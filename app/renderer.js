@@ -3,6 +3,7 @@ const customTitlebar = require("custom-electron-titlebar");
 
 let titlebar = new customTitlebar.Titlebar({
   backgroundColor: customTitlebar.Color.fromHex("#252525"),
+  itemBackgroundColor: customTitlebar.Color.fromHex("#666"),
   icon: "./assets/images/icon_256x256.png",
 });
 //document.querySelector(".titlebar").style.height = "20px";
@@ -54,6 +55,9 @@ document.onkeydown = function (evt) {
     let container = document.querySelector(".container-after-titlebar");
     let amount = container.offsetHeight / 5;
     document.querySelector(".container-after-titlebar").scrollBy(0, -amount);
+  } else if (evt.keyCode == 27) {
+    // escape
+    ipcRenderer.send("escape-pressed");
   }
 };
 
@@ -96,4 +100,26 @@ ipcRenderer.on("set-scrollbar", (event, isVisible) => {
     hideScrollBar();
   }
   // alt to toggle: element.classList.contains(class);
+});
+
+function showMenuBar(show) {
+  if (show) {
+    document.querySelector(".titlebar").classList.remove("display-none");
+    document
+      .querySelector(".container-after-titlebar")
+      .classList.remove("set-top-zero");
+  } else {
+    document.querySelector(".titlebar").classList.add("display-none");
+    document
+      .querySelector(".container-after-titlebar")
+      .classList.add("set-top-zero");
+  }
+}
+
+ipcRenderer.on("show-menu-bar", (event, show) => {
+  showMenuBar(show);
+});
+
+ipcRenderer.on("update-menu", (event, menu) => {
+  titlebar.updateMenu(menu);
 });

@@ -7,24 +7,6 @@ function AddApplicationMenu() {
   //   Menu.getApplicationMenu().items // all the items
   // Menu.getApplicationMenu().getMenuItemById('MENU_ITEM_ID') // get a single item by its id
 
-  const template = [
-    {
-      label: "Edit",
-      submenu: [
-        {
-          label: "Copy",
-          accelerator: "CommandOrControl+C",
-          role: "copy",
-        },
-        {
-          label: "Paste",
-          accelerator: "CommandOrControl+V",
-          role: "paste",
-        },
-      ],
-    },
-  ];
-
   const menuConfig = Menu.buildFromTemplate([
     {
       label: "File",
@@ -36,6 +18,9 @@ function AddApplicationMenu() {
             mainProcess.openFile();
           },
         },
+        // {
+        //   type: "separator",
+        // },
         {
           label: "Quit",
           accelerator: "CommandOrControl+Q",
@@ -49,6 +34,78 @@ function AddApplicationMenu() {
       label: "View",
       submenu: [
         {
+          id: "fit-to-width",
+          label: "Fit to Width",
+          //type: "checkbox",
+          checked: true ? true : false,
+          click() {
+            Menu.getApplicationMenu().getMenuItemById(
+              "fit-to-width"
+            ).checked = true;
+            Menu.getApplicationMenu().getMenuItemById(
+              "fit-to-height"
+            ).checked = false;
+            mainProcess.updateMenu();
+
+            mainProcess.setFitToWidth();
+          },
+        },
+        {
+          id: "fit-to-height",
+          label: "Fit to Height",
+          //type: "checkbox",
+          checked: false,
+          click() {
+            Menu.getApplicationMenu().getMenuItemById(
+              "fit-to-width"
+            ).checked = false;
+            Menu.getApplicationMenu().getMenuItemById(
+              "fit-to-height"
+            ).checked = true;
+            mainProcess.updateMenu();
+
+            mainProcess.setFitToHeight();
+          },
+        },
+        {
+          type: "separator",
+        },
+        {
+          id: "single-page",
+          label: "Single Page",
+          checked: true,
+          click() {
+            Menu.getApplicationMenu().getMenuItemById(
+              "single-page"
+            ).checked = true;
+            Menu.getApplicationMenu().getMenuItemById(
+              "double-page"
+            ).checked = false;
+            mainProcess.updateMenu();
+
+            mainProcess.setSinglePage();
+          },
+        },
+        {
+          id: "double-page",
+          label: "Double Page",
+          checked: false,
+          click() {
+            Menu.getApplicationMenu().getMenuItemById(
+              "single-page"
+            ).checked = false;
+            Menu.getApplicationMenu().getMenuItemById(
+              "double-page"
+            ).checked = true;
+            mainProcess.updateMenu();
+
+            mainProcess.setDoublePage();
+          },
+        },
+        {
+          type: "separator",
+        },
+        {
           label: "Toggle Full Screen",
           accelerator: "F11",
           click() {
@@ -56,6 +113,11 @@ function AddApplicationMenu() {
             //mainWindow.setFullScreen(!mainWindow.isFullScreen());
           },
         },
+      ],
+    },
+    {
+      label: "Settings",
+      submenu: [
         {
           label: "Toggle Scroll Bar",
           accelerator: "CommandOrControl+B",
@@ -63,10 +125,24 @@ function AddApplicationMenu() {
             mainProcess.toggleScrollBar();
           },
         },
+        // {
+        //   type: "separator",
+        // },
+        // {
+        //   label: "Toggle Dev Tools",
+        //   accelerator: "CommandOrControl+Shift+I",
+        //   click() {
+        //     mainProcess.toggleDevTools();
+        //   },
+        // },
       ],
     },
   ]);
-
   Menu.setApplicationMenu(menuConfig);
 }
 exports.AddApplicationMenu = AddApplicationMenu;
+
+function getMenu() {
+  return Menu.getApplicationMenu();
+}
+exports.getMenu = getMenu;

@@ -127,6 +127,12 @@ function openImageFileInRenderer(filePath) {
 
 // Nav / Input / Shortcuts
 
+ipcMain.on("escape-pressed", (event) => {
+  if (mainWindow.isFullScreen()) {
+    setFullScreen(false);
+  }
+});
+
 ipcMain.on("mouse-click", (event, arg) => {
   if (arg === true) {
     // left click
@@ -158,8 +164,13 @@ function goToPreviousPage() {
   }
 }
 
+function setFullScreen(value) {
+  mainWindow.setFullScreen(value);
+  mainWindow.webContents.send("show-menu-bar", !value);
+}
+
 function toggleFullScreen() {
-  mainWindow.setFullScreen(!mainWindow.isFullScreen());
+  setFullScreen(!mainWindow.isFullScreen());
 }
 exports.toggleFullScreen = toggleFullScreen;
 
@@ -169,6 +180,29 @@ function toggleScrollBar() {
   mainWindow.webContents.send("set-scrollbar", isScrollBarVisible);
 }
 exports.toggleScrollBar = toggleScrollBar;
+
+function toggleDevTools() {
+  mainWindow.toggleDevTools();
+}
+exports.toggleDevTools = toggleDevTools;
+
+function setFitToWidth() {}
+exports.setFitToWidth = setFitToWidth;
+
+function setFitToHeight() {}
+exports.setFitToHeight = setFitToHeight;
+
+function setSinglePage() {}
+exports.setSinglePage = setSinglePage;
+
+function setDoublePage() {}
+exports.setDoublePage = setDoublePage;
+
+function updateMenu() {
+  console.log("updateMEnu");
+  //mainWindow.webContents.send("update-menu", appMenu.getMenu());
+}
+exports.updateMenu = updateMenu;
 
 // let shortcut = "PageDown";
 // const ret = globalShortcut.register(shortcut, () => {

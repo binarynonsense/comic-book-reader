@@ -11,15 +11,23 @@ img {
   width: 100%;
 }
 
+.display-none {
+  display: none !important;
+}
+
+.set-top-zero {
+  top: 0px !important;
+}
+
 .titlebar {
-  color: #999 !important;
+  color: #fff !important;
   font-weight: bold !important;
 }
 
-.titlebar > * {
+/* .titlebar > * {
   color: #999 !important;
   font-weight: bold !important;
-}
+} */
 /* .titlebar,
 .menubar,
 .menubar-menutitle {
