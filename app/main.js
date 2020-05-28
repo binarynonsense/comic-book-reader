@@ -117,12 +117,15 @@ function openImageFileInRenderer(filePath) {
   // console.log(filePath);
   // console.log(path.extname(filePath));
 
+  let title = `${currentPageIndex + 1}/${
+    currentPages.length
+  } - ${currentFileName}`;
+
+  mainWindow.setTitle(title);
+
   let data64 = fs.readFileSync(filePath).toString("base64");
   let img64 = "data:image/jpeg;base64," + data64;
-  mainWindow.webContents.send("show-img", img64);
-  mainWindow.setTitle(
-    `${currentPageIndex + 1}/${currentPages.length} - ${currentFileName}`
-  );
+  mainWindow.webContents.send("show-img", img64, title);
 }
 
 // Nav / Input / Shortcuts
@@ -198,11 +201,10 @@ exports.setSinglePage = setSinglePage;
 function setDoublePage() {}
 exports.setDoublePage = setDoublePage;
 
-function updateMenu() {
-  console.log("updateMEnu");
-  //mainWindow.webContents.send("update-menu", appMenu.getMenu());
-}
-exports.updateMenu = updateMenu;
+// function updateMenu() {
+//   mainWindow.webContents.send("update-menu", appMenu.getMenu());
+// }
+// exports.updateMenu = updateMenu;
 
 // let shortcut = "PageDown";
 // const ret = globalShortcut.register(shortcut, () => {
