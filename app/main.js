@@ -30,6 +30,8 @@ app.on("ready", () => {
     minWidth: 250,
     minHeight: 200,
     resizable: true,
+    frame: false,
+    icon: path.join(__dirname, "assets/images/icon_256x256.png"),
 
     //autoHideMenuBar: true,
 
@@ -46,7 +48,6 @@ app.on("ready", () => {
   mainWindow.loadFile(`${__dirname}/index.html`);
 
   mainWindow.webContents.on("did-finish-load", function () {
-    //openTestFolder();
     //openTestCbz();
     //openTestCbr();
   });

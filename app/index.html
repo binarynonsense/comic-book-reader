@@ -6,13 +6,18 @@
     <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'none'" /> -->
     <!-- <meta http-equiv="Content-Security-Policy" content="script-src 'self';" /> -->
     <link rel="stylesheet" href="./assets/css/style.css" />
-    <title>Comic Book Reader</title>
+    <title></title>
   </head>
   <body>
-    <div id="page-container"></div>
-  </body>
+    <div class="centered-block">
+      <img src="./assets/images/icon_256x256.png" />
+      <p>To open a file use the menu or press <i>Ctrl+O</i></p>
+    </div>
 
-  <script>
-    require("./renderer");
-  </script>
+    <div id="page-container"></div>
+
+    <script>
+      require("./renderer");
+    </script>
+  </body>
 </html>

@@ -1,11 +1,34 @@
 body {
   margin: 0;
   padding: 0;
-  background-color: #444;
+  background-color: #1e1e1e;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #666;
 }
+/* 2d2d2d tools bar */
+
 img {
   width: 100%;
 }
+
+.titlebar {
+  color: #999 !important;
+  font-weight: bold !important;
+}
+
+.titlebar > * {
+  color: #999 !important;
+  font-weight: bold !important;
+}
+/* .titlebar,
+.menubar,
+.menubar-menutitle {
+  height: 40px !important;
+}
+
+.container-after-titlebar {
+  top: 100px;
+} */
 
 .hidden-scrollbar::-webkit-scrollbar {
   display: none;
@@ -13,4 +36,50 @@ img {
 
 #page-container {
   width: 100%;
+}
+
+/* CENTER BLOCK OPEN FILE INFO */
+
+.centered-block {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  /* color: #666; */
+  text-align: center;
+}
+.centered-block img {
+  filter: grayscale(100%);
+  width: 100px;
+  opacity: 0.3;
+  margin: auto;
+}
+
+/* SCROLLBAR */
+
+/* ::-webkit-scrollbar {
+  display: none;
+} */
+
+/* width */
+::-webkit-scrollbar {
+  width: 15px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #1e1e1e;
+  border-left: 1px #eee;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: rgb(102, 102, 102);
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
