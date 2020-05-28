@@ -1,4 +1,4 @@
-# Comic Book Reader
+# ACBR - Comic Book Reader
 
 A comic book reader for cbz and cbr files.
 
