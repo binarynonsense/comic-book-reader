@@ -4,10 +4,10 @@
   "description": "A comic book reader for cbz and cbr files",
   "main": "./app/main.js",
   "author": "Álvaro García (www.binarynonsense.com)",
-  "license": "BSD-2-CLAUSE",
+  "license": "BSD-2-Clause",
   "repository": {
     "type": "git",
-    "url": "https://github.com/binarynonsense/"
+    "url": "https://github.com/binarynonsense/comic-book-reader"
   },
   "build": {
     "appId": "com.binarynonsense.cbreader",
@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "adm-zip": "^0.4.14",
+    "custom-electron-titlebar": "^3.2.2-hotfix62",
     "node-unrar-js": "^0.8.1"
   }
 }
