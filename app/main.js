@@ -42,14 +42,18 @@ app.on("ready", () => {
 
   appMenu.AddApplicationMenu();
   //mainWindow.removeMenu();
-
   mainWindow.maximize();
-
   mainWindow.loadFile(`${__dirname}/index.html`);
 
   mainWindow.webContents.on("did-finish-load", function () {
     //openTestCbz();
     //openTestCbr();
+  });
+
+  mainWindow.on("resize", function () {
+    let title = generateTitle();
+    mainWindow.setTitle(title);
+    mainWindow.webContents.send("update-title", title);
   });
 });
 
@@ -68,9 +72,7 @@ function openFile() {
   }
 
   currentPages = fileUtils.getImageFilesInFolderRecursive(currentFolder);
-
   currentFileName = path.basename(filePath);
-
   if (currentPages !== undefined && currentPages.length > 0) {
     currentPageIndex = 0;
     goToFirstPage();
@@ -109,23 +111,37 @@ function openTestFolder() {
 
 // Renderer
 
+function generateTitle() {
+  let title = "---";
+  if (currentPages !== undefined && mainWindow.getSize()[0] <= 800) {
+    title = "ACBR";
+  } else {
+    title = `${currentFileName}`;
+    var length = 50;
+    title =
+      title.length > length
+        ? title.substring(0, length - 3) + "..."
+        : title.substring(0, length);
+    title += " - ACBR";
+  }
+  // `${currentPageIndex + 1}/${
+  //   currentPages.length
+  // } - ${currentFileName}`;
+  return title;
+}
+
 function openImageFileInRenderer(filePath) {
   if (!path.isAbsolute(filePath)) {
     // FIXME: mae it absolute somehow?
     return;
   }
-  // console.log(filePath);
-  // console.log(path.extname(filePath));
-
-  let title = `${currentPageIndex + 1}/${
-    currentPages.length
-  } - ${currentFileName}`;
-
-  mainWindow.setTitle(title);
-
+  let title = generateTitle();
   let data64 = fs.readFileSync(filePath).toString("base64");
   let img64 = "data:image/jpeg;base64," + data64;
-  mainWindow.webContents.send("show-img", img64, title);
+  mainWindow.webContents.send("show-img", img64);
+
+  mainWindow.setTitle(title);
+  mainWindow.webContents.send("update-title", title);
 }
 
 // Nav / Input / Shortcuts

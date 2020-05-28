@@ -7,19 +7,19 @@ let titlebar = new customTitlebar.Titlebar({
   icon: "./assets/images/icon_256x256.png",
 });
 //document.querySelector(".titlebar").style.height = "20px";
-document.title = "Comic Book Reader";
+document.title = "ACBR";
 titlebar.updateTitle();
 // titlebar.updateBackground(customTitlebar.Color.RED);
 // document.title = "232323232";
 // titlebar.updateTitle();
 // titlebar.updateMenu(menu);
 
-ipcRenderer.on("update-toolbar-title", (event, img64) => {
-  //document.title = "My new title";
+ipcRenderer.on("update-title", (event, title) => {
+  document.title = title;
   titlebar.updateTitle();
 });
 
-ipcRenderer.on("show-img", (event, img64, title) => {
+ipcRenderer.on("show-img", (event, img64) => {
   document.querySelector(".centered-block").style.display = "none";
 
   //webFrame.clearCache();
@@ -30,10 +30,6 @@ ipcRenderer.on("show-img", (event, img64, title) => {
 
   // ref: https://www.w3schools.com/howto/howto_js_scroll_to_top.asp
   document.documentElement.scrollTop = 0;
-
-  document.title = title;
-  titlebar.updateTitle();
-
   //webFrame.clearCache(); // don't know if this does anything, haven't tested, I'0m afraid of memory leaks changing imgs
 });
 
