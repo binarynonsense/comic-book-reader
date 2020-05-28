@@ -1,0 +1,33 @@
+{
+  "name": "comic-book-reader",
+  "version": "0.1.0",
+  "description": "A comic book reader for cbz and cbr files",
+  "main": "./app/main.js",
+  "author": "Álvaro García (www.binarynonsense.com)",
+  "license": "BSD-2-CLAUSE",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/binarynonsense/"
+  },
+  "build": {
+    "appId": "com.binarynonsense.cbreader",
+    "linux": {
+      "category": "Utility"
+    }
+  },
+  "scripts": {
+    "start": "electron . --dev",
+    "build:linux": "electron-builder --linux --dir",
+    "dist:linux": "electron-builder --linux",
+    "build:windows": "electron-builder --win --dir",
+    "dist:windows": "electron-builder --win"
+  },
+  "devDependencies": {
+    "electron": "^9.0.0",
+    "electron-builder": "^22.6.1"
+  },
+  "dependencies": {
+    "adm-zip": "^0.4.14",
+    "node-unrar-js": "^0.8.1"
+  }
+}

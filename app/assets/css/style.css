@@ -1,0 +1,16 @@
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #444;
+}
+img {
+  width: 100%;
+}
+
+.hidden-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+#page-container {
+  width: 100%;
+}
