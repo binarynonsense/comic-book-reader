@@ -3,60 +3,92 @@ const customTitlebar = require("custom-electron-titlebar");
 const pdfjsLib = require("./assets/libs/pdfjs/build/pdf.js");
 const path = require("path");
 
-ipcRenderer.on("show-pdf", (event, filePath) => {
+// PDF ////////////////
+
+ipcRenderer.on("load-pdf", (event, filePath) => {
   document.querySelector(".centered-block").style.display = "none";
-  showPdf(filePath);
+
+  let container = document.getElementById("page-container");
+  container.innerHTML = "";
+  var canvas = document.createElement("canvas");
+  canvas.id = "pdf-canvas";
+  // canvas.width = 1224;
+  // canvas.height = 768;
+  // canvas.style.zIndex = 8;
+  // canvas.style.position = "absolute";
+  // canvas.style.border = "1px solid";
+  container.appendChild(canvas);
+
+  loadPdf(filePath);
 });
 
-function showPdf_A(filePath) {
-  const viewerEle = document.getElementById("pdf-viewer");
-  viewerEle.innerHTML = ""; // destroy the old instance of PDF.js (if it exists)
+ipcRenderer.on("render-pdf-page", (event, pageNum) => {
+  renderPdfPage(pageNum);
+});
 
-  // Create an iframe that points to our PDF.js viewer, and tell PDF.js to open the file that was selected from the file picker.
-  const iframe = document.createElement("iframe");
-  console.log("iframe created");
-  iframe.src = path.resolve(
-    __dirname,
-    `./assets/libs/pdfjs/web/viewer.html?file=${filePath}`
-  );
+ipcRenderer.on("refresh-pdf-page", (event) => {
+  refreshPdfPage();
+});
 
-  // Add the iframe to our UI.
-  viewerEle.appendChild(iframe);
-  console.log("finished");
-}
+let currentPdf = null;
+let currentPdfPage = null;
 
-function showPdf(filePath) {
-  console.log("showPDF");
-
+function loadPdf(filePath) {
   pdfjsLib.GlobalWorkerOptions.workerSrc =
     "./assets/libs/pdfjs/build/pdf.worker.js";
-
-  console.log("getDocument");
   var loadingTask = pdfjsLib.getDocument(filePath);
   loadingTask.promise.then(function (pdf) {
+    currentPdf = pdf;
+    console.log("numPages: " + currentPdf.numPages);
+    ipcRenderer.send("pdf-loaded", true, filePath, currentPdf.numPages);
     // you can now use *pdf* here
-    pdf.getPage(1).then(function (page) {
-      // you can now use *page* here
-      // var scale = 1.5;
-      // var viewport = page.getViewport({ scale: scale });
-
-      var desiredWidth = window.innerWidth;
-      var viewport = page.getViewport({ scale: 1 });
-      var scale = desiredWidth / viewport.width;
-      var scaledViewport = page.getViewport({ scale: scale });
-
-      var canvas = document.getElementById("the-canvas");
-      var context = canvas.getContext("2d");
-      canvas.height = scaledViewport.height; // viewport.height;
-      canvas.width = scaledViewport.width; // viewport.width;
-
-      var renderContext = {
-        canvasContext: context,
-        viewport: scaledViewport,
-      };
-      page.render(renderContext);
-    });
+    renderPdfPage(1);
   });
+}
+
+function renderPdfPage(pageNum) {
+  currentPdf.getPage(pageNum).then(function (page) {
+    // you can now use *page* here
+    // var scale = 1.5;
+    // var viewport = page.getViewport({ scale: scale });
+    currentPdfPage = page;
+    var desiredWidth = window.innerWidth;
+    var viewport = currentPdfPage.getViewport({ scale: 1 });
+    var scale = desiredWidth / viewport.width;
+    var scaledViewport = currentPdfPage.getViewport({ scale: scale });
+
+    var canvas = document.getElementById("pdf-canvas");
+    var context = canvas.getContext("2d");
+    canvas.height = scaledViewport.height; // viewport.height;
+    canvas.width = scaledViewport.width; // viewport.width;
+
+    var renderContext = {
+      canvasContext: context,
+      viewport: scaledViewport,
+    };
+    currentPdfPage.render(renderContext);
+
+    document.getElementById("page-container").scrollTop = 0;
+  });
+}
+
+function refreshPdfPage() {
+  if (currentPdfPage === undefined) return;
+  var desiredWidth = window.innerWidth;
+  var viewport = currentPdfPage.getViewport({ scale: 1 });
+  var scale = desiredWidth / viewport.width;
+  var scaledViewport = currentPdfPage.getViewport({ scale: scale });
+
+  var canvas = document.getElementById("pdf-canvas");
+  var context = canvas.getContext("2d");
+  canvas.height = scaledViewport.height; // viewport.height;
+  canvas.width = scaledViewport.width; // viewport.width;
+
+  var renderContext = {
+    canvasContext: context,
+    viewport: scaledViewport,
+  };
+  currentPdfPage.render(renderContext);
 }
 
 ///////////////////////////////////////////////////////////////
@@ -80,14 +112,14 @@ ipcRenderer.on("update-title", (event, title) => {
   titlebar.updateTitle();
 });
 
-ipcRenderer.on("show-img", (event, img64) => {
+ipcRenderer.on("render-img", (event, img64) => {
   document.querySelector(".centered-block").style.display = "none";
 
   //webFrame.clearCache();
   let _out = '<img class="page" src="' + img64 + '" />';
-  let _target = document.getElementById("page-container");
+  let container = document.getElementById("page-container");
   // _target.insertAdjacentHTML("beforeend", _out);
-  _target.innerHTML = _out;
+  container.innerHTML = _out;
 
   // ref: https://www.w3schools.com/howto/howto_js_scroll_to_top.asp
   document.documentElement.scrollTop = 0;
@@ -127,14 +159,14 @@ document.onkeydown = function (evt) {
 };
 
 document.onclick = function (event) {
-  if (event.target.className === "page") {
+  if (event.target.className === "page" || event.target.id === "pdf-canvas") {
     ipcRenderer.send("mouse-click", true);
   }
   //if (event.target.className !== "container-after-titlebar") return;
 };
 
 document.oncontextmenu = function (event) {
-  if (event.target.className === "page") {
+  if (event.target.className === "page" || event.target.id === "pdf-canvas") {
     ipcRenderer.send("mouse-click", false);
   }
 };

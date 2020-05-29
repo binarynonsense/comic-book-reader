@@ -12,11 +12,10 @@ const path = require("path");
 const fileUtils = require("./file-utils");
 const appMenu = require("./app-menu");
 
-let mainWindow;
-let currentPages = [];
-let currentPageIndex = 0;
-let currentFolder;
-let currentFileName = "";
+// Setup ///////////////////////////////////
+
+let g_mainWindow;
+let g_resizeEventCounter;
 
 app.on("will-quit", () => {
   globalShortcut.unregisterAll();
@@ -24,7 +23,7 @@ app.on("will-quit", () => {
 });
 
 app.on("ready", () => {
-  mainWindow = new BrowserWindow({
+  g_mainWindow = new BrowserWindow({
     width: 500,
     height: 600,
     minWidth: 250,
@@ -32,9 +31,7 @@ app.on("ready", () => {
     resizable: true,
     frame: false,
     icon: path.join(__dirname, "assets/images/icon_256x256.png"),
-
     //autoHideMenuBar: true,
-
     webPreferences: {
       nodeIntegration: true,
     },
@@ -42,85 +39,114 @@ app.on("ready", () => {
 
   appMenu.AddApplicationMenu();
   //mainWindow.removeMenu();
-  mainWindow.maximize();
-  mainWindow.loadFile(`${__dirname}/index.html`);
+  g_mainWindow.maximize();
+  g_mainWindow.loadFile(`${__dirname}/index.html`);
 
-  mainWindow.webContents.on("did-finish-load", function () {
+  g_mainWindow.webContents.on("did-finish-load", function () {
     //openTestCbz();
-    //openTestCbr();
   });
 
-  mainWindow.on("resize", function () {
+  g_mainWindow.on("resize", function () {
     let title = generateTitle();
-    mainWindow.setTitle(title);
-    mainWindow.webContents.send("update-title", title);
+    g_mainWindow.setTitle(title);
+    g_mainWindow.webContents.send("update-title", title);
+    if (
+      g_fileData.type === FileDataType.PDF &&
+      g_fileData.state === FileDataState.LOADED
+    ) {
+      // avoid too much pdf resizing
+      clearTimeout(g_resizeEventCounter);
+      g_resizeEventCounter = setTimeout(onResizeEventFinished, 500);
+    }
   });
 });
 
+function onResizeEventFinished() {
+  g_mainWindow.webContents.send("refresh-pdf-page");
+}
+
+// Files ///////////////////////////////////////
+
+const FileDataState = {
+  NOT_SET: "not set",
+  LOADING: "loading",
+  LOADED: "loaded",
+};
+
+const FileDataType = {
+  NOT_SET: "not set",
+  PDF: "pdf",
+  IMGS: "imgs",
+};
+
+let g_fileData = {
+  state: FileDataState.NOT_SET,
+  type: FileDataType.NOT_SET,
+  filePath: "",
+  fileName: "",
+  imgsFolderPath: "",
+  pagesPaths: [],
+  numPages: 0,
+  currentPageIndex: 0,
+};
+
 function openFile() {
-  let filePath = fileUtils.chooseFile(mainWindow)[0];
+  let filePath = fileUtils.chooseFile(g_mainWindow)[0];
   //`${currentPageIndex + 1}/${currentPages.length}`;
   console.log("open file request:" + filePath);
-  let fileExtension = path.extname(filePath);
-  if (fileExtension === ".cbr") {
-    currentFolder = fileUtils.extractRar(filePath);
-  } else if (fileExtension === ".cbz") {
-    currentFolder = fileUtils.extractZip(filePath);
-  } else if (fileExtension === ".pdf") {
-    console.log(filePath);
-    mainWindow.webContents.send("show-pdf", filePath);
-    return;
-  } else {
-    console.log("not a valid file");
-    return;
-  }
 
-  currentPages = fileUtils.getImageFilesInFolderRecursive(currentFolder);
-  currentFileName = path.basename(filePath);
-  if (currentPages !== undefined && currentPages.length > 0) {
-    currentPageIndex = 0;
-    goToFirstPage();
+  let fileExtension = path.extname(filePath);
+  if (fileExtension === ".pdf") {
+    g_fileData.state = FileDataState.LOADING;
+    g_fileData.type = FileDataType.PDF;
+    g_fileData.filePath = filePath;
+    g_fileData.fileName = path.basename(filePath);
+    g_fileData.imgsFolderPath = "";
+    g_fileData.pagesPaths = [];
+    g_fileData.numPages = 0;
+    g_fileData.currentPageIndex = 0;
+    g_mainWindow.webContents.send("load-pdf", filePath);
+    updateTitle();
+  } else {
+    let imgsFolderPath = undefined;
+    if (fileExtension === ".cbr") {
+      imgsFolderPath = fileUtils.extractRar(filePath);
+    } else if (fileExtension === ".cbz") {
+      imgsFolderPath = fileUtils.extractZip(filePath);
+    } else {
+      console.log("not a valid file");
+      return;
+    }
+    if (imgsFolderPath === undefined) return;
+
+    let pagesPaths = fileUtils.getImageFilesInFolderRecursive(imgsFolderPath);
+    if (pagesPaths !== undefined && pagesPaths.length > 0) {
+      g_fileData.state = FileDataState.LOADED;
+      g_fileData.type = FileDataType.IMGS;
+      g_fileData.filePath = filePath;
+      g_fileData.fileName = path.basename(filePath);
+      g_fileData.pagesPaths = pagesPaths;
+      g_fileData.imgsFolderPath = imgsFolderPath;
+      g_fileData.numPages = pagesPaths.length;
+      g_fileData.currentPageIndex = 0;
+      console.log("file data loaded: " + g_fileData);
+      goToFirstPage();
+    }
   }
 }
 exports.openFile = openFile;
-
-function openTestFile() {
-  let filePath = path.join(app.getPath("desktop"), "testComic2.cbr");
-  currentPageIndex = 0;
-  currentFolder = fileUtils.extractRar(filePath);
-  currentPages = fileUtils.getImageFilesInFolderRecursive(currentFolder);
-  if (currentPages !== undefined && currentPages.length > 0) {
-    goToFirstPage();
-  }
-}
-
-function openTestCbz() {
-  let filePath = path.join(app.getPath("desktop"), "testComic.cbz");
-  currentPageIndex = 0;
-  currentFolder = fileUtils.extractZip(filePath);
-  currentPages = fileUtils.getImageFilesInFolderRecursive(currentFolder);
-  if (currentPages !== undefined && currentPages.length > 0) {
-    goToFirstPage();
-  }
-}
-
-function openTestFolder() {
-  currentFolder = path.join(app.getPath("desktop"), "testComic");
-  currentPageIndex = 0;
-  currentPages = fileUtils.getImageFilesInFolder(currentFolder);
-  if (currentPages !== undefined && currentPages.length > 0) {
-    goToFirstPage();
-  }
-}
 
 // Renderer
 
 function generateTitle() {
   let title = "---";
-  if (currentPages.length === 0 || mainWindow.getSize()[0] <= 800) {
+  if (
+    g_fileData.state === FileDataState.NOT_SET ||
+    g_mainWindow.getSize()[0] <= 800
+  ) {
     title = "ACBR";
   } else {
-    title = `${currentFileName}`;
+    title = `${g_fileData.fileName}`;
     var length = 50;
     title =
       title.length > length
@@ -134,24 +160,44 @@ function generateTitle() {
   return title;
 }
 
-function openImageFileInRenderer(filePath) {
+function updateTitle() {
+  let title = generateTitle();
+  g_mainWindow.setTitle(title);
+  g_mainWindow.webContents.send("update-title", title);
+}
+
+function renderImageFile(filePath) {
   if (!path.isAbsolute(filePath)) {
     // FIXME: mae it absolute somehow?
     return;
   }
-  let title = generateTitle();
+
+  updateTitle();
   let data64 = fs.readFileSync(filePath).toString("base64");
   let img64 = "data:image/jpeg;base64," + data64;
-  mainWindow.webContents.send("show-img", img64);
-
-  mainWindow.setTitle(title);
-  mainWindow.webContents.send("update-title", title);
+  g_mainWindow.webContents.send("render-img", img64);
 }
+
+function renderPdfPage(pageNum) {
+  updateTitle();
+  g_mainWindow.webContents.send("render-pdf-page", pageNum + 1); // pdf.j counts from 1
+}
+
+ipcMain.on("pdf-loaded", (event, loadedCorrectly, filePath, numPages) => {
+  g_fileData.state = FileDataState.LOADED;
+  // TODO double check loaded on is the one loading?
+  // g_fileData.filePath = filePath;
+  // g_fileData.fileName = path.basename(filePath);
+  // g_fileData.imgsFolderPath = "";
+  // g_fileData.pagesPaths = [];
+  g_fileData.numPages = numPages;
+  // g_fileData.currentPageIndex = 0;
+});
 
 // Nav / Input / Shortcuts
 
 ipcMain.on("escape-pressed", (event) => {
-  if (mainWindow.isFullScreen()) {
+  if (g_mainWindow.isFullScreen()) {
     setFullScreen(false);
   }
 });
@@ -167,45 +213,66 @@ ipcMain.on("mouse-click", (event, arg) => {
 });
 
 function goToFirstPage() {
-  if (currentPages.length >= 0) {
-    //openImageFileInRenderer(path.join(currentFolder, currentPages[0]));
-    openImageFileInRenderer(currentPages[0]);
+  if (g_fileData.pagesPaths.length > 0) {
+    renderImageFile(g_fileData.pagesPaths[0]);
   }
 }
 
 function goToNextPage() {
-  if (currentPageIndex + 1 < currentPages.length) {
-    currentPageIndex++;
-    openImageFileInRenderer(currentPages[currentPageIndex]);
+  if (
+    g_fileData.state !== FileDataState.LOADED ||
+    g_fileData.type === FileDataType.NOT_SET
+  ) {
+    return;
+  }
+  console;
+  if (g_fileData.currentPageIndex + 1 < g_fileData.numPages) {
+    g_fileData.currentPageIndex++;
+    if (g_fileData.type === FileDataType.IMGS) {
+      renderImageFile(g_fileData.pagesPaths[g_fileData.currentPageIndex]);
+    } else {
+      renderPdfPage(g_fileData.currentPageIndex);
+    }
   }
 }
 
 function goToPreviousPage() {
-  if (currentPageIndex - 1 >= 0) {
-    currentPageIndex--;
-    openImageFileInRenderer(currentPages[currentPageIndex]);
+  if (
+    g_fileData.state !== FileDataState.LOADED ||
+    g_fileData.type === FileDataType.NOT_SET
+  ) {
+    return;
+  }
+
+  if (g_fileData.currentPageIndex - 1 >= 0) {
+    g_fileData.currentPageIndex--;
+    if (g_fileData.type === FileDataType.IMGS) {
+      renderImageFile(g_fileData.pagesPaths[g_fileData.currentPageIndex]);
+    } else {
+      renderPdfPage(g_fileData.currentPageIndex);
+    }
   }
 }
 
 function setFullScreen(value) {
-  mainWindow.setFullScreen(value);
-  mainWindow.webContents.send("show-menu-bar", !value);
+  g_mainWindow.setFullScreen(value);
+  g_mainWindow.webContents.send("show-menu-bar", !value);
 }
 
 function toggleFullScreen() {
-  setFullScreen(!mainWindow.isFullScreen());
+  setFullScreen(!g_mainWindow.isFullScreen());
 }
 exports.toggleFullScreen = toggleFullScreen;
 
 let isScrollBarVisible = true;
 function toggleScrollBar() {
   isScrollBarVisible = !isScrollBarVisible;
-  mainWindow.webContents.send("set-scrollbar", isScrollBarVisible);
+  g_mainWindow.webContents.send("set-scrollbar", isScrollBarVisible);
 }
 exports.toggleScrollBar = toggleScrollBar;
 
 function toggleDevTools() {
-  mainWindow.toggleDevTools();
+  g_mainWindow.toggleDevTools();
 }
 exports.toggleDevTools = toggleDevTools;
 
