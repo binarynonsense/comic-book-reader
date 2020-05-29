@@ -1,6 +1,6 @@
 const { ipcRenderer, remote } = require("electron");
 const customTitlebar = require("custom-electron-titlebar");
-
+const pdfjsLib = require("./assets/libs/pdfjs/build/pdf.js");
 const path = require("path");
 
 ipcRenderer.on("show-pdf", (event, filePath) => {
@@ -8,7 +8,7 @@ ipcRenderer.on("show-pdf", (event, filePath) => {
   showPdf(filePath);
 });
 
-function showPdf(filePath) {
+function showPdf_A(filePath) {
   const viewerEle = document.getElementById("pdf-viewer");
   viewerEle.innerHTML = ""; // destroy the old instance of PDF.js (if it exists)
 
@@ -24,6 +24,43 @@ function showPdf(filePath) {
   viewerEle.appendChild(iframe);
   console.log("finished");
 }
+
+function showPdf(filePath) {
+  console.log("showPDF");
+
+  pdfjsLib.GlobalWorkerOptions.workerSrc =
+    "./assets/libs/pdfjs/build/pdf.worker.js";
+
+  console.log("getDocument");
+  var loadingTask = pdfjsLib.getDocument(filePath);
+  loadingTask.promise.then(function (pdf) {
+    // you can now use *pdf* here
+    pdf.getPage(1).then(function (page) {
+      // you can now use *page* here
+      // var scale = 1.5;
+      // var viewport = page.getViewport({ scale: scale });
+
+      var desiredWidth = window.innerWidth;
+      var viewport = page.getViewport({ scale: 1 });
+      var scale = desiredWidth / viewport.width;
+      var scaledViewport = page.getViewport({ scale: scale });
+
+      var canvas = document.getElementById("the-canvas");
+      var context = canvas.getContext("2d");
+      canvas.height = scaledViewport.height; // viewport.height;
+      canvas.width = scaledViewport.width; // viewport.width;
+
+      var renderContext = {
+        canvasContext: context,
+        viewport: scaledViewport,
+      };
+      page.render(renderContext);
+    });
+  });
+}
+
+///////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////
 
 let titlebar = new customTitlebar.Titlebar({
   backgroundColor: customTitlebar.Color.fromHex("#252525"),
