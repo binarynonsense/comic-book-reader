@@ -45,7 +45,7 @@ img {
 #page-container {
   width: 100%;
   height: 100%;
-  overflow-x: hidden;
+  overflow-x: hidden; /* FIX this is a hack to hide h-scrollbar with pdfs sometimes*/
 }
 
 /* CENTER BLOCK OPEN FILE INFO */

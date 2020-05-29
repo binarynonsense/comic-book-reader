@@ -35,6 +35,7 @@ app.on("ready", () => {
     webPreferences: {
       nodeIntegration: true,
     },
+    show: false,
   });
 
   appMenu.AddApplicationMenu();
@@ -44,6 +45,10 @@ app.on("ready", () => {
 
   g_mainWindow.webContents.on("did-finish-load", function () {
     //openTestCbz();
+  });
+
+  g_mainWindow.once("ready-to-show", () => {
+    g_mainWindow.show();
   });
 
   g_mainWindow.on("resize", function () {
