@@ -125,16 +125,16 @@ function AddApplicationMenu() {
             mainProcess.toggleScrollBar();
           },
         },
-        // {
-        //   type: "separator",
-        // },
-        // {
-        //   label: "Toggle Dev Tools",
-        //   accelerator: "CommandOrControl+Shift+I",
-        //   click() {
-        //     mainProcess.toggleDevTools();
-        //   },
-        // },
+        {
+          type: "separator",
+        },
+        {
+          label: "Toggle Dev Tools",
+          accelerator: "CommandOrControl+Shift+I",
+          click() {
+            mainProcess.toggleDevTools();
+          },
+        },
       ],
     },
   ]);

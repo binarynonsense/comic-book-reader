@@ -31,7 +31,12 @@ const deleteTempFolderRecursive = function (folderPath) {
 
 function chooseFile(window) {
   let imagePath = dialog.showOpenDialogSync(window, {
-    filters: [{ name: "Images", extensions: ["cbz", "cbr", "zip", "rar"] }],
+    filters: [
+      {
+        name: "Comic Book Files",
+        extensions: ["cbz", "cbr", "zip", "rar", "pdf"],
+      },
+    ],
   });
   return imagePath;
 }

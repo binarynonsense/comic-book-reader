@@ -59,13 +59,17 @@ app.on("ready", () => {
 
 function openFile() {
   let filePath = fileUtils.chooseFile(mainWindow)[0];
-  `${currentPageIndex + 1}/${currentPages.length}`;
+  //`${currentPageIndex + 1}/${currentPages.length}`;
   console.log("open file request:" + filePath);
   let fileExtension = path.extname(filePath);
   if (fileExtension === ".cbr") {
     currentFolder = fileUtils.extractRar(filePath);
   } else if (fileExtension === ".cbz") {
     currentFolder = fileUtils.extractZip(filePath);
+  } else if (fileExtension === ".pdf") {
+    console.log(filePath);
+    mainWindow.webContents.send("show-pdf", filePath);
+    return;
   } else {
     console.log("not a valid file");
     return;
@@ -80,7 +84,7 @@ function openFile() {
 }
 exports.openFile = openFile;
 
-function openTestCbr() {
+function openTestFile() {
   let filePath = path.join(app.getPath("desktop"), "testComic2.cbr");
   currentPageIndex = 0;
   currentFolder = fileUtils.extractRar(filePath);
@@ -113,7 +117,7 @@ function openTestFolder() {
 
 function generateTitle() {
   let title = "---";
-  if (currentPages !== undefined && mainWindow.getSize()[0] <= 800) {
+  if (currentPages.length === 0 || mainWindow.getSize()[0] <= 800) {
     title = "ACBR";
   } else {
     title = `${currentFileName}`;

@@ -1,6 +1,30 @@
 const { ipcRenderer, remote } = require("electron");
 const customTitlebar = require("custom-electron-titlebar");
 
+const path = require("path");
+
+ipcRenderer.on("show-pdf", (event, filePath) => {
+  document.querySelector(".centered-block").style.display = "none";
+  showPdf(filePath);
+});
+
+function showPdf(filePath) {
+  const viewerEle = document.getElementById("pdf-viewer");
+  viewerEle.innerHTML = ""; // destroy the old instance of PDF.js (if it exists)
+
+  // Create an iframe that points to our PDF.js viewer, and tell PDF.js to open the file that was selected from the file picker.
+  const iframe = document.createElement("iframe");
+  console.log("iframe created");
+  iframe.src = path.resolve(
+    __dirname,
+    `./assets/libs/pdfjs/web/viewer.html?file=${filePath}`
+  );
+
+  // Add the iframe to our UI.
+  viewerEle.appendChild(iframe);
+  console.log("finished");
+}
+
 let titlebar = new customTitlebar.Titlebar({
   backgroundColor: customTitlebar.Color.fromHex("#252525"),
   itemBackgroundColor: customTitlebar.Color.fromHex("#666"),
