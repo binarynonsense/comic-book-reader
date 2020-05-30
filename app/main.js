@@ -43,19 +43,17 @@ app.on("ready", () => {
   g_mainWindow.maximize();
   g_mainWindow.loadFile(`${__dirname}/index.html`);
 
-  g_mainWindow.webContents.on("did-finish-load", function () {
-    //openTestCbz();
-  });
-
   g_mainWindow.once("ready-to-show", () => {
     g_mainWindow.show();
+    g_mainWindow.webContents.send("set-scrollbar", false);
+    g_mainWindow.webContents.send("set-scrollbar", true);
+    //openTestCbz();
   });
 
   g_mainWindow.on("resize", function () {
     let title = generateTitle();
     g_mainWindow.setTitle(title);
     g_mainWindow.webContents.send("update-title", title);
-    g_mainWindow.webContents.send("show-menu-bar", true);
     if (
       g_fileData.type === FileDataType.PDF &&
       g_fileData.state === FileDataState.LOADED

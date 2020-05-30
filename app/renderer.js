@@ -171,9 +171,6 @@ document.oncontextmenu = function (event) {
 
 // ref: https://stackoverflow.com/questions/4481485/changing-css-pseudo-element-styles-via-javascript
 function hideScrollBar() {
-  document
-    .querySelector("#page-container")
-    .classList.remove("hidden-scrollbar-x");
   // generic:
   document.body.classList.add("hidden-scrollbar");
   // if custom title bar enabled:
@@ -183,7 +180,6 @@ function hideScrollBar() {
 }
 
 function showScrollBar() {
-  document.querySelector("#page-container").classList.add("hidden-scrollbar-x");
   // generic:
   document.body.classList.remove("hidden-scrollbar");
   // if custom title bar enabled:

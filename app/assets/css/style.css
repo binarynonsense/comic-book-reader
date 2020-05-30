@@ -45,10 +45,6 @@ img {
   display: none;
 }
 
-.hidden-scrollbar-x {
-  overflow-x: hidden; /* FIX this is a hack to hide h-scrollbar with pdfs sometimes*/
-}
-
 #page-container {
   width: 100%;
   height: 100%;
