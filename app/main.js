@@ -24,7 +24,7 @@ app.on("will-quit", () => {
 
 app.on("ready", () => {
   g_mainWindow = new BrowserWindow({
-    width: 500,
+    width: 800,
     height: 600,
     minWidth: 250,
     minHeight: 200,
@@ -40,7 +40,7 @@ app.on("ready", () => {
 
   appMenu.AddApplicationMenu();
   //mainWindow.removeMenu();
-  g_mainWindow.maximize();
+  //g_mainWindow.maximize();
   g_mainWindow.loadFile(`${__dirname}/index.html`);
 
   g_mainWindow.once("ready-to-show", () => {
@@ -104,6 +104,8 @@ const FileDataType = {
   NOT_SET: "not set",
   PDF: "pdf",
   IMGS: "imgs",
+  ZIP: "zip",
+  RAR: "rar",
 };
 
 let g_fileData = {
@@ -139,7 +141,19 @@ function openFile() {
     if (fileExtension === ".cbr") {
       imgsFolderPath = fileUtils.extractRar(filePath);
     } else if (fileExtension === ".cbz") {
-      imgsFolderPath = fileUtils.extractZip(filePath);
+      let pagesPaths = fileUtils.getZipEntriesList(filePath);
+      if (pagesPaths !== undefined && pagesPaths.length > 0) {
+        g_fileData.state = FileDataState.LOADED;
+        g_fileData.type = FileDataType.ZIP;
+        g_fileData.filePath = filePath;
+        g_fileData.fileName = path.basename(filePath);
+        g_fileData.pagesPaths = pagesPaths;
+        g_fileData.imgsFolderPath = "";
+        g_fileData.numPages = pagesPaths.length;
+        g_fileData.currentPageIndex = 0;
+        goToFirstPage();
+      }
+      return;
     } else {
       console.log("not a valid file");
       return;
@@ -156,7 +170,6 @@ function openFile() {
       g_fileData.imgsFolderPath = imgsFolderPath;
       g_fileData.numPages = pagesPaths.length;
       g_fileData.currentPageIndex = 0;
-      console.log("file data loaded: " + g_fileData);
       goToFirstPage();
     }
   }
@@ -179,6 +192,11 @@ function renderPageInfo(pageNum, numPages) {
   );
 }
 
+function getMimeType(filePath) {
+  let mimeType = path.basename(filePath);
+  return mimeType;
+}
+
 function renderImageFile(filePath) {
   if (!path.isAbsolute(filePath)) {
     // FIXME: mae it absolute somehow?
@@ -186,7 +204,17 @@ function renderImageFile(filePath) {
   }
   renderTitle();
   let data64 = fs.readFileSync(filePath).toString("base64");
-  let img64 = "data:image/jpeg;base64," + data64;
+  let img64 = "data:image/" + getMimeType(filePath) + ";base64," + data64;
+  g_mainWindow.webContents.send("render-img", img64);
+}
+
+function renderZipEntry(zipPath, entryName) {
+  renderTitle();
+  let data64 = fileUtils
+    .extractZipEntryData(zipPath, entryName)
+    .toString("base64");
+  let mimeType = "jpeg";
+  let img64 = "data:image/" + getMimeType(entryName) + ";base64," + data64;
   g_mainWindow.webContents.send("render-img", img64);
 }
 
@@ -251,13 +279,6 @@ exports.setDoublePage = setDoublePage;
 
 // NAVIGATION //////////////////////////////
 
-function goToFirstPage() {
-  if (g_fileData.pagesPaths.length > 0) {
-    renderImageFile(g_fileData.pagesPaths[0]);
-    renderPageInfo();
-  }
-}
-
 function goToPage(pageNum) {
   if (
     g_fileData.state !== FileDataState.LOADED ||
@@ -269,50 +290,32 @@ function goToPage(pageNum) {
   g_fileData.currentPageIndex = pageNum;
   if (g_fileData.type === FileDataType.IMGS) {
     renderImageFile(g_fileData.pagesPaths[g_fileData.currentPageIndex]);
-    renderPageInfo();
-  } else {
+  } else if (g_fileData.type === FileDataType.PDF) {
     renderPdfPage(g_fileData.currentPageIndex);
-    renderPageInfo();
+  } else if (g_fileData.type === FileDataType.ZIP) {
+    renderZipEntry(
+      g_fileData.filePath,
+      g_fileData.pagesPaths[g_fileData.currentPageIndex]
+    );
   }
+  renderPageInfo();
+}
+
+function goToFirstPage() {
+  goToPage(0);
 }
 
 function goToNextPage() {
-  if (
-    g_fileData.state !== FileDataState.LOADED ||
-    g_fileData.type === FileDataType.NOT_SET
-  ) {
-    return;
-  }
-  console;
   if (g_fileData.currentPageIndex + 1 < g_fileData.numPages) {
     g_fileData.currentPageIndex++;
-    if (g_fileData.type === FileDataType.IMGS) {
-      renderImageFile(g_fileData.pagesPaths[g_fileData.currentPageIndex]);
-      renderPageInfo();
-    } else {
-      renderPdfPage(g_fileData.currentPageIndex);
-      renderPageInfo();
-    }
+    goToPage(g_fileData.currentPageIndex);
   }
 }
 
 function goToPreviousPage() {
-  if (
-    g_fileData.state !== FileDataState.LOADED ||
-    g_fileData.type === FileDataType.NOT_SET
-  ) {
-    return;
-  }
-
   if (g_fileData.currentPageIndex - 1 >= 0) {
     g_fileData.currentPageIndex--;
-    if (g_fileData.type === FileDataType.IMGS) {
-      renderImageFile(g_fileData.pagesPaths[g_fileData.currentPageIndex]);
-      renderPageInfo();
-    } else {
-      renderPdfPage(g_fileData.currentPageIndex);
-      renderPageInfo();
-    }
+    goToPage(g_fileData.currentPageIndex);
   }
 }
 
