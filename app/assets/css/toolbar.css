@@ -1,0 +1,92 @@
+#toolbar-page-numbers {
+  padding: 0 10px;
+  color: rgb(219, 219, 219);
+  display: block;
+  font-size: 18px;
+}
+
+#toolbar {
+  width: 100%;
+  height: 30px;
+  background-color: #818181;
+  padding-left: 0px;
+  padding-right: 0px;
+  display: flex;
+  align-items: center;
+
+  flex-wrap: nowrap;
+  position: fixed;
+  bottom: 0;
+}
+
+.toolbar-item {
+  height: 100%;
+  border-left: 1px solid #3b3b3b;
+}
+
+.toolbar-item-separator {
+  height: 100%;
+  border-left: 3px solid #6b6b6b;
+}
+
+.toolbar-item a {
+  color: #3b3b3b;
+  text-decoration: none;
+  font-size: 18px;
+  /* background-color: #666; */
+  width: 40px;
+  height: 100%;
+
+  display: inline-block;
+  text-align: center;
+  padding: 6px 0 5px 0;
+}
+
+.toolbar-item a:hover {
+  background-color: #ddd;
+  color: black;
+}
+
+.toolbar-item a.active {
+  color: white;
+}
+
+/* ////////////  SLIDER  /////////////////// */
+
+#toolbar-page-slider {
+  flex-grow: 1;
+  padding: 0px 10px;
+}
+
+#page-slider {
+  -webkit-appearance: none; /* Override default CSS styles */
+  appearance: none;
+  width: 100%; /* Full-width */
+  height: 10px; /* Specified height */
+  background: #4d4d4d; /* Grey background */
+  outline: none; /* Remove outline */
+  opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+  -webkit-transition: 0.2s; /* 0.2 seconds transition on hover */
+  transition: opacity 0.2s;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+#page-slider:hover {
+  opacity: 1; /* Fully shown on mouse-over */
+}
+
+/* #page-slider::-webkit-slider-runnable-track {
+  box-shadow: 3px 3px 10px 5px #000;
+} */
+
+#page-slider::-webkit-slider-thumb {
+  -webkit-appearance: none; /* Override default look */
+  width: 25px; /* Set a specific slider handle width */
+  height: 25px; /* Slider handle height */
+  background: #fff; /* Green background */
+  /*cursor: pointer; /* Cursor on hover */
+  border-radius: 10px;
+  box-shadow: -100vw 0 0 100vw #daa41d;
+  /* border: 2px solid #999; */
+}

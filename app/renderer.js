@@ -3,23 +3,14 @@ const customTitlebar = require("custom-electron-titlebar");
 const pdfjsLib = require("./assets/libs/pdfjs/build/pdf.js");
 const path = require("path");
 
-// PDF ////////////////
+// IPC RECEIVED ///////////////////////////
 
-ipcRenderer.on("load-pdf", (event, filePath) => {
-  document.querySelector(".centered-block").style.display = "none";
-
-  let container = document.getElementById("page-container");
-  container.innerHTML = "";
-  var canvas = document.createElement("canvas");
-  canvas.id = "pdf-canvas";
-  // canvas.width = 1224;
-  // canvas.height = 768;
-  // canvas.style.zIndex = 8;
-  // canvas.style.position = "absolute";
-  // canvas.style.border = "1px solid";
-  container.appendChild(canvas);
-
-  loadPdf(filePath);
+ipcRenderer.on("render-page-info", (event, pageNum, numPages) => {
+  if (numPages === 0) pageNum = -1; // hack to make it show 00 / 00 @ start
+  document.getElementById("page-slider").value = pageNum + 1;
+  document.getElementById("page-slider").max = numPages;
+  document.getElementById("toolbar-page-numbers").innerHTML =
+    pageNum + 1 + " / " + numPages;
 });
 
 ipcRenderer.on("render-pdf-page", (event, pageNum) => {
@@ -30,6 +21,55 @@ ipcRenderer.on("refresh-pdf-page", (event) => {
   refreshPdfPage();
 });
 
+ipcRenderer.on("update-title", (event, title) => {
+  document.title = title;
+  titlebar.updateTitle();
+});
+
+ipcRenderer.on("render-img", (event, img64) => {
+  document.querySelector(".centered-block").style.display = "none";
+
+  //webFrame.clearCache();
+  let element = '<img class="page" src="' + img64 + '" />';
+  let container = document.getElementById("page-container");
+  container.innerHTML = element;
+
+  // ref: https://www.w3schools.com/howto/howto_js_scroll_to_top.asp
+  //document.documentElement.scrollTop = 0;
+  document.querySelector(".container-after-titlebar").scrollTop = 0;
+  //webFrame.clearCache(); // don't know if this does anything, haven't tested, I'm afraid of memory leaks changing imgs
+});
+
+ipcRenderer.on("load-pdf", (event, filePath) => {
+  document.querySelector(".centered-block").style.display = "none";
+
+  let container = document.getElementById("page-container");
+  container.innerHTML = "";
+  var canvas = document.createElement("canvas");
+  canvas.id = "pdf-canvas";
+  container.appendChild(canvas);
+
+  loadPdf(filePath);
+});
+
+ipcRenderer.on("set-scrollbar", (event, isVisible) => {
+  if (isVisible) {
+    showScrollBar();
+  } else {
+    hideScrollBar();
+  }
+  // alt to toggle: element.classList.contains(class);
+});
+
+ipcRenderer.on("show-menu-bar", (event, show) => {
+  showMenuBar(show);
+});
+
+ipcRenderer.on("update-menu", (event, menu) => {
+  titlebar.updateMenu(menu);
+});
+
+// PDF ////////////////
 let currentPdf = null;
 let currentPdfPage = null;
 
@@ -50,15 +90,17 @@ function renderPdfPage(pageNum) {
     // var scale = 1.5;
     // var viewport = page.getViewport({ scale: scale });
     currentPdfPage = page;
-    var desiredWidth = window.innerWidth;
+
+    var canvas = document.getElementById("pdf-canvas");
+    var context = canvas.getContext("2d");
+
+    var desiredWidth = canvas.offsetWidth; //document.body.clientWidth;
     var viewport = currentPdfPage.getViewport({ scale: 1 });
     var scale = desiredWidth / viewport.width;
     var scaledViewport = currentPdfPage.getViewport({ scale: scale });
 
-    var canvas = document.getElementById("pdf-canvas");
-    var context = canvas.getContext("2d");
     canvas.height = scaledViewport.height; // viewport.height;
-    canvas.width = scaledViewport.width; // viewport.width;
+    canvas.width = desiredWidth; //scaledViewport.width; // viewport.width;
 
     var renderContext = {
       canvasContext: context,
@@ -66,7 +108,7 @@ function renderPdfPage(pageNum) {
     };
     currentPdfPage.render(renderContext);
 
-    document.getElementById("page-container").scrollTop = 0;
+    document.querySelector(".container-after-titlebar").scrollTop = 0;
   });
 }
 
@@ -93,43 +135,11 @@ function refreshPdfPage() {
 /////////////////////////////////////////////////////////////
 
 let titlebar = new customTitlebar.Titlebar({
-  backgroundColor: customTitlebar.Color.fromHex("#252525"),
-  itemBackgroundColor: customTitlebar.Color.fromHex("#666"),
+  backgroundColor: customTitlebar.Color.fromHex("#818181"),
+  itemBackgroundColor: customTitlebar.Color.fromHex("#bbb"),
   icon: "./assets/images/icon_256x256.png",
 });
-//document.querySelector(".titlebar").style.height = "20px";
-document.title = "ACBR";
-titlebar.updateTitle();
-// titlebar.updateBackground(customTitlebar.Color.RED);
-// document.title = "232323232";
 // titlebar.updateTitle();
-// titlebar.updateMenu(menu);
-
-ipcRenderer.on("update-title", (event, title) => {
-  document.title = title;
-  titlebar.updateTitle();
-});
-
-ipcRenderer.on("render-img", (event, img64) => {
-  document.querySelector(".centered-block").style.display = "none";
-
-  //webFrame.clearCache();
-  let _out = '<img class="page" src="' + img64 + '" />';
-  let container = document.getElementById("page-container");
-  // _target.insertAdjacentHTML("beforeend", _out);
-  container.innerHTML = _out;
-
-  // ref: https://www.w3schools.com/howto/howto_js_scroll_to_top.asp
-  document.documentElement.scrollTop = 0;
-  //webFrame.clearCache(); // don't know if this does anything, haven't tested, I'0m afraid of memory leaks changing imgs
-});
-
-// document.onkeydown = function (evt) {
-//   evt = evt || window.event;
-//   if (evt.ctrlKey && evt.keyCode == 90) {
-//     alert("Ctrl-Z");
-//   }
-// };
 
 document.onkeydown = function (evt) {
   evt = evt || window.event;
@@ -169,6 +179,30 @@ document.oncontextmenu = function (event) {
   }
 };
 
+// TOOLBAR /////////////////////////
+
+function addButtonEvent(buttonName) {
+  document.getElementById(buttonName).addEventListener("click", (event) => {
+    ipcRenderer.send("toolbar-button-clicked", buttonName);
+  });
+}
+
+addButtonEvent("toolbar-button-next");
+addButtonEvent("toolbar-button-prev");
+addButtonEvent("toolbar-button-fit-width");
+addButtonEvent("toolbar-button-fit-height");
+addButtonEvent("toolbar-button-fullscreen");
+
+document.getElementById("page-slider").addEventListener("mouseup", (event) => {
+  ipcRenderer.send("toolbar-slider-changed", event.currentTarget.value);
+});
+document.getElementById("page-slider").addEventListener("input", (event) => {
+  document.getElementById("toolbar-page-numbers").innerHTML =
+    event.currentTarget.value + " / " + event.currentTarget.max;
+});
+
+// SCROLL BAR //////////////////////
+
 // ref: https://stackoverflow.com/questions/4481485/changing-css-pseudo-element-styles-via-javascript
 function hideScrollBar() {
   // generic:
@@ -188,15 +222,6 @@ function showScrollBar() {
     .classList.remove("hidden-scrollbar");
 }
 
-ipcRenderer.on("set-scrollbar", (event, isVisible) => {
-  if (isVisible) {
-    showScrollBar();
-  } else {
-    hideScrollBar();
-  }
-  // alt to toggle: element.classList.contains(class);
-});
-
 function showMenuBar(show) {
   if (show) {
     document.querySelector(".titlebar").classList.remove("display-none");
@@ -210,11 +235,3 @@ function showMenuBar(show) {
       .classList.add("set-top-zero");
   }
 }
-
-ipcRenderer.on("show-menu-bar", (event, show) => {
-  showMenuBar(show);
-});
-
-ipcRenderer.on("update-menu", (event, menu) => {
-  titlebar.updateMenu(menu);
-});

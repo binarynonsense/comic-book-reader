@@ -45,15 +45,17 @@ app.on("ready", () => {
 
   g_mainWindow.once("ready-to-show", () => {
     g_mainWindow.show();
-    g_mainWindow.webContents.send("set-scrollbar", false);
-    g_mainWindow.webContents.send("set-scrollbar", true);
+  });
+
+  g_mainWindow.webContents.on("did-finish-load", function () {
+    // if I put the things below inside ready-to-show they aren't called
+    renderTitle();
+    renderPageInfo();
     //openTestCbz();
   });
 
   g_mainWindow.on("resize", function () {
-    let title = generateTitle();
-    g_mainWindow.setTitle(title);
-    g_mainWindow.webContents.send("update-title", title);
+    renderTitle();
     if (
       g_fileData.type === FileDataType.PDF &&
       g_fileData.state === FileDataState.LOADED
@@ -68,6 +70,27 @@ app.on("ready", () => {
 function onResizeEventFinished() {
   g_mainWindow.webContents.send("refresh-pdf-page");
 }
+
+// Security
+// ref: https://www.electronjs.org/docs/tutorial/security
+
+app.on("web-contents-created", (event, contents) => {
+  contents.on("will-navigate", (event, navigationUrl) => {
+    event.preventDefault();
+  });
+});
+
+app.on("web-contents-created", (event, contents) => {
+  contents.on("new-window", async (event, navigationUrl) => {
+    event.preventDefault();
+
+    //const URL = require('url').URL
+    // const parsedUrl = new URL(navigationUrl)
+    // if (parsedUrl.origin !== 'https://example.com') {
+    //   event.preventDefault()
+    // }
+  });
+});
 
 // Files ///////////////////////////////////////
 
@@ -110,7 +133,7 @@ function openFile() {
     g_fileData.numPages = 0;
     g_fileData.currentPageIndex = 0;
     g_mainWindow.webContents.send("load-pdf", filePath);
-    updateTitle();
+    renderTitle();
   } else {
     let imgsFolderPath = undefined;
     if (fileExtension === ".cbr") {
@@ -140,14 +163,45 @@ function openFile() {
 }
 exports.openFile = openFile;
 
-// Renderer
+// Renderer /////////////////////////////////////////
+
+function renderTitle() {
+  let title = generateTitle();
+  g_mainWindow.setTitle(title);
+  g_mainWindow.webContents.send("update-title", title);
+}
+
+function renderPageInfo(pageNum, numPages) {
+  g_mainWindow.webContents.send(
+    "render-page-info",
+    g_fileData.currentPageIndex,
+    g_fileData.numPages
+  );
+}
+
+function renderImageFile(filePath) {
+  if (!path.isAbsolute(filePath)) {
+    // FIXME: mae it absolute somehow?
+    return;
+  }
+  renderTitle();
+  let data64 = fs.readFileSync(filePath).toString("base64");
+  let img64 = "data:image/jpeg;base64," + data64;
+  g_mainWindow.webContents.send("render-img", img64);
+}
+
+function renderPdfPage(pageNum) {
+  renderTitle();
+  g_mainWindow.webContents.send("render-pdf-page", pageNum + 1); // pdf.j counts from 1
+}
+
+/////////////////////////////////////////////////
 
 function generateTitle() {
   let title = "---";
-  if (
-    g_fileData.state === FileDataState.NOT_SET ||
-    g_mainWindow.getSize()[0] <= 800
-  ) {
+  if (g_fileData.state === FileDataState.NOT_SET) {
+    title = "Comic Book Reader - ACBR";
+  } else if (g_mainWindow.getSize()[0] <= 800) {
     title = "ACBR";
   } else {
     title = `${g_fileData.fileName}`;
@@ -158,104 +212,7 @@ function generateTitle() {
         : title.substring(0, length);
     title += " - ACBR";
   }
-  // `${currentPageIndex + 1}/${
-  //   currentPages.length
-  // } - ${currentFileName}`;
   return title;
-}
-
-function updateTitle() {
-  let title = generateTitle();
-  g_mainWindow.setTitle(title);
-  g_mainWindow.webContents.send("update-title", title);
-}
-
-function renderImageFile(filePath) {
-  if (!path.isAbsolute(filePath)) {
-    // FIXME: mae it absolute somehow?
-    return;
-  }
-
-  updateTitle();
-  let data64 = fs.readFileSync(filePath).toString("base64");
-  let img64 = "data:image/jpeg;base64," + data64;
-  g_mainWindow.webContents.send("render-img", img64);
-}
-
-function renderPdfPage(pageNum) {
-  updateTitle();
-  g_mainWindow.webContents.send("render-pdf-page", pageNum + 1); // pdf.j counts from 1
-}
-
-ipcMain.on("pdf-loaded", (event, loadedCorrectly, filePath, numPages) => {
-  g_fileData.state = FileDataState.LOADED;
-  // TODO double check loaded on is the one loading?
-  // g_fileData.filePath = filePath;
-  // g_fileData.fileName = path.basename(filePath);
-  // g_fileData.imgsFolderPath = "";
-  // g_fileData.pagesPaths = [];
-  g_fileData.numPages = numPages;
-  // g_fileData.currentPageIndex = 0;
-});
-
-// Nav / Input / Shortcuts
-
-ipcMain.on("escape-pressed", (event) => {
-  if (g_mainWindow.isFullScreen()) {
-    setFullScreen(false);
-  }
-});
-
-ipcMain.on("mouse-click", (event, arg) => {
-  if (arg === true) {
-    // left click
-    goToNextPage();
-  } else {
-    // right click
-    goToPreviousPage();
-  }
-});
-
-function goToFirstPage() {
-  if (g_fileData.pagesPaths.length > 0) {
-    renderImageFile(g_fileData.pagesPaths[0]);
-  }
-}
-
-function goToNextPage() {
-  if (
-    g_fileData.state !== FileDataState.LOADED ||
-    g_fileData.type === FileDataType.NOT_SET
-  ) {
-    return;
-  }
-  console;
-  if (g_fileData.currentPageIndex + 1 < g_fileData.numPages) {
-    g_fileData.currentPageIndex++;
-    if (g_fileData.type === FileDataType.IMGS) {
-      renderImageFile(g_fileData.pagesPaths[g_fileData.currentPageIndex]);
-    } else {
-      renderPdfPage(g_fileData.currentPageIndex);
-    }
-  }
-}
-
-function goToPreviousPage() {
-  if (
-    g_fileData.state !== FileDataState.LOADED ||
-    g_fileData.type === FileDataType.NOT_SET
-  ) {
-    return;
-  }
-
-  if (g_fileData.currentPageIndex - 1 >= 0) {
-    g_fileData.currentPageIndex--;
-    if (g_fileData.type === FileDataType.IMGS) {
-      renderImageFile(g_fileData.pagesPaths[g_fileData.currentPageIndex]);
-    } else {
-      renderPdfPage(g_fileData.currentPageIndex);
-    }
-  }
 }
 
 function setFullScreen(value) {
@@ -292,6 +249,120 @@ exports.setSinglePage = setSinglePage;
 function setDoublePage() {}
 exports.setDoublePage = setDoublePage;
 
+// NAVIGATION //////////////////////////////
+
+function goToFirstPage() {
+  if (g_fileData.pagesPaths.length > 0) {
+    renderImageFile(g_fileData.pagesPaths[0]);
+    renderPageInfo();
+  }
+}
+
+function goToPage(pageNum) {
+  if (
+    g_fileData.state !== FileDataState.LOADED ||
+    g_fileData.type === FileDataType.NOT_SET
+  ) {
+    return;
+  }
+  if (pageNum < 0 || pageNum >= g_fileData.numPages) return;
+  g_fileData.currentPageIndex = pageNum;
+  if (g_fileData.type === FileDataType.IMGS) {
+    renderImageFile(g_fileData.pagesPaths[g_fileData.currentPageIndex]);
+    renderPageInfo();
+  } else {
+    renderPdfPage(g_fileData.currentPageIndex);
+    renderPageInfo();
+  }
+}
+
+function goToNextPage() {
+  if (
+    g_fileData.state !== FileDataState.LOADED ||
+    g_fileData.type === FileDataType.NOT_SET
+  ) {
+    return;
+  }
+  console;
+  if (g_fileData.currentPageIndex + 1 < g_fileData.numPages) {
+    g_fileData.currentPageIndex++;
+    if (g_fileData.type === FileDataType.IMGS) {
+      renderImageFile(g_fileData.pagesPaths[g_fileData.currentPageIndex]);
+      renderPageInfo();
+    } else {
+      renderPdfPage(g_fileData.currentPageIndex);
+      renderPageInfo();
+    }
+  }
+}
+
+function goToPreviousPage() {
+  if (
+    g_fileData.state !== FileDataState.LOADED ||
+    g_fileData.type === FileDataType.NOT_SET
+  ) {
+    return;
+  }
+
+  if (g_fileData.currentPageIndex - 1 >= 0) {
+    g_fileData.currentPageIndex--;
+    if (g_fileData.type === FileDataType.IMGS) {
+      renderImageFile(g_fileData.pagesPaths[g_fileData.currentPageIndex]);
+      renderPageInfo();
+    } else {
+      renderPdfPage(g_fileData.currentPageIndex);
+      renderPageInfo();
+    }
+  }
+}
+
+// IPC RECEIVED /////////////////////////////
+
+ipcMain.on("pdf-loaded", (event, loadedCorrectly, filePath, numPages) => {
+  g_fileData.state = FileDataState.LOADED;
+  // TODO double check loaded on is the one loading?
+  g_fileData.numPages = numPages;
+  renderPageInfo();
+});
+
+ipcMain.on("escape-pressed", (event) => {
+  if (g_mainWindow.isFullScreen()) {
+    setFullScreen(false);
+  }
+});
+
+ipcMain.on("mouse-click", (event, arg) => {
+  if (arg === true) {
+    // left click
+    goToNextPage();
+  } else {
+    // right click
+    goToPreviousPage();
+  }
+});
+
+ipcMain.on("toolbar-button-clicked", (event, name) => {
+  switch (name) {
+    case "toolbar-button-next":
+      goToNextPage();
+      break;
+    case "toolbar-button-prev":
+      goToPreviousPage();
+      break;
+  }
+});
+
+ipcMain.on("toolbar-slider-changed", (event, value) => {
+  value -= 1; // from 1 based to 0 based
+  if (g_fileData.state === FileDataState.LOADED) {
+    if (value !== g_fileData.currentPageIndex) {
+      goToPage(value);
+      return;
+    }
+  }
+  renderPageInfo();
+});
+
 // function updateMenu() {
 //   mainWindow.webContents.send("update-menu", appMenu.getMenu());
 // }
@@ -307,24 +378,3 @@ exports.setDoublePage = setDoublePage;
 // } else {
 //   console.log("global shortcut added: " + shortcut);
 // }
-
-// Security
-// ref: https://www.electronjs.org/docs/tutorial/security
-
-app.on("web-contents-created", (event, contents) => {
-  contents.on("will-navigate", (event, navigationUrl) => {
-    event.preventDefault();
-  });
-});
-
-app.on("web-contents-created", (event, contents) => {
-  contents.on("new-window", async (event, navigationUrl) => {
-    event.preventDefault();
-
-    //const URL = require('url').URL
-    // const parsedUrl = new URL(navigationUrl)
-    // if (parsedUrl.origin !== 'https://example.com') {
-    //   event.preventDefault()
-    // }
-  });
-});

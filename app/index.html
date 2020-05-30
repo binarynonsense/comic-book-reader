@@ -6,6 +6,8 @@
     <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'none'" /> -->
     <!-- <meta http-equiv="Content-Security-Policy" content="script-src 'self';" /> -->
     <link rel="stylesheet" href="./assets/css/style.css" />
+    <link rel="stylesheet" href="./assets/css/toolbar.css" />
+    <link href="./assets/fontawesome/css/all.css" rel="stylesheet" />
     <title></title>
   </head>
   <body>
@@ -13,6 +15,62 @@
       <img src="./assets/images/icon_256x256.png" />
       <p>To open a file use the menu or press <i>Ctrl+O</i></p>
     </div>
+
+    <nav id="toolbar">
+      <div id="toolbar-page-slider">
+        <input
+          type="range"
+          min="1"
+          max="100"
+          value="10"
+          class="slider"
+          id="page-slider"
+        />
+      </div>
+
+      <div id="toolbar-page-numbers">00 / 00</div>
+
+      <div class="toolbar-item-separator"></div>
+
+      <div class="toolbar-item" id="toolbar-button-prev">
+        <a href="" title="previous page"><i class="fas fa-chevron-left"></i></a>
+      </div>
+      <div class="toolbar-item" id="toolbar-button-next">
+        <a href="" title="next page"><i class="fas fa-chevron-right"></i></a>
+      </div>
+
+      <div class="toolbar-item-separator"></div>
+
+      <div class="toolbar-item" id="toolbar-button-fit-height">
+        <a href="" title="fit to height"><i class="fas fa-arrows-alt-v"></i></a>
+      </div>
+      <div class="toolbar-item" id="toolbar-button-fit-width">
+        <a href="" title="fit to width"><i class="fas fa-arrows-alt-h"></i></a>
+      </div>
+
+      <!-- <div class="toolbar-item-separator"></div>
+
+      <div class="toolbar-item">
+        <a href="" title="single page"><i class="fas fa-file"></i></a>
+      </div> -->
+      <!-- <div class="toolbar-item">
+        <a href="" title="double page"><i class="fas fa-copy"></i></a>
+      </div> -->
+
+      <!-- <div class="toolbar-item-separator"></div>
+
+      <div class="toolbar-item">
+        <a href="" title="contiguous mode"><i class="fas fa-scroll"></i></a>
+      </div> -->
+
+      <div class="toolbar-item-separator"></div>
+
+      <div class="toolbar-item" id="toolbar-button-fullscreen">
+        <a href="" title="toogle fullscreen mode"
+          ><i class="fas fa-expand"></i
+        ></a>
+      </div>
+    </nav>
 
     <div id="page-container"></div>
 

@@ -1,3 +1,15 @@
+html {
+  box-sizing: border-box;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+  margin: 0;
+  padding: 0;
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -32,11 +44,11 @@ img {
 .menubar,
 .menubar-menutitle {
   height: 40px !important;
-}
+}*/
 
 .container-after-titlebar {
-  top: 100px;
-} */
+  margin-bottom: 30px;
+}
 
 .hidden-scrollbar {
   overflow-x: auto;
@@ -49,6 +61,10 @@ img {
   width: 100%;
   height: 100%;
   /*overflow-x: hidden; /* FIX this is a hack to hide h-scrollbar with pdfs sometimes*/
+}
+
+#pdf-canvas {
+  width: 100%;
 }
 
 /* CENTER BLOCK OPEN FILE INFO */
