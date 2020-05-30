@@ -3,6 +3,7 @@ const os = require("os");
 const fs = require("fs");
 
 const AdmZip = require("adm-zip");
+const unrar = require("node-unrar-js");
 
 const { app, dialog } = require("electron");
 
@@ -96,7 +97,6 @@ function getImageFilesInFolder(folderPath) {
 //exports.getImageFilesInFolder = getImageFilesInFolder;
 
 function extractRar(filePath) {
-  const unrar = require("node-unrar-js");
   cleanUpTempFolder();
   createTempFolder();
   console.log(tempFolder);
@@ -111,41 +111,51 @@ function extractRar(filePath) {
 exports.extractRar = extractRar;
 
 function getRarEntriesList(filePath) {
-  // Read the archive file into a typedArray
   var buf = Uint8Array.from(fs.readFileSync(filePath)).buffer;
   var extractor = unrar.createExtractorFromData(buf);
-
-  var list = extractor.getFileList();
-  list.forEach(function (rarEntry) {
-    console.log(rarEntry.toString());
-  });
-  if (list[0].state === "SUCCESS") {
-    // list[1].arcHeader...
-    // list[1].fileHeaders[...]
+  var rarEntries = extractor.getFileList();
+  let imgEntries = [];
+  if (rarEntries[0].state === "SUCCESS") {
+    rarEntries[1].fileHeaders.forEach(function (rarEntry) {
+      if (!rarEntry.flags.directory) {
+        if (hasImageExtension(rarEntry.name)) {
+          imgEntries.push(rarEntry.name);
+        }
+      }
+    });
   }
-  // var extracted = extractor.extractAll();
-  // var extracted = extractor.extractFiles(["1.txt", "1.txt"], "password")();
-  // if (list[0].state === "SUCCESS") {
-  //   // list[1].arcHeader...
-  //   // list[1].files[0].fileHeader: ..
-  //   // if (list[1].files[0].extract[0].state === "SUCCESS") {
-  //   //   list[1].files[0].extract[1] // Uint8Array
-  //   // }
-  // }
+  // imgEntries.forEach(function (entryName) {
+  //   console.log(entryName);
+  // });
+  return imgEntries;
 }
+exports.getRarEntriesList = getRarEntriesList;
+
+function extractRarEntryData(rarPath, entryName) {
+  var buf = Uint8Array.from(fs.readFileSync(rarPath)).buffer;
+  var extractor = unrar.createExtractorFromData(buf);
+  var extracted = extractor.extractFiles([entryName]);
+  if (extracted[0].state === "SUCCESS") {
+    if (extracted[1].files[0].extract[0].state === "SUCCESS") {
+      // ref: https://stackoverflow.com/questions/54305759/how-to-encode-a-buffer-to-base64-in-nodejs
+      return Buffer.from(extracted[1].files[0].extract[1]);
+    }
+  }
+  return;
+}
+exports.extractRarEntryData = extractRarEntryData;
 
 function getZipEntriesList(filePath) {
   let zip = new AdmZip(filePath);
   let zipEntries = zip.getEntries();
   let imgEntries = [];
   zipEntries.forEach(function (zipEntry) {
-    if (hasImageExtension(zipEntry.entryName)) {
-      imgEntries.push(zipEntry.entryName);
+    if (!zipEntry.isDirectory) {
+      if (hasImageExtension(zipEntry.entryName)) {
+        imgEntries.push(zipEntry.entryName);
+      }
     }
   });
-  // imgEntries.forEach(function (entryName) {
-  //   console.log(entryName);
-  // });
   return imgEntries;
 }
 exports.getZipEntriesList = getZipEntriesList;

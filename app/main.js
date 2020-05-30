@@ -139,8 +139,21 @@ function openFile() {
   } else {
     let imgsFolderPath = undefined;
     if (fileExtension === ".cbr") {
-      imgsFolderPath = fileUtils.extractRar(filePath);
+      //imgsFolderPath = fileUtils.extractRar(filePath);
+      let pagesPaths = fileUtils.getRarEntriesList(filePath);
+      if (pagesPaths !== undefined && pagesPaths.length > 0) {
+        g_fileData.state = FileDataState.LOADED;
+        g_fileData.type = FileDataType.RAR;
+        g_fileData.filePath = filePath;
+        g_fileData.fileName = path.basename(filePath);
+        g_fileData.pagesPaths = pagesPaths;
+        g_fileData.imgsFolderPath = "";
+        g_fileData.numPages = pagesPaths.length;
+        g_fileData.currentPageIndex = 0;
+        goToFirstPage();
+      }
     } else if (fileExtension === ".cbz") {
+      //imgsFolderPath = fileUtils.extractZip(filePath);
       let pagesPaths = fileUtils.getZipEntriesList(filePath);
       if (pagesPaths !== undefined && pagesPaths.length > 0) {
         g_fileData.state = FileDataState.LOADED;
@@ -213,6 +226,17 @@ function renderZipEntry(zipPath, entryName) {
   let data64 = fileUtils
     .extractZipEntryData(zipPath, entryName)
     .toString("base64");
+  let mimeType = "jpeg";
+  let img64 = "data:image/" + getMimeType(entryName) + ";base64," + data64;
+  g_mainWindow.webContents.send("render-img", img64);
+}
+
+function renderRarEntry(rarPath, entryName) {
+  renderTitle();
+  let data64 = fileUtils
+    .extractRarEntryData(rarPath, entryName)
+    .toString("base64");
+  //console.log("data: " + data64);
   let mimeType = "jpeg";
   let img64 = "data:image/" + getMimeType(entryName) + ";base64," + data64;
   g_mainWindow.webContents.send("render-img", img64);
@@ -294,6 +318,11 @@ function goToPage(pageNum) {
     renderPdfPage(g_fileData.currentPageIndex);
   } else if (g_fileData.type === FileDataType.ZIP) {
     renderZipEntry(
+      g_fileData.filePath,
+      g_fileData.pagesPaths[g_fileData.currentPageIndex]
+    );
+  } else if (g_fileData.type === FileDataType.RAR) {
+    renderRarEntry(
       g_fileData.filePath,
       g_fileData.pagesPaths[g_fileData.currentPageIndex]
     );
