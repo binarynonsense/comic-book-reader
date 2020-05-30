@@ -34,7 +34,8 @@ function chooseFile(window) {
     filters: [
       {
         name: "Comic Book Files",
-        extensions: ["cbz", "cbr", "zip", "rar", "pdf"],
+        extensions: ["cbz", "cbr", "pdf"],
+        //extensions: ["cbz", "cbr", "zip", "rar", "pdf"],
       },
     ],
   });
