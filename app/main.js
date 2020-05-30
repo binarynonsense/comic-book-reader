@@ -55,6 +55,7 @@ app.on("ready", () => {
     let title = generateTitle();
     g_mainWindow.setTitle(title);
     g_mainWindow.webContents.send("update-title", title);
+    g_mainWindow.webContents.send("show-menu-bar", true);
     if (
       g_fileData.type === FileDataType.PDF &&
       g_fileData.state === FileDataState.LOADED

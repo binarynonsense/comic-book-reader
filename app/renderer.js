@@ -39,9 +39,7 @@ function loadPdf(filePath) {
   var loadingTask = pdfjsLib.getDocument(filePath);
   loadingTask.promise.then(function (pdf) {
     currentPdf = pdf;
-    console.log("numPages: " + currentPdf.numPages);
     ipcRenderer.send("pdf-loaded", true, filePath, currentPdf.numPages);
-    // you can now use *pdf* here
     renderPdfPage(1);
   });
 }
@@ -173,6 +171,9 @@ document.oncontextmenu = function (event) {
 
 // ref: https://stackoverflow.com/questions/4481485/changing-css-pseudo-element-styles-via-javascript
 function hideScrollBar() {
+  document
+    .querySelector("#page-container")
+    .classList.remove("hidden-scrollbar-x");
   // generic:
   document.body.classList.add("hidden-scrollbar");
   // if custom title bar enabled:
@@ -182,6 +183,7 @@ function hideScrollBar() {
 }
 
 function showScrollBar() {
+  document.querySelector("#page-container").classList.add("hidden-scrollbar-x");
   // generic:
   document.body.classList.remove("hidden-scrollbar");
   // if custom title bar enabled:
