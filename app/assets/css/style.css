@@ -79,8 +79,11 @@ body {
   color: #999 !important;
   font-weight: bold !important;
 } */
-.menubar-menu-title {
-  color: #3b3b3b !important;
+.menubar-menu-title,
+.menubar-menu-button,
+.action-item,
+.action-menu-item {
+  color: rgb(219, 219, 219); /*#3b3b3b !important;*/
 }
 
 .container-after-titlebar {
