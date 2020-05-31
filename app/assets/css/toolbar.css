@@ -29,6 +29,11 @@
   height: 100%;
   border-left: 3px solid #6b6b6b;
 }
+.toolbar-item-separator-full {
+  height: 100%;
+  border-left: 3px solid #6b6b6b;
+  border-right: 1px solid #3b3b3b;
+}
 
 .toolbar-item a {
   color: #3b3b3b;

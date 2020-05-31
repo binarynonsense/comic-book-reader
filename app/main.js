@@ -164,6 +164,9 @@ ipcMain.on("toolbar-button-clicked", (event, name) => {
     case "toolbar-button-fullscreen-exit":
       toggleFullScreen();
       break;
+    case "toolbar-button-open":
+      openFile();
+      break;
   }
 });
 
@@ -237,7 +240,11 @@ let g_fileData = {
 };
 
 function openFile() {
-  let filePath = fileUtils.chooseFile(g_mainWindow)[0];
+  let fileList = fileUtils.chooseFile(g_mainWindow);
+  if (fileList === undefined) {
+    return;
+  }
+  let filePath = fileList[0];
   //`${currentPageIndex + 1}/${currentPages.length}`;
   console.log("open file request:" + filePath);
 

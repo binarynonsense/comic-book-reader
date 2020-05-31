@@ -227,6 +227,7 @@ addButtonEvent("toolbar-button-fit-to-width");
 addButtonEvent("toolbar-button-fit-to-height");
 addButtonEvent("toolbar-button-fullscreen-enter");
 addButtonEvent("toolbar-button-fullscreen-exit");
+addButtonEvent("toolbar-button-open");
 
 document.getElementById("page-slider").addEventListener("mouseup", (event) => {
   ipcRenderer.send("toolbar-slider-changed", event.currentTarget.value);
