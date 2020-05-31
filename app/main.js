@@ -365,10 +365,11 @@ function renderPdfPage(pageNum) {
 
 function generateTitle() {
   let title = "---";
+  let blankSpace = "           ";
   if (g_fileData.state === FileDataState.NOT_SET) {
-    title = "Comic Book Reader - ACBR";
+    title = "Comic Book Reader - ACBR" + blankSpace;
   } else if (g_mainWindow.getSize()[0] < 600) {
-    title = "ACBR";
+    title = "ACBR" + blankSpace;
   } else {
     title = `${g_fileData.fileName}`;
     var length = 50;
@@ -376,7 +377,7 @@ function generateTitle() {
       title.length > length
         ? title.substring(0, length - 3) + "..."
         : title.substring(0, length);
-    title += " - ACBR";
+    title += " - ACBR" + blankSpace;
   }
   return title;
 }
