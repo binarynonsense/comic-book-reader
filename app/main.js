@@ -16,6 +16,7 @@ function isDev() {
 let g_mainWindow;
 let g_resizeEventCounter;
 let g_settings = {
+  version: 1, // save format version
   fit_mode: 0, // 0: width, 1: height
   page_mode: 0, // 0: single-page, 1: double-page
   //isMaximized: false,
@@ -67,12 +68,17 @@ app.on("ready", () => {
     // if I put the things below inside ready-to-show they aren't called
     renderTitle();
     renderPageInfo();
+
+    settings = fileUtils.loadSettings(g_settings);
+
     if (g_settings.fit_mode === 0) {
       setFitToWidth();
     } else {
       setFitToHeight();
     }
     showScrollBar(g_settings.showScrollBar);
+
+    // fileUtils.saveSettings(g_settings);
   });
 
   g_mainWindow.on("resize", function () {

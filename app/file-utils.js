@@ -11,6 +11,48 @@ const { app, dialog } = require("electron");
 // HELPERS ////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+exports.saveSettings = function (settings) {
+  const cfgFilePath = path.join(app.getPath("userData"), "acbr.cfg");
+  //console.log(cfgFilePath);
+  const settingsJSON = JSON.stringify(settings);
+  try {
+    fs.writeFileSync(cfgFilePath, settingsJSON, "utf-8");
+  } catch (e) {
+    console.log("ERROR saving settings to: " + cfgFilePath);
+    return;
+  }
+  console.log("settings saved to: " + cfgFilePath);
+};
+
+exports.loadSettings = function (settings) {
+  const cfgFilePath = path.join(app.getPath("userData"), "acbr.cfg");
+  if (!fs.existsSync(cfgFilePath)) return;
+  let data;
+  try {
+    data = fs.readFileSync(cfgFilePath, "utf8");
+  } catch (e) {
+    return settings;
+  }
+  if (data === null || data === undefined) return;
+
+  let loadedSettings;
+  try {
+    loadedSettings = JSON.parse(data);
+  } catch (e) {
+    return settings;
+  }
+
+  for (key in settings) {
+    // ref: https://stackoverflow.com/questions/1098040/checking-if-a-key-exists-in-a-javascript-object
+    if (loadedSettings[key] !== undefined) {
+      // good if I don't allow undefines in the savefile
+      //console.log(key + ": " + loadedSettings[key]);
+      settings[key] = loadedSettings[key];
+    }
+  }
+  return settings;
+};
+
 function getMimeType(filePath) {
   let mimeType = path.basename(filePath);
   return mimeType;
