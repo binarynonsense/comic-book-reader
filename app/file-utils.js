@@ -14,6 +14,8 @@ const { app, dialog } = require("electron");
 exports.saveSettings = function (settings) {
   const cfgFilePath = path.join(app.getPath("userData"), "acbr.cfg");
   //console.log(cfgFilePath);
+  let date = new Date().toJSON();
+  settings.date = date;
   const settingsJSON = JSON.stringify(settings);
   try {
     fs.writeFileSync(cfgFilePath, settingsJSON, "utf-8");

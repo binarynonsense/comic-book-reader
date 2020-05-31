@@ -17,6 +17,7 @@ let g_mainWindow;
 let g_resizeEventCounter;
 let g_settings = {
   version: 1, // save format version
+  date: "",
   fit_mode: 0, // 0: width, 1: height
   page_mode: 0, // 0: single-page, 1: double-page
   //isMaximized: false,
@@ -24,10 +25,11 @@ let g_settings = {
   showToolBar: true,
   showScrollBar: true,
   lastFilePath: "",
-  lastPageIndex: -1,
+  lastPageIndex: 0,
 };
 
 app.on("will-quit", () => {
+  saveSettings();
   globalShortcut.unregisterAll();
   fileUtils.cleanUpTempFolder();
 });
@@ -78,6 +80,10 @@ app.on("ready", () => {
     }
     showScrollBar(g_settings.showScrollBar);
 
+    if (g_settings.lastFilePath !== "") {
+      openFile(g_settings.lastFilePath, g_settings.lastPageIndex);
+    }
+
     // fileUtils.saveSettings(g_settings);
   });
 
@@ -90,6 +96,15 @@ app.on("ready", () => {
       // avoid too much pdf resizing
       clearTimeout(g_resizeEventCounter);
       g_resizeEventCounter = setTimeout(onResizeEventFinished, 500);
+    }
+  });
+
+  g_mainWindow.on("maximize", function () {
+    if (
+      g_fileData.type === FileDataType.PDF &&
+      g_fileData.state === FileDataState.LOADED
+    ) {
+      g_mainWindow.webContents.send("refresh-pdf-page");
     }
   });
 });
@@ -118,6 +133,14 @@ app.on("web-contents-created", (event, contents) => {
     // }
   });
 });
+
+function saveSettings() {
+  if (g_fileData.filePath != "") {
+    g_settings.lastFilePath = g_fileData.filePath;
+    g_settings.lastPageIndex = g_fileData.currentPageIndex;
+  }
+  fileUtils.saveSettings(g_settings);
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // IPC RECEIVED ///////////////////////////////////////////////////////////////
@@ -171,7 +194,7 @@ ipcMain.on("toolbar-button-clicked", (event, name) => {
       toggleFullScreen();
       break;
     case "toolbar-button-open":
-      openFile();
+      onMenuOpenFile();
       break;
   }
 });
@@ -190,6 +213,17 @@ ipcMain.on("toolbar-slider-changed", (event, value) => {
 ///////////////////////////////////////////////////////////////////////////////
 // MENU MSGS //////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
+
+function onMenuOpenFile() {
+  let fileList = fileUtils.chooseFile(g_mainWindow);
+  if (fileList === undefined) {
+    return;
+  }
+  let filePath = fileList[0];
+  console.log("open file request:" + filePath);
+  openFile(filePath);
+}
+exports.onMenuOpenFile = onMenuOpenFile;
 
 function onMenuFitToWidth() {
   setFitToWidth();
@@ -245,15 +279,7 @@ let g_fileData = {
   currentPageIndex: 0,
 };
 
-function openFile() {
-  let fileList = fileUtils.chooseFile(g_mainWindow);
-  if (fileList === undefined) {
-    return;
-  }
-  let filePath = fileList[0];
-  //`${currentPageIndex + 1}/${currentPages.length}`;
-  console.log("open file request:" + filePath);
-
+function openFile(filePath, pageNum = 0) {
   let fileExtension = path.extname(filePath);
   if (fileExtension === ".pdf") {
     g_fileData.state = FileDataState.LOADING;
@@ -263,8 +289,8 @@ function openFile() {
     g_fileData.imgsFolderPath = "";
     g_fileData.pagesPaths = [];
     g_fileData.numPages = 0;
-    g_fileData.currentPageIndex = 0;
-    g_mainWindow.webContents.send("load-pdf", filePath);
+    g_fileData.currentPageIndex = pageNum;
+    g_mainWindow.webContents.send("load-pdf", filePath, pageNum + 1); // pdf.j counts from 1
     renderTitle();
   } else {
     let imgsFolderPath = undefined;
@@ -279,8 +305,8 @@ function openFile() {
         g_fileData.pagesPaths = pagesPaths;
         g_fileData.imgsFolderPath = "";
         g_fileData.numPages = pagesPaths.length;
-        g_fileData.currentPageIndex = 0;
-        goToFirstPage();
+        g_fileData.currentPageIndex = pageNum;
+        goToPage(pageNum);
       }
     } else if (fileExtension === ".cbz") {
       //imgsFolderPath = fileUtils.extractZip(filePath);
@@ -293,8 +319,8 @@ function openFile() {
         g_fileData.pagesPaths = pagesPaths;
         g_fileData.imgsFolderPath = "";
         g_fileData.numPages = pagesPaths.length;
-        g_fileData.currentPageIndex = 0;
-        goToFirstPage();
+        g_fileData.currentPageIndex = pageNum;
+        goToPage(pageNum);
       }
       return;
     } else {
@@ -312,8 +338,8 @@ function openFile() {
       g_fileData.pagesPaths = pagesPaths;
       g_fileData.imgsFolderPath = imgsFolderPath;
       g_fileData.numPages = pagesPaths.length;
-      g_fileData.currentPageIndex = 0;
-      goToFirstPage();
+      g_fileData.currentPageIndex = pageNum;
+      goToPage(pageNum);
     }
   }
 }

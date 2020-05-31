@@ -74,7 +74,7 @@ ipcRenderer.on("render-img", (event, img64, side) => {
   //webFrame.clearCache(); // don't know if this does anything, haven't tested, I'm afraid of memory leaks changing imgs
 });
 
-ipcRenderer.on("load-pdf", (event, filePath) => {
+ipcRenderer.on("load-pdf", (event, filePath, pageNum) => {
   document.querySelector(".centered-block").style.display = "none";
 
   let container = document.getElementById("pages-container");
@@ -83,7 +83,7 @@ ipcRenderer.on("load-pdf", (event, filePath) => {
   canvas.id = "pdf-canvas";
   container.appendChild(canvas);
 
-  loadPdf(filePath);
+  loadPdf(filePath, pageNum);
 });
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -93,20 +93,19 @@ ipcRenderer.on("load-pdf", (event, filePath) => {
 let currentPdf = null;
 let currentPdfPage = null;
 
-function loadPdf(filePath) {
+function loadPdf(filePath, pageNum) {
   pdfjsLib.GlobalWorkerOptions.workerSrc =
     "./assets/libs/pdfjs/build/pdf.worker.js";
   var loadingTask = pdfjsLib.getDocument(filePath);
   loadingTask.promise.then(function (pdf) {
     currentPdf = pdf;
     ipcRenderer.send("pdf-loaded", true, filePath, currentPdf.numPages);
-    renderPdfPage(1);
+    renderPdfPage(pageNum);
   });
 }
 
 function renderPdfPage(pageNum) {
   currentPdf.getPage(pageNum).then(function (page) {
-    // you can now use *page* here
     // var scale = 1.5;
     // var viewport = page.getViewport({ scale: scale });
     currentPdfPage = page;

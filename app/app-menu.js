@@ -27,7 +27,7 @@ function buildApplicationMenu() {
           label: "Open File...",
           accelerator: "CommandOrControl+O",
           click() {
-            mainProcess.openFile();
+            mainProcess.onMenuOpenFile();
           },
         },
         // {
