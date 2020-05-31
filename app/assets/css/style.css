@@ -17,19 +17,44 @@ body {
   font-family: Arial, Helvetica, sans-serif;
   color: #666;
 }
-/* 2d2d2d tools bar */
 
-img {
+/* //////////////  ////////////// */
+
+#page-container {
+  width: 100%;
+  height: 100%;
+  /*overflow-x: hidden; /* FIX this is a hack to hide h-scrollbar with pdfs sometimes*/
+}
+
+#pdf-canvas {
   width: 100%;
 }
 
-.display-none {
+/* //////////////  ////////////// */
+
+.set-fit-to-height {
+  height: 100% !important;
+}
+
+.set-fit-to-height img {
+  height: 100% !important;
+  display: block;
+  margin: auto;
+}
+
+.set-fit-to-width img {
+  width: 100% !important;
+}
+
+.set-display-none {
   display: none !important;
 }
 
 .set-top-zero {
   top: 0px !important;
 }
+
+/* //////////////  ////////////// */
 
 .titlebar {
   color: #fff !important;
@@ -55,16 +80,6 @@ img {
 }
 .hidden-scrollbar::-webkit-scrollbar {
   display: none;
-}
-
-#page-container {
-  width: 100%;
-  height: 100%;
-  /*overflow-x: hidden; /* FIX this is a hack to hide h-scrollbar with pdfs sometimes*/
-}
-
-#pdf-canvas {
-  width: 100%;
 }
 
 /* CENTER BLOCK OPEN FILE INFO */

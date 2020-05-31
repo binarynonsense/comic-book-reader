@@ -7,6 +7,27 @@ const unrar = require("node-unrar-js");
 
 const { app, dialog } = require("electron");
 
+///////////////////////////////////////////////////////////////////////////////
+// HELPERS ////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+function getMimeType(filePath) {
+  let mimeType = path.basename(filePath);
+  return mimeType;
+}
+exports.getMimeType = getMimeType;
+
+function hasImageExtension(filePath) {
+  const allowedFileExtensions = [".jpg", ".jpeg", ".png"];
+  let fileExtension = path.extname(filePath).toLowerCase();
+  for (i = 0; i < allowedFileExtensions.length; i++) {
+    if (fileExtension === allowedFileExtensions[i]) {
+      return true;
+    }
+  }
+  return false;
+}
+
 const deleteTempFolderRecursive = function (folderPath) {
   //console.log("deleteFolderRecursive: " + folderPath);
   if (fs.existsSync(folderPath)) {
@@ -44,17 +65,6 @@ function chooseFile(window) {
 }
 exports.chooseFile = chooseFile;
 
-function hasImageExtension(filePath) {
-  const allowedFileExtensions = [".jpg", ".jpeg", ".png"];
-  let fileExtension = path.extname(filePath).toLowerCase();
-  for (i = 0; i < allowedFileExtensions.length; i++) {
-    if (fileExtension === allowedFileExtensions[i]) {
-      return true;
-    }
-  }
-  return false;
-}
-
 const getImageFilesInFolderRecursive = function (folderPath) {
   let filesArray = [];
   let dirs = [];
@@ -80,21 +90,25 @@ const getImageFilesInFolderRecursive = function (folderPath) {
 };
 exports.getImageFilesInFolderRecursive = getImageFilesInFolderRecursive;
 
-function getImageFilesInFolder(folderPath) {
-  if (fs.existsSync(folderPath)) {
-    let filesInFolder = fs.readdirSync(folderPath);
-    if (filesInFolder.length === 0) {
-      console.log("no files found in dir");
-      return [];
-    } else {
-      return filesInFolder.filter(hasImageExtension);
-    }
-  } else {
-    console.log("folder doesn't exist");
-    return [];
-  }
-}
+// function getImageFilesInFolder(folderPath) {
+//   if (fs.existsSync(folderPath)) {
+//     let filesInFolder = fs.readdirSync(folderPath);
+//     if (filesInFolder.length === 0) {
+//       console.log("no files found in dir");
+//       return [];
+//     } else {
+//       return filesInFolder.filter(hasImageExtension);
+//     }
+//   } else {
+//     console.log("folder doesn't exist");
+//     return [];
+//   }
+// }
 //exports.getImageFilesInFolder = getImageFilesInFolder;
+
+///////////////////////////////////////////////////////////////////////////////
+// ZIP / RAR //////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 function extractRar(filePath) {
   cleanUpTempFolder();
@@ -180,7 +194,9 @@ function extractZip(filePath) {
 }
 exports.extractZip = extractZip;
 
-// TEMP FOLDER ////////////
+///////////////////////////////////////////////////////////////////////////////
+// TEMP FOLDER ////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 let tempFolder; // = os.tmpdir();
 

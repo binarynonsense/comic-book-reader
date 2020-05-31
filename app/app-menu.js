@@ -2,7 +2,19 @@ const { app, Menu, BrowserWindow } = require("electron");
 
 const mainProcess = require("./main");
 
-function AddApplicationMenu() {
+function setFitToWidth() {
+  Menu.getApplicationMenu().getMenuItemById("fit-to-width").checked = true;
+  Menu.getApplicationMenu().getMenuItemById("fit-to-height").checked = false;
+}
+exports.setFitToWidth = setFitToWidth;
+
+function setFitToHeight() {
+  Menu.getApplicationMenu().getMenuItemById("fit-to-width").checked = false;
+  Menu.getApplicationMenu().getMenuItemById("fit-to-height").checked = true;
+}
+exports.setFitToHeight = setFitToHeight;
+
+function buildApplicationMenu() {
   // ref: https://stackoverflow.com/questions/54105224/electron-modify-a-single-menu-item
   //   Menu.getApplicationMenu().items // all the items
   // Menu.getApplicationMenu().getMenuItemById('MENU_ITEM_ID') // get a single item by its id
@@ -37,17 +49,9 @@ function AddApplicationMenu() {
           id: "fit-to-width",
           label: "Fit to Width",
           //type: "checkbox",
-          checked: true ? true : false,
+          checked: true,
           click() {
-            Menu.getApplicationMenu().getMenuItemById(
-              "fit-to-width"
-            ).checked = true;
-            Menu.getApplicationMenu().getMenuItemById(
-              "fit-to-height"
-            ).checked = false;
-            mainProcess.updateMenu();
-
-            mainProcess.setFitToWidth();
+            mainProcess.onMenuFitToWidth();
           },
         },
         {
@@ -56,52 +60,45 @@ function AddApplicationMenu() {
           //type: "checkbox",
           checked: false,
           click() {
-            Menu.getApplicationMenu().getMenuItemById(
-              "fit-to-width"
-            ).checked = false;
-            Menu.getApplicationMenu().getMenuItemById(
-              "fit-to-height"
-            ).checked = true;
-            mainProcess.updateMenu();
-
-            mainProcess.setFitToHeight();
+            mainProcess.onMenuFitToHeight();
           },
         },
-        {
-          type: "separator",
-        },
-        {
-          id: "single-page",
-          label: "Single Page",
-          checked: true,
-          click() {
-            Menu.getApplicationMenu().getMenuItemById(
-              "single-page"
-            ).checked = true;
-            Menu.getApplicationMenu().getMenuItemById(
-              "double-page"
-            ).checked = false;
-            mainProcess.updateMenu();
 
-            mainProcess.setSinglePage();
-          },
-        },
-        {
-          id: "double-page",
-          label: "Double Page",
-          checked: false,
-          click() {
-            Menu.getApplicationMenu().getMenuItemById(
-              "single-page"
-            ).checked = false;
-            Menu.getApplicationMenu().getMenuItemById(
-              "double-page"
-            ).checked = true;
-            mainProcess.updateMenu();
+        // {
+        //   type: "separator",
+        // },
+        // {
+        //   id: "single-page",
+        //   label: "Single Page",
+        //   checked: true,
+        //   click() {
+        //     Menu.getApplicationMenu().getMenuItemById(
+        //       "single-page"
+        //     ).checked = true;
+        //     Menu.getApplicationMenu().getMenuItemById(
+        //       "double-page"
+        //     ).checked = false;
+        //     mainProcess.renderMenuBar();
 
-            mainProcess.setDoublePage();
-          },
-        },
+        //     mainProcess.setSinglePage();
+        //   },
+        // },
+        // {
+        //   id: "double-page",
+        //   label: "Double Page",
+        //   checked: false,
+        //   click() {
+        //     Menu.getApplicationMenu().getMenuItemById(
+        //       "single-page"
+        //     ).checked = false;
+        //     Menu.getApplicationMenu().getMenuItemById(
+        //       "double-page"
+        //     ).checked = true;
+        //     mainProcess.renderMenuBar();
+
+        //     mainProcess.setDoublePage();
+        //   },
+        // },
         {
           type: "separator",
         },
@@ -109,7 +106,7 @@ function AddApplicationMenu() {
           label: "Toggle Full Screen",
           accelerator: "F11",
           click() {
-            mainProcess.toggleFullScreen();
+            mainProcess.onMenuToggleFullScreen();
             //mainWindow.setFullScreen(!mainWindow.isFullScreen());
           },
         },
@@ -122,7 +119,7 @@ function AddApplicationMenu() {
           label: "Toggle Scroll Bar",
           accelerator: "CommandOrControl+B",
           click() {
-            mainProcess.toggleScrollBar();
+            mainProcess.onMenuToggleScrollBar();
           },
         },
         {
@@ -132,7 +129,7 @@ function AddApplicationMenu() {
           label: "Toggle Dev Tools",
           accelerator: "CommandOrControl+Shift+I",
           click() {
-            mainProcess.toggleDevTools();
+            mainProcess.onMenuToggleDevTools();
           },
         },
       ],
@@ -140,7 +137,7 @@ function AddApplicationMenu() {
   ]);
   Menu.setApplicationMenu(menuConfig);
 }
-exports.AddApplicationMenu = AddApplicationMenu;
+exports.buildApplicationMenu = buildApplicationMenu;
 
 function getMenu() {
   return Menu.getApplicationMenu();

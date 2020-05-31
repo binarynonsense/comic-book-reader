@@ -3,7 +3,32 @@ const customTitlebar = require("custom-electron-titlebar");
 const pdfjsLib = require("./assets/libs/pdfjs/build/pdf.js");
 const path = require("path");
 
-// IPC RECEIVED ///////////////////////////
+let titlebar = new customTitlebar.Titlebar({
+  backgroundColor: customTitlebar.Color.fromHex("#818181"),
+  itemBackgroundColor: customTitlebar.Color.fromHex("#bbb"),
+  icon: "./assets/images/icon_256x256.png",
+});
+// titlebar.updateTitle();
+
+///////////////////////////////////////////////////////////////////////////////
+// IPC RECEIVED ///////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+ipcRenderer.on("set-scrollbar-visibility", (event, isVisible) => {
+  showScrollBar(isVisible);
+});
+
+ipcRenderer.on("set-menubar-visibility", (event, isVisible) => {
+  showMenuBar(isVisible);
+});
+
+ipcRenderer.on("set-fit-to-width", (event) => {
+  setFitToWidth();
+});
+
+ipcRenderer.on("set-fit-to-height", (event) => {
+  setFitToHeight();
+});
 
 ipcRenderer.on("render-page-info", (event, pageNum, numPages) => {
   if (numPages === 0) pageNum = -1; // hack to make it show 00 / 00 @ start
@@ -26,12 +51,12 @@ ipcRenderer.on("update-title", (event, title) => {
   titlebar.updateTitle();
 });
 
-ipcRenderer.on("render-img", (event, img64) => {
+ipcRenderer.on("render-img", (event, img64, side) => {
   document.querySelector(".centered-block").style.display = "none";
 
   //webFrame.clearCache();
   let element = '<img class="page" src="' + img64 + '" />';
-  let container = document.getElementById("page-container");
+  let container = document.getElementById("pages-container");
   container.innerHTML = element;
 
   // ref: https://www.w3schools.com/howto/howto_js_scroll_to_top.asp
@@ -43,7 +68,7 @@ ipcRenderer.on("render-img", (event, img64) => {
 ipcRenderer.on("load-pdf", (event, filePath) => {
   document.querySelector(".centered-block").style.display = "none";
 
-  let container = document.getElementById("page-container");
+  let container = document.getElementById("pages-container");
   container.innerHTML = "";
   var canvas = document.createElement("canvas");
   canvas.id = "pdf-canvas";
@@ -52,24 +77,10 @@ ipcRenderer.on("load-pdf", (event, filePath) => {
   loadPdf(filePath);
 });
 
-ipcRenderer.on("set-scrollbar", (event, isVisible) => {
-  if (isVisible) {
-    showScrollBar();
-  } else {
-    hideScrollBar();
-  }
-  // alt to toggle: element.classList.contains(class);
-});
+///////////////////////////////////////////////////////////////////////////////
+// PDF ////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
-ipcRenderer.on("show-menu-bar", (event, show) => {
-  showMenuBar(show);
-});
-
-ipcRenderer.on("update-menu", (event, menu) => {
-  titlebar.updateMenu(menu);
-});
-
-// PDF ////////////////
 let currentPdf = null;
 let currentPdfPage = null;
 
@@ -131,15 +142,9 @@ function refreshPdfPage() {
   currentPdfPage.render(renderContext);
 }
 
-///////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////
-
-let titlebar = new customTitlebar.Titlebar({
-  backgroundColor: customTitlebar.Color.fromHex("#818181"),
-  itemBackgroundColor: customTitlebar.Color.fromHex("#bbb"),
-  icon: "./assets/images/icon_256x256.png",
-});
-// titlebar.updateTitle();
+///////////////////////////////////////////////////////////////////////////////
+// EVENT LISTENERS ////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 document.onkeydown = function (evt) {
   evt = evt || window.event;
@@ -167,19 +172,29 @@ document.onkeydown = function (evt) {
 };
 
 document.onclick = function (event) {
-  if (event.target.className === "page" || event.target.id === "pdf-canvas") {
+  if (
+    event.target.className === "page" ||
+    event.target.id === "pdf-canvas" ||
+    event.target.id === "pages-container"
+  ) {
     ipcRenderer.send("mouse-click", true);
   }
   //if (event.target.className !== "container-after-titlebar") return;
 };
 
 document.oncontextmenu = function (event) {
-  if (event.target.className === "page" || event.target.id === "pdf-canvas") {
+  if (
+    event.target.className === "page" ||
+    event.target.id === "pdf-canvas" ||
+    event.target.id === "pages-container"
+  ) {
     ipcRenderer.send("mouse-click", false);
   }
 };
 
-// TOOLBAR /////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+// TOOLBAR ////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 function addButtonEvent(buttonName) {
   document.getElementById(buttonName).addEventListener("click", (event) => {
@@ -201,37 +216,51 @@ document.getElementById("page-slider").addEventListener("input", (event) => {
     event.currentTarget.value + " / " + event.currentTarget.max;
 });
 
-// SCROLL BAR //////////////////////
+///////////////////////////////////////////////////////////////////////////////
+// MODIFIERS //////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
-// ref: https://stackoverflow.com/questions/4481485/changing-css-pseudo-element-styles-via-javascript
-function hideScrollBar() {
-  // generic:
-  document.body.classList.add("hidden-scrollbar");
-  // if custom title bar enabled:
-  document
-    .querySelector(".container-after-titlebar")
-    .classList.add("hidden-scrollbar");
+function showScrollBar(isVisible) {
+  // ref: https://stackoverflow.com/questions/4481485/changing-css-pseudo-element-styles-via-javascript
+  if (isVisible) {
+    // generic:
+    document.body.classList.remove("hidden-scrollbar");
+    // if custom title bar enabled:
+    document
+      .querySelector(".container-after-titlebar")
+      .classList.remove("hidden-scrollbar");
+  } else {
+    // generic:
+    document.body.classList.add("hidden-scrollbar");
+    // if custom title bar enabled:
+    document
+      .querySelector(".container-after-titlebar")
+      .classList.add("hidden-scrollbar");
+  }
 }
 
-function showScrollBar() {
-  // generic:
-  document.body.classList.remove("hidden-scrollbar");
-  // if custom title bar enabled:
-  document
-    .querySelector(".container-after-titlebar")
-    .classList.remove("hidden-scrollbar");
-}
-
-function showMenuBar(show) {
-  if (show) {
-    document.querySelector(".titlebar").classList.remove("display-none");
+function showMenuBar(isVisible) {
+  if (isVisible) {
+    document.querySelector(".titlebar").classList.remove("set-display-none");
     document
       .querySelector(".container-after-titlebar")
       .classList.remove("set-top-zero");
   } else {
-    document.querySelector(".titlebar").classList.add("display-none");
+    document.querySelector(".titlebar").classList.add("set-display-none");
     document
       .querySelector(".container-after-titlebar")
       .classList.add("set-top-zero");
   }
+}
+
+function setFitToWidth() {
+  let container = document.querySelector("#pages-container");
+  container.classList.remove("set-fit-to-height");
+  container.classList.add("set-fit-to-width");
+}
+
+function setFitToHeight() {
+  let container = document.querySelector("#pages-container");
+  container.classList.remove("set-fit-to-width");
+  container.classList.add("set-fit-to-height");
 }

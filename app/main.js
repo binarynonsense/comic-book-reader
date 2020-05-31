@@ -1,21 +1,26 @@
-const {
-  app,
-  BrowserWindow,
-  dialog,
-  globalShortcut,
-  Menu,
-  ipcMain,
-} = require("electron");
+const { app, BrowserWindow, globalShortcut, ipcMain } = require("electron");
 
 const fs = require("fs");
 const path = require("path");
 const fileUtils = require("./file-utils");
 const appMenu = require("./app-menu");
 
-// Setup ///////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+// SETUP //////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 let g_mainWindow;
 let g_resizeEventCounter;
+let g_settings = {
+  fit_mode: 0, // 0: width, 1: height
+  page_mode: 0, // 0: single-page, 1: double-page
+  isMaximized: false,
+  showMenuBar: true,
+  showToolBar: true,
+  showScrollBar: true,
+  lastFilePath: "",
+  lastPageIndex: -1,
+};
 
 app.on("will-quit", () => {
   globalShortcut.unregisterAll();
@@ -38,7 +43,7 @@ app.on("ready", () => {
     show: false,
   });
 
-  appMenu.AddApplicationMenu();
+  appMenu.buildApplicationMenu();
   //mainWindow.removeMenu();
   //g_mainWindow.maximize();
   g_mainWindow.loadFile(`${__dirname}/index.html`);
@@ -51,7 +56,12 @@ app.on("ready", () => {
     // if I put the things below inside ready-to-show they aren't called
     renderTitle();
     renderPageInfo();
-    //openTestCbz();
+    if (g_settings.fit_mode === 0) {
+      setFitToWidth();
+    } else {
+      setFitToHeight();
+    }
+    showScrollBar(g_settings.showScrollBar);
   });
 
   g_mainWindow.on("resize", function () {
@@ -92,7 +102,96 @@ app.on("web-contents-created", (event, contents) => {
   });
 });
 
-// Files ///////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+// IPC RECEIVED ///////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+ipcMain.on("pdf-loaded", (event, loadedCorrectly, filePath, numPages) => {
+  g_fileData.state = FileDataState.LOADED;
+  // TODO double check loaded on is the one loading?
+  g_fileData.numPages = numPages;
+  renderPageInfo();
+});
+
+ipcMain.on("escape-pressed", (event) => {
+  if (g_mainWindow.isFullScreen()) {
+    setFullScreen(false);
+  }
+});
+
+ipcMain.on("mouse-click", (event, arg) => {
+  if (arg === true) {
+    // left click
+    goToNextPage();
+  } else {
+    // right click
+    goToPreviousPage();
+  }
+});
+
+ipcMain.on("toolbar-button-clicked", (event, name) => {
+  switch (name) {
+    case "toolbar-button-next":
+      goToNextPage();
+      break;
+    case "toolbar-button-prev":
+      goToPreviousPage();
+      break;
+    case "toolbar-button-fit-width":
+      setFitToWidth();
+      break;
+    case "toolbar-button-fit-height":
+      setFitToHeight();
+      break;
+    case "toolbar-button-fullscreen":
+      toggleFullScreen();
+      break;
+  }
+});
+
+ipcMain.on("toolbar-slider-changed", (event, value) => {
+  value -= 1; // from 1 based to 0 based
+  if (g_fileData.state === FileDataState.LOADED) {
+    if (value !== g_fileData.currentPageIndex) {
+      goToPage(value);
+      return;
+    }
+  }
+  renderPageInfo();
+});
+
+///////////////////////////////////////////////////////////////////////////////
+// MENU MSGS //////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+function onMenuFitToWidth() {
+  setFitToWidth();
+}
+exports.onMenuFitToWidth = onMenuFitToWidth;
+
+function onMenuFitToHeight() {
+  setFitToHeight();
+}
+exports.onMenuFitToHeight = onMenuFitToHeight;
+
+function onMenuToggleScrollBar() {
+  toggleScrollBar();
+}
+exports.onMenuToggleScrollBar = onMenuToggleScrollBar;
+
+function onMenuToggleFullScreen() {
+  toggleFullScreen();
+}
+exports.onMenuToggleFullScreen = onMenuToggleFullScreen;
+
+function onMenuToggleDevTools() {
+  toggleDevTools();
+}
+exports.onMenuToggleDevTools = onMenuToggleDevTools;
+
+///////////////////////////////////////////////////////////////////////////////
+// FILES //////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 const FileDataState = {
   NOT_SET: "not set",
@@ -189,7 +288,9 @@ function openFile() {
 }
 exports.openFile = openFile;
 
-// Renderer /////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+// RENDER /////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 function renderTitle() {
   let title = generateTitle();
@@ -205,11 +306,6 @@ function renderPageInfo(pageNum, numPages) {
   );
 }
 
-function getMimeType(filePath) {
-  let mimeType = path.basename(filePath);
-  return mimeType;
-}
-
 function renderImageFile(filePath) {
   if (!path.isAbsolute(filePath)) {
     // FIXME: mae it absolute somehow?
@@ -217,8 +313,9 @@ function renderImageFile(filePath) {
   }
   renderTitle();
   let data64 = fs.readFileSync(filePath).toString("base64");
-  let img64 = "data:image/" + getMimeType(filePath) + ";base64," + data64;
-  g_mainWindow.webContents.send("render-img", img64);
+  let img64 =
+    "data:image/" + fileUtils.getMimeType(filePath) + ";base64," + data64;
+  g_mainWindow.webContents.send("render-img", img64, 0);
 }
 
 function renderZipEntry(zipPath, entryName) {
@@ -226,9 +323,9 @@ function renderZipEntry(zipPath, entryName) {
   let data64 = fileUtils
     .extractZipEntryData(zipPath, entryName)
     .toString("base64");
-  let mimeType = "jpeg";
-  let img64 = "data:image/" + getMimeType(entryName) + ";base64," + data64;
-  g_mainWindow.webContents.send("render-img", img64);
+  let img64 =
+    "data:image/" + fileUtils.getMimeType(entryName) + ";base64," + data64;
+  g_mainWindow.webContents.send("render-img", img64, 0);
 }
 
 function renderRarEntry(rarPath, entryName) {
@@ -236,10 +333,9 @@ function renderRarEntry(rarPath, entryName) {
   let data64 = fileUtils
     .extractRarEntryData(rarPath, entryName)
     .toString("base64");
-  //console.log("data: " + data64);
-  let mimeType = "jpeg";
-  let img64 = "data:image/" + getMimeType(entryName) + ";base64," + data64;
-  g_mainWindow.webContents.send("render-img", img64);
+  let img64 =
+    "data:image/" + fileUtils.getMimeType(entryName) + ";base64," + data64;
+  g_mainWindow.webContents.send("render-img", img64, 0);
 }
 
 function renderPdfPage(pageNum) {
@@ -267,41 +363,9 @@ function generateTitle() {
   return title;
 }
 
-function setFullScreen(value) {
-  g_mainWindow.setFullScreen(value);
-  g_mainWindow.webContents.send("show-menu-bar", !value);
-}
-
-function toggleFullScreen() {
-  setFullScreen(!g_mainWindow.isFullScreen());
-}
-exports.toggleFullScreen = toggleFullScreen;
-
-let isScrollBarVisible = true;
-function toggleScrollBar() {
-  isScrollBarVisible = !isScrollBarVisible;
-  g_mainWindow.webContents.send("set-scrollbar", isScrollBarVisible);
-}
-exports.toggleScrollBar = toggleScrollBar;
-
-function toggleDevTools() {
-  g_mainWindow.toggleDevTools();
-}
-exports.toggleDevTools = toggleDevTools;
-
-function setFitToWidth() {}
-exports.setFitToWidth = setFitToWidth;
-
-function setFitToHeight() {}
-exports.setFitToHeight = setFitToHeight;
-
-function setSinglePage() {}
-exports.setSinglePage = setSinglePage;
-
-function setDoublePage() {}
-exports.setDoublePage = setDoublePage;
-
-// NAVIGATION //////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+// PAGE NAVIGATION ////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 function goToPage(pageNum) {
   if (
@@ -348,57 +412,52 @@ function goToPreviousPage() {
   }
 }
 
-// IPC RECEIVED /////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+// MODIFIERS //////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
-ipcMain.on("pdf-loaded", (event, loadedCorrectly, filePath, numPages) => {
-  g_fileData.state = FileDataState.LOADED;
-  // TODO double check loaded on is the one loading?
-  g_fileData.numPages = numPages;
-  renderPageInfo();
-});
+function showScrollBar(isVisible) {
+  g_settings.showScrollBar = isVisible;
+  g_mainWindow.webContents.send(
+    "set-scrollbar-visibility",
+    g_settings.showScrollBar
+  );
+}
 
-ipcMain.on("escape-pressed", (event) => {
-  if (g_mainWindow.isFullScreen()) {
-    setFullScreen(false);
-  }
-});
+function toggleScrollBar() {
+  showScrollBar(!g_settings.showScrollBar);
+}
 
-ipcMain.on("mouse-click", (event, arg) => {
-  if (arg === true) {
-    // left click
-    goToNextPage();
-  } else {
-    // right click
-    goToPreviousPage();
-  }
-});
+function toggleFullScreen() {
+  setFullScreen(!g_mainWindow.isFullScreen());
+}
 
-ipcMain.on("toolbar-button-clicked", (event, name) => {
-  switch (name) {
-    case "toolbar-button-next":
-      goToNextPage();
-      break;
-    case "toolbar-button-prev":
-      goToPreviousPage();
-      break;
-  }
-});
+function setFullScreen(value) {
+  g_mainWindow.setFullScreen(value);
+  g_mainWindow.webContents.send("set-menubar-visibility", !value);
+}
 
-ipcMain.on("toolbar-slider-changed", (event, value) => {
-  value -= 1; // from 1 based to 0 based
-  if (g_fileData.state === FileDataState.LOADED) {
-    if (value !== g_fileData.currentPageIndex) {
-      goToPage(value);
-      return;
-    }
-  }
-  renderPageInfo();
-});
+function toggleDevTools() {
+  g_mainWindow.toggleDevTools();
+}
 
-// function updateMenu() {
-//   mainWindow.webContents.send("update-menu", appMenu.getMenu());
-// }
-// exports.updateMenu = updateMenu;
+function setFitToWidth() {
+  appMenu.setFitToWidth();
+  g_mainWindow.webContents.send("set-fit-to-width");
+}
+
+function setFitToHeight() {
+  appMenu.setFitToHeight();
+  g_mainWindow.webContents.send("set-fit-to-height");
+}
+
+function setSinglePage() {}
+
+function setDoublePage() {}
+
+///////////////////////////////////////////////////////////////////////////////
+// GLOBAL SHORTCUTS ///////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 // let shortcut = "PageDown";
 // const ret = globalShortcut.register(shortcut, () => {
