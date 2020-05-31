@@ -176,6 +176,9 @@ document.onkeydown = function (evt) {
   } else if (evt.keyCode == 27) {
     // escape
     ipcRenderer.send("escape-pressed");
+  } else if (evt.ctrlKey && evt.shiftKey && evt.keyCode == 73) {
+    // ctrl + shift + i
+    ipcRenderer.send("dev-tools-pressed");
   }
 };
 
@@ -219,8 +222,8 @@ function addButtonEvent(buttonName) {
 
 addButtonEvent("toolbar-button-next");
 addButtonEvent("toolbar-button-prev");
-addButtonEvent("toolbar-button-fit-width");
-addButtonEvent("toolbar-button-fit-height");
+addButtonEvent("toolbar-button-fit-to-width");
+addButtonEvent("toolbar-button-fit-to-height");
 addButtonEvent("toolbar-button-fullscreen-enter");
 addButtonEvent("toolbar-button-fullscreen-exit");
 
@@ -299,10 +302,24 @@ function setFitToWidth() {
   let container = document.querySelector("#pages-container");
   container.classList.remove("set-fit-to-height");
   container.classList.add("set-fit-to-width");
+
+  document
+    .querySelector("#toolbar-button-fit-to-width")
+    .classList.add("set-display-none");
+  document
+    .querySelector("#toolbar-button-fit-to-height")
+    .classList.remove("set-display-none");
 }
 
 function setFitToHeight() {
   let container = document.querySelector("#pages-container");
   container.classList.remove("set-fit-to-width");
   container.classList.add("set-fit-to-height");
+
+  document
+    .querySelector("#toolbar-button-fit-to-width")
+    .classList.remove("set-display-none");
+  document
+    .querySelector("#toolbar-button-fit-to-height")
+    .classList.add("set-display-none");
 }

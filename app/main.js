@@ -5,6 +5,10 @@ const path = require("path");
 const fileUtils = require("./file-utils");
 const appMenu = require("./app-menu");
 
+function isDev() {
+  return process.argv[2] == "--dev";
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -126,6 +130,10 @@ ipcMain.on("escape-pressed", (event) => {
   }
 });
 
+ipcMain.on("dev-tools-pressed", (event) => {
+  if (isDev()) toggleDevTools();
+});
+
 ipcMain.on("mouse-click", (event, arg) => {
   if (arg === true) {
     // left click
@@ -144,10 +152,10 @@ ipcMain.on("toolbar-button-clicked", (event, name) => {
     case "toolbar-button-prev":
       goToPreviousPage();
       break;
-    case "toolbar-button-fit-width":
+    case "toolbar-button-fit-to-width":
       setFitToWidth();
       break;
-    case "toolbar-button-fit-height":
+    case "toolbar-button-fit-to-height":
       setFitToHeight();
       break;
     case "toolbar-button-fullscreen-enter":

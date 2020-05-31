@@ -109,10 +109,10 @@ body {
   text-align: center;
 }
 .centered-block img {
-  filter: grayscale(100%);
-  width: 100px;
+  width: 30vh;
   opacity: 0.3;
   margin: auto;
+  filter: blur(1px) grayscale(100%);
 }
 
 /* SCROLLBAR */

@@ -122,16 +122,16 @@ function buildApplicationMenu() {
             mainProcess.onMenuToggleScrollBar();
           },
         },
-        {
-          type: "separator",
-        },
-        {
-          label: "Toggle Dev Tools",
-          accelerator: "CommandOrControl+Shift+I",
-          click() {
-            mainProcess.onMenuToggleDevTools();
-          },
-        },
+        // {
+        //   type: "separator",
+        // },
+        // {
+        //   label: "Toggle Dev Tools",
+        //   accelerator: "CommandOrControl+Shift+I",
+        //   click() {
+        //     mainProcess.onMenuToggleDevTools();
+        //   },
+        // },
       ],
     },
   ]);
