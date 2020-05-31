@@ -150,7 +150,10 @@ ipcMain.on("toolbar-button-clicked", (event, name) => {
     case "toolbar-button-fit-height":
       setFitToHeight();
       break;
-    case "toolbar-button-fullscreen":
+    case "toolbar-button-fullscreen-enter":
+      toggleFullScreen();
+      break;
+    case "toolbar-button-fullscreen-exit":
       toggleFullScreen();
       break;
   }
@@ -445,6 +448,7 @@ function setFullScreen(value) {
     g_mainWindow.webContents.send("set-scrollbar-visibility", false);
     g_mainWindow.webContents.send("set-menubar-visibility", false);
     g_mainWindow.webContents.send("set-toolbar-visibility", false);
+    g_mainWindow.webContents.send("set-fullscreen-ui", true);
   } else {
     g_mainWindow.webContents.send(
       "set-scrollbar-visibility",
@@ -455,6 +459,7 @@ function setFullScreen(value) {
       "set-toolbar-visibility",
       g_settings.showToolBar
     );
+    g_mainWindow.webContents.send("set-fullscreen-ui", false);
   }
 }
 

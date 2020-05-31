@@ -26,6 +26,10 @@ ipcRenderer.on("set-toolbar-visibility", (event, isVisible) => {
   showToolBar(isVisible);
 });
 
+ipcRenderer.on("set-fullscreen-ui", (event, isFullscreen) => {
+  setFullscreenUI(isFullscreen);
+});
+
 ipcRenderer.on("set-fit-to-width", (event) => {
   setFitToWidth();
 });
@@ -217,7 +221,8 @@ addButtonEvent("toolbar-button-next");
 addButtonEvent("toolbar-button-prev");
 addButtonEvent("toolbar-button-fit-width");
 addButtonEvent("toolbar-button-fit-height");
-addButtonEvent("toolbar-button-fullscreen");
+addButtonEvent("toolbar-button-fullscreen-enter");
+addButtonEvent("toolbar-button-fullscreen-exit");
 
 document.getElementById("page-slider").addEventListener("mouseup", (event) => {
   ipcRenderer.send("toolbar-slider-changed", event.currentTarget.value);
@@ -275,6 +280,18 @@ function showToolBar(isVisible) {
     document
       .querySelector(".container-after-titlebar")
       .classList.add("set-margin-bottom-zero");
+  }
+}
+
+function setFullscreenUI(isFullscreen) {
+  let buttonEnter = document.querySelector("#toolbar-button-fullscreen-enter");
+  let buttonExit = document.querySelector("#toolbar-button-fullscreen-exit");
+  if (isFullscreen) {
+    buttonEnter.classList.add("set-display-none");
+    buttonExit.classList.remove("set-display-none");
+  } else {
+    buttonEnter.classList.remove("set-display-none");
+    buttonExit.classList.add("set-display-none");
   }
 }
 
