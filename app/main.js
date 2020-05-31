@@ -441,7 +441,21 @@ function toggleFullScreen() {
 
 function setFullScreen(value) {
   g_mainWindow.setFullScreen(value);
-  g_mainWindow.webContents.send("set-menubar-visibility", !value);
+  if (value) {
+    g_mainWindow.webContents.send("set-scrollbar-visibility", false);
+    g_mainWindow.webContents.send("set-menubar-visibility", false);
+    g_mainWindow.webContents.send("set-toolbar-visibility", false);
+  } else {
+    g_mainWindow.webContents.send(
+      "set-scrollbar-visibility",
+      g_settings.showScrollBar
+    );
+    g_mainWindow.webContents.send("set-menubar-visibility", true);
+    g_mainWindow.webContents.send(
+      "set-toolbar-visibility",
+      g_settings.showToolBar
+    );
+  }
 }
 
 function toggleDevTools() {

@@ -64,6 +64,10 @@ body {
   top: 0px !important;
 }
 
+.set-margin-bottom-zero {
+  margin-bottom: 0px !important;
+}
+
 /* //////////////  ////////////// */
 
 .titlebar {

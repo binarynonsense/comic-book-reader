@@ -22,6 +22,10 @@ ipcRenderer.on("set-menubar-visibility", (event, isVisible) => {
   showMenuBar(isVisible);
 });
 
+ipcRenderer.on("set-toolbar-visibility", (event, isVisible) => {
+  showToolBar(isVisible);
+});
+
 ipcRenderer.on("set-fit-to-width", (event) => {
   setFitToWidth();
 });
@@ -188,6 +192,7 @@ document.onclick = function (event) {
   //if (event.target.className !== "container-after-titlebar") return;
 };
 
+// TODO: context menu on right click
 // document.oncontextmenu = function (event) {
 //   if (
 //     event.target.className === "page" ||
@@ -256,6 +261,20 @@ function showMenuBar(isVisible) {
     document
       .querySelector(".container-after-titlebar")
       .classList.add("set-top-zero");
+  }
+}
+
+function showToolBar(isVisible) {
+  if (isVisible) {
+    document.querySelector("#toolbar").classList.remove("set-display-none");
+    document
+      .querySelector(".container-after-titlebar")
+      .classList.remove("set-margin-bottom-zero");
+  } else {
+    document.querySelector("#toolbar").classList.add("set-display-none");
+    document
+      .querySelector(".container-after-titlebar")
+      .classList.add("set-margin-bottom-zero");
   }
 }
 
