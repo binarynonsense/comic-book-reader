@@ -71,7 +71,7 @@ body {
 /* //////////////  ////////////// */
 
 .titlebar {
-  color: #fff !important;
+  color: rgb(219, 219, 219) !important;
   font-weight: bold !important;
 }
 
@@ -79,11 +79,9 @@ body {
   color: #999 !important;
   font-weight: bold !important;
 } */
-/* .titlebar,
-.menubar,
-.menubar-menutitle {
-  height: 40px !important;
-}*/
+.menubar-menu-title {
+  color: #3b3b3b !important;
+}
 
 .container-after-titlebar {
   margin-bottom: 30px;

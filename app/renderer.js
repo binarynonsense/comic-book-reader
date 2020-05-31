@@ -7,6 +7,7 @@ let titlebar = new customTitlebar.Titlebar({
   backgroundColor: customTitlebar.Color.fromHex("#818181"),
   itemBackgroundColor: customTitlebar.Color.fromHex("#bbb"),
   icon: "./assets/images/icon_256x256.png",
+  titleHorizontalAlignment: "right",
 });
 // titlebar.updateTitle();
 

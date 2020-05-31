@@ -367,7 +367,7 @@ function generateTitle() {
   let title = "---";
   if (g_fileData.state === FileDataState.NOT_SET) {
     title = "Comic Book Reader - ACBR";
-  } else if (g_mainWindow.getSize()[0] <= 800) {
+  } else if (g_mainWindow.getSize()[0] < 600) {
     title = "ACBR";
   } else {
     title = `${g_fileData.fileName}`;
