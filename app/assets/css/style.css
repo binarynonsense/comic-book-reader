@@ -113,7 +113,9 @@ body {
   width: 30vh;
   opacity: 0.3;
   margin: auto;
-  filter: blur(1px) grayscale(100%);
+  /* filter: blur(1px) grayscale(100%); */
+  filter: grayscale(100%);
+  margin-bottom: 20px;
 }
 
 /* SCROLLBAR */
