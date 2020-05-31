@@ -177,20 +177,26 @@ document.onclick = function (event) {
     event.target.id === "pdf-canvas" ||
     event.target.id === "pages-container"
   ) {
-    ipcRenderer.send("mouse-click", true);
+    const mouseX = event.clientX;
+    const bodyX = document.body.clientWidth;
+    if (mouseX > bodyX / 2) {
+      ipcRenderer.send("mouse-click", true); // next
+    } else {
+      ipcRenderer.send("mouse-click", false); // prev
+    }
   }
   //if (event.target.className !== "container-after-titlebar") return;
 };
 
-document.oncontextmenu = function (event) {
-  if (
-    event.target.className === "page" ||
-    event.target.id === "pdf-canvas" ||
-    event.target.id === "pages-container"
-  ) {
-    ipcRenderer.send("mouse-click", false);
-  }
-};
+// document.oncontextmenu = function (event) {
+//   if (
+//     event.target.className === "page" ||
+//     event.target.id === "pdf-canvas" ||
+//     event.target.id === "pages-container"
+//   ) {
+//     ipcRenderer.send("mouse-click", false);
+//   }
+// };
 
 ///////////////////////////////////////////////////////////////////////////////
 // TOOLBAR ////////////////////////////////////////////////////////////////////
