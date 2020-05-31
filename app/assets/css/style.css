@@ -26,6 +26,10 @@ body {
   /*overflow-x: hidden; /* FIX this is a hack to hide h-scrollbar with pdfs sometimes*/
 }
 
+.container-after-titlebar {
+  margin-bottom: 26px;
+}
+
 /* #pdf-canvas {
   width: 100%;
 } */
@@ -84,10 +88,6 @@ body {
 .action-item,
 .action-menu-item {
   color: rgb(219, 219, 219); /*#3b3b3b !important;*/
-}
-
-.container-after-titlebar {
-  margin-bottom: 30px;
 }
 
 .hidden-scrollbar {
