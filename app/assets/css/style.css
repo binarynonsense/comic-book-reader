@@ -27,7 +27,7 @@ body {
 }
 
 #pdf-canvas {
-  width: 100%;
+  /* width: 100%; */
 }
 
 /* //////////////  ////////////// */
@@ -42,7 +42,17 @@ body {
   margin: auto;
 }
 
+.set-fit-to-height > canvas {
+  height: 100% !important;
+  display: block;
+  margin: auto;
+}
+
 .set-fit-to-width img {
+  width: 100% !important;
+}
+
+.set-fit-to-width > canvas {
   width: 100% !important;
 }
 
