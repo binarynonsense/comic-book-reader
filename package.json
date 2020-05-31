@@ -12,7 +12,11 @@
   "build": {
     "appId": "com.binarynonsense.cbreader",
     "linux": {
-      "category": "Utility"
+      "category": "Utility",
+      "icon": "./app/assets/images/icon_256x256.png"
+    },
+    "win": {
+      "icon": "./app/assets/images/icon_256x256.png"
     }
   },
   "scripts": {
