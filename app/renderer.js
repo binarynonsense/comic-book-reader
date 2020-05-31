@@ -57,7 +57,7 @@ ipcRenderer.on("render-img", (event, img64, side) => {
   //webFrame.clearCache();
   let element = '<img class="page" src="' + img64 + '" />';
   let container = document.getElementById("pages-container");
-  container.innerHTML = element;
+  container.innerHTML = element; // + element;
 
   // ref: https://www.w3schools.com/howto/howto_js_scroll_to_top.asp
   //document.documentElement.scrollTop = 0;

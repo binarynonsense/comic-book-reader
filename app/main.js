@@ -14,7 +14,7 @@ let g_resizeEventCounter;
 let g_settings = {
   fit_mode: 0, // 0: width, 1: height
   page_mode: 0, // 0: single-page, 1: double-page
-  isMaximized: false,
+  //isMaximized: false,
   showMenuBar: true,
   showToolBar: true,
   showScrollBar: true,
@@ -31,21 +31,28 @@ app.on("ready", () => {
   g_mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
-    minWidth: 250,
-    minHeight: 200,
+    minWidth: 700,
+    minHeight: 500,
     resizable: true,
     frame: false,
     icon: path.join(__dirname, "assets/images/icon_256x256.png"),
     //autoHideMenuBar: true,
     webPreferences: {
       nodeIntegration: true,
+      enableRemoteModule: true,
     },
     show: false,
   });
 
-  appMenu.buildApplicationMenu();
   //mainWindow.removeMenu();
-  //g_mainWindow.maximize();
+  appMenu.buildApplicationMenu();
+
+  // FIX ugly hack: since I wait to show the window on did-finish-load, if I started it
+  // unmaximized the resize controls did nothing until I maximized and unmaximized it... ?? :(
+  // so I do it programmatically at the start, hopefully it's not noticeable
+  g_mainWindow.maximize();
+  g_mainWindow.unmaximize();
+
   g_mainWindow.loadFile(`${__dirname}/index.html`);
 
   g_mainWindow.once("ready-to-show", () => {
@@ -108,7 +115,7 @@ app.on("web-contents-created", (event, contents) => {
 
 ipcMain.on("pdf-loaded", (event, loadedCorrectly, filePath, numPages) => {
   g_fileData.state = FileDataState.LOADED;
-  // TODO double check loaded on is the one loading?
+  // TODO double check loaded is the one loading?
   g_fileData.numPages = numPages;
   renderPageInfo();
 });

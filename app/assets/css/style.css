@@ -26,9 +26,9 @@ body {
   /*overflow-x: hidden; /* FIX this is a hack to hide h-scrollbar with pdfs sometimes*/
 }
 
-#pdf-canvas {
-  /* width: 100%; */
-}
+/* #pdf-canvas {
+  width: 100%;
+} */
 
 /* //////////////  ////////////// */
 

@@ -3,6 +3,7 @@
   color: rgb(219, 219, 219);
   display: block;
   font-size: 18px;
+  white-space: nowrap;
 }
 
 #toolbar {
