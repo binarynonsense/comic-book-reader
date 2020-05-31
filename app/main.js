@@ -89,7 +89,7 @@ app.on("ready", () => {
 });
 
 function onResizeEventFinished() {
-  g_mainWindow.webContents.send("refresh-pdf-page");
+  //g_mainWindow.webContents.send("refresh-pdf-page");
 }
 
 // Security
