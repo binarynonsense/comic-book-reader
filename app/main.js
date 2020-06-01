@@ -199,6 +199,10 @@ ipcMain.on("pdf-loaded", (event, loadedCorrectly, filePath, numPages) => {
   renderPageInfo();
 });
 
+ipcMain.on("pdf-page-loaded", (event) => {
+  g_fileData.state = FileDataState.LOADED;
+});
+
 ipcMain.on("escape-pressed", (event) => {
   if (g_mainWindow.isFullScreen()) {
     setFullScreen(false);
@@ -314,7 +318,7 @@ exports.onMenuAbout = function () {
   dialog.showMessageBox(g_mainWindow, {
     type: "info",
     icon: path.join(__dirname, "assets/images/icon_256x256.png"),
-    title: "About ACBR",
+    title: "ACBR",
     message:
       "ACBR Comic Book Reader\n(c) Álvaro García\nwww.binarynonsense.com",
   });
@@ -477,6 +481,7 @@ function renderRarEntry(rarPath, entryName) {
 
 function renderPdfPage(pageIndex) {
   renderTitle();
+  g_fileData.state = FileDataState.LOADING;
   g_mainWindow.webContents.send("render-pdf-page", pageIndex + 1); // pdf.j counts from 1
 }
 

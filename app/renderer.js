@@ -105,30 +105,43 @@ function loadPdf(filePath, pageNum) {
 }
 
 function renderPdfPage(pageNum) {
-  currentPdf.getPage(pageNum).then(function (page) {
-    // var scale = 1.5;
-    // var viewport = page.getViewport({ scale: scale });
-    currentPdfPage = page;
+  // ref: https://mozilla.github.io/pdf.js/examples/
+  currentPdf.getPage(pageNum).then(
+    function (page) {
+      // var scale = 1.5;
+      // var viewport = page.getViewport({ scale: scale });
+      currentPdfPage = page;
 
-    var canvas = document.getElementById("pdf-canvas");
-    var context = canvas.getContext("2d");
+      var canvas = document.getElementById("pdf-canvas");
+      var context = canvas.getContext("2d");
 
-    var desiredWidth = canvas.offsetWidth; //document.body.clientWidth;
-    var viewport = currentPdfPage.getViewport({ scale: 1 });
-    var scale = desiredWidth / viewport.width;
-    var scaledViewport = currentPdfPage.getViewport({ scale: scale });
+      var desiredWidth = canvas.offsetWidth; //document.body.clientWidth;
+      var viewport = currentPdfPage.getViewport({ scale: 1 });
+      var scale = desiredWidth / viewport.width;
+      var scaledViewport = currentPdfPage.getViewport({ scale: scale });
 
-    canvas.height = scaledViewport.height; // viewport.height;
-    canvas.width = desiredWidth; //scaledViewport.width; // viewport.width;
+      canvas.height = scaledViewport.height; // viewport.height;
+      canvas.width = desiredWidth; //scaledViewport.width; // viewport.width;
 
-    var renderContext = {
-      canvasContext: context,
-      viewport: scaledViewport,
-    };
-    currentPdfPage.render(renderContext);
+      var renderContext = {
+        canvasContext: context,
+        viewport: scaledViewport,
+      };
 
-    document.querySelector(".container-after-titlebar").scrollTop = 0;
-  });
+      //currentPdfPage.render(renderContext);
+      let renderTask = currentPdfPage.render(renderContext);
+      renderTask.promise.then(function () {
+        //console.log("Page rendered");
+        ipcRenderer.send("pdf-page-loaded");
+      });
+
+      document.querySelector(".container-after-titlebar").scrollTop = 0;
+    },
+    function (reason) {
+      // PDF loading error
+      console.error(reason);
+    }
+  );
 }
 
 function refreshPdfPage() {
