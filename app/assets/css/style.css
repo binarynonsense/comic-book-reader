@@ -18,6 +18,11 @@ body {
   color: #666;
 }
 
+img {
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
 /* //////////////  ////////////// */
 
 #page-container {

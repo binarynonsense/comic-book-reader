@@ -1,5 +1,4 @@
-const { app, Menu, BrowserWindow } = require("electron");
-
+const { app, Menu } = require("electron");
 const mainProcess = require("./main");
 
 function setFitToWidth() {

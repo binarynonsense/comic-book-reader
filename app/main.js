@@ -3,7 +3,8 @@ const { app, BrowserWindow, globalShortcut, ipcMain } = require("electron");
 const fs = require("fs");
 const path = require("path");
 const fileUtils = require("./file-utils");
-const appMenu = require("./app-menu");
+const barMenu = require("./menu-bar");
+const contextMenu = require("./menu-context");
 
 function isDev() {
   return process.argv[2] == "--dev";
@@ -52,7 +53,7 @@ app.on("ready", () => {
   });
 
   //mainWindow.removeMenu();
-  appMenu.buildApplicationMenu();
+  barMenu.buildApplicationMenu();
 
   // FIX ugly hack: since I wait to show the window on did-finish-load, if I started it
   // unmaximized the resize controls did nothing until I maximized and unmaximized it... ?? :(
@@ -64,6 +65,11 @@ app.on("ready", () => {
 
   g_mainWindow.once("ready-to-show", () => {
     g_mainWindow.show();
+  });
+
+  g_mainWindow.webContents.on("context-menu", function (e, params) {
+    contextMenu.buildContextMenu();
+    contextMenu.getContextMenu().popup(g_mainWindow, params.x, params.y);
   });
 
   g_mainWindow.webContents.on("did-finish-load", function () {
@@ -214,7 +220,19 @@ ipcMain.on("toolbar-slider-changed", (event, value) => {
 // MENU MSGS //////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-function onMenuOpenFile() {
+exports.onMenuNextPage = function () {
+  goToNextPage();
+};
+
+exports.onMenuPreviousPage = function () {
+  goToPreviousPage();
+};
+
+exports.onMenuNextPage = function () {
+  goToNextPage();
+};
+
+exports.onMenuOpenFile = function () {
   let fileList = fileUtils.chooseFile(g_mainWindow);
   if (fileList === undefined) {
     return;
@@ -222,33 +240,27 @@ function onMenuOpenFile() {
   let filePath = fileList[0];
   console.log("open file request:" + filePath);
   openFile(filePath);
-}
-exports.onMenuOpenFile = onMenuOpenFile;
+};
 
-function onMenuFitToWidth() {
+exports.onMenuFitToWidth = function () {
   setFitToWidth();
-}
-exports.onMenuFitToWidth = onMenuFitToWidth;
+};
 
-function onMenuFitToHeight() {
+exports.onMenuFitToHeight = function () {
   setFitToHeight();
-}
-exports.onMenuFitToHeight = onMenuFitToHeight;
+};
 
-function onMenuToggleScrollBar() {
+exports.onMenuToggleScrollBar = function () {
   toggleScrollBar();
-}
-exports.onMenuToggleScrollBar = onMenuToggleScrollBar;
+};
 
-function onMenuToggleFullScreen() {
+exports.onMenuToggleFullScreen = function () {
   toggleFullScreen();
-}
-exports.onMenuToggleFullScreen = onMenuToggleFullScreen;
+};
 
-function onMenuToggleDevTools() {
+exports.onMenuToggleDevTools = function () {
   toggleDevTools();
-}
-exports.onMenuToggleDevTools = onMenuToggleDevTools;
+};
 
 ///////////////////////////////////////////////////////////////////////////////
 // FILES //////////////////////////////////////////////////////////////////////
@@ -516,12 +528,12 @@ function toggleDevTools() {
 }
 
 function setFitToWidth() {
-  appMenu.setFitToWidth();
+  barMenu.setFitToWidth();
   g_mainWindow.webContents.send("set-fit-to-width");
 }
 
 function setFitToHeight() {
-  appMenu.setFitToHeight();
+  barMenu.setFitToHeight();
   g_mainWindow.webContents.send("set-fit-to-height");
 }
 
