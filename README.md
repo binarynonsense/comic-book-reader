@@ -13,8 +13,14 @@ A comic book reader for cbz, cbr and pdf files.
 
 ## Controls:
 
-- Keys: 'right arrow' or 'page down' to go the next page, 'left arrow' or 'page up' to go to the previous one, 'up arrow' to scroll the page up, 'down arrow' to scroll the page down.
-- Mouse: 'scroll wheel' scrolls the page up and down, 'left-click' opens the next page if the right side of the view area is clicked and the previous one if the left side is clicked. 'right-click' opens a context menu with some basic navigation options.
+- Keys:
+  - 'right arrow' or 'page down' to go the next page.
+  - 'left arrow' or 'page up' to go to the previous one.
+  - 'up arrow' to scroll the page up, 'down arrow' to scroll the page down.
+- Mouse:
+  - 'scroll wheel' scrolls the page up and down.
+  - 'left-click' opens the next page if the right side of the view area is clicked and the previous one if the left side is clicked.
+  - 'right-click' opens a context menu with some basic navigation options.
 
 ## Downloads
 

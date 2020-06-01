@@ -540,7 +540,6 @@ function goToPage(pageIndex) {
     g_fileData.state !== FileDataState.LOADED ||
     g_fileData.type === FileDataType.NOT_SET
   ) {
-    console.log("cant change: " + pageIndex);
     return;
   }
   if (pageIndex < 0 || pageIndex >= g_fileData.numPages) return;
