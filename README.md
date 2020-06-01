@@ -2,6 +2,8 @@
 
 A comic book reader for cbz, cbr and pdf files.
 
+![screenshots](./screenshots.jpg)
+
 ## Features:
 
 - Compatible file formats: .cbz, .cbr and pdf.
