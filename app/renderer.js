@@ -163,6 +163,12 @@ document.onkeydown = function (evt) {
   } else if (evt.keyCode == 33 || evt.keyCode == 37) {
     // page up or arrow left
     ipcRenderer.send("mouse-click", false);
+  } else if (evt.keyCode == 36) {
+    // home
+    ipcRenderer.send("home-pressed");
+  } else if (evt.keyCode == 35) {
+    // end
+    ipcRenderer.send("end-pressed");
   } else if (evt.keyCode == 40) {
     // arrow down
     let container = document.querySelector(".container-after-titlebar");

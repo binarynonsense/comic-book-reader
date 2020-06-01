@@ -133,6 +133,17 @@ function buildApplicationMenu() {
         // },
       ],
     },
+    {
+      label: "Help",
+      submenu: [
+        {
+          label: "About",
+          click() {
+            mainProcess.onMenuAbout();
+          },
+        },
+      ],
+    },
   ]);
   Menu.setApplicationMenu(menuConfig);
 }

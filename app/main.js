@@ -1,4 +1,10 @@
-const { app, BrowserWindow, globalShortcut, ipcMain } = require("electron");
+const {
+  app,
+  BrowserWindow,
+  globalShortcut,
+  ipcMain,
+  dialog,
+} = require("electron");
 
 const fs = require("fs");
 const path = require("path");
@@ -203,6 +209,14 @@ ipcMain.on("dev-tools-pressed", (event) => {
   if (isDev()) toggleDevTools();
 });
 
+ipcMain.on("home-pressed", (event) => {
+  goToPage(0);
+});
+
+ipcMain.on("end-pressed", (event) => {
+  goToPage(g_fileData.numPages - 1);
+});
+
 ipcMain.on("mouse-click", (event, arg) => {
   if (arg === true) {
     // left click
@@ -294,6 +308,16 @@ exports.onMenuToggleFullScreen = function () {
 
 exports.onMenuToggleDevTools = function () {
   toggleDevTools();
+};
+
+exports.onMenuAbout = function () {
+  dialog.showMessageBox(g_mainWindow, {
+    type: "info",
+    icon: path.join(__dirname, "assets/images/icon_256x256.png"),
+    title: "About ACBR",
+    message:
+      "ACBR Comic Book Reader\n(c) Álvaro García\nwww.binarynonsense.com",
+  });
 };
 
 ///////////////////////////////////////////////////////////////////////////////

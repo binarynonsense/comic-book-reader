@@ -91,7 +91,6 @@ exports.loadHistory = function () {
       for (let index = 0; index < loadedHistory.length; index++) {
         const entry = loadedHistory[index];
         if (entry.filePath !== undefined && entry.filePath !== "") {
-          console.log(entry.filePath);
           if (isNaN(entry.pageIndex)) entry.pageIndex = 0;
           history.push(entry);
         }
