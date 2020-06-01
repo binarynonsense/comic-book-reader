@@ -284,7 +284,7 @@ exports.onMenuNextPage = function () {
   goToNextPage();
 };
 
-exports.onMenuOpenFile = function () {
+exports.onMenuOpenFile = onMenuOpenFile = function () {
   let fileList = fileUtils.chooseFile(g_mainWindow);
   if (fileList === undefined) {
     return;
