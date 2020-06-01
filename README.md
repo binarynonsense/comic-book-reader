@@ -6,7 +6,10 @@ A comic book reader for cbz, cbr and pdf files.
 
 ## Features:
 
-- Compatible file formats: cbz, cbr and pdf.
+- Compatible file formats:
+  - .cbz
+  - .cbr
+  - .pdf
 - Windowed (simple UI) and full-screen (no UI) modes.
 - 'Fit to width' and 'fit to height' views.
 - If available, it automatically restores the previous session's opened book and page, and remembers the last 10 books' page positions.
