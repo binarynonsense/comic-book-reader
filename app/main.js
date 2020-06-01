@@ -311,7 +311,13 @@ exports.onMenuNextPage = function () {
 };
 
 exports.onMenuOpenFile = onMenuOpenFile = function () {
-  let fileList = fileUtils.chooseFile(g_mainWindow);
+  let defaultPath = "";
+  if (g_fileData.filePath !== "") {
+    defaultPath = g_fileData.filePath;
+  } else if (g_history.length > 0) {
+    defaultPath = g_history[length - 1].filePath;
+  }
+  let fileList = fileUtils.chooseFile(g_mainWindow, defaultPath);
   if (fileList === undefined) {
     return;
   }

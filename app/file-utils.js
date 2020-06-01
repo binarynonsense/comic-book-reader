@@ -149,15 +149,22 @@ const deleteTempFolderRecursive = function (folderPath) {
   }
 };
 
-function chooseFile(window) {
+function chooseFile(window, defaultPath = "") {
+  if (!fs.existsSync(defaultPath)) {
+    defaultPath = "";
+  }
+  // TODO defaultPath doesn't seem to work, at least on linux, where I've made more tests..
+  // but I'll leave the code anyway
+
   let imagePath = dialog.showOpenDialogSync(window, {
     filters: [
       {
         name: "Comic Book Files",
         extensions: ["cbz", "cbr", "pdf"],
-        //extensions: ["cbz", "cbr", "zip", "rar", "pdf"],
+        defaultPath: defaultPath,
       },
     ],
+    properties: ["openFile"],
   });
   return imagePath;
 }
