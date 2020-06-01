@@ -41,8 +41,8 @@ ipcRenderer.on("set-fit-to-height", (event) => {
 
 ipcRenderer.on("render-page-info", (event, pageNum, numPages) => {
   if (numPages === 0) pageNum = -1; // hack to make it show 00 / 00 @ start
-  document.getElementById("page-slider").value = pageNum + 1;
   document.getElementById("page-slider").max = numPages;
+  document.getElementById("page-slider").value = pageNum + 1;
   document.getElementById("toolbar-page-numbers").innerHTML =
     pageNum + 1 + " / " + numPages;
 });

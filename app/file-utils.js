@@ -8,7 +8,7 @@ const unrar = require("node-unrar-js");
 const { app, dialog } = require("electron");
 
 ///////////////////////////////////////////////////////////////////////////////
-// HELPERS ////////////////////////////////////////////////////////////////////
+// SAVE / LOAD ////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
 exports.saveSettings = function (settings) {
@@ -28,32 +28,86 @@ exports.saveSettings = function (settings) {
 
 exports.loadSettings = function (settings) {
   const cfgFilePath = path.join(app.getPath("userData"), "acbr.cfg");
-  if (!fs.existsSync(cfgFilePath)) return;
-  let data;
-  try {
-    data = fs.readFileSync(cfgFilePath, "utf8");
-  } catch (e) {
-    return settings;
-  }
-  if (data === null || data === undefined) return;
+  if (fs.existsSync(cfgFilePath)) {
+    let data;
+    try {
+      data = fs.readFileSync(cfgFilePath, "utf8");
+    } catch (e) {
+      return settings;
+    }
+    if (data === null || data === undefined) return settings;
 
-  let loadedSettings;
-  try {
-    loadedSettings = JSON.parse(data);
-  } catch (e) {
-    return settings;
-  }
+    let loadedSettings;
+    try {
+      loadedSettings = JSON.parse(data);
+    } catch (e) {
+      return settings;
+    }
 
-  for (key in settings) {
-    // ref: https://stackoverflow.com/questions/1098040/checking-if-a-key-exists-in-a-javascript-object
-    if (loadedSettings[key] !== undefined) {
-      // good if I don't allow undefines in the savefile
-      //console.log(key + ": " + loadedSettings[key]);
-      settings[key] = loadedSettings[key];
+    for (key in settings) {
+      // ref: https://stackoverflow.com/questions/1098040/checking-if-a-key-exists-in-a-javascript-object
+      if (loadedSettings[key] !== undefined) {
+        // good if I don't allow undefines in the savefile
+        //console.log(key + ": " + loadedSettings[key]);
+        settings[key] = loadedSettings[key];
+      }
     }
   }
   return settings;
 };
+
+exports.saveHistory = function (history) {
+  const hstFilePath = path.join(app.getPath("userData"), "acbr.hst");
+  const historyJSON = JSON.stringify(history);
+  try {
+    fs.writeFileSync(hstFilePath, historyJSON, "utf-8");
+  } catch (e) {
+    console.log("ERROR saving history to: " + hstFilePath);
+    return;
+  }
+  console.log("history saved to: " + hstFilePath);
+};
+
+exports.loadHistory = function () {
+  let history = [];
+  const hstFilePath = path.join(app.getPath("userData"), "acbr.hst");
+  if (fs.existsSync(hstFilePath)) {
+    let data;
+    try {
+      data = fs.readFileSync(hstFilePath, "utf8");
+    } catch (e) {
+      return history;
+    }
+    if (data === null || data === undefined) return history;
+
+    let loadedHistory;
+    try {
+      loadedHistory = JSON.parse(data);
+    } catch (e) {
+      return history;
+    }
+
+    if (Array.isArray(loadedHistory)) {
+      for (let index = 0; index < loadedHistory.length; index++) {
+        const entry = loadedHistory[index];
+        if (entry.filePath !== undefined && entry.filePath !== "") {
+          console.log(entry.filePath);
+          if (isNaN(entry.pageIndex)) entry.pageIndex = 0;
+          history.push(entry);
+        }
+      }
+    }
+  }
+  // limit how many are remembered
+  if (history.length > 10) {
+    history.splice(0, history.length - 10);
+  }
+  return history;
+};
+
+///////////////////////////////////////////////////////////////////////////////
+// HELPERS ////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 function getMimeType(filePath) {
   let mimeType = path.basename(filePath);

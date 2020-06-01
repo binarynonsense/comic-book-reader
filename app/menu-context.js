@@ -1,4 +1,4 @@
-const { app, Menu, MenuItem } = require("electron");
+const { Menu } = require("electron");
 const mainProcess = require("./main");
 
 let contextMenu;
@@ -16,6 +16,28 @@ exports.buildContextMenu = function () {
       click() {
         mainProcess.onMenuPreviousPage();
       },
+    },
+    {
+      type: "separator",
+    },
+    {
+      label: "Zoom",
+      submenu: [
+        {
+          id: "fit-to-width",
+          label: "Fit to Width",
+          click() {
+            mainProcess.onMenuFitToWidth();
+          },
+        },
+        {
+          id: "fit-to-height",
+          label: "Fit to Height",
+          click() {
+            mainProcess.onMenuFitToHeight();
+          },
+        },
+      ],
     },
     {
       type: "separator",

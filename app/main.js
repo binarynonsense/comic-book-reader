@@ -21,16 +21,17 @@ let g_settings = {
   date: "",
   fit_mode: 0, // 0: width, 1: height
   page_mode: 0, // 0: single-page, 1: double-page
-  //isMaximized: false,
+  maximize: false,
   showMenuBar: true,
   showToolBar: true,
   showScrollBar: true,
-  lastFilePath: "",
-  lastPageIndex: 0,
 };
+
+let g_history = [];
 
 app.on("will-quit", () => {
   saveSettings();
+  saveHistory();
   globalShortcut.unregisterAll();
   fileUtils.cleanUpTempFolder();
 });
@@ -55,7 +56,7 @@ app.on("ready", () => {
   //mainWindow.removeMenu();
   barMenu.buildApplicationMenu();
 
-  // FIX ugly hack: since I wait to show the window on did-finish-load, if I started it
+  // FIX: ugly hack: since I wait to show the window on did-finish-load, if I started it
   // unmaximized the resize controls did nothing until I maximized and unmaximized it... ?? :(
   // so I do it programmatically at the start, hopefully it's not noticeable
   g_mainWindow.maximize();
@@ -75,9 +76,9 @@ app.on("ready", () => {
   g_mainWindow.webContents.on("did-finish-load", function () {
     // if I put the things below inside ready-to-show they aren't called
     renderTitle();
-    renderPageInfo();
 
-    settings = fileUtils.loadSettings(g_settings);
+    g_settings = fileUtils.loadSettings(g_settings);
+    g_history = fileUtils.loadHistory();
 
     if (g_settings.fit_mode === 0) {
       setFitToWidth();
@@ -86,11 +87,10 @@ app.on("ready", () => {
     }
     showScrollBar(g_settings.showScrollBar);
 
-    if (g_settings.lastFilePath !== "") {
-      openFile(g_settings.lastFilePath, g_settings.lastPageIndex);
+    if (g_history.length > 0) {
+      let entry = g_history[g_history.length - 1];
+      openFile(entry.filePath, entry.pageIndex);
     }
-
-    // fileUtils.saveSettings(g_settings);
   });
 
   g_mainWindow.on("resize", function () {
@@ -140,12 +140,46 @@ app.on("web-contents-created", (event, contents) => {
   });
 });
 
+///////////////////////////////////////////////////////////////////////////////
+// SETTINGS / HISTORY /////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
 function saveSettings() {
-  if (g_fileData.filePath != "") {
-    g_settings.lastFilePath = g_fileData.filePath;
-    g_settings.lastPageIndex = g_fileData.currentPageIndex;
-  }
   fileUtils.saveSettings(g_settings);
+}
+
+function addCurrentToHistory() {
+  let currentFilePath = g_fileData.filePath;
+  let currentPageIndex = g_fileData.pageIndex;
+  if (currentFilePath != "") {
+    let foundIndex = getHistoryIndex(currentFilePath);
+    if (foundIndex !== undefined) {
+      g_history.splice(foundIndex, 1); // remove, to update and put last
+    }
+    let newEntry = { filePath: currentFilePath, pageIndex: currentPageIndex };
+    g_history.push(newEntry);
+    // limit how many are remembered
+    if (g_history.length > 10) {
+      g_history.splice(0, g_history.length - 10);
+    }
+  }
+}
+
+function getHistoryIndex(filePath) {
+  let foundIndex;
+  for (let index = 0; index < g_history.length; index++) {
+    const element = g_history[index];
+    if (element.filePath === filePath) {
+      foundIndex = index;
+      break;
+    }
+  }
+  return foundIndex;
+}
+
+function saveHistory() {
+  addCurrentToHistory();
+  fileUtils.saveHistory(g_history, g_fileData.filePath, g_fileData.pageIndex);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -208,7 +242,7 @@ ipcMain.on("toolbar-button-clicked", (event, name) => {
 ipcMain.on("toolbar-slider-changed", (event, value) => {
   value -= 1; // from 1 based to 0 based
   if (g_fileData.state === FileDataState.LOADED) {
-    if (value !== g_fileData.currentPageIndex) {
+    if (value !== g_fileData.pageIndex) {
       goToPage(value);
       return;
     }
@@ -288,10 +322,20 @@ let g_fileData = {
   imgsFolderPath: "",
   pagesPaths: [],
   numPages: 0,
-  currentPageIndex: 0,
+  pageIndex: 0,
 };
 
-function openFile(filePath, pageNum = 0) {
+function openFile(filePath, pageIndex = 0) {
+  if (filePath === "" || !fs.existsSync(filePath)) return;
+
+  addCurrentToHistory(); // add the one I'm closing to history
+  // if in history: open saved position:
+  let historyIndex = getHistoryIndex(filePath);
+  if (historyIndex !== undefined) {
+    pageIndex = g_history[historyIndex].pageIndex;
+    if (pageIndex === undefined) pageIndex = 0; // just in case
+  }
+
   let fileExtension = path.extname(filePath);
   if (fileExtension === ".pdf") {
     g_fileData.state = FileDataState.LOADING;
@@ -301,8 +345,8 @@ function openFile(filePath, pageNum = 0) {
     g_fileData.imgsFolderPath = "";
     g_fileData.pagesPaths = [];
     g_fileData.numPages = 0;
-    g_fileData.currentPageIndex = pageNum;
-    g_mainWindow.webContents.send("load-pdf", filePath, pageNum + 1); // pdf.j counts from 1
+    g_fileData.pageIndex = pageIndex;
+    g_mainWindow.webContents.send("load-pdf", filePath, pageIndex + 1); // pdf.j counts from 1
     renderTitle();
   } else {
     let imgsFolderPath = undefined;
@@ -317,8 +361,8 @@ function openFile(filePath, pageNum = 0) {
         g_fileData.pagesPaths = pagesPaths;
         g_fileData.imgsFolderPath = "";
         g_fileData.numPages = pagesPaths.length;
-        g_fileData.currentPageIndex = pageNum;
-        goToPage(pageNum);
+        g_fileData.pageIndex = pageIndex;
+        goToPage(pageIndex);
       }
     } else if (fileExtension === ".cbz") {
       //imgsFolderPath = fileUtils.extractZip(filePath);
@@ -331,8 +375,8 @@ function openFile(filePath, pageNum = 0) {
         g_fileData.pagesPaths = pagesPaths;
         g_fileData.imgsFolderPath = "";
         g_fileData.numPages = pagesPaths.length;
-        g_fileData.currentPageIndex = pageNum;
-        goToPage(pageNum);
+        g_fileData.pageIndex = pageIndex;
+        goToPage(pageIndex);
       }
       return;
     } else {
@@ -350,8 +394,8 @@ function openFile(filePath, pageNum = 0) {
       g_fileData.pagesPaths = pagesPaths;
       g_fileData.imgsFolderPath = imgsFolderPath;
       g_fileData.numPages = pagesPaths.length;
-      g_fileData.currentPageIndex = pageNum;
-      goToPage(pageNum);
+      g_fileData.pageIndex = pageIndex;
+      goToPage(pageIndex);
     }
   }
 }
@@ -367,10 +411,10 @@ function renderTitle() {
   g_mainWindow.webContents.send("update-title", title);
 }
 
-function renderPageInfo(pageNum, numPages) {
+function renderPageInfo() {
   g_mainWindow.webContents.send(
     "render-page-info",
-    g_fileData.currentPageIndex,
+    g_fileData.pageIndex,
     g_fileData.numPages
   );
 }
@@ -407,9 +451,9 @@ function renderRarEntry(rarPath, entryName) {
   g_mainWindow.webContents.send("render-img", img64, 0);
 }
 
-function renderPdfPage(pageNum) {
+function renderPdfPage(pageIndex) {
   renderTitle();
-  g_mainWindow.webContents.send("render-pdf-page", pageNum + 1); // pdf.j counts from 1
+  g_mainWindow.webContents.send("render-pdf-page", pageIndex + 1); // pdf.j counts from 1
 }
 
 /////////////////////////////////////////////////
@@ -437,28 +481,28 @@ function generateTitle() {
 // PAGE NAVIGATION ////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-function goToPage(pageNum) {
+function goToPage(pageIndex) {
   if (
     g_fileData.state !== FileDataState.LOADED ||
     g_fileData.type === FileDataType.NOT_SET
   ) {
     return;
   }
-  if (pageNum < 0 || pageNum >= g_fileData.numPages) return;
-  g_fileData.currentPageIndex = pageNum;
+  if (pageIndex < 0 || pageIndex >= g_fileData.numPages) return;
+  g_fileData.pageIndex = pageIndex;
   if (g_fileData.type === FileDataType.IMGS) {
-    renderImageFile(g_fileData.pagesPaths[g_fileData.currentPageIndex]);
+    renderImageFile(g_fileData.pagesPaths[g_fileData.pageIndex]);
   } else if (g_fileData.type === FileDataType.PDF) {
-    renderPdfPage(g_fileData.currentPageIndex);
+    renderPdfPage(g_fileData.pageIndex);
   } else if (g_fileData.type === FileDataType.ZIP) {
     renderZipEntry(
       g_fileData.filePath,
-      g_fileData.pagesPaths[g_fileData.currentPageIndex]
+      g_fileData.pagesPaths[g_fileData.pageIndex]
     );
   } else if (g_fileData.type === FileDataType.RAR) {
     renderRarEntry(
       g_fileData.filePath,
-      g_fileData.pagesPaths[g_fileData.currentPageIndex]
+      g_fileData.pagesPaths[g_fileData.pageIndex]
     );
   }
   renderPageInfo();
@@ -469,16 +513,16 @@ function goToFirstPage() {
 }
 
 function goToNextPage() {
-  if (g_fileData.currentPageIndex + 1 < g_fileData.numPages) {
-    g_fileData.currentPageIndex++;
-    goToPage(g_fileData.currentPageIndex);
+  if (g_fileData.pageIndex + 1 < g_fileData.numPages) {
+    g_fileData.pageIndex++;
+    goToPage(g_fileData.pageIndex);
   }
 }
 
 function goToPreviousPage() {
-  if (g_fileData.currentPageIndex - 1 >= 0) {
-    g_fileData.currentPageIndex--;
-    goToPage(g_fileData.currentPageIndex);
+  if (g_fileData.pageIndex - 1 >= 0) {
+    g_fileData.pageIndex--;
+    goToPage(g_fileData.pageIndex);
   }
 }
 
