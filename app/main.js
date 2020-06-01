@@ -28,12 +28,15 @@ let g_settings = {
   fit_mode: 0, // 0: width, 1: height
   page_mode: 0, // 0: single-page, 1: double-page
   maximize: false,
+  width: 800,
+  height: 600,
   showMenuBar: true,
   showToolBar: true,
   showScrollBar: true,
 };
 
 let g_history = [];
+let g_isLoaded = false;
 
 app.on("will-quit", () => {
   saveSettings();
@@ -80,6 +83,7 @@ app.on("ready", () => {
   });
 
   g_mainWindow.webContents.on("did-finish-load", function () {
+    g_isLoaded = true;
     // if I put the things below inside ready-to-show they aren't called
     renderTitle();
 
@@ -91,7 +95,14 @@ app.on("ready", () => {
     } else {
       setFitToHeight();
     }
+
     showScrollBar(g_settings.showScrollBar);
+
+    g_mainWindow.setSize(g_settings.width, g_settings.height);
+    g_mainWindow.center();
+    if (g_settings.maximize) {
+      g_mainWindow.maximize();
+    }
 
     if (g_history.length > 0) {
       let entry = g_history[g_history.length - 1];
@@ -100,6 +111,14 @@ app.on("ready", () => {
   });
 
   g_mainWindow.on("resize", function () {
+    // if I don't use the isLoaded var the first mazimize @ start is recorded as normal resize !???
+    if (g_isLoaded && g_mainWindow.isNormal()) {
+      // console.log(g_mainWindow.getSize());
+      let width = g_mainWindow.getSize()[0];
+      let height = g_mainWindow.getSize()[1];
+      g_settings.width = width;
+      g_settings.height = height;
+    }
     renderTitle();
     if (
       g_fileData.type === FileDataType.PDF &&
@@ -118,6 +137,12 @@ app.on("ready", () => {
     ) {
       g_mainWindow.webContents.send("refresh-pdf-page");
     }
+
+    g_settings.maximize = true;
+  });
+
+  g_mainWindow.on("unmaximize", function () {
+    g_settings.maximize = false;
   });
 });
 
