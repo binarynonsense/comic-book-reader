@@ -6,6 +6,7 @@ A comic book reader for cbz, cbr and pdf files.
 
 ## Features:
 
+- Windows & GNU/Linux versions.
 - Compatible file formats:
   - .cbz
   - .cbr
