@@ -515,6 +515,7 @@ function goToPage(pageIndex) {
     g_fileData.state !== FileDataState.LOADED ||
     g_fileData.type === FileDataType.NOT_SET
   ) {
+    console.log("cant change: " + pageIndex);
     return;
   }
   if (pageIndex < 0 || pageIndex >= g_fileData.numPages) return;
@@ -543,15 +544,13 @@ function goToFirstPage() {
 
 function goToNextPage() {
   if (g_fileData.pageIndex + 1 < g_fileData.numPages) {
-    g_fileData.pageIndex++;
-    goToPage(g_fileData.pageIndex);
+    goToPage(g_fileData.pageIndex + 1);
   }
 }
 
 function goToPreviousPage() {
   if (g_fileData.pageIndex - 1 >= 0) {
-    g_fileData.pageIndex--;
-    goToPage(g_fileData.pageIndex);
+    goToPage(g_fileData.pageIndex - 1);
   }
 }
 
