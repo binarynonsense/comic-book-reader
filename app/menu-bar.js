@@ -1,21 +1,27 @@
 const { app, Menu } = require("electron");
 const mainProcess = require("./main");
 
-function setFitToWidth() {
+exports.setFitToWidth = function () {
   Menu.getApplicationMenu().getMenuItemById("fit-to-width").checked = true;
   Menu.getApplicationMenu().getMenuItemById("fit-to-height").checked = false;
-}
-exports.setFitToWidth = setFitToWidth;
+};
 
-function setFitToHeight() {
+exports.setFitToHeight = function () {
   Menu.getApplicationMenu().getMenuItemById("fit-to-width").checked = false;
   Menu.getApplicationMenu().getMenuItemById("fit-to-height").checked = true;
-}
-exports.setFitToHeight = setFitToHeight;
+};
+
+exports.setScrollBar = function (isChecked) {
+  Menu.getApplicationMenu().getMenuItemById("scrollbar").checked = isChecked;
+};
+
+exports.setToolBar = function (isChecked) {
+  Menu.getApplicationMenu().getMenuItemById("toolbar").checked = isChecked;
+};
 
 function buildApplicationMenu() {
   // ref: https://stackoverflow.com/questions/54105224/electron-modify-a-single-menu-item
-  //   Menu.getApplicationMenu().items // all the items
+  // Menu.getApplicationMenu().items // all the items
   // Menu.getApplicationMenu().getMenuItemById('MENU_ITEM_ID') // get a single item by its id
 
   const menuConfig = Menu.buildFromTemplate([
@@ -29,9 +35,6 @@ function buildApplicationMenu() {
             mainProcess.onMenuOpenFile();
           },
         },
-        // {
-        //   type: "separator",
-        // },
         {
           label: "Quit",
           accelerator: "CommandOrControl+Q",
@@ -62,7 +65,6 @@ function buildApplicationMenu() {
             mainProcess.onMenuFitToHeight();
           },
         },
-
         // {
         //   type: "separator",
         // },
@@ -106,7 +108,6 @@ function buildApplicationMenu() {
           accelerator: "F11",
           click() {
             mainProcess.onMenuToggleFullScreen();
-            //mainWindow.setFullScreen(!mainWindow.isFullScreen());
           },
         },
       ],
@@ -115,22 +116,23 @@ function buildApplicationMenu() {
       label: "Settings",
       submenu: [
         {
-          label: "Toggle Scroll Bar",
+          label: "Scroll Bar",
+          id: "scrollbar",
+          checked: true,
           accelerator: "CommandOrControl+B",
           click() {
             mainProcess.onMenuToggleScrollBar();
           },
         },
-        // {
-        //   type: "separator",
-        // },
-        // {
-        //   label: "Toggle Dev Tools",
-        //   accelerator: "CommandOrControl+Shift+I",
-        //   click() {
-        //     mainProcess.onMenuToggleDevTools();
-        //   },
-        // },
+        {
+          label: "Tool Bar",
+          id: "toolbar",
+          checked: true,
+          accelerator: "CommandOrControl+T",
+          click() {
+            mainProcess.onMenuToggleToolBar();
+          },
+        },
       ],
     },
     {

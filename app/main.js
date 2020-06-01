@@ -97,6 +97,7 @@ app.on("ready", () => {
     }
 
     showScrollBar(g_settings.showScrollBar);
+    showToolBar(g_settings.showToolBar);
 
     g_mainWindow.setSize(g_settings.width, g_settings.height);
     g_mainWindow.center();
@@ -329,6 +330,10 @@ exports.onMenuFitToHeight = function () {
 
 exports.onMenuToggleScrollBar = function () {
   toggleScrollBar();
+};
+
+exports.onMenuToggleToolBar = function () {
+  toggleToolBar();
 };
 
 exports.onMenuToggleFullScreen = function () {
@@ -584,10 +589,24 @@ function showScrollBar(isVisible) {
     "set-scrollbar-visibility",
     g_settings.showScrollBar
   );
+  barMenu.setScrollBar(isVisible);
 }
 
 function toggleScrollBar() {
   showScrollBar(!g_settings.showScrollBar);
+}
+
+function showToolBar(isVisible) {
+  g_settings.showToolBar = isVisible;
+  g_mainWindow.webContents.send(
+    "set-toolbar-visibility",
+    g_settings.showToolBar
+  );
+  barMenu.setToolBar(isVisible);
+}
+
+function toggleToolBar() {
+  showToolBar(!g_settings.showToolBar);
 }
 
 function toggleFullScreen() {
