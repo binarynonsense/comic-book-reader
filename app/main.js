@@ -538,10 +538,6 @@ function goToPage(pageIndex) {
   renderPageInfo();
 }
 
-function goToFirstPage() {
-  goToPage(0);
-}
-
 function goToNextPage() {
   if (g_fileData.pageIndex + 1 < g_fileData.numPages) {
     goToPage(g_fileData.pageIndex + 1);
@@ -600,11 +596,13 @@ function toggleDevTools() {
 }
 
 function setFitToWidth() {
+  g_settings.fit_mode = 0;
   barMenu.setFitToWidth();
   g_mainWindow.webContents.send("set-fit-to-width");
 }
 
 function setFitToHeight() {
+  g_settings.fit_mode = 1;
   barMenu.setFitToHeight();
   g_mainWindow.webContents.send("set-fit-to-height");
 }
