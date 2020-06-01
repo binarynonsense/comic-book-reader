@@ -17,6 +17,9 @@ A comic book reader for cbz, cbr and pdf files.
 
 ## Controls:
 
+- Toolbar :
+  - buttons: 'open file', 'previous page', 'next page', 'fit to width', 'fit to height' and 'toogle fullscreen'.
+  - slider: use it to quickly go to any page in the book.
 - Keys:
   - 'right arrow' or 'page down' to go the next page.
   - 'left arrow' or 'page up' to go to the previous one.
