@@ -23,7 +23,7 @@ function isDev() {
 let g_mainWindow;
 let g_resizeEventCounter;
 let g_settings = {
-  version: 1, // save format version
+  version: app.getVersion(), // save format version
   date: "",
   fit_mode: 0, // 0: width, 1: height
   page_mode: 0, // 0: single-page, 1: double-page
@@ -350,7 +350,9 @@ exports.onMenuAbout = function () {
     icon: path.join(__dirname, "assets/images/icon_256x256.png"),
     title: "ACBR",
     message:
-      "ACBR Comic Book Reader\n(c) Álvaro García\nwww.binarynonsense.com",
+      "ACBR Comic Book Reader\nversion: " +
+      app.getVersion() +
+      "\n(c) Álvaro García\nwww.binarynonsense.com",
   });
 };
 

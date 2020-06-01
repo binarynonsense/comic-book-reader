@@ -16,6 +16,7 @@ exports.saveSettings = function (settings) {
   //console.log(cfgFilePath);
   let date = new Date().toJSON();
   settings.date = date;
+  settings.version = app.getVersion();
   const settingsJSON = JSON.stringify(settings);
   try {
     fs.writeFileSync(cfgFilePath, settingsJSON, "utf-8");
