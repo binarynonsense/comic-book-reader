@@ -246,6 +246,7 @@ function getRarEntriesList(filePath) {
   // imgEntries.forEach(function (entryName) {
   //   console.log(entryName);
   // });
+  imgEntries.sort();
   return imgEntries;
 }
 exports.getRarEntriesList = getRarEntriesList;
@@ -275,6 +276,7 @@ function getZipEntriesList(filePath) {
       }
     }
   });
+  imgEntries.sort();
   return imgEntries;
 }
 exports.getZipEntriesList = getZipEntriesList;
