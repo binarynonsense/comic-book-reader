@@ -18,19 +18,21 @@ A comic book reader for cbz, cbr and pdf files.
 ## Controls:
 
 - Toolbar :
-  - buttons: 'open file', 'previous page', 'next page', 'fit to width', 'fit to height' and 'toogle fullscreen'.
+  - buttons: 'open file', 'previous page', 'next page', 'fit to width', 'fit to height' and 'toggle fullscreen'.
   - slider: use it to quickly go to any page in the book.
 - Keys:
   - 'right arrow' or 'page down' to go the next page.
   - 'left arrow' or 'page up' to go to the previous one.
   - 'up arrow' to scroll the page up, 'down arrow' to scroll the page down.
+  - 'F11' to toggle full-screen mode.
+  - 'Ctrl+O' to choose a file to open.
 - Mouse:
   - 'scroll wheel' scrolls the page up and down.
-  - 'left-click' opens the next page if the right side of the view area is clicked and the previous one if the left side is clicked.
+  - 'left-click' opens the next page if the right side of the view area is clicked and the previous page if the left side is clicked.
   - 'right-click' opens a context menu with some basic navigation options.
 
 ## Downloads
 
 ## License
 
-ACBR's code is released under the BSD 2-Clause [License](./LICENSE). To check the licenses of the node modules and other libraries used in the project check the [licenses](./licenses/) folder.
+ACBR's code is released under the BSD 2-Clause [license](./LICENSE). To check the licenses of the node modules and other libraries used in the project check the [licenses](./licenses/) folder.
