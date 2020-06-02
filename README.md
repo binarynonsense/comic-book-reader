@@ -33,6 +33,9 @@ A comic book reader for cbz, cbr and pdf files.
 
 ## Downloads
 
+- [Linux](https://github.com/binarynonsense/comic-book-reader/releases/download/v1.0.0/ACBR_Linux.zip)
+- [Windows](https://github.com/binarynonsense/comic-book-reader/releases/download/v1.0.0/ACBR_Windows.zip)
+
 ## License
 
 ACBR's code is released under the BSD 2-Clause [license](./LICENSE). To check the licenses of the node modules and other libraries used in the project check the [licenses](./licenses/) folder.
