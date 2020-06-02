@@ -33,6 +33,7 @@
   "dependencies": {
     "adm-zip": "^0.4.14",
     "custom-electron-titlebar": "^3.2.2-hotfix62",
+    "epub": "^1.2.1",
     "node-unrar-js": "^0.8.1"
   }
 }

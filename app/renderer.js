@@ -2,6 +2,7 @@ const { ipcRenderer, remote } = require("electron");
 const customTitlebar = require("custom-electron-titlebar");
 const pdfjsLib = require("./assets/libs/pdfjs/build/pdf.js");
 const path = require("path");
+const EPub = require("epub");
 
 let titlebar = new customTitlebar.Titlebar({
   backgroundColor: customTitlebar.Color.fromHex("#818181"),
@@ -39,25 +40,17 @@ ipcRenderer.on("set-fit-to-height", (event) => {
   setFitToHeight();
 });
 
+ipcRenderer.on("update-title", (event, title) => {
+  document.title = title;
+  titlebar.updateTitle();
+});
+
 ipcRenderer.on("render-page-info", (event, pageNum, numPages) => {
   if (numPages === 0) pageNum = -1; // hack to make it show 00 / 00 @ start
   document.getElementById("page-slider").max = numPages;
   document.getElementById("page-slider").value = pageNum + 1;
   document.getElementById("toolbar-page-numbers").innerHTML =
     pageNum + 1 + " / " + numPages;
-});
-
-ipcRenderer.on("render-pdf-page", (event, pageNum) => {
-  renderPdfPage(pageNum);
-});
-
-ipcRenderer.on("refresh-pdf-page", (event) => {
-  refreshPdfPage();
-});
-
-ipcRenderer.on("update-title", (event, title) => {
-  document.title = title;
-  titlebar.updateTitle();
 });
 
 ipcRenderer.on("render-img", (event, img64, side) => {
@@ -69,9 +62,16 @@ ipcRenderer.on("render-img", (event, img64, side) => {
   container.innerHTML = element; // + element;
 
   // ref: https://www.w3schools.com/howto/howto_js_scroll_to_top.asp
-  //document.documentElement.scrollTop = 0;
   document.querySelector(".container-after-titlebar").scrollTop = 0;
   //webFrame.clearCache(); // don't know if this does anything, haven't tested, I'm afraid of memory leaks changing imgs
+});
+
+ipcRenderer.on("render-pdf-page", (event, pageNum) => {
+  renderPdfPage(pageNum);
+});
+
+ipcRenderer.on("refresh-pdf-page", (event) => {
+  refreshPdfPage();
 });
 
 ipcRenderer.on("load-pdf", (event, filePath, pageNum) => {
@@ -85,6 +85,103 @@ ipcRenderer.on("load-pdf", (event, filePath, pageNum) => {
 
   loadPdf(filePath, pageNum);
 });
+
+ipcRenderer.on("render-epub-image", (event, filePath, imageID) => {
+  renderEpubImage(filePath, imageID);
+});
+
+ipcRenderer.on("load-epub", (event, filePath, pageNum) => {
+  document.querySelector(".centered-block").style.display = "none";
+  loadEpub(filePath, pageNum);
+});
+
+///////////////////////////////////////////////////////////////////////////////
+// EPUB ///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+function renderEpubImage(filePath, imageID) {
+  console.log("renderEpubImage: " + imageID + " from: " + filePath);
+  // Maybe I couldnot load it every time, keeping the epub object in memory, but this seems to work fine enough
+  const epub = new EPub(filePath);
+  epub.on("error", function (err) {
+    console.log("ERROR\n-----");
+    throw err;
+  });
+  epub.on("end", function (err) {
+    document.querySelector(".centered-block").style.display = "none";
+
+    epub.getImage(imageID, function (err, data, mimeType) {
+      // ref: https://stackoverflow.com/questions/54305759/how-to-encode-a-buffer-to-base64-in-nodejs
+      let data64 = Buffer.from(data).toString("base64");
+      let img64 = "data:" + mimeType + ";base64," + data64;
+      let element = '<img class="page" src="' + img64 + '" />';
+      let container = document.getElementById("pages-container");
+      container.innerHTML = element; // + element;
+      document.querySelector(".container-after-titlebar").scrollTop = 0;
+      ipcRenderer.send("epub-page-loaded");
+    });
+  });
+  epub.parse();
+}
+
+function loadEpub(filePath, pageNum) {
+  // ref: https://github.com/julien-c/epub/blob/master/example/example.js
+  console.log("load epub: " + filePath);
+  const epub = new EPub(filePath);
+  epub.on("error", function (err) {
+    console.log("ERROR\n-----");
+    throw err;
+  });
+  epub.on("end", function (err) {
+    // console.log(epub.metadata);
+    // console.log(epub.flow); // spine
+    // console.log(epub.toc);
+
+    // This will send a message to main at the end (epub-loaded)
+    extractEpubImagesSrcRecursive(epub, 0, filePath, pageNum, []);
+  });
+
+  epub.parse();
+}
+
+function extractEpubImagesSrcRecursive(
+  epub,
+  chapterIndex,
+  filePath,
+  pageNum,
+  imageIDs
+) {
+  epub.getChapter(epub.spine.contents[chapterIndex].id, function (err, data) {
+    let isEnd = false;
+    if (err) {
+      console.log(err);
+      isEnd = true;
+    } else {
+      // ref: https://stackoverflow.com/questions/14939296/extract-image-src-from-a-string/14939476
+      //const rex = /<img[^>]+src="?([^"\s]+)"?\s*\/>/g;
+      const rex = /<img[^>]+src="([^">]+)/g;
+      while ((m = rex.exec(data))) {
+        // i.e. /images/img-0139/OPS/images/0139.jpeg -> TODO extract id: img-0139
+        let id = m[1].split("/")[2];
+        imageIDs.push(id);
+      }
+      if (chapterIndex + 1 < epub.spine.contents.length) {
+        extractEpubImagesSrcRecursive(
+          epub,
+          chapterIndex + 1,
+          filePath,
+          pageNum,
+          imageIDs
+        );
+      } else {
+        isEnd = true;
+      }
+    }
+    if (isEnd) {
+      ipcRenderer.send("epub-loaded", true, filePath, pageNum, imageIDs);
+    }
+  });
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // PDF ////////////////////////////////////////////////////////////////////////

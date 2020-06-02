@@ -160,7 +160,7 @@ function chooseFile(window, defaultPath = "") {
     filters: [
       {
         name: "Comic Book Files",
-        extensions: ["cbz", "cbr", "pdf"],
+        extensions: ["cbz", "cbr", "pdf", "epub"],
         defaultPath: defaultPath,
       },
     ],

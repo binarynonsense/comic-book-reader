@@ -218,6 +218,22 @@ function saveHistory() {
 // IPC RECEIVED ///////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+ipcMain.on(
+  "epub-loaded",
+  (event, loadedCorrectly, filePath, pageNum, imageIDs) => {
+    //console.log("epub loaded, imageIDs: " + imageIDs);
+    g_fileData.state = FileDataState.LOADED;
+    g_fileData.pagesPaths = imageIDs; // not really paths
+    g_fileData.numPages = imageIDs.length;
+    goToPage(pageNum);
+    renderPageInfo();
+  }
+);
+
+ipcMain.on("epub-page-loaded", (event) => {
+  g_fileData.state = FileDataState.LOADED;
+});
+
 ipcMain.on("pdf-loaded", (event, loadedCorrectly, filePath, numPages) => {
   g_fileData.state = FileDataState.LOADED;
   // TODO double check loaded is the one loading?
@@ -378,6 +394,7 @@ const FileDataType = {
   IMGS: "imgs",
   ZIP: "zip",
   RAR: "rar",
+  EPUB: "epub",
 };
 
 let g_fileData = {
@@ -414,6 +431,17 @@ function openFile(filePath, pageIndex = 0) {
     g_fileData.pageIndex = pageIndex;
     g_mainWindow.webContents.send("load-pdf", filePath, pageIndex + 1); // pdf.j counts from 1
     renderTitle();
+  } else if (fileExtension === ".epub") {
+    g_fileData.state = FileDataState.LOADING;
+    g_fileData.type = FileDataType.EPUB;
+    g_fileData.filePath = filePath;
+    g_fileData.fileName = path.basename(filePath);
+    g_fileData.imgsFolderPath = "";
+    g_fileData.pagesPaths = [];
+    g_fileData.numPages = 0;
+    g_fileData.pageIndex = pageIndex;
+    g_mainWindow.webContents.send("load-epub", filePath, pageIndex);
+    // renderTitle();
   } else {
     let imgsFolderPath = undefined;
     if (fileExtension === ".cbr") {
@@ -483,6 +511,12 @@ function renderPageInfo() {
     g_fileData.pageIndex,
     g_fileData.numPages
   );
+}
+
+function renderEpubImg(filePath, imageID) {
+  renderTitle();
+  g_fileData.state = FileDataState.LOADING;
+  g_mainWindow.webContents.send("render-epub-image", filePath, imageID);
 }
 
 function renderImageFile(filePath) {
@@ -568,6 +602,11 @@ function goToPage(pageIndex) {
     );
   } else if (g_fileData.type === FileDataType.RAR) {
     renderRarEntry(
+      g_fileData.filePath,
+      g_fileData.pagesPaths[g_fileData.pageIndex]
+    );
+  } else if (g_fileData.type === FileDataType.EPUB) {
+    renderEpubImg(
       g_fileData.filePath,
       g_fileData.pagesPaths[g_fileData.pageIndex]
     );
