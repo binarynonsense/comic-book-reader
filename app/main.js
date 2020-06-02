@@ -148,7 +148,7 @@ app.on("ready", () => {
 });
 
 function onResizeEventFinished() {
-  //g_mainWindow.webContents.send("refresh-pdf-page");
+  g_mainWindow.webContents.send("refresh-pdf-page");
 }
 
 // Security
@@ -650,12 +650,24 @@ function setFitToWidth() {
   g_settings.fit_mode = 0;
   barMenu.setFitToWidth();
   g_mainWindow.webContents.send("set-fit-to-width");
+  if (
+    g_fileData.type === FileDataType.PDF &&
+    g_fileData.state === FileDataState.LOADED
+  ) {
+    g_mainWindow.webContents.send("refresh-pdf-page");
+  }
 }
 
 function setFitToHeight() {
   g_settings.fit_mode = 1;
   barMenu.setFitToHeight();
   g_mainWindow.webContents.send("set-fit-to-height");
+  if (
+    g_fileData.type === FileDataType.PDF &&
+    g_fileData.state === FileDataState.LOADED
+  ) {
+    g_mainWindow.webContents.send("refresh-pdf-page");
+  }
 }
 
 function setSinglePage() {}
