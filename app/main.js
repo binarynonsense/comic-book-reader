@@ -402,7 +402,7 @@ function openFile(filePath, pageIndex = 0) {
     if (pageIndex === undefined) pageIndex = 0; // just in case
   }
 
-  let fileExtension = path.extname(filePath);
+  let fileExtension = path.extname(filePath).toLowerCase();
   if (fileExtension === ".pdf") {
     g_fileData.state = FileDataState.LOADING;
     g_fileData.type = FileDataType.PDF;
