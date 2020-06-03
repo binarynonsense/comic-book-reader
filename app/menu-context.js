@@ -40,6 +40,25 @@ exports.buildContextMenu = function () {
       ],
     },
     {
+      label: "Rotate",
+      submenu: [
+        {
+          id: "rotate-clockwise",
+          label: "Clockwise",
+          click() {
+            mainProcess.onMenuRotateClockwise();
+          },
+        },
+        {
+          id: "rotation-counterclockwise",
+          label: "Counterclockwise",
+          click() {
+            mainProcess.onMenuRotateCounterclockwise();
+          },
+        },
+      ],
+    },
+    {
       type: "separator",
     },
     {

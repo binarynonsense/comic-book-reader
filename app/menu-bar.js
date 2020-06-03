@@ -19,7 +19,7 @@ exports.setToolBar = function (isChecked) {
   Menu.getApplicationMenu().getMenuItemById("toolbar").checked = isChecked;
 };
 
-exports.setRotation = function (value) {
+exports.setPageRotation = function (value) {
   Menu.getApplicationMenu().getMenuItemById("rotation-0").checked = value === 0;
   Menu.getApplicationMenu().getMenuItemById("rotation-90").checked =
     value === 90;

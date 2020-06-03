@@ -70,8 +70,8 @@ ipcRenderer.on("render-img", (event, img64, side) => {
   //webFrame.clearCache(); // don't know if this does anything, haven't tested, I'm afraid of memory leaks changing imgs
 });
 
-ipcRenderer.on("render-pdf-page", (event, pageIndex) => {
-  renderPdfPage(pageIndex);
+ipcRenderer.on("render-pdf-page", (event, pageIndex, rotation) => {
+  renderPdfPage(pageIndex, rotation);
 });
 
 ipcRenderer.on("refresh-pdf-page", (event, rotation) => {

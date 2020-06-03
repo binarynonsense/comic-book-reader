@@ -27,7 +27,6 @@ let g_settings = {
   date: "",
   fit_mode: 0, // 0: width, 1: height
   page_mode: 0, // 0: single-page, 1: double-page
-  page_rotation: 0, // 0 90 180 270
   maximize: false,
   width: 800,
   height: 600,
@@ -168,7 +167,7 @@ app.on("ready", () => {
     ) {
       g_mainWindow.webContents.send(
         "refresh-pdf-page",
-        g_settings.page_rotation
+        g_fileData.pageRotation
       );
     }
 
@@ -181,7 +180,7 @@ app.on("ready", () => {
 });
 
 function onResizeEventFinished() {
-  g_mainWindow.webContents.send("refresh-pdf-page", g_settings.page_rotation);
+  g_mainWindow.webContents.send("refresh-pdf-page", g_fileData.pageRotation);
 }
 
 // Security
@@ -256,10 +255,17 @@ ipcMain.on(
   (event, loadedCorrectly, filePath, pageIndex, imageIDs) => {
     //console.log("epub loaded, imageIDs: " + imageIDs);
     g_fileData.state = FileDataState.LOADED; // will change inmediately to loading
+    g_fileData.type = FileDataType.EPUB;
+    g_fileData.filePath = filePath;
+    g_fileData.fileName = path.basename(filePath);
+    g_fileData.imgsFolderPath = "";
     g_fileData.pagesPaths = imageIDs; // not really paths
     g_fileData.numPages = imageIDs.length;
+    g_fileData.pageIndex = pageIndex;
+    setPageRotation(0, false);
     goToPage(pageIndex);
     renderPageInfo();
+    renderTitle();
   }
 );
 
@@ -272,9 +278,19 @@ ipcMain.on(
   (event, loadedCorrectly, filePath, pageIndex, numPages) => {
     g_fileData.state = FileDataState.LOADED; // will change inmediately to loading
     // TODO double check loaded is the one loading?
+    // TODO change only if correct
+    g_fileData.type = FileDataType.PDF;
+    g_fileData.filePath = filePath;
+    g_fileData.fileName = path.basename(filePath);
+    g_fileData.imgsFolderPath = "";
+    g_fileData.pagesPaths = [];
+    g_fileData.numPages = 0;
+    g_fileData.pageIndex = pageIndex;
+    setPageRotation(0, false);
     g_fileData.numPages = numPages;
     goToPage(pageIndex);
     renderPageInfo();
+    renderTitle();
   }
 );
 
@@ -332,6 +348,12 @@ ipcMain.on("toolbar-button-clicked", (event, name) => {
       break;
     case "toolbar-button-open":
       onMenuOpenFile();
+      break;
+    case "toolbar-button-rotate-clockwise":
+      this.onMenuRotateClockwise();
+      break;
+    case "toolbar-button-rotate-counterclockwise":
+      this.onMenuRotateCounterclockwise();
       break;
   }
 });
@@ -392,7 +414,15 @@ exports.onMenuFitToHeight = function () {
 };
 
 exports.onMenuRotationValue = function (value) {
-  setRotation(value);
+  setPageRotation(value);
+};
+
+exports.onMenuRotateClockwise = onMenuRotateClockwise = function () {
+  setPageRotation(g_fileData.pageRotation + 90);
+};
+
+exports.onMenuRotateCounterclockwise = onMenuRotateCounterclockwise = function () {
+  setPageRotation(g_fileData.pageRotation - 90);
 };
 
 exports.onMenuToggleScrollBar = function () {
@@ -451,6 +481,7 @@ let g_fileData = {
   pagesPaths: [],
   numPages: 0,
   pageIndex: 0,
+  pageRotation: 0,
 };
 
 function openFile(filePath, pageIndex = 0) {
@@ -467,26 +498,10 @@ function openFile(filePath, pageIndex = 0) {
   let fileExtension = path.extname(filePath).toLowerCase();
   if (fileExtension === ".pdf") {
     g_fileData.state = FileDataState.LOADING;
-    g_fileData.type = FileDataType.PDF;
-    g_fileData.filePath = filePath;
-    g_fileData.fileName = path.basename(filePath);
-    g_fileData.imgsFolderPath = "";
-    g_fileData.pagesPaths = [];
-    g_fileData.numPages = 0;
-    g_fileData.pageIndex = pageIndex;
     g_mainWindow.webContents.send("load-pdf", filePath, pageIndex);
-    renderTitle();
   } else if (fileExtension === ".epub") {
     g_fileData.state = FileDataState.LOADING;
-    g_fileData.type = FileDataType.EPUB;
-    g_fileData.filePath = filePath;
-    g_fileData.fileName = path.basename(filePath);
-    g_fileData.imgsFolderPath = "";
-    g_fileData.pagesPaths = [];
-    g_fileData.numPages = 0;
-    g_fileData.pageIndex = pageIndex;
     g_mainWindow.webContents.send("load-epub", filePath, pageIndex);
-    // renderTitle();
   } else {
     let imgsFolderPath = undefined;
     if (fileExtension === ".cbr") {
@@ -501,6 +516,7 @@ function openFile(filePath, pageIndex = 0) {
         g_fileData.imgsFolderPath = "";
         g_fileData.numPages = pagesPaths.length;
         g_fileData.pageIndex = pageIndex;
+        setPageRotation(0, false);
         goToPage(pageIndex);
       }
     } else if (fileExtension === ".cbz") {
@@ -515,6 +531,7 @@ function openFile(filePath, pageIndex = 0) {
         g_fileData.imgsFolderPath = "";
         g_fileData.numPages = pagesPaths.length;
         g_fileData.pageIndex = pageIndex;
+        setPageRotation(0, false);
         goToPage(pageIndex);
       }
       return;
@@ -534,6 +551,7 @@ function openFile(filePath, pageIndex = 0) {
       g_fileData.imgsFolderPath = imgsFolderPath;
       g_fileData.numPages = pagesPaths.length;
       g_fileData.pageIndex = pageIndex;
+      setPageRotation(0, false);
       goToPage(pageIndex);
     }
   }
@@ -599,10 +617,11 @@ function renderRarEntry(rarPath, entryName) {
 function renderPdfPage(pageIndex) {
   renderTitle();
   g_fileData.state = FileDataState.LOADING;
+  console.log("renderPdfPage: " + g_fileData.pageRotation);
   g_mainWindow.webContents.send(
     "render-pdf-page",
     pageIndex,
-    g_settings.page_rotation
+    g_fileData.pageRotation
   );
 }
 
@@ -743,7 +762,7 @@ function setFitToWidth() {
     g_fileData.type === FileDataType.PDF &&
     g_fileData.state === FileDataState.LOADED
   ) {
-    g_mainWindow.webContents.send("refresh-pdf-page", g_settings.page_rotation);
+    g_mainWindow.webContents.send("refresh-pdf-page", g_fileData.pageRotation);
   }
 }
 
@@ -756,42 +775,27 @@ function setFitToHeight() {
     g_fileData.type === FileDataType.PDF &&
     g_fileData.state === FileDataState.LOADED
   ) {
-    g_mainWindow.webContents.send("refresh-pdf-page", g_settings.page_rotation);
+    g_mainWindow.webContents.send("refresh-pdf-page", g_fileData.pageRotation);
   }
 }
 
-function rotatePageDirection(direction) {
-  let value = g_settings.page_rotation;
-  value += direction === 0 ? -90 : 90;
-  if (value >= 360) value -= 360;
-  else if (value < 0) value += 360;
-  setRotation(value);
-}
-
-function setRotation(value) {
+function setPageRotation(value, refreshPage = true) {
   // if (g_fileData.state === FileDataState.LOADED) {
   // }
-  g_settings.page_rotation = value;
-  menuBar.setRotation(value);
+  if (value >= 360) value -= 360;
+  else if (value < 0) value += 360;
+  console.log("setPageRotation: " + value);
+  g_fileData.pageRotation = value;
+  menuBar.setPageRotation(value);
   g_mainWindow.webContents.send("update-menubar");
-  if (g_fileData.type === FileDataType.PDF) {
-    g_mainWindow.webContents.send("refresh-pdf-page", g_settings.page_rotation);
-  } else {
-    // TODO
+  if (refreshPage) {
+    if (g_fileData.type === FileDataType.PDF) {
+      g_mainWindow.webContents.send(
+        "refresh-pdf-page",
+        g_fileData.pageRotation
+      );
+    } else {
+      // TODO
+    }
   }
 }
-
-///////////////////////////////////////////////////////////////////////////////
-// GLOBAL SHORTCUTS ///////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-
-// let shortcut = "PageDown";
-// const ret = globalShortcut.register(shortcut, () => {
-//   console.log("page down");
-// });
-
-// if (!ret) {
-//   console.log("error adding global shortcut");
-// } else {
-//   console.log("global shortcut added: " + shortcut);
-// }
