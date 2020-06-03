@@ -302,7 +302,8 @@ document.onclick = function (event) {
   if (
     event.target.className === "page" ||
     event.target.id === "pdf-canvas" ||
-    event.target.id === "pages-container"
+    event.target.id === "pages-container" ||
+    event.target.className === "container-after-titlebar"
   ) {
     const mouseX = event.clientX;
     const bodyX = document.body.clientWidth;
@@ -314,17 +315,17 @@ document.onclick = function (event) {
   }
   //if (event.target.className !== "container-after-titlebar") return;
 };
+// mouse right click: document.oncontextmenu
 
-// TODO: context menu on right click
-// document.oncontextmenu = function (event) {
-//   if (
-//     event.target.className === "page" ||
-//     event.target.id === "pdf-canvas" ||
-//     event.target.id === "pages-container"
-//   ) {
-//     ipcRenderer.send("mouse-click", false);
-//   }
-// };
+document.ondragover = document.ondrop = (ev) => {
+  ev.preventDefault();
+};
+
+document.body.ondrop = (ev) => {
+  //console.log(ev.dataTransfer.files[0].path);
+  ipcRenderer.send("open-file", ev.dataTransfer.files[0].path);
+  ev.preventDefault();
+};
 
 ///////////////////////////////////////////////////////////////////////////////
 // TOOLBAR ////////////////////////////////////////////////////////////////////
