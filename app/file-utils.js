@@ -126,6 +126,17 @@ function hasImageExtension(filePath) {
   return false;
 }
 
+exports.hasCompatibleExtension = function (filePath) {
+  const allowedFileExtensions = [".cbz", ".cbr", ".pdf", ".epub"];
+  let fileExtension = path.extname(filePath).toLowerCase();
+  for (i = 0; i < allowedFileExtensions.length; i++) {
+    if (fileExtension === allowedFileExtensions[i]) {
+      return true;
+    }
+  }
+  return false;
+};
+
 const deleteTempFolderRecursive = function (folderPath) {
   //console.log("deleteFolderRecursive: " + folderPath);
   if (fs.existsSync(folderPath)) {

@@ -105,9 +105,24 @@ app.on("ready", () => {
       g_mainWindow.maximize();
     }
 
+    // if program called from os' 'open with' of file association
+    // TODO: if mac version implement on open-file event?
+    console.log(process.argv);
+    if (process.argv.length >= 2) {
+      let filePath = process.argv[1];
+      if (
+        fs.existsSync(filePath) &&
+        fileUtils.hasCompatibleExtension(filePath)
+      ) {
+        openFile(filePath, 0);
+        return;
+      }
+    }
+
     if (g_history.length > 0) {
       let entry = g_history[g_history.length - 1];
       openFile(entry.filePath, entry.pageIndex);
+      return;
     }
   });
 
