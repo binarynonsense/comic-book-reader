@@ -38,7 +38,7 @@ A comic book reader for cbz, cbr and pdf files.
 
 ## Build Notes
 
-zipfile, an optional dependency of the 'epub' module was giving me errors when builing the program so I had to remove 'epub' and reinstall it with: 'npm install epub --no-optional' to use the pure javascript version.
+zipfile, an optional dependency of the 'epub' module was giving me errors when builing the program so I had to remove 'epub' and reinstall it with 'npm install epub --no-optional' to use the pure javascript version.
 
 ## License
 
