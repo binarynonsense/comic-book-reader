@@ -19,6 +19,16 @@ exports.setToolBar = function (isChecked) {
   Menu.getApplicationMenu().getMenuItemById("toolbar").checked = isChecked;
 };
 
+exports.setRotation = function (value) {
+  Menu.getApplicationMenu().getMenuItemById("rotation-0").checked = value === 0;
+  Menu.getApplicationMenu().getMenuItemById("rotation-90").checked =
+    value === 90;
+  Menu.getApplicationMenu().getMenuItemById("rotation-180").checked =
+    value === 180;
+  Menu.getApplicationMenu().getMenuItemById("rotation-270").checked =
+    value === 270;
+};
+
 function buildApplicationMenu() {
   // ref: https://stackoverflow.com/questions/54105224/electron-modify-a-single-menu-item
   // Menu.getApplicationMenu().items // all the items
@@ -48,58 +58,63 @@ function buildApplicationMenu() {
       label: "View",
       submenu: [
         {
-          id: "fit-to-width",
-          label: "Fit to Width",
-          //type: "checkbox",
-          checked: true,
-          click() {
-            mainProcess.onMenuFitToWidth();
-          },
+          label: "Zoom",
+          submenu: [
+            {
+              id: "fit-to-width",
+              label: "Fit to Width",
+              checked: true,
+              click() {
+                mainProcess.onMenuFitToWidth();
+              },
+            },
+            {
+              id: "fit-to-height",
+              label: "Fit to Height",
+              checked: false,
+              click() {
+                mainProcess.onMenuFitToHeight();
+              },
+            },
+          ],
         },
         {
-          id: "fit-to-height",
-          label: "Fit to Height",
-          //type: "checkbox",
-          checked: false,
-          click() {
-            mainProcess.onMenuFitToHeight();
-          },
+          label: "Rotation",
+          submenu: [
+            {
+              id: "rotation-0",
+              label: "0º",
+              checked: true,
+              click() {
+                mainProcess.onMenuRotationValue(0);
+              },
+            },
+            {
+              id: "rotation-90",
+              label: "90º",
+              checked: false,
+              click() {
+                mainProcess.onMenuRotationValue(90);
+              },
+            },
+            {
+              id: "rotation-180",
+              label: "180º",
+              checked: false,
+              click() {
+                mainProcess.onMenuRotationValue(180);
+              },
+            },
+            {
+              id: "rotation-270",
+              label: "270º",
+              checked: false,
+              click() {
+                mainProcess.onMenuRotationValue(270);
+              },
+            },
+          ],
         },
-        // {
-        //   type: "separator",
-        // },
-        // {
-        //   id: "single-page",
-        //   label: "Single Page",
-        //   checked: true,
-        //   click() {
-        //     Menu.getApplicationMenu().getMenuItemById(
-        //       "single-page"
-        //     ).checked = true;
-        //     Menu.getApplicationMenu().getMenuItemById(
-        //       "double-page"
-        //     ).checked = false;
-        //     mainProcess.renderMenuBar();
-
-        //     mainProcess.setSinglePage();
-        //   },
-        // },
-        // {
-        //   id: "double-page",
-        //   label: "Double Page",
-        //   checked: false,
-        //   click() {
-        //     Menu.getApplicationMenu().getMenuItemById(
-        //       "single-page"
-        //     ).checked = false;
-        //     Menu.getApplicationMenu().getMenuItemById(
-        //       "double-page"
-        //     ).checked = true;
-        //     mainProcess.renderMenuBar();
-
-        //     mainProcess.setDoublePage();
-        //   },
-        // },
         {
           type: "separator",
         },

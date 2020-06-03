@@ -1,10 +1,10 @@
 const { ipcRenderer, remote } = require("electron");
+const { Menu } = remote;
 const customTitlebar = require("custom-electron-titlebar");
 const pdfjsLib = require("./assets/libs/pdfjs/build/pdf.js");
-const path = require("path");
 const EPub = require("epub");
 
-let titlebar = new customTitlebar.Titlebar({
+let g_titlebar = new customTitlebar.Titlebar({
   backgroundColor: customTitlebar.Color.fromHex("#818181"),
   itemBackgroundColor: customTitlebar.Color.fromHex("#bbb"),
   icon: "./assets/images/icon_256x256.png",
@@ -15,6 +15,10 @@ let titlebar = new customTitlebar.Titlebar({
 ///////////////////////////////////////////////////////////////////////////////
 // IPC RECEIVED ///////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
+
+ipcRenderer.on("update-menubar", (event, isVisible) => {
+  g_titlebar.updateMenu(Menu.getApplicationMenu());
+});
 
 ipcRenderer.on("set-scrollbar-visibility", (event, isVisible) => {
   showScrollBar(isVisible);
@@ -42,7 +46,7 @@ ipcRenderer.on("set-fit-to-height", (event) => {
 
 ipcRenderer.on("update-title", (event, title) => {
   document.title = title;
-  titlebar.updateTitle();
+  g_titlebar.updateTitle();
 });
 
 ipcRenderer.on("render-page-info", (event, pageNum, numPages) => {
@@ -66,15 +70,15 @@ ipcRenderer.on("render-img", (event, img64, side) => {
   //webFrame.clearCache(); // don't know if this does anything, haven't tested, I'm afraid of memory leaks changing imgs
 });
 
-ipcRenderer.on("render-pdf-page", (event, pageNum) => {
-  renderPdfPage(pageNum);
+ipcRenderer.on("render-pdf-page", (event, pageIndex) => {
+  renderPdfPage(pageIndex);
 });
 
-ipcRenderer.on("refresh-pdf-page", (event) => {
-  refreshPdfPage();
+ipcRenderer.on("refresh-pdf-page", (event, rotation) => {
+  refreshPdfPage(rotation);
 });
 
-ipcRenderer.on("load-pdf", (event, filePath, pageNum) => {
+ipcRenderer.on("load-pdf", (event, filePath, pageIndex) => {
   document.querySelector(".centered-block").style.display = "none";
 
   let container = document.getElementById("pages-container");
@@ -83,16 +87,16 @@ ipcRenderer.on("load-pdf", (event, filePath, pageNum) => {
   canvas.id = "pdf-canvas";
   container.appendChild(canvas);
 
-  loadPdf(filePath, pageNum);
+  loadPdf(filePath, pageIndex);
 });
 
 ipcRenderer.on("render-epub-image", (event, filePath, imageID) => {
   renderEpubImage(filePath, imageID);
 });
 
-ipcRenderer.on("load-epub", (event, filePath, pageNum) => {
+ipcRenderer.on("load-epub", (event, filePath, pageIndex) => {
   document.querySelector(".centered-block").style.display = "none";
-  loadEpub(filePath, pageNum);
+  loadEpub(filePath, pageIndex);
 });
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -187,48 +191,57 @@ function extractEpubImagesSrcRecursive(
 // PDF ////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-let currentPdf = null;
-let currentPdfPage = null;
+let g_currentPdf = null;
+let g_currentPdfPage = null;
+// TODO clean those up when closing file!
 
-function loadPdf(filePath, pageNum) {
+function loadPdf(filePath, pageIndex) {
   pdfjsLib.GlobalWorkerOptions.workerSrc =
     "./assets/libs/pdfjs/build/pdf.worker.js";
   var loadingTask = pdfjsLib.getDocument(filePath);
   loadingTask.promise.then(function (pdf) {
-    currentPdf = pdf;
-    ipcRenderer.send("pdf-loaded", true, filePath, currentPdf.numPages);
-    renderPdfPage(pageNum);
+    g_currentPdf = pdf;
+    ipcRenderer.send(
+      "pdf-loaded",
+      true,
+      filePath,
+      pageIndex,
+      g_currentPdf.numPages
+    );
   });
 }
 
-function renderPdfPage(pageNum) {
+function renderPdfPage(pageIndex, rotation) {
+  let pageNum = pageIndex + 1; // pdfjs counts from 1
   // ref: https://mozilla.github.io/pdf.js/examples/
-  currentPdf.getPage(pageNum).then(
+  g_currentPdf.getPage(pageNum).then(
     function (page) {
-      // var scale = 1.5;
-      // var viewport = page.getViewport({ scale: scale });
-      currentPdfPage = page;
+      g_currentPdfPage = page;
 
       var canvas = document.getElementById("pdf-canvas");
       var context = canvas.getContext("2d");
 
-      var desiredWidth = canvas.offsetWidth; //document.body.clientWidth;
-      var viewport = currentPdfPage.getViewport({ scale: 1 });
+      var desiredWidth = canvas.offsetWidth;
+      var viewport = g_currentPdfPage.getViewport({
+        scale: 1,
+        rotation,
+      });
       var scale = desiredWidth / viewport.width;
-      var scaledViewport = currentPdfPage.getViewport({ scale: scale });
+      var scaledViewport = g_currentPdfPage.getViewport({
+        scale: scale,
+        rotation,
+      });
 
-      canvas.height = scaledViewport.height; // viewport.height;
-      canvas.width = desiredWidth; //scaledViewport.width; // viewport.width;
+      canvas.height = scaledViewport.height;
+      canvas.width = desiredWidth;
 
       var renderContext = {
         canvasContext: context,
         viewport: scaledViewport,
       };
 
-      //currentPdfPage.render(renderContext);
-      let renderTask = currentPdfPage.render(renderContext);
+      let renderTask = g_currentPdfPage.render(renderContext);
       renderTask.promise.then(function () {
-        //console.log("Page rendered");
         ipcRenderer.send("pdf-page-loaded");
       });
 
@@ -241,12 +254,13 @@ function renderPdfPage(pageNum) {
   );
 }
 
-function refreshPdfPage() {
-  if (currentPdfPage === undefined) return;
+function refreshPdfPage(rotation) {
+  if (g_currentPdfPage === undefined) return;
   var desiredWidth = window.innerWidth;
-  var viewport = currentPdfPage.getViewport({ scale: 1 });
+
+  var viewport = g_currentPdfPage.getViewport({ scale: 1, rotation });
   var scale = desiredWidth / viewport.width;
-  var scaledViewport = currentPdfPage.getViewport({ scale: scale });
+  var scaledViewport = g_currentPdfPage.getViewport({ scale: scale, rotation });
 
   var canvas = document.getElementById("pdf-canvas");
   var context = canvas.getContext("2d");
@@ -257,7 +271,7 @@ function refreshPdfPage() {
     canvasContext: context,
     viewport: scaledViewport,
   };
-  currentPdfPage.render(renderContext);
+  g_currentPdfPage.render(renderContext);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

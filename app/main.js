@@ -9,7 +9,7 @@ const {
 const fs = require("fs");
 const path = require("path");
 const fileUtils = require("./file-utils");
-const barMenu = require("./menu-bar");
+const menuBar = require("./menu-bar");
 const contextMenu = require("./menu-context");
 
 function isDev() {
@@ -23,10 +23,11 @@ function isDev() {
 let g_mainWindow;
 let g_resizeEventCounter;
 let g_settings = {
-  version: app.getVersion(), // save format version
+  version: app.getVersion(),
   date: "",
   fit_mode: 0, // 0: width, 1: height
   page_mode: 0, // 0: single-page, 1: double-page
+  page_rotation: 0, // 0 90 180 270
   maximize: false,
   width: 800,
   height: 600,
@@ -37,6 +38,21 @@ let g_settings = {
 
 let g_history = [];
 let g_isLoaded = false;
+
+// TODO in case I decide to allow only one instance
+// ref: https://github.com/electron/electron/blob/master/docs/api/app.md#apprequestsingleinstancelock
+// const gotTheLock = app.requestSingleInstanceLock()
+// if (!gotTheLock) {
+//   app.quit()
+// } else {
+//   app.on('second-instance', (event, commandLine, workingDirectory) => {
+//     // Someone tried to run a second instance, we should focus our window.
+//     if (myWindow) {
+//       if (myWindow.isMinimized()) myWindow.restore()
+//       myWindow.focus()
+//     }
+//   })
+// }
 
 app.on("will-quit", () => {
   saveSettings();
@@ -63,7 +79,7 @@ app.on("ready", () => {
   });
 
   //mainWindow.removeMenu();
-  barMenu.buildApplicationMenu();
+  menuBar.buildApplicationMenu();
 
   // FIX: ugly hack: since I wait to show the window on did-finish-load, if I started it
   // unmaximized the resize controls did nothing until I maximized and unmaximized it... ?? :(
@@ -107,7 +123,6 @@ app.on("ready", () => {
 
     // if program called from os' 'open with' of file association
     // TODO: if mac version implement on open-file event?
-    console.log(process.argv);
     if (process.argv.length >= 2) {
       let filePath = process.argv[1];
       if (
@@ -151,7 +166,10 @@ app.on("ready", () => {
       g_fileData.type === FileDataType.PDF &&
       g_fileData.state === FileDataState.LOADED
     ) {
-      g_mainWindow.webContents.send("refresh-pdf-page");
+      g_mainWindow.webContents.send(
+        "refresh-pdf-page",
+        g_settings.page_rotation
+      );
     }
 
     g_settings.maximize = true;
@@ -163,7 +181,7 @@ app.on("ready", () => {
 });
 
 function onResizeEventFinished() {
-  g_mainWindow.webContents.send("refresh-pdf-page");
+  g_mainWindow.webContents.send("refresh-pdf-page", g_settings.page_rotation);
 }
 
 // Security
@@ -235,12 +253,12 @@ function saveHistory() {
 
 ipcMain.on(
   "epub-loaded",
-  (event, loadedCorrectly, filePath, pageNum, imageIDs) => {
+  (event, loadedCorrectly, filePath, pageIndex, imageIDs) => {
     //console.log("epub loaded, imageIDs: " + imageIDs);
-    g_fileData.state = FileDataState.LOADED;
+    g_fileData.state = FileDataState.LOADED; // will change inmediately to loading
     g_fileData.pagesPaths = imageIDs; // not really paths
     g_fileData.numPages = imageIDs.length;
-    goToPage(pageNum);
+    goToPage(pageIndex);
     renderPageInfo();
   }
 );
@@ -249,12 +267,16 @@ ipcMain.on("epub-page-loaded", (event) => {
   g_fileData.state = FileDataState.LOADED;
 });
 
-ipcMain.on("pdf-loaded", (event, loadedCorrectly, filePath, numPages) => {
-  g_fileData.state = FileDataState.LOADED;
-  // TODO double check loaded is the one loading?
-  g_fileData.numPages = numPages;
-  renderPageInfo();
-});
+ipcMain.on(
+  "pdf-loaded",
+  (event, loadedCorrectly, filePath, pageIndex, numPages) => {
+    g_fileData.state = FileDataState.LOADED; // will change inmediately to loading
+    // TODO double check loaded is the one loading?
+    g_fileData.numPages = numPages;
+    goToPage(pageIndex);
+    renderPageInfo();
+  }
+);
 
 ipcMain.on("pdf-page-loaded", (event) => {
   g_fileData.state = FileDataState.LOADED;
@@ -369,6 +391,10 @@ exports.onMenuFitToHeight = function () {
   setFitToHeight();
 };
 
+exports.onMenuRotationValue = function (value) {
+  setRotation(value);
+};
+
 exports.onMenuToggleScrollBar = function () {
   toggleScrollBar();
 };
@@ -448,7 +474,7 @@ function openFile(filePath, pageIndex = 0) {
     g_fileData.pagesPaths = [];
     g_fileData.numPages = 0;
     g_fileData.pageIndex = pageIndex;
-    g_mainWindow.webContents.send("load-pdf", filePath, pageIndex + 1); // pdf.j counts from 1
+    g_mainWindow.webContents.send("load-pdf", filePath, pageIndex);
     renderTitle();
   } else if (fileExtension === ".epub") {
     g_fileData.state = FileDataState.LOADING;
@@ -573,7 +599,11 @@ function renderRarEntry(rarPath, entryName) {
 function renderPdfPage(pageIndex) {
   renderTitle();
   g_fileData.state = FileDataState.LOADING;
-  g_mainWindow.webContents.send("render-pdf-page", pageIndex + 1); // pdf.j counts from 1
+  g_mainWindow.webContents.send(
+    "render-pdf-page",
+    pageIndex,
+    g_settings.page_rotation
+  );
 }
 
 /////////////////////////////////////////////////
@@ -655,7 +685,7 @@ function showScrollBar(isVisible) {
     "set-scrollbar-visibility",
     g_settings.showScrollBar
   );
-  barMenu.setScrollBar(isVisible);
+  menuBar.setScrollBar(isVisible);
 }
 
 function toggleScrollBar() {
@@ -668,7 +698,7 @@ function showToolBar(isVisible) {
     "set-toolbar-visibility",
     g_settings.showToolBar
   );
-  barMenu.setToolBar(isVisible);
+  menuBar.setToolBar(isVisible);
 }
 
 function toggleToolBar() {
@@ -706,31 +736,50 @@ function toggleDevTools() {
 
 function setFitToWidth() {
   g_settings.fit_mode = 0;
-  barMenu.setFitToWidth();
+  menuBar.setFitToWidth();
+  g_mainWindow.webContents.send("update-menubar");
   g_mainWindow.webContents.send("set-fit-to-width");
   if (
     g_fileData.type === FileDataType.PDF &&
     g_fileData.state === FileDataState.LOADED
   ) {
-    g_mainWindow.webContents.send("refresh-pdf-page");
+    g_mainWindow.webContents.send("refresh-pdf-page", g_settings.page_rotation);
   }
 }
 
 function setFitToHeight() {
   g_settings.fit_mode = 1;
-  barMenu.setFitToHeight();
+  menuBar.setFitToHeight();
+  g_mainWindow.webContents.send("update-menubar");
   g_mainWindow.webContents.send("set-fit-to-height");
   if (
     g_fileData.type === FileDataType.PDF &&
     g_fileData.state === FileDataState.LOADED
   ) {
-    g_mainWindow.webContents.send("refresh-pdf-page");
+    g_mainWindow.webContents.send("refresh-pdf-page", g_settings.page_rotation);
   }
 }
 
-function setSinglePage() {}
+function rotatePageDirection(direction) {
+  let value = g_settings.page_rotation;
+  value += direction === 0 ? -90 : 90;
+  if (value >= 360) value -= 360;
+  else if (value < 0) value += 360;
+  setRotation(value);
+}
 
-function setDoublePage() {}
+function setRotation(value) {
+  // if (g_fileData.state === FileDataState.LOADED) {
+  // }
+  g_settings.page_rotation = value;
+  menuBar.setRotation(value);
+  g_mainWindow.webContents.send("update-menubar");
+  if (g_fileData.type === FileDataType.PDF) {
+    g_mainWindow.webContents.send("refresh-pdf-page", g_settings.page_rotation);
+  } else {
+    // TODO
+  }
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // GLOBAL SHORTCUTS ///////////////////////////////////////////////////////////
