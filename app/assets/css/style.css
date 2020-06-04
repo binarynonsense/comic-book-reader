@@ -32,21 +32,11 @@ img {
 }
 
 .container-after-titlebar {
-  margin-bottom: 31px; /* was 26 */
+  margin-bottom: 26px; /*26px;31px; was 26 */
 }
 
-#page-canvas {
-  /* align vertically */
-  /* padding: 0;
-  margin: auto;
-  display: block;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  border: 0;*/
-}
+/* #page-canvas {
+} */
 
 /* #pdf-canvas {
   width: 100%;

@@ -631,8 +631,10 @@ function renderPdfPage(pageIndex) {
 }
 
 function renderPageRefresh() {
+  console.log("refreshpage");
   if (g_fileData.state === FileDataState.LOADED) {
     if (g_fileData.type === FileDataType.PDF) {
+      console.log("refreshpage PDF");
       g_mainWindow.webContents.send(
         "refresh-pdf-page",
         g_fileData.pageRotation

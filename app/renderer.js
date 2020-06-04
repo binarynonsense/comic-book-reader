@@ -21,6 +21,11 @@ let g_titlebar = new customTitlebar.Titlebar({
   titleHorizontalAlignment: "right",
 });
 
+function resetScrollBars() {
+  document.querySelector(".container-after-titlebar").scrollTop = 0;
+  document.querySelector(".container-after-titlebar").scrollLeft = 0;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // IPC RECEIVED ///////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -71,7 +76,7 @@ ipcRenderer.on("render-img-page", (event, img64, rotation) => {
   document.querySelector(".centered-block").style.display = "none";
   g_currentImg64 = img64;
   renderImg64(rotation);
-  document.querySelector(".container-after-titlebar").scrollTop = 0;
+  resetScrollBars();
 });
 
 ipcRenderer.on("refresh-img-page", (event, rotation) => {
@@ -81,13 +86,6 @@ ipcRenderer.on("refresh-img-page", (event, rotation) => {
 ipcRenderer.on("load-pdf", (event, filePath, pageIndex) => {
   cleanUp();
   document.querySelector(".centered-block").style.display = "none";
-
-  let container = document.getElementById("pages-container");
-  container.innerHTML = "";
-  var canvas = document.createElement("canvas");
-  canvas.id = "page-canvas";
-  container.appendChild(canvas);
-
   loadPdf(filePath, pageIndex);
 });
 
@@ -131,8 +129,8 @@ function renderImg64(rotation) {
       image.classList.add("set-rotate-180");
     }
   }
-  // I use a different method here, I prefer the look of images when resizing but can't make them rotate
-  // as I like, so I'll try canvas for these ones
+  // I use a different method here, I prefer the look of images in <img> when resizing but can't make them rotate
+  // as I like, so I'll try canvas for these rotations
   else if (rotation === 90 || rotation === 270) {
     var canvas = document.createElement("canvas");
     canvas.id = "page-canvas";
@@ -167,89 +165,6 @@ function renderImg64(rotation) {
     };
     image.src = g_currentImg64;
   }
-
-  // let element =
-  //   '<img class="set-rotate-0 page" src="' + g_currentImg64 + '" />';
-  // let container = document.getElementById("pages-container");
-  // container.innerHTML = element; // + element;
-  // //webFrame.clearCache(); // don't know if this does anything, haven't tested, I'm afraid of memory leaks changing imgs
-
-  // ALTERNATIVE: use a canvas (not working correctly)
-  // console.log("renderImg64");
-  // let container = document.getElementById("pages-container");
-  // container.innerHTML = "";
-  // var canvas = document.createElement("canvas");
-  // canvas.id = "page-canvas";
-  // container.appendChild(canvas);
-
-  // // var canvas = document.getElementById("page-canvas");
-  // var context = canvas.getContext("2d");
-  // var image = new Image();
-  // image.onload = function () {
-  //   //rotation = 90;
-  //   if (rotation === 0 || rotation === 180) {
-  //     // var desiredWidth = canvas.offsetWidth;
-  //     // var scale = desiredWidth / image.width;
-  //     // canvas.height = image.height * scale;
-  //     // canvas.width = desiredWidth;
-  //     // context.imageSmoothingEnabled = false;
-  //     // context.translate((image.width * scale) / 2, (image.height * scale) / 2);
-  //     // context.rotate((rotation * Math.PI) / 180);
-  //     // context.translate(
-  //     //   (-image.width * scale) / 2,
-  //     //   (-image.height * scale) / 2
-  //     // );
-  //     // context.scale(scale, scale);
-  //     // context.drawImage(image, 0, 0);
-
-  //     canvas.width = image.width;
-  //     canvas.height = image.height;
-
-  //     var parent = document.getElementById("pages-container");
-  //     // var desiredWidth = parent.offsetWidth; //canvas.offsetWidth;
-  //     // var scale = desiredWidth / image.width;
-  //     // desiredHeight = image.height * scale;
-
-  //     var desiredHeight = canvas.offsetHeight; //canvas.offsetWidth;
-  //     var scale = desiredHeight / image.height;
-  //     desiredWidth = image.height * scale;
-
-  //     canvas.style.width = desiredWidth + "px";
-  //     canvas.style.height = desiredHeight + "px";
-  //     context.imageSmoothingQuality = "high";
-  //     // context.translate(image.width / 2, image.height / 2);
-  //     // context.rotate((rotation * Math.PI) / 180);
-  //     // context.translate(-image.width / 2, -image.height / 2);
-
-  //     context.drawImage(image, 0, 0);
-  //   } else {
-  //     // var desiredWidth = canvas.offsetWidth;
-  //     // var scale = desiredWidth / image.width;
-  //     // canvas.height = desiredWidth;
-  //     // canvas.width = image.height * scale;
-  //     // context.translate(canvas.width / 2, canvas.height / 2);
-  //     // context.rotate((rotation * Math.PI) / 180);
-  //     // context.translate(-canvas.height / 2, -canvas.width / 2);
-  //     // context.scale(scale, scale);
-  //     // context.drawImage(image, 0, 0);
-
-  //     canvas.width = image.height;
-  //     canvas.height = image.width;
-
-  //     var desiredWidth = canvas.offsetWidth; //canvas.offsetWidth;
-  //     var scale = desiredWidth / canvas.width;
-  //     desiredHeight = canvas.height * scale;
-  //     canvas.style.width = desiredWidth + "px";
-  //     canvas.style.height = desiredHeight + "px";
-  //     context.imageSmoothingQuality = "high";
-  //     context.translate(canvas.width / 2, -canvas.height / 2);
-  //     context.rotate((rotation * Math.PI) / 180);
-  //     context.translate(-canvas.height / 2, -canvas.width / 2);
-
-  //     context.drawImage(image, 0, 0);
-  //   }
-  // };
-  // image.src = g_currentImg64;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -290,7 +205,7 @@ function renderEpubImage(filePath, imageID, rotation) {
       let data64 = Buffer.from(data).toString("base64");
       g_currentImg64 = "data:" + mimeType + ";base64," + data64;
       renderImg64(rotation);
-      document.querySelector(".container-after-titlebar").scrollTop = 0;
+      resetScrollBars();
       ipcRenderer.send("epub-page-loaded");
     });
   });
@@ -341,6 +256,11 @@ function extractEpubImagesSrcRecursive(
 ///////////////////////////////////////////////////////////////////////////////
 
 function loadPdf(filePath, pageIndex) {
+  // let container = document.getElementById("pages-container");
+  // container.innerHTML = "";
+  // var canvas = document.createElement("canvas");
+  // canvas.id = "page-canvas";
+  // container.appendChild(canvas);
   pdfjsLib.GlobalWorkerOptions.workerSrc =
     "./assets/libs/pdfjs/build/pdf.worker.js";
   var loadingTask = pdfjsLib.getDocument(filePath);
@@ -356,41 +276,19 @@ function loadPdf(filePath, pageIndex) {
   });
 }
 
+function refreshPdfPage(rotation) {
+  if (g_currentPdfPage === undefined) return;
+  renderCurrentPDFPage(rotation);
+}
+
 function renderPdfPage(pageIndex, rotation) {
   let pageNum = pageIndex + 1; // pdfjs counts from 1
   // ref: https://mozilla.github.io/pdf.js/examples/
   g_currentPdf.getPage(pageNum).then(
     function (page) {
       g_currentPdfPage = page;
-
-      var canvas = document.getElementById("page-canvas");
-      var context = canvas.getContext("2d");
-
-      var desiredWidth = canvas.offsetWidth;
-      var viewport = g_currentPdfPage.getViewport({
-        scale: 1,
-        rotation,
-      });
-      var scale = desiredWidth / viewport.width;
-      var scaledViewport = g_currentPdfPage.getViewport({
-        scale: scale,
-        rotation,
-      });
-
-      canvas.height = scaledViewport.height;
-      canvas.width = desiredWidth;
-
-      var renderContext = {
-        canvasContext: context,
-        viewport: scaledViewport,
-      };
-
-      let renderTask = g_currentPdfPage.render(renderContext);
-      renderTask.promise.then(function () {
-        ipcRenderer.send("pdf-page-loaded");
-      });
-
-      document.querySelector(".container-after-titlebar").scrollTop = 0;
+      renderCurrentPDFPage(rotation);
+      resetScrollBars();
     },
     function (reason) {
       // PDF loading error
@@ -399,59 +297,80 @@ function renderPdfPage(pageIndex, rotation) {
   );
 }
 
-function refreshPdfPage(rotation) {
-  if (g_currentPdfPage === undefined) return;
-  var desiredWidth = window.innerWidth;
-
-  var viewport = g_currentPdfPage.getViewport({ scale: 1, rotation });
-  var scale = desiredWidth / viewport.width;
-  var scaledViewport = g_currentPdfPage.getViewport({ scale: scale, rotation });
+function renderCurrentPDFPage(rotation) {
+  // I recreate the canvas every time to avoid some rendering issues when rotating (low res)
+  // there's probably a better way, but performance seems similar
+  let container = document.getElementById("pages-container");
+  container.innerHTML = "";
+  var canvas = document.createElement("canvas");
+  canvas.id = "page-canvas";
+  container.appendChild(canvas);
 
   var canvas = document.getElementById("page-canvas");
   var context = canvas.getContext("2d");
+
+  var desiredWidth = canvas.offsetWidth;
+  var viewport = g_currentPdfPage.getViewport({
+    scale: 1,
+    rotation,
+  });
+  var scale = desiredWidth / viewport.width;
+  var scaledViewport = g_currentPdfPage.getViewport({
+    scale: scale,
+    rotation,
+  });
+
   canvas.height = scaledViewport.height;
-  canvas.width = scaledViewport.width;
+  canvas.width = desiredWidth;
 
   var renderContext = {
     canvasContext: context,
     viewport: scaledViewport,
   };
-  g_currentPdfPage.render(renderContext);
+
+  let renderTask = g_currentPdfPage.render(renderContext);
+  renderTask.promise.then(function () {
+    ipcRenderer.send("pdf-page-loaded");
+  });
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 // EVENT LISTENERS ////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-document.onkeydown = function (evt) {
-  evt = evt || window.event;
+document.onkeydown = function (event) {
+  event = event || window.event;
   // ref: http://gcctech.org/csc/javascript/javascript_keycodes.htm
-  if (evt.keyCode == 34 || evt.keyCode == 39) {
+  if (event.keyCode == 34 || event.keyCode == 39) {
     // page down or arrow right
     ipcRenderer.send("mouse-click", true);
-  } else if (evt.keyCode == 33 || evt.keyCode == 37) {
+    event.stopPropagation();
+  } else if (event.keyCode == 33 || event.keyCode == 37) {
     // page up or arrow left
     ipcRenderer.send("mouse-click", false);
-  } else if (evt.keyCode == 36) {
+    event.stopPropagation();
+  } else if (event.keyCode == 36) {
     // home
     ipcRenderer.send("home-pressed");
-  } else if (evt.keyCode == 35) {
+  } else if (event.keyCode == 35) {
     // end
     ipcRenderer.send("end-pressed");
-  } else if (evt.keyCode == 40) {
+  } else if (event.keyCode == 40) {
     // arrow down
     let container = document.querySelector(".container-after-titlebar");
     let amount = container.offsetHeight / 5;
     container.scrollBy(0, amount);
-  } else if (evt.keyCode == 38) {
+    event.stopPropagation();
+  } else if (event.keyCode == 38) {
     // arrow up
     let container = document.querySelector(".container-after-titlebar");
     let amount = container.offsetHeight / 5;
     document.querySelector(".container-after-titlebar").scrollBy(0, -amount);
-  } else if (evt.keyCode == 27) {
+    event.stopPropagation();
+  } else if (event.keyCode == 27) {
     // escape
     ipcRenderer.send("escape-pressed");
-  } else if (evt.ctrlKey && evt.shiftKey && evt.keyCode == 73) {
+  } else if (event.ctrlKey && event.shiftKey && event.keyCode == 73) {
     // ctrl + shift + i
     ipcRenderer.send("dev-tools-pressed");
   }
