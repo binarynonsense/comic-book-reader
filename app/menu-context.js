@@ -79,15 +79,6 @@ exports.buildContextMenu = function () {
       },
     },
   ]);
-  //   contextMenu = new Menu();
-  //   contextMenu.append(
-  //     new MenuItem({
-  //       label: "Next Page",
-  //       click: function () {
-  //         //mainProcess.onMenuNextPage();
-  //       },
-  //     })
-  //   );
 };
 
 exports.getContextMenu = function () {

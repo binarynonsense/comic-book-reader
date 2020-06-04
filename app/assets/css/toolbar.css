@@ -18,6 +18,7 @@
   flex-wrap: nowrap;
   position: fixed;
   bottom: 0;
+  border: 0;
 }
 
 .toolbar-item {

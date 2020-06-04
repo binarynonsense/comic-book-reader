@@ -143,7 +143,6 @@ app.on("ready", () => {
   g_mainWindow.on("resize", function () {
     // if I don't use the isLoaded var the first mazimize @ start is recorded as normal resize !???
     if (g_isLoaded && g_mainWindow.isNormal()) {
-      // console.log(g_mainWindow.getSize());
       let width = g_mainWindow.getSize()[0];
       let height = g_mainWindow.getSize()[1];
       g_settings.width = width;
@@ -151,7 +150,7 @@ app.on("ready", () => {
     }
     renderTitle();
     if (
-      g_fileData.type === FileDataType.PDF &&
+      //g_fileData.type === FileDataType.PDF &&
       g_fileData.state === FileDataState.LOADED
     ) {
       // avoid too much pdf resizing
@@ -161,16 +160,7 @@ app.on("ready", () => {
   });
 
   g_mainWindow.on("maximize", function () {
-    if (
-      g_fileData.type === FileDataType.PDF &&
-      g_fileData.state === FileDataState.LOADED
-    ) {
-      g_mainWindow.webContents.send(
-        "refresh-pdf-page",
-        g_fileData.pageRotation
-      );
-    }
-
+    renderPageRefresh();
     g_settings.maximize = true;
   });
 
@@ -180,7 +170,7 @@ app.on("ready", () => {
 });
 
 function onResizeEventFinished() {
-  g_mainWindow.webContents.send("refresh-pdf-page", g_fileData.pageRotation);
+  renderPageRefresh();
 }
 
 // Security
@@ -253,7 +243,6 @@ function saveHistory() {
 ipcMain.on(
   "epub-loaded",
   (event, loadedCorrectly, filePath, pageIndex, imageIDs) => {
-    //console.log("epub loaded, imageIDs: " + imageIDs);
     g_fileData.state = FileDataState.LOADED; // will change inmediately to loading
     g_fileData.type = FileDataType.EPUB;
     g_fileData.filePath = filePath;
@@ -414,15 +403,15 @@ exports.onMenuFitToHeight = function () {
 };
 
 exports.onMenuRotationValue = function (value) {
-  setPageRotation(value);
+  setPageRotation(value, true);
 };
 
 exports.onMenuRotateClockwise = onMenuRotateClockwise = function () {
-  setPageRotation(g_fileData.pageRotation + 90);
+  setPageRotation(g_fileData.pageRotation + 90, true);
 };
 
 exports.onMenuRotateCounterclockwise = onMenuRotateCounterclockwise = function () {
-  setPageRotation(g_fileData.pageRotation - 90);
+  setPageRotation(g_fileData.pageRotation - 90, true);
 };
 
 exports.onMenuToggleScrollBar = function () {
@@ -579,19 +568,28 @@ function renderPageInfo() {
 function renderEpubImg(filePath, imageID) {
   renderTitle();
   g_fileData.state = FileDataState.LOADING;
-  g_mainWindow.webContents.send("render-epub-image", filePath, imageID);
+  g_mainWindow.webContents.send(
+    "render-epub-image",
+    filePath,
+    imageID,
+    g_fileData.pageRotation
+  );
 }
 
 function renderImageFile(filePath) {
   if (!path.isAbsolute(filePath)) {
-    // FIXME: mae it absolute somehow?
+    // FIXME: make it absolute somehow?
     return;
   }
   renderTitle();
   let data64 = fs.readFileSync(filePath).toString("base64");
   let img64 =
     "data:image/" + fileUtils.getMimeType(filePath) + ";base64," + data64;
-  g_mainWindow.webContents.send("render-img", img64, 0);
+  g_mainWindow.webContents.send(
+    "render-img-page",
+    img64,
+    g_fileData.pageRotation
+  );
 }
 
 function renderZipEntry(zipPath, entryName) {
@@ -601,7 +599,11 @@ function renderZipEntry(zipPath, entryName) {
     .toString("base64");
   let img64 =
     "data:image/" + fileUtils.getMimeType(entryName) + ";base64," + data64;
-  g_mainWindow.webContents.send("render-img", img64, 0);
+  g_mainWindow.webContents.send(
+    "render-img-page",
+    img64,
+    g_fileData.pageRotation
+  );
 }
 
 function renderRarEntry(rarPath, entryName) {
@@ -611,18 +613,45 @@ function renderRarEntry(rarPath, entryName) {
     .toString("base64");
   let img64 =
     "data:image/" + fileUtils.getMimeType(entryName) + ";base64," + data64;
-  g_mainWindow.webContents.send("render-img", img64, 0);
+  g_mainWindow.webContents.send(
+    "render-img-page",
+    img64,
+    g_fileData.pageRotation
+  );
 }
 
 function renderPdfPage(pageIndex) {
   renderTitle();
   g_fileData.state = FileDataState.LOADING;
-  console.log("renderPdfPage: " + g_fileData.pageRotation);
   g_mainWindow.webContents.send(
     "render-pdf-page",
     pageIndex,
     g_fileData.pageRotation
   );
+}
+
+function renderPageRefresh() {
+  if (g_fileData.state === FileDataState.LOADED) {
+    if (g_fileData.type === FileDataType.PDF) {
+      g_mainWindow.webContents.send(
+        "refresh-pdf-page",
+        g_fileData.pageRotation
+      );
+    } else if (
+      g_fileData.type === FileDataType.RAR ||
+      g_fileData.type === FileDataType.ZIP
+    ) {
+      g_mainWindow.webContents.send(
+        "refresh-img-page",
+        g_fileData.pageRotation
+      );
+    } else if (g_fileData.type === FileDataType.EPUB) {
+      g_mainWindow.webContents.send(
+        "refresh-epub-image",
+        g_fileData.pageRotation
+      );
+    }
+  }
 }
 
 /////////////////////////////////////////////////
@@ -758,12 +787,7 @@ function setFitToWidth() {
   menuBar.setFitToWidth();
   g_mainWindow.webContents.send("update-menubar");
   g_mainWindow.webContents.send("set-fit-to-width");
-  if (
-    g_fileData.type === FileDataType.PDF &&
-    g_fileData.state === FileDataState.LOADED
-  ) {
-    g_mainWindow.webContents.send("refresh-pdf-page", g_fileData.pageRotation);
-  }
+  renderPageRefresh();
 }
 
 function setFitToHeight() {
@@ -771,31 +795,18 @@ function setFitToHeight() {
   menuBar.setFitToHeight();
   g_mainWindow.webContents.send("update-menubar");
   g_mainWindow.webContents.send("set-fit-to-height");
-  if (
-    g_fileData.type === FileDataType.PDF &&
-    g_fileData.state === FileDataState.LOADED
-  ) {
-    g_mainWindow.webContents.send("refresh-pdf-page", g_fileData.pageRotation);
-  }
+  renderPageRefresh();
 }
 
-function setPageRotation(value, refreshPage = true) {
+function setPageRotation(value, refreshPage) {
   // if (g_fileData.state === FileDataState.LOADED) {
   // }
   if (value >= 360) value -= 360;
   else if (value < 0) value += 360;
-  console.log("setPageRotation: " + value);
   g_fileData.pageRotation = value;
   menuBar.setPageRotation(value);
   g_mainWindow.webContents.send("update-menubar");
   if (refreshPage) {
-    if (g_fileData.type === FileDataType.PDF) {
-      g_mainWindow.webContents.send(
-        "refresh-pdf-page",
-        g_fileData.pageRotation
-      );
-    } else {
-      // TODO
-    }
+    renderPageRefresh();
   }
 }

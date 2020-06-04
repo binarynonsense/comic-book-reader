@@ -4,13 +4,22 @@ const customTitlebar = require("custom-electron-titlebar");
 const pdfjsLib = require("./assets/libs/pdfjs/build/pdf.js");
 const EPub = require("epub");
 
+let g_currentPdf = null;
+let g_currentPdfPage = null;
+let g_currentImg64 = null;
+
+function cleanUp() {
+  g_currentPdf = null;
+  g_currentPdfPage = null;
+  g_currentImg64 = null;
+}
+
 let g_titlebar = new customTitlebar.Titlebar({
   backgroundColor: customTitlebar.Color.fromHex("#818181"),
   itemBackgroundColor: customTitlebar.Color.fromHex("#bbb"),
   icon: "./assets/images/icon_256x256.png",
   titleHorizontalAlignment: "right",
 });
-// titlebar.updateTitle();
 
 ///////////////////////////////////////////////////////////////////////////////
 // IPC RECEIVED ///////////////////////////////////////////////////////////////
@@ -57,17 +66,29 @@ ipcRenderer.on("render-page-info", (event, pageNum, numPages) => {
     pageNum + 1 + " / " + numPages;
 });
 
-ipcRenderer.on("render-img", (event, img64, side) => {
+ipcRenderer.on("render-img-page", (event, img64, rotation) => {
+  cleanUp();
+  document.querySelector(".centered-block").style.display = "none";
+  g_currentImg64 = img64;
+  renderImg64(rotation);
+  document.querySelector(".container-after-titlebar").scrollTop = 0;
+});
+
+ipcRenderer.on("refresh-img-page", (event, rotation) => {
+  renderImg64(rotation);
+});
+
+ipcRenderer.on("load-pdf", (event, filePath, pageIndex) => {
+  cleanUp();
   document.querySelector(".centered-block").style.display = "none";
 
-  //webFrame.clearCache();
-  let element = '<img class="page" src="' + img64 + '" />';
   let container = document.getElementById("pages-container");
-  container.innerHTML = element; // + element;
+  container.innerHTML = "";
+  var canvas = document.createElement("canvas");
+  canvas.id = "page-canvas";
+  container.appendChild(canvas);
 
-  // ref: https://www.w3schools.com/howto/howto_js_scroll_to_top.asp
-  document.querySelector(".container-after-titlebar").scrollTop = 0;
-  //webFrame.clearCache(); // don't know if this does anything, haven't tested, I'm afraid of memory leaks changing imgs
+  loadPdf(filePath, pageIndex);
 });
 
 ipcRenderer.on("render-pdf-page", (event, pageIndex, rotation) => {
@@ -78,59 +99,165 @@ ipcRenderer.on("refresh-pdf-page", (event, rotation) => {
   refreshPdfPage(rotation);
 });
 
-ipcRenderer.on("load-pdf", (event, filePath, pageIndex) => {
-  document.querySelector(".centered-block").style.display = "none";
-
-  let container = document.getElementById("pages-container");
-  container.innerHTML = "";
-  var canvas = document.createElement("canvas");
-  canvas.id = "pdf-canvas";
-  container.appendChild(canvas);
-
-  loadPdf(filePath, pageIndex);
-});
-
-ipcRenderer.on("render-epub-image", (event, filePath, imageID) => {
-  renderEpubImage(filePath, imageID);
-});
-
 ipcRenderer.on("load-epub", (event, filePath, pageIndex) => {
+  cleanUp();
   document.querySelector(".centered-block").style.display = "none";
   loadEpub(filePath, pageIndex);
 });
+
+ipcRenderer.on("render-epub-image", (event, filePath, imageID, rotation) => {
+  renderEpubImage(filePath, imageID, rotation);
+});
+
+ipcRenderer.on("refresh-epub-image", (event, rotation) => {
+  renderImg64(rotation);
+});
+
+///////////////////////////////////////////////////////////////////////////////
+// IMG64 //////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+function renderImg64(rotation) {
+  let container = document.getElementById("pages-container");
+  container.innerHTML = "";
+  if (rotation === 0 || rotation === 180) {
+    var image = new Image();
+    image.onload = function () {
+      container.appendChild(image);
+    };
+    image.src = g_currentImg64;
+    image.classList.add("page");
+    if (rotation === 180) {
+      image.classList.add("set-rotate-180");
+    }
+  }
+  // I use a different method here, I prefer the look of images when resizing but can't make them rotate
+  // as I like, so I'll try canvas for these ones
+  else if (rotation === 90 || rotation === 270) {
+    var canvas = document.createElement("canvas");
+    canvas.id = "page-canvas";
+    container.appendChild(canvas);
+    var context = canvas.getContext("2d");
+    var image = new Image();
+    image.onload = function () {
+      // ref: https://stackoverflow.com/questions/44076873/resize-image-and-rotate-canvas-90-degrees
+      canvas.width = image.height;
+      canvas.height = image.width;
+      if (rotation === 90) {
+        context.setTransform(
+          0, // hScale
+          1, // vSkew
+          -1, // hSkew
+          0, // vScale
+          image.height, // hTrans
+          0 // vTrans
+        );
+      } else if (rotation === 270) {
+        context.setTransform(
+          0, // hScale
+          -1, // vSkew
+          1, // hSkew
+          0, // vScale
+          0, // hTrans
+          image.width // vTrans
+        );
+      }
+      context.drawImage(image, 0, 0);
+      context.setTransform(1, 0, 0, 1, 0, 0); // restore default
+    };
+    image.src = g_currentImg64;
+  }
+
+  // let element =
+  //   '<img class="set-rotate-0 page" src="' + g_currentImg64 + '" />';
+  // let container = document.getElementById("pages-container");
+  // container.innerHTML = element; // + element;
+  // //webFrame.clearCache(); // don't know if this does anything, haven't tested, I'm afraid of memory leaks changing imgs
+
+  // ALTERNATIVE: use a canvas (not working correctly)
+  // console.log("renderImg64");
+  // let container = document.getElementById("pages-container");
+  // container.innerHTML = "";
+  // var canvas = document.createElement("canvas");
+  // canvas.id = "page-canvas";
+  // container.appendChild(canvas);
+
+  // // var canvas = document.getElementById("page-canvas");
+  // var context = canvas.getContext("2d");
+  // var image = new Image();
+  // image.onload = function () {
+  //   //rotation = 90;
+  //   if (rotation === 0 || rotation === 180) {
+  //     // var desiredWidth = canvas.offsetWidth;
+  //     // var scale = desiredWidth / image.width;
+  //     // canvas.height = image.height * scale;
+  //     // canvas.width = desiredWidth;
+  //     // context.imageSmoothingEnabled = false;
+  //     // context.translate((image.width * scale) / 2, (image.height * scale) / 2);
+  //     // context.rotate((rotation * Math.PI) / 180);
+  //     // context.translate(
+  //     //   (-image.width * scale) / 2,
+  //     //   (-image.height * scale) / 2
+  //     // );
+  //     // context.scale(scale, scale);
+  //     // context.drawImage(image, 0, 0);
+
+  //     canvas.width = image.width;
+  //     canvas.height = image.height;
+
+  //     var parent = document.getElementById("pages-container");
+  //     // var desiredWidth = parent.offsetWidth; //canvas.offsetWidth;
+  //     // var scale = desiredWidth / image.width;
+  //     // desiredHeight = image.height * scale;
+
+  //     var desiredHeight = canvas.offsetHeight; //canvas.offsetWidth;
+  //     var scale = desiredHeight / image.height;
+  //     desiredWidth = image.height * scale;
+
+  //     canvas.style.width = desiredWidth + "px";
+  //     canvas.style.height = desiredHeight + "px";
+  //     context.imageSmoothingQuality = "high";
+  //     // context.translate(image.width / 2, image.height / 2);
+  //     // context.rotate((rotation * Math.PI) / 180);
+  //     // context.translate(-image.width / 2, -image.height / 2);
+
+  //     context.drawImage(image, 0, 0);
+  //   } else {
+  //     // var desiredWidth = canvas.offsetWidth;
+  //     // var scale = desiredWidth / image.width;
+  //     // canvas.height = desiredWidth;
+  //     // canvas.width = image.height * scale;
+  //     // context.translate(canvas.width / 2, canvas.height / 2);
+  //     // context.rotate((rotation * Math.PI) / 180);
+  //     // context.translate(-canvas.height / 2, -canvas.width / 2);
+  //     // context.scale(scale, scale);
+  //     // context.drawImage(image, 0, 0);
+
+  //     canvas.width = image.height;
+  //     canvas.height = image.width;
+
+  //     var desiredWidth = canvas.offsetWidth; //canvas.offsetWidth;
+  //     var scale = desiredWidth / canvas.width;
+  //     desiredHeight = canvas.height * scale;
+  //     canvas.style.width = desiredWidth + "px";
+  //     canvas.style.height = desiredHeight + "px";
+  //     context.imageSmoothingQuality = "high";
+  //     context.translate(canvas.width / 2, -canvas.height / 2);
+  //     context.rotate((rotation * Math.PI) / 180);
+  //     context.translate(-canvas.height / 2, -canvas.width / 2);
+
+  //     context.drawImage(image, 0, 0);
+  //   }
+  // };
+  // image.src = g_currentImg64;
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // EPUB ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-function renderEpubImage(filePath, imageID) {
-  console.log("renderEpubImage: " + imageID + " from: " + filePath);
-  // Maybe I couldnot load it every time, keeping the epub object in memory, but this seems to work fine enough
-  const epub = new EPub(filePath);
-  epub.on("error", function (err) {
-    console.log("ERROR\n-----");
-    throw err;
-  });
-  epub.on("end", function (err) {
-    document.querySelector(".centered-block").style.display = "none";
-
-    epub.getImage(imageID, function (err, data, mimeType) {
-      // ref: https://stackoverflow.com/questions/54305759/how-to-encode-a-buffer-to-base64-in-nodejs
-      let data64 = Buffer.from(data).toString("base64");
-      let img64 = "data:" + mimeType + ";base64," + data64;
-      let element = '<img class="page" src="' + img64 + '" />';
-      let container = document.getElementById("pages-container");
-      container.innerHTML = element; // + element;
-      document.querySelector(".container-after-titlebar").scrollTop = 0;
-      ipcRenderer.send("epub-page-loaded");
-    });
-  });
-  epub.parse();
-}
-
 function loadEpub(filePath, pageNum) {
   // ref: https://github.com/julien-c/epub/blob/master/example/example.js
-  console.log("load epub: " + filePath);
   const epub = new EPub(filePath);
   epub.on("error", function (err) {
     console.log("ERROR\n-----");
@@ -145,6 +272,28 @@ function loadEpub(filePath, pageNum) {
     extractEpubImagesSrcRecursive(epub, 0, filePath, pageNum, []);
   });
 
+  epub.parse();
+}
+
+function renderEpubImage(filePath, imageID, rotation) {
+  // Maybe I couldnot load it every time, keeping the epub object in memory, but this seems to work fine enough
+  const epub = new EPub(filePath);
+  epub.on("error", function (err) {
+    console.log("ERROR\n-----");
+    throw err;
+  });
+  epub.on("end", function (err) {
+    document.querySelector(".centered-block").style.display = "none";
+
+    epub.getImage(imageID, function (err, data, mimeType) {
+      // ref: https://stackoverflow.com/questions/54305759/how-to-encode-a-buffer-to-base64-in-nodejs
+      let data64 = Buffer.from(data).toString("base64");
+      g_currentImg64 = "data:" + mimeType + ";base64," + data64;
+      renderImg64(rotation);
+      document.querySelector(".container-after-titlebar").scrollTop = 0;
+      ipcRenderer.send("epub-page-loaded");
+    });
+  });
   epub.parse();
 }
 
@@ -191,10 +340,6 @@ function extractEpubImagesSrcRecursive(
 // PDF ////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-let g_currentPdf = null;
-let g_currentPdfPage = null;
-// TODO clean those up when closing file!
-
 function loadPdf(filePath, pageIndex) {
   pdfjsLib.GlobalWorkerOptions.workerSrc =
     "./assets/libs/pdfjs/build/pdf.worker.js";
@@ -218,7 +363,7 @@ function renderPdfPage(pageIndex, rotation) {
     function (page) {
       g_currentPdfPage = page;
 
-      var canvas = document.getElementById("pdf-canvas");
+      var canvas = document.getElementById("page-canvas");
       var context = canvas.getContext("2d");
 
       var desiredWidth = canvas.offsetWidth;
@@ -262,10 +407,10 @@ function refreshPdfPage(rotation) {
   var scale = desiredWidth / viewport.width;
   var scaledViewport = g_currentPdfPage.getViewport({ scale: scale, rotation });
 
-  var canvas = document.getElementById("pdf-canvas");
+  var canvas = document.getElementById("page-canvas");
   var context = canvas.getContext("2d");
-  canvas.height = scaledViewport.height; // viewport.height;
-  canvas.width = scaledViewport.width; // viewport.width;
+  canvas.height = scaledViewport.height;
+  canvas.width = scaledViewport.width;
 
   var renderContext = {
     canvasContext: context,
@@ -314,10 +459,10 @@ document.onkeydown = function (evt) {
 
 document.onclick = function (event) {
   if (
-    event.target.className === "page" ||
-    event.target.id === "pdf-canvas" ||
+    event.target.classList.contains("page") ||
+    event.target.id === "page-canvas" ||
     event.target.id === "pages-container" ||
-    event.target.className === "container-after-titlebar"
+    event.target.classList.contains("container-after-titlebar")
   ) {
     const mouseX = event.clientX;
     const bodyX = document.body.clientWidth;
@@ -327,7 +472,6 @@ document.onclick = function (event) {
       ipcRenderer.send("mouse-click", false); // prev
     }
   }
-  //if (event.target.className !== "container-after-titlebar") return;
 };
 // mouse right click: document.oncontextmenu
 
@@ -336,7 +480,6 @@ document.ondragover = document.ondrop = (ev) => {
 };
 
 document.body.ondrop = (ev) => {
-  //console.log(ev.dataTransfer.files[0].path);
   ipcRenderer.send("open-file", ev.dataTransfer.files[0].path);
   ev.preventDefault();
 };

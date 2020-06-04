@@ -25,14 +25,27 @@ img {
 
 /* //////////////  ////////////// */
 
-#page-container {
+#pages-container {
   width: 100%;
   height: 100%;
   /*overflow-x: hidden; /* FIX this is a hack to hide h-scrollbar with pdfs sometimes*/
 }
 
 .container-after-titlebar {
-  margin-bottom: 26px;
+  margin-bottom: 31px; /* was 26 */
+}
+
+#page-canvas {
+  /* align vertically */
+  /* padding: 0;
+  margin: auto;
+  display: block;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  border: 0;*/
 }
 
 /* #pdf-canvas {
@@ -77,11 +90,31 @@ img {
   margin-bottom: 0px !important;
 }
 
+.set-rotate-0 {
+  transform: rotate(0deg);
+}
+
+.set-rotate-90 {
+  transform: rotate(90deg);
+  transform-origin: 0 0;
+  margin-left: 100%;
+}
+
+.set-rotate-180 {
+  transform: rotate(180deg);
+}
+
+.set-rotate-270 {
+  transform: rotate(270deg);
+  /* transform-origin: top right; */
+}
+
 /* //////////////  ////////////// */
 
 .titlebar {
   color: rgb(219, 219, 219) !important;
   font-weight: bold !important;
+  /* border-bottom: 1px solid rgb(63, 63, 63); */
 }
 
 /* .titlebar > * {
