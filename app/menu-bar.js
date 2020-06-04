@@ -116,6 +116,29 @@ function buildApplicationMenu() {
           ],
         },
         {
+          label: "Page",
+          submenu: [
+            {
+              label: "Go To First",
+              click() {
+                mainProcess.onGoToPageFirst();
+              },
+            },
+            {
+              label: "Go To Last",
+              click() {
+                mainProcess.onGoToPageLast();
+              },
+            },
+            {
+              label: "Go To...",
+              click() {
+                mainProcess.onGoToPageDialog();
+              },
+            },
+          ],
+        },
+        {
           type: "separator",
         },
         {

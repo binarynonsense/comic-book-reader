@@ -362,6 +362,15 @@ ipcMain.on("open-file", (event, filePath) => {
   openFile(filePath); // it checks if valid path
 });
 
+ipcMain.on("go-to-page", (event, value) => {
+  if (!isNaN(value)) {
+    pageIndex = value - 1;
+    if (pageIndex >= 0 && pageIndex < g_fileData.numPages) {
+      goToPage(pageIndex);
+    }
+  }
+});
+
 ///////////////////////////////////////////////////////////////////////////////
 // MENU MSGS //////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -431,15 +440,43 @@ exports.onMenuToggleDevTools = function () {
 };
 
 exports.onMenuAbout = function () {
-  dialog.showMessageBox(g_mainWindow, {
-    type: "info",
-    icon: path.join(__dirname, "assets/images/icon_256x256.png"),
-    title: "ACBR",
-    message:
-      "ACBR Comic Book Reader\nversion: " +
+  // dialog.showMessageBox(g_mainWindow, {
+  //   type: "info",
+  //   icon: path.join(__dirname, "assets/images/icon_256x256.png"),
+  //   title: "ACBR",
+  //   message:
+  //     "ACBR Comic Book Reader\nversion: " +
+  //     app.getVersion() +
+  //     "\n(c) Álvaro García\nwww.binarynonsense.com",
+  // });
+  g_mainWindow.webContents.send(
+    "show-modal-info",
+    "ACBR",
+    "ACBR Comic Book Reader\nversion: " +
       app.getVersion() +
-      "\n(c) Álvaro García\nwww.binarynonsense.com",
-  });
+      "\n(c) Álvaro García\nwww.binarynonsense.com"
+  );
+};
+
+exports.onGoToPageDialog = function () {
+  g_mainWindow.webContents.send("update-menubar");
+  let question = `Page Number (1-${g_fileData.numPages}):`;
+  //question = "Page Number:";
+  g_mainWindow.webContents.send(
+    "show-modal-prompt",
+    question,
+    "" + (g_fileData.pageIndex + 1)
+  );
+};
+
+exports.onGoToPageFirst = function () {
+  g_mainWindow.webContents.send("update-menubar");
+  goToPage(0);
+};
+
+exports.onGoToPageLast = function () {
+  g_mainWindow.webContents.send("update-menubar");
+  goToPage(g_fileData.numPages - 1);
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -631,10 +668,8 @@ function renderPdfPage(pageIndex) {
 }
 
 function renderPageRefresh() {
-  console.log("refreshpage");
   if (g_fileData.state === FileDataState.LOADED) {
     if (g_fileData.type === FileDataType.PDF) {
-      console.log("refreshpage PDF");
       g_mainWindow.webContents.send(
         "refresh-pdf-page",
         g_fileData.pageRotation

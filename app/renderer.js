@@ -111,6 +111,25 @@ ipcRenderer.on("refresh-epub-image", (event, rotation) => {
   renderImg64(rotation);
 });
 
+ipcRenderer.on("show-modal-prompt", (event, question, defaultValue) => {
+  //const smalltalk = require("./assets/libs/smalltalk/smalltalk.min.js");
+  smalltalk
+    .prompt(question, defaultValue)
+    .then((value) => {
+      // console.log(value);
+      ipcRenderer.send("go-to-page", value);
+    })
+    .catch(() => {
+      // console.log("cancel");
+    });
+});
+
+ipcRenderer.on("show-modal-info", (event, title, info) => {
+  smalltalk.alert(title, info).then(() => {
+    // console.log("ok");
+  });
+});
+
 ///////////////////////////////////////////////////////////////////////////////
 // IMG64 //////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -413,6 +432,8 @@ function addButtonEvent(buttonName) {
   });
 }
 
+addButtonEvent("toolbar-button-rotate-clockwise");
+addButtonEvent("toolbar-button-rotate-counterclockwise");
 addButtonEvent("toolbar-button-next");
 addButtonEvent("toolbar-button-prev");
 addButtonEvent("toolbar-button-fit-to-width");
