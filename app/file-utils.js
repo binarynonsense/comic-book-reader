@@ -263,32 +263,40 @@ function getRarEntriesList(filePath) {
 exports.getRarEntriesList = getRarEntriesList;
 
 function extractRarEntryData(rarPath, entryName) {
-  var buf = Uint8Array.from(fs.readFileSync(rarPath)).buffer;
-  var extractor = unrar.createExtractorFromData(buf);
-  var extracted = extractor.extractFiles([entryName]);
-  if (extracted[0].state === "SUCCESS") {
-    if (extracted[1].files[0].extract[0].state === "SUCCESS") {
-      // ref: https://stackoverflow.com/questions/54305759/how-to-encode-a-buffer-to-base64-in-nodejs
-      return Buffer.from(extracted[1].files[0].extract[1]);
+  try {
+    var buf = Uint8Array.from(fs.readFileSync(rarPath)).buffer;
+    var extractor = unrar.createExtractorFromData(buf);
+    var extracted = extractor.extractFiles([entryName]);
+    if (extracted[0].state === "SUCCESS") {
+      if (extracted[1].files[0].extract[0].state === "SUCCESS") {
+        // ref: https://stackoverflow.com/questions/54305759/how-to-encode-a-buffer-to-base64-in-nodejs
+        return Buffer.from(extracted[1].files[0].extract[1]);
+      }
     }
+    return undefined;
+  } catch (err) {
+    return undefined;
   }
-  return;
 }
 exports.extractRarEntryData = extractRarEntryData;
 
 function getZipEntriesList(filePath) {
-  let zip = new AdmZip(filePath);
-  let zipEntries = zip.getEntries();
-  let imgEntries = [];
-  zipEntries.forEach(function (zipEntry) {
-    if (!zipEntry.isDirectory) {
-      if (hasImageExtension(zipEntry.entryName)) {
-        imgEntries.push(zipEntry.entryName);
+  try {
+    let zip = new AdmZip(filePath);
+    let zipEntries = zip.getEntries();
+    let imgEntries = [];
+    zipEntries.forEach(function (zipEntry) {
+      if (!zipEntry.isDirectory) {
+        if (hasImageExtension(zipEntry.entryName)) {
+          imgEntries.push(zipEntry.entryName);
+        }
       }
-    }
-  });
-  imgEntries.sort();
-  return imgEntries;
+    });
+    imgEntries.sort();
+    return imgEntries;
+  } catch (err) {
+    return undefined;
+  }
 }
 exports.getZipEntriesList = getZipEntriesList;
 

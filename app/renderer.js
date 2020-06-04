@@ -71,6 +71,8 @@ ipcRenderer.on("render-page-info", (event, pageNum, numPages) => {
     pageNum + 1 + " / " + numPages;
 });
 
+///////////////////////////////////////////////////////////////////////////////
+
 ipcRenderer.on("render-img-page", (event, img64, rotation) => {
   cleanUp();
   document.querySelector(".centered-block").style.display = "none";
@@ -82,6 +84,8 @@ ipcRenderer.on("render-img-page", (event, img64, rotation) => {
 ipcRenderer.on("refresh-img-page", (event, rotation) => {
   renderImg64(rotation);
 });
+
+///////////////////////////////////////////////////////////////////////////////
 
 ipcRenderer.on("load-pdf", (event, filePath, pageIndex) => {
   cleanUp();
@@ -97,6 +101,8 @@ ipcRenderer.on("refresh-pdf-page", (event, rotation) => {
   refreshPdfPage(rotation);
 });
 
+///////////////////////////////////////////////////////////////////////////////
+
 ipcRenderer.on("load-epub", (event, filePath, pageIndex) => {
   cleanUp();
   document.querySelector(".centered-block").style.display = "none";
@@ -111,7 +117,21 @@ ipcRenderer.on("refresh-epub-image", (event, rotation) => {
   renderImg64(rotation);
 });
 
+///////////////////////////////////////////////////////////////////////////////
+
 ipcRenderer.on("show-modal-prompt", (event, question, defaultValue) => {
+  showModalPrompt(question, defaultValue);
+});
+
+ipcRenderer.on("show-modal-info", (event, title, message) => {
+  showModalAlert(title, message);
+});
+
+///////////////////////////////////////////////////////////////////////////////
+// MODALS /////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+function showModalPrompt(question, defaultValue) {
   //const smalltalk = require("./assets/libs/smalltalk/smalltalk.min.js");
   smalltalk
     .prompt(question, defaultValue)
@@ -122,13 +142,13 @@ ipcRenderer.on("show-modal-prompt", (event, question, defaultValue) => {
     .catch(() => {
       // console.log("cancel");
     });
-});
+}
 
-ipcRenderer.on("show-modal-info", (event, title, info) => {
-  smalltalk.alert(title, info).then(() => {
+function showModalAlert(title, message) {
+  smalltalk.alert(title, message).then(() => {
     // console.log("ok");
   });
-});
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // IMG64 //////////////////////////////////////////////////////////////////////
@@ -194,8 +214,8 @@ function loadEpub(filePath, pageNum) {
   // ref: https://github.com/julien-c/epub/blob/master/example/example.js
   const epub = new EPub(filePath);
   epub.on("error", function (err) {
-    console.log("ERROR\n-----");
-    throw err;
+    showModalAlert("File Error", "Couldn't open the EPUB file");
+    ipcRenderer.send("epub-load-failed");
   });
   epub.on("end", function (err) {
     // console.log(epub.metadata);
@@ -275,24 +295,24 @@ function extractEpubImagesSrcRecursive(
 ///////////////////////////////////////////////////////////////////////////////
 
 function loadPdf(filePath, pageIndex) {
-  // let container = document.getElementById("pages-container");
-  // container.innerHTML = "";
-  // var canvas = document.createElement("canvas");
-  // canvas.id = "page-canvas";
-  // container.appendChild(canvas);
   pdfjsLib.GlobalWorkerOptions.workerSrc =
     "./assets/libs/pdfjs/build/pdf.worker.js";
   var loadingTask = pdfjsLib.getDocument(filePath);
-  loadingTask.promise.then(function (pdf) {
-    g_currentPdf = pdf;
-    ipcRenderer.send(
-      "pdf-loaded",
-      true,
-      filePath,
-      pageIndex,
-      g_currentPdf.numPages
-    );
-  });
+  loadingTask.promise
+    .then(function (pdf) {
+      g_currentPdf = pdf;
+      ipcRenderer.send(
+        "pdf-loaded",
+        true,
+        filePath,
+        pageIndex,
+        g_currentPdf.numPages
+      );
+    })
+    .catch((e) => {
+      showModalAlert("File Error", "Couldn't open the PDF file");
+      ipcRenderer.send("pdf-load-failed");
+    });
 }
 
 function refreshPdfPage(rotation) {

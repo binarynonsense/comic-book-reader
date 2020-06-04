@@ -258,9 +258,15 @@ ipcMain.on(
   }
 );
 
+ipcMain.on("epub-load-failed", (event) => {
+  g_fileData.state = FileDataState.LOADED;
+});
+
 ipcMain.on("epub-page-loaded", (event) => {
   g_fileData.state = FileDataState.LOADED;
 });
+
+///////////////////////////////////////////////////////////////////////////////
 
 ipcMain.on(
   "pdf-loaded",
@@ -283,9 +289,15 @@ ipcMain.on(
   }
 );
 
+ipcMain.on("pdf-load-failed", (event) => {
+  g_fileData.state = FileDataState.LOADED;
+});
+
 ipcMain.on("pdf-page-loaded", (event) => {
   g_fileData.state = FileDataState.LOADED;
 });
+
+///////////////////////////////////////////////////////////////////////////////
 
 ipcMain.on("escape-pressed", (event) => {
   if (g_mainWindow.isFullScreen()) {
@@ -314,6 +326,8 @@ ipcMain.on("mouse-click", (event, arg) => {
     goToPreviousPage();
   }
 });
+
+///////////////////////////////////////////////////////////////////////////////
 
 ipcMain.on("toolbar-button-clicked", (event, name) => {
   switch (name) {
@@ -357,6 +371,8 @@ ipcMain.on("toolbar-slider-changed", (event, value) => {
   }
   renderPageInfo();
 });
+
+///////////////////////////////////////////////////////////////////////////////
 
 ipcMain.on("open-file", (event, filePath) => {
   openFile(filePath); // it checks if valid path
@@ -529,7 +545,7 @@ function openFile(filePath, pageIndex = 0) {
     g_fileData.state = FileDataState.LOADING;
     g_mainWindow.webContents.send("load-epub", filePath, pageIndex);
   } else {
-    let imgsFolderPath = undefined;
+    // let imgsFolderPath = undefined;
     if (fileExtension === ".cbr") {
       //imgsFolderPath = fileUtils.extractRar(filePath);
       let pagesPaths = fileUtils.getRarEntriesList(filePath);
@@ -544,6 +560,12 @@ function openFile(filePath, pageIndex = 0) {
         g_fileData.pageIndex = pageIndex;
         setPageRotation(0, false);
         goToPage(pageIndex);
+      } else {
+        g_mainWindow.webContents.send(
+          "show-modal-info",
+          "File Error",
+          "Couldn't open the CBR file"
+        );
       }
     } else if (fileExtension === ".cbz") {
       //imgsFolderPath = fileUtils.extractZip(filePath);
@@ -559,27 +581,36 @@ function openFile(filePath, pageIndex = 0) {
         g_fileData.pageIndex = pageIndex;
         setPageRotation(0, false);
         goToPage(pageIndex);
+      } else {
+        g_mainWindow.webContents.send(
+          "show-modal-info",
+          "File Error",
+          "Couldn't open the CBZ file"
+        );
       }
-      return;
     } else {
-      console.log("not a valid file");
+      g_mainWindow.webContents.send(
+        "show-modal-info",
+        "File Error",
+        "Not a valid file format"
+      );
       return;
     }
-    if (imgsFolderPath === undefined) return;
+    // if (imgsFolderPath === undefined) return;
 
-    let pagesPaths = fileUtils.getImageFilesInFolderRecursive(imgsFolderPath);
-    if (pagesPaths !== undefined && pagesPaths.length > 0) {
-      g_fileData.state = FileDataState.LOADED;
-      g_fileData.type = FileDataType.IMGS;
-      g_fileData.filePath = filePath;
-      g_fileData.fileName = path.basename(filePath);
-      g_fileData.pagesPaths = pagesPaths;
-      g_fileData.imgsFolderPath = imgsFolderPath;
-      g_fileData.numPages = pagesPaths.length;
-      g_fileData.pageIndex = pageIndex;
-      setPageRotation(0, false);
-      goToPage(pageIndex);
-    }
+    // let pagesPaths = fileUtils.getImageFilesInFolderRecursive(imgsFolderPath);
+    // if (pagesPaths !== undefined && pagesPaths.length > 0) {
+    //   g_fileData.state = FileDataState.LOADED;
+    //   g_fileData.type = FileDataType.IMGS;
+    //   g_fileData.filePath = filePath;
+    //   g_fileData.fileName = path.basename(filePath);
+    //   g_fileData.pagesPaths = pagesPaths;
+    //   g_fileData.imgsFolderPath = imgsFolderPath;
+    //   g_fileData.numPages = pagesPaths.length;
+    //   g_fileData.pageIndex = pageIndex;
+    //   setPageRotation(0, false);
+    //   goToPage(pageIndex);
+    // }
   }
 }
 exports.openFile = openFile;
