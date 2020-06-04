@@ -41,6 +41,10 @@ img {
 
 /* //////////////  ////////////// */
 
+.set-rotate-180 {
+  transform: rotate(180deg);
+}
+
 .set-fit-to-height {
   height: 100% !important;
 }
