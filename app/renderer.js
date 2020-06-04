@@ -88,7 +88,6 @@ ipcRenderer.on("refresh-img-page", (event, rotation) => {
 ///////////////////////////////////////////////////////////////////////////////
 
 ipcRenderer.on("load-pdf", (event, filePath, pageIndex) => {
-  cleanUp();
   document.querySelector(".centered-block").style.display = "none";
   loadPdf(filePath, pageIndex);
 });
@@ -104,7 +103,6 @@ ipcRenderer.on("refresh-pdf-page", (event, rotation) => {
 ///////////////////////////////////////////////////////////////////////////////
 
 ipcRenderer.on("load-epub", (event, filePath, pageIndex) => {
-  cleanUp();
   document.querySelector(".centered-block").style.display = "none";
   loadEpub(filePath, pageIndex);
 });
@@ -300,6 +298,7 @@ function loadPdf(filePath, pageIndex) {
   var loadingTask = pdfjsLib.getDocument(filePath);
   loadingTask.promise
     .then(function (pdf) {
+      cleanUp();
       g_currentPdf = pdf;
       ipcRenderer.send(
         "pdf-loaded",
