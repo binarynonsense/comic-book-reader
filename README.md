@@ -1,6 +1,6 @@
 # ACBR - Comic Book Reader
 
-A comic book reader for cbz, cbr and pdf files.
+A comic book reader for cbz, cbr, epub and pdf files.
 
 ![screenshots](./screenshots.jpg)
 
