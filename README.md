@@ -15,7 +15,10 @@ A comic book reader for cbz, cbr, epub and pdf files.
 - Windowed (simple UI) and full-screen (no UI) modes.
 - 'Fit to width' and 'fit to height' views.
 - Page rotation.
-- If available, it automatically restores the previous session's opened book and page, and remembers the last 10 books' page positions.
+- UI available in:
+  - English
+  - Spanish
+- Automatically restores the previous session's last opened book and page, and remembers the last 10 books' page positions.
 
 ## Controls:
 
@@ -35,8 +38,8 @@ A comic book reader for cbz, cbr, epub and pdf files.
 
 ## Downloads
 
-- [Linux](https://github.com/binarynonsense/comic-book-reader/releases/download/v1.1.0/ACBR_Linux.zip)
-- [Windows](https://github.com/binarynonsense/comic-book-reader/releases/download/v1.1.0/ACBR_Windows.zip)
+- [Linux](https://github.com/binarynonsense/comic-book-reader/releases/download/v1.1.1/ACBR_Linux.zip)
+- [Windows](https://github.com/binarynonsense/comic-book-reader/releases/download/v1.1.1/ACBR_Windows.zip)
 
 ## Build Notes
 
