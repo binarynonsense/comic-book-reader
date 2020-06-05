@@ -34,6 +34,43 @@ ipcRenderer.on("update-menubar", (event, isVisible) => {
   g_titlebar.updateMenu(Menu.getApplicationMenu());
 });
 
+ipcRenderer.on(
+  "update-toolbar-tooltips",
+  (
+    event,
+    tOpenFile,
+    tPrevious,
+    tNext,
+    tFitWidth,
+    tFitHeight,
+    tRotateCounter,
+    tRotateClock,
+    tFullScreen
+  ) => {
+    document.querySelector("#toolbar-button-open-href").title = tOpenFile;
+    document.querySelector("#toolbar-button-prev-href").title = tPrevious;
+    document.querySelector("#toolbar-button-next-href").title = tNext;
+    document.querySelector(
+      "#toolbar-button-fit-to-height-href"
+    ).title = tFitHeight;
+    document.querySelector(
+      "#toolbar-button-fit-to-width-href"
+    ).title = tFitWidth;
+    document.querySelector(
+      "#toolbar-button-rotate-counterclockwise-href"
+    ).title = tRotateCounter;
+    document.querySelector(
+      "#toolbar-button-rotate-clockwise-href"
+    ).title = tRotateClock;
+    document.querySelector(
+      "#toolbar-button-fullscreen-enter-href"
+    ).title = tFullScreen;
+    document.querySelector(
+      "#toolbar-button-fullscreen-exit-href"
+    ).title = tFullScreen;
+  }
+);
+
 ipcRenderer.on("set-scrollbar-visibility", (event, isVisible) => {
   showScrollBar(isVisible);
 });
@@ -212,7 +249,6 @@ function loadEpub(filePath, pageNum) {
   // ref: https://github.com/julien-c/epub/blob/master/example/example.js
   const epub = new EPub(filePath);
   epub.on("error", function (err) {
-    showModalAlert("File Error", "Couldn't open the EPUB file");
     ipcRenderer.send("epub-load-failed");
   });
   epub.on("end", function (err) {
@@ -309,7 +345,6 @@ function loadPdf(filePath, pageIndex) {
       );
     })
     .catch((e) => {
-      showModalAlert("File Error", "Couldn't open the PDF file");
       ipcRenderer.send("pdf-load-failed");
     });
 }

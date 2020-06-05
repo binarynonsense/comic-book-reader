@@ -1,6 +1,10 @@
 const { app, Menu } = require("electron");
 const mainProcess = require("./main");
 
+function _(...args) {
+  return mainProcess.i18n_.apply(null, args);
+}
+
 exports.setFitToWidth = function () {
   Menu.getApplicationMenu().getMenuItemById("fit-to-width").checked = true;
   Menu.getApplicationMenu().getMenuItemById("fit-to-height").checked = false;
@@ -29,24 +33,53 @@ exports.setPageRotation = function (value) {
     value === 270;
 };
 
-function buildApplicationMenu() {
+exports.setLangiage = function (locale) {
+  Menu.getApplicationMenu().getMenuItemById("language").checked = isChecked;
+};
+
+function buildApplicationMenu(activeLocale, languages) {
   // ref: https://stackoverflow.com/questions/54105224/electron-modify-a-single-menu-item
   // Menu.getApplicationMenu().items // all the items
   // Menu.getApplicationMenu().getMenuItemById('MENU_ITEM_ID') // get a single item by its id
+  // ref: https://github.com/electron/electron/issues/2717 (push items)
+
+  let languagesSubmenu = [];
+
+  if (languages !== undefined) {
+    for (let language of languages) {
+      languagesSubmenu.push({
+        label: language.nativeName,
+        checked: language.locale === activeLocale,
+        click() {
+          mainProcess.onMenuChangeLanguage(language.locale);
+        },
+      });
+    }
+  } else {
+    languagesSubmenu = [
+      {
+        label: "English",
+        checked: true,
+        click() {
+          mainProcess.onMenuChangeLanguage("en");
+        },
+      },
+    ];
+  }
 
   const menuConfig = Menu.buildFromTemplate([
     {
-      label: "File",
+      label: _("File"),
       submenu: [
         {
-          label: "Open File...",
+          label: _("Open File..."),
           accelerator: "CommandOrControl+O",
           click() {
             mainProcess.onMenuOpenFile();
           },
         },
         {
-          label: "Quit",
+          label: _("Quit"),
           accelerator: "CommandOrControl+Q",
           click() {
             app.quit();
@@ -55,14 +88,14 @@ function buildApplicationMenu() {
       ],
     },
     {
-      label: "View",
+      label: _("View"),
       submenu: [
         {
-          label: "Zoom",
+          label: _("Zoom"),
           submenu: [
             {
               id: "fit-to-width",
-              label: "Fit to Width",
+              label: _("Fit to Width"),
               checked: true,
               click() {
                 mainProcess.onMenuFitToWidth();
@@ -70,7 +103,7 @@ function buildApplicationMenu() {
             },
             {
               id: "fit-to-height",
-              label: "Fit to Height",
+              label: _("Fit to Height"),
               checked: false,
               click() {
                 mainProcess.onMenuFitToHeight();
@@ -79,7 +112,7 @@ function buildApplicationMenu() {
           ],
         },
         {
-          label: "Rotation",
+          label: _("Rotation"),
           submenu: [
             {
               id: "rotation-0",
@@ -116,22 +149,22 @@ function buildApplicationMenu() {
           ],
         },
         {
-          label: "Page",
+          label: _("Page"),
           submenu: [
             {
-              label: "Go To First",
+              label: _("Go to First"),
               click() {
                 mainProcess.onGoToPageFirst();
               },
             },
             {
-              label: "Go To Last",
+              label: _("Go to Last"),
               click() {
                 mainProcess.onGoToPageLast();
               },
             },
             {
-              label: "Go To...",
+              label: _("Go to..."),
               click() {
                 mainProcess.onGoToPageDialog();
               },
@@ -142,7 +175,7 @@ function buildApplicationMenu() {
           type: "separator",
         },
         {
-          label: "Toggle Full Screen",
+          label: _("Toggle Full Screen"),
           accelerator: "F11",
           click() {
             mainProcess.onMenuToggleFullScreen();
@@ -151,10 +184,10 @@ function buildApplicationMenu() {
       ],
     },
     {
-      label: "Settings",
+      label: _("Settings"),
       submenu: [
         {
-          label: "Scroll Bar",
+          label: _("Scroll Bar"),
           id: "scrollbar",
           checked: true,
           accelerator: "CommandOrControl+B",
@@ -163,7 +196,7 @@ function buildApplicationMenu() {
           },
         },
         {
-          label: "Tool Bar",
+          label: _("Tool Bar"),
           id: "toolbar",
           checked: true,
           accelerator: "CommandOrControl+T",
@@ -171,13 +204,17 @@ function buildApplicationMenu() {
             mainProcess.onMenuToggleToolBar();
           },
         },
+        {
+          label: _("Languages"),
+          submenu: languagesSubmenu,
+        },
       ],
     },
     {
-      label: "Help",
+      label: _("Help"),
       submenu: [
         {
-          label: "About",
+          label: _("About"),
           click() {
             mainProcess.onMenuAbout();
           },

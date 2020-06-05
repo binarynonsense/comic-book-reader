@@ -3,16 +3,20 @@ const mainProcess = require("./main");
 
 let contextMenu;
 
+function _(...args) {
+  return mainProcess.i18n_.apply(null, args);
+}
+
 exports.buildContextMenu = function () {
   contextMenu = Menu.buildFromTemplate([
     {
-      label: "Next Page",
+      label: _("Next Page"),
       click() {
         mainProcess.onMenuNextPage();
       },
     },
     {
-      label: "Previous Page",
+      label: _("Previous Page"),
       click() {
         mainProcess.onMenuPreviousPage();
       },
@@ -21,18 +25,18 @@ exports.buildContextMenu = function () {
       type: "separator",
     },
     {
-      label: "Zoom",
+      label: _("Zoom"),
       submenu: [
         {
           id: "fit-to-width",
-          label: "Fit to Width",
+          label: _("Fit to Width"),
           click() {
             mainProcess.onMenuFitToWidth();
           },
         },
         {
           id: "fit-to-height",
-          label: "Fit to Height",
+          label: _("Fit to Height"),
           click() {
             mainProcess.onMenuFitToHeight();
           },
@@ -40,18 +44,18 @@ exports.buildContextMenu = function () {
       ],
     },
     {
-      label: "Rotate",
+      label: _("Rotate"),
       submenu: [
         {
           id: "rotate-clockwise",
-          label: "Clockwise",
+          label: _("Clockwise"),
           click() {
             mainProcess.onMenuRotateClockwise();
           },
         },
         {
           id: "rotation-counterclockwise",
-          label: "Counterclockwise",
+          label: _("Counterclockwise"),
           click() {
             mainProcess.onMenuRotateCounterclockwise();
           },
@@ -59,22 +63,22 @@ exports.buildContextMenu = function () {
       ],
     },
     {
-      label: "Page",
+      label: _("Page"),
       submenu: [
         {
-          label: "Go To First",
+          label: _("Go to First"),
           click() {
             mainProcess.onGoToPageFirst();
           },
         },
         {
-          label: "Go To Last",
+          label: _("Go to Last"),
           click() {
             mainProcess.onGoToPageLast();
           },
         },
         {
-          label: "Go To...",
+          label: _("Go to..."),
           click() {
             mainProcess.onGoToPageDialog();
           },
@@ -85,7 +89,7 @@ exports.buildContextMenu = function () {
       type: "separator",
     },
     {
-      label: "Open File...",
+      label: _("Open File..."),
       accelerator: "CommandOrControl+O",
       click() {
         mainProcess.onMenuOpenFile();
@@ -95,7 +99,7 @@ exports.buildContextMenu = function () {
       type: "separator",
     },
     {
-      label: "Toggle Full Screen",
+      label: _("Toggle Full Screen"),
       accelerator: "F11",
       click() {
         mainProcess.onMenuToggleFullScreen();

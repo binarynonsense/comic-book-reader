@@ -9,6 +9,7 @@ const {
 const fs = require("fs");
 const path = require("path");
 const fileUtils = require("./file-utils");
+const i18n = require("./i18n");
 const menuBar = require("./menu-bar");
 const contextMenu = require("./menu-context");
 
@@ -33,10 +34,15 @@ let g_settings = {
   showMenuBar: true,
   showToolBar: true,
   showScrollBar: true,
+  locale: undefined,
 };
 
 let g_history = [];
 let g_isLoaded = false;
+
+///////////////////////////////////////////////////////////////////////////////
+// APP ////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 // TODO in case I decide to allow only one instance
 // ref: https://github.com/electron/electron/blob/master/docs/api/app.md#apprequestsingleinstancelock
@@ -78,7 +84,7 @@ app.on("ready", () => {
   });
 
   //mainWindow.removeMenu();
-  menuBar.buildApplicationMenu();
+  // menuBar.buildApplicationMenu();
 
   // FIX: ugly hack: since I wait to show the window on did-finish-load, if I started it
   // unmaximized the resize controls did nothing until I maximized and unmaximized it... ?? :(
@@ -99,11 +105,20 @@ app.on("ready", () => {
 
   g_mainWindow.webContents.on("did-finish-load", function () {
     g_isLoaded = true;
-    // if I put the things below inside ready-to-show they aren't called
-    renderTitle();
 
     g_settings = fileUtils.loadSettings(g_settings);
     g_history = fileUtils.loadHistory();
+
+    if (g_settings.locale === undefined) {
+      i18n.loadLocale(app.getLocale());
+    } else {
+      i18n.loadLocale(g_settings.locale);
+    }
+
+    rebuildTranslatedTexts(); // this also creates the menu bar
+
+    // if I put the things below inside ready-to-show they aren't called
+    renderTitle();
 
     if (g_settings.fit_mode === 0) {
       setFitToWidth();
@@ -195,6 +210,34 @@ app.on("web-contents-created", (event, contents) => {
 });
 
 ///////////////////////////////////////////////////////////////////////////////
+// I18N ///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+function rebuildTranslatedTexts() {
+  menuBar.buildApplicationMenu(
+    i18n.getLoadedLocal(),
+    i18n.getAvailableLocales()
+  );
+  g_mainWindow.webContents.send("update-menubar");
+  g_mainWindow.webContents.send(
+    "update-toolbar-tooltips",
+    _("Open File..."),
+    _("Previous Page"),
+    _("Next Page"),
+    _("Fit to Width"),
+    _("Fit to Height"),
+    _("Rotate Counterclockwise"),
+    _("Rotate Clockwise"),
+    _("Toggle Full Screen")
+  );
+}
+
+function _(...args) {
+  return i18n._.apply(null, args);
+}
+exports.i18n_ = _;
+
+///////////////////////////////////////////////////////////////////////////////
 // SETTINGS / HISTORY /////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -260,6 +303,11 @@ ipcMain.on(
 
 ipcMain.on("epub-load-failed", (event) => {
   g_fileData.state = FileDataState.LOADED;
+  g_mainWindow.webContents.send(
+    "show-modal-info",
+    _("File Error"),
+    _("Couldn't open the EPUB file")
+  );
 });
 
 ipcMain.on("epub-page-loaded", (event) => {
@@ -291,6 +339,11 @@ ipcMain.on(
 
 ipcMain.on("pdf-load-failed", (event) => {
   g_fileData.state = FileDataState.LOADED;
+  g_mainWindow.webContents.send(
+    "show-modal-info",
+    _("File Error"),
+    _("Couldn't open the PDF file")
+  );
 });
 
 ipcMain.on("pdf-page-loaded", (event) => {
@@ -391,6 +444,19 @@ ipcMain.on("go-to-page", (event, value) => {
 // MENU MSGS //////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+exports.onMenuChangeLanguage = function (locale) {
+  if (locale === i18n.getLoadedLocal())
+    g_mainWindow.webContents.send("update-menubar");
+  else {
+    if (i18n.loadLocale(locale, false)) {
+      g_settings.locale = locale;
+      rebuildTranslatedTexts();
+    } else {
+      g_mainWindow.webContents.send("update-menubar");
+    }
+  }
+};
+
 exports.onMenuNextPage = function () {
   goToNextPage();
 };
@@ -456,19 +522,12 @@ exports.onMenuToggleDevTools = function () {
 };
 
 exports.onMenuAbout = function () {
-  // dialog.showMessageBox(g_mainWindow, {
-  //   type: "info",
-  //   icon: path.join(__dirname, "assets/images/icon_256x256.png"),
-  //   title: "ACBR",
-  //   message:
-  //     "ACBR Comic Book Reader\nversion: " +
-  //     app.getVersion() +
-  //     "\n(c) Álvaro García\nwww.binarynonsense.com",
-  // });
   g_mainWindow.webContents.send(
     "show-modal-info",
     "ACBR",
-    "ACBR Comic Book Reader\nversion: " +
+    "ACBR Comic Book Reader\n" +
+      _("version") +
+      ": " +
       app.getVersion() +
       "\n(c) Álvaro García\nwww.binarynonsense.com"
   );
@@ -476,8 +535,7 @@ exports.onMenuAbout = function () {
 
 exports.onGoToPageDialog = function () {
   g_mainWindow.webContents.send("update-menubar");
-  let question = `Page Number (1-${g_fileData.numPages}):`;
-  //question = "Page Number:";
+  let question = `${_("Page Number")} (1-${g_fileData.numPages}):`;
   g_mainWindow.webContents.send(
     "show-modal-prompt",
     question,
@@ -563,8 +621,8 @@ function openFile(filePath, pageIndex = 0) {
       } else {
         g_mainWindow.webContents.send(
           "show-modal-info",
-          "File Error",
-          "Couldn't open the CBR file"
+          _("File Error"),
+          _("Couldn't open the CBR file")
         );
       }
     } else if (fileExtension === ".cbz") {
@@ -584,15 +642,15 @@ function openFile(filePath, pageIndex = 0) {
       } else {
         g_mainWindow.webContents.send(
           "show-modal-info",
-          "File Error",
-          "Couldn't open the CBZ file"
+          _("File Error"),
+          _("Couldn't open the CBZ file")
         );
       }
     } else {
       g_mainWindow.webContents.send(
         "show-modal-info",
-        "File Error",
-        "Not a valid file format"
+        _("File Error"),
+        _("Not a valid file format")
       );
       return;
     }
