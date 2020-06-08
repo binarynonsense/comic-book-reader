@@ -33,9 +33,9 @@ exports.setPageRotation = function (value) {
     value === 270;
 };
 
-exports.setLangiage = function (locale) {
-  Menu.getApplicationMenu().getMenuItemById("language").checked = isChecked;
-};
+// exports.setLanguage = function (locale) {
+//   Menu.getApplicationMenu().getMenuItemById("language").checked = isChecked;
+// };
 
 function buildApplicationMenu(activeLocale, languages) {
   // ref: https://stackoverflow.com/questions/54105224/electron-modify-a-single-menu-item

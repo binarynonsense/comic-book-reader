@@ -7,7 +7,7 @@ let g_localeData;
 // ref: https://www.electronjs.org/docs/api/locales
 // ref: https://www.christianengvall.se/electron-localization/
 
-exports.getLoadedLocal = function () {
+exports.getLoadedLocale = function () {
   return g_loadedLocale;
 };
 

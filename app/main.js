@@ -215,7 +215,7 @@ app.on("web-contents-created", (event, contents) => {
 
 function rebuildTranslatedTexts() {
   menuBar.buildApplicationMenu(
-    i18n.getLoadedLocal(),
+    i18n.getLoadedLocale(),
     i18n.getAvailableLocales()
   );
   g_mainWindow.webContents.send("update-menubar");
@@ -445,7 +445,7 @@ ipcMain.on("go-to-page", (event, value) => {
 ///////////////////////////////////////////////////////////////////////////////
 
 exports.onMenuChangeLanguage = function (locale) {
-  if (locale === i18n.getLoadedLocal())
+  if (locale === i18n.getLoadedLocale())
     g_mainWindow.webContents.send("update-menubar");
   else {
     if (i18n.loadLocale(locale, false)) {
