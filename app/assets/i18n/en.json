@@ -40,5 +40,6 @@
   "Couldn't open the PDF file": "Couldn't open the PDF file",
   "Page Number": "Page Number",
   "Languages": "Languages",
-  "version": "version"
+  "version": "version",
+  "To open a file use the menu or press <i>Ctrl+O</i>": "To open a file use the menu or press <i>Ctrl+O</i>"
 }

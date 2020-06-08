@@ -34,6 +34,10 @@ ipcRenderer.on("update-menubar", (event, isVisible) => {
   g_titlebar.updateMenu(Menu.getApplicationMenu());
 });
 
+ipcRenderer.on("update-centered-block-text", (event, text) => {
+  document.querySelector("#centered-block-text").innerHTML = text;
+});
+
 ipcRenderer.on(
   "update-toolbar-tooltips",
   (

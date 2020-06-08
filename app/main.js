@@ -230,6 +230,10 @@ function rebuildTranslatedTexts() {
     _("Rotate Clockwise"),
     _("Toggle Full Screen")
   );
+  g_mainWindow.webContents.send(
+    "update-centered-block-text",
+    _("To open a file use the menu or press <i>Ctrl+O</i>")
+  );
 }
 
 function _(...args) {
