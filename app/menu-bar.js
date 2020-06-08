@@ -187,7 +187,7 @@ function buildApplicationMenu(activeLocale, languages) {
       label: _("Settings"),
       submenu: [
         {
-          label: _("Scroll Bar"),
+          label: _("Show Scroll Bar"),
           id: "scrollbar",
           checked: true,
           accelerator: "CommandOrControl+B",
@@ -196,13 +196,16 @@ function buildApplicationMenu(activeLocale, languages) {
           },
         },
         {
-          label: _("Tool Bar"),
+          label: _("Show Tool Bar"),
           id: "toolbar",
           checked: true,
           accelerator: "CommandOrControl+T",
           click() {
             mainProcess.onMenuToggleToolBar();
           },
+        },
+        {
+          type: "separator",
         },
         {
           label: _("Languages"),
