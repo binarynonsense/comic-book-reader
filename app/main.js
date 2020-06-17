@@ -8,6 +8,7 @@ const {
 
 const fs = require("fs");
 const path = require("path");
+const FileType = require("file-type");
 const fileUtils = require("./file-utils");
 const i18n = require("./i18n");
 const menuBar = require("./menu-bar");
@@ -591,89 +592,98 @@ let g_fileData = {
 function openFile(filePath, pageIndex = 0) {
   if (filePath === "" || !fs.existsSync(filePath)) return;
 
-  addCurrentToHistory(); // add the one I'm closing to history
-  // if in history: open saved position:
-  let historyIndex = getHistoryIndex(filePath);
-  if (historyIndex !== undefined) {
-    pageIndex = g_history[historyIndex].pageIndex;
-    if (pageIndex === undefined) pageIndex = 0; // just in case
-  }
-
   let fileExtension = path.extname(filePath).toLowerCase();
-  if (fileExtension === ".pdf") {
-    g_fileData.state = FileDataState.LOADING;
-    g_mainWindow.webContents.send("load-pdf", filePath, pageIndex);
-  } else if (fileExtension === ".epub") {
-    g_fileData.state = FileDataState.LOADING;
-    g_mainWindow.webContents.send("load-epub", filePath, pageIndex);
-  } else {
-    // let imgsFolderPath = undefined;
-    if (fileExtension === ".cbr") {
-      //imgsFolderPath = fileUtils.extractRar(filePath);
-      let pagesPaths = fileUtils.getRarEntriesList(filePath);
-      if (pagesPaths !== undefined && pagesPaths.length > 0) {
-        g_fileData.state = FileDataState.LOADED;
-        g_fileData.type = FileDataType.RAR;
-        g_fileData.filePath = filePath;
-        g_fileData.fileName = path.basename(filePath);
-        g_fileData.pagesPaths = pagesPaths;
-        g_fileData.imgsFolderPath = "";
-        g_fileData.numPages = pagesPaths.length;
-        g_fileData.pageIndex = pageIndex;
-        setPageRotation(0, false);
-        goToPage(pageIndex);
-      } else {
-        g_mainWindow.webContents.send(
-          "show-modal-info",
-          _("File Error"),
-          _("Couldn't open the CBR file")
-        );
-      }
-    } else if (fileExtension === ".cbz") {
-      //imgsFolderPath = fileUtils.extractZip(filePath);
-      let pagesPaths = fileUtils.getZipEntriesList(filePath);
-      if (pagesPaths !== undefined && pagesPaths.length > 0) {
-        g_fileData.state = FileDataState.LOADED;
-        g_fileData.type = FileDataType.ZIP;
-        g_fileData.filePath = filePath;
-        g_fileData.fileName = path.basename(filePath);
-        g_fileData.pagesPaths = pagesPaths;
-        g_fileData.imgsFolderPath = "";
-        g_fileData.numPages = pagesPaths.length;
-        g_fileData.pageIndex = pageIndex;
-        setPageRotation(0, false);
-        goToPage(pageIndex);
-      } else {
-        g_mainWindow.webContents.send(
-          "show-modal-info",
-          _("File Error"),
-          _("Couldn't open the CBZ file")
-        );
-      }
-    } else {
-      g_mainWindow.webContents.send(
-        "show-modal-info",
-        _("File Error"),
-        _("Not a valid file format")
-      );
-      return;
-    }
-    // if (imgsFolderPath === undefined) return;
 
-    // let pagesPaths = fileUtils.getImageFilesInFolderRecursive(imgsFolderPath);
-    // if (pagesPaths !== undefined && pagesPaths.length > 0) {
-    //   g_fileData.state = FileDataState.LOADED;
-    //   g_fileData.type = FileDataType.IMGS;
-    //   g_fileData.filePath = filePath;
-    //   g_fileData.fileName = path.basename(filePath);
-    //   g_fileData.pagesPaths = pagesPaths;
-    //   g_fileData.imgsFolderPath = imgsFolderPath;
-    //   g_fileData.numPages = pagesPaths.length;
-    //   g_fileData.pageIndex = pageIndex;
-    //   setPageRotation(0, false);
-    //   goToPage(pageIndex);
-    // }
-  }
+  (async () => {
+    let fileType = await FileType.fromFile(filePath);
+    if (fileType !== undefined) {
+      // ref: file-type -> https://www.npmjs.com/package/file-type
+      // e.g. {ext: 'png', mime: 'image/png'}
+      fileExtension = "." + fileType.ext;
+    }
+    addCurrentToHistory(); // add the one I'm closing to history
+    // if in history: open saved position:
+    let historyIndex = getHistoryIndex(filePath);
+    if (historyIndex !== undefined) {
+      pageIndex = g_history[historyIndex].pageIndex;
+      if (pageIndex === undefined) pageIndex = 0; // just in case
+    }
+
+    if (fileExtension === ".pdf") {
+      g_fileData.state = FileDataState.LOADING;
+      g_mainWindow.webContents.send("load-pdf", filePath, pageIndex);
+    } else if (fileExtension === ".epub") {
+      g_fileData.state = FileDataState.LOADING;
+      g_mainWindow.webContents.send("load-epub", filePath, pageIndex);
+    } else {
+      // let imgsFolderPath = undefined;
+      if (fileExtension === ".rar" || fileExtension === ".cbr") {
+        //imgsFolderPath = fileUtils.extractRar(filePath);
+        let pagesPaths = fileUtils.getRarEntriesList(filePath);
+        if (pagesPaths !== undefined && pagesPaths.length > 0) {
+          g_fileData.state = FileDataState.LOADED;
+          g_fileData.type = FileDataType.RAR;
+          g_fileData.filePath = filePath;
+          g_fileData.fileName = path.basename(filePath);
+          g_fileData.pagesPaths = pagesPaths;
+          g_fileData.imgsFolderPath = "";
+          g_fileData.numPages = pagesPaths.length;
+          g_fileData.pageIndex = pageIndex;
+          setPageRotation(0, false);
+          goToPage(pageIndex);
+        } else {
+          g_mainWindow.webContents.send(
+            "show-modal-info",
+            _("File Error"),
+            _("Couldn't open the CBR file")
+          );
+        }
+      } else if (fileExtension === ".zip" || fileExtension === ".cbz") {
+        //imgsFolderPath = fileUtils.extractZip(filePath);
+        let pagesPaths = fileUtils.getZipEntriesList(filePath);
+        if (pagesPaths !== undefined && pagesPaths.length > 0) {
+          g_fileData.state = FileDataState.LOADED;
+          g_fileData.type = FileDataType.ZIP;
+          g_fileData.filePath = filePath;
+          g_fileData.fileName = path.basename(filePath);
+          g_fileData.pagesPaths = pagesPaths;
+          g_fileData.imgsFolderPath = "";
+          g_fileData.numPages = pagesPaths.length;
+          g_fileData.pageIndex = pageIndex;
+          setPageRotation(0, false);
+          goToPage(pageIndex);
+        } else {
+          g_mainWindow.webContents.send(
+            "show-modal-info",
+            _("File Error"),
+            _("Couldn't open the CBZ file")
+          );
+        }
+      } else {
+        g_mainWindow.webContents.send(
+          "show-modal-info",
+          _("File Error"),
+          _("Not a valid file format")
+        );
+        return;
+      }
+      // if (imgsFolderPath === undefined) return;
+
+      // let pagesPaths = fileUtils.getImageFilesInFolderRecursive(imgsFolderPath);
+      // if (pagesPaths !== undefined && pagesPaths.length > 0) {
+      //   g_fileData.state = FileDataState.LOADED;
+      //   g_fileData.type = FileDataType.IMGS;
+      //   g_fileData.filePath = filePath;
+      //   g_fileData.fileName = path.basename(filePath);
+      //   g_fileData.pagesPaths = pagesPaths;
+      //   g_fileData.imgsFolderPath = imgsFolderPath;
+      //   g_fileData.numPages = pagesPaths.length;
+      //   g_fileData.pageIndex = pageIndex;
+      //   setPageRotation(0, false);
+      //   goToPage(pageIndex);
+      // }
+    }
+  })(); // async
 }
 exports.openFile = openFile;
 
