@@ -137,6 +137,8 @@ exports.hasCompatibleExtension = function (filePath) {
   return false;
 };
 
+///////////////////////////////////////////////////////////////////////////////
+
 const deleteTempFolderRecursive = function (folderPath) {
   //console.log("deleteFolderRecursive: " + folderPath);
   if (fs.existsSync(folderPath)) {
@@ -160,6 +162,8 @@ const deleteTempFolderRecursive = function (folderPath) {
   }
 };
 
+///////////////////////////////////////////////////////////////////////////////
+
 function chooseFile(window, defaultPath = "") {
   if (!fs.existsSync(defaultPath)) {
     defaultPath = "";
@@ -167,7 +171,7 @@ function chooseFile(window, defaultPath = "") {
   // TODO defaultPath doesn't seem to work, at least on linux, where I've made more tests..
   // but I'll leave the code anyway
 
-  let imagePath = dialog.showOpenDialogSync(window, {
+  let filePath = dialog.showOpenDialogSync(window, {
     filters: [
       {
         name: "Comic Book Files",
@@ -177,9 +181,30 @@ function chooseFile(window, defaultPath = "") {
     ],
     properties: ["openFile"],
   });
-  return imagePath;
+  return filePath;
 }
 exports.chooseFile = chooseFile;
+
+function chooseFolder(window, defaultPath = "") {
+  if (!fs.existsSync(defaultPath)) {
+    defaultPath = "";
+  }
+  // TODO defaultPath doesn't seem to work, at least on linux, where I've made more tests..
+  // but I'll leave the code anyway
+
+  let folderPath = dialog.showOpenDialogSync(window, {
+    filters: [
+      {
+        defaultPath: defaultPath,
+      },
+    ],
+    properties: ["openDirectory"],
+  });
+  return folderPath;
+}
+exports.chooseFolder = chooseFolder;
+
+///////////////////////////////////////////////////////////////////////////////
 
 const getImageFilesInFolderRecursive = function (folderPath) {
   let filesArray = [];
@@ -320,6 +345,17 @@ function extractZip(filePath) {
 }
 exports.extractZip = extractZip;
 
+function createZip(filePathsList, outputFilePath) {
+  let zip = new AdmZip();
+  filePathsList.forEach((element) => {
+    //console.log(element);
+    zip.addLocalFile(element);
+  });
+  //console.log(outputFilePath);
+  zip.writeZip(outputFilePath);
+}
+exports.createZip = createZip;
+
 ///////////////////////////////////////////////////////////////////////////////
 // TEMP FOLDER ////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -334,13 +370,15 @@ exports.getTempFolder = getTempFolder;
 function createTempFolder() {
   tempFolder = fs.mkdtempSync(path.join(os.tmpdir(), "comic-book-reader-"));
   console.log("temp folder created: " + tempFolder);
+  return tempFolder;
 }
 exports.createTempFolder = createTempFolder;
 
 function cleanUpTempFolder() {
   if (tempFolder === undefined) return;
   // console.log("cleaning folder: " + tempFolder);
-  const files = fs.readdirSync(tempFolder);
+  //const files = fs.readdirSync(tempFolder);
   deleteTempFolderRecursive(tempFolder);
+  tempFolder = undefined;
 }
 exports.cleanUpTempFolder = cleanUpTempFolder;

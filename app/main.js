@@ -13,6 +13,7 @@ const fileUtils = require("./file-utils");
 const i18n = require("./i18n");
 const menuBar = require("./menu-bar");
 const contextMenu = require("./menu-context");
+const convertTool = require("./tools/convert");
 
 function isDev() {
   return process.argv[2] == "--dev";
@@ -84,7 +85,7 @@ app.on("ready", () => {
     show: false,
   });
 
-  //mainWindow.removeMenu();
+  // g_mainWindow.removeMenu();
   // menuBar.buildApplicationMenu();
 
   // FIX: ugly hack: since I wait to show the window on did-finish-load, if I started it
@@ -219,6 +220,8 @@ function rebuildTranslatedTexts() {
     i18n.getLoadedLocale(),
     i18n.getAvailableLocales()
   );
+  updateConvertMenu();
+
   g_mainWindow.webContents.send("update-menubar");
   g_mainWindow.webContents.send(
     "update-toolbar-tooltips",
@@ -251,7 +254,7 @@ function saveSettings() {
 }
 
 function addCurrentToHistory() {
-  let currentFilePath = g_fileData.filePath;
+  let currentFilePath = g_fileData.path;
   let currentPageIndex = g_fileData.pageIndex;
   if (currentFilePath != "") {
     let foundIndex = getHistoryIndex(currentFilePath);
@@ -281,7 +284,7 @@ function getHistoryIndex(filePath) {
 
 function saveHistory() {
   addCurrentToHistory();
-  fileUtils.saveHistory(g_history, g_fileData.filePath, g_fileData.pageIndex);
+  fileUtils.saveHistory(g_history, g_fileData.path, g_fileData.pageIndex);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -293,12 +296,13 @@ ipcMain.on(
   (event, loadedCorrectly, filePath, pageIndex, imageIDs) => {
     g_fileData.state = FileDataState.LOADED; // will change inmediately to loading
     g_fileData.type = FileDataType.EPUB;
-    g_fileData.filePath = filePath;
-    g_fileData.fileName = path.basename(filePath);
+    g_fileData.path = filePath;
+    g_fileData.name = path.basename(filePath);
     g_fileData.imgsFolderPath = "";
     g_fileData.pagesPaths = imageIDs; // not really paths
     g_fileData.numPages = imageIDs.length;
     g_fileData.pageIndex = pageIndex;
+    updateConvertMenu();
     setPageRotation(0, false);
     goToPage(pageIndex);
     renderPageInfo();
@@ -328,12 +332,13 @@ ipcMain.on(
     // TODO double check loaded is the one loading?
     // TODO change only if correct
     g_fileData.type = FileDataType.PDF;
-    g_fileData.filePath = filePath;
-    g_fileData.fileName = path.basename(filePath);
+    g_fileData.path = filePath;
+    g_fileData.name = path.basename(filePath);
     g_fileData.imgsFolderPath = "";
     g_fileData.pagesPaths = [];
     g_fileData.numPages = 0;
     g_fileData.pageIndex = pageIndex;
+    updateConvertMenu();
     setPageRotation(0, false);
     g_fileData.numPages = numPages;
     goToPage(pageIndex);
@@ -476,8 +481,8 @@ exports.onMenuNextPage = function () {
 
 exports.onMenuOpenFile = onMenuOpenFile = function () {
   let defaultPath = "";
-  if (g_fileData.filePath !== "") {
-    defaultPath = g_fileData.filePath;
+  if (g_fileData.path !== "") {
+    defaultPath = g_fileData.path;
   } else if (g_history.length > 0) {
     defaultPath = g_history[length - 1].filePath;
   }
@@ -520,6 +525,13 @@ exports.onMenuToggleToolBar = function () {
 
 exports.onMenuToggleFullScreen = function () {
   toggleFullScreen();
+};
+
+exports.onMenuConvertFile = function () {
+  if (g_fileData.path !== undefined) {
+    convertTool.showWindow(g_mainWindow, g_fileData.path, g_fileData.type);
+  }
+  g_mainWindow.webContents.send("update-menubar");
 };
 
 exports.onMenuToggleDevTools = function () {
@@ -580,8 +592,8 @@ const FileDataType = {
 let g_fileData = {
   state: FileDataState.NOT_SET,
   type: FileDataType.NOT_SET,
-  filePath: "",
-  fileName: "",
+  path: "",
+  name: "",
   imgsFolderPath: "",
   pagesPaths: [],
   numPages: 0,
@@ -623,12 +635,13 @@ function openFile(filePath, pageIndex = 0) {
         if (pagesPaths !== undefined && pagesPaths.length > 0) {
           g_fileData.state = FileDataState.LOADED;
           g_fileData.type = FileDataType.RAR;
-          g_fileData.filePath = filePath;
-          g_fileData.fileName = path.basename(filePath);
+          g_fileData.path = filePath;
+          g_fileData.name = path.basename(filePath);
           g_fileData.pagesPaths = pagesPaths;
           g_fileData.imgsFolderPath = "";
           g_fileData.numPages = pagesPaths.length;
           g_fileData.pageIndex = pageIndex;
+          updateConvertMenu();
           setPageRotation(0, false);
           goToPage(pageIndex);
         } else {
@@ -644,12 +657,13 @@ function openFile(filePath, pageIndex = 0) {
         if (pagesPaths !== undefined && pagesPaths.length > 0) {
           g_fileData.state = FileDataState.LOADED;
           g_fileData.type = FileDataType.ZIP;
-          g_fileData.filePath = filePath;
-          g_fileData.fileName = path.basename(filePath);
+          g_fileData.path = filePath;
+          g_fileData.name = path.basename(filePath);
           g_fileData.pagesPaths = pagesPaths;
           g_fileData.imgsFolderPath = "";
           g_fileData.numPages = pagesPaths.length;
           g_fileData.pageIndex = pageIndex;
+          updateConvertMenu();
           setPageRotation(0, false);
           goToPage(pageIndex);
         } else {
@@ -804,7 +818,7 @@ function generateTitle() {
   } else if (g_mainWindow.getSize()[0] < 600) {
     title = "ACBR" + blankSpace;
   } else {
-    title = `${g_fileData.fileName}`;
+    title = `${g_fileData.name}`;
     var length = 50;
     title =
       title.length > length
@@ -834,19 +848,16 @@ function goToPage(pageIndex) {
     renderPdfPage(g_fileData.pageIndex);
   } else if (g_fileData.type === FileDataType.ZIP) {
     renderZipEntry(
-      g_fileData.filePath,
+      g_fileData.path,
       g_fileData.pagesPaths[g_fileData.pageIndex]
     );
   } else if (g_fileData.type === FileDataType.RAR) {
     renderRarEntry(
-      g_fileData.filePath,
+      g_fileData.path,
       g_fileData.pagesPaths[g_fileData.pageIndex]
     );
   } else if (g_fileData.type === FileDataType.EPUB) {
-    renderEpubImg(
-      g_fileData.filePath,
-      g_fileData.pagesPaths[g_fileData.pageIndex]
-    );
+    renderEpubImg(g_fileData.path, g_fileData.pagesPaths[g_fileData.pageIndex]);
   }
   renderPageInfo();
 }
@@ -948,5 +959,18 @@ function setPageRotation(value, refreshPage) {
   g_mainWindow.webContents.send("update-menubar");
   if (refreshPage) {
     renderPageRefresh();
+  }
+}
+
+function updateConvertMenu() {
+  if (g_fileData.filePath !== "") {
+    if (
+      g_fileData.type === FileDataType.ZIP ||
+      g_fileData.type === FileDataType.RAR
+    ) {
+      menuBar.setConvertFile(true);
+    } else {
+      menuBar.setConvertFile(false);
+    }
   }
 }

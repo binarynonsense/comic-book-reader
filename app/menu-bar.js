@@ -33,6 +33,10 @@ exports.setPageRotation = function (value) {
     value === 270;
 };
 
+exports.setConvertFile = function (isEnabled) {
+  Menu.getApplicationMenu().getMenuItemById("convert-file").enabled = isEnabled;
+};
+
 // exports.setLanguage = function (locale) {
 //   Menu.getApplicationMenu().getMenuItemById("language").checked = isChecked;
 // };
@@ -72,11 +76,37 @@ function buildApplicationMenu(activeLocale, languages) {
       label: _("File"),
       submenu: [
         {
-          label: _("Open File..."),
+          label: _("Open..."),
           accelerator: "CommandOrControl+O",
           click() {
             mainProcess.onMenuOpenFile();
           },
+        },
+        {
+          type: "separator",
+        },
+        {
+          id: "convert-file",
+          label: _("Convert..."),
+          enabled: false,
+          click() {
+            mainProcess.onMenuConvertFile();
+          },
+        },
+        {
+          type: "separator",
+        },
+        {
+          label: _("Preferences"),
+          submenu: [
+            {
+              label: _("Languages"),
+              submenu: languagesSubmenu,
+            },
+          ],
+        },
+        {
+          type: "separator",
         },
         {
           label: _("Quit"),
@@ -175,18 +205,6 @@ function buildApplicationMenu(activeLocale, languages) {
           type: "separator",
         },
         {
-          label: _("Toggle Full Screen"),
-          accelerator: "F11",
-          click() {
-            mainProcess.onMenuToggleFullScreen();
-          },
-        },
-      ],
-    },
-    {
-      label: _("Settings"),
-      submenu: [
-        {
           label: _("Show Scroll Bar"),
           id: "scrollbar",
           checked: true,
@@ -208,8 +226,11 @@ function buildApplicationMenu(activeLocale, languages) {
           type: "separator",
         },
         {
-          label: _("Languages"),
-          submenu: languagesSubmenu,
+          label: _("Toggle Full Screen"),
+          accelerator: "F11",
+          click() {
+            mainProcess.onMenuToggleFullScreen();
+          },
         },
       ],
     },
