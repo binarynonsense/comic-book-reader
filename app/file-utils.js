@@ -254,13 +254,13 @@ exports.getImageFilesInFolderRecursive = getImageFilesInFolderRecursive;
 function extractRar(filePath) {
   cleanUpTempFolder();
   createTempFolder();
-  console.log(tempFolder);
+  //console.log(tempFolder);
 
   //ref: https://github.com/YuJianrong/node-unrar.js
   let extractor = unrar.createExtractorFromFile(filePath, tempFolder);
   extractor.extractAll();
 
-  console.log("rar file extracted");
+  //console.log("rar file extracted");
   return tempFolder;
 }
 exports.extractRar = extractRar;
@@ -334,13 +334,13 @@ exports.extractZipEntryData = extractZipEntryData;
 function extractZip(filePath) {
   cleanUpTempFolder();
   createTempFolder();
-  console.log(tempFolder);
+  //console.log(tempFolder);
 
   // ref: https://github.com/cthackers/adm-zip/wiki/ADM-ZIP-Introduction
   let zip = new AdmZip(filePath);
   const imageData = zip.readFile("");
   zip.extractAllTo(tempFolder, true);
-  console.log("zip file extracted");
+  //console.log("zip file extracted");
   return tempFolder;
 }
 exports.extractZip = extractZip;

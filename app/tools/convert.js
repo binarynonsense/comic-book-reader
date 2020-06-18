@@ -69,44 +69,102 @@ ipcMain.on(
     outputFormat,
     outputFolderPath
   ) => {
-    g_convertWindow.webContents.send(
-      "convert-state-update",
-      "text-log",
-      inputFilePath
-    );
-    // extract to temp folder
-    let tempFolder;
-    if (inputFileType === "zip") {
-      tempFolder = fileUtils.extractZip(inputFilePath);
-    } else if (inputFileType === "rar") {
-      tempFolder = fileUtils.extractRar(inputFilePath);
-    } else {
-      // close modal with error?
-      return;
-    }
-    let imgFiles = fileUtils.getImageFilesInFolderRecursive(tempFolder);
-    //console.log(imgFiles);
-
-    // resize imgs if needed
-
-    // compress to output folder
-    let filename = path.basename(inputFilePath, path.extname(inputFilePath));
-    let cbzPath = path.join(outputFolderPath, filename + ".cbz");
-    let i = 1;
-    while (fs.existsSync(cbzPath)) {
-      //console.log("file already exists");
-      i++;
-      cbzPath = path.join(outputFolderPath, filename + "(" + i + ").cbz");
-    }
-    fileUtils.createZip(imgFiles, cbzPath);
-
-    // delete temp folder
-    fileUtils.cleanUpTempFolder();
-
-    g_convertWindow.webContents.send(
-      "convert-state-update",
-      "finished-ok",
-      cbzPath
+    convert(
+      inputFilePath,
+      inputFileType,
+      outputSize,
+      outputFormat,
+      outputFolderPath
     );
   }
 );
+
+async function convert(
+  inputFilePath,
+  inputFileType,
+  outputSize,
+  outputFormat,
+  outputFolderPath
+) {
+  g_convertWindow.webContents.send(
+    "convert-state-update",
+    "text-info",
+    inputFilePath
+  );
+  g_convertWindow.webContents.send(
+    "convert-state-update",
+    "text-log",
+    "Extracting pages..."
+  );
+  // extract to temp folder
+  let tempFolder;
+  if (inputFileType === "zip") {
+    tempFolder = fileUtils.extractZip(inputFilePath);
+  } else if (inputFileType === "rar") {
+    tempFolder = fileUtils.extractRar(inputFilePath);
+  } else {
+    // close modal with error?
+    return;
+  }
+  let imgFiles = fileUtils.getImageFilesInFolderRecursive(tempFolder);
+  //console.log(imgFiles);
+
+  // resize imgs if needed
+  outputSize = parseInt(outputSize);
+  if (outputSize < 100) {
+    const Jimp = require("jimp");
+    for (let index = 0; index < imgFiles.length; index++) {
+      await Jimp.read(imgFiles[index])
+        .then((image) => {
+          //console.log(imgFiles[index]);
+          g_convertWindow.webContents.send(
+            "convert-state-update",
+            "text-log",
+            "Resizing Page: " + (index + 1) + " / " + imgFiles.length
+          );
+          return (
+            image
+              .scale(outputSize / 100)
+              .quality(60)
+              // Don't know how to get the original's quality and 60 seems to give the best size 'reduction to visual quality' results,
+              // much better looking than expected for such a low number
+              .write(imgFiles[index])
+          );
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    }
+  }
+
+  // compress to output folder
+  let filename = path.basename(inputFilePath, path.extname(inputFilePath));
+  let cbzPath = path.join(outputFolderPath, filename + ".cbz");
+  let i = 1;
+  while (fs.existsSync(cbzPath)) {
+    //console.log("file already exists");
+    i++;
+    cbzPath = path.join(outputFolderPath, filename + "(" + i + ").cbz");
+  }
+  //console.log("time to zip");
+  g_convertWindow.webContents.send(
+    "convert-state-update",
+    "text-log",
+    "Compressing New File..."
+  );
+  fileUtils.createZip(imgFiles, cbzPath);
+
+  // delete temp folder
+  g_convertWindow.webContents.send(
+    "convert-state-update",
+    "text-log",
+    "Cleaning Up..."
+  );
+  fileUtils.cleanUpTempFolder();
+
+  g_convertWindow.webContents.send(
+    "convert-state-update",
+    "finished-ok",
+    cbzPath
+  );
+}

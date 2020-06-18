@@ -79,6 +79,7 @@
         <div class="progress" id="modal-loading-bar">
           <div class="indeterminate"></div>
         </div>
+        <p id="modal-log"></p>
       </div>
       <div class="modal-footer" id="modal-button-container">
         <a
@@ -128,6 +129,7 @@
       let convertButton = document.querySelector("#convert-button");
       let sizeSlider = document.querySelector("#size-slider");
       let modalInfoArea = document.querySelector("#modal-info");
+      let modalLogArea = document.querySelector("#modal-log");
       let modalButtonContainer = document.querySelector(
         "#modal-button-container"
       );
@@ -193,8 +195,12 @@
 
       ipcRenderer.on("convert-state-update", (event, updateType, data) => {
         switch (updateType) {
-          case "text-log":
+          case "text-info":
             modalInfoArea.innerHTML = data;
+            break;
+
+          case "text-log":
+            modalLogArea.innerHTML = data;
             break;
 
           case "finished-ok":
@@ -202,6 +208,7 @@
             modalInfoArea.innerHTML = data;
             modalButtonClose.classList.remove("hide");
             modalLoadingBar.classList.add("hide");
+            modalLogArea.innerHTML = "";
             break;
 
           default:
