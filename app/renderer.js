@@ -306,7 +306,7 @@ function extractEpubImagesSrcRecursive(
       //const rex = /<img[^>]+src="?([^"\s]+)"?\s*\/>/g;
       const rex = /<img[^>]+src="([^">]+)/g;
       while ((m = rex.exec(data))) {
-        // i.e. /images/img-0139/OPS/images/0139.jpeg -> TODO extract id: img-0139
+        // i.e. /images/img-0139/OPS/images/0139.jpeg
         let id = m[1].split("/")[2];
         imageIDs.push(id);
       }

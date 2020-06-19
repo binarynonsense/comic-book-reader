@@ -19,12 +19,18 @@
     <!-- <h5><i class="fas fa-tools"></i></h5> -->
     <div class="container center-align">
       <h5>Input File:</h5>
-      <div class="card" id="input-list">
-        <!-- <div class="card-content">
-          /home/alvaro/test/home/alvaro/test/home/alvaro/test/home/alvaro/test/home/alvaro/test/file.cbr
-        </div> -->
-        <!-- <a class="waves-effect waves-light btn">DISCARD</a> -->
-      </div>
+
+      <ul class="collection with-header">
+        <!-- <li class="collection-header"><h4>First Names</h4></li> -->
+        <div id="input-list"></div>
+        <a
+          class="waves-effect waves-light btn"
+          id="input-list-add"
+          onclick="onChooseInputFile()"
+          >ADD</a
+        >
+      </ul>
+
       <!-- <a class="waves-effect waves-light btn" onclick="onChooseInputFile()"
           >ADD</a
         > -->
@@ -56,12 +62,14 @@
         ></i>
       </h5>
 
-      <div class="card">
-        <div class="card-content" id="output-folder"></div>
+      <ul class="collection">
+        <li class="collection-item" id="output-folder">
+          <i>Select a Folder...</i>
+        </li>
         <a class="waves-effect waves-light btn" onclick="onChooseOutputFolder()"
           >CHANGE</a
         >
-      </div>
+      </ul>
 
       <a
         id="convert-button"
@@ -125,6 +133,7 @@
       let outputFolderPath;
 
       let inputListDiv = document.querySelector("#input-list");
+      let inputListButton = document.querySelector("#input-list-add");
       let outputFolderDiv = document.querySelector("#output-folder");
       let convertButton = document.querySelector("#convert-button");
       let sizeSlider = document.querySelector("#size-slider");
@@ -174,12 +183,19 @@
       }
 
       ipcRenderer.on("add-file", (event, filePath, fileType) => {
+        // TEMP do this on future init function
+        inputListButton.classList.add("hide");
+
         inputFilePath = filePath;
         inputFileType = fileType;
-        inputListDiv.innerHTML =
-          "<div class='card-content'>" +
+
+        inputListDiv.innerHTML +=
+          "<li class='collection-item'><div>" +
           reducePathString(inputFilePath) +
-          "</div>";
+          (false
+            ? "<a href='#!' class='secondary-content'><i class='fas fa-window-close' title='remove from list'></i></a>"
+            : "") +
+          "</div></li>";
 
         outputFolderPath = path.dirname(filePath);
         outputFolderDiv.innerHTML = reducePathString(outputFolderPath);

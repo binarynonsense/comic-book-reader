@@ -93,6 +93,15 @@ function buildApplicationMenu(activeLocale, languages) {
             mainProcess.onMenuConvertFile();
           },
         },
+        // {
+        //   id: "export-page",
+        //   label: _("Export Page..."),
+        //   enabled: false,
+        // },
+        // {
+        //   id: "batch-convert",
+        //   label: _("Batch Convert..."),
+        // },
         {
           type: "separator",
         },

@@ -966,7 +966,8 @@ function updateConvertMenu() {
   if (g_fileData.filePath !== "") {
     if (
       g_fileData.type === FileDataType.ZIP ||
-      g_fileData.type === FileDataType.RAR
+      g_fileData.type === FileDataType.RAR ||
+      g_fileData.type === FileDataType.EPUB
     ) {
       menuBar.setConvertFile(true);
     } else {

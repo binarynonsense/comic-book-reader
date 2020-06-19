@@ -4,6 +4,7 @@ const fs = require("fs");
 
 const AdmZip = require("adm-zip");
 const unrar = require("node-unrar-js");
+const EPub = require("epub");
 
 const { app, dialog } = require("electron");
 
@@ -248,7 +249,7 @@ exports.getImageFilesInFolderRecursive = getImageFilesInFolderRecursive;
 //exports.getImageFilesInFolder = getImageFilesInFolder;
 
 ///////////////////////////////////////////////////////////////////////////////
-// ZIP / RAR //////////////////////////////////////////////////////////////////
+// ZIP / RAR / EPUB //////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
 function extractRar(filePath) {
@@ -305,6 +306,8 @@ function extractRarEntryData(rarPath, entryName) {
 }
 exports.extractRarEntryData = extractRarEntryData;
 
+///////////////////////////////////////////////////////////////////////////////
+
 function getZipEntriesList(filePath) {
   try {
     let zip = new AdmZip(filePath);
@@ -355,6 +358,93 @@ function createZip(filePathsList, outputFilePath) {
   zip.writeZip(outputFilePath);
 }
 exports.createZip = createZip;
+
+///////////////////////////////////////////////////////////////////////////////
+
+async function extractEpubImages(filePath) {
+  // TODO catch errors
+  // based on renderer.js epub code
+  cleanUpTempFolder();
+  createTempFolder();
+
+  const epub = new EPub(filePath);
+
+  // parse epub
+  await new Promise((resolve, reject) => {
+    epub.parse();
+    epub.on("error", reject);
+    epub.on("end", (err) => {
+      if (err) {
+        return reject({
+          error: true,
+          message: err,
+        });
+      }
+      return resolve({
+        success: true,
+      });
+    });
+  });
+
+  // get list of image IDs
+  let imageIDs = [];
+  for (let index = 0; index < epub.spine.contents.length; index++) {
+    const element = epub.spine.contents[index];
+    await new Promise((resolve, reject) => {
+      epub.getChapter(element.id, function (err, data) {
+        if (err) {
+          return reject({
+            error: true,
+            message: err,
+          });
+        } else {
+          const rex = /<img[^>]+src="([^">]+)/g;
+          while ((m = rex.exec(data))) {
+            // i.e. /images/img-0139/OPS/images/0139.jpeg
+            let id = m[1].split("/")[2];
+            imageIDs.push(id);
+          }
+          return resolve({
+            success: true,
+          });
+        }
+      });
+    });
+  }
+
+  // extract and save images
+  for (let index = 0; index < imageIDs.length; index++) {
+    const imageID = imageIDs[index];
+    await new Promise((resolve, reject) => {
+      epub.getImage(imageID, function (err, data, mimeType) {
+        if (err) {
+          return reject({
+            error: true,
+            message: err,
+          });
+        } else {
+          let extension = mimeType.split("/")[1];
+          let filePath = path.join(tempFolder, index + "." + extension);
+          fs.writeFile(filePath, Buffer.from(data), "binary", function (err) {
+            if (err) {
+              return reject({
+                error: true,
+                message: err,
+              });
+            }
+          });
+
+          return resolve({
+            success: true,
+          });
+        }
+      });
+    });
+  }
+
+  return tempFolder;
+}
+exports.extractEpubImages = extractEpubImages;
 
 ///////////////////////////////////////////////////////////////////////////////
 // TEMP FOLDER ////////////////////////////////////////////////////////////////

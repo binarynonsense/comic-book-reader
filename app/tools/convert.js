@@ -86,6 +86,7 @@ async function convert(
   outputFormat,
   outputFolderPath
 ) {
+  // TODO catch errors
   g_convertWindow.webContents.send(
     "convert-state-update",
     "text-info",
@@ -102,6 +103,8 @@ async function convert(
     tempFolder = fileUtils.extractZip(inputFilePath);
   } else if (inputFileType === "rar") {
     tempFolder = fileUtils.extractRar(inputFilePath);
+  } else if (inputFileType === "epub") {
+    tempFolder = await fileUtils.extractEpubImages(inputFilePath);
   } else {
     // close modal with error?
     return;
@@ -132,6 +135,7 @@ async function convert(
           );
         })
         .catch((err) => {
+          // TODO cancel conversion?
           console.error(err);
         });
     }
