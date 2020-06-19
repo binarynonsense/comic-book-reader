@@ -61,12 +61,18 @@ ipcMain.on("convert-choose-folder", (event) => {
   g_convertWindow.webContents.send("change-output-folder", folderPath);
 });
 
+/////////////////////////
+
 ipcMain.on(
   "convert-start-conversion",
   (event, inputFilePath, inputFileType) => {
     conversionStart(inputFilePath, inputFileType);
   }
 );
+
+ipcMain.on("convert-pdf-images-extracted", (event) => {
+  g_convertWindow.webContents.send("convert-images-extracted");
+});
 
 ipcMain.on(
   "convert-create-file-from-images",

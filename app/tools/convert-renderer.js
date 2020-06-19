@@ -1,3 +1,4 @@
+const fs = window.require("fs");
 const path = require("path");
 const os = require("os");
 const { ipcRenderer } = require("electron");
@@ -123,10 +124,11 @@ ipcRenderer.on("convert-update-text-info", (event, text) => {
   modalInfoArea.innerHTML = text;
 });
 
-ipcRenderer.on(
-  "convert-extract-pdf-images",
-  (event, filePath, tempFolder) => {}
-);
+//////////////////////////
+
+ipcRenderer.on("convert-extract-pdf-images", (event, tempFolder) => {
+  extractPDFImages(tempFolder);
+});
 
 ipcRenderer.on("convert-images-extracted", (event) => {
   ipcRenderer.send(
@@ -142,3 +144,55 @@ ipcRenderer.on("convert-finished-ok", (event) => {
   modalButtonClose.classList.remove("hide");
   modalLoadingBar.classList.add("hide");
 });
+
+///////////////////////////////////////////////////////////////////////////////
+// PDF ////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+const pdfjsLib = require("../assets/libs/pdfjs/build/pdf.js");
+
+async function extractPDFImages(folderPath) {
+  try {
+    // ref: https://kevinnadro.com/blog/parsing-pdfs-in-javascript/
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+      "../assets/libs/pdfjs/build/pdf.worker.js";
+    //pdfjsLib.disableWorker = true;
+    const pdf = await pdfjsLib.getDocument(inputFilePath).promise;
+    for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+      let page = await pdf.getPage(pageNum);
+      //console.log("page: " + pageNum + " - " + page);
+
+      // RENDER
+      const canvas = document.createElement("canvas");
+      let viewport = page.getViewport({
+        scale: 300 / 72,
+      }); // defines the size in pixels(72DPI)
+      let context = canvas.getContext("2d");
+      canvas.height = viewport.height;
+      canvas.width = viewport.width;
+      //console.log(viewport.width + "x" + viewport.height);
+      await page.render({ canvasContext: context, viewport: viewport }).promise;
+
+      let filePath = path.join(folderPath, pageNum + ".jpg");
+      var img = canvas.toDataURL("image/jpeg", 0.8);
+      var data = img.replace(/^data:image\/\w+;base64,/, "");
+      var buf = Buffer.from(data, "base64");
+      await new Promise((resolve, reject) =>
+        fs.writeFile(filePath, buf, "binary", (err) => {
+          if (err === null) {
+            resolve();
+          } else {
+            reject(err);
+          }
+        })
+      );
+
+      page.cleanup();
+    }
+    pdf.cleanup();
+    pdf.destroy();
+    ipcRenderer.send("convert-pdf-images-extracted");
+  } catch (err) {
+    console.log(err);
+  }
+}
