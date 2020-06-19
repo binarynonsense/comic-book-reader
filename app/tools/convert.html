@@ -13,7 +13,7 @@
       href="../assets/libs/materialize/css/materialize.min.css"
     />
     <link rel="stylesheet" href="../assets/css/convert.css" />
-    <title>Convert File Tool</title>
+    <title></title>
   </head>
   <body>
     <!-- <h5><i class="fas fa-tools"></i></h5> -->
@@ -26,7 +26,7 @@
         <a
           class="waves-effect waves-light btn"
           id="input-list-add"
-          onclick="onChooseInputFile()"
+          onclick="renderer.onChooseInputFile()"
           >ADD</a
         >
       </ul>
@@ -50,7 +50,7 @@
       <h5>Output Format:</h5>
       <select class="browser-default">
         <!-- <option value="" disabled selected>Choose a format</option> -->
-        <option value="1">.cbz (zip)</option>
+        <option value="zip">.cbz (zip)</option>
       </select>
 
       <h5>
@@ -66,7 +66,9 @@
         <li class="collection-item" id="output-folder">
           <i>Select a Folder...</i>
         </li>
-        <a class="waves-effect waves-light btn" onclick="onChooseOutputFolder()"
+        <a
+          class="waves-effect waves-light btn"
+          onclick="renderer.onChooseOutputFolder()"
           >CHANGE</a
         >
       </ul>
@@ -74,7 +76,7 @@
       <a
         id="convert-button"
         class="btn modal-trigger blue-grey darken-3 disabled"
-        onclick="onConvert()"
+        onclick="renderer.onConvert()"
         data-target="modal1"
         >CONVERT</a
       >
@@ -113,139 +115,7 @@
       });
     </script>
     <script>
-      const path = require("path");
-      const os = require("os");
-      const { ipcRenderer } = require("electron");
-
-      const FileDataType = {
-        NOT_SET: "not set",
-        PDF: "pdf",
-        IMGS: "imgs",
-        ZIP: "zip",
-        RAR: "rar",
-        EPUB: "epub",
-      };
-
-      let inputFilePath;
-      let inputFileType;
-      let outputSize = "100";
-      let outputFormat = 1;
-      let outputFolderPath;
-
-      let inputListDiv = document.querySelector("#input-list");
-      let inputListButton = document.querySelector("#input-list-add");
-      let outputFolderDiv = document.querySelector("#output-folder");
-      let convertButton = document.querySelector("#convert-button");
-      let sizeSlider = document.querySelector("#size-slider");
-      let modalInfoArea = document.querySelector("#modal-info");
-      let modalLogArea = document.querySelector("#modal-log");
-      let modalButtonContainer = document.querySelector(
-        "#modal-button-container"
-      );
-      let modalButtonClose = document.querySelector("#modal-button-close");
-      let modalLoadingBar = document.querySelector("#modal-loading-bar");
-      let modalTitle = document.querySelector("#modal-title");
-
-      sizeSlider.addEventListener("mouseup", (event) => {
-        outputSize = event.currentTarget.value;
-        checkValidData();
-      });
-      // sizeSlider.addEventListener("input", (event) => {
-      //   document.getElementById("toolbar-page-numbers").innerHTML =
-      //     event.currentTarget.value + " / " + event.currentTarget.max;
-      // });
-
-      function checkValidData() {
-        if (outputFolderPath !== undefined && inputFilePath !== undefined) {
-          if (outputSize !== "100" || inputFileType !== FileDataType.ZIP) {
-            convertButton.classList.remove("disabled");
-            return;
-          }
-        }
-        convertButton.classList.add("disabled");
-      }
-
-      function onChooseInputFile() {
-        ipcRenderer.send("convert-choose-file");
-      }
-
-      function onChooseOutputFolder() {
-        ipcRenderer.send("convert-choose-folder");
-      }
-
-      function reducePathString(input) {
-        var length = 70;
-        input =
-          input.length > length
-            ? "..." + input.substring(input.length - length, input.length)
-            : input;
-        return input;
-      }
-
-      ipcRenderer.on("add-file", (event, filePath, fileType) => {
-        // TEMP do this on future init function
-        inputListButton.classList.add("hide");
-
-        inputFilePath = filePath;
-        inputFileType = fileType;
-
-        inputListDiv.innerHTML +=
-          "<li class='collection-item'><div>" +
-          reducePathString(inputFilePath) +
-          (false
-            ? "<a href='#!' class='secondary-content'><i class='fas fa-window-close' title='remove from list'></i></a>"
-            : "") +
-          "</div></li>";
-
-        outputFolderPath = path.dirname(filePath);
-        outputFolderDiv.innerHTML = reducePathString(outputFolderPath);
-
-        checkValidData();
-      });
-
-      ipcRenderer.on("change-output-folder", (event, folderPath) => {
-        outputFolderPath = folderPath;
-        outputFolderDiv.innerHTML = reducePathString(outputFolderPath);
-        checkValidData();
-      });
-
-      ipcRenderer.on("convert-state-update", (event, updateType, data) => {
-        switch (updateType) {
-          case "text-info":
-            modalInfoArea.innerHTML = data;
-            break;
-
-          case "text-log":
-            modalLogArea.innerHTML = data;
-            break;
-
-          case "finished-ok":
-            modalTitle.innerHTML = "New File Correctly Created:";
-            modalInfoArea.innerHTML = data;
-            modalButtonClose.classList.remove("hide");
-            modalLoadingBar.classList.add("hide");
-            modalLogArea.innerHTML = "";
-            break;
-
-          default:
-            break;
-        }
-      });
-
-      function onConvert() {
-        // modalInfoArea.innerHTML = "file: " + inputFilePath;
-        modalTitle.innerHTML = "Converting:";
-        modalButtonClose.classList.add("hide");
-        modalLoadingBar.classList.remove("hide");
-        ipcRenderer.send(
-          "convert-do-conversion",
-          inputFilePath,
-          inputFileType,
-          outputSize,
-          outputFormat,
-          outputFolderPath
-        );
-      }
+      const renderer = require("./convert-renderer");
     </script>
   </body>
 </html>

@@ -13,7 +13,7 @@ const fileUtils = require("./file-utils");
 const i18n = require("./i18n");
 const menuBar = require("./menu-bar");
 const contextMenu = require("./menu-context");
-const convertTool = require("./tools/convert");
+const convertTool = require("./tools/convert-main");
 
 function isDev() {
   return process.argv[2] == "--dev";
@@ -220,7 +220,7 @@ function rebuildTranslatedTexts() {
     i18n.getLoadedLocale(),
     i18n.getAvailableLocales()
   );
-  updateConvertMenu();
+  updateMenuItemsState();
 
   g_mainWindow.webContents.send("update-menubar");
   g_mainWindow.webContents.send(
@@ -302,7 +302,7 @@ ipcMain.on(
     g_fileData.pagesPaths = imageIDs; // not really paths
     g_fileData.numPages = imageIDs.length;
     g_fileData.pageIndex = pageIndex;
-    updateConvertMenu();
+    updateMenuItemsState();
     setPageRotation(0, false);
     goToPage(pageIndex);
     renderPageInfo();
@@ -338,7 +338,7 @@ ipcMain.on(
     g_fileData.pagesPaths = [];
     g_fileData.numPages = 0;
     g_fileData.pageIndex = pageIndex;
-    updateConvertMenu();
+    updateMenuItemsState();
     setPageRotation(0, false);
     g_fileData.numPages = numPages;
     goToPage(pageIndex);
@@ -641,7 +641,7 @@ function openFile(filePath, pageIndex = 0) {
           g_fileData.imgsFolderPath = "";
           g_fileData.numPages = pagesPaths.length;
           g_fileData.pageIndex = pageIndex;
-          updateConvertMenu();
+          updateMenuItemsState();
           setPageRotation(0, false);
           goToPage(pageIndex);
         } else {
@@ -663,7 +663,7 @@ function openFile(filePath, pageIndex = 0) {
           g_fileData.imgsFolderPath = "";
           g_fileData.numPages = pagesPaths.length;
           g_fileData.pageIndex = pageIndex;
-          updateConvertMenu();
+          updateMenuItemsState();
           setPageRotation(0, false);
           goToPage(pageIndex);
         } else {
@@ -962,12 +962,13 @@ function setPageRotation(value, refreshPage) {
   }
 }
 
-function updateConvertMenu() {
+function updateMenuItemsState() {
   if (g_fileData.filePath !== "") {
     if (
       g_fileData.type === FileDataType.ZIP ||
       g_fileData.type === FileDataType.RAR ||
-      g_fileData.type === FileDataType.EPUB
+      g_fileData.type === FileDataType.EPUB ||
+      g_fileData.type === FileDataType.PDF
     ) {
       menuBar.setConvertFile(true);
     } else {
