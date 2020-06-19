@@ -484,7 +484,7 @@ exports.onMenuOpenFile = onMenuOpenFile = function () {
   if (g_fileData.path !== "") {
     defaultPath = g_fileData.path;
   } else if (g_history.length > 0) {
-    defaultPath = g_history[length - 1].filePath;
+    defaultPath = g_history[g_history.length - 1].filePath;
   }
   let fileList = fileUtils.chooseFile(g_mainWindow, defaultPath);
   if (fileList === undefined) {
