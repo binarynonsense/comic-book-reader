@@ -97,7 +97,7 @@ ipcMain.on(
 ///////////////////////////////////////////////////////////////////////////////
 
 function conversionStopError(err) {
-  //console.log(err);
+  console.log(err);
   g_convertWindow.webContents.send(
     "convert-update-text-title",
     "Conversion Failed:"
@@ -173,24 +173,14 @@ async function createFileFromImages(
       // ref: https://www.npmjs.com/package/jimp
       const Jimp = require("jimp");
       for (let index = 0; index < imgFiles.length; index++) {
-        await Jimp.read(imgFiles[index]).then((image) => {
-          g_convertWindow.webContents.send(
-            "convert-update-text-log",
-            "Resizing Page: " + (index + 1) + " / " + imgFiles.length
-          );
-          return (
-            image
-              .scale(outputSize / 100)
-              .quality(60)
-              // Don't know how to get the original's quality and 60 seems to give the best size 'reduction to visual quality' results,
-              // much better looking than expected for such a low number
-              .write(imgFiles[index])
-          );
-        });
-        // TODO will an error be catched by the above try-catch?
-        // .catch((err) => {
-        //   conversionError(err);
-        // });
+        g_convertWindow.webContents.send(
+          "convert-update-text-log",
+          "Resizing Page: " + (index + 1) + " / " + imgFiles.length
+        );
+        let image = await Jimp.read(imgFiles[index]);
+        image.scale(outputSize / 100);
+        image.quality(60); // if I use a bigger value files end up biger even when scaling 25-30%
+        await image.writeAsync(imgFiles[index]);
       }
     }
 
