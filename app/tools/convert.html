@@ -96,12 +96,22 @@
         <div class="progress" id="modal-loading-bar">
           <div class="indeterminate"></div>
         </div>
-        <p id="modal-log"></p>
-        <!-- <textarea id="modal-error-log" rows="8" readonly></textarea> -->
+        <!-- <p id="modal-log"></p> -->
+        <textarea
+          id="modal-log"
+          rows="8"
+          style="
+            height: 100px;
+            color: rgb(155, 155, 155);
+            padding: 5px;
+            border-color: rgb(155, 155, 155);
+          "
+          readonly
+        ></textarea>
       </div>
       <a
         href="#!"
-        class="modal-close waves-effect waves-green btn"
+        class="modal-close blue-grey darken-3 btn"
         id="button-modal-close"
         >Close</a
       >

@@ -148,12 +148,25 @@ function conversionStopError(err) {
     "convert-update-text-title",
     _("Conversion Failed:")
   );
-  g_convertWindow.webContents.send("convert-update-text-log", "");
+  g_convertWindow.webContents.send("convert-update-text-log", err);
   g_convertWindow.webContents.send(
     "convert-update-text-info",
     _("Couldn't convert the file, an error ocurred")
   );
+  g_convertWindow.webContents.send(
+    "convert-update-text-log",
+    _("Conversion Failed:")
+  );
   g_convertWindow.webContents.send("convert-finished-error");
+}
+
+function reducePathString(input) {
+  var length = 60;
+  input =
+    input.length > length
+      ? "..." + input.substring(input.length - length, input.length)
+      : input;
+  return input;
 }
 
 function conversionStart(inputFilePath, inputFileType) {
@@ -161,8 +174,12 @@ function conversionStart(inputFilePath, inputFileType) {
     "convert-update-text-title",
     _("Converting:")
   );
-  g_convertWindow.webContents.send("convert-update-text-info", inputFilePath);
-  g_convertWindow.webContents.send("convert-update-text-log", "");
+  g_convertWindow.webContents.send(
+    "convert-update-text-info",
+    reducePathString(inputFilePath)
+  );
+  g_convertWindow.webContents.send("convert-update-text-log", _("Converting:"));
+  g_convertWindow.webContents.send("convert-update-text-log", inputFilePath);
 
   // extract to temp folder
   if (
@@ -245,6 +262,7 @@ async function createFileFromImages(
       outputFolderPath,
       filename + "." + outputFormat
     );
+    g_convertWindow.webContents.send("convert-update-text-log", outputFilePath);
     let i = 1;
     while (fs.existsSync(outputFilePath)) {
       //console.log("file already exists");

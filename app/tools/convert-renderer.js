@@ -210,7 +210,10 @@ function onConvert(resetCounter = true) {
   g_modalButtonClose.classList.add("hide");
   g_modalLoadingBar.classList.remove("hide");
 
-  if (resetCounter) g_inputFilesIndex = 0;
+  if (resetCounter) {
+    g_inputFilesIndex = 0;
+    g_modalLogArea.innerHTML = "";
+  }
 
   g_inputFilePath = g_inputFiles[g_inputFilesIndex].path;
   g_inputFileType = g_inputFiles[g_inputFilesIndex].type;
@@ -230,7 +233,8 @@ ipcRenderer.on("convert-update-text-title", (event, text) => {
 });
 
 ipcRenderer.on("convert-update-text-log", (event, text) => {
-  g_modalLogArea.innerHTML = text;
+  g_modalLogArea.innerHTML += "\n" + text;
+  g_modalLogArea.scrollTop = g_modalLogArea.scrollHeight;
 });
 
 ipcRenderer.on("convert-update-text-info", (event, text) => {
@@ -267,6 +271,8 @@ ipcRenderer.on("convert-finished-ok", (event) => {
 ipcRenderer.on("convert-finished-error", (event) => {
   g_modalButtonClose.classList.remove("hide");
   g_modalLoadingBar.classList.add("hide");
+  g_modalLogArea.innerHTML += "\n" + g_inputFilePath;
+  g_modalLogArea.scrollTop = g_modalLogArea.scrollHeight;
 });
 
 ///////////////////////////////////////////////////////////////////////////////
