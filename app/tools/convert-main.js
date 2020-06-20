@@ -15,7 +15,7 @@ exports.showWindow = function (parentWindow, filePath, fileType) {
   g_convertWindow = new BrowserWindow({
     title: "Convert Files Tool",
     width: 700,
-    height: 600,
+    height: 650,
     //frame: false,
     icon: path.join(__dirname, "../assets/images/icon_256x256.png"),
     resizable: true,
@@ -84,10 +84,18 @@ ipcMain.on("convert-pdf-images-extracted", (event) => {
 
 ipcMain.on(
   "convert-create-file-from-images",
-  (event, inputFilePath, outputSize, outputFormat, outputFolderPath) => {
+  (
+    event,
+    inputFilePath,
+    outputScale,
+    outputQuality,
+    outputFormat,
+    outputFolderPath
+  ) => {
     createFileFromImages(
       inputFilePath,
-      outputSize,
+      outputScale,
+      outputQuality,
       outputFormat,
       outputFolderPath
     );
@@ -155,7 +163,8 @@ async function conversionExtractImages(inputFilePath, inputFileType) {
 
 async function createFileFromImages(
   inputFilePath,
-  outputSize,
+  outputScale,
+  outputQuality,
   outputFormat,
   outputFolderPath
 ) {
@@ -168,8 +177,9 @@ async function createFileFromImages(
     }
 
     // resize imgs if needed
-    outputSize = parseInt(outputSize);
-    if (outputSize < 100) {
+    outputScale = parseInt(outputScale);
+    outputQuality = parseInt(outputQuality);
+    if (outputScale < 100) {
       // ref: https://www.npmjs.com/package/jimp
       const Jimp = require("jimp");
       for (let index = 0; index < imgFiles.length; index++) {
@@ -178,8 +188,8 @@ async function createFileFromImages(
           "Resizing Page: " + (index + 1) + " / " + imgFiles.length
         );
         let image = await Jimp.read(imgFiles[index]);
-        image.scale(outputSize / 100);
-        image.quality(60); // if I use a bigger value files end up biger even when scaling 25-30%
+        image.scale(outputScale / 100);
+        image.quality(outputQuality);
         await image.writeAsync(imgFiles[index]);
       }
     }

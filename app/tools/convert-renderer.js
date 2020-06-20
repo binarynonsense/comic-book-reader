@@ -14,7 +14,8 @@ const FileDataType = {
 
 let inputFilePath;
 let inputFileType;
-let outputSize = "100";
+let outputScale = "100";
+let outputQuality = "60";
 let outputFormat = "cbz";
 let outputFolderPath;
 
@@ -22,7 +23,8 @@ let inputListDiv = document.querySelector("#input-list");
 let inputListButton = document.querySelector("#input-list-add");
 let outputFolderDiv = document.querySelector("#output-folder");
 let convertButton = document.querySelector("#convert-button");
-let sizeSlider = document.querySelector("#size-slider");
+let scaleSlider = document.querySelector("#scale-slider");
+let qualitySlider = document.querySelector("#quality-slider");
 let modalInfoArea = document.querySelector("#modal-info");
 let modalLogArea = document.querySelector("#modal-log");
 let modalButtonContainer = document.querySelector("#modal-button-container");
@@ -30,8 +32,12 @@ let modalButtonClose = document.querySelector("#modal-button-close");
 let modalLoadingBar = document.querySelector("#modal-loading-bar");
 let modalTitle = document.querySelector("#modal-title");
 
-sizeSlider.addEventListener("mouseup", (event) => {
-  outputSize = event.currentTarget.value;
+scaleSlider.addEventListener("mouseup", (event) => {
+  outputScale = event.currentTarget.value;
+  checkValidData();
+});
+qualitySlider.addEventListener("mouseup", (event) => {
+  outputQuality = event.currentTarget.value;
   checkValidData();
 });
 // sizeSlider.addEventListener("input", (event) => {
@@ -42,19 +48,25 @@ sizeSlider.addEventListener("mouseup", (event) => {
 ///////////////////////////////////////////////////////////////////////////////
 
 function checkValidData() {
+  if (outputScale === "100") {
+    qualitySlider.parentElement.classList.add("hide");
+  } else {
+    qualitySlider.parentElement.classList.remove("hide");
+  }
+
   if (outputFolderPath !== undefined && inputFilePath !== undefined) {
     if (inputFileType === FileDataType.ZIP) {
-      if (!(outputFormat === "cbz" && outputSize === "100")) {
+      if (!(outputFormat === "cbz" && outputScale === "100")) {
         convertButton.classList.remove("disabled");
         return;
       }
     } else if (inputFileType === FileDataType.PDF) {
-      if (!(outputFormat === "pdf" && outputSize === "100")) {
+      if (!(outputFormat === "pdf" && outputScale === "100")) {
         convertButton.classList.remove("disabled");
         return;
       }
     } else if (inputFileType === FileDataType.EPUB) {
-      if (!(outputFormat === "epub" && outputSize === "100")) {
+      if (!(outputFormat === "epub" && outputScale === "100")) {
         convertButton.classList.remove("disabled");
         return;
       }
@@ -155,7 +167,8 @@ ipcRenderer.on("convert-images-extracted", (event) => {
   ipcRenderer.send(
     "convert-create-file-from-images",
     inputFilePath,
-    outputSize,
+    outputScale,
+    outputQuality,
     outputFormat,
     outputFolderPath
   );
