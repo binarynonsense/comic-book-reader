@@ -4,6 +4,9 @@ const os = require("os");
 const { ipcRenderer } = require("electron");
 
 let g_mode;
+let g_inputFiles = [];
+let g_inputFilesCounter = 0;
+let g_inputFilesIndex = 0;
 
 const FileDataType = {
   NOT_SET: "not set",
@@ -54,32 +57,41 @@ function checkValidData() {
     g_qualitySlider.parentElement.classList.remove("hide");
   }
 
-  if (g_outputFolderPath !== undefined && g_inputFilePath !== undefined) {
-    if (g_inputFileType === FileDataType.ZIP) {
-      if (!(g_outputFormat === "cbz" && g_outputScale === "100")) {
+  if (g_mode === 0) {
+    if (g_outputFolderPath !== undefined && g_inputFiles.length > 0) {
+      if (g_inputFiles[0].type === FileDataType.ZIP) {
+        if (!(g_outputFormat === "cbz" && g_outputScale === "100")) {
+          g_convertButton.classList.remove("disabled");
+          return;
+        }
+      } else if (g_inputFiles[0].type === FileDataType.PDF) {
+        if (!(g_outputFormat === "pdf" && g_outputScale === "100")) {
+          g_convertButton.classList.remove("disabled");
+          return;
+        }
+      } else if (g_inputFiles[0].type === FileDataType.EPUB) {
+        if (!(g_outputFormat === "epub" && g_outputScale === "100")) {
+          g_convertButton.classList.remove("disabled");
+          return;
+        }
+      } else if (g_inputFiles[0].type === FileDataType.RAR) {
         g_convertButton.classList.remove("disabled");
         return;
       }
-    } else if (g_inputFileType === FileDataType.PDF) {
-      if (!(g_outputFormat === "pdf" && g_outputScale === "100")) {
-        g_convertButton.classList.remove("disabled");
-        return;
-      }
-    } else if (g_inputFileType === FileDataType.EPUB) {
-      if (!(g_outputFormat === "epub" && g_outputScale === "100")) {
-        g_convertButton.classList.remove("disabled");
-        return;
-      }
-    } else if (g_inputFileType === FileDataType.RAR) {
+    }
+    g_convertButton.classList.add("disabled");
+  } else {
+    // mode 1 / batch
+    if (g_outputFolderPath !== undefined && g_inputFiles.length > 0) {
       g_convertButton.classList.remove("disabled");
-      return;
+    } else {
+      g_convertButton.classList.add("disabled");
     }
   }
-  g_convertButton.classList.add("disabled");
 }
 
 function reducePathString(input) {
-  var length = 70;
+  var length = 60;
   input =
     input.length > length
       ? "..." + input.substring(input.length - length, input.length)
@@ -104,6 +116,7 @@ ipcRenderer.on("set-mode", (event, mode, outputFolderPath) => {
     g_textInputFileDiv.classList.add("hide");
     g_textInputFilesDiv.classList.remove("hide");
   }
+  checkValidData();
 });
 
 ipcRenderer.on(
@@ -124,19 +137,49 @@ ipcRenderer.on(
 
 ipcRenderer.on("add-file", (event, filePath, fileType) => {
   if (filePath === undefined || fileType === undefined) return;
-  g_inputFilePath = filePath;
-  g_inputFileType = fileType;
+
+  for (let index = 0; index < g_inputFiles.length; index++) {
+    if (g_inputFiles[index].path === filePath) {
+      return;
+    }
+  }
+  let id = g_inputFilesCounter++; // not the best solution, but if it works...
+  g_inputFiles.push({
+    id: id,
+    path: filePath,
+    type: fileType,
+  });
 
   g_inputListDiv.innerHTML +=
     "<li class='collection-item'><div>" +
-    reducePathString(g_inputFilePath) +
-    (false
-      ? "<a href='#!' class='secondary-content'><i class='fas fa-window-close' title='remove from list'></i></a>"
+    reducePathString(filePath) +
+    (g_mode === 1
+      ? "<a style='cursor: pointer;' onclick='renderer.onRemoveFile(this, " +
+        id +
+        ")' class='secondary-content'><i class='fas fa-window-close' title='remove from list'></i></a>"
       : "") +
     "</div></li>";
 
   checkValidData();
 });
+
+function onRemoveFile(element, id) {
+  element.parentElement.parentElement.parentElement.removeChild(
+    element.parentElement.parentElement
+  );
+  let removeIndex;
+  for (let index = 0; index < g_inputFiles.length; index++) {
+    if (g_inputFiles[index].id === id) {
+      removeIndex = index;
+      break;
+    }
+  }
+  if (removeIndex !== undefined) {
+    g_inputFiles.splice(removeIndex, 1);
+    checkValidData();
+  }
+}
+exports.onRemoveFile = onRemoveFile;
 
 ipcRenderer.on("change-output-folder", (event, folderPath) => {
   g_outputFolderPath = folderPath;
@@ -162,10 +205,15 @@ function outputFormatChanged(selectObject) {
 }
 exports.outputFormatChanged = outputFormatChanged;
 
-function onConvert() {
+function onConvert(resetCounter = true) {
   g_modalTitle.innerHTML = "";
   g_modalButtonClose.classList.add("hide");
   g_modalLoadingBar.classList.remove("hide");
+
+  if (resetCounter) g_inputFilesIndex = 0;
+
+  g_inputFilePath = g_inputFiles[g_inputFilesIndex].path;
+  g_inputFileType = g_inputFiles[g_inputFilesIndex].type;
 
   ipcRenderer.send(
     "convert-start-conversion",
@@ -207,8 +255,13 @@ ipcRenderer.on("convert-images-extracted", (event) => {
 });
 
 ipcRenderer.on("convert-finished-ok", (event) => {
-  g_modalButtonClose.classList.remove("hide");
-  g_modalLoadingBar.classList.add("hide");
+  if (g_inputFilesIndex < g_inputFiles.length - 1) {
+    g_inputFilesIndex++;
+    onConvert(false);
+  } else {
+    g_modalButtonClose.classList.remove("hide");
+    g_modalLoadingBar.classList.add("hide");
+  }
 });
 
 ipcRenderer.on("convert-finished-error", (event) => {
