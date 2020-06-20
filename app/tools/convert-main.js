@@ -70,6 +70,10 @@ ipcMain.on(
   }
 );
 
+ipcMain.on("convert-stop-error", (event, ee) => {
+  conversionStopError(err);
+});
+
 ipcMain.on("convert-pdf-images-extracted", (event) => {
   g_convertWindow.webContents.send("convert-images-extracted");
 });
@@ -87,6 +91,20 @@ ipcMain.on(
 );
 
 ///////////////////////////////////////////////////////////////////////////////
+
+function conversionStopError(err) {
+  //console.log(err);
+  g_convertWindow.webContents.send(
+    "convert-update-text-title",
+    "Conversion Failed:"
+  );
+  g_convertWindow.webContents.send("convert-update-text-log", "");
+  g_convertWindow.webContents.send(
+    "convert-update-text-info",
+    "Couldn't convert the file, an error ocurred"
+  );
+  g_convertWindow.webContents.send("convert-finished-error");
+}
 
 function conversionStart(inputFilePath, inputFileType) {
   g_convertWindow.webContents.send("convert-update-text-title", "Converting:");
@@ -112,19 +130,23 @@ function conversionStart(inputFilePath, inputFileType) {
     tempFolder = fileUtils.createTempFolder();
     g_convertWindow.webContents.send("convert-extract-pdf-images", tempFolder);
   } else {
-    // TODO cancel
+    conversionStopError("");
   }
 }
 
 async function conversionExtractImages(inputFilePath, inputFileType) {
-  if (inputFileType === "zip") {
-    fileUtils.extractZip(inputFilePath);
-  } else if (inputFileType === "rar") {
-    fileUtils.extractRar(inputFilePath);
-  } else if (inputFileType === "epub") {
-    await fileUtils.extractEpubImages(inputFilePath);
+  try {
+    if (inputFileType === "zip") {
+      fileUtils.extractZip(inputFilePath);
+    } else if (inputFileType === "rar") {
+      fileUtils.extractRar(inputFilePath);
+    } else if (inputFileType === "epub") {
+      await fileUtils.extractEpubImages(inputFilePath);
+    }
+    g_convertWindow.webContents.send("convert-images-extracted");
+  } catch (err) {
+    conversionStopError(err);
   }
-  g_convertWindow.webContents.send("convert-images-extracted");
 }
 
 async function createFileFromImages(
@@ -133,16 +155,20 @@ async function createFileFromImages(
   outputFormat,
   outputFolderPath
 ) {
-  let tempFolder = fileUtils.getTempFolder();
-  let imgFiles = fileUtils.getImageFilesInFolderRecursive(tempFolder);
+  try {
+    let tempFolder = fileUtils.getTempFolder();
+    let imgFiles = fileUtils.getImageFilesInFolderRecursive(tempFolder);
+    if (imgFiles === undefined || imgFiles.length === 0) {
+      conversionStopError("");
+      return;
+    }
 
-  // resize imgs if needed
-  outputSize = parseInt(outputSize);
-  if (outputSize < 100) {
-    const Jimp = require("jimp");
-    for (let index = 0; index < imgFiles.length; index++) {
-      await Jimp.read(imgFiles[index])
-        .then((image) => {
+    // resize imgs if needed
+    outputSize = parseInt(outputSize);
+    if (outputSize < 100) {
+      const Jimp = require("jimp");
+      for (let index = 0; index < imgFiles.length; index++) {
+        await Jimp.read(imgFiles[index]).then((image) => {
           g_convertWindow.webContents.send(
             "convert-update-text-log",
             "Resizing Page: " + (index + 1) + " / " + imgFiles.length
@@ -155,137 +181,61 @@ async function createFileFromImages(
               // much better looking than expected for such a low number
               .write(imgFiles[index])
           );
-        })
-        .catch((err) => {
-          // TODO cancel conversion?
-          console.error(err);
         });
+        // TODO will an error be catched by the above try-catch?
+        // .catch((err) => {
+        //   conversionError(err);
+        // });
+      }
     }
+
+    // compress to output folder
+    g_convertWindow.webContents.send(
+      "convert-update-text-log",
+      "Generating New File..."
+    );
+    let filename = path.basename(inputFilePath, path.extname(inputFilePath));
+    let outputFilePath = path.join(
+      outputFolderPath,
+      filename + "." + outputFormat
+    );
+    let i = 1;
+    while (fs.existsSync(outputFilePath)) {
+      //console.log("file already exists");
+      i++;
+      outputFilePath = path.join(
+        outputFolderPath,
+        filename + "(" + i + ")." + outputFormat
+      );
+    }
+
+    if (outputFormat === "pdf") {
+      fileUtils.createPdfFromImages(imgFiles, outputFilePath);
+    } else {
+      //cbz
+      fileUtils.createZip(imgFiles, outputFilePath);
+    }
+
+    // delete temp folder
+    g_convertWindow.webContents.send(
+      "convert-update-text-log",
+      "Cleaning Up..."
+    );
+
+    fileUtils.cleanUpTempFolder();
+    g_convertWindow.webContents.send(
+      "convert-update-text-title",
+      "New File Correctly Created:"
+    );
+    g_convertWindow.webContents.send("convert-update-text-log", "");
+    g_convertWindow.webContents.send(
+      "convert-update-text-info",
+      outputFilePath
+    );
+    g_convertWindow.webContents.send("convert-finished-ok");
+  } catch (err) {
+    conversionStopError(err);
   }
-
-  // compress to output folder
-  let filename = path.basename(inputFilePath, path.extname(inputFilePath));
-  let cbzPath = path.join(outputFolderPath, filename + ".cbz");
-  let i = 1;
-  while (fs.existsSync(cbzPath)) {
-    //console.log("file already exists");
-    i++;
-    cbzPath = path.join(outputFolderPath, filename + "(" + i + ").cbz");
-  }
-  g_convertWindow.webContents.send(
-    "convert-update-text-log",
-    "Compressing New File..."
-  );
-  fileUtils.createZip(imgFiles, cbzPath);
-
-  // delete temp folder
-  g_convertWindow.webContents.send("convert-update-text-log", "Cleaning Up...");
-
-  fileUtils.cleanUpTempFolder();
-  g_convertWindow.webContents.send(
-    "convert-update-text-title",
-    "New File Correctly Created:"
-  );
-  g_convertWindow.webContents.send("convert-update-text-log", "");
-  g_convertWindow.webContents.send("convert-update-text-info", cbzPath);
-  g_convertWindow.webContents.send("convert-finished-ok");
 }
-
-// async function convert(
-//   inputFilePath,
-//   inputFileType,
-//   outputSize,
-//   outputFormat,
-//   outputFolderPath
-// ) {
-//   // TODO catch errors
-//   g_convertWindow.webContents.send(
-//     "convert-state-update",
-//     "text-info",
-//     inputFilePath
-//   );
-//   g_convertWindow.webContents.send(
-//     "convert-state-update",
-//     "text-log",
-//     "Extracting pages..."
-//   );
-
-//   // extract to temp folder
-//   let tempFolder;
-//   if (inputFileType === "zip") {
-//     tempFolder = fileUtils.extractZip(inputFilePath);
-//   } else if (inputFileType === "rar") {
-//     tempFolder = fileUtils.extractRar(inputFilePath);
-//   } else if (inputFileType === "epub") {
-//     tempFolder = await fileUtils.extractEpubImages(inputFilePath);
-//   } else if (inputFileType === "pdf") {
-//     return;
-//   } else {
-//     // close modal with error?
-//     return;
-//   }
-//   let imgFiles = fileUtils.getImageFilesInFolderRecursive(tempFolder);
-//   //console.log(imgFiles);
-
-//   // resize imgs if needed
-//   outputSize = parseInt(outputSize);
-//   if (outputSize < 100) {
-//     const Jimp = require("jimp");
-//     for (let index = 0; index < imgFiles.length; index++) {
-//       await Jimp.read(imgFiles[index])
-//         .then((image) => {
-//           //console.log(imgFiles[index]);
-//           g_convertWindow.webContents.send(
-//             "convert-state-update",
-//             "text-log",
-//             "Resizing Page: " + (index + 1) + " / " + imgFiles.length
-//           );
-//           return (
-//             image
-//               .scale(outputSize / 100)
-//               .quality(60)
-//               // Don't know how to get the original's quality and 60 seems to give the best size 'reduction to visual quality' results,
-//               // much better looking than expected for such a low number
-//               .write(imgFiles[index])
-//           );
-//         })
-//         .catch((err) => {
-//           // TODO cancel conversion?
-//           console.error(err);
-//         });
-//     }
-//   }
-
-//   // compress to output folder
-//   let filename = path.basename(inputFilePath, path.extname(inputFilePath));
-//   let cbzPath = path.join(outputFolderPath, filename + ".cbz");
-//   let i = 1;
-//   while (fs.existsSync(cbzPath)) {
-//     //console.log("file already exists");
-//     i++;
-//     cbzPath = path.join(outputFolderPath, filename + "(" + i + ").cbz");
-//   }
-//   //console.log("time to zip");
-//   g_convertWindow.webContents.send(
-//     "convert-state-update",
-//     "text-log",
-//     "Compressing New File..."
-//   );
-//   fileUtils.createZip(imgFiles, cbzPath);
-
-//   // delete temp folder
-//   g_convertWindow.webContents.send(
-//     "convert-state-update",
-//     "text-log",
-//     "Cleaning Up..."
-//   );
-//   fileUtils.cleanUpTempFolder();
-
-//   g_convertWindow.webContents.send(
-//     "convert-state-update",
-//     "finished-ok",
-//     cbzPath
-//   );
-// }
 
 ///////////////////////////////////////////////////////////////////////////////

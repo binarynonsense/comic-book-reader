@@ -44,9 +44,13 @@
       </p>
 
       <h5>Output Format:</h5>
-      <select class="browser-default">
+      <select
+        class="browser-default"
+        onchange="renderer.outputFormatChanged(this)"
+      >
         <!-- <option value="" disabled selected>Choose a format</option> -->
-        <option value="zip">.cbz (zip)</option>
+        <option value="cbz">.cbz (zip)</option>
+        <option value="pdf">.pdf</option>
       </select>
 
       <h5>

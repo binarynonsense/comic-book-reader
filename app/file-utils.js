@@ -249,7 +249,7 @@ exports.getImageFilesInFolderRecursive = getImageFilesInFolderRecursive;
 //exports.getImageFilesInFolder = getImageFilesInFolder;
 
 ///////////////////////////////////////////////////////////////////////////////
-// ZIP / RAR / EPUB //////////////////////////////////////////////////////////////////
+// ZIP / RAR //////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
 function extractRar(filePath) {
@@ -360,6 +360,8 @@ function createZip(filePathsList, outputFilePath) {
 exports.createZip = createZip;
 
 ///////////////////////////////////////////////////////////////////////////////
+// EPUB / PDF /////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 async function extractEpubImages(filePath) {
   // TODO catch errors
@@ -445,6 +447,25 @@ async function extractEpubImages(filePath) {
   return tempFolder;
 }
 exports.extractEpubImages = extractEpubImages;
+
+///////////////////////////////////////////////////////////////////////////////
+
+function createPdfFromImages(imgPathsList, outputFilePath) {
+  const PDFDocument = require("pdfkit");
+
+  const pdf = new PDFDocument({
+    autoFirstPage: false,
+  });
+  pdf.pipe(fs.createWriteStream(outputFilePath));
+  for (let index = 0; index < imgPathsList.length; index++) {
+    const imgPath = imgPathsList[index];
+    const img = pdf.openImage(imgPath);
+    pdf.addPage({ size: [img.width, img.height] });
+    pdf.image(img, 0, 0);
+  }
+  pdf.end();
+}
+exports.createPdfFromImages = createPdfFromImages;
 
 ///////////////////////////////////////////////////////////////////////////////
 // TEMP FOLDER ////////////////////////////////////////////////////////////////

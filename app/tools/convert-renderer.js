@@ -15,7 +15,7 @@ const FileDataType = {
 let inputFilePath;
 let inputFileType;
 let outputSize = "100";
-let outputFormat = 1;
+let outputFormat = "cbz";
 let outputFolderPath;
 
 let inputListDiv = document.querySelector("#input-list");
@@ -43,9 +43,16 @@ sizeSlider.addEventListener("mouseup", (event) => {
 
 function checkValidData() {
   if (outputFolderPath !== undefined && inputFilePath !== undefined) {
-    if (outputSize !== "100" || inputFileType !== FileDataType.ZIP) {
-      convertButton.classList.remove("disabled");
-      return;
+    if (inputFileType === FileDataType.ZIP) {
+      if (!(outputFormat === "cbz" && outputSize === "100")) {
+        convertButton.classList.remove("disabled");
+        return;
+      }
+    } else if (inputFileType === FileDataType.ZIP) {
+      if (!(outputFormat === "pdf" && outputSize === "100")) {
+        convertButton.classList.remove("disabled");
+        return;
+      }
     }
   }
   convertButton.classList.add("disabled");
@@ -101,6 +108,12 @@ function onChooseOutputFolder() {
 }
 exports.onChooseOutputFolder = onChooseOutputFolder;
 
+function outputFormatChanged(selectObject) {
+  outputFormat = selectObject.value;
+  checkValidData();
+}
+exports.outputFormatChanged = outputFormatChanged;
+
 function onConvert() {
   modalTitle.innerHTML = "";
   modalButtonClose.classList.add("hide");
@@ -141,6 +154,11 @@ ipcRenderer.on("convert-images-extracted", (event) => {
 });
 
 ipcRenderer.on("convert-finished-ok", (event) => {
+  modalButtonClose.classList.remove("hide");
+  modalLoadingBar.classList.add("hide");
+});
+
+ipcRenderer.on("convert-finished-error", (event) => {
   modalButtonClose.classList.remove("hide");
   modalLoadingBar.classList.add("hide");
 });
@@ -193,6 +211,6 @@ async function extractPDFImages(folderPath) {
     pdf.destroy();
     ipcRenderer.send("convert-pdf-images-extracted");
   } catch (err) {
-    console.log(err);
+    ipcRenderer.send("convert-stop-error", err);
   }
 }
