@@ -448,6 +448,40 @@ async function extractEpubImages(filePath) {
 }
 exports.extractEpubImages = extractEpubImages;
 
+async function createEpubFromImages(imgPathsList, outputFilePath) {
+  // ref: https://www.npmjs.com/package/epub-gen
+  // ref: https://github.com/cyrilis/epub-gen/issues/25
+  const Epub = require("epub-gen");
+  let html = "";
+  //const url = require("url");
+  for (let index = 0; index < imgPathsList.length; index++) {
+    const imgPath = imgPathsList[index];
+    html += "<img src='file://" + imgPath + "'/>";
+    //html += '<img src="' + url.pathToFileURL(imgPath).href + '" />';
+    //console.log(html);
+  }
+  const option = {
+    //verbose: true,
+    tempDir: getTempFolder(),
+    title: path.basename(outputFilePath), // *Required, title of the book.
+    author: "", // *Required, name of the author.
+    //publisher: "", // optional
+    //cover: "",
+    //tocTitle: "",
+    content: [
+      {
+        data: html,
+        //beforeToc: true,
+        //excludeFromToc: true,
+      },
+    ],
+  };
+
+  let err = await new Epub(option, outputFilePath).promise;
+  if (err !== undefined) throw err;
+}
+exports.createEpubFromImages = createEpubFromImages;
+
 ///////////////////////////////////////////////////////////////////////////////
 
 function createPdfFromImages(imgPathsList, outputFilePath) {

@@ -6,6 +6,10 @@ const fileUtils = require("../file-utils");
 
 let g_convertWindow;
 
+function isDev() {
+  return process.argv[2] == "--dev";
+}
+
 exports.showWindow = function (parentWindow, filePath, fileType) {
   if (g_convertWindow !== undefined) return; // TODO: focus the existing one?
   g_convertWindow = new BrowserWindow({
@@ -34,7 +38,7 @@ exports.showWindow = function (parentWindow, filePath, fileType) {
     g_convertWindow.webContents.send("add-file", filePath, fileType);
   });
 
-  //g_convertWindow.toggleDevTools();
+  //if (isDev()) g_convertWindow.toggleDevTools();
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -212,6 +216,8 @@ async function createFileFromImages(
 
     if (outputFormat === "pdf") {
       fileUtils.createPdfFromImages(imgFiles, outputFilePath);
+    } else if (outputFormat === "epub") {
+      await fileUtils.createEpubFromImages(imgFiles, outputFilePath);
     } else {
       //cbz
       fileUtils.createZip(imgFiles, outputFilePath);

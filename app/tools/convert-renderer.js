@@ -48,11 +48,19 @@ function checkValidData() {
         convertButton.classList.remove("disabled");
         return;
       }
-    } else if (inputFileType === FileDataType.ZIP) {
+    } else if (inputFileType === FileDataType.PDF) {
       if (!(outputFormat === "pdf" && outputSize === "100")) {
         convertButton.classList.remove("disabled");
         return;
       }
+    } else if (inputFileType === FileDataType.EPUB) {
+      if (!(outputFormat === "epub" && outputSize === "100")) {
+        convertButton.classList.remove("disabled");
+        return;
+      }
+    } else if (inputFileType === FileDataType.RAR) {
+      convertButton.classList.remove("disabled");
+      return;
     }
   }
   convertButton.classList.add("disabled");
