@@ -166,6 +166,7 @@ async function createFileFromImages(
     // resize imgs if needed
     outputSize = parseInt(outputSize);
     if (outputSize < 100) {
+      // ref: https://www.npmjs.com/package/jimp
       const Jimp = require("jimp");
       for (let index = 0; index < imgFiles.length; index++) {
         await Jimp.read(imgFiles[index]).then((image) => {
