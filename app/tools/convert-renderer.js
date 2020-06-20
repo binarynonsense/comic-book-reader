@@ -3,6 +3,8 @@ const path = require("path");
 const os = require("os");
 const { ipcRenderer } = require("electron");
 
+let g_mode;
+
 const FileDataType = {
   NOT_SET: "not set",
   PDF: "pdf",
@@ -12,70 +14,68 @@ const FileDataType = {
   EPUB: "epub",
 };
 
-let inputFilePath;
-let inputFileType;
-let outputScale = "100";
-let outputQuality = "60";
-let outputFormat = "cbz";
-let outputFolderPath;
+let g_inputFilePath;
+let g_inputFileType;
+let g_outputScale = "100";
+let g_outputQuality = "60";
+let g_outputFormat = "cbz";
+let g_outputFolderPath;
 
-let inputListDiv = document.querySelector("#input-list");
-let inputListButton = document.querySelector("#input-list-add");
-let outputFolderDiv = document.querySelector("#output-folder");
-let convertButton = document.querySelector("#convert-button");
-let scaleSlider = document.querySelector("#scale-slider");
-let qualitySlider = document.querySelector("#quality-slider");
-let modalInfoArea = document.querySelector("#modal-info");
-let modalLogArea = document.querySelector("#modal-log");
-let modalButtonContainer = document.querySelector("#modal-button-container");
-let modalButtonClose = document.querySelector("#modal-button-close");
-let modalLoadingBar = document.querySelector("#modal-loading-bar");
-let modalTitle = document.querySelector("#modal-title");
+let g_textInputFileDiv = document.querySelector("#text-input-file");
+let g_textInputFilesDiv = document.querySelector("#text-input-files");
+let g_inputListDiv = document.querySelector("#input-list");
+let g_inputListButton = document.querySelector("#button-add-file");
+let g_outputFolderDiv = document.querySelector("#output-folder");
+let g_convertButton = document.querySelector("#button-convert");
+let g_scaleSlider = document.querySelector("#scale-slider");
+let g_qualitySlider = document.querySelector("#quality-slider");
+let g_modalInfoArea = document.querySelector("#modal-info");
+let g_modalLogArea = document.querySelector("#modal-log");
+let g_modalButtonContainer = document.querySelector("#modal-button-container");
+let g_modalButtonClose = document.querySelector("#button-modal-close");
+let g_modalLoadingBar = document.querySelector("#modal-loading-bar");
+let g_modalTitle = document.querySelector("#modal-title");
 
-scaleSlider.addEventListener("mouseup", (event) => {
-  outputScale = event.currentTarget.value;
+g_scaleSlider.addEventListener("mouseup", (event) => {
+  g_outputScale = event.currentTarget.value;
   checkValidData();
 });
-qualitySlider.addEventListener("mouseup", (event) => {
-  outputQuality = event.currentTarget.value;
+g_qualitySlider.addEventListener("mouseup", (event) => {
+  g_outputQuality = event.currentTarget.value;
   checkValidData();
 });
-// sizeSlider.addEventListener("input", (event) => {
-//   document.getElementById("toolbar-page-numbers").innerHTML =
-//     event.currentTarget.value + " / " + event.currentTarget.max;
-// });
 
 ///////////////////////////////////////////////////////////////////////////////
 
 function checkValidData() {
-  if (outputScale === "100") {
-    qualitySlider.parentElement.classList.add("hide");
+  if (g_outputScale === "100") {
+    g_qualitySlider.parentElement.classList.add("hide");
   } else {
-    qualitySlider.parentElement.classList.remove("hide");
+    g_qualitySlider.parentElement.classList.remove("hide");
   }
 
-  if (outputFolderPath !== undefined && inputFilePath !== undefined) {
-    if (inputFileType === FileDataType.ZIP) {
-      if (!(outputFormat === "cbz" && outputScale === "100")) {
-        convertButton.classList.remove("disabled");
+  if (g_outputFolderPath !== undefined && g_inputFilePath !== undefined) {
+    if (g_inputFileType === FileDataType.ZIP) {
+      if (!(g_outputFormat === "cbz" && g_outputScale === "100")) {
+        g_convertButton.classList.remove("disabled");
         return;
       }
-    } else if (inputFileType === FileDataType.PDF) {
-      if (!(outputFormat === "pdf" && outputScale === "100")) {
-        convertButton.classList.remove("disabled");
+    } else if (g_inputFileType === FileDataType.PDF) {
+      if (!(g_outputFormat === "pdf" && g_outputScale === "100")) {
+        g_convertButton.classList.remove("disabled");
         return;
       }
-    } else if (inputFileType === FileDataType.EPUB) {
-      if (!(outputFormat === "epub" && outputScale === "100")) {
-        convertButton.classList.remove("disabled");
+    } else if (g_inputFileType === FileDataType.EPUB) {
+      if (!(g_outputFormat === "epub" && g_outputScale === "100")) {
+        g_convertButton.classList.remove("disabled");
         return;
       }
-    } else if (inputFileType === FileDataType.RAR) {
-      convertButton.classList.remove("disabled");
+    } else if (g_inputFileType === FileDataType.RAR) {
+      g_convertButton.classList.remove("disabled");
       return;
     }
   }
-  convertButton.classList.add("disabled");
+  g_convertButton.classList.add("disabled");
 }
 
 function reducePathString(input) {
@@ -89,30 +89,58 @@ function reducePathString(input) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
+ipcRenderer.on("set-mode", (event, mode, outputFolderPath) => {
+  g_mode = mode;
+  g_outputFolderPath = outputFolderPath;
+  g_outputFolderDiv.innerHTML = reducePathString(g_outputFolderPath);
+  // 0
+  if (g_mode === 0) {
+    g_inputListButton.classList.add("hide");
+    g_textInputFileDiv.classList.remove("hide");
+    g_textInputFilesDiv.classList.add("hide");
+  } else {
+    // batch conversion
+    g_inputListButton.classList.remove("hide");
+    g_textInputFileDiv.classList.add("hide");
+    g_textInputFilesDiv.classList.remove("hide");
+  }
+});
+
+ipcRenderer.on(
+  "update-localization",
+  (event, title, localization, tooltipsLocalization) => {
+    document.title = title;
+    for (let index = 0; index < localization.length; index++) {
+      const element = localization[index];
+      document.querySelector("#" + element.id).innerHTML = element.text;
+    }
+
+    for (let index = 0; index < tooltipsLocalization.length; index++) {
+      const element = tooltipsLocalization[index];
+      document.querySelector("#" + element.id).title = element.text;
+    }
+  }
+);
+
 ipcRenderer.on("add-file", (event, filePath, fileType) => {
-  // TEMP do this on future init function
-  inputListButton.classList.add("hide");
+  if (filePath === undefined || fileType === undefined) return;
+  g_inputFilePath = filePath;
+  g_inputFileType = fileType;
 
-  inputFilePath = filePath;
-  inputFileType = fileType;
-
-  inputListDiv.innerHTML +=
+  g_inputListDiv.innerHTML +=
     "<li class='collection-item'><div>" +
-    reducePathString(inputFilePath) +
+    reducePathString(g_inputFilePath) +
     (false
       ? "<a href='#!' class='secondary-content'><i class='fas fa-window-close' title='remove from list'></i></a>"
       : "") +
     "</div></li>";
 
-  outputFolderPath = path.dirname(filePath);
-  outputFolderDiv.innerHTML = reducePathString(outputFolderPath);
-
   checkValidData();
 });
 
 ipcRenderer.on("change-output-folder", (event, folderPath) => {
-  outputFolderPath = folderPath;
-  outputFolderDiv.innerHTML = reducePathString(outputFolderPath);
+  g_outputFolderPath = folderPath;
+  g_outputFolderDiv.innerHTML = reducePathString(g_outputFolderPath);
   checkValidData();
 });
 
@@ -129,32 +157,36 @@ function onChooseOutputFolder() {
 exports.onChooseOutputFolder = onChooseOutputFolder;
 
 function outputFormatChanged(selectObject) {
-  outputFormat = selectObject.value;
+  g_outputFormat = selectObject.value;
   checkValidData();
 }
 exports.outputFormatChanged = outputFormatChanged;
 
 function onConvert() {
-  modalTitle.innerHTML = "";
-  modalButtonClose.classList.add("hide");
-  modalLoadingBar.classList.remove("hide");
+  g_modalTitle.innerHTML = "";
+  g_modalButtonClose.classList.add("hide");
+  g_modalLoadingBar.classList.remove("hide");
 
-  ipcRenderer.send("convert-start-conversion", inputFilePath, inputFileType);
+  ipcRenderer.send(
+    "convert-start-conversion",
+    g_inputFilePath,
+    g_inputFileType
+  );
 }
 exports.onConvert = onConvert;
 
 ///////////////////////////////////////////////////////////////////////////////
 
 ipcRenderer.on("convert-update-text-title", (event, text) => {
-  modalTitle.innerHTML = text;
+  g_modalTitle.innerHTML = text;
 });
 
 ipcRenderer.on("convert-update-text-log", (event, text) => {
-  modalLogArea.innerHTML = text;
+  g_modalLogArea.innerHTML = text;
 });
 
 ipcRenderer.on("convert-update-text-info", (event, text) => {
-  modalInfoArea.innerHTML = text;
+  g_modalInfoArea.innerHTML = text;
 });
 
 //////////////////////////
@@ -166,22 +198,22 @@ ipcRenderer.on("convert-extract-pdf-images", (event, tempFolder) => {
 ipcRenderer.on("convert-images-extracted", (event) => {
   ipcRenderer.send(
     "convert-create-file-from-images",
-    inputFilePath,
-    outputScale,
-    outputQuality,
-    outputFormat,
-    outputFolderPath
+    g_inputFilePath,
+    g_outputScale,
+    g_outputQuality,
+    g_outputFormat,
+    g_outputFolderPath
   );
 });
 
 ipcRenderer.on("convert-finished-ok", (event) => {
-  modalButtonClose.classList.remove("hide");
-  modalLoadingBar.classList.add("hide");
+  g_modalButtonClose.classList.remove("hide");
+  g_modalLoadingBar.classList.add("hide");
 });
 
 ipcRenderer.on("convert-finished-error", (event) => {
-  modalButtonClose.classList.remove("hide");
-  modalLoadingBar.classList.add("hide");
+  g_modalButtonClose.classList.remove("hide");
+  g_modalLoadingBar.classList.add("hide");
 });
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -196,7 +228,7 @@ async function extractPDFImages(folderPath) {
     pdfjsLib.GlobalWorkerOptions.workerSrc =
       "../assets/libs/pdfjs/build/pdf.worker.js";
     //pdfjsLib.disableWorker = true;
-    const pdf = await pdfjsLib.getDocument(inputFilePath).promise;
+    const pdf = await pdfjsLib.getDocument(g_inputFilePath).promise;
     for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
       let page = await pdf.getPage(pageNum);
       //console.log("page: " + pageNum + " - " + page);

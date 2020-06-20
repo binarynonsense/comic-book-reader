@@ -491,7 +491,6 @@ function createPdfFromImages(imgPathsList, outputFilePath) {
   pdf.pipe(fs.createWriteStream(outputFilePath));
   for (let index = 0; index < imgPathsList.length; index++) {
     const imgPath = imgPathsList[index];
-    console.log(imgPath);
     const img = pdf.openImage(imgPath);
     pdf.addPage({ size: [img.width, img.height] });
     pdf.image(img, 0, 0);

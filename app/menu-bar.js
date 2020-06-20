@@ -98,10 +98,13 @@ function buildApplicationMenu(activeLocale, languages) {
         //   label: _("Export Page..."),
         //   enabled: false,
         // },
-        // {
-        //   id: "batch-convert",
-        //   label: _("Batch Convert..."),
-        // },
+        {
+          id: "batch-convert",
+          label: _("Batch Convert..."),
+          click() {
+            mainProcess.onMenuBatchConvert();
+          },
+        },
         {
           type: "separator",
         },

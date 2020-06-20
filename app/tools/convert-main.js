@@ -1,8 +1,10 @@
-const { BrowserWindow, ipcMain } = require("electron");
+const { app, BrowserWindow, ipcMain } = require("electron");
 
 const fs = require("fs");
 const path = require("path");
+const FileType = require("file-type");
 const fileUtils = require("../file-utils");
+const mainProcess = require("../main");
 
 let g_convertWindow;
 
@@ -10,10 +12,13 @@ function isDev() {
   return process.argv[2] == "--dev";
 }
 
+function _(...args) {
+  return mainProcess.i18n_.apply(null, args);
+}
+
 exports.showWindow = function (parentWindow, filePath, fileType) {
   if (g_convertWindow !== undefined) return; // TODO: focus the existing one?
   g_convertWindow = new BrowserWindow({
-    title: "Convert Files Tool",
     width: 700,
     height: 650,
     //frame: false,
@@ -35,7 +40,18 @@ exports.showWindow = function (parentWindow, filePath, fileType) {
   });
 
   g_convertWindow.webContents.on("did-finish-load", function () {
-    g_convertWindow.webContents.send("add-file", filePath, fileType);
+    g_convertWindow.webContents.send(
+      "update-localization",
+      _("Convert Files Tool"),
+      getLocalization(),
+      getTooltipsLocalization()
+    );
+    if (filePath === undefined) {
+      g_convertWindow.webContents.send("set-mode", 1, app.getPath("desktop"));
+    } else {
+      g_convertWindow.webContents.send("set-mode", 0, path.dirname(filePath));
+      g_convertWindow.webContents.send("add-file", filePath, fileType);
+    }
   });
 
   //if (isDev()) g_convertWindow.toggleDevTools();
@@ -49,8 +65,30 @@ ipcMain.on("convert-choose-file", (event) => {
     return;
   }
   let filePath = fileList[0];
-  //g_convertWindow.webContents.send("add-file", filePath, fileType);
-  console.log("select file request:" + filePath);
+  let fileType;
+
+  // mostly a COPY FROM main, maybe make a common function in file.utils
+  let fileExtension = path.extname(filePath).toLowerCase();
+  (async () => {
+    let _fileType = await FileType.fromFile(filePath);
+    if (_fileType !== undefined) {
+      fileExtension = "." + _fileType.ext;
+    }
+    if (fileExtension === ".pdf") {
+      fileType = "pdf";
+    } else if (fileExtension === ".epub") {
+      fileType = "epub";
+    } else {
+      if (fileExtension === ".rar" || fileExtension === ".cbr") {
+        fileType = "rar";
+      } else if (fileExtension === ".zip" || fileExtension === ".cbz") {
+        fileType = "zip";
+      } else {
+        return;
+      }
+    }
+    g_convertWindow.webContents.send("add-file", filePath, fileType);
+  })();
 });
 
 ipcMain.on("convert-choose-folder", (event) => {
@@ -59,7 +97,7 @@ ipcMain.on("convert-choose-folder", (event) => {
     return;
   }
   let folderPath = folderList[0];
-  console.log("select folder request:" + folderPath);
+  //console.log("select folder request:" + folderPath);
   if (folderPath === undefined || folderPath === "") return;
 
   g_convertWindow.webContents.send("change-output-folder", folderPath);
@@ -108,18 +146,21 @@ function conversionStopError(err) {
   console.log(err);
   g_convertWindow.webContents.send(
     "convert-update-text-title",
-    "Conversion Failed:"
+    _("Conversion Failed:")
   );
   g_convertWindow.webContents.send("convert-update-text-log", "");
   g_convertWindow.webContents.send(
     "convert-update-text-info",
-    "Couldn't convert the file, an error ocurred"
+    _("Couldn't convert the file, an error ocurred")
   );
   g_convertWindow.webContents.send("convert-finished-error");
 }
 
 function conversionStart(inputFilePath, inputFileType) {
-  g_convertWindow.webContents.send("convert-update-text-title", "Converting:");
+  g_convertWindow.webContents.send(
+    "convert-update-text-title",
+    _("Converting:")
+  );
   g_convertWindow.webContents.send("convert-update-text-info", inputFilePath);
   g_convertWindow.webContents.send("convert-update-text-log", "");
 
@@ -131,13 +172,13 @@ function conversionStart(inputFilePath, inputFileType) {
   ) {
     g_convertWindow.webContents.send(
       "convert-update-text-log",
-      "Extracting pages..."
+      _("Extracting Pages...")
     );
     tempFolder = conversionExtractImages(inputFilePath, inputFileType);
   } else if (inputFileType === "pdf") {
     g_convertWindow.webContents.send(
       "convert-update-text-log",
-      "Extracting pages..."
+      _("Extracting Pages...")
     );
     tempFolder = fileUtils.createTempFolder();
     g_convertWindow.webContents.send("convert-extract-pdf-images", tempFolder);
@@ -185,7 +226,7 @@ async function createFileFromImages(
       for (let index = 0; index < imgFiles.length; index++) {
         g_convertWindow.webContents.send(
           "convert-update-text-log",
-          "Resizing Page: " + (index + 1) + " / " + imgFiles.length
+          _("Resizing Page: ") + (index + 1) + " / " + imgFiles.length
         );
         let image = await Jimp.read(imgFiles[index]);
         image.scale(outputScale / 100);
@@ -197,7 +238,7 @@ async function createFileFromImages(
     // compress to output folder
     g_convertWindow.webContents.send(
       "convert-update-text-log",
-      "Generating New File..."
+      _("Generating New File...")
     );
     let filename = path.basename(inputFilePath, path.extname(inputFilePath));
     let outputFilePath = path.join(
@@ -226,13 +267,13 @@ async function createFileFromImages(
     // delete temp folder
     g_convertWindow.webContents.send(
       "convert-update-text-log",
-      "Cleaning Up..."
+      _("Cleaning Up...")
     );
 
     fileUtils.cleanUpTempFolder();
     g_convertWindow.webContents.send(
       "convert-update-text-title",
-      "New File Correctly Created:"
+      _("New File Correctly Created:")
     );
     g_convertWindow.webContents.send("convert-update-text-log", "");
     g_convertWindow.webContents.send(
@@ -246,3 +287,64 @@ async function createFileFromImages(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+function getTooltipsLocalization() {
+  return [
+    {
+      id: "tooltip-output-size",
+      text: _("tooltip-output-size"),
+    },
+    {
+      id: "tooltip-output-folder",
+      text: _("tooltip-output-folder"),
+    },
+  ];
+}
+
+function getLocalization() {
+  return [
+    {
+      id: "text-input-files",
+      text: _("Input File/s:"),
+    },
+    {
+      id: "text-input-file",
+      text: _("Input File:"),
+    },
+    {
+      id: "button-add-file",
+      text: _("Add").toUpperCase(),
+    },
+    {
+      id: "text-output-size",
+      text: _("Output Size:"),
+    },
+    {
+      id: "text-scale",
+      text: _("Scale (%):"),
+    },
+    {
+      id: "text-quality",
+      text: _("Quality:"),
+    },
+    {
+      id: "text-output-format",
+      text: _("Output Format:"),
+    },
+    {
+      id: "text-output-folder",
+      text: _("Output Folder:"),
+    },
+    {
+      id: "button-change-folder",
+      text: _("Change").toUpperCase(),
+    },
+    {
+      id: "button-convert",
+      text: _("Convert").toUpperCase(),
+    },
+    {
+      id: "button-modal-close",
+      text: _("Close").toUpperCase(),
+    },
+  ];
+}

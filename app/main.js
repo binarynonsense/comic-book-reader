@@ -534,6 +534,11 @@ exports.onMenuConvertFile = function () {
   g_mainWindow.webContents.send("update-menubar");
 };
 
+exports.onMenuBatchConvert = function () {
+  convertTool.showWindow(g_mainWindow);
+  g_mainWindow.webContents.send("update-menubar");
+};
+
 exports.onMenuToggleDevTools = function () {
   toggleDevTools();
 };

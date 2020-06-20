@@ -12,16 +12,16 @@
     <title></title>
   </head>
   <body>
-    <!-- <h5><i class="fas fa-tools"></i></h5> -->
     <div class="container center-align">
-      <h5>Input File:</h5>
+      <h5 id="text-input-file">Input File:</h5>
+      <h5 id="text-input-files" class="hide">Input File/s:</h5>
 
       <ul class="collection with-header">
         <!-- <li class="collection-header"><h4>First Names</h4></li> -->
         <div id="input-list"></div>
         <a
           class="waves-effect waves-light btn"
-          id="input-list-add"
+          id="button-add-file"
           onclick="renderer.onChooseInputFile()"
           >ADD</a
         >
@@ -32,23 +32,23 @@
         > -->
 
       <h5>
-        Output Size:
+        <span id="text-output-size">Output Size:</span>
         <i
-          class="fas fa-question-circle tooltipped blue-text accent-1-text"
-          data-position="bottom"
-          data-tooltip="The size of the pages will be reduced to this percentage of the originals"
+          id="tooltip-output-size"
+          class="fas fa-question-circle blue-text accent-1-text"
+          title="tooltip"
         ></i>
       </h5>
       <p class="range-field">
-        Scale (%):
+        <span id="text-scale">Scale (%):</span>
         <input type="range" min="10" max="100" id="scale-slider" value="100" />
       </p>
       <p class="range-field" id="quality-slider-container">
-        Quality:
+        <span id="text-quality">Quality:</span>
         <input type="range" min="10" max="100" id="quality-slider" value="60" />
       </p>
 
-      <h5>Output Format:</h5>
+      <h5 id="text-output-format">Output Format:</h5>
       <select
         class="browser-default"
         onchange="renderer.outputFormatChanged(this)"
@@ -60,19 +60,20 @@
       </select>
 
       <h5>
-        Output Folder:
+        <span id="text-output-folder">Output Folder:</span>
         <i
-          class="fas fa-question-circle tooltipped blue-text accent-1-text"
-          data-position="bottom"
-          data-tooltip="If a file with the same name already exists in the folder, a subfix will be added to the converted file's name so nothing is overwritten"
+          id="tooltip-output-folder"
+          class="fas fa-question-circle blue-text accent-1-text"
+          title="tooltip"
         ></i>
       </h5>
 
       <ul class="collection">
         <li class="collection-item" id="output-folder">
-          <i>Select a Folder...</i>
+          <!-- <i>Select a Folder...</i> -->
         </li>
         <a
+          id="button-change-folder"
           class="waves-effect waves-light btn"
           onclick="renderer.onChooseOutputFolder()"
           >CHANGE</a
@@ -80,7 +81,7 @@
       </ul>
 
       <a
-        id="convert-button"
+        id="button-convert"
         class="btn modal-trigger blue-grey darken-3 disabled"
         onclick="renderer.onConvert()"
         data-target="modal1"
@@ -90,7 +91,7 @@
 
     <div id="modal1" class="modal">
       <div class="modal-content">
-        <h5 id="modal-title">Converting File</h5>
+        <h5 id="modal-title"></h5>
         <p id="modal-info">...</p>
         <div class="progress" id="modal-loading-bar">
           <div class="indeterminate"></div>
@@ -101,14 +102,14 @@
       <a
         href="#!"
         class="modal-close waves-effect waves-green btn"
-        id="modal-button-close"
+        id="button-modal-close"
         >Close</a
       >
       <!-- <div class="modal-footer" id="modal-button-container">
         <a
           href="#!"
           class="modal-close waves-effect waves-green btn-flat"
-          id="modal-button-close"
+          id="button-modal-close"
           >Close</a
         >
       </div> -->
@@ -123,8 +124,8 @@
           onCloseStart: null,
         });
 
-        elems = document.querySelectorAll(".tooltipped");
-        instances = M.Tooltip.init(elems);
+        // elems = document.querySelectorAll(".tooltipped");
+        // instances = M.Tooltip.init(elems);
       });
     </script>
     <script>

@@ -7,6 +7,7 @@
     "name": "English",
     "native-name": "English"
   },
+
   "Next Page": "Next Page",
   "Previous Page": "Previous Page",
   "Zoom": "Zoom",
@@ -38,12 +39,37 @@
   "About": "About",
   "File Error": "File Error",
   "Not a valid file format": "Not a valid file format",
-  "Couldn't open the CBR file": "Couldn't open the CBR file",
-  "Couldn't open the CBZ file": "Couldn't open the CBZ file",
+  "Couldn't open the RAR file": "Couldn't open the RAR file",
+  "Couldn't open the ZIP file": "Couldn't open the ZIP file",
   "Couldn't open the EPUB file": "Couldn't open the EPUB file",
   "Couldn't open the PDF file": "Couldn't open the PDF file",
   "Page Number": "Page Number",
   "Languages": "Languages",
   "version": "version",
-  "To open a file use the menu or press <i>Ctrl+O</i>": "To open a file use the menu or press <i>Ctrl+O</i>"
+  "To open a file use the menu or press <i>Ctrl+O</i>": "To open a file use the menu or press <i>Ctrl+O</i>",
+
+  "Convert Files Tool": "Convert Files Tool",
+  "Input File:": "Input File:",
+  "Input File/s:": "Input File/s:",
+  "Add": "Add",
+  "Output Size:": "Output Size:",
+  "Scale (%):": "Scale (%):",
+  "Quality:": "Quality:",
+  "Output Format:": "Output Format:",
+  "Output Folder:": "Output Folder:",
+  "Change": "Change",
+  "Convert": "Convert",
+  "Close": "Close",
+
+  "Conversion Failed:": "Conversion Failed:",
+  "Couldn't convert the file, an error ocurred": "Couldn't convert the file, an error ocurred",
+  "Extracting Pages...": "Extracting Pages...",
+  "Resizing Page: ": "Resizing Page: ",
+  "Generating New File...": "Generating New File...",
+  "Cleaning Up...": "Cleaning Up...",
+  "New File Correctly Created:": "New File Correctly Created:",
+  "Converting:": "Converting:",
+
+  "tooltip-output-size": "The size of the pages will be reduced to this percentage of the originals",
+  "tooltip-output-folder": "If a file with the same name already exists in the folder, a subfix will be added to the converted file's name so nothing is overwritten"
 }
