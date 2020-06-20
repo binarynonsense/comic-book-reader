@@ -174,7 +174,7 @@ async function extractPDFImages(folderPath) {
       await page.render({ canvasContext: context, viewport: viewport }).promise;
 
       let filePath = path.join(folderPath, pageNum + ".jpg");
-      var img = canvas.toDataURL("image/jpeg", 0.8);
+      var img = canvas.toDataURL("image/jpeg", 0.75);
       var data = img.replace(/^data:image\/\w+;base64,/, "");
       var buf = Buffer.from(data, "base64");
       await new Promise((resolve, reject) =>
