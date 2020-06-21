@@ -60,14 +60,18 @@
   "Change": "Change",
   "Convert": "Convert",
   "Close": "Close",
+  "Cancel": "Cancel",
 
   "Conversion Finished": "Conversion Finished",
   "Error: {0} of {1} file/s couldn't be converted": "Error: {0} of {1} file/s couldn't be converted",
   "Error: the file couldn't be converted": "Error: the file couldn't be converted",
   "{0} file/s correctly converted": "{0} file/s correctly converted",
   "File correctly converted": "File correctly converted",
+  "Conversion Canceled": "Conversion Canceled",
+  "Converted: {0} | Errors: {1} | Canceled: {2}": "Converted: {0} | Errors: {1} | Canceled: {2}",
 
   "Couldn't convert the file, an error ocurred": "Couldn't convert the file, an error ocurred",
+  "Couldn't convert the file, the conversion  was canceled": "Couldn't convert the file, the conversion  was canceled",
   "Extracting Pages...": "Extracting Pages...",
   "Resizing Page: ": "Resizing Page: ",
   "Generating New File...": "Generating New File...",

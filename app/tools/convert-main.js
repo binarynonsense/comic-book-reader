@@ -7,6 +7,7 @@ const fileUtils = require("../file-utils");
 const mainProcess = require("../main");
 
 let g_convertWindow;
+let g_cancelConversion = false;
 
 function isDev() {
   return process.argv[2] == "--dev";
@@ -105,6 +106,10 @@ ipcMain.on("convert-choose-folder", (event) => {
 
 /////////////////////////
 
+ipcMain.on("convert-cancel-conversion", (event) => {
+  g_cancelConversion = true;
+});
+
 ipcMain.on(
   "convert-start-conversion",
   (event, inputFilePath, inputFileType) => {
@@ -116,8 +121,9 @@ ipcMain.on("convert-stop-error", (event, ee) => {
   conversionStopError(err);
 });
 
-ipcMain.on("convert-pdf-images-extracted", (event) => {
-  g_convertWindow.webContents.send("convert-images-extracted");
+ipcMain.on("convert-pdf-images-extracted", (event, canceled) => {
+  if (!canceled) g_convertWindow.webContents.send("convert-images-extracted");
+  else conversionStopCancel();
 });
 
 ipcMain.on(
@@ -140,39 +146,63 @@ ipcMain.on(
   }
 );
 
-ipcMain.on("convert-end-conversion", (event, numFiles, numErrors) => {
-  g_convertWindow.webContents.send(
-    "convert-update-text-title",
-    _("Conversion Finished")
-  );
-  if (numErrors > 0) {
-    if (numFiles > 1) {
+ipcMain.on(
+  "convert-end-conversion",
+  (event, wasCanceled, numFiles, numErrors, numAttempted) => {
+    if (!wasCanceled) {
       g_convertWindow.webContents.send(
-        "convert-update-text-info",
-        _("Error: {0} of {1} file/s couldn't be converted", numErrors, numFiles)
+        "convert-update-text-title",
+        _("Conversion Finished")
       );
-    } else {
-      g_convertWindow.webContents.send(
-        "convert-update-text-info",
-        _("Error: the file couldn't be converted")
-      );
-    }
-  } else {
-    if (numFiles > 1) {
-      g_convertWindow.webContents.send(
-        "convert-update-text-info",
-        _("{0} file/s correctly converted", numFiles)
-      );
-    } else {
-      g_convertWindow.webContents.send(
-        "convert-update-text-info",
-        _("File correctly converted")
-      );
-    }
-  }
 
-  g_convertWindow.webContents.send("convert-show-modal");
-});
+      if (numErrors > 0) {
+        if (numFiles > 1) {
+          g_convertWindow.webContents.send(
+            "convert-update-text-info",
+            _(
+              "Error: {0} of {1} file/s couldn't be converted",
+              numErrors,
+              numFiles
+            )
+          );
+        } else {
+          g_convertWindow.webContents.send(
+            "convert-update-text-info",
+            _("Error: the file couldn't be converted")
+          );
+        }
+      } else {
+        if (numFiles > 1) {
+          g_convertWindow.webContents.send(
+            "convert-update-text-info",
+            _("{0} file/s correctly converted", numFiles)
+          );
+        } else {
+          g_convertWindow.webContents.send(
+            "convert-update-text-info",
+            _("File correctly converted")
+          );
+        }
+      }
+    } else {
+      g_convertWindow.webContents.send(
+        "convert-update-text-title",
+        _("Conversion Canceled")
+      );
+      g_convertWindow.webContents.send(
+        "convert-update-text-info",
+        _(
+          "Converted: {0} | Errors: {1} | Canceled: {2}",
+          numAttempted - numErrors,
+          numErrors,
+          numFiles - numAttempted
+        )
+      );
+    }
+
+    g_convertWindow.webContents.send("convert-show-result");
+  }
+);
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -186,6 +216,15 @@ function conversionStopError(err) {
   g_convertWindow.webContents.send("convert-finished-error");
 }
 
+function conversionStopCancel() {
+  fileUtils.cleanUpTempFolder();
+  g_convertWindow.webContents.send(
+    "convert-update-text-log",
+    _("Couldn't convert the file, the conversion  was canceled")
+  );
+  g_convertWindow.webContents.send("convert-finished-canceled");
+}
+
 function reducePathString(input) {
   var length = 60;
   input =
@@ -196,6 +235,7 @@ function reducePathString(input) {
 }
 
 function conversionStart(inputFilePath, inputFileType) {
+  g_cancelConversion = false;
   g_convertWindow.webContents.send(
     "convert-update-text-title",
     _("Converting:")
@@ -217,13 +257,13 @@ function conversionStart(inputFilePath, inputFileType) {
       "convert-update-text-log",
       _("Extracting Pages...")
     );
-    tempFolder = conversionExtractImages(inputFilePath, inputFileType);
+    conversionExtractImages(inputFilePath, inputFileType);
   } else if (inputFileType === "pdf") {
     g_convertWindow.webContents.send(
       "convert-update-text-log",
       _("Extracting Pages...")
     );
-    tempFolder = fileUtils.createTempFolder();
+    let tempFolder = fileUtils.createTempFolder();
     g_convertWindow.webContents.send("convert-extract-pdf-images", tempFolder);
   } else {
     conversionStopError("");
@@ -238,6 +278,10 @@ async function conversionExtractImages(inputFilePath, inputFileType) {
       fileUtils.extractRar(inputFilePath);
     } else if (inputFileType === "epub") {
       await fileUtils.extractEpubImages(inputFilePath);
+    }
+    if (g_cancelConversion === true) {
+      conversionStopCancel();
+      return;
     }
     g_convertWindow.webContents.send("convert-images-extracted");
   } catch (err) {
@@ -275,6 +319,11 @@ async function createFileFromImages(
         image.scale(outputScale / 100);
         image.quality(outputQuality);
         await image.writeAsync(imgFiles[index]);
+
+        if (g_cancelConversion === true) {
+          conversionStopCancel();
+          return;
+        }
       }
     }
 
@@ -380,6 +429,10 @@ function getLocalization() {
     {
       id: "button-modal-close",
       text: _("Close").toUpperCase(),
+    },
+    {
+      id: "button-modal-cancel",
+      text: _("Cancel").toUpperCase(),
     },
   ];
 }

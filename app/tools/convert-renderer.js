@@ -17,6 +17,8 @@ const FileDataType = {
   EPUB: "epub",
 };
 
+let g_cancelConversion = false;
+
 let g_inputFilePath;
 let g_inputFileType;
 let g_outputScale = "100";
@@ -36,6 +38,7 @@ let g_modalInfoArea = document.querySelector("#modal-info");
 let g_modalLogArea = document.querySelector("#modal-log");
 let g_modalButtonContainer = document.querySelector("#modal-button-container");
 let g_modalButtonClose = document.querySelector("#button-modal-close");
+let g_modalButtonCancel = document.querySelector("#button-modal-cancel");
 let g_modalLoadingBar = document.querySelector("#modal-loading-bar");
 let g_modalTitle = document.querySelector("#modal-title");
 
@@ -206,6 +209,8 @@ function outputFormatChanged(selectObject) {
 exports.outputFormatChanged = outputFormatChanged;
 
 function onConvert(resetCounter = true) {
+  g_cancelConversion = false;
+  g_modalButtonCancel.classList.remove("hide");
   g_modalButtonClose.classList.add("hide");
   g_modalLoadingBar.classList.remove("hide");
 
@@ -225,6 +230,13 @@ function onConvert(resetCounter = true) {
   );
 }
 exports.onConvert = onConvert;
+
+function onCancelConversion() {
+  g_cancelConversion = true;
+  g_modalButtonCancel.classList.add("hide");
+  ipcRenderer.send("convert-cancel-conversion");
+}
+exports.onCancelConversion = onCancelConversion;
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -277,19 +289,36 @@ ipcRenderer.on("convert-finished-ok", (event) => {
   } else {
     ipcRenderer.send(
       "convert-end-conversion",
+      false,
       g_inputFiles.length,
-      g_numErrors
+      g_numErrors,
+      g_inputFilesIndex + 1
     );
   }
 });
 
 ipcRenderer.on("convert-finished-error", (event) => {
+  g_modalButtonCancel.classList.add("hide"); // just in case
   g_modalButtonClose.classList.remove("hide");
   g_modalLoadingBar.classList.add("hide");
   g_numErrors++;
 });
 
-ipcRenderer.on("convert-show-modal", (event) => {
+ipcRenderer.on("convert-finished-canceled", (event) => {
+  g_modalButtonCancel.classList.add("hide");
+  g_modalButtonClose.classList.remove("hide");
+  g_modalLoadingBar.classList.add("hide");
+  ipcRenderer.send(
+    "convert-end-conversion",
+    true,
+    g_inputFiles.length,
+    g_numErrors,
+    g_inputFilesIndex // last one wasn't converted or error
+  );
+});
+
+ipcRenderer.on("convert-show-result", (event) => {
+  g_modalButtonCancel.classList.add("hide");
   g_modalButtonClose.classList.remove("hide");
   g_modalLoadingBar.classList.add("hide");
 });
@@ -308,6 +337,12 @@ async function extractPDFImages(folderPath) {
     //pdfjsLib.disableWorker = true;
     const pdf = await pdfjsLib.getDocument(g_inputFilePath).promise;
     for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+      if (g_cancelConversion) {
+        pdf.cleanup();
+        pdf.destroy();
+        ipcRenderer.send("convert-pdf-images-extracted", true);
+        return;
+      }
       let page = await pdf.getPage(pageNum);
       //console.log("page: " + pageNum + " - " + page);
 
@@ -340,7 +375,7 @@ async function extractPDFImages(folderPath) {
     }
     pdf.cleanup();
     pdf.destroy();
-    ipcRenderer.send("convert-pdf-images-extracted");
+    ipcRenderer.send("convert-pdf-images-extracted", false);
   } catch (err) {
     ipcRenderer.send("convert-stop-error", err);
   }
