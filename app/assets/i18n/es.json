@@ -61,7 +61,12 @@
   "Convert": "Convertir",
   "Close": "Cerrar",
 
-  "Conversion Failed:": "La conversión falló:",
+  "Conversion Finished": "Conversión Finalizada",
+  "Error: {0} of {1} file/s couldn't be converted": "Error: no se pudo convertir {0} de {1} archivo/s",
+  "Error: the file couldn't be converted": "Error: el archivo no se pudo convertir",
+  "{0} file/s correctly converted": "{0} archivo/s correctamente convertido/s",
+  "File correctly converted": "Archivo correctamente convertido",
+
   "Couldn't convert the file, an error ocurred": "No se pudo convertir el archivo, se produjo un error",
   "Extracting Pages...": "Extrayendo páginas...",
   "Resizing Page: ": "Redimensionando página: ",

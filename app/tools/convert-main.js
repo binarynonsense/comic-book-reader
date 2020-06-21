@@ -140,22 +140,48 @@ ipcMain.on(
   }
 );
 
+ipcMain.on("convert-end-conversion", (event, numFiles, numErrors) => {
+  g_convertWindow.webContents.send(
+    "convert-update-text-title",
+    _("Conversion Finished")
+  );
+  if (numErrors > 0) {
+    if (numFiles > 1) {
+      g_convertWindow.webContents.send(
+        "convert-update-text-info",
+        _("Error: {0} of {1} file/s couldn't be converted", numErrors, numFiles)
+      );
+    } else {
+      g_convertWindow.webContents.send(
+        "convert-update-text-info",
+        _("Error: the file couldn't be converted")
+      );
+    }
+  } else {
+    if (numFiles > 1) {
+      g_convertWindow.webContents.send(
+        "convert-update-text-info",
+        _("{0} file/s correctly converted", numFiles)
+      );
+    } else {
+      g_convertWindow.webContents.send(
+        "convert-update-text-info",
+        _("File correctly converted")
+      );
+    }
+  }
+
+  g_convertWindow.webContents.send("convert-show-modal");
+});
+
 ///////////////////////////////////////////////////////////////////////////////
 
 function conversionStopError(err) {
-  console.log(err);
-  g_convertWindow.webContents.send(
-    "convert-update-text-title",
-    _("Conversion Failed:")
-  );
+  //console.log(err);
   g_convertWindow.webContents.send("convert-update-text-log", err);
   g_convertWindow.webContents.send(
-    "convert-update-text-info",
-    _("Couldn't convert the file, an error ocurred")
-  );
-  g_convertWindow.webContents.send(
     "convert-update-text-log",
-    _("Conversion Failed:")
+    _("Couldn't convert the file, an error ocurred")
   );
   g_convertWindow.webContents.send("convert-finished-error");
 }
@@ -262,7 +288,6 @@ async function createFileFromImages(
       outputFolderPath,
       filename + "." + outputFormat
     );
-    g_convertWindow.webContents.send("convert-update-text-log", outputFilePath);
     let i = 1;
     while (fs.existsSync(outputFilePath)) {
       //console.log("file already exists");
@@ -272,6 +297,7 @@ async function createFileFromImages(
         filename + "(" + i + ")." + outputFormat
       );
     }
+    g_convertWindow.webContents.send("convert-update-text-log", outputFilePath);
 
     if (outputFormat === "pdf") {
       fileUtils.createPdfFromImages(imgFiles, outputFilePath);
@@ -283,21 +309,12 @@ async function createFileFromImages(
     }
 
     // delete temp folder
-    g_convertWindow.webContents.send(
-      "convert-update-text-log",
-      _("Cleaning Up...")
-    );
+    // g_convertWindow.webContents.send(
+    //   "convert-update-text-log",
+    //   _("Cleaning Up...")
+    // );
 
     fileUtils.cleanUpTempFolder();
-    g_convertWindow.webContents.send(
-      "convert-update-text-title",
-      _("New File Correctly Created:")
-    );
-    g_convertWindow.webContents.send("convert-update-text-log", "");
-    g_convertWindow.webContents.send(
-      "convert-update-text-info",
-      outputFilePath
-    );
     g_convertWindow.webContents.send("convert-finished-ok");
   } catch (err) {
     conversionStopError(err);

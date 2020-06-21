@@ -206,13 +206,13 @@ function outputFormatChanged(selectObject) {
 exports.outputFormatChanged = outputFormatChanged;
 
 function onConvert(resetCounter = true) {
-  g_modalTitle.innerHTML = "";
   g_modalButtonClose.classList.add("hide");
   g_modalLoadingBar.classList.remove("hide");
 
   if (resetCounter) {
     g_inputFilesIndex = 0;
-    g_modalLogArea.innerHTML = "";
+    g_numErrors = 0;
+    updateTextLog("", false);
   }
 
   g_inputFilePath = g_inputFiles[g_inputFilesIndex].path;
@@ -229,13 +229,25 @@ exports.onConvert = onConvert;
 ///////////////////////////////////////////////////////////////////////////////
 
 ipcRenderer.on("convert-update-text-title", (event, text) => {
-  g_modalTitle.innerHTML = text;
+  updateTextTitle(text);
 });
 
+function updateTextTitle(text) {
+  g_modalTitle.innerHTML = text;
+}
+
 ipcRenderer.on("convert-update-text-log", (event, text) => {
-  g_modalLogArea.innerHTML += "\n" + text;
-  g_modalLogArea.scrollTop = g_modalLogArea.scrollHeight;
+  updateTextLog(text);
 });
+
+function updateTextLog(text, append = true) {
+  if (append) {
+    g_modalLogArea.innerHTML += "\n" + text;
+  } else {
+    g_modalLogArea.innerHTML = text;
+  }
+  g_modalLogArea.scrollTop = g_modalLogArea.scrollHeight;
+}
 
 ipcRenderer.on("convert-update-text-info", (event, text) => {
   g_modalInfoArea.innerHTML = text;
@@ -263,16 +275,23 @@ ipcRenderer.on("convert-finished-ok", (event) => {
     g_inputFilesIndex++;
     onConvert(false);
   } else {
-    g_modalButtonClose.classList.remove("hide");
-    g_modalLoadingBar.classList.add("hide");
+    ipcRenderer.send(
+      "convert-end-conversion",
+      g_inputFiles.length,
+      g_numErrors
+    );
   }
 });
 
 ipcRenderer.on("convert-finished-error", (event) => {
   g_modalButtonClose.classList.remove("hide");
   g_modalLoadingBar.classList.add("hide");
-  g_modalLogArea.innerHTML += "\n" + g_inputFilePath;
-  g_modalLogArea.scrollTop = g_modalLogArea.scrollHeight;
+  g_numErrors++;
+});
+
+ipcRenderer.on("convert-show-modal", (event) => {
+  g_modalButtonClose.classList.remove("hide");
+  g_modalLoadingBar.classList.add("hide");
 });
 
 ///////////////////////////////////////////////////////////////////////////////

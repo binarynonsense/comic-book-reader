@@ -61,7 +61,12 @@
   "Convert": "Convert",
   "Close": "Close",
 
-  "Conversion Failed:": "Conversion Failed:",
+  "Conversion Finished": "Conversion Finished",
+  "Error: {0} of {1} file/s couldn't be converted": "Error: {0} of {1} file/s couldn't be converted",
+  "Error: the file couldn't be converted": "Error: the file couldn't be converted",
+  "{0} file/s correctly converted": "{0} file/s correctly converted",
+  "File correctly converted": "File correctly converted",
+
   "Couldn't convert the file, an error ocurred": "Couldn't convert the file, an error ocurred",
   "Extracting Pages...": "Extracting Pages...",
   "Resizing Page: ": "Resizing Page: ",

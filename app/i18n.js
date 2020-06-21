@@ -99,11 +99,26 @@ exports.getAvailableLocales = function () {
 };
 
 exports._ = function (...args) {
-  //   console.log(args);
-  let text = args[0]; // TODO {{variables}} substitution with extra args
-  let translatedText = g_localeData[text];
+  //console.log(args); // i.e. [ "Error: {0} file/s couldn't be converted", 0 ]
+  let translatedText = g_localeData[args[0]];
   if (translatedText === undefined) {
-    translatedText = text;
+    translatedText = args[0];
+  }
+  if (args.length > 1) {
+    //{0},{1}... substitution with extra args
+    args[0] = translatedText;
+    translatedText = translatedText.myFormatString(args);
+  } else {
   }
   return translatedText;
+};
+
+// ref: https://stackoverflow.com/questions/37639444/javascript-stringformat-with-array
+String.prototype.myFormatString = function (_array) {
+  var s = _array[0];
+  for (var i = 0; i < _array.length - 1; i++) {
+    var reg = new RegExp("\\{" + i + "\\}", "gm");
+    s = s.replace(reg, _array[i + 1]);
+  }
+  return s;
 };
