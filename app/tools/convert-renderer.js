@@ -198,7 +198,11 @@ function onChooseInputFile() {
 exports.onChooseInputFile = onChooseInputFile;
 
 function onChooseOutputFolder() {
-  ipcRenderer.send("convert-choose-folder");
+  ipcRenderer.send(
+    "convert-choose-folder",
+    g_inputFilePath,
+    g_outputFolderPath
+  );
 }
 exports.onChooseOutputFolder = onChooseOutputFolder;
 

@@ -360,6 +360,17 @@ ipcMain.on("pdf-page-loaded", (event) => {
   g_fileData.state = FileDataState.LOADED;
 });
 
+ipcMain.on(
+  "pdf-page-buffer-extracted",
+  (event, error, buf, outputFolderPath) => {
+    if (error !== undefined) {
+      exportPageError(error);
+    } else {
+      exportPageSaveBuffer(buf, outputFolderPath);
+    }
+  }
+);
+
 ///////////////////////////////////////////////////////////////////////////////
 
 ipcMain.on("escape-pressed", (event) => {
@@ -479,22 +490,6 @@ exports.onMenuNextPage = function () {
   goToNextPage();
 };
 
-exports.onMenuOpenFile = onMenuOpenFile = function () {
-  let defaultPath = "";
-  if (g_fileData.path !== "") {
-    defaultPath = g_fileData.path;
-  } else if (g_history.length > 0) {
-    defaultPath = g_history[g_history.length - 1].filePath;
-  }
-  let fileList = fileUtils.chooseFile(g_mainWindow, defaultPath);
-  if (fileList === undefined) {
-    return;
-  }
-  let filePath = fileList[0];
-  console.log("open file request:" + filePath);
-  openFile(filePath);
-};
-
 exports.onMenuFitToWidth = function () {
   setFitToWidth();
 };
@@ -525,6 +520,26 @@ exports.onMenuToggleToolBar = function () {
 
 exports.onMenuToggleFullScreen = function () {
   toggleFullScreen();
+};
+
+exports.onMenuOpenFile = onMenuOpenFile = function () {
+  let defaultPath = "";
+  if (g_fileData.path !== "") {
+    defaultPath = g_fileData.path;
+  } else if (g_history.length > 0) {
+    defaultPath = g_history[g_history.length - 1].filePath;
+  }
+  let fileList = fileUtils.chooseOpenFile(g_mainWindow, defaultPath);
+  if (fileList === undefined) {
+    return;
+  }
+  let filePath = fileList[0];
+  console.log("open file request:" + filePath);
+  openFile(filePath);
+};
+
+exports.onMenuExportPage = function () {
+  exportPageStart();
 };
 
 exports.onMenuConvertFile = function () {
@@ -880,6 +895,133 @@ function goToPreviousPage() {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+// EXPORT /////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+async function exportPageStart() {
+  // let defaultPath = path.join(
+  //   app.getPath("desktop"),
+  //   g_fileData.name + "_page_" + (g_fileData.pageIndex + 1) + ".jpg"
+  // );
+  // let filePath = fileUtils.chooseSaveFile(g_mainWindow, defaultPath);
+  // if (filePath === undefined) {
+  //   return;
+  // }
+  // console.log(filePath);
+  let defaultPath = app.getPath("desktop");
+  let folderList = fileUtils.chooseFolder(g_mainWindow, defaultPath);
+  if (folderList === undefined) {
+    return;
+  }
+  let outputFolderPath = folderList[0];
+  //console.log("select folder request:" + folderPath);
+  if (outputFolderPath === undefined || outputFolderPath === "") return;
+
+  g_mainWindow.webContents.send("update-loading", true);
+
+  try {
+    let buf;
+    if (g_fileData.filePath !== "") {
+      if (g_fileData.type === FileDataType.ZIP) {
+        buf = fileUtils.extractZipEntryData(
+          g_fileData.path,
+          g_fileData.pagesPaths[g_fileData.pageIndex]
+        );
+      } else if (g_fileData.type === FileDataType.RAR) {
+        buf = fileUtils.extractRarEntryData(
+          g_fileData.path,
+          g_fileData.pagesPaths[g_fileData.pageIndex]
+        );
+      } else if (g_fileData.type === FileDataType.EPUB) {
+        buf = await fileUtils.extractEpubImageBuffer(
+          g_fileData.path,
+          g_fileData.pagesPaths[g_fileData.pageIndex]
+        );
+      } else if (g_fileData.type === FileDataType.PDF) {
+        console.log("FileDataType.PDF");
+        g_mainWindow.webContents.send(
+          "extract-pdf-image-buffer",
+          g_fileData.path,
+          g_fileData.pageIndex + 1,
+          outputFolderPath
+        );
+        return;
+      }
+
+      exportPageSaveBuffer(buf, outputFolderPath);
+    }
+  } catch (err) {
+    exportPageError(err);
+  }
+}
+
+function exportPageError(err) {
+  console.log(err);
+  g_mainWindow.webContents.send("update-loading", false);
+  g_mainWindow.webContents.send(
+    "show-modal-info",
+    "",
+    _("Error: Couldn't export the page")
+  );
+}
+
+function exportPageSaveBuffer(buf, outputFolderPath) {
+  if (buf !== undefined) {
+    try {
+      (async () => {
+        let fileType = await FileType.fromBuffer(buf);
+        let fileExtension = ".jpg";
+        if (fileType !== undefined) {
+          fileExtension = "." + fileType.ext;
+        }
+        let fileName =
+          path.basename(g_fileData.name, path.extname(g_fileData.name)) +
+          "_page_" +
+          (g_fileData.pageIndex + 1);
+
+        let outputFilePath = path.join(
+          outputFolderPath,
+          fileName + fileExtension
+        );
+        let i = 1;
+        while (fs.existsSync(outputFilePath)) {
+          i++;
+          outputFilePath = path.join(
+            outputFolderPath,
+            fileName + "(" + i + ")" + fileExtension
+          );
+        }
+        //console.log(outputFilePath);
+
+        // fs.writeFileSync(outPath, buf,"binary"... ?
+        await new Promise((resolve, reject) =>
+          fs.writeFile(outputFilePath, buf, "binary", (err) => {
+            if (err === null) {
+              resolve();
+            } else {
+              reject(err);
+            }
+          })
+        );
+
+        g_mainWindow.webContents.send(
+          "show-modal-info",
+          "",
+          _("Image file saved to:") +
+            "\n" +
+            fileUtils.reducePathString(outputFilePath, 85)
+        );
+      })();
+      g_mainWindow.webContents.send("update-loading", false);
+    } catch (err) {
+      exportPageError("");
+    }
+  } else {
+    exportPageError("");
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
 // MODIFIERS //////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -976,8 +1118,10 @@ function updateMenuItemsState() {
       g_fileData.type === FileDataType.PDF
     ) {
       menuBar.setConvertFile(true);
+      menuBar.setExportPage(true);
     } else {
       menuBar.setConvertFile(false);
+      menuBar.setExportPage(false);
     }
   }
 }

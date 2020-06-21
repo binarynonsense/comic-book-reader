@@ -138,6 +138,15 @@ exports.hasCompatibleExtension = function (filePath) {
   return false;
 };
 
+exports.reducePathString = function (input, max = 60) {
+  var length = max;
+  input =
+    input.length > length
+      ? "..." + input.substring(input.length - length, input.length)
+      : input;
+  return input;
+};
+
 ///////////////////////////////////////////////////////////////////////////////
 
 const deleteTempFolderRecursive = function (folderPath) {
@@ -165,45 +174,52 @@ const deleteTempFolderRecursive = function (folderPath) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function chooseFile(window, defaultPath = "") {
+function chooseOpenFile(window, defaultPath) {
   if (!fs.existsSync(defaultPath)) {
-    defaultPath = "";
+    defaultPath = undefined;
   }
-  // TODO defaultPath doesn't seem to work, at least on linux, where I've made more tests..
-  // but I'll leave the code anyway
 
   let filePath = dialog.showOpenDialogSync(window, {
+    defaultPath: defaultPath,
     filters: [
       {
         name: "Comic Book Files",
         extensions: ["cbz", "cbr", "pdf", "epub"],
-        defaultPath: defaultPath,
       },
     ],
     properties: ["openFile"],
   });
   return filePath;
 }
-exports.chooseFile = chooseFile;
+exports.chooseOpenFile = chooseOpenFile;
 
-function chooseFolder(window, defaultPath = "") {
+function chooseFolder(window, defaultPath) {
   if (!fs.existsSync(defaultPath)) {
-    defaultPath = "";
+    defaultPath = undefined;
   }
-  // TODO defaultPath doesn't seem to work, at least on linux, where I've made more tests..
-  // but I'll leave the code anyway
 
   let folderPath = dialog.showOpenDialogSync(window, {
-    filters: [
-      {
-        defaultPath: defaultPath,
-      },
-    ],
+    defaultPath: defaultPath,
     properties: ["openDirectory"],
   });
   return folderPath;
 }
 exports.chooseFolder = chooseFolder;
+
+function chooseSaveFile(window, defaultPath) {
+  let filePath = dialog.showSaveDialogSync(window, {
+    defaultPath: defaultPath,
+    filters: [
+      {
+        name: "Images",
+        extensions: ["jpg"],
+      },
+    ],
+    properties: ["showOverwriteConfirmation"],
+  });
+  return filePath;
+}
+exports.chooseSaveFile = chooseSaveFile;
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -447,6 +463,47 @@ async function extractEpubImages(filePath) {
   return tempFolder;
 }
 exports.extractEpubImages = extractEpubImages;
+
+async function extractEpubImageBuffer(filePath, imageID) {
+  const epub = new EPub(filePath);
+
+  // parse epub
+  await new Promise((resolve, reject) => {
+    epub.parse();
+    epub.on("error", reject);
+    epub.on("end", (err) => {
+      if (err) {
+        return reject({
+          error: true,
+          message: err,
+        });
+      }
+      return resolve({
+        success: true,
+      });
+    });
+  });
+
+  // extract image buffer
+  let buf;
+  await new Promise((resolve, reject) => {
+    epub.getImage(imageID, function (err, data, mimeType) {
+      if (err) {
+        return reject({
+          error: true,
+          message: err,
+        });
+      } else {
+        buf = Buffer.from(data);
+        return resolve({
+          success: true,
+        });
+      }
+    });
+  });
+  return buf;
+}
+exports.extractEpubImageBuffer = extractEpubImageBuffer;
 
 async function createEpubFromImages(imgPathsList, outputFilePath) {
   // ref: https://www.npmjs.com/package/epub-gen

@@ -30,7 +30,15 @@ function resetScrollBars() {
 // IPC RECEIVED ///////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-ipcRenderer.on("update-menubar", (event, isVisible) => {
+ipcRenderer.on("update-loading", (event, isVisible) => {
+  if (isVisible) {
+    document.querySelector("#loading").classList.add("is-active");
+  } else {
+    document.querySelector("#loading").classList.remove("is-active");
+  }
+});
+
+ipcRenderer.on("update-menubar", (event) => {
   g_titlebar.updateMenu(Menu.getApplicationMenu());
 });
 
@@ -140,6 +148,13 @@ ipcRenderer.on("render-pdf-page", (event, pageIndex, rotation) => {
 ipcRenderer.on("refresh-pdf-page", (event, rotation) => {
   refreshPdfPage(rotation);
 });
+
+ipcRenderer.on(
+  "extract-pdf-image-buffer",
+  (event, filePath, pageNum, outputFolderPath) => {
+    extractPDFImageBuffer(filePath, pageNum, outputFolderPath);
+  }
+);
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -409,6 +424,41 @@ function renderCurrentPDFPage(rotation) {
   renderTask.promise.then(function () {
     ipcRenderer.send("pdf-page-loaded");
   });
+}
+
+async function extractPDFImageBuffer(filePath, pageNum, outputFolderPath) {
+  pdfjsLib.GlobalWorkerOptions.workerSrc =
+    "./assets/libs/pdfjs/build/pdf.worker.js";
+  try {
+    const pdf = await pdfjsLib.getDocument(filePath).promise;
+    let page = await pdf.getPage(pageNum);
+
+    // RENDER
+    const canvas = document.createElement("canvas");
+    let viewport = page.getViewport({
+      scale: 300 / 72,
+    }); // defines the size in pixels(72DPI)
+    let context = canvas.getContext("2d");
+    canvas.height = viewport.height;
+    canvas.width = viewport.width;
+    await page.render({ canvasContext: context, viewport: viewport }).promise;
+
+    let img = canvas.toDataURL("image/jpeg", 0.75);
+    let data = img.replace(/^data:image\/\w+;base64,/, "");
+    let buf = Buffer.from(data, "base64");
+
+    page.cleanup();
+    pdf.cleanup();
+    pdf.destroy();
+    ipcRenderer.send(
+      "pdf-page-buffer-extracted",
+      undefined,
+      buf,
+      outputFolderPath
+    );
+  } catch (err) {
+    ipcRenderer.send("pdf-page-buffer-extracted", err, buf, outputFolderPath);
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -37,6 +37,10 @@ exports.setConvertFile = function (isEnabled) {
   Menu.getApplicationMenu().getMenuItemById("convert-file").enabled = isEnabled;
 };
 
+exports.setExportPage = function (isEnabled) {
+  Menu.getApplicationMenu().getMenuItemById("export-page").enabled = isEnabled;
+};
+
 // exports.setLanguage = function (locale) {
 //   Menu.getApplicationMenu().getMenuItemById("language").checked = isChecked;
 // };
@@ -93,11 +97,14 @@ function buildApplicationMenu(activeLocale, languages) {
             mainProcess.onMenuConvertFile();
           },
         },
-        // {
-        //   id: "export-page",
-        //   label: _("Export Page..."),
-        //   enabled: false,
-        // },
+        {
+          id: "export-page",
+          label: _("Export Page..."),
+          enabled: false,
+          click() {
+            mainProcess.onMenuExportPage();
+          },
+        },
         {
           id: "batch-convert",
           label: _("Batch Convert..."),

@@ -92,17 +92,26 @@ ipcMain.on("convert-choose-file", (event) => {
   })();
 });
 
-ipcMain.on("convert-choose-folder", (event) => {
-  let folderList = fileUtils.chooseFolder(g_convertWindow);
-  if (folderList === undefined) {
-    return;
-  }
-  let folderPath = folderList[0];
-  //console.log("select folder request:" + folderPath);
-  if (folderPath === undefined || folderPath === "") return;
+ipcMain.on(
+  "convert-choose-folder",
+  (event, inputFilePath, outputFolderPath) => {
+    let defaultPath;
+    if (outputFolderPath !== undefined) {
+      defaultPath = outputFolderPath;
+    } else if (inputFilePath !== undefined) {
+      defaultPath = path.dirname(inputFilePath);
+    }
+    let folderList = fileUtils.chooseFolder(g_convertWindow, defaultPath);
+    if (folderList === undefined) {
+      return;
+    }
+    let folderPath = folderList[0];
+    //console.log("select folder request:" + folderPath);
+    if (folderPath === undefined || folderPath === "") return;
 
-  g_convertWindow.webContents.send("change-output-folder", folderPath);
-});
+    g_convertWindow.webContents.send("change-output-folder", folderPath);
+  }
+);
 
 /////////////////////////
 
@@ -225,15 +234,6 @@ function conversionStopCancel() {
   g_convertWindow.webContents.send("convert-finished-canceled");
 }
 
-function reducePathString(input) {
-  var length = 60;
-  input =
-    input.length > length
-      ? "..." + input.substring(input.length - length, input.length)
-      : input;
-  return input;
-}
-
 function conversionStart(inputFilePath, inputFileType) {
   g_cancelConversion = false;
   g_convertWindow.webContents.send(
@@ -242,7 +242,7 @@ function conversionStart(inputFilePath, inputFileType) {
   );
   g_convertWindow.webContents.send(
     "convert-update-text-info",
-    reducePathString(inputFilePath)
+    fileUtils.reducePathString(inputFilePath)
   );
   g_convertWindow.webContents.send("convert-update-text-log", _("Converting:"));
   g_convertWindow.webContents.send("convert-update-text-log", inputFilePath);

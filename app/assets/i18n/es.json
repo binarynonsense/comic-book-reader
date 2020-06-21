@@ -43,6 +43,8 @@
   "Couldn't open the ZIP file": "No se pudo abrir el archivo ZIP",
   "Couldn't open the EPUB file": "No se pudo abrir el archivo EPUB",
   "Couldn't open the PDF file": "No se pudo abrir el archivo PDF",
+  "Image file saved to:": "Archivo de imagen salvado en:",
+  "Error: Couldn't export the page": "Error: No se pudo exportar la página",
   "Page Number": "Número de Página",
   "Languages": "Idiomas",
   "version": "versión",

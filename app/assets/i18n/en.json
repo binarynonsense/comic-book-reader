@@ -43,6 +43,8 @@
   "Couldn't open the ZIP file": "Couldn't open the ZIP file",
   "Couldn't open the EPUB file": "Couldn't open the EPUB file",
   "Couldn't open the PDF file": "Couldn't open the PDF file",
+  "Image file saved to:": "Image file saved to:",
+  "Error: Couldn't export the page": "Error: Couldn't export the page",
   "Page Number": "Page Number",
   "Languages": "Languages",
   "version": "version",
