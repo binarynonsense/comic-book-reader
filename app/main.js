@@ -155,6 +155,8 @@ app.on("ready", () => {
       openFile(entry.filePath, entry.pageIndex);
       return;
     }
+
+    g_mainWindow.webContents.send("update-loading", false);
   });
 
   g_mainWindow.on("resize", function () {
@@ -624,6 +626,8 @@ let g_fileData = {
 function openFile(filePath, pageIndex = 0) {
   if (filePath === "" || !fs.existsSync(filePath)) return;
 
+  g_mainWindow.webContents.send("update-loading", true);
+
   let fileExtension = path.extname(filePath).toLowerCase();
 
   (async () => {
@@ -670,6 +674,7 @@ function openFile(filePath, pageIndex = 0) {
             _("File Error"),
             _("Couldn't open the CBR file")
           );
+          g_mainWindow.webContents.send("update-loading", false);
         }
       } else if (fileExtension === ".zip" || fileExtension === ".cbz") {
         //imgsFolderPath = fileUtils.extractZip(filePath);
@@ -692,6 +697,7 @@ function openFile(filePath, pageIndex = 0) {
             _("File Error"),
             _("Couldn't open the CBZ file")
           );
+          g_mainWindow.webContents.send("update-loading", false);
         }
       } else {
         g_mainWindow.webContents.send(
@@ -699,6 +705,7 @@ function openFile(filePath, pageIndex = 0) {
           _("File Error"),
           _("Not a valid file format")
         );
+        g_mainWindow.webContents.send("update-loading", false);
         return;
       }
       // if (imgsFolderPath === undefined) return;
@@ -854,6 +861,7 @@ function generateTitle() {
 ///////////////////////////////////////////////////////////////////////////////
 
 function goToPage(pageIndex) {
+  g_mainWindow.webContents.send("update-loading", false);
   if (
     g_fileData.state !== FileDataState.LOADED ||
     g_fileData.type === FileDataType.NOT_SET

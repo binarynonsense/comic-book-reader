@@ -61,7 +61,7 @@ exports.showWindow = function (parentWindow, filePath, fileType) {
 ///////////////////////////////////////////////////////////////////////////////
 
 ipcMain.on("convert-choose-file", (event) => {
-  let fileList = fileUtils.chooseFile(g_convertWindow);
+  let fileList = fileUtils.chooseOpenFile(g_convertWindow);
   if (fileList === undefined) {
     return;
   }
