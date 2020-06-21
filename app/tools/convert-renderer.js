@@ -236,6 +236,7 @@ function onConvert(resetCounter = true) {
 exports.onConvert = onConvert;
 
 function onCancelConversion() {
+  if (g_cancelConversion === true) return; // already canceling?
   g_cancelConversion = true;
   g_modalButtonCancel.classList.add("hide");
   ipcRenderer.send("convert-cancel-conversion");
