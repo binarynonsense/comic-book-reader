@@ -264,7 +264,11 @@ function conversionStart(inputFilePath, inputFileType) {
       _("Extracting Pages...")
     );
     let tempFolder = fileUtils.createTempFolder();
-    g_convertWindow.webContents.send("convert-extract-pdf-images", tempFolder);
+    g_convertWindow.webContents.send(
+      "convert-extract-pdf-images",
+      tempFolder,
+      _("Extracting Page: ")
+    );
   } else {
     conversionStopError("");
   }

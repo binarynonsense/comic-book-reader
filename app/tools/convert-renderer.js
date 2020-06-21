@@ -267,8 +267,8 @@ ipcRenderer.on("convert-update-text-info", (event, text) => {
 
 //////////////////////////
 
-ipcRenderer.on("convert-extract-pdf-images", (event, tempFolder) => {
-  extractPDFImages(tempFolder);
+ipcRenderer.on("convert-extract-pdf-images", (event, tempFolder, logText) => {
+  extractPDFImages(tempFolder, logText);
 });
 
 ipcRenderer.on("convert-images-extracted", (event) => {
@@ -329,7 +329,7 @@ ipcRenderer.on("convert-show-result", (event) => {
 
 const pdfjsLib = require("../assets/libs/pdfjs/build/pdf.js");
 
-async function extractPDFImages(folderPath) {
+async function extractPDFImages(folderPath, logText) {
   try {
     // ref: https://kevinnadro.com/blog/parsing-pdfs-in-javascript/
     pdfjsLib.GlobalWorkerOptions.workerSrc =
@@ -370,6 +370,7 @@ async function extractPDFImages(folderPath) {
           }
         })
       );
+      updateTextLog(logText + pageNum + " / " + pdf.numPages);
 
       page.cleanup();
     }

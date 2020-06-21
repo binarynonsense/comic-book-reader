@@ -73,6 +73,7 @@
   "Couldn't convert the file, an error ocurred": "No se pudo convertir el archivo, se produjo un error",
   "Couldn't convert the file, the conversion  was canceled": "No se pudo convertir el archivo, la conversión fue cancelada",
   "Extracting Pages...": "Extrayendo páginas...",
+  "Extracting Page: ": "Extrayendo página: ",
   "Resizing Page: ": "Redimensionando página: ",
   "Generating New File...": "Generando nuevo archivo...",
   "Cleaning Up...": "Limpiando...",
