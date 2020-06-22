@@ -21,9 +21,22 @@ let g_titlebar = new customTitlebar.Titlebar({
   titleHorizontalAlignment: "right",
 });
 
-function resetScrollBars() {
+function moveScrollBarsToStart() {
   document.querySelector(".container-after-titlebar").scrollTop = 0;
   document.querySelector(".container-after-titlebar").scrollLeft = 0;
+}
+
+function moveScrollBarsToEnd() {
+  document.querySelector(
+    ".container-after-titlebar"
+  ).scrollTop = document.querySelector(
+    ".container-after-titlebar"
+  ).scrollHeight;
+  document.querySelector(
+    ".container-after-titlebar"
+  ).scrollLeft = document.querySelector(
+    ".container-after-titlebar"
+  ).scrollWidth;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -87,6 +100,18 @@ ipcRenderer.on("set-scrollbar-visibility", (event, isVisible) => {
   showScrollBar(isVisible);
 });
 
+ipcRenderer.on("set-scrollbar-position", (event, position) => {
+  if (position === 0) {
+    setTimeout(() => {
+      moveScrollBarsToStart();
+    }, 50);
+  } else if (position === 1) {
+    setTimeout(() => {
+      moveScrollBarsToEnd();
+    }, 50); // if I don't add a timeout they are ignored & always goes to top ¿¿??
+  }
+});
+
 ipcRenderer.on("set-menubar-visibility", (event, isVisible) => {
   showMenuBar(isVisible);
 });
@@ -133,7 +158,7 @@ ipcRenderer.on("render-img-page", (event, img64, rotation) => {
   document.querySelector(".centered-block").classList.add("hide");
   g_currentImg64 = img64;
   renderImg64(rotation);
-  resetScrollBars();
+  //moveScrollBarsToStart();
 });
 
 ipcRenderer.on("refresh-img-page", (event, rotation) => {
@@ -303,7 +328,7 @@ function renderEpubImage(filePath, imageID, rotation) {
       let data64 = Buffer.from(data).toString("base64");
       g_currentImg64 = "data:" + mimeType + ";base64," + data64;
       renderImg64(rotation);
-      resetScrollBars();
+      //moveScrollBarsToStart();
       ipcRenderer.send("epub-page-loaded");
     });
   });
@@ -386,7 +411,7 @@ function renderPdfPage(pageIndex, rotation) {
     function (page) {
       g_currentPdfPage = page;
       renderCurrentPDFPage(rotation);
-      resetScrollBars();
+      //moveScrollBarsToStart();
     },
     function (reason) {
       // PDF loading error

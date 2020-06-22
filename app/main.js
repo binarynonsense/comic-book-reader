@@ -864,7 +864,8 @@ function generateTitle() {
 // PAGE NAVIGATION ////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-function goToPage(pageIndex) {
+function goToPage(pageIndex, scrollBarPos = 0) {
+  // 0 top - 1 bottom
   g_mainWindow.webContents.send("update-loading", false);
   if (
     g_fileData.state !== FileDataState.LOADED ||
@@ -891,6 +892,7 @@ function goToPage(pageIndex) {
   } else if (g_fileData.type === FileDataType.EPUB) {
     renderEpubImg(g_fileData.path, g_fileData.pagesPaths[g_fileData.pageIndex]);
   }
+  g_mainWindow.webContents.send("set-scrollbar-position", scrollBarPos);
   renderPageInfo();
 }
 
@@ -902,7 +904,7 @@ function goToNextPage() {
 
 function goToPreviousPage() {
   if (g_fileData.pageIndex - 1 >= 0) {
-    goToPage(g_fileData.pageIndex - 1);
+    goToPage(g_fileData.pageIndex - 1, 1);
   }
 }
 
