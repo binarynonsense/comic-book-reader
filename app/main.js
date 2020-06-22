@@ -81,7 +81,6 @@ app.on("ready", () => {
     resizable: true,
     frame: false,
     icon: path.join(__dirname, "assets/images/icon_256x256.png"),
-    //autoHideMenuBar: true,
     webPreferences: {
       nodeIntegration: true,
       enableRemoteModule: true,
@@ -89,8 +88,6 @@ app.on("ready", () => {
     show: false,
   });
 
-  // g_mainWindow.removeMenu();
-  // menuBar.buildApplicationMenu();
   menuBar.buildEmptyMenu();
 
   // FIX: ugly hack: since I wait to show the window on did-finish-load, if I started it
@@ -177,10 +174,7 @@ app.on("ready", () => {
       g_settings.height = height;
     }
     renderTitle();
-    if (
-      //g_fileData.type === FileDataType.PDF &&
-      g_fileData.state === FileDataState.LOADED
-    ) {
+    if (g_fileData.state === FileDataState.LOADED) {
       // avoid too much pdf resizing
       clearTimeout(g_resizeEventCounter);
       g_resizeEventCounter = setTimeout(onResizeEventFinished, 500);
@@ -680,9 +674,7 @@ function openFile(filePath, pageIndex = 0) {
       g_fileData.state = FileDataState.LOADING;
       g_mainWindow.webContents.send("load-epub", filePath, pageIndex);
     } else {
-      // let imgsFolderPath = undefined;
       if (fileExtension === ".rar" || fileExtension === ".cbr") {
-        //imgsFolderPath = fileUtils.extractRar(filePath);
         let pagesPaths = fileUtils.getRarEntriesList(filePath);
         if (pagesPaths !== undefined && pagesPaths.length > 0) {
           g_fileData.state = FileDataState.LOADED;
@@ -705,7 +697,6 @@ function openFile(filePath, pageIndex = 0) {
           g_mainWindow.webContents.send("update-loading", false);
         }
       } else if (fileExtension === ".zip" || fileExtension === ".cbz") {
-        //imgsFolderPath = fileUtils.extractZip(filePath);
         let pagesPaths = fileUtils.getZipEntriesList(filePath);
         if (pagesPaths !== undefined && pagesPaths.length > 0) {
           g_fileData.state = FileDataState.LOADED;
@@ -736,21 +727,6 @@ function openFile(filePath, pageIndex = 0) {
         g_mainWindow.webContents.send("update-loading", false);
         return;
       }
-      // if (imgsFolderPath === undefined) return;
-
-      // let pagesPaths = fileUtils.getImageFilesInFolderRecursive(imgsFolderPath);
-      // if (pagesPaths !== undefined && pagesPaths.length > 0) {
-      //   g_fileData.state = FileDataState.LOADED;
-      //   g_fileData.type = FileDataType.IMGS;
-      //   g_fileData.filePath = filePath;
-      //   g_fileData.fileName = path.basename(filePath);
-      //   g_fileData.pagesPaths = pagesPaths;
-      //   g_fileData.imgsFolderPath = imgsFolderPath;
-      //   g_fileData.numPages = pagesPaths.length;
-      //   g_fileData.pageIndex = pageIndex;
-      //   setPageRotation(0, false);
-      //   goToPage(pageIndex);
-      // }
     }
   })(); // async
 }
@@ -935,22 +911,12 @@ function goToPreviousPage() {
 ///////////////////////////////////////////////////////////////////////////////
 
 async function exportPageStart() {
-  // let defaultPath = path.join(
-  //   app.getPath("desktop"),
-  //   g_fileData.name + "_page_" + (g_fileData.pageIndex + 1) + ".jpg"
-  // );
-  // let filePath = fileUtils.chooseSaveFile(g_mainWindow, defaultPath);
-  // if (filePath === undefined) {
-  //   return;
-  // }
-  // console.log(filePath);
   let defaultPath = app.getPath("desktop");
   let folderList = fileUtils.chooseFolder(g_mainWindow, defaultPath);
   if (folderList === undefined) {
     return;
   }
   let outputFolderPath = folderList[0];
-  //console.log("select folder request:" + folderPath);
   if (outputFolderPath === undefined || outputFolderPath === "") return;
 
   g_mainWindow.webContents.send("update-loading", true);
@@ -1027,9 +993,7 @@ function exportPageSaveBuffer(buf, outputFolderPath) {
             fileName + "(" + i + ")" + fileExtension
           );
         }
-        //console.log(outputFilePath);
 
-        // fs.writeFileSync(outPath, buf,"binary"... ?
         await new Promise((resolve, reject) =>
           fs.writeFile(outputFilePath, buf, "binary", (err) => {
             if (err === null) {
@@ -1133,8 +1097,6 @@ function setFitToHeight() {
 }
 
 function setPageRotation(value, refreshPage) {
-  // if (g_fileData.state === FileDataState.LOADED) {
-  // }
   if (value >= 360) value -= 360;
   else if (value < 0) value += 360;
   g_fileData.pageRotation = value;
