@@ -334,7 +334,6 @@ async function createFileFromImages(
   }
   try {
     let tempFolder = fileUtils.getTempFolder();
-    console.log(tempFolder);
     let imgFiles = fileUtils.getImageFilesInFolderRecursive(tempFolder);
     if (imgFiles === undefined || imgFiles.length === 0) {
       console.log(imgFiles);
