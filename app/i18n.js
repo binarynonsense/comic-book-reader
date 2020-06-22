@@ -4,6 +4,8 @@ const fs = require("fs");
 let g_loadedLocale;
 let g_localeData;
 
+let g_loadedEnglishLocale;
+
 // ref: https://www.electronjs.org/docs/api/locales
 // ref: https://www.christianengvall.se/electron-localization/
 
@@ -13,6 +15,10 @@ exports.getLoadedLocale = function () {
 
 exports.loadLocale = function (desiredLocale, loadDefaultIfNotFound = true) {
   let defaultLocale = "en";
+  if (g_loadedEnglishLocale === undefined) {
+    g_loadedEnglishLocale = getLocaleData("en");
+  }
+
   let locale = desiredLocale;
   //console.log("trying locale: " + locale);
   if (locale !== undefined) {
@@ -102,7 +108,11 @@ exports._ = function (...args) {
   //console.log(args); // i.e. [ "Error: {0} file/s couldn't be converted", 0 ]
   let translatedText = g_localeData[args[0]];
   if (translatedText === undefined) {
-    translatedText = args[0];
+    translatedText = g_loadedEnglishLocale[args[0]];
+    if (translatedText === undefined) {
+      // use the sent text as nothing else was found
+      translatedText = args[0];
+    }
   }
   if (args.length > 1) {
     //{0},{1}... substitution with extra args
