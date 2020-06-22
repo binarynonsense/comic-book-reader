@@ -218,7 +218,7 @@ function onConvert(resetCounter = true) {
   g_modalButtonClose.classList.add("hide");
   {
     g_modalButtonClose.classList.add("green");
-    g_modalButtonClose.classList.remove("yellow");
+    g_modalButtonClose.classList.remove("red");
   }
   g_modalLoadingBar.classList.remove("hide");
 
@@ -312,7 +312,7 @@ ipcRenderer.on("convert-finished-error", (event) => {
   g_modalButtonClose.classList.remove("hide");
   {
     g_modalButtonClose.classList.remove("green");
-    g_modalButtonClose.classList.add("yellow");
+    g_modalButtonClose.classList.add("red");
   }
   g_modalLoadingBar.classList.add("hide");
   g_numErrors++;
@@ -323,7 +323,7 @@ ipcRenderer.on("convert-finished-canceled", (event) => {
   g_modalButtonClose.classList.remove("hide");
   {
     g_modalButtonClose.classList.remove("green");
-    g_modalButtonClose.classList.add("yellow");
+    g_modalButtonClose.classList.add("red");
   }
   g_modalLoadingBar.classList.add("hide");
   ipcRenderer.send(
