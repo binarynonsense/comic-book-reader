@@ -2,7 +2,9 @@
 
 A comic book reader for cbz, cbr, epub and pdf files.
 
-![screenshots](./screenshots.jpg)
+<p align="center">
+  <img width="299" height="224" src="https://raw.githubusercontent.com/binarynonsense/comic-book-reader/master/screenshots/screenshot_01.jpg"> <img width="299" height="224" src="https://raw.githubusercontent.com/binarynonsense/comic-book-reader/master/screenshots/screenshot_02.jpg"> <img width="299" height="224" src="https://raw.githubusercontent.com/binarynonsense/comic-book-reader/master/screenshots/screenshot_03.jpg">
+</p>
 
 ## Features:
 
