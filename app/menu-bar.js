@@ -45,6 +45,12 @@ exports.setCloseFile = function (isEnabled) {
   Menu.getApplicationMenu().getMenuItemById("close-file").enabled = isEnabled;
 };
 
+function buildEmptyMenu() {
+  const menuConfig = Menu.buildFromTemplate([]);
+  Menu.setApplicationMenu(menuConfig);
+}
+exports.buildEmptyMenu = buildEmptyMenu;
+
 function buildApplicationMenu(activeLocale, languages) {
   // ref: https://stackoverflow.com/questions/54105224/electron-modify-a-single-menu-item
   // Menu.getApplicationMenu().items // all the items

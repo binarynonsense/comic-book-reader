@@ -91,6 +91,7 @@ app.on("ready", () => {
 
   // g_mainWindow.removeMenu();
   // menuBar.buildApplicationMenu();
+  menuBar.buildEmptyMenu();
 
   // FIX: ugly hack: since I wait to show the window on did-finish-load, if I started it
   // unmaximized the resize controls did nothing until I maximized and unmaximized it... ?? :(
@@ -149,14 +150,18 @@ app.on("ready", () => {
         fs.existsSync(filePath) &&
         fileUtils.hasCompatibleExtension(filePath)
       ) {
-        openFile(filePath, 0);
+        setTimeout(() => {
+          openFile(filePath, 0);
+        }, 1000);
         return;
       }
     }
 
     if (g_history.length > 0 && g_settings.on_quit_state === 1) {
       let entry = g_history[g_history.length - 1];
-      openFile(entry.filePath, entry.pageIndex);
+      setTimeout(() => {
+        openFile(entry.filePath, entry.pageIndex);
+      }, 1000);
       return;
     }
 
