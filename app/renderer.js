@@ -113,18 +113,24 @@ ipcRenderer.on("update-title", (event, title) => {
 });
 
 ipcRenderer.on("render-page-info", (event, pageNum, numPages) => {
-  if (numPages === 0) pageNum = -1; // hack to make it show 00 / 00 @ start
-  document.getElementById("page-slider").max = numPages;
-  document.getElementById("page-slider").value = pageNum + 1;
-  document.getElementById("toolbar-page-numbers").innerHTML =
-    pageNum + 1 + " / " + numPages;
+  toolbarUpdatePageInfo(pageNum, numPages);
+});
+
+///////////////////////////////////////////////////////////////////////////////
+
+ipcRenderer.on("file-closed", (event, img64, rotation) => {
+  cleanUp();
+  let container = document.getElementById("pages-container");
+  container.innerHTML = "";
+  document.querySelector(".centered-block").classList.remove("hide");
+  toolbarUpdatePageInfo(0, 0);
 });
 
 ///////////////////////////////////////////////////////////////////////////////
 
 ipcRenderer.on("render-img-page", (event, img64, rotation) => {
   cleanUp();
-  document.querySelector(".centered-block").style.display = "none";
+  document.querySelector(".centered-block").classList.add("hide");
   g_currentImg64 = img64;
   renderImg64(rotation);
   resetScrollBars();
@@ -137,7 +143,7 @@ ipcRenderer.on("refresh-img-page", (event, rotation) => {
 ///////////////////////////////////////////////////////////////////////////////
 
 ipcRenderer.on("load-pdf", (event, filePath, pageIndex) => {
-  document.querySelector(".centered-block").style.display = "none";
+  document.querySelector(".centered-block").classList.add("hide");
   loadPdf(filePath, pageIndex);
 });
 
@@ -159,7 +165,7 @@ ipcRenderer.on(
 ///////////////////////////////////////////////////////////////////////////////
 
 ipcRenderer.on("load-epub", (event, filePath, pageIndex) => {
-  document.querySelector(".centered-block").style.display = "none";
+  document.querySelector(".centered-block").classList.add("hide");
   loadEpub(filePath, pageIndex);
 });
 
@@ -290,7 +296,7 @@ function renderEpubImage(filePath, imageID, rotation) {
     throw err;
   });
   epub.on("end", function (err) {
-    document.querySelector(".centered-block").style.display = "none";
+    document.querySelector(".centered-block").classList.add("hide");
 
     epub.getImage(imageID, function (err, data, mimeType) {
       // ref: https://stackoverflow.com/questions/54305759/how-to-encode-a-buffer-to-base64-in-nodejs
@@ -557,6 +563,14 @@ document.getElementById("page-slider").addEventListener("input", (event) => {
   document.getElementById("toolbar-page-numbers").innerHTML =
     event.currentTarget.value + " / " + event.currentTarget.max;
 });
+
+function toolbarUpdatePageInfo(pageNum, numPages) {
+  if (numPages === 0) pageNum = -1; // hack to make it show 00 / 00 @ start
+  document.getElementById("page-slider").max = numPages;
+  document.getElementById("page-slider").value = pageNum + 1;
+  document.getElementById("toolbar-page-numbers").innerHTML =
+    pageNum + 1 + " / " + numPages;
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // MODIFIERS //////////////////////////////////////////////////////////////////

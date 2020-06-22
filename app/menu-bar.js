@@ -41,9 +41,9 @@ exports.setExportPage = function (isEnabled) {
   Menu.getApplicationMenu().getMenuItemById("export-page").enabled = isEnabled;
 };
 
-// exports.setLanguage = function (locale) {
-//   Menu.getApplicationMenu().getMenuItemById("language").checked = isChecked;
-// };
+exports.setCloseFile = function (isEnabled) {
+  Menu.getApplicationMenu().getMenuItemById("close-file").enabled = isEnabled;
+};
 
 function buildApplicationMenu(activeLocale, languages) {
   // ref: https://stackoverflow.com/questions/54105224/electron-modify-a-single-menu-item
@@ -84,6 +84,14 @@ function buildApplicationMenu(activeLocale, languages) {
           accelerator: "CommandOrControl+O",
           click() {
             mainProcess.onMenuOpenFile();
+          },
+        },
+        {
+          id: "close-file",
+          label: _("Close..."),
+          enabled: false,
+          click() {
+            mainProcess.onMenuCloseFile();
           },
         },
         {

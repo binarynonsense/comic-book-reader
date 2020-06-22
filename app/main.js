@@ -33,10 +33,13 @@ let g_settings = {
   maximize: false,
   width: 800,
   height: 600,
+  on_quit_state: 0, // 0: no file, 1: reading file
+
   showMenuBar: true,
   showToolBar: true,
   showScrollBar: true,
   locale: undefined,
+  loadLastOpened: true,
 };
 
 let g_history = [];
@@ -62,6 +65,7 @@ let g_isLoaded = false;
 // }
 
 app.on("will-quit", () => {
+  g_settings.on_quit_state = g_fileData.path === "" ? 0 : 1;
   saveSettings();
   saveHistory();
   globalShortcut.unregisterAll();
@@ -150,7 +154,7 @@ app.on("ready", () => {
       }
     }
 
-    if (g_history.length > 0) {
+    if (g_history.length > 0 && g_settings.on_quit_state === 1) {
       let entry = g_history[g_history.length - 1];
       openFile(entry.filePath, entry.pageIndex);
       return;
@@ -538,6 +542,25 @@ exports.onMenuOpenFile = onMenuOpenFile = function () {
   let filePath = fileList[0];
   console.log("open file request:" + filePath);
   openFile(filePath);
+};
+
+exports.onMenuCloseFile = function () {
+  addCurrentToHistory(); // add the one I'm closing to history
+
+  g_fileData.state = FileDataState.NOT_SET;
+  g_fileData.type = FileDataType.NOT_SET;
+  g_fileData.path = "";
+  g_fileData.name = "";
+  g_fileData.imgsFolderPath = "";
+  g_fileData.pagesPaths = [];
+  g_fileData.numPages = 0;
+  g_fileData.pageIndex = 0;
+  g_fileData.pageRotation = 0;
+
+  updateMenuItemsState();
+
+  g_mainWindow.webContents.send("file-closed");
+  g_mainWindow.webContents.send("update-menubar");
 };
 
 exports.onMenuExportPage = function () {
@@ -1125,9 +1148,11 @@ function updateMenuItemsState() {
       g_fileData.type === FileDataType.EPUB ||
       g_fileData.type === FileDataType.PDF
     ) {
+      menuBar.setCloseFile(true);
       menuBar.setConvertFile(true);
       menuBar.setExportPage(true);
     } else {
+      menuBar.setCloseFile(false);
       menuBar.setConvertFile(false);
       menuBar.setExportPage(false);
     }
