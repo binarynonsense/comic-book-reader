@@ -38,12 +38,17 @@ exports.showWindow = function (parentWindow, filePath, fileType) {
   g_convertWindow.menuBarVisible = false;
   g_convertWindow.loadFile(`${__dirname}/convert.html`);
 
+  // g_convertWindow.on("close", (event) => {
+  //   event.preventDefault();
+  // });
+
   g_convertWindow.on("closed", () => {
     g_convertWindow = undefined;
     if (g_worker !== undefined) {
       g_worker.kill();
       g_worker = undefined;
     }
+    fileUtils.cleanUpTempFolder();
   });
 
   g_convertWindow.webContents.on("did-finish-load", function () {
