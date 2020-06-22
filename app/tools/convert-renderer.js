@@ -240,6 +240,7 @@ function onConvert(resetCounter = true) {
 exports.onConvert = onConvert;
 
 function onCancelConversion() {
+  console.log("onCancelConversion");
   if (g_cancelConversion === true) return; // already canceling?
   g_cancelConversion = true;
   g_modalButtonCancel.classList.add("hide");

@@ -2,12 +2,14 @@ const { app, BrowserWindow, ipcMain } = require("electron");
 
 const fs = require("fs");
 const path = require("path");
+const { fork } = require("child_process");
 const FileType = require("file-type");
 const fileUtils = require("../file-utils");
 const mainProcess = require("../main");
 
 let g_convertWindow;
 let g_cancelConversion = false;
+let g_worker;
 
 function isDev() {
   return process.argv[2] == "--dev";
@@ -38,6 +40,10 @@ exports.showWindow = function (parentWindow, filePath, fileType) {
 
   g_convertWindow.on("closed", () => {
     g_convertWindow = undefined;
+    if (g_worker !== undefined) {
+      g_worker.kill();
+      g_worker = undefined;
+    }
   });
 
   g_convertWindow.webContents.on("did-finish-load", function () {
@@ -116,6 +122,7 @@ ipcMain.on(
 /////////////////////////
 
 ipcMain.on("convert-cancel-conversion", (event) => {
+  console.log("cancel conversion request");
   g_cancelConversion = true;
 });
 
@@ -247,6 +254,7 @@ function conversionStart(inputFilePath, inputFileType) {
   g_convertWindow.webContents.send("convert-update-text-log", _("Converting:"));
   g_convertWindow.webContents.send("convert-update-text-log", inputFilePath);
 
+  let tempFolderPath = fileUtils.createTempFolder();
   // extract to temp folder
   if (
     inputFileType === "zip" ||
@@ -257,41 +265,61 @@ function conversionStart(inputFilePath, inputFileType) {
       "convert-update-text-log",
       _("Extracting Pages...")
     );
-    conversionExtractImages(inputFilePath, inputFileType);
+    //conversionExtractImages(inputFilePath, inputFileType);
+    // ref: https://www.matthewslipper.com/2019/09/22/everything-you-wanted-electron-child-process.html
+    if (g_worker === undefined) {
+      g_worker = fork(path.join(__dirname, "convert-worker.js"));
+      g_worker.on("message", (message) => {
+        //console.log("message from worker: " + message);
+        if (message === "success") {
+          //console.log('message === "success"');
+          if (g_cancelConversion === true) {
+            conversionStopCancel();
+            return;
+          }
+          g_convertWindow.webContents.send("convert-images-extracted");
+          return;
+        } else {
+          //console.log('message !== "success"');
+          conversionStopError(message);
+          return;
+        }
+      });
+    }
+    g_worker.send([inputFilePath, inputFileType, tempFolderPath]);
   } else if (inputFileType === "pdf") {
     g_convertWindow.webContents.send(
       "convert-update-text-log",
       _("Extracting Pages...")
     );
-    let tempFolder = fileUtils.createTempFolder();
     g_convertWindow.webContents.send(
       "convert-extract-pdf-images",
-      tempFolder,
+      tempFolderPath,
       _("Extracting Page: ")
     );
   } else {
-    conversionStopError("");
+    conversionStopError("conversionStart: invalid file type");
   }
 }
 
-async function conversionExtractImages(inputFilePath, inputFileType) {
-  try {
-    if (inputFileType === "zip") {
-      fileUtils.extractZip(inputFilePath);
-    } else if (inputFileType === "rar") {
-      fileUtils.extractRar(inputFilePath);
-    } else if (inputFileType === "epub") {
-      await fileUtils.extractEpubImages(inputFilePath);
-    }
-    if (g_cancelConversion === true) {
-      conversionStopCancel();
-      return;
-    }
-    g_convertWindow.webContents.send("convert-images-extracted");
-  } catch (err) {
-    conversionStopError(err);
-  }
-}
+// async function conversionExtractImages(inputFilePath, inputFileType) {
+//   try {
+//     if (inputFileType === "zip") {
+//       fileUtils.extractZip(inputFilePath);
+//     } else if (inputFileType === "rar") {
+//       fileUtils.extractRar(inputFilePath);
+//     } else if (inputFileType === "epub") {
+//       await fileUtils.extractEpubImages(inputFilePath);
+//     }
+//     if (g_cancelConversion === true) {
+//       conversionStopCancel();
+//       return;
+//     }
+//     g_convertWindow.webContents.send("convert-images-extracted");
+//   } catch (err) {
+//     conversionStopError(err);
+//   }
+// }
 
 async function createFileFromImages(
   inputFilePath,
@@ -300,11 +328,17 @@ async function createFileFromImages(
   outputFormat,
   outputFolderPath
 ) {
+  if (g_cancelConversion === true) {
+    conversionStopCancel();
+    return;
+  }
   try {
     let tempFolder = fileUtils.getTempFolder();
+    console.log(tempFolder);
     let imgFiles = fileUtils.getImageFilesInFolderRecursive(tempFolder);
     if (imgFiles === undefined || imgFiles.length === 0) {
-      conversionStopError("");
+      console.log(imgFiles);
+      conversionStopError("imgFiles === undefined || imgFiles.length === 0");
       return;
     }
 

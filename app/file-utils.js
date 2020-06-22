@@ -149,31 +149,6 @@ exports.reducePathString = function (input, max = 60) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-const deleteTempFolderRecursive = function (folderPath) {
-  //console.log("deleteFolderRecursive: " + folderPath);
-  if (fs.existsSync(folderPath)) {
-    if (!folderPath.startsWith(os.tmpdir())) {
-      // safety check
-      return;
-    }
-    let files = fs.readdirSync(folderPath);
-    //console.log(files.length);
-    files.forEach((file) => {
-      //console.log(file);
-      const entryPath = path.join(folderPath, file);
-      if (fs.lstatSync(entryPath).isDirectory()) {
-        deleteTempFolderRecursive(entryPath);
-      } else {
-        fs.unlinkSync(entryPath); // delete the file
-      }
-    });
-    fs.rmdirSync(folderPath);
-    console.log("deletedfolder: " + folderPath);
-  }
-};
-
-///////////////////////////////////////////////////////////////////////////////
-
 function chooseOpenFile(window, defaultPath) {
   if (!fs.existsSync(defaultPath)) {
     defaultPath = undefined;
@@ -268,17 +243,10 @@ exports.getImageFilesInFolderRecursive = getImageFilesInFolderRecursive;
 // ZIP / RAR //////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-function extractRar(filePath) {
-  cleanUpTempFolder();
-  createTempFolder();
-  //console.log(tempFolder);
-
+function extractRar(filePath, tempFolderPath) {
   //ref: https://github.com/YuJianrong/node-unrar.js
-  let extractor = unrar.createExtractorFromFile(filePath, tempFolder);
+  let extractor = unrar.createExtractorFromFile(filePath, tempFolderPath);
   extractor.extractAll();
-
-  //console.log("rar file extracted");
-  return tempFolder;
 }
 exports.extractRar = extractRar;
 
@@ -296,9 +264,6 @@ function getRarEntriesList(filePath) {
       }
     });
   }
-  // imgEntries.forEach(function (entryName) {
-  //   console.log(entryName);
-  // });
   imgEntries.sort();
   return imgEntries;
 }
@@ -350,27 +315,19 @@ function extractZipEntryData(zipPath, entryName) {
 }
 exports.extractZipEntryData = extractZipEntryData;
 
-function extractZip(filePath) {
-  cleanUpTempFolder();
-  createTempFolder();
-  //console.log(tempFolder);
-
+function extractZip(filePath, tempFolderPath) {
   // ref: https://github.com/cthackers/adm-zip/wiki/ADM-ZIP-Introduction
   let zip = new AdmZip(filePath);
   const imageData = zip.readFile("");
-  zip.extractAllTo(tempFolder, true);
-  //console.log("zip file extracted");
-  return tempFolder;
+  zip.extractAllTo(tempFolderPath, true);
 }
 exports.extractZip = extractZip;
 
 function createZip(filePathsList, outputFilePath) {
   let zip = new AdmZip();
   filePathsList.forEach((element) => {
-    //console.log(element);
     zip.addLocalFile(element);
   });
-  //console.log(outputFilePath);
   zip.writeZip(outputFilePath);
 }
 exports.createZip = createZip;
@@ -379,12 +336,9 @@ exports.createZip = createZip;
 // EPUB / PDF /////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-async function extractEpubImages(filePath) {
+async function extractEpubImages(filePath, tempFolderPath) {
   // TODO catch errors
   // based on renderer.js epub code
-  cleanUpTempFolder();
-  createTempFolder();
-
   const epub = new EPub(filePath);
 
   // parse epub
@@ -442,7 +396,7 @@ async function extractEpubImages(filePath) {
           });
         } else {
           let extension = mimeType.split("/")[1];
-          let filePath = path.join(tempFolder, index + "." + extension);
+          let filePath = path.join(tempFolderPath, index + "." + extension);
           fs.writeFile(filePath, Buffer.from(data), "binary", function (err) {
             if (err) {
               return reject({
@@ -459,8 +413,6 @@ async function extractEpubImages(filePath) {
       });
     });
   }
-
-  return tempFolder;
 }
 exports.extractEpubImages = extractEpubImages;
 
@@ -540,6 +492,7 @@ async function createEpubFromImages(imgPathsList, outputFilePath) {
 exports.createEpubFromImages = createEpubFromImages;
 
 ///////////////////////////////////////////////////////////////////////////////
+
 function createPdfFromImages(imgPathsList, outputFilePath) {
   const PDFDocument = require("pdfkit");
   const pdf = new PDFDocument({
@@ -560,25 +513,46 @@ exports.createPdfFromImages = createPdfFromImages;
 // TEMP FOLDER ////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-let tempFolder; // = os.tmpdir();
+// TODO maybe? ref: https://stackabuse.com/using-global-variables-in-node-js/
+// or move this to main and keep tabs of multiple tempFolders?
+
+g_tempFolder = undefined;
 
 function getTempFolder() {
-  return tempFolder;
+  return g_tempFolder;
 }
 exports.getTempFolder = getTempFolder;
 
 function createTempFolder() {
-  tempFolder = fs.mkdtempSync(path.join(os.tmpdir(), "comic-book-reader-"));
-  console.log("temp folder created: " + tempFolder);
-  return tempFolder;
+  g_tempFolder = fs.mkdtempSync(path.join(os.tmpdir(), "comic-book-reader-"));
+  console.log("temp folder created: " + g_tempFolder);
+  return g_tempFolder;
 }
 exports.createTempFolder = createTempFolder;
 
 function cleanUpTempFolder() {
-  if (tempFolder === undefined) return;
-  // console.log("cleaning folder: " + tempFolder);
-  //const files = fs.readdirSync(tempFolder);
-  deleteTempFolderRecursive(tempFolder);
-  tempFolder = undefined;
+  if (g_tempFolder === undefined) return;
+  deleteTempFolderRecursive(g_tempFolder);
+  g_tempFolder = undefined;
 }
 exports.cleanUpTempFolder = cleanUpTempFolder;
+
+const deleteTempFolderRecursive = function (folderPath) {
+  if (fs.existsSync(folderPath)) {
+    if (!folderPath.startsWith(os.tmpdir())) {
+      // safety check
+      return;
+    }
+    let files = fs.readdirSync(folderPath);
+    files.forEach((file) => {
+      const entryPath = path.join(folderPath, file);
+      if (fs.lstatSync(entryPath).isDirectory()) {
+        deleteTempFolderRecursive(entryPath);
+      } else {
+        fs.unlinkSync(entryPath); // delete the file
+      }
+    });
+    fs.rmdirSync(folderPath);
+    console.log("deletedfolder: " + folderPath);
+  }
+};
