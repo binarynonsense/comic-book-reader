@@ -128,8 +128,8 @@ ipcMain.on("convert-cancel-conversion", (event) => {
 
 ipcMain.on(
   "convert-start-conversion",
-  (event, inputFilePath, inputFileType) => {
-    conversionStart(inputFilePath, inputFileType);
+  (event, inputFilePath, inputFileType, fileNum, totalFilesNum) => {
+    conversionStart(inputFilePath, inputFileType, fileNum, totalFilesNum);
   }
 );
 
@@ -241,11 +241,13 @@ function conversionStopCancel() {
   g_convertWindow.webContents.send("convert-finished-canceled");
 }
 
-function conversionStart(inputFilePath, inputFileType) {
+function conversionStart(inputFilePath, inputFileType, fileNum, totalFilesNum) {
   g_cancelConversion = false;
+
   g_convertWindow.webContents.send(
     "convert-update-text-title",
-    _("Converting:")
+    _("Converting:") +
+      (totalFilesNum > 1 ? " (" + fileNum + "/" + totalFilesNum + ")" : "")
   );
   g_convertWindow.webContents.send(
     "convert-update-text-info",

@@ -5,8 +5,9 @@ const { ipcRenderer } = require("electron");
 
 let g_mode;
 let g_inputFiles = [];
-let g_inputFilesCounter = 0;
 let g_inputFilesIndex = 0;
+
+let g_inputFilesID = 0;
 
 const FileDataType = {
   NOT_SET: "not set",
@@ -146,7 +147,7 @@ ipcRenderer.on("add-file", (event, filePath, fileType) => {
       return;
     }
   }
-  let id = g_inputFilesCounter++; // not the best solution, but if it works...
+  let id = g_inputFilesID++; // not the best solution, but if it works...
   g_inputFiles.push({
     id: id,
     path: filePath,
@@ -234,7 +235,9 @@ function onConvert(resetCounter = true) {
   ipcRenderer.send(
     "convert-start-conversion",
     g_inputFilePath,
-    g_inputFileType
+    g_inputFileType,
+    g_inputFilesIndex + 1,
+    g_inputFiles.length
   );
 }
 exports.onConvert = onConvert;
