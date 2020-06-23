@@ -56,6 +56,7 @@ function setScrollBarsPosition(position) {
 ///////////////////////////////////////////////////////////////////////////////
 
 ipcRenderer.on("update-loading", (event, isVisible) => {
+  // ref: https://github.com/raphaelfabeni/css-loader
   if (isVisible) {
     document.querySelector("#loading").classList.add("is-active");
   } else {
