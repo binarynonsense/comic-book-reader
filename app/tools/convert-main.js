@@ -5,6 +5,7 @@ const path = require("path");
 const { fork } = require("child_process");
 const FileType = require("file-type");
 const fileUtils = require("../file-utils");
+const fileFormats = require("../file-formats");
 const mainProcess = require("../main");
 
 let g_convertWindow;
@@ -272,7 +273,7 @@ function conversionStart(inputFilePath, inputFileType, fileNum, totalFilesNum) {
       "convert-update-text-log",
       _("Extracting Pages...")
     );
-    //conversionExtractImages(inputFilePath, inputFileType);
+    // conversionExtractImages(inputFilePath, inputFileType, tempFolderPath);
     // ref: https://www.matthewslipper.com/2019/09/22/everything-you-wanted-electron-child-process.html
     if (g_worker === undefined) {
       g_worker = fork(path.join(__dirname, "convert-worker.js"));
@@ -292,6 +293,20 @@ function conversionStart(inputFilePath, inputFileType, fileNum, totalFilesNum) {
           return;
         }
       });
+
+      // g_worker.on("error", (err) => {
+      //   conversionStopError(err);
+      //   return;
+      // });
+
+      // g_worker.stderr.on("data", function (data) {
+      //   console.log("stdout: " + data);
+      // });
+
+      // g_worker.on("exit", (code, signal) => {
+      //   conversionStopError("fork code: " + code + "\nsignal: " + signal);
+      //   return;
+      // });
     }
     g_worker.send([inputFilePath, inputFileType, tempFolderPath]);
   } else if (inputFileType === "pdf") {
@@ -309,14 +324,18 @@ function conversionStart(inputFilePath, inputFileType, fileNum, totalFilesNum) {
   }
 }
 
-// async function conversionExtractImages(inputFilePath, inputFileType) {
+// async function conversionExtractImages(
+//   inputFilePath,
+//   inputFileType,
+//   tempFolderPath
+// ) {
 //   try {
 //     if (inputFileType === "zip") {
-//       fileUtils.extractZip(inputFilePath);
+//       fileFormats.extractZip(inputFilePath, tempFolderPath);
 //     } else if (inputFileType === "rar") {
-//       fileUtils.extractRar(inputFilePath);
+//       fileFormats.extractRar(inputFilePath, tempFolderPath);
 //     } else if (inputFileType === "epub") {
-//       await fileUtils.extractEpubImages(inputFilePath);
+//       await fileFormats.extractEpubImages(inputFilePath, tempFolderPath);
 //     }
 //     if (g_cancelConversion === true) {
 //       conversionStopCancel();
@@ -340,8 +359,8 @@ async function createFileFromImages(
     return;
   }
   try {
-    let tempFolder = fileUtils.getTempFolder();
-    let imgFiles = fileUtils.getImageFilesInFolderRecursive(tempFolder);
+    let tempFolderPath = fileUtils.getTempFolderPath();
+    let imgFiles = fileUtils.getImageFilesInFolderRecursive(tempFolderPath);
     if (imgFiles === undefined || imgFiles.length === 0) {
       console.log(imgFiles);
       conversionStopError("imgFiles === undefined || imgFiles.length === 0");
@@ -393,12 +412,16 @@ async function createFileFromImages(
     g_convertWindow.webContents.send("convert-update-text-log", outputFilePath);
 
     if (outputFormat === "pdf") {
-      fileUtils.createPdfFromImages(imgFiles, outputFilePath);
+      fileFormats.createPdfFromImages(imgFiles, outputFilePath);
     } else if (outputFormat === "epub") {
-      await fileUtils.createEpubFromImages(imgFiles, outputFilePath);
+      await fileFormats.createEpubFromImages(
+        imgFiles,
+        outputFilePath,
+        tempFolderPath
+      );
     } else {
       //cbz
-      fileUtils.createZip(imgFiles, outputFilePath);
+      fileFormats.createZip(imgFiles, outputFilePath);
     }
 
     // delete temp folder

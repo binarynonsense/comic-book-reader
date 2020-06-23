@@ -10,6 +10,7 @@ const fs = require("fs");
 const path = require("path");
 const FileType = require("file-type");
 const fileUtils = require("./file-utils");
+const fileFormats = require("./file-formats");
 const i18n = require("./i18n");
 const menuBar = require("./menu-bar");
 const contextMenu = require("./menu-context");
@@ -145,7 +146,7 @@ app.on("ready", () => {
       let filePath = process.argv[1];
       if (
         fs.existsSync(filePath) &&
-        fileUtils.hasCompatibleExtension(filePath)
+        fileFormats.hasCompatibleExtension(filePath)
       ) {
         setTimeout(() => {
           openFile(filePath, 0);
@@ -675,7 +676,7 @@ function openFile(filePath, pageIndex = 0) {
       g_mainWindow.webContents.send("load-epub", filePath, pageIndex);
     } else {
       if (fileExtension === ".rar" || fileExtension === ".cbr") {
-        let pagesPaths = fileUtils.getRarEntriesList(filePath);
+        let pagesPaths = fileFormats.getRarEntriesList(filePath);
         if (pagesPaths !== undefined && pagesPaths.length > 0) {
           g_fileData.state = FileDataState.LOADED;
           g_fileData.type = FileDataType.RAR;
@@ -697,7 +698,7 @@ function openFile(filePath, pageIndex = 0) {
           g_mainWindow.webContents.send("update-loading", false);
         }
       } else if (fileExtension === ".zip" || fileExtension === ".cbz") {
-        let pagesPaths = fileUtils.getZipEntriesList(filePath);
+        let pagesPaths = fileFormats.getZipEntriesList(filePath);
         if (pagesPaths !== undefined && pagesPaths.length > 0) {
           g_fileData.state = FileDataState.LOADED;
           g_fileData.type = FileDataType.ZIP;
@@ -769,7 +770,7 @@ function renderImageFile(filePath) {
   renderTitle();
   let data64 = fs.readFileSync(filePath).toString("base64");
   let img64 =
-    "data:image/" + fileUtils.getMimeType(filePath) + ";base64," + data64;
+    "data:image/" + fileFormats.getMimeType(filePath) + ";base64," + data64;
   g_mainWindow.webContents.send(
     "render-img-page",
     img64,
@@ -779,11 +780,11 @@ function renderImageFile(filePath) {
 
 function renderZipEntry(zipPath, entryName) {
   renderTitle();
-  let data64 = fileUtils
+  let data64 = fileFormats
     .extractZipEntryData(zipPath, entryName)
     .toString("base64");
   let img64 =
-    "data:image/" + fileUtils.getMimeType(entryName) + ";base64," + data64;
+    "data:image/" + fileFormats.getMimeType(entryName) + ";base64," + data64;
   g_mainWindow.webContents.send(
     "render-img-page",
     img64,
@@ -793,11 +794,11 @@ function renderZipEntry(zipPath, entryName) {
 
 function renderRarEntry(rarPath, entryName) {
   renderTitle();
-  let data64 = fileUtils
+  let data64 = fileFormats
     .extractRarEntryData(rarPath, entryName)
     .toString("base64");
   let img64 =
-    "data:image/" + fileUtils.getMimeType(entryName) + ";base64," + data64;
+    "data:image/" + fileFormats.getMimeType(entryName) + ";base64," + data64;
   g_mainWindow.webContents.send(
     "render-img-page",
     img64,
@@ -927,17 +928,17 @@ async function exportPageStart() {
     let buf;
     if (g_fileData.filePath !== "") {
       if (g_fileData.type === FileDataType.ZIP) {
-        buf = fileUtils.extractZipEntryData(
+        buf = fileFormats.extractZipEntryData(
           g_fileData.path,
           g_fileData.pagesPaths[g_fileData.pageIndex]
         );
       } else if (g_fileData.type === FileDataType.RAR) {
-        buf = fileUtils.extractRarEntryData(
+        buf = fileFormats.extractRarEntryData(
           g_fileData.path,
           g_fileData.pagesPaths[g_fileData.pageIndex]
         );
       } else if (g_fileData.type === FileDataType.EPUB) {
-        buf = await fileUtils.extractEpubImageBuffer(
+        buf = await fileFormats.extractEpubImageBuffer(
           g_fileData.path,
           g_fileData.pagesPaths[g_fileData.pageIndex]
         );

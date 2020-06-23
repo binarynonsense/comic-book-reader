@@ -1,4 +1,4 @@
-const fileUtils = require("../file-utils");
+const fileFormats = require("../file-formats");
 
 process.on("message", (message) => {
   //console.log("message from parent: " + message[0]);
@@ -12,11 +12,11 @@ async function conversionExtractImages(
 ) {
   try {
     if (inputFileType === "zip") {
-      fileUtils.extractZip(inputFilePath, tempFolderPath);
+      fileFormats.extractZip(inputFilePath, tempFolderPath);
     } else if (inputFileType === "rar") {
-      fileUtils.extractRar(inputFilePath, tempFolderPath);
+      fileFormats.extractRar(inputFilePath, tempFolderPath);
     } else if (inputFileType === "epub") {
-      await fileUtils.extractEpubImages(inputFilePath, tempFolderPath);
+      await fileFormats.extractEpubImages(inputFilePath, tempFolderPath);
     } else {
       process.send("conversionExtractImages: invalid file type");
       return;
