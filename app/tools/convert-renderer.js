@@ -23,7 +23,7 @@ let g_cancelConversion = false;
 let g_inputFilePath;
 let g_inputFileType;
 let g_outputScale = "100";
-let g_outputQuality = "60";
+let g_outputQuality = "80";
 let g_outputFormat = "cbz";
 let g_outputFolderPath;
 

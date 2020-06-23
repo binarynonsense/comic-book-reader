@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require("electron");
+const { app, BrowserWindow, ipcMain, nativeImage } = require("electron");
 
 const fs = require("fs");
 const path = require("path");
@@ -373,21 +373,55 @@ async function createFileFromImages(
     outputScale = parseInt(outputScale);
     outputQuality = parseInt(outputQuality);
     if (outputScale < 100) {
-      // ref: https://www.npmjs.com/package/jimp
-      const Jimp = require("jimp");
-      for (let index = 0; index < imgFiles.length; index++) {
-        g_convertWindow.webContents.send(
-          "convert-update-text-log",
-          _("Resizing Page: ") + (index + 1) + " / " + imgFiles.length
-        );
-        let image = await Jimp.read(imgFiles[index]);
-        image.scale(outputScale / 100);
-        image.quality(outputQuality);
-        await image.writeAsync(imgFiles[index]);
+      if (false) {
+        // ref: https://www.npmjs.com/package/jimp
+        const Jimp = require("jimp");
+        for (let index = 0; index < imgFiles.length; index++) {
+          g_convertWindow.webContents.send(
+            "convert-update-text-log",
+            _("Resizing Page: ") + (index + 1) + " / " + imgFiles.length
+          );
+          let image = await Jimp.read(imgFiles[index]);
+          image.scale(outputScale / 100);
+          image.quality(outputQuality);
+          await image.writeAsync(imgFiles[index]);
 
-        if (g_cancelConversion === true) {
-          conversionStopCancel();
-          return;
+          if (g_cancelConversion === true) {
+            conversionStopCancel();
+            return;
+          }
+        }
+      } else {
+        for (let index = 0; index < imgFiles.length; index++) {
+          g_convertWindow.webContents.send(
+            "convert-update-text-log",
+            _("Resizing Page: ") + (index + 1) + " / " + imgFiles.length
+          );
+          // ref: https://www.electronjs.org/docs/api/native-image#imageresizeoptions
+          let image = nativeImage.createFromPath(imgFiles[index]);
+          console.log(image.getSize().width);
+          const width = (image.getSize().width * outputScale) / 100;
+          console.log(width);
+          image = image.resize({
+            width: width,
+            quality: "best", // good, better, or best
+          });
+          const buf = image.toJPEG(outputQuality);
+
+          await new Promise((resolve, reject) =>
+            fs.writeFile(imgFiles[index], buf, "binary", (err) => {
+              if (err === null) {
+                resolve();
+              } else {
+                reject(err);
+              }
+            })
+          );
+
+          if (g_cancelConversion === true) {
+            conversionStopCancel();
+            return;
+          }
         }
       }
     }
