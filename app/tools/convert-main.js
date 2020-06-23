@@ -452,6 +452,10 @@ function getTooltipsLocalization() {
       id: "tooltip-output-folder",
       text: _("tooltip-output-folder"),
     },
+    {
+      id: "tooltip-remove-from-list",
+      text: _("tooltip-remove-from-list"),
+    },
   ];
 }
 

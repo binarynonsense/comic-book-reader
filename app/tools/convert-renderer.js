@@ -43,6 +43,8 @@ let g_modalButtonCancel = document.querySelector("#button-modal-cancel");
 let g_modalLoadingBar = document.querySelector("#modal-loading-bar");
 let g_modalTitle = document.querySelector("#modal-title");
 
+g_localizedRemoveFromListText = "";
+
 g_scaleSlider.addEventListener("mouseup", (event) => {
   g_outputScale = event.currentTarget.value;
   checkValidData();
@@ -126,15 +128,27 @@ ipcRenderer.on("set-mode", (event, mode, outputFolderPath) => {
 ipcRenderer.on(
   "update-localization",
   (event, title, localization, tooltipsLocalization) => {
+    console.log("update-localization");
     document.title = title;
     for (let index = 0; index < localization.length; index++) {
       const element = localization[index];
-      document.querySelector("#" + element.id).innerHTML = element.text;
+      const domElement = document.querySelector("#" + element.id);
+      if (domElement !== null) {
+        domElement.innerHTML = element.text;
+      }
     }
 
     for (let index = 0; index < tooltipsLocalization.length; index++) {
+      console.log("index: " + index);
       const element = tooltipsLocalization[index];
-      document.querySelector("#" + element.id).title = element.text;
+      const domElement = document.querySelector("#" + element.id);
+      if (domElement !== null) {
+        domElement.title = element.text;
+      }
+      if (element.id === "tooltip-remove-from-list") {
+        // not the most efficient way to do this
+        g_localizedRemoveFromListText = element.text;
+      }
     }
   }
 );
@@ -160,7 +174,9 @@ ipcRenderer.on("add-file", (event, filePath, fileType) => {
     (g_mode === 1
       ? "<a style='cursor: pointer;' onclick='renderer.onRemoveFile(this, " +
         id +
-        ")' class='secondary-content'><i class='fas fa-window-close' title='remove from list'></i></a>"
+        ")' class='secondary-content'><i class='fas fa-window-close' title='" +
+        g_localizedRemoveFromListText +
+        "'></i></a>"
       : "") +
     "</div></li>";
 

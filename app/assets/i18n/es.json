@@ -85,5 +85,6 @@
   "Converting:": "Convirtiendo:",
 
   "tooltip-output-size": "El tamaño de las páginas se reducirá a este porcentaje de las originales",
-  "tooltip-output-folder": "Si un archivo con el mismo nombre ya existe en el directorio, se añadirá un subfijo al nombre del archivo de salida para que ningún archivo sea sobreescrito"
+  "tooltip-output-folder": "Si un archivo con el mismo nombre ya existe en el directorio, se añadirá un subfijo al nombre del archivo de salida para que ningún archivo sea sobreescrito",
+  "tooltip-remove-from-list": "quitar de la lista"
 }
