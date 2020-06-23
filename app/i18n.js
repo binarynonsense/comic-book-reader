@@ -20,7 +20,6 @@ exports.loadLocale = function (desiredLocale, loadDefaultIfNotFound = true) {
   }
 
   let locale = desiredLocale;
-  //console.log("trying locale: " + locale);
   if (locale !== undefined) {
     let data = getLocaleData(locale);
     if (data !== undefined) {
@@ -33,7 +32,6 @@ exports.loadLocale = function (desiredLocale, loadDefaultIfNotFound = true) {
       if (splitted.length > 1) {
         // from "en_US" to "en" for example
         locale = splitted[0];
-        //console.log("trying locale: " + locale);
         data = getLocaleData(locale);
         if (data !== undefined) {
           g_loadedLocale = locale;
@@ -43,7 +41,6 @@ exports.loadLocale = function (desiredLocale, loadDefaultIfNotFound = true) {
       }
     }
     if (loadDefaultIfNotFound) {
-      //console.log("trying default locale: " + defaultLocale);
       g_loadedLocale = defaultLocale;
       data = getLocaleData(defaultLocale);
       g_localeData = data;
@@ -59,7 +56,6 @@ function getLocaleData(locale) {
   let data;
   try {
     data = JSON.parse(fs.readFileSync(dataPath, "utf8"));
-    //console.log(data);
     return data;
   } catch (e) {
     return undefined;
@@ -72,12 +68,10 @@ exports.getAvailableLocales = function () {
   if (fs.existsSync(folderPath)) {
     let filesInFolder = fs.readdirSync(folderPath);
     if (filesInFolder.length === 0) {
-      //console.log("no files found in dir");
       return localesList;
     } else {
       for (let file of filesInFolder) {
         try {
-          //console.log(file);
           let data = JSON.parse(
             fs.readFileSync(path.join(folderPath, file), "utf8")
           );
@@ -95,17 +89,15 @@ exports.getAvailableLocales = function () {
           }
         } catch (e) {
           // just ignore file
-          //console.log("file error");
         }
       }
     }
   }
-  //console.log("localesList: " + localesList);
   return localesList;
 };
 
 exports._ = function (...args) {
-  //console.log(args); // i.e. [ "Error: {0} file/s couldn't be converted", 0 ]
+  // i.e. [ "Error: {0} file/s couldn't be converted", 0 ]
   let translatedText = g_localeData[args[0]];
   if (translatedText === undefined) {
     translatedText = g_loadedEnglishLocale[args[0]];

@@ -158,7 +158,6 @@ ipcRenderer.on("render-img-page", (event, img64, rotation) => {
   document.querySelector(".centered-block").classList.add("hide");
   g_currentImg64 = img64;
   renderImg64(rotation);
-  //moveScrollBarsToStart();
 });
 
 ipcRenderer.on("refresh-img-page", (event, rotation) => {
@@ -217,22 +216,16 @@ ipcRenderer.on("show-modal-info", (event, title, message) => {
 ///////////////////////////////////////////////////////////////////////////////
 
 function showModalPrompt(question, defaultValue) {
-  //const smalltalk = require("./assets/libs/smalltalk/smalltalk.min.js");
   smalltalk
     .prompt(question, defaultValue)
     .then((value) => {
-      // console.log(value);
       ipcRenderer.send("go-to-page", value);
     })
-    .catch(() => {
-      // console.log("cancel");
-    });
+    .catch(() => {});
 }
 
 function showModalAlert(title, message) {
-  smalltalk.alert(title, message).then(() => {
-    // console.log("ok");
-  });
+  smalltalk.alert(title, message).then(() => {});
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -328,7 +321,6 @@ function renderEpubImage(filePath, imageID, rotation) {
       let data64 = Buffer.from(data).toString("base64");
       g_currentImg64 = "data:" + mimeType + ";base64," + data64;
       renderImg64(rotation);
-      //moveScrollBarsToStart();
       ipcRenderer.send("epub-page-loaded");
     });
   });
@@ -411,7 +403,6 @@ function renderPdfPage(pageIndex, rotation) {
     function (page) {
       g_currentPdfPage = page;
       renderCurrentPDFPage(rotation);
-      //moveScrollBarsToStart();
     },
     function (reason) {
       // PDF loading error

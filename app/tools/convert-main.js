@@ -119,7 +119,6 @@ ipcMain.on(
       return;
     }
     let folderPath = folderList[0];
-    //console.log("select folder request:" + folderPath);
     if (folderPath === undefined || folderPath === "") return;
 
     g_convertWindow.webContents.send("change-output-folder", folderPath);
@@ -230,7 +229,6 @@ ipcMain.on(
 ///////////////////////////////////////////////////////////////////////////////
 
 function conversionStopError(err) {
-  //console.log(err);
   g_convertWindow.webContents.send("convert-update-text-log", err);
   g_convertWindow.webContents.send(
     "convert-update-text-log",
@@ -406,7 +404,6 @@ async function createFileFromImages(
     );
     let i = 1;
     while (fs.existsSync(outputFilePath)) {
-      //console.log("file already exists");
       i++;
       outputFilePath = path.join(
         outputFolderPath,
@@ -427,12 +424,6 @@ async function createFileFromImages(
       //cbz
       fileFormats.createZip(imgFiles, outputFilePath);
     }
-
-    // delete temp folder
-    // g_convertWindow.webContents.send(
-    //   "convert-update-text-log",
-    //   _("Cleaning Up...")
-    // );
 
     fileUtils.cleanUpTempFolder();
     g_convertWindow.webContents.send("convert-finished-ok");

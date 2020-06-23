@@ -24,7 +24,6 @@ exports.reducePathString = function (input, max = 60) {
 
 exports.saveSettings = function (settings) {
   const cfgFilePath = path.join(app.getPath("userData"), "acbr.cfg");
-  //console.log(cfgFilePath);
   let date = new Date().toJSON();
   settings.date = date;
   settings.version = app.getVersion();
@@ -60,7 +59,6 @@ exports.loadSettings = function (settings) {
       // ref: https://stackoverflow.com/questions/1098040/checking-if-a-key-exists-in-a-javascript-object
       if (loadedSettings[key] !== undefined) {
         // good if I don't allow undefines in the savefile
-        //console.log(key + ": " + loadedSettings[key]);
         settings[key] = loadedSettings[key];
       }
     }

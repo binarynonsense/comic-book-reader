@@ -381,7 +381,6 @@ async function extractPDFImages(folderPath, logText) {
         return;
       }
       let page = await pdf.getPage(pageNum);
-      //console.log("page: " + pageNum + " - " + page);
 
       // RENDER
       const canvas = document.createElement("canvas");
@@ -391,7 +390,6 @@ async function extractPDFImages(folderPath, logText) {
       let context = canvas.getContext("2d");
       canvas.height = viewport.height;
       canvas.width = viewport.width;
-      //console.log(viewport.width + "x" + viewport.height);
       await page.render({ canvasContext: context, viewport: viewport }).promise;
 
       let filePath = path.join(folderPath, pageNum + ".jpg");
