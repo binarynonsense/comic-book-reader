@@ -4,6 +4,7 @@ const fs = require("fs");
 const path = require("path");
 const { fork } = require("child_process");
 const FileType = require("file-type");
+const naturalCompare = require("natural-compare-lite");
 const fileUtils = require("../file-utils");
 const fileFormats = require("../file-formats");
 const mainProcess = require("../main");
@@ -366,6 +367,9 @@ async function createFileFromImages(
       conversionStopError("imgFiles === undefined || imgFiles.length === 0");
       return;
     }
+    //imgFiles.sort(); // numerical, not natural, order.. doesn't work for what I want
+    // ref: https://www.npmjs.com/package/natural-compare-lite
+    imgFiles.sort(naturalCompare);
 
     // resize imgs if needed
     outputScale = parseInt(outputScale);
