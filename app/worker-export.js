@@ -11,12 +11,12 @@ async function exportPage(fileData, outputFolderPath) {
   try {
     let buf;
     if (fileData.type === "zip") {
-      buf = fileFormats.extractZipEntryData(
+      buf = fileFormats.extractZipEntryBuffer(
         fileData.path,
         fileData.pagesPaths[fileData.pageIndex]
       );
     } else if (fileData.type === "rar") {
-      buf = fileFormats.extractRarEntryData(
+      buf = fileFormats.extractRarEntryBuffer(
         fileData.path,
         fileData.pagesPaths[fileData.pageIndex]
       );

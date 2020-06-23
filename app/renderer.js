@@ -39,6 +39,18 @@ function moveScrollBarsToEnd() {
   ).scrollWidth;
 }
 
+function setScrollBarsPosition(position) {
+  if (position === 0) {
+    setTimeout(() => {
+      moveScrollBarsToStart();
+    }, 50);
+  } else if (position === 1) {
+    setTimeout(() => {
+      moveScrollBarsToEnd();
+    }, 50); // if I don't add a timeout they are ignored & always goes to top ¿¿??
+  }
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // IPC RECEIVED ///////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -101,15 +113,7 @@ ipcRenderer.on("set-scrollbar-visibility", (event, isVisible) => {
 });
 
 ipcRenderer.on("set-scrollbar-position", (event, position) => {
-  if (position === 0) {
-    setTimeout(() => {
-      moveScrollBarsToStart();
-    }, 50);
-  } else if (position === 1) {
-    setTimeout(() => {
-      moveScrollBarsToEnd();
-    }, 50); // if I don't add a timeout they are ignored & always goes to top ¿¿??
-  }
+  setScrollBarsPosition(position);
 });
 
 ipcRenderer.on("set-menubar-visibility", (event, isVisible) => {
@@ -153,11 +157,11 @@ ipcRenderer.on("file-closed", (event, img64, rotation) => {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-ipcRenderer.on("render-img-page", (event, img64, rotation) => {
+ipcRenderer.on("render-img-page", (event, img64, rotation, scrollBarPos) => {
   cleanUp();
   document.querySelector(".centered-block").classList.add("hide");
   g_currentImg64 = img64;
-  renderImg64(rotation);
+  renderImg64(rotation, scrollBarPos);
 });
 
 ipcRenderer.on("refresh-img-page", (event, rotation) => {
@@ -171,9 +175,12 @@ ipcRenderer.on("load-pdf", (event, filePath, pageIndex) => {
   loadPdf(filePath, pageIndex);
 });
 
-ipcRenderer.on("render-pdf-page", (event, pageIndex, rotation) => {
-  renderPdfPage(pageIndex, rotation);
-});
+ipcRenderer.on(
+  "render-pdf-page",
+  (event, pageIndex, rotation, scrollBarPos) => {
+    renderPdfPage(pageIndex, rotation, scrollBarPos);
+  }
+);
 
 ipcRenderer.on("refresh-pdf-page", (event, rotation) => {
   refreshPdfPage(rotation);
@@ -191,10 +198,6 @@ ipcRenderer.on(
 ipcRenderer.on("load-epub", (event, filePath, pageIndex) => {
   document.querySelector(".centered-block").classList.add("hide");
   loadEpub(filePath, pageIndex);
-});
-
-ipcRenderer.on("render-epub-image", (event, filePath, imageID, rotation) => {
-  renderEpubImage(filePath, imageID, rotation);
 });
 
 ipcRenderer.on("refresh-epub-image", (event, rotation) => {
@@ -232,7 +235,7 @@ function showModalAlert(title, message) {
 // IMG64 //////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-function renderImg64(rotation) {
+function renderImg64(rotation, scrollBarPos) {
   let container = document.getElementById("pages-container");
   container.innerHTML = "";
   if (rotation === 0 || rotation === 180) {
@@ -282,6 +285,8 @@ function renderImg64(rotation) {
     };
     image.src = g_currentImg64;
   }
+  if (scrollBarPos !== undefined) setScrollBarsPosition(scrollBarPos);
+  ipcRenderer.send("page-loaded");
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -306,26 +311,25 @@ function loadEpub(filePath, pageNum) {
   epub.parse();
 }
 
-function renderEpubImage(filePath, imageID, rotation) {
-  // Maybe I couldnot load it every time, keeping the epub object in memory, but this seems to work fine enough
-  const epub = new EPub(filePath);
-  epub.on("error", function (err) {
-    console.log("ERROR\n-----");
-    throw err;
-  });
-  epub.on("end", function (err) {
-    document.querySelector(".centered-block").classList.add("hide");
+// function renderEpubImage(filePath, imageID, rotation, scrollBarPos) {
+//   // Maybe I couldnot load it every time, keeping the epub object in memory, but this seems to work fine enough
+//   const epub = new EPub(filePath);
+//   epub.on("error", function (err) {
+//     console.log("ERROR\n-----");
+//     throw err;
+//   });
+//   epub.on("end", function (err) {
+//     document.querySelector(".centered-block").classList.add("hide");
 
-    epub.getImage(imageID, function (err, data, mimeType) {
-      // ref: https://stackoverflow.com/questions/54305759/how-to-encode-a-buffer-to-base64-in-nodejs
-      let data64 = Buffer.from(data).toString("base64");
-      g_currentImg64 = "data:" + mimeType + ";base64," + data64;
-      renderImg64(rotation);
-      ipcRenderer.send("epub-page-loaded");
-    });
-  });
-  epub.parse();
-}
+//     epub.getImage(imageID, function (err, data, mimeType) {
+//       // ref: https://stackoverflow.com/questions/54305759/how-to-encode-a-buffer-to-base64-in-nodejs
+//       let data64 = Buffer.from(data).toString("base64");
+//       g_currentImg64 = "data:" + mimeType + ";base64," + data64;
+//       renderImg64(rotation, scrollBarPos); // it send the page-loaded msg
+//     });
+//   });
+//   epub.parse();
+// }
 
 function extractEpubImagesSrcRecursive(
   epub,
@@ -396,13 +400,13 @@ function refreshPdfPage(rotation) {
   renderCurrentPDFPage(rotation);
 }
 
-function renderPdfPage(pageIndex, rotation) {
+function renderPdfPage(pageIndex, rotation, scrollBarPos) {
   let pageNum = pageIndex + 1; // pdfjs counts from 1
   // ref: https://mozilla.github.io/pdf.js/examples/
   g_currentPdf.getPage(pageNum).then(
     function (page) {
       g_currentPdfPage = page;
-      renderCurrentPDFPage(rotation);
+      renderCurrentPDFPage(rotation, scrollBarPos);
     },
     function (reason) {
       // PDF loading error
@@ -411,7 +415,7 @@ function renderPdfPage(pageIndex, rotation) {
   );
 }
 
-function renderCurrentPDFPage(rotation) {
+function renderCurrentPDFPage(rotation, scrollBarPos) {
   // I recreate the canvas every time to avoid some rendering issues when rotating (low res)
   // there's probably a better way, but performance seems similar
   let container = document.getElementById("pages-container");
@@ -444,7 +448,8 @@ function renderCurrentPDFPage(rotation) {
 
   let renderTask = g_currentPdfPage.render(renderContext);
   renderTask.promise.then(function () {
-    ipcRenderer.send("pdf-page-loaded");
+    setScrollBarsPosition(scrollBarPos);
+    ipcRenderer.send("page-loaded");
   });
 }
 

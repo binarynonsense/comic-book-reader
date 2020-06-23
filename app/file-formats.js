@@ -68,7 +68,7 @@ function getRarEntriesList(filePath) {
 }
 exports.getRarEntriesList = getRarEntriesList;
 
-function extractRarEntryData(rarPath, entryName) {
+function extractRarEntryBuffer(rarPath, entryName) {
   try {
     var buf = Uint8Array.from(fs.readFileSync(rarPath)).buffer;
     var extractor = unrar.createExtractorFromData(buf);
@@ -84,7 +84,7 @@ function extractRarEntryData(rarPath, entryName) {
     return undefined;
   }
 }
-exports.extractRarEntryData = extractRarEntryData;
+exports.extractRarEntryBuffer = extractRarEntryBuffer;
 
 ///////////////////////////////////////////////////////////////////////////////
 // ZIP ////////////////////////////////////////////////////////////////////////
@@ -110,11 +110,11 @@ function getZipEntriesList(filePath) {
 }
 exports.getZipEntriesList = getZipEntriesList;
 
-function extractZipEntryData(zipPath, entryName) {
+function extractZipEntryBuffer(zipPath, entryName) {
   let zip = new AdmZip(zipPath);
   return zip.readFile(entryName);
 }
-exports.extractZipEntryData = extractZipEntryData;
+exports.extractZipEntryBuffer = extractZipEntryBuffer;
 
 function extractZip(filePath, tempFolderPath) {
   // ref: https://github.com/cthackers/adm-zip/wiki/ADM-ZIP-Introduction

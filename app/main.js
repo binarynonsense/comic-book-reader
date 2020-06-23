@@ -47,7 +47,8 @@ let g_settings = {
 let g_history = [];
 let g_isLoaded = false;
 
-let g_worker;
+let g_workerExport;
+let g_workerPage;
 
 ///////////////////////////////////////////////////////////////////////////////
 // APP ////////////////////////////////////////////////////////////////////////
@@ -300,6 +301,16 @@ function saveHistory() {
 // IPC RECEIVED ///////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+ipcMain.on("page-loaded", (event, scrollBarPos) => {
+  g_fileData.state = FileDataState.LOADED;
+  g_mainWindow.webContents.send("update-loading", false);
+  g_mainWindow.webContents.send("set-scrollbar-position", scrollBarPos);
+  renderPageInfo();
+  renderTitle();
+});
+
+///////////////////////////////////////////////////////////////////////////////
+
 ipcMain.on(
   "epub-loaded",
   (event, loadedCorrectly, filePath, pageIndex, imageIDs) => {
@@ -363,10 +374,6 @@ ipcMain.on("pdf-load-failed", (event) => {
     _("File Error"),
     _("Couldn't open the PDF file")
   );
-});
-
-ipcMain.on("pdf-page-loaded", (event) => {
-  g_fileData.state = FileDataState.LOADED;
 });
 
 ipcMain.on(
@@ -754,71 +761,6 @@ function renderPageInfo() {
   );
 }
 
-function renderEpubImg(filePath, imageID) {
-  renderTitle();
-  g_fileData.state = FileDataState.LOADING;
-  g_mainWindow.webContents.send(
-    "render-epub-image",
-    filePath,
-    imageID,
-    g_fileData.pageRotation
-  );
-}
-
-function renderImageFile(filePath) {
-  if (!path.isAbsolute(filePath)) {
-    // FIXME: make it absolute somehow?
-    return;
-  }
-  renderTitle();
-  let data64 = fs.readFileSync(filePath).toString("base64");
-  let img64 =
-    "data:image/" + fileFormats.getMimeType(filePath) + ";base64," + data64;
-  g_mainWindow.webContents.send(
-    "render-img-page",
-    img64,
-    g_fileData.pageRotation
-  );
-}
-
-function renderZipEntry(zipPath, entryName) {
-  renderTitle();
-  let data64 = fileFormats
-    .extractZipEntryData(zipPath, entryName)
-    .toString("base64");
-  let img64 =
-    "data:image/" + fileFormats.getMimeType(entryName) + ";base64," + data64;
-  g_mainWindow.webContents.send(
-    "render-img-page",
-    img64,
-    g_fileData.pageRotation
-  );
-}
-
-function renderRarEntry(rarPath, entryName) {
-  renderTitle();
-  let data64 = fileFormats
-    .extractRarEntryData(rarPath, entryName)
-    .toString("base64");
-  let img64 =
-    "data:image/" + fileFormats.getMimeType(entryName) + ";base64," + data64;
-  g_mainWindow.webContents.send(
-    "render-img-page",
-    img64,
-    g_fileData.pageRotation
-  );
-}
-
-function renderPdfPage(pageIndex) {
-  renderTitle();
-  g_fileData.state = FileDataState.LOADING;
-  g_mainWindow.webContents.send(
-    "render-pdf-page",
-    pageIndex,
-    g_fileData.pageRotation
-  );
-}
-
 function renderPageRefresh() {
   if (g_fileData.state === FileDataState.LOADED) {
     if (g_fileData.type === FileDataType.PDF) {
@@ -870,34 +812,59 @@ function generateTitle() {
 
 function goToPage(pageIndex, scrollBarPos = 0) {
   // 0 top - 1 bottom
-  g_mainWindow.webContents.send("update-loading", false);
   if (
     g_fileData.state !== FileDataState.LOADED ||
     g_fileData.type === FileDataType.NOT_SET
   ) {
     return;
   }
+
+  g_mainWindow.webContents.send("update-loading", true);
+
   if (pageIndex < 0 || pageIndex >= g_fileData.numPages) return;
   g_fileData.pageIndex = pageIndex;
-  if (g_fileData.type === FileDataType.IMGS) {
-    renderImageFile(g_fileData.pagesPaths[g_fileData.pageIndex]);
+
+  if (
+    g_fileData.type === FileDataType.ZIP ||
+    g_fileData.type === FileDataType.RAR ||
+    g_fileData.type === FileDataType.EPUB
+  ) {
+    g_fileData.state = FileDataState.LOADING;
+    if (g_workerPage === undefined) {
+      g_workerPage = fork(path.join(__dirname, "worker-page.js"));
+      g_workerPage.on("message", (message) => {
+        if (message[0] === true) {
+          g_mainWindow.webContents.send(
+            "render-img-page",
+            message[1], //img64,
+            g_fileData.pageRotation,
+            message[2]
+          );
+          return;
+        } else {
+          // TODO: handle error
+          console.log(message[1]);
+          return;
+        }
+      });
+    }
+    g_workerPage.send([
+      g_fileData.type,
+      g_fileData.path,
+      g_fileData.pagesPaths[g_fileData.pageIndex],
+      scrollBarPos,
+    ]);
   } else if (g_fileData.type === FileDataType.PDF) {
-    renderPdfPage(g_fileData.pageIndex);
-  } else if (g_fileData.type === FileDataType.ZIP) {
-    renderZipEntry(
-      g_fileData.path,
-      g_fileData.pagesPaths[g_fileData.pageIndex]
+    g_fileData.state = FileDataState.LOADING;
+    g_mainWindow.webContents.send(
+      "render-pdf-page",
+      g_fileData.pageIndex,
+      g_fileData.pageRotation,
+      scrollBarPos
     );
-  } else if (g_fileData.type === FileDataType.RAR) {
-    renderRarEntry(
-      g_fileData.path,
-      g_fileData.pagesPaths[g_fileData.pageIndex]
-    );
-  } else if (g_fileData.type === FileDataType.EPUB) {
-    renderEpubImg(g_fileData.path, g_fileData.pagesPaths[g_fileData.pageIndex]);
-  }
-  g_mainWindow.webContents.send("set-scrollbar-position", scrollBarPos);
-  renderPageInfo();
+  } // else if (g_fileData.type === FileDataType.IMGS) {
+  //   renderImageFile(g_fileData.pagesPaths[g_fileData.pageIndex]);
+  // }
 }
 
 function goToNextPage() {
@@ -942,9 +909,9 @@ async function exportPageStart() {
       return;
     } else {
       // TODO: kill the worker after job is done?
-      if (g_worker === undefined) {
-        g_worker = fork(path.join(__dirname, "worker.js"));
-        g_worker.on("message", (message) => {
+      if (g_workerExport === undefined) {
+        g_workerExport = fork(path.join(__dirname, "worker-export.js"));
+        g_workerExport.on("message", (message) => {
           if (message[0] === true) {
             g_mainWindow.webContents.send("update-loading", false);
             g_mainWindow.webContents.send(
@@ -961,7 +928,10 @@ async function exportPageStart() {
           }
         });
       }
-      g_worker.send({ data: g_fileData, outputFolderPath: outputFolderPath });
+      g_workerExport.send({
+        data: g_fileData,
+        outputFolderPath: outputFolderPath,
+      });
     }
   } catch (err) {
     exportPageError(err);
