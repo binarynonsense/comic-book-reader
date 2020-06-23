@@ -8,6 +8,7 @@ const {
 
 const fs = require("fs");
 const path = require("path");
+const { fork } = require("child_process");
 const FileType = require("file-type");
 const fileUtils = require("./file-utils");
 const fileFormats = require("./file-formats");
@@ -45,6 +46,8 @@ let g_settings = {
 
 let g_history = [];
 let g_isLoaded = false;
+
+let g_worker;
 
 ///////////////////////////////////////////////////////////////////////////////
 // APP ////////////////////////////////////////////////////////////////////////
@@ -920,54 +923,49 @@ async function exportPageStart() {
     return;
   }
   let outputFolderPath = folderList[0];
-  if (outputFolderPath === undefined || outputFolderPath === "") return;
+  if (
+    g_fileData.filePath === "" ||
+    outputFolderPath === undefined ||
+    outputFolderPath === ""
+  )
+    return;
 
   g_mainWindow.webContents.send("update-loading", true);
-
   try {
-    let buf;
-    if (g_fileData.filePath !== "") {
-      if (g_fileData.type === FileDataType.ZIP) {
-        buf = fileFormats.extractZipEntryData(
-          g_fileData.path,
-          g_fileData.pagesPaths[g_fileData.pageIndex]
-        );
-      } else if (g_fileData.type === FileDataType.RAR) {
-        buf = fileFormats.extractRarEntryData(
-          g_fileData.path,
-          g_fileData.pagesPaths[g_fileData.pageIndex]
-        );
-      } else if (g_fileData.type === FileDataType.EPUB) {
-        buf = await fileFormats.extractEpubImageBuffer(
-          g_fileData.path,
-          g_fileData.pagesPaths[g_fileData.pageIndex]
-        );
-      } else if (g_fileData.type === FileDataType.PDF) {
-        console.log("FileDataType.PDF");
-        g_mainWindow.webContents.send(
-          "extract-pdf-image-buffer",
-          g_fileData.path,
-          g_fileData.pageIndex + 1,
-          outputFolderPath
-        );
-        return;
+    if (g_fileData.type === FileDataType.PDF) {
+      g_mainWindow.webContents.send(
+        "extract-pdf-image-buffer",
+        g_fileData.path,
+        g_fileData.pageIndex + 1,
+        outputFolderPath
+      );
+      return;
+    } else {
+      // TODO: kill the worker after job is done?
+      if (g_worker === undefined) {
+        g_worker = fork(path.join(__dirname, "worker.js"));
+        g_worker.on("message", (message) => {
+          if (message[0] === true) {
+            g_mainWindow.webContents.send("update-loading", false);
+            g_mainWindow.webContents.send(
+              "show-modal-info",
+              "",
+              _("Image file saved to:") +
+                "\n" +
+                fileUtils.reducePathString(message[1], 85)
+            );
+            return;
+          } else {
+            exportPageError(message[1]);
+            return;
+          }
+        });
       }
-
-      exportPageSaveBuffer(buf, outputFolderPath);
+      g_worker.send({ data: g_fileData, outputFolderPath: outputFolderPath });
     }
   } catch (err) {
     exportPageError(err);
   }
-}
-
-function exportPageError(err) {
-  console.log(err);
-  g_mainWindow.webContents.send("update-loading", false);
-  g_mainWindow.webContents.send(
-    "show-modal-info",
-    "",
-    _("Error: Couldn't export the page")
-  );
 }
 
 function exportPageSaveBuffer(buf, outputFolderPath) {
@@ -1022,6 +1020,16 @@ function exportPageSaveBuffer(buf, outputFolderPath) {
   } else {
     exportPageError("");
   }
+}
+
+function exportPageError(err) {
+  console.log(err);
+  g_mainWindow.webContents.send("update-loading", false);
+  g_mainWindow.webContents.send(
+    "show-modal-info",
+    "",
+    _("Error: Couldn't export the page")
+  );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
