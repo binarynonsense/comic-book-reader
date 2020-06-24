@@ -302,7 +302,7 @@ ipcRenderer.on("convert-extract-pdf-images", (event, tempFolder, logText) => {
 
 ipcRenderer.on("convert-images-extracted", (event) => {
   ipcRenderer.send(
-    "convert-create-file-from-images",
+    "convert-resize-images",
     g_inputFilePath,
     g_outputScale,
     g_outputQuality,

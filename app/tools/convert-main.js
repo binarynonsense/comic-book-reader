@@ -12,6 +12,7 @@ const mainProcess = require("../main");
 let g_convertWindow;
 let g_cancelConversion = false;
 let g_worker;
+let g_resizeWindow;
 
 function isDev() {
   return process.argv[2] == "--dev";
@@ -67,6 +68,11 @@ exports.showWindow = function (parentWindow, filePath, fileType) {
       g_convertWindow.webContents.send("add-file", filePath, fileType);
     }
   });
+
+  // Event: 'unresponsive'
+  // Emitted when the web page becomes unresponsive.
+  // Event: 'responsive'
+  // Emitted when the unresponsive web page becomes responsive again.
 
   //if (isDev()) g_convertWindow.toggleDevTools();
 };
@@ -130,6 +136,9 @@ ipcMain.on(
 ipcMain.on("convert-cancel-conversion", (event) => {
   console.log("cancel conversion request");
   g_cancelConversion = true;
+  if (g_resizeWindow !== undefined) {
+    g_resizeWindow.webContents.send("cancel-resize");
+  }
 });
 
 ipcMain.on(
@@ -149,7 +158,7 @@ ipcMain.on("convert-pdf-images-extracted", (event, canceled) => {
 });
 
 ipcMain.on(
-  "convert-create-file-from-images",
+  "convert-resize-images",
   (
     event,
     inputFilePath,
@@ -158,13 +167,39 @@ ipcMain.on(
     outputFormat,
     outputFolderPath
   ) => {
-    createFileFromImages(
+    resizeImages(
       inputFilePath,
       outputScale,
       outputQuality,
       outputFormat,
       outputFolderPath
     );
+  }
+);
+
+ipcMain.on("resizing-image", (event, pageNum, totalNumPages) => {
+  g_convertWindow.webContents.send(
+    "convert-update-text-log",
+    _("Resizing Page: ") + pageNum + " / " + totalNumPages
+  );
+});
+
+ipcMain.on("resizing-canceled", (event) => {
+  if (g_cancelConversion === false) conversionStopCancel();
+});
+
+ipcMain.on("resizing-error", (event, err) => {
+  conversionStopError(err);
+});
+
+ipcMain.on(
+  "convert-create-file-from-images",
+  (event, imgFilePaths, outputFormat, outputFilePath) => {
+    if (g_resizeWindow !== undefined) {
+      g_resizeWindow.destroy();
+      g_resizeWindow = undefined;
+    }
+    createFileFromImages(imgFilePaths, outputFormat, outputFilePath);
   }
 );
 
@@ -222,6 +257,9 @@ ipcMain.on(
       );
     }
 
+    // ref: https://www.electronjs.org/docs/api/browser-window#winmovetop
+    //g_convertWindow.moveTop(); // try to fix Windows 'bug' where window gets behind parent
+    g_convertWindow.show();
     g_convertWindow.webContents.send("convert-show-result");
   }
 );
@@ -335,7 +373,7 @@ function conversionStart(inputFilePath, inputFileType, fileNum, totalFilesNum) {
 //   }
 // }
 
-async function createFileFromImages(
+async function resizeImages(
   inputFilePath,
   outputScale,
   outputQuality,
@@ -347,68 +385,6 @@ async function createFileFromImages(
     return;
   }
   try {
-    let tempFolderPath = fileUtils.getTempFolderPath();
-    let imgFiles = fileUtils.getImageFilesInFolderRecursive(tempFolderPath);
-    if (imgFiles === undefined || imgFiles.length === 0) {
-      console.log(imgFiles);
-      conversionStopError("imgFiles === undefined || imgFiles.length === 0");
-      return;
-    }
-    //imgFiles.sort(); // numerical, not natural, order.. doesn't work for what I want
-    // ref: https://www.npmjs.com/package/natural-compare-lite
-    imgFiles.sort(naturalCompare);
-
-    // resize imgs if needed
-    outputScale = parseInt(outputScale);
-    outputQuality = parseInt(outputQuality);
-    if (outputScale < 100) {
-      if (false) {
-        // ref: https://www.npmjs.com/package/jimp
-        const Jimp = require("jimp");
-        for (let index = 0; index < imgFiles.length; index++) {
-          g_convertWindow.webContents.send(
-            "convert-update-text-log",
-            _("Resizing Page: ") + (index + 1) + " / " + imgFiles.length
-          );
-          let image = await Jimp.read(imgFiles[index]);
-          image.scale(outputScale / 100);
-          image.quality(outputQuality);
-          await image.writeAsync(imgFiles[index]);
-
-          if (g_cancelConversion === true) {
-            conversionStopCancel();
-            return;
-          }
-        }
-      } else {
-        for (let index = 0; index < imgFiles.length; index++) {
-          g_convertWindow.webContents.send(
-            "convert-update-text-log",
-            _("Resizing Page: ") + (index + 1) + " / " + imgFiles.length
-          );
-          // ref: https://www.electronjs.org/docs/api/native-image#imageresizeoptions
-          let image = nativeImage.createFromPath(imgFiles[index]);
-          const width = (image.getSize().width * outputScale) / 100;
-          image = image.resize({
-            width: width,
-            quality: "best", // good, better, or best
-          });
-          const buf = image.toJPEG(outputQuality);
-          fs.writeFileSync(imgFiles[index], buf, "binary");
-
-          if (g_cancelConversion === true) {
-            conversionStopCancel();
-            return;
-          }
-        }
-      }
-    }
-
-    // compress to output folder
-    g_convertWindow.webContents.send(
-      "convert-update-text-log",
-      _("Generating New File...")
-    );
     let filename = path.basename(inputFilePath, path.extname(inputFilePath));
     let outputFilePath = path.join(
       outputFolderPath,
@@ -422,19 +398,83 @@ async function createFileFromImages(
         filename + "(" + i + ")." + outputFormat
       );
     }
+
+    let tempFolderPath = fileUtils.getTempFolderPath();
+    let imgFilePaths = fileUtils.getImageFilesInFolderRecursive(tempFolderPath);
+    if (imgFilePaths === undefined || imgFilePaths.length === 0) {
+      console.log(imgFilePaths);
+      conversionStopError("imgFiles === undefined || imgFiles.length === 0");
+      return;
+    }
+    //imgFiles.sort(); // numerical, not natural, order.. doesn't work for what I want
+    // ref: https://www.npmjs.com/package/natural-compare-lite
+    imgFilePaths.sort(naturalCompare);
+
+    // resize imgs if needed
+    outputScale = parseInt(outputScale);
+    outputQuality = parseInt(outputQuality);
+    if (outputScale < 100) {
+      // can't do it using a forked process, because I need nativeImage,
+      // so I use a hidden window
+      if (g_resizeWindow !== undefined) {
+        // shouldn't happen
+        g_resizeWindow.destroy();
+        g_resizeWindow = undefined;
+      }
+      g_resizeWindow = new BrowserWindow({
+        show: false,
+        webPreferences: { nodeIntegration: true },
+        parent: g_convertWindow,
+      });
+      g_resizeWindow.loadFile(`${__dirname}/bg-resize.html`);
+
+      g_resizeWindow.webContents.on("did-finish-load", function () {
+        //g_resizeWindow.webContents.openDevTools();
+        g_resizeWindow.webContents.send(
+          "resize-images",
+          imgFilePaths,
+          outputScale,
+          outputQuality,
+          outputFormat,
+          outputFilePath
+        );
+      });
+    } else {
+      createFileFromImages(imgFilePaths, outputFormat, outputFilePath);
+    }
+  } catch (err) {
+    conversionStopError(err);
+  }
+}
+
+async function createFileFromImages(
+  imgFilePaths,
+  outputFormat,
+  outputFilePath
+) {
+  if (g_cancelConversion === true) {
+    conversionStopCancel();
+    return;
+  }
+  try {
+    // compress to output folder
+    g_convertWindow.webContents.send(
+      "convert-update-text-log",
+      _("Generating New File...")
+    );
     g_convertWindow.webContents.send("convert-update-text-log", outputFilePath);
 
     if (outputFormat === "pdf") {
-      fileFormats.createPdfFromImages(imgFiles, outputFilePath);
+      fileFormats.createPdfFromImages(imgFilePaths, outputFilePath);
     } else if (outputFormat === "epub") {
       await fileFormats.createEpubFromImages(
-        imgFiles,
+        imgFilePaths,
         outputFilePath,
-        tempFolderPath
+        fileUtils.getTempFolderPath()
       );
     } else {
       //cbz
-      fileFormats.createZip(imgFiles, outputFilePath);
+      fileFormats.createZip(imgFilePaths, outputFilePath);
     }
 
     fileUtils.cleanUpTempFolder();
