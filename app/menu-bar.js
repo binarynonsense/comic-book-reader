@@ -120,6 +120,9 @@ function buildApplicationMenu(activeLocale, languages) {
           },
         },
         {
+          type: "separator",
+        },
+        {
           id: "batch-convert",
           label: _("Batch Convert..."),
           click() {
