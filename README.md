@@ -1,6 +1,6 @@
 # ACBR - Comic Book Reader
 
-A comic book reader for cbz, cbr, epub and pdf files.
+A comic book reader and converter for cbz, cbr, epub and pdf files.
 
 <p align="center">
   <img width="299" height="224" src="https://raw.githubusercontent.com/binarynonsense/comic-book-reader/master/screenshots/screenshot_01.jpg"> <img width="299" height="224" src="https://raw.githubusercontent.com/binarynonsense/comic-book-reader/master/screenshots/screenshot_02.jpg"> <img width="299" height="224" src="https://raw.githubusercontent.com/binarynonsense/comic-book-reader/master/screenshots/screenshot_03.jpg">
