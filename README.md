@@ -37,11 +37,14 @@ A comic book reader for cbz, cbr, epub and pdf files.
   - 'scroll wheel' scrolls the page up and down.
   - 'left-click' opens the next page if the right side of the view area is clicked and the previous page if the left side is clicked.
   - 'right-click' opens a context menu with some basic navigation options.
+- Tools:
+  - Convert/Resize files from cbr, cbz, pdf or epub to cbz, pdf or epub.
+  - Export the current page to an image file.
 
 ## Downloads
 
-- [Linux](https://github.com/binarynonsense/comic-book-reader/releases/download/v1.1.1/ACBR_Linux.zip)
-- [Windows](https://github.com/binarynonsense/comic-book-reader/releases/download/v1.1.1/ACBR_Windows.zip)
+- [Linux](https://github.com/binarynonsense/comic-book-reader/releases/download/v1.2.0/ACBR_Linux_1.2.0.zip)
+- [Windows](https://github.com/binarynonsense/comic-book-reader/releases/download/v1.2.0/ACBR_Windows_1.2.0.zip)
 
 ## Build Notes
 
