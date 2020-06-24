@@ -357,7 +357,7 @@ function conversionStart(inputFilePath, inputFileType, fileNum, totalFilesNum) {
         }
       });
     }
-    g_worker.send([inputFilePath, inputFileType, tempFolderPath]);
+    g_worker.send(["extract", inputFilePath, inputFileType, tempFolderPath]);
   } else if (inputFileType === "pdf") {
     g_convertWindow.webContents.send(
       "convert-update-text-log",
@@ -488,20 +488,38 @@ async function createFileFromImages(
     g_convertWindow.webContents.send("convert-update-text-log", outputFilePath);
 
     if (outputFormat === "pdf") {
+      // TODO: doesn't work in the worker, why?
       fileFormats.createPdfFromImages(imgFilePaths, outputFilePath);
-    } else if (outputFormat === "epub") {
-      await fileFormats.createEpubFromImages(
-        imgFilePaths,
-        outputFilePath,
-        fileUtils.getTempFolderPath()
-      );
+      fileUtils.cleanUpTempFolder();
+      g_convertWindow.webContents.send("convert-finished-ok");
     } else {
-      //cbz
-      fileFormats.createZip(imgFilePaths, outputFilePath);
+      if (g_worker !== undefined) {
+        // kill it after one use
+        g_worker.kill();
+        g_worker = undefined;
+      }
+      if (g_worker === undefined) {
+        g_worker = fork(path.join(__dirname, "convert-worker.js"));
+        g_worker.on("message", (message) => {
+          g_worker.kill(); // kill it after one use
+          if (message === "success") {
+            fileUtils.cleanUpTempFolder();
+            g_convertWindow.webContents.send("convert-finished-ok");
+            return;
+          } else {
+            conversionStopError(message);
+            return;
+          }
+        });
+      }
+      g_worker.send([
+        "create",
+        imgFilePaths,
+        outputFormat,
+        outputFilePath,
+        fileUtils.getTempFolderPath(),
+      ]);
     }
-
-    fileUtils.cleanUpTempFolder();
-    g_convertWindow.webContents.send("convert-finished-ok");
   } catch (err) {
     conversionStopError(err);
   }
