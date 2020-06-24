@@ -281,7 +281,6 @@ async function createEpubFromImages(
     pageID = pageID.substr(
       pageID.length - imgPathsList.length.toString().length
     );
-    console.log(pageID);
     content.push({
       //title: "page_ " + pageID, //(index + 1).padStart(5, "0"),
       data: html,
