@@ -21,6 +21,9 @@ A comic book reader for cbz, cbr, epub and pdf files.
   - English
   - Spanish
 - Automatically restores the previous session's last opened book and page, and remembers the last 10 books' page positions.
+- Tools:
+  - Convert/Resize files from cbr, cbz, pdf or epub to cbz, pdf or epub.
+  - Export the current page to an image file.
 
 ## Controls:
 
@@ -37,9 +40,6 @@ A comic book reader for cbz, cbr, epub and pdf files.
   - 'scroll wheel' scrolls the page up and down.
   - 'left-click' opens the next page if the right side of the view area is clicked and the previous page if the left side is clicked.
   - 'right-click' opens a context menu with some basic navigation options.
-- Tools:
-  - Convert/Resize files from cbr, cbz, pdf or epub to cbz, pdf or epub.
-  - Export the current page to an image file.
 
 ## Downloads
 
