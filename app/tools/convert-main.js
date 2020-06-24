@@ -274,12 +274,16 @@ function conversionStart(inputFilePath, inputFileType, fileNum, totalFilesNum) {
     );
     // conversionExtractImages(inputFilePath, inputFileType, tempFolderPath);
     // ref: https://www.matthewslipper.com/2019/09/22/everything-you-wanted-electron-child-process.html
+    if (g_worker !== undefined) {
+      // kill it after one use
+      g_worker.kill();
+      g_worker = undefined;
+    }
     if (g_worker === undefined) {
       g_worker = fork(path.join(__dirname, "convert-worker.js"));
       g_worker.on("message", (message) => {
-        //console.log("message from worker: " + message);
+        g_worker.kill(); // kill it after one use
         if (message === "success") {
-          //console.log('message === "success"');
           if (g_cancelConversion === true) {
             conversionStopCancel();
             return;
@@ -287,25 +291,10 @@ function conversionStart(inputFilePath, inputFileType, fileNum, totalFilesNum) {
           g_convertWindow.webContents.send("convert-images-extracted");
           return;
         } else {
-          //console.log('message !== "success"');
           conversionStopError(message);
           return;
         }
       });
-
-      // g_worker.on("error", (err) => {
-      //   conversionStopError(err);
-      //   return;
-      // });
-
-      // g_worker.stderr.on("data", function (data) {
-      //   console.log("stdout: " + data);
-      // });
-
-      // g_worker.on("exit", (code, signal) => {
-      //   conversionStopError("fork code: " + code + "\nsignal: " + signal);
-      //   return;
-      // });
     }
     g_worker.send([inputFilePath, inputFileType, tempFolderPath]);
   } else if (inputFileType === "pdf") {

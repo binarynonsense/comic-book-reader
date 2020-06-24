@@ -75,6 +75,14 @@ app.on("will-quit", () => {
   saveHistory();
   globalShortcut.unregisterAll();
   fileUtils.cleanUpTempFolder();
+  if (g_workerExport !== undefined) {
+    g_workerExport.kill();
+    g_workerExport = undefined;
+  }
+  if (g_workerPage !== undefined) {
+    g_workerPage.kill();
+    g_workerPage = undefined;
+  }
 });
 
 app.on("ready", () => {
@@ -105,11 +113,6 @@ app.on("ready", () => {
 
   g_mainWindow.once("ready-to-show", () => {
     g_mainWindow.show();
-  });
-
-  g_mainWindow.webContents.on("context-menu", function (e, params) {
-    contextMenu.buildContextMenu();
-    contextMenu.getContextMenu().popup(g_mainWindow, params.x, params.y);
   });
 
   g_mainWindow.webContents.on("did-finish-load", function () {
@@ -173,6 +176,11 @@ app.on("ready", () => {
     }
 
     g_mainWindow.webContents.send("update-loading", false);
+  });
+
+  g_mainWindow.webContents.on("context-menu", function (e, params) {
+    contextMenu.buildContextMenu();
+    contextMenu.getContextMenu().popup(g_mainWindow, params.x, params.y);
   });
 
   g_mainWindow.on("resize", function () {
@@ -835,9 +843,15 @@ function goToPage(pageIndex, scrollBarPos = 0) {
     g_fileData.type === FileDataType.EPUB
   ) {
     g_fileData.state = FileDataState.LOADING;
+    if (g_workerPage !== undefined) {
+      // kill it after one use
+      g_workerPage.kill();
+      g_workerPage = undefined;
+    }
     if (g_workerPage === undefined) {
       g_workerPage = fork(path.join(__dirname, "worker-page.js"));
       g_workerPage.on("message", (message) => {
+        g_workerPage.kill(); // kill it after one use
         if (message[0] === true) {
           g_mainWindow.webContents.send(
             "render-img-page",
@@ -913,10 +927,15 @@ async function exportPageStart() {
       );
       return;
     } else {
-      // TODO: kill the worker after job is done?
+      if (g_workerExport !== undefined) {
+        // kill it after one use
+        g_workerExport.kill();
+        g_workerExport = undefined;
+      }
       if (g_workerExport === undefined) {
         g_workerExport = fork(path.join(__dirname, "worker-export.js"));
         g_workerExport.on("message", (message) => {
+          g_workerExport.kill(); // kill it after one use
           if (message[0] === true) {
             g_mainWindow.webContents.send("update-loading", false);
             g_mainWindow.webContents.send(
