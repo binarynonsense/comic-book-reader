@@ -161,10 +161,15 @@ app.on("ready", () => {
 
     if (g_history.length > 0 && g_settings.on_quit_state === 1) {
       let entry = g_history[g_history.length - 1];
-      setTimeout(() => {
-        openFile(entry.filePath, entry.pageIndex);
-      }, 1000);
-      return;
+      if (
+        fs.existsSync(entry.filePath) &&
+        fileFormats.hasCompatibleExtension(entry.filePath)
+      ) {
+        setTimeout(() => {
+          openFile(entry.filePath, entry.pageIndex);
+        }, 1000);
+        return;
+      }
     }
 
     g_mainWindow.webContents.send("update-loading", false);
@@ -964,16 +969,7 @@ function exportPageSaveBuffer(buf, outputFolderPath) {
             fileName + "(" + i + ")" + fileExtension
           );
         }
-
-        await new Promise((resolve, reject) =>
-          fs.writeFile(outputFilePath, buf, "binary", (err) => {
-            if (err === null) {
-              resolve();
-            } else {
-              reject(err);
-            }
-          })
-        );
+        fs.writeFileSync(outputFilePath, buf, "binary");
 
         g_mainWindow.webContents.send(
           "show-modal-info",

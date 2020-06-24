@@ -399,24 +399,13 @@ async function createFileFromImages(
           );
           // ref: https://www.electronjs.org/docs/api/native-image#imageresizeoptions
           let image = nativeImage.createFromPath(imgFiles[index]);
-          console.log(image.getSize().width);
           const width = (image.getSize().width * outputScale) / 100;
-          console.log(width);
           image = image.resize({
             width: width,
             quality: "best", // good, better, or best
           });
           const buf = image.toJPEG(outputQuality);
-
-          await new Promise((resolve, reject) =>
-            fs.writeFile(imgFiles[index], buf, "binary", (err) => {
-              if (err === null) {
-                resolve();
-              } else {
-                reject(err);
-              }
-            })
-          );
+          fs.writeFileSync(imgFiles[index], buf, "binary");
 
           if (g_cancelConversion === true) {
             conversionStopCancel();
