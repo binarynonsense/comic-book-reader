@@ -396,15 +396,7 @@ async function extractPDFImages(folderPath, logText) {
       var img = canvas.toDataURL("image/jpeg", 0.75);
       var data = img.replace(/^data:image\/\w+;base64,/, "");
       var buf = Buffer.from(data, "base64");
-      await new Promise((resolve, reject) =>
-        fs.writeFile(filePath, buf, "binary", (err) => {
-          if (err === null) {
-            resolve();
-          } else {
-            reject(err);
-          }
-        })
-      );
+      fs.writeFileSync(filePath, buf, "binary");
       updateTextLog(logText + pageNum + " / " + pdf.numPages);
 
       page.cleanup();

@@ -204,15 +204,7 @@ async function extractEpubImages(filePath, tempFolderPath) {
         } else {
           let extension = mimeType.split("/")[1];
           let filePath = path.join(tempFolderPath, index + "." + extension);
-          fs.writeFile(filePath, Buffer.from(data), "binary", function (err) {
-            if (err) {
-              return reject({
-                error: true,
-                message: err,
-              });
-            }
-          });
-
+          fs.writeFileSync(filePath, Buffer.from(data), "binary");
           return resolve({
             success: true,
           });
