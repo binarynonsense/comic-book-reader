@@ -14,6 +14,8 @@ let g_cancelConversion = false;
 let g_worker;
 let g_resizeWindow;
 
+let g_mode = 0;
+
 function isDev() {
   return process.argv[2] == "--dev";
 }
@@ -62,9 +64,19 @@ exports.showWindow = function (parentWindow, filePath, fileType) {
       getTooltipsLocalization()
     );
     if (filePath === undefined) {
-      g_convertWindow.webContents.send("set-mode", 1, app.getPath("desktop"));
+      g_mode = 1;
+      g_convertWindow.webContents.send(
+        "set-mode",
+        g_mode,
+        app.getPath("desktop")
+      );
     } else {
-      g_convertWindow.webContents.send("set-mode", 0, path.dirname(filePath));
+      g_mode = 0;
+      g_convertWindow.webContents.send(
+        "set-mode",
+        g_mode,
+        path.dirname(filePath)
+      );
       g_convertWindow.webContents.send("add-file", filePath, fileType);
     }
   });
@@ -80,35 +92,46 @@ exports.showWindow = function (parentWindow, filePath, fileType) {
 ///////////////////////////////////////////////////////////////////////////////
 
 ipcMain.on("convert-choose-file", (event) => {
-  let fileList = fileUtils.chooseOpenFile(g_convertWindow);
-  if (fileList === undefined) {
-    return;
+  try {
+    let allowMultipleSelection = false;
+    if ((g_mode = 1)) allowMultipleSelection = true;
+    let filePathsList = fileUtils.chooseOpenFiles(
+      g_convertWindow,
+      undefined,
+      allowMultipleSelection
+    );
+    if (filePathsList === undefined) {
+      return;
+    }
+    for (let index = 0; index < filePathsList.length; index++) {
+      const filePath = filePathsList[index];
+      let fileType;
+      // mostly a COPY FROM main, maybe make a common function in file.utils
+      let fileExtension = path.extname(filePath).toLowerCase();
+      (async () => {
+        let _fileType = await FileType.fromFile(filePath);
+        if (_fileType !== undefined) {
+          fileExtension = "." + _fileType.ext;
+        }
+        if (fileExtension === ".pdf") {
+          fileType = "pdf";
+        } else if (fileExtension === ".epub") {
+          fileType = "epub";
+        } else {
+          if (fileExtension === ".rar" || fileExtension === ".cbr") {
+            fileType = "rar";
+          } else if (fileExtension === ".zip" || fileExtension === ".cbz") {
+            fileType = "zip";
+          } else {
+            return;
+          }
+        }
+        g_convertWindow.webContents.send("add-file", filePath, fileType);
+      })();
+    }
+  } catch (err) {
+    // TODO: do something?
   }
-  let filePath = fileList[0];
-  let fileType;
-
-  // mostly a COPY FROM main, maybe make a common function in file.utils
-  let fileExtension = path.extname(filePath).toLowerCase();
-  (async () => {
-    let _fileType = await FileType.fromFile(filePath);
-    if (_fileType !== undefined) {
-      fileExtension = "." + _fileType.ext;
-    }
-    if (fileExtension === ".pdf") {
-      fileType = "pdf";
-    } else if (fileExtension === ".epub") {
-      fileType = "epub";
-    } else {
-      if (fileExtension === ".rar" || fileExtension === ".cbr") {
-        fileType = "rar";
-      } else if (fileExtension === ".zip" || fileExtension === ".cbz") {
-        fileType = "zip";
-      } else {
-        return;
-      }
-    }
-    g_convertWindow.webContents.send("add-file", filePath, fileType);
-  })();
 });
 
 ipcMain.on(

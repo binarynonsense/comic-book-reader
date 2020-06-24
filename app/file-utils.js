@@ -118,12 +118,19 @@ exports.loadHistory = function () {
 // FILE DIALOGUES /////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-function chooseOpenFile(window, defaultPath) {
-  if (!fs.existsSync(defaultPath)) {
+function chooseOpenFiles(window, defaultPath, allowMultipleSelection) {
+  if (defaultPath !== undefined && !fs.existsSync(defaultPath)) {
     defaultPath = undefined;
   }
 
-  let filePath = dialog.showOpenDialogSync(window, {
+  let properties;
+  if (allowMultipleSelection) {
+    properties = ["openFile", "multiSelections"];
+  } else {
+    properties = ["openFile"];
+  }
+
+  let filePaths = dialog.showOpenDialogSync(window, {
     defaultPath: defaultPath,
     filters: [
       {
@@ -131,11 +138,11 @@ function chooseOpenFile(window, defaultPath) {
         extensions: ["cbz", "cbr", "pdf", "epub"],
       },
     ],
-    properties: ["openFile"],
+    properties: properties,
   });
-  return filePath;
+  return filePaths;
 }
-exports.chooseOpenFile = chooseOpenFile;
+exports.chooseOpenFiles = chooseOpenFiles;
 
 function chooseFolder(window, defaultPath) {
   if (!fs.existsSync(defaultPath)) {
