@@ -30,7 +30,7 @@ exports.loadLocale = function (desiredLocale, loadDefaultIfNotFound = true) {
     if (locale.includes("-")) {
       let splitted = locale.split("-");
       if (splitted.length > 1) {
-        // from "en_US" to "en" for example
+        // from "en-US" to "en" for example
         locale = splitted[0];
         data = getLocaleData(locale);
         if (data !== undefined) {
