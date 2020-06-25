@@ -72,7 +72,7 @@ let g_workerPage;
 app.on("will-quit", () => {
   g_settings.on_quit_state = g_fileData.path === "" ? 0 : 1;
   saveSettings();
-  saveHistory();
+  saveHistory(false);
   globalShortcut.unregisterAll();
   fileUtils.cleanUpTempFolder();
   if (g_workerExport !== undefined) {
@@ -121,10 +121,11 @@ app.on("ready", () => {
     g_settings = fileUtils.loadSettings(g_settings);
     g_history = fileUtils.loadHistory();
 
+    i18n.setUserDataLocalesPath(path.join(app.getPath("userData"), "i18n/"));
     if (g_settings.locale === undefined) {
-      i18n.loadLocale(app.getLocale());
+      g_settings.locale = i18n.loadLocale(app.getLocale());
     } else {
-      i18n.loadLocale(g_settings.locale);
+      g_settings.locale = i18n.loadLocale(g_settings.locale);
     }
 
     rebuildTranslatedTexts(); // this also creates the menu bar
@@ -155,9 +156,7 @@ app.on("ready", () => {
         fs.existsSync(filePath) &&
         fileFormats.hasCompatibleExtension(filePath)
       ) {
-        setTimeout(() => {
-          openFile(filePath, 0);
-        }, 1000);
+        openFile(filePath, 0);
         return;
       }
     }
@@ -168,9 +167,7 @@ app.on("ready", () => {
         fs.existsSync(entry.filePath) &&
         fileFormats.hasCompatibleExtension(entry.filePath)
       ) {
-        setTimeout(() => {
-          openFile(entry.filePath, entry.pageIndex);
-        }, 1000);
+        openFile(entry.filePath, entry.pageIndex);
         return;
       }
     }
@@ -271,10 +268,10 @@ function saveSettings() {
   fileUtils.saveSettings(g_settings);
 }
 
-function addCurrentToHistory() {
+function addCurrentToHistory(updateMenu = true) {
   let currentFilePath = g_fileData.path;
   let currentPageIndex = g_fileData.pageIndex;
-  if (currentFilePath != "") {
+  if (currentFilePath !== "") {
     let foundIndex = getHistoryIndex(currentFilePath);
     if (foundIndex !== undefined) {
       g_history.splice(foundIndex, 1); // remove, to update and put last
@@ -286,7 +283,7 @@ function addCurrentToHistory() {
       g_history.splice(0, g_history.length - 10);
     }
   }
-  rebuildMenuBar();
+  if (updateMenu) rebuildMenuBar();
 }
 
 function clearHistory() {
@@ -306,8 +303,8 @@ function getHistoryIndex(filePath) {
   return foundIndex;
 }
 
-function saveHistory() {
-  addCurrentToHistory();
+function saveHistory(updateMenu = true) {
+  addCurrentToHistory(updateMenu);
   fileUtils.saveHistory(g_history, g_fileData.path, g_fileData.pageIndex);
 }
 
@@ -499,12 +496,9 @@ exports.onMenuChangeLanguage = function (locale) {
   if (locale === i18n.getLoadedLocale())
     g_mainWindow.webContents.send("update-menubar");
   else {
-    if (i18n.loadLocale(locale, false)) {
-      g_settings.locale = locale;
-      rebuildTranslatedTexts();
-    } else {
-      g_mainWindow.webContents.send("update-menubar");
-    }
+    g_settings.locale = i18n.loadLocale(locale);
+    rebuildTranslatedTexts();
+    g_mainWindow.webContents.send("update-menubar");
   }
 };
 
@@ -702,7 +696,7 @@ function openFile(filePath, pageIndex = 0) {
       // e.g. {ext: 'png', mime: 'image/png'}
       fileExtension = "." + fileType.ext;
     }
-    addCurrentToHistory(); // add the one I'm closing to history
+    if (g_fileData.path !== "") addCurrentToHistory(); // add the one I'm closing to history
     // if in history: open saved position:
     let historyIndex = getHistoryIndex(filePath);
     if (historyIndex !== undefined) {

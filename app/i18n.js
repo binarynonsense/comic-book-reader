@@ -6,15 +6,20 @@ let g_localeData;
 
 let g_loadedEnglishLocale;
 
+let g_userDataLocalesPath;
+
 // ref: https://www.electronjs.org/docs/api/locales
 // ref: https://www.christianengvall.se/electron-localization/
+
+exports.setUserDataLocalesPath = function (userDataLocalesPath) {
+  g_userDataLocalesPath = userDataLocalesPath;
+};
 
 exports.getLoadedLocale = function () {
   return g_loadedLocale;
 };
 
-exports.loadLocale = function (desiredLocale, loadDefaultIfNotFound = true) {
-  let defaultLocale = "en";
+exports.loadLocale = function (desiredLocale) {
   if (g_loadedEnglishLocale === undefined) {
     g_loadedEnglishLocale = getLocaleData("en");
   }
@@ -25,7 +30,7 @@ exports.loadLocale = function (desiredLocale, loadDefaultIfNotFound = true) {
     if (data !== undefined) {
       g_loadedLocale = locale;
       g_localeData = data;
-      return true;
+      return locale;
     }
     if (locale.includes("-")) {
       let splitted = locale.split("-");
@@ -36,23 +41,26 @@ exports.loadLocale = function (desiredLocale, loadDefaultIfNotFound = true) {
         if (data !== undefined) {
           g_loadedLocale = locale;
           g_localeData = data;
-          return true;
+          return locale;
         }
       }
     }
-    if (loadDefaultIfNotFound) {
-      g_loadedLocale = defaultLocale;
-      data = getLocaleData(defaultLocale);
-      g_localeData = data;
-      return true;
-    }
-    return false;
+
+    // nothing found, load "en"
+    data = getLocaleData("en");
+    g_localeData = data;
+    return locale;
   }
 };
 
 function getLocaleData(locale) {
-  const dataPath = path.join(__dirname, "assets/i18n/" + locale + ".json");
-  if (!fs.existsSync) return undefined;
+  let dataPath = path.join(__dirname, "assets/i18n/" + locale + ".json");
+  if (!fs.existsSync(dataPath)) {
+    dataPath = path.join(g_userDataLocalesPath + locale + ".json");
+    if (!fs.existsSync) {
+      return undefined;
+    }
+  }
   let data;
   try {
     data = JSON.parse(fs.readFileSync(dataPath, "utf8"));
@@ -64,7 +72,34 @@ function getLocaleData(locale) {
 
 exports.getAvailableLocales = function () {
   let localesList = [];
-  const folderPath = path.join(__dirname, "assets/i18n/");
+  // official locales
+  localesList = getLocalesFromFolder(path.join(__dirname, "assets/i18n/"));
+  if (
+    g_userDataLocalesPath !== undefined &&
+    fs.existsSync(g_userDataLocalesPath)
+  ) {
+    // user locales
+    let userLocalesList = getLocalesFromFolder(g_userDataLocalesPath);
+    for (let index = 0; index < userLocalesList.length; index++) {
+      const userLocale = userLocalesList[index];
+      let found = false;
+      for (let index = localesList.length - 1; index >= 0; index--) {
+        const locale = localesList[index];
+        if (locale.locale === userLocale.locale) {
+          found = true;
+          break;
+        }
+      }
+      if (!found) {
+        localesList.push(userLocale);
+      }
+    }
+  }
+  return localesList;
+};
+
+function getLocalesFromFolder(folderPath) {
+  let localesList = [];
   if (fs.existsSync(folderPath)) {
     let filesInFolder = fs.readdirSync(folderPath);
     if (filesInFolder.length === 0) {
@@ -94,7 +129,7 @@ exports.getAvailableLocales = function () {
     }
   }
   return localesList;
-};
+}
 
 exports._ = function (...args) {
   // i.e. [ "Error: {0} file/s couldn't be converted", 0 ]
