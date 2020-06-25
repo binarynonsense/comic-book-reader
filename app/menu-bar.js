@@ -48,10 +48,10 @@ exports.setCloseFile = function (isEnabled) {
 
 function getOpenRecentSubmenu(history) {
   let menu = [];
-  history.reverse();
+  const reverseHistory = history.slice().reverse();
 
-  for (let index = 0; index < history.length; index++) {
-    const entry = history[index];
+  for (let index = 0; index < reverseHistory.length; index++) {
+    const entry = reverseHistory[index];
     let path = entry.filePath;
     menu.push({
       label: fileUtils.reducePathString(path),
