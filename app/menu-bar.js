@@ -1,5 +1,6 @@
 const { app, Menu } = require("electron");
 const mainProcess = require("./main");
+const fileUtils = require("./file-utils");
 
 function _(...args) {
   return mainProcess.i18n_.apply(null, args);
@@ -45,13 +46,42 @@ exports.setCloseFile = function (isEnabled) {
   Menu.getApplicationMenu().getMenuItemById("close-file").enabled = isEnabled;
 };
 
+function getOpenRecentSubmenu(history) {
+  let menu = [];
+  history.reverse();
+
+  for (let index = 0; index < history.length; index++) {
+    const entry = history[index];
+    let path = entry.filePath;
+    menu.push({
+      label: fileUtils.reducePathString(path),
+      click() {
+        mainProcess.onMenuOpenFile(path);
+      },
+    });
+  }
+
+  menu.push({
+    type: "separator",
+  });
+
+  menu.push({
+    label: _("Clear History"),
+    click() {
+      mainProcess.onMenuClearHistory();
+    },
+  });
+
+  return menu;
+}
+
 function buildEmptyMenu() {
   const menuConfig = Menu.buildFromTemplate([]);
   Menu.setApplicationMenu(menuConfig);
 }
 exports.buildEmptyMenu = buildEmptyMenu;
 
-function buildApplicationMenu(activeLocale, languages) {
+function buildApplicationMenu(activeLocale, languages, history) {
   // ref: https://stackoverflow.com/questions/54105224/electron-modify-a-single-menu-item
   // Menu.getApplicationMenu().items // all the items
   // Menu.getApplicationMenu().getMenuItemById('MENU_ITEM_ID') // get a single item by its id
@@ -91,6 +121,10 @@ function buildApplicationMenu(activeLocale, languages) {
           click() {
             mainProcess.onMenuOpenFile();
           },
+        },
+        {
+          label: _("Open Recent"),
+          submenu: getOpenRecentSubmenu(history),
         },
         {
           id: "close-file",

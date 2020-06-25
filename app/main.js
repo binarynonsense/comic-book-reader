@@ -239,13 +239,8 @@ app.on("web-contents-created", (event, contents) => {
 ///////////////////////////////////////////////////////////////////////////////
 
 function rebuildTranslatedTexts() {
-  menuBar.buildApplicationMenu(
-    i18n.getLoadedLocale(),
-    i18n.getAvailableLocales()
-  );
-  updateMenuItemsState();
+  rebuildMenuBar();
 
-  g_mainWindow.webContents.send("update-menubar");
   g_mainWindow.webContents.send(
     "update-toolbar-tooltips",
     _("Open File..."),
@@ -291,6 +286,12 @@ function addCurrentToHistory() {
       g_history.splice(0, g_history.length - 10);
     }
   }
+  rebuildMenuBar();
+}
+
+function clearHistory() {
+  g_history = [];
+  rebuildMenuBar();
 }
 
 function getHistoryIndex(filePath) {
@@ -551,20 +552,36 @@ exports.onMenuToggleFullScreen = function () {
   toggleFullScreen();
 };
 
-exports.onMenuOpenFile = onMenuOpenFile = function () {
-  let defaultPath = "";
-  if (g_fileData.path !== "") {
-    defaultPath = g_fileData.path;
-  } else if (g_history.length > 0) {
-    defaultPath = g_history[g_history.length - 1].filePath;
+exports.onMenuOpenFile = onMenuOpenFile = function (filePath) {
+  g_mainWindow.webContents.send("update-menubar");
+  if (filePath === undefined) {
+    let defaultPath = "";
+    if (g_fileData.path !== "") {
+      defaultPath = g_fileData.path;
+    } else if (g_history.length > 0) {
+      defaultPath = g_history[g_history.length - 1].filePath;
+    }
+    let fileList = fileUtils.chooseOpenFiles(g_mainWindow, defaultPath, false);
+    if (fileList === undefined) {
+      return;
+    }
+    filePath = fileList[0];
   }
-  let fileList = fileUtils.chooseOpenFiles(g_mainWindow, defaultPath, false);
-  if (fileList === undefined) {
+  if (filePath === undefined || filePath === "" || !fs.existsSync(filePath)) {
+    g_mainWindow.webContents.send(
+      "show-modal-info",
+      _("File Not Found"),
+      filePath
+    );
     return;
   }
-  let filePath = fileList[0];
   console.log("open file request:" + filePath);
   openFile(filePath);
+};
+
+exports.onMenuClearHistory = function () {
+  g_mainWindow.webContents.send("update-menubar");
+  clearHistory();
 };
 
 exports.onMenuCloseFile = function () {
@@ -670,7 +687,9 @@ let g_fileData = {
 };
 
 function openFile(filePath, pageIndex = 0) {
-  if (filePath === "" || !fs.existsSync(filePath)) return;
+  if (filePath === undefined || filePath === "" || !fs.existsSync(filePath)) {
+    return;
+  }
 
   g_mainWindow.webContents.send("update-loading", true);
 
@@ -796,6 +815,16 @@ function renderPageRefresh() {
       );
     }
   }
+}
+
+function rebuildMenuBar() {
+  menuBar.buildApplicationMenu(
+    i18n.getLoadedLocale(),
+    i18n.getAvailableLocales(),
+    g_history
+  );
+  updateMenuItemsState();
+  g_mainWindow.webContents.send("update-menubar");
 }
 
 /////////////////////////////////////////////////

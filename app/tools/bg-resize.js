@@ -1,5 +1,6 @@
 const { ipcRenderer, nativeImage } = require("electron");
-const fs = window.require("fs");
+const fs = require("fs");
+const path = require("path");
 
 let g_cancelConversion;
 
@@ -47,7 +48,17 @@ function resizeImages(
         quality: "best", // good, better, or best
       });
       const buf = image.toJPEG(outputQuality);
-      fs.writeFileSync(imgFilePaths[index], buf, "binary");
+      let filePath = imgFilePaths[index];
+      let fileExtension = path.extname(filePath);
+      fs.writeFileSync(filePath, buf, "binary");
+
+      if (fileExtension !== ".jpg" && fileExtension !== ".jpeg") {
+        let fileFolderPath = path.dirname(filePath);
+        let fileName = path.basename(filePath, path.extname(filePath));
+        let newFilePath = path.join(fileFolderPath, fileName + ".jpg");
+        fs.renameSync(filePath, newFilePath);
+        imgFilePaths[index] = newFilePath;
+      }
 
       if (g_cancelConversion === true) {
         // doesn't currently work as expected. ipcs aren't getting through while resizing

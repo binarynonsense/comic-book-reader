@@ -23,6 +23,8 @@
   "Go to Last": "Go to Last",
   "Go to...": "Go to...",
   "Open...": "Open...",
+  "Open Recent": "Open Recent",
+  "Clear History": "Clear History",
   "Close...": "Close...",
   "Open File...": "Open File...",
   "Convert...": "Convert...",
@@ -39,6 +41,8 @@
   "Show Tool Bar": "Show Tool Bar",
   "Help": "Help",
   "About": "About",
+
+  "File Not Found": "File Not Found",
   "File Error": "File Error",
   "Not a valid file format": "Not a valid file format",
   "Couldn't open the RAR file": "Couldn't open the RAR file",
@@ -50,6 +54,7 @@
   "Page Number": "Page Number",
   "Languages": "Languages",
   "version": "version",
+
   "To open a file use the menu or press <i>Ctrl+O</i>": "To open a file use the menu or press <i>Ctrl+O</i>",
 
   "Convert Files Tool": "Convert Files Tool",
