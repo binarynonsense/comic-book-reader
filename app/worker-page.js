@@ -28,7 +28,6 @@ async function extractBase64Image(fileType, filePath, entryName, scrollBarPos) {
     } else {
       //  TODO: handle error file type not valid
     }
-    console.log(mime);
     let img64 = "data:" + mime + ";base64," + buf;
     process.send([true, img64, scrollBarPos]);
   } catch (err) {
