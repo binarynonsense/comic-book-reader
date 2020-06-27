@@ -30,7 +30,7 @@ exports.loadLocale = function (desiredLocale) {
     if (data !== undefined) {
       g_loadedLocale = locale;
       g_localeData = data;
-      return locale;
+      return g_loadedLocale;
     }
     if (locale.includes("-")) {
       let splitted = locale.split("-");
@@ -41,15 +41,15 @@ exports.loadLocale = function (desiredLocale) {
         if (data !== undefined) {
           g_loadedLocale = locale;
           g_localeData = data;
-          return locale;
+          return g_loadedLocale;
         }
       }
     }
 
     // nothing found, load "en"
     g_loadedLocale = "en";
-    g_localeData = getLocaleData(g_loadedLocale);
-    return locale;
+    g_localeData = getLocaleData(g_loadedLocale); // could use g_englishData.slice()
+    return g_loadedLocale;
   }
 };
 
