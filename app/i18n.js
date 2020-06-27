@@ -4,7 +4,7 @@ const fs = require("fs");
 let g_loadedLocale;
 let g_localeData;
 
-let g_loadedEnglishLocale;
+let g_englishData;
 
 let g_userDataLocalesPath;
 
@@ -20,8 +20,8 @@ exports.getLoadedLocale = function () {
 };
 
 exports.loadLocale = function (desiredLocale) {
-  if (g_loadedEnglishLocale === undefined) {
-    g_loadedEnglishLocale = getLocaleData("en");
+  if (g_englishData === undefined) {
+    g_englishData = getLocaleData("en");
   }
 
   let locale = desiredLocale;
@@ -47,8 +47,8 @@ exports.loadLocale = function (desiredLocale) {
     }
 
     // nothing found, load "en"
-    data = getLocaleData("en");
-    g_localeData = data;
+    g_loadedLocale = "en";
+    g_localeData = getLocaleData(g_loadedLocale);
     return locale;
   }
 };
@@ -135,7 +135,7 @@ exports._ = function (...args) {
   // i.e. [ "Error: {0} file/s couldn't be converted", 0 ]
   let translatedText = g_localeData[args[0]];
   if (translatedText === undefined) {
-    translatedText = g_loadedEnglishLocale[args[0]];
+    translatedText = g_englishData[args[0]];
     if (translatedText === undefined) {
       // use the sent text as nothing else was found
       translatedText = args[0];
