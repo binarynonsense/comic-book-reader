@@ -57,15 +57,7 @@ async function exportPage(fileData, outputFolderPath) {
           );
         }
 
-        await new Promise((resolve, reject) =>
-          fs.writeFile(outputFilePath, buf, "binary", (err) => {
-            if (err === null) {
-              resolve();
-            } else {
-              reject(err);
-            }
-          })
-        );
+        fs.writeFileSync(outputFilePath, buf, "binary");
 
         process.send([true, outputFilePath]);
       })();
