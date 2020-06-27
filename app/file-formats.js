@@ -238,6 +238,7 @@ async function extractEpubImageBuffer(filePath, imageID) {
 
   // extract image buffer
   let buf;
+  let mime;
   await new Promise((resolve, reject) => {
     epub.getImage(imageID, function (err, data, mimeType) {
       if (err) {
@@ -247,13 +248,14 @@ async function extractEpubImageBuffer(filePath, imageID) {
         });
       } else {
         buf = Buffer.from(data);
+        mime = mimeType;
         return resolve({
           success: true,
         });
       }
     });
   });
-  return buf;
+  return [buf, mime];
 }
 exports.extractEpubImageBuffer = extractEpubImageBuffer;
 

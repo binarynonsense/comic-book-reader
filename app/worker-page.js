@@ -7,22 +7,29 @@ process.on("message", (message) => {
 async function extractBase64Image(fileType, filePath, entryName, scrollBarPos) {
   try {
     let buf;
+    let mime;
     if (fileType === "zip") {
       buf = fileFormats
         .extractZipEntryBuffer(filePath, entryName)
         .toString("base64");
+      mime = "image/" + fileFormats.getMimeType(entryName);
     } else if (fileType === "rar") {
       buf = fileFormats
         .extractRarEntryBuffer(filePath, entryName)
         .toString("base64");
+      mime = "image/" + fileFormats.getMimeType(entryName);
     } else if (fileType === "epub") {
-      buf = await fileFormats.extractEpubImageBuffer(filePath, entryName);
-      buf = buf.toString("base64");
+      const data = await fileFormats.extractEpubImageBuffer(
+        filePath,
+        entryName
+      );
+      buf = data[0].toString("base64");
+      mime = data[1];
     } else {
       //  TODO: handle error file type not valid
     }
-    let img64 =
-      "data:image/" + fileFormats.getMimeType(entryName) + ";base64," + buf;
+    console.log(mime);
+    let img64 = "data:" + mime + ";base64," + buf;
     process.send([true, img64, scrollBarPos]);
   } catch (err) {
     process.send([false, err]);
