@@ -11,7 +11,7 @@ const naturalCompare = require("natural-compare-lite");
 ///////////////////////////////////////////////////////////////////////////////
 
 function getMimeType(filePath) {
-  let mimeType = path.basename(filePath);
+  let mimeType = path.extname(filePath).substring(1);
   return mimeType;
 }
 exports.getMimeType = getMimeType;
