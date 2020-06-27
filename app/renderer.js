@@ -540,11 +540,7 @@ document.onclick = function (event) {
   ) {
     const mouseX = event.clientX;
     const bodyX = document.body.clientWidth;
-    if (mouseX > bodyX / 2) {
-      ipcRenderer.send("mouse-click", true); // next
-    } else {
-      ipcRenderer.send("mouse-click", false); // prev
-    }
+    ipcRenderer.send("mouse-click", mouseX, bodyX);
   }
 };
 // mouse right click: document.oncontextmenu

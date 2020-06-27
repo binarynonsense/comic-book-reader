@@ -34,6 +34,12 @@ exports.setPageRotation = function (value) {
     value === 270;
 };
 
+exports.setHotspotsMode = function (mode) {
+  Menu.getApplicationMenu().getMenuItemById("hotspots-0").checked = mode === 0;
+  Menu.getApplicationMenu().getMenuItemById("hotspots-1").checked = mode === 1;
+  Menu.getApplicationMenu().getMenuItemById("hotspots-2").checked = mode === 2;
+};
+
 exports.setConvertFile = function (isEnabled) {
   Menu.getApplicationMenu().getMenuItemById("convert-file").enabled = isEnabled;
 };
@@ -81,7 +87,7 @@ function buildEmptyMenu() {
 }
 exports.buildEmptyMenu = buildEmptyMenu;
 
-function buildApplicationMenu(activeLocale, languages, history) {
+function buildApplicationMenu(activeLocale, languages, settings, history) {
   // ref: https://stackoverflow.com/questions/54105224/electron-modify-a-single-menu-item
   // Menu.getApplicationMenu().items // all the items
   // Menu.getApplicationMenu().getMenuItemById('MENU_ITEM_ID') // get a single item by its id
@@ -172,6 +178,35 @@ function buildApplicationMenu(activeLocale, languages, history) {
             {
               label: _("Languages"),
               submenu: languagesSubmenu,
+            },
+            {
+              label: _("Hotspots-Config"),
+              submenu: [
+                {
+                  id: "hotspots-0",
+                  checked: settings.hotspots_mode === 0,
+                  label: _("Hotspots-Disabled"),
+                  click() {
+                    mainProcess.onMenuChangeHotspotsMode(0);
+                  },
+                },
+                {
+                  id: "hotspots-1",
+                  checked: settings.hotspots_mode === 1,
+                  label: _("Hotspots-2-Columns"),
+                  click() {
+                    mainProcess.onMenuChangeHotspotsMode(1);
+                  },
+                },
+                {
+                  id: "hotspots-2",
+                  checked: settings.hotspots_mode === 2,
+                  label: _("Hotspots-3-Columns"),
+                  click() {
+                    mainProcess.onMenuChangeHotspotsMode(2);
+                  },
+                },
+              ],
             },
           ],
         },

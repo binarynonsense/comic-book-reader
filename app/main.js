@@ -27,11 +27,18 @@ function isDev() {
 
 let g_mainWindow;
 let g_resizeEventCounter;
+let g_isLoaded = false;
+
+let g_workerExport;
+let g_workerPage;
+
+let g_history = [];
 let g_settings = {
   version: app.getVersion(),
   date: "",
   fit_mode: 0, // 0: width, 1: height
   page_mode: 0, // 0: single-page, 1: double-page
+  hotspots_mode: 1, // 0 : disabled, 1: 2-columns, 2: 3-columns
   maximize: false,
   width: 800,
   height: 600,
@@ -44,11 +51,60 @@ let g_settings = {
   loadLastOpened: true,
 };
 
-let g_history = [];
-let g_isLoaded = false;
+function sanitizeSettings() {
+  if (
+    !Number.isInteger(g_settings.fit_mode) ||
+    g_settings.fit_mode < 0 ||
+    g_settings.fit_mode > 1
+  ) {
+    g_settings.fit_mode = 0;
+  }
+  if (
+    !Number.isInteger(g_settings.page_mode) ||
+    g_settings.page_mode < 0 ||
+    g_settings.page_mode > 1
+  ) {
+    g_settings.page_mode = 0;
+  }
+  if (
+    !Number.isInteger(g_settings.hotspots_mode) ||
+    g_settings.hotspots_mode < 0 ||
+    g_settings.hotspots_mode > 2
+  ) {
+    g_settings.hotspots_mode = 1;
+  }
+  if (typeof g_settings.maximize !== "boolean") {
+    g_settings.maximize = false;
+  }
+  if (
+    !Number.isInteger(g_settings.width) ||
+    !Number.isInteger(g_settings.height)
+  ) {
+    g_settings.width = 800;
+    g_settings.height = 600;
+  }
+  if (
+    !Number.isInteger(g_settings.on_quit_state) ||
+    g_settings.on_quit_state < 0 ||
+    g_settings.on_quit_state > 1
+  ) {
+    g_settings.on_quit_state = 0;
+  }
 
-let g_workerExport;
-let g_workerPage;
+  if (typeof g_settings.showMenuBar !== "boolean") {
+    g_settings.showMenuBar = true;
+  }
+  if (typeof g_settings.showToolBar !== "boolean") {
+    console.log("was baddd");
+    g_settings.showToolBar = true;
+  }
+  if (typeof g_settings.showScrollBar !== "boolean") {
+    g_settings.showScrollBar = true;
+  }
+  if (typeof g_settings.loadLastOpened !== "boolean") {
+    g_settings.loadLastOpened = true;
+  }
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // APP ////////////////////////////////////////////////////////////////////////
@@ -119,6 +175,7 @@ app.on("ready", () => {
     g_isLoaded = true;
 
     g_settings = fileUtils.loadSettings(g_settings);
+    sanitizeSettings();
     g_history = fileUtils.loadHistory();
 
     i18n.setUserDataLocalesPath(path.join(app.getPath("userData"), "i18n/"));
@@ -418,13 +475,20 @@ ipcMain.on("end-pressed", (event) => {
   goToPage(g_fileData.numPages - 1);
 });
 
-ipcMain.on("mouse-click", (event, arg) => {
-  if (arg === true) {
-    // left click
-    goToNextPage();
-  } else {
-    // right click
-    goToPreviousPage();
+ipcMain.on("mouse-click", (event, mouseX, bodyX) => {
+  if (g_settings.hotspots_mode === 1) {
+    if (mouseX > bodyX / 2) {
+      goToNextPage();
+    } else {
+      goToPreviousPage();
+    }
+  } else if (g_settings.hotspots_mode === 2) {
+    const columnWidth = bodyX / 3;
+    if (mouseX < columnWidth) {
+      goToPreviousPage();
+    } else if (mouseX > 2 * columnWidth) {
+      goToNextPage();
+    }
   }
 });
 
@@ -491,6 +555,16 @@ ipcMain.on("go-to-page", (event, value) => {
 ///////////////////////////////////////////////////////////////////////////////
 // MENU MSGS //////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
+
+exports.onMenuChangeHotspotsMode = function (mode) {
+  if (mode === g_settings.hotspots_mode || mode < 0 || mode > 2)
+    g_mainWindow.webContents.send("update-menubar");
+  else {
+    g_settings.hotspots_mode = mode;
+    menuBar.setHotspotsMode(mode);
+    g_mainWindow.webContents.send("update-menubar");
+  }
+};
 
 exports.onMenuChangeLanguage = function (locale) {
   if (locale === i18n.getLoadedLocale())
@@ -815,6 +889,7 @@ function rebuildMenuBar() {
   menuBar.buildApplicationMenu(
     i18n.getLoadedLocale(),
     i18n.getAvailableLocales(),
+    g_settings,
     g_history
   );
   updateMenuItemsState();

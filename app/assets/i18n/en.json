@@ -41,6 +41,10 @@
   "Show Tool Bar": "Show Tool Bar",
   "Help": "Help",
   "About": "About",
+  "Hotspots-Config": "Mouse Click Hotspots",
+  "Hotspots-Disabled": "Disabled",
+  "Hotspots-2-Columns": "2 Columns: Previous Page | Next Page",
+  "Hotspots-3-Columns": "3 Columns: Previous Page | Nothing | Next Page",
 
   "File Not Found": "File Not Found",
   "File Error": "File Error",
