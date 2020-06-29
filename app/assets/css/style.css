@@ -35,14 +35,14 @@ img {
   position: fixed;
   bottom: 0;
   border: 0;
-  z-index: 20;
+  z-index: 9;
   margin-bottom: 8px;
 }
 
 #page-number-bubble > span {
   font-size: 15px;
   color: white;
-  opacity: 0.4;
+  opacity: 0.5;
   background-color: rgb(109, 109, 109);
   padding: 2px 5px;
   border-radius: 5px;
