@@ -125,6 +125,10 @@ ipcRenderer.on("set-toolbar-visibility", (event, isVisible) => {
   showToolBar(isVisible);
 });
 
+ipcRenderer.on("set-page-number-visibility", (event, isVisible) => {
+  showPageNumber(isVisible);
+});
+
 ipcRenderer.on("set-fullscreen-ui", (event, isFullscreen) => {
   setFullscreenUI(isFullscreen);
 });
@@ -588,6 +592,8 @@ function toolbarUpdatePageInfo(pageNum, numPages) {
   document.getElementById("page-slider").value = pageNum + 1;
   document.getElementById("toolbar-page-numbers").innerHTML =
     pageNum + 1 + " / " + numPages;
+  document.getElementById("page-number-bubble").innerHTML =
+    pageNum + 1 + " / " + numPages;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -638,6 +644,18 @@ function showToolBar(isVisible) {
     document
       .querySelector(".container-after-titlebar")
       .classList.add("set-margin-bottom-zero");
+  }
+}
+
+function showPageNumber(isVisible) {
+  if (isVisible) {
+    document
+      .querySelector("#page-number-bubble")
+      .classList.remove("set-display-none");
+  } else {
+    document
+      .querySelector("#page-number-bubble")
+      .classList.add("set-display-none");
   }
 }
 

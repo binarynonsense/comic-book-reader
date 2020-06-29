@@ -47,6 +47,7 @@ let g_settings = {
   showMenuBar: true,
   showToolBar: true,
   showScrollBar: true,
+  showPageNumber: true,
   locale: undefined,
   loadLastOpened: true,
 };
@@ -96,6 +97,9 @@ function sanitizeSettings() {
   }
   if (typeof g_settings.showToolBar !== "boolean") {
     g_settings.showToolBar = true;
+  }
+  if (typeof g_settings.showPageNumber !== "boolean") {
+    g_settings.showPageNumber = true;
   }
   if (typeof g_settings.showScrollBar !== "boolean") {
     g_settings.showScrollBar = true;
@@ -197,6 +201,7 @@ app.on("ready", () => {
 
     showScrollBar(g_settings.showScrollBar);
     showToolBar(g_settings.showToolBar);
+    showPageNumber(g_settings.showPageNumber);
 
     g_mainWindow.setSize(g_settings.width, g_settings.height);
     g_mainWindow.center();
@@ -613,6 +618,10 @@ exports.onMenuToggleScrollBar = function () {
 
 exports.onMenuToggleToolBar = function () {
   toggleToolBar();
+};
+
+exports.onMenuTogglePageNumber = function () {
+  togglePageNumber();
 };
 
 exports.onMenuToggleFullScreen = function () {
@@ -1142,6 +1151,19 @@ function showToolBar(isVisible) {
 
 function toggleToolBar() {
   showToolBar(!g_settings.showToolBar);
+}
+
+function showPageNumber(isVisible) {
+  g_settings.showPageNumber = isVisible;
+  g_mainWindow.webContents.send(
+    "set-page-number-visibility",
+    g_settings.showPageNumber
+  );
+  menuBar.setPageNumber(isVisible);
+}
+
+function togglePageNumber() {
+  showPageNumber(!g_settings.showPageNumber);
 }
 
 function toggleFullScreen() {

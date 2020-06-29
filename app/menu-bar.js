@@ -24,6 +24,10 @@ exports.setToolBar = function (isChecked) {
   Menu.getApplicationMenu().getMenuItemById("toolbar").checked = isChecked;
 };
 
+exports.setPageNumber = function (isChecked) {
+  Menu.getApplicationMenu().getMenuItemById("page-number").checked = isChecked;
+};
+
 exports.setPageRotation = function (value) {
   Menu.getApplicationMenu().getMenuItemById("rotation-0").checked = value === 0;
   Menu.getApplicationMenu().getMenuItemById("rotation-90").checked =
@@ -325,6 +329,15 @@ function buildApplicationMenu(activeLocale, languages, settings, history) {
           accelerator: "CommandOrControl+T",
           click() {
             mainProcess.onMenuToggleToolBar();
+          },
+        },
+        {
+          label: _("Show Page Number"),
+          id: "page-number",
+          checked: true,
+          accelerator: "CommandOrControl+P",
+          click() {
+            mainProcess.onMenuTogglePageNumber();
           },
         },
         {
