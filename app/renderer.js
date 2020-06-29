@@ -593,7 +593,7 @@ function toolbarUpdatePageInfo(pageNum, numPages) {
   document.getElementById("toolbar-page-numbers").innerHTML =
     pageNum + 1 + " / " + numPages;
   document.getElementById("page-number-bubble").innerHTML =
-    pageNum + 1 + " / " + numPages;
+    "<span>" + (pageNum + 1) + " / " + numPages + "</span>";
 }
 
 ///////////////////////////////////////////////////////////////////////////////
