@@ -95,7 +95,6 @@ function sanitizeSettings() {
     g_settings.showMenuBar = true;
   }
   if (typeof g_settings.showToolBar !== "boolean") {
-    console.log("was baddd");
     g_settings.showToolBar = true;
   }
   if (typeof g_settings.showScrollBar !== "boolean") {
