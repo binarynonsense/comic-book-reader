@@ -158,6 +158,7 @@ ipcRenderer.on("file-closed", (event, img64, rotation) => {
   container.innerHTML = "";
   document.querySelector(".centered-block").classList.remove("hide");
   toolbarUpdatePageInfo(0, 0);
+  document.querySelector("#page-number-bubble").innerHTML = "";
 });
 
 ///////////////////////////////////////////////////////////////////////////////
