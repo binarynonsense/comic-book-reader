@@ -394,6 +394,7 @@ ipcMain.on(
     g_fileData.pagesPaths = imageIDs; // not really paths
     g_fileData.numPages = imageIDs.length;
     g_fileData.pageIndex = pageIndex;
+    addCurrentToHistory();
     updateMenuItemsState();
     setPageRotation(0, false);
     goToPage(pageIndex);
@@ -430,6 +431,7 @@ ipcMain.on(
     g_fileData.pagesPaths = [];
     g_fileData.numPages = 0;
     g_fileData.pageIndex = pageIndex;
+    addCurrentToHistory();
     updateMenuItemsState();
     setPageRotation(0, false);
     g_fileData.numPages = numPages;
@@ -804,6 +806,7 @@ function openFile(filePath, pageIndex = 0) {
           g_fileData.imgsFolderPath = "";
           g_fileData.numPages = pagesPaths.length;
           g_fileData.pageIndex = pageIndex;
+          addCurrentToHistory();
           updateMenuItemsState();
           setPageRotation(0, false);
           goToPage(pageIndex);
@@ -826,6 +829,7 @@ function openFile(filePath, pageIndex = 0) {
           g_fileData.imgsFolderPath = "";
           g_fileData.numPages = pagesPaths.length;
           g_fileData.pageIndex = pageIndex;
+          addCurrentToHistory();
           updateMenuItemsState();
           setPageRotation(0, false);
           goToPage(pageIndex);
