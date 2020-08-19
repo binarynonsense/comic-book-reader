@@ -33,7 +33,7 @@
   },
   "dependencies": {
     "adm-zip": "^0.4.14",
-    "custom-electron-titlebar": "^3.2.2-hotfix62",
+    "custom-electron-titlebar": "^3.2.4",
     "epub": "^1.2.1",
     "epub-gen": "^0.1.0",
     "file-type": "^14.6.2",

@@ -64,6 +64,11 @@ ipcRenderer.on("update-loading", (event, isVisible) => {
   }
 });
 
+ipcRenderer.on("update-clock", (event, time) => {
+  document.querySelector("#clock-bubble").innerHTML =
+    "<span>" + time + "</span>";
+});
+
 ipcRenderer.on("update-menubar", (event) => {
   g_titlebar.updateMenu(Menu.getApplicationMenu());
 });
@@ -127,6 +132,10 @@ ipcRenderer.on("set-toolbar-visibility", (event, isVisible) => {
 
 ipcRenderer.on("set-page-number-visibility", (event, isVisible) => {
   showPageNumber(isVisible);
+});
+
+ipcRenderer.on("set-clock-visibility", (event, isVisible) => {
+  showClock(isVisible);
 });
 
 ipcRenderer.on("set-fullscreen-ui", (event, isFullscreen) => {
@@ -657,6 +666,16 @@ function showPageNumber(isVisible) {
     document
       .querySelector("#page-number-bubble")
       .classList.add("set-display-none");
+  }
+}
+
+function showClock(isVisible) {
+  if (isVisible) {
+    document
+      .querySelector("#clock-bubble")
+      .classList.remove("set-display-none");
+  } else {
+    document.querySelector("#clock-bubble").classList.add("set-display-none");
   }
 }
 

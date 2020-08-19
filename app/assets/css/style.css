@@ -29,6 +29,26 @@ img {
 
 /* //////////////  ////////////// */
 
+#clock-bubble {
+  width: 100%;
+  text-align: right;
+  position: fixed;
+  top: 10;
+  border: 0;
+  z-index: 9;
+  margin-top: 10px;
+}
+
+#clock-bubble > span {
+  font-size: 15px;
+  color: white;
+  opacity: 0.5;
+  background-color: rgb(109, 109, 109);
+  padding: 2px 5px;
+  border-radius: 5px;
+  margin-right: 25px;
+}
+
 #page-number-bubble {
   width: 100%;
   text-align: center;

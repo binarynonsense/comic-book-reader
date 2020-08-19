@@ -28,6 +28,10 @@ exports.setPageNumber = function (isChecked) {
   Menu.getApplicationMenu().getMenuItemById("page-number").checked = isChecked;
 };
 
+exports.setClock = function (isChecked) {
+  Menu.getApplicationMenu().getMenuItemById("clock").checked = isChecked;
+};
+
 exports.setPageRotation = function (value) {
   Menu.getApplicationMenu().getMenuItemById("rotation-0").checked = value === 0;
   Menu.getApplicationMenu().getMenuItemById("rotation-90").checked =
@@ -235,7 +239,7 @@ function buildApplicationMenu(activeLocale, languages, settings, history) {
             {
               id: "fit-to-width",
               label: _("Fit to Width"),
-              checked: true,
+              checked: settings.fit_mode == 0,
               click() {
                 mainProcess.onMenuFitToWidth();
               },
@@ -243,7 +247,7 @@ function buildApplicationMenu(activeLocale, languages, settings, history) {
             {
               id: "fit-to-height",
               label: _("Fit to Height"),
-              checked: false,
+              checked: settings.fit_mode == 1,
               click() {
                 mainProcess.onMenuFitToHeight();
               },
@@ -316,7 +320,7 @@ function buildApplicationMenu(activeLocale, languages, settings, history) {
         {
           label: _("Show Scroll Bar"),
           id: "scrollbar",
-          checked: true,
+          checked: settings.showScrollBar,
           accelerator: "CommandOrControl+B",
           click() {
             mainProcess.onMenuToggleScrollBar();
@@ -325,7 +329,7 @@ function buildApplicationMenu(activeLocale, languages, settings, history) {
         {
           label: _("Show Tool Bar"),
           id: "toolbar",
-          checked: true,
+          checked: settings.showToolBar,
           accelerator: "CommandOrControl+T",
           click() {
             mainProcess.onMenuToggleToolBar();
@@ -334,10 +338,18 @@ function buildApplicationMenu(activeLocale, languages, settings, history) {
         {
           label: _("Show Page Number"),
           id: "page-number",
-          checked: true,
+          checked: settings.showPageNumber,
           accelerator: "CommandOrControl+P",
           click() {
             mainProcess.onMenuTogglePageNumber();
+          },
+        },
+        {
+          label: _("Show Clock"),
+          id: "clock",
+          checked: settings.showClock,
+          click() {
+            mainProcess.onMenuToggleClock();
           },
         },
         {

@@ -48,6 +48,7 @@ let g_settings = {
   showToolBar: true,
   showScrollBar: true,
   showPageNumber: true,
+  showClock: false,
   locale: undefined,
   loadLastOpened: true,
 };
@@ -100,6 +101,9 @@ function sanitizeSettings() {
   }
   if (typeof g_settings.showPageNumber !== "boolean") {
     g_settings.showPageNumber = true;
+  }
+  if (typeof g_settings.showClock !== "boolean") {
+    g_settings.showClock = false;
   }
   if (typeof g_settings.showScrollBar !== "boolean") {
     g_settings.showScrollBar = true;
@@ -202,6 +206,8 @@ app.on("ready", () => {
     showScrollBar(g_settings.showScrollBar);
     showToolBar(g_settings.showToolBar);
     showPageNumber(g_settings.showPageNumber);
+    initClock();
+    showClock(g_settings.showClock);
 
     g_mainWindow.setSize(g_settings.width, g_settings.height);
     g_mainWindow.center();
@@ -291,6 +297,26 @@ app.on("web-contents-created", (event, contents) => {
     // }
   });
 });
+
+///////////////////////////////////////////////////////////////////////////////
+// CLOCK //////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+function initClock() {
+  let today = new Date();
+  let h = today.getHours();
+  let m = today.getMinutes();
+  if (m < 10) {
+    m = "0" + m;
+  }
+  let s = today.getSeconds();
+  if (s < 10) {
+    s = "0" + s;
+  }
+  let time = h + ":" + m; // + ":" + s;
+  g_mainWindow.webContents.send("update-clock", time);
+  let t = setTimeout(initClock, 500);
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // I18N ///////////////////////////////////////////////////////////////////////
@@ -624,6 +650,10 @@ exports.onMenuToggleToolBar = function () {
 
 exports.onMenuTogglePageNumber = function () {
   togglePageNumber();
+};
+
+exports.onMenuToggleClock = function () {
+  toggleClock();
 };
 
 exports.onMenuToggleFullScreen = function () {
@@ -1170,6 +1200,16 @@ function showPageNumber(isVisible) {
 
 function togglePageNumber() {
   showPageNumber(!g_settings.showPageNumber);
+}
+
+function showClock(isVisible) {
+  g_settings.showClock = isVisible;
+  g_mainWindow.webContents.send("set-clock-visibility", g_settings.showClock);
+  menuBar.setClock(isVisible);
+}
+
+function toggleClock() {
+  showClock(!g_settings.showClock);
 }
 
 function toggleFullScreen() {
