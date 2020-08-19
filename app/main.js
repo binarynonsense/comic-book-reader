@@ -919,7 +919,9 @@ function generateTitle() {
     title = "ACBR" + blankSpace;
   } else {
     title = `${g_fileData.name}`;
-    var length = 50;
+    let length = 50;
+    if (g_mainWindow.getSize()[0] > 1500) length = 120;
+    else if (g_mainWindow.getSize()[0] >= 1280) length = 100;
     title =
       title.length > length
         ? title.substring(0, length - 3) + "..."
