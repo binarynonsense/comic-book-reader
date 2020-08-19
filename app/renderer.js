@@ -512,11 +512,15 @@ document.onkeydown = function (event) {
   // ref: http://gcctech.org/csc/javascript/javascript_keycodes.htm
   if (event.keyCode == 34 || event.keyCode == 39) {
     // page down or arrow right
-    ipcRenderer.send("mouse-click", true);
+    ipcRenderer.send(
+      "mouse-click",
+      document.body.clientWidth,
+      document.body.clientWidth
+    );
     event.stopPropagation();
   } else if (event.keyCode == 33 || event.keyCode == 37) {
     // page up or arrow left
-    ipcRenderer.send("mouse-click", false);
+    ipcRenderer.send("mouse-click", 0, document.body.clientWidth);
     event.stopPropagation();
   } else if (event.keyCode == 36) {
     // home
