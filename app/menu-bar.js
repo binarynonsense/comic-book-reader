@@ -348,6 +348,7 @@ function buildApplicationMenu(activeLocale, languages, settings, history) {
           label: _("Show Clock"),
           id: "clock",
           checked: settings.showClock,
+          accelerator: "CommandOrControl+J",
           click() {
             mainProcess.onMenuToggleClock();
           },
