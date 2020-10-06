@@ -27,7 +27,7 @@
     "dist:windows": "electron-builder --win"
   },
   "devDependencies": {
-    "electron": "^9.0.0",
+    "electron": "^9.3.0",
     "electron-builder": "^22.6.1",
     "license-checker": "^25.0.1"
   },
