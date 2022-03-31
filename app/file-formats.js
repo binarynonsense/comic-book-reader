@@ -17,7 +17,7 @@ function getMimeType(filePath) {
 exports.getMimeType = getMimeType;
 
 function hasImageExtension(filePath) {
-  const allowedFileExtensions = [".jpg", ".jpeg", ".png"];
+  const allowedFileExtensions = [".jpg", ".jpeg", ".png", ".webp"];
   let fileExtension = path.extname(filePath).toLowerCase();
   for (i = 0; i < allowedFileExtensions.length; i++) {
     if (fileExtension === allowedFileExtensions[i]) {
@@ -294,8 +294,7 @@ async function createEpubFromImages(
       __dirname,
       "assets/libs/epub/templates/content.opf.ejs"
     ),
-    css:
-      "body { margin: 0; padding:0; }\n .img-container{text-align:center; text-indent:0; margin-top: 0; margin-bottom: 0;} img { text-align: center; text-indent:0; }",
+    css: "body { margin: 0; padding:0; }\n .img-container{text-align:center; text-indent:0; margin-top: 0; margin-bottom: 0;} img { text-align: center; text-indent:0; }",
     content: content,
   };
 
