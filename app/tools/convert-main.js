@@ -171,7 +171,7 @@ ipcMain.on(
   }
 );
 
-ipcMain.on("convert-stop-error", (event, ee) => {
+ipcMain.on("convert-stop-error", (event, err) => {
   conversionStopError(err);
 });
 
