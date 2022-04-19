@@ -39,6 +39,18 @@ exports.hasCompatibleExtension = function (filePath) {
   return false;
 };
 
+function hasPDFCompatibleImageExtension(filePath) {
+  const allowedFileExtensions = [".jpg", ".jpeg", ".png"];
+  let fileExtension = path.extname(filePath).toLowerCase();
+  for (i = 0; i < allowedFileExtensions.length; i++) {
+    if (fileExtension === allowedFileExtensions[i]) {
+      return true;
+    }
+  }
+  return false;
+}
+exports.hasPDFCompatibleImageExtension = hasPDFCompatibleImageExtension;
+
 ///////////////////////////////////////////////////////////////////////////////
 // RAR ////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////

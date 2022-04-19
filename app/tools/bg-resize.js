@@ -38,26 +38,37 @@ function resizeImages(
 ) {
   try {
     for (let index = 0; index < imgFilePaths.length; index++) {
-      ipcRenderer.send("resizing-image", index + 1, imgFilePaths.length);
-
-      // ref: https://www.electronjs.org/docs/api/native-image#imageresizeoptions
-      let image = nativeImage.createFromPath(imgFilePaths[index]);
-      const width = (image.getSize().width * outputScale) / 100;
-      image = image.resize({
-        width: width,
-        quality: "best", // good, better, or best
-      });
-      const buf = image.toJPEG(outputQuality);
       let filePath = imgFilePaths[index];
       let fileExtension = path.extname(filePath);
-      fs.writeFileSync(filePath, buf, "binary");
 
-      if (fileExtension !== ".jpg" && fileExtension !== ".jpeg") {
-        let fileFolderPath = path.dirname(filePath);
-        let fileName = path.basename(filePath, path.extname(filePath));
-        let newFilePath = path.join(fileFolderPath, fileName + ".jpg");
-        fs.renameSync(filePath, newFilePath);
-        imgFilePaths[index] = newFilePath;
+      if (
+        outputScale < 100 ||
+        (fileExtension !== ".jpg" &&
+          fileExtension !== ".jpeg" &&
+          fileExtension !== ".png")
+      ) {
+        ipcRenderer.send("resizing-image", index + 1, imgFilePaths.length);
+
+        // ref: https://www.electronjs.org/docs/api/native-image#imageresizeoptions
+        let image = nativeImage.createFromPath(imgFilePaths[index]);
+        if (outputScale < 100) {
+          const width = (image.getSize().width * outputScale) / 100;
+          image = image.resize({
+            width: width,
+            quality: "best", // good, better, or best
+          });
+        }
+        const buf = image.toJPEG(outputQuality);
+
+        fs.writeFileSync(filePath, buf, "binary");
+
+        if (fileExtension !== ".jpg" && fileExtension !== ".jpeg") {
+          let fileFolderPath = path.dirname(filePath);
+          let fileName = path.basename(filePath, path.extname(filePath));
+          let newFilePath = path.join(fileFolderPath, fileName + ".jpg");
+          fs.renameSync(filePath, newFilePath);
+          imgFilePaths[index] = newFilePath;
+        }
       }
 
       if (g_cancelConversion === true) {

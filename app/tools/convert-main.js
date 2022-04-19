@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, nativeImage } = require("electron");
+const { app, BrowserWindow, ipcMain } = require("electron");
 
 const fs = require("fs");
 const path = require("path");
@@ -8,6 +8,7 @@ const naturalCompare = require("natural-compare-lite");
 const fileUtils = require("../file-utils");
 const fileFormats = require("../file-formats");
 const mainProcess = require("../main");
+const sharp = require("sharp");
 
 let g_convertWindow;
 let g_cancelConversion = false;
@@ -432,6 +433,33 @@ async function resizeImages(
     //imgFiles.sort(); // numerical, not natural, order.. doesn't work for what I want
     // ref: https://www.npmjs.com/package/natural-compare-lite
     imgFilePaths.sort(naturalCompare);
+
+    // change imgs' format if needed
+    if (outputFormat === "pdf") {
+      // pdfkit only works with png and jpg image formats
+      for (let index = 0; index < imgFilePaths.length; index++) {
+        let filePath = imgFilePaths[index];
+        // let fileExtension = path.extname(filePath);
+        if (!fileFormats.hasPDFCompatibleImageExtension(filePath)) {
+          let fileFolderPath = path.dirname(filePath);
+          let fileName = path.basename(filePath, path.extname(filePath));
+          let tmpFilePath = path.join(fileFolderPath, fileName + ".tmp");
+          let newFilePath = path.join(fileFolderPath, fileName + ".jpg");
+
+          g_convertWindow.webContents.send(
+            "convert-update-text-log",
+            "Image " +
+              index +
+              "'s format is incompatible. Converting to jpeg..." //_("Generating New File...")
+          );
+          await sharp(filePath).jpeg().toFile(tmpFilePath);
+
+          fs.unlinkSync(filePath);
+          fs.renameSync(tmpFilePath, newFilePath);
+          imgFilePaths[index] = newFilePath;
+        }
+      }
+    }
 
     // resize imgs if needed
     outputScale = parseInt(outputScale);
