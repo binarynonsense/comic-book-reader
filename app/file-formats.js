@@ -17,7 +17,7 @@ function getMimeType(filePath) {
 exports.getMimeType = getMimeType;
 
 function hasImageExtension(filePath) {
-  const allowedFileExtensions = [".jpg", ".jpeg", ".png", ".webp"];
+  const allowedFileExtensions = [".jpg", ".jpeg", ".png", ".webp", ".bmp"];
   let fileExtension = path.extname(filePath).toLowerCase();
   for (i = 0; i < allowedFileExtensions.length; i++) {
     if (fileExtension === allowedFileExtensions[i]) {
