@@ -24,6 +24,7 @@ A comic book reader and converter for cbz, cbr, epub and pdf files.
 - Tools:
   - Convert/Resize files from cbr, cbz, pdf or epub to cbz, pdf or epub.
   - Export the current page to an image file.
+  - Create a cbz, pdf or epub file from a list of image files.
 
 ## Controls:
 
@@ -45,10 +46,6 @@ A comic book reader and converter for cbz, cbr, epub and pdf files.
 
 - [Linux](https://github.com/binarynonsense/comic-book-reader/releases/latest/download/ACBR_Linux.zip)
 - [Windows](https://github.com/binarynonsense/comic-book-reader/releases/latest/download/ACBR_Windows.zip)
-
-## Build Notes
-
-zipfile, an optional dependency of the 'epub' module was giving me errors when building the program so I had to remove 'epub' and reinstall it with 'npm install epub --no-optional' to use the pure javascript version.
 
 ## License
 
