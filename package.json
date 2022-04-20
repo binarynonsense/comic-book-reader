@@ -29,6 +29,7 @@
   },
   "scripts": {
     "start": "electron . --dev",
+    "dist": "npm run dist:windows && npm run dist:linux",
     "dist:linux": "npm run sharp:linux && npm run build:linux",
     "dist:windows": "npm run sharp:windows && npm run build:windows",
     "build:linux": "electron-builder --linux",
