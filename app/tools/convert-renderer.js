@@ -1,9 +1,14 @@
 const fs = window.require("fs");
 const path = require("path");
-const os = require("os");
 const { ipcRenderer } = require("electron");
 
-let g_mode;
+const ToolType = {
+  CONVERT: "convert",
+  BATCH_CONVERT: "batch_convert",
+  CREATE: "create",
+};
+let g_toolType;
+
 let g_inputFiles = [];
 let g_inputFilesIndex = 0;
 
@@ -25,19 +30,24 @@ let g_inputFileType;
 let g_outputScale = "100";
 let g_outputQuality = "80";
 let g_outputFormat = "cbz";
+let g_outputName;
 let g_outputFolderPath;
 
 let g_textInputFileDiv = document.querySelector("#text-input-file");
 let g_textInputFilesDiv = document.querySelector("#text-input-files");
+let g_textInputImagesDiv = document.querySelector("#text-input-imgs");
 let g_inputListDiv = document.querySelector("#input-list");
 let g_inputListButton = document.querySelector("#button-add-file");
 let g_outputFolderDiv = document.querySelector("#output-folder");
 let g_convertButton = document.querySelector("#button-convert");
+let g_outputSizeDiv = document.querySelector("#output-size");
+let g_outputNameDiv = document.querySelector("#output-name");
+let g_outputNameInput = document.querySelector("#input-output-name");
 let g_scaleSlider = document.querySelector("#scale-slider");
 let g_qualitySlider = document.querySelector("#quality-slider");
 let g_modalInfoArea = document.querySelector("#modal-info");
 let g_modalLogArea = document.querySelector("#modal-log");
-let g_modalButtonContainer = document.querySelector("#modal-button-container");
+//let g_modalButtonContainer = document.querySelector("#modal-button-container");
 let g_modalButtonClose = document.querySelector("#button-modal-close");
 let g_modalButtonCancel = document.querySelector("#button-modal-cancel");
 let g_modalLoadingBar = document.querySelector("#modal-loading-bar");
@@ -63,7 +73,8 @@ function checkValidData() {
     g_qualitySlider.parentElement.classList.remove("hide");
   }
 
-  if (g_mode === 0) {
+  if (g_toolType === ToolType.CONVERT) {
+    g_outputNameDiv.classList.add("hide");
     if (g_outputFolderPath !== undefined && g_inputFiles.length > 0) {
       if (g_inputFiles[0].type === FileDataType.ZIP) {
         if (!(g_outputFormat === "cbz" && g_outputScale === "100")) {
@@ -86,9 +97,21 @@ function checkValidData() {
       }
     }
     g_convertButton.classList.add("disabled");
-  } else {
-    // mode 1 / batch
+  } else if (g_toolType === ToolType.BATCH_CONVERT) {
+    g_outputNameDiv.classList.add("hide");
     if (g_outputFolderPath !== undefined && g_inputFiles.length > 0) {
+      g_convertButton.classList.remove("disabled");
+    } else {
+      g_convertButton.classList.add("disabled");
+    }
+  } else if (g_toolType === ToolType.CREATE) {
+    g_outputSizeDiv.classList.add("hide");
+    g_outputNameDiv.classList.remove("hide");
+    if (
+      g_outputFolderPath !== undefined &&
+      g_inputFiles.length > 0 &&
+      g_outputNameInput.value !== ""
+    ) {
       g_convertButton.classList.remove("disabled");
     } else {
       g_convertButton.classList.add("disabled");
@@ -107,21 +130,29 @@ function reducePathString(input) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-ipcRenderer.on("set-mode", (event, mode, outputFolderPath) => {
-  g_mode = mode;
+ipcRenderer.on("set-tool-type", (event, toolType, outputFolderPath) => {
+  g_toolType = toolType;
   g_outputFolderPath = outputFolderPath;
   g_outputFolderDiv.innerHTML = reducePathString(g_outputFolderPath);
-  // 0
-  if (g_mode === 0) {
+  if (g_toolType === ToolType.CONVERT) {
     g_inputListButton.classList.add("hide");
     g_textInputFileDiv.classList.remove("hide");
     g_textInputFilesDiv.classList.add("hide");
-  } else {
-    // batch conversion
+    g_textInputImagesDiv.classList.add("hide");
+  } else if (g_toolType === ToolType.BATCH_CONVERT) {
     g_inputListButton.classList.remove("hide");
     g_textInputFileDiv.classList.add("hide");
     g_textInputFilesDiv.classList.remove("hide");
+    g_textInputImagesDiv.classList.add("hide");
+  } else if (g_toolType === ToolType.CREATE) {
+    // g_outputNameInput.value = _("New File");
+    g_outputNameInput.value = "New File";
+    g_inputListButton.classList.remove("hide");
+    g_textInputFileDiv.classList.add("hide");
+    g_textInputFilesDiv.classList.add("hide");
+    g_textInputImagesDiv.classList.remove("hide");
   }
+
   checkValidData();
 });
 
@@ -135,6 +166,13 @@ ipcRenderer.on(
       const domElement = document.querySelector("#" + element.id);
       if (domElement !== null) {
         domElement.innerHTML = element.text;
+      }
+      // UGLY HACK
+      else if (
+        g_toolType === ToolType.CREATE &&
+        element.id === "button-create"
+      ) {
+        document.querySelector("#button-convert").innerHTML = element.text;
       }
     }
 
@@ -171,7 +209,7 @@ ipcRenderer.on("add-file", (event, filePath, fileType) => {
   g_inputListDiv.innerHTML +=
     "<li class='collection-item'><div>" +
     reducePathString(filePath) +
-    (g_mode === 1
+    (g_toolType === ToolType.BATCH_CONVERT || g_toolType === ToolType.CREATE
       ? "<a style='cursor: pointer;' onclick='renderer.onRemoveFile(this, " +
         id +
         ")' class='secondary-content'><i class='fas fa-window-close' title='" +
@@ -223,11 +261,17 @@ function onChooseOutputFolder() {
 }
 exports.onChooseOutputFolder = onChooseOutputFolder;
 
-function outputFormatChanged(selectObject) {
+function onOutputFormatChanged(selectObject) {
   g_outputFormat = selectObject.value;
   checkValidData();
 }
-exports.outputFormatChanged = outputFormatChanged;
+exports.onOutputFormatChanged = onOutputFormatChanged;
+
+function onOutputNameChanged(selectObject) {
+  g_outputName = selectObject.value;
+  checkValidData();
+}
+exports.onOutputNameChanged = onOutputNameChanged;
 
 function onConvert(resetCounter = true) {
   g_cancelConversion = false;
@@ -245,16 +289,21 @@ function onConvert(resetCounter = true) {
     updateTextLog("", false);
   }
 
-  g_inputFilePath = g_inputFiles[g_inputFilesIndex].path;
-  g_inputFileType = g_inputFiles[g_inputFilesIndex].type;
+  if (g_toolType === ToolType.CREATE) {
+    ipcRenderer.send("convert-start-creation", g_inputFiles);
+    g_inputFilePath = g_outputNameInput.value;
+  } else {
+    g_inputFilePath = g_inputFiles[g_inputFilesIndex].path;
+    g_inputFileType = g_inputFiles[g_inputFilesIndex].type;
 
-  ipcRenderer.send(
-    "convert-start-conversion",
-    g_inputFilePath,
-    g_inputFileType,
-    g_inputFilesIndex + 1,
-    g_inputFiles.length
-  );
+    ipcRenderer.send(
+      "convert-start-conversion",
+      g_inputFilePath,
+      g_inputFileType,
+      g_inputFilesIndex + 1,
+      g_inputFiles.length
+    );
+  }
 }
 exports.onConvert = onConvert;
 
@@ -312,7 +361,10 @@ ipcRenderer.on("convert-images-extracted", (event) => {
 });
 
 ipcRenderer.on("convert-finished-ok", (event) => {
-  if (g_inputFilesIndex < g_inputFiles.length - 1) {
+  if (
+    g_toolType !== ToolType.CREATE &&
+    g_inputFilesIndex < g_inputFiles.length - 1
+  ) {
     g_inputFilesIndex++;
     onConvert(false);
   } else {

@@ -15,6 +15,7 @@
     <div class="container center-align">
       <h5 id="text-input-file">Input File:</h5>
       <h5 id="text-input-files" class="hide">Input File/s:</h5>
+      <h5 id="text-input-imgs" class="hide">Input Image/s:</h5>
 
       <ul class="collection with-header">
         <!-- <li class="collection-header"><h4>First Names</h4></li> -->
@@ -31,33 +32,57 @@
           >ADD</a
         > -->
 
-      <h5>
-        <span id="text-output-size">Output Size:</span>
-        <i
-          id="tooltip-output-size"
-          class="fas fa-question-circle blue-text accent-1-text"
-          title="tooltip"
-        ></i>
-      </h5>
-      <p class="range-field">
-        <span id="text-scale">Scale (%):</span>
-        <input type="range" min="10" max="100" id="scale-slider" value="100" />
-      </p>
-      <p class="range-field" id="quality-slider-container">
-        <span id="text-quality">Quality:</span>
-        <input type="range" min="10" max="100" id="quality-slider" value="80" />
-      </p>
+      <div id="output-size">
+        <h5>
+          <span id="text-output-size">Output Size:</span>
+          <i
+            id="tooltip-output-size"
+            class="fas fa-question-circle blue-text accent-1-text"
+            title="tooltip"
+          ></i>
+        </h5>
+        <p class="range-field">
+          <span id="text-scale">Scale (%):</span>
+          <input
+            type="range"
+            min="10"
+            max="100"
+            id="scale-slider"
+            value="100"
+          />
+        </p>
+        <p class="range-field" id="quality-slider-container">
+          <span id="text-quality">Quality:</span>
+          <input
+            type="range"
+            min="10"
+            max="100"
+            id="quality-slider"
+            value="80"
+          />
+        </p>
+      </div>
 
       <h5 id="text-output-format">Output Format:</h5>
       <select
         class="browser-default"
-        onchange="renderer.outputFormatChanged(this)"
+        onchange="renderer.onOutputFormatChanged(this)"
       >
         <!-- <option value="" disabled selected>Choose a format</option> -->
         <option value="cbz">.cbz (zip)</option>
         <option value="pdf">.pdf</option>
         <option value="epub">.epub</option>
       </select>
+
+      <div id="output-name">
+        <h5 id="text-output-name">Output Name:</h5>
+        <input
+          id="input-output-name"
+          type="text"
+          value="New Comic Book File"
+          oninput="renderer.onOutputNameChanged(this)"
+        />
+      </div>
 
       <h5>
         <span id="text-output-folder">Output Folder:</span>

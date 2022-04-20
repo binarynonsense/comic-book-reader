@@ -118,7 +118,13 @@ exports.loadHistory = function () {
 // FILE DIALOGUES /////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-function chooseOpenFiles(window, defaultPath, allowMultipleSelection) {
+function chooseOpenFiles(
+  window,
+  defaultPath,
+  allowedFileTypesName,
+  allowedFileTypesList,
+  allowMultipleSelection
+) {
   if (defaultPath !== undefined && !fs.existsSync(defaultPath)) {
     defaultPath = undefined;
   }
@@ -134,8 +140,8 @@ function chooseOpenFiles(window, defaultPath, allowMultipleSelection) {
     defaultPath: defaultPath,
     filters: [
       {
-        name: "Comic Book Files",
-        extensions: ["cbz", "cbr", "pdf", "epub"],
+        name: allowedFileTypesName,
+        extensions: allowedFileTypesList,
       },
     ],
     properties: properties,

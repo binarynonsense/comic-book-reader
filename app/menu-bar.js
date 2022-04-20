@@ -178,6 +178,14 @@ function buildApplicationMenu(activeLocale, languages, settings, history) {
           },
         },
         {
+          id: "create-file",
+          label: _("Create..."),
+          enabled: true,
+          click() {
+            mainProcess.onMenuCreateFile();
+          },
+        },
+        {
           type: "separator",
         },
         {

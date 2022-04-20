@@ -15,7 +15,12 @@ let g_cancelConversion = false;
 let g_worker;
 let g_resizeWindow;
 
-let g_mode = 0;
+const ToolType = {
+  CONVERT: "convert",
+  BATCH_CONVERT: "batch_convert",
+  CREATE: "create",
+};
+let g_toolType = ToolType.CONVERT;
 
 function isDev() {
   return process.argv[2] == "--dev";
@@ -25,7 +30,7 @@ function _(...args) {
   return mainProcess.i18n_.apply(null, args);
 }
 
-exports.showWindow = function (parentWindow, filePath, fileType) {
+exports.showWindow = function (toolType, parentWindow, filePath, fileType) {
   if (g_convertWindow !== undefined) return; // TODO: focus the existing one?
   g_convertWindow = new BrowserWindow({
     width: 700,
@@ -40,6 +45,8 @@ exports.showWindow = function (parentWindow, filePath, fileType) {
       nodeIntegration: true,
     },
   });
+
+  g_toolType = toolType;
 
   g_convertWindow.menuBarVisible = false;
   g_convertWindow.loadFile(`${__dirname}/convert.html`);
@@ -58,28 +65,35 @@ exports.showWindow = function (parentWindow, filePath, fileType) {
   });
 
   g_convertWindow.webContents.on("did-finish-load", function () {
-    g_convertWindow.webContents.send(
-      "update-localization",
-      _("Convert Files Tool"),
-      getLocalization(),
-      getTooltipsLocalization()
-    );
-    if (filePath === undefined) {
-      g_mode = 1;
+    if (g_toolType === ToolType.CREATE) {
       g_convertWindow.webContents.send(
-        "set-mode",
-        g_mode,
+        "set-tool-type",
+        g_toolType,
         app.getPath("desktop")
       );
-    } else {
-      g_mode = 0;
+    } else if (g_toolType === ToolType.CONVERT && filePath !== undefined) {
       g_convertWindow.webContents.send(
-        "set-mode",
-        g_mode,
+        "set-tool-type",
+        g_toolType,
         path.dirname(filePath)
       );
       g_convertWindow.webContents.send("add-file", filePath, fileType);
+    } else {
+      g_convertWindow.webContents.send(
+        "set-tool-type",
+        ToolType.BATCH_CONVERT,
+        app.getPath("desktop")
+      );
     }
+
+    g_convertWindow.webContents.send(
+      "update-localization",
+      g_toolType === ToolType.CREATE
+        ? _("Create File Tool")
+        : _("Convert Files Tool"),
+      getLocalization(),
+      getTooltipsLocalization()
+    );
   });
 
   // Event: 'unresponsive'
@@ -95,10 +109,19 @@ exports.showWindow = function (parentWindow, filePath, fileType) {
 ipcMain.on("convert-choose-file", (event) => {
   try {
     let allowMultipleSelection = false;
-    if ((g_mode = 1)) allowMultipleSelection = true;
+    let allowedFileTypesName = "Comic Book Files";
+    let allowedFileTypesList = ["cbz", "cbr", "pdf", "epub"];
+    if (g_toolType === ToolType.BATCH_CONVERT) allowMultipleSelection = true;
+    if (g_toolType === ToolType.CREATE) {
+      allowMultipleSelection = true;
+      allowedFileTypesName = "Image Files";
+      allowedFileTypesList = ["jpg", "jpeg", "png", "webp", "bmp"];
+    }
     let filePathsList = fileUtils.chooseOpenFiles(
       g_convertWindow,
       undefined,
+      allowedFileTypesName,
+      allowedFileTypesList,
       allowMultipleSelection
     );
     if (filePathsList === undefined) {
@@ -106,6 +129,8 @@ ipcMain.on("convert-choose-file", (event) => {
     }
     for (let index = 0; index < filePathsList.length; index++) {
       const filePath = filePathsList[index];
+      let stats = fs.statSync(filePath);
+      if (!stats.isFile()) continue; // avoid folders accidentally getting here
       let fileType;
       // mostly a COPY FROM main, maybe make a common function in file.utils
       let fileExtension = path.extname(filePath).toLowerCase();
@@ -114,19 +139,24 @@ ipcMain.on("convert-choose-file", (event) => {
         if (_fileType !== undefined) {
           fileExtension = "." + _fileType.ext;
         }
-        if (fileExtension === ".pdf") {
-          fileType = "pdf";
-        } else if (fileExtension === ".epub") {
-          fileType = "epub";
+        if (g_toolType === ToolType.CREATE) {
+          fileType = "img";
         } else {
-          if (fileExtension === ".rar" || fileExtension === ".cbr") {
-            fileType = "rar";
-          } else if (fileExtension === ".zip" || fileExtension === ".cbz") {
-            fileType = "zip";
+          if (fileExtension === ".pdf") {
+            fileType = "pdf";
+          } else if (fileExtension === ".epub") {
+            fileType = "epub";
           } else {
-            return;
+            if (fileExtension === ".rar" || fileExtension === ".cbr") {
+              fileType = "rar";
+            } else if (fileExtension === ".zip" || fileExtension === ".cbz") {
+              fileType = "zip";
+            } else {
+              return;
+            }
           }
         }
+
         g_convertWindow.webContents.send("add-file", filePath, fileType);
       })();
     }
@@ -171,6 +201,10 @@ ipcMain.on(
     conversionStart(inputFilePath, inputFileType, fileNum, totalFilesNum);
   }
 );
+
+ipcMain.on("convert-start-creation", (event, inputFiles) => {
+  creationStart(inputFiles);
+});
 
 ipcMain.on("convert-stop-error", (event, err) => {
   conversionStopError(err);
@@ -303,7 +337,7 @@ function conversionStopCancel() {
   fileUtils.cleanUpTempFolder();
   g_convertWindow.webContents.send(
     "convert-update-text-log",
-    _("Couldn't convert the file, the conversion  was canceled")
+    _("Couldn't convert the file, the conversion was canceled")
   );
   g_convertWindow.webContents.send("convert-finished-canceled");
 }
@@ -374,6 +408,29 @@ function conversionStart(inputFilePath, inputFileType, fileNum, totalFilesNum) {
   }
 }
 
+function creationStart(inputFiles) {
+  g_cancelConversion = false;
+  //g_convertWindow.webContents.send("convert-update-text-log", _("Creating:"));
+  // g_convertWindow.webContents.send(
+  //   "convert-update-text-info",
+  //   fileUtils.reducePathString(inputFilePath)
+  // );
+
+  let tempFolderPath = fileUtils.createTempFolder();
+  let imgFilePaths = [];
+  // copy to temp folder
+  try {
+    for (let index = 0; index < inputFiles.length; index++) {
+      const inPath = inputFiles[index].path;
+      const outPath = path.join(tempFolderPath, path.basename(inPath));
+      fs.copyFileSync(inPath, outPath, fs.constants.COPYFILE_EXCL);
+      imgFilePaths.push(outPath);
+    }
+    g_convertWindow.webContents.send("convert-images-extracted");
+  } catch (err) {
+    conversionStopError(err);
+  }
+}
 // async function conversionExtractImages(
 //   inputFilePath,
 //   inputFileType,
@@ -410,6 +467,9 @@ async function resizeImages(
   }
   try {
     let filename = path.basename(inputFilePath, path.extname(inputFilePath));
+    if (g_toolType === ToolType.CREATE) {
+      filename = inputFilePath;
+    }
     let outputFilePath = path.join(
       outputFolderPath,
       filename + "." + outputFormat
@@ -434,13 +494,14 @@ async function resizeImages(
     // ref: https://www.npmjs.com/package/natural-compare-lite
     imgFilePaths.sort(naturalCompare);
 
-    // change imgs' format if needed
-    if (outputFormat === "pdf") {
+    // change imgs' format if needed (for pdf creation or resizing)
+    if (outputScale < 100 || outputFormat === "pdf") {
       // pdfkit only works with png and jpg image formats
+      // same for native image? (used for resizing)
       for (let index = 0; index < imgFilePaths.length; index++) {
         let filePath = imgFilePaths[index];
         // let fileExtension = path.extname(filePath);
-        if (!fileFormats.hasPDFCompatibleImageExtension(filePath)) {
+        if (!fileFormats.hasNativeImageCompatibleImageExtension(filePath)) {
           let fileFolderPath = path.dirname(filePath);
           let fileName = path.basename(filePath, path.extname(filePath));
           let tmpFilePath = path.join(fileFolderPath, fileName + ".tmp");
@@ -448,9 +509,7 @@ async function resizeImages(
 
           g_convertWindow.webContents.send(
             "convert-update-text-log",
-            "Image " +
-              index +
-              "'s format is incompatible. Converting to jpeg..." //_("Generating New File...")
+            _("Converting Page {0} to a Compatible Format (JPG)", index + 1)
           );
           await sharp(filePath).jpeg().toFile(tmpFilePath);
 
@@ -582,6 +641,10 @@ function getLocalization() {
       text: _("Input File:"),
     },
     {
+      id: "text-input-imgs",
+      text: _("Input Image/s:"),
+    },
+    {
       id: "button-add-file",
       text: _("Add").toUpperCase(),
     },
@@ -602,6 +665,10 @@ function getLocalization() {
       text: _("Output Format:"),
     },
     {
+      id: "text-output-name",
+      text: _("Output Name:"),
+    },
+    {
       id: "text-output-folder",
       text: _("Output Folder:"),
     },
@@ -612,6 +679,10 @@ function getLocalization() {
     {
       id: "button-convert",
       text: _("Convert").toUpperCase(),
+    },
+    {
+      id: "button-create",
+      text: _("Create").toUpperCase(),
     },
     {
       id: "button-modal-close",

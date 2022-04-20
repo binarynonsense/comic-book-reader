@@ -160,6 +160,7 @@ app.on("ready", () => {
     webPreferences: {
       nodeIntegration: true,
       enableRemoteModule: true,
+      //contextIsolation: false,
     },
     show: false,
   });
@@ -636,9 +637,10 @@ exports.onMenuRotateClockwise = onMenuRotateClockwise = function () {
   setPageRotation(g_fileData.pageRotation + 90, true);
 };
 
-exports.onMenuRotateCounterclockwise = onMenuRotateCounterclockwise = function () {
-  setPageRotation(g_fileData.pageRotation - 90, true);
-};
+exports.onMenuRotateCounterclockwise = onMenuRotateCounterclockwise =
+  function () {
+    setPageRotation(g_fileData.pageRotation - 90, true);
+  };
 
 exports.onMenuToggleScrollBar = function () {
   toggleScrollBar();
@@ -715,15 +717,31 @@ exports.onMenuExportPage = function () {
   exportPageStart();
 };
 
+const ToolType = {
+  CONVERT: "convert",
+  BATCH_CONVERT: "batch_convert",
+  CREATE: "create",
+};
+
 exports.onMenuConvertFile = function () {
   if (g_fileData.path !== undefined) {
-    convertTool.showWindow(g_mainWindow, g_fileData.path, g_fileData.type);
+    convertTool.showWindow(
+      ToolType.CONVERT,
+      g_mainWindow,
+      g_fileData.path,
+      g_fileData.type
+    );
   }
   g_mainWindow.webContents.send("update-menubar");
 };
 
 exports.onMenuBatchConvert = function () {
-  convertTool.showWindow(g_mainWindow);
+  convertTool.showWindow(ToolType.BATCH_CONVERT, g_mainWindow);
+  g_mainWindow.webContents.send("update-menubar");
+};
+
+exports.onMenuCreateFile = function () {
+  convertTool.showWindow(ToolType.CREATE, g_mainWindow);
   g_mainWindow.webContents.send("update-menubar");
 };
 
