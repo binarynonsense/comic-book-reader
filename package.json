@@ -10,22 +10,27 @@
     "url": "https://github.com/binarynonsense/comic-book-reader"
   },
   "build": {
-    "npmRebuild": false,
     "appId": "com.binarynonsense.cbreader",
-    "linux": {
-      "category": "Utility",
-      "icon": "./app/assets/images/icon_256x256.png"
-    },
     "win": {
       "icon": "./app/assets/images/icon_256x256.png"
-    }
+    },
+    "linux": {
+      "category": "Utility",
+      "icon": "./app/assets/images/icon_256x256.png",
+      "target": [
+        {
+          "target": "AppImage"
+        }
+      ],
+      "asarUnpack": [
+        "**/node_modules/sharp/**"
+    ]
+     }
   },
   "scripts": {
     "start": "electron . --dev",
-    "build:linux": "electron-builder --linux --dir",
-    "dist:linux": "electron-builder --linux",
-    "build:windows": "electron-builder --win --dir",
-    "dist:windows": "electron-builder --win"
+    "build:linux": "electron-builder --linux",
+    "build:windows": "electron-builder --win --dir"
   },
   "devDependencies": {
     "electron": "^11.2.3",
