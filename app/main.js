@@ -708,6 +708,7 @@ exports.onMenuCloseFile = function () {
   g_fileData.pageRotation = 0;
 
   updateMenuItemsState();
+  renderTitle();
 
   g_mainWindow.webContents.send("file-closed");
   g_mainWindow.webContents.send("update-menubar");
