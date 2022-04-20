@@ -24,15 +24,20 @@
       ],
       "asarUnpack": [
         "**/node_modules/sharp/**"
-    ]
-     }
+      ]
+    }
   },
   "scripts": {
     "start": "electron . --dev",
+    "dist:linux": "npm run sharp:linux && npm run build:linux",
+    "dist:windows": "npm run sharp:windows && npm run build:windows",
     "build:linux": "electron-builder --linux",
-    "build:windows": "electron-builder --win --dir"
+    "build:windows": "electron-builder --win --dir",
+    "sharp:windows": "del-cli ./node_modules/sharp && npm install --platform=win32 --arch=x64 sharp",
+    "sharp:linux": "del-cli ./node_modules/sharp && npm install --platform=linux --arch=x64 sharp"
   },
   "devDependencies": {
+    "del-cli": "^4.0.1",
     "electron": "^11.2.3",
     "electron-builder": "^22.6.1",
     "license-checker": "^25.0.1"

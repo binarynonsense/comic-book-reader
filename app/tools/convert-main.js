@@ -498,6 +498,11 @@ async function resizeImages(
     if (outputScale < 100 || outputFormat === "pdf") {
       // pdfkit only works with png and jpg image formats
       // same for native image? (used for resizing)
+
+      // avoid EBUSY error on windows
+      // ref: https://stackoverflow.com/questions/41289173/node-js-module-sharp-image-processor-keeps-source-file-open-unable-to-unlink
+      sharp.cache(false);
+
       for (let index = 0; index < imgFilePaths.length; index++) {
         let filePath = imgFilePaths[index];
         // let fileExtension = path.extname(filePath);
