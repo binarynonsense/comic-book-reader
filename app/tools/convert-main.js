@@ -43,6 +43,7 @@ exports.showWindow = function (toolType, parentWindow, filePath, fileType) {
     modal: true,
     webPreferences: {
       nodeIntegration: true,
+      contextIsolation: false,
     },
   });
 
@@ -538,7 +539,7 @@ async function resizeImages(
       }
       g_resizeWindow = new BrowserWindow({
         show: false,
-        webPreferences: { nodeIntegration: true },
+        webPreferences: { nodeIntegration: true, contextIsolation: false },
         parent: g_convertWindow,
       });
       g_resizeWindow.loadFile(`${__dirname}/bg-resize.html`);
