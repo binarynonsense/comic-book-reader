@@ -2,7 +2,7 @@
   "@metadata": {
     "authors": ["vanja-san"],
     "last-updated": "2022-04-31",
-    "acbr-version": "1.2.5",
+    "acbr-version": "1.2.6",
     "comments": "Русский перевод",
     "locale": "ru",
     "name": "Russian",
@@ -50,6 +50,8 @@
   "Hotspots-2-Columns": "2 столбца: Предыдущая страница | Следующая страница",
   "Hotspots-3-Columns": "3 столбца: Предыдущая страница | Ничего | Следующая страница",
   "Languages": "Языки",
+  "Incomplete [Language]": "Незавершённый",
+  "Color Themes": "Цветовые темы",
 
   "File Not Found": "Файл не найден",
   "File Error": "Ошибка файла",
