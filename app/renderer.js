@@ -15,8 +15,8 @@ function cleanUp() {
 }
 
 let g_titlebar = new customTitlebar.Titlebar({
-  backgroundColor: customTitlebar.Color.fromHex("#818181"),
-  itemBackgroundColor: customTitlebar.Color.fromHex("#bbb"),
+  // backgroundColor: customTitlebar.Color.fromHex("#818181"),
+  // itemBackgroundColor: customTitlebar.Color.fromHex("#bbb"),
   icon: "./assets/images/icon_256x256.png",
   titleHorizontalAlignment: "right",
 });
@@ -27,16 +27,10 @@ function moveScrollBarsToStart() {
 }
 
 function moveScrollBarsToEnd() {
-  document.querySelector(
-    ".container-after-titlebar"
-  ).scrollTop = document.querySelector(
-    ".container-after-titlebar"
-  ).scrollHeight;
-  document.querySelector(
-    ".container-after-titlebar"
-  ).scrollLeft = document.querySelector(
-    ".container-after-titlebar"
-  ).scrollWidth;
+  document.querySelector(".container-after-titlebar").scrollTop =
+    document.querySelector(".container-after-titlebar").scrollHeight;
+  document.querySelector(".container-after-titlebar").scrollLeft =
+    document.querySelector(".container-after-titlebar").scrollWidth;
 }
 
 function setScrollBarsPosition(position) {
@@ -73,6 +67,18 @@ ipcRenderer.on("update-menubar", (event) => {
   g_titlebar.updateMenu(Menu.getApplicationMenu());
 });
 
+ipcRenderer.on("update-colors", (event, data) => {
+  for (const [key, value] of Object.entries(data)) {
+    document.documentElement.style.setProperty(key, value);
+  }
+  g_titlebar.updateBackground(
+    customTitlebar.Color.fromHex(data["--titlebar-bg-color"])
+  );
+  g_titlebar.updateItemBGColor(
+    customTitlebar.Color.fromHex(data["--titlebar-focused-bg-color"])
+  );
+});
+
 ipcRenderer.on("update-centered-block-text", (event, text) => {
   document.querySelector("#centered-block-text").innerHTML = text;
 });
@@ -93,24 +99,19 @@ ipcRenderer.on(
     document.querySelector("#toolbar-button-open-href").title = tOpenFile;
     document.querySelector("#toolbar-button-prev-href").title = tPrevious;
     document.querySelector("#toolbar-button-next-href").title = tNext;
-    document.querySelector(
-      "#toolbar-button-fit-to-height-href"
-    ).title = tFitHeight;
-    document.querySelector(
-      "#toolbar-button-fit-to-width-href"
-    ).title = tFitWidth;
+    document.querySelector("#toolbar-button-fit-to-height-href").title =
+      tFitHeight;
+    document.querySelector("#toolbar-button-fit-to-width-href").title =
+      tFitWidth;
     document.querySelector(
       "#toolbar-button-rotate-counterclockwise-href"
     ).title = tRotateCounter;
-    document.querySelector(
-      "#toolbar-button-rotate-clockwise-href"
-    ).title = tRotateClock;
-    document.querySelector(
-      "#toolbar-button-fullscreen-enter-href"
-    ).title = tFullScreen;
-    document.querySelector(
-      "#toolbar-button-fullscreen-exit-href"
-    ).title = tFullScreen;
+    document.querySelector("#toolbar-button-rotate-clockwise-href").title =
+      tRotateClock;
+    document.querySelector("#toolbar-button-fullscreen-enter-href").title =
+      tFullScreen;
+    document.querySelector("#toolbar-button-fullscreen-exit-href").title =
+      tFullScreen;
   }
 );
 

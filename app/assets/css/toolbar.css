@@ -1,6 +1,6 @@
 #toolbar-page-numbers {
   padding: 0 10px;
-  color: rgb(219, 219, 219);
+  color: var(--toolbar-text-color);
   display: block;
   font-size: 17px;
   white-space: nowrap;
@@ -9,7 +9,7 @@
 #toolbar {
   width: 100%;
   height: 30px;
-  background-color: #818181;
+  background-color: var(--toolbar-bg-color);
   padding-left: 0px;
   padding-right: 0px;
   display: flex;
@@ -24,21 +24,15 @@
 
 .toolbar-item {
   height: 100%;
-  border-left: 1px solid #3b3b3b;
 }
 
 .toolbar-item-separator {
   height: 100%;
-  border-left: 3px solid #6b6b6b;
-}
-.toolbar-item-separator-full {
-  height: 100%;
-  border-left: 3px solid #6b6b6b;
-  border-right: 1px solid #3b3b3b;
+  border-left: 1px solid var(--toolbar-item-separator-color);
 }
 
 .toolbar-item a {
-  color: #3b3b3b;
+  color: var(--toolbar-item-color);
   text-decoration: none;
   font-size: 18px;
   /* background-color: #666; */
@@ -51,13 +45,13 @@
 }
 
 .toolbar-item a:hover {
-  background-color: #ddd;
-  color: black;
+  background-color: var(--toolbar-item-hover-bg-color);
+  color: var(--toolbar-item-hover-color);
 }
 
-.toolbar-item a.active {
+/* .toolbar-item a.active {
   color: white;
-}
+} */
 
 /* ////////////  SLIDER  /////////////////// */
 
@@ -69,19 +63,19 @@
 #page-slider {
   -webkit-appearance: none; /* Override default CSS styles */
   appearance: none;
-  width: 100%; /* Full-width */
-  height: 10px; /* Specified height */
-  background: #4d4d4d; /* Grey background */
-  outline: none; /* Remove outline */
-  opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
-  -webkit-transition: 0.2s; /* 0.2 seconds transition on hover */
+  width: 100%;
+  height: 10px;
+  background: var(--toolbar-page-slider-right-bg-color);
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: 0.2s;
   transition: opacity 0.2s;
   border-radius: 3px;
   overflow: hidden;
 }
 
 #page-slider:hover {
-  opacity: 1; /* Fully shown on mouse-over */
+  opacity: 1;
 }
 
 /* #page-slider::-webkit-slider-runnable-track {
@@ -89,12 +83,10 @@
 } */
 
 #page-slider::-webkit-slider-thumb {
-  -webkit-appearance: none; /* Override default look */
-  width: 25px; /* Set a specific slider handle width */
-  height: 25px; /* Slider handle height */
-  background: #fff; /* Green background */
-  /*cursor: pointer; /* Cursor on hover */
+  -webkit-appearance: none;
+  width: 25px;
+  height: 25px;
+  background: var(--toolbar-page-slider-thumb-color);
   border-radius: 10px;
-  box-shadow: -100vw 0 0 100vw #daa41d;
-  /* border: 2px solid #999; */
+  box-shadow: -100vw 0 0 100vw var(--toolbar-page-slider-left-bg-color);
 }

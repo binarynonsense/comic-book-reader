@@ -1,3 +1,27 @@
+:root {
+  --bg-color: #1e1e1e;
+
+  --titlebar-text-color: #dbdbdb;
+  --titlebar-bg-color: #818181;
+  --titlebar-focused-bg-color: #a5a5a5;
+
+  --toolbar-text-color: #dbdbdb;
+  --toolbar-bg-color: #818181;
+  --toolbar-item-separator-color: #3b3b3b;
+  --toolbar-item-thick-separator-color: #6b6b6b;
+  --toolbar-item-color: #3b3b3b;
+  --toolbar-item-hover-bg-color: #ddd;
+  --toolbar-item-hover-color: #000;
+  --toolbar-page-slider-right-bg-color: #4d4d4d;
+  --toolbar-page-slider-left-bg-color: #daa41d;
+  --toolbar-page-slider-thumb-color: #fff;
+
+  --scrollbar-bg-color: #1e1e1e;
+  --scrollbar-color: #666666;
+  --scrollbar-hover-color: #555;
+}
+
+
 html {
   box-sizing: border-box;
 }
@@ -13,9 +37,8 @@ html {
 body {
   margin: 0;
   padding: 0;
-  background-color: #1e1e1e;
+  background-color: var(--bg-color);
   font-family: Arial, Helvetica, sans-serif;
-  color: #666;
 }
 
 img {
@@ -132,11 +155,23 @@ img {
 /* //////////////  ////////////// */
 
 .titlebar {
-  color: rgb(219, 219, 219) !important;
+  /* background-color: var(--toolbar-bg-color) !important; */
+  color: var(--toolbar-text-color) !important;
   font-weight: bold !important;
-  /* border-bottom: 1px solid rgb(63, 63, 63); */
   z-index: 20;
 }
+
+/* .menubar-menu-container,
+.action-menu-item
+{
+  background-color: var(--toolbar-bg-color) !important;
+} */
+
+/* .action-menu-item.focused
+{
+  background-color: white !important;
+} */
+
 
 /* .titlebar > * {
   color: #999 !important;
@@ -146,7 +181,7 @@ img {
 .menubar-menu-button,
 .action-item,
 .action-menu-item {
-  color: rgb(219, 219, 219); /*#3b3b3b !important;*/
+  color: var(--toolbar-text-color) !important;
 }
 
 .hidden-scrollbar {
@@ -190,16 +225,16 @@ img {
 
 /* Track */
 ::-webkit-scrollbar-track {
-  background: #1e1e1e;
+  background: var(--scrollbar-bg-color);
   border-left: 1px #eee;
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: rgb(102, 102, 102);
+  background: var(--scrollbar-color);
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: var(--scrollbar-hover-color);
 }

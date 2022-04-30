@@ -1,7 +1,8 @@
 {
   "@metadata": {
     "authors": ["Álvaro"],
-    "last-updated": "2022-04-20",
+    "last-updated": "2022-04-30",
+    "acbr-version": "1.2.6",
     "comments": "",
     "locale": "es",
     "name": "Spanish",
@@ -48,6 +49,8 @@
   "Hotspots-Disabled": "Desactivada",
   "Hotspots-2-Columns": "2 Columnas: Página Anterior | Página Siguiente",
   "Hotspots-3-Columns": "3 Columnas: Página Anterior | Nada | Página Siguiente",
+  "Languages": "Idiomas",
+  "Color Themes": "Temas de Colores",
 
   "File Not Found": "Archivo No Encontrado",
   "File Error": "Error de Fichero",
@@ -59,7 +62,6 @@
   "Image file saved to:": "Archivo de imagen salvado en:",
   "Error: Couldn't export the page": "Error: No se pudo exportar la página",
   "Page Number": "Número de Página",
-  "Languages": "Idiomas",
   "version": "versión",
 
   "To open a file use the menu or press <i>Ctrl+O</i>": "Para abrir un archivo, use el menú o presione <i>Ctrl+O</i>",

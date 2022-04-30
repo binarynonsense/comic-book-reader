@@ -10,6 +10,7 @@ const i18n = require("./i18n");
 const menuBar = require("./menu-bar");
 const contextMenu = require("./menu-context");
 const convertTool = require("./tools/convert-main");
+const themes = require("./themes");
 
 function isDev() {
   return process.argv[2] == "--dev";
@@ -45,6 +46,7 @@ let g_settings = {
   showClock: false,
   locale: undefined,
   loadLastOpened: true,
+  theme: undefined,
 };
 
 function sanitizeSettings() {
@@ -104,6 +106,20 @@ function sanitizeSettings() {
   }
   if (typeof g_settings.loadLastOpened !== "boolean") {
     g_settings.loadLastOpened = true;
+  }
+  if (typeof g_settings.locale === "string") {
+    g_settings.locale = g_settings.locale
+      .replace(/[^a-z0-9_\-]/gi, "_")
+      .toLowerCase();
+  } else {
+    g_settings.locale = undefined;
+  }
+  if (typeof g_settings.theme === "string") {
+    g_settings.theme = g_settings.theme
+      .replace(/[^a-z0-9_\-]/gi, "_")
+      .toLowerCase();
+  } else {
+    g_settings.theme = undefined;
   }
 }
 
@@ -189,6 +205,9 @@ app.on("ready", () => {
 
     rebuildTranslatedTexts(); // this also creates the menu bar
 
+    g_settings.theme = themes.loadTheme(g_settings.theme);
+    g_mainWindow.webContents.send("update-colors", themes.getLoadedThemeData());
+
     // if I put the things below inside ready-to-show they aren't called
     renderTitle();
 
@@ -216,6 +235,7 @@ app.on("ready", () => {
       let filePath = process.argv[1];
       if (
         fs.existsSync(filePath) &&
+        !fs.lstatSync(filePath).isDirectory() &&
         fileFormats.hasCompatibleExtension(filePath)
       ) {
         openFile(filePath, 0);
@@ -227,6 +247,7 @@ app.on("ready", () => {
       let entry = g_history[g_history.length - 1];
       if (
         fs.existsSync(entry.filePath) &&
+        !fs.lstatSync(entry.filePath).isDirectory() &&
         fileFormats.hasCompatibleExtension(entry.filePath)
       ) {
         openFile(entry.filePath, entry.pageIndex);
@@ -567,7 +588,13 @@ ipcMain.on("toolbar-slider-changed", (event, value) => {
 ///////////////////////////////////////////////////////////////////////////////
 
 ipcMain.on("open-file", (event, filePath) => {
-  openFile(filePath); // it checks if valid path
+  if (
+    fs.existsSync(filePath) &&
+    !fs.lstatSync(filePath).isDirectory() &&
+    fileFormats.hasCompatibleExtension(filePath)
+  ) {
+    openFile(filePath); // it checks if valid path
+  }
 });
 
 ipcMain.on("go-to-page", (event, value) => {
@@ -601,6 +628,13 @@ exports.onMenuChangeLanguage = function (locale) {
     rebuildTranslatedTexts();
     g_mainWindow.webContents.send("update-menubar");
   }
+};
+
+exports.onMenuChangeTheme = function (theme) {
+  g_settings.theme = themes.loadTheme(theme);
+  g_mainWindow.webContents.send("update-colors", themes.getLoadedThemeData());
+  rebuildMenuBar();
+  g_mainWindow.webContents.send("update-menubar");
 };
 
 exports.onMenuNextPage = function () {
@@ -954,6 +988,8 @@ function rebuildMenuBar() {
   menuBar.buildApplicationMenu(
     i18n.getLoadedLocale(),
     i18n.getAvailableLocales(),
+    themes.getLoadedTheme(),
+    themes.getAvailableThemes(),
     g_settings,
     g_history
   );

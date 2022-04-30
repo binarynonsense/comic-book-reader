@@ -2,10 +2,11 @@
   "@metadata": {
     "authors": ["vanja-san"],
     "last-updated": "2022-04-31",
+    "acbr-version": "1.2.5",
     "comments": "Русский перевод",
     "locale": "ru",
     "name": "Russian",
-    "native-name": "Русский"
+    "native-name": "Русский"    
   },
 
   "Next Page": "Следующая страница",
@@ -48,6 +49,7 @@
   "Hotspots-Disabled": "Отключено",
   "Hotspots-2-Columns": "2 столбца: Предыдущая страница | Следующая страница",
   "Hotspots-3-Columns": "3 столбца: Предыдущая страница | Ничего | Следующая страница",
+  "Languages": "Языки",
 
   "File Not Found": "Файл не найден",
   "File Error": "Ошибка файла",
@@ -59,7 +61,6 @@
   "Image file saved to:": "Файл изображения сохранён в:",
   "Error: Couldn't export the page": "Ошибка: Не удалось экспортировать страницу",
   "Page Number": "Номер страницы",
-  "Languages": "Языки",
   "version": "версия",
 
   "To open a file use the menu or press <i>Ctrl+O</i>": "Чтобы открыть файл, воспользуйтесь меню или нажмите <i>Ctrl+O</i>",

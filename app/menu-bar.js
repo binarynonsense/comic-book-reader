@@ -95,7 +95,14 @@ function buildEmptyMenu() {
 }
 exports.buildEmptyMenu = buildEmptyMenu;
 
-function buildApplicationMenu(activeLocale, languages, settings, history) {
+function buildApplicationMenu(
+  activeLocale,
+  languages,
+  activeTheme,
+  themes,
+  settings,
+  history
+) {
   // ref: https://stackoverflow.com/questions/54105224/electron-modify-a-single-menu-item
   // Menu.getApplicationMenu().items // all the items
   // Menu.getApplicationMenu().getMenuItemById('MENU_ITEM_ID') // get a single item by its id
@@ -120,6 +127,30 @@ function buildApplicationMenu(activeLocale, languages, settings, history) {
         checked: true,
         click() {
           mainProcess.onMenuChangeLanguage("en");
+        },
+      },
+    ];
+  }
+
+  let themesSubmenu = [];
+
+  if (themes !== undefined) {
+    for (let theme of themes) {
+      themesSubmenu.push({
+        label: theme.name,
+        checked: theme.filename === activeTheme,
+        click() {
+          mainProcess.onMenuChangeTheme(theme.filename);
+        },
+      });
+    }
+  } else {
+    themesSubmenu = [
+      {
+        label: "ACBR Gray",
+        checked: true,
+        click() {
+          mainProcess.onMenuChangeTheme("acbr-gray");
         },
       },
     ];
@@ -194,6 +225,10 @@ function buildApplicationMenu(activeLocale, languages, settings, history) {
             {
               label: _("Languages"),
               submenu: languagesSubmenu,
+            },
+            {
+              label: _("Color Themes"),
+              submenu: themesSubmenu,
             },
             {
               label: _("Hotspots-Config"),

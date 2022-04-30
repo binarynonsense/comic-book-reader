@@ -1,0 +1,29 @@
+{
+    "@metadata": {
+      "authors": ["Álvaro"],
+      "last-updated": "2022-04-30",
+      "acbr-version": "1.2.6",
+      "comments": "the original gray theme",
+      "name": "ACBR Original Gray"
+    },
+  
+    "--bg-color": "#1e1e1e",
+
+    "--titlebar-text-color": "#dbdbdb",
+    "--titlebar-bg-color": "#818181",
+    "--titlebar-focused-bg-color": "#a5a5a5",
+  
+    "--toolbar-text-color": "#dbdbdb",
+    "--toolbar-bg-color": "#818181",
+    "--toolbar-item-separator-color": "#3b3b3b",
+    "--toolbar-item-color": "#3b3b3b",
+    "--toolbar-item-hover-bg-color": "#ddd",
+    "--toolbar-item-hover-color": "#000",
+    "--toolbar-page-slider-right-bg-color": "#4d4d4d",
+    "--toolbar-page-slider-left-bg-color": "#daa41d",
+    "--toolbar-page-slider-thumb-color": "#fff",
+  
+    "--scrollbar-bg-color": "#1e1e1e",
+    "--scrollbar-color": "#666666",
+    "--scrollbar-hover-color": "#555"
+}
