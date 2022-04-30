@@ -665,7 +665,17 @@ exports.onMenuOpenFile = onMenuOpenFile = function (filePath) {
     } else if (g_history.length > 0) {
       defaultPath = g_history[g_history.length - 1].filePath;
     }
-    let fileList = fileUtils.chooseOpenFiles(g_mainWindow, defaultPath, false);
+
+    let allowMultipleSelection = false;
+    let allowedFileTypesName = "Comic Book Files";
+    let allowedFileTypesList = ["cbz", "cbr", "pdf", "epub"];
+    let fileList = fileUtils.chooseOpenFiles(
+      g_mainWindow,
+      defaultPath,
+      allowedFileTypesName,
+      allowedFileTypesList,
+      allowMultipleSelection
+    );
     if (fileList === undefined) {
       return;
     }
