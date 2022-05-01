@@ -4,7 +4,7 @@ const fs = require("fs");
 let g_loadedTheme;
 let g_themeData;
 
-let g_defaultTheme = "acbr-gray";
+let g_defaultTheme = "acbr-dark";
 
 exports.getLoadedTheme = function () {
   return g_loadedTheme;
