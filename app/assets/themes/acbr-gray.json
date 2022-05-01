@@ -8,6 +8,7 @@
     },
   
     "--bg-color": "#1e1e1e",
+    "--text-color": "#666",
 
     "--titlebar-text-color": "#dbdbdb",
     "--titlebar-bg-color": "#818181",
