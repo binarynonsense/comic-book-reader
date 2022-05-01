@@ -213,10 +213,11 @@ app.on("ready", () => {
       g_settings.locale = i18n.loadLocale(g_settings.locale);
     }
 
-    rebuildTranslatedTexts(); // this also creates the menu bar
+    rebuildTranslatedTexts(false); // false to not create the menu bar yet
 
     g_settings.theme = themes.loadTheme(g_settings.theme);
     g_mainWindow.webContents.send("update-colors", themes.getLoadedThemeData());
+    rebuildMenuBar();
 
     // if I put the things below inside ready-to-show they aren't called
     renderTitle();
@@ -348,8 +349,8 @@ function initClock() {
 // I18N ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-function rebuildTranslatedTexts() {
-  rebuildMenuBar();
+function rebuildTranslatedTexts(rebuildMenu = true) {
+  if (rebuildMenu) rebuildMenuBar();
 
   g_mainWindow.webContents.send(
     "update-toolbar-tooltips",
