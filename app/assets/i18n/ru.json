@@ -52,6 +52,10 @@
   "Languages": "Языки",
   "Incomplete [Language]": "Незавершённый",
   "Color Themes": "Цветовые темы",
+  "AutoOpen-Config": "Автооткрытие",
+  "AutoOpen-Disabled": "Отключено",
+  "AutoOpen-Next": "Следующий файл",
+  "AutoOpen-NextAndPrev": "Следующий и предыдущий файлы",
 
   "File Not Found": "Файл не найден",
   "File Error": "Ошибка файла",
