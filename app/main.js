@@ -344,7 +344,7 @@ function initClock() {
   }
   let time = h + ":" + m; // + ":" + s;
   g_mainWindow.webContents.send("update-clock", time);
-  let g_clockTimeout = setTimeout(initClock, 500);
+  g_clockTimeout = setTimeout(initClock, 500);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
