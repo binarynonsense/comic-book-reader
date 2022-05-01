@@ -24,7 +24,7 @@
     "--toolbar-page-slider-left-bg-color": "#daa41d",
     "--toolbar-page-slider-thumb-color": "#525252",
   
-    "--scrollbar-bg-color": "#fafafa",
-    "--scrollbar-color": "#525252",
-    "--scrollbar-hover-color": "#727272"
+    "--scrollbar-bg-color": "#1e1e1e",
+    "--scrollbar-color": "#ccc",
+    "--scrollbar-hover-color": "#fafafa"
 }
