@@ -52,6 +52,10 @@
   "Languages": "Languages",
   "Incomplete [Language]": "Incomplete",
   "Color Themes": "Color Themes",
+  "AutoOpen-Config": "Auto Open",
+  "AutoOpen-Disabled": "Disabled",
+  "AutoOpen-Next": "Next File",
+  "AutoOpen-NextAndPrev": "Next and Previous Files",
 
   "File Not Found": "File Not Found",
   "File Error": "File Error",

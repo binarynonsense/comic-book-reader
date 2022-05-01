@@ -33,7 +33,7 @@ let g_settings = {
   date: "",
   fit_mode: 0, // 0: width, 1: height
   page_mode: 0, // 0: single-page, 1: double-page
-  hotspots_mode: 1, // 0 : disabled, 1: 2-columns, 2: 3-columns
+  hotspots_mode: 1, // 0: disabled, 1: 2-columns, 2: 3-columns
   maximize: false,
   width: 800,
   height: 600,
@@ -44,8 +44,11 @@ let g_settings = {
   showScrollBar: true,
   showPageNumber: true,
   showClock: false,
-  locale: undefined,
+
   loadLastOpened: true,
+  autoOpen: 0, // 0: disabled, 1: next file, 2: next and previous files
+
+  locale: undefined,
   theme: undefined,
 };
 
@@ -106,6 +109,13 @@ function sanitizeSettings() {
   }
   if (typeof g_settings.loadLastOpened !== "boolean") {
     g_settings.loadLastOpened = true;
+  }
+  if (
+    !Number.isInteger(g_settings.autoOpen) ||
+    g_settings.autoOpen < 0 ||
+    g_settings.autoOpen > 2
+  ) {
+    g_settings.autoOpen = 0;
   }
   if (typeof g_settings.locale === "string") {
     g_settings.locale = g_settings.locale
@@ -637,6 +647,16 @@ exports.onMenuChangeTheme = function (theme) {
   g_mainWindow.webContents.send("update-menubar");
 };
 
+exports.onMenuChangeAutoOpen = function (mode) {
+  if (mode === g_settings.autoOpen || mode < 0 || mode > 2)
+    g_mainWindow.webContents.send("update-menubar");
+  else {
+    g_settings.autoOpen = mode;
+    menuBar.setAutoOpen(mode);
+    g_mainWindow.webContents.send("update-menubar");
+  }
+};
+
 exports.onMenuNextPage = function () {
   goToNextPage();
 };
@@ -942,6 +962,46 @@ function openFile(filePath, pageIndex = 0) {
 }
 exports.openFile = openFile;
 
+function tryOpeningAdjacentFile(next) {
+  // next true -> try next, next false -> try prev
+  const fileName = path.basename(g_fileData.path);
+  const folderPath = path.dirname(g_fileData.path);
+  let allFiles = fs.readdirSync(folderPath);
+  let comicFiles = [];
+  allFiles.forEach((file) => {
+    if (fileFormats.hasCompatibleExtension(file)) {
+      comicFiles.push(file);
+    }
+  });
+  // comicFiles.sort(function (a, b) {
+  //   return naturalCompare(a.toLowerCase(), b.toLowerCase());
+  // });
+  comicFiles.sort(function (a, b) {
+    return a.localeCompare(b, undefined, {
+      numeric: true,
+      sensitivity: "base",
+    });
+  });
+  for (let index = 0; index < comicFiles.length; index++) {
+    if (comicFiles[index] === fileName) {
+      if (next) {
+        if (index < comicFiles.length - 1) {
+          let nextFileName = path.join(folderPath, comicFiles[index + 1]);
+          openFile(nextFileName);
+          return;
+        }
+      } else {
+        if (index > 0) {
+          let prevFileName = path.join(folderPath, comicFiles[index - 1]);
+          openFile(prevFileName);
+          return;
+        }
+      }
+      break;
+    }
+  }
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // RENDER /////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -1090,12 +1150,16 @@ function goToPage(pageIndex, scrollBarPos = 0) {
 function goToNextPage() {
   if (g_fileData.pageIndex + 1 < g_fileData.numPages) {
     goToPage(g_fileData.pageIndex + 1);
+  } else if (g_settings.autoOpen === 1 || g_settings.autoOpen === 2) {
+    tryOpeningAdjacentFile(true);
   }
 }
 
 function goToPreviousPage() {
   if (g_fileData.pageIndex - 1 >= 0) {
     goToPage(g_fileData.pageIndex - 1, 1);
+  } else if (g_settings.autoOpen === 2) {
+    tryOpeningAdjacentFile(false);
   }
 }
 

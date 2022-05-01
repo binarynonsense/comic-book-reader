@@ -48,6 +48,12 @@ exports.setHotspotsMode = function (mode) {
   Menu.getApplicationMenu().getMenuItemById("hotspots-2").checked = mode === 2;
 };
 
+exports.setAutoOpen = function (mode) {
+  Menu.getApplicationMenu().getMenuItemById("auto-open-0").checked = mode === 0;
+  Menu.getApplicationMenu().getMenuItemById("auto-open-1").checked = mode === 1;
+  Menu.getApplicationMenu().getMenuItemById("auto-open-2").checked = mode === 2;
+};
+
 exports.setConvertFile = function (isEnabled) {
   Menu.getApplicationMenu().getMenuItemById("convert-file").enabled = isEnabled;
 };
@@ -255,6 +261,35 @@ function buildApplicationMenu(
                   label: _("Hotspots-3-Columns"),
                   click() {
                     mainProcess.onMenuChangeHotspotsMode(2);
+                  },
+                },
+              ],
+            },
+            {
+              label: _("AutoOpen-Config"),
+              submenu: [
+                {
+                  id: "auto-open-0",
+                  checked: settings.autoOpen === 0,
+                  label: _("AutoOpen-Disabled"),
+                  click() {
+                    mainProcess.onMenuChangeAutoOpen(0);
+                  },
+                },
+                {
+                  id: "auto-open-1",
+                  checked: settings.autoOpen === 1,
+                  label: _("AutoOpen-Next"),
+                  click() {
+                    mainProcess.onMenuChangeAutoOpen(1);
+                  },
+                },
+                {
+                  id: "auto-open-2",
+                  checked: settings.autoOpen === 2,
+                  label: _("AutoOpen-NextAndPrev"),
+                  click() {
+                    mainProcess.onMenuChangeAutoOpen(2);
                   },
                 },
               ],
