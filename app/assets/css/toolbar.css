@@ -55,6 +55,10 @@
 
 /* ////////////  SLIDER  /////////////////// */
 
+#toolbar-page-numbers{
+  user-select: none;
+}
+
 #toolbar-page-slider {
   flex-grow: 1;
   padding: 0px 10px;
