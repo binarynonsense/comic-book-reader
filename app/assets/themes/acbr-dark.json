@@ -10,19 +10,19 @@
     "--bg-color": "#1e1e1e",
     "--text-color": "#666",
 
-    "--titlebar-text-color": "#d8d8d8",
+    "--titlebar-text-color": "#cccccc",
     "--titlebar-bg-color": "#525252",
     "--titlebar-focused-bg-color": "#525252",
   
     "--toolbar-text-color": "#909090",
     "--toolbar-bg-color": "#525252",
     "--toolbar-item-separator-color": "#525252",
-    "--toolbar-item-color": "#d8d8d8",
+    "--toolbar-item-color": "#cccccc",
     "--toolbar-item-hover-bg-color": "#676767",
-    "--toolbar-item-hover-color": "#d8d8d8",
+    "--toolbar-item-hover-color": "#cccccc",
     "--toolbar-page-slider-right-bg-color": "#7b7b7b",
     "--toolbar-page-slider-left-bg-color": "#daa41d",
-    "--toolbar-page-slider-thumb-color": "#d8d8d8",
+    "--toolbar-page-slider-thumb-color": "#cccccc",
   
     "--scrollbar-bg-color": "#1e1e1e",
     "--scrollbar-color": "#666666",
