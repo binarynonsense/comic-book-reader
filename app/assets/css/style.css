@@ -158,7 +158,7 @@ img {
 
 .titlebar {
   /* background-color: var(--toolbar-bg-color) !important; */
-  color: var(--toolbar-text-color) !important;
+  color: var(--titlebar-text-color) !important;
   font-weight: bold !important;
   z-index: 20;
 }
@@ -183,7 +183,7 @@ img {
 .menubar-menu-button,
 .action-item,
 .action-menu-item {
-  color: var(--toolbar-text-color) !important;
+  color: var(--titlebar-text-color) !important;
 }
 
 .hidden-scrollbar {
