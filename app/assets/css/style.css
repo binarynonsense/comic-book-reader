@@ -3,6 +3,7 @@
   --text-color: #666;
 
   --titlebar-text-color: #dbdbdb;
+  --titlebar-title-text-color: #dbdbdb;
   --titlebar-bg-color: #818181;
   --titlebar-focused-bg-color: #a5a5a5;
 
@@ -184,6 +185,10 @@ img {
 .action-item,
 .action-menu-item {
   color: var(--titlebar-text-color) !important;
+}
+
+.window-title {
+  color: var(--titlebar-title-text-color) !important;
 }
 
 .hidden-scrollbar {
