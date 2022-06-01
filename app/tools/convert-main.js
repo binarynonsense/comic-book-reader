@@ -61,13 +61,17 @@ exports.showWindow = function (toolType, parentWindow, filePath, fileType) {
   });
 
   g_convertWindow.webContents.on("did-finish-load", function () {
+    let toolHeaderText = "";
+
     if (g_toolType === ToolType.CREATE_FILE) {
+      toolHeaderText = _("Create File Tool");
       g_convertWindow.webContents.send(
         "set-tool-type",
         g_toolType,
         app.getPath("desktop")
       );
     } else if (g_toolType === ToolType.CONVERT_FILES) {
+      toolHeaderText = _("Convert Files Tool");
       g_convertWindow.webContents.send(
         "set-tool-type",
         g_toolType,
@@ -75,13 +79,17 @@ exports.showWindow = function (toolType, parentWindow, filePath, fileType) {
       );
       if (filePath !== undefined && fileType !== undefined)
         g_convertWindow.webContents.send("add-file", filePath, fileType);
+    } else if (g_toolType === ToolType.CONVERT_IMGS) {
+      toolHeaderText = _("Convert Images Tool");
+      g_convertWindow.webContents.send(
+        "set-tool-type",
+        g_toolType,
+        app.getPath("desktop")
+      );
     }
-
     g_convertWindow.webContents.send(
       "update-localization",
-      g_toolType === ToolType.CREATE_FILE
-        ? _("Create File Tool")
-        : _("Convert Files Tool"),
+      toolHeaderText,
       getLocalization(),
       getTooltipsLocalization()
     );
@@ -99,7 +107,7 @@ exports.showWindow = function (toolType, parentWindow, filePath, fileType) {
 
 ipcMain.on("convert-choose-file", (event) => {
   try {
-    let allowMultipleSelection = false;
+    let allowMultipleSelection = true;
     let allowedFileTypesName = "Comic Book Files";
     let allowedFileTypesList = [
       FileExtension.CBZ,
@@ -107,9 +115,17 @@ ipcMain.on("convert-choose-file", (event) => {
       FileExtension.PDF,
       FileExtension.EPUB,
     ];
-    if (g_toolType === ToolType.CONVERT_FILES) allowMultipleSelection = true;
-    if (g_toolType === ToolType.CREATE_FILE) {
-      allowMultipleSelection = true;
+    if (g_toolType === ToolType.CONVERT_FILES) {
+    } else if (g_toolType === ToolType.CREATE_FILE) {
+      allowedFileTypesName = "Image Files";
+      allowedFileTypesList = [
+        FileExtension.JPG,
+        FileExtension.JPEG,
+        FileExtension.PNG,
+        FileExtension.WEBP,
+        FileExtension.BMP,
+      ];
+    } else if (g_toolType === ToolType.CONVERT_IMGS) {
       allowedFileTypesName = "Image Files";
       allowedFileTypesList = [
         FileExtension.JPG,
@@ -142,6 +158,8 @@ ipcMain.on("convert-choose-file", (event) => {
           fileExtension = "." + _fileType.ext;
         }
         if (g_toolType === ToolType.CREATE_FILE) {
+          fileType = FileDataType.IMG;
+        } else if (g_toolType === ToolType.CONVERT_IMGS) {
           fileType = FileDataType.IMG;
         } else {
           if (fileExtension === "." + FileExtension.PDF) {
@@ -212,6 +230,13 @@ ipcMain.on(
 ipcMain.on("convert-start-creation", (event, inputFiles) => {
   creationStart(inputFiles);
 });
+
+ipcMain.on(
+  "convert-imgs-start",
+  (event, inputFiles, outputFormat, outputFolderPath) => {
+    convertImages(inputFiles, outputFormat, outputFolderPath);
+  }
+);
 
 ipcMain.on("convert-stop-error", (event, err) => {
   conversionStopError(err);
@@ -473,20 +498,20 @@ async function resizeImages(
     return;
   }
   try {
-    let filename = path.basename(inputFilePath, path.extname(inputFilePath));
+    let fileName = path.basename(inputFilePath, path.extname(inputFilePath));
     if (g_toolType === ToolType.CREATE_FILE) {
-      filename = inputFilePath;
+      fileName = inputFilePath;
     }
     let outputFilePath = path.join(
       outputFolderPath,
-      filename + "." + outputFormat
+      fileName + "." + outputFormat
     );
     let i = 1;
     while (fs.existsSync(outputFilePath)) {
       i++;
       outputFilePath = path.join(
         outputFolderPath,
-        filename + "(" + i + ")." + outputFormat
+        fileName + "(" + i + ")." + outputFormat
       );
     }
 
@@ -625,6 +650,98 @@ async function createFileFromImages(
         fileUtils.getTempFolderPath(),
       ]);
     }
+  } catch (err) {
+    conversionStopError(err);
+  }
+}
+
+async function convertImages(imgFiles, outputFormat, outputFolderPath) {
+  if (g_cancelConversion === true) {
+    conversionStopCancel();
+    return;
+  }
+  try {
+    // compress to output folder
+    g_convertWindow.webContents.send(
+      "convert-update-text-log",
+      _("Converting...")
+    );
+    let numErrors = 0;
+    let numFiles = imgFiles.length;
+    // avoid EBUSY error on windows
+    // ref: https://stackoverflow.com/questions/41289173/node-js-module-sharp-image-processor-keeps-source-file-open-unable-to-unlink
+    sharp.cache(false);
+
+    for (let index = 0; index < imgFiles.length; index++) {
+      let filePath = imgFiles[index].path;
+      g_convertWindow.webContents.send("convert-update-text-log", filePath);
+      let fileName = path.basename(filePath, path.extname(filePath));
+      let outputFilePath = path.join(
+        outputFolderPath,
+        fileName + "." + outputFormat
+      );
+      while (fs.existsSync(outputFilePath)) {
+        i++;
+        outputFilePath = path.join(
+          outputFolderPath,
+          fileName + "(" + i + ")." + outputFormat
+        );
+      }
+      g_convertWindow.webContents.send(
+        "convert-update-text-log",
+        "-> " + outputFilePath
+      );
+
+      try {
+        if (outputFormat === FileExtension.JPG) {
+          await sharp(filePath).jpeg().toFile(outputFilePath);
+        } else if (outputFormat === FileExtension.PNG) {
+          await sharp(filePath).png().toFile(outputFilePath);
+        } else if (outputFormat === FileExtension.WEBP) {
+          await sharp(filePath).webp().toFile(outputFilePath);
+        }
+      } catch (err) {
+        g_convertWindow.webContents.send("convert-update-text-log", err);
+        numErrors++;
+      }
+    }
+
+    g_convertWindow.webContents.send(
+      "convert-update-text-title",
+      _("Conversion Finished")
+    );
+
+    if (numErrors > 0) {
+      if (numFiles > 1) {
+        g_convertWindow.webContents.send(
+          "convert-update-text-info",
+          _(
+            "Error: {0} of {1} file/s couldn't be converted",
+            numErrors,
+            numFiles
+          )
+        );
+      } else {
+        g_convertWindow.webContents.send(
+          "convert-update-text-info",
+          _("Error: the file couldn't be converted")
+        );
+      }
+    } else {
+      if (numFiles > 1) {
+        g_convertWindow.webContents.send(
+          "convert-update-text-info",
+          _("{0} file/s correctly converted", numFiles)
+        );
+      } else {
+        g_convertWindow.webContents.send(
+          "convert-update-text-info",
+          _("File correctly converted")
+        );
+      }
+    }
+    g_convertWindow.show();
+    g_convertWindow.webContents.send("convert-show-result");
   } catch (err) {
     conversionStopError(err);
   }

@@ -14,7 +14,7 @@ let g_inputFilePath;
 let g_inputFileType;
 let g_outputScale = "100";
 let g_outputQuality = "80";
-let g_outputFormat = FileExtension.CBZ;
+let g_outputFormat;
 let g_outputFolderPath;
 
 let g_textInputFileDiv = document.querySelector("#text-input-file");
@@ -27,6 +27,7 @@ let g_convertButton = document.querySelector("#button-convert");
 let g_outputSizeDiv = document.querySelector("#output-size");
 let g_outputNameDiv = document.querySelector("#output-name");
 let g_outputNameInput = document.querySelector("#input-output-name");
+let g_outputFormatSelect = document.querySelector("#output-format-select");
 let g_scaleSlider = document.querySelector("#scale-slider");
 let g_qualitySlider = document.querySelector("#quality-slider");
 let g_modalInfoArea = document.querySelector("#modal-info");
@@ -57,37 +58,7 @@ function checkValidData() {
     g_qualitySlider.parentElement.classList.remove("hide");
   }
 
-  if (g_toolType === ToolType.CONVERT_FILE) {
-    g_outputNameDiv.classList.add("hide");
-    if (g_outputFolderPath !== undefined && g_inputFiles.length > 0) {
-      if (g_inputFiles[0].type === FileDataType.ZIP) {
-        if (
-          !(g_outputFormat === FileExtension.CBZ && g_outputScale === "100")
-        ) {
-          g_convertButton.classList.remove("disabled");
-          return;
-        }
-      } else if (g_inputFiles[0].type === FileDataType.PDF) {
-        if (
-          !(g_outputFormat === FileExtension.PDF && g_outputScale === "100")
-        ) {
-          g_convertButton.classList.remove("disabled");
-          return;
-        }
-      } else if (g_inputFiles[0].type === FileDataType.EPUB) {
-        if (
-          !(g_outputFormat === FileExtension.EPUB && g_outputScale === "100")
-        ) {
-          g_convertButton.classList.remove("disabled");
-          return;
-        }
-      } else if (g_inputFiles[0].type === FileDataType.RAR) {
-        g_convertButton.classList.remove("disabled");
-        return;
-      }
-    }
-    g_convertButton.classList.add("disabled");
-  } else if (g_toolType === ToolType.CONVERT_FILES) {
+  if (g_toolType === ToolType.CONVERT_FILES) {
     g_outputNameDiv.classList.add("hide");
     if (g_outputFolderPath !== undefined && g_inputFiles.length > 0) {
       g_convertButton.classList.remove("disabled");
@@ -102,6 +73,14 @@ function checkValidData() {
       g_inputFiles.length > 0 &&
       g_outputNameInput.value !== ""
     ) {
+      g_convertButton.classList.remove("disabled");
+    } else {
+      g_convertButton.classList.add("disabled");
+    }
+  } else if (g_toolType === ToolType.CONVERT_IMGS) {
+    g_outputSizeDiv.classList.add("hide");
+    g_outputNameDiv.classList.add("hide");
+    if (g_outputFolderPath !== undefined && g_inputFiles.length > 0) {
       g_convertButton.classList.remove("disabled");
     } else {
       g_convertButton.classList.add("disabled");
@@ -124,23 +103,34 @@ ipcRenderer.on("set-tool-type", (event, toolType, outputFolderPath) => {
   g_toolType = toolType;
   g_outputFolderPath = outputFolderPath;
   g_outputFolderDiv.innerHTML = reducePathString(g_outputFolderPath);
-  if (g_toolType === ToolType.CONVERT_FILE) {
-    g_inputListButton.classList.add("hide");
-    g_textInputFileDiv.classList.remove("hide");
-    g_textInputFilesDiv.classList.add("hide");
-    g_textInputImagesDiv.classList.add("hide");
-  } else if (g_toolType === ToolType.CONVERT_FILES) {
+  if (g_toolType === ToolType.CONVERT_FILES) {
     g_inputListButton.classList.remove("hide");
     g_textInputFileDiv.classList.add("hide");
     g_textInputFilesDiv.classList.remove("hide");
     g_textInputImagesDiv.classList.add("hide");
+    g_outputFormatSelect.innerHTML =
+      '<option value="cbz">.cbz (zip)</option>' +
+      '<option value="pdf">.pdf</option>' +
+      '<option value="epub">.epub</option>';
   } else if (g_toolType === ToolType.CREATE_FILE) {
-    // g_outputNameInput.value = _("New File");
     g_outputNameInput.value = "New File";
     g_inputListButton.classList.remove("hide");
     g_textInputFileDiv.classList.add("hide");
     g_textInputFilesDiv.classList.add("hide");
     g_textInputImagesDiv.classList.remove("hide");
+    g_outputFormatSelect.innerHTML =
+      '<option value="cbz">.cbz (zip)</option>' +
+      '<option value="pdf">.pdf</option>' +
+      '<option value="epub">.epub</option>';
+  } else if (g_toolType === ToolType.CONVERT_IMGS) {
+    g_inputListButton.classList.remove("hide");
+    g_textInputFileDiv.classList.add("hide");
+    g_textInputFilesDiv.classList.add("hide");
+    g_textInputImagesDiv.classList.remove("hide");
+    g_outputFormatSelect.innerHTML =
+      '<option value="jpg">.jpg</option>' +
+      '<option value="png">.png</option>' +
+      '<option value="webp">.webp</option>';
   }
 
   checkValidData();
@@ -149,7 +139,6 @@ ipcRenderer.on("set-tool-type", (event, toolType, outputFolderPath) => {
 ipcRenderer.on(
   "update-localization",
   (event, title, localization, tooltipsLocalization) => {
-    console.log("update-localization");
     document.title = title;
     for (let index = 0; index < localization.length; index++) {
       const element = localization[index];
@@ -167,7 +156,6 @@ ipcRenderer.on(
     }
 
     for (let index = 0; index < tooltipsLocalization.length; index++) {
-      console.log("index: " + index);
       const element = tooltipsLocalization[index];
       const domElement = document.querySelector("#" + element.id);
       if (domElement !== null) {
@@ -199,14 +187,11 @@ ipcRenderer.on("add-file", (event, filePath, fileType) => {
   g_inputListDiv.innerHTML +=
     "<li class='collection-item'><div>" +
     reducePathString(filePath) +
-    (g_toolType === ToolType.CONVERT_FILES ||
-    g_toolType === ToolType.CREATE_FILE
-      ? "<a style='cursor: pointer;' onclick='renderer.onRemoveFile(this, " +
-        id +
-        ")' class='secondary-content'><i class='fas fa-window-close' title='" +
-        g_localizedRemoveFromListText +
-        "'></i></a>"
-      : "") +
+    "<a style='cursor: pointer;' onclick='renderer.onRemoveFile(this, " +
+    id +
+    ")' class='secondary-content'><i class='fas fa-window-close' title='" +
+    g_localizedRemoveFromListText +
+    "'></i></a>" +
     "</div></li>";
 
   checkValidData();
@@ -281,9 +266,11 @@ function onConvert(resetCounter = true) {
   }
 
   if (g_toolType === ToolType.CREATE_FILE) {
+    if (g_outputFormat === undefined) g_outputFormat = FileExtension.CBZ;
     ipcRenderer.send("convert-start-creation", g_inputFiles);
     g_inputFilePath = g_outputNameInput.value;
-  } else {
+  } else if (g_toolType === ToolType.CONVERT_FILES) {
+    if (g_outputFormat === undefined) g_outputFormat = FileExtension.CBZ;
     g_inputFilePath = g_inputFiles[g_inputFilesIndex].path;
     g_inputFileType = g_inputFiles[g_inputFilesIndex].type;
 
@@ -293,6 +280,14 @@ function onConvert(resetCounter = true) {
       g_inputFileType,
       g_inputFilesIndex + 1,
       g_inputFiles.length
+    );
+  } else if (g_toolType === ToolType.CONVERT_IMGS) {
+    if (g_outputFormat === undefined) g_outputFormat = FileExtension.JPG;
+    ipcRenderer.send(
+      "convert-imgs-start",
+      g_inputFiles,
+      g_outputFormat,
+      g_outputFolderPath
     );
   }
 }
