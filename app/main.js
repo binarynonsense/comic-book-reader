@@ -159,6 +159,7 @@ function sanitizeSettings() {
 // }
 
 app.on("will-quit", () => {
+  clearTimeout(g_clockTimeout);
   g_settings.on_quit_state = g_fileData.path === "" ? 0 : 1;
   saveSettings();
   saveHistory(false);
@@ -334,6 +335,7 @@ app.on("web-contents-created", (event, contents) => {
 ///////////////////////////////////////////////////////////////////////////////
 // CLOCK //////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
+let g_clockTimeout;
 
 function initClock() {
   let today = new Date();
@@ -348,7 +350,7 @@ function initClock() {
   }
   let time = h + ":" + m; // + ":" + s;
   g_mainWindow.webContents.send("update-clock", time);
-  let t = setTimeout(initClock, 500);
+  g_clockTimeout = setTimeout(initClock, 500);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

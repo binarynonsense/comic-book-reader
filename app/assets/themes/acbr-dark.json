@@ -1,7 +1,7 @@
 {
     "@metadata": {
       "authors": ["Álvaro"],
-      "last-updated": "2022-04-30",
+      "last-updated": "2022-05-01",
       "acbr-version": "1.2.6",
       "comments": "light text over dark background, with the orange slider",
       "name": "ACBR Dark"
@@ -10,21 +10,22 @@
     "--bg-color": "#1e1e1e",
     "--text-color": "#666",
 
-    "--titlebar-text-color": "#e7e7e7",
+    "--titlebar-text-color": "#cccccc",
+    "--titlebar-title-text-color": "#909090",
     "--titlebar-bg-color": "#525252",
     "--titlebar-focused-bg-color": "#525252",
   
-    "--toolbar-text-color": "#e7e7e7",
+    "--toolbar-text-color": "#909090",
     "--toolbar-bg-color": "#525252",
     "--toolbar-item-separator-color": "#525252",
-    "--toolbar-item-color": "#e7e7e7",
-    "--toolbar-item-hover-bg-color": "#ddd",
-    "--toolbar-item-hover-color": "#000",
-    "--toolbar-page-slider-right-bg-color": "#6c6c6c",
+    "--toolbar-item-color": "#cccccc",
+    "--toolbar-item-hover-bg-color": "#676767",
+    "--toolbar-item-hover-color": "#cccccc",
+    "--toolbar-page-slider-right-bg-color": "#7b7b7b",
     "--toolbar-page-slider-left-bg-color": "#daa41d",
-    "--toolbar-page-slider-thumb-color": "#e7e7e7",
+    "--toolbar-page-slider-thumb-color": "#cccccc",
   
-    "--scrollbar-bg-color": "#525252",
-    "--scrollbar-color": "#e7e7e7",
-    "--scrollbar-hover-color": "#fff"
+    "--scrollbar-bg-color": "#1e1e1e",
+    "--scrollbar-color": "#666666",
+    "--scrollbar-hover-color": "#777"
 }
