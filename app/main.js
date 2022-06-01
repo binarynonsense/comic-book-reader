@@ -795,7 +795,7 @@ exports.onMenuConvertFile = function () {
   g_mainWindow.webContents.send("update-menubar");
 };
 
-exports.onMenuBatchConvert = function () {
+exports.onMenuConvertFiles = function () {
   convertTool.showWindow(ToolType.BATCH_CONVERT, g_mainWindow);
   g_mainWindow.webContents.send("update-menubar");
 };

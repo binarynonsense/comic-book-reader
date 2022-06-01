@@ -208,24 +208,6 @@ function buildApplicationMenu(
           type: "separator",
         },
         {
-          id: "batch-convert",
-          label: _("Batch Convert..."),
-          click() {
-            mainProcess.onMenuBatchConvert();
-          },
-        },
-        {
-          id: "create-file",
-          label: _("Create..."),
-          enabled: true,
-          click() {
-            mainProcess.onMenuCreateFile();
-          },
-        },
-        {
-          type: "separator",
-        },
-        {
           label: _("Preferences"),
           submenu: [
             {
@@ -439,6 +421,33 @@ function buildApplicationMenu(
           accelerator: "F11",
           click() {
             mainProcess.onMenuToggleFullScreen();
+          },
+        },
+      ],
+    },
+    {
+      label: _("Tools"),
+      submenu: [
+        {
+          id: "convert-files",
+          label: _("Convert Files..."),
+          click() {
+            mainProcess.onMenuConvertFiles();
+          },
+        },
+        {
+          id: "create-file",
+          label: _("Create File..."),
+          enabled: true,
+          click() {
+            mainProcess.onMenuCreateFile();
+          },
+        },
+        {
+          id: "convert-imgs",
+          label: _("Convert Images..."),
+          click() {
+            mainProcess.onMenuConvertImages();
           },
         },
       ],
