@@ -30,7 +30,6 @@ exports.FileDataType = {
 };
 
 exports.ToolType = {
-  CONVERT_FILE: "convert file",
   CONVERT_FILES: "convert files",
   CREATE_FILE: "create file",
   CONVERT_IMGS: "convert imgs",

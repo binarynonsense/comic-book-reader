@@ -791,7 +791,7 @@ exports.onMenuExportPage = function () {
 exports.onMenuConvertFile = function () {
   if (g_fileData.path !== undefined) {
     convertTool.showWindow(
-      ToolType.CONVERT_FILE,
+      ToolType.CONVERT_FILES,
       g_mainWindow,
       g_fileData.path,
       g_fileData.type
@@ -811,7 +811,7 @@ exports.onMenuCreateFile = function () {
 };
 
 exports.onMenuConvertImages = function () {
-  convertTool.showWindow(ToolType.CONVERT_FILES, g_mainWindow);
+  convertTool.showWindow(ToolType.CONVERT_IMGS, g_mainWindow);
   g_mainWindow.webContents.send("update-menubar");
 };
 

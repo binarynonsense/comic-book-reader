@@ -15,7 +15,7 @@ let g_convertWindow;
 let g_cancelConversion = false;
 let g_worker;
 let g_resizeWindow;
-let g_toolType = ToolType.CONVERT_FILE;
+let g_toolType = ToolType.CONVERT_FILES;
 
 function isDev() {
   return process.argv[2] == "--dev";
@@ -67,19 +67,14 @@ exports.showWindow = function (toolType, parentWindow, filePath, fileType) {
         g_toolType,
         app.getPath("desktop")
       );
-    } else if (g_toolType === ToolType.CONVERT_FILE && filePath !== undefined) {
+    } else if (g_toolType === ToolType.CONVERT_FILES) {
       g_convertWindow.webContents.send(
         "set-tool-type",
         g_toolType,
-        path.dirname(filePath)
+        filePath !== undefined ? path.dirname(filePath) : app.getPath("desktop")
       );
-      g_convertWindow.webContents.send("add-file", filePath, fileType);
-    } else {
-      g_convertWindow.webContents.send(
-        "set-tool-type",
-        ToolType.CONVERT_FILES,
-        app.getPath("desktop")
-      );
+      if (filePath !== undefined && fileType !== undefined)
+        g_convertWindow.webContents.send("add-file", filePath, fileType);
     }
 
     g_convertWindow.webContents.send(
