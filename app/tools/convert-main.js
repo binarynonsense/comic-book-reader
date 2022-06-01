@@ -8,19 +8,14 @@ const naturalCompare = require("natural-compare-lite");
 const fileUtils = require("../file-utils");
 const fileFormats = require("../file-formats");
 const mainProcess = require("../main");
+const { FileExtension, FileDataType, ToolType } = require("../constants");
 const sharp = require("sharp");
 
 let g_convertWindow;
 let g_cancelConversion = false;
 let g_worker;
 let g_resizeWindow;
-
-const ToolType = {
-  CONVERT: "convert",
-  BATCH_CONVERT: "batch_convert",
-  CREATE: "create",
-};
-let g_toolType = ToolType.CONVERT;
+let g_toolType = ToolType.CONVERT_FILE;
 
 function isDev() {
   return process.argv[2] == "--dev";
@@ -66,13 +61,13 @@ exports.showWindow = function (toolType, parentWindow, filePath, fileType) {
   });
 
   g_convertWindow.webContents.on("did-finish-load", function () {
-    if (g_toolType === ToolType.CREATE) {
+    if (g_toolType === ToolType.CREATE_FILE) {
       g_convertWindow.webContents.send(
         "set-tool-type",
         g_toolType,
         app.getPath("desktop")
       );
-    } else if (g_toolType === ToolType.CONVERT && filePath !== undefined) {
+    } else if (g_toolType === ToolType.CONVERT_FILE && filePath !== undefined) {
       g_convertWindow.webContents.send(
         "set-tool-type",
         g_toolType,
@@ -82,14 +77,14 @@ exports.showWindow = function (toolType, parentWindow, filePath, fileType) {
     } else {
       g_convertWindow.webContents.send(
         "set-tool-type",
-        ToolType.BATCH_CONVERT,
+        ToolType.CONVERT_FILES,
         app.getPath("desktop")
       );
     }
 
     g_convertWindow.webContents.send(
       "update-localization",
-      g_toolType === ToolType.CREATE
+      g_toolType === ToolType.CREATE_FILE
         ? _("Create File Tool")
         : _("Convert Files Tool"),
       getLocalization(),
@@ -111,12 +106,23 @@ ipcMain.on("convert-choose-file", (event) => {
   try {
     let allowMultipleSelection = false;
     let allowedFileTypesName = "Comic Book Files";
-    let allowedFileTypesList = ["cbz", "cbr", "pdf", "epub"];
-    if (g_toolType === ToolType.BATCH_CONVERT) allowMultipleSelection = true;
-    if (g_toolType === ToolType.CREATE) {
+    let allowedFileTypesList = [
+      FileExtension.CBZ,
+      FileExtension.CBR,
+      FileExtension.PDF,
+      FileExtension.EPUB,
+    ];
+    if (g_toolType === ToolType.CONVERT_FILES) allowMultipleSelection = true;
+    if (g_toolType === ToolType.CREATE_FILE) {
       allowMultipleSelection = true;
       allowedFileTypesName = "Image Files";
-      allowedFileTypesList = ["jpg", "jpeg", "png", "webp", "bmp"];
+      allowedFileTypesList = [
+        FileExtension.JPG,
+        FileExtension.JPEG,
+        FileExtension.PNG,
+        FileExtension.WEBP,
+        FileExtension.BMP,
+      ];
     }
     let filePathsList = fileUtils.chooseOpenFiles(
       g_convertWindow,
@@ -140,24 +146,29 @@ ipcMain.on("convert-choose-file", (event) => {
         if (_fileType !== undefined) {
           fileExtension = "." + _fileType.ext;
         }
-        if (g_toolType === ToolType.CREATE) {
-          fileType = "img";
+        if (g_toolType === ToolType.CREATE_FILE) {
+          fileType = FileDataType.IMG;
         } else {
-          if (fileExtension === ".pdf") {
-            fileType = "pdf";
-          } else if (fileExtension === ".epub") {
-            fileType = "epub";
+          if (fileExtension === "." + FileExtension.PDF) {
+            fileType = FileDataType.PDF;
+          } else if (fileExtension === "." + FileExtension.EPUB) {
+            fileType = FileDataType.EPUB;
           } else {
-            if (fileExtension === ".rar" || fileExtension === ".cbr") {
-              fileType = "rar";
-            } else if (fileExtension === ".zip" || fileExtension === ".cbz") {
-              fileType = "zip";
+            if (
+              fileExtension === "." + FileExtension.RAR ||
+              fileExtension === "." + FileExtension.CBR
+            ) {
+              fileType = FileDataType.RAR;
+            } else if (
+              fileExtension === "." + FileExtension.ZIP ||
+              fileExtension === "." + FileExtension.CBZ
+            ) {
+              fileType = FileDataType.ZIP;
             } else {
               return;
             }
           }
         }
-
         g_convertWindow.webContents.send("add-file", filePath, fileType);
       })();
     }
@@ -361,9 +372,9 @@ function conversionStart(inputFilePath, inputFileType, fileNum, totalFilesNum) {
   let tempFolderPath = fileUtils.createTempFolder();
   // extract to temp folder
   if (
-    inputFileType === "zip" ||
-    inputFileType === "rar" ||
-    inputFileType === "epub"
+    inputFileType === FileDataType.ZIP ||
+    inputFileType === FileDataType.RAR ||
+    inputFileType === FileDataType.EPUB
   ) {
     g_convertWindow.webContents.send(
       "convert-update-text-log",
@@ -394,7 +405,7 @@ function conversionStart(inputFilePath, inputFileType, fileNum, totalFilesNum) {
       });
     }
     g_worker.send(["extract", inputFilePath, inputFileType, tempFolderPath]);
-  } else if (inputFileType === "pdf") {
+  } else if (inputFileType === FileDataType.PDF) {
     g_convertWindow.webContents.send(
       "convert-update-text-log",
       _("Extracting Pages...")
@@ -468,7 +479,7 @@ async function resizeImages(
   }
   try {
     let filename = path.basename(inputFilePath, path.extname(inputFilePath));
-    if (g_toolType === ToolType.CREATE) {
+    if (g_toolType === ToolType.CREATE_FILE) {
       filename = inputFilePath;
     }
     let outputFilePath = path.join(
@@ -496,7 +507,7 @@ async function resizeImages(
     imgFilePaths.sort(naturalCompare);
 
     // change imgs' format if needed (for pdf creation or resizing)
-    if (outputScale < 100 || outputFormat === "pdf") {
+    if (outputScale < 100 || outputFormat === FileExtension.PDF) {
       // pdfkit only works with png and jpg image formats
       // same for native image? (used for resizing)
 
@@ -510,8 +521,14 @@ async function resizeImages(
         if (!fileFormats.hasNativeImageCompatibleImageExtension(filePath)) {
           let fileFolderPath = path.dirname(filePath);
           let fileName = path.basename(filePath, path.extname(filePath));
-          let tmpFilePath = path.join(fileFolderPath, fileName + ".tmp");
-          let newFilePath = path.join(fileFolderPath, fileName + ".jpg");
+          let tmpFilePath = path.join(
+            fileFolderPath,
+            fileName + "." + FileExtension.TMP
+          );
+          let newFilePath = path.join(
+            fileFolderPath,
+            fileName + "." + FileExtension.JPG
+          );
 
           g_convertWindow.webContents.send(
             "convert-update-text-log",
@@ -580,7 +597,7 @@ async function createFileFromImages(
     );
     g_convertWindow.webContents.send("convert-update-text-log", outputFilePath);
 
-    if (outputFormat === "pdf") {
+    if (outputFormat === FileExtension.PDF) {
       // TODO: doesn't work in the worker, why?
       fileFormats.createPdfFromImages(imgFilePaths, outputFilePath);
       fileUtils.cleanUpTempFolder();

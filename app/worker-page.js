@@ -1,4 +1,5 @@
 const fileFormats = require("./file-formats");
+const { FileDataType } = require("./constants");
 
 process.on("message", (message) => {
   extractBase64Image(message[0], message[1], message[2], message[3]);
@@ -8,17 +9,17 @@ async function extractBase64Image(fileType, filePath, entryName, scrollBarPos) {
   try {
     let buf;
     let mime;
-    if (fileType === "zip") {
+    if (fileType === FileDataType.ZIP) {
       buf = fileFormats
         .extractZipEntryBuffer(filePath, entryName)
         .toString("base64");
       mime = "image/" + fileFormats.getMimeType(entryName);
-    } else if (fileType === "rar") {
+    } else if (fileType === FileDataType.RAR) {
       buf = fileFormats
         .extractRarEntryBuffer(filePath, entryName)
         .toString("base64");
       mime = "image/" + fileFormats.getMimeType(entryName);
-    } else if (fileType === "epub") {
+    } else if (fileType === FileDataType.EPUB) {
       const data = await fileFormats.extractEpubImageBuffer(
         filePath,
         entryName

@@ -2,6 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const FileType = require("file-type");
 const fileFormats = require("./file-formats");
+const { FileExtension, FileDataType } = require("./constants");
 
 process.on("message", (message) => {
   exportPage(message.data, message.outputFolderPath);
@@ -10,17 +11,17 @@ process.on("message", (message) => {
 async function exportPage(fileData, outputFolderPath) {
   try {
     let buf;
-    if (fileData.type === "zip") {
+    if (fileData.type === FileDataType.ZIP) {
       buf = fileFormats.extractZipEntryBuffer(
         fileData.path,
         fileData.pagesPaths[fileData.pageIndex]
       );
-    } else if (fileData.type === "rar") {
+    } else if (fileData.type === FileDataType.RAR) {
       buf = fileFormats.extractRarEntryBuffer(
         fileData.path,
         fileData.pagesPaths[fileData.pageIndex]
       );
-    } else if (fileData.type === "epub") {
+    } else if (fileData.type === FileDataType.EPUB) {
       buf = await fileFormats.extractEpubImageBuffer(
         fileData.path,
         fileData.pagesPaths[fileData.pageIndex]
@@ -35,7 +36,7 @@ async function exportPage(fileData, outputFolderPath) {
     } else {
       (async () => {
         let fileType = await FileType.fromBuffer(buf);
-        let fileExtension = ".jpg";
+        let fileExtension = "." + FileExtension.JPG;
         if (fileType !== undefined) {
           fileExtension = "." + fileType.ext;
         }

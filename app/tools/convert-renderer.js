@@ -1,27 +1,12 @@
 const fs = window.require("fs");
 const path = require("path");
 const { ipcRenderer } = require("electron");
+const { FileExtension, FileDataType, ToolType } = require("../constants");
 
-const ToolType = {
-  CONVERT: "convert",
-  BATCH_CONVERT: "batch_convert",
-  CREATE: "create",
-};
 let g_toolType;
-
 let g_inputFiles = [];
 let g_inputFilesIndex = 0;
-
 let g_inputFilesID = 0;
-
-const FileDataType = {
-  NOT_SET: "not set",
-  PDF: "pdf",
-  IMGS: "imgs",
-  ZIP: "zip",
-  RAR: "rar",
-  EPUB: "epub",
-};
 
 let g_cancelConversion = false;
 
@@ -29,8 +14,7 @@ let g_inputFilePath;
 let g_inputFileType;
 let g_outputScale = "100";
 let g_outputQuality = "80";
-let g_outputFormat = "cbz";
-let g_outputName;
+let g_outputFormat = FileExtension.CBZ;
 let g_outputFolderPath;
 
 let g_textInputFileDiv = document.querySelector("#text-input-file");
@@ -73,21 +57,27 @@ function checkValidData() {
     g_qualitySlider.parentElement.classList.remove("hide");
   }
 
-  if (g_toolType === ToolType.CONVERT) {
+  if (g_toolType === ToolType.CONVERT_FILE) {
     g_outputNameDiv.classList.add("hide");
     if (g_outputFolderPath !== undefined && g_inputFiles.length > 0) {
       if (g_inputFiles[0].type === FileDataType.ZIP) {
-        if (!(g_outputFormat === "cbz" && g_outputScale === "100")) {
+        if (
+          !(g_outputFormat === FileExtension.CBZ && g_outputScale === "100")
+        ) {
           g_convertButton.classList.remove("disabled");
           return;
         }
       } else if (g_inputFiles[0].type === FileDataType.PDF) {
-        if (!(g_outputFormat === "pdf" && g_outputScale === "100")) {
+        if (
+          !(g_outputFormat === FileExtension.PDF && g_outputScale === "100")
+        ) {
           g_convertButton.classList.remove("disabled");
           return;
         }
       } else if (g_inputFiles[0].type === FileDataType.EPUB) {
-        if (!(g_outputFormat === "epub" && g_outputScale === "100")) {
+        if (
+          !(g_outputFormat === FileExtension.EPUB && g_outputScale === "100")
+        ) {
           g_convertButton.classList.remove("disabled");
           return;
         }
@@ -97,14 +87,14 @@ function checkValidData() {
       }
     }
     g_convertButton.classList.add("disabled");
-  } else if (g_toolType === ToolType.BATCH_CONVERT) {
+  } else if (g_toolType === ToolType.CONVERT_FILES) {
     g_outputNameDiv.classList.add("hide");
     if (g_outputFolderPath !== undefined && g_inputFiles.length > 0) {
       g_convertButton.classList.remove("disabled");
     } else {
       g_convertButton.classList.add("disabled");
     }
-  } else if (g_toolType === ToolType.CREATE) {
+  } else if (g_toolType === ToolType.CREATE_FILE) {
     g_outputSizeDiv.classList.add("hide");
     g_outputNameDiv.classList.remove("hide");
     if (
@@ -134,17 +124,17 @@ ipcRenderer.on("set-tool-type", (event, toolType, outputFolderPath) => {
   g_toolType = toolType;
   g_outputFolderPath = outputFolderPath;
   g_outputFolderDiv.innerHTML = reducePathString(g_outputFolderPath);
-  if (g_toolType === ToolType.CONVERT) {
+  if (g_toolType === ToolType.CONVERT_FILE) {
     g_inputListButton.classList.add("hide");
     g_textInputFileDiv.classList.remove("hide");
     g_textInputFilesDiv.classList.add("hide");
     g_textInputImagesDiv.classList.add("hide");
-  } else if (g_toolType === ToolType.BATCH_CONVERT) {
+  } else if (g_toolType === ToolType.CONVERT_FILES) {
     g_inputListButton.classList.remove("hide");
     g_textInputFileDiv.classList.add("hide");
     g_textInputFilesDiv.classList.remove("hide");
     g_textInputImagesDiv.classList.add("hide");
-  } else if (g_toolType === ToolType.CREATE) {
+  } else if (g_toolType === ToolType.CREATE_FILE) {
     // g_outputNameInput.value = _("New File");
     g_outputNameInput.value = "New File";
     g_inputListButton.classList.remove("hide");
@@ -169,7 +159,7 @@ ipcRenderer.on(
       }
       // UGLY HACK
       else if (
-        g_toolType === ToolType.CREATE &&
+        g_toolType === ToolType.CREATE_FILE &&
         element.id === "button-create"
       ) {
         document.querySelector("#button-convert").innerHTML = element.text;
@@ -209,7 +199,8 @@ ipcRenderer.on("add-file", (event, filePath, fileType) => {
   g_inputListDiv.innerHTML +=
     "<li class='collection-item'><div>" +
     reducePathString(filePath) +
-    (g_toolType === ToolType.BATCH_CONVERT || g_toolType === ToolType.CREATE
+    (g_toolType === ToolType.CONVERT_FILES ||
+    g_toolType === ToolType.CREATE_FILE
       ? "<a style='cursor: pointer;' onclick='renderer.onRemoveFile(this, " +
         id +
         ")' class='secondary-content'><i class='fas fa-window-close' title='" +
@@ -289,7 +280,7 @@ function onConvert(resetCounter = true) {
     updateTextLog("", false);
   }
 
-  if (g_toolType === ToolType.CREATE) {
+  if (g_toolType === ToolType.CREATE_FILE) {
     ipcRenderer.send("convert-start-creation", g_inputFiles);
     g_inputFilePath = g_outputNameInput.value;
   } else {
@@ -362,7 +353,7 @@ ipcRenderer.on("convert-images-extracted", (event) => {
 
 ipcRenderer.on("convert-finished-ok", (event) => {
   if (
-    g_toolType !== ToolType.CREATE &&
+    g_toolType !== ToolType.CREATE_FILE &&
     g_inputFilesIndex < g_inputFiles.length - 1
   ) {
     g_inputFilesIndex++;
@@ -444,7 +435,7 @@ async function extractPDFImages(folderPath, logText) {
       canvas.width = viewport.width;
       await page.render({ canvasContext: context, viewport: viewport }).promise;
 
-      let filePath = path.join(folderPath, pageNum + ".jpg");
+      let filePath = path.join(folderPath, pageNum + "." + FileExtension.JPG);
       var img = canvas.toDataURL("image/jpeg", 0.75);
       var data = img.replace(/^data:image\/\w+;base64,/, "");
       var buf = Buffer.from(data, "base64");

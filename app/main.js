@@ -11,6 +11,12 @@ const menuBar = require("./menu-bar");
 const contextMenu = require("./menu-context");
 const convertTool = require("./tools/convert-main");
 const themes = require("./themes");
+const {
+  FileExtension,
+  FileDataState,
+  FileDataType,
+  ToolType,
+} = require("./constants");
 
 function isDev() {
   return process.argv[2] == "--dev";
@@ -723,7 +729,12 @@ exports.onMenuOpenFile = onMenuOpenFile = function (filePath) {
 
     let allowMultipleSelection = false;
     let allowedFileTypesName = "Comic Book Files";
-    let allowedFileTypesList = ["cbz", "cbr", "pdf", "epub"];
+    let allowedFileTypesList = [
+      FileExtension.CBZ,
+      FileExtension.CBR,
+      FileExtension.PDF,
+      FileExtension.EPUB,
+    ];
     let fileList = fileUtils.chooseOpenFiles(
       g_mainWindow,
       defaultPath,
@@ -777,16 +788,10 @@ exports.onMenuExportPage = function () {
   exportPageStart();
 };
 
-const ToolType = {
-  CONVERT: "convert",
-  BATCH_CONVERT: "batch_convert",
-  CREATE: "create",
-};
-
 exports.onMenuConvertFile = function () {
   if (g_fileData.path !== undefined) {
     convertTool.showWindow(
-      ToolType.CONVERT,
+      ToolType.CONVERT_FILE,
       g_mainWindow,
       g_fileData.path,
       g_fileData.type
@@ -796,12 +801,17 @@ exports.onMenuConvertFile = function () {
 };
 
 exports.onMenuConvertFiles = function () {
-  convertTool.showWindow(ToolType.BATCH_CONVERT, g_mainWindow);
+  convertTool.showWindow(ToolType.CONVERT_FILES, g_mainWindow);
   g_mainWindow.webContents.send("update-menubar");
 };
 
 exports.onMenuCreateFile = function () {
-  convertTool.showWindow(ToolType.CREATE, g_mainWindow);
+  convertTool.showWindow(ToolType.CREATE_FILE, g_mainWindow);
+  g_mainWindow.webContents.send("update-menubar");
+};
+
+exports.onMenuConvertImages = function () {
+  convertTool.showWindow(ToolType.CONVERT_FILES, g_mainWindow);
   g_mainWindow.webContents.send("update-menubar");
 };
 
@@ -845,21 +855,6 @@ exports.onGoToPageLast = function () {
 // FILES //////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-const FileDataState = {
-  NOT_SET: "not set",
-  LOADING: "loading",
-  LOADED: "loaded",
-};
-
-const FileDataType = {
-  NOT_SET: "not set",
-  PDF: "pdf",
-  IMGS: "imgs",
-  ZIP: "zip",
-  RAR: "rar",
-  EPUB: "epub",
-};
-
 let g_fileData = {
   state: FileDataState.NOT_SET,
   type: FileDataType.NOT_SET,
@@ -896,14 +891,17 @@ function openFile(filePath, pageIndex = 0) {
       if (pageIndex === undefined) pageIndex = 0; // just in case
     }
 
-    if (fileExtension === ".pdf") {
+    if (fileExtension === "." + FileExtension.PDF) {
       g_fileData.state = FileDataState.LOADING;
       g_mainWindow.webContents.send("load-pdf", filePath, pageIndex);
-    } else if (fileExtension === ".epub") {
+    } else if (fileExtension === "." + FileExtension.EPUB) {
       g_fileData.state = FileDataState.LOADING;
       g_mainWindow.webContents.send("load-epub", filePath, pageIndex);
     } else {
-      if (fileExtension === ".rar" || fileExtension === ".cbr") {
+      if (
+        fileExtension === "." + FileExtension.RAR ||
+        fileExtension === "." + FileExtension.CBR
+      ) {
         let pagesPaths = fileFormats.getRarEntriesList(filePath);
         if (pagesPaths !== undefined && pagesPaths.length > 0) {
           g_fileData.state = FileDataState.LOADED;
@@ -926,7 +924,10 @@ function openFile(filePath, pageIndex = 0) {
           );
           g_mainWindow.webContents.send("update-loading", false);
         }
-      } else if (fileExtension === ".zip" || fileExtension === ".cbz") {
+      } else if (
+        fileExtension === "." + FileExtension.ZIP ||
+        fileExtension === "." + FileExtension.CBZ
+      ) {
         let pagesPaths = fileFormats.getZipEntriesList(filePath);
         if (pagesPaths !== undefined && pagesPaths.length > 0) {
           g_fileData.state = FileDataState.LOADED;
@@ -1233,7 +1234,7 @@ function exportPageSaveBuffer(buf, outputFolderPath) {
     try {
       (async () => {
         let fileType = await FileType.fromBuffer(buf);
-        let fileExtension = ".jpg";
+        let fileExtension = "." + FileExtension.JPG;
         if (fileType !== undefined) {
           fileExtension = "." + fileType.ext;
         }
