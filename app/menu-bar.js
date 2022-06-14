@@ -426,29 +426,39 @@ function buildApplicationMenu(
       ],
     },
     {
-      label: _("Tools"),
+      label: _("menu-tools"),
       submenu: [
         {
-          id: "convert-files",
-          label: _("Convert Files..."),
-          click() {
-            mainProcess.onMenuConvertFiles();
-          },
+          label: _("menu-tools-convert"),
+          submenu: [
+            {
+              id: "convert-files",
+              label: _("menu-tools-convert-comics"),
+              click() {
+                mainProcess.onMenuConvertFiles();
+              },
+            },
+            {
+              id: "convert-imgs",
+              label: _("menu-tools-convert-images"),
+              click() {
+                mainProcess.onMenuConvertImages();
+              },
+            },
+          ],
         },
         {
-          id: "create-file",
-          label: _("Create File..."),
-          enabled: true,
-          click() {
-            mainProcess.onMenuCreateFile();
-          },
-        },
-        {
-          id: "convert-imgs",
-          label: _("Convert Images..."),
-          click() {
-            mainProcess.onMenuConvertImages();
-          },
+          label: _("menu-tools-create"),
+          submenu: [
+            {
+              id: "create-file",
+              label: _("menu-tools-create-comic"),
+              enabled: true,
+              click() {
+                mainProcess.onMenuCreateFile();
+              },
+            },
+          ],
         },
       ],
     },
