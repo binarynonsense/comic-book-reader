@@ -1,7 +1,7 @@
 {
   "@metadata": {
     "authors": ["Álvaro"],
-    "last-updated": "2022-06-01",
+    "last-updated": "2022-06-14",
     "acbr-version": "1.2.7-beta1",
     "comments": "",
     "locale": "en",
@@ -42,6 +42,8 @@
   "menu-tools-convert-images": "Images...",
   "menu-tools-create": "Create",
   "menu-tools-create-comic": "Comic Book...",
+  "menu-tools-extract": "Extract",
+  "menu-tools-extract-text": "Text From Image...",
 
   "Help": "Help",
   "About": "About",

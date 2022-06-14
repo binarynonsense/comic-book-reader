@@ -10,6 +10,7 @@ const i18n = require("./i18n");
 const menuBar = require("./menu-bar");
 const contextMenu = require("./menu-context");
 const convertTool = require("./tools/convert-main");
+const extractTextTool = require("./tools/extract-text/main");
 const themes = require("./themes");
 const {
   FileExtension,
@@ -17,6 +18,7 @@ const {
   FileDataType,
   ToolType,
 } = require("./constants");
+const { AsyncTaskManager } = require("builder-util");
 
 function isDev() {
   return process.argv[2] == "--dev";
@@ -802,18 +804,23 @@ exports.onMenuConvertFile = function () {
   g_mainWindow.webContents.send("update-menubar");
 };
 
-exports.onMenuConvertFiles = function () {
+exports.onMenuToolConvertComics = function () {
   convertTool.showWindow(ToolType.CONVERT_FILES, g_mainWindow);
   g_mainWindow.webContents.send("update-menubar");
 };
 
-exports.onMenuCreateFile = function () {
+exports.onMenuToolCreateComic = function () {
   convertTool.showWindow(ToolType.CREATE_FILE, g_mainWindow);
   g_mainWindow.webContents.send("update-menubar");
 };
 
-exports.onMenuConvertImages = function () {
+exports.onMenuToolConvertImages = function () {
   convertTool.showWindow(ToolType.CONVERT_IMGS, g_mainWindow);
+  g_mainWindow.webContents.send("update-menubar");
+};
+
+exports.onMenuToolExtractText = function () {
+  extractTextTool.showWindow(ToolType.EXTRACT_TEXT, g_mainWindow);
   g_mainWindow.webContents.send("update-menubar");
 };
 

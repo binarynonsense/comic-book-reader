@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="../../assets/libs/fontawesome/css/all.css" rel="stylesheet" />
+    <link
+      rel="stylesheet"
+      href="../../assets/libs/materialize/css/materialize.min.css"
+    />
+    <link rel="stylesheet" href="../../assets/css/convert.css" />
+    <title></title>
+  </head>
+  <body>
+    <div class="container center-align">
+      <h5 id="text-input-file">Input Image:</h5>
+      <a
+        class="waves-effect waves-light btn"
+        id="button-add-file"
+        onclick="renderer.onChooseInputFile()"
+        >OPEN IMAGE</a
+      >
+
+      <div id="image"></div>
+
+      <a
+        id="button-convert"
+        class="btn modal-trigger blue-grey darken-3 disabled"
+        onclick="renderer.onConvert()"
+        data-target="modal1"
+        >EXTRACT</a
+      >
+    </div>
+
+    <div id="modal1" class="modal">
+      <div class="modal-content">
+        <h5 id="modal-title"></h5>
+        <p id="modal-info">...</p>
+        <div class="progress" id="modal-loading-bar">
+          <div class="indeterminate"></div>
+        </div>
+        <textarea
+          id="modal-log"
+          rows="8"
+          style="
+            height: 100px;
+            color: rgb(155, 155, 155);
+            padding: 5px;
+            border-color: rgb(155, 155, 155);
+          "
+          readonly
+        ></textarea>
+      </div>
+      <a
+        class="yellow darken-3 btn"
+        id="button-modal-cancel"
+        onclick="renderer.onCancelConversion()"
+        >Cancel</a
+      >
+      <a
+        href="#!"
+        class="modal-close btn waves-effect green darken-3"
+        id="button-modal-close"
+        >Close</a
+      >
+    </div>
+
+    <script src="../../assets/libs/materialize/js/materialize.min.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        var elems = document.querySelectorAll(".modal");
+        var instances = M.Modal.init(elems, {
+          dismissible: false,
+          onCloseStart: null,
+        });
+      });
+    </script>
+    <script>
+      const renderer = require("./renderer");
+    </script>
+  </body>
+</html>

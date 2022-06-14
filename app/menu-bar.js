@@ -435,14 +435,14 @@ function buildApplicationMenu(
               id: "convert-files",
               label: _("menu-tools-convert-comics"),
               click() {
-                mainProcess.onMenuConvertFiles();
+                mainProcess.onMenuToolConvertComics();
               },
             },
             {
               id: "convert-imgs",
               label: _("menu-tools-convert-images"),
               click() {
-                mainProcess.onMenuConvertImages();
+                mainProcess.onMenuToolConvertImages();
               },
             },
           ],
@@ -455,7 +455,20 @@ function buildApplicationMenu(
               label: _("menu-tools-create-comic"),
               enabled: true,
               click() {
-                mainProcess.onMenuCreateFile();
+                mainProcess.onMenuToolCreateComic();
+              },
+            },
+          ],
+        },
+        {
+          label: _("menu-tools-extract"),
+          submenu: [
+            {
+              id: "extract-text",
+              label: _("menu-tools-extract-text"),
+              enabled: true,
+              click() {
+                mainProcess.onMenuToolExtractText();
               },
             },
           ],

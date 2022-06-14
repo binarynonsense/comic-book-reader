@@ -33,4 +33,5 @@ exports.ToolType = {
   CONVERT_FILES: "convert files",
   CREATE_FILE: "create file",
   CONVERT_IMGS: "convert imgs",
+  EXTRACT_TEXT: "extract text",
 };
