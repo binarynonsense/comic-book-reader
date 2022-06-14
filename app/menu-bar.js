@@ -120,6 +120,7 @@ function buildApplicationMenu(
     for (let language of languages) {
       languagesSubmenu.push({
         label: language.nativeName,
+        type: "checkbox",
         checked: language.locale === activeLocale,
         click() {
           mainProcess.onMenuChangeLanguage(language.locale);
@@ -130,6 +131,7 @@ function buildApplicationMenu(
     languagesSubmenu = [
       {
         label: "English",
+        type: "checkbox",
         checked: true,
         click() {
           mainProcess.onMenuChangeLanguage("en");
@@ -144,6 +146,7 @@ function buildApplicationMenu(
     for (let theme of themes) {
       themesSubmenu.push({
         label: theme.name,
+        type: "checkbox",
         checked: theme.filename === activeTheme,
         click() {
           mainProcess.onMenuChangeTheme(theme.filename);
@@ -154,6 +157,7 @@ function buildApplicationMenu(
     themesSubmenu = [
       {
         label: "ACBR Gray",
+        type: "checkbox",
         checked: true,
         click() {
           mainProcess.onMenuChangeTheme("acbr-gray");
@@ -223,6 +227,7 @@ function buildApplicationMenu(
               submenu: [
                 {
                   id: "hotspots-0",
+                  type: "checkbox",
                   checked: settings.hotspots_mode === 0,
                   label: _("Hotspots-Disabled"),
                   click() {
@@ -231,6 +236,7 @@ function buildApplicationMenu(
                 },
                 {
                   id: "hotspots-1",
+                  type: "checkbox",
                   checked: settings.hotspots_mode === 1,
                   label: _("Hotspots-2-Columns"),
                   click() {
@@ -239,6 +245,7 @@ function buildApplicationMenu(
                 },
                 {
                   id: "hotspots-2",
+                  type: "checkbox",
                   checked: settings.hotspots_mode === 2,
                   label: _("Hotspots-3-Columns"),
                   click() {
@@ -252,6 +259,7 @@ function buildApplicationMenu(
               submenu: [
                 {
                   id: "auto-open-0",
+                  type: "checkbox",
                   checked: settings.autoOpen === 0,
                   label: _("AutoOpen-Disabled"),
                   click() {
@@ -260,6 +268,7 @@ function buildApplicationMenu(
                 },
                 {
                   id: "auto-open-1",
+                  type: "checkbox",
                   checked: settings.autoOpen === 1,
                   label: _("AutoOpen-Next"),
                   click() {
@@ -268,6 +277,7 @@ function buildApplicationMenu(
                 },
                 {
                   id: "auto-open-2",
+                  type: "checkbox",
                   checked: settings.autoOpen === 2,
                   label: _("AutoOpen-NextAndPrev"),
                   click() {
@@ -299,6 +309,7 @@ function buildApplicationMenu(
             {
               id: "fit-to-width",
               label: _("Fit to Width"),
+              type: "checkbox",
               checked: settings.fit_mode == 0,
               click() {
                 mainProcess.onMenuFitToWidth();
@@ -307,6 +318,7 @@ function buildApplicationMenu(
             {
               id: "fit-to-height",
               label: _("Fit to Height"),
+              type: "checkbox",
               checked: settings.fit_mode == 1,
               click() {
                 mainProcess.onMenuFitToHeight();
@@ -320,6 +332,7 @@ function buildApplicationMenu(
             {
               id: "rotation-0",
               label: "0º",
+              type: "checkbox",
               checked: true,
               click() {
                 mainProcess.onMenuRotationValue(0);
@@ -328,6 +341,7 @@ function buildApplicationMenu(
             {
               id: "rotation-90",
               label: "90º",
+              type: "checkbox",
               checked: false,
               click() {
                 mainProcess.onMenuRotationValue(90);
@@ -336,6 +350,7 @@ function buildApplicationMenu(
             {
               id: "rotation-180",
               label: "180º",
+              type: "checkbox",
               checked: false,
               click() {
                 mainProcess.onMenuRotationValue(180);
@@ -344,6 +359,7 @@ function buildApplicationMenu(
             {
               id: "rotation-270",
               label: "270º",
+              type: "checkbox",
               checked: false,
               click() {
                 mainProcess.onMenuRotationValue(270);
@@ -380,6 +396,7 @@ function buildApplicationMenu(
         {
           label: _("Show Scroll Bar"),
           id: "scrollbar",
+          type: "checkbox",
           checked: settings.showScrollBar,
           accelerator: "CommandOrControl+B",
           click() {
@@ -389,6 +406,7 @@ function buildApplicationMenu(
         {
           label: _("Show Tool Bar"),
           id: "toolbar",
+          type: "checkbox",
           checked: settings.showToolBar,
           accelerator: "CommandOrControl+T",
           click() {
@@ -398,6 +416,7 @@ function buildApplicationMenu(
         {
           label: _("Show Page Number"),
           id: "page-number",
+          type: "checkbox",
           checked: settings.showPageNumber,
           accelerator: "CommandOrControl+P",
           click() {
@@ -407,6 +426,7 @@ function buildApplicationMenu(
         {
           label: _("Show Clock"),
           id: "clock",
+          type: "checkbox",
           checked: settings.showClock,
           accelerator: "CommandOrControl+J",
           click() {

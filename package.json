@@ -39,13 +39,13 @@
   },
   "devDependencies": {
     "del-cli": "^4.0.1",
-    "electron": "^11.2.3",
+    "electron": "^19.0.4",
     "electron-builder": "^22.6.1",
     "license-checker": "^25.0.1"
   },
   "dependencies": {
     "adm-zip": "^0.4.14",
-    "custom-electron-titlebar": "^3.2.4",
+    "custom-electron-titlebar": "^4.1.0",
     "epub": "^1.2.1",
     "epub-gen": "^0.1.0",
     "file-type": "^14.6.2",
@@ -53,6 +53,7 @@
     "natural-compare-lite": "^1.4.0",
     "node-unrar-js": "^0.8.1",
     "pdfkit": "^0.11.0",
-    "sharp": "^0.30.4"
+    "sharp": "^0.30.4",
+    "tesseract.js": "^2.1.5"
   }
 }

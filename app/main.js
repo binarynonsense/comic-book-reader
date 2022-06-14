@@ -19,6 +19,13 @@ const {
   ToolType,
 } = require("./constants");
 
+const {
+  setupTitlebar,
+  attachTitlebarToWindow,
+} = require("custom-electron-titlebar/main");
+// setup the titlebar main process
+setupTitlebar();
+
 function isDev() {
   return process.argv[2] == "--dev";
 }
@@ -195,12 +202,6 @@ app.on("ready", () => {
 
   menuBar.buildEmptyMenu();
 
-  // FIX: ugly hack: since I wait to show the window on did-finish-load, if I started it
-  // unmaximized the resize controls did nothing until I maximized and unmaximized it... ?? :(
-  // so I do it programmatically at the start, hopefully it's not noticeable
-  g_mainWindow.maximize();
-  g_mainWindow.unmaximize();
-
   g_mainWindow.loadFile(`${__dirname}/index.html`);
 
   g_mainWindow.once("ready-to-show", () => {
@@ -229,6 +230,9 @@ app.on("ready", () => {
 
     // if I put the things below inside ready-to-show they aren't called
     renderTitle();
+
+    //attach fullscreen(f11 and not 'maximized') && focus listeners
+    attachTitlebarToWindow(g_mainWindow);
 
     if (g_settings.fit_mode === 0) {
       setFitToWidth();
@@ -442,6 +446,15 @@ ipcMain.on("page-loaded", (event, scrollBarPos) => {
   renderPageInfo();
   renderTitle();
 });
+
+// ipcMain.on("toMain", (event, args) => {
+//   fs.readFile("path/to/file", (error, data) => {
+//     // Do something with file contents
+
+//     // Send result back to renderer process
+//     g_mainWindow.webContents.send("fromMain", responseObj);
+//   });
+// });
 
 ///////////////////////////////////////////////////////////////////////////////
 

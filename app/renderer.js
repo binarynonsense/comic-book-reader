@@ -1,5 +1,4 @@
-const { ipcRenderer, remote } = require("electron");
-const { Menu } = remote;
+const { ipcRenderer } = require("electron");
 const customTitlebar = require("custom-electron-titlebar");
 const pdfjsLib = require("./assets/libs/pdfjs/build/pdf.js");
 const EPub = require("epub");
@@ -15,22 +14,20 @@ function cleanUp() {
 }
 
 let g_titlebar = new customTitlebar.Titlebar({
-  // backgroundColor: customTitlebar.Color.fromHex("#818181"),
-  // itemBackgroundColor: customTitlebar.Color.fromHex("#bbb"),
   icon: "./assets/images/icon_256x256.png",
   titleHorizontalAlignment: "right",
 });
 
 function moveScrollBarsToStart() {
-  document.querySelector(".container-after-titlebar").scrollTop = 0;
-  document.querySelector(".container-after-titlebar").scrollLeft = 0;
+  document.querySelector(".cet-container").scrollTop = 0;
+  document.querySelector(".cet-container").scrollLeft = 0;
 }
 
 function moveScrollBarsToEnd() {
-  document.querySelector(".container-after-titlebar").scrollTop =
-    document.querySelector(".container-after-titlebar").scrollHeight;
-  document.querySelector(".container-after-titlebar").scrollLeft =
-    document.querySelector(".container-after-titlebar").scrollWidth;
+  document.querySelector(".cet-container").scrollTop =
+    document.querySelector(".cet-container").scrollHeight;
+  document.querySelector(".cet-container").scrollLeft =
+    document.querySelector(".cet-container").scrollWidth;
 }
 
 function setScrollBarsPosition(position) {
@@ -64,7 +61,7 @@ ipcRenderer.on("update-clock", (event, time) => {
 });
 
 ipcRenderer.on("update-menubar", (event) => {
-  g_titlebar.updateMenu(Menu.getApplicationMenu());
+  g_titlebar.refreshMenu(); //  updateMenu(Menu.getApplicationMenu());
 });
 
 ipcRenderer.on("update-colors", (event, data) => {
@@ -153,7 +150,7 @@ ipcRenderer.on("set-fit-to-height", (event) => {
 
 ipcRenderer.on("update-title", (event, title) => {
   document.title = title;
-  g_titlebar.updateTitle();
+  g_titlebar.updateTitle(title);
 });
 
 ipcRenderer.on("render-page-info", (event, pageNum, numPages) => {
@@ -531,15 +528,15 @@ document.onkeydown = function (event) {
     ipcRenderer.send("end-pressed");
   } else if (event.keyCode == 40) {
     // arrow down
-    let container = document.querySelector(".container-after-titlebar");
+    let container = document.querySelector(".cet-container");
     let amount = container.offsetHeight / 5;
     container.scrollBy(0, amount);
     event.stopPropagation();
   } else if (event.keyCode == 38) {
     // arrow up
-    let container = document.querySelector(".container-after-titlebar");
+    let container = document.querySelector(".cet-container");
     let amount = container.offsetHeight / 5;
-    document.querySelector(".container-after-titlebar").scrollBy(0, -amount);
+    document.querySelector(".cet-container").scrollBy(0, -amount);
     event.stopPropagation();
   } else if (event.keyCode == 27) {
     // escape
@@ -555,7 +552,7 @@ document.onclick = function (event) {
     event.target.classList.contains("page") ||
     event.target.id === "page-canvas" ||
     event.target.id === "pages-container" ||
-    event.target.classList.contains("container-after-titlebar")
+    event.target.classList.contains("cet-container")
   ) {
     const mouseX = event.clientX;
     const bodyX = document.body.clientWidth;
@@ -622,29 +619,23 @@ function showScrollBar(isVisible) {
     document.body.classList.remove("hidden-scrollbar");
     // if custom title bar enabled:
     document
-      .querySelector(".container-after-titlebar")
+      .querySelector(".cet-container")
       .classList.remove("hidden-scrollbar");
   } else {
     // generic:
     document.body.classList.add("hidden-scrollbar");
     // if custom title bar enabled:
-    document
-      .querySelector(".container-after-titlebar")
-      .classList.add("hidden-scrollbar");
+    document.querySelector(".cet-container").classList.add("hidden-scrollbar");
   }
 }
 
 function showMenuBar(isVisible) {
   if (isVisible) {
     document.querySelector(".titlebar").classList.remove("set-display-none");
-    document
-      .querySelector(".container-after-titlebar")
-      .classList.remove("set-top-zero");
+    document.querySelector(".cet-container").classList.remove("set-top-zero");
   } else {
     document.querySelector(".titlebar").classList.add("set-display-none");
-    document
-      .querySelector(".container-after-titlebar")
-      .classList.add("set-top-zero");
+    document.querySelector(".cet-container").classList.add("set-top-zero");
   }
 }
 
@@ -652,12 +643,12 @@ function showToolBar(isVisible) {
   if (isVisible) {
     document.querySelector("#toolbar").classList.remove("set-display-none");
     document
-      .querySelector(".container-after-titlebar")
+      .querySelector(".cet-container")
       .classList.remove("set-margin-bottom-zero");
   } else {
     document.querySelector("#toolbar").classList.add("set-display-none");
     document
-      .querySelector(".container-after-titlebar")
+      .querySelector(".cet-container")
       .classList.add("set-margin-bottom-zero");
   }
 }
