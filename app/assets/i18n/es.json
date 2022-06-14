@@ -36,12 +36,12 @@
   "Show Page Number": "Mostrar Número de Página",
   "Show Clock": "Mostrar Reloj",
 
-  "Tools": "Herramientas",
-  "Convert Files...": "Converir Archivos...",
-  "Create File...": "Crear Archivo...",
-  "Convert Images...": "Convertir Imágenes...",
-  "Batch Convert...": "Convertir en Lote...",
-  "Create...": "Crear...",
+  "menu-tools": "Herramientas",
+  "menu-tools-convert": "Convert",
+  "menu-tools-convert-comics": "Comics...",
+  "menu-tools-convert-images": "Imágenes...",
+  "menu-tools-create": "Crear",
+  "menu-tools-create-comic": "Comic...",
 
   "Help": "Ayuda",
   "About": "Acerca de",

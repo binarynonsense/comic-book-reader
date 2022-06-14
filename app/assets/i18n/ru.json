@@ -36,12 +36,12 @@
   "Show Page Number": "Показывать номер страницы",
   "Show Clock": "Показывать часы",
 
-  "Tools": "Инструменты",
-  "[NEEDS TRANSLATION]Convert Files...": "",
-  "[NEEDS TRANSLATION]Create File...": "",
-  "[NEEDS TRANSLATION]Convert Images...": "",
-  "Batch Convert...": "Пакетное конвертирование...",
-  "Create...": "Создать...",
+  "menu-tools": "Инструменты",
+  "[NEEDS TRANSLATION]menu-tools-convert": "Convert",
+  "[NEEDS TRANSLATION]menu-tools-convert-comics": "Comic Books...",
+  "[NEEDS TRANSLATION]menu-tools-convert-images": "Images...",
+  "menu-tools-create": "Создать",
+  "[NEEDS TRANSLATION]menu-tools-create-comic": "Comic Book...",
 
   "Help": "Справка",
   "About": "О программе",
