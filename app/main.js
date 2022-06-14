@@ -18,7 +18,6 @@ const {
   FileDataType,
   ToolType,
 } = require("./constants");
-const { AsyncTaskManager } = require("builder-util");
 
 function isDev() {
   return process.argv[2] == "--dev";
