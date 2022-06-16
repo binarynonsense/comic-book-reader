@@ -84,7 +84,7 @@ function getOpenRecentSubmenu(history) {
   });
 
   menu.push({
-    label: _("Clear History"),
+    label: _("menu-file-openrecent-clear"),
     click() {
       mainProcess.onMenuClearHistory();
     },
@@ -166,22 +166,22 @@ function buildApplicationMenu(
 
   const menuConfig = Menu.buildFromTemplate([
     {
-      label: _("File"),
+      label: _("menu-file"),
       submenu: [
         {
-          label: _("Open..."),
+          label: _("menu-file-open"),
           accelerator: "CommandOrControl+O",
           click() {
             mainProcess.onMenuOpenFile();
           },
         },
         {
-          label: _("Open Recent"),
+          label: _("menu-file-openrecent"),
           submenu: getOpenRecentSubmenu(history),
         },
         {
           id: "close-file",
-          label: _("Close..."),
+          label: _("menu-file-close"),
           enabled: false,
           click() {
             mainProcess.onMenuCloseFile();
@@ -192,7 +192,7 @@ function buildApplicationMenu(
         },
         {
           id: "convert-file",
-          label: _("Convert..."),
+          label: _("menu-file-convert"),
           enabled: false,
           click() {
             mainProcess.onMenuConvertFile();
@@ -228,24 +228,24 @@ function buildApplicationMenu(
           type: "separator",
         },
         {
-          label: _("Preferences"),
+          label: _("menu-file-preferences"),
           submenu: [
             {
-              label: _("Languages"),
+              label: _("menu-file-preferences-languages"),
               submenu: languagesSubmenu,
             },
             {
-              label: _("Color Themes"),
+              label: _("menu-file-preferences-themes"),
               submenu: themesSubmenu,
             },
             {
-              label: _("Hotspots-Config"),
+              label: _("menu-file-preferences-hotspots"),
               submenu: [
                 {
                   id: "hotspots-0",
                   type: "checkbox",
                   checked: settings.hotspots_mode === 0,
-                  label: _("Hotspots-Disabled"),
+                  label: _("menu-file-preferences-hotspots-disabled"),
                   click() {
                     mainProcess.onMenuChangeHotspotsMode(0);
                   },
@@ -254,7 +254,7 @@ function buildApplicationMenu(
                   id: "hotspots-1",
                   type: "checkbox",
                   checked: settings.hotspots_mode === 1,
-                  label: _("Hotspots-2-Columns"),
+                  label: _("menu-file-preferences-hotspots-2columns"),
                   click() {
                     mainProcess.onMenuChangeHotspotsMode(1);
                   },
@@ -263,7 +263,7 @@ function buildApplicationMenu(
                   id: "hotspots-2",
                   type: "checkbox",
                   checked: settings.hotspots_mode === 2,
-                  label: _("Hotspots-3-Columns"),
+                  label: _("menu-file-preferences-hotspots-3columns"),
                   click() {
                     mainProcess.onMenuChangeHotspotsMode(2);
                   },
@@ -271,13 +271,13 @@ function buildApplicationMenu(
               ],
             },
             {
-              label: _("AutoOpen-Config"),
+              label: _("menu-file-preferences-autoopen"),
               submenu: [
                 {
                   id: "auto-open-0",
                   type: "checkbox",
                   checked: settings.autoOpen === 0,
-                  label: _("AutoOpen-Disabled"),
+                  label: _("menu-file-preferences-autoopen-disabled"),
                   click() {
                     mainProcess.onMenuChangeAutoOpen(0);
                   },
@@ -286,7 +286,7 @@ function buildApplicationMenu(
                   id: "auto-open-1",
                   type: "checkbox",
                   checked: settings.autoOpen === 1,
-                  label: _("AutoOpen-Next"),
+                  label: _("menu-file-preferences-autoopen-next"),
                   click() {
                     mainProcess.onMenuChangeAutoOpen(1);
                   },
@@ -295,7 +295,7 @@ function buildApplicationMenu(
                   id: "auto-open-2",
                   type: "checkbox",
                   checked: settings.autoOpen === 2,
-                  label: _("AutoOpen-NextAndPrev"),
+                  label: _("menu-file-preferences-autoopen-nextandprev"),
                   click() {
                     mainProcess.onMenuChangeAutoOpen(2);
                   },
@@ -308,7 +308,7 @@ function buildApplicationMenu(
           type: "separator",
         },
         {
-          label: _("Quit"),
+          label: _("menu-file-quit"),
           accelerator: "CommandOrControl+Q",
           click() {
             app.quit();
@@ -317,14 +317,14 @@ function buildApplicationMenu(
       ],
     },
     {
-      label: _("View"),
+      label: _("menu-view"),
       submenu: [
         {
-          label: _("Zoom"),
+          label: _("menu-view-zoom"),
           submenu: [
             {
               id: "fit-to-width",
-              label: _("Fit to Width"),
+              label: _("menu-view-zoom-fitwidth"),
               type: "checkbox",
               checked: settings.fit_mode == 0,
               click() {
@@ -333,7 +333,7 @@ function buildApplicationMenu(
             },
             {
               id: "fit-to-height",
-              label: _("Fit to Height"),
+              label: _("menu-view-zoom-fitheight"),
               type: "checkbox",
               checked: settings.fit_mode == 1,
               click() {
@@ -343,7 +343,7 @@ function buildApplicationMenu(
           ],
         },
         {
-          label: _("Rotation"),
+          label: _("menu-view-rotation"),
           submenu: [
             {
               id: "rotation-0",
@@ -384,22 +384,22 @@ function buildApplicationMenu(
           ],
         },
         {
-          label: _("Page"),
+          label: _("menu-view-page"),
           submenu: [
             {
-              label: _("Go to First"),
+              label: _("menu-view-page-first"),
               click() {
                 mainProcess.onGoToPageFirst();
               },
             },
             {
-              label: _("Go to Last"),
+              label: _("menu-view-page-last"),
               click() {
                 mainProcess.onGoToPageLast();
               },
             },
             {
-              label: _("Go to..."),
+              label: _("menu-view-page-choose"),
               click() {
                 mainProcess.onGoToPageDialog();
               },
@@ -410,7 +410,7 @@ function buildApplicationMenu(
           type: "separator",
         },
         {
-          label: _("Show Scroll Bar"),
+          label: _("menu-view-showscrollbar"),
           id: "scrollbar",
           type: "checkbox",
           checked: settings.showScrollBar,
@@ -420,7 +420,7 @@ function buildApplicationMenu(
           },
         },
         {
-          label: _("Show Tool Bar"),
+          label: _("menu-view-showtoolbar"),
           id: "toolbar",
           type: "checkbox",
           checked: settings.showToolBar,
@@ -430,7 +430,7 @@ function buildApplicationMenu(
           },
         },
         {
-          label: _("Show Page Number"),
+          label: _("menu-view-showpagenum"),
           id: "page-number",
           type: "checkbox",
           checked: settings.showPageNumber,
@@ -440,7 +440,7 @@ function buildApplicationMenu(
           },
         },
         {
-          label: _("Show Clock"),
+          label: _("menu-view-showclock"),
           id: "clock",
           type: "checkbox",
           checked: settings.showClock,
@@ -453,7 +453,7 @@ function buildApplicationMenu(
           type: "separator",
         },
         {
-          label: _("Toggle Full Screen"),
+          label: _("menu-view-togglefullscreen"),
           accelerator: "F11",
           click() {
             mainProcess.onMenuToggleFullScreen();
@@ -512,10 +512,10 @@ function buildApplicationMenu(
       ],
     },
     {
-      label: _("Help"),
+      label: _("menu-help"),
       submenu: [
         {
-          label: _("About"),
+          label: _("menu-help-about"),
           click() {
             mainProcess.onMenuAbout();
           },

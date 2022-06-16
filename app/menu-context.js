@@ -10,13 +10,13 @@ function _(...args) {
 exports.buildContextMenu = function () {
   contextMenu = Menu.buildFromTemplate([
     {
-      label: _("Next Page"),
+      label: _("ctxmenu-nextpage"),
       click() {
         mainProcess.onMenuNextPage();
       },
     },
     {
-      label: _("Previous Page"),
+      label: _("ctxmenu-prevpage"),
       click() {
         mainProcess.onMenuPreviousPage();
       },
@@ -25,18 +25,18 @@ exports.buildContextMenu = function () {
       type: "separator",
     },
     {
-      label: _("Zoom"),
+      label: _("menu-view-zoom"),
       submenu: [
         {
           id: "fit-to-width",
-          label: _("Fit to Width"),
+          label: _("menu-view-zoom-fitwidth"),
           click() {
             mainProcess.onMenuFitToWidth();
           },
         },
         {
           id: "fit-to-height",
-          label: _("Fit to Height"),
+          label: _("menu-view-zoom-fitheight"),
           click() {
             mainProcess.onMenuFitToHeight();
           },
@@ -44,18 +44,18 @@ exports.buildContextMenu = function () {
       ],
     },
     {
-      label: _("Rotate"),
+      label: _("ctxmenu-rotate"),
       submenu: [
         {
           id: "rotate-clockwise",
-          label: _("Clockwise"),
+          label: _("ctxmenu-rotate-clockwise"),
           click() {
             mainProcess.onMenuRotateClockwise();
           },
         },
         {
           id: "rotation-counterclockwise",
-          label: _("Counterclockwise"),
+          label: _("ctxmenu-rotate-counterclockwise"),
           click() {
             mainProcess.onMenuRotateCounterclockwise();
           },
@@ -63,22 +63,22 @@ exports.buildContextMenu = function () {
       ],
     },
     {
-      label: _("Page"),
+      label: _("menu-view-page"),
       submenu: [
         {
-          label: _("Go to First"),
+          label: _("menu-view-page-first"),
           click() {
             mainProcess.onGoToPageFirst();
           },
         },
         {
-          label: _("Go to Last"),
+          label: _("menu-view-page-last"),
           click() {
             mainProcess.onGoToPageLast();
           },
         },
         {
-          label: _("Go to..."),
+          label: _("menu-view-page-choose"),
           click() {
             mainProcess.onGoToPageDialog();
           },
@@ -89,7 +89,7 @@ exports.buildContextMenu = function () {
       type: "separator",
     },
     {
-      label: _("Open File..."),
+      label: _("ctxmenu-openfile"),
       accelerator: "CommandOrControl+O",
       click() {
         mainProcess.onMenuOpenFile();
@@ -99,7 +99,7 @@ exports.buildContextMenu = function () {
       type: "separator",
     },
     {
-      label: _("Toggle Full Screen"),
+      label: _("menu-view-togglefullscreen"),
       accelerator: "F11",
       click() {
         mainProcess.onMenuToggleFullScreen();

@@ -367,19 +367,16 @@ function rebuildTranslatedTexts(rebuildMenu = true) {
 
   g_mainWindow.webContents.send(
     "update-toolbar-tooltips",
-    _("Open File..."),
-    _("Previous Page"),
-    _("Next Page"),
-    _("Fit to Width"),
-    _("Fit to Height"),
-    _("Rotate Counterclockwise"),
-    _("Rotate Clockwise"),
-    _("Toggle Full Screen")
+    _("ctxmenu-openfile"),
+    _("ctxmenu-prevpage"),
+    _("ctxmenu-nextpage"),
+    _("menu-view-zoom-fitwidth"),
+    _("menu-view-zoom-fitheight"),
+    _("toolbar-rotate-counterclockwise"),
+    _("toolbar-rotate-clockwise"),
+    _("menu-view-togglefullscreen")
   );
-  g_mainWindow.webContents.send(
-    "update-centered-block-text",
-    _("To open a file use the menu or press <i>Ctrl+O</i>")
-  );
+  g_mainWindow.webContents.send("update-centered-block-text", _("ui-bg-msg"));
 }
 
 function _(...args) {
@@ -482,8 +479,8 @@ ipcMain.on("epub-load-failed", (event) => {
   g_fileData.state = FileDataState.LOADED;
   g_mainWindow.webContents.send(
     "show-modal-info",
-    _("File Error"),
-    _("Couldn't open the EPUB file")
+    _("ui-modal-info-fileerror"),
+    _("ui-modal-info-couldntopen-epub")
   );
 });
 
@@ -520,8 +517,8 @@ ipcMain.on("pdf-load-failed", (event) => {
   g_fileData.state = FileDataState.LOADED;
   g_mainWindow.webContents.send(
     "show-modal-info",
-    _("File Error"),
-    _("Couldn't open the PDF file")
+    _("ui-modal-info-fileerror"),
+    _("ui-modal-info-couldntopen-pdf")
   );
 });
 
@@ -766,7 +763,7 @@ exports.onMenuOpenFile = onMenuOpenFile = function (filePath) {
   if (filePath === undefined || filePath === "" || !fs.existsSync(filePath)) {
     g_mainWindow.webContents.send(
       "show-modal-info",
-      _("File Not Found"),
+      _("ui-modal-info-filenotfound"),
       filePath
     );
     return;
@@ -849,7 +846,7 @@ exports.onMenuAbout = function () {
     "show-modal-info",
     "ACBR",
     "ACBR Comic Book Reader\n" +
-      _("version") +
+      _("ui-modal-info-version") +
       ": " +
       app.getVersion() +
       "\n(c) Álvaro García\nwww.binarynonsense.com"
@@ -858,7 +855,9 @@ exports.onMenuAbout = function () {
 
 exports.onGoToPageDialog = function () {
   g_mainWindow.webContents.send("update-menubar");
-  let question = `${_("Page Number")} (1-${g_fileData.numPages}):`;
+  let question = `${_("ui-modal-prompt-pagenumber")} (1-${
+    g_fileData.numPages
+  }):`;
   g_mainWindow.webContents.send(
     "show-modal-prompt",
     question,
@@ -944,8 +943,8 @@ function openFile(filePath, pageIndex = 0) {
         } else {
           g_mainWindow.webContents.send(
             "show-modal-info",
-            _("File Error"),
-            _("Couldn't open the CBR file")
+            _("ui-modal-info-fileerror"),
+            _("ui-modal-info-couldntopen-rar")
           );
           g_mainWindow.webContents.send("update-loading", false);
         }
@@ -970,16 +969,16 @@ function openFile(filePath, pageIndex = 0) {
         } else {
           g_mainWindow.webContents.send(
             "show-modal-info",
-            _("File Error"),
-            _("Couldn't open the CBZ file")
+            _("ui-modal-info-fileerror"),
+            _("ui-modal-info-couldntopen-zip")
           );
           g_mainWindow.webContents.send("update-loading", false);
         }
       } else {
         g_mainWindow.webContents.send(
           "show-modal-info",
-          _("File Error"),
-          _("Not a valid file format")
+          _("ui-modal-info-fileerror"),
+          _("ui-modal-info-invalidformat")
         );
         g_mainWindow.webContents.send("update-loading", false);
         return;
@@ -1249,7 +1248,7 @@ async function exportPageStart(sendToTool = false) {
               g_mainWindow.webContents.send(
                 "show-modal-info",
                 "",
-                _("Image file saved to:") +
+                _("ui-modal-info-imagesavedto") +
                   "\n" +
                   fileUtils.reducePathString(message[1], 85)
               );
@@ -1311,7 +1310,7 @@ function exportPageSaveBuffer(buf, outputFolderPath, sendToTool) {
           g_mainWindow.webContents.send(
             "show-modal-info",
             "",
-            _("Image file saved to:") +
+            _("ui-modal-info-imagesavedto") +
               "\n" +
               fileUtils.reducePathString(outputFilePath, 85)
           );
@@ -1332,7 +1331,7 @@ function exportPageError(err) {
   g_mainWindow.webContents.send(
     "show-modal-info",
     "",
-    _("Error: Couldn't export the page")
+    _("ui-modal-info-errorexportingpage")
   );
 }
 
