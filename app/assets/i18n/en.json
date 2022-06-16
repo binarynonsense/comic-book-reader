@@ -16,7 +16,9 @@
   "Close...": "Close...",
   "Open File...": "Open File...",
   "Convert...": "Convert...",
-  "Export Page...": "Export Page...",  
+  "menu-file-page": "Page",
+  "menu-file-page-export": "Export...",  
+  "menu-file-page-extract": "Extract Text...",  
   "Quit": "Quit",
 
   "View": "View",  
@@ -43,7 +45,7 @@
   "menu-tools-create": "Create",
   "menu-tools-create-comic": "Comic Book...",
   "menu-tools-extract": "Extract",
-  "menu-tools-extract-text": "Text From Image...",
+  "menu-tools-extract-text": "Text From Image (OCR)...",
 
   "Help": "Help",
   "About": "About",
@@ -124,5 +126,17 @@
 
   "tooltip-output-size": "The size of the pages will be reduced to this percentage of the originals",
   "tooltip-output-folder": "If a file with the same name already exists in the folder, a subfix will be added to the converted file's name so nothing is overwritten",
-  "tooltip-remove-from-list": "remove from list"
+  "tooltip-remove-from-list": "remove from list",
+
+  "tool-ocr-title": "Extract Text Tool",
+  "tool-ocr-header-input-file": "Input Image:",
+  "tool-ocr-header-output-text": "Output Text:",
+  "tool-ocr-button-add-file": "Change Image",
+  "tool-ocr-button-copy-text": "Copy Text",
+  "tool-ocr-button-extract-text": "Extract Text",
+  "tool-ocr-header-language": "Language:",
+  "tool-ocr-span-language-checkbox-info": "Include languages that require an internet connection to work",
+  "tool-ocr-modal-title": "Extracting Text",
+  "tool-ocr-modal-info": "(experimental)",
+  "tool-ocr-modal-button-cancel": "Cancel"
 }

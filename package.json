@@ -53,7 +53,7 @@
     "natural-compare-lite": "^1.4.0",
     "node-unrar-js": "^0.8.1",
     "pdfkit": "^0.11.0",
-    "sharp": "^0.30.4",
+    "sharp": "^0.30.6",
     "tesseract.js": "^2.1.5"
   }
 }

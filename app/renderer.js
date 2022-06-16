@@ -201,8 +201,8 @@ ipcRenderer.on("refresh-pdf-page", (event, rotation) => {
 
 ipcRenderer.on(
   "extract-pdf-image-buffer",
-  (event, filePath, pageNum, outputFolderPath) => {
-    extractPDFImageBuffer(filePath, pageNum, outputFolderPath);
+  (event, filePath, pageNum, outputFolderPath, sendToTool) => {
+    extractPDFImageBuffer(filePath, pageNum, outputFolderPath, sendToTool);
   }
 );
 
@@ -466,7 +466,12 @@ function renderCurrentPDFPage(rotation, scrollBarPos) {
   });
 }
 
-async function extractPDFImageBuffer(filePath, pageNum, outputFolderPath) {
+async function extractPDFImageBuffer(
+  filePath,
+  pageNum,
+  outputFolderPath,
+  sendToTool
+) {
   pdfjsLib.GlobalWorkerOptions.workerSrc =
     "./assets/libs/pdfjs/build/pdf.worker.js";
   try {
@@ -494,10 +499,17 @@ async function extractPDFImageBuffer(filePath, pageNum, outputFolderPath) {
       "pdf-page-buffer-extracted",
       undefined,
       buf,
-      outputFolderPath
+      outputFolderPath,
+      sendToTool
     );
   } catch (err) {
-    ipcRenderer.send("pdf-page-buffer-extracted", err, buf, outputFolderPath);
+    ipcRenderer.send(
+      "pdf-page-buffer-extracted",
+      err,
+      buf,
+      outputFolderPath,
+      sendToTool
+    );
   }
 }
 

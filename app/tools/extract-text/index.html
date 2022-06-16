@@ -8,34 +8,182 @@
       rel="stylesheet"
       href="../../assets/libs/materialize/css/materialize.min.css"
     />
-    <link rel="stylesheet" href="../../assets/css/convert.css" />
+    <link
+      rel="stylesheet"
+      href="../../assets/libs/cropperjs/dist/cropper.css"
+    />
+    <link rel="stylesheet" href="./css/style.css" />
     <title></title>
   </head>
   <body>
     <div class="container center-align">
-      <h5 id="text-input-file">Input Image:</h5>
-      <a
-        class="waves-effect waves-light btn"
-        id="button-add-file"
-        onclick="renderer.onChooseInputFile()"
-        >OPEN IMAGE</a
-      >
-
-      <div id="image"></div>
-
-      <a
-        id="button-convert"
-        class="btn modal-trigger blue-grey darken-3 disabled"
-        onclick="renderer.onConvert()"
-        data-target="modal1"
-        >EXTRACT</a
-      >
+      <div class="row">
+        <div class="col s6">
+          <h5 id="header-input-file">Input Image:</h5>
+          <div id="image-container">
+            <img id="image" src="../../assets/ocr-data/testocr.png" />
+          </div>
+          <a
+            class="waves-effect waves-light btn"
+            id="button-add-file"
+            onclick="renderer.onChooseInputFile()"
+            >SELECT IMAGE</a
+          >
+        </div>
+        <div class="col s6">
+          <h5 id="header-output-text">Output Text:</h5>
+          <textarea id="textarea-output" readonly></textarea>
+          <a
+            class="waves-effect waves-light btn"
+            id="button-copy-text"
+            onclick="renderer.onCopyTextAreaText()"
+            >COPY TEXT</a
+          >
+        </div>
+      </div>
+      <div class="row">
+        <div class="col s12">
+          <a
+            id="button-extract-text"
+            class="btn waves-effect waves-purple btn modal-trigger blue"
+            onclick="renderer.onExtract()"
+            data-target="modal1"
+            >EXTRACT TEXT ></a
+          >
+          <h5 id="header-language">Language:</h5>
+          <select id="language-select-offline" class="browser-default">
+            <option value="eng" selected>English (offline)</option>
+            <option value="spa">Spanish (offline)</option>
+          </select>
+          <select id="language-select-online" class="browser-default hide">
+            <option value="offline-eng" selected>English (offline)</option>
+            <option value="offline-spa">Spanish (offline)</option>
+            <!-- ref: https://tesseract-ocr.github.io/tessdoc/Data-Files#data-files-for-version-400-november-29-2016 -->
+            <option value="afr">Afrikaans</option>
+            <option value="amh">Amharic</option>
+            <option value="ara">Arabic</option>
+            <option value="asm">Assamese</option>
+            <option value="aze">Azerbaijani</option>
+            <option value="aze_cyrl">Azerbaijani - Cyrillic</option>
+            <option value="bel">Belarusian</option>
+            <option value="ben">Bengali</option>
+            <option value="bod">Tibetan</option>
+            <option value="bos">Bosnian</option>
+            <option value="bul">Bulgarian</option>
+            <option value="cat">Catalan; Valencian</option>
+            <option value="ceb">Cebuano</option>
+            <option value="ces">Czech</option>
+            <option value="chi_sim">Chinese - Simplified</option>
+            <option value="chi_tra">Chinese - Traditional</option>
+            <option value="chr">Cherokee</option>
+            <option value="cym">Welsh</option>
+            <option value="dan">Danish</option>
+            <option value="deu">German</option>
+            <option value="dzo">Dzongkha</option>
+            <option value="ell">Greek, Modern (1453-)</option>
+            <option value="eng">English</option>
+            <option value="enm">English, Middle (1100-1500)</option>
+            <option value="epo">Esperanto</option>
+            <option value="est">Estonian</option>
+            <option value="eus">Basque</option>
+            <option value="fas">Persian</option>
+            <option value="fin">Finnish</option>
+            <option value="fra">French</option>
+            <option value="frk">German Fraktur</option>
+            <option value="frm">French, Middle (ca. 1400-1600)</option>
+            <option value="gle">Irish</option>
+            <option value="glg">Galician</option>
+            <option value="grc">Greek, Ancient (-1453)</option>
+            <option value="guj">Gujarati</option>
+            <option value="hat">Haitian; Haitian Creole</option>
+            <option value="heb">Hebrew</option>
+            <option value="hin">Hindi</option>
+            <option value="hrv">Croatian</option>
+            <option value="hun">Hungarian</option>
+            <option value="iku">Inuktitut</option>
+            <option value="ind">Indonesian</option>
+            <option value="isl">Icelandic</option>
+            <option value="ita">Italian</option>
+            <option value="ita_old">Italian - Old</option>
+            <option value="jav">Javanese</option>
+            <option value="jpn">Japanese</option>
+            <option value="kan">Kannada</option>
+            <option value="kat">Georgian</option>
+            <option value="kat_old">Georgian - Old</option>
+            <option value="kaz">Kazakh</option>
+            <option value="khm">Central Khmer</option>
+            <option value="kir">Kirghiz; Kyrgyz</option>
+            <option value="kor">Korean</option>
+            <option value="kur">Kurdish</option>
+            <option value="lao">Lao</option>
+            <option value="lat">Latin</option>
+            <option value="lav">Latvian</option>
+            <option value="lit">Lithuanian</option>
+            <option value="mal">Malayalam</option>
+            <option value="mar">Marathi</option>
+            <option value="mkd">Macedonian</option>
+            <option value="mlt">Maltese</option>
+            <option value="msa">Malay</option>
+            <option value="mya">Burmese</option>
+            <option value="nep">Nepali</option>
+            <option value="nld">Dutch; Flemish</option>
+            <option value="nor">Norwegian</option>
+            <option value="ori">Oriya</option>
+            <option value="pan">Panjabi; Punjabi</option>
+            <option value="pol">Polish</option>
+            <option value="por">Portuguese</option>
+            <option value="pus">Pushto; Pashto</option>
+            <option value="ron">Romanian; Moldavian; Moldovan</option>
+            <option value="rus">Russian</option>
+            <option value="san">Sanskrit</option>
+            <option value="sin">Sinhala; Sinhalese</option>
+            <option value="slk">Slovak</option>
+            <option value="slv">Slovenian</option>
+            <option value="spa">Spanish; Castilian</option>
+            <option value="spa_old">Spanish; Castilian - Old</option>
+            <option value="sqi">Albanian</option>
+            <option value="srp">Serbian</option>
+            <option value="srp_latn">Serbian - Latin</option>
+            <option value="swa">Swahili</option>
+            <option value="swe">Swedish</option>
+            <option value="syr">Syriac</option>
+            <option value="tam">Tamil</option>
+            <option value="tel">Telugu</option>
+            <option value="tgk">Tajik</option>
+            <option value="tgl">Tagalog</option>
+            <option value="tha">Thai</option>
+            <option value="tir">Tigrinya</option>
+            <option value="tur">Turkish</option>
+            <option value="uig">Uighur; Uyghur</option>
+            <option value="ukr">Ukrainian</option>
+            <option value="urd">Urdu</option>
+            <option value="uzb">Uzbek</option>
+            <option value="uzb_cyrl">Uzbek - Cyrillic</option>
+            <option value="vie">Vietnamese</option>
+            <option value="yid">Yiddish</option>
+          </select>
+          <form action="#">
+            <p>
+              <label>
+                <input
+                  id="language-checkbox"
+                  type="checkbox"
+                  onclick="renderer.onLanguageCheckboxClicked(this)"
+                />
+                <span id="span-language-checkbox-info"
+                  >Include languages that require downloading extra data</span
+                >
+              </label>
+            </p>
+          </form>
+        </div>
+      </div>
     </div>
 
     <div id="modal1" class="modal">
       <div class="modal-content">
         <h5 id="modal-title"></h5>
-        <p id="modal-info">...</p>
+        <p id="modal-info"></p>
         <div class="progress" id="modal-loading-bar">
           <div class="indeterminate"></div>
         </div>
@@ -52,20 +200,31 @@
         ></textarea>
       </div>
       <a
-        class="yellow darken-3 btn"
+        class="modal-close yellow darken-3 btn"
         id="button-modal-cancel"
         onclick="renderer.onCancelConversion()"
         >Cancel</a
       >
-      <a
+      <!-- <a
         href="#!"
         class="modal-close btn waves-effect green darken-3"
         id="button-modal-close"
         >Close</a
-      >
+      > -->
     </div>
 
     <script src="../../assets/libs/materialize/js/materialize.min.js"></script>
+    <script>
+      const renderer = require("./renderer");
+    </script>
+    <script>
+      window.addEventListener("DOMContentLoaded", function () {
+        renderer.initCropper();
+        var elem = document.querySelector(".modal");
+        var instance = M.Modal.getInstance(elem);
+        renderer.initModal(instance);
+      });
+    </script>
     <script>
       document.addEventListener("DOMContentLoaded", function () {
         var elems = document.querySelectorAll(".modal");
@@ -74,9 +233,6 @@
           onCloseStart: null,
         });
       });
-    </script>
-    <script>
-      const renderer = require("./renderer");
     </script>
   </body>
 </html>

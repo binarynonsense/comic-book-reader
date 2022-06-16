@@ -54,15 +54,13 @@ exports.setAutoOpen = function (mode) {
   Menu.getApplicationMenu().getMenuItemById("auto-open-2").checked = mode === 2;
 };
 
-exports.setConvertFile = function (isEnabled) {
+exports.setFileOpened = function (isEnabled) {
   Menu.getApplicationMenu().getMenuItemById("convert-file").enabled = isEnabled;
-};
-
-exports.setExportPage = function (isEnabled) {
-  Menu.getApplicationMenu().getMenuItemById("export-page").enabled = isEnabled;
-};
-
-exports.setCloseFile = function (isEnabled) {
+  Menu.getApplicationMenu().getMenuItemById("file-page").enabled = isEnabled;
+  Menu.getApplicationMenu().getMenuItemById("file-page-export").enabled =
+    isEnabled;
+  Menu.getApplicationMenu().getMenuItemById("file-page-extract").enabled =
+    isEnabled;
   Menu.getApplicationMenu().getMenuItemById("close-file").enabled = isEnabled;
 };
 
@@ -201,13 +199,31 @@ function buildApplicationMenu(
           },
         },
         {
-          id: "export-page",
-          label: _("Export Page..."),
-          enabled: false,
-          click() {
-            mainProcess.onMenuExportPage();
-          },
+          type: "separator",
         },
+        {
+          id: "file-page",
+          label: _("menu-file-page"),
+          submenu: [
+            {
+              id: "file-page-export",
+              label: _("menu-file-page-export"),
+              enabled: false,
+              click() {
+                mainProcess.onMenuPageExport();
+              },
+            },
+            {
+              id: "file-page-extract",
+              label: _("menu-file-page-extract"),
+              enabled: false,
+              click() {
+                mainProcess.onMenuPageExtractText();
+              },
+            },
+          ],
+        },
+
         {
           type: "separator",
         },

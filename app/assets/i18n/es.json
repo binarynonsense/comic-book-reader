@@ -16,7 +16,9 @@
   "Close...": "Cerrar...",
   "Open File...": "Abrir Archivo...",
   "Convert...": "Convertir...",
-  "Export Page...": "Exportar Página...",
+  "menu-file-page": "Página",
+  "menu-file-page-export": "Exportar...",  
+  "menu-file-page-extract": "Extraer Texto...",  
   "Quit": "Salir",
 
   "View": "Ver",
@@ -37,11 +39,13 @@
   "Show Clock": "Mostrar Reloj",
 
   "menu-tools": "Herramientas",
-  "menu-tools-convert": "Convert",
-  "menu-tools-convert-comics": "Comics...",
+  "menu-tools-convert": "Convertir",
+  "menu-tools-convert-comics": "Cómics...",
   "menu-tools-convert-images": "Imágenes...",
   "menu-tools-create": "Crear",
-  "menu-tools-create-comic": "Comic...",
+  "menu-tools-create-comic": "Cómic...",
+  "menu-tools-extract": "Extraer",
+  "menu-tools-extract-text": "Texto de Imágen (OCR)...",
 
   "Help": "Ayuda",
   "About": "Acerca de",
@@ -121,5 +125,17 @@
 
   "tooltip-output-size": "El tamaño de las páginas se reducirá a este porcentaje de las originales",
   "tooltip-output-folder": "Si un archivo con el mismo nombre ya existe en el directorio, se añadirá un subfijo al nombre del archivo de salida para que ningún archivo sea sobreescrito",
-  "tooltip-remove-from-list": "quitar de la lista"
+  "tooltip-remove-from-list": "quitar de la lista",
+
+  "tool-ocr-title": "Herramienta de extracción de texto",
+  "tool-ocr-header-input-file": "Imagen de Entrada:",
+  "tool-ocr-header-output-text": "Texto de Salida:",
+  "tool-ocr-button-add-file": "Cambiar Imagen",
+  "tool-ocr-button-copy-text": "Copiar Texto",
+  "tool-ocr-button-extract-text": "Extraer Texto",
+  "tool-ocr-header-language": "Idioma:",
+  "tool-ocr-span-language-checkbox-info": "Incluir idiomas que requieren una conexión a internet para funcionar",
+  "tool-ocr-modal-title": "Extrayendo Texto",
+  "tool-ocr-modal-info": "(experimental)",
+  "tool-ocr-modal-button-cancel": "Cancelar"
 }

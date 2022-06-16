@@ -527,11 +527,11 @@ ipcMain.on("pdf-load-failed", (event) => {
 
 ipcMain.on(
   "pdf-page-buffer-extracted",
-  (event, error, buf, outputFolderPath) => {
+  (event, error, buf, outputFolderPath, sendToTool) => {
     if (error !== undefined) {
       exportPageError(error);
     } else {
-      exportPageSaveBuffer(buf, outputFolderPath);
+      exportPageSaveBuffer(buf, outputFolderPath, sendToTool);
     }
   }
 );
@@ -800,8 +800,12 @@ exports.onMenuCloseFile = function () {
   g_mainWindow.webContents.send("update-menubar");
 };
 
-exports.onMenuExportPage = function () {
+exports.onMenuPageExport = function () {
   exportPageStart();
+};
+
+exports.onMenuPageExtractText = function () {
+  exportPageStart(true);
 };
 
 exports.onMenuConvertFile = function () {
@@ -1190,13 +1194,19 @@ function goToPreviousPage() {
 // EXPORT /////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-async function exportPageStart() {
-  let defaultPath = app.getPath("desktop");
-  let folderList = fileUtils.chooseFolder(g_mainWindow, defaultPath);
-  if (folderList === undefined) {
-    return;
+async function exportPageStart(sendToTool = false) {
+  let outputFolderPath;
+  if (sendToTool) {
+    outputFolderPath = fileUtils.createTempFolder();
+  } else {
+    let defaultPath = app.getPath("desktop");
+    let folderList = fileUtils.chooseFolder(g_mainWindow, defaultPath);
+    if (folderList === undefined) {
+      return;
+    }
+    outputFolderPath = folderList[0];
   }
-  let outputFolderPath = folderList[0];
+
   if (
     g_fileData.filePath === "" ||
     outputFolderPath === undefined ||
@@ -1211,7 +1221,8 @@ async function exportPageStart() {
         "extract-pdf-image-buffer",
         g_fileData.path,
         g_fileData.pageIndex + 1,
-        outputFolderPath
+        outputFolderPath,
+        sendToTool
       );
       return;
     } else {
@@ -1226,13 +1237,23 @@ async function exportPageStart() {
           g_workerExport.kill(); // kill it after one use
           if (message[0] === true) {
             g_mainWindow.webContents.send("update-loading", false);
-            g_mainWindow.webContents.send(
-              "show-modal-info",
-              "",
-              _("Image file saved to:") +
-                "\n" +
-                fileUtils.reducePathString(message[1], 85)
-            );
+            if (message[1]) {
+              // sendToTool === true
+              extractTextTool.showWindow(
+                ToolType.EXTRACT_TEXT,
+                g_mainWindow,
+                message[1]
+              );
+              g_mainWindow.webContents.send("update-menubar");
+            } else {
+              g_mainWindow.webContents.send(
+                "show-modal-info",
+                "",
+                _("Image file saved to:") +
+                  "\n" +
+                  fileUtils.reducePathString(message[1], 85)
+              );
+            }
             return;
           } else {
             exportPageError(message[1]);
@@ -1243,6 +1264,7 @@ async function exportPageStart() {
       g_workerExport.send({
         data: g_fileData,
         outputFolderPath: outputFolderPath,
+        sendToTool: sendToTool,
       });
     }
   } catch (err) {
@@ -1250,7 +1272,7 @@ async function exportPageStart() {
   }
 }
 
-function exportPageSaveBuffer(buf, outputFolderPath) {
+function exportPageSaveBuffer(buf, outputFolderPath, sendToTool) {
   if (buf !== undefined) {
     try {
       (async () => {
@@ -1278,13 +1300,22 @@ function exportPageSaveBuffer(buf, outputFolderPath) {
         }
         fs.writeFileSync(outputFilePath, buf, "binary");
 
-        g_mainWindow.webContents.send(
-          "show-modal-info",
-          "",
-          _("Image file saved to:") +
-            "\n" +
-            fileUtils.reducePathString(outputFilePath, 85)
-        );
+        if (sendToTool) {
+          extractTextTool.showWindow(
+            ToolType.EXTRACT_TEXT,
+            g_mainWindow,
+            outputFilePath
+          );
+          g_mainWindow.webContents.send("update-menubar");
+        } else {
+          g_mainWindow.webContents.send(
+            "show-modal-info",
+            "",
+            _("Image file saved to:") +
+              "\n" +
+              fileUtils.reducePathString(outputFilePath, 85)
+          );
+        }
       })();
       g_mainWindow.webContents.send("update-loading", false);
     } catch (err) {
@@ -1422,13 +1453,9 @@ function updateMenuItemsState() {
       g_fileData.type === FileDataType.EPUB ||
       g_fileData.type === FileDataType.PDF
     ) {
-      menuBar.setCloseFile(true);
-      menuBar.setConvertFile(true);
-      menuBar.setExportPage(true);
+      menuBar.setFileOpened(true);
     } else {
-      menuBar.setCloseFile(false);
-      menuBar.setConvertFile(false);
-      menuBar.setExportPage(false);
+      menuBar.setFileOpened(false);
     }
   }
 }

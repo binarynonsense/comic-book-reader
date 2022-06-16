@@ -5,10 +5,10 @@ const fileFormats = require("./file-formats");
 const { FileExtension, FileDataType } = require("./constants");
 
 process.on("message", (message) => {
-  exportPage(message.data, message.outputFolderPath);
+  exportPage(message.data, message.outputFolderPath, message.sendToTool);
 });
 
-async function exportPage(fileData, outputFolderPath) {
+async function exportPage(fileData, outputFolderPath, sendToTool) {
   try {
     let buf;
     if (fileData.type === FileDataType.ZIP) {
@@ -60,7 +60,7 @@ async function exportPage(fileData, outputFolderPath) {
 
         fs.writeFileSync(outputFilePath, buf, "binary");
 
-        process.send([true, outputFilePath]);
+        process.send([true, outputFilePath, sendToTool]);
       })();
     }
   } catch (err) {

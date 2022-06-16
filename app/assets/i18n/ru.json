@@ -16,7 +16,9 @@
   "Close...": "Закрыть...",
   "Open File...": "Открыть файл...",
   "Convert...": "Конвертировать...",
-  "Export Page...": "Экспорт страницы...",
+  "[NEEDS TRANSLATION]menu-file-page": "Page",
+  "[NEEDS TRANSLATION]menu-file-page-export": "Export...",  
+  "[NEEDS TRANSLATION]menu-file-page-extract": "Extract Text...",  
   "Quit": "Выход",
 
   "View": "Вид",
@@ -42,6 +44,8 @@
   "[NEEDS TRANSLATION]menu-tools-convert-images": "Images...",
   "menu-tools-create": "Создать",
   "[NEEDS TRANSLATION]menu-tools-create-comic": "Comic Book...",
+  "[NEEDS TRANSLATION]menu-tools-extract": "Extract",
+  "[NEEDS TRANSLATION]menu-tools-extract-text": "Text From Image (OCR)...",
 
   "Help": "Справка",
   "About": "О программе",
@@ -122,5 +126,17 @@
 
   "tooltip-output-size": "Размер страниц будет уменьшен до этого процента от размера оригиналов",
   "tooltip-output-folder": "Если в папке уже существует файл с таким названием, то к названию конвертированного файла будет добавлен подфикс, чтобы не произошло перезаписи.",
-  "tooltip-remove-from-list": "удалить из списка"
+  "tooltip-remove-from-list": "удалить из списка",
+
+  "[NEEDS TRANSLATION]tool-ocr-title": "Extract Text Tool",
+  "[NEEDS TRANSLATION]tool-ocr-header-input-file": "Input Image:",
+  "[NEEDS TRANSLATION]tool-ocr-header-output-text": "Output Text:",
+  "[NEEDS TRANSLATION]tool-ocr-button-add-file": "Change Image",
+  "[NEEDS TRANSLATION]tool-ocr-button-copy-text": "Copy Text",
+  "[NEEDS TRANSLATION]tool-ocr-button-extract-text": "Extract Text",
+  "[NEEDS TRANSLATION]tool-ocr-header-language": "Language:",
+  "[NEEDS TRANSLATION]tool-ocr-span-language-checkbox-info": "Include languages that require an internet connection to work",
+  "[NEEDS TRANSLATION]tool-ocr-modal-title": "Extracting Text",
+  "[NEEDS TRANSLATION]tool-ocr-modal-info": "(experimental)",
+  "[NEEDS TRANSLATION]tool-ocr-modal-button-cancel": "Cancel"
 }
