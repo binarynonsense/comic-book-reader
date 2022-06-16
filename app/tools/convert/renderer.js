@@ -1,7 +1,7 @@
 const fs = window.require("fs");
 const path = require("path");
 const { ipcRenderer } = require("electron");
-const { FileExtension, FileDataType, ToolType } = require("../constants");
+const { FileExtension, ToolType } = require("../../constants");
 
 let g_toolType;
 let g_inputFiles = [];
@@ -294,7 +294,6 @@ function onConvert(resetCounter = true) {
 exports.onConvert = onConvert;
 
 function onCancelConversion() {
-  console.log("onCancelConversion");
   if (g_cancelConversion === true) return; // already canceling?
   g_cancelConversion = true;
   g_modalButtonCancel.classList.add("hide");
@@ -402,13 +401,13 @@ ipcRenderer.on("convert-show-result", (event) => {
 // PDF ////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-const pdfjsLib = require("../assets/libs/pdfjs/build/pdf.js");
+const pdfjsLib = require("../../assets/libs/pdfjs/build/pdf.js");
 
 async function extractPDFImages(folderPath, logText) {
   try {
     // ref: https://kevinnadro.com/blog/parsing-pdfs-in-javascript/
     pdfjsLib.GlobalWorkerOptions.workerSrc =
-      "../assets/libs/pdfjs/build/pdf.worker.js";
+      "../../assets/libs/pdfjs/build/pdf.worker.js";
     //pdfjsLib.disableWorker = true;
     const pdf = await pdfjsLib.getDocument(g_inputFilePath).promise;
     for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {

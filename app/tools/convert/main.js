@@ -5,10 +5,10 @@ const path = require("path");
 const { fork } = require("child_process");
 const FileType = require("file-type");
 const naturalCompare = require("natural-compare-lite");
-const fileUtils = require("../file-utils");
-const fileFormats = require("../file-formats");
-const mainProcess = require("../main");
-const { FileExtension, FileDataType, ToolType } = require("../constants");
+const fileUtils = require("../../file-utils");
+const fileFormats = require("../../file-formats");
+const mainProcess = require("../../main");
+const { FileExtension, FileDataType, ToolType } = require("../../constants");
 const sharp = require("sharp");
 
 let g_convertWindow;
@@ -27,11 +27,16 @@ function _(...args) {
 
 exports.showWindow = function (toolType, parentWindow, filePath, fileType) {
   if (g_convertWindow !== undefined) return; // TODO: focus the existing one?
+  let [width, height] = parentWindow.getSize();
+  height = (90 * height) / 100;
+  if (height < 700) height = 700;
+  width = 1024;
+
   g_convertWindow = new BrowserWindow({
-    width: 700,
-    height: 650,
+    width: parseInt(width),
+    height: parseInt(height),
     //frame: false,
-    icon: path.join(__dirname, "../assets/images/icon_256x256.png"),
+    icon: path.join(__dirname, "../../assets/images/icon_256x256.png"),
     resizable: true,
     backgroundColor: "white",
     parent: parentWindow,
@@ -45,7 +50,7 @@ exports.showWindow = function (toolType, parentWindow, filePath, fileType) {
   g_toolType = toolType;
 
   g_convertWindow.menuBarVisible = false;
-  g_convertWindow.loadFile(`${__dirname}/convert.html`);
+  g_convertWindow.loadFile(`${__dirname}/index.html`);
 
   // g_convertWindow.on("close", (event) => {
   //   event.preventDefault();
@@ -64,14 +69,14 @@ exports.showWindow = function (toolType, parentWindow, filePath, fileType) {
     let toolHeaderText = "";
 
     if (g_toolType === ToolType.CREATE_FILE) {
-      toolHeaderText = _("Create File Tool");
+      toolHeaderText = _("tool-convert-create-file-title");
       g_convertWindow.webContents.send(
         "set-tool-type",
         g_toolType,
         app.getPath("desktop")
       );
     } else if (g_toolType === ToolType.CONVERT_FILES) {
-      toolHeaderText = _("Convert Files Tool");
+      toolHeaderText = _("tool-convert-files-title");
       g_convertWindow.webContents.send(
         "set-tool-type",
         g_toolType,
@@ -80,7 +85,7 @@ exports.showWindow = function (toolType, parentWindow, filePath, fileType) {
       if (filePath !== undefined && fileType !== undefined)
         g_convertWindow.webContents.send("add-file", filePath, fileType);
     } else if (g_toolType === ToolType.CONVERT_IMGS) {
-      toolHeaderText = _("Convert Images Tool");
+      toolHeaderText = _("tool-convert-images-title");
       g_convertWindow.webContents.send(
         "set-tool-type",
         g_toolType,
@@ -270,7 +275,7 @@ ipcMain.on(
 ipcMain.on("resizing-image", (event, pageNum, totalNumPages) => {
   g_convertWindow.webContents.send(
     "convert-update-text-log",
-    _("Resizing Page: ") + pageNum + " / " + totalNumPages
+    _("tool-convert-modal-log-resizing-page") + pageNum + " / " + totalNumPages
   );
 });
 
@@ -299,7 +304,7 @@ ipcMain.on(
     if (!wasCanceled) {
       g_convertWindow.webContents.send(
         "convert-update-text-title",
-        _("Conversion Finished")
+        _("tool-convert-modal-title-conversion-finished")
       );
 
       if (numErrors > 0) {
@@ -307,7 +312,7 @@ ipcMain.on(
           g_convertWindow.webContents.send(
             "convert-update-text-info",
             _(
-              "Error: {0} of {1} file/s couldn't be converted",
+              "tool-convert-modal-info-error-num-files-not-converted",
               numErrors,
               numFiles
             )
@@ -315,31 +320,31 @@ ipcMain.on(
         } else {
           g_convertWindow.webContents.send(
             "convert-update-text-info",
-            _("Error: the file couldn't be converted")
+            _("tool-convert-modal-info-error-file-not-converted")
           );
         }
       } else {
         if (numFiles > 1) {
           g_convertWindow.webContents.send(
             "convert-update-text-info",
-            _("{0} file/s correctly converted", numFiles)
+            _("tool-convert-modal-info-success-num-files-converted", numFiles)
           );
         } else {
           g_convertWindow.webContents.send(
             "convert-update-text-info",
-            _("File correctly converted")
+            _("tool-convert-modal-info-success-file-converted")
           );
         }
       }
     } else {
       g_convertWindow.webContents.send(
         "convert-update-text-title",
-        _("Conversion Canceled")
+        _("tool-convert-modal-title-conversion-canceled")
       );
       g_convertWindow.webContents.send(
         "convert-update-text-info",
         _(
-          "Converted: {0} | Errors: {1} | Canceled: {2}",
+          "tool-convert-modal-info-conversion-results",
           numAttempted - numErrors,
           numErrors,
           numFiles - numAttempted
@@ -360,7 +365,7 @@ function conversionStopError(err) {
   g_convertWindow.webContents.send("convert-update-text-log", err);
   g_convertWindow.webContents.send(
     "convert-update-text-log",
-    _("Couldn't convert the file, an error ocurred")
+    _("tool-convert-modal-log-conversion-error")
   );
   g_convertWindow.webContents.send("convert-finished-error");
 }
@@ -369,7 +374,7 @@ function conversionStopCancel() {
   fileUtils.cleanUpTempFolder();
   g_convertWindow.webContents.send(
     "convert-update-text-log",
-    _("Couldn't convert the file, the conversion was canceled")
+    _("tool-convert-modal-log-conversion-canceled")
   );
   g_convertWindow.webContents.send("convert-finished-canceled");
 }
@@ -379,14 +384,17 @@ function conversionStart(inputFilePath, inputFileType, fileNum, totalFilesNum) {
 
   g_convertWindow.webContents.send(
     "convert-update-text-title",
-    _("Converting:") +
+    _("tool-convert-modal-title-converting") +
       (totalFilesNum > 1 ? " (" + fileNum + "/" + totalFilesNum + ")" : "")
   );
   g_convertWindow.webContents.send(
     "convert-update-text-info",
     fileUtils.reducePathString(inputFilePath)
   );
-  g_convertWindow.webContents.send("convert-update-text-log", _("Converting:"));
+  g_convertWindow.webContents.send(
+    "convert-update-text-log",
+    _("tool-convert-modal-title-converting")
+  );
   g_convertWindow.webContents.send("convert-update-text-log", inputFilePath);
 
   let tempFolderPath = fileUtils.createTempFolder();
@@ -398,7 +406,7 @@ function conversionStart(inputFilePath, inputFileType, fileNum, totalFilesNum) {
   ) {
     g_convertWindow.webContents.send(
       "convert-update-text-log",
-      _("Extracting Pages...")
+      _("tool-convert-modal-log-extracting-pages")
     );
     // conversionExtractImages(inputFilePath, inputFileType, tempFolderPath);
     // ref: https://www.matthewslipper.com/2019/09/22/everything-you-wanted-electron-child-process.html
@@ -408,7 +416,7 @@ function conversionStart(inputFilePath, inputFileType, fileNum, totalFilesNum) {
       g_worker = undefined;
     }
     if (g_worker === undefined) {
-      g_worker = fork(path.join(__dirname, "convert-worker.js"));
+      g_worker = fork(path.join(__dirname, "worker.js"));
       g_worker.on("message", (message) => {
         g_worker.kill(); // kill it after one use
         if (message === "success") {
@@ -428,12 +436,12 @@ function conversionStart(inputFilePath, inputFileType, fileNum, totalFilesNum) {
   } else if (inputFileType === FileDataType.PDF) {
     g_convertWindow.webContents.send(
       "convert-update-text-log",
-      _("Extracting Pages...")
+      _("tool-convert-modal-log-extracting-pages")
     );
     g_convertWindow.webContents.send(
       "convert-extract-pdf-images",
       tempFolderPath,
-      _("Extracting Page: ")
+      _("tool-convert-modal-log-extracting-page")
     );
   } else {
     conversionStopError("conversionStart: invalid file type");
@@ -552,7 +560,7 @@ async function resizeImages(
 
           g_convertWindow.webContents.send(
             "convert-update-text-log",
-            _("Converting Page {0} to a Compatible Format (JPG)", index + 1)
+            _("tool-convert-modal-log-page-to-compatible-format", index + 1)
           );
           await sharp(filePath).jpeg().toFile(tmpFilePath);
 
@@ -613,7 +621,7 @@ async function createFileFromImages(
     // compress to output folder
     g_convertWindow.webContents.send(
       "convert-update-text-log",
-      _("Generating New File...")
+      _("tool-convert-modal-log-generating-new-file")
     );
     g_convertWindow.webContents.send("convert-update-text-log", outputFilePath);
 
@@ -629,7 +637,7 @@ async function createFileFromImages(
         g_worker = undefined;
       }
       if (g_worker === undefined) {
-        g_worker = fork(path.join(__dirname, "convert-worker.js"));
+        g_worker = fork(path.join(__dirname, "worker.js"));
         g_worker.on("message", (message) => {
           g_worker.kill(); // kill it after one use
           if (message === "success") {
@@ -664,7 +672,7 @@ async function convertImages(imgFiles, outputFormat, outputFolderPath) {
     // compress to output folder
     g_convertWindow.webContents.send(
       "convert-update-text-log",
-      _("Converting...")
+      _("tool-convert-modal-log-converting-images")
     );
     let numErrors = 0;
     let numFiles = imgFiles.length;
@@ -708,7 +716,7 @@ async function convertImages(imgFiles, outputFormat, outputFolderPath) {
 
     g_convertWindow.webContents.send(
       "convert-update-text-title",
-      _("Conversion Finished")
+      _("tool-convert-modal-title-conversion-finished")
     );
 
     if (numErrors > 0) {
@@ -716,7 +724,7 @@ async function convertImages(imgFiles, outputFormat, outputFolderPath) {
         g_convertWindow.webContents.send(
           "convert-update-text-info",
           _(
-            "Error: {0} of {1} file/s couldn't be converted",
+            "tool-convert-modal-info-error-num-files-not-converted",
             numErrors,
             numFiles
           )
@@ -724,19 +732,19 @@ async function convertImages(imgFiles, outputFormat, outputFolderPath) {
       } else {
         g_convertWindow.webContents.send(
           "convert-update-text-info",
-          _("Error: the file couldn't be converted")
+          _("tool-convert-modal-info-error-file-not-converted")
         );
       }
     } else {
       if (numFiles > 1) {
         g_convertWindow.webContents.send(
           "convert-update-text-info",
-          _("{0} file/s correctly converted", numFiles)
+          _("tool-convert-modal-info-success-num-files-converted", numFiles)
         );
       } else {
         g_convertWindow.webContents.send(
           "convert-update-text-info",
-          _("File correctly converted")
+          _("tool-convert-modal-info-success-file-converted")
         );
       }
     }
@@ -752,15 +760,15 @@ function getTooltipsLocalization() {
   return [
     {
       id: "tooltip-output-size",
-      text: _("tooltip-output-size"),
+      text: _("tool-convert-tooltip-output-size"),
     },
     {
       id: "tooltip-output-folder",
-      text: _("tooltip-output-folder"),
+      text: _("tool-convert-tooltip-output-folder"),
     },
     {
       id: "tooltip-remove-from-list",
-      text: _("tooltip-remove-from-list"),
+      text: _("tool-convert-tooltip-remove-from-list"),
     },
   ];
 }
@@ -769,63 +777,63 @@ function getLocalization() {
   return [
     {
       id: "text-input-files",
-      text: _("Input File/s:"),
+      text: _("tool-convert-ui-input-files"),
     },
     {
       id: "text-input-file",
-      text: _("Input File:"),
+      text: _("tool-convert-ui-input-file"),
     },
     {
       id: "text-input-imgs",
-      text: _("Input Image/s:"),
+      text: _("tool-convert-ui-input-images"),
     },
     {
       id: "button-add-file",
-      text: _("Add").toUpperCase(),
+      text: _("tool-convert-ui-add").toUpperCase(),
     },
     {
       id: "text-output-size",
-      text: _("Output Size:"),
+      text: _("tool-convert-ui-output-size"),
     },
     {
       id: "text-scale",
-      text: _("Scale (%):"),
+      text: _("tool-convert-ui-scale"),
     },
     {
       id: "text-quality",
-      text: _("Quality:"),
+      text: _("tool-convert-ui-quality"),
     },
     {
       id: "text-output-format",
-      text: _("Output Format:"),
+      text: _("tool-convert-ui-output-format"),
     },
     {
       id: "text-output-name",
-      text: _("Output Name:"),
+      text: _("tool-convert-ui-output-name"),
     },
     {
       id: "text-output-folder",
-      text: _("Output Folder:"),
+      text: _("tool-convert-ui-output-folder"),
     },
     {
       id: "button-change-folder",
-      text: _("Change").toUpperCase(),
+      text: _("tool-convert-ui-change").toUpperCase(),
     },
     {
       id: "button-convert",
-      text: _("Convert").toUpperCase(),
+      text: _("tool-convert-ui-convert").toUpperCase(),
     },
     {
       id: "button-create",
-      text: _("Create").toUpperCase(),
+      text: _("tool-convert-ui-create").toUpperCase(),
     },
     {
       id: "button-modal-close",
-      text: _("Close").toUpperCase(),
+      text: _("tool-convert-ui-close").toUpperCase(),
     },
     {
       id: "button-modal-cancel",
-      text: _("Cancel").toUpperCase(),
+      text: _("tool-convert-ui-cancel").toUpperCase(),
     },
   ];
 }

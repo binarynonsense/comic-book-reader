@@ -1,4 +1,4 @@
-const fileFormats = require("../file-formats");
+const fileFormats = require("../../file-formats");
 
 process.on("message", (message) => {
   if (message[0] === "extract") {

@@ -9,7 +9,7 @@ const fileFormats = require("./file-formats");
 const i18n = require("./i18n");
 const menuBar = require("./menu-bar");
 const contextMenu = require("./menu-context");
-const convertTool = require("./tools/convert-main");
+const convertTool = require("./tools/convert/main");
 const extractTextTool = require("./tools/extract-text/main");
 const themes = require("./themes");
 const {
