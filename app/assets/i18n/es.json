@@ -103,7 +103,7 @@
   "tool-convert-ui-close": "Cerrar",
   "tool-convert-ui-cancel": "Cancelar",
 
-  "tool-convert-modal-title-converting": "Convirtiendo:",
+  "tool-convert-modal-title-converting": "Convirtiendo",
   "tool-convert-modal-title-conversion-finished": "Conversión Finalizada",  
   "tool-convert-modal-info-success-num-files-converted": "{0} archivo/s correctamente convertido/s",
   "tool-convert-modal-info-success-file-converted": "Archivo correctamente convertido",

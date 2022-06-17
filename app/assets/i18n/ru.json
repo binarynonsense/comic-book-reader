@@ -103,7 +103,7 @@
   "tool-convert-ui-close": "Закрыть",
   "tool-convert-ui-cancel": "Отмена",
 
-  "tool-convert-modal-title-converting": "Конвертация:",
+  "tool-convert-modal-title-converting": "Конвертация",
   "tool-convert-modal-title-conversion-finished": "Конвертация завершена",
   "tool-convert-modal-info-success-num-files-converted": "{0} файла(ов) успешно конвертировано",
   "tool-convert-modal-info-success-file-converted": "Файл успешно конвертирован",
