@@ -17,7 +17,6 @@ let g_outputQuality = "80";
 let g_outputFormat;
 let g_outputFolderPath;
 
-let g_textInputFileDiv = document.querySelector("#text-input-file");
 let g_textInputFilesDiv = document.querySelector("#text-input-files");
 let g_textInputImagesDiv = document.querySelector("#text-input-imgs");
 let g_inputListDiv = document.querySelector("#input-list");
@@ -105,7 +104,6 @@ ipcRenderer.on("set-tool-type", (event, toolType, outputFolderPath) => {
   g_outputFolderDiv.innerHTML = reducePathString(g_outputFolderPath);
   if (g_toolType === ToolType.CONVERT_FILES) {
     g_inputListButton.classList.remove("hide");
-    g_textInputFileDiv.classList.add("hide");
     g_textInputFilesDiv.classList.remove("hide");
     g_textInputImagesDiv.classList.add("hide");
     g_outputFormatSelect.innerHTML =
@@ -115,7 +113,6 @@ ipcRenderer.on("set-tool-type", (event, toolType, outputFolderPath) => {
   } else if (g_toolType === ToolType.CREATE_FILE) {
     g_outputNameInput.value = "New File";
     g_inputListButton.classList.remove("hide");
-    g_textInputFileDiv.classList.add("hide");
     g_textInputFilesDiv.classList.add("hide");
     g_textInputImagesDiv.classList.remove("hide");
     g_outputFormatSelect.innerHTML =
@@ -124,7 +121,6 @@ ipcRenderer.on("set-tool-type", (event, toolType, outputFolderPath) => {
       '<option value="epub">.epub</option>';
   } else if (g_toolType === ToolType.CONVERT_IMGS) {
     g_inputListButton.classList.remove("hide");
-    g_textInputFileDiv.classList.add("hide");
     g_textInputFilesDiv.classList.add("hide");
     g_textInputImagesDiv.classList.remove("hide");
     g_outputFormatSelect.innerHTML =

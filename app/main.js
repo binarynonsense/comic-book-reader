@@ -9,21 +9,18 @@ const fileFormats = require("./file-formats");
 const i18n = require("./i18n");
 const menuBar = require("./menu-bar");
 const contextMenu = require("./menu-context");
-const convertTool = require("./tools/convert/main");
-const extractTextTool = require("./tools/extract-text/main");
 const themes = require("./themes");
-const {
-  FileExtension,
-  FileDataState,
-  FileDataType,
-  ToolType,
-} = require("./constants");
+const { FileExtension, FileDataState, FileDataType } = require("./constants");
+
+const convertComicsTool = require("./tools/convert-comics/main");
+const convertImagesTool = require("./tools/convert-imgs/main");
+const createComicTool = require("./tools/create-comic/main");
+const extractTextTool = require("./tools/extract-text/main");
 
 const {
   setupTitlebar,
   attachTitlebarToWindow,
 } = require("custom-electron-titlebar/main");
-// setup the titlebar main process
 setupTitlebar();
 
 function isDev() {
@@ -807,8 +804,7 @@ exports.onMenuPageExtractText = function () {
 
 exports.onMenuConvertFile = function () {
   if (g_fileData.path !== undefined) {
-    convertTool.showWindow(
-      ToolType.CONVERT_FILES,
+    convertComicsTool.showWindow(
       g_mainWindow,
       g_fileData.path,
       g_fileData.type
@@ -818,22 +814,22 @@ exports.onMenuConvertFile = function () {
 };
 
 exports.onMenuToolConvertComics = function () {
-  convertTool.showWindow(ToolType.CONVERT_FILES, g_mainWindow);
+  convertComicsTool.showWindow(g_mainWindow);
   g_mainWindow.webContents.send("update-menubar");
 };
 
 exports.onMenuToolCreateComic = function () {
-  convertTool.showWindow(ToolType.CREATE_FILE, g_mainWindow);
+  createComicTool.showWindow(g_mainWindow);
   g_mainWindow.webContents.send("update-menubar");
 };
 
 exports.onMenuToolConvertImages = function () {
-  convertTool.showWindow(ToolType.CONVERT_IMGS, g_mainWindow);
+  convertImagesTool.showWindow(g_mainWindow);
   g_mainWindow.webContents.send("update-menubar");
 };
 
 exports.onMenuToolExtractText = function () {
-  extractTextTool.showWindow(ToolType.EXTRACT_TEXT, g_mainWindow);
+  extractTextTool.showWindow(g_mainWindow);
   g_mainWindow.webContents.send("update-menubar");
 };
 
@@ -1238,11 +1234,7 @@ async function exportPageStart(sendToTool = false) {
             g_mainWindow.webContents.send("update-loading", false);
             if (message[1]) {
               // sendToTool === true
-              extractTextTool.showWindow(
-                ToolType.EXTRACT_TEXT,
-                g_mainWindow,
-                message[1]
-              );
+              extractTextTool.showWindow(g_mainWindow, message[1]);
               g_mainWindow.webContents.send("update-menubar");
             } else {
               g_mainWindow.webContents.send(
@@ -1300,11 +1292,7 @@ function exportPageSaveBuffer(buf, outputFolderPath, sendToTool) {
         fs.writeFileSync(outputFilePath, buf, "binary");
 
         if (sendToTool) {
-          extractTextTool.showWindow(
-            ToolType.EXTRACT_TEXT,
-            g_mainWindow,
-            outputFilePath
-          );
+          extractTextTool.showWindow(g_mainWindow, outputFilePath);
           g_mainWindow.webContents.send("update-menubar");
         } else {
           g_mainWindow.webContents.send(

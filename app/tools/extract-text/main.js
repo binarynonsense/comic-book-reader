@@ -3,12 +3,11 @@ const fs = require("fs");
 const path = require("path");
 const mainProcess = require("../../main");
 const fileUtils = require("../../file-utils");
-const { ToolType, FileExtension } = require("../../constants");
+const { FileExtension } = require("../../constants");
 
 const { createWorker } = require("tesseract.js");
 
 let g_toolWindow;
-let g_toolType = ToolType.EXTRACT_TEXT;
 
 function isDev() {
   return process.argv[2] == "--dev";
@@ -24,7 +23,7 @@ const selectionMenu = Menu.buildFromTemplate([
   { role: "selectall" },
 ]);
 
-exports.showWindow = function (toolType, parentWindow, filePath) {
+exports.showWindow = function (parentWindow, filePath) {
   if (g_toolWindow !== undefined) return; // TODO: focus the existing one?
   let [width, height] = parentWindow.getSize();
   height = (90 * height) / 100;
@@ -44,8 +43,6 @@ exports.showWindow = function (toolType, parentWindow, filePath) {
       contextIsolation: false,
     },
   });
-
-  g_toolType = toolType;
 
   g_toolWindow.menuBarVisible = false;
   g_toolWindow.loadFile(`${__dirname}/index.html`);
