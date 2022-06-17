@@ -103,7 +103,10 @@
   "tool-convert-ui-close": "Закрыть",
   "tool-convert-ui-cancel": "Отмена",
 
-  "tool-convert-modal-title-converting": "Конвертация",
+  "[NEEDS TRANSLATION]tool-modal-title-extracting": "Extracting",
+  "tool-modal-title-converting": "Конвертация",
+  "[NEEDS TRANSLATION]tool-modal-title-creating": "Creating",
+
   "tool-convert-modal-title-conversion-finished": "Конвертация завершена",
   "tool-convert-modal-info-success-num-files-converted": "{0} файла(ов) успешно конвертировано",
   "tool-convert-modal-info-success-file-converted": "Файл успешно конвертирован",
@@ -116,9 +119,7 @@
   "tool-convert-modal-log-resizing-page": "Изменение размера страницы: ",
   "tool-convert-modal-log-generating-new-file": "Генерация нового файла...",
 
-  "[NEEDS TRANSLATION]tool-convert-modal-log-converting-images": "Converting Images...",
-
-  "[NEEDS TRANSLATION]tool-convert-modal-title-creating": "Creating",
+  "[NEEDS TRANSLATION]tool-convert-modal-log-converting-images": "Converting Images...",  
 
   "tool-convert-modal-info-error-num-files-not-converted": "Ошибка: Не удалось конвертировать {0} из {1} файла(ов)",
   "tool-convert-modal-info-error-file-not-converted": "Ошибка: Не удалось конвертировать файл",
@@ -136,8 +137,7 @@
   "[NEEDS TRANSLATION]tool-ocr-button-copy-text": "Copy Text",
   "[NEEDS TRANSLATION]tool-ocr-button-extract-text": "Extract Text",
   "[NEEDS TRANSLATION]tool-ocr-header-language": "Language:",
-  "[NEEDS TRANSLATION]tool-ocr-span-language-checkbox-info": "Include languages that require an internet connection to work",
-  "[NEEDS TRANSLATION]tool-ocr-modal-title": "Extracting Text",
+  "[NEEDS TRANSLATION]tool-ocr-span-language-checkbox-info": "Include languages that require an internet connection to work",  
   "[NEEDS TRANSLATION]tool-ocr-modal-info": "(experimental)",
   "[NEEDS TRANSLATION]tool-ocr-modal-button-cancel": "Cancel"
 }

@@ -2,6 +2,8 @@ const { ipcRenderer, clipboard } = require("electron");
 
 const Cropper = require("../../assets/libs/cropperjs/dist/cropper.js");
 
+let g_ipcChannel = "tool-et--";
+
 let g_cropper;
 let g_image = document.querySelector("#image");
 let g_languageOfflineSelect = document.querySelector(
@@ -36,10 +38,10 @@ exports.initModal = function (instance) {
 ///////////////////////////////////////////////////////////////////////////////
 
 exports.onChooseInputFile = function () {
-  ipcRenderer.send("choose-file");
+  ipcRenderer.send(g_ipcChannel + "choose-file");
 };
 
-exports.onExtract = function () {
+exports.onStart = function () {
   let lang;
   let offline;
   if (g_languageCheckbox.checked) {
@@ -57,11 +59,11 @@ exports.onExtract = function () {
 
   g_outputTextArea.innerHTML = "";
   let base64Img = g_cropper.getCroppedCanvas().toDataURL();
-  ipcRenderer.send("ocr-base64-img", base64Img, lang, offline);
+  ipcRenderer.send(g_ipcChannel + "start", base64Img, lang, offline);
 };
 
 exports.onCancelConversion = function () {
-  ipcRenderer.send("cancel-extraction");
+  ipcRenderer.send(g_ipcChannel + "cancel-extraction");
 };
 
 exports.onCopyTextAreaText = function () {
@@ -80,31 +82,34 @@ exports.onLanguageCheckboxClicked = function (checkbox) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-ipcRenderer.on("update-localization", (event, title, localization) => {
-  document.title = title;
-  for (let index = 0; index < localization.length; index++) {
-    const element = localization[index];
-    const domElement = document.querySelector("#" + element.id);
-    if (domElement !== null) {
-      domElement.innerHTML = element.text;
+ipcRenderer.on(
+  g_ipcChannel + "update-localization",
+  (event, title, localization) => {
+    document.title = title;
+    for (let index = 0; index < localization.length; index++) {
+      const element = localization[index];
+      const domElement = document.querySelector("#" + element.id);
+      if (domElement !== null) {
+        domElement.innerHTML = element.text;
+      }
     }
   }
-});
+);
 
-ipcRenderer.on("update-image", (event, filePath) => {
+ipcRenderer.on(g_ipcChannel + "update-image", (event, filePath) => {
   console.log(filePath);
   g_cropper.replace(filePath);
 });
 
-ipcRenderer.on("fill-textarea", (event, text) => {
+ipcRenderer.on(g_ipcChannel + "fill-textarea", (event, text) => {
   g_outputTextArea.innerHTML = text;
 });
 
-ipcRenderer.on("modal-close", (event) => {
+ipcRenderer.on(g_ipcChannel + "modal-close", (event) => {
   g_modalInstance.close();
 });
 
-ipcRenderer.on("modal-update-log", (event, text) => {
+ipcRenderer.on(g_ipcChannel + "modal-update-log", (event, text) => {
   modalUpdateLog(text);
 });
 
@@ -117,10 +122,10 @@ function modalUpdateLog(text, append = true) {
   g_modalLogArea.scrollTop = g_modalLogArea.scrollHeight;
 }
 
-ipcRenderer.on("modal-update-title", (event, text) => {
+ipcRenderer.on(g_ipcChannel + "modal-update-title", (event, text) => {
   g_modalTitle.innerHTML = text;
 });
 
-ipcRenderer.on("modal-update-info", (event, text) => {
+ipcRenderer.on(g_ipcChannel + "modal-update-info", (event, text) => {
   g_modalInfoArea.innerHTML = text;
 });

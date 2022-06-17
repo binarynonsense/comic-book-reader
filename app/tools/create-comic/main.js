@@ -242,7 +242,7 @@ function start(inputFiles) {
   try {
     g_window.webContents.send(
       g_ipcChannel + "update-title-text",
-      _("tool-convert-modal-title-creating")
+      _("tool-modal-title-creating")
     );
     g_window.webContents.send(g_ipcChannel + "update-info-text", "");
 

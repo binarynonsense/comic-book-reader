@@ -7,7 +7,8 @@ const { FileExtension } = require("../../constants");
 
 const { createWorker } = require("tesseract.js");
 
-let g_toolWindow;
+let g_window;
+let g_ipcChannel = "tool-et--";
 
 function isDev() {
   return process.argv[2] == "--dev";
@@ -24,13 +25,13 @@ const selectionMenu = Menu.buildFromTemplate([
 ]);
 
 exports.showWindow = function (parentWindow, filePath) {
-  if (g_toolWindow !== undefined) return; // TODO: focus the existing one?
+  if (g_window !== undefined) return; // TODO: focus the existing one?
   let [width, height] = parentWindow.getSize();
   height = (90 * height) / 100;
   if (height < 700) height = 700;
   width = 1024;
 
-  g_toolWindow = new BrowserWindow({
+  g_window = new BrowserWindow({
     width: parseInt(width),
     height: parseInt(height),
     icon: path.join(__dirname, "../../assets/images/icon_256x256.png"),
@@ -44,44 +45,42 @@ exports.showWindow = function (parentWindow, filePath) {
     },
   });
 
-  g_toolWindow.menuBarVisible = false;
-  g_toolWindow.loadFile(`${__dirname}/index.html`);
+  g_window.menuBarVisible = false;
+  g_window.loadFile(`${__dirname}/index.html`);
 
-  //if (isDev()) g_toolWindow.toggleDevTools();
+  //if (isDev()) g_window.toggleDevTools();
 
-  g_toolWindow.on("closed", () => {
-    g_toolWindow = undefined;
+  g_window.on("closed", () => {
+    g_window = undefined;
     fileUtils.cleanUpTempFolder();
   });
 
-  g_toolWindow.webContents.on("did-finish-load", function () {
+  g_window.webContents.on("did-finish-load", function () {
     if (filePath) {
       let stats = fs.statSync(filePath);
       if (!stats.isFile()) return; // avoid folders accidentally getting here
-      g_toolWindow.webContents.send("update-image", filePath);
+      g_window.webContents.send(g_ipcChannel + "update-image", filePath);
     }
 
-    let toolHeaderText = _("tool-ocr-title");
-
-    g_toolWindow.webContents.send(
-      "update-localization",
-      toolHeaderText,
+    g_window.webContents.send(
+      g_ipcChannel + "update-localization",
+      _("tool-ocr-title"),
       getLocalization()
     );
   });
 
   // ref: https://github.com/electron/electron/issues/4068#issuecomment-274159726
-  g_toolWindow.webContents.on("context-menu", (e, props) => {
+  g_window.webContents.on("context-menu", (e, props) => {
     const { selectionText } = props;
     if (selectionText && selectionText.trim() !== "") {
-      selectionMenu.popup(g_toolWindow);
+      selectionMenu.popup(g_window);
     }
   });
 };
 
 ////////////////////////////////////////////////////////////////////////
 
-ipcMain.on("choose-file", (event) => {
+ipcMain.on(g_ipcChannel + "choose-file", (event) => {
   try {
     let allowMultipleSelection = false;
     let allowedFileTypesName = "Image Files";
@@ -92,7 +91,7 @@ ipcMain.on("choose-file", (event) => {
       FileExtension.BMP,
     ];
     let filePathsList = fileUtils.chooseOpenFiles(
-      g_toolWindow,
+      g_window,
       undefined,
       allowedFileTypesName,
       allowedFileTypesList,
@@ -104,63 +103,72 @@ ipcMain.on("choose-file", (event) => {
     const filePath = filePathsList[0];
     let stats = fs.statSync(filePath);
     if (!stats.isFile()) return; // avoid folders accidentally getting here
-    g_toolWindow.webContents.send("update-image", filePath);
+    g_window.webContents.send(g_ipcChannel + "update-image", filePath);
   } catch (error) {
     console.log(error);
   }
 });
 
-ipcMain.on("ocr-base64-img", (event, inputBase64Img, language, offline) => {
-  try {
-    g_toolWindow.webContents.send(
-      "modal-update-title",
-      _("tool-ocr-modal-title").toUpperCase()
-    );
-    g_toolWindow.webContents.send(
-      "modal-update-info",
-      _("tool-ocr-modal-info")
-    );
-    let base64 = inputBase64Img;
-    let options;
-    if (offline) {
-      options = {
-        langPath: path.join(__dirname, "../../assets/ocr-data"),
-        cachePath: path.join(__dirname, "../../assets/ocr-data"),
-        cacheMethod: "none",
-        //gzip: false,
-        logger: (m) => {
-          g_toolWindow.webContents.send("modal-update-log", m.status);
-        },
-      };
-    } else {
-      options = {
-        cacheMethod: "none",
-        logger: (m) => {
-          g_toolWindow.webContents.send("modal-update-log", m.status);
-        },
-      };
+ipcMain.on(
+  g_ipcChannel + "start",
+  (event, inputBase64Img, language, offline) => {
+    try {
+      g_window.webContents.send(
+        g_ipcChannel + "modal-update-title",
+        _("tool-modal-title-extracting").toUpperCase()
+      );
+      g_window.webContents.send(
+        g_ipcChannel + "modal-update-info",
+        _("tool-ocr-modal-info")
+      );
+      let base64 = inputBase64Img;
+      let options;
+      if (offline) {
+        options = {
+          langPath: path.join(__dirname, "../../assets/ocr-data"),
+          cachePath: path.join(__dirname, "../../assets/ocr-data"),
+          cacheMethod: "none",
+          //gzip: false,
+          logger: (m) => {
+            g_window.webContents.send(
+              g_ipcChannel + "modal-update-log",
+              m.status
+            );
+          },
+        };
+      } else {
+        options = {
+          cacheMethod: "none",
+          logger: (m) => {
+            g_window.webContents.send(
+              g_ipcChannel + "modal-update-log",
+              m.status
+            );
+          },
+        };
+      }
+
+      const worker = createWorker(options);
+      (async () => {
+        await worker.load();
+        await worker.loadLanguage(language);
+        await worker.initialize(language);
+        const {
+          data: { text },
+        } = await worker.recognize(base64);
+        g_window.webContents.send(g_ipcChannel + "modal-update-log", "done");
+        g_window.webContents.send(g_ipcChannel + "modal-close");
+        g_window.webContents.send(g_ipcChannel + "fill-textarea", text);
+        await worker.terminate();
+      })();
+    } catch (error) {
+      console.log(error);
     }
-
-    const worker = createWorker(options);
-    (async () => {
-      await worker.load();
-      await worker.loadLanguage(language);
-      await worker.initialize(language);
-      const {
-        data: { text },
-      } = await worker.recognize(base64);
-      g_toolWindow.webContents.send("modal-update-log", "done");
-      g_toolWindow.webContents.send("modal-close");
-      g_toolWindow.webContents.send("fill-textarea", text);
-      await worker.terminate();
-    })();
-  } catch (error) {
-    console.log(error);
   }
-});
+);
 
-ipcMain.on("cancel-extraction", (event) => {
-  g_toolWindow.webContents.send("close-modal");
+ipcMain.on(g_ipcChannel + "cancel-extraction", (event) => {
+  g_window.webContents.send(g_ipcChannel + "close-modal");
 });
 
 ///////////////////////////////////////////////////////////////////////////////

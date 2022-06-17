@@ -233,12 +233,12 @@ async function start(imgFiles, outputFormat, outputFolderPath) {
   try {
     g_window.webContents.send(
       g_ipcChannel + "update-title-text",
-      _("tool-convert-modal-title-converting")
+      _("tool-modal-title-converting")
     );
     g_window.webContents.send(g_ipcChannel + "update-info-text", "");
     g_window.webContents.send(
       g_ipcChannel + "update-log-text",
-      _("tool-convert-modal-title-converting")
+      _("tool-modal-title-converting")
     );
 
     // compress to output folder

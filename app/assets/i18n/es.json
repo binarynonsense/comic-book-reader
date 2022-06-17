@@ -103,7 +103,10 @@
   "tool-convert-ui-close": "Cerrar",
   "tool-convert-ui-cancel": "Cancelar",
 
-  "tool-convert-modal-title-converting": "Convirtiendo",
+  "tool-modal-title-extracting": "Extrayendo Texto",  
+  "tool-modal-title-converting": "Convirtiendo",
+  "tool-modal-title-creating": "Creando",
+
   "tool-convert-modal-title-conversion-finished": "Conversión Finalizada",  
   "tool-convert-modal-info-success-num-files-converted": "{0} archivo/s correctamente convertido/s",
   "tool-convert-modal-info-success-file-converted": "Archivo correctamente convertido",
@@ -116,9 +119,7 @@
   "tool-convert-modal-log-resizing-page": "Redimensionando página: ",
   "tool-convert-modal-log-generating-new-file": "Generando nuevo archivo...",
 
-  "tool-convert-modal-log-converting-images": "Convirtiendo Imágenes...",
-
-  "tool-convert-modal-title-creating": "Creando",
+  "tool-convert-modal-log-converting-images": "Convirtiendo Imágenes...",  
 
   "tool-convert-modal-info-error-num-files-not-converted": "Error: no se pudo convertir {0} de {1} archivo/s",
   "tool-convert-modal-info-error-file-not-converted": "Error: el archivo no se pudo convertir",
@@ -136,8 +137,7 @@
   "tool-ocr-button-copy-text": "Copiar Texto",
   "tool-ocr-button-extract-text": "Extraer Texto",
   "tool-ocr-header-language": "Idioma:",
-  "tool-ocr-span-language-checkbox-info": "Incluir idiomas que requieren una conexión a internet para funcionar",
-  "tool-ocr-modal-title": "Extrayendo Texto",
+  "tool-ocr-span-language-checkbox-info": "Incluir idiomas que requieren una conexión a internet para funcionar",  
   "tool-ocr-modal-info": "(experimental)",
   "tool-ocr-modal-button-cancel": "Cancelar"
 }
