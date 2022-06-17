@@ -184,7 +184,7 @@ exports.onOutputNameChanged = function (selectObject) {
   checkValidData();
 };
 
-exports.onStart = function (resetCounter = true) {
+function onStart(resetCounter = true) {
   g_cancel = false;
   g_modalButtonCancel.classList.remove("hide");
   g_modalButtonClose.classList.add("hide");
@@ -211,7 +211,8 @@ exports.onStart = function (resetCounter = true) {
     g_inputFilesIndex + 1,
     g_inputFiles.length
   );
-};
+}
+exports.onStart = onStart;
 
 exports.onCancel = function () {
   if (g_cancel === true) return;
