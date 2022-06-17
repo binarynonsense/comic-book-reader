@@ -54,6 +54,7 @@
   "menu-tools-create": "Create",
   "menu-tools-create-comic": "Comic Book...",
   "menu-tools-extract": "Extract",
+  "menu-tools-extract-comics": "Pages From Comic Books...",
   "menu-tools-extract-text": "Text From Image (OCR)...",
 
   "menu-help": "Help",
@@ -100,6 +101,7 @@
   "tool-convert-ui-change": "Change",
   "tool-convert-ui-convert": "Convert",
   "tool-convert-ui-create": "Create",
+  "tool-convert-ui-extract": "Extract",
   "tool-convert-ui-close": "Close",
   "tool-convert-ui-cancel": "Cancel",
 
@@ -126,8 +128,8 @@
   "tool-convert-modal-log-conversion-error": "Couldn't convert the file, an error ocurred",
   "tool-convert-modal-log-conversion-canceled": "Couldn't convert the file, the conversion was canceled",  
 
-  "tool-convert-tooltip-output-size": "The size of the pages will be reduced to this percentage of the originals",
-  "tool-convert-tooltip-output-folder": "If a file with the same name already exists in the folder, a subfix will be added to the converted file's name so nothing is overwritten",
+  "tool-convert-tooltip-output-size": "The size of the pages will be reduced to this percentage of the originals.",
+  "tool-convert-tooltip-output-folder": "If a file with the same name already exists in the folder, a subfix will be added to the converted file's name so nothing is overwritten.",
   "tool-convert-tooltip-remove-from-list": "remove from list",
 
   "tool-ocr-title": "Extract Text Tool",
@@ -139,5 +141,11 @@
   "tool-ocr-header-language": "Language:",
   "tool-ocr-span-language-checkbox-info": "Include languages that require an internet connection to work",  
   "tool-ocr-modal-info": "(experimental)",
-  "tool-ocr-modal-button-cancel": "Cancel"
+  "tool-ocr-modal-button-cancel": "Cancel",
+
+  "tool-ec-title": "Extract Pages Tool",
+  "tool-ec-modal-log-extracting-to": "To",
+  "tool-ec-tooltip-output-folder": "Inside the provided folder, a subfolder with the same name as the file to be extracted will be created to store the images. If a subfolder with the same name already exists, a subfix will be added to the name so nothing is overwritten.",
+  "tool-ec-modal-log-error": "Couldn't extract the file, an error ocurred",
+  "tool-ec-modal-log-canceled": "Couldn't extract the file, the extraction was canceled"
 }

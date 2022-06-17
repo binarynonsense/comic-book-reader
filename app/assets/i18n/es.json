@@ -54,6 +54,7 @@
   "menu-tools-create": "Crear",
   "menu-tools-create-comic": "Cómic...",
   "menu-tools-extract": "Extraer",
+  "menu-tools-extract-comics": "Páginas de Cómics...",
   "menu-tools-extract-text": "Texto de Imágen (OCR)...",
 
   "menu-help": "Ayuda",
@@ -100,10 +101,11 @@
   "tool-convert-ui-change": "Cambiar",
   "tool-convert-ui-convert": "Convertir",
   "tool-convert-ui-create": "Crear",
+  "tool-convert-ui-extract": "Extraer",
   "tool-convert-ui-close": "Cerrar",
   "tool-convert-ui-cancel": "Cancelar",
 
-  "tool-modal-title-extracting": "Extrayendo Texto",  
+  "tool-modal-title-extracting": "Extrayendo",  
   "tool-modal-title-converting": "Convirtiendo",
   "tool-modal-title-creating": "Creando",
 
@@ -126,8 +128,8 @@
   "tool-convert-modal-log-conversion-error": "No se pudo convertir el archivo, se produjo un error",
   "tool-convert-modal-log-conversion-canceled": "No se pudo convertir el archivo, la conversión fue cancelada", 
 
-  "tool-convert-tooltip-output-size": "El tamaño de las páginas se reducirá a este porcentaje de las originales",
-  "tool-convert-tooltip-output-folder": "Si un archivo con el mismo nombre ya existe en el directorio, se añadirá un subfijo al nombre del archivo de salida para que ningún archivo sea sobreescrito",
+  "tool-convert-tooltip-output-size": "El tamaño de las páginas se reducirá a este porcentaje de las originales.",
+  "tool-convert-tooltip-output-folder": "Si un archivo con el mismo nombre ya existe en el directorio, se añadirá un subfijo al nombre del archivo de salida para que ningún archivo sea sobreescrito.",
   "tool-convert-tooltip-remove-from-list": "quitar de la lista",
 
   "tool-ocr-title": "Herramienta de extracción de texto",
@@ -139,5 +141,11 @@
   "tool-ocr-header-language": "Idioma:",
   "tool-ocr-span-language-checkbox-info": "Incluir idiomas que requieren una conexión a internet para funcionar",  
   "tool-ocr-modal-info": "(experimental)",
-  "tool-ocr-modal-button-cancel": "Cancelar"
+  "tool-ocr-modal-button-cancel": "Cancelar",
+
+  "tool-ec-title": "Herramienta de extracción de páginas",
+  "tool-ec-modal-log-extracting-to": "En",
+  "tool-ec-tooltip-output-folder": "Dentro del directorio indicado, se creará un subdirectorio para guardar las imágenes con el mismo nombre que el archivo a extraer. Si ya existe un subdirectorio con ese nombre, se añadirá un subfijo al nombre para que ningún archivo sea sobreescrito.",
+  "tool-ec-modal-log-error": "No se pudo extraer el archivo, se produjo un error",
+  "tool-ec-modal-log-canceled": "No se pudo extraer el archivo, la extracción fue cancelada"
 }

@@ -16,6 +16,7 @@ const convertComicsTool = require("./tools/convert-comics/main");
 const convertImagesTool = require("./tools/convert-imgs/main");
 const createComicTool = require("./tools/create-comic/main");
 const extractTextTool = require("./tools/extract-text/main");
+const extractComicsTool = require("./tools/extract-comics/main");
 
 const {
   setupTitlebar,
@@ -830,6 +831,11 @@ exports.onMenuToolConvertImages = function () {
 
 exports.onMenuToolExtractText = function () {
   extractTextTool.showWindow(g_mainWindow);
+  g_mainWindow.webContents.send("update-menubar");
+};
+
+exports.onMenuToolExtractComics = function () {
+  extractComicsTool.showWindow(g_mainWindow);
   g_mainWindow.webContents.send("update-menubar");
 };
 

@@ -54,6 +54,7 @@
   "menu-tools-create": "Создать",
   "[NEEDS TRANSLATION]menu-tools-create-comic": "Comic Book...",
   "[NEEDS TRANSLATION]menu-tools-extract": "Extract",
+  "[NEEDS TRANSLATION]menu-tools-extract-comics": "Pages From Comic Books...",
   "[NEEDS TRANSLATION]menu-tools-extract-text": "Text From Image (OCR)...",
 
   "menu-help": "Справка",
@@ -98,8 +99,9 @@
   "tool-convert-ui-new-file": "Новый файл",
   "tool-convert-ui-output-folder": "Выходная папка:",
   "tool-convert-ui-change": "Изменить",
-  "tool-convert-ui-convert": "Конвертировать",
+  "[NEEDS TRANSLATION]tool-convert-ui-convert": "Конвертировать",
   "tool-convert-ui-create": "Создать",
+  "tool-convert-ui-extract": "Extract",
   "tool-convert-ui-close": "Закрыть",
   "tool-convert-ui-cancel": "Отмена",
 
@@ -126,7 +128,7 @@
   "tool-convert-modal-log-conversion-error": "Не удалось конвертировать файл, произошла ошибка",
   "tool-convert-modal-log-conversion-canceled": "Не удалось конвертировать файл, конвертация была отменена",
 
-  "tool-convert-tooltip-output-size": "Размер страниц будет уменьшен до этого процента от размера оригиналов",
+  "tool-convert-tooltip-output-size": "Размер страниц будет уменьшен до этого процента от размера оригиналов.",
   "tool-convert-tooltip-output-folder": "Если в папке уже существует файл с таким названием, то к названию конвертированного файла будет добавлен подфикс, чтобы не произошло перезаписи.",
   "tool-convert-tooltip-remove-from-list": "удалить из списка",
 
@@ -139,5 +141,11 @@
   "[NEEDS TRANSLATION]tool-ocr-header-language": "Language:",
   "[NEEDS TRANSLATION]tool-ocr-span-language-checkbox-info": "Include languages that require an internet connection to work",  
   "[NEEDS TRANSLATION]tool-ocr-modal-info": "(experimental)",
-  "[NEEDS TRANSLATION]tool-ocr-modal-button-cancel": "Cancel"
+  "[NEEDS TRANSLATION]tool-ocr-modal-button-cancel": "Cancel",
+
+  "[NEEDS TRANSLATION]tool-ec-title": "Extract Pages Tool",
+  "[NEEDS TRANSLATION]tool-ec-modal-log-extracting-to": "To",
+  "[NEEDS TRANSLATION]tool-ec-tooltip-output-folder": "Inside the provided folder, a subfolder with the same name as the file to be extracted will be created to store the images. If a subfolder with the same name already exists, a subfix will be added to the name so nothing is overwritten.",
+  "[NEEDS TRANSLATION]tool-ec-modal-log-error": "Couldn't extract the file, an error ocurred",
+  "[NEEDS TRANSLATION]tool-ec-modal-log-canceled": "Couldn't extract the file, the extraction was canceled"
 }

@@ -500,6 +500,14 @@ function buildApplicationMenu(
           label: _("menu-tools-extract"),
           submenu: [
             {
+              id: "extract-comics",
+              label: _("menu-tools-extract-comics"),
+              enabled: true,
+              click() {
+                mainProcess.onMenuToolExtractComics();
+              },
+            },
+            {
               id: "extract-text",
               label: _("menu-tools-extract-text"),
               enabled: true,

@@ -3,7 +3,7 @@ const path = require("path");
 const { ipcRenderer } = require("electron");
 const { FileExtension } = require("../../constants");
 
-let g_ipcChannel = "tool-cc--";
+let g_ipcChannel = "tool-ec--";
 
 let g_inputFiles = [];
 let g_inputFilesIndex = 0;
@@ -23,7 +23,6 @@ let g_inputListDiv = document.querySelector("#input-list");
 let g_inputListButton = document.querySelector("#button-add-file");
 let g_outputFolderDiv = document.querySelector("#output-folder");
 let g_startButton = document.querySelector("#button-start");
-let g_outputFormatSelect = document.querySelector("#output-format-select");
 let g_scaleSlider = document.querySelector("#scale-slider");
 let g_qualitySlider = document.querySelector("#quality-slider");
 
@@ -76,10 +75,6 @@ ipcRenderer.on(g_ipcChannel + "init", (event, outputFolderPath) => {
   g_outputFolderDiv.innerHTML = reducePathString(g_outputFolderPath);
   g_inputListButton.classList.remove("hide");
   g_textInputFilesDiv.classList.remove("hide");
-  g_outputFormatSelect.innerHTML =
-    '<option value="cbz">.cbz (zip)</option>' +
-    '<option value="pdf">.pdf</option>' +
-    '<option value="epub">.epub</option>';
   checkValidData();
 });
 
@@ -174,11 +169,6 @@ exports.onChooseOutputFolder = function () {
   );
 };
 
-exports.onOutputFormatChanged = function (selectObject) {
-  g_outputFormat = selectObject.value;
-  checkValidData();
-};
-
 exports.onOutputNameChanged = function (selectObject) {
   g_outputName = selectObject.value;
   checkValidData();
@@ -200,7 +190,6 @@ function onStart(resetCounter = true) {
     updateLogText("", false);
   }
 
-  if (g_outputFormat === undefined) g_outputFormat = FileExtension.CBZ;
   g_inputFilePath = g_inputFiles[g_inputFilesIndex].path;
   g_inputFileType = g_inputFiles[g_inputFilesIndex].type;
 
@@ -263,7 +252,7 @@ ipcRenderer.on(g_ipcChannel + "images-extracted", (event) => {
     g_inputFilePath,
     g_outputScale,
     g_outputQuality,
-    g_outputFormat,
+    undefined, // no output format needed
     g_outputFolderPath
   );
 });

@@ -15,7 +15,7 @@ let g_window;
 let g_cancel = false;
 let g_worker;
 let g_resizeWindow;
-let g_ipcChannel = "tool-cc--";
+let g_ipcChannel = "tool-ec--";
 
 function isDev() {
   return process.argv[2] == "--dev";
@@ -60,7 +60,7 @@ exports.showWindow = function (parentWindow, filePath, fileType) {
   g_window.webContents.on("did-finish-load", function () {
     g_window.webContents.send(
       g_ipcChannel + "update-localization",
-      _("tool-convert-files-title"),
+      _("tool-ec-title"),
       getLocalization(),
       getTooltipsLocalization()
     );
@@ -196,14 +196,14 @@ ipcMain.on(
     inputFilePath,
     outputScale,
     outputQuality,
-    outputFormat,
+    outputFormat, // not used
     outputFolderPath
   ) => {
     resizeImages(
       inputFilePath,
       outputScale,
       outputQuality,
-      outputFormat,
+      outputFormat, // not used
       outputFolderPath
     );
   }
@@ -231,7 +231,7 @@ ipcMain.on(
       g_resizeWindow.destroy();
       g_resizeWindow = undefined;
     }
-    createFileFromImages(imgFilePaths, outputFormat, outputFilePath);
+    createFolderWithImages(imgFilePaths, outputFilePath); // outputFilePath is really outputFolderPath
   }
 );
 
@@ -300,7 +300,7 @@ function stopError(err) {
   g_window.webContents.send(g_ipcChannel + "update-log-text", err);
   g_window.webContents.send(
     g_ipcChannel + "update-log-text",
-    _("tool-convert-modal-log-conversion-error")
+    _("tool-ec-modal-log-error")
   );
   g_window.webContents.send(g_ipcChannel + "finished-error");
 }
@@ -309,7 +309,7 @@ function stopCancel() {
   fileUtils.cleanUpTempFolder();
   g_window.webContents.send(
     g_ipcChannel + "update-log-text",
-    _("tool-convert-modal-log-conversion-canceled")
+    _("tool-ec-modal-log-canceled")
   );
   g_window.webContents.send(g_ipcChannel + "finished-canceled");
 }
@@ -319,7 +319,7 @@ function start(inputFilePath, inputFileType, fileNum, totalFilesNum) {
 
   g_window.webContents.send(
     g_ipcChannel + "update-title-text",
-    _("tool-modal-title-converting") +
+    _("tool-modal-title-extracting") +
       (totalFilesNum > 1 ? " (" + fileNum + "/" + totalFilesNum + ")" : "")
   );
   g_window.webContents.send(
@@ -328,7 +328,7 @@ function start(inputFilePath, inputFileType, fileNum, totalFilesNum) {
   );
   g_window.webContents.send(
     g_ipcChannel + "update-log-text",
-    _("tool-modal-title-converting")
+    _("tool-modal-title-extracting") + ":"
   );
   g_window.webContents.send(g_ipcChannel + "update-log-text", inputFilePath);
 
@@ -339,10 +339,6 @@ function start(inputFilePath, inputFileType, fileNum, totalFilesNum) {
     inputFileType === FileDataType.RAR ||
     inputFileType === FileDataType.EPUB
   ) {
-    g_window.webContents.send(
-      g_ipcChannel + "update-log-text",
-      _("tool-convert-modal-log-extracting-pages")
-    );
     // ref: https://www.matthewslipper.com/2019/09/22/everything-you-wanted-electron-child-process.html
     if (g_worker !== undefined) {
       // kill it after one use
@@ -386,7 +382,7 @@ async function resizeImages(
   inputFilePath,
   outputScale,
   outputQuality,
-  outputFormat,
+  outputFormat, // not used
   outputFolderPath
 ) {
   if (g_cancel === true) {
@@ -395,17 +391,11 @@ async function resizeImages(
   }
   try {
     let fileName = path.basename(inputFilePath, path.extname(inputFilePath));
-    let outputFilePath = path.join(
-      outputFolderPath,
-      fileName + "." + outputFormat
-    );
+    let subFolderPath = path.join(outputFolderPath, fileName);
     let i = 1;
-    while (fs.existsSync(outputFilePath)) {
+    while (fs.existsSync(subFolderPath)) {
       i++;
-      outputFilePath = path.join(
-        outputFolderPath,
-        fileName + "(" + i + ")." + outputFormat
-      );
+      subFolderPath = path.join(outputFolderPath, fileName + "(" + i + ")");
     }
 
     let tempFolderPath = fileUtils.getTempFolderPath();
@@ -479,66 +469,42 @@ async function resizeImages(
           outputScale,
           outputQuality,
           outputFormat,
-          outputFilePath
+          subFolderPath
         );
       });
     } else {
-      createFileFromImages(imgFilePaths, outputFormat, outputFilePath);
+      createFolderWithImages(imgFilePaths, subFolderPath);
     }
   } catch (err) {
     stopError(err);
   }
 }
 
-async function createFileFromImages(
-  imgFilePaths,
-  outputFormat,
-  outputFilePath
-) {
+async function createFolderWithImages(imgFilePaths, outputFolderPath) {
   if (g_cancel === true) {
     stopCancel();
     return;
   }
   try {
-    // compress to output folder
     g_window.webContents.send(
       g_ipcChannel + "update-log-text",
-      _("tool-convert-modal-log-generating-new-file")
+      _("tool-ec-modal-log-extracting-to") + ":"
     );
-    g_window.webContents.send(g_ipcChannel + "update-log-text", outputFilePath);
-
-    if (outputFormat === FileExtension.PDF) {
-      // TODO: doesn't work in the worker, why?
-      fileFormats.createPdfFromImages(imgFilePaths, outputFilePath);
-      fileUtils.cleanUpTempFolder();
+    g_window.webContents.send(
+      g_ipcChannel + "update-log-text",
+      outputFolderPath
+    );
+    // create subFolderPath
+    if (!fs.existsSync(outputFolderPath)) {
+      fs.mkdirSync(outputFolderPath);
+      for (let index = 0; index < imgFilePaths.length; index++) {
+        let oldPath = imgFilePaths[index];
+        let newPath = path.join(outputFolderPath, path.basename(oldPath));
+        fs.renameSync(oldPath, newPath);
+      }
       g_window.webContents.send(g_ipcChannel + "finished-ok");
     } else {
-      if (g_worker !== undefined) {
-        // kill it after one use
-        g_worker.kill();
-        g_worker = undefined;
-      }
-      if (g_worker === undefined) {
-        g_worker = fork(path.join(__dirname, "../shared/worker.js"));
-        g_worker.on("message", (message) => {
-          g_worker.kill(); // kill it after one use
-          if (message === "success") {
-            fileUtils.cleanUpTempFolder();
-            g_window.webContents.send(g_ipcChannel + "finished-ok");
-            return;
-          } else {
-            stopError(message);
-            return;
-          }
-        });
-      }
-      g_worker.send([
-        "create",
-        imgFilePaths,
-        outputFormat,
-        outputFilePath,
-        fileUtils.getTempFolderPath(),
-      ]);
+      stopError("tool-ec folder shouldn't exist");
     }
   } catch (err) {
     stopError(err);
@@ -554,7 +520,7 @@ function getTooltipsLocalization() {
     },
     {
       id: "tooltip-output-folder",
-      text: _("tool-convert-tooltip-output-folder"),
+      text: _("tool-ec-tooltip-output-folder"),
     },
     {
       id: "tooltip-remove-from-list",
@@ -586,10 +552,6 @@ function getLocalization() {
       text: _("tool-convert-ui-quality"),
     },
     {
-      id: "text-output-format",
-      text: _("tool-convert-ui-output-format"),
-    },
-    {
       id: "text-output-folder",
       text: _("tool-convert-ui-output-folder"),
     },
@@ -599,7 +561,7 @@ function getLocalization() {
     },
     {
       id: "button-start",
-      text: _("tool-convert-ui-convert").toUpperCase(),
+      text: _("tool-convert-ui-extract").toUpperCase(),
     },
     {
       id: "button-modal-close",
