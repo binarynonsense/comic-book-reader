@@ -118,6 +118,8 @@
 
   "tool-convert-modal-log-converting-images": "Convirtiendo Imágenes...",
 
+  "tool-convert-modal-title-creating": "Creando",
+
   "tool-convert-modal-info-error-num-files-not-converted": "Error: no se pudo convertir {0} de {1} archivo/s",
   "tool-convert-modal-info-error-file-not-converted": "Error: el archivo no se pudo convertir",
   "tool-convert-modal-log-conversion-error": "No se pudo convertir el archivo, se produjo un error",

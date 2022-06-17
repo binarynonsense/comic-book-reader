@@ -118,6 +118,8 @@
 
   "[NEEDS TRANSLATION]tool-convert-modal-log-converting-images": "Converting Images...",
 
+  "[NEEDS TRANSLATION]tool-convert-modal-title-creating": "Creating",
+
   "tool-convert-modal-info-error-num-files-not-converted": "Ошибка: Не удалось конвертировать {0} из {1} файла(ов)",
   "tool-convert-modal-info-error-file-not-converted": "Ошибка: Не удалось конвертировать файл",
   "tool-convert-modal-log-conversion-error": "Не удалось конвертировать файл, произошла ошибка",

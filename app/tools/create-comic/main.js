@@ -239,10 +239,16 @@ function stopCancel() {
 function start(inputFiles) {
   g_cancel = false;
 
-  let tempFolderPath = fileUtils.createTempFolder();
-  let imgFilePaths = [];
-  // copy to temp folder
   try {
+    g_window.webContents.send(
+      g_ipcChannel + "update-title-text",
+      _("tool-convert-modal-title-creating")
+    );
+    g_window.webContents.send(g_ipcChannel + "update-info-text", "");
+
+    // copy to temp folder
+    let tempFolderPath = fileUtils.createTempFolder();
+    let imgFilePaths = [];
     for (let index = 0; index < inputFiles.length; index++) {
       const inPath = inputFiles[index].path;
       const outPath = path.join(tempFolderPath, path.basename(inPath));
