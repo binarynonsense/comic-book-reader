@@ -814,6 +814,17 @@ exports.onMenuConvertFile = function () {
   g_mainWindow.webContents.send("update-menubar");
 };
 
+exports.onMenuExtractFile = function () {
+  if (g_fileData.path !== undefined) {
+    extractComicsTool.showWindow(
+      g_mainWindow,
+      g_fileData.path,
+      g_fileData.type
+    );
+  }
+  g_mainWindow.webContents.send("update-menubar");
+};
+
 exports.onMenuToolConvertComics = function () {
   convertComicsTool.showWindow(g_mainWindow);
   g_mainWindow.webContents.send("update-menubar");

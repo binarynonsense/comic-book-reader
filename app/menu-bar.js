@@ -56,6 +56,7 @@ exports.setAutoOpen = function (mode) {
 
 exports.setFileOpened = function (isEnabled) {
   Menu.getApplicationMenu().getMenuItemById("convert-file").enabled = isEnabled;
+  Menu.getApplicationMenu().getMenuItemById("extract-file").enabled = isEnabled;
   Menu.getApplicationMenu().getMenuItemById("file-page").enabled = isEnabled;
   Menu.getApplicationMenu().getMenuItemById("file-page-export").enabled =
     isEnabled;
@@ -196,6 +197,14 @@ function buildApplicationMenu(
           enabled: false,
           click() {
             mainProcess.onMenuConvertFile();
+          },
+        },
+        {
+          id: "extract-file",
+          label: _("menu-file-extract"),
+          enabled: false,
+          click() {
+            mainProcess.onMenuExtractFile();
           },
         },
         {
