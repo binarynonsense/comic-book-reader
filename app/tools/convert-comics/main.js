@@ -60,7 +60,7 @@ exports.showWindow = function (parentWindow, filePath, fileType) {
   g_window.webContents.on("did-finish-load", function () {
     g_window.webContents.send(
       g_ipcChannel + "update-localization",
-      _("tool-convert-files-title"),
+      _("tool-cc-title"),
       getLocalization(),
       getTooltipsLocalization()
     );
@@ -212,7 +212,7 @@ ipcMain.on(
 ipcMain.on(g_ipcChannel + "resizing-image", (event, pageNum, totalNumPages) => {
   g_window.webContents.send(
     g_ipcChannel + "update-log-text",
-    _("tool-convert-modal-log-resizing-page") + pageNum + " / " + totalNumPages
+    _("tool-shared-modal-log-resizing-page") + pageNum + " / " + totalNumPages
   );
 });
 
@@ -241,7 +241,7 @@ ipcMain.on(
     if (!wasCanceled) {
       g_window.webContents.send(
         g_ipcChannel + "update-title-text",
-        _("tool-convert-modal-title-conversion-finished")
+        _("tool-shared-modal-title-conversion-finished")
       );
 
       if (numErrors > 0) {
@@ -249,7 +249,7 @@ ipcMain.on(
           g_window.webContents.send(
             g_ipcChannel + "update-info-text",
             _(
-              "tool-convert-modal-info-error-num-files-not-converted",
+              "tool-shared-modal-info-error-num-files-not-converted",
               numErrors,
               numFiles
             )
@@ -257,31 +257,31 @@ ipcMain.on(
         } else {
           g_window.webContents.send(
             g_ipcChannel + "update-info-text",
-            _("tool-convert-modal-info-error-file-not-converted")
+            _("tool-shared-modal-info-error-file-not-converted")
           );
         }
       } else {
         if (numFiles > 1) {
           g_window.webContents.send(
             g_ipcChannel + "update-info-text",
-            _("tool-convert-modal-info-success-num-files-converted", numFiles)
+            _("tool-shared-modal-info-success-num-files-converted", numFiles)
           );
         } else {
           g_window.webContents.send(
             g_ipcChannel + "update-info-text",
-            _("tool-convert-modal-info-success-file-converted")
+            _("tool-shared-modal-info-success-file-converted")
           );
         }
       }
     } else {
       g_window.webContents.send(
         g_ipcChannel + "update-title-text",
-        _("tool-convert-modal-title-conversion-canceled")
+        _("tool-shared-modal-title-conversion-canceled")
       );
       g_window.webContents.send(
         g_ipcChannel + "update-info-text",
         _(
-          "tool-convert-modal-info-conversion-results",
+          "tool-shared-modal-info-conversion-results",
           numAttempted - numErrors,
           numErrors,
           numFiles - numAttempted
@@ -300,7 +300,7 @@ function stopError(err) {
   g_window.webContents.send(g_ipcChannel + "update-log-text", err);
   g_window.webContents.send(
     g_ipcChannel + "update-log-text",
-    _("tool-convert-modal-log-conversion-error")
+    _("tool-shared-modal-log-conversion-error")
   );
   g_window.webContents.send(g_ipcChannel + "finished-error");
 }
@@ -309,7 +309,7 @@ function stopCancel() {
   fileUtils.cleanUpTempFolder();
   g_window.webContents.send(
     g_ipcChannel + "update-log-text",
-    _("tool-convert-modal-log-conversion-canceled")
+    _("tool-shared-modal-log-conversion-canceled")
   );
   g_window.webContents.send(g_ipcChannel + "finished-canceled");
 }
@@ -319,7 +319,7 @@ function start(inputFilePath, inputFileType, fileNum, totalFilesNum) {
 
   g_window.webContents.send(
     g_ipcChannel + "update-title-text",
-    _("tool-modal-title-converting") +
+    _("tool-shared-modal-title-converting") +
       (totalFilesNum > 1 ? " (" + fileNum + "/" + totalFilesNum + ")" : "")
   );
   g_window.webContents.send(
@@ -328,7 +328,7 @@ function start(inputFilePath, inputFileType, fileNum, totalFilesNum) {
   );
   g_window.webContents.send(
     g_ipcChannel + "update-log-text",
-    _("tool-modal-title-converting")
+    _("tool-shared-modal-title-converting")
   );
   g_window.webContents.send(g_ipcChannel + "update-log-text", inputFilePath);
 
@@ -341,7 +341,7 @@ function start(inputFilePath, inputFileType, fileNum, totalFilesNum) {
   ) {
     g_window.webContents.send(
       g_ipcChannel + "update-log-text",
-      _("tool-convert-modal-log-extracting-pages")
+      _("tool-shared-modal-log-extracting-pages")
     );
     // ref: https://www.matthewslipper.com/2019/09/22/everything-you-wanted-electron-child-process.html
     if (g_worker !== undefined) {
@@ -370,12 +370,12 @@ function start(inputFilePath, inputFileType, fileNum, totalFilesNum) {
   } else if (inputFileType === FileDataType.PDF) {
     g_window.webContents.send(
       g_ipcChannel + "update-log-text",
-      _("tool-convert-modal-log-extracting-pages")
+      _("tool-shared-modal-log-extracting-pages")
     );
     g_window.webContents.send(
       g_ipcChannel + "extract-pdf-images",
       tempFolderPath,
-      _("tool-convert-modal-log-extracting-page")
+      _("tool-shared-modal-log-extracting-page")
     );
   } else {
     stopError("start: invalid file type");
@@ -441,7 +441,7 @@ async function resizeImages(
 
           g_window.webContents.send(
             g_ipcChannel + "update-log-text",
-            _("tool-convert-modal-log-page-to-compatible-format", index + 1)
+            _("tool-shared-modal-log-page-to-compatible-format", index + 1)
           );
           await sharp(filePath).jpeg().toFile(tmpFilePath);
 
@@ -503,7 +503,7 @@ async function createFileFromImages(
     // compress to output folder
     g_window.webContents.send(
       g_ipcChannel + "update-log-text",
-      _("tool-convert-modal-log-generating-new-file")
+      _("tool-shared-modal-log-generating-new-file")
     );
     g_window.webContents.send(g_ipcChannel + "update-log-text", outputFilePath);
 
@@ -550,15 +550,15 @@ function getTooltipsLocalization() {
   return [
     {
       id: "tooltip-output-size",
-      text: _("tool-convert-tooltip-output-size"),
+      text: _("tool-shared-tooltip-output-size"),
     },
     {
       id: "tooltip-output-folder",
-      text: _("tool-convert-tooltip-output-folder"),
+      text: _("tool-shared-tooltip-output-folder"),
     },
     {
       id: "tooltip-remove-from-list",
-      text: _("tool-convert-tooltip-remove-from-list"),
+      text: _("tool-shared-tooltip-remove-from-list"),
     },
   ];
 }
@@ -567,47 +567,47 @@ function getLocalization() {
   return [
     {
       id: "text-input-files",
-      text: _("tool-convert-ui-input-files"),
+      text: _("tool-shared-ui-input-files"),
     },
     {
       id: "button-add-file",
-      text: _("tool-convert-ui-add").toUpperCase(),
+      text: _("tool-shared-ui-add").toUpperCase(),
     },
     {
       id: "text-output-size",
-      text: _("tool-convert-ui-output-size"),
+      text: _("tool-shared-ui-output-size"),
     },
     {
       id: "text-scale",
-      text: _("tool-convert-ui-scale"),
+      text: _("tool-shared-ui-scale"),
     },
     {
       id: "text-quality",
-      text: _("tool-convert-ui-quality"),
+      text: _("tool-shared-ui-quality"),
     },
     {
       id: "text-output-format",
-      text: _("tool-convert-ui-output-format"),
+      text: _("tool-shared-ui-output-format"),
     },
     {
       id: "text-output-folder",
-      text: _("tool-convert-ui-output-folder"),
+      text: _("tool-shared-ui-output-folder"),
     },
     {
       id: "button-change-folder",
-      text: _("tool-convert-ui-change").toUpperCase(),
+      text: _("tool-shared-ui-change").toUpperCase(),
     },
     {
       id: "button-start",
-      text: _("tool-convert-ui-convert").toUpperCase(),
+      text: _("tool-shared-ui-convert").toUpperCase(),
     },
     {
       id: "button-modal-close",
-      text: _("tool-convert-ui-close").toUpperCase(),
+      text: _("tool-shared-ui-close").toUpperCase(),
     },
     {
       id: "button-modal-cancel",
-      text: _("tool-convert-ui-cancel").toUpperCase(),
+      text: _("tool-shared-ui-cancel").toUpperCase(),
     },
   ];
 }

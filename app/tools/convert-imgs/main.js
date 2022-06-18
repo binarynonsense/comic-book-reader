@@ -57,7 +57,7 @@ exports.showWindow = function (parentWindow) {
   g_window.webContents.on("did-finish-load", function () {
     g_window.webContents.send(
       g_ipcChannel + "update-localization",
-      _("tool-convert-images-title"),
+      _("tool-ci-title"),
       getLocalization(),
       getTooltipsLocalization()
     );
@@ -154,7 +154,7 @@ ipcMain.on(
     if (!wasCanceled) {
       g_window.webContents.send(
         g_ipcChannel + "update-title-text",
-        _("tool-convert-modal-title-conversion-finished")
+        _("tool-shared-modal-title-conversion-finished")
       );
 
       if (numErrors > 0) {
@@ -162,7 +162,7 @@ ipcMain.on(
           g_window.webContents.send(
             g_ipcChannel + "update-info-text",
             _(
-              "tool-convert-modal-info-error-num-files-not-converted",
+              "tool-shared-modal-info-error-num-files-not-converted",
               numErrors,
               numFiles
             )
@@ -170,31 +170,31 @@ ipcMain.on(
         } else {
           g_window.webContents.send(
             g_ipcChannel + "update-info-text",
-            _("tool-convert-modal-info-error-file-not-converted")
+            _("tool-shared-modal-info-error-file-not-converted")
           );
         }
       } else {
         if (numFiles > 1) {
           g_window.webContents.send(
             g_ipcChannel + "update-info-text",
-            _("tool-convert-modal-info-success-num-files-converted", numFiles)
+            _("tool-shared-modal-info-success-num-files-converted", numFiles)
           );
         } else {
           g_window.webContents.send(
             g_ipcChannel + "update-info-text",
-            _("tool-convert-modal-info-success-file-converted")
+            _("tool-shared-modal-info-success-file-converted")
           );
         }
       }
     } else {
       g_window.webContents.send(
         g_ipcChannel + "update-title-text",
-        _("tool-convert-modal-title-conversion-canceled")
+        _("tool-shared-modal-title-conversion-canceled")
       );
       g_window.webContents.send(
         g_ipcChannel + "update-info-text",
         _(
-          "tool-convert-modal-info-conversion-results",
+          "tool-shared-modal-info-conversion-results",
           numAttempted - numErrors,
           numErrors,
           numFiles - numAttempted
@@ -213,7 +213,7 @@ function stopError(err) {
   g_window.webContents.send(g_ipcChannel + "update-log-text", err);
   g_window.webContents.send(
     g_ipcChannel + "update-log-text",
-    _("tool-convert-modal-log-conversion-error")
+    _("tool-shared-modal-log-conversion-error")
   );
   g_window.webContents.send(g_ipcChannel + "finished-error");
 }
@@ -222,7 +222,7 @@ function stopCancel() {
   fileUtils.cleanUpTempFolder();
   g_window.webContents.send(
     g_ipcChannel + "update-log-text",
-    _("tool-convert-modal-log-conversion-canceled")
+    _("tool-shared-modal-log-conversion-canceled")
   );
   g_window.webContents.send(g_ipcChannel + "finished-canceled");
 }
@@ -233,18 +233,18 @@ async function start(imgFiles, outputFormat, outputFolderPath) {
   try {
     g_window.webContents.send(
       g_ipcChannel + "update-title-text",
-      _("tool-modal-title-converting")
+      _("tool-shared-modal-title-converting")
     );
     g_window.webContents.send(g_ipcChannel + "update-info-text", "");
     g_window.webContents.send(
       g_ipcChannel + "update-log-text",
-      _("tool-modal-title-converting")
+      _("tool-shared-modal-title-converting")
     );
 
     // compress to output folder
     g_window.webContents.send(
       g_ipcChannel + "update-log-text",
-      _("tool-convert-modal-log-converting-images")
+      _("tool-shared-modal-log-converting-images")
     );
     let numErrors = 0;
     let numFiles = imgFiles.length;
@@ -288,7 +288,7 @@ async function start(imgFiles, outputFormat, outputFolderPath) {
 
     g_window.webContents.send(
       g_ipcChannel + "update-title-text",
-      _("tool-convert-modal-title-conversion-finished")
+      _("tool-shared-modal-title-conversion-finished")
     );
 
     if (numErrors > 0) {
@@ -296,7 +296,7 @@ async function start(imgFiles, outputFormat, outputFolderPath) {
         g_window.webContents.send(
           g_ipcChannel + "update-info-text",
           _(
-            "tool-convert-modal-info-error-num-files-not-converted",
+            "tool-shared-modal-info-error-num-files-not-converted",
             numErrors,
             numFiles
           )
@@ -304,19 +304,19 @@ async function start(imgFiles, outputFormat, outputFolderPath) {
       } else {
         g_window.webContents.send(
           g_ipcChannel + "update-info-text",
-          _("tool-convert-modal-info-error-file-not-converted")
+          _("tool-shared-modal-info-error-file-not-converted")
         );
       }
     } else {
       if (numFiles > 1) {
         g_window.webContents.send(
           g_ipcChannel + "update-info-text",
-          _("tool-convert-modal-info-success-num-files-converted", numFiles)
+          _("tool-shared-modal-info-success-num-files-converted", numFiles)
         );
       } else {
         g_window.webContents.send(
           g_ipcChannel + "update-info-text",
-          _("tool-convert-modal-info-success-file-converted")
+          _("tool-shared-modal-info-success-file-converted")
         );
       }
     }
@@ -332,11 +332,11 @@ function getTooltipsLocalization() {
   return [
     {
       id: "tooltip-output-folder",
-      text: _("tool-convert-tooltip-output-folder"),
+      text: _("tool-shared-tooltip-output-folder"),
     },
     {
       id: "tooltip-remove-from-list",
-      text: _("tool-convert-tooltip-remove-from-list"),
+      text: _("tool-shared-tooltip-remove-from-list"),
     },
   ];
 }
@@ -345,47 +345,47 @@ function getLocalization() {
   return [
     {
       id: "text-input-files",
-      text: _("tool-convert-ui-input-images"),
+      text: _("tool-shared-ui-input-images"),
     },
     {
       id: "button-add-file",
-      text: _("tool-convert-ui-add").toUpperCase(),
+      text: _("tool-shared-ui-add").toUpperCase(),
     },
     {
       id: "text-output-size",
-      text: _("tool-convert-ui-output-size"),
+      text: _("tool-shared-ui-output-size"),
     },
     {
       id: "text-scale",
-      text: _("tool-convert-ui-scale"),
+      text: _("tool-shared-ui-scale"),
     },
     {
       id: "text-quality",
-      text: _("tool-convert-ui-quality"),
+      text: _("tool-shared-ui-quality"),
     },
     {
       id: "text-output-format",
-      text: _("tool-convert-ui-output-format"),
+      text: _("tool-shared-ui-output-format"),
     },
     {
       id: "text-output-folder",
-      text: _("tool-convert-ui-output-folder"),
+      text: _("tool-shared-ui-output-folder"),
     },
     {
       id: "button-change-folder",
-      text: _("tool-convert-ui-change").toUpperCase(),
+      text: _("tool-shared-ui-change").toUpperCase(),
     },
     {
       id: "button-start",
-      text: _("tool-convert-ui-convert").toUpperCase(),
+      text: _("tool-shared-ui-convert").toUpperCase(),
     },
     {
       id: "button-modal-close",
-      text: _("tool-convert-ui-close").toUpperCase(),
+      text: _("tool-shared-ui-close").toUpperCase(),
     },
     {
       id: "button-modal-cancel",
-      text: _("tool-convert-ui-cancel").toUpperCase(),
+      text: _("tool-shared-ui-cancel").toUpperCase(),
     },
   ];
 }

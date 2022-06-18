@@ -64,7 +64,7 @@ exports.showWindow = function (parentWindow, filePath) {
 
     g_window.webContents.send(
       g_ipcChannel + "update-localization",
-      _("tool-ocr-title"),
+      _("tool-et-title"),
       getLocalization()
     );
   });
@@ -115,11 +115,11 @@ ipcMain.on(
     try {
       g_window.webContents.send(
         g_ipcChannel + "modal-update-title",
-        _("tool-modal-title-extracting").toUpperCase()
+        _("tool-shared-modal-title-extracting").toUpperCase()
       );
       g_window.webContents.send(
         g_ipcChannel + "modal-update-info",
-        _("tool-ocr-modal-info")
+        _("tool-et-modal-info")
       );
       let base64 = inputBase64Img;
       let options;
@@ -177,35 +177,35 @@ function getLocalization() {
   return [
     {
       id: "header-input-file",
-      text: _("tool-ocr-header-input-file"),
+      text: _("tool-et-header-input-file"),
     },
     {
       id: "header-output-text",
-      text: _("tool-ocr-header-output-text"),
+      text: _("tool-et-header-output-text"),
     },
     {
       id: "button-add-file",
-      text: _("tool-ocr-button-add-file").toUpperCase(),
+      text: _("tool-et-button-add-file").toUpperCase(),
     },
     {
       id: "button-copy-text",
-      text: _("tool-ocr-button-copy-text").toUpperCase(),
+      text: _("tool-et-button-copy-text").toUpperCase(),
     },
     {
       id: "button-extract-text",
-      text: _("tool-ocr-button-extract-text").toUpperCase(),
+      text: _("tool-et-button-extract-text").toUpperCase(),
     },
     {
       id: "header-language",
-      text: _("tool-ocr-header-language"),
+      text: _("tool-et-header-language"),
     },
     {
       id: "span-language-checkbox-info",
-      text: _("tool-ocr-span-language-checkbox-info"),
+      text: _("tool-et-span-language-checkbox-info"),
     },
     {
       id: "button-modal-cancel",
-      text: _("tool-ocr-modal-button-cancel").toUpperCase(),
+      text: _("tool-et-modal-button-cancel").toUpperCase(),
     },
   ];
 }
