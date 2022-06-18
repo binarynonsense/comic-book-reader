@@ -117,8 +117,13 @@ function buildApplicationMenu(
 
   if (languages !== undefined) {
     for (let language of languages) {
+      let nativeName = language.nativeName;
+      if (fileUtils.isVersionOlder(language.acbrVersion, "2.0.0-beta1")) {
+        nativeName +=
+          " (" + _("menu-file-preferences-languages-incompletelanguage") + ")";
+      }
       languagesSubmenu.push({
-        label: language.nativeName,
+        label: nativeName,
         type: "checkbox",
         checked: language.locale === activeLocale,
         click() {

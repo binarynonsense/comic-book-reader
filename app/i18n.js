@@ -119,6 +119,7 @@ function getLocalesFromFolder(folderPath) {
             let localeInfo = {
               nativeName: data["@metadata"]["native-name"],
               locale: data["@metadata"]["locale"],
+              acbrVersion: data["@metadata"]["acbr-version"],
             };
             localesList.push(localeInfo);
           }
