@@ -9,6 +9,7 @@ const { createWorker } = require("tesseract.js");
 
 let g_window;
 let g_ipcChannel = "tool-et--";
+let g_ocrWorker;
 
 function isDev() {
   return process.argv[2] == "--dev";
@@ -53,6 +54,7 @@ exports.showWindow = function (parentWindow, filePath) {
   g_window.on("closed", () => {
     g_window = undefined;
     fileUtils.cleanUpTempFolder();
+    cleanUpOcrWorker();
   });
 
   g_window.webContents.on("did-finish-load", function () {
@@ -148,26 +150,37 @@ ipcMain.on(
         };
       }
 
-      const worker = createWorker(options);
+      cleanUpOcrWorker();
+      g_ocrWorker = createWorker(options);
       (async () => {
-        await worker.load();
-        await worker.loadLanguage(language);
-        await worker.initialize(language);
+        await g_ocrWorker.load();
+        await g_ocrWorker.loadLanguage(language);
+        await g_ocrWorker.initialize(language);
         const {
           data: { text },
-        } = await worker.recognize(base64);
+        } = await g_ocrWorker.recognize(base64);
         g_window.webContents.send(g_ipcChannel + "modal-update-log", "done");
         g_window.webContents.send(g_ipcChannel + "modal-close");
         g_window.webContents.send(g_ipcChannel + "fill-textarea", text);
-        await worker.terminate();
+        await g_ocrWorker.terminate();
+        g_ocrWorker = undefined;
       })();
     } catch (error) {
+      cleanUpOcrWorker();
       console.log(error);
     }
   }
 );
 
+function cleanUpOcrWorker() {
+  if (g_ocrWorker !== undefined) {
+    g_ocrWorker.terminate();
+    g_ocrWorker = undefined;
+  }
+}
+
 ipcMain.on(g_ipcChannel + "cancel-extraction", (event) => {
+  cleanUpOcrWorker();
   g_window.webContents.send(g_ipcChannel + "close-modal");
 });
 
