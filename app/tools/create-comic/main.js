@@ -208,7 +208,7 @@ function stopError(err) {
   g_window.webContents.send(g_ipcChannel + "update-log-text", err);
   g_window.webContents.send(
     g_ipcChannel + "update-log-text",
-    _("tool-shared-modal-log-conversion-error")
+    _("tool-shared-modal-log-creation-error")
   );
   g_window.webContents.send(g_ipcChannel + "finished-error");
 }
@@ -217,7 +217,7 @@ function stopCancel() {
   fileUtils.cleanUpTempFolder();
   g_window.webContents.send(
     g_ipcChannel + "update-log-text",
-    _("tool-shared-modal-log-conversion-canceled")
+    _("tool-shared-modal-log-creation-canceled")
   );
   g_window.webContents.send(g_ipcChannel + "finished-canceled");
 }

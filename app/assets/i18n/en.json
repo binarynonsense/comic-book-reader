@@ -133,6 +133,8 @@
   "tool-shared-modal-log-conversion-canceled": "Couldn't convert the file, the conversion was canceled",  
   "tool-shared-modal-log-extraction-error": "Couldn't extract the file, an error ocurred",
   "tool-shared-modal-log-extraction-canceled": "Couldn't extract the file, the extraction was canceled",
+  "tool-shared-modal-log-creation-error": "Couldn't create the file, an error ocurred",
+  "tool-shared-modal-log-creation-canceled": "Couldn't create the file, the creation was canceled",
 
   "tool-shared-tooltip-output-size": "The size of the pages will be reduced to this percentage of the originals.",
   "tool-shared-tooltip-output-folder": "If a file with the same name already exists in the folder, a subfix will be added to the converted file's name so nothing is overwritten.",
