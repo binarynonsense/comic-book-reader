@@ -245,33 +245,19 @@ ipcMain.on(
       );
 
       if (numErrors > 0) {
-        if (numFiles > 1) {
-          g_window.webContents.send(
-            g_ipcChannel + "update-info-text",
-            _(
-              "tool-shared-modal-info-error-num-files-not-converted",
-              numErrors,
-              numFiles
-            )
-          );
-        } else {
-          g_window.webContents.send(
-            g_ipcChannel + "update-info-text",
-            _("tool-shared-modal-info-error-file-not-converted")
-          );
-        }
+        g_window.webContents.send(
+          g_ipcChannel + "update-info-text",
+          _(
+            "tool-shared-modal-info-conversion-error-num-files",
+            numErrors,
+            numFiles
+          )
+        );
       } else {
-        if (numFiles > 1) {
-          g_window.webContents.send(
-            g_ipcChannel + "update-info-text",
-            _("tool-shared-modal-info-success-num-files-converted", numFiles)
-          );
-        } else {
-          g_window.webContents.send(
-            g_ipcChannel + "update-info-text",
-            _("tool-shared-modal-info-success-file-converted")
-          );
-        }
+        g_window.webContents.send(
+          g_ipcChannel + "update-info-text",
+          _("tool-shared-modal-info-conversion-success-num-files", numFiles)
+        );
       }
     } else {
       g_window.webContents.send(

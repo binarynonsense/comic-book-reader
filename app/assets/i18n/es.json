@@ -15,6 +15,7 @@
   "menu-file-openrecent-clear": "Limpiar Historia",
   "menu-file-close": "Cerrar...",
   "menu-file-convert": "Convertir...",
+  "menu-file-extract": "Extraer...",
   "menu-file-page": "Página",
   "menu-file-page-export": "Exportar...",  
   "menu-file-page-extract": "Extraer Texto...",  
@@ -105,15 +106,22 @@
   "tool-shared-modal-title-extracting": "Extrayendo",  
   "tool-shared-modal-title-converting": "Convirtiendo",
   "tool-shared-modal-title-creating": "Creando",
-
   "tool-shared-modal-title-conversion-finished": "Conversión Finalizada",
   "tool-shared-modal-title-conversion-canceled": "Conversión Cancelada",
+  "tool-shared-modal-title-extraction-finished": "Extracción Finalizada",
+  "tool-shared-modal-title-extraction-canceled": "Extracción Cancelada",
+  "tool-shared-modal-title-creation-finished": "Creación Finalizada",
+  "tool-shared-modal-title-creation-canceled": "Creación Cancelada",
 
-  "tool-shared-modal-info-success-num-files-converted": "{0} archivo/s correctamente convertido/s",
-  "tool-shared-modal-info-success-file-converted": "Archivo correctamente convertido",  
+  "tool-shared-modal-info-conversion-success-num-files": "{0} archivo/s correctamente convertido/s",
   "tool-shared-modal-info-conversion-results": "Convertidos: {0} | Errores: {1} | Cancelados: {2}",
-  "tool-shared-modal-info-error-num-files-not-converted": "Error: no se pudo convertir {0} de {1} archivo/s",
-  "tool-shared-modal-info-error-file-not-converted": "Error: el archivo no se pudo convertir",
+  "tool-shared-modal-info-conversion-error-num-files": "Error: no se pudo convertir {0} archivo/s de {1}",
+  "tool-shared-modal-info-extraction-success-num-files": "{0} file/s correctly extracted",
+  "tool-shared-modal-info-extraction-results": "Extracted: {0} | Errors: {1} | Canceled: {2}",
+  "tool-shared-modal-info-extraction-error-num-files": "Error: {0} of {1} file/s couldn't be extracted",
+  "tool-shared-modal-info-creation-success-num-files": "{0} archivo/s correctamente añadido/s",
+  "tool-shared-modal-info-creation-results": "Añadidos: {0} | Errores: {1} | Cancelados: {2}",
+  "tool-shared-modal-info-creation-error-num-files": "Error: no se pudo añadir {0} archivo/s de {1}",
   
   "tool-shared-modal-log-extracting-pages": "Extrayendo páginas...",
   "tool-shared-modal-log-extracting-page": "Extrayendo página: ",
@@ -122,7 +130,9 @@
   "tool-shared-modal-log-generating-new-file": "Generando nuevo archivo...",
   "tool-shared-modal-log-converting-images": "Convirtiendo imágenes...",    
   "tool-shared-modal-log-conversion-error": "No se pudo convertir el archivo, se produjo un error",
-  "tool-shared-modal-log-conversion-canceled": "No se pudo convertir el archivo, la conversión fue cancelada", 
+  "tool-shared-modal-log-conversion-canceled": "No se pudo convertir el archivo, la conversión fue cancelada",
+  "tool-shared-modal-log-extraction-error": "No se pudo extraer el archivo, se produjo un error",
+  "tool-shared-modal-log-extraction-canceled": "No se pudo extraer el archivo, la extracción fue cancelada",
 
   "tool-shared-tooltip-output-size": "El tamaño de las páginas se reducirá a este porcentaje de las originales.",
   "tool-shared-tooltip-output-folder": "Si un archivo con el mismo nombre ya existe en el directorio, se añadirá un subfijo al nombre del archivo de salida para que ningún archivo sea sobreescrito.",
@@ -145,7 +155,5 @@
 
   "tool-ec-title": "Herramienta de extracción de páginas",
   "tool-ec-modal-log-extracting-to": "En",
-  "tool-ec-tooltip-output-folder": "Dentro del directorio indicado, se creará un subdirectorio para guardar las imágenes con el mismo nombre que el archivo a extraer. Si ya existe un subdirectorio con ese nombre, se añadirá un subfijo al nombre para que ningún archivo sea sobreescrito.",
-  "tool-ec-modal-log-error": "No se pudo extraer el archivo, se produjo un error",
-  "tool-ec-modal-log-canceled": "No se pudo extraer el archivo, la extracción fue cancelada"
+  "tool-ec-tooltip-output-folder": "Dentro del directorio indicado, se creará un subdirectorio para guardar las imágenes con el mismo nombre que el archivo a extraer. Si ya existe un subdirectorio con ese nombre, se añadirá un subfijo al nombre para que ningún archivo sea sobreescrito."  
 }

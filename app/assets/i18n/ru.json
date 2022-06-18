@@ -15,6 +15,7 @@
   "menu-file-openrecent-clear": "Очистить историю",
   "menu-file-close": "Закрыть...",
   "menu-file-convert": "Конвертировать...",
+  "[NEEDS TRANSLATION]menu-file-extract": "Extract...",
   "[NEEDS TRANSLATION]menu-file-page": "Page",
   "[NEEDS TRANSLATION]menu-file-page-export": "Export...",  
   "[NEEDS TRANSLATION]menu-file-page-extract": "Extract Text...",  
@@ -107,12 +108,20 @@
   "[NEEDS TRANSLATION]tool-shared-modal-title-creating": "Creating",
   "tool-shared-modal-title-conversion-finished": "Конвертация завершена",
   "tool-shared-modal-title-conversion-canceled": "Конвертация отменена",
+  "[NEEDS TRANSLATION]tool-shared-modal-title-extraction-finished": "Extraction Finished",
+  "[NEEDS TRANSLATION]tool-shared-modal-title-extraction-canceled": "Extraction Canceled",
+  "[NEEDS TRANSLATION]tool-shared-modal-title-creation-finished": "Creation Finished",
+  "[NEEDS TRANSLATION]tool-shared-modal-title-creation-canceled": "Creation Canceled",
 
-  "tool-shared-modal-info-success-num-files-converted": "{0} файла(ов) успешно конвертировано",
-  "tool-shared-modal-info-success-file-converted": "Файл успешно конвертирован",
+  "tool-shared-modal-info-conversion-success-num-files": "{0} файла(ов) успешно конвертировано",
   "tool-shared-modal-info-conversion-results": "Конвертированно: {0} | Ошибок: {1} | Отменено: {2}",
-  "tool-shared-modal-info-error-num-files-not-converted": "Ошибка: Не удалось конвертировать {0} из {1} файла(ов)",
-  "tool-shared-modal-info-error-file-not-converted": "Ошибка: Не удалось конвертировать файл",
+  "tool-shared-modal-info-conversion-error-num-files": "Ошибка: Не удалось конвертировать {0} из {1} файла(ов)",
+  "[NEEDS TRANSLATION]tool-shared-modal-info-extraction-success-num-files": "{0} file/s correctly extracted",
+  "[NEEDS TRANSLATION]tool-shared-modal-info-extraction-results": "Extracted: {0} | Errors: {1} | Canceled: {2}",
+  "[NEEDS TRANSLATION]tool-shared-modal-info-extraction-error-num-files": "Error: {0} of {1} file/s couldn't be extracted",
+  "[NEEDS TRANSLATION]tool-shared-modal-info-creation-success-num-files": "{0} file/s correctly added",
+  "[NEEDS TRANSLATION]tool-shared-modal-info-creation-results": "Added: {0} | Errors: {1} | Canceled: {2}",
+  "[NEEDS TRANSLATION]tool-shared-modal-info-creation-error-num-files": "Error: {0} of {1} file/s couldn't be added",
 
   "tool-shared-modal-log-extracting-pages": "Извлечение страниц...",
   "tool-shared-modal-log-extracting-page": "Извлечение страницы: ",
@@ -122,6 +131,8 @@
   "[NEEDS TRANSLATION]tool-shared-modal-log-converting-images": "Converting Images...",    
   "tool-shared-modal-log-conversion-error": "Не удалось конвертировать файл, произошла ошибка",
   "tool-shared-modal-log-conversion-canceled": "Не удалось конвертировать файл, конвертация была отменена",
+  "[NEEDS TRANSLATION]tool-shared-modal-log-extraction-error": "Couldn't extract the file, an error ocurred",
+  "[NEEDS TRANSLATION]tool-shared-modal-log-extraction-canceled": "Couldn't extract the file, the extraction was canceled",
 
   "tool-shared-tooltip-output-size": "Размер страниц будет уменьшен до этого процента от размера оригиналов.",
   "tool-shared-tooltip-output-folder": "Если в папке уже существует файл с таким названием, то к названию конвертированного файла будет добавлен подфикс, чтобы не произошло перезаписи.",
@@ -144,7 +155,5 @@
 
   "[NEEDS TRANSLATION]tool-ec-title": "Extract Pages Tool",
   "[NEEDS TRANSLATION]tool-ec-modal-log-extracting-to": "To",
-  "[NEEDS TRANSLATION]tool-ec-tooltip-output-folder": "Inside the provided folder, a subfolder with the same name as the file to be extracted will be created to store the images. If a subfolder with the same name already exists, a subfix will be added to the name so nothing is overwritten.",
-  "[NEEDS TRANSLATION]tool-ec-modal-log-error": "Couldn't extract the file, an error ocurred",
-  "[NEEDS TRANSLATION]tool-ec-modal-log-canceled": "Couldn't extract the file, the extraction was canceled"
+  "[NEEDS TRANSLATION]tool-ec-tooltip-output-folder": "Inside the provided folder, a subfolder with the same name as the file to be extracted will be created to store the images. If a subfolder with the same name already exists, a subfix will be added to the name so nothing is overwritten."  
 }

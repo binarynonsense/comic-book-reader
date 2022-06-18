@@ -241,42 +241,28 @@ ipcMain.on(
     if (!wasCanceled) {
       g_window.webContents.send(
         g_ipcChannel + "update-title-text",
-        _("tool-shared-modal-title-conversion-finished")
+        _("tool-shared-modal-title-extraction-finished")
       );
 
       if (numErrors > 0) {
-        if (numFiles > 1) {
-          g_window.webContents.send(
-            g_ipcChannel + "update-info-text",
-            _(
-              "tool-shared-modal-info-error-num-files-not-converted",
-              numErrors,
-              numFiles
-            )
-          );
-        } else {
-          g_window.webContents.send(
-            g_ipcChannel + "update-info-text",
-            _("tool-shared-modal-info-error-file-not-converted")
-          );
-        }
+        g_window.webContents.send(
+          g_ipcChannel + "update-info-text",
+          _(
+            "tool-shared-modal-info-extraction-error-num-files",
+            numErrors,
+            numFiles
+          )
+        );
       } else {
-        if (numFiles > 1) {
-          g_window.webContents.send(
-            g_ipcChannel + "update-info-text",
-            _("tool-shared-modal-info-success-num-files-converted", numFiles)
-          );
-        } else {
-          g_window.webContents.send(
-            g_ipcChannel + "update-info-text",
-            _("tool-shared-modal-info-success-file-converted")
-          );
-        }
+        g_window.webContents.send(
+          g_ipcChannel + "update-info-text",
+          _("tool-shared-modal-info-extraction-success-num-files", numFiles)
+        );
       }
     } else {
       g_window.webContents.send(
         g_ipcChannel + "update-title-text",
-        _("tool-shared-modal-title-conversion-canceled")
+        _("tool-shared-modal-title-extraction-canceled")
       );
       g_window.webContents.send(
         g_ipcChannel + "update-info-text",
@@ -300,7 +286,7 @@ function stopError(err) {
   g_window.webContents.send(g_ipcChannel + "update-log-text", err);
   g_window.webContents.send(
     g_ipcChannel + "update-log-text",
-    _("tool-ec-modal-log-error")
+    _("tool-shared-modal-log-extraction-error")
   );
   g_window.webContents.send(g_ipcChannel + "finished-error");
 }
@@ -309,7 +295,7 @@ function stopCancel() {
   fileUtils.cleanUpTempFolder();
   g_window.webContents.send(
     g_ipcChannel + "update-log-text",
-    _("tool-ec-modal-log-canceled")
+    _("tool-shared-modal-log-extraction-canceled")
   );
   g_window.webContents.send(g_ipcChannel + "finished-canceled");
 }

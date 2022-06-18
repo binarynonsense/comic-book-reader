@@ -163,47 +163,33 @@ ipcMain.on(
     if (!wasCanceled) {
       g_window.webContents.send(
         g_ipcChannel + "update-title-text",
-        _("tool-shared-modal-title-conversion-finished")
+        _("tool-shared-modal-title-creation-finished")
       );
 
       if (numErrors > 0) {
-        if (numFiles > 1) {
-          g_window.webContents.send(
-            g_ipcChannel + "update-info-text",
-            _(
-              "tool-shared-modal-info-error-num-files-not-converted",
-              numErrors,
-              numFiles
-            )
-          );
-        } else {
-          g_window.webContents.send(
-            g_ipcChannel + "update-info-text",
-            _("tool-shared-modal-info-error-file-not-converted")
-          );
-        }
+        g_window.webContents.send(
+          g_ipcChannel + "update-info-text",
+          _(
+            "tool-shared-modal-info-creation-error-num-files",
+            numErrors,
+            numFiles
+          )
+        );
       } else {
-        if (numFiles > 1) {
-          g_window.webContents.send(
-            g_ipcChannel + "update-info-text",
-            _("tool-shared-modal-info-success-num-files-converted", numFiles)
-          );
-        } else {
-          g_window.webContents.send(
-            g_ipcChannel + "update-info-text",
-            _("tool-shared-modal-info-success-file-converted")
-          );
-        }
+        g_window.webContents.send(
+          g_ipcChannel + "update-info-text",
+          _("tool-shared-modal-info-creation-success-num-files", numFiles)
+        );
       }
     } else {
       g_window.webContents.send(
         g_ipcChannel + "update-title-text",
-        _("tool-shared-modal-title-conversion-canceled")
+        _("tool-shared-modal-title-creation-canceled")
       );
       g_window.webContents.send(
         g_ipcChannel + "update-info-text",
         _(
-          "tool-shared-modal-info-conversion-results",
+          "tool-shared-modal-info-creation-results",
           numAttempted - numErrors,
           numErrors,
           numFiles - numAttempted
