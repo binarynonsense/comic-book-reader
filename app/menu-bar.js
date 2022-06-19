@@ -120,8 +120,6 @@ function buildApplicationMenu(
     for (let language of languages) {
       let nativeName = language.nativeName;
       if (fileUtils.isVersionOlder(language.acbrVersion, "2.0.0-beta1")) {
-        //nativeName +=
-        //  " (" + _("menu-file-preferences-languages-incompletelanguages") + ")";
         incompleteLanguages.push(language);
         continue;
       }
@@ -138,9 +136,8 @@ function buildApplicationMenu(
     if (incompleteLanguages.length > 0) {
       let incompleteSubmenu = [];
       for (let language of incompleteLanguages) {
-        let nativeName = language.nativeName;
         incompleteSubmenu.push({
-          label: nativeName,
+          label: language.nativeName,
           type: "checkbox",
           checked: language.locale === activeLocale,
           click() {
