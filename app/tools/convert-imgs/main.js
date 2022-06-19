@@ -227,7 +227,7 @@ async function start(imgFiles, outputFormat, outputFolderPath) {
       _("tool-shared-modal-title-converting")
     );
 
-    // compress to output folder
+    // convert the images' format if needed
     g_window.webContents.send(
       g_ipcChannel + "update-log-text",
       _("tool-shared-modal-log-converting-images")
@@ -329,11 +329,11 @@ function getLocalization() {
     },
     {
       id: "text-scale",
-      text: _("tool-shared-ui-scale"),
+      text: _("tool-shared-ui-output-options-scale"),
     },
     {
       id: "text-quality",
-      text: _("tool-shared-ui-quality"),
+      text: _("tool-shared-ui-output-options-quality"),
     },
     {
       id: "text-output-format",

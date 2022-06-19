@@ -15,7 +15,8 @@ let g_inputFilePath;
 let g_inputFileType;
 let g_outputScale = "100";
 let g_outputQuality = "80";
-let g_outputFormat;
+let g_outputFormat = FileExtension.NOTSET;
+let g_outputFormatNotSet = "";
 let g_outputFolderPath;
 
 let g_textInputFilesDiv = document.querySelector("#text-input-files");
@@ -23,6 +24,7 @@ let g_inputListDiv = document.querySelector("#input-list");
 let g_inputListButton = document.querySelector("#button-add-file");
 let g_outputFolderDiv = document.querySelector("#output-folder");
 let g_startButton = document.querySelector("#button-start");
+let g_outputFormatSelect = document.querySelector("#output-format-select");
 let g_scaleSlider = document.querySelector("#scale-slider");
 let g_qualitySlider = document.querySelector("#quality-slider");
 
@@ -47,7 +49,7 @@ g_qualitySlider.addEventListener("mouseup", (event) => {
 ///////////////////////////////////////////////////////////////////////////////
 
 function checkValidData() {
-  if (g_outputScale === "100") {
+  if (g_outputScale === "100" && g_outputFormat === FileExtension.NOTSET) {
     g_qualitySlider.parentElement.classList.add("hide");
   } else {
     g_qualitySlider.parentElement.classList.remove("hide");
@@ -75,6 +77,15 @@ ipcRenderer.on(g_ipcChannel + "init", (event, outputFolderPath) => {
   g_outputFolderDiv.innerHTML = reducePathString(g_outputFolderPath);
   g_inputListButton.classList.remove("hide");
   g_textInputFilesDiv.classList.remove("hide");
+  g_outputFormatSelect.innerHTML =
+    '<option value="' +
+    FileExtension.NOTSET +
+    '">' +
+    g_outputFormatNotSet +
+    "</option>" +
+    '<option value="jpg">.jpg</option>' +
+    '<option value="png">.png</option>' +
+    '<option value="webp">.webp</option>';
   checkValidData();
 });
 
@@ -87,6 +98,10 @@ ipcRenderer.on(
       const domElement = document.querySelector("#" + element.id);
       if (domElement !== null) {
         domElement.innerHTML = element.text;
+      }
+      // UGLY HACK
+      else if (element.id === "keep-format") {
+        g_outputFormatNotSet = element.text;
       }
     }
 
@@ -159,6 +174,11 @@ ipcRenderer.on(g_ipcChannel + "change-output-folder", (event, folderPath) => {
 
 exports.onChooseInputFile = function () {
   ipcRenderer.send(g_ipcChannel + "choose-file");
+};
+
+exports.onOutputFormatChanged = function (selectObject) {
+  g_outputFormat = selectObject.value;
+  checkValidData();
 };
 
 exports.onChooseOutputFolder = function () {
@@ -247,12 +267,13 @@ ipcRenderer.on(
 );
 
 ipcRenderer.on(g_ipcChannel + "images-extracted", (event) => {
+  if (g_outputFormat === undefined) g_outputFormat = FileExtension.NOTSET;
   ipcRenderer.send(
     g_ipcChannel + "resize-images",
     g_inputFilePath,
     g_outputScale,
     g_outputQuality,
-    undefined, // no output format needed
+    g_outputFormat,
     g_outputFolderPath
   );
 });

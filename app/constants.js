@@ -1,4 +1,5 @@
 exports.FileExtension = {
+  NOTSET: "notset",
   CBZ: "cbz",
   ZIP: "zip",
   CBR: "cbr",

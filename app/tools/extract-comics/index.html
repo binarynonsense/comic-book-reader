@@ -27,7 +27,7 @@
 
       <div id="output-size">
         <h5>
-          <span id="text-output-size">Output Size:</span>
+          <span id="text-output-options">Output Options:</span>
           <i
             id="tooltip-output-size"
             class="fas fa-question-circle blue-text accent-1-text"
@@ -44,6 +44,12 @@
             value="100"
           />
         </p>
+        <span id="text-format">Format:</span>
+        <select
+          id="output-format-select"
+          class="browser-default"
+          onchange="renderer.onOutputFormatChanged(this)"
+        ></select>
         <p class="range-field" id="quality-slider-container">
           <span id="text-quality">Quality:</span>
           <input

@@ -565,11 +565,11 @@ function getLocalization() {
     },
     {
       id: "text-scale",
-      text: _("tool-shared-ui-scale"),
+      text: _("tool-shared-ui-output-options-scale"),
     },
     {
       id: "text-quality",
-      text: _("tool-shared-ui-quality"),
+      text: _("tool-shared-ui-output-options-quality"),
     },
     {
       id: "text-output-format",

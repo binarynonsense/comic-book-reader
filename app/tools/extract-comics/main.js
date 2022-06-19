@@ -10,6 +10,7 @@ const fileFormats = require("../../file-formats");
 const mainProcess = require("../../main");
 const { FileExtension, FileDataType } = require("../../constants");
 const sharp = require("sharp");
+const { quality } = require("jimp");
 
 let g_window;
 let g_cancel = false;
@@ -196,33 +197,18 @@ ipcMain.on(
     inputFilePath,
     outputScale,
     outputQuality,
-    outputFormat, // not used
+    outputFormat,
     outputFolderPath
   ) => {
     resizeImages(
       inputFilePath,
       outputScale,
       outputQuality,
-      outputFormat, // not used
+      outputFormat,
       outputFolderPath
     );
   }
 );
-
-ipcMain.on(g_ipcChannel + "resizing-image", (event, pageNum, totalNumPages) => {
-  g_window.webContents.send(
-    g_ipcChannel + "update-log-text",
-    _("tool-shared-modal-log-resizing-page") + pageNum + " / " + totalNumPages
-  );
-});
-
-ipcMain.on(g_ipcChannel + "resizing-canceled", (event) => {
-  if (g_cancel === false) stopCancel();
-});
-
-ipcMain.on(g_ipcChannel + "resizing-error", (event, err) => {
-  stopError(err);
-});
 
 ipcMain.on(
   g_ipcChannel + "create-file-from-images",
@@ -368,7 +354,7 @@ async function resizeImages(
   inputFilePath,
   outputScale,
   outputQuality,
-  outputFormat, // not used
+  outputFormat,
   outputFolderPath
 ) {
   if (g_cancel === true) {
@@ -376,6 +362,9 @@ async function resizeImages(
     return;
   }
   try {
+    outputScale = parseInt(outputScale);
+    outputQuality = parseInt(outputQuality);
+
     let fileName = path.basename(inputFilePath, path.extname(inputFilePath));
     let subFolderPath = path.join(outputFolderPath, fileName);
     let i = 1;
@@ -392,75 +381,93 @@ async function resizeImages(
     }
     // ref: https://www.npmjs.com/package/natural-compare-lite
     imgFilePaths.sort(naturalCompare);
-    // change imgs' format if needed (for pdf creation or resizing)
-    if (outputScale < 100 || outputFormat === FileExtension.PDF) {
-      // pdfkit only works with png and jpg image formats
-      // same for native image? (used for resizing)
 
+    // change format
+    if (g_cancel === true) {
+      stopCancel();
+      return;
+    }
+    if (outputFormat != FileExtension.NOTSET) {
+      g_window.webContents.send(
+        g_ipcChannel + "update-log-text",
+        _("tool-shared-modal-log-converting-images")
+      );
       // avoid EBUSY error on windows
       // ref: https://stackoverflow.com/questions/41289173/node-js-module-sharp-image-processor-keeps-source-file-open-unable-to-unlink
       sharp.cache(false);
-
       for (let index = 0; index < imgFilePaths.length; index++) {
+        g_window.webContents.send(g_ipcChannel + "update-log-text", index);
         let filePath = imgFilePaths[index];
-        if (!fileFormats.hasNativeImageCompatibleImageExtension(filePath)) {
-          let fileFolderPath = path.dirname(filePath);
-          let fileName = path.basename(filePath, path.extname(filePath));
-          let tmpFilePath = path.join(
-            fileFolderPath,
-            fileName + "." + FileExtension.TMP
-          );
-          let newFilePath = path.join(
-            fileFolderPath,
-            fileName + "." + FileExtension.JPG
-          );
-
-          g_window.webContents.send(
-            g_ipcChannel + "update-log-text",
-            _("tool-shared-modal-log-page-to-compatible-format", index + 1)
-          );
-          await sharp(filePath).jpeg().toFile(tmpFilePath);
-
-          fs.unlinkSync(filePath);
-          fs.renameSync(tmpFilePath, newFilePath);
-          imgFilePaths[index] = newFilePath;
-        }
-      }
-    }
-
-    // resize imgs if needed
-    outputScale = parseInt(outputScale);
-    outputQuality = parseInt(outputQuality);
-    if (outputScale < 100) {
-      // can't do it using a forked process, because I need nativeImage,
-      // so I use a hidden window
-      if (g_resizeWindow !== undefined) {
-        // shouldn't happen
-        g_resizeWindow.destroy();
-        g_resizeWindow = undefined;
-      }
-      g_resizeWindow = new BrowserWindow({
-        show: false,
-        webPreferences: { nodeIntegration: true, contextIsolation: false },
-        parent: g_window,
-      });
-      g_resizeWindow.loadFile(`${__dirname}/../shared/bg-resize.html`);
-
-      g_resizeWindow.webContents.on("did-finish-load", function () {
-        //g_resizeWindow.webContents.openDevTools();
-        g_resizeWindow.webContents.send("bgr--init", g_ipcChannel);
-        g_resizeWindow.webContents.send(
-          "bgr--resize-images",
-          imgFilePaths,
-          outputScale,
-          outputQuality,
-          outputFormat,
-          subFolderPath
+        let fileFolderPath = path.dirname(filePath);
+        let fileName = path.basename(filePath, path.extname(filePath));
+        let tmpFilePath = path.join(
+          fileFolderPath,
+          fileName + "." + FileExtension.TMP
         );
-      });
-    } else {
-      createFolderWithImages(imgFilePaths, subFolderPath);
+        if (outputFormat === FileExtension.JPG) {
+          await sharp(filePath)
+            .jpeg({
+              quality: outputQuality,
+            })
+            .toFile(tmpFilePath);
+        } else if (outputFormat === FileExtension.PNG) {
+          if (outputQuality < 100) {
+            await sharp(filePath)
+              .png({
+                quality: outputQuality,
+              })
+              .toFile(tmpFilePath);
+          } else {
+            await sharp(filePath).png().toFile(tmpFilePath);
+          }
+        } else if (outputFormat === FileExtension.WEBP) {
+          await sharp(filePath)
+            .webp({
+              quality: outputQuality,
+            })
+            .toFile(tmpFilePath);
+        }
+        let newFilePath = path.join(
+          fileFolderPath,
+          fileName + "." + outputFormat
+        );
+        fs.unlinkSync(filePath);
+        fs.renameSync(tmpFilePath, newFilePath);
+        imgFilePaths[index] = newFilePath;
+      }
     }
+
+    // resize
+    if (g_cancel === true) {
+      stopCancel();
+      return;
+    }
+    if (outputScale < 100) {
+      g_window.webContents.send(
+        g_ipcChannel + "update-log-text",
+        _("tool-shared-modal-log-resizing-images")
+      );
+      sharp.cache(false);
+      for (let index = 0; index < imgFilePaths.length; index++) {
+        g_window.webContents.send(g_ipcChannel + "update-log-text", index);
+        let filePath = imgFilePaths[index];
+        let fileFolderPath = path.dirname(filePath);
+        let fileName = path.basename(filePath, path.extname(filePath));
+        let tmpFilePath = path.join(
+          fileFolderPath,
+          fileName + "." + FileExtension.TMP
+        );
+        let data = await sharp(filePath).metadata();
+        await sharp(filePath)
+          .resize(Math.round(data.width * (outputScale / 100)))
+          .toFile(tmpFilePath);
+
+        fs.unlinkSync(filePath);
+        fs.renameSync(tmpFilePath, filePath);
+      }
+    }
+
+    createFolderWithImages(imgFilePaths, subFolderPath);
   } catch (err) {
     stopError(err);
   }
@@ -526,16 +533,20 @@ function getLocalization() {
       text: _("tool-shared-ui-add").toUpperCase(),
     },
     {
-      id: "text-output-size",
-      text: _("tool-shared-ui-output-size"),
+      id: "text-output-options",
+      text: _("tool-shared-ui-output-options"),
     },
     {
       id: "text-scale",
-      text: _("tool-shared-ui-scale"),
+      text: _("tool-shared-ui-output-options-scale"),
     },
     {
       id: "text-quality",
-      text: _("tool-shared-ui-quality"),
+      text: _("tool-shared-ui-output-options-quality"),
+    },
+    {
+      id: "text-format",
+      text: _("tool-shared-ui-output-options-format"),
     },
     {
       id: "text-output-folder",
@@ -556,6 +567,10 @@ function getLocalization() {
     {
       id: "button-modal-cancel",
       text: _("tool-shared-ui-cancel").toUpperCase(),
+    },
+    {
+      id: "keep-format",
+      text: _("tool-shared-ui-output-options-format-keep"),
     },
   ];
 }
