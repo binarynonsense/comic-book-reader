@@ -13,8 +13,8 @@ let g_cancel = false;
 
 let g_inputFilePath;
 let g_outputScale = "100";
-let g_outputQuality = "80";
-let g_outputFormat;
+let g_outputQuality = "100";
+let g_outputFormat = FileExtension.JPG;
 let g_outputFolderPath;
 
 let g_textInputFilesDiv = document.querySelector("#text-input-files");
@@ -22,7 +22,6 @@ let g_inputListDiv = document.querySelector("#input-list");
 let g_inputListButton = document.querySelector("#button-add-file");
 let g_outputFolderDiv = document.querySelector("#output-folder");
 let g_startButton = document.querySelector("#button-start");
-let g_outputSizeDiv = document.querySelector("#output-size");
 let g_outputFormatSelect = document.querySelector("#output-format-select");
 let g_scaleSlider = document.querySelector("#scale-slider");
 let g_qualitySlider = document.querySelector("#quality-slider");
@@ -48,13 +47,7 @@ g_qualitySlider.addEventListener("mouseup", (event) => {
 ///////////////////////////////////////////////////////////////////////////////
 
 function checkValidData() {
-  if (g_outputScale === "100") {
-    g_qualitySlider.parentElement.classList.add("hide");
-  } else {
-    g_qualitySlider.parentElement.classList.remove("hide");
-  }
-
-  g_outputSizeDiv.classList.add("hide");
+  g_qualitySlider.parentElement.classList.remove("hide");
   if (g_outputFolderPath !== undefined && g_inputFiles.length > 0) {
     g_startButton.classList.remove("disabled");
   } else {
@@ -123,7 +116,6 @@ ipcRenderer.on(g_ipcChannel + "add-file", (event, filePath) => {
     id: id,
     path: filePath,
   });
-
   g_inputListDiv.innerHTML +=
     "<li class='collection-item'><div>" +
     reducePathString(filePath) +
@@ -133,7 +125,6 @@ ipcRenderer.on(g_ipcChannel + "add-file", (event, filePath) => {
     g_localizedRemoveFromListText +
     "'></i></a>" +
     "</div></li>";
-
   checkValidData();
 });
 
@@ -167,17 +158,17 @@ exports.onChooseInputFile = function () {
   ipcRenderer.send(g_ipcChannel + "choose-file");
 };
 
+exports.onOutputFormatChanged = function (selectObject) {
+  g_outputFormat = selectObject.value;
+  checkValidData();
+};
+
 exports.onChooseOutputFolder = function () {
   ipcRenderer.send(
     g_ipcChannel + "choose-folder",
     g_inputFilePath,
     g_outputFolderPath
   );
-};
-
-exports.onOutputFormatChanged = function (selectObject) {
-  g_outputFormat = selectObject.value;
-  checkValidData();
 };
 
 exports.onOutputNameChanged = function (selectObject) {
@@ -205,6 +196,8 @@ exports.onStart = function (resetCounter = true) {
   ipcRenderer.send(
     g_ipcChannel + "start",
     g_inputFiles,
+    g_outputScale,
+    g_outputQuality,
     g_outputFormat,
     g_outputFolderPath
   );

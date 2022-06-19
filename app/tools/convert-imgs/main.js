@@ -139,8 +139,21 @@ ipcMain.on(g_ipcChannel + "cancel", (event) => {
 
 ipcMain.on(
   g_ipcChannel + "start",
-  (event, inputFiles, outputFormat, outputFolderPath) => {
-    start(inputFiles, outputFormat, outputFolderPath);
+  (
+    event,
+    inputFiles,
+    outputScale,
+    outputQuality,
+    outputFormat,
+    outputFolderPath
+  ) => {
+    start(
+      inputFiles,
+      outputScale,
+      outputQuality,
+      outputFormat,
+      outputFolderPath
+    );
   }
 );
 
@@ -213,7 +226,13 @@ function stopCancel() {
   g_window.webContents.send(g_ipcChannel + "finished-canceled");
 }
 
-async function start(imgFiles, outputFormat, outputFolderPath) {
+async function start(
+  imgFiles,
+  outputScale,
+  outputQuality,
+  outputFormat,
+  outputFolderPath
+) {
   g_cancel = false;
 
   try {
@@ -226,6 +245,37 @@ async function start(imgFiles, outputFormat, outputFolderPath) {
       g_ipcChannel + "update-log-text",
       _("tool-shared-modal-title-converting")
     );
+    outputScale = parseInt(outputScale);
+    outputQuality = parseInt(outputQuality);
+
+    // resize
+    if (g_cancel === true) {
+      stopCancel();
+      return;
+    }
+    if (outputScale < 100) {
+      g_window.webContents.send(
+        g_ipcChannel + "update-log-text",
+        _("tool-shared-modal-log-resizing-images")
+      );
+      for (let index = 0; index < imgFiles.length; index++) {
+        let filePath = imgFiles[index].path;
+        g_window.webContents.send(g_ipcChannel + "update-log-text", filePath);
+        let fileFolderPath = path.dirname(filePath);
+        let fileName = path.basename(filePath, path.extname(filePath));
+        let tmpFilePath = path.join(
+          fileFolderPath,
+          fileName + "." + FileExtension.TMP
+        );
+        let data = await sharp(filePath).metadata();
+        await sharp(filePath)
+          .resize(Math.round(data.width * (outputScale / 100)))
+          .toFile(tmpFilePath);
+
+        fs.unlinkSync(filePath);
+        fs.renameSync(tmpFilePath, filePath);
+      }
+    }
 
     // convert the images' format if needed
     g_window.webContents.send(
@@ -237,7 +287,6 @@ async function start(imgFiles, outputFormat, outputFolderPath) {
     // avoid EBUSY error on windows
     // ref: https://stackoverflow.com/questions/41289173/node-js-module-sharp-image-processor-keeps-source-file-open-unable-to-unlink
     sharp.cache(false);
-
     for (let index = 0; index < imgFiles.length; index++) {
       let filePath = imgFiles[index].path;
       g_window.webContents.send(g_ipcChannel + "update-log-text", filePath);
@@ -246,6 +295,7 @@ async function start(imgFiles, outputFormat, outputFolderPath) {
         outputFolderPath,
         fileName + "." + outputFormat
       );
+      let i = 1;
       while (fs.existsSync(outputFilePath)) {
         i++;
         outputFilePath = path.join(
@@ -260,23 +310,40 @@ async function start(imgFiles, outputFormat, outputFolderPath) {
 
       try {
         if (outputFormat === FileExtension.JPG) {
-          await sharp(filePath).jpeg().toFile(outputFilePath);
+          await sharp(filePath)
+            .jpeg({
+              quality: outputQuality,
+            })
+            .toFile(outputFilePath);
         } else if (outputFormat === FileExtension.PNG) {
-          await sharp(filePath).png().toFile(outputFilePath);
+          if (outputQuality < 100) {
+            await sharp(filePath)
+              .png({
+                quality: outputQuality,
+              })
+              .toFile(outputFilePath);
+          } else {
+            await sharp(filePath).png().toFile(outputFilePath);
+          }
         } else if (outputFormat === FileExtension.WEBP) {
-          await sharp(filePath).webp().toFile(outputFilePath);
+          await sharp(filePath)
+            .webp({
+              quality: outputQuality,
+            })
+            .toFile(outputFilePath);
         }
+        imgFiles[index].path = outputFilePath;
       } catch (err) {
         g_window.webContents.send(g_ipcChannel + "update-log-text", err);
         numErrors++;
       }
     }
 
+    // DONE /////////////////////
     g_window.webContents.send(
       g_ipcChannel + "update-title-text",
       _("tool-shared-modal-title-conversion-finished")
     );
-
     if (numErrors > 0) {
       g_window.webContents.send(
         g_ipcChannel + "update-info-text",
@@ -324,8 +391,8 @@ function getLocalization() {
       text: _("tool-shared-ui-add").toUpperCase(),
     },
     {
-      id: "text-output-size",
-      text: _("tool-shared-ui-output-size"),
+      id: "text-output-options",
+      text: _("tool-shared-ui-output-options"),
     },
     {
       id: "text-scale",
@@ -336,8 +403,8 @@ function getLocalization() {
       text: _("tool-shared-ui-output-options-quality"),
     },
     {
-      id: "text-output-format",
-      text: _("tool-shared-ui-output-format"),
+      id: "text-format",
+      text: _("tool-shared-ui-output-options-format"),
     },
     {
       id: "text-output-folder",
