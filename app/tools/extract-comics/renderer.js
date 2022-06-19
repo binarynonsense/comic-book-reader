@@ -189,11 +189,6 @@ exports.onChooseOutputFolder = function () {
   );
 };
 
-exports.onOutputNameChanged = function (selectObject) {
-  g_outputName = selectObject.value;
-  checkValidData();
-};
-
 function onStart(resetCounter = true) {
   g_cancel = false;
   g_modalButtonCancel.classList.remove("hide");
