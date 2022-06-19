@@ -49,7 +49,7 @@ g_qualitySlider.addEventListener("mouseup", (event) => {
 ///////////////////////////////////////////////////////////////////////////////
 
 function checkValidData() {
-  if (g_outputScale === "100" && g_outputFormat === FileExtension.NOTSET) {
+  if (g_outputFormat === FileExtension.NOTSET) {
     g_qualitySlider.parentElement.classList.add("hide");
   } else {
     g_qualitySlider.parentElement.classList.remove("hide");

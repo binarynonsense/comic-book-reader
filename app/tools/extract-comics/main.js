@@ -382,6 +382,36 @@ async function resizeImages(
     // ref: https://www.npmjs.com/package/natural-compare-lite
     imgFilePaths.sort(naturalCompare);
 
+    // resize
+    if (g_cancel === true) {
+      stopCancel();
+      return;
+    }
+    if (outputScale < 100) {
+      g_window.webContents.send(
+        g_ipcChannel + "update-log-text",
+        _("tool-shared-modal-log-resizing-images")
+      );
+      sharp.cache(false);
+      for (let index = 0; index < imgFilePaths.length; index++) {
+        g_window.webContents.send(g_ipcChannel + "update-log-text", index);
+        let filePath = imgFilePaths[index];
+        let fileFolderPath = path.dirname(filePath);
+        let fileName = path.basename(filePath, path.extname(filePath));
+        let tmpFilePath = path.join(
+          fileFolderPath,
+          fileName + "." + FileExtension.TMP
+        );
+        let data = await sharp(filePath).metadata();
+        await sharp(filePath)
+          .resize(Math.round(data.width * (outputScale / 100)))
+          .toFile(tmpFilePath);
+
+        fs.unlinkSync(filePath);
+        fs.renameSync(tmpFilePath, filePath);
+      }
+    }
+
     // change format
     if (g_cancel === true) {
       stopCancel();
@@ -434,36 +464,6 @@ async function resizeImages(
         fs.unlinkSync(filePath);
         fs.renameSync(tmpFilePath, newFilePath);
         imgFilePaths[index] = newFilePath;
-      }
-    }
-
-    // resize
-    if (g_cancel === true) {
-      stopCancel();
-      return;
-    }
-    if (outputScale < 100) {
-      g_window.webContents.send(
-        g_ipcChannel + "update-log-text",
-        _("tool-shared-modal-log-resizing-images")
-      );
-      sharp.cache(false);
-      for (let index = 0; index < imgFilePaths.length; index++) {
-        g_window.webContents.send(g_ipcChannel + "update-log-text", index);
-        let filePath = imgFilePaths[index];
-        let fileFolderPath = path.dirname(filePath);
-        let fileName = path.basename(filePath, path.extname(filePath));
-        let tmpFilePath = path.join(
-          fileFolderPath,
-          fileName + "." + FileExtension.TMP
-        );
-        let data = await sharp(filePath).metadata();
-        await sharp(filePath)
-          .resize(Math.round(data.width * (outputScale / 100)))
-          .toFile(tmpFilePath);
-
-        fs.unlinkSync(filePath);
-        fs.renameSync(tmpFilePath, filePath);
       }
     }
 
