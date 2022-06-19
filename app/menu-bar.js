@@ -116,11 +116,14 @@ function buildApplicationMenu(
   let languagesSubmenu = [];
 
   if (languages !== undefined) {
+    let incompleteLanguages = [];
     for (let language of languages) {
       let nativeName = language.nativeName;
       if (fileUtils.isVersionOlder(language.acbrVersion, "2.0.0-beta1")) {
-        nativeName +=
-          " (" + _("menu-file-preferences-languages-incompletelanguage") + ")";
+        //nativeName +=
+        //  " (" + _("menu-file-preferences-languages-incompletelanguages") + ")";
+        incompleteLanguages.push(language);
+        continue;
       }
       languagesSubmenu.push({
         label: nativeName,
@@ -129,6 +132,25 @@ function buildApplicationMenu(
         click() {
           mainProcess.onMenuChangeLanguage(language.locale);
         },
+      });
+    }
+
+    if (incompleteLanguages.length > 0) {
+      let incompleteSubmenu = [];
+      for (let language of incompleteLanguages) {
+        let nativeName = language.nativeName;
+        incompleteSubmenu.push({
+          label: nativeName,
+          type: "checkbox",
+          checked: language.locale === activeLocale,
+          click() {
+            mainProcess.onMenuChangeLanguage(language.locale);
+          },
+        });
+      }
+      languagesSubmenu.push({
+        label: _("menu-file-preferences-languages-incompletelanguages"),
+        submenu: incompleteSubmenu,
       });
     }
   } else {
