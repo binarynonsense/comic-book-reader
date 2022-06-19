@@ -93,6 +93,7 @@
   "tool-shared-ui-scale": "Масштаб (%):",
   "tool-shared-ui-quality": "Качество:",  
   "tool-shared-ui-output-format": "Выходной формат:",
+  "[NEEDS TRANSLATION]tool-shared-ui-output-format-keep": "keep the original",
   "tool-shared-ui-output-name": "Выходное имя:",
   "tool-shared-ui-new-file": "Новый файл",
   "tool-shared-ui-output-folder": "Выходная папка:",

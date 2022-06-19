@@ -93,6 +93,7 @@
   "tool-shared-ui-scale": "Escala (%):",
   "tool-shared-ui-quality": "Calidad:",
   "tool-shared-ui-output-format": "Formato de Salida:",
+  "tool-shared-ui-output-format-keep": "mantener el original",
   "tool-shared-ui-output-name": "Nombre del Archivo de Salida:",
   "tool-shared-ui-new-file": "Nuevo Archivo",
   "tool-shared-ui-output-folder": "Directorio de Salida:",

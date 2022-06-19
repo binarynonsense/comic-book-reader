@@ -93,6 +93,7 @@
   "tool-shared-ui-scale": "Scale (%):",
   "tool-shared-ui-quality": "Quality:",  
   "tool-shared-ui-output-format": "Output Format:",
+  "tool-shared-ui-output-format-keep": "keep the original",
   "tool-shared-ui-output-name": "Output Name:",
   "tool-shared-ui-new-file": "New File",
   "tool-shared-ui-output-folder": "Output Folder:",
@@ -101,7 +102,7 @@
   "tool-shared-ui-create": "Create",
   "tool-shared-ui-extract": "Extract",
   "tool-shared-ui-close": "Close",
-  "tool-shared-ui-cancel": "Cancel",
+  "tool-shared-ui-cancel": "Cancel",  
 
   "tool-shared-modal-title-extracting": "Extracting",
   "tool-shared-modal-title-converting": "Converting",
@@ -157,5 +158,5 @@
 
   "tool-ec-title": "Extract Pages Tool",
   "tool-ec-modal-log-extracting-to": "To",
-  "tool-ec-tooltip-output-folder": "Inside the provided folder, a subfolder with the same name as the file to be extracted will be created to store the images. If a subfolder with the same name already exists, a subfix will be added to the name so nothing is overwritten."  
+  "tool-ec-tooltip-output-folder": "Inside the provided folder, a subfolder with the same name as the file to be extracted will be created to store the images. If a subfolder with the same name already exists, a subfix will be added to the name so nothing is overwritten."
 }
