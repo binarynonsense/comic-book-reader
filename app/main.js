@@ -733,9 +733,11 @@ exports.onMenuOpenFile = onMenuOpenFile = function (filePath) {
   if (filePath === undefined) {
     let defaultPath = "";
     if (g_fileData.path !== "") {
-      defaultPath = g_fileData.path;
+      defaultPath = path.dirname(g_fileData.path);
+      if (!fs.existsSync(defaultPath)) defaultPath = undefined;
     } else if (g_history.length > 0) {
-      defaultPath = g_history[g_history.length - 1].filePath;
+      defaultPath = path.dirname(g_history[g_history.length - 1].filePath);
+      if (!fs.existsSync(defaultPath)) defaultPath = undefined;
     }
 
     let allowMultipleSelection = false;
