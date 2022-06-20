@@ -10,7 +10,6 @@ const fileFormats = require("../../file-formats");
 const mainProcess = require("../../main");
 const { FileExtension, FileDataType } = require("../../constants");
 const sharp = require("sharp");
-const { quality } = require("jimp");
 
 let g_window;
 let g_cancel = false;

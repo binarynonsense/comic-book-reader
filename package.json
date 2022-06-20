@@ -49,7 +49,6 @@
     "epub": "^1.2.1",
     "epub-gen": "^0.1.0",
     "file-type": "^14.7.1",
-    "jimp": "^0.13.0",
     "natural-compare-lite": "^1.4.0",
     "node-unrar-js": "^0.8.1",
     "pdfkit": "^0.11.0",
