@@ -560,8 +560,8 @@ function getLocalization() {
       text: _("tool-shared-ui-add").toUpperCase(),
     },
     {
-      id: "text-output-size",
-      text: _("tool-shared-ui-output-size"),
+      id: "text-output-options",
+      text: _("tool-shared-ui-output-options"),
     },
     {
       id: "text-scale",
@@ -570,6 +570,10 @@ function getLocalization() {
     {
       id: "text-quality",
       text: _("tool-shared-ui-output-options-quality"),
+    },
+    {
+      id: "text-format",
+      text: _("tool-shared-ui-output-options-format"),
     },
     {
       id: "text-output-format",

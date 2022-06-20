@@ -27,7 +27,7 @@
 
       <div id="output-size">
         <h5>
-          <span id="text-output-size">Output Size:</span>
+          <span id="text-output-options">Output Options:</span>
           <i
             id="tooltip-output-size"
             class="fas fa-question-circle blue-text accent-1-text"
@@ -54,14 +54,13 @@
             value="80"
           />
         </p>
+        <span id="text-format">Format:</span>
+        <select
+          id="output-format-select"
+          class="browser-default"
+          onchange="renderer.onOutputFormatChanged(this)"
+        ></select>
       </div>
-
-      <h5 id="text-output-format">Output Format:</h5>
-      <select
-        id="output-format-select"
-        class="browser-default"
-        onchange="renderer.onOutputFormatChanged(this)"
-      ></select>
 
       <h5>
         <span id="text-output-folder">Output Folder:</span>
