@@ -6,7 +6,6 @@ const { fork } = require("child_process");
 const FileType = require("file-type");
 const naturalCompare = require("natural-compare-lite");
 const fileUtils = require("../../file-utils");
-const fileFormats = require("../../file-formats");
 const mainProcess = require("../../main");
 const { FileExtension, FileDataType } = require("../../constants");
 const sharp = require("sharp");
