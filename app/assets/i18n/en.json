@@ -140,7 +140,7 @@
   "tool-shared-modal-log-creation-error": "Couldn't create the file, an error ocurred",
   "tool-shared-modal-log-creation-canceled": "Couldn't create the file, the creation was canceled",
 
-  "tool-shared-tooltip-output-size": "The size of the pages will be reduced to this percentage of the originals.",
+  "tool-shared-tooltip-output-size": "Scale: The size of the pages will be reduced to this percentage of the originals.",
   "tool-shared-tooltip-output-folder": "If a file with the same name already exists in the folder, a subfix will be added to the converted file's name so nothing is overwritten.",
   "tool-shared-tooltip-remove-from-list": "remove from list",
 

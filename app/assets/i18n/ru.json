@@ -140,7 +140,7 @@
   "[NEEDS TRANSLATION]tool-shared-modal-log-creation-error": "Couldn't create the file, an error ocurred",
   "[NEEDS TRANSLATION]tool-shared-modal-log-creation-canceled": "Couldn't create the file, the creation was canceled",
 
-  "tool-shared-tooltip-output-size": "Размер страниц будет уменьшен до этого процента от размера оригиналов.",
+  "tool-shared-tooltip-output-size": "Масштаб: Размер страниц будет уменьшен до этого процента от размера оригиналов.",
   "tool-shared-tooltip-output-folder": "Если в папке уже существует файл с таким названием, то к названию конвертированного файла будет добавлен подфикс, чтобы не произошло перезаписи.",
   "tool-shared-tooltip-remove-from-list": "удалить из списка",
 

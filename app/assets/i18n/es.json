@@ -140,7 +140,7 @@
   "tool-shared-modal-log-creation-error": "No se pudo crear el archivo, se produjo un error",
   "tool-shared-modal-log-creation-canceled": "No se pudo crear el archivo, la creación fue cancelada",
 
-  "tool-shared-tooltip-output-size": "El tamaño de las páginas se reducirá a este porcentaje de las originales.",
+  "tool-shared-tooltip-output-size": "Escala: El tamaño de las páginas se reducirá a este porcentaje de las originales.",
   "tool-shared-tooltip-output-folder": "Si un archivo con el mismo nombre ya existe en el directorio, se añadirá un subfijo al nombre del archivo de salida para que ningún archivo sea sobreescrito.",
   "tool-shared-tooltip-remove-from-list": "quitar de la lista",
 
