@@ -70,7 +70,7 @@ exports.showWindow = function (parentWindow) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-ipcMain.on(g_ipcChannel + "choose-file", (event) => {
+ipcMain.on(g_ipcChannel + "choose-file", (event, defaultPath) => {
   try {
     let allowMultipleSelection = true;
     let allowedFileTypesName = "Image Files";
@@ -83,7 +83,7 @@ ipcMain.on(g_ipcChannel + "choose-file", (event) => {
     ];
     let filePathsList = fileUtils.chooseOpenFiles(
       g_window,
-      undefined,
+      defaultPath,
       allowedFileTypesName,
       allowedFileTypesList,
       allowMultipleSelection

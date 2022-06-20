@@ -155,7 +155,11 @@ ipcRenderer.on(g_ipcChannel + "change-output-folder", (event, folderPath) => {
 ///////////////////////////////////////////////////////////////////////////////
 
 exports.onChooseInputFile = function () {
-  ipcRenderer.send(g_ipcChannel + "choose-file");
+  let defaultPath = undefined;
+  if (g_inputFiles.length > 0) {
+    defaultPath = path.dirname(g_inputFiles[g_inputFiles.length - 1].path);
+  }
+  ipcRenderer.send(g_ipcChannel + "choose-file", defaultPath);
 };
 
 exports.onOutputFormatChanged = function (selectObject) {

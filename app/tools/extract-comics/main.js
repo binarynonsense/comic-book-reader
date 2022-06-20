@@ -78,7 +78,7 @@ exports.showWindow = function (parentWindow, filePath, fileType) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-ipcMain.on(g_ipcChannel + "choose-file", (event) => {
+ipcMain.on(g_ipcChannel + "choose-file", (event, defaultPath) => {
   try {
     let allowMultipleSelection = true;
     let allowedFileTypesName = "Comic Book Files";
@@ -90,7 +90,7 @@ ipcMain.on(g_ipcChannel + "choose-file", (event) => {
     ];
     let filePathsList = fileUtils.chooseOpenFiles(
       g_window,
-      undefined,
+      defaultPath,
       allowedFileTypesName,
       allowedFileTypesList,
       allowMultipleSelection
