@@ -370,6 +370,10 @@ async function start(
 function getTooltipsLocalization() {
   return [
     {
+      id: "tooltip-output-size",
+      text: _("tool-shared-tooltip-output-size"),
+    },
+    {
       id: "tooltip-output-folder",
       text: _("tool-shared-tooltip-output-folder"),
     },
