@@ -23,7 +23,6 @@
   --scrollbar-hover-color: #555;
 }
 
-
 html {
   box-sizing: border-box;
 }
@@ -119,20 +118,29 @@ img {
 }
 
 .set-fit-to-height {
-  height: 100% !important;  
+  height: 100% !important;
 }
 
-.set-fit-to-height img {
-  height: 100% !important;  
+.set-fit-to-height img:not(.set-rotate-180) {
+  height: 100% !important;
   position: absolute;
   top: 50%;
   left: 50%;
   max-height: 100%;
-  transform: translate(-50%, -50%);  
+  transform: translate(-50%, -50%);
+}
+
+.set-fit-to-height img.set-rotate-180 {
+  height: 100% !important;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  max-height: 100%;
+  transform: translate(-50%, -50%) rotate(180deg);
 }
 
 .set-fit-to-height > canvas {
-  height: 100% !important;  
+  height: 100% !important;
   position: absolute;
   top: 50%;
   left: 50%;
