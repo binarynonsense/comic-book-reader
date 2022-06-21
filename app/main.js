@@ -1357,6 +1357,7 @@ function showScrollBar(isVisible) {
 
 function toggleScrollBar() {
   showScrollBar(!g_settings.showScrollBar);
+  g_mainWindow.webContents.send("update-menubar");
 }
 
 function showToolBar(isVisible) {
@@ -1370,6 +1371,7 @@ function showToolBar(isVisible) {
 
 function toggleToolBar() {
   showToolBar(!g_settings.showToolBar);
+  g_mainWindow.webContents.send("update-menubar");
 }
 
 function showPageNumber(isVisible) {
@@ -1383,6 +1385,7 @@ function showPageNumber(isVisible) {
 
 function togglePageNumber() {
   showPageNumber(!g_settings.showPageNumber);
+  g_mainWindow.webContents.send("update-menubar");
 }
 
 function showClock(isVisible) {
@@ -1393,6 +1396,7 @@ function showClock(isVisible) {
 
 function toggleClock() {
   showClock(!g_settings.showClock);
+  g_mainWindow.webContents.send("update-menubar");
 }
 
 function toggleFullScreen() {
