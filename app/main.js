@@ -1249,10 +1249,10 @@ async function exportPageStart(sendToTool = false) {
         g_workerExport = fork(path.join(__dirname, "worker-export.js"));
         g_workerExport.on("message", (message) => {
           g_workerExport.kill(); // kill it after one use
-          if (message[0] === true) {
+          if (message[0]) {
             g_mainWindow.webContents.send("update-loading", false);
-            if (message[1]) {
-              // sendToTool === true
+            if (message[2]) {
+              // sendToTool
               extractTextTool.showWindow(g_mainWindow, message[1]);
               g_mainWindow.webContents.send("update-menubar");
             } else {
