@@ -392,6 +392,10 @@ async function resizeImages(
       );
       sharp.cache(false);
       for (let index = 0; index < imgFilePaths.length; index++) {
+        if (g_cancel === true) {
+          stopCancel();
+          return;
+        }
         g_window.webContents.send(
           g_ipcChannel + "update-log-text",
           _("tool-shared-modal-log-resizing-image") +
@@ -431,6 +435,10 @@ async function resizeImages(
       // ref: https://stackoverflow.com/questions/41289173/node-js-module-sharp-image-processor-keeps-source-file-open-unable-to-unlink
       sharp.cache(false);
       for (let index = 0; index < imgFilePaths.length; index++) {
+        if (g_cancel === true) {
+          stopCancel();
+          return;
+        }
         g_window.webContents.send(
           g_ipcChannel + "update-log-text",
           _("tool-shared-modal-log-converting-image") +

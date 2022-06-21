@@ -416,6 +416,10 @@ async function resizeImages(
       sharp.cache(false);
 
       for (let index = 0; index < imgFilePaths.length; index++) {
+        if (g_cancel === true) {
+          stopCancel();
+          return;
+        }
         let filePath = imgFilePaths[index];
         if (!fileFormats.hasNativeImageCompatibleImageExtension(filePath)) {
           let fileFolderPath = path.dirname(filePath);
