@@ -481,8 +481,8 @@ async function extractPDFImageBuffer(
     // RENDER
     const canvas = document.createElement("canvas");
     let viewport = page.getViewport({
-      scale: 300 / 72,
-    }); // defines the size in pixels(72DPI)
+      scale: 1.0,
+    });
     let context = canvas.getContext("2d");
     canvas.height = viewport.height;
     canvas.width = viewport.width;
