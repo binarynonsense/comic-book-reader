@@ -336,12 +336,12 @@ function start(inputFilePath, inputFileType, fileNum, totalFilesNum) {
   } else if (inputFileType === FileDataType.PDF) {
     g_window.webContents.send(
       g_ipcChannel + "update-log-text",
-      _("tool-shared-modal-log-extracting-pages")
+      _("tool-shared-modal-log-extracting-pages") + "..."
     );
     g_window.webContents.send(
       g_ipcChannel + "extract-pdf-images",
       tempFolderPath,
-      _("tool-shared-modal-log-extracting-page")
+      _("tool-shared-modal-log-extracting-page") + ": "
     );
   } else {
     stopError("start: invalid file type");
@@ -388,11 +388,18 @@ async function resizeImages(
     if (outputScale < 100) {
       g_window.webContents.send(
         g_ipcChannel + "update-log-text",
-        _("tool-shared-modal-log-resizing-images")
+        _("tool-shared-modal-log-resizing-images") + "..."
       );
       sharp.cache(false);
       for (let index = 0; index < imgFilePaths.length; index++) {
-        g_window.webContents.send(g_ipcChannel + "update-log-text", index);
+        g_window.webContents.send(
+          g_ipcChannel + "update-log-text",
+          _("tool-shared-modal-log-resizing-image") +
+            ": " +
+            index +
+            " / " +
+            imgFilePaths.length
+        );
         let filePath = imgFilePaths[index];
         let fileFolderPath = path.dirname(filePath);
         let fileName = path.basename(filePath, path.extname(filePath));
@@ -418,13 +425,20 @@ async function resizeImages(
     if (outputFormat != FileExtension.NOTSET) {
       g_window.webContents.send(
         g_ipcChannel + "update-log-text",
-        _("tool-shared-modal-log-converting-images")
+        _("tool-shared-modal-log-converting-images") + "..."
       );
       // avoid EBUSY error on windows
       // ref: https://stackoverflow.com/questions/41289173/node-js-module-sharp-image-processor-keeps-source-file-open-unable-to-unlink
       sharp.cache(false);
       for (let index = 0; index < imgFilePaths.length; index++) {
-        g_window.webContents.send(g_ipcChannel + "update-log-text", index);
+        g_window.webContents.send(
+          g_ipcChannel + "update-log-text",
+          _("tool-shared-modal-log-converting-image") +
+            ": " +
+            index +
+            " / " +
+            imgFilePaths.length
+        );
         let filePath = imgFilePaths[index];
         let fileFolderPath = path.dirname(filePath);
         let fileName = path.basename(filePath, path.extname(filePath));

@@ -212,7 +212,11 @@ ipcMain.on(
 ipcMain.on(g_ipcChannel + "resizing-image", (event, pageNum, totalNumPages) => {
   g_window.webContents.send(
     g_ipcChannel + "update-log-text",
-    _("tool-shared-modal-log-resizing-page") + pageNum + " / " + totalNumPages
+    _("tool-shared-modal-log-resizing-page") +
+      ": " +
+      pageNum +
+      " / " +
+      totalNumPages
   );
 });
 
@@ -327,7 +331,7 @@ function start(inputFilePath, inputFileType, fileNum, totalFilesNum) {
   ) {
     g_window.webContents.send(
       g_ipcChannel + "update-log-text",
-      _("tool-shared-modal-log-extracting-pages")
+      _("tool-shared-modal-log-extracting-pages") + "..."
     );
     // ref: https://www.matthewslipper.com/2019/09/22/everything-you-wanted-electron-child-process.html
     if (g_worker !== undefined) {
@@ -356,12 +360,12 @@ function start(inputFilePath, inputFileType, fileNum, totalFilesNum) {
   } else if (inputFileType === FileDataType.PDF) {
     g_window.webContents.send(
       g_ipcChannel + "update-log-text",
-      _("tool-shared-modal-log-extracting-pages")
+      _("tool-shared-modal-log-extracting-pages") + "..."
     );
     g_window.webContents.send(
       g_ipcChannel + "extract-pdf-images",
       tempFolderPath,
-      _("tool-shared-modal-log-extracting-page")
+      _("tool-shared-modal-log-extracting-page") + ": "
     );
   } else {
     stopError("start: invalid file type");
@@ -489,7 +493,7 @@ async function createFileFromImages(
     // compress to output folder
     g_window.webContents.send(
       g_ipcChannel + "update-log-text",
-      _("tool-shared-modal-log-generating-new-file")
+      _("tool-shared-modal-log-generating-new-file") + "..."
     );
     g_window.webContents.send(g_ipcChannel + "update-log-text", outputFilePath);
 

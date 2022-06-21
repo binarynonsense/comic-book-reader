@@ -256,11 +256,14 @@ async function start(
     if (outputScale < 100) {
       g_window.webContents.send(
         g_ipcChannel + "update-log-text",
-        _("tool-shared-modal-log-resizing-images")
+        _("tool-shared-modal-log-resizing-images") + "..."
       );
       for (let index = 0; index < imgFiles.length; index++) {
         let filePath = imgFiles[index].path;
-        g_window.webContents.send(g_ipcChannel + "update-log-text", filePath);
+        g_window.webContents.send(
+          g_ipcChannel + "update-log-text",
+          _("tool-shared-modal-log-resizing-image") + filePath
+        );
         let fileFolderPath = path.dirname(filePath);
         let fileName = path.basename(filePath, path.extname(filePath));
         let tmpFilePath = path.join(
@@ -280,7 +283,7 @@ async function start(
     // convert the images' format if needed
     g_window.webContents.send(
       g_ipcChannel + "update-log-text",
-      _("tool-shared-modal-log-converting-images")
+      _("tool-shared-modal-log-converting-images") + "..."
     );
     let numErrors = 0;
     let numFiles = imgFiles.length;
@@ -289,7 +292,6 @@ async function start(
     sharp.cache(false);
     for (let index = 0; index < imgFiles.length; index++) {
       let filePath = imgFiles[index].path;
-      g_window.webContents.send(g_ipcChannel + "update-log-text", filePath);
       let fileName = path.basename(filePath, path.extname(filePath));
       let outputFilePath = path.join(
         outputFolderPath,
@@ -305,9 +307,12 @@ async function start(
       }
       g_window.webContents.send(
         g_ipcChannel + "update-log-text",
-        "-> " + outputFilePath
+        _("tool-shared-modal-log-converting-image") + ": " + index
       );
-
+      g_window.webContents.send(
+        g_ipcChannel + "update-log-text",
+        _("tool-ec-modal-log-extracting-to") + ": " + outputFilePath
+      );
       try {
         if (outputFormat === FileExtension.JPG) {
           await sharp(filePath)

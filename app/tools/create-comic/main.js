@@ -317,7 +317,7 @@ async function createFileFromImages(
     // compress to output folder
     g_window.webContents.send(
       g_ipcChannel + "update-log-text",
-      _("tool-shared-modal-log-generating-new-file")
+      _("tool-shared-modal-log-generating-new-file") + "..."
     );
     g_window.webContents.send(g_ipcChannel + "update-log-text", outputFilePath);
 
