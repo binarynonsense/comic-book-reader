@@ -1,29 +1,8 @@
-body {
-  text-align: center;
-  user-select: none;
-}
-
 .container {
-  width: 1024px;
+  width: 1000px;
   margin-top: 10px;
   padding: 0 20px;
   text-align: left;
-}
-
-.btn {
-  width: 100%;
-}
-
-h5 {
-  margin-bottom: 20px;
-}
-
-#button-extract {
-  margin-top: 0px;
-}
-
-.hide {
-  display: none;
 }
 
 img {
@@ -31,9 +10,8 @@ img {
   display: block;
 }
 
-textarea {
+textarea#textarea-output {
   height: 400px;
-  /* color: rgb(155, 155, 155); */
   padding: 5px;
   border-color: rgb(155, 155, 155);
   resize: none;
@@ -44,11 +22,3 @@ textarea {
 #image-container {
   height: 400px;
 }
-
-.btn:hover {
-  filter: brightness(120%);
-}
-
-/* .waves-effect.waves-brown .waves-ripple {
-     background-color: rgba(121, 85, 72, 0.65);
-   } */

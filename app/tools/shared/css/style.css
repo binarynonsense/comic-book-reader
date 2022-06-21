@@ -1,0 +1,43 @@
+body {
+  text-align: center;
+  user-select: none;
+}
+
+.container {
+  width: 600px;
+  margin-top: 30px;
+  padding: 0 20px;
+  text-align: left;
+}
+
+.btn {
+  width: 100%;
+}
+
+#output-path {
+  font-weight: bold;
+}
+
+h5 {
+  margin-bottom: 20px;
+}
+
+#button-start {
+  margin-bottom: 30px;
+}
+
+.hide {
+  display: none;
+}
+
+.btn:hover {
+  filter: brightness(120%);
+}
+
+textarea#modal-log {
+  height: 150px;
+  color: rgb(155, 155, 155);
+  padding: 5px;
+  border-color: rgb(155, 155, 155);
+  resize: none;
+}
