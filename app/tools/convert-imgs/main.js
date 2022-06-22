@@ -2,7 +2,6 @@ const { app, BrowserWindow, ipcMain } = require("electron");
 
 const fs = require("fs");
 const path = require("path");
-const { fork } = require("child_process");
 const fileUtils = require("../../file-utils");
 const mainProcess = require("../../main");
 const { FileExtension, FileDataType } = require("../../constants");
@@ -233,9 +232,13 @@ async function start(
   outputFormat,
   outputFolderPath
 ) {
-  g_cancel = false;
-
   try {
+    g_cancel = false;
+    outputScale = parseInt(outputScale);
+    outputQuality = parseInt(outputQuality);
+    let numErrors = 0;
+    let numFiles = imgFiles.length;
+
     g_window.webContents.send(
       g_ipcChannel + "update-title-text",
       _("tool-shared-modal-title-converting")
@@ -243,85 +246,69 @@ async function start(
     g_window.webContents.send(g_ipcChannel + "update-info-text", "");
     g_window.webContents.send(
       g_ipcChannel + "update-log-text",
-      _("tool-shared-modal-title-converting")
-    );
-    outputScale = parseInt(outputScale);
-    outputQuality = parseInt(outputQuality);
-
-    // resize
-    if (g_cancel === true) {
-      stopCancel();
-      return;
-    }
-    if (outputScale < 100) {
-      g_window.webContents.send(
-        g_ipcChannel + "update-log-text",
-        _("tool-shared-modal-log-resizing-images") + "..."
-      );
-      for (let index = 0; index < imgFiles.length; index++) {
-        if (g_cancel === true) {
-          stopCancel();
-          return;
-        }
-        let filePath = imgFiles[index].path;
-        g_window.webContents.send(
-          g_ipcChannel + "update-log-text",
-          _("tool-shared-modal-log-resizing-image") + filePath
-        );
-        let fileFolderPath = path.dirname(filePath);
-        let fileName = path.basename(filePath, path.extname(filePath));
-        let tmpFilePath = path.join(
-          fileFolderPath,
-          fileName + "." + FileExtension.TMP
-        );
-        let data = await sharp(filePath).metadata();
-        await sharp(filePath)
-          .resize(Math.round(data.width * (outputScale / 100)))
-          .toFile(tmpFilePath);
-
-        fs.unlinkSync(filePath);
-        fs.renameSync(tmpFilePath, filePath);
-      }
-    }
-
-    // convert the images' format if needed
-    g_window.webContents.send(
-      g_ipcChannel + "update-log-text",
       _("tool-shared-modal-log-converting-images") + "..."
     );
-    let numErrors = 0;
-    let numFiles = imgFiles.length;
+
+    let tempFolderPath = fileUtils.createTempFolder();
     // avoid EBUSY error on windows
     // ref: https://stackoverflow.com/questions/41289173/node-js-module-sharp-image-processor-keeps-source-file-open-unable-to-unlink
     sharp.cache(false);
     for (let index = 0; index < imgFiles.length; index++) {
-      if (g_cancel === true) {
-        stopCancel();
-        return;
-      }
-      let filePath = imgFiles[index].path;
-      let fileName = path.basename(filePath, path.extname(filePath));
-      let outputFilePath = path.join(
-        outputFolderPath,
-        fileName + "." + outputFormat
-      );
-      let i = 1;
-      while (fs.existsSync(outputFilePath)) {
-        i++;
-        outputFilePath = path.join(
-          outputFolderPath,
-          fileName + "(" + i + ")." + outputFormat
-        );
-      }
-      g_window.webContents.send(
-        g_ipcChannel + "update-log-text",
-        _("tool-shared-modal-log-converting-image") + ": " + index
-      );
-      g_window.webContents.send(
-        g_ipcChannel + "update-log-text",
-        _("tool-ec-modal-log-extracting-to") + ": " + outputFilePath
-      );
       try {
+        if (g_cancel === true) {
+          stopCancel();
+          return;
+        }
+        let originalFilePath = imgFiles[index].path;
+        let filePath = path.join(
+          tempFolderPath,
+          path.basename(imgFiles[index].path)
+        );
+        fs.copyFileSync(imgFiles[index].path, filePath);
+        let fileName = path.basename(filePath, path.extname(filePath));
+        let outputFilePath = path.join(
+          outputFolderPath,
+          fileName + "." + outputFormat
+        );
+        let i = 1;
+        while (fs.existsSync(outputFilePath)) {
+          i++;
+          outputFilePath = path.join(
+            outputFolderPath,
+            fileName + "(" + i + ")." + outputFormat
+          );
+        }
+        // resize first if needed
+        if (outputScale < 100) {
+          if (g_cancel === true) {
+            stopCancel();
+            return;
+          }
+          g_window.webContents.send(
+            g_ipcChannel + "update-log-text",
+            _("tool-shared-modal-log-resizing-image") + ": " + originalFilePath
+          );
+          let tmpFilePath = path.join(
+            tempFolderPath,
+            fileName + "." + FileExtension.TMP
+          );
+          let data = await sharp(filePath).metadata();
+          await sharp(filePath)
+            .resize(Math.round(data.width * (outputScale / 100)))
+            .toFile(tmpFilePath);
+
+          fs.unlinkSync(filePath);
+          fs.renameSync(tmpFilePath, filePath);
+        }
+        // convert
+        g_window.webContents.send(
+          g_ipcChannel + "update-log-text",
+          _("tool-shared-modal-log-converting-image") + ": " + originalFilePath
+        );
+        g_window.webContents.send(
+          g_ipcChannel + "update-log-text",
+          _("tool-ec-modal-log-extracting-to") + ": " + outputFilePath
+        );
         if (outputFormat === FileExtension.JPG) {
           await sharp(filePath)
             .jpeg({
@@ -345,14 +332,14 @@ async function start(
             })
             .toFile(outputFilePath);
         }
-        imgFiles[index].path = outputFilePath;
+        fs.unlinkSync(filePath);
       } catch (err) {
         g_window.webContents.send(g_ipcChannel + "update-log-text", err);
         numErrors++;
       }
     }
-
     // DONE /////////////////////
+    fileUtils.cleanUpTempFolder();
     g_window.webContents.send(
       g_ipcChannel + "update-title-text",
       _("tool-shared-modal-title-conversion-finished")
