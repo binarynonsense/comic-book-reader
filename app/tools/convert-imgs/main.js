@@ -216,13 +216,13 @@ function stopError(err) {
   g_window.webContents.send(g_ipcChannel + "finished-error");
 }
 
-function stopCancel() {
+function stopCancel(numAttempted) {
   fileUtils.cleanUpTempFolder();
   g_window.webContents.send(
     g_ipcChannel + "update-log-text",
     _("tool-shared-modal-log-conversion-canceled")
   );
-  g_window.webContents.send(g_ipcChannel + "finished-canceled");
+  g_window.webContents.send(g_ipcChannel + "finished-canceled", numAttempted);
 }
 
 async function start(
@@ -256,7 +256,7 @@ async function start(
     for (let index = 0; index < imgFiles.length; index++) {
       try {
         if (g_cancel === true) {
-          stopCancel();
+          stopCancel(index);
           return;
         }
         let originalFilePath = imgFiles[index].path;
@@ -281,7 +281,7 @@ async function start(
         // resize first if needed
         if (outputScale < 100) {
           if (g_cancel === true) {
-            stopCancel();
+            stopCancel(index);
             return;
           }
           g_window.webContents.send(

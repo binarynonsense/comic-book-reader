@@ -269,7 +269,7 @@ ipcRenderer.on(g_ipcChannel + "finished-error", (event) => {
   g_numErrors++;
 });
 
-ipcRenderer.on(g_ipcChannel + "finished-canceled", (event) => {
+ipcRenderer.on(g_ipcChannel + "finished-canceled", (event, numAttempted) => {
   g_modalButtonCancel.classList.add("hide");
   g_modalButtonClose.classList.remove("hide");
   {
@@ -282,7 +282,7 @@ ipcRenderer.on(g_ipcChannel + "finished-canceled", (event) => {
     true,
     g_inputFiles.length,
     g_numErrors,
-    g_inputFilesIndex // last one wasn't converted or error
+    numAttempted
   );
 });
 
