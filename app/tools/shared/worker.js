@@ -35,7 +35,7 @@ async function createFile(
   try {
     if (outputFormat === "pdf") {
       // TODO: doesn't work in the worker, why?
-      //fileFormats.createPdfFromImages(imgFilePaths, outputFilePath);
+      //await fileFormats.createPdfFromImages(imgFilePaths, outputFilePath);
       process.send("ERROR: can't create a pdf in the worker");
     } else if (outputFormat === "epub") {
       await fileFormats.createEpubFromImages(

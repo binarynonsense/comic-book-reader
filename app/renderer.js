@@ -477,18 +477,29 @@ async function extractPDFImageBuffer(
   try {
     const pdf = await pdfjsLib.getDocument(filePath).promise;
     let page = await pdf.getPage(pageNum);
-
+    let pageWidth = page.view[2]; // [left, top, width, height]
+    let pageHeight = page.view[3];
+    let scaleFactor = 300 / 72; // output a 300dpi image instead of 72dpi, which is the pdf default?
+    {
+      let bigSide = pageHeight;
+      if (pageHeight < pageWidth) bigSide = pageWidth;
+      let scaledSide = bigSide * scaleFactor;
+      if (scaledSide > 5000) {
+        console.log("reducing PDF scale factor, img too big");
+        scaleFactor = 5000 / bigSide;
+      }
+    }
     // RENDER
     const canvas = document.createElement("canvas");
     let viewport = page.getViewport({
-      scale: 1.0,
+      scale: scaleFactor,
     });
     let context = canvas.getContext("2d");
     canvas.height = viewport.height;
     canvas.width = viewport.width;
     await page.render({ canvasContext: context, viewport: viewport }).promise;
 
-    let img = canvas.toDataURL("image/jpeg", 0.75);
+    let img = canvas.toDataURL("image/jpeg", 0.8);
     let data = img.replace(/^data:image\/\w+;base64,/, "");
     let buf = Buffer.from(data, "base64");
 

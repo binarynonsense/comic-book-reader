@@ -503,7 +503,7 @@ async function createFileFromImages(
 
     if (outputFormat === FileExtension.PDF) {
       // TODO: doesn't work in the worker, why?
-      fileFormats.createPdfFromImages(imgFilePaths, outputFilePath);
+      await fileFormats.createPdfFromImages(imgFilePaths, outputFilePath);
       fileUtils.cleanUpTempFolder();
       g_window.webContents.send(g_ipcChannel + "finished-ok");
     } else {

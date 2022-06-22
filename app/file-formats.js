@@ -5,6 +5,7 @@ const AdmZip = require("adm-zip");
 const unrar = require("node-unrar-js");
 const EPub = require("epub");
 const naturalCompare = require("natural-compare-lite");
+const sharp = require("sharp");
 
 ///////////////////////////////////////////////////////////////////////////////
 // HELPERS ////////////////////////////////////////////////////////////////////
@@ -320,18 +321,32 @@ exports.createEpubFromImages = createEpubFromImages;
 // PDF ////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-function createPdfFromImages(imgPathsList, outputFilePath) {
-  const PDFDocument = require("pdfkit");
-  const pdf = new PDFDocument({
-    autoFirstPage: false,
-  });
-  pdf.pipe(fs.createWriteStream(outputFilePath));
-  for (let index = 0; index < imgPathsList.length; index++) {
-    const imgPath = imgPathsList[index];
-    const img = pdf.openImage(imgPath);
-    pdf.addPage({ size: [img.width, img.height] });
-    pdf.image(img, 0, 0);
+async function createPdfFromImages(imgPathsList, outputFilePath) {
+  try {
+    const PDFDocument = require("pdfkit");
+    const pdf = new PDFDocument({
+      autoFirstPage: false,
+    });
+    pdf.pipe(fs.createWriteStream(outputFilePath));
+    for (let index = 0; index < imgPathsList.length; index++) {
+      const imgPath = imgPathsList[index];
+      // let imgData = await sharp(imgPath).metadata();
+      // let imgDpi = imgData.density;
+      // console.log(imgDpi);
+      // // set 300 as default if none available?? it's what I assume when exporting pdf pages
+      // if (imgDpi === undefined || imgDpi < 72) imgDpi = 300;
+
+      // set 300 as default? it's what I assume when exporting pdf pages
+      let imgDpi = 300;
+      const img = pdf.openImage(imgPath);
+      pdf.addPage({
+        size: [(72 * img.width) / imgDpi, (72 * img.height) / imgDpi],
+      });
+      pdf.image(img, 0, 0, { scale: 72.0 / imgDpi });
+    }
+    pdf.end();
+  } catch (error) {
+    console.log(error);
   }
-  pdf.end();
 }
 exports.createPdfFromImages = createPdfFromImages;
