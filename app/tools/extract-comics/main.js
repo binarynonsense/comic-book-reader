@@ -400,7 +400,7 @@ async function resizeImages(
           g_ipcChannel + "update-log-text",
           _("tool-shared-modal-log-resizing-image") +
             ": " +
-            index +
+            (index + 1) +
             " / " +
             imgFilePaths.length
         );
@@ -443,7 +443,7 @@ async function resizeImages(
           g_ipcChannel + "update-log-text",
           _("tool-shared-modal-log-converting-image") +
             ": " +
-            index +
+            (index + 1) +
             " / " +
             imgFilePaths.length
         );
