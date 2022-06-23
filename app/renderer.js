@@ -519,7 +519,7 @@ async function extractPDFImageBuffer(
       // page needs to have been rendered before for this to be filled
       let image = await page.objs.get(imageName);
       const imageWidth = image.width;
-      if (imageWidth > pageWidth) {
+      if (imageWidth >= pageWidth) {
         console.log("found usable image");
         // canvas.height = imageHeight;
         // canvas.width = imageWidth;

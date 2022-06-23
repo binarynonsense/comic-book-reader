@@ -398,7 +398,7 @@ async function extractPDFImages(folderPath, logText) {
           // page needs to have been rendered before for this to be filled
           let image = await page.objs.get(imageName);
           const imageWidth = image.width;
-          if (imageWidth > pageWidth) {
+          if (imageWidth >= pageWidth) {
             scaleFactor = imageWidth / pageWidth;
             // render again with new dimensions
             viewport = page.getViewport({
