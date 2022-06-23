@@ -520,12 +520,6 @@ async function extractPDFImageBuffer(
       let image = await page.objs.get(imageName);
       const imageWidth = image.width;
       if (imageWidth >= pageWidth) {
-        console.log("found usable image");
-        // canvas.height = imageHeight;
-        // canvas.width = imageWidth;
-        // // image.data is Uint8ClampedArray
-        // // use putBinaryImageData from pdfjs somehow??
-        // context.putBinaryImageData(image.data, 0, 0);
         scaleFactor = imageWidth / pageWidth;
         // render again with new dimensions
         viewport = page.getViewport({
