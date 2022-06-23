@@ -588,6 +588,26 @@ function getLocalization() {
       text: _("tool-shared-ui-output-format"),
     },
     {
+      id: "text-advanced-options",
+      text: _("tool-shared-ui-advanced-options"),
+    },
+    {
+      id: "text-pdf-method",
+      text: _("tool-shared-ui-pdf-method"),
+    },
+    {
+      id: "text-pdf-method-o1",
+      text: _("tool-shared-ui-pdf-method-o1"),
+    },
+    {
+      id: "text-pdf-method-o2",
+      text: _("tool-shared-ui-pdf-method-o2"),
+    },
+    {
+      id: "text-pdf-method-o3",
+      text: _("tool-shared-ui-pdf-method-o3"),
+    },
+    {
       id: "text-output-folder",
       text: _("tool-shared-ui-output-folder"),
     },

@@ -498,7 +498,46 @@ async function extractPDFImageBuffer(
     canvas.height = viewport.height;
     canvas.width = viewport.width;
     await page.render({ canvasContext: context, viewport: viewport }).promise;
-
+    ////////////////////////////
+    // check imgs size
+    // ref: https://codepen.io/allandiego/pen/RwVGbyj
+    const operatorList = await page.getOperatorList();
+    const validTypes = [
+      pdfjsLib.OPS.paintImageXObject,
+      //pdfjsLib.OPS.paintImageXObjectRepeat,
+      pdfjsLib.OPS.paintJpegXObject,
+    ];
+    let images = [];
+    operatorList.fnArray.forEach((element, index) => {
+      if (validTypes.includes(element)) {
+        images.push(operatorList.argsArray[index][0]);
+      }
+    });
+    if (images.length === 1) {
+      // could be a comic book, let's extract the image
+      const imageName = images[0];
+      // page needs to have been rendered before for this to be filled
+      let image = await page.objs.get(imageName);
+      const imageWidth = image.width;
+      if (imageWidth > pageWidth) {
+        console.log("found usable image");
+        // canvas.height = imageHeight;
+        // canvas.width = imageWidth;
+        // // image.data is Uint8ClampedArray
+        // // use putBinaryImageData from pdfjs somehow??
+        // context.putBinaryImageData(image.data, 0, 0);
+        scaleFactor = imageWidth / pageWidth;
+        // render again with new dimensions
+        viewport = page.getViewport({
+          scale: scaleFactor,
+        });
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+        await page.render({ canvasContext: context, viewport: viewport })
+          .promise;
+      }
+    }
+    //////////////////////////////
     let img = canvas.toDataURL("image/jpeg", 0.8);
     let data = img.replace(/^data:image\/\w+;base64,/, "");
     let buf = Buffer.from(data, "base64");

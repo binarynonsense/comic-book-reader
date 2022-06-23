@@ -18,6 +18,7 @@ let g_outputQuality = "80";
 let g_outputFormat = FileExtension.NOTSET;
 let g_outputFormatNotSet = "";
 let g_outputFolderPath;
+let g_outputPdfMethod = "embedded";
 
 let g_textInputFilesDiv = document.querySelector("#text-input-files");
 let g_inputListDiv = document.querySelector("#input-list");
@@ -185,6 +186,10 @@ exports.onOutputFormatChanged = function (selectObject) {
   checkValidData();
 };
 
+exports.onOutputAdvancedPdfMethodChanged = function (selectObject) {
+  g_outputPdfMethod = selectObject.value;
+};
+
 exports.onChooseOutputFolder = function () {
   ipcRenderer.send(
     g_ipcChannel + "choose-folder",
@@ -350,6 +355,9 @@ async function extractPDFImages(folderPath, logText) {
       let pageWidth = page.view[2]; // [left, top, width, height]
       let pageHeight = page.view[3];
       let scaleFactor = 300 / 72; // output a 300dpi image instead of 72dpi, which is the pdf default?
+      if (g_outputPdfMethod === "render72") {
+        scaleFactor = 1;
+      }
       {
         let bigSide = pageHeight;
         if (pageHeight < pageWidth) bigSide = pageWidth;
@@ -368,11 +376,47 @@ async function extractPDFImages(folderPath, logText) {
       canvas.height = viewport.height;
       canvas.width = viewport.width;
       await page.render({ canvasContext: context, viewport: viewport }).promise;
-
-      let filePath = path.join(folderPath, pageNum + "." + FileExtension.JPG);
+      ////////////////////////////
+      if (g_outputPdfMethod === "embedded") {
+        // check imgs size
+        // ref: https://codepen.io/allandiego/pen/RwVGbyj
+        const operatorList = await page.getOperatorList();
+        const validTypes = [
+          pdfjsLib.OPS.paintImageXObject,
+          //pdfjsLib.OPS.paintImageXObjectRepeat,
+          pdfjsLib.OPS.paintJpegXObject,
+        ];
+        let images = [];
+        operatorList.fnArray.forEach((element, index) => {
+          if (validTypes.includes(element)) {
+            images.push(operatorList.argsArray[index][0]);
+          }
+        });
+        if (images.length === 1) {
+          // could be a comic book, let's extract the image
+          const imageName = images[0];
+          // page needs to have been rendered before for this to be filled
+          let image = await page.objs.get(imageName);
+          const imageWidth = image.width;
+          if (imageWidth > pageWidth) {
+            scaleFactor = imageWidth / pageWidth;
+            // render again with new dimensions
+            viewport = page.getViewport({
+              scale: scaleFactor,
+            });
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+            await page.render({ canvasContext: context, viewport: viewport })
+              .promise;
+          }
+        }
+      }
+      //////////////////////////////
       var img = canvas.toDataURL("image/jpeg", 0.8);
       var data = img.replace(/^data:image\/\w+;base64,/, "");
       var buf = Buffer.from(data, "base64");
+
+      let filePath = path.join(folderPath, pageNum + "." + FileExtension.JPG);
       fs.writeFileSync(filePath, buf, "binary");
       updateLogText(logText + pageNum + " / " + pdf.numPages);
 

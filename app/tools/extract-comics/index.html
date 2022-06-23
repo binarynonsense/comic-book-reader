@@ -60,6 +60,29 @@
             value="80"
           />
         </p>
+        <p>
+          <details>
+            <summary id="text-advanced-options">Advanced</summary>
+            <p>
+              <span id="text-pdf-method">PDF Extraction Method:</span>
+              <select
+                id="output-pdf-method-select"
+                class="browser-default"
+                onchange="renderer.onOutputAdvancedPdfMethodChanged(this)"
+              >
+                <option id="text-pdf-method-o1" value="embedded" selected>
+                  embed
+                </option>
+                <option id="text-pdf-method-o2" value="render300">
+                  render 300
+                </option>
+                <option id="text-pdf-method-o3" value="render72">
+                  render 72
+                </option>
+              </select>
+            </p>
+          </details>
+        </p>
       </div>
 
       <h5>

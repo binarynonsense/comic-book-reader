@@ -104,7 +104,12 @@
   "tool-shared-ui-create": "Create",
   "tool-shared-ui-extract": "Extract",
   "tool-shared-ui-close": "Close",
-  "tool-shared-ui-cancel": "Cancel",  
+  "tool-shared-ui-cancel": "Cancel",
+  "tool-shared-ui-advanced-options" : "Advanced",
+  "tool-shared-ui-pdf-method" : "PDF Extraction Method:",
+  "tool-shared-ui-pdf-method-o1" : "use the page's embedded image if there's one and the size seems correct, render the page (300dpi input) if not [slower]",
+  "tool-shared-ui-pdf-method-o2" : "render the page (300dpi input)",
+  "tool-shared-ui-pdf-method-o3" : "render the page (72dpi input)",
 
   "tool-shared-modal-title-extracting": "Extracting",
   "tool-shared-modal-title-converting": "Converting",

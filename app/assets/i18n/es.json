@@ -105,6 +105,11 @@
   "tool-shared-ui-extract": "Extraer",
   "tool-shared-ui-close": "Cerrar",
   "tool-shared-ui-cancel": "Cancelar",
+  "tool-shared-ui-advanced-options" : "Advanzadas",
+  "tool-shared-ui-pdf-method" : "Método de Extracción de PDF:",
+  "tool-shared-ui-pdf-method-o1" : "usar la imagen incrustada en la página si hay una y el tamaño parece correcto, si no renderizar la página (300dpi de entrada) [más lento]",
+  "tool-shared-ui-pdf-method-o2" : "renderizar la página (300dpi de entrada)",
+  "tool-shared-ui-pdf-method-o3" : "renderizar la página (72dpi de entrada)",
 
   "tool-shared-modal-title-extracting": "Extrayendo",  
   "tool-shared-modal-title-converting": "Convirtiendo",
