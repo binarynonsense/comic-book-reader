@@ -340,6 +340,7 @@ async function createPdfFromImages(imgPathsList, outputFilePath) {
       let imgDpi = 300;
       const img = pdf.openImage(imgPath);
       pdf.addPage({
+        margin: 0,
         size: [(72 * img.width) / imgDpi, (72 * img.height) / imgDpi],
       });
       pdf.image(img, 0, 0, { scale: 72.0 / imgDpi });
