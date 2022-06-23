@@ -388,6 +388,10 @@ function getLocalization() {
       text: _("tool-shared-ui-add").toUpperCase(),
     },
     {
+      id: "text-output-options",
+      text: _("tool-shared-ui-output-options"),
+    },
+    {
       id: "text-format",
       text: _("tool-shared-ui-output-options-format"),
     },
