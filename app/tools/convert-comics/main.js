@@ -74,7 +74,7 @@ exports.showWindow = function (parentWindow, filePath, fileType) {
       g_window.webContents.send(g_ipcChannel + "add-file", filePath, fileType);
   });
 
-  //if (isDev()) g_window.toggleDevTools();
+  if (isDev()) g_window.toggleDevTools();
 };
 
 ///////////////////////////////////////////////////////////////////////////////
