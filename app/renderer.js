@@ -519,16 +519,39 @@ async function extractPDFImageBuffer(
       // page needs to have been rendered before for this to be filled
       let image = await page.objs.get(imageName);
       const imageWidth = image.width;
+      const imageHeight = image.height;
       if (imageWidth >= pageWidth) {
-        scaleFactor = imageWidth / pageWidth;
-        // render again with new dimensions
-        viewport = page.getViewport({
-          scale: scaleFactor,
-        });
-        canvas.height = viewport.height;
-        canvas.width = viewport.width;
-        await page.render({ canvasContext: context, viewport: viewport })
-          .promise;
+        if (false) {
+          const rawImageData = image.data;
+          // rawImageData (Uint8ClampedArray) contains only RGB -> add alphaChanel
+          let rawImageDataWithAlpha = new Uint8ClampedArray(
+            imageWidth * imageHeight * 4
+          );
+          for (let j = 0, k = 0, jj = imageWidth * imageHeight * 4; j < jj; ) {
+            rawImageDataWithAlpha[j++] = rawImageData[k++];
+            rawImageDataWithAlpha[j++] = rawImageData[k++];
+            rawImageDataWithAlpha[j++] = rawImageData[k++];
+            rawImageDataWithAlpha[j++] = 255;
+          }
+          const imageData = new ImageData(
+            rawImageDataWithAlpha,
+            imageWidth,
+            imageHeight
+          );
+          canvas.width = imageWidth;
+          canvas.height = imageHeight;
+          ctx.putImageData(imageData, 0, 0);
+        } else {
+          scaleFactor = imageWidth / pageWidth;
+          // render again with new dimensions
+          viewport = page.getViewport({
+            scale: scaleFactor,
+          });
+          canvas.height = viewport.height;
+          canvas.width = viewport.width;
+          await page.render({ canvasContext: context, viewport: viewport })
+            .promise;
+        }
       }
     }
     //////////////////////////////
