@@ -111,7 +111,7 @@
   "tool-shared-ui-pdf-extraction-o1" : "usar la imagen incrustada en la página si hay una y el tamaño parece correcto, si no renderizar la página (300dpi de entrada) [más lento]",
   "tool-shared-ui-pdf-extraction-o2" : "renderizar la página (300dpi de entrada)",
   "tool-shared-ui-pdf-extraction-o3" : "renderizar la página (72dpi de entrada)",
-  "tool-shared-ui-pdf-creation" : "PDF Creation:",
+  "tool-shared-ui-pdf-creation" : "Creación de PDF:",
   "tool-shared-ui-pdf-creation-tooltip" : "La información/resolución de la imagen incrustada se mantendrá intacta, esta opción sólo cambia el valor de 'tamaño de página' (en puntos) almacenado en el nuevo PDF, asumiendo un valor de userunit de 1 (72dpi)",
   "tool-shared-ui-pdf-creation-o1" : "usar 300dpi de entrada para calcular el tamaño de página en puntos",
   "tool-shared-ui-pdf-creation-o2" : "usar la información de dpi de la imagen para calcular el tamaño de página en puntos, usar 300dpi de entrada si no está disponible",
