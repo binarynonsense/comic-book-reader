@@ -479,6 +479,7 @@ async function extractPDFImageBuffer(
     let page = await pdf.getPage(pageNum);
     let pageWidth = page.view[2]; // [left, top, width, height]
     let pageHeight = page.view[3];
+    let userUnit = page.userUnit; // 1 unit = 1/72 inch
     let scaleFactor = 300 / 72; // output a 300dpi image instead of 72dpi, which is the pdf default?
     {
       let bigSide = pageHeight;
