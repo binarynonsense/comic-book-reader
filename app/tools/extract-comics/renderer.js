@@ -186,7 +186,7 @@ exports.onOutputFormatChanged = function (selectObject) {
   checkValidData();
 };
 
-exports.onOutputAdvancedPdfMethodChanged = function (selectObject) {
+exports.onOutputAdvancedPdfExtractionChanged = function (selectObject) {
   g_outputPdfMethod = selectObject.value;
 };
 

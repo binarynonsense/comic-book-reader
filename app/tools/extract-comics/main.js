@@ -529,7 +529,7 @@ function getTooltipsLocalization() {
   return [
     {
       id: "tooltip-output-size",
-      text: _("tool-shared-tooltip-output-size"),
+      text: _("tool-shared-tooltip-output-scale"),
     },
     {
       id: "tooltip-output-folder",
@@ -538,6 +538,10 @@ function getTooltipsLocalization() {
     {
       id: "tooltip-remove-from-list",
       text: _("tool-shared-tooltip-remove-from-list"),
+    },
+    {
+      id: "tooltip-pdf-extraction",
+      text: _("tool-shared-ui-pdf-extraction-tooltip"),
     },
   ];
 }
@@ -573,20 +577,20 @@ function getLocalization() {
       text: _("tool-shared-ui-advanced-options"),
     },
     {
-      id: "text-pdf-method",
-      text: _("tool-shared-ui-pdf-method"),
+      id: "text-pdf-extraction",
+      text: _("tool-shared-ui-pdf-extraction"),
     },
     {
-      id: "text-pdf-method-o1",
-      text: _("tool-shared-ui-pdf-method-o1"),
+      id: "text-pdf-extraction-o1",
+      text: _("tool-shared-ui-pdf-extraction-o1"),
     },
     {
-      id: "text-pdf-method-o2",
-      text: _("tool-shared-ui-pdf-method-o2"),
+      id: "text-pdf-extraction-o2",
+      text: _("tool-shared-ui-pdf-extraction-o2"),
     },
     {
-      id: "text-pdf-method-o3",
-      text: _("tool-shared-ui-pdf-method-o3"),
+      id: "text-pdf-extraction-o3",
+      text: _("tool-shared-ui-pdf-extraction-o3"),
     },
     {
       id: "text-output-folder",

@@ -28,14 +28,14 @@
       <div id="output-size">
         <h5>
           <span id="text-output-options">Output Options:</span>
+        </h5>
+        <p class="range-field">
+          <span id="text-scale">Scale (%):</span>
           <i
             id="tooltip-output-size"
             class="fas fa-question-circle blue-text accent-1-text"
             title="tooltip"
           ></i>
-        </h5>
-        <p class="range-field">
-          <span id="text-scale">Scale (%):</span>
           <input
             type="range"
             min="10"
@@ -64,19 +64,24 @@
           <details>
             <summary id="text-advanced-options">Advanced</summary>
             <p>
-              <span id="text-pdf-method">PDF Extraction Method:</span>
+              <span id="text-pdf-extraction">PDF Extraction:</span>
+              <i
+                id="tooltip-pdf-extraction"
+                class="fas fa-question-circle blue-text accent-1-text"
+                title="tooltip"
+              ></i>
               <select
-                id="output-pdf-method-select"
+                id="output-pdf-extraction-select"
                 class="browser-default"
-                onchange="renderer.onOutputAdvancedPdfMethodChanged(this)"
+                onchange="renderer.onOutputAdvancedPdfExtractionChanged(this)"
               >
-                <option id="text-pdf-method-o1" value="embedded" selected>
+                <option id="text-pdf-extraction-o1" value="embedded" selected>
                   embed
                 </option>
-                <option id="text-pdf-method-o2" value="render300">
+                <option id="text-pdf-extraction-o2" value="render300">
                   render 300
                 </option>
-                <option id="text-pdf-method-o3" value="render72">
+                <option id="text-pdf-extraction-o3" value="render72">
                   render 72
                 </option>
               </select>

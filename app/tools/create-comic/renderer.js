@@ -158,14 +158,6 @@ exports.onChooseInputFile = function () {
   ipcRenderer.send(g_ipcChannel + "choose-file", defaultPath);
 };
 
-exports.onChooseOutputFolder = function () {
-  ipcRenderer.send(
-    g_ipcChannel + "choose-folder",
-    g_outputFileName,
-    g_outputFolderPath
-  );
-};
-
 exports.onOutputFormatChanged = function (selectObject) {
   g_outputFormat = selectObject.value;
   checkValidData();
@@ -174,6 +166,21 @@ exports.onOutputFormatChanged = function (selectObject) {
 exports.onOutputNameChanged = function (selectObject) {
   g_outputName = selectObject.value;
   checkValidData();
+};
+
+exports.onOutputAdvancedPdfCreationChanged = function (selectObject) {
+  ipcRenderer.send(
+    g_ipcChannel + "set-pdf-creation-method",
+    selectObject.value
+  );
+};
+
+exports.onChooseOutputFolder = function () {
+  ipcRenderer.send(
+    g_ipcChannel + "choose-folder",
+    g_outputFileName,
+    g_outputFolderPath
+  );
 };
 
 exports.onStart = function (resetCounter = true) {

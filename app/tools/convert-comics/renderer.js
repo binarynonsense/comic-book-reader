@@ -17,7 +17,7 @@ let g_outputScale = "100";
 let g_outputQuality = "80";
 let g_outputFormat;
 let g_outputFolderPath;
-let g_outputPdfMethod = "embedded";
+let g_outputPdfExtractionMethod = "embedded";
 
 let g_textInputFilesDiv = document.querySelector("#text-input-files");
 let g_inputListDiv = document.querySelector("#input-list");
@@ -181,8 +181,15 @@ exports.onOutputNameChanged = function (selectObject) {
   checkValidData();
 };
 
-exports.onOutputAdvancedPdfMethodChanged = function (selectObject) {
-  g_outputPdfMethod = selectObject.value;
+exports.onOutputAdvancedPdfExtractionChanged = function (selectObject) {
+  g_outputPdfExtractionMethod = selectObject.value;
+};
+
+exports.onOutputAdvancedPdfCreationChanged = function (selectObject) {
+  ipcRenderer.send(
+    g_ipcChannel + "set-pdf-creation-method",
+    selectObject.value
+  );
 };
 
 exports.onChooseOutputFolder = function () {
@@ -350,7 +357,7 @@ async function extractPDFImages(folderPath, logText) {
       let pageWidth = page.view[2]; // [left, top, width, height]
       let pageHeight = page.view[3];
       let scaleFactor = 300 / 72; // output a 300dpi image instead of 72dpi, which is the pdf default?
-      if (g_outputPdfMethod === "render72") {
+      if (g_outputPdfExtractionMethod === "render72") {
         scaleFactor = 1;
       }
       {
@@ -372,7 +379,7 @@ async function extractPDFImages(folderPath, logText) {
       canvas.width = viewport.width;
       await page.render({ canvasContext: context, viewport: viewport }).promise;
       ////////////////////////////
-      if (g_outputPdfMethod === "embedded") {
+      if (g_outputPdfExtractionMethod === "embedded") {
         // check imgs size
         // ref: https://codepen.io/allandiego/pen/RwVGbyj
         const operatorList = await page.getOperatorList();

@@ -28,11 +28,6 @@
       <div id="output-size">
         <h5>
           <span id="text-output-options">Output Options:</span>
-          <!-- <i
-            id="tooltip-output-size"
-            class="fas fa-question-circle blue-text accent-1-text"
-            title="tooltip"
-          ></i> -->
         </h5>
         <span id="text-format">Format:</span>
         <select
@@ -40,6 +35,32 @@
           class="browser-default"
           onchange="renderer.onOutputFormatChanged(this)"
         ></select>
+        <p>
+          <details>
+            <summary id="text-advanced-options">Advanced</summary>
+            <p>
+              <span id="text-pdf-creation">PDF Creation:</span>
+              <i
+                id="tooltip-pdf-creation"
+                class="fas fa-question-circle blue-text accent-1-text"
+                title="tooltip"
+              ></i>
+              <select
+                id="output-pdf-creation-select"
+                class="browser-default"
+                onchange="renderer.onOutputAdvancedPdfCreationChanged(this)"
+              >
+                <option id="text-pdf-creation-o1" value="300dpi" selected>
+                  0
+                </option>
+                <option id="text-pdf-creation-o2" value="extractOr300dpi">
+                  1
+                </option>
+                <option id="text-pdf-creation-o3" value="imgSize">2</option>
+              </select>
+            </p>
+          </details>
+        </p>
       </div>
 
       <div id="output-name">

@@ -321,7 +321,7 @@ exports.createEpubFromImages = createEpubFromImages;
 // PDF ////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-async function createPdfFromImages(imgPathsList, outputFilePath) {
+async function createPdfFromImages(imgPathsList, outputFilePath, method) {
   try {
     const PDFDocument = require("pdfkit");
     const pdf = new PDFDocument({
@@ -330,20 +330,31 @@ async function createPdfFromImages(imgPathsList, outputFilePath) {
     pdf.pipe(fs.createWriteStream(outputFilePath));
     for (let index = 0; index < imgPathsList.length; index++) {
       const imgPath = imgPathsList[index];
-      // let imgData = await sharp(imgPath).metadata();
-      // let imgDpi = imgData.density;
-      // console.log(imgDpi);
-      // // set 300 as default if none available?? it's what I assume when exporting pdf pages
-      // if (imgDpi === undefined || imgDpi < 72) imgDpi = 300;
-
-      // set 300 as default? it's what I assume when exporting pdf pages
-      let imgDpi = 300;
       const img = pdf.openImage(imgPath);
-      pdf.addPage({
-        margin: 0,
-        size: [(72 * img.width) / imgDpi, (72 * img.height) / imgDpi],
-      });
-      pdf.image(img, 0, 0, { scale: 72.0 / imgDpi });
+
+      if (method === "300dpi") {
+        let imgDpi = 300;
+        pdf.addPage({
+          margin: 0,
+          size: [(72 * img.width) / imgDpi, (72 * img.height) / imgDpi],
+        });
+        pdf.image(img, 0, 0, { scale: 72.0 / imgDpi });
+      } else if (method === "extractOr300dpi") {
+        let imgData = await sharp(imgPath).metadata();
+        let imgDpi = imgData.density;
+        if (imgDpi === undefined || imgDpi < 72) imgDpi = 300;
+        pdf.addPage({
+          margin: 0,
+          size: [(72 * img.width) / imgDpi, (72 * img.height) / imgDpi],
+        });
+        pdf.image(img, 0, 0, { scale: 72.0 / imgDpi });
+      } else if (method === "imgSize") {
+        pdf.addPage({
+          margin: 0,
+          size: [img.width, img.height],
+        });
+        pdf.image(img, 0, 0);
+      }
     }
     pdf.end();
   } catch (error) {

@@ -16,6 +16,7 @@ let g_cancel = false;
 let g_worker;
 let g_resizeWindow;
 let g_ipcChannel = "tool-cc--";
+let g_pdfCreationMethod = "300dpi";
 
 function isDev() {
   return process.argv[2] == "--dev";
@@ -171,6 +172,10 @@ ipcMain.on(g_ipcChannel + "cancel", (event) => {
   if (g_resizeWindow !== undefined) {
     g_resizeWindow.webContents.send("bgr--cancel-resize");
   }
+});
+
+ipcMain.on(g_ipcChannel + "set-pdf-creation-method", (event, method) => {
+  g_pdfCreationMethod = method;
 });
 
 ipcMain.on(
@@ -503,7 +508,11 @@ async function createFileFromImages(
 
     if (outputFormat === FileExtension.PDF) {
       // TODO: doesn't work in the worker, why?
-      await fileFormats.createPdfFromImages(imgFilePaths, outputFilePath);
+      await fileFormats.createPdfFromImages(
+        imgFilePaths,
+        outputFilePath,
+        g_pdfCreationMethod
+      );
       fileUtils.cleanUpTempFolder();
       g_window.webContents.send(g_ipcChannel + "finished-ok");
     } else {
@@ -544,7 +553,7 @@ function getTooltipsLocalization() {
   return [
     {
       id: "tooltip-output-size",
-      text: _("tool-shared-tooltip-output-size"),
+      text: _("tool-shared-tooltip-output-scale"),
     },
     {
       id: "tooltip-output-folder",
@@ -553,6 +562,14 @@ function getTooltipsLocalization() {
     {
       id: "tooltip-remove-from-list",
       text: _("tool-shared-tooltip-remove-from-list"),
+    },
+    {
+      id: "tooltip-pdf-extraction",
+      text: _("tool-shared-ui-pdf-extraction-tooltip"),
+    },
+    {
+      id: "tooltip-pdf-creation",
+      text: _("tool-shared-ui-pdf-creation-tooltip"),
     },
   ];
 }
@@ -592,20 +609,36 @@ function getLocalization() {
       text: _("tool-shared-ui-advanced-options"),
     },
     {
-      id: "text-pdf-method",
-      text: _("tool-shared-ui-pdf-method"),
+      id: "text-pdf-extraction",
+      text: _("tool-shared-ui-pdf-extraction"),
     },
     {
-      id: "text-pdf-method-o1",
-      text: _("tool-shared-ui-pdf-method-o1"),
+      id: "text-pdf-extraction-o1",
+      text: _("tool-shared-ui-pdf-extraction-o1"),
     },
     {
-      id: "text-pdf-method-o2",
-      text: _("tool-shared-ui-pdf-method-o2"),
+      id: "text-pdf-extraction-o2",
+      text: _("tool-shared-ui-pdf-extraction-o2"),
     },
     {
-      id: "text-pdf-method-o3",
-      text: _("tool-shared-ui-pdf-method-o3"),
+      id: "text-pdf-extraction-o3",
+      text: _("tool-shared-ui-pdf-extraction-o3"),
+    },
+    {
+      id: "text-pdf-creation",
+      text: _("tool-shared-ui-pdf-creation"),
+    },
+    {
+      id: "text-pdf-creation-o1",
+      text: _("tool-shared-ui-pdf-creation-o1"),
+    },
+    {
+      id: "text-pdf-creation-o2",
+      text: _("tool-shared-ui-pdf-creation-o2"),
+    },
+    {
+      id: "text-pdf-creation-o3",
+      text: _("tool-shared-ui-pdf-creation-o3"),
     },
     {
       id: "text-output-folder",

@@ -28,14 +28,14 @@
       <div id="output-size">
         <h5>
           <span id="text-output-options">Output Options:</span>
+        </h5>
+        <p class="range-field">
+          <span id="text-scale">Scale (%):</span>
           <i
             id="tooltip-output-size"
             class="fas fa-question-circle blue-text accent-1-text"
             title="tooltip"
           ></i>
-        </h5>
-        <p class="range-field">
-          <span id="text-scale">Scale (%):</span>
           <input
             type="range"
             min="10"
@@ -64,21 +64,43 @@
           <details>
             <summary id="text-advanced-options">Advanced</summary>
             <p>
-              <span id="text-pdf-method">PDF Extraction Method:</span>
+              <span id="text-pdf-extraction">PDF Extraction:</span>
+              <i
+                id="tooltip-pdf-extraction"
+                class="fas fa-question-circle blue-text accent-1-text"
+                title="tooltip"
+              ></i>
               <select
-                id="output-pdf-method-select"
+                id="output-pdf-extraction-select"
                 class="browser-default"
-                onchange="renderer.onOutputAdvancedPdfMethodChanged(this)"
+                onchange="renderer.onOutputAdvancedPdfExtractionChanged(this)"
               >
-                <option id="text-pdf-method-o1" value="embedded" selected>
-                  embed
+                <option id="text-pdf-extraction-o1" value="embedded" selected>
+                  0
                 </option>
-                <option id="text-pdf-method-o2" value="render300">
-                  render 300
+                <option id="text-pdf-extraction-o2" value="render300">1</option>
+                <option id="text-pdf-extraction-o3" value="render72">2</option>
+              </select>
+            </p>
+            <p>
+              <span id="text-pdf-creation">PDF Creation:</span>
+              <i
+                id="tooltip-pdf-creation"
+                class="fas fa-question-circle blue-text accent-1-text"
+                title="tooltip"
+              ></i>
+              <select
+                id="output-pdf-creation-select"
+                class="browser-default"
+                onchange="renderer.onOutputAdvancedPdfCreationChanged(this)"
+              >
+                <option id="text-pdf-creation-o1" value="300dpi" selected>
+                  0
                 </option>
-                <option id="text-pdf-method-o3" value="render72">
-                  render 72
+                <option id="text-pdf-creation-o2" value="extractOr300dpi">
+                  1
                 </option>
+                <option id="text-pdf-creation-o3" value="imgSize">2</option>
               </select>
             </p>
           </details>
