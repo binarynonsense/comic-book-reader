@@ -540,7 +540,7 @@ async function extractPDFImageBuffer(
           );
           canvas.width = imageWidth;
           canvas.height = imageHeight;
-          ctx.putImageData(imageData, 0, 0);
+          context.putImageData(imageData, 0, 0);
         } else {
           scaleFactor = imageWidth / pageWidth;
           // render again with new dimensions
