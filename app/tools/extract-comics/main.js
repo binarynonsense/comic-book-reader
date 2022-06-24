@@ -413,6 +413,7 @@ async function resizeImages(
         );
         let data = await sharp(filePath).metadata();
         await sharp(filePath)
+          .withMetadata()
           .resize(Math.round(data.width * (outputScale / 100)))
           .toFile(tmpFilePath);
 
@@ -456,6 +457,7 @@ async function resizeImages(
         );
         if (outputFormat === FileExtension.JPG) {
           await sharp(filePath)
+            .withMetadata()
             .jpeg({
               quality: outputQuality,
             })
@@ -463,15 +465,17 @@ async function resizeImages(
         } else if (outputFormat === FileExtension.PNG) {
           if (outputQuality < 100) {
             await sharp(filePath)
+              .withMetadata()
               .png({
                 quality: outputQuality,
               })
               .toFile(tmpFilePath);
           } else {
-            await sharp(filePath).png().toFile(tmpFilePath);
+            await sharp(filePath).withMetadata().png().toFile(tmpFilePath);
           }
         } else if (outputFormat === FileExtension.WEBP) {
           await sharp(filePath)
+            .withMetadata()
             .webp({
               quality: outputQuality,
             })
