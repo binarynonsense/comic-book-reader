@@ -480,15 +480,16 @@ async function extractPDFImageBuffer(
     let pageWidth = page.view[2]; // [left, top, width, height]
     let pageHeight = page.view[3];
     let userUnit = page.userUnit; // 1 unit = 1/72 inch
-    let scaleFactor = 300 / 72; // output a 300dpi image instead of 72dpi, which is the pdf default?
-    {
-      let bigSide = pageHeight;
-      if (pageHeight < pageWidth) bigSide = pageWidth;
-      let scaledSide = bigSide * scaleFactor;
-      if (scaledSide > 5000) {
-        console.log("reducing PDF scale factor, img too big");
-        scaleFactor = 5000 / bigSide;
-      }
+    let dpi = 300; // use userUnit some day (if > 1) to set dpi?
+    let iPerUnit = 1 / 72;
+    let scaleFactor = dpi * iPerUnit; // default: output a 300dpi image instead of 72dpi, which is the pdf default?
+    // resize if too big?
+    let bigSide = pageHeight;
+    if (pageHeight < pageWidth) bigSide = pageWidth;
+    let scaledSide = bigSide * scaleFactor;
+    if (scaledSide > 5000) {
+      console.log("reducing PDF scale factor, img too big");
+      scaleFactor = 5000 / bigSide;
     }
     // RENDER
     const canvas = document.createElement("canvas");
@@ -500,13 +501,13 @@ async function extractPDFImageBuffer(
     canvas.width = viewport.width;
     await page.render({ canvasContext: context, viewport: viewport }).promise;
     ////////////////////////////
-    // check imgs size
+    // check embedded imgs size
     // ref: https://codepen.io/allandiego/pen/RwVGbyj
     const operatorList = await page.getOperatorList();
     const validTypes = [
       pdfjsLib.OPS.paintImageXObject,
-      //pdfjsLib.OPS.paintImageXObjectRepeat,
       pdfjsLib.OPS.paintJpegXObject,
+      //pdfjsLib.OPS.paintImageXObjectRepeat,
     ];
     let images = [];
     operatorList.fnArray.forEach((element, index) => {
@@ -521,8 +522,9 @@ async function extractPDFImageBuffer(
       let image = await page.objs.get(imageName);
       const imageWidth = image.width;
       const imageHeight = image.height;
-      if (imageWidth >= pageWidth) {
+      if (imageWidth >= pageWidth && imageHeight >= pageHeight) {
         if (false) {
+          // this method doesn't always work yet, keep to explore further some day
           const rawImageData = image.data;
           // rawImageData (Uint8ClampedArray) contains only RGB -> add alphaChanel
           let rawImageDataWithAlpha = new Uint8ClampedArray(
@@ -544,6 +546,7 @@ async function extractPDFImageBuffer(
           context.putImageData(imageData, 0, 0);
         } else {
           scaleFactor = imageWidth / pageWidth;
+          //dpi = parseInt(scaleFactor / iPerUnit);
           // render again with new dimensions
           viewport = page.getViewport({
             scale: scaleFactor,
@@ -557,6 +560,7 @@ async function extractPDFImageBuffer(
     }
     //////////////////////////////
     let img = canvas.toDataURL("image/jpeg", 0.8);
+    //let img = changeDpiDataUrl(dataUrl, dpi);
     let data = img.replace(/^data:image\/\w+;base64,/, "");
     let buf = Buffer.from(data, "base64");
 
@@ -571,10 +575,11 @@ async function extractPDFImageBuffer(
       sendToTool
     );
   } catch (err) {
+    console.log(err);
     ipcRenderer.send(
       "pdf-page-buffer-extracted",
       err,
-      buf,
+      undefined,
       outputFolderPath,
       sendToTool
     );
