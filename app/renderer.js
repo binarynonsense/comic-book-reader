@@ -2,6 +2,7 @@ const { ipcRenderer } = require("electron");
 const customTitlebar = require("custom-electron-titlebar");
 const pdfjsLib = require("./assets/libs/pdfjs/build/pdf.js");
 const EPub = require("epub");
+const { changeDpiDataUrl } = require("changedpi");
 
 let g_currentPdf = null;
 let g_currentPdfPage = null;
@@ -490,6 +491,7 @@ async function extractPDFImageBuffer(
     if (scaledSide > 5000) {
       console.log("reducing PDF scale factor, img too big");
       scaleFactor = 5000 / bigSide;
+      dpi = parseInt(scaleFactor / iPerUnit);
     }
     // RENDER
     const canvas = document.createElement("canvas");
@@ -546,7 +548,7 @@ async function extractPDFImageBuffer(
           context.putImageData(imageData, 0, 0);
         } else {
           scaleFactor = imageWidth / pageWidth;
-          //dpi = parseInt(scaleFactor / iPerUnit);
+          dpi = parseInt(scaleFactor / iPerUnit);
           // render again with new dimensions
           viewport = page.getViewport({
             scale: scaleFactor,
@@ -559,8 +561,8 @@ async function extractPDFImageBuffer(
       }
     }
     //////////////////////////////
-    let img = canvas.toDataURL("image/jpeg", 0.8);
-    //let img = changeDpiDataUrl(dataUrl, dpi);
+    let dataUrl = canvas.toDataURL("image/jpeg", 0.8);
+    let img = changeDpiDataUrl(dataUrl, dpi);
     let data = img.replace(/^data:image\/\w+;base64,/, "");
     let buf = Buffer.from(data, "base64");
 

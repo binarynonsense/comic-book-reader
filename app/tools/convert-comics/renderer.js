@@ -1,6 +1,7 @@
 const fs = window.require("fs");
 const path = require("path");
 const { ipcRenderer } = require("electron");
+const { changeDpiDataUrl } = require("changedpi");
 const { FileExtension } = require("../../constants");
 
 let g_ipcChannel = "tool-cc--";
@@ -356,18 +357,22 @@ async function extractPDFImages(folderPath, logText) {
       let page = await pdf.getPage(pageNum);
       let pageWidth = page.view[2]; // [left, top, width, height]
       let pageHeight = page.view[3];
-      let scaleFactor = 300 / 72; // output a 300dpi image instead of 72dpi, which is the pdf default?
+      let userUnit = page.userUnit; // 1 unit = 1/72 inch
+      let dpi = 300; // use userUnit some day (if > 1) to set dpi?
+      let iPerUnit = 1 / 72;
+      let scaleFactor = dpi * iPerUnit; // default: output a 300dpi image instead of 72dpi, which is the pdf default?
       if (g_outputPdfExtractionMethod === "render72") {
         scaleFactor = 1;
+        dpi = 72;
       }
-      {
-        let bigSide = pageHeight;
-        if (pageHeight < pageWidth) bigSide = pageWidth;
-        let scaledSide = bigSide * scaleFactor;
-        if (scaledSide > 5000) {
-          console.log("reducing PDF scale factor, img too big");
-          scaleFactor = 5000 / bigSide;
-        }
+      // resize if too big?
+      let bigSide = pageHeight;
+      if (pageHeight < pageWidth) bigSide = pageWidth;
+      let scaledSide = bigSide * scaleFactor;
+      if (scaledSide > 5000) {
+        console.log("reducing PDF scale factor, img too big");
+        scaleFactor = 5000 / bigSide;
+        dpi = parseInt(scaleFactor / iPerUnit);
       }
       // RENDER
       const canvas = document.createElement("canvas");
@@ -385,8 +390,8 @@ async function extractPDFImages(folderPath, logText) {
         const operatorList = await page.getOperatorList();
         const validTypes = [
           pdfjsLib.OPS.paintImageXObject,
-          //pdfjsLib.OPS.paintImageXObjectRepeat,
           pdfjsLib.OPS.paintJpegXObject,
+          //pdfjsLib.OPS.paintImageXObjectRepeat,
         ];
         let images = [];
         operatorList.fnArray.forEach((element, index) => {
@@ -400,8 +405,10 @@ async function extractPDFImages(folderPath, logText) {
           // page needs to have been rendered before for this to be filled
           let image = await page.objs.get(imageName);
           const imageWidth = image.width;
-          if (imageWidth >= pageWidth) {
+          const imageHeight = image.height;
+          if (imageWidth >= pageWidth && imageHeight >= pageHeight) {
             scaleFactor = imageWidth / pageWidth;
+            dpi = parseInt(scaleFactor / iPerUnit);
             // render again with new dimensions
             viewport = page.getViewport({
               scale: scaleFactor,
@@ -414,9 +421,10 @@ async function extractPDFImages(folderPath, logText) {
         }
       }
       //////////////////////////////
-      var img = canvas.toDataURL("image/jpeg", 0.8);
-      var data = img.replace(/^data:image\/\w+;base64,/, "");
-      var buf = Buffer.from(data, "base64");
+      let dataUrl = canvas.toDataURL("image/jpeg", 0.8);
+      let img = changeDpiDataUrl(dataUrl, dpi);
+      let data = img.replace(/^data:image\/\w+;base64,/, "");
+      let buf = Buffer.from(data, "base64");
 
       let filePath = path.join(folderPath, pageNum + "." + FileExtension.JPG);
       fs.writeFileSync(filePath, buf, "binary");
