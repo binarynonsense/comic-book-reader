@@ -116,7 +116,7 @@
   "tool-shared-ui-pdf-creation" : "PDF Creation:",
   "tool-shared-ui-pdf-creation-tooltip" : "The embedded image's data/resolution will be kept intact, this option just changes the 'page size' value (in points) stored in the new PDF, assuming a userunit value of 1 (72dpi).",
   "tool-shared-ui-pdf-creation-o1" : "use 300dpi as input to calculate the page's size in points",
-  "tool-shared-ui-pdf-creation-o2" : "use the image's dpi info to calculate the page's size in points, or 300dpi as input if not",
+  "tool-shared-ui-pdf-creation-o2" : "use the image's dpi info to calculate the page's size in points if available, or 300dpi as input if not",
   "tool-shared-ui-pdf-creation-o3" : "use the image's resolution as the page's size",
 
   "tool-shared-modal-title-extracting": "Extracting",
