@@ -17,6 +17,7 @@ let g_worker;
 let g_resizeWindow;
 let g_ipcChannel = "tool-cc--";
 let g_pdfCreationMethod = "300dpi";
+let g_imageFormat = FileExtension.NOTSET;
 
 function isDev() {
   return process.argv[2] == "--dev";
@@ -172,6 +173,10 @@ ipcMain.on(g_ipcChannel + "cancel", (event) => {
   if (g_resizeWindow !== undefined) {
     g_resizeWindow.webContents.send("bgr--cancel-resize");
   }
+});
+
+ipcMain.on(g_ipcChannel + "set-image-format", (event, format) => {
+  g_imageFormat = format;
 });
 
 ipcMain.on(g_ipcChannel + "set-pdf-creation-method", (event, method) => {
@@ -389,6 +394,9 @@ async function resizeImages(
     return;
   }
   try {
+    outputScale = parseInt(outputScale);
+    outputQuality = parseInt(outputQuality);
+
     let fileName = path.basename(inputFilePath, path.extname(inputFilePath));
     let outputFilePath = path.join(
       outputFolderPath,
@@ -411,81 +419,133 @@ async function resizeImages(
     }
     // ref: https://www.npmjs.com/package/natural-compare-lite
     imgFilePaths.sort(naturalCompare);
-    // change imgs' format if needed (for pdf creation or resizing)
-    if (outputScale < 100 || outputFormat === FileExtension.PDF) {
-      // pdfkit only works with png and jpg image formats
-      // same for native image? (used for resizing)
 
-      // avoid EBUSY error on windows
-      // ref: https://stackoverflow.com/questions/41289173/node-js-module-sharp-image-processor-keeps-source-file-open-unable-to-unlink
+    // resize
+    if (g_cancel === true) {
+      stopCancel();
+      return;
+    }
+    if (outputScale < 100) {
+      g_window.webContents.send(
+        g_ipcChannel + "update-log-text",
+        _("tool-shared-modal-log-resizing-images") + "..."
+      );
       sharp.cache(false);
-
       for (let index = 0; index < imgFilePaths.length; index++) {
         if (g_cancel === true) {
           stopCancel();
           return;
         }
+        g_window.webContents.send(
+          g_ipcChannel + "update-log-text",
+          _("tool-shared-modal-log-resizing-image") +
+            ": " +
+            (index + 1) +
+            " / " +
+            imgFilePaths.length
+        );
         let filePath = imgFilePaths[index];
-        if (!fileFormats.hasNativeImageCompatibleImageExtension(filePath)) {
-          let fileFolderPath = path.dirname(filePath);
-          let fileName = path.basename(filePath, path.extname(filePath));
+        let fileFolderPath = path.dirname(filePath);
+        let fileName = path.basename(filePath, path.extname(filePath));
+        let tmpFilePath = path.join(
+          fileFolderPath,
+          fileName + "." + FileExtension.TMP
+        );
+        let data = await sharp(filePath).metadata();
+        await sharp(filePath)
+          .withMetadata()
+          .resize(Math.round(data.width * (outputScale / 100)))
+          .toFile(tmpFilePath);
+
+        fs.unlinkSync(filePath);
+        fs.renameSync(tmpFilePath, filePath);
+      }
+    }
+
+    // change image format if requested or pdfkit incompatible (not jpg or png)
+    if (g_cancel === true) {
+      stopCancel();
+      return;
+    }
+    if (
+      outputFormat === FileExtension.PDF ||
+      g_imageFormat != FileExtension.NOTSET
+    ) {
+      g_window.webContents.send(
+        g_ipcChannel + "update-log-text",
+        _("tool-shared-modal-log-converting-images") + "..."
+      );
+      sharp.cache(false); // avoid EBUSY error on windows
+      for (let index = 0; index < imgFilePaths.length; index++) {
+        if (g_cancel === true) {
+          stopCancel();
+          return;
+        }
+        g_window.webContents.send(
+          g_ipcChannel + "update-log-text",
+          _("tool-shared-modal-log-converting-image") +
+            ": " +
+            (index + 1) +
+            " / " +
+            imgFilePaths.length
+        );
+        let filePath = imgFilePaths[index];
+        let fileFolderPath = path.dirname(filePath);
+        let fileName = path.basename(filePath, path.extname(filePath));
+        let imageFormat = g_imageFormat;
+        if (outputFormat === FileExtension.PDF) {
+          // change to a format compatible with pdfkit if needed
+          if (
+            imageFormat === fileFormats.WEBP ||
+            (imageFormat === fileFormats.NOTSET &&
+              !fileFormats.hasPdfKitCompatibleImageExtension(filePath))
+          )
+            imageFormat = FileExtension.JPG;
+        }
+        if (imageFormat != FileExtension.NOTSET) {
           let tmpFilePath = path.join(
             fileFolderPath,
             fileName + "." + FileExtension.TMP
           );
+          if (imageFormat === FileExtension.JPG) {
+            await sharp(filePath)
+              .withMetadata()
+              .jpeg({
+                quality: outputQuality,
+              })
+              .toFile(tmpFilePath);
+          } else if (imageFormat === FileExtension.PNG) {
+            if (outputQuality < 100) {
+              await sharp(filePath)
+                .withMetadata()
+                .png({
+                  quality: outputQuality,
+                })
+                .toFile(tmpFilePath);
+            } else {
+              await sharp(filePath).withMetadata().png().toFile(tmpFilePath);
+            }
+          } else if (imageFormat === FileExtension.WEBP) {
+            await sharp(filePath)
+              .withMetadata()
+              .webp({
+                quality: outputQuality,
+              })
+              .toFile(tmpFilePath);
+          }
           let newFilePath = path.join(
             fileFolderPath,
-            fileName + "." + FileExtension.JPG
+            fileName + "." + imageFormat
           );
-
-          g_window.webContents.send(
-            g_ipcChannel + "update-log-text",
-            _("tool-shared-modal-log-page-to-compatible-format", index + 1)
-          );
-          await sharp(filePath).jpeg().toFile(tmpFilePath);
-
           fs.unlinkSync(filePath);
           fs.renameSync(tmpFilePath, newFilePath);
           imgFilePaths[index] = newFilePath;
         }
       }
     }
-
-    // resize imgs if needed
-    outputScale = parseInt(outputScale);
-    outputQuality = parseInt(outputQuality);
-    if (outputScale < 100) {
-      // can't do it using a forked process, because I need nativeImage,
-      // so I use a hidden window
-      if (g_resizeWindow !== undefined) {
-        // shouldn't happen
-        g_resizeWindow.destroy();
-        g_resizeWindow = undefined;
-      }
-      g_resizeWindow = new BrowserWindow({
-        show: false,
-        webPreferences: { nodeIntegration: true, contextIsolation: false },
-        parent: g_window,
-      });
-      g_resizeWindow.loadFile(`${__dirname}/../shared/bg-resize.html`);
-
-      g_resizeWindow.webContents.on("did-finish-load", function () {
-        //g_resizeWindow.webContents.openDevTools();
-        g_resizeWindow.webContents.send("bgr--init", g_ipcChannel);
-        g_resizeWindow.webContents.send(
-          "bgr--resize-images",
-          imgFilePaths,
-          outputScale,
-          outputQuality,
-          outputFormat,
-          outputFilePath
-        );
-      });
-    } else {
-      createFileFromImages(imgFilePaths, outputFormat, outputFilePath);
-    }
-  } catch (err) {
-    stopError(err);
+    createFileFromImages(imgFilePaths, outputFormat, outputFilePath);
+  } catch (error) {
+    stopError(error);
   }
 }
 
@@ -593,16 +653,16 @@ function getLocalization() {
       text: _("tool-shared-ui-output-options-scale"),
     },
     {
-      id: "text-quality",
-      text: _("tool-shared-ui-output-options-quality"),
-    },
-    {
       id: "text-format",
       text: _("tool-shared-ui-output-options-format"),
     },
     {
-      id: "text-output-format",
-      text: _("tool-shared-ui-output-format"),
+      id: "text-image-format",
+      text: _("tool-shared-ui-output-options-image-format"),
+    },
+    {
+      id: "text-quality",
+      text: _("tool-shared-ui-output-options-image-quality"),
     },
     {
       id: "text-advanced-options",
@@ -659,6 +719,10 @@ function getLocalization() {
     {
       id: "button-modal-cancel",
       text: _("tool-shared-ui-cancel").toUpperCase(),
+    },
+    {
+      id: "keep-format",
+      text: _("tool-shared-ui-output-options-format-keep"),
     },
   ];
 }

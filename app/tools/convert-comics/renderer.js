@@ -17,16 +17,20 @@ let g_inputFileType;
 let g_outputScale = "100";
 let g_outputQuality = "80";
 let g_outputFormat;
+let g_outputImageFormat = FileExtension.NOTSET;
 let g_outputFolderPath;
 let g_outputPdfExtractionMethod = "embedded";
+
+let g_imageFormatNotSetText = "";
 
 let g_textInputFilesDiv = document.querySelector("#text-input-files");
 let g_inputListDiv = document.querySelector("#input-list");
 let g_inputListButton = document.querySelector("#button-add-file");
 let g_outputFolderDiv = document.querySelector("#output-folder");
 let g_startButton = document.querySelector("#button-start");
-let g_outputFormatSelect = document.querySelector("#output-format-select");
+let g_formatSelect = document.querySelector("#format-select");
 let g_scaleSlider = document.querySelector("#scale-slider");
+let g_imageFormatSelect = document.querySelector("#image-format-select");
 let g_qualitySlider = document.querySelector("#quality-slider");
 
 let g_modalInfoArea = document.querySelector("#modal-info");
@@ -50,7 +54,8 @@ g_qualitySlider.addEventListener("mouseup", (event) => {
 ///////////////////////////////////////////////////////////////////////////////
 
 function checkValidData() {
-  if (g_outputScale === "100") {
+  if (g_outputImageFormat === FileExtension.NOTSET) {
+    // && g_outputScale === "100"
     g_qualitySlider.parentElement.classList.add("hide");
   } else {
     g_qualitySlider.parentElement.classList.remove("hide");
@@ -78,10 +83,19 @@ ipcRenderer.on(g_ipcChannel + "init", (event, outputFolderPath) => {
   g_outputFolderDiv.innerHTML = reducePathString(g_outputFolderPath);
   g_inputListButton.classList.remove("hide");
   g_textInputFilesDiv.classList.remove("hide");
-  g_outputFormatSelect.innerHTML =
+  g_formatSelect.innerHTML =
     '<option value="cbz">.cbz (zip)</option>' +
     '<option value="pdf">.pdf</option>' +
     '<option value="epub">.epub</option>';
+  g_imageFormatSelect.innerHTML =
+    '<option value="' +
+    FileExtension.NOTSET +
+    '">' +
+    g_imageFormatNotSetText +
+    "</option>" +
+    '<option value="jpg">.jpg</option>' +
+    '<option value="png">.png</option>' +
+    '<option value="webp">.webp</option>';
   checkValidData();
 });
 
@@ -94,6 +108,10 @@ ipcRenderer.on(
       const domElement = document.querySelector("#" + element.id);
       if (domElement !== null) {
         domElement.innerHTML = element.text;
+      }
+      // UGLY HACK
+      else if (element.id === "keep-format") {
+        g_imageFormatNotSetText = element.text;
       }
     }
 
@@ -175,6 +193,12 @@ exports.onChooseInputFile = function () {
 exports.onOutputFormatChanged = function (selectObject) {
   g_outputFormat = selectObject.value;
   checkValidData();
+};
+
+exports.onOutputImageFormatChanged = function (selectObject) {
+  g_outputImageFormat = selectObject.value;
+  checkValidData();
+  ipcRenderer.send(g_ipcChannel + "set-image-format", selectObject.value);
 };
 
 exports.onOutputNameChanged = function (selectObject) {

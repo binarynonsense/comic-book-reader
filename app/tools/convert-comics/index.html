@@ -29,6 +29,12 @@
         <h5>
           <span id="text-output-options">Output Options:</span>
         </h5>
+        <span id="text-format">Format:</span>
+        <select
+          id="format-select"
+          class="browser-default"
+          onchange="renderer.onOutputFormatChanged(this)"
+        ></select>
         <p class="range-field">
           <span id="text-scale">Scale (%):</span>
           <i
@@ -44,8 +50,14 @@
             value="100"
           />
         </p>
+        <span id="text-image-format">Image Format:</span>
+        <select
+          id="image-format-select"
+          class="browser-default"
+          onchange="renderer.onOutputImageFormatChanged(this)"
+        ></select>
         <p class="range-field" id="quality-slider-container">
-          <span id="text-quality">Quality:</span>
+          <span id="text-quality">Image Quality:</span>
           <input
             type="range"
             min="10"
@@ -54,12 +66,6 @@
             value="80"
           />
         </p>
-        <span id="text-format">Format:</span>
-        <select
-          id="output-format-select"
-          class="browser-default"
-          onchange="renderer.onOutputFormatChanged(this)"
-        ></select>
         <p>
           <details>
             <summary id="text-advanced-options">Advanced</summary>
