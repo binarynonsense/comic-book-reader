@@ -115,8 +115,8 @@
   "[NEEDS TRANSLATION]tool-shared-ui-pdf-extraction-o3" : "render the page using 72dpi as input",
   "[NEEDS TRANSLATION]tool-shared-ui-pdf-creation" : "PDF Creation:",
   "[NEEDS TRANSLATION]tool-shared-ui-pdf-creation-tooltip" : "The embedded image's data/resolution will be kept intact, this option just changes the 'page size' value (in points) stored in the new PDF, assuming a userunit value of 1 (72dpi).",
-  "[NEEDS TRANSLATION]tool-shared-ui-pdf-creation-o1" : "use 300dpi as input to calculate the page's size in points",
-  "[NEEDS TRANSLATION]tool-shared-ui-pdf-creation-o2" : "use the image's dpi info to calculate the page's size in points if available, or 300dpi as input if not",
+  "[NEEDS TRANSLATION]tool-shared-ui-pdf-creation-o1" : "use the image's dpi info to calculate the page's size in points if available, or 300dpi as input if not",
+  "[NEEDS TRANSLATION]tool-shared-ui-pdf-creation-o2" : "use 300dpi as input to calculate the page's size in points",
   "tool-shared-ui-pdf-creation-o3" : "use the image's resolution as the page's size",
 
   "[NEEDS TRANSLATION]tool-shared-modal-title-extracting": "Extracting",

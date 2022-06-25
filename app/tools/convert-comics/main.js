@@ -16,7 +16,7 @@ let g_cancel = false;
 let g_worker;
 let g_resizeWindow;
 let g_ipcChannel = "tool-cc--";
-let g_pdfCreationMethod = "300dpi";
+let g_pdfCreationMethod = "metadata";
 let g_imageFormat = FileExtension.NOTSET;
 
 function isDev() {

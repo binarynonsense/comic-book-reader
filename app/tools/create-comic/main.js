@@ -15,7 +15,7 @@ let g_cancel = false;
 let g_worker;
 let g_resizeWindow;
 let g_ipcChannel = "tool-cr--";
-let g_pdfCreationMethod = "300dpi";
+let g_pdfCreationMethod = "metadata";
 
 function isDev() {
   return process.argv[2] == "--dev";
