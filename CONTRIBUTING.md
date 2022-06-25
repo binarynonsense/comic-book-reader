@@ -4,5 +4,5 @@ I'm not looking for code contributions, as I want to keep this as a personal pro
 
 If you want to create a localization file for another language, I suggest using the [English one](https://github.com/binarynonsense/comic-book-reader/blob/master/app/assets/i18n/en.json) as a starting point.
 
-Álvaro,
+Álvaro,  
 www.binarynonsense.com
