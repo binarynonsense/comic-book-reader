@@ -51,7 +51,7 @@
     "epub-gen": "^0.1.0",
     "file-type": "^14.7.1",
     "natural-compare-lite": "^1.4.0",
-    "node-unrar-js": "^0.8.1",
+    "node-unrar-js": "^2.0.0",
     "pdfkit": "^0.13.0",
     "sharp": "^0.30.7",
     "tesseract.js": "^2.1.5"

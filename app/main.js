@@ -941,7 +941,7 @@ function openFile(filePath, pageIndex = 0) {
         fileExtension === "." + FileExtension.RAR ||
         fileExtension === "." + FileExtension.CBR
       ) {
-        let pagesPaths = fileFormats.getRarEntriesList(filePath);
+        let pagesPaths = await fileFormats.getRarEntriesList(filePath);
         if (pagesPaths !== undefined && pagesPaths.length > 0) {
           g_fileData.state = FileDataState.LOADED;
           g_fileData.type = FileDataType.RAR;

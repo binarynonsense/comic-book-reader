@@ -68,45 +68,54 @@ exports.hasNativeImageCompatibleImageExtension =
 // RAR ////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-function extractRar(filePath, tempFolderPath) {
-  //ref: https://github.com/YuJianrong/node-unrar.js
-  let extractor = unrar.createExtractorFromFile(filePath, tempFolderPath);
-  extractor.extractAll();
+async function extractRar(filePath, tempFolderPath) {
+  try {
+    //ref: https://github.com/YuJianrong/node-unrar.js
+    let extractor = await unrar.createExtractorFromFile({
+      filepath: filePath,
+      targetPath: tempFolderPath,
+    });
+    const { files } = extractor.extract();
+    [...files]; // lazy initialization? the files are not extracted if I don't do this
+  } catch (error) {
+    console.log(error);
+  }
 }
 exports.extractRar = extractRar;
 
-function getRarEntriesList(filePath) {
-  var buf = Uint8Array.from(fs.readFileSync(filePath)).buffer;
-  var extractor = unrar.createExtractorFromData(buf);
-  var rarEntries = extractor.getFileList();
-  let imgEntries = [];
-  if (rarEntries[0].state === "SUCCESS") {
-    rarEntries[1].fileHeaders.forEach(function (rarEntry) {
-      if (!rarEntry.flags.directory) {
-        if (hasImageExtension(rarEntry.name)) {
-          imgEntries.push(rarEntry.name);
+async function getRarEntriesList(filePath) {
+  try {
+    var buf = Uint8Array.from(fs.readFileSync(filePath)).buffer;
+    var extractor = await unrar.createExtractorFromData({ data: buf });
+    const list = extractor.getFileList();
+    const fileHeaders = [...list.fileHeaders];
+    let imgEntries = [];
+    fileHeaders.forEach(function (header) {
+      if (!header.flags.directory) {
+        if (hasImageExtension(header.name)) {
+          imgEntries.push(header.name);
         }
       }
     });
+    imgEntries.sort(naturalCompare);
+    return imgEntries;
+  } catch (error) {
+    console.log(error);
+    return [];
   }
-  imgEntries.sort(naturalCompare);
-  return imgEntries;
 }
 exports.getRarEntriesList = getRarEntriesList;
 
-function extractRarEntryBuffer(rarPath, entryName) {
+async function extractRarEntryBuffer(rarPath, entryName) {
   try {
     var buf = Uint8Array.from(fs.readFileSync(rarPath)).buffer;
-    var extractor = unrar.createExtractorFromData(buf);
-    var extracted = extractor.extractFiles([entryName]);
-    if (extracted[0].state === "SUCCESS") {
-      if (extracted[1].files[0].extract[0].state === "SUCCESS") {
-        // ref: https://stackoverflow.com/questions/54305759/how-to-encode-a-buffer-to-base64-in-nodejs
-        return Buffer.from(extracted[1].files[0].extract[1]);
-      }
-    }
-    return undefined;
-  } catch (err) {
+    var extractor = await unrar.createExtractorFromData({ data: buf });
+    const extracted = extractor.extract({ files: [entryName] });
+    const files = [...extracted.files];
+    files[0].extraction; // Uint8Array
+    return Buffer.from(files[0].extraction);
+  } catch (error) {
+    console.log(error);
     return undefined;
   }
 }

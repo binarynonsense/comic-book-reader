@@ -17,7 +17,7 @@ async function exportPage(fileData, outputFolderPath, sendToTool) {
         fileData.pagesPaths[fileData.pageIndex]
       );
     } else if (fileData.type === FileDataType.RAR) {
-      buf = fileFormats.extractRarEntryBuffer(
+      buf = await fileFormats.extractRarEntryBuffer(
         fileData.path,
         fileData.pagesPaths[fileData.pageIndex]
       );

@@ -15,9 +15,8 @@ async function extractBase64Image(fileType, filePath, entryName, scrollBarPos) {
         .toString("base64");
       mime = "image/" + fileFormats.getMimeType(entryName);
     } else if (fileType === FileDataType.RAR) {
-      buf = fileFormats
-        .extractRarEntryBuffer(filePath, entryName)
-        .toString("base64");
+      buf = await fileFormats.extractRarEntryBuffer(filePath, entryName);
+      buf = buf.toString("base64");
       mime = "image/" + fileFormats.getMimeType(entryName);
     } else if (fileType === FileDataType.EPUB) {
       const data = await fileFormats.extractEpubImageBuffer(

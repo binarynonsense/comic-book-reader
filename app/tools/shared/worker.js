@@ -13,7 +13,7 @@ async function extractImages(inputFilePath, inputFileType, tempFolderPath) {
     if (inputFileType === "zip") {
       fileFormats.extractZip(inputFilePath, tempFolderPath);
     } else if (inputFileType === "rar") {
-      fileFormats.extractRar(inputFilePath, tempFolderPath);
+      await fileFormats.extractRar(inputFilePath, tempFolderPath);
     } else if (inputFileType === "epub") {
       await fileFormats.extractEpubImages(inputFilePath, tempFolderPath);
     } else {
