@@ -22,10 +22,11 @@ async function exportPage(fileData, outputFolderPath, sendToTool) {
         fileData.pagesPaths[fileData.pageIndex]
       );
     } else if (fileData.type === FileDataType.EPUB) {
-      buf = await fileFormats.extractEpubImageBuffer(
+      let data = await fileFormats.extractEpubImageBuffer(
         fileData.path,
         fileData.pagesPaths[fileData.pageIndex]
       );
+      buf = data[0];
     }
 
     // mostly duplicated code from main's exportPageSaveBuffer because I
