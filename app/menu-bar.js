@@ -109,8 +109,6 @@ function buildApplicationMenu(
   history
 ) {
   // ref: https://stackoverflow.com/questions/54105224/electron-modify-a-single-menu-item
-  // Menu.getApplicationMenu().items // all the items
-  // Menu.getApplicationMenu().getMenuItemById('MENU_ITEM_ID') // get a single item by its id
   // ref: https://github.com/electron/electron/issues/2717 (push items)
 
   let languagesSubmenu = [];

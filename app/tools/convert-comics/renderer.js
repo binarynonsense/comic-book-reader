@@ -55,7 +55,6 @@ g_qualitySlider.addEventListener("mouseup", (event) => {
 
 function checkValidData() {
   if (g_outputImageFormat === FileExtension.NOTSET) {
-    // && g_outputScale === "100"
     g_qualitySlider.parentElement.classList.add("hide");
   } else {
     g_qualitySlider.parentElement.classList.remove("hide");

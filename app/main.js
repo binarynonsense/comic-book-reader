@@ -229,7 +229,6 @@ app.on("ready", () => {
     // if I put the things below inside ready-to-show they aren't called
     renderTitle();
 
-    //attach fullscreen(f11 and not 'maximized') && focus listeners
     attachTitlebarToWindow(g_mainWindow);
 
     if (g_settings.fit_mode === 0) {
@@ -441,15 +440,6 @@ ipcMain.on("page-loaded", (event, scrollBarPos) => {
   renderPageInfo();
   renderTitle();
 });
-
-// ipcMain.on("toMain", (event, args) => {
-//   fs.readFile("path/to/file", (error, data) => {
-//     // Do something with file contents
-
-//     // Send result back to renderer process
-//     g_mainWindow.webContents.send("fromMain", responseObj);
-//   });
-// });
 
 ///////////////////////////////////////////////////////////////////////////////
 

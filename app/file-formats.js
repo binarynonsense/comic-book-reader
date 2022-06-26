@@ -180,7 +180,6 @@ exports.createZip = createZip;
 
 async function extractEpubImages(filePath, tempFolderPath) {
   // TODO catch errors
-  // based on renderer.js epub code
   const epub = new EPub(filePath);
 
   // parse epub
@@ -214,7 +213,7 @@ async function extractEpubImages(filePath, tempFolderPath) {
         } else {
           const rex = /<img[^>]+src="([^">]+)/g;
           while ((m = rex.exec(data))) {
-            // i.e. /images/img-0139/OPS/images/0139.jpeg
+            // e.g. /images/img-0139/OPS/images/0139.jpeg
             let id = m[1].split("/")[2];
             imageIDs.push(id);
           }

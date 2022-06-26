@@ -45,7 +45,6 @@ exports.loadLocale = function (desiredLocale) {
         }
       }
     }
-
     // nothing found, load "en"
     g_loadedLocale = "en";
     g_localeData = getLocaleData(g_loadedLocale); // could use g_englishData.slice()
@@ -133,7 +132,7 @@ function getLocalesFromFolder(folderPath) {
 }
 
 exports._ = function (...args) {
-  // i.e. [ "Error: {0} file/s couldn't be converted", 0 ]
+  // e.g. [ "Error: {0} file/s couldn't be converted", 0 ]
   let translatedText = g_localeData[args[0]];
   if (translatedText === undefined) {
     translatedText = g_englishData[args[0]];

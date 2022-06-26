@@ -62,7 +62,7 @@ ipcRenderer.on("update-clock", (event, time) => {
 });
 
 ipcRenderer.on("update-menubar", (event) => {
-  g_titlebar.refreshMenu(); //  updateMenu(Menu.getApplicationMenu());
+  g_titlebar.refreshMenu();
 });
 
 ipcRenderer.on("update-colors", (event, data) => {
@@ -325,26 +325,6 @@ function loadEpub(filePath, pageNum) {
   epub.parse();
 }
 
-// function renderEpubImage(filePath, imageID, rotation, scrollBarPos) {
-//   // Maybe I couldnot load it every time, keeping the epub object in memory, but this seems to work fine enough
-//   const epub = new EPub(filePath);
-//   epub.on("error", function (err) {
-//     console.log("ERROR\n-----");
-//     throw err;
-//   });
-//   epub.on("end", function (err) {
-//     document.querySelector(".centered-block").classList.add("hide");
-
-//     epub.getImage(imageID, function (err, data, mimeType) {
-//       // ref: https://stackoverflow.com/questions/54305759/how-to-encode-a-buffer-to-base64-in-nodejs
-//       let data64 = Buffer.from(data).toString("base64");
-//       g_currentImg64 = "data:" + mimeType + ";base64," + data64;
-//       renderImg64(rotation, scrollBarPos); // it send the page-loaded msg
-//     });
-//   });
-//   epub.parse();
-// }
-
 function extractEpubImagesSrcRecursive(
   epub,
   chapterIndex,
@@ -359,10 +339,9 @@ function extractEpubImagesSrcRecursive(
       isEnd = true;
     } else {
       // ref: https://stackoverflow.com/questions/14939296/extract-image-src-from-a-string/14939476
-      //const rex = /<img[^>]+src="?([^"\s]+)"?\s*\/>/g;
       const rex = /<img[^>]+src="([^">]+)/g;
       while ((m = rex.exec(data))) {
-        // i.e. /images/img-0139/OPS/images/0139.jpeg
+        // e.g. /images/img-0139/OPS/images/0139.jpeg
         let id = m[1].split("/")[2];
         imageIDs.push(id);
       }

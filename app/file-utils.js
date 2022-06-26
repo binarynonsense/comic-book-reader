@@ -190,21 +190,6 @@ function chooseFolder(window, defaultPath) {
 }
 exports.chooseFolder = chooseFolder;
 
-// function chooseSaveFile(window, defaultPath) {
-//   let filePath = dialog.showSaveDialogSync(window, {
-//     defaultPath: defaultPath,
-//     filters: [
-//       {
-//         name: "Images",
-//         extensions: ["jpg"],
-//       },
-//     ],
-//     properties: ["showOverwriteConfirmation"],
-//   });
-//   return filePath;
-// }
-// exports.chooseSaveFile = chooseSaveFile;
-
 ///////////////////////////////////////////////////////////////////////////////
 // GET IMAGES /////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
