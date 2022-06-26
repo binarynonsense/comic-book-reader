@@ -74,27 +74,27 @@ exports.getAvailableLocales = function () {
   let localesList = [];
   // official locales
   localesList = getLocalesFromFolder(path.join(__dirname, "assets/i18n/"));
-  if (
-    g_userDataLocalesPath !== undefined &&
-    fs.existsSync(g_userDataLocalesPath)
-  ) {
-    // user locales
-    let userLocalesList = getLocalesFromFolder(g_userDataLocalesPath);
-    for (let index = 0; index < userLocalesList.length; index++) {
-      const userLocale = userLocalesList[index];
-      let found = false;
-      for (let index = localesList.length - 1; index >= 0; index--) {
-        const locale = localesList[index];
-        if (locale.locale === userLocale.locale) {
-          found = true;
-          break;
-        }
-      }
-      if (!found) {
-        localesList.push(userLocale);
-      }
-    }
-  }
+  // if (
+  //   g_userDataLocalesPath !== undefined &&
+  //   fs.existsSync(g_userDataLocalesPath)
+  // ) {
+  //   // user locales
+  //   let userLocalesList = getLocalesFromFolder(g_userDataLocalesPath);
+  //   for (let index = 0; index < userLocalesList.length; index++) {
+  //     const userLocale = userLocalesList[index];
+  //     let found = false;
+  //     for (let index = localesList.length - 1; index >= 0; index--) {
+  //       const locale = localesList[index];
+  //       if (locale.locale === userLocale.locale) {
+  //         found = true;
+  //         break;
+  //       }
+  //     }
+  //     if (!found) {
+  //       localesList.push(userLocale);
+  //     }
+  //   }
+  // }
   return localesList;
 };
 
