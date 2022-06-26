@@ -359,7 +359,7 @@ async function createPdfFromImages(imgPathsList, outputFilePath, method) {
           size: [(72 * img.width) / imgDpi, (72 * img.height) / imgDpi],
         });
         pdf.image(img, 0, 0, { scale: 72.0 / imgDpi });
-      } else if (method === "imgSize") {
+      } else if (method === "72dpi") {
         pdf.addPage({
           margin: 0,
           size: [img.width, img.height],
