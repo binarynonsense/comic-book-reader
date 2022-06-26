@@ -119,7 +119,7 @@ function buildApplicationMenu(
     let incompleteLanguages = [];
     for (let language of languages) {
       let nativeName = language.nativeName;
-      if (fileUtils.isVersionOlder(language.acbrVersion, "2.0.0-beta1")) {
+      if (fileUtils.isVersionOlder(language.acbrVersion, "2.0.0")) {
         incompleteLanguages.push(language);
         continue;
       }
