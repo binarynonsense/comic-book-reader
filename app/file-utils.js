@@ -34,8 +34,6 @@ exports.separateVersionText = separateVersionText;
 exports.isVersionOlder = function (testVersion, referenceVersion) {
   const test = separateVersionText(testVersion);
   const reference = separateVersionText(referenceVersion);
-  // if (test !== undefined) console.log(test);
-  // if (reference !== undefined) console.log(reference);
   if (test === undefined || reference === undefined) return true;
   if (test.major < reference.major) return true;
   if (test.minor < reference.minor) return true;
