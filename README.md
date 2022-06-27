@@ -55,4 +55,4 @@ A comic book reader and converter for cbz, cbr, epub and pdf files.
 
 ## License
 
-ACBR's code is released under the BSD 2-Clause [license](./LICENSE). To check the licenses of the node modules and other libraries used in the project check the [licenses](./licenses/) folder.
+ACBR's code is released under the BSD 2-Clause [license](./LICENSE). To check the licenses of the node modules and other libraries used in the project go to the [licenses](./licenses/) folder.
