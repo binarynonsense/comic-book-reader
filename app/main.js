@@ -932,6 +932,7 @@ function openFile(filePath, pageIndex = 0) {
         fileExtension === "." + FileExtension.CBR
       ) {
         let pagesPaths = await fileFormats.getRarEntriesList(filePath);
+        pagesPaths.sort(fileUtils.compare);
         if (pagesPaths !== undefined && pagesPaths.length > 0) {
           g_fileData.state = FileDataState.LOADED;
           g_fileData.type = FileDataType.RAR;
@@ -958,6 +959,7 @@ function openFile(filePath, pageIndex = 0) {
         fileExtension === "." + FileExtension.CBZ
       ) {
         let pagesPaths = fileFormats.getZipEntriesList(filePath);
+        pagesPaths.sort(fileUtils.compare);
         if (pagesPaths !== undefined && pagesPaths.length > 0) {
           g_fileData.state = FileDataState.LOADED;
           g_fileData.type = FileDataType.ZIP;
