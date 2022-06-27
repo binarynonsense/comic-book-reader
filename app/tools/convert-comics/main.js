@@ -4,7 +4,6 @@ const fs = require("fs");
 const path = require("path");
 const { fork } = require("child_process");
 const FileType = require("file-type");
-const naturalCompare = require("natural-compare-lite");
 const fileUtils = require("../../file-utils");
 const fileFormats = require("../../file-formats");
 const mainProcess = require("../../main");
@@ -418,7 +417,7 @@ async function resizeImages(
       return;
     }
     // ref: https://www.npmjs.com/package/natural-compare-lite
-    imgFilePaths.sort(naturalCompare);
+    imgFilePaths.sort(fileUtils.compare);
 
     // resize
     if (g_cancel === true) {

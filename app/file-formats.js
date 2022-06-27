@@ -4,8 +4,9 @@ const fs = require("fs");
 const AdmZip = require("adm-zip");
 const unrar = require("node-unrar-js");
 const EPub = require("epub");
-const naturalCompare = require("natural-compare-lite");
 const sharp = require("sharp");
+
+const fileUtils = require("./file-utils");
 
 ///////////////////////////////////////////////////////////////////////////////
 // HELPERS ////////////////////////////////////////////////////////////////////
@@ -84,7 +85,7 @@ async function getRarEntriesList(filePath) {
         }
       }
     });
-    imgEntries.sort(naturalCompare);
+    imgEntries.sort(fileUtils.compare);
     return imgEntries;
   } catch (error) {
     console.log(error);
@@ -124,7 +125,7 @@ function getZipEntriesList(filePath) {
         }
       }
     });
-    imgEntries.sort(naturalCompare);
+    imgEntries.sort(fileUtils.compare);
     return imgEntries;
   } catch (err) {
     return undefined;

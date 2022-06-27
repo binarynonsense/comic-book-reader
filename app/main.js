@@ -1004,15 +1004,7 @@ function tryOpeningAdjacentFile(next) {
       comicFiles.push(file);
     }
   });
-  // comicFiles.sort(function (a, b) {
-  //   return naturalCompare(a.toLowerCase(), b.toLowerCase());
-  // });
-  comicFiles.sort(function (a, b) {
-    return a.localeCompare(b, undefined, {
-      numeric: true,
-      sensitivity: "base",
-    });
-  });
+  comicFiles.sort(fileUtils.compare);
   for (let index = 0; index < comicFiles.length; index++) {
     if (comicFiles[index] === fileName) {
       if (next) {

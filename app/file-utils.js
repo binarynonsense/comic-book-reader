@@ -3,6 +3,8 @@ const { app, dialog } = require("electron");
 const path = require("path");
 const os = require("os");
 const fs = require("fs");
+const naturalCompare = require("natural-compare-lite");
+
 const fileFormats = require("./file-formats");
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -43,6 +45,18 @@ exports.isVersionOlder = function (testVersion, referenceVersion) {
     if (test.beta < reference.beta) return true;
   }
   return false;
+};
+
+exports.compare = function (a, b) {
+  return a.localeCompare(b, undefined, {
+    numeric: true,
+    sensitivity: "base",
+  });
+};
+
+// keep just in case, but I'm not longer using it
+exports.naturalCompare = function (a, b) {
+  return naturalCompare(a, b);
 };
 
 ///////////////////////////////////////////////////////////////////////////////
