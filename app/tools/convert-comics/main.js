@@ -416,7 +416,6 @@ async function resizeImages(
       stopError("imgFiles === undefined || imgFiles.length === 0");
       return;
     }
-    // ref: https://www.npmjs.com/package/natural-compare-lite
     imgFilePaths.sort(fileUtils.compare);
 
     // resize

@@ -290,8 +290,8 @@ async function createFileFromImages(
       stopError("imgFiles === undefined || imgFiles.length === 0");
       return;
     }
-    // ref: https://www.npmjs.com/package/natural-compare-lite
     imgFilePaths.sort(fileUtils.compare);
+
     // change imgs' format if needed (for pdf creation or resizing)
     if (outputFormat === FileExtension.PDF) {
       // avoid EBUSY error on windows
