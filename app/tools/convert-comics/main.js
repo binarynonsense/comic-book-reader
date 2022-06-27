@@ -494,11 +494,12 @@ async function resizeImages(
         if (outputFormat === FileExtension.PDF) {
           // change to a format compatible with pdfkit if needed
           if (
-            imageFormat === fileFormats.WEBP ||
-            (imageFormat === fileFormats.NOTSET &&
+            imageFormat === FileExtension.WEBP ||
+            (imageFormat === FileExtension.NOTSET &&
               !fileFormats.hasPdfKitCompatibleImageExtension(filePath))
-          )
+          ) {
             imageFormat = FileExtension.JPG;
+          }
         }
         if (imageFormat != FileExtension.NOTSET) {
           let tmpFilePath = path.join(
