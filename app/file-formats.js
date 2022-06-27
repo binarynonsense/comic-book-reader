@@ -51,19 +51,6 @@ exports.hasPdfKitCompatibleImageExtension = function (filePath) {
   return false;
 };
 
-function hasNativeImageCompatibleImageExtension(filePath) {
-  const allowedFileExtensions = [".jpg", ".jpeg", ".png"];
-  let fileExtension = path.extname(filePath).toLowerCase();
-  for (i = 0; i < allowedFileExtensions.length; i++) {
-    if (fileExtension === allowedFileExtensions[i]) {
-      return true;
-    }
-  }
-  return false;
-}
-exports.hasNativeImageCompatibleImageExtension =
-  hasNativeImageCompatibleImageExtension;
-
 ///////////////////////////////////////////////////////////////////////////////
 // RAR ////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
