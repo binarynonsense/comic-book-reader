@@ -36,6 +36,21 @@
           onchange="renderer.onOutputFormatChanged(this)"
         ></select>
         <p>
+          <span id="text-page-order">Page Order:</span>
+          <select
+            id="output-page-order-select"
+            class="browser-default"
+            onchange="renderer.onOutputPageOrderChanged(this)"
+          >
+            <option
+              id="text-page-order-o1"
+              value="byPosition"
+              selected
+            ></option>
+            <option id="text-page-order-o2" value="byName"></option>
+          </select>
+        </p>
+        <p>
           <details>
             <summary id="text-advanced-options">Advanced</summary>
             <p>

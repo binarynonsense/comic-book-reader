@@ -15,7 +15,8 @@ let g_cancel = false;
 let g_worker;
 let g_resizeWindow;
 let g_ipcChannel = "tool-cr--";
-let g_pdfCreationMethod = "metadata";
+let g_outputPageOrder = "byPosition";
+let g_outputPdfCreationMethod = "metadata";
 
 function isDev() {
   return process.argv[2] == "--dev";
@@ -140,7 +141,11 @@ ipcMain.on(g_ipcChannel + "cancel", (event) => {
 });
 
 ipcMain.on(g_ipcChannel + "set-pdf-creation-method", (event, method) => {
-  g_pdfCreationMethod = method;
+  g_outputPdfCreationMethod = method;
+});
+
+ipcMain.on(g_ipcChannel + "set-page-order", (event, order) => {
+  g_outputPageOrder = order;
 });
 
 ipcMain.on(g_ipcChannel + "start", (event, inputFiles) => {
@@ -242,7 +247,12 @@ function start(inputFiles) {
     let imgFilePaths = [];
     for (let index = 0; index < inputFiles.length; index++) {
       const inPath = inputFiles[index].path;
-      const outPath = path.join(tempFolderPath, path.basename(inPath));
+      let outName = path.basename(inPath);
+      if (g_outputPageOrder === "byPosition") {
+        const extension = path.extname(inPath);
+        outName = index + extension;
+      }
+      const outPath = path.join(tempFolderPath, outName);
       fs.copyFileSync(inPath, outPath, fs.constants.COPYFILE_EXCL);
       imgFilePaths.push(outPath);
     }
@@ -288,14 +298,13 @@ async function createFileFromImages(
       // avoid EBUSY error on windows
       // ref: https://stackoverflow.com/questions/41289173/node-js-module-sharp-image-processor-keeps-source-file-open-unable-to-unlink
       sharp.cache(false);
-
       for (let index = 0; index < imgFilePaths.length; index++) {
         if (g_cancel === true) {
           stopCancel();
           return;
         }
         let filePath = imgFilePaths[index];
-        if (!fileFormats.hasNativeImageCompatibleImageExtension(filePath)) {
+        if (!fileFormats.hasPdfKitCompatibleImageExtension(filePath)) {
           let fileFolderPath = path.dirname(filePath);
           let fileName = path.basename(filePath, path.extname(filePath));
           let tmpFilePath = path.join(
@@ -311,7 +320,7 @@ async function createFileFromImages(
             g_ipcChannel + "update-log-text",
             _("tool-shared-modal-log-page-to-compatible-format", index + 1)
           );
-          await sharp(filePath).jpeg().toFile(tmpFilePath);
+          await sharp(filePath).withMetadata().jpeg().toFile(tmpFilePath);
 
           fs.unlinkSync(filePath);
           fs.renameSync(tmpFilePath, newFilePath);
@@ -332,7 +341,7 @@ async function createFileFromImages(
       await fileFormats.createPdfFromImages(
         imgFilePaths,
         outputFilePath,
-        g_pdfCreationMethod
+        g_outputPdfCreationMethod
       );
       fileUtils.cleanUpTempFolder();
       g_window.webContents.send(g_ipcChannel + "finished-ok");
@@ -404,6 +413,18 @@ function getLocalization() {
     {
       id: "text-format",
       text: _("tool-shared-ui-output-options-format"),
+    },
+    {
+      id: "text-page-order",
+      text: _("tool-shared-ui-output-options-page-order"),
+    },
+    {
+      id: "text-page-order-o1",
+      text: _("tool-shared-ui-output-options-page-order-o1"),
+    },
+    {
+      id: "text-page-order-o2",
+      text: _("tool-shared-ui-output-options-page-order-o2"),
     },
     {
       id: "text-advanced-options",

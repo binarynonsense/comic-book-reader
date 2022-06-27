@@ -175,6 +175,10 @@ exports.onOutputAdvancedPdfCreationChanged = function (selectObject) {
   );
 };
 
+exports.onOutputPageOrderChanged = function (selectObject) {
+  ipcRenderer.send(g_ipcChannel + "set-page-order", selectObject.value);
+};
+
 exports.onChooseOutputFolder = function () {
   ipcRenderer.send(
     g_ipcChannel + "choose-folder",
