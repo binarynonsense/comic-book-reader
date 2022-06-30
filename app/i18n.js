@@ -1,6 +1,8 @@
 const path = require("path");
 const fs = require("fs");
 
+const sanitizeHtml = require("sanitize-html");
+
 let g_loadedLocale;
 let g_localeData;
 
@@ -147,7 +149,10 @@ exports._ = function (...args) {
     translatedText = translatedText.myFormatString(args);
   } else {
   }
-  return translatedText;
+  return sanitizeHtml(translatedText, {
+    allowedTags: [],
+    allowedClasses: {},
+  });
 };
 
 // ref: https://stackoverflow.com/questions/37639444/javascript-stringformat-with-array
