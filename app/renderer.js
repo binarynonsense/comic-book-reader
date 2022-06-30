@@ -8,6 +8,11 @@ let g_currentPdf = null;
 let g_currentPdfPage = null;
 let g_currentImg64 = null;
 
+let g_hideMouseCursor = false;
+let g_mouseCursorTimer;
+let g_isMouseCursorVisible = true;
+let g_mouseCursorHideTime = 3500;
+
 function cleanUp() {
   g_currentPdf = null;
   g_currentPdfPage = null;
@@ -18,30 +23,6 @@ let g_titlebar = new customTitlebar.Titlebar({
   icon: "./assets/images/icon_256x256.png",
   titleHorizontalAlignment: "right",
 });
-
-function moveScrollBarsToStart() {
-  document.querySelector(".cet-container").scrollTop = 0;
-  document.querySelector(".cet-container").scrollLeft = 0;
-}
-
-function moveScrollBarsToEnd() {
-  document.querySelector(".cet-container").scrollTop =
-    document.querySelector(".cet-container").scrollHeight;
-  document.querySelector(".cet-container").scrollLeft =
-    document.querySelector(".cet-container").scrollWidth;
-}
-
-function setScrollBarsPosition(position) {
-  if (position === 0) {
-    setTimeout(() => {
-      moveScrollBarsToStart();
-    }, 50);
-  } else if (position === 1) {
-    setTimeout(() => {
-      moveScrollBarsToEnd();
-    }, 50); // if I don't add a timeout they are ignored & always goes to top ¿¿??
-  }
-}
 
 ///////////////////////////////////////////////////////////////////////////////
 // IPC RECEIVED ///////////////////////////////////////////////////////////////
@@ -147,6 +128,10 @@ ipcRenderer.on("set-fit-to-width", (event) => {
 
 ipcRenderer.on("set-fit-to-height", (event) => {
   setFitToHeight();
+});
+
+ipcRenderer.on("set-hide-inactive-mouse-cursor", (event, hide) => {
+  g_hideMouseCursor = hide;
 });
 
 ipcRenderer.on("update-title", (event, title) => {
@@ -636,6 +621,23 @@ document.body.ondrop = (ev) => {
   ev.preventDefault();
 };
 
+document.onmousemove = function () {
+  if (g_mouseCursorTimer) {
+    window.clearTimeout(g_mouseCursorTimer);
+  }
+  if (!g_isMouseCursorVisible) {
+    document.body.style.cursor = "default";
+    g_isMouseCursorVisible = true;
+  }
+  if (g_hideMouseCursor) {
+    g_mouseCursorTimer = window.setTimeout(() => {
+      g_mouseCursorTimer = undefined;
+      document.body.style.cursor = "none";
+      g_isMouseCursorVisible = false;
+    }, g_mouseCursorHideTime);
+  }
+};
+
 ///////////////////////////////////////////////////////////////////////////////
 // TOOLBAR ////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -777,4 +779,28 @@ function setFitToHeight() {
   document
     .querySelector("#toolbar-button-fit-to-height")
     .classList.add("set-display-none");
+}
+
+function moveScrollBarsToStart() {
+  document.querySelector(".cet-container").scrollTop = 0;
+  document.querySelector(".cet-container").scrollLeft = 0;
+}
+
+function moveScrollBarsToEnd() {
+  document.querySelector(".cet-container").scrollTop =
+    document.querySelector(".cet-container").scrollHeight;
+  document.querySelector(".cet-container").scrollLeft =
+    document.querySelector(".cet-container").scrollWidth;
+}
+
+function setScrollBarsPosition(position) {
+  if (position === 0) {
+    setTimeout(() => {
+      moveScrollBarsToStart();
+    }, 50);
+  } else if (position === 1) {
+    setTimeout(() => {
+      moveScrollBarsToEnd();
+    }, 50); // if I don't add a timeout they are ignored & always goes to top ¿¿??
+  }
 }

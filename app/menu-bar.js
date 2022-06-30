@@ -54,6 +54,13 @@ exports.setAutoOpen = function (mode) {
   Menu.getApplicationMenu().getMenuItemById("auto-open-2").checked = mode === 2;
 };
 
+exports.setMouseCursorMode = function (mode) {
+  Menu.getApplicationMenu().getMenuItemById("cursor-visibility-0").checked =
+    mode === 0;
+  Menu.getApplicationMenu().getMenuItemById("cursor-visibility-1").checked =
+    mode === 1;
+};
+
 exports.setFileOpened = function (isEnabled) {
   Menu.getApplicationMenu().getMenuItemById("convert-file").enabled = isEnabled;
   Menu.getApplicationMenu().getMenuItemById("extract-file").enabled = isEnabled;
@@ -329,6 +336,29 @@ function buildApplicationMenu(
                   label: _("menu-file-preferences-autoopen-nextandprev"),
                   click() {
                     mainProcess.onMenuChangeAutoOpen(2);
+                  },
+                },
+              ],
+            },
+            {
+              label: _("menu-file-preferences-cursor"),
+              submenu: [
+                {
+                  id: "cursor-visibility-0",
+                  type: "checkbox",
+                  checked: settings.cursorVisibility === 0,
+                  label: _("menu-file-preferences-cursor-always"),
+                  click() {
+                    mainProcess.onMenuChangeMouseCursorVisibility(0);
+                  },
+                },
+                {
+                  id: "cursor-visibility-1",
+                  type: "checkbox",
+                  checked: settings.cursorVisibility === 1,
+                  label: _("menu-file-preferences-cursor-hide-inactive"),
+                  click() {
+                    mainProcess.onMenuChangeMouseCursorVisibility(1);
                   },
                 },
               ],

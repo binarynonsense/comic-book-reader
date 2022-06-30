@@ -59,6 +59,7 @@ let g_settings = {
 
   loadLastOpened: true,
   autoOpen: 0, // 0: disabled, 1: next file, 2: next and previous files
+  cursorVisibility: 0, // 0: always visible, 1: hide when inactive
 
   locale: undefined,
   theme: undefined,
@@ -128,6 +129,13 @@ function sanitizeSettings() {
     g_settings.autoOpen > 2
   ) {
     g_settings.autoOpen = 0;
+  }
+  if (
+    !Number.isInteger(g_settings.cursorVisibility) ||
+    g_settings.cursorVisibility < 0 ||
+    g_settings.cursorVisibility > 1
+  ) {
+    g_settings.cursorVisibility = 0;
   }
   if (typeof g_settings.locale === "string") {
     g_settings.locale = g_settings.locale
@@ -236,6 +244,11 @@ app.on("ready", () => {
     } else {
       setFitToHeight();
     }
+
+    g_mainWindow.webContents.send(
+      "set-hide-inactive-mouse-cursor",
+      g_settings.cursorVisibility === 1
+    );
 
     showScrollBar(g_settings.showScrollBar);
     showToolBar(g_settings.showToolBar);
@@ -661,6 +674,17 @@ exports.onMenuChangeAutoOpen = function (mode) {
   else {
     g_settings.autoOpen = mode;
     menuBar.setAutoOpen(mode);
+    g_mainWindow.webContents.send("update-menubar");
+  }
+};
+
+exports.onMenuChangeMouseCursorVisibility = function (mode) {
+  if (mode === g_settings.cursorVisibility || mode < 0 || mode > 1)
+    g_mainWindow.webContents.send("update-menubar");
+  else {
+    g_settings.cursorVisibility = mode;
+    menuBar.setMouseCursorMode(mode);
+    g_mainWindow.webContents.send("set-hide-inactive-mouse-cursor", mode === 1);
     g_mainWindow.webContents.send("update-menubar");
   }
 };
