@@ -31,6 +31,9 @@
   "menu-file-preferences-autoopen-disabled": "Desactivado",
   "menu-file-preferences-autoopen-next": "Siguiente Archivo",
   "menu-file-preferences-autoopen-nextandprev": "Siguiente y Previo Archivos",
+  "menu-file-preferences-cursor": "Cursor del Ratón",
+  "menu-file-preferences-cursor-always": "Siempre Visible",
+  "menu-file-preferences-cursor-hide-inactive": "Ocultar si Inactivo",
   "menu-file-quit": "Salir",
 
   "menu-view": "Ver",

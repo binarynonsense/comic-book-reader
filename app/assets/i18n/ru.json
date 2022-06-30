@@ -31,6 +31,9 @@
   "menu-file-preferences-autoopen-disabled": "Отключено",
   "menu-file-preferences-autoopen-next": "Следующий файл",
   "menu-file-preferences-autoopen-nextandprev": "Следующий и предыдущий файлы",
+  "[NEEDS TRANSLATION]menu-file-preferences-cursor": "Mouse Cursor",
+  "[NEEDS TRANSLATION]menu-file-preferences-cursor-always": "Always Visible",
+  "[NEEDS TRANSLATION]menu-file-preferences-cursor-hide-inactive": "Hide When Inactive",
   "menu-file-quit": "Выход",
 
   "menu-view": "Вид",
