@@ -72,7 +72,6 @@ function getExeFolderPath() {
 
 exports.saveSettings = function (settings) {
   let cfgFilePath = path.join(app.getPath("userData"), "acbr.cfg");
-  console.log(path.join(getExeFolderPath(), "portable.txt"));
   if (fs.existsSync(path.join(getExeFolderPath(), "portable.txt"))) {
     cfgFilePath = path.join(getExeFolderPath(), "acbr.cfg");
     try {
