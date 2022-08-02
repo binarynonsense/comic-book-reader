@@ -263,27 +263,18 @@ app.on("ready", () => {
     }
 
     // if program called from os' 'open with' of file association
-    // TODO: if mac version implement on open-file event?
     if (process.argv.length >= 2) {
-      let filePath = process.argv[1];
-      if (
-        fs.existsSync(filePath) &&
-        !fs.lstatSync(filePath).isDirectory() &&
-        fileFormats.hasCompatibleExtension(filePath)
-      ) {
-        openFile(filePath, 0);
-        return;
+      if (app.isPackaged) {
+        let filePath = process.argv[1];
+        if (tryOpenPath(filePath)) {
+          return;
+        }
       }
     }
 
     if (g_history.length > 0 && g_settings.on_quit_state === 1) {
       let entry = g_history[g_history.length - 1];
-      if (
-        fs.existsSync(entry.filePath) &&
-        !fs.lstatSync(entry.filePath).isDirectory() &&
-        fileFormats.hasCompatibleExtension(entry.filePath)
-      ) {
-        openFile(entry.filePath, entry.pageIndex);
+      if (tryOpenPath(entry.filePath, entry.pageIndex)) {
         return;
       }
     }
@@ -463,7 +454,6 @@ ipcMain.on(
     g_fileData.type = FileDataType.EPUB;
     g_fileData.path = filePath;
     g_fileData.name = path.basename(filePath);
-    g_fileData.imgsFolderPath = "";
     g_fileData.pagesPaths = imageIDs; // not really paths
     g_fileData.numPages = imageIDs.length;
     g_fileData.pageIndex = pageIndex;
@@ -500,7 +490,6 @@ ipcMain.on(
     g_fileData.type = FileDataType.PDF;
     g_fileData.path = filePath;
     g_fileData.name = path.basename(filePath);
-    g_fileData.imgsFolderPath = "";
     g_fileData.pagesPaths = [];
     g_fileData.numPages = 0;
     g_fileData.pageIndex = pageIndex;
@@ -619,13 +608,7 @@ ipcMain.on("toolbar-slider-changed", (event, value) => {
 ///////////////////////////////////////////////////////////////////////////////
 
 ipcMain.on("open-file", (event, filePath) => {
-  if (
-    fs.existsSync(filePath) &&
-    !fs.lstatSync(filePath).isDirectory() &&
-    fileFormats.hasCompatibleExtension(filePath)
-  ) {
-    openFile(filePath); // it checks if valid path
-  }
+  tryOpenPath(filePath);
 });
 
 ipcMain.on("go-to-page", (event, value) => {
@@ -755,12 +738,19 @@ exports.onMenuOpenFile = onMenuOpenFile = function (filePath) {
     }
 
     let allowMultipleSelection = false;
-    let allowedFileTypesName = "Comic Book Files";
+    let allowedFileTypesName = "Comic Book Files & Images";
     let allowedFileTypesList = [
       FileExtension.CBZ,
       FileExtension.CBR,
       FileExtension.PDF,
       FileExtension.EPUB,
+
+      FileExtension.JPG,
+      FileExtension.JPEG,
+      FileExtension.PNG,
+      FileExtension.WEBP,
+      FileExtension.BMP,
+      FileExtension.AVIF,
     ];
     let fileList = fileUtils.chooseOpenFiles(
       g_mainWindow,
@@ -782,8 +772,7 @@ exports.onMenuOpenFile = onMenuOpenFile = function (filePath) {
     );
     return;
   }
-  console.log("open file request:" + filePath);
-  openFile(filePath);
+  tryOpenPath(filePath);
 };
 
 exports.onMenuClearHistory = function () {
@@ -798,7 +787,6 @@ exports.onMenuCloseFile = function () {
   g_fileData.type = FileDataType.NOT_SET;
   g_fileData.path = "";
   g_fileData.name = "";
-  g_fileData.imgsFolderPath = "";
   g_fileData.pagesPaths = [];
   g_fileData.numPages = 0;
   g_fileData.pageIndex = 0;
@@ -913,14 +901,86 @@ let g_fileData = {
   type: FileDataType.NOT_SET,
   path: "",
   name: "",
-  imgsFolderPath: "",
   pagesPaths: [],
   numPages: 0,
   pageIndex: 0,
   pageRotation: 0,
 };
 
-function openFile(filePath, pageIndex = 0) {
+function tryOpenPath(filePath, pageIndex = 0) {
+  if (fs.existsSync(filePath)) {
+    if (fs.lstatSync(filePath).isDirectory()) {
+      openImageFolder(filePath, undefined, pageIndex);
+      return true;
+    } else if (fileFormats.hasComicBookExtension(filePath)) {
+      openComicBookFile(filePath, pageIndex);
+      return true;
+    } else if (fileFormats.hasImageExtension(filePath)) {
+      openImageFile(filePath);
+      return true;
+    }
+  }
+  return false;
+}
+
+function openImageFile(filePath) {
+  if (filePath === undefined || filePath === "" || !fs.existsSync(filePath)) {
+    g_mainWindow.webContents.send("update-loading", false);
+    return;
+  }
+
+  openImageFolder(path.dirname(filePath), filePath);
+}
+
+function openImageFolder(folderPath, filePath, pageIndex) {
+  if (
+    folderPath === undefined ||
+    folderPath === "" ||
+    !fs.existsSync(folderPath)
+  ) {
+    g_mainWindow.webContents.send("update-loading", false);
+    return;
+  }
+
+  let pagesPaths = fileUtils.getImageFilesInFolder(folderPath);
+  if (pagesPaths.length <= 0) {
+    g_mainWindow.webContents.send("update-loading", false);
+    return;
+  }
+  pagesPaths.sort(fileUtils.compare);
+
+  if (g_fileData.path !== "") addCurrentToHistory(); // add the one I'm closing to history
+
+  if (pageIndex === undefined) {
+    if (filePath !== undefined && filePath !== "") {
+      for (let index = 0; index < pagesPaths.length; index++) {
+        if (pagesPaths[index] === path.basename(filePath)) {
+          pageIndex = index;
+          break;
+        }
+      }
+    } else {
+      let historyIndex = getHistoryIndex(folderPath);
+      if (historyIndex !== undefined) {
+        pageIndex = g_history[historyIndex].pageIndex;
+        if (pageIndex === undefined) pageIndex = 0; // just in case
+      }
+    }
+  }
+
+  g_fileData.state = FileDataState.LOADED;
+  g_fileData.type = FileDataType.IMGS_FOLDER;
+  g_fileData.path = folderPath;
+  g_fileData.name = path.basename(folderPath);
+  g_fileData.pagesPaths = pagesPaths;
+  g_fileData.numPages = pagesPaths.length;
+  g_fileData.pageIndex = pageIndex;
+  updateMenuItemsState();
+  setPageRotation(0, false);
+  goToPage(pageIndex);
+}
+
+function openComicBookFile(filePath, pageIndex = 0) {
   if (filePath === undefined || filePath === "" || !fs.existsSync(filePath)) {
     return;
   }
@@ -963,7 +1023,6 @@ function openFile(filePath, pageIndex = 0) {
           g_fileData.path = filePath;
           g_fileData.name = path.basename(filePath);
           g_fileData.pagesPaths = pagesPaths;
-          g_fileData.imgsFolderPath = "";
           g_fileData.numPages = pagesPaths.length;
           g_fileData.pageIndex = pageIndex;
           addCurrentToHistory();
@@ -990,7 +1049,6 @@ function openFile(filePath, pageIndex = 0) {
           g_fileData.path = filePath;
           g_fileData.name = path.basename(filePath);
           g_fileData.pagesPaths = pagesPaths;
-          g_fileData.imgsFolderPath = "";
           g_fileData.numPages = pagesPaths.length;
           g_fileData.pageIndex = pageIndex;
           addCurrentToHistory();
@@ -1017,16 +1075,16 @@ function openFile(filePath, pageIndex = 0) {
     }
   })(); // async
 }
-exports.openFile = openFile;
 
 function tryOpeningAdjacentFile(next) {
   // next true -> try next, next false -> try prev
+  if (g_fileData.type === FileDataType.IMGS_FOLDER) return;
   const fileName = path.basename(g_fileData.path);
   const folderPath = path.dirname(g_fileData.path);
   let allFiles = fs.readdirSync(folderPath);
   let comicFiles = [];
   allFiles.forEach((file) => {
-    if (fileFormats.hasCompatibleExtension(file)) {
+    if (fileFormats.hasComicBookExtension(file)) {
       comicFiles.push(file);
     }
   });
@@ -1036,13 +1094,13 @@ function tryOpeningAdjacentFile(next) {
       if (next) {
         if (index < comicFiles.length - 1) {
           let nextFileName = path.join(folderPath, comicFiles[index + 1]);
-          openFile(nextFileName);
+          openComicBookFile(nextFileName);
           return;
         }
       } else {
         if (index > 0) {
           let prevFileName = path.join(folderPath, comicFiles[index - 1]);
-          openFile(prevFileName);
+          openComicBookFile(prevFileName);
           return;
         }
       }
@@ -1139,6 +1197,7 @@ function goToPage(pageIndex, scrollBarPos = 0) {
     g_fileData.state !== FileDataState.LOADED ||
     g_fileData.type === FileDataType.NOT_SET
   ) {
+    g_mainWindow.webContents.send("update-loading", false);
     return;
   }
 
@@ -1150,7 +1209,8 @@ function goToPage(pageIndex, scrollBarPos = 0) {
   if (
     g_fileData.type === FileDataType.ZIP ||
     g_fileData.type === FileDataType.RAR ||
-    g_fileData.type === FileDataType.EPUB
+    g_fileData.type === FileDataType.EPUB ||
+    g_fileData.type === FileDataType.IMGS_FOLDER
   ) {
     g_fileData.state = FileDataState.LOADING;
     if (g_workerPage !== undefined) {
@@ -1172,7 +1232,9 @@ function goToPage(pageIndex, scrollBarPos = 0) {
           return;
         } else {
           // TODO: handle error
+          console.log("worker error");
           console.log(message[1]);
+          g_mainWindow.webContents.send("update-loading", false);
           return;
         }
       });
@@ -1472,6 +1534,8 @@ function updateMenuItemsState() {
       g_fileData.type === FileDataType.PDF
     ) {
       menuBar.setFileOpened(true);
+    } else if (g_fileData.type === FileDataType.IMGS_FOLDER) {
+      menuBar.setImageOpened();
     } else {
       menuBar.setFileOpened(false);
     }

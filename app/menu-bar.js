@@ -72,6 +72,15 @@ exports.setFileOpened = function (isEnabled) {
   Menu.getApplicationMenu().getMenuItemById("close-file").enabled = isEnabled;
 };
 
+exports.setImageOpened = function () {
+  Menu.getApplicationMenu().getMenuItemById("convert-file").enabled = false;
+  Menu.getApplicationMenu().getMenuItemById("extract-file").enabled = false;
+  Menu.getApplicationMenu().getMenuItemById("file-page").enabled = true;
+  Menu.getApplicationMenu().getMenuItemById("file-page-export").enabled = false;
+  Menu.getApplicationMenu().getMenuItemById("file-page-extract").enabled = true;
+  Menu.getApplicationMenu().getMenuItemById("close-file").enabled = true;
+};
+
 function getOpenRecentSubmenu(history) {
   let menu = [];
   const reverseHistory = history.slice().reverse();

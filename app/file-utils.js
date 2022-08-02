@@ -257,21 +257,19 @@ const getImageFilesInFolderRecursive = function (folderPath) {
 };
 exports.getImageFilesInFolderRecursive = getImageFilesInFolderRecursive;
 
-// function getImageFilesInFolder(folderPath) {
-//   if (fs.existsSync(folderPath)) {
-//     let filesInFolder = fs.readdirSync(folderPath);
-//     if (filesInFolder.length === 0) {
-//       console.log("no files found in dir");
-//       return [];
-//     } else {
-//       return filesInFolder.filter(fileFormats.hasImageExtension);
-//     }
-//   } else {
-//     console.log("folder doesn't exist");
-//     return [];
-//   }
-// }
-//exports.getImageFilesInFolder = getImageFilesInFolder;
+function getImageFilesInFolder(folderPath) {
+  if (fs.existsSync(folderPath) && fs.lstatSync(folderPath).isDirectory()) {
+    let filesInFolder = fs.readdirSync(folderPath);
+    if (filesInFolder.length === 0) {
+      return [];
+    } else {
+      return filesInFolder.filter(fileFormats.hasImageExtension);
+    }
+  } else {
+    return [];
+  }
+}
+exports.getImageFilesInFolder = getImageFilesInFolder;
 
 ///////////////////////////////////////////////////////////////////////////////
 // TEMP FOLDER ////////////////////////////////////////////////////////////////

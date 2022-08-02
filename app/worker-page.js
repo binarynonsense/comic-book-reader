@@ -1,3 +1,5 @@
+const fs = require("fs");
+const path = require("path");
 const fileFormats = require("./file-formats");
 const { FileDataType } = require("./constants");
 
@@ -25,6 +27,13 @@ async function extractBase64Image(fileType, filePath, entryName, scrollBarPos) {
       );
       buf = data[0].toString("base64");
       mime = data[1];
+    } else if (fileType === FileDataType.IMGS_FOLDER) {
+      // if (!path.isAbsolute(entryName)) {
+      //   // FIXME: make it absolute somehow?
+      // }
+      const fullPath = path.join(filePath, entryName);
+      buf = fs.readFileSync(fullPath).toString("base64");
+      mime = "image/" + fileFormats.getMimeType(fullPath);
     } else {
       //  TODO: handle error file type not valid
     }
@@ -34,19 +43,3 @@ async function extractBase64Image(fileType, filePath, entryName, scrollBarPos) {
     process.send([false, err]);
   }
 }
-
-// function renderImageFile(filePath) {
-//   if (!path.isAbsolute(filePath)) {
-//     // FIXME: make it absolute somehow?
-//     return;
-//   }
-//   renderTitle();
-//   let data64 = fs.readFileSync(filePath).toString("base64");
-//   let img64 =
-//     "data:image/" + fileFormats.getMimeType(filePath) + ";base64," + data64;
-//   g_mainWindow.webContents.send(
-//     "render-img-page",
-//     img64,
-//     g_fileData.pageRotation
-//   );
-// }

@@ -27,6 +27,12 @@ async function exportPage(fileData, outputFolderPath, sendToTool) {
         fileData.pagesPaths[fileData.pageIndex]
       );
       buf = data[0];
+    } else if (fileData.type === FileDataType.IMGS_FOLDER) {
+      const fullPath = path.join(
+        fileData.path,
+        fileData.pagesPaths[fileData.pageIndex]
+      );
+      buf = fs.readFileSync(fullPath);
     }
 
     // mostly duplicated code from main's exportPageSaveBuffer because I

@@ -35,7 +35,7 @@ function hasImageExtension(filePath) {
 }
 exports.hasImageExtension = hasImageExtension;
 
-exports.hasCompatibleExtension = function (filePath) {
+exports.hasComicBookExtension = function (filePath) {
   const allowedFileExtensions = [".cbz", ".cbr", ".pdf", ".epub"];
   let fileExtension = path.extname(filePath).toLowerCase();
   for (i = 0; i < allowedFileExtensions.length; i++) {
