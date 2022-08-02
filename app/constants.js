@@ -12,6 +12,7 @@ exports.FileExtension = {
   WEBP: "webp",
   BMP: "bmp",
   TMP: "tmp",
+  AVIF: "avif",
 };
 
 exports.FileDataState = {
