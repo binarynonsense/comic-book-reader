@@ -94,7 +94,8 @@ ipcRenderer.on(g_ipcChannel + "init", (event, outputFolderPath) => {
     "</option>" +
     '<option value="jpg">.jpg</option>' +
     '<option value="png">.png</option>' +
-    '<option value="webp">.webp</option>';
+    '<option value="webp">.webp</option>' +
+    '<option value="avif">.avif</option>';
   checkValidData();
 });
 

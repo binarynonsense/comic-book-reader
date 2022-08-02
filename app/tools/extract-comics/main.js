@@ -479,6 +479,13 @@ async function resizeImages(
               quality: outputQuality,
             })
             .toFile(tmpFilePath);
+        } else if (outputFormat === FileExtension.AVIF) {
+          await sharp(filePath)
+            .withMetadata()
+            .avif({
+              quality: outputQuality,
+            })
+            .toFile(tmpFilePath);
         }
         let newFilePath = path.join(
           fileFolderPath,
