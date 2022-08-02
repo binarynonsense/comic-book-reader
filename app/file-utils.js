@@ -63,8 +63,24 @@ exports.naturalCompare = function (a, b) {
 // SAVE / LOAD ////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+function getExeFolderPath() {
+  // app.getAppPath();
+  // process.cwd();
+  // process.execPath;
+  return process.cwd();
+}
+
 exports.saveSettings = function (settings) {
-  const cfgFilePath = path.join(app.getPath("userData"), "acbr.cfg");
+  let cfgFilePath = path.join(app.getPath("userData"), "acbr.cfg");
+  console.log(path.join(getExeFolderPath(), "portable.txt"));
+  if (fs.existsSync(path.join(getExeFolderPath(), "portable.txt"))) {
+    cfgFilePath = path.join(getExeFolderPath(), "acbr.cfg");
+    try {
+      fs.accessSync(getExeFolderPath(), fs.constants.W_OK);
+    } catch (err) {
+      console.log("Warning: portable settings' folder not writable");
+    }
+  }
   let date = new Date().toJSON();
   settings.date = date;
   settings.version = app.getVersion();
@@ -79,7 +95,10 @@ exports.saveSettings = function (settings) {
 };
 
 exports.loadSettings = function (settings) {
-  const cfgFilePath = path.join(app.getPath("userData"), "acbr.cfg");
+  let cfgFilePath = path.join(app.getPath("userData"), "acbr.cfg");
+  if (fs.existsSync(path.join(getExeFolderPath(), "portable.txt"))) {
+    cfgFilePath = path.join(getExeFolderPath(), "acbr.cfg");
+  }
   if (fs.existsSync(cfgFilePath)) {
     let data;
     try {
@@ -108,7 +127,10 @@ exports.loadSettings = function (settings) {
 };
 
 exports.saveHistory = function (history) {
-  const hstFilePath = path.join(app.getPath("userData"), "acbr.hst");
+  let hstFilePath = path.join(app.getPath("userData"), "acbr.hst");
+  if (fs.existsSync(path.join(getExeFolderPath(), "portable.txt"))) {
+    hstFilePath = path.join(getExeFolderPath(), "acbr.hst");
+  }
   const historyJSON = JSON.stringify(history);
   try {
     fs.writeFileSync(hstFilePath, historyJSON, "utf-8");
@@ -121,7 +143,10 @@ exports.saveHistory = function (history) {
 
 exports.loadHistory = function () {
   let history = [];
-  const hstFilePath = path.join(app.getPath("userData"), "acbr.hst");
+  let hstFilePath = path.join(app.getPath("userData"), "acbr.hst");
+  if (fs.existsSync(path.join(getExeFolderPath(), "portable.txt"))) {
+    hstFilePath = path.join(getExeFolderPath(), "acbr.hst");
+  }
   if (fs.existsSync(hstFilePath)) {
     let data;
     try {
