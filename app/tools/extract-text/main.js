@@ -181,7 +181,7 @@ function cleanUpOcrWorker() {
 
 ipcMain.on(g_ipcChannel + "cancel-extraction", (event) => {
   cleanUpOcrWorker();
-  g_window.webContents.send(g_ipcChannel + "close-modal");
+  g_window.webContents.send(g_ipcChannel + "modal-close");
 });
 
 ///////////////////////////////////////////////////////////////////////////////
