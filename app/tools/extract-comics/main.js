@@ -426,7 +426,7 @@ async function resizeImages(
       stopCancel();
       return;
     }
-    if (outputFormat != FileExtension.NOTSET) {
+    if (outputFormat != FileExtension.NOT_SET) {
       g_window.webContents.send(
         g_ipcChannel + "update-log-text",
         _("tool-shared-modal-log-converting-images") + "..."

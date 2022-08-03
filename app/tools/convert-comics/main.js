@@ -16,7 +16,7 @@ let g_worker;
 let g_resizeWindow;
 let g_ipcChannel = "tool-cc--";
 let g_pdfCreationMethod = "metadata";
-let g_imageFormat = FileExtension.NOTSET;
+let g_imageFormat = FileExtension.NOT_SET;
 
 function isDev() {
   return process.argv[2] == "--dev";
@@ -467,7 +467,7 @@ async function resizeImages(
     }
     if (
       outputFormat === FileExtension.PDF ||
-      g_imageFormat != FileExtension.NOTSET
+      g_imageFormat != FileExtension.NOT_SET
     ) {
       g_window.webContents.send(
         g_ipcChannel + "update-log-text",
@@ -495,13 +495,13 @@ async function resizeImages(
           // change to a format compatible with pdfkit if needed
           if (
             imageFormat === FileExtension.WEBP ||
-            (imageFormat === FileExtension.NOTSET &&
+            (imageFormat === FileExtension.NOT_SET &&
               !fileFormats.hasPdfKitCompatibleImageExtension(filePath))
           ) {
             imageFormat = FileExtension.JPG;
           }
         }
-        if (imageFormat != FileExtension.NOTSET) {
+        if (imageFormat != FileExtension.NOT_SET) {
           let tmpFilePath = path.join(
             fileFolderPath,
             fileName + "." + FileExtension.TMP

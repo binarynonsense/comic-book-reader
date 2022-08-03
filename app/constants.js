@@ -1,5 +1,5 @@
 exports.FileExtension = {
-  NOTSET: "notset",
+  NOT_SET: "not set",
   CBZ: "cbz",
   ZIP: "zip",
   CBR: "cbr",
@@ -11,8 +11,8 @@ exports.FileExtension = {
   PNG: "png",
   WEBP: "webp",
   BMP: "bmp",
-  TMP: "tmp",
   AVIF: "avif",
+  TMP: "tmp",
 };
 
 exports.FileDataState = {
