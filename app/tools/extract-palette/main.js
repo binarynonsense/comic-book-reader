@@ -123,7 +123,7 @@ ipcMain.on(g_ipcChannel + "choose-file", (event) => {
 
 ipcMain.on(
   g_ipcChannel + "start",
-  (event, data, distanceMethod, distanceThreshold) => {
+  (event, data, distanceMethod, distanceThreshold, maxQuantizationDepth) => {
     g_window.webContents.send(
       g_ipcChannel + "modal-update-title",
       _("tool-shared-modal-title-extracting").toUpperCase()
@@ -131,7 +131,8 @@ ipcMain.on(
     g_currentPalette = palette.getPaletteFromCanvasData(
       data,
       distanceMethod,
-      distanceThreshold
+      distanceThreshold,
+      maxQuantizationDepth
     );
     g_window.webContents.send(g_ipcChannel + "modal-close");
     g_window.webContents.send(
@@ -272,6 +273,10 @@ function getLocalization() {
     {
       id: "text-export-format",
       text: _("tool-ep-export-format"),
+    },
+    {
+      id: "text-max-num-colors",
+      text: _("tool-ep-max-num-colors"),
     },
     {
       id: "text-distance-method",

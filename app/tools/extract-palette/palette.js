@@ -3,11 +3,16 @@ const utils = require("./color-utils");
 exports.getPaletteFromCanvasData = function (
   canvasColorData,
   distanceMethod,
-  distanceThreshold
+  distanceThreshold,
+  maxQuantizationDepth
 ) {
   try {
     const rgbColors = getRgbColorsFromCanvasData(canvasColorData);
-    const quantizedColors = getQuantizedColors(rgbColors, 0);
+    const quantizedColors = getQuantizedColors(
+      rgbColors,
+      0,
+      maxQuantizationDepth
+    );
     const orderedByColor = utils.getColorsSortedByLuminance(quantizedColors);
     let palette = { rgbColors: [], hexColors: [] };
 
@@ -65,10 +70,9 @@ const getRgbColorsFromCanvasData = (canvasColorData) => {
   return rgbColors;
 };
 
-const getQuantizedColors = (rgbColors, depth) => {
+const getQuantizedColors = (rgbColors, depth, maxDepth = 4) => {
   // ref: https://en.wikipedia.org/wiki/Median_cut
-  const MAX_DEPTH = 4;
-  if (depth === MAX_DEPTH || rgbColors.length === 0) {
+  if (depth === maxDepth || rgbColors.length === 0) {
     const color = rgbColors.reduce(
       (previous, current) => {
         previous.r += current.r;
@@ -95,7 +99,7 @@ const getQuantizedColors = (rgbColors, depth) => {
 
   const mid = rgbColors.length / 2;
   return [
-    ...getQuantizedColors(rgbColors.slice(0, mid), depth + 1),
-    ...getQuantizedColors(rgbColors.slice(mid + 1), depth + 1),
+    ...getQuantizedColors(rgbColors.slice(0, mid), depth + 1, maxDepth),
+    ...getQuantizedColors(rgbColors.slice(mid + 1), depth + 1, maxDepth),
   ];
 };

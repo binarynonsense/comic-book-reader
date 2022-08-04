@@ -63,11 +63,20 @@ exports.onStart = function () {
     else if (distanceThreshold > 49) distanceThreshold = 49;
   }
 
+  let maxQuantizationDepth = 4;
+  let maxNumColors = parseInt(
+    document.getElementById("max-num-colors-select").value
+  );
+  if (maxNumColors === 32) {
+    maxQuantizationDepth = 5;
+  }
+
   ipcRenderer.send(
     g_ipcChannel + "start",
     imageData.data,
     distanceMethod,
-    distanceThreshold
+    distanceThreshold,
+    maxQuantizationDepth
   );
 };
 

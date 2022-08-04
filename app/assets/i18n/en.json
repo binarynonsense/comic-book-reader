@@ -192,6 +192,7 @@
   "tool-ep-button-export-to-file": "Export To",
   "tool-ep-button-start": "Extract Palette",
   "tool-ep-export-format": "Export Format:",
+  "tool-ep-max-num-colors": "Maximum Number of Colors:",
   "tool-ep-distance-method": "Color Distance Method:",
   "tool-ep-distance-deltae-threshold": "Delta E Threshold:",
   "tool-ep-modal-title-exported": "Palette File Created:",
