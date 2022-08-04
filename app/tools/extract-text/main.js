@@ -217,8 +217,12 @@ function getLocalization() {
       text: _("tool-et-span-language-checkbox-info"),
     },
     {
+      id: "button-modal-close",
+      text: _("tool-shared-ui-close").toUpperCase(),
+    },
+    {
       id: "button-modal-cancel",
-      text: _("tool-et-modal-button-cancel").toUpperCase(),
+      text: _("tool-shared-ui-cancel").toUpperCase(),
     },
   ];
 }
