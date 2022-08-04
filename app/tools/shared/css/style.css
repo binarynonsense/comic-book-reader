@@ -43,3 +43,7 @@ textarea#modal-log {
   border-color: rgb(155, 155, 155);
   resize: none;
 }
+
+details summary {
+  cursor: pointer;
+}
