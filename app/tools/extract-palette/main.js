@@ -54,6 +54,7 @@ exports.showWindow = function (parentWindow, filePath) {
 
   g_window.on("closed", () => {
     g_window = undefined;
+    g_currentPalette = undefined;
     if (g_worker !== undefined) {
       g_worker.kill();
       g_worker = undefined;
