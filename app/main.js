@@ -16,6 +16,7 @@ const convertComicsTool = require("./tools/convert-comics/main");
 const convertImagesTool = require("./tools/convert-imgs/main");
 const createComicTool = require("./tools/create-comic/main");
 const extractTextTool = require("./tools/extract-text/main");
+const extractPaletteTool = require("./tools/extract-palette/main");
 const extractComicsTool = require("./tools/extract-comics/main");
 
 const {
@@ -800,11 +801,15 @@ exports.onMenuCloseFile = function () {
 };
 
 exports.onMenuPageExport = function () {
-  exportPageStart();
+  exportPageStart(0);
 };
 
 exports.onMenuPageExtractText = function () {
-  exportPageStart(true);
+  exportPageStart(1);
+};
+
+exports.onMenuPageExtractPalette = function () {
+  exportPageStart(2);
 };
 
 exports.onMenuConvertFile = function () {
@@ -846,6 +851,11 @@ exports.onMenuToolConvertImages = function () {
 
 exports.onMenuToolExtractText = function () {
   extractTextTool.showWindow(g_mainWindow);
+  g_mainWindow.webContents.send("update-menubar");
+};
+
+exports.onMenuToolExtractPalette = function () {
+  extractPaletteTool.showWindow(g_mainWindow);
   g_mainWindow.webContents.send("update-menubar");
 };
 
@@ -1278,9 +1288,9 @@ function goToPreviousPage() {
 // EXPORT /////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-async function exportPageStart(sendToTool = false) {
+async function exportPageStart(sendToTool = 0) {
   let outputFolderPath;
-  if (sendToTool) {
+  if (sendToTool !== 0) {
     outputFolderPath = fileUtils.createTempFolder();
   } else {
     let defaultPath = app.getPath("desktop");
@@ -1321,9 +1331,11 @@ async function exportPageStart(sendToTool = false) {
           g_workerExport.kill(); // kill it after one use
           if (message[0]) {
             g_mainWindow.webContents.send("update-loading", false);
-            if (message[2]) {
-              // sendToTool
+            if (message[2] === 1) {
               extractTextTool.showWindow(g_mainWindow, message[1]);
+              g_mainWindow.webContents.send("update-menubar");
+            } else if (message[2] === 2) {
+              extractPaletteTool.showWindow(g_mainWindow, message[1]);
               g_mainWindow.webContents.send("update-menubar");
             } else {
               g_mainWindow.webContents.send(
@@ -1380,8 +1392,11 @@ function exportPageSaveBuffer(buf, outputFolderPath, sendToTool) {
         }
         fs.writeFileSync(outputFilePath, buf, "binary");
 
-        if (sendToTool) {
+        if (sendToTool === 1) {
           extractTextTool.showWindow(g_mainWindow, outputFilePath);
+          g_mainWindow.webContents.send("update-menubar");
+        } else if (sendToTool === 2) {
+          extractPaletteTool.showWindow(g_mainWindow, outputFilePath);
           g_mainWindow.webContents.send("update-menubar");
         } else {
           g_mainWindow.webContents.send(

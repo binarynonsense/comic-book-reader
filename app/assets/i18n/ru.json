@@ -18,7 +18,8 @@
   "[NEEDS TRANSLATION]menu-file-extract": "Extract...",
   "menu-file-page": "Страница",
   "[NEEDS TRANSLATION]menu-file-page-export": "Export...",  
-  "[NEEDS TRANSLATION]menu-file-page-extract": "Extract Text...",  
+  "[NEEDS TRANSLATION]menu-file-page-extract-text": "Extract Text...",
+  "[NEEDS TRANSLATION]menu-file-page-extract-palette": "Extract Color Palette...",
   "menu-file-preferences": "Настройки",
   "menu-file-preferences-hotspots": "Активные точки щелчка мышью",
   "menu-file-preferences-hotspots-disabled": "Отключено",
@@ -60,6 +61,7 @@
   "[NEEDS TRANSLATION]menu-tools-extract": "Extract",
   "[NEEDS TRANSLATION]menu-tools-extract-comics": "Pages From Comic Books...",
   "[NEEDS TRANSLATION]menu-tools-extract-text": "Text From Image (OCR)...",
+  "[NEEDS TRANSLATION]menu-tools-extract-palette": "Color Palette From Image...",
 
   "menu-help": "Справка",
   "menu-help-about": "О программе", 
@@ -178,9 +180,20 @@
   "[NEEDS TRANSLATION]tool-et-header-language": "Language:",
   "[NEEDS TRANSLATION]tool-et-span-language-checkbox-info": "Include languages that require an internet connection to work",  
   "[NEEDS TRANSLATION]tool-et-modal-info": "(experimental)",
-  "[NEEDS TRANSLATION]tool-et-modal-button-cancel": "Cancel",
 
   "[NEEDS TRANSLATION]tool-ec-title": "Extract Pages Tool",
   "[NEEDS TRANSLATION]tool-ec-modal-log-extracting-to": "To",
-  "[NEEDS TRANSLATION]tool-ec-tooltip-output-folder": "Inside the provided folder, a subfolder with the same name as the file to be extracted will be created to store the images. If a subfolder with the same name already exists, a subfix will be added to the name so nothing is overwritten."  
+  "[NEEDS TRANSLATION]tool-ec-tooltip-output-folder": "Inside the provided folder, a subfolder with the same name as the file to be extracted will be created to store the images. If a subfolder with the same name already exists, a subfix will be added to the name so nothing is overwritten.",
+
+  "[NEEDS TRANSLATION]tool-ep-title": "Extract Palette Tool",
+  "[NEEDS TRANSLATION]tool-ep-header-input-file": "Input Image:",
+  "[NEEDS TRANSLATION]tool-ep-header-output-palette": "Output Palette:",
+  "[NEEDS TRANSLATION]tool-ep-button-add-file": "Change Image",
+  "[NEEDS TRANSLATION]tool-ep-button-export-to-file": "Export To",
+  "[NEEDS TRANSLATION]tool-ep-button-start": "Extract Palette",
+  "[NEEDS TRANSLATION]tool-ep-export-format": "Export Format:",
+  "[NEEDS TRANSLATION]tool-ep-distance-method": "Color Distance Method:",
+  "[NEEDS TRANSLATION]tool-ep-distance-deltae-threshold": "Delta E Threshold:",
+  "[NEEDS TRANSLATION]tool-ep-modal-title-exported": "Palette File Created:",
+  "[NEEDS TRANSLATION]tool-ep-modal-title-exporting-error": "Error: Could NOT Create the File:"
 }

@@ -1,0 +1,45 @@
+.container {
+  margin-top: 10px;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+textarea#textarea-output {
+  height: 400px;
+  padding: 5px;
+  border-color: rgb(155, 155, 155);
+  resize: none;
+  margin: 0px;
+  display: block;
+}
+
+#image-container {
+  height: 400px;
+}
+
+#palette {
+  height: 400px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border: rgb(155, 155, 155) 1px solid;
+  user-select: text;
+}
+
+#palette div {
+  height: 100%;
+  display: grid;
+  align-items: center;
+  justify-items: center;
+}
+
+#palette div div {
+  color: white;
+  background-color: black;
+  /* mix-blend-mode: difference; */
+  padding: 5px;
+  height: 30px;
+  font-size: 15px;
+}

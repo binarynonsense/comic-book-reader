@@ -67,8 +67,11 @@ exports.setFileOpened = function (isEnabled) {
   Menu.getApplicationMenu().getMenuItemById("file-page").enabled = isEnabled;
   Menu.getApplicationMenu().getMenuItemById("file-page-export").enabled =
     isEnabled;
-  Menu.getApplicationMenu().getMenuItemById("file-page-extract").enabled =
+  Menu.getApplicationMenu().getMenuItemById("file-page-extract-text").enabled =
     isEnabled;
+  Menu.getApplicationMenu().getMenuItemById(
+    "file-page-extract-palette"
+  ).enabled = isEnabled;
   Menu.getApplicationMenu().getMenuItemById("close-file").enabled = isEnabled;
 };
 
@@ -77,7 +80,12 @@ exports.setImageOpened = function () {
   Menu.getApplicationMenu().getMenuItemById("extract-file").enabled = false;
   Menu.getApplicationMenu().getMenuItemById("file-page").enabled = true;
   Menu.getApplicationMenu().getMenuItemById("file-page-export").enabled = false;
-  Menu.getApplicationMenu().getMenuItemById("file-page-extract").enabled = true;
+  Menu.getApplicationMenu().getMenuItemById(
+    "file-page-extract-text"
+  ).enabled = true;
+  Menu.getApplicationMenu().getMenuItemById(
+    "file-page-extract-palette"
+  ).enabled = true;
   Menu.getApplicationMenu().getMenuItemById("close-file").enabled = true;
 };
 
@@ -261,8 +269,16 @@ function buildApplicationMenu(
               },
             },
             {
-              id: "file-page-extract",
-              label: _("menu-file-page-extract"),
+              id: "file-page-extract-palette",
+              label: _("menu-file-page-extract-palette"),
+              enabled: false,
+              click() {
+                mainProcess.onMenuPageExtractPalette();
+              },
+            },
+            {
+              id: "file-page-extract-text",
+              label: _("menu-file-page-extract-text"),
               enabled: false,
               click() {
                 mainProcess.onMenuPageExtractText();
@@ -575,6 +591,14 @@ function buildApplicationMenu(
               enabled: true,
               click() {
                 mainProcess.onMenuToolExtractComics();
+              },
+            },
+            {
+              id: "extract-palette",
+              label: _("menu-tools-extract-palette"),
+              enabled: true,
+              click() {
+                mainProcess.onMenuToolExtractPalette();
               },
             },
             {
