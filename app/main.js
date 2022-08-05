@@ -44,7 +44,8 @@ let g_history = [];
 let g_settings = {
   version: app.getVersion(),
   date: "",
-  fit_mode: 0, // 0: width, 1: height
+  fit_mode: 0, // 0: width, 1: height, 2: scale height
+  zoom_scale: 100,
   page_mode: 0, // 0: single-page, 1: double-page
   hotspots_mode: 1, // 0: disabled, 1: 2-columns, 2: 3-columns
   maximize: false,
@@ -70,9 +71,16 @@ function sanitizeSettings() {
   if (
     !Number.isInteger(g_settings.fit_mode) ||
     g_settings.fit_mode < 0 ||
-    g_settings.fit_mode > 1
+    g_settings.fit_mode > 2
   ) {
     g_settings.fit_mode = 0;
+  }
+  if (
+    !Number.isInteger(g_settings.zoom_scale) ||
+    g_settings.zoom_scale < 25 ||
+    g_settings.zoom_scale > 400
+  ) {
+    g_settings.zoom_scale = 100;
   }
   if (
     !Number.isInteger(g_settings.page_mode) ||
@@ -242,8 +250,11 @@ app.on("ready", () => {
 
     if (g_settings.fit_mode === 0) {
       setFitToWidth();
-    } else {
+    }
+    if (g_settings.fit_mode === 1) {
       setFitToHeight();
+    } else {
+      setScaleToHeight(g_settings.zoom_scale);
     }
 
     g_mainWindow.webContents.send(
@@ -562,21 +573,15 @@ ipcMain.on("mouse-click", (event, mouseX, bodyX) => {
 });
 
 ipcMain.on("zoom-in-pressed", (event) => {
-  if (g_settings.fit_mode === 2) {
-    setScaleToHeight(g_settings.zoom_scale + 5);
-  }
+  moveZoomScale(1);
 });
 
 ipcMain.on("zoom-out-pressed", (event) => {
-  if (g_settings.fit_mode === 2) {
-    setScaleToHeight(g_settings.zoom_scale - 5);
-  }
+  moveZoomScale(-1);
 });
 
 ipcMain.on("zoom-reset-pressed", (event) => {
-  if (g_settings.fit_mode === 2) {
-    setScaleToHeight(100);
-  }
+  moveZoomScale(0);
 });
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -713,6 +718,10 @@ exports.onMenuFitToHeight = function () {
 
 exports.onMenuScaleToHeight = function (scale) {
   setScaleToHeight(scale);
+};
+
+exports.onMenuScaleToHeightCustomize = function (mode) {
+  moveZoomScale(mode);
 };
 
 exports.onMenuRotationValue = function (value) {
@@ -1551,15 +1560,36 @@ function setFitToHeight() {
   renderPageRefresh();
 }
 
-function setScaleToHeight(scale) {
+function setScaleToHeight(scale, fromMove = false) {
   g_settings.fit_mode = 2;
   if (scale < 25) scale = 25;
-  else if (scale > 1000) scale = 1000;
+  else if (scale > 400) scale = 400;
+  if (fromMove && g_settings.zoom_scale === scale) return;
   g_settings.zoom_scale = scale;
   menuBar.setScaleToHeight(g_settings.zoom_scale);
   g_mainWindow.webContents.send("update-menubar");
   g_mainWindow.webContents.send("set-scale-to-height", g_settings.zoom_scale);
   renderPageRefresh();
+  rebuildMenuBar();
+}
+
+function moveZoomScale(mode) {
+  if (mode > 0) {
+    // zoom in
+    if (g_settings.fit_mode === 2) {
+      setScaleToHeight(g_settings.zoom_scale + 5, true);
+    }
+  } else if (mode < 0) {
+    // zoom out
+    if (g_settings.fit_mode === 2) {
+      setScaleToHeight(g_settings.zoom_scale - 5, true);
+    }
+  } else {
+    // reset
+    if (g_settings.fit_mode === 2) {
+      setScaleToHeight(100);
+    }
+  }
 }
 
 function setPageRotation(value, refreshPage) {

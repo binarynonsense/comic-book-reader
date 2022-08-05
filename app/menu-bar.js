@@ -97,6 +97,67 @@ exports.setImageOpened = function () {
   Menu.getApplicationMenu().getMenuItemById("close-file").enabled = true;
 };
 
+function getScaleToHeightSubmenu(settings) {
+  let menu = [];
+  let defaults = [25, 50, 100, 150, 200, 300, 400];
+  let found = false;
+  defaults.forEach((scale) => {
+    if (settings.zoom_scale == scale) found = true;
+    menu.push({
+      label: `${scale}%`,
+      type: "checkbox",
+      checked: settings.fit_mode == 2 && settings.zoom_scale == scale,
+      click() {
+        mainProcess.onMenuScaleToHeight(scale);
+      },
+    });
+  });
+  // create one for the custom current zoom
+  if (settings.zoom_scale !== undefined && !found) {
+    menu.push({
+      type: "separator",
+    });
+    menu.push({
+      label: `${settings.zoom_scale}%`,
+      type: "checkbox",
+      checked: settings.fit_mode == 2 ? true : false,
+      click() {
+        mainProcess.onMenuScaleToHeight(settings.zoom_scale);
+      },
+    });
+  }
+
+  if (settings.fit_mode == 2) {
+    menu.push({
+      type: "separator",
+    });
+
+    menu.push({
+      label: _("menu-view-zoom-scaleheight-in"),
+      accelerator: "CommandOrControl+numadd",
+      click() {
+        mainProcess.onMenuScaleToHeightCustomize(1);
+      },
+    });
+    menu.push({
+      label: _("menu-view-zoom-scaleheight-out"),
+      accelerator: "CommandOrControl+numsub",
+      click() {
+        mainProcess.onMenuScaleToHeightCustomize(-1);
+      },
+    });
+    menu.push({
+      label: _("menu-view-zoom-scaleheight-reset"),
+      accelerator: "CommandOrControl+0",
+      click() {
+        mainProcess.onMenuScaleToHeightCustomize(0);
+      },
+    });
+  }
+
+  return menu;
+}
+
 function getOpenRecentSubmenu(history) {
   let menu = [];
   const reverseHistory = history.slice().reverse();
@@ -439,9 +500,7 @@ function buildApplicationMenu(
               label: _("menu-view-zoom-scaleheight"),
               type: "checkbox",
               checked: settings.fit_mode == 2,
-              click() {
-                mainProcess.onMenuScaleToHeight(100);
-              },
+              submenu: getScaleToHeightSubmenu(settings),
             },
           ],
         },

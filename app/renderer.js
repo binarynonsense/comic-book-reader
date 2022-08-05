@@ -652,9 +652,9 @@ document.onmousemove = function () {
 };
 
 document.addEventListener("wheel", function (event) {
-  if (event.deltaY < 0) {
+  if (event.ctrlKey && event.deltaY < 0) {
     ipcRenderer.send("zoom-in-pressed");
-  } else if (event.deltaY > 0) {
+  } else if (event.ctrlKey && event.deltaY > 0) {
     ipcRenderer.send("zoom-out-pressed");
   }
 });
