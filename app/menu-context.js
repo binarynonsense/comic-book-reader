@@ -1,14 +1,14 @@
 const { Menu } = require("electron");
 const mainProcess = require("./main");
 
-let contextMenu;
+let g_contextMenu;
 
 function _(...args) {
   return mainProcess.i18n_.apply(null, args);
 }
 
-exports.buildContextMenu = function (settings) {
-  contextMenu = Menu.buildFromTemplate([
+function buildContextMenu() {
+  g_contextMenu = Menu.buildFromTemplate([
     {
       label: _("ctxmenu-nextpage"),
       click() {
@@ -44,7 +44,7 @@ exports.buildContextMenu = function (settings) {
         {
           id: "scale-to-height",
           label: _("menu-view-zoom-scaleheight"),
-          submenu: getScaleToHeightSubmenu(settings),
+          submenu: getScaleToHeightSubmenu(),
         },
       ],
     },
@@ -111,13 +111,14 @@ exports.buildContextMenu = function (settings) {
       },
     },
   ]);
-};
+}
 
 exports.getContextMenu = function () {
-  return contextMenu;
+  if (g_contextMenu === undefined) buildContextMenu();
+  return g_contextMenu;
 };
 
-function getScaleToHeightSubmenu(settings) {
+function getScaleToHeightSubmenu() {
   let menu = [];
   let defaults = [25, 50, 100, 150, 200, 300, 400];
   defaults.forEach((scale) => {
@@ -128,17 +129,15 @@ function getScaleToHeightSubmenu(settings) {
       },
     });
   });
-  if (settings.fit_mode == 2) {
-    menu.push({
-      type: "separator",
-    });
-    menu.push({
-      label: _("menu-view-zoom-scaleheight-enter"),
-      click() {
-        mainProcess.onMenuScaleToHeightEnter();
-      },
-    });
-  }
+  menu.push({
+    type: "separator",
+  });
+  menu.push({
+    label: _("menu-view-zoom-scaleheight-enter"),
+    click() {
+      mainProcess.onMenuScaleToHeightEnter();
+    },
+  });
 
   return menu;
 }
