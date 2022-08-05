@@ -209,9 +209,12 @@ ipcRenderer.on("refresh-epub-image", (event, rotation) => {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-ipcRenderer.on("show-modal-prompt", (event, question, defaultValue) => {
-  showModalPrompt(question, defaultValue);
-});
+ipcRenderer.on(
+  "show-modal-prompt",
+  (event, question, defaultValue, mode = 0) => {
+    showModalPrompt(question, defaultValue, mode);
+  }
+);
 
 ipcRenderer.on("show-modal-info", (event, title, message) => {
   showModalAlert(title, message);
@@ -221,13 +224,22 @@ ipcRenderer.on("show-modal-info", (event, title, message) => {
 // MODALS /////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-function showModalPrompt(question, defaultValue) {
-  smalltalk
-    .prompt(question, defaultValue)
-    .then((value) => {
-      ipcRenderer.send("go-to-page", value);
-    })
-    .catch(() => {});
+function showModalPrompt(question, defaultValue, mode = 0) {
+  if (mode === 0) {
+    smalltalk
+      .prompt(question, defaultValue)
+      .then((value) => {
+        ipcRenderer.send("go-to-page", value);
+      })
+      .catch(() => {});
+  } else if (mode === 1) {
+    smalltalk
+      .prompt(question, defaultValue)
+      .then((value) => {
+        ipcRenderer.send("enter-scale-value", parseInt(value));
+      })
+      .catch(() => {});
+  }
 }
 
 function showModalAlert(title, message) {

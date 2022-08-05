@@ -42,6 +42,7 @@
   "menu-view-zoom-fitwidth": "Ajustar a Ancho",
   "menu-view-zoom-fitheight": "Ajustar a Alto",
   "menu-view-zoom-scaleheight": "Escalar Altura",
+  "menu-view-zoom-scaleheight-enter": "Introducir Valor",
   "menu-view-zoom-scaleheight-in": "Incrementar",
   "menu-view-zoom-scaleheight-out": "Disminuir",
   "menu-view-zoom-scaleheight-reset": "Restablecer",
@@ -92,6 +93,7 @@
   "ui-modal-info-imagesavedto": "Archivo de imagen salvado en:",
   "ui-modal-info-errorexportingpage": "Error: No se pudo exportar la página",
   "ui-modal-prompt-pagenumber": "Número de Página",
+  "ui-modal-prompt-scalevalue": "Nuevo Valor de Escala",
   "ui-modal-info-version": "versión",
 
   "tool-shared-ui-input-file": "Archivo de Entrada:",

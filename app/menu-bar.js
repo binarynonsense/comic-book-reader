@@ -153,6 +153,12 @@ function getScaleToHeightSubmenu(settings) {
         mainProcess.onMenuScaleToHeightCustomize(0);
       },
     });
+    menu.push({
+      label: _("menu-view-zoom-scaleheight-enter"),
+      click() {
+        mainProcess.onMenuScaleToHeightEnter();
+      },
+    });
   }
 
   return menu;

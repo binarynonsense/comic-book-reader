@@ -77,8 +77,8 @@ function sanitizeSettings() {
   }
   if (
     !Number.isInteger(g_settings.zoom_scale) ||
-    g_settings.zoom_scale < 25 ||
-    g_settings.zoom_scale > 400
+    g_settings.zoom_scale < g_scaleToHeightMin ||
+    g_settings.zoom_scale > g_scaleToHeightMax
   ) {
     g_settings.zoom_scale = 100;
   }
@@ -637,10 +637,18 @@ ipcMain.on("open-file", (event, filePath) => {
 
 ipcMain.on("go-to-page", (event, value) => {
   if (!isNaN(value)) {
-    pageIndex = value - 1;
+    let pageIndex = value - 1;
     if (pageIndex >= 0 && pageIndex < g_fileData.numPages) {
       goToPage(pageIndex);
     }
+  }
+});
+
+ipcMain.on("enter-scale-value", (event, value) => {
+  if (!isNaN(value)) {
+    let scale = value;
+    if (scale < g_scaleToHeightMin || scale > g_scaleToHeightMax) return;
+    setScaleToHeight(scale);
   }
 });
 
@@ -722,6 +730,19 @@ exports.onMenuScaleToHeight = function (scale) {
 
 exports.onMenuScaleToHeightCustomize = function (mode) {
   moveZoomScale(mode);
+};
+
+exports.onMenuScaleToHeightEnter = function () {
+  g_mainWindow.webContents.send("update-menubar");
+  let question = `${_(
+    "ui-modal-prompt-scalevalue"
+  )} (${g_scaleToHeightMin}-${g_scaleToHeightMax}%):`;
+  g_mainWindow.webContents.send(
+    "show-modal-prompt",
+    question,
+    "" + g_settings.zoom_scale,
+    1
+  );
 };
 
 exports.onMenuRotationValue = function (value) {
@@ -1550,6 +1571,7 @@ function setFitToWidth() {
   g_mainWindow.webContents.send("update-menubar");
   g_mainWindow.webContents.send("set-fit-to-width");
   renderPageRefresh();
+  rebuildMenuBar();
 }
 
 function setFitToHeight() {
@@ -1558,12 +1580,16 @@ function setFitToHeight() {
   g_mainWindow.webContents.send("update-menubar");
   g_mainWindow.webContents.send("set-fit-to-height");
   renderPageRefresh();
+  rebuildMenuBar();
 }
+
+let g_scaleToHeightMin = 25;
+let g_scaleToHeightMax = 400;
 
 function setScaleToHeight(scale, fromMove = false) {
   g_settings.fit_mode = 2;
-  if (scale < 25) scale = 25;
-  else if (scale > 400) scale = 400;
+  if (scale < g_scaleToHeightMin) scale = g_scaleToHeightMin;
+  else if (scale > g_scaleToHeightMax) scale = g_scaleToHeightMax;
   if (fromMove && g_settings.zoom_scale === scale) return;
   g_settings.zoom_scale = scale;
   menuBar.setScaleToHeight(g_settings.zoom_scale);
