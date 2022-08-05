@@ -561,6 +561,24 @@ ipcMain.on("mouse-click", (event, mouseX, bodyX) => {
   }
 });
 
+ipcMain.on("zoom-in-pressed", (event) => {
+  if (g_settings.fit_mode === 2) {
+    setScaleToHeight(g_settings.zoom_scale + 5);
+  }
+});
+
+ipcMain.on("zoom-out-pressed", (event) => {
+  if (g_settings.fit_mode === 2) {
+    setScaleToHeight(g_settings.zoom_scale - 5);
+  }
+});
+
+ipcMain.on("zoom-reset-pressed", (event) => {
+  if (g_settings.fit_mode === 2) {
+    setScaleToHeight(100);
+  }
+});
+
 ///////////////////////////////////////////////////////////////////////////////
 
 ipcMain.on("toolbar-button-clicked", (event, name) => {
@@ -691,6 +709,10 @@ exports.onMenuFitToWidth = function () {
 
 exports.onMenuFitToHeight = function () {
   setFitToHeight();
+};
+
+exports.onMenuScaleToHeight = function (scale) {
+  setScaleToHeight(scale);
 };
 
 exports.onMenuRotationValue = function (value) {
@@ -1526,6 +1548,17 @@ function setFitToHeight() {
   menuBar.setFitToHeight();
   g_mainWindow.webContents.send("update-menubar");
   g_mainWindow.webContents.send("set-fit-to-height");
+  renderPageRefresh();
+}
+
+function setScaleToHeight(scale) {
+  g_settings.fit_mode = 2;
+  if (scale < 25) scale = 25;
+  else if (scale > 1000) scale = 1000;
+  g_settings.zoom_scale = scale;
+  menuBar.setScaleToHeight(g_settings.zoom_scale);
+  g_mainWindow.webContents.send("update-menubar");
+  g_mainWindow.webContents.send("set-scale-to-height", g_settings.zoom_scale);
   renderPageRefresh();
 }
 

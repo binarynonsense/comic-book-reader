@@ -21,6 +21,9 @@
   --scrollbar-bg-color: #1e1e1e;
   --scrollbar-color: #666666;
   --scrollbar-hover-color: #555;
+
+  --zoom-height-scale: 100;
+  --zoom-height-borders: 60px;
 }
 
 html {
@@ -52,7 +55,7 @@ img {
   display: none;
 }
 
-/* //////////////  ////////////// */
+/* ////////////// UI ////////////// */
 
 #clock-bubble {
   width: 100%;
@@ -99,7 +102,6 @@ img {
 }
 
 #pages-container {
-  /* ref: https://css-tricks.com/centering-the-newest-coolest-way-vs-the-oldest-coolest-way/ */
   display: grid;
   height: 100%;
   margin: 0;
@@ -111,10 +113,25 @@ img {
   margin-bottom: 30px;
 }
 
-/* //////////////  ////////////// */
+/* ////////////// ZOOM ////////////// */
 
 .set-rotate-180 {
   transform: rotate(180deg);
+}
+
+.set-scale-to-height {
+  --scale-to-height-size: calc(
+    100vh * var(--zoom-height-scale) / 100 - var(--zoom-height-borders)
+  );
+  height: var(--scale-to-height-size);
+}
+
+.set-scale-to-height img {
+  height: calc(var(--scale-to-height-size));
+}
+
+.set-scale-to-height canvas {
+  height: calc(var(--scale-to-height-size));
 }
 
 .set-fit-to-height {
@@ -168,10 +185,9 @@ img {
   margin-bottom: 0px !important;
 }
 
-/* //////////////  ////////////// */
+/* ////////////// TITLE BAR ////////////// */
 
 .cet-titlebar {
-  /* background-color: var(--toolbar-bg-color) !important; */
   color: var(--titlebar-text-color) !important;
   font-weight: bold !important;
   z-index: 20;
@@ -193,14 +209,7 @@ img {
   color: var(--titlebar-title-text-color) !important;
 }
 
-.hidden-scrollbar {
-  overflow-x: auto;
-}
-.hidden-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-
-/* CENTER BLOCK OPEN FILE INFO */
+/* ////////////// BACKGROUND ////////////// */
 
 .centered-block {
   margin: 0;
@@ -209,19 +218,24 @@ img {
   left: 50%;
   -ms-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
-  /* color: #666; */
   text-align: center;
 }
 .centered-block img {
   width: 30vh;
   opacity: 0.3;
   margin: auto;
-  /* filter: blur(1px) grayscale(100%); */
   filter: grayscale(100%);
   margin-bottom: 20px;
 }
 
-/* SCROLLBAR */
+/* ////////////// SCROLLBAR ////////////// */
+
+.hidden-scrollbar {
+  overflow-x: auto;
+}
+.hidden-scrollbar::-webkit-scrollbar {
+  display: none;
+}
 
 /* ::-webkit-scrollbar {
   display: none;

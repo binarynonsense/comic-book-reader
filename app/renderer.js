@@ -130,6 +130,10 @@ ipcRenderer.on("set-fit-to-height", (event) => {
   setFitToHeight();
 });
 
+ipcRenderer.on("set-scale-to-height", (event, scale) => {
+  setScaleToHeight(scale);
+});
+
 ipcRenderer.on("set-hide-inactive-mouse-cursor", (event, hide) => {
   g_hideMouseCursor = hide;
 });
@@ -592,6 +596,15 @@ document.onkeydown = function (event) {
   } else if (event.keyCode == 27) {
     // escape
     ipcRenderer.send("escape-pressed");
+  } else if (event.ctrlKey && event.key === "+") {
+    // ctrl + '+'
+    ipcRenderer.send("zoom-in-pressed");
+  } else if (event.ctrlKey && event.key === "-") {
+    // ctrl + '-'
+    ipcRenderer.send("zoom-out-pressed");
+  } else if (event.ctrlKey && (event.keyCode == 48 || event.keyCode == 96)) {
+    // ctrl + 0
+    ipcRenderer.send("zoom-reset-pressed");
   } else if (event.ctrlKey && event.shiftKey && event.keyCode == 73) {
     // ctrl + shift + i
     ipcRenderer.send("dev-tools-pressed");
@@ -637,6 +650,14 @@ document.onmousemove = function () {
     }, g_mouseCursorHideTime);
   }
 };
+
+document.addEventListener("wheel", function (event) {
+  if (event.deltaY < 0) {
+    ipcRenderer.send("zoom-in-pressed");
+  } else if (event.deltaY > 0) {
+    ipcRenderer.send("zoom-out-pressed");
+  }
+});
 
 ///////////////////////////////////////////////////////////////////////////////
 // TOOLBAR ////////////////////////////////////////////////////////////////////
@@ -699,12 +720,15 @@ function showScrollBar(isVisible) {
 
 function showMenuBar(isVisible) {
   if (isVisible) {
-    document.querySelector(".titlebar").classList.remove("set-display-none");
+    document
+      .querySelector(".cet-titlebar")
+      .classList.remove("set-display-none");
     document.querySelector(".cet-container").classList.remove("set-top-zero");
   } else {
-    document.querySelector(".titlebar").classList.add("set-display-none");
+    document.querySelector(".cet-titlebar").classList.add("set-display-none");
     document.querySelector(".cet-container").classList.add("set-top-zero");
   }
+  updateZoom();
 }
 
 function showToolBar(isVisible) {
@@ -719,6 +743,7 @@ function showToolBar(isVisible) {
       .querySelector(".cet-container")
       .classList.add("set-margin-bottom-zero");
   }
+  updateZoom();
 }
 
 function showPageNumber(isVisible) {
@@ -753,10 +778,12 @@ function setFullscreenUI(isFullscreen) {
     buttonEnter.classList.remove("set-display-none");
     buttonExit.classList.add("set-display-none");
   }
+  updateZoom();
 }
 
 function setFitToWidth() {
   let container = document.querySelector("#pages-container");
+  container.classList.remove("set-scale-to-height");
   container.classList.remove("set-fit-to-height");
   container.classList.add("set-fit-to-width");
 
@@ -770,6 +797,7 @@ function setFitToWidth() {
 
 function setFitToHeight() {
   let container = document.querySelector("#pages-container");
+  container.classList.remove("set-scale-to-height");
   container.classList.remove("set-fit-to-width");
   container.classList.add("set-fit-to-height");
 
@@ -779,6 +807,49 @@ function setFitToHeight() {
   document
     .querySelector("#toolbar-button-fit-to-height")
     .classList.add("set-display-none");
+}
+
+function setScaleToHeight(scale) {
+  setZoomHeightCssVars(scale);
+  let container = document.querySelector("#pages-container");
+  container.classList.remove("set-fit-to-width");
+  container.classList.remove("set-fit-to-height");
+  container.classList.add("set-scale-to-height");
+
+  document
+    .querySelector("#toolbar-button-fit-to-width")
+    .classList.remove("set-display-none");
+  document
+    .querySelector("#toolbar-button-fit-to-height")
+    .classList.add("set-display-none");
+}
+
+function setZoomHeightCssVars(scale) {
+  if (scale !== undefined)
+    document.documentElement.style.setProperty(
+      "--zoom-height-scale",
+      `${scale}`
+    );
+
+  let isTitlebarHidden = document
+    .querySelector(".cet-titlebar")
+    .classList.contains("set-display-none");
+  let isToolbarHidden = document
+    .querySelector("#toolbar")
+    .classList.contains("set-display-none");
+
+  let border = 0;
+  if (!isTitlebarHidden) border += 30;
+  if (!isToolbarHidden) border += 30;
+  console.log(`${border}px`);
+  document.documentElement.style.setProperty(
+    "--zoom-height-borders",
+    `${border}px`
+  );
+}
+
+function updateZoom() {
+  setZoomHeightCssVars();
 }
 
 function moveScrollBarsToStart() {

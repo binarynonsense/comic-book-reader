@@ -9,11 +9,19 @@ function _(...args) {
 exports.setFitToWidth = function () {
   Menu.getApplicationMenu().getMenuItemById("fit-to-width").checked = true;
   Menu.getApplicationMenu().getMenuItemById("fit-to-height").checked = false;
+  Menu.getApplicationMenu().getMenuItemById("scale-to-height").checked = false;
 };
 
 exports.setFitToHeight = function () {
   Menu.getApplicationMenu().getMenuItemById("fit-to-width").checked = false;
   Menu.getApplicationMenu().getMenuItemById("fit-to-height").checked = true;
+  Menu.getApplicationMenu().getMenuItemById("scale-to-height").checked = false;
+};
+
+exports.setScaleToHeight = function () {
+  Menu.getApplicationMenu().getMenuItemById("fit-to-width").checked = false;
+  Menu.getApplicationMenu().getMenuItemById("fit-to-height").checked = false;
+  Menu.getApplicationMenu().getMenuItemById("scale-to-height").checked = true;
 };
 
 exports.setScrollBar = function (isChecked) {
@@ -424,6 +432,15 @@ function buildApplicationMenu(
               checked: settings.fit_mode == 1,
               click() {
                 mainProcess.onMenuFitToHeight();
+              },
+            },
+            {
+              id: "scale-to-height",
+              label: _("menu-view-zoom-scaleheight"),
+              type: "checkbox",
+              checked: settings.fit_mode == 2,
+              click() {
+                mainProcess.onMenuScaleToHeight(100);
               },
             },
           ],
