@@ -295,7 +295,7 @@ app.on("ready", () => {
   });
 
   g_mainWindow.webContents.on("context-menu", function (e, params) {
-    contextMenu.buildContextMenu();
+    contextMenu.buildContextMenu(g_settings);
     contextMenu.getContextMenu().popup(g_mainWindow, params.x, params.y);
   });
 

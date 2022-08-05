@@ -7,7 +7,7 @@ function _(...args) {
   return mainProcess.i18n_.apply(null, args);
 }
 
-exports.buildContextMenu = function () {
+exports.buildContextMenu = function (settings) {
   contextMenu = Menu.buildFromTemplate([
     {
       label: _("ctxmenu-nextpage"),
@@ -40,6 +40,11 @@ exports.buildContextMenu = function () {
           click() {
             mainProcess.onMenuFitToHeight();
           },
+        },
+        {
+          id: "scale-to-height",
+          label: _("menu-view-zoom-scaleheight"),
+          submenu: getScaleToHeightSubmenu(settings),
         },
       ],
     },
@@ -111,3 +116,29 @@ exports.buildContextMenu = function () {
 exports.getContextMenu = function () {
   return contextMenu;
 };
+
+function getScaleToHeightSubmenu(settings) {
+  let menu = [];
+  let defaults = [25, 50, 100, 150, 200, 300, 400];
+  defaults.forEach((scale) => {
+    menu.push({
+      label: `${scale}%`,
+      click() {
+        mainProcess.onMenuScaleToHeight(scale);
+      },
+    });
+  });
+  if (settings.fit_mode == 2) {
+    menu.push({
+      type: "separator",
+    });
+    menu.push({
+      label: _("menu-view-zoom-scaleheight-enter"),
+      click() {
+        mainProcess.onMenuScaleToHeightEnter();
+      },
+    });
+  }
+
+  return menu;
+}
