@@ -86,6 +86,7 @@ img {
   border: 0;
   z-index: 9;
   margin-bottom: 8px;
+  user-select: none;
 }
 
 #page-number-bubble > span {
