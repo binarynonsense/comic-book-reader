@@ -853,7 +853,6 @@ function setZoomHeightCssVars(scale) {
   let border = 0;
   if (!isTitlebarHidden) border += 30;
   if (!isToolbarHidden) border += 30;
-  console.log(`${border}px`);
   document.documentElement.style.setProperty(
     "--zoom-height-borders",
     `${border}px`
