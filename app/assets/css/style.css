@@ -65,6 +65,7 @@ img {
   border: 0;
   z-index: 9;
   margin-top: 10px;
+  user-select: none;
 }
 
 #clock-bubble > span {
