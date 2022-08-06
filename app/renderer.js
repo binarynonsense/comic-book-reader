@@ -593,17 +593,29 @@ document.onkeydown = function (event) {
   } else if (event.keyCode == 35) {
     // end
     ipcRenderer.send("end-pressed");
-  } else if (event.keyCode == 40) {
-    // arrow down
+  } else if (event.keyCode == 40 || event.keyCode == 83) {
+    // arrow down or S
     let container = document.querySelector(".cet-container");
     let amount = container.offsetHeight / 5;
     container.scrollBy(0, amount);
     event.stopPropagation();
-  } else if (event.keyCode == 38) {
-    // arrow up
+  } else if (event.keyCode == 38 || event.keyCode == 87) {
+    // arrow up or W
     let container = document.querySelector(".cet-container");
     let amount = container.offsetHeight / 5;
     document.querySelector(".cet-container").scrollBy(0, -amount);
+    event.stopPropagation();
+  } else if (event.keyCode == 65) {
+    // A
+    let container = document.querySelector(".cet-container");
+    let amount = container.offsetWidth / 5;
+    container.scrollBy(-amount, 0);
+    event.stopPropagation();
+  } else if (event.keyCode == 68) {
+    // D
+    let container = document.querySelector(".cet-container");
+    let amount = container.offsetWidth / 5;
+    container.scrollBy(amount, 0);
     event.stopPropagation();
   } else if (event.keyCode == 27) {
     // escape
