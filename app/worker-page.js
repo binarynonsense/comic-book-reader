@@ -4,10 +4,22 @@ const fileFormats = require("./file-formats");
 const { FileDataType } = require("./constants");
 
 process.on("message", (message) => {
-  extractBase64Image(message[0], message[1], message[2], message[3]);
+  extractBase64Image(
+    message[0],
+    message[1],
+    message[2],
+    message[3],
+    message[4]
+  );
 });
 
-async function extractBase64Image(fileType, filePath, entryName, scrollBarPos) {
+async function extractBase64Image(
+  fileType,
+  filePath,
+  entryName,
+  scrollBarPos,
+  password
+) {
   try {
     let buf;
     let mime;
@@ -17,7 +29,11 @@ async function extractBase64Image(fileType, filePath, entryName, scrollBarPos) {
         .toString("base64");
       mime = "image/" + fileFormats.getMimeType(entryName);
     } else if (fileType === FileDataType.RAR) {
-      buf = await fileFormats.extractRarEntryBuffer(filePath, entryName);
+      buf = await fileFormats.extractRarEntryBuffer(
+        filePath,
+        entryName,
+        password
+      );
       buf = buf.toString("base64");
       mime = "image/" + fileFormats.getMimeType(entryName);
     } else if (fileType === FileDataType.EPUB) {

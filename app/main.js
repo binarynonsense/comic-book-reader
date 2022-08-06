@@ -457,7 +457,10 @@ ipcMain.on("page-loaded", (event, scrollBarPos) => {
 });
 
 ipcMain.on("password-entered", (event, password) => {
-  if (g_fileData.type === FileDataType.PDF) {
+  if (
+    g_fileData.type === FileDataType.PDF ||
+    g_fileData.type === FileDataType.RAR
+  ) {
     let filePath = g_fileData.path;
     let pageIndex = g_fileData.pageIndex;
     if (g_tempFileData.state === FileDataState.LOADED) {
@@ -470,7 +473,10 @@ ipcMain.on("password-entered", (event, password) => {
 });
 
 ipcMain.on("password-canceled", (event) => {
-  if (g_fileData.type === FileDataType.PDF) {
+  if (
+    g_fileData.type === FileDataType.PDF ||
+    g_fileData.type === FileDataType.RAR
+  ) {
     if (g_tempFileData.state === FileDataState.LOADED) {
       // restore previous file data
       Object.assign(g_fileData, g_tempFileData);
@@ -1009,7 +1015,7 @@ let g_fileData = {
   numPages: 0,
   pageIndex: 0,
   pageRotation: 0,
-  password: undefined,
+  password: "",
 };
 
 let g_tempFileData = {};
@@ -1087,7 +1093,7 @@ function openImageFolder(folderPath, filePath, pageIndex) {
   goToPage(pageIndex);
 }
 
-function openComicBookFile(filePath, pageIndex = 0, password = undefined) {
+function openComicBookFile(filePath, pageIndex = 0, password = "") {
   if (filePath === undefined || filePath === "" || !fs.existsSync(filePath)) {
     return;
   }
@@ -1119,7 +1125,6 @@ function openComicBookFile(filePath, pageIndex = 0, password = undefined) {
         g_fileData.type = FileDataType.PDF;
         g_fileData.state = FileDataState.LOADING;
         g_fileData.pageIndex = pageIndex;
-
         g_fileData.path = filePath;
       }
       g_fileData.password = password;
@@ -1131,7 +1136,6 @@ function openComicBookFile(filePath, pageIndex = 0, password = undefined) {
         g_fileData.type = FileDataType.EPUB;
         g_fileData.state = FileDataState.LOADING;
         g_fileData.pageIndex = pageIndex;
-
         g_fileData.path = filePath;
       }
       g_fileData.password = password;
@@ -1141,7 +1145,32 @@ function openComicBookFile(filePath, pageIndex = 0, password = undefined) {
         fileExtension === "." + FileExtension.RAR ||
         fileExtension === "." + FileExtension.CBR
       ) {
-        let pagesPaths = await fileFormats.getRarEntriesList(filePath);
+        let rarData = await fileFormats.getRarEntriesList(filePath, password);
+        if (rarData.result === "password required") {
+          if (g_fileData.state !== FileDataState.LOADING) {
+            Object.assign(g_tempFileData, g_fileData);
+            cleanUpFileData();
+            g_fileData.state = FileDataState.LOADING;
+            g_fileData.type = FileDataType.RAR;
+            g_fileData.path = filePath;
+            g_fileData.pageIndex = pageIndex;
+          }
+          g_fileData.password = password;
+          g_mainWindow.webContents.send(
+            "show-modal-prompt-password",
+            _("ui-modal-prompt-enterpassword")
+          );
+          return;
+        } else if (rarData.result === "other error") {
+          g_mainWindow.webContents.send(
+            "show-modal-info",
+            _("ui-modal-info-fileerror"),
+            _("ui-modal-info-couldntopen-rar")
+          );
+          g_mainWindow.webContents.send("update-loading", false);
+          return;
+        }
+        let pagesPaths = rarData.paths;
         pagesPaths.sort(fileUtils.compare);
         if (pagesPaths !== undefined && pagesPaths.length > 0) {
           g_fileData.state = FileDataState.LOADED;
@@ -1246,7 +1275,7 @@ function cleanUpFileData() {
   g_fileData.numPages = 0;
   g_fileData.pageIndex = 0;
   g_fileData.pageRotation = 0;
-  g_fileData.password = undefined;
+  g_fileData.password = "";
 }
 
 function closeCurrentFile() {
@@ -1393,6 +1422,7 @@ function goToPage(pageIndex, scrollBarPos = 0) {
       g_fileData.path,
       g_fileData.pagesPaths[g_fileData.pageIndex],
       scrollBarPos,
+      g_fileData.password,
     ]);
   } else if (g_fileData.type === FileDataType.PDF) {
     g_fileData.state = FileDataState.LOADING;

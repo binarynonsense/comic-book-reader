@@ -76,32 +76,58 @@ async function extractRar(filePath, tempFolderPath) {
 }
 exports.extractRar = extractRar;
 
-async function getRarEntriesList(filePath) {
+async function getRarEntriesList(filePath, password) {
   try {
     var buf = Uint8Array.from(fs.readFileSync(filePath)).buffer;
-    var extractor = await unrar.createExtractorFromData({ data: buf });
+    var extractor = await unrar.createExtractorFromData({
+      data: buf,
+      password: password,
+    });
     const list = extractor.getFileList();
+
+    // const arcHeader = list.arcHeader;
+    // console.log(arcHeader);
+
     const fileHeaders = [...list.fileHeaders];
     let imgEntries = [];
+    let isEncrypted = false;
+    let encryptedEntryName;
     fileHeaders.forEach(function (header) {
+      if (header.flags.encrypted) {
+        isEncrypted = true;
+        encryptedEntryName = header.name;
+      }
       if (!header.flags.directory) {
         if (hasImageExtension(header.name)) {
           imgEntries.push(header.name);
         }
       }
     });
-    return imgEntries;
+    if (isEncrypted) {
+      // try password to see if there's an error = wrong password
+      try {
+        const extracted = extractor.extract({ files: [encryptedEntryName] });
+        const files = [...extracted.files];
+        files[0].extraction;
+      } catch (error) {
+        return { result: "password required", paths: [] };
+      }
+    }
+    return { result: "success", paths: imgEntries };
   } catch (error) {
     console.log(error);
-    return [];
+    return { result: "other error", paths: [] };
   }
 }
 exports.getRarEntriesList = getRarEntriesList;
 
-async function extractRarEntryBuffer(rarPath, entryName) {
+async function extractRarEntryBuffer(rarPath, entryName, password) {
   try {
     var buf = Uint8Array.from(fs.readFileSync(rarPath)).buffer;
-    var extractor = await unrar.createExtractorFromData({ data: buf });
+    var extractor = await unrar.createExtractorFromData({
+      data: buf,
+      password: password,
+    });
     const extracted = extractor.extract({ files: [entryName] });
     const files = [...extracted.files];
     files[0].extraction; // Uint8Array

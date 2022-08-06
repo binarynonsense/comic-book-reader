@@ -19,7 +19,8 @@ async function exportPage(fileData, outputFolderPath, sendToTool) {
     } else if (fileData.type === FileDataType.RAR) {
       buf = await fileFormats.extractRarEntryBuffer(
         fileData.path,
-        fileData.pagesPaths[fileData.pageIndex]
+        fileData.pagesPaths[fileData.pageIndex],
+        fileData.password
       );
     } else if (fileData.type === FileDataType.EPUB) {
       let data = await fileFormats.extractEpubImageBuffer(
