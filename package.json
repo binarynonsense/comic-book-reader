@@ -44,7 +44,7 @@
     "license-checker": "^25.0.1"
   },
   "dependencies": {
-    "adm-zip": "^0.4.16",
+    "adm-zip": "^0.5.9",
     "changedpi": "^1.0.4",
     "custom-electron-titlebar": "^4.1.0",
     "epub": "^1.2.1",
