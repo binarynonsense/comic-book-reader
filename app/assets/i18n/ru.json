@@ -92,9 +92,10 @@
   "ui-modal-info-couldntopen-pdf": "Не удалось открыть файл PDF",
   "ui-modal-info-imagesavedto": "Файл изображения сохранён в:",
   "ui-modal-info-errorexportingpage": "Ошибка: Не удалось экспортировать страницу",
+  "ui-modal-info-version": "версия",
   "ui-modal-prompt-pagenumber": "Номер страницы",
   "[NEEDS TRANSLATION]ui-modal-prompt-scalevalue": "New Scale Value",
-  "ui-modal-info-version": "версия",
+  "[NEEDS TRANSLATION]ui-modal-prompt-enterpassword": "Enter Password",
 
   "tool-shared-ui-input-file": "Входной файл:",
   "tool-shared-ui-input-files": "Входной файл(ы):",

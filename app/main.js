@@ -456,6 +456,30 @@ ipcMain.on("page-loaded", (event, scrollBarPos) => {
   renderTitle();
 });
 
+ipcMain.on("password-entered", (event, password) => {
+  if (g_fileData.type === FileDataType.PDF) {
+    let filePath = g_fileData.path;
+    let pageIndex = g_fileData.pageIndex;
+    if (g_tempFileData.state === FileDataState.LOADED) {
+      // restore previous file data
+      Object.assign(g_fileData, g_tempFileData);
+      g_tempFileData = {};
+    }
+    openComicBookFile(filePath, pageIndex, password);
+  }
+});
+
+ipcMain.on("password-canceled", (event) => {
+  if (g_fileData.type === FileDataType.PDF) {
+    if (g_tempFileData.state === FileDataState.LOADED) {
+      // restore previous file data
+      Object.assign(g_fileData, g_tempFileData);
+      g_tempFileData = {};
+    }
+    g_mainWindow.webContents.send("update-loading", false);
+  }
+});
+
 ///////////////////////////////////////////////////////////////////////////////
 
 ipcMain.on(
@@ -478,7 +502,14 @@ ipcMain.on(
 );
 
 ipcMain.on("epub-load-failed", (event) => {
-  g_fileData.state = FileDataState.LOADED;
+  // unrecoverable error
+  if (g_tempFileData.state === FileDataState.LOADED) {
+    // restore previous file data
+    Object.assign(g_fileData, g_tempFileData);
+    g_tempFileData = {};
+  }
+
+  g_mainWindow.webContents.send("update-loading", false);
   g_mainWindow.webContents.send(
     "show-modal-info",
     _("ui-modal-info-fileerror"),
@@ -514,13 +545,40 @@ ipcMain.on(
   }
 );
 
-ipcMain.on("pdf-load-failed", (event) => {
-  g_fileData.state = FileDataState.LOADED;
-  g_mainWindow.webContents.send(
-    "show-modal-info",
-    _("ui-modal-info-fileerror"),
-    _("ui-modal-info-couldntopen-pdf")
-  );
+ipcMain.on("pdf-load-failed", (event, error) => {
+  if (
+    error !== undefined &&
+    error.name !== undefined &&
+    error.name === "PasswordException"
+  ) {
+    if (error.code === 1) {
+      // { message: 'No password given', name: 'PasswordException', code: 1 }
+      g_mainWindow.webContents.send(
+        "show-modal-prompt-password",
+        _("ui-modal-prompt-enterpassword")
+      );
+    } else if (error.code === 2) {
+      // { message: 'Incorrect Password', name: 'PasswordException', code: 2 }
+      g_mainWindow.webContents.send(
+        "show-modal-prompt-password",
+        _("ui-modal-prompt-enterpassword")
+      );
+    }
+  } else {
+    // unrecoverable error
+    if (g_tempFileData.state === FileDataState.LOADED) {
+      // restore previous file data
+      Object.assign(g_fileData, g_tempFileData);
+      g_tempFileData = {};
+    }
+
+    g_mainWindow.webContents.send("update-loading", false);
+    g_mainWindow.webContents.send(
+      "show-modal-info",
+      _("ui-modal-info-fileerror"),
+      _("ui-modal-info-couldntopen-pdf")
+    );
+  }
 });
 
 ipcMain.on(
@@ -833,22 +891,7 @@ exports.onMenuClearHistory = function () {
 };
 
 exports.onMenuCloseFile = function () {
-  addCurrentToHistory(); // add the one I'm closing to history
-
-  g_fileData.state = FileDataState.NOT_SET;
-  g_fileData.type = FileDataType.NOT_SET;
-  g_fileData.path = "";
-  g_fileData.name = "";
-  g_fileData.pagesPaths = [];
-  g_fileData.numPages = 0;
-  g_fileData.pageIndex = 0;
-  g_fileData.pageRotation = 0;
-
-  updateMenuItemsState();
-  renderTitle();
-
-  g_mainWindow.webContents.send("file-closed");
-  g_mainWindow.webContents.send("update-menubar");
+  closeCurrentFile();
 };
 
 exports.onMenuPageExport = function () {
@@ -966,7 +1009,10 @@ let g_fileData = {
   numPages: 0,
   pageIndex: 0,
   pageRotation: 0,
+  password: undefined,
 };
+
+let g_tempFileData = {};
 
 function tryOpenPath(filePath, pageIndex = 0) {
   if (fs.existsSync(filePath)) {
@@ -1041,7 +1087,7 @@ function openImageFolder(folderPath, filePath, pageIndex) {
   goToPage(pageIndex);
 }
 
-function openComicBookFile(filePath, pageIndex = 0) {
+function openComicBookFile(filePath, pageIndex = 0, password = undefined) {
   if (filePath === undefined || filePath === "" || !fs.existsSync(filePath)) {
     return;
   }
@@ -1049,6 +1095,7 @@ function openComicBookFile(filePath, pageIndex = 0) {
   g_mainWindow.webContents.send("update-loading", true);
 
   let fileExtension = path.extname(filePath).toLowerCase();
+  g_tempFileData = {};
 
   (async () => {
     let fileType = await FileType.fromFile(filePath);
@@ -1066,10 +1113,28 @@ function openComicBookFile(filePath, pageIndex = 0) {
     }
 
     if (fileExtension === "." + FileExtension.PDF) {
-      g_fileData.state = FileDataState.LOADING;
-      g_mainWindow.webContents.send("load-pdf", filePath, pageIndex);
+      if (g_fileData.state !== FileDataState.LOADING) {
+        Object.assign(g_tempFileData, g_fileData);
+        cleanUpFileData();
+        g_fileData.type = FileDataType.PDF;
+        g_fileData.state = FileDataState.LOADING;
+        g_fileData.pageIndex = pageIndex;
+
+        g_fileData.path = filePath;
+      }
+      g_fileData.password = password;
+      g_mainWindow.webContents.send("load-pdf", filePath, pageIndex, password);
     } else if (fileExtension === "." + FileExtension.EPUB) {
-      g_fileData.state = FileDataState.LOADING;
+      if (g_fileData.state !== FileDataState.LOADING) {
+        Object.assign(g_tempFileData, g_fileData);
+        cleanUpFileData();
+        g_fileData.type = FileDataType.EPUB;
+        g_fileData.state = FileDataState.LOADING;
+        g_fileData.pageIndex = pageIndex;
+
+        g_fileData.path = filePath;
+      }
+      g_fileData.password = password;
       g_mainWindow.webContents.send("load-epub", filePath, pageIndex);
     } else {
       if (
@@ -1086,6 +1151,7 @@ function openComicBookFile(filePath, pageIndex = 0) {
           g_fileData.pagesPaths = pagesPaths;
           g_fileData.numPages = pagesPaths.length;
           g_fileData.pageIndex = pageIndex;
+          g_fileData.password = password;
           addCurrentToHistory();
           updateMenuItemsState();
           setPageRotation(0, false);
@@ -1112,6 +1178,7 @@ function openComicBookFile(filePath, pageIndex = 0) {
           g_fileData.pagesPaths = pagesPaths;
           g_fileData.numPages = pagesPaths.length;
           g_fileData.pageIndex = pageIndex;
+          g_fileData.password = password;
           addCurrentToHistory();
           updateMenuItemsState();
           setPageRotation(0, false);
@@ -1168,6 +1235,27 @@ function tryOpeningAdjacentFile(next) {
       break;
     }
   }
+}
+
+function cleanUpFileData() {
+  g_fileData.state = FileDataState.NOT_SET;
+  g_fileData.type = FileDataType.NOT_SET;
+  g_fileData.path = "";
+  g_fileData.name = "";
+  g_fileData.pagesPaths = [];
+  g_fileData.numPages = 0;
+  g_fileData.pageIndex = 0;
+  g_fileData.pageRotation = 0;
+  g_fileData.password = undefined;
+}
+
+function closeCurrentFile() {
+  addCurrentToHistory(); // add the one I'm closing to history
+  cleanUpFileData();
+  updateMenuItemsState();
+  renderTitle();
+  g_mainWindow.webContents.send("file-closed");
+  g_mainWindow.webContents.send("update-menubar");
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1367,6 +1455,7 @@ async function exportPageStart(sendToTool = 0) {
         g_fileData.path,
         g_fileData.pageIndex + 1,
         outputFolderPath,
+        g_fileData.password,
         sendToTool
       );
       return;

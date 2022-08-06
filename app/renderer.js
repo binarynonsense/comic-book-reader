@@ -173,14 +173,14 @@ ipcRenderer.on("refresh-img-page", (event, rotation) => {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-ipcRenderer.on("load-pdf", (event, filePath, pageIndex) => {
-  document.querySelector(".centered-block").classList.add("hide");
-  loadPdf(filePath, pageIndex);
+ipcRenderer.on("load-pdf", (event, filePath, pageIndex, password) => {
+  loadPdf(filePath, pageIndex, password);
 });
 
 ipcRenderer.on(
   "render-pdf-page",
   (event, pageIndex, rotation, scrollBarPos) => {
+    document.querySelector(".centered-block").classList.add("hide");
     renderPdfPage(pageIndex, rotation, scrollBarPos);
   }
 );
@@ -191,15 +191,21 @@ ipcRenderer.on("refresh-pdf-page", (event, rotation) => {
 
 ipcRenderer.on(
   "extract-pdf-image-buffer",
-  (event, filePath, pageNum, outputFolderPath, sendToTool) => {
-    extractPDFImageBuffer(filePath, pageNum, outputFolderPath, sendToTool);
+  (event, filePath, pageNum, outputFolderPath, password, sendToTool) => {
+    extractPDFImageBuffer(
+      filePath,
+      pageNum,
+      outputFolderPath,
+      password,
+      sendToTool
+    );
   }
 );
 
 ///////////////////////////////////////////////////////////////////////////////
 
 ipcRenderer.on("load-epub", (event, filePath, pageIndex) => {
-  document.querySelector(".centered-block").classList.add("hide");
+  //document.querySelector(".centered-block").classList.add("hide");
   loadEpub(filePath, pageIndex);
 });
 
@@ -215,6 +221,10 @@ ipcRenderer.on(
     showModalPrompt(question, defaultValue, mode);
   }
 );
+
+ipcRenderer.on("show-modal-prompt-password", (event, question) => {
+  showModalPromptPassword(question);
+});
 
 ipcRenderer.on("show-modal-info", (event, title, message) => {
   showModalAlert(title, message);
@@ -240,6 +250,17 @@ function showModalPrompt(question, defaultValue, mode = 0) {
       })
       .catch(() => {});
   }
+}
+
+function showModalPromptPassword(question) {
+  smalltalk
+    .prompt(question, "", "", { type: "password" })
+    .then((value) => {
+      ipcRenderer.send("password-entered", value);
+    })
+    .catch(() => {
+      ipcRenderer.send("password-canceled");
+    });
 }
 
 function showModalAlert(title, message) {
@@ -368,10 +389,28 @@ function extractEpubImagesSrcRecursive(
 // PDF ////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-function loadPdf(filePath, pageIndex) {
+function loadPdf(filePath, pageIndex, password) {
   pdfjsLib.GlobalWorkerOptions.workerSrc =
     "./assets/libs/pdfjs/build/pdf.worker.js";
-  var loadingTask = pdfjsLib.getDocument(filePath);
+  var loadingTask = pdfjsLib.getDocument({ url: filePath, password: password });
+
+  // NOTE: Didn't work, keep for the future
+  // loadingTask.onPassword = function (updatePassword, reason) {
+  //   console.log("onPassword");
+  //   if (reason === PasswordResponses.NEED_PASSWORD) {
+  //     updatePassword("123456"); // Provide an incorrect password.
+  //     // ipcRenderer.send("pdf-load-failed", reason);
+  //     // loadingTask.destroy();
+  //     return;
+  //   }
+  //   if (reason === PasswordResponses.INCORRECT_PASSWORD) {
+  //     //updatePassword("asdfasdf"); // Provide the correct password.
+  //     ipcRenderer.send("pdf-load-failed", reason);
+  //     loadingTask.destroy();
+  //     return;
+  //   }
+  // };
+
   loadingTask.promise
     .then(function (pdf) {
       cleanUp();
@@ -384,8 +423,8 @@ function loadPdf(filePath, pageIndex) {
         g_currentPdf.numPages
       );
     })
-    .catch((e) => {
-      ipcRenderer.send("pdf-load-failed");
+    .catch((error) => {
+      ipcRenderer.send("pdf-load-failed", error);
     });
 }
 
@@ -451,12 +490,16 @@ async function extractPDFImageBuffer(
   filePath,
   pageNum,
   outputFolderPath,
+  password,
   sendToTool
 ) {
   pdfjsLib.GlobalWorkerOptions.workerSrc =
     "./assets/libs/pdfjs/build/pdf.worker.js";
   try {
-    const pdf = await pdfjsLib.getDocument(filePath).promise;
+    const pdf = await pdfjsLib.getDocument({
+      url: filePath,
+      password: password,
+    }).promise;
     let page = await pdf.getPage(pageNum);
     let pageWidth = page.view[2]; // [left, top, width, height]
     let pageHeight = page.view[3];

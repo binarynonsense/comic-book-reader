@@ -92,9 +92,10 @@
   "ui-modal-info-couldntopen-pdf": "Couldn't open the PDF file",
   "ui-modal-info-imagesavedto": "Image file saved to:",
   "ui-modal-info-errorexportingpage": "Error: Couldn't export the page",
+  "ui-modal-info-version": "version",
   "ui-modal-prompt-pagenumber": "Page Number",
   "ui-modal-prompt-scalevalue": "New Scale Value",
-  "ui-modal-info-version": "version",
+  "ui-modal-prompt-enterpassword": "Enter Password",
 
   "tool-shared-ui-input-file": "Input File:",
   "tool-shared-ui-input-files": "Input File/s:",
