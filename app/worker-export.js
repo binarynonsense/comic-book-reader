@@ -14,7 +14,8 @@ async function exportPage(fileData, outputFolderPath, sendToTool) {
     if (fileData.type === FileDataType.ZIP) {
       buf = fileFormats.extractZipEntryBuffer(
         fileData.path,
-        fileData.pagesPaths[fileData.pageIndex]
+        fileData.pagesPaths[fileData.pageIndex],
+        fileData.password
       );
     } else if (fileData.type === FileDataType.RAR) {
       buf = await fileFormats.extractRarEntryBuffer(

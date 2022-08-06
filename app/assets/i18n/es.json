@@ -88,6 +88,7 @@
   "ui-modal-info-invalidformat": "Formato Inválido",
   "ui-modal-info-couldntopen-rar": "No se pudo abrir el archivo RAR",
   "ui-modal-info-couldntopen-zip": "No se pudo abrir el archivo ZIP",
+  "ui-modal-info-couldntopen-zip-aes": "No se pudo abrir el archivo ZIP. El cifrado AES para contraseñas no está soportado (sólo ZipCrypto).",
   "ui-modal-info-couldntopen-epub": "No se pudo abrir el archivo EPUB",
   "ui-modal-info-couldntopen-pdf": "No se pudo abrir el archivo PDF",
   "ui-modal-info-imagesavedto": "Archivo de imagen salvado en:",

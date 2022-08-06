@@ -25,7 +25,7 @@ async function extractBase64Image(
     let mime;
     if (fileType === FileDataType.ZIP) {
       buf = fileFormats
-        .extractZipEntryBuffer(filePath, entryName)
+        .extractZipEntryBuffer(filePath, entryName, password)
         .toString("base64");
       mime = "image/" + fileFormats.getMimeType(entryName);
     } else if (fileType === FileDataType.RAR) {

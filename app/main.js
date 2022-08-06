@@ -459,7 +459,8 @@ ipcMain.on("page-loaded", (event, scrollBarPos) => {
 ipcMain.on("password-entered", (event, password) => {
   if (
     g_fileData.type === FileDataType.PDF ||
-    g_fileData.type === FileDataType.RAR
+    g_fileData.type === FileDataType.RAR ||
+    g_fileData.type === FileDataType.ZIP
   ) {
     let filePath = g_fileData.path;
     let pageIndex = g_fileData.pageIndex;
@@ -475,7 +476,8 @@ ipcMain.on("password-entered", (event, password) => {
 ipcMain.on("password-canceled", (event) => {
   if (
     g_fileData.type === FileDataType.PDF ||
-    g_fileData.type === FileDataType.RAR
+    g_fileData.type === FileDataType.RAR ||
+    g_fileData.type === FileDataType.ZIP
   ) {
     if (g_tempFileData.state === FileDataState.LOADED) {
       // restore previous file data
@@ -1197,7 +1199,40 @@ function openComicBookFile(filePath, pageIndex = 0, password = "") {
         fileExtension === "." + FileExtension.ZIP ||
         fileExtension === "." + FileExtension.CBZ
       ) {
-        let pagesPaths = fileFormats.getZipEntriesList(filePath);
+        let zipData = fileFormats.getZipEntriesList(filePath, password);
+        if (zipData.result === "password required") {
+          if (g_fileData.state !== FileDataState.LOADING) {
+            Object.assign(g_tempFileData, g_fileData);
+            cleanUpFileData();
+            g_fileData.state = FileDataState.LOADING;
+            g_fileData.type = FileDataType.ZIP;
+            g_fileData.path = filePath;
+            g_fileData.pageIndex = pageIndex;
+          }
+          g_fileData.password = password;
+          g_mainWindow.webContents.send(
+            "show-modal-prompt-password",
+            _("ui-modal-prompt-enterpassword")
+          );
+          return;
+        } else if (zipData.result === "other error") {
+          if (zipData.extra == "aes") {
+            g_mainWindow.webContents.send(
+              "show-modal-info",
+              _("ui-modal-info-fileerror"),
+              _("ui-modal-info-couldntopen-zip-aes")
+            );
+          } else {
+            g_mainWindow.webContents.send(
+              "show-modal-info",
+              _("ui-modal-info-fileerror"),
+              _("ui-modal-info-couldntopen-zip")
+            );
+          }
+          g_mainWindow.webContents.send("update-loading", false);
+          return;
+        }
+        let pagesPaths = zipData.paths;
         pagesPaths.sort(fileUtils.compare);
         if (pagesPaths !== undefined && pagesPaths.length > 0) {
           g_fileData.state = FileDataState.LOADED;
@@ -1432,9 +1467,7 @@ function goToPage(pageIndex, scrollBarPos = 0) {
       g_fileData.pageRotation,
       scrollBarPos
     );
-  } // else if (g_fileData.type === FileDataType.IMGS) {
-  //   renderImageFile(g_fileData.pagesPaths[g_fileData.pageIndex]);
-  // }
+  }
 }
 
 function goToNextPage() {

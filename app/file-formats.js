@@ -143,28 +143,49 @@ exports.extractRarEntryBuffer = extractRarEntryBuffer;
 // ZIP ////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-function getZipEntriesList(filePath) {
+function getZipEntriesList(filePath, password) {
   try {
     let zip = new AdmZip(filePath);
     let zipEntries = zip.getEntries();
     let imgEntries = [];
+    let isEncrypted = false;
+    let encryptedEntryName;
+    let compressionMethod;
     zipEntries.forEach(function (zipEntry) {
+      if (zipEntry.header.encripted) {
+        isEncrypted = true;
+        encryptedEntryName = zipEntry.entryName;
+        compressionMethod = zipEntry.header.method;
+      }
       if (!zipEntry.isDirectory) {
         if (hasImageExtension(zipEntry.entryName)) {
           imgEntries.push(zipEntry.entryName);
         }
       }
     });
-    return imgEntries;
-  } catch (err) {
-    return undefined;
+    if (isEncrypted) {
+      if (parseInt(compressionMethod) !== 99) {
+        // AES encryption is not supported by adm-zip, only ZipCrypto
+        // compression method 99 indicates the AES encryption
+        if (!zip.test(password)) {
+          return { result: "password required", paths: [] };
+        }
+      } else {
+        // can't handle this protection
+        return { result: "other error", paths: [], extra: "aes" };
+      }
+    }
+    return { result: "success", paths: imgEntries };
+  } catch (error) {
+    console.log(error);
+    return { result: "success", paths: imgEntries };
   }
 }
 exports.getZipEntriesList = getZipEntriesList;
 
-function extractZipEntryBuffer(zipPath, entryName) {
+function extractZipEntryBuffer(zipPath, entryName, password) {
   let zip = new AdmZip(zipPath);
-  return zip.readFile(entryName);
+  return zip.readFile(entryName, password);
 }
 exports.extractZipEntryBuffer = extractZipEntryBuffer;
 
