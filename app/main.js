@@ -1756,6 +1756,7 @@ function setScaleToHeight(scale, fromMove = false) {
 }
 
 function processZoomInput(input) {
+  if (input !== 0 && g_fileData.state !== FileDataState.LOADED) return;
   if (input > 0) {
     // zoom in
     if (g_settings.fit_mode === 2) {
@@ -1782,7 +1783,8 @@ function processZoomInput(input) {
   } else {
     // 0 = reset
     if (g_settings.fit_mode === 2 || g_settings.fit_mode === 0) {
-      setScaleToHeight(100);
+      //setScaleToHeight(100);
+      setFitToHeight();
     }
   }
 }
