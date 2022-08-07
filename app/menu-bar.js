@@ -492,14 +492,14 @@ function buildApplicationMenu(
             },
             {
               label: _("menu-view-zoom-scaleheight-in"),
-              accelerator: "CommandOrControl+numadd",
+              accelerator: "CommandOrControl++",
               click() {
                 mainProcess.onMenuScaleToHeightZoomInput(1);
               },
             },
             {
               label: _("menu-view-zoom-scaleheight-out"),
-              accelerator: "CommandOrControl+numsub",
+              accelerator: "CommandOrControl+-",
               click() {
                 mainProcess.onMenuScaleToHeightZoomInput(-1);
               },
