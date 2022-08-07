@@ -250,8 +250,7 @@ app.on("ready", () => {
 
     if (g_settings.fit_mode === 0) {
       setFitToWidth();
-    }
-    if (g_settings.fit_mode === 1) {
+    } else if (g_settings.fit_mode === 1) {
       setFitToHeight();
     } else {
       setScaleToHeight(g_settings.zoom_scale);
@@ -638,15 +637,21 @@ ipcMain.on("mouse-click", (event, mouseX, bodyX) => {
 });
 
 ipcMain.on("zoom-in-pressed", (event) => {
-  moveZoomScale(1);
+  processZoomInput(1);
 });
 
 ipcMain.on("zoom-out-pressed", (event) => {
-  moveZoomScale(-1);
+  processZoomInput(-1);
 });
 
 ipcMain.on("zoom-reset-pressed", (event) => {
-  moveZoomScale(0);
+  processZoomInput(0);
+});
+
+ipcMain.on("set-scale-mode", (event, scale) => {
+  // called from renderer try-zoom-scale-from-width which is called from main process zoom
+  // it's a bit convoluted :)
+  setScaleToHeight(scale);
 });
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -793,8 +798,8 @@ exports.onMenuScaleToHeight = function (scale) {
   setScaleToHeight(scale);
 };
 
-exports.onMenuScaleToHeightCustomize = function (mode) {
-  moveZoomScale(mode);
+exports.onMenuScaleToHeightZoomInput = function (input) {
+  processZoomInput(input);
 };
 
 exports.onMenuScaleToHeightEnter = function () {
@@ -1735,7 +1740,7 @@ function setFitToHeight() {
 }
 
 let g_scaleToHeightMin = 25;
-let g_scaleToHeightMax = 400;
+let g_scaleToHeightMax = 500;
 
 function setScaleToHeight(scale, fromMove = false) {
   g_settings.fit_mode = 2;
@@ -1750,20 +1755,33 @@ function setScaleToHeight(scale, fromMove = false) {
   rebuildMenuBar();
 }
 
-function moveZoomScale(mode) {
-  if (mode > 0) {
+function processZoomInput(input) {
+  if (input > 0) {
     // zoom in
     if (g_settings.fit_mode === 2) {
+      // scale mode
       setScaleToHeight(g_settings.zoom_scale + 5, true);
+    } else if (g_settings.fit_mode === 1) {
+      // height
+      setScaleToHeight(100 + 5, true);
+    } else if (g_settings.fit_mode === 0) {
+      // width
+      g_mainWindow.webContents.send("try-zoom-scale-from-width", 5);
     }
-  } else if (mode < 0) {
+  } else if (input < 0) {
     // zoom out
     if (g_settings.fit_mode === 2) {
       setScaleToHeight(g_settings.zoom_scale - 5, true);
+    } else if (g_settings.fit_mode === 1) {
+      // height
+      setScaleToHeight(100 - 5, true);
+    } else if (g_settings.fit_mode === 0) {
+      // width
+      g_mainWindow.webContents.send("try-zoom-scale-from-width", -5);
     }
   } else {
-    // reset
-    if (g_settings.fit_mode === 2) {
+    // 0 = reset
+    if (g_settings.fit_mode === 2 || g_settings.fit_mode === 0) {
       setScaleToHeight(100);
     }
   }

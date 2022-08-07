@@ -134,6 +134,20 @@ ipcRenderer.on("set-scale-to-height", (event, scale) => {
   setScaleToHeight(scale);
 });
 
+ipcRenderer.on("try-zoom-scale-from-width", (event, increment) => {
+  const page = document.querySelector("#pages-container");
+  const img = page.firstChild;
+  const imgHeight = img.offsetHeight;
+  const vh = Math.min(
+    document.documentElement.clientHeight || 0,
+    window.innerHeight || 0
+  );
+  // TODO: not getting exactly the value I want, cheat by using the 1.1 multiplier for now
+  let scale = parseInt((imgHeight / vh) * 100 * (increment > 0 ? 1.1 : 1));
+  scale += increment;
+  ipcRenderer.send("set-scale-mode", scale);
+});
+
 ipcRenderer.on("set-hide-inactive-mouse-cursor", (event, hide) => {
   g_hideMouseCursor = hide;
 });

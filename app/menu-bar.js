@@ -127,39 +127,17 @@ function getScaleToHeightSubmenu(settings) {
     });
   }
 
-  if (settings.fit_mode == 2) {
-    menu.push({
-      type: "separator",
-    });
-
-    menu.push({
-      label: _("menu-view-zoom-scaleheight-in"),
-      accelerator: "CommandOrControl+numadd",
-      click() {
-        mainProcess.onMenuScaleToHeightCustomize(1);
-      },
-    });
-    menu.push({
-      label: _("menu-view-zoom-scaleheight-out"),
-      accelerator: "CommandOrControl+numsub",
-      click() {
-        mainProcess.onMenuScaleToHeightCustomize(-1);
-      },
-    });
-    menu.push({
-      label: _("menu-view-zoom-scaleheight-reset"),
-      accelerator: "CommandOrControl+0",
-      click() {
-        mainProcess.onMenuScaleToHeightCustomize(0);
-      },
-    });
-    menu.push({
-      label: _("menu-view-zoom-scaleheight-enter"),
-      click() {
-        mainProcess.onMenuScaleToHeightEnter();
-      },
-    });
-  }
+  //if (settings.fit_mode == 2) {
+  menu.push({
+    type: "separator",
+  });
+  menu.push({
+    label: _("menu-view-zoom-scaleheight-enter"),
+    click() {
+      mainProcess.onMenuScaleToHeightEnter();
+    },
+  });
+  //}
 
   return menu;
 }
@@ -507,6 +485,31 @@ function buildApplicationMenu(
               type: "checkbox",
               checked: settings.fit_mode == 2,
               submenu: getScaleToHeightSubmenu(settings),
+            },
+
+            {
+              type: "separator",
+            },
+            {
+              label: _("menu-view-zoom-scaleheight-in"),
+              accelerator: "CommandOrControl+numadd",
+              click() {
+                mainProcess.onMenuScaleToHeightZoomInput(1);
+              },
+            },
+            {
+              label: _("menu-view-zoom-scaleheight-out"),
+              accelerator: "CommandOrControl+numsub",
+              click() {
+                mainProcess.onMenuScaleToHeightZoomInput(-1);
+              },
+            },
+            {
+              label: _("menu-view-zoom-scaleheight-reset"),
+              accelerator: "CommandOrControl+0",
+              click() {
+                mainProcess.onMenuScaleToHeightZoomInput(0);
+              },
             },
           ],
         },
