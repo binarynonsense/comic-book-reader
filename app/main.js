@@ -803,6 +803,7 @@ exports.onMenuChangeZoomDefault = function (mode) {
     g_mainWindow.webContents.send("update-menubar");
   else {
     g_settings.zoomDefault = mode;
+    menuBar.setZoomDefault(mode);
     g_mainWindow.webContents.send("update-menubar");
   }
 };
@@ -812,6 +813,7 @@ exports.onMenuChangeZoomFileLoading = function (mode) {
     g_mainWindow.webContents.send("update-menubar");
   else {
     g_settings.zoomFileLoading = mode;
+    menuBar.setZoomFileLoading(mode);
     g_mainWindow.webContents.send("update-menubar");
   }
 };

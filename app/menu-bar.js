@@ -69,6 +69,27 @@ exports.setMouseCursorMode = function (mode) {
     mode === 1;
 };
 
+exports.setZoomDefault = function (mode) {
+  Menu.getApplicationMenu().getMenuItemById(
+    "preferences-zoom-default-fitwidth"
+  ).checked = mode === 0;
+  Menu.getApplicationMenu().getMenuItemById(
+    "preferences-zoom-default-fitheight"
+  ).checked = mode === 1;
+  Menu.getApplicationMenu().getMenuItemById(
+    "preferences-zoom-default-lastused"
+  ).checked = mode === 2;
+};
+
+exports.setZoomFileLoading = function (mode) {
+  Menu.getApplicationMenu().getMenuItemById(
+    "preferences-zoom-fileloading-default"
+  ).checked = mode === 0;
+  Menu.getApplicationMenu().getMenuItemById(
+    "preferences-zoom-fileloading-history"
+  ).checked = mode === 1;
+};
+
 exports.setFileOpened = function (isEnabled) {
   Menu.getApplicationMenu().getMenuItemById("convert-file").enabled = isEnabled;
   Menu.getApplicationMenu().getMenuItemById("extract-file").enabled = isEnabled;
