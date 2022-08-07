@@ -15,6 +15,9 @@ let g_worker;
 let g_resizeWindow;
 let g_ipcChannel = "tool-ec--";
 
+// hack to allow this at least for files from File>Convert...
+let g_initialPassword;
+
 function isDev() {
   return process.argv[2] == "--dev";
 }
@@ -23,12 +26,19 @@ function _(...args) {
   return mainProcess.i18n_.apply(null, args);
 }
 
-exports.showWindow = function (parentWindow, filePath, fileType) {
+exports.showWindow = function (parentWindow, fileData) {
   if (g_window !== undefined) return; // TODO: focus the existing one?
   let [width, height] = parentWindow.getSize();
   height = (90 * height) / 100;
   if (height < 700) height = 700;
   width = 1024;
+
+  let filePath, fileType;
+  if (fileData !== undefined) {
+    filePath = fileData.path;
+    fileType = fileData.type;
+    g_initialPassword = fileData.password;
+  }
 
   g_window = new BrowserWindow({
     width: parseInt(width),
@@ -331,7 +341,13 @@ function start(inputFilePath, inputFileType, fileNum, totalFilesNum) {
         }
       });
     }
-    g_worker.send(["extract", inputFilePath, inputFileType, tempFolderPath]);
+    g_worker.send([
+      "extract",
+      inputFilePath,
+      inputFileType,
+      tempFolderPath,
+      g_initialPassword,
+    ]);
   } else if (inputFileType === FileDataType.PDF) {
     g_window.webContents.send(
       g_ipcChannel + "update-log-text",
@@ -340,7 +356,8 @@ function start(inputFilePath, inputFileType, fileNum, totalFilesNum) {
     g_window.webContents.send(
       g_ipcChannel + "extract-pdf-images",
       tempFolderPath,
-      _("tool-shared-modal-log-extracting-page") + ": "
+      _("tool-shared-modal-log-extracting-page") + ": ",
+      g_initialPassword
     );
   } else {
     stopError("start: invalid file type");

@@ -17,7 +17,7 @@ let g_inputFileType;
 let g_outputScale = "100";
 let g_outputQuality = "80";
 let g_outputFormat;
-let g_outputImageFormat = FileExtension.NOTSET;
+let g_outputImageFormat = FileExtension.NOT_SET;
 let g_outputFolderPath;
 let g_outputPdfExtractionMethod = "embedded";
 
@@ -54,7 +54,7 @@ g_qualitySlider.addEventListener("mouseup", (event) => {
 ///////////////////////////////////////////////////////////////////////////////
 
 function checkValidData() {
-  if (g_outputImageFormat === FileExtension.NOTSET) {
+  if (g_outputImageFormat === FileExtension.NOT_SET) {
     g_qualitySlider.parentElement.classList.add("hide");
   } else {
     g_qualitySlider.parentElement.classList.remove("hide");
@@ -88,7 +88,7 @@ ipcRenderer.on(g_ipcChannel + "init", (event, outputFolderPath) => {
     '<option value="epub">.epub</option>';
   g_imageFormatSelect.innerHTML =
     '<option value="' +
-    FileExtension.NOTSET +
+    FileExtension.NOT_SET +
     '">' +
     g_imageFormatNotSetText +
     "</option>" +
@@ -293,8 +293,8 @@ ipcRenderer.on(g_ipcChannel + "update-info-text", (event, text) => {
 
 ipcRenderer.on(
   g_ipcChannel + "extract-pdf-images",
-  (event, tempFolder, logText) => {
-    extractPDFImages(tempFolder, logText);
+  (event, tempFolder, logText, password) => {
+    extractPDFImages(tempFolder, logText, password);
   }
 );
 
@@ -364,13 +364,16 @@ ipcRenderer.on(g_ipcChannel + "show-result", (event) => {
 
 const pdfjsLib = require("../../assets/libs/pdfjs/build/pdf.js");
 
-async function extractPDFImages(folderPath, logText) {
+async function extractPDFImages(folderPath, logText, password) {
   try {
     // ref: https://kevinnadro.com/blog/parsing-pdfs-in-javascript/
     pdfjsLib.GlobalWorkerOptions.workerSrc =
       "../../assets/libs/pdfjs/build/pdf.worker.js";
     //pdfjsLib.disableWorker = true;
-    const pdf = await pdfjsLib.getDocument(g_inputFilePath).promise;
+    const pdf = await pdfjsLib.getDocument({
+      url: g_inputFilePath,
+      password: password,
+    }).promise;
     for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
       if (g_cancel) {
         pdf.cleanup();

@@ -3,7 +3,7 @@ const palette = require("../extract-palette/palette");
 
 process.on("message", (message) => {
   if (message[0] === "extract") {
-    extractImages(message[1], message[2], message[3]);
+    extractImages(message[1], message[2], message[3], message[4]);
   } else if (message[0] === "create") {
     createFile(message[1], message[2], message[3], message[4]);
   } //else if (message[0] === "palette") {
@@ -11,12 +11,17 @@ process.on("message", (message) => {
   // }
 });
 
-async function extractImages(inputFilePath, inputFileType, tempFolderPath) {
+async function extractImages(
+  inputFilePath,
+  inputFileType,
+  tempFolderPath,
+  password
+) {
   try {
     if (inputFileType === "zip") {
-      fileFormats.extractZip(inputFilePath, tempFolderPath);
+      fileFormats.extractZip(inputFilePath, tempFolderPath, password);
     } else if (inputFileType === "rar") {
-      await fileFormats.extractRar(inputFilePath, tempFolderPath);
+      await fileFormats.extractRar(inputFilePath, tempFolderPath, password);
     } else if (inputFileType === "epub") {
       await fileFormats.extractEpubImages(inputFilePath, tempFolderPath);
     } else {

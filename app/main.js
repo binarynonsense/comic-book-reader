@@ -965,22 +965,14 @@ exports.onMenuPageExtractPalette = function () {
 
 exports.onMenuConvertFile = function () {
   if (g_fileData.path !== undefined) {
-    convertComicsTool.showWindow(
-      g_mainWindow,
-      g_fileData.path,
-      g_fileData.type
-    );
+    convertComicsTool.showWindow(g_mainWindow, g_fileData);
   }
   g_mainWindow.webContents.send("update-menubar");
 };
 
 exports.onMenuExtractFile = function () {
   if (g_fileData.path !== undefined) {
-    extractComicsTool.showWindow(
-      g_mainWindow,
-      g_fileData.path,
-      g_fileData.type
-    );
+    extractComicsTool.showWindow(g_mainWindow, g_fileData);
   }
   g_mainWindow.webContents.send("update-menubar");
 };

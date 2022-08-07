@@ -61,12 +61,13 @@ exports.hasPdfKitCompatibleImageExtension = function (filePath) {
 // RAR ////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-async function extractRar(filePath, tempFolderPath) {
+async function extractRar(filePath, tempFolderPath, password) {
   try {
     //ref: https://github.com/YuJianrong/node-unrar.js
     let extractor = await unrar.createExtractorFromFile({
       filepath: filePath,
       targetPath: tempFolderPath,
+      password: password,
     });
     const { files } = extractor.extract();
     [...files]; // lazy initialization? the files are not extracted if I don't do this
@@ -189,12 +190,12 @@ function extractZipEntryBuffer(zipPath, entryName, password) {
 }
 exports.extractZipEntryBuffer = extractZipEntryBuffer;
 
-function extractZip(filePath, tempFolderPath) {
+function extractZip(filePath, tempFolderPath, password) {
   // ref: https://github.com/cthackers/adm-zip/wiki/ADM-ZIP-Introduction
   try {
     let zip = new AdmZip(filePath);
     const imageData = zip.readFile("");
-    zip.extractAllTo(tempFolderPath, true);
+    zip.extractAllTo(tempFolderPath, true, false, password);
     return undefined;
   } catch (err) {
     console.log(err);
