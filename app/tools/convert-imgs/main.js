@@ -300,7 +300,7 @@ async function start(
             .toFile(tmpFilePath);
 
           fs.unlinkSync(filePath);
-          fs.renameSync(tmpFilePath, filePath);
+          fileUtils.moveFile(tmpFilePath, filePath);         
         }
         // convert
         g_window.webContents.send(

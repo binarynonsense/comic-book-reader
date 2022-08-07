@@ -473,7 +473,7 @@ async function resizeImages(
           .toFile(tmpFilePath);
 
         fs.unlinkSync(filePath);
-        fs.renameSync(tmpFilePath, filePath);
+        fileUtils.moveFile(tmpFilePath, filePath); 
       }
     }
 
@@ -561,7 +561,7 @@ async function resizeImages(
             fileName + "." + imageFormat
           );
           fs.unlinkSync(filePath);
-          fs.renameSync(tmpFilePath, newFilePath);
+          fileUtils.moveFile(tmpFilePath, newFilePath); 
           imgFilePaths[index] = newFilePath;
         }
       }

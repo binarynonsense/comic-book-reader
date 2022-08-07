@@ -323,7 +323,7 @@ async function createFileFromImages(
           await sharp(filePath).withMetadata().jpeg().toFile(tmpFilePath);
 
           fs.unlinkSync(filePath);
-          fs.renameSync(tmpFilePath, newFilePath);
+          fileUtils.moveFile(tmpFilePath, newFilePath); 
           imgFilePaths[index] = newFilePath;
         }
       }

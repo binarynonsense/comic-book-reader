@@ -434,7 +434,7 @@ async function resizeImages(
           .toFile(tmpFilePath);
 
         fs.unlinkSync(filePath);
-        fs.renameSync(tmpFilePath, filePath);
+        fileUtils.moveFile(tmpFilePath, filePath); 
       }
     }
 
@@ -509,7 +509,7 @@ async function resizeImages(
           fileName + "." + outputFormat
         );
         fs.unlinkSync(filePath);
-        fs.renameSync(tmpFilePath, newFilePath);
+        fileUtils.moveFile(tmpFilePath, newFilePath); 
         imgFilePaths[index] = newFilePath;
       }
     }
@@ -540,7 +540,7 @@ async function createFolderWithImages(imgFilePaths, outputFolderPath) {
       for (let index = 0; index < imgFilePaths.length; index++) {
         let oldPath = imgFilePaths[index];
         let newPath = path.join(outputFolderPath, path.basename(oldPath));
-        fs.renameSync(oldPath, newPath);
+        fileUtils.moveFile(oldPath, newPath); 
       }
       g_window.webContents.send(g_ipcChannel + "finished-ok");
     } else {
