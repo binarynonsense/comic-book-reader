@@ -168,6 +168,12 @@ exports.loadHistory = function () {
         if (entry.filePath !== undefined && entry.filePath !== "") {
           if (isNaN(entry.pageIndex)) entry.pageIndex = 0;
           history.push(entry);
+          if (entry.fitMode !== undefined && isNaN(entry.fitMode)) {
+            entry.fitMode = undefined;
+          }
+          if (entry.zoomScale !== undefined && isNaN(entry.zoomScale)) {
+            entry.zoomScale = undefined;
+          }
         }
       }
     }

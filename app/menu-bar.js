@@ -351,6 +351,71 @@ function buildApplicationMenu(
               submenu: languagesSubmenu,
             },
             {
+              label: _("menu-file-preferences-zoom"),
+              submenu: [
+                {
+                  label: _("menu-file-preferences-zoom-default"),
+                  submenu: [
+                    {
+                      id: "preferences-zoom-default-fitwidth",
+                      type: "checkbox",
+                      checked: settings.zoomDefault === 0,
+                      label: _("menu-file-preferences-zoom-default-fitwidth"),
+                      click() {
+                        mainProcess.onMenuChangeZoomDefault(0);
+                      },
+                    },
+                    {
+                      id: "preferences-zoom-default-fitheight",
+                      type: "checkbox",
+                      checked: settings.zoomDefault === 1,
+                      label: _("menu-file-preferences-zoom-default-fitheight"),
+                      click() {
+                        mainProcess.onMenuChangeZoomDefault(1);
+                      },
+                    },
+                    {
+                      id: "preferences-zoom-default-lastused",
+                      type: "checkbox",
+                      checked: settings.zoomDefault === 2,
+                      label: _("menu-file-preferences-zoom-default-lastused"),
+                      click() {
+                        mainProcess.onMenuChangeZoomDefault(2);
+                      },
+                    },
+                  ],
+                },
+                ,
+                {
+                  label: _("menu-file-preferences-zoom-fileloading"),
+                  submenu: [
+                    {
+                      id: "preferences-zoom-fileloading-default",
+                      type: "checkbox",
+                      checked: settings.zoomFileLoading === 0,
+                      label: _(
+                        "menu-file-preferences-zoom-fileloading-default"
+                      ),
+                      click() {
+                        mainProcess.onMenuChangeZoomFileLoading(0);
+                      },
+                    },
+                    {
+                      id: "preferences-zoom-fileloading-history",
+                      type: "checkbox",
+                      checked: settings.zoomFileLoading === 1,
+                      label: _(
+                        "menu-file-preferences-zoom-fileloading-history"
+                      ),
+                      click() {
+                        mainProcess.onMenuChangeZoomFileLoading(1);
+                      },
+                    },
+                  ],
+                },
+              ],
+            },
+            {
               label: _("menu-file-preferences-themes"),
               submenu: themesSubmenu,
             },

@@ -62,6 +62,8 @@ let g_settings = {
   loadLastOpened: true,
   autoOpen: 0, // 0: disabled, 1: next file, 2: next and previous files
   cursorVisibility: 0, // 0: always visible, 1: hide when inactive
+  zoomDefault: 2, // // 0: width, 1: height, 2: last used
+  zoomFileLoading: 0, // 0: use default, 1: use history
 
   locale: undefined,
   theme: undefined,
@@ -146,6 +148,21 @@ function sanitizeSettings() {
   ) {
     g_settings.cursorVisibility = 0;
   }
+  if (
+    !Number.isInteger(g_settings.zoomDefault) ||
+    g_settings.zoomDefault < 0 ||
+    g_settings.zoomDefault > 2
+  ) {
+    g_settings.zoomDefault = 2;
+  }
+  if (
+    !Number.isInteger(g_settings.zoomFileLoading) ||
+    g_settings.zoomFileLoading < 0 ||
+    g_settings.zoomFileLoading > 1
+  ) {
+    g_settings.zoomFileLoading = 0;
+  }
+
   if (typeof g_settings.locale === "string") {
     g_settings.locale = g_settings.locale
       .replace(/[^a-z0-9_\-]/gi, "_")
@@ -411,7 +428,12 @@ function addCurrentToHistory(updateMenu = true) {
     if (foundIndex !== undefined) {
       g_history.splice(foundIndex, 1); // remove, to update and put last
     }
-    let newEntry = { filePath: currentFilePath, pageIndex: currentPageIndex };
+    let newEntry = {
+      filePath: currentFilePath,
+      pageIndex: currentPageIndex,
+      fitMode: g_settings.fit_mode,
+      zoomScale: g_settings.zoom_scale,
+    };
     g_history.push(newEntry);
     // limit how many are remembered
     if (g_history.length > 10) {
@@ -499,9 +521,10 @@ ipcMain.on(
     g_fileData.pagesPaths = imageIDs; // not really paths
     g_fileData.numPages = imageIDs.length;
     g_fileData.pageIndex = pageIndex;
-    addCurrentToHistory();
     updateMenuItemsState();
     setPageRotation(0, false);
+    setInitialZoom(filePath);
+    addCurrentToHistory();
     goToPage(pageIndex);
     renderPageInfo();
     renderTitle();
@@ -542,10 +565,11 @@ ipcMain.on(
     g_fileData.pagesPaths = [];
     g_fileData.numPages = 0;
     g_fileData.pageIndex = pageIndex;
-    addCurrentToHistory();
     updateMenuItemsState();
     setPageRotation(0, false);
+    setInitialZoom(filePath);
     g_fileData.numPages = numPages;
+    addCurrentToHistory();
     goToPage(pageIndex);
     renderPageInfo();
     renderTitle();
@@ -770,6 +794,24 @@ exports.onMenuChangeMouseCursorVisibility = function (mode) {
     g_settings.cursorVisibility = mode;
     menuBar.setMouseCursorMode(mode);
     g_mainWindow.webContents.send("set-hide-inactive-mouse-cursor", mode === 1);
+    g_mainWindow.webContents.send("update-menubar");
+  }
+};
+
+exports.onMenuChangeZoomDefault = function (mode) {
+  if (mode === g_settings.zoomDefault || mode < 0 || mode > 2)
+    g_mainWindow.webContents.send("update-menubar");
+  else {
+    g_settings.zoomDefault = mode;
+    g_mainWindow.webContents.send("update-menubar");
+  }
+};
+
+exports.onMenuChangeZoomFileLoading = function (mode) {
+  if (mode === g_settings.zoomFileLoading || mode < 0 || mode > 1)
+    g_mainWindow.webContents.send("update-menubar");
+  else {
+    g_settings.zoomFileLoading = mode;
     g_mainWindow.webContents.send("update-menubar");
   }
 };
@@ -1097,6 +1139,7 @@ function openImageFolder(folderPath, filePath, pageIndex) {
   g_fileData.pageIndex = pageIndex;
   updateMenuItemsState();
   setPageRotation(0, false);
+  setInitialZoom(g_fileData.path);
   goToPage(pageIndex);
 }
 
@@ -1188,9 +1231,10 @@ function openComicBookFile(filePath, pageIndex = 0, password = "") {
           g_fileData.numPages = pagesPaths.length;
           g_fileData.pageIndex = pageIndex;
           g_fileData.password = password;
-          addCurrentToHistory();
           updateMenuItemsState();
           setPageRotation(0, false);
+          setInitialZoom(filePath);
+          addCurrentToHistory();
           goToPage(pageIndex);
         } else {
           g_mainWindow.webContents.send(
@@ -1248,9 +1292,10 @@ function openComicBookFile(filePath, pageIndex = 0, password = "") {
           g_fileData.numPages = pagesPaths.length;
           g_fileData.pageIndex = pageIndex;
           g_fileData.password = password;
-          addCurrentToHistory();
           updateMenuItemsState();
           setPageRotation(0, false);
+          setInitialZoom(filePath);
+          addCurrentToHistory();
           goToPage(pageIndex);
         } else {
           g_mainWindow.webContents.send(
@@ -1797,6 +1842,47 @@ function setPageRotation(value, refreshPage) {
   g_mainWindow.webContents.send("update-menubar");
   if (refreshPage) {
     renderPageRefresh();
+  }
+}
+
+function setInitialZoom(filePath) {
+  if (g_settings.zoomFileLoading === 1) {
+    // use history
+    let historyIndex = getHistoryIndex(filePath);
+    if (historyIndex !== undefined) {
+      let fitMode = g_history[historyIndex].fitMode;
+      let zoomScale = g_history[historyIndex].zoomScale;
+      console.log(g_history[historyIndex]);
+      if (fitMode !== undefined) {
+        if (fitMode === 0) {
+          setFitToWidth();
+          return;
+        } else if (fitMode === 1) {
+          setFitToHeight();
+          return;
+        } else if (fitMode === 2 && zoomScale != undefined) {
+          setScaleToHeight(zoomScale);
+          return;
+        }
+      }
+    }
+    // not in history, use default
+  }
+  // use default
+  if (g_settings.zoomDefault === 0) {
+    setFitToWidth();
+    return;
+  } else if (g_settings.zoomDefault === 1) {
+    setFitToHeight();
+    return;
+  }
+  // use last used
+  if (g_settings.fit_mode === 0) {
+    setFitToWidth();
+  } else if (g_settings.fit_mode === 1) {
+    setFitToHeight();
+  } else {
+    setScaleToHeight(g_settings.zoom_scale);
   }
 }
 
