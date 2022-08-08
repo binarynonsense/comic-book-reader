@@ -481,7 +481,8 @@ ipcMain.on("password-entered", (event, password) => {
   if (
     g_fileData.type === FileDataType.PDF ||
     g_fileData.type === FileDataType.RAR ||
-    g_fileData.type === FileDataType.ZIP
+    g_fileData.type === FileDataType.ZIP ||
+    g_fileData.type === FileDataType.SEVENZIP
   ) {
     let filePath = g_fileData.path;
     let pageIndex = g_fileData.pageIndex;
@@ -498,7 +499,8 @@ ipcMain.on("password-canceled", (event) => {
   if (
     g_fileData.type === FileDataType.PDF ||
     g_fileData.type === FileDataType.RAR ||
-    g_fileData.type === FileDataType.ZIP
+    g_fileData.type === FileDataType.ZIP ||
+    g_fileData.type === FileDataType.SEVENZIP
   ) {
     if (g_tempFileData.state === FileDataState.LOADED) {
       // restore previous file data
@@ -911,6 +913,7 @@ exports.onMenuOpenFile = onMenuOpenFile = function (filePath) {
     let allowedFileTypesList = [
       FileExtension.CBZ,
       FileExtension.CBR,
+      FileExtension.CB7,
       FileExtension.PDF,
       FileExtension.EPUB,
 
@@ -1303,6 +1306,63 @@ function openComicBookFile(filePath, pageIndex = 0, password = "") {
           );
           g_mainWindow.webContents.send("update-loading", false);
         }
+      } else if (
+        fileExtension === "." + FileExtension.SEVENZIP ||
+        fileExtension === "." + FileExtension.CB7
+      ) {
+        let sevenData = await fileFormats.get7ZipEntriesList(
+          filePath,
+          password
+        );
+        if (sevenData.result === "password required") {
+          if (g_fileData.state !== FileDataState.LOADING) {
+            Object.assign(g_tempFileData, g_fileData);
+            cleanUpFileData();
+            g_fileData.state = FileDataState.LOADING;
+            g_fileData.type = FileDataType.SEVENZIP;
+            g_fileData.path = filePath;
+            g_fileData.pageIndex = pageIndex;
+          }
+          g_fileData.password = password;
+          g_mainWindow.webContents.send(
+            "show-modal-prompt-password",
+            _("ui-modal-prompt-enterpassword"),
+            path.basename(g_fileData.path)
+          );
+          return;
+        } else if (sevenData.result === "other error") {
+          g_mainWindow.webContents.send(
+            "show-modal-info",
+            _("ui-modal-info-fileerror"),
+            _("ui-modal-info-couldntopen-rar")
+          );
+          g_mainWindow.webContents.send("update-loading", false);
+          return;
+        }
+        let pagesPaths = sevenData.paths;
+        pagesPaths.sort(fileUtils.compare);
+        if (pagesPaths !== undefined && pagesPaths.length > 0) {
+          g_fileData.state = FileDataState.LOADED;
+          g_fileData.type = FileDataType.SEVENZIP;
+          g_fileData.path = filePath;
+          g_fileData.name = path.basename(filePath);
+          g_fileData.pagesPaths = pagesPaths;
+          g_fileData.numPages = pagesPaths.length;
+          g_fileData.pageIndex = pageIndex;
+          g_fileData.password = password;
+          updateMenuItemsState();
+          setPageRotation(0, false);
+          setInitialZoom(filePath);
+          addCurrentToHistory();
+          goToPage(pageIndex);
+        } else {
+          g_mainWindow.webContents.send(
+            "show-modal-info",
+            _("ui-modal-info-fileerror"),
+            _("ui-modal-info-couldntopen-rar")
+          );
+          g_mainWindow.webContents.send("update-loading", false);
+        }
       } else {
         g_mainWindow.webContents.send(
           "show-modal-info",
@@ -1397,7 +1457,8 @@ function renderPageRefresh() {
       );
     } else if (
       g_fileData.type === FileDataType.RAR ||
-      g_fileData.type === FileDataType.ZIP
+      g_fileData.type === FileDataType.ZIP ||
+      g_fileData.type === FileDataType.SEVENZIP
     ) {
       g_mainWindow.webContents.send(
         "refresh-img-page",
@@ -1470,6 +1531,7 @@ function goToPage(pageIndex, scrollBarPos = 0) {
   if (
     g_fileData.type === FileDataType.ZIP ||
     g_fileData.type === FileDataType.RAR ||
+    g_fileData.type === FileDataType.SEVENZIP ||
     g_fileData.type === FileDataType.EPUB ||
     g_fileData.type === FileDataType.IMGS_FOLDER
   ) {
@@ -1889,6 +1951,7 @@ function updateMenuItemsState() {
     if (
       g_fileData.type === FileDataType.ZIP ||
       g_fileData.type === FileDataType.RAR ||
+      g_fileData.type === FileDataType.SEVENZIP ||
       g_fileData.type === FileDataType.EPUB ||
       g_fileData.type === FileDataType.PDF
     ) {

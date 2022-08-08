@@ -23,6 +23,12 @@ async function exportPage(fileData, outputFolderPath, sendToTool) {
         fileData.pagesPaths[fileData.pageIndex],
         fileData.password
       );
+    } else if (fileData.type === FileDataType.SEVENZIP) {
+      buf = await fileFormats.extract7ZipEntryBuffer(
+        fileData.path,
+        fileData.pagesPaths[fileData.pageIndex],
+        fileData.password
+      );
     } else if (fileData.type === FileDataType.EPUB) {
       let data = await fileFormats.extractEpubImageBuffer(
         fileData.path,

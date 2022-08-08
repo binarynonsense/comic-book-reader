@@ -23,7 +23,8 @@
         }
       ],
       "asarUnpack": [
-        "**/node_modules/sharp/**"
+        "**/node_modules/sharp/**",
+        "**/node_modules/7zip-bin/**"
       ]
     }
   },
@@ -44,6 +45,7 @@
     "license-checker": "^25.0.1"
   },
   "dependencies": {
+    "7zip-bin": "^5.2.0",
     "adm-zip": "^0.5.9",
     "changedpi": "^1.0.4",
     "custom-electron-titlebar": "^4.1.0",
@@ -51,6 +53,7 @@
     "epub-gen": "^0.1.0",
     "file-type": "^14.7.1",
     "natural-compare-lite": "^1.4.0",
+    "node-7z": "^3.0.0",
     "node-unrar-js": "^2.0.0",
     "pdfkit": "^0.13.0",
     "sanitize-html": "^2.7.0",

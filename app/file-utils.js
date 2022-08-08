@@ -7,25 +7,21 @@ const naturalCompare = require("natural-compare-lite");
 
 const fileFormats = require("./file-formats");
 
-
 ///////////////////////////////////////////////////////////////////////////////
 
-exports.moveFile = function(oldPath, newPath)
-{
+exports.moveFile = function (oldPath, newPath) {
   try {
     fs.renameSync(oldPath, newPath);
   } catch (error) {
-    if(error.code === 'EXDEV')
-    {
+    if (error.code === "EXDEV") {
       // EXDEV = cross-device link not permitted.
       fs.copyFileSync(oldPath, newPath);
       fs.unlinkSync(oldPath);
-    }
-    else{
+    } else {
       throw error;
-    }  
-  }  
-}
+    }
+  }
+};
 
 ///////////////////////////////////////////////////////////////////////////////
 // HELPERS ////////////////////////////////////////////////////////////////////

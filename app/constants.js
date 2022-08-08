@@ -6,6 +6,8 @@ exports.FileExtension = {
   RAR: "rar",
   EPUB: "epub",
   PDF: "pdf",
+  CB7: "cb7",
+  SEVENZIP: "7z",
   JPG: "jpg",
   JPEG: "jpeg",
   PNG: "png",
@@ -29,4 +31,5 @@ exports.FileDataType = {
   ZIP: "zip",
   RAR: "rar",
   EPUB: "epub",
+  SEVENZIP: "7z",
 };

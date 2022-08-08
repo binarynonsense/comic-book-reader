@@ -36,6 +36,14 @@ async function extractBase64Image(
       );
       buf = buf.toString("base64");
       mime = "image/" + fileFormats.getMimeType(entryName);
+    } else if (fileType === FileDataType.SEVENZIP) {
+      buf = await fileFormats.extract7ZipEntryBuffer(
+        filePath,
+        entryName,
+        password
+      );
+      buf = buf.toString("base64");
+      mime = "image/" + fileFormats.getMimeType(entryName);
     } else if (fileType === FileDataType.EPUB) {
       const data = await fileFormats.extractEpubImageBuffer(
         filePath,
