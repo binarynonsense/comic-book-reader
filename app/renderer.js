@@ -236,8 +236,8 @@ ipcRenderer.on(
   }
 );
 
-ipcRenderer.on("show-modal-prompt-password", (event, question) => {
-  showModalPromptPassword(question);
+ipcRenderer.on("show-modal-prompt-password", (event, text1, text2) => {
+  showModalPromptPassword(text1, text2);
 });
 
 ipcRenderer.on("show-modal-info", (event, title, message) => {
@@ -266,9 +266,9 @@ function showModalPrompt(question, defaultValue, mode = 0) {
   }
 }
 
-function showModalPromptPassword(question) {
+function showModalPromptPassword(text1, text2) {
   smalltalk
-    .prompt(question, "", "", { type: "password" })
+    .prompt(text1, text2 + "\n\n", "", { type: "password" })
     .then((value) => {
       ipcRenderer.send("password-entered", value);
     })

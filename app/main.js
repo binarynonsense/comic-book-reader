@@ -586,13 +586,15 @@ ipcMain.on("pdf-load-failed", (event, error) => {
       // { message: 'No password given', name: 'PasswordException', code: 1 }
       g_mainWindow.webContents.send(
         "show-modal-prompt-password",
-        _("ui-modal-prompt-enterpassword")
+        _("ui-modal-prompt-enterpassword"),
+        path.basename(g_fileData.path)
       );
     } else if (error.code === 2) {
       // { message: 'Incorrect Password', name: 'PasswordException', code: 2 }
       g_mainWindow.webContents.send(
         "show-modal-prompt-password",
-        _("ui-modal-prompt-enterpassword")
+        _("ui-modal-prompt-enterpassword"),
+        path.basename(g_fileData.path)
       );
     }
   } else {
@@ -1202,7 +1204,8 @@ function openComicBookFile(filePath, pageIndex = 0, password = "") {
           g_fileData.password = password;
           g_mainWindow.webContents.send(
             "show-modal-prompt-password",
-            _("ui-modal-prompt-enterpassword")
+            _("ui-modal-prompt-enterpassword"),
+            path.basename(g_fileData.path)
           );
           return;
         } else if (rarData.result === "other error") {
@@ -1255,7 +1258,8 @@ function openComicBookFile(filePath, pageIndex = 0, password = "") {
           g_fileData.password = password;
           g_mainWindow.webContents.send(
             "show-modal-prompt-password",
-            _("ui-modal-prompt-enterpassword")
+            _("ui-modal-prompt-enterpassword"),
+            path.basename(g_fileData.path)
           );
           return;
         } else if (zipData.result === "other error") {
