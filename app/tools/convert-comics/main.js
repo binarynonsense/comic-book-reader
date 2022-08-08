@@ -97,6 +97,7 @@ ipcMain.on(g_ipcChannel + "choose-file", (event, defaultPath) => {
     let allowedFileTypesList = [
       FileExtension.CBZ,
       FileExtension.CBR,
+      FileExtension.CB7,
       FileExtension.PDF,
       FileExtension.EPUB,
     ];
@@ -136,6 +137,11 @@ ipcMain.on(g_ipcChannel + "choose-file", (event, defaultPath) => {
             fileExtension === "." + FileExtension.CBZ
           ) {
             fileType = FileDataType.ZIP;
+          } else if (
+            fileExtension === "." + FileExtension.SEVENZIP ||
+            fileExtension === "." + FileExtension.CB7
+          ) {
+            fileType = FileDataType.SEVENZIP;
           } else {
             return;
           }
@@ -346,6 +352,7 @@ function start(inputFilePath, inputFileType, fileNum, totalFilesNum) {
   if (
     inputFileType === FileDataType.ZIP ||
     inputFileType === FileDataType.RAR ||
+    inputFileType === FileDataType.SEVENZIP ||
     inputFileType === FileDataType.EPUB
   ) {
     g_window.webContents.send(

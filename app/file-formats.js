@@ -99,275 +99,8 @@ const deleteTempFolderRecursive = function (folderPath) {
 };
 
 ///////////////////////////////////////////////////////////////////////////////
-// 7Zip ///////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-
-async function get7ZipEntriesList(filePath, password) {
-  try {
-    if (password === undefined || password === "") {
-      // to help trigger the right error
-      password = "_";
-    }
-    let pathTo7zip = sevenBin.path7za;
-    if (!isDev()) {
-      // find the one that works in the release version
-      pathTo7zip = pathTo7zip.replace("app.asar", "app.asar.unpacked");
-    }
-
-    // NOTE:  I use test instead of list because it gives an error for encrypted files
-    // that have the file names ot encrypted, and also returns the file list.
-    // List only gives an error if the names are also encrypted
-    // TODO: check if test comes with a performance hit for big files? Don't really know what it tests...
-    const seven = Seven.test(filePath, {
-      $bin: pathTo7zip,
-      charset: "UTF-8", // always used just in case?
-      password: password,
-    });
-
-    let imgEntries;
-    let promise = await new Promise((resolve) => {
-      imgEntries = [];
-      seven.on("data", function (data) {
-        imgEntries.push(data.file);
-      });
-      seven.on("error", (error) => {
-        resolve({ success: false, data: error });
-      });
-      seven.on("end", () => {
-        return resolve({
-          success: true,
-          data: imgEntries,
-        });
-      });
-    });
-
-    if (promise.success === true) {
-      return { result: "success", paths: imgEntries };
-    } else if (promise.success === false) {
-      if (promise.data.toString().search("password") !== -1) {
-        // Can not open encrypted archive. Wrong password?"
-        return { result: "password required", paths: [] };
-      }
-    }
-    // shouldn't reach this point
-    return { result: "other error", paths: [] };
-  } catch (error) {
-    return { result: "other error", paths: [] };
-  }
-}
-exports.get7ZipEntriesList = get7ZipEntriesList;
-
-async function extract7ZipEntryBuffer(filePath, entryName, password) {
-  try {
-    let tempFolder = createTempFolder();
-    //////////////////////////////////////////
-    if (password === undefined || password === "") {
-      // to help trigger the right error
-      password = "_";
-    }
-    let pathTo7zip = sevenBin.path7za;
-    if (!isDev()) {
-      // find the one that works in the release version
-      pathTo7zip = pathTo7zip.replace("app.asar", "app.asar.unpacked");
-    }
-
-    const seven = Seven.extract(filePath, tempFolder, {
-      $bin: pathTo7zip,
-      charset: "UTF-8", // always used just in case?
-      password: password,
-      $cherryPick: entryName,
-    });
-
-    let promise = await new Promise((resolve) => {
-      seven.on("error", (error) => {
-        resolve({ success: false, data: error });
-      });
-      seven.on("end", () => {
-        return resolve({
-          success: true,
-          data: "",
-        });
-      });
-    });
-
-    let buffer;
-    if (promise.success === true) {
-      buffer = fs.readFileSync(path.join(tempFolder, entryName));
-      cleanUpTempFolder(tempFolder);
-      return buffer;
-    }
-    //////////////////////////////////////////
-    cleanUpTempFolder(tempFolder);
-    return undefined;
-  } catch (error) {
-    console.log(error);
-    cleanUpTempFolder(tempFolder);
-    return undefined;
-  }
-}
-exports.extract7ZipEntryBuffer = extract7ZipEntryBuffer;
-
-/////////////////////////////
-
-test7z();
-
-function test7z() {
-  return;
-  (async () => {
-    let entryName;
-    let filePath = "/home/alvaro/_temp/cb7_example.cb7";
-    // filePath = "/home/alvaro/_temp/cb7_example_password_all_1234.cb7";
-    // filePath = "/home/alvaro/_temp/cb7_example_password_1234.cb7";
-    try {
-      let pathTo7zip = sevenBin.path7za;
-      console.log(pathTo7zip);
-      // linux-unpacked/resources/app.asar/node_modules/7zip-bin/linux/x64/7za
-      // linux-unpacked/resources/app.asar.unpacked ...
-      if (!isDev()) {
-        pathTo7zip = pathTo7zip.replace("app.asar", "app.asar.unpacked");
-        console.log(pathTo7zip);
-      }
-
-      //const seven = Seven.list("/home/alvaro/_temp/cb7_example.cb7");
-      // const seven = Seven.list(
-      //   "/home/alvaro/_temp/cb7_example_password_all_1234.cb7",
-      //   { charset: "UTF-8", password: "1" }
-      // ); // Can not open encrypted archive. Wrong password?
-      // const seven = Seven.list("/home/alvaro/_temp/cb7_example.cb7", {
-      //   charset: "UTF-8",
-      //   password: "1",
-      // });
-      // const seven = Seven.list(
-      //   "/home/alvaro/_temp/cb7_example_password_1234.cb7",
-      //   {
-      //     charset: "UTF-8",
-      //     password: "1",
-      //   }
-      // );
-
-      // I use test instead of list because it gives an error for encrypted files
-      // that have the file names ot encrypted. List only gives it if the names are also encrypted
-      const seven = Seven.test(filePath, {
-        $bin: pathTo7zip,
-        charset: "UTF-8",
-        password: "1",
-      });
-      let files;
-      let promise = await new Promise((resolve) => {
-        files = [];
-        console.log("START");
-        seven.on("data", function (data) {
-          // example output:
-          // {
-          //   datetime: 2022-06-17T19:37:25.000Z,
-          //   attributes: '....A',
-          //   size: 732574,
-          //   sizeCompressed: undefined,
-          //   file: '0002.jpeg'
-          // }
-          files.push(data.file);
-        });
-        seven.on("error", (error) => {
-          console.log("REJECT ERROR");
-          // possible reasons
-          // Can not open encrypted archive. Wrong password?
-          // No more files --> file not found?
-          console.log(error);
-          resolve({ success: false, data: error });
-        });
-        seven.on("end", () => {
-          return resolve({
-            success: true,
-            data: files,
-          });
-        });
-      });
-
-      // console.log(promise);
-      if (promise.success === true) {
-        console.log(promise.data);
-        entryName = promise.data[0];
-      } else if (promise.success === false) {
-        // console.log(promise.data);
-        if (promise.data.toString().search("password") !== -1) {
-          console.log("Can not open encrypted archive. Wrong password?");
-        }
-        return;
-      }
-      console.log("EXIT");
-    } catch (error) {
-      console.log("CATCHED ERROR");
-      console.log(error);
-      return;
-    }
-    console.log(entryName);
-    /////// TEST EXTRACT BUFFER
-    try {
-      let tempFolder = createTempFolder();
-      //////////////////////////////////////////
-      let pathTo7zip = sevenBin.path7za;
-      console.log(pathTo7zip);
-      if (!isDev()) {
-        // find the one that works in the release version
-        pathTo7zip = pathTo7zip.replace("app.asar", "app.asar.unpacked");
-      }
-
-      const seven = Seven.extract(filePath, tempFolder, {
-        $bin: pathTo7zip,
-        charset: "UTF-8", // always used just in case?
-        password: "1",
-        $cherryPick: entryName,
-      });
-
-      let promise = await new Promise((resolve) => {
-        seven.on("error", (error) => {
-          resolve({ success: false, data: error });
-        });
-        seven.on("end", () => {
-          return resolve({
-            success: true,
-            data: "",
-          });
-        });
-      });
-
-      let buffer;
-      if (promise.success === true) {
-        buffer = fs.readFileSync(path.join(tempFolder, entryName));
-        console.log(buffer.toString("base64"));
-        cleanUpTempFolder(tempFolder);
-        return buffer;
-      }
-      //////////////////////////////////////////
-      cleanUpTempFolder(tempFolder);
-      return undefined;
-    } catch (error) {
-      console.log(error);
-      cleanUpTempFolder(tempFolder);
-      return undefined;
-    }
-  })(); // async
-}
-
-///////////////////////////////////////////////////////////////////////////////
 // RAR ////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-
-async function extractRar(filePath, tempFolderPath, password) {
-  try {
-    //ref: https://github.com/YuJianrong/node-unrar.js
-    let extractor = await unrar.createExtractorFromFile({
-      filepath: filePath,
-      targetPath: tempFolderPath,
-      password: password,
-    });
-    const { files } = extractor.extract();
-    [...files]; // lazy initialization? the files are not extracted if I don't do this
-  } catch (error) {
-    throw error;
-  }
-}
-exports.extractRar = extractRar;
 
 async function getRarEntriesList(filePath, password) {
   try {
@@ -431,6 +164,22 @@ async function extractRarEntryBuffer(rarPath, entryName, password) {
   }
 }
 exports.extractRarEntryBuffer = extractRarEntryBuffer;
+
+async function extractRar(filePath, tempFolderPath, password) {
+  try {
+    //ref: https://github.com/YuJianrong/node-unrar.js
+    let extractor = await unrar.createExtractorFromFile({
+      filepath: filePath,
+      targetPath: tempFolderPath,
+      password: password,
+    });
+    const { files } = extractor.extract();
+    [...files]; // lazy initialization? the files are not extracted if I don't do this
+  } catch (error) {
+    throw error;
+  }
+}
+exports.extractRar = extractRar;
 
 ///////////////////////////////////////////////////////////////////////////////
 // ZIP ////////////////////////////////////////////////////////////////////////
@@ -502,6 +251,193 @@ function createZip(filePathsList, outputFilePath) {
   zip.writeZip(outputFilePath);
 }
 exports.createZip = createZip;
+
+///////////////////////////////////////////////////////////////////////////////
+// 7Zip ///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+async function get7ZipEntriesList(filePath, password) {
+  try {
+    if (password === undefined || password === "") {
+      // to help trigger the right error
+      password = "_";
+    }
+    let pathTo7zip = sevenBin.path7za;
+    if (!isDev()) {
+      // find the one that works in the release version
+      pathTo7zip = pathTo7zip.replace("app.asar", "app.asar.unpacked");
+    }
+
+    // NOTE:  I use test instead of list because it gives an error for encrypted files
+    // that have the file names ot encrypted, and also returns the file list.
+    // List only gives an error if the names are also encrypted
+    // TODO: check if test comes with a performance hit for big files? Don't really know what it tests...
+    const seven = Seven.test(filePath, {
+      $bin: pathTo7zip,
+      charset: "UTF-8", // always used just in case?
+      password: password,
+    });
+
+    let imgEntries;
+    let promise = await new Promise((resolve) => {
+      imgEntries = [];
+      seven.on("data", function (data) {
+        imgEntries.push(data.file);
+      });
+      seven.on("error", (error) => {
+        resolve({ success: false, data: error });
+      });
+      seven.on("end", () => {
+        return resolve({
+          success: true,
+          data: imgEntries,
+        });
+      });
+    });
+
+    if (promise.success === true) {
+      return { result: "success", paths: imgEntries };
+    } else if (promise.success === false) {
+      if (promise.data.toString().search("password") !== -1) {
+        // Can not open encrypted archive. Wrong password?"
+        return { result: "password required", paths: [] };
+      }
+    }
+    // shouldn't reach this point
+    return { result: "other error", paths: [] };
+  } catch (error) {
+    return { result: "other error", paths: [] };
+  }
+}
+exports.get7ZipEntriesList = get7ZipEntriesList;
+
+async function extract7ZipEntryBuffer(filePath, entryName, password) {
+  let tempFolderPath;
+  try {
+    tempFolderPath = createTempFolder();
+    //////////////////////////////////////////
+    if (password === undefined || password === "") {
+      // to help trigger the right error
+      password = "_";
+    }
+    let pathTo7zip = sevenBin.path7za;
+    if (!isDev()) {
+      // find the one that works in the release version
+      pathTo7zip = pathTo7zip.replace("app.asar", "app.asar.unpacked");
+    }
+
+    const seven = Seven.extract(filePath, tempFolderPath, {
+      $bin: pathTo7zip,
+      charset: "UTF-8", // always used just in case?
+      password: password,
+      $cherryPick: entryName,
+    });
+
+    let promise = await new Promise((resolve) => {
+      seven.on("error", (error) => {
+        resolve({ success: false, data: error });
+      });
+      seven.on("end", () => {
+        return resolve({
+          success: true,
+          data: "",
+        });
+      });
+    });
+
+    let buffer;
+    if (promise.success === true) {
+      buffer = fs.readFileSync(path.join(tempFolderPath, entryName));
+      cleanUpTempFolder(tempFolderPath);
+      return buffer;
+    }
+    //////////////////////////////////////////
+    cleanUpTempFolder(tempFolderPath);
+    return undefined;
+  } catch (error) {
+    console.log(error);
+    cleanUpTempFolder(tempFolderPath);
+    return undefined;
+  }
+}
+exports.extract7ZipEntryBuffer = extract7ZipEntryBuffer;
+
+async function extract7Zip(filePath, tempFolderPath, password) {
+  try {
+    if (password === undefined || password === "") {
+      // to help trigger the right error
+      password = "_";
+    }
+    let pathTo7zip = sevenBin.path7za;
+    if (!isDev()) {
+      // find the one that works in the release version
+      pathTo7zip = pathTo7zip.replace("app.asar", "app.asar.unpacked");
+    }
+
+    const seven = Seven.extractFull(filePath, tempFolderPath, {
+      $bin: pathTo7zip,
+      charset: "UTF-8", // always used just in case?
+      password: password,
+    });
+
+    let promise = await new Promise((resolve) => {
+      seven.on("error", (error) => {
+        resolve({ success: false, data: error });
+      });
+      seven.on("end", () => {
+        return resolve({
+          success: true,
+          data: "",
+        });
+      });
+    });
+
+    if (promise.success === true) {
+      return;
+    }
+    throw "Error: unknown error extracting 7z file";
+  } catch (error) {
+    throw error;
+  }
+}
+exports.extract7Zip = extract7Zip;
+
+async function create7Zip(filePathsList, outputFilePath) {
+  try {
+    let pathTo7zip = sevenBin.path7za;
+    if (!isDev()) {
+      // find the one that works in the release version
+      pathTo7zip = pathTo7zip.replace("app.asar", "app.asar.unpacked");
+    }
+
+    const seven = Seven.add(outputFilePath, filePathsList, {
+      $bin: pathTo7zip,
+      charset: "UTF-8", // always used just in case?
+    });
+    // TODO: test archiveType, maybe to support cbt files?
+    // not sure, but possible values may be: 7z, xz, split, zip, gzip, bzip2, tar,
+
+    let promise = await new Promise((resolve) => {
+      seven.on("error", (error) => {
+        resolve({ success: false, data: error });
+      });
+      seven.on("end", () => {
+        return resolve({
+          success: true,
+        });
+      });
+    });
+
+    if (promise.success === true) {
+      return;
+    } else if (promise.success === false) {
+      throw promise.data;
+    }
+  } catch (error) {
+    throw error;
+  }
+}
+exports.create7Zip = create7Zip;
 
 ///////////////////////////////////////////////////////////////////////////////
 // EPUB ///////////////////////////////////////////////////////////////////////

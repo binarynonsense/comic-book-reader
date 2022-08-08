@@ -1,5 +1,6 @@
 const fileFormats = require("../../file-formats");
-const palette = require("../extract-palette/palette");
+//const palette = require("../extract-palette/palette");
+const { FileExtension, FileDataType } = require("../../constants");
 
 process.on("message", (message) => {
   if (message[0] === "extract") {
@@ -18,11 +19,13 @@ async function extractImages(
   password
 ) {
   try {
-    if (inputFileType === "zip") {
+    if (inputFileType === FileDataType.ZIP) {
       fileFormats.extractZip(inputFilePath, tempFolderPath, password);
-    } else if (inputFileType === "rar") {
+    } else if (inputFileType === FileDataType.RAR) {
       await fileFormats.extractRar(inputFilePath, tempFolderPath, password);
-    } else if (inputFileType === "epub") {
+    } else if (inputFileType === FileDataType.SEVENZIP) {
+      await fileFormats.extract7Zip(inputFilePath, tempFolderPath, password);
+    } else if (inputFileType === FileDataType.EPUB) {
       await fileFormats.extractEpubImages(inputFilePath, tempFolderPath);
     } else {
       process.send("conversionExtractImages: invalid file type");
@@ -41,12 +44,18 @@ async function createFile(
   tempFolderPath
 ) {
   try {
-    if (outputFormat === "pdf") {
+    if (outputFormat === FileExtension.PDF) {
       // TODO: doesn't work in the worker, why?
       //await fileFormats.createPdfFromImages(imgFilePaths, outputFilePath, method);
       process.send("ERROR: can't create a pdf in the worker");
-    } else if (outputFormat === "epub") {
+    } else if (outputFormat === FileDataType.EPUB) {
       await fileFormats.createEpubFromImages(
+        imgFilePaths,
+        outputFilePath,
+        tempFolderPath
+      );
+    } else if (outputFormat === FileExtension.CB7) {
+      await fileFormats.create7Zip(
         imgFilePaths,
         outputFilePath,
         tempFolderPath

@@ -85,7 +85,8 @@ ipcRenderer.on(g_ipcChannel + "init", (event, outputFolderPath) => {
   g_formatSelect.innerHTML =
     '<option value="cbz">.cbz (zip)</option>' +
     '<option value="pdf">.pdf</option>' +
-    '<option value="epub">.epub</option>';
+    '<option value="epub">.epub</option>' +
+    '<option value="cb7">.cb7</option>';
   g_imageFormatSelect.innerHTML =
     '<option value="' +
     FileExtension.NOT_SET +
