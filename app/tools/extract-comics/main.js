@@ -94,6 +94,7 @@ ipcMain.on(g_ipcChannel + "choose-file", (event, defaultPath) => {
     let allowedFileTypesList = [
       FileExtension.CBZ,
       FileExtension.CBR,
+      FileExtension.CB7,
       FileExtension.PDF,
       FileExtension.EPUB,
     ];
@@ -133,6 +134,11 @@ ipcMain.on(g_ipcChannel + "choose-file", (event, defaultPath) => {
             fileExtension === "." + FileExtension.CBZ
           ) {
             fileType = FileDataType.ZIP;
+          } else if (
+            fileExtension === "." + FileExtension.SEVENZIP ||
+            fileExtension === "." + FileExtension.CB7
+          ) {
+            fileType = FileDataType.SEVENZIP;
           } else {
             return;
           }
@@ -316,6 +322,7 @@ function start(inputFilePath, inputFileType, fileNum, totalFilesNum) {
   if (
     inputFileType === FileDataType.ZIP ||
     inputFileType === FileDataType.RAR ||
+    inputFileType === FileDataType.SEVENZIP ||
     inputFileType === FileDataType.EPUB
   ) {
     // ref: https://www.matthewslipper.com/2019/09/22/everything-you-wanted-electron-child-process.html
@@ -434,7 +441,7 @@ async function resizeImages(
           .toFile(tmpFilePath);
 
         fs.unlinkSync(filePath);
-        fileUtils.moveFile(tmpFilePath, filePath); 
+        fileUtils.moveFile(tmpFilePath, filePath);
       }
     }
 
@@ -509,7 +516,7 @@ async function resizeImages(
           fileName + "." + outputFormat
         );
         fs.unlinkSync(filePath);
-        fileUtils.moveFile(tmpFilePath, newFilePath); 
+        fileUtils.moveFile(tmpFilePath, newFilePath);
         imgFilePaths[index] = newFilePath;
       }
     }
@@ -540,7 +547,7 @@ async function createFolderWithImages(imgFilePaths, outputFolderPath) {
       for (let index = 0; index < imgFilePaths.length; index++) {
         let oldPath = imgFilePaths[index];
         let newPath = path.join(outputFolderPath, path.basename(oldPath));
-        fileUtils.moveFile(oldPath, newPath); 
+        fileUtils.moveFile(oldPath, newPath);
       }
       g_window.webContents.send(g_ipcChannel + "finished-ok");
     } else {
