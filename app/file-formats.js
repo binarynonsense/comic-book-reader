@@ -72,7 +72,7 @@ async function extractRar(filePath, tempFolderPath, password) {
     const { files } = extractor.extract();
     [...files]; // lazy initialization? the files are not extracted if I don't do this
   } catch (error) {
-    console.log(error);
+    throw error
   }
 }
 exports.extractRar = extractRar;
@@ -196,10 +196,8 @@ function extractZip(filePath, tempFolderPath, password) {
     let zip = new AdmZip(filePath);
     const imageData = zip.readFile("");
     zip.extractAllTo(tempFolderPath, true, false, password);
-    return undefined;
-  } catch (err) {
-    console.log(err);
-    return err;
+  } catch (error) {
+    throw error
   }
 }
 exports.extractZip = extractZip;

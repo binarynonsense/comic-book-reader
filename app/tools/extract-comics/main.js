@@ -275,8 +275,8 @@ ipcMain.on(
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function stopError(err) {
-  g_window.webContents.send(g_ipcChannel + "update-log-text", err);
+function stopError(error) {
+  g_window.webContents.send(g_ipcChannel + "update-log-text", error);
   g_window.webContents.send(
     g_ipcChannel + "update-log-text",
     _("tool-shared-modal-log-extraction-error")

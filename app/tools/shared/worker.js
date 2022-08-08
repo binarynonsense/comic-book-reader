@@ -29,8 +29,8 @@ async function extractImages(
       return;
     }
     process.send("success");
-  } catch (err) {
-    process.send(err);
+  } catch (error) {
+    process.send(error.message);
   }
 }
 

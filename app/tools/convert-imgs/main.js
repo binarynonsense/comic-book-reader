@@ -157,8 +157,8 @@ ipcMain.on(
   }
 );
 
-ipcMain.on(g_ipcChannel + "stop-error", (event, err) => {
-  stopError(err);
+ipcMain.on(g_ipcChannel + "stop-error", (event, error) => {
+  stopError(error);
 });
 
 ipcMain.on(
@@ -300,7 +300,7 @@ async function start(
             .toFile(tmpFilePath);
 
           fs.unlinkSync(filePath);
-          fileUtils.moveFile(tmpFilePath, filePath);         
+          fileUtils.moveFile(tmpFilePath, filePath);
         }
         // convert
         g_window.webContents.send(

@@ -305,8 +305,8 @@ ipcMain.on(
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function stopError(err) {
-  g_window.webContents.send(g_ipcChannel + "update-log-text", err);
+function stopError(error) {
+  g_window.webContents.send(g_ipcChannel + "update-log-text", error);
   g_window.webContents.send(
     g_ipcChannel + "update-log-text",
     _("tool-shared-modal-log-conversion-error")
@@ -473,7 +473,7 @@ async function resizeImages(
           .toFile(tmpFilePath);
 
         fs.unlinkSync(filePath);
-        fileUtils.moveFile(tmpFilePath, filePath); 
+        fileUtils.moveFile(tmpFilePath, filePath);
       }
     }
 
@@ -561,7 +561,7 @@ async function resizeImages(
             fileName + "." + imageFormat
           );
           fs.unlinkSync(filePath);
-          fileUtils.moveFile(tmpFilePath, newFilePath); 
+          fileUtils.moveFile(tmpFilePath, newFilePath);
           imgFilePaths[index] = newFilePath;
         }
       }

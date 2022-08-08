@@ -226,20 +226,20 @@ exports.onChooseOutputFolder = function () {
 };
 
 function onStart(resetCounter = true) {
-  g_cancel = false;
-  g_modalButtonCancel.classList.remove("hide");
-  g_modalButtonClose.classList.add("hide");
-  {
-    g_modalButtonClose.classList.add("green");
-    g_modalButtonClose.classList.remove("red");
-  }
-  g_modalLoadingBar.classList.remove("hide");
-
   if (resetCounter) {
     g_inputFilesIndex = 0;
     g_numErrors = 0;
     updateLogText("", false);
   }
+
+  g_cancel = false;
+  g_modalButtonCancel.classList.remove("hide");
+  g_modalButtonClose.classList.add("hide");
+  if (g_numErrors === 0) {
+    g_modalButtonClose.classList.add("green");
+    g_modalButtonClose.classList.remove("red");
+  }
+  g_modalLoadingBar.classList.remove("hide");
 
   if (g_outputFormat === undefined) g_outputFormat = FileExtension.CBZ;
   g_inputFilePath = g_inputFiles[g_inputFilesIndex].path;
@@ -325,14 +325,21 @@ ipcRenderer.on(g_ipcChannel + "finished-ok", (event) => {
 });
 
 ipcRenderer.on(g_ipcChannel + "finished-error", (event) => {
-  g_modalButtonCancel.classList.add("hide");
-  g_modalButtonClose.classList.remove("hide");
-  {
-    g_modalButtonClose.classList.remove("green");
-    g_modalButtonClose.classList.add("red");
-  }
-  g_modalLoadingBar.classList.add("hide");
+  g_modalButtonClose.classList.remove("green");
+  g_modalButtonClose.classList.add("red");
   g_numErrors++;
+  if (g_inputFilesIndex < g_inputFiles.length - 1) {
+    g_inputFilesIndex++;
+    onStart(false);
+  } else {
+    ipcRenderer.send(
+      g_ipcChannel + "end",
+      false,
+      g_inputFiles.length,
+      g_numErrors,
+      g_inputFilesIndex + 1
+    );
+  }
 });
 
 ipcRenderer.on(g_ipcChannel + "finished-canceled", (event) => {
