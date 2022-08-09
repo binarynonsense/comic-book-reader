@@ -1334,7 +1334,7 @@ function openComicBookFile(filePath, pageIndex = 0, password = "") {
           g_mainWindow.webContents.send(
             "show-modal-info",
             _("ui-modal-info-fileerror"),
-            _("ui-modal-info-couldntopen-rar")
+            _("ui-modal-info-couldntopen-7z")
           );
           g_mainWindow.webContents.send("update-loading", false);
           return;
@@ -1359,7 +1359,7 @@ function openComicBookFile(filePath, pageIndex = 0, password = "") {
           g_mainWindow.webContents.send(
             "show-modal-info",
             _("ui-modal-info-fileerror"),
-            _("ui-modal-info-couldntopen-rar")
+            _("ui-modal-info-couldntopen-7z")
           );
           g_mainWindow.webContents.send("update-loading", false);
         }

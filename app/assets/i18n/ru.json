@@ -97,6 +97,7 @@
   "ui-modal-info-couldntopen-rar": "Не удалось открыть файл RAR",
   "ui-modal-info-couldntopen-zip": "Не удалось открыть файл ZIP",
   "[NEEDS TRANSLATION]ui-modal-info-couldntopen-zip-aes": "Couldn't open the ZIP file.\nAES encryption not supported for passwords (only ZipCrypto).",
+  "[NEEDS TRANSLATION]ui-modal-info-couldntopen-7z": "Couldn't open the 7Z file",
   "ui-modal-info-couldntopen-epub": "Не удалось открыть файл EPUB",
   "ui-modal-info-couldntopen-pdf": "Не удалось открыть файл PDF",
   "ui-modal-info-imagesavedto": "Файл изображения сохранён в:",
