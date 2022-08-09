@@ -175,7 +175,7 @@ ipcRenderer.on("file-closed", (event, img64, rotation) => {
 ///////////////////////////////////////////////////////////////////////////////
 
 ipcRenderer.on("render-img-page", (event, img64, rotation, scrollBarPos) => {
-  if (img64 !== undefined) {
+  if (img64) {
     cleanUp();
     document.querySelector(".centered-block").classList.add("hide");
     g_currentImg64 = img64;
