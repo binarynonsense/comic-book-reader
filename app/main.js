@@ -486,7 +486,7 @@ ipcMain.on("password-entered", (event, password) => {
   ) {
     let filePath = g_fileData.path;
     let pageIndex = g_fileData.pageIndex;
-    if (g_tempFileData.state === FileDataState.LOADED) {
+    if (g_tempFileData.state !== FileDataState.LOADING) {
       // restore previous file data
       Object.assign(g_fileData, g_tempFileData);
       g_tempFileData = {};
@@ -502,7 +502,7 @@ ipcMain.on("password-canceled", (event) => {
     g_fileData.type === FileDataType.ZIP ||
     g_fileData.type === FileDataType.SEVENZIP
   ) {
-    if (g_tempFileData.state === FileDataState.LOADED) {
+    if (g_tempFileData.state !== FileDataState.LOADING) {
       // restore previous file data
       Object.assign(g_fileData, g_tempFileData);
       g_tempFileData = {};
@@ -535,7 +535,7 @@ ipcMain.on(
 
 ipcMain.on("epub-load-failed", (event) => {
   // unrecoverable error
-  if (g_tempFileData.state === FileDataState.LOADED) {
+  if (g_tempFileData.state !== FileDataState.LOADING) {
     // restore previous file data
     Object.assign(g_fileData, g_tempFileData);
     g_tempFileData = {};
@@ -601,7 +601,7 @@ ipcMain.on("pdf-load-failed", (event, error) => {
     }
   } else {
     // unrecoverable error
-    if (g_tempFileData.state === FileDataState.LOADED) {
+    if (g_tempFileData.state !== FileDataState.LOADING) {
       // restore previous file data
       Object.assign(g_fileData, g_tempFileData);
       g_tempFileData = {};
