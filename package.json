@@ -31,18 +31,21 @@
   "scripts": {
     "start": "electron . --dev",
     "dist": "npm run dist:windows && npm run dist:linux",
-    "dist:linux": "npm run sharp:linux && npm run build:linux",
+    "dist:linux": "npm run 7zbin:linux && npm run sharp:linux && npm run build:linux",
     "dist:windows": "npm run sharp:windows && npm run build:windows",
     "build:linux": "electron-builder --linux",
     "build:windows": "electron-builder --win --dir",
     "sharp:windows": "del-cli ./node_modules/sharp && npm install --platform=win32 --arch=x64 sharp",
-    "sharp:linux": "del-cli ./node_modules/sharp && npm install --platform=linux --arch=x64 sharp"
+    "sharp:linux": "del-cli ./node_modules/sharp && npm install --platform=linux --arch=x64 sharp",
+    "7zbin:linux": "shx chmod +x node_modules/7zip-bin/linux/x64/7za",
+    "licenses": "license-checker > licenses/node_modules.txt && shx sed -i 's/path.*node_modules/path: node_modules/' ./licenses/node_modules.txt && shx sed -i 's/licenseFile.*node_modules/licenseFile: node_modules/' ./licenses/node_modules.txt"
   },
   "devDependencies": {
     "del-cli": "^4.0.1",
     "electron": "^20.0.1",
     "electron-builder": "^22.14.13",
-    "license-checker": "^25.0.1"
+    "license-checker": "^25.0.1",
+    "shx": "^0.3.4"
   },
   "dependencies": {
     "7zip-bin": "^5.2.0",
