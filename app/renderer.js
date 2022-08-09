@@ -46,6 +46,72 @@ ipcRenderer.on("update-menubar", (event) => {
   g_titlebar.refreshMenu();
 });
 
+ipcRenderer.on(
+  "update-loading-indicator",
+  (
+    event,
+    loadingIndicatorBG,
+    loadingIndicatorIconSize,
+    loadingIndicatorIconPos
+  ) => {
+    if (loadingIndicatorBG === 0) {
+      document.documentElement.style.setProperty("--li-bg-alpha", 0);
+    } else {
+      document.documentElement.style.setProperty("--li-bg-alpha", 0.1);
+    }
+    if (loadingIndicatorIconSize === 0) {
+      document.documentElement.style.setProperty("--li-icon-size", "30px");
+      document.documentElement.style.setProperty("--li-icon-thickness", "4px");
+    } else {
+      document.documentElement.style.setProperty("--li-icon-size", "65px");
+      document.documentElement.style.setProperty("--li-icon-thickness", "8px");
+    }
+    if (loadingIndicatorIconPos === 0) {
+      document.documentElement.style.setProperty(
+        "--li-icon-align-self",
+        "normal"
+      );
+      document.documentElement.style.setProperty(
+        "--li-icon-justify-self",
+        "left"
+      );
+      document.documentElement.style.setProperty(
+        "--li-icon-margin-top-full",
+        "10px"
+      );
+      document.documentElement.style.setProperty(
+        "--li-icon-margin-top-win",
+        "40px"
+      );
+      document.documentElement.style.setProperty(
+        "--li-icon-margin-left",
+        "10px"
+      );
+    } else {
+      document.documentElement.style.setProperty(
+        "--li-icon-align-self",
+        "center"
+      );
+      document.documentElement.style.setProperty(
+        "--li-icon-justify-self",
+        "center"
+      );
+      document.documentElement.style.setProperty(
+        "--li-icon-margin-top-full",
+        "0px"
+      );
+      document.documentElement.style.setProperty(
+        "--li-icon-margin-top-win",
+        "0px"
+      );
+      document.documentElement.style.setProperty(
+        "--li-icon-margin-left",
+        "0px"
+      );
+    }
+  }
+);
+
 ipcRenderer.on("update-colors", (event, data) => {
   for (const [key, value] of Object.entries(data)) {
     document.documentElement.style.setProperty(key, value);

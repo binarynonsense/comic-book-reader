@@ -80,7 +80,6 @@ exports.setZoomDefault = function (mode) {
     "preferences-zoom-default-lastused"
   ).checked = mode === 2;
 };
-
 exports.setZoomFileLoading = function (mode) {
   Menu.getApplicationMenu().getMenuItemById(
     "preferences-zoom-fileloading-default"
@@ -88,6 +87,31 @@ exports.setZoomFileLoading = function (mode) {
   Menu.getApplicationMenu().getMenuItemById(
     "preferences-zoom-fileloading-history"
   ).checked = mode === 1;
+};
+
+exports.setLoadingIndicatorBG = function (value) {
+  Menu.getApplicationMenu().getMenuItemById(
+    "preferences-loading-bg-0"
+  ).checked = value === 0;
+  Menu.getApplicationMenu().getMenuItemById(
+    "preferences-loading-bg-1"
+  ).checked = value === 1;
+};
+exports.setLoadingIndicatorIconSize = function (value) {
+  Menu.getApplicationMenu().getMenuItemById(
+    "preferences-loading-isize-0"
+  ).checked = value === 0;
+  Menu.getApplicationMenu().getMenuItemById(
+    "preferences-loading-isize-1"
+  ).checked = value === 1;
+};
+exports.setLoadingIndicatorIconPos = function (value) {
+  Menu.getApplicationMenu().getMenuItemById(
+    "preferences-loading-ipos-0"
+  ).checked = value === 0;
+  Menu.getApplicationMenu().getMenuItemById(
+    "preferences-loading-ipos-1"
+  ).checked = value === 1;
 };
 
 exports.setFileOpened = function (isEnabled) {
@@ -524,6 +548,80 @@ function buildApplicationMenu(
                   click() {
                     mainProcess.onMenuChangeMouseCursorVisibility(1);
                   },
+                },
+              ],
+            },
+            {
+              label: _("menu-file-preferences-loading"),
+              submenu: [
+                {
+                  label: _("menu-file-preferences-loading-bg"),
+                  submenu: [
+                    {
+                      id: "preferences-loading-bg-0",
+                      type: "checkbox",
+                      checked: settings.loadingIndicatorBG === 0,
+                      label: _("menu-file-preferences-loading-bg-0"),
+                      click() {
+                        mainProcess.onMenuChangeLoadingIndicatorBG(0);
+                      },
+                    },
+                    {
+                      id: "preferences-loading-bg-1",
+                      type: "checkbox",
+                      checked: settings.loadingIndicatorBG === 1,
+                      label: _("menu-file-preferences-loading-bg-1"),
+                      click() {
+                        mainProcess.onMenuChangeLoadingIndicatorBG(1);
+                      },
+                    },
+                  ],
+                },
+                {
+                  label: _("menu-file-preferences-loading-isize"),
+                  submenu: [
+                    {
+                      id: "preferences-loading-isize-0",
+                      type: "checkbox",
+                      checked: settings.loadingIndicatorIconSize === 0,
+                      label: _("menu-file-preferences-loading-isize-0"),
+                      click() {
+                        mainProcess.onMenuChangeLoadingIndicatorIconSize(0);
+                      },
+                    },
+                    {
+                      id: "preferences-loading-isize-1",
+                      type: "checkbox",
+                      checked: settings.loadingIndicatorIconSize === 1,
+                      label: _("menu-file-preferences-loading-isize-1"),
+                      click() {
+                        mainProcess.onMenuChangeLoadingIndicatorIconSize(1);
+                      },
+                    },
+                  ],
+                },
+                {
+                  label: _("menu-file-preferences-loading-ipos"),
+                  submenu: [
+                    {
+                      id: "preferences-loading-ipos-0",
+                      type: "checkbox",
+                      checked: settings.loadingIndicatorIconPos === 0,
+                      label: _("menu-file-preferences-loading-ipos-0"),
+                      click() {
+                        mainProcess.onMenuChangeLoadingIndicatorIconPos(0);
+                      },
+                    },
+                    {
+                      id: "preferences-loading-ipos-1",
+                      type: "checkbox",
+                      checked: settings.loadingIndicatorIconPos === 1,
+                      label: _("menu-file-preferences-loading-ipos-1"),
+                      click() {
+                        mainProcess.onMenuChangeLoadingIndicatorIconPos(1);
+                      },
+                    },
+                  ],
                 },
               ],
             },

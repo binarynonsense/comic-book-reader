@@ -62,8 +62,11 @@ let g_settings = {
   loadLastOpened: true,
   autoOpen: 0, // 0: disabled, 1: next file, 2: next and previous files
   cursorVisibility: 0, // 0: always visible, 1: hide when inactive
-  zoomDefault: 2, // // 0: width, 1: height, 2: last used
+  zoomDefault: 2, // 0: width, 1: height, 2: last used
   zoomFileLoading: 0, // 0: use default, 1: use history
+  loadingIndicatorBG: 1, // 0: transparent, 1: slightly opaque
+  loadingIndicatorIconSize: 0, // 0: small, 1: big
+  loadingIndicatorIconPos: 0, // 0: top left, 1: center
 
   locale: undefined,
   theme: undefined,
@@ -162,7 +165,29 @@ function sanitizeSettings() {
   ) {
     g_settings.zoomFileLoading = 0;
   }
-
+  // loading indicator
+  if (
+    !Number.isInteger(g_settings.loadingIndicatorBG) ||
+    g_settings.loadingIndicatorBG < 0 ||
+    g_settings.loadingIndicatorBG > 1
+  ) {
+    g_settings.loadingIndicatorBG = 1;
+  }
+  if (
+    !Number.isInteger(g_settings.loadingIndicatorIconSize) ||
+    g_settings.loadingIndicatorIconSize < 0 ||
+    g_settings.loadingIndicatorIconSize > 1
+  ) {
+    g_settings.loadingIndicatorIconSize = 0;
+  }
+  if (
+    !Number.isInteger(g_settings.loadingIndicatorIconPos) ||
+    g_settings.loadingIndicatorIconPos < 0 ||
+    g_settings.loadingIndicatorIconPos > 1
+  ) {
+    g_settings.loadingIndicatorIconPos = 0;
+  }
+  /////////////////////
   if (typeof g_settings.locale === "string") {
     g_settings.locale = g_settings.locale
       .replace(/[^a-z0-9_\-]/gi, "_")
@@ -272,6 +297,8 @@ app.on("ready", () => {
     } else {
       setScaleToHeight(g_settings.zoom_scale);
     }
+
+    updateLoadingIndicator();
 
     g_mainWindow.webContents.send(
       "set-hide-inactive-mouse-cursor",
@@ -818,6 +845,37 @@ exports.onMenuChangeZoomFileLoading = function (mode) {
   else {
     g_settings.zoomFileLoading = mode;
     menuBar.setZoomFileLoading(mode);
+    g_mainWindow.webContents.send("update-menubar");
+  }
+};
+
+exports.onMenuChangeLoadingIndicatorBG = function (value) {
+  if (value === g_settings.loadingIndicatorBG || value < 0 || value > 1)
+    g_mainWindow.webContents.send("update-menubar");
+  else {
+    g_settings.loadingIndicatorBG = value;
+    menuBar.setLoadingIndicatorBG(value);
+    updateLoadingIndicator();
+    g_mainWindow.webContents.send("update-menubar");
+  }
+};
+exports.onMenuChangeLoadingIndicatorIconSize = function (value) {
+  if (value === g_settings.loadingIndicatorIconSize || value < 0 || value > 1)
+    g_mainWindow.webContents.send("update-menubar");
+  else {
+    g_settings.loadingIndicatorIconSize = value;
+    menuBar.setLoadingIndicatorIconSize(value);
+    updateLoadingIndicator();
+    g_mainWindow.webContents.send("update-menubar");
+  }
+};
+exports.onMenuChangeLoadingIndicatorIconPos = function (value) {
+  if (value === g_settings.loadingIndicatorIconPos || value < 0 || value > 1)
+    g_mainWindow.webContents.send("update-menubar");
+  else {
+    g_settings.loadingIndicatorIconPos = value;
+    menuBar.setLoadingIndicatorIconPos(value);
+    updateLoadingIndicator();
     g_mainWindow.webContents.send("update-menubar");
   }
 };
@@ -1962,4 +2020,13 @@ function updateMenuItemsState() {
       menuBar.setFileOpened(false);
     }
   }
+}
+
+function updateLoadingIndicator() {
+  g_mainWindow.webContents.send(
+    "update-loading-indicator",
+    g_settings.loadingIndicatorBG,
+    g_settings.loadingIndicatorIconSize,
+    g_settings.loadingIndicatorIconPos
+  );
 }
