@@ -195,7 +195,7 @@
   "[NEEDS TRANSLATION]tool-et-button-extract-text": "Extract Text",
   "[NEEDS TRANSLATION]tool-et-header-language": "Language:",
   "[NEEDS TRANSLATION]tool-et-span-language-checkbox-info": "Include languages that require an internet connection to work",  
-  "[NEEDS TRANSLATION]tool-et-modal-info": "(experimental)",
+  "tool-et-modal-info": "",
 
   "[NEEDS TRANSLATION]tool-ec-title": "Extract Pages Tool",
   "[NEEDS TRANSLATION]tool-ec-modal-log-extracting-to": "To",

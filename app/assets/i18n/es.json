@@ -195,7 +195,7 @@
   "tool-et-button-extract-text": "Extraer Texto",
   "tool-et-header-language": "Idioma:",
   "tool-et-span-language-checkbox-info": "Incluir idiomas que requieren una conexión a internet para funcionar",
-  "tool-et-modal-info": "(experimental)",
+  "tool-et-modal-info": "",
 
   "tool-ec-title": "Herramienta de extracción de páginas",
   "tool-ec-modal-log-extracting-to": "En",
