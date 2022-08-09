@@ -175,14 +175,16 @@ ipcRenderer.on("file-closed", (event, img64, rotation) => {
 ///////////////////////////////////////////////////////////////////////////////
 
 ipcRenderer.on("render-img-page", (event, img64, rotation, scrollBarPos) => {
-  cleanUp();
-  document.querySelector(".centered-block").classList.add("hide");
-  g_currentImg64 = img64;
-  renderImg64(rotation, scrollBarPos);
+  if (img64 !== undefined) {
+    cleanUp();
+    document.querySelector(".centered-block").classList.add("hide");
+    g_currentImg64 = img64;
+    renderImg64(rotation, scrollBarPos);
+  }
 });
 
 ipcRenderer.on("refresh-img-page", (event, rotation) => {
-  renderImg64(rotation);
+  if (g_currentImg64) renderImg64(rotation);
 });
 
 ///////////////////////////////////////////////////////////////////////////////
