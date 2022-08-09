@@ -226,7 +226,7 @@ ipcRenderer.on("load-epub", (event, filePath, pageIndex) => {
 });
 
 ipcRenderer.on("refresh-epub-image", (event, rotation) => {
-  renderImg64(rotation);
+  if (g_currentImg64) renderImg64(rotation);
 });
 
 ///////////////////////////////////////////////////////////////////////////////
