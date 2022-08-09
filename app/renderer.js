@@ -445,8 +445,9 @@ function loadPdf(filePath, pageIndex, password) {
 }
 
 function refreshPdfPage(rotation) {
-  if (g_currentPdfPage === undefined) return;
-  renderCurrentPDFPage(rotation);
+  if (g_currentPdfPage) {
+    renderCurrentPDFPage(rotation);
+  }
 }
 
 function renderPdfPage(pageIndex, rotation, scrollBarPos) {
