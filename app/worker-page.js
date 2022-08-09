@@ -24,9 +24,7 @@ async function extractBase64Image(
     let buf;
     let mime;
     if (fileType === FileDataType.ZIP) {
-      buf = fileFormats
-        .extractZipEntryBuffer(filePath, entryName, password)
-        .toString("base64");
+      buf = fileFormats.extractZipEntryBuffer(filePath, entryName, password);
       mime = "image/" + fileFormats.getMimeType(entryName);
     } else if (fileType === FileDataType.RAR) {
       buf = await fileFormats.extractRarEntryBuffer(
@@ -34,7 +32,6 @@ async function extractBase64Image(
         entryName,
         password
       );
-      buf = buf.toString("base64");
       mime = "image/" + fileFormats.getMimeType(entryName);
     } else if (fileType === FileDataType.SEVENZIP) {
       buf = await fileFormats.extract7ZipEntryBuffer(
@@ -42,28 +39,31 @@ async function extractBase64Image(
         entryName,
         password
       );
-      buf = buf.toString("base64");
       mime = "image/" + fileFormats.getMimeType(entryName);
     } else if (fileType === FileDataType.EPUB) {
       const data = await fileFormats.extractEpubImageBuffer(
         filePath,
         entryName
       );
-      buf = data[0].toString("base64");
+      buf = data[0];
       mime = data[1];
     } else if (fileType === FileDataType.IMGS_FOLDER) {
       // if (!path.isAbsolute(entryName)) {
       //   // FIXME: make it absolute somehow?
       // }
       const fullPath = path.join(filePath, entryName);
-      buf = fs.readFileSync(fullPath).toString("base64");
+      buf = fs.readFileSync(fullPath);
       mime = "image/" + fileFormats.getMimeType(fullPath);
     } else {
       //  TODO: handle error file type not valid
     }
-    let img64 = "data:" + mime + ";base64," + buf;
-    process.send([true, img64, scrollBarPos]);
-  } catch (err) {
-    process.send([false, err]);
+    if (buf) {
+      let img64 = "data:" + mime + ";base64," + buf.toString("base64");
+      process.send([true, img64, scrollBarPos]);
+    } else {
+      throw "empty buffer";
+    }
+  } catch (error) {
+    process.send([false, error]);
   }
 }
