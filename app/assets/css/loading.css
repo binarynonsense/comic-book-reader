@@ -1,0 +1,47 @@
+/* ref: https://css-tricks.com/single-element-loaders-the-spinner/ */
+
+.is-active {
+  display: block !important;
+}
+
+.is-full-screen {
+  top: 10px !important;
+}
+
+#loading {
+  display: none;
+  margin: 0;
+  min-width: 100%;
+  min-height: 100vh;
+  z-index: 10;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+#loading-spinner {
+  position: relative;
+  left: 10px;
+  top: 40px;
+  background: white;
+
+  width: 30px; /* size */
+  padding: 4px; /* border */
+
+  aspect-ratio: 1;
+  border-radius: 50%;
+  --_m: conic-gradient(#0000, #000), linear-gradient(#000 0 0) content-box;
+  -webkit-mask: var(--_m);
+  mask: var(--_m);
+  -webkit-mask-composite: source-out;
+  mask-composite: subtract;
+  box-sizing: border-box;
+  animation: spinner-anim 1s linear infinite;
+}
+
+@keyframes spinner-anim {
+  to {
+    transform: rotate(1turn);
+  }
+}

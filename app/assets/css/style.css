@@ -98,10 +98,10 @@ img {
   border-radius: 5px;
 }
 
-#loading {
+/* #loading {
   z-index: 10;
   background-color: rgba(0, 0, 0, 0.15) !important;
-}
+} */
 
 #pages-container {
   display: grid;

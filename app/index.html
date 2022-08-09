@@ -7,8 +7,8 @@
     <!-- <meta http-equiv="Content-Security-Policy" content="script-src 'self';" /> -->
     <link rel="stylesheet" href="./assets/css/style.css" />
     <link rel="stylesheet" href="./assets/css/toolbar.css" />
+    <link rel="stylesheet" href="./assets/css/loading.css" />
     <link href="./assets/libs/fontawesome/css/all.css" rel="stylesheet" />
-    <link href="./assets/libs/css-loader/css-loader.css" rel="stylesheet" />
     <script src="./assets/libs/smalltalk/smalltalk.min.js"></script>
     <title></title>
   </head>
@@ -110,7 +110,7 @@
 
     <div id="pages-container"></div>
 
-    <div id="loading" class="loader loader-default is-active"></div>
+    <div id="loading"><div id="loading-spinner"></div></div>
 
     <script>
       require("./renderer");

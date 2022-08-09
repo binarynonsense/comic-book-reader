@@ -812,9 +812,15 @@ function showMenuBar(isVisible) {
       .querySelector(".cet-titlebar")
       .classList.remove("set-display-none");
     document.querySelector(".cet-container").classList.remove("set-top-zero");
+
+    document
+      .querySelector("#loading-spinner")
+      .classList.remove("is-full-screen");
   } else {
     document.querySelector(".cet-titlebar").classList.add("set-display-none");
     document.querySelector(".cet-container").classList.add("set-top-zero");
+
+    document.querySelector("#loading-spinner").classList.add("is-full-screen");
   }
   updateZoom();
 }
