@@ -179,12 +179,12 @@ ipcRenderer.on("render-img-page", (event, img64, rotation, scrollBarPos) => {
     cleanUp();
     document.querySelector(".centered-block").classList.add("hide");
     g_currentImg64 = img64;
-    renderImg64(rotation, scrollBarPos);
+    renderImg64(rotation, scrollBarPos, true);
   }
 });
 
 ipcRenderer.on("refresh-img-page", (event, rotation) => {
-  if (g_currentImg64) renderImg64(rotation);
+  if (g_currentImg64) renderImg64(rotation, undefined, false);
 });
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -226,7 +226,7 @@ ipcRenderer.on("load-epub", (event, filePath, pageIndex) => {
 });
 
 ipcRenderer.on("refresh-epub-image", (event, rotation) => {
-  if (g_currentImg64) renderImg64(rotation);
+  if (g_currentImg64) renderImg64(rotation, undefined, false);
 });
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -287,7 +287,11 @@ function showModalAlert(title, message) {
 // IMG64 //////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-function renderImg64(rotation, scrollBarPos) {
+function renderImg64(
+  rotation,
+  scrollBarPos = undefined,
+  sendPageLoaded = true
+) {
   let container = document.getElementById("pages-container");
   container.innerHTML = "";
   if (rotation === 0 || rotation === 180) {
@@ -338,7 +342,7 @@ function renderImg64(rotation, scrollBarPos) {
     image.src = g_currentImg64;
   }
   if (scrollBarPos !== undefined) setScrollBarsPosition(scrollBarPos);
-  ipcRenderer.send("page-loaded");
+  if (sendPageLoaded) ipcRenderer.send("page-loaded");
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -446,7 +450,7 @@ function loadPdf(filePath, pageIndex, password) {
 
 function refreshPdfPage(rotation) {
   if (g_currentPdfPage) {
-    renderCurrentPDFPage(rotation);
+    renderCurrentPDFPage(rotation, undefined, false);
   }
 }
 
@@ -456,7 +460,7 @@ function renderPdfPage(pageIndex, rotation, scrollBarPos) {
   g_currentPdf.getPage(pageNum).then(
     function (page) {
       g_currentPdfPage = page;
-      renderCurrentPDFPage(rotation, scrollBarPos);
+      renderCurrentPDFPage(rotation, scrollBarPos, true);
     },
     function (reason) {
       // PDF loading error
@@ -465,7 +469,7 @@ function renderPdfPage(pageIndex, rotation, scrollBarPos) {
   );
 }
 
-function renderCurrentPDFPage(rotation, scrollBarPos) {
+function renderCurrentPDFPage(rotation, scrollBarPos, sendPageLoaded) {
   // I recreate the canvas every time to avoid some rendering issues when rotating (low res)
   // there's probably a better way, but performance seems similar
   let container = document.getElementById("pages-container");
@@ -499,7 +503,7 @@ function renderCurrentPDFPage(rotation, scrollBarPos) {
   let renderTask = g_currentPdfPage.render(renderContext);
   renderTask.promise.then(function () {
     setScrollBarsPosition(scrollBarPos);
-    ipcRenderer.send("page-loaded");
+    if (sendPageLoaded) ipcRenderer.send("page-loaded");
   });
 }
 
