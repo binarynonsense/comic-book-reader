@@ -253,8 +253,23 @@ function createZip(filePathsList, outputFilePath) {
 exports.createZip = createZip;
 
 ///////////////////////////////////////////////////////////////////////////////
-// 7Zip ///////////////////////////////////////////////////////////////////////
+// 7ZIP ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
+
+let g_pathTo7zipBin;
+function checkPathTo7ZipBin() {
+  if (g_pathTo7zipBin === undefined) {
+    g_pathTo7zipBin = sevenBin.path7za;
+    if (!isDev()) {
+      // find the one that works in the release version
+      g_pathTo7zipBin = g_pathTo7zipBin.replace(
+        "app.asar",
+        "app.asar.unpacked"
+      );
+    }
+  }
+  return g_pathTo7zipBin;
+}
 
 async function get7ZipEntriesList(filePath, password) {
   try {
@@ -262,18 +277,13 @@ async function get7ZipEntriesList(filePath, password) {
       // to help trigger the right error
       password = "_";
     }
-    let pathTo7zip = sevenBin.path7za;
-    if (!isDev()) {
-      // find the one that works in the release version
-      pathTo7zip = pathTo7zip.replace("app.asar", "app.asar.unpacked");
-    }
-
+    checkPathTo7ZipBin();
     // NOTE:  I use test instead of list because it gives an error for encrypted files
     // that have the file names ot encrypted, and also returns the file list.
     // List only gives an error if the names are also encrypted
     // TODO: check if test comes with a performance hit for big files? Don't really know what it tests...
     const seven = Seven.test(filePath, {
-      $bin: pathTo7zip,
+      $bin: g_pathTo7zipBin,
       charset: "UTF-8", // always used just in case?
       password: password,
     });
@@ -320,14 +330,10 @@ async function extract7ZipEntryBuffer(filePath, entryName, password) {
       // to help trigger the right error
       password = "_";
     }
-    let pathTo7zip = sevenBin.path7za;
-    if (!isDev()) {
-      // find the one that works in the release version
-      pathTo7zip = pathTo7zip.replace("app.asar", "app.asar.unpacked");
-    }
+    checkPathTo7ZipBin();
 
     const seven = Seven.extract(filePath, tempFolderPath, {
-      $bin: pathTo7zip,
+      $bin: g_pathTo7zipBin,
       charset: "UTF-8", // always used just in case?
       password: password,
       $cherryPick: entryName,
@@ -335,6 +341,7 @@ async function extract7ZipEntryBuffer(filePath, entryName, password) {
 
     let promise = await new Promise((resolve) => {
       seven.on("error", (error) => {
+        console.log(error);
         resolve({ success: false, data: error });
       });
       seven.on("end", () => {
@@ -368,14 +375,10 @@ async function extract7Zip(filePath, tempFolderPath, password) {
       // to help trigger the right error
       password = "_";
     }
-    let pathTo7zip = sevenBin.path7za;
-    if (!isDev()) {
-      // find the one that works in the release version
-      pathTo7zip = pathTo7zip.replace("app.asar", "app.asar.unpacked");
-    }
+    checkPathTo7ZipBin();
 
     const seven = Seven.extractFull(filePath, tempFolderPath, {
-      $bin: pathTo7zip,
+      $bin: g_pathTo7zipBin,
       charset: "UTF-8", // always used just in case?
       password: password,
     });
@@ -394,6 +397,8 @@ async function extract7Zip(filePath, tempFolderPath, password) {
 
     if (promise.success === true) {
       return;
+    } else if (promise.success === false) {
+      throw promise.data;
     }
     throw "Error: unknown error extracting 7z file";
   } catch (error) {
@@ -404,14 +409,10 @@ exports.extract7Zip = extract7Zip;
 
 async function create7Zip(filePathsList, outputFilePath) {
   try {
-    let pathTo7zip = sevenBin.path7za;
-    if (!isDev()) {
-      // find the one that works in the release version
-      pathTo7zip = pathTo7zip.replace("app.asar", "app.asar.unpacked");
-    }
+    checkPathTo7ZipBin();
 
     const seven = Seven.add(outputFilePath, filePathsList, {
-      $bin: pathTo7zip,
+      $bin: g_pathTo7zipBin,
       charset: "UTF-8", // always used just in case?
     });
     // TODO: test archiveType, maybe to support cbt files?
