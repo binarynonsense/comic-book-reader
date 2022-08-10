@@ -229,6 +229,8 @@
   "tool-ep-modal-title-exporting-error": "Error: No se pudo crear el archivo:",
 
   "tool-eq-title": "Herramienta de extracción de código QR",
+  "tool-eq-modal-alert-title-errorextracting": "ERROR: No se pudo extraer el texto",
+  "tool-eq-modal-alert-msg-errornodatafound": "No se encontró el código QR",
 
   "tool-cq-title": "Herramienta de creación de código QR",  
   "tool-cq-header-input-text": "Texto de Entrada:",

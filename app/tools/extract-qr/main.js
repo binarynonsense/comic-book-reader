@@ -117,21 +117,38 @@ ipcMain.on(g_ipcChannel + "start", (event, imgData, imgWidth, imgHeight) => {
       _("tool-shared-modal-title-extracting").toUpperCase()
     );
     const code = jsQR(imgData, imgWidth, imgHeight);
-    g_window.webContents.send(g_ipcChannel + "modal-close");
     if (code && code.data) {
       g_window.webContents.send(g_ipcChannel + "fill-textarea", code.data);
+      g_window.webContents.send(g_ipcChannel + "modal-close");
     } else {
       g_window.webContents.send(g_ipcChannel + "fill-textarea", "");
+      throw {
+        name: "GenericError",
+        message: _("tool-eq-modal-alert-msg-errornodatafound"),
+      };
     }
   } catch (error) {
     console.log(error);
-    g_window.webContents.send(g_ipcChannel + "modal-close");
+    cancelExtraction(error);
   }
 });
 
-ipcMain.on(g_ipcChannel + "cancel-extraction", (event) => {
-  g_window.webContents.send(g_ipcChannel + "modal-close");
+ipcMain.on(g_ipcChannel + "cancel-extraction", (event, error) => {
+  cancelExtraction(error);
 });
+
+///////////////////////////////////////////////////////////////////////////////
+
+function cancelExtraction(error) {
+  if (error) {
+    g_window.webContents.send(
+      g_ipcChannel + "show-modal-alert",
+      _("tool-eq-modal-alert-title-errorextracting"),
+      error.message
+    );
+  }
+  g_window.webContents.send(g_ipcChannel + "modal-close");
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 

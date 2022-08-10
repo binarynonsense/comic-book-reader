@@ -50,12 +50,8 @@ exports.onStart = function () {
     );
   } catch (error) {
     console.log(error);
-    ipcRenderer.send(g_ipcChannel + "cancel-extraction");
+    ipcRenderer.send(g_ipcChannel + "cancel-extraction", error);
   }
-};
-
-exports.onCancelConversion = function () {
-  ipcRenderer.send(g_ipcChannel + "cancel-extraction");
 };
 
 exports.onCopyTextAreaText = function () {
@@ -111,3 +107,13 @@ ipcRenderer.on(g_ipcChannel + "modal-update-title", (event, text) => {
 ipcRenderer.on(g_ipcChannel + "modal-update-info", (event, text) => {
   g_modalInfoArea.innerHTML = text;
 });
+
+///////////////////////////////////////////////////////////////////////////////
+
+ipcRenderer.on(g_ipcChannel + "show-modal-alert", (event, title, message) => {
+  showModalAlert(title, message);
+});
+
+function showModalAlert(title, message) {
+  smalltalk.alert(title, message).then(() => {});
+}

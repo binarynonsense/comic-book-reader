@@ -229,6 +229,8 @@
   "[NEEDS TRANSLATION]tool-ep-modal-title-exporting-error": "Error: Could NOT Create the File:",
 
   "[NEEDS TRANSLATION]tool-eq-title": "Extract QR Code's Text Tool",
+  "[NEEDS TRANSLATION]tool-eq-modal-alert-title-errorextracting": "ERROR: Could NOT Extract the Text",
+  "[NEEDS TRANSLATION]tool-eq-modal-alert-msg-errornodatafound": "QR code not found",
 
   "[NEEDS TRANSLATION]tool-cq-title": "Create QR Code Tool",  
   "[NEEDS TRANSLATION]tool-cq-header-input-text": "Input Text:",
