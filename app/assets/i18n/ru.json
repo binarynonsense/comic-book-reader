@@ -239,6 +239,6 @@
   "[NEEDS TRANSLATION]tool-cq-button-export": "Save Image To",
   "[NEEDS TRANSLATION]tool-et-button-start": "Create Code",
   "[NEEDS TRANSLATION]tool-cq-modal-alert-title-errorcreating": "ERROR: Could NOT Create the Code",
-  "[NEEDS TRANSLATION]tool-cq-modal-alert-title-successexporting": "QR Code Image Saved",
+  "[NEEDS TRANSLATION]tool-cq-modal-alert-title-successexporting": "QR Code Image File Created:",
   "[NEEDS TRANSLATION]tool-cq-modal-alert-title-errorexporting": "ERROR: Could NOT Save the Image"
 }

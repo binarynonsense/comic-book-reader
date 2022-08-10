@@ -239,6 +239,6 @@
   "tool-cq-button-export": "Guardar Imagen En",
   "tool-et-button-start": "Crear Código",
   "tool-cq-modal-alert-title-errorcreating": "ERROR: No se pudo crear el código",
-  "tool-cq-modal-alert-title-successexporting": "Imagen de Código QR Guardada",
+  "tool-cq-modal-alert-title-successexporting": "Archivo de Imagen de Código QR Creado:",
   "tool-cq-modal-alert-title-errorexporting": "ERROR: No se pudo guardar la imagen"
 }
