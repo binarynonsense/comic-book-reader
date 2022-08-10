@@ -26,6 +26,7 @@ function initCropper() {
     viewMode: 2,
     rotatable: false,
     toggleDragModeOnDblclick: true,
+    autoCropArea: 1, // 0-1, default 0.8
   });
 }
 exports.initCropper = initCropper;
