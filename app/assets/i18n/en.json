@@ -241,7 +241,5 @@
   "tool-cq-modal-alert-title-errorcreating": "ERROR: Could NOT Create the Code",
   "tool-cq-modal-alert-msg-toomuchdata": "The text is too long to be stored in a QR Code",
   "tool-cq-modal-alert-title-successexporting": "QR Code Image File Created:",
-  "tool-cq-modal-alert-title-errorexporting": "ERROR: Could NOT Save the Image"
-  
-  
+  "tool-cq-modal-alert-title-errorexporting": "ERROR: Could NOT Save the Image"  
 }
