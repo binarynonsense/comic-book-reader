@@ -91,6 +91,8 @@ ipcMain.on(g_ipcChannel + "choose-file", (event) => {
       FileExtension.JPEG,
       FileExtension.PNG,
       FileExtension.BMP,
+      FileExtension.WEBP,
+      FileExtension.AVIF,
     ];
     let filePathsList = fileUtils.chooseOpenFiles(
       g_window,
