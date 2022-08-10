@@ -122,6 +122,8 @@ exports.setFileOpened = function (isEnabled) {
     isEnabled;
   Menu.getApplicationMenu().getMenuItemById("file-page-extract-text").enabled =
     isEnabled;
+  Menu.getApplicationMenu().getMenuItemById("file-page-extract-qr").enabled =
+    isEnabled;
   Menu.getApplicationMenu().getMenuItemById(
     "file-page-extract-palette"
   ).enabled = isEnabled;
@@ -135,6 +137,9 @@ exports.setImageOpened = function () {
   Menu.getApplicationMenu().getMenuItemById("file-page-export").enabled = false;
   Menu.getApplicationMenu().getMenuItemById(
     "file-page-extract-text"
+  ).enabled = true;
+  Menu.getApplicationMenu().getMenuItemById(
+    "file-page-extract-qr"
   ).enabled = true;
   Menu.getApplicationMenu().getMenuItemById(
     "file-page-extract-palette"
@@ -380,6 +385,14 @@ function buildApplicationMenu(
               enabled: false,
               click() {
                 mainProcess.onMenuPageExtractText();
+              },
+            },
+            {
+              id: "file-page-extract-qr",
+              label: _("menu-file-page-extract-qr"),
+              enabled: false,
+              click() {
+                mainProcess.onMenuPageExtractQR();
               },
             },
           ],
@@ -876,6 +889,14 @@ function buildApplicationMenu(
               enabled: true,
               click() {
                 mainProcess.onMenuToolExtractText();
+              },
+            },
+            {
+              id: "extract-qr",
+              label: _("menu-tools-extract-qr"),
+              enabled: true,
+              click() {
+                mainProcess.onMenuToolExtractQR();
               },
             },
           ],

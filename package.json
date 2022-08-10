@@ -55,6 +55,7 @@
     "epub": "^1.2.1",
     "epub-gen": "^0.1.0",
     "file-type": "^14.7.1",
+    "jsqr": "^1.4.0",
     "natural-compare-lite": "^1.4.0",
     "node-7z": "^3.0.0",
     "node-unrar-js": "^2.0.0",

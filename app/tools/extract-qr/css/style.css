@@ -1,0 +1,21 @@
+.container {
+  margin-top: 10px;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+textarea#textarea-output {
+  height: 400px;
+  padding: 5px;
+  border-color: rgb(155, 155, 155);
+  resize: none;
+  margin: 0px;
+  display: block;
+}
+
+#image-container {
+  height: 400px;
+}

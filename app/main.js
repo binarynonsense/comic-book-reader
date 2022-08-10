@@ -18,6 +18,7 @@ const createComicTool = require("./tools/create-comic/main");
 const extractTextTool = require("./tools/extract-text/main");
 const extractPaletteTool = require("./tools/extract-palette/main");
 const extractComicsTool = require("./tools/extract-comics/main");
+const extractQRTool = require("./tools/extract-qr/main");
 
 const {
   setupTitlebar,
@@ -1026,6 +1027,10 @@ exports.onMenuPageExtractPalette = function () {
   exportPageStart(2);
 };
 
+exports.onMenuPageExtractQR = function () {
+  exportPageStart(3);
+};
+
 exports.onMenuConvertFile = function () {
   if (g_fileData.path !== undefined) {
     convertComicsTool.showWindow(g_mainWindow, g_fileData);
@@ -1057,6 +1062,11 @@ exports.onMenuToolConvertImages = function () {
 
 exports.onMenuToolExtractText = function () {
   extractTextTool.showWindow(g_mainWindow);
+  g_mainWindow.webContents.send("update-menubar");
+};
+
+exports.onMenuToolExtractQR = function () {
+  extractQRTool.showWindow(g_mainWindow);
   g_mainWindow.webContents.send("update-menubar");
 };
 
@@ -1707,6 +1717,9 @@ async function exportPageStart(sendToTool = 0) {
               g_mainWindow.webContents.send("update-menubar");
             } else if (message[2] === 2) {
               extractPaletteTool.showWindow(g_mainWindow, message[1]);
+              g_mainWindow.webContents.send("update-menubar");
+            } else if (message[2] === 3) {
+              extractQRTool.showWindow(g_mainWindow, message[1]);
               g_mainWindow.webContents.send("update-menubar");
             } else {
               g_mainWindow.webContents.send(

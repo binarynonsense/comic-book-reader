@@ -20,6 +20,7 @@
   "menu-file-page-export": "Exportar...",
   "menu-file-page-extract-text": "Extraer Texto...",
   "menu-file-page-extract-palette": "Extraer Paleta de Colores...",
+  "menu-file-page-extract-qr": "Extraer Texto en Código QR...",
   "menu-file-preferences": "Preferencias",
   "menu-file-preferences-hotspots": "Navegación con Click de Ratón",
   "menu-file-preferences-hotspots-disabled": "Desactivada",
@@ -85,6 +86,7 @@
   "menu-tools-extract-comics": "Páginas de Cómics...",
   "menu-tools-extract-text": "Texto de Imagen (OCR)...",
   "menu-tools-extract-palette": "Paleta de Colores de Imagen...",
+  "menu-tools-extract-qr": "Texto en Código QR de Imagen...",
 
   "menu-help": "Ayuda",
   "menu-help-about": "Acerca de",
@@ -223,5 +225,7 @@
   "tool-ep-distance-method": "Método de Cálculo de Distancia entre Colores:",
   "tool-ep-distance-deltae-threshold": "Valor Límite para el Método Delta E:",
   "tool-ep-modal-title-exported": "Archivo de Paleta Creado:",
-  "tool-ep-modal-title-exporting-error": "Error: Could NOT Create the File:"
+  "tool-ep-modal-title-exporting-error": "Error: Could NOT Create the File:",
+
+  "tool-eq-title": "Herramienta de extracción de código QR"
 }
