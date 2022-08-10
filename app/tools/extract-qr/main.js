@@ -128,7 +128,7 @@ ipcMain.on(g_ipcChannel + "start", (event, imgData, imgWidth, imgHeight) => {
       };
     }
   } catch (error) {
-    console.log(error);
+    if (error?.name !== "GenericError") console.log(error);
     cancelExtraction(error);
   }
 });
@@ -140,14 +140,15 @@ ipcMain.on(g_ipcChannel + "cancel-extraction", (event, error) => {
 ///////////////////////////////////////////////////////////////////////////////
 
 function cancelExtraction(error) {
+  g_window.webContents.send(g_ipcChannel + "modal-close");
   if (error) {
     g_window.webContents.send(
       g_ipcChannel + "show-modal-alert",
       _("tool-eq-modal-alert-title-errorextracting"),
-      error.message
+      error.message,
+      true
     );
   }
-  g_window.webContents.send(g_ipcChannel + "modal-close");
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -185,10 +186,6 @@ function getLocalization() {
     {
       id: "button-modal-close",
       text: _("tool-shared-ui-close").toUpperCase(),
-    },
-    {
-      id: "button-modal-cancel",
-      text: _("tool-shared-ui-cancel").toUpperCase(),
     },
   ];
 }

@@ -46,6 +46,8 @@ exports.onStart = function () {
     g_modalButtonClose.classList.remove("red");
   }
   g_modalLoadingBar.classList.remove("hide");
+  g_modalTitle.innerHTML = "";
+  g_modalInfoArea.innerHTML = "";
 
   const paletteContainer = document.getElementById("palette");
   paletteContainer.innerHTML = "";

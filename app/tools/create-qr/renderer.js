@@ -9,6 +9,8 @@ let g_startButton = document.querySelector("#button-start");
 let g_clearButton = document.querySelector("#button-clear");
 let g_exportButton = document.querySelector("#button-export");
 
+let g_modalButtonClose = document.querySelector("#button-modal-close");
+let g_modalLoadingBar = document.querySelector("#modal-loading-bar");
 let g_modalInfoArea = document.querySelector("#modal-info");
 let g_modalLogArea = document.querySelector("#modal-log");
 let g_modalTitle = document.querySelector("#modal-title");
@@ -25,6 +27,14 @@ exports.onExport = function () {
 };
 
 exports.onStart = function () {
+  g_modalButtonClose.classList.add("hide");
+  {
+    g_modalButtonClose.classList.add("green");
+    g_modalButtonClose.classList.remove("red");
+  }
+  g_modalLoadingBar.classList.remove("hide");
+  g_modalTitle.innerHTML = "";
+  g_modalInfoArea.innerHTML = "";
   ipcRenderer.send(g_ipcChannel + "start", g_inputTextArea.value);
 };
 
@@ -93,10 +103,20 @@ ipcRenderer.on(g_ipcChannel + "modal-update-info", (event, text) => {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-ipcRenderer.on(g_ipcChannel + "show-modal-alert", (event, title, message) => {
-  showModalAlert(title, message);
-});
-
-function showModalAlert(title, message) {
-  smalltalk.alert(title, message).then(() => {});
-}
+ipcRenderer.on(
+  g_ipcChannel + "show-modal-alert",
+  (event, titleText, infoText, isError) => {
+    g_modalButtonClose.classList.remove("hide");
+    if (isError) {
+      g_modalButtonClose.classList.remove("green");
+      g_modalButtonClose.classList.add("red");
+    } else {
+      g_modalButtonClose.classList.add("green");
+      g_modalButtonClose.classList.remove("red");
+    }
+    g_modalLoadingBar.classList.add("hide");
+    g_modalTitle.innerHTML = titleText;
+    g_modalInfoArea.innerHTML = infoText;
+    g_modalInstance.open();
+  }
+);

@@ -97,13 +97,14 @@ ipcMain.on(g_ipcChannel + "start", (event, text) => {
           };
         }
       })
-      .catch((err) => {
-        console.log(err);
+      .catch((error) => {
+        if (error?.name !== "GenericError") console.log(error);
         g_window.webContents.send(g_ipcChannel + "modal-close");
         g_window.webContents.send(
           g_ipcChannel + "show-modal-alert",
           _("tool-cq-modal-alert-title-errorcreating"),
-          error.message
+          error.message,
+          true
         );
       });
   } catch (error) {
@@ -112,7 +113,8 @@ ipcMain.on(g_ipcChannel + "start", (event, text) => {
     g_window.webContents.send(
       g_ipcChannel + "show-modal-alert",
       _("tool-cq-modal-alert-title-errorcreating"),
-      error.message
+      error.message,
+      true
     );
   }
 });
@@ -148,14 +150,16 @@ ipcMain.on(g_ipcChannel + "export-to-file", (event) => {
     g_window.webContents.send(
       g_ipcChannel + "show-modal-alert",
       _("tool-cq-modal-alert-title-successexporting"),
-      outputFilePath
+      outputFilePath,
+      false
     );
   } catch (error) {
     console.log(error);
     g_window.webContents.send(
       g_ipcChannel + "show-modal-alert",
       _("tool-cq-modal-alert-title-errorexporting"),
-      error.message
+      error.message,
+      true
     );
   }
 });
@@ -183,6 +187,10 @@ function getLocalization() {
     {
       id: "button-start",
       text: _("tool-et-button-start").toUpperCase(),
+    },
+    {
+      id: "button-modal-close",
+      text: _("tool-shared-ui-close").toUpperCase(),
     },
   ];
 }
