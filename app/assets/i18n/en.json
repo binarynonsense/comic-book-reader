@@ -82,6 +82,7 @@
   "menu-tools-convert-images": "Images...",
   "menu-tools-create": "Create",
   "menu-tools-create-comic": "Comic Book...",
+  "menu-tools-create-qr": "QR Code Image...",
   "menu-tools-extract": "Extract",
   "menu-tools-extract-comics": "Pages From Comic Books...",
   "menu-tools-extract-text": "Text From Image (OCR)...",
@@ -227,5 +228,15 @@
   "tool-ep-modal-title-exported": "Palette File Created:",
   "tool-ep-modal-title-exporting-error": "Error: Could NOT Create the File:",
 
-  "tool-eq-title": "Extract QR Code's Text Tool"
+  "tool-eq-title": "Extract QR Code's Text Tool",  
+
+  "tool-cq-title": "Create QR Code Tool",  
+  "tool-cq-header-input-text": "Input Text:",
+  "tool-cq-header-output-text": "Output Image:",
+  "tool-cq-button-clear": "Clear Text",
+  "tool-cq-button-export": "Save Image To",
+  "tool-et-button-start": "Create Code",
+  "tool-cq-modal-alert-title-errorcreating": "ERROR: Could NOT Create the Code",
+  "tool-cq-modal-alert-title-successexporting": "QR Code Image Saved",
+  "tool-cq-modal-alert-title-errorexporting": "ERROR: Could NOT Save the Image"
 }

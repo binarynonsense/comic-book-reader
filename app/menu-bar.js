@@ -862,6 +862,14 @@ function buildApplicationMenu(
                 mainProcess.onMenuToolCreateComic();
               },
             },
+            {
+              id: "create-file",
+              label: _("menu-tools-create-qr"),
+              enabled: true,
+              click() {
+                mainProcess.onMenuToolCreateQR();
+              },
+            },
           ],
         },
         {

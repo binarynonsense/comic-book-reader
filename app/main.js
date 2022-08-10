@@ -15,6 +15,7 @@ const { FileExtension, FileDataState, FileDataType } = require("./constants");
 const convertComicsTool = require("./tools/convert-comics/main");
 const convertImagesTool = require("./tools/convert-imgs/main");
 const createComicTool = require("./tools/create-comic/main");
+const createQRTool = require("./tools/create-qr/main");
 const extractTextTool = require("./tools/extract-text/main");
 const extractPaletteTool = require("./tools/extract-palette/main");
 const extractComicsTool = require("./tools/extract-comics/main");
@@ -1052,6 +1053,11 @@ exports.onMenuToolConvertComics = function () {
 
 exports.onMenuToolCreateComic = function () {
   createComicTool.showWindow(g_mainWindow);
+  g_mainWindow.webContents.send("update-menubar");
+};
+
+exports.onMenuToolCreateQR = function () {
+  createQRTool.showWindow(g_mainWindow);
   g_mainWindow.webContents.send("update-menubar");
 };
 

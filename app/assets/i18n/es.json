@@ -82,6 +82,7 @@
   "menu-tools-convert-images": "Imágenes...",
   "menu-tools-create": "Crear",
   "menu-tools-create-comic": "Cómic...",
+  "menu-tools-create-qr": "Código QR...",
   "menu-tools-extract": "Extraer",
   "menu-tools-extract-comics": "Páginas de Cómics...",
   "menu-tools-extract-text": "Texto de Imagen (OCR)...",
@@ -225,7 +226,17 @@
   "tool-ep-distance-method": "Método de Cálculo de Distancia entre Colores:",
   "tool-ep-distance-deltae-threshold": "Valor Límite para el Método Delta E:",
   "tool-ep-modal-title-exported": "Archivo de Paleta Creado:",
-  "tool-ep-modal-title-exporting-error": "Error: Could NOT Create the File:",
+  "tool-ep-modal-title-exporting-error": "Error: No se pudo crear el archivo:",
 
-  "tool-eq-title": "Herramienta de extracción de código QR"
+  "tool-eq-title": "Herramienta de extracción de código QR",
+
+  "tool-cq-title": "Herramienta de creación de código QR",  
+  "tool-cq-header-input-text": "Texto de Entrada:",
+  "tool-cq-header-output-text": "Imagen de Salida:",
+  "tool-cq-button-clear": "Borrar Texto",
+  "tool-cq-button-export": "Guardar Imagen En",
+  "tool-et-button-start": "Crear Código",
+  "tool-cq-modal-alert-title-errorcreating": "ERROR: No se pudo crear el código",
+  "tool-cq-modal-alert-title-successexporting": "Imagen de Código QR Guardada",
+  "tool-cq-modal-alert-title-errorexporting": "ERROR: No se pudo guardar la imagen"
 }

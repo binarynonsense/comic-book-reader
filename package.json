@@ -60,6 +60,7 @@
     "node-7z": "^3.0.0",
     "node-unrar-js": "^2.0.0",
     "pdfkit": "^0.13.0",
+    "qrcode": "^1.5.1",
     "sanitize-html": "^2.7.0",
     "sharp": "^0.30.7",
     "tesseract.js": "^2.1.5"

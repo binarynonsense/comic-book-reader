@@ -82,6 +82,7 @@
   "[NEEDS TRANSLATION]menu-tools-convert-images": "Images...",
   "menu-tools-create": "Создать",
   "[NEEDS TRANSLATION]menu-tools-create-comic": "Comic Book...",
+  "[NEEDS TRANSLATION]menu-tools-create-qr": "QR Code Image...",
   "[NEEDS TRANSLATION]menu-tools-extract": "Extract",
   "[NEEDS TRANSLATION]menu-tools-extract-comics": "Pages From Comic Books...",
   "[NEEDS TRANSLATION]menu-tools-extract-text": "Text From Image (OCR)...",
@@ -227,5 +228,15 @@
   "[NEEDS TRANSLATION]tool-ep-modal-title-exported": "Palette File Created:",
   "[NEEDS TRANSLATION]tool-ep-modal-title-exporting-error": "Error: Could NOT Create the File:",
 
-  "[NEEDS TRANSLATION]tool-eq-title": "Extract QR Code's Text Tool"
+  "[NEEDS TRANSLATION]tool-eq-title": "Extract QR Code's Text Tool",
+
+  "[NEEDS TRANSLATION]tool-cq-title": "Create QR Code Tool",  
+  "[NEEDS TRANSLATION]tool-cq-header-input-text": "Input Text:",
+  "[NEEDS TRANSLATION]tool-cq-header-output-text": "Output Image:",
+  "[NEEDS TRANSLATION]tool-cq-button-clear": "Clear Text",
+  "[NEEDS TRANSLATION]tool-cq-button-export": "Save Image To",
+  "[NEEDS TRANSLATION]tool-et-button-start": "Create Code",
+  "[NEEDS TRANSLATION]tool-cq-modal-alert-title-errorcreating": "ERROR: Could NOT Create the Code",
+  "[NEEDS TRANSLATION]tool-cq-modal-alert-title-successexporting": "QR Code Image Saved",
+  "[NEEDS TRANSLATION]tool-cq-modal-alert-title-errorexporting": "ERROR: Could NOT Save the Image"
 }
