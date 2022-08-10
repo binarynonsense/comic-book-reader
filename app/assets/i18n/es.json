@@ -239,6 +239,7 @@
   "tool-cq-button-export": "Guardar Imagen En",
   "tool-et-button-start": "Crear Código",
   "tool-cq-modal-alert-title-errorcreating": "ERROR: No se pudo crear el código",
+  "tool-cq-modal-alert-msg-toomuchdata": "El texto es demasiado largo para ser almacenado en un código QR",
   "tool-cq-modal-alert-title-successexporting": "Archivo de Imagen de Código QR Creado:",
   "tool-cq-modal-alert-title-errorexporting": "ERROR: No se pudo guardar la imagen"
 }

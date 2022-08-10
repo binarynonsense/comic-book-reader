@@ -98,7 +98,15 @@ ipcMain.on(g_ipcChannel + "start", (event, text) => {
         }
       })
       .catch((error) => {
-        if (error?.name !== "GenericError") console.log(error);
+        if (error?.message.includes("big to be stored")) {
+          error = {
+            name: "GenericError",
+            message: _("tool-cq-modal-alert-msg-toomuchdata"),
+          };
+        }
+        if (error?.name !== "GenericError") {
+          console.log(error);
+        }
         g_window.webContents.send(g_ipcChannel + "modal-close");
         g_window.webContents.send(
           g_ipcChannel + "show-modal-alert",
@@ -186,7 +194,7 @@ function getLocalization() {
     },
     {
       id: "button-start",
-      text: _("tool-et-button-start").toUpperCase(),
+      text: _("tool-cq-button-start").toUpperCase(),
     },
     {
       id: "button-modal-close",
