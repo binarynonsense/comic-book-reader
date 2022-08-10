@@ -1788,6 +1788,9 @@ function exportPageSaveBuffer(buf, outputFolderPath, sendToTool) {
         } else if (sendToTool === 2) {
           extractPaletteTool.showWindow(g_mainWindow, outputFilePath);
           g_mainWindow.webContents.send("update-menubar");
+        } else if (sendToTool === 3) {
+          extractQRTool.showWindow(g_mainWindow, outputFilePath);
+          g_mainWindow.webContents.send("update-menubar");
         } else {
           g_mainWindow.webContents.send(
             "show-modal-info",
