@@ -16,7 +16,7 @@ let g_resizeWindow;
 let g_ipcChannel = "tool-ec--";
 
 // hack to allow this at least for files from File>Convert...
-let g_initialPassword;
+let g_initialPassword = "";
 
 function isDev() {
   return process.argv[2] == "--dev";
