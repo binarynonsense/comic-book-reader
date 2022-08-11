@@ -27,13 +27,13 @@ A comic book reader and converter for cbz, cbr, cb7, epub and pdf files.
 - Portable mode (by creating a file named portable.txt in the same folder as the executable).
 - Tools:
   - Convert/Resize:
-    - comic books (cbr, cbz, pdf or epub to cbz, pdf or epub).
-    - images (jpg, png or webp).
+    - comic books (cbr, cbz, cb7, pdf or epub to cbz, cb7, pdf or epub).
+    - images (jpg, png, avif or webp).
   - Create:
-    - a comic book (cbz, pdf or epub) from a list of image files.
+    - a comic book (cbz, cb7, pdf or epub) from a list of image files.
     - a QR code image from text.
   - Extract:
-    - comic book pages (to jpg, png or webp).
+    - comic book pages (to jpg, png, avif or webp).
     - text (OCR) from a comic book page or image file.
     - a QR code's text from a comic book page or image file.
     - a color palette from a comic book page or image file.
