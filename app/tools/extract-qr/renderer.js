@@ -7,6 +7,7 @@ let g_cropper;
 let g_image = document.querySelector("#image");
 
 let g_outputTextArea = document.querySelector("#textarea-output");
+let g_copyTextButton = document.querySelector("#button-copy-text");
 
 let g_modalButtonClose = document.querySelector("#button-modal-close");
 let g_modalLoadingBar = document.querySelector("#modal-loading-bar");
@@ -48,7 +49,7 @@ exports.onStart = function () {
   g_modalTitle.innerHTML = "";
   g_modalInfoArea.innerHTML = "";
   try {
-    g_outputTextArea.innerHTML = "";
+    g_outputTextArea.value = "";
     let canvas = g_cropper.getCroppedCanvas();
     const ctx = canvas.getContext("2d");
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
@@ -65,7 +66,7 @@ exports.onStart = function () {
 };
 
 exports.onCopyTextAreaText = function () {
-  clipboard.writeText(g_outputTextArea.innerHTML);
+  clipboard.writeText(g_outputTextArea.value);
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -89,7 +90,12 @@ ipcRenderer.on(g_ipcChannel + "update-image", (event, filePath) => {
 });
 
 ipcRenderer.on(g_ipcChannel + "fill-textarea", (event, text) => {
-  g_outputTextArea.innerHTML = text;
+  g_outputTextArea.value = text;
+  if (text && text !== "") {
+    g_copyTextButton.classList.remove("disabled");
+  } else {
+    g_copyTextButton.classList.add("disabled");
+  }
 });
 
 ipcRenderer.on(g_ipcChannel + "modal-close", (event) => {
