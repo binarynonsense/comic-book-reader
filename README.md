@@ -1,6 +1,6 @@
 # ACBR - Comic Book Reader
 
-A comic book reader and converter for cbz, cbr, epub and pdf files.
+A comic book reader and converter for cbz, cbr, cb7, epub and pdf files.
 
 <p align="center">
   <img width="299" height="224" src="https://raw.githubusercontent.com/binarynonsense/comic-book-reader/master/screenshots/screenshot_01.jpg"> <img width="299" height="224" src="https://raw.githubusercontent.com/binarynonsense/comic-book-reader/master/screenshots/screenshot_02.jpg"> <img width="299" height="224" src="https://raw.githubusercontent.com/binarynonsense/comic-book-reader/master/screenshots/screenshot_03.jpg">
@@ -12,24 +12,32 @@ A comic book reader and converter for cbz, cbr, epub and pdf files.
 - Compatible file formats:
   - .cbz
   - .cbr
+  - .cb7
   - .pdf
   - .epub (images only)
+  - image files (.jpg, .png, .webp or .avif)
+  - including password protected pdf, cbz (AES encryption not supported), cb7 and cbr files.
 - Windowed (simple UI) and full-screen (no UI) modes.
-- 'Fit to width' and 'fit to height' views.
+- 'Fit to width', 'fit to height' and a customizable 'scale to height' page views.
 - Page rotation.
 - UI available in:
   - English
   - Spanish
-- Automatically restores the previous session's last opened book and page, and remembers the last 10 books' page positions.
+- Automatically restores the previous session's last opened book and page, and remembers the last books' page positions.
+- Portable mode (by creating a file named portable.txt in the same folder as the executable).
 - Tools:
   - Convert/Resize:
-    - Comic book files (cbr, cbz, pdf or epub to cbz, pdf or epub).
-    - Image files (jpg, png or webp).
+    - comic books (cbr, cbz, pdf or epub to cbz, pdf or epub).
+    - images (jpg, png or webp).
   - Create:
-    - A comic book file (cbz, pdf or epub) from a list of image files.
+    - a comic book (cbz, pdf or epub) from a list of image files.
+    - a QR code image from text.
   - Extract:
-    - Comic book pages (to jpg, png or webp).
-    - Text (OCR) from a comic book page or image file.
+    - comic book pages (to jpg, png or webp).
+    - text (OCR) from a comic book page or image file.
+    - a QR code's text from a comic book page or image file.
+    - a color palette from a comic book page or image file.
+      - can be exported to a .gpl or .aco palette file.
 
 ## Controls:
 
@@ -40,12 +48,15 @@ A comic book reader and converter for cbz, cbr, epub and pdf files.
   - 'right arrow' or 'page down' to go the next page.
   - 'left arrow' or 'page up' to go to the previous one.
   - 'up arrow' to scroll the page up, 'down arrow' to scroll the page down.
-  - 'F11' to toggle full-screen mode.
-  - 'Ctrl+O' to choose a file to open.
+  - 'wasd' to scroll the page vertically and horizontally.
+  - 'f11' to toggle full-screen mode.
+  - 'ctrl+O' to choose a file to open.
+  - 'ctrl++' and 'ctrl+-' to zoom in or zoom out the view. 'ctrl+0' to reset it.
 - Mouse:
   - 'scroll wheel' scrolls the page up and down.
   - 'left-click' opens the next page if the right side of the view area is clicked and the previous page if the left side is clicked.
   - 'right-click' opens a context menu with some basic navigation options.
+  - 'ctrl+scroll wheel' to zoom in or zoom out the view.
 
 ## Downloads
 
