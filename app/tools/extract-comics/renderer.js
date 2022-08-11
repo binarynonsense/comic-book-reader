@@ -37,7 +37,7 @@ let g_modalButtonCancel = document.querySelector("#button-modal-cancel");
 let g_modalLoadingBar = document.querySelector("#modal-loading-bar");
 let g_modalTitle = document.querySelector("#modal-title");
 
-g_localizedRemoveFromListText = "";
+let g_localizedRemoveFromListText = "";
 
 g_scaleSlider.addEventListener("mouseup", (event) => {
   g_outputScale = event.currentTarget.value;
