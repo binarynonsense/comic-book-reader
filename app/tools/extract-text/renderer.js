@@ -13,6 +13,7 @@ let g_languageOnlineSelect = document.querySelector("#language-select-online");
 let g_languageCheckbox = document.querySelector("#language-checkbox");
 
 let g_outputTextArea = document.querySelector("#textarea-output");
+let g_copyTextButton = document.querySelector("#button-copy-text");
 
 let g_modalInfoArea = document.querySelector("#modal-info");
 let g_modalLogArea = document.querySelector("#modal-log");
@@ -104,6 +105,11 @@ ipcRenderer.on(g_ipcChannel + "update-image", (event, filePath) => {
 
 ipcRenderer.on(g_ipcChannel + "fill-textarea", (event, text) => {
   g_outputTextArea.innerHTML = text;
+  if (text && text !== "") {
+    g_copyTextButton.classList.remove("disabled");
+  } else {
+    g_copyTextButton.classList.add("disabled");
+  }
 });
 
 ipcRenderer.on(g_ipcChannel + "modal-close", (event) => {
