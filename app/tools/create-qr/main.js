@@ -158,7 +158,7 @@ ipcMain.on(g_ipcChannel + "export-to-file", (event) => {
     g_window.webContents.send(
       g_ipcChannel + "show-modal-alert",
       _("tool-cq-modal-alert-title-successexporting"),
-      outputFilePath,
+      fileUtils.reducePathString(outputFilePath, 50),
       false
     );
   } catch (error) {

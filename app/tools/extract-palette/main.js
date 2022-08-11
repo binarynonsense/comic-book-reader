@@ -214,13 +214,13 @@ ipcMain.on(g_ipcChannel + "export-to-file", (event, format) => {
         g_window.webContents.send(
           g_ipcChannel + "export-file-created",
           _("tool-ep-modal-title-exported"),
-          fileUtils.reducePathString(outputFilePath, 85)
+          fileUtils.reducePathString(outputFilePath, 50)
         );
       } else {
         g_window.webContents.send(
           g_ipcChannel + "export-file-error",
           _("tool-ep-modal-title-exporting-error"),
-          fileUtils.reducePathString(outputFilePath, 85)
+          fileUtils.reducePathString(outputFilePath, 50)
         );
       }
     } else if (format === "aco") {
@@ -231,13 +231,13 @@ ipcMain.on(g_ipcChannel + "export-to-file", (event, format) => {
         g_window.webContents.send(
           g_ipcChannel + "export-file-created",
           _("tool-ep-modal-title-exported"),
-          fileUtils.reducePathString(outputFilePath, 85)
+          fileUtils.reducePathString(outputFilePath, 50)
         );
       } else {
         g_window.webContents.send(
           g_ipcChannel + "export-file-error",
           _("tool-ep-modal-title-exporting-error"),
-          fileUtils.reducePathString(outputFilePath, 85)
+          fileUtils.reducePathString(outputFilePath, 50)
         );
       }
     }
