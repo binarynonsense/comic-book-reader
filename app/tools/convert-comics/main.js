@@ -519,6 +519,7 @@ async function resizeImages(
           // change to a format compatible with pdfkit if needed
           if (
             imageFormat === FileExtension.WEBP ||
+            imageFormat === FileExtension.AVIF ||
             (imageFormat === FileExtension.NOT_SET &&
               !fileFormats.hasPdfKitCompatibleImageExtension(filePath))
           ) {

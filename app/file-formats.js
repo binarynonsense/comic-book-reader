@@ -643,7 +643,7 @@ async function createPdfFromImages(imgPathsList, outputFilePath, method) {
     }
     pdf.end();
   } catch (error) {
-    console.log(error);
+    throw error;
   }
 }
 exports.createPdfFromImages = createPdfFromImages;
