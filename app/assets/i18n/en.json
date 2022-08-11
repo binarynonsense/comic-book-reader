@@ -13,6 +13,7 @@
   "menu-file-open": "Open...",
   "menu-file-openrecent": "Open Recent",
   "menu-file-openrecent-clear": "Clear History",
+  "menu-file-openrecent-history": "History...",
   "menu-file-close": "Close...",
   "menu-file-convert": "Convert...",
   "menu-file-extract": "Extract...",
@@ -241,5 +242,10 @@
   "tool-cq-modal-alert-title-errorcreating": "ERROR: Could NOT Create the Code",
   "tool-cq-modal-alert-msg-toomuchdata": "The text is too long to be stored in a QR Code",
   "tool-cq-modal-alert-title-successexporting": "QR Code Image File Created:",
-  "tool-cq-modal-alert-title-errorexporting": "ERROR: Could NOT Save the Image"  
+  "tool-cq-modal-alert-title-errorexporting": "ERROR: Could NOT Save the Image",
+
+  "mgr-hist-title": "History",  
+  "mgr-hist-button-clear-all": "Clear History",
+  "mgr-hist-tooltip-remove-from-list": "remove from history",
+  "mgr-hist-tooltip-open-from-list": "open file"
 }

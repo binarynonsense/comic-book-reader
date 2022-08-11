@@ -21,6 +21,8 @@ const extractPaletteTool = require("./tools/extract-palette/main");
 const extractComicsTool = require("./tools/extract-comics/main");
 const extractQRTool = require("./tools/extract-qr/main");
 
+const historyManager = require("./tools/history-mgr/main");
+
 const {
   setupTitlebar,
   attachTitlebarToWindow,
@@ -53,6 +55,7 @@ let g_settings = {
   maximize: false,
   width: 800,
   height: 600,
+  history_capacity: 30,
   on_quit_state: 0, // 0: no file, 1: reading file
 
   showMenuBar: true,
@@ -112,6 +115,13 @@ function sanitizeSettings() {
   ) {
     g_settings.width = 800;
     g_settings.height = 600;
+  }
+  if (
+    !Number.isInteger(g_settings.history_capacity) ||
+    g_settings.history_capacity < 10 ||
+    g_settings.history_capacity > 100
+  ) {
+    g_settings.history_capacity = 30;
   }
   if (
     !Number.isInteger(g_settings.on_quit_state) ||
@@ -272,7 +282,7 @@ app.on("ready", () => {
 
     g_settings = fileUtils.loadSettings(g_settings);
     sanitizeSettings();
-    g_history = fileUtils.loadHistory();
+    g_history = fileUtils.loadHistory(g_settings.history_capacity);
 
     i18n.setUserDataLocalesPath(path.join(app.getPath("userData"), "i18n/"));
     if (g_settings.locale === undefined) {
@@ -465,8 +475,8 @@ function addCurrentToHistory(updateMenu = true) {
     };
     g_history.push(newEntry);
     // limit how many are remembered
-    if (g_history.length > 10) {
-      g_history.splice(0, g_history.length - 10);
+    if (g_history.length > g_settings.history_capacity) {
+      g_history.splice(0, g_history.length - g_settings.history_capacity);
     }
   }
   if (updateMenu) rebuildMenuBar();
@@ -1012,6 +1022,11 @@ exports.onMenuClearHistory = function () {
   clearHistory();
 };
 
+exports.onMenuOpenHistoryManager = function () {
+  historyManager.showWindow(g_mainWindow, g_history);
+  g_mainWindow.webContents.send("update-menubar");
+};
+
 exports.onMenuCloseFile = function () {
   closeCurrentFile();
 };
@@ -1122,6 +1137,13 @@ exports.onGoToPageFirst = function () {
 exports.onGoToPageLast = function () {
   g_mainWindow.webContents.send("update-menubar");
   goToPage(g_fileData.numPages - 1);
+};
+
+////////////////////////////////////////////////////////////////////////////////
+
+exports.onReplaceHistory = function (newHistory) {
+  g_history = newHistory;
+  rebuildMenuBar();
 };
 
 ///////////////////////////////////////////////////////////////////////////////

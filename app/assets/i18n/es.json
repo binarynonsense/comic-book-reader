@@ -13,6 +13,7 @@
   "menu-file-open": "Abrir...",
   "menu-file-openrecent": "Abrir Reciente",
   "menu-file-openrecent-clear": "Limpiar Historia",
+  "menu-file-openrecent-history": "Historial...",
   "menu-file-close": "Cerrar...",
   "menu-file-convert": "Convertir...",
   "menu-file-extract": "Extraer...",
@@ -241,5 +242,10 @@
   "tool-cq-modal-alert-title-errorcreating": "ERROR: No se pudo crear el código",
   "tool-cq-modal-alert-msg-toomuchdata": "El texto es demasiado largo para ser almacenado en un código QR",
   "tool-cq-modal-alert-title-successexporting": "Archivo de Imagen de Código QR Creado:",
-  "tool-cq-modal-alert-title-errorexporting": "ERROR: No se pudo guardar la imagen"
+  "tool-cq-modal-alert-title-errorexporting": "ERROR: No se pudo guardar la imagen",
+
+  "mgr-hist-title": "Historial",  
+  "mgr-hist-button-clear-all": "Vaciar Historial",
+  "mgr-hist-tooltip-remove-from-list": "eliminar del historial",
+  "mgr-hist-tooltip-open-from-list": "abrir fichero"
 }

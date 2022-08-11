@@ -156,7 +156,7 @@ exports.saveHistory = function (history) {
   console.log("history saved to: " + hstFilePath);
 };
 
-exports.loadHistory = function () {
+exports.loadHistory = function (capacity) {
   let history = [];
   let hstFilePath = path.join(app.getPath("userData"), "acbr.hst");
   if (fs.existsSync(path.join(getExeFolderPath(), "portable.txt"))) {
@@ -195,8 +195,8 @@ exports.loadHistory = function () {
     }
   }
   // limit how many are remembered
-  if (history.length > 10) {
-    history.splice(0, history.length - 10);
+  if (history.length > capacity) {
+    history.splice(0, history.length - capacity);
   }
   return history;
 };

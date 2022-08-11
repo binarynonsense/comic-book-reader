@@ -13,6 +13,7 @@
   "menu-file-open": "Открыть...",
   "menu-file-openrecent": "Открыть последнее",
   "menu-file-openrecent-clear": "Очистить историю",
+  "[NEEDS TRANSLATION]menu-file-openrecent-history": "History...",
   "menu-file-close": "Закрыть...",
   "menu-file-convert": "Конвертировать...",
   "[NEEDS TRANSLATION]menu-file-extract": "Extract...",
@@ -241,5 +242,10 @@
   "[NEEDS TRANSLATION]tool-cq-modal-alert-title-errorcreating": "ERROR: Could NOT Create the Code",
   "[NEEDS TRANSLATION]tool-cq-modal-alert-msg-toomuchdata": "The text is too long to be stored in a QR Code",
   "[NEEDS TRANSLATION]tool-cq-modal-alert-title-successexporting": "QR Code Image File Created:",
-  "[NEEDS TRANSLATION]tool-cq-modal-alert-title-errorexporting": "ERROR: Could NOT Save the Image"
+  "[NEEDS TRANSLATION]tool-cq-modal-alert-title-errorexporting": "ERROR: Could NOT Save the Image",
+
+  "[NEEDS TRANSLATION]mgr-hist-title": "History",  
+  "[NEEDS TRANSLATION]mgr-hist-button-clear-all": "Clear History",
+  "[NEEDS TRANSLATION]mgr-hist-tooltip-remove-from-list": "remove from history",
+  "[NEEDS TRANSLATION]mgr-hist-tooltip-open-from-list": "open file"
 }

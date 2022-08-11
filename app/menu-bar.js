@@ -195,8 +195,10 @@ function getScaleToHeightSubmenu(settings) {
 function getOpenRecentSubmenu(history) {
   let menu = [];
   const reverseHistory = history.slice().reverse();
+  let length = reverseHistory.length;
+  if (length > 10) length = 10;
 
-  for (let index = 0; index < reverseHistory.length; index++) {
+  for (let index = 0; index < length; index++) {
     const entry = reverseHistory[index];
     let path = entry.filePath;
     menu.push({
@@ -207,14 +209,26 @@ function getOpenRecentSubmenu(history) {
     });
   }
 
+  // menu.push({
+  //   type: "separator",
+  // });
+
+  // menu.push({
+  //   label: _("menu-file-openrecent-clear"),
+  //   click() {
+  //     mainProcess.onMenuClearHistory();
+  //   },
+  // });
+
   menu.push({
     type: "separator",
   });
 
   menu.push({
-    label: _("menu-file-openrecent-clear"),
+    label: _("menu-file-openrecent-history"),
+    accelerator: "CommandOrControl+H",
     click() {
-      mainProcess.onMenuClearHistory();
+      mainProcess.onMenuOpenHistoryManager();
     },
   });
 
