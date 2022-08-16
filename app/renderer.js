@@ -364,6 +364,7 @@ function renderImg64(
     var image = new Image();
     image.onload = function () {
       container.appendChild(image);
+      if (sendPageLoaded) ipcRenderer.send("page-loaded");
     };
     image.src = g_currentImg64;
     image.classList.add("page");
@@ -404,11 +405,11 @@ function renderImg64(
       }
       context.drawImage(image, 0, 0);
       context.setTransform(1, 0, 0, 1, 0, 0); // restore default
+      if (sendPageLoaded) ipcRenderer.send("page-loaded");
     };
     image.src = g_currentImg64;
   }
   if (scrollBarPos !== undefined) setScrollBarsPosition(scrollBarPos);
-  if (sendPageLoaded) ipcRenderer.send("page-loaded");
 }
 
 ///////////////////////////////////////////////////////////////////////////////

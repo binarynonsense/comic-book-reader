@@ -32,4 +32,5 @@ exports.FileDataType = {
   RAR: "rar",
   EPUB: "epub",
   SEVENZIP: "7z",
+  WWW: "www",
 };

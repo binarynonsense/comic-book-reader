@@ -42,7 +42,7 @@
   },
   "devDependencies": {
     "del-cli": "^4.0.1",
-    "electron": "^20.0.1",
+    "electron": "^20.0.2",
     "electron-builder": "^22.14.13",
     "license-checker": "^25.0.1",
     "shx": "^0.3.4"
@@ -50,11 +50,13 @@
   "dependencies": {
     "7zip-bin": "^5.2.0",
     "adm-zip": "^0.5.9",
+    "axios": "^0.27.2",
     "changedpi": "^1.0.4",
     "custom-electron-titlebar": "^4.1.0",
     "epub": "^1.2.1",
     "epub-gen": "^0.1.0",
     "file-type": "^14.7.1",
+    "jsdom": "^20.0.0",
     "jsqr": "^1.4.0",
     "natural-compare-lite": "^1.4.0",
     "node-7z": "^3.0.0",

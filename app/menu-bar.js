@@ -147,6 +147,23 @@ exports.setImageOpened = function () {
   Menu.getApplicationMenu().getMenuItemById("close-file").enabled = true;
 };
 
+exports.setWWWOpened = function () {
+  Menu.getApplicationMenu().getMenuItemById("convert-file").enabled = false;
+  Menu.getApplicationMenu().getMenuItemById("extract-file").enabled = false;
+  Menu.getApplicationMenu().getMenuItemById("file-page").enabled = true;
+  Menu.getApplicationMenu().getMenuItemById("file-page-export").enabled = false;
+  Menu.getApplicationMenu().getMenuItemById(
+    "file-page-extract-text"
+  ).enabled = true;
+  Menu.getApplicationMenu().getMenuItemById(
+    "file-page-extract-qr"
+  ).enabled = true;
+  Menu.getApplicationMenu().getMenuItemById(
+    "file-page-extract-palette"
+  ).enabled = true;
+  Menu.getApplicationMenu().getMenuItemById("close-file").enabled = true;
+};
+
 function getScaleToHeightSubmenu(settings) {
   let menu = [];
   let defaults = [25, 50, 100, 150, 200, 300, 400];
@@ -919,6 +936,20 @@ function buildApplicationMenu(
               enabled: true,
               click() {
                 mainProcess.onMenuToolExtractQR();
+              },
+            },
+          ],
+        },
+        {
+          type: "separator",
+        },
+        {
+          label: _("menu-tools-other"),
+          submenu: [
+            {
+              label: _("menu-tools-other-dcm"),
+              click() {
+                mainProcess.onMenuToolDCM();
               },
             },
           ],

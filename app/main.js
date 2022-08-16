@@ -20,6 +20,7 @@ const extractTextTool = require("./tools/extract-text/main");
 const extractPaletteTool = require("./tools/extract-palette/main");
 const extractComicsTool = require("./tools/extract-comics/main");
 const extractQRTool = require("./tools/extract-qr/main");
+const dcmTool = require("./tools/dcm/main");
 
 const historyManager = require("./tools/history-mgr/main");
 
@@ -237,7 +238,12 @@ function sanitizeSettings() {
 
 app.on("will-quit", () => {
   clearTimeout(g_clockTimeout);
-  g_settings.on_quit_state = g_fileData.path === "" ? 0 : 1;
+  console.log(g_fileData.type);
+  if (g_fileData.type === FileDataType.WWW) {
+    g_settings.on_quit_state = 0;
+  } else {
+    g_settings.on_quit_state = g_fileData.path === "" ? 0 : 1;
+  }
   saveSettings();
   saveHistory(false);
   globalShortcut.unregisterAll();
@@ -460,6 +466,7 @@ function saveSettings() {
 }
 
 function addCurrentToHistory(updateMenu = true) {
+  if (g_fileData.type === FileDataType.WWW) return;
   let currentFilePath = g_fileData.path;
   let currentPageIndex = g_fileData.pageIndex;
   if (currentFilePath !== "") {
@@ -488,6 +495,7 @@ function clearHistory() {
 }
 
 function getHistoryIndex(filePath) {
+  if (!filePath) return undefined;
   let foundIndex;
   for (let index = 0; index < g_history.length; index++) {
     const element = g_history[index];
@@ -1101,6 +1109,11 @@ exports.onMenuToolExtractComics = function () {
   g_mainWindow.webContents.send("update-menubar");
 };
 
+exports.onMenuToolDCM = function () {
+  dcmTool.showWindow(g_mainWindow);
+  g_mainWindow.webContents.send("update-menubar");
+};
+
 exports.onMenuToggleDevTools = function () {
   toggleDevTools();
 };
@@ -1160,9 +1173,23 @@ let g_fileData = {
   pageIndex: 0,
   pageRotation: 0,
   password: "",
+  getPageCallback: undefined,
 };
 
 let g_tempFileData = {};
+
+function cleanUpFileData() {
+  g_fileData.state = FileDataState.NOT_SET;
+  g_fileData.type = FileDataType.NOT_SET;
+  g_fileData.path = "";
+  g_fileData.name = "";
+  g_fileData.pagesPaths = [];
+  g_fileData.numPages = 0;
+  g_fileData.pageIndex = 0;
+  g_fileData.pageRotation = 0;
+  g_fileData.password = "";
+  g_fileData.getPageCallback = undefined;
+}
 
 function tryOpenPath(filePath, pageIndex = 0) {
   if (fs.existsSync(filePath)) {
@@ -1472,6 +1499,25 @@ function openComicBookFile(filePath, pageIndex = 0, password = "") {
   })(); // async
 }
 
+function openWWWComicBook(comicData, getPageCallback) {
+  g_mainWindow.webContents.send("update-loading", true);
+  if (g_fileData.path !== "") addCurrentToHistory(); // add the one I'm closing to history
+  cleanUpFileData();
+  g_fileData.state = FileDataState.LOADED;
+  g_fileData.type = FileDataType.WWW;
+  g_fileData.path = comicData.name;
+  g_fileData.name = comicData.name;
+  g_fileData.pagesPaths = [comicData.pageUrl];
+  g_fileData.numPages = comicData.numPages;
+  g_fileData.pageIndex = 0;
+  g_fileData.getPageCallback = getPageCallback;
+  updateMenuItemsState();
+  setPageRotation(0, false);
+  setInitialZoom(g_fileData.path);
+  goToPage(g_fileData.pageIndex);
+}
+exports.openWWWComicBook = openWWWComicBook;
+
 function tryOpeningAdjacentFile(next) {
   // next true -> try next, next false -> try prev
   if (g_fileData.type === FileDataType.IMGS_FOLDER) return;
@@ -1503,18 +1549,6 @@ function tryOpeningAdjacentFile(next) {
       break;
     }
   }
-}
-
-function cleanUpFileData() {
-  g_fileData.state = FileDataState.NOT_SET;
-  g_fileData.type = FileDataType.NOT_SET;
-  g_fileData.path = "";
-  g_fileData.name = "";
-  g_fileData.pagesPaths = [];
-  g_fileData.numPages = 0;
-  g_fileData.pageIndex = 0;
-  g_fileData.pageRotation = 0;
-  g_fileData.password = "";
 }
 
 function closeCurrentFile() {
@@ -1673,6 +1707,21 @@ function goToPage(pageIndex, scrollBarPos = 0) {
       g_fileData.pageRotation,
       scrollBarPos
     );
+  } else if (g_fileData.type === FileDataType.WWW) {
+    (async () => {
+      let imgUrl = await g_fileData.getPageCallback(g_fileData.pageIndex + 1);
+      if (!imgUrl) {
+        console.log("download error");
+        g_mainWindow.webContents.send("update-loading", false);
+      }
+      g_fileData.pagesPaths = [imgUrl];
+      g_mainWindow.webContents.send(
+        "render-img-page",
+        imgUrl,
+        g_fileData.pageRotation,
+        scrollBarPos
+      );
+    })(); // async
   }
 }
 
@@ -2060,6 +2109,8 @@ function updateMenuItemsState() {
       menuBar.setFileOpened(true);
     } else if (g_fileData.type === FileDataType.IMGS_FOLDER) {
       menuBar.setImageOpened();
+    } else if (g_fileData.type === FileDataType.WWW) {
+      menuBar.setWWWOpened();
     } else {
       menuBar.setFileOpened(false);
     }

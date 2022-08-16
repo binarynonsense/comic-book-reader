@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="../../assets/libs/fontawesome/css/all.css" rel="stylesheet" />
+    <link
+      rel="stylesheet"
+      href="../../assets/libs/materialize/css/materialize.min.css"
+    />
+    <link rel="stylesheet" href="../shared/css/style.css" />
+    <link rel="stylesheet" href="./css/style.css" />
+    <title></title>
+  </head>
+  <body>
+    <div class="container center-align">
+      <ul class="tabs" style="margin-bottom: 20px">
+        <li class="tab col s3">
+          <a id="tab-1-text" class="active" href="#tab-1">FIND COMICS</a>
+        </li>
+        <li class="tab col s3">
+          <a id="tab-2-text" href="#tab-2">OPEN URL</a>
+        </li>
+        <li class="tab col s3"><a id="tab-3-text" href="#tab-3">ABOUT</a></li>
+      </ul>
+
+      <div id="tab-1" class="col s12">
+        <!-- find comics -->
+        <span id="publishers-text">Publishers:</span>
+        <select
+          id="publishers-select"
+          class="browser-default"
+          onchange="renderer.onPublishersChanged(this)"
+        ></select>
+        <span id="titles-text">Titles:</span>
+        <select
+          id="titles-select"
+          class="browser-default"
+          onchange="renderer.onTitlesChanged(this)"
+        ></select>
+        <span id="comics-text">Comic Books:</span>
+        <select
+          id="comics-select"
+          class="browser-default"
+          onchange="renderer.onComicsChanged(this)"
+        ></select>
+        <p>
+          <a
+            id="button-open-selected-acbr"
+            class="btn waves-effect waves-purple btn blue disabled"
+            onclick="renderer.onOpenSelectedComicInACBR()"
+            >OPEN IN ACBR</a
+          >
+        </p>
+        <p>
+          <a
+            id="button-open-selected-browser"
+            class="btn waves-effect waves-purple btn blue disabled"
+            onclick="renderer.onOpenSelectedComicInBrowser()"
+            >OPEN IN BROWSER</a
+          >
+        </p>
+      </div>
+
+      <div id="tab-2" style="display: none">
+        <!-- open url -->
+        <div>
+          <h5 id="dcm-url-text">DCM's Comic Book URL:</h5>
+          <input
+            id="dcm-url-input"
+            type="text"
+            value="https://digitalcomicmuseum.com/preview/index.php?did=32771"
+            oninput="renderer.onComicUrlInputChanged(this)"
+          />
+        </div>
+        <p>
+          <a
+            id="button-open-input-url-acbr"
+            class="btn waves-effect waves-purple btn blue"
+            onclick="renderer.onOpenComicUrlInACBR()"
+            >OPEN IN ACBR</a
+          >
+        </p>
+        <p>
+          <a
+            id="button-open-input-url-browser"
+            class="btn waves-effect waves-purple btn blue"
+            onclick="renderer.onOpenComicUrlInBrowser()"
+            >OPEN IN BROWSER</a
+          >
+        </p>
+      </div>
+
+      <div id="tab-3" style="display: none">
+        <!-- about -->
+        <div>
+          <p id="about-text-1">
+            This is a tool to search through the comic books available in the
+            online preview viewer from the amazing "Digital Comic Museum"
+            website and open them in the system's browser or directly inside
+            ACBR.
+          </p>
+          <p id="about-text-2">
+            It needs an internet connection to work and could at any point stop
+            working if the website structure changes.
+          </p>
+          <p id="about-text-3">
+            If you use it frequently or just like what they are doing, please
+            consider making a donation to help them keep the site alive and free
+            for all to enjoy.
+          </p>
+        </div>
+
+        <p>
+          <a
+            id="button-open-dcm-browser"
+            class="btn waves-effect waves-purple btn blue"
+            onclick="renderer.onOpenLink(`https://digitalcomicmuseum.com`)"
+            >OPEN DCM IN BROWSER</a
+          >
+        </p>
+        <p>
+          <a
+            id="button-open-donate-browser"
+            class="btn waves-effect waves-purple btn blue"
+            onclick="renderer.onOpenLink(`https://digitalcomicmuseum.com/forum/index.php?action=treasury`)"
+            >OPEN DONATION SITE IN BROWSER</a
+          >
+        </p>
+      </div>
+    </div>
+
+    <script src="../../assets/libs/materialize/js/materialize.min.js"></script>
+    <script>
+      const renderer = require("./renderer");
+    </script>
+    <script>
+      window.addEventListener("DOMContentLoaded", function () {
+        var instance = M.Tabs.init(document.querySelector(".tabs"));
+        // instance.updateTabIndicator();
+        // HACK: I do this to ensure the highlight border is the right size
+        // or it starts too short in spanish ???
+        instance.select("tab-2");
+        setTimeout(() => instance.select("tab-1"), 50);
+      });
+    </script>
+  </body>
+</html>

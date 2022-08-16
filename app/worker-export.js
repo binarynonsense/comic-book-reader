@@ -41,6 +41,12 @@ async function exportPage(fileData, outputFolderPath, sendToTool) {
         fileData.pagesPaths[fileData.pageIndex]
       );
       buf = fs.readFileSync(fullPath);
+    } else if (fileData.type === FileDataType.WWW) {
+      const axios = require("axios").default;
+      const response = await axios(fileData.pagesPaths[0], {
+        responseType: "arraybuffer",
+      });
+      buf = Buffer.from(response.data, "binary");
     }
 
     // mostly duplicated code from main's exportPageSaveBuffer because I
