@@ -19,12 +19,6 @@ let g_openInputInBrowser = document.querySelector(
   "#button-open-input-url-browser"
 );
 
-let g_modalButtonClose = document.querySelector("#button-modal-close");
-let g_modalLoadingBar = document.querySelector("#modal-loading-bar");
-let g_modalInfoArea = document.querySelector("#modal-info");
-let g_modalLogArea = document.querySelector("#modal-log");
-let g_modalTitle = document.querySelector("#modal-title");
-
 let g_selectedComicData;
 let g_selectPublisherString;
 let g_selectTitleString;
@@ -289,50 +283,3 @@ exports.onOpenComicUrlInBrowser = function () {
   let url = g_dcmUrlInput.value;
   openDCMLink(url);
 };
-
-///////////////////////////////////////////////////////////////////////////////
-
-ipcRenderer.on(g_ipcChannel + "modal-close", (event) => {
-  g_modalInstance.close();
-});
-
-ipcRenderer.on(g_ipcChannel + "modal-update-log", (event, text) => {
-  modalUpdateLog(text);
-});
-
-function modalUpdateLog(text, append = true) {
-  if (append) {
-    g_modalLogArea.innerHTML += "\n" + text;
-  } else {
-    g_modalLogArea.innerHTML = text;
-  }
-  g_modalLogArea.scrollTop = g_modalLogArea.scrollHeight;
-}
-
-ipcRenderer.on(g_ipcChannel + "modal-update-title", (event, text) => {
-  g_modalTitle.innerHTML = text;
-});
-
-ipcRenderer.on(g_ipcChannel + "modal-update-info", (event, text) => {
-  g_modalInfoArea.innerHTML = text;
-});
-
-///////////////////////////////////////////////////////////////////////////////
-
-ipcRenderer.on(
-  g_ipcChannel + "show-modal-alert",
-  (event, titleText, infoText, isError) => {
-    g_modalButtonClose.classList.remove("hide");
-    if (isError) {
-      g_modalButtonClose.classList.remove("green");
-      g_modalButtonClose.classList.add("red");
-    } else {
-      g_modalButtonClose.classList.add("green");
-      g_modalButtonClose.classList.remove("red");
-    }
-    g_modalLoadingBar.classList.add("hide");
-    g_modalTitle.innerHTML = titleText;
-    g_modalInfoArea.innerHTML = infoText;
-    g_modalInstance.open();
-  }
-);
