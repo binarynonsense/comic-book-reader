@@ -151,7 +151,7 @@ exports.setWWWOpened = function () {
   Menu.getApplicationMenu().getMenuItemById("convert-file").enabled = false;
   Menu.getApplicationMenu().getMenuItemById("extract-file").enabled = false;
   Menu.getApplicationMenu().getMenuItemById("file-page").enabled = true;
-  Menu.getApplicationMenu().getMenuItemById("file-page-export").enabled = false;
+  Menu.getApplicationMenu().getMenuItemById("file-page-export").enabled = true;
   Menu.getApplicationMenu().getMenuItemById(
     "file-page-extract-text"
   ).enabled = true;
