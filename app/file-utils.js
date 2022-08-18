@@ -181,7 +181,11 @@ exports.loadHistory = function (capacity) {
     if (Array.isArray(loadedHistory)) {
       for (let index = 0; index < loadedHistory.length; index++) {
         const entry = loadedHistory[index];
-        if (entry.filePath !== undefined && entry.filePath !== "") {
+        if (
+          entry.filePath !== undefined &&
+          entry.filePath !== "" &&
+          typeof entry.filePath === "string"
+        ) {
           if (isNaN(entry.pageIndex)) entry.pageIndex = 0;
           history.push(entry);
           if (entry.fitMode !== undefined && isNaN(entry.fitMode)) {
