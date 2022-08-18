@@ -39,8 +39,7 @@ ipcRenderer.on(
     g_selectPublisherString = selectPublisherString;
     g_selectTitleString = selectTitleString;
     g_selectComicString = selectComicString;
-    document.title =
-      title + "  (" + (navigator.onLine ? "online" : "offline") + ")";
+    document.title = title; // + "  (" + (navigator.onLine ? "online" : "offline") + ")";
     for (let index = 0; index < localization.length; index++) {
       const element = localization[index];
       const domElement = document.querySelector("#" + element.id);
