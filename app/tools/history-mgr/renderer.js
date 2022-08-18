@@ -10,7 +10,7 @@ let g_localizedOpenFromListText = "";
 ///////////////////////////////////////////////////////////////////////////////
 
 function reducePathString(input) {
-  var length = 60;
+  var length = 80;
   input =
     input.length > length
       ? "..." + input.substring(input.length - length, input.length)
@@ -53,10 +53,9 @@ ipcRenderer.on(g_ipcChannel + "build-list", (event, history) => {
     const fileInfo = history[index];
     g_itemsListDiv.innerHTML += `<li class="collection-item">
     <div>
-      <a style="cursor: pointer; margin-right: 5px" onclick="renderer.onOpenItem(${index})"
-        ><i class="fas fa-external-link-alt" title="${g_localizedOpenFromListText}"></i
-      ></a>
-      ${reducePathString(fileInfo.filePath)}<a
+      <a style="cursor: pointer; margin-right: 5px" onclick="renderer.onOpenItem(${index})" title="${g_localizedOpenFromListText}"
+        ><i class="fa fa-folder-open"></i
+      >&nbsp;&nbsp;${reducePathString(fileInfo.filePath)}</a><a
         style="cursor: pointer"
         onclick="renderer.onRemoveItem(this, ${index})"
         class="secondary-content"
