@@ -952,6 +952,12 @@ function buildApplicationMenu(
                 mainProcess.onMenuToolDCM();
               },
             },
+            {
+              label: _("menu-tools-other-iab"),
+              click() {
+                mainProcess.onMenuToolIArchive();
+              },
+            },
           ],
         },
       ],

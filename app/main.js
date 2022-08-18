@@ -21,6 +21,7 @@ const extractPaletteTool = require("./tools/extract-palette/main");
 const extractComicsTool = require("./tools/extract-comics/main");
 const extractQRTool = require("./tools/extract-qr/main");
 const dcmTool = require("./tools/dcm/main");
+const iarchiveTool = require("./tools/internet-archive/main");
 
 const historyManager = require("./tools/history-mgr/main");
 
@@ -238,7 +239,6 @@ function sanitizeSettings() {
 
 app.on("will-quit", () => {
   clearTimeout(g_clockTimeout);
-  console.log(g_fileData.type);
   if (g_fileData.type === FileDataType.WWW) {
     g_settings.on_quit_state = 0;
   } else {
@@ -1114,6 +1114,11 @@ exports.onMenuToolDCM = function () {
   g_mainWindow.webContents.send("update-menubar");
 };
 
+exports.onMenuToolIArchive = function () {
+  iarchiveTool.showWindow(g_mainWindow);
+  g_mainWindow.webContents.send("update-menubar");
+};
+
 exports.onMenuToggleDevTools = function () {
   toggleDevTools();
 };
@@ -1713,6 +1718,7 @@ function goToPage(pageIndex, scrollBarPos = 0) {
       if (!imgUrl) {
         console.log("download error");
         g_mainWindow.webContents.send("update-loading", false);
+        return;
       }
       g_fileData.pagesPaths = [imgUrl];
       g_mainWindow.webContents.send(
@@ -2063,7 +2069,6 @@ function setInitialZoom(filePath) {
     if (historyIndex !== undefined) {
       let fitMode = g_history[historyIndex].fitMode;
       let zoomScale = g_history[historyIndex].zoomScale;
-      console.log(g_history[historyIndex]);
       if (fitMode !== undefined) {
         if (fitMode === 0) {
           setFitToWidth();
