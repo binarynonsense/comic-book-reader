@@ -120,7 +120,6 @@ exports.onSearchResultClicked = function (index, mode) {
   let selectedComicData = {
     comicId: bookData.identifier,
     name: bookData.title,
-    pageUrl: undefined,
     numPages: bookData.imagecount,
   };
   if (mode === 0) {

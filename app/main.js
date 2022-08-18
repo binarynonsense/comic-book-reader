@@ -1714,16 +1714,19 @@ function goToPage(pageIndex, scrollBarPos = 0) {
     );
   } else if (g_fileData.type === FileDataType.WWW) {
     (async () => {
-      let imgUrl = await g_fileData.getPageCallback(g_fileData.pageIndex + 1);
-      if (!imgUrl) {
+      let response = await g_fileData.getPageCallback(
+        g_fileData.pageIndex + 1,
+        g_fileData
+      );
+      if (!response || !response.pageImgSrc) {
         console.log("download error");
         g_mainWindow.webContents.send("update-loading", false);
         return;
       }
-      g_fileData.pagesPaths = [imgUrl];
+      g_fileData.pagesPaths = [response.pageImgUrl];
       g_mainWindow.webContents.send(
         "render-img-page",
-        imgUrl,
+        response.pageImgSrc,
         g_fileData.pageRotation,
         scrollBarPos
       );

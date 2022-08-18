@@ -79,7 +79,7 @@ ipcMain.on(g_ipcChannel + "open", (event, comicData) => {
           continue;
         }
       }
-      return imageUrl;
+      return { pageImgSrc: imageUrl, pageImgUrl: imageUrl };
     } catch (error) {
       // console.error(error);
       return undefined;

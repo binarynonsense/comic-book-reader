@@ -93,16 +93,18 @@ ipcMain.on(g_ipcChannel + "open", (event, comicData) => {
   mainProcess.openWWWComicBook(comicData, async (pageNum) => {
     //////////////
     const axios = require("axios").default;
+
     try {
-      const response = await axios.get(
-        `https://archive.org/download/${comicData.comicId}/page/n${
-          pageNum - 1
-        }/mode/1up`,
-        { timeout: 5000, responseType: "arraybuffer" }
-      );
+      let imgUrl = `https://archive.org/download/${comicData.comicId}/page/n${
+        pageNum - 1
+      }/mode/1up`;
+      const response = await axios.get(imgUrl, {
+        timeout: 5000,
+        responseType: "arraybuffer",
+      });
       let buf = Buffer.from(response.data, "binary");
       let img64 = "data:image/jpg;base64," + buf.toString("base64");
-      return img64;
+      return { pageImgSrc: img64, pageImgUrl: imgUrl };
     } catch (error) {
       // console.error(error);
       return undefined;
