@@ -55,6 +55,9 @@
   "menu-file-preferences-loading-ipos": "Posición del Icono",
   "menu-file-preferences-loading-ipos-0": "Arriba Izda.",
   "menu-file-preferences-loading-ipos-1": "Centro",
+  "menu-file-preferences-layout": "Disposición",
+  "menu-file-preferences-layout-clock": "Reloj",
+  "menu-file-preferences-layout-pagenum": "Número de Página",
   "menu-file-quit": "Salir",
 
   "menu-view": "Ver",
@@ -95,6 +98,13 @@
 
   "menu-help": "Ayuda",
   "menu-help-about": "Acerca de",
+
+  "menu-shared-top-left": "Arriba Izda.",
+  "menu-shared-top-center": "Arriba Centro",
+  "menu-shared-top-right": "Arriba Dcha.",
+  "menu-shared-bottom-left": "Abajo Izda.",
+  "menu-shared-bottom-center": "Abajo Centro",
+  "menu-shared-bottom-right": "Abajo Dcha.",
 
   "ctxmenu-nextpage": "Página Siguiente",
   "ctxmenu-prevpage": "Página Anterior",

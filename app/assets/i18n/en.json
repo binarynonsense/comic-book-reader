@@ -55,6 +55,9 @@
   "menu-file-preferences-loading-ipos": "Icon Position",
   "menu-file-preferences-loading-ipos-0": "Top Left",
   "menu-file-preferences-loading-ipos-1": "Center",
+  "menu-file-preferences-layout": "Layout",
+  "menu-file-preferences-layout-clock": "Clock",
+  "menu-file-preferences-layout-pagenum": "Page Number",
   "menu-file-quit": "Quit",
 
   "menu-view": "View",
@@ -95,6 +98,13 @@
 
   "menu-help": "Help",
   "menu-help-about": "About",
+
+  "menu-shared-top-left": "Top Left",
+  "menu-shared-top-center": "Top Center",
+  "menu-shared-top-right": "Top Right",
+  "menu-shared-bottom-left": "Bottom Left",
+  "menu-shared-bottom-center": "Bottom Center",
+  "menu-shared-bottom-right": "Bottom Right",
 
   "ctxmenu-nextpage": "Next Page",
   "ctxmenu-prevpage": "Previous Page",

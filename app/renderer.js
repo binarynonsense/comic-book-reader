@@ -112,6 +112,38 @@ ipcRenderer.on(
   }
 );
 
+ipcRenderer.on("update-layout-pos", (event, value, id) => {
+  let element = document.querySelector(id);
+  element.className = "";
+  element.classList.add("layout-bubble");
+  switch (value) {
+    case 0:
+      element.classList.add("layout-top");
+      element.classList.add("layout-left");
+      break;
+    case 1:
+      element.classList.add("layout-top");
+      element.classList.add("layout-center");
+      break;
+    case 2:
+      element.classList.add("layout-top");
+      element.classList.add("layout-right");
+      break;
+    case 3:
+      element.classList.add("layout-bottom");
+      element.classList.add("layout-left");
+      break;
+    case 4:
+      element.classList.add("layout-bottom");
+      element.classList.add("layout-center");
+      break;
+    case 5:
+      element.classList.add("layout-bottom");
+      element.classList.add("layout-right");
+      break;
+  }
+});
+
 ipcRenderer.on("update-colors", (event, data) => {
   for (const [key, value] of Object.entries(data)) {
     document.documentElement.style.setProperty(key, value);

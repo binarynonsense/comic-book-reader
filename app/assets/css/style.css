@@ -55,47 +55,65 @@ img {
   display: none;
 }
 
-/* ////////////// UI ////////////// */
+/* ////////////// LAYOUT ////////////// */
 
-#clock-bubble {
+.layout-bubble {
   width: 100%;
-  text-align: right;
   position: fixed;
+  border: 0;
+  z-index: 9;
+  user-select: none;
+}
+
+.layout-bubble > span {
+  font-size: 15px;
+  color: white;
+  opacity: 0.5;
+  background-color: rgb(109, 109, 109);
+  padding: 2px 5px;
+  border-radius: 5px;
+}
+
+.layout-top {
   top: 10;
-  border: 0;
-  z-index: 9;
   margin-top: 10px;
-  user-select: none;
 }
 
-#clock-bubble > span {
-  font-size: 15px;
-  color: white;
-  opacity: 0.5;
-  background-color: rgb(109, 109, 109);
-  padding: 2px 5px;
-  border-radius: 5px;
-  margin-right: 25px;
-}
-
-#page-number-bubble {
-  width: 100%;
-  text-align: center;
-  position: fixed;
+.layout-bottom {
   bottom: 0;
-  border: 0;
-  z-index: 9;
   margin-bottom: 8px;
-  user-select: none;
 }
 
-#page-number-bubble > span {
-  font-size: 15px;
-  color: white;
-  opacity: 0.5;
-  background-color: rgb(109, 109, 109);
-  padding: 2px 5px;
-  border-radius: 5px;
+.layout-left {
+  text-align: left;
+  padding-left: 10px;
+}
+
+.layout-center {
+  text-align: center;
+}
+
+.layout-right {
+  text-align: right;
+  padding-right: 25px;
+}
+
+.centered-block {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  text-align: center;
+  user-select: none;
+}
+.centered-block img {
+  width: 30vh;
+  opacity: 0.3;
+  margin: auto;
+  filter: grayscale(100%);
+  margin-bottom: 20px;
 }
 
 #pages-container {
@@ -204,26 +222,6 @@ img {
 
 .cet-window-title {
   color: var(--titlebar-title-text-color) !important;
-}
-
-/* ////////////// BACKGROUND ////////////// */
-
-.centered-block {
-  margin: 0;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  -ms-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%);
-  text-align: center;
-  user-select: none;
-}
-.centered-block img {
-  width: 30vh;
-  opacity: 0.3;
-  margin: auto;
-  filter: grayscale(100%);
-  margin-bottom: 20px;
 }
 
 /* ////////////// SCROLLBAR ////////////// */

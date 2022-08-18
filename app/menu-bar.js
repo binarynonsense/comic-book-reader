@@ -114,6 +114,47 @@ exports.setLoadingIndicatorIconPos = function (value) {
   ).checked = value === 1;
 };
 
+exports.setLayoutClock = function (value) {
+  Menu.getApplicationMenu().getMenuItemById(
+    "preferences-layout-clock-top-left"
+  ).checked = value === 0;
+  Menu.getApplicationMenu().getMenuItemById(
+    "preferences-layout-clock-top-center"
+  ).checked = value === 1;
+  Menu.getApplicationMenu().getMenuItemById(
+    "preferences-layout-clock-top-right"
+  ).checked = value === 2;
+  Menu.getApplicationMenu().getMenuItemById(
+    "preferences-layout-clock-bottom-left"
+  ).checked = value === 3;
+  Menu.getApplicationMenu().getMenuItemById(
+    "preferences-layout-clock-bottom-center"
+  ).checked = value === 4;
+  Menu.getApplicationMenu().getMenuItemById(
+    "preferences-layout-clock-bottom-right"
+  ).checked = value === 5;
+};
+exports.setLayoutPageNum = function (value) {
+  Menu.getApplicationMenu().getMenuItemById(
+    "preferences-layout-pagenum-top-left"
+  ).checked = value === 0;
+  Menu.getApplicationMenu().getMenuItemById(
+    "preferences-layout-pagenum-top-center"
+  ).checked = value === 1;
+  Menu.getApplicationMenu().getMenuItemById(
+    "preferences-layout-pagenum-top-right"
+  ).checked = value === 2;
+  Menu.getApplicationMenu().getMenuItemById(
+    "preferences-layout-pagenum-bottom-left"
+  ).checked = value === 3;
+  Menu.getApplicationMenu().getMenuItemById(
+    "preferences-layout-pagenum-bottom-center"
+  ).checked = value === 4;
+  Menu.getApplicationMenu().getMenuItemById(
+    "preferences-layout-pagenum-bottom-right"
+  ).checked = value === 5;
+};
+
 exports.setFileOpened = function (isEnabled) {
   Menu.getApplicationMenu().getMenuItemById("convert-file").enabled = isEnabled;
   Menu.getApplicationMenu().getMenuItemById("extract-file").enabled = isEnabled;
@@ -663,6 +704,129 @@ function buildApplicationMenu(
                       label: _("menu-file-preferences-loading-ipos-1"),
                       click() {
                         mainProcess.onMenuChangeLoadingIndicatorIconPos(1);
+                      },
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              label: _("menu-file-preferences-layout"),
+              submenu: [
+                {
+                  label: _("menu-file-preferences-layout-clock"),
+                  submenu: [
+                    {
+                      id: "preferences-layout-clock-top-left",
+                      type: "checkbox",
+                      checked: settings.layoutClock === 0,
+                      label: _("menu-shared-top-left"),
+                      click() {
+                        mainProcess.onMenuChangeLayoutClock(0);
+                      },
+                    },
+                    {
+                      id: "preferences-layout-clock-top-center",
+                      type: "checkbox",
+                      checked: settings.layoutClock === 1,
+                      label: _("menu-shared-top-center"),
+                      click() {
+                        mainProcess.onMenuChangeLayoutClock(1);
+                      },
+                    },
+                    {
+                      id: "preferences-layout-clock-top-right",
+                      type: "checkbox",
+                      checked: settings.layoutClock === 2,
+                      label: _("menu-shared-top-right"),
+                      click() {
+                        mainProcess.onMenuChangeLayoutClock(2);
+                      },
+                    },
+                    {
+                      id: "preferences-layout-clock-bottom-left",
+                      type: "checkbox",
+                      checked: settings.layoutClock === 3,
+                      label: _("menu-shared-bottom-left"),
+                      click() {
+                        mainProcess.onMenuChangeLayoutClock(3);
+                      },
+                    },
+                    {
+                      id: "preferences-layout-clock-bottom-center",
+                      type: "checkbox",
+                      checked: settings.layoutClock === 4,
+                      label: _("menu-shared-bottom-center"),
+                      click() {
+                        mainProcess.onMenuChangeLayoutClock(4);
+                      },
+                    },
+                    {
+                      id: "preferences-layout-clock-bottom-right",
+                      type: "checkbox",
+                      checked: settings.layoutClock === 5,
+                      label: _("menu-shared-bottom-right"),
+                      click() {
+                        mainProcess.onMenuChangeLayoutClock(5);
+                      },
+                    },
+                  ],
+                },
+                {
+                  label: _("menu-file-preferences-layout-pagenum"),
+                  submenu: [
+                    {
+                      id: "preferences-layout-pagenum-top-left",
+                      type: "checkbox",
+                      checked: settings.layoutPageNum === 0,
+                      label: _("menu-shared-top-left"),
+                      click() {
+                        mainProcess.onMenuChangeLayoutPageNum(0);
+                      },
+                    },
+                    {
+                      id: "preferences-layout-pagenum-top-center",
+                      type: "checkbox",
+                      checked: settings.layoutPageNum === 1,
+                      label: _("menu-shared-top-center"),
+                      click() {
+                        mainProcess.onMenuChangeLayoutPageNum(1);
+                      },
+                    },
+                    {
+                      id: "preferences-layout-pagenum-top-right",
+                      type: "checkbox",
+                      checked: settings.layoutPageNum === 2,
+                      label: _("menu-shared-top-right"),
+                      click() {
+                        mainProcess.onMenuChangeLayoutPageNum(2);
+                      },
+                    },
+                    {
+                      id: "preferences-layout-pagenum-bottom-left",
+                      type: "checkbox",
+                      checked: settings.layoutPageNum === 3,
+                      label: _("menu-shared-bottom-left"),
+                      click() {
+                        mainProcess.onMenuChangeLayoutPageNum(3);
+                      },
+                    },
+                    {
+                      id: "preferences-layout-pagenum-bottom-center",
+                      type: "checkbox",
+                      checked: settings.layoutPageNum === 4,
+                      label: _("menu-shared-bottom-center"),
+                      click() {
+                        mainProcess.onMenuChangeLayoutPageNum(4);
+                      },
+                    },
+                    {
+                      id: "preferences-layout-pagenum-bottom-right",
+                      type: "checkbox",
+                      checked: settings.layoutPageNum === 5,
+                      label: _("menu-shared-bottom-right"),
+                      click() {
+                        mainProcess.onMenuChangeLayoutPageNum(5);
                       },
                     },
                   ],

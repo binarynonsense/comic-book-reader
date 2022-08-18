@@ -74,6 +74,8 @@ let g_settings = {
   loadingIndicatorBG: 1, // 0: transparent, 1: slightly opaque
   loadingIndicatorIconSize: 0, // 0: small, 1: big
   loadingIndicatorIconPos: 0, // 0: top left, 1: center
+  layoutClock: 2, // 0 top left, 1 top center, 2 top right .... 5 bottom right
+  layoutPageNum: 4, // 0 top left, 1 top center, 2 top right .... 5 bottom right
 
   locale: undefined,
   theme: undefined,
@@ -201,6 +203,21 @@ function sanitizeSettings() {
   ) {
     g_settings.loadingIndicatorIconPos = 0;
   }
+  if (
+    !Number.isInteger(g_settings.layoutClock) ||
+    g_settings.layoutClock < 0 ||
+    g_settings.layoutClock > 5
+  ) {
+    g_settings.layoutClock = 2;
+  }
+  if (
+    !Number.isInteger(g_settings.layoutPageNum) ||
+    g_settings.layoutPageNum < 0 ||
+    g_settings.layoutPageNum > 5
+  ) {
+    g_settings.layoutPageNum = 2;
+  }
+
   /////////////////////
   if (typeof g_settings.locale === "string") {
     g_settings.locale = g_settings.locale
@@ -317,6 +334,8 @@ app.on("ready", () => {
     }
 
     updateLoadingIndicator();
+    updateLayoutClock();
+    updateLayoutPageNum();
 
     g_mainWindow.webContents.send(
       "set-hide-inactive-mouse-cursor",
@@ -896,6 +915,27 @@ exports.onMenuChangeLoadingIndicatorIconPos = function (value) {
     g_settings.loadingIndicatorIconPos = value;
     menuBar.setLoadingIndicatorIconPos(value);
     updateLoadingIndicator();
+    g_mainWindow.webContents.send("update-menubar");
+  }
+};
+
+exports.onMenuChangeLayoutClock = function (value) {
+  if (value === g_settings.layoutClock || value < 0 || value > 5)
+    g_mainWindow.webContents.send("update-menubar");
+  else {
+    g_settings.layoutClock = value;
+    menuBar.setLayoutClock(value);
+    updateLayoutClock();
+    g_mainWindow.webContents.send("update-menubar");
+  }
+};
+exports.onMenuChangeLayoutPageNum = function (value) {
+  if (value === g_settings.layoutPageNum || value < 0 || value > 5)
+    g_mainWindow.webContents.send("update-menubar");
+  else {
+    g_settings.layoutPageNum = value;
+    menuBar.setLayoutPageNum(value);
+    updateLayoutPageNum();
     g_mainWindow.webContents.send("update-menubar");
   }
 };
@@ -2131,5 +2171,21 @@ function updateLoadingIndicator() {
     g_settings.loadingIndicatorBG,
     g_settings.loadingIndicatorIconSize,
     g_settings.loadingIndicatorIconPos
+  );
+}
+
+function updateLayoutClock() {
+  g_mainWindow.webContents.send(
+    "update-layout-pos",
+    g_settings.layoutClock,
+    "#clock-bubble"
+  );
+}
+
+function updateLayoutPageNum() {
+  g_mainWindow.webContents.send(
+    "update-layout-pos",
+    g_settings.layoutPageNum,
+    "#page-number-bubble"
   );
 }
