@@ -216,6 +216,7 @@ img {
   -ms-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
   text-align: center;
+  user-select: none;
 }
 .centered-block img {
   width: 30vh;
