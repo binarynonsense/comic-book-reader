@@ -67,7 +67,7 @@ ipcMain.on(g_ipcChannel + "open", (event, comicData) => {
     try {
       const response = await axios.get(
         `https://digitalcomicmuseum.com/preview/index.php?did=${comicData.comicId}&page=${pageNum}`,
-        { timeout: 5000 }
+        { timeout: 10000 }
       );
       const dom = new JSDOM(response.data);
       let images = dom.window.document.getElementsByTagName("img");

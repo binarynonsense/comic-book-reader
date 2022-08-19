@@ -75,7 +75,7 @@ async function getBookPagesInfo(comicData) {
   try {
     const response = await axios.get(
       `https://api.archivelab.org/books/${comicData.comicId}/pages`,
-      { timeout: 5000 }
+      { timeout: 10000 }
     );
     return response.data.pages.length;
   } catch (error) {

@@ -99,7 +99,7 @@ ipcMain.on(g_ipcChannel + "open", (event, comicData) => {
         pageNum - 1
       }/mode/1up`;
       const response = await axios.get(imgUrl, {
-        timeout: 5000,
+        timeout: 10000,
         responseType: "arraybuffer",
       });
       let buf = Buffer.from(response.data, "binary");
@@ -140,7 +140,7 @@ ipcMain.on(
         }
         const response = await axios.get(
           `https://archive.org/advancedsearch.php?${searchQuery}${collectionQuery}+AND+mediatype%3A(texts)${readableQuery}&fl[]=identifier&fl[]=imagecount&fl[]=title&fl[]=creator&sort[]=&sort[]=&sort[]=&rows=${g_queryPageSize}&page=${pageNum}&output=json`,
-          { timeout: 5000 }
+          { timeout: 10000 }
         );
         let searchResults = response.data;
         // e.g.
