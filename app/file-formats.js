@@ -2,13 +2,6 @@ const path = require("path");
 const fs = require("fs");
 const os = require("os");
 
-const AdmZip = require("adm-zip");
-const unrar = require("node-unrar-js");
-const EPub = require("epub");
-const sharp = require("sharp");
-const Seven = require("node-7z");
-const sevenBin = require("7zip-bin");
-
 function isDev() {
   return process.argv[2] == "--dev";
 }
@@ -104,6 +97,7 @@ const deleteTempFolderRecursive = function (folderPath) {
 
 async function getRarEntriesList(filePath, password) {
   try {
+    const unrar = require("node-unrar-js");
     var buf = Uint8Array.from(fs.readFileSync(filePath)).buffer;
     var extractor = await unrar.createExtractorFromData({
       data: buf,
@@ -149,6 +143,7 @@ exports.getRarEntriesList = getRarEntriesList;
 
 async function extractRarEntryBuffer(rarPath, entryName, password) {
   try {
+    const unrar = require("node-unrar-js");
     var buf = Uint8Array.from(fs.readFileSync(rarPath)).buffer;
     var extractor = await unrar.createExtractorFromData({
       data: buf,
@@ -167,6 +162,7 @@ exports.extractRarEntryBuffer = extractRarEntryBuffer;
 
 async function extractRar(filePath, tempFolderPath, password) {
   try {
+    const unrar = require("node-unrar-js");
     //ref: https://github.com/YuJianrong/node-unrar.js
     let extractor = await unrar.createExtractorFromFile({
       filepath: filePath,
@@ -187,6 +183,7 @@ exports.extractRar = extractRar;
 
 function getZipEntriesList(filePath, password) {
   try {
+    const AdmZip = require("adm-zip");
     let zip = new AdmZip(filePath);
     let zipEntries = zip.getEntries();
     let imgEntries = [];
@@ -226,6 +223,7 @@ function getZipEntriesList(filePath, password) {
 exports.getZipEntriesList = getZipEntriesList;
 
 function extractZipEntryBuffer(zipPath, entryName, password) {
+  const AdmZip = require("adm-zip");
   let zip = new AdmZip(zipPath);
   return zip.readFile(entryName, password);
 }
@@ -234,6 +232,7 @@ exports.extractZipEntryBuffer = extractZipEntryBuffer;
 function extractZip(filePath, tempFolderPath, password) {
   // ref: https://github.com/cthackers/adm-zip/wiki/ADM-ZIP-Introduction
   try {
+    const AdmZip = require("adm-zip");
     let zip = new AdmZip(filePath);
     const imageData = zip.readFile("");
     zip.extractAllTo(tempFolderPath, true, false, password);
@@ -244,6 +243,7 @@ function extractZip(filePath, tempFolderPath, password) {
 exports.extractZip = extractZip;
 
 function createZip(filePathsList, outputFilePath) {
+  const AdmZip = require("adm-zip");
   let zip = new AdmZip();
   filePathsList.forEach((element) => {
     zip.addLocalFile(element);
@@ -258,6 +258,7 @@ exports.createZip = createZip;
 
 let g_pathTo7zipBin;
 function checkPathTo7ZipBin() {
+  const sevenBin = require("7zip-bin");
   if (g_pathTo7zipBin === undefined) {
     g_pathTo7zipBin = sevenBin.path7za;
     if (!isDev()) {
@@ -282,6 +283,7 @@ async function get7ZipEntriesList(filePath, password) {
     // that have the file names ot encrypted, and also returns the file list.
     // List only gives an error if the names are also encrypted
     // TODO: check if test comes with a performance hit for big files? Don't really know what it tests...
+    const Seven = require("node-7z");
     const seven = Seven.test(filePath, {
       $bin: g_pathTo7zipBin,
       charset: "UTF-8", // always used just in case?
@@ -332,6 +334,7 @@ async function extract7ZipEntryBuffer(filePath, entryName, password) {
     }
     checkPathTo7ZipBin();
 
+    const Seven = require("node-7z");
     const seven = Seven.extract(filePath, tempFolderPath, {
       $bin: g_pathTo7zipBin,
       charset: "UTF-8", // always used just in case?
@@ -377,6 +380,7 @@ async function extract7Zip(filePath, tempFolderPath, password) {
     }
     checkPathTo7ZipBin();
 
+    const Seven = require("node-7z");
     const seven = Seven.extractFull(filePath, tempFolderPath, {
       $bin: g_pathTo7zipBin,
       charset: "UTF-8", // always used just in case?
@@ -411,6 +415,7 @@ async function create7Zip(filePathsList, outputFilePath) {
   try {
     checkPathTo7ZipBin();
 
+    const Seven = require("node-7z");
     const seven = Seven.add(outputFilePath, filePathsList, {
       $bin: g_pathTo7zipBin,
       charset: "UTF-8", // always used just in case?
@@ -446,6 +451,7 @@ exports.create7Zip = create7Zip;
 
 async function extractEpubImages(filePath, tempFolderPath) {
   // TODO catch errors
+  const EPub = require("epub");
   const epub = new EPub(filePath);
 
   // parse epub
@@ -516,6 +522,7 @@ async function extractEpubImages(filePath, tempFolderPath) {
 exports.extractEpubImages = extractEpubImages;
 
 async function extractEpubImageBuffer(filePath, imageID) {
+  const EPub = require("epub");
   const epub = new EPub(filePath);
 
   // parse epub
@@ -609,6 +616,7 @@ exports.createEpubFromImages = createEpubFromImages;
 async function createPdfFromImages(imgPathsList, outputFilePath, method) {
   try {
     const PDFDocument = require("pdfkit");
+    const sharp = require("sharp");
     const pdf = new PDFDocument({
       autoFirstPage: false,
     });

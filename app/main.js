@@ -12,19 +12,6 @@ const contextMenu = require("./menu-context");
 const themes = require("./themes");
 const { FileExtension, FileDataState, FileDataType } = require("./constants");
 
-const convertComicsTool = require("./tools/convert-comics/main");
-const convertImagesTool = require("./tools/convert-imgs/main");
-const createComicTool = require("./tools/create-comic/main");
-const createQRTool = require("./tools/create-qr/main");
-const extractTextTool = require("./tools/extract-text/main");
-const extractPaletteTool = require("./tools/extract-palette/main");
-const extractComicsTool = require("./tools/extract-comics/main");
-const extractQRTool = require("./tools/extract-qr/main");
-const dcmTool = require("./tools/dcm/main");
-const iarchiveTool = require("./tools/internet-archive/main");
-
-const historyManager = require("./tools/history-mgr/main");
-
 const {
   setupTitlebar,
   attachTitlebarToWindow,
@@ -1071,7 +1058,8 @@ exports.onMenuClearHistory = function () {
 };
 
 exports.onMenuOpenHistoryManager = function () {
-  historyManager.showWindow(g_mainWindow, g_history);
+  const manager = require("./tools/history-mgr/main");
+  manager.showWindow(g_mainWindow, g_history);
   g_mainWindow.webContents.send("update-menubar");
 };
 
@@ -1097,65 +1085,77 @@ exports.onMenuPageExtractQR = function () {
 
 exports.onMenuConvertFile = function () {
   if (g_fileData.path !== undefined) {
-    convertComicsTool.showWindow(g_mainWindow, g_fileData);
+    const tool = require("./tools/convert-comics/main");
+    tool.showWindow(g_mainWindow, g_fileData);
   }
   g_mainWindow.webContents.send("update-menubar");
 };
 
 exports.onMenuExtractFile = function () {
   if (g_fileData.path !== undefined) {
-    extractComicsTool.showWindow(g_mainWindow, g_fileData);
+    const tool = require("./tools/extract-comics/main");
+    tool.showWindow(g_mainWindow, g_fileData);
   }
   g_mainWindow.webContents.send("update-menubar");
 };
 
 exports.onMenuToolConvertComics = function () {
-  convertComicsTool.showWindow(g_mainWindow);
+  const tool = require("./tools/convert-comics/main");
+  tool.showWindow(g_mainWindow);
   g_mainWindow.webContents.send("update-menubar");
 };
 
 exports.onMenuToolCreateComic = function () {
-  createComicTool.showWindow(g_mainWindow);
+  const tool = require("./tools/create-comic/main");
+  tool.showWindow(g_mainWindow);
   g_mainWindow.webContents.send("update-menubar");
 };
 
 exports.onMenuToolCreateQR = function () {
-  createQRTool.showWindow(g_mainWindow);
+  const tool = require("./tools/create-qr/main");
+  tool.showWindow(g_mainWindow);
   g_mainWindow.webContents.send("update-menubar");
 };
 
 exports.onMenuToolConvertImages = function () {
-  convertImagesTool.showWindow(g_mainWindow);
+  const tool = require("./tools/convert-imgs/main");
+  tool.showWindow(g_mainWindow);
   g_mainWindow.webContents.send("update-menubar");
 };
 
 exports.onMenuToolExtractText = function () {
-  extractTextTool.showWindow(g_mainWindow);
+  const tool = require("./tools/extract-text/main");
+  tool.showWindow(g_mainWindow);
   g_mainWindow.webContents.send("update-menubar");
 };
 
 exports.onMenuToolExtractQR = function () {
-  extractQRTool.showWindow(g_mainWindow);
+  const tool = require("./tools/extract-qr/main");
+  tool.showWindow(g_mainWindow);
   g_mainWindow.webContents.send("update-menubar");
 };
 
 exports.onMenuToolExtractPalette = function () {
-  extractPaletteTool.showWindow(g_mainWindow);
+  const tool = require("./tools/extract-palette/main");
+  tool.showWindow(g_mainWindow);
   g_mainWindow.webContents.send("update-menubar");
 };
 
 exports.onMenuToolExtractComics = function () {
-  extractComicsTool.showWindow(g_mainWindow);
+  const tool = require("./tools/extract-comics/main");
+  tool.showWindow(g_mainWindow);
   g_mainWindow.webContents.send("update-menubar");
 };
 
 exports.onMenuToolDCM = function () {
-  dcmTool.showWindow(g_mainWindow);
+  const tool = require("./tools/dcm/main");
+  tool.showWindow(g_mainWindow);
   g_mainWindow.webContents.send("update-menubar");
 };
 
 exports.onMenuToolIArchive = function () {
-  iarchiveTool.showWindow(g_mainWindow);
+  const tool = require("./tools/internet-archive/main");
+  tool.showWindow(g_mainWindow);
   g_mainWindow.webContents.send("update-menubar");
 };
 
@@ -1839,12 +1839,15 @@ async function exportPageStart(sendToTool = 0) {
           if (message[0]) {
             g_mainWindow.webContents.send("update-loading", false);
             if (message[2] === 1) {
+              const extractTextTool = require("./tools/extract-text/main");
               extractTextTool.showWindow(g_mainWindow, message[1]);
               g_mainWindow.webContents.send("update-menubar");
             } else if (message[2] === 2) {
+              const extractPaletteTool = require("./tools/extract-palette/main");
               extractPaletteTool.showWindow(g_mainWindow, message[1]);
               g_mainWindow.webContents.send("update-menubar");
             } else if (message[2] === 3) {
+              const extractQRTool = require("./tools/extract-qr/main");
               extractQRTool.showWindow(g_mainWindow, message[1]);
               g_mainWindow.webContents.send("update-menubar");
             } else {
@@ -1903,12 +1906,15 @@ function exportPageSaveBuffer(buf, outputFolderPath, sendToTool) {
         fs.writeFileSync(outputFilePath, buf, "binary");
 
         if (sendToTool === 1) {
+          const extractTextTool = require("./tools/extract-text/main");
           extractTextTool.showWindow(g_mainWindow, outputFilePath);
           g_mainWindow.webContents.send("update-menubar");
         } else if (sendToTool === 2) {
+          const extractPaletteTool = require("./tools/extract-palette/main");
           extractPaletteTool.showWindow(g_mainWindow, outputFilePath);
           g_mainWindow.webContents.send("update-menubar");
         } else if (sendToTool === 3) {
+          const extractQRTool = require("./tools/extract-qr/main");
           extractQRTool.showWindow(g_mainWindow, outputFilePath);
           g_mainWindow.webContents.send("update-menubar");
         } else {

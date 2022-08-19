@@ -3,8 +3,6 @@ const { app, dialog } = require("electron");
 const path = require("path");
 const os = require("os");
 const fs = require("fs");
-const naturalCompare = require("natural-compare-lite");
-
 const fileFormats = require("./file-formats");
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -72,6 +70,7 @@ exports.compare = function (a, b) {
 
 // keep just in case, but I'm not longer using it
 exports.naturalCompare = function (a, b) {
+  const naturalCompare = require("natural-compare-lite");
   return naturalCompare(a, b);
 };
 

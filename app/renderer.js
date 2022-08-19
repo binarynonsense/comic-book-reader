@@ -1,8 +1,5 @@
 const { ipcRenderer } = require("electron");
 const customTitlebar = require("custom-electron-titlebar");
-const pdfjsLib = require("./assets/libs/pdfjs/build/pdf.js");
-const EPub = require("epub");
-const { changeDpiDataUrl } = require("changedpi");
 
 let g_currentPdf = null;
 let g_currentPdfPage = null;
@@ -450,6 +447,7 @@ function renderImg64(
 
 function loadEpub(filePath, pageNum) {
   // ref: https://github.com/julien-c/epub/blob/master/example/example.js
+  const EPub = require("epub");
   const epub = new EPub(filePath);
   epub.on("error", function (err) {
     ipcRenderer.send("epub-load-failed");
@@ -509,6 +507,7 @@ function extractEpubImagesSrcRecursive(
 ///////////////////////////////////////////////////////////////////////////////
 
 function loadPdf(filePath, pageIndex, password) {
+  const pdfjsLib = require("./assets/libs/pdfjs/build/pdf.js");
   pdfjsLib.GlobalWorkerOptions.workerSrc =
     "./assets/libs/pdfjs/build/pdf.worker.js";
   var loadingTask = pdfjsLib.getDocument({ url: filePath, password: password });
@@ -613,6 +612,7 @@ async function extractPDFImageBuffer(
   password,
   sendToTool
 ) {
+  const pdfjsLib = require("./assets/libs/pdfjs/build/pdf.js");
   pdfjsLib.GlobalWorkerOptions.workerSrc =
     "./assets/libs/pdfjs/build/pdf.worker.js";
   try {
@@ -705,6 +705,7 @@ async function extractPDFImageBuffer(
     }
     //////////////////////////////
     let dataUrl = canvas.toDataURL("image/jpeg", 0.8);
+    const { changeDpiDataUrl } = require("changedpi");
     let img = changeDpiDataUrl(dataUrl, dpi);
     let data = img.replace(/^data:image\/\w+;base64,/, "");
     let buf = Buffer.from(data, "base64");
