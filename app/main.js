@@ -1668,7 +1668,9 @@ function renderPageRefresh() {
     } else if (
       g_fileData.type === FileDataType.RAR ||
       g_fileData.type === FileDataType.ZIP ||
-      g_fileData.type === FileDataType.SEVENZIP
+      g_fileData.type === FileDataType.SEVENZIP ||
+      g_fileData.type === FileDataType.IMGS_FOLDER ||
+      g_fileData.type === FileDataType.WWW
     ) {
       g_mainWindow.webContents.send(
         "refresh-img-page",
