@@ -1247,15 +1247,12 @@ function cleanUpFileData() {
 function tryOpenPath(filePath, pageIndex = 0) {
   if (fs.existsSync(filePath)) {
     if (fs.lstatSync(filePath).isDirectory()) {
-      g_mainWindow.webContents.send("update-bg", false);
       openImageFolder(filePath, undefined, pageIndex);
       return true;
     } else if (fileFormats.hasComicBookExtension(filePath)) {
-      g_mainWindow.webContents.send("update-bg", false);
       openComicBookFile(filePath, pageIndex);
       return true;
     } else if (fileFormats.hasImageExtension(filePath)) {
-      g_mainWindow.webContents.send("update-bg", false);
       openImageFile(filePath);
       return true;
     }
@@ -1266,12 +1263,10 @@ function tryOpenPath(filePath, pageIndex = 0) {
 function tryOpenWWW(data, pageIndex = 0) {
   if (data.source === "dcm") {
     const tool = require("./tools/dcm/main");
-    g_mainWindow.webContents.send("update-bg", false);
     openWWWComicBook(data, tool.getPageCallback, pageIndex);
     return true;
   }
   if (data.source === "iab") {
-    g_mainWindow.webContents.send("update-bg", false);
     const tool = require("./tools/internet-archive/main");
     openWWWComicBook(data, tool.getPageCallback, pageIndex);
     return true;
@@ -1289,6 +1284,7 @@ function openImageFile(filePath) {
 }
 
 function openImageFolder(folderPath, filePath, pageIndex) {
+  g_mainWindow.webContents.send("update-bg", false);
   if (
     folderPath === undefined ||
     folderPath === "" ||
@@ -1345,6 +1341,7 @@ function openComicBookFile(filePath, pageIndex = 0, password = "") {
   }
 
   g_mainWindow.webContents.send("update-loading", true);
+  g_mainWindow.webContents.send("update-bg", false);
 
   let fileExtension = path.extname(filePath).toLowerCase();
   g_tempFileData = {};
@@ -1581,6 +1578,7 @@ function openComicBookFile(filePath, pageIndex = 0, password = "") {
 }
 
 function openWWWComicBook(comicData, getPageCallback, pageIndex = 0) {
+  g_mainWindow.webContents.send("update-bg", false);
   g_mainWindow.webContents.send("update-loading", true);
   if (g_fileData.path !== "") addCurrentToHistory(); // add the one I'm closing to history
   cleanUpFileData();
