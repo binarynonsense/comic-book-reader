@@ -1759,6 +1759,7 @@ function goToPage(pageIndex, scrollBarPos = 0) {
         g_fileData
       );
       if (!response || !response.pageImgSrc) {
+        // TODO: handle error
         console.log("download error");
         g_mainWindow.webContents.send("update-loading", false);
         return;
