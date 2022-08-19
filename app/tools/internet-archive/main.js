@@ -117,16 +117,17 @@ ipcMain.on(g_ipcChannel + "open", (event, comicData) => {
 ipcMain.on(
   g_ipcChannel + "search",
   (event, text, pageNum, collection, availability) => {
+    let content = `<div style="margin-top: 50px !important"></div>`;
     (async () => {
       try {
         const axios = require("axios").default;
         if (text.trim().length === 0) {
-          g_window.webContents.send(
-            g_ipcChannel + "update-results",
-            `<li class="collection-item"><span class="title">${_(
-              "tool-iab-search-nothing-found"
-            )}</span></li>`
-          );
+          content += `<ul class="collection">`;
+          content += `<li class="collection-item"><span class="title">${_(
+            "tool-iab-search-nothing-found"
+          )}</span></li>`;
+          content += `</ul>`;
+          g_window.webContents.send(g_ipcChannel + "update-results", content);
           return;
         }
         let searchQuery = `q=(${encodeURIComponent(text)})`;
@@ -147,7 +148,6 @@ ipcMain.on(
         // numFound: 8
         // start: 0
         const totalResultsNum = searchResults.response.numFound;
-        let content = `<div style="margin-top: 50px !important"></div>`;
 
         // Pagination arrows
         let paginationContent = "";
@@ -176,7 +176,7 @@ ipcMain.on(
         content += paginationContent;
 
         // List
-        content += `<ul class="collection">`; //style="margin-top: 50px !important"
+        content += `<ul class="collection">`;
 
         if (totalResultsNum <= 0) {
           content += `<li class="collection-item"><span class="title">${_(
@@ -221,13 +221,13 @@ ipcMain.on(
           searchResults
         );
       } catch (error) {
-        console.error(error);
-        g_window.webContents.send(
-          g_ipcChannel + "update-results",
-          `<li class="collection-item"><span class="title">${_(
-            "tool-iab-search-nothing-found"
-          )}</span></li>`
-        );
+        // console.error(error);
+        content += `<ul class="collection">`;
+        content += `<li class="collection-item"><span class="title">${_(
+          "tool-iab-search-nothing-found"
+        )}</span></li>`;
+        content += `</ul>`;
+        g_window.webContents.send(g_ipcChannel + "update-results", content);
       }
     })(); // async
   }
