@@ -546,171 +546,6 @@ function buildApplicationMenu(
               ],
             },
             {
-              label: _("menu-file-preferences-themes"),
-              submenu: themesSubmenu,
-            },
-            {
-              label: _("menu-file-preferences-hotspots"),
-              submenu: [
-                {
-                  id: "hotspots-0",
-                  type: "checkbox",
-                  checked: settings.hotspots_mode === 0,
-                  label: _("menu-file-preferences-hotspots-disabled"),
-                  click() {
-                    mainProcess.onMenuChangeHotspotsMode(0);
-                  },
-                },
-                {
-                  id: "hotspots-1",
-                  type: "checkbox",
-                  checked: settings.hotspots_mode === 1,
-                  label: _("menu-file-preferences-hotspots-2columns"),
-                  click() {
-                    mainProcess.onMenuChangeHotspotsMode(1);
-                  },
-                },
-                {
-                  id: "hotspots-2",
-                  type: "checkbox",
-                  checked: settings.hotspots_mode === 2,
-                  label: _("menu-file-preferences-hotspots-3columns"),
-                  click() {
-                    mainProcess.onMenuChangeHotspotsMode(2);
-                  },
-                },
-              ],
-            },
-            {
-              label: _("menu-file-preferences-autoopen"),
-              submenu: [
-                {
-                  id: "auto-open-0",
-                  type: "checkbox",
-                  checked: settings.autoOpen === 0,
-                  label: _("menu-file-preferences-autoopen-disabled"),
-                  click() {
-                    mainProcess.onMenuChangeAutoOpen(0);
-                  },
-                },
-                {
-                  id: "auto-open-1",
-                  type: "checkbox",
-                  checked: settings.autoOpen === 1,
-                  label: _("menu-file-preferences-autoopen-next"),
-                  click() {
-                    mainProcess.onMenuChangeAutoOpen(1);
-                  },
-                },
-                {
-                  id: "auto-open-2",
-                  type: "checkbox",
-                  checked: settings.autoOpen === 2,
-                  label: _("menu-file-preferences-autoopen-nextandprev"),
-                  click() {
-                    mainProcess.onMenuChangeAutoOpen(2);
-                  },
-                },
-              ],
-            },
-            {
-              label: _("menu-file-preferences-cursor"),
-              submenu: [
-                {
-                  id: "cursor-visibility-0",
-                  type: "checkbox",
-                  checked: settings.cursorVisibility === 0,
-                  label: _("menu-file-preferences-cursor-always"),
-                  click() {
-                    mainProcess.onMenuChangeMouseCursorVisibility(0);
-                  },
-                },
-                {
-                  id: "cursor-visibility-1",
-                  type: "checkbox",
-                  checked: settings.cursorVisibility === 1,
-                  label: _("menu-file-preferences-cursor-hide-inactive"),
-                  click() {
-                    mainProcess.onMenuChangeMouseCursorVisibility(1);
-                  },
-                },
-              ],
-            },
-            {
-              label: _("menu-file-preferences-loading"),
-              submenu: [
-                {
-                  label: _("menu-file-preferences-loading-bg"),
-                  submenu: [
-                    {
-                      id: "preferences-loading-bg-0",
-                      type: "checkbox",
-                      checked: settings.loadingIndicatorBG === 0,
-                      label: _("menu-file-preferences-loading-bg-0"),
-                      click() {
-                        mainProcess.onMenuChangeLoadingIndicatorBG(0);
-                      },
-                    },
-                    {
-                      id: "preferences-loading-bg-1",
-                      type: "checkbox",
-                      checked: settings.loadingIndicatorBG === 1,
-                      label: _("menu-file-preferences-loading-bg-1"),
-                      click() {
-                        mainProcess.onMenuChangeLoadingIndicatorBG(1);
-                      },
-                    },
-                  ],
-                },
-                {
-                  label: _("menu-file-preferences-loading-isize"),
-                  submenu: [
-                    {
-                      id: "preferences-loading-isize-0",
-                      type: "checkbox",
-                      checked: settings.loadingIndicatorIconSize === 0,
-                      label: _("menu-file-preferences-loading-isize-0"),
-                      click() {
-                        mainProcess.onMenuChangeLoadingIndicatorIconSize(0);
-                      },
-                    },
-                    {
-                      id: "preferences-loading-isize-1",
-                      type: "checkbox",
-                      checked: settings.loadingIndicatorIconSize === 1,
-                      label: _("menu-file-preferences-loading-isize-1"),
-                      click() {
-                        mainProcess.onMenuChangeLoadingIndicatorIconSize(1);
-                      },
-                    },
-                  ],
-                },
-                {
-                  label: _("menu-file-preferences-loading-ipos"),
-                  submenu: [
-                    {
-                      id: "preferences-loading-ipos-0",
-                      type: "checkbox",
-                      checked: settings.loadingIndicatorIconPos === 0,
-                      label: _("menu-file-preferences-loading-ipos-0"),
-                      click() {
-                        mainProcess.onMenuChangeLoadingIndicatorIconPos(0);
-                      },
-                    },
-                    {
-                      id: "preferences-loading-ipos-1",
-                      type: "checkbox",
-                      checked: settings.loadingIndicatorIconPos === 1,
-                      label: _("menu-file-preferences-loading-ipos-1"),
-                      click() {
-                        mainProcess.onMenuChangeLoadingIndicatorIconPos(1);
-                      },
-                    },
-                  ],
-                },
-              ],
-            },
-            {
               label: _("menu-file-preferences-layout"),
               submenu: [
                 {
@@ -830,6 +665,171 @@ function buildApplicationMenu(
                       },
                     },
                   ],
+                },
+              ],
+            },
+            {
+              label: _("menu-file-preferences-themes"),
+              submenu: themesSubmenu,
+            },
+            {
+              label: _("menu-file-preferences-loading"),
+              submenu: [
+                {
+                  label: _("menu-file-preferences-loading-bg"),
+                  submenu: [
+                    {
+                      id: "preferences-loading-bg-0",
+                      type: "checkbox",
+                      checked: settings.loadingIndicatorBG === 0,
+                      label: _("menu-file-preferences-loading-bg-0"),
+                      click() {
+                        mainProcess.onMenuChangeLoadingIndicatorBG(0);
+                      },
+                    },
+                    {
+                      id: "preferences-loading-bg-1",
+                      type: "checkbox",
+                      checked: settings.loadingIndicatorBG === 1,
+                      label: _("menu-file-preferences-loading-bg-1"),
+                      click() {
+                        mainProcess.onMenuChangeLoadingIndicatorBG(1);
+                      },
+                    },
+                  ],
+                },
+                {
+                  label: _("menu-file-preferences-loading-isize"),
+                  submenu: [
+                    {
+                      id: "preferences-loading-isize-0",
+                      type: "checkbox",
+                      checked: settings.loadingIndicatorIconSize === 0,
+                      label: _("menu-file-preferences-loading-isize-0"),
+                      click() {
+                        mainProcess.onMenuChangeLoadingIndicatorIconSize(0);
+                      },
+                    },
+                    {
+                      id: "preferences-loading-isize-1",
+                      type: "checkbox",
+                      checked: settings.loadingIndicatorIconSize === 1,
+                      label: _("menu-file-preferences-loading-isize-1"),
+                      click() {
+                        mainProcess.onMenuChangeLoadingIndicatorIconSize(1);
+                      },
+                    },
+                  ],
+                },
+                {
+                  label: _("menu-file-preferences-loading-ipos"),
+                  submenu: [
+                    {
+                      id: "preferences-loading-ipos-0",
+                      type: "checkbox",
+                      checked: settings.loadingIndicatorIconPos === 0,
+                      label: _("menu-file-preferences-loading-ipos-0"),
+                      click() {
+                        mainProcess.onMenuChangeLoadingIndicatorIconPos(0);
+                      },
+                    },
+                    {
+                      id: "preferences-loading-ipos-1",
+                      type: "checkbox",
+                      checked: settings.loadingIndicatorIconPos === 1,
+                      label: _("menu-file-preferences-loading-ipos-1"),
+                      click() {
+                        mainProcess.onMenuChangeLoadingIndicatorIconPos(1);
+                      },
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              label: _("menu-file-preferences-hotspots"),
+              submenu: [
+                {
+                  id: "hotspots-0",
+                  type: "checkbox",
+                  checked: settings.hotspots_mode === 0,
+                  label: _("menu-file-preferences-hotspots-disabled"),
+                  click() {
+                    mainProcess.onMenuChangeHotspotsMode(0);
+                  },
+                },
+                {
+                  id: "hotspots-1",
+                  type: "checkbox",
+                  checked: settings.hotspots_mode === 1,
+                  label: _("menu-file-preferences-hotspots-2columns"),
+                  click() {
+                    mainProcess.onMenuChangeHotspotsMode(1);
+                  },
+                },
+                {
+                  id: "hotspots-2",
+                  type: "checkbox",
+                  checked: settings.hotspots_mode === 2,
+                  label: _("menu-file-preferences-hotspots-3columns"),
+                  click() {
+                    mainProcess.onMenuChangeHotspotsMode(2);
+                  },
+                },
+              ],
+            },
+            {
+              label: _("menu-file-preferences-autoopen"),
+              submenu: [
+                {
+                  id: "auto-open-0",
+                  type: "checkbox",
+                  checked: settings.autoOpen === 0,
+                  label: _("menu-file-preferences-autoopen-disabled"),
+                  click() {
+                    mainProcess.onMenuChangeAutoOpen(0);
+                  },
+                },
+                {
+                  id: "auto-open-1",
+                  type: "checkbox",
+                  checked: settings.autoOpen === 1,
+                  label: _("menu-file-preferences-autoopen-next"),
+                  click() {
+                    mainProcess.onMenuChangeAutoOpen(1);
+                  },
+                },
+                {
+                  id: "auto-open-2",
+                  type: "checkbox",
+                  checked: settings.autoOpen === 2,
+                  label: _("menu-file-preferences-autoopen-nextandprev"),
+                  click() {
+                    mainProcess.onMenuChangeAutoOpen(2);
+                  },
+                },
+              ],
+            },
+            {
+              label: _("menu-file-preferences-cursor"),
+              submenu: [
+                {
+                  id: "cursor-visibility-0",
+                  type: "checkbox",
+                  checked: settings.cursorVisibility === 0,
+                  label: _("menu-file-preferences-cursor-always"),
+                  click() {
+                    mainProcess.onMenuChangeMouseCursorVisibility(0);
+                  },
+                },
+                {
+                  id: "cursor-visibility-1",
+                  type: "checkbox",
+                  checked: settings.cursorVisibility === 1,
+                  label: _("menu-file-preferences-cursor-hide-inactive"),
+                  click() {
+                    mainProcess.onMenuChangeMouseCursorVisibility(1);
+                  },
                 },
               ],
             },
