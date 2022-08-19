@@ -56,36 +56,37 @@ exports.showWindow = function (parentWindow) {
   });
 };
 
-////////////////////////////////////////////////////////////////////////
-
-ipcMain.on(g_ipcChannel + "open", (event, comicData) => {
-  mainProcess.openWWWComicBook(comicData, async (pageNum) => {
-    //////////////
+exports.getPageCallback = async function getPageCallback(pageNum, fileData) {
+  try {
     const axios = require("axios").default;
     const jsdom = require("jsdom");
     const { JSDOM } = jsdom;
-    try {
-      const response = await axios.get(
-        `https://digitalcomicmuseum.com/preview/index.php?did=${comicData.comicId}&page=${pageNum}`,
-        { timeout: 10000 }
-      );
-      const dom = new JSDOM(response.data);
-      let images = dom.window.document.getElementsByTagName("img");
+    let comicData = fileData.data;
+    const response = await axios.get(
+      `https://digitalcomicmuseum.com/preview/index.php?did=${comicData.comicId}&page=${pageNum}`,
+      { timeout: 10000 }
+    );
+    const dom = new JSDOM(response.data);
+    let images = dom.window.document.getElementsByTagName("img");
 
-      let imageUrl;
-      for (let i = 0; i < images.length; i++) {
-        if (images[i].alt === "Comic Page") {
-          imageUrl = images[i].src;
-          continue;
-        }
+    let imageUrl;
+    for (let i = 0; i < images.length; i++) {
+      if (images[i].alt === "Comic Page") {
+        imageUrl = images[i].src;
+        continue;
       }
-      return { pageImgSrc: imageUrl, pageImgUrl: imageUrl };
-    } catch (error) {
-      // console.error(error);
-      return undefined;
     }
-    //////////////
-  });
+    return { pageImgSrc: imageUrl, pageImgUrl: imageUrl };
+  } catch (error) {
+    // console.error(error);
+    return undefined;
+  }
+};
+
+////////////////////////////////////////////////////////////////////////
+
+ipcMain.on(g_ipcChannel + "open", (event, comicData) => {
+  mainProcess.openWWWComicBook(comicData, this.getPageCallback);
   g_window.close();
 });
 

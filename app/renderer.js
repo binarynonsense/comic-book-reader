@@ -153,8 +153,13 @@ ipcRenderer.on("update-colors", (event, data) => {
   );
 });
 
-ipcRenderer.on("update-centered-block-text", (event, text) => {
+ipcRenderer.on("update-bg-text", (event, text) => {
   document.querySelector("#centered-block-text").innerHTML = text;
+});
+
+ipcRenderer.on("update-bg", (event, show) => {
+  if (show) document.querySelector(".centered-block").classList.remove("hide");
+  else document.querySelector(".centered-block").classList.add("hide");
 });
 
 ipcRenderer.on(

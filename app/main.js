@@ -243,11 +243,7 @@ function sanitizeSettings() {
 
 app.on("will-quit", () => {
   clearTimeout(g_clockTimeout);
-  if (g_fileData.type === FileDataType.WWW) {
-    g_settings.on_quit_state = 0;
-  } else {
-    g_settings.on_quit_state = g_fileData.path === "" ? 0 : 1;
-  }
+  g_settings.on_quit_state = g_fileData.path === "" ? 0 : 1;
   saveSettings();
   saveHistory(false);
   globalShortcut.unregisterAll();
@@ -353,7 +349,9 @@ app.on("ready", () => {
 
     if (g_history.length > 0 && g_settings.on_quit_state === 1) {
       let entry = g_history[g_history.length - 1];
-      if (tryOpenPath(entry.filePath, entry.pageIndex)) {
+      if (entry.data && entry.data.source) {
+        if (tryOpenWWW(entry.data, entry.pageIndex)) return;
+      } else if (tryOpenPath(entry.filePath, entry.pageIndex)) {
         return;
       }
     }
@@ -455,7 +453,7 @@ function rebuildTranslatedTexts(rebuildMenu = true) {
     _("toolbar-rotate-clockwise"),
     _("menu-view-togglefullscreen")
   );
-  g_mainWindow.webContents.send("update-centered-block-text", _("ui-bg-msg"));
+  g_mainWindow.webContents.send("update-bg-text", _("ui-bg-msg"));
 }
 
 function _(...args) {
@@ -472,7 +470,6 @@ function saveSettings() {
 }
 
 function addCurrentToHistory(updateMenu = true) {
-  if (g_fileData.type === FileDataType.WWW) return;
   let currentFilePath = g_fileData.path;
   let currentPageIndex = g_fileData.pageIndex;
   if (currentFilePath !== "") {
@@ -486,6 +483,9 @@ function addCurrentToHistory(updateMenu = true) {
       fitMode: g_settings.fit_mode,
       zoomScale: g_settings.zoom_scale,
     };
+    if (g_fileData.type === FileDataType.WWW) {
+      newEntry.data = g_fileData.data;
+    }
     g_history.push(newEntry);
     // limit how many are remembered
     if (g_history.length > g_settings.history_capacity) {
@@ -1001,14 +1001,15 @@ exports.onMenuToggleFullScreen = function () {
   toggleFullScreen();
 };
 
-exports.onMenuOpenFile = onMenuOpenFile = function (filePath) {
+exports.onMenuOpenFile = onMenuOpenFile = function (entry = {}) {
   g_mainWindow.webContents.send("update-menubar");
+  let filePath = entry.filePath;
   if (filePath === undefined) {
-    let defaultPath = "";
-    if (g_fileData.path !== "") {
+    let defaultPath;
+    if (g_fileData.path !== "" && !g_fileData.data) {
       defaultPath = path.dirname(g_fileData.path);
       if (!fs.existsSync(defaultPath)) defaultPath = undefined;
-    } else if (g_history.length > 0) {
+    } else if (g_history.length > 0 && !g_history[g_history.length - 1].data) {
       defaultPath = path.dirname(g_history[g_history.length - 1].filePath);
       if (!fs.existsSync(defaultPath)) defaultPath = undefined;
     }
@@ -1041,15 +1042,20 @@ exports.onMenuOpenFile = onMenuOpenFile = function (filePath) {
     }
     filePath = fileList[0];
   }
-  if (filePath === undefined || filePath === "" || !fs.existsSync(filePath)) {
-    g_mainWindow.webContents.send(
-      "show-modal-info",
-      _("ui-modal-info-filenotfound"),
-      filePath
-    );
-    return;
+
+  if (entry.data && entry.data.source) {
+    tryOpenWWW(entry.data, entry.pageIndex);
+  } else {
+    if (filePath === undefined || filePath === "" || !fs.existsSync(filePath)) {
+      g_mainWindow.webContents.send(
+        "show-modal-info",
+        _("ui-modal-info-filenotfound"),
+        filePath
+      );
+      return;
+    }
+    tryOpenPath(filePath);
   }
-  tryOpenPath(filePath);
 };
 
 exports.onMenuClearHistory = function () {
@@ -1219,6 +1225,7 @@ let g_fileData = {
   pageRotation: 0,
   password: "",
   getPageCallback: undefined,
+  data: undefined,
 };
 
 let g_tempFileData = {};
@@ -1234,17 +1241,21 @@ function cleanUpFileData() {
   g_fileData.pageRotation = 0;
   g_fileData.password = "";
   g_fileData.getPageCallback = undefined;
+  g_fileData.data = undefined;
 }
 
 function tryOpenPath(filePath, pageIndex = 0) {
   if (fs.existsSync(filePath)) {
     if (fs.lstatSync(filePath).isDirectory()) {
+      g_mainWindow.webContents.send("update-bg", false);
       openImageFolder(filePath, undefined, pageIndex);
       return true;
     } else if (fileFormats.hasComicBookExtension(filePath)) {
+      g_mainWindow.webContents.send("update-bg", false);
       openComicBookFile(filePath, pageIndex);
       return true;
     } else if (fileFormats.hasImageExtension(filePath)) {
+      g_mainWindow.webContents.send("update-bg", false);
       openImageFile(filePath);
       return true;
     }
@@ -1252,12 +1263,28 @@ function tryOpenPath(filePath, pageIndex = 0) {
   return false;
 }
 
+function tryOpenWWW(data, pageIndex = 0) {
+  if (data.source === "dcm") {
+    const tool = require("./tools/dcm/main");
+    g_mainWindow.webContents.send("update-bg", false);
+    openWWWComicBook(data, tool.getPageCallback, pageIndex);
+    return true;
+  }
+  if (data.source === "iab") {
+    g_mainWindow.webContents.send("update-bg", false);
+    const tool = require("./tools/internet-archive/main");
+    openWWWComicBook(data, tool.getPageCallback, pageIndex);
+    return true;
+  }
+  return false;
+}
+
 function openImageFile(filePath) {
   if (filePath === undefined || filePath === "" || !fs.existsSync(filePath)) {
+    g_mainWindow.webContents.send("update-bg", true);
     g_mainWindow.webContents.send("update-loading", false);
     return;
   }
-
   openImageFolder(path.dirname(filePath), filePath);
 }
 
@@ -1267,12 +1294,14 @@ function openImageFolder(folderPath, filePath, pageIndex) {
     folderPath === "" ||
     !fs.existsSync(folderPath)
   ) {
+    g_mainWindow.webContents.send("update-bg", true);
     g_mainWindow.webContents.send("update-loading", false);
     return;
   }
 
   let pagesPaths = fileUtils.getImageFilesInFolder(folderPath);
   if (pagesPaths.length <= 0) {
+    g_mainWindow.webContents.send("update-bg", true);
     g_mainWindow.webContents.send("update-loading", false);
     return;
   }
@@ -1385,6 +1414,7 @@ function openComicBookFile(filePath, pageIndex = 0, password = "") {
             _("ui-modal-info-fileerror"),
             _("ui-modal-info-couldntopen-rar")
           );
+          g_mainWindow.webContents.send("update-bg", true);
           g_mainWindow.webContents.send("update-loading", false);
           return;
         }
@@ -1410,6 +1440,7 @@ function openComicBookFile(filePath, pageIndex = 0, password = "") {
             _("ui-modal-info-fileerror"),
             _("ui-modal-info-couldntopen-rar")
           );
+          g_mainWindow.webContents.send("update-bg", true);
           g_mainWindow.webContents.send("update-loading", false);
         }
       } else if (
@@ -1447,6 +1478,7 @@ function openComicBookFile(filePath, pageIndex = 0, password = "") {
               _("ui-modal-info-couldntopen-zip")
             );
           }
+          g_mainWindow.webContents.send("update-bg", true);
           g_mainWindow.webContents.send("update-loading", false);
           return;
         }
@@ -1472,6 +1504,7 @@ function openComicBookFile(filePath, pageIndex = 0, password = "") {
             _("ui-modal-info-fileerror"),
             _("ui-modal-info-couldntopen-zip")
           );
+          g_mainWindow.webContents.send("update-bg", true);
           g_mainWindow.webContents.send("update-loading", false);
         }
       } else if (
@@ -1504,6 +1537,7 @@ function openComicBookFile(filePath, pageIndex = 0, password = "") {
             _("ui-modal-info-fileerror"),
             _("ui-modal-info-couldntopen-7z")
           );
+          g_mainWindow.webContents.send("update-bg", true);
           g_mainWindow.webContents.send("update-loading", false);
           return;
         }
@@ -1529,6 +1563,7 @@ function openComicBookFile(filePath, pageIndex = 0, password = "") {
             _("ui-modal-info-fileerror"),
             _("ui-modal-info-couldntopen-7z")
           );
+          g_mainWindow.webContents.send("update-bg", true);
           g_mainWindow.webContents.send("update-loading", false);
         }
       } else {
@@ -1537,6 +1572,7 @@ function openComicBookFile(filePath, pageIndex = 0, password = "") {
           _("ui-modal-info-fileerror"),
           _("ui-modal-info-invalidformat")
         );
+        g_mainWindow.webContents.send("update-bg", true);
         g_mainWindow.webContents.send("update-loading", false);
         return;
       }
@@ -1544,7 +1580,7 @@ function openComicBookFile(filePath, pageIndex = 0, password = "") {
   })(); // async
 }
 
-function openWWWComicBook(comicData, getPageCallback) {
+function openWWWComicBook(comicData, getPageCallback, pageIndex = 0) {
   g_mainWindow.webContents.send("update-loading", true);
   if (g_fileData.path !== "") addCurrentToHistory(); // add the one I'm closing to history
   cleanUpFileData();
@@ -1552,10 +1588,11 @@ function openWWWComicBook(comicData, getPageCallback) {
   g_fileData.type = FileDataType.WWW;
   g_fileData.path = comicData.name;
   g_fileData.name = comicData.name;
-  g_fileData.pagesPaths = [comicData.pageUrl];
+  g_fileData.pagesPaths = [];
   g_fileData.numPages = comicData.numPages;
-  g_fileData.pageIndex = 0;
+  g_fileData.pageIndex = pageIndex;
   g_fileData.getPageCallback = getPageCallback;
+  g_fileData.data = comicData;
   updateMenuItemsState();
   setPageRotation(0, false);
   setInitialZoom(g_fileData.path);
@@ -1694,6 +1731,7 @@ function goToPage(pageIndex, scrollBarPos = 0) {
     g_fileData.state !== FileDataState.LOADED ||
     g_fileData.type === FileDataType.NOT_SET
   ) {
+    g_mainWindow.webContents.send("update-bg", true);
     g_mainWindow.webContents.send("update-loading", false);
     return;
   }

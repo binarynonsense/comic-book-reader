@@ -235,7 +235,6 @@ function getScaleToHeightSubmenu(settings) {
     });
   }
 
-  //if (settings.fit_mode == 2) {
   menu.push({
     type: "separator",
   });
@@ -245,7 +244,6 @@ function getScaleToHeightSubmenu(settings) {
       mainProcess.onMenuScaleToHeightEnter();
     },
   });
-  //}
 
   return menu;
 }
@@ -258,25 +256,15 @@ function getOpenRecentSubmenu(history) {
 
   for (let index = 0; index < length; index++) {
     const entry = reverseHistory[index];
-    let path = entry.filePath;
+    let label = fileUtils.reducePathString(entry.filePath);
+    if (entry.data && entry.data.source) label = "[www] " + label;
     menu.push({
-      label: fileUtils.reducePathString(path),
+      label: label,
       click() {
-        mainProcess.onMenuOpenFile(path);
+        mainProcess.onMenuOpenFile(entry);
       },
     });
   }
-
-  // menu.push({
-  //   type: "separator",
-  // });
-
-  // menu.push({
-  //   label: _("menu-file-openrecent-clear"),
-  //   click() {
-  //     mainProcess.onMenuClearHistory();
-  //   },
-  // });
 
   menu.push({
     type: "separator",

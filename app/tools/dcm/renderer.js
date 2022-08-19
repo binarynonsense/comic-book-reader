@@ -205,9 +205,9 @@ exports.onComicsChanged = function (selectObject) {
     let comicId = selectObject.value;
     let page = await getFirstPageInfo(comicId, 1);
     g_selectedComicData = {
+      source: "dcm",
       comicId: comicId,
       name: selectObject.options[selectObject.selectedIndex].text,
-      pageUrl: page.url,
       numPages: page.numPages,
     };
     checkValidData();
@@ -266,9 +266,9 @@ exports.onOpenComicUrlInACBR = function () {
     (async () => {
       let page = await getFirstPageInfo(comicId, 1);
       let comicData = {
+        source: "dcm",
         comicId: comicId,
         name: page.name,
-        pageUrl: page.url,
         numPages: page.numPages,
       };
       if (page.url) {

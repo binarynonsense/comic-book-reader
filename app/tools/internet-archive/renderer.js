@@ -118,6 +118,7 @@ exports.onSearchResultClicked = function (index, mode) {
   if (!g_lastSearchResults) return;
   const bookData = g_lastSearchResults.response.docs[index];
   let selectedComicData = {
+    source: "iab",
     comicId: bookData.identifier,
     name: bookData.title,
     numPages: bookData.imagecount,

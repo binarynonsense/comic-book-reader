@@ -51,11 +51,13 @@ ipcRenderer.on(g_ipcChannel + "build-list", (event, history) => {
   g_itemsListDiv.innerHTML = "";
   for (let index = history.length - 1; index >= 0; index--) {
     const fileInfo = history[index];
+    let name = reducePathString(fileInfo.filePath);
+    if (fileInfo.data && fileInfo.data.source) name = "[www] " + name;
     g_itemsListDiv.innerHTML += `<li class="collection-item">
     <div>
       <a style="cursor: pointer; margin-right: 5px" onclick="renderer.onOpenItem(${index})" title="${g_localizedOpenFromListText}"
         ><i class="fa fa-folder-open"></i
-      >&nbsp;&nbsp;${reducePathString(fileInfo.filePath)}</a><a
+      >&nbsp;&nbsp;${name}</a><a
         style="cursor: pointer"
         onclick="renderer.onRemoveItem(this, ${index})"
         class="secondary-content"
