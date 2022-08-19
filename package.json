@@ -10,7 +10,7 @@
     "url": "https://github.com/binarynonsense/comic-book-reader"
   },
   "build": {
-    "appId": "com.binarynonsense.cbreader",
+    "appId": "com.binarynonsense.acbr",
     "win": {
       "icon": "./app/assets/images/icon_256x256.png"
     },
