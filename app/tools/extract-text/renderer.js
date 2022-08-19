@@ -60,6 +60,7 @@ exports.onStart = function () {
   }
 
   g_outputTextArea.innerHTML = "";
+  g_modalLogArea.innerHTML = "";
   let base64Img = g_cropper.getCroppedCanvas().toDataURL();
   ipcRenderer.send(g_ipcChannel + "start", base64Img, lang, offline);
 };
