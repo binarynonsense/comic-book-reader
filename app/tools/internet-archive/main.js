@@ -52,6 +52,10 @@ exports.showWindow = function (parentWindow) {
       _("tool-iab-search-placeholder"),
       getLocalization()
     );
+    g_window.webContents.send(
+      g_ipcChannel + "modal-update-title",
+      _("tool-shared-modal-title-searching").toUpperCase()
+    );
 
     let collectionsContent = `<option value="internetarchivebooks">Internet Archive Books</option>`;
     collectionsContent += `<option value="smithsonian">Smithsonian Libraries and Archives</option>`;
