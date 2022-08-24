@@ -56,6 +56,13 @@ exports.setHotspotsMode = function (mode) {
   Menu.getApplicationMenu().getMenuItemById("hotspots-2").checked = mode === 2;
 };
 
+exports.setEpubOpenAs = function (mode) {
+  Menu.getApplicationMenu().getMenuItemById("epub-openas-0").checked =
+    mode === 0;
+  Menu.getApplicationMenu().getMenuItemById("epub-openas-1").checked =
+    mode === 1;
+};
+
 exports.setAutoOpen = function (mode) {
   Menu.getApplicationMenu().getMenuItemById("auto-open-0").checked = mode === 0;
   Menu.getApplicationMenu().getMenuItemById("auto-open-1").checked = mode === 1;
@@ -155,54 +162,66 @@ exports.setLayoutPageNum = function (value) {
   ).checked = value === 5;
 };
 
-exports.setFileOpened = function (isEnabled) {
+exports.setComicBookOpened = setComicBookOpened = function (isEnabled) {
   Menu.getApplicationMenu().getMenuItemById("convert-file").enabled = isEnabled;
   Menu.getApplicationMenu().getMenuItemById("extract-file").enabled = isEnabled;
-  Menu.getApplicationMenu().getMenuItemById("file-page").enabled = isEnabled;
-  Menu.getApplicationMenu().getMenuItemById("file-page-export").enabled =
-    isEnabled;
-  Menu.getApplicationMenu().getMenuItemById("file-page-extract-text").enabled =
-    isEnabled;
-  Menu.getApplicationMenu().getMenuItemById("file-page-extract-qr").enabled =
-    isEnabled;
-  Menu.getApplicationMenu().getMenuItemById(
-    "file-page-extract-palette"
-  ).enabled = isEnabled;
+  EnableItemRecursive(
+    Menu.getApplicationMenu().getMenuItemById("file-page"),
+    isEnabled
+  );
   Menu.getApplicationMenu().getMenuItemById("close-file").enabled = isEnabled;
+  EnableItemRecursive(
+    Menu.getApplicationMenu().getMenuItemById("view-rotation"),
+    isEnabled
+  );
+  EnableItemRecursive(
+    Menu.getApplicationMenu().getMenuItemById("view-page"),
+    isEnabled
+  );
+  EnableItemRecursive(
+    Menu.getApplicationMenu().getMenuItemById("view-zoom"),
+    isEnabled
+  );
 };
 
-exports.setImageOpened = function () {
+exports.setEpubEbookOpened = function () {
+  setComicBookOpened(true);
   Menu.getApplicationMenu().getMenuItemById("convert-file").enabled = false;
   Menu.getApplicationMenu().getMenuItemById("extract-file").enabled = false;
-  Menu.getApplicationMenu().getMenuItemById("file-page").enabled = true;
+  EnableItemRecursive(
+    Menu.getApplicationMenu().getMenuItemById("file-page"),
+    false
+  );
+  EnableItemRecursive(
+    Menu.getApplicationMenu().getMenuItemById("view-rotation"),
+    false
+  );
+  EnableItemRecursive(
+    Menu.getApplicationMenu().getMenuItemById("view-page"),
+    false
+  );
+};
+
+function EnableItemRecursive(item, isEnabled) {
+  item.enabled = isEnabled;
+  if (item.submenu) {
+    item.submenu.items.forEach((subitem) => {
+      EnableItemRecursive(subitem, isEnabled);
+    });
+  }
+}
+
+exports.setImageOpened = function () {
+  setComicBookOpened(true);
+  Menu.getApplicationMenu().getMenuItemById("convert-file").enabled = false;
+  Menu.getApplicationMenu().getMenuItemById("extract-file").enabled = false;
   Menu.getApplicationMenu().getMenuItemById("file-page-export").enabled = false;
-  Menu.getApplicationMenu().getMenuItemById(
-    "file-page-extract-text"
-  ).enabled = true;
-  Menu.getApplicationMenu().getMenuItemById(
-    "file-page-extract-qr"
-  ).enabled = true;
-  Menu.getApplicationMenu().getMenuItemById(
-    "file-page-extract-palette"
-  ).enabled = true;
-  Menu.getApplicationMenu().getMenuItemById("close-file").enabled = true;
 };
 
 exports.setWWWOpened = function () {
+  setComicBookOpened(true);
   Menu.getApplicationMenu().getMenuItemById("convert-file").enabled = false;
   Menu.getApplicationMenu().getMenuItemById("extract-file").enabled = false;
-  Menu.getApplicationMenu().getMenuItemById("file-page").enabled = true;
-  Menu.getApplicationMenu().getMenuItemById("file-page-export").enabled = true;
-  Menu.getApplicationMenu().getMenuItemById(
-    "file-page-extract-text"
-  ).enabled = true;
-  Menu.getApplicationMenu().getMenuItemById(
-    "file-page-extract-qr"
-  ).enabled = true;
-  Menu.getApplicationMenu().getMenuItemById(
-    "file-page-extract-palette"
-  ).enabled = true;
-  Menu.getApplicationMenu().getMenuItemById("close-file").enabled = true;
 };
 
 function getScaleToHeightSubmenu(settings) {
@@ -261,7 +280,7 @@ function getOpenRecentSubmenu(history) {
     menu.push({
       label: label,
       click() {
-        mainProcess.onMenuOpenFile(entry);
+        mainProcess.tryOpen(entry.filePath, undefined, entry);
       },
     });
   }
@@ -735,6 +754,34 @@ function buildApplicationMenu(
               ],
             },
             {
+              label: _("menu-file-preferences-epub"),
+              submenu: [
+                {
+                  label: _("menu-file-preferences-epub-openas"),
+                  submenu: [
+                    {
+                      id: "epub-openas-0",
+                      type: "checkbox",
+                      checked: settings.epubOpenAs === 0,
+                      label: _("menu-file-preferences-epub-openas-0"),
+                      click() {
+                        mainProcess.onMenuChangeEpubOpenAs(0);
+                      },
+                    },
+                    {
+                      id: "epub-openas-1",
+                      type: "checkbox",
+                      checked: settings.epubOpenAs === 1,
+                      label: _("menu-file-preferences-epub-openas-1"),
+                      click() {
+                        mainProcess.onMenuChangeEpubOpenAs(1);
+                      },
+                    },
+                  ],
+                },
+              ],
+            },
+            {
               label: _("menu-file-preferences-hotspots"),
               submenu: [
                 {
@@ -839,7 +886,9 @@ function buildApplicationMenu(
       label: _("menu-view"),
       submenu: [
         {
+          id: "view-zoom",
           label: _("menu-view-zoom"),
+          enabled: true,
           submenu: [
             {
               id: "fit-to-width",
@@ -894,6 +943,7 @@ function buildApplicationMenu(
           ],
         },
         {
+          id: "view-rotation",
           label: _("menu-view-rotation"),
           submenu: [
             {
@@ -935,6 +985,7 @@ function buildApplicationMenu(
           ],
         },
         {
+          id: "view-page",
           label: _("menu-view-page"),
           submenu: [
             {

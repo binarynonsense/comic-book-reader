@@ -29,7 +29,7 @@ async function exportPage(fileData, outputFolderPath, sendToTool) {
         fileData.pagesPaths[fileData.pageIndex],
         fileData.password
       );
-    } else if (fileData.type === FileDataType.EPUB) {
+    } else if (fileData.type === FileDataType.EPUB_COMIC) {
       let data = await fileFormats.extractEpubImageBuffer(
         fileData.path,
         fileData.pagesPaths[fileData.pageIndex]

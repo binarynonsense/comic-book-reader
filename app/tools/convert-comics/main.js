@@ -125,7 +125,7 @@ ipcMain.on(g_ipcChannel + "choose-file", (event, defaultPath) => {
         if (fileExtension === "." + FileExtension.PDF) {
           fileType = FileDataType.PDF;
         } else if (fileExtension === "." + FileExtension.EPUB) {
-          fileType = FileDataType.EPUB;
+          fileType = FileDataType.EPUB_COMIC;
         } else {
           if (
             fileExtension === "." + FileExtension.RAR ||
@@ -353,7 +353,7 @@ function start(inputFilePath, inputFileType, fileNum, totalFilesNum) {
     inputFileType === FileDataType.ZIP ||
     inputFileType === FileDataType.RAR ||
     inputFileType === FileDataType.SEVENZIP ||
-    inputFileType === FileDataType.EPUB
+    inputFileType === FileDataType.EPUB_COMIC
   ) {
     g_window.webContents.send(
       g_ipcChannel + "update-log-text",

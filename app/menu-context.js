@@ -7,8 +7,8 @@ function _(...args) {
   return mainProcess.i18n_.apply(null, args);
 }
 
-function buildContextMenu() {
-  g_contextMenu = Menu.buildFromTemplate([
+function buildContextMenu(showRotation, showGotoPage) {
+  let contextMenu = Menu.buildFromTemplate([
     {
       label: _("ctxmenu-nextpage"),
       click() {
@@ -50,16 +50,19 @@ function buildContextMenu() {
     },
     {
       label: _("ctxmenu-rotate"),
+      enabled: showRotation,
       submenu: [
         {
           id: "rotate-clockwise",
           label: _("ctxmenu-rotate-clockwise"),
+          enabled: showRotation,
           click() {
             mainProcess.onMenuRotateClockwise();
           },
         },
         {
           id: "rotation-counterclockwise",
+          enabled: showRotation,
           label: _("ctxmenu-rotate-counterclockwise"),
           click() {
             mainProcess.onMenuRotateCounterclockwise();
@@ -84,6 +87,7 @@ function buildContextMenu() {
         },
         {
           label: _("menu-view-page-choose"),
+          enabled: showGotoPage,
           click() {
             mainProcess.onGoToPageDialog();
           },
@@ -111,11 +115,13 @@ function buildContextMenu() {
       },
     },
   ]);
+  return contextMenu;
 }
 
-exports.getContextMenu = function () {
-  if (g_contextMenu === undefined) buildContextMenu();
-  return g_contextMenu;
+exports.getContextMenu = function (showRotation, showGotoPage) {
+  // if (g_contextMenu === undefined) buildContextMenu(showRotation, showGotoPage);
+  // return g_contextMenu;
+  return buildContextMenu(showRotation, showGotoPage);
 };
 
 function getScaleToHeightSubmenu() {

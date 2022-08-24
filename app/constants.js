@@ -30,7 +30,14 @@ exports.FileDataType = {
   IMGS_FOLDER: "imgs folder",
   ZIP: "zip",
   RAR: "rar",
-  EPUB: "epub",
+  EPUB_COMIC: "epub comic",
+  EPUB_EBOOK: "epub ebook",
   SEVENZIP: "7z",
   WWW: "www",
+};
+
+exports.BookType = {
+  NOT_SET: "not set",
+  COMIC: "comic",
+  EBOOK: "ebook",
 };

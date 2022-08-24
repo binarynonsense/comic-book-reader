@@ -78,7 +78,11 @@ ipcMain.on(g_ipcChannel + "remove-item", (event, itemIndex) => {
 });
 
 ipcMain.on(g_ipcChannel + "open-item", (event, itemIndex) => {
-  mainProcess.onMenuOpenFile(g_history[itemIndex]);
+  mainProcess.tryOpen(
+    g_history[itemIndex].filePath,
+    undefined,
+    g_history[itemIndex]
+  );
   g_window.close();
 });
 

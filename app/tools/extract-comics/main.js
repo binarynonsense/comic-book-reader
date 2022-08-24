@@ -122,7 +122,7 @@ ipcMain.on(g_ipcChannel + "choose-file", (event, defaultPath) => {
         if (fileExtension === "." + FileExtension.PDF) {
           fileType = FileDataType.PDF;
         } else if (fileExtension === "." + FileExtension.EPUB) {
-          fileType = FileDataType.EPUB;
+          fileType = FileDataType.EPUB_COMIC;
         } else {
           if (
             fileExtension === "." + FileExtension.RAR ||
@@ -323,7 +323,7 @@ function start(inputFilePath, inputFileType, fileNum, totalFilesNum) {
     inputFileType === FileDataType.ZIP ||
     inputFileType === FileDataType.RAR ||
     inputFileType === FileDataType.SEVENZIP ||
-    inputFileType === FileDataType.EPUB
+    inputFileType === FileDataType.EPUB_COMIC
   ) {
     // ref: https://www.matthewslipper.com/2019/09/22/everything-you-wanted-electron-child-process.html
     if (g_worker !== undefined) {

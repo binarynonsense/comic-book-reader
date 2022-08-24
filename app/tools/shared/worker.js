@@ -25,7 +25,7 @@ async function extractImages(
       await fileFormats.extractRar(inputFilePath, tempFolderPath, password);
     } else if (inputFileType === FileDataType.SEVENZIP) {
       await fileFormats.extract7Zip(inputFilePath, tempFolderPath, password);
-    } else if (inputFileType === FileDataType.EPUB) {
+    } else if (inputFileType === FileDataType.EPUB_COMIC) {
       await fileFormats.extractEpubImages(inputFilePath, tempFolderPath);
     } else {
       process.send("conversionExtractImages: invalid file type");
@@ -48,7 +48,7 @@ async function createFile(
       // TODO: doesn't work in the worker, why?
       //await fileFormats.createPdfFromImages(imgFilePaths, outputFilePath, method);
       process.send("ERROR: can't create a pdf in the worker");
-    } else if (outputFormat === FileDataType.EPUB) {
+    } else if (outputFormat === FileDataType.EPUB_COMIC) {
       await fileFormats.createEpubFromImages(
         imgFilePaths,
         outputFilePath,

@@ -186,13 +186,15 @@ exports.loadHistory = function (capacity) {
           typeof entry.filePath === "string"
         ) {
           if (isNaN(entry.pageIndex)) entry.pageIndex = 0;
-          history.push(entry);
+          entry.pageIndex = Number(entry.pageIndex);
           if (entry.fitMode !== undefined && isNaN(entry.fitMode)) {
-            entry.fitMode = undefined;
+            delete entry.fitMode;
           }
           if (entry.zoomScale !== undefined && isNaN(entry.zoomScale)) {
-            entry.zoomScale = undefined;
+            delete entry.zoomScale;
           }
+          // TODO: sanitize data bookType if available
+          history.push(entry);
         }
       }
     }

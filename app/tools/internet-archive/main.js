@@ -105,7 +105,7 @@ exports.getPageCallback = async function getPageCallback(pageNum, fileData) {
 ////////////////////////////////////////////////////////////////////////
 
 ipcMain.on(g_ipcChannel + "open", (event, comicData) => {
-  mainProcess.openWWWComicBook(comicData, this.getPageCallback);
+  mainProcess.openBookFromCallback(comicData, this.getPageCallback);
   g_window.close();
 });
 

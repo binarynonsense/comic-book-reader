@@ -58,6 +58,10 @@
   "menu-file-preferences-layout": "Layout",
   "menu-file-preferences-layout-clock": "Clock",
   "menu-file-preferences-layout-pagenum": "Page Number",
+  "menu-file-preferences-epub": "Epub",
+  "menu-file-preferences-epub-openas": "Open As",
+  "menu-file-preferences-epub-openas-0": "Ask and Remember",
+  "menu-file-preferences-epub-openas-1": "Always Ask",
   "menu-file-quit": "Quit",
 
   "menu-view": "View",
@@ -133,6 +137,9 @@
   "ui-modal-prompt-pagenumber": "Page Number",
   "ui-modal-prompt-scalevalue": "New Scale Value",
   "ui-modal-prompt-enterpassword": "Enter Password",
+  "ui-modal-question-ebookorcomic": "Open {0} As",
+  "ui-modal-question-button-comicbook": "Comic",
+  "ui-modal-question-button-ebook": "Ebook",
 
   "tool-shared-ui-input-file": "Input File:",
   "tool-shared-ui-input-files": "Input File/s:",

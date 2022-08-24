@@ -40,7 +40,7 @@ async function extractBase64Image(
         password
       );
       mime = "image/" + fileFormats.getMimeType(entryName);
-    } else if (fileType === FileDataType.EPUB) {
+    } else if (fileType === FileDataType.EPUB_COMIC) {
       const data = await fileFormats.extractEpubImageBuffer(
         filePath,
         entryName

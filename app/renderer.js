@@ -1,9 +1,10 @@
 const { ipcRenderer } = require("electron");
 const customTitlebar = require("custom-electron-titlebar");
+const { BookType } = require("./constants.js");
 
-let g_currentPdf = null;
-let g_currentPdfPage = null;
+let g_currentPdf = {};
 let g_currentImg64 = null;
+let g_currentEpubEbook = {};
 
 let g_hideMouseCursor = false;
 let g_mouseCursorTimer;
@@ -11,9 +12,9 @@ let g_isMouseCursorVisible = true;
 let g_mouseCursorHideTime = 3500;
 
 function cleanUp() {
-  g_currentPdf = null;
-  g_currentPdfPage = null;
+  g_currentPdf = {};
   g_currentImg64 = null;
+  g_currentEpubEbook = {};
 }
 
 let g_titlebar = new customTitlebar.Titlebar({
@@ -194,6 +195,24 @@ ipcRenderer.on(
   }
 );
 
+ipcRenderer.on("update-toolbar-rotation-buttons", (event, areEnabled) => {
+  const cwButton = document.querySelector("#toolbar-button-rotate-clockwise");
+  const ccwButton = document.querySelector(
+    "#toolbar-button-rotate-counterclockwise"
+  );
+  if (areEnabled) {
+    cwButton.classList.remove("no-click");
+    ccwButton.classList.remove("no-click");
+    cwButton.classList.remove("low-opacity");
+    ccwButton.classList.remove("low-opacity");
+  } else {
+    cwButton.classList.add("no-click");
+    ccwButton.classList.add("no-click");
+    cwButton.classList.add("low-opacity");
+    ccwButton.classList.add("low-opacity");
+  }
+});
+
 ipcRenderer.on("set-scrollbar-visibility", (event, isVisible) => {
   showScrollBar(isVisible);
 });
@@ -257,8 +276,8 @@ ipcRenderer.on("update-title", (event, title) => {
   g_titlebar.updateTitle(title);
 });
 
-ipcRenderer.on("render-page-info", (event, pageNum, numPages) => {
-  toolbarUpdatePageInfo(pageNum, numPages);
+ipcRenderer.on("render-page-info", (event, pageNum, numPages, isPercentage) => {
+  updatePageInfo(pageNum, numPages, isPercentage);
 });
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -268,7 +287,7 @@ ipcRenderer.on("file-closed", (event, img64, rotation) => {
   let container = document.getElementById("pages-container");
   container.innerHTML = "";
   document.querySelector(".centered-block").classList.remove("hide");
-  toolbarUpdatePageInfo(0, 0);
+  updatePageInfo(0, 0);
   document.querySelector("#page-number-bubble").innerHTML = "";
 });
 
@@ -320,14 +339,125 @@ ipcRenderer.on(
 
 ///////////////////////////////////////////////////////////////////////////////
 
-ipcRenderer.on("load-epub", (event, filePath, pageIndex) => {
-  //document.querySelector(".centered-block").classList.add("hide");
-  loadEpub(filePath, pageIndex);
+ipcRenderer.on("load-epub-comic", (event, filePath, pageIndex) => {
+  loadEpubComic(filePath, pageIndex);
 });
 
-ipcRenderer.on("refresh-epub-image", (event, rotation) => {
+ipcRenderer.on("refresh-epub-comic-page", (event, rotation) => {
   if (g_currentImg64) renderImg64(rotation, undefined, false);
 });
+
+///////////////////////////////////////////////////////////////////////////////
+
+ipcRenderer.on("load-epub-ebook", (event, filePath, pageIndex) => {
+  loadEpubEbook(filePath, pageIndex);
+});
+
+ipcRenderer.on("render-epub-ebook-page-percentage", (event, percentage) => {
+  document.querySelector(".centered-block").classList.add("hide");
+  renderEpubEbookPercentage(percentage);
+});
+
+ipcRenderer.on("render-epub-ebook-page-next", (event) => {
+  document.querySelector(".centered-block").classList.add("hide");
+  renderEpubEbookNext();
+});
+
+ipcRenderer.on("render-epub-ebook-page-prev", (event) => {
+  document.querySelector(".centered-block").classList.add("hide");
+  renderEpubEbookPrev();
+});
+
+ipcRenderer.on("refresh-epub-ebook-page", (event, rotation) => {
+  refreshEpubEbookPage();
+});
+
+// https://www.gutenberg.org/cache/epub/68783/pg68783.epub
+// mirror:
+// https://gutenberg.pglaf.org/cache/epub/68783/pg68783.epub
+// rendition.themes.fontSize("140%");
+
+async function loadEpubEbook(filePath, percentage) {
+  try {
+    const ePub = require("epubjs");
+    g_currentEpubEbook.book = ePub.default(filePath);
+    const container = document.querySelector("#pages-container");
+    container.innerHTML = "";
+    const ebookContainer = document.createElement("div");
+    ebookContainer.id = "epub-ebook-container";
+    container.appendChild(ebookContainer);
+    g_currentEpubEbook.rendition = g_currentEpubEbook.book.renderTo(
+      "epub-ebook-container",
+      {
+        flow: "paginated",
+        width: 450,
+        height: 600,
+        allowScriptedContent: false,
+      }
+    );
+    await g_currentEpubEbook.rendition.display();
+    await g_currentEpubEbook.book.locations.generate(1000);
+    let cfi = getEpubEbookCfiFromPercentage(percentage / 100);
+    if (cfi === "epubcfi(/!/)" || cfi === -1)
+      throw { name: "GenericError", message: "Empty or malformed epub cfi" };
+    else console.log("cfi" + cfi);
+
+    ipcRenderer.send("epub-ebook-loaded", filePath, percentage);
+  } catch (error) {
+    ipcRenderer.send("epub-ebook-load-failed", error);
+  }
+}
+
+async function renderEpubEbookPercentage(percentage) {
+  try {
+    let cfi = getEpubEbookCfiFromPercentage(percentage / 100);
+    if (cfi !== "epubcfi(/!/)" && cfi !== -1) {
+      await g_currentEpubEbook.rendition.display(cfi);
+      refreshEpubEbookPage();
+      ipcRenderer.send("page-loaded", { percentage: percentage });
+    } else {
+      ipcRenderer.send("page-loaded", { error: true });
+    }
+  } catch (error) {
+    ipcRenderer.send("page-loaded", { error: true });
+  }
+}
+
+async function renderEpubEbookNext() {
+  await g_currentEpubEbook.rendition.next();
+  refreshEpubEbookPage();
+  ipcRenderer.send("page-loaded", {
+    percentage: getCurrentPercentage() * 100,
+  });
+}
+
+async function renderEpubEbookPrev() {
+  await g_currentEpubEbook.rendition.prev();
+  refreshEpubEbookPage();
+  ipcRenderer.send("page-loaded", {
+    percentage: getCurrentPercentage() * 100,
+  });
+}
+
+function refreshEpubEbookPage() {
+  const height = document.querySelector("#epub-ebook-container").clientHeight;
+  const scale = height / 600;
+  document.documentElement.style.setProperty(
+    "--zoom-epub-ebook-scale-factor",
+    scale
+  );
+}
+
+function getEpubEbookCfiFromPercentage(percentage) {
+  return g_currentEpubEbook.book.locations.cfiFromPercentage(percentage);
+}
+
+function getCurrentPercentage() {
+  const currentLocation = g_currentEpubEbook.rendition.currentLocation();
+  return g_currentEpubEbook.book.locations.percentageFromCfi(
+    currentLocation.start.cfi
+  );
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -345,6 +475,13 @@ ipcRenderer.on("show-modal-prompt-password", (event, text1, text2) => {
 ipcRenderer.on("show-modal-info", (event, title, message) => {
   showModalAlert(title, message);
 });
+
+ipcRenderer.on(
+  "show-modal-question-openas",
+  (event, title, message, button1Text, button2Text, filePath) => {
+    showModalQuestionOpenAs(title, message, button1Text, button2Text, filePath);
+  }
+);
 
 ///////////////////////////////////////////////////////////////////////////////
 // MODALS /////////////////////////////////////////////////////////////////////
@@ -381,6 +518,28 @@ function showModalPromptPassword(text1, text2) {
 
 function showModalAlert(title, message) {
   smalltalk.alert(title, message).then(() => {});
+}
+
+function showModalQuestionOpenAs(
+  title,
+  message,
+  button1Text,
+  button2Text,
+  filePath
+) {
+  smalltalk
+    .confirm(title, message, {
+      buttons: {
+        ok: button1Text,
+        cancel: button2Text,
+      },
+    })
+    .then(() => {
+      ipcRenderer.send("booktype-entered", filePath, BookType.COMIC);
+    })
+    .catch(() => {
+      ipcRenderer.send("booktype-entered", filePath, BookType.EBOOK);
+    });
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -450,12 +609,12 @@ function renderImg64(
 // EPUB ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-function loadEpub(filePath, pageNum) {
+function loadEpubComic(filePath, pageNum) {
   // ref: https://github.com/julien-c/epub/blob/master/example/example.js
   const EPub = require("epub");
   const epub = new EPub(filePath);
   epub.on("error", function (err) {
-    ipcRenderer.send("epub-load-failed");
+    ipcRenderer.send("epub-comic-load-failed");
   });
   epub.on("end", function (err) {
     // console.log(epub.metadata);
@@ -476,6 +635,7 @@ function extractEpubImagesSrcRecursive(
   pageNum,
   imageIDs
 ) {
+  // TODO: error catching
   epub.getChapter(epub.spine.contents[chapterIndex].id, function (err, data) {
     let isEnd = false;
     if (err) {
@@ -502,7 +662,7 @@ function extractEpubImagesSrcRecursive(
       }
     }
     if (isEnd) {
-      ipcRenderer.send("epub-loaded", true, filePath, pageNum, imageIDs);
+      ipcRenderer.send("epub-comic-loaded", filePath, pageNum, imageIDs);
     }
   });
 }
@@ -537,13 +697,12 @@ function loadPdf(filePath, pageIndex, password) {
   loadingTask.promise
     .then(function (pdf) {
       cleanUp();
-      g_currentPdf = pdf;
+      g_currentPdf.pdf = pdf;
       ipcRenderer.send(
         "pdf-loaded",
-        true,
         filePath,
         pageIndex,
-        g_currentPdf.numPages
+        g_currentPdf.pdf.numPages
       );
     })
     .catch((error) => {
@@ -552,7 +711,7 @@ function loadPdf(filePath, pageIndex, password) {
 }
 
 function refreshPdfPage(rotation) {
-  if (g_currentPdfPage) {
+  if (g_currentPdf.page) {
     renderCurrentPDFPage(rotation, undefined, false);
   }
 }
@@ -560,9 +719,9 @@ function refreshPdfPage(rotation) {
 function renderPdfPage(pageIndex, rotation, scrollBarPos) {
   let pageNum = pageIndex + 1; // pdfjs counts from 1
   // ref: https://mozilla.github.io/pdf.js/examples/
-  g_currentPdf.getPage(pageNum).then(
+  g_currentPdf.pdf.getPage(pageNum).then(
     function (page) {
-      g_currentPdfPage = page;
+      g_currentPdf.page = page;
       renderCurrentPDFPage(rotation, scrollBarPos, true);
     },
     function (reason) {
@@ -585,12 +744,12 @@ function renderCurrentPDFPage(rotation, scrollBarPos, sendPageLoaded) {
   var context = canvas.getContext("2d");
 
   var desiredWidth = canvas.offsetWidth;
-  var viewport = g_currentPdfPage.getViewport({
+  var viewport = g_currentPdf.page.getViewport({
     scale: 1,
     rotation,
   });
   var scale = desiredWidth / viewport.width;
-  var scaledViewport = g_currentPdfPage.getViewport({
+  var scaledViewport = g_currentPdf.page.getViewport({
     scale: scale,
     rotation,
   });
@@ -603,7 +762,7 @@ function renderCurrentPDFPage(rotation, scrollBarPos, sendPageLoaded) {
     viewport: scaledViewport,
   };
 
-  let renderTask = g_currentPdfPage.render(renderContext);
+  let renderTask = g_currentPdf.page.render(renderContext);
   renderTask.promise.then(function () {
     setScrollBarsPosition(scrollBarPos);
     if (sendPageLoaded) ipcRenderer.send("page-loaded");
@@ -876,18 +1035,38 @@ document.getElementById("page-slider").addEventListener("mouseup", (event) => {
   ipcRenderer.send("toolbar-slider-changed", event.currentTarget.value);
 });
 document.getElementById("page-slider").addEventListener("input", (event) => {
-  document.getElementById("toolbar-page-numbers").innerHTML =
-    event.currentTarget.value + " / " + event.currentTarget.max;
+  if (g_toolbarSliderIsPercentage) {
+    document.getElementById(
+      "toolbar-page-numbers"
+    ).innerHTML = `${event.currentTarget.value}.00%`;
+  } else {
+    document.getElementById("toolbar-page-numbers").innerHTML =
+      event.currentTarget.value + " / " + event.currentTarget.max;
+  }
 });
 
-function toolbarUpdatePageInfo(pageNum, numPages) {
-  if (numPages === 0) pageNum = -1; // hack to make it show 00 / 00 @ start
-  document.getElementById("page-slider").max = numPages;
-  document.getElementById("page-slider").value = pageNum + 1;
-  document.getElementById("toolbar-page-numbers").innerHTML =
-    pageNum + 1 + " / " + numPages;
-  document.getElementById("page-number-bubble").innerHTML =
-    "<span>" + (pageNum + 1) + " / " + numPages + "</span>";
+let g_toolbarSliderIsPercentage = false;
+
+function updatePageInfo(pageNum, numPages, isPercentage) {
+  g_toolbarSliderIsPercentage = isPercentage;
+  if (isPercentage) {
+    document.getElementById("page-slider").max = 100;
+    document.getElementById("page-slider").value = pageNum;
+    document.getElementById("toolbar-page-numbers").innerHTML = `${Number(
+      pageNum
+    ).toFixed(2)}%`;
+    document.getElementById("page-number-bubble").innerHTML = `<span>${Number(
+      pageNum
+    ).toFixed(2)}%</span>`;
+  } else {
+    if (numPages === 0) pageNum = -1; // hack to make it show 00 / 00 @ start
+    document.getElementById("page-slider").max = numPages;
+    document.getElementById("page-slider").value = pageNum + 1;
+    document.getElementById("toolbar-page-numbers").innerHTML =
+      pageNum + 1 + " / " + numPages;
+    document.getElementById("page-number-bubble").innerHTML =
+      "<span>" + (pageNum + 1) + " / " + numPages + "</span>";
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////

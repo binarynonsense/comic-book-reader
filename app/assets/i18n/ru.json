@@ -58,6 +58,10 @@
   "[NEEDS TRANSLATION]menu-file-preferences-layout": "Layout",
   "[NEEDS TRANSLATION]menu-file-preferences-layout-clock": "Clock",
   "[NEEDS TRANSLATION]menu-file-preferences-layout-pagenum": "Page Number",
+  "[NEEDS TRANSLATION]menu-file-preferences-epub": "Epub",
+  "[NEEDS TRANSLATION]menu-file-preferences-epub-openas": "Open As",
+  "[NEEDS TRANSLATION]menu-file-preferences-epub-openas-0": "Ask and Remember",
+  "[NEEDS TRANSLATION]menu-file-preferences-epub-openas-1": "Always Ask",
   "menu-file-quit": "Выход",
 
   "menu-view": "Вид",
@@ -133,6 +137,9 @@
   "ui-modal-prompt-pagenumber": "Номер страницы",
   "[NEEDS TRANSLATION]ui-modal-prompt-scalevalue": "New Scale Value",
   "[NEEDS TRANSLATION]ui-modal-prompt-enterpassword": "Enter Password",
+  "[NEEDS TRANSLATION]ui-modal-question-ebookorcomic": "Open {0} As",
+  "[NEEDS TRANSLATION]ui-modal-question-button-comicbook": "Comic",
+  "[NEEDS TRANSLATION]ui-modal-question-button-ebook": "Ebook",
 
   "tool-shared-ui-input-file": "Входной файл:",
   "tool-shared-ui-input-files": "Входной файл(ы):",

@@ -35,6 +35,17 @@ function hasImageExtension(filePath) {
 }
 exports.hasImageExtension = hasImageExtension;
 
+exports.hasBookExtension = function (filePath) {
+  const allowedFileExtensions = [".cbz", ".cbr", ".pdf", ".epub", ".cb7"];
+  let fileExtension = path.extname(filePath).toLowerCase();
+  for (i = 0; i < allowedFileExtensions.length; i++) {
+    if (fileExtension === allowedFileExtensions[i]) {
+      return true;
+    }
+  }
+  return false;
+};
+
 exports.hasComicBookExtension = function (filePath) {
   const allowedFileExtensions = [".cbz", ".cbr", ".pdf", ".epub", ".cb7"];
   let fileExtension = path.extname(filePath).toLowerCase();
@@ -42,6 +53,14 @@ exports.hasComicBookExtension = function (filePath) {
     if (fileExtension === allowedFileExtensions[i]) {
       return true;
     }
+  }
+  return false;
+};
+
+exports.hasEpubExtension = function (filePath) {
+  let fileExtension = path.extname(filePath).toLowerCase();
+  if (fileExtension === ".epub") {
+    return true;
   }
   return false;
 };
