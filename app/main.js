@@ -1747,6 +1747,8 @@ async function openEbookFromPath(filePath, pageIndex, historyEntry) {
     // cached file
     if (filePath.startsWith("http")) {
       if (g_settings.toolGutUseCache) {
+        g_mainWindow.webContents.send("update-loading", true);
+        g_mainWindow.webContents.send("update-bg", false);
         const url = filePath;
         const tool = require("./tools/gutenberg/main");
         const cacheFolder = tool.getPortableCacheFolder();
@@ -1775,6 +1777,8 @@ async function openEbookFromPath(filePath, pageIndex, historyEntry) {
           } catch (error) {
             console.log(error?.message);
             // couldn't download file -> abort
+            g_mainWindow.webContents.send("update-loading", false);
+            g_mainWindow.webContents.send("update-bg", true);
             return;
           }
         }
