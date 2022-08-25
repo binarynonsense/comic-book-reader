@@ -1740,58 +1740,58 @@ async function openEbookFromPath(filePath, pageIndex, historyEntry) {
   if (filePath === undefined || filePath === "") {
     return;
   }
-  let data;
-  let cachedPath;
-  if (historyEntry?.data?.source === "gut") {
-    data = historyEntry.data;
-    // cached file
-    if (filePath.startsWith("http")) {
-      if (g_settings.toolGutUseCache) {
-        g_mainWindow.webContents.send("update-loading", true);
-        g_mainWindow.webContents.send("update-bg", false);
-        const url = filePath;
-        const tool = require("./tools/gutenberg/main");
-        const cacheFolder = tool.getPortableCacheFolder();
-        const fileName = path.basename(filePath);
-        cachedPath = path.join(cacheFolder, fileName);
+  let fileExtension = path.extname(filePath).toLowerCase();
+  if (fileExtension === "." + FileExtension.EPUB) {
+    let data;
+    let cachedPath;
+    if (historyEntry?.data?.source === "gut") {
+      data = historyEntry.data;
+      // cached file
+      if (filePath.startsWith("http")) {
+        if (g_settings.toolGutUseCache) {
+          g_mainWindow.webContents.send("update-loading", true);
+          g_mainWindow.webContents.send("update-bg", false);
+          const url = filePath;
+          const tool = require("./tools/gutenberg/main");
+          const cacheFolder = tool.getPortableCacheFolder();
+          const fileName = path.basename(filePath);
+          cachedPath = path.join(cacheFolder, fileName);
 
-        if (!fs.existsSync(cachedPath)) {
-          try {
-            // download it
-            const axios = require("axios").default;
-            const response = await axios.get(url, {
-              responseType: "arraybuffer",
-              timeout: 10000,
-            });
+          if (!fs.existsSync(cachedPath)) {
+            try {
+              // download it
+              const axios = require("axios").default;
+              const response = await axios.get(url, {
+                responseType: "arraybuffer",
+                timeout: 10000,
+              });
 
-            if (!response?.data) {
-              throw {
-                name: "GenericError",
-                message: "Invalid response data",
-              };
+              if (!response?.data) {
+                throw {
+                  name: "GenericError",
+                  message: "Invalid response data",
+                };
+              }
+              if (!fs.existsSync(cacheFolder)) {
+                fs.mkdirSync(cacheFolder, { recursive: true });
+              }
+              fs.writeFileSync(cachedPath, response.data, { flag: "w" });
+            } catch (error) {
+              console.log(error?.message);
+              // couldn't download file -> abort
+              g_mainWindow.webContents.send("update-loading", false);
+              g_mainWindow.webContents.send("update-bg", true);
+              return;
             }
-            if (!fs.existsSync(cacheFolder)) {
-              fs.mkdirSync(cacheFolder, { recursive: true });
-            }
-            fs.writeFileSync(cachedPath, response.data, { flag: "w" });
-          } catch (error) {
-            console.log(error?.message);
-            // couldn't download file -> abort
-            g_mainWindow.webContents.send("update-loading", false);
-            g_mainWindow.webContents.send("update-bg", true);
-            return;
           }
         }
+      } else if (!fs.existsSync(filePath)) {
+        return;
       }
     } else if (!fs.existsSync(filePath)) {
       return;
     }
-  } else if (!fs.existsSync(filePath)) {
-    return;
-  }
 
-  let fileExtension = path.extname(filePath).toLowerCase();
-  if (fileExtension === "." + FileExtension.EPUB) {
     if (g_fileData.state !== FileDataState.LOADING) {
       g_mainWindow.webContents.send("update-loading", true);
       g_mainWindow.webContents.send("update-bg", false);
@@ -1812,6 +1812,9 @@ async function openEbookFromPath(filePath, pageIndex, historyEntry) {
       pageIndex,
       cachedPath
     );
+  } else {
+    g_mainWindow.webContents.send("update-loading", false);
+    g_mainWindow.webContents.send("update-bg", true);
   }
 }
 exports.openEbookFromPath = openEbookFromPath;
