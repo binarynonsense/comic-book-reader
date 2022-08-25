@@ -49,7 +49,7 @@ exports.showWindow = function (parentWindow) {
     g_window.webContents.send(
       g_ipcChannel + "update-localization",
       _("tool-iab-title"),
-      _("tool-iab-search-placeholder"),
+      _("tool-shared-ui-search-placeholder"),
       getLocalization()
     );
     g_window.webContents.send(
@@ -119,7 +119,7 @@ ipcMain.on(
         if (text.trim().length === 0) {
           content += `<ul class="collection">`;
           content += `<li class="collection-item"><span class="title">${_(
-            "tool-iab-search-nothing-found"
+            "tool-shared-ui-search-nothing-found"
           )}</span></li>`;
           content += `</ul>`;
           g_window.webContents.send(g_ipcChannel + "update-results", content);
@@ -175,7 +175,7 @@ ipcMain.on(
 
         if (totalResultsNum <= 0) {
           content += `<li class="collection-item"><span class="title">${_(
-            "tool-iab-search-nothing-found"
+            "tool-shared-ui-search-nothing-found"
           )}</span></li>`;
         } else {
           const queryResultsNum = searchResults.response.docs.length;
@@ -185,22 +185,22 @@ ipcMain.on(
             // identifier: "originalillustra00cast"
             // imagecount: 650
             // title: "The Original Illustrated Sherlock Holmes"
+            let authors = reduceString(bookData.creator);
+            if (!authors || authors === "") authors = "&nbsp;&nbsp;";
             content += `<li class="collection-item">      
             <span class="title"><a style="cursor: pointer; margin-right: 5px;" title="${_(
-              "tool-iab-search-item-open-acbr"
+              "tool-shared-ui-search-item-open-acbr"
             )}" onclick="renderer.onSearchResultClicked(${index}, 0)"
               ><i class="fa fa-folder-open"></i> ${reduceString(
                 bookData.title
-              )}</a><br>${
-              reduceString(bookData.creator) ?? "&nbsp;&nbsp;"
-            }</span>
+              )}</a><br>${authors}</span>
               <a
                 style="cursor: pointer"
                 onclick="renderer.onSearchResultClicked(${index}, 1)"
                 class="secondary-content"
                 ><i
                   class="fa fa-link" aria-hidden="true"
-                  title="${_("tool-iab-search-item-open-browser")}"
+                  title="${_("tool-shared-ui-search-item-open-browser")}"
                 ></i
               ></a>
             </li>`;
@@ -219,7 +219,7 @@ ipcMain.on(
         // console.error(error);
         content += `<ul class="collection">`;
         content += `<li class="collection-item"><span class="title">${_(
-          "tool-iab-search-nothing-found"
+          "tool-shared-ui-search-nothing-found"
         )}</span></li>`;
         content += `</ul>`;
         g_window.webContents.send(g_ipcChannel + "update-results", content);
@@ -242,20 +242,20 @@ function reduceString(input) {
 function getLocalization() {
   return [
     {
-      id: "tab-1-text",
+      id: "text-tab-1",
       text: _("tool-iab-tab-1-text").toUpperCase(),
     },
     {
-      id: "tab-2-text",
+      id: "text-tab-2",
       text: _("tool-iab-tab-2-text").toUpperCase(),
     },
     {
-      id: "tab-3-text",
+      id: "text-tab-3",
       text: _("tool-iab-tab-3-text").toUpperCase(),
     },
     {
       id: "search-button",
-      text: _("tool-iab-search-button").toUpperCase(),
+      text: _("tool-shared-ui-search-button").toUpperCase(),
     },
 
     {
@@ -272,16 +272,16 @@ function getLocalization() {
     },
 
     {
-      id: "about-text-1",
-      text: _("tool-iab-about-text-1"),
+      id: "text-about-1",
+      text: _("tool-shared-ui-about-text-1", "Internet Archive"),
     },
     {
-      id: "about-text-2",
-      text: _("tool-iab-about-text-2"),
+      id: "text-about-2",
+      text: _("tool-shared-ui-about-text-2"),
     },
     {
-      id: "about-text-3",
-      text: _("tool-iab-about-text-3"),
+      id: "text-about-3",
+      text: _("tool-shared-ui-about-text-3"),
     },
     {
       id: "button-open-ia-browser",

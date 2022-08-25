@@ -47,7 +47,9 @@ ipcRenderer.on(
     g_searchInput.addEventListener("keypress", function (event) {
       if (event.key === "Enter") {
         event.preventDefault();
-        onSearch();
+        if (g_searchInput.value) {
+          onSearch();
+        }
       }
     });
     g_searchInput.focus();
@@ -102,9 +104,10 @@ exports.onSearchInputChanged = function (input) {
   }
 };
 
-exports.onSearch = onSearch = function (pageNum = 1, inputValue = undefined) {
+function onSearch(pageNum = 1, inputValue = undefined) {
   if (!inputValue) inputValue = g_searchInput.value;
   g_modalInstance.open();
+  window.scrollTo(0, 0);
   ipcRenderer.send(
     g_ipcChannel + "search",
     inputValue,
@@ -112,7 +115,8 @@ exports.onSearch = onSearch = function (pageNum = 1, inputValue = undefined) {
     g_collectionSelect.value,
     g_availabilitySelect.value
   );
-};
+}
+exports.onSearch = onSearch;
 
 exports.onSearchResultClicked = function (index, mode) {
   if (!g_lastSearchResults) return;

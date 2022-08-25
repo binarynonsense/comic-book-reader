@@ -78,16 +78,27 @@ exports.naturalCompare = function (a, b) {
 // SAVE / LOAD ////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+function getUserDataFolderPath() {
+  return app.getPath("userData");
+}
+exports.getUserDataFolderPath = getUserDataFolderPath;
+
 function getExeFolderPath() {
   // app.getAppPath();
   // process.cwd();
   // process.execPath;
   return process.cwd();
 }
+exports.getExeFolderPath = getExeFolderPath;
+
+function isPortable() {
+  return fs.existsSync(path.join(getExeFolderPath(), "portable.txt"));
+}
+exports.isPortable = isPortable;
 
 exports.saveSettings = function (settings) {
-  let cfgFilePath = path.join(app.getPath("userData"), "acbr.cfg");
-  if (fs.existsSync(path.join(getExeFolderPath(), "portable.txt"))) {
+  let cfgFilePath = path.join(getUserDataFolderPath(), "acbr.cfg");
+  if (isPortable()) {
     cfgFilePath = path.join(getExeFolderPath(), "acbr.cfg");
     try {
       fs.accessSync(getExeFolderPath(), fs.constants.W_OK);
@@ -109,8 +120,8 @@ exports.saveSettings = function (settings) {
 };
 
 exports.loadSettings = function (settings) {
-  let cfgFilePath = path.join(app.getPath("userData"), "acbr.cfg");
-  if (fs.existsSync(path.join(getExeFolderPath(), "portable.txt"))) {
+  let cfgFilePath = path.join(getUserDataFolderPath(), "acbr.cfg");
+  if (isPortable()) {
     cfgFilePath = path.join(getExeFolderPath(), "acbr.cfg");
   }
   if (fs.existsSync(cfgFilePath)) {
@@ -141,7 +152,7 @@ exports.loadSettings = function (settings) {
 };
 
 exports.saveHistory = function (history) {
-  let hstFilePath = path.join(app.getPath("userData"), "acbr.hst");
+  let hstFilePath = path.join(getUserDataFolderPath(), "acbr.hst");
   if (fs.existsSync(path.join(getExeFolderPath(), "portable.txt"))) {
     hstFilePath = path.join(getExeFolderPath(), "acbr.hst");
   }
@@ -157,8 +168,8 @@ exports.saveHistory = function (history) {
 
 exports.loadHistory = function (capacity) {
   let history = [];
-  let hstFilePath = path.join(app.getPath("userData"), "acbr.hst");
-  if (fs.existsSync(path.join(getExeFolderPath(), "portable.txt"))) {
+  let hstFilePath = path.join(getUserDataFolderPath(), "acbr.hst");
+  if (isPortable()) {
     hstFilePath = path.join(getExeFolderPath(), "acbr.hst");
   }
   if (fs.existsSync(hstFilePath)) {

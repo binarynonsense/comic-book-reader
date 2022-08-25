@@ -349,8 +349,8 @@ ipcRenderer.on("refresh-epub-comic-page", (event, rotation) => {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-ipcRenderer.on("load-epub-ebook", (event, filePath, pageIndex) => {
-  loadEpubEbook(filePath, pageIndex);
+ipcRenderer.on("load-epub-ebook", (event, filePath, pageIndex, cachedPath) => {
+  loadEpubEbook(filePath, pageIndex, cachedPath);
 });
 
 ipcRenderer.on("render-epub-ebook-page-percentage", (event, percentage) => {
@@ -372,21 +372,17 @@ ipcRenderer.on("refresh-epub-ebook-page", (event, rotation) => {
   refreshEpubEbookPage();
 });
 
-// https://www.gutenberg.org/cache/epub/68783/pg68783.epub
-// mirror:
-// https://gutenberg.pglaf.org/cache/epub/68783/pg68783.epub
-// rendition.themes.fontSize("140%");
-
-async function loadEpubEbook(filePath, percentage) {
+async function loadEpubEbook(filePath, percentage, cachedPath) {
   try {
     const ePub = require("epubjs");
-    g_currentEpubEbook.book = ePub.default(filePath);
+    g_currentEpubEbook.book = ePub.default(cachedPath ?? filePath);
+
     const container = document.querySelector("#pages-container");
     container.innerHTML = "";
     const ebookContainer = document.createElement("div");
     ebookContainer.id = "epub-ebook-container";
     container.appendChild(ebookContainer);
-    g_currentEpubEbook.rendition = g_currentEpubEbook.book.renderTo(
+    g_currentEpubEbook.rendition = await g_currentEpubEbook.book.renderTo(
       "epub-ebook-container",
       {
         flow: "paginated",
@@ -395,12 +391,13 @@ async function loadEpubEbook(filePath, percentage) {
         allowScriptedContent: false,
       }
     );
+    // g_currentEpubEbook.rendition.themes.fontSize("140%");
+
     await g_currentEpubEbook.rendition.display();
     await g_currentEpubEbook.book.locations.generate(1000);
     let cfi = getEpubEbookCfiFromPercentage(percentage / 100);
     if (cfi === "epubcfi(/!/)" || cfi === -1)
       throw { name: "GenericError", message: "Empty or malformed epub cfi" };
-    else console.log("cfi" + cfi);
 
     ipcRenderer.send("epub-ebook-loaded", filePath, percentage);
   } catch (error) {
@@ -1051,6 +1048,7 @@ function updatePageInfo(pageNum, numPages, isPercentage) {
   g_toolbarSliderIsPercentage = isPercentage;
   if (isPercentage) {
     document.getElementById("page-slider").max = 100;
+    document.getElementById("page-slider").min = 0;
     document.getElementById("page-slider").value = pageNum;
     document.getElementById("toolbar-page-numbers").innerHTML = `${Number(
       pageNum
@@ -1061,6 +1059,7 @@ function updatePageInfo(pageNum, numPages, isPercentage) {
   } else {
     if (numPages === 0) pageNum = -1; // hack to make it show 00 / 00 @ start
     document.getElementById("page-slider").max = numPages;
+    document.getElementById("page-slider").min = 1;
     document.getElementById("page-slider").value = pageNum + 1;
     document.getElementById("toolbar-page-numbers").innerHTML =
       pageNum + 1 + " / " + numPages;

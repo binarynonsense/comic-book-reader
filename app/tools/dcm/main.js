@@ -95,15 +95,15 @@ ipcMain.on(g_ipcChannel + "open", (event, comicData) => {
 function getLocalization() {
   return [
     {
-      id: "tab-1-text",
+      id: "text-tab-1",
       text: _("tool-dcm-tab-1-text").toUpperCase(),
     },
     {
-      id: "tab-2-text",
+      id: "text-tab-2",
       text: _("tool-dcm-tab-2-text").toUpperCase(),
     },
     {
-      id: "tab-3-text",
+      id: "text-tab-3",
       text: _("tool-dcm-tab-3-text").toUpperCase(),
     },
     {
@@ -120,11 +120,11 @@ function getLocalization() {
     },
     {
       id: "button-open-selected-acbr",
-      text: _("tool-dcm-button-open-selected-acbr").toUpperCase(),
+      text: _("tool-shared-ui-button-open-in-acbr").toUpperCase(),
     },
     {
       id: "button-open-selected-browser",
-      text: _("tool-dcm-button-open-selected-browser").toUpperCase(),
+      text: _("tool-shared-ui-button-open-in-browser").toUpperCase(),
     },
     {
       id: "dcm-url-text",
@@ -132,23 +132,23 @@ function getLocalization() {
     },
     {
       id: "button-open-input-url-acbr",
-      text: _("tool-dcm-button-open-input-url-acbr").toUpperCase(),
+      text: _("tool-shared-ui-button-open-in-acbr").toUpperCase(),
     },
     {
       id: "button-open-input-url-browser",
-      text: _("tool-dcm-button-open-input-url-browser").toUpperCase(),
+      text: _("tool-shared-ui-button-open-in-browser").toUpperCase(),
     },
     {
-      id: "about-text-1",
-      text: _("tool-dcm-about-text-1"),
+      id: "text-about-1",
+      text: _("tool-shared-ui-about-text-1", "Digital Comic Museum"),
     },
     {
-      id: "about-text-2",
-      text: _("tool-dcm-about-text-2"),
+      id: "text-about-2",
+      text: _("tool-shared-ui-about-text-2"),
     },
     {
-      id: "about-text-3",
-      text: _("tool-dcm-about-text-3"),
+      id: "text-about-3",
+      text: _("tool-shared-ui-about-text-3"),
     },
     {
       id: "button-open-dcm-browser",

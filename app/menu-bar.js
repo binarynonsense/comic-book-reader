@@ -1161,6 +1161,12 @@ function buildApplicationMenu(
                 mainProcess.onMenuToolIArchive();
               },
             },
+            {
+              label: _("menu-tools-other-gut"),
+              click() {
+                mainProcess.onMenuToolGutenberg();
+              },
+            },
           ],
         },
       ],

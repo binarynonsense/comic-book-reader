@@ -73,6 +73,10 @@ let g_settings = {
 
   locale: undefined,
   theme: undefined,
+
+  // TOOLS
+
+  toolGutUseCache: true,
 };
 
 function sanitizeSettings() {
@@ -234,7 +238,19 @@ function sanitizeSettings() {
   } else {
     g_settings.theme = undefined;
   }
+  // TOOLS ///////////
+  if (typeof g_settings.toolGutUseCache !== "boolean") {
+    g_settings.toolGutUseCache = true;
+  }
 }
+
+exports.getSettingsProperty = function (name) {
+  return g_settings[name];
+};
+
+exports.setSettingsProperty = function (name, value) {
+  g_settings[name] = value;
+};
 
 ///////////////////////////////////////////////////////////////////////////////
 // APP ////////////////////////////////////////////////////////////////////////
@@ -644,10 +660,10 @@ ipcMain.on("epub-ebook-loaded", (event, filePath, percentage) => {
   g_fileData.numPages = 100;
   if (percentage < 0 || percentage >= 100) percentage = 0;
   g_fileData.pageIndex = percentage;
-  g_fileData.data = { bookType: BookType.EBOOK };
+  if (!g_fileData.data) g_fileData.data = { bookType: BookType.EBOOK };
   updateMenuAndToolbarItems();
   setPageRotation(0, false);
-  //setInitialZoom(filePath);
+  setInitialZoom(filePath);
   addCurrentToHistory();
   goToPercentage(g_fileData.pageIndex);
   renderPageInfo();
@@ -1231,6 +1247,12 @@ exports.onMenuToolIArchive = function () {
   g_mainWindow.webContents.send("update-menubar");
 };
 
+exports.onMenuToolGutenberg = function () {
+  const tool = require("./tools/gutenberg/main");
+  tool.showWindow(g_mainWindow);
+  g_mainWindow.webContents.send("update-menubar");
+};
+
 exports.onMenuToggleDevTools = function () {
   toggleDevTools();
 };
@@ -1376,7 +1398,7 @@ function tryOpenPath(filePath, pageIndex, bookType, historyEntry) {
   // TODO: pass historyEntry and use it?
   if (bookType === BookType.EBOOK) {
     if (fileFormats.hasEpubExtension(filePath)) {
-      openEbookFromPath(filePath, pageIndex);
+      openEbookFromPath(filePath, pageIndex, historyEntry);
       return true;
     } else {
       // ERROR ??????
@@ -1386,7 +1408,7 @@ function tryOpenPath(filePath, pageIndex, bookType, historyEntry) {
       openImageFolder(filePath, undefined, pageIndex);
       return true;
     } else if (fileFormats.hasComicBookExtension(filePath)) {
-      openComicBookFromPath(filePath, pageIndex);
+      openComicBookFromPath(filePath, pageIndex, historyEntry);
       return true;
     } else if (fileFormats.hasImageExtension(filePath)) {
       openImageFile(filePath);
@@ -1714,11 +1736,52 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
   })(); // async
 }
 
-function openEbookFromPath(filePath, pageIndex, historyEntry) {
+async function openEbookFromPath(filePath, pageIndex, historyEntry) {
   if (filePath === undefined || filePath === "") {
     return;
   }
+  let data;
+  let cachedPath;
   if (historyEntry?.data?.source === "gut") {
+    data = historyEntry.data;
+    // cached file
+    if (filePath.startsWith("http")) {
+      if (g_settings.toolGutUseCache) {
+        const url = filePath;
+        const tool = require("./tools/gutenberg/main");
+        const cacheFolder = tool.getPortableCacheFolder();
+        const fileName = path.basename(filePath);
+        cachedPath = path.join(cacheFolder, fileName);
+
+        if (!fs.existsSync(cachedPath)) {
+          try {
+            // download it
+            const axios = require("axios").default;
+            const response = await axios.get(url, {
+              responseType: "arraybuffer",
+              timeout: 10000,
+            });
+
+            if (!response?.data) {
+              throw {
+                name: "GenericError",
+                message: "Invalid response data",
+              };
+            }
+            if (!fs.existsSync(cacheFolder)) {
+              fs.mkdirSync(cacheFolder, { recursive: true });
+            }
+            fs.writeFileSync(cachedPath, response.data, { flag: "w" });
+          } catch (error) {
+            console.log(error?.message);
+            // couldn't download file -> abort
+            return;
+          }
+        }
+      }
+    } else if (!fs.existsSync(filePath)) {
+      return;
+    }
   } else if (!fs.existsSync(filePath)) {
     return;
   }
@@ -1737,10 +1800,17 @@ function openEbookFromPath(filePath, pageIndex, historyEntry) {
       g_fileData.state = FileDataState.LOADING;
       g_fileData.pageIndex = pageIndex;
       g_fileData.path = filePath;
+      if (data) g_fileData.data = data;
     }
-    g_mainWindow.webContents.send("load-epub-ebook", filePath, pageIndex);
+    g_mainWindow.webContents.send(
+      "load-epub-ebook",
+      filePath,
+      pageIndex,
+      cachedPath
+    );
   }
 }
+exports.openEbookFromPath = openEbookFromPath;
 
 function openBookFromCallback(comicData, getPageCallback, pageIndex = 0) {
   g_mainWindow.webContents.send("update-bg", false);
