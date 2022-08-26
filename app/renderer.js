@@ -478,6 +478,7 @@ async function renderEpubEbookPercentage(percentage) {
     if (cfi !== "epubcfi(/!/)" && cfi !== -1) {
       await g_currentEpubEbook.rendition.display(cfi);
       refreshEpubEbookPage();
+      setScrollBarsPosition(0);
       ipcRenderer.send("page-loaded", { percentage: percentage });
     } else {
       ipcRenderer.send("page-loaded", { error: true });
@@ -490,6 +491,7 @@ async function renderEpubEbookPercentage(percentage) {
 async function renderEpubEbookNext() {
   await g_currentEpubEbook.rendition.next();
   refreshEpubEbookPage();
+  setScrollBarsPosition(0);
   ipcRenderer.send("page-loaded", {
     percentage: getCurrentPercentage() * 100,
   });
@@ -498,6 +500,7 @@ async function renderEpubEbookNext() {
 async function renderEpubEbookPrev() {
   await g_currentEpubEbook.rendition.prev();
   refreshEpubEbookPage();
+  setScrollBarsPosition(1);
   ipcRenderer.send("page-loaded", {
     percentage: getCurrentPercentage() * 100,
   });
