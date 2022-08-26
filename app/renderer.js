@@ -398,6 +398,73 @@ async function loadEpubEbook(filePath, percentage, cachedPath) {
     let cfi = getEpubEbookCfiFromPercentage(percentage / 100);
     if (cfi === "epubcfi(/!/)" || cfi === -1)
       throw { name: "GenericError", message: "Empty or malformed epub cfi" };
+    console.log(g_currentEpubEbook.rendition.manager);
+    const manager = g_currentEpubEbook.rendition.manager;
+    // HACK / modification to epubjs
+    // highjack function from managers>default>index.js in module
+    // to take into account how I use a css transform to scale the 'page'
+    manager.paginatedLocation = () => {
+      let visible = manager.visible();
+      let container = manager.container.getBoundingClientRect();
+      let used = 0;
+
+      let sections = visible.map((view) => {
+        let { index, href } = view.section;
+        let offset;
+        let position = view.position();
+        let width = view.width();
+
+        let start;
+        let end;
+        let pageWidth;
+
+        offset = container.left;
+        pageWidth = 450;
+
+        const zoomFactor =
+          document.querySelector("#epub-ebook-container").clientHeight / 600;
+        console.log("position.left");
+        console.log(position.left);
+        start = offset / zoomFactor - position.left / zoomFactor + used;
+        console.log(start);
+        end = start + pageWidth;
+        console.log(end);
+
+        used += pageWidth;
+
+        let mapping = manager.mapping.page(
+          view.contents,
+          view.section.cfiBase,
+          start,
+          end
+        );
+
+        let totalPages = manager.layout.count(width).pages;
+        let startPage = Math.floor(start / manager.layout.pageWidth);
+        let pages = [];
+        let endPage = Math.floor(end / manager.layout.pageWidth);
+
+        if (startPage < 0) {
+          startPage = 0;
+          endPage = endPage + 1;
+        }
+
+        for (var i = startPage + 1; i <= endPage; i++) {
+          let pg = i;
+          pages.push(pg);
+        }
+
+        return {
+          index,
+          href,
+          pages,
+          totalPages,
+          mapping,
+        };
+      });
+
+      return sections;
+    };
 
     ipcRenderer.send("epub-ebook-loaded", filePath, percentage);
   } catch (error) {
