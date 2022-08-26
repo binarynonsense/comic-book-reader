@@ -1031,6 +1031,7 @@ document.onclick = function (event) {
   if (
     event.target.classList.contains("page") ||
     event.target.id === "page-canvas" ||
+    event.target.classList.contains("epub-view") ||
     event.target.id === "pages-container" ||
     event.target.classList.contains("cet-container")
   ) {
