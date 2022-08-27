@@ -393,6 +393,21 @@ async function loadEpubEbook(filePath, percentage, cachedPath) {
     );
     // g_currentEpubEbook.rendition.themes.fontSize("140%");
 
+    g_currentEpubEbook.rendition.on("relocated", function (location) {
+      const iframe = document
+        .getElementsByClassName("epub-view")[0]
+        .getElementsByTagName("iframe")[0];
+      let iframeDoc = iframe.contentDocument;
+      iframeDoc.body.innerHTML =
+        iframeDoc.body.innerHTML +
+        `<style>
+            a, a:hover, a:focus, a:active {
+              text-decoration: none !important;
+              color: black !important;
+            }
+      </style>`;
+    });
+
     await g_currentEpubEbook.rendition.display();
     await g_currentEpubEbook.book.locations.generate(1000);
     let cfi = getEpubEbookCfiFromPercentage(percentage / 100);
