@@ -636,7 +636,8 @@ ipcMain.on("epub-comic-load-failed", (event) => {
   g_mainWindow.webContents.send(
     "show-modal-info",
     _("ui-modal-info-fileerror"),
-    _("ui-modal-info-couldntopen-epub")
+    _("ui-modal-info-couldntopen-epub"),
+    _("ui-modal-prompt-button-ok")
   );
 });
 
@@ -667,7 +668,8 @@ ipcMain.on("epub-ebook-load-failed", (event, error) => {
   g_mainWindow.webContents.send(
     "show-modal-info",
     _("ui-modal-info-fileerror"),
-    _("ui-modal-info-couldntopen-epub")
+    _("ui-modal-info-couldntopen-epub"),
+    _("ui-modal-prompt-button-ok")
   );
   closeCurrentFile(false);
 });
@@ -706,14 +708,18 @@ ipcMain.on("pdf-load-failed", (event, error) => {
       g_mainWindow.webContents.send(
         "show-modal-prompt-password",
         _("ui-modal-prompt-enterpassword"),
-        path.basename(g_fileData.path)
+        path.basename(g_fileData.path),
+        _("ui-modal-prompt-button-ok"),
+        _("ui-modal-prompt-button-cancel")
       );
     } else if (error.code === 2) {
       // { message: 'Incorrect Password', name: 'PasswordException', code: 2 }
       g_mainWindow.webContents.send(
         "show-modal-prompt-password",
         _("ui-modal-prompt-enterpassword"),
-        path.basename(g_fileData.path)
+        path.basename(g_fileData.path),
+        _("ui-modal-prompt-button-ok"),
+        _("ui-modal-prompt-button-cancel")
       );
     }
   } else {
@@ -722,7 +728,8 @@ ipcMain.on("pdf-load-failed", (event, error) => {
     g_mainWindow.webContents.send(
       "show-modal-info",
       _("ui-modal-info-fileerror"),
-      _("ui-modal-info-couldntopen-pdf")
+      _("ui-modal-info-couldntopen-pdf"),
+      _("ui-modal-prompt-button-ok")
     );
   }
 });
@@ -1054,6 +1061,8 @@ exports.onMenuScaleToHeightEnter = function () {
     "show-modal-prompt",
     question,
     "" + g_settings.zoom_scale,
+    _("ui-modal-prompt-button-ok"),
+    _("ui-modal-prompt-button-cancel"),
     1
   );
 };
@@ -1258,7 +1267,8 @@ exports.onMenuAbout = function () {
       _("ui-modal-info-version") +
       ": " +
       app.getVersion() +
-      "\n(c) Álvaro García\nwww.binarynonsense.com"
+      "\n(c) Álvaro García\nwww.binarynonsense.com",
+    _("ui-modal-prompt-button-ok")
   );
 };
 
@@ -1270,6 +1280,8 @@ exports.onGoToPageDialog = function () {
       "show-modal-prompt",
       question,
       "" + g_fileData.pageIndex,
+      _("ui-modal-prompt-button-ok"),
+      _("ui-modal-prompt-button-cancel"),
       2
     );
   } else {
@@ -1279,7 +1291,9 @@ exports.onGoToPageDialog = function () {
     g_mainWindow.webContents.send(
       "show-modal-prompt",
       question,
-      "" + (g_fileData.pageIndex + 1)
+      "" + (g_fileData.pageIndex + 1),
+      _("ui-modal-prompt-button-ok"),
+      _("ui-modal-prompt-button-cancel")
     );
   }
 };
@@ -1388,7 +1402,8 @@ function tryOpen(filePath, bookType, historyEntry) {
     g_mainWindow.webContents.send(
       "show-modal-info",
       _("ui-modal-info-filenotfound"),
-      filePath
+      filePath,
+      _("ui-modal-prompt-button-ok")
     );
     return false;
   }
@@ -1551,14 +1566,17 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
           g_mainWindow.webContents.send(
             "show-modal-prompt-password",
             _("ui-modal-prompt-enterpassword"),
-            path.basename(g_fileData.path)
+            path.basename(g_fileData.path),
+            _("ui-modal-prompt-button-ok"),
+            _("ui-modal-prompt-button-cancel")
           );
           return;
         } else if (rarData.result === "other error") {
           g_mainWindow.webContents.send(
             "show-modal-info",
             _("ui-modal-info-fileerror"),
-            _("ui-modal-info-couldntopen-rar")
+            _("ui-modal-info-couldntopen-rar"),
+            _("ui-modal-prompt-button-ok")
           );
           g_mainWindow.webContents.send("update-bg", true);
           g_mainWindow.webContents.send("update-loading", false);
@@ -1585,7 +1603,8 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
           g_mainWindow.webContents.send(
             "show-modal-info",
             _("ui-modal-info-fileerror"),
-            _("ui-modal-info-couldntopen-rar")
+            _("ui-modal-info-couldntopen-rar"),
+            _("ui-modal-prompt-button-ok")
           );
           g_mainWindow.webContents.send("update-bg", true);
           g_mainWindow.webContents.send("update-loading", false);
@@ -1607,7 +1626,9 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
           g_mainWindow.webContents.send(
             "show-modal-prompt-password",
             _("ui-modal-prompt-enterpassword"),
-            path.basename(g_fileData.path)
+            path.basename(g_fileData.path),
+            _("ui-modal-prompt-button-ok"),
+            _("ui-modal-prompt-button-cancel")
           );
           return;
         } else if (zipData.result === "other error") {
@@ -1615,13 +1636,15 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
             g_mainWindow.webContents.send(
               "show-modal-info",
               _("ui-modal-info-fileerror"),
-              _("ui-modal-info-couldntopen-zip-aes")
+              _("ui-modal-info-couldntopen-zip-aes"),
+              _("ui-modal-prompt-button-ok")
             );
           } else {
             g_mainWindow.webContents.send(
               "show-modal-info",
               _("ui-modal-info-fileerror"),
-              _("ui-modal-info-couldntopen-zip")
+              _("ui-modal-info-couldntopen-zip"),
+              _("ui-modal-prompt-button-ok")
             );
           }
           g_mainWindow.webContents.send("update-bg", true);
@@ -1649,7 +1672,8 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
           g_mainWindow.webContents.send(
             "show-modal-info",
             _("ui-modal-info-fileerror"),
-            _("ui-modal-info-couldntopen-zip")
+            _("ui-modal-info-couldntopen-zip"),
+            _("ui-modal-prompt-button-ok")
           );
           g_mainWindow.webContents.send("update-bg", true);
           g_mainWindow.webContents.send("update-loading", false);
@@ -1674,14 +1698,17 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
           g_mainWindow.webContents.send(
             "show-modal-prompt-password",
             _("ui-modal-prompt-enterpassword"),
-            path.basename(g_fileData.path)
+            path.basename(g_fileData.path),
+            _("ui-modal-prompt-button-ok"),
+            _("ui-modal-prompt-button-cancel")
           );
           return;
         } else if (sevenData.result === "other error") {
           g_mainWindow.webContents.send(
             "show-modal-info",
             _("ui-modal-info-fileerror"),
-            _("ui-modal-info-couldntopen-7z")
+            _("ui-modal-info-couldntopen-7z"),
+            _("ui-modal-prompt-button-ok")
           );
           g_mainWindow.webContents.send("update-bg", true);
           g_mainWindow.webContents.send("update-loading", false);
@@ -1708,7 +1735,8 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
           g_mainWindow.webContents.send(
             "show-modal-info",
             _("ui-modal-info-fileerror"),
-            _("ui-modal-info-couldntopen-7z")
+            _("ui-modal-info-couldntopen-7z"),
+            _("ui-modal-prompt-button-ok")
           );
           g_mainWindow.webContents.send("update-bg", true);
           g_mainWindow.webContents.send("update-loading", false);
@@ -1717,7 +1745,8 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
         g_mainWindow.webContents.send(
           "show-modal-info",
           _("ui-modal-info-fileerror"),
-          _("ui-modal-info-invalidformat")
+          _("ui-modal-info-invalidformat"),
+          _("ui-modal-prompt-button-ok")
         );
         g_mainWindow.webContents.send("update-bg", true);
         g_mainWindow.webContents.send("update-loading", false);
@@ -2181,7 +2210,8 @@ async function exportPageStart(sendToTool = 0) {
                 "",
                 _("ui-modal-info-imagesavedto") +
                   "\n" +
-                  fileUtils.reducePathString(message[1], 85)
+                  fileUtils.reducePathString(message[1], 85),
+                _("ui-modal-prompt-button-ok")
               );
             }
             return;
@@ -2248,7 +2278,8 @@ function exportPageSaveBuffer(buf, outputFolderPath, sendToTool) {
             "",
             _("ui-modal-info-imagesavedto") +
               "\n" +
-              fileUtils.reducePathString(outputFilePath, 85)
+              fileUtils.reducePathString(outputFilePath, 85),
+            _("ui-modal-prompt-button-ok")
           );
         }
       })();
@@ -2267,7 +2298,8 @@ function exportPageError(err) {
   g_mainWindow.webContents.send(
     "show-modal-info",
     "",
-    _("ui-modal-info-errorexportingpage")
+    _("ui-modal-info-errorexportingpage"),
+    _("ui-modal-prompt-button-ok")
   );
 }
 

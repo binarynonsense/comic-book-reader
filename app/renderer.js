@@ -547,23 +547,26 @@ function getCurrentPercentage() {
 
 ipcRenderer.on(
   "show-modal-prompt",
-  (event, question, defaultValue, mode = 0) => {
-    showModalPrompt(question, defaultValue, mode);
+  (event, question, defaultValue, textButton1, textButton2, mode = 0) => {
+    showModalPrompt(question, defaultValue, textButton1, textButton2, mode);
   }
 );
 
-ipcRenderer.on("show-modal-prompt-password", (event, text1, text2) => {
-  showModalPromptPassword(text1, text2);
-});
+ipcRenderer.on(
+  "show-modal-prompt-password",
+  (event, text1, text2, textButton1, textButton2) => {
+    showModalPromptPassword(text1, text2, textButton1, textButton2);
+  }
+);
 
-ipcRenderer.on("show-modal-info", (event, title, message) => {
-  showModalAlert(title, message);
+ipcRenderer.on("show-modal-info", (event, title, message, textButton1) => {
+  showModalAlert(title, message, textButton1);
 });
 
 ipcRenderer.on(
   "show-modal-question-openas",
-  (event, title, message, button1Text, button2Text, filePath) => {
-    showModalQuestionOpenAs(title, message, button1Text, button2Text, filePath);
+  (event, title, message, textButton1, textButton2, filePath) => {
+    showModalQuestionOpenAs(title, message, textButton1, textButton2, filePath);
   }
 );
 
@@ -571,17 +574,33 @@ ipcRenderer.on(
 // MODALS /////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-function showModalPrompt(question, defaultValue, mode = 0) {
+function showModalPrompt(
+  question,
+  defaultValue,
+  textButton1,
+  textButton2,
+  mode = 0
+) {
   if (mode === 0) {
     smalltalk
-      .prompt(question, defaultValue)
+      .prompt(question, defaultValue, undefined, {
+        buttons: {
+          ok: `&nbsp;${textButton1}&nbsp;`,
+          cancel: `&nbsp;${textButton2}&nbsp;`,
+        },
+      })
       .then((value) => {
         ipcRenderer.send("go-to-page", value);
       })
       .catch(() => {});
   } else if (mode === 1) {
     smalltalk
-      .prompt(question, defaultValue)
+      .prompt(question, defaultValue, undefined, {
+        buttons: {
+          ok: `&nbsp;${textButton1}&nbsp;`,
+          cancel: `&nbsp;${textButton2}&nbsp;`,
+        },
+      })
       .then((value) => {
         ipcRenderer.send("enter-scale-value", parseInt(value));
       })
@@ -589,7 +608,12 @@ function showModalPrompt(question, defaultValue, mode = 0) {
   }
   if (mode === 2) {
     smalltalk
-      .prompt(question, defaultValue)
+      .prompt(question, defaultValue, undefined, {
+        buttons: {
+          ok: `&nbsp;${textButton1}&nbsp;`,
+          cancel: `&nbsp;${textButton2}&nbsp;`,
+        },
+      })
       .then((value) => {
         ipcRenderer.send("go-to-percentage", value);
       })
@@ -597,9 +621,15 @@ function showModalPrompt(question, defaultValue, mode = 0) {
   }
 }
 
-function showModalPromptPassword(text1, text2) {
+function showModalPromptPassword(text1, text2, textButton1, textButton2) {
   smalltalk
-    .prompt(text1, text2 + "\n\n", "", { type: "password" })
+    .prompt(text1, text2 + "\n\n", "", {
+      type: "password",
+      buttons: {
+        ok: `&nbsp;${textButton1}&nbsp;`,
+        cancel: `&nbsp;${textButton2}&nbsp;`,
+      },
+    })
     .then((value) => {
       ipcRenderer.send("password-entered", value);
     })
@@ -608,22 +638,28 @@ function showModalPromptPassword(text1, text2) {
     });
 }
 
-function showModalAlert(title, message) {
-  smalltalk.alert(title, message).then(() => {});
+function showModalAlert(title, message, textButton1) {
+  smalltalk
+    .alert(title, message, {
+      buttons: {
+        ok: `&nbsp;${textButton1}&nbsp;`,
+      },
+    })
+    .then(() => {});
 }
 
 function showModalQuestionOpenAs(
   title,
   message,
-  button1Text,
-  button2Text,
+  textButton1,
+  textButton2,
   filePath
 ) {
   smalltalk
     .confirm(title, message, {
       buttons: {
-        ok: button1Text,
-        cancel: button2Text,
+        ok: `&nbsp;${textButton1}&nbsp;`,
+        cancel: `&nbsp;${textButton2}&nbsp;`,
       },
     })
     .then(() => {

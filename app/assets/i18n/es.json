@@ -136,6 +136,8 @@
   "ui-modal-info-imagesavedto": "Archivo de imagen salvado en:",
   "ui-modal-info-errorexportingpage": "Error: No se pudo exportar la página",
   "ui-modal-info-version": "versión",
+  "ui-modal-prompt-button-ok": "Ok",
+  "ui-modal-prompt-button-cancel": "Cancelar",
   "ui-modal-prompt-pagenumber": "Número de Página",
   "ui-modal-prompt-pagepercentage": "Porcentaje",
   "ui-modal-prompt-scalevalue": "Nuevo Valor de Escala",
