@@ -103,6 +103,7 @@
 
   "menu-help": "Ayuda",
   "menu-help-about": "Acerca de",
+  "menu-help-devtools-toggle": "Alternar DevTools",
 
   "menu-shared-top-left": "Arriba Izda.",
   "menu-shared-top-center": "Arriba Centro",

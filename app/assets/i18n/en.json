@@ -103,6 +103,7 @@
 
   "menu-help": "Help",
   "menu-help-about": "About",
+  "menu-help-devtools-toggle": "Toggle DevTools",
 
   "menu-shared-top-left": "Top Left",
   "menu-shared-top-center": "Top Center",

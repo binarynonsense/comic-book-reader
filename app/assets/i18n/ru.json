@@ -103,6 +103,7 @@
 
   "menu-help": "Справка",
   "menu-help-about": "О программе", 
+  "[NEEDS TRANSLATION]menu-help-devtools-toggle": "Toggle DevTools",
 
   "[NEEDS TRANSLATION]menu-shared-top-left": "Top Left",
   "[NEEDS TRANSLATION]menu-shared-top-center": "Top Center",

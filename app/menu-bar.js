@@ -224,6 +224,28 @@ exports.setWWWOpened = function () {
   Menu.getApplicationMenu().getMenuItemById("extract-file").enabled = false;
 };
 
+function getHelpSubmenu() {
+  let menu = [];
+  menu.push({
+    label: _("menu-help-about"),
+    click() {
+      mainProcess.onMenuAbout();
+    },
+  });
+  if (mainProcess.isDev()) {
+    menu.push({
+      type: "separator",
+    });
+    menu.push({
+      label: _("menu-help-devtools-toggle"),
+      click() {
+        mainProcess.onMenuToggleDevTools();
+      },
+    });
+  }
+  return menu;
+}
+
 function getScaleToHeightSubmenu(settings) {
   let menu = [];
   let defaults = [25, 50, 100, 150, 200, 300, 400];
@@ -1173,14 +1195,7 @@ function buildApplicationMenu(
     },
     {
       label: _("menu-help"),
-      submenu: [
-        {
-          label: _("menu-help-about"),
-          click() {
-            mainProcess.onMenuAbout();
-          },
-        },
-      ],
+      submenu: getHelpSubmenu(),
     },
   ]);
   Menu.setApplicationMenu(menuConfig);
