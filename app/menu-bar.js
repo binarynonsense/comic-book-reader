@@ -198,7 +198,7 @@ exports.setEpubEbookOpened = function () {
   );
   EnableItemRecursive(
     Menu.getApplicationMenu().getMenuItemById("view-page"),
-    false
+    true
   );
 };
 

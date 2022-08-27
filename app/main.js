@@ -391,7 +391,7 @@ app.on("ready", () => {
     let showGotoPage = true;
     if (g_fileData.type === FileDataType.EPUB_EBOOK) {
       showRotation = false;
-      showGotoPage = false;
+      //showGotoPage = false;
     }
     contextMenu
       .getContextMenu(showRotation, showGotoPage)
@@ -890,6 +890,14 @@ ipcMain.on("enter-scale-value", (event, value) => {
   }
 });
 
+ipcMain.on("go-to-percentage", (event, value) => {
+  if (!isNaN(value)) {
+    if (value >= 0 && value <= 100) {
+      goToPercentage(value);
+    }
+  }
+});
+
 ///////////////////////////////////////////////////////////////////////////////
 // MENU MSGS //////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -1271,14 +1279,24 @@ exports.onMenuAbout = function () {
 
 exports.onGoToPageDialog = function () {
   g_mainWindow.webContents.send("update-menubar");
-  let question = `${_("ui-modal-prompt-pagenumber")} (1-${
-    g_fileData.numPages
-  }):`;
-  g_mainWindow.webContents.send(
-    "show-modal-prompt",
-    question,
-    "" + (g_fileData.pageIndex + 1)
-  );
+  if (g_fileData.type === FileDataType.EPUB_EBOOK) {
+    let question = `${_("ui-modal-prompt-pagepercentage")} (0-100):`;
+    g_mainWindow.webContents.send(
+      "show-modal-prompt",
+      question,
+      "" + g_fileData.pageIndex,
+      2
+    );
+  } else {
+    let question = `${_("ui-modal-prompt-pagenumber")} (1-${
+      g_fileData.numPages
+    }):`;
+    g_mainWindow.webContents.send(
+      "show-modal-prompt",
+      question,
+      "" + (g_fileData.pageIndex + 1)
+    );
+  }
 };
 
 exports.onGoToPageFirst = function () {

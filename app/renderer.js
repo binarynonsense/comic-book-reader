@@ -580,6 +580,14 @@ function showModalPrompt(question, defaultValue, mode = 0) {
       })
       .catch(() => {});
   }
+  if (mode === 2) {
+    smalltalk
+      .prompt(question, defaultValue)
+      .then((value) => {
+        ipcRenderer.send("go-to-percentage", value);
+      })
+      .catch(() => {});
+  }
 }
 
 function showModalPromptPassword(text1, text2) {

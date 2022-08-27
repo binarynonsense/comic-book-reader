@@ -136,6 +136,7 @@
   "ui-modal-info-errorexportingpage": "Ошибка: Не удалось экспортировать страницу",
   "ui-modal-info-version": "версия",
   "ui-modal-prompt-pagenumber": "Номер страницы",
+  "[NEEDS TRANSLATION]ui-modal-prompt-pagepercentage": "Percentage",
   "[NEEDS TRANSLATION]ui-modal-prompt-scalevalue": "New Scale Value",
   "[NEEDS TRANSLATION]ui-modal-prompt-enterpassword": "Enter Password",
   "[NEEDS TRANSLATION]ui-modal-question-ebookorcomic": "Open {0} As",
