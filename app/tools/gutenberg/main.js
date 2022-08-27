@@ -307,7 +307,11 @@ function getLocalization() {
 
     {
       id: "text-about-1",
-      text: _("tool-shared-ui-about-text-1", "Project Gutenberg"),
+      text: _(
+        "tool-shared-ui-about-text-1",
+        _("tool-shared-ui-about-text-1-books"),
+        "Project Gutenberg"
+      ),
     },
     {
       id: "text-about-2",

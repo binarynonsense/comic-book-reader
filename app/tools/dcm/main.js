@@ -237,7 +237,11 @@ function getLocalization() {
 
     {
       id: "text-about-1",
-      text: _("tool-shared-ui-about-text-1", "Digital Comic Museum"),
+      text: _(
+        "tool-shared-ui-about-text-1",
+        _("tool-shared-ui-about-text-1-comicbooks"),
+        "Digital Comic Museum"
+      ),
     },
     {
       id: "text-about-2",

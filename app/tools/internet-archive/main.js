@@ -273,7 +273,11 @@ function getLocalization() {
 
     {
       id: "text-about-1",
-      text: _("tool-shared-ui-about-text-1", "Internet Archive"),
+      text: _(
+        "tool-shared-ui-about-text-1",
+        _("tool-shared-ui-about-text-1-books"),
+        "Internet Archive"
+      ),
     },
     {
       id: "text-about-2",
