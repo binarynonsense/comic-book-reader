@@ -4,12 +4,12 @@ const axios = require("axios").default;
 
 const g_ipcChannel = "tool-iab--";
 
-const g_searchInput = document.querySelector("#search-input");
-const g_searchButton = document.querySelector("#search-button");
-const g_searchResultsDiv = document.querySelector("#div-search-results");
+const g_inputSearch = document.querySelector("#search-input");
+const g_buttonSearch = document.querySelector("#search-button");
+const g_divSearchResults = document.querySelector("#div-search-results");
 
-let g_collectionSelect = document.querySelector("#options-collections-select");
-let g_availabilitySelect = document.querySelector(
+let g_selectCollection = document.querySelector("#options-collections-select");
+let g_selectAvailability = document.querySelector(
   "#options-availability-select"
 );
 
@@ -22,13 +22,22 @@ exports.initModal = function (instance) {
 
 let g_lastSearchResults;
 
+let g_activeTab = "tab-1";
+
+exports.onShowTabs = function (tab) {
+  g_activeTab = tab.id;
+  if (tab.id === "tab-1") {
+    g_inputSearch.focus();
+  }
+};
+
 ///////////////////////////////////////////////////////////////////////////////
 
 ipcRenderer.on(
   g_ipcChannel + "update-localization",
   (event, title, searchPlaceHolder, localization) => {
     document.title = title; // + "  (" + (navigator.onLine ? "online" : "offline") + ")";
-    g_searchInput.placeholder = searchPlaceHolder;
+    g_inputSearch.placeholder = searchPlaceHolder;
     for (let index = 0; index < localization.length; index++) {
       const element = localization[index];
       const domElement = document.querySelector("#" + element.id);
@@ -42,17 +51,17 @@ ipcRenderer.on(
 ipcRenderer.on(
   g_ipcChannel + "init",
   (event, collectionsContent, availabilityContent) => {
-    g_collectionSelect.innerHTML = collectionsContent;
-    g_availabilitySelect.innerHTML = availabilityContent;
-    g_searchInput.addEventListener("keypress", function (event) {
+    g_selectCollection.innerHTML = collectionsContent;
+    g_selectAvailability.innerHTML = availabilityContent;
+    g_inputSearch.addEventListener("keypress", function (event) {
       if (event.key === "Enter") {
         event.preventDefault();
-        if (g_searchInput.value) {
+        if (g_inputSearch.value) {
           onSearch();
         }
       }
     });
-    g_searchInput.focus();
+    g_inputSearch.focus();
   }
 );
 
@@ -60,7 +69,7 @@ ipcRenderer.on(
   g_ipcChannel + "update-results",
   (event, content, searchResults) => {
     g_lastSearchResults = searchResults;
-    g_searchResultsDiv.innerHTML = content;
+    g_divSearchResults.innerHTML = content;
     g_modalInstance.close();
   }
 );
@@ -97,23 +106,23 @@ function openIALink(url) {
 /////////////////////////////////////////////////////////////////////////
 
 exports.onSearchInputChanged = function (input) {
-  if (g_searchInput.value !== "") {
-    g_searchButton.classList.remove("disabled");
+  if (g_inputSearch.value !== "") {
+    g_buttonSearch.classList.remove("disabled");
   } else {
-    g_searchButton.classList.add("disabled");
+    g_buttonSearch.classList.add("disabled");
   }
 };
 
 function onSearch(pageNum = 1, inputValue = undefined) {
-  if (!inputValue) inputValue = g_searchInput.value;
+  if (!inputValue) inputValue = g_inputSearch.value;
   g_modalInstance.open();
   window.scrollTo(0, 0);
   ipcRenderer.send(
     g_ipcChannel + "search",
     inputValue,
     pageNum,
-    g_collectionSelect.value,
-    g_availabilitySelect.value
+    g_selectCollection.value,
+    g_selectAvailability.value
   );
 }
 exports.onSearch = onSearch;

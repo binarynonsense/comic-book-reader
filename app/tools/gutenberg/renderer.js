@@ -34,6 +34,15 @@ exports.initModal = function (instance) {
 
 let g_portableCacheFolderPath;
 
+let g_activeTab = "tab-1";
+
+exports.onShowTabs = function (tab) {
+  g_activeTab = tab.id;
+  if (tab.id === "tab-1") {
+    g_inputSearch.focus();
+  }
+};
+
 ///////////////////////////////////////////////////////////////////////////////
 
 ipcRenderer.on(

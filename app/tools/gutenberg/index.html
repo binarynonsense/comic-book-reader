@@ -159,7 +159,9 @@
         let elem = document.querySelector(".modal");
         let modal = M.Modal.getInstance(elem);
         renderer.initModal(modal);
-        let tabs = M.Tabs.init(document.querySelector(".tabs"));
+        let tabs = M.Tabs.init(document.querySelector(".tabs"), {
+          onShow: renderer.onShowTabs,
+        });
         // HACK: I do this to ensure the highlight border is the right size
         // or it starts too short or long some times?
         tabs.select("tab-4");
