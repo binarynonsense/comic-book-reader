@@ -192,6 +192,10 @@
   "tool-shared-ui-about-text-1": "This is a tool to search through the books available in the \"{0}\" website and open them in the system's browser or directly inside ACBR.",
   "tool-shared-ui-about-text-2": "It needs an internet connection and could at any point stop working if the website's structure changes.",
   "tool-shared-ui-about-text-3": "If you use it frequently or just like what they are doing, please consider making a donation to help them keep the site alive.",
+  "tool-shared-tab-search": "Search",
+  "tool-shared-tab-catalog": "Catalog",
+  "tool-shared-tab-openurl": "Open Url",
+  "tool-shared-tab-about": "About",
 
   "tool-shared-modal-title-extracting": "Extracting",
   "tool-shared-modal-title-converting": "Converting",
@@ -281,9 +285,6 @@
   "tool-cq-modal-alert-title-errorexporting": "ERROR: Could NOT Save the Image",
 
   "tool-dcm-title": "Digital Comic Museum",  
-  "tool-dcm-tab-1-text": "Find Comics",
-  "tool-dcm-tab-2-text": "Open Url",
-  "tool-dcm-tab-3-text": "About",
   "tool-dcm-publishers-text": "Publishers:",
   "tool-dcm-titles-text": "Titles",
   "tool-dcm-comics-text": "Comic Books:",

@@ -192,6 +192,10 @@
   "[NEEDS TRANSLATION]tool-shared-ui-about-text-1": "This is a tool to search through the books available in the \"{0}\" website and open them in the system's browser or directly inside ACBR.",
   "[NEEDS TRANSLATION]tool-shared-ui-about-text-2": "It needs an internet connection and could at any point stop working if the website's structure changes.",
   "[NEEDS TRANSLATION]tool-shared-ui-about-text-3": "If you use it frequently or just like what they are doing, please consider making a donation to help them keep the site alive.",
+  "[NEEDS TRANSLATION]tool-shared-tab-search": "Search",
+  "[NEEDS TRANSLATION]tool-shared-tab-catalog": "Catalog",
+  "[NEEDS TRANSLATION]tool-shared-tab-openurl": "Open Url",
+  "[NEEDS TRANSLATION]tool-shared-tab-about": "About",
 
   "[NEEDS TRANSLATION]tool-shared-modal-title-extracting": "Extracting",
   "tool-shared-modal-title-converting": "Конвертация",
@@ -295,9 +299,6 @@
   "[NEEDS TRANSLATION]tool-dcm-select-comic-text": "Select a Comic Book",
 
   "tool-iab-title": "Internet Archive Books",
-  "[NEEDS TRANSLATION]tool-iab-tab-1-text": "Search Books",
-  "[NEEDS TRANSLATION]tool-iab-tab-2-text": "Options",
-  "[NEEDS TRANSLATION]tool-iab-tab-3-text": "About",
   "[NEEDS TRANSLATION]tool-iab-options-collections-text": "Collections:",  
   "[NEEDS TRANSLATION]tool-iab-collection-any": "Any",
   "[NEEDS TRANSLATION]tool-iab-options-availability-text": "Availability:", 

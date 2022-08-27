@@ -37,7 +37,7 @@ exports.showWindow = function (parentWindow) {
   g_window.menuBarVisible = false;
   g_window.loadFile(`${__dirname}/index.html`);
 
-  // if (isDev()) g_window.toggleDevTools();
+  if (isDev()) g_window.toggleDevTools();
 
   g_window.on("closed", () => {
     g_window = undefined;
@@ -47,6 +47,7 @@ exports.showWindow = function (parentWindow) {
     g_window.webContents.send(
       g_ipcChannel + "update-localization",
       _("tool-dcm-title"),
+      _("tool-shared-ui-search-placeholder"),
       _("tool-dcm-select-publisher-text"),
       _("tool-dcm-select-title-text"),
       _("tool-dcm-select-comic-text"),
@@ -90,22 +91,112 @@ ipcMain.on(g_ipcChannel + "open", (event, comicData) => {
   g_window.close();
 });
 
+ipcMain.on(g_ipcChannel + "search", (event, data) => {
+  // NOTE: tried to use the form-data package but couldn't make it work so I do the
+  // axios request in the renderer and send the result here
+  (async () => {
+    try {
+      const jsdom = require("jsdom");
+      const { JSDOM } = jsdom;
+
+      let content = `<div style="margin-top: 50px !important"></div>`;
+      content += `<ul class="collection">`;
+      const dom = new JSDOM(data);
+      const table = dom.window.document.querySelector("#search-results");
+      // List
+      const links = table?.getElementsByTagName("a");
+      if (!links || links.length <= 0) {
+        content += `<li class="collection-item"><span class="title">${_(
+          "tool-shared-ui-search-nothing-found"
+        )}</span></li>`;
+      } else {
+        for (let index = 0; index < links.length; index++) {
+          const link = links[index];
+          // e.g. index.php?dlid=33252
+          if (link.href.startsWith("index.php?dlid=")) {
+            const name = link.innerHTML;
+            const parts = link.href.split("dlid=");
+            if (parts.length === 2 && isValidBookId(parts[1])) {
+              const dlid = parts[1];
+              content += `<li class="collection-item">      
+                  <span class="title"><a style="cursor: pointer; margin-right: 5px;" title="${_(
+                    "tool-shared-ui-search-item-open-acbr"
+                  )}" onclick="renderer.onSearchResultClicked(${dlid}, 0)"
+                    ><i class="fa fa-folder-open"></i> ${reduceString(
+                      name
+                    )}</a></span>
+                    <a
+                      style="cursor: pointer"
+                      onclick="renderer.onSearchResultClicked(${dlid}, 1)"
+                      class="secondary-content"
+                      ><i
+                        class="fa fa-link" aria-hidden="true"
+                        title="${_("tool-shared-ui-search-item-open-browser")}"
+                      ></i
+                    ></a>
+                  </li>`;
+            }
+          }
+        }
+      }
+      // End list
+
+      content += `</ul>`;
+
+      g_window.webContents.send(g_ipcChannel + "update-results", content);
+    } catch (error) {
+      console.log(error);
+      let content = `<div style="margin-top: 50px !important"></div>`;
+      content += `<ul class="collection">`;
+      content += `<li class="collection-item"><span class="title">${_(
+        "tool-shared-ui-search-nothing-found"
+      )}</span></li>`;
+      content += `</ul>`;
+      g_window.webContents.send(g_ipcChannel + "update-results", content);
+    }
+  })(); // async
+});
+
+///////////////////////////////////////////////////////////////////////////////
+
+function reduceString(input) {
+  if (!input) return undefined;
+  var length = 80;
+  input = input.length > length ? input.substring(0, length) + "..." : input;
+  return input;
+}
+
+function isValidBookId(str) {
+  let n = Math.floor(Number(str));
+  return n !== Infinity && String(n) === str && n >= 0;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
 function getLocalization() {
   return [
     {
       id: "text-tab-1",
-      text: _("tool-dcm-tab-1-text").toUpperCase(),
+      text: _("tool-shared-tab-search").toUpperCase(),
     },
     {
       id: "text-tab-2",
-      text: _("tool-dcm-tab-2-text").toUpperCase(),
+      text: _("tool-shared-tab-catalog").toUpperCase(),
     },
     {
       id: "text-tab-3",
-      text: _("tool-dcm-tab-3-text").toUpperCase(),
+      text: _("tool-shared-tab-openurl").toUpperCase(),
     },
+    {
+      id: "text-tab-4",
+      text: _("tool-shared-tab-about").toUpperCase(),
+    },
+
+    {
+      id: "button-search",
+      text: _("tool-shared-ui-search-button").toUpperCase(),
+    },
+
     {
       id: "publishers-text",
       text: _("tool-dcm-publishers-text"),
@@ -126,6 +217,7 @@ function getLocalization() {
       id: "button-open-selected-browser",
       text: _("tool-shared-ui-button-open-in-browser").toUpperCase(),
     },
+
     {
       id: "dcm-url-text",
       text: _("tool-dcm-dcm-url-text"),
@@ -138,6 +230,7 @@ function getLocalization() {
       id: "button-open-input-url-browser",
       text: _("tool-shared-ui-button-open-in-browser").toUpperCase(),
     },
+
     {
       id: "text-about-1",
       text: _("tool-shared-ui-about-text-1", "Digital Comic Museum"),

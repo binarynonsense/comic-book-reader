@@ -192,6 +192,10 @@
   "tool-shared-ui-about-text-1": "Esta es una herramienta para buscar entre los libros disponibles la web \"{0}\" y abrirlos en el navegador del sistema o directamente en ACBR.",
   "tool-shared-ui-about-text-2": "Necesita conexión a internet y podría dejar de funcionar en cualquier momento si la estructura de la web cambia.",
   "tool-shared-ui-about-text-3": "Si la usa frecuentemente o simplemente le gusta lo que hacen, por favor considere hacer un donativo para ayudarles a mantener el sitio en funcionamiento.",
+  "tool-shared-tab-search": "Buscar",
+  "tool-shared-tab-catalog": "Catálogo",
+  "tool-shared-tab-openurl": "Abrir Url",
+  "tool-shared-tab-about": "Acerca De",
 
   "tool-shared-modal-title-extracting": "Extrayendo",
   "tool-shared-modal-title-converting": "Convirtiendo",
@@ -281,9 +285,6 @@
   "tool-cq-modal-alert-title-errorexporting": "ERROR: No se pudo guardar la imagen",
 
   "tool-dcm-title": "Digital Comic Museum", 
-  "tool-dcm-tab-1-text": "Encontrar Cómics",
-  "tool-dcm-tab-2-text": "Abrir Url",
-  "tool-dcm-tab-3-text": "Acerca De",
   "tool-dcm-publishers-text": "Editores:",
   "tool-dcm-titles-text": "Títulos",
   "tool-dcm-comics-text": "Cómics:",

@@ -16,16 +16,38 @@
     <div class="container center-align">
       <ul class="tabs" style="margin-bottom: 20px">
         <li class="tab col s3">
-          <a id="text-tab-1" class="active" href="#tab-1">FIND COMICS</a>
+          <a id="text-tab-1" class="active" href="#tab-1">SEARCH</a>
         </li>
         <li class="tab col s3">
-          <a id="text-tab-2" href="#tab-2">OPEN URL</a>
+          <a id="text-tab-2" href="#tab-2">INDEX</a>
         </li>
-        <li class="tab col s3"><a id="text-tab-3" href="#tab-3">ABOUT</a></li>
+        <li class="tab col s3">
+          <a id="text-tab-3" href="#tab-3">OPEN URL</a>
+        </li>
+        <li class="tab col s3"><a id="text-tab-4" href="#tab-4">ABOUT</a></li>
       </ul>
 
-      <div id="tab-1" class="col s12">
-        <!-- find comics -->
+      <div id="tab-1">
+        <!-- search -->
+        <div>
+          <input
+            id="input-search"
+            type="text"
+            oninput="renderer.onInputChangedSearch(this)"
+            placeholder="Search Comic Books"
+          />
+          <a
+            id="button-search"
+            class="btn waves-effect waves-purple btn teal disabled"
+            onclick="renderer.onSearch()"
+            >SEARCH</a
+          >
+        </div>
+        <div id="div-search-results" style="margin-top: 20px"></div>
+      </div>
+
+      <div id="tab-2" style="display: none">
+        <!-- index -->
         <span id="publishers-text">Publishers:</span>
         <select
           id="publishers-select"
@@ -62,7 +84,7 @@
         </p>
       </div>
 
-      <div id="tab-2" style="display: none">
+      <div id="tab-3" style="display: none">
         <!-- open url -->
         <div>
           <h5 id="dcm-url-text">DCM's Comic Book URL:</h5>
@@ -91,7 +113,7 @@
         </p>
       </div>
 
-      <div id="tab-3" style="display: none">
+      <div id="tab-4" style="display: none">
         <!-- about -->
         <div>
           <p id="text-about-1"></p>
@@ -118,18 +140,37 @@
       </div>
     </div>
 
+    <div id="modal1" class="modal">
+      <div class="modal-content">
+        <h5 id="modal-title"></h5>
+        <p id="modal-info"></p>
+        <div class="progress" id="modal-loading-bar">
+          <div class="indeterminate"></div>
+        </div>
+      </div>
+    </div>
+
     <script src="../../assets/libs/materialize/js/materialize.min.js"></script>
     <script>
       const renderer = require("./renderer");
     </script>
     <script>
       window.addEventListener("DOMContentLoaded", function () {
-        var instance = M.Tabs.init(document.querySelector(".tabs"));
-        // instance.updateTabIndicator();
-        // HACK: I do this to ensure the highlight border is the right size
-        // or it starts too short in spanish ???
-        instance.select("tab-2");
-        setTimeout(() => instance.select("tab-1"), 50);
+        var elem = document.querySelector(".modal");
+        var instance = M.Modal.getInstance(elem);
+        renderer.initModal(instance);
+        var tabs = M.Tabs.init(document.querySelector(".tabs"), {
+          onShow: renderer.onShowTabs,
+        });
+      });
+    </script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        var elems = document.querySelectorAll(".modal");
+        var instances = M.Modal.init(elems, {
+          dismissible: false,
+          onCloseStart: null,
+        });
       });
     </script>
   </body>
