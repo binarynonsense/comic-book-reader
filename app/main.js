@@ -1754,6 +1754,7 @@ async function openEbookFromPath(filePath, pageIndex, historyEntry) {
   if (filePath === undefined || filePath === "") {
     return;
   }
+  closeCurrentFile(); // in case coming from tool and bypassing tryopen
   let fileExtension = path.extname(filePath).toLowerCase();
   if (fileExtension === "." + FileExtension.EPUB) {
     let data;
