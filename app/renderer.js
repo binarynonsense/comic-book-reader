@@ -997,19 +997,24 @@ document.onkeydown = function (event) {
   // keys ref: https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key
   // keys ref: https://developer.mozilla.org/en-US/docs/Web/API/UI_Events/Keyboard_event_key_values
   if (event.key == "PageDown" || event.key == "ArrowRight") {
-    ipcRenderer.send(
-      "mouse-click",
-      document.body.clientWidth,
-      document.body.clientWidth
-    );
+    if (!event.repeat) {
+      ipcRenderer.send(
+        "mouse-click",
+        document.body.clientWidth,
+        document.body.clientWidth
+      );
+      event.stopPropagation();
+    }
     event.stopPropagation();
   } else if (event.key == "PageUp" || event.key == "ArrowLeft") {
-    ipcRenderer.send("mouse-click", 0, document.body.clientWidth);
-    event.stopPropagation();
+    if (!event.repeat) {
+      ipcRenderer.send("mouse-click", 0, document.body.clientWidth);
+      event.stopPropagation();
+    }
   } else if (event.key == "Home") {
-    ipcRenderer.send("home-pressed");
+    if (!event.repeat) ipcRenderer.send("home-pressed");
   } else if (event.key == "End") {
-    ipcRenderer.send("end-pressed");
+    if (!event.repeat) ipcRenderer.send("end-pressed");
   } else if (event.key == "ArrowDown" || event.key == "s") {
     let container = document.querySelector(".cet-container");
     let amount = container.offsetHeight / 5;
@@ -1031,13 +1036,19 @@ document.onkeydown = function (event) {
     container.scrollBy(amount, 0);
     event.stopPropagation();
   } else if (event.key == "Escape") {
-    ipcRenderer.send("escape-pressed");
+    if (!event.repeat) ipcRenderer.send("escape-pressed");
   } else if (event.ctrlKey && event.key === "+") {
-    ipcRenderer.send("zoom-in-pressed");
+    if (!event.repeat) {
+      ipcRenderer.send("zoom-in-pressed");
+      event.stopPropagation();
+    }
   } else if (event.ctrlKey && event.key === "-") {
-    ipcRenderer.send("zoom-out-pressed");
+    if (!event.repeat) {
+      ipcRenderer.send("zoom-out-pressed");
+      event.stopPropagation();
+    }
   } else if (event.ctrlKey && event.key == "0") {
-    ipcRenderer.send("zoom-reset-pressed");
+    if (!event.repeat) ipcRenderer.send("zoom-reset-pressed");
   } else if (
     event.ctrlKey &&
     event.shiftKey &&

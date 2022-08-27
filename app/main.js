@@ -1041,7 +1041,8 @@ exports.onMenuScaleToHeight = function (scale) {
 };
 
 exports.onMenuScaleToHeightZoomInput = function (input) {
-  processZoomInput(input);
+  // handled by renderer
+  //processZoomInput(input);
 };
 
 exports.onMenuScaleToHeightEnter = function () {
