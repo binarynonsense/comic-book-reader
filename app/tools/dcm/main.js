@@ -53,6 +53,10 @@ exports.showWindow = function (parentWindow) {
       _("tool-dcm-select-comic-text"),
       getLocalization()
     );
+    g_window.webContents.send(
+      g_ipcChannel + "modal-update-title",
+      _("tool-shared-modal-title-searching").toUpperCase()
+    );
     g_window.webContents.send(g_ipcChannel + "init");
   });
 };
