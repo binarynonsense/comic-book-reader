@@ -21,7 +21,7 @@ const {
   setupTitlebar,
   attachTitlebarToWindow,
 } = require("custom-electron-titlebar/main");
-const { constants } = require("buffer");
+
 setupTitlebar();
 
 function isDev() {
@@ -505,6 +505,11 @@ function saveSettings() {
 }
 
 function addCurrentToHistory(updateMenu = true) {
+  if (
+    g_fileData.type === FileDataType.NOT_SET ||
+    g_fileData.state !== FileDataState.LOADED
+  )
+    return;
   let currentFilePath = g_fileData.path;
   let currentPageIndex = g_fileData.pageIndex;
   if (currentFilePath !== "") {
@@ -584,11 +589,6 @@ ipcMain.on("password-entered", (event, password) => {
   ) {
     let filePath = g_fileData.path;
     let pageIndex = g_fileData.pageIndex;
-    if (g_tempFileData.state !== FileDataState.LOADING) {
-      // restore previous file data
-      Object.assign(g_fileData, g_tempFileData);
-      g_tempFileData = {};
-    }
     openComicBookFromPath(filePath, pageIndex, password);
   }
 });
@@ -600,12 +600,7 @@ ipcMain.on("password-canceled", (event) => {
     g_fileData.type === FileDataType.ZIP ||
     g_fileData.type === FileDataType.SEVENZIP
   ) {
-    if (g_tempFileData.state !== FileDataState.LOADING) {
-      // restore previous file data
-      Object.assign(g_fileData, g_tempFileData);
-      g_tempFileData = {};
-    }
-    g_mainWindow.webContents.send("update-loading", false);
+    closeCurrentFile();
   }
 });
 
@@ -636,13 +631,7 @@ ipcMain.on("epub-comic-loaded", (event, filePath, pageIndex, imageIDs) => {
 
 ipcMain.on("epub-comic-load-failed", (event) => {
   // unrecoverable error
-  if (g_tempFileData.state !== FileDataState.LOADING) {
-    // restore previous file data
-    Object.assign(g_fileData, g_tempFileData);
-    g_tempFileData = {};
-  }
-
-  g_mainWindow.webContents.send("update-loading", false);
+  closeCurrentFile();
   g_mainWindow.webContents.send(
     "show-modal-info",
     _("ui-modal-info-fileerror"),
@@ -728,13 +717,7 @@ ipcMain.on("pdf-load-failed", (event, error) => {
     }
   } else {
     // unrecoverable error
-    if (g_tempFileData.state !== FileDataState.LOADING) {
-      // restore previous file data
-      Object.assign(g_fileData, g_tempFileData);
-      g_tempFileData = {};
-    }
-
-    g_mainWindow.webContents.send("update-loading", false);
+    closeCurrentFile();
     g_mainWindow.webContents.send(
       "show-modal-info",
       _("ui-modal-info-fileerror"),
@@ -1342,8 +1325,6 @@ let g_fileData = {
   data: undefined,
 };
 
-let g_tempFileData = {};
-
 function cleanUpFileData() {
   g_fileData.state = FileDataState.NOT_SET;
   g_fileData.type = FileDataType.NOT_SET;
@@ -1360,6 +1341,7 @@ function cleanUpFileData() {
 
 function tryOpen(filePath, bookType, historyEntry) {
   g_mainWindow.webContents.send("update-menubar"); // in case coming from menu
+  closeCurrentFile();
   if (!bookType) bookType = BookType.NOT_SET;
   let pageIndex;
 
@@ -1426,7 +1408,7 @@ function tryOpenPath(filePath, pageIndex, bookType, historyEntry) {
       openImageFolder(filePath, undefined, pageIndex);
       return true;
     } else if (fileFormats.hasComicBookExtension(filePath)) {
-      openComicBookFromPath(filePath, pageIndex, historyEntry);
+      openComicBookFromPath(filePath, pageIndex, "", historyEntry);
       return true;
     } else if (fileFormats.hasImageExtension(filePath)) {
       openImageFile(filePath);
@@ -1480,8 +1462,6 @@ function openImageFolder(folderPath, filePath, pageIndex) {
   }
   pagesPaths.sort(fileUtils.compare);
 
-  if (g_fileData.path !== "") addCurrentToHistory(); // add the one I'm closing to history
-
   if (pageIndex === undefined) {
     if (filePath !== undefined && filePath !== "") {
       for (let index = 0; index < pagesPaths.length; index++) {
@@ -1522,7 +1502,6 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
   g_mainWindow.webContents.send("update-bg", false);
 
   let fileExtension = path.extname(filePath).toLowerCase();
-  g_tempFileData = {};
   if (!pageIndex) pageIndex = 0;
   if (!password) password = "";
 
@@ -1533,11 +1512,9 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
       // e.g. {ext: 'png', mime: 'image/png'}
       fileExtension = "." + fileType.ext;
     }
-    if (g_fileData.path !== "") addCurrentToHistory(); // add the one I'm closing to history
 
     if (fileExtension === "." + FileExtension.PDF) {
       if (g_fileData.state !== FileDataState.LOADING) {
-        Object.assign(g_tempFileData, g_fileData);
         cleanUpFileData();
         g_fileData.type = FileDataType.PDF;
         g_fileData.state = FileDataState.LOADING;
@@ -1547,14 +1524,11 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
       g_fileData.password = password;
       g_mainWindow.webContents.send("load-pdf", filePath, pageIndex, password);
     } else if (fileExtension === "." + FileExtension.EPUB) {
-      if (g_fileData.state !== FileDataState.LOADING) {
-        Object.assign(g_tempFileData, g_fileData);
-        cleanUpFileData();
-        g_fileData.type = FileDataType.EPUB_COMIC;
-        g_fileData.state = FileDataState.LOADING;
-        g_fileData.pageIndex = pageIndex;
-        g_fileData.path = filePath;
-      }
+      cleanUpFileData();
+      g_fileData.type = FileDataType.EPUB_COMIC;
+      g_fileData.state = FileDataState.LOADING;
+      g_fileData.pageIndex = pageIndex;
+      g_fileData.path = filePath;
       g_fileData.password = password;
       g_mainWindow.webContents.send("load-epub-comic", filePath, pageIndex);
     } else {
@@ -1565,7 +1539,6 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
         let rarData = await fileFormats.getRarEntriesList(filePath, password);
         if (rarData.result === "password required") {
           if (g_fileData.state !== FileDataState.LOADING) {
-            Object.assign(g_tempFileData, g_fileData);
             cleanUpFileData();
             g_fileData.state = FileDataState.LOADING;
             g_fileData.type = FileDataType.RAR;
@@ -1622,7 +1595,6 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
         let zipData = fileFormats.getZipEntriesList(filePath, password);
         if (zipData.result === "password required") {
           if (g_fileData.state !== FileDataState.LOADING) {
-            Object.assign(g_tempFileData, g_fileData);
             cleanUpFileData();
             g_fileData.state = FileDataState.LOADING;
             g_fileData.type = FileDataType.ZIP;
@@ -1690,7 +1662,6 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
         );
         if (sevenData.result === "password required") {
           if (g_fileData.state !== FileDataState.LOADING) {
-            Object.assign(g_tempFileData, g_fileData);
             cleanUpFileData();
             g_fileData.state = FileDataState.LOADING;
             g_fileData.type = FileDataType.SEVENZIP;
@@ -1810,20 +1781,15 @@ async function openEbookFromPath(filePath, pageIndex, historyEntry) {
       return;
     }
 
-    if (g_fileData.state !== FileDataState.LOADING) {
-      g_mainWindow.webContents.send("update-loading", true);
-      g_mainWindow.webContents.send("update-bg", false);
-      if (!pageIndex) pageIndex = 0;
-      if (g_fileData.path !== "") addCurrentToHistory(); // add the one I'm closing to history
-      g_tempFileData = {};
-      Object.assign(g_tempFileData, g_fileData);
-      cleanUpFileData();
-      g_fileData.type = FileDataType.EPUB_EBOOK;
-      g_fileData.state = FileDataState.LOADING;
-      g_fileData.pageIndex = pageIndex;
-      g_fileData.path = filePath;
-      if (data) g_fileData.data = data;
-    }
+    g_mainWindow.webContents.send("update-loading", true);
+    g_mainWindow.webContents.send("update-bg", false);
+    if (!pageIndex) pageIndex = 0;
+    cleanUpFileData();
+    g_fileData.type = FileDataType.EPUB_EBOOK;
+    g_fileData.state = FileDataState.LOADING;
+    g_fileData.pageIndex = pageIndex;
+    g_fileData.path = filePath;
+    if (data) g_fileData.data = data;
     g_mainWindow.webContents.send(
       "load-epub-ebook",
       filePath,
@@ -1840,7 +1806,6 @@ exports.openEbookFromPath = openEbookFromPath;
 function openBookFromCallback(comicData, getPageCallback, pageIndex = 0) {
   g_mainWindow.webContents.send("update-bg", false);
   g_mainWindow.webContents.send("update-loading", true);
-  if (g_fileData.path !== "") addCurrentToHistory(); // add the one I'm closing to history
   cleanUpFileData();
   g_fileData.state = FileDataState.LOADED;
   g_fileData.type = FileDataType.WWW;
@@ -1895,13 +1860,17 @@ function tryOpeningAdjacentFile(next) {
 }
 
 function closeCurrentFile(addToHistory = true) {
+  if (g_fileData.type === FileDataType.NOT_SET) return;
   if (addToHistory) addCurrentToHistory(); // add the one I'm closing to history
-  g_tempFileData = {};
+  if (g_fileData.type === FileDataType.EPUB_EBOOK) {
+    g_mainWindow.webContents.send("close-epub-ebook");
+  }
   cleanUpFileData();
   updateMenuAndToolbarItems();
   renderTitle();
   g_mainWindow.webContents.send("file-closed");
   g_mainWindow.webContents.send("update-menubar");
+  g_mainWindow.webContents.send("update-loading", false);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

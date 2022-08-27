@@ -154,7 +154,7 @@ async function getRarEntriesList(filePath, password) {
     }
     return { result: "success", paths: imgEntries };
   } catch (error) {
-    console.log(error);
+    console.log(error.message);
     return { result: "other error", paths: [] };
   }
 }
@@ -235,8 +235,8 @@ function getZipEntriesList(filePath, password) {
     }
     return { result: "success", paths: imgEntries };
   } catch (error) {
-    console.log(error);
-    return { result: "success", paths: imgEntries };
+    console.log(error.message);
+    return { result: "other error", paths: [] };
   }
 }
 exports.getZipEntriesList = getZipEntriesList;

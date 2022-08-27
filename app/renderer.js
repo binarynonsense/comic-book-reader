@@ -372,6 +372,13 @@ ipcRenderer.on("refresh-epub-ebook-page", (event, rotation) => {
   refreshEpubEbookPage();
 });
 
+ipcRenderer.on("close-epub-ebook", (event) => {
+  if (g_currentEpubEbook.book) {
+    g_currentEpubEbook.book.destroy();
+    g_currentEpubEbook = {};
+  }
+});
+
 async function loadEpubEbook(filePath, percentage, cachedPath) {
   try {
     const ePub = require("epubjs");
