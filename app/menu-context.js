@@ -1,22 +1,23 @@
 const { Menu } = require("electron");
 const mainProcess = require("./main");
-
-let g_contextMenu;
+const { FileDataType } = require("./constants");
 
 function _(...args) {
   return mainProcess.i18n_.apply(null, args);
 }
 
-function buildContextMenu(showRotation, showGotoPage) {
+function buildContextMenu(isOpen, showRotation) {
   let contextMenu = Menu.buildFromTemplate([
     {
       label: _("ctxmenu-nextpage"),
+      enabled: isOpen,
       click() {
         mainProcess.onMenuNextPage();
       },
     },
     {
       label: _("ctxmenu-prevpage"),
+      enabled: isOpen,
       click() {
         mainProcess.onMenuPreviousPage();
       },
@@ -26,10 +27,12 @@ function buildContextMenu(showRotation, showGotoPage) {
     },
     {
       label: _("menu-view-zoom"),
+      enabled: isOpen,
       submenu: [
         {
           id: "fit-to-width",
           label: _("menu-view-zoom-fitwidth"),
+          enabled: isOpen,
           click() {
             mainProcess.onMenuFitToWidth();
           },
@@ -37,6 +40,7 @@ function buildContextMenu(showRotation, showGotoPage) {
         {
           id: "fit-to-height",
           label: _("menu-view-zoom-fitheight"),
+          enabled: isOpen,
           click() {
             mainProcess.onMenuFitToHeight();
           },
@@ -44,25 +48,26 @@ function buildContextMenu(showRotation, showGotoPage) {
         {
           id: "scale-to-height",
           label: _("menu-view-zoom-scaleheight"),
+          enabled: isOpen,
           submenu: getScaleToHeightSubmenu(),
         },
       ],
     },
     {
       label: _("ctxmenu-rotate"),
-      enabled: showRotation,
+      enabled: isOpen && showRotation,
       submenu: [
         {
           id: "rotate-clockwise",
           label: _("ctxmenu-rotate-clockwise"),
-          enabled: showRotation,
+          enabled: isOpen && showRotation,
           click() {
             mainProcess.onMenuRotateClockwise();
           },
         },
         {
           id: "rotation-counterclockwise",
-          enabled: showRotation,
+          enabled: isOpen && showRotation,
           label: _("ctxmenu-rotate-counterclockwise"),
           click() {
             mainProcess.onMenuRotateCounterclockwise();
@@ -72,22 +77,25 @@ function buildContextMenu(showRotation, showGotoPage) {
     },
     {
       label: _("menu-view-page"),
+      enabled: isOpen,
       submenu: [
         {
           label: _("menu-view-page-first"),
+          enabled: isOpen,
           click() {
             mainProcess.onGoToPageFirst();
           },
         },
         {
           label: _("menu-view-page-last"),
+          enabled: isOpen,
           click() {
             mainProcess.onGoToPageLast();
           },
         },
         {
           label: _("menu-view-page-choose"),
-          enabled: showGotoPage,
+          enabled: isOpen,
           click() {
             mainProcess.onGoToPageDialog();
           },
@@ -118,10 +126,15 @@ function buildContextMenu(showRotation, showGotoPage) {
   return contextMenu;
 }
 
-exports.getContextMenu = function (showRotation, showGotoPage) {
-  // if (g_contextMenu === undefined) buildContextMenu(showRotation, showGotoPage);
-  // return g_contextMenu;
-  return buildContextMenu(showRotation, showGotoPage);
+exports.getContextMenu = function (fileData) {
+  let isOpen = true;
+  let showRotation = true;
+  if (fileData.type === FileDataType.NOT_SET) {
+    isOpen = false;
+  } else if (fileData.type === FileDataType.EPUB_EBOOK) {
+    showRotation = false;
+  }
+  return buildContextMenu(isOpen, showRotation);
 };
 
 function getScaleToHeightSubmenu() {

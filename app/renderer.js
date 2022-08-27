@@ -196,20 +196,52 @@ ipcRenderer.on(
 );
 
 ipcRenderer.on("update-toolbar-rotation-buttons", (event, areEnabled) => {
-  const cwButton = document.querySelector("#toolbar-button-rotate-clockwise");
-  const ccwButton = document.querySelector(
+  const button1 = document.querySelector("#toolbar-button-rotate-clockwise");
+  const button2 = document.querySelector(
     "#toolbar-button-rotate-counterclockwise"
   );
   if (areEnabled) {
-    cwButton.classList.remove("no-click");
-    ccwButton.classList.remove("no-click");
-    cwButton.classList.remove("low-opacity");
-    ccwButton.classList.remove("low-opacity");
+    button1.classList.remove("no-click");
+    button2.classList.remove("no-click");
+    button1.classList.remove("low-opacity");
+    button2.classList.remove("low-opacity");
   } else {
-    cwButton.classList.add("no-click");
-    ccwButton.classList.add("no-click");
-    cwButton.classList.add("low-opacity");
-    ccwButton.classList.add("low-opacity");
+    button1.classList.add("no-click");
+    button2.classList.add("no-click");
+    button1.classList.add("low-opacity");
+    button2.classList.add("low-opacity");
+  }
+});
+
+ipcRenderer.on("update-toolbar-page-buttons", (event, areEnabled) => {
+  const button1 = document.querySelector("#toolbar-button-prev");
+  const button2 = document.querySelector("#toolbar-button-next");
+  if (areEnabled) {
+    button1.classList.remove("no-click");
+    button2.classList.remove("no-click");
+    button1.classList.remove("low-opacity");
+    button2.classList.remove("low-opacity");
+  } else {
+    button1.classList.add("no-click");
+    button2.classList.add("no-click");
+    button1.classList.add("low-opacity");
+    button2.classList.add("low-opacity");
+  }
+});
+
+ipcRenderer.on("update-toolbar-zoom-buttons", (event, areEnabled) => {
+  const button1 = document.querySelector("#toolbar-button-fit-to-height");
+  const button2 = document.querySelector("#toolbar-button-fit-to-width");
+  if (areEnabled) {
+    button1.classList.remove("no-click");
+    button2.classList.remove("no-click");
+    button1.classList.remove("low-opacity");
+    button2.classList.remove("low-opacity");
+  } else {
+    button1.classList.add("no-click");
+    button2.classList.add("no-click");
+    button1.classList.add("low-opacity");
+    button2.classList.add("low-opacity");
   }
 });
 

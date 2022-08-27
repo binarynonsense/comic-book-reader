@@ -388,14 +388,8 @@ app.on("ready", () => {
   });
 
   g_mainWindow.webContents.on("context-menu", function (e, params) {
-    let showRotation = true;
-    let showGotoPage = true;
-    if (g_fileData.type === FileDataType.EPUB_EBOOK) {
-      showRotation = false;
-      //showGotoPage = false;
-    }
     contextMenu
-      .getContextMenu(showRotation, showGotoPage)
+      .getContextMenu(g_fileData)
       .popup(g_mainWindow, params.x, params.y);
   });
 
@@ -2519,18 +2513,28 @@ function updateMenuAndToolbarItems() {
     ) {
       menuBar.setComicBookOpened(true);
       g_mainWindow.webContents.send("update-toolbar-rotation-buttons", true);
+      g_mainWindow.webContents.send("update-toolbar-page-buttons", true);
+      g_mainWindow.webContents.send("update-toolbar-zoom-buttons", true);
     } else if (g_fileData.type === FileDataType.EPUB_EBOOK) {
       menuBar.setEpubEbookOpened();
       g_mainWindow.webContents.send("update-toolbar-rotation-buttons", false);
+      g_mainWindow.webContents.send("update-toolbar-page-buttons", false);
+      g_mainWindow.webContents.send("update-toolbar-zoom-buttons", false);
     } else if (g_fileData.type === FileDataType.IMGS_FOLDER) {
       menuBar.setImageOpened();
       g_mainWindow.webContents.send("update-toolbar-rotation-buttons", true);
+      g_mainWindow.webContents.send("update-toolbar-page-buttons", true);
+      g_mainWindow.webContents.send("update-toolbar-zoom-buttons", true);
     } else if (g_fileData.type === FileDataType.WWW) {
       menuBar.setWWWOpened();
       g_mainWindow.webContents.send("update-toolbar-rotation-buttons", true);
+      g_mainWindow.webContents.send("update-toolbar-page-buttons", true);
+      g_mainWindow.webContents.send("update-toolbar-zoom-buttons", true);
     } else {
       menuBar.setComicBookOpened(false);
-      g_mainWindow.webContents.send("update-toolbar-rotation-buttons", true);
+      g_mainWindow.webContents.send("update-toolbar-rotation-buttons", false);
+      g_mainWindow.webContents.send("update-toolbar-page-buttons", false);
+      g_mainWindow.webContents.send("update-toolbar-zoom-buttons", false);
     }
   }
 }
