@@ -2518,8 +2518,8 @@ function updateMenuAndToolbarItems() {
     } else if (g_fileData.type === FileDataType.EPUB_EBOOK) {
       menuBar.setEpubEbookOpened();
       g_mainWindow.webContents.send("update-toolbar-rotation-buttons", false);
-      g_mainWindow.webContents.send("update-toolbar-page-buttons", false);
-      g_mainWindow.webContents.send("update-toolbar-zoom-buttons", false);
+      g_mainWindow.webContents.send("update-toolbar-page-buttons", true);
+      g_mainWindow.webContents.send("update-toolbar-zoom-buttons", true);
     } else if (g_fileData.type === FileDataType.IMGS_FOLDER) {
       menuBar.setImageOpened();
       g_mainWindow.webContents.send("update-toolbar-rotation-buttons", true);
