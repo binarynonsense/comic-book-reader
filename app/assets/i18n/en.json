@@ -195,6 +195,7 @@
   "tool-shared-tab-search": "Search",
   "tool-shared-tab-catalog": "Catalog",
   "tool-shared-tab-openurl": "Open Url",
+  "tool-shared-tab-options": "Options",
   "tool-shared-tab-about": "About",
 
   "tool-shared-modal-title-extracting": "Extracting",
@@ -296,9 +297,6 @@
   "tool-dcm-select-comic-text": "Select a Comic Book",
 
   "tool-iab-title": "Internet Archive Books",
-  "tool-iab-tab-1-text": "Search Books",
-  "tool-iab-tab-2-text": "Options",
-  "tool-iab-tab-3-text": "About",
   "tool-iab-options-collections-text": "Collections:",  
   "tool-iab-collection-any": "Any",
   "tool-iab-options-availability-text": "Availability:", 
@@ -307,11 +305,7 @@
   "tool-iab-button-open-ia-browser": "Open Internet Archive In Browser",
   "tool-iab-button-open-donate-browser": "Open Donation Site In Browser",
 
-  "tool-gut-title": "Internet Archive Books",
-  "tool-gut-text-tab-1": "Search Books",
-  "tool-gut-text-tab-2": "Open Url",
-  "tool-gut-text-tab-3": "Options",
-  "tool-gut-text-tab-4": "About",
+  "tool-gut-title": "Project Gutenberg",
   "tool-gut-text-url": "Ebook's Url:",
   "tool-gut-text-options-mirrors": "Download From:",
   "tool-gut-text-options-search-engine": "Search Engine:",

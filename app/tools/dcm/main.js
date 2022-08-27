@@ -37,7 +37,7 @@ exports.showWindow = function (parentWindow) {
   g_window.menuBarVisible = false;
   g_window.loadFile(`${__dirname}/index.html`);
 
-  if (isDev()) g_window.toggleDevTools();
+  // if (isDev()) g_window.toggleDevTools();
 
   g_window.on("closed", () => {
     g_window = undefined;

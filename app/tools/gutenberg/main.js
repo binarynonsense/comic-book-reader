@@ -251,19 +251,19 @@ function getLocalization() {
   return [
     {
       id: "text-tab-1",
-      text: _("tool-gut-text-tab-1").toUpperCase(),
+      text: _("tool-shared-tab-search").toUpperCase(),
     },
     {
       id: "text-tab-2",
-      text: _("tool-gut-text-tab-2").toUpperCase(),
+      text: _("tool-shared-tab-openurl").toUpperCase(),
     },
     {
       id: "text-tab-3",
-      text: _("tool-gut-text-tab-3").toUpperCase(),
+      text: _("tool-shared-tab-options").toUpperCase(),
     },
     {
       id: "text-tab-4",
-      text: _("tool-gut-text-tab-4").toUpperCase(),
+      text: _("tool-shared-tab-about").toUpperCase(),
     },
 
     {

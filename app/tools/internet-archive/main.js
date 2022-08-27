@@ -243,15 +243,15 @@ function getLocalization() {
   return [
     {
       id: "text-tab-1",
-      text: _("tool-iab-tab-1-text").toUpperCase(),
+      text: _("tool-shared-tab-search").toUpperCase(),
     },
     {
       id: "text-tab-2",
-      text: _("tool-iab-tab-2-text").toUpperCase(),
+      text: _("tool-shared-tab-options").toUpperCase(),
     },
     {
       id: "text-tab-3",
-      text: _("tool-iab-tab-3-text").toUpperCase(),
+      text: _("tool-shared-tab-about").toUpperCase(),
     },
     {
       id: "search-button",

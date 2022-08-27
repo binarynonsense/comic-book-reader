@@ -195,6 +195,7 @@
   "[NEEDS TRANSLATION]tool-shared-tab-search": "Search",
   "[NEEDS TRANSLATION]tool-shared-tab-catalog": "Catalog",
   "[NEEDS TRANSLATION]tool-shared-tab-openurl": "Open Url",
+  "[NEEDS TRANSLATION]tool-shared-tab-options": "Options",
   "[NEEDS TRANSLATION]tool-shared-tab-about": "About",
 
   "[NEEDS TRANSLATION]tool-shared-modal-title-extracting": "Extracting",
@@ -285,9 +286,6 @@
   "[NEEDS TRANSLATION]tool-cq-modal-alert-title-errorexporting": "ERROR: Could NOT Save the Image",
 
   "tool-dcm-title": "Digital Comic Museum", 
-  "[NEEDS TRANSLATION]tool-dcm-tab-1-text": "Find Comics",
-  "[NEEDS TRANSLATION]tool-dcm-tab-2-text": "Open Url",
-  "[NEEDS TRANSLATION]tool-dcm-tab-3-text": "About",
   "[NEEDS TRANSLATION]tool-dcm-publishers-text": "Publishers:",
   "[NEEDS TRANSLATION]tool-dcm-titles-text": "Titles",
   "[NEEDS TRANSLATION]tool-dcm-comics-text": "Comic Books:",
@@ -307,11 +305,7 @@
   "[NEEDS TRANSLATION]tool-iab-button-open-ia-browser": "Open Internet Archive In Browser",
   "[NEEDS TRANSLATION]tool-iab-button-open-donate-browser": "Open Donation Site In Browser",
 
-  "[NEEDS TRANSLATION]tool-gut-title": "Internet Archive Books",
-  "[NEEDS TRANSLATION]tool-gut-text-tab-1": "Search Books",
-  "[NEEDS TRANSLATION]tool-gut-text-tab-2": "Open Url",
-  "[NEEDS TRANSLATION]tool-gut-text-tab-3": "Options",
-  "[NEEDS TRANSLATION]tool-gut-text-tab-4": "About",
+  "[NEEDS TRANSLATION]tool-gut-title": "Project Gutenberg",
   "[NEEDS TRANSLATION]tool-gut-text-url": "Ebook's Url:",
   "[NEEDS TRANSLATION]tool-gut-text-options-mirrors": "Download From:",
   "[NEEDS TRANSLATION]tool-gut-text-options-search-engine": "Search Engine:",
