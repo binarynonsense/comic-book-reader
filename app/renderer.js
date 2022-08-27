@@ -994,63 +994,51 @@ async function extractPDFImageBuffer(
 
 document.onkeydown = function (event) {
   event = event || window.event;
-  // ref: http://gcctech.org/csc/javascript/javascript_keycodes.htm
-  if (event.keyCode == 34 || event.keyCode == 39) {
-    // page down or arrow right
+  // keys ref: https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key
+  // keys ref: https://developer.mozilla.org/en-US/docs/Web/API/UI_Events/Keyboard_event_key_values
+  if (event.key == "PageDown" || event.key == "ArrowRight") {
     ipcRenderer.send(
       "mouse-click",
       document.body.clientWidth,
       document.body.clientWidth
     );
     event.stopPropagation();
-  } else if (event.keyCode == 33 || event.keyCode == 37) {
-    // page up or arrow left
+  } else if (event.key == "PageUp" || event.key == "ArrowLeft") {
     ipcRenderer.send("mouse-click", 0, document.body.clientWidth);
     event.stopPropagation();
-  } else if (event.keyCode == 36) {
-    // home
+  } else if (event.key == "Home") {
     ipcRenderer.send("home-pressed");
-  } else if (event.keyCode == 35) {
-    // end
+  } else if (event.key == "End") {
     ipcRenderer.send("end-pressed");
-  } else if (event.keyCode == 40 || event.keyCode == 83) {
-    // arrow down or S
+  } else if (event.key == "ArrowDown" || event.key == "s") {
     let container = document.querySelector(".cet-container");
     let amount = container.offsetHeight / 5;
     container.scrollBy(0, amount);
     event.stopPropagation();
-  } else if (event.keyCode == 38 || event.keyCode == 87) {
-    // arrow up or W
+  } else if (event.key == "ArrowUp" || event.key == "w") {
     let container = document.querySelector(".cet-container");
     let amount = container.offsetHeight / 5;
     document.querySelector(".cet-container").scrollBy(0, -amount);
     event.stopPropagation();
-  } else if (event.keyCode == 65) {
-    // A
+  } else if (event.key == "a") {
     let container = document.querySelector(".cet-container");
     let amount = container.offsetWidth / 5;
     container.scrollBy(-amount, 0);
     event.stopPropagation();
-  } else if (event.keyCode == 68) {
-    // D
+  } else if (event.key == "d") {
     let container = document.querySelector(".cet-container");
     let amount = container.offsetWidth / 5;
     container.scrollBy(amount, 0);
     event.stopPropagation();
-  } else if (event.keyCode == 27) {
-    // escape
+  } else if (event.key == "Escape") {
     ipcRenderer.send("escape-pressed");
   } else if (event.ctrlKey && event.key === "+") {
-    // ctrl + '+'
     ipcRenderer.send("zoom-in-pressed");
   } else if (event.ctrlKey && event.key === "-") {
-    // ctrl + '-'
     ipcRenderer.send("zoom-out-pressed");
-  } else if (event.ctrlKey && (event.keyCode == 48 || event.keyCode == 96)) {
-    // ctrl + 0
+  } else if (event.ctrlKey && event.key == "0") {
     ipcRenderer.send("zoom-reset-pressed");
-  } else if (event.ctrlKey && event.shiftKey && event.keyCode == 73) {
-    // ctrl + shift + i
+  } else if (event.ctrlKey && event.shiftKey && event.key == "i") {
     ipcRenderer.send("dev-tools-pressed");
   }
 };
