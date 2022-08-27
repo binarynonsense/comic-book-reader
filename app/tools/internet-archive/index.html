@@ -117,9 +117,8 @@
         });
         // HACK: I do this to ensure the highlight border is the right size
         // or it starts too short or long some times?
-        tabs.select("tab-3");
         setTimeout(() => {
-          tabs.select("tab-1");
+          tabs.updateTabIndicator();
         }, 50);
       });
     </script>
