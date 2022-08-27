@@ -2041,10 +2041,15 @@ function goToPage(pageIndex, scrollBarPos = 0) {
     );
   } else if (g_fileData.type === FileDataType.WWW) {
     (async () => {
+      const calledFunc = g_fileData.getPageCallback;
       let response = await g_fileData.getPageCallback(
         g_fileData.pageIndex + 1,
         g_fileData
       );
+      if (calledFunc !== g_fileData.getPageCallback) {
+        // getPageCallback changed while downloading
+        return;
+      }
       if (!response || !response.pageImgSrc) {
         // TODO: handle error
         console.log("download error");
