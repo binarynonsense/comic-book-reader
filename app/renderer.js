@@ -1038,7 +1038,11 @@ document.onkeydown = function (event) {
     ipcRenderer.send("zoom-out-pressed");
   } else if (event.ctrlKey && event.key == "0") {
     ipcRenderer.send("zoom-reset-pressed");
-  } else if (event.ctrlKey && event.shiftKey && event.key == "i") {
+  } else if (
+    event.ctrlKey &&
+    event.shiftKey &&
+    (event.key == "i" || event.key == "I")
+  ) {
     ipcRenderer.send("dev-tools-pressed");
   }
 };
