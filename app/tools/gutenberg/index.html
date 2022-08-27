@@ -156,22 +156,22 @@
     </script>
     <script>
       window.addEventListener("DOMContentLoaded", function () {
-        var elem = document.querySelector(".modal");
-        var instance = M.Modal.getInstance(elem);
-        renderer.initModal(instance);
-        var instance2 = M.Tabs.init(document.querySelector(".tabs"));
+        let elem = document.querySelector(".modal");
+        let modal = M.Modal.getInstance(elem);
+        renderer.initModal(modal);
+        let tabs = M.Tabs.init(document.querySelector(".tabs"));
         // HACK: I do this to ensure the highlight border is the right size
-        // or it starts too short in spanish ???
-        // instance2.select("tab-2");
-        // setTimeout(() => {
-        //   instance2.select("tab-1");
-        // }, 50);
+        // or it starts too short or long some times?
+        tabs.select("tab-4");
+        setTimeout(() => {
+          tabs.select("tab-1");
+        }, 50);
       });
     </script>
     <script>
       document.addEventListener("DOMContentLoaded", function () {
-        var elems = document.querySelectorAll(".modal");
-        var instances = M.Modal.init(elems, {
+        let elems = document.querySelectorAll(".modal");
+        let modals = M.Modal.init(elems, {
           dismissible: false,
           onCloseStart: null,
         });
