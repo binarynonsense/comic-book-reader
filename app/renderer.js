@@ -415,6 +415,9 @@ async function loadEpubEbook(filePath, percentage, cachedPath) {
   try {
     const ePub = require("epubjs");
     g_currentEpubEbook.book = ePub.default(cachedPath ?? filePath);
+    g_currentEpubEbook.book.on("openFailed", function (error) {
+      ipcRenderer.send("epub-ebook-load-failed", error);
+    });
 
     const container = document.querySelector("#pages-container");
     container.innerHTML = "";
