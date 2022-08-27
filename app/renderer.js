@@ -398,7 +398,6 @@ async function loadEpubEbook(filePath, percentage, cachedPath) {
     let cfi = getEpubEbookCfiFromPercentage(percentage / 100);
     if (cfi === "epubcfi(/!/)" || cfi === -1)
       throw { name: "GenericError", message: "Empty or malformed epub cfi" };
-    console.log(g_currentEpubEbook.rendition.manager);
     const manager = g_currentEpubEbook.rendition.manager;
     // HACK / modification to epubjs
     // highjack function from managers>default>index.js in module
@@ -423,12 +422,8 @@ async function loadEpubEbook(filePath, percentage, cachedPath) {
 
         const zoomFactor =
           document.querySelector("#epub-ebook-container").clientHeight / 600;
-        console.log("position.left");
-        console.log(position.left);
         start = offset / zoomFactor - position.left / zoomFactor + used;
-        console.log(start);
         end = start + pageWidth;
-        console.log(end);
 
         used += pageWidth;
 
