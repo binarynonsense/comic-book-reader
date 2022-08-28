@@ -90,8 +90,10 @@ exports.getPortableCacheFolder = getPortableCacheFolder;
 
 ipcMain.on(g_ipcChannel + "open-id", (event, bookId, bookTitle, mirrorUrl) => {
   const url = `${mirrorUrl}cache/epub/${bookId}/pg${bookId}.epub`;
+  let data = { source: "gut", bookType: BookType.EBOOK };
+  if (bookTitle) data.name = bookTitle;
   mainProcess.openEbookFromPath(url, 0, {
-    data: { source: "gut", bookType: BookType.EBOOK, name: bookTitle },
+    data: data,
   });
   g_window.close();
 });

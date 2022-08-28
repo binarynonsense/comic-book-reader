@@ -157,7 +157,12 @@ exports.onOpenUrlInACBR = function () {
       bookId = parts[1];
     }
     if (!bookId) return;
-    ipcRenderer.send(g_ipcChannel + "open-id", bookId, g_mirrorsSelect.value);
+    ipcRenderer.send(
+      g_ipcChannel + "open-id",
+      bookId,
+      undefined,
+      g_mirrorsSelect.value
+    );
   }
 };
 
