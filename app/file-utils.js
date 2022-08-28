@@ -87,7 +87,25 @@ function getExeFolderPath() {
   // app.getAppPath();
   // process.cwd();
   // process.execPath;
-  return process.cwd();
+
+  // process.cwd() seemed to work as I wanted on win and linux until I used
+  // shortcuts to launch the builds. It is fine in windows (always returns
+  // the exe's directory path) but not linux. And for appimage builds
+  // app.getAppPath() returns the temp directory it was extracted to, not the exe's
+  if (process.platform === "linux") {
+    if (process.env.APPIMAGE) {
+      return path.dirname(process.env.APPIMAGE);
+    } else {
+      if (process.argv[2] == "--dev") {
+        return process.cwd();
+      } else {
+        return path.join(app.getAppPath(), "../../");
+      }
+    }
+  } else {
+    // win
+    return path.join(app.getAppPath(), "../../");
+  }
 }
 exports.getExeFolderPath = getExeFolderPath;
 
