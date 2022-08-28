@@ -52,7 +52,13 @@ ipcRenderer.on(g_ipcChannel + "build-list", (event, history) => {
   for (let index = history.length - 1; index >= 0; index--) {
     const fileInfo = history[index];
     let name = reducePathString(fileInfo.filePath);
-    if (fileInfo.data && fileInfo.data.source) name = "[www] " + name;
+    if (fileInfo.data && fileInfo.data.source) {
+      if (fileInfo.data.name) {
+        name = "[www] " + reducePathString(fileInfo.data.name);
+      } else {
+        name = "[www] " + name;
+      }
+    }
     g_itemsListDiv.innerHTML += `<li class="collection-item">
     <div>
       <a style="cursor: pointer; margin-right: 5px" onclick="renderer.onOpenItem(${index})" title="${g_localizedOpenFromListText}"

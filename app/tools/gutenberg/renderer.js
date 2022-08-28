@@ -114,9 +114,14 @@ function onSearch(pageNum = 1, inputValue = undefined) {
 }
 exports.onSearch = onSearch;
 
-exports.onSearchResultClicked = function (bookId, openWith) {
+exports.onSearchResultClicked = function (bookId, bookTitle, openWith) {
   if (openWith === 0) {
-    ipcRenderer.send(g_ipcChannel + "open-id", bookId, g_mirrorsSelect.value);
+    ipcRenderer.send(
+      g_ipcChannel + "open-id",
+      bookId,
+      bookTitle,
+      g_mirrorsSelect.value
+    );
   } else {
     let url = `https://www.gutenberg.org/ebooks/${bookId}`;
     openGutLink(url);

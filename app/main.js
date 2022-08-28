@@ -651,12 +651,8 @@ ipcMain.on("epub-comic-load-failed", (event) => {
 ipcMain.on("epub-ebook-loaded", (event, filePath, percentage) => {
   g_fileData.state = FileDataState.LOADED; // will change inmediately to loading
   g_fileData.type = FileDataType.EPUB_EBOOK;
-  g_fileData.path = filePath;
-  g_fileData.name = path.basename(filePath);
-  g_fileData.numPages = 100;
   if (percentage < 0 || percentage >= 100) percentage = 0;
   g_fileData.pageIndex = percentage;
-  if (!g_fileData.data) g_fileData.data = { bookType: BookType.EBOOK };
   updateMenuAndToolbarItems();
   setPageRotation(0, false);
   setInitialZoom(filePath);
@@ -1779,8 +1775,10 @@ async function openEbookFromPath(filePath, pageIndex, historyEntry) {
   if (fileExtension === "." + FileExtension.EPUB) {
     let data;
     let cachedPath;
+    let name = path.basename(filePath);
     if (historyEntry?.data?.source === "gut") {
       data = historyEntry.data;
+      if (data.name && data.name != "") name = data.name;
       // cached file
       if (filePath.startsWith("http")) {
         if (g_settings.toolGutUseCache) {
@@ -1829,13 +1827,21 @@ async function openEbookFromPath(filePath, pageIndex, historyEntry) {
 
     g_mainWindow.webContents.send("update-loading", true);
     g_mainWindow.webContents.send("update-bg", false);
-    if (!pageIndex) pageIndex = 0;
     cleanUpFileData();
+
     g_fileData.type = FileDataType.EPUB_EBOOK;
     g_fileData.state = FileDataState.LOADING;
-    g_fileData.pageIndex = pageIndex;
     g_fileData.path = filePath;
-    if (data) g_fileData.data = data;
+    g_fileData.name = name;
+    if (!pageIndex || pageIndex < 0 || pageIndex >= 100) pageIndex = 0;
+    g_fileData.pageIndex = pageIndex;
+    g_fileData.numPages = 100;
+    if (data) {
+      g_fileData.data = data;
+    } else {
+      g_fileData.data = { bookType: BookType.EBOOK };
+    }
+
     g_mainWindow.webContents.send(
       "load-epub-ebook",
       filePath,

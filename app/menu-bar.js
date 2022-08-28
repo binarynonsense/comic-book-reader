@@ -298,7 +298,13 @@ function getOpenRecentSubmenu(history) {
   for (let index = 0; index < length; index++) {
     const entry = reverseHistory[index];
     let label = fileUtils.reducePathString(entry.filePath);
-    if (entry.data && entry.data.source) label = "[www] " + label;
+    if (entry.data && entry.data.source) {
+      if (entry.data.name) {
+        label = "[www] " + fileUtils.reducePathString(entry.data.name);
+      } else {
+        label = "[www] " + label;
+      }
+    }
     menu.push({
       label: label,
       click() {

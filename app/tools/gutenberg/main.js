@@ -88,10 +88,10 @@ exports.getPortableCacheFolder = getPortableCacheFolder;
 
 ////////////////////////////////////////////////////////////////////////
 
-ipcMain.on(g_ipcChannel + "open-id", (event, bookId, mirrorUrl) => {
+ipcMain.on(g_ipcChannel + "open-id", (event, bookId, bookTitle, mirrorUrl) => {
   const url = `${mirrorUrl}cache/epub/${bookId}/pg${bookId}.epub`;
   mainProcess.openEbookFromPath(url, 0, {
-    data: { source: "gut", bookType: BookType.EBOOK },
+    data: { source: "gut", bookType: BookType.EBOOK, name: bookTitle },
   });
   g_window.close();
 });
@@ -207,13 +207,17 @@ ipcMain.on(g_ipcChannel + "search", (event, text, pageNum) => {
           content += `<li class="collection-item">      
           <span class="title"><a style="cursor: pointer; margin-right: 5px;" title="${_(
             "tool-shared-ui-search-item-open-acbr"
-          )}" onclick="renderer.onSearchResultClicked(${bookData.id}, 0)"
+          )}" onclick="renderer.onSearchResultClicked(${bookData.id}, '${
+            bookData.title
+          }', 0)"
             ><i class="fa fa-folder-open"></i> ${reduceString(
               bookData.title
             )}</a><br>${authors}</span>
             <a
               style="cursor: pointer"
-              onclick="renderer.onSearchResultClicked(${bookData.id}, 1)"
+              onclick="renderer.onSearchResultClicked(${bookData.id}, '${
+            bookData.title
+          }', 1)"
               class="secondary-content"
               ><i
                 class="fa fa-link" aria-hidden="true"
