@@ -126,10 +126,6 @@ function getLocalization() {
       text: _("tool-shared-ui-about-text-2"),
     },
     {
-      id: "text-about-3",
-      text: _("tool-shared-ui-about-text-3"),
-    },
-    {
       id: "button-open-website-browser",
       text: _("tool-xkcd-button-open-website-browser").toUpperCase(),
     },
