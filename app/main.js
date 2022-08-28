@@ -520,6 +520,7 @@ function addCurrentToHistory(updateMenu = true) {
     };
     if (g_fileData.data) {
       newEntry.data = g_fileData.data;
+      if (newEntry.data.tempData) delete newEntry.data.tempData;
     }
     g_history.push(newEntry);
     if (g_history.length > g_settings.history_capacity) {
@@ -572,6 +573,17 @@ ipcMain.on("page-loaded", (event, data) => {
   }
   renderPageInfo();
   renderTitle();
+  if (g_fileData?.data?.source === "xkcd") {
+    g_mainWindow.webContents.send(
+      "update-title",
+      `${g_fileData.data.name} #${g_fileData.pageIndex + 1}`
+    );
+    if (g_fileData.data?.tempData?.title)
+      g_mainWindow.webContents.send(
+        "update-img-page-title",
+        g_fileData.data.tempData.title
+      );
+  }
 });
 
 ipcMain.on("password-entered", (event, password) => {
@@ -1248,6 +1260,12 @@ exports.onMenuToolGutenberg = function () {
   g_mainWindow.webContents.send("update-menubar");
 };
 
+exports.onMenuToolXkcd = function () {
+  const tool = require("./tools/xkcd/main");
+  tool.showWindow(g_mainWindow);
+  g_mainWindow.webContents.send("update-menubar");
+};
+
 exports.onMenuToggleDevTools = function () {
   toggleDevTools();
 };
@@ -1366,7 +1384,8 @@ function tryOpen(filePath, bookType, historyEntry) {
     if (historyEntry.data && historyEntry.data.source) {
       if (
         historyEntry.data.source === "dcm" ||
-        historyEntry.data.source === "iab"
+        historyEntry.data.source === "iab" ||
+        historyEntry.data.source === "xkcd"
       ) {
         return tryOpenWWW(pageIndex, historyEntry);
       } else if (historyEntry.data.source === "gut") {
@@ -1433,9 +1452,12 @@ function tryOpenWWW(pageIndex, historyEntry) {
     const tool = require("./tools/dcm/main");
     openBookFromCallback(data, tool.getPageCallback, pageIndex);
     return true;
-  }
-  if (data.source === "iab") {
+  } else if (data.source === "iab") {
     const tool = require("./tools/internet-archive/main");
+    openBookFromCallback(data, tool.getPageCallback, pageIndex);
+    return true;
+  } else if (data.source === "xkcd") {
+    const tool = require("./tools/xkcd/main");
     openBookFromCallback(data, tool.getPageCallback, pageIndex);
     return true;
   }
@@ -2081,6 +2103,11 @@ function goToPage(pageIndex, scrollBarPos = 0) {
         return;
       }
       g_fileData.pagesPaths = [response.pageImgUrl];
+      if (response.tempData) {
+        if (g_fileData.data) {
+          g_fileData.data.tempData = response.tempData;
+        }
+      }
       g_mainWindow.webContents.send(
         "render-img-page",
         response.pageImgSrc,

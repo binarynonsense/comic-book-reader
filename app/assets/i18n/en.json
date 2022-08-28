@@ -100,6 +100,7 @@
   "menu-tools-other-dcm": "Digital Comic Museum",
   "menu-tools-other-iab": "Internet Archive Books",
   "menu-tools-other-gut": "Project Gutenberg",
+  "menu-tools-other-xkcd": "xkcd Webcomics",
 
   "menu-help": "Help",
   "menu-help-about": "About",
@@ -192,7 +193,7 @@
   "tool-shared-ui-about-text-1": "This is a tool to search through {0} available in the \"{1}\" website and open them in the system's browser or directly inside ACBR.",
   "tool-shared-ui-about-text-1-comicbooks": "the comic books",
   "tool-shared-ui-about-text-1-books": "the books",
-  "tool-shared-ui-about-text-1-comicstrips": "the comics",
+  "tool-shared-ui-about-text-1-webcomics": "the webcomics",
   "tool-shared-ui-about-text-2": "It needs an internet connection and could at any point stop working if the website's structure changes.",
   "tool-shared-ui-about-text-3": "If you use it frequently or just like what they are doing, please consider making a donation to help them keep the site alive.",
   "tool-shared-tab-search": "Search",
@@ -317,6 +318,11 @@
   "tool-gut-button-options-open-cache-folder": "Open Cache Folder",
   "tool-gut-button-open-pg-browser": "Open Project Gutenberg In Browser",
   "tool-gut-button-open-donate-browser": "Open Donation Site In Browser",
+
+  "tool-xkcd-title": "xkcd Webcomics",
+  "tool-xkcd-text-catalog-number": "Webcomic Number",
+  "tool-xkcd-select-catalog-number-default": "Select a Number",
+  "tool-xkcd-button-open-website-browser": "Open xkcd In Browser",
 
   "mgr-hist-title": "History",  
   "mgr-hist-button-clear-all": "Clear History",

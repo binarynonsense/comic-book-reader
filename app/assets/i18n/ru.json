@@ -100,6 +100,7 @@
   "menu-tools-other-dcm": "Digital Comic Museum",
   "menu-tools-other-iab": "Internet Archive Books",
   "menu-tools-other-gut": "Project Gutenberg",
+  "menu-tools-other-xkcd": "xkcd Webcomics",
 
   "menu-help": "Справка",
   "menu-help-about": "О программе", 
@@ -192,7 +193,7 @@
   "[NEEDS TRANSLATION]tool-shared-ui-about-text-1": "This is a tool to search through {0} available in the \"{1}\" website and open them in the system's browser or directly inside ACBR.",
   "[NEEDS TRANSLATION]tool-shared-ui-about-text-1-comicbooks": "the comic books",
   "[NEEDS TRANSLATION]tool-shared-ui-about-text-1-books": "the books",
-  "[NEEDS TRANSLATION]tool-shared-ui-about-text-1-comicstrips": "the comics",
+  "[NEEDS TRANSLATION]tool-shared-ui-about-text-1-webcomics": "the webcomics",
   "[NEEDS TRANSLATION]tool-shared-ui-about-text-2": "It needs an internet connection and could at any point stop working if the website's structure changes.",
   "[NEEDS TRANSLATION]tool-shared-ui-about-text-3": "If you use it frequently or just like what they are doing, please consider making a donation to help them keep the site alive.",
   "[NEEDS TRANSLATION]tool-shared-tab-search": "Search",
@@ -308,7 +309,7 @@
   "[NEEDS TRANSLATION]tool-iab-button-open-ia-browser": "Open Internet Archive In Browser",
   "[NEEDS TRANSLATION]tool-iab-button-open-donate-browser": "Open Donation Site In Browser",
 
-  "[NEEDS TRANSLATION]tool-gut-title": "Project Gutenberg",
+  "tool-gut-title": "Project Gutenberg",
   "[NEEDS TRANSLATION]tool-gut-text-url": "Ebook's Url:",
   "[NEEDS TRANSLATION]tool-gut-text-options-mirrors": "Download From:",
   "[NEEDS TRANSLATION]tool-gut-text-options-search-engine": "Search Engine:",
@@ -317,6 +318,11 @@
   "[NEEDS TRANSLATION]tool-gut-button-options-open-cache-folder": "Open Cache Folder",
   "[NEEDS TRANSLATION]tool-gut-button-open-pg-browser": "Open Project Gutenberg In Browser",
   "[NEEDS TRANSLATION]tool-gut-button-open-donate-browser": "Open Donation Site In Browser",
+
+  "tool-xkcd-title": "xkcd Webcomics",
+  "[NEEDS TRANSLATION]tool-xkcd-text-catalog-number": "Webcomic Number",
+  "[NEEDS TRANSLATION]tool-xkcd-select-catalog-number-default": "Select a Number",
+  "[NEEDS TRANSLATION]tool-xkcd-button-open-website-browser": "Open xkcd In Browser",
 
   "[NEEDS TRANSLATION]mgr-hist-title": "History",  
   "[NEEDS TRANSLATION]mgr-hist-button-clear-all": "Clear History",

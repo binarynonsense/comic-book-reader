@@ -1189,6 +1189,12 @@ function buildApplicationMenu(
                 mainProcess.onMenuToolGutenberg();
               },
             },
+            {
+              label: _("menu-tools-other-xkcd"),
+              click() {
+                mainProcess.onMenuToolXkcd();
+              },
+            },
           ],
         },
       ],

@@ -330,12 +330,18 @@ ipcRenderer.on("render-img-page", (event, img64, rotation, scrollBarPos) => {
     cleanUp();
     document.querySelector(".centered-block").classList.add("hide");
     g_currentImg64 = img64;
-    renderImg64(rotation, scrollBarPos, true);
+    renderImg64(rotation, scrollBarPos, true, false);
   }
 });
 
 ipcRenderer.on("refresh-img-page", (event, rotation) => {
-  if (g_currentImg64) renderImg64(rotation, undefined, false);
+  if (g_currentImg64) renderImg64(rotation, undefined, false, true);
+});
+
+ipcRenderer.on("update-img-page-title", (event, text) => {
+  let img = document.getElementById("page-img");
+  if (!img) img = document.getElementById("page-canvas");
+  if (img) img.title = text;
 });
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -376,7 +382,7 @@ ipcRenderer.on("load-epub-comic", (event, filePath, pageIndex) => {
 });
 
 ipcRenderer.on("refresh-epub-comic-page", (event, rotation) => {
-  if (g_currentImg64) renderImg64(rotation, undefined, false);
+  if (g_currentImg64) renderImg64(rotation, undefined, false, true);
 });
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -709,12 +715,14 @@ function showModalQuestionOpenAs(
 // IMG64 //////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-function renderImg64(
-  rotation,
-  scrollBarPos = undefined,
-  sendPageLoaded = true
-) {
+function renderImg64(rotation, scrollBarPos, sendPageLoaded, fromRefresh) {
   let container = document.getElementById("pages-container");
+  let title;
+  if (fromRefresh) {
+    let img = document.getElementById("page-img");
+    if (!img) img = document.getElementById("page-canvas");
+    if (img) title = img.title;
+  }
   container.innerHTML = "";
   if (rotation === 0 || rotation === 180) {
     var image = new Image();
@@ -723,7 +731,9 @@ function renderImg64(
       if (sendPageLoaded) ipcRenderer.send("page-loaded");
     };
     image.src = g_currentImg64;
+    image.id = "page-img";
     image.classList.add("page");
+    if (title && title != "") image.title = title;
     if (rotation === 180) {
       image.classList.add("set-rotate-180");
     }
@@ -733,6 +743,7 @@ function renderImg64(
   else if (rotation === 90 || rotation === 270) {
     var canvas = document.createElement("canvas");
     canvas.id = "page-canvas";
+    if (title && title != "") canvas.title = title;
     container.appendChild(canvas);
     var context = canvas.getContext("2d");
     var image = new Image();
