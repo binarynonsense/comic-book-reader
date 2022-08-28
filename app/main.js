@@ -425,7 +425,6 @@ function onResizeEventFinished() {
 
 // Security
 // ref: https://www.electronjs.org/docs/tutorial/security
-
 app.on("web-contents-created", (event, contents) => {
   contents.on("will-navigate", (event, navigationUrl) => {
     event.preventDefault();
@@ -510,7 +509,8 @@ function addCurrentToHistory(updateMenu = true) {
   if (currentFilePath !== "") {
     let foundIndex = getHistoryIndex(currentFilePath);
     if (foundIndex !== undefined) {
-      g_history.splice(foundIndex, 1); // remove, to update and put last
+      // remove, to update and put last
+      g_history.splice(foundIndex, 1);
     }
     let newEntry = {
       filePath: currentFilePath,
@@ -522,7 +522,6 @@ function addCurrentToHistory(updateMenu = true) {
       newEntry.data = g_fileData.data;
     }
     g_history.push(newEntry);
-    // limit how many are remembered
     if (g_history.length > g_settings.history_capacity) {
       g_history.splice(0, g_history.length - g_settings.history_capacity);
     }
@@ -1042,7 +1041,7 @@ exports.onMenuScaleToHeight = function (scale) {
 };
 
 exports.onMenuScaleToHeightZoomInput = function (input) {
-  // handled by renderer
+  // now handled by renderer
   //processZoomInput(input);
 };
 
@@ -1406,7 +1405,6 @@ function tryOpen(filePath, bookType, historyEntry) {
 exports.tryOpen = tryOpen;
 
 function tryOpenPath(filePath, pageIndex, bookType, historyEntry) {
-  // TODO: pass historyEntry and use it?
   if (bookType === BookType.EBOOK) {
     if (fileFormats.hasEpubExtension(filePath)) {
       openEbookFromPath(filePath, pageIndex, historyEntry);
@@ -1488,7 +1486,7 @@ function openImageFolder(folderPath, filePath, pageIndex) {
       }
     }
   }
-  if (pageIndex === undefined) pageIndex = 0; // just in case
+  if (pageIndex === undefined) pageIndex = 0;
 
   g_fileData.state = FileDataState.LOADED;
   g_fileData.type = FileDataType.IMGS_FOLDER;
