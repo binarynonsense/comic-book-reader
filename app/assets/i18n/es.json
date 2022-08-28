@@ -319,8 +319,8 @@
   "tool-gut-button-open-pg-browser": "Abrir Project Gutenberg En Navegador",
   "tool-gut-button-open-donate-browser": "Abrir Web De Donativos En Navegador",
 
-  "tool-xkcd-title": "xkcd Webcomics",
-  "tool-xkcd-text-catalog-number": "Número del Webcómic",
+  "tool-xkcd-title": "xkcd Webcómics",
+  "tool-xkcd-text-catalog-number": "Número del Webcómic:",
   "tool-xkcd-select-catalog-number-default": "Seleccione un Número",
   "tool-xkcd-button-open-website-browser": "Abrir xkcd En Navegador",
 

@@ -320,7 +320,7 @@
   "[NEEDS TRANSLATION]tool-gut-button-open-donate-browser": "Open Donation Site In Browser",
 
   "tool-xkcd-title": "xkcd Webcomics",
-  "[NEEDS TRANSLATION]tool-xkcd-text-catalog-number": "Webcomic Number",
+  "[NEEDS TRANSLATION]tool-xkcd-text-catalog-number": "Webcomic Number:",
   "[NEEDS TRANSLATION]tool-xkcd-select-catalog-number-default": "Select a Number",
   "[NEEDS TRANSLATION]tool-xkcd-button-open-website-browser": "Open xkcd In Browser",
 
