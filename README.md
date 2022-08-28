@@ -16,7 +16,6 @@ A comic book reader and converter for cbz, cbr, cb7, epub and pdf files.
     - .cb7
     - .pdf
     - .epub (images only)    
-    including password protected pdf, cbz (AES encryption not supported), cb7 and cbr files.
   - Image files:
     - .jpg
     - .png
@@ -25,6 +24,8 @@ A comic book reader and converter for cbz, cbr, cb7, epub and pdf files.
   - Ebooks:
     - .pdf
     - .epub
+
+  Including password protected pdf, cbz (AES encryption not supported), cb7 and cbr files.
 - Windowed (simple UI) and full-screen (no UI) modes.
 - 'Fit to width', 'fit to height' and a customizable 'scale to height' page views.
 - Page rotation.
