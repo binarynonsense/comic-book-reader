@@ -10,13 +10,21 @@ A comic book reader and converter for cbz, cbr, cb7, epub and pdf files.
 
 - Windows & GNU/Linux versions.
 - Compatible file formats:
-  - .cbz
-  - .cbr
-  - .cb7
-  - .pdf
-  - .epub (images only)
-  - image files (.jpg, .png, .webp or .avif)  
-Including password protected pdf, cbz (AES encryption not supported), cb7 and cbr files.
+  - Comic books:
+    - .cbz
+    - .cbr
+    - .cb7
+    - .pdf
+    - .epub (images only)    
+    including password protected pdf, cbz (AES encryption not supported), cb7 and cbr files.
+  - Image files:
+    - .jpg
+    - .png
+    - .webp
+    - .avif
+  - Ebooks:
+    - .pdf
+    - .epub
 - Windowed (simple UI) and full-screen (no UI) modes.
 - 'Fit to width', 'fit to height' and a customizable 'scale to height' page views.
 - Page rotation.
@@ -38,6 +46,11 @@ Including password protected pdf, cbz (AES encryption not supported), cb7 and cb
     - a QR code's text from a comic book page or image file.
     - a color palette from a comic book page or image file.
       - can be exported to a .gpl or .aco palette file.
+  - Other (search the catalogs and open books/comics from):
+    - Digital Comics Museum
+    - Internet Archive Books
+    - Project Gutenberg
+    - xkcd Webcomics
 
 ## Controls:
 
