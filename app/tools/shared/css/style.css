@@ -11,6 +11,10 @@ body {
   text-align: left;
 }
 
+.container-withtabs {
+  margin-top: 10px !important;
+}
+
 .btn {
   width: 100%;
 }
@@ -46,4 +50,22 @@ textarea#modal-log {
 
 details summary {
   cursor: pointer;
+}
+
+.tabs .tab a {
+  color: rgba(47, 144, 209, 0.664);
+}
+
+.tabs .tab a:hover {
+  background-color: rgba(255, 255, 255, 0) !important;
+  color: rgb(47, 144, 209);
+}
+
+.tabs .tab a.active {
+  background-color: rgba(255, 255, 255, 0) !important;
+  color: rgb(47, 144, 209);
+}
+
+.tabs .indicator {
+  background-color: rgb(47, 144, 209) !important;
 }
