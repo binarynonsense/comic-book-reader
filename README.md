@@ -15,7 +15,7 @@ A comic book reader and converter for cbz, cbr, cb7, epub and pdf files.
     - .cbr
     - .cb7
     - .pdf
-    - .epub (images only)    
+    - .epub    
   - Image files:
     - .jpg
     - .png
