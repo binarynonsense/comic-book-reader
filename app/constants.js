@@ -14,6 +14,7 @@ exports.FileExtension = {
   WEBP: "webp",
   BMP: "bmp",
   AVIF: "avif",
+  MP3: "mp3",
   TMP: "tmp",
 };
 

@@ -1,0 +1,68 @@
+<div id="ap-div-topbar" class="ap-frame">
+  <a id="ap-button-open" class="ap-button" title="open files"
+    ><i class="fa fa-folder-open" aria-hidden="true"></i
+  ></a>
+  <div class="ap-separator"></div>
+  <a id="ap-button-prev" class="ap-button" title="previous track"
+    ><i class="fa fa-step-backward" aria-hidden="true"></i
+  ></a>
+  <a id="ap-button-play" class="ap-button" title="play"
+    ><i class="fa fa-play" aria-hidden="true"></i
+  ></a>
+  <a id="ap-button-pause" class="ap-button" title="pause"
+    ><i class="fa fa-pause" aria-hidden="true"></i
+  ></a>
+  <a id="ap-button-next" class="ap-button" title="next track"
+    ><i class="fa fa-step-forward" aria-hidden="true"></i
+  ></a>
+  <div id="ap-div-time">
+    <input id="ap-slider-time" class="ap-slider" type="range" value="0" />
+    <div id="ap-text-time">00:00 / 00:00</div>
+  </div>
+  <div id="ap-div-volume">
+    <a id="ap-button-volume-off" class="ap-button" title="volume off"
+      ><i class="fa fa-volume-up" aria-hidden="true"></i
+    ></a>
+    <a id="ap-button-volume-on" class="ap-button ap-hidden" title="volume on"
+      ><i class="fa fa-volume-off" aria-hidden="true"></i
+    ></a>
+    <input
+      id="ap-slider-volume"
+      class="ap-slider ap-hidden"
+      type="range"
+      value="100"
+    />
+    <div id="ap-text-volume">100%</div>
+  </div>
+  <div class="ap-separator"></div>
+  <a id="ap-button-playlist" class="ap-button" title="toggle playlist"
+    ><i class="fa fa-list" aria-hidden="true"></i
+  ></a>
+  <a id="ap-button-close" class="ap-button" title="hide"
+    ><i class="fa fa-times" aria-hidden="true"></i
+  ></a>
+</div>
+<!-- ---------------   PLAYLIST    ---------------  -->
+<div id="ap-div-playlist" class="ap-frame">
+  <div id="ap-div-playlist-tracks"></div>
+  <div id="ap-span-playlist-buttons">
+    <a id="ap-button-shuffle-off" class="ap-button" title="toggle shuffle"
+      ><i class="fa fa-random" aria-hidden="true"></i
+      ><i class="far fa-check-square fa-sm" style="margin-left: 5px"></i
+    ></a>
+    <a id="ap-button-shuffle-on" class="ap-button" title="toggle shuffle"
+      ><i class="fa fa-random" aria-hidden="true"></i
+      ><i class="far fa-square fa-sm" style="margin-left: 5px"></i
+    ></a>
+    <a id="ap-button-repeat-off" class="ap-button" title="toggle repeat"
+      ><i class="fa fa-sync-alt fa-sm" aria-hidden="true"></i
+      ><i class="far fa-check-square fa-sm" style="margin-left: 5px"></i
+    ></a>
+    <a id="ap-button-repeat-on" class="ap-button" title="toggle repeat"
+      ><i class="fa fa-sync-alt fa-sm" aria-hidden="true"></i
+      ><i class="far fa-square fa-sm" style="margin-left: 5px"></i
+    ></a>
+  </div>
+</div>
+<!-- ---------------  HTML AUDIO PLAYER ---------------  -->
+<audio id="html-audio"></audio>

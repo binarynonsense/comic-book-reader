@@ -1,8 +1,8 @@
 {
   "@metadata": {
     "authors": ["Álvaro"],
-    "last-updated": "2022-08-25",
-    "acbr-version": "2.3.0",
+    "last-updated": "2022-08-30",
+    "acbr-version": "2.4.0",
     "comments": "",
     "locale": "en",
     "name": "English",
@@ -83,6 +83,7 @@
   "menu-view-showtoolbar": "Show Tool Bar",
   "menu-view-showpagenum": "Show Page Number",
   "menu-view-showclock": "Show Clock",
+  "menu-view-showaudioplayer": "Show Audio Player",
 
   "menu-tools": "Tools",
   "menu-tools-convert": "Convert",
@@ -327,5 +328,19 @@
   "mgr-hist-title": "History",  
   "mgr-hist-button-clear-all": "Clear History",
   "mgr-hist-tooltip-remove-from-list": "remove from history",
-  "mgr-hist-tooltip-open-from-list": "open file"
+  "mgr-hist-tooltip-open-from-list": "open file",
+
+  "ap-tooltip-button-play": "play",
+  "ap-tooltip-button-pause": "pause",
+  "ap-tooltip-button-next": "next track",
+  "ap-tooltip-button-prev": "prev track",
+  "ap-tooltip-button-open": "open audio files",
+  "ap-tooltip-button-volume-off": "turn volume off",
+  "ap-tooltip-button-volume-on": "turn volume on",
+  "ap-tooltip-button-playlist": "toggle playlist",
+  "ap-tooltip-button-close": "hide",
+  "ap-tooltip-button-shuffle-off": "turn shuffle playlist off",
+  "ap-tooltip-button-shuffle-on": "turn shuffle playlist on",
+  "ap-tooltip-button-repeat-off": "turn repeat playlist off",
+  "ap-tooltip-button-repeat-on": "turn repeat playlist on"
 }

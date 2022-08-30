@@ -16,6 +16,7 @@ const {
   FileDataType,
   BookType,
 } = require("./constants");
+const audioPlayer = require("./audio-player/main");
 
 const {
   setupTitlebar,
@@ -59,6 +60,7 @@ let g_settings = {
   showScrollBar: true,
   showPageNumber: true,
   showClock: false,
+  showAudioPlayer: false,
 
   loadLastOpened: true,
   autoOpen: 0, // 0: disabled, 1: next file, 2: next and previous files
@@ -155,6 +157,9 @@ function sanitizeSettings() {
   }
   if (typeof g_settings.showScrollBar !== "boolean") {
     g_settings.showScrollBar = true;
+  }
+  if (typeof g_settings.showAudioPlayer !== "boolean") {
+    g_settings.showAudioPlayer = false;
   }
   if (typeof g_settings.loadLastOpened !== "boolean") {
     g_settings.loadLastOpened = true;
@@ -361,6 +366,8 @@ app.on("ready", () => {
     showPageNumber(g_settings.showPageNumber);
     initClock();
     showClock(g_settings.showClock);
+    audioPlayer.init(g_mainWindow, "audio-player-container", _);
+    showAudioPlayer(g_settings.showAudioPlayer);
 
     g_mainWindow.setSize(g_settings.width, g_settings.height);
     g_mainWindow.center();
@@ -1096,6 +1103,10 @@ exports.onMenuTogglePageNumber = function () {
 
 exports.onMenuToggleClock = function () {
   toggleClock();
+};
+
+exports.onMenuToggleAudioPlayer = function () {
+  toggleAudioPlayer();
 };
 
 exports.onMenuToggleFullScreen = function () {
@@ -2385,6 +2396,19 @@ function showClock(isVisible) {
 
 function toggleClock() {
   showClock(!g_settings.showClock);
+  g_mainWindow.webContents.send("update-menubar");
+}
+
+exports.showAudioPlayer = showAudioPlayer;
+function showAudioPlayer(isVisible, updateMenuBar) {
+  g_settings.showAudioPlayer = isVisible;
+  audioPlayer.show(isVisible);
+  menuBar.setAudioPlayer(isVisible);
+  if (updateMenuBar) g_mainWindow.webContents.send("update-menubar");
+}
+
+function toggleAudioPlayer() {
+  showAudioPlayer(!g_settings.showAudioPlayer);
   g_mainWindow.webContents.send("update-menubar");
 }
 

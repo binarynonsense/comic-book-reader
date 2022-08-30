@@ -26,6 +26,10 @@ let g_titlebar = new customTitlebar.Titlebar({
 // IPC RECEIVED ///////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+ipcRenderer.on("append-html", (event, parentElementId, content) => {
+  document.getElementById(parentElementId).innerHTML = content;
+});
+
 ipcRenderer.on("update-loading", (event, isVisible) => {
   // ref: https://github.com/raphaelfabeni/css-loader
   if (isVisible) {

@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="./assets/css/style.css" />
     <link rel="stylesheet" href="./assets/css/toolbar.css" />
     <link rel="stylesheet" href="./assets/css/loading.css" />
+    <link rel="stylesheet" href="./assets/css/audio-player.css" />
     <link href="./assets/libs/fontawesome/css/all.css" rel="stylesheet" />
     <script src="./assets/libs/smalltalk/smalltalk.min.js"></script>
     <title></title>
@@ -20,6 +21,7 @@
 
     <div id="page-number-bubble"></div>
     <div id="clock-bubble"></div>
+    <div id="audio-player-container" class="ap-layout-top-left"></div>
 
     <nav id="toolbar">
       <div class="toolbar-item" id="toolbar-button-open">
@@ -115,7 +117,8 @@
     </div>
 
     <script>
-      require("./renderer");
+      const renderer = require("./renderer");
+      const player = require("./audio-player/renderer");
     </script>
   </body>
 </html>

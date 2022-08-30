@@ -40,6 +40,10 @@ exports.setClock = function (isChecked) {
   Menu.getApplicationMenu().getMenuItemById("clock").checked = isChecked;
 };
 
+exports.setAudioPlayer = function (isChecked) {
+  Menu.getApplicationMenu().getMenuItemById("audio-player").checked = isChecked;
+};
+
 exports.setPageRotation = function (value) {
   Menu.getApplicationMenu().getMenuItemById("rotation-0").checked = value === 0;
   Menu.getApplicationMenu().getMenuItemById("rotation-90").checked =
@@ -1077,6 +1081,16 @@ function buildApplicationMenu(
           accelerator: "CommandOrControl+J",
           click() {
             mainProcess.onMenuToggleClock();
+          },
+        },
+        {
+          label: _("menu-view-showaudioplayer"),
+          id: "audio-player",
+          type: "checkbox",
+          checked: settings.showAudioPlayer,
+          accelerator: "CommandOrControl+M",
+          click() {
+            mainProcess.onMenuToggleAudioPlayer();
           },
         },
         {

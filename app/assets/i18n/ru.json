@@ -83,6 +83,7 @@
   "menu-view-showtoolbar": "Показывать панель инструментов",
   "menu-view-showpagenum": "Показывать номер страницы",
   "menu-view-showclock": "Показывать часы",
+  "[NEEDS TRANSLATION]menu-view-showaudioplayer": "Show Audio Player",
 
   "menu-tools": "Инструменты",
   "[NEEDS TRANSLATION]menu-tools-convert": "Convert",
@@ -327,5 +328,19 @@
   "[NEEDS TRANSLATION]mgr-hist-title": "History",  
   "[NEEDS TRANSLATION]mgr-hist-button-clear-all": "Clear History",
   "[NEEDS TRANSLATION]mgr-hist-tooltip-remove-from-list": "remove from history",
-  "[NEEDS TRANSLATION]mgr-hist-tooltip-open-from-list": "open file"
+  "[NEEDS TRANSLATION]mgr-hist-tooltip-open-from-list": "open file",
+
+  "[NEEDS TRANSLATION]ap-tooltip-button-play": "play",
+  "[NEEDS TRANSLATION]ap-tooltip-button-pause": "pause",
+  "[NEEDS TRANSLATION]ap-tooltip-button-next": "next track",
+  "[NEEDS TRANSLATION]ap-tooltip-button-prev": "prev track",
+  "[NEEDS TRANSLATION]ap-tooltip-button-open": "open audio files",
+  "[NEEDS TRANSLATION]ap-tooltip-button-volume-off": "turn volume off",
+  "[NEEDS TRANSLATION]ap-tooltip-button-volume-on": "turn volume on",
+  "[NEEDS TRANSLATION]ap-tooltip-button-playlist": "toggle playlist",
+  "[NEEDS TRANSLATION]ap-tooltip-button-close": "hide",
+  "[NEEDS TRANSLATION]ap-tooltip-button-shuffle-off": "turn shuffle playlist off",
+  "[NEEDS TRANSLATION]ap-tooltip-button-shuffle-on": "turn shuffle playlist on",
+  "[NEEDS TRANSLATION]ap-tooltip-button-repeat-off": "turn repeat playlist off",
+  "[NEEDS TRANSLATION]ap-tooltip-button-repeat-on": "turn repeat playlist on"
 }
