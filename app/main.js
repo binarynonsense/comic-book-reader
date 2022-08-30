@@ -1072,14 +1072,15 @@ exports.onMenuRotationValue = function (value) {
   setPageRotation(value, true);
 };
 
-exports.onMenuRotateClockwise = onMenuRotateClockwise = function () {
+exports.onMenuRotateClockwise = onMenuRotateClockwise;
+function onMenuRotateClockwise() {
   setPageRotation(g_fileData.pageRotation + 90, true);
-};
+}
 
-exports.onMenuRotateCounterclockwise = onMenuRotateCounterclockwise =
-  function () {
-    setPageRotation(g_fileData.pageRotation - 90, true);
-  };
+exports.onMenuRotateCounterclockwise = onMenuRotateCounterclockwise;
+function onMenuRotateCounterclockwise() {
+  setPageRotation(g_fileData.pageRotation - 90, true);
+}
 
 exports.onMenuToggleScrollBar = function () {
   toggleScrollBar();
@@ -1101,7 +1102,8 @@ exports.onMenuToggleFullScreen = function () {
   toggleFullScreen();
 };
 
-exports.onMenuOpenFile = onMenuOpenFile = function () {
+exports.onMenuOpenFile = onMenuOpenFile;
+function onMenuOpenFile() {
   g_mainWindow.webContents.send("update-menubar");
 
   let defaultPath;
@@ -1141,7 +1143,7 @@ exports.onMenuOpenFile = onMenuOpenFile = function () {
   let filePath = fileList[0];
 
   tryOpen(filePath);
-};
+}
 
 exports.onMenuClearHistory = function () {
   g_mainWindow.webContents.send("update-menubar");
