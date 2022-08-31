@@ -141,5 +141,9 @@ function getLocalization() {
       id: "ap-button-delete",
       text: _("ap-tooltip-button-delete"),
     },
+    {
+      id: "ap-button-save",
+      text: _("ap-tooltip-button-save"),
+    },
   ];
 }
