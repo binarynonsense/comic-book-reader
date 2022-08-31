@@ -220,7 +220,7 @@ function getLocalization() {
       id: "text-about-1",
       text: _(
         "tool-shared-ui-about-text-1",
-        _("tool-shared-ui-about-text-1-books"),
+        _("tool-shared-ui-about-text-1-audiobooks"),
         "LibriVox"
       ),
     },
