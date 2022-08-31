@@ -41,7 +41,7 @@ exports.showWindow = function (parentWindow) {
   g_window.menuBarVisible = false;
   g_window.loadFile(`${__dirname}/index.html`);
 
-  if (isDev()) g_window.toggleDevTools();
+  // if (isDev()) g_window.toggleDevTools();
 
   g_window.on("closed", () => {
     g_window = undefined;
@@ -50,7 +50,7 @@ exports.showWindow = function (parentWindow) {
   g_window.webContents.on("did-finish-load", function () {
     g_window.webContents.send(
       g_ipcChannel + "update-localization",
-      _("tool-iab-title"),
+      _("tool-lvx-title"),
       _("tool-shared-ui-search-placeholder"),
       getLocalization()
     );
@@ -209,10 +209,6 @@ function getLocalization() {
     },
     {
       id: "text-tab-2",
-      text: _("tool-shared-tab-options").toUpperCase(),
-    },
-    {
-      id: "text-tab-3",
       text: _("tool-shared-tab-about").toUpperCase(),
     },
     {
@@ -221,24 +217,11 @@ function getLocalization() {
     },
 
     {
-      id: "options-collections-text",
-      text: _("tool-iab-options-collections-text"),
-    },
-    {
-      id: "text-advanced-options",
-      text: _("tool-shared-ui-advanced-options"),
-    },
-    {
-      id: "options-availability-text",
-      text: _("tool-iab-options-availability-text"),
-    },
-
-    {
       id: "text-about-1",
       text: _(
         "tool-shared-ui-about-text-1",
         _("tool-shared-ui-about-text-1-books"),
-        "Internet Archive"
+        "LibriVox"
       ),
     },
     {
@@ -250,8 +233,8 @@ function getLocalization() {
       text: _("tool-shared-ui-about-text-3"),
     },
     {
-      id: "button-open-ia-browser",
-      text: _("tool-iab-button-open-ia-browser").toUpperCase(),
+      id: "button-open-lvx-browser",
+      text: _("tool-lvx-button-open-lvx-browser").toUpperCase(),
     },
     {
       id: "button-open-donate-browser",

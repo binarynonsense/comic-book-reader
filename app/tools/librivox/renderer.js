@@ -85,10 +85,10 @@ async function getBookPagesInfo(comicData) {
   }
 }
 
-function openIALink(url) {
+function openLvxLink(url) {
   const tmp = document.createElement("a");
   tmp.href = url;
-  if (tmp.host === "archive.org") {
+  if (tmp.host === "archive.org" || tmp.host === "librivox.org") {
     shell.openExternal(url);
   }
 }
@@ -144,12 +144,12 @@ exports.onSearchResultClicked = function (index, mode) {
     })(); // async
   } else {
     let url = `https://archive.org/details/${bookData.identifier}`;
-    openIALink(url);
+    openLvxLink(url);
   }
 };
 
 exports.onOpenLink = function (url) {
-  openIALink(url);
+  openLvxLink(url);
 };
 
 ////////////////////////////////////////////////////////////////

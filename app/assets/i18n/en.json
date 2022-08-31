@@ -103,6 +103,7 @@
   "menu-tools-other-iab": "Internet Archive Books",
   "menu-tools-other-gut": "Project Gutenberg",
   "menu-tools-other-xkcd": "xkcd Webcomics",
+  "menu-tools-other-librivox": "LibriVox AudioBooks",
 
   "menu-help": "Help",
   "menu-help-about": "About",
@@ -325,6 +326,9 @@
   "tool-xkcd-text-catalog-number": "Webcomic Number:",
   "tool-xkcd-select-catalog-number-default": "Select a Number",
   "tool-xkcd-button-open-website-browser": "Open xkcd In Browser",
+
+  "tool-lvx-title": "LibriVox AudioBooks",
+  "tool-lvx-button-open-lvx-browser": "Open LibriVox In Browser",
 
   "mgr-hist-title": "History",  
   "mgr-hist-button-clear-all": "Clear History",
