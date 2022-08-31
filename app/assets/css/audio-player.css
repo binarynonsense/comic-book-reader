@@ -67,6 +67,8 @@ a:hover a:visited {
 
 .ap-button:hover {
   opacity: 1;
+  transform: scale(1.1);
+  display: inline-block;
 }
 
 #ap-button-open {
