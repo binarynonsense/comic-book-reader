@@ -343,5 +343,7 @@
   "[NEEDS TRANSLATION]ap-tooltip-button-shuffle-off": "turn shuffle playlist off",
   "[NEEDS TRANSLATION]ap-tooltip-button-shuffle-on": "turn shuffle playlist on",
   "[NEEDS TRANSLATION]ap-tooltip-button-repeat-off": "turn repeat playlist off",
-  "[NEEDS TRANSLATION]ap-tooltip-button-repeat-on": "turn repeat playlist on"
+  "[NEEDS TRANSLATION]ap-tooltip-button-repeat-on": "turn repeat playlist on",
+  "[NEEDS TRANSLATION]ap-tooltip-button-add": "add files to playlist",
+  "[NEEDS TRANSLATION]ap-tooltip-button-delete": "remove selected from playlist"
 }

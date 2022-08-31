@@ -1,4 +1,5 @@
 const { ipcRenderer } = require("electron");
+const { pause } = require("pdfkit");
 
 let g_player = {};
 let g_playlist = {
@@ -9,6 +10,7 @@ let g_tracks = [];
 let g_currentTrackIndex = 0;
 let g_tempAudioElement;
 let g_tempAudioIndex;
+let g_selectedTrackFileIndex;
 
 ipcRenderer.on("audio-player", (event, ...args) => {
   if (args[0] === "init") {
@@ -20,13 +22,24 @@ ipcRenderer.on("audio-player", (event, ...args) => {
       document.getElementById(args[2]).classList.add("ap-hidden");
     }
   } else if (args[0] === "open-playlist") {
-    g_player.engine.pause();
-    g_player.isPlaying = false;
+    pauseTrack(false);
     g_playlist = args[1];
+    g_selectedTrackFileIndex = undefined;
     createTracksList(false);
     updatePlaylistInfo();
     playTrack(g_currentTrackIndex, 0);
     fillTimes();
+  } else if (args[0] === "add-to-playlist") {
+    let load = false;
+    if (g_tracks.length === 0) load = true;
+    let fileUrls = args[1];
+    fileUrls.forEach((element) => {
+      g_playlist.files.push({ url: element });
+    });
+    createTracksList(g_tracks.length > 0);
+    if (load) loadTrack(0, 0);
+    refreshUI();
+    fillTimes(); // calls updatePlaylistInfo
   } else if (args[0] === "update-layout-pos") {
     let container = document.getElementById("audio-player-container");
     if (args[1] == 0) {
@@ -40,23 +53,39 @@ ipcRenderer.on("audio-player", (event, ...args) => {
 });
 
 function fillTimes() {
-  if (!g_tempAudioElement) g_tempAudioElement = document.createElement("audio");
   g_tempAudioIndex = 0;
-  g_tempAudioElement.muted = true;
-  g_tempAudioElement.preload = true;
-  g_tempAudioElement.src = g_playlist.files[0].url;
-  g_tempAudioElement.addEventListener("loadeddata", function () {
-    g_playlist.files[g_tempAudioIndex].duration = g_tempAudioElement.duration;
-    if (g_tempAudioIndex < g_playlist.files.length - 1) {
+  g_tempAudioIndex = getNextToFill();
+  if (g_tempAudioIndex >= 0) {
+    if (!g_tempAudioElement)
+      g_tempAudioElement = document.createElement("audio");
+    g_tempAudioElement.muted = true;
+    g_tempAudioElement.preload = true;
+    g_tempAudioElement.src = g_playlist.files[0].url;
+    g_tempAudioElement.addEventListener("loadeddata", function () {
+      g_playlist.files[g_tempAudioIndex].duration = g_tempAudioElement.duration;
       g_tempAudioIndex++;
-      // NOTE: I'm downloading it twice, maybe only do this for local files?
-      g_tempAudioElement.src = g_playlist.files[g_tempAudioIndex].url;
-    } else {
-      g_tempAudioElement.src = null;
-      g_tempAudioElement = null;
-      updatePlaylistInfo();
-    }
-  });
+      g_tempAudioIndex = getNextToFill();
+      if (g_tempAudioIndex > 0 && g_tempAudioIndex < g_playlist.files.length) {
+        // NOTE: I'm downloading it twice, maybe only do this for local files?
+        g_tempAudioElement.src = g_playlist.files[g_tempAudioIndex].url;
+      } else {
+        g_tempAudioElement.removeAttribute("src");
+        g_tempAudioElement = null;
+        updatePlaylistInfo();
+      }
+    });
+  } else {
+    updatePlaylistInfo();
+  }
+}
+
+function getNextToFill() {
+  for (let index = g_tempAudioIndex; index < g_playlist.files.length; index++) {
+    const file = g_playlist.files[index];
+    if (file.duration) continue;
+    return index;
+  }
+  return -1;
 }
 
 function createTracksList(isRefresh) {
@@ -87,19 +116,26 @@ function createTracksList(isRefresh) {
 }
 
 function updatePlaylistInfo() {
-  if (!g_playlist || g_tracks.length === 0) return;
+  if (!g_playlist || g_tracks.length === 0) {
+    g_player.divPlaylistTracks.innerHTML = "";
+    return;
+  }
   let content = "";
   for (let index = 0; index < g_playlist.files.length; index++) {
     const file = g_playlist.files[index];
     let id = "";
     let duration = "--:--";
+    let classlist = "ap-div-playlist-track";
     if (g_tracks[g_currentTrackIndex].fileIndex === index) {
-      id = `id="ap-div-playlist-highlighted-track"`;
+      classlist += " ap-div-playlist-current-track";
     }
-    if (file.duration !== undefined) {
+    if (index === g_selectedTrackFileIndex) {
+      classlist += " ap-div-playlist-selected-track";
+    }
+    if (file.duration !== undefined && file.duration >= 0) {
       duration = getFormatedTimeFromSeconds(file.duration);
     }
-    content += `<div ${id} class="ap-div-playlist-track" onclick="player.onPlaylistTrackClicked(${index})"><span>${reducePlaylistNameString(
+    content += `<div class="${classlist}" onclick="player.onPlaylistTrackClicked(${index})"  ondblclick="player.onPlaylistTrackDoubleClicked(${index})"><span>${reducePlaylistNameString(
       file.url
     )}</span
   ><span class="ap-span-playlist-track-time">${duration}</span></div>`;
@@ -108,40 +144,60 @@ function updatePlaylistInfo() {
   g_player.divPlaylistTracks.innerHTML = content;
 }
 
-function playTrack(index, time) {
+function loadTrack(index, time) {
   g_currentTrackIndex = index;
+  g_selectedTrackFileIndex = g_tracks[g_currentTrackIndex].fileIndex;
   g_player.engine.src = g_tracks[g_currentTrackIndex].fileUrl;
   g_player.engine.currentTime = time;
+  g_player.sliderTime.value = time;
+}
+
+function playTrack(index, time) {
+  loadTrack(index, time);
   g_player.engine.play();
   g_player.isPlaying = true;
   refreshUI();
 }
 
-function refreshUI() {
-  if (g_player.engine.src) {
-    g_player.buttonPlay.classList.remove("ap-disabled");
-    g_player.buttonPause.classList.remove("ap-disabled");
-  } else {
-    g_player.buttonPlay.classList.add("ap-disabled");
-    g_player.buttonPause.classList.add("ap-disabled");
-  }
+function pauseTrack(refreshUI = true) {
+  g_player.engine.pause();
+  g_player.isPlaying = false;
+  if (refreshUI) refreshUI();
+}
 
-  if (g_player.isPlaying) {
-    g_player.buttonPlay.classList.add("hide");
-    g_player.buttonPause.classList.remove("hide");
+function refreshUI() {
+  if (g_tracks.length > 0) {
+    if (g_player.engine.src) {
+      g_player.buttonPlay.classList.remove("ap-disabled");
+      g_player.buttonPause.classList.remove("ap-disabled");
+    } else {
+      g_player.buttonPlay.classList.add("ap-disabled");
+      g_player.buttonPause.classList.add("ap-disabled");
+    }
+
+    if (g_player.isPlaying) {
+      g_player.buttonPlay.classList.add("hide");
+      g_player.buttonPause.classList.remove("hide");
+    } else {
+      g_player.buttonPlay.classList.remove("hide");
+      g_player.buttonPause.classList.add("hide");
+    }
+
+    if (g_player.repeat || g_currentTrackIndex > 0) {
+      g_player.buttonPrev.classList.remove("ap-disabled");
+    } else {
+      g_player.buttonPrev.classList.add("ap-disabled");
+    }
+    if (g_player.repeat || g_tracks.length - 1 > g_currentTrackIndex) {
+      g_player.buttonNext.classList.remove("ap-disabled");
+    } else {
+      g_player.buttonNext.classList.add("ap-disabled");
+    }
   } else {
     g_player.buttonPlay.classList.remove("hide");
+    g_player.buttonPlay.classList.add("ap-disabled");
     g_player.buttonPause.classList.add("hide");
-  }
-
-  if (g_player.repeat || g_currentTrackIndex > 0) {
-    g_player.buttonPrev.classList.remove("ap-disabled");
-  } else {
     g_player.buttonPrev.classList.add("ap-disabled");
-  }
-  if (g_player.repeat || g_tracks.length - 1 > g_currentTrackIndex) {
-    g_player.buttonNext.classList.remove("ap-disabled");
-  } else {
     g_player.buttonNext.classList.add("ap-disabled");
   }
 
@@ -175,8 +231,7 @@ function onButtonClicked(buttonName) {
     g_player.engine.play();
     g_player.isPlaying = true;
   } else if (buttonName === "pause") {
-    g_player.engine.pause();
-    g_player.isPlaying = false;
+    pauseTrack(false);
   } else if (buttonName === "prev") {
     if (g_player.repeat && g_currentTrackIndex === 0)
       playTrack(g_tracks.length - 1, 0);
@@ -213,6 +268,48 @@ function onButtonClicked(buttonName) {
     g_player.repeat = true;
   } else if (buttonName === "repeat-off") {
     g_player.repeat = false;
+  } else if (buttonName === "add") {
+    ipcRenderer.send("audio-player", "add-files");
+  } else if (buttonName === "delete") {
+    if (g_tracks.length <= 0 || g_selectedTrackFileIndex === undefined) return;
+    let currentTrackFileIndex = g_tracks[g_currentTrackIndex].fileIndex;
+    // delete
+    g_playlist.files.splice(g_selectedTrackFileIndex, 1);
+    let selectedTrackIndex = 0;
+    for (let index = 0; index < g_tracks.length; index++) {
+      const track = g_tracks[index];
+      if (track.fileIndex === g_selectedTrackFileIndex)
+        selectedTrackIndex = index;
+      if (track.fileIndex > g_selectedTrackFileIndex) {
+        track.fileIndex--;
+        track.fileUrl = g_playlist.files[track.fileIndex].url;
+      }
+    }
+    g_tracks.splice(selectedTrackIndex, 1);
+    // update current index / playing track if needed
+    if (currentTrackFileIndex === g_selectedTrackFileIndex) {
+      // deleteing the current one
+      if (g_currentTrackIndex < g_tracks.length) {
+        playTrack(g_currentTrackIndex, 0);
+      } else {
+        // the deleted one was the last
+        pauseTrack(false);
+        g_currentTrackIndex = 0;
+        if (g_tracks.length > 0) g_player.engine.src = g_tracks[0].fileUrl;
+      }
+    } else {
+      if (g_currentTrackIndex < selectedTrackIndex) {
+        // keep the same
+      } else {
+        g_currentTrackIndex--;
+      }
+    }
+    if (g_tracks.length > 0) {
+      g_selectedTrackFileIndex = g_tracks[g_currentTrackIndex].fileIndex;
+    } else {
+      g_selectedTrackFileIndex = 0;
+    }
+    updatePlaylistInfo();
   }
 
   refreshUI();
@@ -220,6 +317,12 @@ function onButtonClicked(buttonName) {
 
 exports.onPlaylistTrackClicked = onPlaylistTrackClicked;
 function onPlaylistTrackClicked(fileIndex) {
+  g_selectedTrackFileIndex = fileIndex;
+  updatePlaylistInfo();
+}
+
+exports.onPlaylistTrackDoubleClicked = onPlaylistTrackDoubleClicked;
+function onPlaylistTrackDoubleClicked(fileIndex) {
   let newTrackIndex;
   for (let index = 0; index < g_tracks.length; index++) {
     if (g_tracks[index].fileIndex === fileIndex) {
@@ -330,6 +433,7 @@ function init(shuffle, repeat, volume, localization) {
   g_player.divPlaylistTracks = document.getElementById(
     "ap-div-playlist-tracks"
   );
+
   g_player.buttonShuffleOn = document.getElementById("ap-button-shuffle-on");
   g_player.buttonShuffleOn.addEventListener("click", function () {
     onButtonClicked("shuffle-on");
@@ -345,6 +449,15 @@ function init(shuffle, repeat, volume, localization) {
   g_player.buttonRepeatOff = document.getElementById("ap-button-repeat-off");
   g_player.buttonRepeatOff.addEventListener("click", function () {
     onButtonClicked("repeat-off");
+  });
+
+  g_player.buttonAdd = document.getElementById("ap-button-add");
+  g_player.buttonAdd.addEventListener("click", function () {
+    onButtonClicked("add");
+  });
+  g_player.buttonDelete = document.getElementById("ap-button-delete");
+  g_player.buttonDelete.addEventListener("click", function () {
+    onButtonClicked("delete");
   });
   //////
 
@@ -369,13 +482,8 @@ function init(shuffle, repeat, volume, localization) {
       if (g_player.repeat) {
         playTrack(0, 0);
       } else {
-        g_player.engine.currentTime = 0;
-        g_player.sliderTime.value = 0;
-        g_player.textTime.innerHTML =
-          "00:00 / " + getFormatedTimeFromSeconds(this.duration);
-        g_player.sliderTime.value = (100 * this.currentTime) / this.duration;
-        g_player.pause();
-        g_player.isPlaying = false;
+        pauseTrack(false);
+        loadTrack(0, 0);
       }
     }
     refreshUI();

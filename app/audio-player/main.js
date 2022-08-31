@@ -58,6 +58,22 @@ ipcMain.on("audio-player", (event, ...args) => {
       playlist.files.push({ url: element });
     });
     g_mainWindow.webContents.send("audio-player", "open-playlist", playlist);
+  } else if (args[0] === "add-files") {
+    let defaultPath;
+    let allowMultipleSelection = true;
+    let allowedFileTypesName = "Audio Files";
+    let allowedFileTypesList = [FileExtension.MP3];
+    let fileList = fileUtils.chooseOpenFiles(
+      g_mainWindow,
+      defaultPath,
+      allowedFileTypesName,
+      allowedFileTypesList,
+      allowMultipleSelection
+    );
+    if (fileList === undefined) {
+      return;
+    }
+    g_mainWindow.webContents.send("audio-player", "add-to-playlist", fileList);
   } else if (args[0] === "close") {
     mainProcess.showAudioPlayer(false, true);
   }
@@ -116,6 +132,15 @@ function getLocalization() {
     {
       id: "ap-button-repeat-on",
       text: _("ap-tooltip-button-repeat-on"),
+    },
+
+    {
+      id: "ap-button-add",
+      text: _("ap-tooltip-button-add"),
+    },
+    {
+      id: "ap-button-delete",
+      text: _("ap-tooltip-button-delete"),
     },
   ];
 }
