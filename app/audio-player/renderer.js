@@ -90,7 +90,8 @@ function getNextToFill() {
 
 function createTracksList(isRefresh) {
   let currentFileIndex;
-  if (isRefresh) currentFileIndex = g_tracks[g_currentTrackIndex].fileIndex;
+  if (isRefresh && g_tracks.length > 0)
+    currentFileIndex = g_tracks[g_currentTrackIndex].fileIndex;
   g_tracks = [];
   for (let index = 0; index < g_playlist.files.length; index++) {
     if (g_player.shuffle && currentFileIndex === index) {
@@ -227,6 +228,7 @@ function refreshUI() {
 }
 
 function onButtonClicked(buttonName) {
+  console.log(buttonName);
   if (buttonName === "play") {
     g_player.engine.play();
     g_player.isPlaying = true;
