@@ -228,7 +228,6 @@ function refreshUI() {
 }
 
 function onButtonClicked(buttonName) {
-  console.log(buttonName);
   if (buttonName === "play") {
     g_player.engine.play();
     g_player.isPlaying = true;
@@ -479,6 +478,18 @@ function init(shuffle, repeat, volume, localization) {
   g_player.engine.addEventListener("volumechange", function () {
     g_player.textVolume.innerHTML = `${Math.floor(this.volume * 100)}%`;
     g_player.sliderVolume.value = this.volume * 100;
+  });
+
+  g_player.engine.addEventListener("loadeddata", function () {
+    if (g_tracks.length <= 0) return;
+    let fileIndex = g_tracks[g_currentTrackIndex].fileIndex;
+    if (
+      !g_playlist.files[fileIndex].duration ||
+      g_playlist.files[fileIndex].duration == -1
+    ) {
+      g_playlist.files[fileIndex].duration = g_player.engine.duration;
+      updatePlaylistInfo();
+    }
   });
 
   g_player.engine.addEventListener("ended", function () {
