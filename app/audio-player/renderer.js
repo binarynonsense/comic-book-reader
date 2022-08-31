@@ -117,32 +117,39 @@ function createTracksList(isRefresh) {
 }
 
 function updatePlaylistInfo() {
+  g_player.divPlaylistTracks.innerHTML = "";
   if (!g_playlist || g_tracks.length === 0) {
-    g_player.divPlaylistTracks.innerHTML = "";
     return;
   }
-  let content = "";
   for (let index = 0; index < g_playlist.files.length; index++) {
     const file = g_playlist.files[index];
-    let id = "";
     let duration = "--:--";
-    let classlist = "ap-div-playlist-track";
+
+    const div = document.createElement("div");
+    div.id = "ap-playlist-track-" + index;
+    div.classList.add("ap-div-playlist-track");
     if (g_tracks[g_currentTrackIndex].fileIndex === index) {
-      classlist += " ap-div-playlist-current-track";
+      div.classList.add("ap-div-playlist-current-track");
     }
     if (index === g_selectedTrackFileIndex) {
-      classlist += " ap-div-playlist-selected-track";
+      div.classList.add("ap-div-playlist-selected-track");
     }
     if (file.duration !== undefined && file.duration >= 0) {
       duration = getFormatedTimeFromSeconds(file.duration);
     }
-    content += `<div class="${classlist}" onclick="player.onPlaylistTrackClicked(${index})"  ondblclick="player.onPlaylistTrackDoubleClicked(${index})"><span>${reducePlaylistNameString(
-      file.url
-    )}</span
-  ><span class="ap-span-playlist-track-time">${duration}</span></div>`;
-  }
+    div.addEventListener("click", function () {
+      onPlaylistTrackClicked(index);
+    });
+    div.addEventListener("dblclick", function () {
+      onPlaylistTrackDoubleClicked(index);
+    });
 
-  g_player.divPlaylistTracks.innerHTML = content;
+    let content = `<span>${reducePlaylistNameString(file.url)}</span
+  ><span class="ap-span-playlist-track-time">${duration}</span>`;
+    div.innerHTML = content;
+
+    g_player.divPlaylistTracks.appendChild(div);
+  }
 }
 
 function loadTrack(index, time) {
@@ -158,12 +165,19 @@ function playTrack(index, time) {
   g_player.engine.play();
   g_player.isPlaying = true;
   refreshUI();
+  scrollToCurrent();
 }
 
 function pauseTrack(refreshUI = true) {
   g_player.engine.pause();
   g_player.isPlaying = false;
   if (refreshUI) refreshUI();
+}
+
+function scrollToCurrent() {
+  let index = g_tracks[g_currentTrackIndex].fileIndex;
+  let divId = "ap-playlist-track-" + index;
+  document.getElementById(divId).scrollIntoView();
 }
 
 function refreshUI() {
@@ -324,6 +338,7 @@ function onPlaylistTrackClicked(fileIndex) {
 
 exports.onPlaylistTrackDoubleClicked = onPlaylistTrackDoubleClicked;
 function onPlaylistTrackDoubleClicked(fileIndex) {
+  console.log(fileIndex);
   let newTrackIndex;
   for (let index = 0; index < g_tracks.length; index++) {
     if (g_tracks[index].fileIndex === fileIndex) {
