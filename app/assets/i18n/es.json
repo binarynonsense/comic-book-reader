@@ -345,5 +345,6 @@
   "ap-tooltip-button-repeat-off": "desactivar repetir",
   "ap-tooltip-button-repeat-on": "activar repetir",
   "ap-tooltip-button-add": "añadir ficheros a la lista",
-  "ap-tooltip-button-delete": "borrar seleccionado de la lista"
+  "ap-tooltip-button-delete": "borrar seleccionado de la lista",
+  "ap-tooltip-button-save": "guardar lista de reproducción en fichero"
 }

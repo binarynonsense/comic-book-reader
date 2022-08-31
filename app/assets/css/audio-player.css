@@ -30,7 +30,7 @@
   border-radius: 5px;
 
   min-height: 10px;
-  min-width: 265px;
+  min-width: 273px;
 }
 
 .ap-frame a,
@@ -63,6 +63,8 @@ a:hover a:visited {
 
 .ap-button {
   opacity: 0.8;
+  margin-right: 3px;
+  margin-left: 3px;
 }
 
 .ap-button:hover {
@@ -75,19 +77,9 @@ a:hover a:visited {
   transform: scale(0.9);
 }
 
-#ap-button-open {
-  margin-left: 5px;
-}
-
-#ap-button-play,
-#ap-button-pause {
-  margin-right: 5px;
-  margin-left: 5px;
-}
-
 #ap-div-time {
   display: inline;
-  margin-left: 5px;
+  margin-left: 3px;
 }
 
 #ap-text-time,
@@ -117,11 +109,6 @@ a:hover a:visited {
   display: inline !important;
 }
 
-#ap-button-volume-off,
-#ap-button-volume-on {
-  margin-left: 5px;
-}
-
 #ap-slider-volume {
   width: 30px;
 }
@@ -137,15 +124,12 @@ a:hover a:visited {
 #ap-button-playlist {
   margin-left: 5px;
 }
-#ap-button-close {
-  margin-left: 4px;
-  margin-right: 5px;
-}
 
 .ap-slider {
   display: inline-block;
   vertical-align: middle;
   margin-bottom: 3px;
+  margin-left: 2px;
   margin-right: 5px;
   cursor: pointer;
 
@@ -221,6 +205,7 @@ a:hover a:visited {
   float: right;
   display: inline;
   margin-top: 3px;
+  margin-right: 5px;
 }
 
 #ap-span-playlist-buttons-left {
@@ -235,7 +220,6 @@ a:hover a:visited {
   margin-right: 8px;
 }
 
-#ap-button-repeat-on,
-#ap-button-repeat-off {
-  margin-right: 5px;
+#ap-button-save {
+  margin-left: 7px;
 }
