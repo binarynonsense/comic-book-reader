@@ -72,6 +72,7 @@ let g_settings = {
   loadingIndicatorIconPos: 0, // 0: top left, 1: center
   layoutClock: 2, // 0 top left, 1 top center, 2 top right .... 5 bottom right
   layoutPageNum: 4, // 0 top left, 1 top center, 2 top right .... 5 bottom right
+  layoutAudioPlayer: 0, // 0 top left, 3 bootom left - for now
   epubOpenAs: 0, // 0 ask and remember, 1 always ask
 
   locale: undefined,
@@ -228,6 +229,12 @@ function sanitizeSettings() {
   ) {
     g_settings.layoutPageNum = 2;
   }
+  if (
+    !Number.isInteger(g_settings.layoutAudioPlayer) ||
+    (g_settings.layoutAudioPlayer != 0 && g_settings.layoutAudioPlayer != 3)
+  ) {
+    g_settings.layoutAudioPlayer = 0;
+  }
 
   /////////////////////
   if (typeof g_settings.locale === "string") {
@@ -355,6 +362,7 @@ app.on("ready", () => {
     updateLoadingIndicator();
     updateLayoutClock();
     updateLayoutPageNum();
+    updateLayoutAudioPlayer();
 
     g_mainWindow.webContents.send(
       "set-hide-inactive-mouse-cursor",
@@ -1027,6 +1035,16 @@ exports.onMenuChangeLayoutPageNum = function (value) {
     g_settings.layoutPageNum = value;
     menuBar.setLayoutPageNum(value);
     updateLayoutPageNum();
+    g_mainWindow.webContents.send("update-menubar");
+  }
+};
+exports.onMenuChangeLayoutAudioPlayer = function (value) {
+  if (value === g_settings.layoutAudioPlayer || value < 0 || value > 5)
+    g_mainWindow.webContents.send("update-menubar");
+  else {
+    g_settings.layoutAudioPlayer = value;
+    menuBar.setLayoutAudioPlayer(value);
+    updateLayoutAudioPlayer();
     g_mainWindow.webContents.send("update-menubar");
   }
 };
@@ -2619,5 +2637,13 @@ function updateLayoutPageNum() {
     "update-layout-pos",
     g_settings.layoutPageNum,
     "#page-number-bubble"
+  );
+}
+
+function updateLayoutAudioPlayer() {
+  g_mainWindow.webContents.send(
+    "audio-player",
+    "update-layout-pos",
+    g_settings.layoutAudioPlayer
   );
 }

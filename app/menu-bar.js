@@ -165,6 +165,14 @@ exports.setLayoutPageNum = function (value) {
     "preferences-layout-pagenum-bottom-right"
   ).checked = value === 5;
 };
+exports.setLayoutAudioPlayer = function (value) {
+  Menu.getApplicationMenu().getMenuItemById(
+    "preferences-layout-audioplayer-top-left"
+  ).checked = value === 0;
+  Menu.getApplicationMenu().getMenuItemById(
+    "preferences-layout-audioplayer-bottom-left"
+  ).checked = value === 3;
+};
 
 exports.setComicBookOpened = setComicBookOpened = function (isEnabled) {
   Menu.getApplicationMenu().getMenuItemById("convert-file").enabled = isEnabled;
@@ -701,6 +709,29 @@ function buildApplicationMenu(
                       label: _("menu-shared-bottom-right"),
                       click() {
                         mainProcess.onMenuChangeLayoutPageNum(5);
+                      },
+                    },
+                  ],
+                },
+                {
+                  label: _("menu-file-preferences-layout-audioplayer"),
+                  submenu: [
+                    {
+                      id: "preferences-layout-audioplayer-top-left",
+                      type: "checkbox",
+                      checked: settings.layoutAudioPlayer === 0,
+                      label: _("menu-shared-top-left"),
+                      click() {
+                        mainProcess.onMenuChangeLayoutAudioPlayer(0);
+                      },
+                    },
+                    {
+                      id: "preferences-layout-audioplayer-bottom-left",
+                      type: "checkbox",
+                      checked: settings.layoutAudioPlayer === 3,
+                      label: _("menu-shared-bottom-left"),
+                      click() {
+                        mainProcess.onMenuChangeLayoutAudioPlayer(3);
                       },
                     },
                   ],

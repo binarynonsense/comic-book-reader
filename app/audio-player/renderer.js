@@ -27,6 +27,15 @@ ipcRenderer.on("audio-player", (event, ...args) => {
     updatePlaylistInfo();
     playTrack(g_currentTrackIndex, 0);
     fillTimes();
+  } else if (args[0] === "update-layout-pos") {
+    let container = document.getElementById("audio-player-container");
+    if (args[1] == 0) {
+      container.classList.remove("ap-layout-bottom-left");
+      container.classList.add("ap-layout-top-left");
+    } else {
+      container.classList.add("ap-layout-bottom-left");
+      container.classList.remove("ap-layout-top-left");
+    }
   }
 });
 
