@@ -1246,6 +1246,12 @@ function buildApplicationMenu(
                 mainProcess.onMenuToolXkcd();
               },
             },
+            {
+              label: _("menu-tools-other-librivox"),
+              click() {
+                mainProcess.onMenuToolLibrivox();
+              },
+            },
           ],
         },
       ],

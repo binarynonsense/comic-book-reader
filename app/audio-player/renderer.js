@@ -3,6 +3,7 @@ const { ipcRenderer } = require("electron");
 let g_player = {};
 let g_playlist = {
   id: "",
+  source: "",
   files: [],
 };
 let g_tracks = [];
@@ -333,7 +334,9 @@ function onPlaylistTrackDoubleClicked(fileIndex) {
 }
 
 function onSliderTimeChanged(slider) {
-  g_player.engine.currentTime = (slider.value * g_player.engine.duration) / 100;
+  if (!isNaN(g_player.engine.duration))
+    g_player.engine.currentTime =
+      (slider.value * g_player.engine.duration) / 100;
 }
 
 function onSliderVolumeChanged(slider) {
@@ -341,6 +344,7 @@ function onSliderVolumeChanged(slider) {
 }
 
 function getFormatedTimeFromSeconds(seconds) {
+  if (isNaN(seconds)) return "00:00";
   let hours = Math.floor(seconds / 3600);
   let minutes = Math.floor((seconds - hours * 3600) / 60);
   seconds = Math.floor(seconds - hours * 3600 - minutes * 60);
@@ -466,7 +470,8 @@ function init(shuffle, repeat, volume, localization) {
       getFormatedTimeFromSeconds(this.currentTime) +
       " / " +
       getFormatedTimeFromSeconds(this.duration);
-    g_player.sliderTime.value = (100 * this.currentTime) / this.duration;
+    if (!isNaN(this.duration))
+      g_player.sliderTime.value = (100 * this.currentTime) / this.duration;
   });
 
   g_player.engine.addEventListener("volumechange", function () {

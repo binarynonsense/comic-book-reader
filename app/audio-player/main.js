@@ -50,9 +50,8 @@ ipcMain.on("audio-player", (event, ...args) => {
     }
     let playlist = {
       id: "",
+      source: "filesystem",
       files: [],
-      currentIndex: 0,
-      currentTime: 0,
     };
     fileList.forEach((element) => {
       playlist.files.push({ url: element });

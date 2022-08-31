@@ -1293,6 +1293,12 @@ exports.onMenuToolXkcd = function () {
   g_mainWindow.webContents.send("update-menubar");
 };
 
+exports.onMenuToolLibrivox = function () {
+  const tool = require("./tools/librivox/main");
+  tool.showWindow(g_mainWindow);
+  g_mainWindow.webContents.send("update-menubar");
+};
+
 exports.onMenuToggleDevTools = function () {
   toggleDevTools();
 };
