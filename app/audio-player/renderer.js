@@ -1,5 +1,4 @@
 const { ipcRenderer } = require("electron");
-const { pause } = require("pdfkit");
 
 let g_player = {};
 let g_playlist = {
