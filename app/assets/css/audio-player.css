@@ -71,6 +71,10 @@ a:hover a:visited {
   display: inline-block;
 }
 
+.ap-button:active {
+  transform: scale(0.9);
+}
+
 #ap-button-open {
   margin-left: 5px;
 }
