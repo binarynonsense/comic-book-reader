@@ -289,7 +289,7 @@ function onButtonClicked(buttonName) {
     g_tracks.splice(selectedTrackIndex, 1);
     // update current index / playing track if needed
     if (currentTrackFileIndex === g_selectedTrackFileIndex) {
-      // deleteing the current one
+      // deleting the current one
       if (g_currentTrackIndex < g_tracks.length) {
         playTrack(g_currentTrackIndex, 0);
       } else {
