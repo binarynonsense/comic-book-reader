@@ -1,30 +1,6 @@
 :root {
-  --bg-color: #1e1e1e;
-  --text-color: #666;
-
-  --titlebar-text-color: #dbdbdb;
-  --titlebar-title-text-color: #dbdbdb;
-  --titlebar-bg-color: #818181;
-  --titlebar-focused-bg-color: #a5a5a5;
-
-  --toolbar-text-color: #dbdbdb;
-  --toolbar-bg-color: #818181;
-  --toolbar-item-separator-color: #3b3b3b;
-  --toolbar-item-thick-separator-color: #6b6b6b;
-  --toolbar-item-color: #3b3b3b;
-  --toolbar-item-hover-bg-color: #ddd;
-  --toolbar-item-hover-color: #000;
-  --toolbar-page-slider-right-bg-color: #4d4d4d;
-  --toolbar-page-slider-left-bg-color: #daa41d;
-  --toolbar-page-slider-thumb-color: #fff;
-
-  --scrollbar-bg-color: #1e1e1e;
-  --scrollbar-color: #666666;
-  --scrollbar-hover-color: #555;
-
   --zoom-height-scale: 100;
   --zoom-height-borders: 60px;
-
   --zoom-epub-ebook-scale-factor: 1;
 }
 
