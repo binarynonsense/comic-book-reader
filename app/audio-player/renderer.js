@@ -177,7 +177,13 @@ function pauseTrack(refreshUI = true) {
 function scrollToCurrent() {
   let index = g_tracks[g_currentTrackIndex].fileIndex;
   let divId = "ap-playlist-track-" + index;
-  document.getElementById(divId).scrollIntoView();
+  document
+    .getElementById(divId)
+    .scrollIntoView({
+      behavior: "smooth",
+      block: "nearest",
+      inline: "nearest",
+    });
 }
 
 function refreshUI() {
