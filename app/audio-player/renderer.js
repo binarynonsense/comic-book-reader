@@ -1,4 +1,5 @@
 const { ipcRenderer } = require("electron");
+const path = require("path");
 
 let g_player = {};
 let g_playlist = {
@@ -152,7 +153,9 @@ function updatePlaylistInfo() {
       onPlaylistTrackDoubleClicked(index);
     });
 
-    let content = `<span>${reducePlaylistNameString(file.url)}</span
+    let content = `<span title="${file.url}">${reducePlaylistNameString(
+      path.basename(file.url, path.extname(file.url))
+    )}</span
   ><span class="ap-span-playlist-track-time">${duration}</span>`;
     div.innerHTML = content;
 
