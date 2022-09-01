@@ -17,7 +17,7 @@ function _(...args) {
 }
 
 exports.showWindow = function (parentWindow) {
-  if (g_window !== undefined) return; // TODO: focus the existing one?
+  if (g_window !== undefined) return;
   g_parentWindow = parentWindow;
   let [width, height] = parentWindow.getSize();
   height = (90 * height) / 100;
@@ -66,7 +66,6 @@ exports.showWindow = function (parentWindow) {
 ////////////////////////////////////////////////////////////////////////
 
 ipcMain.on(g_ipcChannel + "open", (event, identifier, fileUrls) => {
-  // TODO
   let playlist = {
     id: identifier,
     source: "librivox",
