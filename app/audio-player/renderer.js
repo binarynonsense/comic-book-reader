@@ -53,29 +53,37 @@ ipcRenderer.on("audio-player", (event, ...args) => {
 });
 
 function fillTimes() {
-  g_tempAudioIndex = 0;
-  g_tempAudioIndex = getNextToFill();
-  if (g_tempAudioIndex >= 0) {
-    if (!g_tempAudioElement)
-      g_tempAudioElement = document.createElement("audio");
-    g_tempAudioElement.muted = true;
-    g_tempAudioElement.preload = true;
-    g_tempAudioElement.src = g_playlist.files[0].url;
-    g_tempAudioElement.addEventListener("loadeddata", function () {
-      g_playlist.files[g_tempAudioIndex].duration = g_tempAudioElement.duration;
-      g_tempAudioIndex++;
-      g_tempAudioIndex = getNextToFill();
-      if (g_tempAudioIndex > 0 && g_tempAudioIndex < g_playlist.files.length) {
-        // NOTE: I'm downloading it twice, maybe only do this for local files?
-        g_tempAudioElement.src = g_playlist.files[g_tempAudioIndex].url;
-      } else {
-        g_tempAudioElement.removeAttribute("src");
-        g_tempAudioElement = null;
-        updatePlaylistInfo();
-      }
-    });
-  } else {
-    updatePlaylistInfo();
+  try {
+    g_tempAudioIndex = 0;
+    g_tempAudioIndex = getNextToFill();
+    if (g_tempAudioIndex >= 0) {
+      if (!g_tempAudioElement)
+        g_tempAudioElement = document.createElement("audio");
+      g_tempAudioElement.muted = true;
+      g_tempAudioElement.preload = true;
+      g_tempAudioElement.src = g_playlist.files[0].url;
+      g_tempAudioElement.addEventListener("loadeddata", function () {
+        g_playlist.files[g_tempAudioIndex].duration =
+          g_tempAudioElement.duration;
+        g_tempAudioIndex++;
+        g_tempAudioIndex = getNextToFill();
+        if (
+          g_tempAudioIndex > 0 &&
+          g_tempAudioIndex < g_playlist.files.length
+        ) {
+          // NOTE: I'm downloading it twice, maybe only do this for local files?
+          g_tempAudioElement.src = g_playlist.files[g_tempAudioIndex].url;
+        } else {
+          g_tempAudioElement.removeAttribute("src");
+          g_tempAudioElement = null;
+          updatePlaylistInfo();
+        }
+      });
+    } else {
+      updatePlaylistInfo();
+    }
+  } catch (error) {
+    // TODO
   }
 }
 
@@ -153,11 +161,15 @@ function updatePlaylistInfo() {
 }
 
 function loadTrack(index, time) {
-  g_currentTrackIndex = index;
-  g_selectedTrackFileIndex = g_tracks[g_currentTrackIndex].fileIndex;
-  g_player.engine.src = g_tracks[g_currentTrackIndex].fileUrl;
-  g_player.engine.currentTime = time;
-  g_player.sliderTime.value = time;
+  try {
+    g_currentTrackIndex = index;
+    g_selectedTrackFileIndex = g_tracks[g_currentTrackIndex].fileIndex;
+    g_player.engine.src = g_tracks[g_currentTrackIndex].fileUrl;
+    g_player.engine.currentTime = time;
+    g_player.sliderTime.value = time;
+  } catch (error) {
+    // TODO
+  }
 }
 
 function playTrack(index, time) {
@@ -177,13 +189,11 @@ function pauseTrack(refreshUI = true) {
 function scrollToCurrent() {
   let index = g_tracks[g_currentTrackIndex].fileIndex;
   let divId = "ap-playlist-track-" + index;
-  document
-    .getElementById(divId)
-    .scrollIntoView({
-      behavior: "smooth",
-      block: "nearest",
-      inline: "nearest",
-    });
+  document.getElementById(divId).scrollIntoView({
+    behavior: "smooth",
+    block: "nearest",
+    inline: "nearest",
+  });
 }
 
 function refreshUI() {
@@ -316,7 +326,7 @@ function onButtonClicked(buttonName) {
         // the deleted one was the last
         pauseTrack(false);
         g_currentTrackIndex = 0;
-        if (g_tracks.length > 0) g_player.engine.src = g_tracks[0].fileUrl;
+        if (g_tracks.length > 0) loadTrack(0, 0);
       }
     } else {
       if (g_currentTrackIndex < selectedTrackIndex) {
