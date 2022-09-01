@@ -27,5 +27,23 @@
   
     "--scrollbar-bg-color": "#1e1e1e",
     "--scrollbar-color": "#ccc",
-    "--scrollbar-hover-color": "#fafafa"
+    "--scrollbar-hover-color": "#fafafa",
+
+    "--audioplayer-bg-color": "#fafafa",
+    "--audioplayer-disabled-color": "#aaa",
+    "--audioplayer-separator-color": "#787878",
+    "--audioplayer-button-color": "#525252",   
+    "--audioplayer-button-hover-color": "#000",
+    "--audioplayer-slider-right-bg-color": "#ddd",
+    "--audioplayer-slider-hover-right-bg-color": "#ddd",
+    "--audioplayer-slider-left-bg-color": "#525252",
+    "--audioplayer-slider-hover-left-bg-color": "#000",
+    "--audioplayer-tracks-bg-color": "#ddd",
+    "--audioplayer-track-text-color": "#888",
+    "--audioplayer-track-hover-text-color": "#fafafa",
+    "--audioplayer-track-hover-bg-color": "#525252",
+    "--audioplayer-track-current-text-color": "#333",
+    "--audioplayer-track-current-bg-color": "#ddd",    
+    "--audioplayer-track-selected-text-color": "#888",
+    "--audioplayer-track-selected-bg-color": "#bbb"    
 }

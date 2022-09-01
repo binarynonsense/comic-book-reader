@@ -23,9 +23,9 @@
   user-select: none;
 
   font-size: 15px;
-  color: white;
-  opacity: 0.5;
-  background-color: rgb(109, 109, 109);
+  /* color: var(--audioplayer-text-color); */
+  /* opacity: 0.5; */
+  background-color: var(--audioplayer-bg-color);
   padding: 5px 5px;
   border-radius: 5px;
 
@@ -35,7 +35,6 @@
 
 .ap-frame a,
 a:hover a:visited {
-  color: inherit;
   text-decoration: none;
   cursor: pointer;
 }
@@ -49,10 +48,11 @@ a:hover a:visited {
   display: inline;
   margin-left: 5px;
   margin-right: 5px;
-  border-left: white solid 1px;
+  border-left: var(--audioplayer-separator-color) solid 1px;
 }
 
 .ap-disabled {
+  color: var(--audioplayer-disabled-color) !important;
   opacity: 0.3 !important;
   pointer-events: none;
 }
@@ -62,13 +62,13 @@ a:hover a:visited {
 }
 
 .ap-button {
-  opacity: 0.8;
   margin-right: 3px;
   margin-left: 3px;
+  color: var(--audioplayer-button-color);
 }
 
 .ap-button:hover {
-  opacity: 1;
+  color: var(--audioplayer-button-hover-color);
   transform: scale(1.1);
   display: inline-block;
 }
@@ -138,9 +138,8 @@ a:hover a:visited {
   appearance: none;
   height: 5px;
   width: 60px;
-  background: var(--bg-color);
+  background: var(--audioplayer-slider-right-bg-color);
   outline: none;
-  opacity: 0.7;
   -webkit-transition: 0.2s;
   transition: opacity 0.2s;
   border-radius: 3px;
@@ -148,15 +147,19 @@ a:hover a:visited {
 }
 
 .ap-slider:hover {
-  opacity: 1;
+  background: var(--audioplayer-slider-hover-right-bg-color);
 }
 
 .ap-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   width: 5px;
-  background: white;
+  background: var(--audioplayer-slider-left-bg-color);
   border-radius: 5px;
-  box-shadow: -100vw 0 0 100vw white;
+  box-shadow: -100vw 0 0 100vw var(--audioplayer-slider-left-bg-color);
+}
+.ap-slider:hover::-webkit-slider-thumb {
+  background: var(--audioplayer-slider-hover-left-bg-color);
+  box-shadow: -100vw 0 0 100vw var(--audioplayer-slider-hover-left-bg-color);
 }
 
 /* ************* PLAYLIST ************* */
@@ -165,7 +168,7 @@ a:hover a:visited {
   clear: both;
   margin: 3px 2px 3px 2px;
   padding: 5px;
-  background-color: rgb(59, 59, 59);
+  background-color: var(--audioplayer-tracks-bg-color);
   border-radius: 5px;
   min-height: 0px;
   max-height: 200px;
@@ -181,12 +184,13 @@ a:hover a:visited {
   font-size: 11px;
   width: 100%;
   padding: 2px;
-  opacity: 0.5;
   cursor: pointer;
+  color: var(--audioplayer-track-text-color);
 }
 
 .ap-div-playlist-track:hover {
-  background-color: rgb(104, 104, 104);
+  background-color: var(--audioplayer-track-hover-bg-color) !important;
+  color: var(--audioplayer-track-hover-text-color) !important;
 }
 
 .ap-span-playlist-track-time {
@@ -194,11 +198,13 @@ a:hover a:visited {
 }
 
 .ap-div-playlist-current-track {
-  opacity: 1;
+  color: var(--audioplayer-track-current-text-color) !important;
+  background-color: var(--audioplayer-track-current-bg-color);
 }
 
 .ap-div-playlist-selected-track {
-  background-color: rgb(90, 90, 90);
+  background-color: var(--audioplayer-track-selected-bg-color);
+  color: var(--audioplayer-track-selected-text-color);
 }
 
 #ap-span-playlist-buttons-right {
