@@ -59,6 +59,7 @@
     "file-type": "^14.7.1",
     "jsdom": "^20.0.0",
     "jsqr": "^1.4.0",
+    "music-metadata": "^7.12.6",
     "natural-compare-lite": "^1.4.0",
     "node-7z": "^3.0.0",
     "node-unrar-js": "^2.0.0",

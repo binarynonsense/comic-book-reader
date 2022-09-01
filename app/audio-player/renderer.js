@@ -30,6 +30,7 @@ ipcRenderer.on("audio-player", (event, ...args) => {
     updatePlaylistInfo();
     playTrack(g_currentTrackIndex, 0);
     fillTimes();
+    fillTags();
   } else if (args[0] === "add-to-playlist") {
     let load = false;
     if (g_tracks.length === 0) load = true;
@@ -41,6 +42,7 @@ ipcRenderer.on("audio-player", (event, ...args) => {
     if (load) loadTrack(0, 0);
     refreshUI();
     fillTimes(); // calls updatePlaylistInfo
+    fillTags();
   } else if (args[0] === "update-layout-pos") {
     let container = document.getElementById("audio-player-container");
     if (args[1] == 0) {
@@ -95,6 +97,31 @@ function getNextToFill() {
     return index;
   }
   return -1;
+}
+
+async function fillTags() {
+  const musicmetadata = require("music-metadata");
+  for (let index = 0; index < g_playlist.files.length; index++) {
+    const file = g_playlist.files[index];
+    try {
+      if (file.title && file.artist) continue;
+      if (!/^http:\/\/|https:\/\//.test(file.url)) {
+        let url = file.url;
+        const metadata = await musicmetadata.parseFile(file.url);
+        if (file.url === url) {
+          if (metadata?.common?.artist) file.artist = metadata.common.artist;
+          if (metadata?.common?.title) file.title = metadata.common.title;
+        } else {
+          // playlist changed in the meantime !!
+          break;
+        }
+      }
+    } catch (error) {
+      // TODO
+      console.log(error);
+    }
+  }
+  updatePlaylistInfo();
 }
 
 function createTracksList(isRefresh) {
@@ -152,7 +179,9 @@ function updatePlaylistInfo() {
       onPlaylistTrackDoubleClicked(index);
     });
     let content = `<span title="${file.url}">${reducePlaylistNameString(
-      path.basename(file.url, path.extname(file.url))
+      file.title && file.artist
+        ? `${file.artist} - ${file.title}`
+        : path.basename(file.url, path.extname(file.url))
     )}</span
   ><span class="ap-span-playlist-track-time">${duration}</span>`;
     div.innerHTML = content;
@@ -369,7 +398,6 @@ function onPlaylistTrackClicked(fileIndex) {
 
 exports.onPlaylistTrackDoubleClicked = onPlaylistTrackDoubleClicked;
 function onPlaylistTrackDoubleClicked(fileIndex) {
-  console.log(fileIndex);
   let newTrackIndex;
   for (let index = 0; index < g_tracks.length; index++) {
     if (g_tracks[index].fileIndex === fileIndex) {
