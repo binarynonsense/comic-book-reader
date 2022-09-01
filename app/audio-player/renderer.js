@@ -4,7 +4,7 @@ const path = require("path");
 let g_player = {};
 let g_playlist = {
   id: "",
-  source: "",
+  source: "", // filesystem, librivox...
   files: [],
 };
 let g_tracks = [];
