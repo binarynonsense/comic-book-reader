@@ -1252,6 +1252,12 @@ function buildApplicationMenu(
                 mainProcess.onMenuToolLibrivox();
               },
             },
+            {
+              label: _("menu-tools-other-wiktionary"),
+              click() {
+                mainProcess.onMenuToolWiktionary();
+              },
+            },
           ],
         },
       ],

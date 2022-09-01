@@ -104,6 +104,7 @@
   "menu-tools-other-gut": "Project Gutenberg",
   "menu-tools-other-xkcd": "xkcd Webcomics",
   "menu-tools-other-librivox": "LibriVox AudioBooks",
+  "[NEEDS TRANSLATION]menu-tools-other-wiktionary": "Wiktionary Dictionary",
 
   "menu-help": "Справка",
   "menu-help-about": "О программе", 
@@ -198,6 +199,7 @@
   "[NEEDS TRANSLATION]tool-shared-ui-about-text-1-books": "the books",
   "[NEEDS TRANSLATION]tool-shared-ui-about-text-1-webcomics": "the webcomics",
   "[NEEDS TRANSLATION]tool-shared-ui-about-text-1-audiobooks": "the audiobooks",
+  "[NEEDS TRANSLATION]tool-shared-ui-about-text-1-dictionaryterms": "the dictionary terms",
   "[NEEDS TRANSLATION]tool-shared-ui-about-text-2": "It needs an internet connection and could at any point stop working if the website's structure changes.",
   "[NEEDS TRANSLATION]tool-shared-ui-about-text-3": "If you use it frequently or just like what they are doing, please consider making a donation to help them keep the site alive.",
   "[NEEDS TRANSLATION]tool-shared-tab-search": "Search",
@@ -330,6 +332,9 @@
 
   "[NEEDS TRANSLATION]tool-lvx-title": "LibriVox AudioBooks",
   "[NEEDS TRANSLATION]tool-lvx-button-open-lvx-browser": "Open LibriVox In Browser",
+
+  "[NEEDS TRANSLATION]tool-wik-title": "Wiktionary Dictionary",
+  "[NEEDS TRANSLATION]tool-wik-button-open-wik-browser": "Open Wiktionary In Browser",
 
   "[NEEDS TRANSLATION]mgr-hist-title": "History",  
   "[NEEDS TRANSLATION]mgr-hist-button-clear-all": "Clear History",

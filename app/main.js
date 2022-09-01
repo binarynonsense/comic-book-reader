@@ -1299,6 +1299,12 @@ exports.onMenuToolLibrivox = function () {
   g_mainWindow.webContents.send("update-menubar");
 };
 
+exports.onMenuToolWiktionary = function () {
+  const tool = require("./tools/wiktionary/main");
+  tool.showWindow(g_mainWindow);
+  g_mainWindow.webContents.send("update-menubar");
+};
+
 exports.onMenuToggleDevTools = function () {
   toggleDevTools();
 };

@@ -104,6 +104,7 @@
   "menu-tools-other-gut": "Project Gutenberg",
   "menu-tools-other-xkcd": "xkcd Webcómics",
   "menu-tools-other-librivox": "LibriVox AudioLibros",
+  "menu-tools-other-wiktionary": "Diccionario Wiktionary",
 
   "menu-help": "Ayuda",
   "menu-help-about": "Acerca de",
@@ -198,6 +199,7 @@
   "tool-shared-ui-about-text-1-books": "los libros",
   "tool-shared-ui-about-text-1-webcomics": "los webcómics",
   "tool-shared-ui-about-text-1-audiobooks": "los audiolibros",
+  "tool-shared-ui-about-text-1-dictionaryterms": "las entradas de diccionario",
   "tool-shared-ui-about-text-2": "Necesita conexión a internet y podría dejar de funcionar en cualquier momento si la estructura de la web cambia.",
   "tool-shared-ui-about-text-3": "Si la usa frecuentemente o simplemente le gusta lo que hacen, por favor considere hacer un donativo para ayudarles a mantener el sitio en funcionamiento.",
   "tool-shared-tab-search": "Buscar",
@@ -329,7 +331,10 @@
   "tool-xkcd-button-open-website-browser": "Abrir xkcd En Navegador",
 
   "tool-lvx-title": "LibriVox AudioLibros",
-  "tool-lvx-button-open-lvx-browser": "Open LibriVox In Browser",
+  "tool-lvx-button-open-lvx-browser": "Abrir LibriVox En Navegador",
+
+  "tool-wik-title": "Diccionario Wiktionary",
+  "tool-wik-button-open-wik-browser": "Abrir Wiktionary En Navegador",
 
   "mgr-hist-title": "Historial",  
   "mgr-hist-button-clear-all": "Vaciar Historial",

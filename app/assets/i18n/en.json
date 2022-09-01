@@ -104,6 +104,8 @@
   "menu-tools-other-gut": "Project Gutenberg",
   "menu-tools-other-xkcd": "xkcd Webcomics",
   "menu-tools-other-librivox": "LibriVox AudioBooks",
+  "menu-tools-other-wiktionary": "Wiktionary Dictionary",
+
 
   "menu-help": "Help",
   "menu-help-about": "About",
@@ -198,6 +200,7 @@
   "tool-shared-ui-about-text-1-books": "the books",
   "tool-shared-ui-about-text-1-webcomics": "the webcomics",
   "tool-shared-ui-about-text-1-audiobooks": "the audiobooks",
+  "tool-shared-ui-about-text-1-dictionaryterms": "the dictionary terms",
   "tool-shared-ui-about-text-2": "It needs an internet connection and could at any point stop working if the website's structure changes.",
   "tool-shared-ui-about-text-3": "If you use it frequently or just like what they are doing, please consider making a donation to help them keep the site alive.",
   "tool-shared-tab-search": "Search",
@@ -330,6 +333,9 @@
 
   "tool-lvx-title": "LibriVox AudioBooks",
   "tool-lvx-button-open-lvx-browser": "Open LibriVox In Browser",
+
+  "tool-wik-title": "Wiktionary Dictionary",
+  "tool-wik-button-open-wik-browser": "Open Wiktionary In Browser",
 
   "mgr-hist-title": "History",  
   "mgr-hist-button-clear-all": "Clear History",
