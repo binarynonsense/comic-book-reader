@@ -2397,6 +2397,7 @@ function showToolBar(isVisible) {
     g_settings.showToolBar
   );
   menuBar.setToolBar(isVisible);
+  renderPageRefresh();
 }
 
 function toggleToolBar() {
