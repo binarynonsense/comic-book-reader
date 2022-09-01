@@ -257,11 +257,14 @@ function refreshUI() {
   }
 
   if (g_tracks.length > 0) {
-    g_player.buttonDelete.classList.remove("ap-disabled");
     g_player.buttonSave.classList.remove("ap-disabled");
   } else {
-    g_player.buttonDelete.classList.add("ap-disabled");
     g_player.buttonSave.classList.add("ap-disabled");
+  }
+  if (g_tracks.length > 0 && g_selectedTrackFileIndex !== undefined) {
+    g_player.buttonDelete.classList.remove("ap-disabled");
+  } else {
+    g_player.buttonDelete.classList.add("ap-disabled");
   }
   updatePlaylistInfo();
 }
