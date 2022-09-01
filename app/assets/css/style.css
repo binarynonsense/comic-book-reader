@@ -2,6 +2,8 @@
   --zoom-height-scale: 100;
   --zoom-height-borders: 60px;
   --zoom-epub-ebook-scale-factor: 1;
+  --toolbar-height: 30px;
+  --menubar-height: 30px;
 }
 
 html {

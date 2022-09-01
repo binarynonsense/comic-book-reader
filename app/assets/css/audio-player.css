@@ -7,14 +7,14 @@
 }
 
 .ap-layout-top-left {
-  position: absolute;
-  top: 10px;
+  position: fixed;
+  top: calc(var(--menubar-height) + 10px);
   left: 10px;
 }
 
 .ap-layout-bottom-left {
-  position: absolute;
-  bottom: 22px;
+  position: fixed;
+  bottom: calc(var(--toolbar-height) + 10px);
   left: 10px;
 }
 

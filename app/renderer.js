@@ -1298,11 +1298,13 @@ function showToolBar(isVisible) {
     document
       .querySelector(".cet-container")
       .classList.remove("set-margin-bottom-zero");
+    document.documentElement.style.setProperty("--toolbar-height", "30px");
   } else {
     document.querySelector("#toolbar").classList.add("set-display-none");
     document
       .querySelector(".cet-container")
       .classList.add("set-margin-bottom-zero");
+    document.documentElement.style.setProperty("--toolbar-height", "0px");
   }
   updateZoom();
 }
@@ -1335,9 +1337,11 @@ function setFullscreenUI(isFullscreen) {
   if (isFullscreen) {
     buttonEnter.classList.add("set-display-none");
     buttonExit.classList.remove("set-display-none");
+    document.documentElement.style.setProperty("--menubar-height", "0px");
   } else {
     buttonEnter.classList.remove("set-display-none");
     buttonExit.classList.add("set-display-none");
+    document.documentElement.style.setProperty("--menubar-height", "30px");
   }
   updateZoom();
 }
