@@ -342,6 +342,9 @@ function onButtonClicked(buttonName) {
       g_selectedTrackFileIndex = 0;
     }
     updatePlaylistInfo();
+  } else if (buttonName === "save-playlist") {
+    if (g_playlist.files.length > 0)
+      ipcRenderer.send("audio-player", "save-playlist", g_playlist);
   }
 
   refreshUI();
@@ -494,6 +497,10 @@ function init(shuffle, repeat, volume, localization) {
   g_player.buttonDelete = document.getElementById("ap-button-delete");
   g_player.buttonDelete.addEventListener("click", function () {
     onButtonClicked("delete");
+  });
+  g_player.buttonDelete = document.getElementById("ap-button-save");
+  g_player.buttonDelete.addEventListener("click", function () {
+    onButtonClicked("save-playlist");
   });
   //////
 

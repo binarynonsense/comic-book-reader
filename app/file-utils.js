@@ -284,6 +284,31 @@ function chooseFolder(window, defaultPath) {
 }
 exports.chooseFolder = chooseFolder;
 
+function chooseSaveAs(
+  window,
+  defaultPath,
+  allowedFileTypesName,
+  allowedFileTypesList
+) {
+  if (!fs.existsSync(path.dirname(defaultPath))) {
+    defaultPath = undefined;
+  }
+
+  let filePath = dialog.showSaveDialogSync(window, {
+    // title = ""
+    defaultPath: defaultPath,
+    properties: ["showOverwriteConfirmation"],
+    filters: [
+      {
+        name: allowedFileTypesName,
+        extensions: allowedFileTypesList,
+      },
+    ],
+  });
+  return filePath;
+}
+exports.chooseSaveAs = chooseSaveAs;
+
 ///////////////////////////////////////////////////////////////////////////////
 // GET IMAGES /////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////

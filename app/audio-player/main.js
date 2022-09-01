@@ -1,4 +1,4 @@
-const { ipcMain } = require("electron");
+const { app, ipcMain } = require("electron");
 const fs = require("fs");
 const path = require("path");
 const { FileExtension } = require("../constants");
@@ -39,6 +39,28 @@ ipcMain.on("audio-player", (event, ...args) => {
     openFiles(1);
   } else if (args[0] === "close") {
     mainProcess.showAudioPlayer(false, true);
+  } else if (args[0] === "save-playlist") {
+    let defaultPath = path.join(app.getPath("desktop"), "acbr-playlist.m3u");
+    let playlist = args[1];
+    if (!playlist?.files[0]?.url) return;
+    if (!/^http:\/\/|https:\/\//.test(playlist.files[0].url)) {
+      defaultPath = path.join(
+        path.dirname(playlist.files[0].url),
+        "acbr-playlist.m3u"
+      );
+    }
+    let allowedFileTypesName = "Playlists";
+    let allowedFileTypesList = [FileExtension.M3U];
+    let filePath = fileUtils.chooseSaveAs(
+      g_mainWindow,
+      defaultPath,
+      allowedFileTypesName,
+      allowedFileTypesList
+    );
+    if (filePath === undefined) {
+      return;
+    }
+    savePlaylistToFile(playlist, filePath, false);
   }
 });
 
@@ -101,6 +123,7 @@ function openFiles(mode) {
 
 function getPlaylistFiles(filePath) {
   // TODO: this is a quick and dirty implementation, maybe do a more elegant/efficient one
+  // TODO: read duration, name...
   try {
     const fileContents = fs.readFileSync(filePath, "utf-8");
     let files = [];
@@ -117,6 +140,32 @@ function getPlaylistFiles(filePath) {
   } catch (error) {
     return [];
   }
+}
+
+function savePlaylistToFile(playlist, filePath, saveAsAbsolutePaths) {
+  /*
+    ref: https://en.wikipedia.org/wiki/M3u
+    #EXTINF: 	track information: runtime in seconds and display title of the following resource 	
+    #EXTINF:123,Artist Name – Track Title␤
+    artist - title.mp3
+    additional properties as key-value pairs
+    #EXTINF:123 logo="cover.jpg",Track Title
+  */
+  let content = "#EXTM3U\n";
+  playlist.files.forEach((file) => {
+    let url = file.url;
+    if (!saveAsAbsolutePaths && !/^http:\/\/|https:\/\//.test(url)) {
+      // make paths relative to playlist file folder
+      let fileDir = path.dirname(url);
+      let saveDir = path.dirname(filePath);
+      if (fileDir !== saveDir) {
+        url = path.relative(saveDir, url);
+      }
+    }
+    content += `#EXTINF:${parseInt(file.duration) ?? -1},${file.name ?? ""}\n`;
+    content += encodeURI(url) + "\n";
+  });
+  fs.writeFileSync(filePath, content, "utf8");
 }
 
 function getLocalization() {
