@@ -133,7 +133,6 @@ function updatePlaylistInfo() {
   for (let index = 0; index < g_playlist.files.length; index++) {
     const file = g_playlist.files[index];
     let duration = "--:--";
-
     const div = document.createElement("div");
     div.id = "ap-playlist-track-" + index;
     div.classList.add("ap-div-playlist-track");
@@ -152,13 +151,11 @@ function updatePlaylistInfo() {
     div.addEventListener("dblclick", function () {
       onPlaylistTrackDoubleClicked(index);
     });
-
     let content = `<span title="${file.url}">${reducePlaylistNameString(
       path.basename(file.url, path.extname(file.url))
     )}</span
   ><span class="ap-span-playlist-track-time">${duration}</span>`;
     div.innerHTML = content;
-
     g_player.divPlaylistTracks.appendChild(div);
   }
 }
