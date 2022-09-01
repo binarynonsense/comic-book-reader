@@ -255,6 +255,14 @@ function refreshUI() {
     g_player.buttonRepeatOff.classList.add("ap-hidden");
     g_player.buttonRepeatOn.classList.remove("ap-hidden");
   }
+
+  if (g_tracks.length > 0) {
+    g_player.buttonDelete.classList.remove("ap-disabled");
+    g_player.buttonSave.classList.remove("ap-disabled");
+  } else {
+    g_player.buttonDelete.classList.add("ap-disabled");
+    g_player.buttonSave.classList.add("ap-disabled");
+  }
   updatePlaylistInfo();
 }
 
@@ -498,8 +506,8 @@ function init(shuffle, repeat, volume, localization) {
   g_player.buttonDelete.addEventListener("click", function () {
     onButtonClicked("delete");
   });
-  g_player.buttonDelete = document.getElementById("ap-button-save");
-  g_player.buttonDelete.addEventListener("click", function () {
+  g_player.buttonSave = document.getElementById("ap-button-save");
+  g_player.buttonSave.addEventListener("click", function () {
     onButtonClicked("save-playlist");
   });
   //////
