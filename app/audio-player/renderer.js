@@ -167,13 +167,14 @@ function loadTrack(index, time) {
     g_player.engine.src = g_tracks[g_currentTrackIndex].fileUrl;
     g_player.engine.currentTime = time;
     g_player.sliderTime.value = time;
+    return true;
   } catch (error) {
-    // TODO
+    return false;
   }
 }
 
 function playTrack(index, time) {
-  loadTrack(index, time);
+  if (!loadTrack(index, time)) return;
   g_player.engine.play();
   g_player.isPlaying = true;
   refreshUI();
