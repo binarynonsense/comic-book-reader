@@ -73,7 +73,7 @@ function fillTimes() {
         g_tempAudioElement = document.createElement("audio");
       g_tempAudioElement.muted = true;
       g_tempAudioElement.preload = true;
-      g_tempAudioElement.src = g_playlist.files[0].url;
+      g_tempAudioElement.src = g_playlist.files[g_tempAudioIndex].url;
       g_tempAudioElement.addEventListener("loadeddata", function () {
         g_playlist.files[g_tempAudioIndex].duration =
           g_tempAudioElement.duration;
