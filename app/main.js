@@ -375,7 +375,8 @@ app.on("ready", () => {
     showPageNumber(g_settings.showPageNumber);
     initClock();
     showClock(g_settings.showClock);
-    audioPlayer.init(g_mainWindow, "audio-player-container", _);
+    audioPlayer.init(g_mainWindow, "audio-player-container");
+    audioPlayer.updateLocalization(_);
     showAudioPlayer(g_settings.showAudioPlayer);
 
     g_mainWindow.setSize(g_settings.width, g_settings.height);
@@ -499,6 +500,8 @@ function rebuildTranslatedTexts(rebuildMenu = true) {
     _("menu-view-togglefullscreen")
   );
   g_mainWindow.webContents.send("update-bg-text", _("ui-bg-msg"));
+
+  audioPlayer.updateLocalization(_);
 }
 
 function _(...args) {

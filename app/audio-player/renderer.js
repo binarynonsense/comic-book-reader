@@ -12,7 +12,7 @@ let g_selectedTrackFileIndex;
 
 ipcRenderer.on("audio-player", (event, ...args) => {
   if (args[0] === "init") {
-    init(args[1], args[2], args[3]);
+    init(args[1], args[2]);
   } else if (args[0] === "show") {
     if (args[1]) {
       document.getElementById(args[2]).classList.remove("ap-hidden");
@@ -49,8 +49,20 @@ ipcRenderer.on("audio-player", (event, ...args) => {
       container.classList.add("ap-layout-bottom-left");
       container.classList.remove("ap-layout-top-left");
     }
+  } else if (args[0] === "update-localization") {
+    updateLocalization(args[1]);
   }
 });
+
+function updateLocalization(localization) {
+  for (let index = 0; index < localization.length; index++) {
+    const element = localization[index];
+    const domElement = document.getElementById(element.id);
+    if (domElement !== null) {
+      domElement.title = element.text;
+    }
+  }
+}
 
 function fillTimes() {
   try {
@@ -465,7 +477,7 @@ function shuffleArray(array) {
   return array;
 }
 
-function init(settings, playlist, localization) {
+function init(settings, playlist) {
   g_player.engine = document.getElementById("html-audio");
   ///////
   g_player.buttonOpen = document.getElementById("ap-button-open");
@@ -602,15 +614,6 @@ function init(settings, playlist, localization) {
     }
     refreshUI();
   });
-
-  // localization
-  for (let index = 0; index < localization.length; index++) {
-    const element = localization[index];
-    const domElement = document.getElementById(element.id);
-    if (domElement !== null) {
-      domElement.title = element.text;
-    }
-  }
 
   // load settings & playlist
   g_settings = settings;

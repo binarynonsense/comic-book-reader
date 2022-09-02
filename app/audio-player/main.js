@@ -82,8 +82,7 @@ function sanitizeSettings() {
 
 /////////////////////////////////////////////////////////////////////////
 
-exports.init = function (mainWindow, parentElementId, localizer) {
-  _ = localizer;
+exports.init = function (mainWindow, parentElementId) {
   g_mainWindow = mainWindow;
   const data = fs.readFileSync(path.join(__dirname, "index.html"));
   g_parentElementId = parentElementId;
@@ -94,13 +93,17 @@ exports.init = function (mainWindow, parentElementId, localizer) {
   );
 
   loadSettings();
-  g_mainWindow.webContents.send(
-    "audio-player",
-    "init",
-    g_settings,
-    g_playlist,
-    getLocalization()
-  );
+  g_mainWindow.webContents.send("audio-player", "init", g_settings, g_playlist);
+};
+
+exports.updateLocalization = function (localizer) {
+  _ = localizer;
+  if (g_mainWindow)
+    g_mainWindow.webContents.send(
+      "audio-player",
+      "update-localization",
+      getLocalization()
+    );
 };
 
 ipcMain.on("audio-player", (event, ...args) => {
