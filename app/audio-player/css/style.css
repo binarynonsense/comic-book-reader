@@ -180,7 +180,6 @@ a:hover a:visited {
 
 .ap-div-playlist-track {
   font-size: 11px;
-  font-family: monospace;
   width: 100%;
   padding: 2px;
   cursor: pointer;
@@ -193,7 +192,19 @@ a:hover a:visited {
 }
 
 .ap-span-playlist-track-time {
+  /* font-family: monospace; */
   float: right;
+}
+
+.ap-span-playlist-track-title {
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 195px;
+  /* ellipsis on the left */
+  direction: rtl;
+  text-align: left;
 }
 
 .ap-div-playlist-current-track {

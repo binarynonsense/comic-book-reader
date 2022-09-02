@@ -196,9 +196,7 @@ function updatePlaylistInfo() {
       file.title && file.artist
         ? `${file.artist} - ${file.title}`
         : path.basename(file.url, path.extname(file.url));
-    let content = `<span title="${fullName}\n${
-      file.url
-    }">${reducePlaylistNameString(fullName)}</span
+    let content = `<span title="${fullName}\n${file.url}" class="ap-span-playlist-track-title">${fullName}</span
   ><span class="ap-span-playlist-track-time">${duration}</span>`;
     div.innerHTML = content;
     g_player.divPlaylistTracks.appendChild(div);
