@@ -257,10 +257,13 @@ function getPlaylistFiles(filePath) {
     fileContents.split(/\r?\n/).forEach((line) => {
       if (/.mp3|.ogg|.wav$/.test(line)) {
         line = decodeURI(line);
-        if (!/^http:\/\/|https:\/\//.test(line) && !path.isAbsolute(line)) {
-          line = path.join(path.dirname(filePath), line);
+        if (!/^http:\/\/|https:\/\//.test(line)) {
+          if (!path.isAbsolute(line)) {
+            line = path.join(path.dirname(filePath), line);
+          }
+          if (!fs.existsSync(line)) line = undefined;
         }
-        files.push(line);
+        if (line) files.push(line);
       }
     });
     return files;
