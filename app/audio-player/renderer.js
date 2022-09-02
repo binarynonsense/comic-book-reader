@@ -389,7 +389,11 @@ function onButtonClicked(buttonName) {
     if (currentTrackFileIndex === g_selectedTrackFileIndex) {
       // deleting the current one
       if (g_currentTrackIndex < g_tracks.length) {
-        playTrack(g_currentTrackIndex, 0);
+        if (g_player.isPlaying) {
+          playTrack(g_currentTrackIndex, 0);
+        } else {
+          loadTrack(g_currentTrackIndex, 0);
+        }
       } else {
         // the deleted one was the last
         pauseTrack(false);

@@ -233,11 +233,8 @@ function savePlaylistToFile(playlist, filePath, saveAsAbsolutePaths) {
     let url = file.url;
     if (!saveAsAbsolutePaths && !/^http:\/\/|https:\/\//.test(url)) {
       // make paths relative to playlist file folder
-      let fileDir = path.dirname(url);
       let saveDir = path.dirname(filePath);
-      if (fileDir !== saveDir) {
-        url = path.relative(saveDir, url);
-      }
+      url = path.relative(saveDir, url);
     }
     let timeText =
       !file.duration || isNaN(file.duration) ? -1 : parseInt(file.duration);
