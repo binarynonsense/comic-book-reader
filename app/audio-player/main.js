@@ -152,46 +152,50 @@ function openFiles(mode) {
     FileExtension.M3U,
     FileExtension.M3U8,
   ];
-  let fileList = fileUtils.chooseOpenFiles(
+  let filePaths = fileUtils.chooseOpenFiles(
     g_mainWindow,
     defaultPath,
     allowedFileTypesName,
     allowedFileTypesList,
     allowMultipleSelection
   );
-  if (fileList === undefined) {
+  if (filePaths === undefined) {
     return;
   }
-  let filePaths = [];
+  let outputPaths = [];
   //////////////////////
 
-  fileList.forEach((file) => {
-    let ext = path.extname(file);
+  filePaths.forEach((filePath) => {
+    let ext = path.extname(filePath);
     if (ext !== "") ext = ext.substring(1);
     if (
       ext === FileExtension.MP3 ||
       ext === FileExtension.OGG ||
       ext === FileExtension.WAV
     ) {
-      filePaths.push(file);
+      outputPaths.push(filePath);
     } else if (ext === FileExtension.M3U || ext === FileExtension.M3U8) {
-      filePaths = filePaths.concat(getPlaylistFiles(file));
+      outputPaths = outputPaths.concat(getPlaylistFiles(filePath));
     }
   });
 
   //////////////////////
-  if (filePaths.length == 0) {
+  if (outputPaths.length == 0) {
     return;
   }
   if (mode === 1) {
-    g_mainWindow.webContents.send("audio-player", "add-to-playlist", filePaths);
+    g_mainWindow.webContents.send(
+      "audio-player",
+      "add-to-playlist",
+      outputPaths
+    );
   } else if (mode === 0) {
     let playlist = {
       id: "",
       source: "filesystem",
       files: [],
     };
-    filePaths.forEach((element) => {
+    outputPaths.forEach((element) => {
       playlist.files.push({ url: element });
     });
     g_mainWindow.webContents.send("audio-player", "open-playlist", playlist);
