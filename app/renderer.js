@@ -1166,11 +1166,13 @@ document.body.ondrop = (event) => {
   for (let index = 0; index < event.path.length; index++) {
     const element = event.path[index];
     if (element?.id?.includes("ap-")) {
-      ipcRenderer.send(
-        "audio-player",
-        "on-drop",
-        event.dataTransfer.files[0].path
-      );
+      let outputPaths = [];
+      for (let index = 0; index < event.dataTransfer.files.length; index++) {
+        const file = event.dataTransfer.files[index];
+        outputPaths.push(file.path);
+      }
+      if (outputPaths.length > 0)
+        ipcRenderer.send("audio-player", "on-drop", outputPaths);
       event.preventDefault();
       return;
     }

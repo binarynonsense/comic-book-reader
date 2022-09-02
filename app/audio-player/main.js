@@ -115,7 +115,7 @@ ipcMain.on("audio-player", (event, ...args) => {
   } else if (args[0] === "add-files") {
     callOpenFilesDialog(1);
   } else if (args[0] === "on-drop") {
-    onDroppedFile(args[1]);
+    onDroppedFiles(args[1]);
   } else if (args[0] === "close") {
     mainProcess.showAudioPlayer(false, true);
   } else if (args[0] === "save-playlist") {
@@ -143,20 +143,20 @@ ipcMain.on("audio-player", (event, ...args) => {
   }
 });
 
-function onDroppedFile(inputPath) {
-  if (!inputPath || inputPath === "" || !fs.existsSync(inputPath)) return;
-
+function onDroppedFiles(inputPaths) {
   let filePaths = [];
-
-  if (fs.lstatSync(inputPath).isDirectory()) {
-    let inDirPaths = fs.readdirSync(inputPath);
-    inDirPaths.forEach((inDirPath) => {
-      filePaths.push(path.join(inputPath, inDirPath));
-    });
-  } else {
-    filePaths.push(inputPath);
+  for (let index = 0; index < inputPaths.length; index++) {
+    const inputPath = inputPaths[index];
+    if (!fs.existsSync(inputPath)) return;
+    if (fs.lstatSync(inputPath).isDirectory()) {
+      let inDirPaths = fs.readdirSync(inputPath);
+      inDirPaths.forEach((inDirPath) => {
+        filePaths.push(path.join(inputPath, inDirPath));
+      });
+    } else {
+      filePaths.push(inputPath);
+    }
   }
-
   let outputPaths = getValidFilePaths(filePaths);
   if (outputPaths.length == 0) {
     return;
