@@ -83,7 +83,6 @@ function fillTimes() {
           g_tempAudioIndex > 0 &&
           g_tempAudioIndex < g_playlist.files.length
         ) {
-          // NOTE: I'm downloading it twice, maybe only do this for local files?
           g_tempAudioElement.src = g_playlist.files[g_tempAudioIndex].url;
         } else {
           g_tempAudioElement.removeAttribute("src");
