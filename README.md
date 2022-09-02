@@ -34,6 +34,9 @@ A comic book reader and converter for cbz, cbr, cb7, epub and pdf files.
   - Spanish
 - Automatically restores the previous session's last opened book and page, and remembers the last books' page positions.
 - Portable mode (by creating a file named portable.txt in the same folder as the executable).
+- Integrated audio player:
+    - supports .mp3, .ogg, .wav, .m3u and .m3u8 files.
+    - can export playlists to .m3u files.
 - Tools:
   - Convert/Resize:
     - comic books (cbr, cbz, cb7, pdf or epub to cbz, cb7, pdf or epub).
@@ -47,11 +50,16 @@ A comic book reader and converter for cbz, cbr, cb7, epub and pdf files.
     - a QR code's text from a comic book page or image file.
     - a color palette from a comic book page or image file.
       - can be exported to a .gpl or .aco palette file.
-  - Other (search the catalogs and open books/comics from):
-    - Digital Comics Museum
-    - Internet Archive Books
-    - Project Gutenberg
-    - xkcd Webcomics
+  - Other:
+    - search and open books/comics from:
+      - Digital Comics Museum.
+      - Internet Archive Books.
+      - Project Gutenberg.
+      - xkcd Webcomics.
+    - search and open audiobooks from:
+      - Librivox AudioBooks.
+    - search dictionary terms from:
+      - Wiktionary Dictionary.
 
 ## Controls:
 
