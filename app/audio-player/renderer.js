@@ -458,15 +458,6 @@ function getFormatedTimeFromSeconds(seconds) {
   return minutes + ":" + seconds;
 }
 
-function reducePlaylistNameString(input) {
-  let length = 29;
-  input =
-    input.length > length
-      ? "..." + input.substring(input.length - length + 3, input.length)
-      : input;
-  return input;
-}
-
 // ref: https://en.wikipedia.org/wiki/Fisher-Yates_shuffle#The_modern_algorithm
 // ref: https://www.geeksforgeeks.org/how-to-shuffle-an-array-using-javascript/
 function shuffleArray(array) {
