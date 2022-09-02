@@ -1162,9 +1162,21 @@ document.ondragover = document.ondrop = (ev) => {
   ev.preventDefault();
 };
 
-document.body.ondrop = (ev) => {
-  ipcRenderer.send("open-file", ev.dataTransfer.files[0].path);
-  ev.preventDefault();
+document.body.ondrop = (event) => {
+  for (let index = 0; index < event.path.length; index++) {
+    const element = event.path[index];
+    if (element?.id?.includes("ap-")) {
+      ipcRenderer.send(
+        "audio-player",
+        "on-drop",
+        event.dataTransfer.files[0].path
+      );
+      event.preventDefault();
+      return;
+    }
+  }
+  ipcRenderer.send("open-file", event.dataTransfer.files[0].path);
+  event.preventDefault();
 };
 
 document.onmousemove = function () {

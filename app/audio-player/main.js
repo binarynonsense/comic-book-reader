@@ -111,9 +111,11 @@ ipcMain.on("audio-player", (event, ...args) => {
     g_settings = args[1];
     g_playlist = args[2];
   } else if (args[0] === "open-files") {
-    openFiles(0);
+    callOpenFilesDialog(0);
   } else if (args[0] === "add-files") {
-    openFiles(1);
+    callOpenFilesDialog(1);
+  } else if (args[0] === "on-drop") {
+    onDroppedFile(args[1]);
   } else if (args[0] === "close") {
     mainProcess.showAudioPlayer(false, true);
   } else if (args[0] === "save-playlist") {
@@ -141,7 +143,68 @@ ipcMain.on("audio-player", (event, ...args) => {
   }
 });
 
-function openFiles(mode) {
+function onDroppedFile(inputPath) {
+  if (!inputPath || inputPath === "" || !fs.existsSync(inputPath)) return;
+
+  let filePaths = [];
+
+  if (fs.lstatSync(inputPath).isDirectory()) {
+    let inDirPaths = fs.readdirSync(inputPath);
+    inDirPaths.forEach((inDirPath) => {
+      filePaths.push(path.join(inputPath, inDirPath));
+    });
+  } else {
+    filePaths.push(inputPath);
+  }
+
+  let outputPaths = getValidFilePaths(filePaths);
+  if (outputPaths.length == 0) {
+    return;
+  }
+  let playlist = {
+    id: "",
+    source: "filesystem",
+    files: [],
+  };
+  outputPaths.forEach((element) => {
+    playlist.files.push({ url: element });
+  });
+  g_mainWindow.webContents.send("audio-player", "open-playlist", playlist);
+}
+
+function isAlreadyInArray(inputArray, content) {
+  for (let index = 0; index < inputArray.length; index++) {
+    const element = inputArray[index];
+    if (content === element) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function getValidFilePaths(filePaths) {
+  let outputPaths = [];
+  filePaths.forEach((filePath) => {
+    let ext = path.extname(filePath);
+    if (ext !== "") ext = ext.substring(1);
+    if (
+      ext === FileExtension.MP3 ||
+      ext === FileExtension.OGG ||
+      ext === FileExtension.WAV
+    ) {
+      if (!isAlreadyInArray(outputPaths, filePath)) outputPaths.push(filePath);
+    } else if (ext === FileExtension.M3U || ext === FileExtension.M3U8) {
+      const listPaths = getPlaylistFiles(filePath);
+      listPaths.forEach((listPath) => {
+        if (!isAlreadyInArray(outputPaths, listPath))
+          outputPaths.push(listPath);
+      });
+    }
+  });
+  return outputPaths;
+}
+
+function callOpenFilesDialog(mode) {
   let defaultPath;
   let allowMultipleSelection = true;
   let allowedFileTypesName = "Audio Files / Playlists";
@@ -162,24 +225,7 @@ function openFiles(mode) {
   if (filePaths === undefined) {
     return;
   }
-  let outputPaths = [];
-  //////////////////////
-
-  filePaths.forEach((filePath) => {
-    let ext = path.extname(filePath);
-    if (ext !== "") ext = ext.substring(1);
-    if (
-      ext === FileExtension.MP3 ||
-      ext === FileExtension.OGG ||
-      ext === FileExtension.WAV
-    ) {
-      outputPaths.push(filePath);
-    } else if (ext === FileExtension.M3U || ext === FileExtension.M3U8) {
-      outputPaths = outputPaths.concat(getPlaylistFiles(filePath));
-    }
-  });
-
-  //////////////////////
+  let outputPaths = getValidFilePaths(filePaths);
   if (outputPaths.length == 0) {
     return;
   }
