@@ -192,11 +192,13 @@ function updatePlaylistInfo() {
     div.addEventListener("dblclick", function () {
       onPlaylistTrackDoubleClicked(index);
     });
-    let content = `<span title="${file.url}">${reducePlaylistNameString(
+    let fullName =
       file.title && file.artist
         ? `${file.artist} - ${file.title}`
-        : path.basename(file.url, path.extname(file.url))
-    )}</span
+        : path.basename(file.url, path.extname(file.url));
+    let content = `<span title="${fullName}\n${
+      file.url
+    }">${reducePlaylistNameString(fullName)}</span
   ><span class="ap-span-playlist-track-time">${duration}</span>`;
     div.innerHTML = content;
     g_player.divPlaylistTracks.appendChild(div);
