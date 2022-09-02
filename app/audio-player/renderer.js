@@ -461,10 +461,10 @@ function getFormatedTimeFromSeconds(seconds) {
 }
 
 function reducePlaylistNameString(input) {
-  var length = 28;
+  let length = 29;
   input =
     input.length > length
-      ? "..." + input.substring(input.length - length, input.length)
+      ? "..." + input.substring(input.length - length + 3, input.length)
       : input;
   return input;
 }
