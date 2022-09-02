@@ -210,10 +210,10 @@ function playTrack(index, time) {
   scrollToCurrent();
 }
 
-function pauseTrack(refreshUI = true) {
+function pauseTrack(refresh = true) {
   g_player.engine.pause();
   g_player.isPlaying = false;
-  if (refreshUI) refreshUI();
+  if (refresh) refreshUI();
 }
 
 function scrollToCurrent() {
@@ -286,8 +286,10 @@ function refreshUI() {
   }
 
   if (g_tracks.length > 0) {
+    g_player.buttonClear.classList.remove("ap-disabled");
     g_player.buttonSave.classList.remove("ap-disabled");
   } else {
+    g_player.buttonClear.classList.add("ap-disabled");
     g_player.buttonSave.classList.add("ap-disabled");
   }
   if (g_tracks.length > 0 && g_selectedTrackFileIndex !== undefined) {
@@ -340,6 +342,12 @@ function onButtonClicked(buttonName) {
     g_player.repeat = true;
   } else if (buttonName === "repeat-off") {
     g_player.repeat = false;
+  } else if (buttonName === "clear") {
+    if (g_tracks.length <= 0) return;
+    g_playlist.files = [];
+    g_tracks = [];
+    g_selectedTrackFileIndex = undefined;
+    pauseTrack(true);
   } else if (buttonName === "add") {
     ipcRenderer.send("audio-player", "add-files");
   } else if (buttonName === "delete") {
@@ -379,7 +387,7 @@ function onButtonClicked(buttonName) {
     if (g_tracks.length > 0) {
       g_selectedTrackFileIndex = g_tracks[g_currentTrackIndex].fileIndex;
     } else {
-      g_selectedTrackFileIndex = 0;
+      g_selectedTrackFileIndex = undefined;
     }
     updatePlaylistInfo();
   } else if (buttonName === "save-playlist") {
@@ -529,6 +537,10 @@ function init(shuffle, repeat, volume, localization) {
     onButtonClicked("repeat-off");
   });
 
+  g_player.buttonClear = document.getElementById("ap-button-clear");
+  g_player.buttonClear.addEventListener("click", function () {
+    onButtonClicked("clear");
+  });
   g_player.buttonAdd = document.getElementById("ap-button-add");
   g_player.buttonAdd.addEventListener("click", function () {
     onButtonClicked("add");

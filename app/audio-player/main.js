@@ -123,7 +123,7 @@ function openFiles(mode) {
 
 function getPlaylistFiles(filePath) {
   // TODO: this is a quick and dirty implementation, maybe do a more elegant/efficient one
-  // TODO: read duration, name...
+  // TODO: read duration, title, artist...
   try {
     const fileContents = fs.readFileSync(filePath, "utf-8");
     let files = [];
@@ -162,11 +162,17 @@ function savePlaylistToFile(playlist, filePath, saveAsAbsolutePaths) {
         url = path.relative(saveDir, url);
       }
     }
-    content += `#EXTINF:${parseInt(file.duration) ?? -1},${file.name ?? ""}\n`;
+    content += `#EXTINF:${parseInt(file.duration) ?? -1},${
+      file.title && file.artist ? file.artist + " - " + file.title : ""
+    }\n`;
     content += encodeURI(url) + "\n";
   });
   fs.writeFileSync(filePath, content, "utf8");
 }
+
+exports.getSettings = function () {};
+
+/////////////////////////////////////////////////////////////////////////////
 
 function getLocalization() {
   return [
@@ -223,6 +229,10 @@ function getLocalization() {
       text: _("ap-tooltip-button-repeat-on"),
     },
 
+    {
+      id: "ap-button-clear",
+      text: _("ap-tooltip-button-clear"),
+    },
     {
       id: "ap-button-add",
       text: _("ap-tooltip-button-add"),

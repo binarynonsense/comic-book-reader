@@ -355,6 +355,7 @@
   "ap-tooltip-button-shuffle-on": "turn shuffle playlist on",
   "ap-tooltip-button-repeat-off": "turn repeat playlist off",
   "ap-tooltip-button-repeat-on": "turn repeat playlist on",
+  "ap-tooltip-button-clear": "remove all from playlist",
   "ap-tooltip-button-add": "add files to playlist",
   "ap-tooltip-button-delete": "remove selected from playlist",
   "ap-tooltip-button-save": "save playlist to file"
