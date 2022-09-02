@@ -38,7 +38,7 @@
     "--audioplayer-slider-hover-right-bg-color": "#888",
     "--audioplayer-slider-left-bg-color": "#ccc",
     "--audioplayer-slider-hover-left-bg-color": "#ddd",
-    "--audioplayer-tracks-bg-color": "#1e1e1e",
+    "--audioplayer-tracks-bg-color": "#2e2e2e",
     "--audioplayer-track-text-color": "#999",
     "--audioplayer-track-hover-text-color": "#525252",
     "--audioplayer-track-hover-bg-color": "#ccc",
