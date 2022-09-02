@@ -114,10 +114,22 @@ function isPortable() {
 }
 exports.isPortable = isPortable;
 
-exports.saveSettings = function (settings) {
-  let cfgFilePath = path.join(getUserDataFolderPath(), "acbr.cfg");
+exports.getConfigFolder = function () {
   if (isPortable()) {
-    cfgFilePath = path.join(getExeFolderPath(), "acbr.cfg");
+    try {
+      fs.accessSync(getExeFolderPath(), fs.constants.W_OK);
+      return getExeFolderPath();
+    } catch (err) {
+      console.log("Warning: portable settings' folder not writable");
+    }
+  }
+  return getUserDataFolderPath();
+};
+
+exports.saveSettings = function (settings, fileName) {
+  let cfgFilePath = path.join(getUserDataFolderPath(), fileName);
+  if (isPortable()) {
+    cfgFilePath = path.join(getExeFolderPath(), fileName);
     try {
       fs.accessSync(getExeFolderPath(), fs.constants.W_OK);
     } catch (err) {
@@ -137,10 +149,10 @@ exports.saveSettings = function (settings) {
   console.log("settings saved to: " + cfgFilePath);
 };
 
-exports.loadSettings = function (settings) {
-  let cfgFilePath = path.join(getUserDataFolderPath(), "acbr.cfg");
+exports.loadSettings = function (settings, fileName) {
+  let cfgFilePath = path.join(getUserDataFolderPath(), fileName);
   if (isPortable()) {
-    cfgFilePath = path.join(getExeFolderPath(), "acbr.cfg");
+    cfgFilePath = path.join(getExeFolderPath(), fileName);
   }
   if (fs.existsSync(cfgFilePath)) {
     let data;

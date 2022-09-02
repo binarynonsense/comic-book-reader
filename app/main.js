@@ -289,6 +289,7 @@ app.on("will-quit", () => {
   g_settings.on_quit_state = g_fileData.path === "" ? 0 : 1;
   saveSettings();
   saveHistory(false);
+  audioPlayer.saveSettings();
   globalShortcut.unregisterAll();
   fileUtils.cleanUpTempFolder();
   if (g_workerExport !== undefined) {
@@ -329,7 +330,7 @@ app.on("ready", () => {
   g_mainWindow.webContents.on("did-finish-load", function () {
     g_isLoaded = true;
 
-    g_settings = fileUtils.loadSettings(g_settings);
+    g_settings = fileUtils.loadSettings(g_settings, "acbr.cfg");
     sanitizeSettings();
     g_history = fileUtils.loadHistory(g_settings.history_capacity);
 
@@ -510,7 +511,7 @@ exports.i18n_ = _;
 ///////////////////////////////////////////////////////////////////////////////
 
 function saveSettings() {
-  fileUtils.saveSettings(g_settings);
+  fileUtils.saveSettings(g_settings, "acbr.cfg");
 }
 
 function addCurrentToHistory(updateMenu = true) {

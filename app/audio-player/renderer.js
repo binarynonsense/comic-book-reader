@@ -1,12 +1,9 @@
 const { ipcRenderer } = require("electron");
 const path = require("path");
 
+let g_settings;
 let g_player = {};
-let g_playlist = {
-  id: "",
-  source: "", // filesystem, librivox...
-  files: [],
-};
+let g_playlist;
 let g_tracks = [];
 let g_currentTrackIndex = 0;
 let g_tempAudioElement;
@@ -15,7 +12,7 @@ let g_selectedTrackFileIndex;
 
 ipcRenderer.on("audio-player", (event, ...args) => {
   if (args[0] === "init") {
-    init(false, false, 0.3, args[1]);
+    init(args[1], args[2], args[3]);
   } else if (args[0] === "show") {
     if (args[1]) {
       document.getElementById(args[2]).classList.remove("ap-hidden");
@@ -94,6 +91,7 @@ function getNextToFill() {
   for (let index = g_tempAudioIndex; index < g_playlist.files.length; index++) {
     const file = g_playlist.files[index];
     if (file.duration) continue;
+    if (/^http:\/\/|https:\/\//.test(file.url)) continue;
     return index;
   }
   return -1;
@@ -126,17 +124,22 @@ async function fillTags() {
 
 function createTracksList(isRefresh) {
   let currentFileIndex;
+  if (!isRefresh && g_tempAudioElement) {
+    // playlist changed, abort time background retrieval
+    g_tempAudioElement.removeAttribute("src");
+    g_tempAudioElement = null;
+  }
   if (isRefresh && g_tracks.length > 0)
     currentFileIndex = g_tracks[g_currentTrackIndex].fileIndex;
   g_tracks = [];
   for (let index = 0; index < g_playlist.files.length; index++) {
-    if (g_player.shuffle && currentFileIndex === index) {
+    if (g_settings.shuffle && currentFileIndex === index) {
       continue;
     }
     g_tracks.push({ fileIndex: index, fileUrl: g_playlist.files[index].url });
   }
   // shuffled
-  if (g_player.shuffle) {
+  if (g_settings.shuffle) {
     g_tracks = shuffleArray(g_tracks);
     if (currentFileIndex !== undefined) {
       g_tracks.unshift({
@@ -217,13 +220,15 @@ function pauseTrack(refresh = true) {
 }
 
 function scrollToCurrent() {
-  let index = g_tracks[g_currentTrackIndex].fileIndex;
-  let divId = "ap-playlist-track-" + index;
-  document.getElementById(divId).scrollIntoView({
-    behavior: "smooth",
-    block: "nearest",
-    inline: "nearest",
-  });
+  if (g_currentTrackIndex && g_tracks.length > g_currentTrackIndex) {
+    let index = g_tracks[g_currentTrackIndex].fileIndex;
+    let divId = "ap-playlist-track-" + index;
+    document.getElementById(divId).scrollIntoView({
+      behavior: "smooth",
+      block: "nearest",
+      inline: "nearest",
+    });
+  }
 }
 
 function refreshUI() {
@@ -244,12 +249,12 @@ function refreshUI() {
       g_player.buttonPause.classList.add("hide");
     }
 
-    if (g_player.repeat || g_currentTrackIndex > 0) {
+    if (g_settings.repeat || g_currentTrackIndex > 0) {
       g_player.buttonPrev.classList.remove("ap-disabled");
     } else {
       g_player.buttonPrev.classList.add("ap-disabled");
     }
-    if (g_player.repeat || g_tracks.length - 1 > g_currentTrackIndex) {
+    if (g_settings.repeat || g_tracks.length - 1 > g_currentTrackIndex) {
       g_player.buttonNext.classList.remove("ap-disabled");
     } else {
       g_player.buttonNext.classList.add("ap-disabled");
@@ -270,14 +275,14 @@ function refreshUI() {
     g_player.buttonVolumeOff.classList.add("ap-hidden");
   }
 
-  if (g_player.shuffle) {
+  if (g_settings.shuffle) {
     g_player.buttonShuffleOff.classList.remove("ap-hidden");
     g_player.buttonShuffleOn.classList.add("ap-hidden");
   } else {
     g_player.buttonShuffleOff.classList.add("ap-hidden");
     g_player.buttonShuffleOn.classList.remove("ap-hidden");
   }
-  if (g_player.repeat) {
+  if (g_settings.repeat) {
     g_player.buttonRepeatOff.classList.remove("ap-hidden");
     g_player.buttonRepeatOn.classList.add("ap-hidden");
   } else {
@@ -307,11 +312,11 @@ function onButtonClicked(buttonName) {
   } else if (buttonName === "pause") {
     pauseTrack(false);
   } else if (buttonName === "prev") {
-    if (g_player.repeat && g_currentTrackIndex === 0)
+    if (g_settings.repeat && g_currentTrackIndex === 0)
       playTrack(g_tracks.length - 1, 0);
     else playTrack(g_currentTrackIndex - 1, 0);
   } else if (buttonName === "next") {
-    if (g_player.repeat && g_currentTrackIndex === g_tracks.length - 1)
+    if (g_settings.repeat && g_currentTrackIndex === g_tracks.length - 1)
       playTrack(0, 0);
     else playTrack(g_currentTrackIndex + 1, 0);
   } else if (buttonName === "open") {
@@ -319,8 +324,10 @@ function onButtonClicked(buttonName) {
   } else if (buttonName === "playlist") {
     if (g_player.divPlaylist.classList.contains("ap-hidden")) {
       g_player.divPlaylist.classList.remove("ap-hidden");
+      g_settings.showPlaylist = true;
     } else {
       g_player.divPlaylist.classList.add("ap-hidden");
+      g_settings.showPlaylist = false;
     }
   } else if (buttonName === "volume-off") {
     g_player.lastVolume = g_player.engine.volume;
@@ -333,15 +340,15 @@ function onButtonClicked(buttonName) {
   }
   // playlist
   else if (buttonName === "shuffle-on") {
-    g_player.shuffle = true;
+    g_settings.shuffle = true;
     createTracksList(true);
   } else if (buttonName === "shuffle-off") {
-    g_player.shuffle = false;
+    g_settings.shuffle = false;
     createTracksList(true);
   } else if (buttonName === "repeat-on") {
-    g_player.repeat = true;
+    g_settings.repeat = true;
   } else if (buttonName === "repeat-off") {
-    g_player.repeat = false;
+    g_settings.repeat = false;
   } else if (buttonName === "clear") {
     if (g_tracks.length <= 0) return;
     g_playlist.files = [];
@@ -458,7 +465,7 @@ function shuffleArray(array) {
   return array;
 }
 
-function init(shuffle, repeat, volume, localization) {
+function init(settings, playlist, localization) {
   g_player.engine = document.getElementById("html-audio");
   ///////
   g_player.buttonOpen = document.getElementById("ap-button-open");
@@ -586,7 +593,7 @@ function init(shuffle, repeat, volume, localization) {
     if (g_tracks.length - 1 > g_currentTrackIndex) {
       playTrack(g_currentTrackIndex + 1, 0);
     } else {
-      if (g_player.repeat) {
+      if (g_settings.repeat) {
         playTrack(0, 0);
       } else {
         pauseTrack(false);
@@ -605,12 +612,51 @@ function init(shuffle, repeat, volume, localization) {
     }
   }
 
-  g_player.isPlaying = false;
-  g_player.shuffle = shuffle;
-  g_player.repeat = repeat;
-  g_player.engine.volume = volume;
-  g_player.sliderVolume.value = volume * 100;
-  g_player.divPlaylist.classList.add("ap-hidden");
+  // load settings & playlist
+  g_settings = settings;
+  g_playlist = playlist;
 
+  g_player.isPlaying = false;
+  g_player.engine.volume = g_settings.volume;
+  g_player.textVolume.innerHTML = `${Math.floor(g_settings.volume * 100)}%`;
+  g_player.sliderVolume.value = g_settings.volume * 100;
+  if (g_settings.showPlaylist)
+    g_player.divPlaylist.classList.remove("ap-hidden");
+  else g_player.divPlaylist.classList.add("ap-hidden");
+  if (g_playlist.files.length > 0) {
+    createTracksList(false);
+    let trackIndex = 0;
+    if (g_settings.currentFileIndex) {
+      for (let index = 0; index < g_tracks.length; index++) {
+        const track = g_tracks[index];
+        if (track.fileIndex === g_settings.currentFileIndex) {
+          trackIndex = index;
+          break;
+        }
+      }
+    }
+    loadTrack(trackIndex, g_settings.currentTime ?? 0);
+    refreshUI();
+    fillTimes(); // calls updatePlaylistInfo
+    fillTags();
+  }
   refreshUI();
+  setTimeout(scrollToCurrent, 100);
+
+  // will send settings and playlist to main
+  // so on quit the info is immediately available
+  // TODO: maybe do it a more efficient way
+  sendConfigUpdateTimeout();
 }
+
+let g_configUpdateTimeout;
+function sendConfigUpdateTimeout() {
+  g_settings.volume = g_player.engine.volume;
+  if (g_tracks.length > 0)
+    g_settings.currentFileIndex = g_tracks[g_currentTrackIndex].fileIndex;
+  else g_settings.currentFileIndex = undefined;
+  g_settings.currentTime = g_player.engine.currentTime;
+  ipcRenderer.send("audio-player", "update-config", g_settings, g_playlist);
+  g_configUpdateTimeout = setTimeout(sendConfigUpdateTimeout, 2000);
+}
+// TODO: call clearTimeout(g_configUpdateTimeout); on exit?

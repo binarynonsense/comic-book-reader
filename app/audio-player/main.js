@@ -18,6 +18,70 @@ exports.show = function (isVisible) {
   );
 };
 
+/////////////////////////////////////////////////////////////////////////
+
+let g_settings = {
+  version: app.getVersion(),
+  date: "",
+  volume: 0.8,
+  shuffle: false,
+  repeat: false,
+  currentFileIndex: undefined,
+  currentTime: 0,
+  showPlaylist: true,
+};
+
+let g_playlist = {
+  id: "",
+  source: "", // filesystem, librivox...
+  files: [],
+};
+
+exports.saveSettings = function () {
+  fileUtils.saveSettings(g_settings, "acbr-player.cfg");
+  let playlistPath = path.join(fileUtils.getConfigFolder(), "acbr-player.m3u");
+  savePlaylistToFile(g_playlist, playlistPath, false);
+  console.log("playlist saved to: " + playlistPath);
+};
+
+function loadSettings() {
+  g_settings = fileUtils.loadSettings(g_settings, "acbr-player.cfg");
+  sanitizeSettings();
+  let playlistPath = path.join(fileUtils.getConfigFolder(), "acbr-player.m3u");
+  let fileUrls = getPlaylistFiles(playlistPath);
+  if (fileUrls && fileUrls.length > 0) {
+    fileUrls.forEach((url) => {
+      g_playlist.files.push({ url: url });
+    });
+  }
+}
+
+function sanitizeSettings() {
+  if (isNaN(g_settings.volume)) {
+    g_settings.volume = 0.8;
+  }
+  if (g_settings.volume < 0 || g_settings.volume > 1) {
+    g_settings.volume = 0.8;
+  }
+  if (typeof g_settings.shuffle !== "boolean") {
+    g_settings.shuffle = false;
+  }
+  if (typeof g_settings.repeat !== "boolean") {
+    g_settings.repeat = false;
+  }
+  if (isNaN(g_settings.currentFileIndex)) {
+    g_settings.currentFileIndex = undefined;
+  }
+  if (isNaN(g_settings.currentTime)) {
+    g_settings.currentTime = 0;
+  }
+  if (typeof g_settings.showPlaylist !== "boolean") {
+    g_settings.showPlaylist = true;
+  }
+}
+
+/////////////////////////////////////////////////////////////////////////
+
 exports.init = function (mainWindow, parentElementId, localizer) {
   _ = localizer;
   g_mainWindow = mainWindow;
@@ -29,11 +93,21 @@ exports.init = function (mainWindow, parentElementId, localizer) {
     data.toString()
   );
 
-  g_mainWindow.webContents.send("audio-player", "init", getLocalization());
+  loadSettings();
+  g_mainWindow.webContents.send(
+    "audio-player",
+    "init",
+    g_settings,
+    g_playlist,
+    getLocalization()
+  );
 };
 
 ipcMain.on("audio-player", (event, ...args) => {
-  if (args[0] === "open-files") {
+  if (args[0] === "update-config") {
+    g_settings = args[1];
+    g_playlist = args[2];
+  } else if (args[0] === "open-files") {
     openFiles(0);
   } else if (args[0] === "add-files") {
     openFiles(1);
@@ -162,9 +236,11 @@ function savePlaylistToFile(playlist, filePath, saveAsAbsolutePaths) {
         url = path.relative(saveDir, url);
       }
     }
-    content += `#EXTINF:${parseInt(file.duration) ?? -1},${
-      file.title && file.artist ? file.artist + " - " + file.title : ""
-    }\n`;
+    let timeText =
+      !file.duration || isNaN(file.duration) ? -1 : parseInt(file.duration);
+    let artistTitleText =
+      file.title && file.artist ? file.artist + " - " + file.title : "";
+    content += `#EXTINF:${timeText},${artistTitleText}\n`;
     content += encodeURI(url) + "\n";
   });
   fs.writeFileSync(filePath, content, "utf8");
