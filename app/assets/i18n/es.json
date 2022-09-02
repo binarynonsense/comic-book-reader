@@ -194,7 +194,7 @@
   "tool-shared-ui-search-nothing-found": "No hay resultados que coincidan con sus criterios",
   "tool-shared-ui-button-open-in-acbr": "Abrir En ACBR",
   "tool-shared-ui-button-open-in-browser": "Abrir En Navegador",
-  "tool-shared-ui-about-text-1": "Esta es una herramienta para buscar entre {0} disponibles la web \"{1}\" y abrirlos en el navegador del sistema o directamente en ACBR.",
+  "tool-shared-ui-about-text-1": "Esta es una herramienta para buscar entre {0} disponibles en la web \"{1}\" y abrirlos en el navegador del sistema o directamente en ACBR.",
   "tool-shared-ui-about-text-1-comicbooks": "los cómics",
   "tool-shared-ui-about-text-1-books": "los libros",
   "tool-shared-ui-about-text-1-webcomics": "los webcómics",
