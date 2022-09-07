@@ -1,7 +1,7 @@
 {
   "@metadata": {
     "authors": ["vanja-san"],
-    "last-updated": "2022-09-07",
+    "last-updated": "2022-09-08",
     "acbr-version": "2.4.0",
     "comments": "Русский перевод",
     "locale": "ru",
@@ -206,7 +206,7 @@
   "tool-shared-tab-catalog": "Каталог",
   "tool-shared-tab-openurl": "Открыть ссылку",
   "tool-shared-tab-options": "Параметры",
-  "tool-shared-tab-about": "О...",
+  "tool-shared-tab-about": "О сайте",
 
   "tool-shared-modal-title-extracting": "Извлечение",
   "tool-shared-modal-title-converting": "Конвертация",
