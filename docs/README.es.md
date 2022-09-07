@@ -17,7 +17,7 @@ Un lector y conversor de cómics en formato cbz, cbr, cb7, epub y pdf.
 - Versiones para Windows y GNU/Linux.
 - Formatos de archivo compatibles:
 
-  - Comic books:
+  - Cómics:
     - .cbz
     - .cbr
     - .cb7
@@ -35,17 +35,17 @@ Un lector y conversor de cómics en formato cbz, cbr, cb7, epub y pdf.
   Incluyendo archivos pdf protegidos con contraseña, cbz (cifrado AES no compatible), cb7 y cbr..
 
 - Modos de ventana (IU simple) y pantalla completa (sin IU).
-- Vistas de pagina: 'ajustar a anchura', 'ajustar a altura' y 'escalar a la altura' personalizable.
+- Vistas de pagina: 'ajustar a anchura', 'ajustar a altura' y 'escalar a altura' personalizable.
 - Rotación de página.
 - Interfaz de usuario disponible en:
   - Inglés
   - Español
   - Ruso
-- Restaura automáticamente el último libro y página abiertos de la sesión anterior, y recuerda las posiciones de página de los últimos libros.
+- Restaura automáticamente el último libro, y página, abierto en la sesión anterior, y recuerda las posiciones de página de los últimos libros.
 - Modo portátil (al crear un archivo llamado portable.txt en la misma carpeta que el ejecutable).
 - Reproductor de audio integrado:
   - admite archivos .mp3, .ogg, .wav, .m3u y .m3u8.
-  - Puede exportar listas de reproducción a archivos .m3u.
+  - puede exportar listas de reproducción a archivos .m3u.
 - Herramientas:
   - Convertir/Redimensionar:
     - cómics (cbr, cbz, cb7, pdf o epub a cbz, cb7, pdf o epub).
@@ -98,4 +98,4 @@ Un lector y conversor de cómics en formato cbz, cbr, cb7, epub y pdf.
 
 ## Licencia
 
-El código de ACBR se publica bajo la [licencia](./LICENSE) BSD 2-Clause. Para comprobar las licencias de los módulos de node y otras librerías utilizadas en el proyecto, vaya a la carpeta [licencias](./licenses/).
+El código de ACBR se publica bajo la [licencia](../LICENSE) BSD 2-Clause. Para comprobar las licencias de los módulos de node y otras librerías utilizadas en el proyecto, vaya a la carpeta [licencias](../licenses/).
