@@ -41,7 +41,7 @@ Un lector y conversor de cómics en formato cbz, cbr, cb7, epub y pdf.
   - Inglés
   - Español
   - Ruso
-- Restaura automáticamente el último libro, y página, abierto en la sesión anterior, y recuerda las posiciones de página de los últimos libros.
+- Restaura automáticamente el último cómic, y página, abierto en la sesión anterior, y recuerda las posiciones de página de los últimos cómics.
 - Modo portátil (al crear un archivo llamado portable.txt en la misma carpeta que el ejecutable).
 - Reproductor de audio integrado:
   - admite archivos .mp3, .ogg, .wav, .m3u y .m3u8.
