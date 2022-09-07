@@ -9,7 +9,7 @@ Un lector y conversor de cómics en formato cbz, cbr, cb7, epub y pdf.
 <p align="center">
   <a href="../README.md">English</a> |
   <span>Español</span> | 
-  <a href="./docs/README.ru.md">Русский</a> 
+  <a href="./README.ru.md">Русский</a> 
 </p>
 
 ## Características:
