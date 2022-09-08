@@ -10,6 +10,13 @@ Un lector y conversor de cómics para archivos en formato cbz, cbr, cb7, epub y 
   <a href="./README.ru.md">Русский</a> 
 </p>
 
+## Contenidos:
+
+* [Características](#características)
+* [Controles](#controles)
+* [Descargas](#descargas)
+* [Licencia](#licencia)
+
 ## Características:
 
 - Versiones para Windows y GNU/Linux.
@@ -68,7 +75,7 @@ Un lector y conversor de cómics para archivos en formato cbz, cbr, cb7, epub y 
     - búsqueda de términos de diccionario de:
       - Diccionario Wiktionary.
 
-## Controls:
+## Controles:
 
 - Barra de herramientas:
   - botones: 'abrir archivo', 'página anterior', 'página siguiente', 'ajustar al ancho', 'ajustar al alto', 'girar en sentido antihorario', 'girar en sentido horario' y 'alternar pantalla completa'.
