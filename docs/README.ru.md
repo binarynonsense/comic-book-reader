@@ -87,8 +87,8 @@
 ## Управление:
 
 - Панель инструментов:
-  - кнопки: 'open file', 'previous page', 'next page', 'fit to width', 'fit to height', 'rotate counterclockwise', 'rotate clockwise' and 'toggle fullscreen'.
-  - ползунок: use it to quickly go to any page in the book.
+  - кнопки: 'открыть файл', 'предыдущая страница', 'следующая страница', 'подогнать по ширине', 'подогнать по высоте', 'вращать против часовой стрелки', 'вращать по часовой стрелке' и 'переключить на весь экран'.
+  - ползунок: используйте его для быстрого перехода к любой странице книги.
 - Горячие клавиши:
   - 'стрелка вправо' или 'page down' - перейти на следующую страницу.
   - 'стрелка вправо' или 'page up' - перейти на предыдущую страницу.
@@ -110,7 +110,7 @@
 - [Linux](https://github.com/binarynonsense/comic-book-reader/releases/latest/download/ACBR_Linux.zip)
 - [Linux (AppImage)](https://github.com/binarynonsense/comic-book-reader/releases/latest/download/ACBR_Linux_AppImage.zip)
 
-## Вклад:
+## Участники вклада:
 
 - Русская локализация от [vanja-san](https://github.com/vanja-san)
 
