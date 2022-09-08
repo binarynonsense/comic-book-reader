@@ -13,18 +13,18 @@
 ![git_banner](https://user-images.githubusercontent.com/8535921/189077872-0b8dab41-9c0f-4487-9462-7cd2ba49e35a.png)
 
 <p align="center">
-  <a href="./README.en.md"Английский</a> |
-  <a href="./README.es.md">Испанский</a> |
+  <a href="../README.md">English</a> |
+  <a href="./README.es.md">Español</a> |
   <span>Русский</span>
 </p>
 
 ## Содержание:
 
-* [Особенности](#features)
-* [Управление](#controls)
-* [Скачать](#downloads)
-* [Вклад](#contributions)
-* [Лицензия](#license)
+* [Особенности](#особенности)
+* [Управление](#управление)
+* [Скачать](#скачать)
+* [Вклад](#вклад)
+* [Лицензия](#лицензия)
 
 ## Особенности:
 
@@ -114,7 +114,7 @@
 
 - Русская локализация от [vanja-san](https://github.com/vanja-san)
 
-Информация о том, как внести свой вклад в проект, содержится в файле [CONTRIBUTING.md](./CONTRIBUTING.md).
+Информация о том, как внести свой вклад в проект, содержится в файле [CONTRIBUTING.md](../CONTRIBUTING.md).
 
 ## Лицензия
 
