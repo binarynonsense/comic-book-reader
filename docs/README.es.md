@@ -103,19 +103,19 @@ Un lector y conversor de cómics para archivos en formato cbz, cbr, cb7, epub y 
   - 'clic derecho' abre un menú contextual con algunas opciones básicas de navegación.
   - 'ctrl+rueda de desplazamiento' para acercar o alejar la vista.
 
-## Descargas
+## Descargas:
 
 - [Windows](https://github.com/binarynonsense/comic-book-reader/releases/latest/download/ACBR_Windows.zip)
 - [Windows (Self-Extracting)](https://github.com/binarynonsense/comic-book-reader/releases/latest/download/ACBR_Windows_SelfExtracting.exe)
 - [Linux](https://github.com/binarynonsense/comic-book-reader/releases/latest/download/ACBR_Linux.zip)
 - [Linux (AppImage)](https://github.com/binarynonsense/comic-book-reader/releases/latest/download/ACBR_Linux_AppImage.zip)
 
-## Contribuciones
+## Contribuciones:
 
 - Traducción al ruso por [vanja-san](https://github.com/vanja-san).
 
 Hay información sobre cómo contribuir al proyecto en en fichero [CONTRIBUTING.md](../CONTRIBUTING.md).
 
-## Licencia
+## Licencia:
 
 El código de ACBR se publica bajo la [licencia](../LICENSE) BSD 2-Clause. Para comprobar las licencias de los módulos de node y otras librerías utilizadas en el proyecto, vaya a la carpeta [licencias](../licenses/).
