@@ -2,9 +2,7 @@
 
 A comic book reader and converter for cbz, cbr, cb7, epub and pdf files.
 
-<p align="center">
-  <img width="299" height="224" src="https://raw.githubusercontent.com/binarynonsense/comic-book-reader/master/screenshots/screenshot_01.jpg"> <img width="299" height="224" src="https://raw.githubusercontent.com/binarynonsense/comic-book-reader/master/screenshots/screenshot_02.jpg"> <img width="299" height="224" src="https://raw.githubusercontent.com/binarynonsense/comic-book-reader/master/screenshots/screenshot_03.jpg">
-</p>
+![git_banner](https://user-images.githubusercontent.com/8535921/189074976-7674fd7c-fda8-455c-b46a-f42578034943.jpg)
 
 <p align="center">
   <span>English</span> |
