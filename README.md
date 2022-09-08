@@ -9,6 +9,13 @@ A comic book reader and converter for cbz, cbr, cb7, epub and pdf files.
   <a href="./docs/README.es.md">Español</a>
 </p>
 
+## Contents:
+
+* [Features](#features)
+* [Controls](#controls)
+* [Downloads](#downloads)
+* [License](#license)
+
 ## Features:
 
 - Windows & GNU/Linux versions.
