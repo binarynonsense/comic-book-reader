@@ -13,7 +13,7 @@ Un lector y conversor de cómics para archivos en formato cbz, cbr, cb7, epub y 
 ![git_banner](https://user-images.githubusercontent.com/8535921/189077872-0b8dab41-9c0f-4487-9462-7cd2ba49e35a.png)
 
 <p align="center">
-  <a href="../README.md">English</a> |
+  <a href="./README.en.md">English</a> |
   <span>Español</span> | 
   <a href="./README.ru.md">Русский</a>
 </p>
