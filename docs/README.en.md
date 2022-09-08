@@ -14,7 +14,8 @@ A comic book reader and converter for cbz, cbr, cb7, epub and pdf files.
 
 <p align="center">
   <span>English</span> |
-  <a href="./README.es.md">Español</a>
+  <a href="./README.es.md">Español</a> | 
+  <a href="./README.ru.md">Русский</a>
 </p>
 
 ## Contents:
@@ -113,7 +114,7 @@ A comic book reader and converter for cbz, cbr, cb7, epub and pdf files.
 
 - Russian localization by [vanja-san](https://github.com/vanja-san)
 
-There's info about how to contribute to the project in the [CONTRIBUTING.md](./CONTRIBUTING.md) file.
+There's info about how to contribute to the project in the [CONTRIBUTING.md](../CONTRIBUTING.md) file.
 
 ## License
 
