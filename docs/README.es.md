@@ -114,7 +114,7 @@ Un lector y conversor de cómics para archivos en formato cbz, cbr, cb7, epub y 
 
 - Traducción al ruso por [vanja-san](https://github.com/vanja-san).
 
-Hay información sobre cómo contribuir al proyecto en en fichero [CONTRIBUTING.md](../CONTRIBUTING.md).
+Hay información sobre cómo contribuir al proyecto en el fichero [CONTRIBUTING.md](../CONTRIBUTING.md).
 
 ## Licencia:
 
