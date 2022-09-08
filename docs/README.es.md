@@ -1,6 +1,7 @@
 <p align="right">  
   <a href="#downloads"><img src="https://user-images.githubusercontent.com/8535921/189104931-527ab8bc-8757-4e04-8150-5207d2077bb8.png" title="linux"></a>
   <a href="#downloads"><img src="https://user-images.githubusercontent.com/8535921/189104940-ade062d9-d2e0-4e08-83a4-f34cdb457025.png" title="windows"></a>
+  <a href="#license"><img src="https://user-images.githubusercontent.com/8535921/189119543-b1f7cc20-bd0e-44e7-811a-c23b0ccdf767.png" title="open source"></a>
   <a href="http://www.binarynonsense.com/"><img src="https://user-images.githubusercontent.com/8535921/189104953-7ac2d4d1-7d36-483b-8cc9-3568d1cbf6e5.png" title="my website"></a>
   <a href="https://twitter.com/binarynonsense"><img src="https://user-images.githubusercontent.com/8535921/189104963-ae74d98e-ddb3-4068-8958-7028ecae2966.png" title="my twitter"></a>
 </p>
@@ -75,7 +76,7 @@ Un lector y conversor de cómics para archivos en formato cbz, cbr, cb7, epub y 
     - buscar y abrir libros/cómics de:
       - Digital Comics Museum.
       - Internet Archive Books.
-      - Proyecto Gutenberg.
+      - Project Gutenberg.
       - Webcómics xkcd.
     - buscar y abrir audiolibros de:
       - Librivox.
