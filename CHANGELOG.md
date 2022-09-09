@@ -1,6 +1,7 @@
 ## v2.4.1
 
 - Updated Russian localization (contributed by vanja-san)
+- Added a docs folder with English, Spanish and Russian README files.
 
 ## v2.4.0
 
