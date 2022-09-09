@@ -1,3 +1,6 @@
+## v2.4.1
+
+- Updated Russian localization (contributed by vanja-san)
 
 ## v2.4.0
 
