@@ -1005,42 +1005,53 @@ async function extractPDFImageBuffer(
       // could be a comic book, let's extract the image
       const imageName = images[0];
       // page needs to have been rendered before for this to be filled
-      let image = await page.objs.get(imageName);
-      const imageWidth = image.width;
-      const imageHeight = image.height;
-      if (imageWidth >= pageWidth && imageHeight >= pageHeight) {
-        if (false) {
-          // this method doesn't always work yet, keep to explore further some day
-          const rawImageData = image.data;
-          // rawImageData (Uint8ClampedArray) contains only RGB -> add alphaChanel
-          let rawImageDataWithAlpha = new Uint8ClampedArray(
-            imageWidth * imageHeight * 4
-          );
-          for (let j = 0, k = 0, jj = imageWidth * imageHeight * 4; j < jj; ) {
-            rawImageDataWithAlpha[j++] = rawImageData[k++];
-            rawImageDataWithAlpha[j++] = rawImageData[k++];
-            rawImageDataWithAlpha[j++] = rawImageData[k++];
-            rawImageDataWithAlpha[j++] = 255;
+      let image;
+      try {
+        image = await page.objs.get(imageName);
+      } catch (error) {
+        image = undefined;
+      }
+      if (image !== undefined && image !== null) {
+        const imageWidth = image.width;
+        const imageHeight = image.height;
+        if (imageWidth >= pageWidth && imageHeight >= pageHeight) {
+          if (false) {
+            // this method doesn't always work yet, keep to explore further some day
+            const rawImageData = image.data;
+            // rawImageData (Uint8ClampedArray) contains only RGB -> add alphaChanel
+            let rawImageDataWithAlpha = new Uint8ClampedArray(
+              imageWidth * imageHeight * 4
+            );
+            for (
+              let j = 0, k = 0, jj = imageWidth * imageHeight * 4;
+              j < jj;
+
+            ) {
+              rawImageDataWithAlpha[j++] = rawImageData[k++];
+              rawImageDataWithAlpha[j++] = rawImageData[k++];
+              rawImageDataWithAlpha[j++] = rawImageData[k++];
+              rawImageDataWithAlpha[j++] = 255;
+            }
+            const imageData = new ImageData(
+              rawImageDataWithAlpha,
+              imageWidth,
+              imageHeight
+            );
+            canvas.width = imageWidth;
+            canvas.height = imageHeight;
+            context.putImageData(imageData, 0, 0);
+          } else {
+            scaleFactor = imageWidth / pageWidth;
+            dpi = parseInt(scaleFactor / iPerUnit);
+            // render again with new dimensions
+            viewport = page.getViewport({
+              scale: scaleFactor,
+            });
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+            await page.render({ canvasContext: context, viewport: viewport })
+              .promise;
           }
-          const imageData = new ImageData(
-            rawImageDataWithAlpha,
-            imageWidth,
-            imageHeight
-          );
-          canvas.width = imageWidth;
-          canvas.height = imageHeight;
-          context.putImageData(imageData, 0, 0);
-        } else {
-          scaleFactor = imageWidth / pageWidth;
-          dpi = parseInt(scaleFactor / iPerUnit);
-          // render again with new dimensions
-          viewport = page.getViewport({
-            scale: scaleFactor,
-          });
-          canvas.height = viewport.height;
-          canvas.width = viewport.width;
-          await page.render({ canvasContext: context, viewport: viewport })
-            .promise;
         }
       }
     }

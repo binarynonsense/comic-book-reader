@@ -536,13 +536,10 @@ async function extractPDFImages(folderPath, logText, password) {
           .promise;
         ////////////////////////////
         if (g_outputPdfExtractionMethod === "embedded") {
-          // check imgs size
-          // ref: https://codepen.io/allandiego/pen/RwVGbyj
           const operatorList = await page.getOperatorList();
           const validTypes = [
             pdfjsLib.OPS.paintImageXObject,
             pdfjsLib.OPS.paintJpegXObject,
-            //pdfjsLib.OPS.paintImageXObjectRepeat,
           ];
           let images = [];
           operatorList.fnArray.forEach((element, index) => {
@@ -551,23 +548,32 @@ async function extractPDFImages(folderPath, logText, password) {
             }
           });
           if (images.length === 1) {
-            // could be a comic book, let's extract the image
             const imageName = images[0];
-            // page needs to have been rendered before for this to be filled
-            let image = await page.objs.get(imageName);
-            const imageWidth = image.width;
-            const imageHeight = image.height;
-            if (imageWidth >= pageWidth && imageHeight >= pageHeight) {
-              scaleFactor = imageWidth / pageWidth;
-              dpi = parseInt(scaleFactor / iPerUnit);
-              // render again with new dimensions
-              viewport = page.getViewport({
-                scale: scaleFactor,
-              });
-              canvas.height = viewport.height;
-              canvas.width = viewport.width;
-              await page.render({ canvasContext: context, viewport: viewport })
-                .promise;
+            let image;
+            try {
+              image = await page.objs.get(imageName);
+            } catch (error) {
+              // console.log(
+              //   `couldn't extract embedded size info for page ${pageNum}, using 300dpi`
+              // );
+              image = undefined;
+            }
+            if (image !== undefined && image !== null) {
+              const imageWidth = image.width;
+              const imageHeight = image.height;
+              if (imageWidth >= pageWidth && imageHeight >= pageHeight) {
+                scaleFactor = imageWidth / pageWidth;
+                dpi = parseInt(scaleFactor / iPerUnit);
+                viewport = page.getViewport({
+                  scale: scaleFactor,
+                });
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+                await page.render({
+                  canvasContext: context,
+                  viewport: viewport,
+                }).promise;
+              }
             }
           }
         }
