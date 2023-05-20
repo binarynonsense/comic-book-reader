@@ -15,7 +15,8 @@ A comic book reader and converter for cbz, cbr, cb7, epub and pdf files.
 <p align="center">
   <span>English</span> |
   <a href="./README.es.md">Español</a> | 
-  <a href="./README.ru.md">Русский</a>
+  <a href="./README.ru.md">Русский</a> | 
+  <a href="./README.de.md">Deutsch</a>
 </p>
 
 ## Contents:
