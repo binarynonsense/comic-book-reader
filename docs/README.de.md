@@ -114,8 +114,8 @@ Ein Comicbuch Leser und Konverter für cbz, cbr, cb7, epub und pdf Dateien.
 
 ## Beiträge:
 
-- Russische Lokalisation von [vanja-san](https://github.com/vanja-san)
-- Deutsche Lokalisation von [Timo Heidutzek (trzyglow)](https://github.com/trzyglow)
+- Russische Lokalisierung von [vanja-san](https://github.com/vanja-san)
+- Deutsche Lokalisierung von [Timo Heidutzek (trzyglow)](https://github.com/trzyglow)
 
 Informationen darüber, wie man zu dem Projekt beitragen kann, gibt es im [CONTRIBUTING.md](../CONTRIBUTING.md) Dokument.
 
