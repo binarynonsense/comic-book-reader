@@ -21,11 +21,11 @@ Un lector y conversor de cómics para archivos en formato cbz, cbr, cb7, epub y 
 
 ## Contenidos:
 
-* [Características](#características)
-* [Controles](#controles)
-* [Descargas](#descargas)
-* [Contribuciones](#contribuciones)
-* [Licencia](#licencia)
+- [Características](#características)
+- [Controles](#controles)
+- [Descargas](#descargas)
+- [Contribuciones](#contribuciones)
+- [Licencia](#licencia)
 
 ## Características:
 
@@ -56,6 +56,7 @@ Un lector y conversor de cómics para archivos en formato cbz, cbr, cb7, epub y 
   - Inglés
   - Español
   - Ruso
+  - Alemán
 - Restaura automáticamente el último cómic, y página, abierto en la sesión anterior, y recuerda las posiciones de página de los últimos cómics.
 - Modo portátil (al crear un archivo llamado portable.txt en la misma carpeta que el ejecutable).
 - Reproductor de audio integrado:
@@ -114,6 +115,7 @@ Un lector y conversor de cómics para archivos en formato cbz, cbr, cb7, epub y 
 ## Contribuciones:
 
 - Traducción al ruso por [vanja-san](https://github.com/vanja-san).
+- Traducción al alemán por [Timo Heidutzek (trzyglow)](https://github.com/trzyglow)
 
 Hay información sobre cómo contribuir al proyecto en el fichero [CONTRIBUTING.md](../CONTRIBUTING.md).
 

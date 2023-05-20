@@ -21,11 +21,11 @@ A comic book reader and converter for cbz, cbr, cb7, epub and pdf files.
 
 ## Contents:
 
-* [Features](#features)
-* [Controls](#controls)
-* [Downloads](#downloads)
-* [Contributions](#contributions)
-* [License](#license)
+- [Features](#features)
+- [Controls](#controls)
+- [Downloads](#downloads)
+- [Contributions](#contributions)
+- [License](#license)
 
 ## Features:
 
@@ -56,6 +56,7 @@ A comic book reader and converter for cbz, cbr, cb7, epub and pdf files.
   - English
   - Spanish
   - Russian
+  - German
 - Automatically restores the previous session's last opened book and page, and remembers the last books' page positions.
 - Portable mode (by creating a file named portable.txt in the same folder as the executable).
 - Integrated audio player:
@@ -114,6 +115,7 @@ A comic book reader and converter for cbz, cbr, cb7, epub and pdf files.
 ## Contributions:
 
 - Russian localization by [vanja-san](https://github.com/vanja-san)
+- German localization by [Timo Heidutzek (trzyglow)](https://github.com/trzyglow)
 
 There's info about how to contribute to the project in the [CONTRIBUTING.md](../CONTRIBUTING.md) file.
 

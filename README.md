@@ -6,7 +6,6 @@
   <a href="https://twitter.com/binarynonsense"><img src="https://user-images.githubusercontent.com/8535921/189104963-ae74d98e-ddb3-4068-8958-7028ecae2966.png" title="my twitter"></a>
 </p>
 
-
 # ACBR - Comic Book Reader
 
 A comic book reader and converter for cbz, cbr, cb7, epub and pdf files.
@@ -22,11 +21,11 @@ A comic book reader and converter for cbz, cbr, cb7, epub and pdf files.
 
 ## Contents:
 
-* [Features](#features)
-* [Controls](#controls)
-* [Downloads](#downloads)
-* [Contributions](#contributions)
-* [License](#license)
+- [Features](#features)
+- [Controls](#controls)
+- [Downloads](#downloads)
+- [Contributions](#contributions)
+- [License](#license)
 
 ## Features:
 
@@ -57,6 +56,7 @@ A comic book reader and converter for cbz, cbr, cb7, epub and pdf files.
   - English
   - Spanish
   - Russian
+  - German
 - Automatically restores the previous session's last opened book and page, and remembers the last books' page positions.
 - Portable mode (by creating a file named portable.txt in the same folder as the executable).
 - Integrated audio player:
@@ -114,10 +114,10 @@ A comic book reader and converter for cbz, cbr, cb7, epub and pdf files.
 - [Linux](https://github.com/binarynonsense/comic-book-reader/releases/latest/download/ACBR_Linux.zip)
 - [Linux (AppImage)](https://github.com/binarynonsense/comic-book-reader/releases/latest/download/ACBR_Linux_AppImage.zip)
 
-
 ## Contributions:
 
 - Russian localization by [vanja-san](https://github.com/vanja-san)
+- German localization by [Timo Heidutzek (trzyglow)](https://github.com/trzyglow)
 
 There's info about how to contribute to the project in the [CONTRIBUTING.md](./CONTRIBUTING.md) file.
 
