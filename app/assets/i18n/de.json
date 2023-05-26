@@ -3,7 +3,7 @@
     "authors": ["trzyglow"],
     "last-updated": "2023-05-20",
     "acbr-version": "2.4.2",
-    "comments": "Deutsche Lokalisation",
+    "comments": "Deutsche Lokalisierung",
     "locale": "de",
     "name": "German",
     "native-name": "Deutsch"
@@ -42,10 +42,10 @@
   "menu-file-preferences-autoopen-disabled": "Deaktiviert",
   "menu-file-preferences-autoopen-next": "Nächste Datei",
   "menu-file-preferences-autoopen-nextandprev": "Nächste und Vorherige Dateien",
-  "menu-file-preferences-cursor": "Mazszeiger",
+  "menu-file-preferences-cursor": "Mauszeiger",
   "menu-file-preferences-cursor-always": "Immer Sichtbar",
   "menu-file-preferences-cursor-hide-inactive": "Versteckt bei Inaktivität",
-  "menu-file-preferences-loading": "Indikator Laden",
+  "menu-file-preferences-loading": "Lade-indikator",
   "menu-file-preferences-loading-bg": "Hintergrund",
   "menu-file-preferences-loading-bg-0": "Transparent",
   "menu-file-preferences-loading-bg-1": "Leicht Undurchsichtig",
@@ -108,7 +108,7 @@
 
 
   "menu-help": "Hilfe",
-  "menu-help-about": "Über",
+  "menu-help-about": "Über ACBR",
   "menu-help-devtools-toggle": "Entwickler Werkzeug Anzeigen",
 
   "menu-shared-top-left": "Oben Links",
@@ -291,10 +291,10 @@
   "tool-cq-button-clear": "Text Löschen",
   "tool-cq-button-export": "Bild Speichern Nach",
   "tool-cq-button-start": "Code Erstellen",
-  "tool-cq-modal-alert-title-errorcreating": "Fehler: Konnte den Code NICHT erstellen",
+  "tool-cq-modal-alert-title-errorcreating": "Fehler: Konnte den QR Code NICHT erstellen",
   "tool-cq-modal-alert-msg-toomuchdata": "Der Text ist zu lang um in einem QR Code gespeichert zu werden",
   "tool-cq-modal-alert-title-successexporting": "QR Code Bild-datei erstellt:",
-  "tool-cq-modal-alert-title-errorexporting": "Fehler: Konnte dad Bild NICHT Abspeichern",
+  "tool-cq-modal-alert-title-errorexporting": "Fehler: Konnte das Bild NICHT Abspeichern",
 
   "tool-dcm-title": "Digital Comic Museum",  
   "tool-dcm-publishers-text": "Verläge:",
@@ -345,7 +345,7 @@
   "ap-tooltip-button-play": "play",
   "ap-tooltip-button-pause": "pause",
   "ap-tooltip-button-next": "nächster track",
-  "ap-tooltip-button-prev": "vorher. track",
+  "ap-tooltip-button-prev": "vorheriger track",
   "ap-tooltip-button-open": "öffne audio dateien",
   "ap-tooltip-button-volume-off": "lautstärke Aus",
   "ap-tooltip-button-volume-on": "lautstärke An",
