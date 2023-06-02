@@ -1,7 +1,7 @@
 {
   "@metadata": {
     "authors": ["trzyglow"],
-    "last-updated": "2023-05-20",
+    "last-updated": "2023-06-02",
     "acbr-version": "2.4.2",
     "comments": "Deutsche Lokalisierung",
     "locale": "de",
@@ -79,7 +79,7 @@
   "menu-view-page-first": "Zur Ersten gehen",
   "menu-view-page-last": "Zur Letzten gehen",
   "menu-view-page-choose": "Gehe Zu...",
-  "menu-view-togglefullscreen": "Vollbild Aktivieren",
+  "menu-view-togglefullscreen": "Vollbild An/Aus",
   "menu-view-showscrollbar": "Bildlaufleiste Anzeigen",
   "menu-view-showtoolbar": "Werkzeugleiste Anzeigen",
   "menu-view-showpagenum": "Seitenzahl Anzeigen",
@@ -238,8 +238,8 @@
   "tool-shared-modal-log-generating-new-file": "Generiere Neue Datei",
   "tool-shared-modal-log-converting-images": "Konvertiere Bilder",
   "tool-shared-modal-log-converting-image": "Konvertiere Bild",
-  "[NEEDS TRANSLATION]tool-shared-modal-log-updating-comicinfoxml": "Updating ComicInfo.xml",
-  "[NEEDS TRANSLATION]tool-shared-modal-log-warning-comicinfoxml": "Warning: couldn't update the contents of ComicInfo.xml",
+  "tool-shared-modal-log-updating-comicinfoxml": "Aktualisiere ComicInfo.xml",
+  "tool-shared-modal-log-warning-comicinfoxml": "Warnung: konnte den Inhalt von ComicInfo.xml nicht aktualisieren",
   "tool-shared-modal-log-conversion-error": "Konnte Datei nicht konvertieren, ein Fehler ist aufgetreten",
   "tool-shared-modal-log-conversion-canceled": "Konnte Datei nicht konvertieren, die Konversion wurde Abgebrochen",
   "tool-shared-modal-log-extraction-error": "Konnte Datei nicht extrahieren, ein Fehler ist aufgetreten",
