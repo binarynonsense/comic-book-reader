@@ -449,7 +449,9 @@ async function resizeImages(
       stopCancel();
       return;
     }
+    let didResize = false;
     if (outputScale < 100) {
+      didResize = true;
       g_window.webContents.send(
         g_ipcChannel + "update-log-text",
         _("tool-shared-modal-log-resizing-images") + "..."
@@ -491,6 +493,7 @@ async function resizeImages(
       stopCancel();
       return;
     }
+    let didChangeFormat = false;
     if (
       outputFormat === FileExtension.PDF ||
       g_imageFormat != FileExtension.NOT_SET
@@ -529,6 +532,7 @@ async function resizeImages(
           }
         }
         if (imageFormat != FileExtension.NOT_SET) {
+          didChangeFormat = true;
           let tmpFilePath = path.join(
             fileFolderPath,
             fileName + "." + FileExtension.TMP
@@ -574,6 +578,77 @@ async function resizeImages(
           fileUtils.moveFile(tmpFilePath, newFilePath);
           imgFilePaths[index] = newFilePath;
         }
+      }
+    }
+    // update comicbook.xml if available, needs changing and the output format is right
+    if (
+      comicInfoFilePath &&
+      (outputFormat === FileExtension.CBZ ||
+        outputFormat === FileExtension.CB7) &&
+      (didChangeFormat || didResize)
+    ) {
+      try {
+        const {
+          XMLParser,
+          XMLBuilder,
+          XMLValidator,
+        } = require("fast-xml-parser");
+        const xmlFileData = fs.readFileSync(comicInfoFilePath, "utf8");
+        const isValidXml = XMLValidator.validate(xmlFileData);
+        if (isValidXml === true) {
+          // open
+          const parserOptions = {
+            ignoreAttributes: false,
+          };
+          const parser = new XMLParser(parserOptions);
+          let json = parser.parse(xmlFileData);
+          // modify
+          g_window.webContents.send(
+            g_ipcChannel + "update-log-text",
+            _("tool-shared-modal-log-updating-comicinfoxml")
+          );
+          let oldPagesArray = json["ComicInfo"]["Pages"]["Page"].slice();
+          json["ComicInfo"]["Pages"]["Page"] = [];
+          for (let index = 0; index < imgFilePaths.length; index++) {
+            let pageData = {
+              "@_Image": "",
+              "@_ImageSize": "",
+              "@_ImageWidth": "",
+              "@_ImageHeight": "",
+            };
+            if (oldPagesArray.length >= index) {
+              pageData = oldPagesArray[index];
+            }
+            let filePath = imgFilePaths[index];
+            pageData["@_Image"] = index;
+            let fileStats = fs.statSync(filePath);
+            let fileSizeInBytes = fileStats.size;
+            pageData["@_ImageSize"] = fileSizeInBytes;
+            const metadata = await sharp(filePath).metadata();
+            pageData["@_ImageWidth"] = metadata.width;
+            pageData["@_ImageHeight"] = metadata.height;
+            json["ComicInfo"]["Pages"]["Page"].push(pageData);
+          }
+          // rebuild
+          const builderOptions = {
+            ignoreAttributes: false,
+            format: true,
+          };
+          const builder = new XMLBuilder(builderOptions);
+          let outputXmlData = builder.build(json);
+          fs.writeFileSync(comicInfoFilePath, outputXmlData);
+        } else {
+          throw "ComicInfo.xml is not a valid xml file";
+        }
+      } catch (error) {
+        console.log(
+          "Warning: couldn't update the contents of ComicInfo.xml: " + error
+        );
+        g_window.webContents.send(
+          g_ipcChannel + "update-log-text",
+          _("tool-shared-modal-log-warning-comicinfoxml")
+        );
+        g_window.webContents.send(g_ipcChannel + "update-log-text", error);
       }
     }
     createFileFromImages(

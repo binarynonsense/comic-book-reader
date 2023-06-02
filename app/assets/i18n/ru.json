@@ -238,6 +238,8 @@
   "tool-shared-modal-log-generating-new-file": "Генерация нового файла",
   "tool-shared-modal-log-converting-images": "Конвертирование изображений",
   "tool-shared-modal-log-converting-image": "Конвертирование изображения", 
+  "[NEEDS TRANSLATION]tool-shared-modal-log-updating-comicinfoxml": "Updating ComicInfo.xml",
+  "[NEEDS TRANSLATION]tool-shared-modal-log-warning-comicinfoxml": "Warning: couldn't update the contents of ComicInfo.xml",
   "tool-shared-modal-log-conversion-error": "Не удалось конвертировать файл, произошла ошибка",
   "tool-shared-modal-log-conversion-canceled": "Не удалось конвертировать файл, конвертация была отменена",
   "tool-shared-modal-log-extraction-error": "Не удалось извлечь файл, возникла ошибка",

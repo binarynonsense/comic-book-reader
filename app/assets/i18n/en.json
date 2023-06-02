@@ -1,8 +1,8 @@
 {
   "@metadata": {
     "authors": ["Álvaro"],
-    "last-updated": "2022-08-30",
-    "acbr-version": "2.4.0",
+    "last-updated": "2023-06-02",
+    "acbr-version": "2.4.5",
     "comments": "",
     "locale": "en",
     "name": "English",
@@ -105,7 +105,6 @@
   "menu-tools-other-xkcd": "xkcd Webcomics",
   "menu-tools-other-librivox": "LibriVox AudioBooks",
   "menu-tools-other-wiktionary": "Wiktionary Dictionary",
-
 
   "menu-help": "Help",
   "menu-help-about": "About",
@@ -239,6 +238,8 @@
   "tool-shared-modal-log-generating-new-file": "Generating New File",
   "tool-shared-modal-log-converting-images": "Converting Images",
   "tool-shared-modal-log-converting-image": "Converting Image",
+  "tool-shared-modal-log-updating-comicinfoxml": "Updating ComicInfo.xml",
+  "tool-shared-modal-log-warning-comicinfoxml": "Warning: couldn't update the contents of ComicInfo.xml",
   "tool-shared-modal-log-conversion-error": "Couldn't convert the file, an error ocurred",
   "tool-shared-modal-log-conversion-canceled": "Couldn't convert the file, the conversion was canceled",
   "tool-shared-modal-log-extraction-error": "Couldn't extract the file, an error ocurred",

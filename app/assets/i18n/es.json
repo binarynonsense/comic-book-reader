@@ -1,8 +1,8 @@
 {
   "@metadata": {
     "authors": ["Álvaro"],
-    "last-updated": "2022-08-30",
-    "acbr-version": "2.4.0",
+    "last-updated": "2023-06-02",
+    "acbr-version": "2.4.5",
     "comments": "",
     "locale": "es",
     "name": "Spanish",
@@ -238,6 +238,8 @@
   "tool-shared-modal-log-generating-new-file": "Generando nuevo archivo",
   "tool-shared-modal-log-converting-images": "Convirtiendo imágenes",
   "tool-shared-modal-log-converting-image": "Convirtiendo imagen",
+  "tool-shared-modal-log-updating-comicinfoxml": "Actualizando ComicInfo.xml",
+  "tool-shared-modal-log-warning-comicinfoxml": "Advertencia: No se pudieron actualizar los contenidos de ComicInfo.xml",
   "tool-shared-modal-log-conversion-error": "No se pudo convertir el archivo, se produjo un error",
   "tool-shared-modal-log-conversion-canceled": "No se pudo convertir el archivo, la conversión fue cancelada",
   "tool-shared-modal-log-extraction-error": "No se pudo extraer el archivo, se produjo un error",
