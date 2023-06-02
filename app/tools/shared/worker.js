@@ -6,7 +6,7 @@ process.on("message", (message) => {
   if (message[0] === "extract") {
     extractImages(message[1], message[2], message[3], message[4]);
   } else if (message[0] === "create") {
-    createFile(message[1], message[2], message[3], message[4]);
+    createFile(message[1], message[2], message[3], message[4], message[5]);
   } //else if (message[0] === "palette") {
   //   extractPalette(message[1]);
   // }
@@ -39,6 +39,7 @@ async function extractImages(
 
 async function createFile(
   imgFilePaths,
+  comicInfoFilePath,
   outputFormat,
   outputFilePath,
   tempFolderPath
@@ -55,13 +56,11 @@ async function createFile(
         tempFolderPath
       );
     } else if (outputFormat === FileExtension.CB7) {
-      await fileFormats.create7Zip(
-        imgFilePaths,
-        outputFilePath,
-        tempFolderPath
-      );
+      if (comicInfoFilePath) imgFilePaths.push(comicInfoFilePath);
+      await fileFormats.create7Zip(imgFilePaths, outputFilePath);
     } else {
       //cbz
+      if (comicInfoFilePath) imgFilePaths.push(comicInfoFilePath);
       fileFormats.createZip(imgFilePaths, outputFilePath);
     }
     process.send("success");

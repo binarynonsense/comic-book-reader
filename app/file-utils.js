@@ -365,6 +365,39 @@ function getImageFilesInFolder(folderPath) {
 exports.getImageFilesInFolder = getImageFilesInFolder;
 
 ///////////////////////////////////////////////////////////////////////////////
+// GET COMIC INFO FILE ////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+const getComicInfoFileInFolderRecursive = function (folderPath) {
+  let filesArray = [];
+  let dirs = [];
+
+  if (fs.existsSync(folderPath)) {
+    let nodes = fs.readdirSync(folderPath);
+    nodes.forEach((node) => {
+      const nodePath = path.join(folderPath, node);
+      if (fs.lstatSync(nodePath).isDirectory()) {
+        dirs.push(nodePath); // check later so this folder's imgs come first
+      } else {
+        let fileName = path.basename(nodePath);
+        if (fileName.toLowerCase() === "comicinfo.xml") {
+          filesArray.push(nodePath);
+        }
+      }
+    });
+    // now check inner folders
+    dirs.forEach((dir) => {
+      filesArray = filesArray.concat(getComicInfoFileInFolderRecursive(dir));
+    });
+  }
+
+  // NOTE: could there be more than one? I'll just return the first one for now, if any
+  if (filesArray.length > 0) return filesArray[0];
+  else return undefined;
+};
+exports.getComicInfoFileInFolderRecursive = getComicInfoFileInFolderRecursive;
+
+///////////////////////////////////////////////////////////////////////////////
 // TEMP FOLDER ////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 

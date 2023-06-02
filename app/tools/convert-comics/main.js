@@ -435,6 +435,8 @@ async function resizeImages(
     }
 
     let tempFolderPath = fileUtils.getTempFolderPath();
+    let comicInfoFilePath =
+      fileUtils.getComicInfoFileInFolderRecursive(tempFolderPath);
     let imgFilePaths = fileUtils.getImageFilesInFolderRecursive(tempFolderPath);
     if (imgFilePaths === undefined || imgFilePaths.length === 0) {
       stopError("imgFiles === undefined || imgFiles.length === 0");
@@ -574,7 +576,12 @@ async function resizeImages(
         }
       }
     }
-    createFileFromImages(imgFilePaths, outputFormat, outputFilePath);
+    createFileFromImages(
+      imgFilePaths,
+      outputFormat,
+      outputFilePath,
+      comicInfoFilePath
+    );
   } catch (error) {
     stopError(error);
   }
@@ -583,7 +590,8 @@ async function resizeImages(
 async function createFileFromImages(
   imgFilePaths,
   outputFormat,
-  outputFilePath
+  outputFilePath,
+  comicInfoFilePath
 ) {
   if (g_cancel === true) {
     stopCancel();
@@ -629,6 +637,7 @@ async function createFileFromImages(
       g_worker.send([
         "create",
         imgFilePaths,
+        comicInfoFilePath,
         outputFormat,
         outputFilePath,
         fileUtils.getTempFolderPath(),
