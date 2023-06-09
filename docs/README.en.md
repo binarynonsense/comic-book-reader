@@ -25,6 +25,7 @@ A comic book reader and converter for cbz, cbr, cb7, epub and pdf files.
 - [Controls](#controls)
 - [Downloads](#downloads)
 - [Contributions](#contributions)
+- [Related Projects](#related-projects)
 - [License](#license)
 
 ## Features:
@@ -118,6 +119,11 @@ A comic book reader and converter for cbz, cbr, cb7, epub and pdf files.
 - German localization by [Timo Heidutzek (trzyglow)](https://github.com/trzyglow)
 
 There's info about how to contribute to the project in the [CONTRIBUTING.md](../CONTRIBUTING.md) file.
+
+## Related Projects:
+
+- [ACBT - Comic Book Tools](https://github.com/binarynonsense/comic-book-tools)
+  - Still in beta, it aims to be a stand-alone, command-line version of some of the tools available in ACBR.
 
 ## License:
 
