@@ -25,6 +25,7 @@ Un lector y conversor de cómics para archivos en formato cbz, cbr, cb7, epub y 
 - [Controles](#controles)
 - [Descargas](#descargas)
 - [Contribuciones](#contribuciones)
+- [Proyectos Relacionados](#proyectos-relacionados)
 - [Licencia](#licencia)
 
 ## Características:
@@ -118,6 +119,11 @@ Un lector y conversor de cómics para archivos en formato cbz, cbr, cb7, epub y 
 - Traducción al alemán por [Timo Heidutzek (trzyglow)](https://github.com/trzyglow)
 
 Hay información sobre cómo contribuir al proyecto en el fichero [CONTRIBUTING.md](../CONTRIBUTING.md).
+
+## Proyectos Relacionados:
+
+- [ACBT - Comic Book Tools](https://github.com/binarynonsense/comic-book-tools)
+  - Versión independiente para línea de comandos de alguna de las herramientas disponibles en ACBR.
 
 ## Licencia:
 
