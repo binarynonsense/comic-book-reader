@@ -125,7 +125,7 @@ There's info about how to contribute to the project in the [CONTRIBUTING.md](./C
 ## Related Projects:
 
 - [ACBT - Comic Book Tools](https://github.com/binarynonsense/comic-book-tools)
-  - Still in beta, it aims to be a stand-alone, command-line version of some of the tools available in ACBR.
+  - Stand-alone, command-line version of some of the tools available in ACBR.
 
 ## License:
 
