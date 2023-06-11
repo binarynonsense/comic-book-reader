@@ -104,8 +104,8 @@ exports.createComic = async function (
 <body>
   <p class="img-container">`;
       if (imageStorageSelection === "base64") {
-        buf = fs.readFileSync(imgPath);
-        mime = "image/" + getMimeType(imgPath);
+        let buf = fs.readFileSync(imgPath);
+        let mime = "image/" + getMimeType(imgPath);
         let img64 = "data:" + mime + ";base64," + buf.toString("base64");
         pageXhtml += `\n      <img src="${img64}" alt="page_image"/>`;
       } else {
