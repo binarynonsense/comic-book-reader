@@ -6,7 +6,14 @@ process.on("message", (message) => {
   if (message[0] === "extract") {
     extractImages(message[1], message[2], message[3], message[4]);
   } else if (message[0] === "create") {
-    createFile(message[1], message[2], message[3], message[4], message[5]);
+    createFile(
+      message[1],
+      message[2],
+      message[3],
+      message[4],
+      message[5],
+      message[6]
+    );
   } //else if (message[0] === "palette") {
   //   extractPalette(message[1]);
   // }
@@ -42,7 +49,8 @@ async function createFile(
   comicInfoFilePath,
   outputFormat,
   outputFilePath,
-  tempFolderPath
+  tempFolderPath,
+  extra
 ) {
   try {
     if (outputFormat === FileExtension.PDF) {
@@ -53,7 +61,8 @@ async function createFile(
       await fileFormats.createEpubFromImages(
         imgFilePaths,
         outputFilePath,
-        tempFolderPath
+        tempFolderPath,
+        extra
       );
     } else if (outputFormat === FileExtension.CB7) {
       if (comicInfoFilePath) imgFilePaths.push(comicInfoFilePath);

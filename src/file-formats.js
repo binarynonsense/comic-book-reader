@@ -76,6 +76,17 @@ exports.hasPdfKitCompatibleImageExtension = function (filePath) {
   return false;
 };
 
+exports.hasEpubSupportedImageExtension = function (filePath) {
+  const allowedFileExtensions = [".jpg", ".jpeg", ".png"]; // gif?
+  let fileExtension = path.extname(filePath).toLowerCase();
+  for (i = 0; i < allowedFileExtensions.length; i++) {
+    if (fileExtension === allowedFileExtensions[i]) {
+      return true;
+    }
+  }
+  return false;
+};
+
 // mostly a copy from file-utils
 
 function createTempFolder() {
@@ -587,8 +598,23 @@ exports.extractEpubImageBuffer = extractEpubImageBuffer;
 async function createEpubFromImages(
   imgPathsList,
   outputFilePath,
-  tempFolderPath
+  tempFolderPath,
+  imageStorageSelection
 ) {
+  try {
+    const epub = require("./epub-generator");
+    await epub.createComic(
+      imgPathsList,
+      outputFilePath,
+      tempFolderPath,
+      imageStorageSelection
+    );
+    return;
+  } catch (error) {
+    throw error;
+  }
+
+  // TODO: delete when new custom epub generation code has been properly tested
   // ref: https://www.npmjs.com/package/epub-gen
   // ref: https://github.com/cyrilis/epub-gen/issues/25
   const Epub = require("epub-gen");

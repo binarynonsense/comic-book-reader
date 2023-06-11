@@ -16,6 +16,8 @@ let g_worker;
 let g_resizeWindow;
 let g_ipcChannel = "tool-cc--";
 let g_pdfCreationMethod = "metadata";
+let g_epubCreationImageFormat = "keep-selected";
+let g_epubCreationImageStorage = "files";
 let g_imageFormat = FileExtension.NOT_SET;
 
 // hack to allow this at least for files from File>Convert...
@@ -197,6 +199,17 @@ ipcMain.on(g_ipcChannel + "set-image-format", (event, format) => {
 ipcMain.on(g_ipcChannel + "set-pdf-creation-method", (event, method) => {
   g_pdfCreationMethod = method;
 });
+
+ipcMain.on(g_ipcChannel + "set-epub-creation-image-format", (event, format) => {
+  g_epubCreationImageFormat = format;
+});
+
+ipcMain.on(
+  g_ipcChannel + "set-epub-creation-image-storage",
+  (event, selection) => {
+    g_epubCreationImageStorage = selection;
+  }
+);
 
 ipcMain.on(
   g_ipcChannel + "start",
@@ -496,6 +509,7 @@ async function resizeImages(
     let didChangeFormat = false;
     if (
       outputFormat === FileExtension.PDF ||
+      outputFormat === FileExtension.EPUB ||
       g_imageFormat != FileExtension.NOT_SET
     ) {
       g_window.webContents.send(
@@ -527,6 +541,20 @@ async function resizeImages(
             imageFormat === FileExtension.AVIF ||
             (imageFormat === FileExtension.NOT_SET &&
               !fileFormats.hasPdfKitCompatibleImageExtension(filePath))
+          ) {
+            imageFormat = FileExtension.JPG;
+          }
+        }
+        if (
+          outputFormat === FileExtension.EPUB &&
+          g_epubCreationImageFormat === "core-media-types-only"
+        ) {
+          // change to a format supported by the epub specification if needed
+          if (
+            imageFormat === FileExtension.WEBP ||
+            imageFormat === FileExtension.AVIF ||
+            (imageFormat === FileExtension.NOT_SET &&
+              !fileFormats.hasEpubSupportedImageExtension(filePath))
           ) {
             imageFormat = FileExtension.JPG;
           }
@@ -716,6 +744,9 @@ async function createFileFromImages(
         outputFormat,
         outputFilePath,
         fileUtils.getTempFolderPath(),
+        outputFormat === FileExtension.EPUB
+          ? g_epubCreationImageStorage
+          : undefined,
       ]);
     }
   } catch (err) {
@@ -814,6 +845,27 @@ function getLocalization() {
     {
       id: "text-pdf-creation-o3",
       text: _("tool-shared-ui-pdf-creation-o3"),
+    },
+    {
+      id: "text-epub-creation",
+      text: _("tool-shared-ui-epub-creation"),
+    },
+    {
+      id: "text-epub-creation-image-format-o1",
+      text: _("tool-shared-ui-epub-creation-image-format-o1"),
+    },
+    {
+      id: "text-epub-creation-image-format-o2",
+      text: _("tool-shared-ui-epub-creation-image-format-o2"),
+    },
+
+    {
+      id: "text-epub-creation-image-storage-o1",
+      text: _("tool-shared-ui-epub-creation-image-storage-o1"),
+    },
+    {
+      id: "text-epub-creation-image-storage-o2",
+      text: _("tool-shared-ui-epub-creation-image-storage-o2"),
     },
     {
       id: "text-output-folder",

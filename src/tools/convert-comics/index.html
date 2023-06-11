@@ -111,6 +111,40 @@
                 <option id="text-pdf-creation-o3" value="72dpi"></option>
               </select>
             </p>
+            <p>
+              <span id="text-epub-creation">Epub Creation:</span>
+              <select
+                id="output-epub-creation-image-format-select"
+                class="browser-default"
+                onchange="renderer.onOutputAdvancedEpubCreationImageFormatChanged(this)"
+              >
+                <option
+                  id="text-epub-creation-image-format-o1"
+                  value="keep-selected"
+                  selected
+                ></option>
+                <option
+                  id="text-epub-creation-image-format-o2"
+                  value="core-media-types-only"
+                ></option>
+              </select>
+              <select
+                id="output-epub-creation-image-storage-select"
+                class="browser-default"
+                style="margin-top: 6px"
+                onchange="renderer.onOutputAdvancedEpubCreationImageStorageChanged(this)"
+              >
+                <option
+                  id="text-epub-creation-image-storage-o1"
+                  value="files"
+                  selected
+                ></option>
+                <option
+                  id="text-epub-creation-image-storage-o2"
+                  value="base64"
+                ></option>
+              </select>
+            </p>
           </details>
         </p>
       </div>

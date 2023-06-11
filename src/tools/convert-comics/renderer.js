@@ -218,6 +218,24 @@ exports.onOutputAdvancedPdfCreationChanged = function (selectObject) {
   );
 };
 
+exports.onOutputAdvancedEpubCreationImageFormatChanged = function (
+  selectObject
+) {
+  ipcRenderer.send(
+    g_ipcChannel + "set-epub-creation-image-format",
+    selectObject.value
+  );
+};
+
+exports.onOutputAdvancedEpubCreationImageStorageChanged = function (
+  selectObject
+) {
+  ipcRenderer.send(
+    g_ipcChannel + "set-epub-creation-image-storage",
+    selectObject.value
+  );
+};
+
 exports.onChooseOutputFolder = function () {
   ipcRenderer.send(
     g_ipcChannel + "choose-folder",
