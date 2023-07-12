@@ -1,7 +1,7 @@
 {
   "@metadata": {
     "authors": ["trzyglow"],
-    "last-updated": "2023-06-02",
+    "last-updated": "2023-07-12",
     "acbr-version": "2.4.2",
     "comments": "Deutsche Lokalisierung",
     "locale": "de",
@@ -45,9 +45,9 @@
   "menu-file-preferences-cursor": "Mauszeiger",
   "menu-file-preferences-cursor-always": "Immer Sichtbar",
   "menu-file-preferences-cursor-hide-inactive": "Versteckt bei Inaktivität",
-  "[NEEDS TRANSLATION]menu-file-preferences-page-turn": "Automatic Page Turn",
-  "[NEEDS TRANSLATION]menu-file-preferences-page-turn-default": "Disabled",
-  "[NEEDS TRANSLATION]menu-file-preferences-page-turn-onscroll": "On scroll boundaries",
+  "menu-file-preferences-page-turn": "Automatisches Blättern",
+  "menu-file-preferences-page-turn-default": "Deaktiviert",
+  "menu-file-preferences-page-turn-onscroll": "Auf Bildlaufgrenzen",
   "menu-file-preferences-loading": "Lade-indikator",
   "menu-file-preferences-loading-bg": "Hintergrund",
   "menu-file-preferences-loading-bg-0": "Transparent",
