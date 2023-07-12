@@ -11,6 +11,8 @@ let g_mouseCursorTimer;
 let g_isMouseCursorVisible = true;
 let g_mouseCursorHideTime = 3500;
 
+let g_turnPageOnScrollBoundary = true;
+
 function cleanUp() {
   g_currentPdf = {};
   g_currentImg64 = null;
@@ -304,6 +306,10 @@ ipcRenderer.on("try-zoom-scale-from-width", (event, increment) => {
 
 ipcRenderer.on("set-hide-inactive-mouse-cursor", (event, hide) => {
   g_hideMouseCursor = hide;
+});
+
+ipcRenderer.on("set-turn-page-on-scroll-boundary", (event, value) => {
+  g_turnPageOnScrollBoundary = value;
 });
 
 ipcRenderer.on("update-title", (event, title) => {
@@ -1112,14 +1118,10 @@ document.onkeydown = function (event) {
   } else if (event.key == "End") {
     if (!event.repeat) ipcRenderer.send("end-pressed");
   } else if (event.key == "ArrowDown" || event.key == "s") {
-    let container = document.querySelector(".cet-container");
-    let amount = container.offsetHeight / 5;
-    container.scrollBy(0, amount);
+    scrollPageDown();
     event.stopPropagation();
   } else if (event.key == "ArrowUp" || event.key == "w") {
-    let container = document.querySelector(".cet-container");
-    let amount = container.offsetHeight / 5;
-    document.querySelector(".cet-container").scrollBy(0, -amount);
+    scrollPageUp();
     event.stopPropagation();
   } else if (event.key == "a") {
     let container = document.querySelector(".cet-container");
@@ -1210,13 +1212,62 @@ document.onmousemove = function () {
 };
 
 document.addEventListener("wheel", function (event) {
-  if (event.ctrlKey && event.deltaY < 0) {
-    ipcRenderer.send("zoom-in-pressed");
-  } else if (event.ctrlKey && event.deltaY > 0) {
-    ipcRenderer.send("zoom-out-pressed");
+  if (event.ctrlKey) {
+    if (event.deltaY < 0) {
+      ipcRenderer.send("zoom-in-pressed");
+    } else if (event.deltaY > 0) {
+      ipcRenderer.send("zoom-out-pressed");
+    }
+  } else if (g_turnPageOnScrollBoundary) {
+    let container = document.querySelector(".cet-container");
+    if (
+      event.deltaY > 0 &&
+      Math.abs(
+        container.scrollHeight - container.scrollTop - container.clientHeight
+      ) < 1
+    ) {
+      // reached bottom
+      ipcRenderer.send(
+        "mouse-click",
+        document.body.clientWidth,
+        document.body.clientWidth
+      );
+    } else if (event.deltaY < 0 && container.scrollTop <= 0) {
+      // reached top
+      ipcRenderer.send("mouse-click", 0, document.body.clientWidth);
+    }
   }
+  event.stopPropagation();
+  event.preventDefault();
 });
 
+function scrollPageUp() {
+  let container = document.querySelector(".cet-container");
+  if (container.scrollTop <= 0) {
+    ipcRenderer.send("mouse-click", 0, document.body.clientWidth);
+  } else {
+    let amount = container.offsetHeight / 5;
+    document.querySelector(".cet-container").scrollBy(0, -amount);
+  }
+}
+
+function scrollPageDown() {
+  let container = document.querySelector(".cet-container");
+  if (
+    Math.abs(
+      container.scrollHeight - container.scrollTop - container.clientHeight
+    ) < 1
+  ) {
+    ipcRenderer.send(
+      "mouse-click",
+      document.body.clientWidth,
+      document.body.clientWidth
+    );
+  } else {
+    let amount = container.offsetHeight / 5;
+    container.scrollBy(0, amount);
+  }
+}
 ///////////////////////////////////////////////////////////////////////////////
 // TOOLBAR ////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////

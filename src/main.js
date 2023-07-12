@@ -74,6 +74,7 @@ let g_settings = {
   layoutPageNum: 4, // 0 top left, 1 top center, 2 top right .... 5 bottom right
   layoutAudioPlayer: 0, // 0 top left, 3 bootom left - for now
   epubOpenAs: 0, // 0 ask and remember, 1 always ask
+  turnPageOnScrollBoundary: true,
 
   locale: undefined,
   theme: undefined,
@@ -111,13 +112,6 @@ function sanitizeSettings() {
     g_settings.hotspots_mode > 2
   ) {
     g_settings.hotspots_mode = 1;
-  }
-  if (
-    !Number.isInteger(g_settings.epubOpenAs) ||
-    g_settings.epubOpenAs < 0 ||
-    g_settings.epubOpenAs > 1
-  ) {
-    g_settings.epubOpenAs = 0;
   }
   if (typeof g_settings.maximize !== "boolean") {
     g_settings.maximize = false;
@@ -234,6 +228,16 @@ function sanitizeSettings() {
     (g_settings.layoutAudioPlayer != 0 && g_settings.layoutAudioPlayer != 3)
   ) {
     g_settings.layoutAudioPlayer = 0;
+  }
+  if (
+    !Number.isInteger(g_settings.epubOpenAs) ||
+    g_settings.epubOpenAs < 0 ||
+    g_settings.epubOpenAs > 1
+  ) {
+    g_settings.epubOpenAs = 0;
+  }
+  if (typeof g_settings.turnPageOnScrollBoundary !== "boolean") {
+    g_settings.turnPageOnScrollBoundary = true;
   }
 
   /////////////////////
@@ -368,6 +372,10 @@ app.on("ready", () => {
     g_mainWindow.webContents.send(
       "set-hide-inactive-mouse-cursor",
       g_settings.cursorVisibility === 1
+    );
+    g_mainWindow.webContents.send(
+      "set-turn-page-on-scroll-boundary",
+      g_settings.turnPageOnScrollBoundary
     );
 
     showScrollBar(g_settings.showScrollBar);
