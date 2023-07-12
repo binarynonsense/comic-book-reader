@@ -922,33 +922,21 @@ ipcMain.on("go-to-percentage", (event, value) => {
 ///////////////////////////////////////////////////////////////////////////////
 
 exports.onMenuChangeHotspotsMode = function (mode) {
-  if (mode === g_settings.hotspots_mode || mode < 0 || mode > 2)
-    g_mainWindow.webContents.send("update-menubar");
-  else {
-    g_settings.hotspots_mode = mode;
-    menuBar.setHotspotsMode(mode);
-    g_mainWindow.webContents.send("update-menubar");
-  }
+  g_settings.hotspots_mode = mode;
+  menuBar.setHotspotsMode(mode);
+  g_mainWindow.webContents.send("update-menubar");
 };
 
 exports.onMenuChangeEpubOpenAs = function (mode) {
-  if (mode === g_settings.epubOpenAs || mode < 0 || mode > 1)
-    g_mainWindow.webContents.send("update-menubar");
-  else {
-    g_settings.epubOpenAs = mode;
-    menuBar.setEpubOpenAs(mode);
-    g_mainWindow.webContents.send("update-menubar");
-  }
+  g_settings.epubOpenAs = mode;
+  menuBar.setEpubOpenAs(mode);
+  g_mainWindow.webContents.send("update-menubar");
 };
 
 exports.onMenuChangeLanguage = function (locale) {
-  if (locale === i18n.getLoadedLocale())
-    g_mainWindow.webContents.send("update-menubar");
-  else {
-    g_settings.locale = i18n.loadLocale(locale);
-    rebuildTranslatedTexts();
-    g_mainWindow.webContents.send("update-menubar");
-  }
+  g_settings.locale = i18n.loadLocale(locale);
+  rebuildTranslatedTexts();
+  g_mainWindow.webContents.send("update-menubar");
 };
 
 exports.onMenuChangeTheme = function (theme) {
@@ -959,106 +947,66 @@ exports.onMenuChangeTheme = function (theme) {
 };
 
 exports.onMenuChangeAutoOpen = function (mode) {
-  if (mode === g_settings.autoOpen || mode < 0 || mode > 2)
-    g_mainWindow.webContents.send("update-menubar");
-  else {
-    g_settings.autoOpen = mode;
-    menuBar.setAutoOpen(mode);
-    g_mainWindow.webContents.send("update-menubar");
-  }
+  g_settings.autoOpen = mode;
+  menuBar.setAutoOpen(mode);
+  g_mainWindow.webContents.send("update-menubar");
 };
 
 exports.onMenuChangeMouseCursorVisibility = function (mode) {
-  if (mode === g_settings.cursorVisibility || mode < 0 || mode > 1)
-    g_mainWindow.webContents.send("update-menubar");
-  else {
-    g_settings.cursorVisibility = mode;
-    menuBar.setMouseCursorMode(mode);
-    g_mainWindow.webContents.send("set-hide-inactive-mouse-cursor", mode === 1);
-    g_mainWindow.webContents.send("update-menubar");
-  }
+  g_settings.cursorVisibility = mode;
+  menuBar.setMouseCursorMode(mode);
+  g_mainWindow.webContents.send("set-hide-inactive-mouse-cursor", mode === 1);
+  g_mainWindow.webContents.send("update-menubar");
 };
 
 exports.onMenuChangeZoomDefault = function (mode) {
-  if (mode === g_settings.zoomDefault || mode < 0 || mode > 2)
-    g_mainWindow.webContents.send("update-menubar");
-  else {
-    g_settings.zoomDefault = mode;
-    menuBar.setZoomDefault(mode);
-    g_mainWindow.webContents.send("update-menubar");
-  }
+  g_settings.zoomDefault = mode;
+  menuBar.setZoomDefault(mode);
+  g_mainWindow.webContents.send("update-menubar");
 };
 
 exports.onMenuChangeZoomFileLoading = function (mode) {
-  if (mode === g_settings.zoomFileLoading || mode < 0 || mode > 1)
-    g_mainWindow.webContents.send("update-menubar");
-  else {
-    g_settings.zoomFileLoading = mode;
-    menuBar.setZoomFileLoading(mode);
-    g_mainWindow.webContents.send("update-menubar");
-  }
+  g_settings.zoomFileLoading = mode;
+  menuBar.setZoomFileLoading(mode);
+  g_mainWindow.webContents.send("update-menubar");
 };
 
 exports.onMenuChangeLoadingIndicatorBG = function (value) {
-  if (value === g_settings.loadingIndicatorBG || value < 0 || value > 1)
-    g_mainWindow.webContents.send("update-menubar");
-  else {
-    g_settings.loadingIndicatorBG = value;
-    menuBar.setLoadingIndicatorBG(value);
-    updateLoadingIndicator();
-    g_mainWindow.webContents.send("update-menubar");
-  }
+  g_settings.loadingIndicatorBG = value;
+  menuBar.setLoadingIndicatorBG(value);
+  updateLoadingIndicator();
+  g_mainWindow.webContents.send("update-menubar");
 };
 exports.onMenuChangeLoadingIndicatorIconSize = function (value) {
-  if (value === g_settings.loadingIndicatorIconSize || value < 0 || value > 1)
-    g_mainWindow.webContents.send("update-menubar");
-  else {
-    g_settings.loadingIndicatorIconSize = value;
-    menuBar.setLoadingIndicatorIconSize(value);
-    updateLoadingIndicator();
-    g_mainWindow.webContents.send("update-menubar");
-  }
+  g_settings.loadingIndicatorIconSize = value;
+  menuBar.setLoadingIndicatorIconSize(value);
+  updateLoadingIndicator();
+  g_mainWindow.webContents.send("update-menubar");
 };
 exports.onMenuChangeLoadingIndicatorIconPos = function (value) {
-  if (value === g_settings.loadingIndicatorIconPos || value < 0 || value > 1)
-    g_mainWindow.webContents.send("update-menubar");
-  else {
-    g_settings.loadingIndicatorIconPos = value;
-    menuBar.setLoadingIndicatorIconPos(value);
-    updateLoadingIndicator();
-    g_mainWindow.webContents.send("update-menubar");
-  }
+  g_settings.loadingIndicatorIconPos = value;
+  menuBar.setLoadingIndicatorIconPos(value);
+  updateLoadingIndicator();
+  g_mainWindow.webContents.send("update-menubar");
 };
 
 exports.onMenuChangeLayoutClock = function (value) {
-  if (value === g_settings.layoutClock || value < 0 || value > 5)
-    g_mainWindow.webContents.send("update-menubar");
-  else {
-    g_settings.layoutClock = value;
-    menuBar.setLayoutClock(value);
-    updateLayoutClock();
-    g_mainWindow.webContents.send("update-menubar");
-  }
+  g_settings.layoutClock = value;
+  menuBar.setLayoutClock(value);
+  updateLayoutClock();
+  g_mainWindow.webContents.send("update-menubar");
 };
 exports.onMenuChangeLayoutPageNum = function (value) {
-  if (value === g_settings.layoutPageNum || value < 0 || value > 5)
-    g_mainWindow.webContents.send("update-menubar");
-  else {
-    g_settings.layoutPageNum = value;
-    menuBar.setLayoutPageNum(value);
-    updateLayoutPageNum();
-    g_mainWindow.webContents.send("update-menubar");
-  }
+  g_settings.layoutPageNum = value;
+  menuBar.setLayoutPageNum(value);
+  updateLayoutPageNum();
+  g_mainWindow.webContents.send("update-menubar");
 };
 exports.onMenuChangeLayoutAudioPlayer = function (value) {
-  if (value === g_settings.layoutAudioPlayer || value < 0 || value > 5)
-    g_mainWindow.webContents.send("update-menubar");
-  else {
-    g_settings.layoutAudioPlayer = value;
-    menuBar.setLayoutAudioPlayer(value);
-    updateLayoutAudioPlayer();
-    g_mainWindow.webContents.send("update-menubar");
-  }
+  g_settings.layoutAudioPlayer = value;
+  menuBar.setLayoutAudioPlayer(value);
+  updateLayoutAudioPlayer();
+  g_mainWindow.webContents.send("update-menubar");
 };
 
 exports.onMenuNextPage = function () {
