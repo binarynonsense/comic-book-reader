@@ -1,7 +1,7 @@
 {
   "@metadata": {
     "authors": ["Álvaro"],
-    "last-updated": "2023-06-02",
+    "last-updated": "2023-07-12",
     "acbr-version": "2.4.5",
     "comments": "",
     "locale": "es",
@@ -45,6 +45,9 @@
   "menu-file-preferences-cursor": "Cursor del Ratón",
   "menu-file-preferences-cursor-always": "Siempre Visible",
   "menu-file-preferences-cursor-hide-inactive": "Ocultar si Inactivo",
+  "menu-file-preferences-page-turn": "Cambio de Página Automático",
+  "menu-file-preferences-page-turn-default": "Desactivado",
+  "menu-file-preferences-page-turn-onscroll": "En los límites del scroll",
   "menu-file-preferences-loading": "Indicador de Carga",
   "menu-file-preferences-loading-bg": "Fondo",
   "menu-file-preferences-loading-bg-0": "Transparente",

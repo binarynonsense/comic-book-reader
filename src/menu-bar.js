@@ -80,6 +80,11 @@ exports.setMouseCursorMode = function (mode) {
     mode === 1;
 };
 
+exports.setTurnPageOnScrollBoundary = function (value) {
+  Menu.getApplicationMenu().getMenuItemById("page-turn-0").checked = !value;
+  Menu.getApplicationMenu().getMenuItemById("page-turn-1").checked = value;
+};
+
 exports.setZoomDefault = function (mode) {
   Menu.getApplicationMenu().getMenuItemById(
     "preferences-zoom-default-fitwidth"
@@ -927,6 +932,29 @@ function buildApplicationMenu(
                   label: _("menu-file-preferences-cursor-hide-inactive"),
                   click() {
                     mainProcess.onMenuChangeMouseCursorVisibility(1);
+                  },
+                },
+              ],
+            },
+            {
+              label: _("menu-file-preferences-page-turn"),
+              submenu: [
+                {
+                  id: "page-turn-0",
+                  type: "checkbox",
+                  checked: !settings.turnPageOnScrollBoundary,
+                  label: _("menu-file-preferences-page-turn-default"),
+                  click() {
+                    mainProcess.onMenuChangeTurnPageOnScrollBoundary(false);
+                  },
+                },
+                {
+                  id: "page-turn-1",
+                  type: "checkbox",
+                  checked: settings.turnPageOnScrollBoundary,
+                  label: _("menu-file-preferences-page-turn-onscroll"),
+                  click() {
+                    mainProcess.onMenuChangeTurnPageOnScrollBoundary(true);
                   },
                 },
               ],

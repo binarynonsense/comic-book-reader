@@ -74,7 +74,7 @@ let g_settings = {
   layoutPageNum: 4, // 0 top left, 1 top center, 2 top right .... 5 bottom right
   layoutAudioPlayer: 0, // 0 top left, 3 bootom left - for now
   epubOpenAs: 0, // 0 ask and remember, 1 always ask
-  turnPageOnScrollBoundary: true,
+  turnPageOnScrollBoundary: false,
 
   locale: undefined,
   theme: undefined,
@@ -237,7 +237,7 @@ function sanitizeSettings() {
     g_settings.epubOpenAs = 0;
   }
   if (typeof g_settings.turnPageOnScrollBoundary !== "boolean") {
-    g_settings.turnPageOnScrollBoundary = true;
+    g_settings.turnPageOnScrollBoundary = false;
   }
 
   /////////////////////
@@ -930,6 +930,16 @@ exports.onMenuChangeHotspotsMode = function (mode) {
 exports.onMenuChangeEpubOpenAs = function (mode) {
   g_settings.epubOpenAs = mode;
   menuBar.setEpubOpenAs(mode);
+  g_mainWindow.webContents.send("update-menubar");
+};
+
+exports.onMenuChangeTurnPageOnScrollBoundary = function (value) {
+  g_settings.turnPageOnScrollBoundary = value;
+  menuBar.setTurnPageOnScrollBoundary(value);
+  g_mainWindow.webContents.send(
+    "set-turn-page-on-scroll-boundary",
+    g_settings.turnPageOnScrollBoundary
+  );
   g_mainWindow.webContents.send("update-menubar");
 };
 
