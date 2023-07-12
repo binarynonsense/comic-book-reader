@@ -1,3 +1,16 @@
+## v2.4.4
+
+- Fixed the conversion to epub format no longer working correctly due to a bug introduced in version 2.3.0.
+- Added some improvements to the German translation (contributed by Timo Heidutzek (trzyglow)).
+
+## v2.4.3
+
+- Added German to the available languages (translation contributed by Timo Heidutzek (trzyglow)).
+
+## v2.4.2
+
+- Fixed tools failing to convert or extract some pdf files.
+
 ## v2.4.1
 
 - Updated the Russian localization (contributed by vanja-san)
@@ -128,4 +141,3 @@ Hotfix:
 ## v1.0.0
 
 - First public version of ACBR.
-
