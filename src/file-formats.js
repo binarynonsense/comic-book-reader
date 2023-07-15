@@ -613,44 +613,6 @@ async function createEpubFromImages(
   } catch (error) {
     throw error;
   }
-
-  // TODO: delete when new custom epub generation code has been properly tested
-  // ref: https://www.npmjs.com/package/epub-gen
-  // ref: https://github.com/cyrilis/epub-gen/issues/25
-  const Epub = require("epub-gen");
-  let content = [];
-  for (let index = 0; index < imgPathsList.length; index++) {
-    const imgPath = imgPathsList[index];
-    const html =
-      "<p class='img-container'><img src='file://" + imgPath + "'/></p>";
-    let pageID = "000000000" + index;
-    pageID = pageID.substr(
-      pageID.length - imgPathsList.length.toString().length
-    );
-    content.push({
-      //title: "page_ " + pageID, //(index + 1).padStart(5, "0"),
-      data: html,
-      filename: "page_ " + pageID,
-    });
-  }
-  const option = {
-    //verbose: true,
-    tempDir: tempFolderPath,
-    title: path.basename(outputFilePath, path.extname(outputFilePath)),
-    author: "", // required
-    //publisher: "",
-    cover: imgPathsList[0],
-    //tocTitle: "",
-    customOpfTemplatePath: path.join(
-      __dirname,
-      "assets/libs/epub/templates/content.opf.ejs"
-    ),
-    css: "body { margin: 0; padding:0; }\n .img-container{text-align:center; text-indent:0; margin-top: 0; margin-bottom: 0;} img { text-align: center; text-indent:0; }",
-    content: content,
-  };
-
-  let err = await new Epub(option, outputFilePath).promise;
-  if (err !== undefined) throw err;
 }
 exports.createEpubFromImages = createEpubFromImages;
 
