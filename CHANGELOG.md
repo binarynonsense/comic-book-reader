@@ -1,3 +1,10 @@
+## v2.4.5
+
+- Added support for ComicInfo.xml files in the comic books converter. If the original contains a ComicBook.xml file and the output format allows it, the file is now preserved and even updated if the pages were changed in format or scale (previously this xml file was ignored and not included in the output comic file).
+- Switched to a custom epub generator, instead of the third-party library used so far, to be able to focus only on those features needed to create comic book files and add some new options.
+- Added a new section to the Advanced options of the comic book conversion tool to allow creating epubs with the images embedded as base64 in the html and limiting the image formats to only those allowed by the specification.
+- Added an option to the preferences, disabled by default, to automatically turn the page when a scroll boundary is reached (i.e. if you keep scrolling after reaching the top/bottom of the page the previous/next page will be loaded).
+
 ## v2.4.4
 
 - Fixed the conversion to epub format no longer working correctly due to a bug introduced in version 2.3.0.
