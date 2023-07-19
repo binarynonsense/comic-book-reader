@@ -117,6 +117,11 @@ img {
   text-align: center;
 }
 
+.page-filter-old-page {
+  filter: brightness(80%) saturate(90%) sepia(40%);
+  /* filter: brightness(85%) saturate(95%) sepia(30%); */
+}
+
 .epub-container {
   transform-origin: top left;
   transform: scale(calc(var(--zoom-epub-ebook-scale-factor)));

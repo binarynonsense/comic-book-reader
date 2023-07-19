@@ -75,6 +75,7 @@ let g_settings = {
   layoutAudioPlayer: 0, // 0 top left, 3 bootom left - for now
   epubOpenAs: 0, // 0 ask and remember, 1 always ask
   turnPageOnScrollBoundary: false,
+  filterMode: 0, // 0: none, 1: old paper
 
   locale: undefined,
   theme: undefined,
@@ -239,6 +240,13 @@ function sanitizeSettings() {
   if (typeof g_settings.turnPageOnScrollBoundary !== "boolean") {
     g_settings.turnPageOnScrollBoundary = false;
   }
+  if (
+    !Number.isInteger(g_settings.filterMode) ||
+    g_settings.filterMode < 0 ||
+    g_settings.filterMode > 1
+  ) {
+    g_settings.filterMode = 0;
+  }
 
   /////////////////////
   if (typeof g_settings.locale === "string") {
@@ -355,6 +363,8 @@ app.on("ready", () => {
     renderTitle();
 
     attachTitlebarToWindow(g_mainWindow);
+
+    setFilter(g_settings.filterMode);
 
     if (g_settings.fit_mode === 0) {
       setFitToWidth();
@@ -1334,6 +1344,10 @@ exports.onGoToPageLast = function () {
   } else {
     goToPage(g_fileData.numPages - 1);
   }
+};
+
+exports.onMenuFilterValue = function (value) {
+  setFilter(value);
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -2629,4 +2643,12 @@ function updateLayoutAudioPlayer() {
     "update-layout-pos",
     g_settings.layoutAudioPlayer
   );
+}
+
+function setFilter(value, rebuildMenu = true) {
+  g_settings.filterMode = value;
+  menuBar.setFilterMode(value);
+  g_mainWindow.webContents.send("update-menubar");
+  g_mainWindow.webContents.send("set-filter", value);
+  if (rebuildMenu) rebuildMenuBar();
 }

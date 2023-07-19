@@ -12,6 +12,7 @@ let g_isMouseCursorVisible = true;
 let g_mouseCursorHideTime = 3500;
 
 let g_turnPageOnScrollBoundary = true;
+let g_filterMode = 0;
 
 function cleanUp() {
   g_currentPdf = {};
@@ -320,6 +321,20 @@ ipcRenderer.on("update-title", (event, title) => {
 ipcRenderer.on("render-page-info", (event, pageNum, numPages, isPercentage) => {
   updatePageInfo(pageNum, numPages, isPercentage);
 });
+
+ipcRenderer.on("set-filter", (event, value) => {
+  g_filterMode = value;
+  let img = document.getElementById("page-img");
+  if (!img) img = document.getElementById("page-canvas");
+  if (img) {
+    setFilterClass(img);
+  }
+});
+
+function setFilterClass(element) {
+  if (g_filterMode === 0) element.classList.remove("page-filter-old-page");
+  else if (g_filterMode === 1) element.classList.add("page-filter-old-page");
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -737,6 +752,7 @@ function renderImg64(rotation, scrollBarPos, sendPageLoaded, fromRefresh) {
     var image = new Image();
     image.onload = function () {
       container.appendChild(image);
+      setFilterClass(image);
       if (sendPageLoaded) ipcRenderer.send("page-loaded");
     };
     image.src = g_currentImg64;
@@ -754,6 +770,7 @@ function renderImg64(rotation, scrollBarPos, sendPageLoaded, fromRefresh) {
     canvas.id = "page-canvas";
     if (title && title != "") canvas.title = title;
     container.appendChild(canvas);
+    setFilterClass(canvas);
     var context = canvas.getContext("2d");
     var image = new Image();
     image.onload = function () {
@@ -922,8 +939,7 @@ function renderCurrentPDFPage(rotation, scrollBarPos, sendPageLoaded) {
   var canvas = document.createElement("canvas");
   canvas.id = "page-canvas";
   container.appendChild(canvas);
-
-  var canvas = document.getElementById("page-canvas");
+  setFilterClass(canvas);
   var context = canvas.getContext("2d");
 
   var desiredWidth = canvas.offsetWidth;

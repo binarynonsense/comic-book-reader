@@ -85,6 +85,11 @@ exports.setTurnPageOnScrollBoundary = function (value) {
   Menu.getApplicationMenu().getMenuItemById("page-turn-1").checked = value;
 };
 
+exports.setFilterMode = function (mode) {
+  Menu.getApplicationMenu().getMenuItemById("filter-0").checked = mode === 0;
+  Menu.getApplicationMenu().getMenuItemById("filter-1").checked = mode === 1;
+};
+
 exports.setZoomDefault = function (mode) {
   Menu.getApplicationMenu().getMenuItemById(
     "preferences-zoom-default-fitwidth"
@@ -1095,6 +1100,30 @@ function buildApplicationMenu(
               label: _("menu-view-page-choose"),
               click() {
                 mainProcess.onGoToPageDialog();
+              },
+            },
+          ],
+        },
+        {
+          id: "view-filter",
+          label: _("menu-view-filter"),
+          submenu: [
+            {
+              id: "filter-0",
+              label: _("menu-view-filter-0"),
+              type: "checkbox",
+              checked: settings.filterMode === 0,
+              click() {
+                mainProcess.onMenuFilterValue(0);
+              },
+            },
+            {
+              id: "filter-1",
+              label: _("menu-view-filter-1"),
+              type: "checkbox",
+              checked: settings.filterMode === 1,
+              click() {
+                mainProcess.onMenuFilterValue(1);
               },
             },
           ],
