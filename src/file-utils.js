@@ -446,3 +446,29 @@ const deleteTempFolderRecursive = function (folderPath) {
     console.log("deletedfolder: " + folderPath);
   }
 };
+
+function cleanUpCacheFolder() {
+  let cachePath = path.join(app.getPath("userData"), "Cache");
+  console.log("cleaning up cache folder: " + cachePath);
+  deleteCacheFolderRecursive(cachePath);
+}
+exports.cleanUpCacheFolder = cleanUpCacheFolder;
+
+const deleteCacheFolderRecursive = function (folderPath) {
+  if (fs.existsSync(folderPath)) {
+    if (!folderPath.startsWith(app.getPath("userData"))) {
+      // safety check
+      return;
+    }
+    let files = fs.readdirSync(folderPath);
+    files.forEach((file) => {
+      const entryPath = path.join(folderPath, file);
+      if (fs.lstatSync(entryPath).isDirectory()) {
+        deleteCacheFolderRecursive(entryPath);
+      } else {
+        fs.unlinkSync(entryPath); // delete the file
+      }
+    });
+    fs.rmdirSync(folderPath);
+  }
+};

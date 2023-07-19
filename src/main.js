@@ -312,6 +312,9 @@ app.on("will-quit", () => {
     g_workerPage.kill();
     g_workerPage = undefined;
   }
+
+  // clear cache
+  fileUtils.cleanUpCacheFolder();
 });
 
 app.on("ready", () => {
