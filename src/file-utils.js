@@ -447,14 +447,33 @@ const deleteTempFolderRecursive = function (folderPath) {
   }
 };
 
-function cleanUpCacheFolder() {
-  let cachePath = path.join(app.getPath("userData"), "Cache");
-  console.log("cleaning up cache folder: " + cachePath);
-  deleteCacheFolderRecursive(cachePath);
+function cleanUpUserDataFolder() {
+  // some things are not entirely deleted, but it's good enough :)
+  console.log("cleaning up...");
+  let keepFiles = [
+    "acbr.cfg",
+    "acbr.hst",
+    "acbr-player.cfg",
+    "acbr-player.m3u",
+  ];
+  let userDataPath = app.getPath("userData");
+  if (fs.existsSync(userDataPath)) {
+    let files = fs.readdirSync(userDataPath);
+    files.forEach((file) => {
+      if (!keepFiles.includes(file)) {
+        const entryPath = path.join(userDataPath, file);
+        if (fs.lstatSync(entryPath).isDirectory()) {
+          deleteUserDataFolderRecursive(entryPath);
+        } else {
+          fs.unlinkSync(entryPath); // delete the file
+        }
+      }
+    });
+  }
 }
-exports.cleanUpCacheFolder = cleanUpCacheFolder;
+exports.cleanUpUserDataFolder = cleanUpUserDataFolder;
 
-const deleteCacheFolderRecursive = function (folderPath) {
+const deleteUserDataFolderRecursive = function (folderPath) {
   if (fs.existsSync(folderPath)) {
     if (!folderPath.startsWith(app.getPath("userData"))) {
       // safety check
@@ -464,7 +483,7 @@ const deleteCacheFolderRecursive = function (folderPath) {
     files.forEach((file) => {
       const entryPath = path.join(folderPath, file);
       if (fs.lstatSync(entryPath).isDirectory()) {
-        deleteCacheFolderRecursive(entryPath);
+        deleteUserDataFolderRecursive(entryPath);
       } else {
         fs.unlinkSync(entryPath); // delete the file
       }

@@ -314,7 +314,7 @@ app.on("will-quit", () => {
   }
 
   // clear cache
-  fileUtils.cleanUpCacheFolder();
+  fileUtils.cleanUpUserDataFolder();
 });
 
 app.on("ready", () => {
