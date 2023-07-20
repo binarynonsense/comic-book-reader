@@ -1,7 +1,7 @@
 ## v2.4.7
 
 - Hotfix:
-  - Fixed pages being always turned when a scroll boundary was reached regardless of the preferences when using the keys or gamepad.
+  - Fixed pages being always turned when a scroll boundary was reached, regardless of the preferences, when using the keys or gamepad.
 
 ## v2.4.6
 
