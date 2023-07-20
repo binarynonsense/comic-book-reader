@@ -831,16 +831,20 @@ ipcMain.on("mouse-click", (event, mouseX, bodyX) => {
   }
 });
 
-ipcMain.on("zoom-in-pressed", (event) => {
-  processZoomInput(1);
+ipcMain.on("zoom-in-pressed", (event, factor = 1) => {
+  processZoomInput(1, factor);
 });
 
-ipcMain.on("zoom-out-pressed", (event) => {
-  processZoomInput(-1);
+ipcMain.on("zoom-out-pressed", (event, factor = 1) => {
+  processZoomInput(-1, factor);
 });
 
 ipcMain.on("zoom-reset-pressed", (event) => {
   processZoomInput(0);
+});
+
+ipcMain.on("switch-scale-mode", (event) => {
+  switchScaleMode();
 });
 
 ipcMain.on("set-scale-mode", (event, scale) => {
@@ -2493,30 +2497,42 @@ function setScaleToHeight(scale, fromMove = false) {
   rebuildMenuBar();
 }
 
-function processZoomInput(input) {
+function switchScaleMode() {
+  // 0: width, 1: height, 2: scale height
+  if (g_settings.fit_mode === 0) {
+    setFitToHeight();
+  } else if (g_settings.fit_mode === 1) {
+    setFitToWidth();
+  } else {
+    setFitToWidth();
+  }
+}
+
+function processZoomInput(input, factor) {
+  const amount = 5 * factor;
   if (input !== 0 && g_fileData.state !== FileDataState.LOADED) return;
   if (input > 0) {
     // zoom in
     if (g_settings.fit_mode === 2) {
       // scale mode
-      setScaleToHeight(g_settings.zoom_scale + 5, true);
+      setScaleToHeight(g_settings.zoom_scale + amount, true);
     } else if (g_settings.fit_mode === 1) {
       // height
-      setScaleToHeight(100 + 5, true);
+      setScaleToHeight(100 + amount, true);
     } else if (g_settings.fit_mode === 0) {
       // width
-      g_mainWindow.webContents.send("try-zoom-scale-from-width", 5);
+      g_mainWindow.webContents.send("try-zoom-scale-from-width", amount);
     }
   } else if (input < 0) {
     // zoom out
     if (g_settings.fit_mode === 2) {
-      setScaleToHeight(g_settings.zoom_scale - 5, true);
+      setScaleToHeight(g_settings.zoom_scale - amount, true);
     } else if (g_settings.fit_mode === 1) {
       // height
-      setScaleToHeight(100 - 5, true);
+      setScaleToHeight(100 - amount, true);
     } else if (g_settings.fit_mode === 0) {
       // width
-      g_mainWindow.webContents.send("try-zoom-scale-from-width", -5);
+      g_mainWindow.webContents.send("try-zoom-scale-from-width", -amount);
     }
   } else {
     // 0 = reset

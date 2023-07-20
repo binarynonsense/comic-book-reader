@@ -1116,28 +1116,24 @@ document.onkeydown = function (event) {
   // keys ref: https://developer.mozilla.org/en-US/docs/Web/API/UI_Events/Keyboard_event_key_values
   if (event.key == "PageDown" || event.key == "ArrowRight") {
     if (!event.repeat) {
-      ipcRenderer.send(
-        "mouse-click",
-        document.body.clientWidth,
-        document.body.clientWidth
-      );
+      inputGoToNextPage();
       event.stopPropagation();
     }
     event.stopPropagation();
   } else if (event.key == "PageUp" || event.key == "ArrowLeft") {
     if (!event.repeat) {
-      ipcRenderer.send("mouse-click", 0, document.body.clientWidth);
+      inputGoToPrevPage();
       event.stopPropagation();
     }
   } else if (event.key == "Home") {
-    if (!event.repeat) ipcRenderer.send("home-pressed");
+    if (!event.repeat) inputGoToFirstPage();
   } else if (event.key == "End") {
-    if (!event.repeat) ipcRenderer.send("end-pressed");
+    if (!event.repeat) inputGoToLastPage();
   } else if (event.key == "ArrowDown" || event.key == "s") {
-    scrollPageDown();
+    inputScrollPageDown();
     event.stopPropagation();
   } else if (event.key == "ArrowUp" || event.key == "w") {
-    scrollPageUp();
+    inputScrollPageUp();
     event.stopPropagation();
   } else if (event.key == "a") {
     let container = document.querySelector(".cet-container");
@@ -1153,16 +1149,16 @@ document.onkeydown = function (event) {
     if (!event.repeat) ipcRenderer.send("escape-pressed");
   } else if (event.ctrlKey && event.key === "+") {
     if (!event.repeat) {
-      ipcRenderer.send("zoom-in-pressed");
+      inputZoomIn();
       event.stopPropagation();
     }
   } else if (event.ctrlKey && event.key === "-") {
     if (!event.repeat) {
-      ipcRenderer.send("zoom-out-pressed");
+      inputZoomOut();
       event.stopPropagation();
     }
   } else if (event.ctrlKey && event.key == "0") {
-    if (!event.repeat) ipcRenderer.send("zoom-reset-pressed");
+    if (!event.repeat) inputZoomReset();
   } else if (
     event.ctrlKey &&
     event.shiftKey &&
@@ -1230,9 +1226,9 @@ document.onmousemove = function () {
 document.addEventListener("wheel", function (event) {
   if (event.ctrlKey) {
     if (event.deltaY < 0) {
-      ipcRenderer.send("zoom-in-pressed");
+      inputZoomIn();
     } else if (event.deltaY > 0) {
-      ipcRenderer.send("zoom-out-pressed");
+      inputZoomOut();
     }
   } else if (g_turnPageOnScrollBoundary) {
     let container = document.querySelector(".cet-container");
@@ -1243,47 +1239,172 @@ document.addEventListener("wheel", function (event) {
       ) < 1
     ) {
       // reached bottom
-      ipcRenderer.send(
-        "mouse-click",
-        document.body.clientWidth,
-        document.body.clientWidth
-      );
+      inputGoToNextPage();
     } else if (event.deltaY < 0 && container.scrollTop <= 0) {
       // reached top
-      ipcRenderer.send("mouse-click", 0, document.body.clientWidth);
+      inputGoToPrevPage();
     }
   }
   event.stopPropagation();
   event.preventDefault();
 });
 
-function scrollPageUp() {
+function inputScrollPageUp(checkEdge = true, factor = 1) {
   let container = document.querySelector(".cet-container");
-  if (container.scrollTop <= 0) {
-    ipcRenderer.send("mouse-click", 0, document.body.clientWidth);
+  if (checkEdge && container.scrollTop <= 0) {
+    inputGoToPrevPage();
   } else {
-    let amount = container.offsetHeight / 5;
+    let amount = (factor * container.offsetHeight) / 5;
     document.querySelector(".cet-container").scrollBy(0, -amount);
   }
 }
 
-function scrollPageDown() {
+function inputScrollPageDown(checkEdge = true, factor = 1) {
   let container = document.querySelector(".cet-container");
   if (
+    checkEdge &&
     Math.abs(
       container.scrollHeight - container.scrollTop - container.clientHeight
     ) < 1
   ) {
-    ipcRenderer.send(
-      "mouse-click",
-      document.body.clientWidth,
-      document.body.clientWidth
-    );
+    inputGoToNextPage();
   } else {
-    let amount = container.offsetHeight / 5;
+    let amount = (factor * container.offsetHeight) / 5;
     container.scrollBy(0, amount);
   }
 }
+
+function inputGoToNextPage() {
+  ipcRenderer.send(
+    "mouse-click",
+    document.body.clientWidth,
+    document.body.clientWidth
+  );
+}
+function inputGoToPrevPage() {
+  ipcRenderer.send("mouse-click", 0, document.body.clientWidth);
+}
+function inputGoToFirstPage() {
+  ipcRenderer.send("home-pressed");
+}
+function inputGoToLastPage() {
+  ipcRenderer.send("end-pressed");
+}
+
+function inputZoomIn(factor = 1) {
+  ipcRenderer.send("zoom-in-pressed", factor);
+}
+function inputZoomOut(factor = 1) {
+  ipcRenderer.send("zoom-out-pressed", factor);
+}
+function inputZoomReset() {
+  ipcRenderer.send("zoom-reset-pressed");
+}
+
+function inputSwitchScaleMode() {
+  ipcRenderer.send("switch-scale-mode");
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// GAMEPAD ////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+// ref: https://developer.mozilla.org/en-US/docs/Web/API/Gamepad_API/Using_the_Gamepad_API
+
+let g_gamepadsAnimationFrame;
+let g_gamepadButtonsPrev;
+let g_gamepadsAnimationLastTime;
+
+window.addEventListener("gamepadconnected", (e) => {
+  const gp = navigator.getGamepads()[e.gamepad.index];
+  console.log(
+    `gamepad connected [${gp.index}|${gp.id}; ${gp.buttons.length} buttons; ${gp.axes.length} axes]`
+  );
+  g_gamepadsAnimationLastTime = performance.now();
+  g_gamepadButtonsPrev = [...gp.buttons];
+  pollGamepads();
+});
+
+window.addEventListener("gamepaddisconnected", (e) => {
+  console.log("gamepad disconnected");
+  g_gamepadButtonsPrev = undefined;
+  cancelAnimationFrame(g_gamepadsAnimationFrame);
+});
+
+function pollGamepads() {
+  const deltaTime = (performance.now() - g_gamepadsAnimationLastTime) / 1000;
+
+  const gamepads = navigator.getGamepads();
+  if (!gamepads) {
+    return;
+  }
+  const activeGamepad = gamepads[0];
+  // on pressed ///////
+  if (activeGamepad.buttons[1].pressed && !g_gamepadButtonsPrev[1].pressed) {
+    // b button
+    inputGoToNextPage();
+  } else if (
+    activeGamepad.buttons[2].pressed &&
+    !g_gamepadButtonsPrev[2].pressed
+  ) {
+    // x button
+    inputGoToPrevPage();
+  } else if (
+    activeGamepad.buttons[4].pressed &&
+    !g_gamepadButtonsPrev[4].pressed
+  ) {
+    // left shoulder
+    inputGoToFirstPage();
+  } else if (
+    activeGamepad.buttons[5].pressed &&
+    !g_gamepadButtonsPrev[5].pressed
+  ) {
+    // right shoulder
+    inputGoToLastPage();
+  } else if (
+    activeGamepad.buttons[11].pressed &&
+    !g_gamepadButtonsPrev[11].pressed
+  ) {
+    // right shoulder click
+    inputSwitchScaleMode();
+  }
+  // is pressed //////
+  const scrollFactor = deltaTime * 3;
+  if (activeGamepad.buttons[3].pressed) {
+    // y button
+    inputScrollPageUp(!g_gamepadButtonsPrev[3].pressed, scrollFactor);
+  } else if (activeGamepad.buttons[0].pressed) {
+    // a button
+    inputScrollPageDown(!g_gamepadButtonsPrev[0].pressed, scrollFactor);
+  } else if (activeGamepad.buttons[12].pressed) {
+    // directional pad up
+    inputScrollPageUp(!g_gamepadButtonsPrev[12].pressed, scrollFactor);
+  } else if (activeGamepad.buttons[13].pressed) {
+    // directional pad down
+    inputScrollPageDown(!g_gamepadButtonsPrev[13].pressed, scrollFactor);
+  } else if (activeGamepad.buttons[6].pressed) {
+    // left trigger
+    inputScrollPageUp(!g_gamepadButtonsPrev[6].pressed, scrollFactor);
+  } else if (activeGamepad.buttons[7].pressed) {
+    // right trigger
+    inputScrollPageDown(!g_gamepadButtonsPrev[7].pressed, scrollFactor);
+  }
+
+  // axes ////////////
+  if (activeGamepad.axes[3] > 0.5) {
+    // right stick vertical down
+    inputZoomOut(deltaTime * 10);
+  } else if (activeGamepad.axes[3] < -0.5) {
+    // right stick vertical up
+    inputZoomIn(deltaTime * 10);
+  }
+
+  // set up next frame //
+  g_gamepadButtonsPrev = [...activeGamepad.buttons];
+  g_gamepadsAnimationLastTime = performance.now();
+  g_gamepadsAnimationFrame = requestAnimationFrame(pollGamepads);
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // TOOLBAR ////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
