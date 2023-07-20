@@ -1338,31 +1338,31 @@ function pollGamepads() {
   if (!gamepads) {
     return;
   }
-  const activeGamepad = gamepads[0];
+  const selectedGamepad = gamepads[0];
   // on pressed ///////
-  if (activeGamepad.buttons[1].pressed && !g_gamepadButtonsPrev[1].pressed) {
+  if (selectedGamepad.buttons[1].pressed && !g_gamepadButtonsPrev[1].pressed) {
     // b button
     inputGoToNextPage();
   } else if (
-    activeGamepad.buttons[2].pressed &&
+    selectedGamepad.buttons[2].pressed &&
     !g_gamepadButtonsPrev[2].pressed
   ) {
     // x button
     inputGoToPrevPage();
   } else if (
-    activeGamepad.buttons[4].pressed &&
+    selectedGamepad.buttons[4].pressed &&
     !g_gamepadButtonsPrev[4].pressed
   ) {
     // left shoulder
     inputGoToFirstPage();
   } else if (
-    activeGamepad.buttons[5].pressed &&
+    selectedGamepad.buttons[5].pressed &&
     !g_gamepadButtonsPrev[5].pressed
   ) {
     // right shoulder
     inputGoToLastPage();
   } else if (
-    activeGamepad.buttons[11].pressed &&
+    selectedGamepad.buttons[11].pressed &&
     !g_gamepadButtonsPrev[11].pressed
   ) {
     // right shoulder click
@@ -1370,37 +1370,37 @@ function pollGamepads() {
   }
   // is pressed //////
   const scrollFactor = deltaTime * 3;
-  if (activeGamepad.buttons[3].pressed) {
+  if (selectedGamepad.buttons[3].pressed) {
     // y button
     inputScrollPageUp(!g_gamepadButtonsPrev[3].pressed, scrollFactor);
-  } else if (activeGamepad.buttons[0].pressed) {
+  } else if (selectedGamepad.buttons[0].pressed) {
     // a button
     inputScrollPageDown(!g_gamepadButtonsPrev[0].pressed, scrollFactor);
-  } else if (activeGamepad.buttons[12].pressed) {
+  } else if (selectedGamepad.buttons[12].pressed) {
     // directional pad up
     inputScrollPageUp(!g_gamepadButtonsPrev[12].pressed, scrollFactor);
-  } else if (activeGamepad.buttons[13].pressed) {
+  } else if (selectedGamepad.buttons[13].pressed) {
     // directional pad down
     inputScrollPageDown(!g_gamepadButtonsPrev[13].pressed, scrollFactor);
-  } else if (activeGamepad.buttons[6].pressed) {
+  } else if (selectedGamepad.buttons[6].pressed) {
     // left trigger
     inputScrollPageUp(!g_gamepadButtonsPrev[6].pressed, scrollFactor);
-  } else if (activeGamepad.buttons[7].pressed) {
+  } else if (selectedGamepad.buttons[7].pressed) {
     // right trigger
     inputScrollPageDown(!g_gamepadButtonsPrev[7].pressed, scrollFactor);
   }
 
   // axes ////////////
-  if (activeGamepad.axes[3] > 0.5) {
+  if (selectedGamepad.axes[3] > 0.5) {
     // right stick vertical down
     inputZoomOut(deltaTime * 10);
-  } else if (activeGamepad.axes[3] < -0.5) {
+  } else if (selectedGamepad.axes[3] < -0.5) {
     // right stick vertical up
     inputZoomIn(deltaTime * 10);
   }
 
   // set up next frame //
-  g_gamepadButtonsPrev = [...activeGamepad.buttons];
+  g_gamepadButtonsPrev = [...selectedGamepad.buttons];
   g_gamepadsAnimationLastTime = performance.now();
   g_gamepadsAnimationFrame = requestAnimationFrame(pollGamepads);
 }
