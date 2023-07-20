@@ -1,3 +1,8 @@
+## v2.4.7
+
+- Hotfix:
+  - Fixed pages being always turned when a scroll boundary was reached regardless of the preferences when using the keys or gamepad.
+
 ## v2.4.6
 
 - Added basic gamepad support to the reader. Changing pages, scrolling and zooming can now be done using one.

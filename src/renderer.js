@@ -1251,7 +1251,7 @@ document.addEventListener("wheel", function (event) {
 
 function inputScrollPageUp(checkEdge = true, factor = 1) {
   let container = document.querySelector(".cet-container");
-  if (checkEdge && container.scrollTop <= 0) {
+  if (g_turnPageOnScrollBoundary && checkEdge && container.scrollTop <= 0) {
     inputGoToPrevPage();
   } else {
     let amount = (factor * container.offsetHeight) / 5;
@@ -1262,6 +1262,7 @@ function inputScrollPageUp(checkEdge = true, factor = 1) {
 function inputScrollPageDown(checkEdge = true, factor = 1) {
   let container = document.querySelector(".cet-container");
   if (
+    g_turnPageOnScrollBoundary &&
     checkEdge &&
     Math.abs(
       container.scrollHeight - container.scrollTop - container.clientHeight
