@@ -1,3 +1,9 @@
+## v2.4.6
+
+- Added basic gamepad support to the reader. Changing pages, scrolling and zooming can now be done using one.
+- Added a new menu section View>Filters to apply optional color filters to the pages, and included one to make the paper look older, for digital versions of classic comics that look too bright/colorful.
+- Updated and improved the German translation (contributed by Timo Heidutzek (trzyglow)).
+
 ## v2.4.5
 
 - Added support for ComicInfo.xml files in the comic books converter. If the original contains a ComicBook.xml file and the output format allows it, the file is now preserved and even updated if the pages were changed in format or scale (previously this xml file was ignored and not included in the output comic file).
