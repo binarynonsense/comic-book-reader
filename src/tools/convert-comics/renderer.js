@@ -22,8 +22,6 @@ let g_numErrors = 0;
 let g_inputFilePath;
 let g_inputFileType;
 let g_outputFormat;
-let g_outputImageScale = "100";
-let g_outputImageQuality = "80";
 let g_outputFolderPath;
 let g_outputPdfExtractionMethod = "embedded";
 
@@ -111,16 +109,6 @@ function init(outputFolderPath) {
       }
       sendIpcToMain("choose-file", lastFilePath);
     });
-
-  g_outputImageScaleSlider.addEventListener("mouseup", (event) => {
-    g_outputImageScale = event.currentTarget.value;
-    checkValidData();
-  });
-
-  g_outputImageQualitySlider.addEventListener("mouseup", (event) => {
-    g_outputImageQuality = event.currentTarget.value;
-    checkValidData();
-  });
 
   updateOutputFolder(outputFolderPath);
   document
@@ -382,8 +370,8 @@ function initOnIpcCallbacks() {
     sendIpcToMain(
       "resize-images",
       g_inputFilePath,
-      g_outputImageScale,
-      g_outputImageQuality,
+      g_outputImageScaleSlider.value,
+      g_outputImageQualitySlider.value,
       g_outputFormat,
       g_outputFolderPath
     );

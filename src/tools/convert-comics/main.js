@@ -510,6 +510,7 @@ function start(
       //g_resizeWindow.webContents.openDevTools();
       g_workerWindow.webContents.send(
         "extract-pdf",
+        "tool-convert-comics",
         inputFilePath,
         tempFolderPath,
         pdfExtractionMethod,
