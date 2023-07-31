@@ -100,7 +100,7 @@ exports.setTempCodeRefactoringDisabled = function () {
   Menu.getApplicationMenu().getMenuItemById("convert-imgs").enabled = false;
   Menu.getApplicationMenu().getMenuItemById("create-file").enabled = false;
   Menu.getApplicationMenu().getMenuItemById("create-qr").enabled = false;
-  Menu.getApplicationMenu().getMenuItemById("extract-comics").enabled = false;
+  // Menu.getApplicationMenu().getMenuItemById("extract-comics").enabled = false;
   Menu.getApplicationMenu().getMenuItemById("extract-palette").enabled = false;
   Menu.getApplicationMenu().getMenuItemById("extract-text").enabled = false;
   Menu.getApplicationMenu().getMenuItemById("extract-qr").enabled = false;
@@ -109,7 +109,7 @@ exports.setTempCodeRefactoringDisabled = function () {
     false
   );
 
-  Menu.getApplicationMenu().getMenuItemById("extract-file").enabled = false;
+  // Menu.getApplicationMenu().getMenuItemById("extract-file").enabled = false;
   // Menu.getApplicationMenu().getMenuItemById("file-page-export").enabled = false;
   Menu.getApplicationMenu().getMenuItemById(
     "file-page-extract-palette"

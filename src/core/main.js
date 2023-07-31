@@ -19,6 +19,7 @@ const audioPlayer = require("../audio-player/main");
 const toolPreferences = require("../tools/preferences/main");
 const toolHistory = require("../tools/history/main");
 const toolConvertComics = require("../tools/convert-comics/main");
+const toolExtractComics = require("../tools/extract-comics/main");
 
 let g_mainWindow;
 let g_isLoaded = false;
@@ -136,6 +137,7 @@ g_tools["audio-player"] = audioPlayer;
 g_tools["tool-preferences"] = toolPreferences;
 g_tools["tool-history"] = toolHistory;
 g_tools["tool-convert-comics"] = toolConvertComics;
+g_tools["tool-extract-comics"] = toolExtractComics;
 
 function getTools() {
   return g_tools;
@@ -242,80 +244,67 @@ exports.onMenuToolConvertComics = function () {
 };
 
 exports.onMenuToolCreateComic = function () {
-  const tool = require("./tools/create-comic/main");
-  tool.showWindow(core.getMainWindow());
+  switchTool("tool-create-comic");
   sendIpcToPreload("update-menubar");
 };
 
 exports.onMenuToolCreateQR = function () {
-  const tool = require("./tools/create-qr/main");
-  tool.showWindow(core.getMainWindow());
+  switchTool("tool-create-qr");
   sendIpcToPreload("update-menubar");
 };
 
 exports.onMenuToolConvertImages = function () {
-  const tool = require("./tools/convert-imgs/main");
-  tool.showWindow(core.getMainWindow());
+  switchTool("tool-convert-imgs");
   sendIpcToPreload("update-menubar");
 };
 
 exports.onMenuToolExtractText = function () {
-  const tool = require("./tools/extract-text/main");
-  tool.showWindow(core.getMainWindow());
+  switchTool("tool-extract-text");
   sendIpcToPreload("update-menubar");
 };
 
 exports.onMenuToolExtractQR = function () {
-  const tool = require("./tools/extract-qr/main");
-  tool.showWindow(core.getMainWindow());
+  switchTool("tool-extract-qr");
   sendIpcToPreload("update-menubar");
 };
 
 exports.onMenuToolExtractPalette = function () {
-  const tool = require("./tools/extract-palette/main");
-  tool.showWindow(core.getMainWindow());
+  switchTool("tool-extract-palette");
   sendIpcToPreload("update-menubar");
 };
 
 exports.onMenuToolExtractComics = function () {
-  const tool = require("./tools/extract-comics/main");
-  tool.showWindow(core.getMainWindow());
+  switchTool("tool-extract-comics");
   sendIpcToPreload("update-menubar");
 };
 
 exports.onMenuToolDCM = function () {
-  const tool = require("./tools/dcm/main");
-  tool.showWindow(core.getMainWindow());
+  switchTool("tool-dcm");
   sendIpcToPreload("update-menubar");
 };
 
 exports.onMenuToolIArchive = function () {
-  const tool = require("./tools/internet-archive/main");
-  tool.showWindow(core.getMainWindow());
+  switchTool("tool-internet-archive");
   sendIpcToPreload("update-menubar");
 };
 
 exports.onMenuToolGutenberg = function () {
-  const tool = require("./tools/gutenberg/main");
-  tool.showWindow(core.getMainWindow());
+  switchTool("tool-gutenberg");
   sendIpcToPreload("update-menubar");
 };
 
 exports.onMenuToolXkcd = function () {
-  const tool = require("./tools/xkcd/main");
-  tool.showWindow(core.getMainWindow());
+  switchTool("tool-xkcd");
   sendIpcToPreload("update-menubar");
 };
 
 exports.onMenuToolLibrivox = function () {
-  const tool = require("./tools/librivox/main");
-  tool.showWindow(core.getMainWindow());
+  switchTool("tool-librivox");
   sendIpcToPreload("update-menubar");
 };
 
 exports.onMenuToolWiktionary = function () {
-  const tool = require("./tools/wiktionary/main");
-  tool.showWindow(core.getMainWindow());
+  switchTool("tool-wiktionary");
   sendIpcToPreload("update-menubar");
 };
 

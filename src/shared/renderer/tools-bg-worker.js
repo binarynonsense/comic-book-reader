@@ -5,6 +5,7 @@ const { changeDpiDataUrl } = require("changedpi");
 const { FileExtension } = require("../main/constants");
 
 let g_cancel;
+let g_ipcChannel;
 
 ipcRenderer.on(
   "extract-pdf",
@@ -26,6 +27,7 @@ const pdfjsFolderName_1 = "pdfjs-2.3.200";
 const pdfjsFolderName_2 = "pdfjs-3.8.162";
 
 async function extractPDF(
+  ipcChannel,
   filePath,
   folderPath,
   extractionMethod,
@@ -33,6 +35,7 @@ async function extractPDF(
   password
 ) {
   try {
+    g_ipcChannel = ipcChannel;
     // FIRST PASS
     // Uses an older pdf library, it's faster but has a bug in page.obj.get that fails for some files
     let pdfjsFolderName = pdfjsFolderName_1;
@@ -52,7 +55,7 @@ async function extractPDF(
           pdf.destroy();
           ipcRenderer.send(
             "tools-worker",
-            "tool-convert-comics",
+            g_ipcChannel,
             "pdf-images-extracted",
             true
           );
@@ -142,7 +145,7 @@ async function extractPDF(
         fs.writeFileSync(filePath, buf, "binary");
         ipcRenderer.send(
           "tools-worker",
-          "tool-convert-comics",
+          g_ipcChannel,
           "update-log-text",
           logText + pageNum + " / " + pdf.numPages
         );
@@ -171,7 +174,7 @@ async function extractPDF(
           pdf.destroy();
           ipcRenderer.send(
             "tools-worker",
-            "tool-convert-comics",
+            g_ipcChannel,
             "pdf-images-extracted",
             true
           );
@@ -260,7 +263,7 @@ async function extractPDF(
         fs.writeFileSync(filePath, buf, "binary");
         ipcRenderer.send(
           "tools-worker",
-          "tool-convert-comics",
+          g_ipcChannel,
           "update-log-text",
           logText + pageNum + " / " + pdf.numPages
         );
@@ -272,16 +275,11 @@ async function extractPDF(
     }
     ipcRenderer.send(
       "tools-worker",
-      "tool-convert-comics",
+      g_ipcChannel,
       "pdf-images-extracted",
       false
     );
   } catch (error) {
-    ipcRenderer.send(
-      "tools-worker",
-      "tool-convert-comics",
-      "stop-error",
-      error
-    );
+    ipcRenderer.send("tools-worker", g_ipcChannel, "stop-error", error);
   }
 }

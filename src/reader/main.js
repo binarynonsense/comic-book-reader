@@ -2029,8 +2029,7 @@ exports.onMenuConvertFile = function () {
 
 exports.onMenuExtractFile = function () {
   if (g_fileData.path !== undefined) {
-    const tool = require("./tools/extract-comics/main");
-    tool.showWindow(core.getMainWindow(), g_fileData);
+    core.switchTool("tool-extract-comics", g_fileData);
   }
   sendIpcToPreload("update-menubar");
 };
