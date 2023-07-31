@@ -1,126 +1,76 @@
-const { app, ipcMain } = require("electron");
+/**
+ * @license
+ * Copyright 2020-2023 Álvaro García
+ * www.binarynonsense.com
+ * SPDX-License-Identifier: BSD-2-Clause
+ */
+
+const { app } = require("electron");
 const fs = require("fs");
 const path = require("path");
-const { FileExtension } = require("../constants");
-const fileUtils = require("../file-utils");
-const mainProcess = require("../main");
+const { FileExtension } = require("../shared/main/constants");
+const fileUtils = require("../shared/main/file-utils");
+const core = require("../core/main");
+const reader = require("../reader/main");
+const settings = require("./settings");
+const { _ } = require("../shared/main/i18n");
 
 let g_mainWindow;
-let _;
 let g_parentElementId;
 
-exports.show = function (isVisible) {
-  g_mainWindow.webContents.send(
-    "audio-player",
-    "show",
-    isVisible,
-    g_parentElementId
-  );
-};
+///////////////////////////////////////////////////////////////////////////////
+// IPC SEND ///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////
-
-let g_settings = {
-  version: app.getVersion(),
-  date: "",
-  volume: 0.8,
-  shuffle: false,
-  repeat: false,
-  currentFileIndex: undefined,
-  currentTime: 0,
-  showPlaylist: true,
-};
-
-let g_playlist = {
-  id: "",
-  source: "", // filesystem, librivox...
-  files: [],
-};
-
-exports.saveSettings = function () {
-  fileUtils.saveSettings(g_settings, "acbr-player.cfg");
-  let playlistPath = path.join(fileUtils.getConfigFolder(), "acbr-player.m3u");
-  savePlaylistToFile(g_playlist, playlistPath, false);
-  console.log("playlist saved to: " + playlistPath);
-};
-
-function loadSettings() {
-  g_settings = fileUtils.loadSettings(g_settings, "acbr-player.cfg");
-  sanitizeSettings();
-  let playlistPath = path.join(fileUtils.getConfigFolder(), "acbr-player.m3u");
-  let fileUrls = getPlaylistFiles(playlistPath);
-  if (fileUrls && fileUrls.length > 0) {
-    fileUrls.forEach((url) => {
-      g_playlist.files.push({ url: url });
-    });
-  }
+function sendIpcToRenderer(...args) {
+  core.sendIpcToRenderer("audio-player", ...args);
 }
 
-function sanitizeSettings() {
-  if (isNaN(g_settings.volume)) {
-    g_settings.volume = 0.8;
-  }
-  if (g_settings.volume < 0 || g_settings.volume > 1) {
-    g_settings.volume = 0.8;
-  }
-  if (typeof g_settings.shuffle !== "boolean") {
-    g_settings.shuffle = false;
-  }
-  if (typeof g_settings.repeat !== "boolean") {
-    g_settings.repeat = false;
-  }
-  if (isNaN(g_settings.currentFileIndex)) {
-    g_settings.currentFileIndex = undefined;
-  }
-  if (isNaN(g_settings.currentTime)) {
-    g_settings.currentTime = 0;
-  }
-  if (typeof g_settings.showPlaylist !== "boolean") {
-    g_settings.showPlaylist = true;
-  }
+function sendIpcToCoreRenderer(...args) {
+  core.sendIpcToRenderer("core", ...args);
 }
 
-/////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+// IPC RECEIVE ////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
-exports.init = function (mainWindow, parentElementId) {
-  g_mainWindow = mainWindow;
-  const data = fs.readFileSync(path.join(__dirname, "index.html"));
-  g_parentElementId = parentElementId;
-  g_mainWindow.webContents.send(
-    "append-html",
-    parentElementId,
-    data.toString()
-  );
+let g_onIpcCallbacks = {};
 
-  loadSettings();
-  g_mainWindow.webContents.send("audio-player", "init", g_settings, g_playlist);
+exports.onIpcFromRenderer = function (...args) {
+  const callback = g_onIpcCallbacks[args[0]];
+  if (callback) callback(...args.slice(1));
+  return;
 };
 
-exports.updateLocalization = function (localizer) {
-  _ = localizer;
-  if (g_mainWindow)
-    g_mainWindow.webContents.send(
-      "audio-player",
-      "update-localization",
-      getLocalization()
-    );
-};
+function on(id, callback) {
+  g_onIpcCallbacks[id] = callback;
+}
 
-ipcMain.on("audio-player", (event, ...args) => {
-  if (args[0] === "update-config") {
-    g_settings = args[1];
-    g_playlist = args[2];
-  } else if (args[0] === "open-files") {
+function initOnIpcCallbacks() {
+  on("update-config", (_settings, _playlist) => {
+    settings.set(_settings);
+    g_playlist = _playlist;
+  });
+
+  on("open-files", () => {
+    console.log("open-files");
     callOpenFilesDialog(0);
-  } else if (args[0] === "add-files") {
+  });
+
+  on("add-files", () => {
     callOpenFilesDialog(1);
-  } else if (args[0] === "on-drop") {
-    onDroppedFiles(args[1]);
-  } else if (args[0] === "close") {
-    mainProcess.showAudioPlayer(false, true);
-  } else if (args[0] === "save-playlist") {
+  });
+
+  on("on-drop", (inputPaths) => {
+    onDroppedFiles(inputPaths);
+  });
+
+  on("close", () => {
+    reader.showAudioPlayer(false, true);
+  });
+
+  on("save-playlist", (playlist) => {
     let defaultPath = path.join(app.getPath("desktop"), "acbr-playlist.m3u");
-    let playlist = args[1];
     if (!playlist?.files[0]?.url) return;
     if (!/^http:\/\/|https:\/\//.test(playlist.files[0].url)) {
       defaultPath = path.join(
@@ -140,10 +90,121 @@ ipcMain.on("audio-player", (event, ...args) => {
       return;
     }
     savePlaylistToFile(playlist, filePath, false);
+  });
+}
+
+// HANDLE
+
+let g_handleIpcCallbacks = {};
+
+async function handleIpcFromRenderer(...args) {
+  const callback = g_handleIpcCallbacks[args[0]];
+  if (callback) return await callback(...args.slice(1));
+  return;
+}
+exports.handleIpcFromRenderer = handleIpcFromRenderer;
+
+function handle(id, callback) {
+  g_handleIpcCallbacks[id] = callback;
+}
+
+function initHandleIpcCallbacks() {
+  handle("test", async (value) => {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    return value;
+  });
+
+  handle("fill-tags", async (files) => {
+    const musicmetadata = require("music-metadata");
+    let updatedFiles = [];
+    for (let index = 0; index < files.length; index++) {
+      const file = files[index];
+      try {
+        if (file.title && file.artist) continue;
+        if (!/^http:\/\/|https:\/\//.test(file.url)) {
+          const metadata = await musicmetadata.parseFile(file.url);
+          let didUpdate = false;
+          if (metadata?.common?.artist) {
+            file.artist = metadata.common.artist;
+            didUpdate = true;
+          }
+          if (metadata?.common?.title) {
+            file.title = metadata.common.title;
+            didUpdate = true;
+          }
+          if (didUpdate) updatedFiles.push(file);
+        }
+      } catch (error) {
+        console.log(error);
+        return [];
+      }
+    }
+    return updatedFiles;
+  });
+}
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+let g_didShow = false;
+
+exports.open = function (isVisible) {
+  if (isVisible & !g_didShow) {
+    sendIpcToRenderer("init", settings.get(), g_playlist);
+    g_didShow = true;
   }
-});
+  sendIpcToRenderer("show", isVisible, g_parentElementId);
+};
+
+let g_playlist = {
+  id: "",
+  source: "", // filesystem, librivox...
+  files: [],
+};
+
+exports.saveSettings = function () {
+  settings.save();
+  let playlistPath = path.join(fileUtils.getConfigFolder(), "acbr-player.m3u");
+  savePlaylistToFile(g_playlist, playlistPath, false);
+  console.log("playlist saved to: " + playlistPath);
+};
+
+function loadSettings() {
+  settings.init();
+  let playlistPath = path.join(fileUtils.getConfigFolder(), "acbr-player.m3u");
+  let fileUrls = getPlaylistFiles(playlistPath);
+  if (fileUrls && fileUrls.length > 0) {
+    fileUrls.forEach((url) => {
+      g_playlist.files.push({ url: url });
+    });
+  }
+}
+
+/////////////////////////////////////////////////////////////////////////
+
+exports.init = function (mainWindow, parentElementId) {
+  initOnIpcCallbacks();
+  initHandleIpcCallbacks();
+  g_mainWindow = mainWindow;
+  const data = fs.readFileSync(path.join(__dirname, "index.html"));
+  g_parentElementId = parentElementId;
+  sendIpcToCoreRenderer(
+    "replace-inner-html",
+    "#" + parentElementId,
+    data.toString()
+  );
+  loadSettings();
+  updateLocalizedText();
+};
+
+function updateLocalizedText() {
+  if (g_mainWindow) sendIpcToRenderer("update-localization", getLocalization());
+}
+exports.updateLocalizedText = updateLocalizedText;
 
 function onDroppedFiles(inputPaths) {
+  // TODO: add to current playlist instead of creating new one?
   let filePaths = [];
   for (let index = 0; index < inputPaths.length; index++) {
     const inputPath = inputPaths[index];
@@ -169,7 +230,7 @@ function onDroppedFiles(inputPaths) {
   outputPaths.forEach((element) => {
     playlist.files.push({ url: element });
   });
-  g_mainWindow.webContents.send("audio-player", "open-playlist", playlist);
+  sendIpcToRenderer("open-playlist", playlist);
 }
 
 function isAlreadyInArray(inputArray, content) {
@@ -230,11 +291,7 @@ function callOpenFilesDialog(mode) {
     return;
   }
   if (mode === 1) {
-    g_mainWindow.webContents.send(
-      "audio-player",
-      "add-to-playlist",
-      outputPaths
-    );
+    sendIpcToRenderer("add-to-playlist", outputPaths);
   } else if (mode === 0) {
     let playlist = {
       id: "",
@@ -244,7 +301,7 @@ function callOpenFilesDialog(mode) {
     outputPaths.forEach((element) => {
       playlist.files.push({ url: element });
     });
-    g_mainWindow.webContents.send("audio-player", "open-playlist", playlist);
+    sendIpcToRenderer("open-playlist", playlist);
   }
 }
 

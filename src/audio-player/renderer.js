@@ -1,5 +1,14 @@
-const { ipcRenderer } = require("electron");
-const path = require("path");
+/**
+ * @license
+ * Copyright 2020-2023 Álvaro García
+ * www.binarynonsense.com
+ * SPDX-License-Identifier: BSD-2-Clause
+ */
+
+import {
+  sendIpcToMain as coreSendIpcToMain,
+  sendIpcToMainAndWait as coreSendIpcToMainAndWait,
+} from "../core/renderer.js";
 
 let g_settings;
 let g_player = {};
@@ -10,28 +19,65 @@ let g_tempAudioElement;
 let g_tempAudioIndex;
 let g_selectedTrackFileIndex;
 
-ipcRenderer.on("audio-player", (event, ...args) => {
-  if (args[0] === "init") {
-    init(args[1], args[2]);
-  } else if (args[0] === "show") {
-    if (args[1]) {
-      document.getElementById(args[2]).classList.remove("ap-hidden");
+export function initIpc() {
+  initOnIpcCallbacks();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// IPC SEND ///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+function sendIpcToMain(...args) {
+  coreSendIpcToMain("audio-player", ...args);
+}
+
+async function sendIpcToMainAndWait(...args) {
+  return await coreSendIpcToMainAndWait("audio-player", ...args);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// IPC RECEIVE ////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+let g_onIpcCallbacks = {};
+
+export function onIpcFromMain(args) {
+  const callback = g_onIpcCallbacks[args[0]];
+  if (callback) callback(...args.slice(1));
+  return;
+}
+
+export function on(id, callback) {
+  g_onIpcCallbacks[id] = callback;
+}
+
+function initOnIpcCallbacks() {
+  on("init", (settings, playlist) => {
+    initPlayer(settings, playlist);
+  });
+
+  on("show", (isVisible, elementId) => {
+    if (isVisible) {
+      document.getElementById(elementId).classList.remove("ap-hidden");
     } else {
-      document.getElementById(args[2]).classList.add("ap-hidden");
+      document.getElementById(elementId).classList.add("ap-hidden");
     }
-  } else if (args[0] === "open-playlist") {
+  });
+
+  on("open-playlist", (playlist) => {
     pauseTrack(false);
-    g_playlist = args[1];
+    g_playlist = playlist;
     g_selectedTrackFileIndex = undefined;
     createTracksList(false);
     updatePlaylistInfo();
     playTrack(g_currentTrackIndex, 0);
     fillTimes();
     fillTags();
-  } else if (args[0] === "add-to-playlist") {
+  });
+
+  on("add-to-playlist", (fileUrls) => {
     let load = false;
     if (g_tracks.length === 0) load = true;
-    let fileUrls = args[1];
     fileUrls.forEach((element) => {
       g_playlist.files.push({ url: element });
     });
@@ -40,19 +86,27 @@ ipcRenderer.on("audio-player", (event, ...args) => {
     refreshUI();
     fillTimes(); // calls updatePlaylistInfo
     fillTags();
-  } else if (args[0] === "update-layout-pos") {
+  });
+
+  on("update-layout-pos", (position) => {
     let container = document.getElementById("audio-player-container");
-    if (args[1] == 0) {
+    if (position == 0) {
       container.classList.remove("ap-layout-bottom-left");
       container.classList.add("ap-layout-top-left");
     } else {
       container.classList.add("ap-layout-bottom-left");
       container.classList.remove("ap-layout-top-left");
     }
-  } else if (args[0] === "update-localization") {
-    updateLocalization(args[1]);
-  }
-});
+  });
+
+  on("update-localization", (callback) => {
+    updateLocalization(callback);
+  });
+}
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 function updateLocalization(localization) {
   for (let index = 0; index < localization.length; index++) {
@@ -109,25 +163,18 @@ function getNextToFill() {
 }
 
 async function fillTags() {
-  const musicmetadata = require("music-metadata");
-  for (let index = 0; index < g_playlist.files.length; index++) {
-    const file = g_playlist.files[index];
-    try {
+  let updatedFiles = await sendIpcToMainAndWait("fill-tags", g_playlist.files);
+  if (updatedFiles && updatedFiles.length > 0) {
+    for (let index = 0; index < g_playlist.files.length; index++) {
+      const file = g_playlist.files[index];
       if (file.title && file.artist) continue;
-      if (!/^http:\/\/|https:\/\//.test(file.url)) {
-        let url = file.url;
-        const metadata = await musicmetadata.parseFile(file.url);
-        if (file.url === url) {
-          if (metadata?.common?.artist) file.artist = metadata.common.artist;
-          if (metadata?.common?.title) file.title = metadata.common.title;
-        } else {
-          // playlist changed in the meantime !!
-          break;
+      for (let j = 0; j < updatedFiles.length; j++) {
+        const updatedFile = updatedFiles[j];
+        if (updatedFile.url === file.url) {
+          file.artist = updatedFile.artist;
+          file.title = updatedFile.title;
         }
       }
-    } catch (error) {
-      // TODO
-      console.log(error);
     }
   }
   updatePlaylistInfo();
@@ -192,10 +239,18 @@ function updatePlaylistInfo() {
     div.addEventListener("dblclick", function () {
       onPlaylistTrackDoubleClicked(index);
     });
-    let fullName =
-      file.title && file.artist
-        ? `${file.artist} - ${file.title}`
-        : path.basename(file.url, path.extname(file.url));
+    let fullName;
+    if (file.title && file.artist) {
+      fullName = `${file.artist} - ${file.title}`;
+    } else {
+      var filenameextension = file.url.replace(/^.*[\\\/]/, "");
+      var filename = filenameextension.substring(
+        0,
+        filenameextension.lastIndexOf(".")
+      );
+      //var ext = filenameextension.split(".").pop();
+      fullName = filename;
+    }
     let content = `<span title="${fullName}\n${file.url}" class="ap-span-playlist-track-title">${fullName}</span
   ><span class="ap-span-playlist-track-time">${duration}</span>`;
     div.innerHTML = content;
@@ -253,11 +308,11 @@ function refreshUI() {
     }
 
     if (g_player.isPlaying) {
-      g_player.buttonPlay.classList.add("hide");
-      g_player.buttonPause.classList.remove("hide");
+      g_player.buttonPlay.classList.add("set-display-none");
+      g_player.buttonPause.classList.remove("set-display-none");
     } else {
-      g_player.buttonPlay.classList.remove("hide");
-      g_player.buttonPause.classList.add("hide");
+      g_player.buttonPlay.classList.remove("set-display-none");
+      g_player.buttonPause.classList.add("set-display-none");
     }
 
     if (g_settings.repeat || g_currentTrackIndex > 0) {
@@ -271,9 +326,9 @@ function refreshUI() {
       g_player.buttonNext.classList.add("ap-disabled");
     }
   } else {
-    g_player.buttonPlay.classList.remove("hide");
+    g_player.buttonPlay.classList.remove("set-display-none");
     g_player.buttonPlay.classList.add("ap-disabled");
-    g_player.buttonPause.classList.add("hide");
+    g_player.buttonPause.classList.add("set-display-none");
     g_player.buttonPrev.classList.add("ap-disabled");
     g_player.buttonNext.classList.add("ap-disabled");
   }
@@ -331,7 +386,7 @@ function onButtonClicked(buttonName) {
       playTrack(0, 0);
     else playTrack(g_currentTrackIndex + 1, 0);
   } else if (buttonName === "open") {
-    ipcRenderer.send("audio-player", "open-files");
+    sendIpcToMain("open-files");
   } else if (buttonName === "playlist") {
     if (g_player.divPlaylist.classList.contains("ap-hidden")) {
       g_player.divPlaylist.classList.remove("ap-hidden");
@@ -347,7 +402,7 @@ function onButtonClicked(buttonName) {
     if (g_player.lastVolume) g_player.engine.volume = g_player.lastVolume;
     else g_player.engine.volume = 1;
   } else if (buttonName === "close") {
-    ipcRenderer.send("audio-player", "close");
+    sendIpcToMain("close");
   }
   // playlist
   else if (buttonName === "shuffle-on") {
@@ -367,7 +422,7 @@ function onButtonClicked(buttonName) {
     g_selectedTrackFileIndex = undefined;
     pauseTrack(true);
   } else if (buttonName === "add") {
-    ipcRenderer.send("audio-player", "add-files");
+    sendIpcToMain("add-files");
   } else if (buttonName === "delete") {
     if (g_tracks.length <= 0 || g_selectedTrackFileIndex === undefined) return;
     let currentTrackFileIndex = g_tracks[g_currentTrackIndex].fileIndex;
@@ -413,20 +468,17 @@ function onButtonClicked(buttonName) {
     }
     updatePlaylistInfo();
   } else if (buttonName === "save-playlist") {
-    if (g_playlist.files.length > 0)
-      ipcRenderer.send("audio-player", "save-playlist", g_playlist);
+    if (g_playlist.files.length > 0) sendIpcToMain("save-playlist", g_playlist);
   }
 
   refreshUI();
 }
 
-exports.onPlaylistTrackClicked = onPlaylistTrackClicked;
 function onPlaylistTrackClicked(fileIndex) {
   g_selectedTrackFileIndex = fileIndex;
   updatePlaylistInfo();
 }
 
-exports.onPlaylistTrackDoubleClicked = onPlaylistTrackDoubleClicked;
 function onPlaylistTrackDoubleClicked(fileIndex) {
   let newTrackIndex;
   for (let index = 0; index < g_tracks.length; index++) {
@@ -471,7 +523,7 @@ function shuffleArray(array) {
   return array;
 }
 
-function init(settings, playlist) {
+function initPlayer(settings, playlist) {
   g_player.engine = document.getElementById("html-audio");
   ///////
   g_player.buttonOpen = document.getElementById("ap-button-open");
@@ -609,6 +661,16 @@ function init(settings, playlist) {
     refreshUI();
   });
 
+  // stop wheel scroll from propagating through the player
+  g_player.divPlaylist.addEventListener("wheel", function (event) {
+    event.stopPropagation();
+  });
+  document
+    .getElementById("ap-div-topbar")
+    .addEventListener("wheel", function (event) {
+      event.stopPropagation();
+    });
+
   // load settings & playlist
   g_settings = settings;
   g_playlist = playlist;
@@ -653,7 +715,39 @@ function sendConfigUpdateTimeout() {
     g_settings.currentFileIndex = g_tracks[g_currentTrackIndex].fileIndex;
   else g_settings.currentFileIndex = undefined;
   g_settings.currentTime = g_player.engine.currentTime;
-  ipcRenderer.send("audio-player", "update-config", g_settings, g_playlist);
+  sendIpcToMain("update-config", g_settings, g_playlist);
   g_configUpdateTimeout = setTimeout(sendConfigUpdateTimeout, 2000);
 }
 // TODO: call clearTimeout(g_configUpdateTimeout); on exit?
+
+///////////////////////////////////////////////////////////////////////////////
+// EVENT LISTENERS ////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+export function onInputEvent(type, event) {
+  switch (type) {
+    case "body.ondrop": {
+      const composedPath = event.composedPath();
+      for (let index = 0; index < composedPath.length; index++) {
+        const element = composedPath[index];
+        console.log(element);
+        if (element?.id?.includes("ap-")) {
+          let outputPaths = [];
+          for (
+            let index = 0;
+            index < event.dataTransfer.files.length;
+            index++
+          ) {
+            const file = event.dataTransfer.files[index];
+            outputPaths.push(file.path);
+          }
+          if (outputPaths.length > 0) sendIpcToMain("on-drop", outputPaths);
+          return true;
+        }
+      }
+      return false;
+    }
+    default:
+      return false;
+  }
+}

@@ -1,217 +1,195 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link href="../../assets/libs/fontawesome/css/all.css" rel="stylesheet" />
-    <link
-      rel="stylesheet"
-      href="../../assets/libs/materialize/css/materialize.min.css"
-    />
-    <link rel="stylesheet" href="../shared/css/style.css" />
-    <title></title>
-  </head>
-  <body>
-    <div class="container center-align">
-      <h5 id="text-input-files" class="hide">Input File/s:</h5>
-
-      <ul class="collection with-header">
-        <div id="input-list"></div>
-        <a
-          class="waves-effect waves-light btn"
-          id="button-add-file"
-          onclick="renderer.onChooseInputFile()"
-          >ADD</a
-        >
-      </ul>
-
-      <div id="output-size">
-        <h5>
-          <span id="text-output-options">Output Options:</span>
-        </h5>
-        <span id="text-format">Format:</span>
-        <select
-          id="format-select"
-          class="browser-default"
-          onchange="renderer.onOutputFormatChanged(this)"
-        ></select>
-        <p class="range-field">
-          <span id="text-scale">Scale (%):</span>
-          <i
-            id="tooltip-output-size"
-            class="fas fa-question-circle blue-text accent-1-text"
-            title="tooltip"
-          ></i>
-          <input
-            type="range"
-            min="10"
-            max="100"
-            id="scale-slider"
-            value="100"
-          />
-        </p>
-        <span id="text-image-format">Image Format:</span>
-        <select
-          id="image-format-select"
-          class="browser-default"
-          onchange="renderer.onOutputImageFormatChanged(this)"
-        ></select>
-        <p class="range-field" id="quality-slider-container">
-          <span id="text-quality">Image Quality:</span>
-          <input
-            type="range"
-            min="10"
-            max="100"
-            id="quality-slider"
-            value="80"
-          />
-        </p>
-        <p>
-          <details>
-            <summary id="text-advanced-options">Advanced</summary>
-            <p>
-              <span id="text-pdf-extraction">PDF Extraction:</span>
-              <i
-                id="tooltip-pdf-extraction"
-                class="fas fa-question-circle blue-text accent-1-text"
-                title="tooltip"
-              ></i>
-              <select
-                id="output-pdf-extraction-select"
-                class="browser-default"
-                onchange="renderer.onOutputAdvancedPdfExtractionChanged(this)"
-              >
-                <option
-                  id="text-pdf-extraction-o1"
-                  value="embedded"
-                  selected
-                ></option>
-                <option id="text-pdf-extraction-o2" value="render300"></option>
-                <option id="text-pdf-extraction-o3" value="render72"></option>
-              </select>
-            </p>
-            <p>
-              <span id="text-pdf-creation">PDF Creation:</span>
-              <i
-                id="tooltip-pdf-creation"
-                class="fas fa-question-circle blue-text accent-1-text"
-                title="tooltip"
-              ></i>
-              <select
-                id="output-pdf-creation-select"
-                class="browser-default"
-                onchange="renderer.onOutputAdvancedPdfCreationChanged(this)"
-              >
-                <option
-                  id="text-pdf-creation-o1"
-                  value="metadata"
-                  selected
-                ></option>
-                <option id="text-pdf-creation-o2" value="300dpi"></option>
-                <option id="text-pdf-creation-o3" value="72dpi"></option>
-              </select>
-            </p>
-            <p>
-              <span id="text-epub-creation">Epub Creation:</span>
-              <select
-                id="output-epub-creation-image-format-select"
-                class="browser-default"
-                onchange="renderer.onOutputAdvancedEpubCreationImageFormatChanged(this)"
-              >
-                <option
-                  id="text-epub-creation-image-format-o1"
-                  value="keep-selected"
-                  selected
-                ></option>
-                <option
-                  id="text-epub-creation-image-format-o2"
-                  value="core-media-types-only"
-                ></option>
-              </select>
-              <select
-                id="output-epub-creation-image-storage-select"
-                class="browser-default"
-                style="margin-top: 6px"
-                onchange="renderer.onOutputAdvancedEpubCreationImageStorageChanged(this)"
-              >
-                <option
-                  id="text-epub-creation-image-storage-o1"
-                  value="files"
-                  selected
-                ></option>
-                <option
-                  id="text-epub-creation-image-storage-o2"
-                  value="base64"
-                ></option>
-              </select>
-            </p>
-          </details>
-        </p>
+<!-- CONTENT -->
+<div id="tools-columns">
+  <!-- ------------------- LEFT COLUMN -------------------------------- -->
+  <div id="tools-columns-left">
+    <div id="tools-menu-sticky-div">
+      <button id="tool-cc-back-button" class="tools-button-accent">
+        <i class="fas fa-angle-left"></i>
+        <span id="tool-cc-back-button-text"></span>
+      </button>
+      <button id="tool-cc-start-button">
+        <span id="tool-cc-start-button-text"></span>
+      </button>
+    </div>
+    <!-- sections menu -->
+    <div
+      id="tool-cc-section-general-options-button"
+      class="tools-menu-button tools-menu-button-selected"
+    >
+      <i class="fas fa-sliders-h tools-menu-button-icon"></i>
+      <div class="tools-menu-button-text">
+        <span id="tool-cc-section-general-options-text"></span>
       </div>
+    </div>
+    <div id="tool-cc-section-advanced-options-button" class="tools-menu-button">
+      <i class="fas fa-tools tools-menu-button-icon"></i>
+      <div class="tools-menu-button-text">
+        <span id="tool-cc-section-advanced-options-text"></span>
+      </div>
+    </div>
+  </div>
+  <!-- ------------------- RIGTH COLUMN -------------------------------- -->
+  <div id="tools-columns-right">
+    <div id="tools-title"><span id="tool-cc-title-text"></span></div>
+    <!-- input -->
+    <div
+      id="tool-pre-input-options-section-div"
+      class="tools-columns-right-section"
+    >
+      <h3><span id="tool-cc-input-options-text"></span></h3>
+      <label
+        ><span id="tool-cc-input-files-text"></span>
+        <ul id="tool-cc-input-list" class="tools-collection-ul"></ul>
+      </label>
+      <button id="tool-cc-add-file-button">
+        <span id="tool-cc-add-file-button-text"></span>
+      </button>
+    </div>
+    <!-- output -->
+    <div
+      id="tool-pre-output-options-section-div"
+      class="tools-columns-right-section"
+    >
+      <h3><span id="tool-cc-output-options-text"></span></h3>
 
-      <h5>
-        <span id="text-output-folder">Output Folder:</span>
+      <label
+        ><span id="tool-cc-output-format-text"></span>
+        <select id="tool-cc-output-format-select"></select>
+      </label>
+
+      <label
+        ><span id="tool-cc-output-image-scale-text"></span>
         <i
-          id="tooltip-output-folder"
-          class="fas fa-question-circle blue-text accent-1-text"
+          id="tool-cc-tooltip-output-size"
+          class="fas fa-question-circle"
           title="tooltip"
         ></i>
-      </h5>
-
-      <ul class="collection">
-        <li class="collection-item" id="output-folder"></li>
-        <a
-          id="button-change-folder"
-          class="waves-effect waves-light btn"
-          onclick="renderer.onChooseOutputFolder()"
-          >CHANGE</a
-        >
-      </ul>
-
-      <a
-        id="button-start"
-        class="btn waves-effect waves-purple btn modal-trigger blue disabled"
-        onclick="renderer.onStart()"
-        data-target="modal1"
-        >CONVERT</a
-      >
-    </div>
-
-    <div id="modal1" class="modal">
-      <div class="modal-content">
-        <h5 id="modal-title"></h5>
-        <p id="modal-info">...</p>
-        <div class="progress" id="modal-loading-bar">
-          <div class="indeterminate"></div>
+        <div class="tools-range-wrap">
+          <input
+            type="range"
+            class="tools-range"
+            min="10"
+            max="100"
+            id="tool-cc-output-image-scale-slider"
+            value="100"
+          />
+          <output class="tools-range-bubble set-display-none"></output>
         </div>
-        <textarea id="modal-log" readonly></textarea>
-      </div>
-      <a
-        class="yellow darken-3 btn"
-        id="button-modal-cancel"
-        onclick="renderer.onCancel()"
-        >Cancel</a
-      >
-      <a
-        href="#!"
-        class="modal-close btn waves-effect green darken-3"
-        id="button-modal-close"
-        >Close</a
-      >
+      </label>
+
+      <label
+        ><span id="tool-cc-output-image-format-text"></span>
+        <select id="tool-cc-output-image-format-select"></select>
+      </label>
+
+      <label
+        ><span id="tool-cc-output-image-quality-text"></span>
+        <div class="tools-range-wrap">
+          <input
+            type="range"
+            class="tools-range"
+            min="10"
+            max="100"
+            id="tool-cc-output-image-quality-slider"
+            value="80"
+          />
+          <output class="tools-range-bubble set-display-none"></output>
+        </div>
+      </label>
+
+      <label
+        ><span id="tool-cc-output-folder-text"></span
+        ><i
+          id="tool-cc-tooltip-output-folder"
+          class="fas fa-question-circle"
+          title="tooltip"
+        ></i>
+        <ul id="tool-cc-output-folder" class="tools-collection-ul"></ul>
+      </label>
+      <button id="tool-cc-change-folder-button">
+        <span id="tool-cc-change-folder-button-text"></span>
+      </button>
+    </div>
+    <!-- advanced output -->
+    <div
+      id="tool-pre-advanced-input-options-section-div"
+      class="tools-columns-right-section set-display-none"
+    >
+      <h3><span id="tool-cc-advanced-input-options-text"></span></h3>
+      <label
+        ><span id="tool-cc-pdf-extraction-text"></span>
+        <i
+          id="tool-cc-tooltip-pdf-extraction"
+          class="fas fa-question-circle"
+          title="tooltip"
+        ></i>
+        <select id="tool-cc-pdf-extraction-select">
+          <option
+            id="tool-cc-pdf-extraction-o1-text"
+            value="embedded"
+            selected
+          ></option>
+          <option
+            id="tool-cc-pdf-extraction-o2-text"
+            value="render300"
+          ></option>
+          <option
+            id="tool-cc-pdf-extraction-o3-text"
+            value="render72"
+          ></option></select
+      ></label>
     </div>
 
-    <script src="../../assets/libs/materialize/js/materialize.min.js"></script>
-    <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        var elems = document.querySelectorAll(".modal");
-        var instances = M.Modal.init(elems, {
-          dismissible: false,
-          onCloseStart: null,
-        });
-      });
-    </script>
-    <script>
-      const renderer = require("./renderer");
-    </script>
-  </body>
-</html>
+    <div
+      id="tool-pre-advanced-output-options-section-div"
+      class="tools-columns-right-section set-display-none"
+    >
+      <h3><span id="tool-cc-advanced-output-options-text"></span></h3>
+      <label
+        ><span id="tool-cc-pdf-creation-text"></span>
+        <i
+          id="tool-cc-tooltip-pdf-creation"
+          class="fas fa-question-circle"
+          title="tooltip"
+        ></i>
+        <select id="tool-cc-pdf-creation-select">
+          <option
+            id="tool-cc-pdf-creation-o1-text"
+            value="metadata"
+            selected
+          ></option>
+          <option id="tool-cc-pdf-creation-o2-text" value="render300"></option>
+          <option
+            id="tool-cc-pdf-creation-o3-text"
+            value="render72"
+          ></option></select
+      ></label>
+
+      <label
+        ><span id="tool-cc-epub-creation-text"></span>
+        <select id="tool-cc-epub-creation-image-format-select">
+          <option
+            id="tool-cc-epub-creation-image-format-o1-text"
+            value="keep-selected"
+            selected
+          ></option>
+          <option
+            id="tool-cc-epub-creation-image-format-o2-text"
+            value="core-media-types-only"
+          ></option>
+        </select>
+      </label>
+      <select id="tool-cc-epub-creation-image-storage-select">
+        <option
+          id="tool-cc-epub-creation-image-storage-o1-text"
+          value="files"
+          selected
+        ></option>
+        <option
+          id="tool-cc-epub-creation-image-storage-o2-text"
+          value="base64"
+        ></option>
+      </select>
+    </div>
+  </div>
+</div>

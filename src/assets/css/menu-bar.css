@@ -1,0 +1,31 @@
+:root {
+  --menubar-height: 32px;
+}
+
+.cet-container {
+  /* margin-bottom: 30px; */
+  /* overflow: hidden !important; */
+  display: none;
+}
+
+.cet-titlebar {
+  color: var(--titlebar-text-color) !important;
+  font-weight: bold !important;
+  /* z-index: 100 !important; */ /* default 9999 */
+}
+
+.cet-menubar-menu-title,
+.cet-menubar-menu-button,
+.cet-action-item,
+.cet-action-menu-item,
+.cet-menu-item-icon.checkbox {
+  color: var(--titlebar-text-color) !important;
+}
+
+/* .cet-menu-item-icon > svg {
+    fill: var(--titlebar-text-color) !important;
+  } */
+
+.cet-window-title {
+  color: var(--titlebar-title-text-color) !important;
+}

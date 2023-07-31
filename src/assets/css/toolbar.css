@@ -1,3 +1,7 @@
+:root {
+  --toolbar-height: 30px;
+}
+
 #toolbar-page-numbers {
   padding: 0 10px;
   color: var(--toolbar-text-color);
@@ -8,7 +12,7 @@
 
 #toolbar {
   width: 100%;
-  height: 30px;
+  height: var(--toolbar-height);
   background-color: var(--toolbar-bg-color);
   padding-left: 0px;
   padding-right: 0px;
@@ -53,18 +57,18 @@
   color: white;
 } */
 
-/* ////////////  SLIDER  /////////////////// */
+/* SLIDER */
 
-#toolbar-page-numbers{
+#toolbar-page-numbers {
   user-select: none;
 }
 
-#toolbar-page-slider {
+#toolbar-page-slider-div {
   flex-grow: 1;
   padding: 0px 10px;
 }
 
-#page-slider {
+#toolbar-page-slider-input {
   -webkit-appearance: none; /* Override default CSS styles */
   appearance: none;
   width: 100%;
@@ -78,15 +82,15 @@
   overflow: hidden;
 }
 
-#page-slider:hover {
+#toolbar-page-slider-input:hover {
   opacity: 1;
 }
 
-/* #page-slider::-webkit-slider-runnable-track {
+/* #toolbar-page-slider-input::-webkit-slider-runnable-track {
   box-shadow: 3px 3px 10px 5px #000;
 } */
 
-#page-slider::-webkit-slider-thumb {
+#toolbar-page-slider-input::-webkit-slider-thumb {
   -webkit-appearance: none;
   width: 25px;
   height: 25px;

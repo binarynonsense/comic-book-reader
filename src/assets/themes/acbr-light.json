@@ -1,8 +1,8 @@
 {
     "@metadata": {
       "authors": ["Álvaro"],
-      "last-updated": "2022-05-01",
-      "acbr-version": "1.2.6",
+      "last-updated": "2023-07-26",
+      "acbr-version": "3.0.0-alpha1",
       "comments": "dark text over light background, with the orange slider",
       "name": "ACBR Light"
     },
@@ -45,5 +45,34 @@
     "--audioplayer-track-current-text-color": "#333",
     "--audioplayer-track-current-bg-color": "#ddd",    
     "--audioplayer-track-selected-text-color": "#888",
-    "--audioplayer-track-selected-bg-color": "#bbb"    
+    "--audioplayer-track-selected-bg-color": "#bbb",
+
+    "--tools-bg1-color": "#ccc",
+    "--tools-bg2-color": "#ddd",    
+    "--tools-text-color": "#666",
+    "--tools-input-bg-color": "#ccc",
+    "--tools-input-text-color": "#666",
+    "--tools-input-border-color": "#666",
+    "--tools-collection-bg-color": "#ccc",
+    "--tools-collection-text-color": "#666",
+    "--tools-collection-border-color": "#666",
+    "--tools-button-normal-bg-color": "#666",
+    "--tools-button-normal-text-color": "#ddd",
+    "--tools-button-accent-bg-color": "#d9af50",
+    "--tools-button-accent-text-color": "#303030",
+    "--tools-button-danger-bg-color": "#c14949",
+    "--tools-button-danger-text-color": "#303030",   
+
+    "--modal-text-color": "#525252",
+    "--modal-bg-color": "#fafafa",
+    "--modal-input-bg-color": "#eee",
+    "--modal-input-text-color": "#555",
+    "--modal-progress-bar-bg-color":"#dbdbdb",
+    "--modal-progress-bar-fg-color":"#589cdf",    
+    "--modal-button-normal-bg-color": "#d9af50",
+    "--modal-button-normal-text-color": "#525252",   
+    "--modal-button-danger-bg-color": "#d95055",
+    "--modal-button-danger-text-color": "#525252",
+    "--modal-button-success-bg-color": "#50d971",
+    "--modal-button-success-text-color": "#525252" 
 }

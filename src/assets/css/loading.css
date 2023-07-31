@@ -22,6 +22,7 @@
 
 #loading {
   display: none;
+  z-index: 20;
 }
 
 #loading-bg {
@@ -30,7 +31,7 @@
   margin: 0;
   min-width: 100%;
   min-height: 100vh;
-  z-index: 10;
+
   position: fixed;
   top: 0;
   left: 0;

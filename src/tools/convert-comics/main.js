@@ -1,20 +1,31 @@
-const { app, BrowserWindow, ipcMain } = require("electron");
+/**
+ * @license
+ * Copyright 2020-2023 Álvaro García
+ * www.binarynonsense.com
+ * SPDX-License-Identifier: BSD-2-Clause
+ */
 
+const { BrowserWindow } = require("electron");
 const fs = require("fs");
 const path = require("path");
+const core = require("../../core/main");
+const { _ } = require("../../shared/main/i18n");
+
+const { FileExtension, FileDataType } = require("../../shared/main/constants");
 const { fork } = require("child_process");
 const FileType = require("file-type");
-const fileUtils = require("../../file-utils");
-const fileFormats = require("../../file-formats");
-const mainProcess = require("../../main");
-const { FileExtension, FileDataType } = require("../../constants");
-const sharp = require("sharp");
+const fileUtils = require("../../shared/main/file-utils");
+const fileFormats = require("../../shared/main/file-formats");
 
-let g_window;
+///////////////////////////////////////////////////////////////////////////////
+// SETUP //////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+let g_isInitialized = false;
+
 let g_cancel = false;
 let g_worker;
-let g_resizeWindow;
-let g_ipcChannel = "tool-cc--";
+let g_workerWindow;
 let g_pdfCreationMethod = "metadata";
 let g_epubCreationImageFormat = "keep-selected";
 let g_epubCreationImageStorage = "files";
@@ -23,272 +34,304 @@ let g_imageFormat = FileExtension.NOT_SET;
 // hack to allow this at least for files from File>Convert...
 let g_initialPassword = "";
 
-function isDev() {
-  return process.argv[2] == "--dev";
+function init() {
+  if (!g_isInitialized) {
+    initOnIpcCallbacks();
+    initHandleIpcCallbacks();
+    g_isInitialized = true;
+  }
 }
 
-function _(...args) {
-  return mainProcess.i18n_.apply(null, args);
-}
-
-exports.showWindow = function (parentWindow, fileData) {
-  if (g_window !== undefined) return; // TODO: focus the existing one?
-  let [width, height] = parentWindow.getSize();
-  height = (90 * height) / 100;
-  if (height < 700) height = 700;
-  width = 1024;
-
+exports.open = function (fileData) {
+  // called by switchTool when opening tool
+  init();
   let filePath, fileType;
   if (fileData !== undefined) {
     filePath = fileData.path;
     fileType = fileData.type;
     g_initialPassword = fileData.password;
   }
+  const data = fs.readFileSync(path.join(__dirname, "index.html"));
+  sendIpcToCoreRenderer("replace-inner-html", "#tools", data.toString());
 
-  g_window = new BrowserWindow({
-    width: parseInt(width),
-    height: parseInt(height),
-    icon: path.join(__dirname, "../../assets/images/icon_256x256.png"),
-    resizable: true,
-    backgroundColor: "white",
-    parent: parentWindow,
-    modal: true,
-    webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false,
-    },
-  });
-  g_window.menuBarVisible = false;
-  g_window.loadFile(`${__dirname}/index.html`);
+  updateLocalizedText();
 
-  g_window.on("closed", () => {
-    g_window = undefined;
-    if (g_worker !== undefined) {
-      g_worker.kill();
-      g_worker = undefined;
-    }
-    fileUtils.cleanUpTempFolder();
-  });
+  sendIpcToRenderer(
+    "show",
+    filePath !== undefined
+      ? path.dirname(filePath)
+      : fileUtils.getDesktopFolderPath()
+  );
 
-  g_window.webContents.on("did-finish-load", function () {
-    g_window.webContents.send(
-      g_ipcChannel + "update-localization",
-      _("tool-cc-title"),
-      getLocalization(),
-      getTooltipsLocalization()
-    );
+  updateLocalizedText();
 
-    g_window.webContents.send(
-      g_ipcChannel + "init",
-      filePath !== undefined ? path.dirname(filePath) : app.getPath("desktop")
-    );
-
-    if (filePath !== undefined && fileType !== undefined)
-      g_window.webContents.send(g_ipcChannel + "add-file", filePath, fileType);
-  });
-
-  //if (isDev()) g_window.toggleDevTools();
+  if (filePath !== undefined && fileType !== undefined)
+    sendIpcToRenderer("add-file", filePath, fileType);
 };
 
+exports.close = function () {
+  // called by switchTool when closing tool
+  sendIpcToRenderer("close-modal");
+  sendIpcToRenderer("hide"); // clean up
+
+  if (g_workerWindow !== undefined) {
+    g_workerWindow.destroy();
+    g_workerWindow = undefined;
+  }
+
+  if (g_worker !== undefined) {
+    g_worker.kill();
+    g_worker = undefined;
+  }
+  fileUtils.cleanUpTempFolder();
+};
+
+exports.onResize = function () {
+  sendIpcToRenderer("update-window");
+};
+
+exports.onMaximize = function () {
+  sendIpcToRenderer("update-window");
+};
+
+function onCloseClicked() {
+  core.switchTool("reader");
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// IPC SEND ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-ipcMain.on(g_ipcChannel + "choose-file", (event, defaultPath) => {
-  try {
-    let allowMultipleSelection = true;
-    let allowedFileTypesName = "Comic Book Files";
-    let allowedFileTypesList = [
-      FileExtension.CBZ,
-      FileExtension.CBR,
-      FileExtension.CB7,
-      FileExtension.PDF,
-      FileExtension.EPUB,
-    ];
-    let filePathsList = fileUtils.chooseOpenFiles(
-      g_window,
-      defaultPath,
-      allowedFileTypesName,
-      allowedFileTypesList,
-      allowMultipleSelection
-    );
-    if (filePathsList === undefined) {
-      return;
-    }
-    for (let index = 0; index < filePathsList.length; index++) {
-      const filePath = filePathsList[index];
-      let stats = fs.statSync(filePath);
-      if (!stats.isFile()) continue; // avoid folders accidentally getting here
-      let fileType;
-      let fileExtension = path.extname(filePath).toLowerCase();
-      (async () => {
-        let _fileType = await FileType.fromFile(filePath);
-        if (_fileType !== undefined) {
-          fileExtension = "." + _fileType.ext;
-        }
-        if (fileExtension === "." + FileExtension.PDF) {
-          fileType = FileDataType.PDF;
-        } else if (fileExtension === "." + FileExtension.EPUB) {
-          fileType = FileDataType.EPUB_COMIC;
-        } else {
-          if (
-            fileExtension === "." + FileExtension.RAR ||
-            fileExtension === "." + FileExtension.CBR
-          ) {
-            fileType = FileDataType.RAR;
-          } else if (
-            fileExtension === "." + FileExtension.ZIP ||
-            fileExtension === "." + FileExtension.CBZ
-          ) {
-            fileType = FileDataType.ZIP;
-          } else if (
-            fileExtension === "." + FileExtension.SEVENZIP ||
-            fileExtension === "." + FileExtension.CB7
-          ) {
-            fileType = FileDataType.SEVENZIP;
-          } else {
-            return;
-          }
-        }
-        g_window.webContents.send(
-          g_ipcChannel + "add-file",
-          filePath,
-          fileType
-        );
-      })();
-    }
-  } catch (err) {
-    // TODO: do something?
-  }
-});
+function sendIpcToRenderer(...args) {
+  core.sendIpcToRenderer("tool-convert-comics", ...args);
+}
 
-ipcMain.on(
-  g_ipcChannel + "choose-folder",
-  (event, inputFilePath, outputFolderPath) => {
+function sendIpcToCoreRenderer(...args) {
+  core.sendIpcToRenderer("core", ...args);
+}
+
+function sendIpcToPreload(...args) {
+  core.sendIpcToPreload(...args);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// IPC RECEIVE ////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+let g_onIpcCallbacks = {};
+
+exports.onIpcFromRenderer = function (...args) {
+  const callback = g_onIpcCallbacks[args[0]];
+  if (callback) callback(...args.slice(1));
+  return;
+};
+
+function on(id, callback) {
+  g_onIpcCallbacks[id] = callback;
+}
+
+function initOnIpcCallbacks() {
+  on("close", () => {
+    onCloseClicked();
+  });
+
+  on("choose-file", (lastFilePath) => {
+    let defaultPath;
+    if (lastFilePath) defaultPath = path.dirname(lastFilePath);
+    try {
+      let allowMultipleSelection = true;
+      let allowedFileTypesName = "Comic Book Files";
+      let allowedFileTypesList = [
+        FileExtension.CBZ,
+        FileExtension.CBR,
+        FileExtension.CB7,
+        FileExtension.PDF,
+        FileExtension.EPUB,
+      ];
+      let filePathsList = fileUtils.chooseOpenFiles(
+        core.getMainWindow(),
+        defaultPath,
+        allowedFileTypesName,
+        allowedFileTypesList,
+        allowMultipleSelection
+      );
+      if (filePathsList === undefined) {
+        return;
+      }
+      for (let index = 0; index < filePathsList.length; index++) {
+        const filePath = filePathsList[index];
+        let stats = fs.statSync(filePath);
+        if (!stats.isFile()) continue; // avoid folders accidentally getting here
+        let fileType;
+        let fileExtension = path.extname(filePath).toLowerCase();
+        (async () => {
+          let _fileType = await FileType.fromFile(filePath);
+          if (_fileType !== undefined) {
+            fileExtension = "." + _fileType.ext;
+          }
+          if (fileExtension === "." + FileExtension.PDF) {
+            fileType = FileDataType.PDF;
+          } else if (fileExtension === "." + FileExtension.EPUB) {
+            fileType = FileDataType.EPUB_COMIC;
+          } else {
+            if (
+              fileExtension === "." + FileExtension.RAR ||
+              fileExtension === "." + FileExtension.CBR
+            ) {
+              fileType = FileDataType.RAR;
+            } else if (
+              fileExtension === "." + FileExtension.ZIP ||
+              fileExtension === "." + FileExtension.CBZ
+            ) {
+              fileType = FileDataType.ZIP;
+            } else if (
+              fileExtension === "." + FileExtension.SEVENZIP ||
+              fileExtension === "." + FileExtension.CB7
+            ) {
+              fileType = FileDataType.SEVENZIP;
+            } else {
+              return;
+            }
+          }
+          sendIpcToRenderer("add-file", filePath, fileType);
+        })();
+      }
+    } catch (err) {
+      // TODO: do something?
+    }
+  });
+
+  on("choose-folder", (inputFilePath, outputFolderPath) => {
     let defaultPath;
     if (outputFolderPath !== undefined) {
       defaultPath = outputFolderPath;
     } else if (inputFilePath !== undefined) {
       defaultPath = path.dirname(inputFilePath);
     }
-    let folderList = fileUtils.chooseFolder(g_window, defaultPath);
+    let folderList = fileUtils.chooseFolder(core.getMainWindow(), defaultPath);
     if (folderList === undefined) {
       return;
     }
     let folderPath = folderList[0];
     if (folderPath === undefined || folderPath === "") return;
 
-    g_window.webContents.send(
-      g_ipcChannel + "change-output-folder",
-      folderPath
-    );
-  }
-);
+    sendIpcToRenderer("change-output-folder", folderPath);
+  });
 
-/////////////////////////
+  /////////////////////////
 
-ipcMain.on(g_ipcChannel + "cancel", (event) => {
-  g_cancel = true;
-  if (g_resizeWindow !== undefined) {
-    g_resizeWindow.webContents.send("bgr--cancel-resize");
-  }
-});
+  on("cancel", () => {
+    if (!g_cancel) {
+      g_cancel = true;
+      if (g_workerWindow) {
+        console.log("cancel pdf");
+        g_workerWindow.webContents.send("cancel");
+      }
+    }
+  });
 
-ipcMain.on(g_ipcChannel + "set-image-format", (event, format) => {
-  g_imageFormat = format;
-});
+  on("set-image-format", (format) => {
+    g_imageFormat = format;
+  });
 
-ipcMain.on(g_ipcChannel + "set-pdf-creation-method", (event, method) => {
-  g_pdfCreationMethod = method;
-});
+  on("set-pdf-creation-method", (method) => {
+    g_pdfCreationMethod = method;
+  });
 
-ipcMain.on(g_ipcChannel + "set-epub-creation-image-format", (event, format) => {
-  g_epubCreationImageFormat = format;
-});
+  on("set-epub-creation-image-format", (format) => {
+    g_epubCreationImageFormat = format;
+  });
 
-ipcMain.on(
-  g_ipcChannel + "set-epub-creation-image-storage",
-  (event, selection) => {
+  on("set-epub-creation-image-storage", (selection) => {
     g_epubCreationImageStorage = selection;
-  }
-);
+  });
 
-ipcMain.on(
-  g_ipcChannel + "start",
-  (event, inputFilePath, inputFileType, fileNum, totalFilesNum) => {
-    start(inputFilePath, inputFileType, fileNum, totalFilesNum);
-  }
-);
+  on(
+    "start",
+    (
+      inputFilePath,
+      inputFileType,
+      fileNum,
+      totalFilesNum,
+      pdfExtractionMethod
+    ) => {
+      start(
+        inputFilePath,
+        inputFileType,
+        fileNum,
+        totalFilesNum,
+        pdfExtractionMethod
+      );
+    }
+  );
 
-ipcMain.on(g_ipcChannel + "stop-error", (event, err) => {
-  stopError(err);
-});
+  on("stop-error", (err) => {
+    stopError(err);
+  });
 
-ipcMain.on(g_ipcChannel + "pdf-images-extracted", (event, canceled) => {
-  if (!canceled) g_window.webContents.send(g_ipcChannel + "images-extracted");
-  else stopCancel();
-});
-
-ipcMain.on(
-  g_ipcChannel + "resize-images",
-  (
-    event,
-    inputFilePath,
-    outputScale,
-    outputQuality,
-    outputFormat,
-    outputFolderPath
-  ) => {
-    resizeImages(
+  on(
+    "resize-images",
+    (
       inputFilePath,
       outputScale,
       outputQuality,
       outputFormat,
       outputFolderPath
-    );
-  }
-);
-
-ipcMain.on(g_ipcChannel + "resizing-image", (event, pageNum, totalNumPages) => {
-  g_window.webContents.send(
-    g_ipcChannel + "update-log-text",
-    _("tool-shared-modal-log-resizing-page") +
-      ": " +
-      pageNum +
-      " / " +
-      totalNumPages
-  );
-});
-
-ipcMain.on(g_ipcChannel + "resizing-canceled", (event) => {
-  if (g_cancel === false) stopCancel();
-});
-
-ipcMain.on(g_ipcChannel + "resizing-error", (event, err) => {
-  stopError(err);
-});
-
-ipcMain.on(
-  g_ipcChannel + "create-file-from-images",
-  (event, imgFilePaths, outputFormat, outputFilePath) => {
-    if (g_resizeWindow !== undefined) {
-      g_resizeWindow.destroy();
-      g_resizeWindow = undefined;
+    ) => {
+      resizeImages(
+        inputFilePath,
+        outputScale,
+        outputQuality,
+        outputFormat,
+        outputFolderPath
+      );
     }
-    createFileFromImages(imgFilePaths, outputFormat, outputFilePath);
-  }
-);
+  );
 
-ipcMain.on(
-  g_ipcChannel + "end",
-  (event, wasCanceled, numFiles, numErrors, numAttempted) => {
+  on(
+    "resize-images",
+    (
+      inputFilePath,
+      outputScale,
+      outputQuality,
+      outputFormat,
+      outputFolderPath
+    ) => {
+      resizeImages(
+        inputFilePath,
+        outputScale,
+        outputQuality,
+        outputFormat,
+        outputFolderPath
+      );
+    }
+  );
+
+  on("resizing-canceled", () => {
+    if (g_cancel === false) stopCancel();
+  });
+
+  on("resizing-error", (err) => {
+    stopError(err);
+  });
+
+  on(
+    "create-file-from-images",
+    (imgFilePaths, outputFormat, outputFilePath) => {
+      createFileFromImages(imgFilePaths, outputFormat, outputFilePath);
+    }
+  );
+
+  on("end", (wasCanceled, numFiles, numErrors, numAttempted) => {
     if (!wasCanceled) {
-      g_window.webContents.send(
-        g_ipcChannel + "update-title-text",
+      sendIpcToRenderer(
+        "update-title-text",
         _("tool-shared-modal-title-conversion-finished")
       );
 
       if (numErrors > 0) {
-        g_window.webContents.send(
-          g_ipcChannel + "update-info-text",
+        sendIpcToRenderer(
+          "update-info-text",
           _(
             "tool-shared-modal-info-conversion-error-num-files",
             numErrors,
@@ -296,18 +339,18 @@ ipcMain.on(
           )
         );
       } else {
-        g_window.webContents.send(
-          g_ipcChannel + "update-info-text",
+        sendIpcToRenderer(
+          "update-info-text",
           _("tool-shared-modal-info-conversion-success-num-files", numFiles)
         );
       }
     } else {
-      g_window.webContents.send(
-        g_ipcChannel + "update-title-text",
+      sendIpcToRenderer(
+        "update-title-text",
         _("tool-shared-modal-title-conversion-canceled")
       );
-      g_window.webContents.send(
-        g_ipcChannel + "update-info-text",
+      sendIpcToRenderer(
+        "update-info-text",
         _(
           "tool-shared-modal-info-conversion-results",
           numAttempted - numErrors,
@@ -317,48 +360,86 @@ ipcMain.on(
       );
     }
 
-    g_window.show();
-    g_window.webContents.send(g_ipcChannel + "show-result");
-  }
-);
+    sendIpcToRenderer("show-result");
+  });
+}
 
+// HANDLE
+
+let g_handleIpcCallbacks = {};
+
+async function handleIpcFromRenderer(...args) {
+  const callback = g_handleIpcCallbacks[args[0]];
+  if (callback) return await callback(...args.slice(1));
+  return;
+}
+exports.handleIpcFromRenderer = handleIpcFromRenderer;
+
+function handle(id, callback) {
+  g_handleIpcCallbacks[id] = callback;
+}
+
+function initHandleIpcCallbacks() {
+  // handle(
+  //   "pdf-save-dataurl-to-file",
+  //   async (dataUrl, dpi, folderPath, pageNum) => {
+  //     try {
+  //       const { changeDpiDataUrl } = require("changedpi");
+  //       let img = changeDpiDataUrl(dataUrl, dpi);
+  //       let data = img.replace(/^data:image\/\w+;base64,/, "");
+  //       let buf = Buffer.from(data, "base64");
+  //       let filePath = path.join(folderPath, pageNum + "." + FileExtension.JPG);
+  //       fs.writeFileSync(filePath, buf, "binary");
+  //       return undefined;
+  //     } catch (error) {
+  //       return error;
+  //     }
+  //   }
+  // );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// TOOL ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
 function stopError(error) {
-  g_window.webContents.send(g_ipcChannel + "update-log-text", error);
-  g_window.webContents.send(
-    g_ipcChannel + "update-log-text",
+  sendIpcToRenderer("update-log-text", error);
+  sendIpcToRenderer(
+    "update-log-text",
     _("tool-shared-modal-log-conversion-error")
   );
-  g_window.webContents.send(g_ipcChannel + "finished-error");
+  sendIpcToRenderer("finished-error");
 }
 
 function stopCancel() {
   fileUtils.cleanUpTempFolder();
-  g_window.webContents.send(
-    g_ipcChannel + "update-log-text",
+  sendIpcToRenderer(
+    "update-log-text",
     _("tool-shared-modal-log-conversion-canceled")
   );
-  g_window.webContents.send(g_ipcChannel + "finished-canceled");
+  sendIpcToRenderer("finished-canceled");
 }
 
-function start(inputFilePath, inputFileType, fileNum, totalFilesNum) {
+function start(
+  inputFilePath,
+  inputFileType,
+  fileNum,
+  totalFilesNum,
+  pdfExtractionMethod
+) {
   g_cancel = false;
 
-  g_window.webContents.send(
-    g_ipcChannel + "update-title-text",
+  sendIpcToRenderer(
+    "update-title-text",
     _("tool-shared-modal-title-converting") +
       (totalFilesNum > 1 ? " (" + fileNum + "/" + totalFilesNum + ")" : "")
   );
-  g_window.webContents.send(
-    g_ipcChannel + "update-info-text",
+  sendIpcToRenderer(
+    "update-info-text",
     fileUtils.reducePathString(inputFilePath)
   );
-  g_window.webContents.send(
-    g_ipcChannel + "update-log-text",
-    _("tool-shared-modal-title-converting")
-  );
-  g_window.webContents.send(g_ipcChannel + "update-log-text", inputFilePath);
+  sendIpcToRenderer("update-log-text", _("tool-shared-modal-title-converting"));
+  sendIpcToRenderer("update-log-text", inputFilePath);
 
   let tempFolderPath = fileUtils.createTempFolder();
   // extract to temp folder
@@ -368,8 +449,8 @@ function start(inputFilePath, inputFileType, fileNum, totalFilesNum) {
     inputFileType === FileDataType.SEVENZIP ||
     inputFileType === FileDataType.EPUB_COMIC
   ) {
-    g_window.webContents.send(
-      g_ipcChannel + "update-log-text",
+    sendIpcToRenderer(
+      "update-log-text",
       _("tool-shared-modal-log-extracting-pages") + "..."
     );
     // ref: https://www.matthewslipper.com/2019/09/22/everything-you-wanted-electron-child-process.html
@@ -379,7 +460,9 @@ function start(inputFilePath, inputFileType, fileNum, totalFilesNum) {
       g_worker = undefined;
     }
     if (g_worker === undefined) {
-      g_worker = fork(path.join(__dirname, "../shared/worker.js"));
+      g_worker = fork(
+        path.join(__dirname, "../../shared/main/tools-worker.js")
+      );
       g_worker.on("message", (message) => {
         g_worker.kill(); // kill it after one use
         if (message === "success") {
@@ -387,7 +470,7 @@ function start(inputFilePath, inputFileType, fileNum, totalFilesNum) {
             stopCancel();
             return;
           }
-          g_window.webContents.send(g_ipcChannel + "images-extracted");
+          sendIpcToRenderer("images-extracted");
           return;
         } else {
           stopError(message);
@@ -403,20 +486,60 @@ function start(inputFilePath, inputFileType, fileNum, totalFilesNum) {
       g_initialPassword,
     ]);
   } else if (inputFileType === FileDataType.PDF) {
-    g_window.webContents.send(
-      g_ipcChannel + "update-log-text",
+    sendIpcToRenderer(
+      "update-log-text",
       _("tool-shared-modal-log-extracting-pages") + "..."
     );
-    g_window.webContents.send(
-      g_ipcChannel + "extract-pdf-images",
-      tempFolderPath,
-      _("tool-shared-modal-log-extracting-page") + ": ",
-      g_initialPassword
+    /////////////////////////
+    // use a hidden window for better performance and node api access
+    if (g_workerWindow !== undefined) {
+      // shouldn't happen
+      g_workerWindow.destroy();
+      g_workerWindow = undefined;
+    }
+    g_workerWindow = new BrowserWindow({
+      show: false,
+      webPreferences: { nodeIntegration: true, contextIsolation: false },
+      parent: core.getMainWindow(),
+    });
+    g_workerWindow.loadFile(
+      `${__dirname}/../../shared/renderer/tools-bg-worker.html`
     );
+
+    g_workerWindow.webContents.on("did-finish-load", function () {
+      //g_resizeWindow.webContents.openDevTools();
+      g_workerWindow.webContents.send(
+        "extract-pdf",
+        inputFilePath,
+        tempFolderPath,
+        pdfExtractionMethod,
+        _("tool-shared-modal-log-extracting-page") + ": ",
+        g_initialPassword
+      );
+    });
   } else {
     stopError("start: invalid file type");
   }
 }
+
+exports.onIpcFromToolsWorkerRenderer = function (...args) {
+  switch (args[0]) {
+    case "update-log-text":
+      sendIpcToRenderer("update-log-text", args[1]);
+      break;
+    case "pdf-images-extracted":
+      g_workerWindow.destroy();
+      g_workerWindow = undefined;
+      if (!args[1]) sendIpcToRenderer("images-extracted");
+      else stopCancel();
+      break;
+    case "stop-error":
+      g_workerWindow.destroy();
+      g_workerWindow = undefined;
+      stopError(args[1]);
+      break;
+  }
+};
 
 async function resizeImages(
   inputFilePath,
@@ -430,6 +553,7 @@ async function resizeImages(
     return;
   }
   try {
+    const sharp = require("sharp");
     outputScale = parseInt(outputScale);
     outputQuality = parseInt(outputQuality);
 
@@ -465,8 +589,8 @@ async function resizeImages(
     let didResize = false;
     if (outputScale < 100) {
       didResize = true;
-      g_window.webContents.send(
-        g_ipcChannel + "update-log-text",
+      sendIpcToRenderer(
+        "update-log-text",
         _("tool-shared-modal-log-resizing-images") + "..."
       );
       sharp.cache(false);
@@ -475,8 +599,8 @@ async function resizeImages(
           stopCancel();
           return;
         }
-        g_window.webContents.send(
-          g_ipcChannel + "update-log-text",
+        sendIpcToRenderer(
+          "update-log-text",
           _("tool-shared-modal-log-resizing-image") +
             ": " +
             (index + 1) +
@@ -512,8 +636,8 @@ async function resizeImages(
       outputFormat === FileExtension.EPUB ||
       g_imageFormat != FileExtension.NOT_SET
     ) {
-      g_window.webContents.send(
-        g_ipcChannel + "update-log-text",
+      sendIpcToRenderer(
+        "update-log-text",
         _("tool-shared-modal-log-converting-images") + "..."
       );
       sharp.cache(false); // avoid EBUSY error on windows
@@ -522,8 +646,8 @@ async function resizeImages(
           stopCancel();
           return;
         }
-        g_window.webContents.send(
-          g_ipcChannel + "update-log-text",
+        sendIpcToRenderer(
+          "update-log-text",
           _("tool-shared-modal-log-converting-image") +
             ": " +
             (index + 1) +
@@ -631,8 +755,8 @@ async function resizeImages(
           const parser = new XMLParser(parserOptions);
           let json = parser.parse(xmlFileData);
           // modify
-          g_window.webContents.send(
-            g_ipcChannel + "update-log-text",
+          sendIpcToRenderer(
+            "update-log-text",
             _("tool-shared-modal-log-updating-comicinfoxml")
           );
           let oldPagesArray = json["ComicInfo"]["Pages"]["Page"].slice();
@@ -672,11 +796,11 @@ async function resizeImages(
         console.log(
           "Warning: couldn't update the contents of ComicInfo.xml: " + error
         );
-        g_window.webContents.send(
-          g_ipcChannel + "update-log-text",
+        sendIpcToRenderer(
+          "update-log-text",
           _("tool-shared-modal-log-warning-comicinfoxml")
         );
-        g_window.webContents.send(g_ipcChannel + "update-log-text", error);
+        sendIpcToRenderer("update-log-text", error);
       }
     }
     createFileFromImages(
@@ -702,21 +826,21 @@ async function createFileFromImages(
   }
   try {
     // compress to output folder
-    g_window.webContents.send(
-      g_ipcChannel + "update-log-text",
+    sendIpcToRenderer(
+      "update-log-text",
       _("tool-shared-modal-log-generating-new-file") + "..."
     );
-    g_window.webContents.send(g_ipcChannel + "update-log-text", outputFilePath);
+    sendIpcToRenderer("update-log-text", outputFilePath);
 
     if (outputFormat === FileExtension.PDF) {
       // TODO: doesn't work in the worker, why?
-      await fileFormats.createPdfFromImages(
+      await fileFormats.createPdf(
         imgFilePaths,
         outputFilePath,
         g_pdfCreationMethod
       );
       fileUtils.cleanUpTempFolder();
-      g_window.webContents.send(g_ipcChannel + "finished-ok");
+      sendIpcToRenderer("finished-ok");
     } else {
       if (g_worker !== undefined) {
         // kill it after one use
@@ -724,12 +848,14 @@ async function createFileFromImages(
         g_worker = undefined;
       }
       if (g_worker === undefined) {
-        g_worker = fork(path.join(__dirname, "../shared/worker.js"));
+        g_worker = fork(
+          path.join(__dirname, "../../shared/main/tools-worker.js")
+        );
         g_worker.on("message", (message) => {
           g_worker.kill(); // kill it after one use
           if (message === "success") {
             fileUtils.cleanUpTempFolder();
-            g_window.webContents.send(g_ipcChannel + "finished-ok");
+            sendIpcToRenderer("finished-ok");
             return;
           } else {
             stopError(message);
@@ -755,26 +881,38 @@ async function createFileFromImages(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+// LOCALIZATION ///////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+function updateLocalizedText() {
+  sendIpcToRenderer(
+    "update-localization",
+    getLocalization(),
+    getTooltipsLocalization()
+  );
+}
+exports.updateLocalizedText = updateLocalizedText;
+
 function getTooltipsLocalization() {
   return [
     {
-      id: "tooltip-output-size",
+      id: "tool-cc-tooltip-output-size",
       text: _("tool-shared-tooltip-output-scale"),
     },
     {
-      id: "tooltip-output-folder",
+      id: "tool-cc-tooltip-output-folder",
       text: _("tool-shared-tooltip-output-folder"),
     },
     {
-      id: "tooltip-remove-from-list",
+      id: "tool-cc-tooltip-remove-from-list",
       text: _("tool-shared-tooltip-remove-from-list"),
     },
     {
-      id: "tooltip-pdf-extraction",
+      id: "tool-cc-tooltip-pdf-extraction",
       text: _("tool-shared-ui-pdf-extraction-tooltip"),
     },
     {
-      id: "tooltip-pdf-creation",
+      id: "tool-cc-tooltip-pdf-creation",
       text: _("tool-shared-ui-pdf-creation-tooltip"),
     },
   ];
@@ -783,113 +921,144 @@ function getTooltipsLocalization() {
 function getLocalization() {
   return [
     {
-      id: "text-input-files",
+      id: "tool-cc-title-text",
+      text: _("tool-cc-title").toUpperCase(),
+    },
+    {
+      id: "tool-cc-back-button-text",
+      text: _("tool-shared-ui-back-button").toUpperCase(),
+    },
+    {
+      id: "tool-cc-start-button-text",
+      text: _("tool-shared-ui-convert").toUpperCase(),
+    },
+    //////////////////////////////////////////////
+    {
+      id: "tool-cc-section-general-options-text",
+      text: _("tool-shared-ui-general-options"),
+    },
+    {
+      id: "tool-cc-section-advanced-options-text",
+      text: _("tool-shared-ui-advanced-options"),
+    },
+    //////////////////////////////////////////////
+    {
+      id: "tool-cc-input-options-text",
+      text: _("tool-shared-ui-input-options"),
+    },
+    {
+      id: "tool-cc-input-files-text",
       text: _("tool-shared-ui-input-files"),
     },
     {
-      id: "button-add-file",
+      id: "tool-cc-add-file-button-text",
       text: _("tool-shared-ui-add").toUpperCase(),
     },
+    //////////////////////////////////////////////
     {
-      id: "text-output-options",
+      id: "tool-cc-output-options-text",
       text: _("tool-shared-ui-output-options"),
     },
     {
-      id: "text-scale",
+      id: "tool-cc-output-image-scale-text",
       text: _("tool-shared-ui-output-options-scale"),
     },
     {
-      id: "text-format",
+      id: "tool-cc-output-format-text",
       text: _("tool-shared-ui-output-options-format"),
     },
     {
-      id: "text-image-format",
+      id: "tool-cc-output-image-format-text",
       text: _("tool-shared-ui-output-options-image-format"),
     },
     {
-      id: "text-quality",
+      id: "tool-cc-output-image-quality-text",
       text: _("tool-shared-ui-output-options-image-quality"),
     },
     {
-      id: "text-advanced-options",
-      text: _("tool-shared-ui-advanced-options"),
-    },
-    {
-      id: "text-pdf-extraction",
-      text: _("tool-shared-ui-pdf-extraction"),
-    },
-    {
-      id: "text-pdf-extraction-o1",
-      text: _("tool-shared-ui-pdf-extraction-o1"),
-    },
-    {
-      id: "text-pdf-extraction-o2",
-      text: _("tool-shared-ui-pdf-extraction-o2"),
-    },
-    {
-      id: "text-pdf-extraction-o3",
-      text: _("tool-shared-ui-pdf-extraction-o3"),
-    },
-    {
-      id: "text-pdf-creation",
-      text: _("tool-shared-ui-pdf-creation"),
-    },
-    {
-      id: "text-pdf-creation-o1",
-      text: _("tool-shared-ui-pdf-creation-o1"),
-    },
-    {
-      id: "text-pdf-creation-o2",
-      text: _("tool-shared-ui-pdf-creation-o2"),
-    },
-    {
-      id: "text-pdf-creation-o3",
-      text: _("tool-shared-ui-pdf-creation-o3"),
-    },
-    {
-      id: "text-epub-creation",
-      text: _("tool-shared-ui-epub-creation"),
-    },
-    {
-      id: "text-epub-creation-image-format-o1",
-      text: _("tool-shared-ui-epub-creation-image-format-o1"),
-    },
-    {
-      id: "text-epub-creation-image-format-o2",
-      text: _("tool-shared-ui-epub-creation-image-format-o2"),
-    },
-
-    {
-      id: "text-epub-creation-image-storage-o1",
-      text: _("tool-shared-ui-epub-creation-image-storage-o1"),
-    },
-    {
-      id: "text-epub-creation-image-storage-o2",
-      text: _("tool-shared-ui-epub-creation-image-storage-o2"),
-    },
-    {
-      id: "text-output-folder",
+      id: "tool-cc-output-folder-text",
       text: _("tool-shared-ui-output-folder"),
     },
     {
-      id: "button-change-folder",
+      id: "tool-cc-change-folder-button-text",
       text: _("tool-shared-ui-change").toUpperCase(),
     },
+    //////////////////////////////////////////////
     {
-      id: "button-start",
-      text: _("tool-shared-ui-convert").toUpperCase(),
+      id: "tool-cc-advanced-input-options-text",
+      text: _("tool-shared-ui-advanced-input-options"),
     },
     {
-      id: "button-modal-close",
+      id: "tool-cc-pdf-extraction-text",
+      text: _("tool-shared-ui-pdf-extraction"),
+    },
+    {
+      id: "tool-cc-pdf-extraction-o1-text",
+      text: _("tool-shared-ui-pdf-extraction-o1"),
+    },
+    {
+      id: "tool-cc-pdf-extraction-o2-text",
+      text: _("tool-shared-ui-pdf-extraction-o2"),
+    },
+    {
+      id: "tool-cc-pdf-extraction-o3-text",
+      text: _("tool-shared-ui-pdf-extraction-o3"),
+    },
+    //////////////////////////////////////////////
+    {
+      id: "tool-cc-advanced-output-options-text",
+      text: _("tool-shared-ui-advanced-output-options"),
+    },
+    {
+      id: "tool-cc-pdf-creation-text",
+      text: _("tool-shared-ui-pdf-creation"),
+    },
+    {
+      id: "tool-cc-pdf-creation-o1-text",
+      text: _("tool-shared-ui-pdf-creation-o1"),
+    },
+    {
+      id: "tool-cc-pdf-creation-o2-text",
+      text: _("tool-shared-ui-pdf-creation-o2"),
+    },
+    {
+      id: "tool-cc-pdf-creation-o3-text",
+      text: _("tool-shared-ui-pdf-creation-o3"),
+    },
+
+    {
+      id: "tool-cc-epub-creation-text",
+      text: _("tool-shared-ui-epub-creation"),
+    },
+    {
+      id: "tool-cc-epub-creation-image-format-o1-text",
+      text: _("tool-shared-ui-epub-creation-image-format-o1"),
+    },
+    {
+      id: "tool-cc-epub-creation-image-format-o2-text",
+      text: _("tool-shared-ui-epub-creation-image-format-o2"),
+    },
+    {
+      id: "tool-cc-epub-creation-image-storage-o1-text",
+      text: _("tool-shared-ui-epub-creation-image-storage-o1"),
+    },
+    {
+      id: "tool-cc-epub-creation-image-storage-o2-text",
+      text: _("tool-shared-ui-epub-creation-image-storage-o2"),
+    },
+    //////////////////////////////////////////////
+    {
+      id: "tool-cc-keep-format-text",
+      text: _("tool-shared-ui-output-options-format-keep"),
+    },
+
+    {
+      id: "tool-cc-modal-close-button-text",
       text: _("tool-shared-ui-close").toUpperCase(),
     },
     {
-      id: "button-modal-cancel",
+      id: "tool-cc-modal-cancel-button-text",
       text: _("tool-shared-ui-cancel").toUpperCase(),
-    },
-    {
-      id: "keep-format",
-      text: _("tool-shared-ui-output-options-format-keep"),
     },
   ];
 }

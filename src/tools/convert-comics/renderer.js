@@ -1,166 +1,514 @@
-const fs = window.require("fs");
-const path = require("path");
-const { ipcRenderer } = require("electron");
-const { changeDpiDataUrl } = require("changedpi");
-const { FileExtension } = require("../../constants");
+/**
+ * @license
+ * Copyright 2020-2023 Álvaro García
+ * www.binarynonsense.com
+ * SPDX-License-Identifier: BSD-2-Clause
+ */
 
-let g_ipcChannel = "tool-cc--";
+import {
+  sendIpcToMain as coreSendIpcToMain,
+  sendIpcToMainAndWait as coreSendIpcToMainAndWait,
+} from "../../core/renderer.js";
+import * as modals from "../../shared/renderer/modals.js";
+import { FileExtension } from "../../shared/renderer/constants.js";
 
 let g_inputFiles = [];
 let g_inputFilesIndex = 0;
 let g_inputFilesID = 0;
 
 let g_cancel = false;
+let g_numErrors = 0;
 
 let g_inputFilePath;
 let g_inputFileType;
-let g_outputScale = "100";
-let g_outputQuality = "80";
 let g_outputFormat;
-let g_outputImageFormat = FileExtension.NOT_SET;
+let g_outputImageScale = "100";
+let g_outputImageQuality = "80";
 let g_outputFolderPath;
 let g_outputPdfExtractionMethod = "embedded";
 
-let g_imageFormatNotSetText = "";
+let g_outputImageFormatNotSetText = "";
 
-let g_textInputFilesDiv = document.querySelector("#text-input-files");
-let g_inputListDiv = document.querySelector("#input-list");
-let g_inputListButton = document.querySelector("#button-add-file");
-let g_outputFolderDiv = document.querySelector("#output-folder");
-let g_startButton = document.querySelector("#button-start");
-let g_formatSelect = document.querySelector("#format-select");
-let g_scaleSlider = document.querySelector("#scale-slider");
-let g_imageFormatSelect = document.querySelector("#image-format-select");
-let g_qualitySlider = document.querySelector("#quality-slider");
+let g_inputListDiv;
+let g_outputFolderDiv;
+let g_startButton;
+let g_outputFormatSelect;
+let g_outputImageScaleSlider;
+let g_outputImageFormatSelect;
+let g_outputImageQualitySlider;
 
-let g_modalInfoArea = document.querySelector("#modal-info");
-let g_modalLogArea = document.querySelector("#modal-log");
-let g_modalButtonClose = document.querySelector("#button-modal-close");
-let g_modalButtonCancel = document.querySelector("#button-modal-cancel");
-let g_modalLoadingBar = document.querySelector("#modal-loading-bar");
-let g_modalTitle = document.querySelector("#modal-title");
-
-let g_localizedRemoveFromListText = "";
-
-g_scaleSlider.addEventListener("mouseup", (event) => {
-  g_outputScale = event.currentTarget.value;
-  checkValidData();
-});
-g_qualitySlider.addEventListener("mouseup", (event) => {
-  g_outputQuality = event.currentTarget.value;
-  checkValidData();
-});
+let g_localizedRemoveFromListText;
+let g_localizedModalCancelButtonText;
+let g_localizedModalCloseButtonText;
 
 ///////////////////////////////////////////////////////////////////////////////
-
-function checkValidData() {
-  if (g_outputImageFormat === FileExtension.NOT_SET) {
-    g_qualitySlider.parentElement.classList.add("hide");
-  } else {
-    g_qualitySlider.parentElement.classList.remove("hide");
-  }
-  if (g_outputFolderPath !== undefined && g_inputFiles.length > 0) {
-    g_startButton.classList.remove("disabled");
-  } else {
-    g_startButton.classList.add("disabled");
-  }
-}
-
-function reducePathString(input) {
-  var length = 60;
-  input =
-    input.length > length
-      ? "..." + input.substring(input.length - length, input.length)
-      : input;
-  return input;
-}
-
+// SETUP //////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-ipcRenderer.on(g_ipcChannel + "init", (event, outputFolderPath) => {
-  g_outputFolderPath = outputFolderPath;
-  g_outputFolderDiv.innerHTML = reducePathString(g_outputFolderPath);
-  g_inputListButton.classList.remove("hide");
-  g_textInputFilesDiv.classList.remove("hide");
-  g_formatSelect.innerHTML =
-    '<option value="cbz">.cbz (zip)</option>' +
-    '<option value="pdf">.pdf</option>' +
-    '<option value="epub">.epub</option>' +
-    '<option value="cb7">.cb7</option>';
-  g_imageFormatSelect.innerHTML =
+let g_isInitialized = false;
+
+function init(outputFolderPath) {
+  if (!g_isInitialized) {
+    // things to start only once go here
+    g_isInitialized = true;
+  }
+
+  g_inputFiles = [];
+  g_inputFilesIndex = 0;
+  g_inputFilesID = 0;
+  g_cancel = false;
+  g_numErrors = 0;
+
+  // menu buttons
+  document
+    .getElementById("tool-cc-back-button")
+    .addEventListener("click", (event) => {
+      sendIpcToMain("close");
+    });
+  document
+    .getElementById("tool-cc-start-button")
+    .addEventListener("click", (event) => {
+      onStart();
+    });
+  // sections menu
+  document
+    .getElementById("tool-cc-section-general-options-button")
+    .addEventListener("click", (event) => {
+      switchSection(0);
+    });
+  document
+    .getElementById("tool-cc-section-advanced-options-button")
+    .addEventListener("click", (event) => {
+      switchSection(1);
+    });
+  ////////////////////////////////////////
+  g_inputListDiv = document.querySelector("#tool-cc-input-list");
+
+  g_outputFolderDiv = document.querySelector("#tool-cc-output-folder");
+  g_outputFormatSelect = document.querySelector(
+    "#tool-cc-output-format-select"
+  );
+  g_outputImageScaleSlider = document.querySelector(
+    "#tool-cc-output-image-scale-slider"
+  );
+  g_outputImageFormatSelect = document.querySelector(
+    "#tool-cc-output-image-format-select"
+  );
+  g_outputImageQualitySlider = document.querySelector(
+    "#tool-cc-output-image-quality-slider"
+  );
+
+  g_startButton = document.querySelector("#tool-cc-start-button");
+
+  g_localizedRemoveFromListText = "";
+
+  document
+    .getElementById("tool-cc-add-file-button")
+    .addEventListener("click", (event) => {
+      let lastFilePath = undefined;
+      if (g_inputFiles.length > 0) {
+        lastFilePath = g_inputFiles[g_inputFiles.length - 1].path;
+      }
+      sendIpcToMain("choose-file", lastFilePath);
+    });
+
+  g_outputImageScaleSlider.addEventListener("mouseup", (event) => {
+    g_outputImageScale = event.currentTarget.value;
+    checkValidData();
+  });
+
+  g_outputImageQualitySlider.addEventListener("mouseup", (event) => {
+    g_outputImageQuality = event.currentTarget.value;
+    checkValidData();
+  });
+
+  updateOutputFolder(outputFolderPath);
+  document
+    .getElementById("tool-cc-change-folder-button")
+    .addEventListener("click", (event) => {
+      sendIpcToMain("choose-folder", g_inputFilePath, g_outputFolderPath);
+    });
+
+  g_outputFormatSelect.innerHTML =
+    '<option value="cbz">cbz</option>' +
+    '<option value="pdf">pdf</option>' +
+    '<option value="epub">epub</option>' +
+    '<option value="cb7">cb7</option>';
+  g_outputFormatSelect.addEventListener("change", (event) => {
+    g_outputFormat = g_outputFormatSelect.value;
+    checkValidData();
+  });
+
+  g_outputImageFormatSelect.innerHTML =
     '<option value="' +
     FileExtension.NOT_SET +
     '">' +
-    g_imageFormatNotSetText +
+    g_outputImageFormatNotSetText +
     "</option>" +
-    '<option value="jpg">.jpg</option>' +
-    '<option value="png">.png</option>' +
-    '<option value="webp">.webp</option>' +
-    '<option value="avif">.avif</option>';
-  checkValidData();
-});
+    '<option value="jpg">jpg</option>' +
+    '<option value="png">png</option>' +
+    '<option value="webp">webp</option>' +
+    '<option value="avif">avif</option>';
 
-ipcRenderer.on(
-  g_ipcChannel + "update-localization",
-  (event, title, localization, tooltipsLocalization) => {
-    document.title = title;
-    for (let index = 0; index < localization.length; index++) {
-      const element = localization[index];
-      const domElement = document.querySelector("#" + element.id);
-      if (domElement !== null) {
-        domElement.innerHTML = element.text;
-      }
-      // UGLY HACK
-      else if (element.id === "keep-format") {
-        g_imageFormatNotSetText = element.text;
-      }
-    }
-
-    for (let index = 0; index < tooltipsLocalization.length; index++) {
-      const element = tooltipsLocalization[index];
-      const domElement = document.querySelector("#" + element.id);
-      if (domElement !== null) {
-        domElement.title = element.text;
-      }
-      if (element.id === "tooltip-remove-from-list") {
-        g_localizedRemoveFromListText = element.text;
-      }
-    }
-  }
-);
-
-ipcRenderer.on(g_ipcChannel + "add-file", (event, filePath, fileType) => {
-  if (filePath === undefined || fileType === undefined) return;
-
-  for (let index = 0; index < g_inputFiles.length; index++) {
-    if (g_inputFiles[index].path === filePath) {
-      return;
-    }
-  }
-  let id = g_inputFilesID++;
-  g_inputFiles.push({
-    id: id,
-    path: filePath,
-    type: fileType,
+  g_outputImageFormatSelect.addEventListener("change", (event) => {
+    checkValidData();
+    sendIpcToMain("set-image-format", g_outputImageFormatSelect.value);
   });
 
-  g_inputListDiv.innerHTML +=
-    "<li class='collection-item'><div>" +
-    reducePathString(filePath) +
-    "<a style='cursor: pointer;' onclick='renderer.onRemoveFile(this, " +
-    id +
-    ")' class='secondary-content'><i class='fas fa-window-close' title='" +
-    g_localizedRemoveFromListText +
-    "'></i></a>" +
-    "</div></li>";
+  document
+    .getElementById("tool-cc-pdf-extraction-select")
+    .addEventListener("change", (event) => {
+      g_outputPdfExtractionMethod = event.target.value;
+    });
+
+  document
+    .getElementById("tool-cc-pdf-creation-select")
+    .addEventListener("change", (event) => {
+      sendIpcToMain("set-pdf-creation-method", event.target.value);
+    });
+
+  document
+    .getElementById("tool-cc-epub-creation-image-format-select")
+    .addEventListener("change", (event) => {
+      sendIpcToMain("set-epub-creation-image-format", event.target.value);
+    });
+
+  document
+    .getElementById("tool-cc-epub-creation-image-storage-select")
+    .addEventListener("change", (event) => {
+      sendIpcToMain("set-epub-creation-image-storage", event.target.value);
+    });
+
+  // ref: https://css-tricks.com/value-bubbles-for-range-inputs/
+  const sliders = document.querySelectorAll(".tools-range-wrap");
+  sliders.forEach((wrap) => {
+    const range = wrap.querySelector(".tools-range");
+    const bubble = wrap.querySelector(".tools-range-bubble");
+    range.addEventListener("input", () => {
+      updateSliderBubble(range, bubble);
+    });
+    range.addEventListener("mousedown", () => {
+      bubble.classList.remove("set-display-none");
+    });
+    range.addEventListener("mouseup", () => {
+      bubble.classList.add("set-display-none");
+    });
+    updateSliderBubble(range, bubble);
+  });
 
   checkValidData();
-});
+  ////////////////////////////////////////
+  updateColumnsHeight();
+}
+
+export function initIpc() {
+  initOnIpcCallbacks();
+}
+
+function updateColumnsHeight() {
+  const left = document.getElementById("tools-columns-left");
+  const right = document.getElementById("tools-columns-right");
+  left.style.minHeight = right.offsetHeight + "px";
+}
+
+function updateSliderBubble(range, bubble) {
+  const val = range.value;
+  const min = range.min ? range.min : 0;
+  const max = range.max ? range.max : 100;
+  const newVal = Number(((val - min) * 100) / (max - min));
+  bubble.innerHTML = range.value;
+  // magic numbers
+  bubble.style.left = `calc(${newVal}% - (${newVal * 0.15}px))`;
+}
+
+function switchSection(id) {
+  switch (id) {
+    case 0:
+      // buttons
+      document
+        .getElementById("tool-cc-section-general-options-button")
+        .classList.add("tools-menu-button-selected");
+      document
+        .getElementById("tool-cc-section-advanced-options-button")
+        .classList.remove("tools-menu-button-selected");
+      // sections
+      document
+        .getElementById("tool-pre-input-options-section-div")
+        .classList.remove("set-display-none");
+      document
+        .getElementById("tool-pre-output-options-section-div")
+        .classList.remove("set-display-none");
+      document
+        .getElementById("tool-pre-advanced-input-options-section-div")
+        .classList.add("set-display-none");
+      document
+        .getElementById("tool-pre-advanced-output-options-section-div")
+        .classList.add("set-display-none");
+      break;
+    case 1:
+      // buttons
+      document
+        .getElementById("tool-cc-section-general-options-button")
+        .classList.remove("tools-menu-button-selected");
+      document
+        .getElementById("tool-cc-section-advanced-options-button")
+        .classList.add("tools-menu-button-selected");
+      // sections
+      document
+        .getElementById("tool-pre-input-options-section-div")
+        .classList.add("set-display-none");
+      document
+        .getElementById("tool-pre-output-options-section-div")
+        .classList.add("set-display-none");
+      document
+        .getElementById("tool-pre-advanced-input-options-section-div")
+        .classList.remove("set-display-none");
+      document
+        .getElementById("tool-pre-advanced-output-options-section-div")
+        .classList.remove("set-display-none");
+      break;
+      break;
+  }
+  updateColumnsHeight();
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// IPC SEND ///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+export function sendIpcToMain(...args) {
+  coreSendIpcToMain("tool-convert-comics", ...args);
+}
+
+async function sendIpcToMainAndWait(...args) {
+  return await coreSendIpcToMainAndWait("tool-convert-comics", ...args);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// IPC RECEIVE ////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+let g_onIpcCallbacks = {};
+
+export function onIpcFromMain(args) {
+  const callback = g_onIpcCallbacks[args[0]];
+  if (callback) callback(...args.slice(1));
+  return;
+}
+
+function on(id, callback) {
+  g_onIpcCallbacks[id] = callback;
+}
+
+function initOnIpcCallbacks() {
+  on("show", (outputFolderPath) => {
+    init(outputFolderPath);
+  });
+
+  on("hide", () => {});
+
+  on("update-localization", (localization, tooltipsLocalization) => {
+    updateLocalization(localization, tooltipsLocalization);
+  });
+
+  on("update-window", () => {
+    updateColumnsHeight();
+  });
+
+  on("close-modal", () => {
+    if (g_openModal) {
+      modals.close(g_openModal);
+      modalClosed();
+    }
+  });
+
+  on("add-file", (filePath, fileType) => {
+    if (filePath === undefined || fileType === undefined) return;
+
+    for (let index = 0; index < g_inputFiles.length; index++) {
+      if (g_inputFiles[index].path === filePath) {
+        return;
+      }
+    }
+    let id = g_inputFilesID++;
+    g_inputFiles.push({
+      id: id,
+      path: filePath,
+      type: fileType,
+    });
+
+    let li = document.createElement("li");
+    li.className = "tools-collection-li";
+    // text
+    let text = document.createElement("span");
+    text.innerText = reducePathString(filePath);
+    li.appendChild(text);
+    // remove icon - clickable
+    let button = document.createElement("span");
+    button.title = g_localizedRemoveFromListText;
+    button.className = "tools-collection-li-button";
+    button.addEventListener("click", (event) => {
+      onRemoveFile(li, id);
+    });
+    button.innerHTML = `<i class="fas fa-window-close"></i>`;
+    li.appendChild(button);
+    g_inputListDiv.appendChild(li);
+
+    checkValidData();
+  });
+
+  on("change-output-folder", (folderPath) => {
+    updateOutputFolder(folderPath);
+    checkValidData();
+  });
+
+  /////////////////////////////////////////////////////////////////////////////
+
+  on("update-title-text", (text) => {
+    updateTitleText(text);
+  });
+
+  on("update-info-text", (text) => {
+    updateInfoText(text);
+  });
+
+  on("update-log-text", (text) => {
+    updateLogText(text);
+  });
+
+  /////////////////////////////////////////////////////////////////////////////
+
+  on("images-extracted", () => {
+    sendIpcToMain(
+      "resize-images",
+      g_inputFilePath,
+      g_outputImageScale,
+      g_outputImageQuality,
+      g_outputFormat,
+      g_outputFolderPath
+    );
+  });
+
+  on("finished-ok", () => {
+    if (g_inputFilesIndex < g_inputFiles.length - 1) {
+      g_inputFilesIndex++;
+      onStart(false);
+    } else {
+      sendIpcToMain(
+        "end",
+        false,
+        g_inputFiles.length,
+        g_numErrors,
+        g_inputFilesIndex + 1
+      );
+    }
+  });
+
+  on("finished-error", () => {
+    const modalButtonClose = g_openModal.querySelector(
+      "#tool-cc-modal-close-button"
+    );
+    modalButtonClose.classList.remove("modal-button-success-color");
+    modalButtonClose.classList.add("modal-button-danger-color");
+    g_numErrors++;
+    if (g_inputFilesIndex < g_inputFiles.length - 1) {
+      g_inputFilesIndex++;
+      onStart(false);
+    } else {
+      sendIpcToMain(
+        "end",
+        false,
+        g_inputFiles.length,
+        g_numErrors,
+        g_inputFilesIndex + 1
+      );
+    }
+  });
+
+  on("finished-canceled", () => {
+    const modalButtonCancel = g_openModal.querySelector(
+      "#tool-cc-modal-cancel-button"
+    );
+    const modalButtonClose = g_openModal.querySelector(
+      "#tool-cc-modal-close-button"
+    );
+    const modalLoadingBar = g_openModal.querySelector(".modal-progress-bar");
+
+    modalButtonCancel.classList.add("set-display-none");
+    modalButtonClose.classList.remove("set-display-none");
+    {
+      modalButtonClose.classList.remove("modal-button-success-color");
+      modalButtonClose.classList.add("modal-button-danger-color");
+    }
+    modalLoadingBar.classList.add("set-display-none");
+    sendIpcToMain(
+      "end",
+      true,
+      g_inputFiles.length,
+      g_numErrors,
+      g_inputFilesIndex // last one wasn't converted or error
+    );
+  });
+
+  on("show-result", () => {
+    const modalButtonCancel = g_openModal.querySelector(
+      "#tool-cc-modal-cancel-button"
+    );
+    const modalButtonClose = g_openModal.querySelector(
+      "#tool-cc-modal-close-button"
+    );
+    const modalLoadingBar = g_openModal.querySelector(".modal-progress-bar");
+    modalButtonCancel.classList.add("set-display-none");
+    modalButtonClose.classList.remove("set-display-none");
+    modalLoadingBar.classList.add("set-display-none");
+    g_openModal
+      .querySelector(".modal-close-button")
+      .classList.remove("set-display-none");
+    g_openModal
+      .querySelector(".modal-topbar")
+      .classList.remove("set-display-none");
+  });
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// TOOL ///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+function checkValidData() {
+  if (
+    document.querySelector("#tool-cc-output-image-format-select").value ===
+    FileExtension.NOT_SET
+  ) {
+    g_outputImageQualitySlider.parentElement.parentElement.classList.add(
+      "set-display-none"
+    );
+  } else {
+    g_outputImageQualitySlider.parentElement.parentElement.classList.remove(
+      "set-display-none"
+    );
+  }
+  if (g_outputFolderPath !== undefined && g_inputFiles.length > 0) {
+    g_startButton.classList.remove("tools-disabled");
+  } else {
+    g_startButton.classList.add("tools-disabled");
+  }
+  updateColumnsHeight();
+}
+
+function updateOutputFolder(folderPath) {
+  g_outputFolderPath = folderPath;
+  g_outputFolderDiv.innerHTML = "";
+  let li = document.createElement("li");
+  li.className = "tools-collection-li";
+  // text
+  let text = document.createElement("span");
+  text.innerText = reducePathString(g_outputFolderPath);
+  li.appendChild(text);
+  g_outputFolderDiv.appendChild(li);
+}
 
 function onRemoveFile(element, id) {
-  element.parentElement.parentElement.parentElement.removeChild(
-    element.parentElement.parentElement
-  );
+  element.parentElement.removeChild(element);
   let removeIndex;
   for (let index = 0; index < g_inputFiles.length; index++) {
     if (g_inputFiles[index].id === id) {
@@ -173,78 +521,10 @@ function onRemoveFile(element, id) {
     checkValidData();
   }
 }
-exports.onRemoveFile = onRemoveFile;
-
-ipcRenderer.on(g_ipcChannel + "change-output-folder", (event, folderPath) => {
-  g_outputFolderPath = folderPath;
-  g_outputFolderDiv.innerHTML = reducePathString(g_outputFolderPath);
-  checkValidData();
-});
-
-///////////////////////////////////////////////////////////////////////////////
-
-exports.onChooseInputFile = function () {
-  let defaultPath = undefined;
-  if (g_inputFiles.length > 0) {
-    defaultPath = path.dirname(g_inputFiles[g_inputFiles.length - 1].path);
-  }
-  ipcRenderer.send(g_ipcChannel + "choose-file", defaultPath);
-};
-
-exports.onOutputFormatChanged = function (selectObject) {
-  g_outputFormat = selectObject.value;
-  checkValidData();
-};
-
-exports.onOutputImageFormatChanged = function (selectObject) {
-  g_outputImageFormat = selectObject.value;
-  checkValidData();
-  ipcRenderer.send(g_ipcChannel + "set-image-format", selectObject.value);
-};
-
-exports.onOutputNameChanged = function (selectObject) {
-  g_outputName = selectObject.value;
-  checkValidData();
-};
-
-exports.onOutputAdvancedPdfExtractionChanged = function (selectObject) {
-  g_outputPdfExtractionMethod = selectObject.value;
-};
-
-exports.onOutputAdvancedPdfCreationChanged = function (selectObject) {
-  ipcRenderer.send(
-    g_ipcChannel + "set-pdf-creation-method",
-    selectObject.value
-  );
-};
-
-exports.onOutputAdvancedEpubCreationImageFormatChanged = function (
-  selectObject
-) {
-  ipcRenderer.send(
-    g_ipcChannel + "set-epub-creation-image-format",
-    selectObject.value
-  );
-};
-
-exports.onOutputAdvancedEpubCreationImageStorageChanged = function (
-  selectObject
-) {
-  ipcRenderer.send(
-    g_ipcChannel + "set-epub-creation-image-storage",
-    selectObject.value
-  );
-};
-
-exports.onChooseOutputFolder = function () {
-  ipcRenderer.send(
-    g_ipcChannel + "choose-folder",
-    g_inputFilePath,
-    g_outputFolderPath
-  );
-};
 
 function onStart(resetCounter = true) {
+  if (!g_openModal) showLogModal(); // TODO: check if first time?
+
   if (resetCounter) {
     g_inputFilesIndex = 0;
     g_numErrors = 0;
@@ -252,366 +532,166 @@ function onStart(resetCounter = true) {
   }
 
   g_cancel = false;
-  g_modalButtonCancel.classList.remove("hide");
-  g_modalButtonClose.classList.add("hide");
+  const modalButtonCancel = g_openModal.querySelector(
+    "#tool-cc-modal-cancel-button"
+  );
+  const modalButtonClose = g_openModal.querySelector(
+    "#tool-cc-modal-close-button"
+  );
+  modalButtonCancel.innerText = g_localizedModalCancelButtonText;
+  modalButtonClose.innerText = g_localizedModalCloseButtonText;
+  modalButtonCancel.classList.remove("set-display-none");
+  modalButtonClose.classList.add("set-display-none");
   if (g_numErrors === 0) {
-    g_modalButtonClose.classList.add("green");
-    g_modalButtonClose.classList.remove("red");
+    modalButtonClose.classList.add("modal-button-success-color");
+    modalButtonClose.classList.remove("modal-button-danger-color");
   }
-  g_modalLoadingBar.classList.remove("hide");
+  //g_modalLoadingBar.classList.remove("hide");
 
   if (g_outputFormat === undefined) g_outputFormat = FileExtension.CBZ;
   g_inputFilePath = g_inputFiles[g_inputFilesIndex].path;
   g_inputFileType = g_inputFiles[g_inputFilesIndex].type;
 
-  ipcRenderer.send(
-    g_ipcChannel + "start",
+  sendIpcToMain(
+    "start",
     g_inputFilePath,
     g_inputFileType,
     g_inputFilesIndex + 1,
-    g_inputFiles.length
+    g_inputFiles.length,
+    g_outputPdfExtractionMethod
   );
 }
-exports.onStart = onStart;
 
-exports.onCancel = function () {
+function onCancel() {
   if (g_cancel === true) return;
   g_cancel = true;
-  g_modalButtonCancel.classList.add("hide");
-  ipcRenderer.send(g_ipcChannel + "cancel");
-};
+  g_openModal
+    .querySelector("#tool-cc-modal-cancel-button")
+    .classList.add("set-display-none");
+  sendIpcToMain("cancel");
+}
 
 ///////////////////////////////////////////////////////////////////////////////
+// EVENT LISTENERS ////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
-ipcRenderer.on(g_ipcChannel + "update-title-text", (event, text) => {
-  updateTitleText(text);
-});
+export function onInputEvent(type, event) {
+  if (getOpenModal()) {
+    modals.onInputEvent(getOpenModal(), type, event);
+    return;
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// MODALS /////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+let g_openModal;
+
+export function getOpenModal() {
+  return g_openModal;
+}
+
+function modalClosed() {
+  g_openModal = undefined;
+}
+
+function showLogModal() {
+  if (g_openModal) {
+    return;
+  }
+  g_openModal = modals.show({
+    title: "TEST",
+    message: "message",
+    zIndexDelta: 5,
+    frameWidth: 600,
+    close: {
+      callback: () => {
+        modalClosed();
+      },
+      // key: "Escape",
+      hide: true,
+    },
+    log: {},
+    progressBar: {},
+    buttons: [
+      {
+        text: " ",
+        callback: () => {
+          onCancel();
+        },
+        // key: "Enter",
+        fullWidth: true,
+        id: "tool-cc-modal-cancel-button",
+        dontClose: true,
+      },
+      {
+        text: " ",
+        callback: () => {
+          modalClosed();
+        },
+        fullWidth: true,
+        id: "tool-cc-modal-close-button",
+      },
+    ],
+  });
+}
 
 function updateTitleText(text) {
-  g_modalTitle.innerHTML = text;
+  if (g_openModal) g_openModal.querySelector(".modal-title").innerHTML = text;
 }
 
-ipcRenderer.on(g_ipcChannel + "update-log-text", (event, text) => {
-  updateLogText(text);
-});
+function updateInfoText(text) {
+  if (g_openModal) g_openModal.querySelector(".modal-message").innerHTML = text;
+}
 
 function updateLogText(text, append = true) {
-  if (append) {
-    g_modalLogArea.innerHTML += "\n" + text;
-  } else {
-    g_modalLogArea.innerHTML = text;
+  if (g_openModal) {
+    const log = g_openModal.querySelector(".modal-log");
+    if (append) {
+      log.innerHTML += "\n" + text;
+    } else {
+      log.innerHTML = text;
+    }
+    log.scrollTop = log.scrollHeight;
   }
-  g_modalLogArea.scrollTop = g_modalLogArea.scrollHeight;
 }
 
-ipcRenderer.on(g_ipcChannel + "update-info-text", (event, text) => {
-  g_modalInfoArea.innerHTML = text;
-});
-
-//////////////////////////
-
-ipcRenderer.on(
-  g_ipcChannel + "extract-pdf-images",
-  (event, tempFolder, logText, password) => {
-    extractPDFImages(tempFolder, logText, password);
-  }
-);
-
-ipcRenderer.on(g_ipcChannel + "images-extracted", (event) => {
-  ipcRenderer.send(
-    g_ipcChannel + "resize-images",
-    g_inputFilePath,
-    g_outputScale,
-    g_outputQuality,
-    g_outputFormat,
-    g_outputFolderPath
-  );
-});
-
-ipcRenderer.on(g_ipcChannel + "finished-ok", (event) => {
-  if (g_inputFilesIndex < g_inputFiles.length - 1) {
-    g_inputFilesIndex++;
-    onStart(false);
-  } else {
-    ipcRenderer.send(
-      g_ipcChannel + "end",
-      false,
-      g_inputFiles.length,
-      g_numErrors,
-      g_inputFilesIndex + 1
-    );
-  }
-});
-
-ipcRenderer.on(g_ipcChannel + "finished-error", (event) => {
-  g_modalButtonClose.classList.remove("green");
-  g_modalButtonClose.classList.add("red");
-  g_numErrors++;
-  if (g_inputFilesIndex < g_inputFiles.length - 1) {
-    g_inputFilesIndex++;
-    onStart(false);
-  } else {
-    ipcRenderer.send(
-      g_ipcChannel + "end",
-      false,
-      g_inputFiles.length,
-      g_numErrors,
-      g_inputFilesIndex + 1
-    );
-  }
-});
-
-ipcRenderer.on(g_ipcChannel + "finished-canceled", (event) => {
-  g_modalButtonCancel.classList.add("hide");
-  g_modalButtonClose.classList.remove("hide");
-  {
-    g_modalButtonClose.classList.remove("green");
-    g_modalButtonClose.classList.add("red");
-  }
-  g_modalLoadingBar.classList.add("hide");
-  ipcRenderer.send(
-    g_ipcChannel + "end",
-    true,
-    g_inputFiles.length,
-    g_numErrors,
-    g_inputFilesIndex // last one wasn't converted or error
-  );
-});
-
-ipcRenderer.on(g_ipcChannel + "show-result", (event) => {
-  g_modalButtonCancel.classList.add("hide");
-  g_modalButtonClose.classList.remove("hide");
-  g_modalLoadingBar.classList.add("hide");
-});
-
 ///////////////////////////////////////////////////////////////////////////////
-// PDF ////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-const pdfjsFolderName_1 = "pdfjs"; // 2.3.200
-const pdfjsFolderName_2 = "pdfjs-3.4.120";
-
-async function extractPDFImages(folderPath, logText, password) {
-  try {
-    // FIRST PASS
-    // Uses an older pdf library, it's faster but has a bug in page.obj.get that fails for some files
-    let pdfjsFolderName = pdfjsFolderName_1;
-    let failedPages = [];
-    {
-      const pdfjsLib = require(`../../assets/libs/${pdfjsFolderName}/build/pdf.js`);
-      // ref: https://kevinnadro.com/blog/parsing-pdfs-in-javascript/
-      pdfjsLib.GlobalWorkerOptions.workerSrc = `../../assets/libs/${pdfjsFolderName}/build/pdf.worker.js`;
-      //pdfjsLib.disableWorker = true;
-      const pdf = await pdfjsLib.getDocument({
-        url: g_inputFilePath,
-        password: password,
-      }).promise;
-      for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-        if (g_cancel) {
-          pdf.cleanup();
-          pdf.destroy();
-          ipcRenderer.send(g_ipcChannel + "pdf-images-extracted", true);
-          return;
-        }
-        let page = await pdf.getPage(pageNum);
-        let pageWidth = page.view[2]; // [left, top, width, height]
-        let pageHeight = page.view[3];
-        let userUnit = page.userUnit; // 1 unit = 1/72 inch
-        let dpi = 300; // use userUnit some day (if > 1) to set dpi?
-        let iPerUnit = 1 / 72;
-        let scaleFactor = dpi * iPerUnit; // default: output a 300dpi image instead of 72dpi, which is the pdf default?
-        if (g_outputPdfExtractionMethod === "render72") {
-          scaleFactor = 1;
-          dpi = 72;
-        }
-        // resize if too big?
-        let bigSide = pageHeight;
-        if (pageHeight < pageWidth) bigSide = pageWidth;
-        let scaledSide = bigSide * scaleFactor;
-        if (scaledSide > 5000) {
-          console.log("reducing PDF scale factor, img too big");
-          scaleFactor = 5000 / bigSide;
-          dpi = parseInt(scaleFactor / iPerUnit);
-        }
-        // RENDER
-        const canvas = document.createElement("canvas");
-        let viewport = page.getViewport({
-          scale: scaleFactor,
-        });
-        let context = canvas.getContext("2d");
-        canvas.height = viewport.height;
-        canvas.width = viewport.width;
-        await page.render({ canvasContext: context, viewport: viewport })
-          .promise;
-        ////////////////////////////
-        if (g_outputPdfExtractionMethod === "embedded") {
-          // check imgs size
-          // ref: https://codepen.io/allandiego/pen/RwVGbyj
-          const operatorList = await page.getOperatorList();
-          const validTypes = [
-            pdfjsLib.OPS.paintImageXObject,
-            pdfjsLib.OPS.paintJpegXObject,
-            //pdfjsLib.OPS.paintImageXObjectRepeat,
-          ];
-          let images = [];
-          operatorList.fnArray.forEach((element, index) => {
-            if (validTypes.includes(element)) {
-              images.push(operatorList.argsArray[index][0]);
-            }
-          });
-          if (images.length === 1) {
-            // could be a comic book, let's extract the image
-            const imageName = images[0];
-            try {
-              // page needs to have been rendered before for this to be filled
-              let image = await page.objs.get(imageName);
-              const imageWidth = image.width;
-              const imageHeight = image.height;
-              if (imageWidth >= pageWidth && imageHeight >= pageHeight) {
-                scaleFactor = imageWidth / pageWidth;
-                dpi = parseInt(scaleFactor / iPerUnit);
-                // render again with new dimensions
-                viewport = page.getViewport({
-                  scale: scaleFactor,
-                });
-                canvas.height = viewport.height;
-                canvas.width = viewport.width;
-                await page.render({
-                  canvasContext: context,
-                  viewport: viewport,
-                }).promise;
-              }
-            } catch (error) {
-              failedPages.push(pageNum);
-              continue;
-            }
-          }
-        }
-        //////////////////////////////
-        let dataUrl = canvas.toDataURL("image/jpeg", 0.8);
-        let img = changeDpiDataUrl(dataUrl, dpi);
-        let data = img.replace(/^data:image\/\w+;base64,/, "");
-        let buf = Buffer.from(data, "base64");
-
-        let filePath = path.join(folderPath, pageNum + "." + FileExtension.JPG);
-        fs.writeFileSync(filePath, buf, "binary");
-        updateLogText(logText + pageNum + " / " + pdf.numPages);
-
-        page.cleanup();
-      }
-      pdf.cleanup();
-      pdf.destroy();
+function updateLocalization(localization, tooltipsLocalization) {
+  for (let index = 0; index < localization.length; index++) {
+    const element = localization[index];
+    const domElement = document.querySelector("#" + element.id);
+    if (element.id === "tool-cc-keep-format-text") {
+      g_outputImageFormatNotSetText = element.text;
+    } else if (element.id === "tool-cc-modal-close-button-text") {
+      g_localizedModalCloseButtonText = element.text;
+    } else if (element.id === "tool-cc-modal-cancel-button-text") {
+      g_localizedModalCancelButtonText = element.text;
+    } else if (domElement !== null) {
+      domElement.innerHTML = element.text;
     }
-    // SECOND PASS
-    // Try to extract failed pages using newer but slower version of the library
-    pdfjsFolderName = pdfjsFolderName_2;
-    if (failedPages.length > 0) {
-      console.log("retrying pages: " + failedPages);
-      const pdfjsLib = require(`../../assets/libs/${pdfjsFolderName}/build/pdf.js`);
-      // ref: https://kevinnadro.com/blog/parsing-pdfs-in-javascript/
-      pdfjsLib.GlobalWorkerOptions.workerSrc = `../../assets/libs/${pdfjsFolderName}/build/pdf.worker.js`;
-      //pdfjsLib.disableWorker = true;
-      const pdf = await pdfjsLib.getDocument({
-        url: g_inputFilePath,
-        password: password,
-      }).promise;
-      for (pageNum of failedPages) {
-        if (g_cancel) {
-          pdf.cleanup();
-          pdf.destroy();
-          ipcRenderer.send(g_ipcChannel + "pdf-images-extracted", true);
-          return;
-        }
-        let page = await pdf.getPage(pageNum);
-        let pageWidth = page.view[2]; // [left, top, width, height]
-        let pageHeight = page.view[3];
-        let userUnit = page.userUnit; // 1 unit = 1/72 inch
-        let dpi = 300; // use userUnit some day (if > 1) to set dpi?
-        let iPerUnit = 1 / 72;
-        let scaleFactor = dpi * iPerUnit; // default: output a 300dpi image instead of 72dpi, which is the pdf default?
-        if (g_outputPdfExtractionMethod === "render72") {
-          scaleFactor = 1;
-          dpi = 72;
-        }
-        // resize if too big?
-        let bigSide = pageHeight;
-        if (pageHeight < pageWidth) bigSide = pageWidth;
-        let scaledSide = bigSide * scaleFactor;
-        if (scaledSide > 5000) {
-          console.log("reducing PDF scale factor, img too big");
-          scaleFactor = 5000 / bigSide;
-          dpi = parseInt(scaleFactor / iPerUnit);
-        }
-        // RENDER
-        const canvas = document.createElement("canvas");
-        let viewport = page.getViewport({
-          scale: scaleFactor,
-        });
-        let context = canvas.getContext("2d");
-        canvas.height = viewport.height;
-        canvas.width = viewport.width;
-        await page.render({ canvasContext: context, viewport: viewport })
-          .promise;
-        ////////////////////////////
-        if (g_outputPdfExtractionMethod === "embedded") {
-          const operatorList = await page.getOperatorList();
-          const validTypes = [
-            pdfjsLib.OPS.paintImageXObject,
-            pdfjsLib.OPS.paintJpegXObject,
-          ];
-          let images = [];
-          operatorList.fnArray.forEach((element, index) => {
-            if (validTypes.includes(element)) {
-              images.push(operatorList.argsArray[index][0]);
-            }
-          });
-          if (images.length === 1) {
-            const imageName = images[0];
-            let image;
-            try {
-              image = await page.objs.get(imageName);
-            } catch (error) {
-              // console.log(
-              //   `couldn't extract embedded size info for page ${pageNum}, using 300dpi`
-              // );
-              image = undefined;
-            }
-            if (image !== undefined && image !== null) {
-              const imageWidth = image.width;
-              const imageHeight = image.height;
-              if (imageWidth >= pageWidth && imageHeight >= pageHeight) {
-                scaleFactor = imageWidth / pageWidth;
-                dpi = parseInt(scaleFactor / iPerUnit);
-                viewport = page.getViewport({
-                  scale: scaleFactor,
-                });
-                canvas.height = viewport.height;
-                canvas.width = viewport.width;
-                await page.render({
-                  canvasContext: context,
-                  viewport: viewport,
-                }).promise;
-              }
-            }
-          }
-        }
-        //////////////////////////////
-        let dataUrl = canvas.toDataURL("image/jpeg", 0.8);
-        let img = changeDpiDataUrl(dataUrl, dpi);
-        let data = img.replace(/^data:image\/\w+;base64,/, "");
-        let buf = Buffer.from(data, "base64");
-
-        let filePath = path.join(folderPath, pageNum + "." + FileExtension.JPG);
-        fs.writeFileSync(filePath, buf, "binary");
-        updateLogText(logText + pageNum + " / " + pdf.numPages);
-
-        page.cleanup();
-      }
-      pdf.cleanup();
-      pdf.destroy();
-    }
-    ipcRenderer.send(g_ipcChannel + "pdf-images-extracted", false);
-  } catch (err) {
-    ipcRenderer.send(g_ipcChannel + "stop-error", err);
   }
+
+  for (let index = 0; index < tooltipsLocalization.length; index++) {
+    const element = tooltipsLocalization[index];
+    const domElement = document.querySelector("#" + element.id);
+    if (element.id === "tool-cc-tooltip-remove-from-list") {
+      g_localizedRemoveFromListText = element.text;
+    } else if (domElement !== null) {
+      domElement.title = element.text;
+    }
+  }
+}
+
+function reducePathString(input) {
+  var length = 80;
+  input =
+    input.length > length
+      ? "..." + input.substring(input.length - length, input.length)
+      : input;
+  return input;
 }

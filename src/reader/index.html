@@ -1,0 +1,101 @@
+<div class="centered-block">
+  <img src="../assets/images/icon_512x512.png" />
+  <p id="centered-block-text"></p>
+</div>
+
+<div id="page-number-bubble"></div>
+<div id="clock-bubble"></div>
+<div id="audio-player-container" class="ap-layout-top-left ap-hidden"></div>
+
+<nav id="toolbar">
+  <div class="toolbar-item" id="toolbar-button-open">
+    <a href="" id="toolbar-button-open-href" title="open file"
+      ><i class="fas fa-folder-open"></i
+    ></a>
+  </div>
+  <div class="toolbar-item-separator"></div>
+
+  <div id="toolbar-page-slider-div">
+    <input
+      type="range"
+      min="1"
+      max="50"
+      value="1"
+      class="slider"
+      id="toolbar-page-slider-input"
+    />
+  </div>
+  <div id="toolbar-page-numbers">00 / 00</div>
+  <div class="toolbar-item-separator"></div>
+
+  <div class="toolbar-item" id="toolbar-button-prev">
+    <a href="" id="toolbar-button-prev-href" title="previous page"
+      ><i class="fas fa-chevron-left"></i
+    ></a>
+  </div>
+  <div class="toolbar-item-separator"></div>
+  <div class="toolbar-item" id="toolbar-button-next">
+    <a href="" id="toolbar-button-next-href" title="next page"
+      ><i class="fas fa-chevron-right"></i
+    ></a>
+  </div>
+
+  <div class="toolbar-item-separator"></div>
+  <div class="toolbar-item" id="toolbar-button-fit-to-height">
+    <a href="" id="toolbar-button-fit-to-height-href" title="fit to height"
+      ><i class="fas fa-arrows-alt-v"></i
+    ></a>
+  </div>
+  <div class="toolbar-item" id="toolbar-button-fit-to-width">
+    <a href="" id="toolbar-button-fit-to-width-href" title="fit to width"
+      ><i class="fas fa-arrows-alt-h"></i
+    ></a>
+  </div>
+
+  <div class="toolbar-item-separator"></div>
+  <div class="toolbar-item" id="toolbar-button-rotate-counterclockwise">
+    <a
+      href=""
+      id="toolbar-button-rotate-counterclockwise-href"
+      title="rotate counterclockwise"
+      ><i class="fas fa-undo-alt"></i
+    ></a>
+  </div>
+  <div class="toolbar-item-separator"></div>
+  <div class="toolbar-item" id="toolbar-button-rotate-clockwise">
+    <a
+      href=""
+      id="toolbar-button-rotate-clockwise-href"
+      title="rotate clockwise"
+      ><i class="fas fa-redo-alt"></i
+    ></a>
+  </div>
+
+  <div class="toolbar-item-separator"></div>
+  <div class="toolbar-item" id="toolbar-button-fullscreen-enter">
+    <a
+      href=""
+      id="toolbar-button-fullscreen-enter-href"
+      title="enter fullscreen mode"
+      ><i class="fas fa-expand"></i
+    ></a>
+  </div>
+
+  <div
+    class="toolbar-item set-display-none"
+    id="toolbar-button-fullscreen-exit"
+  >
+    <a
+      href=""
+      id="toolbar-button-fullscreen-exit-href"
+      title="exit fullscreen mode"
+      ><i class="fas fa-compress"></i
+    ></a>
+  </div>
+</nav>
+
+<div id="pages-container"></div>
+
+<div id="loading">
+  <div id="loading-bg"><div id="loading-spinner"></div></div>
+</div>
