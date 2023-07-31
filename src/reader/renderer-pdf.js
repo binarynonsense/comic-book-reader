@@ -55,7 +55,6 @@ export function cleanUp() {
 }
 
 function loadPdf(filePath, pageIndex, password) {
-  //   const pdfjsLib = require("../assets/libs/pdfjs/build/pdf.js");
   pdfjsLib.GlobalWorkerOptions.workerSrc =
     "../assets/libs/pdfjs-2.3.200/build/pdf.worker.js";
   var loadingTask = pdfjsLib.getDocument({ url: filePath, password: password });
@@ -158,9 +157,8 @@ async function extractPDFImageBuffer(
   password,
   sendToTool
 ) {
-  const pdfjsLib = require("./assets/libs/pdfjs/build/pdf.js");
   pdfjsLib.GlobalWorkerOptions.workerSrc =
-    "./assets/libs/pdfjs-2.3.200/build/pdf.worker.js";
+    "../assets/libs/pdfjs-2.3.200/build/pdf.worker.js";
   try {
     const pdf = await pdfjsLib.getDocument({
       url: filePath,
@@ -235,26 +233,23 @@ async function extractPDFImageBuffer(
     }
     //////////////////////////////
     let dataUrl = canvas.toDataURL("image/jpeg", 0.8);
-    const { changeDpiDataUrl } = require("changedpi");
-    let img = changeDpiDataUrl(dataUrl, dpi);
-    let data = img.replace(/^data:image\/\w+;base64,/, "");
-    let buf = Buffer.from(data, "base64");
-
     page.cleanup();
     pdf.cleanup();
     pdf.destroy();
     sendIpcToMain(
-      "pdf-page-buffer-extracted",
+      "pdf-page-dataurl-extracted",
       undefined,
-      buf,
+      dataUrl, 
+      dpi,
       outputFolderPath,
       sendToTool
     );
   } catch (err) {
     console.log(err);
     sendIpcToMain(
-      "pdf-page-buffer-extracted",
+      "pdf-page-dataurl-extracted",
       err,
+      undefined,
       undefined,
       outputFolderPath,
       sendToTool

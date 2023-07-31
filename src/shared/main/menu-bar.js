@@ -110,7 +110,7 @@ exports.setTempCodeRefactoringDisabled = function () {
   );
 
   Menu.getApplicationMenu().getMenuItemById("extract-file").enabled = false;
-  Menu.getApplicationMenu().getMenuItemById("file-page-export").enabled = false;
+  // Menu.getApplicationMenu().getMenuItemById("file-page-export").enabled = false;
   Menu.getApplicationMenu().getMenuItemById(
     "file-page-extract-palette"
   ).enabled = false;

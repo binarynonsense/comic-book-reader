@@ -339,12 +339,12 @@ function initOnIpcCallbacks() {
   });
 
   on(
-    "pdf-page-buffer-extracted",
-    (error, buf, outputFolderPath, sendToTool) => {
+    "pdf-page-dataurl-extracted",
+    (error, dataUrl, dpi, outputFolderPath, sendToTool) => {
       if (error !== undefined) {
         exportPageError(error);
       } else {
-        exportPageSaveBuffer(buf, outputFolderPath, sendToTool);
+        exportPageSaveDataUrl(dataUrl, dpi, outputFolderPath, sendToTool);
       }
     }
   );
@@ -1761,17 +1761,17 @@ async function exportPageStart(sendToTool = 0) {
           if (message[0]) {
             sendIpcToRenderer("update-loading", false);
             if (message[2] === 1) {
-              const extractTextTool = require("./tools/extract-text/main");
-              extractTextTool.showWindow(core.getMainWindow(), message[1]);
-              sendIpcToPreload("update-menubar");
+              // const extractTextTool = require("./tools/extract-text/main");
+              // extractTextTool.showWindow(core.getMainWindow(), message[1]);
+              // sendIpcToPreload("update-menubar");
             } else if (message[2] === 2) {
-              const extractPaletteTool = require("./tools/extract-palette/main");
-              extractPaletteTool.showWindow(core.getMainWindow(), message[1]);
-              sendIpcToPreload("update-menubar");
+              // const extractPaletteTool = require("./tools/extract-palette/main");
+              // extractPaletteTool.showWindow(core.getMainWindow(), message[1]);
+              // sendIpcToPreload("update-menubar");
             } else if (message[2] === 3) {
-              const extractQRTool = require("./tools/extract-qr/main");
-              extractQRTool.showWindow(core.getMainWindow(), message[1]);
-              sendIpcToPreload("update-menubar");
+              // const extractQRTool = require("./tools/extract-qr/main");
+              // extractQRTool.showWindow(core.getMainWindow(), message[1]);
+              // sendIpcToPreload("update-menubar");
             } else {
               sendIpcToRenderer(
                 "show-modal-info",
@@ -1800,10 +1800,14 @@ async function exportPageStart(sendToTool = 0) {
   }
 }
 
-function exportPageSaveBuffer(buf, outputFolderPath, sendToTool) {
-  if (buf !== undefined) {
-    try {
-      (async () => {
+function exportPageSaveDataUrl(dataUrl, dpi, outputFolderPath, sendToTool) {
+  if (dataUrl !== undefined) {
+    (async () => {
+      try {
+        const { changeDpiDataUrl } = require("changedpi");
+        let img = changeDpiDataUrl(dataUrl, dpi);
+        let data = img.replace(/^data:image\/\w+;base64,/, "");
+        let buf = Buffer.from(data, "base64");
         let fileType = await FileType.fromBuffer(buf);
         let fileExtension = "." + FileExtension.JPG;
         if (fileType !== undefined) {
@@ -1829,17 +1833,17 @@ function exportPageSaveBuffer(buf, outputFolderPath, sendToTool) {
         fs.writeFileSync(outputFilePath, buf, "binary");
 
         if (sendToTool === 1) {
-          const extractTextTool = require("./tools/extract-text/main");
-          extractTextTool.showWindow(core.getMainWindow(), outputFilePath);
-          sendIpcToPreload("update-menubar");
+          // const extractTextTool = require("./tools/extract-text/main");
+          // extractTextTool.showWindow(core.getMainWindow(), outputFilePath);
+          // sendIpcToPreload("update-menubar");
         } else if (sendToTool === 2) {
-          const extractPaletteTool = require("./tools/extract-palette/main");
-          extractPaletteTool.showWindow(core.getMainWindow(), outputFilePath);
-          sendIpcToPreload("update-menubar");
+          // const extractPaletteTool = require("./tools/extract-palette/main");
+          // extractPaletteTool.showWindow(core.getMainWindow(), outputFilePath);
+          // sendIpcToPreload("update-menubar");
         } else if (sendToTool === 3) {
-          const extractQRTool = require("./tools/extract-qr/main");
-          extractQRTool.showWindow(core.getMainWindow(), outputFilePath);
-          sendIpcToPreload("update-menubar");
+          // const extractQRTool = require("./tools/extract-qr/main");
+          // extractQRTool.showWindow(core.getMainWindow(), outputFilePath);
+          // sendIpcToPreload("update-menubar");
         } else {
           sendIpcToRenderer(
             "show-modal-info",
@@ -1850,11 +1854,11 @@ function exportPageSaveBuffer(buf, outputFolderPath, sendToTool) {
             _("ui-modal-prompt-button-ok")
           );
         }
-      })();
-      sendIpcToRenderer("update-loading", false);
-    } catch (err) {
-      exportPageError("");
-    }
+        sendIpcToRenderer("update-loading", false);
+      } catch (err) {
+        exportPageError("");
+      }
+    })();
   } else {
     exportPageError("");
   }
