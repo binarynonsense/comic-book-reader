@@ -1,3 +1,10 @@
+/**
+ * @license
+ * Copyright 2020-2023 Álvaro García
+ * www.binarynonsense.com
+ * SPDX-License-Identifier: BSD-2-Clause
+ */
+
 const { ipcRenderer } = require("electron");
 const fs = require("fs");
 const path = require("path");
