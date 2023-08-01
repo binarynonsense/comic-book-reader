@@ -136,6 +136,7 @@ function getLocalesFromFolder(folderPath) {
               nativeName: data["@metadata"]["native-name"],
               locale: data["@metadata"]["locale"],
               acbrVersion: data["@metadata"]["acbr-version"],
+              outdatedText: data["tool-pre-languages-outdatedlanguage"],
             };
             localesList.push(localeInfo);
           }

@@ -6,6 +6,7 @@
  */
 
 import { sendIpcToMain as coreSendIpcToMain } from "../../core/renderer.js";
+import { isVersionOlder } from "../../shared/renderer/utils.js";
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -52,9 +53,9 @@ function init(activeLocale, languages, activeTheme, themes, settings) {
     if (languages !== undefined) {
       for (let language of languages) {
         let nativeName = language.nativeName;
-        // if (fileUtils.isVersionOlder(language.acbrVersion, "2.0.0")) {
-        //   incompleteLanguage
-        // }
+        if (isVersionOlder(language.acbrVersion, "3.0.0-alpha1")) {
+          nativeName += " (" + language.outdatedText + ")";
+        }
         let opt = document.createElement("option");
         opt.value = language.locale;
         opt.textContent = nativeName;
