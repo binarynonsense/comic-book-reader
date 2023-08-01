@@ -12,6 +12,7 @@ import * as toolHistory from "../tools/history/renderer.js";
 import * as toolConvertComics from "../tools/convert-comics/renderer.js";
 import * as toolExtractComics from "../tools/extract-comics/renderer.js";
 import * as toolConvertImgs from "../tools/convert-imgs/renderer.js";
+import * as toolCreateComic from "../tools/create-comic/renderer.js";
 import * as modals from "../shared/renderer/modals.js";
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -33,6 +34,7 @@ function init() {
   g_tools["tool-convert-comics"] = toolConvertComics;
   g_tools["tool-extract-comics"] = toolExtractComics;
   g_tools["tool-convert-imgs"] = toolConvertImgs;
+  g_tools["tool-create-comic"] = toolCreateComic;
   // init ipcs
   for (const [key, value] of Object.entries(g_tools)) {
     value.initIpc();
