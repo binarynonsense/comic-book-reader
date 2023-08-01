@@ -1,0 +1,93 @@
+<!-- CONTENT -->
+<div id="tools-columns">
+  <!-- ------------------- LEFT COLUMN -------------------------------- -->
+  <div id="tools-columns-left">
+    <div id="tools-menu-sticky-div">
+      <button id="tool-ci-back-button" class="tools-button-accent">
+        <i class="fas fa-angle-left"></i>
+        <span id="tool-ci-back-button-text"></span>
+      </button>
+      <button id="tool-ci-start-button">
+        <span id="tool-ci-start-button-text"></span>
+      </button>
+    </div>
+  </div>
+  <!-- ------------------- RIGTH COLUMN -------------------------------- -->
+  <div id="tools-columns-right">
+    <div id="tools-title"><span id="tool-ci-title-text"></span></div>
+    <!-- input -->
+    <div
+      id="tool-pre-input-options-section-div"
+      class="tools-columns-right-section"
+    >
+      <h3><span id="tool-ci-input-options-text"></span></h3>
+      <label
+        ><span id="tool-ci-input-files-text"></span>
+        <ul id="tool-ci-input-list" class="tools-collection-ul"></ul>
+      </label>
+      <button id="tool-ci-add-file-button">
+        <span id="tool-ci-add-file-button-text"></span>
+      </button>
+    </div>
+    <!-- output -->
+    <div
+      id="tool-pre-output-options-section-div"
+      class="tools-columns-right-section"
+    >
+      <h3><span id="tool-ci-output-options-text"></span></h3>
+
+      <label
+        ><span id="tool-ci-output-image-format-text"></span>
+        <select id="tool-ci-output-image-format-select"></select>
+      </label>
+
+      <label
+        ><span id="tool-ci-output-image-scale-text"></span>
+        <i
+          id="tool-ci-tooltip-output-size"
+          class="fas fa-question-circle"
+          title="tooltip"
+        ></i>
+        <div class="tools-range-wrap">
+          <input
+            type="range"
+            class="tools-range"
+            min="10"
+            max="100"
+            id="tool-ci-output-image-scale-slider"
+            value="100"
+          />
+          <output class="tools-range-bubble set-display-none"></output>
+        </div>
+      </label>
+
+      <label
+        ><span id="tool-ci-output-image-quality-text"></span>
+        <div class="tools-range-wrap">
+          <input
+            type="range"
+            class="tools-range"
+            min="10"
+            max="100"
+            id="tool-ci-output-image-quality-slider"
+            value="80"
+          />
+          <output class="tools-range-bubble set-display-none"></output>
+        </div>
+      </label>
+
+      <label
+        ><span id="tool-ci-output-folder-text"></span
+        ><i
+          id="tool-ci-tooltip-output-folder"
+          class="fas fa-question-circle"
+          title="tooltip"
+        ></i>
+        <ul id="tool-ci-output-folder" class="tools-collection-ul"></ul>
+      </label>
+      <button id="tool-ci-change-folder-button">
+        <span id="tool-ci-change-folder-button-text"></span>
+      </button>
+    </div>
+  </div>
+</div>

@@ -97,7 +97,7 @@ exports.setFilterMode = function (mode) {
 
 // TODO: delete
 exports.setTempCodeRefactoringDisabled = function () {
-  Menu.getApplicationMenu().getMenuItemById("convert-imgs").enabled = false;
+  // Menu.getApplicationMenu().getMenuItemById("convert-imgs").enabled = false;
   Menu.getApplicationMenu().getMenuItemById("create-file").enabled = false;
   Menu.getApplicationMenu().getMenuItemById("create-qr").enabled = false;
   // Menu.getApplicationMenu().getMenuItemById("extract-comics").enabled = false;

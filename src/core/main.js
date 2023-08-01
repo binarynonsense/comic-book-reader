@@ -20,9 +20,39 @@ const toolPreferences = require("../tools/preferences/main");
 const toolHistory = require("../tools/history/main");
 const toolConvertComics = require("../tools/convert-comics/main");
 const toolExtractComics = require("../tools/extract-comics/main");
+const toolConvertImgs = require("../tools/convert-imgs/main");
 
 let g_mainWindow;
 let g_isLoaded = false;
+
+///////////////////////////////////////////////////////////////////////////////
+// TOOLS //////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+let g_currentTool = "reader";
+let g_tools = {};
+g_tools["reader"] = reader;
+g_tools["audio-player"] = audioPlayer;
+g_tools["tool-preferences"] = toolPreferences;
+g_tools["tool-history"] = toolHistory;
+g_tools["tool-convert-comics"] = toolConvertComics;
+g_tools["tool-extract-comics"] = toolExtractComics;
+g_tools["tool-convert-imgs"] = toolConvertImgs;
+
+function getTools() {
+  return g_tools;
+}
+exports.getTools = getTools;
+
+function switchTool(tool, ...args) {
+  if (g_currentTool !== tool) {
+    if (g_tools[g_currentTool].close) g_tools[g_currentTool].close();
+    g_currentTool = tool;
+    sendIpcToCoreRenderer("show-tool", tool);
+    g_tools[tool].open(...args);
+  }
+}
+exports.switchTool = switchTool;
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -125,34 +155,6 @@ app.on("web-contents-created", (event, contents) => {
     event.preventDefault();
   });
 });
-
-///////////////////////////////////////////////////////////////////////////////
-// TOOLS //////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-
-let g_currentTool = "reader";
-let g_tools = {};
-g_tools["reader"] = reader;
-g_tools["audio-player"] = audioPlayer;
-g_tools["tool-preferences"] = toolPreferences;
-g_tools["tool-history"] = toolHistory;
-g_tools["tool-convert-comics"] = toolConvertComics;
-g_tools["tool-extract-comics"] = toolExtractComics;
-
-function getTools() {
-  return g_tools;
-}
-exports.getTools = getTools;
-
-function switchTool(tool, ...args) {
-  if (g_currentTool !== tool) {
-    if (g_tools[g_currentTool].close) g_tools[g_currentTool].close();
-    g_currentTool = tool;
-    sendIpcToCoreRenderer("show-tool", tool);
-    g_tools[tool].open(...args);
-  }
-}
-exports.switchTool = switchTool;
 
 ///////////////////////////////////////////////////////////////////////////////
 // IPC SEND ///////////////////////////////////////////////////////////////////
