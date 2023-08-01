@@ -53,7 +53,7 @@ Ein Comicbuch Leser und Konverter für cbz, cbr, cb7, epub und pdf Dateien.
 - Fenster- (einfache Benutzeroberfläche) und Vollbild- (keine Benutzeroberfläche) Modi.
 - 'Breitenanpassung', 'Höhenanpassung' und eine anpassbare 'Höhenskalierung' Seitenansicht.
 - Seitenrotation.
-- UI verfügbar auf:
+- Benutzeroberfläche verfügbar auf:
   - Englisch
   - Spanisch
   - Russisch
