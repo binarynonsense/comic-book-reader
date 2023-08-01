@@ -134,6 +134,8 @@
   "ap-tooltip-button-save": "guardar lista de reproducción en fichero", 
   
   "tool-shared-ui-back-button": "Volver al Lector",
+  "tool-shared-ui-tool": "Herramienta",
+  "tool-shared-ui-input-output": "Entrada / Salida",
   "tool-shared-ui-general-options": "Opciones Generales",
   "tool-shared-ui-advanced-options": "Opciones Avanzadas",
   "tool-shared-ui-input-options": "Opciones de Entrada",
