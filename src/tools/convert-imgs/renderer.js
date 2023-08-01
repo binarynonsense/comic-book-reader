@@ -503,9 +503,7 @@ function updateLocalization(localization, tooltipsLocalization) {
   for (let index = 0; index < localization.length; index++) {
     const element = localization[index];
     const domElement = document.querySelector("#" + element.id);
-    if (element.id === "tool-ci-keep-format-text") {
-      g_outputImageFormatNotSetText = element.text;
-    } else if (element.id === "tool-ci-modal-close-button-text") {
+    if (element.id === "tool-ci-modal-close-button-text") {
       g_localizedModalCloseButtonText = element.text;
     } else if (element.id === "tool-ci-modal-cancel-button-text") {
       g_localizedModalCancelButtonText = element.text;
