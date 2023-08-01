@@ -1,3 +1,10 @@
+/**
+ * @license
+ * Copyright 2020-2023 Álvaro García
+ * www.binarynonsense.com
+ * SPDX-License-Identifier: BSD-2-Clause
+ */
+
 const fileFormats = require("./file-formats");
 //const palette = require("../extract-palette/palette");
 const { FileExtension, FileDataType } = require("./constants");
