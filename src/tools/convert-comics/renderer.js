@@ -589,8 +589,8 @@ function showLogModal() {
     return;
   }
   g_openModal = modals.show({
-    title: "TEST",
-    message: "message",
+    title: " ",
+    message: " ",
     zIndexDelta: 5,
     frameWidth: 600,
     close: {
