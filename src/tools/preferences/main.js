@@ -189,11 +189,11 @@ function getLocalization() {
     },
     {
       id: "tool-pre-languages-text",
-      text: _("tool-pre-languages"),
+      text: _("tool-pre-language"),
     },
     {
       id: "tool-pre-themes-text",
-      text: _("tool-pre-themes"),
+      text: _("tool-pre-theme"),
     },
     //////////////////////////////////////////////
     {
