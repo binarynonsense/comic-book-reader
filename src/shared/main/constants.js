@@ -1,3 +1,10 @@
+/**
+ * @license
+ * Copyright 2020-2023 Álvaro García
+ * www.binarynonsense.com
+ * SPDX-License-Identifier: BSD-2-Clause
+ */
+
 exports.FileExtension = {
   NOT_SET: "not set",
 

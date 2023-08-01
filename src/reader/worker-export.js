@@ -1,3 +1,10 @@
+/**
+ * @license
+ * Copyright 2020-2023 Álvaro García
+ * www.binarynonsense.com
+ * SPDX-License-Identifier: BSD-2-Clause
+ */
+
 const fs = require("fs");
 const path = require("path");
 const FileType = require("file-type");
