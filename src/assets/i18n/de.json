@@ -2,7 +2,7 @@
   "@metadata": {
     "authors": ["trzyglow"],
     "last-updated": "2023-08-01",
-    "acbr-version": "3.0.0",
+    "acbr-version": "3.0.0-alpha1",
     "comments": "Deutsche Lokalisierung",
     "locale": "de",
     "name": "German",
@@ -253,6 +253,7 @@
   "tool-pre-language": "Sprache",
   "tool-pre-languages-incompletelanguages": "Unvollständig",
   "tool-pre-languages-incompletelanguage": "Unvollständig",
+  "[NEEDS TRANSLATION]tool-pre-languages-outdatedlanguage": "Outdated",
   "tool-pre-themes": "Farbthemen",
   "tool-pre-theme": "Color Theme",
   "tool-pre-zoom": "Zoom",

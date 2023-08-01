@@ -1,7 +1,7 @@
 {
   "@metadata": {
     "authors": ["Álvaro"],
-    "last-updated": "2023-07-29",
+    "last-updated": "2023-08-01",
     "acbr-version": "3.0.0-alpha1",
     "comments": "",
     "locale": "en",
@@ -251,8 +251,9 @@
   "tool-pre-text-colors": "Text and Colors",
   "tool-pre-languages": "Languages",
   "tool-pre-language": "Language",
-  "tool-pre-languages-incompletelanguages": "Incompletos",
-  "tool-pre-languages-incompletelanguage": "Incompletos",
+  "tool-pre-languages-incompletelanguages": "Incomplete",
+  "tool-pre-languages-incompletelanguage": "Incomplete",
+  "tool-pre-languages-outdatedlanguage": "Outdated",
   "tool-pre-themes": "Color Themes",
   "tool-pre-theme": "Color Theme",
   "tool-pre-zoom": "Zoom",

@@ -253,6 +253,7 @@
   "[NEEDS TRANSLATION][SINGULAR]tool-pre-language": "Language",
   "tool-pre-languages-incompletelanguages": "Незавершённый",
   "[NEEDS TRANSLATION][SINGULAR]tool-pre-languages-incompletelanguage": "Incomplete",
+  "[NEEDS TRANSLATION]tool-pre-languages-outdatedlanguage": "Outdated",
   "tool-pre-themes": "Цветовые темы",
   "tool-pre-theme": "Color Theme",
   "tool-pre-zoom": "Масштаб",
