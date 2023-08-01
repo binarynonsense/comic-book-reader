@@ -59,7 +59,7 @@ Ein Comicbuch Leser und Konverter für cbz, cbr, cb7, epub und pdf Dateien.
   - Russisch
   - Deutsch
 - Automatische Wiederherstellung der vergangenen Sitzung, mit Erinnerung der letzten Seitenposition.
-- Tragbarer Modus (durch das Erstellen einer Datei names portable.txt im selben Ordner wie die Anwendung).
+- Tragbarer Modus (durch das Erstellen einer Datei namens portable.txt im selben Ordner wie die Anwendung).
 - Integrierter Audio-player:
   - unterstützt .mp3, .ogg, .wav, .m3u und .m3u8 Dateien.
   - Kann Playlists als .m3u Dateien exportieren.
