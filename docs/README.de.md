@@ -50,16 +50,16 @@ Ein Comicbuch Leser und Konverter für cbz, cbr, cb7, epub und pdf Dateien.
 
   Dazu gehören Passwort geschützte pdf, cbz (AES Verschlüsselung nicht unterstützt), cb7 und cbr Dateien.
 
-- Fenster- (einfaches UI) und Vollbild- (kein UI) Modi.
+- Fenster- (einfache Benutzeroberfläche) und Vollbild- (keine Benutzeroberfläche) Modi.
 - 'Breitenanpassung', 'Höhenanpassung' und eine anpassbare 'Höhenskalierung' Seitenansicht.
 - Seitenrotation.
-- UI verfügbar auf:
+- Benutzeroberfläche verfügbar auf:
   - Englisch
   - Spanisch
   - Russisch
   - Deutsch
 - Automatische Wiederherstellung der vergangenen Sitzung, mit Erinnerung der letzten Seitenposition.
-- Tragbarer Modus (durch das Erstellen einer Datei names portable.txt im selben Ordner wie die Anwendung).
+- Tragbarer Modus (durch das Erstellen einer Datei namens portable.txt im selben Ordner wie die Anwendung).
 - Integrierter Audio-player:
   - unterstützt .mp3, .ogg, .wav, .m3u und .m3u8 Dateien.
   - Kann Playlists als .m3u Dateien exportieren.
