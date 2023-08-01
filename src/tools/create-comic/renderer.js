@@ -87,6 +87,9 @@ function init(outputFolderPath) {
       sendIpcToMain("set-page-order", event.target.value);
     });
   g_outputNameInput = document.querySelector("#tool-cr-output-name-input");
+  g_outputNameInput.addEventListener("input", (event) => {
+    checkValidData();
+  });
 
   g_startButton = document.querySelector("#tool-cr-start-button");
 
