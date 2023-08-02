@@ -297,7 +297,7 @@
 
 /* /////////////////////////////////////////////////////////////// */
 
-.tool-ep-columns-parent {
+.tool-shared-columns-parent {
   display: flex;
   flex-wrap: nowrap;
   gap: 10px;
@@ -305,7 +305,7 @@
   width: 100%;
 }
 
-.tool-ep-two-columns {
+.tool-shared-two-columns {
   flex: 0 1 50%;
 }
 
