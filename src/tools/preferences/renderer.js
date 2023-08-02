@@ -356,10 +356,10 @@ function initOnIpcCallbacks() {
 ///////////////////////////////////////////////////////////////////////////////
 
 export function onInputEvent(type, event) {
-  if (getOpenModal()) {
-    modals.onInputEvent(getOpenModal(), type, event);
-    return;
-  }
+  // if (getOpenModal()) {
+  //   modals.onInputEvent(getOpenModal(), type, event);
+  //   return;
+  // }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
