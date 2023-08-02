@@ -487,6 +487,11 @@ function getLocalization() {
     },
     //////////////////////////////////////////////
     {
+      id: "tool-ci-section-general-options-text",
+      text: _("tool-shared-ui-general-options"),
+    },
+    //////////////////////////////////////////////
+    {
       id: "tool-ci-input-options-text",
       text: _("tool-shared-ui-input-options"),
     },
