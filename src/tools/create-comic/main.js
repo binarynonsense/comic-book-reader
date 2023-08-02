@@ -480,7 +480,7 @@ function getLocalization() {
     },
     {
       id: "tool-cr-start-button-text",
-      text: _("tool-shared-ui-convert").toUpperCase(),
+      text: _("tool-shared-ui-create").toUpperCase(),
     },
     //////////////////////////////////////////////
     {
