@@ -95,14 +95,6 @@ exports.setFilterMode = function (mode) {
 
 ////////////////////////////
 
-// TODO: delete
-exports.setTempCodeRefactoringDisabled = function () {
-  EnableItemRecursive(
-    Menu.getApplicationMenu().getMenuItemById("tools-other"),
-    false
-  );
-};
-
 exports.setCanOpenBooks = setCanOpenBooks = function (isEnabled) {
   Menu.getApplicationMenu().getMenuItemById("open-file").enabled = isEnabled;
   EnableItemRecursive(

@@ -1411,8 +1411,6 @@ function updateMenuAndToolbarItems(isOpen = true) {
     menuBar.setComicBookOpened(false);
     setCanOpenBooks(false); // right now this is redundant
   }
-  // TODO: delete
-  menuBar.setTempCodeRefactoringDisabled();
 }
 
 function updateLocalizedText() {
