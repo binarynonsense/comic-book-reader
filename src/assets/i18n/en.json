@@ -182,6 +182,8 @@
   "tool-shared-ui-epub-creation-image-storage-o1": "store the images as files",
   "tool-shared-ui-epub-creation-image-storage-o2": "embed the images in the html (base64)",
   "tool-shared-ui-search-button": "Search",
+  "tool-shared-ui-search-input": "Search Input",
+  "tool-shared-ui-search-results": "Search Results",
   "tool-shared-ui-search-placeholder": "Enter your search terms",
   "tool-shared-ui-search-item-open-acbr": "open in acbr",
   "tool-shared-ui-search-item-open-browser": "open in browser",
