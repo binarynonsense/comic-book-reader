@@ -102,7 +102,7 @@ exports.setTempCodeRefactoringDisabled = function () {
   Menu.getApplicationMenu().getMenuItemById("create-qr").enabled = false;
   // Menu.getApplicationMenu().getMenuItemById("extract-comics").enabled = false;
   // Menu.getApplicationMenu().getMenuItemById("extract-palette").enabled = false;
-  Menu.getApplicationMenu().getMenuItemById("extract-text").enabled = false;
+  // Menu.getApplicationMenu().getMenuItemById("extract-text").enabled = false;
   Menu.getApplicationMenu().getMenuItemById("extract-qr").enabled = false;
   EnableItemRecursive(
     Menu.getApplicationMenu().getMenuItemById("tools-other"),
@@ -114,9 +114,9 @@ exports.setTempCodeRefactoringDisabled = function () {
   // Menu.getApplicationMenu().getMenuItemById(
   //   "file-page-extract-palette"
   // ).enabled = false;
-  Menu.getApplicationMenu().getMenuItemById(
-    "file-page-extract-text"
-  ).enabled = false;
+  // Menu.getApplicationMenu().getMenuItemById(
+  //   "file-page-extract-text"
+  // ).enabled = false;
   Menu.getApplicationMenu().getMenuItemById(
     "file-page-extract-qr"
   ).enabled = false;

@@ -187,10 +187,11 @@
   padding: 15px;
 }
 
-.tools-checkbox-label {
+.tools-checkbox-container {
   cursor: pointer;
   width: 100%;
-  display: block;
+  display: flex;
+  flex-direction: row;
 }
 
 #tools input[type="checkbox"] {
@@ -198,7 +199,6 @@
   /* filter: invert(100%) hue-rotate(18deg) brightness(0.8); */
   accent-color: var(--tools-button-accent-bg-color);
   cursor: pointer;
-  vertical-align: middle;
   margin-right: 10px;
 }
 
@@ -213,7 +213,8 @@
 
 #tools label > select,
 #tools label > input,
-#tools label > ul {
+#tools label > ul,
+.tools-checkbox-container {
   margin-top: 15px;
 }
 
@@ -351,3 +352,13 @@
 }
 
 /* /////////////////////////////////////////////////////////////// */
+
+#tool-et-textarea-output {
+  height: 400px;
+  width: 100%;
+  padding: 5px;
+  border-color: rgb(155, 155, 155);
+  resize: none;
+  margin: 0px;
+  display: block;
+}

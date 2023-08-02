@@ -23,6 +23,7 @@ const toolExtractComics = require("../tools/extract-comics/main");
 const toolConvertImgs = require("../tools/convert-imgs/main");
 const toolCreateComic = require("../tools/create-comic/main");
 const toolExtractPalette = require("../tools/extract-palette/main");
+const toolExtractText = require("../tools/extract-text/main");
 
 let g_mainWindow;
 let g_isLoaded = false;
@@ -42,6 +43,7 @@ g_tools["tool-extract-comics"] = toolExtractComics;
 g_tools["tool-convert-imgs"] = toolConvertImgs;
 g_tools["tool-create-comic"] = toolCreateComic;
 g_tools["tool-extract-palette"] = toolExtractPalette;
+g_tools["tool-extract-text"] = toolExtractText;
 
 function getTools() {
   return g_tools;
@@ -336,6 +338,10 @@ exports.onMenuAbout = function () {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
+
+// NOTE: (2023/08/02) I'm using v3.x of the tesseract.js module as v4.x
+// was giving errors.
+// TODO: try newer versions & investigate further.
 
 // NOTE: (2023/07/31) I'm freezing the sharp module version to 0.31.3 as
 // 0.32.4 was crashing the app when resizing and previous versions didn't

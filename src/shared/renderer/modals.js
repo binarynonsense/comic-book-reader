@@ -125,7 +125,7 @@ function isObject(object) {
 }
 
 export function close(modal) {
-  modal.remove();
+  if (modal) modal.remove();
 }
 
 export function onInputEvent(modalDiv, type, event) {
