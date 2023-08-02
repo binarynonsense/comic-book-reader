@@ -97,29 +97,10 @@ exports.setFilterMode = function (mode) {
 
 // TODO: delete
 exports.setTempCodeRefactoringDisabled = function () {
-  // Menu.getApplicationMenu().getMenuItemById("convert-imgs").enabled = false;
-  // Menu.getApplicationMenu().getMenuItemById("create-file").enabled = false;
-  // Menu.getApplicationMenu().getMenuItemById("create-qr").enabled = false;
-  // Menu.getApplicationMenu().getMenuItemById("extract-comics").enabled = false;
-  // Menu.getApplicationMenu().getMenuItemById("extract-palette").enabled = false;
-  // Menu.getApplicationMenu().getMenuItemById("extract-text").enabled = false;
-  Menu.getApplicationMenu().getMenuItemById("extract-qr").enabled = false;
   EnableItemRecursive(
     Menu.getApplicationMenu().getMenuItemById("tools-other"),
     false
   );
-
-  // Menu.getApplicationMenu().getMenuItemById("extract-file").enabled = false;
-  // Menu.getApplicationMenu().getMenuItemById("file-page-export").enabled = false;
-  // Menu.getApplicationMenu().getMenuItemById(
-  //   "file-page-extract-palette"
-  // ).enabled = false;
-  // Menu.getApplicationMenu().getMenuItemById(
-  //   "file-page-extract-text"
-  // ).enabled = false;
-  Menu.getApplicationMenu().getMenuItemById(
-    "file-page-extract-qr"
-  ).enabled = false;
 };
 
 exports.setCanOpenBooks = setCanOpenBooks = function (isEnabled) {
