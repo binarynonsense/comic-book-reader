@@ -75,7 +75,6 @@ const createWindow = () => {
     webPreferences: {
       sandbox: false,
       preload: path.join(__dirname, "preload.js"),
-      nodeIntegrationInWorker: true, // for webworker
     },
   });
   // NOTE: 'sandbox: false' is needed for the custom-title-bar module to work
