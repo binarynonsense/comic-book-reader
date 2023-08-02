@@ -292,19 +292,19 @@ function getLocalization() {
       text: _("tool-shared-ui-advanced-output-options"),
     },
     {
-      id: "text-export-format",
+      id: "tool-ep-export-format-text",
       text: _("tool-ep-export-format"),
     },
     {
-      id: "text-max-num-colors",
+      id: "tool-ep-max-num-colors-text",
       text: _("tool-ep-max-num-colors"),
     },
     {
-      id: "text-distance-method",
+      id: "tool-ep-distance-method-text",
       text: _("tool-ep-distance-method"),
     },
     {
-      id: "text-distance-deltae-threshold",
+      id: "tool-ep-distance-deltae-threshold-text",
       text: _("tool-ep-distance-deltae-threshold"),
     },
 
