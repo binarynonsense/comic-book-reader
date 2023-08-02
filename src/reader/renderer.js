@@ -123,6 +123,5 @@ export function onContextMenu(params) {
   if (getOpenModal()) {
     return;
   }
-  console.log("onContextMenu");
   sendIpcToMain("show-context-menu", params);
 }
