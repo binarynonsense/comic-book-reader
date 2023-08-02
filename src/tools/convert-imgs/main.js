@@ -194,7 +194,7 @@ function initOnIpcCallbacks() {
   on("end", (wasCanceled, numFiles, numErrors, numAttempted) => {
     if (!wasCanceled) {
       sendIpcToRenderer(
-        "update-title-text",
+        "modal-update-title-text",
         _("tool-shared-modal-title-conversion-finished")
       );
 
@@ -215,7 +215,7 @@ function initOnIpcCallbacks() {
       }
     } else {
       sendIpcToRenderer(
-        "update-title-text",
+        "modal-update-title-text",
         _("tool-shared-modal-title-conversion-canceled")
       );
       sendIpcToRenderer(
@@ -304,7 +304,7 @@ async function start(
     let numFiles = imgFiles.length;
 
     sendIpcToRenderer(
-      "update-title-text",
+      "modal-update-title-text",
       _("tool-shared-modal-title-converting")
     );
     sendIpcToRenderer("update-info-text", "");
@@ -417,7 +417,7 @@ async function start(
     // DONE /////////////////////
     fileUtils.cleanUpTempFolder();
     sendIpcToRenderer(
-      "update-title-text",
+      "modal-update-title-text",
       _("tool-shared-modal-title-conversion-finished")
     );
     if (numErrors > 0) {

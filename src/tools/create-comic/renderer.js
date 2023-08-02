@@ -305,8 +305,8 @@ function initOnIpcCallbacks() {
 
   /////////////////////////////////////////////////////////////////////////////
 
-  on("update-title-text", (text) => {
-    updateTitleText(text);
+  on("modal-update-title-text", (text) => {
+    updateModalTitleText(text);
   });
 
   on("update-info-text", (text) => {
@@ -547,7 +547,7 @@ function showLogModal() {
   });
 }
 
-function updateTitleText(text) {
+function updateModalTitleText(text) {
   if (g_openModal) g_openModal.querySelector(".modal-title").innerHTML = text;
 }
 

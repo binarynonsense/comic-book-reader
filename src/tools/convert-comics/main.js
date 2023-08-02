@@ -325,7 +325,7 @@ function initOnIpcCallbacks() {
   on("end", (wasCanceled, numFiles, numErrors, numAttempted) => {
     if (!wasCanceled) {
       sendIpcToRenderer(
-        "update-title-text",
+        "modal-update-title-text",
         _("tool-shared-modal-title-conversion-finished")
       );
 
@@ -346,7 +346,7 @@ function initOnIpcCallbacks() {
       }
     } else {
       sendIpcToRenderer(
-        "update-title-text",
+        "modal-update-title-text",
         _("tool-shared-modal-title-conversion-canceled")
       );
       sendIpcToRenderer(
@@ -430,7 +430,7 @@ function start(
   g_cancel = false;
 
   sendIpcToRenderer(
-    "update-title-text",
+    "modal-update-title-text",
     _("tool-shared-modal-title-converting") +
       (totalFilesNum > 1 ? " (" + fileNum + "/" + totalFilesNum + ")" : "")
   );

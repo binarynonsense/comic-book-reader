@@ -194,7 +194,7 @@ function initOnIpcCallbacks() {
   on("end", (wasCanceled, numFiles, numErrors, numAttempted) => {
     if (!wasCanceled) {
       sendIpcToRenderer(
-        "update-title-text",
+        "modal-update-title-text",
         _("tool-shared-modal-title-creation-finished")
       );
 
@@ -215,7 +215,7 @@ function initOnIpcCallbacks() {
       }
     } else {
       sendIpcToRenderer(
-        "update-title-text",
+        "modal-update-title-text",
         _("tool-shared-modal-title-creation-canceled")
       );
       sendIpcToRenderer(
@@ -293,7 +293,7 @@ function start(inputFiles) {
   g_cancel = false;
   try {
     sendIpcToRenderer(
-      "update-title-text",
+      "modal-update-title-text",
       _("tool-shared-modal-title-creating")
     );
     sendIpcToRenderer("update-info-text", "");

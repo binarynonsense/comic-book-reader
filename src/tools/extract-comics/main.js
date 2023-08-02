@@ -304,7 +304,7 @@ function initOnIpcCallbacks() {
   on("end", (wasCanceled, numFiles, numErrors, numAttempted) => {
     if (!wasCanceled) {
       sendIpcToRenderer(
-        "update-title-text",
+        "modal-update-title-text",
         _("tool-shared-modal-title-extraction-finished")
       );
 
@@ -325,7 +325,7 @@ function initOnIpcCallbacks() {
       }
     } else {
       sendIpcToRenderer(
-        "update-title-text",
+        "modal-update-title-text",
         _("tool-shared-modal-title-extraction-canceled")
       );
       sendIpcToRenderer(
@@ -393,7 +393,7 @@ function start(
   g_cancel = false;
 
   sendIpcToRenderer(
-    "update-title-text",
+    "modal-update-title-text",
     _("tool-shared-modal-title-extracting") +
       (totalFilesNum > 1 ? " (" + fileNum + "/" + totalFilesNum + ")" : "")
   );
