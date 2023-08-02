@@ -1762,12 +1762,11 @@ async function exportPageStart(sendToTool = 0) {
             sendIpcToRenderer("update-loading", false);
             if (message[2] === 1) {
               // const extractTextTool = require("./tools/extract-text/main");
-              // extractTextTool.showWindow(core.getMainWindow(), message[1]);
-              // sendIpcToPreload("update-menubar");
+              // extractTextTool.showWindow(g_mainWindow, message[1]);
+              // g_mainWindow.webContents.send("update-menubar");
             } else if (message[2] === 2) {
-              // const extractPaletteTool = require("./tools/extract-palette/main");
-              // extractPaletteTool.showWindow(core.getMainWindow(), message[1]);
-              // sendIpcToPreload("update-menubar");
+              core.switchTool("tool-extract-palette", message[1]);
+              sendIpcToPreload("update-menubar");
             } else if (message[2] === 3) {
               // const extractQRTool = require("./tools/extract-qr/main");
               // extractQRTool.showWindow(core.getMainWindow(), message[1]);
@@ -1837,9 +1836,8 @@ function exportPageSaveDataUrl(dataUrl, dpi, outputFolderPath, sendToTool) {
           // extractTextTool.showWindow(core.getMainWindow(), outputFilePath);
           // sendIpcToPreload("update-menubar");
         } else if (sendToTool === 2) {
-          // const extractPaletteTool = require("./tools/extract-palette/main");
-          // extractPaletteTool.showWindow(core.getMainWindow(), outputFilePath);
-          // sendIpcToPreload("update-menubar");
+          core.switchTool("tool-extract-palette", outputFilePath);
+          sendIpcToPreload("update-menubar");
         } else if (sendToTool === 3) {
           // const extractQRTool = require("./tools/extract-qr/main");
           // extractQRTool.showWindow(core.getMainWindow(), outputFilePath);

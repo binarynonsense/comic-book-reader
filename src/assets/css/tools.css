@@ -16,12 +16,13 @@
   );
   overflow: auto;
   scrollbar-gutter: stable;
+  user-select: none;
 }
 
 #tools-columns {
   display: flex;
   flex-direction: row;
-  width: 1280px;
+  width: 1200px;
   height: 100%;
   font-size: 14px;
   color: var(--tools-text-color);
@@ -163,6 +164,7 @@
   border: 1px solid var(--tools-input-border-color);
   font-size: 13px;
   text-indent: 4px;
+  user-select: text;
 }
 
 #tools select {
@@ -260,7 +262,6 @@
   top: -80%;
   transform: translateX(-30%);
   pointer-events: none;
-  user-select: none;
   z-index: 101;
 }
 
@@ -277,7 +278,6 @@
   color: var(--tools-collection-text-color);
   display: flex;
   flex-direction: row;
-  user-select: none;
   gap: 15px;
 }
 .tools-collection-li:last-child {
@@ -293,4 +293,57 @@
 }
 .tools-collection-li-button:last-child {
   margin-left: auto;
+}
+
+/* /////////////////////////////////////////////////////////////// */
+
+.tool-ep-columns-parent {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 10px;
+  /* min-width: 550px; */
+  width: 100%;
+}
+
+.tool-ep-two-columns {
+  flex: 0 1 50%;
+}
+
+#tool-ep-image-container {
+  height: 400px;
+  width: 100%;
+}
+
+#tool-ep-image-container img {
+  max-width: 100%;
+}
+
+#tool-ep-palette {
+  height: 400px;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border: rgb(155, 155, 155) 1px solid;
+  user-select: text;
+
+  /* ref: https://programming.vip/docs/three-ways-of-realizing-transparent-grid-with-css.html */
+  background-image: repeating-conic-gradient(#7f7f7f 0 25%, transparent 0 50%);
+  background-size: 16px 16px;
+  background-color: #666666;
+}
+
+#tool-ep-palette div {
+  height: 100%;
+  display: grid;
+  align-items: center;
+  justify-items: center;
+}
+
+#tool-ep-palette div div {
+  color: white;
+  background-color: black;
+  /* mix-blend-mode: difference; */
+  padding: 5px;
+  height: 30px;
+  font-size: 15px;
 }

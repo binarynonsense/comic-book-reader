@@ -22,6 +22,7 @@ const toolConvertComics = require("../tools/convert-comics/main");
 const toolExtractComics = require("../tools/extract-comics/main");
 const toolConvertImgs = require("../tools/convert-imgs/main");
 const toolCreateComic = require("../tools/create-comic/main");
+const toolExtractPalette = require("../tools/extract-palette/main");
 
 let g_mainWindow;
 let g_isLoaded = false;
@@ -40,6 +41,7 @@ g_tools["tool-convert-comics"] = toolConvertComics;
 g_tools["tool-extract-comics"] = toolExtractComics;
 g_tools["tool-convert-imgs"] = toolConvertImgs;
 g_tools["tool-create-comic"] = toolCreateComic;
+g_tools["tool-extract-palette"] = toolExtractPalette;
 
 function getTools() {
   return g_tools;
