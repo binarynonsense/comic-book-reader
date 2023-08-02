@@ -245,6 +245,13 @@ function getLocalization() {
     //////////////////////////////////////////////
 
     {
+      id: "tool-cq-section-general-options-text",
+      text: _("tool-shared-ui-input-output"),
+    },
+
+    //////////////////////////////////////////////
+
+    {
       id: "tool-cq-header-input-text",
       text: _("tool-cq-header-input-text"),
     },
