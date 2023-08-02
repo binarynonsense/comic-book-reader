@@ -15,6 +15,7 @@ import * as toolConvertImgs from "../tools/convert-imgs/renderer.js";
 import * as toolCreateComic from "../tools/create-comic/renderer.js";
 import * as toolExtractPalette from "../tools/extract-palette/renderer.js";
 import * as toolExtractText from "../tools/extract-text/renderer.js";
+import * as toolCreateQr from "../tools/create-qr/renderer.js";
 import * as modals from "../shared/renderer/modals.js";
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -39,6 +40,7 @@ function init() {
   g_tools["tool-create-comic"] = toolCreateComic;
   g_tools["tool-extract-palette"] = toolExtractPalette;
   g_tools["tool-extract-text"] = toolExtractText;
+  g_tools["tool-create-qr"] = toolCreateQr;
   // init ipcs
   for (const [key, value] of Object.entries(g_tools)) {
     value.initIpc();

@@ -24,6 +24,7 @@ const toolConvertImgs = require("../tools/convert-imgs/main");
 const toolCreateComic = require("../tools/create-comic/main");
 const toolExtractPalette = require("../tools/extract-palette/main");
 const toolExtractText = require("../tools/extract-text/main");
+const toolCreateQr = require("../tools/create-qr/main");
 
 let g_mainWindow;
 let g_isLoaded = false;
@@ -44,6 +45,7 @@ g_tools["tool-convert-imgs"] = toolConvertImgs;
 g_tools["tool-create-comic"] = toolCreateComic;
 g_tools["tool-extract-palette"] = toolExtractPalette;
 g_tools["tool-extract-text"] = toolExtractText;
+g_tools["tool-create-qr"] = toolCreateQr;
 
 function getTools() {
   return g_tools;

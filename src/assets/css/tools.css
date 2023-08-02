@@ -362,3 +362,34 @@
   margin: 0px;
   display: block;
 }
+
+/* /////////////////////////////////////////////////////////////// */
+
+#tool-cq-image {
+  height: 100%;
+  width: 100%;
+  object-fit: contain;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+#tool-cq-textarea-input {
+  height: 400px;
+  width: 100%;
+  padding: 5px;
+  border-color: rgb(155, 155, 155);
+  resize: none;
+  margin: 0px;
+  display: block;
+  cursor: auto;
+}
+
+#tool-cq-image-container {
+  height: 400px;
+  width: 100%;
+  border: rgb(155, 155, 155) 1px solid;
+  /* ref: https://programming.vip/docs/three-ways-of-realizing-transparent-grid-with-css.html */
+  background-image: repeating-conic-gradient(#7f7f7f 0 25%, transparent 0 50%);
+  background-size: 16px 16px;
+  background-color: #666666;
+}
