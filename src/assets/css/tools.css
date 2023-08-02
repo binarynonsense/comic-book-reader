@@ -309,14 +309,16 @@
   flex: 0 1 50%;
 }
 
-#tool-ep-image-container {
+#tool-shared-image-container {
   height: 400px;
   width: 100%;
 }
 
-#tool-ep-image-container img {
+#tool-shared-image-container img {
   max-width: 100%;
 }
+
+/* /////////////////////////////////////////////////////////////// */
 
 #tool-ep-palette {
   height: 400px;
@@ -347,3 +349,5 @@
   height: 30px;
   font-size: 15px;
 }
+
+/* /////////////////////////////////////////////////////////////// */
