@@ -140,6 +140,8 @@
   "tool-shared-ui-advanced-options": "Дополнительные параметры",
   "tool-shared-ui-input-options": "Параметры ввода",
   "tool-shared-ui-advanced-input-options": "Дополнительные параметры ввода",
+  "[NEEDS TRANSLATION]tool-shared-ui-search-options": "Search Options",
+  "[NEEDS TRANSLATION]tool-shared-ui-advanced-search-options": "Advanced Search Options",
   "tool-shared-ui-input-file": "Входной файл",
   "tool-shared-ui-input-files": "Входные файлы",
   "tool-shared-ui-input-images": "Входные изображения",
