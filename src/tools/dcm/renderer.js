@@ -376,7 +376,7 @@ function initOnIpcCallbacks() {
     searchResultsDiv.appendChild(ul);
     document.getElementById("tools-columns-right").scrollIntoView({
       behavior: "smooth",
-      block: "nearest",
+      block: "start",
       inline: "nearest",
     });
     closeModal();
