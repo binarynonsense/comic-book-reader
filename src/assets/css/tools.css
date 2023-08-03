@@ -336,6 +336,36 @@
   margin-left: auto;
 }
 
+.tools-collection-li-multiline-text {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.tools-collection-li-multiline-text span:last-child:not(:first-child) {
+  font-style: italic;
+}
+
+.tools-collection-pagination {
+  margin-top: 15px;
+  margin-bottom: 15px;
+  text-align: center;
+  width: 100%;
+}
+
+.tools-collection-pagination span {
+  margin-right: 5px;
+}
+
+.tools-collection-pagination-button {
+  cursor: pointer;
+  display: inline-block;
+}
+
+.tools-collection-pagination-button:hover i {
+  transform: scale(1.1);
+  filter: brightness(1.2);
+}
+
 /* /////////////////////////////////////////////////////////////// */
 
 .tool-shared-columns-parent {

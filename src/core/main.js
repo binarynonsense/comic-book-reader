@@ -14,6 +14,7 @@ const i18n = require("../shared/main/i18n");
 const themes = require("../shared/main/themes");
 const menuBar = require("../shared/main/menu-bar");
 const fileUtils = require("../shared/main/file-utils");
+
 const reader = require("../reader/main");
 const audioPlayer = require("../audio-player/main");
 const toolPreferences = require("../tools/preferences/main");
@@ -27,6 +28,7 @@ const toolExtractText = require("../tools/extract-text/main");
 const toolCreateQr = require("../tools/create-qr/main");
 const toolExtractQr = require("../tools/extract-qr/main");
 const toolDcm = require("../tools/dcm/main");
+const toolInternetArchive = require("../tools/internet-archive/main");
 
 let g_mainWindow;
 let g_isLoaded = false;
@@ -50,6 +52,7 @@ g_tools["tool-extract-text"] = toolExtractText;
 g_tools["tool-create-qr"] = toolCreateQr;
 g_tools["tool-extract-qr"] = toolExtractQr;
 g_tools["tool-dcm"] = toolDcm;
+g_tools["tool-internet-archive"] = toolInternetArchive;
 
 function getTools() {
   return g_tools;
