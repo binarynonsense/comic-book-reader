@@ -69,6 +69,32 @@
 
 /* /////////////////////////////////////////////////////////////// */
 
+@media (max-width: 1200px) {
+  #tools-columns {
+    display: relative;
+    top: 0;
+    left: 0;
+    width: 100%;
+  }
+
+  #tools-columns-left {
+    position: relative;
+    top: 0;
+    left: 0;
+    width: 250px;
+    min-width: 250px;
+  }
+
+  #tools-columns-right {
+    width: 100%;
+    position: relative;
+    top: 0;
+    left: 250;
+  }
+}
+
+/* /////////////////////////////////////////////////////////////// */
+
 #tools button {
   padding: 10px;
   border: none;
@@ -154,6 +180,10 @@
   margin-top: 20px !important;
 }
 
+.tools-h3-extra-margin-top-2 {
+  margin-top: 30px !important;
+}
+
 #tools input[type="text"],
 #tools input[type="number"] {
   width: 100%;
@@ -165,6 +195,7 @@
   font-size: 13px;
   text-indent: 4px;
   user-select: text;
+  overflow-wrap: anywhere;
 }
 
 #tools select {
@@ -177,6 +208,7 @@
   font-size: 13px;
   cursor: pointer;
   border-radius: 5px;
+  overflow-wrap: anywhere;
 }
 
 #tools select:hover {
@@ -206,6 +238,7 @@
   margin: 10px 0px 10px 0px;
   display: inline-block;
   width: 100%;
+  overflow-wrap: anywhere;
 }
 #tools label i {
   margin-left: 10px;
