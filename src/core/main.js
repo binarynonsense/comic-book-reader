@@ -26,6 +26,7 @@ const toolExtractPalette = require("../tools/extract-palette/main");
 const toolExtractText = require("../tools/extract-text/main");
 const toolCreateQr = require("../tools/create-qr/main");
 const toolExtractQr = require("../tools/extract-qr/main");
+const toolDcm = require("../tools/dcm/main");
 
 let g_mainWindow;
 let g_isLoaded = false;
@@ -48,6 +49,7 @@ g_tools["tool-extract-palette"] = toolExtractPalette;
 g_tools["tool-extract-text"] = toolExtractText;
 g_tools["tool-create-qr"] = toolCreateQr;
 g_tools["tool-extract-qr"] = toolExtractQr;
+g_tools["tool-dcm"] = toolDcm;
 
 function getTools() {
   return g_tools;

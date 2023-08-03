@@ -544,30 +544,6 @@ function tryOpen(filePath, bookType, historyEntry) {
 
   closeCurrentFile();
 
-  if (!fs.existsSync(filePath)) {
-    sendIpcToRenderer(
-      "show-modal-info",
-      _("ui-modal-info-filenotfound"),
-      filePath,
-      _("ui-modal-prompt-button-ok")
-    );
-    return false;
-  }
-  if (
-    !(
-      fs.lstatSync(filePath).isDirectory() ||
-      fileFormats.hasComicBookExtension(filePath) ||
-      fileFormats.hasImageExtension(filePath)
-    )
-  ) {
-    sendIpcToRenderer(
-      "show-modal-info",
-      _("ui-modal-info-invalidformat"),
-      filePath,
-      _("ui-modal-prompt-button-ok")
-    );
-    return false;
-  }
   if (!bookType) bookType = BookType.NOT_SET;
   let pageIndex;
 
@@ -624,6 +600,31 @@ function tryOpen(filePath, bookType, historyEntry) {
 exports.tryOpen = tryOpen;
 
 function tryOpenPath(filePath, pageIndex, bookType, historyEntry) {
+  if (!fs.existsSync(filePath)) {
+    sendIpcToRenderer(
+      "show-modal-info",
+      _("ui-modal-info-filenotfound"),
+      filePath,
+      _("ui-modal-prompt-button-ok")
+    );
+    return false;
+  }
+  if (
+    !(
+      fs.lstatSync(filePath).isDirectory() ||
+      fileFormats.hasComicBookExtension(filePath) ||
+      fileFormats.hasImageExtension(filePath)
+    )
+  ) {
+    sendIpcToRenderer(
+      "show-modal-info",
+      _("ui-modal-info-invalidformat"),
+      filePath,
+      _("ui-modal-prompt-button-ok")
+    );
+    return false;
+  }
+
   if (bookType === BookType.EBOOK) {
     if (fileFormats.hasEpubExtension(filePath)) {
       openEbookFromPath(filePath, pageIndex, historyEntry);
@@ -649,15 +650,15 @@ function tryOpenPath(filePath, pageIndex, bookType, historyEntry) {
 function tryOpenWWW(pageIndex, historyEntry) {
   const data = historyEntry.data;
   if (data.source === "dcm") {
-    const tool = require("./tools/dcm/main");
+    const tool = require("../tools/dcm/main");
     openBookFromCallback(data, tool.getPageCallback, pageIndex);
     return true;
   } else if (data.source === "iab") {
-    const tool = require("./tools/internet-archive/main");
+    const tool = require("../tools/internet-archive/main");
     openBookFromCallback(data, tool.getPageCallback, pageIndex);
     return true;
   } else if (data.source === "xkcd") {
-    const tool = require("./tools/xkcd/main");
+    const tool = require("../tools/xkcd/main");
     openBookFromCallback(data, tool.getPageCallback, pageIndex);
     return true;
   }

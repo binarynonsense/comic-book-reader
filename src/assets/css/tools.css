@@ -247,8 +247,15 @@
 #tools label > select,
 #tools label > input,
 #tools label > ul,
-.tools-checkbox-container {
+.tools-checkbox-container,
+.tools-text-paragraphs {
   margin-top: 15px;
+}
+
+.tools-text-paragraphs p {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  line-height: 120%;
 }
 
 .tools-range-wrap {
