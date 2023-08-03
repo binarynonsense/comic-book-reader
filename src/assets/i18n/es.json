@@ -204,6 +204,10 @@
   "tool-shared-tab-options": "Opciones",
   "tool-shared-tab-about": "Acerca De",
 
+  "tool-shared-modal-title-warning": "Advertencia",
+  "tool-shared-modal-title-info": "Info",
+  "tool-shared-modal-title-alert": "Alerta",
+  "tool-shared-modal-title-notification": "Notificación",
   "tool-shared-modal-title-extracting": "Extrayendo",
   "tool-shared-modal-title-converting": "Convirtiendo",
   "tool-shared-modal-title-creating": "Creando",
@@ -224,6 +228,7 @@
   "tool-shared-modal-info-creation-success-num-files": "{0} archivo/s correctamente añadido/s",
   "tool-shared-modal-info-creation-results": "Añadidos: {0} | Errores: {1} | Cancelados: {2}",
   "tool-shared-modal-info-creation-error-num-files": "Error: no se pudo añadir {0} archivo/s de {1}",
+  "tool-shared-modal-info-change-needs-restart": "El programa necesita ser reiniciado para que este cambio tenga efecto",
 
   "tool-shared-modal-log-extracting-pages": "Extrayendo páginas",
   "tool-shared-modal-log-extracting-page": "Extrayendo página",

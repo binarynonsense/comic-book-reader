@@ -204,6 +204,10 @@
   "tool-shared-tab-options": "Параметры",
   "tool-shared-tab-about": "Об этом инструменте",
 
+  "[NEEDS TRANSLATION]tool-shared-modal-title-warning": "Warning",
+  "[NEEDS TRANSLATION]tool-shared-modal-title-info": "Info",
+  "[NEEDS TRANSLATION]tool-shared-modal-title-alert": "Alert",
+  "[NEEDS TRANSLATION]tool-shared-modal-title-notification": "Notification",
   "tool-shared-modal-title-extracting": "Извлечение",
   "tool-shared-modal-title-converting": "Конвертация",
   "tool-shared-modal-title-creating": "Создание",
@@ -224,6 +228,7 @@
   "tool-shared-modal-info-creation-success-num-files": "{0} файла(ов) успешно добавлено",
   "tool-shared-modal-info-creation-results": "Добавлено: {0} | Ошибок: {1} | Отменено: {2}",
   "tool-shared-modal-info-creation-error-num-files": "Ошибка: Не удалось добавить {0} из {1} файла(ов)",
+  "[NEEDS TRANSLATION]tool-shared-modal-info-change-needs-restart": "The program needs to be restarted for this change to take effect",
 
   "tool-shared-modal-log-extracting-pages": "Извлечение страниц",
   "tool-shared-modal-log-extracting-page": "Извлечение страницы",

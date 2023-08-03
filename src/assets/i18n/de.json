@@ -204,6 +204,10 @@
   "tool-shared-tab-options": "Optionen",
   "tool-shared-tab-about": "Über",
 
+  "[NEEDS TRANSLATION]tool-shared-modal-title-warning": "Warning",
+  "[NEEDS TRANSLATION]tool-shared-modal-title-info": "Info",
+  "[NEEDS TRANSLATION]tool-shared-modal-title-alert": "Alert",
+  "[NEEDS TRANSLATION]tool-shared-modal-title-notification": "Notification",
   "tool-shared-modal-title-extracting": "Extrahieren",
   "tool-shared-modal-title-converting": "Konvertieren",
   "tool-shared-modal-title-creating": "Erstellen",
@@ -224,6 +228,7 @@
   "tool-shared-modal-info-creation-success-num-files": "{0} Datei/en korrekt hinzugefügt",
   "tool-shared-modal-info-creation-results": "Hinzugefügt: {0} | Fehler: {1} | Abgebrochen: {2}",
   "tool-shared-modal-info-creation-error-num-files": "Fehler: {0} von {1} Datei/en konnten nicht hinzugefügt werden",
+  "[NEEDS TRANSLATION]tool-shared-modal-info-change-needs-restart": "The program needs to be restarted for this change to take effect",
 
   "tool-shared-modal-log-extracting-pages": "Extrahiere Seiten",
   "tool-shared-modal-log-extracting-page": "Extrahiere Seite",

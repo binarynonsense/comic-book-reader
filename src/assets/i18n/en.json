@@ -204,6 +204,10 @@
   "tool-shared-tab-options": "Options",
   "tool-shared-tab-about": "About",
 
+  "tool-shared-modal-title-warning": "Warning",
+  "tool-shared-modal-title-info": "Info",
+  "tool-shared-modal-title-alert": "Alert",
+  "tool-shared-modal-title-notification": "Notification",
   "tool-shared-modal-title-extracting": "Extracting",
   "tool-shared-modal-title-converting": "Converting",
   "tool-shared-modal-title-creating": "Creating",
@@ -224,6 +228,7 @@
   "tool-shared-modal-info-creation-success-num-files": "{0} file/s correctly added",
   "tool-shared-modal-info-creation-results": "Added: {0} | Errors: {1} | Canceled: {2}",
   "tool-shared-modal-info-creation-error-num-files": "Error: {0} of {1} file/s couldn't be added",
+  "tool-shared-modal-info-change-needs-restart": "The program needs to be restarted for this change to take effect",
 
   "tool-shared-modal-log-extracting-pages": "Extracting Pages",
   "tool-shared-modal-log-extracting-page": "Extracting Page",
