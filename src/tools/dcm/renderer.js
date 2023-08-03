@@ -374,6 +374,11 @@ function initOnIpcCallbacks() {
       ul.appendChild(li);
     }
     searchResultsDiv.appendChild(ul);
+    document.getElementById("tools-title").scrollIntoView({
+      behavior: "smooth",
+      block: "nearest",
+      inline: "nearest",
+    });
     closeModal();
   });
 }
@@ -388,8 +393,6 @@ async function onSearch() {
 
   if (!g_openModal) showSearchModal(); // TODO: check if first time?
   updateModalTitleText(g_localizedModalSearchingTitleText);
-
-  window.scrollTo(0, 0); // TODO: doesn't work?
   try {
     const formData = new FormData();
     formData.append("terms", inputValue);
