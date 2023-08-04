@@ -21,8 +21,8 @@ let g_isInitialized = false;
 let g_searchInput;
 let g_searchButton;
 
-let g_selectCollection;
-let g_selectAvailability;
+let g_collectionSelect;
+let g_availabilitySelect;
 
 let g_localizedSearchPlaceholderText;
 let g_localizedModalSearchingTitleText;
@@ -83,15 +83,15 @@ function init(collectionsContent, availabilityContent) {
   });
   g_searchInput.focus();
   // options
-  g_selectCollection = document.querySelector(
+  g_collectionSelect = document.querySelector(
     "#tool-iab-options-collections-select"
   );
-  g_selectAvailability = document.querySelector(
+  g_availabilitySelect = document.querySelector(
     "#tool-iab-options-availability-select"
   );
 
-  g_selectCollection.innerHTML = collectionsContent;
-  g_selectAvailability.innerHTML = availabilityContent;
+  g_collectionSelect.innerHTML = collectionsContent;
+  g_availabilitySelect.innerHTML = availabilityContent;
   // about
   document
     .getElementById("tool-iab-open-ia-browser-button")
@@ -390,8 +390,8 @@ async function onSearch(pageNum = 1, inputValue = undefined) {
     "search",
     inputValue,
     pageNum,
-    g_selectCollection.value,
-    g_selectAvailability.value
+    g_collectionSelect.value,
+    g_availabilitySelect.value
   );
 }
 

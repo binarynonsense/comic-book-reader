@@ -15,21 +15,21 @@ import axios from "../../assets/libs/axios/dist/esm/axios.js";
 let g_searchInput;
 let g_searchButton;
 
-// TODO: rename
-let g_selectPublishers;
-let g_selectTitles;
-let g_selectComics;
-let g_buttonOpenSelectedInACBR;
-let g_buttonOpenSelectedInBrowser;
+let g_publishersSelect;
+let g_titlesSelect;
+let g_comicsSelect;
+let g_openSelectedInACBRButton;
+let g_openSelectedInBrowserButton;
 
-let g_selectedComicData;
 let g_selectPublisherString;
 let g_selectTitleString;
 let g_selectComicString;
 
-let g_inputDcmUrl;
-let g_buttonOpenInputInACBR;
-let g_buttonOpenInputInBrowser;
+let g_selectedComicData;
+
+let g_dcmUrlInput;
+let g_openInputInACBRButton;
+let g_openInputInBrowserButton;
 
 let g_localizedSearchPlaceholderText;
 let g_localizedModalCancelButtonText;
@@ -93,32 +93,32 @@ function init() {
   });
   g_searchInput.focus();
   // catalog
-  g_selectPublishers = document.querySelector("#tool-dcm-publishers-select");
-  g_selectTitles = document.querySelector("#tool-dcm-titles-select");
-  g_selectComics = document.querySelector("#tool-dcm-comics-select");
-  g_buttonOpenSelectedInACBR = document.querySelector(
+  g_publishersSelect = document.querySelector("#tool-dcm-publishers-select");
+  g_titlesSelect = document.querySelector("#tool-dcm-titles-select");
+  g_comicsSelect = document.querySelector("#tool-dcm-comics-select");
+  g_openSelectedInACBRButton = document.querySelector(
     "#tool-dcm-open-selected-acbr-button"
   );
-  g_buttonOpenSelectedInBrowser = document.querySelector(
+  g_openSelectedInBrowserButton = document.querySelector(
     "#tool-dcm-open-selected-browser-button"
   );
 
-  g_selectPublishers.addEventListener("change", (event) => {
+  g_publishersSelect.addEventListener("change", (event) => {
     if (event.target.value == -1) {
       cleanUpSelected(false);
       return;
     }
-    g_selectComics.innerHTML = "";
+    g_comicsSelect.innerHTML = "";
     fillTitles(event.target.value);
   });
-  g_selectTitles.addEventListener("change", (event) => {
+  g_titlesSelect.addEventListener("change", (event) => {
     if (event.target.value == -1) {
       cleanUpSelected(false, false);
       return;
     }
     fillComics(event.target.value);
   });
-  g_selectComics.addEventListener("change", async (event) => {
+  g_comicsSelect.addEventListener("change", async (event) => {
     if (event.target.value == -1) {
       return;
     }
@@ -133,43 +133,43 @@ function init() {
     checkValidData();
   });
 
-  g_buttonOpenSelectedInACBR.addEventListener("click", (event) => {
+  g_openSelectedInACBRButton.addEventListener("click", (event) => {
     if (g_selectedComicData) {
       sendIpcToMain("open", g_selectedComicData);
     }
   });
-  g_buttonOpenSelectedInBrowser.addEventListener("click", (event) => {
+  g_openSelectedInBrowserButton.addEventListener("click", (event) => {
     if (g_selectedComicData) {
       let url = `https://digitalcomicmuseum.com/preview/index.php?did=${g_selectedComicData.comicId}`;
       openDCMLink(url);
     }
   });
   // url
-  g_inputDcmUrl = document.getElementById("tool-dcm-url-input");
-  g_buttonOpenInputInACBR = document.getElementById(
+  g_dcmUrlInput = document.getElementById("tool-dcm-url-input");
+  g_openInputInACBRButton = document.getElementById(
     "tool-dcm-open-input-url-acbr-button"
   );
-  g_buttonOpenInputInBrowser = document.getElementById(
+  g_openInputInBrowserButton = document.getElementById(
     "tool-dcm-open-input-url-browser-button"
   );
 
-  g_inputDcmUrl.addEventListener("input", (event) => {
+  g_dcmUrlInput.addEventListener("input", (event) => {
     if (
       event.target.value.startsWith(
         "https://digitalcomicmuseum.com/preview/index.php?did="
       )
     ) {
-      g_buttonOpenInputInACBR.classList.remove("tools-disabled");
-      g_buttonOpenInputInBrowser.classList.remove("tools-disabled");
+      g_openInputInACBRButton.classList.remove("tools-disabled");
+      g_openInputInBrowserButton.classList.remove("tools-disabled");
     } else {
-      g_buttonOpenInputInACBR.classList.add("tools-disabled");
-      g_buttonOpenInputInBrowser.classList.add("tools-disabled");
+      g_openInputInACBRButton.classList.add("tools-disabled");
+      g_openInputInBrowserButton.classList.add("tools-disabled");
     }
   });
-  g_buttonOpenInputInACBR.addEventListener("click", (event) => {
+  g_openInputInACBRButton.addEventListener("click", (event) => {
     onOpenComicUrlInACBR();
   });
-  g_buttonOpenInputInBrowser.addEventListener("click", (event) => {
+  g_openInputInBrowserButton.addEventListener("click", (event) => {
     onOpenComicUrlInBrowser();
   });
   // about
@@ -222,7 +222,7 @@ function switchSection(id) {
     if (index === 0) {
       g_searchInput.focus();
     } else if (index === 1) {
-      if (g_selectPublishers.innerHTML == "") {
+      if (g_publishersSelect.innerHTML == "") {
         (async () => {
           await fillPublishers();
           checkValidData();
@@ -447,7 +447,7 @@ async function onSearchResultClicked(dlid, openWith) {
 //////////////////////////////////////
 
 async function onOpenComicUrlInACBR(url) {
-  if (!url) url = g_inputDcmUrl.value;
+  if (!url) url = g_dcmUrlInput.value;
   const tmp = document.createElement("a");
   tmp.href = url;
   if (tmp.host === "digitalcomicmuseum.com") {
@@ -473,7 +473,7 @@ async function onOpenComicUrlInACBR(url) {
 }
 
 function onOpenComicUrlInBrowser(url) {
-  if (!url) url = g_inputDcmUrl.value;
+  if (!url) url = g_dcmUrlInput.value;
   openDCMLink(url);
 }
 
@@ -526,10 +526,10 @@ function cleanUpSelected(
   cleanTitles = true,
   cleanComics = true
 ) {
-  if (cleanPublishers) g_selectPublishers.innerHTML = "";
-  if (cleanTitles) g_selectTitles.innerHTML = "";
+  if (cleanPublishers) g_publishersSelect.innerHTML = "";
+  if (cleanTitles) g_titlesSelect.innerHTML = "";
   if (cleanComics) {
-    g_selectComics.innerHTML = "";
+    g_comicsSelect.innerHTML = "";
     g_selectedComicData = undefined;
     checkValidData();
   }
@@ -537,11 +537,11 @@ function cleanUpSelected(
 
 function checkValidData() {
   if (g_selectedComicData) {
-    g_buttonOpenSelectedInBrowser.classList.remove("tools-disabled");
-    g_buttonOpenSelectedInACBR.classList.remove("tools-disabled");
+    g_openSelectedInBrowserButton.classList.remove("tools-disabled");
+    g_openSelectedInACBRButton.classList.remove("tools-disabled");
   } else {
-    g_buttonOpenSelectedInBrowser.classList.add("tools-disabled");
-    g_buttonOpenSelectedInACBR.classList.add("tools-disabled");
+    g_openSelectedInBrowserButton.classList.add("tools-disabled");
+    g_openSelectedInACBRButton.classList.add("tools-disabled");
   }
 }
 
@@ -554,11 +554,11 @@ async function fillPublishers() {
     const parser = new DOMParser().parseFromString(response.data, "text/html");
     //e.g. <div class='pull-left'><a href='category.php?cid=98'>Ace Magazines</a>
     const publisherElements = parser.querySelectorAll(".pull-left");
-    g_selectPublishers.innerHTML += `<option value="-1">${g_selectPublisherString}</option>`;
+    g_publishersSelect.innerHTML += `<option value="-1">${g_selectPublisherString}</option>`;
     for (let index = 0; index < publisherElements.length; index++) {
       let aElement = publisherElements[index].getElementsByTagName("a")[0];
       let parts = aElement.href.split("cid=");
-      g_selectPublishers.innerHTML += `<option value="${parts[1]}">${aElement.innerHTML}</option>`;
+      g_publishersSelect.innerHTML += `<option value="${parts[1]}">${aElement.innerHTML}</option>`;
     }
   } catch (error) {
     console.log(error);
@@ -573,9 +573,9 @@ async function fillTitles(publisherId) {
     );
     //e.g. [ {"optionValue": "98", "optionDisplay": "Please Select a Comic Title"},{"optionValue": "289", "optionDisplay": "All Love"},...
     let data = response.data;
-    g_selectTitles.innerHTML += `<option value="-1">${g_selectTitleString}</option>`;
+    g_titlesSelect.innerHTML += `<option value="-1">${g_selectTitleString}</option>`;
     for (let index = 1; index < data.length; index++) {
-      g_selectTitles.innerHTML += `<option value="${data[index].optionValue}">${data[index].optionDisplay}</option>`;
+      g_titlesSelect.innerHTML += `<option value="${data[index].optionValue}">${data[index].optionDisplay}</option>`;
     }
   } catch (error) {
     console.log(error);
@@ -590,10 +590,10 @@ async function fillComics(titleId) {
     );
     //e.g. [ {"optionValue": "0", "optionDisplay": "Please Select a Comic Book"},{"optionValue": "https://digitalcomicmuseum.com/preview/index.php?did=7793", "optionDisplay": "World War III #01 (inc)"},...
     let data = response.data;
-    g_selectComics.innerHTML += `<option value="-1">${g_selectComicString}</option>`;
+    g_comicsSelect.innerHTML += `<option value="-1">${g_selectComicString}</option>`;
     for (let index = 1; index < data.length; index++) {
       let parts = data[index].optionValue.split("did=");
-      g_selectComics.innerHTML += `<option value="${parts[1]}">${data[index].optionDisplay}</option>`;
+      g_comicsSelect.innerHTML += `<option value="${parts[1]}">${data[index].optionDisplay}</option>`;
     }
   } catch (error) {
     console.log(error);

@@ -21,7 +21,7 @@ let g_searchInput;
 let g_searchButton;
 let g_lastSearchPageSize;
 
-let g_inputUrl;
+let g_urlInput;
 let g_openInputInACBRButton;
 let g_openInputInBrowserButton;
 
@@ -95,7 +95,7 @@ function init(
   g_lastSearchPageSize = undefined;
 
   // url
-  g_inputUrl = document.getElementById("tool-gut-url-input");
+  g_urlInput = document.getElementById("tool-gut-url-input");
   g_openInputInACBRButton = document.getElementById(
     "tool-gut-open-input-url-acbr-button"
   );
@@ -103,7 +103,7 @@ function init(
     "tool-gut-open-input-url-browser-button"
   );
 
-  g_inputUrl.addEventListener("input", (event) => {
+  g_urlInput.addEventListener("input", (event) => {
     if (event.target.value.startsWith("https://www.gutenberg.org/ebooks/")) {
       g_openInputInACBRButton.classList.remove("tools-disabled");
       g_openInputInBrowserButton.classList.remove("tools-disabled");
@@ -527,7 +527,7 @@ async function onSearchResultClicked(bookId, bookTitle, openWith) {
 //////////////////////////////////////
 
 function onOpenUrlInACBR() {
-  let url = g_inputUrl.value;
+  let url = g_urlInput.value;
   const tmp = document.createElement("a");
   tmp.href = url;
   if (tmp.host === "www.gutenberg.org") {
@@ -543,7 +543,7 @@ function onOpenUrlInACBR() {
 }
 
 function onOpenUrlInBrowser() {
-  let url = g_inputUrl.value;
+  let url = g_urlInput.value;
   openGutLink(url);
 }
 
