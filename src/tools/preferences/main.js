@@ -103,7 +103,7 @@ function initOnIpcCallbacks() {
     settings.setValue("locale", i18n.getLoadedLocale());
     reader.rebuildMenuAndToolBars();
     for (const [key, value] of Object.entries(core.getTools())) {
-      value.updateLocalizedText();
+      if (value.updateLocalizedText) value.updateLocalizedText();
     }
   });
   on("set-theme", (value) => {
