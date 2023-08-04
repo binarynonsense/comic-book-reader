@@ -32,6 +32,7 @@ const toolInternetArchive = require("../tools/internet-archive/main");
 const toolGutenberg = require("../tools/gutenberg/main");
 const toolXkcd = require("../tools/xkcd/main");
 const toolLibrivox = require("../tools/librivox/main");
+const toolWiktionary = require("../tools/wiktionary/main");
 
 let g_mainWindow;
 let g_isLoaded = false;
@@ -59,6 +60,7 @@ g_tools["tool-internet-archive"] = toolInternetArchive;
 g_tools["tool-gutenberg"] = toolGutenberg;
 g_tools["tool-xkcd"] = toolXkcd;
 g_tools["tool-librivox"] = toolLibrivox;
+g_tools["tool-wiktionary"] = toolWiktionary;
 
 function getTools() {
   return g_tools;
