@@ -1,7 +1,7 @@
 {
   "@metadata": {
     "authors": ["Álvaro"],
-    "last-updated": "2023-08-01",
+    "last-updated": "2023-08-04",
     "acbr-version": "3.0.0-alpha1",
     "comments": "",
     "locale": "en",
@@ -105,6 +105,7 @@
   "ui-modal-info-errorexportingpage": "Error: Couldn't export the page",
   "ui-modal-info-version": "version",
   "ui-modal-prompt-button-yes": "Yes",
+  "ui-modal-prompt-button-no": "No",
   "ui-modal-prompt-button-ok": "Ok",
   "ui-modal-prompt-button-cancel": "Cancel",
   "ui-modal-prompt-pagenumber": "Page Number",
@@ -166,6 +167,7 @@
   "tool-shared-ui-convert": "Convert",
   "tool-shared-ui-create": "Create",
   "tool-shared-ui-extract": "Extract",
+  "tool-shared-ui-open": "Open",
   "tool-shared-ui-close": "Close",
   "tool-shared-ui-cancel": "Cancel",
   "tool-shared-ui-pdf-extraction": "PDF Extraction",
@@ -309,6 +311,13 @@
   "tool-pre-epub-openas": "Open As",
   "tool-pre-epub-openas-0": "Ask and Remember",
   "tool-pre-epub-openas-1": "Always Ask",
+  "tool-pre-pdf": "PDF",
+  "tool-pre-pdf-reading-library-version": "Reading Library Version",
+  "tool-pre-pdf-extracting-library-version": "Extracting Library Version",
+  "tool-pre-pdf-library-version-oldest": "Oldest",
+  "tool-pre-pdf-library-version-oldest-desc": "Quicker but less robust",
+  "tool-pre-pdf-library-version-newest": "Newest",
+  "tool-pre-pdf-library-version-newest-desc": "Slower but more robust",
 
   "tool-hst-title": "History",  
   "tool-hst-button-clear-all": "Clear History",
