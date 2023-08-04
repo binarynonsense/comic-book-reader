@@ -600,39 +600,37 @@ function tryOpen(filePath, bookType, historyEntry) {
 exports.tryOpen = tryOpen;
 
 function tryOpenPath(filePath, pageIndex, bookType, historyEntry) {
-  if (!fs.existsSync(filePath)) {
-    sendIpcToRenderer(
-      "show-modal-info",
-      _("ui-modal-info-filenotfound"),
-      filePath,
-      _("ui-modal-prompt-button-ok")
-    );
-    return false;
-  }
-  if (
-    !(
-      fs.lstatSync(filePath).isDirectory() ||
-      fileFormats.hasComicBookExtension(filePath) ||
-      fileFormats.hasImageExtension(filePath)
-    )
-  ) {
-    sendIpcToRenderer(
-      "show-modal-info",
-      _("ui-modal-info-invalidformat"),
-      filePath,
-      _("ui-modal-prompt-button-ok")
-    );
-    return false;
-  }
-
   if (bookType === BookType.EBOOK) {
     if (fileFormats.hasEpubExtension(filePath)) {
-      openEbookFromPath(filePath, pageIndex, historyEntry);
-      return true;
+      return openEbookFromPath(filePath, pageIndex, historyEntry);
     } else {
       // ERROR ??????
     }
   } else {
+    if (!fs.existsSync(filePath)) {
+      sendIpcToRenderer(
+        "show-modal-info",
+        _("ui-modal-info-filenotfound"),
+        filePath,
+        _("ui-modal-prompt-button-ok")
+      );
+      return false;
+    }
+    if (
+      !(
+        fs.lstatSync(filePath).isDirectory() ||
+        fileFormats.hasComicBookExtension(filePath) ||
+        fileFormats.hasImageExtension(filePath)
+      )
+    ) {
+      sendIpcToRenderer(
+        "show-modal-info",
+        _("ui-modal-info-invalidformat"),
+        filePath,
+        _("ui-modal-prompt-button-ok")
+      );
+      return false;
+    }
     if (fs.lstatSync(filePath).isDirectory()) {
       openImageFolder(filePath, undefined, pageIndex);
       return true;
@@ -993,7 +991,7 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
 
 async function openEbookFromPath(filePath, pageIndex, historyEntry) {
   if (filePath === undefined || filePath === "") {
-    return;
+    return false;
   }
   closeCurrentFile(); // in case coming from tool and bypassing tryopen
   let fileExtension = path.extname(filePath).toLowerCase();
@@ -1010,7 +1008,7 @@ async function openEbookFromPath(filePath, pageIndex, historyEntry) {
           sendIpcToRenderer("update-loading", true);
           sendIpcToRenderer("update-bg", false);
           const url = filePath;
-          const tool = require("./tools/gutenberg/main");
+          const tool = require("../tools/gutenberg/main");
           const cacheFolder = tool.getPortableCacheFolder();
           const fileName = path.basename(filePath);
           cachedPath = path.join(cacheFolder, fileName);
@@ -1039,15 +1037,11 @@ async function openEbookFromPath(filePath, pageIndex, historyEntry) {
               // couldn't download file -> abort
               sendIpcToRenderer("update-loading", false);
               sendIpcToRenderer("update-bg", true);
-              return;
+              return false;
             }
           }
         }
-      } else if (!fs.existsSync(filePath)) {
-        return;
       }
-    } else if (!fs.existsSync(filePath)) {
-      return;
     }
 
     sendIpcToRenderer("update-loading", true);
@@ -1068,9 +1062,17 @@ async function openEbookFromPath(filePath, pageIndex, historyEntry) {
     }
 
     sendIpcToRenderer("load-epub-ebook", filePath, pageIndex, cachedPath);
+    return true;
   } else {
     sendIpcToRenderer("update-loading", false);
     sendIpcToRenderer("update-bg", true);
+    sendIpcToRenderer(
+      "show-modal-info",
+      _("ui-modal-info-invalidformat"),
+      filePath,
+      _("ui-modal-prompt-button-ok")
+    );
+    return false;
   }
 }
 exports.openEbookFromPath = openEbookFromPath;

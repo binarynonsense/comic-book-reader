@@ -19,6 +19,7 @@ import * as toolCreateQr from "../tools/create-qr/renderer.js";
 import * as toolExtractQr from "../tools/extract-qr/renderer.js";
 import * as toolDcm from "../tools/dcm/renderer.js";
 import * as toolInternetArchive from "../tools/internet-archive/renderer.js";
+import * as toolGutenberg from "../tools/gutenberg/renderer.js";
 import * as modals from "../shared/renderer/modals.js";
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -47,6 +48,7 @@ function init() {
   g_tools["tool-extract-qr"] = toolExtractQr;
   g_tools["tool-dcm"] = toolDcm;
   g_tools["tool-internet-archive"] = toolInternetArchive;
+  g_tools["tool-gutenberg"] = toolGutenberg;
   // init ipcs
   for (const [key, value] of Object.entries(g_tools)) {
     value.initIpc();

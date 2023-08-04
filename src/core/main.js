@@ -29,6 +29,7 @@ const toolCreateQr = require("../tools/create-qr/main");
 const toolExtractQr = require("../tools/extract-qr/main");
 const toolDcm = require("../tools/dcm/main");
 const toolInternetArchive = require("../tools/internet-archive/main");
+const toolGutenberg = require("../tools/gutenberg/main");
 
 let g_mainWindow;
 let g_isLoaded = false;
@@ -53,6 +54,7 @@ g_tools["tool-create-qr"] = toolCreateQr;
 g_tools["tool-extract-qr"] = toolExtractQr;
 g_tools["tool-dcm"] = toolDcm;
 g_tools["tool-internet-archive"] = toolInternetArchive;
+g_tools["tool-gutenberg"] = toolGutenberg;
 
 function getTools() {
   return g_tools;

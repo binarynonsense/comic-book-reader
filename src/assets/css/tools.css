@@ -252,6 +252,10 @@
   margin-top: 15px;
 }
 
+#tools label > input[type="text"]:read-only {
+  filter: opacity(0.5);
+}
+
 .tools-text-paragraphs p {
   padding-top: 10px;
   padding-bottom: 10px;
