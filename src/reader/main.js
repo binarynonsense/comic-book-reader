@@ -77,7 +77,6 @@ exports.init = function () {
   audioPlayer.init(core.getMainWindow(), "audio-player-container");
   showAudioPlayer(settings.getValue("showAudioPlayer"));
 
-  // TODO: discard --modifiers
   // if the program is called from the os' 'open with' of file association
   if (process.argv.length >= 2) {
     if (app.isPackaged) {
