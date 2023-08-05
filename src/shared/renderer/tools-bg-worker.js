@@ -287,6 +287,6 @@ async function extractPDF(
       false
     );
   } catch (error) {
-    ipcRenderer.send("tools-worker", g_ipcChannel, "stop-error", error);
+    ipcRenderer.send("tools-worker", g_ipcChannel, "stop-error", error.message);
   }
 }
