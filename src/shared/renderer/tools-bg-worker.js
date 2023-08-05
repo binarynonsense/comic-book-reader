@@ -16,9 +16,24 @@ let g_ipcChannel;
 
 ipcRenderer.on(
   "extract-pdf",
-  (event, filePath, folderPath, extractionMethod, logText, password) => {
+  (
+    event,
+    ipcChannel,
+    filePath,
+    folderPath,
+    extractionMethod,
+    logText,
+    password
+  ) => {
     g_cancel = false;
-    extractPDF(filePath, folderPath, extractionMethod, logText, password);
+    extractPDF(
+      ipcChannel,
+      filePath,
+      folderPath,
+      extractionMethod,
+      logText,
+      password
+    );
   }
 );
 
