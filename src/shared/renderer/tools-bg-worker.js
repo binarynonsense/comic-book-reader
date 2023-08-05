@@ -12,7 +12,6 @@ const { changeDpiDataUrl } = require("changedpi");
 const { FileExtension } = require("../main/constants");
 
 let g_cancel;
-let g_ipcChannel;
 
 ipcRenderer.on(
   "extract-pdf",
@@ -57,7 +56,6 @@ async function extractPDF(
   password
 ) {
   try {
-    g_ipcChannel = ipcChannel;
     // FIRST PASS
     // Uses an older pdf library, it's faster but has a bug in page.obj.get that fails for some files
     let pdfjsFolderName = pdfjsFolderName_1;
@@ -77,7 +75,7 @@ async function extractPDF(
           pdf.destroy();
           ipcRenderer.send(
             "tools-worker",
-            g_ipcChannel,
+            ipcChannel,
             "pdf-images-extracted",
             true
           );
@@ -167,7 +165,7 @@ async function extractPDF(
         fs.writeFileSync(filePath, buf, "binary");
         ipcRenderer.send(
           "tools-worker",
-          g_ipcChannel,
+          ipcChannel,
           "update-log-text",
           logText + pageNum + " / " + pdf.numPages
         );
@@ -196,7 +194,7 @@ async function extractPDF(
           pdf.destroy();
           ipcRenderer.send(
             "tools-worker",
-            g_ipcChannel,
+            ipcChannel,
             "pdf-images-extracted",
             true
           );
@@ -285,7 +283,7 @@ async function extractPDF(
         fs.writeFileSync(filePath, buf, "binary");
         ipcRenderer.send(
           "tools-worker",
-          g_ipcChannel,
+          ipcChannel,
           "update-log-text",
           logText + pageNum + " / " + pdf.numPages
         );
@@ -295,13 +293,8 @@ async function extractPDF(
       pdf.cleanup();
       pdf.destroy();
     }
-    ipcRenderer.send(
-      "tools-worker",
-      g_ipcChannel,
-      "pdf-images-extracted",
-      false
-    );
+    ipcRenderer.send("tools-worker", ipcChannel, "pdf-images-extracted", false);
   } catch (error) {
-    ipcRenderer.send("tools-worker", g_ipcChannel, "stop-error", error.message);
+    ipcRenderer.send("tools-worker", ipcChannel, "stop-error", error.message);
   }
 }
