@@ -81,9 +81,18 @@ exports.init = function () {
   // if the program is called from the os' 'open with' of file association
   if (process.argv.length >= 2) {
     if (app.isPackaged) {
-      let filePath = process.argv[1];
-      if (tryOpen(filePath)) {
-        return;
+      for (let index = 1; index < process.argv.length; index++) {
+        let filePath = process.argv[index];
+        if (
+          filePath !== undefined &&
+          filePath !== "" &&
+          !filePath.startsWith("--") &&
+          fs.existsSync(filePath)
+        ) {
+          if (tryOpen(filePath)) {
+            return;
+          }
+        }
       }
     }
   }
@@ -681,6 +690,12 @@ function openImageFolder(folderPath, filePath, pageIndex) {
   ) {
     sendIpcToRenderer("update-bg", true);
     sendIpcToRenderer("update-loading", false);
+    sendIpcToRenderer(
+      "show-modal-info",
+      _("ui-modal-info-foldernotfound"),
+      filePath,
+      _("ui-modal-prompt-button-ok")
+    );
     return;
   }
 
@@ -688,6 +703,12 @@ function openImageFolder(folderPath, filePath, pageIndex) {
   if (pagesPaths.length <= 0) {
     sendIpcToRenderer("update-bg", true);
     sendIpcToRenderer("update-loading", false);
+    sendIpcToRenderer(
+      "show-modal-info",
+      _("ui-modal-info-couldntopen-imagesfolder-empty"),
+      filePath,
+      _("ui-modal-prompt-button-ok")
+    );
     return;
   }
   pagesPaths.sort(fileUtils.compare);
@@ -701,7 +722,7 @@ function openImageFolder(folderPath, filePath, pageIndex) {
         }
       }
     } else {
-      let historyIndex = getHistoryIndex(folderPath);
+      let historyIndex = history.getFilePathIndex(folderPath);
       if (historyIndex !== undefined) {
         pageIndex = history.getIndex(historyIndex).pageIndex;
       }
