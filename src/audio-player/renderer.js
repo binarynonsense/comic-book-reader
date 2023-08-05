@@ -75,14 +75,16 @@ function initOnIpcCallbacks() {
     fillTags();
   });
 
-  on("add-to-playlist", (fileUrls) => {
-    let load = false;
-    if (g_tracks.length === 0) load = true;
+  on("add-to-playlist", (fileUrls, load = false) => {
+    // TODO: MAYBE: start first new song by default after adding?
+    const oldLength = g_tracks.length;
     fileUrls.forEach((element) => {
       g_playlist.files.push({ url: element });
     });
     createTracksList(g_tracks.length > 0);
-    if (load) loadTrack(0, 0);
+    if (oldLength === 0 || load) {
+      loadTrack(oldLength, 0);
+    }
     refreshUI();
     fillTimes(); // calls updatePlaylistInfo
     fillTags();

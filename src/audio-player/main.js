@@ -204,7 +204,6 @@ function updateLocalizedText() {
 exports.updateLocalizedText = updateLocalizedText;
 
 function onDroppedFiles(inputPaths) {
-  // TODO: add to current playlist instead of creating new one?
   let filePaths = [];
   for (let index = 0; index < inputPaths.length; index++) {
     const inputPath = inputPaths[index];
@@ -222,15 +221,16 @@ function onDroppedFiles(inputPaths) {
   if (outputPaths.length == 0) {
     return;
   }
-  let playlist = {
-    id: "",
-    source: "filesystem",
-    files: [],
-  };
-  outputPaths.forEach((element) => {
-    playlist.files.push({ url: element });
-  });
-  sendIpcToRenderer("open-playlist", playlist);
+  // let playlist = {
+  //   id: "",
+  //   source: "filesystem",
+  //   files: [],
+  // };
+  // outputPaths.forEach((element) => {
+  //   playlist.files.push({ url: element });
+  // });
+  // sendIpcToRenderer("open-playlist", playlist);
+  sendIpcToRenderer("add-to-playlist", outputPaths);
 }
 
 function isAlreadyInArray(inputArray, content) {
