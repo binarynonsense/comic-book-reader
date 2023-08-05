@@ -251,8 +251,7 @@ exports.getComicInfoFileInFolderRecursive = getComicInfoFileInFolderRecursive;
 // TEMP FOLDER ////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-// TODO maybe? ref: https://stackabuse.com/using-global-variables-in-node-js/
-// or move this to main and keep tabs of multiple tempFolders?
+// TODO: MAYBE: keep tabs of multiple tempFolders?
 
 g_tempFolderPath = undefined;
 
