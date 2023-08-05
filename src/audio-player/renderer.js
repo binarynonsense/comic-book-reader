@@ -286,7 +286,10 @@ function pauseTrack(refresh = true) {
 }
 
 function scrollToCurrent() {
-  if (g_currentTrackIndex && g_tracks.length > g_currentTrackIndex) {
+  if (
+    g_currentTrackIndex !== undefined &&
+    g_tracks.length > g_currentTrackIndex
+  ) {
     let index = g_tracks[g_currentTrackIndex].fileIndex;
     let divId = "ap-playlist-track-" + index;
     document.getElementById(divId).scrollIntoView({
