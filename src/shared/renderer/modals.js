@@ -27,7 +27,10 @@ export function show(options) {
     }
     // title
     if (options.title && typeof options.title === "string") {
-      modalDiv.querySelector(".modal-title").innerHTML = options.title;
+      modalDiv.querySelector(".modal-title").innerHTML = options.title.replace(
+        /\n/g,
+        "<br>"
+      );
       modalDiv
         .querySelector(".modal-title")
         .classList.remove("set-display-none");
