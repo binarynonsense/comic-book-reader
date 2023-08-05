@@ -31,21 +31,31 @@ async function extractImages(
   password
 ) {
   try {
+    let success = false;
     if (inputFileType === FileDataType.ZIP) {
-      fileFormats.extractZip(inputFilePath, tempFolderPath, password);
+      success = fileFormats.extractZip(inputFilePath, tempFolderPath, password);
     } else if (inputFileType === FileDataType.RAR) {
-      await fileFormats.extractRar(inputFilePath, tempFolderPath, password);
+      success = await fileFormats.extractRar(
+        inputFilePath,
+        tempFolderPath,
+        password
+      );
     } else if (inputFileType === FileDataType.SEVENZIP) {
-      await fileFormats.extract7Zip(inputFilePath, tempFolderPath, password);
+      success = await fileFormats.extract7Zip(
+        inputFilePath,
+        tempFolderPath,
+        password
+      );
     } else if (inputFileType === FileDataType.EPUB_COMIC) {
-      await fileFormats.extractEpub(inputFilePath, tempFolderPath);
+      success = await fileFormats.extractEpub(inputFilePath, tempFolderPath);
     } else {
       process.send("conversionExtractImages: invalid file type");
       return;
     }
-    process.send("success");
+    if (success) process.send("success");
+    else throw "error";
   } catch (error) {
-    process.send(error.message);
+    process.send("conversionExtractImages: couldnt extract the file");
   }
 }
 

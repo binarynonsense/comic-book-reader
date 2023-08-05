@@ -403,6 +403,7 @@ function initHandleIpcCallbacks() {
 ///////////////////////////////////////////////////////////////////////////////
 
 function stopError(error) {
+  fileUtils.cleanUpTempFolder();
   sendIpcToRenderer("update-log-text", error);
   sendIpcToRenderer(
     "update-log-text",

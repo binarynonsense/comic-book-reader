@@ -208,8 +208,9 @@ async function extractRar(filePath, tempFolderPath, password) {
     });
     const { files } = extractor.extract();
     [...files]; // lazy initialization? the files are not extracted if I don't do this
+    return true;
   } catch (error) {
-    throw error;
+    return false;
   }
 }
 exports.extractRar = extractRar;
@@ -273,8 +274,9 @@ function extractZip(filePath, tempFolderPath, password) {
     let zip = new AdmZip(filePath);
     const imageData = zip.readFile("");
     zip.extractAllTo(tempFolderPath, true, false, password);
+    return true;
   } catch (error) {
-    throw error;
+    return false;
   }
 }
 exports.extractZip = extractZip;
@@ -437,13 +439,13 @@ async function extract7Zip(filePath, tempFolderPath, password) {
     });
 
     if (promise.success === true) {
-      return;
+      return true;
     } else if (promise.success === false) {
       throw promise.data;
     }
     throw "Error: unknown error extracting 7z file";
   } catch (error) {
-    throw error;
+    return false;
   }
 }
 exports.extract7Zip = extract7Zip;
@@ -590,73 +592,72 @@ async function extractEpubImageBuffer(filePath, imageID) {
 exports.extractEpubImageBuffer = extractEpubImageBuffer;
 
 async function extractEpub(filePath, tempFolderPath) {
-  // TODO catch errors
-  const EPub = require("epub");
-  const epub = new EPub(filePath);
+  try {
+    const EPub = require("epub");
+    const epub = new EPub(filePath);
 
-  // parse epub
-  await new Promise((resolve, reject) => {
-    epub.parse();
-    epub.on("error", reject);
-    epub.on("end", (err) => {
-      if (err) {
-        return reject({
-          error: true,
-          message: err,
-        });
-      }
-      return resolve({
-        success: true,
+    // parse epub
+    let promise = await new Promise((resolve, reject) => {
+      epub.parse();
+      epub.on("error", reject);
+      epub.on("end", (error) => {
+        if (error) {
+          resolve({ success: false, error: error });
+        } else {
+          resolve({
+            success: true,
+          });
+        }
       });
     });
-  });
+    if (!promise.success) throw promise.error;
 
-  // get list of image IDs
-  let imageIDs = [];
-  for (let index = 0; index < epub.spine.contents.length; index++) {
-    const element = epub.spine.contents[index];
-    await new Promise((resolve, reject) => {
-      epub.getChapter(element.id, function (err, data) {
-        if (err) {
-          return reject({
-            error: true,
-            message: err,
-          });
-        } else {
-          const rex = /<img[^>]+src="([^">]+)/g;
-          while ((m = rex.exec(data))) {
-            // e.g. /images/img-0139/OPS/images/0139.jpeg
-            let id = m[1].split("/")[2];
-            imageIDs.push(id);
+    // get list of image IDs
+    let imageIDs = [];
+    for (let index = 0; index < epub.spine.contents.length; index++) {
+      const element = epub.spine.contents[index];
+      let promise = await new Promise((resolve, reject) => {
+        epub.getChapter(element.id, function (error, data) {
+          if (error) {
+            resolve({ success: false, error: error });
+          } else {
+            const rex = /<img[^>]+src="([^">]+)/g;
+            while ((m = rex.exec(data))) {
+              // e.g. /images/img-0139/OPS/images/0139.jpeg
+              let id = m[1].split("/")[2];
+              imageIDs.push(id);
+            }
+            resolve({
+              success: true,
+            });
           }
-          return resolve({
-            success: true,
-          });
-        }
+        });
       });
-    });
-  }
+      if (!promise.success) throw promise.error;
+    }
 
-  // extract and save images
-  for (let index = 0; index < imageIDs.length; index++) {
-    const imageID = imageIDs[index];
-    await new Promise((resolve, reject) => {
-      epub.getImage(imageID, function (err, data, mimeType) {
-        if (err) {
-          return reject({
-            error: true,
-            message: err,
-          });
-        } else {
-          let extension = mimeType.split("/")[1];
-          let filePath = path.join(tempFolderPath, index + "." + extension);
-          fs.writeFileSync(filePath, Buffer.from(data), "binary");
-          return resolve({
-            success: true,
-          });
-        }
+    // extract and save images
+    for (let index = 0; index < imageIDs.length; index++) {
+      const imageID = imageIDs[index];
+      let promise = await new Promise((resolve, reject) => {
+        epub.getImage(imageID, function (error, data, mimeType) {
+          if (error) {
+            resolve({ success: false, error: error });
+          } else {
+            let extension = mimeType.split("/")[1];
+            let filePath = path.join(tempFolderPath, index + "." + extension);
+            fs.writeFileSync(filePath, Buffer.from(data), "binary");
+            resolve({
+              success: true,
+            });
+          }
+        });
       });
-    });
+    }
+
+    return true;
+  } catch (error) {
+    return false;
   }
 }
 exports.extractEpub = extractEpub;
