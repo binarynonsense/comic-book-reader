@@ -489,48 +489,59 @@ exports.create7Zip = create7Zip;
 async function getEpubImageIdsList(filePath) {
   // ref: https://github.com/julien-c/epub/blob/master/example/example.js
   // ref: https://github.com/julien-c/epub/issues/16
-  const EPub = require("epub");
-  const epub = new EPub(filePath);
+  try {
+    const EPub = require("epub");
+    const epub = new EPub(filePath);
 
-  await new Promise((resolve, reject) => {
-    epub.on("error", function (error) {
-      throw error;
-    });
-    epub.on("end", function (error) {
-      if (error) {
-        reject({ on: "end", error });
-      } else {
-        resolve();
-      }
-    });
-    epub.parse();
-  });
-
-  let imageIDs = [];
-  for (let index = 0; index < epub.spine.contents.length; index++) {
-    await new Promise((resolve, reject) => {
-      epub.getChapter(epub.spine.contents[index].id, function (error, data) {
+    let promise = await new Promise((resolve, reject) => {
+      epub.on("error", function (error) {
+        resolve({ success: false, error: error });
+      });
+      epub.on("end", function (error) {
         if (error) {
-          reject({
-            error: true,
-            message: error,
-          });
+          resolve({ success: false, error: error });
         } else {
-          // ref: https://stackoverflow.com/questions/14939296/extract-image-src-from-a-string/14939476
-          const rex = /<img[^>]+src="([^">]+)/g;
-          while ((m = rex.exec(data))) {
-            // e.g. /images/img-0139/OPS/images/0139.jpeg
-            let id = m[1].split("/")[2];
-            imageIDs.push(id);
-          }
-          resolve({
-            success: true,
-          });
+          resolve({ success: true, error: undefined });
         }
       });
+      epub.parse();
     });
+    if (!promise.success) {
+      throw promise.error;
+    }
+
+    let imageIDs = [];
+    for (let index = 0; index < epub.spine.contents.length; index++) {
+      let promise = await new Promise((resolve, reject) => {
+        epub.getChapter(epub.spine.contents[index].id, function (error, data) {
+          if (error) {
+            resolve({
+              success: false,
+              error: error,
+            });
+          } else {
+            // ref: https://stackoverflow.com/questions/14939296/extract-image-src-from-a-string/14939476
+            const rex = /<img[^>]+src="([^">]+)/g;
+            while ((m = rex.exec(data))) {
+              // e.g. /images/img-0139/OPS/images/0139.jpeg
+              let id = m[1].split("/")[2];
+              imageIDs.push(id);
+            }
+            resolve({
+              success: true,
+            });
+          }
+        });
+      });
+      if (!promise.success) {
+        throw promise.error;
+      }
+    }
+    return imageIDs;
+  } catch (error) {
+    console.log(error);
+    return undefined;
   }
-  return imageIDs;
 }
 exports.getEpubImageIdsList = getEpubImageIdsList;
 
