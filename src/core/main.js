@@ -92,16 +92,14 @@ const createWindow = () => {
     icon: path.join(__dirname, "assets/images/icon_256x256.png"),
     show: false,
     webPreferences: {
-      sandbox: false,
+      sandbox: false, // needed for the custom-title-bar to work
       preload: path.join(__dirname, "preload.js"),
     },
   });
-  // NOTE: 'sandbox: false' is needed for the custom-title-bar module to work
   g_mainWindow.loadFile(path.join(__dirname, "index.html"));
 
   g_mainWindow.webContents.on("did-finish-load", function () {
     g_isLoaded = true;
-    // if (isDev()) g_mainWindow.webContents.openDevTools();
     settings.init();
     history.init(settings.getValue("history_capacity"));
     i18n.init();
@@ -339,7 +337,6 @@ exports.onMenuToggleDevTools = function () {
 };
 
 exports.onMenuAbout = function () {
-  // TODO: don't use reader modal?
   sendIpcToCoreRenderer(
     "show-modal-info",
     "ACBR",
