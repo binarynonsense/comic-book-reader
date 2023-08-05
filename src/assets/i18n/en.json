@@ -92,13 +92,14 @@
 
   "ui-bg-msg": "To open a file use the menu or press <i>Ctrl+O</i>",
 
-  "ui-modal-info-foldernotfound": "Folder Not Found",
-  "ui-modal-info-filenotfound": "File Not Found",
-  "ui-modal-info-fileerror": "File Error",
+  "ui-modal-title-foldernotfound": "Folder Not Found",
+  "ui-modal-title-filenotfound": "File Not Found",
+  "ui-modal-title-foldererror": "Folder Error",
+  "ui-modal-title-fileerror": "File Error",
   "ui-modal-info-invalidformat": "Not a valid file format",
   "ui-modal-info-couldntopen-rar": "Couldn't open the RAR file",
   "ui-modal-info-couldntopen-zip": "Couldn't open the ZIP file",
-  "ui-modal-info-couldntopen-zip-aes": "Couldn't open the ZIP file\nAES encryption not supported for passwords (only ZipCrypto)",
+  "ui-modal-info-couldntopen-zip-aes": "Couldn't open the ZIP file.\nAES encryption not supported for passwords (only ZipCrypto).",
   "ui-modal-info-couldntopen-7z": "Couldn't open the 7Z file",
   "ui-modal-info-couldntopen-epub": "Couldn't open the EPUB file",
   "ui-modal-info-couldntopen-pdf": "Couldn't open the PDF file",

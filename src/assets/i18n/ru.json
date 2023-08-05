@@ -92,9 +92,10 @@
 
   "ui-bg-msg": "Чтобы открыть файл, воспользуйтесь меню или нажмите <i>Ctrl+O</i>",
 
-  "[NEEDS TRANSLATION]ui-modal-info-foldernotfound": "Folder Not Found",
-  "ui-modal-info-filenotfound": "Файл не найден",
-  "ui-modal-info-fileerror": "Ошибка файла",
+  "[NEEDS TRANSLATION]ui-modal-title-foldernotfound": "Folder Not Found",
+  "ui-modal-title-filenotfound": "Файл не найден",
+  "[NEEDS TRANSLATION]ui-modal-title-foldererror": "Folder Error",
+  "ui-modal-title-fileerror": "Ошибка файла",
   "ui-modal-info-invalidformat": "Недопустимый формат файла",
   "ui-modal-info-couldntopen-rar": "Не удалось открыть файл RAR",
   "ui-modal-info-couldntopen-zip": "Не удалось открыть файл ZIP",
@@ -102,7 +103,7 @@
   "ui-modal-info-couldntopen-7z": "Не удалось открыть Файл 7Z",
   "ui-modal-info-couldntopen-epub": "Не удалось открыть файл EPUB",
   "ui-modal-info-couldntopen-pdf": "Не удалось открыть файл PDF",
-  "[NEEDS TRANSLATION]ui-modal-info-couldntopen-imagesfolder-empty" : "Couldn't open the folder\nNo images found",
+  "[NEEDS TRANSLATION]ui-modal-info-couldntopen-imagesfolder-empty" : "Couldn't open the folder.\nNo images found.",
   "ui-modal-info-imagesavedto": "Файл изображения сохранён в",
   "ui-modal-info-errorexportingpage": "Ошибка: Не удалось экспортировать страницу",
   "ui-modal-info-version": "Версия",
