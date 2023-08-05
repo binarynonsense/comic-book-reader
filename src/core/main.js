@@ -176,6 +176,21 @@ app.on("web-contents-created", (event, contents) => {
   });
 });
 
+// TODO in case I decide to allow only one instance
+// ref: https://github.com/electron/electron/blob/master/docs/api/app.md#apprequestsingleinstancelock
+// const gotTheLock = app.requestSingleInstanceLock()
+// if (!gotTheLock) {
+//   app.quit()
+// } else {
+//   app.on('second-instance', (event, commandLine, workingDirectory) => {
+//     // Someone tried to run a second instance, we should focus our window.
+//     if (myWindow) {
+//       if (myWindow.isMinimized()) myWindow.restore()
+//       myWindow.focus()
+//     }
+//   })
+// }
+
 ///////////////////////////////////////////////////////////////////////////////
 // IPC SEND ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
