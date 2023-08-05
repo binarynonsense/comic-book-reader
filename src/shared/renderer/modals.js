@@ -16,7 +16,6 @@ export function show(options) {
       modalDiv.firstChild.style.width = `${options.frameWidth}px`;
     }
     // fill data ///
-    // TODO: sanitize input more thoroughly
     // zindex
     if (options.zIndexDelta && Number.isInteger(options.zIndexDelta)) {
       modalDiv.style.zIndex = `${
