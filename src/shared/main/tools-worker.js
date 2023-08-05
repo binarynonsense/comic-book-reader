@@ -21,9 +21,7 @@ process.on("message", (message) => {
       message[5],
       message[6]
     );
-  } //else if (message[0] === "palette") {
-  //   extractPalette(message[1]);
-  // }
+  }
 });
 
 async function extractImages(
