@@ -84,18 +84,3 @@ async function createFile(
     process.send(err);
   }
 }
-
-// function extractPalette(data) {
-//   try {
-//     // TODO: data seemes to be changed from an array to an object during sending
-//     // there must be a way to avoid that, in the mean time I use Object.values()
-//     // but would like to learn how to do this more properly
-//     console.log("extracting...");
-//     let hexColors = palette.getHexColorsPalette(Object.values(data));
-//     console.log("done");
-//     //console.log(hexColors);
-//     process.send(["success", hexColors]);
-//   } catch (err) {
-//     process.send(err);
-//   }
-// }
