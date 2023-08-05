@@ -92,6 +92,7 @@
 
   "ui-bg-msg": "Чтобы открыть файл, воспользуйтесь меню или нажмите <i>Ctrl+O</i>",
 
+  "[NEEDS TRANSLATION]ui-modal-info-foldernotfound": "Folder Not Found",
   "ui-modal-info-filenotfound": "Файл не найден",
   "ui-modal-info-fileerror": "Ошибка файла",
   "ui-modal-info-invalidformat": "Недопустимый формат файла",

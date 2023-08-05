@@ -92,6 +92,7 @@
 
   "ui-bg-msg": "Um eine Datei zu öffnen, verwenden Sie das Menü oder drücken Sie <i>Strg+O</i>",
 
+  "[NEEDS TRANSLATION]ui-modal-info-foldernotfound": "Folder Not Found",
   "ui-modal-info-filenotfound": "Datei nicht gefunden",
   "ui-modal-info-fileerror": "Dateifehler",
   "ui-modal-info-invalidformat": "Kein gültiges Dateiformat",
