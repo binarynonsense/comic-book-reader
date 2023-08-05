@@ -280,7 +280,7 @@ function initOnIpcCallbacks() {
     closeCurrentFile(false);
     sendIpcToRenderer(
       "show-modal-info",
-      _("ui-modal-info-fileerror"),
+      _("ui-modal-title-fileerror"),
       _("ui-modal-info-couldntopen-epub"),
       _("ui-modal-prompt-button-ok")
     );
@@ -339,7 +339,7 @@ function initOnIpcCallbacks() {
       closeCurrentFile();
       sendIpcToRenderer(
         "show-modal-info",
-        _("ui-modal-info-fileerror"),
+        _("ui-modal-title-fileerror"),
         _("ui-modal-info-couldntopen-pdf"),
         _("ui-modal-prompt-button-ok")
       );
@@ -597,7 +597,7 @@ function tryOpen(filePath, bookType, historyEntry) {
   if (filePath === undefined || filePath === "" || !fs.existsSync(filePath)) {
     sendIpcToRenderer(
       "show-modal-info",
-      _("ui-modal-info-filenotfound"),
+      _("ui-modal-title-filenotfound"),
       filePath,
       _("ui-modal-prompt-button-ok")
     );
@@ -618,7 +618,7 @@ function tryOpenPath(filePath, pageIndex, bookType, historyEntry) {
     if (!fs.existsSync(filePath)) {
       sendIpcToRenderer(
         "show-modal-info",
-        _("ui-modal-info-filenotfound"),
+        _("ui-modal-title-filenotfound"),
         filePath,
         _("ui-modal-prompt-button-ok")
       );
@@ -691,8 +691,8 @@ function openImageFolder(folderPath, filePath, pageIndex) {
     sendIpcToRenderer("update-loading", false);
     sendIpcToRenderer(
       "show-modal-info",
-      _("ui-modal-info-foldernotfound"),
-      filePath,
+      _("ui-modal-title-foldernotfound"),
+      folderPath,
       _("ui-modal-prompt-button-ok")
     );
     return;
@@ -704,8 +704,8 @@ function openImageFolder(folderPath, filePath, pageIndex) {
     sendIpcToRenderer("update-loading", false);
     sendIpcToRenderer(
       "show-modal-info",
+      _("ui-modal-title-foldererror"),
       _("ui-modal-info-couldntopen-imagesfolder-empty"),
-      filePath,
       _("ui-modal-prompt-button-ok")
     );
     return;
@@ -794,7 +794,7 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
       } else {
         sendIpcToRenderer(
           "show-modal-info",
-          _("ui-modal-info-fileerror"),
+          _("ui-modal-title-fileerror"),
           _("ui-modal-info-couldntopen-epub"),
           _("ui-modal-prompt-button-ok")
         );
@@ -827,7 +827,7 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
         } else if (rarData.result === "other error") {
           sendIpcToRenderer(
             "show-modal-info",
-            _("ui-modal-info-fileerror"),
+            _("ui-modal-title-fileerror"),
             _("ui-modal-info-couldntopen-rar"),
             _("ui-modal-prompt-button-ok")
           );
@@ -855,7 +855,7 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
         } else {
           sendIpcToRenderer(
             "show-modal-info",
-            _("ui-modal-info-fileerror"),
+            _("ui-modal-title-fileerror"),
             _("ui-modal-info-couldntopen-rar"),
             _("ui-modal-prompt-button-ok")
           );
@@ -888,14 +888,14 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
           if (zipData.extra == "aes") {
             sendIpcToRenderer(
               "show-modal-info",
-              _("ui-modal-info-fileerror"),
+              _("ui-modal-title-fileerror"),
               _("ui-modal-info-couldntopen-zip-aes"),
               _("ui-modal-prompt-button-ok")
             );
           } else {
             sendIpcToRenderer(
               "show-modal-info",
-              _("ui-modal-info-fileerror"),
+              _("ui-modal-title-fileerror"),
               _("ui-modal-info-couldntopen-zip"),
               _("ui-modal-prompt-button-ok")
             );
@@ -924,7 +924,7 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
         } else {
           sendIpcToRenderer(
             "show-modal-info",
-            _("ui-modal-info-fileerror"),
+            _("ui-modal-title-fileerror"),
             _("ui-modal-info-couldntopen-zip"),
             _("ui-modal-prompt-button-ok")
           );
@@ -959,7 +959,7 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
         } else if (sevenData.result === "other error") {
           sendIpcToRenderer(
             "show-modal-info",
-            _("ui-modal-info-fileerror"),
+            _("ui-modal-title-fileerror"),
             _("ui-modal-info-couldntopen-7z"),
             _("ui-modal-prompt-button-ok")
           );
@@ -987,7 +987,7 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
         } else {
           sendIpcToRenderer(
             "show-modal-info",
-            _("ui-modal-info-fileerror"),
+            _("ui-modal-title-fileerror"),
             _("ui-modal-info-couldntopen-7z"),
             _("ui-modal-prompt-button-ok")
           );
@@ -997,7 +997,7 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
       } else {
         sendIpcToRenderer(
           "show-modal-info",
-          _("ui-modal-info-fileerror"),
+          _("ui-modal-title-fileerror"),
           _("ui-modal-info-invalidformat"),
           _("ui-modal-prompt-button-ok")
         );
