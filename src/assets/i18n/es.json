@@ -62,6 +62,8 @@
   "menu-tools-extract-text": "Texto de Imagen (OCR)...",
   "menu-tools-extract-palette": "Paleta de Colores de Imagen...",
   "menu-tools-extract-qr": "Texto en Código QR de Imagen...",
+  "menu-tools-merge": "Unir",
+  "menu-tools-split": "Dividir",
   "menu-tools-other": "Otras",
   "menu-tools-other-dcm": "Digital Comic Museum",
   "menu-tools-other-iab": "Internet Archive Books",
@@ -358,11 +360,11 @@
   "tool-hst-tooltip-open-from-list": "abrir fichero",
   "tool-hst-modal-clearall-message": "¿Está seguro de que quiere eliminar todas las entradas de su historial?",
 
-  "tool-cc-title": "Herramienta de conversión de archivos",
-  "tool-cr-title": "Herramienta de creación de archivo",
-  "tool-ci-title": "Herramienta de conversión de imágenes",
+  "tool-cc-title": "Herramienta de Conversión de Archivos",
+  "tool-cr-title": "Herramienta de Creación de Archivo",
+  "tool-ci-title": "Herramienta de Conversión de Imágenes",
 
-  "tool-et-title": "Herramienta de extracción de texto",
+  "tool-et-title": "Herramienta de Extracción de Texto",
   "tool-et-header-input-file": "Imagen de Entrada",
   "tool-et-header-output-text": "Texto de Salida",
   "tool-et-button-add-file": "Cambiar Imagen",
@@ -372,11 +374,11 @@
   "tool-et-span-language-checkbox-info": "Incluir idiomas que requieren una conexión a internet para funcionar",
   "tool-et-modal-info": "",
 
-  "tool-ec-title": "Herramienta de extracción de páginas",
+  "tool-ec-title": "Herramienta de Extracción de Páginas",
   "tool-ec-modal-log-extracting-to": "En",
   "tool-ec-tooltip-output-folder": "Dentro del directorio indicado, se creará un subdirectorio para guardar las imágenes con el mismo nombre que el archivo a extraer. Si ya existe un subdirectorio con ese nombre, se añadirá un subfijo al nombre para que ningún archivo sea sobreescrito.",
 
-  "tool-ep-title": "Herramienta de extracción de paleta",
+  "tool-ep-title": "Herramienta de Cxtracción de Paleta",
   "tool-ep-header-input-file": "Imagen de Entrada",
   "tool-ep-header-output-palette": "Paleta de Salida",
   "tool-ep-button-add-file": "Cambiar Imagen",
@@ -389,11 +391,11 @@
   "tool-ep-modal-title-exported": "Archivo de Paleta Creado",
   "tool-ep-modal-title-exporting-error": "Error: No se pudo crear el archivo",
 
-  "tool-eq-title": "Herramienta de extracción de código QR",
+  "tool-eq-title": "Herramienta de Extracción de Código QR",
   "tool-eq-modal-alert-title-errorextracting": "ERROR: No se pudo extraer el texto",
   "tool-eq-modal-alert-msg-errornodatafound": "No se encontró el código QR",
 
-  "tool-cq-title": "Herramienta de creación de código QR",  
+  "tool-cq-title": "Herramienta de Creación de Código QR",  
   "tool-cq-header-input-text": "Texto de Entrada",
   "tool-cq-header-output-text": "Imagen de Salida",
   "tool-cq-button-clear": "Borrar Texto",
@@ -443,5 +445,10 @@
   "tool-lvx-button-open-lvx-browser": "Abrir LibriVox En Navegador",
 
   "tool-wik-title": "Diccionario Wiktionary",
-  "tool-wik-button-open-wik-browser": "Abrir Wiktionary En Navegador"
+  "tool-wik-button-open-wik-browser": "Abrir Wiktionary En Navegador",
+
+  "tool-mc-title": "Herramienta de Unión de Archivos",
+
+  "tool-sc-title": "Herramienta de División de Archivos",
+  "tool-sc-number": "Número de Ficheros en los que Dividir"
 }

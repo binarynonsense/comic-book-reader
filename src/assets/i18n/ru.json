@@ -62,6 +62,8 @@
   "menu-tools-extract-text": "Текст из изображения (OCR)...",
   "menu-tools-extract-palette": "Цветовую палитру из изображения...",
   "menu-tools-extract-qr": "Текст QR-кода из изображения...",
+  "[NEEDS TRANSLATION]menu-tools-merge": "Merge",
+  "[NEEDS TRANSLATION]menu-tools-split": "Split",
   "menu-tools-other": "Другое",
   "menu-tools-other-dcm": "Digital Comic Museum",
   "menu-tools-other-iab": "Internet Archive Books",
@@ -443,5 +445,10 @@
   "tool-lvx-button-open-lvx-browser": "Открыть LibriVox в браузере",
 
   "tool-wik-title": "Викисловарь",
-  "tool-wik-button-open-wik-browser": "Открыть Викисловарь в браузере"
+  "tool-wik-button-open-wik-browser": "Открыть Викисловарь в браузере",
+
+  "[NEEDS TRANSLATION]tool-mc-title": "Merge Files Tool",
+
+  "[NEEDS TRANSLATION]tool-sc-title": "Split Files Tool",
+  "[NEEDS TRANSLATION]tool-sc-number": "Number of Files to Split Into"
 }

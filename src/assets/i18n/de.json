@@ -62,6 +62,8 @@
   "menu-tools-extract-text": "Text aus Bild (OCR)...",
   "menu-tools-extract-palette": "Farb-palette aus Bild...",
   "menu-tools-extract-qr": "QR-Code Text aus Bild...",
+  "[NEEDS TRANSLATION]menu-tools-merge": "Merge",
+  "[NEEDS TRANSLATION]menu-tools-split": "Split",
   "menu-tools-other": "Anderes",
   "menu-tools-other-dcm": "Digital Comic Museum",
   "menu-tools-other-iab": "Internet Archive Books",
@@ -443,5 +445,10 @@
   "tool-lvx-button-open-lvx-browser": "Öffne LibriVox Im Browser",
 
   "tool-wik-title": "Wiktionary Dictionary",
-  "tool-wik-button-open-wik-browser": "Öffne Wiktionary Im Browser"
+  "tool-wik-button-open-wik-browser": "Öffne Wiktionary Im Browser",
+
+  "[NEEDS TRANSLATION]tool-mc-title": "Merge Files Tool",
+
+  "[NEEDS TRANSLATION]tool-sc-title": "Split Files Tool",
+  "[NEEDS TRANSLATION]tool-sc-number": "Number of Files to Split Into"
 }

@@ -62,6 +62,8 @@
   "menu-tools-extract-text": "Text From Image (OCR)...",
   "menu-tools-extract-palette": "Color Palette From Image...",
   "menu-tools-extract-qr": "QR Code's Text from Image...",
+  "menu-tools-merge": "Merge",
+  "menu-tools-split": "Split",
   "menu-tools-other": "Other",
   "menu-tools-other-dcm": "Digital Comic Museum",
   "menu-tools-other-iab": "Internet Archive Books",
@@ -198,6 +200,8 @@
   "tool-shared-ui-convert": "Convert",
   "tool-shared-ui-create": "Create",
   "tool-shared-ui-extract": "Extract",
+  "tool-shared-ui-merge": "Merge",
+  "tool-shared-ui-split": "Split",
   "tool-shared-ui-open": "Open",
   "tool-shared-ui-close": "Close",
   "tool-shared-ui-cancel": "Cancel",
@@ -443,5 +447,10 @@
   "tool-lvx-button-open-lvx-browser": "Open LibriVox In Browser",
 
   "tool-wik-title": "Wiktionary Dictionary",
-  "tool-wik-button-open-wik-browser": "Open Wiktionary In Browser"
+  "tool-wik-button-open-wik-browser": "Open Wiktionary In Browser",
+
+  "tool-mc-title": "Merge Files Tool",
+
+  "tool-sc-title": "Split Files Tool",
+  "tool-sc-number": "Number of Files to Split Into"
 }
