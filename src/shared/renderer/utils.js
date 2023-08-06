@@ -13,8 +13,16 @@ export function isVersionOlder(testVersion, referenceVersion) {
   if (test.minor < reference.minor) return true;
   if (test.patch < reference.patch) return true;
   if (test.beta !== undefined) {
-    if (reference.beta === undefined) return true;
-    if (test.beta < reference.beta) return true;
+    if (reference.beta === undefined && reference.alpha === undefined)
+      return true;
+    if (reference.beta !== undefined) {
+      if (test.beta < reference.beta) return true;
+    }
+  }
+  if (test.alpha !== undefined) {
+    if (reference.beta !== undefined) return true;
+    if (reference.alpha === undefined) return true;
+    if (test.alpha < reference.alpha) return true;
   }
   return false;
 }
@@ -24,7 +32,7 @@ function separateVersionText(version) {
     // TODO: alpha-beta test is not correct, but good enough for now, fix it
     // I added |-alpha for a quick fix for what I needed but is not correct
     const regex =
-      /^(?<major>[0-9]+)\.(?<minor>[0-9]+)\.(?<patch>[0-9]+)(-beta|-alpha(?<beta>[0-9]+))*$/;
+      /^(?<major>[0-9]+)\.(?<minor>[0-9]+)\.(?<patch>[0-9]+)(-alpha(?<alpha>[0-9]+))|(-beta(?<beta>[0-9]+))*$/;
     let match = version.match(regex);
     if (match === null) return undefined;
     return match.groups;
