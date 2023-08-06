@@ -1,7 +1,7 @@
 {
   "@metadata": {
     "authors": ["trzyglow"],
-    "last-updated": "2023-08-05",
+    "last-updated": "2023-08-06",
     "acbr-version": "3.0.0-beta1",
     "comments": "Deutsche Lokalisierung",
     "locale": "de",
@@ -192,7 +192,7 @@
   "tool-shared-ui-search-input": "Sucheingabe",
   "tool-shared-ui-search-results": "Suchergebnisse",
   "tool-shared-ui-search-placeholder": "Geben Sie Ihre Suchbegriffe ein",  
-  "tool-shared-ui-search-item-open-acbr": "In acbr öffnen",
+  "tool-shared-ui-search-item-open-acbr": "In ACBR öffnen",
   "tool-shared-ui-search-item-open-browser": "Im browser öffnen",
   "tool-shared-ui-search-nothing-found": "Keine Ergebnisse stimmen mit Ihren Suchkriterien überein",
   "tool-shared-ui-button-open-in-acbr": "In ACBR öffnen",
