@@ -135,16 +135,28 @@ const deleteTempFolderRecursive = function (folderPath) {
 async function getRarEntriesList(filePath, password) {
   try {
     const unrar = require("node-unrar-js");
-    var buf = Uint8Array.from(fs.readFileSync(filePath)).buffer;
-    var extractor = await unrar.createExtractorFromData({
-      data: buf,
-      password: password,
-    });
-    const list = extractor.getFileList();
+    let buf = Uint8Array.from(fs.readFileSync(filePath)).buffer;
 
+    let extractor;
+    try {
+      extractor = await unrar.createExtractorFromData({
+        data: buf,
+        password: password,
+      });
+    } catch (error) {
+      if (error.message.startsWith("Password for encrypted")) {
+        // the file list is also encrypted
+        // full message is something like:
+        // "Password for encrypted file or header is not specified"
+        return { result: "password required", paths: [] };
+      } else {
+        throw error;
+      }
+    }
+
+    const list = extractor.getFileList();
     // const arcHeader = list.arcHeader;
     // console.log(arcHeader);
-
     const fileHeaders = [...list.fileHeaders];
     let imgEntries = [];
     let isEncrypted = false;
@@ -181,8 +193,8 @@ exports.getRarEntriesList = getRarEntriesList;
 async function extractRarEntryBuffer(rarPath, entryName, password) {
   try {
     const unrar = require("node-unrar-js");
-    var buf = Uint8Array.from(fs.readFileSync(rarPath)).buffer;
-    var extractor = await unrar.createExtractorFromData({
+    let buf = Uint8Array.from(fs.readFileSync(rarPath)).buffer;
+    let extractor = await unrar.createExtractorFromData({
       data: buf,
       password: password,
     });
@@ -357,6 +369,7 @@ async function get7ZipEntriesList(filePath, password) {
     // shouldn't reach this point
     return { result: "other error", paths: [] };
   } catch (error) {
+    console.log(error);
     return { result: "other error", paths: [] };
   }
 }
