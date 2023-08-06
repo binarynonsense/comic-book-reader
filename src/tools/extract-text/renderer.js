@@ -42,6 +42,7 @@ function init(filePath) {
   document
     .getElementById("tool-et-start-button")
     .addEventListener("click", (event) => {
+      switchSection(0);
       onStart();
     });
   // sections menu
