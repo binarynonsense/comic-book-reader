@@ -682,7 +682,6 @@ async function createEpub(
   imageStorageSelection
 ) {
   try {
-    console.log("create epub");
     const epub = require("./epub-generator");
     await epub.createComic(
       imgPathsList,
