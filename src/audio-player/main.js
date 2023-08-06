@@ -53,7 +53,6 @@ function initOnIpcCallbacks() {
   });
 
   on("open-files", () => {
-    console.log("open-files");
     callOpenFilesDialog(0);
   });
 
