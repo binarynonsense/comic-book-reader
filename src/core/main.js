@@ -368,6 +368,13 @@ exports.onMenuAbout = function () {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+// NOTE: (2023/08/06) custom-electron-titlebar has a bug in its css. It's
+// been fixed in this PR:
+// https://github.com/AlexTorresDev/custom-electron-titlebar/pull/233/files
+// but it's not available in the current release (v4.2.5), so I'm applying
+// the solution manually for now.
+// TODO: check for future updates that fix the issue.
+
 // NOTE: (2023/08/02) I'm using v3.x of the tesseract.js module as v4.x
 // was giving errors.
 // TODO: try newer versions & investigate further.
