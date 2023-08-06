@@ -119,7 +119,7 @@
   "ui-modal-info-metadata-numpages": "Páginas",
   "ui-modal-info-metadata-created": "Creado",
   "ui-modal-info-metadata-modified": "Modificado",
-  "ui-modal-info-metadata-mimetype": "Tipo Mime",
+  "ui-modal-info-metadata-mimetype": "Tipo MIME",
   "ui-modal-info-metadata-security": "Seguridad",
   "ui-modal-info-metadata-security-encrypted": "Encriptado",
   "ui-modal-info-metadata-security-unencrypted": "No Encriptado",
