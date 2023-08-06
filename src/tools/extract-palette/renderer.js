@@ -41,6 +41,7 @@ function init(filePath) {
   document
     .getElementById("tool-ep-start-button")
     .addEventListener("click", (event) => {
+      switchSection(0);
       onStart();
     });
   document
