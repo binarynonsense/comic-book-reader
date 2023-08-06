@@ -178,6 +178,8 @@
   "tool-shared-ui-pdf-extraction-o1": "Verwende die Information des eingebetteten Bildes wenn möglich, 300 dpi wenn nicht",
   "tool-shared-ui-pdf-extraction-o2": "Verwende 300 dpi",
   "tool-shared-ui-pdf-extraction-o3": "Verwende 72 dpi",
+  "[NEEDS TRANSLATION]tool-shared-ui-creation-password": "Password",
+  "[NEEDS TRANSLATION]tool-shared-ui-creation-password-tooltip": "The provided password will be used to encrypt the file/s if the output format is among the ones that support this option ({0}). If the password is left empty the file/s won't be encrypted.",
   "tool-shared-ui-pdf-creation": "PDF Erstellung",
   "tool-shared-ui-pdf-creation-tooltip": "Die Daten/Auflösung des eingebetteten Bildes werden intakt behalten, diese Option verändert nur die 'Seitengröße' Werte (in Punkten) welche in der neuen PDF gespeichert sind, angenommen bei einer Benutzereinheit von 1 (72 dpi), basierend auf der dpi des gewählten Eingangs.",
   "tool-shared-ui-pdf-creation-o1": "Verwende die dpi des eingebetteten Bildes wenn möglich, 300 dpi wenn nicht",

@@ -178,6 +178,8 @@
   "tool-shared-ui-pdf-extraction-o1": "Usar la información de la imagen incrustada si es posible, 300dpi si no",
   "tool-shared-ui-pdf-extraction-o2": "Usar 300dpi",
   "tool-shared-ui-pdf-extraction-o3": "Usar 72dpi",
+  "tool-shared-ui-creation-password": "Contraseña",
+  "tool-shared-ui-creation-password-tooltip": "La contraseña proporcionada se usará para encriptar el/los fichero/s si el formato de salida se encuentra entre los que soportan esta opción ({0}). Si la contraseña se deja en blanco el/los fichero/s no se encriptarán.",
   "tool-shared-ui-pdf-creation": "Creación de PDF",
   "tool-shared-ui-pdf-creation-tooltip": "La información/resolución de la imagen incrustada se mantendrá intacta, esta opción sólo cambia el valor de 'tamaño de página' (en puntos) almacenado en el nuevo PDF, asumiendo un valor de userunit de 1 (72dpi), a partir de los dpi de entrada seleccionados.",
   "tool-shared-ui-pdf-creation-o1": "Usar los dpi de la imagen si están disponibles, 300dpi si no",

@@ -178,6 +178,8 @@
   "tool-shared-ui-pdf-extraction-o1": "Использовать информацию о встроенном изображении, если это возможно, 300 dpi, если нет",
   "tool-shared-ui-pdf-extraction-o2" : "Использовать 300 dpi",
   "tool-shared-ui-pdf-extraction-o3" : "Использовать 72 dpi",
+  "[NEEDS TRANSLATION]tool-shared-ui-creation-password": "Password",
+  "[NEEDS TRANSLATION]tool-shared-ui-creation-password-tooltip": "The provided password will be used to encrypt the file/s if the output format is among the ones that support this option ({0}). If the password is left empty the file/s won't be encrypted.",
   "tool-shared-ui-pdf-creation" : "Создание PDF",
   "tool-shared-ui-pdf-creation-tooltip" : "Данные/разрешение встроенного изображения останутся нетронутыми. Эта опция просто изменяет значение 'размера страницы' (в пунктах), сохранённое в новом PDF, принимая значение пользовательского блока равным 1 (72 dpi), основанное на выбранном значении dpi входных данных.",
   "tool-shared-ui-pdf-creation-o1" : "Использовать dpi изображения, если оно доступно, 300dpi, если нет",
