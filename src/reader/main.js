@@ -212,6 +212,8 @@ function initOnIpcCallbacks() {
         } else {
           // shouldn't happen?
         }
+      } else if (data.dimensions) {
+        g_fileData.pageDimensions = data.dimensions;
       }
     }
     renderPageInfo();
@@ -530,6 +532,7 @@ let g_fileData = {
   numPages: 0,
   pageIndex: 0,
   pageRotation: 0,
+  pageDimensions: undefined,
   password: "",
   getPageCallback: undefined,
   data: undefined,
@@ -545,7 +548,7 @@ function cleanUpFileData() {
   g_fileData.numPages = 0;
   g_fileData.pageIndex = 0;
   g_fileData.pageRotation = 0;
-  g_fileData.password = "";
+  (g_fileData.pageDimensions = undefined), (g_fileData.password = "");
   g_fileData.getPageCallback = undefined;
   g_fileData.data = undefined;
   g_fileData.metadata = undefined;
@@ -2151,6 +2154,19 @@ exports.onMenuFileProperties = async function () {
       }`;
       message += "\n";
     }
+    // dimensions
+    if (g_fileData.pageDimensions) {
+      message += `${_("ui-modal-info-metadata-pagedimensions")}: ${
+        g_fileData.pageDimensions[0]
+      } x ${g_fileData.pageDimensions[1]}`;
+      if (g_fileData.type === FileDataType.PDF) {
+        message += " pt";
+      } else {
+        message += " px";
+      }
+      message += "\n";
+    }
+
     // created
     if (
       g_fileData.type === FileDataType.PDF &&

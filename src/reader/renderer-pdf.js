@@ -178,7 +178,14 @@ function renderCurrentPDFPage(rotation, scrollBarPos, sendPageLoaded) {
   let renderTask = g_currentPdf.page.render(renderContext);
   renderTask.promise.then(function () {
     setScrollBarsPosition(scrollBarPos);
-    if (sendPageLoaded) sendIpcToMain("page-loaded");
+    if (sendPageLoaded) {
+      const [x1, y1, x2, y2] = g_currentPdf.page.view;
+      const width = x2 - x1;
+      const height = y2 - y1;
+      sendIpcToMain("page-loaded", {
+        dimensions: [width, height],
+      });
+    }
   });
 }
 

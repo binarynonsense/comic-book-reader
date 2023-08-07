@@ -892,7 +892,10 @@ export function renderImg64(
     image.onload = function () {
       container.appendChild(image);
       setFilterClass(image);
-      if (sendPageLoaded) sendIpcToMain("page-loaded");
+      if (sendPageLoaded)
+        sendIpcToMain("page-loaded", {
+          dimensions: [image.naturalWidth, image.naturalHeight],
+        });
     };
     image.src = img64;
     image.id = "page-img";
@@ -914,6 +917,7 @@ export function renderImg64(
     var image = new Image();
     image.onload = function () {
       // ref: https://stackoverflow.com/questions/44076873/resize-image-and-rotate-canvas-90-degrees
+      // TODO: use naturalWidth & naturalHeight???
       canvas.width = image.height;
       canvas.height = image.width;
       if (rotation === 90) {
@@ -937,7 +941,10 @@ export function renderImg64(
       }
       context.drawImage(image, 0, 0);
       context.setTransform(1, 0, 0, 1, 0, 0); // restore default
-      if (sendPageLoaded) sendIpcToMain("page-loaded");
+      if (sendPageLoaded)
+        sendIpcToMain("page-loaded", {
+          dimensions: [image.naturalWidth, image.naturalHeight],
+        });
     };
     image.src = img64;
   }
