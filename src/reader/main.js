@@ -2124,28 +2124,28 @@ exports.onMenuFileProperties = async function () {
     }`;
     message += "\n";
     // title
-    if (g_fileData.metadata.title) {
+    if (g_fileData.metadata && g_fileData.metadata.title) {
       message += `${_("ui-modal-info-metadata-title")}: ${
         g_fileData.metadata.title
       }`;
       message += "\n";
     }
     // author
-    if (g_fileData.metadata.author) {
+    if (g_fileData.metadata && g_fileData.metadata.author) {
       message += `${_("ui-modal-info-metadata-author")}: ${
         g_fileData.metadata.author
       }`;
       message += "\n";
     }
     // subject
-    if (g_fileData.metadata.subject) {
+    if (g_fileData.metadata && g_fileData.metadata.subject) {
       message += `${_("ui-modal-info-metadata-subject")}: ${
         g_fileData.metadata.subject
       }`;
       message += "\n";
     }
     // keywords
-    if (g_fileData.metadata.keywords) {
+    if (g_fileData.metadata && g_fileData.metadata.keywords) {
       message += `${_("ui-modal-info-metadata-keywords")}: ${
         g_fileData.metadata.keywords
       }`;
