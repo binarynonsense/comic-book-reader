@@ -1,6 +1,6 @@
 {
   "name": "acbr-comic-book-reader",
-  "version": "3.0.0-beta2",
+  "version": "3.0.0",
   "description": "ACBR - A comic book reader and converter for cbz and cbr files",
   "main": "./src/core/main.js",
   "author": "Álvaro García (www.binarynonsense.com)",
