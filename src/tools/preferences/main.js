@@ -101,7 +101,7 @@ function initOnIpcCallbacks() {
   on("set-language", (value) => {
     i18n.loadLocale(value);
     settings.setValue("locale", i18n.getLoadedLocale());
-    reader.rebuildMenuAndToolBars();
+    reader.rebuildMenuAndToolBars(false);
     for (const [key, value] of Object.entries(core.getTools())) {
       if (value.updateLocalizedText) value.updateLocalizedText();
     }
@@ -110,7 +110,7 @@ function initOnIpcCallbacks() {
     themes.load(value);
     settings.setValue("theme", value);
     sendIpcToCoreRenderer("update-css-properties", themes.getData());
-    reader.rebuildMenuAndToolBars();
+    reader.rebuildMenuAndToolBars(false);
   });
   on("set-layout-clock", (value) => {
     settings.setValue("layoutClock", value);
