@@ -12,6 +12,7 @@
   color: var(--titlebar-text-color) !important;
   font-weight: bold !important;
   /* z-index: 100 !important; */ /* default 9999 */
+  min-width: 550px;
 }
 
 .cet-menubar-menu-title,

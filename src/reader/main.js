@@ -1345,21 +1345,23 @@ function renderTitle() {
 
 function generateTitle() {
   let title = "---";
-  let blankSpace = "           ";
-  if (g_fileData.state === FileDataState.NOT_SET) {
-    title = "Comic Book Reader - ACBR" + blankSpace;
-  } else if (core.getMainWindow().getSize()[0] < 600) {
-    title = "ACBR" + blankSpace;
+  if (core.getMainWindow().getSize()[0] < 600) {
+    title = "ACBR";
+  } else if (g_fileData.state === FileDataState.NOT_SET) {
+    title = "Comic Book Reader - ACBR";
   } else {
     title = `${g_fileData.name}`;
     let length = 50;
-    if (core.getMainWindow().getSize()[0] > 1500) length = 120;
+    if (core.getMainWindow().getSize()[0] < 700) length = 10;
+    else if (core.getMainWindow().getSize()[0] < 750) length = 20;
+    else if (core.getMainWindow().getSize()[0] < 850) length = 35;
+    else if (core.getMainWindow().getSize()[0] > 1500) length = 120;
     else if (core.getMainWindow().getSize()[0] >= 1280) length = 100;
     title =
       title.length > length
         ? title.substring(0, length - 3) + "..."
         : title.substring(0, length);
-    title += " - ACBR" + blankSpace;
+    title += " - ACBR";
   }
   return title;
 }
