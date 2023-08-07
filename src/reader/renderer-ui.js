@@ -1013,6 +1013,7 @@ function showModalPrompt(
     g_openModal = modals.show({
       title: question,
       message: defaultValue,
+      zIndexDelta: -450,
       input: {},
       close: {
         callback: () => {
@@ -1041,6 +1042,7 @@ function showModalPrompt(
     g_openModal = modals.show({
       title: question,
       message: defaultValue,
+      zIndexDelta: -450,
       input: {},
       close: {
         callback: () => {
@@ -1070,6 +1072,7 @@ function showModalPrompt(
     g_openModal = modals.show({
       title: question,
       message: defaultValue,
+      zIndexDelta: -450,
       input: {},
       close: {
         callback: () => {
@@ -1104,6 +1107,7 @@ function showModalPromptPassword(title, message, textButton1, textButton2) {
   g_openModal = modals.show({
     title: title,
     message: message,
+    zIndexDelta: -450,
     input: { type: "password" },
     close: {
       callback: () => {
@@ -1139,6 +1143,7 @@ function showModalAlert(title, message, textButton1) {
   g_openModal = modals.show({
     title: title,
     message: message,
+    zIndexDelta: -450,
     close: {
       callback: () => {
         modalClosed();
@@ -1170,6 +1175,7 @@ function showModalQuestionOpenAs(
   g_openModal = modals.show({
     title: title,
     message: message,
+    zIndexDelta: -450,
     close: {
       callback: () => {
         modalClosed();
@@ -1204,6 +1210,7 @@ function showModalProperties(title, message, textButton1) {
     title: title,
     log: { message: message },
     frameWidth: 600,
+    zIndexDelta: -450,
     close: {
       callback: () => {
         modalClosed();
