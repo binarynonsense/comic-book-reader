@@ -111,6 +111,8 @@ exports.setComicBookOpened = setComicBookOpened = function (isEnabled) {
   );
   Menu.getApplicationMenu().getMenuItemById("convert-file").enabled = isEnabled;
   Menu.getApplicationMenu().getMenuItemById("extract-file").enabled = isEnabled;
+  Menu.getApplicationMenu().getMenuItemById("file-properties").enabled =
+    isEnabled;
   EnableItemRecursive(
     Menu.getApplicationMenu().getMenuItemById("file-page"),
     isEnabled
@@ -165,6 +167,7 @@ exports.setImageOpened = function () {
   setComicBookOpened(true);
   Menu.getApplicationMenu().getMenuItemById("convert-file").enabled = false;
   Menu.getApplicationMenu().getMenuItemById("extract-file").enabled = false;
+  Menu.getApplicationMenu().getMenuItemById("file-properties").enabled = false;
   Menu.getApplicationMenu().getMenuItemById("file-page-export").enabled = false;
 };
 
@@ -172,4 +175,5 @@ exports.setWWWOpened = function () {
   setComicBookOpened(true);
   Menu.getApplicationMenu().getMenuItemById("convert-file").enabled = false;
   Menu.getApplicationMenu().getMenuItemById("extract-file").enabled = false;
+  Menu.getApplicationMenu().getMenuItemById("file-properties").enabled = false;
 };

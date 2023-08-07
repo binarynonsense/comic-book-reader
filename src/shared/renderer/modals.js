@@ -65,6 +65,9 @@ export function show(options) {
     let logElement = modalDiv.querySelector(".modal-log");
     if (options.log && isObject(options.log)) {
       logElement.classList.remove("set-display-none");
+      if (options.log.message) {
+        logElement.textContent = options.log.message;
+      }
     } else {
       logElement.classList.add("set-display-none");
     }

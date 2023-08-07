@@ -159,6 +159,7 @@ async function getRarEntriesList(filePath, password) {
     // console.log(arcHeader);
     const fileHeaders = [...list.fileHeaders];
     let imgEntries = [];
+    let comicInfoId = undefined;
     let isEncrypted = false;
     let encryptedEntryName;
     fileHeaders.forEach(function (header) {
@@ -169,6 +170,8 @@ async function getRarEntriesList(filePath, password) {
       if (!header.flags.directory) {
         if (hasImageExtension(header.name)) {
           imgEntries.push(header.name);
+        } else if (header.name.toLowerCase().endsWith("comicinfo.xml")) {
+          comicInfoId = header.name;
         }
       }
     });
@@ -182,7 +185,11 @@ async function getRarEntriesList(filePath, password) {
         return { result: "password required", paths: [] };
       }
     }
-    return { result: "success", paths: imgEntries };
+    return {
+      result: "success",
+      paths: imgEntries,
+      metadata: { encrypted: isEncrypted, comicInfoId: comicInfoId },
+    };
   } catch (error) {
     console.log(error.message);
     return { result: "other error", paths: [] };
@@ -237,6 +244,7 @@ function getZipEntriesList(filePath, password) {
     let zip = new AdmZip(filePath);
     let zipEntries = zip.getEntries();
     let imgEntries = [];
+    let comicInfoId = undefined;
     let isEncrypted = false;
     let encryptedEntryName;
     let compressionMethod;
@@ -249,6 +257,8 @@ function getZipEntriesList(filePath, password) {
       if (!zipEntry.isDirectory) {
         if (hasImageExtension(zipEntry.entryName)) {
           imgEntries.push(zipEntry.entryName);
+        } else if (zipEntry.entryName.toLowerCase().endsWith("comicinfo.xml")) {
+          comicInfoId = zipEntry.entryName;
         }
       }
     });
@@ -264,7 +274,11 @@ function getZipEntriesList(filePath, password) {
         return { result: "other error", paths: [], extra: "aes" };
       }
     }
-    return { result: "success", paths: imgEntries };
+    return {
+      result: "success",
+      paths: imgEntries,
+      metadata: { encrypted: isEncrypted, comicInfoId: comicInfoId },
+    };
   } catch (error) {
     console.log(error.message);
     return { result: "other error", paths: [] };
@@ -342,10 +356,15 @@ async function get7ZipEntriesList(filePath, password) {
     });
 
     let imgEntries;
+    let comicInfoId = undefined;
     let promise = await new Promise((resolve) => {
       imgEntries = [];
       seven.on("data", function (data) {
-        imgEntries.push(data.file);
+        if (hasImageExtension(data.file)) {
+          imgEntries.push(data.file);
+        } else if (data.file.toLowerCase().endsWith("comicinfo.xml")) {
+          comicInfoId = data.file;
+        }
       });
       seven.on("error", (error) => {
         resolve({ success: false, data: error });
@@ -359,7 +378,14 @@ async function get7ZipEntriesList(filePath, password) {
     });
 
     if (promise.success === true) {
-      return { result: "success", paths: imgEntries };
+      return {
+        result: "success",
+        paths: imgEntries,
+        metadata: {
+          encrypted: password && password.trim() !== "",
+          comicInfoId: comicInfoId,
+        },
+      };
     } else if (promise.success === false) {
       if (promise.data.toString().search("password") !== -1) {
         // Can not open encrypted archive. Wrong password?"

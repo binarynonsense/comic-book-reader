@@ -80,12 +80,44 @@ function loadPdf(filePath, pageIndex, password) {
     .then(function (pdf) {
       cleanUp();
       g_currentPdf.pdf = pdf;
-      sendIpcToMain(
-        "pdf-loaded",
-        filePath,
-        pageIndex,
-        g_currentPdf.pdf.numPages
-      );
+      console.log(g_currentPdf.pdf);
+      g_currentPdf.pdf
+        .getMetadata()
+        .then(function (metadata) {
+          // unused:
+          // IsAcroFormPresent: false;
+          // IsCollectionPresent: false;
+          // IsLinearized: false;
+          // IsXFAPresent: false;
+          sendIpcToMain(
+            "pdf-loaded",
+            filePath,
+            pageIndex,
+            g_currentPdf.pdf.numPages,
+            {
+              encrypted: password && password.trim() !== "",
+              creator: metadata.info.Creator,
+              producer: metadata.info.Producer,
+              created: metadata.info.CreationDate,
+              modified: metadata.info.ModDate,
+              format: "PDF " + metadata.info.PDFFormatVersion,
+              author: metadata.info.Author,
+              subject: metadata.info.Subject,
+              keywords: metadata.info.Keywords,
+              title: metadata.info.Title,
+            }
+          );
+        })
+        .catch(function (error) {
+          // keep on anyway
+          sendIpcToMain(
+            "pdf-loaded",
+            filePath,
+            pageIndex,
+            g_currentPdf.pdf.numPages,
+            { encrypted: password && password.trim() !== "" }
+          );
+        });
     })
     .catch((error) => {
       sendIpcToMain("pdf-load-failed", error);
@@ -239,7 +271,7 @@ async function extractPDFImageBuffer(
     sendIpcToMain(
       "pdf-page-dataurl-extracted",
       undefined,
-      dataUrl, 
+      dataUrl,
       dpi,
       outputFolderPath,
       sendToTool

@@ -288,7 +288,7 @@ function initOnIpcCallbacks() {
 
   ////////////////////////////////////////////////////////////////////////////
 
-  on("pdf-loaded", (filePath, pageIndex, numPages) => {
+  on("pdf-loaded", (filePath, pageIndex, numPages, metadata) => {
     g_fileData.state = FileDataState.LOADED; // will change inmediately to loading
     // TODO double check loaded is the one loading?
     // TODO change only if correct
@@ -299,6 +299,7 @@ function initOnIpcCallbacks() {
     g_fileData.numPages = numPages;
     if (pageIndex < 0 || pageIndex >= g_fileData.numPages) pageIndex = 0;
     g_fileData.pageIndex = pageIndex;
+    g_fileData.metadata = metadata;
     updateMenuAndToolbarItems();
     setPageRotation(0, false);
     setInitialZoom(filePath);
@@ -336,6 +337,7 @@ function initOnIpcCallbacks() {
       }
     } else {
       // unrecoverable error
+      console.log(error);
       closeCurrentFile();
       sendIpcToRenderer(
         "show-modal-info",
@@ -531,6 +533,7 @@ let g_fileData = {
   password: "",
   getPageCallback: undefined,
   data: undefined,
+  metadata: undefined,
 };
 
 function cleanUpFileData() {
@@ -545,6 +548,7 @@ function cleanUpFileData() {
   g_fileData.password = "";
   g_fileData.getPageCallback = undefined;
   g_fileData.data = undefined;
+  g_fileData.metadata = undefined;
 }
 
 function tryOpen(filePath, bookType, historyEntry) {
@@ -847,6 +851,7 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
           if (pageIndex < 0 || pageIndex >= g_fileData.numPages) pageIndex = 0;
           g_fileData.pageIndex = pageIndex;
           g_fileData.password = password;
+          g_fileData.metadata = rarData.metadata;
           updateMenuAndToolbarItems();
           setPageRotation(0, false);
           setInitialZoom(filePath);
@@ -916,6 +921,7 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
           if (pageIndex < 0 || pageIndex >= g_fileData.numPages) pageIndex = 0;
           g_fileData.pageIndex = pageIndex;
           g_fileData.password = password;
+          g_fileData.metadata = zipData.metadata;
           updateMenuAndToolbarItems();
           setPageRotation(0, false);
           setInitialZoom(filePath);
@@ -979,6 +985,7 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
           if (pageIndex < 0 || pageIndex >= g_fileData.numPages) pageIndex = 0;
           g_fileData.pageIndex = pageIndex;
           g_fileData.password = password;
+          g_fileData.metadata = sevenData.metadata;
           updateMenuAndToolbarItems();
           setPageRotation(0, false);
           setInitialZoom(filePath);
@@ -2095,4 +2102,154 @@ exports.onGoToPageLast = function () {
 
 exports.onMenuFilterValue = function (value) {
   setFilter(value);
+};
+
+exports.onMenuFileProperties = async function () {
+  if (g_fileData.path !== undefined) {
+    // get metadata //////////////
+    let message = "";
+    // path
+    message += `${_("ui-modal-info-metadata-filepath")}: ${g_fileData.path}`;
+    message += "\n";
+    // size
+    let stats = fs.statSync(g_fileData.path);
+    message += `${_("ui-modal-info-metadata-filesize")}: ${(
+      stats.size /
+      (1024 * 1024)
+    ).toFixed(2)} MiB`;
+    message += "\n";
+    // pages
+    message += `${_("ui-modal-info-metadata-numpages")}: ${
+      g_fileData.numPages
+    }`;
+    message += "\n";
+    // title
+    if (g_fileData.metadata.title) {
+      message += `${_("ui-modal-info-metadata-title")}: ${
+        g_fileData.metadata.title
+      }`;
+      message += "\n";
+    }
+    // author
+    if (g_fileData.metadata.author) {
+      message += `${_("ui-modal-info-metadata-author")}: ${
+        g_fileData.metadata.author
+      }`;
+      message += "\n";
+    }
+    // subject
+    if (g_fileData.metadata.subject) {
+      message += `${_("ui-modal-info-metadata-subject")}: ${
+        g_fileData.metadata.subject
+      }`;
+      message += "\n";
+    }
+    // keywords
+    if (g_fileData.metadata.keywords) {
+      message += `${_("ui-modal-info-metadata-keywords")}: ${
+        g_fileData.metadata.keywords
+      }`;
+      message += "\n";
+    }
+    // created
+    if (
+      g_fileData.type === FileDataType.PDF &&
+      g_fileData.metadata &&
+      g_fileData.metadata.created
+    ) {
+      let date = g_fileData.metadata.created;
+      date = fileUtils.parsePdfDate(date);
+      date = date.toLocaleString();
+      // date = Intl.DateTimeFormat([], {
+      //   dayTime: "short",
+      // }).format(date);
+      message += `${_("ui-modal-info-metadata-created")}: ${date}`;
+      message += "\n";
+    } else if (process.platform === "win32") {
+      let date = stats.birthtime;
+      date = date.toLocaleString();
+      message += `${_("ui-modal-info-metadata-created")}: ${date}`;
+      message += "\n";
+    }
+    // modified
+    if (g_fileData.metadata && g_fileData.metadata.modified) {
+      let date = g_fileData.metadata.modified;
+      date = fileUtils.parsePdfDate(date);
+      if (stats.mtime.getTime() > date.getTime()) {
+        date = stats.mtime;
+      }
+      date = date.toLocaleString();
+      message += `${_("ui-modal-info-metadata-modified")}: ${date}`;
+      message += "\n";
+    } else {
+      let date = stats.mtime.toLocaleString();
+      message += `${_("ui-modal-info-metadata-modified")}: ${date}`;
+      message += "\n";
+    }
+    // MIME
+    let fileType = await FileType.fromFile(g_fileData.path);
+    if (fileType !== undefined) {
+      // e.g. {ext: 'png', mime: 'image/png'}
+      message += `${_("ui-modal-info-metadata-mimetype")}: ${fileType.mime}`;
+      message += "\n";
+    }
+    // format
+    if (g_fileData.metadata && g_fileData.metadata.format) {
+      message += `${_("ui-modal-info-metadata-format")}: ${
+        g_fileData.metadata.format
+      }`;
+      message += "\n";
+    }
+    // security
+    if (g_fileData.metadata && g_fileData.metadata.encrypted) {
+      message += `${_("ui-modal-info-metadata-security")}: ${_(
+        "ui-modal-info-metadata-security-encrypted"
+      )}`;
+      message += "\n";
+    } else {
+      message += `${_("ui-modal-info-metadata-security")}: ${_(
+        "ui-modal-info-metadata-security-unencrypted"
+      )}`;
+      message += "\n";
+    }
+    // comicinfo.xml
+    if (
+      g_fileData.type === FileDataType.ZIP ||
+      g_fileData.type === FileDataType.RAR ||
+      g_fileData.type === FileDataType.SEVENZIP
+    ) {
+      if (g_fileData.metadata && g_fileData.metadata.comicInfoId) {
+        message += `ComicInfo.xml: ${_(
+          "ui-modal-info-metadata-comicinfoxml-included"
+        )}`;
+        message += "\n";
+      } else {
+        message += `ComicInfo.xml: ${_(
+          "ui-modal-info-metadata-comicinfoxml-notincluded"
+        )}`;
+        message += "\n";
+      }
+    }
+    // creator
+    if (g_fileData.metadata && g_fileData.metadata.creator) {
+      message += `${_("ui-modal-info-metadata-creator")}: ${
+        g_fileData.metadata.creator
+      }`;
+      message += "\n";
+    }
+    // producer
+    if (g_fileData.metadata && g_fileData.metadata.producer) {
+      message += `${_("ui-modal-info-metadata-producer")}: ${
+        g_fileData.metadata.producer
+      }`;
+      message += "\n";
+    }
+    // send //////////////////////
+    sendIpcToRenderer(
+      "show-modal-properties",
+      _("menu-file-properties").replace("...", ""),
+      message,
+      _("ui-modal-prompt-button-ok")
+    );
+  }
 };

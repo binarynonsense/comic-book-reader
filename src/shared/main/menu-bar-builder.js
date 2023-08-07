@@ -164,6 +164,14 @@ function buildApplicationMenu(settings, history) {
           },
         },
         {
+          id: "file-properties",
+          label: _("menu-file-properties"),
+          enabled: false,
+          click() {
+            reader.onMenuFileProperties();
+          },
+        },
+        {
           type: "separator",
         },
         {

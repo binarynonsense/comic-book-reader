@@ -993,6 +993,10 @@ function initModalsOnIpcCallbacks() {
       );
     }
   );
+
+  on("show-modal-properties", (title, message, textButton1) => {
+    showModalProperties(title, message, textButton1);
+  });
 }
 
 function showModalPrompt(
@@ -1187,6 +1191,32 @@ function showModalQuestionOpenAs(
           sendIpcToMain("booktype-entered", filePath, BookType.EBOOK);
           modalClosed();
         },
+      },
+    ],
+  });
+}
+
+function showModalProperties(title, message, textButton1) {
+  if (g_openModal) {
+    return;
+  }
+  g_openModal = modals.show({
+    title: title,
+    log: { message: message },
+    frameWidth: 600,
+    close: {
+      callback: () => {
+        modalClosed();
+      },
+      key: "Escape",
+    },
+    buttons: [
+      {
+        text: textButton1.toUpperCase(),
+        callback: () => {
+          modalClosed();
+        },
+        key: "Enter",
       },
     ],
   });

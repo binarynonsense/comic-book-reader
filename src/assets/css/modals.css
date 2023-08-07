@@ -85,6 +85,8 @@
   border: 2px solid var(--modal-input-text-color);
   resize: none;
   /* pointer-events: none; */
+  word-break: break-all;
+  cursor: auto;
 }
 
 /* ///////////////////////////////// */
