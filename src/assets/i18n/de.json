@@ -62,8 +62,8 @@
   "menu-tools-extract-text": "Text aus Bild (OCR)...",
   "menu-tools-extract-palette": "Farb-palette aus Bild...",
   "menu-tools-extract-qr": "QR-Code Text aus Bild...",
-  "[NEEDS TRANSLATION]menu-tools-merge": "Merge",
-  "[NEEDS TRANSLATION]menu-tools-split": "Split",
+  "menu-tools-merge": "Zusammenführen",
+  "menu-tools-split": "Aufteilen",
   "menu-tools-other": "Anderes",
   "menu-tools-other-dcm": "Digital Comic Museum",
   "menu-tools-other-iab": "Internet Archive Books",
@@ -229,7 +229,7 @@
   "tool-shared-ui-search-nothing-found": "Keine Ergebnisse stimmen mit Ihren Suchkriterien überein",
   "tool-shared-ui-button-open-in-acbr": "In ACBR öffnen",
   "tool-shared-ui-button-open-in-browser": "Im Browser öffnen",
-  "tool-shared-ui-about-text-1": "Dies ist ein Werkzeug zum suchen nach {0} welche auf der \"{1}\" Website verfügbar ist und sie im Systembrowser oder direkt in ACBR öffnet.",
+  "tool-shared-ui-about-text-1": "Dies ist ein Werkzeug zum suchen nach {0} welche auf der \"{1}\" Website verfügbar sind und sie im Systembrowser oder direkt in ACBR öffnet.",
   "tool-shared-ui-about-text-1-comicbooks": "Comicbüchern",
   "tool-shared-ui-about-text-1-books": "Büchern",
   "tool-shared-ui-about-text-1-webcomics": "Webcomics",
@@ -447,8 +447,8 @@
   "tool-wik-title": "Wiktionary Dictionary",
   "tool-wik-button-open-wik-browser": "Öffne Wiktionary Im Browser",
 
-  "[NEEDS TRANSLATION]tool-mc-title": "Merge Files Tool",
+  "tool-mc-title": "Datei Zusammenführungs-Werkzeug",
 
-  "[NEEDS TRANSLATION]tool-sc-title": "Split Files Tool",
-  "[NEEDS TRANSLATION]tool-sc-number": "Number of Files to Split Into"
+  "tool-sc-title": "Datei Aufteilungs-Werkzeug",
+  "tool-sc-number": "Anzahl der Dateien, in die aufgeteilt werden soll"
 }
