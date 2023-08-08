@@ -9,7 +9,6 @@ const fs = require("fs");
 const path = require("path");
 const core = require("../../core/main");
 const { _ } = require("../../shared/main/i18n");
-const reader = require("../../reader/main");
 const shell = require("electron").shell;
 
 ///////////////////////////////////////////////////////////////////////////////
