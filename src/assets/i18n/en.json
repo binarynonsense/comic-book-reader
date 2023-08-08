@@ -469,5 +469,8 @@
   "tool-cix-warning-save-update": "This will update the contents of the ComicInfo.xml file inside the comic book with the new data",
   "tool-cix-warning-save-create": "This will create a ComicInfo.xml file inside the comic book containing the supplied data",
   "tool-cix-warning-rar": "RAR files can't be edited",
-  "tool-cix-update-pages": "Update Pages"  
+  "tool-cix-update-pages": "Update Pages",
+  "tool-cix-modal-message-not-valid": "The ComicInfo.xml file is not a valid xml file",
+  "tool-cix-modal-message-could-not-update": "Couldn't update the contents of the ComicInfo.xml file",
+  "tool-cix-modal-message-could-not-create": "Couldn't create the ComicInfo.xml file"
 }
