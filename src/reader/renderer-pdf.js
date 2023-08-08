@@ -84,11 +84,6 @@ function loadPdf(filePath, pageIndex, password) {
       g_currentPdf.pdf
         .getMetadata()
         .then(function (metadata) {
-          // unused:
-          // IsAcroFormPresent: false;
-          // IsCollectionPresent: false;
-          // IsLinearized: false;
-          // IsXFAPresent: false;
           sendIpcToMain(
             "pdf-loaded",
             filePath,
