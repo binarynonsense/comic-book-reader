@@ -136,7 +136,6 @@ export function close(modal) {
 export function onInputEvent(modalDiv, type, event) {
   switch (type) {
     case "onkeydown":
-      // TODO: check if hidden
       // close x button
       {
         let button = modalDiv.querySelector(".modal-close-button");
