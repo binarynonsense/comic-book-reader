@@ -258,6 +258,8 @@
   "tool-shared-modal-title-converting": "Converting",
   "tool-shared-modal-title-creating": "Creating",
   "tool-shared-modal-title-searching": "Searching",
+  "tool-shared-modal-title-updating": "Updating",
+  "tool-shared-modal-title-saving": "Saving",
   "tool-shared-modal-title-conversion-finished": "Conversion Finished",
   "tool-shared-modal-title-conversion-canceled": "Conversion Canceled",
   "tool-shared-modal-title-extraction-finished": "Extraction Finished",
@@ -360,6 +362,9 @@
   "tool-pre-pdf-library-version-oldest-desc": "Quicker but less robust",
   "tool-pre-pdf-library-version-newest": "Newest",
   "tool-pre-pdf-library-version-newest-desc": "Slower but more robust",
+  "tool-pre-advanced-preferences": "Advanced",
+  "tool-pre-other-preferences": "Other",
+  "tool-pre-tempfolder": "Temp Folder",
 
   "tool-hst-title": "History",  
   "tool-hst-button-clear-all": "Clear History",
@@ -457,5 +462,11 @@
   "tool-mc-title": "Merge Files Tool",
 
   "tool-sc-title": "Split Files Tool",
-  "tool-sc-number": "Number of Files to Split Into"
+  "tool-sc-number": "Number of Files to Split Into",
+
+  "tool-cix-title": "ComicInfo.xml Editor",
+  "tool-cix-warning-save-update": "This will update the contents of the ComicInfo.xml file inside the comic book with the new data",
+  "tool-cix-warning-save-create": "This will create a ComicInfo.xml file inside the comic book containing the supplied data",
+  "tool-cix-warning-rar": "RAR files can't be edited",
+  "tool-cix-update-pages": "Update Pages"  
 }

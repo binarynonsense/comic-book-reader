@@ -205,6 +205,8 @@
   "tool-shared-ui-convert": "Konvertieren",
   "tool-shared-ui-create": "Erstellen",
   "tool-shared-ui-extract": "Extrahieren",
+  "tool-shared-ui-merge": "Zusammenführen",
+  "tool-shared-ui-split": "Aufteilen",
   "tool-shared-ui-open": "Öffnen",
   "tool-shared-ui-close": "Schließen",
   "tool-shared-ui-cancel": "Abbrechen",
@@ -256,6 +258,8 @@
   "tool-shared-modal-title-converting": "Konvertieren",
   "tool-shared-modal-title-creating": "Erstellen",
   "tool-shared-modal-title-searching": "Suchen",
+  "[NEEDS TRANSLATION]tool-shared-modal-title-updating": "Updating",
+  "[NEEDS TRANSLATION]tool-shared-modal-title-saving": "Saving",
   "tool-shared-modal-title-conversion-finished": "Konversion Beendet",
   "tool-shared-modal-title-conversion-canceled": "Konversion Abgebrochen",
   "tool-shared-modal-title-extraction-finished": "Extraktion Beendet",
@@ -358,6 +362,9 @@
   "tool-pre-pdf-library-version-oldest-desc": "Schneller, aber weniger robust",
   "tool-pre-pdf-library-version-newest": "Neuste",
   "tool-pre-pdf-library-version-newest-desc": "Langsamer, aber robuster",
+  "[NEEDS TRANSLATION]tool-pre-advanced-preferences": "Advanced",
+  "[NEEDS TRANSLATION]tool-pre-other-preferences": "Other",
+  "[NEEDS TRANSLATION]tool-pre-tempfolder": "Temp Folder",
 
   "tool-hst-title": "Chronik",  
   "tool-hst-button-clear-all": "Chronik Löschen",
@@ -455,5 +462,11 @@
   "tool-mc-title": "Datei Zusammenführungs-Werkzeug",
 
   "tool-sc-title": "Datei Aufteilungs-Werkzeug",
-  "tool-sc-number": "Anzahl der Dateien, in die aufgeteilt werden soll"
+  "tool-sc-number": "Anzahl der Dateien, in die aufgeteilt werden soll",
+
+  "[NEEDS TRANSLATION]tool-cix-title": "ComicInfo.xml Editor",
+  "[NEEDS TRANSLATION]tool-cix-warning-save-update": "This will update the contents of the ComicInfo.xml file inside the comic book with the new data",
+  "[NEEDS TRANSLATION]tool-cix-warning-save-create": "This will create a ComicInfo.xml file inside the comic book containing the supplied data",
+  "[NEEDS TRANSLATION]tool-cix-warning-rar": "RAR files can't be edited",
+  "[NEEDS TRANSLATION]tool-cix-update-pages": "Update Pages"  
 }

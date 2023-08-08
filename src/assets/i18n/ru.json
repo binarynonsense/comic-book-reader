@@ -205,6 +205,8 @@
   "tool-shared-ui-convert": "Конвертировать",
   "tool-shared-ui-create": "Создать",
   "tool-shared-ui-extract": "Извлечь",
+  "[NEEDS TRANSLATION]tool-shared-ui-merge": "Merge",
+  "[NEEDS TRANSLATION]tool-shared-ui-split": "Split",
   "[NEEDS TRANSLATION]tool-shared-ui-open": "Open",
   "tool-shared-ui-close": "Закрыть",
   "tool-shared-ui-cancel": "Отмена",
@@ -256,6 +258,8 @@
   "tool-shared-modal-title-converting": "Конвертация",
   "tool-shared-modal-title-creating": "Создание",
   "tool-shared-modal-title-searching": "Поиск",
+  "[NEEDS TRANSLATION]tool-shared-modal-title-updating": "Updating",
+  "[NEEDS TRANSLATION]tool-shared-modal-title-saving": "Saving",
   "tool-shared-modal-title-conversion-finished": "Конвертация завершена",
   "tool-shared-modal-title-conversion-canceled": "Конвертация отменена",
   "tool-shared-modal-title-extraction-finished": "Извлечение завершено",
@@ -358,6 +362,9 @@
   "[NEEDS TRANSLATION]tool-pre-pdf-library-version-oldest-desc": "Quicker but less robust",
   "[NEEDS TRANSLATION]tool-pre-pdf-library-version-newest": "Newest",
   "[NEEDS TRANSLATION]tool-pre-pdf-library-version-newest-desc": "Slower but more robust",
+  "[NEEDS TRANSLATION]tool-pre-advanced-preferences": "Advanced",
+  "[NEEDS TRANSLATION]tool-pre-other-preferences": "Other",
+  "[NEEDS TRANSLATION]tool-pre-tempfolder": "Temp Folder",
 
   "tool-hst-title": "История",  
   "tool-hst-button-clear-all": "Очистить историю",
@@ -455,5 +462,11 @@
   "[NEEDS TRANSLATION]tool-mc-title": "Merge Files Tool",
 
   "[NEEDS TRANSLATION]tool-sc-title": "Split Files Tool",
-  "[NEEDS TRANSLATION]tool-sc-number": "Number of Files to Split Into"
+  "[NEEDS TRANSLATION]tool-sc-number": "Number of Files to Split Into",
+
+  "[NEEDS TRANSLATION]tool-cix-title": "ComicInfo.xml Editor",
+  "[NEEDS TRANSLATION]tool-cix-warning-save-update": "This will update the contents of the ComicInfo.xml file inside the comic book with the new data",
+  "[NEEDS TRANSLATION]tool-cix-warning-save-create": "This will create a ComicInfo.xml file inside the comic book containing the supplied data",
+  "[NEEDS TRANSLATION]tool-cix-warning-rar": "RAR files can't be edited",
+  "[NEEDS TRANSLATION]tool-cix-update-pages": "Update Pages"  
 }

@@ -137,7 +137,7 @@
   "ui-modal-prompt-button-no": "No",
   "ui-modal-prompt-button-ok": "Ok",
   "ui-modal-prompt-button-edit": "Editar",
-  "ui-modal-prompt-button-save": "Salvar",
+  "ui-modal-prompt-button-save": "Guardar",
   "ui-modal-prompt-button-open": "Abrir",
   "ui-modal-prompt-button-cancel": "Cancelar",
   "ui-modal-prompt-button-edit-metadata": "Editar Metadata",
@@ -205,6 +205,8 @@
   "tool-shared-ui-convert": "Convertir",
   "tool-shared-ui-create": "Crear",
   "tool-shared-ui-extract": "Extraer",
+  "tool-shared-ui-merge": "Unir",
+  "tool-shared-ui-split": "Dividir",
   "tool-shared-ui-open": "Abrir",
   "tool-shared-ui-close": "Cerrar",
   "tool-shared-ui-cancel": "Cancelar",
@@ -256,6 +258,8 @@
   "tool-shared-modal-title-converting": "Convirtiendo",
   "tool-shared-modal-title-creating": "Creando",
   "tool-shared-modal-title-searching": "Buscando",
+  "tool-shared-modal-title-updating": "Actualizando",
+  "tool-shared-modal-title-saving": "Guardando",
   "tool-shared-modal-title-conversion-finished": "Conversión Finalizada",
   "tool-shared-modal-title-conversion-canceled": "Conversión Cancelada",
   "tool-shared-modal-title-extraction-finished": "Extracción Finalizada",
@@ -358,6 +362,9 @@
   "tool-pre-pdf-library-version-oldest-desc": "Más Rápida pero Menos Robusta",
   "tool-pre-pdf-library-version-newest": "Más Reciente",
   "tool-pre-pdf-library-version-newest-desc": "Menos Rápida pero Más Robusta",
+  "tool-pre-advanced-preferences": "Avanzadas",
+  "tool-pre-other-preferences": "Otras",
+  "tool-pre-tempfolder": "Directorio Temporal",
 
   "tool-hst-title": "Historial",  
   "tool-hst-button-clear-all": "Vaciar Historial",
@@ -455,5 +462,11 @@
   "tool-mc-title": "Herramienta de Unión de Archivos",
 
   "tool-sc-title": "Herramienta de División de Archivos",
-  "tool-sc-number": "Número de Ficheros en los que Dividir"
+  "tool-sc-number": "Número de Ficheros en los que Dividir",
+
+  "tool-cix-title": "Editor de ComicInfo.xml",
+  "tool-cix-warning-save-update": "Esto actualizará los contenidos del fichero ComicInfo.xml en el interior del Comic con los nuevos datos",
+  "tool-cix-warning-save-create": "Esto creará un fichero ComicInfo.xml en el interior del Comic conteniendo los datos proporcionados",
+  "tool-cix-warning-rar": "Los archivos RAR no se pueden editar",
+  "tool-cix-update-pages": "Actualizar Páginas"  
 }
