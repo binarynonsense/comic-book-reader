@@ -89,7 +89,7 @@ const createWindow = () => {
     minHeight: 500,
     resizable: true,
     frame: false,
-    icon: path.join(__dirname, "assets/images/icon_256x256.png"),
+    icon: path.join(__dirname, "../assets/images/icon_256x256.png"),
     show: false,
     webPreferences: {
       sandbox: false, // needed for the custom-title-bar to work
