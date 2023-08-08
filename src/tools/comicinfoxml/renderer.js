@@ -80,8 +80,8 @@ function on(id, callback) {
 }
 
 function initOnIpcCallbacks() {
-  on("show", (collectionsContent, availabilityContent) => {
-    init(collectionsContent, availabilityContent);
+  on("show", () => {
+    init();
   });
 
   on("hide", () => {});
