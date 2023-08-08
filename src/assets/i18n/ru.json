@@ -260,6 +260,7 @@
   "tool-shared-modal-title-searching": "Поиск",
   "[NEEDS TRANSLATION]tool-shared-modal-title-updating": "Updating",
   "[NEEDS TRANSLATION]tool-shared-modal-title-saving": "Saving",
+  "[NEEDS TRANSLATION]tool-shared-modal-title-loading": "Loading",
   "tool-shared-modal-title-conversion-finished": "Конвертация завершена",
   "tool-shared-modal-title-conversion-canceled": "Конвертация отменена",
   "tool-shared-modal-title-extraction-finished": "Извлечение завершено",

@@ -260,6 +260,7 @@
   "tool-shared-modal-title-searching": "Suchen",
   "tool-shared-modal-title-updating": "Aktualisieren",
   "tool-shared-modal-title-saving": "Speichern",
+  "[NEEDS TRANSLATION]tool-shared-modal-title-loading": "Loading",
   "tool-shared-modal-title-conversion-finished": "Konversion Beendet",
   "tool-shared-modal-title-conversion-canceled": "Konversion Abgebrochen",
   "tool-shared-modal-title-extraction-finished": "Extraktion Beendet",

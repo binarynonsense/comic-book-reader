@@ -1,7 +1,7 @@
 {
   "@metadata": {
     "authors": ["Álvaro"],
-    "last-updated": "2023-08-07",
+    "last-updated": "2023-08-08",
     "acbr-version": "3.0.0",
     "comments": "",
     "locale": "es",
@@ -110,7 +110,7 @@
   "ui-modal-info-imagesavedto": "Archivo de imagen salvado en",
   "ui-modal-info-errorexportingpage": "Error: No se pudo exportar la página",
   "ui-modal-info-version": "versión",
-  "ui-modal-info-metadata": "Metadata",
+  "ui-modal-info-metadata": "Metadatos",
   "ui-modal-info-metadata-fileproperties": "Propieddes del Fichero",
   "ui-modal-info-metadata-pageproperties": "Propiedades de la Página",
   "ui-modal-info-metadata-filename": "Nombre",
@@ -260,6 +260,7 @@
   "tool-shared-modal-title-searching": "Buscando",
   "tool-shared-modal-title-updating": "Actualizando",
   "tool-shared-modal-title-saving": "Guardando",
+  "tool-shared-modal-title-loading": "Cargando",
   "tool-shared-modal-title-conversion-finished": "Conversión Finalizada",
   "tool-shared-modal-title-conversion-canceled": "Conversión Cancelada",
   "tool-shared-modal-title-extraction-finished": "Extracción Finalizada",
