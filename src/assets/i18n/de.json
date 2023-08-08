@@ -468,9 +468,9 @@
   "tool-cix-title": "ComicInfo.xml Editor",
   "tool-cix-warning-save-update": "Dies wird den Inhalt der ComicInfo.xml Datei im Comicbuch, mit den neuen Daten aktualisieren",
   "tool-cix-warning-save-create": "Dies wird eine ComicInfo.xml Datei, mit den bereitgestellten Daten, in dem Comicbuch erstellen",
-  "tool-cix-warning-rar": "RAR Dateien können nicht bearbeitet werden",
+  "tool-cix-warning-rar": "RAR-Dateien können nicht bearbeitet werden",
   "tool-cix-update-pages": "Aktualisiere Seiten",
-  "tool-cix-modal-message-not-valid": "Die ComicInfo.xml Datei ist keine gültige XML Datei",
+  "tool-cix-modal-message-not-valid": "Die ComicInfo.xml Datei ist keine gültige XML-Datei",
   "tool-cix-modal-message-could-not-update": "Konnte den Inhalt der ComicInfo.xml Datei nicht aktualisieren",
   "tool-cix-modal-message-could-not-create": "Konnte die ComicInfo.xml Datei nicht erstellen"
 }
