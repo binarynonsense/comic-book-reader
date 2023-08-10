@@ -52,7 +52,7 @@
     "adm-zip": "^0.5.10",
     "axios": "^1.4.0",
     "changedpi": "^1.0.4",
-    "custom-electron-titlebar": "^4.2.5",
+    "custom-electron-titlebar": "^4.2.6",
     "epub": "^1.2.1",
     "epubjs": "0.3.93",
     "fast-xml-parser": "^4.2.7",
