@@ -10,12 +10,20 @@ const path = require("path");
 const core = require("../../core/main");
 const { _ } = require("../../shared/main/i18n");
 const reader = require("../../reader/main");
+const fileUtils = require("../../shared/main/file-utils");
+const fileFormats = require("../../shared/main/file-formats");
+const {
+  FileExtension,
+  FileDataState,
+  FileDataType,
+} = require("../../shared/main/constants");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
 let g_isInitialized = false;
+let g_fileData;
 
 function init() {
   if (!g_isInitialized) {
@@ -32,6 +40,10 @@ exports.open = function (fileData) {
   sendIpcToCoreRenderer("replace-inner-html", "#tools", data.toString());
   updateLocalizedText();
   sendIpcToRenderer("show");
+
+  g_fileData = fileData;
+
+  loadXml();
 };
 
 exports.close = function () {
@@ -107,6 +119,68 @@ function initHandleIpcCallbacks() {}
 // TOOL ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+async function loadXml() {
+  let xmlFileData;
+  if (g_fileData.metadata && g_fileData.metadata.comicInfoId) {
+    let buf;
+    switch (g_fileData.type) {
+      case FileDataType.ZIP:
+        buf = fileFormats.extractZipEntryBuffer(
+          g_fileData.path,
+          g_fileData.metadata.comicInfoId,
+          g_fileData.password
+        );
+        break;
+      case FileDataType.RAR:
+        buf = await fileFormats.extractRarEntryBuffer(
+          g_fileData.path,
+          g_fileData.metadata.comicInfoId,
+          g_fileData.password
+        );
+        break;
+      case FileDataType.SEVENZIP:
+        buf = await fileFormats.extract7ZipEntryBuffer(
+          g_fileData.path,
+          g_fileData.metadata.comicInfoId,
+          g_fileData.password
+        );
+        break;
+    }
+    xmlFileData = buf.toString();
+  } else {
+    // TODO: read empty comicinfo xml  and generate json
+    //const xmlFileData = fs.readFileSync(../../assets....base.xml, "utf8");
+    // OR NOT and build json in renderer!! think!!
+    // input xmls can lack some fields anyway, so I'll have to add them
+    // manually in those cases too.. think!!
+  }
+
+  // TODO move to asyn func
+
+  try {
+    const { XMLParser, XMLBuilder, XMLValidator } = require("fast-xml-parser");
+    // console.log(xmlFileData);
+    const isValidXml = XMLValidator.validate(xmlFileData);
+    if (isValidXml === true) {
+      // open
+      const parserOptions = {
+        ignoreAttributes: false,
+      };
+      const parser = new XMLParser(parserOptions);
+      let json = parser.parse(xmlFileData);
+      console.log(json);
+      // TODO: send json
+    } else {
+      throw "ComicInfo.xml is not a valid xml file";
+    }
+  } catch (error) {
+    console.log(
+      "Warning: couldn't read the contents of ComicInfo.xml: " + error
+    );
+    // TODO: send stop and open modal
+  }
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // LOCALIZATION ///////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -115,6 +189,7 @@ function updateLocalizedText() {
   sendIpcToRenderer(
     "update-localization",
     _("tool-shared-modal-title-updating"),
+    _("tool-shared-modal-title-saving"),
     getLocalization()
   );
 }
@@ -132,7 +207,7 @@ function getLocalization() {
     },
     {
       id: "tool-cix-save-button-text",
-      text: _("tool-shared-ui-save-button").toUpperCase(),
+      text: _("ui-modal-prompt-button-save").toUpperCase(),
     },
     ////////////////////////////////
     {

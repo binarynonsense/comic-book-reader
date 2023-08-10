@@ -18,6 +18,7 @@ import * as modals from "../../shared/renderer/modals.js";
 let g_isInitialized = false;
 
 let g_localizedModalUpdatingTitleText;
+let g_localizedModalSavingTitleText;
 
 function init() {
   if (!g_isInitialized) {
@@ -86,16 +87,20 @@ function initOnIpcCallbacks() {
 
   on("hide", () => {});
 
-  on("update-localization", (modalUpdatingTitleText, localization) => {
-    g_localizedModalUpdatingTitleText = modalUpdatingTitleText;
-    for (let index = 0; index < localization.length; index++) {
-      const element = localization[index];
-      const domElement = document.querySelector("#" + element.id);
-      if (domElement !== null) {
-        domElement.innerHTML = element.text;
+  on(
+    "update-localization",
+    (modalUpdatingTitleText, modalSavingTitleText, localization) => {
+      g_localizedModalUpdatingTitleText = modalUpdatingTitleText;
+      g_localizedModalSavingTitleText = modalSavingTitleText;
+      for (let index = 0; index < localization.length; index++) {
+        const element = localization[index];
+        const domElement = document.querySelector("#" + element.id);
+        if (domElement !== null) {
+          domElement.innerHTML = element.text;
+        }
       }
     }
-  });
+  );
 
   on("update-window", () => {
     updateColumnsHeight();
@@ -135,7 +140,7 @@ function initOnIpcCallbacks() {
 ///////////////////////////////////////////////////////////////////////////////
 
 async function onUpdate() {
-  if (!g_openModal) showSearchModal(); // TODO: check if first time?
+  if (!g_openModal) showWorkingModal(); // TODO: check if first time?
   updateModalTitleText(g_localizedModalUpdatingTitleTextTitleText);
   // sendIpcToMain(
   //   "search",
@@ -176,7 +181,7 @@ function modalClosed() {
   g_openModal = undefined;
 }
 
-function showSearchModal() {
+function showWorkingModal() {
   if (g_openModal) {
     return;
   }

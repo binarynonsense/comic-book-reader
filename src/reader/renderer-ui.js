@@ -1001,8 +1001,8 @@ function initModalsOnIpcCallbacks() {
     }
   );
 
-  on("show-modal-properties", (title, message, textButton1) => {
-    showModalProperties(title, message, textButton1);
+  on("show-modal-properties", (title, message, textButton1, textButton2) => {
+    showModalProperties(title, message, textButton1, textButton2);
   });
 }
 
@@ -1209,10 +1209,26 @@ function showModalQuestionOpenAs(
   });
 }
 
-function showModalProperties(title, message, textButton1) {
+function showModalProperties(title, message, textButton1, textButton2) {
   if (g_openModal) {
     return;
   }
+  let buttons = [];
+  if (textButton2) {
+    buttons.push({
+      text: textButton2.toUpperCase(),
+      callback: () => {
+        modalClosed();
+        sendIpcToMain("open-comicinfo-xml-tool");
+      },
+    });
+  }
+  buttons.push({
+    text: textButton1.toUpperCase(),
+    callback: () => {
+      modalClosed();
+    },
+  });
   g_openModal = modals.show({
     title: title,
     log: { message: message },
@@ -1224,14 +1240,6 @@ function showModalProperties(title, message, textButton1) {
       },
       key: "Escape",
     },
-    buttons: [
-      {
-        text: textButton1.toUpperCase(),
-        callback: () => {
-          modalClosed();
-        },
-        key: "Enter",
-      },
-    ],
+    buttons: buttons,
   });
 }

@@ -518,6 +518,14 @@ function initOnIpcCallbacks() {
   on("rebuild-menu-and-toolbar", (isOpen) => {
     rebuildMenuAndToolBars(isOpen);
   });
+
+  ////////////////////////////////////////////////////////////////////////////
+
+  on("open-comicinfo-xml-tool", () => {
+    if (g_fileData.path !== undefined) {
+      core.switchTool("tool-comicinfoxml", g_fileData);
+    }
+  });
 }
 
 //////////////////////////////////////////////////////////////////////////////// FILES /////////////////////////////////////////////////////////////////////
@@ -2263,11 +2271,30 @@ exports.onMenuFileProperties = async function () {
       message += "\n";
     }
     // send //////////////////////
+    const canHaveComicInfo =
+      g_fileData.type === FileDataType.ZIP ||
+      g_fileData.type === FileDataType.RAR ||
+      g_fileData.type === FileDataType.SEVENZIP;
+    const isRar = g_fileData.type === FileDataType.RAR;
+    const hasComicInfo = g_fileData.metadata && g_fileData.metadata.comicInfoId;
+    let buttonText;
+    if (canHaveComicInfo) {
+      if (hasComicInfo) {
+        buttonText = _("ui-modal-prompt-button-open-xml");
+      } else if (!isRar) {
+        buttonText = _("ui-modal-prompt-button-create-xml");
+      }
+    }
+
+    // TODO: delete when tool is finished
+    if (!core.isDev()) buttonText = undefined;
+
     sendIpcToRenderer(
       "show-modal-properties",
       _("menu-file-properties").replace("...", ""),
       message,
-      _("ui-modal-prompt-button-ok")
+      _("tool-shared-ui-close"),
+      buttonText
     );
   }
 };
