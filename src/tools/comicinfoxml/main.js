@@ -149,34 +149,49 @@ async function loadXml() {
         );
         break;
     }
-    xmlFileData = buf.toString();
-  } else {
-    // TODO: read empty comicinfo xml and generate json as fallback
+    if (buf) xmlFileData = buf.toString();
   }
 
+  const { XMLParser, XMLValidator } = require("fast-xml-parser");
   try {
-    const { XMLParser, XMLBuilder, XMLValidator } = require("fast-xml-parser");
-    // console.log(xmlFileData);
+    if (xmlFileData === undefined) {
+      throw "no comicinfo";
+    }
     const isValidXml = XMLValidator.validate(xmlFileData);
-    if (isValidXml === true) {
+    if (isValidXml !== true) {
+      throw "invalid xml";
+    }
+    // open
+    const parserOptions = {
+      ignoreAttributes: false,
+    };
+    const parser = new XMLParser(parserOptions);
+    let json = parser.parse(xmlFileData);
+    if (!json["ComicInfo"]) {
+      throw "invalid comicinfo";
+    }
+    sendIpcToRenderer("load-json", json, undefined);
+  } catch (error) {
+    try {
+      xmlFileData = `<?xml version="1.0"?>
+  <ComicInfo xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">  
+  </ComicInfo>`;
       // open
       const parserOptions = {
         ignoreAttributes: false,
+        allowBooleanAttributes: true,
       };
       const parser = new XMLParser(parserOptions);
       let json = parser.parse(xmlFileData);
-      // console.log(json);
-      // TODO: send json
-      sendIpcToRenderer("load-json", json);
-    } else {
-      throw "ComicInfo.xml is not a valid xml file";
+      sendIpcToRenderer(
+        "load-json",
+        json,
+        error === "no comicinfo" ? undefined : error
+      );
+    } catch (error) {
+      // TODO: can't recuperate from this!!
+      // close???
     }
-  } catch (error) {
-    console.log(
-      "Warning: couldn't read the contents of ComicInfo.xml: " + error
-    );
-    // TODO: send stop and open modal
-    sendIpcToRenderer("load-json", undefined);
   }
 }
 

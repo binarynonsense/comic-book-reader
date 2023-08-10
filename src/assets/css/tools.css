@@ -406,6 +406,36 @@
 
 /* /////////////////////////////////////////////////////////////// */
 
+.tools-table {
+  width: 100%;
+  background-color: var(--tools-input-bg-color);
+  color: var(--tools-input-text-color);
+  border: 1px solid var(--tools-input-border-color);
+  border-bottom: 0px;
+  font-size: 13px;
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+
+.tools-table tr {
+  height: 35px;
+  border-bottom: 1px solid var(--tools-input-border-color);
+}
+
+.tools-table th,
+.tools-table td {
+  padding: 5px;
+  text-align: center;
+  border-right: 1px solid var(--tools-input-border-color);
+  font-weight: bold;
+}
+.tools-table th:last-child,
+.tools-table td:last-child {
+  border-right: 0px;
+}
+
+/* /////////////////////////////////////////////////////////////// */
+
 .tool-shared-columns-parent {
   display: flex;
   flex-wrap: nowrap;

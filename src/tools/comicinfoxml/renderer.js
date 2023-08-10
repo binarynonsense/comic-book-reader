@@ -23,7 +23,7 @@ let g_localizedModalLoadingTitleText;
 
 let g_saveButton;
 let g_langSelect;
-let g_pagesDiv;
+let g_pagesTable;
 
 let g_fields = [];
 
@@ -57,14 +57,10 @@ function init(isoLangNames, isoLangCodes) {
   isoLangNames.forEach((name, i) => {
     g_langSelect.innerHTML += `<option value="${isoLangCodes[i]}">${name}</option>`;
   });
-  g_pagesDiv = document.getElementById("tool-cix-pages-data-div");
-  let ul = document.createElement("ul");
-  ul.className = "tools-collection-ul";
-  let li = document.createElement("li");
-  li.className = "tools-collection-li";
-  li.innerHTML = "&nbsp;";
-  ul.appendChild(li);
-  g_pagesDiv.appendChild(ul);
+
+  g_pagesTable = document.getElementById("tool-cix-pages-data-table");
+  g_pagesTable.appendChild(generateTableHeader());
+  g_pagesTable.appendChild(generateTableEmptyRow());
   ////////////////////////////////////////
   // generate fields array
   let elements = document
@@ -238,8 +234,8 @@ function initOnIpcCallbacks() {
 
   /////////////////////////////////////////////////////////////////////////////
 
-  on("load-json", (json) => {
-    onLoadJson(json);
+  on("load-json", (json, error) => {
+    onLoadJson(json, error);
   });
 }
 
@@ -252,8 +248,9 @@ function onFieldChanged(element) {
   //g_saveButton.classList.remove("tools-disabled");
 }
 
-function onLoadJson(json) {
-  // console.log(json);
+function onLoadJson(json, error) {
+  console.log(error);
+  console.log(json);
 
   // fill UI with json data
   for (let index = 0; index < g_fields.length; index++) {
@@ -272,6 +269,28 @@ function onLoadJson(json) {
     }
   }
 
+  if (json["ComicInfo"]["Pages"] && json["ComicInfo"]["Pages"]["Page"]) {
+    g_pagesTable.innerHTML = "";
+    g_pagesTable.appendChild(generateTableHeader());
+    let pages = json["ComicInfo"]["Pages"]["Page"];
+    for (let index = 0; index < pages.length; index++) {
+      const pageData = pages[index];
+      if (pageData) {
+        // TODO: check info sanitize
+        g_pagesTable.appendChild(
+          generateTableRow(
+            pageData["@_Image"],
+            pageData["@_ImageSize"],
+            pageData["@_ImageWidth"],
+            pageData["@_ImageHeight"],
+            pageData["@_DoublePage"],
+            pageData["@_Type"]
+          )
+        );
+      }
+    }
+  }
+
   //////////////////////////////////
   closeModal();
 }
@@ -281,6 +300,110 @@ async function onSave() {
   showProgressModal();
   updateModalTitleText(g_localizedModalSavingTitleText);
   // sendIpcToMain
+}
+
+function generateTableHeader() {
+  let tr = document.createElement("tr");
+  let th = document.createElement("th");
+  th.innerText = "Image";
+  tr.appendChild(th);
+  th = document.createElement("th");
+  th.innerText = "ImageSize";
+  tr.appendChild(th);
+  th = document.createElement("th");
+  th.innerText = "ImageWidth";
+  tr.appendChild(th);
+  th = document.createElement("th");
+  th.innerText = "ImageHeight";
+  tr.appendChild(th);
+  th = document.createElement("th");
+  th.innerText = "DoublePage";
+  tr.appendChild(th);
+  th = document.createElement("th");
+  th.innerText = "Type";
+  tr.appendChild(th);
+  return tr;
+}
+
+function generateTableEmptyRow() {
+  let tr = document.createElement("tr");
+  let td = document.createElement("td");
+  td.innerText = " ";
+  tr.appendChild(td);
+  td = document.createElement("td");
+  td.innerText = " ";
+  tr.appendChild(td);
+  td = document.createElement("td");
+  td.innerText = " ";
+  tr.appendChild(td);
+  td = document.createElement("td");
+  td.innerText = " ";
+  tr.appendChild(td);
+  td = document.createElement("td");
+  td.innerText = " ";
+  tr.appendChild(td);
+  td = document.createElement("td");
+  td.innerText = " ";
+  tr.appendChild(td);
+  return tr;
+}
+
+function generateTableRow(index, size, width, height, doublepage, type) {
+  let tr = document.createElement("tr");
+  let td = document.createElement("td");
+  td.innerText = index;
+  tr.appendChild(td);
+  td = document.createElement("td");
+  td.innerText = size;
+  tr.appendChild(td);
+  td = document.createElement("td");
+  td.innerText = width;
+  tr.appendChild(td);
+  td = document.createElement("td");
+  td.innerText = height;
+  tr.appendChild(td);
+  td = document.createElement("td");
+  {
+    let checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.checked = doublepage;
+    td.appendChild(checkbox);
+  }
+  tr.appendChild(td);
+  td = document.createElement("td");
+  {
+    let select = document.createElement("select");
+    select.innerHTML = `<option value="default"></option>
+<option value="FrontCover"${
+      type === "FrontCover" ? " selected" : ""
+    }>FrontCover</option>
+<option value="InnerCover"${
+      type === "InnerCover" ? " selected" : ""
+    }>InnerCover</option>
+<option value="Roundup"${type === "Roundup" ? " selected" : ""}>Roundup</option>
+<option value="Story"${type === "Story" ? " selected" : ""}>Story</option>
+<option value="Advertisement"${
+      type === "Advertisement" ? " selected" : ""
+    }>Advertisement</option>
+<option value="Editorial"${
+      type === "Editorial" ? " selected" : ""
+    }>Editorial</option>
+<option value="Letters"${type === "Letters" ? " selected" : ""}>Letters</option>
+<option value="Preview"${type === "Preview" ? " selected" : ""}>Preview</option>
+<option value="BackCover"${
+      type === "BackCover" ? " selected" : ""
+    }>BackCover</option>
+<option value="Other"${type === "Other" ? " selected" : ""}>Other</option>
+<option value="Deleted"${
+      type === "Deleted" ? " selected" : ""
+    }>Deleted</option>`;
+    td.appendChild(select);
+    select.addEventListener("change", (event) => {
+      onFieldChanged(select);
+    });
+  }
+  tr.appendChild(td);
+  return tr;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
