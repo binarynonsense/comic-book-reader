@@ -1,7 +1,7 @@
 {
   "@metadata": {
     "authors": ["trzyglow"],
-    "last-updated": "2023-08-08",
+    "last-updated": "2023-08-10",
     "acbr-version": "3.0.0",
     "comments": "Deutsche Lokalisierung",
     "locale": "de",
@@ -140,7 +140,7 @@
   "ui-modal-prompt-button-save": "Speichern",
   "ui-modal-prompt-button-open": "Öffnen",
   "ui-modal-prompt-button-cancel": "Abbrechen",
-  "[NEEDS TRANSLATION]ui-modal-prompt-button-update": "Update",
+  "ui-modal-prompt-button-update": "Aktualisieren",
   "ui-modal-prompt-button-edit-metadata": "Bearbeite Metadaten",
   "ui-modal-prompt-button-open-metadata": "Öffne Metadaten",
   "ui-modal-prompt-button-create-metadata": "Erstelle Metadaten",
@@ -470,12 +470,13 @@
   "tool-cix-warning-save-update": "Dies wird den Inhalt der ComicInfo.xml Datei im Comicbuch, mit den neuen Daten aktualisieren",
   "tool-cix-warning-save-create": "Dies wird eine ComicInfo.xml Datei, mit den bereitgestellten Daten, in dem Comicbuch erstellen",
   "tool-cix-warning-rar": "CBR-Dateien können nicht bearbeitet werden",
-  "[NEEDS TRANSLATION]tool-cix-tooltip-update-pages": "Clicking the button will update the number of pages and their size and dimensions with data retrieved from the actual image files inside the comic book.",
+  "tool-cix-tooltip-update-pages": "Durch das Klicken des Knopfes werden die Anzahl der Seiten sowie ihre Größe und Dimensionen mit den Daten, welche aus dem tatsächlichen Comicbuch abgerufen wurden, Aktualisiert.",
+
   "tool-cix-modal-message-not-valid": "Die ComicInfo.xml Datei ist keine gültige XML-Datei",
   "tool-cix-modal-message-could-not-update": "Konnte den Inhalt der ComicInfo.xml Datei nicht aktualisieren",
   "tool-cix-modal-message-could-not-create": "Konnte die ComicInfo.xml Datei nicht erstellen",
-  "[NEEDS TRANSLATION]tool-cix-section-basic-data": "Basic Data",
-  "[NEEDS TRANSLATION]tool-cix-section-creators": "Creators",
-  "[NEEDS TRANSLATION]tool-cix-section-pages": "Pages",
-  "[NEEDS TRANSLATION]tool-cix-section-other-data": "Other"
+  "tool-cix-section-basic-data": "Grundlegende Daten",
+  "tool-cix-section-creators": "Urheber",
+  "tool-cix-section-pages": "Seiten",
+  "tool-cix-section-other-data": "Anderes"
 }
