@@ -19,8 +19,15 @@ let g_isInitialized = false;
 
 let g_localizedModalUpdatingTitleText;
 let g_localizedModalSavingTitleText;
+let g_localizedModalLoadingTitleText;
 
-function init() {
+let g_saveButton;
+let g_langSelect;
+let g_pagesDiv;
+
+let g_fields = [];
+
+function init(isoLangNames, isoLangCodes) {
   if (!g_isInitialized) {
     // things to start only once go here
     g_isInitialized = true;
@@ -31,13 +38,79 @@ function init() {
     .addEventListener("click", (event) => {
       sendIpcToMain("close");
     });
-  document
-    .getElementById("tool-cix-save-button")
-    .addEventListener("click", (event) => {
-      onUpdate();
-    });
+  g_saveButton = document.getElementById("tool-cix-save-button");
+  g_saveButton.addEventListener("click", (event) => {
+    onSave();
+  });
+  g_saveButton.classList.add("tools-disabled");
+  // sections menu
+  for (let index = 0; index < 4; index++) {
+    document
+      .getElementById(`tool-cix-section-${index}-button`)
+      .addEventListener("click", (event) => {
+        switchSection(index);
+      });
+  }
   ////////////////////////////////////////
-
+  g_langSelect = document.getElementById("tool-cix-data-languageiso-select");
+  g_langSelect.innerHTML += `<option value="default"></option>`;
+  isoLangNames.forEach((name, i) => {
+    g_langSelect.innerHTML += `<option value="${isoLangCodes[i]}">${name}</option>`;
+  });
+  g_pagesDiv = document.getElementById("tool-cix-pages-data-div");
+  let ul = document.createElement("ul");
+  ul.className = "tools-collection-ul";
+  let li = document.createElement("li");
+  li.className = "tools-collection-li";
+  li.innerHTML = "&nbsp;";
+  ul.appendChild(li);
+  g_pagesDiv.appendChild(ul);
+  ////////////////////////////////////////
+  // generate fields array
+  let elements = document
+    .querySelector("#tools-columns-right")
+    .getElementsByTagName("input");
+  elements = [
+    ...elements,
+    ...document
+      .querySelector("#tools-columns-right")
+      .getElementsByTagName("select"),
+  ];
+  elements = [
+    ...elements,
+    ...document
+      .querySelector("#tools-columns-right")
+      .getElementsByTagName("textarea"),
+  ];
+  for (let index = 0; index < elements.length; index++) {
+    const element = elements[index];
+    g_fields.push({
+      element: element,
+      xmlId: element.getAttribute("data-xml-id"),
+      xmlType: element.getAttribute("data-xml-type"),
+    });
+  }
+  // add event listeners
+  g_fields.forEach((field) => {
+    if (field.xmlId) {
+      if (
+        field.element.tagName.toLowerCase() === "input" ||
+        field.element.tagName.toLowerCase() === "textarea"
+      )
+        field.element.addEventListener("input", (event) => {
+          onFieldChanged(field.element);
+        });
+      else if (field.element.tagName.toLowerCase() === "select")
+        field.element.addEventListener("change", (event) => {
+          onFieldChanged(field.element);
+        });
+    }
+  });
+  ////////////////////////////////////////
+  if (!g_openModal) closeModal(g_openModal);
+  showProgressModal();
+  updateModalTitleText(g_localizedModalLoadingTitleText);
+  sendIpcToMain("load-xml");
   ////////////////////////////////////////
   updateColumnsHeight();
 }
@@ -50,6 +123,27 @@ function updateColumnsHeight() {
   const left = document.getElementById("tools-columns-left");
   const right = document.getElementById("tools-columns-right");
   left.style.minHeight = right.offsetHeight + "px";
+}
+
+function switchSection(id) {
+  for (let index = 0; index < 4; index++) {
+    if (id === index) {
+      document
+        .getElementById(`tool-cix-section-${index}-button`)
+        .classList.add("tools-menu-button-selected");
+      document
+        .getElementById(`tool-cix-section-${index}-content-div`)
+        .classList.remove("set-display-none");
+    } else {
+      document
+        .getElementById(`tool-cix-section-${index}-button`)
+        .classList.remove("tools-menu-button-selected");
+      document
+        .getElementById(`tool-cix-section-${index}-content-div`)
+        .classList.add("set-display-none");
+    }
+  }
+  updateColumnsHeight();
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -81,22 +175,36 @@ function on(id, callback) {
 }
 
 function initOnIpcCallbacks() {
-  on("show", () => {
-    init();
+  on("show", (isoLangNames, isoLangCodes) => {
+    init(isoLangNames, isoLangCodes);
   });
 
   on("hide", () => {});
 
   on(
     "update-localization",
-    (modalUpdatingTitleText, modalSavingTitleText, localization) => {
+    (
+      modalUpdatingTitleText,
+      modalSavingTitleText,
+      modalLoadingTitleText,
+      localization,
+      tooltipsLocalization
+    ) => {
       g_localizedModalUpdatingTitleText = modalUpdatingTitleText;
       g_localizedModalSavingTitleText = modalSavingTitleText;
+      g_localizedModalLoadingTitleText = modalLoadingTitleText;
       for (let index = 0; index < localization.length; index++) {
         const element = localization[index];
         const domElement = document.querySelector("#" + element.id);
         if (domElement !== null) {
           domElement.innerHTML = element.text;
+        }
+      }
+      for (let index = 0; index < tooltipsLocalization.length; index++) {
+        const element = tooltipsLocalization[index];
+        const domElement = document.querySelector("#" + element.id);
+        if (domElement !== null) {
+          domElement.title = element.text;
         }
       }
     }
@@ -130,8 +238,8 @@ function initOnIpcCallbacks() {
 
   /////////////////////////////////////////////////////////////////////////////
 
-  on("update-results", (content) => {
-    closeModal();
+  on("load-json", (json) => {
+    onLoadJson(json);
   });
 }
 
@@ -139,14 +247,40 @@ function initOnIpcCallbacks() {
 // TOOL ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-async function onUpdate() {
-  if (!g_openModal) showWorkingModal(); // TODO: check if first time?
-  updateModalTitleText(g_localizedModalUpdatingTitleTextTitleText);
-  // sendIpcToMain(
-  //   "search",
-  //   inputValue,
-  //   document.getElementById("tool-cix-search-language-select").value
-  // );
+function onFieldChanged(element) {
+  // TODO: reenable
+  //g_saveButton.classList.remove("tools-disabled");
+}
+
+function onLoadJson(json) {
+  // console.log(json);
+
+  // fill UI with json data
+  for (let index = 0; index < g_fields.length; index++) {
+    const field = g_fields[index];
+    if (!field.xmlId || !field.xmlType) continue;
+    let value = json["ComicInfo"][field.xmlId];
+    if (value && value !== "") {
+      if (field.xmlType !== "Page") {
+        // sanitize
+        if (field.element.tagName.toLowerCase() === "select") {
+          if (!field.element.querySelector('[value="' + value + '"]')) continue;
+        }
+        // update element's value
+        field.element.value = value;
+      }
+    }
+  }
+
+  //////////////////////////////////
+  closeModal();
+}
+
+async function onSave() {
+  if (g_openModal) return;
+  showProgressModal();
+  updateModalTitleText(g_localizedModalSavingTitleText);
+  // sendIpcToMain
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -181,7 +315,7 @@ function modalClosed() {
   g_openModal = undefined;
 }
 
-function showWorkingModal() {
+function showProgressModal() {
   if (g_openModal) {
     return;
   }

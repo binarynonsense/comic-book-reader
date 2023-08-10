@@ -11,19 +11,48 @@
         <span id="tool-cix-save-button-text"></span>
       </button>
     </div>
+    <!-- sections menu -->
+    <div
+      id="tool-cix-section-0-button"
+      class="tools-menu-button tools-menu-button-selected"
+    >
+      <i class="fas fa-book tools-menu-button-icon"></i>
+      <div class="tools-menu-button-text">
+        <span id="tool-cix-section-0-button-text"></span>
+      </div>
+    </div>
+    <div id="tool-cix-section-1-button" class="tools-menu-button">
+      <i class="fas fa-paint-brush tools-menu-button-icon"></i>
+      <div class="tools-menu-button-text">
+        <span id="tool-cix-section-1-button-text"></span>
+      </div>
+    </div>
+    <div id="tool-cix-section-2-button" class="tools-menu-button">
+      <i class="fas fa-book-open tools-menu-button-icon"></i>
+      <div class="tools-menu-button-text">
+        <span id="tool-cix-section-2-button-text"></span>
+      </div>
+    </div>
+    <div id="tool-cix-section-3-button" class="tools-menu-button">
+      <i class="fas fa-list-ul tools-menu-button-icon"></i>
+      <div class="tools-menu-button-text">
+        <span id="tool-cix-section-3-button-text"></span>
+      </div>
+    </div>
   </div>
   <!-- ------------------- RIGTH COLUMN -------------------------------- -->
   <div id="tools-columns-right">
     <div id="tools-title"><span id="tool-cix-title-text"></span></div>
-    <!-- basic info -->
+    <!-- basic data -->
     <div id="tool-cix-section-0-content-div">
       <div class="tools-columns-right-section">
         <h3><span id="tool-cix-section-0-text"></span></h3>
-        <!-- general fields -->
         <label>
           <span id="tool-cix-data-title-text">Title</span>
           <input
             id="tool-cix-data-title-input"
+            data-xml-id="Title"
+            data-xml-type="xs:string"
             type="text"
             spellcheck="false"
           />
@@ -32,6 +61,8 @@
           <span id="tool-cix-data-series-text">Series</span>
           <input
             id="tool-cix-data-series-input"
+            data-xml-id="Series"
+            data-xml-type="xs:string"
             type="text"
             spellcheck="false"
           />
@@ -40,6 +71,8 @@
           <span id="tool-cix-data-number-text">Number</span>
           <input
             id="tool-cix-data-number-input"
+            data-xml-id="Number"
+            data-xml-type="xs:string"
             type="text"
             spellcheck="false"
           />
@@ -48,53 +81,26 @@
           <span id="tool-cix-data-count-text">Count</span>
           <input
             id="tool-cix-data-count-input"
+            data-xml-id="Count"
+            data-xml-type="xs:int"
             type="number"
-            spellcheck="false"
           />
         </label>
         <label>
           <span id="tool-cix-data-volume-text">Volume</span>
           <input
             id="tool-cix-data-volume-input"
+            data-xml-id="Volume"
+            data-xml-type="xs:int"
             type="number"
-            spellcheck="false"
-          />
-        </label>
-        <label>
-          <span id="tool-cix-data-alternateseries-text">Alternate Series</span>
-          <input
-            id="tool-cix-data-alternateseries-input"
-            type="text"
-            spellcheck="false"
-          />
-        </label>
-        <label>
-          <span id="tool-cix-data-alternatenumber-text">Alternate Number</span>
-          <input
-            id="tool-cix-data-alternatenumber-input"
-            type="text"
-            spellcheck="false"
-          />
-        </label>
-        <label>
-          <span id="tool-cix-data-alternatecount-text">Alternate Count</span>
-          <input
-            id="tool-cix-data-alternatecount-input"
-            type="number"
-            spellcheck="false"
           />
         </label>
         <label>
           <span id="tool-cix-data-summary-text">Summary</span>
           <textarea
             id="tool-cix-data-summary-textarea"
-            spellcheck="false"
-          ></textarea>
-        </label>
-        <label>
-          <span id="tool-cix-data-notes-text">Notes</span>
-          <textarea
-            id="tool-cix-data-notes-textarea"
+            data-xml-id="Summary"
+            data-xml-type="xs:string"
             spellcheck="false"
           ></textarea>
         </label>
@@ -102,24 +108,27 @@
           <span id="tool-cix-data-year-text">Year</span>
           <input
             id="tool-cix-data-year-input"
+            data-xml-id="Year"
+            data-xml-type="xs:int"
             type="number"
-            spellcheck="false"
           />
         </label>
         <label>
           <span id="tool-cix-data-month-text">Month</span>
           <input
             id="tool-cix-data-month-input"
+            data-xml-id="Month"
+            data-xml-type="xs:int"
             type="number"
-            spellcheck="false"
           />
         </label>
         <label>
           <span id="tool-cix-data-day-text">Day</span>
           <input
             id="tool-cix-data-day-input"
+            data-xml-id="Day"
+            data-xml-type="xs:int"
             type="number"
-            spellcheck="false"
           />
         </label>
 
@@ -127,68 +136,32 @@
           <span id="tool-cix-data-genre-text">Genre</span>
           <input
             id="tool-cix-data-genre-input"
+            data-xml-id="Genre"
+            data-xml-type="xs:string"
             type="text"
             spellcheck="false"
           />
         </label>
         <label>
-          <span id="tool-cix-data-web-text">Web</span>
-          <input id="tool-cix-data-web-input" type="text" spellcheck="false" />
-        </label>
-        <!-- TODO: make select -->
-        <label>
-          <span id="tool-cix-data-languageiso-text">Language (ISO)</span>
-          <input
-            id="tool-cix-data-languageiso-input"
-            type="number"
-            spellcheck="false"
-          />
-        </label>
-        <label>
-          <span id="tool-cix-data-format-text">Format</span>
-          <input
-            id="tool-cix-data-format-input"
-            type="text"
-            spellcheck="false"
-          />
-        </label>
-        <!-- TODO: make select yes/no -->
-        <label>
-          <span id="tool-cix-data-blackwhite-text">Black and White</span>
-          <input
-            id="tool-cix-data-blackwhite-input"
-            type="text"
-            spellcheck="false"
-          />
-        </label>
-        <!-- TODO: make select manga -->
-        <label>
-          <span id="tool-cix-data-manga-text">Manga</span>
-          <input
-            id="tool-cix-data-manga-input"
-            type="text"
-            spellcheck="false"
-          />
-        </label>
-
-        <label>
-          <span id="tool-cix-data-scaninformation-text">Scan Information</span>
-          <input
-            id="tool-cix-data-scaninformation-input"
-            type="text"
-            spellcheck="false"
-          />
+          <span id="tool-cix-data-languageiso-text">Language</span>
+          <select
+            id="tool-cix-data-languageiso-select"
+            data-xml-id="LanguageISO"
+            data-xml-type="xs:string"
+          ></select>
         </label>
       </div>
     </div>
     <!-- creators -->
-    <div id="tool-cix-section-1-content-div">
+    <div id="tool-cix-section-1-content-div" class="set-display-none">
       <div class="tools-columns-right-section">
         <h3><span id="tool-cix-section-1-text"></span></h3>
         <label>
           <span id="tool-cix-data-writer-text">Writer</span>
           <input
             id="tool-cix-data-writer-input"
+            data-xml-id="Writer"
+            data-xml-type="xs:string"
             type="text"
             spellcheck="false"
           />
@@ -197,6 +170,8 @@
           <span id="tool-cix-data-penciler-text">Penciller</span>
           <input
             id="tool-cix-data-penciler-input"
+            data-xml-id="Penciller"
+            data-xml-type="xs:string"
             type="text"
             spellcheck="false"
           />
@@ -205,6 +180,8 @@
           <span id="tool-cix-data-inker-text">Inker</span>
           <input
             id="tool-cix-data-inker-input"
+            data-xml-id="Inker"
+            data-xml-type="xs:string"
             type="text"
             spellcheck="false"
           />
@@ -213,6 +190,8 @@
           <span id="tool-cix-data-colorist-text">Colorist</span>
           <input
             id="tool-cix-data-colorist-input"
+            data-xml-id="Colorist"
+            data-xml-type="xs:string"
             type="text"
             spellcheck="false"
           />
@@ -221,6 +200,8 @@
           <span id="tool-cix-data-letterer-text">Letterer</span>
           <input
             id="tool-cix-data-letterer-input"
+            data-xml-id="Letterer"
+            data-xml-type="xs:string"
             type="text"
             spellcheck="false"
           />
@@ -229,6 +210,8 @@
           <span id="tool-cix-data-coverartist-text">Cover Artist</span>
           <input
             id="tool-cix-data-coverartist-input"
+            data-xml-id="CoverArtist"
+            data-xml-type="xs:string"
             type="text"
             spellcheck="false"
           />
@@ -237,6 +220,8 @@
           <span id="tool-cix-data-editor-text">Editor</span>
           <input
             id="tool-cix-data-editor-input"
+            data-xml-id="Editor"
+            data-xml-type="xs:string"
             type="text"
             spellcheck="false"
           />
@@ -245,6 +230,8 @@
           <span id="tool-cix-data-publisher-text">Publisher</span>
           <input
             id="tool-cix-data-publisher-input"
+            data-xml-id="Publisher"
+            data-xml-type="xs:string"
             type="text"
             spellcheck="false"
           />
@@ -253,6 +240,8 @@
           <span id="tool-cix-data-imprint-text">Imprint</span>
           <input
             id="tool-cix-data-imprint-input"
+            data-xml-id="Imprint"
+            data-xml-type="xs:string"
             type="text"
             spellcheck="false"
           />
@@ -260,76 +249,141 @@
       </div>
     </div>
     <!-- pages -->
-    <div id="tool-cix-section-2-content-div">
+    <div id="tool-cix-section-2-content-div" class="set-display-none">
       <div class="tools-columns-right-section">
         <h3><span id="tool-cix-section-2-text"></span></h3>
         <label>
           <span id="tool-cix-data-pagecount-text">Page Count</span>
           <input
             id="tool-cix-data-pagecount-input"
+            data-xml-id="PageCount"
+            data-xml-type="xs:int"
             type="number"
-            spellcheck="false"
           />
+        </label>
+
+        <label>
+          <span id="tool-cix-page-data-text">Pages</span>
+          <i
+            id="tool-cix-tooltip-page-data"
+            class="fas fa-question-circle"
+            title="tooltip"
+          ></i>
+          <button
+            id="tool-cix-update-pages-button"
+            class="tools-h3-extra-margin-top"
+          >
+            <span id="tool-cix-update-pages-button-text"></span>
+          </button>
+          <div id="tool-cix-pages-data-div" style="margin-top: 0px"></div>
         </label>
       </div>
     </div>
-    <!-- other -->
-    <div id="tool-cix-section-3-content-div">
+    <!-- other data -->
+    <div id="tool-cix-section-3-content-div" class="set-display-none">
       <div class="tools-columns-right-section">
         <h3><span id="tool-cix-section-3-text"></span></h3>
         <label>
-          <span id="tool-cix-data-characters-text">Characters</span>
+          <span id="tool-cix-data-format-text">Format</span>
           <input
-            id="tool-cix-data-characters-input"
+            id="tool-cix-data-format-input"
+            data-xml-id="Format"
+            data-xml-type="xs:string"
             type="text"
             spellcheck="false"
           />
         </label>
         <label>
-          <span id="tool-cix-data-teams-text">Teams</span>
-          <input
-            id="tool-cix-data-teams-input"
-            type="text"
-            spellcheck="false"
-          />
-        </label>
-        <label>
-          <span id="tool-cix-data-locations-text">Locations</span>
-          <input
-            id="tool-cix-data-locations-input"
-            type="text"
-            spellcheck="false"
-          />
-        </label>
-        <label>
-          <span id="tool-cix-data-storyarc-text">Story Arc</span>
+          <span id="tool-cix-data-notes-text">Notes</span>
           <textarea
-            id="tool-cix-data-storyarc-textarea"
+            id="tool-cix-data-notes-textarea"
+            data-xml-id="Notes"
+            data-xml-type="xs:string"
             spellcheck="false"
           ></textarea>
         </label>
         <label>
-          <span id="tool-cix-data-seriesgroup-text">Series Group</span>
+          <span id="tool-cix-data-alternateseries-text">Alternate Series</span>
           <input
-            id="tool-cix-data-seriesgroup-input"
+            id="tool-cix-data-alternateseries-input"
+            data-xml-id="AlternateSeries"
+            data-xml-type="xs:string"
             type="text"
             spellcheck="false"
           />
         </label>
-        <!-- make select age rating default unknown -->
         <label>
-          <span id="tool-cix-data-agerating-text">Age Rating</span>
+          <span id="tool-cix-data-alternatenumber-text">Alternate Number</span>
           <input
-            id="tool-cix-data-agerating-input"
+            id="tool-cix-data-alternatenumber-input"
+            data-xml-id="AlternateNumber"
+            data-xml-type="xs:string"
             type="text"
             spellcheck="false"
           />
         </label>
-        <!-- make select rating -->
         <label>
-          <span id="tool-cix-data-communityrating-text">Community Rating</span>
+          <span id="tool-cix-data-alternatecount-text">Alternate Count</span>
           <input
-            id="tool-cix-data-communityrating-input"
+            id="tool-cix-data-alternatecount-input"
+            data-xml-id="AlternateCount"
+            data-xml-type="xs:int"
+            type="number"
+          />
+        </label>
+        <label>
+          <span id="tool-cix-data-web-text">Web</span>
+          <input
+            id="tool-cix-data-web-input"
+            data-xml-id="Web"
+            data-xml-type="xs:string"
+            type="text"
+            spellcheck="false"
+          />
+        </label>
+        <label>
+          <span id="tool-cix-data-blackwhite-text">Black and White</span>
+          <select
+            id="tool-cix-data-blackwhite-select"
+            data-xml-id="BlackAndWhite"
+            data-xml-type="YesNo"
+          >
+            <option value="default"></option>
+            <option value="Unknown">Unknown</option>
+            <option value="No">No</option>
+            <option value="Yes">Yes</option>
+          </select>
+        </label>
+        <label>
+          <span id="tool-cix-data-manga-text">Manga</span>
+          <select
+            id="tool-cix-data-manga-select"
+            data-xml-id="Manga"
+            data-xml-type="Manga"
+          >
+            <option value="default"></option>
+            <option value="Unknown">Unknown</option>
+            <option value="No">No</option>
+            <option value="Yes">Yes</option>
+            <option value="YesAndRightToLeft">Yes And Right To Left</option>
+          </select>
+        </label>
+        <label>
+          <span id="tool-cix-data-scaninformation-text">Scan Information</span>
+          <input
+            id="tool-cix-data-scaninformation-input"
+            data-xml-id="ScanInformation"
+            data-xml-type="xs:string"
+            type="text"
+            spellcheck="false"
+          />
+        </label>
+        <label>
+          <span id="tool-cix-data-characters-text">Characters</span>
+          <input
+            id="tool-cix-data-characters-input"
+            data-xml-id="Characters"
+            data-xml-type="xs:string"
             type="text"
             spellcheck="false"
           />
@@ -340,14 +394,97 @@
           >
           <input
             id="tool-cix-data-maincharacterorteam-input"
+            data-xml-id="MainCharacterOrTeam"
+            data-xml-type="xs:string"
             type="text"
             spellcheck="false"
+          />
+        </label>
+        <label>
+          <span id="tool-cix-data-teams-text">Teams</span>
+          <input
+            id="tool-cix-data-teams-input"
+            data-xml-id="Teams"
+            data-xml-type="xs:string"
+            type="text"
+            spellcheck="false"
+          />
+        </label>
+        <label>
+          <span id="tool-cix-data-locations-text">Locations</span>
+          <input
+            id="tool-cix-data-locations-input"
+            data-xml-id="Locations"
+            data-xml-type="xs:string"
+            type="text"
+            spellcheck="false"
+          />
+        </label>
+        <label>
+          <span id="tool-cix-data-storyarc-text">Story Arc</span>
+          <textarea
+            id="tool-cix-data-storyarc-textarea"
+            data-xml-id="StoryArc"
+            data-xml-type="xs:string"
+            spellcheck="false"
+          ></textarea>
+        </label>
+        <label>
+          <span id="tool-cix-data-seriesgroup-text">Series Group</span>
+          <input
+            id="tool-cix-data-seriesgroup-input"
+            data-xml-id="SeriesGroup"
+            data-xml-type="xs:string"
+            type="text"
+            spellcheck="false"
+          />
+        </label>
+        <label>
+          <span id="tool-cix-data-agerating-text">Age Rating</span>
+          <select
+            id="tool-cix-data-agerating-select"
+            data-xml-id="AgeRating"
+            data-xml-type="AgeRating"
+          >
+            <option value="default"></option>
+            <option value="Unknown">Unknown</option>
+            <option value="Adults Only 18+">Adults Only 18+</option>
+            <option value="Early Childhood">Early Childhood</option>
+            <option value="Everyone">Everyone</option>
+            <option value="Everyone 10+">Everyone 10+</option>
+            <option value="G">G</option>
+            <option value="Kids to Adults">Kids to Adults</option>
+            <option value="M">M</option>
+            <option value="MA15+">MA15+</option>
+            <option value="Mature 17+">Mature 17+</option>
+            <option value="PG">PG</option>
+            <option value="R18+">R18+</option>
+            <option value="Rating Pending">Rating Pending</option>
+            <option value="Teen">Teen</option>
+            <option value="X18+">X18+</option>
+          </select>
+        </label>
+        <label>
+          <span
+            id="tool-cix-data-communityrating-text"
+            data-xml-id="CommunityRating"
+            data-xml-type="Rating"
+            >Community Rating</span
+          >
+          <input
+            id="tool-cix-data-communityrating-input"
+            type="number"
+            step="0.01"
+            max="5.00"
+            min="0.00"
           />
         </label>
         <label>
           <span id="tool-cix-data-review-text">Review</span>
           <textarea
             id="tool-cix-data-review-textarea"
+            data-xml-id="Review"
+            data-xml-type="xs:string"
             spellcheck="false"
           ></textarea>
         </label>

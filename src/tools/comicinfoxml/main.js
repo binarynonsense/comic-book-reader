@@ -17,6 +17,7 @@ const {
   FileDataState,
   FileDataType,
 } = require("../../shared/main/constants");
+const ISO6391 = require("iso-639-1");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -39,11 +40,9 @@ exports.open = function (fileData) {
   const data = fs.readFileSync(path.join(__dirname, "index.html"));
   sendIpcToCoreRenderer("replace-inner-html", "#tools", data.toString());
   updateLocalizedText();
-  sendIpcToRenderer("show");
-
+  // console.log(ISO6391.validate("en"));
+  sendIpcToRenderer("show", ISO6391.getAllNativeNames(), ISO6391.getAllCodes());
   g_fileData = fileData;
-
-  loadXml();
 };
 
 exports.close = function () {
@@ -95,6 +94,10 @@ function on(id, callback) {
 function initOnIpcCallbacks() {
   on("close", () => {
     onCloseClicked();
+  });
+
+  on("load-xml", () => {
+    loadXml();
   });
 }
 
@@ -148,14 +151,8 @@ async function loadXml() {
     }
     xmlFileData = buf.toString();
   } else {
-    // TODO: read empty comicinfo xml  and generate json
-    //const xmlFileData = fs.readFileSync(../../assets....base.xml, "utf8");
-    // OR NOT and build json in renderer!! think!!
-    // input xmls can lack some fields anyway, so I'll have to add them
-    // manually in those cases too.. think!!
+    // TODO: read empty comicinfo xml and generate json as fallback
   }
-
-  // TODO move to asyn func
 
   try {
     const { XMLParser, XMLBuilder, XMLValidator } = require("fast-xml-parser");
@@ -168,8 +165,9 @@ async function loadXml() {
       };
       const parser = new XMLParser(parserOptions);
       let json = parser.parse(xmlFileData);
-      console.log(json);
+      // console.log(json);
       // TODO: send json
+      sendIpcToRenderer("load-json", json);
     } else {
       throw "ComicInfo.xml is not a valid xml file";
     }
@@ -178,6 +176,7 @@ async function loadXml() {
       "Warning: couldn't read the contents of ComicInfo.xml: " + error
     );
     // TODO: send stop and open modal
+    sendIpcToRenderer("load-json", undefined);
   }
 }
 
@@ -190,10 +189,21 @@ function updateLocalizedText() {
     "update-localization",
     _("tool-shared-modal-title-updating"),
     _("tool-shared-modal-title-saving"),
-    getLocalization()
+    _("tool-shared-modal-title-loading"),
+    getLocalization(),
+    getTooltipsLocalization()
   );
 }
 exports.updateLocalizedText = updateLocalizedText;
+
+function getTooltipsLocalization() {
+  return [
+    {
+      id: "tool-cix-tooltip-page-data",
+      text: _("tool-cix-tooltip-update-pages"),
+    },
+  ];
+}
 
 function getLocalization() {
   return [
@@ -209,10 +219,44 @@ function getLocalization() {
       id: "tool-cix-save-button-text",
       text: _("ui-modal-prompt-button-save").toUpperCase(),
     },
+    //////////////////////////////////////////////
+    {
+      id: "tool-cix-section-0-button-text",
+      text: _("tool-cix-section-basic-data"),
+    },
+    {
+      id: "tool-cix-section-1-button-text",
+      text: _("tool-cix-section-creators"),
+    },
+    {
+      id: "tool-cix-section-2-button-text",
+      text: _("tool-cix-section-pages"),
+    },
+    {
+      id: "tool-cix-section-3-button-text",
+      text: _("tool-cix-section-other-data"),
+    },
     ////////////////////////////////
     {
-      id: "tool-cix-metadata-text",
-      text: _("ui-modal-info-metadata").toUpperCase(),
+      id: "tool-cix-section-0-text",
+      text: _("tool-cix-section-basic-data"),
+    },
+    {
+      id: "tool-cix-section-1-text",
+      text: _("tool-cix-section-creators"),
+    },
+    {
+      id: "tool-cix-section-2-text",
+      text: _("tool-cix-section-pages"),
+    },
+    {
+      id: "tool-cix-section-3-text",
+      text: _("tool-cix-section-other-data"),
+    },
+    ////////////////////////////////
+    {
+      id: "tool-cix-update-pages-button-text",
+      text: _("ui-modal-prompt-button-update").toUpperCase(),
     },
   ];
 }
