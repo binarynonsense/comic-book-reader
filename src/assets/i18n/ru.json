@@ -140,6 +140,7 @@
   "[NEEDS TRANSLATION]ui-modal-prompt-button-save": "Save",
   "[NEEDS TRANSLATION]ui-modal-prompt-button-open": "Open",
   "ui-modal-prompt-button-cancel": "Отмена",
+  "[NEEDS TRANSLATION]ui-modal-prompt-button-update": "Update",
   "[NEEDS TRANSLATION]ui-modal-prompt-button-edit-metadata": "Edit Metadata",
   "[NEEDS TRANSLATION]ui-modal-prompt-button-open-metadata": "Open Metadata",
   "[NEEDS TRANSLATION]ui-modal-prompt-button-create-metadata": "Create Metadata",
@@ -469,8 +470,12 @@
   "[NEEDS TRANSLATION]tool-cix-warning-save-update": "This will update the contents of the ComicInfo.xml file inside the comic book with the new data",
   "[NEEDS TRANSLATION]tool-cix-warning-save-create": "This will create a ComicInfo.xml file inside the comic book containing the supplied data",
   "[NEEDS TRANSLATION]tool-cix-warning-rar": "RAR files can't be edited",
-  "[NEEDS TRANSLATION]tool-cix-update-pages": "Update Pages",
+  "[NEEDS TRANSLATION]tool-cix-tooltip-update-pages": "Clicking the button will update the number of pages and their size and dimensions with data retrieved from the actual image files inside the comic book.",
   "[NEEDS TRANSLATION]tool-cix-modal-message-not-valid": "The ComicInfo.xml file is not a valid XML file",
   "[NEEDS TRANSLATION]tool-cix-modal-message-could-not-update": "Couldn't update the contents of the ComicInfo.xml file",
-  "[NEEDS TRANSLATION]tool-cix-modal-message-could-not-create": "Couldn't create the ComicInfo.xml file"  
+  "[NEEDS TRANSLATION]tool-cix-modal-message-could-not-create": "Couldn't create the ComicInfo.xml file",
+  "[NEEDS TRANSLATION]tool-cix-section-basic-data": "Basic Data",
+  "[NEEDS TRANSLATION]tool-cix-section-creators": "Creators",
+  "[NEEDS TRANSLATION]tool-cix-section-pages": "Pages",
+  "[NEEDS TRANSLATION]tool-cix-section-other-data": "Other"
 }

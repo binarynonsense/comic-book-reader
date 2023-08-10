@@ -140,6 +140,7 @@
   "ui-modal-prompt-button-save": "Guardar",
   "ui-modal-prompt-button-open": "Abrir",
   "ui-modal-prompt-button-cancel": "Cancelar",
+  "ui-modal-prompt-button-update": "Actualizar",
   "ui-modal-prompt-button-edit-metadata": "Editar Metadata",
   "ui-modal-prompt-button-open-metadata": "Abrir Metadata",
   "ui-modal-prompt-button-create-metadata": "Crear Metadata",
@@ -468,9 +469,13 @@
   "tool-cix-title": "Editor de ComicInfo.xml",
   "tool-cix-warning-save-update": "Esto actualizará los contenidos del fichero ComicInfo.xml en el interior del Comic con los nuevos datos",
   "tool-cix-warning-save-create": "Esto creará un fichero ComicInfo.xml en el interior del Comic conteniendo los datos proporcionados",
-  "tool-cix-warning-rar": "Los archivos RAR no se pueden editar",
-  "tool-cix-update-pages": "Actualizar Páginas",
+  "tool-cix-warning-rar": "Los archivos CBR no se pueden editar",
+  "tool-cix-tooltip-update-pages": "Haciendo click en el botón se actualizarán el número de páginas y su tamaño y dimensiones con datos obtenidos de los propios ficheros de imagen contenidos en el comic.",
   "tool-cix-modal-message-not-valid": "El archivo ComicInfo.xml no es un archivo XML válido",
   "tool-cix-modal-message-could-not-update": "No se pudieron actualizar los contenidos del archivo ComicInfo.xml",
-  "tool-cix-modal-message-could-not-create": "No se pudo crear el archivo ComicInfo.xml"  
+  "tool-cix-modal-message-could-not-create": "No se pudo crear el archivo ComicInfo.xml",
+  "tool-cix-section-basic-data": "Basic Data",
+  "tool-cix-section-creators": "Creators",
+  "tool-cix-section-pages": "Pages",
+  "tool-cix-section-other-data": "Other"
 }
