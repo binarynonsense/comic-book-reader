@@ -112,6 +112,12 @@
   filter: opacity(0.2) grayscale(1);
 }
 
+.tools-read-only {
+  filter: opacity(0.7) !important;
+  cursor: default;
+  pointer-events: none;
+}
+
 #tools button:hover {
   filter: brightness(1.2);
   transform: scale(1.01);

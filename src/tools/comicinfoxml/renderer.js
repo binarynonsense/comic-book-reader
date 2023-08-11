@@ -22,14 +22,16 @@ let g_saveButton;
 let g_langSelect;
 let g_pagesTable;
 
+let g_isEditable;
 let g_json;
 let g_fields = [];
 
-function init(isoLangNames, isoLangCodes) {
+function init(isEditable, isoLangNames, isoLangCodes) {
   if (!g_isInitialized) {
     // things to start only once go here
     g_isInitialized = true;
   }
+  g_isEditable = isEditable;
   // menu buttons
   document
     .getElementById("tool-cix-back-button")
@@ -64,6 +66,15 @@ function init(isoLangNames, isoLangCodes) {
     .addEventListener("click", (event) => {
       onUpdatePages();
     });
+
+  if (!g_isEditable) {
+    document
+      .getElementById("tool-cix-update-pages-button")
+      .classList.add("tools-disabled");
+    document
+      .getElementById("tool-cix-cbr-no-edit-div")
+      .classList.remove("set-display-none");
+  }
   ////////////////////////////////////////
   // generate fields array
   let elements = document
@@ -83,6 +94,13 @@ function init(isoLangNames, isoLangCodes) {
   ];
   for (let index = 0; index < elements.length; index++) {
     const element = elements[index];
+    if (!g_isEditable) {
+      element.classList.add("tools-read-only");
+      const tagName = element.tagName.toLowerCase();
+      if (tagName === "textarea" || tagName === "input") {
+        element.readOnly = true;
+      }
+    }
     g_fields.push({
       element: element,
       xmlId: element.getAttribute("data-xml-id"),
@@ -174,8 +192,8 @@ function on(id, callback) {
 }
 
 function initOnIpcCallbacks() {
-  on("show", (isoLangNames, isoLangCodes) => {
-    init(isoLangNames, isoLangCodes);
+  on("show", (isEditable, isoLangNames, isoLangCodes) => {
+    init(isEditable, isoLangNames, isoLangCodes);
   });
 
   on("hide", () => {});
@@ -248,7 +266,7 @@ function initOnIpcCallbacks() {
 
 function onFieldChanged(element) {
   element.setAttribute("data-changed", true);
-  g_saveButton.classList.remove("tools-disabled");
+  if (g_isEditable) g_saveButton.classList.remove("tools-disabled");
 }
 
 function onLoadJson(json, error) {
@@ -290,7 +308,7 @@ function onPagesUpdated(json) {
     document.getElementById("tool-cix-data-pagecount-input").value =
       json["ComicInfo"]["Pages"]["Page"].length;
     buildPagesTableFromJson(json);
-    g_saveButton.classList.remove("tools-disabled");
+    if (g_isEditable) g_saveButton.classList.remove("tools-disabled");
     updateColumnsHeight();
     closeModal();
   } else {
@@ -329,6 +347,7 @@ async function onSave() {
 }
 
 function buildPagesTableFromJson(json) {
+  if (!g_isEditable) g_pagesTable.classList.add("tools-read-only");
   if (
     json &&
     json["ComicInfo"]["Pages"] &&

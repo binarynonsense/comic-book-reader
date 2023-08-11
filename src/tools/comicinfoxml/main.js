@@ -43,7 +43,12 @@ exports.open = function (fileData) {
   sendIpcToCoreRenderer("replace-inner-html", "#tools", data.toString());
   updateLocalizedText();
   // console.log(ISO6391.validate("en"));
-  sendIpcToRenderer("show", ISO6391.getAllNativeNames(), ISO6391.getAllCodes());
+  sendIpcToRenderer(
+    "show",
+    fileData.type !== FileDataType.RAR,
+    ISO6391.getAllNativeNames(),
+    ISO6391.getAllCodes()
+  );
   g_fileData = fileData;
 };
 
@@ -383,6 +388,10 @@ function getLocalization() {
       text: _("tool-cix-section-other-data"),
     },
     ////////////////////////////////
+    {
+      id: "tool-cix-cbr-no-edit-text",
+      text: _("tool-cix-warning-rar"),
+    },
     {
       id: "tool-cix-update-pages-button-text",
       text: _("ui-modal-prompt-button-update").toUpperCase(),
