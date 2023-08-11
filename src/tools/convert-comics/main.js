@@ -770,7 +770,7 @@ async function resizeImages(
               "@_ImageWidth": "",
               "@_ImageHeight": "",
             };
-            if (oldPagesArray.length >= index) {
+            if (oldPagesArray.length > index) {
               pageData = oldPagesArray[index];
             }
             let filePath = imgFilePaths[index];
