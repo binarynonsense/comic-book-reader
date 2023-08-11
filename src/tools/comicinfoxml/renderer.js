@@ -257,8 +257,26 @@ function initOnIpcCallbacks() {
     onPagesUpdated(json);
   });
 
-  on("saving-done", () => {
+  on("saving-done", (error) => {
     closeModal();
+    if (!error) {
+      showInfoModal(
+        g_localizedModalTexts.successTitle,
+        g_hasInfo
+          ? g_localizedModalTexts.savingMessageSuccessUpdate
+          : g_localizedModalTexts.savingMessageSuccessCreate,
+        g_localizedModalTexts.okButton
+      );
+      g_hasInfo = true;
+    } else {
+      showInfoModal(
+        g_localizedModalTexts.errorTitle,
+        g_hasInfo
+          ? g_localizedModalTexts.savingMessageErrorUpdate
+          : g_localizedModalTexts.savingMessageErrorCreate,
+        g_localizedModalTexts.okButton
+      );
+    }
   });
 }
 

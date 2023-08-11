@@ -306,7 +306,9 @@ function saveJsonToFile(json) {
   let outputXmlData = builder.build(json);
   console.log(outputXmlData);
   // fs.writeFileSync(comicInfoFilePath, outputXmlData);
-  sendIpcToRenderer("saving-done");
+  let error;
+  // TODO: errors
+  sendIpcToRenderer("saving-done", error);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -327,6 +329,10 @@ function updateLocalizedText() {
       cancelButton: _("ui-modal-prompt-button-cancel").toUpperCase(),
       savingMessageUpdate: _("tool-cix-warning-save-update"),
       savingMessageCreate: _("tool-cix-warning-save-create"),
+      savingMessageSuccessUpdate: _("tool-cix-modal-message-success-update"),
+      savingMessageSuccessCreate: _("tool-cix-modal-message-success-create"),
+      savingMessageErrorUpdate: _("tool-cix-modal-message-could-not-update"),
+      savingMessageErrorCreate: _("tool-cix-modal-message-could-not-create"),
     },
     getLocalization(),
     getTooltipsLocalization()
