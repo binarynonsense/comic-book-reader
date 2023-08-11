@@ -320,19 +320,26 @@ function updateLocalizedText() {
     "update-localization",
     {
       updatingTitle: _("tool-shared-modal-title-updating"),
-      savingTitle: _("tool-shared-modal-title-saving"),
-      loadingTitle: _("tool-shared-modal-title-loading"),
+
       warningTitle: _("tool-shared-modal-title-warning"),
       errorTitle: _("tool-shared-modal-title-error"),
       successTitle: _("tool-shared-modal-title-success"),
+
       okButton: _("ui-modal-prompt-button-ok").toUpperCase(),
       cancelButton: _("ui-modal-prompt-button-cancel").toUpperCase(),
+
+      savingTitle: _("tool-shared-modal-title-saving"),
       savingMessageUpdate: _("tool-cix-warning-save-update"),
       savingMessageCreate: _("tool-cix-warning-save-create"),
       savingMessageSuccessUpdate: _("tool-cix-modal-message-success-update"),
       savingMessageSuccessCreate: _("tool-cix-modal-message-success-create"),
       savingMessageErrorUpdate: _("tool-cix-modal-message-could-not-update"),
       savingMessageErrorCreate: _("tool-cix-modal-message-could-not-create"),
+
+      loadingTitle: _("tool-shared-modal-title-loading"),
+      loadingMessageErrorInvalid: _(
+        "The ComicInfo.xml file is not a valid xml file"
+      ),
     },
     getLocalization(),
     getTooltipsLocalization()

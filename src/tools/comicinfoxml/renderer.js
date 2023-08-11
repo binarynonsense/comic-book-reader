@@ -312,7 +312,15 @@ function onLoadJson(json, error) {
   buildPagesTableFromJson(g_json);
 
   //////////////////////////////////
+
   closeModal();
+  if (error) {
+    showInfoModal(
+      g_localizedModalTexts.errorTitle,
+      g_localizedModalTexts.loadingMessageErrorInvalid,
+      g_localizedModalTexts.okButton
+    );
+  }
 }
 
 function onUpdatePages() {
