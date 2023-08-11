@@ -761,6 +761,17 @@ async function resizeImages(
             "update-log-text",
             _("tool-shared-modal-log-updating-comicinfoxml")
           );
+
+          if (!json["ComicInfo"]["Pages"]) {
+            json["ComicInfo"]["Pages"] = {};
+            console.log(json["ComicInfo"]["Pages"]);
+          }
+          if (!json["ComicInfo"]["Pages"]["Page"]) {
+            json["ComicInfo"]["Pages"]["Page"] = [];
+            console.log(json["ComicInfo"]["Pages"]["Page"]);
+          }
+
+          json["ComicInfo"]["PageCount"] = imgFilePaths.length;
           let oldPagesArray = json["ComicInfo"]["Pages"]["Page"].slice();
           json["ComicInfo"]["Pages"]["Page"] = [];
           for (let index = 0; index < imgFilePaths.length; index++) {
