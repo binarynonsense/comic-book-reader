@@ -22,15 +22,17 @@ let g_saveButton;
 let g_langSelect;
 let g_pagesTable;
 
+let g_hasInfo;
 let g_isEditable;
 let g_json;
 let g_fields = [];
 
-function init(isEditable, isoLangNames, isoLangCodes) {
+function init(hasInfo, isEditable, isoLangNames, isoLangCodes) {
   if (!g_isInitialized) {
     // things to start only once go here
     g_isInitialized = true;
   }
+  g_hasInfo = hasInfo;
   g_isEditable = isEditable;
   // menu buttons
   document
@@ -192,8 +194,8 @@ function on(id, callback) {
 }
 
 function initOnIpcCallbacks() {
-  on("show", (isEditable, isoLangNames, isoLangCodes) => {
-    init(isEditable, isoLangNames, isoLangCodes);
+  on("show", (hasInfo, isEditable, isoLangNames, isoLangCodes) => {
+    init(hasInfo, isEditable, isoLangNames, isoLangCodes);
   });
 
   on("hide", () => {});
@@ -322,7 +324,9 @@ async function onSave() {
   if (g_openModal) closeModal();
   showInfoModal(
     "",
-    g_localizedModalTexts.savingMessageUpdate,
+    g_hasInfo
+      ? g_localizedModalTexts.savingMessageUpdate
+      : g_localizedModalTexts.savingMessageCreate,
     g_localizedModalTexts.okButton,
     g_localizedModalTexts.cancelButton,
     () => {

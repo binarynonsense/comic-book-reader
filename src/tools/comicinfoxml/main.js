@@ -45,6 +45,7 @@ exports.open = function (fileData) {
   // console.log(ISO6391.validate("en"));
   sendIpcToRenderer(
     "show",
+    fileData.comicInfoId !== undefined,
     fileData.type !== FileDataType.RAR,
     ISO6391.getAllNativeNames(),
     ISO6391.getAllCodes()
