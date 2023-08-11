@@ -25,6 +25,7 @@ let g_saveButton;
 let g_langSelect;
 let g_pagesTable;
 
+let g_json;
 let g_fields = [];
 
 function init(isoLangNames, isoLangCodes) {
@@ -59,8 +60,13 @@ function init(isoLangNames, isoLangCodes) {
   });
 
   g_pagesTable = document.getElementById("tool-cix-pages-data-table");
-  g_pagesTable.appendChild(generateTableHeader());
-  g_pagesTable.appendChild(generateTableEmptyRow());
+  buildPagesTableFromJson(undefined);
+
+  document
+    .getElementById("tool-cix-update-pages-button")
+    .addEventListener("click", (event) => {
+      onUpdatePages();
+    });
   ////////////////////////////////////////
   // generate fields array
   let elements = document
@@ -237,6 +243,10 @@ function initOnIpcCallbacks() {
   on("load-json", (json, error) => {
     onLoadJson(json, error);
   });
+
+  on("pages-updated", (json) => {
+    onPagesUpdated(json);
+  });
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -244,13 +254,15 @@ function initOnIpcCallbacks() {
 ///////////////////////////////////////////////////////////////////////////////
 
 function onFieldChanged(element) {
-  // TODO: reenable
-  //g_saveButton.classList.remove("tools-disabled");
+  element.setAttribute("data-changed", true);
+  g_saveButton.classList.remove("tools-disabled");
 }
 
 function onLoadJson(json, error) {
   console.log(error);
   console.log(json);
+
+  g_json = json;
 
   // fill UI with json data
   for (let index = 0; index < g_fields.length; index++) {
@@ -269,7 +281,67 @@ function onLoadJson(json, error) {
     }
   }
 
-  if (json["ComicInfo"]["Pages"] && json["ComicInfo"]["Pages"]["Page"]) {
+  buildPagesTableFromJson(g_json);
+
+  //////////////////////////////////
+  closeModal();
+}
+
+function onUpdatePages() {
+  if (g_openModal) closeModal();
+  showProgressModal();
+  updateModalTitleText(g_localizedModalUpdatingTitleText);
+  sendIpcToMain("update-pages", g_json);
+}
+
+function onPagesUpdated(json) {
+  if (json) {
+    g_json = json;
+    document.getElementById("tool-cix-data-pagecount-input").value =
+      json["ComicInfo"]["Pages"]["Page"].length;
+    buildPagesTableFromJson(json);
+    updateColumnsHeight();
+    closeModal();
+  } else {
+    // TODO: show error
+    closeModal();
+  }
+}
+
+async function onSave() {
+  if (g_openModal) return;
+  showProgressModal();
+  updateModalTitleText(g_localizedModalSavingTitleText);
+  /////////////////////////////////
+  for (let index = 0; index < g_fields.length; index++) {
+    const field = g_fields[index];
+    if (!field.element.getAttribute("data-changed")) continue;
+    console.log(field.element.id);
+    // let value = json["ComicInfo"][field.xmlId];
+    // if (value && value !== "") {
+    //   if (field.xmlType !== "Page") {
+    //     // sanitize
+    //     if (field.element.tagName.toLowerCase() === "select") {
+    //       if (!field.element.querySelector('[value="' + value + '"]')) continue;
+    //     }
+    //     // update element's value
+    //     field.element.value = value;
+    //   }
+    // }
+  }
+  // TODO: pages
+  /////////////////////////////////
+  // sendIpcToMain
+  // TEMP
+  closeModal();
+}
+
+function buildPagesTableFromJson(json) {
+  if (
+    json &&
+    json["ComicInfo"]["Pages"] &&
+    json["ComicInfo"]["Pages"]["Page"]
+  ) {
     g_pagesTable.innerHTML = "";
     g_pagesTable.appendChild(generateTableHeader());
     let pages = json["ComicInfo"]["Pages"]["Page"];
@@ -289,17 +361,11 @@ function onLoadJson(json, error) {
         );
       }
     }
+  } else {
+    g_pagesTable.innerHTML = "";
+    g_pagesTable.appendChild(generateTableHeader());
+    g_pagesTable.appendChild(generateTableEmptyRow());
   }
-
-  //////////////////////////////////
-  closeModal();
-}
-
-async function onSave() {
-  if (g_openModal) return;
-  showProgressModal();
-  updateModalTitleText(g_localizedModalSavingTitleText);
-  // sendIpcToMain
 }
 
 function generateTableHeader() {

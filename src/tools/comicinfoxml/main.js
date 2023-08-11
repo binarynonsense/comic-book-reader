@@ -18,6 +18,7 @@ const {
   FileDataType,
 } = require("../../shared/main/constants");
 const ISO6391 = require("iso-639-1");
+const { fork } = require("child_process");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -25,6 +26,7 @@ const ISO6391 = require("iso-639-1");
 
 let g_isInitialized = false;
 let g_fileData;
+let g_worker;
 
 function init() {
   if (!g_isInitialized) {
@@ -49,6 +51,13 @@ exports.close = function () {
   // called by switchTool when closing tool
   sendIpcToRenderer("close-modal");
   sendIpcToRenderer("hide"); // clean up
+
+  if (g_worker !== undefined) {
+    // kill it after one use
+    g_worker.kill();
+    g_worker = undefined;
+  }
+  fileUtils.cleanUpTempFolder();
 };
 
 exports.onResize = function () {
@@ -98,6 +107,10 @@ function initOnIpcCallbacks() {
 
   on("load-xml", () => {
     loadXml();
+  });
+
+  on("update-pages", (json) => {
+    updatePages(json);
   });
 }
 
@@ -192,6 +205,84 @@ async function loadXml() {
       // TODO: can't recuperate from this!!
       // close???
     }
+  }
+}
+
+function updatePages(json) {
+  let tempFolderPath = fileUtils.createTempFolder();
+  if (g_worker !== undefined) {
+    // kill it after one use
+    g_worker.kill();
+    g_worker = undefined;
+  }
+  if (g_worker === undefined) {
+    g_worker = fork(path.join(__dirname, "../../shared/main/tools-worker.js"));
+    g_worker.on("message", (message) => {
+      g_worker.kill(); // kill it after one use
+      if (message === "success") {
+        updatePagesDataFromImages(json);
+        return;
+      } else {
+        sendIpcToRenderer("pages-updated", undefined);
+        fileUtils.cleanUpTempFolder();
+        return;
+      }
+    });
+  }
+  g_worker.send([
+    "extract",
+    g_fileData.path,
+    g_fileData.type,
+    tempFolderPath,
+    g_fileData.password,
+  ]);
+}
+
+async function updatePagesDataFromImages(json) {
+  try {
+    // TODO: xml with no pages data!!!!
+    const sharp = require("sharp");
+    let tempFolderPath = fileUtils.getTempFolderPath();
+    let imgFilePaths = fileUtils.getImageFilesInFolderRecursive(tempFolderPath);
+    imgFilePaths.sort(fileUtils.compare);
+
+    if (!json["ComicInfo"]["Pages"]) {
+      json["ComicInfo"]["Pages"] = {};
+      console.log(json["ComicInfo"]["Pages"]);
+    }
+    if (!json["ComicInfo"]["Pages"]["Page"]) {
+      json["ComicInfo"]["Pages"]["Page"] = [];
+      console.log(json["ComicInfo"]["Pages"]["Page"]);
+    }
+    let oldPagesArray = json["ComicInfo"]["Pages"]["Page"].slice();
+    json["ComicInfo"]["Pages"]["Page"] = [];
+    for (let index = 0; index < imgFilePaths.length; index++) {
+      let pageData = {
+        "@_Image": "",
+        "@_ImageSize": "",
+        "@_ImageWidth": "",
+        "@_ImageHeight": "",
+      };
+      if (oldPagesArray.length > index) {
+        pageData = oldPagesArray[index];
+      }
+      let filePath = imgFilePaths[index];
+      pageData["@_Image"] = index;
+      let fileStats = fs.statSync(filePath);
+      let fileSizeInBytes = fileStats.size;
+      pageData["@_ImageSize"] = fileSizeInBytes;
+      const metadata = await sharp(filePath).metadata();
+      pageData["@_ImageWidth"] = metadata.width;
+      pageData["@_ImageHeight"] = metadata.height;
+      json["ComicInfo"]["Pages"]["Page"].push(pageData);
+    }
+
+    fileUtils.cleanUpTempFolder();
+    console.log(json["ComicInfo"]["Pages"]["Page"]);
+    sendIpcToRenderer("pages-updated", json);
+  } catch (error) {
+    sendIpcToRenderer("pages-updated", undefined);
+    fileUtils.cleanUpTempFolder();
   }
 }
 
