@@ -323,7 +323,7 @@ async function onSave() {
   // TODO: show warning ok cancel and do the following in the callback
   if (g_openModal) closeModal();
   showInfoModal(
-    "",
+    g_localizedModalTexts.warningTitle,
     g_hasInfo
       ? g_localizedModalTexts.savingMessageUpdate
       : g_localizedModalTexts.savingMessageCreate,
