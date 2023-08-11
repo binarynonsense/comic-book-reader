@@ -112,6 +112,10 @@ function initOnIpcCallbacks() {
   on("update-pages", (json) => {
     updatePages(json);
   });
+
+  on("save-json-to-file", (json) => {
+    saveJsonToFile(json);
+  });
 }
 
 // HANDLE
@@ -177,6 +181,7 @@ async function loadXml() {
     // open
     const parserOptions = {
       ignoreAttributes: false,
+      allowBooleanAttributes: true,
     };
     const parser = new XMLParser(parserOptions);
     let json = parser.parse(xmlFileData);
@@ -248,11 +253,9 @@ async function updatePagesDataFromImages(json) {
 
     if (!json["ComicInfo"]["Pages"]) {
       json["ComicInfo"]["Pages"] = {};
-      console.log(json["ComicInfo"]["Pages"]);
     }
     if (!json["ComicInfo"]["Pages"]["Page"]) {
       json["ComicInfo"]["Pages"]["Page"] = [];
-      console.log(json["ComicInfo"]["Pages"]["Page"]);
     }
     let oldPagesArray = json["ComicInfo"]["Pages"]["Page"].slice();
     json["ComicInfo"]["Pages"]["Page"] = [];
@@ -278,12 +281,26 @@ async function updatePagesDataFromImages(json) {
     }
 
     fileUtils.cleanUpTempFolder();
-    console.log(json["ComicInfo"]["Pages"]["Page"]);
     sendIpcToRenderer("pages-updated", json);
   } catch (error) {
     sendIpcToRenderer("pages-updated", undefined);
     fileUtils.cleanUpTempFolder();
   }
+}
+
+function saveJsonToFile(json) {
+  const { XMLBuilder } = require("fast-xml-parser");
+  // rebuild
+  const builderOptions = {
+    ignoreAttributes: false,
+    format: true,
+    suppressBooleanAttributes: false, // write booleans with text
+  };
+  const builder = new XMLBuilder(builderOptions);
+  let outputXmlData = builder.build(json);
+  console.log(outputXmlData);
+  // fs.writeFileSync(comicInfoFilePath, outputXmlData);
+  sendIpcToRenderer("saving-done");
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -293,9 +310,15 @@ async function updatePagesDataFromImages(json) {
 function updateLocalizedText() {
   sendIpcToRenderer(
     "update-localization",
-    _("tool-shared-modal-title-updating"),
-    _("tool-shared-modal-title-saving"),
-    _("tool-shared-modal-title-loading"),
+    {
+      updatingTitle: _("tool-shared-modal-title-updating"),
+      savingTitle: _("tool-shared-modal-title-saving"),
+      loadingTitle: _("tool-shared-modal-title-loading"),
+      okButton: _("ui-modal-prompt-button-ok").toUpperCase(),
+      cancelButton: _("ui-modal-prompt-button-cancel").toUpperCase(),
+      savingMessageUpdate: _("tool-cix-warning-save-update"),
+      savingMessageCreate: _("tool-cix-warning-save-create"),
+    },
     getLocalization(),
     getTooltipsLocalization()
   );

@@ -16,10 +16,7 @@ import * as modals from "../../shared/renderer/modals.js";
 ///////////////////////////////////////////////////////////////////////////////
 
 let g_isInitialized = false;
-
-let g_localizedModalUpdatingTitleText;
-let g_localizedModalSavingTitleText;
-let g_localizedModalLoadingTitleText;
+let g_localizedModalTexts;
 
 let g_saveButton;
 let g_langSelect;
@@ -111,7 +108,7 @@ function init(isoLangNames, isoLangCodes) {
   ////////////////////////////////////////
   if (!g_openModal) closeModal(g_openModal);
   showProgressModal();
-  updateModalTitleText(g_localizedModalLoadingTitleText);
+  updateModalTitleText(g_localizedModalTexts.loadingTitle);
   sendIpcToMain("load-xml");
   ////////////////////////////////////////
   updateColumnsHeight();
@@ -185,16 +182,8 @@ function initOnIpcCallbacks() {
 
   on(
     "update-localization",
-    (
-      modalUpdatingTitleText,
-      modalSavingTitleText,
-      modalLoadingTitleText,
-      localization,
-      tooltipsLocalization
-    ) => {
-      g_localizedModalUpdatingTitleText = modalUpdatingTitleText;
-      g_localizedModalSavingTitleText = modalSavingTitleText;
-      g_localizedModalLoadingTitleText = modalLoadingTitleText;
+    (localizedModalTexts, localization, tooltipsLocalization) => {
+      g_localizedModalTexts = localizedModalTexts;
       for (let index = 0; index < localization.length; index++) {
         const element = localization[index];
         const domElement = document.querySelector("#" + element.id);
@@ -247,6 +236,10 @@ function initOnIpcCallbacks() {
   on("pages-updated", (json) => {
     onPagesUpdated(json);
   });
+
+  on("saving-done", () => {
+    closeModal();
+  });
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -259,9 +252,6 @@ function onFieldChanged(element) {
 }
 
 function onLoadJson(json, error) {
-  console.log(error);
-  console.log(json);
-
   g_json = json;
 
   // fill UI with json data
@@ -290,7 +280,7 @@ function onLoadJson(json, error) {
 function onUpdatePages() {
   if (g_openModal) closeModal();
   showProgressModal();
-  updateModalTitleText(g_localizedModalUpdatingTitleText);
+  updateModalTitleText(g_localizedModalTexts.updatingTitle);
   sendIpcToMain("update-pages", g_json);
 }
 
@@ -300,6 +290,7 @@ function onPagesUpdated(json) {
     document.getElementById("tool-cix-data-pagecount-input").value =
       json["ComicInfo"]["Pages"]["Page"].length;
     buildPagesTableFromJson(json);
+    g_saveButton.classList.remove("tools-disabled");
     updateColumnsHeight();
     closeModal();
   } else {
@@ -309,31 +300,32 @@ function onPagesUpdated(json) {
 }
 
 async function onSave() {
-  if (g_openModal) return;
-  showProgressModal();
-  updateModalTitleText(g_localizedModalSavingTitleText);
-  /////////////////////////////////
-  for (let index = 0; index < g_fields.length; index++) {
-    const field = g_fields[index];
-    if (!field.element.getAttribute("data-changed")) continue;
-    console.log(field.element.id);
-    // let value = json["ComicInfo"][field.xmlId];
-    // if (value && value !== "") {
-    //   if (field.xmlType !== "Page") {
-    //     // sanitize
-    //     if (field.element.tagName.toLowerCase() === "select") {
-    //       if (!field.element.querySelector('[value="' + value + '"]')) continue;
-    //     }
-    //     // update element's value
-    //     field.element.value = value;
-    //   }
-    // }
-  }
-  // TODO: pages
-  /////////////////////////////////
-  // sendIpcToMain
-  // TEMP
-  closeModal();
+  // TODO: show warning ok cancel and do the following in the callback
+  if (g_openModal) closeModal();
+  showInfoModal(
+    "",
+    g_localizedModalTexts.savingMessageUpdate,
+    g_localizedModalTexts.okButton,
+    g_localizedModalTexts.cancelButton,
+    () => {
+      showProgressModal();
+      updateModalTitleText(g_localizedModalTexts.savingTitle);
+      /////////////////////////////////
+      for (let index = 0; index < g_fields.length; index++) {
+        const field = g_fields[index];
+        if (!field.element.getAttribute("data-changed")) continue;
+        console.log(field.element.id);
+        let value = field.element.value;
+        if (field.element.tagName.toLowerCase() === "select") {
+          if (value === "default") value = "";
+        }
+        g_json["ComicInfo"][field.xmlId] = value;
+      }
+      // pages already updated, they are updated on input events
+      /////////////////////////////////
+      sendIpcToMain("save-json-to-file", g_json);
+    }
+  );
 }
 
 function buildPagesTableFromJson(json) {
@@ -351,6 +343,7 @@ function buildPagesTableFromJson(json) {
         // TODO: check info sanitize
         g_pagesTable.appendChild(
           generateTableRow(
+            index,
             pageData["@_Image"],
             pageData["@_ImageSize"],
             pageData["@_ImageWidth"],
@@ -414,10 +407,10 @@ function generateTableEmptyRow() {
   return tr;
 }
 
-function generateTableRow(index, size, width, height, doublepage, type) {
+function generateTableRow(index, id, size, width, height, doublepage, type) {
   let tr = document.createElement("tr");
   let td = document.createElement("td");
-  td.innerText = index;
+  td.innerText = id;
   tr.appendChild(td);
   td = document.createElement("td");
   td.innerText = size;
@@ -434,6 +427,11 @@ function generateTableRow(index, size, width, height, doublepage, type) {
     checkbox.type = "checkbox";
     checkbox.checked = doublepage;
     td.appendChild(checkbox);
+    checkbox.addEventListener("change", (event) => {
+      g_json["ComicInfo"]["Pages"]["Page"][index]["@_DoublePage"] =
+        checkbox.checked ? "true" : "false";
+      console.log(g_json["ComicInfo"]["Pages"]["Page"][index]["@_DoublePage"]);
+    });
   }
   tr.appendChild(td);
   td = document.createElement("td");
@@ -465,7 +463,9 @@ function generateTableRow(index, size, width, height, doublepage, type) {
     }>Deleted</option>`;
     td.appendChild(select);
     select.addEventListener("change", (event) => {
-      onFieldChanged(select);
+      g_json["ComicInfo"]["Pages"]["Page"][index]["@_Type"] =
+        select.value === "default" ? "" : select.value;
+      console.log(g_json["ComicInfo"]["Pages"]["Page"][index]["@_Type"]);
     });
   }
   tr.appendChild(td);
@@ -521,6 +521,52 @@ function showProgressModal() {
       hide: true,
     },
     progressBar: {},
+  });
+}
+
+function showInfoModal(
+  title,
+  message,
+  textButton1,
+  textButton2,
+  callbackButton1,
+  callbackButton2
+) {
+  // TODO: use isError to color button red or green?
+  if (g_openModal) {
+    return;
+  }
+  let buttons = [];
+  if (textButton1) {
+    buttons.push({
+      text: textButton1,
+      callback: () => {
+        if (callbackButton1) callbackButton1();
+        modalClosed();
+      },
+    });
+  }
+  if (textButton2) {
+    buttons.push({
+      text: textButton2,
+      callback: () => {
+        if (callbackButton2) callbackButton2();
+        modalClosed();
+      },
+    });
+  }
+  g_openModal = modals.show({
+    title: title,
+    message: message,
+    zIndexDelta: 5,
+    close: {
+      callback: () => {
+        if (callbackButton1) callbackButton1();
+        modalClosed();
+      },
+      key: "Escape",
+    },
+    buttons: buttons,
   });
 }
 
