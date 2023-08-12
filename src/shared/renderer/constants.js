@@ -34,3 +34,16 @@ export let FileExtension = {
 
   TMP: "tmp",
 };
+
+export let FileDataType = {
+  NOT_SET: "not set",
+  PDF: "pdf",
+  IMG: "img",
+  IMGS_FOLDER: "imgs folder",
+  ZIP: "zip",
+  RAR: "rar",
+  EPUB_COMIC: "epub comic",
+  EPUB_EBOOK: "epub ebook",
+  SEVENZIP: "7z",
+  WWW: "www",
+};

@@ -317,6 +317,20 @@ function createZip(filePathsList, outputFilePath) {
 }
 exports.createZip = createZip;
 
+function updateZipEntry(zipPath, entryName, contentBuffer) {
+  try {
+    const AdmZip = require("adm-zip");
+    let zip = new AdmZip(zipPath);
+    zip.updateFile(entryName, contentBuffer);
+    zip.writeZip(zipPath);
+    return true;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
+}
+exports.updateZipEntry = updateZipEntry;
+
 ///////////////////////////////////////////////////////////////////////////////
 // 7ZIP ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -382,7 +396,7 @@ async function get7ZipEntriesList(filePath, password) {
         result: "success",
         paths: imgEntries,
         metadata: {
-          encrypted: password && password.trim() !== "",
+          encrypted: password && password !== "_",
           comicInfoId: comicInfoId,
         },
       };
@@ -522,6 +536,44 @@ async function create7Zip(filePathsList, outputFilePath) {
   }
 }
 exports.create7Zip = create7Zip;
+
+async function update7ZipEntry(filePath, entryName, workingDir, password) {
+  try {
+    checkPathTo7ZipBin();
+    if (password === undefined || password === "") {
+      // to help trigger the right error
+      password = "_";
+    }
+    const Seven = require("node-7z");
+    const seven = Seven.add(filePath, entryName, {
+      $bin: g_pathTo7zipBin,
+      charset: "UTF-8",
+      password: password,
+      workingDir: workingDir,
+    });
+    let promise = await new Promise((resolve) => {
+      seven.on("error", (error) => {
+        console.log(error);
+        resolve({ success: false, data: error });
+      });
+      seven.on("end", () => {
+        return resolve({
+          success: true,
+          data: "",
+        });
+      });
+    });
+
+    if (promise.success === true) {
+      return true;
+    }
+    return false;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
+}
+exports.update7ZipEntry = update7ZipEntry;
 
 ///////////////////////////////////////////////////////////////////////////////
 // EPUB ///////////////////////////////////////////////////////////////////////

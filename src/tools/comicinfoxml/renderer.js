@@ -10,6 +10,7 @@ import {
   sendIpcToMainAndWait as coreSendIpcToMainAndWait,
 } from "../../core/renderer.js";
 import * as modals from "../../shared/renderer/modals.js";
+import { FileDataType } from "../../shared/renderer/constants.js";
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -24,16 +25,19 @@ let g_pagesTable;
 
 let g_hasInfo;
 let g_isEditable;
+let g_fileData;
 let g_json;
 let g_fields = [];
 
-function init(hasInfo, isEditable, isoLangNames, isoLangCodes) {
+function init(fileData, isoLangNames, isoLangCodes) {
   if (!g_isInitialized) {
     // things to start only once go here
     g_isInitialized = true;
   }
-  g_hasInfo = hasInfo;
-  g_isEditable = isEditable;
+  g_fileData = fileData;
+  g_hasInfo = g_fileData.metadata.comicInfoId !== undefined;
+  g_isEditable =
+    g_fileData.type !== FileDataType.RAR && !g_fileData.metadata.encrypted;
   // menu buttons
   document
     .getElementById("tool-cix-back-button")
@@ -69,12 +73,20 @@ function init(hasInfo, isEditable, isoLangNames, isoLangCodes) {
       onUpdatePages();
     });
 
-  if (!g_isEditable) {
+  if (g_fileData.type === "rar") {
     document
       .getElementById("tool-cix-update-pages-button")
       .classList.add("tools-disabled");
     document
-      .getElementById("tool-cix-cbr-no-edit-div")
+      .getElementById("tool-cix-cbr-no-edit-rar-div")
+      .classList.remove("set-display-none");
+  }
+  if (g_fileData.metadata.encrypted) {
+    document
+      .getElementById("tool-cix-update-pages-button")
+      .classList.add("tools-disabled");
+    document
+      .getElementById("tool-cix-cbr-no-edit-encrypted-div")
       .classList.remove("set-display-none");
   }
   ////////////////////////////////////////
@@ -194,8 +206,8 @@ function on(id, callback) {
 }
 
 function initOnIpcCallbacks() {
-  on("show", (hasInfo, isEditable, isoLangNames, isoLangCodes) => {
-    init(hasInfo, isEditable, isoLangNames, isoLangCodes);
+  on("show", (fileData, isoLangNames, isoLangCodes) => {
+    init(fileData, isoLangNames, isoLangCodes);
   });
 
   on("hide", () => {});

@@ -45,8 +45,7 @@ exports.open = function (fileData) {
   // console.log(ISO6391.validate("en"));
   sendIpcToRenderer(
     "show",
-    fileData.comicInfoId !== undefined,
-    fileData.type !== FileDataType.RAR,
+    fileData,
     ISO6391.getAllNativeNames(),
     ISO6391.getAllCodes()
   );
@@ -294,21 +293,52 @@ async function updatePagesDataFromImages(json) {
   }
 }
 
-function saveJsonToFile(json) {
-  const { XMLBuilder } = require("fast-xml-parser");
-  // rebuild
-  const builderOptions = {
-    ignoreAttributes: false,
-    format: true,
-    suppressBooleanAttributes: false, // write booleans with text
-  };
-  const builder = new XMLBuilder(builderOptions);
-  let outputXmlData = builder.build(json);
-  console.log(outputXmlData);
-  // fs.writeFileSync(comicInfoFilePath, outputXmlData);
-  let error;
-  // TODO: errors
-  sendIpcToRenderer("saving-done", error);
+async function saveJsonToFile(json) {
+  try {
+    const { XMLBuilder } = require("fast-xml-parser");
+    // rebuild
+    const builderOptions = {
+      ignoreAttributes: false,
+      format: true,
+      suppressBooleanAttributes: false, // write booleans with text
+    };
+    const builder = new XMLBuilder(builderOptions);
+    let outputXmlData = builder.build(json);
+    if (g_fileData.type === FileDataType.ZIP) {
+      let buf = Buffer.from(outputXmlData, "utf8");
+      if (
+        !fileFormats.updateZipEntry(
+          g_fileData.path,
+          g_fileData.metadata.comicInfoId,
+          buf
+        )
+      ) {
+        throw "error updating zip entry";
+      }
+    } else if (g_fileData.type === FileDataType.SEVENZIP) {
+      const tempFolderPath = fileUtils.createTempFolder();
+      const xmlFilePath = path.resolve(
+        tempFolderPath,
+        g_fileData.metadata.comicInfoId
+      );
+      fs.writeFileSync(xmlFilePath, outputXmlData);
+      let success = await fileFormats.update7ZipEntry(
+        g_fileData.path,
+        xmlFilePath,
+        tempFolderPath,
+        g_fileData.password
+      );
+      if (!success) {
+        fileUtils.cleanUpTempFolder();
+        throw "error updating 7zip entry";
+      }
+      fileUtils.cleanUpTempFolder();
+    }
+    sendIpcToRenderer("saving-done");
+  } catch (error) {
+    console.log(error);
+    sendIpcToRenderer("saving-done", error);
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -406,8 +436,12 @@ function getLocalization() {
     },
     ////////////////////////////////
     {
-      id: "tool-cix-cbr-no-edit-text",
+      id: "tool-cix-cbr-no-edit-rar-text",
       text: _("tool-cix-warning-rar"),
+    },
+    {
+      id: "tool-cix-cbr-no-edit-encrypted-text",
+      text: _("tool-cix-warning-encrypted"),
     },
     {
       id: "tool-cix-update-pages-button-text",
