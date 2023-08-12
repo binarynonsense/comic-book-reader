@@ -1,3 +1,5 @@
+source: https://github.com/anansi-project/comicinfo/blob/main/DOCUMENTATION.md
+
 # Schema documentation
 
 This page aims at clarifying the various elements of the schema, as well as their intended use and observed usage.
