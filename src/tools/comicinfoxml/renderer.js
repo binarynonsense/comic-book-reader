@@ -18,6 +18,8 @@ import { FileDataType } from "../../shared/renderer/constants.js";
 
 let g_isInitialized = false;
 let g_localizedModalTexts;
+let g_localizedPageTypes;
+let g_localizedPageTableHeaders;
 
 let g_saveButton;
 let g_langSelect;
@@ -214,8 +216,16 @@ function initOnIpcCallbacks() {
 
   on(
     "update-localization",
-    (localizedModalTexts, localization, tooltipsLocalization) => {
+    (
+      localizedModalTexts,
+      localizedPageTypes,
+      localizedPageTableHeaders,
+      localization,
+      tooltipsLocalization
+    ) => {
       g_localizedModalTexts = localizedModalTexts;
+      g_localizedPageTypes = localizedPageTypes;
+      g_localizedPageTableHeaders = localizedPageTableHeaders;
       for (let index = 0; index < localization.length; index++) {
         const element = localization[index];
         const domElement = document.querySelector("#" + element.id);
@@ -425,22 +435,22 @@ function buildPagesTableFromJson(json) {
 function generateTableHeader() {
   let tr = document.createElement("tr");
   let th = document.createElement("th");
-  th.innerText = "Image";
+  th.innerText = g_localizedPageTableHeaders[0];
   tr.appendChild(th);
   th = document.createElement("th");
-  th.innerText = "ImageSize";
+  th.innerText = g_localizedPageTableHeaders[1];
   tr.appendChild(th);
   th = document.createElement("th");
-  th.innerText = "ImageWidth";
+  th.innerText = g_localizedPageTableHeaders[2];
   tr.appendChild(th);
   th = document.createElement("th");
-  th.innerText = "ImageHeight";
+  th.innerText = g_localizedPageTableHeaders[3];
   tr.appendChild(th);
   th = document.createElement("th");
-  th.innerText = "DoublePage";
+  th.innerText = g_localizedPageTableHeaders[4];
   tr.appendChild(th);
   th = document.createElement("th");
-  th.innerText = "Type";
+  th.innerText = g_localizedPageTableHeaders[5];
   tr.appendChild(th);
   return tr;
 }
@@ -499,29 +509,39 @@ function generateTableRow(index, id, size, width, height, doublepage, type) {
   {
     let select = document.createElement("select");
     select.innerHTML = `<option value="default"></option>
-<option value="FrontCover"${
-      type === "FrontCover" ? " selected" : ""
-    }>FrontCover</option>
-<option value="InnerCover"${
-      type === "InnerCover" ? " selected" : ""
-    }>InnerCover</option>
-<option value="Roundup"${type === "Roundup" ? " selected" : ""}>Roundup</option>
-<option value="Story"${type === "Story" ? " selected" : ""}>Story</option>
-<option value="Advertisement"${
-      type === "Advertisement" ? " selected" : ""
-    }>Advertisement</option>
-<option value="Editorial"${
-      type === "Editorial" ? " selected" : ""
-    }>Editorial</option>
-<option value="Letters"${type === "Letters" ? " selected" : ""}>Letters</option>
-<option value="Preview"${type === "Preview" ? " selected" : ""}>Preview</option>
-<option value="BackCover"${
-      type === "BackCover" ? " selected" : ""
-    }>BackCover</option>
-<option value="Other"${type === "Other" ? " selected" : ""}>Other</option>
-<option value="Deleted"${
-      type === "Deleted" ? " selected" : ""
-    }>Deleted</option>`;
+<option value="FrontCover"${type === "FrontCover" ? " selected" : ""}>${
+      g_localizedPageTypes[0]
+    }</option>
+<option value="InnerCover"${type === "InnerCover" ? " selected" : ""}>${
+      g_localizedPageTypes[1]
+    }</option>
+<option value="Roundup"${type === "Roundup" ? " selected" : ""}>${
+      g_localizedPageTypes[2]
+    }</option>
+<option value="Story"${type === "Story" ? " selected" : ""}>${
+      g_localizedPageTypes[3]
+    }</option>
+<option value="Advertisement"${type === "Advertisement" ? " selected" : ""}>${
+      g_localizedPageTypes[4]
+    }</option>
+<option value="Editorial"${type === "Editorial" ? " selected" : ""}>${
+      g_localizedPageTypes[5]
+    }</option>
+<option value="Letters"${type === "Letters" ? " selected" : ""}>${
+      g_localizedPageTypes[6]
+    }</option>
+<option value="Preview"${type === "Preview" ? " selected" : ""}>${
+      g_localizedPageTypes[7]
+    }</option>
+<option value="BackCover"${type === "BackCover" ? " selected" : ""}>${
+      g_localizedPageTypes[8]
+    }</option>
+<option value="Other"${type === "Other" ? " selected" : ""}>${
+      g_localizedPageTypes[9]
+    }</option>
+<option value="Deleted"${type === "Deleted" ? " selected" : ""}>${
+      g_localizedPageTypes[10]
+    }</option>`;
     td.appendChild(select);
     select.addEventListener("change", (event) => {
       g_json["ComicInfo"]["Pages"]["Page"][index]["@_Type"] =

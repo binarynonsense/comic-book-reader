@@ -371,6 +371,28 @@ function updateLocalizedText() {
         "The ComicInfo.xml file is not a valid xml file"
       ),
     },
+    [
+      _("tool-cix-data-page-type-frontcover"),
+      _("tool-cix-data-page-type-innercover"),
+      _("tool-cix-data-page-type-roundup"),
+      _("tool-cix-data-page-type-story"),
+      _("tool-cix-data-page-type-advertisement"),
+      _("tool-cix-data-page-type-editorial"),
+      _("tool-cix-data-page-type-letters"),
+      _("tool-cix-data-page-type-preview"),
+      _("tool-cix-data-page-type-backCover"),
+      _("tool-cix-data-page-type-other"),
+      _("tool-cix-data-page-type-deleted"),
+    ],
+    [
+      _("tool-cix-data-page-table-header-image"),
+      _("tool-cix-data-page-table-header-imagesize"),
+      _("tool-cix-data-page-table-header-imagewidth"),
+      _("tool-cix-data-page-table-header-imageheight"),
+      _("tool-cix-data-page-table-header-doublepage"),
+      _("tool-cix-data-page-table-header-type"),
+    ],
+
     getLocalization(),
     getTooltipsLocalization()
   );
@@ -446,6 +468,196 @@ function getLocalization() {
     {
       id: "tool-cix-update-pages-button-text",
       text: _("ui-modal-prompt-button-update").toUpperCase(),
+    },
+    ////////////////////////////////
+    {
+      id: "tool-cix-data-title-text",
+      text: _("tool-cix-data-title"),
+    },
+    {
+      id: "tool-cix-data-series-text",
+      text: _("tool-cix-data-series"),
+    },
+    {
+      id: "tool-cix-data-number-text",
+      text: _("tool-cix-data-number"),
+    },
+    {
+      id: "tool-cix-data-count-text",
+      text: _("tool-cix-data-count"),
+    },
+    {
+      id: "tool-cix-data-volume-text",
+      text: _("tool-cix-data-volume"),
+    },
+    {
+      id: "tool-cix-data-summary-text",
+      text: _("tool-cix-data-summary"),
+    },
+    {
+      id: "tool-cix-data-year-text",
+      text: _("tool-cix-data-year"),
+    },
+    {
+      id: "tool-cix-data-month-text",
+      text: _("tool-cix-data-month"),
+    },
+    {
+      id: "tool-cix-data-day-text",
+      text: _("tool-cix-data-day"),
+    },
+    {
+      id: "tool-cix-data-genre-text",
+      text: _("tool-cix-data-genre"),
+    },
+
+    {
+      id: "tool-cix-data-languageiso-text",
+      text: _("tool-cix-data-languageiso"),
+    },
+    {
+      id: "tool-cix-data-writer-text",
+      text: _("tool-cix-data-writer"),
+    },
+    {
+      id: "tool-cix-data-penciller-text",
+      text: _("tool-cix-data-penciller"),
+    },
+    {
+      id: "tool-cix-data-inker-text",
+      text: _("tool-cix-data-inker"),
+    },
+    {
+      id: "tool-cix-data-colorist-text",
+      text: _("tool-cix-data-colorist"),
+    },
+    {
+      id: "tool-cix-data-letterer-text",
+      text: _("tool-cix-data-letterer"),
+    },
+    {
+      id: "tool-cix-data-coverartist-text",
+      text: _("tool-cix-data-coverartist"),
+    },
+    {
+      id: "tool-cix-data-editor-text",
+      text: _("tool-cix-data-editor"),
+    },
+    {
+      id: "tool-cix-data-publisher-text",
+      text: _("tool-cix-data-publisher"),
+    },
+    {
+      id: "tool-cix-data-imprint-text",
+      text: _("tool-cix-data-imprint"),
+    },
+    {
+      id: "tool-cix-data-pagecount-text",
+      text: _("tool-cix-data-pagecount"),
+    },
+    {
+      id: "tool-cix-data-pages-text",
+      text: _("tool-cix-data-pages"),
+    },
+    {
+      id: "tool-cix-data-format-text",
+      text: _("tool-cix-data-format"),
+    },
+    {
+      id: "tool-cix-data-notes-text",
+      text: _("tool-cix-data-notes"),
+    },
+    {
+      id: "tool-cix-data-alternateseries-text",
+      text: _("tool-cix-data-alternateseries"),
+    },
+    {
+      id: "tool-cix-data-alternatenumber-text",
+      text: _("tool-cix-data-alternatenumber"),
+    },
+    {
+      id: "tool-cix-data-alternatecount-text",
+      text: _("tool-cix-data-alternatecount"),
+    },
+    {
+      id: "tool-cix-data-web-text",
+      text: _("tool-cix-data-web"),
+    },
+    {
+      id: "tool-cix-data-blackwhite-text",
+      text: _("tool-cix-data-blackwhite"),
+    },
+    {
+      id: "tool-cix-data-blackwhite-option-unknown-text",
+      text: _("tool-cix-data-blackwhite-option-unknown"),
+    },
+    {
+      id: "tool-cix-data-blackwhite-option-no-text",
+      text: _("tool-cix-data-blackwhite-option-no"),
+    },
+    {
+      id: "tool-cix-data-blackwhite-option-yes-text",
+      text: _("tool-cix-data-blackwhite-option-yes"),
+    },
+    {
+      id: "tool-cix-data-manga-text",
+      text: _("tool-cix-data-manga"),
+    },
+    {
+      id: "tool-cix-data-manga-option-unknown-text",
+      text: _("tool-cix-data-manga-option-unknown"),
+    },
+    {
+      id: "tool-cix-data-manga-option-no-text",
+      text: _("tool-cix-data-manga-option-no"),
+    },
+    {
+      id: "tool-cix-data-manga-option-yes-text",
+      text: _("tool-cix-data-manga-option-yes"),
+    },
+    {
+      id: "tool-cix-data-manga-option-yesrightleft-text",
+      text: _("tool-cix-data-manga-option-yesrightleft"),
+    },
+    {
+      id: "tool-cix-data-scaninformation-text",
+      text: _("tool-cix-data-scaninformation"),
+    },
+    {
+      id: "tool-cix-data-characters-text",
+      text: _("tool-cix-data-characters"),
+    },
+    {
+      id: "tool-cix-data-maincharacterorteam-text",
+      text: _("tool-cix-data-maincharacterorteam"),
+    },
+    {
+      id: "tool-cix-data-teams-text",
+      text: _("tool-cix-data-teams"),
+    },
+    {
+      id: "tool-cix-data-locations-text",
+      text: _("tool-cix-data-locations"),
+    },
+    {
+      id: "tool-cix-data-storyarc-text",
+      text: _("tool-cix-data-storyarc"),
+    },
+    {
+      id: "tool-cix-data-seriesgroup-text",
+      text: _("tool-cix-data-seriesgroup"),
+    },
+    {
+      id: "tool-cix-data-agerating-text",
+      text: _("tool-cix-data-agerating"),
+    },
+    {
+      id: "tool-cix-data-communityrating-text",
+      text: _("tool-cix-data-communityrating"),
+    },
+    {
+      id: "tool-cix-data-review-text",
+      text: _("tool-cix-data-review"),
     },
   ];
 }
