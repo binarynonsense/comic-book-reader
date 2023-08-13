@@ -357,6 +357,7 @@ function onPagesUpdated(json) {
     g_json = json;
     document.getElementById("tool-cix-data-pagecount-input").value =
       json["ComicInfo"]["Pages"]["Page"].length;
+    onFieldChanged(document.getElementById("tool-cix-data-pagecount-input"));
     buildPagesTableFromJson(json);
     if (g_isEditable) g_saveButton.classList.remove("tools-disabled");
     updateColumnsHeight();
