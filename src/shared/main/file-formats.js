@@ -541,10 +541,6 @@ exports.create7Zip = create7Zip;
 async function update7ZipEntry(filePath, entryName, workingDir, password) {
   try {
     checkPathTo7ZipBin();
-    if (password === undefined || password === "") {
-      // to help trigger the right error
-      password = "_";
-    }
     const Seven = require("node-7z");
     const seven = Seven.add(filePath, entryName, {
       $bin: g_pathTo7zipBin,
@@ -554,7 +550,6 @@ async function update7ZipEntry(filePath, entryName, workingDir, password) {
     });
     let promise = await new Promise((resolve) => {
       seven.on("error", (error) => {
-        console.log(error);
         resolve({ success: false, data: error });
       });
       seven.on("end", () => {
@@ -568,7 +563,7 @@ async function update7ZipEntry(filePath, entryName, workingDir, password) {
     if (promise.success === true) {
       return true;
     }
-    return false;
+    throw promise.data;
   } catch (error) {
     console.log(error);
     return false;
