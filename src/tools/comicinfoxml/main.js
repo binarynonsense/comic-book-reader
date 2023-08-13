@@ -331,6 +331,9 @@ async function saveJsonToFile(json) {
       }
       fileUtils.cleanUpTempFolder();
     }
+    if (!isUpdate) {
+      reader.updateFileDataMetadataEntry("comicInfoId", entryName);
+    }
     sendIpcToRenderer("saving-done");
   } catch (error) {
     console.log(error);

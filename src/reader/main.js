@@ -562,6 +562,10 @@ function cleanUpFileData() {
   g_fileData.metadata = undefined;
 }
 
+exports.updateFileDataMetadataEntry = function (name, value) {
+  console.log(g_fileData.metadata[name]);
+};
+
 function tryOpen(filePath, bookType, historyEntry) {
   sendIpcToPreload("update-menubar"); // in case coming from menu
 
