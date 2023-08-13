@@ -317,11 +317,12 @@ function createZip(filePathsList, outputFilePath) {
 }
 exports.createZip = createZip;
 
-function updateZipEntry(zipPath, entryName, contentBuffer) {
+function updateZipEntry(zipPath, entryName, contentBuffer, entryExists) {
   try {
     const AdmZip = require("adm-zip");
     let zip = new AdmZip(zipPath);
-    zip.updateFile(entryName, contentBuffer);
+    if (entryExists) zip.updateFile(entryName, contentBuffer);
+    else zip.addFile(entryName, contentBuffer);
     zip.writeZip(zipPath);
     return true;
   } catch (error) {

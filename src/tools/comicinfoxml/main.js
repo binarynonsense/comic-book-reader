@@ -303,24 +303,21 @@ async function saveJsonToFile(json) {
       suppressBooleanAttributes: false, // write booleans with text
     };
     const builder = new XMLBuilder(builderOptions);
-    let outputXmlData = builder.build(json);
+    const outputXmlData = builder.build(json);
+    const isUpdate = g_fileData.metadata.comicInfoId !== undefined;
+    const entryName = isUpdate
+      ? g_fileData.metadata.comicInfoId
+      : "ComicInfo.xml";
     if (g_fileData.type === FileDataType.ZIP) {
       let buf = Buffer.from(outputXmlData, "utf8");
       if (
-        !fileFormats.updateZipEntry(
-          g_fileData.path,
-          g_fileData.metadata.comicInfoId,
-          buf
-        )
+        !fileFormats.updateZipEntry(g_fileData.path, entryName, buf, isUpdate)
       ) {
         throw "error updating zip entry";
       }
     } else if (g_fileData.type === FileDataType.SEVENZIP) {
       const tempFolderPath = fileUtils.createTempFolder();
-      const xmlFilePath = path.resolve(
-        tempFolderPath,
-        g_fileData.metadata.comicInfoId
-      );
+      const xmlFilePath = path.resolve(tempFolderPath, entryName);
       fs.writeFileSync(xmlFilePath, outputXmlData);
       let success = await fileFormats.update7ZipEntry(
         g_fileData.path,
