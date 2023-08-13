@@ -385,7 +385,6 @@ async function onSave() {
       for (let index = 0; index < g_fields.length; index++) {
         const field = g_fields[index];
         if (!field.element.getAttribute("data-changed")) continue;
-        console.log(field.element.id);
         let value = field.element.value;
         if (field.element.tagName.toLowerCase() === "select") {
           if (value === "default") value = "";
