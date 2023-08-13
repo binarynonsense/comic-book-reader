@@ -563,7 +563,7 @@ function cleanUpFileData() {
 }
 
 exports.updateFileDataMetadataEntry = function (name, value) {
-  console.log(g_fileData.metadata[name]);
+  g_fileData.metadata[name] = value;
 };
 
 function tryOpen(filePath, bookType, historyEntry) {
