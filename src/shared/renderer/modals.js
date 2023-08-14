@@ -162,6 +162,8 @@ export function onInputEvent(modalDiv, type, event) {
           button.click();
         }
       });
+      // event.stopPropagation();
+      event.preventDefault();
       break;
   }
 }
