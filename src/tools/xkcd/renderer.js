@@ -29,6 +29,11 @@ async function init(selectCatalogNumberLocalizedText) {
     // things to start only once go here
     g_isInitialized = true;
   }
+  document.getElementById("tools-columns-right").scrollIntoView({
+    behavior: "instant",
+    block: "start",
+    inline: "nearest",
+  });
   // menu buttons
   document
     .getElementById("tool-xkcd-back-button")

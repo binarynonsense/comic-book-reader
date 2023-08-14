@@ -30,6 +30,11 @@ function init() {
     // things to start only once go here
     g_isInitialized = true;
   }
+  document.getElementById("tools-columns-right").scrollIntoView({
+    behavior: "instant",
+    block: "start",
+    inline: "nearest",
+  });
 
   document
     .getElementById("tool-cq-back-button")

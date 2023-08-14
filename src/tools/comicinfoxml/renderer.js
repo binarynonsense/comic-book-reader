@@ -36,6 +36,12 @@ function init(fileData, isoLanguages) {
     // things to start only once go here
     g_isInitialized = true;
   }
+  document.getElementById("tools-columns-right").scrollIntoView({
+    behavior: "instant",
+    block: "start",
+    inline: "nearest",
+  });
+
   g_fileData = fileData;
   g_hasInfo = g_fileData.metadata.comicInfoId !== undefined;
   g_isEditable =

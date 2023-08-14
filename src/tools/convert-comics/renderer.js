@@ -50,6 +50,11 @@ function init(outputFolderPath) {
     // things to start only once go here
     g_isInitialized = true;
   }
+  document.getElementById("tools-columns-right").scrollIntoView({
+    behavior: "instant",
+    block: "start",
+    inline: "nearest",
+  });
 
   g_inputFiles = [];
   g_inputFilesIndex = 0;

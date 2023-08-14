@@ -20,6 +20,11 @@ function init(activeLocale, languages, activeTheme, themes, settings) {
     // things to start only once go here
     g_isInitialized = true;
   }
+  document.getElementById("tools-columns-right").scrollIntoView({
+    behavior: "instant",
+    block: "start",
+    inline: "nearest",
+  });
   // close/back button
   document
     .getElementById("tool-pre-back-button")
