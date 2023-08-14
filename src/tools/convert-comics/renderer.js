@@ -612,6 +612,7 @@ function showLogModal() {
         fullWidth: true,
         id: "tool-cc-modal-cancel-button",
         dontClose: true,
+        key: "Escape",
       },
       {
         text: " ",
@@ -620,6 +621,7 @@ function showLogModal() {
         },
         fullWidth: true,
         id: "tool-cc-modal-close-button",
+        key: "Escape",
       },
     ],
   });
