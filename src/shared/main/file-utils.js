@@ -285,18 +285,31 @@ exports.getComicInfoFileInFolderRecursive = getComicInfoFileInFolderRecursive;
 
 // TODO: MAYBE: keep tabs of multiple tempFolders?
 
-g_tempFolderPath = undefined;
+let g_tempFolderPath = undefined;
+let g_tempFolderParentPath = undefined;
 
 function getTempFolderPath() {
   return g_tempFolderPath;
 }
 exports.getTempFolderPath = getTempFolderPath;
 
+function getTempFolderParentPath() {
+  return g_tempFolderParentPath;
+}
+exports.getTempFolderParentPath = getTempFolderParentPath;
+
+function setTempFolderParentPath(folderPath) {
+  g_tempFolderParentPath = folderPath;
+}
+exports.setTempFolderParentPath = setTempFolderParentPath;
+
+function getSystemTempFolderPath() {
+  return os.tmpdir();
+}
+exports.getSystemTempFolderPath = getSystemTempFolderPath;
+
 function createTempFolder() {
-  g_tempFolderPath = fs.mkdtempSync(
-    path.join(os.tmpdir(), "comic-book-reader-")
-  );
-  console.log("temp folder created: " + g_tempFolderPath);
+  g_tempFolderPath = fs.mkdtempSync(path.join(g_tempFolderParentPath, "acbr-"));
   return g_tempFolderPath;
 }
 exports.createTempFolder = createTempFolder;
@@ -308,9 +321,10 @@ function cleanUpTempFolder() {
 }
 exports.cleanUpTempFolder = cleanUpTempFolder;
 
-const deleteTempFolderRecursive = function (folderPath) {
+const deleteTempFolderRecursive = function (folderPath, isRoot = true) {
   if (fs.existsSync(folderPath)) {
-    if (!folderPath.startsWith(os.tmpdir())) {
+    const folderName = path.basename(folderPath);
+    if (isRoot && !folderName.startsWith("acbr-")) {
       // safety check
       return;
     }
@@ -318,15 +332,29 @@ const deleteTempFolderRecursive = function (folderPath) {
     files.forEach((file) => {
       const entryPath = path.join(folderPath, file);
       if (fs.lstatSync(entryPath).isDirectory()) {
-        deleteTempFolderRecursive(entryPath);
+        deleteTempFolderRecursive(entryPath, false);
       } else {
         fs.unlinkSync(entryPath); // delete the file
       }
     });
-    fs.rmdirSync(folderPath);
-    console.log("deletedfolder: " + folderPath);
+    try {
+      fs.rmdirSync(folderPath);
+      console.log("deleted folder: " + folderPath);
+    } catch (error) {
+      if (error.code == "ENOTEMPTY") {
+        // TODO: retry?
+        // this can happen if the temp folder is the same as the one the
+        // conversion is outputing to
+      }
+      console.log("Error: " + error.code);
+      console.log("couldn't delete folder: " + folderPath);
+    }
   }
 };
+
+///////////////////////////////////////////////////////////////////////////////
+// USER DATA //////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 function cleanUpUserDataFolder() {
   // some things are not entirely deleted, but it's good enough :)

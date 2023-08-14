@@ -13,6 +13,7 @@ import { isVersionOlder } from "../../shared/renderer/utils.js";
 ///////////////////////////////////////////////////////////////////////////////
 
 let g_isInitialized = false;
+let g_tempFolderPathUl;
 
 function init(activeLocale, languages, activeTheme, themes, settings) {
   if (!g_isInitialized) {
@@ -45,6 +46,11 @@ function init(activeLocale, languages, activeTheme, themes, settings) {
     .getElementById("tool-pre-section-file-formats-button")
     .addEventListener("click", (event) => {
       switchSection(3);
+    });
+  document
+    .getElementById("tool-pre-section-advanced-button")
+    .addEventListener("click", (event) => {
+      switchSection(4);
     });
   // languages select
   {
@@ -190,6 +196,21 @@ function init(activeLocale, languages, activeTheme, themes, settings) {
       sendIpcToMain("set-setting", "epubOpenAs", parseInt(select.value));
     });
   }
+  // temp folder ul and button
+  {
+    g_tempFolderPathUl = document.getElementById("tool-pre-tempfolder-ul");
+    updateTempFolder(settings.tempFolderPath);
+    document
+      .getElementById("tool-pre-tempfolder-update-button")
+      .addEventListener("click", (event) => {
+        sendIpcToMain("change-temp-folder", false);
+      });
+    document
+      .getElementById("tool-pre-tempfolder-reset-button")
+      .addEventListener("click", (event) => {
+        sendIpcToMain("change-temp-folder", true);
+      });
+  }
 
   updateColumnsHeight();
 }
@@ -223,6 +244,9 @@ function switchSection(id) {
       document
         .getElementById("tool-pre-section-file-formats-button")
         .classList.remove("tools-menu-button-selected");
+      document
+        .getElementById("tool-pre-section-advanced-button")
+        .classList.remove("tools-menu-button-selected");
       // sections
       document
         .getElementById("tool-pre-appearance-section-div")
@@ -232,6 +256,9 @@ function switchSection(id) {
         .classList.remove("set-display-none");
       document
         .getElementById("tool-pre-file-formats-section-div")
+        .classList.remove("set-display-none");
+      document
+        .getElementById("tool-pre-file-advanced-div")
         .classList.remove("set-display-none");
       break;
     case 1:
@@ -248,6 +275,9 @@ function switchSection(id) {
       document
         .getElementById("tool-pre-section-file-formats-button")
         .classList.remove("tools-menu-button-selected");
+      document
+        .getElementById("tool-pre-section-advanced-button")
+        .classList.remove("tools-menu-button-selected");
       // sections
       document
         .getElementById("tool-pre-appearance-section-div")
@@ -257,6 +287,9 @@ function switchSection(id) {
         .classList.add("set-display-none");
       document
         .getElementById("tool-pre-file-formats-section-div")
+        .classList.add("set-display-none");
+      document
+        .getElementById("tool-pre-advanced-section-div")
         .classList.add("set-display-none");
       break;
     case 2:
@@ -273,6 +306,9 @@ function switchSection(id) {
       document
         .getElementById("tool-pre-section-file-formats-button")
         .classList.remove("tools-menu-button-selected");
+      document
+        .getElementById("tool-pre-section-advanced-button")
+        .classList.remove("tools-menu-button-selected");
       // sections
       document
         .getElementById("tool-pre-appearance-section-div")
@@ -282,6 +318,9 @@ function switchSection(id) {
         .classList.remove("set-display-none");
       document
         .getElementById("tool-pre-file-formats-section-div")
+        .classList.add("set-display-none");
+      document
+        .getElementById("tool-pre-advanced-section-div")
         .classList.add("set-display-none");
       break;
     case 3:
@@ -298,6 +337,9 @@ function switchSection(id) {
       document
         .getElementById("tool-pre-section-file-formats-button")
         .classList.add("tools-menu-button-selected");
+      document
+        .getElementById("tool-pre-section-advanced-button")
+        .classList.remove("tools-menu-button-selected");
       // sections
       document
         .getElementById("tool-pre-appearance-section-div")
@@ -307,6 +349,40 @@ function switchSection(id) {
         .classList.add("set-display-none");
       document
         .getElementById("tool-pre-file-formats-section-div")
+        .classList.remove("set-display-none");
+      document
+        .getElementById("tool-pre-advanced-section-div")
+        .classList.add("set-display-none");
+      break;
+    case 4:
+      // buttons
+      document
+        .getElementById("tool-pre-section-all-button")
+        .classList.remove("tools-menu-button-selected");
+      document
+        .getElementById("tool-pre-section-appearance-button")
+        .classList.remove("tools-menu-button-selected");
+      document
+        .getElementById("tool-pre-section-ui-button")
+        .classList.remove("tools-menu-button-selected");
+      document
+        .getElementById("tool-pre-section-file-formats-button")
+        .classList.remove("tools-menu-button-selected");
+      document
+        .getElementById("tool-pre-section-advanced-button")
+        .classList.add("tools-menu-button-selected");
+      // sections
+      document
+        .getElementById("tool-pre-appearance-section-div")
+        .classList.add("set-display-none");
+      document
+        .getElementById("tool-pre-ui-section-div")
+        .classList.add("set-display-none");
+      document
+        .getElementById("tool-pre-file-formats-section-div")
+        .classList.add("set-display-none");
+      document
+        .getElementById("tool-pre-advanced-section-div")
         .classList.remove("set-display-none");
       break;
   }
@@ -349,6 +425,34 @@ function initOnIpcCallbacks() {
   on("update-window", () => {
     updateColumnsHeight();
   });
+
+  on("set-temp-folder", (folderPath) => {
+    updateTempFolder(folderPath);
+  });
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// TOOL ///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+function updateTempFolder(folderPath) {
+  g_tempFolderPathUl.innerHTML = "";
+  let li = document.createElement("li");
+  li.className = "tools-collection-li";
+  // text
+  let text = document.createElement("span");
+  text.innerText = reducePathString(folderPath);
+  li.appendChild(text);
+  g_tempFolderPathUl.appendChild(li);
+}
+
+function reducePathString(input) {
+  var length = 80;
+  input =
+    input.length > length
+      ? "..." + input.substring(input.length - length, input.length)
+      : input;
+  return input;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

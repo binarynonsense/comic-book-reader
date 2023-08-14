@@ -211,6 +211,7 @@
   "tool-shared-ui-open": "Öffnen",
   "tool-shared-ui-close": "Schließen",
   "tool-shared-ui-cancel": "Abbrechen",
+  "tool-shared-ui-reset": "Zurücksetzen",
   "tool-shared-ui-pdf-extraction": "PDF Extrahierung",
   "tool-shared-ui-pdf-extraction-tooltip": "Die meisten PDF-Dateien scheinen ihre standard Benutzereinheit von 1 (72 dpi) unabhängig ihres Inhaltes zu behalten, weshalb die eingebettete Comic Seite größer als die angegebene Seitengröße sein kann. Dieses Werkzeug enthält drei Verfahren zum Entscheiden, welche dpi zum Berechnen der Auflösung, der gerenderten Seite, verwendet wird: Sie können das Werkzeug versuchen lassen die dpi/Größe des eingebetteten Bildes zu finden, oder manuell einen Wert festlegen (72 oder 300).",  
   "tool-shared-ui-pdf-extraction-o1": "Verwende die Information des eingebetteten Bildes wenn möglich, 300 dpi wenn nicht",

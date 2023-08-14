@@ -211,6 +211,7 @@
   "tool-shared-ui-open": "Open",
   "tool-shared-ui-close": "Close",
   "tool-shared-ui-cancel": "Cancel",
+  "tool-shared-ui-reset": "Reset",
   "tool-shared-ui-pdf-extraction": "PDF Extraction",
   "tool-shared-ui-pdf-extraction-tooltip": "Most PDF files seem to keep the default userunit of 1 (72dpi) regardless of their content, therefore the embedded comic page images can be bigger than the reported page size. This tool includes three methods to decide which dpi it uses to calculate the resolution of the rendered page: you can let the tool try to find the dpi/size from the embedded image or set a value manually (72 or 300).",
   "tool-shared-ui-pdf-extraction-o1": "Use the embedded image's info if possible, 300dpi if not",

@@ -8,6 +8,7 @@
 const { app } = require("electron");
 const fs = require("fs");
 const path = require("path");
+const fileUtils = require("./file-utils");
 
 const {
   isPortable,
@@ -72,6 +73,8 @@ function setDefaultValues() {
 
     locale: undefined,
     theme: undefined,
+
+    tempFolderPath: undefined,
 
     // TOOLS
 
@@ -264,6 +267,20 @@ function sanitize() {
   if (typeof g_settings.toolGutUseCache !== "boolean") {
     g_settings.toolGutUseCache = true;
   }
+  // TEMP FOLDER
+  if (
+    g_settings.tempFolderPath &&
+    typeof g_settings.tempFolderPath === "string"
+  ) {
+    if (
+      !fs.existsSync(g_settings.tempFolderPath) ||
+      !fs.lstatSync(g_settings.tempFolderPath).isDirectory()
+    ) {
+      g_settings.tempFolderPath = fileUtils.getSystemTempFolderPath();
+    }
+  } else {
+    g_settings.tempFolderPath = fileUtils.getSystemTempFolderPath();
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -283,6 +300,9 @@ exports.save = function () {
   let date = new Date().toJSON();
   g_settings.date = date;
   g_settings.version = app.getVersion();
+  if (g_settings.tempFolderPath === fileUtils.getSystemTempFolderPath()) {
+    g_settings.tempFolderPath = undefined;
+  }
   const settingsJSON = JSON.stringify(g_settings, null, 2);
   try {
     fs.writeFileSync(cfgFilePath, settingsJSON, "utf-8");

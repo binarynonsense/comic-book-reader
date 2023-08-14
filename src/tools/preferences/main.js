@@ -13,6 +13,7 @@ const { _ } = require("../../shared/main/i18n");
 const settings = require("../../shared/main/settings");
 const themes = require("../../shared/main/themes");
 const reader = require("../../reader/main");
+const fileUtils = require("../../shared/main/file-utils");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -144,6 +145,27 @@ function initOnIpcCallbacks() {
     settings.setValue("turnPageOnScrollBoundary", value);
     reader.sendIpcToRenderer("set-page-turn-on-scroll-boundary", value);
   });
+  on("change-temp-folder", (reset) => {
+    let folderPath;
+    if (reset) {
+      folderPath = fileUtils.getSystemTempFolderPath();
+    } else {
+      let defaultPath = settings.getValue["tempFolderPath"];
+      let folderList = fileUtils.chooseFolder(
+        core.getMainWindow(),
+        defaultPath
+      );
+      if (folderList === undefined) {
+        return;
+      }
+      folderPath = folderList[0];
+      if (folderPath === undefined || folderPath === "") return;
+      // TODO: check if writable?
+    }
+    settings.setValue("tempFolderPath", folderPath);
+    fileUtils.setTempFolderParentPath(folderPath);
+    sendIpcToRenderer("set-temp-folder", folderPath);
+  });
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -181,6 +203,10 @@ function getLocalization() {
     {
       id: "tool-pre-section-file-formats-text",
       text: _("tool-pre-file-formats"),
+    },
+    {
+      id: "tool-pre-section-advanced-text",
+      text: _("tool-pre-advanced-preferences"),
     },
     //////////////////////////////////////////////
     {
@@ -424,6 +450,19 @@ function getLocalization() {
     {
       id: "tool-pre-epub-openas-1-text",
       text: _("tool-pre-epub-openas-1"),
+    },
+    //////////////////////////////////////////////
+    {
+      id: "tool-pre-tempfolder-text",
+      text: _("tool-pre-tempfolder"),
+    },
+    {
+      id: "tool-pre-tempfolder-update-button-text",
+      text: _("tool-shared-ui-change").toUpperCase(),
+    },
+    {
+      id: "tool-pre-tempfolder-reset-button-text",
+      text: _("tool-shared-ui-reset").toUpperCase(),
     },
   ];
 }
