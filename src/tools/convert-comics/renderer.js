@@ -597,7 +597,6 @@ function showLogModal() {
       callback: () => {
         modalClosed();
       },
-      // key: "Escape",
       hide: true,
     },
     log: {},
