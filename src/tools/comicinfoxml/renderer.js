@@ -64,7 +64,7 @@ function init(fileData, isoLanguages) {
   g_langSelect.innerHTML += `<option value="default"></option>`;
   isoLanguages.sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0));
   isoLanguages.forEach((lang, i) => {
-    g_langSelect.innerHTML += `<option value="${lang.code}">${lang.name}</option>`;
+    g_langSelect.innerHTML += `<option value="${lang.code}">${lang.name} (${lang.nativeName})</option>`;
   });
 
   g_pagesTable = document.getElementById("tool-cix-pages-data-table");
