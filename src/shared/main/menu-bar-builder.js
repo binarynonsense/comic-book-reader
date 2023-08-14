@@ -217,6 +217,7 @@ function buildApplicationMenu(settings, history) {
           type: "separator",
         },
         {
+          id: "file-preferences",
           label: _("menu-file-preferences"),
           click() {
             core.onMenuPreferences();
@@ -450,6 +451,7 @@ function buildApplicationMenu(settings, history) {
       ],
     },
     {
+      id: "tools",
       label: _("menu-tools"),
       submenu: [
         {

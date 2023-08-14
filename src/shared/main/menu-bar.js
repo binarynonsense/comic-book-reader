@@ -103,12 +103,27 @@ exports.setCanOpenBooks = setCanOpenBooks = function (isEnabled) {
   );
 };
 
-exports.setComicBookOpened = setComicBookOpened = function (isEnabled) {
-  Menu.getApplicationMenu().getMenuItemById("open-file").enabled = isEnabled;
+exports.setCanOpenTools = setCanOpenTools = function (isEnabled) {
+  Menu.getApplicationMenu().getMenuItemById("file-preferences").enabled =
+    isEnabled;
   EnableItemRecursive(
-    Menu.getApplicationMenu().getMenuItemById("openrecent-file"),
+    Menu.getApplicationMenu().getMenuItemById("tools"),
     isEnabled
   );
+};
+
+exports.setCanTweakUI = setCanTweakUI = function (isEnabled) {
+  Menu.getApplicationMenu().getMenuItemById("scrollbar").enabled = isEnabled;
+  Menu.getApplicationMenu().getMenuItemById("toolbar").enabled = isEnabled;
+  Menu.getApplicationMenu().getMenuItemById("page-number").enabled = isEnabled;
+  Menu.getApplicationMenu().getMenuItemById("clock").enabled = isEnabled;
+  Menu.getApplicationMenu().getMenuItemById("audio-player").enabled = isEnabled;
+};
+
+exports.setComicBookOpened = setComicBookOpened = function (isEnabled) {
+  setCanOpenTools(isEnabled);
+  setCanOpenBooks(isEnabled);
+  setCanTweakUI(isEnabled);
   Menu.getApplicationMenu().getMenuItemById("convert-file").enabled = isEnabled;
   Menu.getApplicationMenu().getMenuItemById("extract-file").enabled = isEnabled;
   Menu.getApplicationMenu().getMenuItemById("file-properties").enabled =

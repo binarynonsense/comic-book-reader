@@ -1417,7 +1417,7 @@ exports.rebuildMenuAndToolBars = rebuildMenuAndToolBars;
 
 function updateMenuAndToolbarItems(isOpen = true) {
   if (isOpen) {
-    if (g_fileData.filePath !== "") {
+    if (g_fileData.path && g_fileData.path !== "") {
       if (
         g_fileData.type === FileDataType.ZIP ||
         g_fileData.type === FileDataType.RAR ||
@@ -1446,17 +1446,20 @@ function updateMenuAndToolbarItems(isOpen = true) {
         sendIpcToRenderer("update-toolbar-zoom-buttons", true);
       } else {
         menuBar.setComicBookOpened(false);
-        setCanOpenBooks(true);
+        menuBar.setCanOpenBooks(true);
+        menuBar.setCanOpenTools(true);
         sendIpcToRenderer("update-toolbar-rotation-buttons", false);
         sendIpcToRenderer("update-toolbar-page-buttons", false);
         sendIpcToRenderer("update-toolbar-zoom-buttons", false);
       }
     } else {
-      setCanOpenBooks(true);
+      menuBar.setComicBookOpened(false);
+      menuBar.setCanOpenBooks(true);
+      menuBar.setCanOpenTools(true);
+      menuBar.setCanTweakUI(true);
     }
   } else {
     menuBar.setComicBookOpened(false);
-    setCanOpenBooks(false); // right now this is redundant
   }
 }
 
@@ -1775,7 +1778,7 @@ async function exportPageStart(sendToTool = 0) {
   }
 
   if (
-    g_fileData.filePath === "" ||
+    g_fileData.path === "" ||
     outputFolderPath === undefined ||
     outputFolderPath === ""
   )
