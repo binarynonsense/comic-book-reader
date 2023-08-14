@@ -2294,9 +2294,6 @@ exports.onMenuFileProperties = async function () {
       }
     }
 
-    // TODO: delete when tool is finished
-    if (!core.isDev()) buttonText = undefined;
-
     sendIpcToRenderer(
       "show-modal-properties",
       _("menu-file-properties").replace("...", ""),
