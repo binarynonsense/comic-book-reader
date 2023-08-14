@@ -162,6 +162,11 @@ export function onInputEvent(modalDiv, type, event) {
           button.click();
         }
       });
+      // input
+      let inputElement = modalDiv.querySelector(".modal-input");
+      if (!inputElement.classList.contains("set-display-none")) {
+        inputElement.dispatchEvent(event);
+      }
       // event.stopPropagation();
       event.preventDefault();
       break;
