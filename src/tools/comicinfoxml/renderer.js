@@ -31,7 +31,7 @@ let g_fileData;
 let g_json;
 let g_fields = [];
 
-function init(fileData, isoLangNames, isoLangCodes) {
+function init(fileData, isoLanguages) {
   if (!g_isInitialized) {
     // things to start only once go here
     g_isInitialized = true;
@@ -62,8 +62,9 @@ function init(fileData, isoLangNames, isoLangCodes) {
   ////////////////////////////////////////
   g_langSelect = document.getElementById("tool-cix-data-languageiso-select");
   g_langSelect.innerHTML += `<option value="default"></option>`;
-  isoLangNames.forEach((name, i) => {
-    g_langSelect.innerHTML += `<option value="${isoLangCodes[i]}">${name}</option>`;
+  isoLanguages.sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0));
+  isoLanguages.forEach((lang, i) => {
+    g_langSelect.innerHTML += `<option value="${lang.code}">${lang.name}</option>`;
   });
 
   g_pagesTable = document.getElementById("tool-cix-pages-data-table");
@@ -208,8 +209,8 @@ function on(id, callback) {
 }
 
 function initOnIpcCallbacks() {
-  on("show", (fileData, isoLangNames, isoLangCodes) => {
-    init(fileData, isoLangNames, isoLangCodes);
+  on("show", (fileData, isoLanguages) => {
+    init(fileData, isoLanguages);
   });
 
   on("hide", () => {});

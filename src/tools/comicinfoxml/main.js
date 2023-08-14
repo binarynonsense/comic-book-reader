@@ -38,12 +38,8 @@ exports.open = function (fileData) {
   const data = fs.readFileSync(path.join(__dirname, "index.html"));
   sendIpcToCoreRenderer("replace-inner-html", "#tools", data.toString());
   updateLocalizedText();
-  sendIpcToRenderer(
-    "show",
-    fileData,
-    ISO6391.getAllNativeNames(),
-    ISO6391.getAllCodes()
-  );
+  let languages = ISO6391.getLanguages(ISO6391.getAllCodes());
+  sendIpcToRenderer("show", fileData, languages);
   g_fileData = fileData;
 };
 
@@ -245,7 +241,6 @@ function updatePages(json) {
 
 async function updatePagesDataFromImages(json) {
   try {
-    // TODO: xml with no pages data!!!!
     const sharp = require("sharp");
     let tempFolderPath = fileUtils.getTempFolderPath();
     let imgFilePaths = fileUtils.getImageFilesInFolderRecursive(tempFolderPath);
