@@ -501,7 +501,7 @@ function generateTableRow(index, id, size, width, height, doublepage, type) {
     checkbox.addEventListener("change", (event) => {
       g_json["ComicInfo"]["Pages"]["Page"][index]["@_DoublePage"] =
         checkbox.checked ? "true" : "false";
-      console.log(g_json["ComicInfo"]["Pages"]["Page"][index]["@_DoublePage"]);
+      onFieldChanged(checkbox);
     });
   }
   tr.appendChild(td);
@@ -546,7 +546,7 @@ function generateTableRow(index, id, size, width, height, doublepage, type) {
     select.addEventListener("change", (event) => {
       g_json["ComicInfo"]["Pages"]["Page"][index]["@_Type"] =
         select.value === "default" ? "" : select.value;
-      console.log(g_json["ComicInfo"]["Pages"]["Page"][index]["@_Type"]);
+      onFieldChanged(select);
     });
   }
   tr.appendChild(td);
