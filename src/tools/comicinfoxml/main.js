@@ -12,11 +12,7 @@ const { _ } = require("../../shared/main/i18n");
 const reader = require("../../reader/main");
 const fileUtils = require("../../shared/main/file-utils");
 const fileFormats = require("../../shared/main/file-formats");
-const {
-  FileExtension,
-  FileDataState,
-  FileDataType,
-} = require("../../shared/main/constants");
+const { FileDataType } = require("../../shared/main/constants");
 const ISO6391 = require("iso-639-1");
 const { fork } = require("child_process");
 
@@ -42,7 +38,6 @@ exports.open = function (fileData) {
   const data = fs.readFileSync(path.join(__dirname, "index.html"));
   sendIpcToCoreRenderer("replace-inner-html", "#tools", data.toString());
   updateLocalizedText();
-  // console.log(ISO6391.validate("en"));
   sendIpcToRenderer(
     "show",
     fileData,
