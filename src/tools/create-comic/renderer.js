@@ -519,7 +519,6 @@ function showLogModal() {
       callback: () => {
         modalClosed();
       },
-      // key: "Escape",
       hide: true,
     },
     log: {},
@@ -530,10 +529,10 @@ function showLogModal() {
         callback: () => {
           onCancel();
         },
-        // key: "Enter",
         fullWidth: true,
         id: "tool-cr-modal-cancel-button",
         dontClose: true,
+        key: "Escape",
       },
       {
         text: " ",
@@ -542,6 +541,7 @@ function showLogModal() {
         },
         fullWidth: true,
         id: "tool-cr-modal-close-button",
+        key: "Escape",
       },
     ],
   });
