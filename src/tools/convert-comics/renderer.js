@@ -608,7 +608,6 @@ function showLogModal() {
         callback: () => {
           onCancel();
         },
-        // key: "Enter",
         fullWidth: true,
         id: "tool-cc-modal-cancel-button",
         dontClose: true,
