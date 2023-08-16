@@ -450,8 +450,24 @@
   width: 100%;
 }
 
-.tool-shared-two-columns {
+.tool-shared-columns-50 {
   flex: 0 1 50%;
+}
+
+.tool-shared-columns-50-grow {
+  flex: 1 0 50%;
+}
+
+.tool-shared-columns-25 {
+  flex: 0 1 25%;
+}
+
+.tool-shared-columns-25-grow {
+  flex: 1 0 25%;
+}
+
+.tool-shared-columns-15 {
+  flex: 0 1 15%;
 }
 
 #tool-shared-image-container {
