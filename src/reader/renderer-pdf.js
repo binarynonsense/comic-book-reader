@@ -56,26 +56,8 @@ export function cleanUp() {
 
 function loadPdf(filePath, pageIndex, password) {
   pdfjsLib.GlobalWorkerOptions.workerSrc =
-    "../assets/libs/pdfjs-2.3.200/build/pdf.worker.js";
+    "../assets/libs/pdfjs-2.3.200/build/pdf.worker.js";  
   var loadingTask = pdfjsLib.getDocument({ url: filePath, password: password });
-
-  // NOTE: Didn't work, keep for the future
-  // loadingTask.onPassword = function (updatePassword, reason) {
-  //   console.log("onPassword");
-  //   if (reason === PasswordResponses.NEED_PASSWORD) {
-  //     updatePassword("123456"); // Provide an incorrect password.
-  //     // sendToMain("pdf-load-failed", reason);
-  //     // loadingTask.destroy();
-  //     return;
-  //   }
-  //   if (reason === PasswordResponses.INCORRECT_PASSWORD) {
-  //     //updatePassword("asdfasdf"); // Provide the correct password.
-  //     sendToMain("pdf-load-failed", reason);
-  //     loadingTask.destroy();
-  //     return;
-  //   }
-  // };
-
   loadingTask.promise
     .then(function (pdf) {
       cleanUp();
