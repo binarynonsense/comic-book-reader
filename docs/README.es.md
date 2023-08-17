@@ -61,8 +61,8 @@ Un lector y conversor de cómics para archivos en formato cbz, cbr, cb7, epub y 
 - Restaura automáticamente el último cómic, y página, abierto en la sesión anterior, y recuerda las posiciones de página de los últimos cómics.
 - Modo portátil (al crear un archivo llamado portable.txt en la misma carpeta que el ejecutable).
 - Editor de ComicInfo.xml:
-  - Ver los metadatos almacenados en archivos ComicInfo.xml dentro de cómics cbr, cbz y cb7.
-  - Crear y/o modificar los metadatos almacenados en archivos ComicInfo.xml dentro de cómics cbz y cb7 no encriptados.
+  - ver los metadatos almacenados en archivos ComicInfo.xml dentro de cómics cbr, cbz y cb7.
+  - crear y/o modificar los metadatos almacenados en archivos ComicInfo.xml dentro de cómics cbz y cb7 no encriptados.
 - Reproductor de audio integrado:
   - admite archivos .mp3, .ogg, .wav, .m3u y .m3u8.
   - puede exportar listas de reproducción a archivos .m3u.
