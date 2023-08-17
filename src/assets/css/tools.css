@@ -329,6 +329,7 @@
   transform: translateX(-30%);
   pointer-events: none;
   z-index: 101;
+  white-space: nowrap;
 }
 
 .tools-html-div {
