@@ -261,6 +261,10 @@
 #tools label i {
   margin-left: 10px;
 }
+#tools label span {
+  overflow: hidden;
+  white-space: nowrap;
+}
 
 #tools label > select,
 #tools label > input,
@@ -459,6 +463,10 @@
 
 .tool-shared-columns-50-grow {
   flex: 1 0 50%;
+}
+
+.tool-shared-columns-35 {
+  flex: 0 1 35%;
 }
 
 .tool-shared-columns-25 {
