@@ -118,10 +118,11 @@ function init(fileData, isoLanguages) {
   for (let index = 0; index < elements.length; index++) {
     const element = elements[index];
     if (!g_isEditable) {
-      element.classList.add("tools-read-only");
       const tagName = element.tagName.toLowerCase();
       if (tagName === "textarea" || tagName === "input") {
         element.readOnly = true;
+      } else {
+        element.classList.add("tools-read-only");
       }
     }
     g_fields.push({

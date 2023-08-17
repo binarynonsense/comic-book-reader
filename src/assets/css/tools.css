@@ -271,8 +271,10 @@
   margin-top: 15px;
 }
 
-#tools label > input[type="text"]:read-only {
-  filter: opacity(0.5);
+#tools label > input[type="text"]:read-only,
+#tools label > input[type="number"]:read-only,
+#tools label > textarea:read-only {
+  filter: opacity(0.7);
 }
 
 .tools-text-paragraphs p {
