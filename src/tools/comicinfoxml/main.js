@@ -5,6 +5,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
+const { Menu } = require("electron");
 const fs = require("fs");
 const path = require("path");
 const core = require("../../core/main");
@@ -111,6 +112,29 @@ function initOnIpcCallbacks() {
 
   on("save-json-to-file", (json) => {
     saveJsonToFile(json);
+  });
+
+  on("show-context-menu", (params, g_isEditable) => {
+    if (g_isEditable) {
+      const { selectionText, isEditable } = params;
+      if (isEditable || (selectionText && selectionText.trim() !== "")) {
+        Menu.buildFromTemplate([
+          { role: "copy" },
+          { role: "paste" },
+          { type: "separator" },
+          { role: "selectall" },
+        ]).popup(core.getMainWindow(), params.x, params.y);
+      }
+    } else {
+      const { selectionText } = params;
+      if (selectionText && selectionText.trim() !== "") {
+        Menu.buildFromTemplate([
+          { role: "copy" },
+          { type: "separator" },
+          { role: "selectall" },
+        ]).popup(core.getMainWindow(), params.x, params.y);
+      }
+    }
   });
 }
 
