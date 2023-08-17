@@ -61,8 +61,8 @@ A comic book reader and converter for cbz, cbr, cb7, epub and pdf files.
 - Automatically restores the previous session's last opened book and page, and remembers the last books' page positions.
 - Portable mode (by creating a file named portable.txt in the same folder as the executable).
 - ComicInfo.xml editor:
-  - View the metadata stored in ComicInfo.xml files inside cbr, cbz and cb7 comic books.
-  - Create and/or modify the metadata stored in ComicInfo.xml files inside unencrypted cbz and cb7 comic books.
+  - view the metadata stored in ComicInfo.xml files inside cbr, cbz and cb7 comic books.
+  - create and/or modify the metadata stored in ComicInfo.xml files inside unencrypted cbz and cb7 comic books.
 - Integrated audio player:
   - supports .mp3, .ogg, .wav, .m3u and .m3u8 files.
   - can export playlists to .m3u files.
