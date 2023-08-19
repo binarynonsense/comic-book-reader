@@ -1,3 +1,21 @@
+## v3.1.0
+
+- Added a ComicInfo.xml viewer/editor that can be opened from the properties window if the file format allows it. ComicInfo.xml files inside cbr, cbz and cb7 comic books can be viewed and ComicInfo.xml files inside unencrypted cbz and cb7 comic books can be created and edited.
+- Added the option to change the temp folder in the preferences.
+- Fixed modals not stopping the input events' propagation.
+
+## v3.0.1
+
+- Hotfix:
+  - Fixed icon not showing in taskbar.
+
+## v3.0.0
+
+- Redesigned the user interface and refactored the internal structure and code.
+- Fixed cb7 files containing more than images not opening or failing at some point.
+- Added a File>Properties entry to the menu that opens a modal window showing some data about the current file.
+- Other small fixes, tweaks and improvements.
+
 ## v2.4.7
 
 - Hotfix:
