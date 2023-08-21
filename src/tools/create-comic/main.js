@@ -477,7 +477,7 @@ function getLocalization() {
     },
     {
       id: "tool-cr-back-button-text",
-      text: _("tool-shared-ui-back-button").toUpperCase(),
+      text: _("tool-shared-ui-back-to-reader").toUpperCase(),
     },
     {
       id: "tool-cr-start-button-text",

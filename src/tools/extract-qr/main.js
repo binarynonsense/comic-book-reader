@@ -203,7 +203,7 @@ function getLocalization() {
     },
     {
       id: "tool-eq-back-button-text",
-      text: _("tool-shared-ui-back-button").toUpperCase(),
+      text: _("tool-shared-ui-back-to-reader").toUpperCase(),
     },
     {
       id: "tool-eq-start-button-text",

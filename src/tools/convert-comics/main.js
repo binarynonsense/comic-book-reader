@@ -939,7 +939,7 @@ function getLocalization() {
     },
     {
       id: "tool-cc-back-button-text",
-      text: _("tool-shared-ui-back-button").toUpperCase(),
+      text: _("tool-shared-ui-back-to-reader").toUpperCase(),
     },
     {
       id: "tool-cc-start-button-text",

@@ -480,7 +480,7 @@ function getLocalization() {
     },
     {
       id: "tool-ci-back-button-text",
-      text: _("tool-shared-ui-back-button").toUpperCase(),
+      text: _("tool-shared-ui-back-to-reader").toUpperCase(),
     },
     {
       id: "tool-ci-start-button-text",

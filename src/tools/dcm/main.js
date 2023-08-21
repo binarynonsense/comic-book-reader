@@ -222,7 +222,7 @@ function getLocalization() {
     },
     {
       id: "tool-dcm-back-button-text",
-      text: _("tool-shared-ui-back-button").toUpperCase(),
+      text: _("tool-shared-ui-back-to-reader").toUpperCase(),
     },
     {
       id: "tool-dcm-start-button-text",

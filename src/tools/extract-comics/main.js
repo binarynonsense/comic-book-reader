@@ -729,7 +729,7 @@ function getLocalization() {
     },
     {
       id: "tool-ec-back-button-text",
-      text: _("tool-shared-ui-back-button").toUpperCase(),
+      text: _("tool-shared-ui-back-to-reader").toUpperCase(),
     },
     {
       id: "tool-ec-start-button-text",
