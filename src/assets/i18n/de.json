@@ -1,7 +1,7 @@
 {
   "@metadata": {
     "authors": ["trzyglow"],
-    "last-updated": "2023-08-21",
+    "last-updated": "2023-08-22",
     "acbr-version": "3.1.0",
     "comments": "Deutsche Lokalisierung",
     "locale": "de",
@@ -241,7 +241,7 @@
   "tool-shared-ui-search-item-open-acbr": "In ACBR öffnen",
   "tool-shared-ui-search-item-open-browser": "Im browser öffnen",
   "tool-shared-ui-search-nothing-found": "Keine Ergebnisse stimmen mit Ihren Suchkriterien überein",
-  "[NEEDS TRANSLATION]tool-shared-ui-search-network-error": "Coudn't connect to {0}, an error occurred.",
+  "tool-shared-ui-search-network-error": "Konnte keine Verbindung zu {0} herstellen, ein Fehler ist aufgetreten.",
   "tool-shared-ui-button-open-in-acbr": "In ACBR öffnen",
   "tool-shared-ui-button-open-in-browser": "Im Browser öffnen",
   "tool-shared-ui-about-text-1": "Dies ist ein Werkzeug zum suchen nach {0} welche auf der \"{1}\" Website verfügbar sind und sie im Systembrowser oder direkt in ACBR öffnet.",
@@ -570,11 +570,11 @@
   "tool-cix-data-page-type-other": "Anderes",
   "tool-cix-data-page-type-deleted": "Gelöscht",
 
-  "[NEEDS TRANSLATION]tool-cix-search-placeholder-series": "Enter a comic book series name",
+  "tool-cix-search-placeholder-series": "Geben Sie einen Comicbuch-Reihen Namen ein",
   "tool-cix-search-error-invalid-api-key": "Ungültiger API-Schlüssel",
   "tool-cix-search-import-warning": "Die ausgewählten Informationen werden den entsprechenden Metadatenfeldern zugeordnet und deren Inhalt wird durch diese ersetzt.",
-  "[NEEDS TRANSLATION]tool-cix-search-results-show-issues-list": "Show Issues in this Series",
-  "[NEEDS TRANSLATION]tool-cix-search-results-show-issue-info": "Show Metadata",
+  "tool-cix-search-results-show-issues-list": "Zeige Ausgaben in dieser Reihe an",
+  "tool-cix-search-results-show-issue-info": "Zeige Metadaten an",
   "tool-cix-search-api-key-file-path": "API-Schlüssel Datei",
   "tool-cix-search-api-key-file-path-info": "Eine Textdatei welche einen gültigen API-Schlüssel für {0} enthält", 
   "tool-cix-search-api-key-not-found": "In den Sucheinstellungen muss eine Textdatei zugewiesen werden, die einen gültigen API-Schlüssel für {0} enthält."
