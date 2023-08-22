@@ -45,7 +45,13 @@ exports.open = function (fileData) {
   sendIpcToCoreRenderer("replace-inner-html", "#tools", data.toString());
   updateLocalizedText();
   let languages = ISO6391.getLanguages(ISO6391.getAllCodes());
-  sendIpcToRenderer("show", fileData, languages);
+  sendIpcToRenderer(
+    "show",
+    fileData,
+    languages,
+    settings.getValue("cbrCreation") === 1 &&
+      settings.getValue("rarExeAvailable")
+  );
   g_fileData = fileData;
 
   g_cvApiKeyFilePath = settings.getValue("toolCixApiKeyPath");
@@ -410,6 +416,20 @@ async function saveJsonToFile(json) {
       if (!success) {
         fileUtils.cleanUpTempFolder();
         throw "error updating 7zip entry";
+      }
+      fileUtils.cleanUpTempFolder();
+    } else if (g_fileData.type === FileDataType.RAR) {
+      const tempFolderPath = fileUtils.createTempFolder();
+      const xmlFilePath = path.resolve(tempFolderPath, entryName);
+      fs.writeFileSync(xmlFilePath, outputXmlData);
+      let success = await fileFormats.updateRarEntry(
+        g_fileData.path,
+        entryName,
+        tempFolderPath
+      );
+      if (!success) {
+        fileUtils.cleanUpTempFolder();
+        throw "error updating RAR entry";
       }
       fileUtils.cleanUpTempFolder();
     }

@@ -14,6 +14,7 @@ const i18n = require("../shared/main/i18n");
 const themes = require("../shared/main/themes");
 const menuBar = require("../shared/main/menu-bar");
 const fileUtils = require("../shared/main/file-utils");
+const utils = require("../shared/main/utils");
 
 const reader = require("../reader/main");
 const audioPlayer = require("../audio-player/main");
@@ -34,6 +35,7 @@ const toolXkcd = require("../tools/xkcd/main");
 const toolLibrivox = require("../tools/librivox/main");
 const toolWiktionary = require("../tools/wiktionary/main");
 const toolComicInfoXml = require("../tools/comicinfoxml/main");
+const { stdout } = require("process");
 
 let g_mainWindow;
 let g_isLoaded = false;

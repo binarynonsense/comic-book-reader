@@ -28,6 +28,7 @@ let g_pagesTable;
 let g_hasInfo;
 let g_isEditable;
 let g_fileData;
+let g_canEditRars;
 let g_json;
 let g_fields = [];
 
@@ -37,7 +38,7 @@ let g_searchHistory;
 let g_apiKeyFilePathUl;
 let g_apiKeyFilePathCheckbox;
 
-function init(fileData, isoLanguages) {
+function init(fileData, isoLanguages, canEditRars) {
   if (!g_isInitialized) {
     // things to start only once go here
     g_isInitialized = true;
@@ -50,8 +51,10 @@ function init(fileData, isoLanguages) {
 
   g_fileData = fileData;
   g_hasInfo = g_fileData.metadata.comicInfoId !== undefined;
+  g_canEditRars = canEditRars;
   g_isEditable =
-    g_fileData.type !== FileDataType.RAR && !g_fileData.metadata.encrypted;
+    (g_canEditRars || g_fileData.type !== FileDataType.RAR) &&
+    !g_fileData.metadata.encrypted;
   // menu buttons
   document
     .getElementById("tool-cix-back-button")
@@ -88,7 +91,7 @@ function init(fileData, isoLanguages) {
       onUpdatePages();
     });
 
-  if (g_fileData.type === "rar") {
+  if (g_fileData.type === FileDataType.RAR && !g_canEditRars) {
     document
       .getElementById("tool-cix-update-pages-button")
       .classList.add("tools-disabled");
@@ -276,8 +279,8 @@ function on(id, callback) {
 }
 
 function initOnIpcCallbacks() {
-  on("show", (fileData, isoLanguages) => {
-    init(fileData, isoLanguages);
+  on("show", (...args) => {
+    init(...args);
   });
 
   on("hide", () => {});
@@ -780,25 +783,19 @@ function initOnIpcCallbacks() {
           roles[2].list += roles[0].list;
         }
         for (let i = 1; i < roles.length; i++) {
-          if (roles[i].list !== "")
-            console.log(
-              `tool-cix-data-${
-                roles[i].altName !== undefined
-                  ? roles[i].altName
-                  : roles[i].name
-              }-text`
+          if (roles[i].list !== "") {
+            compiledData[roles[i].name] = addLine(
+              ul,
+              document.getElementById(
+                `tool-cix-data-${
+                  roles[i].altName !== undefined
+                    ? roles[i].altName
+                    : roles[i].name
+                }-text`
+              ).textContent,
+              roles[i].list
             );
-          compiledData[roles[i].name] = addLine(
-            ul,
-            document.getElementById(
-              `tool-cix-data-${
-                roles[i].altName !== undefined
-                  ? roles[i].altName
-                  : roles[i].name
-              }-text`
-            ).textContent,
-            roles[i].list
-          );
+          }
         }
       }
       if (data.story_arc_credits) {

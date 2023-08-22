@@ -96,9 +96,11 @@ function initOnIpcCallbacks() {
   on("close", () => {
     onCloseClicked();
   });
+
   on("set-setting", (id, value) => {
     settings.setValue(id, value);
   });
+
   on("set-language", (value) => {
     i18n.loadLocale(value);
     settings.setValue("locale", i18n.getLoadedLocale());
@@ -107,44 +109,54 @@ function initOnIpcCallbacks() {
       if (value.updateLocalizedText) value.updateLocalizedText();
     }
   });
+
   on("set-theme", (value) => {
     themes.load(value);
     settings.setValue("theme", value);
     sendIpcToCoreRenderer("update-css-properties", themes.getData());
     reader.rebuildMenuAndToolBars(false);
   });
+
   on("set-layout-clock", (value) => {
     settings.setValue("layoutClock", value);
     reader.updateLayoutClock();
   });
+
   on("set-layout-pagenum", (value) => {
     settings.setValue("layoutPageNum", value);
     reader.updateLayoutPageNum();
   });
+
   on("set-layout-audioplayer", (value) => {
     settings.setValue("layoutAudioPlayer", value);
     reader.updateLayoutAudioPlayer();
   });
+
   on("set-loading-bg", (value) => {
     settings.setValue("loadingIndicatorBG", value);
     reader.updateLoadingIndicator();
   });
+
   on("set-loading-isize", (value) => {
     settings.setValue("loadingIndicatorIconSize", value);
     reader.updateLoadingIndicator();
   });
+
   on("set-loading-ipos", (value) => {
     settings.setValue("loadingIndicatorIconPos", value);
     reader.updateLoadingIndicator();
   });
+
   on("set-cursor", (value) => {
     settings.setValue("cursorVisibility", value);
     reader.sendIpcToRenderer("set-hide-inactive-mouse-cursor", value === 1);
   });
+
   on("set-page-turn", (value) => {
     settings.setValue("turnPageOnScrollBoundary", value);
     reader.sendIpcToRenderer("set-page-turn-on-scroll-boundary", value);
   });
+
   on("change-temp-folder", (reset) => {
     let folderPath;
     if (reset) {
@@ -173,9 +185,25 @@ function initOnIpcCallbacks() {
 ///////////////////////////////////////////////////////////////////////////////
 
 function updateLocalizedText() {
-  sendIpcToRenderer("update-localization", getLocalization());
+  sendIpcToRenderer(
+    "update-localization",
+    getLocalization(),
+    getTooltipsLocalization()
+  );
 }
 exports.updateLocalizedText = updateLocalizedText;
+
+function getTooltipsLocalization() {
+  return [
+    {
+      id: "tool-pre-tooltip-cbr-creation-modification",
+      text: _(
+        "tool-pre-use-system-exe-tooltip",
+        process.platform === "win32" ? '"rar.exe"' : '"rar"'
+      ),
+    },
+  ];
+}
 
 function getLocalization() {
   return [
@@ -450,6 +478,27 @@ function getLocalization() {
     {
       id: "tool-pre-epub-openas-1-text",
       text: _("tool-pre-epub-openas-1"),
+    },
+
+    {
+      id: "tool-pre-cbr-text",
+      text: _("tool-pre-cbr"),
+    },
+    {
+      id: "tool-pre-cbr-creation-modification-text",
+      text: _("tool-pre-cbr-creation-modification"),
+    },
+    {
+      id: "tool-pre-cbr-creation-modification-0-text",
+      text: _("tool-pre-cbr-creation-modification-disabled"),
+    },
+    {
+      id: "tool-pre-cbr-creation-modification-1-text",
+      text:
+        _("tool-pre-cbr-creation-modification-enabled") +
+        " (" +
+        _("tool-pre-use-system-exe") +
+        ")",
     },
     //////////////////////////////////////////////
     {

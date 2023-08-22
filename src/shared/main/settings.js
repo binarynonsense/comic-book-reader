@@ -9,6 +9,7 @@ const { app } = require("electron");
 const fs = require("fs");
 const path = require("path");
 const fileUtils = require("./file-utils");
+const utils = require("./utils");
 
 const {
   isPortable,
@@ -33,6 +34,11 @@ exports.setValue = function (name, value) {
 
 exports.init = function () {
   load();
+  (async () => {
+    g_settings.rarExeAvailable = await utils.isRarExeAvailable();
+    // TODO: delete
+    console.log("rar command available: " + g_settings.rarExeAvailable);
+  })();
 };
 
 function setDefaultValues() {
@@ -68,6 +74,7 @@ function setDefaultValues() {
     layoutPageNum: 4, // 0 top left, 1 top center, 2 top right .... 5 bottom right
     layoutAudioPlayer: 0, // 0 top left, 3 bootom left - for now
     epubOpenAs: 0, // 0 ask and remember, 1 always ask
+    cbrCreation: 0, // 0 disabled, 1 use command tool if available
     turnPageOnScrollBoundary: false,
     filterMode: 0, // 0: none, 1: old paper
 
@@ -238,6 +245,13 @@ function sanitize() {
   ) {
     g_settings.epubOpenAs = 0;
   }
+  if (
+    !Number.isInteger(g_settings.cbrCreation) ||
+    g_settings.cbrCreation < 0 ||
+    g_settings.cbrCreation > 1
+  ) {
+    g_settings.cbrCreation = 0;
+  }
   if (typeof g_settings.turnPageOnScrollBoundary !== "boolean") {
     g_settings.turnPageOnScrollBoundary = false;
   }
@@ -311,6 +325,7 @@ exports.save = function () {
   if (g_settings.tempFolderPath === fileUtils.getSystemTempFolderPath()) {
     g_settings.tempFolderPath = undefined;
   }
+  g_settings.rarExeAvailable = undefined;
   const settingsJSON = JSON.stringify(g_settings, null, 2);
   try {
     fs.writeFileSync(cfgFilePath, settingsJSON, "utf-8");

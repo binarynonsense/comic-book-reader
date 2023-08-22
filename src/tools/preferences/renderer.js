@@ -201,6 +201,16 @@ function init(activeLocale, languages, activeTheme, themes, settings) {
       sendIpcToMain("set-setting", "epubOpenAs", parseInt(select.value));
     });
   }
+  // cbr creation select
+  {
+    let select = document.getElementById(
+      "tool-pre-cbr-creation-modification-select"
+    );
+    select.value = settings.cbrCreation;
+    select.addEventListener("change", function (event) {
+      sendIpcToMain("set-setting", "cbrCreation", parseInt(select.value));
+    });
+  }
   // temp folder ul and button
   {
     g_tempFolderPathUl = document.getElementById("tool-pre-tempfolder-ul");
@@ -423,8 +433,8 @@ function initOnIpcCallbacks() {
     init(activeLocale, languages, activeTheme, themes, settings);
   });
 
-  on("update-localization", (callback) => {
-    updateLocalization(callback);
+  on("update-localization", (...args) => {
+    updateLocalization(...args);
   });
 
   on("update-window", () => {
@@ -475,12 +485,19 @@ export function onInputEvent(type, event) {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-function updateLocalization(localization) {
+function updateLocalization(localization, tooltipsLocalization) {
   for (let index = 0; index < localization.length; index++) {
     const element = localization[index];
     const domElement = document.getElementById(element.id);
     if (domElement !== null) {
       domElement.innerText = element.text;
+    }
+  }
+  for (let index = 0; index < tooltipsLocalization.length; index++) {
+    const element = tooltipsLocalization[index];
+    const domElement = document.querySelector("#" + element.id);
+    if (domElement !== null) {
+      domElement.title = element.text;
     }
   }
 }

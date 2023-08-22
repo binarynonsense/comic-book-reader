@@ -8,6 +8,7 @@
 const path = require("path");
 const fs = require("fs");
 const os = require("os");
+const utils = require("./utils");
 
 function isDev() {
   return process.argv[2] == "--dev";
@@ -233,6 +234,25 @@ async function extractRar(filePath, tempFolderPath, password) {
   }
 }
 exports.extractRar = extractRar;
+
+async function updateRarEntry(filePath, entryPath, workingDir, password) {
+  try {
+    const cmdResult = await utils.execShellCommand(
+      `rar u ${filePath} ${entryPath}`,
+      workingDir
+    );
+    if (!cmdResult.error || cmdResult.error === "") {
+      return true;
+    } else {
+      console.log(cmdResult.error);
+      return false;
+    }
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
+}
+exports.updateRarEntry = updateRarEntry;
 
 ///////////////////////////////////////////////////////////////////////////////
 // ZIP ////////////////////////////////////////////////////////////////////////
