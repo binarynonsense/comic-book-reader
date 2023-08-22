@@ -241,7 +241,7 @@
   "tool-shared-ui-search-item-open-acbr": "In ACBR öffnen",
   "tool-shared-ui-search-item-open-browser": "Im browser öffnen",
   "tool-shared-ui-search-nothing-found": "Keine Ergebnisse stimmen mit Ihren Suchkriterien überein",
-  "tool-shared-ui-search-network-error": "Konnte keine Verbindung zu {0} herstellen, ein Fehler ist aufgetreten.",
+  "tool-shared-ui-search-network-error": "Konnte keine Verbindung mit {0} herstellen, ein Fehler ist aufgetreten.",
   "tool-shared-ui-button-open-in-acbr": "In ACBR öffnen",
   "tool-shared-ui-button-open-in-browser": "Im Browser öffnen",
   "tool-shared-ui-about-text-1": "Dies ist ein Werkzeug zum suchen nach {0} welche auf der \"{1}\" Website verfügbar sind und sie im Systembrowser oder direkt in ACBR öffnet.",
