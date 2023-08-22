@@ -241,6 +241,7 @@
   "tool-shared-ui-search-item-open-acbr": "Открыть в ACBR",
   "tool-shared-ui-search-item-open-browser": "Открыть в браузере",
   "tool-shared-ui-search-nothing-found": "Нет результатов, соответствующих вашим критериям",
+  "[NEEDS TRANSLATION]tool-shared-ui-search-network-error": "Coudn't connect to {0}, an error occurred.",
   "tool-shared-ui-button-open-in-acbr": "Открыть в ACBR",
   "tool-shared-ui-button-open-in-browser": "Открыть в браузере",
   "tool-shared-ui-about-text-1": "Это инструмент для поиска по {0}, доступным на веб-сайте \"{1}\", и открытия их в браузере системы или непосредственно внутри ACBR.",
