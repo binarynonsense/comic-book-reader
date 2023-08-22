@@ -573,6 +573,8 @@
   "tool-cix-search-placeholder-series": "Introduzca el nombre de una serie de cómics",
   "tool-cix-search-error-invalid-api-key": "Clave API Inválida",
   "tool-cix-search-import-warning": "La información seleccionada se asignará a los campos de metadatos apropiados y sus contenidos serán reemplazados con ella.",
+  "tool-cix-search-results-show-issues-list": "Mostrar los Números en esta Serie",
+  "tool-cix-search-results-show-issue-info": "Mostrar Metadatos",
   "tool-cix-search-api-key-file-path": "Archivo de Clave API",
   "tool-cix-search-api-key-file-path-info": "Un archivo de texto que contenga una clave API válida para {0}",
   "tool-cix-search-api-key-not-found": "Un archivo de texto que contenga una clave API válida para {0} debe ser asignado en la configuración de búsqueda."

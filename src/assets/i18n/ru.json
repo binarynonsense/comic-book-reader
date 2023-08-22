@@ -573,6 +573,8 @@
   "[NEEDS TRANSLATION]tool-cix-search-placeholder-series": "Enter a comic book series name",
   "[NEEDS TRANSLATION]tool-cix-search-error-invalid-api-key": "Invalid API Key",
   "tool-cix-search-import-warning": "The selected information will be matched to the appropriate metadata fields and their content replaced with it.",
+  "[NEEDS TRANSLATION]tool-cix-search-results-show-issues-list": "Show Issues in this Series",
+  "[NEEDS TRANSLATION]tool-cix-search-results-show-issue-info": "Show Metadata",
   "[NEEDS TRANSLATION]tool-cix-search-api-key-file-path": "API Key File",
   "[NEEDS TRANSLATION]tool-cix-search-api-key-file-path-info": "A text file containing a valid API key for {0}",
   "[NEEDS TRANSLATION]tool-cix-search-api-key-not-found": "A text file containing a valid API key for {0} must be assigned in the search settings."
