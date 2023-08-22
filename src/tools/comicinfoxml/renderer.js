@@ -689,19 +689,39 @@ function initOnIpcCallbacks() {
       /////////////////////////////////
       let compiledData = {};
       if (data.name) {
-        compiledData.title = addLine(ul, "title", data.name);
+        compiledData.title = addLine(
+          ul,
+          document.getElementById("tool-cix-data-title-text").textContent,
+          data.name
+        );
       }
       if (data?.volume?.name) {
-        compiledData.series = addLine(ul, "series", data.volume.name);
+        compiledData.series = addLine(
+          ul,
+          document.getElementById("tool-cix-data-series-text").textContent,
+          data.volume.name
+        );
       }
       if (data.cover_date) {
         let numbers = data.cover_date.split("-");
         if (numbers.length > 0)
-          compiledData.year = addLine(ul, "year", numbers[0]);
+          compiledData.year = addLine(
+            ul,
+            document.getElementById("tool-cix-data-year-text").textContent,
+            numbers[0]
+          );
         if (numbers.length > 1)
-          compiledData.month = addLine(ul, "month", numbers[1]);
+          compiledData.month = addLine(
+            ul,
+            document.getElementById("tool-cix-data-month-text").textContent,
+            numbers[1]
+          );
         if (numbers.length > 2)
-          compiledData.day = addLine(ul, "day", numbers[2]);
+          compiledData.day = addLine(
+            ul,
+            document.getElementById("tool-cix-data-day-text").textContent,
+            numbers[2]
+          );
       }
       if (
         g_searchHistory.issues.results.publisher &&
@@ -709,29 +729,33 @@ function initOnIpcCallbacks() {
       ) {
         compiledData.publisher = addLine(
           ul,
-          "publisher",
+          document.getElementById("tool-cix-data-publisher-text").textContent,
           g_searchHistory.issues.results.publisher.name
         );
       }
       if (data.issue_number) {
-        compiledData.number = addLine(ul, "number", data.issue_number);
+        compiledData.number = addLine(
+          ul,
+          document.getElementById("tool-cix-data-number-text").textContent,
+          data.issue_number
+        );
       }
       if (g_searchHistory.issues.results.count_of_issues) {
         compiledData.totalNumber = addLine(
           ul,
-          "count",
+          document.getElementById("tool-cix-data-count-text").textContent,
           g_searchHistory.issues.results.count_of_issues
         );
       }
       if (data.person_credits) {
         let roles = [
           { name: "artist", list: "" },
-          { name: "penciler", list: "" },
+          { name: "penciler", altName: "penciller", list: "" },
           { name: "inker", list: "" },
           { name: "colorist", list: "" },
           { name: "letterer", list: "" },
           { name: "writer", list: "" },
-          { name: "cover", list: "" },
+          { name: "cover", altName: "coverartist", list: "" },
           { name: "editor", list: "" },
         ];
         for (let i = 0; i < roles.length; i++) {
@@ -757,11 +781,24 @@ function initOnIpcCallbacks() {
         }
         for (let i = 1; i < roles.length; i++) {
           if (roles[i].list !== "")
-            compiledData[roles[i].name] = addLine(
-              ul,
-              roles[i].name,
-              roles[i].list
+            console.log(
+              `tool-cix-data-${
+                roles[i].altName !== undefined
+                  ? roles[i].altName
+                  : roles[i].name
+              }-text`
             );
+          compiledData[roles[i].name] = addLine(
+            ul,
+            document.getElementById(
+              `tool-cix-data-${
+                roles[i].altName !== undefined
+                  ? roles[i].altName
+                  : roles[i].name
+              }-text`
+            ).textContent,
+            roles[i].list
+          );
         }
       }
       if (data.story_arc_credits) {
@@ -772,7 +809,12 @@ function initOnIpcCallbacks() {
             arcs += ", ";
           }
         }
-        if (arcs !== "") compiledData.storyArc = addLine(ul, "story arc", arcs);
+        if (arcs !== "")
+          compiledData.storyArc = addLine(
+            ul,
+            document.getElementById("tool-cix-data-storyarc-text").textContent,
+            arcs
+          );
       }
       if (data.location_credits) {
         let locations = "";
@@ -783,7 +825,11 @@ function initOnIpcCallbacks() {
           }
         }
         if (locations !== "")
-          compiledData.locations = addLine(ul, "locations", locations);
+          compiledData.locations = addLine(
+            ul,
+            document.getElementById("tool-cix-data-locations-text").textContent,
+            locations
+          );
       }
       if (data.character_credits) {
         let characters = "";
@@ -794,7 +840,12 @@ function initOnIpcCallbacks() {
           }
         }
         if (characters !== "")
-          compiledData.characters = addLine(ul, "characters", characters);
+          compiledData.characters = addLine(
+            ul,
+            document.getElementById("tool-cix-data-characters-text")
+              .textContent,
+            characters
+          );
       }
       if (data.team_credits) {
         let teams = "";
@@ -804,12 +855,22 @@ function initOnIpcCallbacks() {
             teams += ", ";
           }
         }
-        if (teams !== "") compiledData.teams = addLine(ul, "teams", teams);
+        if (teams !== "")
+          compiledData.teams = addLine(
+            ul,
+            document.getElementById("tool-cix-data-teams-text").textContent,
+            teams
+          );
       }
       // TODO:
       //aliases 	List of aliases the issue is known by. A \n (newline) seperates each alias.
       if (data.description) {
-        compiledData.summary = addLine(ul, "summary", data.description, true);
+        compiledData.summary = addLine(
+          ul,
+          document.getElementById("tool-cix-data-summary-text").textContent,
+          data.description,
+          true
+        );
       }
       searchResultsDiv.appendChild(ul);
 
