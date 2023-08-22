@@ -1199,8 +1199,6 @@ function goToPage(pageIndex, scrollBarPos = 0) {
     g_fileData.state !== FileDataState.LOADED ||
     g_fileData.type === FileDataType.NOT_SET
   ) {
-    // sendToRenderer("update-bg", true);
-    // sendToRenderer("update-loading", false);
     return;
   }
 
