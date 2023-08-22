@@ -39,6 +39,19 @@
         <span id="tool-cix-section-3-button-text"></span>
       </div>
     </div>
+    <div class="tools-menu-separator"></div>
+    <div id="tool-cix-section-4-button" class="tools-menu-button">
+      <i class="fas fa-search tools-menu-button-icon"></i>
+      <div class="tools-menu-button-text">
+        <span id="tool-cix-section-4-button-text"></span>
+      </div>
+    </div>
+    <div id="tool-cix-section-5-button" class="tools-menu-button">
+      <i class="fas fa-tools tools-menu-button-icon"></i>
+      <div class="tools-menu-button-text">
+        <span id="tool-cix-section-5-button-text"></span>
+      </div>
+    </div>
   </div>
   <!-- ------------------- RIGTH COLUMN -------------------------------- -->
   <div id="tools-columns-right">
@@ -182,7 +195,7 @@
           <label class="tool-shared-columns-50">
             <span id="tool-cix-data-storyarc-text"></span>
             <input
-              id="tool-cix-data-storyarc-textarea"
+              id="tool-cix-data-storyarc-input"
               data-xml-id="StoryArc"
               data-xml-type="xs:string"
               type="text"
@@ -539,6 +552,71 @@
             spellcheck="false"
           ></textarea>
         </label>
+      </div>
+    </div>
+    <!-- search -->
+    <div id="tool-cix-section-4-content-div" class="set-display-none">
+      <div id="tool-search-input-div" class="tools-columns-right-section">
+        <h3><span id="tool-cix-search-input-text"></span></h3>
+        <label>
+          <input
+            id="tool-cix-search-input"
+            type="text"
+            style="margin-top: 0"
+            spellcheck="false"
+          />
+        </label>
+        <button id="tool-cix-search-button" class="tools-disabled">
+          <span id="tool-cix-search-button-text"></span>
+        </button>
+      </div>
+      <div id="tool-search-results-div" class="tools-columns-right-section">
+        <h3
+          id="tool-search-results-h3"
+          class="tools-h3-extra-margin-top-2 set-display-none"
+        >
+          <span id="tool-cix-search-results-text"></span>
+        </h3>
+        <div
+          id="tool-cix-search-results-div"
+          class="set-display-none"
+          style="margin-top: 20px"
+        ></div>
+        <div
+          id="tool-cix-search-results-issues-div"
+          class="set-display-none"
+          style="margin-top: 20px"
+        ></div>
+        <div
+          id="tool-cix-search-results-issue-div"
+          class="set-display-none"
+          style="margin-top: 20px"
+        ></div>
+      </div>
+    </div>
+    <!-- search settings -->
+    <div id="tool-cix-section-5-content-div" class="set-display-none">
+      <div class="tools-columns-right-section">
+        <h3><span id="tool-cix-comicvine-text"></span></h3>
+        <label>
+          <span id="tool-cix-comicvine-api-key-file-text"></span
+          ><i
+            id="tool-cix-tooltip-comicvine-api-key-file"
+            class="fas fa-question-circle"
+            title="tooltip"
+          ></i>
+          <ul
+            id="tool-cix-comicvine-api-key-file-ul"
+            class="tools-collection-ul"
+          ></ul>
+        </label>
+        <button id="tool-cix-comicvine-api-key-file-change-button">
+          <span id="tool-cix-comicvine-api-key-file-change-button-text"></span>
+        </button>
+        <div class="tools-checkbox-container">
+          <input type="checkbox" id="tool-cix-comicvine-api-key-checkbox" />
+          <span id="tool-cix-comicvine-api-key-checkbox-text"></span>
+        </div>
       </div>
     </div>
   </div>

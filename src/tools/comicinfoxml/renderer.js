@@ -31,6 +31,12 @@ let g_fileData;
 let g_json;
 let g_fields = [];
 
+let g_searchInput;
+let g_searchButton;
+let g_searchHistory;
+let g_apiKeyFilePathUl;
+let g_apiKeyFilePathCheckbox;
+
 function init(fileData, isoLanguages) {
   if (!g_isInitialized) {
     // things to start only once go here
@@ -58,7 +64,7 @@ function init(fileData, isoLanguages) {
   });
   g_saveButton.classList.add("tools-disabled");
   // sections menu
-  for (let index = 0; index < 4; index++) {
+  for (let index = 0; index < 6; index++) {
     document
       .getElementById(`tool-cix-section-${index}-button`)
       .addEventListener("click", (event) => {
@@ -148,6 +154,52 @@ function init(fileData, isoLanguages) {
     }
   });
   ////////////////////////////////////////
+  // search
+  g_searchButton = document.getElementById("tool-cix-search-button");
+  g_searchButton.addEventListener("click", (event) => {
+    onSearch();
+  });
+
+  g_searchInput = document.getElementById("tool-cix-search-input");
+  g_searchInput.placeholder = g_localizedModalTexts.searchPlaceholder;
+  g_searchInput.addEventListener("input", function (event) {
+    if (g_searchInput.value !== "") {
+      g_searchButton.classList.remove("tools-disabled");
+    } else {
+      g_searchButton.classList.add("tools-disabled");
+    }
+  });
+  g_searchInput.addEventListener("keypress", function (event) {
+    if (
+      event.key === "Enter" &&
+      !document
+        .getElementById("tool-cix-section-4-content-div")
+        .classList.contains("set-display-none")
+    ) {
+      event.preventDefault();
+      if (g_searchInput.value) {
+        onSearch();
+      }
+    }
+  });
+  g_searchInput.focus();
+
+  // TODO: cache multiple searches, issue url...
+  g_searchHistory = {};
+  ////////////////////////////////////////
+  // search settings
+  g_apiKeyFilePathUl = document.getElementById(
+    "tool-cix-comicvine-api-key-file-ul"
+  );
+  g_apiKeyFilePathCheckbox = document.getElementById(
+    "tool-cix-comicvine-api-key-checkbox"
+  );
+  document
+    .getElementById("tool-cix-comicvine-api-key-file-change-button")
+    .addEventListener("click", (event) => {
+      sendIpcToMain("change-api-key-file", g_apiKeyFilePathCheckbox.checked);
+    });
+  ////////////////////////////////////////
   if (!g_openModal) closeModal(g_openModal);
   showProgressModal();
   updateModalTitleText(g_localizedModalTexts.loadingTitle);
@@ -167,7 +219,7 @@ function updateColumnsHeight() {
 }
 
 function switchSection(id) {
-  for (let index = 0; index < 4; index++) {
+  for (let index = 0; index < 6; index++) {
     if (id === index) {
       document
         .getElementById(`tool-cix-section-${index}-button`)
@@ -185,6 +237,14 @@ function switchSection(id) {
     }
   }
   updateColumnsHeight();
+  document.getElementById("tools-columns-right").scrollIntoView({
+    behavior: "smooth",
+    block: "start",
+    inline: "nearest",
+  });
+  if (id === 4) {
+    g_searchInput.focus();
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -265,7 +325,6 @@ function initOnIpcCallbacks() {
   /////////////////////////////////////////////////////////////////////////////
 
   on("modal-update-title-text", (text) => {
-    console.log(text);
     updateModalTitleText(text);
   });
 
@@ -307,6 +366,675 @@ function initOnIpcCallbacks() {
         g_localizedModalTexts.okButton
       );
     }
+  });
+
+  /////////////////////////////////////////////////////////////////////////////
+
+  on(
+    "search-volumes-results",
+    (searchResults, noResultsText, queryInputText, pageNum) => {
+      document
+        .querySelector("#tool-search-results-h3")
+        .classList.remove("set-display-none");
+
+      document
+        .querySelector("#tool-cix-search-results-div")
+        .classList.remove("set-display-none");
+      document
+        .querySelector("#tool-cix-search-results-issues-div")
+        .classList.add("set-display-none");
+      document
+        .querySelector("#tool-cix-search-results-issue-div")
+        .classList.add("set-display-none");
+      const searchResultsDiv = document.querySelector(
+        "#tool-cix-search-results-div"
+      );
+      searchResultsDiv.innerHTML = "";
+
+      g_searchHistory.volumes = searchResults;
+      g_searchHistory.issues = undefined;
+      g_searchHistory.issue = undefined;
+
+      const totalResultsNum = searchResults?.number_of_total_results;
+      if (
+        searchResults &&
+        searchResults.error === "OK" &&
+        totalResultsNum &&
+        totalResultsNum > 0
+      ) {
+        const resultsNum = searchResults.results.length;
+        if (!g_searchHistory.lastSearchPageSize || pageNum === 1)
+          g_searchHistory.lastSearchPageSize = resultsNum;
+        // pagination top
+        if (totalResultsNum > g_searchHistory.lastSearchPageSize) {
+          const totalPagesNum = Math.ceil(
+            totalResultsNum / g_searchHistory.lastSearchPageSize
+          );
+          searchResultsDiv.appendChild(
+            generatePaginationHtml(pageNum, totalPagesNum, queryInputText)
+          );
+        }
+        // list
+        let ul = document.createElement("ul");
+        ul.className = "tools-collection-ul";
+        for (let index = 0; index < resultsNum; index++) {
+          const data = searchResults.results[index];
+          let li = document.createElement("li");
+          li.className = "tools-collection-li";
+          // text
+          let multilineText = document.createElement("span");
+          multilineText.className = "tools-collection-li-multiline-text";
+          {
+            let text = document.createElement("span");
+            text.innerText =
+              data?.name +
+              " (" +
+              data?.start_year +
+              "); Issues: " +
+              data?.count_of_issues +
+              "; Publisher: " +
+              data?.publisher?.name; // + " - " + data.resource_type;
+
+            multilineText.appendChild(text);
+
+            if (data.description) {
+              text = document.createElement("span");
+              text.innerHTML = data.description;
+              text.innerHTML = reduceStringBack(text.textContent);
+              multilineText.appendChild(text);
+            }
+          }
+          li.appendChild(multilineText);
+
+          // open issues list
+          let button = document.createElement("span");
+          button.title = g_localizedModalTexts.searchResultsShowIssues;
+          button.className =
+            "tools-collection-li-button tools-collection-li-button-extra-padding";
+          button.addEventListener("click", (event) => {
+            showProgressModal();
+            updateModalTitleText(g_localizedModalTexts.searchingTitle);
+            sendIpcToMain("get-volume-data", data.api_detail_url);
+          });
+          button.innerHTML = `<i class="fas fa-angle-right"></i>`;
+          li.appendChild(button);
+
+          ul.appendChild(li);
+        }
+        searchResultsDiv.appendChild(ul);
+        // pagination bottom
+        if (totalResultsNum > g_searchHistory.lastSearchPageSize) {
+          const totalPagesNum = Math.ceil(
+            totalResultsNum / g_searchHistory.lastSearchPageSize
+          );
+          searchResultsDiv.appendChild(
+            generatePaginationHtml(pageNum, totalPagesNum, queryInputText)
+          );
+        }
+      } else {
+        let ul = document.createElement("ul");
+        ul.className = "tools-collection-ul";
+        let li = document.createElement("li");
+        li.className = "tools-collection-li";
+        let text = document.createElement("span");
+        text.innerText = noResultsText;
+        li.appendChild(text);
+        ul.appendChild(li);
+        searchResultsDiv.appendChild(ul);
+      }
+      ///////////////////////////////////////////
+      updateColumnsHeight();
+      document.getElementById("tools-columns-right").scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+        inline: "nearest",
+      });
+      closeModal();
+    }
+  );
+
+  on("search-issues-results", (searchResults, noResultsText) => {
+    document
+      .querySelector("#tool-cix-search-results-div")
+      .classList.add("set-display-none");
+    document
+      .querySelector("#tool-cix-search-results-issues-div")
+      .classList.remove("set-display-none");
+    document
+      .querySelector("#tool-cix-search-results-issue-div")
+      .classList.add("set-display-none");
+    const searchResultsDiv = document.querySelector(
+      "#tool-cix-search-results-issues-div"
+    );
+    searchResultsDiv.innerHTML = "";
+
+    g_searchHistory.issues = searchResults;
+    g_searchHistory.issue = undefined;
+
+    let button = document.createElement("span");
+    button.className = "tools-collection-navigation-back";
+    button.addEventListener("click", (event) => {
+      document
+        .querySelector("#tool-cix-search-results-div")
+        .classList.remove("set-display-none");
+      document
+        .querySelector("#tool-cix-search-results-issues-div")
+        .classList.add("set-display-none");
+      document
+        .querySelector("#tool-cix-search-results-issue-div")
+        .classList.add("set-display-none");
+    });
+    button.innerHTML = `<i class="fas fa-angle-left"></i> BACK`;
+    searchResultsDiv.appendChild(button);
+
+    if (
+      searchResults &&
+      searchResults.error === "OK" &&
+      searchResults.results &&
+      searchResults.results.issues
+    ) {
+      // list
+      let ul = document.createElement("ul");
+      ul.className = "tools-collection-ul";
+      searchResults.results.issues.sort((a, b) =>
+        parseInt(a.issue_number) > parseInt(b.issue_number)
+          ? 1
+          : parseInt(b.issue_number) > parseInt(a.issue_number)
+          ? -1
+          : 0
+      );
+      for (
+        let index = 0;
+        index < searchResults.results.issues.length;
+        index++
+      ) {
+        const data = searchResults.results.issues[index];
+        let li = document.createElement("li");
+        li.className = "tools-collection-li";
+        // text
+        let multilineText = document.createElement("span");
+        multilineText.className = "tools-collection-li-multiline-text";
+        {
+          let text = document.createElement("span");
+          text.innerText = `${data.issue_number}`;
+          if (data.name) text.innerText += ` - ${data.name}`;
+          multilineText.appendChild(text);
+        }
+        li.appendChild(multilineText);
+
+        // open issue data
+        let button = document.createElement("span");
+        button.title = g_localizedModalTexts.searchResultsShowMetadata;
+        button.className =
+          "tools-collection-li-button tools-collection-li-button-extra-padding";
+        button.addEventListener("click", (event) => {
+          showProgressModal();
+          updateModalTitleText(g_localizedModalTexts.searchingTitle);
+          sendIpcToMain("get-issue-data", data.api_detail_url);
+        });
+        button.innerHTML = `<i class="fas fa-angle-right"></i>`;
+        li.appendChild(button);
+
+        ul.appendChild(li);
+      }
+      searchResultsDiv.appendChild(ul);
+    } else {
+      let ul = document.createElement("ul");
+      ul.className = "tools-collection-ul";
+      let li = document.createElement("li");
+      li.className = "tools-collection-li";
+      let text = document.createElement("span");
+      text.innerText = noResultsText;
+      li.appendChild(text);
+      ul.appendChild(li);
+      searchResultsDiv.appendChild(ul);
+    }
+    ///////////////////////////////////////////
+    updateColumnsHeight();
+    document.getElementById("tools-columns-right").scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+      inline: "nearest",
+    });
+    closeModal();
+  });
+
+  on("search-issue-results", (searchResults, localizedImportButtonText) => {
+    document
+      .querySelector("#tool-cix-search-results-div")
+      .classList.add("set-display-none");
+    document
+      .querySelector("#tool-cix-search-results-issues-div")
+      .classList.add("set-display-none");
+    document
+      .querySelector("#tool-cix-search-results-issue-div")
+      .classList.remove("set-display-none");
+    const searchResultsDiv = document.querySelector(
+      "#tool-cix-search-results-issue-div"
+    );
+    searchResultsDiv.innerHTML = "";
+
+    g_searchHistory.issue = searchResults;
+
+    let button = document.createElement("span");
+    button.className = "tools-collection-navigation-back";
+    button.addEventListener("click", (event) => {
+      document
+        .querySelector("#tool-cix-search-results-div")
+        .classList.add("set-display-none");
+      document
+        .querySelector("#tool-cix-search-results-issues-div")
+        .classList.remove("set-display-none");
+      document
+        .querySelector("#tool-cix-search-results-issue-div")
+        .classList.add("set-display-none");
+    });
+    button.innerHTML = `<i class="fas fa-angle-left"></i> BACK`;
+    searchResultsDiv.appendChild(button);
+
+    if (
+      searchResults &&
+      searchResults.error === "OK" &&
+      searchResults.results
+    ) {
+      // list
+      let ul = document.createElement("ul");
+      ul.className = "tools-collection-ul";
+      const data = searchResults.results;
+      let button = document.createElement("button");
+      let text = document.createElement("span");
+      text.innerText = localizedImportButtonText;
+      button.appendChild(text);
+      searchResultsDiv.appendChild(button);
+      // ref: https://comicvine.gamespot.com/api/documentation#toc-0-10
+      /////////////////////////////////
+      let addLine = (ul, title, text, sanitize) => {
+        let li = document.createElement("li");
+        li.className = "tools-collection-li";
+        // checkbox
+        let checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.checked = true;
+        li.appendChild(checkbox);
+        // text
+        let multilineText = document.createElement("span");
+        multilineText.className =
+          "tools-collection-li-multiline-text tools-collection-selectable";
+        let textSpan = document.createElement("span");
+        textSpan.innerText = title + ":";
+        multilineText.appendChild(textSpan);
+        let sanitizedText = text;
+        textSpan = document.createElement("span");
+        if (!sanitize) {
+          textSpan.innerText = text;
+        } else {
+          textSpan.innerHTML = text;
+          for (
+            let i = 0,
+              elems = textSpan.getElementsByTagName("*"),
+              len = elems.length;
+            i < len;
+            i++
+          ) {
+            elems[i].removeAttribute("style");
+          }
+          textSpan.textContent = textSpan.innerHTML;
+          sanitizedText = textSpan.textContent;
+        }
+        multilineText.appendChild(textSpan);
+        li.appendChild(multilineText);
+        ul.appendChild(li);
+        return { checkbox: checkbox, text: sanitizedText };
+      };
+      /////////////////////////////////
+      let compiledData = {};
+      if (data.name) {
+        compiledData.title = addLine(ul, "title", data.name);
+      }
+      if (data?.volume?.name) {
+        compiledData.series = addLine(ul, "series", data.volume.name);
+      }
+      if (data.cover_date) {
+        let numbers = data.cover_date.split("-");
+        if (numbers.length > 0)
+          compiledData.year = addLine(ul, "year", numbers[0]);
+        if (numbers.length > 1)
+          compiledData.month = addLine(ul, "month", numbers[1]);
+        if (numbers.length > 2)
+          compiledData.day = addLine(ul, "day", numbers[2]);
+      }
+      if (
+        g_searchHistory.issues.results.publisher &&
+        g_searchHistory.issues.results.publisher.name
+      ) {
+        compiledData.publisher = addLine(
+          ul,
+          "publisher",
+          g_searchHistory.issues.results.publisher.name
+        );
+      }
+      if (data.issue_number) {
+        compiledData.number = addLine(ul, "number", data.issue_number);
+      }
+      if (g_searchHistory.issues.results.count_of_issues) {
+        compiledData.totalNumber = addLine(
+          ul,
+          "count",
+          g_searchHistory.issues.results.count_of_issues
+        );
+      }
+      if (data.person_credits) {
+        let roles = [
+          { name: "artist", list: "" },
+          { name: "penciler", list: "" },
+          { name: "inker", list: "" },
+          { name: "colorist", list: "" },
+          { name: "letterer", list: "" },
+          { name: "writer", list: "" },
+          { name: "cover", list: "" },
+          { name: "editor", list: "" },
+        ];
+        for (let i = 0; i < roles.length; i++) {
+          for (let j = 0; j < data.person_credits.length; j++) {
+            const creator = data.person_credits[j];
+            if (creator.role.toLowerCase().includes(roles[i].name)) {
+              if (roles[i].list !== "") {
+                roles[i].list += ", ";
+              }
+              roles[i].list += creator.name;
+            }
+          }
+        }
+        if (roles[0].list !== "") {
+          if (roles[1].list !== "") {
+            roles[1].list += ", ";
+          }
+          roles[1].list += roles[0].list;
+          if (roles[2].list !== "") {
+            roles[2].list += ", ";
+          }
+          roles[2].list += roles[0].list;
+        }
+        for (let i = 1; i < roles.length; i++) {
+          if (roles[i].list !== "")
+            compiledData[roles[i].name] = addLine(
+              ul,
+              roles[i].name,
+              roles[i].list
+            );
+        }
+      }
+      if (data.story_arc_credits) {
+        let arcs = "";
+        for (let index = 0; index < data.story_arc_credits.length; index++) {
+          arcs += data.story_arc_credits[index].name;
+          if (index < data.story_arc_credits.length - 1) {
+            arcs += ", ";
+          }
+        }
+        if (arcs !== "") compiledData.storyArc = addLine(ul, "story arc", arcs);
+      }
+      if (data.location_credits) {
+        let locations = "";
+        for (let index = 0; index < data.location_credits.length; index++) {
+          locations += data.location_credits[index].name;
+          if (index < data.location_credits.length - 1) {
+            locations += ", ";
+          }
+        }
+        if (locations !== "")
+          compiledData.locations = addLine(ul, "locations", locations);
+      }
+      if (data.character_credits) {
+        let characters = "";
+        for (let index = 0; index < data.character_credits.length; index++) {
+          characters += data.character_credits[index].name;
+          if (index < data.character_credits.length - 1) {
+            characters += ", ";
+          }
+        }
+        if (characters !== "")
+          compiledData.characters = addLine(ul, "characters", characters);
+      }
+      if (data.team_credits) {
+        let teams = "";
+        for (let index = 0; index < data.team_credits.length; index++) {
+          teams += data.team_credits[index].name;
+          if (index < data.team_credits.length - 1) {
+            teams += ", ";
+          }
+        }
+        if (teams !== "") compiledData.teams = addLine(ul, "teams", teams);
+      }
+      // TODO:
+      //aliases 	List of aliases the issue is known by. A \n (newline) seperates each alias.
+      if (data.description) {
+        compiledData.summary = addLine(ul, "summary", data.description, true);
+      }
+      searchResultsDiv.appendChild(ul);
+
+      button.addEventListener("click", (event) => {
+        if (g_openModal) return;
+        showInfoModal(
+          g_localizedModalTexts.warningTitle,
+          g_localizedModalTexts.importingMessage,
+          g_localizedModalTexts.okButton,
+          g_localizedModalTexts.cancelButton,
+          () => {
+            // showProgressModal();
+            // updateModalTitleText(g_localizedModalTexts.importingTitle);
+            /////////////////////////////////
+            if (compiledData.title && compiledData.title.checkbox.checked) {
+              let element = document.getElementById(
+                "tool-cix-data-title-input"
+              );
+              element.value = compiledData.title.text;
+              onFieldChanged(element);
+            }
+            if (compiledData.series && compiledData.series.checkbox.checked) {
+              let element = document.getElementById(
+                "tool-cix-data-series-input"
+              );
+              element.value = compiledData.series.text;
+              onFieldChanged(element);
+            }
+            if (compiledData.year && compiledData.year.checkbox.checked) {
+              let element = document.getElementById("tool-cix-data-year-input");
+              element.value = compiledData.year.text;
+              onFieldChanged(element);
+            }
+            if (compiledData.month && compiledData.month.checkbox.checked) {
+              let element = document.getElementById(
+                "tool-cix-data-month-input"
+              );
+              element.value = compiledData.month.text;
+              onFieldChanged(element);
+            }
+            if (compiledData.day && compiledData.day.checkbox.checked) {
+              let element = document.getElementById("tool-cix-data-day-input");
+              element.value = compiledData.day.text;
+              onFieldChanged(element);
+            }
+            if (
+              compiledData.publisher &&
+              compiledData.publisher.checkbox.checked
+            ) {
+              let element = document.getElementById(
+                "tool-cix-data-publisher-input"
+              );
+              element.value = compiledData.publisher.text;
+              onFieldChanged(element);
+            }
+            if (compiledData.number && compiledData.number.checkbox.checked) {
+              let element = document.getElementById(
+                "tool-cix-data-number-input"
+              );
+              element.value = compiledData.number.text;
+              onFieldChanged(element);
+            }
+            if (
+              compiledData.totalNumber &&
+              compiledData.totalNumber.checkbox.checked
+            ) {
+              let element = document.getElementById(
+                "tool-cix-data-count-input"
+              );
+              element.value = compiledData.totalNumber.text;
+              onFieldChanged(element);
+            }
+            if (
+              compiledData["penciler"] &&
+              compiledData["penciler"].checkbox.checked
+            ) {
+              let element = document.getElementById(
+                "tool-cix-data-penciller-input"
+              );
+              element.value = compiledData["penciler"].text;
+              onFieldChanged(element);
+            }
+            if (
+              compiledData["inker"] &&
+              compiledData["inker"].checkbox.checked
+            ) {
+              let element = document.getElementById(
+                "tool-cix-data-inker-input"
+              );
+              element.value = compiledData["inker"].text;
+              onFieldChanged(element);
+            }
+            if (
+              compiledData["colorist"] &&
+              compiledData["colorist"].checkbox.checked
+            ) {
+              let element = document.getElementById(
+                "tool-cix-data-colorist-input"
+              );
+              element.value = compiledData["colorist"].text;
+              onFieldChanged(element);
+            }
+            if (
+              compiledData["letterer"] &&
+              compiledData["letterer"].checkbox.checked
+            ) {
+              let element = document.getElementById(
+                "tool-cix-data-letterer-input"
+              );
+              element.value = compiledData["letterer"].text;
+              onFieldChanged(element);
+            }
+            if (
+              compiledData["writer"] &&
+              compiledData["writer"].checkbox.checked
+            ) {
+              let element = document.getElementById(
+                "tool-cix-data-writer-input"
+              );
+              element.value = compiledData["writer"].text;
+              onFieldChanged(element);
+            }
+            if (
+              compiledData["cover"] &&
+              compiledData["cover"].checkbox.checked
+            ) {
+              let element = document.getElementById(
+                "tool-cix-data-coverartist-input"
+              );
+              element.value = compiledData["cover"].text;
+              onFieldChanged(element);
+            }
+            if (
+              compiledData["editor"] &&
+              compiledData["editor"].checkbox.checked
+            ) {
+              let element = document.getElementById(
+                "tool-cix-data-editor-input"
+              );
+              element.value = compiledData["editor"].text;
+              onFieldChanged(element);
+            }
+            if (
+              compiledData.storyArc &&
+              compiledData.storyArc.checkbox.checked
+            ) {
+              let element = document.getElementById(
+                "tool-cix-data-storyarc-input"
+              );
+              element.value = compiledData.storyArc.text;
+              onFieldChanged(element);
+            }
+            if (
+              compiledData.locations &&
+              compiledData.locations.checkbox.checked
+            ) {
+              let element = document.getElementById(
+                "tool-cix-data-locations-input"
+              );
+              element.value = compiledData.locations.text;
+              onFieldChanged(element);
+            }
+            if (
+              compiledData.characters &&
+              compiledData.characters.checkbox.checked
+            ) {
+              let element = document.getElementById(
+                "tool-cix-data-characters-input"
+              );
+              element.value = compiledData.characters.text;
+              onFieldChanged(element);
+            }
+            if (compiledData.teams && compiledData.teams.checkbox.checked) {
+              let element = document.getElementById(
+                "tool-cix-data-teams-input"
+              );
+              element.value = compiledData.teams.text;
+              onFieldChanged(element);
+            }
+            if (compiledData.summary && compiledData.summary.checkbox.checked) {
+              let element = document.getElementById(
+                "tool-cix-data-summary-textarea"
+              );
+              element.value = compiledData.summary.text;
+              onFieldChanged(element);
+            }
+
+            switchSection(0);
+            /////////////////////////////////
+            //closeModal();
+          }
+        );
+      });
+    } else {
+      let ul = document.createElement("ul");
+      ul.className = "tools-collection-ul";
+      let li = document.createElement("li");
+      li.className = "tools-collection-li";
+      let text = document.createElement("span");
+      text.innerText = localizedImportButtonText;
+      li.appendChild(text);
+      ul.appendChild(li);
+      searchResultsDiv.appendChild(ul);
+    }
+    ///////////////////////////////////////////
+    updateColumnsHeight();
+    document.getElementById("tools-columns-right").scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+      inline: "nearest",
+    });
+    closeModal();
+  });
+
+  on("set-api-key-file", (filePath, saveAsRelative) => {
+    g_apiKeyFilePathCheckbox.checked = saveAsRelative;
+    g_apiKeyFilePathUl.innerHTML = "";
+    let li = document.createElement("li");
+    li.className = "tools-collection-li";
+    // text
+    let text = document.createElement("span");
+    if (filePath && filePath !== "") text.innerText = reduceString(filePath);
+    else text.innerHTML = "&nbsp;";
+    li.appendChild(text);
+    g_apiKeyFilePathUl.appendChild(li);
   });
 }
 
@@ -377,7 +1105,6 @@ function onPagesUpdated(json) {
 }
 
 async function onSave() {
-  // TODO: show warning ok cancel and do the following in the callback
   if (g_openModal) closeModal();
   showInfoModal(
     g_localizedModalTexts.warningTitle,
@@ -561,6 +1288,80 @@ function generateTableRow(index, id, size, width, height, doublepage, type) {
   return tr;
 }
 
+async function onSearch(pageNum = 1, inputValue = undefined) {
+  if (!inputValue) inputValue = g_searchInput.value;
+  if (g_openModal) return;
+  showProgressModal();
+  updateModalTitleText(g_localizedModalTexts.searchingTitle);
+  sendIpcToMain("search", inputValue, pageNum);
+}
+
+//////////////////////////////////////
+
+function generatePaginationHtml(pageNum, totalPagesNum, queryInputText) {
+  let paginationDiv = document.createElement("div");
+  paginationDiv.className = "tools-collection-pagination";
+  if (pageNum > 2) {
+    let span = document.createElement("span");
+    span.className = "tools-collection-pagination-button";
+    span.innerHTML = '<i class="fas fa-angle-double-left"></i>';
+    span.addEventListener("click", (event) => {
+      onSearch(1, queryInputText);
+    });
+    paginationDiv.appendChild(span);
+  }
+  if (pageNum > 1) {
+    let span = document.createElement("span");
+    span.className = "tools-collection-pagination-button";
+    span.innerHTML = '<i class="fas fa-angle-left"></i>';
+    span.addEventListener("click", (event) => {
+      onSearch(pageNum - 1, queryInputText);
+    });
+    paginationDiv.appendChild(span);
+  }
+  let span = document.createElement("span");
+  span.innerHTML = ` ${pageNum} / ${totalPagesNum} `;
+  paginationDiv.appendChild(span);
+  if (pageNum < totalPagesNum) {
+    let span = document.createElement("span");
+    span.className = "tools-collection-pagination-button";
+    span.innerHTML = '<i class="fas fa-angle-right"></i>';
+    span.addEventListener("click", (event) => {
+      onSearch(pageNum + 1, queryInputText);
+    });
+    paginationDiv.appendChild(span);
+  }
+  if (pageNum < totalPagesNum - 1) {
+    let span = document.createElement("span");
+    span.className = "tools-collection-pagination-button";
+    span.innerHTML = '<i class="fas fa-angle-double-right"></i>';
+    span.addEventListener("click", (event) => {
+      onSearch(totalPagesNum, queryInputText);
+    });
+    paginationDiv.appendChild(span);
+  }
+  return paginationDiv;
+}
+
+//////////////////////////////////////
+
+function reduceString(input) {
+  if (!input) return undefined;
+  let length = 80;
+  input =
+    input.length > length
+      ? "..." + input.substring(input.length - length, input.length)
+      : input;
+  return input;
+}
+
+function reduceStringBack(input) {
+  if (!input) return undefined;
+  let length = 80;
+  input = input.length > length ? input.substring(0, length) + "..." : input;
+  return input;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // EVENT LISTENERS ////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -628,7 +1429,6 @@ function showInfoModal(
   callbackButton1,
   callbackButton2
 ) {
-  // TODO: use isError to color button red or green?
   if (g_openModal) {
     return;
   }

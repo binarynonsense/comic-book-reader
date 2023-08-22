@@ -79,6 +79,7 @@ function setDefaultValues() {
     // TOOLS
 
     toolGutUseCache: true,
+    toolCixApiKeyPath: undefined,
   };
 }
 
@@ -266,6 +267,13 @@ function sanitize() {
   // TOOLS ///////////
   if (typeof g_settings.toolGutUseCache !== "boolean") {
     g_settings.toolGutUseCache = true;
+  }
+  if (
+    g_settings.toolCixApiKeyPath &&
+    typeof g_settings.toolCixApiKeyPath === "string"
+  ) {
+  } else {
+    g_settings.toolCixApiKeyPath = undefined;
   }
   // TEMP FOLDER
   if (

@@ -401,7 +401,10 @@ const deleteUserDataFolderRecursive = function (folderPath) {
   }
 };
 
-// TODO: keep?
-// function delay(time) {
-//   return new Promise((resolve) => setTimeout(resolve, time));
-// }
+///////////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+// TODO: create utils.js and move there?
+exports.delay = async function (seconds) {
+  return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
+};

@@ -16,6 +16,7 @@ const fileFormats = require("../../shared/main/file-formats");
 const { FileDataType } = require("../../shared/main/constants");
 const ISO6391 = require("iso-639-1");
 const { fork } = require("child_process");
+const settings = require("../../shared/main/settings");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -24,6 +25,9 @@ const { fork } = require("child_process");
 let g_isInitialized = false;
 let g_fileData;
 let g_worker;
+
+let g_cvApiKey;
+let g_cvApiKeyFilePath;
 
 function init() {
   if (!g_isInitialized) {
@@ -42,6 +46,30 @@ exports.open = function (fileData) {
   let languages = ISO6391.getLanguages(ISO6391.getAllCodes());
   sendIpcToRenderer("show", fileData, languages);
   g_fileData = fileData;
+
+  g_cvApiKeyFilePath = settings.getValue("toolCixApiKeyPath");
+  let saveAsRelative = false;
+  if (g_cvApiKeyFilePath) {
+    let absoluteFilePath = g_cvApiKeyFilePath;
+    if (!path.isAbsolute(g_cvApiKeyFilePath)) {
+      absoluteFilePath = path.resolve(
+        fileUtils.getUserDataFolderPath(),
+        g_cvApiKeyFilePath
+      );
+      saveAsRelative = true;
+    }
+    if (
+      fs.existsSync(absoluteFilePath) &&
+      !fs.lstatSync(absoluteFilePath).isDirectory()
+    ) {
+      g_cvApiKey = fs.readFileSync(absoluteFilePath).toString().trim();
+    } else {
+      g_cvApiKey = undefined;
+      g_cvApiKeyFilePath = undefined;
+      saveAsRelative = false;
+    }
+  }
+  sendIpcToRenderer("set-api-key-file", g_cvApiKeyFilePath, saveAsRelative);
 };
 
 exports.close = function () {
@@ -135,6 +163,45 @@ function initOnIpcCallbacks() {
         ]).popup(core.getMainWindow(), params.x, params.y);
       }
     }
+  });
+
+  on("search", (...args) => {
+    search(...args);
+  });
+
+  on("get-volume-data", (...args) => {
+    getVolumeData(...args);
+  });
+
+  on("get-issue-data", (...args) => {
+    getIssueData(...args);
+  });
+
+  on("change-api-key-file", (saveAsRelative) => {
+    let defaultPath = settings.getValue("toolCixApiKeyPath");
+
+    let allowMultipleSelection = false;
+    let allowedFileTypesName = "Text Files";
+    let allowedFileTypesList = ["txt"];
+    let filePaths = fileUtils.chooseOpenFiles(
+      core.getMainWindow(),
+      defaultPath,
+      allowedFileTypesName,
+      allowedFileTypesList,
+      allowMultipleSelection
+    );
+    if (filePaths === undefined) {
+      return;
+    }
+    let filePath = filePaths[0];
+    if (filePath === undefined || filePath === "") return;
+    g_cvApiKeyFilePath = filePath;
+    g_cvApiKey = fs.readFileSync(g_cvApiKeyFilePath).toString().trim();
+    if (saveAsRelative) {
+      filePath = path.relative(fileUtils.getUserDataFolderPath(), filePath);
+    }
+    settings.setValue("toolCixApiKeyPath", filePath);
+    sendIpcToRenderer("set-api-key-file", filePath, saveAsRelative);
   });
 }
 
@@ -355,6 +422,101 @@ async function saveJsonToFile(json) {
   }
 }
 
+async function search(text, pageNum) {
+  try {
+    if (text.trim().length === 0) {
+      throw "query text is empty";
+    }
+    const axios = require("axios").default;
+
+    let resources = "volume";
+
+    // usage examples
+    // https://comicvine.gamespot.com/api/volumes/?api_key=YOUR-KEY&format=json&sort=name:asc&filter=name:Walking%20Dead
+    // https://comicvine.gamespot.com/api/search/?api_key=YOUR-KEY&format=json&sort=name:asc&resources=issue&query=%22Master%20of%20kung%20fu%22
+    // https://comicvine.gamespot.com/api/issue/4000-14582/?api_key=YOUR-KEY&format=json
+
+    let searchQuery = encodeURIComponent(text);
+    const response = await axios.get(
+      `https://comicvine.gamespot.com/api/search/?api_key=${g_cvApiKey}&format=json&resources=${resources}&page=${pageNum}&limit=50&query=${searchQuery}`,
+      { timeout: 10000 }
+    ); //&sort=name:asc
+    // TODO: &field_list=name,publisher,id,count_of_issues...
+    await fileUtils.delay(1); // to not get banned from the api
+    sendIpcToRenderer(
+      "search-volumes-results",
+      response.data,
+      _("tool-shared-ui-search-nothing-found"),
+      text,
+      pageNum
+    );
+  } catch (error) {
+    let errorMsg = _("tool-shared-ui-search-network-error", "Comic Vine");
+    if (error?.response?.data) {
+      if (error.response.data.error === "Invalid API Key")
+        errorMsg = _("tool-cix-search-error-invalid-api-key");
+      else errorMsg += " (Error: )" + error.response.data.error;
+    }
+    await fileUtils.delay(1);
+    sendIpcToRenderer("search-volumes-results", undefined, errorMsg);
+  }
+}
+
+async function getVolumeData(url) {
+  try {
+    const axios = require("axios").default;
+    const response = await axios.get(
+      `${url}?api_key=${g_cvApiKey}&format=json`,
+      {
+        timeout: 10000,
+      }
+    );
+    //&sort=issue_number:asc didn't work, I sort them in renderer
+    await fileUtils.delay(1); // to not get banned from the api
+    sendIpcToRenderer(
+      "search-issues-results",
+      response.data,
+      _("tool-shared-ui-search-nothing-found")
+    );
+  } catch (error) {
+    let errorMsg = _("tool-shared-ui-search-network-error", "Comic Vine");
+    if (error?.response?.data) {
+      if (error.response.data.error === "Invalid API Key")
+        errorMsg = _("tool-cix-search-error-invalid-api-key");
+      else errorMsg += " (Error: )" + error.response.data.error;
+    }
+    await fileUtils.delay(1);
+    sendIpcToRenderer("search-volumes-results", undefined, errorMsg);
+  }
+}
+
+async function getIssueData(url) {
+  try {
+    const axios = require("axios").default;
+    const response = await axios.get(
+      `${url}?api_key=${g_cvApiKey}&format=json`,
+      {
+        timeout: 10000,
+      }
+    );
+    await fileUtils.delay(1); // to not get banned from the api
+    sendIpcToRenderer(
+      "search-issue-results",
+      response.data,
+      _("tool-shared-ui-import").toUpperCase()
+    );
+  } catch (error) {
+    let errorMsg = _("tool-shared-ui-search-network-error", "Comic Vine");
+    if (error?.response?.data) {
+      if (error.response.data.error === "Invalid API Key")
+        errorMsg = _("tool-cix-search-error-invalid-api-key");
+      else errorMsg += " (Error: )" + error.response.data.error;
+    }
+    await fileUtils.delay(1);
+    sendIpcToRenderer("search-issue-results", undefined, errorMsg);
+  }
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // LOCALIZATION ///////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -384,6 +546,14 @@ function updateLocalizedText() {
       loadingMessageErrorInvalid: _(
         "The ComicInfo.xml file is not a valid xml file"
       ),
+
+      // TODO: some of this should go elsewhere
+      searchingTitle: _("tool-shared-modal-title-searching"),
+      searchPlaceholder: _("tool-cix-search-placeholder-series"),
+      importingTitle: _("tool-shared-modal-title-importing"),
+      importingMessage: _("tool-cix-search-import-warning"),
+      searchResultsShowIssues: _("tool-cix-search-results-show-issues-list"),
+      searchResultsShowMetadata: _("tool-cix-search-results-show-issue-info"),
     },
     [
       _("tool-cix-data-page-type-frontcover"),
@@ -419,6 +589,10 @@ function getTooltipsLocalization() {
       id: "tool-cix-tooltip-page-data",
       text: _("tool-cix-tooltip-update-pages"),
     },
+    {
+      id: "tool-cix-tooltip-comicvine-api-key-file",
+      text: _("tool-cix-search-api-key-file-path-info", "Comic Vine"),
+    },
   ];
 }
 
@@ -430,7 +604,7 @@ function getLocalization() {
     },
     {
       id: "tool-cix-back-button-text",
-      text: _("tool-shared-ui-back-button").toUpperCase(),
+      text: _("tool-shared-ui-back-to-reader").toUpperCase(),
     },
     {
       id: "tool-cix-save-button-text",
@@ -439,7 +613,7 @@ function getLocalization() {
     //////////////////////////////////////////////
     {
       id: "tool-cix-section-0-button-text",
-      text: _("tool-cix-section-basic-data"),
+      text: _("tool-cix-section-details"),
     },
     {
       id: "tool-cix-section-1-button-text",
@@ -453,10 +627,18 @@ function getLocalization() {
       id: "tool-cix-section-3-button-text",
       text: _("tool-cix-section-other-data"),
     },
+    {
+      id: "tool-cix-section-4-button-text",
+      text: _("tool-shared-tab-search"),
+    },
+    {
+      id: "tool-cix-section-5-button-text",
+      text: _("tool-shared-tab-search-settings"),
+    },
     ////////////////////////////////
     {
       id: "tool-cix-section-0-text",
-      text: _("tool-cix-section-basic-data"),
+      text: _("tool-cix-section-details"),
     },
     {
       id: "tool-cix-section-1-text",
@@ -673,5 +855,42 @@ function getLocalization() {
       id: "tool-cix-data-review-text",
       text: _("tool-cix-data-review"),
     },
+    //////////////////////////////////////////////
+    {
+      id: "tool-cix-search-input-text",
+      text: _("tool-shared-ui-search-input"),
+    },
+    {
+      id: "tool-cix-search-input-placeholder-text",
+      text: _("tool-shared-ui-search-placeholder"),
+    },
+    {
+      id: "tool-cix-search-button-text",
+      text: _("tool-shared-ui-search-button").toUpperCase(),
+    },
+    {
+      id: "tool-cix-search-results-text",
+      text: _("tool-shared-ui-search-results"),
+    },
+    //////////////////////////////////////////////
+    {
+      id: "tool-cix-comicvine-text",
+      text: "Comic Vine",
+    },
+    {
+      id: "tool-cix-comicvine-api-key-file-text",
+      text: _("tool-cix-search-api-key-file-path"),
+    },
+    {
+      id: "tool-cix-comicvine-api-key-file-change-button-text",
+      text: _("tool-shared-ui-change").toUpperCase(),
+    },
+    {
+      id: "tool-cix-comicvine-api-key-checkbox-text",
+      text: _("tool-shared-ui-save-as-relative-path"),
+    },
+    //"ui-modal-title-filenotfound"
+    //"tool-cix-search-volumes"
+    //"tool-cix-search-issues"
   ];
 }
