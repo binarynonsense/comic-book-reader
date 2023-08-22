@@ -13,6 +13,7 @@ const { _ } = require("../../shared/main/i18n");
 const reader = require("../../reader/main");
 const fileUtils = require("../../shared/main/file-utils");
 const fileFormats = require("../../shared/main/file-formats");
+const utils = require("../../shared/main/utils");
 const { FileDataType } = require("../../shared/main/constants");
 const ISO6391 = require("iso-639-1");
 const { fork } = require("child_process");
@@ -442,7 +443,7 @@ async function search(text, pageNum) {
       { timeout: 10000 }
     ); //&sort=name:asc
     // TODO: &field_list=name,publisher,id,count_of_issues...
-    await fileUtils.delay(1); // to not get banned from the api
+    await utils.delay(1); // to not get banned from the api
     sendIpcToRenderer(
       "search-volumes-results",
       response.data,
@@ -457,7 +458,7 @@ async function search(text, pageNum) {
         errorMsg = _("tool-cix-search-error-invalid-api-key");
       else errorMsg += " (Error: )" + error.response.data.error;
     }
-    await fileUtils.delay(1);
+    await utils.delay(1);
     sendIpcToRenderer("search-volumes-results", undefined, errorMsg);
   }
 }
@@ -472,7 +473,7 @@ async function getVolumeData(url) {
       }
     );
     //&sort=issue_number:asc didn't work, I sort them in renderer
-    await fileUtils.delay(1); // to not get banned from the api
+    await utils.delay(1); // to not get banned from the api
     sendIpcToRenderer(
       "search-issues-results",
       response.data,
@@ -485,7 +486,7 @@ async function getVolumeData(url) {
         errorMsg = _("tool-cix-search-error-invalid-api-key");
       else errorMsg += " (Error: )" + error.response.data.error;
     }
-    await fileUtils.delay(1);
+    await utils.delay(1);
     sendIpcToRenderer("search-volumes-results", undefined, errorMsg);
   }
 }
@@ -499,7 +500,7 @@ async function getIssueData(url) {
         timeout: 10000,
       }
     );
-    await fileUtils.delay(1); // to not get banned from the api
+    await utils.delay(1); // to not get banned from the api
     sendIpcToRenderer(
       "search-issue-results",
       response.data,
@@ -512,7 +513,7 @@ async function getIssueData(url) {
         errorMsg = _("tool-cix-search-error-invalid-api-key");
       else errorMsg += " (Error: )" + error.response.data.error;
     }
-    await fileUtils.delay(1);
+    await utils.delay(1);
     sendIpcToRenderer("search-issue-results", undefined, errorMsg);
   }
 }
