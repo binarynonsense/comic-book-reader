@@ -42,7 +42,7 @@
   },
   "devDependencies": {
     "del-cli": "^5.0.0",
-    "electron": "^25.4.0",
+    "electron": "^26.0.0",
     "electron-builder": "^24.6.3",
     "license-checker": "^25.0.1",
     "shx": "^0.3.4"
@@ -52,7 +52,7 @@
     "adm-zip": "^0.5.10",
     "axios": "^1.4.0",
     "changedpi": "^1.0.4",
-    "custom-electron-titlebar": "^4.2.6",
+    "custom-electron-titlebar": "^4.2.7",
     "epub": "^1.2.1",
     "epubjs": "0.3.93",
     "fast-xml-parser": "^4.2.7",
