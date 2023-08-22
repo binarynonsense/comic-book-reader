@@ -569,8 +569,7 @@
   "[NEEDS TRANSLATION]tool-cix-data-page-type-other": "Other",
   "[NEEDS TRANSLATION]tool-cix-data-page-type-deleted": "Deleted",
 
-  "[NEEDS TRANSLATION]tool-cix-search-volumes": "Volumes",
-  "[NEEDS TRANSLATION]tool-cix-search-issues": "Issues",
+  "[NEEDS TRANSLATION]tool-cix-search-placeholder-series": "Enter a comic book series name",
   "[NEEDS TRANSLATION]tool-cix-search-error-invalid-api-key": "Invalid API Key",
   "tool-cix-search-import-warning": "The selected information will be matched to the appropriate metadata fields and their content replaced with it.",
   "[NEEDS TRANSLATION]tool-cix-search-api-key-file-path": "API Key File",

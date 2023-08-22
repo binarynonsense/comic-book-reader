@@ -569,11 +569,10 @@
   "tool-cix-data-page-type-other": "Other",
   "tool-cix-data-page-type-deleted": "Deleted",
 
-  "tool-cix-search-volumes": "Volumes",
-  "tool-cix-search-issues": "Issues",
+  "tool-cix-search-placeholder-series": "Enter a comic book series name",
   "tool-cix-search-error-invalid-api-key": "Invalid API Key",
   "tool-cix-search-import-warning": "The selected information will be matched to the appropriate metadata fields and their content replaced with it.",
   "tool-cix-search-api-key-file-path": "API Key File",
   "tool-cix-search-api-key-file-path-info": "A text file containing a valid API key for {0}",
-  "tool-cix-search-api-key-not-found": "A text file containing a valid API key for {0} must be assigned in the search settings."  
+  "tool-cix-search-api-key-not-found": "A text file containing a valid API key for {0} must be assigned in the search settings."
 }
