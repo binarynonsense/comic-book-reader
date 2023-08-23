@@ -218,6 +218,7 @@ function init(activeLocale, languages, activeTheme, themes, settings) {
           .getElementById("tool-pre-rarfolder-div")
           .classList.remove("set-display-none");
       }
+      updateColumnsHeight();
       sendIpcToMain("set-setting", "cbrCreation", parseInt(select.value));
     });
   }
