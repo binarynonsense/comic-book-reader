@@ -540,13 +540,11 @@ function updateLocalization(localization, tooltipsLocalization) {
       domElement.innerText = element.text;
     }
   }
-  console.log(tooltipsLocalization);
   for (let index = 0; index < tooltipsLocalization.length; index++) {
     const element = tooltipsLocalization[index];
     const domElement = document.querySelector("#" + element.id);
     if (domElement !== null) {
       domElement.title = element.text;
-      console.log(element.text);
     }
   }
 }
