@@ -103,7 +103,14 @@ const createWindow = () => {
   g_mainWindow.webContents.on("did-finish-load", function () {
     g_isLoaded = true;
     settings.init();
-    fileUtils.setTempFolderParentPath(settings.getValue("tempFolderPath"));
+    let tempFolderPath = settings.getValue("tempFolderPath");
+    if (!path.isAbsolute(tempFolderPath)) {
+      tempFolderPath = path.resolve(
+        fileUtils.getExeFolderPath(),
+        tempFolderPath
+      );
+    }
+    fileUtils.setTempFolderParentPath(tempFolderPath);
     history.init(settings.getValue("history_capacity"));
     i18n.init();
     themes.init();

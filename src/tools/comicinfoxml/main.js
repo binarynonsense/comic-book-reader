@@ -54,7 +54,7 @@ exports.open = function (fileData) {
     let absoluteFilePath = g_cvApiKeyFilePath;
     if (!path.isAbsolute(g_cvApiKeyFilePath)) {
       absoluteFilePath = path.resolve(
-        fileUtils.getUserDataFolderPath(),
+        fileUtils.getExeFolderPath(),
         g_cvApiKeyFilePath
       );
       saveAsRelative = true;
@@ -199,7 +199,7 @@ function initOnIpcCallbacks() {
     g_cvApiKeyFilePath = filePath;
     g_cvApiKey = fs.readFileSync(g_cvApiKeyFilePath).toString().trim();
     if (saveAsRelative) {
-      filePath = path.relative(fileUtils.getUserDataFolderPath(), filePath);
+      filePath = path.relative(fileUtils.getExeFolderPath(), filePath);
     }
     settings.setValue("toolCixApiKeyPath", filePath);
     sendIpcToRenderer("set-api-key-file", filePath, saveAsRelative);
@@ -905,8 +905,5 @@ function getLocalization() {
       id: "tool-cix-comicvine-api-key-checkbox-text",
       text: _("tool-shared-ui-save-as-relative-path"),
     },
-    //"ui-modal-title-filenotfound"
-    //"tool-cix-search-volumes"
-    //"tool-cix-search-issues"
   ];
 }

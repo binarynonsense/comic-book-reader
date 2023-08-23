@@ -14,6 +14,7 @@ import { isVersionOlder } from "../../shared/renderer/utils.js";
 
 let g_isInitialized = false;
 let g_tempFolderPathUl;
+let g_tempFolderPathCheckbox;
 let g_rarExeFolderPathUl;
 
 function init(activeLocale, languages, activeTheme, themes, settings) {
@@ -245,16 +246,26 @@ function init(activeLocale, languages, activeTheme, themes, settings) {
   // temp folder ul and buttons
   {
     g_tempFolderPathUl = document.getElementById("tool-pre-tempfolder-ul");
-    updateTempFolder(settings.tempFolderPath);
+    g_tempFolderPathCheckbox = document.getElementById(
+      "tool-pre-tempfolder-checkbox"
+    );
     document
       .getElementById("tool-pre-tempfolder-update-button")
       .addEventListener("click", (event) => {
-        sendIpcToMain("change-temp-folder", false);
+        sendIpcToMain(
+          "change-temp-folder",
+          false,
+          g_tempFolderPathCheckbox.checked
+        );
       });
     document
       .getElementById("tool-pre-tempfolder-reset-button")
       .addEventListener("click", (event) => {
-        sendIpcToMain("change-temp-folder", true);
+        sendIpcToMain(
+          "change-temp-folder",
+          true,
+          g_tempFolderPathCheckbox.checked
+        );
       });
   }
 
@@ -460,8 +471,8 @@ function on(id, callback) {
 }
 
 function initOnIpcCallbacks() {
-  on("show", (activeLocale, languages, activeTheme, themes, settings) => {
-    init(activeLocale, languages, activeTheme, themes, settings);
+  on("show", (...args) => {
+    init(...args);
   });
 
   on("update-localization", (...args) => {
@@ -472,12 +483,12 @@ function initOnIpcCallbacks() {
     updateColumnsHeight();
   });
 
-  on("set-temp-folder", (folderPath) => {
-    updateTempFolder(folderPath);
+  on("set-temp-folder", (...args) => {
+    updateTempFolder(...args);
   });
 
-  on("set-rar-folder", (folderPath) => {
-    updateRarFolder(folderPath);
+  on("set-rar-folder", (...args) => {
+    updateRarFolder(...args);
   });
 }
 
@@ -485,7 +496,7 @@ function initOnIpcCallbacks() {
 // TOOL ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-function updateTempFolder(folderPath) {
+function updateTempFolder(folderPath, saveAsRelative) {
   g_tempFolderPathUl.innerHTML = "";
   let li = document.createElement("li");
   li.className = "tools-collection-li";
@@ -494,6 +505,8 @@ function updateTempFolder(folderPath) {
   text.innerText = reducePathString(folderPath);
   li.appendChild(text);
   g_tempFolderPathUl.appendChild(li);
+
+  g_tempFolderPathCheckbox.checked = saveAsRelative;
 }
 
 function updateRarFolder(folderPath) {

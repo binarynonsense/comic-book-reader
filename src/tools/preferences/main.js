@@ -42,6 +42,12 @@ exports.open = function () {
     themes.getAvailableList(),
     settings.get()
   );
+  let tempFolderPath = settings.getValue("tempFolderPath");
+  let saveAsRelative = false;
+  if (!path.isAbsolute(tempFolderPath)) {
+    saveAsRelative = true;
+  }
+  sendIpcToRenderer("set-temp-folder", tempFolderPath, saveAsRelative);
 };
 
 exports.close = function () {
@@ -157,8 +163,9 @@ function initOnIpcCallbacks() {
     reader.sendIpcToRenderer("set-page-turn-on-scroll-boundary", value);
   });
 
-  on("change-temp-folder", (reset) => {
+  on("change-temp-folder", (reset, saveAsRelative) => {
     let folderPath;
+    let relativeFolderPath;
     if (reset) {
       folderPath = fileUtils.getSystemTempFolderPath();
     } else {
@@ -173,10 +180,23 @@ function initOnIpcCallbacks() {
       folderPath = folderList[0];
       if (folderPath === undefined || folderPath === "") return;
       // TODO: check if writable?
+      if (saveAsRelative) {
+        relativeFolderPath = path.relative(
+          fileUtils.getExeFolderPath(),
+          folderPath
+        );
+      }
     }
-    settings.setValue("tempFolderPath", folderPath);
+    settings.setValue(
+      "tempFolderPath",
+      relativeFolderPath ? relativeFolderPath : folderPath
+    );
     fileUtils.setTempFolderParentPath(folderPath);
-    sendIpcToRenderer("set-temp-folder", folderPath);
+    sendIpcToRenderer(
+      "set-temp-folder",
+      relativeFolderPath ? relativeFolderPath : folderPath,
+      saveAsRelative
+    );
   });
 
   on("change-rar-folder", (reset) => {
@@ -556,6 +576,10 @@ function getLocalization() {
     {
       id: "tool-pre-tempfolder-reset-button-text",
       text: _("tool-shared-ui-reset").toUpperCase(),
+    },
+    {
+      id: "tool-pre-tempfolder-checkbox-text",
+      text: _("tool-shared-ui-save-as-relative-path"),
     },
   ];
 }
