@@ -1,7 +1,7 @@
 {
   "@metadata": {
     "authors": ["Álvaro"],
-    "last-updated": "2023-08-22",
+    "last-updated": "2023-08-23",
     "acbr-version": "3.2.0-beta1",
     "comments": "",
     "locale": "en",
@@ -381,9 +381,9 @@
   "tool-pre-cbr-creation-modification-disabled": "Disabled",
   "tool-pre-cbr-creation-modification-enabled": "Enabled",
   "tool-pre-use-system-exe": "Use third-party tool",
-  "tool-pre-use-system-exe-rar-win": "rar.exe",
-  "tool-pre-use-system-exe-rar-lin": "rar",
-  "tool-pre-use-system-exe-tooltip": "The third party tool {0} must be installed and available via the command-line to be able to be used.",
+  "tool-pre-rarfolder": "Third-Party Executable's Folder",
+  "tool-pre-rarfolder-tooltip": "The absolute path of the folder containing the executable {0}. You can leave it blank if it is included in your system's PATH environment variable.",
+  "tool-pre-rarfolder-example": "Example: {0}.",
   "tool-pre-advanced-preferences": "Advanced",
   "tool-pre-other-preferences": "Other",
   "tool-pre-tempfolder": "Temp Folder",

@@ -1,7 +1,7 @@
 {
   "@metadata": {
     "authors": ["Álvaro"],
-    "last-updated": "2023-08-22",
+    "last-updated": "2023-08-23",
     "acbr-version": "3.2.0-beta1",
     "comments": "",
     "locale": "es",
@@ -380,10 +380,10 @@
   "tool-pre-cbr-creation-modification": "Creación y Modificación",
   "tool-pre-cbr-creation-modification-disabled": "Desactivadas",
   "tool-pre-cbr-creation-modification-enabled": "Activadas",
-  "tool-pre-use-system-exe": "Usar herramienta de línea de comandos",
-  "tool-pre-use-system-exe-rar-win": "rar.exe",
-  "tool-pre-use-system-exe-rar-lin": "rar",
-  "tool-pre-use-system-exe-tooltip": "La herramienta de terceros {0} debe estar instalada y disponible a través de la línea de comandos para poder ser usada.",
+  "tool-pre-use-system-exe": "Usar herramienta de terceros",
+  "tool-pre-rarfolder": "Carpeta de la Herramienta de Terceros",
+  "tool-pre-rarfolder-tooltip": "La ruta absoluta de la carpeta que contiene el ejecutable {0}. Puede dejarla en blanco si ya está incluida en la variable de entorno PATH de su sistema.",
+  "tool-pre-rarfolder-example": "Ejemplo: {0}.",
   "tool-pre-advanced-preferences": "Avanzadas",
   "tool-pre-other-preferences": "Otras",
   "tool-pre-tempfolder": "Directorio Temporal",
