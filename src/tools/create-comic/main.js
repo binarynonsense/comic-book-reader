@@ -5,17 +5,17 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-const { BrowserWindow } = require("electron");
 const fs = require("fs");
 const path = require("path");
 const core = require("../../core/main");
 const { _ } = require("../../shared/main/i18n");
 
-const { FileExtension, FileDataType } = require("../../shared/main/constants");
+const { FileExtension } = require("../../shared/main/constants");
 const { fork } = require("child_process");
-const FileType = require("file-type");
 const fileUtils = require("../../shared/main/file-utils");
 const fileFormats = require("../../shared/main/file-formats");
+const settings = require("../../shared/main/settings");
+const utils = require("../../shared/main/utils");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -44,7 +44,11 @@ exports.open = function () {
 
   updateLocalizedText();
 
-  sendIpcToRenderer("show", fileUtils.getDesktopFolderPath());
+  sendIpcToRenderer(
+    "show",
+    fileUtils.getDesktopFolderPath(),
+    settings.canEditRars()
+  );
 
   updateLocalizedText();
 };
@@ -425,6 +429,16 @@ async function createFileFromImages(
           }
         });
       }
+      let extraData = undefined;
+      if (outputFormat === FileExtension.CBR) {
+        extraData = {
+          rarExePath: utils.getRarCommand(
+            settings.getValue("rarExeFolderPath")
+          ),
+          workingDir: fileUtils.getTempFolderPath(),
+          password: undefined,
+        };
+      }
       g_worker.send([
         "create",
         imgFilePaths,
@@ -432,6 +446,7 @@ async function createFileFromImages(
         outputFormat,
         outputFilePath,
         fileUtils.getTempFolderPath(),
+        extraData,
       ]);
     }
   } catch (err) {
