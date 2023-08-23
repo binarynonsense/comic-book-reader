@@ -299,6 +299,7 @@
   "tool-shared-modal-log-resizing-images": "Verändere Bildgrößen",
   "tool-shared-modal-log-resizing-image": "Verändere Bildgröße",
   "tool-shared-modal-log-generating-new-file": "Generiere Neue Datei",
+  "[NEEDS TRANSLATION]tool-shared-modal-log-generating-new-files": "Generating New Files",
   "tool-shared-modal-log-converting-images": "Konvertiere Bilder",
   "tool-shared-modal-log-converting-image": "Konvertiere Bild",
   "tool-shared-modal-log-updating-comicinfoxml": "Aktualisiere ComicInfo.xml",
