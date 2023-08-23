@@ -379,6 +379,7 @@ function initOnIpcCallbacks() {
       ul.appendChild(li);
     }
     searchResultsDiv.appendChild(ul);
+    updateColumnsHeight();
     document.getElementById("tools-columns-right").scrollIntoView({
       behavior: "smooth",
       block: "start",

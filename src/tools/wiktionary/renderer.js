@@ -219,6 +219,7 @@ function initOnIpcCallbacks() {
     content = `<div class="tools-html-div">${content}</div>`;
     searchResultsDiv.innerHTML = content;
     ///////////////////////////////////////////
+    updateColumnsHeight();
     document.getElementById("tools-columns-right").scrollIntoView({
       behavior: "smooth",
       block: "start",
