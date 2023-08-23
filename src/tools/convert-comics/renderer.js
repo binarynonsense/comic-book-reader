@@ -45,7 +45,7 @@ let g_localizedModalCloseButtonText;
 
 let g_isInitialized = false;
 
-function init(outputFolderPath) {
+function init(outputFolderPath, canEditRars) {
   if (!g_isInitialized) {
     // things to start only once go here
     g_isInitialized = true;
@@ -127,6 +127,9 @@ function init(outputFolderPath) {
     '<option value="pdf">pdf</option>' +
     '<option value="epub">epub</option>' +
     '<option value="cb7">cb7</option>';
+  if (canEditRars) {
+    g_outputFormatSelect.innerHTML += '<option value="cbr">cbr</option>';
+  }
   g_outputFormatSelect.addEventListener("change", (event) => {
     g_outputFormat = g_outputFormatSelect.value;
     checkValidData();
@@ -294,8 +297,8 @@ function on(id, callback) {
 }
 
 function initOnIpcCallbacks() {
-  on("show", (outputFolderPath) => {
-    init(outputFolderPath);
+  on("show", (...args) => {
+    init(...args);
   });
 
   on("hide", () => {});

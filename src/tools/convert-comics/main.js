@@ -16,6 +16,8 @@ const { fork } = require("child_process");
 const FileType = require("file-type");
 const fileUtils = require("../../shared/main/file-utils");
 const fileFormats = require("../../shared/main/file-formats");
+const settings = require("../../shared/main/settings");
+const utils = require("../../shared/main/utils");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -60,7 +62,8 @@ exports.open = function (fileData) {
     "show",
     filePath !== undefined
       ? path.dirname(filePath)
-      : fileUtils.getDesktopFolderPath()
+      : fileUtils.getDesktopFolderPath(),
+    settings.canEditRars()
   );
 
   updateLocalizedText();
@@ -876,6 +879,18 @@ async function createFileFromImages(
           }
         });
       }
+      let extraData = undefined;
+      if (outputFormat === FileExtension.EPUB) {
+        extraData = g_epubCreationImageStorage;
+      } else if (outputFormat === FileExtension.CBR) {
+        extraData = {
+          rarExePath: utils.getRarCommand(
+            settings.getValue("rarExeFolderPath")
+          ),
+          workingDir: fileUtils.getTempFolderPath(),
+          password: undefined,
+        };
+      }
       g_worker.send([
         "create",
         imgFilePaths,
@@ -883,9 +898,7 @@ async function createFileFromImages(
         outputFormat,
         outputFilePath,
         fileUtils.getTempFolderPath(),
-        outputFormat === FileExtension.EPUB
-          ? g_epubCreationImageStorage
-          : undefined,
+        extraData,
       ]);
     }
   } catch (err) {

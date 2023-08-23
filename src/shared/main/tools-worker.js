@@ -11,16 +11,9 @@ const { FileExtension, FileDataType } = require("./constants");
 
 process.on("message", (message) => {
   if (message[0] === "extract") {
-    extractImages(message[1], message[2], message[3], message[4]);
+    extractImages(...message.slice(1));
   } else if (message[0] === "create") {
-    createFile(
-      message[1],
-      message[2],
-      message[3],
-      message[4],
-      message[5],
-      message[6]
-    );
+    createFile(...message.slice(1));
   }
 });
 
@@ -82,6 +75,18 @@ async function createFile(
     } else if (outputFormat === FileExtension.CB7) {
       if (comicInfoFilePath) imgFilePaths.push(comicInfoFilePath);
       await fileFormats.create7Zip(imgFilePaths, outputFilePath);
+    } else if (outputFormat === FileExtension.CBR) {
+      if (comicInfoFilePath) imgFilePaths.push(comicInfoFilePath);
+      if (
+        !fileFormats.createRar(
+          imgFilePaths,
+          outputFilePath,
+          extra.rarExePath,
+          extra.workingDir,
+          extra.password
+        )
+      )
+        throw "error creating rar";
     } else {
       //cbz
       if (comicInfoFilePath) imgFilePaths.push(comicInfoFilePath);

@@ -388,11 +388,9 @@ exports.canEditRars = function () {
     } else {
       if (utils.isRarExeAvailable(g_settings.rarExeFolderPath)) {
         g_settings.rarExeAvailable = true;
-        console.log("rar command available");
         return true;
       } else {
         g_settings.rarExeAvailable = false;
-        console.log("rar command NOT available");
         return false;
       }
     }

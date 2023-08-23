@@ -235,6 +235,33 @@ async function extractRar(filePath, tempFolderPath, password) {
 }
 exports.extractRar = extractRar;
 
+function createRar(
+  filePathsList,
+  outputFilePath,
+  rarExePath,
+  workingDir,
+  password
+) {
+  try {
+    let args = ["a", outputFilePath];
+    filePathsList.forEach((filePath) => {
+      filePath = path.relative(workingDir, filePath);
+      args.push(filePath);
+    });
+    const cmdResult = utils.execShellCommand(rarExePath, args, workingDir);
+    if (!cmdResult.error || cmdResult.error === "") {
+      return true;
+    } else {
+      console.log(cmdResult.error);
+      return false;
+    }
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
+}
+exports.createRar = createRar;
+
 function updateRarEntry(rarExePath, filePath, entryPath, workingDir, password) {
   try {
     const cmdResult = utils.execShellCommand(
