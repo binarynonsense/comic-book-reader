@@ -14,6 +14,7 @@ import { isVersionOlder } from "../../shared/renderer/utils.js";
 
 let g_isInitialized = false;
 let g_tempFolderPathUl;
+let g_rarExeFolderPathUl;
 
 function init(activeLocale, languages, activeTheme, themes, settings) {
   if (!g_isInitialized) {
@@ -208,10 +209,39 @@ function init(activeLocale, languages, activeTheme, themes, settings) {
     );
     select.value = settings.cbrCreation;
     select.addEventListener("change", function (event) {
+      if (select.value === "0") {
+        document
+          .getElementById("tool-pre-rarfolder-div")
+          .classList.add("set-display-none");
+      } else {
+        document
+          .getElementById("tool-pre-rarfolder-div")
+          .classList.remove("set-display-none");
+      }
       sendIpcToMain("set-setting", "cbrCreation", parseInt(select.value));
     });
   }
-  // temp folder ul and button
+  // rar folder div, ul and buttons
+  {
+    g_rarExeFolderPathUl = document.getElementById("tool-pre-rarfolder-ul");
+    updateRarFolder(settings.rarExeFolderPath);
+    document
+      .getElementById("tool-pre-rarfolder-update-button")
+      .addEventListener("click", (event) => {
+        sendIpcToMain("change-rar-folder", false);
+      });
+    document
+      .getElementById("tool-pre-rarfolder-reset-button")
+      .addEventListener("click", (event) => {
+        sendIpcToMain("change-rar-folder", true);
+      });
+    if (settings.cbrCreation === 0) {
+      document
+        .getElementById("tool-pre-rarfolder-div")
+        .classList.add("set-display-none");
+    }
+  }
+  // temp folder ul and buttons
   {
     g_tempFolderPathUl = document.getElementById("tool-pre-tempfolder-ul");
     updateTempFolder(settings.tempFolderPath);
@@ -444,6 +474,10 @@ function initOnIpcCallbacks() {
   on("set-temp-folder", (folderPath) => {
     updateTempFolder(folderPath);
   });
+
+  on("set-rar-folder", (folderPath) => {
+    updateRarFolder(folderPath);
+  });
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -461,7 +495,20 @@ function updateTempFolder(folderPath) {
   g_tempFolderPathUl.appendChild(li);
 }
 
+function updateRarFolder(folderPath) {
+  g_rarExeFolderPathUl.innerHTML = "";
+  let li = document.createElement("li");
+  li.className = "tools-collection-li";
+  // text
+  let text = document.createElement("span");
+  if (!folderPath || folderPath.trim() === "") text.innerHTML = "&nbsp;";
+  else text.innerText = reducePathString(folderPath);
+  li.appendChild(text);
+  g_rarExeFolderPathUl.appendChild(li);
+}
+
 function reducePathString(input) {
+  if (!input) return input;
   var length = 80;
   input =
     input.length > length
@@ -493,11 +540,13 @@ function updateLocalization(localization, tooltipsLocalization) {
       domElement.innerText = element.text;
     }
   }
+  console.log(tooltipsLocalization);
   for (let index = 0; index < tooltipsLocalization.length; index++) {
     const element = tooltipsLocalization[index];
     const domElement = document.querySelector("#" + element.id);
     if (domElement !== null) {
       domElement.title = element.text;
+      console.log(element.text);
     }
   }
 }

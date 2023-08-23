@@ -5,23 +5,36 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-function execShellCommand(command, workingDir) {
-  // ref: : https://nodejs.org/api/child_process.html#child_processexeccommand-options-callback
-  let options = { windowsHide: true };
-  if (workingDir) options.cwd = workingDir;
-  const exec = require("child_process").exec;
-  return new Promise((resolve, reject) => {
-    exec(command, options, (error, stdout, stderr) => {
-      resolve({ stdout, stderr, error });
-    });
-  });
+const path = require("path");
+
+function execShellCommand(command, args, workingDir) {
+  //ref: https://nodejs.org/api/child_process.html#child_processexecfilesyncfile-args-options
+  try {
+    let options = { windowsHide: true, encoding: "utf8" };
+    if (workingDir) options.cwd = workingDir;
+    const execFileSync = require("child_process").execFileSync;
+    const stdout = execFileSync(command, args, options);
+    return { error: false, stdout: stdout };
+  } catch (error) {
+    return { error: true, stdout: undefined };
+  }
 }
 exports.execShellCommand = execShellCommand;
 
-exports.isRarExeAvailable = async function () {
-  //if (process.platform === "win32")
-  const cmdResult = await execShellCommand("rar");
-  //console.log(cmdResult);
+function getRarCommand(rarFolderPath) {
+  let command = "rar";
+  if (process.platform === "win32") {
+    command = "Rar.exe";
+  }
+  if (rarFolderPath && rarFolderPath.trim !== "") {
+    command = path.join(rarFolderPath, command);
+  }
+  return command;
+}
+exports.getRarCommand = getRarCommand;
+
+exports.isRarExeAvailable = function (rarFolderPath) {
+  const cmdResult = execShellCommand(getRarCommand(rarFolderPath));
   if (!cmdResult.error || cmdResult.error === "") {
     return true;
   } else {

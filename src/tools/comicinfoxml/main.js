@@ -422,7 +422,8 @@ async function saveJsonToFile(json) {
       const tempFolderPath = fileUtils.createTempFolder();
       const xmlFilePath = path.resolve(tempFolderPath, entryName);
       fs.writeFileSync(xmlFilePath, outputXmlData);
-      let success = await fileFormats.updateRarEntry(
+      let success = fileFormats.updateRarEntry(
+        utils.getRarCommand(settings.getValue("rarExeFolderPath")),
         g_fileData.path,
         entryName,
         tempFolderPath

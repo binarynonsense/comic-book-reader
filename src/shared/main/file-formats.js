@@ -235,10 +235,11 @@ async function extractRar(filePath, tempFolderPath, password) {
 }
 exports.extractRar = extractRar;
 
-async function updateRarEntry(filePath, entryPath, workingDir, password) {
+function updateRarEntry(rarExePath, filePath, entryPath, workingDir, password) {
   try {
-    const cmdResult = await utils.execShellCommand(
-      `rar u ${filePath} ${entryPath}`,
+    const cmdResult = utils.execShellCommand(
+      rarExePath,
+      ["u", filePath, entryPath],
       workingDir
     );
     if (!cmdResult.error || cmdResult.error === "") {

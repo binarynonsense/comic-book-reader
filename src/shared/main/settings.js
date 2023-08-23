@@ -34,11 +34,6 @@ exports.setValue = function (name, value) {
 
 exports.init = function () {
   load();
-  (async () => {
-    g_settings.rarExeAvailable = await utils.isRarExeAvailable();
-    // TODO: delete
-    console.log("rar command available: " + g_settings.rarExeAvailable);
-  })();
 };
 
 function setDefaultValues() {
@@ -75,6 +70,7 @@ function setDefaultValues() {
     layoutAudioPlayer: 0, // 0 top left, 3 bootom left - for now
     epubOpenAs: 0, // 0 ask and remember, 1 always ask
     cbrCreation: 0, // 0 disabled, 1 use command tool if available
+    rarExeFolderPath: undefined,
     turnPageOnScrollBoundary: false,
     filterMode: 0, // 0: none, 1: old paper
 
@@ -303,6 +299,28 @@ function sanitize() {
   } else {
     g_settings.tempFolderPath = fileUtils.getSystemTempFolderPath();
   }
+  // RAR FOLDER
+  if (
+    g_settings.rarExeFolderPath &&
+    typeof g_settings.rarExeFolderPath === "string"
+  ) {
+    if (
+      !fs.existsSync(g_settings.rarExeFolderPath) ||
+      !fs.lstatSync(g_settings.rarExeFolderPath).isDirectory()
+    ) {
+      // if (process.platform === "win32") {
+      // }
+      g_settings.rarExeFolderPath = undefined;
+    }
+  } else {
+    g_settings.rarExeFolderPath = undefined;
+  }
+
+  g_settings.rarExeAvailable = !utils.isRarExeAvailable(
+    g_settings.rarExeFolderPath
+  ).error;
+  // TODO: delete
+  console.log("rar command available: " + g_settings.rarExeAvailable);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

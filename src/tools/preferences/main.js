@@ -162,7 +162,7 @@ function initOnIpcCallbacks() {
     if (reset) {
       folderPath = fileUtils.getSystemTempFolderPath();
     } else {
-      let defaultPath = settings.getValue["tempFolderPath"];
+      let defaultPath = settings.getValue("tempFolderPath");
       let folderList = fileUtils.chooseFolder(
         core.getMainWindow(),
         defaultPath
@@ -177,6 +177,26 @@ function initOnIpcCallbacks() {
     settings.setValue("tempFolderPath", folderPath);
     fileUtils.setTempFolderParentPath(folderPath);
     sendIpcToRenderer("set-temp-folder", folderPath);
+  });
+
+  on("change-rar-folder", (reset) => {
+    let folderPath;
+    if (reset) {
+      folderPath = undefined;
+    } else {
+      let defaultPath = settings.getValue("rarExeFolderPath");
+      let folderList = fileUtils.chooseFolder(
+        core.getMainWindow(),
+        defaultPath
+      );
+      if (folderList === undefined) {
+        return;
+      }
+      folderPath = folderList[0];
+      if (folderPath === undefined || folderPath === "") return;
+    }
+    settings.setValue("rarExeFolderPath", folderPath);
+    sendIpcToRenderer("set-rar-folder", folderPath);
   });
 }
 
@@ -199,8 +219,19 @@ function getTooltipsLocalization() {
       id: "tool-pre-tooltip-cbr-creation-modification",
       text: _(
         "tool-pre-use-system-exe-tooltip",
-        process.platform === "win32" ? '"rar.exe"' : '"rar"'
+        process.platform === "win32" ? '"Rar.exe"' : '"rar"'
       ),
+    },
+    {
+      id: "tool-pre-tooltip-rarfolder",
+      text: `${_(
+        "tool-pre-rarfolder-tooltip",
+        process.platform === "win32" ? '"Rar.exe"' : '"rar"'
+      )}${
+        process.platform === "win32"
+          ? " " + _("tool-pre-rarfolder-tooltip", '"C:\\Program Files\\WinRAR"')
+          : ""
+      }`,
     },
   ];
 }
@@ -499,6 +530,18 @@ function getLocalization() {
         " (" +
         _("tool-pre-use-system-exe") +
         ")",
+    },
+    {
+      id: "tool-pre-rarfolder-text",
+      text: _("tool-pre-rarfolder"),
+    },
+    {
+      id: "tool-pre-rarfolder-update-button-text",
+      text: _("tool-shared-ui-change").toUpperCase(),
+    },
+    {
+      id: "tool-pre-rarfolder-reset-button-text",
+      text: _("tool-shared-ui-reset").toUpperCase(),
     },
     //////////////////////////////////////////////
     {
