@@ -45,13 +45,7 @@ exports.open = function (fileData) {
   sendIpcToCoreRenderer("replace-inner-html", "#tools", data.toString());
   updateLocalizedText();
   let languages = ISO6391.getLanguages(ISO6391.getAllCodes());
-  sendIpcToRenderer(
-    "show",
-    fileData,
-    languages,
-    settings.getValue("cbrCreation") === 1 &&
-      settings.getValue("rarExeAvailable")
-  );
+  sendIpcToRenderer("show", fileData, languages, settings.canEditRars());
   g_fileData = fileData;
 
   g_cvApiKeyFilePath = settings.getValue("toolCixApiKeyPath");

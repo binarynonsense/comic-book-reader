@@ -315,12 +315,6 @@ function sanitize() {
   } else {
     g_settings.rarExeFolderPath = undefined;
   }
-
-  g_settings.rarExeAvailable = !utils.isRarExeAvailable(
-    g_settings.rarExeFolderPath
-  ).error;
-  // TODO: delete
-  console.log("rar command available: " + g_settings.rarExeAvailable);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -386,3 +380,21 @@ function load() {
     sanitize();
   }
 }
+
+exports.canEditRars = function () {
+  if (g_settings.cbrCreation === 1) {
+    if (g_settings.rarExeAvailable !== undefined) {
+      return g_settings.rarExeAvailable;
+    } else {
+      if (utils.isRarExeAvailable(g_settings.rarExeFolderPath)) {
+        g_settings.rarExeAvailable = true;
+        console.log("rar command available");
+        return true;
+      } else {
+        g_settings.rarExeAvailable = false;
+        console.log("rar command NOT available");
+        return false;
+      }
+    }
+  } else return false;
+};

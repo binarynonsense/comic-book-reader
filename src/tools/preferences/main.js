@@ -196,6 +196,7 @@ function initOnIpcCallbacks() {
       if (folderPath === undefined || folderPath === "") return;
     }
     settings.setValue("rarExeFolderPath", folderPath);
+    settings.setValue("rarExeAvailable", undefined);
     sendIpcToRenderer("set-rar-folder", folderPath);
   });
 }

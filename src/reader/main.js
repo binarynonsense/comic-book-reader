@@ -2281,9 +2281,7 @@ exports.onMenuFileProperties = async function () {
       g_fileData.type === FileDataType.RAR ||
       g_fileData.type === FileDataType.SEVENZIP;
     const isRar = g_fileData.type === FileDataType.RAR;
-    const canEditRar =
-      settings.getValue("cbrCreation") === 1 &&
-      settings.getValue("rarExeAvailable");
+    const canEditRar = settings.canEditRars();
     const isEncrypted = g_fileData.metadata && g_fileData.metadata.encrypted;
     const hasComicInfo = g_fileData.metadata && g_fileData.metadata.comicInfoId;
     let buttonText;
