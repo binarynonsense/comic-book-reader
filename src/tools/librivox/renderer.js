@@ -21,15 +21,12 @@ let g_isInitialized = false;
 let g_searchInput;
 let g_searchButton;
 
-let g_collectionSelect;
-let g_availabilitySelect;
-
 let g_localizedSearchPlaceholderText;
 let g_localizedModalSearchingTitleText;
 
 let g_lastSearchResults;
 
-function init(collectionsContent, availabilityContent) {
+function init() {
   if (!g_isInitialized) {
     // things to start only once go here
     g_isInitialized = true;
@@ -167,8 +164,8 @@ function on(id, callback) {
 }
 
 function initOnIpcCallbacks() {
-  on("show", (collectionsContent, availabilityContent) => {
-    init(collectionsContent, availabilityContent);
+  on("show", () => {
+    init();
   });
 
   on("hide", () => {});
