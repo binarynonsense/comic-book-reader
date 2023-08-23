@@ -127,7 +127,7 @@ function initOnIpcCallbacks() {
         _("tool-shared-ui-search-item-open-browser")
       );
     } catch (error) {
-      console.log(error);
+      if (error !== "0 results") console.log(error);
       sendIpcToRenderer(
         "update-results",
         [],
