@@ -63,6 +63,7 @@ async function createFiles(
   comicInfoFilePath,
   outputFormat,
   tempFolderPath,
+  password,
   extra
 ) {
   let outputSubFolderPath;
@@ -124,7 +125,8 @@ async function createFiles(
         await fileFormats.createPdf(
           filesData[index].imgFilePaths,
           filesData[index].outputFilePath,
-          extra
+          extra,
+          password
         );
       } else if (outputFormat === FileExtension.EPUB) {
         await fileFormats.createEpub(
@@ -138,7 +140,8 @@ async function createFiles(
           filesData[index].imgFilePaths.push(comicInfoFilePath);
         await fileFormats.create7Zip(
           filesData[index].imgFilePaths,
-          filesData[index].outputFilePath
+          filesData[index].outputFilePath,
+          password
         );
       } else if (outputFormat === FileExtension.CBR) {
         if (comicInfoFilePath)
@@ -149,7 +152,7 @@ async function createFiles(
             filesData[index].outputFilePath,
             extra.rarExePath,
             extra.workingDir,
-            extra.password
+            password
           )
         )
           throw "error creating rar";

@@ -511,7 +511,8 @@ async function resizeImages(
   outputQuality,
   outputFormat,
   outputFolderPath,
-  outputSplitNumFiles
+  outputSplitNumFiles,
+  password
 ) {
   if (g_cancel === true) {
     stopCancel();
@@ -771,7 +772,8 @@ async function resizeImages(
       imgFilePaths,
       outputFormat,
       comicInfoFilePath,
-      outputSplitNumFiles
+      outputSplitNumFiles,
+      password
     );
   } catch (error) {
     stopError(error);
@@ -784,7 +786,8 @@ async function createFilesFromImages(
   imgFilePaths,
   outputFormat,
   comicInfoFilePath,
-  outputSplitNumFiles
+  outputSplitNumFiles,
+  password
 ) {
   if (g_cancel === true) {
     stopCancel();
@@ -828,7 +831,6 @@ async function createFilesFromImages(
       extraData = {
         rarExePath: utils.getRarCommand(settings.getValue("rarExeFolderPath")),
         workingDir: fileUtils.getTempFolderPath(),
-        password: undefined,
       };
     } else if (outputFormat === FileExtension.PDF) {
       extraData = g_pdfCreationMethod;
@@ -846,6 +848,7 @@ async function createFilesFromImages(
       comicInfoFilePath,
       outputFormat,
       fileUtils.getTempFolderPath(),
+      password,
       extraData,
     ]);
   } catch (err) {
@@ -883,6 +886,10 @@ function getTooltipsLocalization() {
     {
       id: "tool-cc-tooltip-pdf-extraction",
       text: _("tool-shared-ui-pdf-extraction-tooltip"),
+    },
+    {
+      id: "tool-cc-tooltip-password",
+      text: _("tool-shared-ui-creation-password-tooltip", "cb7, pdf, cbr"),
     },
     {
       id: "tool-cc-tooltip-pdf-creation",
@@ -985,6 +992,10 @@ function getLocalization() {
     {
       id: "tool-cc-split-num-files-text",
       text: _("tool-sc-number"),
+    },
+    {
+      id: "tool-cc-password-text",
+      text: _("tool-shared-ui-creation-password"),
     },
     {
       id: "tool-cc-pdf-creation-text",

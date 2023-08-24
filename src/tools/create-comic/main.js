@@ -413,7 +413,6 @@ async function createFileFromImages(
             settings.getValue("rarExeFolderPath")
           ),
           workingDir: fileUtils.getTempFolderPath(),
-          password: undefined,
         };
       } else if (outputFormat === FileExtension.PDF) {
         extraData = g_pdfCreationMethod;
@@ -427,6 +426,7 @@ async function createFileFromImages(
         undefined, // comicinfoxml
         outputFormat,
         fileUtils.getTempFolderPath(),
+        undefined, // password
         extraData,
       ]);
     } catch (error) {}

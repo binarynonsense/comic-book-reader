@@ -128,7 +128,13 @@ function createRar(
   password
 ) {
   try {
-    let args = ["a", outputFilePath];
+    let args = ["a"];
+    if (password && password.trim() !== "") {
+      // -hp would also encrypt the headers but acbr wouldn't
+      // be able to open it currently
+      args.push(`-p${password}`);
+    }
+    args.push(outputFilePath);
     filePathsList.forEach((filePath) => {
       filePath = path.relative(workingDir, filePath);
       args.push(filePath);
@@ -137,8 +143,7 @@ function createRar(
     if (!cmdResult.error || cmdResult.error === "") {
       return true;
     } else {
-      console.log(cmdResult.error);
-      return false;
+      throw cmdResult.error;
     }
   } catch (error) {
     console.log(error);
@@ -440,15 +445,19 @@ async function extract7Zip(filePath, tempFolderPath, password) {
 }
 exports.extract7Zip = extract7Zip;
 
-async function create7Zip(filePathsList, outputFilePath) {
+async function create7Zip(filePathsList, outputFilePath, password) {
   try {
     checkPathTo7ZipBin();
 
     const Seven = require("node-7z");
-    const seven = Seven.add(outputFilePath, filePathsList, {
+    let options = {
       $bin: g_pathTo7zipBin,
       charset: "UTF-8", // always used just in case?
-    });
+    };
+    if (password && password.trim() !== "") {
+      options.password = password;
+    }
+    const seven = Seven.add(outputFilePath, filePathsList, options);
     // TODO: test archiveType, maybe to support cbt files?
     // not sure, but possible values may be: 7z, xz, split, zip, gzip, bzip2, tar,
 
@@ -710,13 +719,16 @@ exports.createEpub = createEpub;
 // PDF ////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-async function createPdf(imgPathsList, outputFilePath, method) {
+async function createPdf(imgPathsList, outputFilePath, method, password) {
   try {
     const PDFDocument = require("pdfkit");
     const sharp = require("sharp");
-    const pdf = new PDFDocument({
+    let options = {
       autoFirstPage: false,
-    });
+    };
+    // ref: https://pdfkit.org/docs/getting_started.html#setting_document_metadata
+    if (password && password.trim() !== "") options.userPassword = password;
+    const pdf = new PDFDocument(options);
     let stream = fs.createWriteStream(outputFilePath);
     // stream.on("finish", function () {
     // });

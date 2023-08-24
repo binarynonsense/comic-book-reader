@@ -35,6 +35,7 @@ let g_outputImageScaleSlider;
 let g_outputImageFormatSelect;
 let g_outputImageQualitySlider;
 let g_outputSplitNumFilesInput;
+let g_outputPasswordInput;
 
 let g_localizedRemoveFromListText;
 let g_localizedModalCancelButtonText;
@@ -105,6 +106,7 @@ function init(outputFolderPath, canEditRars) {
     "#tool-cc-split-num-files-input"
   );
   g_outputSplitNumFilesInput.value = 1;
+  g_outputPasswordInput = document.querySelector("#tool-cc-password-input");
 
   g_startButton = document.querySelector("#tool-cc-start-button");
 
@@ -387,7 +389,8 @@ function initOnIpcCallbacks() {
       g_outputImageQualitySlider.value,
       g_outputFormat,
       g_outputFolderPath,
-      g_outputSplitNumFilesInput.value
+      g_outputSplitNumFilesInput.value,
+      g_outputPasswordInput.value
     );
   });
 
