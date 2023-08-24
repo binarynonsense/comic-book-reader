@@ -16,6 +16,7 @@ const { fork } = require("child_process");
 const FileType = require("file-type");
 const fileUtils = require("../../shared/main/file-utils");
 const appUtils = require("../../shared/main/app-utils");
+const utils = require("../../shared/main/utils");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -399,7 +400,7 @@ function start(
   );
   sendIpcToRenderer(
     "update-info-text",
-    fileUtils.reducePathString(inputFilePath)
+    utils.reduceStringFrontEllipsis(inputFilePath)
   );
   sendIpcToRenderer("update-log-text", _("tool-shared-modal-title-extracting"));
   sendIpcToRenderer("update-log-text", inputFilePath);
@@ -535,7 +536,7 @@ async function resizeImages(
       stopError("imgFiles === undefined || imgFiles.length === 0");
       return;
     }
-    imgFilePaths.sort(fileUtils.compare);
+    imgFilePaths.sort(utils.compare);
 
     // resize
     if (g_cancel === true) {

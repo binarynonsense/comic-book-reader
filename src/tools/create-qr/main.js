@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-const { Menu, clipboard } = require("electron");
+const { Menu } = require("electron");
 const fs = require("fs");
 const path = require("path");
 const core = require("../../core/main");
@@ -13,6 +13,7 @@ const { _ } = require("../../shared/main/i18n");
 const { FileExtension } = require("../../shared/main/constants");
 const fileUtils = require("../../shared/main/file-utils");
 const appUtils = require("../../shared/main/app-utils");
+const utils = require("../../shared/main/utils");
 const QRCode = require("qrcode");
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -175,7 +176,7 @@ function initOnIpcCallbacks() {
       sendIpcToRenderer(
         "show-modal-alert",
         _("tool-cq-modal-alert-title-successexporting"),
-        fileUtils.reducePathString(outputFilePath, 50),
+        utils.reduceStringFrontEllipsis(outputFilePath, 50),
         false
       );
     } catch (error) {

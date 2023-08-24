@@ -353,7 +353,7 @@ async function createFileFromImages(
       stopError("imgFiles === undefined || imgFiles.length === 0");
       return;
     }
-    imgFilePaths.sort(fileUtils.compare);
+    imgFilePaths.sort(utils.compare);
 
     // change imgs' format if needed (for pdf creation or resizing)
     if (outputFormat === FileExtension.PDF) {

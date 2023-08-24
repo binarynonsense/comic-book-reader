@@ -9,7 +9,7 @@ const { Menu, app } = require("electron");
 const core = require("../../core/main");
 const reader = require("../../reader/main");
 const { _ } = require("./i18n");
-const fileUtils = require("./file-utils");
+const utils = require("./utils");
 
 function getHelpSubmenu() {
   let menu = [];
@@ -84,10 +84,10 @@ function getOpenRecentSubmenu(history) {
 
   for (let index = 0; index < length; index++) {
     const entry = reverseHistory[index];
-    let label = fileUtils.reducePathString(entry.filePath);
+    let label = utils.reduceStringFrontEllipsis(entry.filePath);
     if (entry.data && entry.data.source) {
       if (entry.data.name) {
-        label = "[www] " + fileUtils.reducePathString(entry.data.name);
+        label = "[www] " + utils.reduceStringFrontEllipsis(entry.data.name);
       } else {
         label = "[www] " + label;
       }

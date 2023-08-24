@@ -19,6 +19,7 @@ const { _ } = require("../shared/main/i18n");
 const menuBar = require("../shared/main/menu-bar");
 const fileUtils = require("../shared/main/file-utils");
 const appUtils = require("../shared/main/app-utils");
+const utils = require("../shared/main/utils");
 const fileFormats = require("../shared/main/file-formats");
 const contextMenu = require("./menu-context");
 const audioPlayer = require("../audio-player/main");
@@ -730,7 +731,7 @@ function openImageFolder(folderPath, filePath, pageIndex) {
     );
     return;
   }
-  pagesPaths.sort(fileUtils.compare);
+  pagesPaths.sort(utils.compare);
 
   if (pageIndex === undefined) {
     if (filePath !== undefined && filePath !== "") {
@@ -856,7 +857,7 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
           return;
         }
         let pagesPaths = rarData.paths;
-        pagesPaths.sort(fileUtils.compare);
+        pagesPaths.sort(utils.compare);
         if (pagesPaths !== undefined && pagesPaths.length > 0) {
           g_fileData.state = FileDataState.LOADED;
           g_fileData.type = FileDataType.RAR;
@@ -926,7 +927,7 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
           return;
         }
         let pagesPaths = zipData.paths;
-        pagesPaths.sort(fileUtils.compare);
+        pagesPaths.sort(utils.compare);
         if (pagesPaths !== undefined && pagesPaths.length > 0) {
           g_fileData.state = FileDataState.LOADED;
           g_fileData.type = FileDataType.ZIP;
@@ -990,7 +991,7 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
           return;
         }
         let pagesPaths = sevenData.paths;
-        pagesPaths.sort(fileUtils.compare);
+        pagesPaths.sort(utils.compare);
         if (pagesPaths !== undefined && pagesPaths.length > 0) {
           g_fileData.state = FileDataState.LOADED;
           g_fileData.type = FileDataType.SEVENZIP;
@@ -1155,7 +1156,7 @@ function tryOpeningAdjacentFile(next) {
       comicFiles.push(file);
     }
   });
-  comicFiles.sort(fileUtils.compare);
+  comicFiles.sort(utils.compare);
   for (let index = 0; index < comicFiles.length; index++) {
     if (comicFiles[index] === fileName) {
       if (next) {
@@ -1825,7 +1826,7 @@ async function exportPageStart(sendToTool = 0) {
                 "",
                 _("ui-modal-info-imagesavedto") +
                   "\n" +
-                  fileUtils.reducePathString(message[1], 85),
+                  utils.reduceStringFrontEllipsis(message[1], 85),
                 _("ui-modal-prompt-button-ok")
               );
             }
@@ -1898,7 +1899,7 @@ function exportPageSaveDataUrl(dataUrl, dpi, outputFolderPath, sendToTool) {
             "",
             _("ui-modal-info-imagesavedto") +
               "\n" +
-              fileUtils.reducePathString(outputFilePath, 85),
+              utils.reduceStringFrontEllipsis(outputFilePath, 85),
             _("ui-modal-prompt-button-ok")
           );
         }
@@ -2197,7 +2198,7 @@ exports.onMenuFileProperties = async function () {
       g_fileData.metadata.created
     ) {
       let date = g_fileData.metadata.created;
-      date = fileUtils.parsePdfDate(date);
+      date = utils.parsePdfDate(date);
       date = date.toLocaleString();
       // date = Intl.DateTimeFormat([], {
       //   dayTime: "short",
@@ -2213,7 +2214,7 @@ exports.onMenuFileProperties = async function () {
     // modified
     if (g_fileData.metadata && g_fileData.metadata.modified) {
       let date = g_fileData.metadata.modified;
-      date = fileUtils.parsePdfDate(date);
+      date = utils.parsePdfDate(date);
       if (stats.mtime.getTime() > date.getTime()) {
         date = stats.mtime;
       }

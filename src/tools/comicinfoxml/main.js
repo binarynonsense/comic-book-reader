@@ -338,7 +338,7 @@ async function updatePagesDataFromImages(json) {
     const sharp = require("sharp");
     let tempFolderPath = fileUtils.getTempFolderPath();
     let imgFilePaths = fileUtils.getImageFilesInFolderRecursive(tempFolderPath);
-    imgFilePaths.sort(fileUtils.compare);
+    imgFilePaths.sort(utils.compare);
 
     if (!json["ComicInfo"]["Pages"]) {
       json["ComicInfo"]["Pages"] = {};

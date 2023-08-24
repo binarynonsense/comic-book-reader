@@ -399,7 +399,7 @@ function start(
   );
   sendIpcToRenderer(
     "update-info-text",
-    fileUtils.reducePathString(inputFilePath)
+    utils.reduceStringFrontEllipsis(inputFilePath)
   );
   sendIpcToRenderer("update-log-text", _("tool-shared-modal-title-converting"));
   sendIpcToRenderer("update-log-text", inputFilePath);
@@ -530,7 +530,7 @@ async function resizeImages(
       stopError("imgFiles === undefined || imgFiles.length === 0");
       return;
     }
-    imgFilePaths.sort(fileUtils.compare);
+    imgFilePaths.sort(utils.compare);
 
     // resize
     if (g_cancel === true) {

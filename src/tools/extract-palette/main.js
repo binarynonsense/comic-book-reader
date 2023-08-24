@@ -11,7 +11,7 @@ const path = require("path");
 const core = require("../../core/main");
 const { _ } = require("../../shared/main/i18n");
 const { FileExtension } = require("../../shared/main/constants");
-const fileUtils = require("../../shared/main/file-utils");
+const utils = require("../../shared/main/utils");
 const appUtils = require("../../shared/main/app-utils");
 const palette = require("./palette");
 
@@ -192,13 +192,13 @@ function initOnIpcCallbacks() {
           sendIpcToRenderer(
             "export-file-created",
             _("tool-ep-modal-title-exported"),
-            fileUtils.reducePathString(outputFilePath, 50)
+            utils.reduceStringFrontEllipsis(outputFilePath, 50)
           );
         } else {
           sendIpcToRenderer(
             "export-file-error",
             _("tool-ep-modal-title-exporting-error"),
-            fileUtils.reducePathString(outputFilePath, 50)
+            utils.reduceStringFrontEllipsis(outputFilePath, 50)
           );
         }
       } else if (format === "aco") {
@@ -209,13 +209,13 @@ function initOnIpcCallbacks() {
           sendIpcToRenderer(
             "export-file-created",
             _("tool-ep-modal-title-exported"),
-            fileUtils.reducePathString(outputFilePath, 50)
+            utils.reduceStringFrontEllipsis(outputFilePath, 50)
           );
         } else {
           sendIpcToRenderer(
             "export-file-error",
             _("tool-ep-modal-title-exporting-error"),
-            fileUtils.reducePathString(outputFilePath, 50)
+            utils.reduceStringFrontEllipsis(outputFilePath, 50)
           );
         }
       }
