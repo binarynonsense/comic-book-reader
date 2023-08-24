@@ -8,6 +8,7 @@
 const { app, dialog } = require("electron");
 const path = require("path");
 const fs = require("fs");
+const fileUtils = require("./file-utils");
 
 ///////////////////////////////////////////////////////////////////////////////
 // PATHS //////////////////////////////////////////////////////////////////////
@@ -152,7 +153,7 @@ function cleanUpUserDataFolder() {
       if (!keepFiles.includes(file)) {
         const entryPath = path.join(userDataPath, file);
         if (fs.lstatSync(entryPath).isDirectory()) {
-          deleteFolderRecursive(entryPath, false, userDataPath);
+          fileUtils.deleteFolderRecursive(entryPath, false, userDataPath);
         } else {
           fs.unlinkSync(entryPath); // delete the file
         }
