@@ -14,6 +14,7 @@ const i18n = require("../shared/main/i18n");
 const themes = require("../shared/main/themes");
 const menuBar = require("../shared/main/menu-bar");
 const fileUtils = require("../shared/main/file-utils");
+const appUtils = require("../shared/main/app-utils");
 
 const reader = require("../reader/main");
 const audioPlayer = require("../audio-player/main");
@@ -106,7 +107,7 @@ const createWindow = () => {
     let tempFolderPath = settings.getValue("tempFolderPath");
     if (!path.isAbsolute(tempFolderPath)) {
       tempFolderPath = path.resolve(
-        fileUtils.getExeFolderPath(),
+        appUtils.getExeFolderPath(),
         tempFolderPath
       );
     }
@@ -169,7 +170,7 @@ app.on("will-quit", () => {
   history.save();
   // clean up
   fileUtils.cleanUpTempFolder();
-  fileUtils.cleanUpUserDataFolder();
+  appUtils.cleanUpUserDataFolder();
 });
 
 app.on("window-all-closed", () => {

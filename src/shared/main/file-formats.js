@@ -7,7 +7,6 @@
 
 const path = require("path");
 const fs = require("fs");
-const os = require("os");
 const utils = require("./utils");
 const fileUtils = require("./file-utils");
 

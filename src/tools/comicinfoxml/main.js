@@ -12,6 +12,7 @@ const core = require("../../core/main");
 const { _ } = require("../../shared/main/i18n");
 const reader = require("../../reader/main");
 const fileUtils = require("../../shared/main/file-utils");
+const appUtils = require("../../shared/main/app-utils");
 const fileFormats = require("../../shared/main/file-formats");
 const utils = require("../../shared/main/utils");
 const { FileDataType } = require("../../shared/main/constants");
@@ -54,7 +55,7 @@ exports.open = function (fileData) {
     let absoluteFilePath = g_cvApiKeyFilePath;
     if (!path.isAbsolute(g_cvApiKeyFilePath)) {
       absoluteFilePath = path.resolve(
-        fileUtils.getExeFolderPath(),
+        appUtils.getExeFolderPath(),
         g_cvApiKeyFilePath
       );
       saveAsRelative = true;
@@ -184,7 +185,7 @@ function initOnIpcCallbacks() {
     let allowMultipleSelection = false;
     let allowedFileTypesName = "Text Files";
     let allowedFileTypesList = ["txt"];
-    let filePaths = fileUtils.chooseOpenFiles(
+    let filePaths = appUtils.chooseOpenFiles(
       core.getMainWindow(),
       defaultPath,
       allowedFileTypesName,
@@ -199,7 +200,7 @@ function initOnIpcCallbacks() {
     g_cvApiKeyFilePath = filePath;
     g_cvApiKey = fs.readFileSync(g_cvApiKeyFilePath).toString().trim();
     if (saveAsRelative) {
-      filePath = path.relative(fileUtils.getExeFolderPath(), filePath);
+      filePath = path.relative(appUtils.getExeFolderPath(), filePath);
     }
     settings.setValue("toolCixApiKeyPath", filePath);
     sendIpcToRenderer("set-api-key-file", filePath, saveAsRelative);

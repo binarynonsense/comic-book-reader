@@ -10,6 +10,7 @@ const fs = require("fs");
 const path = require("path");
 const { FileExtension } = require("../shared/main/constants");
 const fileUtils = require("../shared/main/file-utils");
+const appUtils = require("../shared/main/app-utils");
 const core = require("../core/main");
 const reader = require("../reader/main");
 const settings = require("./settings");
@@ -79,7 +80,7 @@ function initOnIpcCallbacks() {
     }
     let allowedFileTypesName = "Playlists";
     let allowedFileTypesList = [FileExtension.M3U];
-    let filePath = fileUtils.chooseSaveAs(
+    let filePath = appUtils.chooseSaveAs(
       g_mainWindow,
       defaultPath,
       allowedFileTypesName,
@@ -164,14 +165,14 @@ let g_playlist = {
 
 exports.saveSettings = function () {
   settings.save();
-  let playlistPath = path.join(fileUtils.getConfigFolder(), "acbr-player.m3u");
+  let playlistPath = path.join(appUtils.getConfigFolder(), "acbr-player.m3u");
   savePlaylistToFile(g_playlist, playlistPath, false);
   console.log("playlist saved to: " + playlistPath);
 };
 
 function loadSettings() {
   settings.init();
-  let playlistPath = path.join(fileUtils.getConfigFolder(), "acbr-player.m3u");
+  let playlistPath = path.join(appUtils.getConfigFolder(), "acbr-player.m3u");
   let fileUrls = getPlaylistFiles(playlistPath);
   if (fileUrls && fileUrls.length > 0) {
     fileUrls.forEach((url) => {
@@ -275,7 +276,7 @@ function callOpenFilesDialog(mode) {
     FileExtension.M3U,
     FileExtension.M3U8,
   ];
-  let filePaths = fileUtils.chooseOpenFiles(
+  let filePaths = appUtils.chooseOpenFiles(
     g_mainWindow,
     defaultPath,
     allowedFileTypesName,

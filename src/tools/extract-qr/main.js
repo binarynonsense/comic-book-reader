@@ -12,6 +12,7 @@ const core = require("../../core/main");
 const { _ } = require("../../shared/main/i18n");
 const { FileExtension } = require("../../shared/main/constants");
 const fileUtils = require("../../shared/main/file-utils");
+const appUtils = require("../../shared/main/app-utils");
 const jsQR = require("jsqr");
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -106,7 +107,7 @@ function initOnIpcCallbacks() {
         FileExtension.WEBP,
         FileExtension.AVIF,
       ];
-      let filePathsList = fileUtils.chooseOpenFiles(
+      let filePathsList = appUtils.chooseOpenFiles(
         core.getMainWindow(),
         undefined,
         allowedFileTypesName,

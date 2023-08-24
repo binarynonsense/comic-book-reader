@@ -13,7 +13,7 @@ const {
   isPortable,
   getUserDataFolderPath,
   getExeFolderPath,
-} = require("../shared/main/file-utils");
+} = require("../shared/main/app-utils");
 
 let g_settings;
 let g_fileName = "acbr-player.cfg";

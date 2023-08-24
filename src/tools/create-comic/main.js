@@ -13,6 +13,7 @@ const { _ } = require("../../shared/main/i18n");
 const { FileExtension } = require("../../shared/main/constants");
 const { fork } = require("child_process");
 const fileUtils = require("../../shared/main/file-utils");
+const appUtils = require("../../shared/main/app-utils");
 const fileFormats = require("../../shared/main/file-formats");
 const settings = require("../../shared/main/settings");
 const utils = require("../../shared/main/utils");
@@ -46,7 +47,7 @@ exports.open = function () {
 
   sendIpcToRenderer(
     "show",
-    fileUtils.getDesktopFolderPath(),
+    appUtils.getDesktopFolderPath(),
     settings.canEditRars()
   );
 
@@ -126,7 +127,7 @@ function initOnIpcCallbacks() {
         FileExtension.BMP,
         FileExtension.AVIF,
       ];
-      let filePathsList = fileUtils.chooseOpenFiles(
+      let filePathsList = appUtils.chooseOpenFiles(
         core.getMainWindow(),
         defaultPath,
         allowedFileTypesName,
@@ -154,7 +155,7 @@ function initOnIpcCallbacks() {
     } else if (inputFilePath !== undefined) {
       defaultPath = path.dirname(inputFilePath);
     }
-    let folderList = fileUtils.chooseFolder(core.getMainWindow(), defaultPath);
+    let folderList = appUtils.chooseFolder(core.getMainWindow(), defaultPath);
     if (folderList === undefined) {
       return;
     }

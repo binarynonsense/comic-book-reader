@@ -14,6 +14,7 @@ const settings = require("../../shared/main/settings");
 const themes = require("../../shared/main/themes");
 const reader = require("../../reader/main");
 const fileUtils = require("../../shared/main/file-utils");
+const appUtils = require("../../shared/main/app-utils");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -170,10 +171,7 @@ function initOnIpcCallbacks() {
       folderPath = fileUtils.getSystemTempFolderPath();
     } else {
       let defaultPath = settings.getValue("tempFolderPath");
-      let folderList = fileUtils.chooseFolder(
-        core.getMainWindow(),
-        defaultPath
-      );
+      let folderList = appUtils.chooseFolder(core.getMainWindow(), defaultPath);
       if (folderList === undefined) {
         return;
       }
@@ -182,7 +180,7 @@ function initOnIpcCallbacks() {
       // TODO: check if writable?
       if (saveAsRelative) {
         relativeFolderPath = path.relative(
-          fileUtils.getExeFolderPath(),
+          appUtils.getExeFolderPath(),
           folderPath
         );
       }
@@ -205,10 +203,7 @@ function initOnIpcCallbacks() {
       folderPath = undefined;
     } else {
       let defaultPath = settings.getValue("rarExeFolderPath");
-      let folderList = fileUtils.chooseFolder(
-        core.getMainWindow(),
-        defaultPath
-      );
+      let folderList = appUtils.chooseFolder(core.getMainWindow(), defaultPath);
       if (folderList === undefined) {
         return;
       }

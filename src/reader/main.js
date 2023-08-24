@@ -18,6 +18,7 @@ const history = require("../shared/main/history");
 const { _ } = require("../shared/main/i18n");
 const menuBar = require("../shared/main/menu-bar");
 const fileUtils = require("../shared/main/file-utils");
+const appUtils = require("../shared/main/app-utils");
 const fileFormats = require("../shared/main/file-formats");
 const contextMenu = require("./menu-context");
 const audioPlayer = require("../audio-player/main");
@@ -1771,7 +1772,7 @@ async function exportPageStart(sendToTool = 0) {
     outputFolderPath = fileUtils.createTempFolder();
   } else {
     let defaultPath = app.getPath("desktop");
-    let folderList = fileUtils.chooseFolder(core.getMainWindow(), defaultPath);
+    let folderList = appUtils.chooseFolder(core.getMainWindow(), defaultPath);
     if (folderList === undefined) {
       return;
     }
@@ -2032,7 +2033,7 @@ function onMenuOpenFile() {
     FileExtension.BMP,
     FileExtension.AVIF,
   ];
-  let fileList = fileUtils.chooseOpenFiles(
+  let fileList = appUtils.chooseOpenFiles(
     core.getMainWindow(),
     defaultPath,
     allowedFileTypesName,

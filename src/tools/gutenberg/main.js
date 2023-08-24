@@ -12,7 +12,7 @@ const { _ } = require("../../shared/main/i18n");
 const reader = require("../../reader/main");
 const shell = require("electron").shell;
 const { BookType } = require("../../shared/main/constants");
-const fileUtils = require("../../shared/main/file-utils");
+const appUtils = require("../../shared/main/app-utils");
 const settings = require("../../shared/main/settings");
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -174,7 +174,7 @@ function initHandleIpcCallbacks() {}
 ///////////////////////////////////////////////////////////////////////////////
 
 function getPortableCacheFolder() {
-  return path.join(fileUtils.getExeFolderPath(), "acbr-cache", "gutenberg");
+  return path.join(appUtils.getExeFolderPath(), "acbr-cache", "gutenberg");
 }
 exports.getPortableCacheFolder = getPortableCacheFolder;
 

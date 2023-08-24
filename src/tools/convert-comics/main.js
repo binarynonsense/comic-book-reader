@@ -15,6 +15,7 @@ const { FileExtension, FileDataType } = require("../../shared/main/constants");
 const { fork } = require("child_process");
 const FileType = require("file-type");
 const fileUtils = require("../../shared/main/file-utils");
+const appUtils = require("../../shared/main/app-utils");
 const settings = require("../../shared/main/settings");
 const utils = require("../../shared/main/utils");
 
@@ -61,7 +62,7 @@ exports.open = function (fileData) {
     "show",
     filePath !== undefined
       ? path.dirname(filePath)
-      : fileUtils.getDesktopFolderPath(),
+      : appUtils.getDesktopFolderPath(),
     settings.canEditRars()
   );
 
@@ -150,7 +151,7 @@ function initOnIpcCallbacks() {
         FileExtension.PDF,
         FileExtension.EPUB,
       ];
-      let filePathsList = fileUtils.chooseOpenFiles(
+      let filePathsList = appUtils.chooseOpenFiles(
         core.getMainWindow(),
         defaultPath,
         allowedFileTypesName,
@@ -210,7 +211,7 @@ function initOnIpcCallbacks() {
     } else if (inputFilePath !== undefined) {
       defaultPath = path.dirname(inputFilePath);
     }
-    let folderList = fileUtils.chooseFolder(core.getMainWindow(), defaultPath);
+    let folderList = appUtils.chooseFolder(core.getMainWindow(), defaultPath);
     if (folderList === undefined) {
       return;
     }

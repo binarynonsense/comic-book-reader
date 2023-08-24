@@ -15,7 +15,7 @@ const {
   isPortable,
   getUserDataFolderPath,
   getExeFolderPath,
-} = require("./file-utils");
+} = require("./app-utils");
 
 let g_settings;
 let g_fileName = "acbr.cfg";

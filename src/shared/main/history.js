@@ -13,7 +13,7 @@ const {
   isPortable,
   getUserDataFolderPath,
   getExeFolderPath,
-} = require("./file-utils");
+} = require("./app-utils");
 
 let g_history = [];
 let g_capacity = 100;

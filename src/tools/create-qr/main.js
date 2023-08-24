@@ -12,6 +12,7 @@ const core = require("../../core/main");
 const { _ } = require("../../shared/main/i18n");
 const { FileExtension } = require("../../shared/main/constants");
 const fileUtils = require("../../shared/main/file-utils");
+const appUtils = require("../../shared/main/app-utils");
 const QRCode = require("qrcode");
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -146,11 +147,8 @@ function initOnIpcCallbacks() {
   on("export-to-file", () => {
     let outputFilePath;
     try {
-      let defaultPath = fileUtils.getDesktopFolderPath();
-      let folderList = fileUtils.chooseFolder(
-        core.getMainWindow(),
-        defaultPath
-      );
+      let defaultPath = appUtils.getDesktopFolderPath();
+      let folderList = appUtils.chooseFolder(core.getMainWindow(), defaultPath);
       if (folderList === undefined) {
         return;
       }

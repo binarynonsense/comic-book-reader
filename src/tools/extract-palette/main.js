@@ -12,6 +12,7 @@ const core = require("../../core/main");
 const { _ } = require("../../shared/main/i18n");
 const { FileExtension } = require("../../shared/main/constants");
 const fileUtils = require("../../shared/main/file-utils");
+const appUtils = require("../../shared/main/app-utils");
 const palette = require("./palette");
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -107,7 +108,7 @@ function initOnIpcCallbacks() {
         FileExtension.WEBP,
         FileExtension.AVIF,
       ];
-      let filePathsList = fileUtils.chooseOpenFiles(
+      let filePathsList = appUtils.chooseOpenFiles(
         core.getMainWindow(),
         undefined,
         allowedFileTypesName,
@@ -154,11 +155,8 @@ function initOnIpcCallbacks() {
         return;
       }
 
-      let defaultPath = fileUtils.getDesktopFolderPath();
-      let folderList = fileUtils.chooseFolder(
-        core.getMainWindow(),
-        defaultPath
-      );
+      let defaultPath = appUtils.getDesktopFolderPath();
+      let folderList = appUtils.chooseFolder(core.getMainWindow(), defaultPath);
       if (folderList === undefined) {
         return;
       }
