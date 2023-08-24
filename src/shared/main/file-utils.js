@@ -280,10 +280,54 @@ const getComicInfoFileInFolderRecursive = function (folderPath) {
 exports.getComicInfoFileInFolderRecursive = getComicInfoFileInFolderRecursive;
 
 ///////////////////////////////////////////////////////////////////////////////
-// TEMP FOLDER ////////////////////////////////////////////////////////////////
+// DELETE /////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-// TODO: MAYBE: keep tabs of multiple tempFolders?
+function deleteFolderRecursive(
+  folderPath,
+  logToConsole,
+  pathStartsWith,
+  nameStartsWith
+) {
+  if (fs.existsSync(folderPath)) {
+    if (nameStartsWith) {
+      const folderName = path.basename(folderPath);
+      if (!folderName.startsWith(nameStartsWith)) {
+        return;
+      }
+    }
+    if (pathStartsWith) {
+      if (!folderPath.startsWith(pathStartsWith)) {
+        return;
+      }
+    }
+    let files = fs.readdirSync(folderPath);
+    files.forEach((file) => {
+      const entryPath = path.join(folderPath, file);
+      if (fs.lstatSync(entryPath).isDirectory()) {
+        deleteFolderRecursive(entryPath, logToConsole);
+      } else {
+        fs.unlinkSync(entryPath); // delete the file
+      }
+    });
+    try {
+      fs.rmdirSync(folderPath);
+      if (logToConsole) console.log("deleted folder: " + folderPath);
+    } catch (error) {
+      if (error.code == "ENOTEMPTY") {
+        // TODO: retry?
+        // this can happen if for examplethe temp folder is the same
+        // as the one the conversion is outputing to
+      }
+      if (logToConsole) console.log("Error: " + error.code);
+      if (logToConsole) console.log("couldn't delete folder: " + folderPath);
+    }
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// TEMP FOLDER ////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 let g_tempFolderPath = undefined;
 let g_tempFolderParentPath = undefined;
@@ -316,41 +360,10 @@ exports.createTempFolder = createTempFolder;
 
 function cleanUpTempFolder() {
   if (g_tempFolderPath === undefined) return;
-  deleteTempFolderRecursive(g_tempFolderPath);
+  deleteFolderRecursive(g_tempFolderPath, true, undefined, "acbr-");
   g_tempFolderPath = undefined;
 }
 exports.cleanUpTempFolder = cleanUpTempFolder;
-
-const deleteTempFolderRecursive = function (folderPath, isRoot = true) {
-  if (fs.existsSync(folderPath)) {
-    const folderName = path.basename(folderPath);
-    if (isRoot && !folderName.startsWith("acbr-")) {
-      // safety check
-      return;
-    }
-    let files = fs.readdirSync(folderPath);
-    files.forEach((file) => {
-      const entryPath = path.join(folderPath, file);
-      if (fs.lstatSync(entryPath).isDirectory()) {
-        deleteTempFolderRecursive(entryPath, false);
-      } else {
-        fs.unlinkSync(entryPath); // delete the file
-      }
-    });
-    try {
-      fs.rmdirSync(folderPath);
-      console.log("deleted folder: " + folderPath);
-    } catch (error) {
-      if (error.code == "ENOTEMPTY") {
-        // TODO: retry?
-        // this can happen if the temp folder is the same as the one the
-        // conversion is outputing to
-      }
-      console.log("Error: " + error.code);
-      console.log("couldn't delete folder: " + folderPath);
-    }
-  }
-};
 
 ///////////////////////////////////////////////////////////////////////////////
 // USER DATA //////////////////////////////////////////////////////////////////
@@ -372,7 +385,7 @@ function cleanUpUserDataFolder() {
       if (!keepFiles.includes(file)) {
         const entryPath = path.join(userDataPath, file);
         if (fs.lstatSync(entryPath).isDirectory()) {
-          deleteUserDataFolderRecursive(entryPath);
+          deleteFolderRecursive(entryPath, false, userDataPath);
         } else {
           fs.unlinkSync(entryPath); // delete the file
         }
@@ -381,22 +394,3 @@ function cleanUpUserDataFolder() {
   }
 }
 exports.cleanUpUserDataFolder = cleanUpUserDataFolder;
-
-const deleteUserDataFolderRecursive = function (folderPath) {
-  if (fs.existsSync(folderPath)) {
-    if (!folderPath.startsWith(app.getPath("userData"))) {
-      // safety check
-      return;
-    }
-    let files = fs.readdirSync(folderPath);
-    files.forEach((file) => {
-      const entryPath = path.join(folderPath, file);
-      if (fs.lstatSync(entryPath).isDirectory()) {
-        deleteUserDataFolderRecursive(entryPath);
-      } else {
-        fs.unlinkSync(entryPath); // delete the file
-      }
-    });
-    fs.rmdirSync(folderPath);
-  }
-};
