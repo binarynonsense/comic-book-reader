@@ -15,7 +15,6 @@ const { FileExtension, FileDataType } = require("../../shared/main/constants");
 const { fork } = require("child_process");
 const FileType = require("file-type");
 const fileUtils = require("../../shared/main/file-utils");
-const fileFormats = require("../../shared/main/file-formats");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////

@@ -15,7 +15,6 @@ const { FileExtension, FileDataType } = require("../../shared/main/constants");
 const { fork } = require("child_process");
 const FileType = require("file-type");
 const fileUtils = require("../../shared/main/file-utils");
-const fileFormats = require("../../shared/main/file-formats");
 const settings = require("../../shared/main/settings");
 const utils = require("../../shared/main/utils");
 
@@ -272,43 +271,9 @@ function initOnIpcCallbacks() {
     stopError(err);
   });
 
-  on(
-    "resize-images",
-    (
-      inputFilePath,
-      outputScale,
-      outputQuality,
-      outputFormat,
-      outputFolderPath
-    ) => {
-      resizeImages(
-        inputFilePath,
-        outputScale,
-        outputQuality,
-        outputFormat,
-        outputFolderPath
-      );
-    }
-  );
-
-  on(
-    "resize-images",
-    (
-      inputFilePath,
-      outputScale,
-      outputQuality,
-      outputFormat,
-      outputFolderPath
-    ) => {
-      resizeImages(
-        inputFilePath,
-        outputScale,
-        outputQuality,
-        outputFormat,
-        outputFolderPath
-      );
-    }
-  );
+  on("resize-images", (...args) => {
+    resizeImages(...args);
+  });
 
   on("resizing-canceled", () => {
     if (g_cancel === false) stopCancel();
@@ -317,13 +282,6 @@ function initOnIpcCallbacks() {
   on("resizing-error", (err) => {
     stopError(err);
   });
-
-  on(
-    "create-file-from-images",
-    (imgFilePaths, outputFormat, outputFilePath) => {
-      createFileFromImages(imgFilePaths, outputFormat, outputFilePath);
-    }
-  );
 
   on("end", (wasCanceled, numFiles, numErrors, numAttempted) => {
     if (!wasCanceled) {
@@ -551,7 +509,8 @@ async function resizeImages(
   outputScale,
   outputQuality,
   outputFormat,
-  outputFolderPath
+  outputFolderPath,
+  outputSplitNumFiles
 ) {
   if (g_cancel === true) {
     stopCancel();
@@ -561,20 +520,6 @@ async function resizeImages(
     const sharp = require("sharp");
     outputScale = parseInt(outputScale);
     outputQuality = parseInt(outputQuality);
-
-    let fileName = path.basename(inputFilePath, path.extname(inputFilePath));
-    let outputFilePath = path.join(
-      outputFolderPath,
-      fileName + "." + outputFormat
-    );
-    let i = 1;
-    while (fs.existsSync(outputFilePath)) {
-      i++;
-      outputFilePath = path.join(
-        outputFolderPath,
-        fileName + "(" + i + ")." + outputFormat
-      );
-    }
 
     let tempFolderPath = fileUtils.getTempFolderPath();
     let comicInfoFilePath =
@@ -669,7 +614,7 @@ async function resizeImages(
             imageFormat === FileExtension.WEBP ||
             imageFormat === FileExtension.AVIF ||
             (imageFormat === FileExtension.NOT_SET &&
-              !fileFormats.hasPdfKitCompatibleImageExtension(filePath))
+              !fileUtils.hasPdfKitCompatibleImageExtension(filePath))
           ) {
             imageFormat = FileExtension.JPG;
           }
@@ -683,7 +628,7 @@ async function resizeImages(
             imageFormat === FileExtension.WEBP ||
             imageFormat === FileExtension.AVIF ||
             (imageFormat === FileExtension.NOT_SET &&
-              !fileFormats.hasEpubSupportedImageExtension(filePath))
+              !fileUtils.hasEpubSupportedImageExtension(filePath))
           ) {
             imageFormat = FileExtension.JPG;
           }
@@ -819,88 +764,85 @@ async function resizeImages(
         sendIpcToRenderer("update-log-text", error);
       }
     }
-    createFileFromImages(
+    createFilesFromImages(
+      inputFilePath,
+      outputFolderPath,
       imgFilePaths,
       outputFormat,
-      outputFilePath,
-      comicInfoFilePath
+      comicInfoFilePath,
+      outputSplitNumFiles
     );
   } catch (error) {
     stopError(error);
   }
 }
 
-async function createFileFromImages(
+async function createFilesFromImages(
+  inputFilePath,
+  outputFolderPath,
   imgFilePaths,
   outputFormat,
-  outputFilePath,
-  comicInfoFilePath
+  comicInfoFilePath,
+  outputSplitNumFiles
 ) {
   if (g_cancel === true) {
     stopCancel();
     return;
   }
   try {
-    // compress to output folder
     sendIpcToRenderer(
       "update-log-text",
-      _("tool-shared-modal-log-generating-new-file") + "..."
+      outputSplitNumFiles > 1
+        ? _("tool-shared-modal-log-generating-new-files") + "..."
+        : _("tool-shared-modal-log-generating-new-file") + "..."
     );
-    sendIpcToRenderer("update-log-text", outputFilePath);
-
-    if (outputFormat === FileExtension.PDF) {
-      // TODO: doesn't work in the worker, why?
-      await fileFormats.createPdf(
-        imgFilePaths,
-        outputFilePath,
-        g_pdfCreationMethod
-      );
-      fileUtils.cleanUpTempFolder();
-      sendIpcToRenderer("finished-ok");
-    } else {
-      if (g_worker !== undefined) {
-        // kill it after one use
-        g_worker.kill();
-        g_worker = undefined;
-      }
-      if (g_worker === undefined) {
-        g_worker = fork(
-          path.join(__dirname, "../../shared/main/tools-worker.js")
-        );
-        g_worker.on("message", (message) => {
-          g_worker.kill(); // kill it after one use
-          if (message === "success") {
-            fileUtils.cleanUpTempFolder();
-            sendIpcToRenderer("finished-ok");
-            return;
-          } else {
-            stopError(message);
-            return;
-          }
-        });
-      }
-      let extraData = undefined;
-      if (outputFormat === FileExtension.EPUB) {
-        extraData = g_epubCreationImageStorage;
-      } else if (outputFormat === FileExtension.CBR) {
-        extraData = {
-          rarExePath: utils.getRarCommand(
-            settings.getValue("rarExeFolderPath")
-          ),
-          workingDir: fileUtils.getTempFolderPath(),
-          password: undefined,
-        };
-      }
-      g_worker.send([
-        "create",
-        imgFilePaths,
-        comicInfoFilePath,
-        outputFormat,
-        outputFilePath,
-        fileUtils.getTempFolderPath(),
-        extraData,
-      ]);
+    if (g_worker !== undefined) {
+      // kill it after one use
+      g_worker.kill();
+      g_worker = undefined;
     }
+    if (g_worker === undefined) {
+      g_worker = fork(
+        path.join(__dirname, "../../shared/main/tools-worker.js")
+      );
+      g_worker.on("message", (message) => {
+        g_worker.kill(); // kill it after one use
+        if (message[0] === "success") {
+          fileUtils.cleanUpTempFolder();
+          message[1].forEach((element) => {
+            sendIpcToRenderer("update-log-text", element);
+          });
+          sendIpcToRenderer("finished-ok");
+          return;
+        } else {
+          stopError(message[0]);
+          return;
+        }
+      });
+    }
+    let extraData = undefined;
+    if (outputFormat === FileExtension.EPUB) {
+      extraData = g_epubCreationImageStorage;
+    } else if (outputFormat === FileExtension.CBR) {
+      extraData = {
+        rarExePath: utils.getRarCommand(settings.getValue("rarExeFolderPath")),
+        workingDir: fileUtils.getTempFolderPath(),
+        password: undefined,
+      };
+    } else if (outputFormat === FileExtension.PDF) {
+      extraData = g_pdfCreationMethod;
+    }
+    g_worker.send([
+      "create-split",
+      inputFilePath,
+      outputFolderPath,
+      outputSplitNumFiles,
+      imgFilePaths,
+      comicInfoFilePath,
+      outputFormat,
+      fileUtils.getTempFolderPath(),
+      extraData,
+    ]);
   } catch (err) {
     stopError(err);
   }
@@ -1034,6 +976,10 @@ function getLocalization() {
     {
       id: "tool-cc-advanced-output-options-text",
       text: _("tool-shared-ui-advanced-output-options"),
+    },
+    {
+      id: "tool-cc-split-num-files-text",
+      text: _("tool-sc-number"),
     },
     {
       id: "tool-cc-pdf-creation-text",

@@ -12,10 +12,20 @@ const fileFormats = require("../shared/main/file-formats");
 const { FileExtension, FileDataType } = require("../shared/main/constants");
 
 process.on("message", (message) => {
-  exportPage(message.data, message.outputFolderPath, message.sendToTool);
+  exportPage(
+    message.data,
+    message.outputFolderPath,
+    message.sendToTool,
+    message.untrackedTempFolder
+  );
 });
 
-async function exportPage(fileData, outputFolderPath, sendToTool) {
+async function exportPage(
+  fileData,
+  outputFolderPath,
+  sendToTool,
+  untrackedTempFolder
+) {
   try {
     let buf;
     if (fileData.type === FileDataType.ZIP) {
@@ -34,7 +44,8 @@ async function exportPage(fileData, outputFolderPath, sendToTool) {
       buf = await fileFormats.extract7ZipEntryBuffer(
         fileData.path,
         fileData.pagesPaths[fileData.pageIndex],
-        fileData.password
+        fileData.password,
+        untrackedTempFolder
       );
     } else if (fileData.type === FileDataType.EPUB_COMIC) {
       let data = await fileFormats.extractEpubImageBuffer(

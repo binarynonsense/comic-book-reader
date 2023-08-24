@@ -34,6 +34,7 @@ let g_outputFormatSelect;
 let g_outputImageScaleSlider;
 let g_outputImageFormatSelect;
 let g_outputImageQualitySlider;
+let g_outputSplitNumFilesInput;
 
 let g_localizedRemoveFromListText;
 let g_localizedModalCancelButtonText;
@@ -100,6 +101,10 @@ function init(outputFolderPath, canEditRars) {
   g_outputImageQualitySlider = document.querySelector(
     "#tool-cc-output-image-quality-slider"
   );
+  g_outputSplitNumFilesInput = document.querySelector(
+    "#tool-cc-split-num-files-input"
+  );
+  g_outputSplitNumFilesInput.value = 1;
 
   g_startButton = document.querySelector("#tool-cc-start-button");
 
@@ -381,7 +386,8 @@ function initOnIpcCallbacks() {
       g_outputImageScaleSlider.value,
       g_outputImageQualitySlider.value,
       g_outputFormat,
-      g_outputFolderPath
+      g_outputFolderPath,
+      g_outputSplitNumFilesInput.value
     );
   });
 

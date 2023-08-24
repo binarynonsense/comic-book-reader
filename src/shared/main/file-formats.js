@@ -9,125 +9,11 @@ const path = require("path");
 const fs = require("fs");
 const os = require("os");
 const utils = require("./utils");
+const fileUtils = require("./file-utils");
 
 function isDev() {
   return process.argv[2] == "--dev";
 }
-
-///////////////////////////////////////////////////////////////////////////////
-// HELPERS ////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-
-function getMimeType(filePath) {
-  let mimeType = path.extname(filePath).substring(1);
-  return mimeType;
-}
-exports.getMimeType = getMimeType;
-
-function hasImageExtension(filePath) {
-  const allowedFileExtensions = [
-    ".jpg",
-    ".jpeg",
-    ".png",
-    ".webp",
-    ".bmp",
-    ".avif",
-  ];
-  let fileExtension = path.extname(filePath).toLowerCase();
-  for (i = 0; i < allowedFileExtensions.length; i++) {
-    if (fileExtension === allowedFileExtensions[i]) {
-      return true;
-    }
-  }
-  return false;
-}
-exports.hasImageExtension = hasImageExtension;
-
-exports.hasBookExtension = function (filePath) {
-  const allowedFileExtensions = [".cbz", ".cbr", ".pdf", ".epub", ".cb7"];
-  let fileExtension = path.extname(filePath).toLowerCase();
-  for (i = 0; i < allowedFileExtensions.length; i++) {
-    if (fileExtension === allowedFileExtensions[i]) {
-      return true;
-    }
-  }
-  return false;
-};
-
-exports.hasComicBookExtension = function (filePath) {
-  const allowedFileExtensions = [".cbz", ".cbr", ".pdf", ".epub", ".cb7"];
-  let fileExtension = path.extname(filePath).toLowerCase();
-  for (i = 0; i < allowedFileExtensions.length; i++) {
-    if (fileExtension === allowedFileExtensions[i]) {
-      return true;
-    }
-  }
-  return false;
-};
-
-exports.hasEpubExtension = function (filePath) {
-  let fileExtension = path.extname(filePath).toLowerCase();
-  if (fileExtension === ".epub") {
-    return true;
-  }
-  return false;
-};
-
-exports.hasPdfKitCompatibleImageExtension = function (filePath) {
-  const allowedFileExtensions = [".jpg", ".jpeg", ".png"];
-  let fileExtension = path.extname(filePath).toLowerCase();
-  for (i = 0; i < allowedFileExtensions.length; i++) {
-    if (fileExtension === allowedFileExtensions[i]) {
-      return true;
-    }
-  }
-  return false;
-};
-
-exports.hasEpubSupportedImageExtension = function (filePath) {
-  const allowedFileExtensions = [".jpg", ".jpeg", ".png"]; // gif?
-  let fileExtension = path.extname(filePath).toLowerCase();
-  for (i = 0; i < allowedFileExtensions.length; i++) {
-    if (fileExtension === allowedFileExtensions[i]) {
-      return true;
-    }
-  }
-  return false;
-};
-
-// mostly a copy from file-utils
-
-function createTempFolder() {
-  let tempFolderPath = fs.mkdtempSync(
-    path.join(os.tmpdir(), "comic-book-reader-")
-  );
-  return tempFolderPath;
-}
-
-function cleanUpTempFolder(tempFolderPath) {
-  if (tempFolderPath === undefined) return;
-  deleteTempFolderRecursive(tempFolderPath);
-  tempFolderPath = undefined;
-}
-
-const deleteTempFolderRecursive = function (folderPath) {
-  if (fs.existsSync(folderPath)) {
-    if (!folderPath.startsWith(os.tmpdir())) {
-      // safety check
-      return;
-    }
-    let files = fs.readdirSync(folderPath);
-    files.forEach((file) => {
-      const entryPath = path.join(folderPath, file);
-      if (fs.lstatSync(entryPath).isDirectory()) {
-        deleteTempFolderRecursive(entryPath);
-      } else {
-        fs.unlinkSync(entryPath); // delete the file
-      }
-    });
-    fs.rmdirSync(folderPath);
-  }
-};
 
 ///////////////////////////////////////////////////////////////////////////////
 // RAR ////////////////////////////////////////////////////////////////////////
@@ -169,7 +55,7 @@ async function getRarEntriesList(filePath, password) {
         encryptedEntryName = header.name;
       }
       if (!header.flags.directory) {
-        if (hasImageExtension(header.name)) {
+        if (fileUtils.hasImageExtension(header.name)) {
           imgEntries.push(header.name);
         } else if (header.name.toLowerCase().endsWith("comicinfo.xml")) {
           comicInfoId = header.name;
@@ -303,7 +189,7 @@ function getZipEntriesList(filePath, password) {
         compressionMethod = zipEntry.header.method;
       }
       if (!zipEntry.isDirectory) {
-        if (hasImageExtension(zipEntry.entryName)) {
+        if (fileUtils.hasImageExtension(zipEntry.entryName)) {
           imgEntries.push(zipEntry.entryName);
         } else if (zipEntry.entryName.toLowerCase().endsWith("comicinfo.xml")) {
           comicInfoId = zipEntry.entryName;
@@ -423,7 +309,7 @@ async function get7ZipEntriesList(filePath, password) {
     let promise = await new Promise((resolve) => {
       imgEntries = [];
       seven.on("data", function (data) {
-        if (hasImageExtension(data.file)) {
+        if (fileUtils.hasImageExtension(data.file)) {
           imgEntries.push(data.file);
         } else if (data.file.toLowerCase().endsWith("comicinfo.xml")) {
           comicInfoId = data.file;
@@ -464,10 +350,13 @@ async function get7ZipEntriesList(filePath, password) {
 }
 exports.get7ZipEntriesList = get7ZipEntriesList;
 
-async function extract7ZipEntryBuffer(filePath, entryName, password) {
-  let tempFolderPath;
+async function extract7ZipEntryBuffer(
+  filePath,
+  entryName,
+  password,
+  untrackedTempFolder
+) {
   try {
-    tempFolderPath = createTempFolder();
     //////////////////////////////////////////
     if (password === undefined || password === "") {
       // to help trigger the right error
@@ -476,7 +365,7 @@ async function extract7ZipEntryBuffer(filePath, entryName, password) {
     checkPathTo7ZipBin();
 
     const Seven = require("node-7z");
-    const seven = Seven.extract(filePath, tempFolderPath, {
+    const seven = Seven.extract(filePath, untrackedTempFolder, {
       $bin: g_pathTo7zipBin,
       charset: "UTF-8", // always used just in case?
       password: password,
@@ -498,16 +387,16 @@ async function extract7ZipEntryBuffer(filePath, entryName, password) {
 
     let buffer;
     if (promise.success === true) {
-      buffer = fs.readFileSync(path.join(tempFolderPath, entryName));
-      cleanUpTempFolder(tempFolderPath);
+      buffer = fs.readFileSync(path.join(untrackedTempFolder, entryName));
+      fileUtils.cleanUpTempFolder(untrackedTempFolder);
       return buffer;
     }
     //////////////////////////////////////////
-    cleanUpTempFolder(tempFolderPath);
+    fileUtils.cleanUpTempFolder(untrackedTempFolder);
     return undefined;
   } catch (error) {
     console.log(error);
-    cleanUpTempFolder(tempFolderPath);
+    fileUtils.cleanUpTempFolder(untrackedTempFolder);
     return undefined;
   }
 }
@@ -829,11 +718,13 @@ async function createPdf(imgPathsList, outputFilePath, method) {
     const pdf = new PDFDocument({
       autoFirstPage: false,
     });
-    pdf.pipe(fs.createWriteStream(outputFilePath));
+    let stream = fs.createWriteStream(outputFilePath);
+    // stream.on("finish", function () {
+    // });
+    pdf.pipe(stream);
     for (let index = 0; index < imgPathsList.length; index++) {
       const imgPath = imgPathsList[index];
       const img = pdf.openImage(imgPath);
-
       if (method === "metadata") {
         let imgData = await sharp(imgPath).metadata();
         let imgDpi = imgData.density;
@@ -859,6 +750,13 @@ async function createPdf(imgPathsList, outputFilePath, method) {
       }
     }
     pdf.end();
+    // ref: https://stackoverflow.com/questions/74686305/how-to-properly-await-createwritestream
+    const { once } = require("node:events");
+    try {
+      await once(stream, "finish");
+    } catch (error) {
+      throw error;
+    }
   } catch (error) {
     throw error;
   }

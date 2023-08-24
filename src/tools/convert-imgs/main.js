@@ -11,11 +11,8 @@ const path = require("path");
 const core = require("../../core/main");
 const { _ } = require("../../shared/main/i18n");
 
-const { FileExtension, FileDataType } = require("../../shared/main/constants");
-const { fork } = require("child_process");
-const FileType = require("file-type");
+const { FileExtension } = require("../../shared/main/constants");
 const fileUtils = require("../../shared/main/file-utils");
-const fileFormats = require("../../shared/main/file-formats");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////

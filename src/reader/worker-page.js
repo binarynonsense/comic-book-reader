@@ -9,6 +9,7 @@ const fs = require("fs");
 const path = require("path");
 const fileFormats = require("../shared/main/file-formats");
 const { FileDataType } = require("../shared/main/constants");
+const fileUtils = require("../shared/main/file-utils");
 
 process.on("message", (message) => {
   extractBase64Image(...message);
@@ -19,28 +20,30 @@ async function extractBase64Image(
   filePath,
   entryName,
   scrollBarPos,
-  password
+  password,
+  untrackedTempFolder
 ) {
   try {
     let buf;
     let mime;
     if (fileType === FileDataType.ZIP) {
       buf = fileFormats.extractZipEntryBuffer(filePath, entryName, password);
-      mime = "image/" + fileFormats.getMimeType(entryName);
+      mime = "image/" + fileUtils.getMimeType(entryName);
     } else if (fileType === FileDataType.RAR) {
       buf = await fileFormats.extractRarEntryBuffer(
         filePath,
         entryName,
         password
       );
-      mime = "image/" + fileFormats.getMimeType(entryName);
+      mime = "image/" + fileUtils.getMimeType(entryName);
     } else if (fileType === FileDataType.SEVENZIP) {
       buf = await fileFormats.extract7ZipEntryBuffer(
         filePath,
         entryName,
-        password
+        password,
+        untrackedTempFolder
       );
-      mime = "image/" + fileFormats.getMimeType(entryName);
+      mime = "image/" + fileUtils.getMimeType(entryName);
     } else if (fileType === FileDataType.EPUB_COMIC) {
       const data = await fileFormats.extractEpubImageBuffer(
         filePath,
@@ -54,7 +57,7 @@ async function extractBase64Image(
       // }
       const fullPath = path.join(filePath, entryName);
       buf = fs.readFileSync(fullPath);
-      mime = "image/" + fileFormats.getMimeType(fullPath);
+      mime = "image/" + fileUtils.getMimeType(fullPath);
     } else {
       //  TODO: handle error file type not valid
     }

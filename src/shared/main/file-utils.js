@@ -10,8 +10,9 @@ const { app, dialog } = require("electron");
 const path = require("path");
 const os = require("os");
 const fs = require("fs");
-const fileFormats = require("./file-formats");
 
+///////////////////////////////////////////////////////////////////////////////
+// MOVE ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
 exports.moveFile = function (oldPath, newPath) {
@@ -26,6 +27,87 @@ exports.moveFile = function (oldPath, newPath) {
       throw error;
     }
   }
+};
+
+///////////////////////////////////////////////////////////////////////////////
+// EXTENSIONS /////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+function getMimeType(filePath) {
+  let mimeType = path.extname(filePath).substring(1);
+  return mimeType;
+}
+exports.getMimeType = getMimeType;
+
+function hasImageExtension(filePath) {
+  const allowedFileExtensions = [
+    ".jpg",
+    ".jpeg",
+    ".png",
+    ".webp",
+    ".bmp",
+    ".avif",
+  ];
+  let fileExtension = path.extname(filePath).toLowerCase();
+  for (i = 0; i < allowedFileExtensions.length; i++) {
+    if (fileExtension === allowedFileExtensions[i]) {
+      return true;
+    }
+  }
+  return false;
+}
+exports.hasImageExtension = hasImageExtension;
+
+exports.hasBookExtension = function (filePath) {
+  const allowedFileExtensions = [".cbz", ".cbr", ".pdf", ".epub", ".cb7"];
+  let fileExtension = path.extname(filePath).toLowerCase();
+  for (i = 0; i < allowedFileExtensions.length; i++) {
+    if (fileExtension === allowedFileExtensions[i]) {
+      return true;
+    }
+  }
+  return false;
+};
+
+exports.hasComicBookExtension = function (filePath) {
+  const allowedFileExtensions = [".cbz", ".cbr", ".pdf", ".epub", ".cb7"];
+  let fileExtension = path.extname(filePath).toLowerCase();
+  for (i = 0; i < allowedFileExtensions.length; i++) {
+    if (fileExtension === allowedFileExtensions[i]) {
+      return true;
+    }
+  }
+  return false;
+};
+
+exports.hasEpubExtension = function (filePath) {
+  let fileExtension = path.extname(filePath).toLowerCase();
+  if (fileExtension === ".epub") {
+    return true;
+  }
+  return false;
+};
+
+exports.hasPdfKitCompatibleImageExtension = function (filePath) {
+  const allowedFileExtensions = [".jpg", ".jpeg", ".png"];
+  let fileExtension = path.extname(filePath).toLowerCase();
+  for (i = 0; i < allowedFileExtensions.length; i++) {
+    if (fileExtension === allowedFileExtensions[i]) {
+      return true;
+    }
+  }
+  return false;
+};
+
+exports.hasEpubSupportedImageExtension = function (filePath) {
+  const allowedFileExtensions = [".jpg", ".jpeg", ".png"]; // gif?
+  let fileExtension = path.extname(filePath).toLowerCase();
+  for (i = 0; i < allowedFileExtensions.length; i++) {
+    if (fileExtension === allowedFileExtensions[i]) {
+      return true;
+    }
+  }
+  return false;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -218,7 +300,7 @@ const getImageFilesInFolderRecursive = function (folderPath) {
       if (fs.lstatSync(nodePath).isDirectory()) {
         dirs.push(nodePath); // check later so this folder's imgs come first
       } else {
-        if (fileFormats.hasImageExtension(nodePath)) {
+        if (hasImageExtension(nodePath)) {
           filesArray.push(nodePath);
         }
       }
@@ -238,7 +320,7 @@ function getImageFilesInFolder(folderPath) {
     if (filesInFolder.length === 0) {
       return [];
     } else {
-      return filesInFolder.filter(fileFormats.hasImageExtension);
+      return filesInFolder.filter(hasImageExtension);
     }
   } else {
     return [];
@@ -353,16 +435,25 @@ function getSystemTempFolderPath() {
 }
 exports.getSystemTempFolderPath = getSystemTempFolderPath;
 
-function createTempFolder() {
-  g_tempFolderPath = fs.mkdtempSync(path.join(g_tempFolderParentPath, "acbr-"));
-  return g_tempFolderPath;
+function createTempFolder(keepTrack = true) {
+  let tempFolderPath = fs.mkdtempSync(
+    path.join(g_tempFolderParentPath, "acbr-")
+  );
+  if (keepTrack) {
+    g_tempFolderPath = tempFolderPath;
+  }
+  return tempFolderPath;
 }
 exports.createTempFolder = createTempFolder;
 
-function cleanUpTempFolder() {
-  if (g_tempFolderPath === undefined) return;
-  deleteFolderRecursive(g_tempFolderPath, true, undefined, "acbr-");
-  g_tempFolderPath = undefined;
+function cleanUpTempFolder(tempFolderPath) {
+  if (tempFolderPath) {
+    deleteFolderRecursive(tempFolderPath, false, undefined, "acbr-");
+  } else {
+    if (g_tempFolderPath === undefined) return;
+    deleteFolderRecursive(g_tempFolderPath, true, undefined, "acbr-");
+    g_tempFolderPath = undefined;
+  }
 }
 exports.cleanUpTempFolder = cleanUpTempFolder;
 

@@ -366,7 +366,7 @@ async function createFileFromImages(
           return;
         }
         let filePath = imgFilePaths[index];
-        if (!fileFormats.hasPdfKitCompatibleImageExtension(filePath)) {
+        if (!fileUtils.hasPdfKitCompatibleImageExtension(filePath)) {
           let fileFolderPath = path.dirname(filePath);
           let fileName = path.basename(filePath, path.extname(filePath));
           let tmpFilePath = path.join(

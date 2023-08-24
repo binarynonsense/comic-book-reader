@@ -600,7 +600,7 @@ function tryOpen(filePath, bookType, historyEntry) {
     }
   }
 
-  if (fileFormats.hasEpubExtension(filePath) && bookType === BookType.NOT_SET) {
+  if (fileUtils.hasEpubExtension(filePath) && bookType === BookType.NOT_SET) {
     // Special case, as epub can be opened as comic or ebook
     sendIpcToRenderer(
       "show-modal-question-openas",
@@ -628,7 +628,7 @@ exports.tryOpen = tryOpen;
 
 function tryOpenPath(filePath, pageIndex, bookType, historyEntry) {
   if (bookType === BookType.EBOOK) {
-    if (fileFormats.hasEpubExtension(filePath)) {
+    if (fileUtils.hasEpubExtension(filePath)) {
       return openEbookFromPath(filePath, pageIndex, historyEntry);
     } else {
       // ERROR ??????
@@ -646,8 +646,8 @@ function tryOpenPath(filePath, pageIndex, bookType, historyEntry) {
     if (
       !(
         fs.lstatSync(filePath).isDirectory() ||
-        fileFormats.hasComicBookExtension(filePath) ||
-        fileFormats.hasImageExtension(filePath)
+        fileUtils.hasComicBookExtension(filePath) ||
+        fileUtils.hasImageExtension(filePath)
       )
     ) {
       sendIpcToRenderer(
@@ -661,10 +661,10 @@ function tryOpenPath(filePath, pageIndex, bookType, historyEntry) {
     if (fs.lstatSync(filePath).isDirectory()) {
       openImageFolder(filePath, undefined, pageIndex);
       return true;
-    } else if (fileFormats.hasComicBookExtension(filePath)) {
+    } else if (fileUtils.hasComicBookExtension(filePath)) {
       openComicBookFromPath(filePath, pageIndex, "", historyEntry);
       return true;
-    } else if (fileFormats.hasImageExtension(filePath)) {
+    } else if (fileUtils.hasImageExtension(filePath)) {
       openImageFile(filePath);
       return true;
     }
@@ -1150,7 +1150,7 @@ function tryOpeningAdjacentFile(next) {
   let allFiles = fs.readdirSync(folderPath);
   let comicFiles = [];
   allFiles.forEach((file) => {
-    if (fileFormats.hasComicBookExtension(file)) {
+    if (fileUtils.hasComicBookExtension(file)) {
       comicFiles.push(file);
     }
   });
@@ -1248,6 +1248,9 @@ function goToPage(pageIndex, scrollBarPos = 0) {
       g_fileData.pagesPaths[g_fileData.pageIndex],
       scrollBarPos,
       g_fileData.password,
+      g_fileData.type === FileDataType.SEVENZIP
+        ? fileUtils.createTempFolder(false)
+        : undefined,
     ]);
   } else if (g_fileData.type === FileDataType.EPUB_EBOOK) {
     if (pageIndex > 0) {
@@ -1836,6 +1839,10 @@ async function exportPageStart(sendToTool = 0) {
         data: g_fileData,
         outputFolderPath: outputFolderPath,
         sendToTool: sendToTool,
+        untrackedTempFolder:
+          g_fileData.type === FileDataType.SEVENZIP
+            ? fileUtils.createTempFolder(false)
+            : undefined,
       });
     }
   } catch (err) {

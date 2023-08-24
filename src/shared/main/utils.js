@@ -45,3 +45,14 @@ exports.isRarExeAvailable = function (rarFolderPath) {
 exports.delay = async function (seconds) {
   return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
 };
+
+exports.splitArray = function (array, number) {
+  // ref: https://stackoverflow.com/questions/8188548/splitting-a-js-array-into-n-arrays
+  if (number > array.length) number = array.length;
+  let copyArray = [...array];
+  let result = [];
+  for (let i = number; i > 0; i--) {
+    result.push(copyArray.splice(0, Math.ceil(copyArray.length / i)));
+  }
+  return result;
+};
