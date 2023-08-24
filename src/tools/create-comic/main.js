@@ -189,12 +189,9 @@ function initOnIpcCallbacks() {
     stopError(err);
   });
 
-  on(
-    "create-file-from-images",
-    (outputFileName, outputFormat, outputFolderPath) => {
-      createFileFromImages(outputFileName, outputFormat, outputFolderPath);
-    }
-  );
+  on("create-file-from-images", (...args) => {
+    createFileFromImages(...args);
+  });
 
   on("end", (wasCanceled, numFiles, numErrors, numAttempted) => {
     if (!wasCanceled) {
@@ -334,19 +331,6 @@ async function createFileFromImages(
     return;
   }
   try {
-    let outputFilePath = path.join(
-      outputFolderPath,
-      outputFileName + "." + outputFormat
-    );
-    let i = 1;
-    while (fs.existsSync(outputFilePath)) {
-      i++;
-      outputFilePath = path.join(
-        outputFolderPath,
-        outputFileName + "(" + i + ")." + outputFormat
-      );
-    }
-
     let tempFolderPath = fileUtils.getTempFolderPath();
     let imgFilePaths = fileUtils.getImageFilesInFolderRecursive(tempFolderPath);
     if (imgFilePaths === undefined || imgFilePaths.length === 0) {
@@ -393,22 +377,11 @@ async function createFileFromImages(
     }
 
     // compress to output folder
-    sendIpcToRenderer(
-      "update-log-text",
-      _("tool-shared-modal-log-generating-new-file") + "..."
-    );
-    sendIpcToRenderer("update-log-text", outputFilePath);
-
-    if (outputFormat === FileExtension.PDF) {
-      // TODO: doesn't work in the worker, why?
-      await fileFormats.createPdf(
-        imgFilePaths,
-        outputFilePath,
-        g_pdfCreationMethod
+    try {
+      sendIpcToRenderer(
+        "update-log-text",
+        _("tool-shared-modal-log-generating-new-file") + "..."
       );
-      fileUtils.cleanUpTempFolder();
-      sendIpcToRenderer("finished-ok");
-    } else {
       if (g_worker !== undefined) {
         // kill it after one use
         g_worker.kill();
@@ -420,12 +393,15 @@ async function createFileFromImages(
         );
         g_worker.on("message", (message) => {
           g_worker.kill(); // kill it after one use
-          if (message === "success") {
+          if (message[0] === "success") {
             fileUtils.cleanUpTempFolder();
+            message[1].forEach((element) => {
+              sendIpcToRenderer("update-log-text", element);
+            });
             sendIpcToRenderer("finished-ok");
             return;
           } else {
-            stopError(message);
+            stopError(message[0]);
             return;
           }
         });
@@ -439,17 +415,21 @@ async function createFileFromImages(
           workingDir: fileUtils.getTempFolderPath(),
           password: undefined,
         };
+      } else if (outputFormat === FileExtension.PDF) {
+        extraData = g_pdfCreationMethod;
       }
       g_worker.send([
         "create",
+        outputFileName,
+        outputFolderPath,
+        1,
         imgFilePaths,
         undefined, // comicinfoxml
         outputFormat,
-        outputFilePath,
         fileUtils.getTempFolderPath(),
         extraData,
       ]);
-    }
+    } catch (error) {}
   } catch (err) {
     stopError(err);
   }

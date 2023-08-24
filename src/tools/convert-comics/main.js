@@ -833,9 +833,13 @@ async function createFilesFromImages(
     } else if (outputFormat === FileExtension.PDF) {
       extraData = g_pdfCreationMethod;
     }
-    g_worker.send([
-      "create-split",
+    let baseFileName = path.basename(
       inputFilePath,
+      path.extname(inputFilePath)
+    );
+    g_worker.send([
+      "create",
+      baseFileName,
       outputFolderPath,
       outputSplitNumFiles,
       imgFilePaths,

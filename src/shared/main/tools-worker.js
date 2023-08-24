@@ -16,9 +16,7 @@ process.on("message", (message) => {
   if (message[0] === "extract") {
     extractImages(...message.slice(1));
   } else if (message[0] === "create") {
-    createFile(...message.slice(1));
-  } else if (message[0] === "create-split") {
-    createSplitFiles(...message.slice(1));
+    createFiles(...message.slice(1));
   }
 });
 
@@ -57,54 +55,54 @@ async function extractImages(
   }
 }
 
-async function createFile(
-  imgFilePaths,
-  comicInfoFilePath,
-  outputFormat,
-  outputFilePath,
-  tempFolderPath,
-  extra
-) {
-  try {
-    if (outputFormat === FileExtension.PDF) {
-      // TODO: doesn't work in the worker, why?
-      //await fileFormats.createPdf(imgFilePaths, outputFilePath, method);
-      process.send("ERROR: can't create a pdf in the worker");
-    } else if (outputFormat === FileExtension.EPUB) {
-      await fileFormats.createEpub(
-        imgFilePaths,
-        outputFilePath,
-        tempFolderPath,
-        extra
-      );
-    } else if (outputFormat === FileExtension.CB7) {
-      if (comicInfoFilePath) imgFilePaths.push(comicInfoFilePath);
-      await fileFormats.create7Zip(imgFilePaths, outputFilePath);
-    } else if (outputFormat === FileExtension.CBR) {
-      if (comicInfoFilePath) imgFilePaths.push(comicInfoFilePath);
-      if (
-        !fileFormats.createRar(
-          imgFilePaths,
-          outputFilePath,
-          extra.rarExePath,
-          extra.workingDir,
-          extra.password
-        )
-      )
-        throw "error creating rar";
-    } else {
-      //cbz
-      if (comicInfoFilePath) imgFilePaths.push(comicInfoFilePath);
-      fileFormats.createZip(imgFilePaths, outputFilePath);
-    }
-    process.send("success");
-  } catch (err) {
-    process.send(err);
-  }
-}
+// async function createFile(
+//   imgFilePaths,
+//   comicInfoFilePath,
+//   outputFormat,
+//   outputFilePath,
+//   tempFolderPath,
+//   extra
+// ) {
+//   try {
+//     if (outputFormat === FileExtension.PDF) {
+//       // TODO: doesn't work in the worker, why?
+//       //await fileFormats.createPdf(imgFilePaths, outputFilePath, method);
+//       process.send("ERROR: can't create a pdf in the worker");
+//     } else if (outputFormat === FileExtension.EPUB) {
+//       await fileFormats.createEpub(
+//         imgFilePaths,
+//         outputFilePath,
+//         tempFolderPath,
+//         extra
+//       );
+//     } else if (outputFormat === FileExtension.CB7) {
+//       if (comicInfoFilePath) imgFilePaths.push(comicInfoFilePath);
+//       await fileFormats.create7Zip(imgFilePaths, outputFilePath);
+//     } else if (outputFormat === FileExtension.CBR) {
+//       if (comicInfoFilePath) imgFilePaths.push(comicInfoFilePath);
+//       if (
+//         !fileFormats.createRar(
+//           imgFilePaths,
+//           outputFilePath,
+//           extra.rarExePath,
+//           extra.workingDir,
+//           extra.password
+//         )
+//       )
+//         throw "error creating rar";
+//     } else {
+//       //cbz
+//       if (comicInfoFilePath) imgFilePaths.push(comicInfoFilePath);
+//       fileFormats.createZip(imgFilePaths, outputFilePath);
+//     }
+//     process.send("success");
+//   } catch (err) {
+//     process.send(err);
+//   }
+// }
 
-async function createSplitFiles(
-  inputFilePath,
+async function createFiles(
+  baseFileName,
   outputFolderPath,
   outputSplitNumFiles,
   imgFilePaths,
@@ -117,7 +115,6 @@ async function createSplitFiles(
   try {
     let createdFiles = [];
     let filesData = [];
-    let fileName = path.basename(inputFilePath, path.extname(inputFilePath));
     outputSplitNumFiles = parseInt(outputSplitNumFiles);
     if (
       !outputSplitNumFiles ||
@@ -130,14 +127,14 @@ async function createSplitFiles(
       // just one file in the output folder
       let outputFilePath = path.join(
         outputFolderPath,
-        fileName + "." + outputFormat
+        baseFileName + "." + outputFormat
       );
       let i = 1;
       while (fs.existsSync(outputFilePath)) {
         i++;
         outputFilePath = path.join(
           outputFolderPath,
-          fileName + "(" + i + ")." + outputFormat
+          baseFileName + "(" + i + ")." + outputFormat
         );
       }
       filesData.push({
@@ -147,19 +144,19 @@ async function createSplitFiles(
     } else {
       // multiple files in a subfolder in the output folder
       const subArrays = utils.splitArray(imgFilePaths, outputSplitNumFiles);
-      outputSubFolderPath = path.join(outputFolderPath, fileName);
+      outputSubFolderPath = path.join(outputFolderPath, baseFileName);
       let i = 1;
       while (fs.existsSync(outputSubFolderPath)) {
         i++;
         outputSubFolderPath = path.join(
           outputFolderPath,
-          fileName + "(" + i + ")"
+          baseFileName + "(" + i + ")"
         );
       }
       for (let index = 0; index < subArrays.length; index++) {
         let outputFilePath = path.join(
           tempFolderPath,
-          `${fileName}(${index + 1}_${subArrays.length}).${outputFormat}`
+          `${baseFileName}(${index + 1}_${subArrays.length}).${outputFormat}`
         );
         filesData.push({
           imgFilePaths: subArrays[index],
