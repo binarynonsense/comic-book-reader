@@ -55,52 +55,6 @@ async function extractImages(
   }
 }
 
-// async function createFile(
-//   imgFilePaths,
-//   comicInfoFilePath,
-//   outputFormat,
-//   outputFilePath,
-//   tempFolderPath,
-//   extra
-// ) {
-//   try {
-//     if (outputFormat === FileExtension.PDF) {
-//       // TODO: doesn't work in the worker, why?
-//       //await fileFormats.createPdf(imgFilePaths, outputFilePath, method);
-//       process.send("ERROR: can't create a pdf in the worker");
-//     } else if (outputFormat === FileExtension.EPUB) {
-//       await fileFormats.createEpub(
-//         imgFilePaths,
-//         outputFilePath,
-//         tempFolderPath,
-//         extra
-//       );
-//     } else if (outputFormat === FileExtension.CB7) {
-//       if (comicInfoFilePath) imgFilePaths.push(comicInfoFilePath);
-//       await fileFormats.create7Zip(imgFilePaths, outputFilePath);
-//     } else if (outputFormat === FileExtension.CBR) {
-//       if (comicInfoFilePath) imgFilePaths.push(comicInfoFilePath);
-//       if (
-//         !fileFormats.createRar(
-//           imgFilePaths,
-//           outputFilePath,
-//           extra.rarExePath,
-//           extra.workingDir,
-//           extra.password
-//         )
-//       )
-//         throw "error creating rar";
-//     } else {
-//       //cbz
-//       if (comicInfoFilePath) imgFilePaths.push(comicInfoFilePath);
-//       fileFormats.createZip(imgFilePaths, outputFilePath);
-//     }
-//     process.send("success");
-//   } catch (err) {
-//     process.send(err);
-//   }
-// }
-
 async function createFiles(
   baseFileName,
   outputFolderPath,
