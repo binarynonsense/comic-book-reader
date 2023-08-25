@@ -281,6 +281,7 @@
   "tool-shared-modal-title-extraction-canceled": "Extracción Cancelada",
   "tool-shared-modal-title-creation-finished": "Creación Finalizada",
   "tool-shared-modal-title-creation-canceled": "Creación Cancelada",
+  "tool-shared-modal-title-creation-failed": "Creación Fallida",
 
   "tool-shared-modal-info-conversion-success-num-files": "{0} archivo/s correctamente convertido/s",
   "tool-shared-modal-info-conversion-results": "Convertidos: {0} | Errores: {1} | Cancelados: {2}",

@@ -281,6 +281,7 @@
   "tool-shared-modal-title-extraction-canceled": "Извлечение отменено",
   "tool-shared-modal-title-creation-finished": "Создание завершено",
   "tool-shared-modal-title-creation-canceled": "Создание отменено",
+  "[NEEDS TRANSLATION]tool-shared-modal-title-creation-failed": "Creation Failed",
 
   "tool-shared-modal-info-conversion-success-num-files": "{0} файла(ов) успешно конвертировано",
   "tool-shared-modal-info-conversion-results": "Конвертированно: {0} | Ошибок: {1} | Отменено: {2}",

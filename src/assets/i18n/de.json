@@ -281,6 +281,7 @@
   "tool-shared-modal-title-extraction-canceled": "Extraktion Abgebrochen",
   "tool-shared-modal-title-creation-finished": "Erstellung Beendet",
   "tool-shared-modal-title-creation-canceled": "Erstellung Abgebrochen",
+  "[NEEDS TRANSLATION]tool-shared-modal-title-creation-failed": "Creation Failed",
 
   "tool-shared-modal-info-conversion-success-num-files": "{0} Datei/en korrekt konvertiert",
   "tool-shared-modal-info-conversion-results": "Konvertiert: {0} | Fehler: {1} | Abgebrochen: {2}",
