@@ -313,6 +313,7 @@
 
   "tool-shared-tooltip-output-scale": "Размер страниц будет уменьшен до этого процента от размера оригинала.",
   "tool-shared-tooltip-output-folder": "Если в папке уже существует файл с таким названием, то к названию конвертированного файла будет добавлен подфикс, чтобы не произошло перезаписи.",
+  "[NEEDS TRANSLATION]tool-shared-tooltip-output-page-order": "Only used if the input files are all images, otherwise they will be processed in the order they are listed.",
   "tool-shared-tooltip-remove-from-list": "Удалить из списка",
 
   "tool-pre-title": "Настройки",

@@ -313,6 +313,7 @@
 
   "tool-shared-tooltip-output-scale": "Die Größe der Seiten wird auf diesen Prozentsatz des Originals reduziert.",
   "tool-shared-tooltip-output-folder": "Wenn eine Datei mit dem selben Namen bereits im Ordner existiert, wird ein Suffix zum Namen der konvertierten Datei hinzugefügt damit nichts überschrieben wird.",
+  "[NEEDS TRANSLATION]tool-shared-tooltip-output-page-order": "Only used if the input files are all images, otherwise they will be processed in the order they are listed.",
   "tool-shared-tooltip-remove-from-list": "entferne von der Liste",
 
   "tool-pre-title": "Einstellungen",
