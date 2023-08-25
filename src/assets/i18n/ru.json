@@ -317,6 +317,8 @@
   "tool-shared-tooltip-output-folder": "Если в папке уже существует файл с таким названием, то к названию конвертированного файла будет добавлен подфикс, чтобы не произошло перезаписи.",
   "[NEEDS TRANSLATION]tool-shared-tooltip-output-page-order": "Only used if the input files are all images, otherwise they will be processed in the order they are listed.",
   "tool-shared-tooltip-remove-from-list": "Удалить из списка",
+  "[NEEDS TRANSLATION]tool-shared-tooltip-move-up-in-list": "move up",
+  "[NEEDS TRANSLATION]tool-shared-tooltip-move-down-in-list": "move down",
 
   "tool-pre-title": "Настройки",
   "tool-pre-all": "Все настройки",

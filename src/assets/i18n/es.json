@@ -317,6 +317,8 @@
   "tool-shared-tooltip-output-folder": "Si un archivo con el mismo nombre ya existe en el directorio, se añadirá un subfijo al nombre del archivo de salida para que ningún archivo sea sobreescrito.",
   "tool-shared-tooltip-output-page-order": "Solo se usará si todos los archivos de entrada son imágenes, en caso contrario serán procesados en el orden en que aparecen en la lista.",
   "tool-shared-tooltip-remove-from-list": "quitar de la lista",
+  "tool-shared-tooltip-move-up-in-list": "mover arriba",
+  "tool-shared-tooltip-move-down-in-list": "mover abajo",
 
   "tool-pre-title": "Preferencias",
   "tool-pre-all": "Todas las Preferencias",  

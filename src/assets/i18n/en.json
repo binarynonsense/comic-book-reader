@@ -317,6 +317,8 @@
   "tool-shared-tooltip-output-folder": "If a file with the same name already exists in the folder, a subfix will be added to the converted file's name so nothing is overwritten.",
   "tool-shared-tooltip-output-page-order": "Only used if the input files are all images, otherwise they will be processed in the order they are listed.",
   "tool-shared-tooltip-remove-from-list": "remove from list",
+  "tool-shared-tooltip-move-up-in-list": "move up",
+  "tool-shared-tooltip-move-down-in-list": "move down",
 
   "tool-pre-title": "Preferences",
   "tool-pre-all": "All Preferences",  

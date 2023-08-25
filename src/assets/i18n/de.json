@@ -317,6 +317,8 @@
   "tool-shared-tooltip-output-folder": "Wenn eine Datei mit dem selben Namen bereits im Ordner existiert, wird ein Suffix zum Namen der konvertierten Datei hinzugefügt damit nichts überschrieben wird.",
   "tool-shared-tooltip-output-page-order": "Nur verwendet wenn alle Eingangsdateien Bilder sind, andernfalls werden sie in der gelisteten Reihenfolge verarbeitet.",
   "tool-shared-tooltip-remove-from-list": "entferne von der Liste",
+  "[NEEDS TRANSLATION]tool-shared-tooltip-move-up-in-list": "move up",
+  "[NEEDS TRANSLATION]tool-shared-tooltip-move-down-in-list": "move down",
 
   "tool-pre-title": "Einstellungen",
   "tool-pre-all": "Alle Einstellungen",  
