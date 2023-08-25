@@ -89,7 +89,7 @@ async function createFiles(
         i++;
         outputFilePath = path.join(
           outputFolderPath,
-          baseFileName + "(" + i + ")." + outputFormat
+          baseFileName + " (" + i + ")." + outputFormat
         );
       }
       filesData.push({
@@ -105,13 +105,13 @@ async function createFiles(
         i++;
         outputSubFolderPath = path.join(
           outputFolderPath,
-          baseFileName + "(" + i + ")"
+          baseFileName + " (" + i + ")"
         );
       }
       for (let index = 0; index < subArrays.length; index++) {
         let outputFilePath = path.join(
           tempFolderPath,
-          `${baseFileName}(${index + 1}_${subArrays.length}).${outputFormat}`
+          `${baseFileName} (${index + 1}_${subArrays.length}).${outputFormat}`
         );
         filesData.push({
           imgFilePaths: subArrays[index],
