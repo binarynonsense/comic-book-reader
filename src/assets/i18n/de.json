@@ -1,7 +1,7 @@
 {
   "@metadata": {
     "authors": ["trzyglow"],
-    "last-updated": "2023-08-24",
+    "last-updated": "2023-08-25",
     "acbr-version": "3.2.0-beta1",
     "comments": "Deutsche Lokalisierung",
     "locale": "de",
@@ -313,7 +313,7 @@
 
   "tool-shared-tooltip-output-scale": "Die Größe der Seiten wird auf diesen Prozentsatz des Originals reduziert.",
   "tool-shared-tooltip-output-folder": "Wenn eine Datei mit dem selben Namen bereits im Ordner existiert, wird ein Suffix zum Namen der konvertierten Datei hinzugefügt damit nichts überschrieben wird.",
-  "[NEEDS TRANSLATION]tool-shared-tooltip-output-page-order": "Only used if the input files are all images, otherwise they will be processed in the order they are listed.",
+  "tool-shared-tooltip-output-page-order": "Nur verwendet wenn alle Eingangsdateien Bilder sind, andernfalls werden sie in der gelisteten Reihenfolge verarbeitet.",
   "tool-shared-tooltip-remove-from-list": "entferne von der Liste",
 
   "tool-pre-title": "Einstellungen",
