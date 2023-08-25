@@ -1031,6 +1031,14 @@ function getTooltipsLocalization() {
       text: _("tool-shared-tooltip-remove-from-list"),
     },
     {
+      id: "tool-cc-tooltip-move-up-in-list",
+      text: _("tool-shared-tooltip-move-up-in-list"),
+    },
+    {
+      id: "tool-cc-tooltip-move-down-in-list",
+      text: _("tool-shared-tooltip-move-down-in-list"),
+    },
+    {
       id: "tool-cc-tooltip-pdf-extraction",
       text: _("tool-shared-ui-pdf-extraction-tooltip"),
     },

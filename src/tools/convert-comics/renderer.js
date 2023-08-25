@@ -42,6 +42,8 @@ let g_outputPasswordInput;
 let g_outputNameInput;
 
 let g_localizedRemoveFromListText;
+let g_localizedMoveUpInListText;
+let g_localizedMoveDownInListText;
 let g_localizedModalCancelButtonText;
 let g_localizedModalCloseButtonText;
 
@@ -116,6 +118,8 @@ function init(mode, outputFolderPath, canEditRars) {
   g_startButton = document.querySelector("#tool-cc-start-button");
 
   g_localizedRemoveFromListText = "";
+  g_localizedMoveUpInListText = "";
+  g_localizedMoveDownInListText = "";
 
   document
     .getElementById("tool-cc-add-file-button")
@@ -370,15 +374,41 @@ function initOnIpcCallbacks() {
     let text = document.createElement("span");
     text.innerText = reducePathString(filePath);
     li.appendChild(text);
+    // buttons
+    let buttons = document.createElement("span");
+    buttons.className = "tools-collection-li-buttonset";
+    li.appendChild(buttons);
+    // up icon - clickable
+    {
+      let button = document.createElement("span");
+      button.title = g_localizedMoveUpInListText;
+      button.addEventListener("click", (event) => {
+        onMoveFileUpInList(li, id);
+      });
+      button.innerHTML = `<i class="fas fa-caret-square-up"></i>`;
+      buttons.appendChild(button);
+    }
+    // down icon - clickable
+    {
+      let button = document.createElement("span");
+      button.title = g_localizedMoveDownInListText;
+      button.addEventListener("click", (event) => {
+        onMoveFileDownInList(li, id);
+      });
+      button.innerHTML = `<i class="fas fa-caret-square-down"></i>`;
+      buttons.appendChild(button);
+    }
     // remove icon - clickable
-    let button = document.createElement("span");
-    button.title = g_localizedRemoveFromListText;
-    button.className = "tools-collection-li-button";
-    button.addEventListener("click", (event) => {
-      onRemoveFile(li, id);
-    });
-    button.innerHTML = `<i class="fas fa-window-close"></i>`;
-    li.appendChild(button);
+    {
+      let button = document.createElement("span");
+      button.title = g_localizedRemoveFromListText;
+      button.addEventListener("click", (event) => {
+        onRemoveFileFromList(li, id);
+      });
+      button.innerHTML = `<i class="fas fa-window-close"></i>`;
+      buttons.appendChild(button);
+    }
+    //
     g_inputListDiv.appendChild(li);
 
     checkValidData();
@@ -599,7 +629,7 @@ function updateOutputFolder(folderPath) {
   g_outputFolderDiv.appendChild(li);
 }
 
-function onRemoveFile(element, id) {
+function onRemoveFileFromList(element, id) {
   element.parentElement.removeChild(element);
   let removeIndex;
   for (let index = 0; index < g_inputFiles.length; index++) {
@@ -611,6 +641,69 @@ function onRemoveFile(element, id) {
   if (removeIndex !== undefined) {
     g_inputFiles.splice(removeIndex, 1);
     checkValidData();
+  }
+}
+
+function onMoveFileUpInList(element, id) {
+  let parentNode = element.parentNode;
+  let currentIndex = [...parentNode.children].indexOf(element);
+  let desiredIndex = currentIndex - 1;
+  if (desiredIndex >= 0) {
+    let currentNode = parentNode.children[currentIndex];
+    let desiredNode = parentNode.children[desiredIndex];
+    // swap
+    for (let index = 0; index < g_inputFiles.length; index++) {
+      if (g_inputFiles[index].id === id) {
+        if (index !== currentIndex) {
+          console.log("index !== currentIndex || this shouldn't happen!");
+          return;
+        }
+        // hack to do a copy not by reference
+        const currentData = JSON.parse(
+          JSON.stringify(g_inputFiles[currentIndex])
+        );
+        const desiredData = JSON.parse(
+          JSON.stringify(g_inputFiles[desiredIndex])
+        );
+        g_inputFiles[currentIndex] = desiredData;
+        g_inputFiles[desiredIndex] = currentData;
+        // html
+        parentNode.insertBefore(currentNode, desiredNode);
+        break;
+      }
+    }
+  }
+}
+
+function onMoveFileDownInList(element, id) {
+  let total = element.parentElement.childElementCount;
+  let parentNode = element.parentNode;
+  let currentIndex = [...parentNode.children].indexOf(element);
+  let desiredIndex = currentIndex + 1;
+  if (desiredIndex < total) {
+    let currentNode = parentNode.children[currentIndex];
+    let desiredNode = parentNode.children[desiredIndex];
+    // swap
+    for (let index = 0; index < g_inputFiles.length; index++) {
+      if (g_inputFiles[index].id === id) {
+        if (index !== currentIndex) {
+          console.log("index !== currentIndex || this shouldn't happen!");
+          return;
+        }
+        // hack to do a copy not by reference
+        const currentData = JSON.parse(
+          JSON.stringify(g_inputFiles[currentIndex])
+        );
+        const desiredData = JSON.parse(
+          JSON.stringify(g_inputFiles[desiredIndex])
+        );
+        g_inputFiles[currentIndex] = desiredData;
+        g_inputFiles[desiredIndex] = currentData;
+        // html
+        parentNode.insertBefore(desiredNode, currentNode);
+        break;
+      }
+    }
   }
 }
 
@@ -780,6 +873,10 @@ function updateLocalization(localization, tooltipsLocalization) {
     const domElement = document.querySelector("#" + element.id);
     if (element.id === "tool-cc-tooltip-remove-from-list") {
       g_localizedRemoveFromListText = element.text;
+    } else if (element.id === "tool-cc-tooltip-move-up-in-list") {
+      g_localizedMoveUpInListText = element.text;
+    } else if (element.id === "tool-cc-tooltip-move-down-in-list") {
+      g_localizedMoveDownInListText = element.text;
     } else if (domElement !== null) {
       domElement.title = element.text;
     }

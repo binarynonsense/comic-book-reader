@@ -398,6 +398,28 @@
   padding: 5px;
 }
 
+.tools-collection-li-buttonset {
+  margin-left: auto;
+  display: flex;
+  flex-direction: row;
+  gap: 0px;
+}
+.tools-collection-li-buttonset > span {
+  cursor: pointer;
+}
+.tools-collection-li-buttonset > span:hover {
+  cursor: pointer;
+  transform: scale(1.2);
+  filter: brightness(1.2);
+}
+/* .tools-collection-li-buttonset > span:last-child {
+  transform-origin: 100% 50%;
+} */
+.tools-collection-li-buttonset > span > i {
+  margin-left: 0px !important;
+  padding: 3px;
+}
+
 .tools-collection-li-multiline-text {
   display: flex;
   flex-direction: column;
