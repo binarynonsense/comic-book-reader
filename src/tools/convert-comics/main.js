@@ -345,6 +345,7 @@ function initOnIpcCallbacks() {
             "modal-update-title-text",
             _("tool-shared-modal-title-creation-failed")
           );
+          sendIpcToRenderer("update-info-text", "");
         } else {
           sendIpcToRenderer(
             "modal-update-title-text",
