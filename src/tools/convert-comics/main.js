@@ -1045,7 +1045,7 @@ function getTooltipsLocalization() {
     },
     {
       id: "tool-cc-tooltip-password",
-      text: _("tool-shared-ui-creation-password-tooltip", "cb7, pdf, cbr"),
+      text: _("tool-shared-ui-creation-password-tooltip", "cbz, cb7, cbr, pdf"),
     },
     {
       id: "tool-cc-tooltip-pdf-creation",
