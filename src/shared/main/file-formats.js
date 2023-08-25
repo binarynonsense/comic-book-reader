@@ -445,7 +445,12 @@ async function extract7Zip(filePath, tempFolderPath, password) {
 }
 exports.extract7Zip = extract7Zip;
 
-async function create7Zip(filePathsList, outputFilePath, password) {
+async function create7Zip(
+  filePathsList,
+  outputFilePath,
+  password,
+  archiveType
+) {
   try {
     checkPathTo7ZipBin();
 
@@ -457,9 +462,11 @@ async function create7Zip(filePathsList, outputFilePath, password) {
     if (password && password.trim() !== "") {
       options.password = password;
     }
+    if (archiveType && archiveType === "zip") {
+      // not sure, but possible values may be: 7z, xz, split, zip, gzip, bzip2, tar,
+      options.archiveType = archiveType;
+    }
     const seven = Seven.add(outputFilePath, filePathsList, options);
-    // TODO: test archiveType, maybe to support cbt files?
-    // not sure, but possible values may be: 7z, xz, split, zip, gzip, bzip2, tar,
 
     let promise = await new Promise((resolve) => {
       seven.on("error", (error) => {

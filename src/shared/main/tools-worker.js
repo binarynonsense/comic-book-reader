@@ -160,10 +160,21 @@ async function createFiles(
         //cbz
         if (comicInfoFilePath)
           filesData[index].imgFilePaths.push(comicInfoFilePath);
-        fileFormats.createZip(
-          filesData[index].imgFilePaths,
-          filesData[index].outputFilePath
-        );
+        if (password && password.trim() !== "") {
+          console.log("7zip");
+          await fileFormats.create7Zip(
+            filesData[index].imgFilePaths,
+            filesData[index].outputFilePath,
+            password,
+            "zip"
+          );
+        } else {
+          console.log("AdmZip");
+          fileFormats.createZip(
+            filesData[index].imgFilePaths,
+            filesData[index].outputFilePath
+          );
+        }
       }
     }
     /////////////////////////////
