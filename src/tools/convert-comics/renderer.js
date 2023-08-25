@@ -386,6 +386,7 @@ function initOnIpcCallbacks() {
         onMoveFileUpInList(li, id);
       });
       button.innerHTML = `<i class="fas fa-caret-square-up"></i>`;
+      button.setAttribute("data-type", "move-up-in-list");
       buttons.appendChild(button);
     }
     // down icon - clickable
@@ -396,6 +397,7 @@ function initOnIpcCallbacks() {
         onMoveFileDownInList(li, id);
       });
       button.innerHTML = `<i class="fas fa-caret-square-down"></i>`;
+      button.setAttribute("data-type", "move-down-in-list");
       buttons.appendChild(button);
     }
     // remove icon - clickable
@@ -406,6 +408,7 @@ function initOnIpcCallbacks() {
         onRemoveFileFromList(li, id);
       });
       button.innerHTML = `<i class="fas fa-window-close"></i>`;
+      button.setAttribute("data-type", "remove-from-list");
       buttons.appendChild(button);
     }
     //
@@ -614,6 +617,25 @@ function checkValidData() {
   } else {
     g_startButton.classList.remove("tools-disabled");
   }
+  ///////////////////
+  for (let index = 0; index < g_inputListDiv.childElementCount; ++index) {
+    const element = g_inputListDiv.children[index];
+    const moveUpSpan = element.querySelector('[data-type="move-up-in-list"]');
+    const moveDownSpan = element.querySelector(
+      '[data-type="move-down-in-list"]'
+    );
+    if (index === 0) {
+      moveUpSpan.classList.add("tools-disabled");
+    } else {
+      moveUpSpan.classList.remove("tools-disabled");
+    }
+    if (index === g_inputListDiv.childElementCount - 1) {
+      moveDownSpan.classList.add("tools-disabled");
+    } else {
+      moveDownSpan.classList.remove("tools-disabled");
+    }
+  }
+  ///////////////////
   updateColumnsHeight();
 }
 
@@ -669,6 +691,7 @@ function onMoveFileUpInList(element, id) {
         g_inputFiles[desiredIndex] = currentData;
         // html
         parentNode.insertBefore(currentNode, desiredNode);
+        checkValidData();
         break;
       }
     }
@@ -701,6 +724,7 @@ function onMoveFileDownInList(element, id) {
         g_inputFiles[desiredIndex] = currentData;
         // html
         parentNode.insertBefore(desiredNode, currentNode);
+        checkValidData();
         break;
       }
     }
