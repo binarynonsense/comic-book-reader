@@ -2071,7 +2071,7 @@ exports.onMenuPageExtractQR = function () {
 
 exports.onMenuConvertFile = function () {
   if (g_fileData.path !== undefined) {
-    core.switchTool("tool-convert-comics", g_fileData);
+    core.switchTool("tool-convert-comics", 0, g_fileData);
   }
   sendIpcToPreload("update-menubar");
 };

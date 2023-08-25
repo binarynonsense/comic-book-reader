@@ -25,16 +25,22 @@ const utils = require("../../shared/main/utils");
 
 let g_isInitialized = false;
 
+let g_mode = 0; // 0 = convert, 1 = create
+let g_imageIndex = 0;
+
 let g_cancel = false;
 let g_worker;
 let g_workerWindow;
+let g_outputPageOrder = "byPosition";
 let g_pdfCreationMethod = "metadata";
 let g_epubCreationImageFormat = "keep-selected";
 let g_epubCreationImageStorage = "files";
 let g_imageFormat = FileExtension.NOT_SET;
+let g_outputFileBaseName;
 
 // hack to allow this at least for files from File>Convert...
 let g_initialPassword = "";
+let g_creationTempFolderPath;
 
 function init() {
   if (!g_isInitialized) {
@@ -44,8 +50,9 @@ function init() {
   }
 }
 
-exports.open = function (fileData) {
+exports.open = function (mode, fileData) {
   // called by switchTool when opening tool
+  g_mode = mode;
   init();
   let filePath, fileType;
   if (fileData !== undefined) {
@@ -60,6 +67,7 @@ exports.open = function (fileData) {
 
   sendIpcToRenderer(
     "show",
+    g_mode,
     filePath !== undefined
       ? path.dirname(filePath)
       : appUtils.getDesktopFolderPath(),
@@ -87,6 +95,8 @@ exports.close = function () {
     g_worker = undefined;
   }
   fileUtils.cleanUpTempFolder();
+  fileUtils.cleanUpTempFolder(g_creationTempFolderPath);
+  g_creationTempFolderPath = undefined;
 };
 
 exports.onResize = function () {
@@ -143,14 +153,33 @@ function initOnIpcCallbacks() {
     if (lastFilePath) defaultPath = path.dirname(lastFilePath);
     try {
       let allowMultipleSelection = true;
-      let allowedFileTypesName = "Comic Book Files";
-      let allowedFileTypesList = [
-        FileExtension.CBZ,
-        FileExtension.CBR,
-        FileExtension.CB7,
-        FileExtension.PDF,
-        FileExtension.EPUB,
-      ];
+      let allowedFileTypesName;
+      let allowedFileTypesList;
+      if (g_mode === 0) {
+        allowedFileTypesName = "Comic Book Files";
+        allowedFileTypesList = [
+          FileExtension.CBZ,
+          FileExtension.CBR,
+          FileExtension.CB7,
+          FileExtension.PDF,
+          FileExtension.EPUB,
+        ];
+      } else {
+        allowedFileTypesName = "Image & Comic Book Files";
+        allowedFileTypesList = [
+          FileExtension.JPG,
+          FileExtension.JPEG,
+          FileExtension.PNG,
+          FileExtension.WEBP,
+          FileExtension.BMP,
+          FileExtension.AVIF,
+          FileExtension.CBZ,
+          FileExtension.CBR,
+          FileExtension.CB7,
+          FileExtension.PDF,
+          FileExtension.EPUB,
+        ];
+      }
       let filePathsList = appUtils.chooseOpenFiles(
         core.getMainWindow(),
         defaultPath,
@@ -192,6 +221,16 @@ function initOnIpcCallbacks() {
               fileExtension === "." + FileExtension.CB7
             ) {
               fileType = FileDataType.SEVENZIP;
+            } else if (
+              g_mode === 1 &&
+              (fileExtension === "." + FileExtension.JPG ||
+                fileExtension === "." + FileExtension.JPEG ||
+                fileExtension === "." + FileExtension.PNG ||
+                fileExtension === "." + FileExtension.WEBP ||
+                fileExtension === "." + FileExtension.BMP ||
+                fileExtension === "." + FileExtension.AVIF)
+            ) {
+              fileType = FileDataType.IMG;
             } else {
               return;
             }
@@ -233,6 +272,10 @@ function initOnIpcCallbacks() {
     }
   });
 
+  on("set-page-order", (order) => {
+    g_outputPageOrder = order;
+  });
+
   on("set-image-format", (format) => {
     g_imageFormat = format;
   });
@@ -249,24 +292,13 @@ function initOnIpcCallbacks() {
     g_epubCreationImageStorage = selection;
   });
 
-  on(
-    "start",
-    (
-      inputFilePath,
-      inputFileType,
-      fileNum,
-      totalFilesNum,
-      pdfExtractionMethod
-    ) => {
-      start(
-        inputFilePath,
-        inputFileType,
-        fileNum,
-        totalFilesNum,
-        pdfExtractionMethod
-      );
-    }
-  );
+  on("start", (...args) => {
+    start(...args);
+  });
+
+  on("start-file", (...args) => {
+    startFile(...args);
+  });
 
   on("stop-error", (err) => {
     stopError(err);
@@ -286,39 +318,57 @@ function initOnIpcCallbacks() {
 
   on("end", (wasCanceled, numFiles, numErrors, numAttempted) => {
     if (!wasCanceled) {
-      sendIpcToRenderer(
-        "modal-update-title-text",
-        _("tool-shared-modal-title-conversion-finished")
-      );
+      if (g_mode === 0) {
+        sendIpcToRenderer(
+          "modal-update-title-text",
+          _("tool-shared-modal-title-conversion-finished")
+        );
 
-      if (numErrors > 0) {
-        sendIpcToRenderer(
-          "update-info-text",
-          _(
-            "tool-shared-modal-info-conversion-error-num-files",
-            numErrors,
-            numFiles
-          )
-        );
+        if (numErrors > 0) {
+          sendIpcToRenderer(
+            "update-info-text",
+            _(
+              "tool-shared-modal-info-conversion-error-num-files",
+              numErrors,
+              numFiles
+            )
+          );
+        } else {
+          sendIpcToRenderer(
+            "update-info-text",
+            _("tool-shared-modal-info-conversion-success-num-files", numFiles)
+          );
+        }
       } else {
-        sendIpcToRenderer(
-          "update-info-text",
-          _("tool-shared-modal-info-conversion-success-num-files", numFiles)
-        );
+        if (numErrors > 0) {
+          sendIpcToRenderer(
+            "modal-update-title-text",
+            _("tool-shared-modal-title-creation-failed")
+          );
+        } else {
+          sendIpcToRenderer(
+            "modal-update-title-text",
+            _("tool-shared-modal-title-creation-finished")
+          );
+        }
       }
     } else {
       sendIpcToRenderer(
         "modal-update-title-text",
-        _("tool-shared-modal-title-conversion-canceled")
+        g_mode === 0
+          ? _("tool-shared-modal-title-conversion-canceled")
+          : _("tool-shared-modal-title-creation-canceled")
       );
       sendIpcToRenderer(
         "update-info-text",
-        _(
-          "tool-shared-modal-info-conversion-results",
-          numAttempted - numErrors,
-          numErrors,
-          numFiles - numAttempted
-        )
+        g_mode === 0
+          ? _(
+              "tool-shared-modal-info-conversion-results",
+              numAttempted - numErrors,
+              numErrors,
+              numFiles - numAttempted
+            )
+          : ""
       );
     }
 
@@ -366,24 +416,70 @@ function initHandleIpcCallbacks() {
 
 function stopError(error) {
   fileUtils.cleanUpTempFolder();
+  fileUtils.cleanUpTempFolder(g_creationTempFolderPath);
+  g_creationTempFolderPath = undefined;
   sendIpcToRenderer("update-log-text", error);
   sendIpcToRenderer(
     "update-log-text",
-    _("tool-shared-modal-log-conversion-error")
+    g_mode === 0
+      ? _("tool-shared-modal-log-conversion-error")
+      : _("tool-shared-modal-log-creation-error")
   );
-  sendIpcToRenderer("finished-error");
+  sendIpcToRenderer("file-finished-error");
 }
 
 function stopCancel() {
   fileUtils.cleanUpTempFolder();
+  fileUtils.cleanUpTempFolder(g_creationTempFolderPath);
+  g_creationTempFolderPath = undefined;
   sendIpcToRenderer(
     "update-log-text",
-    _("tool-shared-modal-log-conversion-canceled")
+    g_mode === 0
+      ? _("tool-shared-modal-log-conversion-canceled")
+      : _("tool-shared-modal-log-creation-canceled")
   );
-  sendIpcToRenderer("finished-canceled");
+  sendIpcToRenderer("file-finished-canceled");
 }
 
-function start(
+function start(inputFiles, outputFileBaseName) {
+  g_outputFileBaseName = outputFileBaseName;
+  g_imageIndex = 0;
+  if (g_mode === 0) {
+    sendIpcToRenderer("start-first-file");
+  } else {
+    let tempFolderPath = fileUtils.createTempFolder();
+    // check types
+    let areAllImages = true;
+    for (let index = 0; index < inputFiles.length; index++) {
+      const inputFile = inputFiles[index];
+      if (inputFile.type !== FileDataType.IMG) {
+        areAllImages = false;
+        break;
+      }
+    }
+    if (areAllImages) {
+      sendIpcToRenderer(
+        "modal-update-title-text",
+        _("tool-shared-modal-title-creating")
+      );
+      for (let index = 0; index < inputFiles.length; index++) {
+        const inputFilePath = inputFiles[index].path;
+        let outName = path.basename(inputFilePath);
+        if (g_outputPageOrder === "byPosition") {
+          const extension = path.extname(inputFilePath);
+          outName = g_imageIndex++ + extension;
+        }
+        const outPath = path.join(tempFolderPath, outName);
+        fs.copyFileSync(inputFilePath, outPath, fs.constants.COPYFILE_EXCL);
+      }
+      sendIpcToRenderer("file-images-extracted");
+    } else {
+      sendIpcToRenderer("start-first-file");
+    }
+  }
+}
+
+function startFile(
   inputFilePath,
   inputFileType,
   fileNum,
@@ -394,19 +490,40 @@ function start(
 
   sendIpcToRenderer(
     "modal-update-title-text",
-    _("tool-shared-modal-title-converting") +
-      (totalFilesNum > 1 ? " (" + fileNum + "/" + totalFilesNum + ")" : "")
+    g_mode === 0
+      ? _("tool-shared-modal-title-converting")
+      : _("tool-shared-modal-title-adding") +
+          (totalFilesNum > 1 ? " (" + fileNum + "/" + totalFilesNum + ")" : "")
   );
   sendIpcToRenderer(
     "update-info-text",
     utils.reduceStringFrontEllipsis(inputFilePath)
   );
-  sendIpcToRenderer("update-log-text", _("tool-shared-modal-title-converting"));
+  sendIpcToRenderer(
+    "update-log-text",
+    g_mode === 0
+      ? _("tool-shared-modal-title-converting")
+      : _("tool-shared-modal-title-adding")
+  );
   sendIpcToRenderer("update-log-text", inputFilePath);
 
-  let tempFolderPath = fileUtils.createTempFolder();
+  let tempFolderPath;
+  if (g_mode === 0) {
+    tempFolderPath = fileUtils.createTempFolder();
+  } else {
+    // tempFolderPath was created on start
+    tempFolderPath = fileUtils.getTempFolderPath();
+    g_creationTempFolderPath = fileUtils.createTempFolder(false);
+  }
   // extract to temp folder
-  if (
+  if (inputFileType === FileDataType.IMG) {
+    const extension = path.extname(inputFilePath);
+    let outName = g_imageIndex++ + extension;
+    const outPath = path.join(tempFolderPath, outName);
+    fs.copyFileSync(inputFilePath, outPath, fs.constants.COPYFILE_EXCL);
+    fileUtils.cleanUpTempFolder(g_creationTempFolderPath);
+    sendIpcToRenderer("file-images-extracted");
+  } else if (
     inputFileType === FileDataType.ZIP ||
     inputFileType === FileDataType.RAR ||
     inputFileType === FileDataType.SEVENZIP ||
@@ -433,7 +550,10 @@ function start(
             stopCancel();
             return;
           }
-          sendIpcToRenderer("images-extracted");
+          if (g_mode === 1) {
+            copyImagesToTempFolder();
+          }
+          sendIpcToRenderer("file-images-extracted");
           return;
         } else {
           stopError(message);
@@ -445,7 +565,7 @@ function start(
       "extract",
       inputFilePath,
       inputFileType,
-      tempFolderPath,
+      g_mode === 0 ? tempFolderPath : g_creationTempFolderPath,
       g_initialPassword,
     ]);
   } else if (inputFileType === FileDataType.PDF) {
@@ -475,7 +595,7 @@ function start(
         "extract-pdf",
         "tool-convert-comics",
         inputFilePath,
-        tempFolderPath,
+        g_mode === 0 ? tempFolderPath : g_creationTempFolderPath,
         pdfExtractionMethod,
         _("tool-shared-modal-log-extracting-page") + ": ",
         g_initialPassword
@@ -494,8 +614,12 @@ exports.onIpcFromToolsWorkerRenderer = function (...args) {
     case "pdf-images-extracted":
       g_workerWindow.destroy();
       g_workerWindow = undefined;
-      if (!args[1]) sendIpcToRenderer("images-extracted");
-      else stopCancel();
+      if (!args[1]) {
+        if (g_mode === 1) {
+          copyImagesToTempFolder();
+        }
+        sendIpcToRenderer("file-images-extracted");
+      } else stopCancel();
       break;
     case "stop-error":
       g_workerWindow.destroy();
@@ -504,6 +628,24 @@ exports.onIpcFromToolsWorkerRenderer = function (...args) {
       break;
   }
 };
+
+function copyImagesToTempFolder() {
+  let imgFilePaths = fileUtils.getImageFilesInFolderRecursive(
+    g_creationTempFolderPath
+  );
+  let tempFolderPath = fileUtils.getTempFolderPath();
+  if (imgFilePaths !== undefined && imgFilePaths.length > 0) {
+    imgFilePaths.sort(utils.compare);
+    imgFilePaths.forEach((imgFilePath) => {
+      const extension = path.extname(imgFilePath);
+      let outName = g_imageIndex++ + extension;
+      const outPath = path.join(tempFolderPath, outName);
+      fs.copyFileSync(imgFilePath, outPath, fs.constants.COPYFILE_EXCL);
+    });
+  }
+  fileUtils.cleanUpTempFolder(g_creationTempFolderPath);
+  g_creationTempFolderPath = undefined;
+}
 
 async function resizeImages(
   inputFilePath,
@@ -525,7 +667,9 @@ async function resizeImages(
 
     let tempFolderPath = fileUtils.getTempFolderPath();
     let comicInfoFilePath =
-      fileUtils.getComicInfoFileInFolderRecursive(tempFolderPath);
+      g_mode === 0
+        ? fileUtils.getComicInfoFileInFolderRecursive(tempFolderPath)
+        : undefined;
     let imgFilePaths = fileUtils.getImageFilesInFolderRecursive(tempFolderPath);
     if (imgFilePaths === undefined || imgFilePaths.length === 0) {
       stopError("imgFiles === undefined || imgFiles.length === 0");
@@ -766,8 +910,11 @@ async function resizeImages(
         sendIpcToRenderer("update-log-text", error);
       }
     }
+    let baseFileName = g_outputFileBaseName
+      ? g_outputFileBaseName
+      : path.basename(inputFilePath, path.extname(inputFilePath));
     createFilesFromImages(
-      inputFilePath,
+      baseFileName,
       outputFolderPath,
       imgFilePaths,
       outputFormat,
@@ -781,7 +928,7 @@ async function resizeImages(
 }
 
 async function createFilesFromImages(
-  inputFilePath,
+  baseFileName,
   outputFolderPath,
   imgFilePaths,
   outputFormat,
@@ -816,7 +963,7 @@ async function createFilesFromImages(
           message[1].forEach((element) => {
             sendIpcToRenderer("update-log-text", element);
           });
-          sendIpcToRenderer("finished-ok");
+          sendIpcToRenderer("file-finished-ok");
           return;
         } else {
           stopError(message[0]);
@@ -835,10 +982,6 @@ async function createFilesFromImages(
     } else if (outputFormat === FileExtension.PDF) {
       extraData = g_pdfCreationMethod;
     }
-    let baseFileName = path.basename(
-      inputFilePath,
-      path.extname(inputFilePath)
-    );
     g_worker.send([
       "create",
       baseFileName,
@@ -876,6 +1019,10 @@ function getTooltipsLocalization() {
       text: _("tool-shared-tooltip-output-scale"),
     },
     {
+      id: "tool-cc-tooltip-output-page-order",
+      text: _("tool-shared-tooltip-output-page-order"),
+    },
+    {
       id: "tool-cc-tooltip-output-folder",
       text: _("tool-shared-tooltip-output-folder"),
     },
@@ -902,7 +1049,10 @@ function getLocalization() {
   return [
     {
       id: "tool-cc-title-text",
-      text: _("tool-cc-title").toUpperCase(),
+      text:
+        g_mode === 0
+          ? _("tool-cc-title").toUpperCase()
+          : _("tool-cr-title").toUpperCase(),
     },
     {
       id: "tool-cc-back-button-text",
@@ -910,7 +1060,10 @@ function getLocalization() {
     },
     {
       id: "tool-cc-start-button-text",
-      text: _("tool-shared-ui-convert").toUpperCase(),
+      text:
+        g_mode === 0
+          ? _("tool-shared-ui-convert").toUpperCase()
+          : _("tool-shared-ui-create").toUpperCase(),
     },
     //////////////////////////////////////////////
     {
@@ -938,6 +1091,22 @@ function getLocalization() {
     {
       id: "tool-cc-output-options-text",
       text: _("tool-shared-ui-output-options"),
+    },
+    {
+      id: "tool-cc-output-format-text",
+      text: _("tool-shared-ui-output-options-format"),
+    },
+    {
+      id: "tool-cc-output-page-order-text",
+      text: _("tool-shared-ui-output-options-page-order"),
+    },
+    {
+      id: "tool-cc-output-page-order-o1-text",
+      text: _("tool-shared-ui-output-options-page-order-o1"),
+    },
+    {
+      id: "tool-cc-output-page-order-o2-text",
+      text: _("tool-shared-ui-output-options-page-order-o2"),
     },
     {
       id: "tool-cc-output-image-scale-text",

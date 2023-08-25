@@ -23,7 +23,6 @@ const toolHistory = require("../tools/history/main");
 const toolConvertComics = require("../tools/convert-comics/main");
 const toolExtractComics = require("../tools/extract-comics/main");
 const toolConvertImgs = require("../tools/convert-imgs/main");
-const toolCreateComic = require("../tools/create-comic/main");
 const toolExtractPalette = require("../tools/extract-palette/main");
 const toolExtractText = require("../tools/extract-text/main");
 const toolCreateQr = require("../tools/create-qr/main");
@@ -52,7 +51,6 @@ g_tools["tool-history"] = toolHistory;
 g_tools["tool-convert-comics"] = toolConvertComics;
 g_tools["tool-extract-comics"] = toolExtractComics;
 g_tools["tool-convert-imgs"] = toolConvertImgs;
-g_tools["tool-create-comic"] = toolCreateComic;
 g_tools["tool-extract-palette"] = toolExtractPalette;
 g_tools["tool-extract-text"] = toolExtractText;
 g_tools["tool-create-qr"] = toolCreateQr;
@@ -287,12 +285,12 @@ exports.onMenuToggleFullScreen = function () {
 // TOOLS /////////////
 
 exports.onMenuToolConvertComics = function () {
-  switchTool("tool-convert-comics");
+  switchTool("tool-convert-comics", 0);
   sendIpcToPreload("update-menubar");
 };
 
 exports.onMenuToolCreateComic = function () {
-  switchTool("tool-create-comic");
+  switchTool("tool-convert-comics", 1);
   sendIpcToPreload("update-menubar");
 };
 

@@ -12,6 +12,8 @@ import {
 import * as modals from "../../shared/renderer/modals.js";
 import { FileExtension } from "../../shared/renderer/constants.js";
 
+let g_mode = 0; // 0 = convert, 1 = create
+
 let g_inputFiles = [];
 let g_inputFilesIndex = 0;
 let g_inputFilesID = 0;
@@ -37,6 +39,8 @@ let g_outputImageQualitySlider;
 let g_outputSplitNumFilesInput;
 let g_outputPasswordInput;
 
+let g_outputNameInput;
+
 let g_localizedRemoveFromListText;
 let g_localizedModalCancelButtonText;
 let g_localizedModalCloseButtonText;
@@ -47,7 +51,8 @@ let g_localizedModalCloseButtonText;
 
 let g_isInitialized = false;
 
-function init(outputFolderPath, canEditRars) {
+function init(mode, outputFolderPath, canEditRars) {
+  g_mode = mode;
   if (!g_isInitialized) {
     // things to start only once go here
     g_isInitialized = true;
@@ -59,7 +64,7 @@ function init(outputFolderPath, canEditRars) {
   });
 
   g_inputFiles = [];
-  g_inputFilesIndex = 0;
+  g_inputFilesIndex = -1;
   g_inputFilesID = 0;
   g_cancel = false;
   g_numErrors = 0;
@@ -199,8 +204,27 @@ function init(outputFolderPath, canEditRars) {
     updateSliderBubble(range, bubble);
   });
 
-  checkValidData();
+  // conversion / creation
+  g_outputNameInput = document.querySelector("#tool-cc-output-name-input");
+  if (g_mode === 0) {
+    document
+      .getElementById("tool-cc-output-page-order-label")
+      .classList.add("set-display-none");
+    document
+      .getElementById("tool-cc-output-name-label")
+      .classList.add("set-display-none");
+  } else {
+    document
+      .getElementById("tool-cc-output-page-order-select")
+      .addEventListener("click", (event) => {
+        sendIpcToMain("set-page-order", event.target.value);
+      });
+    g_outputNameInput.addEventListener("input", (event) => {
+      checkValidData();
+    });
+  }
   ////////////////////////////////////////
+  checkValidData();
   updateColumnsHeight();
 }
 
@@ -236,16 +260,16 @@ function switchSection(id) {
         .classList.remove("tools-menu-button-selected");
       // sections
       document
-        .getElementById("tool-pre-input-options-section-div")
+        .getElementById("tool-cc-input-options-section-div")
         .classList.remove("set-display-none");
       document
-        .getElementById("tool-pre-output-options-section-div")
+        .getElementById("tool-cc-output-options-section-div")
         .classList.remove("set-display-none");
       document
-        .getElementById("tool-pre-advanced-input-options-section-div")
+        .getElementById("tool-cc-advanced-input-options-section-div")
         .classList.add("set-display-none");
       document
-        .getElementById("tool-pre-advanced-output-options-section-div")
+        .getElementById("tool-cc-advanced-output-options-section-div")
         .classList.add("set-display-none");
       break;
     case 1:
@@ -258,16 +282,16 @@ function switchSection(id) {
         .classList.add("tools-menu-button-selected");
       // sections
       document
-        .getElementById("tool-pre-input-options-section-div")
+        .getElementById("tool-cc-input-options-section-div")
         .classList.add("set-display-none");
       document
-        .getElementById("tool-pre-output-options-section-div")
+        .getElementById("tool-cc-output-options-section-div")
         .classList.add("set-display-none");
       document
-        .getElementById("tool-pre-advanced-input-options-section-div")
+        .getElementById("tool-cc-advanced-input-options-section-div")
         .classList.remove("set-display-none");
       document
-        .getElementById("tool-pre-advanced-output-options-section-div")
+        .getElementById("tool-cc-advanced-output-options-section-div")
         .classList.remove("set-display-none");
       break;
       break;
@@ -381,23 +405,62 @@ function initOnIpcCallbacks() {
 
   /////////////////////////////////////////////////////////////////////////////
 
-  on("images-extracted", () => {
-    sendIpcToMain(
-      "resize-images",
-      g_inputFilePath,
-      g_outputImageScaleSlider.value,
-      g_outputImageQualitySlider.value,
-      g_outputFormat,
-      g_outputFolderPath,
-      g_outputSplitNumFilesInput.value,
-      g_outputPasswordInput.value
-    );
+  on("start-first-file", () => {
+    onStartNextFile();
   });
 
-  on("finished-ok", () => {
+  on("file-images-extracted", () => {
+    if (g_mode === 0) {
+      // convert tool
+      sendIpcToMain(
+        "resize-images",
+        g_inputFilePath,
+        g_outputImageScaleSlider.value,
+        g_outputImageQualitySlider.value,
+        g_outputFormat,
+        g_outputFolderPath,
+        g_outputSplitNumFilesInput.value,
+        g_outputPasswordInput.value
+      );
+    } else {
+      // create tool
+      if (
+        g_inputFilePath === undefined || // special case, all images done at once
+        g_inputFilesIndex === g_inputFiles.length - 1
+      ) {
+        // all done - resize and make file
+        sendIpcToMain(
+          "resize-images",
+          g_inputFilePath,
+          g_outputImageScaleSlider.value,
+          g_outputImageQualitySlider.value,
+          g_outputFormat,
+          g_outputFolderPath,
+          g_outputSplitNumFilesInput.value,
+          g_outputPasswordInput.value
+        );
+      } else {
+        onStartNextFile();
+      }
+    }
+  });
+
+  on("file-finished-ok", () => {
+    if (g_mode === 1) {
+      if (g_inputFilePath === undefined) {
+        // special case, all images done at once
+        sendIpcToMain(
+          "end",
+          false,
+          g_inputFiles.length,
+          0,
+          g_inputFiles.length
+        );
+        return;
+      }
+    }
     if (g_inputFilesIndex < g_inputFiles.length - 1) {
-      g_inputFilesIndex++;
-      onStart(false);
+      onStartNextFile();
     } else {
       sendIpcToMain(
         "end",
@@ -409,28 +472,48 @@ function initOnIpcCallbacks() {
     }
   });
 
-  on("finished-error", () => {
+  on("file-finished-error", () => {
     const modalButtonClose = g_openModal.querySelector(
       "#tool-cc-modal-close-button"
     );
-    modalButtonClose.classList.remove("modal-button-success-color");
-    modalButtonClose.classList.add("modal-button-danger-color");
-    g_numErrors++;
-    if (g_inputFilesIndex < g_inputFiles.length - 1) {
-      g_inputFilesIndex++;
-      onStart(false);
+    if (g_mode === 0) {
+      modalButtonClose.classList.remove("modal-button-success-color");
+      modalButtonClose.classList.add("modal-button-danger-color");
+      g_numErrors++;
+      if (g_inputFilesIndex < g_inputFiles.length - 1) {
+        onStartNextFile();
+      } else {
+        sendIpcToMain(
+          "end",
+          false,
+          g_inputFiles.length,
+          g_numErrors,
+          g_inputFilesIndex + 1
+        );
+      }
     } else {
+      const modalButtonCancel = g_openModal.querySelector(
+        "#tool-cc-modal-cancel-button"
+      );
+      const modalLoadingBar = g_openModal.querySelector(".modal-progress-bar");
+      modalButtonCancel.classList.add("set-display-none");
+      modalButtonClose.classList.remove("set-display-none");
+      {
+        modalButtonClose.classList.remove("modal-button-success-color");
+        modalButtonClose.classList.add("modal-button-danger-color");
+      }
+      modalLoadingBar.classList.add("set-display-none");
       sendIpcToMain(
         "end",
         false,
         g_inputFiles.length,
-        g_numErrors,
-        g_inputFilesIndex + 1
+        g_inputFiles.length,
+        g_inputFilesIndex // last one wasn't converted or error
       );
     }
   });
 
-  on("finished-canceled", () => {
+  on("file-finished-canceled", () => {
     const modalButtonCancel = g_openModal.querySelector(
       "#tool-cc-modal-cancel-button"
     );
@@ -492,10 +575,14 @@ function checkValidData() {
       "set-display-none"
     );
   }
-  if (g_outputFolderPath !== undefined && g_inputFiles.length > 0) {
-    g_startButton.classList.remove("tools-disabled");
-  } else {
+  if (
+    g_outputFolderPath === undefined ||
+    g_inputFiles.length <= 0 ||
+    (g_mode === 0 && g_outputNameInput.value === "")
+  ) {
     g_startButton.classList.add("tools-disabled");
+  } else {
+    g_startButton.classList.remove("tools-disabled");
   }
   updateColumnsHeight();
 }
@@ -527,14 +614,13 @@ function onRemoveFile(element, id) {
   }
 }
 
-function onStart(resetCounter = true) {
+function onStart() {
   if (!g_openModal) showLogModal(); // TODO: check if first time?
 
-  if (resetCounter) {
-    g_inputFilesIndex = 0;
-    g_numErrors = 0;
-    updateLogText("", false);
-  }
+  g_inputFilePath = undefined;
+  g_inputFilesIndex = -1;
+  g_numErrors = 0;
+  updateLogText("", false);
 
   g_cancel = false;
   const modalButtonCancel = g_openModal.querySelector(
@@ -551,14 +637,22 @@ function onStart(resetCounter = true) {
     modalButtonClose.classList.add("modal-button-success-color");
     modalButtonClose.classList.remove("modal-button-danger-color");
   }
-  //g_modalLoadingBar.classList.remove("hide");
 
   if (g_outputFormat === undefined) g_outputFormat = FileExtension.CBZ;
-  g_inputFilePath = g_inputFiles[g_inputFilesIndex].path;
-  g_inputFileType = g_inputFiles[g_inputFilesIndex].type;
 
   sendIpcToMain(
     "start",
+    g_inputFiles,
+    g_mode === 0 ? undefined : g_outputNameInput.value
+  );
+}
+
+function onStartNextFile() {
+  g_inputFilesIndex++;
+  g_inputFilePath = g_inputFiles[g_inputFilesIndex].path;
+  g_inputFileType = g_inputFiles[g_inputFilesIndex].type;
+  sendIpcToMain(
+    "start-file",
     g_inputFilePath,
     g_inputFileType,
     g_inputFilesIndex + 1,
