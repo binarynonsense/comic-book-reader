@@ -129,7 +129,9 @@ function init(fileData, isoLanguages, canEditRars) {
     if (!g_isEditable) {
       const tagName = element.tagName.toLowerCase();
       if (tagName === "textarea" || tagName === "input") {
-        element.readOnly = true;
+        if (element.id !== "tool-cix-search-input") {
+          element.readOnly = true;
+        }
       } else {
         element.classList.add("tools-read-only");
       }
@@ -647,6 +649,9 @@ function initOnIpcCallbacks() {
       let button = document.createElement("button");
       let text = document.createElement("span");
       text.innerText = localizedImportButtonText;
+      if (!g_isEditable) {
+        button.className = "tools-disabled";
+      }
       button.appendChild(text);
       searchResultsDiv.appendChild(button);
       // ref: https://comicvine.gamespot.com/api/documentation#toc-0-10

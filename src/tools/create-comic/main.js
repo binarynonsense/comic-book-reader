@@ -14,7 +14,6 @@ const { FileExtension } = require("../../shared/main/constants");
 const { fork } = require("child_process");
 const fileUtils = require("../../shared/main/file-utils");
 const appUtils = require("../../shared/main/app-utils");
-const fileFormats = require("../../shared/main/file-formats");
 const settings = require("../../shared/main/settings");
 const utils = require("../../shared/main/utils");
 
@@ -250,24 +249,7 @@ function handle(id, callback) {
   g_handleIpcCallbacks[id] = callback;
 }
 
-function initHandleIpcCallbacks() {
-  // handle(
-  //   "pdf-save-dataurl-to-file",
-  //   async (dataUrl, dpi, folderPath, pageNum) => {
-  //     try {
-  //       const { changeDpiDataUrl } = require("changedpi");
-  //       let img = changeDpiDataUrl(dataUrl, dpi);
-  //       let data = img.replace(/^data:image\/\w+;base64,/, "");
-  //       let buf = Buffer.from(data, "base64");
-  //       let filePath = path.join(folderPath, pageNum + "." + FileExtension.JPG);
-  //       fs.writeFileSync(filePath, buf, "binary");
-  //       return undefined;
-  //     } catch (error) {
-  //       return error;
-  //     }
-  //   }
-  // );
-}
+function initHandleIpcCallbacks() {}
 
 ///////////////////////////////////////////////////////////////////////////////
 // TOOL ///////////////////////////////////////////////////////////////////////
