@@ -28,12 +28,10 @@ exports.info = function (message) {
 exports.error = function (message) {
   if (message?.message) {
     console.log(
-      `${getTime()} ${g_errorTag} ${message.message}\n    at ${callerData()}`
+      `${getTime()} ${g_errorTag} ${message.message}\n${callerData()}`
     );
   } else {
-    console.log(
-      `${getTime()} ${g_errorTag} ${message}\n    at ${callerData()}`
-    );
+    console.log(`${getTime()} ${g_errorTag} ${message}\n${callerData()}`);
   }
   if (g_isDebug && message?.stack) {
     console.log(`${getTime()} ${g_stackTag} ${message.stack}`);
@@ -58,11 +56,7 @@ function getTime() {
 }
 
 function callerData() {
-  let error = new Error();
-  let frame = error.stack.split("\n")[3];
-  let callerLineNumber = frame.split(":").reverse()[1];
-  let functionName = frame.split(" ")[5];
-  return `${functionName}::${callerLineNumber}`;
+  return new Error().stack.split("\n")[3];
 }
 
 // refs:
