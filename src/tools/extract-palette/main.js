@@ -10,6 +10,7 @@ const fs = require("fs");
 const path = require("path");
 const core = require("../../core/main");
 const { _ } = require("../../shared/main/i18n");
+const log = require("../../shared/main/logger");
 const { FileExtension } = require("../../shared/main/constants");
 const utils = require("../../shared/main/utils");
 const appUtils = require("../../shared/main/app-utils");
@@ -123,7 +124,7 @@ function initOnIpcCallbacks() {
       if (!stats.isFile()) return; // avoid folders accidentally getting here
       sendIpcToRenderer("update-image", filePath);
     } catch (error) {
-      console.log(error);
+      log.error(error);
     }
   });
 

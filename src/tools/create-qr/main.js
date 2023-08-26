@@ -10,6 +10,7 @@ const fs = require("fs");
 const path = require("path");
 const core = require("../../core/main");
 const { _ } = require("../../shared/main/i18n");
+const log = require("../../shared/main/logger");
 const { FileExtension } = require("../../shared/main/constants");
 const fileUtils = require("../../shared/main/file-utils");
 const appUtils = require("../../shared/main/app-utils");
@@ -123,7 +124,7 @@ function initOnIpcCallbacks() {
             };
           }
           if (error?.name !== "GenericError") {
-            console.log(error);
+            log.error(error);
           }
           sendIpcToRenderer("modal-close");
           sendIpcToRenderer(
@@ -134,7 +135,7 @@ function initOnIpcCallbacks() {
           );
         });
     } catch (error) {
-      console.log(error);
+      log.error(error);
       sendIpcToRenderer("modal-close");
       sendIpcToRenderer(
         "show-modal-alert",
@@ -180,7 +181,7 @@ function initOnIpcCallbacks() {
         false
       );
     } catch (error) {
-      console.log(error);
+      log.error(error);
       sendIpcToRenderer(
         "show-modal-alert",
         _("tool-cq-modal-alert-title-errorexporting"),

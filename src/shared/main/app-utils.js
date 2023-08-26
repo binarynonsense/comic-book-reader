@@ -9,6 +9,7 @@ const { app, dialog } = require("electron");
 const path = require("path");
 const fs = require("fs");
 const fileUtils = require("./file-utils");
+const log = require("./logger");
 
 ///////////////////////////////////////////////////////////////////////////////
 // PATHS //////////////////////////////////////////////////////////////////////
@@ -53,7 +54,7 @@ exports.getConfigFolder = function () {
       fs.accessSync(getExeFolderPath(), fs.constants.W_OK);
       return getExeFolderPath();
     } catch (err) {
-      console.log("Warning: portable settings' folder not writable");
+      log.info("Warning: portable settings' folder not writable");
     }
   }
   return getUserDataFolderPath();
@@ -139,7 +140,7 @@ exports.chooseSaveAs = chooseSaveAs;
 
 function cleanUpUserDataFolder() {
   // some things are not entirely deleted, but it's good enough :)
-  console.log("cleaning up...");
+  log.info("cleaning up...");
   let keepFiles = [
     "acbr.cfg",
     "acbr.hst",

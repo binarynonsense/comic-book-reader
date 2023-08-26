@@ -9,6 +9,7 @@ const path = require("path");
 const fs = require("fs");
 const utils = require("./utils");
 const fileUtils = require("./file-utils");
+const log = require("./logger");
 
 function isDev() {
   return process.argv[2] == "--dev";
@@ -42,7 +43,7 @@ async function getRarEntriesList(filePath, password) {
 
     const list = extractor.getFileList();
     // const arcHeader = list.arcHeader;
-    // console.log(arcHeader);
+    // log.debug(arcHeader);
     const fileHeaders = [...list.fileHeaders];
     let imgEntries = [];
     let comicInfoId = undefined;
@@ -77,7 +78,7 @@ async function getRarEntriesList(filePath, password) {
       metadata: { encrypted: isEncrypted, comicInfoId: comicInfoId },
     };
   } catch (error) {
-    console.log(error.message);
+    log.error(error.message);
     return { result: "other error", paths: [] };
   }
 }
@@ -96,7 +97,7 @@ async function extractRarEntryBuffer(rarPath, entryName, password) {
     files[0].extraction; // Uint8Array
     return Buffer.from(files[0].extraction);
   } catch (error) {
-    console.log(error);
+    log.error(error);
     return undefined;
   }
 }
@@ -146,7 +147,7 @@ function createRar(
       throw cmdResult.error;
     }
   } catch (error) {
-    console.log(error);
+    log.error(error);
     return false;
   }
 }
@@ -162,11 +163,11 @@ function updateRarEntry(rarExePath, filePath, entryPath, workingDir, password) {
     if (!cmdResult.error || cmdResult.error === "") {
       return true;
     } else {
-      console.log(cmdResult.error);
+      log.error(cmdResult.error);
       return false;
     }
   } catch (error) {
-    console.log(error);
+    log.error(error);
     return false;
   }
 }
@@ -218,7 +219,7 @@ function getZipEntriesList(filePath, password) {
       metadata: { encrypted: isEncrypted, comicInfoId: comicInfoId },
     };
   } catch (error) {
-    console.log(error.message);
+    log.error(error.message);
     return { result: "other error", paths: [] };
   }
 }
@@ -264,7 +265,7 @@ function updateZipEntry(zipPath, entryName, contentBuffer, entryExists) {
     zip.writeZip(zipPath);
     return true;
   } catch (error) {
-    console.log(error);
+    log.error(error);
     return false;
   }
 }
@@ -339,16 +340,15 @@ async function get7ZipEntriesList(filePath, password) {
           comicInfoId: comicInfoId,
         },
       };
-    } else if (promise.success === false) {
+    } else {
       if (promise.data.toString().search("password") !== -1) {
         // Can not open encrypted archive. Wrong password?"
         return { result: "password required", paths: [] };
       }
+      throw promise.data;
     }
-    // shouldn't reach this point
-    return { result: "other error", paths: [] };
   } catch (error) {
-    console.log(error);
+    log.error(error);
     return { result: "other error", paths: [] };
   }
 }
@@ -378,7 +378,7 @@ async function extract7ZipEntryBuffer(
 
     let promise = await new Promise((resolve) => {
       seven.on("error", (error) => {
-        console.log(error);
+        log.error(error);
         resolve({ success: false, data: error });
       });
       seven.on("end", () => {
@@ -399,7 +399,7 @@ async function extract7ZipEntryBuffer(
     fileUtils.cleanUpTempFolder(untrackedTempFolder);
     return undefined;
   } catch (error) {
-    console.log(error);
+    log.error(error);
     fileUtils.cleanUpTempFolder(untrackedTempFolder);
     return undefined;
   }
@@ -517,7 +517,7 @@ async function update7ZipEntry(filePath, entryName, workingDir, password) {
     }
     throw promise.data;
   } catch (error) {
-    console.log(error);
+    log.error(error);
     return false;
   }
 }
@@ -580,7 +580,7 @@ async function getEpubImageIdsList(filePath) {
     }
     return imageIDs;
   } catch (error) {
-    console.log(error);
+    log.error(error);
     return undefined;
   }
 }

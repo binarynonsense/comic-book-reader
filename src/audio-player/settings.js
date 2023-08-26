@@ -8,6 +8,7 @@
 const { app } = require("electron");
 const fs = require("fs");
 const path = require("path");
+const log = require("../shared/main/logger");
 
 const {
   isPortable,
@@ -86,7 +87,7 @@ exports.save = function () {
     try {
       fs.accessSync(getExeFolderPath(), fs.constants.W_OK);
     } catch (err) {
-      console.log("Warning: portable settings' folder not writable");
+      log.info("Warning: portable settings' folder not writable");
     }
   }
   let date = new Date().toJSON();
@@ -96,10 +97,10 @@ exports.save = function () {
   try {
     fs.writeFileSync(cfgFilePath, settingsJSON, "utf-8");
   } catch (e) {
-    console.log("ERROR saving settings to: " + cfgFilePath);
+    log.info("ERROR saving settings to: " + cfgFilePath);
     return;
   }
-  console.log("settings saved to: " + cfgFilePath);
+  log.info("settings saved to: " + cfgFilePath);
 };
 
 function load() {

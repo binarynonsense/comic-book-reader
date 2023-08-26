@@ -266,7 +266,6 @@ function initOnIpcCallbacks() {
     if (!g_cancel) {
       g_cancel = true;
       if (g_workerWindow) {
-        console.log("cancel pdf");
         g_workerWindow.webContents.send("cancel");
       }
     }
@@ -859,11 +858,9 @@ async function resizeImages(
 
           if (!json["ComicInfo"]["Pages"]) {
             json["ComicInfo"]["Pages"] = {};
-            console.log(json["ComicInfo"]["Pages"]);
           }
           if (!json["ComicInfo"]["Pages"]["Page"]) {
             json["ComicInfo"]["Pages"]["Page"] = [];
-            console.log(json["ComicInfo"]["Pages"]["Page"]);
           }
 
           json["ComicInfo"]["PageCount"] = imgFilePaths.length;
@@ -901,7 +898,7 @@ async function resizeImages(
           throw "ComicInfo.xml is not a valid xml file";
         }
       } catch (error) {
-        console.log(
+        log.debug(
           "Warning: couldn't update the contents of ComicInfo.xml: " + error
         );
         sendIpcToRenderer(

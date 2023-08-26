@@ -10,6 +10,7 @@ const fs = require("fs");
 const path = require("path");
 const core = require("../../core/main");
 const { _ } = require("../../shared/main/i18n");
+const log = require("../../shared/main/logger");
 const reader = require("../../reader/main");
 const fileUtils = require("../../shared/main/file-utils");
 const appUtils = require("../../shared/main/app-utils");
@@ -435,7 +436,7 @@ async function saveJsonToFile(json) {
     }
     sendIpcToRenderer("saving-done");
   } catch (error) {
-    console.log(error);
+    log.error(error);
     sendIpcToRenderer("saving-done", error);
   }
 }

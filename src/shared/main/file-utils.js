@@ -8,6 +8,7 @@
 const path = require("path");
 const os = require("os");
 const fs = require("fs");
+const log = require("./logger");
 
 function isDev() {
   return process.argv[2] == "--dev";
@@ -221,15 +222,15 @@ function deleteFolderRecursive(
     });
     try {
       fs.rmdirSync(folderPath);
-      if (logToConsole) console.log("deleted folder: " + folderPath);
+      if (logToConsole) log.debug("deleted folder: " + folderPath);
     } catch (error) {
       if (error.code == "ENOTEMPTY") {
         // TODO: retry?
         // this can happen if for examplethe temp folder is the same
         // as the one the conversion is outputing to
       }
-      if (logToConsole) console.log("Error: " + error.code);
-      if (logToConsole) console.log("couldn't delete folder: " + folderPath);
+      log.error("Error: " + error.code);
+      log.error("couldn't delete folder: " + folderPath);
     }
   }
 }
@@ -278,7 +279,7 @@ function cleanUpTempFolder(tempFolderPath) {
     deleteFolderRecursive(tempFolderPath, false, undefined, "acbr-");
   } else {
     if (g_tempFolderPath === undefined) return;
-    deleteFolderRecursive(g_tempFolderPath, isDev(), undefined, "acbr-");
+    deleteFolderRecursive(g_tempFolderPath, true, undefined, "acbr-");
     g_tempFolderPath = undefined;
   }
 }

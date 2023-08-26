@@ -16,6 +16,7 @@ const core = require("../core/main");
 const settings = require("../shared/main/settings");
 const history = require("../shared/main/history");
 const { _ } = require("../shared/main/i18n");
+const log = require("../shared/main/logger");
 const menuBar = require("../shared/main/menu-bar");
 const fileUtils = require("../shared/main/file-utils");
 const appUtils = require("../shared/main/app-utils");
@@ -280,7 +281,7 @@ function initOnIpcCallbacks() {
   on("epub-ebook-load-failed", (error) => {
     // unrecoverable error
     sendIpcToRenderer("update-loading", false);
-    console.log(error.message);
+    log.error(error.message);
     closeCurrentFile(false);
     sendIpcToRenderer(
       "show-modal-info",
@@ -341,7 +342,7 @@ function initOnIpcCallbacks() {
       }
     } else {
       // unrecoverable error
-      console.log(error);
+      log.error(error);
       closeCurrentFile();
       sendIpcToRenderer(
         "show-modal-info",
@@ -1077,7 +1078,7 @@ async function openEbookFromPath(filePath, pageIndex, historyEntry) {
               }
               fs.writeFileSync(cachedPath, response.data, { flag: "w" });
             } catch (error) {
-              console.log(error?.message);
+              log.error(error?.message);
               // couldn't download file -> abort
               sendIpcToRenderer("update-loading", false);
               sendIpcToRenderer("update-bg", true);
@@ -1237,8 +1238,8 @@ function goToPage(pageIndex, scrollBarPos = 0) {
           return;
         } else {
           // TODO: handle error
-          console.log("worker error");
-          console.log(message[1]);
+          log.error("worker error");
+          log.error(message[1]);
           sendIpcToRenderer("update-loading", false);
           return;
         }
@@ -1283,7 +1284,7 @@ function goToPage(pageIndex, scrollBarPos = 0) {
       }
       if (!response || !response.pageImgSrc) {
         // TODO: handle error
-        console.log("download error");
+        log.error("download error");
         sendIpcToRenderer("update-loading", false);
         return;
       }
@@ -1914,7 +1915,7 @@ function exportPageSaveDataUrl(dataUrl, dpi, outputFolderPath, sendToTool) {
 }
 
 function exportPageError(err) {
-  console.log(err);
+  log.error(err);
   sendIpcToRenderer("update-loading", false);
   sendIpcToRenderer(
     "show-modal-info",

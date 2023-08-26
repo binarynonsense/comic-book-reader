@@ -7,6 +7,7 @@
 
 const fs = require("fs");
 const path = require("path");
+const log = require("./logger");
 
 const settings = require("./settings");
 const {
@@ -48,10 +49,10 @@ exports.save = function () {
   try {
     fs.writeFileSync(hstFilePath, historyJSON, "utf-8");
   } catch (e) {
-    console.log("ERROR saving history to: " + hstFilePath);
+    log.error("ERROR saving history to: " + hstFilePath);
     return;
   }
-  console.log("history saved to: " + hstFilePath);
+  log.info("history saved to: " + hstFilePath);
 };
 
 function load() {

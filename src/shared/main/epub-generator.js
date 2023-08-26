@@ -7,6 +7,7 @@
 
 const fs = require("fs");
 const path = require("path");
+const log = require("./logger");
 
 function getMimeType(filePath) {
   // ref: https://idpf.org/epub/30/spec/epub30-publications.html#sec-core-media-types
@@ -223,13 +224,13 @@ img {
     //   zip = new AdmZip(outputFilePath);
     //   let zipEntries = zip.getEntries();
     //   zipEntries.forEach(function (zipEntry) {
-    //     console.log(zipEntry.entryName);
-    //     console.log(zipEntry.header.method);
-    //     console.log();
+    //     log.debug(zipEntry.entryName);
+    //     log.debug(zipEntry.header.method);
+    //     log.debug();
     //   });
     // }
   } catch (error) {
-    console.log("Epub generator error: " + error);
+    log.error("Epub generator error: " + error);
     throw "Epub generator error: " + error;
   }
 };

@@ -11,6 +11,7 @@ const path = require("path");
 const settings = require("../shared/main/settings");
 const history = require("../shared/main/history");
 const i18n = require("../shared/main/i18n");
+const log = require("../shared/main/logger");
 const themes = require("../shared/main/themes");
 const menuBar = require("../shared/main/menu-bar");
 const fileUtils = require("../shared/main/file-utils");
@@ -98,6 +99,7 @@ const createWindow = () => {
     },
   });
 
+  log.init(isDev());
   settings.init();
 
   if (settings.getValue("pdfReadingLib") === 1) {

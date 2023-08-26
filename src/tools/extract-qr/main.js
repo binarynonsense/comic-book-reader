@@ -10,6 +10,7 @@ const fs = require("fs");
 const path = require("path");
 const core = require("../../core/main");
 const { _ } = require("../../shared/main/i18n");
+const log = require("../../shared/main/logger");
 const { FileExtension } = require("../../shared/main/constants");
 const fileUtils = require("../../shared/main/file-utils");
 const appUtils = require("../../shared/main/app-utils");
@@ -122,7 +123,7 @@ function initOnIpcCallbacks() {
       if (!stats.isFile()) return; // avoid folders accidentally getting here
       sendIpcToRenderer("update-image", filePath);
     } catch (error) {
-      console.log(error);
+      log.error(error);
     }
   });
 
@@ -134,7 +135,6 @@ function initOnIpcCallbacks() {
       );
       const code = jsQR(imgData, imgWidth, imgHeight);
       if (code && code.data) {
-        console.log(code.data);
         sendIpcToRenderer("fill-textarea", code.data);
         sendIpcToRenderer("modal-close");
       } else {
@@ -145,7 +145,7 @@ function initOnIpcCallbacks() {
         };
       }
     } catch (error) {
-      if (error?.name !== "GenericError") console.log(error);
+      if (error?.name !== "GenericError") log.error(error);
       cancelExtraction(error);
     }
   });

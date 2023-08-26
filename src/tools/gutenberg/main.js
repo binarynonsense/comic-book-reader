@@ -9,6 +9,7 @@ const fs = require("fs");
 const path = require("path");
 const core = require("../../core/main");
 const { _ } = require("../../shared/main/i18n");
+const log = require("../../shared/main/logger");
 const reader = require("../../reader/main");
 const shell = require("electron").shell;
 const { BookType } = require("../../shared/main/constants");
@@ -130,7 +131,7 @@ function initOnIpcCallbacks() {
         _("tool-shared-ui-search-item-open-browser")
       );
     } catch (error) {
-      console.log(error);
+      log.error(error);
       sendIpcToRenderer(
         "update-results",
         undefined,

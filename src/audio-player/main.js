@@ -9,12 +9,12 @@ const { app } = require("electron");
 const fs = require("fs");
 const path = require("path");
 const { FileExtension } = require("../shared/main/constants");
-const fileUtils = require("../shared/main/file-utils");
 const appUtils = require("../shared/main/app-utils");
 const core = require("../core/main");
 const reader = require("../reader/main");
 const settings = require("./settings");
 const { _ } = require("../shared/main/i18n");
+const log = require("../shared/main/logger");
 
 let g_mainWindow;
 let g_parentElementId;
@@ -135,7 +135,7 @@ function initHandleIpcCallbacks() {
           if (didUpdate) updatedFiles.push(file);
         }
       } catch (error) {
-        console.log(error);
+        log.error(error);
         return [];
       }
     }
@@ -167,7 +167,7 @@ exports.saveSettings = function () {
   settings.save();
   let playlistPath = path.join(appUtils.getConfigFolder(), "acbr-player.m3u");
   savePlaylistToFile(g_playlist, playlistPath, false);
-  console.log("playlist saved to: " + playlistPath);
+  log.info("playlist saved to: " + playlistPath);
 };
 
 function loadSettings() {
