@@ -2020,7 +2020,7 @@ function onMenuOpenFile() {
   if (defaultPath && !fs.existsSync(defaultPath)) defaultPath = undefined;
 
   let allowMultipleSelection = false;
-  let allowedFileTypesName = "Comics, Books & Images";
+  let allowedFileTypesName = _("dialog-file-types-comics-books-images");
   let allowedFileTypesList = [
     FileExtension.CBZ,
     FileExtension.CBR,

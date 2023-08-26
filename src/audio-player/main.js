@@ -78,7 +78,7 @@ function initOnIpcCallbacks() {
         "acbr-playlist.m3u"
       );
     }
-    let allowedFileTypesName = "Playlists";
+    let allowedFileTypesName = _("dialog-file-types-playlists");
     let allowedFileTypesList = [FileExtension.M3U];
     let filePath = appUtils.chooseSaveAs(
       g_mainWindow,
@@ -268,7 +268,7 @@ function getValidFilePaths(filePaths) {
 function callOpenFilesDialog(mode) {
   let defaultPath;
   let allowMultipleSelection = true;
-  let allowedFileTypesName = "Audio Files / Playlists";
+  let allowedFileTypesName = _("dialog-file-types-audio-playlists");
   let allowedFileTypesList = [
     FileExtension.MP3,
     FileExtension.OGG,

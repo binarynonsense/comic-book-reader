@@ -137,7 +137,7 @@ function initOnIpcCallbacks() {
     if (lastFilePath) defaultPath = path.dirname(lastFilePath);
     try {
       let allowMultipleSelection = true;
-      let allowedFileTypesName = "Comic Book Files";
+      let allowedFileTypesName = _("dialog-file-types-comics");
       let allowedFileTypesList = [
         FileExtension.CBZ,
         FileExtension.CBR,

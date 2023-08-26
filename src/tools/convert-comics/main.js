@@ -156,7 +156,7 @@ function initOnIpcCallbacks() {
       let allowedFileTypesName;
       let allowedFileTypesList;
       if (g_mode === 0) {
-        allowedFileTypesName = "Comic Book Files";
+        allowedFileTypesName = _("dialog-file-types-comics");
         allowedFileTypesList = [
           FileExtension.CBZ,
           FileExtension.CBR,
@@ -165,7 +165,7 @@ function initOnIpcCallbacks() {
           FileExtension.EPUB,
         ];
       } else {
-        allowedFileTypesName = "Image & Comic Book Files";
+        allowedFileTypesName = _("dialog-file-types-comics-images");
         allowedFileTypesList = [
           FileExtension.JPG,
           FileExtension.JPEG,

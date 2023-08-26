@@ -93,6 +93,14 @@
   "toolbar-rotate-clockwise": "Rotar en Sentido Horario",
   "toolbar-rotate-counterclockwise": "Rotar en Sentido Anti-horario",
 
+  "dialog-file-types-playlists": "Playlists",
+  "dialog-file-types-audio-playlists": "Archivos de Música y Playlists",
+  "dialog-file-types-comics": "Archivos de Cómic",
+  "dialog-file-types-comics-images": "Archivos de Cómic e Imagen",
+  "dialog-file-types-comics-books-images": "Archivos de Cómic, Libro e Imagen",
+  "dialog-file-types-images": "Archivos de Imagen",
+  "dialog-file-types-text": "Archivos de Texto",
+
   "ui-bg-msg": "Para abrir un archivo, use el menú o presione <i>Ctrl+O</i>",
 
   "ui-modal-title-foldernotfound": "Directorio No Encontrado",

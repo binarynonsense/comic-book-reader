@@ -184,7 +184,7 @@ function initOnIpcCallbacks() {
     let defaultPath = settings.getValue("toolCixApiKeyPath");
 
     let allowMultipleSelection = false;
-    let allowedFileTypesName = "Text Files";
+    let allowedFileTypesName = _("dialog-file-types-text");
     let allowedFileTypesList = ["txt"];
     let filePaths = appUtils.chooseOpenFiles(
       core.getMainWindow(),

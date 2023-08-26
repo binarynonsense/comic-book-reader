@@ -109,7 +109,7 @@ function initOnIpcCallbacks() {
   on("choose-file", (defaultPath) => {
     try {
       let allowMultipleSelection = true;
-      let allowedFileTypesName = "Image Files";
+      let allowedFileTypesName = _("dialog-file-types-images");
       let allowedFileTypesList = [
         FileExtension.JPG,
         FileExtension.JPEG,

@@ -93,6 +93,14 @@
   "toolbar-rotate-clockwise": "Rotate Clockwise",
   "toolbar-rotate-counterclockwise": "Rotate Counterclockwise",
 
+  "dialog-file-types-playlists": "Playlist Files",
+  "dialog-file-types-audio-playlists": "Audio Files / Playlist Files",
+  "dialog-file-types-comics": "Comic Files",
+  "dialog-file-types-comics-images": "Comic & Image Files",
+  "dialog-file-types-comics-books-images": "Comic, Book & Image Files",
+  "dialog-file-types-images": "Image Files",
+  "dialog-file-types-text": "Text Files",
+
   "ui-bg-msg": "To open a file use the menu or press <i>Ctrl+O</i>",
 
   "ui-modal-title-foldernotfound": "Folder Not Found",
