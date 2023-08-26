@@ -9,6 +9,10 @@ const path = require("path");
 const os = require("os");
 const fs = require("fs");
 
+function isDev() {
+  return process.argv[2] == "--dev";
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // MOVE ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -274,7 +278,7 @@ function cleanUpTempFolder(tempFolderPath) {
     deleteFolderRecursive(tempFolderPath, false, undefined, "acbr-");
   } else {
     if (g_tempFolderPath === undefined) return;
-    deleteFolderRecursive(g_tempFolderPath, true, undefined, "acbr-");
+    deleteFolderRecursive(g_tempFolderPath, isDev(), undefined, "acbr-");
     g_tempFolderPath = undefined;
   }
 }
