@@ -161,7 +161,6 @@ async function createFiles(
         if (comicInfoFilePath)
           filesData[index].imgFilePaths.push(comicInfoFilePath);
         if (password && password.trim() !== "") {
-          console.log("7zip");
           await fileFormats.create7Zip(
             filesData[index].imgFilePaths,
             filesData[index].outputFilePath,
@@ -169,7 +168,6 @@ async function createFiles(
             "zip"
           );
         } else {
-          console.log("AdmZip");
           fileFormats.createZip(
             filesData[index].imgFilePaths,
             filesData[index].outputFilePath
