@@ -7,6 +7,7 @@
 
 import { sendIpcToMain as coreSendIpcToMain } from "../../core/renderer.js";
 import { isVersionOlder } from "../../shared/renderer/utils.js";
+import * as modals from "../../shared/renderer/modals.js";
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -201,6 +202,16 @@ function init(activeLocale, languages, activeTheme, themes, settings) {
     select.value = settings.epubOpenAs;
     select.addEventListener("change", function (event) {
       sendIpcToMain("set-setting", "epubOpenAs", parseInt(select.value));
+    });
+  }
+  // pdf reading library select
+  {
+    let select = document.getElementById(
+      "tool-pre-pdf-reading-library-version-select"
+    );
+    select.value = settings.pdfReadingLib;
+    select.addEventListener("change", function (event) {
+      sendIpcToMain("set-pdf-reading-lib", parseInt(select.value));
     });
   }
   // cbr creation select
@@ -490,6 +501,21 @@ function initOnIpcCallbacks() {
   on("set-rar-folder", (...args) => {
     updateRarFolder(...args);
   });
+
+  on("show-ok-modal", (...args) => {
+    if (g_openModal) {
+      modals.close(g_openModal);
+      modalClosed();
+    }
+    showOKModal(...args);
+  });
+
+  on("close-modal", () => {
+    if (g_openModal) {
+      modals.close(g_openModal);
+      modalClosed();
+    }
+  });
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -536,10 +562,52 @@ function reducePathString(input) {
 ///////////////////////////////////////////////////////////////////////////////
 
 export function onInputEvent(type, event) {
-  // if (getOpenModal()) {
-  //   modals.onInputEvent(getOpenModal(), type, event);
-  //   return;
-  // }
+  if (getOpenModal()) {
+    modals.onInputEvent(getOpenModal(), type, event);
+    return;
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// MODALS /////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+let g_openModal;
+
+export function getOpenModal() {
+  return g_openModal;
+}
+
+function modalClosed() {
+  g_openModal = undefined;
+}
+
+function showOKModal(title, message, textButton) {
+  if (g_openModal) {
+    return;
+  }
+  let buttons = [];
+  if (textButton) {
+    buttons.push({
+      text: textButton,
+      callback: () => {
+        modalClosed();
+      },
+      key: "Enter",
+    });
+  }
+  g_openModal = modals.show({
+    title: title,
+    message: message,
+    zIndexDelta: 5,
+    close: {
+      callback: () => {
+        modalClosed();
+      },
+      key: "Escape",
+    },
+    buttons: buttons,
+  });
 }
 
 ///////////////////////////////////////////////////////////////////////////////

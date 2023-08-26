@@ -69,6 +69,7 @@ function setDefaultValues() {
     layoutPageNum: 4, // 0 top left, 1 top center, 2 top right .... 5 bottom right
     layoutAudioPlayer: 0, // 0 top left, 3 bootom left - for now
     epubOpenAs: 0, // 0 ask and remember, 1 always ask
+    pdfReadingLib: 0, // 0 oldest, 1 newest
     cbrCreation: 0, // 0 disabled, 1 use command tool if available
     rarExeFolderPath: undefined,
     turnPageOnScrollBoundary: false,
@@ -240,6 +241,13 @@ function sanitize() {
     g_settings.epubOpenAs > 1
   ) {
     g_settings.epubOpenAs = 0;
+  }
+  if (
+    !Number.isInteger(g_settings.pdfReadingLib) ||
+    g_settings.pdfReadingLib < 0 ||
+    g_settings.pdfReadingLib > 1
+  ) {
+    g_settings.pdfReadingLib = 0;
   }
   if (
     !Number.isInteger(g_settings.cbrCreation) ||

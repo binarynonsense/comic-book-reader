@@ -97,11 +97,17 @@ const createWindow = () => {
       preload: path.join(__dirname, "preload.js"),
     },
   });
-  g_mainWindow.loadFile(path.join(__dirname, "index.html"));
+
+  settings.init();
+
+  if (settings.getValue("pdfReadingLib") === 1) {
+    g_mainWindow.loadFile(path.join(__dirname, "index-2.html"));
+  } else {
+    g_mainWindow.loadFile(path.join(__dirname, "index-1.html"));
+  }
 
   g_mainWindow.webContents.on("did-finish-load", function () {
     g_isLoaded = true;
-    settings.init();
     let tempFolderPath = settings.getValue("tempFolderPath");
     if (!path.isAbsolute(tempFolderPath)) {
       tempFolderPath = path.resolve(

@@ -53,6 +53,7 @@ exports.open = function () {
 
 exports.close = function () {
   // called by switchTool when closing tool
+  sendIpcToRenderer("close-modal");
 };
 
 exports.onResize = function () {
@@ -162,6 +163,16 @@ function initOnIpcCallbacks() {
   on("set-page-turn", (value) => {
     settings.setValue("turnPageOnScrollBoundary", value);
     reader.sendIpcToRenderer("set-page-turn-on-scroll-boundary", value);
+  });
+
+  on("set-pdf-reading-lib", (value) => {
+    settings.setValue("pdfReadingLib", value);
+    sendIpcToRenderer(
+      "show-ok-modal",
+      _("tool-shared-modal-title-info"),
+      _("tool-shared-modal-info-change-needs-restart"),
+      _("ui-modal-prompt-button-ok")
+    );
   });
 
   on("change-temp-folder", (reset, saveAsRelative) => {
@@ -525,6 +536,27 @@ function getLocalization() {
     {
       id: "tool-pre-epub-openas-1-text",
       text: _("tool-pre-epub-openas-1"),
+    },
+
+    {
+      id: "tool-pre-pdf-text",
+      text: _("tool-pre-pdf"),
+    },
+    {
+      id: "tool-pre-pdf-reading-library-version-text",
+      text: _("tool-pre-pdf-reading-library-version"),
+    },
+    {
+      id: "tool-pre-pdf-reading-library-version-0-text",
+      text: `${_("tool-pre-pdf-library-version-oldest")} (${_(
+        "tool-pre-pdf-library-version-oldest-desc"
+      )})`,
+    },
+    {
+      id: "tool-pre-pdf-reading-library-version-1-text",
+      text: `${_("tool-pre-pdf-library-version-newest")} (${_(
+        "tool-pre-pdf-library-version-newest-desc"
+      )})`,
     },
 
     {

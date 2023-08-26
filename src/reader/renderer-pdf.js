@@ -55,14 +55,14 @@ export function cleanUp() {
 }
 
 function loadPdf(filePath, pageIndex, password) {
-  pdfjsLib.GlobalWorkerOptions.workerSrc =
-    "../assets/libs/pdfjs-2.3.200/build/pdf.worker.js";  
+  // pdfjsLib.GlobalWorkerOptions.workerSrc =
+  //   "../assets/libs/pdfjs-2.3.200/build/pdf.worker.js";
   var loadingTask = pdfjsLib.getDocument({ url: filePath, password: password });
   loadingTask.promise
     .then(function (pdf) {
       cleanUp();
       g_currentPdf.pdf = pdf;
-      console.log(g_currentPdf.pdf);
+      //console.log(g_currentPdf.pdf);
       g_currentPdf.pdf
         .getMetadata()
         .then(function (metadata) {
@@ -173,8 +173,8 @@ async function extractPDFImageBuffer(
   password,
   sendToTool
 ) {
-  pdfjsLib.GlobalWorkerOptions.workerSrc =
-    "../assets/libs/pdfjs-2.3.200/build/pdf.worker.js";
+  // pdfjsLib.GlobalWorkerOptions.workerSrc =
+  //   "../assets/libs/pdfjs-2.3.200/build/pdf.worker.js";
   try {
     const pdf = await pdfjsLib.getDocument({
       url: filePath,
