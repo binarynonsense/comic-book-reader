@@ -93,13 +93,13 @@
   "toolbar-rotate-clockwise": "Rotiere in Uhrzeigerrichtung",
   "toolbar-rotate-counterclockwise": "Rotiere gegen Uhrzeigerrichtung",
 
-  "[NEEDS TRANSLATION]dialog-file-types-playlists": "Playlist Files",
-  "[NEEDS TRANSLATION]dialog-file-types-audio-playlists": "Audio and Playlist Files",
-  "[NEEDS TRANSLATION]dialog-file-types-comics": "Comic Files",
-  "[NEEDS TRANSLATION]dialog-file-types-comics-images": "Comic and Image Files",
-  "[NEEDS TRANSLATION]dialog-file-types-comics-books-images": "Comic, Book and Image Files",
-  "[NEEDS TRANSLATION]dialog-file-types-images": "Image Files",
-  "[NEEDS TRANSLATION]dialog-file-types-text": "Text Files",
+  "dialog-file-types-playlists": "Playlist-Dateien",
+  "dialog-file-types-audio-playlists": "Audio- und Playlist-Dateien",
+  "dialog-file-types-comics": "Comic-Dateien",
+  "dialog-file-types-comics-images": "Comic und Bild-Dateien",
+  "dialog-file-types-comics-books-images": "Comic-, Buch-  und Bild-Dateien",
+  "dialog-file-types-images": "Bild-Dateien",
+  "dialog-file-types-text": "Textdateien",
 
   "ui-bg-msg": "Um eine Datei zu öffnen, verwenden Sie das Menü oder drücken Sie <i>Strg+O</i>",
 
