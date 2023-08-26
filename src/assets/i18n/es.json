@@ -93,8 +93,8 @@
   "toolbar-rotate-clockwise": "Rotar en Sentido Horario",
   "toolbar-rotate-counterclockwise": "Rotar en Sentido Anti-horario",
 
-  "dialog-file-types-playlists": "Playlists",
-  "dialog-file-types-audio-playlists": "Archivos de Música y Playlists",
+  "dialog-file-types-playlists": "Archivos de Lista de Reproducción",
+  "dialog-file-types-audio-playlists": "Archivos de Música y Lista de Reproducción",
   "dialog-file-types-comics": "Archivos de Cómic",
   "dialog-file-types-comics-images": "Archivos de Cómic e Imagen",
   "dialog-file-types-comics-books-images": "Archivos de Cómic, Libro e Imagen",
