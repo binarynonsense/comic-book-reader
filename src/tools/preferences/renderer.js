@@ -326,7 +326,7 @@ function switchSection(id) {
         .getElementById("tool-pre-file-formats-section-div")
         .classList.remove("set-display-none");
       document
-        .getElementById("tool-pre-file-advanced-div")
+        .getElementById("tool-pre-advanced-section-div")
         .classList.remove("set-display-none");
       break;
     case 1:
