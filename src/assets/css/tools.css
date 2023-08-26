@@ -237,6 +237,12 @@
   display: flex;
   flex-direction: row;
 }
+.tools-checkbox-container > input[type="checkbox"] {
+  vertical-align: middle;
+}
+.tools-checkbox-container > span {
+  vertical-align: middle;
+}
 
 #tools input[type="checkbox"] {
   /* change "blue" browser chrome to yellow */
@@ -273,7 +279,7 @@
 }
 
 #tools label > select,
-#tools label > input,
+#tools label:not(.tools-checkbox-container) > input,
 #tools label > ul,
 #tools label > textarea,
 .tools-checkbox-container,
