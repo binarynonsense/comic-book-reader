@@ -10,6 +10,7 @@ const path = require("path");
 const core = require("../../core/main");
 const i18n = require("../../shared/main/i18n");
 const { _ } = require("../../shared/main/i18n");
+const log = require("../../shared/main/logger");
 const settings = require("../../shared/main/settings");
 const themes = require("../../shared/main/themes");
 const reader = require("../../reader/main");
@@ -214,6 +215,19 @@ function initOnIpcCallbacks() {
       folderPath = undefined;
     } else {
       let defaultPath = settings.getValue("rarExeFolderPath");
+      if (defaultPath === undefined && process.platform === "win32") {
+        let winrarPath = "C:\\Program Files\\WinRAR";
+        if (fs.existsSync(winrarPath)) {
+          defaultPath = winrarPath;
+          log.debug("found potential rar folder: " + defaultPath);
+        } else {
+          winrarPath = "D:\\Program Files\\WinRAR";
+          if (fs.existsSync(winrarPath)) {
+            defaultPath = winrarPath;
+            log.debug("found potential rar folder: " + defaultPath);
+          }
+        }
+      }
       let folderList = appUtils.chooseFolder(core.getMainWindow(), defaultPath);
       if (folderList === undefined) {
         return;
