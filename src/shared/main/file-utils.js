@@ -213,7 +213,11 @@ function deleteFolderRecursive(
       if (fs.lstatSync(entryPath).isDirectory()) {
         deleteFolderRecursive(entryPath, logToConsole);
       } else {
-        fs.unlinkSync(entryPath); // delete the file
+        try {
+          fs.unlinkSync(entryPath); // delete the file
+        } catch (error) {
+          if (logToConsole) log.debug("couldn't delete file: " + entryPath);
+        }
       }
     });
     try {
