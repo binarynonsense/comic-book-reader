@@ -1,3 +1,19 @@
+## v3.2.1
+
+- Hotfix:
+  - Fixed error window showing after quitting in some cases.
+
+## v3.2.0
+
+- Added an option in the preferences to enable using a third-party command-line application ([rar](https://www.win-rar.com/cmd-shell-mode.html?&L=0) from WinRAR) to create and modify cbr files.
+- Added the ability to search for and import comic book metadata from Comic Vine to the ComicInfo.xml editor. A [Comic Vine API key](https://comicvine.gamespot.com/api/) is required for it to work.
+- Added an option in the comic book conversion and creation tools to split the output into multiple files.
+- Added an option in the comic book conversion and creation tools to password protect the output files. Only available for some of the output formats (cbz, cb7, pdf and cbr).
+- Made the creation tool accept not only image files as input but also comic book files.
+- Added an option in the preferences to save the temp folder path as relative.
+- Added an option in the preferences to choose which PDF library is used for reading, the oldest (quicker but less robust) or the newest (slower but more robust).
+- Fixed an error in the PDF creation code when using an advanced option other than the default one.
+
 ## v3.1.0
 
 - Added a ComicInfo.xml viewer/editor that can be opened from the properties window if the file format allows it. ComicInfo.xml files inside cbr, cbz and cb7 comic books can be viewed and ComicInfo.xml files inside unencrypted cbz and cb7 comic books can be created and edited.
