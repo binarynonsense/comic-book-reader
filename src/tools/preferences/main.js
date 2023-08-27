@@ -256,7 +256,7 @@ function getTooltipsLocalization() {
         process.platform === "win32" ? '"Rar.exe"' : '"rar"'
       )}${
         process.platform === "win32"
-          ? " " + _("tool-pre-rarfolder-tooltip", '"C:\\Program Files\\WinRAR"')
+          ? " " + _("tool-pre-rarfolder-example", '"C:\\Program Files\\WinRAR"')
           : ""
       }`,
     },
