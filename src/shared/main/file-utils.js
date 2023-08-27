@@ -191,7 +191,7 @@ exports.getComicInfoFileInFolderRecursive = getComicInfoFileInFolderRecursive;
 
 function deleteFolderRecursive(
   folderPath,
-  logToConsole,
+  logToError,
   pathStartsWith,
   nameStartsWith
 ) {
@@ -211,26 +211,28 @@ function deleteFolderRecursive(
     files.forEach((file) => {
       const entryPath = path.join(folderPath, file);
       if (fs.lstatSync(entryPath).isDirectory()) {
-        deleteFolderRecursive(entryPath, logToConsole);
+        deleteFolderRecursive(entryPath, logToError);
       } else {
         try {
           fs.unlinkSync(entryPath); // delete the file
         } catch (error) {
-          if (logToConsole) log.debug("couldn't delete file: " + entryPath);
+          log.debug("couldn't delete file: " + entryPath);
         }
       }
     });
     try {
       fs.rmdirSync(folderPath);
-      if (logToConsole) log.debug("deleted folder: " + folderPath);
+      log.debug("deleted folder: " + folderPath);
     } catch (error) {
       if (error.code == "ENOTEMPTY") {
         // TODO: retry?
-        // this can happen if for examplethe temp folder is the same
+        // this can happen if for example the temp folder is the same
         // as the one the conversion is outputing to
       }
-      log.error("Error: " + error.code);
-      log.error("couldn't delete folder: " + folderPath);
+      if (logToError) log.error("Error: " + error.code);
+      else log.debug("Error: " + error.code);
+      if (logToError) log.error("couldn't delete folder: " + folderPath);
+      else log.debug("couldn't delete folder: " + folderPath);
     }
   }
 }
@@ -276,7 +278,7 @@ exports.createTempFolder = createTempFolder;
 
 function cleanUpTempFolder(tempFolderPath) {
   if (tempFolderPath) {
-    deleteFolderRecursive(tempFolderPath, false, undefined, "acbr-");
+    deleteFolderRecursive(tempFolderPath, true, undefined, "acbr-");
   } else {
     if (g_tempFolderPath === undefined) return;
     deleteFolderRecursive(g_tempFolderPath, true, undefined, "acbr-");
