@@ -63,15 +63,16 @@ Un lector y conversor de cómics para archivos en formato cbz, cbr, cb7, epub y 
 - Editor de ComicInfo.xml:
   - ver los metadatos almacenados en archivos ComicInfo.xml dentro de cómics cbr, cbz y cb7.
   - crear y/o modificar los metadatos almacenados en archivos ComicInfo.xml dentro de cómics cbz y cb7 no encriptados.
+  - buscar e importar metadatos de cómics de Comic Vine (una [clave API de Comic Vine](https://comicvine.gamespot.com/api/) es necesaria para su funcionamiento).
 - Reproductor de audio integrado:
   - admite archivos .mp3, .ogg, .wav, .m3u y .m3u8.
   - puede exportar listas de reproducción a archivos .m3u.
 - Herramientas:
   - Convertir/Redimensionar:
-    - cómics (cbr, cbz, cb7, pdf o epub a cbz, cb7, pdf o epub).
+    - cómics (cbr, cbz, cb7, pdf o epub a cbr*, cbz, cb7, pdf o epub).
     - imágenes (jpg, png, avif o webp).
   - Crear:
-    - un cómic (cbz, cb7, pdf o epub) a partir de una lista de archivos de imagen.
+    - un cómic (cbr*, cbz, cb7, pdf o epub) a partir de una lista de archivos de imagen y/o cómics.
     - una imagen de código QR a partir de un texto.
   - Extraer:
     - páginas de cómics (a jpg, png, avif o webp).
@@ -89,6 +90,8 @@ Un lector y conversor de cómics para archivos en formato cbz, cbr, cb7, epub y 
       - Librivox.
     - búsqueda de términos de diccionario de:
       - Diccionario Wiktionary.
+
+(*) La creación y modificación de archivos cbr están desactivadas por defecto. Se pueden activar en las preferencias pero requieren que una herramienta de línea de comandos de terceros ([rar](https://www.win-rar.com/cmd-shell-mode.html?&L=0) de WinRAR) se encuentre instalada en el sistema.
 
 ## Controles:
 

@@ -63,15 +63,16 @@ A comic book reader and converter for cbz, cbr, cb7, epub and pdf files.
 - ComicInfo.xml editor:
   - view the metadata stored in ComicInfo.xml files inside cbr, cbz and cb7 comic books.
   - create and/or modify the metadata stored in ComicInfo.xml files inside unencrypted cbz and cb7 comic books.
+  - search for and import comic book metadata from Comic Vine (a [Comic Vine API key](https://comicvine.gamespot.com/api/) is required for it to work).
 - Integrated audio player:
   - supports .mp3, .ogg, .wav, .m3u and .m3u8 files.
   - can export playlists to .m3u files.
 - Tools:
   - Convert/Resize:
-    - comic books (cbr, cbz, cb7, pdf or epub to cbz, cb7, pdf or epub).
+    - comic books (cbr, cbz, cb7, pdf or epub to cbr*, cbz, cb7, pdf or epub).
     - images (jpg, png, avif or webp).
   - Create:
-    - a comic book (cbz, cb7, pdf or epub) from a list of image files.
+    - a comic book (cbr*, cbz, cb7, pdf or epub) from a list of image files and/or comic books.
     - a QR code image from text.
   - Extract:
     - comic book pages (to jpg, png, avif or webp).
@@ -89,6 +90,8 @@ A comic book reader and converter for cbz, cbr, cb7, epub and pdf files.
       - Librivox AudioBooks.
     - search dictionary terms from:
       - Wiktionary Dictionary.
+      
+(*) Creating and modifying cbr files are disabled by default. They can be enabled in the preferences but require a third-party command-line tool ([rar](https://www.win-rar.com/cmd-shell-mode.html?&L=0) from WinRAR) to be installed in the system.
 
 ## Controls:
 
