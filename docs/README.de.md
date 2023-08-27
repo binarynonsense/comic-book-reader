@@ -91,7 +91,7 @@ Ein Comicbuch Leser und Konverter für cbz, cbr, cb7, epub und pdf Dateien.
     - Suche Wörterbucheinträge in:
       - Wiktionary Dictionary.
 
-(*) Das Erstellen und Modifizieren von cbr Dateien ist standardmäßig deaktiviert. Diese Einstellungen können aktiviert werden, benötigen aber ein Drittanbieter Kommandozeilen-Werkzeug ([rar](https://www.win-rar.com/cmd-shell-mode.html?&L=0) von WinRAR), welches im System installiert sein muss.
+(*) Das Erstellen und Modifizieren von cbr Dateien ist standardmäßig deaktiviert. Diese Funktionen können über die Einstellungen aktiviert werden, benötigen aber ein Drittanbieter Kommandozeilen-Werkzeug ([rar](https://www.win-rar.com/cmd-shell-mode.html?&L=0) von WinRAR), welches im System installiert sein muss.
 
 ## Steuerung:
 
