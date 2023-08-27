@@ -491,7 +491,8 @@ function startFile(
   sendIpcToRenderer(
     "modal-update-title-text",
     g_mode === 0
-      ? _("tool-shared-modal-title-converting")
+      ? _("tool-shared-modal-title-converting") +
+          (totalFilesNum > 1 ? " (" + fileNum + "/" + totalFilesNum + ")" : "")
       : _("tool-shared-modal-title-adding") +
           (totalFilesNum > 1 ? " (" + fileNum + "/" + totalFilesNum + ")" : "")
   );
