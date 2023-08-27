@@ -9,7 +9,7 @@ let g_isDebug = false;
 
 const g_errorTag = "[\x1b[31mERROR\x1b[0m]";
 const g_stackTag = "[\x1b[31mSTACK\x1b[0m]";
-const g_debugTag = "[\x1b[94mDEBUG\x1b[0m]";
+const g_debugTag = "[\x1b[36mDEBUG\x1b[0m]";
 
 exports.init = function (isDebug) {
   g_isDebug = isDebug;
