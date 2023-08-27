@@ -24,6 +24,10 @@ exports.init = function (window) {
   rebuild();
 };
 
+exports.empty = function () {
+  builder.buildEmptyMenu();
+};
+
 function rebuild() {
   builder.buildApplicationMenu(settings.get(), history.get());
   const themeData = themes.getData();

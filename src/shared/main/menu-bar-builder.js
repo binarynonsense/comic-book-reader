@@ -586,3 +586,9 @@ function buildApplicationMenu(settings, history) {
   Menu.setApplicationMenu(menuConfig);
 }
 exports.buildApplicationMenu = buildApplicationMenu;
+
+function buildEmptyMenu() {
+  const menuConfig = Menu.buildFromTemplate([]);
+  Menu.setApplicationMenu(menuConfig);
+}
+exports.buildEmptyMenu = buildEmptyMenu;

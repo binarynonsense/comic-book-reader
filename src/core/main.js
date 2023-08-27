@@ -101,6 +101,7 @@ const createWindow = () => {
 
   log.init(isDev());
   settings.init();
+  menuBar.empty();
 
   if (settings.getValue("pdfReadingLib") === 1) {
     g_mainWindow.loadFile(path.join(__dirname, "index-2.html"));
