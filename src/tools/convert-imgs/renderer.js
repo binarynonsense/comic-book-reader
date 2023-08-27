@@ -19,7 +19,6 @@ let g_inputFilesID = 0;
 let g_cancel = false;
 let g_numErrors = 0;
 
-let g_inputFilePath;
 let g_outputFolderPath;
 
 let g_inputListDiv;
@@ -86,7 +85,7 @@ function init(outputFolderPath) {
     .getElementById("tool-ci-add-file-button")
     .addEventListener("click", (event) => {
       let lastFilePath = undefined;
-      if (g_inputFiles.length > 0) {
+      if (g_inputFiles && g_inputFiles.length > 0) {
         lastFilePath = g_inputFiles[g_inputFiles.length - 1].path;
       }
       sendIpcToMain("choose-file", lastFilePath);
@@ -96,7 +95,11 @@ function init(outputFolderPath) {
   document
     .getElementById("tool-ci-change-folder-button")
     .addEventListener("click", (event) => {
-      sendIpcToMain("choose-folder", g_inputFilePath, g_outputFolderPath);
+      let lastFilePath = undefined;
+      if (g_inputFiles && g_inputFiles.length > 0) {
+        lastFilePath = g_inputFiles[g_inputFiles.length - 1].path;
+      }
+      sendIpcToMain("choose-folder", lastFilePath, g_outputFolderPath);
     });
 
   g_outputImageFormatSelect.innerHTML =

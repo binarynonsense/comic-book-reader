@@ -106,7 +106,9 @@ function initOnIpcCallbacks() {
     onCloseClicked();
   });
 
-  on("choose-file", (defaultPath) => {
+  on("choose-file", (lastFilePath) => {
+    let defaultPath;
+    if (lastFilePath) defaultPath = path.dirname(lastFilePath);
     try {
       let allowMultipleSelection = true;
       let allowedFileTypesName = _("dialog-file-types-images");

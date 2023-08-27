@@ -127,7 +127,7 @@ function init(mode, outputFolderPath, canEditRars) {
     .getElementById("tool-cc-add-file-button")
     .addEventListener("click", (event) => {
       let lastFilePath = undefined;
-      if (g_inputFiles.length > 0) {
+      if (g_inputFiles && g_inputFiles.length > 0) {
         lastFilePath = g_inputFiles[g_inputFiles.length - 1].path;
       }
       sendIpcToMain("choose-file", lastFilePath);
@@ -137,7 +137,11 @@ function init(mode, outputFolderPath, canEditRars) {
   document
     .getElementById("tool-cc-change-folder-button")
     .addEventListener("click", (event) => {
-      sendIpcToMain("choose-folder", g_inputFilePath, g_outputFolderPath);
+      let lastFilePath = undefined;
+      if (g_inputFiles && g_inputFiles.length > 0) {
+        lastFilePath = g_inputFiles[g_inputFiles.length - 1].path;
+      }
+      sendIpcToMain("choose-folder", lastFilePath, g_outputFolderPath);
     });
 
   g_outputFormatSelect.innerHTML =

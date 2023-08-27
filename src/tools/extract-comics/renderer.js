@@ -60,6 +60,7 @@ function init(outputFolderPath) {
   g_inputFilesID = 0;
   g_cancel = false;
   g_numErrors = 0;
+  g_outputPdfExtractionMethod = "embedded";
 
   // menu buttons
   document
@@ -115,7 +116,11 @@ function init(outputFolderPath) {
   document
     .getElementById("tool-ec-change-folder-button")
     .addEventListener("click", (event) => {
-      sendIpcToMain("choose-folder", g_inputFilePath, g_outputFolderPath);
+      let lastFilePath = undefined;
+      if (g_inputFiles && g_inputFiles.length > 0) {
+        lastFilePath = g_inputFiles[g_inputFiles.length - 1].path;
+      }
+      sendIpcToMain("choose-folder", lastFilePath, g_outputFolderPath);
     });
 
   g_outputImageFormatSelect.innerHTML =
