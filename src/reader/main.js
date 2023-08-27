@@ -1125,7 +1125,7 @@ exports.openEbookFromPath = openEbookFromPath;
 function openBookFromCallback(comicData, getPageCallback, pageIndex = 0) {
   sendIpcToRenderer("update-bg", false);
   sendIpcToRenderer("update-loading", true);
-  cleanUpFileData();
+  closeCurrentFile();
   g_fileData.state = FileDataState.LOADED;
   g_fileData.type = FileDataType.WWW;
   g_fileData.path = comicData.name;
