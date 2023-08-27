@@ -65,6 +65,8 @@ function init(mode, outputFolderPath, canEditRars) {
     inline: "nearest",
   });
 
+  g_outputFormat = undefined;
+  g_outputPdfExtractionMethod = "embedded";
   g_inputFiles = [];
   g_inputFilesIndex = -1;
   g_inputFilesID = 0;

@@ -67,6 +67,7 @@ async function createFiles(
   extra
 ) {
   let outputSubFolderPath;
+  if (outputFormat === undefined) outputFormat = FileExtension.CBZ;
   try {
     let createdFiles = [];
     let filesData = [];
