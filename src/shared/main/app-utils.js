@@ -140,26 +140,33 @@ exports.chooseSaveAs = chooseSaveAs;
 
 function cleanUpUserDataFolder() {
   // some things are not entirely deleted, but it's good enough :)
-  log.info("cleaning up...");
-  let keepFiles = [
-    "acbr.cfg",
-    "acbr.hst",
-    "acbr-player.cfg",
-    "acbr-player.m3u",
-  ];
-  let userDataPath = app.getPath("userData");
-  if (fs.existsSync(userDataPath)) {
-    let files = fs.readdirSync(userDataPath);
-    files.forEach((file) => {
-      if (!keepFiles.includes(file)) {
-        const entryPath = path.join(userDataPath, file);
-        if (fs.lstatSync(entryPath).isDirectory()) {
-          fileUtils.deleteFolderRecursive(entryPath, false, userDataPath);
-        } else {
-          fs.unlinkSync(entryPath); // delete the file
+  try {
+    log.info("cleaning up...");
+    let keepFiles = [
+      "acbr.cfg",
+      "acbr.hst",
+      "acbr-player.cfg",
+      "acbr-player.m3u",
+    ];
+    let userDataPath = app.getPath("userData");
+    if (fs.existsSync(userDataPath)) {
+      let files = fs.readdirSync(userDataPath);
+      files.forEach((file) => {
+        if (!keepFiles.includes(file)) {
+          const entryPath = path.join(userDataPath, file);
+          if (fs.lstatSync(entryPath).isDirectory()) {
+            fileUtils.deleteFolderRecursive(entryPath, false, userDataPath);
+          } else {
+            try {
+              fs.unlinkSync(entryPath); // delete the file
+            } catch (error) {
+              // just skip it
+              log.debug("couldn't delete file: " + entryPath);
+            }
+          }
         }
-      }
-    });
-  }
+      });
+    }
+  } catch (error) {}
 }
 exports.cleanUpUserDataFolder = cleanUpUserDataFolder;
