@@ -37,6 +37,8 @@ function init() {
     initHandleIpcCallbacks();
     g_isInitialized = true;
   }
+
+  g_initialPassword = "";
 }
 
 exports.open = function (fileData) {

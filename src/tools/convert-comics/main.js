@@ -48,6 +48,13 @@ function init() {
     initHandleIpcCallbacks();
     g_isInitialized = true;
   }
+
+  g_outputPageOrder = "byPosition";
+  g_pdfCreationMethod = "metadata";
+  g_epubCreationImageFormat = "keep-selected";
+  g_epubCreationImageStorage = "files";
+  g_imageFormat = FileExtension.NOT_SET;
+  g_outputFileBaseName = undefined;
 }
 
 exports.open = function (mode, fileData) {
