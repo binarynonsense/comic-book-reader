@@ -16,6 +16,7 @@ const themes = require("../shared/main/themes");
 const menuBar = require("../shared/main/menu-bar");
 const fileUtils = require("../shared/main/file-utils");
 const appUtils = require("../shared/main/app-utils");
+const fileFormats = require("../shared/main/file-formats");
 
 const reader = require("../reader/main");
 const audioPlayer = require("../audio-player/main");
@@ -118,7 +119,9 @@ const createWindow = () => {
         tempFolderPath
       );
     }
+    log.debug("dev mode: " + isDev());
     fileUtils.setTempFolderParentPath(tempFolderPath);
+    fileFormats.init(app.isPackaged);
     history.init(settings.getValue("history_capacity"));
     i18n.init();
     themes.init();
@@ -247,8 +250,19 @@ ipcMain.on("tools-worker", (event, ...args) => {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+let g_isDev = undefined;
 function isDev() {
-  return process.argv[2] == "--dev";
+  if (g_isDev === undefined) {
+    g_isDev = false;
+    for (let index = 1; index < process.argv.length; index++) {
+      if (process.argv[index] === "--dev");
+      {
+        g_isDev = true;
+        break;
+      }
+    }
+  }
+  return g_isDev;
 }
 exports.isDev = isDev;
 

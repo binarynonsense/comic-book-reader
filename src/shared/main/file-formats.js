@@ -11,9 +11,12 @@ const utils = require("./utils");
 const fileUtils = require("./file-utils");
 const log = require("./logger");
 
-function isDev() {
-  return process.argv[2] == "--dev";
-}
+let g_isRelease = true;
+
+exports.init = function (isRelease) {
+  log.debug("release version: " + isRelease);
+  g_isRelease = isRelease;
+};
 
 ///////////////////////////////////////////////////////////////////////////////
 // RAR ////////////////////////////////////////////////////////////////////////
@@ -280,7 +283,7 @@ function checkPathTo7ZipBin() {
   const sevenBin = require("7zip-bin");
   if (g_pathTo7zipBin === undefined) {
     g_pathTo7zipBin = sevenBin.path7za;
-    if (!isDev()) {
+    if (g_isRelease) {
       // find the one that works in the release version
       g_pathTo7zipBin = g_pathTo7zipBin.replace(
         "app.asar",
