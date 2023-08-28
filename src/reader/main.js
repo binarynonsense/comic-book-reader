@@ -1953,8 +1953,7 @@ exports.onMenuScaleToHeight = function (scale) {
 };
 
 exports.onMenuScaleToHeightZoomInput = function (input) {
-  // now handled by renderer
-  //processZoomInput(input);
+  processZoomInput(input, 1);
 };
 
 exports.onMenuScaleToHeightEnter = function () {
