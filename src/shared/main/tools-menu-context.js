@@ -46,6 +46,14 @@ exports.show = function (type, params, backToReaderCallback) {
           { type: "separator" },
           ...commonEntries,
         ]).popup(core.getMainWindow(), params.x, params.y);
+      } else if (selectionText && selectionText.trim() !== "") {
+        Menu.buildFromTemplate([
+          { label: _("ctxmenu-copy"), role: "copy" },
+          { type: "separator" },
+          { label: _("ctxmenu-select-all"), role: "selectall" },
+          { type: "separator" },
+          ...commonEntries,
+        ]).popup(core.getMainWindow(), params.x, params.y);
       } else {
         Menu.buildFromTemplate([...commonEntries]).popup(
           core.getMainWindow(),

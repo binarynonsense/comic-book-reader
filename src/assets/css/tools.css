@@ -354,6 +354,9 @@
   /* background-color: var(--tools-input-bg-color);
   color: var(--tools-input-text-color); */
   border: 1px solid var(--tools-input-border-color);
+  cursor: auto;
+  user-select: text;
+  pointer-events: all;
 }
 .tools-html-div p,
 .tools-html-div h1,
