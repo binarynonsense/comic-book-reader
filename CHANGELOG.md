@@ -1,3 +1,9 @@
+## v3.2.3
+
+- Hotfix:
+  - Fixed error when clicking 'Toggle Fullscreen' in the context menu.
+  - Fixed 'Zoom > Increase', 'Zoom > Decrease' and 'Zoom > Reset' in the menu bar doing nothing
+
 ## v3.2.2
 
 - Updated the documentation.
