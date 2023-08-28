@@ -62,7 +62,7 @@ Un lector y conversor de cómics para archivos en formato cbz, cbr, cb7, epub y 
 - Modo portátil (al crear un archivo llamado portable.txt en la misma carpeta que el ejecutable).
 - Editor de ComicInfo.xml:
   - ver los metadatos almacenados en archivos ComicInfo.xml dentro de cómics cbr, cbz y cb7.
-  - crear y/o modificar los metadatos almacenados en archivos ComicInfo.xml dentro de cómics cbz y cb7 no encriptados.
+  - crear y/o modificar los metadatos almacenados en archivos ComicInfo.xml dentro de cómics cbr*, cbz y cb7 no encriptados.
   - buscar e importar metadatos de cómics de Comic Vine (una [clave API de Comic Vine](https://comicvine.gamespot.com/api/) es necesaria para su funcionamiento).
 - Reproductor de audio integrado:
   - admite archivos .mp3, .ogg, .wav, .m3u y .m3u8.
