@@ -5,13 +5,13 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-const { Menu } = require("electron");
 const fs = require("fs");
 const path = require("path");
 const core = require("../../core/main");
 const { _ } = require("../../shared/main/i18n");
 const reader = require("../../reader/main");
 const shell = require("electron").shell;
+const contextMenu = require("../../shared/main/tools-menu-context");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -93,47 +93,7 @@ function initOnIpcCallbacks() {
   });
 
   on("show-context-menu", (params) => {
-    // ref: https://github.com/electron/electron/blob/main/docs/api/web-contents.md#event-context-menu
-    const { selectionText, isEditable } = params;
-    const commonEntries = [
-      {
-        label: _("tool-shared-ui-back-to-reader"),
-        click() {
-          onCloseClicked();
-        },
-      },
-      {
-        label: _("menu-view-togglefullscreen"),
-        accelerator: "F11",
-        click() {
-          core.onMenuToggleFullScreen();
-        },
-      },
-    ];
-    if (isEditable && selectionText && selectionText.trim() !== "") {
-      Menu.buildFromTemplate([
-        { label: _("ctxmenu-copy"), role: "copy" },
-        { label: _("ctxmenu-paste"), role: "paste" },
-        { type: "separator" },
-        { label: _("ctxmenu-select-all"), role: "selectall" },
-        { type: "separator" },
-        ...commonEntries,
-      ]).popup(core.getMainWindow(), params.x, params.y);
-    } else if (isEditable) {
-      Menu.buildFromTemplate([
-        { label: _("ctxmenu-paste"), role: "paste" },
-        { type: "separator" },
-        { label: _("ctxmenu-select-all"), role: "selectall" },
-        { type: "separator" },
-        ...commonEntries,
-      ]).popup(core.getMainWindow(), params.x, params.y);
-    } else {
-      Menu.buildFromTemplate([...commonEntries]).popup(
-        core.getMainWindow(),
-        params.x,
-        params.y
-      );
-    }
+    contextMenu.show("edit", params, onCloseClicked);
   });
 
   on("open", (identifier, fileUrls) => {

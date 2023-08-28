@@ -5,13 +5,13 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-const { Menu } = require("electron");
 const fs = require("fs");
 const path = require("path");
 const core = require("../../core/main");
 const { _ } = require("../../shared/main/i18n");
 const reader = require("../../reader/main");
 const shell = require("electron").shell;
+const contextMenu = require("../../shared/main/tools-menu-context");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -88,26 +88,7 @@ function initOnIpcCallbacks() {
   });
 
   on("show-context-menu", (params) => {
-    const commonEntries = [
-      {
-        label: _("tool-shared-ui-back-to-reader"),
-        click() {
-          onCloseClicked();
-        },
-      },
-      {
-        label: _("menu-view-togglefullscreen"),
-        accelerator: "F11",
-        click() {
-          core.onMenuToggleFullScreen();
-        },
-      },
-    ];
-    Menu.buildFromTemplate([...commonEntries]).popup(
-      core.getMainWindow(),
-      params.x,
-      params.y
-    );
+    contextMenu.show("minimal", params, onCloseClicked);
   });
 
   on("open", (comicData, pageNum) => {
