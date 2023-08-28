@@ -6,6 +6,7 @@
  */
 
 const { Menu } = require("electron");
+const core = require("../core/main");
 const reader = require("./main");
 const { FileDataType } = require("../shared/main/constants");
 const { _ } = require("../shared/main/i18n");
@@ -123,7 +124,7 @@ function buildContextMenu(isOpen, showRotation) {
       label: _("menu-view-togglefullscreen"),
       accelerator: "F11",
       click() {
-        reader.onMenuToggleFullScreen();
+        core.onMenuToggleFullScreen();
       },
     },
   ]);
