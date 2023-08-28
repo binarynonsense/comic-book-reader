@@ -196,3 +196,11 @@ exports.setWWWOpened = function () {
   Menu.getApplicationMenu().getMenuItemById("extract-file").enabled = false;
   Menu.getApplicationMenu().getMenuItemById("file-properties").enabled = false;
 };
+
+// refs:
+// https://uxdesign.cc/dot-dot-dot-7ce6170bfc7f?gi=ab412e3d4b7d
+/*
+“The ellipsis character (…) means a dialog or separate window will open and prompt the user for additional information or to make a choice.”
+
+“This doesn’t mean you should use an ellipsis whenever an action displays another window — only when additional information is required to perform the action. Consequently, any command button whose implicit verb is to “show another window” doesn’t take an ellipsis, such as with the commands About, Advanced, Help (or any other command linking to a Help topic), Options, Properties, or Settings.”
+*/
