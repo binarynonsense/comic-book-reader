@@ -108,18 +108,18 @@ function initOnIpcCallbacks() {
     ];
     if (isEditable && selectionText && selectionText.trim() !== "") {
       Menu.buildFromTemplate([
-        { role: "copy" },
-        { role: "paste" },
+        { label: _("ctxmenu-copy"), role: "copy" },
+        { label: _("ctxmenu-paste"), role: "paste" },
         { type: "separator" },
-        { role: "selectall" },
+        { label: _("ctxmenu-select-all"), role: "selectall" },
         { type: "separator" },
         ...commonEntries,
       ]).popup(core.getMainWindow(), params.x, params.y);
     } else if (isEditable) {
       Menu.buildFromTemplate([
-        { role: "paste" },
+        { label: _("ctxmenu-paste"), role: "paste" },
         { type: "separator" },
-        { role: "selectall" },
+        { label: _("ctxmenu-select-all"), role: "selectall" },
         { type: "separator" },
         ...commonEntries,
       ]).popup(core.getMainWindow(), params.x, params.y);

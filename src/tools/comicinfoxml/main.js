@@ -153,27 +153,27 @@ function initOnIpcCallbacks() {
     if (selectionText) {
       if (g_isEditable && isEditable && selectionText.trim() !== "") {
         Menu.buildFromTemplate([
-          { role: "copy" },
-          { role: "paste" },
+          { label: _("ctxmenu-copy"), role: "copy" },
+          { label: _("ctxmenu-paste"), role: "paste" },
           { type: "separator" },
-          { role: "selectall" },
+          { label: _("ctxmenu-select-all"), role: "selectall" },
           { type: "separator" },
           ...commonEntries,
         ]).popup(core.getMainWindow(), params.x, params.y);
       } else if (selectionText.trim() !== "") {
         Menu.buildFromTemplate([
-          { role: "copy" },
+          { label: _("ctxmenu-copy"), role: "copy" },
           { type: "separator" },
-          { role: "selectall" },
+          { label: _("ctxmenu-select-all"), role: "selectall" },
           { type: "separator" },
           ...commonEntries,
         ]).popup(core.getMainWindow(), params.x, params.y);
       }
     } else if (g_isEditable && isEditable) {
       Menu.buildFromTemplate([
-        { role: "paste" },
+        { label: _("ctxmenu-paste"), role: "paste" },
         { type: "separator" },
-        { role: "selectall" },
+        { label: _("ctxmenu-select-all"), role: "selectall" },
         { type: "separator" },
         ...commonEntries,
       ]).popup(core.getMainWindow(), params.x, params.y);

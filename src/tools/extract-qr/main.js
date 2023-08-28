@@ -117,9 +117,9 @@ function initOnIpcCallbacks() {
     ];
     if (selectionText && selectionText.trim() !== "") {
       Menu.buildFromTemplate([
-        { role: "copy" },
+        { label: _("ctxmenu-copy"), role: "copy" },
         { type: "separator" },
-        { role: "selectall" },
+        { label: _("ctxmenu-select-all"), role: "selectall" },
         { type: "separator" },
         ...commonEntries,
       ]).popup(core.getMainWindow(), params.x, params.y);
