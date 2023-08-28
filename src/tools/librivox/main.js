@@ -5,6 +5,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
+const { Menu } = require("electron");
 const fs = require("fs");
 const path = require("path");
 const core = require("../../core/main");
@@ -89,6 +90,50 @@ function on(id, callback) {
 function initOnIpcCallbacks() {
   on("close", () => {
     onCloseClicked();
+  });
+
+  on("show-context-menu", (params) => {
+    // ref: https://github.com/electron/electron/blob/main/docs/api/web-contents.md#event-context-menu
+    const { selectionText, isEditable } = params;
+    const commonEntries = [
+      {
+        label: _("tool-shared-ui-back-to-reader"),
+        click() {
+          onCloseClicked();
+        },
+      },
+      {
+        label: _("menu-view-togglefullscreen"),
+        accelerator: "F11",
+        click() {
+          core.onMenuToggleFullScreen();
+        },
+      },
+    ];
+    if (isEditable && selectionText && selectionText.trim() !== "") {
+      Menu.buildFromTemplate([
+        { role: "copy" },
+        { role: "paste" },
+        { type: "separator" },
+        { role: "selectall" },
+        { type: "separator" },
+        ...commonEntries,
+      ]).popup(core.getMainWindow(), params.x, params.y);
+    } else if (isEditable) {
+      Menu.buildFromTemplate([
+        { role: "paste" },
+        { type: "separator" },
+        { role: "selectall" },
+        { type: "separator" },
+        ...commonEntries,
+      ]).popup(core.getMainWindow(), params.x, params.y);
+    } else {
+      Menu.buildFromTemplate([...commonEntries]).popup(
+        core.getMainWindow(),
+        params.x,
+        params.y
+      );
+    }
   });
 
   on("open", (identifier, fileUrls) => {

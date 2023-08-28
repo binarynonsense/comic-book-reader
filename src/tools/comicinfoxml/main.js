@@ -133,6 +133,59 @@ function initOnIpcCallbacks() {
     onCloseClicked();
   });
 
+  on("show-context-menu", (params, g_isEditable) => {
+    const { selectionText, isEditable } = params;
+    const commonEntries = [
+      {
+        label: _("tool-shared-ui-back-to-reader"),
+        click() {
+          onCloseClicked();
+        },
+      },
+      {
+        label: _("menu-view-togglefullscreen"),
+        accelerator: "F11",
+        click() {
+          core.onMenuToggleFullScreen();
+        },
+      },
+    ];
+    if (selectionText) {
+      if (g_isEditable && isEditable && selectionText.trim() !== "") {
+        Menu.buildFromTemplate([
+          { role: "copy" },
+          { role: "paste" },
+          { type: "separator" },
+          { role: "selectall" },
+          { type: "separator" },
+          ...commonEntries,
+        ]).popup(core.getMainWindow(), params.x, params.y);
+      } else if (selectionText.trim() !== "") {
+        Menu.buildFromTemplate([
+          { role: "copy" },
+          { type: "separator" },
+          { role: "selectall" },
+          { type: "separator" },
+          ...commonEntries,
+        ]).popup(core.getMainWindow(), params.x, params.y);
+      }
+    } else if (g_isEditable && isEditable) {
+      Menu.buildFromTemplate([
+        { role: "paste" },
+        { type: "separator" },
+        { role: "selectall" },
+        { type: "separator" },
+        ...commonEntries,
+      ]).popup(core.getMainWindow(), params.x, params.y);
+    } else {
+      Menu.buildFromTemplate([...commonEntries]).popup(
+        core.getMainWindow(),
+        params.x,
+        params.y
+      );
+    }
+  });
+
   on("load-xml", () => {
     loadXml();
   });
@@ -143,29 +196,6 @@ function initOnIpcCallbacks() {
 
   on("save-json-to-file", (json) => {
     saveJsonToFile(json);
-  });
-
-  on("show-context-menu", (params, g_isEditable) => {
-    if (g_isEditable) {
-      const { selectionText, isEditable } = params;
-      if (isEditable || (selectionText && selectionText.trim() !== "")) {
-        Menu.buildFromTemplate([
-          { role: "copy" },
-          { role: "paste" },
-          { type: "separator" },
-          { role: "selectall" },
-        ]).popup(core.getMainWindow(), params.x, params.y);
-      }
-    } else {
-      const { selectionText } = params;
-      if (selectionText && selectionText.trim() !== "") {
-        Menu.buildFromTemplate([
-          { role: "copy" },
-          { type: "separator" },
-          { role: "selectall" },
-        ]).popup(core.getMainWindow(), params.x, params.y);
-      }
-    }
   });
 
   on("search", (...args) => {

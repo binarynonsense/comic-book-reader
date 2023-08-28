@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-const { BrowserWindow } = require("electron");
+const { BrowserWindow, Menu } = require("electron");
 const fs = require("fs");
 const path = require("path");
 const core = require("../../core/main");
@@ -153,6 +153,29 @@ function on(id, callback) {
 function initOnIpcCallbacks() {
   on("close", () => {
     onCloseClicked();
+  });
+
+  on("show-context-menu", (params) => {
+    const commonEntries = [
+      {
+        label: _("tool-shared-ui-back-to-reader"),
+        click() {
+          onCloseClicked();
+        },
+      },
+      {
+        label: _("menu-view-togglefullscreen"),
+        accelerator: "F11",
+        click() {
+          core.onMenuToggleFullScreen();
+        },
+      },
+    ];
+    Menu.buildFromTemplate([...commonEntries]).popup(
+      core.getMainWindow(),
+      params.x,
+      params.y
+    );
   });
 
   on("choose-file", (lastFilePath) => {

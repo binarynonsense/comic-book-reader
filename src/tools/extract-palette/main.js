@@ -97,6 +97,42 @@ function initOnIpcCallbacks() {
     onCloseClicked();
   });
 
+  on("show-context-menu", (params) => {
+    // show context menu only if text selected
+    // ref: https://github.com/electron/electron/issues/4068#issuecomment-274159726
+    const { selectionText } = params;
+    const commonEntries = [
+      {
+        label: _("tool-shared-ui-back-to-reader"),
+        click() {
+          onCloseClicked();
+        },
+      },
+      {
+        label: _("menu-view-togglefullscreen"),
+        accelerator: "F11",
+        click() {
+          core.onMenuToggleFullScreen();
+        },
+      },
+    ];
+    if (selectionText && selectionText.trim() !== "") {
+      Menu.buildFromTemplate([
+        { role: "copy" },
+        { type: "separator" },
+        { role: "selectall" },
+        { type: "separator" },
+        ...commonEntries,
+      ]).popup(core.getMainWindow(), params.x, params.y);
+    } else {
+      Menu.buildFromTemplate([...commonEntries]).popup(
+        core.getMainWindow(),
+        params.x,
+        params.y
+      );
+    }
+  });
+
   on("choose-file", () => {
     try {
       let allowMultipleSelection = false;
@@ -221,19 +257,6 @@ function initOnIpcCallbacks() {
         }
       }
     } catch (error) {}
-  });
-
-  on("show-context-menu", (params) => {
-    // show context menu only if text selected
-    // ref: https://github.com/electron/electron/issues/4068#issuecomment-274159726
-    const { selectionText } = params;
-    if (selectionText && selectionText.trim() !== "") {
-      Menu.buildFromTemplate([
-        { role: "copy" },
-        { type: "separator" },
-        { role: "selectall" },
-      ]).popup(core.getMainWindow(), params.x, params.y);
-    }
   });
 }
 
