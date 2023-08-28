@@ -1,7 +1,7 @@
 ## v3.2.5
 
-Hotfix:
-- Fixed a crash at initialization when no configuration file was found.
+- Hotfix:
+  - Fixed a crash at initialization when no configuration file was found.
 
 ## v3.2.4
 
