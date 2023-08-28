@@ -31,7 +31,7 @@
   "menu-view-zoom-fitwidth": "Fit to Width",
   "menu-view-zoom-fitheight": "Fit to Height",
   "menu-view-zoom-scaleheight": "Scale to Height",
-  "menu-view-zoom-scaleheight-enter": "Enter Value",
+  "menu-view-zoom-scaleheight-enter": "Enter Value...",
   "menu-view-zoom-scaleheight-in": "Increase",
   "menu-view-zoom-scaleheight-out": "Decrease",
   "menu-view-zoom-scaleheight-reset": "Reset",
