@@ -1,3 +1,9 @@
+## v3.2.2
+
+- Updated the documentation.
+- Fixed some debug messages being logged as errors.
+- All the language localization files are now up to date.
+
 ## v3.2.1
 
 - Hotfix:
