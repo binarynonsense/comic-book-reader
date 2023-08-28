@@ -83,6 +83,9 @@
   "menu-shared-bottom-center": "Снизу по центру",
   "menu-shared-bottom-right": "Снизу справа",
 
+  "[NEEDS TRANSLATION]ctxmenu-copy": "Copy",
+  "[NEEDS TRANSLATION]ctxmenu-paste": "Paste",
+  "[NEEDS TRANSLATION]ctxmenu-select-all": "Select All",
   "ctxmenu-nextpage": "Следующая страница",
   "ctxmenu-prevpage": "Предыдущая страница",  
   "ctxmenu-rotate": "Повернуть",

@@ -83,6 +83,9 @@
   "menu-shared-bottom-center": "Unten Mitte",
   "menu-shared-bottom-right": "Unten Rechts",
 
+  "[NEEDS TRANSLATION]ctxmenu-copy": "Copy",
+  "[NEEDS TRANSLATION]ctxmenu-paste": "Paste",
+  "[NEEDS TRANSLATION]ctxmenu-select-all": "Select All",
   "ctxmenu-nextpage": "Nächste Seite",
   "ctxmenu-prevpage": "Vorherige Seite",
   "ctxmenu-rotate": "Rotieren",

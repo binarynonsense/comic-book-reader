@@ -83,6 +83,9 @@
   "menu-shared-bottom-center": "Abajo centro",
   "menu-shared-bottom-right": "Abajo dcha.",
 
+  "ctxmenu-copy": "Copiar",
+  "ctxmenu-paste": "Pegar",
+  "ctxmenu-select-all": "Seleccionar Todo",
   "ctxmenu-nextpage": "Página Siguiente",
   "ctxmenu-prevpage": "Página Anterior",
   "ctxmenu-rotate": "Rotar",
