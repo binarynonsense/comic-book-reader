@@ -1,3 +1,8 @@
+## v3.2.5
+
+Hotfix:
+- Fixed a crash at initialization when no configuration file was found.
+
 ## v3.2.4
 
 - Removed the ellipses from the menu entries that no longer open a dialog or separate window for additional information, and from some that were using them incorrectly.
