@@ -386,8 +386,8 @@ function load() {
         g_settings[key] = loadedSettings[key];
       }
     }
-    sanitize();
   }
+  sanitize();
 }
 
 exports.canEditRars = function () {

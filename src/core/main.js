@@ -85,6 +85,10 @@ exports.switchTool = switchTool;
 ///////////////////////////////////////////////////////////////////////////////
 
 const createWindow = () => {
+  log.init(isDev());
+  settings.init();
+  menuBar.empty();
+
   g_mainWindow = new BrowserWindow({
     width: 1280,
     height: 720,
@@ -100,10 +104,6 @@ const createWindow = () => {
     },
   });
 
-  log.init(isDev());
-  settings.init();
-  menuBar.empty();
-
   if (settings.getValue("pdfReadingLib") === 1) {
     g_mainWindow.loadFile(path.join(__dirname, "index-2.html"));
   } else {
@@ -113,6 +113,9 @@ const createWindow = () => {
   g_mainWindow.webContents.on("did-finish-load", function () {
     g_isLoaded = true;
     let tempFolderPath = settings.getValue("tempFolderPath");
+    if (!tempFolderPath) {
+      log.error("Temp folder path is undefined");
+    }
     if (!path.isAbsolute(tempFolderPath)) {
       tempFolderPath = path.resolve(
         appUtils.getExeFolderPath(),
