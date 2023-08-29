@@ -116,7 +116,7 @@ function load() {
     } catch (e) {
       return g_settings;
     }
-    if (data === null || data === undefined) return settings;
+    if (data === null || data === undefined) return g_settings;
 
     let loadedSettings;
     try {
