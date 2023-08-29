@@ -712,6 +712,33 @@ let g_gamepadsAnimationFrame;
 let g_gamepadButtonsPrev;
 let g_gamepadsAnimationLastTime;
 
+let g_gamepadButtons = {
+  A: 0,
+  B: 1,
+  X: 2,
+  Y: 3,
+  LB: 4,
+  RB: 5,
+  LT: 6,
+  RT: 7,
+  BACK: 8,
+  START: 9,
+  LS_PRESS: 10,
+  RS_PRESS: 11,
+  DPAD_UP: 12,
+  DPAD_DOWN: 13,
+  DPAD_LEFT: 14,
+  DPAD_RIGHT: 15,
+  GUIDE: 16,
+};
+
+let g_gamepadAxes = {
+  LS_X: 0,
+  LS_Y: 1,
+  RS_X: 2,
+  RS_Y: 3,
+};
+
 window.addEventListener("gamepadconnected", (e) => {
   const gp = navigator.getGamepads()[e.gamepad.index];
   console.log(
@@ -737,61 +764,70 @@ function pollGamepads() {
   }
   const selectedGamepad = gamepads[0];
   // on pressed ///////
-  if (selectedGamepad.buttons[1].pressed && !g_gamepadButtonsPrev[1].pressed) {
-    // b button
+  if (
+    selectedGamepad.buttons[g_gamepadButtons.B].pressed &&
+    !g_gamepadButtonsPrev[g_gamepadButtons.B].pressed
+  ) {
     inputGoToNextPage();
   } else if (
-    selectedGamepad.buttons[2].pressed &&
-    !g_gamepadButtonsPrev[2].pressed
+    selectedGamepad.buttons[g_gamepadButtons.X].pressed &&
+    !g_gamepadButtonsPrev[g_gamepadButtons.X].pressed
   ) {
-    // x button
     inputGoToPrevPage();
   } else if (
-    selectedGamepad.buttons[4].pressed &&
-    !g_gamepadButtonsPrev[4].pressed
+    selectedGamepad.buttons[g_gamepadButtons.LB].pressed &&
+    !g_gamepadButtonsPrev[g_gamepadButtons.LB].pressed
   ) {
-    // left shoulder
     inputGoToFirstPage();
   } else if (
-    selectedGamepad.buttons[5].pressed &&
-    !g_gamepadButtonsPrev[5].pressed
+    selectedGamepad.buttons[g_gamepadButtons.RB].pressed &&
+    !g_gamepadButtonsPrev[g_gamepadButtons.RB].pressed
   ) {
-    // right shoulder
     inputGoToLastPage();
   } else if (
-    selectedGamepad.buttons[11].pressed &&
-    !g_gamepadButtonsPrev[11].pressed
+    selectedGamepad.buttons[g_gamepadButtons.RS_PRESS].pressed &&
+    !g_gamepadButtonsPrev[g_gamepadButtons.RS_PRESS].pressed
   ) {
-    // right shoulder click
     inputSwitchScaleMode();
   }
   // is pressed //////
   const scrollFactor = deltaTime * 3;
-  if (selectedGamepad.buttons[3].pressed) {
-    // y button
-    inputScrollPageUp(!g_gamepadButtonsPrev[3].pressed, scrollFactor);
-  } else if (selectedGamepad.buttons[0].pressed) {
-    // a button
-    inputScrollPageDown(!g_gamepadButtonsPrev[0].pressed, scrollFactor);
-  } else if (selectedGamepad.buttons[12].pressed) {
-    // directional pad up
-    inputScrollPageUp(!g_gamepadButtonsPrev[12].pressed, scrollFactor);
-  } else if (selectedGamepad.buttons[13].pressed) {
-    // directional pad down
-    inputScrollPageDown(!g_gamepadButtonsPrev[13].pressed, scrollFactor);
-  } else if (selectedGamepad.buttons[6].pressed) {
-    // left trigger
-    inputScrollPageUp(!g_gamepadButtonsPrev[6].pressed, scrollFactor);
-  } else if (selectedGamepad.buttons[7].pressed) {
-    // right trigger
-    inputScrollPageDown(!g_gamepadButtonsPrev[7].pressed, scrollFactor);
+  if (selectedGamepad.buttons[g_gamepadButtons.Y].pressed) {
+    inputScrollPageUp(
+      !g_gamepadButtonsPrev[g_gamepadButtons.Y].pressed,
+      scrollFactor
+    );
+  } else if (selectedGamepad.buttons[g_gamepadButtons.A].pressed) {
+    inputScrollPageDown(
+      !g_gamepadButtonsPrev[g_gamepadButtons.A].pressed,
+      scrollFactor
+    );
+  } else if (selectedGamepad.buttons[g_gamepadButtons.DPAD_UP].pressed) {
+    inputScrollPageUp(
+      !g_gamepadButtonsPrev[g_gamepadButtons.DPAD_UP].pressed,
+      scrollFactor
+    );
+  } else if (selectedGamepad.buttons[g_gamepadButtons.DPAD_DOWN].pressed) {
+    inputScrollPageDown(
+      !g_gamepadButtonsPrev[g_gamepadButtons.DPAD_DOWN].pressed,
+      scrollFactor
+    );
+  } else if (selectedGamepad.buttons[g_gamepadButtons.LT].pressed) {
+    inputScrollPageUp(
+      !g_gamepadButtonsPrev[g_gamepadButtons.LT].pressed,
+      scrollFactor
+    );
+  } else if (selectedGamepad.buttons[g_gamepadButtons.RT].pressed) {
+    inputScrollPageDown(
+      !g_gamepadButtonsPrev[g_gamepadButtons.RT].pressed,
+      scrollFactor
+    );
   }
 
   // axes ////////////
-  if (selectedGamepad.axes[3] > 0.5) {
-    // right stick vertical down
+  if (selectedGamepad.axes[g_gamepadAxes.RS_Y] > 0.5) {
     inputZoomOut(deltaTime * 10);
-  } else if (selectedGamepad.axes[3] < -0.5) {
+  } else if (selectedGamepad.axes[g_gamepadAxes.RS_Y] < -0.5) {
     // right stick vertical up
     inputZoomIn(deltaTime * 10);
   }
