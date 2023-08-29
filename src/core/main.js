@@ -273,8 +273,7 @@ function isDev() {
   if (g_isDev === undefined) {
     g_isDev = false;
     for (let index = 1; index < process.argv.length; index++) {
-      if (process.argv[index] === "--dev");
-      {
+      if (process.argv[index] === "--dev") {
         g_isDev = true;
         break;
       }
