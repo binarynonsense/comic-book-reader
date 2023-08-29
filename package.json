@@ -1,6 +1,6 @@
 {
   "name": "acbr-comic-book-reader",
-  "version": "3.2.5",
+  "version": "3.2.6-beta1",
   "description": "ACBR - A comic book reader and converter for cbz, cbr, cb7, epub and pdf files",
   "main": "./src/core/main.js",
   "author": "Álvaro García (www.binarynonsense.com)",
@@ -30,6 +30,7 @@
   },
   "scripts": {
     "start": "electron . --dev",
+    "steam-deck": "electron . --no-sandbox",
     "dist": "npm run dist:windows && npm run dist:linux",
     "dist:linux": "npm run 7zbin:linux && npm run sharp:linux && npm run build:linux",
     "dist:windows": "npm run sharp:windows && npm run build:windows",
