@@ -40,7 +40,7 @@ const toolComicInfoXml = require("../tools/comicinfoxml/main");
 
 let g_mainWindow;
 let g_isLoaded = false;
-let g_systemInfo;
+let g_systemInfo = {};
 
 ///////////////////////////////////////////////////////////////////////////////
 // TOOLS //////////////////////////////////////////////////////////////////////
@@ -90,6 +90,13 @@ const createWindow = () => {
   // gather system info
   const { screen } = require("electron");
   const primaryDisplay = screen.getPrimaryDisplay();
+  let isDev = false;
+  for (let index = 1; index < process.argv.length; index++) {
+    if (process.argv[index] === "--dev") {
+      isDev = true;
+      break;
+    }
+  }
   g_systemInfo = {
     platform: os.platform(),
     release: os.release(),
@@ -98,7 +105,7 @@ const createWindow = () => {
     isGameScope: false,
     screenWidth: primaryDisplay.workAreaSize.width,
     screenHeight: primaryDisplay.workAreaSize.height,
-    isDev: isDev(),
+    isDev: isDev,
   };
   if (
     !g_systemInfo.screenWidth ||
@@ -136,7 +143,7 @@ const createWindow = () => {
     }
   }
   // log system data
-  log.debug("dev mode: " + isDev());
+  log.debug("dev mode: " + g_systemInfo.isDev);
   log.debug("release version: " + app.isPackaged);
   log.debug("work area width: " + g_systemInfo.screenWidth);
   log.debug("work area height: " + g_systemInfo.screenHeight);
@@ -147,8 +154,6 @@ const createWindow = () => {
   g_mainWindow = new BrowserWindow({
     width: settings.getValue("width"),
     height: settings.getValue("height"),
-    minWidth: 700,
-    minHeight: 500,
     resizable: true,
     frame: false,
     icon: path.join(__dirname, "../assets/images/icon_256x256.png"),
@@ -304,18 +309,8 @@ ipcMain.on("tools-worker", (event, ...args) => {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-let g_isDev = undefined;
 function isDev() {
-  if (g_isDev === undefined) {
-    g_isDev = false;
-    for (let index = 1; index < process.argv.length; index++) {
-      if (process.argv[index] === "--dev") {
-        g_isDev = true;
-        break;
-      }
-    }
-  }
-  return g_isDev;
+  return g_systemInfo.isDev;
 }
 exports.isDev = isDev;
 
