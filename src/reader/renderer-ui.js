@@ -702,6 +702,10 @@ function inputSwitchScaleMode() {
   sendIpcToMain("switch-scale-mode");
 }
 
+function inputToggleFullScreen() {
+  sendIpcToMain("toolbar-button-clicked", "toolbar-button-fullscreen-enter");
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // GAMEPAD ////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -789,6 +793,11 @@ function pollGamepads() {
     !g_gamepadButtonsPrev[g_gamepadButtons.RS_PRESS].pressed
   ) {
     inputSwitchScaleMode();
+  } else if (
+    selectedGamepad.buttons[g_gamepadButtons.LS_PRESS].pressed &&
+    !g_gamepadButtonsPrev[g_gamepadButtons.LS_PRESS].pressed
+  ) {
+    inputToggleFullScreen();
   }
   // is pressed //////
   const scrollFactor = deltaTime * 3;
