@@ -85,13 +85,24 @@ exports.switchTool = switchTool;
 ///////////////////////////////////////////////////////////////////////////////
 
 const createWindow = () => {
+  const { screen } = require("electron");
+  const primaryDisplay = screen.getPrimaryDisplay();
+  let screenWidth = primaryDisplay.workAreaSize.width;
+  let screenHeight = primaryDisplay.workAreaSize.height;
+  if (!screenWidth || !Number.isInteger(screenWidth) || screenWidth <= 0)
+    screenWidth = 800;
+  if (!screenHeight || !Number.isInteger(screenHeight) || screenHeight <= 0)
+    screenHeight = 600;
+  // init before win creation
   log.init(isDev());
-  settings.init();
+  settings.init(screenWidth, screenHeight);
   menuBar.empty();
-
+  log.debug("work area width: " + screenWidth);
+  log.debug("work area height: " + screenHeight);
+  // win creation
   g_mainWindow = new BrowserWindow({
-    width: 1280,
-    height: 720,
+    width: screenWidth,
+    height: screenHeight,
     minWidth: 700,
     minHeight: 500,
     resizable: true,
@@ -103,13 +114,14 @@ const createWindow = () => {
       preload: path.join(__dirname, "preload.js"),
     },
   });
-
+  // init after win creation
+  // load html
   if (settings.getValue("pdfReadingLib") === 1) {
     g_mainWindow.loadFile(path.join(__dirname, "index-2.html"));
   } else {
     g_mainWindow.loadFile(path.join(__dirname, "index-1.html"));
   }
-
+  // win events
   g_mainWindow.webContents.on("did-finish-load", function () {
     g_isLoaded = true;
     let tempFolderPath = settings.getValue("tempFolderPath");
@@ -137,10 +149,13 @@ const createWindow = () => {
       settings.getValue("width"),
       settings.getValue("height")
     );
+    log.debug("starting width: " + settings.getValue("width"));
+    log.debug("starting height: " + settings.getValue("height"));
     g_mainWindow.center();
     if (settings.getValue("maximize")) {
       g_mainWindow.maximize();
     }
+    log.debug("maximized: " + settings.getValue("maximize"));
     g_mainWindow.webContents.on("context-menu", function (e, params) {
       sendIpcToCoreRenderer("show-context-menu", params);
     });

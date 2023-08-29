@@ -19,7 +19,9 @@ const {
 } = require("./app-utils");
 
 let g_settings;
-let g_fileName = "acbr.cfg";
+const g_fileName = "acbr.cfg";
+const g_defaultSize = { width: 1280, height: 720 };
+const g_minSize = { width: 590, height: 410 };
 
 exports.get = function () {
   return g_settings;
@@ -33,8 +35,8 @@ exports.setValue = function (name, value) {
   g_settings[name] = value;
 };
 
-exports.init = function () {
-  load();
+exports.init = function (...args) {
+  load(...args);
 };
 
 function setDefaultValues() {
@@ -46,8 +48,8 @@ function setDefaultValues() {
     page_mode: 0, // 0: single-page, 1: double-page
     hotspots_mode: 1, // 0: disabled, 1: 2-columns, 2: 3-columns
     maximize: false,
-    width: 800,
-    height: 600,
+    width: g_defaultSize.width,
+    height: g_defaultSize.height,
     history_capacity: 30,
     on_quit_state: 0, // 0: no file, 1: reading file
 
@@ -91,7 +93,7 @@ function setDefaultValues() {
 let g_scaleToHeightMin = 25;
 let g_scaleToHeightMax = 500;
 
-function sanitize() {
+function sanitize(screenWidth, screenHeight) {
   if (
     !Number.isInteger(g_settings.fit_mode) ||
     g_settings.fit_mode < 0 ||
@@ -127,8 +129,18 @@ function sanitize() {
     !Number.isInteger(g_settings.width) ||
     !Number.isInteger(g_settings.height)
   ) {
-    g_settings.width = 800;
-    g_settings.height = 600;
+    g_settings.width = g_defaultSize.width;
+    g_settings.height = g_defaultSize.height;
+  }
+  if (g_settings.width > screenWidth) {
+    g_settings.width = screenWidth;
+  } else if (g_settings.width < g_minSize.width) {
+    g_settings.width = g_minSize.width;
+  }
+  if (g_settings.height > screenHeight) {
+    g_settings.height = screenHeight;
+  } else if (g_settings.height < g_minSize.height) {
+    g_settings.height = g_minSize.height;
   }
   if (
     !Number.isInteger(g_settings.history_capacity) ||
@@ -357,7 +369,7 @@ exports.save = function () {
   log.info("settings saved to: " + cfgFilePath);
 };
 
-function load() {
+function load(screenWidth, screenHeight) {
   setDefaultValues();
   let cfgFilePath = path.join(getUserDataFolderPath(), g_fileName);
   if (isPortable()) {
@@ -387,7 +399,7 @@ function load() {
       }
     }
   }
-  sanitize();
+  sanitize(screenWidth, screenHeight);
 }
 
 exports.canEditRars = function () {
