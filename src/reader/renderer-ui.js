@@ -931,10 +931,10 @@ export function renderImg64(
     if (!img) img = document.getElementById("page-canvas");
     if (img) title = img.title;
   }
-  container.innerHTML = "";
   if (rotation === 0 || rotation === 180) {
     var image = new Image();
     image.onload = function () {
+      container.innerHTML = "";
       container.appendChild(image);
       setFilterClass(image);
       if (sendPageLoaded)
@@ -956,6 +956,7 @@ export function renderImg64(
     var canvas = document.createElement("canvas");
     canvas.id = "page-canvas";
     if (title && title != "") canvas.title = title;
+    container.innerHTML = "";
     container.appendChild(canvas);
     setFilterClass(canvas);
     var context = canvas.getContext("2d");
