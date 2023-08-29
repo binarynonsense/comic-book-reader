@@ -6,6 +6,7 @@
  */
 
 const { app, BrowserWindow, ipcMain } = require("electron");
+const os = require("os");
 const path = require("path");
 
 const settings = require("../shared/main/settings");
@@ -39,6 +40,7 @@ const toolComicInfoXml = require("../tools/comicinfoxml/main");
 
 let g_mainWindow;
 let g_isLoaded = false;
+let g_osInfo;
 
 ///////////////////////////////////////////////////////////////////////////////
 // TOOLS //////////////////////////////////////////////////////////////////////
@@ -85,6 +87,14 @@ exports.switchTool = switchTool;
 ///////////////////////////////////////////////////////////////////////////////
 
 const createWindow = () => {
+  // gather system data
+  g_osInfo = {
+    platform: os.platform(),
+    release: os.release(),
+    hostname: os.hostname(),
+    isSteamDeck: false,
+    isGameScope: false,
+  };
   const { screen } = require("electron");
   const primaryDisplay = screen.getPrimaryDisplay();
   let screenWidth = primaryDisplay.workAreaSize.width;
@@ -93,16 +103,38 @@ const createWindow = () => {
     screenWidth = 800;
   if (!screenHeight || !Number.isInteger(screenHeight) || screenHeight <= 0)
     screenHeight = 600;
-  // init before win creation
+  // init before win creation & start logging
   log.init(isDev());
   settings.init(screenWidth, screenHeight);
   menuBar.empty();
+  // steam deck detection
+  if (
+    (g_osInfo.platform =
+      "linux" &&
+      (g_osInfo.hostname === "steamdeck" || g_osInfo.release.includes("valve")))
+  ) {
+    log.debug("is steam deck");
+    g_osInfo.isSteamDeck = true;
+    if (process.env.SteamDeck == 1) {
+      log.debug("is gaming mode");
+      // the environment variable "SteamDeck" is set to 1 in gamescope,
+      // and it's not present in desktop mode.
+      // not sure if this is official and will always be so.
+      g_osInfo.isGameScope = true;
+      settings.setValue("width", 1280);
+      settings.setValue("height", 800);
+    }
+  }
+  // log sizes
   log.debug("work area width: " + screenWidth);
   log.debug("work area height: " + screenHeight);
+  log.debug("starting width: " + settings.getValue("width"));
+  log.debug("starting height: " + settings.getValue("height"));
+  log.debug("maximized: " + settings.getValue("maximize"));
   // win creation
   g_mainWindow = new BrowserWindow({
-    width: screenWidth,
-    height: screenHeight,
+    width: settings.getValue("width"),
+    height: settings.getValue("height"),
     minWidth: 700,
     minHeight: 500,
     resizable: true,
@@ -145,17 +177,10 @@ const createWindow = () => {
     // add extra divs after menuBar init, so its container is already created
     sendIpcToCoreRenderer("append-structure-divs");
     reader.init();
-    g_mainWindow.setSize(
-      settings.getValue("width"),
-      settings.getValue("height")
-    );
-    log.debug("starting width: " + settings.getValue("width"));
-    log.debug("starting height: " + settings.getValue("height"));
     g_mainWindow.center();
     if (settings.getValue("maximize")) {
       g_mainWindow.maximize();
     }
-    log.debug("maximized: " + settings.getValue("maximize"));
     g_mainWindow.webContents.on("context-menu", function (e, params) {
       sendIpcToCoreRenderer("show-context-menu", params);
     });
@@ -404,11 +429,9 @@ exports.onMenuAbout = function () {
   sendIpcToCoreRenderer(
     "show-modal-info",
     "ACBR",
-    "ACBR Comic Book Reader\n" +
-      i18n._("ui-modal-info-version") +
-      ": " +
-      app.getVersion() +
-      "\n(c) Álvaro García\nwww.binarynonsense.com",
+    `ACBR Comic Book Reader\n${i18n._(
+      "ui-modal-info-version"
+    )}: ${app.getVersion()}\n(c) Álvaro García\nwww.binarynonsense.com`,
     i18n._("ui-modal-prompt-button-ok")
   );
 };
