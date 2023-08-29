@@ -149,7 +149,11 @@ function cleanUpUserDataFolder() {
       "acbr-player.m3u",
     ];
     let userDataPath = app.getPath("userData");
-    if (fs.existsSync(userDataPath)) {
+    if (
+      fs.existsSync(userDataPath) &&
+      path.basename(userDataPath).startsWith("acbr-comic-book-reader")
+    ) {
+      log.debug("user data path is valid");
       let files = fs.readdirSync(userDataPath);
       files.forEach((file) => {
         if (!keepFiles.includes(file)) {
