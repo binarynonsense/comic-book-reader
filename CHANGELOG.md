@@ -1,3 +1,11 @@
+## v3.2.6
+
+- Added Steam Deck and Gaming Mode detection so a better configuration is now set by default when running in that mode on the Deck. Adding the "--no-sandbox" command-line flag to the launch options is still needed in Gaming Mode.
+- Fixed the development mode being incorrectly detected under some circumstances.
+- Fixed the image flickering while zooming in/out.
+- Fixed the image being duplicated some times when zooming quickly.
+- Fixed the reader's scrollbar moving to the top after coming back from a tool.
+
 ## v3.2.5
 
 - Hotfix:
