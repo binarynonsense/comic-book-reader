@@ -369,7 +369,7 @@ exports.save = function () {
   log.info("settings saved to: " + cfgFilePath);
 };
 
-function load(screenWidth, screenHeight) {
+function load(systemInfo) {
   setDefaultValues();
   let cfgFilePath = path.join(getUserDataFolderPath(), g_fileName);
   if (isPortable()) {
@@ -382,7 +382,7 @@ function load(screenWidth, screenHeight) {
     } catch (e) {
       return g_settings;
     }
-    if (data === null || data === undefined) return settings;
+    if (data === null || data === undefined) return g_settings;
 
     let loadedSettings;
     try {
@@ -399,7 +399,7 @@ function load(screenWidth, screenHeight) {
       }
     }
   }
-  sanitize(screenWidth, screenHeight);
+  sanitize(systemInfo.screenWidth, systemInfo.screenHeight);
 }
 
 exports.canEditRars = function () {

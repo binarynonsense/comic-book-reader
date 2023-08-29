@@ -14,7 +14,6 @@ const log = require("./logger");
 let g_isRelease = true;
 
 exports.init = function (isRelease) {
-  log.debug("release version: " + isRelease);
   g_isRelease = isRelease;
 };
 

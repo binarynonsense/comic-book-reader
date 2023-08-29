@@ -40,7 +40,7 @@ const toolComicInfoXml = require("../tools/comicinfoxml/main");
 
 let g_mainWindow;
 let g_isLoaded = false;
-let g_osInfo;
+let g_systemInfo;
 
 ///////////////////////////////////////////////////////////////////////////////
 // TOOLS //////////////////////////////////////////////////////////////////////
@@ -87,47 +87,59 @@ exports.switchTool = switchTool;
 ///////////////////////////////////////////////////////////////////////////////
 
 const createWindow = () => {
-  // gather system data
-  g_osInfo = {
+  // gather system info
+  const { screen } = require("electron");
+  const primaryDisplay = screen.getPrimaryDisplay();
+  g_systemInfo = {
     platform: os.platform(),
     release: os.release(),
     hostname: os.hostname(),
     isSteamDeck: false,
     isGameScope: false,
+    screenWidth: primaryDisplay.workAreaSize.width,
+    screenHeight: primaryDisplay.workAreaSize.height,
+    isDev: isDev(),
   };
-  const { screen } = require("electron");
-  const primaryDisplay = screen.getPrimaryDisplay();
-  let screenWidth = primaryDisplay.workAreaSize.width;
-  let screenHeight = primaryDisplay.workAreaSize.height;
-  if (!screenWidth || !Number.isInteger(screenWidth) || screenWidth <= 0)
-    screenWidth = 800;
-  if (!screenHeight || !Number.isInteger(screenHeight) || screenHeight <= 0)
-    screenHeight = 600;
-  // init before win creation & start logging
-  log.init(isDev());
-  settings.init(screenWidth, screenHeight);
+  if (
+    !g_systemInfo.screenWidth ||
+    !Number.isInteger(g_systemInfo.screenWidth) ||
+    g_systemInfo.screenWidth <= 0
+  )
+    g_systemInfo.screenWidth = 800;
+  if (
+    !g_systemInfo.screenHeight ||
+    !Number.isInteger(g_systemInfo.screenHeight) ||
+    g_systemInfo.screenHeight <= 0
+  )
+    g_systemInfo.screenHeight = 600;
+  // init before win creation
+  log.init(g_systemInfo);
+  settings.init(g_systemInfo);
   menuBar.empty();
   // steam deck detection
   if (
-    (g_osInfo.platform =
+    (g_systemInfo.platform =
       "linux" &&
-      (g_osInfo.hostname === "steamdeck" || g_osInfo.release.includes("valve")))
+      (g_systemInfo.hostname === "steamdeck" ||
+        g_systemInfo.release.includes("valve")))
   ) {
     log.debug("is steam deck");
-    g_osInfo.isSteamDeck = true;
+    g_systemInfo.isSteamDeck = true;
     if (process.env.SteamDeck == 1) {
       log.debug("is gaming mode");
       // the environment variable "SteamDeck" is set to 1 in gamescope,
       // and it's not present in desktop mode.
       // not sure if this is official and will always be so.
-      g_osInfo.isGameScope = true;
+      g_systemInfo.isGameScope = true;
       settings.setValue("width", 1280);
       settings.setValue("height", 800);
     }
   }
-  // log sizes
-  log.debug("work area width: " + screenWidth);
-  log.debug("work area height: " + screenHeight);
+  // log system data
+  log.debug("dev mode: " + isDev());
+  log.debug("release version: " + app.isPackaged);
+  log.debug("work area width: " + g_systemInfo.screenWidth);
+  log.debug("work area height: " + g_systemInfo.screenHeight);
   log.debug("starting width: " + settings.getValue("width"));
   log.debug("starting height: " + settings.getValue("height"));
   log.debug("maximized: " + settings.getValue("maximize"));
@@ -166,7 +178,6 @@ const createWindow = () => {
         tempFolderPath
       );
     }
-    log.debug("dev mode: " + isDev());
     fileUtils.setTempFolderParentPath(tempFolderPath);
     fileFormats.init(app.isPackaged);
     history.init(settings.getValue("history_capacity"));
