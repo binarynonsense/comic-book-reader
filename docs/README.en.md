@@ -47,38 +47,38 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB and PDF files.
 - 'Fit to width', 'fit to height' and a customizable 'scale to height' page views.
 - Page rotation.
 - UI available in:
-  - English, Spanish, Russian and German.
+   - English, Spanish, Russian and German.
 - Automatically restores the previous session's last opened book and page, and remembers the last books' page positions.
 - Portable mode (by creating a file named portable.txt in the same folder as the executable).
 - ComicInfo.xml editor:
-  - view the metadata stored in ComicInfo.xml files inside CBR, CBZ and CB7 comic books.
-  - create and/or modify the metadata stored in ComicInfo.xml files inside unencrypted CBR\*, CBZ and CB7 comic books.
-  - search for and import comic book metadata from Comic Vine (a [Comic Vine API key](https://comicvine.gamespot.com/api/) is required for it to work).
+  - View the metadata stored in ComicInfo.xml files inside CBR, CBZ and CB7 comic books.
+  - Create and/or modify the metadata stored in ComicInfo.xml files inside unencrypted CBR\*, CBZ and CB7 comic books.
+  - Search for and import comic book metadata from Comic Vine (a [Comic Vine API key](https://comicvine.gamespot.com/api/) is required for it to work).
 - Integrated audio player:
-  - supports MP3, Ogg, WAV, M3U and M3U8 files.
-  - can export playlists to M3U files.
+  - Supports MP3, Ogg, WAV, M3U and M3U8 files.
+  - Can export playlists to M3U files.
 - Tools:
   - Convert/Resize:
-    - comic books (CBR, CBZ, CB7, PDF or EPUB to CBR\*, CBZ, CB7, PDF or EPUB).
-    - images (JPG, PNG, AVIF or WebP).
+    - Comic books (CBR, CBZ, CB7, PDF or EPUB to CBR\*, CBZ, CB7, PDF or EPUB).
+    - Images (JPG, PNG, AVIF or WebP).
   - Create:
-    - a comic book (CBR\*, CBZ, CB7, PDF or EPUB) from a list of image files and/or comic books.
-    - a QR code image from text.
+    - A comic book (CBR\*, CBZ, CB7, PDF or EPUB) from a list of image files and/or comic books.
+    - A QR code image from text.
   - Extract:
-    - comic book pages (to JPG, PNG, AVIF or WebP).
-    - text (OCR) from a comic book page or image file.
-    - a QR code's text from a comic book page or image file.
-    - a color palette from a comic book page or image file.
-      - can be exported to a GPL or ACO palette file.
+    - Comic book pages (to JPG, PNG, AVIF or WebP).
+    - Text (OCR) from a comic book page or image file.
+    - A QR code's text from a comic book page or image file.
+    - A color palette from a comic book page or image file.
+      - Can be exported to a GPL or ACO palette file.
   - Other:
-    - search and open books/comics from:
+    - Search and open books/comics from:
       - Digital Comics Museum.
       - Internet Archive Books.
       - Project Gutenberg.
       - xkcd Webcomics.
-    - search and open audiobooks from:
+    - Search and open audiobooks from:
       - Librivox AudioBooks.
-    - search dictionary terms from:
+    - Search dictionary terms from:
       - Wiktionary Dictionary.
 
 (\*) Creating and modifying CBR files are disabled by default. They can be enabled in the preferences but require a third-party command-line tool ([rar](https://www.win-rar.com/cmd-shell-mode.html?&L=0) from WinRAR) to be installed in the system.
@@ -86,21 +86,21 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB and PDF files.
 ## Controls:
 
 - Toolbar :
-  - buttons: 'open file', 'previous page', 'next page', 'fit to width', 'fit to height', 'rotate counterclockwise', 'rotate clockwise' and 'toggle fullscreen'.
-  - slider: use it to quickly go to any page in the book.
+  - Buttons: 'open file', 'previous page', 'next page', 'fit to width', 'fit to height', 'rotate counterclockwise', 'rotate clockwise' and 'toggle fullscreen'.
+  - Slider: use it to quickly go to any page in the book.
 - Keys:
-  - 'right arrow' or 'page down' to go the next page.
-  - 'left arrow' or 'page up' to go to the previous one.
-  - 'up arrow' to scroll the page up, 'down arrow' to scroll the page down.
-  - 'wasd' to scroll the page vertically and horizontally.
-  - 'f11' to toggle full-screen mode.
-  - 'ctrl+O' to choose a file to open.
-  - 'ctrl++' and 'ctrl+-' to zoom in or zoom out the view. 'ctrl+0' to reset it.
+  - 'Right arrow' or 'page down' to go the next page.
+  - 'Left arrow' or 'page up' to go to the previous one.
+  - 'Up arrow' to scroll the page up, 'down arrow' to scroll the page down.
+  - 'WASD' to scroll the page vertically and horizontally.
+  - 'F11' to toggle full-screen mode.
+  - 'Ctrl+O' to choose a file to open.
+  - 'Ctrl++' and 'ctrl+-' to zoom in or zoom out the view. 'ctrl+0' to reset it.
 - Mouse:
-  - 'scroll wheel' scrolls the page up and down.
-  - 'left-click' opens the next page if the right side of the view area is clicked and the previous page if the left side is clicked.
-  - 'right-click' opens a context menu with some basic navigation options.
-  - 'ctrl+scroll wheel' to zoom in or zoom out the view.
+  - 'Scroll wheel' scrolls the page up and down.
+  - 'Left-click' opens the next page if the right side of the view area is clicked and the previous page if the left side is clicked.
+  - 'Right-click' opens a context menu with some basic navigation options.
+  - 'Ctrl+scroll wheel' to zoom in or zoom out the view.
 
 ## Downloads:
 
