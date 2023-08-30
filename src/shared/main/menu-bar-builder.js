@@ -429,6 +429,16 @@ function buildApplicationMenu(settings, history) {
           },
         },
         {
+          label: _("menu-view-showbattery"),
+          id: "battery",
+          type: "checkbox",
+          checked: settings.showBattery,
+          accelerator: "CommandOrControl+B",
+          click() {
+            reader.onMenuToggleBattery();
+          },
+        },
+        {
           label: _("menu-view-showaudioplayer"),
           id: "audio-player",
           type: "checkbox",

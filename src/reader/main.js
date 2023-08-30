@@ -61,6 +61,7 @@ exports.init = function () {
   updateLayoutClock();
   updateLayoutPageNum();
   updateLayoutAudioPlayer();
+  updateLayoutBattery();
 
   sendIpcToRenderer("add-event-listeners");
   sendIpcToRenderer(
@@ -77,6 +78,8 @@ exports.init = function () {
   showPageNumber(settings.getValue("showPageNumber"));
   initClock();
   showClock(settings.getValue("showClock"));
+  sendIpcToRenderer("init-battery");
+  showBattery(settings.getValue("showBattery"));
   audioPlayer.init(core.getMainWindow(), "audio-player-container");
   showAudioPlayer(settings.getValue("showAudioPlayer"));
 
@@ -1519,6 +1522,15 @@ function updateLayoutAudioPlayer() {
 }
 exports.updateLayoutAudioPlayer = updateLayoutAudioPlayer;
 
+function updateLayoutBattery() {
+  sendIpcToRenderer(
+    "update-layout-pos",
+    settings.getValue("layoutBattery"),
+    "#battery-bubble"
+  );
+}
+exports.updateLayoutBattery = updateLayoutBattery;
+
 //////////////////////////////////////////////////////////////////////////////// SHOW/HIDE /////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1564,6 +1576,17 @@ function showClock(isVisible) {
 
 function toggleClock() {
   showClock(!settings.getValue("showClock"));
+  sendIpcToPreload("update-menubar");
+}
+
+function showBattery(isVisible) {
+  settings.setValue("showBattery", isVisible);
+  sendIpcToRenderer("set-battery-visibility", isVisible);
+  menuBar.setBattery(isVisible);
+}
+
+function toggleBattery() {
+  showBattery(!settings.getValue("showBattery"));
   sendIpcToPreload("update-menubar");
 }
 
@@ -1743,8 +1766,8 @@ function processZoomInput(input, factor) {
   }
 }
 
-//////////////////////////////////////////////////////////////////////////////// CLOCK /////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////// CLOCK //////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 let g_clockTimeout;
 
@@ -1999,6 +2022,10 @@ exports.onMenuTogglePageNumber = function () {
 
 exports.onMenuToggleClock = function () {
   toggleClock();
+};
+
+exports.onMenuToggleBattery = function () {
+  toggleBattery();
 };
 
 exports.onMenuOpenFile = onMenuOpenFile;

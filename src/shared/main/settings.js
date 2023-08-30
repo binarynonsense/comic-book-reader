@@ -59,6 +59,7 @@ function setDefaultValues() {
     showPageNumber: true,
     showClock: false,
     showAudioPlayer: false,
+    showBattery: false,
 
     loadLastOpened: true,
     autoOpen: 0, // 0: disabled, 1: next file, 2: next and previous files
@@ -70,7 +71,8 @@ function setDefaultValues() {
     loadingIndicatorIconPos: 0, // 0: top left, 1: center
     layoutClock: 2, // 0 top left, 1 top center, 2 top right .... 5 bottom right
     layoutPageNum: 4, // 0 top left, 1 top center, 2 top right .... 5 bottom right
-    layoutAudioPlayer: 0, // 0 top left, 3 bootom left - for now
+    layoutAudioPlayer: 0, // 0 top left, 3 bottom left - for now
+    layoutBattery: 0, // 0 top left, 1 top center, 2 top right .... 5 bottom right
     epubOpenAs: 0, // 0 ask and remember, 1 always ask
     pdfReadingLib: 0, // 0 oldest, 1 newest
     cbrCreation: 0, // 0 disabled, 1 use command tool if available
@@ -175,6 +177,9 @@ function sanitize(screenWidth, screenHeight) {
   if (typeof g_settings.showAudioPlayer !== "boolean") {
     g_settings.showAudioPlayer = false;
   }
+  if (typeof g_settings.showBattery !== "boolean") {
+    g_settings.showBattery = false;
+  }
   if (typeof g_settings.loadLastOpened !== "boolean") {
     g_settings.loadLastOpened = true;
   }
@@ -247,6 +252,13 @@ function sanitize(screenWidth, screenHeight) {
     (g_settings.layoutAudioPlayer != 0 && g_settings.layoutAudioPlayer != 1)
   ) {
     g_settings.layoutAudioPlayer = 0;
+  }
+  if (
+    !Number.isInteger(g_settings.layoutBattery) ||
+    g_settings.layoutBattery < 0 ||
+    g_settings.layoutBattery > 5
+  ) {
+    g_settings.layoutBattery = 0;
   }
   if (
     !Number.isInteger(g_settings.epubOpenAs) ||

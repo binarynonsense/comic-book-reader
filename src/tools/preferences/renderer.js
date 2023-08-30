@@ -140,6 +140,14 @@ function init(activeLocale, languages, activeTheme, themes, settings) {
       sendIpcToMain("set-layout-audioplayer", parseInt(select.value));
     });
   }
+  // layout battery select
+  {
+    let select = document.getElementById("tool-pre-layout-battery-select");
+    select.value = settings.layoutBattery;
+    select.addEventListener("change", function (event) {
+      sendIpcToMain("set-layout-battery", parseInt(select.value));
+    });
+  }
   // loading bg select
   {
     let select = document.getElementById("tool-pre-loading-bg-select");

@@ -77,6 +77,10 @@ exports.setClock = function (isChecked) {
   Menu.getApplicationMenu().getMenuItemById("clock").checked = isChecked;
 };
 
+exports.setBattery = function (isChecked) {
+  Menu.getApplicationMenu().getMenuItemById("battery").checked = isChecked;
+};
+
 exports.setAudioPlayer = function (isChecked) {
   Menu.getApplicationMenu().getMenuItemById("audio-player").checked = isChecked;
 };

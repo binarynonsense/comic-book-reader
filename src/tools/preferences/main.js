@@ -146,6 +146,11 @@ function initOnIpcCallbacks() {
     reader.updateLayoutAudioPlayer();
   });
 
+  on("set-layout-battery", (value) => {
+    settings.setValue("layoutBattery", value);
+    reader.updateLayoutBattery();
+  });
+
   on("set-loading-bg", (value) => {
     settings.setValue("loadingIndicatorBG", value);
     reader.updateLoadingIndicator();
@@ -359,10 +364,12 @@ function getLocalization() {
       id: "tool-pre-zoom-fileloading-history-text",
       text: _("tool-pre-zoom-fileloading-history"),
     },
+    //////////////////////////////////////////////
     {
       id: "tool-pre-layout-text",
       text: _("tool-pre-layout"),
     },
+
     {
       id: "tool-pre-layout-clock-text",
       text: _("tool-pre-layout-clock"),
@@ -391,7 +398,7 @@ function getLocalization() {
       id: "tool-pre-layout-clock-5-text",
       text: _("menu-shared-bottom-right"),
     },
-    //////////////////////////////////////////////
+
     {
       id: "tool-pre-layout-pagenum-text",
       text: _("tool-pre-layout-pagenum"),
@@ -424,6 +431,7 @@ function getLocalization() {
       id: "tool-pre-layout-audioplayer-text",
       text: _("tool-pre-layout-audioplayer"),
     },
+
     {
       id: "tool-pre-layout-audioplayer-0-text",
       text: _("menu-shared-top-left"),
@@ -431,6 +439,35 @@ function getLocalization() {
     {
       id: "tool-pre-layout-audioplayer-1-text",
       text: _("menu-shared-bottom-left"),
+    },
+
+    {
+      id: "tool-pre-layout-battery-text",
+      text: _("tool-pre-layout-battery"),
+    },
+    {
+      id: "tool-pre-layout-battery-0-text",
+      text: _("menu-shared-top-left"),
+    },
+    {
+      id: "tool-pre-layout-battery-1-text",
+      text: _("menu-shared-top-center"),
+    },
+    {
+      id: "tool-pre-layout-battery-2-text",
+      text: _("menu-shared-top-right"),
+    },
+    {
+      id: "tool-pre-layout-battery-3-text",
+      text: _("menu-shared-bottom-left"),
+    },
+    {
+      id: "tool-pre-layout-battery-4-text",
+      text: _("menu-shared-bottom-center"),
+    },
+    {
+      id: "tool-pre-layout-battery-5-text",
+      text: _("menu-shared-bottom-right"),
     },
     //////////////////////////////////////////////
     {

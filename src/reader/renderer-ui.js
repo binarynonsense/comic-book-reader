@@ -28,7 +28,7 @@ let g_turnPageOnScrollBoundary = true;
 let g_filterMode = 0;
 
 ///////////////////////////////////////////////////////////////////////////////
-// IPC RECEIVE /////////////////////////////////////////////////////////////
+// IPC RECEIVE ////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
 function initOnIpcCallbacks() {
@@ -46,6 +46,21 @@ function initOnIpcCallbacks() {
   on("update-clock", (time) => {
     document.querySelector("#clock-bubble").innerHTML =
       "<span>" + time + "</span>";
+  });
+
+  on("init-battery", () => {
+    const bubble = document.querySelector("#battery-bubble");
+    // chargingchange
+    // chargingtimechange
+    // dischargingtimechange
+    navigator.getBattery().then(function (battery) {
+      console.log(battery.level);
+      bubble.innerHTML = `<span>${battery.level * 100}%</span>`;
+      battery.addEventListener("levelchange", function () {
+        console.log(this.level);
+        bubble.innerHTML = `<span>${this.level * 100}%</span>`;
+      });
+    });
   });
 
   on(
@@ -267,6 +282,10 @@ function initOnIpcCallbacks() {
     showClock(isVisible);
   });
 
+  on("set-battery-visibility", (isVisible) => {
+    showBattery(isVisible);
+  });
+
   on("set-fullscreen-ui", (isFullscreen) => {
     setFullscreenUI(isFullscreen);
   });
@@ -391,6 +410,16 @@ function showClock(isVisible) {
       .classList.remove("set-display-none");
   } else {
     document.querySelector("#clock-bubble").classList.add("set-display-none");
+  }
+}
+
+function showBattery(isVisible) {
+  if (isVisible) {
+    document
+      .querySelector("#battery-bubble")
+      .classList.remove("set-display-none");
+  } else {
+    document.querySelector("#battery-bubble").classList.add("set-display-none");
   }
 }
 
