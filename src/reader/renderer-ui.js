@@ -493,13 +493,13 @@ function moveScrollBarsToEnd() {
 
 export function setScrollBarsPosition(position) {
   if (position === 0) {
-    setTimeout(() => {
-      moveScrollBarsToStart();
-    }, 50);
+    //setTimeout(() => {
+    moveScrollBarsToStart();
+    //}, 50);
   } else if (position === 1) {
-    setTimeout(() => {
-      moveScrollBarsToEnd();
-    }, 50); // if I don't add a timeout they are ignored & always goes to top ¿¿??
+    // setTimeout(() => {
+    moveScrollBarsToEnd();
+    //}, 50); // if I don't add a timeout they are ignored & always goes to top ¿¿??
   }
 }
 
@@ -937,10 +937,12 @@ export function renderImg64(
       container.innerHTML = "";
       container.appendChild(image);
       setFilterClass(image);
-      if (sendPageLoaded)
+      if (sendPageLoaded) {
         sendIpcToMain("page-loaded", {
           dimensions: [image.naturalWidth, image.naturalHeight],
         });
+      }
+      if (scrollBarPos !== undefined) setScrollBarsPosition(scrollBarPos);
     };
     image.src = img64;
     image.id = "page-img";
@@ -987,14 +989,15 @@ export function renderImg64(
       }
       context.drawImage(image, 0, 0);
       context.setTransform(1, 0, 0, 1, 0, 0); // restore default
-      if (sendPageLoaded)
+      if (sendPageLoaded) {
         sendIpcToMain("page-loaded", {
           dimensions: [image.naturalWidth, image.naturalHeight],
         });
+      }
+      if (scrollBarPos !== undefined) setScrollBarsPosition(scrollBarPos);
     };
     image.src = img64;
   }
-  if (scrollBarPos !== undefined) setScrollBarsPosition(scrollBarPos);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
