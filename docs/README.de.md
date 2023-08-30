@@ -27,6 +27,7 @@ Ein Comicbuch Leser und Konverter für CBZ, CBR, CB7, EPUB und PDF Dateien.
 - [Beiträge](#beiträge)
 - [Verwandte Projekte](#verwandte-projekte)
 - [Lizenz](#lizenz)
+- [Anderes](#anderes)
 
 ## Funktionen:
 
