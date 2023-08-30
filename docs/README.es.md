@@ -27,6 +27,7 @@ Un lector y conversor de cómics para archivos en formato cbz, cbr, cb7, epub y 
 - [Contribuciones](#contribuciones)
 - [Proyectos Relacionados](#proyectos-relacionados)
 - [Licencia](#licencia)
+- [Otros](#otros)
 
 ## Características:
 
@@ -134,3 +135,7 @@ Hay información sobre cómo contribuir al proyecto en el fichero [CONTRIBUTING.
 ## Licencia:
 
 El código de ACBR se publica bajo la [licencia](../LICENSE) BSD 2-Clause. Para comprobar las licencias de los módulos de node y otras librerías utilizadas en el proyecto, vaya a la carpeta [licencias](../licenses/).
+
+## Otros:
+
+Capturas de pantalla, más información sobre los controles y otra información extra se puede encontrar en [la Wiki del proyecto](https://github.com/binarynonsense/comic-book-reader/wiki). 
