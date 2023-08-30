@@ -47,41 +47,38 @@ Un lector y conversor de cómics para archivos en formato CBZ, CBR, CB7, EPUB y 
 - Vistas de pagina: 'ajustar a anchura', 'ajustar a altura' y 'escalar a altura' personalizable.
 - Rotación de página.
 - Interfaz de usuario disponible en:
-  - Inglés
-  - Español
-  - Ruso
-  - Alemán
+  - Inglés, Español, Ruso y Alemán
 - Restaura automáticamente el último cómic, y página, abierto en la sesión anterior, y recuerda las posiciones de página de los últimos cómics.
 - Modo portátil (al crear un archivo llamado portable.txt en la misma carpeta que el ejecutable).
 - Editor de ComicInfo.xml:
-  - ver los metadatos almacenados en archivos ComicInfo.xml dentro de cómics CBR, CBZ y CB7.
-  - crear y/o modificar los metadatos almacenados en archivos ComicInfo.xml dentro de cómics CBR\*, CBZ y CB7 no encriptados.
-  - buscar e importar metadatos de cómics de Comic Vine (una [clave API de Comic Vine](https://comicvine.gamespot.com/api/) es necesaria para su funcionamiento).
+  - Ver los metadatos almacenados en archivos ComicInfo.xml dentro de cómics CBR, CBZ y CB7.
+  - Crear y/o modificar los metadatos almacenados en archivos ComicInfo.xml dentro de cómics CBR\*, CBZ y CB7 no encriptados.
+  - Buscar e importar metadatos de cómics de Comic Vine (una [clave API de Comic Vine](https://comicvine.gamespot.com/api/) es necesaria para su funcionamiento).
 - Reproductor de audio integrado:
-  - admite archivos MP3, Ogg, WAV, M3U y M3U8.
-  - puede exportar listas de reproducción a archivos M3U.
+  - Admite archivos MP3, Ogg, WAV, M3U y M3U8.
+  - Puede exportar listas de reproducción a archivos M3U.
 - Herramientas:
   - Convertir/Redimensionar:
-    - cómics (CBR, CBZ, CB7, PDF o EPUB a CBR\*, CBZ, CB7, PDF o EPUB).
-    - imágenes (JPG, PNG, AVIF o WebP).
+    - Cómics (CBR, CBZ, CB7, PDF o EPUB a CBR\*, CBZ, CB7, PDF o EPUB).
+    - Imágenes (JPG, PNG, AVIF o WebP).
   - Crear:
-    - un cómic (CBR\*, CBZ, CB7, PDF o EPUB) a partir de una lista de archivos de imagen y/o cómics.
-    - una imagen de código QR a partir de un texto.
+    - Un cómic (CBR\*, CBZ, CB7, PDF o EPUB) a partir de una lista de archivos de imagen y/o cómics.
+    - Una imagen de código QR a partir de un texto.
   - Extraer:
-    - páginas de cómics (a JPG, PNG, AVIF o WebP).
-    - texto (OCR) de una página de cómic o archivo de imagen.
-    - el texto de un código QR en una página de cómic o un archivo de imagen.
-    - una paleta de colores de una página de cómic o un archivo de imagen.
-      - se puede exportar a un archivo de paleta GPL o ACO.
+    - Páginas de cómics (a JPG, PNG, AVIF o WebP).
+    - Texto (OCR) de una página de cómic o archivo de imagen.
+    - El texto de un código QR en una página de cómic o un archivo de imagen.
+    - Una paleta de colores de una página de cómic o un archivo de imagen.
+      - Se puede exportar a un archivo de paleta GPL o ACO.
   - Otras:
-    - buscar y abrir libros/cómics de:
+    - Buscar y abrir libros/cómics de:
       - Digital Comics Museum.
       - Internet Archive Books.
       - Project Gutenberg.
       - Webcómics xkcd.
-    - buscar y abrir audiolibros de:
+    - Buscar y abrir audiolibros de:
       - Librivox.
-    - búsqueda de términos de diccionario de:
+    - Búsqueda de términos de diccionario de:
       - Diccionario Wiktionary.
 
 (\*) La creación y modificación de archivos CBR están desactivadas por defecto. Se pueden activar en las preferencias pero requieren que una herramienta de línea de comandos de terceros ([rar](https://www.win-rar.com/cmd-shell-mode.html?&L=0) de WinRAR) se encuentre instalada en el sistema.
@@ -89,21 +86,21 @@ Un lector y conversor de cómics para archivos en formato CBZ, CBR, CB7, EPUB y 
 ## Controles:
 
 - Barra de herramientas:
-  - botones: 'abrir archivo', 'página anterior', 'página siguiente', 'ajustar al ancho', 'ajustar al alto', 'girar en sentido antihorario', 'girar en sentido horario' y 'alternar pantalla completa'.
-  - control deslizante: utilícelo para ir rápidamente a cualquier página del libro.
+  - Botones: 'abrir archivo', 'página anterior', 'página siguiente', 'ajustar al ancho', 'ajustar al alto', 'girar en sentido antihorario', 'girar en sentido horario' y 'alternar pantalla completa'.
+  - Control deslizante: utilícelo para ir rápidamente a cualquier página del libro.
 - Teclas:
-  - 'flecha derecha' o 'página abajo' para ir a la página siguiente.
-  - 'flecha izquierda' o 'retroceder página' para ir a la anterior.
-  - 'flecha arriba' para desplazar la página hacia arriba, 'flecha abajo' para desplazar la página hacia abajo.
-  - 'wasd' para desplazar la página vertical y horizontalmente.
-  - 'f11' para alternar el modo de pantalla completa.
-  - 'ctrl+O' para elegir un archivo para abrir.
-  - 'ctrl++' y 'ctrl+-' para acercar o alejar la vista. 'ctrl+0' para restablecerla.
+  - 'Flecha derecha' o 'página abajo' para ir a la página siguiente.
+  - 'Flecha izquierda' o 'retroceder página' para ir a la anterior.
+  - 'Flecha arriba' para desplazar la página hacia arriba, 'flecha abajo' para desplazar la página hacia abajo.
+  - 'WASD' para desplazar la página vertical y horizontalmente.
+  - 'F11' para alternar el modo de pantalla completa.
+  - 'Ctrl+O' para elegir un archivo para abrir.
+  - 'Ctrl++' y 'ctrl+-' para acercar o alejar la vista. 'ctrl+0' para restablecerla.
 - Ratón:
-  - 'rueda de desplazamiento' desplaza la página hacia arriba y hacia abajo.
-  - 'clic con el botón izquierdo' abre la página siguiente si se hace clic en el lado derecho del área de visualización y la página anterior si se hace clic en el lado izquierdo.
-  - 'clic derecho' abre un menú contextual con algunas opciones básicas de navegación.
-  - 'ctrl+rueda de desplazamiento' para acercar o alejar la vista.
+  - 'Rueda de desplazamiento' desplaza la página hacia arriba y hacia abajo.
+  - 'Clic con el botón izquierdo' abre la página siguiente si se hace clic en el lado derecho del área de visualización y la página anterior si se hace clic en el lado izquierdo.
+  - 'Clic derecho' abre un menú contextual con algunas opciones básicas de navegación.
+  - 'Ctrl+rueda de desplazamiento' para acercar o alejar la vista.
 
 ## Descargas:
 
