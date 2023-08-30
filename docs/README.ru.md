@@ -1,14 +1,14 @@
 <p align="right">  
-  <a href="#downloads"><img src="https://user-images.githubusercontent.com/8535921/189104931-527ab8bc-8757-4e04-8150-5207d2077bb8.png" title="linux"></a>
-  <a href="#downloads"><img src="https://user-images.githubusercontent.com/8535921/189104940-ade062d9-d2e0-4e08-83a4-f34cdb457025.png" title="windows"></a>
-  <a href="#license"><img src="https://user-images.githubusercontent.com/8535921/189119543-b1f7cc20-bd0e-44e7-811a-c23b0ccdf767.png" title="open source"></a>
-  <a href="http://www.binarynonsense.com/"><img src="https://user-images.githubusercontent.com/8535921/189104953-7ac2d4d1-7d36-483b-8cc9-3568d1cbf6e5.png" title="my website"></a>
-  <a href="https://twitter.com/binarynonsense"><img src="https://user-images.githubusercontent.com/8535921/189104963-ae74d98e-ddb3-4068-8958-7028ecae2966.png" title="my twitter"></a>
+  <a href="#downloads"><img src="https://user-images.githubusercontent.com/8535921/189104931-527ab8bc-8757-4e04-8150-5207d2077bb8PNG" title="linux"></a>
+  <a href="#downloads"><img src="https://user-images.githubusercontent.com/8535921/189104940-ade062d9-d2e0-4e08-83a4-f34cdb457025PNG" title="windows"></a>
+  <a href="#license"><img src="https://user-images.githubusercontent.com/8535921/189119543-b1f7cc20-bd0e-44e7-811a-c23b0ccdf767PNG" title="open source"></a>
+  <a href="http://www.binarynonsense.com/"><img src="https://user-images.githubusercontent.com/8535921/189104953-7ac2d4d1-7d36-483b-8cc9-3568d1cbf6e5PNG" title="my website"></a>
+  <a href="https://twitter.com/binarynonsense"><img src="https://user-images.githubusercontent.com/8535921/189104963-ae74d98e-ddb3-4068-8958-7028ecae2966PNG" title="my twitter"></a>
 </p>
 
 # ACBR - Comic Book Reader
 
-Программа для чтения и конвертирования комиксов с расширениями файлов cbz, cbr, cb7, epub и pdf.
+Программа для чтения и конвертирования комиксов с расширениями файлов CBZ, CBR, CB7, EPUB и PDF.
 
 ![git_banner](https://github.com/binarynonsense/comic-book-reader/assets/8535921/a8a7f902-4445-4695-9bc0-bbae4cba78f2)
 
@@ -33,21 +33,21 @@
 - Совместимые расширения файлов:
 
   - Комиксы:
-    - .cbz
-    - .cbr
-    - .cb7
-    - .pdf
-    - .epub
+    - CBZ
+    - CBR
+    - CB7
+    - PDF
+    - EPUB
   - Изображения:
-    - .jpg
-    - .png
-    - .webp
-    - .avif
+    - JPG
+    - PNG
+    - WEBP
+    - AVIF
   - Электронные книги:
-    - .pdf
-    - .epub
+    - PDF
+    - EPUB
 
-  Включая защищенные паролем файлы pdf, cbz (шифрование AES не поддерживается), cb7 и cbr.
+  Включая защищенные паролем файлы PDF, CBZ (шифрование AES не поддерживается), CB7 и CBR.
 
 - Оконный (простой пользовательский интерфейс) и полноэкранный (без пользовательского интерфейса) режимы.
 - "Подгонка по ширине", "подгонка по высоте" и настраиваемые виды страниц "масштабирование по высоте".
@@ -64,13 +64,13 @@
   - можно экспортировать плейлист в файл .m3u
 - Инструменты:
   - Конвертация/Изменение размера:
-    - комиксов (cbr, cbz, cb7, pdf или epub в cbz, cb7, pdf или epub).
-    - изображений (jpg, png, avif или webp).
+    - комиксов (CBR, CBZ, CB7, PDF или EPUB в CBZ, CB7, PDF или EPUB).
+    - изображений (JPG, PNG, AVIF или WEBP).
   - Создание:
-    - комиксов (cbz, cb7, pdf или epub) из списка изображений.
+    - комиксов (CBZ, CB7, PDF или EPUB) из списка изображений.
     - изображение QR-кода из текста.
   - Извлечение:
-    - страниц комиксов (в jpg, png, avif или webp).
+    - страниц комиксов (в JPG, PNG, AVIF или WEBP).
     - текста (OCR) со страницы комикса или изображения.
     - текста QR-кода со страницы комикса или с изображения.
     - цветовой палитры со страницы комикса или с изображения.
