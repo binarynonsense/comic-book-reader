@@ -66,8 +66,8 @@ Un lector y conversor de cómics para archivos en formato CBZ, CBR, CB7, EPUB y 
   - crear y/o modificar los metadatos almacenados en archivos ComicInfo.xml dentro de cómics CBR\*, CBZ y CB7 no encriptados.
   - buscar e importar metadatos de cómics de Comic Vine (una [clave API de Comic Vine](https://comicvine.gamespot.com/api/) es necesaria para su funcionamiento).
 - Reproductor de audio integrado:
-  - admite archivos .mp3, .ogg, .wav, .m3u y .m3u8.
-  - puede exportar listas de reproducción a archivos .m3u.
+  - admite archivos MP3, Ogg, WAV, M3U y M3U8.
+  - puede exportar listas de reproducción a archivos M3U.
 - Herramientas:
   - Convertir/Redimensionar:
     - cómics (CBR, CBZ, CB7, PDF o EPUB a CBR\*, CBZ, CB7, PDF o EPUB).
