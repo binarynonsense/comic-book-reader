@@ -532,6 +532,11 @@ function initOnIpcCallbacks() {
       core.switchTool("tool-comicinfoxml", g_fileData);
     }
   });
+
+  on("open-file-browser-tool", () => {
+    log.debug("open-file-browser-tool");
+    core.switchTool("tool-file-browser", g_fileData);
+  });
 }
 
 //////////////////////////////////////////////////////////////////////////////// FILES /////////////////////////////////////////////////////////////////////

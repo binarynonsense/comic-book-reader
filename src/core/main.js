@@ -37,6 +37,7 @@ const toolXkcd = require("../tools/xkcd/main");
 const toolLibrivox = require("../tools/librivox/main");
 const toolWiktionary = require("../tools/wiktionary/main");
 const toolComicInfoXml = require("../tools/comicinfoxml/main");
+const toolFileBrowser = require("../tools/file-browser/main");
 
 let g_mainWindow;
 let g_isLoaded = false;
@@ -66,6 +67,7 @@ g_tools["tool-xkcd"] = toolXkcd;
 g_tools["tool-librivox"] = toolLibrivox;
 g_tools["tool-wiktionary"] = toolWiktionary;
 g_tools["tool-comicinfoxml"] = toolComicInfoXml;
+g_tools["tool-file-browser"] = toolFileBrowser;
 
 function getTools() {
   return g_tools;

@@ -23,6 +23,7 @@ import * as toolXkcd from "../tools/xkcd/renderer.js";
 import * as toolLibrivox from "../tools/librivox/renderer.js";
 import * as toolWiktionary from "../tools/wiktionary/renderer.js";
 import * as toolComicInfoXml from "../tools/comicinfoxml/renderer.js";
+import * as toolFileBrowser from "../tools/file-browser/renderer.js";
 
 import * as modals from "../shared/renderer/modals.js";
 
@@ -56,6 +57,7 @@ function init() {
   g_tools["tool-librivox"] = toolLibrivox;
   g_tools["tool-wiktionary"] = toolWiktionary;
   g_tools["tool-comicinfoxml"] = toolComicInfoXml;
+  g_tools["tool-file-browser"] = toolFileBrowser;
   // init ipcs
   for (const [key, value] of Object.entries(g_tools)) {
     value.initIpc();
