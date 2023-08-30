@@ -134,3 +134,7 @@ Informationen darüber, wie man zu dem Projekt beitragen kann, gibt es im [CONTR
 ## Lizenz:
 
 ACBRs Code ist unter der BSD 2-Clause [Lizenz](../LICENSE) veröffentlicht. Um die Lizenzen der Knoten-Module, sowie weiteren Libraries, welche in diesem Projekt verwendet wurden, zu überprüfen begeben Sie sich zum [Lizenzen](../licenses/) Ordner.
+
+## Anderes:
+
+Screenshots, weitere Details über die Steuerung und andere zusätzliche Informationen können auf der [Wiki-Seite des Projekts](https://github.com/binarynonsense/comic-book-reader/wiki) gefunden werden.
