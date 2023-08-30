@@ -43,7 +43,7 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB and PDF files.
   - Image files:
     - JPG
     - PNG
-    - WEBP
+    - WebP
     - AVIF
   - Ebooks:
     - PDF
@@ -71,12 +71,12 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB and PDF files.
 - Tools:
   - Convert/Resize:
     - comic books (CBR, CBZ, CB7, PDF or EPUB to CBR\*, CBZ, CB7, PDF or EPUB).
-    - images (JPG, PNG, AVIF or WEBP).
+    - images (JPG, PNG, AVIF or WebP).
   - Create:
     - a comic book (CBR\*, CBZ, CB7, PDF or EPUB) from a list of image files and/or comic books.
     - a QR code image from text.
   - Extract:
-    - comic book pages (to JPG, PNG, AVIF or WEBP).
+    - comic book pages (to JPG, PNG, AVIF or WebP).
     - text (OCR) from a comic book page or image file.
     - a QR code's text from a comic book page or image file.
     - a color palette from a comic book page or image file.
@@ -138,4 +138,4 @@ ACBR's code is released under the BSD 2-Clause [license](../LICENSE). To check t
 
 ## Other:
 
-Screenshots, more details about the controls and other extra information can be found on [the project's Wiki](https://github.com/binarynonsense/comic-book-reader/wiki). 
+Screenshots, more details about the controls and other extra information can be found on [the project's Wiki](https://github.com/binarynonsense/comic-book-reader/wiki).

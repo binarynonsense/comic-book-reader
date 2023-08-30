@@ -43,7 +43,7 @@ Ein Comicbuch Leser und Konverter für CBZ, CBR, CB7, EPUB und PDF Dateien.
   - Bilddateien:
     - JPG
     - PNG
-    - WEBP
+    - WebP
     - AVIF
   - Ebooks:
     - PDF
@@ -71,12 +71,12 @@ Ein Comicbuch Leser und Konverter für CBZ, CBR, CB7, EPUB und PDF Dateien.
 - Werkzeuge:
   - Konvertieren/größe Ändern:
     - Comicbücher (CBR, CBZ, CB7, PDF oder EPUB zu CBR\*, CBZ, CB7, PDF oder EPUB).
-    - Bilder (JPG, PNG, AVIF oder WEBP).
+    - Bilder (JPG, PNG, AVIF oder WebP).
   - Erstelle:
     - Ein Comicbuch (CBR\*, CBZ, CB7, PDF oder EPUB) aus einer Liste von Bild Dateien und/oder Comicbüchern.
     - Eine QR Code Bild aus Text.
   - Extrahiere:
-    - Comicbuch Seiten (zu JPG, PNG, AVIF oder WEBP).
+    - Comicbuch Seiten (zu JPG, PNG, AVIF oder WebP).
     - Text (OCR) aus einer Comicbuch Seite oder Bilddatei.
     - QR Code Text aus einer Comicbuch Seite oder Bilddatei.
     - Eine Farb-palette aus einer Comicbuch Seite oder Bilddatei.
