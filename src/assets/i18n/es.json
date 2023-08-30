@@ -1,8 +1,8 @@
 {
   "@metadata": {
     "authors": ["Álvaro"],
-    "last-updated": "2023-08-28",
-    "acbr-version": "3.2.4",
+    "last-updated": "2023-08-30",
+    "acbr-version": "3.2.7",
     "comments": "",
     "locale": "es",
     "name": "Spanish",
@@ -49,6 +49,7 @@
   "menu-view-showpagenum": "Mostrar Número de Página",
   "menu-view-showclock": "Mostrar Reloj",
   "menu-view-showaudioplayer": "Mostrar Reproductor de Audio",
+  "menu-view-showbattery": "Mostrar Batería",
 
   "menu-tools": "Herramientas",
   "menu-tools-convert": "Convertir",
@@ -356,6 +357,7 @@
   "tool-pre-layout-clock": "Reloj",
   "tool-pre-layout-pagenum": "Número de página",
   "tool-pre-layout-audioplayer": "Reproductor de audio",
+  "tool-pre-layout-battery": "Batería",
   "tool-pre-loading": "Indicador de Carga",
   "tool-pre-loading-bg": "Fondo",
   "tool-pre-loading-bg-0": "Transparente",
