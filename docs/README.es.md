@@ -1,14 +1,14 @@
 <p align="right">  
-  <a href="#downloads"><img src="https://user-images.githubusercontent.com/8535921/189104931-527ab8bc-8757-4e04-8150-5207d2077bb8.png" title="linux"></a>
-  <a href="#downloads"><img src="https://user-images.githubusercontent.com/8535921/189104940-ade062d9-d2e0-4e08-83a4-f34cdb457025.png" title="windows"></a>
-  <a href="#license"><img src="https://user-images.githubusercontent.com/8535921/189119543-b1f7cc20-bd0e-44e7-811a-c23b0ccdf767.png" title="open source"></a>
-  <a href="http://www.binarynonsense.com/"><img src="https://user-images.githubusercontent.com/8535921/189104953-7ac2d4d1-7d36-483b-8cc9-3568d1cbf6e5.png" title="my website"></a>
-  <a href="https://twitter.com/binarynonsense"><img src="https://user-images.githubusercontent.com/8535921/189104963-ae74d98e-ddb3-4068-8958-7028ecae2966.png" title="my twitter"></a>
+  <a href="#downloads"><img src="https://user-images.githubusercontent.com/8535921/189104931-527ab8bc-8757-4e04-8150-5207d2077bb8PNG" title="linux"></a>
+  <a href="#downloads"><img src="https://user-images.githubusercontent.com/8535921/189104940-ade062d9-d2e0-4e08-83a4-f34cdb457025PNG" title="windows"></a>
+  <a href="#license"><img src="https://user-images.githubusercontent.com/8535921/189119543-b1f7cc20-bd0e-44e7-811a-c23b0ccdf767PNG" title="open source"></a>
+  <a href="http://www.binarynonsense.com/"><img src="https://user-images.githubusercontent.com/8535921/189104953-7ac2d4d1-7d36-483b-8cc9-3568d1cbf6e5PNG" title="my website"></a>
+  <a href="https://twitter.com/binarynonsense"><img src="https://user-images.githubusercontent.com/8535921/189104963-ae74d98e-ddb3-4068-8958-7028ecae2966PNG" title="my twitter"></a>
 </p>
 
 # ACBR - Comic Book Reader
 
-Un lector y conversor de cómics para archivos en formato cbz, cbr, cb7, epub y pdf.
+Un lector y conversor de cómics para archivos en formato CBZ, CBR, CB7, EPUB y PDF.
 
 ![git_banner](https://github.com/binarynonsense/comic-book-reader/assets/8535921/a8a7f902-4445-4695-9bc0-bbae4cba78f2)
 
@@ -35,21 +35,21 @@ Un lector y conversor de cómics para archivos en formato cbz, cbr, cb7, epub y 
 - Formatos de archivo compatibles:
 
   - Cómics:
-    - .cbz
-    - .cbr
-    - .cb7
-    - .pdf
-    - .epub
+    - CBZ
+    - CBR
+    - CB7
+    - PDF
+    - EPUB
   - Archivos de imagen:
-    - .jpg
-    - .png
-    - .webp
-    - .avif
+    - JPG
+    - PNG
+    - WEBP
+    - AVIF
   - Ebooks:
-    - .pdf
-    - .epub
+    - PDF
+    - EPUB
 
-  Incluyendo archivos pdf, cbz (cifrado AES no compatible), cb7 y cbr protegidos con contraseña.
+  Incluyendo archivos PDF, CBZ (cifrado AES no compatible), CB7 y CBR protegidos con contraseña.
 
 - Modos de ventana (IU simple) y pantalla completa (sin IU).
 - Vistas de pagina: 'ajustar a anchura', 'ajustar a altura' y 'escalar a altura' personalizable.
@@ -62,21 +62,21 @@ Un lector y conversor de cómics para archivos en formato cbz, cbr, cb7, epub y 
 - Restaura automáticamente el último cómic, y página, abierto en la sesión anterior, y recuerda las posiciones de página de los últimos cómics.
 - Modo portátil (al crear un archivo llamado portable.txt en la misma carpeta que el ejecutable).
 - Editor de ComicInfo.xml:
-  - ver los metadatos almacenados en archivos ComicInfo.xml dentro de cómics cbr, cbz y cb7.
-  - crear y/o modificar los metadatos almacenados en archivos ComicInfo.xml dentro de cómics cbr*, cbz y cb7 no encriptados.
+  - ver los metadatos almacenados en archivos ComicInfo.xml dentro de cómics CBR, CBZ y CB7.
+  - crear y/o modificar los metadatos almacenados en archivos ComicInfo.xml dentro de cómics CBR\*, CBZ y CB7 no encriptados.
   - buscar e importar metadatos de cómics de Comic Vine (una [clave API de Comic Vine](https://comicvine.gamespot.com/api/) es necesaria para su funcionamiento).
 - Reproductor de audio integrado:
   - admite archivos .mp3, .ogg, .wav, .m3u y .m3u8.
   - puede exportar listas de reproducción a archivos .m3u.
 - Herramientas:
   - Convertir/Redimensionar:
-    - cómics (cbr, cbz, cb7, pdf o epub a cbr*, cbz, cb7, pdf o epub).
-    - imágenes (jpg, png, avif o webp).
+    - cómics (CBR, CBZ, CB7, PDF o EPUB a CBR\*, CBZ, CB7, PDF o EPUB).
+    - imágenes (JPG, PNG, AVIF o WEBP).
   - Crear:
-    - un cómic (cbr*, cbz, cb7, pdf o epub) a partir de una lista de archivos de imagen y/o cómics.
+    - un cómic (CBR\*, CBZ, CB7, PDF o EPUB) a partir de una lista de archivos de imagen y/o cómics.
     - una imagen de código QR a partir de un texto.
   - Extraer:
-    - páginas de cómics (a jpg, png, avif o webp).
+    - páginas de cómics (a JPG, PNG, AVIF o WEBP).
     - texto (OCR) de una página de cómic o archivo de imagen.
     - el texto de un código QR en una página de cómic o un archivo de imagen.
     - una paleta de colores de una página de cómic o un archivo de imagen.
@@ -92,7 +92,7 @@ Un lector y conversor de cómics para archivos en formato cbz, cbr, cb7, epub y 
     - búsqueda de términos de diccionario de:
       - Diccionario Wiktionary.
 
-(*) La creación y modificación de archivos cbr están desactivadas por defecto. Se pueden activar en las preferencias pero requieren que una herramienta de línea de comandos de terceros ([rar](https://www.win-rar.com/cmd-shell-mode.html?&L=0) de WinRAR) se encuentre instalada en el sistema.
+(\*) La creación y modificación de archivos CBR están desactivadas por defecto. Se pueden activar en las preferencias pero requieren que una herramienta de línea de comandos de terceros ([rar](https://www.win-rar.com/cmd-shell-mode.html?&L=0) de WinRAR) se encuentre instalada en el sistema.
 
 ## Controles:
 

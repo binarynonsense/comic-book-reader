@@ -1,14 +1,14 @@
 <p align="right">  
-  <a href="#downloads"><img src="https://user-images.githubusercontent.com/8535921/189104931-527ab8bc-8757-4e04-8150-5207d2077bb8.png" title="linux"></a>
-  <a href="#downloads"><img src="https://user-images.githubusercontent.com/8535921/189104940-ade062d9-d2e0-4e08-83a4-f34cdb457025.png" title="windows"></a>
-  <a href="#license"><img src="https://user-images.githubusercontent.com/8535921/189119543-b1f7cc20-bd0e-44e7-811a-c23b0ccdf767.png" title="open source"></a>
-  <a href="http://www.binarynonsense.com/"><img src="https://user-images.githubusercontent.com/8535921/189104953-7ac2d4d1-7d36-483b-8cc9-3568d1cbf6e5.png" title="my website"></a>
-  <a href="https://twitter.com/binarynonsense"><img src="https://user-images.githubusercontent.com/8535921/189104963-ae74d98e-ddb3-4068-8958-7028ecae2966.png" title="my twitter"></a>
+  <a href="#downloads"><img src="https://user-images.githubusercontent.com/8535921/189104931-527ab8bc-8757-4e04-8150-5207d2077bb8PNG" title="linux"></a>
+  <a href="#downloads"><img src="https://user-images.githubusercontent.com/8535921/189104940-ade062d9-d2e0-4e08-83a4-f34cdb457025PNG" title="windows"></a>
+  <a href="#license"><img src="https://user-images.githubusercontent.com/8535921/189119543-b1f7cc20-bd0e-44e7-811a-c23b0ccdf767PNG" title="open source"></a>
+  <a href="http://www.binarynonsense.com/"><img src="https://user-images.githubusercontent.com/8535921/189104953-7ac2d4d1-7d36-483b-8cc9-3568d1cbf6e5PNG" title="my website"></a>
+  <a href="https://twitter.com/binarynonsense"><img src="https://user-images.githubusercontent.com/8535921/189104963-ae74d98e-ddb3-4068-8958-7028ecae2966PNG" title="my twitter"></a>
 </p>
 
 # ACBR - Comic Book Reader
 
-Ein Comicbuch Leser und Konverter für cbz, cbr, cb7, epub und pdf Dateien.
+Ein Comicbuch Leser und Konverter für CBZ, CBR, CB7, EPUB und PDF Dateien.
 
 ![git_banner](https://github.com/binarynonsense/comic-book-reader/assets/8535921/a8a7f902-4445-4695-9bc0-bbae4cba78f2)
 
@@ -21,13 +21,12 @@ Ein Comicbuch Leser und Konverter für cbz, cbr, cb7, epub und pdf Dateien.
 
 ## Inhalt:
 
-* [Funktionen](#funktionen)
-* [Steuerung](#steuerung)
-* [Downloads](#downloads)
-* [Beiträge](#beiträge)
-* [Verwandte Projekte](#verwandte-projekte)
-* [Lizenz](#lizenz)
-* [Anderes](#anderes)
+- [Funktionen](#funktionen)
+- [Steuerung](#steuerung)
+- [Downloads](#downloads)
+- [Beiträge](#beiträge)
+- [Verwandte Projekte](#verwandte-projekte)
+- [Lizenz](#lizenz)
 
 ## Funktionen:
 
@@ -35,21 +34,21 @@ Ein Comicbuch Leser und Konverter für cbz, cbr, cb7, epub und pdf Dateien.
 - Kompatible Datei-formate:
 
   - Comicbücher:
-    - .cbz
-    - .cbr
-    - .cb7
-    - .pdf
-    - .epub
+    - CBZ
+    - CBR
+    - CB7
+    - PDF
+    - EPUB
   - Bilddateien:
-    - .jpg
-    - .png
-    - .webp
-    - .avif
+    - JPG
+    - PNG
+    - WEBP
+    - AVIF
   - Ebooks:
-    - .pdf
-    - .epub
+    - PDF
+    - EPUB
 
-  Dazu gehören Passwort geschützte pdf, cbz (AES Verschlüsselung nicht unterstützt), cb7 und cbr Dateien.
+  Dazu gehören Passwort geschützte PDF, CBZ (AES Verschlüsselung nicht unterstützt), CB7 und CBR Dateien.
 
 - Fenster- (einfache Benutzeroberfläche) und Vollbild- (keine Benutzeroberfläche) Modi.
 - 'Breitenanpassung', 'Höhenanpassung' und eine anpassbare 'Höhenskalierung' Seitenansicht.
@@ -62,21 +61,21 @@ Ein Comicbuch Leser und Konverter für cbz, cbr, cb7, epub und pdf Dateien.
 - Automatische Wiederherstellung der vergangenen Sitzung, mit Erinnerung der letzten Seitenposition.
 - Tragbarer Modus (durch das Erstellen einer Datei namens portable.txt im selben Ordner wie die Anwendung).
 - ComicInfo.xml Editor:
-  - Ansicht der Metadaten welche in ComicInfo.xml Dateien innerhalb cbr, cbz und cb7 Comicbüchern gespeichert sind.
-  - Erstelle und/oder modifiziere die Metadaten welche in ComicInfo.xml Dateien innerhalb unverschlüsselten cbr*, cbz und cb7 Comicbüchern gespeichert sind.
+  - Ansicht der Metadaten welche in ComicInfo.xml Dateien innerhalb CBR, CBZ und CB7 Comicbüchern gespeichert sind.
+  - Erstelle und/oder modifiziere die Metadaten welche in ComicInfo.xml Dateien innerhalb unverschlüsselten CBR\*, CBZ und CB7 Comicbüchern gespeichert sind.
   - Suche nach und importiere Comicbuch Metadaten von Comic Vine (für die funktionalität wird ein [Comic Vine API key](https://comicvine.gamespot.com/api/) benötigt).
 - Integrierter Audio-player:
   - unterstützt .mp3, .ogg, .wav, .m3u und .m3u8 Dateien.
   - Kann Playlists als .m3u Dateien exportieren.
 - Werkzeuge:
   - Konvertieren/größe Ändern:
-    - Comicbücher (cbr, cbz, cb7, pdf oder epub zu cbr*, cbz, cb7, pdf oder epub).
-    - Bilder (jpg, png, avif oder webp).
+    - Comicbücher (CBR, CBZ, CB7, PDF oder EPUB zu CBR\*, CBZ, CB7, PDF oder EPUB).
+    - Bilder (JPG, PNG, AVIF oder WEBP).
   - Erstelle:
-    - Ein Comicbuch (cbr*, cbz, cb7, pdf oder epub) aus einer Liste von Bild Dateien und/oder Comicbüchern.
+    - Ein Comicbuch (CBR\*, CBZ, CB7, PDF oder EPUB) aus einer Liste von Bild Dateien und/oder Comicbüchern.
     - Eine QR Code Bild aus Text.
   - Extrahiere:
-    - Comicbuch Seiten (zu jpg, png, avif oder webp).
+    - Comicbuch Seiten (zu JPG, PNG, AVIF oder WEBP).
     - Text (OCR) aus einer Comicbuch Seite oder Bilddatei.
     - QR Code Text aus einer Comicbuch Seite oder Bilddatei.
     - Eine Farb-palette aus einer Comicbuch Seite oder Bilddatei.
@@ -92,7 +91,7 @@ Ein Comicbuch Leser und Konverter für cbz, cbr, cb7, epub und pdf Dateien.
     - Suche Wörterbucheinträge in:
       - Wiktionary Dictionary.
 
-(*) Das Erstellen und Modifizieren von cbr Dateien ist standardmäßig deaktiviert. Diese Funktionen können über die Einstellungen aktiviert werden, benötigen aber ein Drittanbieter Kommandozeilen-Werkzeug ([rar](https://www.win-rar.com/cmd-shell-mode.html?&L=0) von WinRAR), welches im System installiert sein muss.
+(\*) Das Erstellen und Modifizieren von CBR Dateien ist standardmäßig deaktiviert. Diese Funktionen können über die Einstellungen aktiviert werden, benötigen aber ein Drittanbieter Kommandozeilen-Werkzeug ([rar](https://www.win-rar.com/cmd-shell-mode.html?&L=0) von WinRAR), welches im System installiert sein muss.
 
 ## Steuerung:
 
