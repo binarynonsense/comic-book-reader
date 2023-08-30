@@ -138,4 +138,4 @@ El código de ACBR se publica bajo la [licencia](../LICENSE) BSD 2-Clause. Para 
 
 ## Otros:
 
-Capturas de pantalla, más información sobre los controles y otra información extra se puede encontrar en [la Wiki del proyecto](https://github.com/binarynonsense/comic-book-reader/wiki). 
+Capturas de pantalla, más información sobre los controles y otra información extra se pueden encontrar en [la Wiki del proyecto](https://github.com/binarynonsense/comic-book-reader/wiki). 
