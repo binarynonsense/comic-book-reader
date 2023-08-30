@@ -1,7 +1,7 @@
 {
   "@metadata": {
     "authors": ["vanja-san"],
-    "last-updated": "2023-08-28",
+    "last-updated": "2023-08-30",
     "acbr-version": "3.2.0",
     "comments": "Русский перевод",
     "locale": "ru",
@@ -49,7 +49,7 @@
   "menu-view-showpagenum": "Отображать номер страницы",
   "menu-view-showclock": "Отображать часы",
   "menu-view-showaudioplayer": "Отображать аудиоплеер",
-  "[NEEDS TRANSLATION]menu-view-showbattery": "Show Battery",
+  "menu-view-showbattery": "Отображать батарею",
 
   "menu-tools": "Инструменты",
   "menu-tools-convert": "Конвертировать",
@@ -84,9 +84,9 @@
   "menu-shared-bottom-center": "Снизу по центру",
   "menu-shared-bottom-right": "Снизу справа",
 
-  "[NEEDS TRANSLATION]ctxmenu-copy": "Copy",
-  "[NEEDS TRANSLATION]ctxmenu-paste": "Paste",
-  "[NEEDS TRANSLATION]ctxmenu-select-all": "Select All",
+  "ctxmenu-copy": "Копировать",
+  "ctxmenu-paste": "Вставить",
+  "ctxmenu-select-all": "Выделить все",
   "ctxmenu-nextpage": "Следующая страница",
   "ctxmenu-prevpage": "Предыдущая страница",  
   "ctxmenu-rotate": "Повернуть",
@@ -357,7 +357,7 @@
   "tool-pre-layout-clock": "Часы",
   "tool-pre-layout-pagenum": "Номер страницы",
   "tool-pre-layout-audioplayer": "Аудиоплеер",
-  "[NEEDS TRANSLATION]tool-pre-layout-battery": "Battery",  
+  "tool-pre-layout-battery": "Батарея",  
   "tool-pre-loading": "Индикатор загрузки",
   "tool-pre-loading-bg": "Фон",
   "tool-pre-loading-bg-0": "Прозрачный",
