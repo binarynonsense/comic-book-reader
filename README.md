@@ -8,7 +8,7 @@
 
 # ACBR - Comic Book Reader
 
-A comic book reader and converter for cbz, cbr, cb7, epub and pdf files.
+A comic book reader and converter for CBZ, CBR, CB7, EPUB and PDF files.
 
 ![git_banner](https://github.com/binarynonsense/comic-book-reader/assets/8535921/a8a7f902-4445-4695-9bc0-bbae4cba78f2)
 
@@ -29,27 +29,37 @@ A comic book reader and converter for cbz, cbr, cb7, epub and pdf files.
 - [License](#license)
 - [Other](#other)
 
+## Contents:
+
+- [Features](#features)
+- [Controls](#controls)
+- [Downloads](#downloads)
+- [Contributions](#contributions)
+- [Related Projects](#related-projects)
+- [License](#license)
+- [Other](#other)
+
 ## Features:
 
 - Windows & GNU/Linux versions.
 - Compatible file formats:
 
   - Comic books:
-    - .cbz
-    - .cbr
-    - .cb7
-    - .pdf
-    - .epub
+    - CBZ
+    - CBR
+    - CB7
+    - PDF
+    - EPUB
   - Image files:
-    - .jpg
-    - .png
-    - .webp
-    - .avif
+    - JPG
+    - PNG
+    - WebP
+    - AVIF
   - Ebooks:
-    - .pdf
-    - .epub
+    - PDF
+    - EPUB
 
-  Including password protected pdf, cbz (AES encryption not supported), cb7 and cbr files.
+  Including password protected PDF, CBZ (AES encryption not supported), CB7 and CBR files.
 
 - Windowed (simple UI) and full-screen (no UI) modes.
 - 'Fit to width', 'fit to height' and a customizable 'scale to height' page views.
@@ -62,25 +72,25 @@ A comic book reader and converter for cbz, cbr, cb7, epub and pdf files.
 - Automatically restores the previous session's last opened book and page, and remembers the last books' page positions.
 - Portable mode (by creating a file named portable.txt in the same folder as the executable).
 - ComicInfo.xml editor:
-  - view the metadata stored in ComicInfo.xml files inside cbr, cbz and cb7 comic books.
-  - create and/or modify the metadata stored in ComicInfo.xml files inside unencrypted cbr*, cbz and cb7 comic books.
+  - view the metadata stored in ComicInfo.xml files inside CBR, CBZ and CB7 comic books.
+  - create and/or modify the metadata stored in ComicInfo.xml files inside unencrypted CBR\*, CBZ and CB7 comic books.
   - search for and import comic book metadata from Comic Vine (a [Comic Vine API key](https://comicvine.gamespot.com/api/) is required for it to work).
 - Integrated audio player:
-  - supports .mp3, .ogg, .wav, .m3u and .m3u8 files.
-  - can export playlists to .m3u files.
+  - supports MP3, Ogg, WAV, M3U and M3U8 files.
+  - can export playlists to M3U files.
 - Tools:
   - Convert/Resize:
-    - comic books (cbr, cbz, cb7, pdf or epub to cbr*, cbz, cb7, pdf or epub).
-    - images (jpg, png, avif or webp).
+    - comic books (CBR, CBZ, CB7, PDF or EPUB to CBR\*, CBZ, CB7, PDF or EPUB).
+    - images (JPG, PNG, AVIF or WebP).
   - Create:
-    - a comic book (cbr*, cbz, cb7, pdf or epub) from a list of image files and/or comic books.
+    - a comic book (CBR\*, CBZ, CB7, PDF or EPUB) from a list of image files and/or comic books.
     - a QR code image from text.
   - Extract:
-    - comic book pages (to jpg, png, avif or webp).
+    - comic book pages (to JPG, PNG, AVIF or WebP).
     - text (OCR) from a comic book page or image file.
     - a QR code's text from a comic book page or image file.
     - a color palette from a comic book page or image file.
-      - can be exported to a .gpl or .aco palette file.
+      - can be exported to a GPL or ACO palette file.
   - Other:
     - search and open books/comics from:
       - Digital Comics Museum.
@@ -91,8 +101,8 @@ A comic book reader and converter for cbz, cbr, cb7, epub and pdf files.
       - Librivox AudioBooks.
     - search dictionary terms from:
       - Wiktionary Dictionary.
-      
-(*) Creating and modifying cbr files are disabled by default. They can be enabled in the preferences but require a third-party command-line tool ([rar](https://www.win-rar.com/cmd-shell-mode.html?&L=0) from WinRAR) to be installed in the system.
+
+(*) Creating and modifying CBR files are disabled by default. They can be enabled in the preferences but require a third-party command-line tool ([rar](https://www.win-rar.com/cmd-shell-mode.html?&L=0) from WinRAR) to be installed in the system.
 
 ## Controls:
 
