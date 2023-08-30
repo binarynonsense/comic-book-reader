@@ -138,4 +138,4 @@ ACBRs Code ist unter der BSD 2-Clause [Lizenz](../LICENSE) veröffentlicht. Um d
 
 ## Anderes:
 
-Screenshots, weitere Details über die Steuerung und andere zusätzliche Informationen können auf der [Wiki-Seite des Projekts](https://github.com/binarynonsense/comic-book-reader/wiki) gefunden werden.
+Screenshots, weitere Details über die Steuerung und andere zusätzliche Informationen können im [Wiki des Projekts](https://github.com/binarynonsense/comic-book-reader/wiki) gefunden werden.
