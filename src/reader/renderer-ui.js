@@ -493,13 +493,9 @@ function moveScrollBarsToEnd() {
 
 export function setScrollBarsPosition(position) {
   if (position === 0) {
-    //setTimeout(() => {
     moveScrollBarsToStart();
-    //}, 50);
   } else if (position === 1) {
-    // setTimeout(() => {
     moveScrollBarsToEnd();
-    //}, 50); // if I don't add a timeout they are ignored & always goes to top ¿¿??
   }
 }
 
