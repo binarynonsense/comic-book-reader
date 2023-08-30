@@ -80,7 +80,7 @@ Un lector y conversor de cómics para archivos en formato CBZ, CBR, CB7, EPUB y 
     - texto (OCR) de una página de cómic o archivo de imagen.
     - el texto de un código QR en una página de cómic o un archivo de imagen.
     - una paleta de colores de una página de cómic o un archivo de imagen.
-      - se puede exportar a un archivo de paleta .gpl o .aco.
+      - se puede exportar a un archivo de paleta GPL o ACO.
   - Otras:
     - buscar y abrir libros/cómics de:
       - Digital Comics Museum.

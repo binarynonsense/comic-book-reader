@@ -80,7 +80,7 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB and PDF files.
     - text (OCR) from a comic book page or image file.
     - a QR code's text from a comic book page or image file.
     - a color palette from a comic book page or image file.
-      - can be exported to a .gpl or .aco palette file.
+      - can be exported to a GPL or ACO palette file.
   - Other:
     - search and open books/comics from:
       - Digital Comics Museum.
