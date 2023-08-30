@@ -433,7 +433,7 @@ function buildApplicationMenu(settings, history) {
           id: "battery",
           type: "checkbox",
           checked: settings.showBattery,
-          accelerator: "CommandOrControl+B",
+          accelerator: "CommandOrControl+L",
           click() {
             reader.onMenuToggleBattery();
           },
