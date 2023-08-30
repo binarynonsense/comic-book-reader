@@ -33,19 +33,11 @@
 - Совместимые расширения файлов:
 
   - Комиксы:
-    - CBZ
-    - CBR
-    - CB7
-    - PDF
-    - EPUB
+    - CBZ, CBR, CB7, PDF и EPUB.
   - Изображения:
-    - JPG
-    - PNG
-    - WebP
-    - AVIF
+    - JPG, PNG, WebP и AVIF.
   - Электронные книги:
-    - PDF
-    - EPUB
+    - PDF и EPUB.
 
   Включая защищенные паролем файлы PDF, CBZ (шифрование AES не поддерживается), CB7 и CBR.
 
