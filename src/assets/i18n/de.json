@@ -1,7 +1,7 @@
 {
   "@metadata": {
     "authors": ["trzyglow"],
-    "last-updated": "2023-08-28",
+    "last-updated": "2023-08-30",
     "acbr-version": "3.2.4",
     "comments": "Deutsche Lokalisierung",
     "locale": "de",
@@ -49,7 +49,7 @@
   "menu-view-showpagenum": "Seitenzahl Anzeigen",
   "menu-view-showclock": "Uhr Anzeigen",
   "menu-view-showaudioplayer": "Audio-Player Anzeigen",
-  "[NEEDS TRANSLATION]menu-view-showbattery": "Show Battery",
+  "menu-view-showbattery": "Akku Anzeigen",
 
   "menu-tools": "Werkzeuge",
   "menu-tools-convert": "Konvertieren",
@@ -357,7 +357,7 @@
   "tool-pre-layout-clock": "Uhr",
   "tool-pre-layout-pagenum": "Seitenzahl",
   "tool-pre-layout-audioplayer": "Audio-Player",
-  "[NEEDS TRANSLATION]tool-pre-layout-battery": "Battery",
+  "tool-pre-layout-battery": "Akku",
   "tool-pre-loading": "Lade-indikator",
   "tool-pre-loading-bg": "Hintergrund",
   "tool-pre-loading-bg-0": "Transparent",
