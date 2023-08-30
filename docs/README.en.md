@@ -31,7 +31,7 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB and PDF files.
 
 ## Features:
 
-- Windows & GNU/Linux versions.
+- Windows & Linux versions.
 - Compatible file formats:
 
   - Comic books:

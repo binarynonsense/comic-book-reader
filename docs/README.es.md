@@ -31,7 +31,7 @@ Un lector y conversor de cómics para archivos en formato CBZ, CBR, CB7, EPUB y 
 
 ## Características:
 
-- Versiones para Windows y GNU/Linux.
+- Versiones para Windows y Linux.
 - Formatos de archivo compatibles:
 
   - Cómics:
