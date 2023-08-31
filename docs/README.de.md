@@ -53,7 +53,7 @@ Ein Comicbuch Leser und Konverter für CBZ, CBR, CB7, EPUB und PDF Dateien.
 - ComicInfo.xml Editor:
   - Ansicht der Metadaten welche in ComicInfo.xml Dateien innerhalb CBR, CBZ und CB7 Comicbüchern gespeichert sind.
   - Erstelle und/oder modifiziere die Metadaten welche in ComicInfo.xml Dateien innerhalb unverschlüsselten CBR\*, CBZ und CB7 Comicbüchern gespeichert sind.
-  - Suche nach und importiere Comicbuch Metadaten von Comic Vine (für die funktionalität wird ein [Comic Vine API key](https://comicvine.gamespot.com/api/) benötigt).
+  - Suche nach und importiere Comicbuch Metadaten von Comic Vine (hierfür wird ein [Comic Vine API key](https://comicvine.gamespot.com/api/) benötigt).
 - Integrierter Audio-player:
   - unterstützt MP3, Ogg, WAV, M3U und M3U8 Dateien.
   - Kann Playlists als M3U Dateien exportieren.
