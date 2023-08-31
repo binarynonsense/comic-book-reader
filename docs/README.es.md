@@ -86,16 +86,16 @@ Un lector y conversor de cómics para archivos en formato CBZ, CBR, CB7, EPUB y 
 ## Controles:
 
 - Barra de herramientas:
-  - Botones: 'abrir archivo', 'página anterior', 'página siguiente', 'ajustar al ancho', 'ajustar al alto', 'girar en sentido antihorario', 'girar en sentido horario' y 'alternar pantalla completa'.
+  - Botones: 'Abrir archivo', 'Página anterior', 'Página siguiente', 'Ajustar al ancho', 'Ajustar al alto', 'Girar en sentido antihorario', 'Girar en sentido horario' y 'Alternar pantalla completa'.
   - Control deslizante: utilícelo para ir rápidamente a cualquier página del libro.
 - Teclas:
-  - 'Flecha derecha' o 'página abajo' para ir a la página siguiente.
-  - 'Flecha izquierda' o 'retroceder página' para ir a la anterior.
-  - 'Flecha arriba' para desplazar la página hacia arriba, 'flecha abajo' para desplazar la página hacia abajo.
+  - 'Flecha derecha' o 'Página abajo' para ir a la página siguiente.
+  - 'Flecha izquierda' o 'Retroceder página' para ir a la anterior.
+  - 'Flecha arriba' para desplazar la página hacia arriba, 'Flecha abajo' para desplazar la página hacia abajo.
   - 'WASD' para desplazar la página vertical y horizontalmente.
   - 'F11' para alternar el modo de pantalla completa.
   - 'Ctrl+O' para elegir un archivo para abrir.
-  - 'Ctrl++' y 'ctrl+-' para acercar o alejar la vista. 'ctrl+0' para restablecerla.
+  - 'Ctrl++' y 'Ctrl+-' para acercar o alejar la vista. 'Ctrl+0' para restablecerla.
 - Ratón:
   - 'Rueda de desplazamiento' desplaza la página hacia arriba y hacia abajo.
   - 'Clic con el botón izquierdo' abre la página siguiente si se hace clic en el lado derecho del área de visualización y la página anterior si se hace clic en el lado izquierdo.
