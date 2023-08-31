@@ -100,7 +100,7 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB and PDF files.
   - 'Scroll wheel' scrolls the page up and down.
   - 'Left-click' opens the next page if the right side of the view area is clicked and the previous page if the left side is clicked.
   - 'Right-click' opens a context menu with some basic navigation options.
-  - 'Ctrl+scroll wheel' to zoom in or zoom out the view.
+  - 'Ctrl+Scroll wheel' to zoom in or zoom out the view.
 
 ## Downloads:
 
