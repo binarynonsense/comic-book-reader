@@ -86,16 +86,16 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB and PDF files.
 ## Controls:
 
 - Toolbar :
-  - Buttons: 'open file', 'previous page', 'next page', 'fit to width', 'fit to height', 'rotate counterclockwise', 'rotate clockwise' and 'toggle fullscreen'.
+  - Buttons: 'Open file', 'Previous page', 'Next page', 'Fit to width', 'Fit to height', 'Rotate counterclockwise', 'Rotate clockwise' and 'Toggle fullscreen'.
   - Slider: use it to quickly go to any page in the book.
 - Keys:
-  - 'Right arrow' or 'page down' to go the next page.
-  - 'Left arrow' or 'page up' to go to the previous one.
-  - 'Up arrow' to scroll the page up, 'down arrow' to scroll the page down.
+  - 'Right arrow' or 'Page down' to go the next page.
+  - 'Left arrow' or 'Page up' to go to the previous one.
+  - 'Up arrow' to scroll the page up, 'Down arrow' to scroll the page down.
   - 'WASD' to scroll the page vertically and horizontally.
   - 'F11' to toggle full-screen mode.
   - 'Ctrl+O' to choose a file to open.
-  - 'Ctrl++' and 'ctrl+-' to zoom in or zoom out the view. 'ctrl+0' to reset it.
+  - 'Ctrl++' and 'Ctrl+-' to zoom in or zoom out the view. 'Ctrl+0' to reset it.
 - Mouse:
   - 'Scroll wheel' scrolls the page up and down.
   - 'Left-click' opens the next page if the right side of the view area is clicked and the previous page if the left side is clicked.
