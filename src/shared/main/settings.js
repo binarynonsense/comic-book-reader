@@ -381,7 +381,7 @@ exports.save = function () {
   log.info("settings saved to: " + cfgFilePath);
 };
 
-function load(systemInfo) {
+function load(info) {
   setDefaultValues();
   let cfgFilePath = path.join(getUserDataFolderPath(), g_fileName);
   if (isPortable()) {
@@ -411,7 +411,7 @@ function load(systemInfo) {
       }
     }
   }
-  sanitize(systemInfo.screenWidth, systemInfo.screenHeight);
+  sanitize(info.screenWidth, info.screenHeight);
 }
 
 exports.canEditRars = function () {

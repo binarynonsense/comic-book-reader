@@ -143,6 +143,11 @@ function onIpcFromMain(event, args) {
             g_tools[g_currentTool].onContextMenu(args[2]);
         }
         break;
+      case "log-to-console":
+        {
+          console.log(args[2]);
+        }
+        break;
     }
   } else {
     if (g_tools[args[0]]?.onIpcFromMain) {

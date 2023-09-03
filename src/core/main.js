@@ -41,7 +41,7 @@ const toolFileBrowser = require("../tools/file-browser/main");
 
 let g_mainWindow;
 let g_isLoaded = false;
-let g_systemInfo = {};
+let g_launchInfo = {};
 
 ///////////////////////////////////////////////////////////////////////////////
 // TOOLS //////////////////////////////////////////////////////////////////////
@@ -88,67 +88,70 @@ exports.switchTool = switchTool;
 // SETUP //////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+g_launchInfo = {
+  platform: os.platform(),
+  release: os.release(),
+  hostName: os.hostname(),
+  isSteamDeck: false,
+  isGameScope: false,
+  isDev: false,
+  isRelease: app.isPackaged,
+  parsedArgs: {},
+};
+// steam deck detection
+if (
+  (g_launchInfo.platform =
+    "linux" &&
+    (g_launchInfo.hostName === "steamdeck" ||
+      g_launchInfo.release.includes("valve")))
+) {
+  g_launchInfo.isSteamDeck = true;
+  if (process.env.SteamDeck == 1) {
+    // the environment variable "SteamDeck" is set to 1 in gamescope,
+    // and it's not present in desktop mode.
+    // not sure if this is official and will always be so.
+    g_launchInfo.isGameScope = true;
+  }
+}
+// parse command line arguments
+g_launchInfo.parsedArgs = require("minimist")(
+  process.argv.slice(g_launchInfo.isRelease ? 1 : 2)
+);
+g_launchInfo.isDev = g_launchInfo.parsedArgs["dev"] === true;
+// start logging
+log.init(g_launchInfo);
+log.debug("dev mode: " + g_launchInfo.isDev);
+log.debug("release version: " + g_launchInfo.isRelease);
+
+// init window
 const createWindow = () => {
-  // gather system info
+  // get screen size
   const { screen } = require("electron");
   const primaryDisplay = screen.getPrimaryDisplay();
-  let isDev = false;
-  for (let index = 1; index < process.argv.length; index++) {
-    if (process.argv[index] === "--dev") {
-      isDev = true;
-      break;
-    }
-  }
-  g_systemInfo = {
-    platform: os.platform(),
-    release: os.release(),
-    hostname: os.hostname(),
-    isSteamDeck: false,
-    isGameScope: false,
-    screenWidth: primaryDisplay.workAreaSize.width,
-    screenHeight: primaryDisplay.workAreaSize.height,
-    isDev: isDev,
-  };
+  g_launchInfo.screenWidth = primaryDisplay.workAreaSize.width;
+  g_launchInfo.screenHeight = primaryDisplay.workAreaSize.height;
   if (
-    !g_systemInfo.screenWidth ||
-    !Number.isInteger(g_systemInfo.screenWidth) ||
-    g_systemInfo.screenWidth <= 0
+    !g_launchInfo.screenWidth ||
+    !Number.isInteger(g_launchInfo.screenWidth) ||
+    g_launchInfo.screenWidth <= 0
   )
-    g_systemInfo.screenWidth = 800;
+    g_launchInfo.screenWidth = 800;
   if (
-    !g_systemInfo.screenHeight ||
-    !Number.isInteger(g_systemInfo.screenHeight) ||
-    g_systemInfo.screenHeight <= 0
+    !g_launchInfo.screenHeight ||
+    !Number.isInteger(g_launchInfo.screenHeight) ||
+    g_launchInfo.screenHeight <= 0
   )
-    g_systemInfo.screenHeight = 600;
+    g_launchInfo.screenHeight = 600;
   // init before win creation
-  log.init(g_systemInfo);
-  settings.init(g_systemInfo);
+  settings.init(g_launchInfo);
   menuBar.empty();
-  // steam deck detection
-  if (
-    (g_systemInfo.platform =
-      "linux" &&
-      (g_systemInfo.hostname === "steamdeck" ||
-        g_systemInfo.release.includes("valve")))
-  ) {
-    log.debug("is steam deck");
-    g_systemInfo.isSteamDeck = true;
-    if (process.env.SteamDeck == 1) {
-      log.debug("is gaming mode");
-      // the environment variable "SteamDeck" is set to 1 in gamescope,
-      // and it's not present in desktop mode.
-      // not sure if this is official and will always be so.
-      g_systemInfo.isGameScope = true;
-      settings.setValue("width", 1280);
-      settings.setValue("height", 800);
-    }
+  if (g_launchInfo.isSteamDeck && g_launchInfo.isGameScope) {
+    settings.setValue("width", 1280);
+    settings.setValue("height", 800);
   }
-  // log system data
-  log.debug("dev mode: " + g_systemInfo.isDev);
-  log.debug("release version: " + app.isPackaged);
-  log.debug("work area width: " + g_systemInfo.screenWidth);
-  log.debug("work area height: " + g_systemInfo.screenHeight);
+  // log size data
+  log.debug("work area width: " + g_launchInfo.screenWidth);
+  log.debug("work area height: " + g_launchInfo.screenHeight);
   log.debug("starting width: " + settings.getValue("width"));
   log.debug("starting height: " + settings.getValue("height"));
   log.debug("maximized: " + settings.getValue("maximize"));
@@ -312,7 +315,7 @@ ipcMain.on("tools-worker", (event, ...args) => {
 ///////////////////////////////////////////////////////////////////////////////
 
 function isDev() {
-  return g_systemInfo.isDev;
+  return g_launchInfo.isDev;
 }
 exports.isDev = isDev;
 
