@@ -22,7 +22,7 @@ Ein Comicbuch Leser und Konverter für CBZ, CBR, CB7, EPUB und PDF Dateien.
 ## Inhalt:
 
 - [Funktionen](#funktionen)
-- [Steuerung](#steuerung)
+- [Grundlegende Steuerung](#grundlegende-steuerung)
 - [Downloads](#downloads)
 - [Beiträge](#beiträge)
 - [Verwandte Projekte](#verwandte-projekte)
@@ -83,7 +83,7 @@ Ein Comicbuch Leser und Konverter für CBZ, CBR, CB7, EPUB und PDF Dateien.
 
 (\*) Das Erstellen und Modifizieren von CBR Dateien ist standardmäßig deaktiviert. Diese Funktionen können über die Einstellungen aktiviert werden, benötigen aber ein Drittanbieter Kommandozeilen-Werkzeug ([rar](https://www.win-rar.com/cmd-shell-mode.html?&L=0) von WinRAR), welches im System installiert sein muss.
 
-## Steuerung:
+## Grundlegende Steuerung:
 
 - Werkzeugleiste:
   - Knöpfe: 'Öffne Datei', 'Vorherige Seite', 'Nächste Seite', 'An Breite Anpassen', 'An Höhe Anpassen', 'Rotiere gegen Uhrzeigerrichtung', 'Rotiere in Uhrzeigerrichtung' und 'Vollbild Aktivieren'.
