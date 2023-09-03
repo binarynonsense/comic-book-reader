@@ -58,34 +58,34 @@ function init() {
   g_outputFileBaseName = undefined;
 }
 
-exports.open = function (mode, fileData) {
+exports.open = async function (data) {
   // called by switchTool when opening tool
-  g_mode = mode;
+  g_mode = data.mode;
   init();
-  let filePath, fileType;
-  if (fileData !== undefined) {
-    filePath = fileData.path;
-    fileType = fileData.type;
-    g_initialPassword = fileData.password;
-  }
-  const data = fs.readFileSync(path.join(__dirname, "index.html"));
-  sendIpcToCoreRenderer("replace-inner-html", "#tools", data.toString());
+  g_initialPassword = data.password;
+  const html = fs.readFileSync(path.join(__dirname, "index.html"));
+  sendIpcToCoreRenderer("replace-inner-html", "#tools", html.toString());
 
   updateLocalizedText();
 
   sendIpcToRenderer(
     "show",
     g_mode,
-    filePath !== undefined
-      ? path.dirname(filePath)
+    data.filePaths &&
+      data.filePaths.length > 0 &&
+      data.filePaths[0] !== undefined
+      ? path.dirname(data.filePaths[0])
       : appUtils.getDesktopFolderPath(),
     settings.canEditRars()
   );
 
   updateLocalizedText();
 
-  if (filePath !== undefined && fileType !== undefined)
-    sendIpcToRenderer("add-file", filePath, fileType);
+  if (data.filePaths) {
+    for (let index = 0; index < data.filePaths.length; index++) {
+      await addFile(data.filePaths[index]);
+    }
+  }
 };
 
 exports.close = function () {
@@ -160,7 +160,7 @@ function initOnIpcCallbacks() {
     contextMenu.show("minimal", params, onCloseClicked);
   });
 
-  on("choose-file", (lastFilePath) => {
+  on("choose-file", async (lastFilePath) => {
     let defaultPath;
     if (lastFilePath) defaultPath = path.dirname(lastFilePath);
     try {
@@ -204,51 +204,7 @@ function initOnIpcCallbacks() {
       }
       for (let index = 0; index < filePathsList.length; index++) {
         const filePath = filePathsList[index];
-        let stats = fs.statSync(filePath);
-        if (!stats.isFile()) continue; // avoid folders accidentally getting here
-        let fileType;
-        let fileExtension = path.extname(filePath).toLowerCase();
-        (async () => {
-          let _fileType = await FileType.fromFile(filePath);
-          if (_fileType !== undefined) {
-            fileExtension = "." + _fileType.ext;
-          }
-          if (fileExtension === "." + FileExtension.PDF) {
-            fileType = FileDataType.PDF;
-          } else if (fileExtension === "." + FileExtension.EPUB) {
-            fileType = FileDataType.EPUB_COMIC;
-          } else {
-            if (
-              fileExtension === "." + FileExtension.RAR ||
-              fileExtension === "." + FileExtension.CBR
-            ) {
-              fileType = FileDataType.RAR;
-            } else if (
-              fileExtension === "." + FileExtension.ZIP ||
-              fileExtension === "." + FileExtension.CBZ
-            ) {
-              fileType = FileDataType.ZIP;
-            } else if (
-              fileExtension === "." + FileExtension.SEVENZIP ||
-              fileExtension === "." + FileExtension.CB7
-            ) {
-              fileType = FileDataType.SEVENZIP;
-            } else if (
-              g_mode === 1 &&
-              (fileExtension === "." + FileExtension.JPG ||
-                fileExtension === "." + FileExtension.JPEG ||
-                fileExtension === "." + FileExtension.PNG ||
-                fileExtension === "." + FileExtension.WEBP ||
-                fileExtension === "." + FileExtension.BMP ||
-                fileExtension === "." + FileExtension.AVIF)
-            ) {
-              fileType = FileDataType.IMG;
-            } else {
-              return;
-            }
-          }
-          sendIpcToRenderer("add-file", filePath, fileType);
-        })();
+        await addFile(filePath);
       }
     } catch (err) {
       // TODO: do something?
@@ -425,6 +381,53 @@ function initHandleIpcCallbacks() {
 ///////////////////////////////////////////////////////////////////////////////
 // TOOL ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
+
+async function addFile(filePath) {
+  let stats = fs.statSync(filePath);
+  if (!stats.isFile()) return; // avoid folders accidentally getting here
+  let fileType;
+  let fileExtension = path.extname(filePath).toLowerCase();
+
+  let _fileType = await FileType.fromFile(filePath);
+  if (_fileType !== undefined) {
+    fileExtension = "." + _fileType.ext;
+  }
+  if (fileExtension === "." + FileExtension.PDF) {
+    fileType = FileDataType.PDF;
+  } else if (fileExtension === "." + FileExtension.EPUB) {
+    fileType = FileDataType.EPUB_COMIC;
+  } else {
+    if (
+      fileExtension === "." + FileExtension.RAR ||
+      fileExtension === "." + FileExtension.CBR
+    ) {
+      fileType = FileDataType.RAR;
+    } else if (
+      fileExtension === "." + FileExtension.ZIP ||
+      fileExtension === "." + FileExtension.CBZ
+    ) {
+      fileType = FileDataType.ZIP;
+    } else if (
+      fileExtension === "." + FileExtension.SEVENZIP ||
+      fileExtension === "." + FileExtension.CB7
+    ) {
+      fileType = FileDataType.SEVENZIP;
+    } else if (
+      g_mode === 1 &&
+      (fileExtension === "." + FileExtension.JPG ||
+        fileExtension === "." + FileExtension.JPEG ||
+        fileExtension === "." + FileExtension.PNG ||
+        fileExtension === "." + FileExtension.WEBP ||
+        fileExtension === "." + FileExtension.BMP ||
+        fileExtension === "." + FileExtension.AVIF)
+    ) {
+      fileType = FileDataType.IMG;
+    } else {
+      return;
+    }
+  }
+  sendIpcToRenderer("add-file", filePath, fileType);
+}
 
 function stopError(error) {
   fileUtils.cleanUpTempFolder();

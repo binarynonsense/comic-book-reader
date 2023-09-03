@@ -7,6 +7,7 @@
 
 const { app, BrowserWindow, ipcMain } = require("electron");
 const os = require("os");
+const fs = require("fs");
 const path = require("path");
 
 const settings = require("../shared/main/settings");
@@ -115,7 +116,8 @@ if (
 }
 // parse command line arguments
 g_launchInfo.parsedArgs = require("minimist")(
-  process.argv.slice(g_launchInfo.isRelease ? 1 : 2)
+  process.argv.slice(g_launchInfo.isRelease ? 1 : 2),
+  { boolean: ["dev"] }
 );
 g_launchInfo.isDev = g_launchInfo.parsedArgs["dev"] === true;
 // start logging
@@ -197,7 +199,47 @@ const createWindow = () => {
     menuBar.init(g_mainWindow);
     // add extra divs after menuBar init, so its container is already created
     sendIpcToCoreRenderer("append-structure-divs");
-    reader.init();
+    // check command line args and setup initial state
+    let inputFiles = [];
+    let inputFilesAndFolders = [];
+    g_launchInfo.parsedArgs["_"].forEach((path) => {
+      if (fs.existsSync(path)) {
+        inputFilesAndFolders.push(path);
+        if (!fs.lstatSync(path).isDirectory()) {
+          // TODO: add only valid formats?
+          inputFiles.push(path);
+        }
+      }
+    });
+    let isValidTool = (name) => {
+      if (name && typeof name === "string") {
+        const validToolNames = ["cc"];
+        for (let index = 0; index < validToolNames.length; index++) {
+          if (validToolNames[index] === name) return true;
+        }
+      }
+      return false;
+    };
+    if (
+      g_launchInfo.parsedArgs["tool"] &&
+      isValidTool(g_launchInfo.parsedArgs["tool"])
+    ) {
+      // start reader with no file open
+      reader.init(undefined, false);
+      // start tool
+      switch (g_launchInfo.parsedArgs["tool"]) {
+        case "cc":
+          switchTool("tool-convert-comics", { mode: 0, filePaths: inputFiles });
+          break;
+      }
+    } else {
+      // start reader, open file if available
+      reader.init(
+        inputFilesAndFolders.length > 0 ? inputFilesAndFolders[0] : undefined,
+        true
+      );
+    }
+    // show window
     g_mainWindow.center();
     if (settings.getValue("maximize")) {
       g_mainWindow.maximize();
@@ -361,12 +403,12 @@ exports.onMenuToggleFullScreen = function () {
 // TOOLS /////////////
 
 exports.onMenuToolConvertComics = function () {
-  switchTool("tool-convert-comics", 0);
+  switchTool("tool-convert-comics", { mode: 0 });
   sendIpcToPreload("update-menubar");
 };
 
 exports.onMenuToolCreateComic = function () {
-  switchTool("tool-convert-comics", 1);
+  switchTool("tool-convert-comics", { mode: 1 });
   sendIpcToPreload("update-menubar");
 };
 

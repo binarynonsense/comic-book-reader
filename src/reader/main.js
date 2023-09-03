@@ -39,7 +39,7 @@ let g_resizeEventCounter;
 let g_workerExport;
 let g_workerPage;
 
-exports.init = function () {
+exports.init = function (filePath, checkHistory) {
   initOnIpcCallbacks();
 
   const data = fs.readFileSync(path.join(__dirname, "index.html"));
@@ -84,25 +84,17 @@ exports.init = function () {
   showAudioPlayer(settings.getValue("showAudioPlayer"));
 
   // if the program is called from the os' 'open with' of file association
-  if (process.argv.length >= 2) {
-    if (app.isPackaged) {
-      for (let index = 1; index < process.argv.length; index++) {
-        let filePath = process.argv[index];
-        if (
-          filePath !== undefined &&
-          filePath !== "" &&
-          !filePath.startsWith("--") &&
-          fs.existsSync(filePath)
-        ) {
-          if (tryOpen(filePath)) {
-            return;
-          }
-        }
-      }
+  if (filePath && filePath !== "" && fs.existsSync(filePath)) {
+    if (tryOpen(filePath)) {
+      return;
     }
   }
 
-  if (history.get().length > 0 && settings.getValue("on_quit_state") === 1) {
+  if (
+    checkHistory &&
+    history.get().length > 0 &&
+    settings.getValue("on_quit_state") === 1
+  ) {
     const entry = history.getIndex(history.get().length - 1);
     tryOpen(entry.filePath, undefined, entry);
     return;
@@ -2103,7 +2095,11 @@ exports.onMenuPageExtractQR = function () {
 
 exports.onMenuConvertFile = function () {
   if (g_fileData.path !== undefined) {
-    core.switchTool("tool-convert-comics", 0, g_fileData);
+    core.switchTool("tool-convert-comics", {
+      mode: 0,
+      filePaths: [g_fileData.path],
+      password: g_fileData.password,
+    });
   }
   sendIpcToPreload("update-menubar");
 };
