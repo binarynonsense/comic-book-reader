@@ -22,7 +22,7 @@ Un lector y conversor de cómics para archivos en formato CBZ, CBR, CB7, EPUB y 
 ## Contenidos:
 
 - [Características](#características)
-- [Controles](#controles)
+- [Controles Básicos](#controles-básicos)
 - [Descargas](#descargas)
 - [Contribuciones](#contribuciones)
 - [Proyectos Relacionados](#proyectos-relacionados)
@@ -83,7 +83,7 @@ Un lector y conversor de cómics para archivos en formato CBZ, CBR, CB7, EPUB y 
 
 (\*) La creación y modificación de archivos CBR están desactivadas por defecto. Se pueden activar en las preferencias pero requieren que una herramienta de línea de comandos de terceros ([rar](https://www.win-rar.com/cmd-shell-mode.html?&L=0) de WinRAR) se encuentre instalada en el sistema.
 
-## Controles:
+## Controles Básicos:
 
 - Barra de herramientas:
   - Botones: 'Abrir archivo', 'Página anterior', 'Página siguiente', 'Ajustar al ancho', 'Ajustar al alto', 'Girar en sentido antihorario', 'Girar en sentido horario' y 'Alternar pantalla completa'.
