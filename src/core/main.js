@@ -229,9 +229,12 @@ const createWindow = () => {
       // start tool
       switch (g_launchInfo.parsedArgs["tool"]) {
         case "cc":
+          // TODO: other options like output-format or output-folder
           switchTool("tool-convert-comics", { mode: 0, filePaths: inputFiles });
           break;
       }
+    } else if (inputFiles.length > 0) {
+      switchTool("tool-convert-comics", { mode: 0, filePaths: inputFiles });
     } else {
       // start reader, open file if available
       reader.init(
