@@ -40,7 +40,7 @@ let g_imageFormat = FileExtension.NOT_SET;
 let g_outputFileBaseName;
 
 // hack to allow this at least for files from File>Convert...
-let g_initialPassword = "";
+let g_inputPassword = "";
 let g_creationTempFolderPath;
 
 function init() {
@@ -58,33 +58,39 @@ function init() {
   g_outputFileBaseName = undefined;
 }
 
-exports.open = async function (data) {
+exports.open = async function (options) {
   // called by switchTool when opening tool
-  g_mode = data.mode;
+  g_mode = options.mode;
   init();
-  g_initialPassword = data.password;
-  const html = fs.readFileSync(path.join(__dirname, "index.html"));
-  sendIpcToCoreRenderer("replace-inner-html", "#tools", html.toString());
+  g_inputPassword = options.inputPassword;
+  const data = fs.readFileSync(path.join(__dirname, "index.html"));
+  sendIpcToCoreRenderer("replace-inner-html", "#tools", data.toString());
 
   updateLocalizedText();
 
   sendIpcToRenderer(
     "show",
     g_mode,
-    data.filePaths &&
-      data.filePaths.length > 0 &&
-      data.filePaths[0] !== undefined
-      ? path.dirname(data.filePaths[0])
+    options.inputFilePaths &&
+      options.inputFilePaths.length > 0 &&
+      options.inputFilePaths[0] !== undefined
+      ? path.dirname(options.inputFilePaths[0])
       : appUtils.getDesktopFolderPath(),
     settings.canEditRars()
   );
 
   updateLocalizedText();
 
-  if (data.filePaths) {
-    for (let index = 0; index < data.filePaths.length; index++) {
-      await addFile(data.filePaths[index]);
+  if (options.inputFilePaths) {
+    for (let index = 0; index < options.inputFilePaths.length; index++) {
+      await addFile(options.inputFilePaths[index]);
     }
+  }
+  if (options.outputFolderPath) {
+    sendIpcToRenderer("change-output-folder", options.outputFolderPath);
+  }
+  if (options.outputFormat) {
+    sendIpcToRenderer("change-output-format", options.outputFormat);
   }
 };
 
@@ -582,7 +588,7 @@ function startFile(
       inputFilePath,
       inputFileType,
       g_mode === 0 ? tempFolderPath : g_creationTempFolderPath,
-      g_initialPassword,
+      g_inputPassword,
     ]);
   } else if (inputFileType === FileDataType.PDF) {
     sendIpcToRenderer(
@@ -614,7 +620,7 @@ function startFile(
         g_mode === 0 ? tempFolderPath : g_creationTempFolderPath,
         pdfExtractionMethod,
         _("tool-shared-modal-log-extracting-page") + ": ",
-        g_initialPassword
+        g_inputPassword
       );
     });
   } else {

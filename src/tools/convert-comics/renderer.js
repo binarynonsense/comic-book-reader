@@ -428,6 +428,12 @@ function initOnIpcCallbacks() {
     checkValidData();
   });
 
+  on("change-output-format", (format) => {
+    g_outputFormatSelect.value = format;
+    g_outputFormat = format;
+    checkValidData();
+  });
+
   /////////////////////////////////////////////////////////////////////////////
 
   on("modal-update-title-text", (text) => {

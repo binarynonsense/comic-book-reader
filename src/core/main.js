@@ -117,7 +117,7 @@ if (
 // parse command line arguments
 g_launchInfo.parsedArgs = require("minimist")(
   process.argv.slice(g_launchInfo.isRelease ? 1 : 2),
-  { boolean: ["dev"] }
+  { boolean: ["dev"], string: ["tool", "output-format", "output-folder"] }
 );
 g_launchInfo.isDev = g_launchInfo.parsedArgs["dev"] === true;
 // start logging
@@ -200,22 +200,32 @@ const createWindow = () => {
     // add extra divs after menuBar init, so its container is already created
     sendIpcToCoreRenderer("append-structure-divs");
     // check command line args and setup initial state
-    let inputFiles = [];
-    let inputFilesAndFolders = [];
+    let inputFilePaths = [];
+    let inputFileAndFolderPaths = [];
     g_launchInfo.parsedArgs["_"].forEach((path) => {
       if (fs.existsSync(path)) {
-        inputFilesAndFolders.push(path);
+        inputFileAndFolderPaths.push(path);
         if (!fs.lstatSync(path).isDirectory()) {
           // TODO: add only valid formats?
-          inputFiles.push(path);
+          inputFilePaths.push(path);
         }
       }
     });
-    let isValidTool = (name) => {
+    const isValidTool = (name) => {
       if (name && typeof name === "string") {
-        const validToolNames = ["cc"];
-        for (let index = 0; index < validToolNames.length; index++) {
-          if (validToolNames[index] === name) return true;
+        const validValues = ["cc"];
+        for (let index = 0; index < validValues.length; index++) {
+          if (validValues[index] === name) return true;
+        }
+      }
+      return false;
+    };
+    const isValidFormat = (name) => {
+      if (name && typeof name === "string") {
+        const validValues = ["cbz", "cb7", "epub", "pdf"];
+        if (settings.canEditRars()) validValues.push("cbr");
+        for (let index = 0; index < validValues.length; index++) {
+          if (validValues[index] === name) return true;
         }
       }
       return false;
@@ -229,16 +239,40 @@ const createWindow = () => {
       // start tool
       switch (g_launchInfo.parsedArgs["tool"]) {
         case "cc":
-          // TODO: other options like output-format or output-folder
-          switchTool("tool-convert-comics", { mode: 0, filePaths: inputFiles });
+          {
+            let options = { mode: 0, inputFilePaths: inputFilePaths };
+            const outputFolderPath = g_launchInfo.parsedArgs["output-folder"];
+            if (
+              outputFolderPath &&
+              typeof outputFolderPath === "string" &&
+              fs.existsSync(outputFolderPath) &&
+              fs.lstatSync(outputFolderPath).isDirectory()
+            ) {
+              options.outputFolderPath = outputFolderPath;
+            }
+            const outputFormat = g_launchInfo.parsedArgs["output-format"];
+            if (
+              outputFormat &&
+              typeof outputFormat === "string" &&
+              isValidFormat(outputFormat)
+            ) {
+              options.outputFormat = outputFormat;
+            }
+            switchTool("tool-convert-comics", options);
+          }
           break;
       }
-    } else if (inputFiles.length > 1) {
-      switchTool("tool-convert-comics", { mode: 0, filePaths: inputFiles });
+    } else if (inputFilePaths.length > 1) {
+      switchTool("tool-convert-comics", {
+        mode: 0,
+        inputFilePaths: inputFilePaths,
+      });
     } else {
       // start reader, open file if available
       reader.init(
-        inputFilesAndFolders.length > 0 ? inputFilesAndFolders[0] : undefined,
+        inputFileAndFolderPaths.length > 0
+          ? inputFileAndFolderPaths[0]
+          : undefined,
         true
       );
     }

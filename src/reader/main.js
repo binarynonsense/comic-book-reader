@@ -2097,8 +2097,8 @@ exports.onMenuConvertFile = function () {
   if (g_fileData.path !== undefined) {
     core.switchTool("tool-convert-comics", {
       mode: 0,
-      filePaths: [g_fileData.path],
-      password: g_fileData.password,
+      inputFilePaths: [g_fileData.path],
+      inputPassword: g_fileData.password,
     });
   }
   sendIpcToPreload("update-menubar");
