@@ -118,6 +118,7 @@ async function extractRar(filePath, tempFolderPath, password) {
     [...files]; // lazy initialization? the files are not extracted if I don't do this
     return true;
   } catch (error) {
+    log.error(error);
     return false;
   }
 }
