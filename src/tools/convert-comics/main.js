@@ -62,7 +62,7 @@ exports.open = async function (options) {
   // called by switchTool when opening tool
   g_mode = options.mode;
   init();
-  g_inputPassword = options.inputPassword;
+  if (options.inputPassword) g_inputPassword = options.inputPassword;
   const data = fs.readFileSync(path.join(__dirname, "index.html"));
   sendIpcToCoreRenderer("replace-inner-html", "#tools", data.toString());
 
