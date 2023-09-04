@@ -233,7 +233,7 @@ const createWindow = () => {
           switchTool("tool-convert-comics", { mode: 0, filePaths: inputFiles });
           break;
       }
-    } else if (inputFiles.length > 0) {
+    } else if (inputFiles.length > 1) {
       switchTool("tool-convert-comics", { mode: 0, filePaths: inputFiles });
     } else {
       // start reader, open file if available
