@@ -234,6 +234,13 @@ function initOnIpcCallbacks() {
     sendIpcToRenderer("change-output-folder", folderPath);
   });
 
+  on("dragged-files", async (filePaths) => {
+    for (let index = 0; index < filePaths.length; index++) {
+      const filePath = filePaths[index];
+      await addFile(filePath);
+    }
+  });
+
   /////////////////////////
 
   on("cancel", () => {

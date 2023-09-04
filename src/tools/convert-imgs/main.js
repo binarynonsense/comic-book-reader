@@ -110,7 +110,7 @@ function initOnIpcCallbacks() {
     contextMenu.show("minimal", params, onCloseClicked);
   });
 
-  on("choose-file", (lastFilePath) => {
+  on("choose-file", async (lastFilePath) => {
     let defaultPath;
     if (lastFilePath) defaultPath = path.dirname(lastFilePath);
     try {
@@ -136,11 +136,7 @@ function initOnIpcCallbacks() {
       }
       for (let index = 0; index < filePathsList.length; index++) {
         const filePath = filePathsList[index];
-        let stats = fs.statSync(filePath);
-        if (!stats.isFile()) continue; // avoid folders accidentally getting here
-        (async () => {
-          sendIpcToRenderer("add-file", filePath);
-        })();
+        await addFile(filePath);
       }
     } catch (err) {
       // TODO: do something?
@@ -162,6 +158,13 @@ function initOnIpcCallbacks() {
     if (folderPath === undefined || folderPath === "") return;
 
     sendIpcToRenderer("change-output-folder", folderPath);
+  });
+
+  on("dragged-files", async (filePaths) => {
+    for (let index = 0; index < filePaths.length; index++) {
+      const filePath = filePaths[index];
+      await addFile(filePath);
+    }
   });
 
   /////////////////////////
@@ -274,6 +277,22 @@ function initHandleIpcCallbacks() {
 ///////////////////////////////////////////////////////////////////////////////
 // TOOL ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
+
+async function addFile(filePath) {
+  let stats = fs.statSync(filePath);
+  if (!stats.isFile()) return; // avoid folders accidentally getting here
+  let fileExtension = path.extname(filePath).toLowerCase();
+  if (
+    fileExtension === "." + FileExtension.JPG ||
+    fileExtension === "." + FileExtension.JPEG ||
+    fileExtension === "." + FileExtension.PNG ||
+    fileExtension === "." + FileExtension.WEBP ||
+    fileExtension === "." + FileExtension.BMP ||
+    fileExtension === "." + FileExtension.AVIF
+  ) {
+    sendIpcToRenderer("add-file", filePath);
+  }
+}
 
 function stopError(error) {
   fileUtils.cleanUpTempFolder();

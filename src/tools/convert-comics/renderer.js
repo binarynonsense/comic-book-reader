@@ -807,6 +807,23 @@ export function onInputEvent(type, event) {
   if (getOpenModal()) {
     modals.onInputEvent(getOpenModal(), type, event);
     return;
+  } else {
+    switch (type) {
+      case "body.ondrop":
+        {
+          let filePaths = [];
+          for (
+            let index = 0;
+            index < event.dataTransfer.files.length;
+            index++
+          ) {
+            const file = event.dataTransfer.files[index];
+            filePaths.push(file.path);
+          }
+          sendIpcToMain("dragged-files", filePaths);
+        }
+        break;
+    }
   }
 }
 
