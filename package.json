@@ -38,8 +38,7 @@
     "sharp:windows": "del-cli ./node_modules/sharp && npm install --platform=win32 --arch=x64 sharp",
     "sharp:linux": "del-cli ./node_modules/sharp && npm install --platform=linux --arch=x64 sharp",
     "7zbin:linux": "shx chmod +x node_modules/7zip-bin/linux/x64/7za",
-    "licenses": "license-checker > licenses/node_modules.txt && shx sed -i 's/path.*node_modules/path: node_modules/' ./licenses/node_modules.txt && shx sed -i 's/licenseFile.*node_modules/licenseFile: node_modules/' ./licenses/node_modules.txt",
-    "test": "electron . --dev --tool cc --output-folder /media/alvaro/Windows-SSD/alvaro/_virtualbox/_shared/_ACBR_Tests/CONVERTED --output-format cbr  /media/alvaro/Windows-SSD/alvaro/_virtualbox/_shared/_ACBR_Tests/_comics/one_of_each_small_5pgs/cb7_test.cb7 '/media/alvaro/Windows-SSD/alvaro/_virtualbox/_shared/_ACBR_Tests/_comics/one_of_each_small_5pgs/pdf_test.pdf'"
+    "licenses": "license-checker > licenses/node_modules.txt && shx sed -i 's/path.*node_modules/path: node_modules/' ./licenses/node_modules.txt && shx sed -i 's/licenseFile.*node_modules/licenseFile: node_modules/' ./licenses/node_modules.txt"
   },
   "devDependencies": {
     "del-cli": "^5.0.1",
