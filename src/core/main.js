@@ -124,7 +124,8 @@ g_launchInfo.isDev = g_launchInfo.parsedArgs["dev"] === true;
 log.init(g_launchInfo);
 log.debug("dev mode: " + g_launchInfo.isDev);
 log.debug("release version: " + g_launchInfo.isRelease);
-
+// show vips warnings from sharp only in dev mode
+if (!g_launchInfo.isDev) process.env.VIPS_WARNING = 1;
 // init window
 const createWindow = () => {
   // get screen size
