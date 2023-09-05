@@ -125,6 +125,7 @@ exports.setCanTweakUI = setCanTweakUI = function (isEnabled) {
   Menu.getApplicationMenu().getMenuItemById("toolbar").enabled = isEnabled;
   Menu.getApplicationMenu().getMenuItemById("page-number").enabled = isEnabled;
   Menu.getApplicationMenu().getMenuItemById("clock").enabled = isEnabled;
+  Menu.getApplicationMenu().getMenuItemById("battery").enabled = isEnabled;
   Menu.getApplicationMenu().getMenuItemById("audio-player").enabled = isEnabled;
 };
 
