@@ -684,28 +684,50 @@ export function onInputEvent(type, event) {
 }
 
 function inputScrollPageUp(checkEdge = true, factor = 1) {
-  let container = document.querySelector("#reader");
-  if (g_turnPageOnScrollBoundary && checkEdge && container.scrollTop <= 0) {
-    inputGoToPrevPage();
-  } else {
-    let amount = (factor * container.offsetHeight) / 5;
-    document.querySelector("#reader").scrollBy(0, -amount);
+  const reader = document.getElementById("reader");
+  const container = document.getElementById("pages-container");
+  const image = container?.firstChild;
+  if (reader && container && image) {
+    if (g_turnPageOnScrollBoundary && checkEdge && reader.scrollTop <= 0) {
+      inputGoToPrevPage();
+    } else {
+      const cs = getComputedStyle(reader);
+      const readerHeight = reader.offsetHeight - parseFloat(cs.marginBottom);
+      const scrollableHeight = Math.ceil(image.offsetHeight - readerHeight);
+      if (scrollableHeight > 0) {
+        const amount = Math.max(
+          readerHeight / 100,
+          (factor * scrollableHeight) / 5
+        );
+        reader.scrollBy(0, -amount);
+      }
+    }
   }
 }
 
 function inputScrollPageDown(checkEdge = true, factor = 1) {
-  let container = document.querySelector("#reader");
-  if (
-    g_turnPageOnScrollBoundary &&
-    checkEdge &&
-    Math.abs(
-      container.scrollHeight - container.scrollTop - container.clientHeight
-    ) < 1
-  ) {
-    inputGoToNextPage();
-  } else {
-    let amount = (factor * container.offsetHeight) / 5;
-    container.scrollBy(0, amount);
+  const reader = document.getElementById("reader");
+  const container = document.getElementById("pages-container");
+  const image = container.firstChild;
+  if (reader && container && image) {
+    if (
+      g_turnPageOnScrollBoundary &&
+      checkEdge &&
+      Math.abs(reader.scrollHeight - reader.scrollTop - reader.clientHeight) < 1
+    ) {
+      inputGoToNextPage();
+    } else {
+      const cs = getComputedStyle(reader);
+      const readerHeight = reader.offsetHeight - parseFloat(cs.marginBottom);
+      const scrollableHeight = Math.ceil(image.offsetHeight - readerHeight);
+      if (scrollableHeight > 0) {
+        const amount = Math.max(
+          readerHeight / 100,
+          (factor * scrollableHeight) / 5
+        );
+        reader.scrollBy(0, amount);
+      }
+    }
   }
 }
 
