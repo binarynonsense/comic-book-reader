@@ -539,9 +539,10 @@ export function setFilterClass(element) {
 let g_pagesContainerDiv;
 
 export function onInputEvent(type, event) {
-  if (!g_pagesContainerDiv)
+  if (!g_pagesContainerDiv) {
     g_pagesContainerDiv = document.getElementById("pages-container");
-  let fileOpen = g_pagesContainerDiv.innerHTML !== "";
+  }
+  let fileOpen = g_pagesContainerDiv && g_pagesContainerDiv.innerHTML !== "";
   switch (type) {
     case "onkeydown":
       {
@@ -754,9 +755,10 @@ function inputOpenFileBrowser() {
 export function onGamepadPolled() {
   const deltaTime = gamepads.getDeltaTime();
   const scrollFactor = deltaTime * 3;
-  if (!g_pagesContainerDiv)
+  if (!g_pagesContainerDiv) {
     g_pagesContainerDiv = document.getElementById("pages-container");
-  let fileOpen = g_pagesContainerDiv.innerHTML !== "";
+  }
+  let fileOpen = g_pagesContainerDiv && g_pagesContainerDiv.innerHTML !== "";
   if (fileOpen) {
     // zoom in/ out
     if (gamepads.getButton(gamepads.Buttons.LT)) {
