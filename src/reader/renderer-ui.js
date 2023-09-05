@@ -536,55 +536,64 @@ export function setFilterClass(element) {
 // EVENT LISTENERS ////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+let g_pagesContainerDiv;
+
 export function onInputEvent(type, event) {
+  if (!g_pagesContainerDiv)
+    g_pagesContainerDiv = document.getElementById("pages-container");
+  let fileOpen = g_pagesContainerDiv.innerHTML !== "";
   switch (type) {
     case "onkeydown":
       {
-        if (event.key == "PageDown" || event.key == "ArrowRight") {
-          if (!event.repeat) {
-            inputGoToNextPage();
+        if (fileOpen) {
+          if (event.key == "PageDown" || event.key == "ArrowRight") {
+            if (!event.repeat) {
+              inputGoToNextPage();
+              event.stopPropagation();
+            }
             event.stopPropagation();
-          }
-          event.stopPropagation();
-        } else if (event.key == "PageUp" || event.key == "ArrowLeft") {
-          if (!event.repeat) {
-            inputGoToPrevPage();
+          } else if (event.key == "PageUp" || event.key == "ArrowLeft") {
+            if (!event.repeat) {
+              inputGoToPrevPage();
+              event.stopPropagation();
+            }
+          } else if (event.key == "Home") {
+            if (!event.repeat) inputGoToFirstPage();
+          } else if (event.key == "End") {
+            if (!event.repeat) inputGoToLastPage();
+          } else if (event.key == "ArrowDown" || event.key == "s") {
+            inputScrollPageDown();
             event.stopPropagation();
+          } else if (event.key == "ArrowUp" || event.key == "w") {
+            inputScrollPageUp();
+            event.stopPropagation();
+          } else if (event.key == "a") {
+            let container = document.querySelector("#reader");
+            let amount = container.offsetWidth / 5;
+            container.scrollBy(-amount, 0);
+            event.stopPropagation();
+          } else if (event.key == "d") {
+            let container = document.querySelector("#reader");
+            let amount = container.offsetWidth / 5;
+            container.scrollBy(amount, 0);
+            event.stopPropagation();
+          } else if (event.ctrlKey && event.key === "+") {
+            if (!event.repeat) {
+              inputZoomIn();
+              event.stopPropagation();
+            }
+          } else if (event.ctrlKey && event.key === "-") {
+            if (!event.repeat) {
+              inputZoomOut();
+              event.stopPropagation();
+            }
+          } else if (event.ctrlKey && event.key == "0") {
+            if (!event.repeat) inputZoomReset();
           }
-        } else if (event.key == "Home") {
-          if (!event.repeat) inputGoToFirstPage();
-        } else if (event.key == "End") {
-          if (!event.repeat) inputGoToLastPage();
-        } else if (event.key == "ArrowDown" || event.key == "s") {
-          inputScrollPageDown();
-          event.stopPropagation();
-        } else if (event.key == "ArrowUp" || event.key == "w") {
-          inputScrollPageUp();
-          event.stopPropagation();
-        } else if (event.key == "a") {
-          let container = document.querySelector("#reader");
-          let amount = container.offsetWidth / 5;
-          container.scrollBy(-amount, 0);
-          event.stopPropagation();
-        } else if (event.key == "d") {
-          let container = document.querySelector("#reader");
-          let amount = container.offsetWidth / 5;
-          container.scrollBy(amount, 0);
-          event.stopPropagation();
-        } else if (event.key == "Escape") {
+        }
+
+        if (event.key == "Escape") {
           if (!event.repeat) sendIpcToMain("escape-pressed");
-        } else if (event.ctrlKey && event.key === "+") {
-          if (!event.repeat) {
-            inputZoomIn();
-            event.stopPropagation();
-          }
-        } else if (event.ctrlKey && event.key === "-") {
-          if (!event.repeat) {
-            inputZoomOut();
-            event.stopPropagation();
-          }
-        } else if (event.ctrlKey && event.key == "0") {
-          if (!event.repeat) inputZoomReset();
         } else if (
           event.ctrlKey &&
           event.shiftKey &&
@@ -597,16 +606,18 @@ export function onInputEvent(type, event) {
 
     case "onclick":
       {
-        if (
-          event.target.classList.contains("page") ||
-          event.target.id === "page-canvas" ||
-          event.target.classList.contains("epub-view") ||
-          event.target.id === "pages-container" ||
-          event.target.id === "reader"
-        ) {
-          const mouseX = event.clientX;
-          const bodyX = document.body.clientWidth;
-          sendIpcToMain("mouse-click", mouseX, bodyX);
+        if (fileOpen) {
+          if (
+            event.target.classList.contains("page") ||
+            event.target.id === "page-canvas" ||
+            event.target.classList.contains("epub-view") ||
+            event.target.id === "pages-container" ||
+            event.target.id === "reader"
+          ) {
+            const mouseX = event.clientX;
+            const bodyX = document.body.clientWidth;
+            sendIpcToMain("mouse-click", mouseX, bodyX);
+          }
         }
       }
       // mouse right click: document.oncontextmenu
@@ -641,27 +652,29 @@ export function onInputEvent(type, event) {
 
     case "wheel":
       {
-        if (event.ctrlKey) {
-          if (event.deltaY < 0) {
-            inputZoomIn();
-          } else if (event.deltaY > 0) {
-            inputZoomOut();
-          }
-        } else if (g_turnPageOnScrollBoundary) {
-          let container = document.querySelector("#reader");
-          if (
-            event.deltaY > 0 &&
-            Math.abs(
-              container.scrollHeight -
-                container.scrollTop -
-                container.clientHeight
-            ) < 1
-          ) {
-            // reached bottom
-            inputGoToNextPage();
-          } else if (event.deltaY < 0 && container.scrollTop <= 0) {
-            // reached top
-            inputGoToPrevPage();
+        if (fileOpen) {
+          if (event.ctrlKey) {
+            if (event.deltaY < 0) {
+              inputZoomIn();
+            } else if (event.deltaY > 0) {
+              inputZoomOut();
+            }
+          } else if (g_turnPageOnScrollBoundary) {
+            let container = document.querySelector("#reader");
+            if (
+              event.deltaY > 0 &&
+              Math.abs(
+                container.scrollHeight -
+                  container.scrollTop -
+                  container.clientHeight
+              ) < 1
+            ) {
+              // reached bottom
+              inputGoToNextPage();
+            } else if (event.deltaY < 0 && container.scrollTop <= 0) {
+              // reached top
+              inputGoToPrevPage();
+            }
           }
         }
       }
@@ -741,43 +754,49 @@ function inputOpenFileBrowser() {
 export function onGamepadPolled() {
   const deltaTime = gamepads.getDeltaTime();
   const scrollFactor = deltaTime * 3;
-  // zoom in/ out
-  if (gamepads.getButton(gamepads.Buttons.LT)) {
-    inputZoomOut(deltaTime * 10);
-  } else if (gamepads.getButton(gamepads.Buttons.RT)) {
-    inputZoomIn(deltaTime * 10);
+  if (!g_pagesContainerDiv)
+    g_pagesContainerDiv = document.getElementById("pages-container");
+  let fileOpen = g_pagesContainerDiv.innerHTML !== "";
+  if (fileOpen) {
+    // zoom in/ out
+    if (gamepads.getButton(gamepads.Buttons.LT)) {
+      inputZoomOut(deltaTime * 10);
+    } else if (gamepads.getButton(gamepads.Buttons.RT)) {
+      inputZoomIn(deltaTime * 10);
+    }
+    // page up / down
+    if (gamepads.getAxis(gamepads.Axes.RS_Y) > 0.5) {
+      inputScrollPageDown(
+        gamepads.getPrevAxis(gamepads.Axes.RS_Y) < 0.5,
+        scrollFactor
+      );
+    } else if (gamepads.getAxis(gamepads.Axes.RS_Y) < -0.5) {
+      inputScrollPageUp(
+        gamepads.getPrevAxis(gamepads.Axes.RS_Y) > -0.5,
+        scrollFactor
+      );
+    }
+    // next / prev page
+    if (gamepads.getButtonDown(gamepads.Buttons.LB)) {
+      inputGoToPrevPage();
+    } else if (gamepads.getButtonDown(gamepads.Buttons.RB)) {
+      inputGoToNextPage();
+    }
+    // last / first page
+    if (gamepads.getButtonDown(gamepads.Buttons.A)) {
+      inputGoToLastPage();
+    } else if (gamepads.getButtonDown(gamepads.Buttons.Y)) {
+      inputGoToFirstPage();
+    }
+    // change scale mode
+    if (gamepads.getButtonDown(gamepads.Buttons.RS_PRESS)) {
+      inputSwitchScaleMode();
+    }
   }
-  // page up / down
-  if (gamepads.getAxis(gamepads.Axes.RS_Y) > 0.5) {
-    inputScrollPageDown(
-      gamepads.getPrevAxis(gamepads.Axes.RS_Y) < 0.5,
-      scrollFactor
-    );
-  } else if (gamepads.getAxis(gamepads.Axes.RS_Y) < -0.5) {
-    inputScrollPageUp(
-      gamepads.getPrevAxis(gamepads.Axes.RS_Y) > -0.5,
-      scrollFactor
-    );
-  }
-  // next / prev page
-  if (gamepads.getButtonDown(gamepads.Buttons.LB)) {
-    inputGoToPrevPage();
-  } else if (gamepads.getButtonDown(gamepads.Buttons.RB)) {
-    inputGoToNextPage();
-  }
-  // last / first page
-  if (gamepads.getButtonDown(gamepads.Buttons.A)) {
-    inputGoToLastPage();
-  } else if (gamepads.getButtonDown(gamepads.Buttons.Y)) {
-    inputGoToFirstPage();
-  }
+
   // toggle full screen
   if (gamepads.getButtonDown(gamepads.Buttons.LS_PRESS)) {
     inputToggleFullScreen();
-  }
-  // change scale mode
-  if (gamepads.getButtonDown(gamepads.Buttons.RS_PRESS)) {
-    inputSwitchScaleMode();
   }
   // // open file browser
   // //if (
