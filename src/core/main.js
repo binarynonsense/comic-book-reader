@@ -264,6 +264,9 @@ const createWindow = () => {
           break;
       }
     } else if (inputFilePaths.length > 1) {
+      // start reader with no file open
+      reader.init(undefined, false);
+      // start tool
       switchTool("tool-convert-comics", {
         mode: 0,
         inputFilePaths: inputFilePaths,
