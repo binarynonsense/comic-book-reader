@@ -28,8 +28,6 @@ let g_mouseCursorHideTime = 3500;
 let g_turnPageOnScrollBoundary = true;
 let g_filterMode = 0;
 
-let g_readerDiv;
-
 ///////////////////////////////////////////////////////////////////////////////
 // IPC RECEIVE ////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -741,55 +739,52 @@ function inputOpenFileBrowser() {
 ///////////////////////////////////////////////////////////////////////////////
 
 export function onGamepadPolled() {
-  if (!g_readerDiv) g_readerDiv = document.getElementById("reader");
-  if (!g_readerDiv.classList.contains("set-display-none")) {
-    const deltaTime = gamepads.getDeltaTime();
-    const scrollFactor = deltaTime * 3;
-    // zoom in/ out
-    if (gamepads.getButton(gamepads.Buttons.LT)) {
-      inputZoomOut(deltaTime * 10);
-    } else if (gamepads.getButton(gamepads.Buttons.RT)) {
-      inputZoomIn(deltaTime * 10);
-    }
-    // page up / down
-    if (gamepads.getAxis(gamepads.Axes.RS_Y) > 0.5) {
-      inputScrollPageDown(
-        gamepads.getPrevAxis(gamepads.Axes.RS_Y) < 0.5,
-        scrollFactor
-      );
-    } else if (gamepads.getAxis(gamepads.Axes.RS_Y) < -0.5) {
-      inputScrollPageUp(
-        gamepads.getPrevAxis(gamepads.Axes.RS_Y) > -0.5,
-        scrollFactor
-      );
-    }
-    // next / prev page
-    if (gamepads.getButtonDown(gamepads.Buttons.LB)) {
-      inputGoToPrevPage();
-    } else if (gamepads.getButtonDown(gamepads.Buttons.RB)) {
-      inputGoToNextPage();
-    }
-    // last / first page
-    if (gamepads.getButtonDown(gamepads.Buttons.A)) {
-      inputGoToLastPage();
-    } else if (gamepads.getButtonDown(gamepads.Buttons.Y)) {
-      inputGoToFirstPage();
-    }
-    // toggle full screen
-    if (gamepads.getButtonDown(gamepads.Buttons.LS_PRESS)) {
-      inputToggleFullScreen();
-    }
-    // change scale mode
-    if (gamepads.getButtonDown(gamepads.Buttons.RS_PRESS)) {
-      inputSwitchScaleMode();
-    }
-    // // open file browser
-    // //if (
-    // // gamepads.getButtonDown(gamepads.Buttons.BACK)
-    // // ) {
-    // //   inputOpenFileBrowser();
-    // // }
+  const deltaTime = gamepads.getDeltaTime();
+  const scrollFactor = deltaTime * 3;
+  // zoom in/ out
+  if (gamepads.getButton(gamepads.Buttons.LT)) {
+    inputZoomOut(deltaTime * 10);
+  } else if (gamepads.getButton(gamepads.Buttons.RT)) {
+    inputZoomIn(deltaTime * 10);
   }
+  // page up / down
+  if (gamepads.getAxis(gamepads.Axes.RS_Y) > 0.5) {
+    inputScrollPageDown(
+      gamepads.getPrevAxis(gamepads.Axes.RS_Y) < 0.5,
+      scrollFactor
+    );
+  } else if (gamepads.getAxis(gamepads.Axes.RS_Y) < -0.5) {
+    inputScrollPageUp(
+      gamepads.getPrevAxis(gamepads.Axes.RS_Y) > -0.5,
+      scrollFactor
+    );
+  }
+  // next / prev page
+  if (gamepads.getButtonDown(gamepads.Buttons.LB)) {
+    inputGoToPrevPage();
+  } else if (gamepads.getButtonDown(gamepads.Buttons.RB)) {
+    inputGoToNextPage();
+  }
+  // last / first page
+  if (gamepads.getButtonDown(gamepads.Buttons.A)) {
+    inputGoToLastPage();
+  } else if (gamepads.getButtonDown(gamepads.Buttons.Y)) {
+    inputGoToFirstPage();
+  }
+  // toggle full screen
+  if (gamepads.getButtonDown(gamepads.Buttons.LS_PRESS)) {
+    inputToggleFullScreen();
+  }
+  // change scale mode
+  if (gamepads.getButtonDown(gamepads.Buttons.RS_PRESS)) {
+    inputSwitchScaleMode();
+  }
+  // // open file browser
+  // //if (
+  // // gamepads.getButtonDown(gamepads.Buttons.BACK)
+  // // ) {
+  // //   inputOpenFileBrowser();
+  // // }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
