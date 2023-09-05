@@ -192,7 +192,7 @@ const createWindow = () => {
       );
     }
     fileUtils.setTempFolderParentPath(tempFolderPath);
-    fileFormats.init(app.isPackaged);
+    fileFormats.init(g_launchInfo.isRelease);
     history.init(settings.getValue("history_capacity"));
     i18n.init();
     themes.init();
