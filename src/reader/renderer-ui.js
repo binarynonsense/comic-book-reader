@@ -7,7 +7,7 @@
 
 import { on, sendIpcToMain } from "./renderer.js";
 import * as modals from "../shared/renderer/modals.js";
-import { GamepadButtons, GamepadAxes } from "../shared/renderer/constants.js";
+import * as gamepads from "../shared/renderer/gamepads.js";
 
 export function initIpc() {
   initOnIpcCallbacks();
@@ -740,105 +740,56 @@ function inputOpenFileBrowser() {
 // GAMEPAD ////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-// ref: https://developer.mozilla.org/en-US/docs/Web/API/Gamepad_API/Using_the_Gamepad_API
-
-let g_gamepadsAnimationFrame;
-let GamepadButtonsPrev;
-let g_gamepadsAnimationLastTime;
-
-window.addEventListener("gamepadconnected", (e) => {
-  const gp = navigator.getGamepads()[e.gamepad.index];
-  console.log(
-    `gamepad connected [${gp.index}|${gp.id}; ${gp.buttons.length} buttons; ${gp.axes.length} axes]`
-  );
-  g_gamepadsAnimationLastTime = performance.now();
-  GamepadButtonsPrev = [...gp.buttons];
-  pollGamepads();
-});
-
-window.addEventListener("gamepaddisconnected", (e) => {
-  console.log("gamepad disconnected");
-  GamepadButtonsPrev = undefined;
-  cancelAnimationFrame(g_gamepadsAnimationFrame);
-});
-
-function pollGamepads() {
-  const deltaTime = (performance.now() - g_gamepadsAnimationLastTime) / 1000;
-
-  const gamepads = navigator.getGamepads();
-  if (!gamepads || !gamepads[0]) return;
-  const selectedGamepad = gamepads[0];
+export function onGamepadPolled() {
   if (!g_readerDiv) g_readerDiv = document.getElementById("reader");
   if (!g_readerDiv.classList.contains("set-display-none")) {
+    const deltaTime = gamepads.getDeltaTime();
     const scrollFactor = deltaTime * 3;
     // zoom in/ out
-    if (selectedGamepad.buttons[GamepadButtons.LT].pressed) {
+    if (gamepads.getButton(gamepads.Buttons.LT)) {
       inputZoomOut(deltaTime * 10);
-    } else if (selectedGamepad.buttons[GamepadButtons.RT].pressed) {
+    } else if (gamepads.getButton(gamepads.Buttons.RT)) {
       inputZoomIn(deltaTime * 10);
     }
     // page up / down
-    if (selectedGamepad.axes[GamepadAxes.RS_Y] > 0.5) {
+    if (gamepads.getAxis(gamepads.Axes.RS_Y) > 0.5) {
       inputScrollPageDown(
-        !GamepadButtonsPrev[GamepadButtons.A].pressed,
+        gamepads.getPrevAxis(gamepads.Axes.RS_Y) < 0.5,
         scrollFactor
       );
-    } else if (selectedGamepad.axes[GamepadAxes.RS_Y] < -0.5) {
+    } else if (gamepads.getAxis(gamepads.Axes.RS_Y) < -0.5) {
       inputScrollPageUp(
-        !GamepadButtonsPrev[GamepadButtons.Y].pressed,
+        gamepads.getPrevAxis(gamepads.Axes.RS_Y) > -0.5,
         scrollFactor
       );
     }
     // next / prev page
-    if (
-      selectedGamepad.buttons[GamepadButtons.LB].pressed &&
-      !GamepadButtonsPrev[GamepadButtons.LB].pressed
-    ) {
+    if (gamepads.getButtonDown(gamepads.Buttons.LB)) {
       inputGoToPrevPage();
-    } else if (
-      selectedGamepad.buttons[GamepadButtons.RB].pressed &&
-      !GamepadButtonsPrev[GamepadButtons.RB].pressed
-    ) {
+    } else if (gamepads.getButtonDown(gamepads.Buttons.RB)) {
       inputGoToNextPage();
     }
     // last / first page
-    if (
-      selectedGamepad.buttons[GamepadButtons.A].pressed &&
-      !GamepadButtonsPrev[GamepadButtons.A].pressed
-    ) {
+    if (gamepads.getButtonDown(gamepads.Buttons.A)) {
       inputGoToLastPage();
-    } else if (
-      selectedGamepad.buttons[GamepadButtons.Y].pressed &&
-      !GamepadButtonsPrev[GamepadButtons.Y].pressed
-    ) {
+    } else if (gamepads.getButtonDown(gamepads.Buttons.Y)) {
       inputGoToFirstPage();
     }
     // toggle full screen
-    if (
-      selectedGamepad.buttons[GamepadButtons.LS_PRESS].pressed &&
-      !GamepadButtonsPrev[GamepadButtons.LS_PRESS].pressed
-    ) {
+    if (gamepads.getButtonDown(gamepads.Buttons.LS_PRESS)) {
       inputToggleFullScreen();
     }
     // change scale mode
-    if (
-      selectedGamepad.buttons[GamepadButtons.RS_PRESS].pressed &&
-      !GamepadButtonsPrev[GamepadButtons.RS_PRESS].pressed
-    ) {
+    if (gamepads.getButtonDown(gamepads.Buttons.RS_PRESS)) {
       inputSwitchScaleMode();
     }
-    // open file browser
-    //if (
-    //   selectedGamepad.buttons[GamepadButtons.BACK].pressed &&
-    //   !GamepadButtonsPrev[GamepadButtons.BACK].pressed
-    // ) {
-    //   inputOpenFileBrowser();
-    // }
+    // // open file browser
+    // //if (
+    // // gamepads.getButtonDown(gamepads.Buttons.BACK)
+    // // ) {
+    // //   inputOpenFileBrowser();
+    // // }
   }
-  // set up next frame //
-  GamepadButtonsPrev = [...selectedGamepad.buttons];
-  g_gamepadsAnimationLastTime = performance.now();
-  g_gamepadsAnimationFrame = requestAnimationFrame(pollGamepads);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

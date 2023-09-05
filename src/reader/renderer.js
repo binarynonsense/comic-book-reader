@@ -12,6 +12,7 @@ import {
   updatePageInfo,
   onInputEvent as uiOnInputEvent,
   getOpenModal,
+  onGamepadPolled as uiOnGamepadPolled,
 } from "./renderer-ui.js";
 import {
   initIpc as pdfInitIpc,
@@ -124,4 +125,16 @@ export function onContextMenu(params) {
     return;
   }
   sendIpcToMain("show-context-menu", params);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// GAMEPAD ////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+export function onGamepadPolled() {
+  // if (getOpenModal()) {
+  //   modalOnGamepadPolled(getOpenModal());
+  //   return;
+  // }
+  uiOnGamepadPolled();
 }

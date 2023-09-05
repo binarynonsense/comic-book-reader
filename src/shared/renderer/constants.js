@@ -47,30 +47,3 @@ export let FileDataType = {
   SEVENZIP: "7z",
   WWW: "www",
 };
-
-export let GamepadButtons = {
-  A: 0,
-  B: 1,
-  X: 2,
-  Y: 3,
-  LB: 4,
-  RB: 5,
-  LT: 6,
-  RT: 7,
-  BACK: 8,
-  START: 9,
-  LS_PRESS: 10,
-  RS_PRESS: 11,
-  DPAD_UP: 12,
-  DPAD_DOWN: 13,
-  DPAD_LEFT: 14,
-  DPAD_RIGHT: 15,
-  GUIDE: 16,
-};
-
-export let GamepadAxes = {
-  LS_X: 0,
-  LS_Y: 1,
-  RS_X: 2,
-  RS_Y: 3,
-};

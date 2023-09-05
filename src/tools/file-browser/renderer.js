@@ -9,10 +9,7 @@ import {
   sendIpcToMain as coreSendIpcToMain,
   sendIpcToMainAndWait as coreSendIpcToMainAndWait,
 } from "../../core/renderer.js";
-import {
-  GamepadButtons,
-  GamepadAxes,
-} from "../../shared/renderer/constants.js";
+import * as gamepads from "../../shared/renderer/gamepads.js";
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////

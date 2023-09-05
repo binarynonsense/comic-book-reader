@@ -26,6 +26,7 @@ import * as toolComicInfoXml from "../tools/comicinfoxml/renderer.js";
 import * as toolFileBrowser from "../tools/file-browser/renderer.js";
 
 import * as modals from "../shared/renderer/modals.js";
+import { init as initGamepad } from "../shared/renderer/gamepads.js";
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -257,4 +258,18 @@ document.addEventListener("wheel", function (event) {
   g_tools[g_currentTool].onInputEvent("wheel", event);
   event.stopPropagation();
   //event.preventDefault();
+});
+
+///////////////////////////////////////////////////////////////////////////////
+// GAMEPAD ////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+initGamepad(() => {
+  if (getOpenModal()) {
+    //modals.onGamepadPolled(getOpenModal());
+    return;
+  }
+  if (g_tools[g_currentTool].onGamepadPolled) {
+    g_tools[g_currentTool].onGamepadPolled();
+  }
 });
