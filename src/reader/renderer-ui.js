@@ -601,6 +601,8 @@ export function onInputEvent(type, event) {
           (event.key == "i" || event.key == "I")
         ) {
           sendIpcToMain("dev-tools-pressed");
+        } else if (event.key == "F1") {
+          inputOpenQuickMenu();
         }
       }
       break;
@@ -770,7 +772,7 @@ function inputOpenFileBrowser() {
   sendIpcToMain("open-file-browser-tool");
 }
 
-function inputOpenGamepadMenu() {
+function inputOpenQuickMenu() {
   sendIpcToMain("open-gamepad-menu");
 }
 
@@ -821,14 +823,13 @@ export function onGamepadPolled() {
       inputSwitchScaleMode();
     }
   }
-
   // toggle full screen
   if (gamepads.getButtonDown(gamepads.Buttons.LS_PRESS)) {
     inputToggleFullScreen();
   }
-  // open gamepad menu
+  // open quick menu
   if (gamepads.getButtonDown(gamepads.Buttons.START)) {
-    inputOpenGamepadMenu();
+    inputOpenQuickMenu();
   }
 }
 

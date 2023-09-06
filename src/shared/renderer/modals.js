@@ -138,6 +138,13 @@ export function close(modal) {
 export function onInputEvent(modalDiv, type, event) {
   switch (type) {
     case "onkeydown":
+      navigate(
+        modalDiv,
+        undefined,
+        event.key == "Enter",
+        event.key == "ArrowUp" || event.key == "ArrowLeft",
+        event.key == "ArrowDown" || event.key == "ArrowRight"
+      );
       // close x button
       {
         const button = modalDiv.querySelector(".modal-close-button");
@@ -176,8 +183,35 @@ export function onInputEvent(modalDiv, type, event) {
 }
 
 export function onGamepadPolled(modalDiv) {
+  const upPressed =
+    gamepads.getButtonDown(gamepads.Buttons.DPAD_UP) ||
+    gamepads.getButtonDown(gamepads.Buttons.DPAD_LEFT) ||
+    gamepads.getAxisDown(gamepads.Axes.RS_Y, -1) ||
+    gamepads.getAxisDown(gamepads.Axes.RS_X, -1);
+  const downPressed =
+    gamepads.getButtonDown(gamepads.Buttons.DPAD_DOWN) ||
+    gamepads.getButtonDown(gamepads.Buttons.DPAD_RIGHT) ||
+    gamepads.getAxisDown(gamepads.Axes.RS_Y, 1) ||
+    gamepads.getAxisDown(gamepads.Axes.RS_X, 1);
+
+  navigate(
+    modalDiv,
+    gamepads.getButtonDown(gamepads.Buttons.B),
+    gamepads.getButtonDown(gamepads.Buttons.A),
+    upPressed,
+    downPressed
+  );
+}
+
+function navigate(
+  modalDiv,
+  backPressed,
+  actionPressed,
+  upPressed,
+  downPressed
+) {
   // close x button
-  if (gamepads.getButtonDown(gamepads.Buttons.B)) {
+  if (backPressed) {
     const button = modalDiv.querySelector(".modal-close-button");
     if (!button.classList.contains("set-display-none")) {
       button.click();
@@ -192,7 +226,7 @@ export function onGamepadPolled(modalDiv) {
     }
   });
   const focusedElement = document.activeElement;
-  if (gamepads.getButtonDown(gamepads.Buttons.A)) {
+  if (actionPressed) {
     for (let index = 0; index < enabledButtons.length; index++) {
       const button = enabledButtons[index];
       if (button === focusedElement) {
@@ -201,16 +235,6 @@ export function onGamepadPolled(modalDiv) {
       }
     }
   } else {
-    const upPressed =
-      gamepads.getButtonDown(gamepads.Buttons.DPAD_UP) ||
-      gamepads.getButtonDown(gamepads.Buttons.DPAD_LEFT) ||
-      gamepads.getAxisDown(gamepads.Axes.RS_Y, -1) ||
-      gamepads.getAxisDown(gamepads.Axes.RS_X, -1);
-    const downPressed =
-      gamepads.getButtonDown(gamepads.Buttons.DPAD_DOWN) ||
-      gamepads.getButtonDown(gamepads.Buttons.DPAD_RIGHT) ||
-      gamepads.getAxisDown(gamepads.Axes.RS_Y, 1) ||
-      gamepads.getAxisDown(gamepads.Axes.RS_X, 1);
     if (upPressed || downPressed) {
       let buttonIndex = undefined;
       for (let index = 0; index < enabledButtons.length; index++) {
