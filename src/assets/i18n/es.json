@@ -599,5 +599,5 @@
   "tool-cix-search-api-key-file-path-info": "Un archivo de texto que contenga una clave API válida para {0}",
   "tool-cix-search-api-key-not-found": "Un archivo de texto que contenga una clave API válida para {0} debe ser asignado en la configuración de búsqueda.",
 
-  "tool-fb-title": "File Browser"
+  "tool-fb-title": "Explorador de Archivos"
 }
