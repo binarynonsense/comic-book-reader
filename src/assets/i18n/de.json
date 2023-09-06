@@ -1,7 +1,7 @@
 {
   "@metadata": {
     "authors": ["trzyglow"],
-    "last-updated": "2023-08-30",
+    "last-updated": "2023-09-06",
     "acbr-version": "3.2.4",
     "comments": "Deutsche Lokalisierung",
     "locale": "de",
@@ -111,7 +111,7 @@
   "ui-modal-title-filenotfound": "Datei nicht gefunden",
   "ui-modal-title-foldererror": "Ordnerfehler",
   "ui-modal-title-fileerror": "Dateifehler",
-  "[NEEDS TRANSLATION]ui-modal-title-quickmenu": "Quick Menu",
+  "ui-modal-title-quickmenu": "Schnellmenü",
   "ui-modal-info-invalidformat": "Kein gültiges Dateiformat",
   "ui-modal-info-couldntopen-rar": "Konnte RAR-Datei nicht öffnen",
   "ui-modal-info-couldntopen-zip": "Konnte ZIP-Datei nicht öffnen",
@@ -599,5 +599,5 @@
   "tool-cix-search-api-key-file-path-info": "Eine Textdatei welche einen gültigen API-Schlüssel für {0} enthält", 
   "tool-cix-search-api-key-not-found": "In den Sucheinstellungen muss eine Textdatei zugewiesen werden, die einen gültigen API-Schlüssel für {0} enthält.",
 
-  "[NEEDS TRANSLATION]tool-fb-title": "File Browser"
+  "tool-fb-title": "Dateibrowser"
 }
