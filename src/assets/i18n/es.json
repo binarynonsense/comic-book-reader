@@ -1,7 +1,7 @@
 {
   "@metadata": {
     "authors": ["Álvaro"],
-    "last-updated": "2023-08-30",
+    "last-updated": "2023-09-06",
     "acbr-version": "3.2.7",
     "comments": "",
     "locale": "es",
@@ -112,6 +112,7 @@
   "ui-modal-title-foldererror": "Error de Directorio",
   "ui-modal-title-fileerror": "Error de Archivo",
   "ui-modal-info-invalidformat": "Formato Inválido",
+  "ui-modal-title-quickmenu": "Menú Rápido",
   "ui-modal-info-couldntopen-rar": "No se pudo abrir el archivo RAR",
   "ui-modal-info-couldntopen-zip": "No se pudo abrir el archivo ZIP",
   "ui-modal-info-couldntopen-zip-aes": "No se pudo abrir el archivo ZIP\nEl cifrado AES para contraseñas no está soportado (sólo ZipCrypto)",
@@ -596,5 +597,7 @@
   "tool-cix-search-results-show-issue-info": "Mostrar Metadatos",
   "tool-cix-search-api-key-file-path": "Archivo de Clave API",
   "tool-cix-search-api-key-file-path-info": "Un archivo de texto que contenga una clave API válida para {0}",
-  "tool-cix-search-api-key-not-found": "Un archivo de texto que contenga una clave API válida para {0} debe ser asignado en la configuración de búsqueda."
+  "tool-cix-search-api-key-not-found": "Un archivo de texto que contenga una clave API válida para {0} debe ser asignado en la configuración de búsqueda.",
+
+  "tool-fb-title": "File Browser"
 }

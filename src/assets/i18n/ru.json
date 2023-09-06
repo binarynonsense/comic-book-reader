@@ -111,6 +111,7 @@
   "ui-modal-title-filenotfound": "Файл не найден",
   "ui-modal-title-foldererror": "Ошибка папки",
   "ui-modal-title-fileerror": "Ошибка файла",
+  "[NEEDS TRANSLATION]ui-modal-title-quickmenu": "Quick Menu",
   "ui-modal-info-invalidformat": "Недопустимый формат файла",
   "ui-modal-info-couldntopen-rar": "Не удалось открыть файл RAR",
   "ui-modal-info-couldntopen-zip": "Не удалось открыть файл ZIP",
@@ -596,5 +597,7 @@
   "tool-cix-search-results-show-issue-info": "Показать метаданные",
   "tool-cix-search-api-key-file-path": "Файл ключа API",
   "tool-cix-search-api-key-file-path-info": "Текстовый файл, содержащий действительный API-ключ для {0}",
-  "tool-cix-search-api-key-not-found": "В настройках поиска должен быть назначен текстовый файл, содержащий действительный API-ключ для {0}."
+  "tool-cix-search-api-key-not-found": "В настройках поиска должен быть назначен текстовый файл, содержащий действительный API-ключ для {0}.",
+
+  "[NEEDS TRANSLATION]tool-fb-title": "File Browser"
 }

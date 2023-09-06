@@ -111,6 +111,7 @@
   "ui-modal-title-filenotfound": "Datei nicht gefunden",
   "ui-modal-title-foldererror": "Ordnerfehler",
   "ui-modal-title-fileerror": "Dateifehler",
+  "[NEEDS TRANSLATION]ui-modal-title-quickmenu": "Quick Menu",
   "ui-modal-info-invalidformat": "Kein gültiges Dateiformat",
   "ui-modal-info-couldntopen-rar": "Konnte RAR-Datei nicht öffnen",
   "ui-modal-info-couldntopen-zip": "Konnte ZIP-Datei nicht öffnen",
@@ -596,5 +597,7 @@
   "tool-cix-search-results-show-issue-info": "Zeige Metadaten an",
   "tool-cix-search-api-key-file-path": "API-Schlüssel Datei",
   "tool-cix-search-api-key-file-path-info": "Eine Textdatei welche einen gültigen API-Schlüssel für {0} enthält", 
-  "tool-cix-search-api-key-not-found": "In den Sucheinstellungen muss eine Textdatei zugewiesen werden, die einen gültigen API-Schlüssel für {0} enthält."
+  "tool-cix-search-api-key-not-found": "In den Sucheinstellungen muss eine Textdatei zugewiesen werden, die einen gültigen API-Schlüssel für {0} enthält.",
+
+  "[NEEDS TRANSLATION]tool-fb-title": "File Browser"
 }
