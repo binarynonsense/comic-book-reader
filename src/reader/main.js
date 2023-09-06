@@ -526,8 +526,22 @@ function initOnIpcCallbacks() {
   });
 
   on("open-file-browser-tool", () => {
-    log.debug("open-file-browser-tool");
     core.switchTool("tool-file-browser", g_fileData);
+  });
+
+  on("open-gamepad-menu", () => {
+    sendIpcToRenderer(
+      "show-modal-gamepad-menu",
+      _("ui-modal-title-quickmenu"),
+      _("tool-shared-ui-back-to-reader"),
+      _("tool-fb-title"),
+      _("menu-file-openrecent-history"),
+      _("menu-file-quit")
+    );
+  });
+
+  on("quit", () => {
+    core.onMenuQuit();
   });
 }
 

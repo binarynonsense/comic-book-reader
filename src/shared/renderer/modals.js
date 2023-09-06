@@ -5,6 +5,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
+import * as gamepads from "./gamepads.js";
+
 export function show(options) {
   let modalDiv;
   if (isObject(options)) {
@@ -90,9 +92,9 @@ export function show(options) {
     }
     // bottom buttons
     if (options.buttons && Array.isArray(options.buttons)) {
-      let buttonsDiv = modalDiv.querySelector(".modal-buttons");
+      const buttonsDiv = modalDiv.querySelector(".modal-buttons");
       for (let index = 0; index < options.buttons.length; index++) {
-        let buttonOptions = options.buttons[index];
+        const buttonOptions = options.buttons[index];
         if (buttonOptions && isObject(buttonOptions)) {
           const buttonDiv = document.createElement("button");
           buttonDiv.className = "modal-button";
@@ -138,8 +140,8 @@ export function onInputEvent(modalDiv, type, event) {
     case "onkeydown":
       // close x button
       {
-        let button = modalDiv.querySelector(".modal-close-button");
-        let key = button.getAttribute("data-key");
+        const button = modalDiv.querySelector(".modal-close-button");
+        const key = button.getAttribute("data-key");
         if (
           key &&
           event.key &&
@@ -149,10 +151,10 @@ export function onInputEvent(modalDiv, type, event) {
           button.click();
         }
       }
-      let buttons = modalDiv.querySelectorAll(".modal-button");
       // bottom buttons
+      const buttons = modalDiv.querySelectorAll(".modal-button");
       buttons.forEach((button) => {
-        let key = button.getAttribute("data-key");
+        const key = button.getAttribute("data-key");
         if (
           key &&
           event.key &&
@@ -163,13 +165,77 @@ export function onInputEvent(modalDiv, type, event) {
         }
       });
       // input
-      let inputElement = modalDiv.querySelector(".modal-input");
+      const inputElement = modalDiv.querySelector(".modal-input");
       if (!inputElement.classList.contains("set-display-none")) {
         inputElement.dispatchEvent(event);
       }
       // event.stopPropagation();
       event.preventDefault();
       break;
+  }
+}
+
+export function onGamepadPolled(modalDiv) {
+  // close x button
+  if (gamepads.getButtonDown(gamepads.Buttons.B)) {
+    const button = modalDiv.querySelector(".modal-close-button");
+    if (!button.classList.contains("set-display-none")) {
+      button.click();
+    }
+  }
+  // bottom buttons
+  const buttons = modalDiv.querySelectorAll(".modal-button");
+  let enabledButtons = [];
+  buttons.forEach((button) => {
+    if (!button.classList.contains("set-display-none")) {
+      enabledButtons.push(button);
+    }
+  });
+  const focusedElement = document.activeElement;
+  if (gamepads.getButtonDown(gamepads.Buttons.A)) {
+    for (let index = 0; index < enabledButtons.length; index++) {
+      const button = enabledButtons[index];
+      if (button === focusedElement) {
+        button.click();
+        break;
+      }
+    }
+  } else {
+    const upPressed =
+      gamepads.getButtonDown(gamepads.Buttons.DPAD_UP) ||
+      gamepads.getButtonDown(gamepads.Buttons.DPAD_LEFT) ||
+      gamepads.getAxisDown(gamepads.Axes.RS_Y, -1) ||
+      gamepads.getAxisDown(gamepads.Axes.RS_X, -1);
+    const downPressed =
+      gamepads.getButtonDown(gamepads.Buttons.DPAD_DOWN) ||
+      gamepads.getButtonDown(gamepads.Buttons.DPAD_RIGHT) ||
+      gamepads.getAxisDown(gamepads.Axes.RS_Y, 1) ||
+      gamepads.getAxisDown(gamepads.Axes.RS_X, 1);
+    if (upPressed || downPressed) {
+      let buttonIndex = undefined;
+      for (let index = 0; index < enabledButtons.length; index++) {
+        const button = enabledButtons[index];
+        if (button === focusedElement) {
+          buttonIndex = index;
+          break;
+        }
+      }
+      if (buttonIndex === undefined) {
+        enabledButtons[0].focus();
+      } else {
+        // check direction
+        //console.log(enabledButtons[0].style.width === "100%");
+        // TODO: use direction?
+        if (upPressed) {
+          buttonIndex--;
+          if (buttonIndex < 0) buttonIndex = enabledButtons.length - 1;
+        } else if (downPressed) {
+          buttonIndex++;
+          if (buttonIndex > enabledButtons.length - 1) buttonIndex = 0;
+        }
+        enabledButtons[buttonIndex].focus();
+      }
+    }
   }
 }
 

@@ -84,14 +84,6 @@ export function getDeltaTime() {
   return g_deltaTime;
 }
 
-export function getAxis(id) {
-  return g_gamepad.axes[id];
-}
-
-export function getPrevAxis(id) {
-  return g_prevAxes[id];
-}
-
 export function getButton(id) {
   // returns true while the button identified by id is held down
   return g_gamepad.buttons[id].pressed;
@@ -107,6 +99,21 @@ export function getButtonDown(id) {
     return true;
   }
   return false;
+}
+
+export function getAxis(id) {
+  return g_gamepad.axes[id];
+}
+
+export function getPrevAxis(id) {
+  return g_prevAxes[id];
+}
+
+// TODO: naming could be confusing but I'm trying use something as similar
+// to the names for the button functions (which are inspired by Unity's)
+export function getAxisDown(id, direction) {
+  if (direction >= 0) return g_gamepad.axes[id] > 0.5 && g_prevAxes[id] < 0.5;
+  else return g_gamepad.axes[id] < -0.5 && g_prevAxes[id] > -0.5;
 }
 
 // ref: https://developer.mozilla.org/en-US/docs/Web/API/Gamepad_API/Using_the_Gamepad_API

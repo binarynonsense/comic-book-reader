@@ -770,6 +770,10 @@ function inputOpenFileBrowser() {
   sendIpcToMain("open-file-browser-tool");
 }
 
+function inputOpenGamepadMenu() {
+  sendIpcToMain("open-gamepad-menu");
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // GAMEPAD ////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -822,12 +826,10 @@ export function onGamepadPolled() {
   if (gamepads.getButtonDown(gamepads.Buttons.LS_PRESS)) {
     inputToggleFullScreen();
   }
-  // // open file browser
-  // //if (
-  // // gamepads.getButtonDown(gamepads.Buttons.BACK)
-  // // ) {
-  // //   inputOpenFileBrowser();
-  // // }
+  // open gamepad menu
+  if (gamepads.getButtonDown(gamepads.Buttons.START)) {
+    inputOpenGamepadMenu();
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1012,29 +1014,24 @@ function initModalsOnIpcCallbacks() {
     }
   );
 
-  on("show-modal-prompt-password", (text1, text2, textButton1, textButton2) => {
-    showModalPromptPassword(text1, text2, textButton1, textButton2);
+  on("show-modal-prompt-password", (...args) => {
+    showModalPromptPassword(...args);
   });
 
-  on("show-modal-info", (title, message, textButton1) => {
-    showModalAlert(title, message, textButton1);
+  on("show-modal-info", (...args) => {
+    showModalAlert(...args);
   });
 
-  on(
-    "show-modal-question-openas",
-    (title, message, textButton1, textButton2, filePath) => {
-      showModalQuestionOpenAs(
-        title,
-        message,
-        textButton1,
-        textButton2,
-        filePath
-      );
-    }
-  );
+  on("show-modal-question-openas", (...args) => {
+    showModalQuestionOpenAs(...args);
+  });
 
-  on("show-modal-properties", (title, message, textButton1, textButton2) => {
-    showModalProperties(title, message, textButton1, textButton2);
+  on("show-modal-properties", (...args) => {
+    showModalProperties(...args);
+  });
+
+  on("show-modal-gamepad-menu", (...args) => {
+    showModalGamepadMenu(...args);
   });
 }
 
@@ -1265,6 +1262,54 @@ function showModalProperties(title, message, textButton1, textButton2) {
     title: title,
     log: { message: message },
     frameWidth: 600,
+    zIndexDelta: -450,
+    close: {
+      callback: () => {
+        modalClosed();
+      },
+      key: "Escape",
+    },
+    buttons: buttons,
+  });
+}
+
+function showModalGamepadMenu(
+  title,
+  textButtonBack,
+  textButtonFileBrowser,
+  textButtonHistory,
+  textButtonQuit
+) {
+  if (g_openModal) {
+    return;
+  }
+  let buttons = [];
+  buttons.push({
+    text: textButtonBack.toUpperCase(),
+    fullWidth: true,
+    callback: () => {
+      modalClosed();
+    },
+  });
+  // buttons.push({
+  //   text: textButtonFileBrowser.toUpperCase(),
+  //   fullWidth: true,
+  //   callback: () => {
+  //     modalClosed();
+  //     sendIpcToMain("open-file-browser-tool");
+  //   },
+  // });
+  buttons.push({
+    text: textButtonQuit.toUpperCase(),
+    fullWidth: true,
+    callback: () => {
+      modalClosed();
+      sendIpcToMain("quit");
+    },
+  });
+  g_openModal = modals.show({
+    title: title,
+    frameWidth: 400,
     zIndexDelta: -450,
     close: {
       callback: () => {

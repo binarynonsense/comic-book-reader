@@ -22,7 +22,10 @@ import {
   initIpc as epubInitIpc,
   cleanUp as cleanUpEpub,
 } from "./renderer-epub.js";
-import { onInputEvent as modalOnInputEvent } from "../shared/renderer/modals.js";
+import {
+  onInputEvent as modalOnInputEvent,
+  onGamepadPolled as modalOnGamepadPolled,
+} from "../shared/renderer/modals.js";
 
 export function initIpc() {
   uiInitIpc();
@@ -132,9 +135,9 @@ export function onContextMenu(params) {
 ///////////////////////////////////////////////////////////////////////////////
 
 export function onGamepadPolled() {
-  // if (getOpenModal()) {
-  //   modalOnGamepadPolled(getOpenModal());
-  //   return;
-  // }
+  if (getOpenModal()) {
+    modalOnGamepadPolled(getOpenModal());
+    return;
+  }
   uiOnGamepadPolled();
 }

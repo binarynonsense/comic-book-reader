@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-const { Menu, app } = require("electron");
+const { Menu } = require("electron");
 const core = require("../../core/main");
 const reader = require("../../reader/main");
 const { _ } = require("./i18n");
@@ -230,7 +230,7 @@ function buildApplicationMenu(settings, history) {
           label: _("menu-file-quit"),
           accelerator: "CommandOrControl+Q",
           click() {
-            app.quit();
+            core.onMenuQuit();
           },
         },
       ],
