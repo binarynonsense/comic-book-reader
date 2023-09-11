@@ -31,7 +31,7 @@ function init() {
   }
 }
 
-exports.open = async function () {
+exports.open = async function (fileData) {
   // called by switchTool when opening tool
   init();
   const data = fs.readFileSync(path.join(__dirname, "index.html"));
@@ -78,7 +78,11 @@ exports.open = async function () {
     }
   });
   sendIpcToRenderer("show", drivesData);
-  updateCurrentFolder(appUtils.getDesktopFolderPath());
+  updateCurrentFolder(
+    fileData.path !== undefined
+      ? path.dirname(fileData.path)
+      : appUtils.getDesktopFolderPath()
+  );
 };
 
 exports.close = function () {
