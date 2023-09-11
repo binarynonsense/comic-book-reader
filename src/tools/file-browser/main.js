@@ -174,38 +174,42 @@ function initHandleIpcCallbacks() {}
 ///////////////////////////////////////////////////////////////////////////////
 
 function updateCurrentFolder(folderPath) {
-  const folderContents = fileUtils.getFolderContents(folderPath);
-  if (folderContents) {
-    if (folderContents.files) {
-      // files: only comics and images, no hidden ones
-      folderContents.files = folderContents.files.filter((e) => {
-        return (
-          (fileUtils.hasImageExtension(e.fullPath) ||
-            fileUtils.hasComicBookExtension(e.fullPath)) &&
-          (process.platform !== "linux" || !e.name.startsWith("."))
-        );
-      });
-      folderContents.files.sort((a, b) => {
-        return utils.compare(a.name, b.name);
-      });
-    }
-    if (folderContents.folders) {
-      // folders: no hidden ones
-      folderContents.folders = folderContents.folders.filter((e) => {
-        return process.platform !== "linux" || !e.name.startsWith(".");
-      });
-      folderContents.folders.sort((a, b) => {
-        return utils.compare(a.name, b.name);
-      });
-    }
+  try {
+    const folderContents = fileUtils.getFolderContents(folderPath);
+    if (folderContents) {
+      if (folderContents.files) {
+        // files: only comics and images, no hidden ones
+        folderContents.files = folderContents.files.filter((e) => {
+          return (
+            (fileUtils.hasImageExtension(e.fullPath) ||
+              fileUtils.hasComicBookExtension(e.fullPath)) &&
+            (process.platform !== "linux" || !e.name.startsWith("."))
+          );
+        });
+        folderContents.files.sort((a, b) => {
+          return utils.compare(a.name, b.name);
+        });
+      }
+      if (folderContents.folders) {
+        // folders: no hidden ones
+        folderContents.folders = folderContents.folders.filter((e) => {
+          return process.platform !== "linux" || !e.name.startsWith(".");
+        });
+        folderContents.folders.sort((a, b) => {
+          return utils.compare(a.name, b.name);
+        });
+      }
 
-    const parent = path.resolve(folderPath, "../");
-    sendIpcToRenderer(
-      "show-folder-contents",
-      folderPath,
-      folderContents,
-      parent === folderPath ? undefined : parent
-    );
+      const parent = path.resolve(folderPath, "../");
+      sendIpcToRenderer(
+        "show-folder-contents",
+        folderPath,
+        folderContents,
+        parent === folderPath ? undefined : parent
+      );
+    }
+  } catch (error) {
+    // TODO: do something?
   }
 }
 
