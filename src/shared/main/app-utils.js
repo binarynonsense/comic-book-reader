@@ -20,6 +20,16 @@ function getDesktopFolderPath() {
 }
 exports.getDesktopFolderPath = getDesktopFolderPath;
 
+function getHomeFolderPath() {
+  return app.getPath("home");
+}
+exports.getHomeFolderPath = getHomeFolderPath;
+
+function getDownloadsFolderPath() {
+  return app.getPath("downloads");
+}
+exports.getDownloadsFolderPath = getDownloadsFolderPath;
+
 function getUserDataFolderPath() {
   return app.getPath("userData");
 }
