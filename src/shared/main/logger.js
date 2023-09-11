@@ -6,18 +6,21 @@
  */
 
 let g_isDebug = false;
+let g_isRelease = true;
 
 const g_errorTag = "[\x1b[31mERROR\x1b[0m]";
 const g_stackTag = "[\x1b[31mSTACK\x1b[0m]";
 const g_debugTag = "[\x1b[36mDEBUG\x1b[0m]";
+const g_testTag = "[\x1b[93mTEST\x1b[0m]";
 
 exports.init = function (info) {
   g_isDebug = info.isDev;
+  g_isRelease = info.isRelease;
 };
 
 exports.debug = function (message) {
   if (g_isDebug) {
-    console.log(`${getTime()} ${g_debugTag} ${message}`);
+    console.log(`${getTime()} ${g_debugTag}`, message);
   }
 };
 
@@ -35,6 +38,12 @@ exports.error = function (message) {
   }
   if (g_isDebug && message?.stack) {
     console.log(`${getTime()} ${g_stackTag} ${message.stack}`);
+  }
+};
+
+exports.test = function (message) {
+  if (g_isDebug && !g_isRelease) {
+    console.log(`${getTime()} ${g_testTag}`, message);
   }
 };
 
