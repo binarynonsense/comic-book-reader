@@ -10,6 +10,7 @@ const path = require("path");
 const core = require("../../core/main");
 const { _ } = require("../../shared/main/i18n");
 const log = require("../../shared/main/logger");
+const utils = require("../../shared/main/utils");
 const appUtils = require("../../shared/main/app-utils");
 const fileUtils = require("../../shared/main/file-utils");
 const reader = require("../../reader/main");
@@ -174,16 +175,38 @@ function initHandleIpcCallbacks() {}
 
 function updateCurrentFolder(folderPath) {
   const folderContents = fileUtils.getFolderContents(folderPath);
-  // log.test(folderContents);
-  const parent = path.resolve(folderPath, "../");
-  ///////
-  if (folderContents)
+  if (folderContents) {
+    if (folderContents.files) {
+      // files: only comics and images, no hidden ones
+      folderContents.files = folderContents.files.filter((e) => {
+        return (
+          (fileUtils.hasImageExtension(e.fullPath) ||
+            fileUtils.hasComicBookExtension(e.fullPath)) &&
+          (process.platform !== "linux" || !e.name.startsWith("."))
+        );
+      });
+      folderContents.files.sort((a, b) => {
+        return utils.compare(a.name, b.name);
+      });
+    }
+    if (folderContents.folders) {
+      // folders: no hidden ones
+      folderContents.folders = folderContents.folders.filter((e) => {
+        return process.platform !== "linux" || !e.name.startsWith(".");
+      });
+      folderContents.folders.sort((a, b) => {
+        return utils.compare(a.name, b.name);
+      });
+    }
+
+    const parent = path.resolve(folderPath, "../");
     sendIpcToRenderer(
       "show-folder-contents",
       folderPath,
       folderContents,
       parent === folderPath ? undefined : parent
     );
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
