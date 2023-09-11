@@ -430,6 +430,10 @@ exports.onMenuOpenHistoryManager = function () {
   sendIpcToPreload("update-menubar");
 };
 
+exports.onMenuQuit = function () {
+  app.quit();
+};
+
 /////////////
 
 exports.onMenuToggleAudioPlayer = function () {
@@ -528,10 +532,6 @@ exports.onMenuAbout = function () {
     )}: ${app.getVersion()}\n(c) Álvaro García\nwww.binarynonsense.com`,
     i18n._("ui-modal-prompt-button-ok")
   );
-};
-
-exports.onMenuQuit = function () {
-  app.quit();
 };
 
 ///////////////////////////////////////////////////////////////////////////////
