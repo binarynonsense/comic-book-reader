@@ -173,7 +173,10 @@ export function onInputEvent(modalDiv, type, event) {
       });
       // input
       const inputElement = modalDiv.querySelector(".modal-input");
-      if (!inputElement.classList.contains("set-display-none")) {
+      if (
+        !inputElement.classList.contains("set-display-none") &&
+        event.key != "Tab"
+      ) {
         inputElement.dispatchEvent(event);
       }
       // event.stopPropagation();
