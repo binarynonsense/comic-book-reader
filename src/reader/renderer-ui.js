@@ -1292,14 +1292,14 @@ function showModalGamepadMenu(
       modalClosed();
     },
   });
-  // buttons.push({
-  //   text: textButtonFileBrowser.toUpperCase(),
-  //   fullWidth: true,
-  //   callback: () => {
-  //     modalClosed();
-  //     sendIpcToMain("open-file-browser-tool");
-  //   },
-  // });
+  buttons.push({
+    text: textButtonFileBrowser.toUpperCase(),
+    fullWidth: true,
+    callback: () => {
+      modalClosed();
+      sendIpcToMain("open-file-browser-tool");
+    },
+  });
   buttons.push({
     text: textButtonQuit.toUpperCase(),
     fullWidth: true,

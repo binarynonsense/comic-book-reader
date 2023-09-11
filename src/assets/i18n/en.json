@@ -599,5 +599,14 @@
   "tool-cix-search-api-key-file-path-info": "A text file containing a valid API key for {0}",
   "tool-cix-search-api-key-not-found": "A text file containing a valid API key for {0} must be assigned in the search settings.",
 
-  "tool-fb-title": "File Browser"
+  "tool-fb-title": "File Browser",
+  "[NOTE TO TRANSLATORS fb1]": "Places refers to locations/folders like Home, Desktop, Downloads... Home refers to the User's home directory",
+  "tool-fb-shortcuts-places": "Places",
+  "tool-fb-shortcuts-places-home": "Home",
+  "tool-fb-shortcuts-places-desktop": "Desktop",
+  "tool-fb-shortcuts-places-downloads": "Downloads",
+  "[NOTE TO TRANSLATORS fb2]": "devices as in hard-drives, usb pendrives...",
+  "tool-fb-shortcuts-devices": "Devices",
+  "tool-fb-shortcuts-generic-harddrive": "{0} GiB Hard Drive",
+  "tool-fb-shortcuts-generic-drive": "{0} GiB Drive"
 }

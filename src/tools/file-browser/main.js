@@ -10,6 +10,8 @@ const path = require("path");
 const core = require("../../core/main");
 const { _ } = require("../../shared/main/i18n");
 const log = require("../../shared/main/logger");
+const appUtils = require("../../shared/main/app-utils");
+const fileUtils = require("../../shared/main/file-utils");
 const reader = require("../../reader/main");
 const contextMenu = require("../../shared/main/tools-menu-context");
 let drivelist; // required in open
@@ -35,16 +37,47 @@ exports.open = async function () {
   sendIpcToCoreRenderer("replace-inner-html", "#tools", data.toString());
   updateLocalizedText();
 
-  // drivelist = require("drivelist");
-  // const drives = await drivelist.list();
-  // drives.forEach((drive) => {
-  //   console.log(drive);
-  //   console.log(drive.device);
-  //   console.log(drive.displayName);
-  //   console.log(drive.mountpoints);
-  //   console.log("-----------------");
-  // });
-  sendIpcToRenderer("show");
+  drivelist = require("drivelist");
+  const drives = await drivelist.list();
+  let drivesData = [];
+  drivesData.push({
+    name: _("tool-fb-shortcuts-places-home"),
+    path: appUtils.getHomeFolderPath(),
+    isPlace: true,
+  });
+  drivesData.push({
+    name: _("tool-fb-shortcuts-places-desktop"),
+    path: appUtils.getDesktopFolderPath(),
+    isPlace: true,
+  });
+  drivesData.push({
+    name: _("tool-fb-shortcuts-places-downloads"),
+    path: appUtils.getDownloadsFolderPath(),
+    isPlace: true,
+  });
+  drives.forEach((drive) => {
+    // log.test(drive);
+    // log.test("---------------------");
+    if (drive.mountpoints && drive.mountpoints.length > 0) {
+      let driveName = drive.mountpoints[drive.mountpoints.length - 1].label;
+      const drivePath = drive.mountpoints[drive.mountpoints.length - 1].path;
+      if (!driveName) {
+        driveName = drive.displayName;
+      }
+      if (!driveName) {
+        let size = (drive.size / 1024 / 1024 / 1024).toFixed(2);
+        driveName = _("tool-fb-shortcuts-generic-drive", size);
+      }
+      drivesData.push({
+        name: driveName,
+        path: drivePath,
+        isRemovable: drive.isRemovable,
+        isUSB: drive.isUSB,
+      });
+    }
+  });
+  sendIpcToRenderer("show", drivesData);
+  updateCurrentFolder(appUtils.getDesktopFolderPath());
 };
 
 exports.close = function () {
@@ -101,6 +134,21 @@ function initOnIpcCallbacks() {
   on("show-context-menu", (params) => {
     contextMenu.show("minimal", params, onCloseClicked);
   });
+
+  on("change-current-folder", (...args) => {
+    updateCurrentFolder(...args);
+  });
+
+  on("open-file", (filePath) => {
+    // TODO: check also, or only, in the change folder content generation?
+    if (
+      fileUtils.hasImageExtension(filePath) ||
+      fileUtils.hasComicBookExtension(filePath)
+    ) {
+      reader.tryOpen(filePath);
+      onCloseClicked();
+    }
+  });
 }
 
 // HANDLE
@@ -123,6 +171,20 @@ function initHandleIpcCallbacks() {}
 ///////////////////////////////////////////////////////////////////////////////
 // TOOL ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
+
+function updateCurrentFolder(folderPath) {
+  const folderContents = fileUtils.getFolderContents(folderPath);
+  // log.test(folderContents);
+  const parent = path.resolve(folderPath, "../");
+  ///////
+  if (folderContents)
+    sendIpcToRenderer(
+      "show-folder-contents",
+      folderPath,
+      folderContents,
+      parent === folderPath ? undefined : parent
+    );
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // LOCALIZATION ///////////////////////////////////////////////////////////////

@@ -534,7 +534,7 @@ function initOnIpcCallbacks() {
       "show-modal-gamepad-menu",
       _("ui-modal-title-quickmenu"),
       _("tool-shared-ui-back-to-reader"),
-      _("tool-fb-title"),
+      _("tool-fb-title"), //_("ctxmenu-openfile").replace("...", ""),
       _("menu-file-openrecent-history"),
       _("menu-file-quit")
     );

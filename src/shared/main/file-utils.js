@@ -11,7 +11,7 @@ const fs = require("fs");
 const log = require("./logger");
 
 ///////////////////////////////////////////////////////////////////////////////
-// MOVE ///////////////////////////////////////////////////////////////////////
+// GENERAL ////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
 exports.moveFile = function (oldPath, newPath) {
@@ -25,6 +25,47 @@ exports.moveFile = function (oldPath, newPath) {
     } else {
       throw error;
     }
+  }
+};
+
+exports.getFolderContents = function (folderPath) {
+  if (fs.existsSync(folderPath) && fs.lstatSync(folderPath).isDirectory()) {
+    let filesInFolder = fs.readdirSync(folderPath);
+    if (filesInFolder.length === 0) {
+      return {};
+    } else {
+      let contents = {
+        files: [],
+        folders: [],
+      };
+      filesInFolder.forEach((entry) => {
+        let data = {
+          name: entry,
+          fullPath: path.join(folderPath, entry),
+          isLink: false,
+        };
+        const stats = fs.lstatSync(data.fullPath);
+        if (stats.isSymbolicLink()) {
+          data.isLink = true;
+          const realPath = fs.readlinkSync(path.join(folderPath, entry));
+          if (fs.existsSync(realPath)) {
+            data.fullPath = realPath;
+            if (fs.lstatSync(realPath).isDirectory()) {
+              contents.folders.push(data);
+            } else {
+              contents.files.push(data);
+            }
+          }
+        } else if (stats.isDirectory()) {
+          contents.folders.push(data);
+        } else {
+          contents.files.push(data);
+        }
+      });
+      return contents;
+    }
+  } else {
+    return undefined;
   }
 };
 
