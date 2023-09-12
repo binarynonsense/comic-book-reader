@@ -1297,6 +1297,14 @@ function showModalQuickMenu(
     },
   });
   buttons.push({
+    text: textButtonHistory.toUpperCase(),
+    fullWidth: true,
+    callback: () => {
+      modalClosed();
+      sendIpcToMain("open-history-tool", true);
+    },
+  });
+  buttons.push({
     text: textButtonQuit.toUpperCase(),
     fullWidth: true,
     callback: () => {

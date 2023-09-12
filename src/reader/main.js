@@ -529,6 +529,10 @@ function initOnIpcCallbacks() {
     core.switchTool("tool-file-browser", g_fileData, showFocus);
   });
 
+  on("open-history-tool", (showFocus) => {
+    core.switchTool("tool-history", showFocus);
+  });
+
   on("open-quick-menu", () => {
     sendIpcToRenderer(
       "show-modal-quick-menu",
