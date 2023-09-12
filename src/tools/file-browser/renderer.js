@@ -231,11 +231,11 @@ function addFolderContentLi(type, ul, entry, index) {
 // NAVIGATION /////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-let g_navFocus;
+let g_navFocusedElement;
 let g_navTree;
 
 function rebuildNavigation(focusedPanelID) {
-  g_navFocus = undefined;
+  g_navFocusedElement = undefined;
   g_navTree = [];
   for (let panelIndex = 0; panelIndex < 2; panelIndex++) {
     g_navTree.push([]);
@@ -253,8 +253,8 @@ function rebuildNavigation(focusedPanelID) {
     }
   }
   if (focusedPanelID != undefined) {
-    g_navFocus = g_navTree[focusedPanelID][0][0];
-    g_navFocus.focus();
+    g_navFocusedElement = g_navTree[focusedPanelID][0][0];
+    g_navFocusedElement.focus();
   }
 }
 
@@ -267,20 +267,20 @@ function navigate(
   rightPressed
 ) {
   if (!g_navTree) return;
-  if (!g_navFocus) g_navFocus = g_navTree[0][0][0];
+  if (!g_navFocusedElement) g_navFocusedElement = g_navTree[0][0][0];
 
   if (backPressed) {
     const button = document.getElementById("tool-fb-back-button");
     button.click();
   } else if (actionPressed) {
-    if (g_navFocus) {
-      g_navFocus.click();
+    if (g_navFocusedElement) {
+      g_navFocusedElement.click();
       document.activeElement.blur();
     }
   } else if (upPressed || downPressed || leftPressed || rightPressed) {
-    let panelId = g_navFocus.getAttribute("data-nav-panel");
-    let rowId = g_navFocus.getAttribute("data-nav-row");
-    let colId = g_navFocus.getAttribute("data-nav-col");
+    let panelId = g_navFocusedElement.getAttribute("data-nav-panel");
+    let rowId = g_navFocusedElement.getAttribute("data-nav-row");
+    let colId = g_navFocusedElement.getAttribute("data-nav-col");
     if (upPressed) {
       colId = 0;
       rowId--;
@@ -316,8 +316,8 @@ function navigate(
         }
       }
     }
-    g_navFocus = g_navTree[panelId][rowId][colId];
-    g_navFocus.focus();
+    g_navFocusedElement = g_navTree[panelId][rowId][colId];
+    g_navFocusedElement.focus();
   }
 }
 
