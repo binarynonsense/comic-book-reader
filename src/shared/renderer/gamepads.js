@@ -50,7 +50,13 @@ export function init(callback) {
       g_gamepadId = e.gamepad.index;
       g_animationLastTime = performance.now();
       g_prevButtons = [...gp.buttons];
+      g_prevButtons.forEach((button, index) => {
+        g_prevButtons[index] = { pressed: false, touched: false, value: 0 };
+      });
       g_prevAxes = [...gp.axes];
+      g_prevAxes.forEach((axis, index) => {
+        g_prevAxes[index] = 0;
+      });
       poll(callback);
     }
   });
@@ -63,6 +69,10 @@ export function init(callback) {
       cancelAnimationFrame(g_animationFrame);
     }
   });
+
+  // NOTE: from MDN: if a gamepad is already connected when the page loaded,
+  // the gamepadconnected event is dispatched to the focused page WHEN the
+  // user presses a button or moves an axis.
 }
 
 function poll(callback) {
