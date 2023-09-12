@@ -266,14 +266,9 @@ function navigate(
   leftPressed,
   rightPressed
 ) {
-  if (g_navTree) return;
-  if (
-    (!g_navFocus || document.activeElement != g_navFocus) &&
-    (upPressed || downPressed || leftPressed || rightPressed)
-  ) {
-    g_navFocus = document.getElementById("tool-fb-back-button");
-    g_navFocus.focus();
-  } else if (backPressed) {
+  if (!g_navTree || !g_navFocus) return;
+
+  if (backPressed) {
     const button = document.getElementById("tool-fb-back-button");
     button.click();
   } else if (actionPressed) {
