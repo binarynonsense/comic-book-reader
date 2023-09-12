@@ -599,5 +599,14 @@
   "tool-cix-search-api-key-file-path-info": "Текстовый файл, содержащий действительный API-ключ для {0}",
   "tool-cix-search-api-key-not-found": "В настройках поиска должен быть назначен текстовый файл, содержащий действительный API-ключ для {0}.",
 
-  "[NEEDS TRANSLATION]tool-fb-title": "File Browser"
+  "[NEEDS TRANSLATION]tool-fb-title": "File Browser",
+  "[NOTE TO TRANSLATORS fb1]": "Places refers to locations/folders like Home, Desktop, Downloads... Home refers to the User's home directory",
+  "[NEEDS TRANSLATION]tool-fb-shortcuts-places": "Places",
+  "[NEEDS TRANSLATION]tool-fb-shortcuts-places-home": "Home",
+  "[NEEDS TRANSLATION]tool-fb-shortcuts-places-desktop": "Desktop",
+  "[NEEDS TRANSLATION]tool-fb-shortcuts-places-downloads": "Downloads",
+  "[NOTE TO TRANSLATORS fb2]": "devices as in hard-drives, usb pendrives...",
+  "[NEEDS TRANSLATION]tool-fb-shortcuts-devices": "Devices",
+  "[NEEDS TRANSLATION]tool-fb-shortcuts-generic-harddrive": "{0} GiB Hard Drive",
+  "[NEEDS TRANSLATION]tool-fb-shortcuts-generic-drive": "{0} GiB Drive"
 }
