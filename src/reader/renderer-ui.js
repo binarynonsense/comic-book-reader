@@ -1305,6 +1305,7 @@ function showModalQuickMenu(
     },
   });
   g_openModal = modals.show({
+    showFocus: true,
     title: title,
     frameWidth: 400,
     zIndexDelta: -450,

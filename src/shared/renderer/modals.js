@@ -121,6 +121,17 @@ export function show(options) {
         }
       }
     }
+    // focus
+    if (options.showFocus) {
+      const buttons = modalDiv.querySelectorAll(".modal-button");
+      let enabledButtons = [];
+      buttons.forEach((button) => {
+        if (!button.classList.contains("set-display-none")) {
+          enabledButtons.push(button);
+        }
+      });
+      enabledButtons[0].focus();
+    }
   }
   return modalDiv;
 }
