@@ -359,7 +359,7 @@ export function onContextMenu(params) {
 // GAMEPADS ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-export function onGamepadPolled(modalDiv) {
+export function onGamepadPolled() {
   const upPressed =
     gamepads.getButtonDown(gamepads.Buttons.DPAD_UP) ||
     gamepads.getAxisDown(gamepads.Axes.RS_Y, -1);
