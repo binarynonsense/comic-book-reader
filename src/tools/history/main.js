@@ -26,13 +26,13 @@ function init() {
   }
 }
 
-exports.open = function () {
+exports.open = function (showFocus) {
   // called by switchTool when opening tool
   init();
   const data = fs.readFileSync(path.join(__dirname, "index.html"));
   sendIpcToCoreRenderer("replace-inner-html", "#tools", data.toString());
   updateLocalizedText();
-  sendIpcToRenderer("show", history.get());
+  sendIpcToRenderer("show", history.get(), showFocus);
 };
 
 exports.close = function () {
