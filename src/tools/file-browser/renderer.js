@@ -330,7 +330,7 @@ export function onInputEvent(type, event) {
   switch (type) {
     case "onkeydown":
       navigate(
-        event.key == "Esc",
+        event.key == "Escape",
         event.key == "Enter",
         event.key == "ArrowUp",
         event.key == "ArrowDown",
