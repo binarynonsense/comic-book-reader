@@ -28,9 +28,9 @@
 }
 
 .modal-frame-show {
-  animation: pop 0.3s ease-out;
+  animation: bounce 0.3s ease-out;
 }
-@keyframes pop {
+@keyframes bounce {
   0% {
     transform: scale(85%);
   }
