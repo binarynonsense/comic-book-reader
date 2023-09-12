@@ -1,7 +1,7 @@
 {
   "@metadata": {
     "authors": ["trzyglow"],
-    "last-updated": "2023-09-06",
+    "last-updated": "2023-09-12",
     "acbr-version": "3.2.4",
     "comments": "Deutsche Lokalisierung",
     "locale": "de",
@@ -601,12 +601,12 @@
 
   "tool-fb-title": "Dateibrowser",
   "[NOTE TO TRANSLATORS fb1]": "Places refers to locations/folders like Home, Desktop, Downloads... Home refers to the User's home directory",
-  "[NEEDS TRANSLATION]tool-fb-shortcuts-places": "Places",
-  "[NEEDS TRANSLATION]tool-fb-shortcuts-places-home": "Home",
-  "[NEEDS TRANSLATION]tool-fb-shortcuts-places-desktop": "Desktop",
-  "[NEEDS TRANSLATION]tool-fb-shortcuts-places-downloads": "Downloads",
+  "tool-fb-shortcuts-places": "Orte",
+  "tool-fb-shortcuts-places-home": "Home-Verzeichnis",
+  "tool-fb-shortcuts-places-desktop": "Desktop",
+  "tool-fb-shortcuts-places-downloads": "Downloads",
   "[NOTE TO TRANSLATORS fb2]": "devices as in hard-drives, usb pendrives...",
-  "[NEEDS TRANSLATION]tool-fb-shortcuts-devices": "Devices",
-  "[NEEDS TRANSLATION]tool-fb-shortcuts-generic-harddrive": "{0} GiB Hard Drive",
-  "[NEEDS TRANSLATION]tool-fb-shortcuts-generic-drive": "{0} GiB Drive"
+  "tool-fb-shortcuts-devices": "Geräte und Laufwerke",
+  "tool-fb-shortcuts-generic-harddrive": "{0} GiB Festplatte",
+  "tool-fb-shortcuts-generic-drive": "{0} GiB Laufwerk"
 }
