@@ -27,6 +27,21 @@
   border-radius: 5px;
 }
 
+.modal-frame-show {
+  animation: pop 0.3s ease-out;
+}
+@keyframes pop {
+  0% {
+    transform: scale(85%);
+  }
+  50% {
+    transform: scale(105%);
+  }
+  100% {
+    transform: scale(100%);
+  }
+}
+
 .modal-topbar {
   height: 30px;
   font-size: 20px;

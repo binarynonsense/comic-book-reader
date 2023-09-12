@@ -280,7 +280,7 @@ function navigate(
 function getHTMLElement(parent) {
   const modalDiv = document.createElement("div");
   modalDiv.className = "modal";
-  modalDiv.innerHTML = `<div class="modal-frame">
+  modalDiv.innerHTML = `<div class="modal-frame modal-frame-show">
   <div class="modal-topbar">
     <div class="modal-close-button" title="close">
       <i class="fas fa-times"></i>
