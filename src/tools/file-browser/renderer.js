@@ -266,7 +266,8 @@ function navigate(
   leftPressed,
   rightPressed
 ) {
-  if (!g_navTree || !g_navFocus) return;
+  if (!g_navTree) return;
+  if (!g_navFocus) g_navFocus = g_navTree[0][0][0];
 
   if (backPressed) {
     const button = document.getElementById("tool-fb-back-button");
