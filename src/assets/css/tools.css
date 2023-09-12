@@ -643,6 +643,9 @@
 .tools-buttons-list-li:last-child {
   border-bottom: 1px solid var(--tools-collection-text-color);
 }
+.tools-buttons-list-li:nth-child(even) {
+  filter: brightness(105%);
+}
 
 .tools-buttons-list-button {
   display: flex;
