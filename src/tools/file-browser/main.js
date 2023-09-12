@@ -31,7 +31,7 @@ function init() {
   }
 }
 
-exports.open = async function (fileData) {
+exports.open = async function (fileData, showFocus) {
   // called by switchTool when opening tool
   init();
   const data = fs.readFileSync(path.join(__dirname, "index.html"));
@@ -77,7 +77,7 @@ exports.open = async function (fileData) {
       });
     }
   });
-  sendIpcToRenderer("show", drivesData);
+  sendIpcToRenderer("show", drivesData, showFocus);
   updateCurrentFolder(
     fileData && fileData.path !== undefined && fileData.path !== ""
       ? path.dirname(fileData.path)

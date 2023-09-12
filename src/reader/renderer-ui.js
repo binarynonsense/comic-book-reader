@@ -768,12 +768,8 @@ function inputToggleFullScreen() {
   sendIpcToMain("toolbar-button-clicked", "toolbar-button-fullscreen-enter");
 }
 
-function inputOpenFileBrowser() {
-  sendIpcToMain("open-file-browser-tool");
-}
-
 function inputOpenQuickMenu() {
-  sendIpcToMain("open-gamepad-menu");
+  sendIpcToMain("open-quick-menu");
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1031,8 +1027,8 @@ function initModalsOnIpcCallbacks() {
     showModalProperties(...args);
   });
 
-  on("show-modal-gamepad-menu", (...args) => {
-    showModalGamepadMenu(...args);
+  on("show-modal-quick-menu", (...args) => {
+    showModalQuickMenu(...args);
   });
 }
 
@@ -1274,7 +1270,7 @@ function showModalProperties(title, message, textButton1, textButton2) {
   });
 }
 
-function showModalGamepadMenu(
+function showModalQuickMenu(
   title,
   textButtonBack,
   textButtonFileBrowser,
@@ -1297,7 +1293,7 @@ function showModalGamepadMenu(
     fullWidth: true,
     callback: () => {
       modalClosed();
-      sendIpcToMain("open-file-browser-tool");
+      sendIpcToMain("open-file-browser-tool", true);
     },
   });
   buttons.push({

@@ -525,13 +525,13 @@ function initOnIpcCallbacks() {
     }
   });
 
-  on("open-file-browser-tool", () => {
-    core.switchTool("tool-file-browser", g_fileData);
+  on("open-file-browser-tool", (showFocus) => {
+    core.switchTool("tool-file-browser", g_fileData, showFocus);
   });
 
-  on("open-gamepad-menu", () => {
+  on("open-quick-menu", () => {
     sendIpcToRenderer(
-      "show-modal-gamepad-menu",
+      "show-modal-quick-menu",
       _("ui-modal-title-quickmenu"),
       _("tool-shared-ui-back-to-reader"),
       _("tool-fb-title"), //_("ctxmenu-openfile").replace("...", ""),

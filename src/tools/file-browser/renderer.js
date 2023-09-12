@@ -18,11 +18,12 @@ import * as gamepads from "../../shared/renderer/gamepads.js";
 let g_isInitialized = false;
 let g_shortcutsDiv;
 
-async function init(drivesData) {
+async function init(drivesData, showFocus) {
   if (!g_isInitialized) {
     // things to start only once go here
     g_isInitialized = true;
   }
+  g_navShowFocus = showFocus;
   document.getElementById("tools-columns-right").scrollIntoView({
     behavior: "instant",
     block: "start",
@@ -233,6 +234,7 @@ function addFolderContentLi(type, ul, entry, index) {
 
 let g_navFocusedElement;
 let g_navTree;
+let g_navShowFocus;
 
 function rebuildNavigation(focusedPanelID) {
   const root = document.getElementById("tools-columns");
@@ -255,7 +257,7 @@ function rebuildNavigation(focusedPanelID) {
   }
   if (focusedPanelID != undefined) {
     g_navFocusedElement = g_navTree[focusedPanelID][0][0];
-    g_navFocusedElement.focus();
+    if (g_navShowFocus) g_navFocusedElement.focus();
   }
 }
 
@@ -269,6 +271,10 @@ function navigate(
 ) {
   if (!g_navTree) return;
   if (!g_navFocusedElement) g_navFocusedElement = g_navTree[0][0][0];
+
+  if (upPressed || downPressed || leftPressed || rightPressed) {
+    g_navShowFocus = true;
+  }
 
   if (backPressed) {
     const button = document.getElementById("tool-fb-back-button");
