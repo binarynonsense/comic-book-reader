@@ -79,7 +79,7 @@ exports.open = async function (fileData) {
   });
   sendIpcToRenderer("show", drivesData);
   updateCurrentFolder(
-    fileData.path !== undefined
+    fileData && fileData.path !== undefined && fileData.path !== ""
       ? path.dirname(fileData.path)
       : appUtils.getDesktopFolderPath()
   );
@@ -145,7 +145,6 @@ function initOnIpcCallbacks() {
   });
 
   on("open-file", (filePath) => {
-    // TODO: check also, or only, in the change folder content generation?
     if (
       fileUtils.hasImageExtension(filePath) ||
       fileUtils.hasComicBookExtension(filePath)

@@ -29,14 +29,16 @@ async function init(drivesData) {
     inline: "nearest",
   });
   // menu buttons
-  document
-    .getElementById("tool-fb-back-button")
-    .addEventListener("click", (event) => {
-      sendIpcToMain("close");
-    });
+  const backButton = document.getElementById("tool-fb-back-button");
+  backButton.addEventListener("click", (event) => {
+    sendIpcToMain("close");
+  });
+  backButton.setAttribute("data-nav-panel", 0);
+  backButton.setAttribute("data-nav-row", 0);
+  backButton.setAttribute("data-nav-col", 0);
   ////////////////////////////////////////
   g_shortcutsDiv = document.getElementById("shortcuts");
-  drivesData.forEach((drive) => {
+  drivesData.forEach((drive, index) => {
     const buttonDiv = document.createElement("div");
     buttonDiv.className = "tools-menu-button";
     const buttonIcon = document.createElement("i");
@@ -54,11 +56,15 @@ async function init(drivesData) {
     textSpan.innerText = drive.name;
     textDiv.appendChild(textSpan);
     buttonDiv.appendChild(textDiv);
-    buttonDiv.setAttribute("data-path", drive.path);
-    g_shortcutsDiv.appendChild(buttonDiv);
+    // buttonDiv.setAttribute("data-path", drive.path);
     buttonDiv.addEventListener("click", () => {
       sendIpcToMain("change-current-folder", drive.path);
     });
+    buttonDiv.setAttribute("data-nav-panel", 0);
+    buttonDiv.setAttribute("data-nav-row", index + 1);
+    buttonDiv.setAttribute("data-nav-col", 0);
+    buttonDiv.setAttribute("tabindex", "0");
+    g_shortcutsDiv.appendChild(buttonDiv);
   });
   ////////////////////////////////////////
 
@@ -138,38 +144,34 @@ function initOnIpcCallbacks() {
 
 function showFolderContents(folderPath, folderContents, parentPath) {
   document.getElementById("tool-fb-current-path-text").innerText = folderPath;
-  // TODO: rebuild navigation tree, set current element focused...
   const ul = document.querySelector("#tool-fb-items-ul");
   ul.innerHTML = "";
+  let rowId = 0;
   if (parentPath) {
     let data = {
       name: "..",
       fullPath: parentPath,
       isLink: false,
     };
-    addFolderContentLi(-1, ul, data);
+    addFolderContentLi(-1, ul, data, rowId++);
   }
   if (folderContents.folders) {
     for (let index = 0; index < folderContents.folders.length; index++) {
       const entry = folderContents.folders[index];
-      addFolderContentLi(0, ul, entry);
+      addFolderContentLi(0, ul, entry, rowId++);
     }
   }
   if (folderContents.files) {
     for (let index = 0; index < folderContents.files.length; index++) {
       const entry = folderContents.files[index];
-      addFolderContentLi(1, ul, entry);
+      addFolderContentLi(1, ul, entry, rowId++);
     }
   }
-  if (folderContents.links) {
-    for (let index = 0; index < folderContents.links.length; index++) {
-      const entry = folderContents.links[index];
-      addFolderContentLi(2, ul, entry);
-    }
-  }
+
+  rebuildNavigation(1);
 }
 
-function addFolderContentLi(type, ul, entry) {
+function addFolderContentLi(type, ul, entry, index) {
   let li = document.createElement("li");
   li.className = "tools-buttons-list-li";
   let buttonSpan = document.createElement("span");
@@ -207,6 +209,10 @@ function addFolderContentLi(type, ul, entry) {
       sendIpcToMain("open-file", entry.fullPath);
     });
   }
+  buttonSpan.setAttribute("data-nav-panel", 1);
+  buttonSpan.setAttribute("data-nav-row", index);
+  buttonSpan.setAttribute("data-nav-col", 0);
+  buttonSpan.setAttribute("tabindex", "0");
   li.appendChild(buttonSpan);
   // {
   //   // TODO: delete TEST, use in History tool
@@ -222,6 +228,103 @@ function addFolderContentLi(type, ul, entry) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+// NAVIGATION /////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+let g_navFocus;
+let g_navTree = [];
+
+function rebuildNavigation(focusedPanelID) {
+  g_navTree = [];
+  for (let panelIndex = 0; panelIndex < 2; panelIndex++) {
+    g_navTree.push([]);
+    const panelElements = document.querySelectorAll(
+      `[data-nav-panel='${panelIndex}']`
+    );
+    for (let index = 0; index < panelElements.length; index++) {
+      const element = panelElements[index];
+      const rowId = element.getAttribute("data-nav-row");
+      const colId = element.getAttribute("data-nav-col");
+      if (!g_navTree[panelIndex][rowId]) {
+        g_navTree[panelIndex][rowId] = [];
+      }
+      g_navTree[panelIndex][rowId][colId] = element;
+    }
+  }
+  if (focusedPanelID != undefined) {
+    g_navFocus = g_navTree[focusedPanelID][0][0];
+    g_navFocus.focus();
+  }
+}
+
+function navigate(
+  backPressed,
+  actionPressed,
+  upPressed,
+  downPressed,
+  leftPressed,
+  rightPressed
+) {
+  if (
+    (!g_navFocus || document.activeElement != g_navFocus) &&
+    (upPressed || downPressed || leftPressed || rightPressed)
+  ) {
+    g_navFocus = document.getElementById("tool-fb-back-button");
+    g_navFocus.focus();
+  } else if (backPressed) {
+    const button = document.getElementById("tool-fb-back-button");
+    button.click();
+  } else if (actionPressed) {
+    if (g_navFocus) {
+      g_navFocus.click();
+      document.activeElement.blur();
+    }
+  } else if (upPressed || downPressed || leftPressed || rightPressed) {
+    let panelId = g_navFocus.getAttribute("data-nav-panel");
+    let rowId = g_navFocus.getAttribute("data-nav-row");
+    let colId = g_navFocus.getAttribute("data-nav-col");
+    if (upPressed) {
+      colId = 0;
+      rowId--;
+      if (rowId < 0) rowId = g_navTree[panelId].length - 1;
+    } else if (downPressed) {
+      colId = 0;
+      rowId++;
+      if (rowId >= g_navTree[panelId].length) rowId = 0;
+    } else if (leftPressed) {
+      if (colId > 0) {
+        colId--;
+      } else {
+        if (panelId > 0) {
+          panelId--;
+          colId = 0;
+          rowId = 0;
+          document.getElementById("tools-columns-right").scrollIntoView({
+            behavior: "instant",
+            block: "start",
+            inline: "nearest",
+          });
+        }
+      }
+    } else if (rightPressed) {
+      if (colId < g_navTree[panelId][rowId].length - 1) {
+        colId++;
+      } else {
+        // TODO: hardcoded 1, store somewhere the number of panels
+        if (panelId < 1) {
+          panelId++;
+          colId = 0;
+          rowId = 0;
+        }
+      }
+    }
+    g_navFocus = g_navTree[panelId][rowId][colId];
+    g_navFocus.focus();
+  }
+}
+//var rectObject = object.getBoundingClientRect();
+
+///////////////////////////////////////////////////////////////////////////////
 // EVENT LISTENERS ////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -230,6 +333,19 @@ export function onInputEvent(type, event) {
   //   modals.onInputEvent(getOpenModal(), type, event);
   //   return;
   // }
+  switch (type) {
+    case "onkeydown":
+      navigate(
+        event.key == "Esc",
+        event.key == "Enter",
+        event.key == "ArrowUp",
+        event.key == "ArrowDown",
+        event.key == "ArrowLeft",
+        event.key == "ArrowRight"
+      );
+      event.preventDefault();
+      break;
+  }
 }
 
 export function onContextMenu(params) {
@@ -237,4 +353,32 @@ export function onContextMenu(params) {
   //   return;
   // }
   sendIpcToMain("show-context-menu", params);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// GAMEPADS ///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+export function onGamepadPolled(modalDiv) {
+  const upPressed =
+    gamepads.getButtonDown(gamepads.Buttons.DPAD_UP) ||
+    gamepads.getAxisDown(gamepads.Axes.RS_Y, -1);
+  const downPressed =
+    gamepads.getButtonDown(gamepads.Buttons.DPAD_DOWN) ||
+    gamepads.getAxisDown(gamepads.Axes.RS_Y, 1);
+  const leftPressed =
+    gamepads.getButtonDown(gamepads.Buttons.DPAD_LEFT) ||
+    gamepads.getAxisDown(gamepads.Axes.RS_X, -1);
+  const rightPressed =
+    gamepads.getButtonDown(gamepads.Buttons.DPAD_RIGHT) ||
+    gamepads.getAxisDown(gamepads.Axes.RS_X, 1);
+
+  navigate(
+    gamepads.getButtonDown(gamepads.Buttons.B),
+    gamepads.getButtonDown(gamepads.Buttons.A),
+    upPressed,
+    downPressed,
+    leftPressed,
+    rightPressed
+  );
 }
