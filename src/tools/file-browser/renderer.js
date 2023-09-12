@@ -168,7 +168,7 @@ function showFolderContents(folderPath, folderContents, parentPath) {
       addFolderContentLi(1, ul, entry, rowId++);
     }
   }
-
+  updateColumnsHeight();
   rebuildNavigation(1);
 }
 
