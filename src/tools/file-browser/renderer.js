@@ -235,11 +235,12 @@ let g_navFocusedElement;
 let g_navTree;
 
 function rebuildNavigation(focusedPanelID) {
+  const root = document.getElementById("tools-columns");
   g_navFocusedElement = undefined;
   g_navTree = [];
   for (let panelIndex = 0; panelIndex < 2; panelIndex++) {
     g_navTree.push([]);
-    const panelElements = document.querySelectorAll(
+    const panelElements = root.querySelectorAll(
       `[data-nav-panel='${panelIndex}']`
     );
     for (let index = 0; index < panelElements.length; index++) {
