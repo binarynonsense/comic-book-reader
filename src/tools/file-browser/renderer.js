@@ -232,9 +232,10 @@ function addFolderContentLi(type, ul, entry, index) {
 ///////////////////////////////////////////////////////////////////////////////
 
 let g_navFocus;
-let g_navTree = [];
+let g_navTree;
 
 function rebuildNavigation(focusedPanelID) {
+  g_navFocus = undefined;
   g_navTree = [];
   for (let panelIndex = 0; panelIndex < 2; panelIndex++) {
     g_navTree.push([]);
@@ -265,6 +266,7 @@ function navigate(
   leftPressed,
   rightPressed
 ) {
+  if (g_navTree) return;
   if (
     (!g_navFocus || document.activeElement != g_navFocus) &&
     (upPressed || downPressed || leftPressed || rightPressed)
@@ -322,7 +324,6 @@ function navigate(
     g_navFocus.focus();
   }
 }
-//var rectObject = object.getBoundingClientRect();
 
 ///////////////////////////////////////////////////////////////////////////////
 // EVENT LISTENERS ////////////////////////////////////////////////////////////
