@@ -125,6 +125,10 @@ export function show(options) {
     if (options.showFocus) {
       const buttons = modalDiv.querySelectorAll(".modal-button");
       let enabledButtons = [];
+      const inputElement = modalDiv.querySelector(".modal-input");
+      if (!inputElement.classList.contains("set-display-none")) {
+        enabledButtons.push(inputElement);
+      }
       buttons.forEach((button) => {
         if (!button.classList.contains("set-display-none")) {
           enabledButtons.push(button);
@@ -149,49 +153,81 @@ export function close(modal) {
 export function onInputEvent(modalDiv, type, event) {
   switch (type) {
     case "onkeydown":
-      navigate(
-        modalDiv,
-        undefined,
-        event.key == "Enter",
-        event.key == "ArrowUp" || event.key == "ArrowLeft",
-        event.key == "ArrowDown" || event.key == "ArrowRight"
-      );
-      // close x button
-      {
-        const button = modalDiv.querySelector(".modal-close-button");
-        const key = button.getAttribute("data-key");
-        if (
-          key &&
-          event.key &&
-          key === event.key &&
-          !button.classList.contains("set-display-none")
-        ) {
-          button.click();
-        }
-      }
-      // bottom buttons
-      const buttons = modalDiv.querySelectorAll(".modal-button");
-      buttons.forEach((button) => {
-        const key = button.getAttribute("data-key");
-        if (
-          key &&
-          event.key &&
-          key === event.key &&
-          !button.classList.contains("set-display-none")
-        ) {
-          button.click();
-        }
-      });
       // input
       const inputElement = modalDiv.querySelector(".modal-input");
       if (
         !inputElement.classList.contains("set-display-none") &&
-        event.key != "Tab"
+        inputElement == document.activeElement &&
+        event.key == "Enter"
       ) {
-        inputElement.dispatchEvent(event);
+        const buttons = modalDiv.querySelectorAll(".modal-button");
+        buttons.forEach((button) => {
+          const key = button.getAttribute("data-key");
+          if (
+            key &&
+            event.key &&
+            key === event.key &&
+            !button.classList.contains("set-display-none")
+          ) {
+            button.click();
+          }
+        });
+      } else {
+        navigate(
+          modalDiv,
+          undefined,
+          event.key == "Enter",
+          event.key == "ArrowUp" || event.key == "ArrowLeft",
+          event.key == "ArrowDown" || event.key == "ArrowRight"
+        );
+        // close x button
+        {
+          const button = modalDiv.querySelector(".modal-close-button");
+          const key = button.getAttribute("data-key");
+          if (
+            key &&
+            event.key &&
+            key === event.key &&
+            !button.classList.contains("set-display-none")
+          ) {
+            button.click();
+          }
+        }
+        // bottom buttons
+        // const buttons = modalDiv.querySelectorAll(".modal-button");
+        // buttons.forEach((button) => {
+        //   const key = button.getAttribute("data-key");
+        //   if (
+        //     key &&
+        //     event.key &&
+        //     key === event.key &&
+        //     !button.classList.contains("set-display-none")
+        //   ) {
+        //     button.click();
+        //   }
+        // });
+        // event.stopPropagation();
       }
-      // event.stopPropagation();
-      event.preventDefault();
+      // if (
+      //   !inputElement.classList.contains("set-display-none") &&
+      //   inputElement == document.activeElement &&
+      //   event.key != "Tab" &&
+      //   event.key != "Enter"
+      // ) {
+      //   // TODO: gives error can't dispatch but works?
+      //   // Uncaught DOMException: Failed to execute 'dispatchEvent' on 'EventTarget': The event is already being dispatched.
+      //   inputElement.dispatchEvent(event);
+      // }
+      if (
+        !inputElement.classList.contains("set-display-none") &&
+        inputElement == document.activeElement &&
+        event.key != "Tab" &&
+        event.key != "Enter"
+      ) {
+      } else {
+        event.preventDefault();
+      }
+
       break;
   }
 }
@@ -234,6 +270,10 @@ function navigate(
   // bottom buttons
   const buttons = modalDiv.querySelectorAll(".modal-button");
   let enabledButtons = [];
+  const inputElement = modalDiv.querySelector(".modal-input");
+  if (!inputElement.classList.contains("set-display-none")) {
+    enabledButtons.push(inputElement);
+  }
   buttons.forEach((button) => {
     if (!button.classList.contains("set-display-none")) {
       enabledButtons.push(button);
@@ -243,7 +283,7 @@ function navigate(
   if (actionPressed) {
     for (let index = 0; index < enabledButtons.length; index++) {
       const button = enabledButtons[index];
-      if (button === focusedElement) {
+      if (button === focusedElement && button !== inputElement) {
         button.click();
         break;
       }
