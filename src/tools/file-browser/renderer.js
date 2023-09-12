@@ -215,16 +215,6 @@ function addFolderContentLi(type, ul, entry, index) {
   buttonSpan.setAttribute("data-nav-col", 0);
   buttonSpan.setAttribute("tabindex", "0");
   li.appendChild(buttonSpan);
-  // {
-  //   // TODO: delete TEST, use in History tool
-  //   //<i class="fas fa-window-close"></i>
-  //   if (type === -1) {
-  //     let buttonSpan = document.createElement("span");
-  //     buttonSpan.className = "tools-buttons-list-button";
-  //     buttonSpan.innerHTML = `<i class="fas fa-times fa-2x fa-fw"></i>`;
-  //     li.appendChild(buttonSpan);
-  //   }
-  // }
   ul.appendChild(li);
 }
 
