@@ -632,19 +632,19 @@
 /* /////////////////////////////////////////////////////////////// */
 
 .tools-buttons-list-li {
-  background-color: var(--tools-collection-bg-color);
-  border: 1px solid var(--tools-collection-text-color);
+  background-color: var(--tools-buttons-list-bg1-color);
+  border: 1px solid var(--tools-buttons-list-text-color);
   border-bottom: 0px;
-  color: var(--tools-collection-text-color);
+  color: var(--tools-buttons-list-text-color);
   display: flex;
   flex-direction: row;
   align-items: center;
 }
 .tools-buttons-list-li:last-child {
-  border-bottom: 1px solid var(--tools-collection-text-color);
+  border-bottom: 1px solid var(--tools-buttons-list-text-color);
 }
 .tools-buttons-list-li:nth-child(even) {
-  filter: brightness(105%);
+  background-color: var(--tools-buttons-list-bg2-color);
 }
 
 .tools-buttons-list-button {
@@ -655,15 +655,15 @@
   cursor: pointer;
   padding: 10px;
   width: 50px;
-  border-left: 1px solid var(--tools-collection-text-color);
+  border-left: 1px solid var(--tools-buttons-list-text-color);
 }
 .tools-buttons-list-button:hover {
-  color: var(--tools-collection-bg-color);
-  background-color: var(--tools-collection-text-color);
+  color: var(--tools-buttons-list-bg1-color);
+  background-color: var(--tools-buttons-list-text-color);
 }
 .tools-buttons-list-button:hover .tools-buttons-list-linkicon-file,
 .tools-buttons-list-button:hover .tools-buttons-list-linkicon-folder {
-  color: var(--tools-collection-text-color) !important;
+  color: var(--tools-buttons-list-text-color) !important;
 }
 .tools-buttons-list-button:first-child {
   width: 100%;
@@ -671,12 +671,12 @@
 }
 
 .tools-buttons-list-linkicon-file {
-  color: var(--tools-collection-bg-color) !important;
+  color: var(--tools-buttons-list-bg1-color) !important;
   padding-left: 5px;
   padding-top: 5px;
 }
 .tools-buttons-list-linkicon-folder {
-  color: var(--tools-collection-bg-color) !important;
+  color: var(--tools-buttons-list-bg1-color) !important;
   padding-left: 10px;
   padding-top: 2px;
 }

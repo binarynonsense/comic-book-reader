@@ -61,7 +61,10 @@
     "--tools-button-accent-bg-color": "#d9af50",
     "--tools-button-accent-text-color": "#303030",
     "--tools-button-danger-bg-color": "#c14949",
-    "--tools-button-danger-text-color": "#303030",      
+    "--tools-button-danger-text-color": "#303030",   
+    "--tools-buttons-list-bg1-color": "#373737",
+    "--tools-buttons-list-bg2-color": "#3b3b3b",    
+    "--tools-buttons-list-text-color": "#aaa",   
 
     "--modal-text-color": "#dbdbdb",
     "--modal-bg-color": "#818181",
