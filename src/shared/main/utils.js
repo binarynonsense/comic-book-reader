@@ -6,6 +6,7 @@
  */
 
 const path = require("path");
+const log = require("./logger");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SHELL //////////////////////////////////////////////////////////////////////
@@ -13,14 +14,19 @@ const path = require("path");
 
 function execShellCommand(command, args, workingDir) {
   //ref: https://nodejs.org/api/child_process.html#child_processexecfilesyncfile-args-options
+  // ref: https://nodejs.org/api/child_process.html#child_process_options_stdio
   try {
-    let options = { windowsHide: true, encoding: "utf8" };
+    let options = {
+      windowsHide: true,
+      encoding: "utf8",
+      stdio: ["pipe", "pipe", null],
+    };
     if (workingDir) options.cwd = workingDir;
     const execFileSync = require("child_process").execFileSync;
     const stdout = execFileSync(command, args, options);
-    return { error: false, stdout: stdout };
+    return { error: false, stdout: stdout, stderr: undefined };
   } catch (error) {
-    return { error: true, stdout: undefined };
+    return { error: true, stdout: undefined, stderr: error };
   }
 }
 exports.execShellCommand = execShellCommand;
@@ -44,6 +50,55 @@ exports.isRarExeAvailable = function (rarFolderPath) {
   } else {
     return false;
   }
+};
+
+exports.getDriveList = function () {
+  //lsblk -J -f -o size,label,mountpoint,uuid,rm
+  const cmdResult = execShellCommand("lsblk", [
+    "-J",
+    "-f",
+    "-o",
+    "size,label,mountpoint,uuid,rm,fstype,type",
+  ]);
+  let driveList = [];
+  if (process.platform === "linux") {
+    if (!cmdResult.error) {
+      //log.test(cmdResult.stdout);
+      try {
+        const list = JSON.parse(cmdResult.stdout);
+        // log.test(list);
+        if (list?.blockdevices && list.blockdevices.length > 0) {
+          list.blockdevices.forEach((drive) => {
+            if (drive.type !== "loop" && drive.mountpoint != null) {
+              driveList.push({
+                label: drive.label,
+                // TODO: do in a more elegant way
+                size:
+                  drive.size.substring(0, drive.size.length - 1) +
+                  " " +
+                  drive.size.substring(
+                    drive.size.length,
+                    drive.size.length - 1
+                  ) +
+                  "iB",
+                path: drive.mountpoint,
+                // NOTE: rm is false even for usb pendrives?
+                isRemovable: drive.rm,
+                isUSB: false,
+              });
+            }
+          });
+        }
+      } catch (error) {
+        log.debug(error);
+      }
+    } else {
+      log.debug(cmdResult.stderr);
+    }
+  } else if (process.platform === "win32") {
+    // TODO: win32
+  }
+  return driveList;
 };
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -38,8 +38,6 @@ exports.open = async function (fileData, showFocus) {
   sendIpcToCoreRenderer("replace-inner-html", "#tools", data.toString());
   updateLocalizedText();
 
-  // drivelist = require("drivelist");
-  // const drives = await drivelist.list();
   let drivesData = [];
   drivesData.push({
     name: _("tool-fb-shortcuts-places-home"),
@@ -56,6 +54,27 @@ exports.open = async function (fileData, showFocus) {
     path: appUtils.getDownloadsFolderPath(),
     isPlace: true,
   });
+
+  const drives = utils.getDriveList();
+  drives.forEach((drive) => {
+    if (drive.path) {
+      try {
+        fs.accessSync(drive.path, fs.constants.R_OK);
+        if (!drive.label || drive.label.trim() == "") {
+          drive.name = _("tool-fb-shortcuts-generic-drive", drive.size);
+        } else {
+          drive.name = drive.label;
+        }
+        drivesData.push(drive);
+      } catch (error) {
+        log.test(error.message);
+      }
+    }
+  });
+
+  // TODO: delete? old method - using drivelist package
+  // drivelist = require("drivelist");
+  // const drives = await drivelist.list();
   // drives.forEach((drive) => {
   //   // log.test(drive);
   //   // log.test("---------------------");
