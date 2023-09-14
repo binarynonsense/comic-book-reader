@@ -38,3 +38,7 @@ function separateVersionText(version) {
     console.log("match error");
   }
 }
+
+export async function delay(seconds) {
+  return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
+}

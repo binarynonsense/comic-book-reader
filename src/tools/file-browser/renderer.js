@@ -9,7 +9,9 @@ import {
   sendIpcToMain as coreSendIpcToMain,
   sendIpcToMainAndWait as coreSendIpcToMainAndWait,
 } from "../../core/renderer.js";
+import * as modals from "../../shared/renderer/modals.js";
 import * as gamepads from "../../shared/renderer/gamepads.js";
+import { delay } from "../../shared/renderer/utils.js";
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -18,7 +20,7 @@ import * as gamepads from "../../shared/renderer/gamepads.js";
 let g_isInitialized = false;
 let g_shortcutsDiv;
 
-async function init(drivesData, showFocus) {
+async function init(showFocus, localizedLoadingText) {
   if (!g_isInitialized) {
     // things to start only once go here
     g_isInitialized = true;
@@ -29,6 +31,14 @@ async function init(drivesData, showFocus) {
     block: "start",
     inline: "nearest",
   });
+  ////////////////////////////////////////
+  if (!g_openModal) closeModal(g_openModal);
+  showProgressModal(localizedLoadingText);
+  // give some time for the modal to show
+  await delay(0.2);
+  sendIpcToMain("build-drives-data");
+}
+async function buildPage(drivesData) {
   // menu buttons
   const backButton = document.getElementById("tool-fb-back-button");
   backButton.addEventListener("click", (event) => {
@@ -68,6 +78,10 @@ async function init(drivesData, showFocus) {
   });
   ////////////////////////////////////////
   updateColumnsHeight();
+  if (g_openModal) {
+    modals.close(g_openModal);
+    modalClosed();
+  }
 }
 
 export function initIpc() {
@@ -130,6 +144,10 @@ function initOnIpcCallbacks() {
   });
 
   //////////////////////////
+
+  on("build-page", (...args) => {
+    buildPage(...args);
+  });
 
   on("show-folder-contents", (...args) => {
     showFolderContents(...args);
@@ -320,10 +338,10 @@ function navigate(
 ///////////////////////////////////////////////////////////////////////////////
 
 export function onInputEvent(type, event) {
-  // if (getOpenModal()) {
-  //   modals.onInputEvent(getOpenModal(), type, event);
-  //   return;
-  // }
+  if (getOpenModal()) {
+    modals.onInputEvent(getOpenModal(), type, event);
+    return;
+  }
   switch (type) {
     case "onkeydown":
       navigate(
@@ -340,9 +358,9 @@ export function onInputEvent(type, event) {
 }
 
 export function onContextMenu(params) {
-  // if (getOpenModal()) {
-  //   return;
-  // }
+  if (getOpenModal()) {
+    return;
+  }
   sendIpcToMain("show-context-menu", params);
 }
 
@@ -351,6 +369,10 @@ export function onContextMenu(params) {
 ///////////////////////////////////////////////////////////////////////////////
 
 export function onGamepadPolled() {
+  if (getOpenModal()) {
+    modals.onGamepadPolled(getOpenModal());
+    return;
+  }
   const upPressed =
     gamepads.getButtonDown(gamepads.Buttons.DPAD_UP) ||
     gamepads.getAxisDown(gamepads.Axes.RS_Y, -1);
@@ -372,4 +394,45 @@ export function onGamepadPolled() {
     leftPressed,
     rightPressed
   );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// MODALS /////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+let g_openModal;
+
+export function getOpenModal() {
+  return g_openModal;
+}
+
+function closeModal() {
+  if (g_openModal) {
+    modals.close(g_openModal);
+    modalClosed();
+  }
+}
+
+function modalClosed() {
+  g_openModal = undefined;
+}
+
+function showProgressModal(title) {
+  if (g_openModal) {
+    return;
+  }
+  g_openModal = modals.show({
+    title: title,
+    message: " ",
+    zIndexDelta: 5,
+    frameWidth: 600,
+    close: {
+      callback: () => {
+        modalClosed();
+      },
+      // key: "Escape",
+      hide: true,
+    },
+    progressBar: {},
+  });
 }

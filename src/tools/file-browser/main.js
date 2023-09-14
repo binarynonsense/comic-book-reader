@@ -21,6 +21,7 @@ const contextMenu = require("../../shared/main/tools-menu-context");
 ///////////////////////////////////////////////////////////////////////////////
 
 let g_isInitialized = false;
+let g_;
 
 function init() {
   if (!g_isInitialized) {
@@ -30,53 +31,17 @@ function init() {
   }
 }
 
-exports.open = async function (fileData, showFocus) {
+exports.open = function (fileData, showFocus) {
   // called by switchTool when opening tool
   init();
   const data = fs.readFileSync(path.join(__dirname, "index.html"));
   sendIpcToCoreRenderer("replace-inner-html", "#tools", data.toString());
   updateLocalizedText();
-
-  let drivesData = [];
-  drivesData.push({
-    name: _("tool-fb-shortcuts-places-home"),
-    path: appUtils.getHomeFolderPath(),
-    isPlace: true,
-  });
-  drivesData.push({
-    name: _("tool-fb-shortcuts-places-desktop"),
-    path: appUtils.getDesktopFolderPath(),
-    isPlace: true,
-  });
-  drivesData.push({
-    name: _("tool-fb-shortcuts-places-downloads"),
-    path: appUtils.getDownloadsFolderPath(),
-    isPlace: true,
-  });
-
-  const drives = utils.getDriveList();
-  drives.forEach((drive) => {
-    if (drive.path) {
-      try {
-        fs.accessSync(drive.path, fs.constants.R_OK);
-        if (!drive.label || drive.label.trim() == "") {
-          drive.name = _("tool-fb-shortcuts-generic-drive", drive.size);
-        } else {
-          drive.name = drive.label;
-        }
-        drivesData.push(drive);
-      } catch (error) {
-        log.test(error.message);
-      }
-    }
-  });
-
-  sendIpcToRenderer("show", drivesData, showFocus);
-  updateCurrentFolder(
+  g_startingFolder =
     fileData && fileData.path !== undefined && fileData.path !== ""
       ? path.dirname(fileData.path)
-      : appUtils.getDesktopFolderPath()
-  );
+      : appUtils.getDesktopFolderPath();
+  sendIpcToRenderer("show", showFocus, _("tool-shared-modal-title-loading"));
 };
 
 exports.close = function () {
@@ -132,6 +97,45 @@ function initOnIpcCallbacks() {
 
   on("show-context-menu", (params) => {
     contextMenu.show("minimal", params, onCloseClicked);
+  });
+
+  on("build-drives-data", () => {
+    let drivesData = [];
+    drivesData.push({
+      name: _("tool-fb-shortcuts-places-home"),
+      path: appUtils.getHomeFolderPath(),
+      isPlace: true,
+    });
+    drivesData.push({
+      name: _("tool-fb-shortcuts-places-desktop"),
+      path: appUtils.getDesktopFolderPath(),
+      isPlace: true,
+    });
+    drivesData.push({
+      name: _("tool-fb-shortcuts-places-downloads"),
+      path: appUtils.getDownloadsFolderPath(),
+      isPlace: true,
+    });
+
+    const drives = utils.getDriveList();
+    drives.forEach((drive) => {
+      if (drive.path) {
+        try {
+          fs.accessSync(drive.path, fs.constants.R_OK);
+          if (!drive.label || drive.label.trim() == "") {
+            drive.name = _("tool-fb-shortcuts-generic-drive", drive.size);
+          } else {
+            drive.name = drive.label;
+          }
+          drivesData.push(drive);
+        } catch (error) {
+          log.test(error.message);
+        }
+      }
+    });
+
+    sendIpcToRenderer("build-page", drivesData);
+    updateCurrentFolder(g_startingFolder);
   });
 
   on("change-current-folder", (...args) => {
