@@ -1,7 +1,7 @@
 {
   "@metadata": {
     "authors": ["trzyglow"],
-    "last-updated": "2023-09-12",
+    "last-updated": "2023-09-14",
     "acbr-version": "3.2.4",
     "comments": "Deutsche Lokalisierung",
     "locale": "de",
@@ -607,6 +607,7 @@
   "tool-fb-shortcuts-places-downloads": "Downloads",
   "[NOTE TO TRANSLATORS fb2]": "devices as in hard-drives, usb pendrives...",
   "tool-fb-shortcuts-devices": "Geräte und Laufwerke",
-  "tool-fb-shortcuts-generic-harddrive": "{0} GiB Festplatte",
-  "tool-fb-shortcuts-generic-drive": "{0} GiB Laufwerk"
+  "[NOTE TO TRANSLATORS fb3]": "{0} will be replaced with the drive's size, e.g: 250 GB",
+  "tool-fb-shortcuts-generic-harddrive": "{0} Festplatte",
+  "tool-fb-shortcuts-generic-drive": "{0} Laufwerk"
 }

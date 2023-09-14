@@ -607,6 +607,7 @@
   "[NEEDS TRANSLATION]tool-fb-shortcuts-places-downloads": "Downloads",
   "[NOTE TO TRANSLATORS fb2]": "devices as in hard-drives, usb pendrives...",
   "[NEEDS TRANSLATION]tool-fb-shortcuts-devices": "Devices",
-  "[NEEDS TRANSLATION]tool-fb-shortcuts-generic-harddrive": "{0} GiB Hard Drive",
-  "[NEEDS TRANSLATION]tool-fb-shortcuts-generic-drive": "{0} GiB Drive"
+  "[NOTE TO TRANSLATORS fb3]": "{0} will be replaced with the drive's size, e.g: 250 GB",
+  "[NEEDS TRANSLATION]tool-fb-shortcuts-generic-harddrive": "{0} Hard Drive",
+  "[NEEDS TRANSLATION]tool-fb-shortcuts-generic-drive": "{0} Drive"
 }
