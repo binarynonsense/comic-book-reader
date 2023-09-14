@@ -29,56 +29,75 @@ exports.moveFile = function (oldPath, newPath) {
 };
 
 exports.getFolderContents = function (folderPath) {
-  if (fs.existsSync(folderPath) && fs.lstatSync(folderPath).isDirectory()) {
-    let filesInFolder = fs.readdirSync(folderPath);
-    if (filesInFolder.length === 0) {
-      return {};
-    } else {
-      let contents = {
-        files: [],
-        folders: [],
-      };
-      filesInFolder.forEach((entry) => {
-        try {
-          let data = {
-            name: entry,
-            fullPath: path.join(folderPath, entry),
-            isLink: false,
-          };
-          let stats = fs.lstatSync(data.fullPath);
-          if (process.platform === "win32" && path.extname(entry) === ".lnk") {
-            const { shell } = require("electron");
-            const parsed = shell.readShortcutLink(data.fullPath);
-            const realPath = parsed.target;
-            data.isLink = true;
-            if (fs.existsSync(realPath)) {
-              data.name = path.basename(entry, path.extname(entry));
-              data.fullPath = realPath;
-              stats = fs.lstatSync(data.fullPath);
-            }
-          }
-          if (!data.isLink && stats.isSymbolicLink()) {
-            data.isLink = true;
-            const realPath = fs.readlinkSync(path.join(folderPath, entry));
-            if (fs.existsSync(realPath)) {
-              data.fullPath = realPath;
-              stats = fs.lstatSync(data.fullPath);
-            }
-          }
-          // add to the corresponding list
-          if (stats.isDirectory()) {
-            contents.folders.push(data);
-          } else {
-            contents.files.push(data);
-          }
-        } catch (error) {
-          // just don't add files/folders if there are errors
-          // checking their stats
+  try {
+    if (fs.existsSync(folderPath)) {
+      let folderStats = fs.lstatSync(folderPath);
+      if (folderStats.isSymbolicLink()) {
+        const realPath = fs.readlinkSync(folderPath);
+        if (fs.existsSync(realPath)) {
+          folderPath = realPath;
+          folderStats = fs.lstatSync(folderPath);
         }
-      });
-      return contents;
+      }
+      if (!folderStats.isDirectory()) {
+        return undefined;
+      }
+      // get contents
+      let filesInFolder = fs.readdirSync(folderPath);
+      if (filesInFolder.length === 0) {
+        return {};
+      } else {
+        let contents = {
+          files: [],
+          folders: [],
+        };
+        filesInFolder.forEach((entry) => {
+          try {
+            let data = {
+              name: entry,
+              fullPath: path.join(folderPath, entry),
+              isLink: false,
+            };
+            let stats = fs.lstatSync(data.fullPath);
+            if (
+              process.platform === "win32" &&
+              path.extname(entry) === ".lnk"
+            ) {
+              const { shell } = require("electron");
+              const parsed = shell.readShortcutLink(data.fullPath);
+              const realPath = parsed.target;
+              data.isLink = true;
+              if (fs.existsSync(realPath)) {
+                data.name = path.basename(entry, path.extname(entry));
+                data.fullPath = realPath;
+                stats = fs.lstatSync(data.fullPath);
+              }
+            }
+            if (!data.isLink && stats.isSymbolicLink()) {
+              data.isLink = true;
+              const realPath = fs.readlinkSync(path.join(folderPath, entry));
+              if (fs.existsSync(realPath)) {
+                data.fullPath = realPath;
+                stats = fs.lstatSync(data.fullPath);
+              }
+            }
+            // add to the corresponding list
+            if (stats.isDirectory()) {
+              contents.folders.push(data);
+            } else {
+              contents.files.push(data);
+            }
+          } catch (error) {
+            // just don't add files/folders if there are errors
+            // checking their stats
+          }
+        });
+        return contents;
+      }
+    } else {
+      return undefined;
     }
-  } else {
+  } catch (error) {
     return undefined;
   }
 };
