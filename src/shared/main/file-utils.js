@@ -63,7 +63,7 @@ exports.getFolderContents = function (folderPath) {
             contents.files.push(data);
           }
         } catch (error) {
-          // just don't add files/folders if there are error
+          // just don't add files/folders if there are errors
           // checking their stats
         }
       });
