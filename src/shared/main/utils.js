@@ -97,6 +97,10 @@ exports.getDriveList = function () {
     }
   } else if (process.platform === "win32") {
     // TODO: win32
+    // things to try:
+    // powershell
+    //   get-psdrive -psprovider filesystem
+    //   get-volume
   }
   return driveList;
 };
