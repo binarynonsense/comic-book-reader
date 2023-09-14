@@ -29,7 +29,7 @@ exports.moveFile = function (oldPath, newPath) {
 };
 
 exports.getFolderContents = function (folderPath) {
-  if (fs.existsSync(folderPath)) {
+  if (fs.existsSync(folderPath) && fs.lstatSync(folderPath).isDirectory()) {
     let filesInFolder = fs.readdirSync(folderPath);
     if (filesInFolder.length === 0) {
       return {};
