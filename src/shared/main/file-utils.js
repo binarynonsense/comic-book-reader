@@ -45,19 +45,28 @@ exports.getFolderContents = function (folderPath) {
             fullPath: path.join(folderPath, entry),
             isLink: false,
           };
-          const stats = fs.lstatSync(data.fullPath);
-          if (stats.isSymbolicLink()) {
+          let stats = fs.lstatSync(data.fullPath);
+          if (process.platform === "win32" && path.extname(entry) === ".lnk") {
+            const { shell } = require("electron");
+            const parsed = shell.readShortcutLink(data.fullPath);
+            const realPath = parsed.target;
+            data.isLink = true;
+            if (fs.existsSync(realPath)) {
+              data.name = path.basename(entry, path.extname(entry));
+              data.fullPath = realPath;
+              stats = fs.lstatSync(data.fullPath);
+            }
+          }
+          if (!data.isLink && stats.isSymbolicLink()) {
             data.isLink = true;
             const realPath = fs.readlinkSync(path.join(folderPath, entry));
             if (fs.existsSync(realPath)) {
               data.fullPath = realPath;
-              if (fs.lstatSync(realPath).isDirectory()) {
-                contents.folders.push(data);
-              } else {
-                contents.files.push(data);
-              }
+              stats = fs.lstatSync(data.fullPath);
             }
-          } else if (stats.isDirectory()) {
+          }
+          // add to the corresponding list
+          if (stats.isDirectory()) {
             contents.folders.push(data);
           } else {
             contents.files.push(data);
