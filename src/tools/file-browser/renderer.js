@@ -57,7 +57,6 @@ async function init(drivesData, showFocus) {
     textSpan.innerText = drive.name;
     textDiv.appendChild(textSpan);
     buttonDiv.appendChild(textDiv);
-    // buttonDiv.setAttribute("data-path", drive.path);
     buttonDiv.addEventListener("click", () => {
       sendIpcToMain("change-current-folder", drive.path);
     });
@@ -67,8 +66,6 @@ async function init(drivesData, showFocus) {
     buttonDiv.setAttribute("tabindex", "0");
     g_shortcutsDiv.appendChild(buttonDiv);
   });
-  ////////////////////////////////////////
-
   ////////////////////////////////////////
   updateColumnsHeight();
 }

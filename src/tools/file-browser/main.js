@@ -15,7 +15,6 @@ const appUtils = require("../../shared/main/app-utils");
 const fileUtils = require("../../shared/main/file-utils");
 const reader = require("../../reader/main");
 const contextMenu = require("../../shared/main/tools-menu-context");
-// let drivelist; // required in open
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -72,30 +71,6 @@ exports.open = async function (fileData, showFocus) {
     }
   });
 
-  // TODO: delete? old method - using drivelist package
-  // drivelist = require("drivelist");
-  // const drives = await drivelist.list();
-  // drives.forEach((drive) => {
-  //   // log.test(drive);
-  //   // log.test("---------------------");
-  //   if (drive.mountpoints && drive.mountpoints.length > 0) {
-  //     let driveName = drive.mountpoints[drive.mountpoints.length - 1].label;
-  //     const drivePath = drive.mountpoints[drive.mountpoints.length - 1].path;
-  //     if (!driveName) {
-  //       driveName = drive.displayName;
-  //     }
-  //     if (!driveName) {
-  //       let size = (drive.size / 1024 / 1024 / 1024).toFixed(2);
-  //       driveName = _("tool-fb-shortcuts-generic-drive", size);
-  //     }
-  //     drivesData.push({
-  //       name: driveName,
-  //       path: drivePath,
-  //       isRemovable: drive.isRemovable,
-  //       isUSB: drive.isUSB,
-  //     });
-  //   }
-  // });
   sendIpcToRenderer("show", drivesData, showFocus);
   updateCurrentFolder(
     fileData && fileData.path !== undefined && fileData.path !== ""
@@ -231,7 +206,7 @@ function updateCurrentFolder(folderPath) {
       );
     }
   } catch (error) {
-    // TODO: do something?
+    log.debug(error);
   }
 }
 

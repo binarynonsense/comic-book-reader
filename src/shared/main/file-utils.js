@@ -29,7 +29,7 @@ exports.moveFile = function (oldPath, newPath) {
 };
 
 exports.getFolderContents = function (folderPath) {
-  if (fs.existsSync(folderPath) && fs.lstatSync(folderPath).isDirectory()) {
+  if (fs.existsSync(folderPath)) {
     let filesInFolder = fs.readdirSync(folderPath);
     if (filesInFolder.length === 0) {
       return {};
@@ -39,27 +39,32 @@ exports.getFolderContents = function (folderPath) {
         folders: [],
       };
       filesInFolder.forEach((entry) => {
-        let data = {
-          name: entry,
-          fullPath: path.join(folderPath, entry),
-          isLink: false,
-        };
-        const stats = fs.lstatSync(data.fullPath);
-        if (stats.isSymbolicLink()) {
-          data.isLink = true;
-          const realPath = fs.readlinkSync(path.join(folderPath, entry));
-          if (fs.existsSync(realPath)) {
-            data.fullPath = realPath;
-            if (fs.lstatSync(realPath).isDirectory()) {
-              contents.folders.push(data);
-            } else {
-              contents.files.push(data);
+        try {
+          let data = {
+            name: entry,
+            fullPath: path.join(folderPath, entry),
+            isLink: false,
+          };
+          const stats = fs.lstatSync(data.fullPath);
+          if (stats.isSymbolicLink()) {
+            data.isLink = true;
+            const realPath = fs.readlinkSync(path.join(folderPath, entry));
+            if (fs.existsSync(realPath)) {
+              data.fullPath = realPath;
+              if (fs.lstatSync(realPath).isDirectory()) {
+                contents.folders.push(data);
+              } else {
+                contents.files.push(data);
+              }
             }
+          } else if (stats.isDirectory()) {
+            contents.folders.push(data);
+          } else {
+            contents.files.push(data);
           }
-        } else if (stats.isDirectory()) {
-          contents.folders.push(data);
-        } else {
-          contents.files.push(data);
+        } catch (error) {
+          // just don't add files/folders if there are error
+          // checking their stats
         }
       });
       return contents;

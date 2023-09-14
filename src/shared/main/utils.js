@@ -53,20 +53,18 @@ exports.isRarExeAvailable = function (rarFolderPath) {
 };
 
 exports.getDriveList = function () {
-  //lsblk -J -f -o size,label,mountpoint,uuid,rm
-  const cmdResult = execShellCommand("lsblk", [
-    "-J",
-    "-f",
-    "-o",
-    "size,label,mountpoint,uuid,rm,fstype,type",
-  ]);
   let driveList = [];
   if (process.platform === "linux") {
+    //lsblk -J -f -o size,label,mountpoint,uuid,rm
+    const cmdResult = execShellCommand("lsblk", [
+      "-J",
+      "-f",
+      "-o",
+      "size,label,mountpoint,uuid,rm,fstype,type",
+    ]);
     if (!cmdResult.error) {
-      //log.test(cmdResult.stdout);
       try {
         const list = JSON.parse(cmdResult.stdout);
-        // log.test(list);
         if (list?.blockdevices && list.blockdevices.length > 0) {
           list.blockdevices.forEach((drive) => {
             if (drive.type !== "loop" && drive.mountpoint != null) {
@@ -96,11 +94,46 @@ exports.getDriveList = function () {
       log.debug(cmdResult.stderr);
     }
   } else if (process.platform === "win32") {
-    // TODO: win32
-    // things to try:
-    // powershell
-    //   get-psdrive -psprovider filesystem
-    //   get-volume
+    // const cmdResult = execShellCommand("powershell", [
+    //   "get-volume | ConvertTo-Json",
+    // ]);
+    const cmdResult = execShellCommand("powershell", [
+      "get-psdrive -psprovider filesystem | ConvertTo-Json",
+    ]);
+    if (!cmdResult.error) {
+      try {
+        let list = JSON.parse(cmdResult.stdout);
+        if (!Array.isArray(list)) {
+          list = [list];
+        }
+        list.forEach((drive) => {
+          if (drive.Root) {
+            let size = "??? GiB";
+            if (drive.Used && drive.Free) {
+              size =
+                (
+                  (parseInt(drive.Used) + parseInt(drive.Free)) /
+                  1024 /
+                  1024 /
+                  1024
+                ).toFixed(2) + " GiB";
+            }
+            driveList.push({
+              label: drive.Description,
+              size: size,
+              path: drive.Root,
+              // NOTE: can't get these
+              isRemovable: false,
+              isUSB: false,
+            });
+          }
+        });
+      } catch (error) {
+        log.debug(error);
+      }
+    } else {
+      log.debug(cmdResult.stderr);
+    }
   }
   return driveList;
 };
