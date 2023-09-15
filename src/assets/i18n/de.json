@@ -1,7 +1,7 @@
 {
   "@metadata": {
     "authors": ["trzyglow"],
-    "last-updated": "2023-09-14",
+    "last-updated": "2023-09-15",
     "acbr-version": "3.2.4",
     "comments": "Deutsche Lokalisierung",
     "locale": "de",
@@ -611,8 +611,8 @@
   "tool-fb-shortcuts-generic-harddrive": "{0} Festplatte",
   "tool-fb-shortcuts-generic-drive": "{0} Laufwerk",
   "[NOTE TO TRANSLATORS fb4]": "up refers to going up in the folder tree, back refers to going back to the previous folder",
-  "[NEEDS TRANSLATION]tool-fb-browse-up": "Up",
-  "[NEEDS TRANSLATION]tool-fb-browse-back": "Back",
-  "[NEEDS TRANSLATION]tool-fb-browse-parent": "Parent Folder",
-  "[NEEDS TRANSLATION]tool-fb-browse-previous": "Previous Folder"
+  "tool-fb-browse-up": "Pfad Hoch",
+  "tool-fb-browse-back": "Zurück",
+  "tool-fb-browse-parent": "Übergeordneter Ordner",
+  "tool-fb-browse-previous": "Vorheriger Ordner"
 }
