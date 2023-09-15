@@ -158,18 +158,31 @@ function initOnIpcCallbacks() {
 // TOOL ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-function showFolderContents(folderPath, folderContents, parentPath) {
+function showFolderContents(
+  folderPath,
+  folderContents,
+  parentFolder,
+  previousFolder
+) {
   document.getElementById("tool-fb-current-path-text").innerText = folderPath;
   const ul = document.querySelector("#tool-fb-items-ul");
   ul.innerHTML = "";
   let rowId = 0;
-  if (parentPath) {
+  if (parentFolder && parentFolder?.path) {
     let data = {
-      name: "..",
-      fullPath: parentPath,
+      name: parentFolder.name,
+      fullPath: parentFolder.path,
       isLink: false,
     };
     addFolderContentLi(-1, ul, data, rowId++);
+  }
+  if (previousFolder && previousFolder?.path) {
+    let data = {
+      name: previousFolder.name,
+      fullPath: previousFolder.path,
+      isLink: false,
+    };
+    addFolderContentLi(-2, ul, data, rowId++);
   }
   if (folderContents.folders) {
     for (let index = 0; index < folderContents.folders.length; index++) {
@@ -212,11 +225,13 @@ function addFolderContentLi(type, ul, entry, index) {
     }
   } else if (type === -1) {
     buttonSpan.innerHTML = `<i class="fas fa-arrow-alt-circle-up fa-2x fa-fw"></i>`;
+  } else if (type === -2) {
+    buttonSpan.innerHTML = `<i class="fas fa-arrow-alt-circle-left fa-2x fa-fw"></i>`;
   }
   let text = document.createElement("span");
   text.innerText = `${entry.name}`;
   buttonSpan.appendChild(text);
-  if (type === 0 || type === -1) {
+  if (type === 0 || type === -1 || type === -2) {
     buttonSpan.addEventListener("click", (event) => {
       sendIpcToMain("change-current-folder", entry.fullPath);
     });

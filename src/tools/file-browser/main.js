@@ -21,7 +21,8 @@ const contextMenu = require("../../shared/main/tools-menu-context");
 ///////////////////////////////////////////////////////////////////////////////
 
 let g_isInitialized = false;
-let g_;
+let g_startingFolderPath;
+let g_previousFolderPath;
 
 function init() {
   if (!g_isInitialized) {
@@ -37,10 +38,11 @@ exports.open = function (fileData, showFocus) {
   const data = fs.readFileSync(path.join(__dirname, "index.html"));
   sendIpcToCoreRenderer("replace-inner-html", "#tools", data.toString());
   updateLocalizedText();
-  g_startingFolder =
+  g_startingFolderPath =
     fileData && fileData.path !== undefined && fileData.path !== ""
       ? path.dirname(fileData.path)
       : appUtils.getDesktopFolderPath();
+  g_previousFolderPath = undefined;
   sendIpcToRenderer("show", showFocus, _("tool-shared-modal-title-loading"));
 };
 
@@ -135,7 +137,7 @@ function initOnIpcCallbacks() {
     });
 
     sendIpcToRenderer("build-page", drivesData);
-    updateCurrentFolder(g_startingFolder);
+    updateCurrentFolder(g_startingFolderPath);
   });
 
   on("change-current-folder", (...args) => {
@@ -206,8 +208,17 @@ function updateCurrentFolder(folderPath) {
         "show-folder-contents",
         folderPath,
         folderContents,
-        parent === folderPath ? undefined : parent
+        parent === folderPath
+          ? undefined
+          : { path: parent, name: _("tool-fb-browse-up") },
+        g_previousFolderPath
+          ? {
+              path: g_previousFolderPath,
+              name: _("tool-fb-browse-back"),
+            }
+          : undefined
       );
+      g_previousFolderPath = folderPath;
     }
   } catch (error) {
     log.debug(error);
