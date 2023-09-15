@@ -100,6 +100,7 @@ exports.init = function (filePath, checkHistory) {
     return;
   }
 
+  sendIpcToRenderer("update-bg", true);
   sendIpcToRenderer("update-loading", false);
 };
 
