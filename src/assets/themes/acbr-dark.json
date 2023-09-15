@@ -1,8 +1,8 @@
 {
     "@metadata": {
       "authors": ["Álvaro"],
-      "last-updated": "2023-07-26",
-      "acbr-version": "3.0.0-alpha1",
+      "last-updated": "2023-09-15",
+      "acbr-version": "3.3.0",
       "comments": "light text over dark background, with the orange slider",
       "name": "ACBR Dark"
     },
