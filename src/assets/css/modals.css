@@ -28,7 +28,7 @@
 }
 
 .modal-frame-show {
-  animation: bounce 0.3s ease-out;
+  animation: bounce 0.2s ease-out;
 }
 @keyframes bounce {
   0% {
