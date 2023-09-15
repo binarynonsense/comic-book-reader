@@ -159,6 +159,7 @@ const createWindow = () => {
   log.debug("starting width: " + settings.getValue("width"));
   log.debug("starting height: " + settings.getValue("height"));
   log.debug("maximized: " + settings.getValue("maximize"));
+  log.debug("full screen: " + settings.getValue("fullScreen"));
   // win creation
   g_mainWindow = new BrowserWindow({
     width: settings.getValue("width"),
@@ -285,6 +286,9 @@ const createWindow = () => {
     g_mainWindow.center();
     if (settings.getValue("maximize")) {
       g_mainWindow.maximize();
+    }
+    if (settings.getValue("fullScreen")) {
+      toggleFullScreen();
     }
     g_mainWindow.webContents.on("context-menu", function (e, params) {
       sendIpcToCoreRenderer("show-context-menu", params);
@@ -414,6 +418,7 @@ exports.toggleDevTools = toggleDevTools;
 
 function toggleFullScreen() {
   reader.setFullScreen(!g_mainWindow.isFullScreen());
+  settings.setValue("fullScreen", g_mainWindow.isFullScreen());
 }
 exports.toggleFullScreen = toggleFullScreen;
 

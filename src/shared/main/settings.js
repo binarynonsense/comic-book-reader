@@ -48,6 +48,7 @@ function setDefaultValues() {
     page_mode: 0, // 0: single-page, 1: double-page
     hotspots_mode: 1, // 0: disabled, 1: 2-columns, 2: 3-columns
     maximize: false,
+    fullScreen: false,
     width: g_defaultSize.width,
     height: g_defaultSize.height,
     history_capacity: 30,
@@ -126,6 +127,9 @@ function sanitize(screenWidth, screenHeight) {
   }
   if (typeof g_settings.maximize !== "boolean") {
     g_settings.maximize = false;
+  }
+  if (typeof g_settings.fullScreen !== "boolean") {
+    g_settings.fullScreen = false;
   }
   if (
     !Number.isInteger(g_settings.width) ||
