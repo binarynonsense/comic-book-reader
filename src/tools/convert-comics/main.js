@@ -19,6 +19,7 @@ const appUtils = require("../../shared/main/app-utils");
 const settings = require("../../shared/main/settings");
 const utils = require("../../shared/main/utils");
 const contextMenu = require("../../shared/main/tools-menu-context");
+const log = require("../../shared/main/logger");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
