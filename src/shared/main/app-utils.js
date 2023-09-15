@@ -153,7 +153,7 @@ function cleanUpUserDataFolder() {
   try {
     log.info("cleaning up...");
     log.debug(
-      "failing to delete some files or folders during the clean up process is normal and expected"
+      "the clean up process may fail to delete some files or folders depending on the OS and other circumstances, this is normal and expected"
     );
     let keepFiles = [
       "acbr.cfg",
