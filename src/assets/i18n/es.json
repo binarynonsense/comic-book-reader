@@ -609,5 +609,10 @@
   "tool-fb-shortcuts-devices": "Dispositivos",
   "[NOTE TO TRANSLATORS fb3]": "{0} will be replaced with the drive's size, e.g: 250 GB",
   "tool-fb-shortcuts-generic-harddrive": "Disco Duro de {0}",
-  "tool-fb-shortcuts-generic-drive": "Disco de {0}"
+  "tool-fb-shortcuts-generic-drive": "Disco de {0}",
+  "[NOTE TO TRANSLATORS fb4]": "up refers to going up in the folder tree, back refers to going back to the previous folder",
+  "tool-fb-browse-up": "Arriba",
+  "tool-fb-browse-back": "Atrás",
+  "tool-fb-browse-parent": "Directorio Padre",
+  "tool-fb-browse-previous": "Directorio Anterior"
 }
