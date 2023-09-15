@@ -541,8 +541,13 @@ function initOnIpcCallbacks() {
       _("tool-shared-ui-back-to-reader"),
       _("tool-fb-title"), //_("ctxmenu-openfile").replace("...", ""),
       _("menu-file-openrecent-history"),
+      _("menu-view-togglefullscreen"),
       _("menu-file-quit")
     );
+  });
+
+  on("toggle-fullscreen", () => {
+    core.onMenuToggleFullScreen();
   });
 
   on("quit", () => {

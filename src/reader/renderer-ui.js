@@ -1275,6 +1275,7 @@ function showModalQuickMenu(
   textButtonBack,
   textButtonFileBrowser,
   textButtonHistory,
+  textButtonFullscreen,
   textButtonQuit
 ) {
   if (g_openModal) {
@@ -1302,6 +1303,14 @@ function showModalQuickMenu(
     callback: () => {
       modalClosed();
       sendIpcToMain("open-history-tool", true);
+    },
+  });
+  buttons.push({
+    text: textButtonFullscreen.toUpperCase(),
+    fullWidth: true,
+    callback: () => {
+      modalClosed();
+      sendIpcToMain("toggle-fullscreen");
     },
   });
   buttons.push({
