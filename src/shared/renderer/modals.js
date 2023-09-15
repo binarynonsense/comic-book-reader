@@ -89,6 +89,12 @@ export function show(options) {
       if (options.close?.key && typeof options.close.key === "string") {
         button.setAttribute("data-key", options.close.key);
       }
+      if (
+        options.close?.gpButton &&
+        typeof options.close.gpButton === "string"
+      ) {
+        button.setAttribute("data-gp-button", options.close.gpButton);
+      }
     }
     // bottom buttons
     if (options.buttons && Array.isArray(options.buttons)) {
@@ -183,14 +189,16 @@ export function onInputEvent(modalDiv, type, event) {
         // close x button
         {
           const button = modalDiv.querySelector(".modal-close-button");
-          const key = button.getAttribute("data-key");
-          if (
-            key &&
-            event.key &&
-            key === event.key &&
-            !button.classList.contains("set-display-none")
-          ) {
-            button.click();
+          const data = button.getAttribute("data-key");
+          if (data && !button.classList.contains("set-display-none")) {
+            const keys = data.split(",");
+            for (let index = 0; index < keys.length; index++) {
+              const key = keys[index];
+              if (key && event.key && key === event.key) {
+                button.click();
+                break;
+              }
+            }
           }
         }
         // bottom buttons
@@ -243,14 +251,23 @@ export function onGamepadPolled(modalDiv) {
     gamepads.getButtonDown(gamepads.Buttons.DPAD_RIGHT) ||
     gamepads.getAxisDown(gamepads.Axes.RS_Y, 1) ||
     gamepads.getAxisDown(gamepads.Axes.RS_X, 1);
-
-  navigate(
-    modalDiv,
-    gamepads.getButtonDown(gamepads.Buttons.B),
-    gamepads.getButtonDown(gamepads.Buttons.A),
-    upPressed,
-    downPressed
-  );
+  const actionPressed = gamepads.getButtonDown(gamepads.Buttons.A);
+  let backPressed = gamepads.getButtonDown(gamepads.Buttons.B);
+  if (!backPressed) {
+    const button = modalDiv.querySelector(".modal-close-button");
+    const data = button.getAttribute("data-gp-button");
+    if (data && !button.classList.contains("set-display-none")) {
+      const gpButtons = data.split(",");
+      for (let index = 0; index < gpButtons.length; index++) {
+        const gpButton = gpButtons[index];
+        if (gpButton && gamepads.getButtonDown(parseInt(gpButton))) {
+          backPressed = true;
+          break;
+        }
+      }
+    }
+  }
+  navigate(modalDiv, backPressed, actionPressed, upPressed, downPressed);
 }
 
 function navigate(

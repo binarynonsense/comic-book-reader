@@ -1330,7 +1330,8 @@ function showModalQuickMenu(
       callback: () => {
         modalClosed();
       },
-      key: "Escape",
+      key: "Escape,F1",
+      gpButton: `${gamepads.Buttons.START}`,
     },
     buttons: buttons,
   });
