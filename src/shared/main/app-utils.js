@@ -152,6 +152,9 @@ function cleanUpUserDataFolder() {
   // some things are not entirely deleted, but it's good enough :)
   try {
     log.info("cleaning up...");
+    log.debug(
+      "failing to delete some files or folders during the clean up process is normal and expected"
+    );
     let keepFiles = [
       "acbr.cfg",
       "acbr.hst",
