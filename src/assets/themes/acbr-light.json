@@ -8,7 +8,8 @@
     },
   
     "--bg-color": "#1e1e1e",
-    "--text-color": "#666",
+    "--text-color": "#666",    
+    "--focus-color": "#d1a02e",
 
     "--titlebar-text-color": "#525252",
     "--titlebar-title-text-color": "#787878",

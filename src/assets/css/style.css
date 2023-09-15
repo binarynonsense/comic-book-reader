@@ -10,6 +10,14 @@ html {
   padding: 0;
 }
 
+:focus {
+  outline: 2px dashed var(--focus-color);
+}
+
+:focus-visible {
+  outline: 2px dashed var(--focus-color);
+}
+
 body {
   margin: 0;
   padding: 0;
