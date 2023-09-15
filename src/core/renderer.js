@@ -266,7 +266,7 @@ document.addEventListener("wheel", function (event) {
 
 initGamepad(() => {
   if (getOpenModal()) {
-    //modals.onGamepadPolled(getOpenModal());
+    modals.onGamepadPolled(getOpenModal());
     return;
   }
   if (g_tools[g_currentTool].onGamepadPolled) {
