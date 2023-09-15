@@ -245,12 +245,16 @@ export function onGamepadPolled(modalDiv) {
     gamepads.getButtonDown(gamepads.Buttons.DPAD_UP) ||
     gamepads.getButtonDown(gamepads.Buttons.DPAD_LEFT) ||
     gamepads.getAxisDown(gamepads.Axes.RS_Y, -1) ||
-    gamepads.getAxisDown(gamepads.Axes.RS_X, -1);
+    gamepads.getAxisDown(gamepads.Axes.RS_X, -1) ||
+    gamepads.getAxisDown(gamepads.Axes.LS_Y, -1) ||
+    gamepads.getAxisDown(gamepads.Axes.LS_X, -1);
   const downPressed =
     gamepads.getButtonDown(gamepads.Buttons.DPAD_DOWN) ||
     gamepads.getButtonDown(gamepads.Buttons.DPAD_RIGHT) ||
     gamepads.getAxisDown(gamepads.Axes.RS_Y, 1) ||
-    gamepads.getAxisDown(gamepads.Axes.RS_X, 1);
+    gamepads.getAxisDown(gamepads.Axes.RS_X, 1) ||
+    gamepads.getAxisDown(gamepads.Axes.LS_Y, 1) ||
+    gamepads.getAxisDown(gamepads.Axes.LS_X, 1);
   const actionPressed = gamepads.getButtonDown(gamepads.Buttons.A);
   let backPressed = gamepads.getButtonDown(gamepads.Buttons.B);
   if (!backPressed) {
