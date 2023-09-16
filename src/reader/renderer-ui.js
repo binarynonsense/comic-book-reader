@@ -130,35 +130,33 @@ function initOnIpcCallbacks() {
   );
 
   on("update-layout-pos", (value, id) => {
-    let element = document.querySelector(id);
+    // 0 top left, 1 top center, 2 top right .... 5 bottom right
+    console.log(id);
+    const element = document.querySelector(id);
     element.className = "";
-    element.classList.add("layout-bubble");
+    element.classList.add("info-bubble");
+    let anchor;
     switch (value) {
       case 0:
-        element.classList.add("layout-top");
-        element.classList.add("layout-left");
+        anchor = document.getElementById("info-anchor-topleft");
         break;
       case 1:
-        element.classList.add("layout-top");
-        element.classList.add("layout-center");
+        anchor = document.getElementById("info-anchor-topcenter");
         break;
       case 2:
-        element.classList.add("layout-top");
-        element.classList.add("layout-right");
+        anchor = document.getElementById("info-anchor-topright");
         break;
       case 3:
-        element.classList.add("layout-bottom");
-        element.classList.add("layout-left");
+        anchor = document.getElementById("info-anchor-bottomleft");
         break;
       case 4:
-        element.classList.add("layout-bottom");
-        element.classList.add("layout-center");
+        anchor = document.getElementById("info-anchor-bottomcenter");
         break;
       case 5:
-        element.classList.add("layout-bottom");
-        element.classList.add("layout-right");
+        anchor = document.getElementById("info-anchor-bottomright");
         break;
     }
+    anchor.appendChild(element);
   });
 
   on("update-bg-text", (text) => {

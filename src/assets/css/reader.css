@@ -57,47 +57,51 @@
   user-select: none;
 }
 
-/* LAYOUT */
+/* INFO */
 
-.layout-bubble {
-  width: 100%;
+.info-anchor {
   position: fixed;
   border: 0;
   z-index: 9;
   user-select: none;
+
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
 }
 
-.layout-bubble > span {
+.info-anchor-top {
+  top: calc(var(--menubar-height));
+  margin-top: 10px;
+}
+
+.info-anchor-bottom {
+  bottom: calc(var(--toolbar-height));
+  margin-bottom: 10px;
+}
+
+.info-anchor-left {
+  left: 10px;
+}
+
+.info-anchor-right {
+  right: 25px;
+  align-items: end;
+}
+
+.info-anchor-center {
+  left: 50%;
+  align-items: center;
+}
+
+.info-bubble {
   font-size: 15px;
   color: white;
   opacity: 0.5;
   background-color: rgb(109, 109, 109);
   padding: 2px 5px;
   border-radius: 5px;
-}
-
-.layout-top {
-  top: 10;
-  margin-top: 10px;
-}
-
-.layout-bottom {
-  bottom: 0;
-  margin-bottom: 8px;
-}
-
-.layout-left {
-  text-align: left;
-  padding-left: 10px;
-}
-
-.layout-center {
-  text-align: center;
-}
-
-.layout-right {
-  text-align: right;
-  padding-right: 25px;
+  width: fit-content;
 }
 
 /* ZOOM  */
