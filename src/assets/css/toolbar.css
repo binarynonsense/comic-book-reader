@@ -19,7 +19,6 @@
   display: flex;
   align-items: center;
   user-select: none;
-
   flex-wrap: nowrap;
   position: fixed;
   bottom: 0;
@@ -48,10 +47,12 @@
   text-align: center;
   padding: 6px 0 5px 0;
 }
-
 .toolbar-item a:hover {
   background-color: var(--toolbar-item-hover-bg-color);
   color: var(--toolbar-item-hover-color);
+}
+.toolbar-item a:focus {
+  outline: none;
 }
 
 /* .toolbar-item a.active {
