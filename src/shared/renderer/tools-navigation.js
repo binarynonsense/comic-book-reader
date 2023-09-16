@@ -40,16 +40,15 @@ export function navigate(
   leftPressed,
   rightPressed
 ) {
-  if (!data.tree) return;
+  if (!data.tree || data.tree.length <= 0) return;
   if (!data.focusedElement) data.focusedElement = data.tree[0][0][0];
 
   if (upPressed || downPressed || leftPressed || rightPressed) {
     data.showFocus = true;
   }
 
-  if (backPressed) {
-    const button = backButtonElement;
-    button.click();
+  if (backPressed && backButtonElement) {
+    backButtonElement.click();
   } else if (actionPressed) {
     if (data.focusedElement) {
       data.focusedElement.click();
