@@ -1,7 +1,7 @@
 #tools {
   z-index: 100;
   position: absolute;
-  top: 30px;
+  top: calc(var(--menubar-height));
   bottom: 0;
   left: 0;
   width: 100%;

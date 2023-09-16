@@ -417,8 +417,12 @@ function toggleDevTools() {
 exports.toggleDevTools = toggleDevTools;
 
 function toggleFullScreen() {
-  reader.setFullScreen(!g_mainWindow.isFullScreen());
-  settings.setValue("fullScreen", g_mainWindow.isFullScreen());
+  const newState = !g_mainWindow.isFullScreen();
+  reader.setFullScreen(newState);
+  if (g_currentTool !== "reader") {
+    g_tools[g_currentTool]?.onToggleFullScreen(newState);
+  }
+  settings.setValue("fullScreen", newState);
 }
 exports.toggleFullScreen = toggleFullScreen;
 

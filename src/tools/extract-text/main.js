@@ -62,6 +62,10 @@ exports.onMaximize = function () {
   sendIpcToRenderer("update-window");
 };
 
+exports.onToggleFullScreen = function () {
+  sendIpcToRenderer("update-window");
+};
+
 function onCloseClicked() {
   core.switchTool("reader");
 }
