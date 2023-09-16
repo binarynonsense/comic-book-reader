@@ -49,17 +49,23 @@
   margin-bottom: 20px;
 }
 
+/* /////////////////////////////////////////////////////////////// */
+
 #tools-menu-sticky-div {
-  padding: 30px;
   background-color: var(--tools-bg1-color);
   position: sticky;
   top: 0;
   left: 0;
-  /* height: 100px; */
 }
-#tools-menu-sticky-div i {
+
+.tools-menu-buttons {
+  padding: 30px;
+}
+.tools-menu-buttons i {
   margin-right: 5px;
 }
+
+/* /////////////////////////////////////////////////////////////// */
 
 #tools-title {
   text-align: right;
