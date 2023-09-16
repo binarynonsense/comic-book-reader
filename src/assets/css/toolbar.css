@@ -82,6 +82,7 @@
   transition: opacity 0.2s;
   border-radius: 3px;
   overflow: hidden;
+  cursor: pointer;
 }
 
 #toolbar-page-slider-input:hover {
@@ -97,6 +98,8 @@
   width: 25px;
   height: 25px;
   background: var(--toolbar-page-slider-thumb-color);
-  border-radius: 10px;
   box-shadow: -100vw 0 0 100vw var(--toolbar-page-slider-left-bg-color);
+}
+#toolbar-page-slider-input::-webkit-slider-thumb:hover {
+  width: 30px;
 }
