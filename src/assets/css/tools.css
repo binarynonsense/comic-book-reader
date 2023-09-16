@@ -18,6 +18,9 @@
   scrollbar-gutter: stable;
   user-select: none;
 }
+#tools *:not([data-nav-panel]) {
+  outline: none;
+}
 
 #tools-columns {
   display: flex;
