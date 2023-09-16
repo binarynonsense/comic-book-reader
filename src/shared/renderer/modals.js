@@ -8,7 +8,6 @@
 import * as gamepads from "./gamepads.js";
 
 export function show(options) {
-  console.log(document.activeElement);
   let modalDiv;
   if (isObject(options)) {
     // generate html
@@ -332,7 +331,6 @@ function navigate(
           buttonIndex++;
           if (buttonIndex > enabledButtons.length - 1) buttonIndex = 0;
         }
-        console.log(enabledButtons[buttonIndex]);
         enabledButtons[buttonIndex].focus();
       }
     }
