@@ -603,6 +603,8 @@ export function onInputEvent(type, event) {
           sendIpcToMain("dev-tools-pressed");
         } else if (event.key == "F1") {
           inputOpenQuickMenu();
+        } else if (event.key == "Tab") {
+          event.preventDefault();
         }
       }
       break;

@@ -441,6 +441,12 @@ export function onInputEvent(type, event) {
           sendIpcToMain("dragged-files", filePaths);
         }
         break;
+      case "onkeydown": {
+        if (event.key == "Tab") {
+          event.preventDefault();
+        }
+        break;
+      }
     }
   }
 }

@@ -197,6 +197,14 @@ export function onInputEvent(type, event) {
     modals.onInputEvent(getOpenModal(), type, event);
     return;
   }
+  switch (type) {
+    case "onkeydown": {
+      if (event.key == "Tab") {
+        event.preventDefault();
+      }
+      break;
+    }
+  }
 }
 
 export function onContextMenu(params) {
