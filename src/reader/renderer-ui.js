@@ -130,7 +130,6 @@ function initOnIpcCallbacks() {
   );
 
   on("update-layout-pos", (value, id) => {
-    // 0 top left, 1 top center, 2 top right .... 5 bottom right
     console.log(id);
     const element = document.querySelector(id);
     element.className = "";
