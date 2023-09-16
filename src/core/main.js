@@ -19,6 +19,7 @@ const menuBar = require("../shared/main/menu-bar");
 const fileUtils = require("../shared/main/file-utils");
 const appUtils = require("../shared/main/app-utils");
 const fileFormats = require("../shared/main/file-formats");
+const timers = require("../shared/main/timers");
 
 const reader = require("../reader/main");
 const audioPlayer = require("../audio-player/main");
@@ -88,6 +89,8 @@ exports.switchTool = switchTool;
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
+
+timers.start("startup");
 
 g_launchInfo = {
   platform: os.platform(),
@@ -294,6 +297,7 @@ const createWindow = () => {
       sendIpcToCoreRenderer("show-context-menu", params);
     });
     g_mainWindow.show();
+    log.debug(`start-up time: ${timers.stop("startup")}s`);
   });
 
   g_mainWindow.on("resize", function () {
