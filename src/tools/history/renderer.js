@@ -8,12 +8,14 @@
 import { sendIpcToMain as coreSendIpcToMain } from "../../core/renderer.js";
 import * as modals from "../../shared/renderer/modals.js";
 import * as gamepads from "../../shared/renderer/gamepads.js";
+import * as navigation from "../../shared/renderer/tools-navigation.js";
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
 let g_isInitialized = false;
+let g_navData = {};
 
 let g_localizedRemoveFromListText = "";
 let g_localizedOpenFromListText = "";
@@ -28,7 +30,7 @@ function init(history, showFocus) {
     // things to start only once go here
     g_isInitialized = true;
   }
-  g_navShowFocus = showFocus;
+  g_navData.showFocus = showFocus;
   document.getElementById("tools-columns-right").scrollIntoView({
     behavior: "instant",
     block: "start",
@@ -176,107 +178,7 @@ function buildHistoryList(history) {
     }
   }
   updateColumnsHeight();
-  rebuildNavigation(1);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// NAVIGATION /////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-
-let g_navFocusedElement;
-let g_navTree;
-let g_navShowFocus;
-
-function rebuildNavigation(focusedPanelID) {
-  const root = document.getElementById("tools-columns");
-  g_navFocusedElement = undefined;
-  g_navTree = [];
-  for (let panelIndex = 0; panelIndex < 2; panelIndex++) {
-    g_navTree.push([]);
-    const panelElements = root.querySelectorAll(
-      `[data-nav-panel='${panelIndex}']`
-    );
-    for (let index = 0; index < panelElements.length; index++) {
-      const element = panelElements[index];
-      const rowId = element.getAttribute("data-nav-row");
-      const colId = element.getAttribute("data-nav-col");
-      if (!g_navTree[panelIndex][rowId]) {
-        g_navTree[panelIndex][rowId] = [];
-      }
-      g_navTree[panelIndex][rowId][colId] = element;
-    }
-  }
-  if (focusedPanelID != undefined) {
-    g_navFocusedElement = g_navTree[focusedPanelID][0][0];
-    if (g_navShowFocus) g_navFocusedElement.focus();
-  }
-}
-
-function navigate(
-  backPressed,
-  actionPressed,
-  upPressed,
-  downPressed,
-  leftPressed,
-  rightPressed
-) {
-  if (!g_navTree) return;
-  if (!g_navFocusedElement) g_navFocusedElement = g_navTree[0][0][0];
-
-  if (upPressed || downPressed || leftPressed || rightPressed) {
-    g_navShowFocus = true;
-  }
-
-  if (backPressed) {
-    const button = document.getElementById("tool-hst-back-button");
-    button.click();
-  } else if (actionPressed) {
-    if (g_navFocusedElement && document.activeElement == g_navFocusedElement) {
-      g_navFocusedElement.click();
-      document.activeElement.blur();
-    }
-  } else if (upPressed || downPressed || leftPressed || rightPressed) {
-    let panelId = g_navFocusedElement.getAttribute("data-nav-panel");
-    let rowId = g_navFocusedElement.getAttribute("data-nav-row");
-    let colId = g_navFocusedElement.getAttribute("data-nav-col");
-    if (upPressed) {
-      colId = 0;
-      rowId--;
-      if (rowId < 0) rowId = g_navTree[panelId].length - 1;
-    } else if (downPressed) {
-      colId = 0;
-      rowId++;
-      if (rowId >= g_navTree[panelId].length) rowId = 0;
-    } else if (leftPressed) {
-      if (colId > 0) {
-        colId--;
-      } else {
-        if (panelId > 0) {
-          panelId--;
-          colId = 0;
-          rowId = 0;
-          document.getElementById("tools-columns-right").scrollIntoView({
-            behavior: "instant",
-            block: "start",
-            inline: "nearest",
-          });
-        }
-      }
-    } else if (rightPressed) {
-      if (colId < g_navTree[panelId][rowId].length - 1) {
-        colId++;
-      } else {
-        // TODO: hardcoded 1, store somewhere the number of panels
-        if (panelId < 1) {
-          panelId++;
-          colId = 0;
-          rowId = 0;
-        }
-      }
-    }
-    g_navFocusedElement = g_navTree[panelId][rowId][colId];
-    g_navFocusedElement.focus();
-  }
+  navigation.rebuild(g_navData, 1);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -290,7 +192,9 @@ export function onInputEvent(type, event) {
   }
   switch (type) {
     case "onkeydown":
-      navigate(
+      navigation.navigate(
+        g_navData,
+        document.getElementById("tool-hst-back-button"),
         event.key == "Escape",
         event.key == "Enter",
         event.key == "ArrowUp",
@@ -338,7 +242,9 @@ export function onGamepadPolled() {
     gamepads.getAxisDown(gamepads.Axes.RS_X, 1) ||
     gamepads.getAxisDown(gamepads.Axes.LS_X, 1);
 
-  navigate(
+  navigation.navigate(
+    g_navData,
+    document.getElementById("tool-hst-back-button"),
     gamepads.getButtonDown(gamepads.Buttons.B),
     gamepads.getButtonDown(gamepads.Buttons.A),
     upPressed,
