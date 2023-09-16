@@ -130,7 +130,6 @@ function initOnIpcCallbacks() {
   );
 
   on("update-layout-pos", (value, id) => {
-    console.log(id);
     const element = document.querySelector(id);
     element.className = "";
     element.classList.add("info-bubble");
