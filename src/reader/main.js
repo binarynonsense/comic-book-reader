@@ -102,6 +102,7 @@ exports.init = function (filePath, checkHistory) {
 
   sendIpcToRenderer("update-bg", true);
   sendIpcToRenderer("update-loading", false);
+  sendIpcToRenderer("render-page-info", 0, 0, false);
 };
 
 exports.open = function () {

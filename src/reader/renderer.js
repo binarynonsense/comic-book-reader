@@ -105,7 +105,6 @@ function initOnIpcCallbacks() {
       .querySelector(".centered-block")
       .classList.remove("set-display-none");
     updatePageInfo(0, 0);
-    document.querySelector("#page-number-bubble").innerHTML = "";
   });
 }
 
