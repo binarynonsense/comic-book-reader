@@ -25,6 +25,9 @@
   border: 0;
   z-index: 20;
 }
+#toolbar * {
+  outline: none;
+}
 
 .toolbar-item {
   height: 100%;
@@ -49,9 +52,6 @@
 .toolbar-item a:hover {
   background-color: var(--toolbar-item-hover-bg-color);
   color: var(--toolbar-item-hover-color);
-}
-.toolbar-item a:focus {
-  outline: none;
 }
 
 /* SLIDER */
@@ -86,7 +86,6 @@
 }
 
 /* #toolbar-page-slider-input::-webkit-slider-runnable-track {
-  box-shadow: 3px 3px 10px 5px #000;
 } */
 
 #toolbar-page-slider-input::-webkit-slider-thumb {
