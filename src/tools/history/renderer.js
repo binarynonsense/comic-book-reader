@@ -298,7 +298,9 @@ export function onInputEvent(type, event) {
         event.key == "ArrowLeft",
         event.key == "ArrowRight"
       );
-      event.preventDefault();
+      if (event.key == "Tab") {
+        event.preventDefault();
+      }
       break;
   }
 }
