@@ -18,6 +18,7 @@
   padding-right: 0px;
   display: flex;
   align-items: center;
+  user-select: none;
 
   flex-wrap: nowrap;
   position: fixed;
@@ -66,10 +67,11 @@
 #toolbar-page-slider-div {
   flex-grow: 1;
   padding: 0px 10px;
+  user-select: auto;
 }
 
 #toolbar-page-slider-input {
-  -webkit-appearance: none; /* Override default CSS styles */
+  -webkit-appearance: none;
   appearance: none;
   width: 100%;
   height: 10px;
