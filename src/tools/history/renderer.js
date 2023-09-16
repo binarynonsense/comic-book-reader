@@ -165,8 +165,8 @@ function buildHistoryList(history) {
     }
     ul.appendChild(li);
   }
-  if (history.length < 20) {
-    for (let index = 0; index < 20 - history.length; index++) {
+  if (history.length < 10) {
+    for (let index = 0; index < 10 - history.length; index++) {
       let li = document.createElement("li");
       li.className = "tools-buttons-list-li";
       let span = document.createElement("span");
