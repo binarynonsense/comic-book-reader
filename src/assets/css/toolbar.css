@@ -39,7 +39,6 @@
   color: var(--toolbar-item-color);
   text-decoration: none;
   font-size: 18px;
-  /* background-color: #666; */
   width: 40px;
   height: 100%;
 
@@ -54,10 +53,6 @@
 .toolbar-item a:focus {
   outline: none;
 }
-
-/* .toolbar-item a.active {
-  color: white;
-} */
 
 /* SLIDER */
 
