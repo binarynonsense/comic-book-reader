@@ -40,7 +40,16 @@ let g_deltaTime;
 let g_gamepadId;
 let g_gamepad;
 
+let g_isActive = false;
+
 export function init(callback) {
+  setTimeout(() => {
+    // allow some time between the app starting and allowing
+    // gamepad inputs, to avoid problems detecting false pressed
+    // buttons due to the g_prevButtons clearing done at the start
+    g_isActive = true;
+  }, "500");
+
   window.addEventListener("gamepadconnected", (e) => {
     const gp = navigator.getGamepads()[e.gamepad.index];
     console.log(
@@ -80,7 +89,7 @@ function poll(callback) {
   const gamepads = navigator.getGamepads();
   if (!gamepads || !gamepads[g_gamepadId]) return;
   g_gamepad = gamepads[g_gamepadId];
-  callback();
+  if (g_isActive) callback();
   // set up next frame
   g_prevButtons = [...g_gamepad.buttons];
   g_prevAxes = [...g_gamepad.axes];
