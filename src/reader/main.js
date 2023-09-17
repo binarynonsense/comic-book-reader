@@ -96,8 +96,9 @@ exports.init = function (filePath, checkHistory) {
     settings.getValue("on_quit_state") === 1
   ) {
     const entry = history.getIndex(history.get().length - 1);
-    tryOpen(entry.filePath, undefined, entry);
-    return;
+    if (tryOpen(entry.filePath, undefined, entry)) {
+      return;
+    }
   }
 
   sendIpcToRenderer("update-bg", true);
