@@ -807,9 +807,15 @@ export function onGamepadPolled() {
       inputGoToNextPage();
     }
     // last / first page
-    if (gamepads.getButtonDown(gamepads.Buttons.A)) {
+    if (
+      gamepads.getButton(gamepads.Buttons.BACK) &&
+      gamepads.getButtonDown(gamepads.Buttons.A)
+    ) {
       inputGoToLastPage();
-    } else if (gamepads.getButtonDown(gamepads.Buttons.Y)) {
+    } else if (
+      gamepads.getButton(gamepads.Buttons.BACK) &&
+      gamepads.getButtonDown(gamepads.Buttons.Y)
+    ) {
       inputGoToFirstPage();
     }
     // change scale mode
