@@ -271,7 +271,13 @@ export function onInputEvent(type, event) {
         event.key == "ArrowLeft",
         event.key == "ArrowRight"
       );
-      if (event.key == "Tab") {
+      if (
+        event.key == "Tab" ||
+        event.key == "ArrowUp" ||
+        event.key == "ArrowDown" ||
+        event.key == "ArrowLeft" ||
+        event.key == "ArrowRight"
+      ) {
         event.preventDefault();
       }
       break;
