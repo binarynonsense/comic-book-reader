@@ -1,3 +1,40 @@
+## v3.3.2
+
+- Fixed gamepad buttons being detected as pressed at the start in some circumstances and causing undesired input events.
+- Changed the gamepad mapping for "go to the first page" and "go to the last page" from "Y" and "A" to "BACK + Y" and "BACK + A" as they were too easy to press by accident.   
+
+## v3.3.1
+
+- Made all the contents of the tools' left panel stick to the top, not just the action buttons.
+- Made the info bubbles stackable.
+- Fixed the scrollbar moving with the arrow keys in the file browser and history tools.
+
+## v3.3.0
+
+- Added a quick menu that can be opened from the reader by pressing the gamepad's start button or F1 in the keyboard.
+- Added a file browser that can be opened from the quick menu and works with mouse, keyboard and gamepad.
+- Added a button to open the history tool from the quick menu and adapted the tool to also work with keyboard and gamepad.
+- Added a brief bounce animation to the modals.
+- The full screen state is now saved on exit and restored on launch.
+- Fixed a gap showing at the top of the modals' background in full screen mode.
+- Fixed a gap showing at the top of the tools' background in full screen mode.
+- Fixed the focus indicator not showing some times in the modals and the browser and history tools when using the gamepad, and customized its style.
+- Fixed the battery level value having a large number of decimals in some cases.
+
+## v3.2.8
+
+- Included the ability to drag and drop files into a tool so they are added to its input files list (if the tool has one).
+- Drag and dropping multiple files into the program's icon now initializes the program with the "convert comics" tool open and those files added to the input files list (dropping only one file opens that file in the reader, as in previous versions).
+- Added command line arguments to directly open the provided file/s with the reader or one of the tools, set some of that tool's options... There's more info on [the wiki](https://github.com/binarynonsense/comic-book-reader/wiki).
+- Improved the keyboard and gamepad page scrolling smoothness.
+- Fixed the "show battery" menu entry not being disabled outside the reader.
+
+## v3.2.7
+
+- Added a battery level indicator.
+- Simplified the reader's [gamepad controls layout](https://github.com/binarynonsense/comic-book-reader/wiki/Gamepad-Controls-Layout-in-the-Reader) (may expand it in the future).
+- Fixed the delay between changing the page's image and resetting its position.
+
 ## v3.2.6
 
 - Added Steam Deck and Gaming Mode detection so a better configuration is now set by default when running in that mode on the Deck. Adding the "--no-sandbox" command-line flag to the launch options is still needed in Gaming Mode.
