@@ -1,7 +1,7 @@
 {
   "@metadata": {
     "authors": ["Álvaro"],
-    "last-updated": "2023-09-14",
+    "last-updated": "2023-10-03",
     "acbr-version": "3.3.0",
     "comments": "",
     "locale": "en",
@@ -395,6 +395,10 @@
   "tool-pre-page-turn": "Automatic Page Turn",
   "tool-pre-page-turn-default": "Disabled",
   "tool-pre-page-turn-onscroll": "On scroll boundaries",  
+  "tool-pre-formats-library-reading": "Reading Library",
+  "tool-pre-formats-library-extraction": "Extraction Library",
+  "tool-pre-formats-library-compression": "Compression Library",
+  "tool-pre-formats-library-value-default": "Default library",
   "tool-pre-epub": "EPUB",
   "tool-pre-epub-openas": "Open As",
   "tool-pre-epub-openas-0": "Ask and Remember",
