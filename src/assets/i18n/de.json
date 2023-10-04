@@ -1,7 +1,7 @@
 {
   "@metadata": {
     "authors": ["trzyglow"],
-    "last-updated": "2023-10-03",
+    "last-updated": "2023-10-04",
     "acbr-version": "3.3.0",
     "comments": "Deutsche Lokalisierung",
     "locale": "de",
@@ -123,9 +123,9 @@
   "ui-modal-title-fileerror": "Dateifehler",
   "ui-modal-title-quickmenu": "Schnellmenü",
   "ui-modal-info-invalidformat": "Kein gültiges Dateiformat",
-  "[NEEDS TRANSLATION]ui-modal-info-invalidsize": "The file is too big",
-  "[NEEDS TRANSLATION]ui-modal-info-invalidsize-cap-a": "The maximum file size supported by the reading library is {0}",
-  "[NEEDS TRANSLATION]ui-modal-info-invalidsize-cap-b": "The maximum supported file size is {0}",
+  "ui-modal-info-invalidsize": "Die Datei ist zu groß",
+  "ui-modal-info-invalidsize-cap-a": "Die maximale Dateigröße, welche von der Lesebibliothek unterstützt wird, ist {0}",
+  "ui-modal-info-invalidsize-cap-b": "Die maximal unterstützte Dateigröße ist {0}",
   "ui-modal-info-couldntopen-rar": "Konnte RAR-Datei nicht öffnen",
   "ui-modal-info-couldntopen-zip": "Konnte ZIP-Datei nicht öffnen",
   "ui-modal-info-couldntopen-zip-aes": "Konnte ZIP-Datei nicht öffnen\nAES Verschlüsselung nicht für Passwörter unterstützt (nur ZipCrypto)",
