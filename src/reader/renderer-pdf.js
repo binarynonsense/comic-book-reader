@@ -57,7 +57,7 @@ export function cleanUp() {
 function loadPdf(filePath, pageIndex, password) {
   // pdfjsLib.GlobalWorkerOptions.workerSrc =
   //   "../assets/libs/pdfjs-2.3.200/build/pdf.worker.js";
-  let escapedInputFilePath = filePath.replace("#", "%23");
+  let escapedInputFilePath = filePath.replaceAll("#", "%23");
   // hashtags must be escaped so PDF.js doesn't break trying to parse
   // the path, as it looks for patterns like #page=2&zoom=200
   var loadingTask = pdfjsLib.getDocument({
@@ -181,7 +181,7 @@ async function extractPDFImageBuffer(
 ) {
   // pdfjsLib.GlobalWorkerOptions.workerSrc =
   //   "../assets/libs/pdfjs-2.3.200/build/pdf.worker.js";
-  let escapedInputFilePath = filePath.replace("#", "%23");
+  let escapedInputFilePath = filePath.replaceAll("#", "%23");
   // hashtags must be escaped so PDF.js doesn't break trying to parse
   // the path, as it looks for patterns like #page=2&zoom=200
   try {

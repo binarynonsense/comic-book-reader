@@ -65,7 +65,7 @@ async function extractPDF(
       // ref: https://kevinnadro.com/blog/parsing-pdfs-in-javascript/
       pdfjsLib.GlobalWorkerOptions.workerSrc = `../../assets/libs/${pdfjsFolderName}/build/pdf.worker.js`;
       //pdfjsLib.disableWorker = true;
-      let escapedInputFilePath = filePath.replace("#", "%23");
+      let escapedInputFilePath = filePath.replaceAll("#", "%23");
       // hashtags must be escaped so PDF.js doesn't break trying to parse
       // the path, as it looks for patterns like #page=2&zoom=200
       const pdf = await pdfjsLib.getDocument({
@@ -187,7 +187,7 @@ async function extractPDF(
       // ref: https://kevinnadro.com/blog/parsing-pdfs-in-javascript/
       pdfjsLib.GlobalWorkerOptions.workerSrc = `../../assets/libs/${pdfjsFolderName}/build/pdf.worker.js`;
       //pdfjsLib.disableWorker = true;
-      let escapedInputFilePath = filePath.replace("#", "%23");
+      let escapedInputFilePath = filePath.replaceAll("#", "%23");
       // hashtags must be escaped so PDF.js doesn't break trying to parse
       // the path, as it looks for patterns like #page=2&zoom=200
       const pdf = await pdfjsLib.getDocument({
