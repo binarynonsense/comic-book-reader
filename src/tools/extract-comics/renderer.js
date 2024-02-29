@@ -539,6 +539,16 @@ export function onInputEvent(type, event) {
     return;
   }
   switch (type) {
+    case "body.ondrop":
+      {
+        let filePaths = [];
+        for (let index = 0; index < event.dataTransfer.files.length; index++) {
+          const file = event.dataTransfer.files[index];
+          filePaths.push(file.path);
+        }
+        sendIpcToMain("dragged-files", filePaths);
+      }
+      break;
     case "onkeydown": {
       if (event.key == "Tab") {
         event.preventDefault();
