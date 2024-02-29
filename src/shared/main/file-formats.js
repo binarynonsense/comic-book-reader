@@ -301,10 +301,12 @@ async function get7ZipEntriesList(filePath, password) {
       password = "_";
     }
     checkPathTo7ZipBin();
-    // NOTE:  I use test instead of list because it gives an error for encrypted files
-    // that have the file names ot encrypted, and also returns the file list.
-    // List only gives an error if the names are also encrypted
-    // TODO: check if test comes with a performance hit for big files? Don't really know what it tests...
+    // NOTE:  I use test instead of list because it gives an error for
+    // encrypted files that have the file names ot encrypted, and also returns
+    // the file list.
+    // List only gives an error if the names are also encrypted.
+    // TODO: check if test comes with a performance hit for big files? Don't
+    // really know what it tests...
     const Seven = require("node-7z");
     const seven = Seven.test(filePath, {
       $bin: g_pathTo7zipBin,
