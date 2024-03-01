@@ -269,10 +269,17 @@ async function loadXml() {
     let buf;
     switch (g_fileData.type) {
       case FileDataType.ZIP:
-        buf = fileFormats.extractZipEntryBuffer(
+        // buf = fileFormats.extractZipEntryBuffer(
+        //   g_fileData.path,
+        //   g_fileData.metadata.comicInfoId,
+        //   g_fileData.password
+        // );
+        buf = await fileFormats.extract7ZipEntryBuffer(
           g_fileData.path,
           g_fileData.metadata.comicInfoId,
-          g_fileData.password
+          g_fileData.password,
+          fileUtils.createTempFolder(false),
+          "zip"
         );
         break;
       case FileDataType.RAR:

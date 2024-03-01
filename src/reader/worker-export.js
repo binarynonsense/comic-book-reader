@@ -29,10 +29,17 @@ async function exportPage(
   try {
     let buf;
     if (fileData.type === FileDataType.ZIP) {
-      buf = fileFormats.extractZipEntryBuffer(
+      // buf = fileFormats.extractZipEntryBuffer(
+      //   fileData.path,
+      //   fileData.pagesPaths[fileData.pageIndex],
+      //   fileData.password
+      // );
+      buf = await fileFormats.extract7ZipEntryBuffer(
         fileData.path,
         fileData.pagesPaths[fileData.pageIndex],
-        fileData.password
+        fileData.password,
+        untrackedTempFolder,
+        "zip"
       );
     } else if (fileData.type === FileDataType.RAR) {
       buf = await fileFormats.extractRarEntryBuffer(

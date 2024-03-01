@@ -1891,6 +1891,13 @@ async function exportPageStart(sendToTool = 0) {
         g_workerExport.kill();
         g_workerExport = undefined;
       }
+
+      let untrackedTempFolder =
+        g_fileData.type === FileDataType.SEVENZIP ||
+        g_fileData.type === FileDataType.ZIP
+          ? fileUtils.createTempFolder(false)
+          : undefined;
+
       if (g_workerExport === undefined) {
         g_workerExport = fork(path.join(__dirname, "worker-export.js"));
         g_workerExport.on("message", (message) => {
@@ -1916,9 +1923,16 @@ async function exportPageStart(sendToTool = 0) {
                 _("ui-modal-prompt-button-ok")
               );
             }
+
+            if (untrackedTempFolder) {
+              fileUtils.cleanUpTempFolder(untrackedTempFolder);
+            }
             return;
           } else {
             exportPageError(message[1]);
+            if (untrackedTempFolder) {
+              fileUtils.cleanUpTempFolder(untrackedTempFolder);
+            }
             return;
           }
         });
@@ -1927,10 +1941,7 @@ async function exportPageStart(sendToTool = 0) {
         data: g_fileData,
         outputFolderPath: outputFolderPath,
         sendToTool: sendToTool,
-        untrackedTempFolder:
-          g_fileData.type === FileDataType.SEVENZIP
-            ? fileUtils.createTempFolder(false)
-            : undefined,
+        untrackedTempFolder: untrackedTempFolder,
       });
     }
   } catch (err) {
