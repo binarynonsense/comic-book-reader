@@ -26,10 +26,10 @@ async function extractImages(
   tempFolderPath,
   password
 ) {
+  const timers = require("./timers");
+  timers.start("extractImages");
   try {
     let success = false;
-    const timers = require("./timers");
-    timers.start("extractImages");
     if (inputFileType === FileDataType.ZIP) {
       // success = fileFormats.extractZip(inputFilePath, tempFolderPath, password);
       success = await fileFormats.extract7Zip(
@@ -59,7 +59,10 @@ async function extractImages(
     let time = `${timers.stop("extractImages")}s`;
     if (success) {
       process.send({ success: true, time: time });
-    } else throw "error";
+    } else {
+      // TODO: get errors from extraction functions
+      throw "error";
+    }
   } catch (error) {
     timers.stop("extractImages");
     process.send({
