@@ -28,6 +28,8 @@ async function extractImages(
 ) {
   try {
     let success = false;
+    const timers = require("./timers");
+    timers.start("extractImages");
     if (inputFileType === FileDataType.ZIP) {
       success = fileFormats.extractZip(inputFilePath, tempFolderPath, password);
     } else if (inputFileType === FileDataType.RAR) {
@@ -48,10 +50,17 @@ async function extractImages(
       process.send("conversionExtractImages: invalid file type");
       return;
     }
-    if (success) process.send("success");
-    else throw "error";
+    let time = `${timers.stop("extractImages")}s`;
+    if (success) {
+      process.send({ success: true, time: time });
+    } else throw "error";
   } catch (error) {
-    process.send("conversionExtractImages: couldnt extract the file");
+    timers.stop("extractImages");
+    process.send({
+      success: false,
+      errorLog: "conversionExtractImages: couldnt extract the file",
+      error: error.message,
+    });
   }
 }
 

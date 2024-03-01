@@ -18,6 +18,7 @@ const fileUtils = require("../../shared/main/file-utils");
 const appUtils = require("../../shared/main/app-utils");
 const utils = require("../../shared/main/utils");
 const contextMenu = require("../../shared/main/tools-menu-context");
+const log = require("../../shared/main/logger");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -450,7 +451,8 @@ function start(
       );
       g_worker.on("message", (message) => {
         g_worker.kill(); // kill it after one use
-        if (message === "success") {
+        if (message.success) {
+          log.debug("file extracted in: " + message.time);
           if (g_cancel === true) {
             stopCancel();
             return;
