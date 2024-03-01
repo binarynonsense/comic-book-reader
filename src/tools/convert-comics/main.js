@@ -580,6 +580,7 @@ function startFile(
       g_worker.on("message", (message) => {
         g_worker.kill(); // kill it after one use
         if (message.success) {
+          log.debug("file extracted in: " + message.time);
           if (g_cancel === true) {
             stopCancel();
             return;
