@@ -24,17 +24,17 @@ exports.init = function (isRelease) {
 async function getRarEntriesList(filePath, password) {
   try {
     const unrar = require("node-unrar-js");
-    //let buf = Uint8Array.from(fs.readFileSync(filePath)).buffer;
+    let buf = Uint8Array.from(fs.readFileSync(filePath)).buffer;
     let extractor;
     try {
-      // extractor = await unrar.createExtractorFromData({
-      //   data: buf,
-      //   password: password,
-      // });
-      extractor = await unrar.createExtractorFromFile({
-        filepath: filePath,
+      extractor = await unrar.createExtractorFromData({
+        data: buf,
         password: password,
       });
+      // extractor = await unrar.createExtractorFromFile({
+      //   filepath: filePath,
+      //   password: password,
+      // });
     } catch (error) {
       if (error.message.startsWith("Password for encrypted")) {
         // the file list is also encrypted
