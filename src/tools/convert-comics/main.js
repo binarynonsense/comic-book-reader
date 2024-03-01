@@ -591,7 +591,7 @@ function startFile(
           return;
         } else {
           log.error(error);
-          stopError("couldnt extract the file");
+          stopError("Couldn't extract the file");
           return;
         }
       });
