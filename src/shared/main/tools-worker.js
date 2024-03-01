@@ -129,59 +129,68 @@ async function createFiles(
       }
     }
     /////////////////////////////
+    const timers = require("./timers");
+    let times = [];
     for (let index = 0; index < filesData.length; index++) {
-      if (outputFormat === FileExtension.PDF) {
-        await fileFormats.createPdf(
-          filesData[index].imgFilePaths,
-          filesData[index].outputFilePath,
-          extra,
-          password
-        );
-      } else if (outputFormat === FileExtension.EPUB) {
-        await fileFormats.createEpub(
-          filesData[index].imgFilePaths,
-          filesData[index].outputFilePath,
-          tempFolderPath,
-          extra
-        );
-      } else if (outputFormat === FileExtension.CB7) {
-        if (comicInfoFilePath)
-          filesData[index].imgFilePaths.push(comicInfoFilePath);
-        await fileFormats.create7Zip(
-          filesData[index].imgFilePaths,
-          filesData[index].outputFilePath,
-          password
-        );
-      } else if (outputFormat === FileExtension.CBR) {
-        if (comicInfoFilePath)
-          filesData[index].imgFilePaths.push(comicInfoFilePath);
-        if (
-          !fileFormats.createRar(
+      try {
+        timers.start("createFile");
+        if (outputFormat === FileExtension.PDF) {
+          await fileFormats.createPdf(
             filesData[index].imgFilePaths,
             filesData[index].outputFilePath,
-            extra.rarExePath,
-            extra.workingDir,
+            extra,
             password
-          )
-        )
-          throw "error creating rar";
-      } else {
-        //cbz
-        if (comicInfoFilePath)
-          filesData[index].imgFilePaths.push(comicInfoFilePath);
-        if (password && password.trim() !== "") {
+          );
+        } else if (outputFormat === FileExtension.EPUB) {
+          await fileFormats.createEpub(
+            filesData[index].imgFilePaths,
+            filesData[index].outputFilePath,
+            tempFolderPath,
+            extra
+          );
+        } else if (outputFormat === FileExtension.CB7) {
+          if (comicInfoFilePath)
+            filesData[index].imgFilePaths.push(comicInfoFilePath);
           await fileFormats.create7Zip(
             filesData[index].imgFilePaths,
             filesData[index].outputFilePath,
-            password,
-            "zip"
+            password
           );
+        } else if (outputFormat === FileExtension.CBR) {
+          if (comicInfoFilePath)
+            filesData[index].imgFilePaths.push(comicInfoFilePath);
+          if (
+            !fileFormats.createRar(
+              filesData[index].imgFilePaths,
+              filesData[index].outputFilePath,
+              extra.rarExePath,
+              extra.workingDir,
+              password
+            )
+          )
+            throw "error creating rar";
         } else {
-          fileFormats.createZip(
-            filesData[index].imgFilePaths,
-            filesData[index].outputFilePath
-          );
+          //cbz
+          if (comicInfoFilePath)
+            filesData[index].imgFilePaths.push(comicInfoFilePath);
+          if (password && password.trim() !== "") {
+            await fileFormats.create7Zip(
+              filesData[index].imgFilePaths,
+              filesData[index].outputFilePath,
+              password,
+              "zip"
+            );
+          } else {
+            fileFormats.createZip(
+              filesData[index].imgFilePaths,
+              filesData[index].outputFilePath
+            );
+          }
         }
+        times.push(`${timers.stop("createFile")}s`);
+      } catch (error) {
+        timers.stop("createFile");
+        throw error;
       }
     }
     /////////////////////////////
@@ -201,10 +210,10 @@ async function createFiles(
       createdFiles.push(filesData[index].outputFilePath);
     }
     /////////////////////////////
-    process.send(["success", createdFiles]);
+    process.send({ success: true, files: createdFiles, times: times });
   } catch (error) {
     // TODO: remove outputSubFolderPath if exists?
     // I'd prefer not to delete things outside the temp folder, just in case
-    process.send([error.message]);
+    process.send({ success: false, error: error });
   }
 }

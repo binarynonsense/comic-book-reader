@@ -992,15 +992,16 @@ async function createFilesFromImages(
       );
       g_worker.on("message", (message) => {
         g_worker.kill(); // kill it after one use
-        if (message[0] === "success") {
+        if (message.success) {
+          log.debug("file/s created in: " + message.times);
           fileUtils.cleanUpTempFolder();
-          message[1].forEach((element) => {
+          message.files.forEach((element) => {
             sendIpcToRenderer("update-log-text", element);
           });
           sendIpcToRenderer("file-finished-ok");
           return;
         } else {
-          stopError(message[0]);
+          stopError(message.error?.message);
           return;
         }
       });
