@@ -854,7 +854,11 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
         fileExtension === "." + FileExtension.RAR ||
         fileExtension === "." + FileExtension.CBR
       ) {
-        let rarData = await fileFormats.getRarEntriesList(filePath, password);
+        let rarData = await fileFormats.getRarEntriesList(
+          filePath,
+          password,
+          fileUtils.createTempFolder(false)
+        );
         if (rarData.result === "password required") {
           if (g_fileData.state !== FileDataState.LOADING) {
             cleanUpFileData();
@@ -1280,7 +1284,8 @@ function goToPage(pageIndex, scrollBarPos = 0) {
 
     let untrackedTempFolder =
       g_fileData.type === FileDataType.SEVENZIP ||
-      g_fileData.type === FileDataType.ZIP
+      g_fileData.type === FileDataType.ZIP ||
+      g_fileData.type === FileDataType.RAR
         ? fileUtils.createTempFolder(false)
         : undefined;
 
@@ -1894,7 +1899,8 @@ async function exportPageStart(sendToTool = 0) {
 
       let untrackedTempFolder =
         g_fileData.type === FileDataType.SEVENZIP ||
-        g_fileData.type === FileDataType.ZIP
+        g_fileData.type === FileDataType.ZIP ||
+        g_fileData.type === FileDataType.RAR
           ? fileUtils.createTempFolder(false)
           : undefined;
 

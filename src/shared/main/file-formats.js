@@ -21,20 +21,21 @@ exports.init = function (isRelease) {
 // RAR ////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-async function getRarEntriesList(filePath, password) {
+async function getRarEntriesList(filePath, password, untrackedTempFolder) {
   try {
     const unrar = require("node-unrar-js");
-    let buf = Uint8Array.from(fs.readFileSync(filePath)).buffer;
+    //let buf = Uint8Array.from(fs.readFileSync(filePath)).buffer;
     let extractor;
     try {
-      extractor = await unrar.createExtractorFromData({
-        data: buf,
-        password: password,
-      });
-      // extractor = await unrar.createExtractorFromFile({
-      //   filepath: filePath,
+      // extractor = await unrar.createExtractorFromData({
+      //   data: buf,
       //   password: password,
       // });
+      extractor = await unrar.createExtractorFromFile({
+        filepath: filePath,
+        targetPath: untrackedTempFolder,
+        password: password,
+      });
     } catch (error) {
       if (error.message.startsWith("Password for encrypted")) {
         // the file list is also encrypted
@@ -77,12 +78,18 @@ async function getRarEntriesList(filePath, password) {
         return { result: "password required", paths: [] };
       }
     }
+    if (untrackedTempFolder) {
+      fileUtils.cleanUpTempFolder(untrackedTempFolder);
+    }
     return {
       result: "success",
       paths: imgEntries,
       metadata: { encrypted: isEncrypted, comicInfoId: comicInfoId },
     };
   } catch (error) {
+    if (untrackedTempFolder) {
+      fileUtils.cleanUpTempFolder(untrackedTempFolder);
+    }
     if (error.message.startsWith("Password for encrypted")) {
       // "Password for encrypted file or header is not specified"
       return { result: "password required", paths: [] };
@@ -98,20 +105,41 @@ async function getRarEntriesList(filePath, password) {
 }
 exports.getRarEntriesList = getRarEntriesList;
 
-async function extractRarEntryBuffer(rarPath, entryName, password) {
+async function extractRarEntryBuffer(
+  rarPath,
+  entryName,
+  password,
+  untrackedTempFolder
+) {
   try {
     const unrar = require("node-unrar-js");
-    let buf = Uint8Array.from(fs.readFileSync(rarPath)).buffer;
-    let extractor = await unrar.createExtractorFromData({
-      data: buf,
+    // let buf = Uint8Array.from(fs.readFileSync(rarPath)).buffer;
+    // let extractor = await unrar.createExtractorFromData({
+    //   data: buf,
+    //   password: password,
+    // });
+    // const extracted = extractor.extract({ files: [entryName] });
+    // const files = [...extracted.files];
+    // files[0].extraction; // Uint8Array
+
+    let extractor = await unrar.createExtractorFromFile({
+      filepath: rarPath,
+      targetPath: untrackedTempFolder,
       password: password,
     });
     const extracted = extractor.extract({ files: [entryName] });
     const files = [...extracted.files];
-    files[0].extraction; // Uint8Array
-    return Buffer.from(files[0].extraction);
+    let buffer = fs.readFileSync(path.join(untrackedTempFolder, entryName));
+    if (untrackedTempFolder) {
+      fileUtils.cleanUpTempFolder(untrackedTempFolder);
+    }
+
+    return buffer;
   } catch (error) {
     log.error(error);
+    if (untrackedTempFolder) {
+      fileUtils.cleanUpTempFolder(untrackedTempFolder);
+    }
     return undefined;
   }
 }
@@ -422,15 +450,21 @@ async function extract7ZipEntryBuffer(
     let buffer;
     if (promise.success === true) {
       buffer = fs.readFileSync(path.join(untrackedTempFolder, entryName));
-      fileUtils.cleanUpTempFolder(untrackedTempFolder);
+      if (untrackedTempFolder) {
+        fileUtils.cleanUpTempFolder(untrackedTempFolder);
+      }
       return buffer;
     }
     //////////////////////////////////////////
-    fileUtils.cleanUpTempFolder(untrackedTempFolder);
+    if (untrackedTempFolder) {
+      fileUtils.cleanUpTempFolder(untrackedTempFolder);
+    }
     return undefined;
   } catch (error) {
     log.error(error);
-    fileUtils.cleanUpTempFolder(untrackedTempFolder);
+    if (untrackedTempFolder) {
+      fileUtils.cleanUpTempFolder(untrackedTempFolder);
+    }
     return undefined;
   }
 }

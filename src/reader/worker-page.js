@@ -40,7 +40,8 @@ async function extractBase64Image(
       buf = await fileFormats.extractRarEntryBuffer(
         filePath,
         entryName,
-        password
+        password,
+        untrackedTempFolder
       );
       mime = "image/" + fileUtils.getMimeType(entryName);
     } else if (fileType === FileDataType.SEVENZIP) {

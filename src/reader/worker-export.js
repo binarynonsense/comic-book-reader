@@ -45,7 +45,8 @@ async function exportPage(
       buf = await fileFormats.extractRarEntryBuffer(
         fileData.path,
         fileData.pagesPaths[fileData.pageIndex],
-        fileData.password
+        fileData.password,
+        untrackedTempFolder
       );
     } else if (fileData.type === FileDataType.SEVENZIP) {
       buf = await fileFormats.extract7ZipEntryBuffer(

@@ -286,7 +286,8 @@ async function loadXml() {
         buf = await fileFormats.extractRarEntryBuffer(
           g_fileData.path,
           g_fileData.metadata.comicInfoId,
-          g_fileData.password
+          g_fileData.password,
+          fileUtils.createTempFolder(false)
         );
         break;
       case FileDataType.SEVENZIP:
