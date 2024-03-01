@@ -81,7 +81,10 @@ async function getRarEntriesList(filePath, password) {
     };
   } catch (error) {
     log.error(error.message);
-    if (error.message.includes("greater than 2 GiB")) {
+    if (error.message.startsWith("Password for encrypted")) {
+      // "Password for encrypted file or header is not specified"
+      return { result: "password required", paths: [] };
+    } else if (error.message.includes("greater than 2 GiB")) {
       return { result: "other error", paths: [], extra: "over2gb" };
     } else {
       return { result: "other error", paths: [] };
