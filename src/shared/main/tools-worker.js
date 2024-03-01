@@ -31,7 +31,13 @@ async function extractImages(
     const timers = require("./timers");
     timers.start("extractImages");
     if (inputFileType === FileDataType.ZIP) {
-      success = fileFormats.extractZip(inputFilePath, tempFolderPath, password);
+      // success = fileFormats.extractZip(inputFilePath, tempFolderPath, password);
+      success = await fileFormats.extract7Zip(
+        inputFilePath,
+        tempFolderPath,
+        password,
+        "zip"
+      );
     } else if (inputFileType === FileDataType.RAR) {
       success = await fileFormats.extractRar(
         inputFilePath,
@@ -173,19 +179,25 @@ async function createFiles(
           //cbz
           if (comicInfoFilePath)
             filesData[index].imgFilePaths.push(comicInfoFilePath);
-          if (password && password.trim() !== "") {
-            await fileFormats.create7Zip(
-              filesData[index].imgFilePaths,
-              filesData[index].outputFilePath,
-              password,
-              "zip"
-            );
-          } else {
-            fileFormats.createZip(
-              filesData[index].imgFilePaths,
-              filesData[index].outputFilePath
-            );
-          }
+          // if (password && password.trim() !== "") {
+          //   await fileFormats.create7Zip(
+          //     filesData[index].imgFilePaths,
+          //     filesData[index].outputFilePath,
+          //     password,
+          //     "zip"
+          //   );
+          // } else {
+          //   fileFormats.createZip(
+          //     filesData[index].imgFilePaths,
+          //     filesData[index].outputFilePath
+          //   );
+          // }
+          await fileFormats.create7Zip(
+            filesData[index].imgFilePaths,
+            filesData[index].outputFilePath,
+            password,
+            "zip"
+          );
         }
         times.push(`${timers.stop("createFile")}s`);
       } catch (error) {
