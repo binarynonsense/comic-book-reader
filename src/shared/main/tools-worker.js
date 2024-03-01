@@ -58,8 +58,7 @@ async function extractImages(
     timers.stop("extractImages");
     process.send({
       success: false,
-      errorLog: "conversionExtractImages: couldnt extract the file",
-      error: error.message,
+      error: error,
     });
   }
 }

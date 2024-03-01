@@ -460,7 +460,8 @@ function start(
           sendIpcToRenderer("images-extracted");
           return;
         } else {
-          stopError(message);
+          log.error(error);
+          stopError("Couldn't extract the file");
           return;
         }
       });

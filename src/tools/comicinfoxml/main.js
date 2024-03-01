@@ -349,7 +349,7 @@ function updatePages(json) {
     g_worker = fork(path.join(__dirname, "../../shared/main/tools-worker.js"));
     g_worker.on("message", (message) => {
       g_worker.kill(); // kill it after one use
-      if (message === "success") {
+      if (message.success) {
         updatePagesDataFromImages(json);
         return;
       } else {

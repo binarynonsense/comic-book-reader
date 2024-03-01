@@ -579,7 +579,7 @@ function startFile(
       );
       g_worker.on("message", (message) => {
         g_worker.kill(); // kill it after one use
-        if (message === "success") {
+        if (message.success) {
           if (g_cancel === true) {
             stopCancel();
             return;
@@ -590,7 +590,8 @@ function startFile(
           sendIpcToRenderer("file-images-extracted");
           return;
         } else {
-          stopError(message);
+          log.error(error);
+          stopError("couldnt extract the file");
           return;
         }
       });
