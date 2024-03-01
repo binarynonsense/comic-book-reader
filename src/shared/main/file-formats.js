@@ -419,7 +419,7 @@ async function extract7ZipEntryBuffer(
 }
 exports.extract7ZipEntryBuffer = extract7ZipEntryBuffer;
 
-async function extract7Zip(filePath, tempFolderPath, password) {
+async function extract7Zip(filePath, tempFolderPath, password, archiveType) {
   try {
     if (password === undefined || password === "") {
       // to help trigger the right error
@@ -428,11 +428,16 @@ async function extract7Zip(filePath, tempFolderPath, password) {
     checkPathTo7ZipBin();
 
     const Seven = require("node-7z");
-    const seven = Seven.extractFull(filePath, tempFolderPath, {
+    let options = {
       $bin: g_pathTo7zipBin,
       charset: "UTF-8", // always used just in case?
       password: password,
-    });
+    };
+    if (archiveType && archiveType === "zip") {
+      // not sure, but possible values may be: 7z, xz, split, zip, gzip, bzip2, tar,
+      options.archiveType = archiveType;
+    }
+    const seven = Seven.extractFull(filePath, tempFolderPath, options);
 
     let promise = await new Promise((resolve) => {
       seven.on("error", (error) => {
