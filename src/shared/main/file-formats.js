@@ -24,12 +24,15 @@ exports.init = function (isRelease) {
 async function getRarEntriesList(filePath, password) {
   try {
     const unrar = require("node-unrar-js");
-    let buf = Uint8Array.from(fs.readFileSync(filePath)).buffer;
-
+    //let buf = Uint8Array.from(fs.readFileSync(filePath)).buffer;
     let extractor;
     try {
-      extractor = await unrar.createExtractorFromData({
-        data: buf,
+      // extractor = await unrar.createExtractorFromData({
+      //   data: buf,
+      //   password: password,
+      // });
+      extractor = await unrar.createExtractorFromFile({
+        filepath: filePath,
         password: password,
       });
     } catch (error) {
@@ -80,14 +83,16 @@ async function getRarEntriesList(filePath, password) {
       metadata: { encrypted: isEncrypted, comicInfoId: comicInfoId },
     };
   } catch (error) {
-    log.error(error.message);
     if (error.message.startsWith("Password for encrypted")) {
       // "Password for encrypted file or header is not specified"
       return { result: "password required", paths: [] };
-    } else if (error.message.includes("greater than 2 GiB")) {
-      return { result: "other error", paths: [], extra: "over2gb" };
     } else {
-      return { result: "other error", paths: [] };
+      log.error(error.message);
+      if (error.message.includes("greater than 2 GiB")) {
+        return { result: "other error", paths: [], extra: "over2gb" };
+      } else {
+        return { result: "other error", paths: [] };
+      }
     }
   }
 }
