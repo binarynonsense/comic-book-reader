@@ -873,12 +873,23 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
           );
           return;
         } else if (rarData.result === "other error") {
-          sendIpcToRenderer(
-            "show-modal-info",
-            _("ui-modal-title-fileerror"),
-            _("ui-modal-info-couldntopen-rar"),
-            _("ui-modal-prompt-button-ok")
-          );
+          if (rarData.extra === "over2gb") {
+            sendIpcToRenderer(
+              "show-modal-info",
+              _("ui-modal-title-fileerror"),
+              _("ui-modal-info-couldntopen-rar") +
+                "\n" +
+                _("ui-modal-info-invalidsize-cap-b", "2GB"),
+              _("ui-modal-prompt-button-ok")
+            );
+          } else {
+            sendIpcToRenderer(
+              "show-modal-info",
+              _("ui-modal-title-fileerror"),
+              _("ui-modal-info-couldntopen-rar"),
+              _("ui-modal-prompt-button-ok")
+            );
+          }
           sendIpcToRenderer("update-bg", true);
           sendIpcToRenderer("update-loading", false);
           return;
@@ -939,6 +950,15 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
               "show-modal-info",
               _("ui-modal-title-fileerror"),
               _("ui-modal-info-couldntopen-zip-aes"),
+              _("ui-modal-prompt-button-ok")
+            );
+          } else if (zipData.extra === "over2gb") {
+            sendIpcToRenderer(
+              "show-modal-info",
+              _("ui-modal-title-fileerror"),
+              _("ui-modal-info-couldntopen-zip") +
+                "\n" +
+                _("ui-modal-info-invalidsize-cap-b", "2GB"),
               _("ui-modal-prompt-button-ok")
             );
           } else {

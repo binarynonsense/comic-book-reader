@@ -81,7 +81,11 @@ async function getRarEntriesList(filePath, password) {
     };
   } catch (error) {
     log.error(error.message);
-    return { result: "other error", paths: [] };
+    if (error.message.includes("greater than 2 GiB")) {
+      return { result: "other error", paths: [], extra: "over2gb" };
+    } else {
+      return { result: "other error", paths: [] };
+    }
   }
 }
 exports.getRarEntriesList = getRarEntriesList;
@@ -223,7 +227,11 @@ function getZipEntriesList(filePath, password) {
     };
   } catch (error) {
     log.error(error.message);
-    return { result: "other error", paths: [] };
+    if (error.message.includes("greater than 2 GiB")) {
+      return { result: "other error", paths: [], extra: "over2gb" };
+    } else {
+      return { result: "other error", paths: [] };
+    }
   }
 }
 exports.getZipEntriesList = getZipEntriesList;
