@@ -404,7 +404,7 @@ async function extract7ZipEntryBuffer(
     if (archiveType && archiveType === "zip") {
       options.archiveType = archiveType;
     }
-    const seven = Seven.extract(filePath, untrackedTempFolder, options);
+    const seven = Seven.extractFull(filePath, untrackedTempFolder, options);
 
     let promise = await new Promise((resolve) => {
       seven.on("error", (error) => {
