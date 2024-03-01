@@ -141,8 +141,8 @@ async function createFiles(
     const timers = require("./timers");
     let times = [];
     for (let index = 0; index < filesData.length; index++) {
+      timers.start("createFile");
       try {
-        timers.start("createFile");
         if (outputFormat === FileExtension.PDF) {
           await fileFormats.createPdf(
             filesData[index].imgFilePaths,
