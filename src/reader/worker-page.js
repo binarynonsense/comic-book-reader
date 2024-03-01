@@ -27,7 +27,14 @@ async function extractBase64Image(
     let buf;
     let mime;
     if (fileType === FileDataType.ZIP) {
-      buf = fileFormats.extractZipEntryBuffer(filePath, entryName, password);
+      //buf = fileFormats.extractZipEntryBuffer(filePath, entryName, password);
+      buf = await fileFormats.extract7ZipEntryBuffer(
+        filePath,
+        entryName,
+        password,
+        untrackedTempFolder,
+        "zip"
+      );
       mime = "image/" + fileUtils.getMimeType(entryName);
     } else if (fileType === FileDataType.RAR) {
       buf = await fileFormats.extractRarEntryBuffer(

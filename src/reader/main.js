@@ -926,7 +926,12 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
         fileExtension === "." + FileExtension.ZIP ||
         fileExtension === "." + FileExtension.CBZ
       ) {
-        let zipData = fileFormats.getZipEntriesList(filePath, password);
+        //let zipData = fileFormats.getZipEntriesList(filePath, password);
+        let zipData = await fileFormats.get7ZipEntriesList(
+          filePath,
+          password,
+          "zip"
+        );
         if (zipData.result === "password required") {
           if (g_fileData.state !== FileDataState.LOADING) {
             cleanUpFileData();
@@ -1270,9 +1275,19 @@ function goToPage(pageIndex, scrollBarPos = 0) {
       g_workerPage.kill();
       g_workerPage = undefined;
     }
+    const timers = require("../shared/main/timers");
+    timers.start("workerPage");
+
+    let untrackedTempFolder =
+      g_fileData.type === FileDataType.SEVENZIP ||
+      g_fileData.type === FileDataType.ZIP
+        ? fileUtils.createTempFolder(false)
+        : undefined;
+
     if (g_workerPage === undefined) {
       g_workerPage = fork(path.join(__dirname, "worker-page.js"));
       g_workerPage.on("message", (message) => {
+        log.debug(`page load time: ${timers.stop("workerPage")}s`);
         g_workerPage.kill(); // kill it after one use
         if (message[0] === true) {
           sendIpcToRenderer(
@@ -1281,12 +1296,18 @@ function goToPage(pageIndex, scrollBarPos = 0) {
             g_fileData.pageRotation,
             message[2]
           );
+          if (untrackedTempFolder) {
+            fileUtils.cleanUpTempFolder(untrackedTempFolder);
+          }
           return;
         } else {
           // TODO: handle error
           log.error("worker error");
           log.error(message[1]);
           sendIpcToRenderer("update-loading", false);
+          if (untrackedTempFolder) {
+            fileUtils.cleanUpTempFolder(untrackedTempFolder);
+          }
           return;
         }
       });
@@ -1297,9 +1318,7 @@ function goToPage(pageIndex, scrollBarPos = 0) {
       g_fileData.pagesPaths[g_fileData.pageIndex],
       scrollBarPos,
       g_fileData.password,
-      g_fileData.type === FileDataType.SEVENZIP
-        ? fileUtils.createTempFolder(false)
-        : undefined,
+      untrackedTempFolder,
     ]);
   } else if (g_fileData.type === FileDataType.EPUB_EBOOK) {
     if (pageIndex > 0) {

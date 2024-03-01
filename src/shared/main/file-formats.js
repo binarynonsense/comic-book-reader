@@ -310,7 +310,7 @@ function checkPathTo7ZipBin() {
   return g_pathTo7zipBin;
 }
 
-async function get7ZipEntriesList(filePath, password) {
+async function get7ZipEntriesList(filePath, password, archiveType) {
   try {
     if (password === undefined || password === "") {
       // to help trigger the right error
@@ -324,11 +324,15 @@ async function get7ZipEntriesList(filePath, password) {
     // TODO: check if test comes with a performance hit for big files? Don't
     // really know what it tests...
     const Seven = require("node-7z");
-    const seven = Seven.test(filePath, {
+    let options = {
       $bin: g_pathTo7zipBin,
       charset: "UTF-8", // always used just in case?
       password: password,
-    });
+    };
+    if (archiveType && archiveType === "zip") {
+      options.archiveType = archiveType;
+    }
+    const seven = Seven.test(filePath, options);
 
     let imgEntries;
     let comicInfoId = undefined;
@@ -379,7 +383,8 @@ async function extract7ZipEntryBuffer(
   filePath,
   entryName,
   password,
-  untrackedTempFolder
+  untrackedTempFolder,
+  archiveType
 ) {
   try {
     //////////////////////////////////////////
@@ -390,12 +395,16 @@ async function extract7ZipEntryBuffer(
     checkPathTo7ZipBin();
 
     const Seven = require("node-7z");
-    const seven = Seven.extract(filePath, untrackedTempFolder, {
+    let options = {
       $bin: g_pathTo7zipBin,
       charset: "UTF-8", // always used just in case?
       password: password,
       $cherryPick: entryName,
-    });
+    };
+    if (archiveType && archiveType === "zip") {
+      options.archiveType = archiveType;
+    }
+    const seven = Seven.extract(filePath, untrackedTempFolder, options);
 
     let promise = await new Promise((resolve) => {
       seven.on("error", (error) => {
