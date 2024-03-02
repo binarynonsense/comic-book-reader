@@ -631,5 +631,21 @@
   "tool-fb-browse-up": "Up",
   "tool-fb-browse-back": "Back",
   "tool-fb-browse-parent": "Parent Folder",
-  "tool-fb-browse-previous": "Previous Folder"
+  "tool-fb-browse-previous": "Previous Folder",
+
+  "[NOTE TO TRANSLATORS] not yet": "No translation needed yet as I don't know if they are definitive",
+  "tool-pre-navkeys": "Key Mapping",
+  "tool-pre-navkeys-actions": {
+    "scrollUp": "Scroll Page Up",
+    "scrollDown": "Scroll Page Down",
+    "scrollLeft": "Scroll Page Left",
+    "scrollRight": "Scroll Page Right",
+    "nextPage": "Next Page",
+    "prevPage": "Previous Page",
+    "firstPage": "First Page",
+    "lastPage": "Last Page",
+    "zoomInPage": "Zoom Page In",
+    "zoomOutPage": "Zoom Page Out"
+  },
+  "tool-pre-navkeys-no-key": "Unassigned"
 }
