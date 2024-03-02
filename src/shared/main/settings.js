@@ -63,6 +63,7 @@ const g_defaultSettings = {
   turnPageOnScrollBoundary: false,
   filterMode: 0, // 0: none, 1: old paper
 
+  // TODO: key modifiers
   navKeys: {
     scrollUp: ["w", "ArrowUp"],
     scrollDown: ["s", "ArrowDown"],
