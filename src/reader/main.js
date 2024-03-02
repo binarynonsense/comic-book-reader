@@ -68,6 +68,7 @@ exports.init = function (filePath, checkHistory) {
     "set-hide-inactive-mouse-cursor",
     settings.getValue("cursorVisibility") === 1
   );
+  sendIpcToRenderer("set-nav-keys", settings.getValue("navKeys"));
   sendIpcToRenderer(
     "set-page-turn-on-scroll-boundary",
     settings.getValue("turnPageOnScrollBoundary")

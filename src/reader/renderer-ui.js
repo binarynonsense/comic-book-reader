@@ -25,6 +25,8 @@ let g_mouseCursorTimer;
 let g_isMouseCursorVisible = true;
 let g_mouseCursorHideTime = 3500;
 
+let g_navKeys;
+
 let g_turnPageOnScrollBoundary = true;
 let g_filterMode = 0;
 
@@ -311,10 +313,6 @@ function initOnIpcCallbacks() {
     sendIpcToMain("set-scale-mode", scale);
   });
 
-  on("set-hide-inactive-mouse-cursor", (hide) => {
-    g_hideMouseCursor = hide;
-  });
-
   on("set-page-turn-on-scroll-boundary", (value) => {
     g_turnPageOnScrollBoundary = value;
   });
@@ -330,6 +328,14 @@ function initOnIpcCallbacks() {
     if (img) {
       setFilterClass(img);
     }
+  });
+
+  on("set-hide-inactive-mouse-cursor", (hide) => {
+    g_hideMouseCursor = hide;
+  });
+
+  on("set-nav-keys", (keys) => {
+    g_navKeys = keys;
   });
 }
 
@@ -542,6 +548,16 @@ export function onInputEvent(type, event) {
   switch (type) {
     case "onkeydown":
       {
+        if (
+          event.key == "ArrowUp" ||
+          event.key == "ArrowDown" ||
+          event.key == "ArrowRight" ||
+          event.key == "ArrowLeft" ||
+          event.key == " "
+        ) {
+          event.preventDefault();
+        }
+
         if (fileOpen) {
           if (event.key == "PageDown" || event.key == "ArrowRight") {
             if (!event.repeat) {
@@ -558,10 +574,16 @@ export function onInputEvent(type, event) {
             if (!event.repeat) inputGoToFirstPage();
           } else if (event.key == "End") {
             if (!event.repeat) inputGoToLastPage();
-          } else if (event.key == "ArrowDown" || event.key == "s") {
+          } else if (
+            event.key == g_navKeys.scrollDown1 ||
+            event.key == g_navKeys.scrollDown2
+          ) {
             inputScrollPageDown();
             event.stopPropagation();
-          } else if (event.key == "ArrowUp" || event.key == "w") {
+          } else if (
+            event.key == g_navKeys.scrollUp1 ||
+            event.key == g_navKeys.scrollUp2
+          ) {
             inputScrollPageUp();
             event.stopPropagation();
           } else if (event.key == "a") {
