@@ -36,7 +36,7 @@ exports.open = function () {
   init();
   const data = fs.readFileSync(path.join(__dirname, "index.html"));
   sendIpcToCoreRenderer("replace-inner-html", "#tools", data.toString());
-  updateLocalizedText();
+  updateLocalizedText(); // also creates the navKeys html
   sendIpcToRenderer(
     "show",
     i18n.getLoadedLocale(),
@@ -72,6 +72,16 @@ exports.onToggleFullScreen = function () {
 
 function onCloseClicked() {
   core.switchTool("reader");
+}
+
+function updateNavKeys() {
+  sendIpcToRenderer(
+    "update-navkeys",
+    settings.get().navKeys,
+    i18n._object("tool-pre-navkeys-actions"),
+    _("tool-shared-ui-change").toUpperCase(),
+    _("tool-shared-ui-reset").toUpperCase()
+  );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -180,6 +190,12 @@ function initOnIpcCallbacks() {
     reader.sendIpcToRenderer("set-page-turn-on-scroll-boundary", value);
   });
 
+  on("set-nav-keys", (value) => {
+    // TODO: the real thing
+    // settings.setValue("navKeys", value);
+    // reader.sendIpcToRenderer("set-nav-keys", settings.getValue("navKeys"));
+  });
+
   on("set-pdf-reading-lib", (value) => {
     settings.setValue("pdfReadingLib", value);
     sendIpcToRenderer(
@@ -265,6 +281,7 @@ function updateLocalizedText() {
     getLocalization(),
     getTooltipsLocalization()
   );
+  updateNavKeys();
 }
 exports.updateLocalizedText = updateLocalizedText;
 
@@ -579,6 +596,10 @@ function getLocalization() {
     {
       id: "tool-pre-page-turn-onscroll-text",
       text: _("tool-pre-page-turn-onscroll"),
+    },
+    {
+      id: "tool-pre-navkeys-text",
+      text: _("tool-pre-navkeys"),
     },
     //////////////////////////////////////////////
     {

@@ -503,6 +503,10 @@ function initOnIpcCallbacks() {
     updateColumnsHeight();
   });
 
+  on("update-navkeys", (...args) => {
+    updateNavKeys(...args);
+  });
+
   on("set-temp-folder", (...args) => {
     updateTempFolder(...args);
   });
@@ -554,6 +558,99 @@ function updateRarFolder(folderPath) {
   else text.innerText = reducePathString(folderPath);
   li.appendChild(text);
   g_rarExeFolderPathUl.appendChild(li);
+}
+
+function updateNavKeys(actionKeys, actionTexts, changeText, resetText) {
+  // select.addEventListener("change", function (event) {
+  //   sendIpcToMain("set-page-turn", select.value === "true");
+  // });
+  const parentDiv = document.getElementById("tool-pre-navkeys-div");
+  parentDiv.innerHTML = "";
+  // for (const action in actionKeys) {
+  //   parentDiv.innerHTML += `
+  // <label>
+  // <span id="tool-pre-navkeys-scrollup-text">Scroll Up</span>
+  // <div
+  //   class="tool-shared-columns-parent tool-shared-columns-parent-alignv"
+  //   style="padding-top: 10px"
+  // >
+  //   <div class="tool-shared-columns-50-grow">
+  //     <ul
+  //       id="tool-pre-navkeys-scrollup1-ul"
+  //       class="tools-collection-ul"
+  //     >
+  //       <li class="tools-collection-li">w</li>
+  //     </ul>
+  //   </div>
+  //   <button
+  //     id="tool-pre-navkeys-scrollup1-update-button"
+  //     class="tool-shared-columns-25-grow"
+  //   >
+  //     <span id="tool-pre-navkeys-scrollup1-update-button-text"
+  //       >CHANGEsss</span
+  //     >
+  //   </button>
+  //   <button
+  //     id="tool-pre-navkeys-scrollup1-reset-button"
+  //     class="tool-shared-columns-25-grow"
+  //   >
+  //     <span id="tool-pre-navkeys-scrollup1-reset-button-text"
+  //       >RESET</span
+  //     >
+  //   </button>
+  // </div>
+  // </label>`;
+  // }
+
+  for (const action in actionKeys) {
+    const parentLabel = document.createElement("label");
+    parentDiv.appendChild(parentLabel);
+    const span = document.createElement("span");
+    span.innerText = actionTexts[action];
+    parentLabel.appendChild(span);
+    for (let index = 0; index < actionKeys[action].length; index++) {
+      const keyText = actionKeys[action][index];
+      ////
+      const columnsDiv = document.createElement("div");
+      parentDiv.appendChild(columnsDiv);
+      columnsDiv.classList =
+        "tool-shared-columns-parent tool-shared-columns-parent-alignv";
+      columnsDiv.style = "padding-top: 0px";
+      ////
+      const keyDiv = document.createElement("div");
+      columnsDiv.appendChild(keyDiv);
+      keyDiv.classList = "tool-shared-columns-50-grow";
+      const keyUl = document.createElement("ul");
+      keyDiv.appendChild(keyUl);
+      keyUl.classList = "tools-collection-ul";
+      const keyLi = document.createElement("li");
+      keyUl.appendChild(keyLi);
+      keyLi.classList = "tools-collection-li";
+      // TODO: check if this works for space bar
+      keyLi.innerText = keyText === " " ? "SpaceBar" : keyText;
+      ////
+      const changeButton = document.createElement("button");
+      columnsDiv.appendChild(changeButton);
+      changeButton.classList == "tool-shared-columns-25-grow";
+      const changeSpan = document.createElement("span");
+      changeButton.appendChild(changeSpan);
+      changeSpan.innerText = changeText;
+      changeButton.addEventListener("click", function (event) {
+        console.log(`${action}-${index}-button`);
+      });
+      ////
+      const resetButton = document.createElement("button");
+      columnsDiv.appendChild(resetButton);
+      changeButton.classList == "tool-shared-columns-25-grow";
+      const resetSpan = document.createElement("span");
+      resetButton.appendChild(resetSpan);
+      resetSpan.innerText = resetText;
+      resetButton.addEventListener("click", function (event) {
+        console.log(`${action}-${index}-button`);
+      });
+      ////
+    }
+  }
 }
 
 function reducePathString(input) {

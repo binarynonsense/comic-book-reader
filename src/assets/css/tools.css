@@ -529,6 +529,10 @@
   width: 100%;
 }
 
+.tool-shared-columns-parent-alignv {
+  align-items: center;
+}
+
 .tool-shared-columns-50 {
   flex: 0 1 50%;
 }
