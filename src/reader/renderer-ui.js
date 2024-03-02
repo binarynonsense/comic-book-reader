@@ -559,10 +559,7 @@ export function onInputEvent(type, event) {
         }
 
         function isNavKey(keysArray, eventKey) {
-          console.log(keysArray);
           for (const key of keysArray) {
-            console.log(eventKey);
-            console.log(key);
             if (key === eventKey) {
               return true;
             }
