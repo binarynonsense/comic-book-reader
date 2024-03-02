@@ -288,7 +288,8 @@ function init(activeLocale, languages, activeTheme, themes, settings) {
       });
   }
 
-  updateColumnsHeight();
+  switchSection(1);
+  //updateColumnsHeight();
 }
 
 export function initIpc() {
