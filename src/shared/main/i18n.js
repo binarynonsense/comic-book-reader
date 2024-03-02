@@ -13,7 +13,7 @@ const sanitizeHtml = require("sanitize-html");
 const settings = require("./settings");
 
 let g_loadedLocale;
-let g_localeData;
+let g_loadedLocaleData;
 let g_englishData;
 let g_userDataLocalesPath;
 
@@ -43,7 +43,7 @@ function loadLocale(desiredLocale) {
     let data = getLocaleData(locale);
     if (data !== undefined) {
       g_loadedLocale = locale;
-      g_localeData = data;
+      g_loadedLocaleData = data;
       return g_loadedLocale;
     }
     if (locale.includes("-")) {
@@ -54,14 +54,14 @@ function loadLocale(desiredLocale) {
         data = getLocaleData(locale);
         if (data !== undefined) {
           g_loadedLocale = locale;
-          g_localeData = data;
+          g_loadedLocaleData = data;
           return g_loadedLocale;
         }
       }
     }
     // nothing found, load "en"
     g_loadedLocale = "en";
-    g_localeData = getLocaleData(g_loadedLocale); // could use g_englishData.slice()
+    g_loadedLocaleData = getLocaleData(g_loadedLocale); // could use g_englishData.slice()
     return g_loadedLocale;
   }
 }
@@ -151,8 +151,8 @@ function getLocalesFromFolder(folderPath) {
 
 exports._ = function (...args) {
   // e.g. [ "Error: {0} file/s couldn't be converted", 0 ]
-  let translatedText = g_localeData[args[0]];
-  if (translatedText === undefined) {
+  let translatedText = g_loadedLocaleData[args[0]];
+  if (translatedText === undefined || typeof translatedText !== "string") {
     translatedText = g_englishData[args[0]];
     if (translatedText === undefined) {
       // use the sent text as nothing else was found
@@ -169,6 +169,36 @@ exports._ = function (...args) {
     allowedTags: [],
     allowedClasses: {},
   });
+};
+
+exports._raw = function (key) {
+  let data = g_loadedLocaleData[key];
+  if (data === undefined) {
+    data = g_englishData[key];
+  }
+  return data;
+};
+
+exports._object = function (key) {
+  let data = g_loadedLocaleData[key];
+  if (
+    data === undefined ||
+    !(typeof data == "object" && data.constructor == Object)
+  ) {
+    data = g_englishData[key];
+  }
+  if (!(typeof data == "object" && data.constructor == Object)) {
+    return undefined;
+  }
+  // make a copy
+  data = JSON.parse(JSON.stringify(data));
+  for (const key in data) {
+    data[key] = sanitizeHtml(data[key], {
+      allowedTags: [],
+      allowedClasses: {},
+    });
+  }
+  return data;
 };
 
 // ref: https://stackoverflow.com/questions/37639444/javascript-stringformat-with-array
