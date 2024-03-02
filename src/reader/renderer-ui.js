@@ -558,6 +558,18 @@ export function onInputEvent(type, event) {
           event.preventDefault();
         }
 
+        function isNavKey(keysArray, eventKey) {
+          console.log(keysArray);
+          for (const key of keysArray) {
+            console.log(eventKey);
+            console.log(key);
+            if (key === eventKey) {
+              return true;
+            }
+          }
+          return false;
+        }
+
         if (fileOpen) {
           if (event.key == "PageDown" || event.key == "ArrowRight") {
             if (!event.repeat) {
@@ -574,16 +586,10 @@ export function onInputEvent(type, event) {
             if (!event.repeat) inputGoToFirstPage();
           } else if (event.key == "End") {
             if (!event.repeat) inputGoToLastPage();
-          } else if (
-            event.key == g_navKeys.scrollDown1 ||
-            event.key == g_navKeys.scrollDown2
-          ) {
+          } else if (isNavKey(g_navKeys.scrollDown, event.key)) {
             inputScrollPageDown();
             event.stopPropagation();
-          } else if (
-            event.key == g_navKeys.scrollUp1 ||
-            event.key == g_navKeys.scrollUp2
-          ) {
+          } else if (isNavKey(g_navKeys.scrollUp, event.key)) {
             inputScrollPageUp();
             event.stopPropagation();
           } else if (event.key == "a") {

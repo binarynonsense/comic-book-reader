@@ -63,10 +63,8 @@ const g_defaultSettings = {
   turnPageOnScrollBoundary: false,
   filterMode: 0, // 0: none, 1: old paper
   navKeys: {
-    scrollUp1: "w",
-    scrollUp2: "ArrowUp",
-    scrollDown1: "s",
-    scrollDown2: "ArrowDown",
+    scrollUp: ["w", "ArrowUp"],
+    scrollDown: ["s", "ArrowDown"],
   },
 
   locale: undefined,
@@ -421,7 +419,7 @@ function load(info) {
         throw error;
       }
 
-      for (key in g_settings) {
+      for (const key in g_settings) {
         // ref: https://stackoverflow.com/questions/1098040/checking-if-a-key-exists-in-a-javascript-object
         if (loadedSettings[key] !== undefined) {
           // good if I don't allow undefines in the savefile
@@ -441,9 +439,20 @@ function load(info) {
 }
 
 function loadNavKeys(loadedKeys) {
-  for (key in g_settings.navKeys) {
-    if (loadedKeys[key] !== undefined && typeof loadedKeys[key] === "string") {
-      g_settings.navKeys[key] = loadedKeys[key];
+  for (const navAction in g_settings.navKeys) {
+    let navActionKeys = loadedKeys[navAction];
+    if (
+      navActionKeys !== undefined &&
+      Array.isArray(navActionKeys) &&
+      navActionKeys.length <= 2
+    ) {
+      let valid = true;
+      for (const key in navActionKeys) {
+        if (typeof key !== "string") valid = false;
+      }
+      if (valid) {
+        g_settings.navKeys[navAction] = navActionKeys;
+      }
     }
   }
 }
