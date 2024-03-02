@@ -190,7 +190,7 @@ exports._object = function (key) {
   if (!(typeof data == "object" && data.constructor == Object)) {
     return undefined;
   }
-  // make a copy
+  // make a copy and sanitize values
   data = JSON.parse(JSON.stringify(data));
   for (const key in data) {
     data[key] = sanitizeHtml(data[key], {
