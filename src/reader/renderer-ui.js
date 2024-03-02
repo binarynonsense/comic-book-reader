@@ -558,9 +558,9 @@ export function onInputEvent(type, event) {
           event.preventDefault();
         }
 
-        function isNavKey(keysArray, eventKey) {
+        function isNavKey(keysArray, event) {
           for (const key of keysArray) {
-            if (key === eventKey) {
+            if (key === event.key) {
               return true;
             }
           }
@@ -568,43 +568,43 @@ export function onInputEvent(type, event) {
         }
 
         if (fileOpen) {
-          if (isNavKey(g_navKeys.nextPage, event.key)) {
+          if (isNavKey(g_navKeys.nextPage, event)) {
             if (!event.repeat) {
               inputGoToNextPage();
               event.stopPropagation();
             }
             event.stopPropagation();
-          } else if (isNavKey(g_navKeys.prevPage, event.key)) {
+          } else if (isNavKey(g_navKeys.prevPage, event)) {
             if (!event.repeat) {
               inputGoToPrevPage();
               event.stopPropagation();
             }
-          } else if (isNavKey(g_navKeys.firstPage, event.key)) {
+          } else if (isNavKey(g_navKeys.firstPage, event)) {
             if (!event.repeat) inputGoToFirstPage();
-          } else if (isNavKey(g_navKeys.lastPage, event.key)) {
+          } else if (isNavKey(g_navKeys.lastPage, event)) {
             if (!event.repeat) inputGoToLastPage();
-          } else if (isNavKey(g_navKeys.scrollDown, event.key)) {
+          } else if (isNavKey(g_navKeys.scrollDown, event)) {
             inputScrollPageDown();
             event.stopPropagation();
-          } else if (isNavKey(g_navKeys.scrollUp, event.key)) {
+          } else if (isNavKey(g_navKeys.scrollUp, event)) {
             inputScrollPageUp();
             event.stopPropagation();
-          } else if (isNavKey(g_navKeys.scrollLeft, event.key)) {
+          } else if (isNavKey(g_navKeys.scrollLeft, event)) {
             let container = document.querySelector("#reader");
             let amount = container.offsetWidth / 5;
             container.scrollBy(-amount, 0);
             event.stopPropagation();
-          } else if (isNavKey(g_navKeys.scrollRight, event.key)) {
+          } else if (isNavKey(g_navKeys.scrollRight, event)) {
             let container = document.querySelector("#reader");
             let amount = container.offsetWidth / 5;
             container.scrollBy(amount, 0);
             event.stopPropagation();
-          } else if (isNavKey(g_navKeys.zoomInPage, event.key)) {
+          } else if (isNavKey(g_navKeys.zoomInPage, event)) {
             if (!event.repeat) {
               inputZoomIn();
               event.stopPropagation();
             }
-          } else if (isNavKey(g_navKeys.zoomOutPage, event.key)) {
+          } else if (isNavKey(g_navKeys.zoomOutPage, event)) {
             if (!event.repeat) {
               inputZoomOut();
               event.stopPropagation();
