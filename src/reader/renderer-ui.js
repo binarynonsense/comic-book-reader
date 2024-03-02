@@ -568,20 +568,20 @@ export function onInputEvent(type, event) {
         }
 
         if (fileOpen) {
-          if (event.key == "PageDown" || event.key == "ArrowRight") {
+          if (isNavKey(g_navKeys.nextPage, event.key)) {
             if (!event.repeat) {
               inputGoToNextPage();
               event.stopPropagation();
             }
             event.stopPropagation();
-          } else if (event.key == "PageUp" || event.key == "ArrowLeft") {
+          } else if (isNavKey(g_navKeys.prevPage, event.key)) {
             if (!event.repeat) {
               inputGoToPrevPage();
               event.stopPropagation();
             }
-          } else if (event.key == "Home") {
+          } else if (isNavKey(g_navKeys.firstPage, event.key)) {
             if (!event.repeat) inputGoToFirstPage();
-          } else if (event.key == "End") {
+          } else if (isNavKey(g_navKeys.lastPage, event.key)) {
             if (!event.repeat) inputGoToLastPage();
           } else if (isNavKey(g_navKeys.scrollDown, event.key)) {
             inputScrollPageDown();
@@ -589,22 +589,22 @@ export function onInputEvent(type, event) {
           } else if (isNavKey(g_navKeys.scrollUp, event.key)) {
             inputScrollPageUp();
             event.stopPropagation();
-          } else if (event.key == "a") {
+          } else if (isNavKey(g_navKeys.scrollLeft, event.key)) {
             let container = document.querySelector("#reader");
             let amount = container.offsetWidth / 5;
             container.scrollBy(-amount, 0);
             event.stopPropagation();
-          } else if (event.key == "d") {
+          } else if (isNavKey(g_navKeys.scrollRight, event.key)) {
             let container = document.querySelector("#reader");
             let amount = container.offsetWidth / 5;
             container.scrollBy(amount, 0);
             event.stopPropagation();
-          } else if (event.ctrlKey && event.key === "+") {
+          } else if (isNavKey(g_navKeys.zoomInPage, event.key)) {
             if (!event.repeat) {
               inputZoomIn();
               event.stopPropagation();
             }
-          } else if (event.ctrlKey && event.key === "-") {
+          } else if (isNavKey(g_navKeys.zoomOutPage, event.key)) {
             if (!event.repeat) {
               inputZoomOut();
               event.stopPropagation();

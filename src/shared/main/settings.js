@@ -62,9 +62,18 @@ const g_defaultSettings = {
   rarExeFolderPath: undefined,
   turnPageOnScrollBoundary: false,
   filterMode: 0, // 0: none, 1: old paper
+
   navKeys: {
     scrollUp: ["w", "ArrowUp"],
     scrollDown: ["s", "ArrowDown"],
+    scrollLeft: ["a"],
+    scrollRight: ["d"],
+    nextPage: ["PageDown", "ArrowRight"],
+    prevPage: ["PageUp", "ArrowLeft"],
+    firstPage: ["Home"],
+    lastPage: ["End"],
+    zoomInPage: ["+"],
+    zoomOutPage: ["-"],
   },
 
   locale: undefined,
