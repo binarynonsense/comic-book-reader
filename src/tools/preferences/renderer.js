@@ -68,7 +68,7 @@ function init(activeLocale, languages, activeTheme, themes, settings) {
     if (languages !== undefined) {
       for (let language of languages) {
         let nativeName = language.nativeName;
-        if (isVersionOlder(language.acbrVersion, "3.2.0")) {
+        if (isVersionOlder(language.acbrVersion, "3.3.3-beta4")) {
           nativeName += " (" + language.outdatedText + ")";
         }
         let opt = document.createElement("option");
