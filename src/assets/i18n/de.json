@@ -441,7 +441,7 @@
   "tool-pre-navkeys-change-cancel": "Klicken Sie den Button zum Abbrechen.",
   "[NOTE TO TRANSLATORS]tool-pre-navkeys-button-resetall": "'Reset All' as in 'reset all the assigned keys'",
   "tool-pre-navkeys-button-resetall": "Alle zurücksetzen",
-  "tool-pre-navkeys-modal-resetall-message": "Sind Sie sich sicher, dass Sie die gesamte Tastenbelegung auf die Standardwerte zurücksetzen wollen?",
+  "tool-pre-navkeys-modal-resetall-message": "Sind Sie sicher, dass Sie die gesamte Tastenbelegung auf die Standardwerte zurücksetzen wollen?",
   "tool-pre-advanced-preferences": "Erweitert",
   "tool-pre-other-preferences": "Andere",
   "tool-pre-tempfolder": "Temp Ordner",
