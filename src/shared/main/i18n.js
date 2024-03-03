@@ -191,7 +191,7 @@ exports._object = function (key) {
     return undefined;
   }
   // make a copy and sanitize values
-  data = JSON.parse(JSON.stringify(data));
+  data = structuredClone(data);
   for (const key in data) {
     data[key] = sanitizeHtml(data[key], {
       allowedTags: [],

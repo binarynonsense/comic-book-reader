@@ -315,9 +315,7 @@ function initOnIpcCallbacks() {
 
   on("resetall-nav-keys", () => {
     // make a copy of the defaults object to update the settings
-    const defaultNavKeys = JSON.parse(
-      JSON.stringify(settings.getDefaultValue("navKeys"))
-    );
+    const defaultNavKeys = structuredClone(settings.getDefaultValue("navKeys"));
     settings.setValue("navKeys", defaultNavKeys);
     reader.sendIpcToRenderer("set-nav-keys", settings.getValue("navKeys"));
     updateNavKeys();

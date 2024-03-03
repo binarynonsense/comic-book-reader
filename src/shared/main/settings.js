@@ -84,7 +84,6 @@ const g_defaultSettings = {
   tempFolderPath: undefined,
 
   // TOOLS
-
   toolGutUseCache: true,
   toolCixApiKeyPath: undefined,
 };
@@ -114,7 +113,7 @@ exports.getDefaultValue = function (name) {
 };
 
 function setDefaultValues() {
-  g_settings = JSON.parse(JSON.stringify(g_defaultSettings));
+  g_settings = structuredClone(g_defaultSettings);
 }
 
 let g_scaleToHeightMin = 25;
