@@ -808,7 +808,19 @@ function showNavKeysChangeModal(title, message, textButton, action, keyIndex) {
           event.key === "ContextMenu" ||
           event.key === "CapsLock" ||
           event.key === "Shift" ||
-          event.shiftKey
+          event.shiftKey ||
+          event.key === "F1" ||
+          event.key === "F2" ||
+          event.key === "F3" ||
+          event.key === "F4" ||
+          event.key === "F5" ||
+          event.key === "F6" ||
+          event.key === "F7" ||
+          event.key === "F8" ||
+          event.key === "F9" ||
+          event.key === "F10" ||
+          event.key === "F11" ||
+          event.key === "F12"
         ) {
           // not allowed
           sound.playErrorSound();
