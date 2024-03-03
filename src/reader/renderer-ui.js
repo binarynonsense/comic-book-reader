@@ -558,53 +558,108 @@ export function onInputEvent(type, event) {
           event.preventDefault();
         }
 
-        function isNavKey(keysArray, event) {
-          for (const key of keysArray) {
-            if (key === event.key) {
-              return true;
+        function matchesNavKey(keysArray, event) {
+          for (const keyCombination of keysArray) {
+            if (
+              !keyCombination ||
+              keyCombination === "" ||
+              keyCombination === "UNASSIGNED"
+            ) {
+              continue;
             }
+            const keyParts = keyCombination.split("+");
+            /*             
+             examples:
+             w -> ["w"]
+             + -> ["", ""]
+             Control+2 -> ["Control", "2"]
+             Control++ -> ["Control", "", ""]
+             Control+Shift+2 -> ['Control', 'Shift', '2']
+             Control+Shift++ -> ['Control', 'Shift', '', '']
+            */
+            let key = keyParts[keyParts.length - 1];
+            if (key === "") {
+              key = "+";
+            }
+            let requiresCtrl = false;
+            for (const value of keyParts) {
+              if (value === "Control") {
+                requiresCtrl = true;
+                break;
+              }
+            }
+            let requiresShift = false;
+            for (const value of keyParts) {
+              if (value === "Shift") {
+                requiresShift = true;
+                break;
+              }
+            }
+            let requiresAlt = false;
+            for (const value of keyParts) {
+              if (value === "Alt") {
+                requiresAlt = true;
+                break;
+              }
+            }
+            console.log(event.key);
+            let matches = true;
+            if (event.key !== key) {
+              matches = false;
+            }
+            // modifiers
+            if (event.ctrlKey !== requiresCtrl) {
+              matches = false;
+            }
+            if (event.shiftKey !== requiresShift) {
+              matches = false;
+            }
+            if (event.altKey !== requiresAlt) {
+              matches = false;
+            }
+            if (matches) return true;
           }
           return false;
         }
 
         if (fileOpen) {
-          if (isNavKey(g_navKeys.nextPage, event)) {
+          if (matchesNavKey(g_navKeys.nextPage, event)) {
             if (!event.repeat) {
               inputGoToNextPage();
               event.stopPropagation();
             }
             event.stopPropagation();
-          } else if (isNavKey(g_navKeys.prevPage, event)) {
+          } else if (matchesNavKey(g_navKeys.prevPage, event)) {
             if (!event.repeat) {
               inputGoToPrevPage();
               event.stopPropagation();
             }
-          } else if (isNavKey(g_navKeys.firstPage, event)) {
+          } else if (matchesNavKey(g_navKeys.firstPage, event)) {
             if (!event.repeat) inputGoToFirstPage();
-          } else if (isNavKey(g_navKeys.lastPage, event)) {
+          } else if (matchesNavKey(g_navKeys.lastPage, event)) {
             if (!event.repeat) inputGoToLastPage();
-          } else if (isNavKey(g_navKeys.scrollDown, event)) {
+          } else if (matchesNavKey(g_navKeys.scrollDown, event)) {
             inputScrollPageDown();
             event.stopPropagation();
-          } else if (isNavKey(g_navKeys.scrollUp, event)) {
+          } else if (matchesNavKey(g_navKeys.scrollUp, event)) {
             inputScrollPageUp();
             event.stopPropagation();
-          } else if (isNavKey(g_navKeys.scrollLeft, event)) {
+          } else if (matchesNavKey(g_navKeys.scrollLeft, event)) {
             let container = document.querySelector("#reader");
             let amount = container.offsetWidth / 5;
             container.scrollBy(-amount, 0);
             event.stopPropagation();
-          } else if (isNavKey(g_navKeys.scrollRight, event)) {
+          } else if (matchesNavKey(g_navKeys.scrollRight, event)) {
             let container = document.querySelector("#reader");
             let amount = container.offsetWidth / 5;
             container.scrollBy(amount, 0);
             event.stopPropagation();
-          } else if (isNavKey(g_navKeys.zoomInPage, event)) {
+          } else if (matchesNavKey(g_navKeys.zoomInPage, event)) {
             if (!event.repeat) {
               inputZoomIn();
               event.stopPropagation();
             }
-          } else if (isNavKey(g_navKeys.zoomOutPage, event)) {
+          } else if (matchesNavKey(g_navKeys.zoomOutPage, event)) {
             if (!event.repeat) {
               inputZoomOut();
               event.stopPropagation();

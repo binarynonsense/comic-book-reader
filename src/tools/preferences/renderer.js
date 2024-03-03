@@ -755,16 +755,24 @@ function showNavKeysChangeModal(title, message, textButton, action, keyIndex) {
           event.key === "AltGraph" ||
           event.key === "ContextMenu" ||
           event.key === "CapsLock" ||
-          // TODO: allow combinations like Control+0?
-          event.key === "Control" ||
           event.key === "Shift" ||
-          event.key === "Alt"
+          event.shiftKey
         ) {
+          // not allowed
           sound.playErrorSound();
           event.preventDefault();
+        } else if (event.key === "Control" || event.key === "Alt") {
+          // allowed only as modifiers
+          event.preventDefault();
         } else {
-          //console.log("event.key: " + event.key);
-          sendIpcToMain("change-nav-keys", action, keyIndex, event.key);
+          sendIpcToMain(
+            "change-nav-keys",
+            action,
+            keyIndex,
+            event.key,
+            event.ctrlKey,
+            event.altKey
+          );
           modals.close(g_openModal);
           modalClosed();
           event.preventDefault();

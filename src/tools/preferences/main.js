@@ -81,7 +81,7 @@ function updateNavKeys() {
     i18n._object("tool-pre-navkeys-actions"),
     _("tool-shared-ui-change").toUpperCase(),
     _("tool-shared-ui-reset").toUpperCase(),
-    _("tool-pre-navkeys-no-key").toUpperCase()
+    _("tool-pre-navkeys-unassigned-key").toUpperCase()
   );
 }
 
@@ -269,17 +269,21 @@ function initOnIpcCallbacks() {
     sendIpcToRenderer(
       "show-nav-keys-change-modal",
       i18n._object("tool-pre-navkeys-actions")[action],
-      `${_("tool-pre-navkeys-change-press")}\n\n${_(
-        "tool-pre-navkeys-change-cancel"
-      )}`,
-      _("ui-modal-prompt-button-cancel"),
+      `${_("tool-pre-navkeys-change-press")}\n${_(
+        "tool-pre-navkeys-change-modifiers",
+        "Control, Alt"
+      )}\n\n${_("tool-pre-navkeys-change-cancel")}`,
+      _("ui-modal-prompt-button-cancel").toUpperCase(),
       action,
       keyIndex
     );
   });
 
-  on("change-nav-keys", (action, index, newValue) => {
+  on("change-nav-keys", (action, index, key, ctrl, alt) => {
     let navKeys = settings.getValue("navKeys");
+    let newValue = key;
+    if (alt) newValue = "Alt+" + newValue;
+    if (ctrl) newValue = "Control+" + newValue;
     navKeys[action][index] = newValue;
     settings.setValue("navKeys", navKeys);
     reader.sendIpcToRenderer("set-nav-keys", settings.getValue("navKeys"));
