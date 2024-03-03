@@ -159,6 +159,7 @@ export function close(modal) {
 export function onInputEvent(modalDiv, type, event) {
   switch (type) {
     case "onkeydown":
+      event.preventDefault();
       // input
       const inputElement = modalDiv.querySelector(".modal-input");
       if (
