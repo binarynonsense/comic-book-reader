@@ -561,47 +561,8 @@ function updateRarFolder(folderPath) {
 }
 
 function updateNavKeys(actionKeys, actionTexts, changeText, resetText) {
-  // select.addEventListener("change", function (event) {
-  //   sendIpcToMain("set-page-turn", select.value === "true");
-  // });
   const parentDiv = document.getElementById("tool-pre-navkeys-div");
   parentDiv.innerHTML = "";
-  // for (const action in actionKeys) {
-  //   parentDiv.innerHTML += `
-  // <label>
-  // <span id="tool-pre-navkeys-scrollup-text">Scroll Up</span>
-  // <div
-  //   class="tool-shared-columns-parent tool-shared-columns-parent-alignv"
-  //   style="padding-top: 10px"
-  // >
-  //   <div class="tool-shared-columns-50-grow">
-  //     <ul
-  //       id="tool-pre-navkeys-scrollup1-ul"
-  //       class="tools-collection-ul"
-  //     >
-  //       <li class="tools-collection-li">w</li>
-  //     </ul>
-  //   </div>
-  //   <button
-  //     id="tool-pre-navkeys-scrollup1-update-button"
-  //     class="tool-shared-columns-25-grow"
-  //   >
-  //     <span id="tool-pre-navkeys-scrollup1-update-button-text"
-  //       >CHANGEsss</span
-  //     >
-  //   </button>
-  //   <button
-  //     id="tool-pre-navkeys-scrollup1-reset-button"
-  //     class="tool-shared-columns-25-grow"
-  //   >
-  //     <span id="tool-pre-navkeys-scrollup1-reset-button-text"
-  //       >RESET</span
-  //     >
-  //   </button>
-  // </div>
-  // </label>`;
-  // }
-
   for (const action in actionKeys) {
     const parentLabel = document.createElement("label");
     parentDiv.appendChild(parentLabel);
@@ -626,7 +587,7 @@ function updateNavKeys(actionKeys, actionTexts, changeText, resetText) {
       const keyLi = document.createElement("li");
       keyUl.appendChild(keyLi);
       keyLi.classList = "tools-collection-li";
-      // TODO: check if this works for space bar
+      // TODO: confirm this works for space bar
       keyLi.innerText = keyText === " " ? "SpaceBar" : keyText;
       ////
       const changeButton = document.createElement("button");
