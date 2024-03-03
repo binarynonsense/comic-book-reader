@@ -104,8 +104,16 @@ exports.init = function (...args) {
   load(...args);
 };
 
+exports.getDefault = function () {
+  return g_defaultSettings;
+};
+
+exports.getDefaultValue = function (name) {
+  return g_defaultSettings[name];
+};
+
 function setDefaultValues() {
-  g_settings = g_defaultSettings;
+  g_settings = JSON.parse(JSON.stringify(g_defaultSettings));
 }
 
 let g_scaleToHeightMin = 25;
