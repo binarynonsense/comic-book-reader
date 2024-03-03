@@ -81,6 +81,7 @@ function updateNavKeys() {
     i18n._object("tool-pre-navkeys-actions"),
     _("tool-shared-ui-change").toUpperCase(),
     _("tool-shared-ui-reset").toUpperCase(),
+    _("tool-pre-navkeys-button-resetall").toUpperCase(),
     _("tool-pre-navkeys-unassigned-key").toUpperCase()
   );
 }
@@ -279,13 +280,22 @@ function initOnIpcCallbacks() {
     );
   });
 
+  on("click-nav-keys-resetall", () => {
+    sendIpcToRenderer(
+      "show-nav-keys-resetall-modal",
+      _("tool-pre-navkeys-button-resetall"),
+      _("tool-pre-navkeys-modal-resetall-message"),
+      _("ui-modal-prompt-button-yes"),
+      _("ui-modal-prompt-button-cancel")
+    );
+  });
+
   on("change-nav-keys", (action, index, key, ctrl, alt) => {
     let navKeys = settings.getValue("navKeys");
     let newValue = key;
     if (alt) newValue = "Alt+" + newValue;
     if (ctrl) newValue = "Control+" + newValue;
-    navKeys[action][index] = newValue;
-    settings.setValue("navKeys", navKeys);
+    navKeys[action][index] = newValue; // array ref, so this updates the settings
     reader.sendIpcToRenderer("set-nav-keys", settings.getValue("navKeys"));
     updateNavKeys();
   });
@@ -298,8 +308,17 @@ function initOnIpcCallbacks() {
     if (defaultAction.length > index) {
       value = defaultAction[index];
     }
-    navKeys[action][index] = value;
-    settings.setValue("navKeys", navKeys);
+    navKeys[action][index] = value; // array ref, so this updates the settings
+    reader.sendIpcToRenderer("set-nav-keys", settings.getValue("navKeys"));
+    updateNavKeys();
+  });
+
+  on("resetall-nav-keys", () => {
+    // make a copy of the defaults object to update the settings
+    const defaultNavKeys = JSON.parse(
+      JSON.stringify(settings.getDefaultValue("navKeys"))
+    );
+    settings.setValue("navKeys", defaultNavKeys);
     reader.sendIpcToRenderer("set-nav-keys", settings.getValue("navKeys"));
     updateNavKeys();
   });

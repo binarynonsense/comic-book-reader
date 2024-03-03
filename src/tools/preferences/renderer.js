@@ -532,6 +532,14 @@ function initOnIpcCallbacks() {
     showNavKeysChangeModal(...args);
   });
 
+  on("show-nav-keys-resetall-modal", (...args) => {
+    if (g_openModal) {
+      modals.close(g_openModal);
+      modalClosed();
+    }
+    showNavKeysResetAllModal(...args);
+  });
+
   on("close-modal", () => {
     if (g_openModal) {
       modals.close(g_openModal);
@@ -574,10 +582,21 @@ function updateNavKeys(
   actionTexts,
   changeText,
   resetText,
+  resetAllText,
   unassignedText
 ) {
   const parentDiv = document.getElementById("tool-pre-navkeys-div");
   parentDiv.innerHTML = "";
+  ////
+  const resetAllButton = document.createElement("button");
+  parentDiv.appendChild(resetAllButton);
+  const resetAllSpan = document.createElement("span");
+  resetAllButton.appendChild(resetAllSpan);
+  resetAllSpan.innerText = resetAllText;
+  resetAllButton.addEventListener("click", function (event) {
+    sendIpcToMain("click-nav-keys-resetall");
+  });
+  ////
   for (const action in actionKeys) {
     const parentLabel = document.createElement("label");
     parentDiv.appendChild(parentLabel);
@@ -717,6 +736,39 @@ function showOKModal(title, message, textButton) {
       key: "Escape",
     },
     buttons: buttons,
+  });
+}
+
+function showNavKeysResetAllModal(title, message, yesText, cancelText) {
+  if (g_openModal) {
+    return;
+  }
+  g_openModal = modals.show({
+    title: title,
+    message: message,
+    zIndexDelta: 5,
+    close: {
+      callback: () => {
+        modalClosed();
+      },
+      key: "Escape",
+    },
+    buttons: [
+      {
+        text: yesText.toUpperCase(),
+        callback: () => {
+          sendIpcToMain("resetall-nav-keys");
+          modalClosed();
+        },
+        //key: "Enter",
+      },
+      {
+        text: cancelText.toUpperCase(),
+        callback: () => {
+          modalClosed();
+        },
+      },
+    ],
   });
 }
 
