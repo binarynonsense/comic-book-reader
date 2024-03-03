@@ -1,8 +1,8 @@
 {
   "@metadata": {
     "authors": ["Álvaro"],
-    "last-updated": "2023-10-03",
-    "acbr-version": "3.3.0",
+    "last-updated": "2024-03-03",
+    "acbr-version": "3.3.3-beta4",
     "comments": "",
     "locale": "en",
     "name": "English",
@@ -421,6 +421,27 @@
   "tool-pre-rarfolder": "Third-Party Executable's Folder",
   "tool-pre-rarfolder-tooltip": "The absolute path of the folder containing the executable {0}. You can leave it blank if it is included in your system's PATH environment variable.",
   "tool-pre-rarfolder-example": "Example: {0}.",
+  "tool-pre-navkeys": "Key Mapping",
+  "tool-pre-navkeys-actions": {
+    "scrollUp": "Scroll Page Up",
+    "scrollDown": "Scroll Page Down",
+    "scrollLeft": "Scroll Page Left",
+    "scrollRight": "Scroll Page Right",
+    "nextPage": "Next Page",
+    "prevPage": "Previous Page",
+    "firstPage": "First Page",
+    "lastPage": "Last Page",
+    "zoomInPage": "Zoom Page In",
+    "zoomOutPage": "Zoom Page Out",
+    "zoomResetPage": "Reset Page Zoom"
+  },
+  "tool-pre-navkeys-unassigned-key": "Unassigned",
+  "tool-pre-navkeys-change-press": "Press a valid key to replace the currently assigned one.",
+  "tool-pre-navkeys-change-modifiers": "Allowed modifiers: {0}.",
+  "tool-pre-navkeys-change-cancel": "Click the button to cancel.",
+  "[NOTE TO TRANSLATORS]tool-pre-navkeys-button-resetall": "'Reset All' as in 'reset all the assigned keys'",
+  "tool-pre-navkeys-button-resetall": "Reset All",
+  "tool-pre-navkeys-modal-resetall-message": "Are you sure you want to reset the complete key mapping to the default values?",
   "tool-pre-advanced-preferences": "Advanced",
   "tool-pre-other-preferences": "Other",
   "tool-pre-tempfolder": "Temp Folder",
@@ -631,21 +652,5 @@
   "tool-fb-browse-up": "Up",
   "tool-fb-browse-back": "Back",
   "tool-fb-browse-parent": "Parent Folder",
-  "tool-fb-browse-previous": "Previous Folder",
-
-  "[NOTE TO TRANSLATORS] not yet": "No translation needed yet as I don't know if they are definitive",
-  "tool-pre-navkeys": "Key Mapping",
-  "tool-pre-navkeys-actions": {
-    "scrollUp": "Scroll Page Up",
-    "scrollDown": "Scroll Page Down",
-    "scrollLeft": "Scroll Page Left",
-    "scrollRight": "Scroll Page Right",
-    "nextPage": "Next Page",
-    "prevPage": "Previous Page",
-    "firstPage": "First Page",
-    "lastPage": "Last Page",
-    "zoomInPage": "Zoom Page In",
-    "zoomOutPage": "Zoom Page Out"
-  },
-  "tool-pre-navkeys-no-key": "Unassigned"
+  "tool-fb-browse-previous": "Previous Folder"
 }
