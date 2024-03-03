@@ -75,6 +75,7 @@ const g_defaultSettings = {
     lastPage: ["End"],
     zoomInPage: ["+"],
     zoomOutPage: ["-"],
+    zoomResetPage: ["Control+0"],
   },
 
   locale: undefined,
