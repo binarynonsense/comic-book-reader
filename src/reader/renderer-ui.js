@@ -549,11 +549,16 @@ export function onInputEvent(type, event) {
     case "onkeydown":
       {
         if (
-          event.key == "ArrowUp" ||
-          event.key == "ArrowDown" ||
-          event.key == "ArrowRight" ||
-          event.key == "ArrowLeft" ||
-          event.key == " "
+          // disable default scrolling
+          event.key === "ArrowUp" ||
+          event.key === "ArrowDown" ||
+          event.key === "ArrowRight" ||
+          event.key === "ArrowLeft" ||
+          event.key === " " ||
+          // disable default zoom in out reset
+          (event.key === "-" && event.ctrlKey) ||
+          (event.key === "+" && event.ctrlKey) ||
+          (event.key === "0" && event.ctrlKey)
         ) {
           event.preventDefault();
         }
@@ -664,7 +669,7 @@ export function onInputEvent(type, event) {
               inputZoomOut();
               event.stopPropagation();
             }
-          } else if (event.ctrlKey && event.key == "0") {
+          } else if (matchesNavKey(g_navKeys.zoomResetPage, event)) {
             if (!event.repeat) inputZoomReset();
           }
         }
