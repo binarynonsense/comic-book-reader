@@ -8,6 +8,7 @@
 import { sendIpcToMain as coreSendIpcToMain } from "../../core/renderer.js";
 import { isVersionOlder } from "../../shared/renderer/utils.js";
 import * as modals from "../../shared/renderer/modals.js";
+import * as sound from "../../shared/renderer/sound.js";
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -523,6 +524,14 @@ function initOnIpcCallbacks() {
     showOKModal(...args);
   });
 
+  on("show-nav-keys-change-modal", (...args) => {
+    if (g_openModal) {
+      modals.close(g_openModal);
+      modalClosed();
+    }
+    showNavKeysChangeModal(...args);
+  });
+
   on("close-modal", () => {
     if (g_openModal) {
       modals.close(g_openModal);
@@ -560,7 +569,13 @@ function updateRarFolder(folderPath) {
   g_rarExeFolderPathUl.appendChild(li);
 }
 
-function updateNavKeys(actionKeys, actionTexts, changeText, resetText) {
+function updateNavKeys(
+  actionKeys,
+  actionTexts,
+  changeText,
+  resetText,
+  unassignedText
+) {
   const parentDiv = document.getElementById("tool-pre-navkeys-div");
   parentDiv.innerHTML = "";
   for (const action in actionKeys) {
@@ -587,8 +602,14 @@ function updateNavKeys(actionKeys, actionTexts, changeText, resetText) {
       const keyLi = document.createElement("li");
       keyUl.appendChild(keyLi);
       keyLi.classList = "tools-collection-li";
-      // TODO: confirm this works for space bar
-      keyLi.innerText = keyText === " " ? "SpaceBar" : keyText;
+
+      if (keyText === " ") {
+        keyLi.innerText = "SpaceBar";
+      } else if (keyText === "UNASSIGNED") {
+        keyLi.innerText = unassignedText;
+      } else {
+        keyLi.innerText = keyText;
+      }
       ////
       const changeButton = document.createElement("button");
       columnsDiv.appendChild(changeButton);
@@ -597,7 +618,7 @@ function updateNavKeys(actionKeys, actionTexts, changeText, resetText) {
       changeButton.appendChild(changeSpan);
       changeSpan.innerText = changeText;
       changeButton.addEventListener("click", function (event) {
-        console.log(`${action}-${index}-button`);
+        sendIpcToMain("click-nav-keys-change", action, index);
       });
       ////
       const resetButton = document.createElement("button");
@@ -607,7 +628,7 @@ function updateNavKeys(actionKeys, actionTexts, changeText, resetText) {
       resetButton.appendChild(resetSpan);
       resetSpan.innerText = resetText;
       resetButton.addEventListener("click", function (event) {
-        console.log(`${action}-${index}-button`);
+        sendIpcToMain("reset-nav-keys", action, index);
       });
       ////
     }
@@ -630,6 +651,11 @@ function reducePathString(input) {
 
 export function onInputEvent(type, event) {
   if (getOpenModal()) {
+    if (g_openModalOnInputEvent) {
+      if (g_openModalOnInputEvent(type, event)) {
+        return;
+      }
+    }
     modals.onInputEvent(getOpenModal(), type, event);
     return;
   }
@@ -655,6 +681,7 @@ export function onContextMenu(params) {
 ///////////////////////////////////////////////////////////////////////////////
 
 let g_openModal;
+let g_openModalOnInputEvent;
 
 export function getOpenModal() {
   return g_openModal;
@@ -662,6 +689,7 @@ export function getOpenModal() {
 
 function modalClosed() {
   g_openModal = undefined;
+  g_openModalOnInputEvent = undefined;
 }
 
 function showOKModal(title, message, textButton) {
@@ -690,6 +718,63 @@ function showOKModal(title, message, textButton) {
     },
     buttons: buttons,
   });
+}
+
+function showNavKeysChangeModal(title, message, textButton, action, keyIndex) {
+  if (g_openModal) {
+    return;
+  }
+  let buttons = [];
+  if (textButton) {
+    buttons.push({
+      text: textButton,
+      callback: () => {
+        modalClosed();
+      },
+    });
+  }
+  g_openModal = modals.show({
+    title: title,
+    message: message,
+    zIndexDelta: 5,
+    close: {
+      callback: () => {
+        modalClosed();
+      },
+      key: "Escape",
+    },
+    buttons: buttons,
+  });
+
+  g_openModalOnInputEvent = (type, event) => {
+    switch (type) {
+      case "onkeydown": {
+        if (
+          event.key === "Escape" ||
+          event.key === "Meta" ||
+          event.key === "AltGraph" ||
+          event.key === "ContextMenu" ||
+          event.key === "CapsLock" ||
+          // TODO: allow combinations like Control+0?
+          event.key === "Control" ||
+          event.key === "Shift" ||
+          event.key === "Alt"
+        ) {
+          sound.playErrorSound();
+          event.preventDefault();
+        } else {
+          //console.log("event.key: " + event.key);
+          sendIpcToMain("change-nav-keys", action, keyIndex, event.key);
+          modals.close(g_openModal);
+          modalClosed();
+          event.preventDefault();
+        }
+        // don't let generic modal onInputEvent run
+        return true;
+      }
+    }
+    return false;
+  };
 }
 
 ///////////////////////////////////////////////////////////////////////////////

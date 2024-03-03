@@ -77,10 +77,11 @@ function onCloseClicked() {
 function updateNavKeys() {
   sendIpcToRenderer(
     "update-navkeys",
-    settings.get().navKeys,
+    settings.getValue("navKeys"),
     i18n._object("tool-pre-navkeys-actions"),
     _("tool-shared-ui-change").toUpperCase(),
-    _("tool-shared-ui-reset").toUpperCase()
+    _("tool-shared-ui-reset").toUpperCase(),
+    _("tool-pre-navkeys-no-key").toUpperCase()
   );
 }
 
@@ -190,12 +191,6 @@ function initOnIpcCallbacks() {
     reader.sendIpcToRenderer("set-page-turn-on-scroll-boundary", value);
   });
 
-  on("set-nav-keys", (value) => {
-    // TODO: the real thing
-    // settings.setValue("navKeys", value);
-    // reader.sendIpcToRenderer("set-nav-keys", settings.getValue("navKeys"));
-  });
-
   on("set-pdf-reading-lib", (value) => {
     settings.setValue("pdfReadingLib", value);
     sendIpcToRenderer(
@@ -268,6 +263,41 @@ function initOnIpcCallbacks() {
     settings.setValue("rarExeFolderPath", folderPath);
     settings.setValue("rarExeAvailable", undefined);
     sendIpcToRenderer("set-rar-folder", folderPath);
+  });
+
+  on("click-nav-keys-change", (action, keyIndex) => {
+    sendIpcToRenderer(
+      "show-nav-keys-change-modal",
+      i18n._object("tool-pre-navkeys-actions")[action],
+      `${_("tool-pre-navkeys-change-press")}\n\n${_(
+        "tool-pre-navkeys-change-cancel"
+      )}`,
+      _("ui-modal-prompt-button-cancel"),
+      action,
+      keyIndex
+    );
+  });
+
+  on("change-nav-keys", (action, index, newValue) => {
+    let navKeys = settings.getValue("navKeys");
+    navKeys[action][index] = newValue;
+    settings.setValue("navKeys", navKeys);
+    reader.sendIpcToRenderer("set-nav-keys", settings.getValue("navKeys"));
+    updateNavKeys();
+  });
+
+  on("reset-nav-keys", (action, index) => {
+    let navKeys = settings.getValue("navKeys");
+    const defaultAction = settings.getDefaultValue("navKeys")[action];
+    let value = "UNASSIGNED";
+    // The action could have only one default key
+    if (defaultAction.length > index) {
+      value = defaultAction[index];
+    }
+    navKeys[action][index] = value;
+    settings.setValue("navKeys", navKeys);
+    reader.sendIpcToRenderer("set-nav-keys", settings.getValue("navKeys"));
+    updateNavKeys();
   });
 }
 
