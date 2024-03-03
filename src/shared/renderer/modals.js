@@ -202,31 +202,7 @@ export function onInputEvent(modalDiv, type, event) {
             }
           }
         }
-        // bottom buttons
-        // const buttons = modalDiv.querySelectorAll(".modal-button");
-        // buttons.forEach((button) => {
-        //   const key = button.getAttribute("data-key");
-        //   if (
-        //     key &&
-        //     event.key &&
-        //     key === event.key &&
-        //     !button.classList.contains("set-display-none")
-        //   ) {
-        //     button.click();
-        //   }
-        // });
-        // event.stopPropagation();
       }
-      // if (
-      //   !inputElement.classList.contains("set-display-none") &&
-      //   inputElement == document.activeElement &&
-      //   event.key != "Tab" &&
-      //   event.key != "Enter"
-      // ) {
-      //   // TODO: gives error can't dispatch but works?
-      //   // Uncaught DOMException: Failed to execute 'dispatchEvent' on 'EventTarget': The event is already being dispatched.
-      //   inputElement.dispatchEvent(event);
-      // }
       if (
         !inputElement.classList.contains("set-display-none") &&
         inputElement == document.activeElement &&
