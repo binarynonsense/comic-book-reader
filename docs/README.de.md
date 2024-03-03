@@ -95,7 +95,7 @@ Ein Comicbuch Leser und Konverter für CBZ, CBR, CB7, EPUB und PDF Dateien.
   - 'WASD' um die Seite vertikal und horizontal zu scrollen.
   - 'F11' um in den Vollbildmodus zu wechseln.
   - 'Strg+O' um eine Datei zum Öffnen auszuwählen.
-  - 'Strg++' und 'Strg+-' zum Zoomen. 'Strg+0' zum Zurückstellen des Zooms.
+  - 'Strg++' und 'Strg+-' zum Zoomen. 'Strg+0' zum Zurücksetzen des Zooms.
 - Maus:
   - 'Mausrad' scrollt die Seite hoch und runter.
   - 'Linksklick' öffnet die nächste Seite wenn die rechte Seite der Oberfläche geklickt wurde, und die vorherige wenn die rechte geklickt wurde.
