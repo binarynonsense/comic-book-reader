@@ -557,7 +557,7 @@ async function create7Zip(
       seven = Seven.add(outputFilePath, tempFolderPath + "/*", options);
     } else if (true) {
       // use txt with all paths in it
-      /* UNFINISHED CODE / NOT WORKNG PROPERLY*/
+      /* UNFINISHED CODE / NOT WORKING PROPERLY*/
       // problems with keeping the relative folder structure, spaces...
       const pathsTxt = path.join(tempFolderPath, "acbr-tmp-paths.txt");
       // - relative paths version
