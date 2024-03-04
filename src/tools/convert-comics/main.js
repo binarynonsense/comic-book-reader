@@ -285,8 +285,8 @@ function initOnIpcCallbacks() {
     startFile(...args);
   });
 
-  on("stop-error", (err) => {
-    stopError(err);
+  on("stop-error", (errorMsg) => {
+    stopError(undefined, errorMsg);
   });
 
   on("resize-images", (...args) => {
@@ -297,8 +297,8 @@ function initOnIpcCallbacks() {
     if (g_cancel === false) stopCancel();
   });
 
-  on("resizing-error", (err) => {
-    stopError(err);
+  on("resizing-error", (errorMessage) => {
+    stopError(undefined, errorMessage);
   });
 
   on("end", (wasCanceled, numFiles, numErrors, numAttempted) => {
@@ -447,11 +447,35 @@ async function addFile(filePath) {
   sendIpcToRenderer("add-file", filePath, fileType);
 }
 
-function stopError(error) {
+function stopError(error, errorMessage) {
+  let uiMsg = errorMessage;
+  if (error) {
+    if (error.message) {
+      uiMsg = (errorMessage ? errorMessage + "\n" : "") + error.message;
+      log.error(uiMsg);
+    } else {
+      const toString = error.toString();
+      if (
+        toString &&
+        toString !== "" &&
+        !toString.includes("[object Object]")
+      ) {
+        uiMsg = (errorMessage ? errorMessage + "\n" : "") + toString;
+        log.error(uiMsg);
+      } else {
+        uiMsg = (errorMessage ? errorMessage + "\n" : "") + "Unknown error";
+        log.error(uiMsg);
+        console.log(error);
+      }
+    }
+  } else {
+    if (!uiMsg) uiMsg = "Unknown error";
+    log.error(errorMessage);
+  }
   fileUtils.cleanUpTempFolder();
   fileUtils.cleanUpTempFolder(g_creationTempFolderPath);
   g_creationTempFolderPath = undefined;
-  sendIpcToRenderer("update-log-text", error);
+  sendIpcToRenderer("update-log-text", uiMsg);
   sendIpcToRenderer(
     "update-log-text",
     g_mode === 0
@@ -591,8 +615,7 @@ function startFile(
           sendIpcToRenderer("file-images-extracted");
           return;
         } else {
-          log.error(error);
-          stopError("Couldn't extract the file");
+          stopError(message.error, "Couldn't extract the file");
           return;
         }
       });
@@ -638,7 +661,7 @@ function startFile(
       );
     });
   } else {
-    stopError("start: invalid file type");
+    stopError(undefined, "start: invalid file type");
   }
 }
 
@@ -660,7 +683,7 @@ exports.onIpcFromToolsWorkerRenderer = function (...args) {
     case "stop-error":
       g_workerWindow.destroy();
       g_workerWindow = undefined;
-      stopError(args[1]);
+      stopError(undefined, args[1]);
       break;
   }
 };
@@ -708,7 +731,7 @@ async function resizeImages(
         : undefined;
     let imgFilePaths = fileUtils.getImageFilesInFolderRecursive(tempFolderPath);
     if (imgFilePaths === undefined || imgFilePaths.length === 0) {
-      stopError("imgFiles === undefined || imgFiles.length === 0");
+      stopError(undefined, "imgFiles === undefined || imgFiles.length === 0");
       return;
     }
     imgFilePaths.sort(utils.compare);
@@ -1001,7 +1024,7 @@ async function createFilesFromImages(
           sendIpcToRenderer("file-finished-ok");
           return;
         } else {
-          stopError(message.error?.message);
+          stopError(message.error);
           return;
         }
       });
@@ -1029,8 +1052,8 @@ async function createFilesFromImages(
       password,
       extraData,
     ]);
-  } catch (err) {
-    stopError(err);
+  } catch (error) {
+    stopError(error);
   }
 }
 
