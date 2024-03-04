@@ -163,7 +163,8 @@ async function createFiles(
           await fileFormats.create7Zip(
             filesData[index].imgFilePaths,
             filesData[index].outputFilePath,
-            password
+            password,
+            tempFolderPath
           );
         } else if (outputFormat === FileExtension.CBR) {
           if (comicInfoFilePath)
@@ -199,6 +200,7 @@ async function createFiles(
             filesData[index].imgFilePaths,
             filesData[index].outputFilePath,
             password,
+            tempFolderPath,
             "zip"
           );
         }

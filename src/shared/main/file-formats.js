@@ -179,18 +179,34 @@ function createRar(
       args.push(`-p${password}`);
     }
     args.push(outputFilePath);
-    filePathsList.forEach((filePath) => {
-      filePath = path.relative(workingDir, filePath);
-      args.push(filePath);
-    });
+    if (true) {
+      // use txt with all paths in it
+      const pathsTxt = path.join(workingDir, "acbr-txt-paths.txt");
+      let relativePaths = "";
+      for (let index = 0; index < filePathsList.length; index++) {
+        if (index > 0) relativePaths += "\n";
+        const filePath = filePathsList[index];
+        relativePaths += path.relative(workingDir, filePath);
+      }
+      fs.writeFileSync(pathsTxt, relativePaths);
+      args.push(`@${pathsTxt}`);
+    } else {
+      // pass paths directly
+      // stopped using it due to potential 'ENAMETOOLONG' errors
+      // when too many files (at least on Windows)
+      filePathsList.forEach((filePath) => {
+        filePath = path.relative(workingDir, filePath);
+        args.push(filePath);
+      });
+    }
     const cmdResult = utils.execShellCommand(rarExePath, args, workingDir);
-    if (!cmdResult.error || cmdResult.error === "") {
+    if (!cmdResult.error || cmdResult.error === false) {
       return true;
     } else {
-      throw cmdResult.error;
+      throw cmdResult.stderr;
     }
   } catch (error) {
-    log.error(error);
+    //console.log(error);
     return false;
   }
 }
@@ -518,6 +534,7 @@ async function create7Zip(
   filePathsList,
   outputFilePath,
   password,
+  tempFolderPath,
   archiveType
 ) {
   try {
@@ -532,10 +549,56 @@ async function create7Zip(
       options.password = password;
     }
     if (archiveType && archiveType === "zip") {
-      // not sure, but possible values may be: 7z, xz, split, zip, gzip, bzip2, tar,
       options.archiveType = archiveType;
     }
-    const seven = Seven.add(outputFilePath, filePathsList, options);
+
+    let seven;
+    if (true) {
+      seven = Seven.add(outputFilePath, tempFolderPath + "/*", options);
+    } else if (true) {
+      // use txt with all paths in it
+      /* UNFINISHED CODE / NOT WORKNG PROPERLY*/
+      // problems with keeping the relative folder structure, spaces...
+      const pathsTxt = path.join(tempFolderPath, "acbr-tmp-paths.txt");
+      // - relative paths version
+      // gives an error/warning reading the paths, no more files
+      let relativePaths = "";
+      for (let index = 0; index < filePathsList.length; index++) {
+        if (index > 0) relativePaths += "\n";
+        const filePath = filePathsList[index];
+        relativePaths += path.relative(tempFolderPath, filePath);
+      }
+      //options.recursive = true;
+      fs.writeFileSync(pathsTxt, relativePaths);
+      // - full paths version
+      // WRONG because it also stores the full path in the 7z file
+      // no matter what I do... can't make the structure relative
+      //fs.writeFileSync(pathsTxt, filePathsList.join("\n"));
+
+      // - test: print stored file paths
+      // try {
+      //   let data = fs.readFileSync(pathsTxt, "utf8");
+      //   console.log(data.toString());
+      // }
+
+      // folder for 7z to store the file while creating it, I think :)
+      // if there's an error it moves it to the outputPath so it's
+      // of not much use in my case?
+      //options.workingDir = tempFolderPath;
+
+      // spawnOptions: don't seem to work, at least for cwd!!!!
+      options.$spawnOptions = { cwd: tempFolderPath };
+      //options.fullyQualifiedPaths = false;
+
+      seven = Seven.add(outputFilePath, "@" + pathsTxt, options);
+      // - test cwd
+      //seven = Seven.add(outputFilePath, "*.*", options);
+    } else {
+      // pass paths directly
+      // stopped using it due to potential 'ENAMETOOLONG' errors
+      // when too many files (at least on Windows)
+      seven = Seven.add(outputFilePath, filePathsList, options);
+    }
 
     let promise = await new Promise((resolve) => {
       seven.on("error", (error) => {
@@ -554,6 +617,7 @@ async function create7Zip(
       throw promise.data;
     }
   } catch (error) {
+    console.log(error);
     throw error;
   }
 }
