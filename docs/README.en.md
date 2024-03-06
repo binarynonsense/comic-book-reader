@@ -104,10 +104,16 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB and PDF files.
 
 ## Downloads:
 
+Stable version:
+
 - [Windows](https://github.com/binarynonsense/comic-book-reader/releases/latest/download/ACBR_Windows.zip)
 - [Windows (Self-Extracting)](https://github.com/binarynonsense/comic-book-reader/releases/latest/download/ACBR_Windows_SelfExtracting.exe)
 - [Linux](https://github.com/binarynonsense/comic-book-reader/releases/latest/download/ACBR_Linux.zip)
 - [Linux (AppImage)](https://github.com/binarynonsense/comic-book-reader/releases/latest/download/ACBR_Linux_AppImage.zip)
+
+All versions (stable and beta):
+
+- [Releases list](https://github.com/binarynonsense/comic-book-reader/releases)
 
 ## Contributions:
 
