@@ -113,7 +113,7 @@ Stabile Version:
 - [Linux](https://github.com/binarynonsense/comic-book-reader/releases/latest/download/ACBR_Linux.zip)
 - [Linux (AppImage)](https://github.com/binarynonsense/comic-book-reader/releases/latest/download/ACBR_Linux_AppImage.zip)
 
-Alle Versionen (Stabil and Beta):
+Alle Versionen (Stabil und Beta):
 
 - [Veröffentlichungsliste](https://github.com/binarynonsense/comic-book-reader/releases)
 
