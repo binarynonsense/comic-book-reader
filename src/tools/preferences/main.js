@@ -14,9 +14,9 @@ const log = require("../../shared/main/logger");
 const settings = require("../../shared/main/settings");
 const themes = require("../../shared/main/themes");
 const reader = require("../../reader/main");
-const fileUtils = require("../../shared/main/file-utils");
 const appUtils = require("../../shared/main/app-utils");
 const contextMenu = require("../../shared/main/tools-menu-context");
+const temp = require("../../shared/main/temp");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -206,7 +206,7 @@ function initOnIpcCallbacks() {
     let folderPath;
     let relativeFolderPath;
     if (reset) {
-      folderPath = fileUtils.getSystemTempFolderPath();
+      folderPath = temp.getOSTempFolderPath();
     } else {
       let defaultPath = settings.getValue("tempFolderPath");
       let folderList = appUtils.chooseFolder(core.getMainWindow(), defaultPath);
@@ -227,7 +227,8 @@ function initOnIpcCallbacks() {
       "tempFolderPath",
       relativeFolderPath ? relativeFolderPath : folderPath
     );
-    fileUtils.setTempFolderParentPath(folderPath);
+    // TODO: error recovery?
+    temp.changeBaseFolderPath(folderPath);
     sendIpcToRenderer(
       "set-temp-folder",
       relativeFolderPath ? relativeFolderPath : folderPath,

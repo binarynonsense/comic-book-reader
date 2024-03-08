@@ -19,6 +19,7 @@ const appUtils = require("../../shared/main/app-utils");
 const utils = require("../../shared/main/utils");
 const contextMenu = require("../../shared/main/tools-menu-context");
 const log = require("../../shared/main/logger");
+const temp = require("../../shared/main/temp");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -32,6 +33,7 @@ let g_workerWindow;
 
 // hack to allow this at least for files from File>Convert...
 let g_initialPassword = "";
+let g_tempSubFolderPath;
 
 function init() {
   if (!g_isInitialized) {
@@ -84,7 +86,8 @@ exports.close = function () {
     g_worker.kill();
     g_worker = undefined;
   }
-  fileUtils.cleanUpTempFolder();
+  temp.deleteSubFolder(g_tempSubFolderPath);
+  g_tempSubFolderPath = undefined;
 };
 
 exports.onResize = function () {
@@ -388,7 +391,8 @@ async function addFile(filePath) {
 }
 
 function stopError(error) {
-  fileUtils.cleanUpTempFolder();
+  temp.deleteSubFolder(g_tempSubFolderPath);
+  g_tempSubFolderPath = undefined;
   sendIpcToRenderer("update-log-text", error);
   sendIpcToRenderer(
     "update-log-text",
@@ -398,7 +402,8 @@ function stopError(error) {
 }
 
 function stopCancel() {
-  fileUtils.cleanUpTempFolder();
+  temp.deleteSubFolder(g_tempSubFolderPath);
+  g_tempSubFolderPath = undefined;
   sendIpcToRenderer(
     "update-log-text",
     _("tool-shared-modal-log-extraction-canceled")
@@ -427,7 +432,7 @@ function start(
   sendIpcToRenderer("update-log-text", _("tool-shared-modal-title-extracting"));
   sendIpcToRenderer("update-log-text", inputFilePath);
 
-  let tempFolderPath = fileUtils.createTempFolder();
+  g_tempSubFolderPath = temp.createSubFolder();
   // extract to temp folder
   if (
     inputFileType === FileDataType.ZIP ||
@@ -467,10 +472,11 @@ function start(
       });
     }
     g_worker.send([
+      core.getLaunchInfo(),
       "extract",
       inputFilePath,
       inputFileType,
-      tempFolderPath,
+      g_tempSubFolderPath,
       g_initialPassword,
     ]);
   } else if (inputFileType === FileDataType.PDF) {
@@ -500,7 +506,7 @@ function start(
         "extract-pdf",
         "tool-extract-comics",
         inputFilePath,
-        tempFolderPath,
+        g_tempSubFolderPath,
         pdfExtractionMethod,
         _("tool-shared-modal-log-extracting-page") + ": ",
         g_initialPassword
@@ -554,8 +560,8 @@ async function resizeImages(
       subFolderPath = path.join(outputFolderPath, fileName + "(" + i + ")");
     }
 
-    let tempFolderPath = fileUtils.getTempFolderPath();
-    let imgFilePaths = fileUtils.getImageFilesInFolderRecursive(tempFolderPath);
+    let imgFilePaths =
+      fileUtils.getImageFilesInFolderRecursive(g_tempSubFolderPath);
     if (imgFilePaths === undefined || imgFilePaths.length === 0) {
       stopError("imgFiles === undefined || imgFiles.length === 0");
       return;
@@ -702,7 +708,8 @@ async function createFolderWithImages(imgFilePaths, outputFolderPath) {
         let newPath = path.join(outputFolderPath, path.basename(oldPath));
         fileUtils.moveFile(oldPath, newPath);
       }
-      fileUtils.cleanUpTempFolder();
+      temp.deleteSubFolder(g_tempSubFolderPath);
+      g_tempSubFolderPath = undefined;
       sendIpcToRenderer("finished-ok");
     } else {
       stopError("tool-ec folder shouldn't exist");

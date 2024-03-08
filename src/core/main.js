@@ -19,9 +19,9 @@ const i18n = require("../shared/main/i18n");
 const log = require("../shared/main/logger");
 const themes = require("../shared/main/themes");
 const menuBar = require("../shared/main/menu-bar");
-const fileUtils = require("../shared/main/file-utils");
 const appUtils = require("../shared/main/app-utils");
 const fileFormats = require("../shared/main/file-formats");
+const temp = require("../shared/main/temp");
 
 const reader = require("../reader/main");
 const audioPlayer = require("../audio-player/main");
@@ -102,6 +102,10 @@ g_launchInfo = {
   isRelease: app.isPackaged,
   parsedArgs: {},
 };
+exports.getLaunchInfo = function () {
+  return g_launchInfo;
+};
+
 // steam deck detection
 if (
   (g_launchInfo.platform =
@@ -196,7 +200,7 @@ const createWindow = () => {
         tempFolderPath
       );
     }
-    fileUtils.setTempFolderParentPath(tempFolderPath);
+    temp.init(tempFolderPath);
     fileFormats.init(g_launchInfo.isRelease);
     history.init(settings.getValue("history_capacity"));
     i18n.init();
@@ -335,7 +339,8 @@ app.on("will-quit", () => {
   settings.save();
   history.save();
   // clean up
-  fileUtils.cleanUpTempFolder();
+  log.info("cleaning up...");
+  temp.cleanUp();
   appUtils.cleanUpUserDataFolder();
 });
 

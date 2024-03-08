@@ -20,6 +20,7 @@ const settings = require("../../shared/main/settings");
 const utils = require("../../shared/main/utils");
 const contextMenu = require("../../shared/main/tools-menu-context");
 const log = require("../../shared/main/logger");
+const temp = require("../../shared/main/temp");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -42,7 +43,8 @@ let g_outputFileBaseName;
 
 // hack to allow this at least for files from File>Convert...
 let g_inputPassword = "";
-let g_creationTempFolderPath;
+let g_tempSubFolderPath;
+let g_creationTempSubFolderPath;
 
 function init() {
   if (!g_isInitialized) {
@@ -109,9 +111,11 @@ exports.close = function () {
     g_worker.kill();
     g_worker = undefined;
   }
-  fileUtils.cleanUpTempFolder();
-  fileUtils.cleanUpTempFolder(g_creationTempFolderPath);
-  g_creationTempFolderPath = undefined;
+  temp.deleteSubFolder(g_tempSubFolderPath);
+  g_tempSubFolderPath = undefined;
+  temp.deleteSubFolder(g_creationTempSubFolderPath);
+  g_tempSubFolderPath = undefined;
+  g_creationTempSubFolderPath = undefined;
 };
 
 exports.onResize = function () {
@@ -472,9 +476,10 @@ function stopError(error, errorMessage) {
     if (!uiMsg) uiMsg = "Unknown error";
     log.error(errorMessage);
   }
-  fileUtils.cleanUpTempFolder();
-  fileUtils.cleanUpTempFolder(g_creationTempFolderPath);
-  g_creationTempFolderPath = undefined;
+  temp.deleteSubFolder(g_tempSubFolderPath);
+  g_tempSubFolderPath = undefined;
+  temp.deleteSubFolder(g_creationTempSubFolderPath);
+  g_creationTempSubFolderPath = undefined;
   sendIpcToRenderer("update-log-text", uiMsg);
   sendIpcToRenderer(
     "update-log-text",
@@ -486,9 +491,10 @@ function stopError(error, errorMessage) {
 }
 
 function stopCancel() {
-  fileUtils.cleanUpTempFolder();
-  fileUtils.cleanUpTempFolder(g_creationTempFolderPath);
-  g_creationTempFolderPath = undefined;
+  temp.deleteSubFolder(g_tempSubFolderPath);
+  g_tempSubFolderPath = undefined;
+  temp.deleteSubFolder(g_creationTempSubFolderPath);
+  g_creationTempSubFolderPath = undefined;
   sendIpcToRenderer(
     "update-log-text",
     g_mode === 0
@@ -504,7 +510,7 @@ function start(inputFiles, outputFileBaseName) {
   if (g_mode === 0) {
     sendIpcToRenderer("start-first-file");
   } else {
-    let tempFolderPath = fileUtils.createTempFolder();
+    g_tempSubFolderPath = temp.createSubFolder();
     // check types
     let areAllImages = true;
     for (let index = 0; index < inputFiles.length; index++) {
@@ -526,7 +532,7 @@ function start(inputFiles, outputFileBaseName) {
           const extension = path.extname(inputFilePath);
           outName = g_imageIndex++ + extension;
         }
-        const outPath = path.join(tempFolderPath, outName);
+        const outPath = path.join(g_tempSubFolderPath, outName);
         fs.copyFileSync(inputFilePath, outPath, fs.constants.COPYFILE_EXCL);
       }
       sendIpcToRenderer("file-images-extracted");
@@ -565,21 +571,20 @@ function startFile(
   );
   sendIpcToRenderer("update-log-text", inputFilePath);
 
-  let tempFolderPath;
   if (g_mode === 0) {
-    tempFolderPath = fileUtils.createTempFolder();
+    g_tempSubFolderPath = temp.createSubFolder();
   } else {
-    // tempFolderPath was created on start
-    tempFolderPath = fileUtils.getTempFolderPath();
-    g_creationTempFolderPath = fileUtils.createTempFolder(false);
+    // g_tempSubFolderPath was created on start
+    g_creationTempSubFolderPath = temp.createSubFolder();
   }
   // extract to temp folder
   if (inputFileType === FileDataType.IMG) {
     const extension = path.extname(inputFilePath);
     let outName = g_imageIndex++ + extension;
-    const outPath = path.join(tempFolderPath, outName);
+    const outPath = path.join(g_tempSubFolderPath, outName);
     fs.copyFileSync(inputFilePath, outPath, fs.constants.COPYFILE_EXCL);
-    fileUtils.cleanUpTempFolder(g_creationTempFolderPath);
+    temp.deleteSubFolder(g_creationTempSubFolderPath);
+    g_creationTempSubFolderPath = undefined;
     sendIpcToRenderer("file-images-extracted");
   } else if (
     inputFileType === FileDataType.ZIP ||
@@ -621,10 +626,11 @@ function startFile(
       });
     }
     g_worker.send([
+      core.getLaunchInfo(),
       "extract",
       inputFilePath,
       inputFileType,
-      g_mode === 0 ? tempFolderPath : g_creationTempFolderPath,
+      g_mode === 0 ? g_tempSubFolderPath : g_creationTempSubFolderPath,
       g_inputPassword,
     ]);
   } else if (inputFileType === FileDataType.PDF) {
@@ -654,7 +660,7 @@ function startFile(
         "extract-pdf",
         "tool-convert-comics",
         inputFilePath,
-        g_mode === 0 ? tempFolderPath : g_creationTempFolderPath,
+        g_mode === 0 ? g_tempSubFolderPath : g_creationTempSubFolderPath,
         pdfExtractionMethod,
         _("tool-shared-modal-log-extracting-page") + ": ",
         g_inputPassword
@@ -690,20 +696,19 @@ exports.onIpcFromToolsWorkerRenderer = function (...args) {
 
 function copyImagesToTempFolder() {
   let imgFilePaths = fileUtils.getImageFilesInFolderRecursive(
-    g_creationTempFolderPath
+    g_creationTempSubFolderPath
   );
-  let tempFolderPath = fileUtils.getTempFolderPath();
   if (imgFilePaths !== undefined && imgFilePaths.length > 0) {
     imgFilePaths.sort(utils.compare);
     imgFilePaths.forEach((imgFilePath) => {
       const extension = path.extname(imgFilePath);
       let outName = g_imageIndex++ + extension;
-      const outPath = path.join(tempFolderPath, outName);
+      const outPath = path.join(g_tempSubFolderPath, outName);
       fs.copyFileSync(imgFilePath, outPath, fs.constants.COPYFILE_EXCL);
     });
   }
-  fileUtils.cleanUpTempFolder(g_creationTempFolderPath);
-  g_creationTempFolderPath = undefined;
+  temp.deleteSubFolder(g_creationTempSubFolderPath);
+  g_creationTempSubFolderPath = undefined;
 }
 
 async function resizeImages(
@@ -724,12 +729,12 @@ async function resizeImages(
     outputScale = parseInt(outputScale);
     outputQuality = parseInt(outputQuality);
 
-    let tempFolderPath = fileUtils.getTempFolderPath();
     let comicInfoFilePath =
       g_mode === 0
-        ? fileUtils.getComicInfoFileInFolderRecursive(tempFolderPath)
+        ? fileUtils.getComicInfoFileInFolderRecursive(g_tempSubFolderPath)
         : undefined;
-    let imgFilePaths = fileUtils.getImageFilesInFolderRecursive(tempFolderPath);
+    let imgFilePaths =
+      fileUtils.getImageFilesInFolderRecursive(g_tempSubFolderPath);
     if (imgFilePaths === undefined || imgFilePaths.length === 0) {
       stopError(undefined, "imgFiles === undefined || imgFiles.length === 0");
       return;
@@ -1017,7 +1022,8 @@ async function createFilesFromImages(
         g_worker.kill(); // kill it after one use
         if (message.success) {
           log.debug("file/s created in: " + message.times);
-          fileUtils.cleanUpTempFolder();
+          temp.deleteSubFolder(g_tempSubFolderPath);
+          g_tempSubFolderPath = undefined;
           message.files.forEach((element) => {
             sendIpcToRenderer("update-log-text", element);
           });
@@ -1035,12 +1041,13 @@ async function createFilesFromImages(
     } else if (outputFormat === FileExtension.CBR) {
       extraData = {
         rarExePath: utils.getRarCommand(settings.getValue("rarExeFolderPath")),
-        workingDir: fileUtils.getTempFolderPath(),
+        workingDir: g_tempSubFolderPath,
       };
     } else if (outputFormat === FileExtension.PDF) {
       extraData = g_pdfCreationMethod;
     }
     g_worker.send([
+      core.getLaunchInfo(),
       "create",
       baseFileName,
       outputFolderPath,
@@ -1048,7 +1055,7 @@ async function createFilesFromImages(
       imgFilePaths,
       comicInfoFilePath,
       outputFormat,
-      fileUtils.getTempFolderPath(),
+      g_tempSubFolderPath,
       password,
       extraData,
     ]);

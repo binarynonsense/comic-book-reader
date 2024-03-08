@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2023 Álvaro García
+ * Copyright 2020-2024 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -15,6 +15,7 @@ const utils = require("../../shared/main/utils");
 const appUtils = require("../../shared/main/app-utils");
 const palette = require("./palette");
 const contextMenu = require("../../shared/main/tools-menu-context");
+const temp = require("../../shared/main/temp");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -22,6 +23,7 @@ const contextMenu = require("../../shared/main/tools-menu-context");
 
 let g_isInitialized = false;
 let g_currentPalette;
+let g_initialFilePath;
 
 function init() {
   if (!g_isInitialized) {
@@ -32,6 +34,7 @@ function init() {
 
 exports.open = function (filePath) {
   // called by switchTool when opening tool
+  g_initialFilePath = filePath;
   init();
   const data = fs.readFileSync(path.join(__dirname, "index.html"));
   sendIpcToCoreRenderer("replace-inner-html", "#tools", data.toString());
@@ -48,8 +51,11 @@ exports.open = function (filePath) {
 exports.close = function () {
   // called by switchTool when closing tool
   sendIpcToRenderer("close-modal");
-  sendIpcToRenderer("hide"); // clean up
+  sendIpcToRenderer("hide");
+  // clean up
   g_currentPalette = undefined;
+  temp.deleteSubFolder(path.dirname(g_initialFilePath));
+  g_initialFilePath = undefined;
 };
 
 exports.onResize = function () {

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2023 Álvaro García
+ * Copyright 2020-2024 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -11,7 +11,6 @@ const core = require("../../core/main");
 const { _ } = require("../../shared/main/i18n");
 const log = require("../../shared/main/logger");
 const { FileExtension } = require("../../shared/main/constants");
-const fileUtils = require("../../shared/main/file-utils");
 const appUtils = require("../../shared/main/app-utils");
 const utils = require("../../shared/main/utils");
 const QRCode = require("qrcode");
@@ -46,7 +45,6 @@ exports.close = function () {
   // called by switchTool when closing tool
   sendIpcToRenderer("close-modal");
   sendIpcToRenderer("hide"); // clean up
-  fileUtils.cleanUpTempFolder();
 };
 
 exports.onResize = function () {

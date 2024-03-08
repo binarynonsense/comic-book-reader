@@ -12,10 +12,10 @@ const core = require("../../core/main");
 const { _ } = require("../../shared/main/i18n");
 const log = require("../../shared/main/logger");
 const { FileExtension } = require("../../shared/main/constants");
-const fileUtils = require("../../shared/main/file-utils");
 const appUtils = require("../../shared/main/app-utils");
 const contextMenu = require("../../shared/main/tools-menu-context");
 const { createWorker } = require("tesseract.js");
+const temp = require("../../shared/main/temp");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -23,6 +23,7 @@ const { createWorker } = require("tesseract.js");
 
 let g_isInitialized = false;
 let g_ocrWorker;
+let g_initialFilePath;
 
 function init() {
   if (!g_isInitialized) {
@@ -33,6 +34,7 @@ function init() {
 
 exports.open = function (filePath) {
   // called by switchTool when opening tool
+  g_initialFilePath = filePath;
   init();
   const data = fs.readFileSync(path.join(__dirname, "index.html"));
   sendIpcToCoreRenderer("replace-inner-html", "#tools", data.toString());
@@ -49,8 +51,10 @@ exports.open = function (filePath) {
 exports.close = function () {
   // called by switchTool when closing tool
   sendIpcToRenderer("close-modal");
-  sendIpcToRenderer("hide"); // clean up
-  fileUtils.cleanUpTempFolder();
+  sendIpcToRenderer("hide");
+  // clean up
+  temp.deleteSubFolder(path.dirname(g_initialFilePath));
+  g_initialFilePath = undefined;
   cleanUpOcrWorker();
 };
 

@@ -14,6 +14,7 @@ const { FileExtension } = require("../../shared/main/constants");
 const fileUtils = require("../../shared/main/file-utils");
 const appUtils = require("../../shared/main/app-utils");
 const contextMenu = require("../../shared/main/tools-menu-context");
+const temp = require("../../shared/main/temp");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -23,6 +24,7 @@ let g_isInitialized = false;
 
 let g_cancel = false;
 let g_worker;
+let g_tempSubFolderPath;
 
 function init() {
   if (!g_isInitialized) {
@@ -54,7 +56,8 @@ exports.close = function () {
     g_worker.kill();
     g_worker = undefined;
   }
-  fileUtils.cleanUpTempFolder();
+  temp.deleteSubFolder(g_tempSubFolderPath);
+  g_tempSubFolderPath = undefined;
 };
 
 exports.onResize = function () {
@@ -299,7 +302,8 @@ async function addFile(filePath) {
 }
 
 function stopError(error) {
-  fileUtils.cleanUpTempFolder();
+  temp.deleteSubFolder(g_tempSubFolderPath);
+  g_tempSubFolderPath = undefined;
   sendIpcToRenderer("update-log-text", error);
   sendIpcToRenderer(
     "update-log-text",
@@ -309,7 +313,8 @@ function stopError(error) {
 }
 
 function stopCancel() {
-  fileUtils.cleanUpTempFolder();
+  temp.deleteSubFolder(g_tempSubFolderPath);
+  g_tempSubFolderPath = undefined;
   sendIpcToRenderer(
     "update-log-text",
     _("tool-shared-modal-log-conversion-canceled")
@@ -343,7 +348,7 @@ async function start(
 
     const sharp = require("sharp");
 
-    let tempFolderPath = fileUtils.createTempFolder();
+    g_tempSubFolderPath = temp.createSubFolder();
     // avoid EBUSY error on windows
     sharp.cache(false);
     for (let index = 0; index < imgFiles.length; index++) {
@@ -354,7 +359,7 @@ async function start(
         }
         let originalFilePath = imgFiles[index].path;
         let filePath = path.join(
-          tempFolderPath,
+          g_tempSubFolderPath,
           path.basename(imgFiles[index].path)
         );
         fs.copyFileSync(imgFiles[index].path, filePath);
@@ -382,7 +387,7 @@ async function start(
             _("tool-shared-modal-log-resizing-image") + ": " + originalFilePath
           );
           let tmpFilePath = path.join(
-            tempFolderPath,
+            g_tempSubFolderPath,
             fileName + "." + FileExtension.TMP
           );
           let data = await sharp(filePath).metadata();
@@ -443,7 +448,8 @@ async function start(
       }
     }
     // DONE /////////////////////
-    fileUtils.cleanUpTempFolder();
+    temp.deleteSubFolder(g_tempSubFolderPath);
+    g_tempSubFolderPath = undefined;
     sendIpcToRenderer(
       "modal-update-title-text",
       _("tool-shared-modal-title-conversion-finished")

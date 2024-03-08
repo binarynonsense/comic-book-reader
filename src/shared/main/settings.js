@@ -8,9 +8,9 @@
 const { app } = require("electron");
 const fs = require("fs");
 const path = require("path");
-const fileUtils = require("./file-utils");
 const utils = require("./utils");
 const log = require("./logger");
+const temp = require("./temp");
 
 const {
   isPortable,
@@ -356,10 +356,10 @@ function sanitize(screenWidth, screenHeight) {
       !fs.existsSync(g_settings.tempFolderPath) ||
       !fs.lstatSync(g_settings.tempFolderPath).isDirectory()
     ) {
-      g_settings.tempFolderPath = fileUtils.getSystemTempFolderPath();
+      g_settings.tempFolderPath = temp.getOSTempFolderPath();
     }
   } else {
-    g_settings.tempFolderPath = fileUtils.getSystemTempFolderPath();
+    g_settings.tempFolderPath = temp.getOSTempFolderPath();
   }
   // RAR FOLDER
   if (
@@ -396,7 +396,7 @@ exports.save = function () {
   let date = new Date().toJSON();
   g_settings.date = date;
   g_settings.version = app.getVersion();
-  if (g_settings.tempFolderPath === fileUtils.getSystemTempFolderPath()) {
+  if (g_settings.tempFolderPath === temp.getOSTempFolderPath()) {
     g_settings.tempFolderPath = undefined;
   }
   g_settings.rarExeAvailable = undefined;

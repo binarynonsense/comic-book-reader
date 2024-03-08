@@ -10,13 +10,15 @@ const path = require("path");
 const FileType = require("file-type");
 const fileFormats = require("../shared/main/file-formats");
 const { FileExtension, FileDataType } = require("../shared/main/constants");
+const log = require("../shared/main/logger");
 
 process.on("message", (message) => {
+  log.init(message.launchInfo);
   exportPage(
     message.data,
     message.outputFolderPath,
     message.sendToTool,
-    message.untrackedTempFolder
+    message.tempSubFolderPath
   );
 });
 
@@ -24,7 +26,7 @@ async function exportPage(
   fileData,
   outputFolderPath,
   sendToTool,
-  untrackedTempFolder
+  tempSubFolderPath
 ) {
   try {
     let buf;
@@ -38,7 +40,7 @@ async function exportPage(
         fileData.path,
         fileData.pagesPaths[fileData.pageIndex],
         fileData.password,
-        untrackedTempFolder,
+        tempSubFolderPath,
         "zip"
       );
     } else if (fileData.type === FileDataType.RAR) {
@@ -46,14 +48,14 @@ async function exportPage(
         fileData.path,
         fileData.pagesPaths[fileData.pageIndex],
         fileData.password,
-        untrackedTempFolder
+        tempSubFolderPath
       );
     } else if (fileData.type === FileDataType.SEVENZIP) {
       buf = await fileFormats.extract7ZipEntryBuffer(
         fileData.path,
         fileData.pagesPaths[fileData.pageIndex],
         fileData.password,
-        untrackedTempFolder
+        tempSubFolderPath
       );
     } else if (fileData.type === FileDataType.EPUB_COMIC) {
       let data = await fileFormats.extractEpubImageBuffer(

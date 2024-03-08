@@ -6,7 +6,6 @@
  */
 
 const path = require("path");
-const os = require("os");
 const fs = require("fs");
 const log = require("./logger");
 
@@ -282,11 +281,21 @@ function deleteFolderRecursive(
     if (nameStartsWith) {
       const folderName = path.basename(folderPath);
       if (!folderName.startsWith(nameStartsWith)) {
+        log.warning(
+          "tried to delete a folder with a name that doesn't start with: " +
+            nameStartsWith
+        );
+        log.warning(folderPath);
         return;
       }
     }
     if (pathStartsWith) {
       if (!folderPath.startsWith(pathStartsWith)) {
+        log.warning(
+          "tried to delete a folder with a path that doesn't start with: " +
+            pathStartsWith
+        );
+        log.warning(folderPath);
         return;
       }
     }
@@ -312,60 +321,16 @@ function deleteFolderRecursive(
         // this can happen if for example the temp folder is the same
         // as the one the conversion is outputing to
       }
-      if (logToError) log.error("Error: " + error.code);
-      else log.debug("Error: " + error.code);
-      if (logToError) log.error("couldn't delete folder: " + folderPath);
-      else log.debug("couldn't delete folder: " + folderPath);
+      if (logToError) {
+        log.error("couldn't delete folder: " + folderPath);
+        log.error(error.code);
+      } else {
+        log.debug("couldn't delete folder: " + folderPath);
+        log.debug(error.code);
+      }
     }
+  } else {
+    log.test("deleteFolderRecursive: !existsSync " + folderPath);
   }
 }
 exports.deleteFolderRecursive = deleteFolderRecursive;
-
-///////////////////////////////////////////////////////////////////////////////
-// TEMP FOLDER ////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-
-let g_tempFolderPath = undefined;
-let g_tempFolderParentPath = undefined;
-
-function getTempFolderPath() {
-  return g_tempFolderPath;
-}
-exports.getTempFolderPath = getTempFolderPath;
-
-function getTempFolderParentPath() {
-  return g_tempFolderParentPath;
-}
-exports.getTempFolderParentPath = getTempFolderParentPath;
-
-function setTempFolderParentPath(folderPath) {
-  g_tempFolderParentPath = folderPath;
-}
-exports.setTempFolderParentPath = setTempFolderParentPath;
-
-function getSystemTempFolderPath() {
-  return os.tmpdir();
-}
-exports.getSystemTempFolderPath = getSystemTempFolderPath;
-
-function createTempFolder(keepTrack = true) {
-  let tempFolderPath = fs.mkdtempSync(
-    path.join(g_tempFolderParentPath, "acbr-")
-  );
-  if (keepTrack) {
-    g_tempFolderPath = tempFolderPath;
-  }
-  return tempFolderPath;
-}
-exports.createTempFolder = createTempFolder;
-
-function cleanUpTempFolder(tempFolderPath) {
-  if (tempFolderPath) {
-    deleteFolderRecursive(tempFolderPath, true, undefined, "acbr-");
-  } else {
-    if (g_tempFolderPath === undefined) return;
-    deleteFolderRecursive(g_tempFolderPath, true, undefined, "acbr-");
-    g_tempFolderPath = undefined;
-  }
-}
-exports.cleanUpTempFolder = cleanUpTempFolder;

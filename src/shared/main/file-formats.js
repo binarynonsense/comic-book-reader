@@ -21,7 +21,7 @@ exports.init = function (isRelease) {
 // RAR ////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-async function getRarEntriesList(filePath, password, untrackedTempFolder) {
+async function getRarEntriesList(filePath, password, tempSubFolderPath) {
   try {
     const unrar = require("node-unrar-js");
     //let buf = Uint8Array.from(fs.readFileSync(filePath)).buffer;
@@ -33,7 +33,7 @@ async function getRarEntriesList(filePath, password, untrackedTempFolder) {
       // });
       extractor = await unrar.createExtractorFromFile({
         filepath: filePath,
-        targetPath: untrackedTempFolder,
+        targetPath: tempSubFolderPath,
         password: password,
       });
     } catch (error) {
@@ -78,18 +78,12 @@ async function getRarEntriesList(filePath, password, untrackedTempFolder) {
         return { result: "password required", paths: [] };
       }
     }
-    if (untrackedTempFolder) {
-      fileUtils.cleanUpTempFolder(untrackedTempFolder);
-    }
     return {
       result: "success",
       paths: imgEntries,
       metadata: { encrypted: isEncrypted, comicInfoId: comicInfoId },
     };
   } catch (error) {
-    if (untrackedTempFolder) {
-      fileUtils.cleanUpTempFolder(untrackedTempFolder);
-    }
     if (error.message.startsWith("Password for encrypted")) {
       // "Password for encrypted file or header is not specified"
       return { result: "password required", paths: [] };
@@ -109,7 +103,7 @@ async function extractRarEntryBuffer(
   rarPath,
   entryName,
   password,
-  untrackedTempFolder
+  tempSubFolderPath
 ) {
   try {
     const unrar = require("node-unrar-js");
@@ -124,22 +118,16 @@ async function extractRarEntryBuffer(
 
     let extractor = await unrar.createExtractorFromFile({
       filepath: rarPath,
-      targetPath: untrackedTempFolder,
+      targetPath: tempSubFolderPath,
       password: password,
     });
     const extracted = extractor.extract({ files: [entryName] });
     const files = [...extracted.files];
-    let buffer = fs.readFileSync(path.join(untrackedTempFolder, entryName));
-    if (untrackedTempFolder) {
-      fileUtils.cleanUpTempFolder(untrackedTempFolder);
-    }
+    let buffer = fs.readFileSync(path.join(tempSubFolderPath, entryName));
 
     return buffer;
   } catch (error) {
     log.error(error);
-    if (untrackedTempFolder) {
-      fileUtils.cleanUpTempFolder(untrackedTempFolder);
-    }
     return undefined;
   }
 }
@@ -427,7 +415,7 @@ async function extract7ZipEntryBuffer(
   filePath,
   entryName,
   password,
-  untrackedTempFolder,
+  tempSubFolderPath,
   archiveType
 ) {
   try {
@@ -448,7 +436,7 @@ async function extract7ZipEntryBuffer(
     if (archiveType && archiveType === "zip") {
       options.archiveType = archiveType;
     }
-    const seven = Seven.extractFull(filePath, untrackedTempFolder, options);
+    const seven = Seven.extractFull(filePath, tempSubFolderPath, options);
 
     let promise = await new Promise((resolve) => {
       seven.on("error", (error) => {
@@ -465,22 +453,13 @@ async function extract7ZipEntryBuffer(
 
     let buffer;
     if (promise.success === true) {
-      buffer = fs.readFileSync(path.join(untrackedTempFolder, entryName));
-      if (untrackedTempFolder) {
-        fileUtils.cleanUpTempFolder(untrackedTempFolder);
-      }
+      buffer = fs.readFileSync(path.join(tempSubFolderPath, entryName));
       return buffer;
     }
     //////////////////////////////////////////
-    if (untrackedTempFolder) {
-      fileUtils.cleanUpTempFolder(untrackedTempFolder);
-    }
     return undefined;
   } catch (error) {
     log.error(error);
-    if (untrackedTempFolder) {
-      fileUtils.cleanUpTempFolder(untrackedTempFolder);
-    }
     return undefined;
   }
 }

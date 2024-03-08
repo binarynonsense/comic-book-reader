@@ -151,7 +151,7 @@ exports.chooseSaveAs = chooseSaveAs;
 function cleanUpUserDataFolder() {
   // some things are not entirely deleted, but it's good enough :)
   try {
-    log.info("cleaning up...");
+    log.debug("cleaning up user data folder");
     log.debug(
       "the clean up process may fail to delete some files or folders depending on the OS and other circumstances, this is normal and expected"
     );

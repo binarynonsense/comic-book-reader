@@ -20,6 +20,7 @@ const log = require("../shared/main/logger");
 const menuBar = require("../shared/main/menu-bar");
 const fileUtils = require("../shared/main/file-utils");
 const appUtils = require("../shared/main/app-utils");
+const temp = require("../shared/main/temp");
 const utils = require("../shared/main/utils");
 const fileFormats = require("../shared/main/file-formats");
 const contextMenu = require("./menu-context");
@@ -855,11 +856,13 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
         fileExtension === "." + FileExtension.RAR ||
         fileExtension === "." + FileExtension.CBR
       ) {
+        const tempSubFolderPath = temp.createSubFolder();
         let rarData = await fileFormats.getRarEntriesList(
           filePath,
           password,
-          fileUtils.createTempFolder(false)
+          tempSubFolderPath
         );
+        temp.deleteSubFolder(tempSubFolderPath);
         if (rarData.result === "password required") {
           if (g_fileData.state !== FileDataState.LOADING) {
             cleanUpFileData();
@@ -1283,11 +1286,11 @@ function goToPage(pageIndex, scrollBarPos = 0) {
     const timers = require("../shared/main/timers");
     timers.start("workerPage");
 
-    let untrackedTempFolder =
+    let tempSubFolderPath =
       g_fileData.type === FileDataType.SEVENZIP ||
       g_fileData.type === FileDataType.ZIP ||
       g_fileData.type === FileDataType.RAR
-        ? fileUtils.createTempFolder(false)
+        ? temp.createSubFolder()
         : undefined;
 
     if (g_workerPage === undefined) {
@@ -1302,29 +1305,26 @@ function goToPage(pageIndex, scrollBarPos = 0) {
             g_fileData.pageRotation,
             message[2]
           );
-          if (untrackedTempFolder) {
-            fileUtils.cleanUpTempFolder(untrackedTempFolder);
-          }
+          temp.deleteSubFolder(tempSubFolderPath);
           return;
         } else {
           // TODO: handle error
           log.error("worker error");
           log.error(message[1]);
           sendIpcToRenderer("update-loading", false);
-          if (untrackedTempFolder) {
-            fileUtils.cleanUpTempFolder(untrackedTempFolder);
-          }
+          temp.deleteSubFolder(tempSubFolderPath);
           return;
         }
       });
     }
     g_workerPage.send([
+      core.getLaunchInfo(),
       g_fileData.type,
       g_fileData.path,
       g_fileData.pagesPaths[g_fileData.pageIndex],
       scrollBarPos,
       g_fileData.password,
-      untrackedTempFolder,
+      tempSubFolderPath,
     ]);
   } else if (g_fileData.type === FileDataType.EPUB_EBOOK) {
     if (pageIndex > 0) {
@@ -1862,7 +1862,7 @@ function initClock() {
 async function exportPageStart(sendToTool = 0) {
   let outputFolderPath;
   if (sendToTool !== 0) {
-    outputFolderPath = fileUtils.createTempFolder();
+    outputFolderPath = temp.createSubFolder();
   } else {
     let defaultPath = app.getPath("desktop");
     let folderList = appUtils.chooseFolder(core.getMainWindow(), defaultPath);
@@ -1876,8 +1876,9 @@ async function exportPageStart(sendToTool = 0) {
     g_fileData.path === "" ||
     outputFolderPath === undefined ||
     outputFolderPath === ""
-  )
+  ) {
     return;
+  }
 
   sendIpcToRenderer("update-loading", true);
   try {
@@ -1898,11 +1899,11 @@ async function exportPageStart(sendToTool = 0) {
         g_workerExport = undefined;
       }
 
-      let untrackedTempFolder =
+      let tempSubFolderPath =
         g_fileData.type === FileDataType.SEVENZIP ||
         g_fileData.type === FileDataType.ZIP ||
         g_fileData.type === FileDataType.RAR
-          ? fileUtils.createTempFolder(false)
+          ? temp.createSubFolder()
           : undefined;
 
       if (g_workerExport === undefined) {
@@ -1930,25 +1931,21 @@ async function exportPageStart(sendToTool = 0) {
                 _("ui-modal-prompt-button-ok")
               );
             }
-
-            if (untrackedTempFolder) {
-              fileUtils.cleanUpTempFolder(untrackedTempFolder);
-            }
+            temp.deleteSubFolder(tempSubFolderPath);
             return;
           } else {
             exportPageError(message[1]);
-            if (untrackedTempFolder) {
-              fileUtils.cleanUpTempFolder(untrackedTempFolder);
-            }
+            temp.deleteSubFolder(tempSubFolderPath);
             return;
           }
         });
       }
       g_workerExport.send({
+        launchInfo: core.getLaunchInfo(),
         data: g_fileData,
         outputFolderPath: outputFolderPath,
         sendToTool: sendToTool,
-        untrackedTempFolder: untrackedTempFolder,
+        tempSubFolderPath: tempSubFolderPath,
       });
     }
   } catch (err) {

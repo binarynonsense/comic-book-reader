@@ -20,6 +20,7 @@ const { FileDataType } = require("../../shared/main/constants");
 const ISO6391 = require("iso-639-1");
 const { fork } = require("child_process");
 const settings = require("../../shared/main/settings");
+const temp = require("../../shared/main/temp");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -85,7 +86,6 @@ exports.close = function () {
     g_worker.kill();
     g_worker = undefined;
   }
-  fileUtils.cleanUpTempFolder();
 };
 
 exports.onResize = function () {
@@ -269,34 +269,46 @@ async function loadXml() {
     let buf;
     switch (g_fileData.type) {
       case FileDataType.ZIP:
-        // buf = fileFormats.extractZipEntryBuffer(
-        //   g_fileData.path,
-        //   g_fileData.metadata.comicInfoId,
-        //   g_fileData.password
-        // );
-        buf = await fileFormats.extract7ZipEntryBuffer(
-          g_fileData.path,
-          g_fileData.metadata.comicInfoId,
-          g_fileData.password,
-          fileUtils.createTempFolder(false),
-          "zip"
-        );
+        {
+          // buf = fileFormats.extractZipEntryBuffer(
+          //   g_fileData.path,
+          //   g_fileData.metadata.comicInfoId,
+          //   g_fileData.password
+          // );
+          const tempFolderPath = temp.createSubFolder();
+          buf = await fileFormats.extract7ZipEntryBuffer(
+            g_fileData.path,
+            g_fileData.metadata.comicInfoId,
+            g_fileData.password,
+            tempFolderPath,
+            "zip"
+          );
+          temp.deleteSubFolder(tempFolderPath);
+        }
         break;
       case FileDataType.RAR:
-        buf = await fileFormats.extractRarEntryBuffer(
-          g_fileData.path,
-          g_fileData.metadata.comicInfoId,
-          g_fileData.password,
-          fileUtils.createTempFolder(false)
-        );
+        {
+          const tempFolderPath = temp.createSubFolder();
+          buf = await fileFormats.extractRarEntryBuffer(
+            g_fileData.path,
+            g_fileData.metadata.comicInfoId,
+            g_fileData.password,
+            tempFolderPath
+          );
+          temp.deleteSubFolder(tempFolderPath);
+        }
         break;
       case FileDataType.SEVENZIP:
-        buf = await fileFormats.extract7ZipEntryBuffer(
-          g_fileData.path,
-          g_fileData.metadata.comicInfoId,
-          g_fileData.password,
-          fileUtils.createTempFolder(false)
-        );
+        {
+          const tempFolderPath = temp.createSubFolder();
+          buf = await fileFormats.extract7ZipEntryBuffer(
+            g_fileData.path,
+            g_fileData.metadata.comicInfoId,
+            g_fileData.password,
+            tempFolderPath
+          );
+          temp.deleteSubFolder(tempFolderPath);
+        }
         break;
     }
     if (buf) xmlFileData = buf.toString();
@@ -347,7 +359,7 @@ async function loadXml() {
 }
 
 function updatePages(json) {
-  let tempFolderPath = fileUtils.createTempFolder();
+  let tempFolderPath = temp.createSubFolder();
   if (g_worker !== undefined) {
     // kill it after one use
     g_worker.kill();
@@ -358,16 +370,17 @@ function updatePages(json) {
     g_worker.on("message", (message) => {
       g_worker.kill(); // kill it after one use
       if (message.success) {
-        updatePagesDataFromImages(json);
+        updatePagesDataFromImages(json, tempFolderPath);
         return;
       } else {
         sendIpcToRenderer("pages-updated", undefined);
-        fileUtils.cleanUpTempFolder();
+        temp.deleteSubFolder(tempFolderPath);
         return;
       }
     });
   }
   g_worker.send([
+    core.getLaunchInfo(),
     "extract",
     g_fileData.path,
     g_fileData.type,
@@ -376,10 +389,9 @@ function updatePages(json) {
   ]);
 }
 
-async function updatePagesDataFromImages(json) {
+async function updatePagesDataFromImages(json, tempFolderPath) {
   try {
     const sharp = require("sharp");
-    let tempFolderPath = fileUtils.getTempFolderPath();
     let imgFilePaths = fileUtils.getImageFilesInFolderRecursive(tempFolderPath);
     imgFilePaths.sort(utils.compare);
 
@@ -412,11 +424,11 @@ async function updatePagesDataFromImages(json) {
       json["ComicInfo"]["Pages"]["Page"].push(pageData);
     }
 
-    fileUtils.cleanUpTempFolder();
+    temp.deleteSubFolder(tempFolderPath);
     sendIpcToRenderer("pages-updated", json);
   } catch (error) {
+    temp.deleteSubFolder(tempFolderPath);
     sendIpcToRenderer("pages-updated", undefined);
-    fileUtils.cleanUpTempFolder();
   }
 }
 
@@ -443,7 +455,7 @@ async function saveJsonToFile(json) {
         throw "error updating zip entry";
       }
     } else if (g_fileData.type === FileDataType.SEVENZIP) {
-      const tempFolderPath = fileUtils.createTempFolder();
+      const tempFolderPath = temp.createSubFolder();
       const xmlFilePath = path.resolve(tempFolderPath, entryName);
       fs.writeFileSync(xmlFilePath, outputXmlData);
       let success = await fileFormats.update7ZipEntry(
@@ -452,13 +464,12 @@ async function saveJsonToFile(json) {
         tempFolderPath,
         g_fileData.password
       );
+      temp.deleteSubFolder(tempFolderPath);
       if (!success) {
-        fileUtils.cleanUpTempFolder();
         throw "error updating 7zip entry";
       }
-      fileUtils.cleanUpTempFolder();
     } else if (g_fileData.type === FileDataType.RAR) {
-      const tempFolderPath = fileUtils.createTempFolder();
+      const tempFolderPath = temp.createSubFolder();
       const xmlFilePath = path.resolve(tempFolderPath, entryName);
       fs.writeFileSync(xmlFilePath, outputXmlData);
       let success = fileFormats.updateRarEntry(
@@ -467,11 +478,10 @@ async function saveJsonToFile(json) {
         entryName,
         tempFolderPath
       );
+      temp.deleteSubFolder(tempFolderPath);
       if (!success) {
-        fileUtils.cleanUpTempFolder();
         throw "error updating RAR entry";
       }
-      fileUtils.cleanUpTempFolder();
     }
     if (!isUpdate) {
       reader.updateFileDataMetadataEntry("comicInfoId", entryName);

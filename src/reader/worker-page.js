@@ -10,9 +10,11 @@ const path = require("path");
 const fileFormats = require("../shared/main/file-formats");
 const { FileDataType } = require("../shared/main/constants");
 const fileUtils = require("../shared/main/file-utils");
+const log = require("../shared/main/logger");
 
 process.on("message", (message) => {
-  extractBase64Image(...message);
+  log.init(message[0]);
+  extractBase64Image(...message.slice(1));
 });
 
 async function extractBase64Image(
@@ -21,7 +23,7 @@ async function extractBase64Image(
   entryName,
   scrollBarPos,
   password,
-  untrackedTempFolder
+  tempSubFolderPath
 ) {
   try {
     let buf;
@@ -32,7 +34,7 @@ async function extractBase64Image(
         filePath,
         entryName,
         password,
-        untrackedTempFolder,
+        tempSubFolderPath,
         "zip"
       );
       mime = "image/" + fileUtils.getMimeType(entryName);
@@ -41,7 +43,7 @@ async function extractBase64Image(
         filePath,
         entryName,
         password,
-        untrackedTempFolder
+        tempSubFolderPath
       );
       mime = "image/" + fileUtils.getMimeType(entryName);
     } else if (fileType === FileDataType.SEVENZIP) {
@@ -49,7 +51,7 @@ async function extractBase64Image(
         filePath,
         entryName,
         password,
-        untrackedTempFolder
+        tempSubFolderPath
       );
       mime = "image/" + fileUtils.getMimeType(entryName);
     } else if (fileType === FileDataType.EPUB_COMIC) {

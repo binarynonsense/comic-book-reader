@@ -11,12 +11,14 @@ const fileFormats = require("./file-formats");
 const { FileExtension, FileDataType } = require("./constants");
 const utils = require("./utils");
 const fileUtils = require("./file-utils");
+const log = require("./logger");
 
 process.on("message", (message) => {
-  if (message[0] === "extract") {
-    extractImages(...message.slice(1));
-  } else if (message[0] === "create") {
-    createFiles(...message.slice(1));
+  log.init(message[0]);
+  if (message[1] === "extract") {
+    extractImages(...message.slice(2));
+  } else if (message[1] === "create") {
+    createFiles(...message.slice(2));
   }
 });
 
