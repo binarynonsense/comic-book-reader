@@ -684,6 +684,8 @@ export function onInputEvent(type, event) {
           sendIpcToMain("dev-tools-pressed");
         } else if (event.key == "F1") {
           inputOpenQuickMenu();
+        } else if (event.key == "F2") {
+          inputOpenPropertiesModal();
         } else if (event.key == "Tab") {
           event.preventDefault();
         }
@@ -853,6 +855,14 @@ function inputToggleFullScreen() {
 
 function inputOpenQuickMenu() {
   sendIpcToMain("open-quick-menu");
+}
+
+function inputOpenPropertiesModal() {
+  sendIpcToMain("open-properties-modal");
+}
+
+function inputOpenHelpModal() {
+  sendIpcToMain("open-help-modal");
 }
 
 ///////////////////////////////////////////////////////////////////////////////

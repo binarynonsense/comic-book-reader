@@ -550,6 +550,14 @@ function initOnIpcCallbacks() {
     );
   });
 
+  on("open-properties-modal", () => {
+    onMenuFileProperties();
+  });
+
+  on("open-help-modal", () => {
+    core.onMenuAbout();
+  });
+
   on("toggle-fullscreen", () => {
     core.onMenuToggleFullScreen();
   });
@@ -2239,8 +2247,8 @@ exports.onMenuFilterValue = function (value) {
   setFilter(value);
 };
 
-exports.onMenuFileProperties = async function () {
-  if (g_fileData.path !== undefined) {
+async function onMenuFileProperties() {
+  if (g_fileData.path && g_fileData.path !== "") {
     // get metadata //////////////
     let message = "";
     // path
@@ -2418,4 +2426,5 @@ exports.onMenuFileProperties = async function () {
       buttonText
     );
   }
-};
+}
+exports.onMenuFileProperties = onMenuFileProperties;
