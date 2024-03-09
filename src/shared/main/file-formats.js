@@ -53,6 +53,7 @@ async function getRarEntriesList(filePath, password, tempSubFolderPath) {
     const fileHeaders = [...list.fileHeaders];
     let imgEntries = [];
     let comicInfoId = undefined;
+    let comicInfoIds = [];
     let isEncrypted = false;
     let encryptedEntryName;
     fileHeaders.forEach(function (header) {
@@ -64,10 +65,27 @@ async function getRarEntriesList(filePath, password, tempSubFolderPath) {
         if (fileUtils.hasImageExtension(header.name)) {
           imgEntries.push(header.name);
         } else if (header.name.toLowerCase().endsWith("comicinfo.xml")) {
-          comicInfoId = header.name;
+          comicInfoIds.push(header.name);
         }
       }
     });
+    if (comicInfoIds.length > 0) {
+      if (comicInfoIds.length > 1) {
+        for (const id of comicInfoIds) {
+          if (id.toLowerCase() === "comicinfo.xml") {
+            // is at the root, choose that one
+            comicInfoId = id;
+            break;
+          }
+        }
+        if (!comicInfoId) {
+          // choose any one, the first detected?
+          comicInfoId = comicInfoIds[0];
+        }
+      } else {
+        comicInfoId = comicInfoIds[0];
+      }
+    }
     if (isEncrypted) {
       // try password to see if there's an error = wrong password
       try {
@@ -231,6 +249,7 @@ function getZipEntriesList(filePath, password) {
     let zipEntries = zip.getEntries();
     let imgEntries = [];
     let comicInfoId = undefined;
+    let comicInfoIds = [];
     let isEncrypted = false;
     let encryptedEntryName;
     let compressionMethod;
@@ -244,10 +263,27 @@ function getZipEntriesList(filePath, password) {
         if (fileUtils.hasImageExtension(zipEntry.entryName)) {
           imgEntries.push(zipEntry.entryName);
         } else if (zipEntry.entryName.toLowerCase().endsWith("comicinfo.xml")) {
-          comicInfoId = zipEntry.entryName;
+          comicInfoIds.push(zipEntry.entryName);
         }
       }
     });
+    if (comicInfoIds.length > 0) {
+      if (comicInfoIds.length > 1) {
+        for (const id of comicInfoIds) {
+          if (id.toLowerCase() === "comicinfo.xml") {
+            // is at the root, choose that one
+            comicInfoId = id;
+            break;
+          }
+        }
+        if (!comicInfoId) {
+          // choose any one, the first detected?
+          comicInfoId = comicInfoIds[0];
+        }
+      } else {
+        comicInfoId = comicInfoIds[0];
+      }
+    }
     if (isEncrypted) {
       if (parseInt(compressionMethod) !== 99) {
         // AES encryption is not supported by adm-zip, only ZipCrypto
@@ -368,13 +404,14 @@ async function get7ZipEntriesList(filePath, password, archiveType) {
 
     let imgEntries;
     let comicInfoId = undefined;
+    let comicInfoIds = [];
     let promise = await new Promise((resolve) => {
       imgEntries = [];
       seven.on("data", function (data) {
         if (fileUtils.hasImageExtension(data.file)) {
           imgEntries.push(data.file);
         } else if (data.file.toLowerCase().endsWith("comicinfo.xml")) {
-          comicInfoId = data.file;
+          comicInfoIds.push(data.file);
         }
       });
       seven.on("error", (error) => {
@@ -387,6 +424,24 @@ async function get7ZipEntriesList(filePath, password, archiveType) {
         });
       });
     });
+
+    if (comicInfoIds.length > 0) {
+      if (comicInfoIds.length > 1) {
+        for (const id of comicInfoIds) {
+          if (id.toLowerCase() === "comicinfo.xml") {
+            // is at the root, choose that one
+            comicInfoId = id;
+            break;
+          }
+        }
+        if (!comicInfoId) {
+          // choose any one, the first detected?
+          comicInfoId = comicInfoIds[0];
+        }
+      } else {
+        comicInfoId = comicInfoIds[0];
+      }
+    }
 
     if (promise.success === true) {
       return {
