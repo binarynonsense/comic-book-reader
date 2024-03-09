@@ -565,6 +565,8 @@ exports.onMenuAbout = function () {
 // 0.32.4 was crashing the app when resizing and previous versions didn't
 // work with the current electron version I'm using.
 // TODO: try newer versions of sharp when available & investigate further.
+// NOTE: (2024/03/09) tried 0.33.2, still having different types of random
+// crashes (GLib-GObject-CRITICAL, ***MEMORY-ERROR***, SIGSEGV, SIGABRT...).
 
 // NOTE: I'm freezing the epubjs module version to 0.3.93 as I'm customizing
 // some of its functions from my code and later versions may break things.
