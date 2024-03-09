@@ -368,7 +368,7 @@ function initOnIpcCallbacks() {
 
   on("escape-pressed", () => {
     if (core.getMainWindow().isFullScreen()) {
-      setFullScreen(false);
+      core.toggleFullScreen();
     }
   });
 
