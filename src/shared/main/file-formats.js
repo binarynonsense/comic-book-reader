@@ -186,6 +186,9 @@ function createRar(
     }
     args.push(outputFilePath);
     if (true) {
+      args.push("-r");
+      args.push("./*");
+    } else if (true) {
       // use txt with all paths in it
       const pathsTxt = path.join(workingDir, "acbr-txt-paths.txt");
       let relativePaths = "";
