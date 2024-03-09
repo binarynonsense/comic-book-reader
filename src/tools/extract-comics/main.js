@@ -242,14 +242,14 @@ function initOnIpcCallbacks() {
     (
       inputFilePath,
       outputScale,
-      outputQuality,
+      outputFormatParams,
       outputFormat,
       outputFolderPath
     ) => {
       resizeImages(
         inputFilePath,
         outputScale,
-        outputQuality,
+        outputFormatParams,
         outputFormat,
         outputFolderPath
       );
@@ -539,7 +539,7 @@ exports.onIpcFromToolsWorkerRenderer = function (...args) {
 async function resizeImages(
   inputFilePath,
   outputScale,
-  outputQuality,
+  outputFormatParams,
   outputFormat,
   outputFolderPath
 ) {
@@ -550,7 +550,6 @@ async function resizeImages(
   try {
     const sharp = require("sharp");
     outputScale = parseInt(outputScale);
-    outputQuality = parseInt(outputQuality);
 
     let fileName = path.basename(inputFilePath, path.extname(inputFilePath));
     let subFolderPath = path.join(outputFolderPath, fileName);
@@ -645,15 +644,16 @@ async function resizeImages(
           await sharp(filePath)
             .withMetadata()
             .jpeg({
-              quality: outputQuality,
+              quality: parseInt(outputFormatParams.jpgQuality),
+              mozjpeg: outputFormatParams.jpgMozjpeg,
             })
             .toFile(tmpFilePath);
         } else if (outputFormat === FileExtension.PNG) {
-          if (outputQuality < 100) {
+          if (parseInt(outputFormatParams.pngQuality) < 100) {
             await sharp(filePath)
               .withMetadata()
               .png({
-                quality: outputQuality,
+                quality: parseInt(outputFormatParams.pngQuality),
               })
               .toFile(tmpFilePath);
           } else {
@@ -663,14 +663,14 @@ async function resizeImages(
           await sharp(filePath)
             .withMetadata()
             .webp({
-              quality: outputQuality,
+              quality: parseInt(outputFormatParams.webpQuality),
             })
             .toFile(tmpFilePath);
         } else if (outputFormat === FileExtension.AVIF) {
           await sharp(filePath)
             .withMetadata()
             .avif({
-              quality: outputQuality,
+              quality: parseInt(outputFormatParams.avifQuality),
             })
             .toFile(tmpFilePath);
         }

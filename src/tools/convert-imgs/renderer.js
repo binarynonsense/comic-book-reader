@@ -65,6 +65,17 @@ function init(outputFolderPath) {
     .addEventListener("click", (event) => {
       onStart();
     });
+  // sections menu
+  document
+    .getElementById("tool-ci-section-general-options-button")
+    .addEventListener("click", (event) => {
+      switchSection(0);
+    });
+  document
+    .getElementById("tool-ci-section-advanced-options-button")
+    .addEventListener("click", (event) => {
+      switchSection(1);
+    });
   ////////////////////////////////////////
   g_inputListDiv = document.querySelector("#tool-ci-input-list");
   g_outputFolderDiv = document.querySelector("#tool-ci-output-folder");
@@ -148,6 +159,51 @@ function updateSliderBubble(range, bubble) {
   bubble.innerHTML = range.value;
   // magic numbers
   bubble.style.left = `calc(${newVal}% - (${newVal * 0.15}px))`;
+}
+
+function switchSection(id) {
+  switch (id) {
+    case 0:
+      // buttons
+      document
+        .getElementById("tool-ci-section-general-options-button")
+        .classList.add("tools-menu-button-selected");
+      document
+        .getElementById("tool-ci-section-advanced-options-button")
+        .classList.remove("tools-menu-button-selected");
+      // sections
+      document
+        .getElementById("tool-ci-input-options-section-div")
+        .classList.remove("set-display-none");
+      document
+        .getElementById("tool-ci-output-options-section-div")
+        .classList.remove("set-display-none");
+      document
+        .getElementById("tool-ci-advanced-output-options-section-div")
+        .classList.add("set-display-none");
+      break;
+    case 1:
+      // buttons
+      document
+        .getElementById("tool-ci-section-general-options-button")
+        .classList.remove("tools-menu-button-selected");
+      document
+        .getElementById("tool-ci-section-advanced-options-button")
+        .classList.add("tools-menu-button-selected");
+      // sections
+      document
+        .getElementById("tool-ci-input-options-section-div")
+        .classList.add("set-display-none");
+      document
+        .getElementById("tool-ci-output-options-section-div")
+        .classList.add("set-display-none");
+      document
+        .getElementById("tool-ci-advanced-output-options-section-div")
+        .classList.remove("set-display-none");
+      break;
+      break;
+  }
+  updateColumnsHeight();
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -398,11 +454,18 @@ function onStart(resetCounter = true) {
 
   let outputFormat = g_outputImageFormatSelect.value;
   if (outputFormat === undefined) outputFormat = FileExtension.JPG;
+  let imageFormatParams = {
+    jpgQuality: document.querySelector("#tool-ci-jpg-quality-slider").value,
+    jpgMozjpeg: document.querySelector("#tool-ci-jpg-mozjpeg-checkbox").checked,
+    pngQuality: document.querySelector("#tool-ci-png-quality-slider").value,
+    avifQuality: document.querySelector("#tool-ci-avif-quality-slider").value,
+    webpQuality: document.querySelector("#tool-ci-webp-quality-slider").value,
+  };
   sendIpcToMain(
     "start",
     g_inputFiles,
     g_outputImageScaleSlider.value,
-    g_outputImageQualitySlider.value,
+    imageFormatParams,
     outputFormat,
     g_outputFolderPath
   );

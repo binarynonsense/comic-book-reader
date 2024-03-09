@@ -32,7 +32,6 @@ let g_outputFolderDiv;
 let g_startButton;
 let g_outputImageScaleSlider;
 let g_outputImageFormatSelect;
-let g_outputImageQualitySlider;
 
 let g_localizedRemoveFromListText;
 let g_localizedModalCancelButtonText;
@@ -93,9 +92,6 @@ function init(outputFolderPath) {
   );
   g_outputImageFormatSelect = document.querySelector(
     "#tool-ec-output-image-format-select"
-  );
-  g_outputImageQualitySlider = document.querySelector(
-    "#tool-ec-output-image-quality-slider"
   );
 
   g_startButton = document.querySelector("#tool-ec-start-button");
@@ -198,13 +194,16 @@ function switchSection(id) {
         .classList.remove("tools-menu-button-selected");
       // sections
       document
-        .getElementById("tool-pre-input-options-section-div")
+        .getElementById("tool-ec-input-options-section-div")
         .classList.remove("set-display-none");
       document
-        .getElementById("tool-pre-output-options-section-div")
+        .getElementById("tool-ec-output-options-section-div")
         .classList.remove("set-display-none");
       document
-        .getElementById("tool-pre-advanced-input-options-section-div")
+        .getElementById("tool-ec-advanced-input-options-section-div")
+        .classList.add("set-display-none");
+      document
+        .getElementById("tool-ec-advanced-output-options-section-div")
         .classList.add("set-display-none");
       break;
     case 1:
@@ -217,13 +216,16 @@ function switchSection(id) {
         .classList.add("tools-menu-button-selected");
       // sections
       document
-        .getElementById("tool-pre-input-options-section-div")
+        .getElementById("tool-ec-input-options-section-div")
         .classList.add("set-display-none");
       document
-        .getElementById("tool-pre-output-options-section-div")
+        .getElementById("tool-ec-output-options-section-div")
         .classList.add("set-display-none");
       document
-        .getElementById("tool-pre-advanced-input-options-section-div")
+        .getElementById("tool-ec-advanced-input-options-section-div")
+        .classList.remove("set-display-none");
+      document
+        .getElementById("tool-ec-advanced-output-options-section-div")
         .classList.remove("set-display-none");
       break;
       break;
@@ -338,11 +340,19 @@ function initOnIpcCallbacks() {
   /////////////////////////////////////////////////////////////////////////////
 
   on("images-extracted", () => {
+    let imageFormatParams = {
+      jpgQuality: document.querySelector("#tool-ec-jpg-quality-slider").value,
+      jpgMozjpeg: document.querySelector("#tool-ec-jpg-mozjpeg-checkbox")
+        .checked,
+      pngQuality: document.querySelector("#tool-ec-png-quality-slider").value,
+      avifQuality: document.querySelector("#tool-ec-avif-quality-slider").value,
+      webpQuality: document.querySelector("#tool-ec-webp-quality-slider").value,
+    };
     sendIpcToMain(
       "resize-images",
       g_inputFilePath,
       g_outputImageScaleSlider.value,
-      g_outputImageQualitySlider.value,
+      imageFormatParams,
       g_outputImageFormatSelect.value,
       g_outputFolderPath
     );
@@ -434,18 +444,6 @@ function initOnIpcCallbacks() {
 ///////////////////////////////////////////////////////////////////////////////
 
 function checkValidData() {
-  if (
-    document.querySelector("#tool-ec-output-image-format-select").value ===
-    FileExtension.NOT_SET
-  ) {
-    g_outputImageQualitySlider.parentElement.parentElement.classList.add(
-      "set-display-none"
-    );
-  } else {
-    g_outputImageQualitySlider.parentElement.parentElement.classList.remove(
-      "set-display-none"
-    );
-  }
   if (g_outputFolderPath !== undefined && g_inputFiles.length > 0) {
     g_startButton.classList.remove("tools-disabled");
   } else {

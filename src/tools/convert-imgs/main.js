@@ -187,14 +187,14 @@ function initOnIpcCallbacks() {
     (
       inputFiles,
       outputScale,
-      outputQuality,
+      outputFormatParams,
       outputFormat,
       outputFolderPath
     ) => {
       start(
         inputFiles,
         outputScale,
-        outputQuality,
+        outputFormatParams,
         outputFormat,
         outputFolderPath
       );
@@ -325,14 +325,13 @@ function stopCancel() {
 async function start(
   imgFiles,
   outputScale,
-  outputQuality,
+  outputFormatParams,
   outputFormat,
   outputFolderPath
 ) {
   try {
     g_cancel = false;
     outputScale = parseInt(outputScale);
-    outputQuality = parseInt(outputQuality);
     let numErrors = 0;
     let numFiles = imgFiles.length;
 
@@ -412,15 +411,16 @@ async function start(
           await sharp(filePath)
             .withMetadata()
             .jpeg({
-              quality: outputQuality,
+              quality: parseInt(outputFormatParams.jpgQuality),
+              mozjpeg: outputFormatParams.jpgMozjpeg,
             })
             .toFile(outputFilePath);
         } else if (outputFormat === FileExtension.PNG) {
-          if (outputQuality < 100) {
+          if (parseInt(outputFormatParams.pngQuality) < 100) {
             await sharp(filePath)
               .withMetadata()
               .png({
-                quality: outputQuality,
+                quality: parseInt(outputFormatParams.pngQuality),
               })
               .toFile(outputFilePath);
           } else {
@@ -430,14 +430,14 @@ async function start(
           await sharp(filePath)
             .withMetadata()
             .webp({
-              quality: outputQuality,
+              quality: parseInt(outputFormatParams.webpQuality),
             })
             .toFile(outputFilePath);
         } else if (outputFormat === FileExtension.AVIF) {
           await sharp(filePath)
             .withMetadata()
             .avif({
-              quality: outputQuality,
+              quality: parseInt(outputFormatParams.avifQuality),
             })
             .toFile(outputFilePath);
         }
@@ -524,6 +524,10 @@ function getLocalization() {
       id: "tool-ci-section-general-options-text",
       text: _("tool-shared-ui-general-options"),
     },
+    {
+      id: "tool-ci-section-advanced-options-text",
+      text: _("tool-shared-ui-advanced-options"),
+    },
     //////////////////////////////////////////////
     {
       id: "tool-ci-input-options-text",
@@ -564,7 +568,11 @@ function getLocalization() {
     },
 
     //////////////////////////////////////////////
-
+    {
+      id: "tool-ci-advanced-output-options-text",
+      text: _("tool-shared-ui-advanced-output-options"),
+    },
+    //////////////////////////////////////////////
     {
       id: "tool-ci-modal-close-button-text",
       text: _("tool-shared-ui-close").toUpperCase(),

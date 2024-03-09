@@ -714,7 +714,7 @@ function copyImagesToTempFolder() {
 async function resizeImages(
   inputFilePath,
   outputScale,
-  outputQuality,
+  outputFormatParams,
   outputFormat,
   outputFolderPath,
   outputSplitNumFiles,
@@ -727,7 +727,6 @@ async function resizeImages(
   try {
     const sharp = require("sharp");
     outputScale = parseInt(outputScale);
-    outputQuality = parseInt(outputQuality);
 
     let comicInfoFilePath =
       g_mode === 0
@@ -853,15 +852,16 @@ async function resizeImages(
             await sharp(filePath)
               .withMetadata()
               .jpeg({
-                quality: outputQuality,
+                quality: parseInt(outputFormatParams.jpgQuality),
+                mozjpeg: outputFormatParams.jpgMozjpeg,
               })
               .toFile(tmpFilePath);
           } else if (imageFormat === FileExtension.PNG) {
-            if (outputQuality < 100) {
+            if (parseInt(outputFormatParams.pngQuality) < 100) {
               await sharp(filePath)
                 .withMetadata()
                 .png({
-                  quality: outputQuality,
+                  quality: parseInt(outputFormatParams.pngQuality),
                 })
                 .toFile(tmpFilePath);
             } else {
@@ -871,14 +871,14 @@ async function resizeImages(
             await sharp(filePath)
               .withMetadata()
               .webp({
-                quality: outputQuality,
+                quality: parseInt(outputFormatParams.webpQuality),
               })
               .toFile(tmpFilePath);
           } else if (imageFormat === FileExtension.AVIF) {
             await sharp(filePath)
               .withMetadata()
               .avif({
-                quality: outputQuality,
+                quality: parseInt(outputFormatParams.avifQuality),
               })
               .toFile(tmpFilePath);
           }

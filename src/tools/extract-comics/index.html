@@ -40,7 +40,7 @@
     <div id="tools-title"><span id="tool-ec-title-text"></span></div>
     <!-- input -->
     <div
-      id="tool-pre-input-options-section-div"
+      id="tool-ec-input-options-section-div"
       class="tools-columns-right-section"
     >
       <h3><span id="tool-ec-input-options-text"></span></h3>
@@ -54,7 +54,7 @@
     </div>
     <!-- output -->
     <div
-      id="tool-pre-output-options-section-div"
+      id="tool-ec-output-options-section-div"
       class="tools-columns-right-section"
     >
       <h3><span id="tool-ec-output-options-text"></span></h3>
@@ -112,9 +112,9 @@
         <span id="tool-ec-change-folder-button-text"></span>
       </button>
     </div>
-    <!-- advanced output -->
+    <!-- advanced input -->
     <div
-      id="tool-pre-advanced-input-options-section-div"
+      id="tool-ec-advanced-input-options-section-div"
       class="tools-columns-right-section set-display-none"
     >
       <h3><span id="tool-ec-advanced-input-options-text"></span></h3>
@@ -140,6 +140,74 @@
             value="render72"
           ></option></select
       ></label>
+    </div>
+    <!-- advanced output -->
+    <div
+      id="tool-ec-advanced-output-options-section-div"
+      class="tools-columns-right-section set-display-none"
+    >
+      <h3><span id="tool-ec-advanced-output-options-text"></span></h3>
+      <label
+        ><span id="tool-ec-jpg-quality-text">JPG: quality</span>
+        <div class="tools-range-wrap">
+          <input
+            type="range"
+            class="tools-range"
+            min="10"
+            max="100"
+            id="tool-ec-jpg-quality-slider"
+            value="90"
+          />
+          <output class="tools-range-bubble set-display-none"></output>
+        </div>
+      </label>
+      <label><span id="tool-ec-jpg-mozjpeg-text">JPG: mozjpeg</span> </label
+      ><label class="tools-checkbox-container">
+        <input type="checkbox" id="tool-ec-jpg-mozjpeg-checkbox" />
+        <!-- <span id="tool-ec-jpg-mozjpeg-checkbox-text"></span> -->
+      </label>
+      <label class="tools-h3-extra-margin-top"
+        ><span id="tool-ec-png-quality-text">PNG: quality</span>
+        <div class="tools-range-wrap">
+          <input
+            type="range"
+            class="tools-range"
+            min="10"
+            max="100"
+            id="tool-ec-png-quality-slider"
+            value="100"
+          />
+          <output class="tools-range-bubble set-display-none"></output>
+        </div>
+      </label>
+      <label class="tools-h3-extra-margin-top"
+        ><span id="tool-ec-avif-quality-text">AVIF: quality</span>
+        <div class="tools-range-wrap">
+          <input
+            type="range"
+            class="tools-range"
+            min="10"
+            max="100"
+            id="tool-ec-avif-quality-slider"
+            value="50"
+          />
+          <output class="tools-range-bubble set-display-none"></output>
+        </div>
+      </label>
+      <label class="tools-h3-extra-margin-top"
+        ><span id="tool-ec-webp-quality-text">WebP: quality</span>
+        <div class="tools-range-wrap">
+          <input
+            type="range"
+            class="tools-range"
+            min="10"
+            max="100"
+            id="tool-ec-webp-quality-slider"
+            value="80"
+          />
+          <output class="tools-range-bubble set-display-none"></output>
+        </div>
+      </label>
     </div>
   </div>
 </div>

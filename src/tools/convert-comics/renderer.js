@@ -35,7 +35,6 @@ let g_startButton;
 let g_outputFormatSelect;
 let g_outputImageScaleSlider;
 let g_outputImageFormatSelect;
-let g_outputImageQualitySlider;
 let g_outputSplitNumFilesInput;
 let g_outputPasswordInput;
 
@@ -107,9 +106,6 @@ function init(mode, outputFolderPath, canEditRars) {
   );
   g_outputImageFormatSelect = document.querySelector(
     "#tool-cc-output-image-format-select"
-  );
-  g_outputImageQualitySlider = document.querySelector(
-    "#tool-cc-output-image-quality-slider"
   );
   g_outputSplitNumFilesInput = document.querySelector(
     "#tool-cc-split-num-files-input"
@@ -455,13 +451,21 @@ function initOnIpcCallbacks() {
   });
 
   on("file-images-extracted", () => {
+    let imageFormatParams = {
+      jpgQuality: document.querySelector("#tool-cc-jpg-quality-slider").value,
+      jpgMozjpeg: document.querySelector("#tool-cc-jpg-mozjpeg-checkbox")
+        .checked,
+      pngQuality: document.querySelector("#tool-cc-png-quality-slider").value,
+      avifQuality: document.querySelector("#tool-cc-avif-quality-slider").value,
+      webpQuality: document.querySelector("#tool-cc-webp-quality-slider").value,
+    };
     if (g_mode === 0) {
       // convert tool
       sendIpcToMain(
         "resize-images",
         g_inputFilePath,
         g_outputImageScaleSlider.value,
-        g_outputImageQualitySlider.value,
+        imageFormatParams,
         g_outputFormat,
         g_outputFolderPath,
         g_outputSplitNumFilesInput.value,
@@ -478,7 +482,7 @@ function initOnIpcCallbacks() {
           "resize-images",
           g_inputFilePath,
           g_outputImageScaleSlider.value,
-          g_outputImageQualitySlider.value,
+          imageFormatParams,
           g_outputFormat,
           g_outputFolderPath,
           g_outputSplitNumFilesInput.value,
@@ -608,18 +612,6 @@ function initOnIpcCallbacks() {
 ///////////////////////////////////////////////////////////////////////////////
 
 function checkValidData() {
-  if (
-    document.querySelector("#tool-cc-output-image-format-select").value ===
-    FileExtension.NOT_SET
-  ) {
-    g_outputImageQualitySlider.parentElement.parentElement.classList.add(
-      "set-display-none"
-    );
-  } else {
-    g_outputImageQualitySlider.parentElement.parentElement.classList.remove(
-      "set-display-none"
-    );
-  }
   if (
     g_outputFolderPath === undefined ||
     g_inputFiles.length <= 0 ||
