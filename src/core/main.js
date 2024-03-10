@@ -46,6 +46,8 @@ const toolFileBrowser = require("../tools/file-browser/main");
 let g_mainWindow;
 let g_isLoaded = false;
 let g_launchInfo = {};
+let g_currentTool = "reader";
+let g_tools = {};
 
 // Allow only one instance
 // NOTE: if not, cleanup would break things when an instance deletes the
@@ -68,8 +70,6 @@ if (!gotTheLock) {
   // TOOLS /////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
-  let g_currentTool = "reader";
-  let g_tools = {};
   g_tools["reader"] = reader;
   g_tools["audio-player"] = audioPlayer;
   g_tools["tool-preferences"] = toolPreferences;
