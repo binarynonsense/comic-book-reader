@@ -607,7 +607,6 @@ export function onInputEvent(type, event) {
                 break;
               }
             }
-            console.log(event.key);
             let matches = true;
             if (event.key !== key) {
               matches = false;
