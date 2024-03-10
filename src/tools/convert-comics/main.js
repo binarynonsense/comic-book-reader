@@ -548,6 +548,10 @@ function startFile(
   totalFilesNum,
   pdfExtractionMethod
 ) {
+  if (g_cancel === true) {
+    stopCancel();
+    return;
+  }
   sendIpcToRenderer(
     "modal-update-title-text",
     g_mode === 0
