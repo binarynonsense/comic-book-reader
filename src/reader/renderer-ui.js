@@ -643,9 +643,11 @@ export function onInputEvent(type, event) {
           } else if (matchesNavKey(g_navKeys.lastPage, event)) {
             if (!event.repeat) inputGoToLastPage();
           } else if (matchesNavKey(g_navKeys.scrollDown, event)) {
+            // TODO: only check edge if down this frame? like in gamepad
             inputScrollPageDown();
             event.stopPropagation();
           } else if (matchesNavKey(g_navKeys.scrollUp, event)) {
+            // TODO: only check edge if down this frame? like in gamepad
             inputScrollPageUp();
             event.stopPropagation();
           } else if (matchesNavKey(g_navKeys.scrollLeft, event)) {
