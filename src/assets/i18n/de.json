@@ -445,7 +445,7 @@
   "tool-pre-navbuttons": "Gamepad Tastenbelegung",
   "[NOTE TO TRANSLATORS]tool-pre-navbuttons-button-resetall": "'Reset All' as in 'reset all the assigned gamepad buttons'",
   "tool-pre-navbuttons-button-resetall": "Alle zurücksetzen",
-  "tool-pre-navbuttons-modal-resetall-message": "Sind Sie sicher, dass Sie die gesamte Tastenbelegung auf die Standardwerte zurücksetzen wollen?",
+  "tool-pre-navbuttons-modal-resetall-message": "Sind Sie sicher, dass Sie die gesamte Gamepad Tastenbelegung auf die Standardwerte zurücksetzen wollen?",
   "tool-pre-advanced-preferences": "Erweitert",
   "tool-pre-other-preferences": "Andere",
   "tool-pre-tempfolder": "Temp Ordner",
