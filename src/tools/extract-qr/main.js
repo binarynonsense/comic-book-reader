@@ -52,7 +52,7 @@ exports.close = function () {
   sendIpcToRenderer("close-modal");
   sendIpcToRenderer("hide");
   // clean up
-  temp.deleteSubFolder(path.dirname(g_initialFilePath));
+  if (g_initialFilePath) temp.deleteSubFolder(path.dirname(g_initialFilePath));
   g_initialFilePath = undefined;
 };
 

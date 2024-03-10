@@ -54,7 +54,7 @@ exports.close = function () {
   sendIpcToRenderer("hide");
   // clean up
   g_currentPalette = undefined;
-  temp.deleteSubFolder(path.dirname(g_initialFilePath));
+  if (g_initialFilePath) temp.deleteSubFolder(path.dirname(g_initialFilePath));
   g_initialFilePath = undefined;
 };
 
