@@ -102,6 +102,8 @@ exports.close = function () {
   sendIpcToRenderer("close-modal");
   sendIpcToRenderer("hide"); // clean up
 
+  g_cancel = false;
+
   if (g_workerWindow !== undefined) {
     g_workerWindow.destroy();
     g_workerWindow = undefined;
@@ -501,6 +503,7 @@ function stopCancel() {
 }
 
 function start(inputFiles, outputFileBaseName) {
+  g_cancel = false;
   g_outputFileBaseName = outputFileBaseName;
   g_imageIndex = 0;
   if (g_mode === 0) {
@@ -545,8 +548,6 @@ function startFile(
   totalFilesNum,
   pdfExtractionMethod
 ) {
-  g_cancel = false;
-
   sendIpcToRenderer(
     "modal-update-title-text",
     g_mode === 0
