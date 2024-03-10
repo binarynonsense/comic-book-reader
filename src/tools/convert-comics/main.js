@@ -297,10 +297,6 @@ function initOnIpcCallbacks() {
     resizeImages(...args);
   });
 
-  on("resizing-canceled", () => {
-    if (g_cancel === false) stopCancel();
-  });
-
   on("resizing-error", (errorMessage) => {
     stopError(undefined, errorMessage);
   });

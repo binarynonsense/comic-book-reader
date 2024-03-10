@@ -275,10 +275,6 @@ function initOnIpcCallbacks() {
     }
   );
 
-  on("resizing-canceled", () => {
-    if (g_cancel === false) stopCancel();
-  });
-
   on("resizing-error", (err) => {
     stopError(err);
   });
