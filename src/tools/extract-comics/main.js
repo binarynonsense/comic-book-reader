@@ -77,6 +77,8 @@ exports.close = function () {
   sendIpcToRenderer("close-modal");
   sendIpcToRenderer("hide"); // clean up
 
+  g_cancel = false;
+
   if (g_workerWindow !== undefined) {
     g_workerWindow.destroy();
     g_workerWindow = undefined;
@@ -414,7 +416,7 @@ function start(
   totalFilesNum,
   pdfExtractionMethod
 ) {
-  g_cancel = false;
+  if (fileNum === 1) g_cancel = false;
 
   sendIpcToRenderer(
     "modal-update-title-text",
