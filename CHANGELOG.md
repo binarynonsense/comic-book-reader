@@ -1,3 +1,7 @@
+## v3.4.1
+
+- Fixed not receiving key events in the input element of some of the modal windows, like the one that's invoked by "Page > Go To...", due to a bug introduced in the previous version.
+
 ## v3.4.0
 
 - Updated some of the core libraries to newer versions.
