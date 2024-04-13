@@ -35,11 +35,11 @@ Un lector y conversor de cómics para archivos en formato CBZ, CBR, CB7, EPUB y 
 - Formatos de archivo compatibles:
 
   - Cómics:
-    - CBZ, CBR, CB7, PDF y EPUB.
+    - CBZ, CBR, CB7, PDF y EPUB<sup>[1]</sup>.
   - Archivos de imagen:
     - JPG, PNG, WebP y AVIF.
   - Ebooks:
-    - PDF y EPUB<sup>[1]</sup>.
+    - PDF y EPUB<sup>[2]</sup>.
 
   Incluyendo archivos PDF, CBZ (cifrado AES no compatible), CB7 y CBR protegidos con contraseña.
 
@@ -52,17 +52,17 @@ Un lector y conversor de cómics para archivos en formato CBZ, CBR, CB7, EPUB y 
 - Modo portátil (al crear un archivo llamado portable.txt en la misma carpeta que el ejecutable).
 - Editor de ComicInfo.xml:
   - Ver los metadatos almacenados en archivos ComicInfo.xml dentro de cómics CBR, CBZ y CB7.
-  - Crear y/o modificar los metadatos almacenados en archivos ComicInfo.xml dentro de cómics CBR<sup>[2]</sup>, CBZ y CB7 no encriptados.
+  - Crear y/o modificar los metadatos almacenados en archivos ComicInfo.xml dentro de cómics CBR<sup>[3]</sup>, CBZ y CB7 no encriptados.
   - Buscar e importar metadatos de cómics de Comic Vine (es necesaria una [clave API de Comic Vine](https://comicvine.gamespot.com/api/)).
 - Reproductor de audio integrado:
   - Admite archivos MP3, Ogg, WAV, M3U y M3U8.
   - Puede exportar listas de reproducción a archivos M3U.
 - Herramientas:
   - Convertir/Redimensionar:
-    - Cómics (CBR, CBZ, CB7, PDF o EPUB a CBR<sup>[2]</sup>, CBZ, CB7, PDF o EPUB).
+    - Cómics (CBR, CBZ, CB7, PDF o EPUB a CBR<sup>[3]</sup>, CBZ, CB7, PDF o EPUB).
     - Imágenes (JPG, PNG, AVIF o WebP).
   - Crear:
-    - Un cómic (CBR<sup>[2]</sup>, CBZ, CB7, PDF o EPUB) a partir de una lista de archivos de imagen y/o cómics.
+    - Un cómic (CBR<sup>[3]</sup>, CBZ, CB7, PDF o EPUB) a partir de una lista de archivos de imagen y/o cómics.
     - Una imagen de código QR a partir de un texto.
   - Extraer:
     - Páginas de cómics (a JPG, PNG, AVIF o WebP).
@@ -82,9 +82,11 @@ Un lector y conversor de cómics para archivos en formato CBZ, CBR, CB7, EPUB y 
       - Diccionario Wiktionary.
 
 
-<sup>[1]</sup> La lectura de Ebooks EPUB es una función experimental/extra más allá de los objectivos principales del proyecto. Es posible que no funcione para todos los archivos y podría eliminarse en versiones futuras si surge la necesidad.
+[1] Sólo imágenes.
 
-<sup>[2]</sup> La creación y modificación de archivos CBR están desactivadas por defecto. Se pueden activar en las preferencias pero requieren que una herramienta de línea de comandos de terceros ([rar](https://www.win-rar.com/cmd-shell-mode.html?&L=0) de WinRAR) se encuentre instalada en el sistema.
+[2] La lectura de Ebooks EPUB es una función experimental/extra más allá de los objectivos principales del proyecto. Es posible que no funcione para todos los archivos y podría eliminarse en versiones futuras si surge la necesidad.
+
+[3] La creación y modificación de archivos CBR están desactivadas por defecto. Se pueden activar en las preferencias pero requieren que una herramienta de línea de comandos de terceros ([rar](https://www.win-rar.com/cmd-shell-mode.html?&L=0) de WinRAR) se encuentre instalada en el sistema.
 
 ## Controles Básicos:
 
