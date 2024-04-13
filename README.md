@@ -59,7 +59,7 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB and PDF files.
   - Can export playlists to M3U files.
 - Tools:
   - Convert/Resize:
-    - Comic books (CBR, CBZ, CB7, PDF or EPUB to CBR<sup>[3]</sup>, CBZ, CB7, PDF or EPUB<sup>[1]</sup>).
+    - Comic books (CBR, CBZ, CB7, PDF or EPUB<sup>[1]</sup> to CBR<sup>[3]</sup>, CBZ, CB7, PDF or EPUB).
     - Images (JPG, PNG, AVIF or WebP).
   - Create:
     - A comic book (CBR<sup>[3]</sup>, CBZ, CB7, PDF or EPUB) from a list of image files and/or comic books.
