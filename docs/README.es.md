@@ -59,7 +59,7 @@ Un lector y conversor de cómics para archivos en formato CBZ, CBR, CB7, EPUB y 
   - Puede exportar listas de reproducción a archivos M3U.
 - Herramientas:
   - Convertir/Redimensionar:
-    - Cómics (CBR, CBZ, CB7, PDF o EPUB a CBR<sup>[3]</sup>, CBZ, CB7, PDF o EPUB).
+    - Cómics (CBR, CBZ, CB7, PDF o EPUB<sup>[1]</sup> a CBR<sup>[3]</sup>, CBZ, CB7, PDF o EPUB).
     - Imágenes (JPG, PNG, AVIF o WebP).
   - Crear:
     - Un cómic (CBR<sup>[3]</sup>, CBZ, CB7, PDF o EPUB) a partir de una lista de archivos de imagen y/o cómics.
