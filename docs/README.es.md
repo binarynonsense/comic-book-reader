@@ -82,7 +82,7 @@ Un lector y conversor de cómics para archivos en formato CBZ, CBR, CB7, EPUB y 
       - Diccionario Wiktionary.
 
 
-[1] Sólo imágenes.
+[1] Solo imágenes.
 
 [2] La lectura de Ebooks EPUB es una función experimental/extra más allá de los objectivos principales del proyecto. Es posible que no funcione para todos los archivos y podría eliminarse en versiones futuras si surge la necesidad.
 
