@@ -35,11 +35,11 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB and PDF files.
 - Compatible file formats:
 
   - Comic books:
-    - CBZ, CBR, CB7, PDF and EPUB.
+    - CBZ, CBR, CB7, PDF and EPUB<sup>[1]</sup>.
   - Image files:
     - JPG, PNG, WebP and AVIF.
   - Ebooks:
-    - PDF and EPUB<sup>[1]</sup>.
+    - PDF and EPUB<sup>[2]</sup>.
 
   Including password protected PDF, CBZ (AES encryption not supported), CB7 and CBR files.
 
@@ -52,17 +52,17 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB and PDF files.
 - Portable mode (by creating a file named portable.txt in the same folder as the executable).
 - ComicInfo.xml editor:
   - View the metadata stored in ComicInfo.xml files inside CBR, CBZ and CB7 comic books.
-  - Create and/or modify the metadata stored in ComicInfo.xml files inside unencrypted CBR<sup>[2]</sup>, CBZ and CB7 comic books.
+  - Create and/or modify the metadata stored in ComicInfo.xml files inside unencrypted CBR<sup>[3]</sup>, CBZ and CB7 comic books.
   - Search for and import comic book metadata from Comic Vine (a [Comic Vine API key](https://comicvine.gamespot.com/api/) is required).
 - Integrated audio player:
   - Supports MP3, Ogg, WAV, M3U and M3U8 files.
   - Can export playlists to M3U files.
 - Tools:
   - Convert/Resize:
-    - Comic books (CBR, CBZ, CB7, PDF or EPUB to CBR<sup>[2]</sup>, CBZ, CB7, PDF or EPUB).
+    - Comic books (CBR, CBZ, CB7, PDF or EPUB to CBR<sup>[3]</sup>, CBZ, CB7, PDF or EPUB).
     - Images (JPG, PNG, AVIF or WebP).
   - Create:
-    - A comic book (CBR<sup>[2]</sup>, CBZ, CB7, PDF or EPUB) from a list of image files and/or comic books.
+    - A comic book (CBR<sup>[3]</sup>, CBZ, CB7, PDF or EPUB) from a list of image files and/or comic books.
     - A QR code image from text.
   - Extract:
     - Comic book pages (to JPG, PNG, AVIF or WebP).
@@ -81,9 +81,11 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB and PDF files.
     - Search dictionary terms from:
       - Wiktionary Dictionary.
 
-<sup>[1]</sup> Reading EPUB Ebooks is an experimental / extra feature outside the main scope of the project. It may not work for all files and could be removed in future versions if the need arises.
+<sup>[1]</sup> Images only.
 
-<sup>[2]</sup> Creating and modifying CBR files are disabled by default. They can be enabled in the preferences but require a third-party command-line tool ([rar](https://www.win-rar.com/cmd-shell-mode.html?&L=0) from WinRAR) to be installed in the system.
+<sup>[2]</sup> Reading EPUB Ebooks is an experimental / extra feature outside the main scope of the project. It may not work for all files and could be removed in future versions if the need arises.
+
+<sup>[3]</sup> Creating and modifying CBR files are disabled by default. They can be enabled in the preferences but require a third-party command-line tool ([rar](https://www.win-rar.com/cmd-shell-mode.html?&L=0) from WinRAR) to be installed in the system.
 
 ## Basic Controls:
 
