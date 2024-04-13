@@ -81,11 +81,11 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB and PDF files.
     - Search dictionary terms from:
       - Wiktionary Dictionary.
 
-<sup>[1]</sup> Images only.
+[1] Images only.
 
-<sup>[2]</sup> Reading EPUB Ebooks is an experimental / extra feature outside the main scope of the project. It may not work for all files and could be removed in future versions if the need arises.
+[2] Reading EPUB Ebooks is an experimental / extra feature outside the main scope of the project. It may not work for all files and could be removed in future versions if the need arises.
 
-<sup>[3]</sup> Creating and modifying CBR files are disabled by default. They can be enabled in the preferences but require a third-party command-line tool ([rar](https://www.win-rar.com/cmd-shell-mode.html?&L=0) from WinRAR) to be installed in the system.
+[3] Creating and modifying CBR files are disabled by default. They can be enabled in the preferences but require a third-party command-line tool ([rar](https://www.win-rar.com/cmd-shell-mode.html?&L=0) from WinRAR) to be installed in the system.
 
 ## Basic Controls:
 
