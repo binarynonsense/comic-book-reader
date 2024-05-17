@@ -1,7 +1,7 @@
 {
   "@metadata": {
     "authors": ["trzyglow"],
-    "last-updated": "2024-03-03",
+    "last-updated": "2024-05-17",
     "acbr-version": "3.3.3-beta4",
     "comments": "Deutsche Lokalisierung",
     "locale": "de",
@@ -180,7 +180,7 @@
   "ui-modal-question-ebookorcomic": "Öffne {0} Als",
   "ui-modal-question-button-comicbook": "Comicbuch",
   "ui-modal-question-button-ebook": "E-Book",
-  "[NEEDS TRANSLATION]ui-modal-question-openrequestedfile": "Open File?",
+  "ui-modal-question-openrequestedfile": "Datei Öffnen?",
 
   "ap-tooltip-button-play": "Play",
   "ap-tooltip-button-pause": "Pause",
@@ -214,10 +214,10 @@
   "tool-shared-ui-input-files": "Füge Datei/en ein",
   "tool-shared-ui-input-images": "Füge Bild/er ein",
   "tool-shared-ui-add": "Hinzufügen",
-  "[NEEDS TRANSLATION]tool-shared-ui-add-file": "Add File",
-  "[NEEDS TRANSLATION]tool-shared-ui-add-files": "Add Files",
-  "[NEEDS TRANSLATION]tool-shared-ui-add-folder": "Add Folder",
-  "[NEEDS TRANSLATION]tool-shared-ui-add-folders": "Add Folders",
+  "tool-shared-ui-add-file": "Datei Hinzufügen",
+  "tool-shared-ui-add-files": "Dateien Hinzufügen",
+  "tool-shared-ui-add-folder": "Ordner Hinzufügen",
+  "tool-shared-ui-add-folders": "Ordner Hinzufügen",
   "tool-shared-ui-output-size": "Ausgangsgröße",
   "tool-shared-ui-output-format": "Ausgangsformat",
   "tool-shared-ui-output-options": "Ausgangsoptionen",
@@ -663,8 +663,8 @@
   "tool-fb-browse-parent": "Übergeordneter Ordner",
   "tool-fb-browse-previous": "Vorheriger Ordner",
 
-  "[NEEDS TRANSLATION]home-screen-favorites": "Favorites",
-  "[NEEDS TRANSLATION]home-screen-favorite-folders": "Favorite Folders",
-  "[NEEDS TRANSLATION]home-screen-favorite-files": "Favorite Files",
-  "[NEEDS TRANSLATION]home-screen-latest-files": "Latest Files"
+  "home-screen-favorites": "Favoriten",
+  "home-screen-favorite-folders": "Lieblingsordner",
+  "home-screen-favorite-files": "Lieblingsdateien",
+  "home-screen-latest-files": "Zuletzt Verwendete Dateien"
 }
