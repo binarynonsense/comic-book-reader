@@ -180,6 +180,7 @@
   "ui-modal-question-ebookorcomic": "Abrir {0} como",
   "ui-modal-question-button-comicbook": "Cómic",
   "ui-modal-question-button-ebook": "Ebook",
+  "ui-modal-question-openrequestedfile": "Abrir Fichero?",
 
   "ap-tooltip-button-play": "reproducir",
   "ap-tooltip-button-pause": "pausar",

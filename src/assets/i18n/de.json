@@ -180,6 +180,7 @@
   "ui-modal-question-ebookorcomic": "Öffne {0} Als",
   "ui-modal-question-button-comicbook": "Comicbuch",
   "ui-modal-question-button-ebook": "E-Book",
+  "[NEEDS TRANSLATION]ui-modal-question-openrequestedfile": "Open File?",
 
   "ap-tooltip-button-play": "Play",
   "ap-tooltip-button-pause": "Pause",
