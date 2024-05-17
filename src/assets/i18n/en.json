@@ -1,8 +1,8 @@
 {
   "@metadata": {
     "authors": ["Álvaro"],
-    "last-updated": "2024-03-10",
-    "acbr-version": "3.3.3-beta4",
+    "last-updated": "2024-05-17",
+    "acbr-version": "3.5.0-beta1",
     "comments": "",
     "locale": "en",
     "name": "English",
@@ -213,6 +213,10 @@
   "tool-shared-ui-input-files": "Input File/s",
   "tool-shared-ui-input-images": "Input Image/s",
   "tool-shared-ui-add": "Add",
+  "tool-shared-ui-add-file": "Add File",
+  "tool-shared-ui-add-files": "Add Files",
+  "tool-shared-ui-add-folder": "Add Folder",
+  "tool-shared-ui-add-folders": "Add Folders",
   "tool-shared-ui-output-size": "Output Size",
   "tool-shared-ui-output-format": "Output Format",
   "tool-shared-ui-output-options": "Output Options",
@@ -656,5 +660,10 @@
   "tool-fb-browse-up": "Up",
   "tool-fb-browse-back": "Back",
   "tool-fb-browse-parent": "Parent Folder",
-  "tool-fb-browse-previous": "Previous Folder"
+  "tool-fb-browse-previous": "Previous Folder",
+
+  "home-screen-favorites": "Favorites",
+  "home-screen-favorite-folders": "Favorite Folders",
+  "home-screen-favorite-files": "Favorite Files",
+  "home-screen-latest-files": "Latest Files"
 }

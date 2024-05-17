@@ -213,6 +213,10 @@
   "tool-shared-ui-input-files": "Входные файлы",
   "tool-shared-ui-input-images": "Входные изображения",
   "tool-shared-ui-add": "Добавить",
+  "[NEEDS TRANSLATION]tool-shared-ui-add-file": "Add File",
+  "[NEEDS TRANSLATION]tool-shared-ui-add-files": "Add Files",
+  "[NEEDS TRANSLATION]tool-shared-ui-add-folder": "Add Folder",
+  "[NEEDS TRANSLATION]tool-shared-ui-add-folders": "Add Folders",
   "tool-shared-ui-output-size": "Выходной размер",
   "tool-shared-ui-output-format": "Выходной формат",
   "tool-shared-ui-output-options": "Параметры выхода",
@@ -656,5 +660,10 @@
   "[NEEDS TRANSLATION]tool-fb-browse-up": "Up",
   "[NEEDS TRANSLATION]tool-fb-browse-back": "Back",
   "[NEEDS TRANSLATION]tool-fb-browse-parent": "Parent Folder",
-  "[NEEDS TRANSLATION]tool-fb-browse-previous": "Previous Folder"
+  "[NEEDS TRANSLATION]tool-fb-browse-previous": "Previous Folder",
+
+  "[NEEDS TRANSLATION]home-screen-favorites": "Favorites",
+  "[NEEDS TRANSLATION]home-screen-favorite-folders": "Favorite Folders",
+  "[NEEDS TRANSLATION]home-screen-favorite-files": "Favorite Files",
+  "[NEEDS TRANSLATION]home-screen-latest-files": "Latest Files"
 }

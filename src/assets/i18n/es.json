@@ -1,8 +1,8 @@
 {
   "@metadata": {
     "authors": ["Álvaro"],
-    "last-updated": "2024-03-10",
-    "acbr-version": "3.3.3-beta4",
+    "last-updated": "2024-05-17",
+    "acbr-version": "3.5.0-beta1",
     "comments": "",
     "locale": "es",
     "name": "Spanish",
@@ -117,9 +117,9 @@
 
   "ui-bg-msg": "Para abrir un archivo, use el menú o presione <i>Ctrl+O</i>",
 
-  "ui-modal-title-foldernotfound": "Directorio No Encontrado",
+  "ui-modal-title-foldernotfound": "Carpeta No Encontrada",
   "ui-modal-title-filenotfound": "Archivo No Encontrado",
-  "ui-modal-title-foldererror": "Error de Directorio",
+  "ui-modal-title-foldererror": "Error de Carpeta",
   "ui-modal-title-fileerror": "Error de Archivo",
   "ui-modal-title-quickmenu": "Menú Rápido",
   "ui-modal-info-invalidformat": "Formato Inválido",
@@ -132,7 +132,7 @@
   "ui-modal-info-couldntopen-7z": "No se pudo abrir el archivo 7Z",
   "ui-modal-info-couldntopen-epub": "No se pudo abrir el archivo EPUB",
   "ui-modal-info-couldntopen-pdf": "No se pudo abrir el archivo PDF",
-  "ui-modal-info-couldntopen-imagesfolder-empty" : "No se pudo abrir el directorio\nNo se encontró ninguna imagen",
+  "ui-modal-info-couldntopen-imagesfolder-empty" : "No se pudo abrir la carpeta\nNo se encontró ninguna imagen",
   "ui-modal-info-imagesavedto": "Archivo de imagen salvado en",
   "ui-modal-info-errorexportingpage": "Error: No se pudo exportar la página",
   "ui-modal-info-version": "versión",
@@ -213,6 +213,10 @@
   "tool-shared-ui-input-files": "Archivo/s de entrada",
   "tool-shared-ui-input-images": "Imágenes de entrada",
   "tool-shared-ui-add": "Añadir",
+  "tool-shared-ui-add-file": "Añadir File",
+  "tool-shared-ui-add-files": "Añadir Files",
+  "tool-shared-ui-add-folder": "Añadir Folder",
+  "tool-shared-ui-add-folders": "Añadir Folders",
   "tool-shared-ui-output-size": "Tamaño de salida",
   "tool-shared-ui-output-format": "Formato de salida",
   "tool-shared-ui-output-options": "Opciones de Salida",
@@ -228,7 +232,7 @@
   "tool-shared-ui-output-options-page-order-o2": "Por nombre",
   "tool-shared-ui-output-name": "Nombre del archivo de salida",
   "tool-shared-ui-new-file": "Nuevo Archivo",
-  "tool-shared-ui-output-folder": "Directorio de salida",
+  "tool-shared-ui-output-folder": "Carpeta de salida",
   "tool-shared-ui-change": "Cambiar",
   "tool-shared-ui-convert": "Convertir",
   "tool-shared-ui-create": "Crear",
@@ -340,7 +344,7 @@
   "tool-shared-modal-log-creation-canceled": "No se pudo crear el archivo, la creación fue cancelada",
 
   "tool-shared-tooltip-output-scale": "El tamaño de las páginas se reducirá a este porcentaje de las originales.",
-  "tool-shared-tooltip-output-folder": "Si un archivo con el mismo nombre ya existe en el directorio, se añadirá un subfijo al nombre del archivo de salida para que ningún archivo sea sobreescrito.",
+  "tool-shared-tooltip-output-folder": "Si un archivo con el mismo nombre ya existe en la carpeta, se añadirá un subfijo al nombre del archivo de salida para que ningún archivo sea sobreescrito.",
   "tool-shared-tooltip-output-page-order": "Solo se usará si todos los archivos de entrada son imágenes, en caso contrario serán procesados en el orden en que aparecen en la lista.",
   "tool-shared-tooltip-remove-from-list": "quitar de la lista",
   "tool-shared-tooltip-move-up-in-list": "mover arriba",
@@ -448,7 +452,7 @@
   "tool-pre-navbuttons-modal-resetall-message": "¿Está seguro de que quiere restablecer el mapeado de botones completo a los valores por defecto?",
   "tool-pre-advanced-preferences": "Avanzadas",
   "tool-pre-other-preferences": "Otras",
-  "tool-pre-tempfolder": "Directorio Temporal",
+  "tool-pre-tempfolder": "Carpeta Temporal",
 
   "tool-hst-title": "Historial",  
   "tool-hst-button-clear-all": "Vaciar Historial",
@@ -472,7 +476,7 @@
 
   "tool-ec-title": "Herramienta de Extracción de Páginas",
   "tool-ec-modal-log-extracting-to": "En",
-  "tool-ec-tooltip-output-folder": "Dentro del directorio indicado, se creará un subdirectorio para guardar las imágenes con el mismo nombre que el archivo a extraer. Si ya existe un subdirectorio con ese nombre, se añadirá un subfijo al nombre para que ningún archivo sea sobreescrito.",
+  "tool-ec-tooltip-output-folder": "Dentro de la carpeta indicada, se creará una subcarpeta para guardar las imágenes con el mismo nombre que el archivo a extraer. Si ya existe una subcarpeta con ese nombre, se añadirá un subfijo al nombre para que ningún archivo sea sobreescrito.",
 
   "tool-ep-title": "Herramienta de Cxtracción de Paleta",
   "tool-ep-header-input-file": "Imagen de Entrada",
@@ -526,9 +530,9 @@
   "tool-gut-text-url": "Dirección del Ebook",
   "tool-gut-text-options-mirrors": "Descargar de",
   "tool-gut-text-options-search-engine": "Motor de búsqueda",
-  "tool-gut-text-options-cache-folder": "Directorio de caché",
+  "tool-gut-text-options-cache-folder": "Carpeta de caché",
   "tool-gut-text-options-cache-downloads": "Guardar descargas en caché",
-  "tool-gut-button-options-open-cache-folder": "Abrir Directorio de Caché",
+  "tool-gut-button-options-open-cache-folder": "Abrir Carpeta de Caché",
   "tool-gut-button-open-pg-browser": "Abrir Project Gutenberg En Navegador",
   "tool-gut-button-open-donate-browser": "Abrir Web De Donativos En Navegador",
 
@@ -655,6 +659,11 @@
   "[NOTE TO TRANSLATORS fb4]": "up refers to going up in the folder tree, back refers to going back to the previous folder",
   "tool-fb-browse-up": "Arriba",
   "tool-fb-browse-back": "Atrás",
-  "tool-fb-browse-parent": "Directorio Padre",
-  "tool-fb-browse-previous": "Directorio Anterior"
+  "tool-fb-browse-parent": "Carpeta Padre",
+  "tool-fb-browse-previous": "Carpeta Anterior",
+
+  "home-screen-favorites": "Favoritos",
+  "home-screen-favorite-folders": "Carpetas Favoritas",
+  "home-screen-favorite-files": "Ficheros Favoritos",
+  "home-screen-latest-files": "Ficheros Más Recientes"
 }

@@ -213,6 +213,10 @@
   "tool-shared-ui-input-files": "Füge Datei/en ein",
   "tool-shared-ui-input-images": "Füge Bild/er ein",
   "tool-shared-ui-add": "Hinzufügen",
+  "[NEEDS TRANSLATION]tool-shared-ui-add-file": "Add File",
+  "[NEEDS TRANSLATION]tool-shared-ui-add-files": "Add Files",
+  "[NEEDS TRANSLATION]tool-shared-ui-add-folder": "Add Folder",
+  "[NEEDS TRANSLATION]tool-shared-ui-add-folders": "Add Folders",
   "tool-shared-ui-output-size": "Ausgangsgröße",
   "tool-shared-ui-output-format": "Ausgangsformat",
   "tool-shared-ui-output-options": "Ausgangsoptionen",
@@ -656,5 +660,10 @@
   "tool-fb-browse-up": "Pfad Hoch",
   "tool-fb-browse-back": "Zurück",
   "tool-fb-browse-parent": "Übergeordneter Ordner",
-  "tool-fb-browse-previous": "Vorheriger Ordner"
+  "tool-fb-browse-previous": "Vorheriger Ordner",
+
+  "[NEEDS TRANSLATION]home-screen-favorites": "Favorites",
+  "[NEEDS TRANSLATION]home-screen-favorite-folders": "Favorite Folders",
+  "[NEEDS TRANSLATION]home-screen-favorite-files": "Favorite Files",
+  "[NEEDS TRANSLATION]home-screen-latest-files": "Latest Files"
 }
