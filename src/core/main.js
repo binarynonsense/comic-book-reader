@@ -170,6 +170,9 @@ if (!gotTheLock) {
   log.info("starting ACBR");
   log.debug("dev mode: " + g_launchInfo.isDev);
   log.debug("release version: " + g_launchInfo.isRelease);
+  log.debug("electron version: " + process.versions.electron);
+  log.debug("chrome version: " + process.versions.chrome);
+  log.debug("node version: " + process.versions.node);
   // show vips warnings from sharp only in dev mode
   if (!g_launchInfo.isDev) process.env.VIPS_WARNING = 1;
   // init window
