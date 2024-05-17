@@ -112,9 +112,9 @@ if (!gotTheLock) {
       }
     });
     if (inputFilePaths.length > 0) {
-      if (g_currentTool === "reader") {
-        reader.requestOpenConfirmation(inputFilePaths[0]);
-      }
+      //if (g_currentTool === "reader") {
+      reader.requestOpenConfirmation(inputFilePaths[0]);
+      //}
     }
     // focus on first instance window
     if (g_mainWindow) {
