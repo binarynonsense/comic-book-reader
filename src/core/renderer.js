@@ -6,25 +6,12 @@
  */
 
 import * as reader from "../reader/renderer.js";
-import * as audioPlayer from "../audio-player/renderer.js";
-import * as toolPreferences from "../tools/preferences/renderer.js";
-import * as toolHistory from "../tools/history/renderer.js";
-import * as toolConvertComics from "../tools/convert-comics/renderer.js";
-import * as toolExtractComics from "../tools/extract-comics/renderer.js";
-import * as toolConvertImgs from "../tools/convert-imgs/renderer.js";
-import * as toolExtractPalette from "../tools/extract-palette/renderer.js";
-import * as toolExtractText from "../tools/extract-text/renderer.js";
-import * as toolCreateQr from "../tools/create-qr/renderer.js";
-import * as toolExtractQr from "../tools/extract-qr/renderer.js";
-import * as toolDcm from "../tools/dcm/renderer.js";
-import * as toolInternetArchive from "../tools/internet-archive/renderer.js";
-import * as toolGutenberg from "../tools/gutenberg/renderer.js";
-import * as toolXkcd from "../tools/xkcd/renderer.js";
-import * as toolLibrivox from "../tools/librivox/renderer.js";
-import * as toolWiktionary from "../tools/wiktionary/renderer.js";
-import * as toolComicInfoXml from "../tools/comicinfoxml/renderer.js";
-import * as toolFileBrowser from "../tools/file-browser/renderer.js";
-
+import {
+  init as initTools,
+  getTools,
+  getCurrentTool,
+  setCurrentToolName,
+} from "../shared/renderer/tools.js";
 import * as modals from "../shared/renderer/modals.js";
 import { init as initInput } from "../shared/renderer/input.js";
 
@@ -32,51 +19,15 @@ import { init as initInput } from "../shared/renderer/input.js";
 // SETUP //////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-let g_currentTool = "reader";
-let g_tools;
-
 init();
 
 function init() {
-  // init input
   initInput();
-  // init tools
-  g_tools = {};
-  g_tools["reader"] = reader;
-  g_tools["audio-player"] = audioPlayer;
-  g_tools["tool-preferences"] = toolPreferences;
-  g_tools["tool-history"] = toolHistory;
-  g_tools["tool-convert-comics"] = toolConvertComics;
-  g_tools["tool-extract-comics"] = toolExtractComics;
-  g_tools["tool-convert-imgs"] = toolConvertImgs;
-  g_tools["tool-extract-palette"] = toolExtractPalette;
-  g_tools["tool-extract-text"] = toolExtractText;
-  g_tools["tool-create-qr"] = toolCreateQr;
-  g_tools["tool-extract-qr"] = toolExtractQr;
-  g_tools["tool-dcm"] = toolDcm;
-  g_tools["tool-internet-archive"] = toolInternetArchive;
-  g_tools["tool-gutenberg"] = toolGutenberg;
-  g_tools["tool-xkcd"] = toolXkcd;
-  g_tools["tool-librivox"] = toolLibrivox;
-  g_tools["tool-wiktionary"] = toolWiktionary;
-  g_tools["tool-comicinfoxml"] = toolComicInfoXml;
-  g_tools["tool-file-browser"] = toolFileBrowser;
+  initTools();
   // init ipcs
-  for (const [key, value] of Object.entries(g_tools)) {
+  for (const [key, value] of Object.entries(getTools())) {
     value.initIpc();
   }
-}
-
-export function getTools() {
-  return g_tools;
-}
-
-export function getCurrentTool() {
-  return g_tools[g_currentTool];
-}
-
-export function getCurrentToolName() {
-  return g_currentTool;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -128,9 +79,8 @@ function onIpcFromMain(event, args) {
         break;
       case "show-tool":
         {
-          g_currentTool = args[2];
+          setCurrentToolName(args[2]);
           if (args[2] === "reader") {
-            g_currentTool = args[2];
             document
               .getElementById("reader")
               .classList.remove("set-display-none");
@@ -154,8 +104,8 @@ function onIpcFromMain(event, args) {
           if (getOpenModal()) {
             return;
           }
-          if (g_tools[g_currentTool].onContextMenu)
-            g_tools[g_currentTool].onContextMenu(args[2]);
+          if (getCurrentTool().onContextMenu)
+            getCurrentTool().onContextMenu(args[2]);
         }
         break;
       case "log-to-console":
@@ -165,8 +115,8 @@ function onIpcFromMain(event, args) {
         break;
     }
   } else {
-    if (g_tools[args[0]]?.onIpcFromMain) {
-      g_tools[args[0]].onIpcFromMain(args.slice(1));
+    if (getTools()[args[0]]?.onIpcFromMain) {
+      getTools()[args[0]].onIpcFromMain(args.slice(1));
     } else {
       console.log("onIpcFromMain is null: " + args[0]);
     }
@@ -195,7 +145,7 @@ export function getOpenModal() {
 
 function modalClosed() {
   g_openModal = undefined;
-  if (g_tools[g_currentTool] === reader)
+  if (getCurrentTool() === reader)
     reader.sendIpcToMain("rebuild-menu-and-toolbar", true);
 }
 
@@ -223,6 +173,6 @@ function showModalAlert(title, message, textButton1) {
       },
     ],
   });
-  if (g_tools[g_currentTool] === reader)
+  if (getCurrentTool() === reader)
     reader.sendIpcToMain("rebuild-menu-and-toolbar", false);
 }

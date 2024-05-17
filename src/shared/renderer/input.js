@@ -5,12 +5,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-import {
-  getTools,
-  getCurrentTool,
-  getCurrentToolName,
-  getOpenModal,
-} from "../../core/renderer.js";
+import { getOpenModal } from "../../core/renderer.js";
+import { getTools, getCurrentTool, getCurrentToolName } from "./tools.js";
 import * as modals from "./modals.js";
 import { init as setupGamepads } from "./gamepads.js";
 
