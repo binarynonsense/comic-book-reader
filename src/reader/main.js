@@ -605,6 +605,18 @@ exports.updateFileDataMetadataEntry = function (name, value) {
   g_fileData.metadata[name] = value;
 };
 
+// called when trying to open second instance with file
+exports.requestOpenConfirmation = function (filePath) {
+  sendIpcToRenderer(
+    "show-modal-request-open-confirmation",
+    _("ui-modal-question-openrequestedfile"),
+    filePath,
+    _("ui-modal-prompt-button-ok"),
+    _("ui-modal-prompt-button-cancel"),
+    filePath
+  );
+};
+
 function tryOpen(filePath, bookType, historyEntry) {
   sendIpcToPreload("update-menubar"); // in case coming from menu
 

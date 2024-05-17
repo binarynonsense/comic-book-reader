@@ -1123,6 +1123,10 @@ function initModalsOnIpcCallbacks() {
     showModalQuestionOpenAs(...args);
   });
 
+  on("show-modal-request-open-confirmation", (...args) => {
+    showModalRequestOpenConfirmation(...args);
+  });
+
   on("show-modal-properties", (...args) => {
     showModalProperties(...args);
   });
@@ -1328,6 +1332,44 @@ function showModalQuestionOpenAs(
         text: textButton2.toUpperCase(),
         callback: () => {
           sendIpcToMain("booktype-entered", filePath, BookType.EBOOK);
+          modalClosed();
+        },
+      },
+    ],
+  });
+}
+
+function showModalRequestOpenConfirmation(
+  title,
+  message,
+  textButton1,
+  textButton2,
+  filePath
+) {
+  if (g_openModal) {
+    return;
+  }
+  g_openModal = modals.show({
+    title: title,
+    message: message,
+    zIndexDelta: -450,
+    close: {
+      callback: () => {
+        modalClosed();
+      },
+      key: "Escape",
+    },
+    buttons: [
+      {
+        text: textButton1.toUpperCase(),
+        callback: () => {
+          sendIpcToMain("open-file", filePath);
+          modalClosed();
+        },
+      },
+      {
+        text: textButton2.toUpperCase(),
+        callback: () => {
           modalClosed();
         },
       },

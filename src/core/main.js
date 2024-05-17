@@ -48,17 +48,74 @@ let g_isLoaded = false;
 let g_launchInfo = {};
 let g_currentTool = "reader";
 let g_tools = {};
+//////////////////////////////////////////////////////////////////////////////
+// LAUNCH INFO ///////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+g_launchInfo = {
+  platform: os.platform(),
+  release: os.release(),
+  hostName: os.hostname(),
+  isSteamDeck: false,
+  isGameScope: false,
+  isDev: false,
+  isRelease: app.isPackaged,
+  parsedArgs: {},
+};
+exports.getLaunchInfo = function () {
+  return g_launchInfo;
+};
 
-// Allow only one instance
+// steam deck detection
+if (
+  g_launchInfo.platform === "linux" &&
+  (g_launchInfo.hostName === "steamdeck" ||
+    g_launchInfo.release.includes("valve"))
+) {
+  g_launchInfo.isSteamDeck = true;
+  if (process.env.SteamDeck == 1) {
+    // the environment variable "SteamDeck" is set to 1 in gamescope,
+    // and it's not present in desktop mode.
+    // not sure if this is official and will always be so.
+    g_launchInfo.isGameScope = true;
+  }
+}
+// parse command line arguments
+g_launchInfo.parsedArgs = require("minimist")(
+  process.argv.slice(g_launchInfo.isRelease ? 1 : 2),
+  { boolean: ["dev"], string: ["tool", "output-format", "output-folder"] }
+);
+g_launchInfo.isDev = g_launchInfo.parsedArgs["dev"] === true;
+
+//////////////////////////////////////////////////////////////////////////////
+// PREVENT SECOND INSTANCES //////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+
 // NOTE: if not, cleanup would break things when an instance deletes the
 // temp folder of another running one, settings changes may get lost, same
 // with history...
 // ref: https://www.electronjs.org/docs/latest/api/app#apprequestsingleinstancelockadditionaldata
-const gotTheLock = app.requestSingleInstanceLock();
+const gotTheLock = app.requestSingleInstanceLock({
+  launchInfo: g_launchInfo,
+});
 if (!gotTheLock) {
   app.quit();
 } else {
-  app.on("second-instance", (event, commandLine, workingDirectory) => {
+  // ref: https://www.electronjs.org/docs/latest/api/app#event-second-instance
+  app.on("second-instance", (event, argv, workingDirectory, additionalData) => {
+    log.debug("Tried to open a second instance of the app");
+    let inputFilePaths = [];
+    additionalData.launchInfo.parsedArgs["_"].forEach((path) => {
+      if (fs.existsSync(path)) {
+        if (!fs.lstatSync(path).isDirectory()) {
+          inputFilePaths.push(path);
+        }
+      }
+    });
+    if (inputFilePaths.length > 0) {
+      if (g_currentTool === "reader") {
+        reader.requestOpenConfirmation(inputFilePaths[0]);
+      }
+    }
     // focus on first instance window
     if (g_mainWindow) {
       if (g_mainWindow.isMinimized()) g_mainWindow.restore();
@@ -108,42 +165,6 @@ if (!gotTheLock) {
   //////////////////////////////////////////////////////////////////////////////
   // SETUP /////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
-
-  g_launchInfo = {
-    platform: os.platform(),
-    release: os.release(),
-    hostName: os.hostname(),
-    isSteamDeck: false,
-    isGameScope: false,
-    isDev: false,
-    isRelease: app.isPackaged,
-    parsedArgs: {},
-  };
-  exports.getLaunchInfo = function () {
-    return g_launchInfo;
-  };
-
-  // steam deck detection
-  if (
-    (g_launchInfo.platform =
-      "linux" &&
-      (g_launchInfo.hostName === "steamdeck" ||
-        g_launchInfo.release.includes("valve")))
-  ) {
-    g_launchInfo.isSteamDeck = true;
-    if (process.env.SteamDeck == 1) {
-      // the environment variable "SteamDeck" is set to 1 in gamescope,
-      // and it's not present in desktop mode.
-      // not sure if this is official and will always be so.
-      g_launchInfo.isGameScope = true;
-    }
-  }
-  // parse command line arguments
-  g_launchInfo.parsedArgs = require("minimist")(
-    process.argv.slice(g_launchInfo.isRelease ? 1 : 2),
-    { boolean: ["dev"], string: ["tool", "output-format", "output-folder"] }
-  );
-  g_launchInfo.isDev = g_launchInfo.parsedArgs["dev"] === true;
   // start logging
   log.init(g_launchInfo);
   log.info("starting ACBR");
