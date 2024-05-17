@@ -26,7 +26,7 @@ import * as toolComicInfoXml from "../tools/comicinfoxml/renderer.js";
 import * as toolFileBrowser from "../tools/file-browser/renderer.js";
 
 import * as modals from "../shared/renderer/modals.js";
-import { init as initGamepad } from "../shared/renderer/gamepads.js";
+import { init as initInput } from "../shared/renderer/input.js";
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -38,6 +38,8 @@ let g_tools;
 init();
 
 function init() {
+  // init input
+  initInput();
   // init tools
   g_tools = {};
   g_tools["reader"] = reader;
@@ -63,6 +65,18 @@ function init() {
   for (const [key, value] of Object.entries(g_tools)) {
     value.initIpc();
   }
+}
+
+export function getTools() {
+  return g_tools;
+}
+
+export function getCurrentTool() {
+  return g_tools[g_currentTool];
+}
+
+export function getCurrentToolName() {
+  return g_currentTool;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -175,7 +189,7 @@ function updateCssProperties(newValuesObject) {
 
 let g_openModal;
 
-function getOpenModal() {
+export function getOpenModal() {
   return g_openModal;
 }
 
@@ -212,64 +226,3 @@ function showModalAlert(title, message, textButton1) {
   if (g_tools[g_currentTool] === reader)
     reader.sendIpcToMain("rebuild-menu-and-toolbar", false);
 }
-
-///////////////////////////////////////////////////////////////////////////////
-// EVENT LISTENERS ////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-
-document.onkeydown = function (event) {
-  if (getOpenModal()) {
-    modals.onInputEvent(getOpenModal(), "onkeydown", event);
-    return;
-  }
-  g_tools[g_currentTool].onInputEvent("onkeydown", event);
-  // keys ref: https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key
-  // keys ref: https://developer.mozilla.org/en-US/docs/Web/API/UI_Events/Keyboard_event_key_values
-};
-
-document.onclick = function (event) {
-  if (getOpenModal()) return;
-  g_tools[g_currentTool].onInputEvent("onclick", event);
-};
-
-document.ondragover = document.ondrop = (event) => {
-  event.preventDefault();
-};
-
-document.body.ondrop = (event) => {
-  if (getOpenModal()) return;
-  if (g_currentTool === "reader") {
-    if (!g_tools["audio-player"].onInputEvent("body.ondrop", event)) {
-      g_tools["reader"].onInputEvent("body.ondrop", event);
-    }
-  } else {
-    g_tools[g_currentTool].onInputEvent("body.ondrop", event);
-  }
-  event.preventDefault();
-};
-
-document.onmousemove = function () {
-  if (getOpenModal()) return;
-  g_tools[g_currentTool].onInputEvent("onmousemove");
-};
-
-document.addEventListener("wheel", function (event) {
-  if (getOpenModal()) return;
-  g_tools[g_currentTool].onInputEvent("wheel", event);
-  event.stopPropagation();
-  //event.preventDefault();
-});
-
-///////////////////////////////////////////////////////////////////////////////
-// GAMEPAD ////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-
-initGamepad(() => {
-  if (getOpenModal()) {
-    modals.onGamepadPolled(getOpenModal());
-    return;
-  }
-  if (g_tools[g_currentTool].onGamepadPolled) {
-    g_tools[g_currentTool].onGamepadPolled();
-  }
-});
