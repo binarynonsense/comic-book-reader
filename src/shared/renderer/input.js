@@ -83,7 +83,6 @@ function initMouse() {
     // TODO: make marging a percentage of the window height?
     const margin = 10;
     const deltaTime = Date.now() - g_mouseDownTime;
-    console.log(deltaTime);
     const wasDrag =
       (deltaTime > 1500 && (g_mouseMovedX > 0 || g_mouseMovedY > 0)) ||
       (deltaTime > 500 && (g_mouseMovedX > margin || g_mouseMovedY > margin));
