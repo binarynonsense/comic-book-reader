@@ -15,6 +15,7 @@ const appUtils = require("../../shared/main/app-utils");
 const fileUtils = require("../../shared/main/file-utils");
 const reader = require("../../reader/main");
 const contextMenu = require("../../shared/main/tools-menu-context");
+const tools = require("../../shared/main/tools");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -65,7 +66,7 @@ exports.onToggleFullScreen = function () {
 };
 
 function onCloseClicked() {
-  core.switchTool("reader");
+  tools.switchTool("reader");
 }
 
 ///////////////////////////////////////////////////////////////////////////////

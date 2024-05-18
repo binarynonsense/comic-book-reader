@@ -17,6 +17,7 @@ const reader = require("../../reader/main");
 const appUtils = require("../../shared/main/app-utils");
 const contextMenu = require("../../shared/main/tools-menu-context");
 const temp = require("../../shared/main/temp");
+const tools = require("../../shared/main/tools");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -71,7 +72,7 @@ exports.onToggleFullScreen = function () {
 };
 
 function onCloseClicked() {
-  core.switchTool("reader");
+  tools.switchTool("reader");
 }
 
 function updateNavKeys() {
@@ -135,7 +136,7 @@ function initOnIpcCallbacks() {
     i18n.loadLocale(value);
     settings.setValue("locale", i18n.getLoadedLocale());
     reader.rebuildMenuAndToolBars(false);
-    for (const [key, value] of Object.entries(core.getTools())) {
+    for (const [key, value] of Object.entries(tools.getTools())) {
       if (value.updateLocalizedText) value.updateLocalizedText();
     }
   });

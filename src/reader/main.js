@@ -25,6 +25,7 @@ const utils = require("../shared/main/utils");
 const fileFormats = require("../shared/main/file-formats");
 const contextMenu = require("./menu-context");
 const audioPlayer = require("../audio-player/main");
+const tools = require("../shared/main/tools");
 const {
   FileExtension,
   FileDataState,
@@ -526,16 +527,16 @@ function initOnIpcCallbacks() {
 
   on("open-comicinfo-xml-tool", () => {
     if (g_fileData.path !== undefined) {
-      core.switchTool("tool-comicinfoxml", g_fileData);
+      tools.switchTool("tool-comicinfoxml", g_fileData);
     }
   });
 
   on("open-file-browser-tool", (showFocus) => {
-    core.switchTool("tool-file-browser", g_fileData, showFocus);
+    tools.switchTool("tool-file-browser", g_fileData, showFocus);
   });
 
   on("open-history-tool", (showFocus) => {
-    core.switchTool("tool-history", showFocus);
+    tools.switchTool("tool-history", showFocus);
   });
 
   on("open-quick-menu", () => {
@@ -1933,13 +1934,13 @@ async function exportPageStart(sendToTool = 0) {
           if (message[0]) {
             sendIpcToRenderer("update-loading", false);
             if (message[2] === 1) {
-              core.switchTool("tool-extract-text", message[1]);
+              tools.switchTool("tool-extract-text", message[1]);
               sendIpcToPreload("update-menubar");
             } else if (message[2] === 2) {
-              core.switchTool("tool-extract-palette", message[1]);
+              tools.switchTool("tool-extract-palette", message[1]);
               sendIpcToPreload("update-menubar");
             } else if (message[2] === 3) {
-              core.switchTool("tool-extract-qr", message[1]);
+              tools.switchTool("tool-extract-qr", message[1]);
               sendIpcToPreload("update-menubar");
             } else {
               sendIpcToRenderer(
@@ -2006,13 +2007,13 @@ function exportPageSaveDataUrl(dataUrl, dpi, outputFolderPath, sendToTool) {
         fs.writeFileSync(outputFilePath, buf, "binary");
 
         if (sendToTool === 1) {
-          core.switchTool("tool-extract-text", outputFilePath);
+          tools.switchTool("tool-extract-text", outputFilePath);
           sendIpcToPreload("update-menubar");
         } else if (sendToTool === 2) {
-          core.switchTool("tool-extract-palette", outputFilePath);
+          tools.switchTool("tool-extract-palette", outputFilePath);
           sendIpcToPreload("update-menubar");
         } else if (sendToTool === 3) {
-          core.switchTool("tool-extract-qr", outputFilePath);
+          tools.switchTool("tool-extract-qr", outputFilePath);
           sendIpcToPreload("update-menubar");
         } else {
           sendIpcToRenderer(
@@ -2195,7 +2196,7 @@ exports.onMenuPageExtractQR = function () {
 
 exports.onMenuConvertFile = function () {
   if (g_fileData.path !== undefined) {
-    core.switchTool("tool-convert-comics", {
+    tools.switchTool("tool-convert-comics", {
       mode: 0,
       inputFilePaths: [g_fileData.path],
       inputPassword: g_fileData.password,
@@ -2206,7 +2207,7 @@ exports.onMenuConvertFile = function () {
 
 exports.onMenuExtractFile = function () {
   if (g_fileData.path !== undefined) {
-    core.switchTool("tool-extract-comics", g_fileData);
+    tools.switchTool("tool-extract-comics", g_fileData);
   }
   sendIpcToPreload("update-menubar");
 };

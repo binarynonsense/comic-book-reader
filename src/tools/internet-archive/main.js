@@ -12,6 +12,7 @@ const { _ } = require("../../shared/main/i18n");
 const reader = require("../../reader/main");
 const shell = require("electron").shell;
 const contextMenu = require("../../shared/main/tools-menu-context");
+const tools = require("../../shared/main/tools");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -74,7 +75,7 @@ exports.onToggleFullScreen = function () {
 };
 
 function onCloseClicked() {
-  core.switchTool("reader");
+  tools.switchTool("reader");
 }
 
 ///////////////////////////////////////////////////////////////////////////////

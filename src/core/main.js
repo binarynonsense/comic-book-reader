@@ -22,32 +22,14 @@ const menuBar = require("../shared/main/menu-bar");
 const appUtils = require("../shared/main/app-utils");
 const fileFormats = require("../shared/main/file-formats");
 const temp = require("../shared/main/temp");
+const tools = require("../shared/main/tools");
 
 const reader = require("../reader/main");
-const audioPlayer = require("../audio-player/main");
-const toolPreferences = require("../tools/preferences/main");
-const toolHistory = require("../tools/history/main");
-const toolConvertComics = require("../tools/convert-comics/main");
-const toolExtractComics = require("../tools/extract-comics/main");
-const toolConvertImgs = require("../tools/convert-imgs/main");
-const toolExtractPalette = require("../tools/extract-palette/main");
-const toolExtractText = require("../tools/extract-text/main");
-const toolCreateQr = require("../tools/create-qr/main");
-const toolExtractQr = require("../tools/extract-qr/main");
-const toolDcm = require("../tools/dcm/main");
-const toolInternetArchive = require("../tools/internet-archive/main");
-const toolGutenberg = require("../tools/gutenberg/main");
-const toolXkcd = require("../tools/xkcd/main");
-const toolLibrivox = require("../tools/librivox/main");
-const toolWiktionary = require("../tools/wiktionary/main");
-const toolComicInfoXml = require("../tools/comicinfoxml/main");
-const toolFileBrowser = require("../tools/file-browser/main");
 
 let g_mainWindow;
 let g_isLoaded = false;
 let g_launchInfo = {};
-let g_currentTool = "reader";
-let g_tools = {};
+
 //////////////////////////////////////////////////////////////////////////////
 // LAUNCH INFO ///////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
@@ -112,9 +94,7 @@ if (!gotTheLock) {
       }
     });
     if (inputFilePaths.length > 0) {
-      //if (g_currentTool === "reader") {
       reader.requestOpenConfirmation(inputFilePaths[0]);
-      //}
     }
     // focus on first instance window
     if (g_mainWindow) {
@@ -124,47 +104,9 @@ if (!gotTheLock) {
   });
 
   //////////////////////////////////////////////////////////////////////////////
-  // TOOLS /////////////////////////////////////////////////////////////////////
-  //////////////////////////////////////////////////////////////////////////////
-
-  g_tools["reader"] = reader;
-  g_tools["audio-player"] = audioPlayer;
-  g_tools["tool-preferences"] = toolPreferences;
-  g_tools["tool-history"] = toolHistory;
-  g_tools["tool-convert-comics"] = toolConvertComics;
-  g_tools["tool-extract-comics"] = toolExtractComics;
-  g_tools["tool-convert-imgs"] = toolConvertImgs;
-  g_tools["tool-extract-palette"] = toolExtractPalette;
-  g_tools["tool-extract-text"] = toolExtractText;
-  g_tools["tool-create-qr"] = toolCreateQr;
-  g_tools["tool-extract-qr"] = toolExtractQr;
-  g_tools["tool-dcm"] = toolDcm;
-  g_tools["tool-internet-archive"] = toolInternetArchive;
-  g_tools["tool-gutenberg"] = toolGutenberg;
-  g_tools["tool-xkcd"] = toolXkcd;
-  g_tools["tool-librivox"] = toolLibrivox;
-  g_tools["tool-wiktionary"] = toolWiktionary;
-  g_tools["tool-comicinfoxml"] = toolComicInfoXml;
-  g_tools["tool-file-browser"] = toolFileBrowser;
-
-  function getTools() {
-    return g_tools;
-  }
-  exports.getTools = getTools;
-
-  function switchTool(tool, ...args) {
-    if (g_currentTool !== tool) {
-      if (g_tools[g_currentTool].close) g_tools[g_currentTool].close();
-      g_currentTool = tool;
-      sendIpcToCoreRenderer("show-tool", tool);
-      g_tools[tool].open(...args);
-    }
-  }
-  exports.switchTool = switchTool;
-
-  //////////////////////////////////////////////////////////////////////////////
   // SETUP /////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
+  tools.init();
   // start logging
   log.init(g_launchInfo);
   log.info("starting ACBR");
@@ -309,7 +251,7 @@ if (!gotTheLock) {
               ) {
                 options.outputFormat = outputFormat;
               }
-              switchTool("tool-convert-comics", options);
+              tools.switchTool("tool-convert-comics", options);
             }
             break;
         }
@@ -317,7 +259,7 @@ if (!gotTheLock) {
         // start reader with no file open
         reader.init(undefined, false);
         // start tool
-        switchTool("tool-convert-comics", {
+        tools.switchTool("tool-convert-comics", {
           mode: 0,
           inputFilePaths: inputFilePaths,
         });
@@ -353,13 +295,15 @@ if (!gotTheLock) {
         settings.setValue("height", height);
       }
       reader.onResize();
-      if (g_currentTool !== "reader") g_tools[g_currentTool]?.onResize();
+      if (tools.getCurrentToolName() !== "reader")
+        tools.getCurrentTool()?.onResize();
     });
 
     g_mainWindow.on("maximize", function () {
       settings.setValue("maximize", true);
       reader.onMaximize();
-      if (g_currentTool !== "reader") g_tools[g_currentTool]?.onMaximize();
+      if (tools.getCurrentToolName() !== "reader")
+        tools.getCurrentTool()?.onMaximize();
     });
 
     g_mainWindow.on("unmaximize", function () {
@@ -416,21 +360,22 @@ if (!gotTheLock) {
   function sendIpcToCoreRenderer(...args) {
     sendIpcToRenderer("core", ...args);
   }
+  exports.sendIpcToCoreRenderer = sendIpcToCoreRenderer;
 
   //////////////////////////////////////////////////////////////////////////////
   // IPC RECEIVE ///////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
   ipcMain.on("main", (event, args) => {
-    g_tools[args[0]]?.onIpcFromRenderer(...args.slice(1));
+    tools.getTools()[args[0]]?.onIpcFromRenderer(...args.slice(1));
   });
 
   ipcMain.handle("main", async (event, args) => {
-    g_tools[args[0]]?.handleIpcFromRenderer(...args.slice(1));
+    tools.getTools()[args[0]]?.handleIpcFromRenderer(...args.slice(1));
   });
 
   ipcMain.on("tools-worker", (event, ...args) => {
-    g_tools[args[0]]?.onIpcFromToolsWorkerRenderer(...args.slice(1));
+    tools.getTools()[args[0]]?.onIpcFromToolsWorkerRenderer(...args.slice(1));
   });
 
   //////////////////////////////////////////////////////////////////////////////
@@ -454,8 +399,8 @@ if (!gotTheLock) {
   function toggleFullScreen() {
     const newState = !g_mainWindow.isFullScreen();
     reader.setFullScreen(newState);
-    if (g_currentTool !== "reader") {
-      g_tools[g_currentTool]?.onToggleFullScreen(newState);
+    if (tools.getCurrentToolName() !== "reader") {
+      tools.getCurrentTool()?.onToggleFullScreen(newState);
     }
     settings.setValue("fullScreen", newState);
   }
@@ -466,12 +411,12 @@ if (!gotTheLock) {
   //////////////////////////////////////////////////////////////////////////////
 
   exports.onMenuPreferences = function () {
-    switchTool("tool-preferences");
+    tools.switchTool("tool-preferences");
     sendIpcToPreload("update-menubar");
   };
 
   exports.onMenuOpenHistoryManager = function () {
-    switchTool("tool-history");
+    tools.switchTool("tool-history");
     sendIpcToPreload("update-menubar");
   };
 
@@ -493,72 +438,72 @@ if (!gotTheLock) {
   // TOOLS /////////////
 
   exports.onMenuToolConvertComics = function () {
-    switchTool("tool-convert-comics", { mode: 0 });
+    tools.switchTool("tool-convert-comics", { mode: 0 });
     sendIpcToPreload("update-menubar");
   };
 
   exports.onMenuToolCreateComic = function () {
-    switchTool("tool-convert-comics", { mode: 1 });
+    tools.switchTool("tool-convert-comics", { mode: 1 });
     sendIpcToPreload("update-menubar");
   };
 
   exports.onMenuToolCreateQR = function () {
-    switchTool("tool-create-qr");
+    tools.switchTool("tool-create-qr");
     sendIpcToPreload("update-menubar");
   };
 
   exports.onMenuToolConvertImages = function () {
-    switchTool("tool-convert-imgs");
+    tools.switchTool("tool-convert-imgs");
     sendIpcToPreload("update-menubar");
   };
 
   exports.onMenuToolExtractText = function () {
-    switchTool("tool-extract-text");
+    tools.switchTool("tool-extract-text");
     sendIpcToPreload("update-menubar");
   };
 
   exports.onMenuToolExtractQR = function () {
-    switchTool("tool-extract-qr");
+    tools.switchTool("tool-extract-qr");
     sendIpcToPreload("update-menubar");
   };
 
   exports.onMenuToolExtractPalette = function () {
-    switchTool("tool-extract-palette");
+    tools.switchTool("tool-extract-palette");
     sendIpcToPreload("update-menubar");
   };
 
   exports.onMenuToolExtractComics = function () {
-    switchTool("tool-extract-comics");
+    tools.switchTool("tool-extract-comics");
     sendIpcToPreload("update-menubar");
   };
 
   exports.onMenuToolDCM = function () {
-    switchTool("tool-dcm");
+    tools.switchTool("tool-dcm");
     sendIpcToPreload("update-menubar");
   };
 
   exports.onMenuToolIArchive = function () {
-    switchTool("tool-internet-archive");
+    tools.switchTool("tool-internet-archive");
     sendIpcToPreload("update-menubar");
   };
 
   exports.onMenuToolGutenberg = function () {
-    switchTool("tool-gutenberg");
+    tools.switchTool("tool-gutenberg");
     sendIpcToPreload("update-menubar");
   };
 
   exports.onMenuToolXkcd = function () {
-    switchTool("tool-xkcd");
+    tools.switchTool("tool-xkcd");
     sendIpcToPreload("update-menubar");
   };
 
   exports.onMenuToolLibrivox = function () {
-    switchTool("tool-librivox");
+    tools.switchTool("tool-librivox");
     sendIpcToPreload("update-menubar");
   };
 
   exports.onMenuToolWiktionary = function () {
-    switchTool("tool-wiktionary");
+    tools.switchTool("tool-wiktionary");
     sendIpcToPreload("update-menubar");
   };
 

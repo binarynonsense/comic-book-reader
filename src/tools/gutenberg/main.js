@@ -16,6 +16,7 @@ const { BookType } = require("../../shared/main/constants");
 const appUtils = require("../../shared/main/app-utils");
 const settings = require("../../shared/main/settings");
 const contextMenu = require("../../shared/main/tools-menu-context");
+const tools = require("../../shared/main/tools");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -65,7 +66,7 @@ exports.onToggleFullScreen = function () {
 };
 
 function onCloseClicked() {
-  core.switchTool("reader");
+  tools.switchTool("reader");
 }
 
 ///////////////////////////////////////////////////////////////////////////////

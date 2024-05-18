@@ -15,6 +15,7 @@ const appUtils = require("../../shared/main/app-utils");
 const utils = require("../../shared/main/utils");
 const QRCode = require("qrcode");
 const contextMenu = require("../../shared/main/tools-menu-context");
+const tools = require("../../shared/main/tools");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -60,7 +61,7 @@ exports.onToggleFullScreen = function () {
 };
 
 function onCloseClicked() {
-  core.switchTool("reader");
+  tools.switchTool("reader");
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -21,6 +21,7 @@ const utils = require("../../shared/main/utils");
 const contextMenu = require("../../shared/main/tools-menu-context");
 const log = require("../../shared/main/logger");
 const temp = require("../../shared/main/temp");
+const tools = require("../../shared/main/tools");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -133,7 +134,7 @@ exports.onToggleFullScreen = function () {
 };
 
 function onCloseClicked() {
-  core.switchTool("reader");
+  tools.switchTool("reader");
 }
 
 ///////////////////////////////////////////////////////////////////////////////

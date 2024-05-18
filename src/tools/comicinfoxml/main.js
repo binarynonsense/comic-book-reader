@@ -21,6 +21,7 @@ const ISO6391 = require("iso-639-1");
 const { fork } = require("child_process");
 const settings = require("../../shared/main/settings");
 const temp = require("../../shared/main/temp");
+const tools = require("../../shared/main/tools");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -101,7 +102,7 @@ exports.onToggleFullScreen = function () {
 };
 
 function onCloseClicked() {
-  core.switchTool("reader");
+  tools.switchTool("reader");
 }
 
 ///////////////////////////////////////////////////////////////////////////////
