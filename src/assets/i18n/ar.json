@@ -180,6 +180,7 @@
   "ui-modal-question-ebookorcomic": "فتح {0} كـ",
   "ui-modal-question-button-comicbook": "كتاب مصور",
   "ui-modal-question-button-ebook": "كتاب إلكتروني",
+  "[NEEDS TRANSLATION]ui-modal-question-openrequestedfile": "Open File?",
 
   "ap-tooltip-button-play": "تشغيل",
   "ap-tooltip-button-pause": "إيقاف مؤقت",
@@ -212,7 +213,11 @@
   "tool-shared-ui-input-file": "الملف المدخل",
   "tool-shared-ui-input-files": "الملفات المدخلة",
   "tool-shared-ui-input-images": "الصور المدخلة",
-  "tool-shared-ui-add": "أضف",
+  "tool-shared-ui-add": "أضف",  
+  "[NEEDS TRANSLATION]tool-shared-ui-add-file": "Add File",
+  "[NEEDS TRANSLATION]tool-shared-ui-add-files": "Add Files",
+  "[NEEDS TRANSLATION]tool-shared-ui-add-folder": "Add Folder",
+  "[NEEDS TRANSLATION]tool-shared-ui-add-folders": "Add Folders",
   "tool-shared-ui-output-size": "حجم المخرج",
   "tool-shared-ui-output-format": "صيغة الإخراج",
   "tool-shared-ui-output-options": "خيارات الإخراج",
@@ -656,5 +661,10 @@
   "tool-fb-browse-up": "إلى اعلى",
   "tool-fb-browse-back": "الخلف",
   "tool-fb-browse-parent": "المجلد الأب",
-  "tool-fb-browse-previous": "المجلد السابق"
+  "tool-fb-browse-previous": "المجلد السابق",
+
+  "[NEEDS TRANSLATION]home-screen-favorites": "Favorites",
+  "[NEEDS TRANSLATION]home-screen-favorite-folders": "Favorite Folders",
+  "[NEEDS TRANSLATION]home-screen-favorite-files": "Favorite Files",
+  "[NEEDS TRANSLATION]home-screen-latest-files": "Latest Files"
 }
