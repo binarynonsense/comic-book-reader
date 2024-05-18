@@ -693,7 +693,7 @@ export function onInputEvent(type, event) {
       }
       break;
 
-    case "onclick":
+    case "acbr-click":
       {
         if (fileOpen) {
           if (
@@ -718,7 +718,7 @@ export function onInputEvent(type, event) {
       }
       break;
 
-    case "onmousemove":
+    case "mousemove":
       {
         if (g_mouseCursorTimer) {
           window.clearTimeout(g_mouseCursorTimer);
@@ -735,6 +735,17 @@ export function onInputEvent(type, event) {
             document.querySelector("#reader").style.cursor = "none";
             g_isMouseCursorVisible = false;
           }, g_mouseCursorHideTime);
+        }
+      }
+      break;
+
+    case "acbr-onmousedownmove":
+      {
+        const reader = document.getElementById("reader");
+        const container = document.getElementById("pages-container");
+        const image = container?.firstChild;
+        if (reader && container && image) {
+          reader.scrollBy(-event[0], -event[1]);
         }
       }
       break;
