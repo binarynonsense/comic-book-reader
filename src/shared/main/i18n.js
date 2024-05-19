@@ -16,11 +16,13 @@ let g_loadedLocale;
 let g_loadedLocaleData;
 let g_englishData;
 let g_userDataLocalesPath;
+let g_isDev = false;
 
 // ref: https://www.electronjs.org/docs/api/locales
 // ref: https://www.christianengvall.se/electron-localization/
 
-exports.init = function () {
+exports.init = function (isDev) {
+  g_isDev = isDev;
   g_userDataLocalesPath = path.join(app.getPath("userData"), "i18n/");
   if (settings.getValue("locale") === undefined) {
     settings.setValue("locale", loadLocale(app.getLocale()));
@@ -130,7 +132,8 @@ function getLocalesFromFolder(folderPath) {
             data !== undefined &&
             data["@metadata"] !== undefined &&
             data["@metadata"]["native-name"] !== undefined &&
-            data["@metadata"]["locale"] !== undefined
+            data["@metadata"]["locale"] !== undefined &&
+            (g_isDev || data["@metadata"]["pre-release"] === "false")
           ) {
             let localeInfo = {
               nativeName: data["@metadata"]["native-name"],

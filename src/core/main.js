@@ -186,7 +186,7 @@ if (!gotTheLock) {
       temp.init(tempFolderPath);
       fileFormats.init(g_launchInfo.isRelease);
       history.init(settings.getValue("history_capacity"));
-      i18n.init();
+      i18n.init(g_launchInfo.isDev);
       themes.init();
       sendIpcToCoreRenderer("update-css-properties", themes.getData());
       menuBar.init(g_mainWindow);
