@@ -3,10 +3,12 @@
     "authors": ["vanja-san"],
     "last-updated": "2024-05-18",
     "acbr-version": "3.5.0-beta1",
+    "pre-release": "false",
     "comments": "Русский перевод",
     "locale": "ru",
     "name": "Russian",
-    "native-name": "Русский"    
+    "native-name": "Русский",
+    "direction": "ltr"
   },
 
   "menu-file": "Файл",

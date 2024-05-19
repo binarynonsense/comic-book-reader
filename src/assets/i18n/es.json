@@ -3,10 +3,12 @@
     "authors": ["Álvaro"],
     "last-updated": "2024-05-17",
     "acbr-version": "3.5.0-beta1",
+    "pre-release": "false",
     "comments": "",
     "locale": "es",
     "name": "Spanish",
-    "native-name": "Español"
+    "native-name": "Español",
+    "direction": "ltr"
   },
 
   "menu-file": "Archivo",

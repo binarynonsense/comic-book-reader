@@ -3,10 +3,12 @@
     "authors": ["trzyglow"],
     "last-updated": "2024-05-17",
     "acbr-version": "3.5.0-beta1",
+    "pre-release": "false",
     "comments": "Deutsche Lokalisierung",
     "locale": "de",
     "name": "German",
-    "native-name": "Deutsch"
+    "native-name": "Deutsch",
+    "direction": "ltr"
   },
 
   "menu-file": "Datei",

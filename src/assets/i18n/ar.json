@@ -3,10 +3,12 @@
     "authors": ["ahmed-0011"],
     "last-updated": "2024-05-18",
     "acbr-version": "3.3.3-beta4",
+    "pre-release": "true",
     "comments": "",
     "locale": "ar",
     "name": "Arabic",
-    "native-name": "العربية"
+    "native-name": "العربية",
+    "direction": "rtl"
   },
 
   "menu-file": "ملف",
