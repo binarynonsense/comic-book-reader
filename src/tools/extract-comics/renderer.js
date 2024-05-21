@@ -179,7 +179,9 @@ function updateSliderBubble(range, bubble) {
   const newVal = Number(((val - min) * 100) / (max - min));
   bubble.innerHTML = range.value;
   // magic numbers
-  bubble.style.left = `calc(${newVal}% - (${newVal * 0.15}px))`;
+  bubble.style["inset-inline-start"] = `calc(${newVal}% - (${
+    newVal * 0.15
+  }px))`;
 }
 
 function switchSection(id) {

@@ -380,6 +380,10 @@ html[dir="rtl"] .tools-button-accent i {
   white-space: nowrap;
 }
 
+html[dir="rtl"] .tools-range-bubble {
+  transform: translateX(30%);
+}
+
 .tools-html-div {
   margin-top: 15px;
   padding: 20px;
