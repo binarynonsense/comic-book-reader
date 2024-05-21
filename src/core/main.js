@@ -414,6 +414,7 @@ if (!gotTheLock) {
     }
     // TODO: Temp if until everything works
     if (g_launchInfo.isDev && !g_launchInfo.isRelease) {
+      reader.setLanguageDirection(direction);
       sendIpcToCoreRenderer("update-language-direction", direction);
     }
   }

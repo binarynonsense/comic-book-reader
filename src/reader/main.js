@@ -40,6 +40,7 @@ let g_resizeEventCounter;
 
 let g_workerExport;
 let g_workerPage;
+let g_languageDir = "ltr";
 
 exports.init = function (filePath, checkHistory) {
   initOnIpcCallbacks();
@@ -151,6 +152,10 @@ exports.onQuit = function () {
 
 exports.onMaximize = function () {
   renderPageRefresh();
+};
+
+exports.setLanguageDirection = function (direction) {
+  g_languageDir = direction;
 };
 
 //////////////////////////////////////////////////////////////////////////////// HISTORY ///////////////////////////////////////////////////////////////////
@@ -396,16 +401,16 @@ function initOnIpcCallbacks() {
   on("mouse-click", (mouseX, bodyX) => {
     if (settings.getValue("hotspots_mode") === 1) {
       if (mouseX > bodyX / 2) {
-        goToNextPage();
+        g_languageDir === "ltr" ? goToNextPage() : goToPreviousPage();
       } else {
-        goToPreviousPage();
+        g_languageDir === "ltr" ? goToPreviousPage() : goToNextPage();
       }
     } else if (settings.getValue("hotspots_mode") === 2) {
       const columnWidth = bodyX / 3;
       if (mouseX < columnWidth) {
-        goToPreviousPage();
+        g_languageDir === "ltr" ? goToPreviousPage() : goToNextPage();
       } else if (mouseX > 2 * columnWidth) {
-        goToNextPage();
+        g_languageDir === "ltr" ? goToNextPage() : goToPreviousPage();
       }
     }
   });
