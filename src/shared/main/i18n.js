@@ -35,6 +35,10 @@ exports.getLoadedLocale = function () {
   return g_loadedLocale;
 };
 
+exports.getLoadedLocaleData = function () {
+  return g_loadedLocaleData;
+};
+
 function loadLocale(desiredLocale) {
   if (g_englishData === undefined) {
     g_englishData = getLocaleData("en");

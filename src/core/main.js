@@ -187,6 +187,7 @@ if (!gotTheLock) {
       fileFormats.init(g_launchInfo.isRelease);
       history.init(settings.getValue("history_capacity"));
       i18n.init(g_launchInfo.isDev);
+      onLanguageChanged();
       themes.init();
       sendIpcToCoreRenderer("update-css-properties", themes.getData());
       menuBar.init(g_mainWindow);
@@ -405,6 +406,16 @@ if (!gotTheLock) {
     settings.setValue("fullScreen", newState);
   }
   exports.toggleFullScreen = toggleFullScreen;
+
+  function onLanguageChanged() {
+    const direction = i18n.getLoadedLocaleData()["@metadata"]["direction"];
+    log.test("language direction: " + direction);
+    if (direction !== "rtl") {
+      direction === "ltr";
+    }
+    sendIpcToCoreRenderer("update-language-direction", direction);
+  }
+  exports.onLanguageChanged = onLanguageChanged;
 
   //////////////////////////////////////////////////////////////////////////////
   // MENU MSGS /////////////////////////////////////////////////////////////////

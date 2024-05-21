@@ -56,6 +56,12 @@ function onIpcFromMain(event, args) {
           updateCssProperties(args[2]);
         }
         break;
+
+      case "update-language-direction":
+        {
+          updateLanguageDirection(args[2]);
+        }
+        break;
       case "replace-inner-html":
         {
           document.querySelector(args[2]).innerHTML = args[3];
@@ -131,6 +137,10 @@ function updateCssProperties(newValuesObject) {
   for (const [key, value] of Object.entries(newValuesObject)) {
     document.documentElement.style.setProperty(key, value);
   }
+}
+
+function updateLanguageDirection(newDirection) {
+  document.documentElement.setAttribute("dir", newDirection);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
