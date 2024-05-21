@@ -48,7 +48,7 @@
   width: 100%;
   display: flex;
   align-items: center;
-  justify-content: right;
+  justify-content: end;
 }
 
 .modal-close-button {
@@ -69,6 +69,7 @@
   font-size: 120%;
   font-weight: bold;
   overflow-wrap: break-word;
+  text-align: start;
 }
 
 .modal-message {
@@ -76,6 +77,7 @@
   line-height: 130%;
   overflow-wrap: break-word;
   user-select: text;
+  text-align: start;
 }
 
 .modal-input {
@@ -88,6 +90,7 @@
   height: 30px;
   color: var(--modal-input-text-color);
   background-color: var(--modal-input-bg-color);
+  text-align: start;
 }
 
 .modal-log {
@@ -102,6 +105,7 @@
   /* pointer-events: none; */
   word-break: break-all;
   cursor: auto;
+  text-align: start;
 }
 
 /* ///////////////////////////////// */
@@ -109,7 +113,7 @@
 .modal-buttons {
   margin-top: 20px;
   display: flex;
-  justify-content: right;
+  justify-content: end;
   gap: 7px;
 }
 
