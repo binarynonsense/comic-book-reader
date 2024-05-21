@@ -165,8 +165,10 @@
 }
 
 .tools-menu-button-icon {
-  padding-right: 15px;
+  /* padding-right: 15px; */
+  padding-inline-end: 15px;
   max-width: 30px;
+  align-content: center;
 }
 
 .tools-menu-button:hover {
