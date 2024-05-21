@@ -151,6 +151,10 @@ html[dir="rtl"] #tools {
   color: var(--tools-button-accent-text-color) !important;
 }
 
+html[dir="rtl"] .tools-button-accent i {
+  transform: scale(-1, 1);
+}
+
 .tools-button-danger {
   background-color: var(--tools-button-danger-bg-color) !important;
   color: var(--tools-button-danger-text-color) !important;
@@ -401,6 +405,10 @@ html[dir="rtl"] #tools {
 }
 
 /* /////////////////////////////////////////////////////////////// */
+
+.tools-collection-ul {
+  direction: ltr;
+}
 
 .tools-collection-li {
   padding: 10px;
