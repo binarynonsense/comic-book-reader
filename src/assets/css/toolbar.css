@@ -98,3 +98,11 @@
 #toolbar-page-slider-input::-webkit-slider-thumb:hover {
   width: 30px;
 }
+
+html[dir="rtl"] #toolbar-button-next i {
+  transform: scale(-1, 1);
+}
+
+html[dir="rtl"] #toolbar-button-prev i {
+  transform: scale(-1, 1);
+}
