@@ -141,6 +141,13 @@ function updateCssProperties(newValuesObject) {
 
 function updateLanguageDirection(newDirection) {
   document.documentElement.setAttribute("dir", newDirection);
+  if (newDirection === "ltr") {
+    document.querySelector(".cet-title").classList.add("cet-title-right");
+    document.querySelector(".cet-title").classList.remove("cet-title-left");
+  } else {
+    document.querySelector(".cet-title").classList.remove("cet-title-right");
+    document.querySelector(".cet-title").classList.add("cet-title-left");
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
