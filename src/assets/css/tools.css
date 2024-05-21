@@ -18,6 +18,15 @@
   scrollbar-gutter: stable;
   user-select: none;
 }
+html[dir="rtl"] #tools {
+  background: linear-gradient(
+    to right,
+    var(--tools-bg2-color) 0%,
+    var(--tools-bg2-color) 50%,
+    var(--tools-bg1-color) 50%,
+    var(--tools-bg1-color) 100%
+  );
+}
 #tools *:not([data-nav-panel]) {
   outline: none;
 }
