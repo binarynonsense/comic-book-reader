@@ -409,7 +409,6 @@ if (!gotTheLock) {
 
   function onLanguageChanged() {
     const direction = i18n.getLoadedLocaleData()["@metadata"]["direction"];
-    log.test("language direction: " + direction);
     if (direction !== "rtl") {
       direction === "ltr";
     }
