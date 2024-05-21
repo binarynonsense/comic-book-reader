@@ -413,7 +413,10 @@ if (!gotTheLock) {
     if (direction !== "rtl") {
       direction === "ltr";
     }
-    sendIpcToCoreRenderer("update-language-direction", direction);
+    // TODO: Temp if until everything works
+    if (g_launchInfo.isDev && !g_launchInfo.isRelease) {
+      sendIpcToCoreRenderer("update-language-direction", direction);
+    }
   }
   exports.onLanguageChanged = onLanguageChanged;
 
