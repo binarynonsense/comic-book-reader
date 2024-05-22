@@ -139,17 +139,6 @@ function updateCssProperties(newValuesObject) {
   }
 }
 
-function updateLanguageDirection(newDirection) {
-  document.documentElement.setAttribute("dir", newDirection);
-  if (newDirection === "ltr") {
-    document.querySelector(".cet-title").classList.add("cet-title-right");
-    document.querySelector(".cet-title").classList.remove("cet-title-left");
-  } else {
-    document.querySelector(".cet-title").classList.remove("cet-title-right");
-    document.querySelector(".cet-title").classList.add("cet-title-left");
-  }
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 // MODALS//////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -192,4 +181,87 @@ function showModalAlert(title, message, textButton1) {
   });
   if (getCurrentTool() === reader)
     reader.sendIpcToMain("rebuild-menu-and-toolbar", false);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// LANGUAGE DIRECTION /////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+let g_languageDirection = "ltr";
+
+function updateLanguageDirection(newDirection) {
+  g_languageDirection = newDirection;
+  initTitleBarObserver(g_languageDirection);
+  document.documentElement.setAttribute("dir", g_languageDirection);
+  if (g_languageDirection === "ltr") {
+    document.querySelector(".cet-title").classList.add("cet-title-right");
+    document.querySelector(".cet-title").classList.remove("cet-title-left");
+  } else {
+    document.querySelector(".cet-title").classList.remove("cet-title-right");
+    document.querySelector(".cet-title").classList.add("cet-title-left");
+  }
+}
+
+let g_menuBarObserver;
+
+// TITLE BAR HACK to spuppor rtl direction !!!!!!
+function initTitleBarObserver() {
+  if (g_languageDirection !== "rtl") {
+    if (g_menuBarObserver !== undefined) {
+      g_menuBarObserver.disconnect();
+      g_menuBarObserver = undefined;
+    }
+    return;
+  }
+  if (g_menuBarObserver !== undefined) return;
+  try {
+    // ref: https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver
+    const targetNode = document.querySelector(".cet-menubar");
+    const config = { attributes: true, childList: true, subtree: true };
+    const callback = (mutationList, observer) => {
+      for (const mutation of mutationList) {
+        if (mutation.type === "childList") {
+          // a child node has been added or removed
+          if (mutation.addedNodes && mutation.addedNodes.length > 0) {
+            mutation.addedNodes.forEach((node) => {
+              if (
+                node.classList &&
+                node.classList.contains("cet-menubar-menu-container")
+              ) {
+                // ref: custom-electron-titlebar/src/menubar/menu/submenu.ts
+                // createSubmenu()
+                // HACK !!!!!
+                if (node.classList.contains("cet-submenu")) {
+                  // submenu container
+                  node.style.left = "auto";
+                  node.style.right = `${node.parentNode.offsetWidth}px`;
+                  const parentRect = node.parentNode.getBoundingClientRect();
+                  const grandParentRect =
+                    node.parentNode.parentNode.parentNode.getBoundingClientRect();
+                  console.log(node.parentNode);
+                  console.log("sub parent rect" + parentRect.top);
+                  node.style.top = `${
+                    parentRect.top - grandParentRect.bottom
+                  }px`;
+                } else {
+                  const rect = node.getBoundingClientRect();
+                  const parentRect = node.parentNode.getBoundingClientRect();
+                  node.style.left = `${
+                    parentRect.left - rect.width + parentRect.width
+                  }px`;
+                  node.style.left = `${
+                    parentRect.left - rect.width + parentRect.width
+                  }px`;
+                }
+              }
+            });
+          }
+        }
+      }
+    };
+    g_menuBarObserver = new MutationObserver(callback);
+    g_menuBarObserver.observe(targetNode, config);
+  } catch (error) {
+    console.log(error);
+  }
 }
