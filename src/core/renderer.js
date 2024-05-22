@@ -204,7 +204,9 @@ function updateLanguageDirection(newDirection) {
 
 let g_menuBarObserver;
 
-// TITLE BAR HACK to spuppor rtl direction !!!!!!
+// TITLE BAR HACK to support rtl direction !!!!!!
+// Observe to know when a cet-menubar-menu-container is created and then
+// override its position to flow from right to left
 function initTitleBarObserver() {
   if (g_languageDirection !== "rtl") {
     if (g_menuBarObserver !== undefined) {
