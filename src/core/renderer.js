@@ -240,8 +240,6 @@ function initTitleBarObserver() {
                   const parentRect = node.parentNode.getBoundingClientRect();
                   const grandParentRect =
                     node.parentNode.parentNode.parentNode.getBoundingClientRect();
-                  console.log(node.parentNode);
-                  console.log("sub parent rect" + parentRect.top);
                   node.style.top = `${
                     parentRect.top - grandParentRect.bottom
                   }px`;
