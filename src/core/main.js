@@ -412,11 +412,8 @@ if (!gotTheLock) {
     if (direction !== "rtl") {
       direction === "ltr";
     }
-    // TODO: Temp if until everything works
-    if (g_launchInfo.isDev && !g_launchInfo.isRelease) {
-      reader.setLanguageDirection(direction);
-      sendIpcToCoreRenderer("update-language-direction", direction);
-    }
+    reader.setLanguageDirection(direction);
+    sendIpcToCoreRenderer("update-language-direction", direction);
   }
   exports.onLanguageChanged = onLanguageChanged;
 
