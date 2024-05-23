@@ -151,7 +151,7 @@ function initTouchScreen() {
   document.addEventListener(
     "touchmove",
     function (event) {
-      console.log("touchmove");
+      // console.log("touchmove");
       g_isTouching = true;
       g_prevTouches = g_touches;
       g_touches = event.touches;
@@ -173,12 +173,11 @@ function initTouchScreen() {
         g_touchMovedY += Math.abs(touchDeltaY);
         // NOTE: work in progress
         // TODO: delete false to continue working on this
-      } else if (false && g_touches.length === 2) {
+      } else if (g_touches.length === 2) {
         // pinch-zoom
         // NOTE: added user-scalable:none to index-X.html files to prevent the
         // default pinch zoom
-        console.log("pinch-zoom");
-        console.log(g_touches);
+        // console.log(g_touches);
         let a = g_touches[0].clientX - g_touches[1].clientX;
         let b = g_touches[0].clientY - g_touches[1].clientY;
         const touchesDistance = Math.sqrt(a * a + b * b);
@@ -186,24 +185,12 @@ function initTouchScreen() {
         b = g_prevTouches[0].clientY - g_prevTouches[1].clientY;
         const prevTouchesDistance = Math.sqrt(a * a + b * b);
         if (touchesDistance > 0) {
-          console.log(touchesDistance);
-          // NOTE: still doesn't work, sometimes the pich is detected
-          // and others not???
-          // Also need to implement the zoom call correctly with good values
-          // maybe use a timer and zoom at a constant rate?
-          // TODO: comment the onInputEvent call to see if scaling is the
-          // cause of only detecting touchmove events once some times...
-          // I'm having trouble testing this as my PC doesn't have a touch
-          // screen, and going back and forth to my steamdeck with the build
-          // is time consuming and can't easily debug things
-          if (touchesDistance > prevTouchesDistance) {
-            if (!getOpenModal()) {
-              getCurrentTool().onInputEvent("acbr-pinchzoom", { zoom: 1 });
-            }
-          } else if (touchesDistance < prevTouchesDistance) {
-            if (!getOpenModal()) {
-              getCurrentTool().onInputEvent("acbr-pinchzoom", { zoom: -1 });
-            }
+          //console.log(touchesDistance);
+          if (!getOpenModal()) {
+            getCurrentTool().onInputEvent("acbr-pinchzoom", {
+              touchesDistance,
+              prevTouchesDistance,
+            });
           }
         }
       }

@@ -539,6 +539,7 @@ export function setFilterClass(element) {
 ///////////////////////////////////////////////////////////////////////////////
 
 let g_pagesContainerDiv;
+let g_pinchZoomTimeOut;
 
 export function onInputEvent(type, event) {
   if (!g_pagesContainerDiv) {
@@ -746,6 +747,25 @@ export function onInputEvent(type, event) {
         const image = container?.firstChild;
         if (reader && container && image) {
           reader.scrollBy(-event[0], -event[1]);
+        }
+      }
+      break;
+
+    case "acbr-pinchzoom":
+      {
+        // NOTE: I'm having trouble testing this as my PC doesn't have a touch
+        // screen, and going back and forth to my steamdeck with the build
+        // is time consuming and can't easily debug things
+        if (g_pinchZoomTimeOut === undefined) {
+          // zoom at a constant rate
+          g_pinchZoomTimeOut = setTimeout(() => {
+            if (event.touchesDistance > event.prevTouchesDistance) {
+              inputZoomIn();
+            } else if (event.touchesDistance < event.prevTouchesDistance) {
+              inputZoomOut();
+            }
+            g_pinchZoomTimeOut = undefined;
+          }, 100);
         }
       }
       break;
