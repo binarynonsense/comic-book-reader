@@ -21,6 +21,7 @@ import * as navigation from "../../shared/renderer/tools-navigation.js";
 let g_isInitialized = false;
 let g_shortcutsDiv;
 let g_navData = {};
+let g_languageDirection;
 
 async function init(showFocus, localizedLoadingText) {
   if (!g_isInitialized) {
@@ -41,12 +42,16 @@ async function init(showFocus, localizedLoadingText) {
   sendIpcToMain("build-drives-data");
 }
 async function buildPage(drivesData) {
+  g_languageDirection = document.documentElement.getAttribute("dir");
   // menu buttons
   const backButton = document.getElementById("tool-fb-back-button");
   backButton.addEventListener("click", (event) => {
     sendIpcToMain("close");
   });
-  backButton.setAttribute("data-nav-panel", 0);
+  backButton.setAttribute(
+    "data-nav-panel",
+    g_languageDirection !== "rtl" ? 0 : 1
+  );
   backButton.setAttribute("data-nav-row", 0);
   backButton.setAttribute("data-nav-col", 0);
   ////////////////////////////////////////
@@ -72,7 +77,10 @@ async function buildPage(drivesData) {
     buttonDiv.addEventListener("click", () => {
       sendIpcToMain("change-current-folder", drive.path);
     });
-    buttonDiv.setAttribute("data-nav-panel", 0);
+    buttonDiv.setAttribute(
+      "data-nav-panel",
+      g_languageDirection !== "rtl" ? 0 : 1
+    );
     buttonDiv.setAttribute("data-nav-row", index + 1);
     buttonDiv.setAttribute("data-nav-col", 0);
     buttonDiv.setAttribute("tabindex", "0");
@@ -242,7 +250,10 @@ function addFolderContentLi(type, ul, entry, index) {
       sendIpcToMain("open-file", entry.fullPath);
     });
   }
-  buttonSpan.setAttribute("data-nav-panel", 1);
+  buttonSpan.setAttribute(
+    "data-nav-panel",
+    g_languageDirection !== "rtl" ? 1 : 0
+  );
   buttonSpan.setAttribute("data-nav-row", index);
   buttonSpan.setAttribute("data-nav-col", 0);
   buttonSpan.setAttribute("tabindex", "0");
