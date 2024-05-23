@@ -16,6 +16,7 @@ import * as navigation from "../../shared/renderer/tools-navigation.js";
 
 let g_isInitialized = false;
 let g_navData = {};
+let g_languageDirection;
 
 let g_localizedRemoveFromListText = "";
 let g_localizedOpenFromListText = "";
@@ -36,19 +37,26 @@ function init(history, showFocus) {
     block: "start",
     inline: "nearest",
   });
+  g_languageDirection = document.documentElement.getAttribute("dir");
   // menu buttons
   const backButton = document.getElementById("tool-hst-back-button");
   backButton.addEventListener("click", (event) => {
     sendIpcToMain("close");
   });
-  backButton.setAttribute("data-nav-panel", 0);
+  backButton.setAttribute(
+    "data-nav-panel",
+    g_languageDirection !== "rtl" ? 0 : 1
+  );
   backButton.setAttribute("data-nav-row", 0);
   backButton.setAttribute("data-nav-col", 0);
   const clearButton = document.getElementById("tool-hst-clear-button");
   clearButton.addEventListener("click", (event) => {
     showModalConfirmClearAll();
   });
-  clearButton.setAttribute("data-nav-panel", 0);
+  clearButton.setAttribute(
+    "data-nav-panel",
+    g_languageDirection !== "rtl" ? 0 : 1
+  );
   clearButton.setAttribute("data-nav-row", 1);
   clearButton.setAttribute("data-nav-col", 0);
   // history list
@@ -146,7 +154,10 @@ function buildHistoryList(history) {
     buttonSpan.addEventListener("click", (event) => {
       sendIpcToMain("open-item", index);
     });
-    buttonSpan.setAttribute("data-nav-panel", 1);
+    buttonSpan.setAttribute(
+      "data-nav-panel",
+      g_languageDirection !== "rtl" ? 1 : 0
+    );
     buttonSpan.setAttribute("data-nav-row", history.length - 1 - index);
     buttonSpan.setAttribute("data-nav-col", 0);
     buttonSpan.setAttribute("tabindex", "0");
@@ -159,7 +170,10 @@ function buildHistoryList(history) {
       buttonSpan.addEventListener("click", (event) => {
         sendIpcToMain("remove-item", index);
       });
-      buttonSpan.setAttribute("data-nav-panel", 1);
+      buttonSpan.setAttribute(
+        "data-nav-panel",
+        g_languageDirection !== "rtl" ? 1 : 0
+      );
       buttonSpan.setAttribute("data-nav-row", history.length - 1 - index);
       buttonSpan.setAttribute("data-nav-col", 1);
       buttonSpan.setAttribute("tabindex", "0");
