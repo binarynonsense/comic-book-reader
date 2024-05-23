@@ -30,3 +30,31 @@
 .cet-window-title {
   color: var(--titlebar-title-text-color) !important;
 }
+
+/* rtl overrides */
+
+html[dir="rtl"] .cet-menubar-menu-container {
+  text-align: start;
+}
+
+/* html[dir="rtl"] .cet-menubar-menu-container .cet-action-menu-item {
+} */
+
+html[dir="rtl"] .cet-menubar-menu-container .cet-submenu-indicator {
+  right: auto !important;
+  left: 4px !important;
+  transform: scaleX(-1) !important;
+}
+
+html[dir="rtl"] .cet-menubar-menu-container .cet-action-label:not(.separator) {
+  padding: 0 0.8em 0 2em;
+}
+
+html[dir="rtl"] .cet-menubar-menu-container .keybinding {
+  text-align: end !important;
+  padding: 0 1em 0 2em !important;
+}
+
+html[dir="rtl"] .cet-menubar-menu-container .cet-menu-item-icon {
+  margin: 0 12px 0 0 !important;
+}
