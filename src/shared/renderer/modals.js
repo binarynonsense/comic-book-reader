@@ -179,12 +179,21 @@ export function onInputEvent(modalDiv, type, event) {
           }
         });
       } else {
+        const dir = document.documentElement.getAttribute("dir");
+        const upPressed =
+          dir !== "rtl"
+            ? event.key == "ArrowUp" || event.key == "ArrowLeft"
+            : event.key == "ArrowUp" || event.key == "ArrowRight";
+        const downPressed =
+          dir !== "rtl"
+            ? event.key == "ArrowDown" || event.key == "ArrowRight"
+            : event.key == "ArrowDown" || event.key == "ArrowLeft";
         navigate(
           modalDiv,
           undefined,
           event.key == "Enter",
-          event.key == "ArrowUp" || event.key == "ArrowLeft",
-          event.key == "ArrowDown" || event.key == "ArrowRight"
+          upPressed,
+          downPressed
         );
         // close x button
         {
