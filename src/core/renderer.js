@@ -191,7 +191,7 @@ let g_languageDirection = "ltr";
 
 function updateLanguageDirection(newDirection) {
   g_languageDirection = newDirection;
-  initTitleBarObserver(g_languageDirection);
+  initTitleBarObserver();
   document.documentElement.setAttribute("dir", g_languageDirection);
   if (g_languageDirection === "ltr") {
     document.querySelector(".cet-title").classList.add("cet-title-right");
@@ -206,7 +206,8 @@ let g_menuBarObserver;
 
 // TITLE BAR HACK to support rtl direction !!!!!!
 // Observe to know when a cet-menubar-menu-container is created and then
-// override its position to flow from right to left
+// override its position to flow from right to left, the rest is done in
+// updateLanguageDirection
 function initTitleBarObserver() {
   if (g_languageDirection !== "rtl") {
     if (g_menuBarObserver !== undefined) {
