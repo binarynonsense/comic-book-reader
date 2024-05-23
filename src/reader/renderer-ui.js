@@ -710,8 +710,19 @@ export function onInputEvent(type, event) {
           }
         }
       }
-      // mouse right click: document.oncontextmenu
       break;
+
+    case "acbr-doubleclick":
+      {
+        if (fileOpen) {
+          if (event.target.id === "reader") {
+            inputSwitchScaleMode();
+          }
+        }
+      }
+      break;
+
+    // mouse right click: document.oncontextmenu
 
     case "body.ondrop":
       {
@@ -753,19 +764,21 @@ export function onInputEvent(type, event) {
 
     case "acbr-pinchzoom":
       {
-        // NOTE: I'm having trouble testing this as my PC doesn't have a touch
-        // screen, and going back and forth to my steamdeck with the build
-        // is time consuming and can't easily debug things
-        if (g_pinchZoomTimeOut === undefined) {
-          // zoom at a constant rate
-          g_pinchZoomTimeOut = setTimeout(() => {
-            if (event.touchesDistance > event.prevTouchesDistance) {
-              inputZoomIn();
-            } else if (event.touchesDistance < event.prevTouchesDistance) {
-              inputZoomOut();
-            }
-            g_pinchZoomTimeOut = undefined;
-          }, 100);
+        if (fileOpen) {
+          // NOTE: I'm having trouble testing this as my PC doesn't have a touch
+          // screen, and going back and forth to my steamdeck with the build
+          // is time consuming and can't easily debug things
+          if (g_pinchZoomTimeOut === undefined) {
+            // zoom at a constant rate
+            g_pinchZoomTimeOut = setTimeout(() => {
+              if (event.touchesDistance > event.prevTouchesDistance) {
+                inputZoomIn();
+              } else if (event.touchesDistance < event.prevTouchesDistance) {
+                inputZoomOut();
+              }
+              g_pinchZoomTimeOut = undefined;
+            }, 100);
+          }
         }
       }
       break;

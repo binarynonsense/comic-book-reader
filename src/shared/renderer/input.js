@@ -94,7 +94,6 @@ function initMouse() {
     g_isMouseDown = false;
   });
 
-  //dblclick
   //mouseleave
 
   document.addEventListener("click", function (event) {
@@ -114,6 +113,12 @@ function initMouse() {
         clientY: event.clientY,
       });
     }
+  });
+
+  document.addEventListener("dblclick", function (event) {
+    // disabled for now, maybe add an option to enable some day
+    // if (getOpenModal()) return;
+    // getCurrentTool().onInputEvent("acbr-doubleclick", event);
   });
 
   document.addEventListener("wheel", function (event) {
@@ -210,10 +215,12 @@ function initTouchScreen() {
       g_lastTouchEndTime = currentTime;
       if (!getOpenModal()) {
         if (deltaTime < 500) {
-          console.log("Double tapped!");
+          getCurrentTool().onInputEvent("acbr-doubleclick", {
+            event: event,
+            target: g_touches[0].target,
+          });
           if (g_touchClickTimer) {
             clearTimeout(g_touchClickTimer);
-            console.log("clear timer");
           }
         } else {
           g_touchClickTimer = setTimeout(() => {
