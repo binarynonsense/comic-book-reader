@@ -23,6 +23,7 @@
   transform: translate(-50%, -50%);
   text-align: center;
   user-select: none;
+  pointer-events: none;
 }
 
 .centered-block img {
@@ -40,6 +41,14 @@
   align-items: center;
   justify-items: center;
   text-align: center;
+  pointer-events: none;
+  user-select: none;
+}
+
+.page-img,
+.page-canvas {
+  pointer-events: none;
+  user-select: none;
 }
 
 .page-filter-old-page {
@@ -64,6 +73,7 @@
   border: 0;
   z-index: 9;
   user-select: none;
+  pointer-events: none;
 
   display: flex;
   flex-direction: row;
