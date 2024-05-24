@@ -114,7 +114,7 @@ html[dir="rtl"] #tools {
 /* /////////////////////////////////////////////////////////////// */
 
 #tools button {
-  padding: 10px;
+  padding: 15px;
   border: none;
   background-color: var(--tools-button-normal-bg-color);
   color: var(--tools-button-normal-text-color);
@@ -124,7 +124,7 @@ html[dir="rtl"] #tools {
   border-radius: 3px;
 }
 html[dir="rtl"] #tools button {
-  padding: 5px 10px;
+  padding: 10px 10px;
 }
 
 .tools-disabled {
