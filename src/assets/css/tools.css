@@ -123,9 +123,6 @@ html[dir="rtl"] #tools {
   margin: 5px 0;
   border-radius: 3px;
 }
-html[dir="rtl"] #tools button {
-  padding: 8px 10px;
-}
 
 .tools-disabled {
   pointer-events: none;
@@ -176,15 +173,8 @@ html[dir="rtl"] .tools-button-accent i {
   cursor: pointer;
   display: flex;
   flex-direction: row;
-  border-top-left-radius: 3px;
-  border-bottom-left-radius: 3px;
-}
-html[dir="rtl"] .tools-menu-button {
-  padding: 2px 30px;
-  border-top-left-radius: 0px;
-  border-bottom-left-radius: 0px;
-  border-top-right-radius: 3px;
-  border-bottom-right-radius: 3px;
+  border-end-start-radius: 3px;
+  border-start-start-radius: 3px;
 }
 
 .tools-menu-button-icon {
