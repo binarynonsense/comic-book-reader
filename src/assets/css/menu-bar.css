@@ -37,6 +37,16 @@ html[dir="rtl"] .cet-menubar-menu-container {
   text-align: start;
 }
 
+html[dir="rtl"] .cet-menubar {
+  margin-right: 0px !important;
+  margin-left: 20px !important;
+}
+
+html[dir="rtl"] .cet-window-controls {
+  margin-left: 0px !important;
+  margin-right: 10px !important;
+}
+
 /* html[dir="rtl"] .cet-menubar-menu-container .cet-action-menu-item {
 } */
 
