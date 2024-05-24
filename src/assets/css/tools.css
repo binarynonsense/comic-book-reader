@@ -123,6 +123,9 @@ html[dir="rtl"] #tools {
   margin: 5px 0;
   border-radius: 3px;
 }
+html[dir="rtl"] #tools button {
+  padding: 5px 10px;
+}
 
 .tools-disabled {
   pointer-events: none;
@@ -163,7 +166,7 @@ html[dir="rtl"] .tools-button-accent i {
 /* /////////////////////////////////////////////////////////////// */
 
 .tools-menu-button {
-  padding: 10px 30px 10px 30px;
+  padding: 10px 30px;
   margin-bottom: 10px;
   border: none;
   font-size: 16px;
@@ -175,6 +178,9 @@ html[dir="rtl"] .tools-button-accent i {
   flex-direction: row;
   border-top-left-radius: 3px;
   border-bottom-left-radius: 3px;
+}
+html[dir="rtl"] .tools-menu-button {
+  padding: 5px 30px;
 }
 
 .tools-menu-button-icon {
