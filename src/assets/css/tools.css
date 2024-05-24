@@ -124,7 +124,7 @@ html[dir="rtl"] #tools {
   border-radius: 3px;
 }
 html[dir="rtl"] #tools button {
-  padding: 10px 10px;
+  padding: 8px 10px;
 }
 
 .tools-disabled {
@@ -180,7 +180,11 @@ html[dir="rtl"] .tools-button-accent i {
   border-bottom-left-radius: 3px;
 }
 html[dir="rtl"] .tools-menu-button {
-  padding: 5px 30px;
+  padding: 2px 30px;
+  border-top-left-radius: 0px;
+  border-bottom-left-radius: 0px;
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
 }
 
 .tools-menu-button-icon {
