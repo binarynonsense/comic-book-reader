@@ -244,6 +244,15 @@ function initTitleBarObserver() {
                   node.style.top = `${
                     parentRect.top - grandParentRect.bottom
                   }px`;
+                  // fix paths starting with ..., make always ltr
+                  const labels = node.querySelectorAll(".cet-action-label");
+                  labels.forEach((label) => {
+                    if (label.tagName.toLowerCase() === "span") {
+                      if (label.textContent.startsWith("...")) {
+                        label.style.direction = "ltr";
+                      }
+                    }
+                  });
                 } else {
                   const rect = node.getBoundingClientRect();
                   const parentRect = node.parentNode.getBoundingClientRect();
