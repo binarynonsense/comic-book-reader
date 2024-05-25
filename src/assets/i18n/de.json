@@ -295,7 +295,7 @@
   "tool-shared-ui-about-text-1-dictionaryterms": "Wörterbucheinträgen",
   "tool-shared-ui-about-text-2": "Es benötigt eine Internetverbindung und kann zu jedem Zeitpunkt aufhören zu funktionieren wenn sich die Struktur der Website verändert.",
   "tool-shared-ui-about-text-3": "Falls Sie es oft verwenden oder nur mögen was sie tun, erwägen Sie bitte eine Spende, um ihnen zu helfen die Seite weiterhin zu betreiben.",
-  "[NEEDS TRANSLATION]tool-shared-ui-direction-fromlanguage": "Infer from Selected Language",
+  "tool-shared-ui-direction-fromlanguage": "Aus gewählter Sprache ableiten",
   "tool-shared-ui-direction-ltr": "Links nach Rechts",
   "tool-shared-ui-direction-rtl": "Rechts nach Links",
 
