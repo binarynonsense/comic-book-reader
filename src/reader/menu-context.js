@@ -17,14 +17,14 @@ function buildContextMenu(isOpen, showRotation) {
       label: _("ctxmenu-turnto-rightpage"),
       enabled: isOpen,
       click() {
-        reader.onMenuNextPage();
+        reader.onMenuTurnToRightPage();
       },
     },
     {
       label: _("ctxmenu-turnto-leftpage"),
       enabled: isOpen,
       click() {
-        reader.onMenuPreviousPage();
+        reader.onMenuTurnToLeftPage();
       },
     },
     {

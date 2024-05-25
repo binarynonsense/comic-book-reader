@@ -2054,15 +2054,15 @@ function exportPageError(err) {
 //////////////////////////////////////////////////////////////////////////////// MENU MSGS /////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 
-exports.onMenuNextPage = function () {
+exports.onMenuTurnToRightPage = function () {
   goToNextPage();
 };
 
-exports.onMenuPreviousPage = function () {
+exports.onMenuTurnToLeftPage = function () {
   goToPreviousPage();
 };
 
-exports.onMenuNextPage = function () {
+exports.onMenuTurnToRightPage = function () {
   goToNextPage();
 };
 
