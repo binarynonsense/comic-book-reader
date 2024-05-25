@@ -622,13 +622,13 @@ export function onInputEvent(type, event) {
         }
 
         if (fileOpen) {
-          if (matchesNavKey(g_navKeys.nextPage, event)) {
+          if (matchesNavKey(g_navKeys.turnPageRight, event)) {
             if (!event.repeat) {
               inputGoToNextPage();
               event.stopPropagation();
             }
             event.stopPropagation();
-          } else if (matchesNavKey(g_navKeys.prevPage, event)) {
+          } else if (matchesNavKey(g_navKeys.turnPageLeft, event)) {
             if (!event.repeat) {
               inputGoToPrevPage();
               event.stopPropagation();
