@@ -401,16 +401,16 @@ function initOnIpcCallbacks() {
   on("mouse-click", (mouseX, bodyX) => {
     if (settings.getValue("hotspots_mode") === 1) {
       if (mouseX > bodyX / 2) {
-        g_languageDir === "ltr" ? goToNextPage() : goToPreviousPage();
+        goToNextPage();
       } else {
-        g_languageDir === "ltr" ? goToPreviousPage() : goToNextPage();
+        goToPreviousPage();
       }
     } else if (settings.getValue("hotspots_mode") === 2) {
       const columnWidth = bodyX / 3;
       if (mouseX < columnWidth) {
-        g_languageDir === "ltr" ? goToPreviousPage() : goToNextPage();
+        goToPreviousPage();
       } else if (mouseX > 2 * columnWidth) {
-        g_languageDir === "ltr" ? goToNextPage() : goToPreviousPage();
+        goToNextPage();
       }
     }
   });
