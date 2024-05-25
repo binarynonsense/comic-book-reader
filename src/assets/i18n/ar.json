@@ -295,7 +295,7 @@
   "tool-shared-ui-about-text-1-dictionaryterms": "مصطلحات القاموس",
   "tool-shared-ui-about-text-2": "تحتاج إلى وجود اتصال بالإنترنت ويمكن أن تتوقف عن العمل في أي وقت إذا تغيرت بنية الموقع الإلكتروني.",
   "tool-shared-ui-about-text-3": "إذا كنت تستخدمه بشكل متكرر أو يعجبك ما يفعلونه، يرجى الأخذ بعين الاعتبار التبرع لمساعدتهم في الحفاظ على الموقع.",
-  "[NEEDS TRANSLATION]tool-shared-ui-direction-language": "Language direction",
+  "[NEEDS TRANSLATION]tool-shared-ui-direction-fromlanguage": "Infer from Selected Language",
   "[NEEDS TRANSLATION]tool-shared-ui-direction-ltr": "Left to Right",
   "[NEEDS TRANSLATION]tool-shared-ui-direction-rtl": "Right to Left",
 

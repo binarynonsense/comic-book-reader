@@ -295,7 +295,7 @@
   "tool-shared-ui-about-text-1-dictionaryterms": "Словарные термины",
   "tool-shared-ui-about-text-2": "Это требует подключения к интернету и может в любой момент перестать работать, если структура сайта изменится.",
   "tool-shared-ui-about-text-3": "Если вы часто пользуетесь сайтом или вам просто нравится то, что они делают, пожалуйста, подумайте о том, чтобы сделать пожертвование, чтобы помочь им сохранить сайт.",
-  "[NEEDS TRANSLATION]tool-shared-ui-direction-language": "Language direction",
+  "[NEEDS TRANSLATION]tool-shared-ui-direction-fromlanguage": "Infer from Selected Language",
   "[NEEDS TRANSLATION]tool-shared-ui-direction-ltr": "Left to Right",
   "[NEEDS TRANSLATION]tool-shared-ui-direction-rtl": "Right to Left",
 
