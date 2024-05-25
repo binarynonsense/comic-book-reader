@@ -5,7 +5,12 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-import { on, sendIpcToMain, getCurrentImg64 } from "./renderer.js";
+import {
+  on,
+  sendIpcToMain,
+  getCurrentImg64,
+  showNoBookContent,
+} from "./renderer.js";
 import { renderImg64, setScrollBarsPosition } from "./renderer-ui.js";
 
 export function initIpc() {
@@ -29,17 +34,17 @@ function initHandlers() {
   });
 
   on("render-epub-ebook-page-percentage", (percentage) => {
-    document.querySelector(".centered-block").classList.add("set-display-none");
+    showNoBookContent(false);
     renderEpubEbookPercentage(percentage);
   });
 
   on("render-epub-ebook-page-next", () => {
-    document.querySelector(".centered-block").classList.add("set-display-none");
+    showNoBookContent(false);
     renderEpubEbookNext();
   });
 
   on("render-epub-ebook-page-prev", () => {
-    document.querySelector(".centered-block").classList.add("set-display-none");
+    showNoBookContent(false);
     renderEpubEbookPrev();
   });
 

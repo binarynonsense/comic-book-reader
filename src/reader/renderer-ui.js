@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-import { on, sendIpcToMain } from "./renderer.js";
+import { on, sendIpcToMain, showNoBookContent } from "./renderer.js";
 import * as modals from "../shared/renderer/modals.js";
 import * as gamepads from "../shared/renderer/gamepads.js";
 
@@ -164,14 +164,8 @@ function initOnIpcCallbacks() {
   });
 
   on("update-bg", (show) => {
-    if (show)
-      document
-        .querySelector(".centered-block")
-        .classList.remove("set-display-none");
-    else
-      document
-        .querySelector(".centered-block")
-        .classList.add("set-display-none");
+    if (show) showNoBookContent(true);
+    else showNoBookContent(false);
   });
 
   on(

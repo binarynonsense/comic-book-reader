@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-import { on, sendIpcToMain } from "./renderer.js";
+import { on, sendIpcToMain, showNoBookContent } from "./renderer.js";
 import { setScrollBarsPosition, setFilterClass } from "./renderer-ui.js";
 
 export function initIpc() {
@@ -22,7 +22,7 @@ function initOnIpcCallbacks() {
   });
 
   on("render-pdf-page", (pageIndex, rotation, scrollBarPos) => {
-    document.querySelector(".centered-block").classList.add("set-display-none");
+    showNoBookContent(false);
     renderPdfPage(pageIndex, rotation, scrollBarPos);
   });
 

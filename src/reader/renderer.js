@@ -40,7 +40,7 @@ export function initIpc() {
 
 let g_currentImg64 = null;
 
-function cleanUp() {
+function cleanUpPages() {
   g_currentImg64 = null;
   cleanUpPdf();
   cleanUpEpub();
@@ -48,6 +48,24 @@ function cleanUp() {
 
 export function getCurrentImg64() {
   return g_currentImg64;
+}
+
+export function showNoBookContent(show) {
+  if (show) {
+    document
+      .querySelector("#no-book-content")
+      .classList.remove("set-display-none");
+    document
+      .querySelector("#pages-container")
+      .classList.add("set-display-none");
+  } else {
+    document
+      .querySelector("#no-book-content")
+      .classList.add("set-display-none");
+    document
+      .querySelector("#pages-container")
+      .classList.remove("set-display-none");
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -77,10 +95,8 @@ export function on(id, callback) {
 function initOnIpcCallbacks() {
   on("render-img-page", (img64, rotation, scrollBarPos) => {
     if (img64) {
-      cleanUp();
-      document
-        .querySelector(".centered-block")
-        .classList.add("set-display-none");
+      cleanUpPages();
+      showNoBookContent(false);
       g_currentImg64 = img64;
       renderImg64(g_currentImg64, rotation, scrollBarPos, true, false);
     }
@@ -98,12 +114,10 @@ function initOnIpcCallbacks() {
   });
 
   on("file-closed", () => {
-    cleanUp();
+    cleanUpPages();
     let container = document.getElementById("pages-container");
     container.innerHTML = "";
-    document
-      .querySelector(".centered-block")
-      .classList.remove("set-display-none");
+    showNoBookContent(true);
     updatePageInfo(0, 0);
   });
 }
