@@ -24,6 +24,7 @@
   bottom: 0;
   border: 0;
   z-index: 20;
+  direction: ltr;
 }
 #toolbar * {
   outline: none;
@@ -99,10 +100,10 @@
   width: 30px;
 }
 
-html[dir="rtl"] #toolbar-button-next i {
+/* html[dir="rtl"] #toolbar-button-next i {
   transform: scale(-1, 1);
 }
 
 html[dir="rtl"] #toolbar-button-prev i {
   transform: scale(-1, 1);
-}
+} */
