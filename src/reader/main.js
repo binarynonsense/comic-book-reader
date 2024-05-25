@@ -1568,8 +1568,8 @@ function updateLocalizedText() {
   sendIpcToRenderer(
     "update-toolbar-tooltips",
     _("ctxmenu-openfile"),
-    _("ctxmenu-prevpage"),
-    _("ctxmenu-nextpage"),
+    _("ctxmenu-turnto-leftpage"),
+    _("ctxmenu-turnto-rightpage"),
     _("menu-view-zoom-fitwidth"),
     _("menu-view-zoom-fitheight"),
     _("toolbar-rotate-counterclockwise"),

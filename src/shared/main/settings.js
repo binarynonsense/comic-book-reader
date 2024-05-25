@@ -70,8 +70,8 @@ const g_defaultSettings = {
     scrollRight: ["d"],
     // nextPage: ["PageDown", "ArrowRight"],
     // prevPage: ["PageUp", "ArrowLeft"],
-    turnPageRight: ["PageDown", "ArrowRight"],
-    turnPageLeft: ["PageUp", "ArrowLeft"],
+    turnToRightPage: ["PageDown", "ArrowRight"],
+    turnToLeftPage: ["PageUp", "ArrowLeft"],
     firstPage: ["Home"],
     lastPage: ["End"],
     zoomInPage: ["+"],
@@ -479,11 +479,11 @@ function loadNavKeys(loadedKeys) {
 
 function checkNavKeysOlderVersion(loadedKeys) {
   if (loadedKeys.nextPage) {
-    loadedKeys.turnPageRight = loadedKeys.nextPage;
+    loadedKeys.turnToRightPage = loadedKeys.nextPage;
     loadedKeys.nextPage = undefined;
   }
   if (loadedKeys.prevPage) {
-    loadedKeys.turnPageLeft = loadedKeys.prevPage;
+    loadedKeys.turnToLeftPage = loadedKeys.prevPage;
     loadedKeys.prevPage = undefined;
   }
 }
