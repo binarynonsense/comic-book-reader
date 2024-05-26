@@ -239,6 +239,99 @@ function buildApplicationMenu(settings, history) {
       label: _("menu-view"),
       submenu: [
         {
+          id: "view-layout",
+          label: _("menu-view-layout"),
+          submenu: [
+            {
+              id: "view-layout-pagesdirection",
+              label: _("menu-view-layout-pagesdirection"),
+              submenu: [
+                {
+                  id: "pagesdirection-0",
+                  label: _("tool-shared-ui-direction-ltr"),
+                  type: "radio",
+                  checked: settings.pagesDirection === 0,
+                  click() {
+                    reader.onMenuPagesDirection(0);
+                  },
+                },
+                {
+                  id: "pagesdirection-1",
+                  label: _("tool-shared-ui-direction-rtl"),
+                  type: "radio",
+                  checked: settings.pagesDirection === 1,
+                  click() {
+                    reader.onMenuPagesDirection(1);
+                  },
+                },
+              ],
+            },
+            {
+              type: "separator",
+            },
+            {
+              label: _("menu-view-showscrollbar"),
+              id: "scrollbar",
+              type: "checkbox",
+              checked: settings.showScrollBar,
+              accelerator: "CommandOrControl+B",
+              click() {
+                reader.onMenuToggleScrollBar();
+              },
+            },
+            {
+              label: _("menu-view-showtoolbar"),
+              id: "toolbar",
+              type: "checkbox",
+              checked: settings.showToolBar,
+              accelerator: "CommandOrControl+T",
+              click() {
+                reader.onMenuToggleToolBar();
+              },
+            },
+            {
+              label: _("menu-view-showpagenum"),
+              id: "page-number",
+              type: "checkbox",
+              checked: settings.showPageNumber,
+              accelerator: "CommandOrControl+P",
+              click() {
+                reader.onMenuTogglePageNumber();
+              },
+            },
+            {
+              label: _("menu-view-showclock"),
+              id: "clock",
+              type: "checkbox",
+              checked: settings.showClock,
+              accelerator: "CommandOrControl+J",
+              click() {
+                reader.onMenuToggleClock();
+              },
+            },
+            {
+              label: _("menu-view-showbattery"),
+              id: "battery",
+              type: "checkbox",
+              checked: settings.showBattery,
+              accelerator: "CommandOrControl+L",
+              click() {
+                reader.onMenuToggleBattery();
+              },
+            },
+            {
+              label: _("menu-view-showaudioplayer"),
+              id: "audio-player",
+              type: "checkbox",
+              checked: settings.showAudioPlayer,
+              accelerator: "CommandOrControl+M",
+              click() {
+                core.onMenuToggleAudioPlayer();
+              },
+            },
+          ],
+        },
+        {
           id: "view-zoom",
           label: _("menu-view-zoom"),
           enabled: true,
@@ -338,36 +431,6 @@ function buildApplicationMenu(settings, history) {
           ],
         },
         {
-          id: "view-layout",
-          label: _("menu-view-layout"),
-          submenu: [
-            {
-              id: "view-layout-pagesdirection",
-              label: _("menu-view-layout-pagesdirection"),
-              submenu: [
-                {
-                  id: "pagesdirection-0",
-                  label: _("tool-shared-ui-direction-ltr"),
-                  type: "radio",
-                  checked: settings.pagesDirection === 0,
-                  click() {
-                    reader.onMenuPagesDirection(0);
-                  },
-                },
-                {
-                  id: "pagesdirection-1",
-                  label: _("tool-shared-ui-direction-rtl"),
-                  type: "radio",
-                  checked: settings.pagesDirection === 1,
-                  click() {
-                    reader.onMenuPagesDirection(1);
-                  },
-                },
-              ],
-            },
-          ],
-        },
-        {
           id: "view-page",
           label: _("menu-view-page"),
           submenu: [
@@ -414,69 +477,6 @@ function buildApplicationMenu(settings, history) {
               },
             },
           ],
-        },
-        {
-          type: "separator",
-        },
-        {
-          label: _("menu-view-showscrollbar"),
-          id: "scrollbar",
-          type: "checkbox",
-          checked: settings.showScrollBar,
-          accelerator: "CommandOrControl+B",
-          click() {
-            reader.onMenuToggleScrollBar();
-          },
-        },
-        {
-          label: _("menu-view-showtoolbar"),
-          id: "toolbar",
-          type: "checkbox",
-          checked: settings.showToolBar,
-          accelerator: "CommandOrControl+T",
-          click() {
-            reader.onMenuToggleToolBar();
-          },
-        },
-        {
-          label: _("menu-view-showpagenum"),
-          id: "page-number",
-          type: "checkbox",
-          checked: settings.showPageNumber,
-          accelerator: "CommandOrControl+P",
-          click() {
-            reader.onMenuTogglePageNumber();
-          },
-        },
-        {
-          label: _("menu-view-showclock"),
-          id: "clock",
-          type: "checkbox",
-          checked: settings.showClock,
-          accelerator: "CommandOrControl+J",
-          click() {
-            reader.onMenuToggleClock();
-          },
-        },
-        {
-          label: _("menu-view-showbattery"),
-          id: "battery",
-          type: "checkbox",
-          checked: settings.showBattery,
-          accelerator: "CommandOrControl+L",
-          click() {
-            reader.onMenuToggleBattery();
-          },
-        },
-        {
-          label: _("menu-view-showaudioplayer"),
-          id: "audio-player",
-          type: "checkbox",
-          checked: settings.showAudioPlayer,
-          accelerator: "CommandOrControl+M",
-          click() {
-            core.onMenuToggleAudioPlayer();
-          },
         },
         {
           type: "separator",
