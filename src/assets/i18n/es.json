@@ -117,6 +117,8 @@
   "toolbar-rotate-clockwise": "Rotar en Sentido Horario",
   "toolbar-rotate-counterclockwise": "Rotar en Sentido Anti-horario",
   "toolbar-change-pagesdirection": "Cambiar Dirección de las Páginas",
+  "toolbar-change-pagesdirection-ltr": "Cambiar Dirección de Páginas a de Izda a Dcha.",
+  "toolbar-change-pagesdirection-rtl": "Cambiar Dirección de Páginas a de Dcha a Izda.",
 
   "dialog-file-types-playlists": "Archivos de Lista de Reproducción",
   "dialog-file-types-audio-playlists": "Archivos de Música y Lista de Reproducción",

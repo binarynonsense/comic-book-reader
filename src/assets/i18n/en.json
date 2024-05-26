@@ -117,6 +117,8 @@
   "toolbar-rotate-clockwise": "Rotate Clockwise",
   "toolbar-rotate-counterclockwise": "Rotate Counterclockwise",
   "toolbar-change-pagesdirection": "Change Pages Direction",
+  "toolbar-change-pagesdirection-ltr": "Set Left to Right Pages Direction",
+  "toolbar-change-pagesdirection-rtl": "Set Right to Left Pages Direction",
 
   "dialog-file-types-playlists": "Playlist Files",
   "dialog-file-types-audio-playlists": "Audio and Playlist Files",
