@@ -1587,8 +1587,8 @@ function updateLocalizedText() {
   sendIpcToRenderer(
     "update-toolbar-tooltips",
     _("ctxmenu-openfile"),
-    _("ctxmenu-turnto-leftpage"),
-    _("ctxmenu-turnto-rightpage"),
+    _("ctxmenu-go-left"),
+    _("ctxmenu-go-right"),
     _("menu-view-zoom-fitwidth"),
     _("menu-view-zoom-fitheight"),
     _("toolbar-rotate-counterclockwise"),
@@ -2103,6 +2103,14 @@ exports.onMenuTurnToRightPage = function () {
 
 exports.onMenuTurnToLeftPage = function () {
   goToLeftPage();
+};
+
+exports.onMenuNextPage = function () {
+  goToNextPage();
+};
+
+exports.onMenuPreviousPage = function () {
+  goToPreviousPage();
 };
 
 exports.onMenuFitToWidth = function () {

@@ -14,17 +14,17 @@ const { _ } = require("../shared/main/i18n");
 function buildContextMenu(isOpen, showRotation) {
   let contextMenu = Menu.buildFromTemplate([
     {
-      label: _("ctxmenu-turnto-rightpage"),
+      label: _("ctxmenu-nextpage"),
       enabled: isOpen,
       click() {
-        reader.onMenuTurnToRightPage();
+        reader.onMenuNextPage();
       },
     },
     {
-      label: _("ctxmenu-turnto-leftpage"),
+      label: _("ctxmenu-prevpage"),
       enabled: isOpen,
       click() {
-        reader.onMenuTurnToLeftPage();
+        reader.onMenuPreviousPage();
       },
     },
     {
