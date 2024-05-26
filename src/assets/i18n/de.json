@@ -116,6 +116,7 @@
 
   "toolbar-rotate-clockwise": "Rotiere in Uhrzeigerrichtung",
   "toolbar-rotate-counterclockwise": "Rotiere gegen Uhrzeigerrichtung",
+  "[NEEDS TRANSLATION]toolbar-change-pagesdirection": "Change Pages Direction",
 
   "dialog-file-types-playlists": "Playlist-Dateien",
   "dialog-file-types-audio-playlists": "Audio- und Playlist-Dateien",

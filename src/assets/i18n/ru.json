@@ -116,6 +116,7 @@
 
   "toolbar-rotate-clockwise": "Повернуть по часовой стрелке",
   "toolbar-rotate-counterclockwise": "Повернуть против часовой стрелки",
+  "[NEEDS TRANSLATION]toolbar-change-pagesdirection": "Change Pages Direction",
 
   "dialog-file-types-playlists": "Файлы плейлистов",
   "dialog-file-types-audio-playlists": "Файлы аудио и плейлистов",

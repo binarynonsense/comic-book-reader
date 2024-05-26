@@ -116,6 +116,7 @@
 
   "toolbar-rotate-clockwise": "تدوير باتجاه عقارب الساعة",
   "toolbar-rotate-counterclockwise": "تدوير عكس اتجاه عقارب الساعة",
+  "[NEEDS TRANSLATION]toolbar-change-pagesdirection": "Change Pages Direction",
 
   "dialog-file-types-playlists": "ملفات قائمة التشغيل",
   "dialog-file-types-audio-playlists": "ملفات الصوت وقائمة التشغيل",
