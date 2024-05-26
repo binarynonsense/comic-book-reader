@@ -149,6 +149,14 @@ function init(activeLocale, languages, activeTheme, themes, settings) {
       sendIpcToMain("set-layout-battery", parseInt(select.value));
     });
   }
+  // toolbar direction select
+  {
+    let select = document.getElementById("tool-pre-toolbar-direction-select");
+    select.value = settings.toolbarDirection;
+    select.addEventListener("change", function (event) {
+      sendIpcToMain("set-toolbar-direction", parseInt(select.value));
+    });
+  }
   // loading bg select
   {
     let select = document.getElementById("tool-pre-loading-bg-select");

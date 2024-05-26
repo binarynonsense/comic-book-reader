@@ -1625,6 +1625,21 @@ function updateLayoutBattery() {
 }
 exports.updateLayoutBattery = updateLayoutBattery;
 
+function updateToolbarDirection() {
+  let direction = "ltr";
+  // g_languageDir
+  switch (settings.getValue("toolbarDirection")) {
+    case 0:
+      direction = g_languageDir;
+      break;
+    case 2:
+      direction = "rtl";
+      break;
+  }
+  sendIpcToRenderer("update-toolbar-direction", direction);
+}
+exports.updateToolbarDirection = updateToolbarDirection;
+
 //////////////////////////////////////////////////////////////////////////////// SHOW/HIDE /////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 

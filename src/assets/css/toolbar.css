@@ -24,7 +24,6 @@
   bottom: 0;
   border: 0;
   z-index: 20;
-  direction: ltr;
 }
 #toolbar * {
   outline: none;

@@ -169,6 +169,11 @@ function initOnIpcCallbacks() {
     reader.updateLayoutBattery();
   });
 
+  on("set-toolbar-direction", (value) => {
+    settings.setValue("toolbarDirection", value);
+    reader.updateToolbarDirection();
+  });
+
   on("set-loading-bg", (value) => {
     settings.setValue("loadingIndicatorBG", value);
     reader.updateLoadingIndicator();
@@ -543,6 +548,27 @@ function getLocalization() {
     {
       id: "tool-pre-layout-battery-5-text",
       text: _("menu-shared-bottom-right"),
+    },
+    //////////////////////////////////////////////
+    {
+      id: "tool-pre-toolbar-text",
+      text: _("tool-pre-toolbar"),
+    },
+    {
+      id: "tool-pre-toolbar-direction-text",
+      text: _("tool-pre-toolbar-direction"),
+    },
+    {
+      id: "tool-pre-toolbar-direction-0-text",
+      text: _("tool-shared-ui-direction-fromlanguage"),
+    },
+    {
+      id: "tool-pre-toolbar-direction-1-text",
+      text: _("tool-shared-ui-direction-ltr"),
+    },
+    {
+      id: "tool-pre-toolbar-direction-2-text",
+      text: _("tool-shared-ui-direction-rtl"),
     },
     //////////////////////////////////////////////
     {

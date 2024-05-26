@@ -62,6 +62,7 @@ const g_defaultSettings = {
   rarExeFolderPath: undefined,
   turnPageOnScrollBoundary: false,
   filterMode: 0, // 0: none, 1: old paper
+  toolbarDirection: 0, // 0: infer from language, 1: ltr, 2: rtl
 
   navKeys: {
     scrollUp: ["w", "ArrowUp"],
@@ -289,6 +290,13 @@ function sanitize(screenWidth, screenHeight) {
     g_settings.layoutBattery > 5
   ) {
     g_settings.layoutBattery = g_defaultSettings.layoutBattery;
+  }
+  if (
+    !Number.isInteger(g_settings.toolbarDirection) ||
+    g_settings.toolbarDirection < 0 ||
+    g_settings.toolbarDirection > 2
+  ) {
+    g_settings.toolbarDirection = g_defaultSettings.toolbarDirection;
   }
   if (
     !Number.isInteger(g_settings.epubOpenAs) ||

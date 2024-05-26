@@ -168,6 +168,10 @@ function initOnIpcCallbacks() {
     else showNoBookContent(false);
   });
 
+  on("update-toolbar-direction", (dir) => {
+    document.querySelector("#toolbar").style.direction = dir;
+  });
+
   on(
     "update-toolbar-tooltips",
     (
