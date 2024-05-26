@@ -65,6 +65,7 @@ exports.init = function (filePath, checkHistory) {
   updateLayoutPageNum();
   updateLayoutAudioPlayer();
   updateLayoutBattery();
+  updateToolbarDirection();
 
   sendIpcToRenderer("add-event-listeners");
   sendIpcToRenderer(
