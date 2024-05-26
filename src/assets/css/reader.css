@@ -14,6 +14,8 @@
   overflow: auto;
 }
 
+/* NO BOOK CONTENT ***************************************************/
+
 .centered-block {
   margin: 0;
   position: absolute;
@@ -33,6 +35,8 @@
   filter: grayscale(100%);
   margin-bottom: 20px;
 }
+
+/* PAGES *********************************************************/
 
 #pages-container {
   height: 100%;
@@ -66,7 +70,7 @@
   user-select: none;
 }
 
-/* INFO */
+/* INFO *********************************************************/
 
 .info-anchor {
   position: fixed;
@@ -113,9 +117,10 @@
   border-radius: 5px;
   width: fit-content;
   white-space: nowrap;
+  direction: ltr;
 }
 
-/* ZOOM  */
+/* ZOOM  *********************************************************/
 
 .set-rotate-180 {
   transform: rotate(180deg);
