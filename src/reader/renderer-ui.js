@@ -988,8 +988,8 @@ function addButtonEvent(buttonName) {
 function addToolbarEventListeners() {
   addButtonEvent("toolbar-button-rotate-clockwise");
   addButtonEvent("toolbar-button-rotate-counterclockwise");
-  addButtonEvent("toolbar-button-next");
-  addButtonEvent("toolbar-button-prev");
+  addButtonEvent("toolbar-button-right");
+  addButtonEvent("toolbar-button-left");
   addButtonEvent("toolbar-button-fit-to-width");
   addButtonEvent("toolbar-button-fit-to-height");
   addButtonEvent("toolbar-button-fullscreen-enter");

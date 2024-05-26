@@ -444,10 +444,10 @@ function initOnIpcCallbacks() {
 
   on("toolbar-button-clicked", (name) => {
     switch (name) {
-      case "toolbar-button-next":
+      case "toolbar-button-right":
         goToRightPage();
         break;
-      case "toolbar-button-prev":
+      case "toolbar-button-left":
         goToLeftPage();
         break;
       case "toolbar-button-fit-to-width":
