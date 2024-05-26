@@ -58,6 +58,7 @@
 
 #toolbar-page-numbers {
   user-select: none;
+  direction: ltr;
 }
 
 #toolbar-page-slider-div {
