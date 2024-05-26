@@ -54,6 +54,12 @@
   color: var(--toolbar-item-hover-color);
 }
 
+#toolbar-arrow-buttons {
+  display: flex;
+  align-items: center;
+  direction: ltr;
+}
+
 /* SLIDER */
 
 #toolbar-page-numbers {
