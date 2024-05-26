@@ -178,6 +178,8 @@ function initOnIpcCallbacks() {
       tOpenFile,
       tPrevious,
       tNext,
+      tChangeDirectionLtr,
+      tChangeDirectionRtl,
       tFitWidth,
       tFitHeight,
       tRotateCounter,
@@ -187,6 +189,12 @@ function initOnIpcCallbacks() {
       document.querySelector("#toolbar-button-open-href").title = tOpenFile;
       document.querySelector("#toolbar-button-left-href").title = tPrevious;
       document.querySelector("#toolbar-button-right-href").title = tNext;
+      document.querySelector(
+        "#toolbar-button-set-pagesdirection-ltr-href"
+      ).title = tChangeDirectionLtr;
+      document.querySelector(
+        "#toolbar-button-set-pagesdirection-rtl-href"
+      ).title = tChangeDirectionRtl;
       document.querySelector("#toolbar-button-fit-to-height-href").title =
         tFitHeight;
       document.querySelector("#toolbar-button-fit-to-width-href").title =
@@ -240,6 +248,26 @@ function initOnIpcCallbacks() {
   on("update-toolbar-zoom-buttons", (areEnabled) => {
     const button1 = document.querySelector("#toolbar-button-fit-to-height");
     const button2 = document.querySelector("#toolbar-button-fit-to-width");
+    if (areEnabled) {
+      button1.classList.remove("set-no-click");
+      button2.classList.remove("set-no-click");
+      button1.classList.remove("set-low-opacity");
+      button2.classList.remove("set-low-opacity");
+    } else {
+      button1.classList.add("set-no-click");
+      button2.classList.add("set-no-click");
+      button1.classList.add("set-low-opacity");
+      button2.classList.add("set-low-opacity");
+    }
+  });
+
+  on("update-toolbar-pagesdirection-buttons", (areEnabled) => {
+    const button1 = document.querySelector(
+      "#toolbar-button-set-pagesdirection-ltr"
+    );
+    const button2 = document.querySelector(
+      "#toolbar-button-set-pagesdirection-rtl"
+    );
     if (areEnabled) {
       button1.classList.remove("set-no-click");
       button2.classList.remove("set-no-click");
@@ -330,6 +358,21 @@ function initOnIpcCallbacks() {
 
   on("set-pages-direction", (value) => {
     document.querySelector("#toolbar-page-slider-div").style.direction = value;
+    if (value === "rtl") {
+      document
+        .querySelector("#toolbar-button-set-pagesdirection-ltr")
+        .classList.remove("set-display-none");
+      document
+        .querySelector("#toolbar-button-set-pagesdirection-rtl")
+        .classList.add("set-display-none");
+    } else {
+      document
+        .querySelector("#toolbar-button-set-pagesdirection-ltr")
+        .classList.add("set-display-none");
+      document
+        .querySelector("#toolbar-button-set-pagesdirection-rtl")
+        .classList.remove("set-display-none");
+    }
   });
 
   on("set-hide-inactive-mouse-cursor", (hide) => {
@@ -990,6 +1033,8 @@ function addToolbarEventListeners() {
   addButtonEvent("toolbar-button-rotate-counterclockwise");
   addButtonEvent("toolbar-button-right");
   addButtonEvent("toolbar-button-left");
+  addButtonEvent("toolbar-button-set-pagesdirection-ltr");
+  addButtonEvent("toolbar-button-set-pagesdirection-rtl");
   addButtonEvent("toolbar-button-fit-to-width");
   addButtonEvent("toolbar-button-fit-to-height");
   addButtonEvent("toolbar-button-fullscreen-enter");

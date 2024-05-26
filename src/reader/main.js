@@ -450,6 +450,12 @@ function initOnIpcCallbacks() {
       case "toolbar-button-left":
         goToLeftPage();
         break;
+      case "toolbar-button-set-pagesdirection-ltr":
+        setPagesDirection(0);
+        break;
+      case "toolbar-button-set-pagesdirection-rtl":
+        setPagesDirection(1);
+        break;
       case "toolbar-button-fit-to-width":
         setFitToWidth();
         break;
@@ -1549,21 +1555,25 @@ function updateMenuAndToolbarItems(isOpen = true) {
         sendIpcToRenderer("update-toolbar-rotation-buttons", true);
         sendIpcToRenderer("update-toolbar-page-buttons", true);
         sendIpcToRenderer("update-toolbar-zoom-buttons", true);
+        sendIpcToRenderer("update-toolbar-pagesdirection-buttons", true);
       } else if (g_fileData.type === FileDataType.EPUB_EBOOK) {
         menuBar.setEpubEbookOpened();
         sendIpcToRenderer("update-toolbar-rotation-buttons", false);
         sendIpcToRenderer("update-toolbar-page-buttons", true);
         sendIpcToRenderer("update-toolbar-zoom-buttons", true);
+        sendIpcToRenderer("update-toolbar-pagesdirection-buttons", true);
       } else if (g_fileData.type === FileDataType.IMGS_FOLDER) {
         menuBar.setImageOpened();
         sendIpcToRenderer("update-toolbar-rotation-buttons", true);
         sendIpcToRenderer("update-toolbar-page-buttons", true);
         sendIpcToRenderer("update-toolbar-zoom-buttons", true);
+        sendIpcToRenderer("update-toolbar-pagesdirection-buttons", true);
       } else if (g_fileData.type === FileDataType.WWW) {
         menuBar.setWWWOpened();
         sendIpcToRenderer("update-toolbar-rotation-buttons", true);
         sendIpcToRenderer("update-toolbar-page-buttons", true);
         sendIpcToRenderer("update-toolbar-zoom-buttons", true);
+        sendIpcToRenderer("update-toolbar-pagesdirection-buttons", true);
       } else {
         menuBar.setComicBookOpened(false);
         menuBar.setCanOpenBooks(true);
@@ -1571,6 +1581,7 @@ function updateMenuAndToolbarItems(isOpen = true) {
         sendIpcToRenderer("update-toolbar-rotation-buttons", false);
         sendIpcToRenderer("update-toolbar-page-buttons", false);
         sendIpcToRenderer("update-toolbar-zoom-buttons", false);
+        sendIpcToRenderer("update-toolbar-pagesdirection-buttons", false);
       }
     } else {
       menuBar.setComicBookOpened(false);
@@ -1589,6 +1600,8 @@ function updateLocalizedText() {
     _("ctxmenu-openfile"),
     _("ctxmenu-go-left"),
     _("ctxmenu-go-right"),
+    _("toolbar-change-pagesdirection-ltr"),
+    _("toolbar-change-pagesdirection-rtl"),
     _("menu-view-zoom-fitwidth"),
     _("menu-view-zoom-fitheight"),
     _("toolbar-rotate-counterclockwise"),
