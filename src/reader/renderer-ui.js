@@ -185,8 +185,8 @@ function initOnIpcCallbacks() {
       tFullScreen
     ) => {
       document.querySelector("#toolbar-button-open-href").title = tOpenFile;
-      document.querySelector("#toolbar-button-prev-href").title = tPrevious;
-      document.querySelector("#toolbar-button-next-href").title = tNext;
+      document.querySelector("#toolbar-button-left-href").title = tPrevious;
+      document.querySelector("#toolbar-button-right-href").title = tNext;
       document.querySelector("#toolbar-button-fit-to-height-href").title =
         tFitHeight;
       document.querySelector("#toolbar-button-fit-to-width-href").title =
