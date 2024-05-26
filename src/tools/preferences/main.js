@@ -136,6 +136,7 @@ function initOnIpcCallbacks() {
     i18n.loadLocale(value);
     settings.setValue("locale", i18n.getLoadedLocale());
     core.onLanguageChanged();
+    reader.updateToolbarDirection(settings.getValue("toolbarDirection"));
     reader.rebuildMenuAndToolBars(false);
     for (const [key, value] of Object.entries(tools.getTools())) {
       if (value.updateLocalizedText) value.updateLocalizedText();
