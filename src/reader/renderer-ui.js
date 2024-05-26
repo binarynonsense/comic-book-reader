@@ -222,8 +222,8 @@ function initOnIpcCallbacks() {
   });
 
   on("update-toolbar-page-buttons", (areEnabled) => {
-    const button1 = document.querySelector("#toolbar-button-prev");
-    const button2 = document.querySelector("#toolbar-button-next");
+    const button1 = document.querySelector("#toolbar-button-left");
+    const button2 = document.querySelector("#toolbar-button-right");
     if (areEnabled) {
       button1.classList.remove("set-no-click");
       button2.classList.remove("set-no-click");
