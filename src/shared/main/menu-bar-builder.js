@@ -338,6 +338,36 @@ function buildApplicationMenu(settings, history) {
           ],
         },
         {
+          id: "view-layout",
+          label: _("menu-view-layout"),
+          submenu: [
+            {
+              id: "view-layout-pagesdirection",
+              label: _("menu-view-layout-pagesdirection"),
+              submenu: [
+                {
+                  id: "pagesdirection-0",
+                  label: _("tool-shared-ui-direction-ltr"),
+                  type: "radio",
+                  checked: settings.pagesDirection === 0,
+                  click() {
+                    reader.onMenuPagesDirection(0);
+                  },
+                },
+                {
+                  id: "pagesdirection-1",
+                  label: _("tool-shared-ui-direction-rtl"),
+                  type: "radio",
+                  checked: settings.pagesDirection === 1,
+                  click() {
+                    reader.onMenuPagesDirection(1);
+                  },
+                },
+              ],
+            },
+          ],
+        },
+        {
           id: "view-page",
           label: _("menu-view-page"),
           submenu: [

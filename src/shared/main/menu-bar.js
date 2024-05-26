@@ -101,6 +101,13 @@ exports.setFilterMode = function (mode) {
   Menu.getApplicationMenu().getMenuItemById("filter-1").checked = mode === 1;
 };
 
+exports.setPagesDirection = function (direction) {
+  Menu.getApplicationMenu().getMenuItemById("pagesdirection-0").checked =
+    direction === 0;
+  Menu.getApplicationMenu().getMenuItemById("pagesdirection-1").checked =
+    direction === 1;
+};
+
 ////////////////////////////
 
 exports.setCanOpenBooks = setCanOpenBooks = function (isEnabled) {
@@ -156,6 +163,10 @@ exports.setComicBookOpened = setComicBookOpened = function (isEnabled) {
   );
   EnableItemRecursive(
     Menu.getApplicationMenu().getMenuItemById("view-filter"),
+    isEnabled
+  );
+  EnableItemRecursive(
+    Menu.getApplicationMenu().getMenuItemById("view-layout-pagesdirection"),
     isEnabled
   );
 };

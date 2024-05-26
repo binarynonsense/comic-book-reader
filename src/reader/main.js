@@ -41,6 +41,7 @@ let g_resizeEventCounter;
 let g_workerExport;
 let g_workerPage;
 let g_languageDir = "ltr";
+let g_pagesDirection = "ltr";
 
 exports.init = function (filePath, checkHistory) {
   initOnIpcCallbacks();
@@ -50,8 +51,8 @@ exports.init = function (filePath, checkHistory) {
 
   updateLocalizedText();
   renderTitle();
-  setFilter(settings.getValue("filterMode"));
 
+  setFilter(settings.getValue("filterMode"));
   if (settings.getValue("fit_mode") === 0) {
     setFitToWidth();
   } else if (settings.getValue("fit_mode") === 1) {
@@ -59,6 +60,7 @@ exports.init = function (filePath, checkHistory) {
   } else {
     setScaleToHeight(settings.getValue("zoom_scale"));
   }
+  setPagesDirection(settings.getValue("pagesDirection"));
 
   updateLoadingIndicator();
   updateLayoutClock();
@@ -1749,6 +1751,15 @@ function setFilter(value, rebuildMenu = true) {
   if (rebuildMenu) rebuildMenuAndToolBars();
 }
 
+function setPagesDirection(value, rebuildMenu = true) {
+  g_pagesDirection = value === 1 ? "rtl" : "ltr";
+  settings.setValue("pagesDirection", value);
+  menuBar.setPagesDirection(value);
+  sendIpcToPreload("update-menubar");
+  sendIpcToRenderer("set-pages-direction", g_pagesDirection);
+  if (rebuildMenu) rebuildMenuAndToolBars();
+}
+
 //////////////////////////////////////////////////////////////////////////////// ZOOM //////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 
@@ -2279,6 +2290,10 @@ exports.onGoToPageLast = function () {
 
 exports.onMenuFilterValue = function (value) {
   setFilter(value);
+};
+
+exports.onMenuPagesDirection = function (value) {
+  setPagesDirection(value);
 };
 
 async function onMenuFileProperties() {

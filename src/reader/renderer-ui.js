@@ -328,6 +328,10 @@ function initOnIpcCallbacks() {
     }
   });
 
+  on("set-pages-direction", (value) => {
+    document.querySelector("#toolbar-page-slider-div").style.direction = value;
+  });
+
   on("set-hide-inactive-mouse-cursor", (hide) => {
     g_hideMouseCursor = hide;
   });
