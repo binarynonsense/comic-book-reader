@@ -22,10 +22,8 @@ Un lector y conversor de cómics para archivos en formato CBZ, CBR, CB7, EPUB y 
 ## Contenidos:
 
 - [Características](#características)
-- [Controles Básicos](#controles-básicos)
 - [Descargas](#descargas)
 - [Contribuciones](#contribuciones)
-- [Proyectos Relacionados](#proyectos-relacionados)
 - [Licencia](#licencia)
 - [Otros](#otros)
 
@@ -90,25 +88,6 @@ Un lector y conversor de cómics para archivos en formato CBZ, CBR, CB7, EPUB y 
 > 
 > [3]: La creación y modificación de archivos CBR están desactivadas por defecto. Se pueden activar en las preferencias pero requieren que una herramienta de línea de comandos de terceros ([rar](https://www.win-rar.com/cmd-shell-mode.html?&L=0) de WinRAR) se encuentre instalada en el sistema.
 
-## Controles Básicos:
-
-- Barra de herramientas:
-  - Botones: 'Abrir archivo', 'Página anterior', 'Página siguiente', 'Ajustar al ancho', 'Ajustar al alto', 'Girar en sentido antihorario', 'Girar en sentido horario' y 'Alternar pantalla completa'.
-  - Control deslizante: utilícelo para ir rápidamente a cualquier página del libro.
-- Teclas:
-  - 'Flecha derecha' o 'Página abajo' para ir a la página siguiente.
-  - 'Flecha izquierda' o 'Retroceder página' para ir a la anterior.
-  - 'Flecha arriba' para desplazar la página hacia arriba, 'Flecha abajo' para desplazar la página hacia abajo.
-  - 'WASD' para desplazar la página vertical y horizontalmente.
-  - 'F11' para alternar el modo de pantalla completa.
-  - 'Ctrl+O' para elegir un archivo para abrir.
-  - 'Ctrl++' y 'Ctrl+-' para acercar o alejar la vista. 'Ctrl+0' para restablecerla.
-- Ratón:
-  - 'Rueda de desplazamiento' desplaza la página hacia arriba y hacia abajo.
-  - 'Clic con el botón izquierdo' abre la página siguiente si se hace clic en el lado derecho del área de visualización y la página anterior si se hace clic en el lado izquierdo.
-  - 'Clic derecho' abre un menú contextual con algunas opciones básicas de navegación.
-  - 'Ctrl+rueda de desplazamiento' para acercar o alejar la vista.
-
 ## Descargas:
 
 <a href="https://github.com/binarynonsense/comic-book-reader/releases/latest"><img src="https://shields.io/github/v/release/binarynonsense/comic-book-reader?display_name=tag&label=estable" title="version"></a> <a href="https://github.com/binarynonsense/comic-book-reader/releases"><img src="https://shields.io/github/v/release/binarynonsense/comic-book-reader?display_name=tag&label=%C3%BAltima&include_prereleases" title="version"></a> <a href="https://github.com/binarynonsense/comic-book-reader/releases"><img src="https://shields.io/github/downloads/binarynonsense/comic-book-reader/total?label=descargas" title="total downloads"></a>
@@ -130,11 +109,6 @@ Todas las versiones (estables y betas):
 - Traducción al alemán por [Timo Heidutzek (trzyglow)](https://github.com/trzyglow)
 
 Hay información sobre cómo contribuir al proyecto en el fichero [CONTRIBUTING.md](../CONTRIBUTING.md).
-
-## Proyectos Relacionados:
-
-- [ACBT - Comic Book Tools](https://github.com/binarynonsense/comic-book-tools)
-  - Versión independiente para línea de comandos de alguna de las herramientas disponibles en ACBR.
 
 ## Licencia:
 
