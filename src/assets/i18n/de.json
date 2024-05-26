@@ -1,7 +1,7 @@
 {
   "@metadata": {
     "authors": ["trzyglow"],
-    "last-updated": "2024-05-17",
+    "last-updated": "2024-05-26",
     "acbr-version": "3.5.0-beta1",
     "pre-release": "false",
     "comments": "Deutsche Lokalisierung",
@@ -105,10 +105,10 @@
   "ctxmenu-prevpage": "Vorherige Seite",
   "ctxmenu-turnto-leftpage": "Zur linken Seite blättern",
   "ctxmenu-turnto-rightpage": "Zur rechten Seite blättern",
-  "[NEEDS TRANSLATION]ctxmenu-goto-leftpage": "Go to Left Page",
-  "[NEEDS TRANSLATION]ctxmenu-goto-rightpage": "Go to Right Page",
-  "[NEEDS TRANSLATION]ctxmenu-go-left": "Go Left",
-  "[NEEDS TRANSLATION]ctxmenu-go-right": "Go Right",
+  "ctxmenu-goto-leftpage": "Zur linken Seite gehen",
+  "ctxmenu-goto-rightpage": "Zur rechten Seite gehen",
+  "ctxmenu-go-left": "Nach links gehen",
+  "ctxmenu-go-right": "Nach rechts gehen",
   "ctxmenu-rotate": "Rotieren",
   "ctxmenu-rotate-clockwise": "In Uhrzeigerrichtung",
   "ctxmenu-rotate-counterclockwise": "Gegen Uhrzeigerrichtung",
