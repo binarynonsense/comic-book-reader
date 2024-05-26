@@ -22,10 +22,8 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB and PDF files.
 ## Contents:
 
 - [Features](#features)
-- [Basic Controls](#basic-controls)
 - [Downloads](#downloads)
 - [Contributions](#contributions)
-- [Related Projects](#related-projects)
 - [License](#license)
 - [Other](#other)
 
@@ -89,25 +87,6 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB and PDF files.
 > 
 > [3]: Creating and modifying CBR files are disabled by default. They can be enabled in the preferences but require a third-party command-line tool ([rar](https://www.win-rar.com/cmd-shell-mode.html?&L=0) from WinRAR) to be installed in the system.
 
-## Basic Controls:
-
-- Toolbar :
-  - Buttons: 'Open file', 'Previous page', 'Next page', 'Fit to width', 'Fit to height', 'Rotate counterclockwise', 'Rotate clockwise' and 'Toggle fullscreen'.
-  - Slider: use it to quickly go to any page in the book.
-- Keys:
-  - 'Right arrow' or 'Page down' to go the next page.
-  - 'Left arrow' or 'Page up' to go to the previous one.
-  - 'Up arrow' to scroll the page up, 'Down arrow' to scroll the page down.
-  - 'WASD' to scroll the page vertically and horizontally.
-  - 'F11' to toggle full-screen mode.
-  - 'Ctrl+O' to choose a file to open.
-  - 'Ctrl++' and 'Ctrl+-' to zoom in or zoom out the view. 'Ctrl+0' to reset it.
-- Mouse:
-  - 'Scroll wheel' scrolls the page up and down.
-  - 'Left-click' opens the next page if the right side of the view area is clicked and the previous page if the left side is clicked.
-  - 'Right-click' opens a context menu with some basic navigation options.
-  - 'Ctrl+Scroll wheel' to zoom in or zoom out the view.
-
 ## Downloads:
 
 <a href="https://github.com/binarynonsense/comic-book-reader/releases/latest"><img src="https://shields.io/github/v/release/binarynonsense/comic-book-reader?display_name=tag&label=stable" title="version"></a> <a href="https://github.com/binarynonsense/comic-book-reader/releases"><img src="https://shields.io/github/v/release/binarynonsense/comic-book-reader?display_name=tag&label=latest&include_prereleases" title="version"></a> <a href="https://github.com/binarynonsense/comic-book-reader/releases"><img src="https://shields.io/github/downloads/binarynonsense/comic-book-reader/total?label=downloads" title="total downloads"></a>
@@ -129,11 +108,6 @@ All versions (stable and beta):
 - German localization by [Timo Heidutzek (trzyglow)](https://github.com/trzyglow)
 
 There's info about how to contribute to the project in the [CONTRIBUTING.md](../CONTRIBUTING.md) file.
-
-## Related Projects:
-
-- [ACBT - Comic Book Tools](https://github.com/binarynonsense/comic-book-tools)
-  - Stand-alone, command-line version of some of the tools available in ACBR.
 
 ## License:
 
