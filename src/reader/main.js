@@ -404,16 +404,16 @@ function initOnIpcCallbacks() {
   on("mouse-click", (mouseX, bodyX) => {
     if (settings.getValue("hotspots_mode") === 1) {
       if (mouseX > bodyX / 2) {
-        goToNextPage();
+        goToRightPage();
       } else {
-        goToPreviousPage();
+        goToLeftPage();
       }
     } else if (settings.getValue("hotspots_mode") === 2) {
       const columnWidth = bodyX / 3;
       if (mouseX < columnWidth) {
-        goToPreviousPage();
+        goToLeftPage();
       } else if (mouseX > 2 * columnWidth) {
-        goToNextPage();
+        goToRightPage();
       }
     }
   });
@@ -445,10 +445,10 @@ function initOnIpcCallbacks() {
   on("toolbar-button-clicked", (name) => {
     switch (name) {
       case "toolbar-button-next":
-        goToNextPage();
+        goToRightPage();
         break;
       case "toolbar-button-prev":
-        goToPreviousPage();
+        goToLeftPage();
         break;
       case "toolbar-button-fit-to-width":
         setFitToWidth();
@@ -1431,6 +1431,22 @@ function goToPreviousPage() {
   }
 }
 
+function goToRightPage() {
+  if (g_pagesDirection === "rtl") {
+    goToPreviousPage();
+  } else {
+    goToNextPage();
+  }
+}
+
+function goToLeftPage() {
+  if (g_pagesDirection === "rtl") {
+    goToNextPage();
+  } else {
+    goToPreviousPage();
+  }
+}
+
 function goToPercentage(percentage) {
   if (
     g_fileData.state !== FileDataState.LOADED ||
@@ -2082,15 +2098,11 @@ function exportPageError(err) {
 //////////////////////////////////////////////////////////////////////////////
 
 exports.onMenuTurnToRightPage = function () {
-  goToNextPage();
+  goToRightPage();
 };
 
 exports.onMenuTurnToLeftPage = function () {
-  goToPreviousPage();
-};
-
-exports.onMenuTurnToRightPage = function () {
-  goToNextPage();
+  goToLeftPage();
 };
 
 exports.onMenuFitToWidth = function () {
