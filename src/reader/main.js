@@ -401,6 +401,13 @@ function initOnIpcCallbacks() {
     }
   });
 
+  on("next-page-pressed", () => {
+    goToNextPage();
+  });
+  on("prev-page-pressed", () => {
+    goToPreviousPage();
+  });
+
   on("mouse-click", (mouseX, bodyX) => {
     if (settings.getValue("hotspots_mode") === 1) {
       if (mouseX > bodyX / 2) {
@@ -1598,8 +1605,8 @@ function updateLocalizedText() {
   sendIpcToRenderer(
     "update-toolbar-tooltips",
     _("ctxmenu-openfile"),
-    _("ctxmenu-go-left"),
-    _("ctxmenu-go-right"),
+    _("toolbar-go-left"),
+    _("toolbar-go-right"),
     _("toolbar-change-pagesdirection-ltr"),
     _("toolbar-change-pagesdirection-rtl"),
     _("menu-view-zoom-fitwidth"),

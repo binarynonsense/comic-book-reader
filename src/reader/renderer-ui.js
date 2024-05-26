@@ -673,20 +673,31 @@ export function onInputEvent(type, event) {
         }
 
         if (fileOpen) {
-          if (matchesNavKey(g_navKeys.turnToRightPage, event)) {
+          if (matchesNavKey(g_navKeys.changePageNext, event)) {
             if (!event.repeat) {
               inputGoToNextPage();
               event.stopPropagation();
             }
             event.stopPropagation();
-          } else if (matchesNavKey(g_navKeys.turnToLeftPage, event)) {
+          } else if (matchesNavKey(g_navKeys.changePagePrev, event)) {
             if (!event.repeat) {
               inputGoToPrevPage();
               event.stopPropagation();
             }
-          } else if (matchesNavKey(g_navKeys.firstPage, event)) {
+          } else if (matchesNavKey(g_navKeys.changePageRight, event)) {
+            if (!event.repeat) {
+              inputGoToLeftPage();
+              event.stopPropagation();
+            }
+            event.stopPropagation();
+          } else if (matchesNavKey(g_navKeys.changePageLeft, event)) {
+            if (!event.repeat) {
+              inputGoToRightPage();
+              event.stopPropagation();
+            }
+          } else if (matchesNavKey(g_navKeys.changePageFirst, event)) {
             if (!event.repeat) inputGoToFirstPage();
-          } else if (matchesNavKey(g_navKeys.lastPage, event)) {
+          } else if (matchesNavKey(g_navKeys.changePageLast, event)) {
             if (!event.repeat) inputGoToLastPage();
           } else if (matchesNavKey(g_navKeys.scrollDown, event)) {
             // TODO: only check edge if down this frame? like in gamepad
@@ -848,10 +859,10 @@ export function onInputEvent(type, event) {
               ) < 1
             ) {
               // reached bottom
-              inputGoToNextPage();
+              inputGoToLeftPage();
             } else if (event.deltaY < 0 && container.scrollTop <= 0) {
               // reached top
-              inputGoToPrevPage();
+              inputGoToRightPage();
             }
           }
         }
@@ -866,7 +877,7 @@ function inputScrollPageUp(checkEdge = true, factor = 1) {
   const image = container?.firstChild;
   if (reader && container && image) {
     if (g_turnPageOnScrollBoundary && checkEdge && reader.scrollTop <= 0) {
-      inputGoToPrevPage();
+      inputGoToRightPage();
     } else {
       const cs = getComputedStyle(reader);
       const readerHeight = reader.offsetHeight - parseFloat(cs.marginBottom);
@@ -892,7 +903,7 @@ function inputScrollPageDown(checkEdge = true, factor = 1) {
       checkEdge &&
       Math.abs(reader.scrollHeight - reader.scrollTop - reader.clientHeight) < 1
     ) {
-      inputGoToNextPage();
+      inputGoToLeftPage();
     } else {
       const cs = getComputedStyle(reader);
       const readerHeight = reader.offsetHeight - parseFloat(cs.marginBottom);
@@ -909,13 +920,20 @@ function inputScrollPageDown(checkEdge = true, factor = 1) {
 }
 
 function inputGoToNextPage() {
+  sendIpcToMain("next-page-pressed");
+}
+function inputGoToPrevPage() {
+  sendIpcToMain("prev-page-pressed");
+}
+
+function inputGoToLeftPage() {
   sendIpcToMain(
     "mouse-click",
     document.body.clientWidth,
     document.body.clientWidth
   );
 }
-function inputGoToPrevPage() {
+function inputGoToRightPage() {
   sendIpcToMain("mouse-click", 0, document.body.clientWidth);
 }
 function inputGoToFirstPage() {
@@ -987,9 +1005,9 @@ export function onGamepadPolled() {
     }
     // next / prev page
     if (gamepads.getButtonDown(gamepads.Buttons.LB)) {
-      inputGoToPrevPage();
+      inputGoToRightPage();
     } else if (gamepads.getButtonDown(gamepads.Buttons.RB)) {
-      inputGoToNextPage();
+      inputGoToLeftPage();
     }
     // last / first page
     if (

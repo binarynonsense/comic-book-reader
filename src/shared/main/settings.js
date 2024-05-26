@@ -70,12 +70,12 @@ const g_defaultSettings = {
     scrollDown: ["s", "ArrowDown"],
     scrollLeft: ["a"],
     scrollRight: ["d"],
-    // nextPage: ["PageDown", "ArrowRight"],
-    // prevPage: ["PageUp", "ArrowLeft"],
-    turnToRightPage: ["PageDown", "ArrowRight"],
-    turnToLeftPage: ["PageUp", "ArrowLeft"],
-    firstPage: ["Home"],
-    lastPage: ["End"],
+    changePageNext: ["PageDown"],
+    changePagePrev: ["PageUp"],
+    changePageRight: ["ArrowRight"],
+    changePageLeft: ["ArrowLeft"],
+    changePageFirst: ["Home"],
+    changePageLast: ["End"],
     zoomInPage: ["+"],
     zoomOutPage: ["-"],
     zoomResetPage: ["Control+0"],
@@ -494,14 +494,14 @@ function loadNavKeys(loadedKeys) {
 }
 
 function checkNavKeysOlderVersion(loadedKeys) {
-  if (loadedKeys.nextPage) {
-    loadedKeys.turnToRightPage = loadedKeys.nextPage;
-    loadedKeys.nextPage = undefined;
-  }
-  if (loadedKeys.prevPage) {
-    loadedKeys.turnToLeftPage = loadedKeys.prevPage;
-    loadedKeys.prevPage = undefined;
-  }
+  // if (loadedKeys.nextPage) {
+  //   loadedKeys.turnToRightPage = loadedKeys.nextPage;
+  //   loadedKeys.nextPage = undefined;
+  // }
+  // if (loadedKeys.prevPage) {
+  //   loadedKeys.turnToLeftPage = loadedKeys.prevPage;
+  //   loadedKeys.prevPage = undefined;
+  // }
 }
 
 exports.canEditRars = function () {
