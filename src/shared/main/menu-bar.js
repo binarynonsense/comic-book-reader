@@ -158,6 +158,10 @@ exports.setComicBookOpened = setComicBookOpened = function (isEnabled) {
     isEnabled
   );
   EnableItemRecursive(
+    Menu.getApplicationMenu().getMenuItemById("view-layout"),
+    isEnabled
+  );
+  EnableItemRecursive(
     Menu.getApplicationMenu().getMenuItemById("view-zoom"),
     isEnabled
   );
