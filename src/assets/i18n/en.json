@@ -1,7 +1,7 @@
 {
   "@metadata": {
     "authors": ["Álvaro"],
-    "last-updated": "2024-05-25",
+    "last-updated": "2024-05-26",
     "acbr-version": "3.5.0-beta1",
     "pre-release": "false",
     "comments": "",
@@ -105,6 +105,10 @@
   "ctxmenu-prevpage": "Previous Page",
   "ctxmenu-turnto-leftpage": "Turn to Left Page",
   "ctxmenu-turnto-rightpage": "Turn to Right Page",
+  "ctxmenu-goto-leftpage": "Go to Left Page",
+  "ctxmenu-goto-rightpage": "Go to Right Page",
+  "ctxmenu-go-left": "Go Left",
+  "ctxmenu-go-right": "Go Right",
   "ctxmenu-rotate": "Rotate",
   "ctxmenu-rotate-clockwise": "Clockwise",
   "ctxmenu-rotate-counterclockwise": "Counterclockwise",
