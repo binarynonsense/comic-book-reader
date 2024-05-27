@@ -79,7 +79,6 @@ Ein Comicbuch Leser und Konverter für CBZ, CBR, CB7, EPUB und PDF Dateien.
     - Suche Wörterbucheinträge in:
       - Wiktionary Dictionary.
 
-
 > Hinweise:
 >
 > [1]: Nur Bilder.
@@ -107,6 +106,7 @@ Alle Versionen (Stabil und Beta):
 
 - Russische Lokalisierung von [vanja-san](https://github.com/vanja-san)
 - Deutsche Lokalisierung von [Timo Heidutzek (trzyglow)](https://github.com/trzyglow)
+- Arabische Lokalisierung von [ahmed-0011](https://github.com/ahmed-0011)
 
 Informationen darüber, wie man zu dem Projekt beitragen kann, gibt es im [CONTRIBUTING.md](../CONTRIBUTING.md) Dokument.
 
