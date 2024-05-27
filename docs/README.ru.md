@@ -106,6 +106,7 @@
 
 - Русская локализация от [vanja-san](https://github.com/vanja-san)
 - Немецкая локализация от [Timo Heidutzek (trzyglow)](https://github.com/trzyglow)
+- Арабская локализация от [Ahmed (ahmed-0011)](https://github.com/ahmed-0011)
 
 Информация о том, как внести свой вклад в проект, содержится в файле [CONTRIBUTING.md](../CONTRIBUTING.md).
 
