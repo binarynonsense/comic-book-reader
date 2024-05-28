@@ -1199,7 +1199,6 @@ export function getOpenModal() {
 
 // NOTE: called from home-screen renderer
 export function showModal(config) {
-  console.log("ui showModal");
   g_openModal = modals.show(config);
 }
 
