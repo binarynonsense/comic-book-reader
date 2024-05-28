@@ -132,7 +132,7 @@ function initOnIpcCallbacks() {
         FileExtension.BMP,
         FileExtension.AVIF,
       ];
-      let filePathsList = appUtils.chooseOpenFiles(
+      let filePathsList = appUtils.chooseFiles(
         core.getMainWindow(),
         defaultPath,
         allowedFileTypesName,

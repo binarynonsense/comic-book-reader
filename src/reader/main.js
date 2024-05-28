@@ -2237,7 +2237,7 @@ function onMenuOpenFile(startPath) {
     FileExtension.BMP,
     FileExtension.AVIF,
   ];
-  let fileList = appUtils.chooseOpenFiles(
+  let fileList = appUtils.chooseFiles(
     core.getMainWindow(),
     defaultPath,
     allowedFileTypesName,

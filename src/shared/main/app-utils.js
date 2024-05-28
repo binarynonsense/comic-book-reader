@@ -74,7 +74,7 @@ exports.getConfigFolder = function () {
 // FILE DIALOGUES /////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-function chooseOpenFiles(
+function chooseFiles(
   window,
   defaultPath,
   allowedFileTypesName,
@@ -104,7 +104,7 @@ function chooseOpenFiles(
   });
   return filePaths;
 }
-exports.chooseOpenFiles = chooseOpenFiles;
+exports.chooseFiles = chooseFiles;
 
 function chooseFolder(window, defaultPath) {
   if (!fs.existsSync(defaultPath)) {

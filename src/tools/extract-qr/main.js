@@ -122,7 +122,7 @@ function initOnIpcCallbacks() {
         FileExtension.WEBP,
         FileExtension.AVIF,
       ];
-      let filePathsList = appUtils.chooseOpenFiles(
+      let filePathsList = appUtils.chooseFiles(
         core.getMainWindow(),
         undefined,
         allowedFileTypesName,

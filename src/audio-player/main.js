@@ -276,7 +276,7 @@ function callOpenFilesDialog(mode) {
     FileExtension.M3U,
     FileExtension.M3U8,
   ];
-  let filePaths = appUtils.chooseOpenFiles(
+  let filePaths = appUtils.chooseFiles(
     g_mainWindow,
     defaultPath,
     allowedFileTypesName,

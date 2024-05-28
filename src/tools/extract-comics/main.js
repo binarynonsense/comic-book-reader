@@ -163,7 +163,7 @@ function initOnIpcCallbacks() {
         FileExtension.PDF,
         FileExtension.EPUB,
       ];
-      let filePathsList = appUtils.chooseOpenFiles(
+      let filePathsList = appUtils.chooseFiles(
         core.getMainWindow(),
         defaultPath,
         allowedFileTypesName,

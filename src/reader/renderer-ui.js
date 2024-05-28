@@ -1197,7 +1197,13 @@ export function getOpenModal() {
   return g_openModal;
 }
 
-function modalClosed() {
+// NOTE: called from home-screen renderer
+export function showModal(config) {
+  console.log("ui showModal");
+  g_openModal = modals.show(config);
+}
+
+export function modalClosed() {
   g_openModal = undefined;
 }
 

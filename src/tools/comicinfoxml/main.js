@@ -221,7 +221,7 @@ function initOnIpcCallbacks() {
     let allowMultipleSelection = false;
     let allowedFileTypesName = _("dialog-file-types-text");
     let allowedFileTypesList = ["txt"];
-    let filePaths = appUtils.chooseOpenFiles(
+    let filePaths = appUtils.chooseFiles(
       core.getMainWindow(),
       defaultPath,
       allowedFileTypesName,
