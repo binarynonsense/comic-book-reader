@@ -181,9 +181,9 @@
   "[NOTE TO TRANSLATORS]ui-modal-prompt-button-open-in-file-browser": "File Browser should be translated the same as in tool-fb-title",
   "ui-modal-prompt-button-open-in-file-browser": "Im Dateibrowser öffnen",
   "[NOTE TO TRANSLATORS]ui-modal-prompt-button-open-in-acbr-file-browser": "File Browser should be translated the same as in tool-fb-title",
-  "[NEEDS TRANSLATION]ui-modal-prompt-button-open-in-acbr-file-browser": "Open in ACBR's File Browser",
-  "[NEEDS TRANSLATION]ui-modal-prompt-button-open-in-system-file-browser": "Open in System's File Browser",
-  "[NEEDS TRANSLATION]ui-modal-prompt-button-open-in-reader": "Open in Reader",
+  "ui-modal-prompt-button-open-in-acbr-file-browser": "In ACBRs Dateibrowser öffnen",
+  "ui-modal-prompt-button-open-in-system-file-browser": "Im System-Dateibrowser öffnen",
+  "ui-modal-prompt-button-open-in-reader": "Im Reader öffnen",
   "ui-modal-prompt-button-cancel": "Abbrechen",
   "ui-modal-prompt-button-update": "Aktualisieren",
   "ui-modal-prompt-button-edit-metadata": "Bearbeite Metadaten",
@@ -701,5 +701,5 @@
   "home-screen-favorite-files": "Lieblingsdateien",
   "home-screen-latest-files": "Zuletzt Verwendete Dateien",
   "[NOTE TO TRANSLATORS]home-screen-latest": "Latest as in Latest files and folders",
-  "[NEEDS TRANSLATION]home-screen-latest": "Latest"
+  "home-screen-latest": "Zuletzt Verwendet"
 }
