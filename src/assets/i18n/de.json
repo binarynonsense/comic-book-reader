@@ -700,6 +700,6 @@
   "home-screen-favorite-folders": "Lieblingsordner",
   "home-screen-favorite-files": "Lieblingsdateien",
   "home-screen-latest-files": "Zuletzt Verwendete Dateien",
-  "[NOTE TO TRANSLATORS]home-screen-latest": "Latest as in Latest files or folders",
+  "[NOTE TO TRANSLATORS]home-screen-latest": "Latest as in Latest files and folders",
   "[NEEDS TRANSLATION]home-screen-latest": "Latest"
 }
