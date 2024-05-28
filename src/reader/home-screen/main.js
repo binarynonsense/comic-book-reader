@@ -122,8 +122,8 @@ function on(id, callback) {
 }
 
 function initOnIpcCallbacks() {
-  on("hs-open-dialog-file", (filePath) => {
-    reader.onMenuOpenFile();
+  on("hs-open-dialog-file", (path) => {
+    reader.onMenuOpenFile(path);
   });
 
   on("hs-open-file", (filePath) => {

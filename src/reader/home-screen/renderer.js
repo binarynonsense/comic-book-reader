@@ -149,7 +149,7 @@ function getNewCardDiv(cardType, data) {
           if (data.isFile) {
             sendIpcToMain("hs-open-file", path);
           } else {
-            console.log("CLICKK FAV");
+            sendIpcToMain("hs-open-dialog-file", data.path);
           }
           event.stopPropagation();
         });
