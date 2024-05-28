@@ -2202,22 +2202,24 @@ exports.onMenuToggleBattery = function () {
   toggleBattery();
 };
 
-exports.onMenuOpenFile = onMenuOpenFile;
-function onMenuOpenFile() {
+function onMenuOpenFile(startPath) {
   sendIpcToPreload("update-menubar");
-
   let defaultPath;
-  if (g_fileData.path !== "") {
-    defaultPath = path.dirname(g_fileData.path);
-  } else if (
-    history.get().length > 0 &&
-    !history.getIndex(history.get().length - 1).data
-  ) {
-    defaultPath = path.dirname(
-      history.getIndex(history.get().length - 1).filePath
-    );
+  if (startPath && fs.existsSync(startPath)) {
+    defaultPath = startPath;
+  } else {
+    if (g_fileData.path !== "") {
+      defaultPath = path.dirname(g_fileData.path);
+    } else if (
+      history.get().length > 0 &&
+      !history.getIndex(history.get().length - 1).data
+    ) {
+      defaultPath = path.dirname(
+        history.getIndex(history.get().length - 1).filePath
+      );
+    }
+    if (defaultPath && !fs.existsSync(defaultPath)) defaultPath = undefined;
   }
-  if (defaultPath && !fs.existsSync(defaultPath)) defaultPath = undefined;
 
   let allowMultipleSelection = false;
   let allowedFileTypesName = _("dialog-file-types-comics-books-images");
@@ -2249,6 +2251,7 @@ function onMenuOpenFile() {
 
   tryOpen(filePath);
 }
+exports.onMenuOpenFile = onMenuOpenFile;
 
 exports.onMenuCloseFile = function () {
   closeCurrentFile();
