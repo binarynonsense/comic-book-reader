@@ -26,11 +26,13 @@ import {
   onInputEvent as modalOnInputEvent,
   onGamepadPolled as modalOnGamepadPolled,
 } from "../shared/renderer/modals.js";
+import { initIpc as homeScreenInitIpc } from "./home-screen/renderer.js";
 
 export function initIpc() {
   uiInitIpc();
   pdfInitIpc();
   epubInitIpc();
+  homeScreenInitIpc();
   initOnIpcCallbacks();
 }
 

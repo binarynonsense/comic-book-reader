@@ -14,28 +14,6 @@
   overflow: auto;
 }
 
-/* NO BOOK CONTENT ***************************************************/
-
-.centered-block {
-  margin: 0;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  -ms-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%);
-  text-align: center;
-  user-select: none;
-  pointer-events: none;
-}
-
-.centered-block img {
-  width: 30vh;
-  opacity: 0.3;
-  margin: auto;
-  filter: grayscale(100%);
-  margin-bottom: 20px;
-}
-
 /* PAGES *********************************************************/
 
 #pages-container {

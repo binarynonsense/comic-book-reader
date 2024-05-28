@@ -159,10 +159,6 @@ function initOnIpcCallbacks() {
     anchor.appendChild(element);
   });
 
-  on("update-bg-text", (text) => {
-    document.querySelector("#centered-block-text").innerHTML = text;
-  });
-
   on("update-bg", (show) => {
     if (show) showNoBookContent(true);
     else showNoBookContent(false);

@@ -1,0 +1,212 @@
+:root {
+  --hs-bg-color: #1e1e1e;
+  --hs-text-color: #666;
+  --hs-button-normal-bg-color: #bbb;
+  --hs-button-normal-text-color: #444;
+  --hs-button-accent-bg-color: #d9af50;
+  --hs-button-accent-text-color: #303030;
+  --hs-path-card-bg-color: #303030;
+  --hs-path-card-text-color: #888;
+}
+
+#home-screen {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  top: 0px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: auto;
+  background-color: var(--hs-bg-color);
+  user-select: none;
+}
+
+#hs-content {
+  display: flex;
+  flex-direction: column;
+  width: 1024px;
+  max-width: 1024px;
+  padding: 50px;
+  color: var(--hs-text-color);
+}
+
+#hs-content button {
+  padding: 15px;
+  border: none;
+  background-color: var(--hs-button-normal-bg-color);
+  color: var(--hs-button-normal-text-color);
+  font-weight: 600;
+  width: 100%;
+  margin: 5px 0;
+  border-radius: 3px;
+}
+
+#hs-content button:hover {
+  filter: brightness(1.2);
+  transform: scale(1.01);
+  cursor: pointer;
+}
+
+#hs-content button:active {
+  transform: translateY(1px);
+}
+
+.hs-section-title {
+  display: block;
+  font-weight: bold;
+  text-transform: uppercase;
+  user-select: none;
+  text-align: start;
+  font-size: 15px;
+  margin: 30px 0;
+}
+
+.hs-button-accent {
+  background-color: var(--hs-button-accent-bg-color) !important;
+  color: var(--hs-button-accent-text-color) !important;
+}
+
+#hs-logo-open {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 50px;
+}
+
+#hs-logo-open button {
+  max-width: 500px !important;
+}
+
+#hs-logo-open img {
+  width: 150px;
+  opacity: 0.3;
+  filter: grayscale(100%);
+}
+
+#hs-latest {
+  padding-bottom: 45px;
+}
+/* *********************** */
+
+.hs-path-cards-list {
+  gap: 6px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+/* @media only screen and (max-width: 1024px) {
+  .hs-path-cards-list {
+    display: flex;
+    flex-direction: column;
+  }
+} */
+
+.hs-path-interactive {
+  border: 1px solid transparent;
+}
+.hs-path-interactive:hover {
+  filter: brightness(1.2);
+  transform: scale(1.03);
+  cursor: pointer;
+  border: 1px solid var(--hs-path-card-text-color);
+}
+.hs-path-interactive:active {
+  transform: translateY(1px);
+}
+
+.hs-path-empty {
+  opacity: 0.5;
+}
+
+/* *********************** */
+
+.hs-path-card {
+  display: flex;
+  flex-direction: row;
+  align-content: center;
+  color: var(--hs-path-card-text-color);
+  gap: 3px;
+  min-height: 80px;
+}
+
+.hs-path-card-main {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  flex-grow: 1;
+  background-color: var(--hs-path-card-bg-color);
+  border-radius: 10px;
+}
+.hs-path-card:has(.hs-path-card-button) .hs-path-card-main {
+  border-end-end-radius: 0px;
+  border-start-end-radius: 0px;
+}
+
+.hs-path-card-image {
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  justify-content: center;
+  padding: 10px;
+}
+
+.hs-path-card-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 15px;
+  flex-grow: 1;
+  gap: 5px;
+}
+
+.hs-path-card-content span {
+  word-break: break-all;
+}
+
+.hs-path-card-content span:first-child {
+  font-weight: bolder;
+}
+
+.hs-path-card-content span:last-child {
+  font-size: 12px;
+  font-style: italic;
+}
+
+.hs-path-card-button {
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  justify-content: center;
+  padding: 10px;
+  background-color: var(--hs-path-card-bg-color);
+  border-end-end-radius: 10px;
+  border-start-end-radius: 10px;
+}
+
+/* *********************** */
+
+.hs-add-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: color-mix(
+    in srgb,
+    var(--hs-path-card-bg-color) 20%,
+    transparent
+  );
+  color: color-mix(in srgb, var(--hs-path-card-text-color) 60%, transparent);
+  border-radius: 10px;
+  border: 1px dashed
+    color-mix(in srgb, var(--hs-path-card-text-color) 20%, transparent);
+}
+
+.hs-add-card:hover {
+  background-color: var(--hs-path-card-bg-color);
+  color: var(--hs-path-card-text-color);
+  border: 1px dashed var(--hs-path-card-text-color);
+}

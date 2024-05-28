@@ -32,6 +32,7 @@ const {
   FileDataType,
   BookType,
 } = require("../shared/main/constants");
+const homeScreen = require("./home-screen/main");
 
 let g_resizeEventCounter;
 
@@ -48,6 +49,7 @@ exports.init = function (filePath, checkHistory) {
 
   const data = fs.readFileSync(path.join(__dirname, "index.html"));
   sendIpcToCoreRenderer("replace-inner-html", "#reader", data.toString());
+  homeScreen.open();
 
   updateLocalizedText();
   renderTitle();
@@ -187,6 +189,7 @@ exports.sendIpcToRenderer = sendIpcToRenderer;
 function sendIpcToCoreRenderer(...args) {
   core.sendIpcToRenderer("core", ...args);
 }
+exports.sendIpcToCoreRenderer = sendIpcToCoreRenderer;
 
 function sendIpcToAudioPlayerRenderer(...args) {
   core.sendIpcToRenderer("audio-player", ...args);
@@ -210,6 +213,7 @@ exports.onIpcFromRenderer = function (...args) {
 function on(id, callback) {
   g_onIpcCallbacks[id] = callback;
 }
+exports.on = on;
 
 function initOnIpcCallbacks() {
   on("page-loaded", (data) => {
@@ -1615,7 +1619,7 @@ function updateLocalizedText() {
     _("toolbar-rotate-clockwise"),
     _("menu-view-togglefullscreen")
   );
-  sendIpcToRenderer("update-bg-text", _("ui-bg-msg"));
+  homeScreen.updateLocalizedText();
 }
 exports.updateLocalizedText = updateLocalizedText;
 
