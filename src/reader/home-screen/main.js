@@ -13,6 +13,7 @@ const history = require("../../shared/main/history");
 const reader = require("../../reader/main");
 const log = require("../../shared/main/logger");
 const appUtils = require("../../shared/main/app-utils");
+const { FileExtension } = require("../../shared/main/constants");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -129,6 +130,49 @@ function initOnIpcCallbacks() {
   on("hs-open-file", (filePath) => {
     reader.tryOpen(filePath);
   });
+
+  on("hs-on-add-favorite-clicked", () => {
+    sendIpcToRenderer(
+      "hs-show-modal-add-favorite",
+      _("home-screen-favorites"),
+      _("tool-shared-ui-back"),
+      _("tool-shared-ui-add-file"),
+      _("tool-shared-ui-add-folder")
+    );
+  });
+
+  on("hs-on-modal-add-favorite-folder-clicked", () => {
+    let folderList = appUtils.chooseFolder(core.getMainWindow());
+    if (folderList === undefined || folderList.length <= 0) {
+      return;
+    }
+    const folderPath = folderList[0];
+    log.test(folderPath);
+  });
+
+  on("hs-on-modal-add-favorite-file-clicked", () => {
+    let allowMultipleSelection = false;
+    let allowedFileTypesName = _("dialog-file-types-comics");
+    let allowedFileTypesList = [
+      FileExtension.CBZ,
+      FileExtension.CBR,
+      FileExtension.CB7,
+      FileExtension.PDF,
+      FileExtension.EPUB,
+    ];
+    let filePathsList = appUtils.chooseFiles(
+      core.getMainWindow(),
+      undefined,
+      allowedFileTypesName,
+      allowedFileTypesList,
+      allowMultipleSelection
+    );
+    if (filePathsList === undefined || filePathsList.length <= 0) {
+      return;
+    }
+    const filePath = filePathsList[0];
+    log.test(filePath);
+  });
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -136,7 +180,7 @@ function initOnIpcCallbacks() {
 ///////////////////////////////////////////////////////////////////////////////
 
 function updateLocalizedText() {
-  reader.sendIpcToRenderer("hs-update-localization", getIdsLocalization());
+  sendIpcToRenderer("hs-update-localization", getIdsLocalization());
 }
 exports.updateLocalizedText = updateLocalizedText;
 

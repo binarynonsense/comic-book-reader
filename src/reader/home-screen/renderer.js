@@ -6,6 +6,11 @@
  */
 
 import { sendIpcToMain, on } from "../../reader/renderer.js";
+import {
+  getOpenModal,
+  showModal,
+  modalClosed,
+} from "../../reader/renderer-ui.js";
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -47,6 +52,17 @@ function initOnIpcCallbacks() {
 
   on("hs-update-latest", (...args) => {
     updateLatest(args[0]);
+  });
+
+  // on("hs-close-modal", () => {
+  //   if (g_openModal) {
+  //     modals.close(g_openModal);
+  //     modalClosed();
+  //   }
+  // });
+
+  on("hs-show-modal-add-favorite", (...args) => {
+    showModalAddFavorite(...args);
   });
 }
 
@@ -157,7 +173,6 @@ function getNewCardDiv(cardType, data) {
         .querySelector(".hs-path-card-button")
         .addEventListener("click", function (event) {
           console.log("CLICKK BUT");
-
           event.stopPropagation();
         });
       break;
@@ -170,7 +185,7 @@ function getNewCardDiv(cardType, data) {
       cardDiv.classList.add("hs-path-interactive");
       cardDiv.innerHTML = addFavHtml;
       cardDiv.addEventListener("click", function (event) {
-        console.log("CLICKK ADD");
+        sendIpcToMain("hs-on-add-favorite-clicked");
         event.stopPropagation();
       });
       break;
@@ -178,6 +193,57 @@ function getNewCardDiv(cardType, data) {
   return cardDiv;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// MODALS /////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+function showModalAddFavorite(
+  title,
+  textButtonBack,
+  textButtonAddFile,
+  textButtonAddFolder
+) {
+  if (getOpenModal()) {
+    return;
+  }
+  let buttons = [];
+  buttons.push({
+    text: textButtonAddFile.toUpperCase(),
+    fullWidth: true,
+    callback: () => {
+      modalClosed();
+      sendIpcToMain("hs-on-modal-add-favorite-file-clicked");
+    },
+  });
+  buttons.push({
+    text: textButtonAddFolder.toUpperCase(),
+    fullWidth: true,
+    callback: () => {
+      modalClosed();
+      sendIpcToMain("hs-on-modal-add-favorite-folder-clicked");
+    },
+  });
+  buttons.push({
+    text: textButtonBack.toUpperCase(),
+    fullWidth: true,
+    callback: () => {
+      modalClosed();
+    },
+  });
+  showModal({
+    showFocus: true,
+    title: title,
+    frameWidth: 400,
+    zIndexDelta: -450,
+    close: {
+      callback: () => {
+        modalClosed();
+      },
+      key: "Escape",
+    },
+    buttons: buttons,
+  });
+}
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
