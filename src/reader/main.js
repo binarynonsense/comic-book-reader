@@ -1284,6 +1284,7 @@ function tryOpeningAdjacentFile(next) {
 }
 
 function closeCurrentFile(addToHistory = true) {
+  sendIpcToRenderer("close-modal");
   if (g_fileData.type === FileDataType.NOT_SET) return;
   if (addToHistory) addCurrentToHistory(); // add the one I'm closing to history
   if (g_fileData.type === FileDataType.EPUB_EBOOK) {
@@ -1295,7 +1296,6 @@ function closeCurrentFile(addToHistory = true) {
   sendIpcToRenderer("file-closed");
   sendIpcToPreload("update-menubar");
   sendIpcToRenderer("update-loading", false);
-  sendIpcToRenderer("close-modal");
 }
 
 ///////////////////////////////////////////////////////////////////////////////// PAGE NAVIGATION //////////////////////////////////////////////////////////
