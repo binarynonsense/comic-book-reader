@@ -121,11 +121,19 @@ function getNewCardDiv(cardType, data) {
   <i class="hs-path-card-image-file fas fa-file fa-2x fa-fw"></i>`;
   const folderIconHtml = `
   <i class="hs-path-card-image-file fas fa-folder fa-2x fa-fw"></i>`;
+  const imagesIconHtml = `
+  <i class="hs-path-card-image-file fas fa-images fa-2x fa-fw"></i>`;
   const interactiveHtml = data
     ? `
   <div class="hs-path-card-main hs-path-interactive">
     <div class="hs-path-card-image">
-      ${data.isFile ? fileIconHtml : folderIconHtml}
+      ${
+        data.isFile
+          ? fileIconHtml
+          : cardType === CardType.LATEST
+          ? imagesIconHtml
+          : folderIconHtml
+      }
     </div>
     <div class="hs-path-card-content">
       <span>${data.name}</span
