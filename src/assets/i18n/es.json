@@ -1,7 +1,7 @@
 {
   "@metadata": {
     "authors": ["Álvaro"],
-    "last-updated": "2024-05-26",
+    "last-updated": "2024-05-28",
     "acbr-version": "3.5.0-beta1",
     "pre-release": "false",
     "comments": "",
@@ -180,6 +180,10 @@
   "ui-modal-prompt-button-open": "Abrir",
   "[NOTE TO TRANSLATORS]ui-modal-prompt-button-open-in-file-browser": "File Browser should be translated the same as in tool-fb-title",
   "ui-modal-prompt-button-open-in-file-browser": "Abrir en Explorador de Archivos",
+  "[NOTE TO TRANSLATORS]ui-modal-prompt-button-open-in-acbr-file-browser": "File Browser should be translated the same as in tool-fb-title",
+  "ui-modal-prompt-button-open-in-acbr-file-browser": "Abrir en el Explorador de Archivos de ACBR",
+  "ui-modal-prompt-button-open-in-system-file-browser": "Abrir en Explorador de Archivos del Sistema",
+  "ui-modal-prompt-button-open-in-reader": "Open in Reader",
   "ui-modal-prompt-button-cancel": "Cancelar",
   "ui-modal-prompt-button-update": "Actualizar",
   "ui-modal-prompt-button-edit-metadata": "Editar Metadata",
@@ -695,5 +699,7 @@
   "home-screen-favorites": "Favoritos",
   "home-screen-favorite-folders": "Carpetas Favoritas",
   "home-screen-favorite-files": "Ficheros Favoritos",
-  "home-screen-latest-files": "Ficheros Más Recientes"
+  "home-screen-latest-files": "Ficheros Más Recientes",
+  "[NOTE TO TRANSLATORS]home-screen-latest": "Latest as in Latest files or folders",
+  "home-screen-latest": "Más Recientes"
 }

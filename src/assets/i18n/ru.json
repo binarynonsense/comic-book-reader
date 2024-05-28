@@ -1,7 +1,7 @@
 {
   "@metadata": {
     "authors": ["vanja-san"],
-    "last-updated": "2024-05-18",
+    "last-updated": "2024-05-28",
     "acbr-version": "3.5.0-beta1",
     "pre-release": "false",
     "comments": "Русский перевод",
@@ -180,6 +180,10 @@
   "ui-modal-prompt-button-open": "Открыть",
   "[NOTE TO TRANSLATORS]ui-modal-prompt-button-open-in-file-browser": "File Browser should be translated the same as in tool-fb-title",
   "ui-modal-prompt-button-open-in-file-browser": "Открыть в обозревателе файлов",
+  "[NOTE TO TRANSLATORS]ui-modal-prompt-button-open-in-acbr-file-browser": "File Browser should be translated the same as in tool-fb-title",
+  "[NEEDS TRANSLATION]ui-modal-prompt-button-open-in-acbr-file-browser": "Open in ACBR's File Browser",
+  "[NEEDS TRANSLATION]ui-modal-prompt-button-open-in-system-file-browser": "Open in System's File Browser",
+  "[NEEDS TRANSLATION]ui-modal-prompt-button-open-in-reader": "Open in Reader",
   "ui-modal-prompt-button-cancel": "Отмена",
   "ui-modal-prompt-button-update": "Обновить",
   "ui-modal-prompt-button-edit-metadata": "Изменить метаданные",
@@ -695,5 +699,7 @@
   "home-screen-favorites": "Избранное",
   "home-screen-favorite-folders": "Избранные папки",
   "home-screen-favorite-files": "Избранные файлы",
-  "home-screen-latest-files": "Последние файлы"
+  "home-screen-latest-files": "Последние файлы",
+  "[NOTE TO TRANSLATORS]home-screen-latest": "Latest as in Latest files or folders",
+  "[NEEDS TRANSLATION]home-screen-latest": "Latest"
 }

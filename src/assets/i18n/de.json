@@ -1,7 +1,7 @@
 {
   "@metadata": {
     "authors": ["trzyglow"],
-    "last-updated": "2024-05-26",
+    "last-updated": "2024-05-28",
     "acbr-version": "3.5.0-beta1",
     "pre-release": "false",
     "comments": "Deutsche Lokalisierung",
@@ -180,6 +180,10 @@
   "ui-modal-prompt-button-open": "Öffnen",
   "[NOTE TO TRANSLATORS]ui-modal-prompt-button-open-in-file-browser": "File Browser should be translated the same as in tool-fb-title",
   "ui-modal-prompt-button-open-in-file-browser": "Im Dateibrowser öffnen",
+  "[NOTE TO TRANSLATORS]ui-modal-prompt-button-open-in-acbr-file-browser": "File Browser should be translated the same as in tool-fb-title",
+  "[NEEDS TRANSLATION]ui-modal-prompt-button-open-in-acbr-file-browser": "Open in ACBR's File Browser",
+  "[NEEDS TRANSLATION]ui-modal-prompt-button-open-in-system-file-browser": "Open in System's File Browser",
+  "[NEEDS TRANSLATION]ui-modal-prompt-button-open-in-reader": "Open in Reader",
   "ui-modal-prompt-button-cancel": "Abbrechen",
   "ui-modal-prompt-button-update": "Aktualisieren",
   "ui-modal-prompt-button-edit-metadata": "Bearbeite Metadaten",
@@ -695,5 +699,7 @@
   "home-screen-favorites": "Favoriten",
   "home-screen-favorite-folders": "Lieblingsordner",
   "home-screen-favorite-files": "Lieblingsdateien",
-  "home-screen-latest-files": "Zuletzt Verwendete Dateien"
+  "home-screen-latest-files": "Zuletzt Verwendete Dateien",
+  "[NOTE TO TRANSLATORS]home-screen-latest": "Latest as in Latest files or folders",
+  "[NEEDS TRANSLATION]home-screen-latest": "Latest"
 }
