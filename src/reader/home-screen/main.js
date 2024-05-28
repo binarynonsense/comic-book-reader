@@ -173,6 +173,20 @@ function initOnIpcCallbacks() {
     const filePath = filePathsList[0];
     log.test(filePath);
   });
+
+  on("hs-on-favorite-options-clicked", (index) => {
+    sendIpcToRenderer(
+      "hs-show-modal-favorite-options",
+      index,
+      _("tool-shared-tab-options"),
+      _("tool-shared-ui-back"),
+      _("tool-shared-tooltip-remove-from-list")
+    );
+  });
+
+  on("hs-on-modal-favorite-options-remove-clicked", (index) => {
+    log.test("Remove favorite " + index);
+  });
 }
 
 ///////////////////////////////////////////////////////////////////////////////

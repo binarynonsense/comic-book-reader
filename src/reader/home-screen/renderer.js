@@ -54,15 +54,12 @@ function initOnIpcCallbacks() {
     updateLatest(args[0]);
   });
 
-  // on("hs-close-modal", () => {
-  //   if (g_openModal) {
-  //     modals.close(g_openModal);
-  //     modalClosed();
-  //   }
-  // });
-
   on("hs-show-modal-add-favorite", (...args) => {
     showModalAddFavorite(...args);
+  });
+
+  on("hs-show-modal-favorite-options", (...args) => {
+    showModalFavoriteOptions(...args);
   });
 }
 
@@ -172,7 +169,10 @@ function getNewCardDiv(cardType, data) {
       cardDiv
         .querySelector(".hs-path-card-button")
         .addEventListener("click", function (event) {
-          console.log("CLICKK BUT");
+          // TODO: get index from somewhere
+          // TODO: maybe also send path to make sure
+          let favIndex = 0;
+          sendIpcToMain("hs-on-favorite-options-clicked", favIndex);
           event.stopPropagation();
         });
       break;
@@ -244,6 +244,48 @@ function showModalAddFavorite(
     buttons: buttons,
   });
 }
+
+function showModalFavoriteOptions(
+  index,
+  title,
+  textButtonBack,
+  textButtonRemove
+) {
+  if (getOpenModal()) {
+    return;
+  }
+  let buttons = [];
+  buttons.push({
+    text: textButtonRemove.toUpperCase(),
+    fullWidth: true,
+    callback: () => {
+      modalClosed();
+      sendIpcToMain("hs-on-modal-favorite-options-remove-clicked", index);
+    },
+  });
+
+  buttons.push({
+    text: textButtonBack.toUpperCase(),
+    fullWidth: true,
+    callback: () => {
+      modalClosed();
+    },
+  });
+  showModal({
+    showFocus: true,
+    title: title,
+    frameWidth: 400,
+    zIndexDelta: -450,
+    close: {
+      callback: () => {
+        modalClosed();
+      },
+      key: "Escape",
+    },
+    buttons: buttons,
+  });
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
