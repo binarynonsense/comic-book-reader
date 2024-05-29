@@ -71,16 +71,16 @@ function load() {
       try {
         fileData = fs.readFileSync(favFilePath, "utf8");
       } catch (error) {
-        throw "Invalid favorites file";
+        throw "invalid favorites file";
       }
       if (fileData === null || fileData === undefined) {
-        throw "Invalid favorites file content";
+        throw "invalid favorites file content";
       }
       let loadedFavorites;
       try {
         loadedFavorites = JSON.parse(fileData);
       } catch (error) {
-        throw "Invalid favorites JSON";
+        throw "invalid favorites JSON";
       }
       if (loadedFavorites.version && Array.isArray(loadedFavorites.data)) {
         const loadedFavoritesData = loadedFavorites.data;
@@ -105,7 +105,7 @@ function load() {
           }
         }
       } else {
-        throw "Invalid favorites format";
+        throw "invalid favorites format";
       }
     } else {
       throw "favorites file not found";
