@@ -517,6 +517,10 @@ function initOnIpcCallbacks() {
     tryOpen(filePath);
   });
 
+  on("close-file", () => {
+    closeCurrentFile();
+  });
+
   on("go-to-page", (value) => {
     if (!isNaN(value)) {
       let pageIndex = value - 1;
@@ -573,6 +577,7 @@ function initOnIpcCallbacks() {
       "show-modal-quick-menu",
       _("ui-modal-title-quickmenu"),
       _("tool-shared-ui-back-to-reader"),
+      _("ui-modal-prompt-button-close-file"),
       _("tool-fb-title"), //_("ctxmenu-openfile").replace("...", ""),
       _("menu-file-openrecent-history"),
       _("menu-view-togglefullscreen"),

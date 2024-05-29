@@ -1525,6 +1525,7 @@ function showModalProperties(title, message, textButton1, textButton2) {
 function showModalQuickMenu(
   title,
   textButtonBack,
+  textCloseFile,
   textButtonFileBrowser,
   textButtonHistory,
   textButtonFullscreen,
@@ -1541,6 +1542,20 @@ function showModalQuickMenu(
       modalClosed();
     },
   });
+  if (!g_pagesContainerDiv) {
+    g_pagesContainerDiv = document.getElementById("pages-container");
+  }
+  let fileOpen = g_pagesContainerDiv && g_pagesContainerDiv.innerHTML !== "";
+  if (fileOpen) {
+    buttons.push({
+      text: textCloseFile.toUpperCase(),
+      fullWidth: true,
+      callback: () => {
+        modalClosed();
+        sendIpcToMain("close-file", true);
+      },
+    });
+  }
   buttons.push({
     text: textButtonFileBrowser.toUpperCase(),
     fullWidth: true,
