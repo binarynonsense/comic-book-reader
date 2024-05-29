@@ -166,6 +166,7 @@ function cleanUpUserDataFolder() {
     let keepFiles = [
       "acbr.cfg",
       "acbr.hst",
+      "acbr.fav",
       "acbr-player.cfg",
       "acbr-player.m3u",
     ];
