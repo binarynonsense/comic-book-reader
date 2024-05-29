@@ -276,6 +276,10 @@ function getNewCardDiv(cardType, data, navRow, navColumn) {
   return cardDiv;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// EVENT LISTENERS ////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
 export function onInputEvent(type, event) {
   switch (type) {
     case "onkeydown":
@@ -296,8 +300,6 @@ export function onInputEvent(type, event) {
 
       navigation.navigate(
         g_navData,
-        document.getElementById("tool-hst-back-button"),
-        event.key == "Escape",
         event.key == "Enter",
         event.key == "ArrowUp",
         event.key == "ArrowDown",
@@ -315,6 +317,38 @@ export function onInputEvent(type, event) {
       }
       break;
   }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// GAMEPADS ///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+export function onGamepadPolled() {
+  const upPressed =
+    gamepads.getButtonDown(gamepads.Buttons.DPAD_UP) ||
+    gamepads.getAxisDown(gamepads.Axes.RS_Y, -1) ||
+    gamepads.getAxisDown(gamepads.Axes.LS_Y, -1);
+  const downPressed =
+    gamepads.getButtonDown(gamepads.Buttons.DPAD_DOWN) ||
+    gamepads.getAxisDown(gamepads.Axes.RS_Y, 1) ||
+    gamepads.getAxisDown(gamepads.Axes.LS_Y, 1);
+  const leftPressed =
+    gamepads.getButtonDown(gamepads.Buttons.DPAD_LEFT) ||
+    gamepads.getAxisDown(gamepads.Axes.RS_X, -1) ||
+    gamepads.getAxisDown(gamepads.Axes.LS_X, -1);
+  const rightPressed =
+    gamepads.getButtonDown(gamepads.Buttons.DPAD_RIGHT) ||
+    gamepads.getAxisDown(gamepads.Axes.RS_X, 1) ||
+    gamepads.getAxisDown(gamepads.Axes.LS_X, 1);
+
+  navigation.navigate(
+    g_navData,
+    gamepads.getButtonDown(gamepads.Buttons.A),
+    upPressed,
+    downPressed,
+    leftPressed,
+    rightPressed
+  );
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -29,6 +29,7 @@ import {
 import {
   initIpc as homeScreenInitIpc,
   onInputEvent as homeScreenOnInputEvent,
+  onGamepadPolled as homeScreenOnGamepadPolled,
 } from "./home-screen/renderer.js";
 
 export function initIpc() {
@@ -167,5 +168,13 @@ export function onGamepadPolled() {
     modalOnGamepadPolled(getOpenModal());
     return;
   }
-  uiOnGamepadPolled();
+  if (!g_pagesContainerDiv) {
+    g_pagesContainerDiv = document.getElementById("pages-container");
+  }
+  let fileOpen = g_pagesContainerDiv && g_pagesContainerDiv.innerHTML !== "";
+  if (fileOpen) {
+    uiOnGamepadPolled();
+  } else {
+    homeScreenOnGamepadPolled();
+  }
 }

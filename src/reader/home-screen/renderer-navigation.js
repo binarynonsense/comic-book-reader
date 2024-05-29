@@ -34,8 +34,6 @@ export function rebuild(data, focusedPanelID) {
 
 export function navigate(
   data,
-  backButtonElement,
-  backPressed,
   actionPressed,
   upPressed,
   downPressed,
@@ -49,9 +47,7 @@ export function navigate(
     data.showFocus = true;
   }
 
-  if (backPressed && backButtonElement) {
-    backButtonElement.click();
-  } else if (actionPressed) {
+  if (actionPressed) {
     if (data.focusedElement) {
       data.focusedElement.click();
       document.activeElement.blur();
