@@ -108,6 +108,12 @@ function saveFavorites() {
   favorites.save();
 }
 
+function addFavorite(favPath) {
+  // TODO: check if exists?
+  g_favorites.push({ path: favPath, name: path.basename(favPath) });
+  sendFavoritesUpdate();
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // IPC SEND ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -149,7 +155,7 @@ function initOnIpcCallbacks() {
       return;
     }
     const folderPath = folderList[0];
-    log.test(folderPath);
+    addFavorite(folderPath);
   });
 
   on("hs-on-modal-add-favorite-file-clicked", () => {
@@ -173,7 +179,7 @@ function initOnIpcCallbacks() {
       return;
     }
     const filePath = filePathsList[0];
-    log.test(filePath);
+    addFavorite(filePath);
   });
 
   on("hs-on-favorite-options-clicked", (index, path) => {
