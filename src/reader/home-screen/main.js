@@ -15,6 +15,7 @@ const reader = require("../../reader/main");
 const log = require("../../shared/main/logger");
 const appUtils = require("../../shared/main/app-utils");
 const { FileExtension } = require("../../shared/main/constants");
+const tools = require("../../shared/main/tools");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -150,8 +151,12 @@ function on(id, callback) {
 }
 
 function initOnIpcCallbacks() {
-  on("hs-open-dialog-file", (path) => {
-    reader.onMenuOpenFile(path);
+  on("hs-open-dialog-file", (filePath, sourceId) => {
+    if (sourceId === 1) {
+      tools.switchTool("tool-file-browser", { path: filePath });
+    } else {
+      reader.onMenuOpenFile(filePath);
+    }
   });
 
   on("hs-open-file", (filePath) => {

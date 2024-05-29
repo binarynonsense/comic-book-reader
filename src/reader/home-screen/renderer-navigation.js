@@ -47,15 +47,29 @@ export function navigate(
     data.showFocus = true;
   }
 
+  let panelId = data.focusedElement.getAttribute("data-nav-panel");
+  let rowId = data.focusedElement.getAttribute("data-nav-row");
+  let colId = data.focusedElement.getAttribute("data-nav-col");
+  let hasNavClick = data.focusedElement.getAttribute("data-nav-click");
   if (actionPressed) {
     if (data.focusedElement) {
-      data.focusedElement.click();
+      if (hasNavClick) {
+        // have a different behavior if clicked from keyboard or gamepad
+        // when it has the attribute
+        const event = new CustomEvent("acbr-nav-click", {
+          // TODO: use for something in the future?
+          detail: {
+            source: "from navigation",
+          },
+        });
+        data.focusedElement.dispatchEvent(event);
+      } else {
+        data.focusedElement.click();
+      }
+
       document.activeElement.blur();
     }
   } else if (upPressed || downPressed || leftPressed || rightPressed) {
-    let panelId = data.focusedElement.getAttribute("data-nav-panel");
-    let rowId = data.focusedElement.getAttribute("data-nav-row");
-    let colId = data.focusedElement.getAttribute("data-nav-col");
     if (upPressed) {
       rowId--;
       if (rowId < 0) rowId = data.tree[panelId].length - 1;

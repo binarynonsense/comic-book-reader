@@ -30,9 +30,13 @@ function init() {
     openFileButton.addEventListener("click", (event) => {
       sendIpcToMain("hs-open-dialog-file");
     });
+    openFileButton.addEventListener("acbr-nav-click", (event) => {
+      sendIpcToMain("hs-open-dialog-file", undefined, 1);
+    });
     openFileButton.setAttribute("data-nav-panel", 0);
     openFileButton.setAttribute("data-nav-row", 0);
     openFileButton.setAttribute("data-nav-col", 0);
+    openFileButton.setAttribute("data-nav-click", 0);
   }
 }
 
@@ -202,11 +206,19 @@ function getNewCardDiv(cardType, data, navRow, navColumn) {
           }
           event.stopPropagation();
         });
+
         if (navRow !== undefined && navColumn !== undefined) {
           mainCardDiv.setAttribute("data-nav-panel", 0);
           mainCardDiv.setAttribute("data-nav-row", navRow);
           mainCardDiv.setAttribute("data-nav-col", navColumn);
           mainCardDiv.setAttribute("tabindex", "0");
+
+          if (!data.isFile) {
+            mainCardDiv.addEventListener("acbr-nav-click", (event) => {
+              sendIpcToMain("hs-open-dialog-file", data.path, 1);
+            });
+            mainCardDiv.setAttribute("data-nav-click", 0);
+          }
         }
 
         const buttonDiv = cardDiv.querySelector(".hs-path-card-button");
