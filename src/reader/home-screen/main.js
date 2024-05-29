@@ -187,14 +187,20 @@ function initOnIpcCallbacks() {
     sendIpcToRenderer(
       "hs-show-modal-favorite-options",
       index,
+      path,
       _("tool-shared-tab-options"),
       _("tool-shared-ui-back"),
       _("tool-shared-tooltip-remove-from-list")
     );
   });
 
-  on("hs-on-modal-favorite-options-remove-clicked", (index) => {
-    log.test("Remove favorite " + index);
+  on("hs-on-modal-favorite-options-remove-clicked", (favIndex, favPath) => {
+    if (g_favorites[favIndex].path === favPath) {
+      g_favorites.splice(favIndex, 1);
+      sendFavoritesUpdate();
+    } else {
+      log.error("Tried to remove a favorite with not matching index and path");
+    }
   });
 }
 

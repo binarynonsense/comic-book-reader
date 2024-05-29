@@ -256,6 +256,7 @@ function showModalAddFavorite(
 
 function showModalFavoriteOptions(
   index,
+  path,
   title,
   textButtonBack,
   textButtonRemove
@@ -269,7 +270,7 @@ function showModalFavoriteOptions(
     fullWidth: true,
     callback: () => {
       modalClosed();
-      sendIpcToMain("hs-on-modal-favorite-options-remove-clicked", index);
+      sendIpcToMain("hs-on-modal-favorite-options-remove-clicked", index, path);
     },
   });
 
