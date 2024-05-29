@@ -61,57 +61,57 @@ function load() {
   g_favorites = {};
   g_favorites.version = getAppVersion();
   g_favorites.data = [];
-  let favFilePath = path.join(getUserDataFolderPath(), "acbr.fav");
-  if (isPortable()) {
-    favFilePath = path.join(getExeFolderPath(), "acbr.fav");
-  }
-  if (fs.existsSync(favFilePath)) {
-    let fileData;
-    try {
-      fileData = fs.readFileSync(favFilePath, "utf8");
-    } catch (e) {
-      return g_favorites;
+  try {
+    let favFilePath = path.join(getUserDataFolderPath(), "acbr.fav");
+    if (isPortable()) {
+      favFilePath = path.join(getExeFolderPath(), "acbr.fav");
     }
-    if (fileData === null || fileData === undefined) return g_favorites;
-
-    let loadedFavorites;
-    try {
-      loadedFavorites = JSON.parse(fileData);
-    } catch (e) {
-      return g_favorites;
-    }
-
-    const loadedFavoritesData = loadedFavorites.data;
-    if (Array.isArray(loadedFavoritesData)) {
-      for (let index = 0; index < loadedFavoritesData.length; index++) {
-        const loadedEntry = loadedFavoritesData[index];
-        if (loadedEntry.path && typeof loadedEntry.path === "string") {
-          let entry = { path: loadedEntry.path };
-          if (loadedEntry.name && typeof loadedEntry.name === "string") {
-            entry.name = loadedEntry.name;
-          }
-          if (
-            loadedEntry.localizedNameId &&
-            typeof loadedEntry.localizedNameId === "string"
-          ) {
-            // default favorites like Home, Desktop... will have a
-            // localizedNameId and it will be used to get a localized name
-            // and replace the name key contents
-            entry.localizedNameId = loadedEntry.localizedNameId;
-            entry.name = undefined;
-          }
-          //typeof loadedEntry.localizeName !== 'undefined'
-          // if (
-          //   loadedEntry.localizeName &&
-          //   typeof loadedEntry.localizeName === "boolean"
-          // ) {
-          //   entry.localizeName = loadedEntry.localizeName;
-          // }
-          g_favorites.data.push(entry);
-        }
+    if (fs.existsSync(favFilePath)) {
+      let fileData;
+      try {
+        fileData = fs.readFileSync(favFilePath, "utf8");
+      } catch (error) {
+        throw "Invalid favorites file";
       }
+      if (fileData === null || fileData === undefined) {
+        throw "Invalid favorites file content";
+      }
+      let loadedFavorites;
+      try {
+        loadedFavorites = JSON.parse(fileData);
+      } catch (error) {
+        throw "Invalid favorites JSON";
+      }
+      if (loadedFavorites.version && Array.isArray(loadedFavorites.data)) {
+        const loadedFavoritesData = loadedFavorites.data;
+        for (let index = 0; index < loadedFavoritesData.length; index++) {
+          const loadedEntry = loadedFavoritesData[index];
+          if (loadedEntry.path && typeof loadedEntry.path === "string") {
+            let entry = { path: loadedEntry.path };
+            if (loadedEntry.name && typeof loadedEntry.name === "string") {
+              entry.name = loadedEntry.name;
+            }
+            if (
+              loadedEntry.localizedNameId &&
+              typeof loadedEntry.localizedNameId === "string"
+            ) {
+              // default favorites like Home, Desktop... will have a
+              // localizedNameId and it will be used to get a localized name
+              // and replace the name key contents
+              entry.localizedNameId = loadedEntry.localizedNameId;
+              entry.name = undefined;
+            }
+            g_favorites.data.push(entry);
+          }
+        }
+      } else {
+        throw "Invalid favorites format";
+      }
+    } else {
+      throw "favorites file not found";
     }
-  } else {
+  } catch (error) {
+    log.debug(error);
     // initialize with defaults
     g_favorites.data.push({
       localizedNameId: "home",
