@@ -203,6 +203,7 @@
   border-radius: 10px;
   border: 1px dashed
     color-mix(in srgb, var(--hs-path-card-text-color) 20%, transparent);
+  min-height: 80px;
 }
 
 .hs-add-card:hover {
