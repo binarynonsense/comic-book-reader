@@ -10,6 +10,7 @@ const path = require("path");
 const core = require("../../core/main");
 const { _ } = require("../../shared/main/i18n");
 const history = require("../../shared/main/history");
+const favorites = require("../../shared/main/favorites");
 const reader = require("../../reader/main");
 const log = require("../../shared/main/logger");
 const appUtils = require("../../shared/main/app-utils");
@@ -20,6 +21,7 @@ const { FileExtension } = require("../../shared/main/constants");
 ///////////////////////////////////////////////////////////////////////////////
 
 let g_isInitialized = false;
+let g_favorites;
 
 function init() {
   if (!g_isInitialized) {
@@ -32,17 +34,20 @@ function init() {
       data.toString()
     );
     sendIpcToRenderer("hs-init");
+    favorites.init();
     sendFavoritesUpdate();
   }
 }
 
 exports.open = function (showFocus) {
   init();
-  // TODO: use showFocus
+  // TODO: use showFocus?
   sendLatestUpdate();
 };
 
-exports.close = function () {};
+exports.close = function () {
+  saveFavorites();
+};
 
 //////////////////////////////////////////////////////////////////////////////
 // TOOL //////////////////////////////////////////////////////////////////////
@@ -50,9 +55,9 @@ exports.close = function () {};
 
 function sendLatestUpdate() {
   const historyData = history.get();
-  const latest = [];
+  const data = [];
   for (let index = 0; index < historyData.length; index++) {
-    if (latest.length < 8) {
+    if (data.length < 8) {
       const latestInfo = {};
       const historyDataFile = historyData[historyData.length - index - 1];
       latestInfo.path = historyDataFile.filePath;
@@ -61,49 +66,46 @@ function sendLatestUpdate() {
         continue;
       }
       latestInfo.isFile = !fs.lstatSync(latestInfo.path).isDirectory();
-      latest.push(latestInfo);
+      data.push(latestInfo);
     } else {
       break;
     }
   }
-  sendIpcToRenderer("hs-update-latest", latest);
+  sendIpcToRenderer("hs-update-latest", data);
 }
 
 function sendFavoritesUpdate() {
-  const favorites = [];
-  // TODO: load favorites from file
-  if (false) {
-    // TODO: if favorites file loaded from file successfully
-  } else {
-    // Couldn't load favorites, fill with default
-    let folderPath = appUtils.getHomeFolderPath();
-    if (fs.existsSync(folderPath)) {
-      let favorite = {};
-      favorite.name = _("tool-fb-shortcuts-places-home");
-      favorite.path = folderPath;
-      favorite.isFile = false;
-      favorites.push(favorite);
+  if (!g_favorites) g_favorites = favorites.get();
+  const data = [];
+  for (let index = 0; index < g_favorites.length; index++) {
+    const favoriteInfo = {};
+    favoriteInfo.index = index;
+    favoriteInfo.path = g_favorites[index].path;
+    if (g_favorites[index].localizedNameId) {
+      // used in the defaults
+      switch (g_favorites[index].localizedNameId) {
+        case "home":
+          favoriteInfo.name = _("tool-fb-shortcuts-places-home");
+          break;
+        case "desktop":
+          favoriteInfo.name = _("tool-fb-shortcuts-places-desktop");
+          break;
+        case "downloads":
+          favoriteInfo.name = _("tool-fb-shortcuts-places-downloads");
+          break;
+      }
+    } else {
+      favoriteInfo.name = g_favorites[index].name;
     }
-
-    folderPath = appUtils.getDesktopFolderPath();
-    if (fs.existsSync(folderPath)) {
-      let favorite = {};
-      favorite.name = _("tool-fb-shortcuts-places-desktop");
-      favorite.path = folderPath;
-      favorite.isFile = false;
-      favorites.push(favorite);
-    }
-
-    folderPath = appUtils.getDownloadsFolderPath();
-    if (fs.existsSync(folderPath)) {
-      let favorite = {};
-      favorite.name = _("tool-fb-shortcuts-places-downloads");
-      favorite.path = folderPath;
-      favorite.isFile = false;
-      favorites.push(favorite);
-    }
+    favoriteInfo.isFile = !fs.lstatSync(favoriteInfo.path).isDirectory();
+    data.push(favoriteInfo);
   }
-  sendIpcToRenderer("hs-update-favorites", favorites);
+  sendIpcToRenderer("hs-update-favorites", data);
+}
+
+function saveFavorites() {
+  favorites.set(g_favorites);
+  favorites.save();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -174,7 +176,8 @@ function initOnIpcCallbacks() {
     log.test(filePath);
   });
 
-  on("hs-on-favorite-options-clicked", (index) => {
+  on("hs-on-favorite-options-clicked", (index, path) => {
+    // TODO: maybe check index and path match?
     sendIpcToRenderer(
       "hs-show-modal-favorite-options",
       index,
@@ -194,6 +197,7 @@ function initOnIpcCallbacks() {
 ///////////////////////////////////////////////////////////////////////////////
 
 function updateLocalizedText() {
+  sendFavoritesUpdate();
   sendIpcToRenderer("hs-update-localization", getIdsLocalization());
 }
 exports.updateLocalizedText = updateLocalizedText;
@@ -201,8 +205,16 @@ exports.updateLocalizedText = updateLocalizedText;
 function getIdsLocalization() {
   return [
     {
-      id: "home-screen-title-text",
-      text: _("home-screen").toUpperCase(),
+      id: "hs-openfile-button-text",
+      text: _("ctxmenu-openfile").replace("...", "").toUpperCase(),
+    },
+    {
+      id: "hs-favorites-title",
+      text: _("home-screen-favorites").toUpperCase(),
+    },
+    {
+      id: "hs-latest-title",
+      text: _("home-screen-latest").toUpperCase(),
     },
   ];
 }

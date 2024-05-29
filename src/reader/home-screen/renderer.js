@@ -177,10 +177,11 @@ function getNewCardDiv(cardType, data) {
       cardDiv
         .querySelector(".hs-path-card-button")
         .addEventListener("click", function (event) {
-          // TODO: get index from somewhere
-          // TODO: maybe also send path to make sure
-          let favIndex = 0;
-          sendIpcToMain("hs-on-favorite-options-clicked", favIndex);
+          sendIpcToMain(
+            "hs-on-favorite-options-clicked",
+            data.index,
+            data.path
+          );
           event.stopPropagation();
         });
       break;

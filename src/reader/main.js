@@ -145,6 +145,7 @@ exports.onQuit = function () {
   settings.setValue("on_quit_state", g_fileData.path === "" ? 0 : 1);
   addCurrentToHistory(false);
   audioPlayer.saveSettings();
+  homeScreen.close();
   if (g_workerExport !== undefined) {
     g_workerExport.kill();
     g_workerExport = undefined;
