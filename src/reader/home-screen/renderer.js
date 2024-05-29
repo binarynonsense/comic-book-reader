@@ -26,7 +26,6 @@ function init() {
     // things to start only once go here
     g_isInitialized = true;
     ///////////
-    // document.querySelector("#hs-content");
     const openFileButton = document.querySelector("#hs-openfile-button");
     openFileButton.addEventListener("click", (event) => {
       sendIpcToMain("hs-open-dialog-file");
