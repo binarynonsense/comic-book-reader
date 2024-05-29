@@ -49,7 +49,6 @@ exports.init = function (filePath, checkHistory) {
 
   const data = fs.readFileSync(path.join(__dirname, "index.html"));
   sendIpcToCoreRenderer("replace-inner-html", "#reader", data.toString());
-  homeScreen.open();
 
   updateLocalizedText();
   renderTitle();
@@ -91,6 +90,7 @@ exports.init = function (filePath, checkHistory) {
   showBattery(settings.getValue("showBattery"));
   audioPlayer.init(core.getMainWindow(), "audio-player-container");
   showAudioPlayer(settings.getValue("showAudioPlayer"));
+  homeScreen.open();
 
   // if the program is called from the os' 'open with' of file association
   if (filePath && filePath !== "" && fs.existsSync(filePath)) {

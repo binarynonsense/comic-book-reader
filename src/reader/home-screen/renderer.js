@@ -152,21 +152,26 @@ function getNewCardDiv(cardType, data) {
 
   switch (cardType) {
     case CardType.LATEST:
-      cardDiv.classList.add("hs-path-card");
-      cardDiv.innerHTML = interactiveHtml;
-      cardDiv
-        .querySelector(".hs-path-card-main")
-        .addEventListener("click", function (event) {
+      {
+        cardDiv.classList.add("hs-path-card");
+        cardDiv.innerHTML = interactiveHtml;
+        const mainCardDiv = cardDiv.querySelector(".hs-path-card-main");
+        mainCardDiv.title = g_cardLocalization.openInReader;
+        mainCardDiv.addEventListener("click", function (event) {
           sendIpcToMain("hs-open-file", data.path);
           event.stopPropagation();
         });
+      }
       break;
     case CardType.FAVORITES:
-      cardDiv.classList.add("hs-path-card");
-      cardDiv.innerHTML = interactiveHtml;
-      cardDiv
-        .querySelector(".hs-path-card-main")
-        .addEventListener("click", function (event) {
+      {
+        cardDiv.classList.add("hs-path-card");
+        cardDiv.innerHTML = interactiveHtml;
+        const mainCardDiv = cardDiv.querySelector(".hs-path-card-main");
+        mainCardDiv.title = data.isFile
+          ? g_cardLocalization.openInReader
+          : g_cardLocalization.openInSystemBrowser;
+        mainCardDiv.addEventListener("click", function (event) {
           if (data.isFile) {
             sendIpcToMain("hs-open-file", path);
           } else {
@@ -174,9 +179,10 @@ function getNewCardDiv(cardType, data) {
           }
           event.stopPropagation();
         });
-      cardDiv
-        .querySelector(".hs-path-card-button")
-        .addEventListener("click", function (event) {
+
+        const buttonDiv = cardDiv.querySelector(".hs-path-card-button");
+        buttonDiv.title = g_cardLocalization.options;
+        buttonDiv.addEventListener("click", function (event) {
           sendIpcToMain(
             "hs-on-favorite-options-clicked",
             data.index,
@@ -184,6 +190,7 @@ function getNewCardDiv(cardType, data) {
           );
           event.stopPropagation();
         });
+      }
       break;
     case CardType.EMPTY:
       cardDiv.classList.add("hs-path-card");
@@ -193,6 +200,7 @@ function getNewCardDiv(cardType, data) {
       cardDiv.classList.add("hs-add-card");
       cardDiv.classList.add("hs-path-interactive");
       cardDiv.innerHTML = addFavHtml;
+      cardDiv.title = g_cardLocalization.add;
       cardDiv.addEventListener("click", function (event) {
         sendIpcToMain("hs-on-add-favorite-clicked");
         event.stopPropagation();
@@ -300,12 +308,17 @@ function showModalFavoriteOptions(
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-function updateLocalization(localization) {
-  for (let index = 0; index < localization.length; index++) {
-    const element = localization[index];
+let g_cardLocalization;
+
+function updateLocalization(idsLocalization, cardLocalization) {
+  // ids
+  for (let index = 0; index < idsLocalization.length; index++) {
+    const element = idsLocalization[index];
     const domElement = document.getElementById(element.id);
     if (domElement !== null) {
       domElement.innerText = element.text;
     }
   }
+  // cards
+  g_cardLocalization = cardLocalization;
 }

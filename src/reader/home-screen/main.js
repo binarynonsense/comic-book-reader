@@ -34,6 +34,7 @@ function init() {
       data.toString()
     );
     sendIpcToRenderer("hs-init");
+    updateLocalizedText(false);
     favorites.init();
     sendFavoritesUpdate();
   }
@@ -109,9 +110,20 @@ function saveFavorites() {
 }
 
 function addFavorite(favPath) {
-  // TODO: check if exists?
-  g_favorites.push({ path: favPath, name: path.basename(favPath) });
-  sendFavoritesUpdate();
+  let isAlreadyInList = false;
+  for (let index = 0; index < g_favorites.length; index++) {
+    if (g_favorites[index].path === favPath) {
+      isAlreadyInList = true;
+      break;
+    }
+  }
+  if (!isAlreadyInList) {
+    g_favorites.push({ path: favPath, name: path.basename(favPath) });
+    sendFavoritesUpdate();
+  } else {
+    // TODO: show some kind of error modal?
+    log.debug("tried to add a favorite already in the list");
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -208,9 +220,15 @@ function initOnIpcCallbacks() {
 // LOCALIZATION ///////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-function updateLocalizedText() {
-  sendFavoritesUpdate();
-  sendIpcToRenderer("hs-update-localization", getIdsLocalization());
+function updateLocalizedText(sendFavsUpdate = true) {
+  if (!g_isInitialized) return;
+  sendIpcToRenderer(
+    "hs-update-localization",
+    getIdsLocalization(),
+    getCardLocalization()
+  );
+  log.debug("loading favorites");
+  if (sendFavsUpdate) sendFavoritesUpdate();
 }
 exports.updateLocalizedText = updateLocalizedText;
 
@@ -229,4 +247,15 @@ function getIdsLocalization() {
       text: _("home-screen-latest").toUpperCase(),
     },
   ];
+}
+
+function getCardLocalization() {
+  return {
+    options: _("tool-shared-tab-options"),
+    add: _("tool-shared-ui-add"),
+    openInSystemBrowser: _(
+      "ui-modal-prompt-button-open-in-system-file-browser"
+    ),
+    openInReader: _("ui-modal-prompt-button-open-in-reader"),
+  };
 }
