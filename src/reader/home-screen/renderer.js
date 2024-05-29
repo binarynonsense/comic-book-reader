@@ -173,7 +173,7 @@ function getNewCardDiv(cardType, data) {
           : g_cardLocalization.openInSystemBrowser;
         mainCardDiv.addEventListener("click", function (event) {
           if (data.isFile) {
-            sendIpcToMain("hs-open-file", path);
+            sendIpcToMain("hs-open-file", data.path);
           } else {
             sendIpcToMain("hs-open-dialog-file", data.path);
           }
