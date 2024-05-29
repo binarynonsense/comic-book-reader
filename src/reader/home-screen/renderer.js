@@ -11,21 +11,29 @@ import {
   showModal,
   modalClosed,
 } from "../../reader/renderer-ui.js";
+import * as gamepads from "../../shared/renderer/gamepads.js";
+import * as navigation from "./renderer-navigation.js";
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
 let g_isInitialized = false;
+let g_navData = {};
 
 function init() {
   if (!g_isInitialized) {
     // things to start only once go here
     g_isInitialized = true;
+    ///////////
+    // document.querySelector("#hs-content");
     const openFileButton = document.querySelector("#hs-openfile-button");
     openFileButton.addEventListener("click", (event) => {
       sendIpcToMain("hs-open-dialog-file");
     });
+    openFileButton.setAttribute("data-nav-panel", 0);
+    openFileButton.setAttribute("data-nav-row", 0);
+    openFileButton.setAttribute("data-nav-col", 0);
   }
 }
 
@@ -46,12 +54,8 @@ function initOnIpcCallbacks() {
     init();
   });
 
-  on("hs-update-favorites", (...args) => {
-    updateFavorites(args[0]);
-  });
-
-  on("hs-update-latest", (...args) => {
-    updateLatest(args[0]);
+  on("hs-build-sections", (...args) => {
+    buildSections(...args);
   });
 
   on("hs-show-modal-add-favorite", (...args) => {
@@ -74,41 +78,61 @@ const CardType = {
   ADD_FAVORITE: "add favorite",
 };
 
-function updateFavorites(favorites) {
+function buildSections(favorites, latest) {
+  // FAVORITES
   const favoritesDiv = document.querySelector("#hs-favorites");
   favoritesDiv.innerHTML = "";
 
-  const listDiv = document.createElement("div");
+  let listDiv = document.createElement("div");
   listDiv.classList.add("hs-path-cards-list");
   favoritesDiv.appendChild(listDiv);
 
+  let navRow = 1;
+  let navColumn = 0;
+
   for (let index = 0; index < favorites.length; index++) {
     const data = favorites[index];
-    listDiv.appendChild(getNewCardDiv(CardType.FAVORITES, data));
+    listDiv.appendChild(
+      getNewCardDiv(CardType.FAVORITES, data, navRow, navColumn)
+    );
+    if (index % 2 === 0) {
+      navColumn = 1;
+    } else {
+      navRow++;
+      navColumn = 0;
+    }
   }
 
-  listDiv.appendChild(getNewCardDiv(CardType.ADD_FAVORITE));
-}
+  listDiv.appendChild(
+    getNewCardDiv(CardType.ADD_FAVORITE, undefined, navRow, navColumn)
+  );
 
-function updateLatest(latest) {
+  // LATEST
   const latestDiv = document.querySelector("#hs-latest");
   latestDiv.innerHTML = "";
 
-  const listDiv = document.createElement("div");
+  listDiv = document.createElement("div");
   listDiv.classList.add("hs-path-cards-list");
   latestDiv.appendChild(listDiv);
 
   for (let index = 0; index < 6; index++) {
     if (latest && latest.length > index) {
       const data = latest[index];
-      listDiv.appendChild(getNewCardDiv(CardType.LATEST, data));
+      listDiv.appendChild(
+        getNewCardDiv(CardType.LATEST, data, navRow, navColumn)
+      );
     } else if (index < 4) {
-      listDiv.appendChild(getNewCardDiv(CardType.EMPTY));
+      listDiv.appendChild(
+        getNewCardDiv(CardType.EMPTY, undefined, navRow, navColumn)
+      );
     }
   }
+
+  // NAVIGATION
+  navigation.rebuild(g_navData, 0);
 }
 
-function getNewCardDiv(cardType, data) {
+function getNewCardDiv(cardType, data, navRow, navColumn) {
   const cardDiv = document.createElement("div");
 
   let hasButton = cardType === CardType.LATEST ? false : true;
@@ -151,18 +175,6 @@ function getNewCardDiv(cardType, data) {
   </div>`;
 
   switch (cardType) {
-    case CardType.LATEST:
-      {
-        cardDiv.classList.add("hs-path-card");
-        cardDiv.innerHTML = interactiveHtml;
-        const mainCardDiv = cardDiv.querySelector(".hs-path-card-main");
-        mainCardDiv.title = g_cardLocalization.openInReader;
-        mainCardDiv.addEventListener("click", function (event) {
-          sendIpcToMain("hs-open-file", data.path);
-          event.stopPropagation();
-        });
-      }
-      break;
     case CardType.FAVORITES:
       {
         cardDiv.classList.add("hs-path-card");
@@ -179,6 +191,12 @@ function getNewCardDiv(cardType, data) {
           }
           event.stopPropagation();
         });
+        if (navRow !== undefined && navColumn !== undefined) {
+          mainCardDiv.setAttribute("data-nav-panel", 0);
+          mainCardDiv.setAttribute("data-nav-row", navRow);
+          mainCardDiv.setAttribute("data-nav-col", navColumn);
+          mainCardDiv.setAttribute("tabindex", "0");
+        }
 
         const buttonDiv = cardDiv.querySelector(".hs-path-card-button");
         buttonDiv.title = g_cardLocalization.options;
@@ -192,10 +210,6 @@ function getNewCardDiv(cardType, data) {
         });
       }
       break;
-    case CardType.EMPTY:
-      cardDiv.classList.add("hs-path-card");
-      cardDiv.innerHTML = emptyHtml;
-      break;
     case CardType.ADD_FAVORITE:
       cardDiv.classList.add("hs-add-card");
       cardDiv.classList.add("hs-path-interactive");
@@ -206,8 +220,65 @@ function getNewCardDiv(cardType, data) {
         event.stopPropagation();
       });
       break;
+    case CardType.LATEST:
+      {
+        cardDiv.classList.add("hs-path-card");
+        cardDiv.innerHTML = interactiveHtml;
+        const mainCardDiv = cardDiv.querySelector(".hs-path-card-main");
+        mainCardDiv.title = g_cardLocalization.openInReader;
+        mainCardDiv.addEventListener("click", function (event) {
+          sendIpcToMain("hs-open-file", data.path);
+          event.stopPropagation();
+        });
+      }
+      break;
+    case CardType.EMPTY:
+      cardDiv.classList.add("hs-path-card");
+      cardDiv.innerHTML = emptyHtml;
+      break;
   }
   return cardDiv;
+}
+
+export function onInputEvent(type, event) {
+  switch (type) {
+    case "onkeydown":
+      if (
+        // disable default scrolling
+        event.key === "ArrowUp" ||
+        event.key === "ArrowDown" ||
+        event.key === "ArrowRight" ||
+        event.key === "ArrowLeft" ||
+        event.key === " " ||
+        // disable default zoom in out reset
+        (event.key === "-" && event.ctrlKey) ||
+        (event.key === "+" && event.ctrlKey) ||
+        (event.key === "0" && event.ctrlKey)
+      ) {
+        event.preventDefault();
+      }
+
+      navigation.navigate(
+        g_navData,
+        document.getElementById("tool-hst-back-button"),
+        event.key == "Escape",
+        event.key == "Enter",
+        event.key == "ArrowUp",
+        event.key == "ArrowDown",
+        event.key == "ArrowLeft",
+        event.key == "ArrowRight"
+      );
+      if (
+        event.key == "Tab" ||
+        event.key == "ArrowUp" ||
+        event.key == "ArrowDown" ||
+        event.key == "ArrowLeft" ||
+        event.key == "ArrowRight"
+      ) {
+        event.preventDefault();
+      }
+      break;
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////

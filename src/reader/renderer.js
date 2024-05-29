@@ -26,7 +26,10 @@ import {
   onInputEvent as modalOnInputEvent,
   onGamepadPolled as modalOnGamepadPolled,
 } from "../shared/renderer/modals.js";
-import { initIpc as homeScreenInitIpc } from "./home-screen/renderer.js";
+import {
+  initIpc as homeScreenInitIpc,
+  onInputEvent as homeScreenOnInputEvent,
+} from "./home-screen/renderer.js";
 
 export function initIpc() {
   uiInitIpc();
@@ -128,6 +131,8 @@ function initOnIpcCallbacks() {
 // EVENT LISTENERS ////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+let g_pagesContainerDiv;
+
 export function onInputEvent(type, event) {
   // NOTE: if more are added, make them return true or false to see if handled
   // or next should try?
@@ -135,7 +140,15 @@ export function onInputEvent(type, event) {
     modalOnInputEvent(getOpenModal(), type, event);
     return;
   }
-  uiOnInputEvent(type, event);
+  if (!g_pagesContainerDiv) {
+    g_pagesContainerDiv = document.getElementById("pages-container");
+  }
+  let fileOpen = g_pagesContainerDiv && g_pagesContainerDiv.innerHTML !== "";
+  if (fileOpen) {
+    uiOnInputEvent(type, event);
+  } else {
+    homeScreenOnInputEvent(type, event);
+  }
 }
 
 export function onContextMenu(params) {

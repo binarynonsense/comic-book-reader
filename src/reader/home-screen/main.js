@@ -58,11 +58,10 @@ exports.refresh = function () {
 //////////////////////////////////////////////////////////////////////////////
 
 function buildSections() {
-  sendFavoritesUpdate();
-  sendLatestUpdate();
+  sendIpcToRenderer("hs-build-sections", getFavoritesData(), getLatestData());
 }
 
-function sendLatestUpdate() {
+function getLatestData() {
   const historyData = history.get();
   const data = [];
   for (let index = 0; index < historyData.length; index++) {
@@ -80,10 +79,10 @@ function sendLatestUpdate() {
       break;
     }
   }
-  sendIpcToRenderer("hs-update-latest", data);
+  return data;
 }
 
-function sendFavoritesUpdate() {
+function getFavoritesData() {
   if (!g_favorites) g_favorites = favorites.get();
   const data = [];
   for (let index = 0; index < g_favorites.length; index++) {
@@ -109,7 +108,7 @@ function sendFavoritesUpdate() {
     favoriteInfo.isFile = !fs.lstatSync(favoriteInfo.path).isDirectory();
     data.push(favoriteInfo);
   }
-  sendIpcToRenderer("hs-update-favorites", data);
+  return data;
 }
 
 function saveFavorites() {
@@ -127,7 +126,7 @@ function addFavorite(favPath) {
   }
   if (!isAlreadyInList) {
     g_favorites.push({ path: favPath, name: path.basename(favPath) });
-    sendFavoritesUpdate();
+    getFavoritesData();
   } else {
     // TODO: show some kind of error modal?
     log.debug("tried to add a favorite already in the list");
@@ -217,7 +216,7 @@ function initOnIpcCallbacks() {
   on("hs-on-modal-favorite-options-remove-clicked", (favIndex, favPath) => {
     if (g_favorites[favIndex].path === favPath) {
       g_favorites.splice(favIndex, 1);
-      sendFavoritesUpdate();
+      getFavoritesData();
     } else {
       log.error("Tried to remove a favorite with not matching index and path");
     }
@@ -236,7 +235,7 @@ function updateLocalizedText(sendFavsUpdate = true) {
     getCardLocalization()
   );
   log.debug("loading favorites");
-  if (sendFavsUpdate) sendFavoritesUpdate();
+  if (sendFavsUpdate) getFavoritesData();
 }
 exports.updateLocalizedText = updateLocalizedText;
 
