@@ -39,10 +39,20 @@ exports.open = function (fileData, showFocus) {
   const data = fs.readFileSync(path.join(__dirname, "index.html"));
   sendIpcToCoreRenderer("replace-inner-html", "#tools", data.toString());
   updateLocalizedText();
-  g_startingFolderPath =
-    fileData && fileData.path !== undefined && fileData.path !== ""
-      ? path.dirname(fileData.path)
-      : appUtils.getDesktopFolderPath();
+  if (
+    fileData &&
+    fileData.path !== undefined &&
+    fileData.path !== "" &&
+    fs.existsSync(fileData.path)
+  ) {
+    if (fs.lstatSync(fileData.path).isDirectory()) {
+      g_startingFolderPath = fileData.path;
+    } else {
+      g_startingFolderPath = path.dirname(fileData.path);
+    }
+  } else {
+    g_startingFolderPath = appUtils.getDesktopFolderPath();
+  }
   g_previousFolderPath = undefined;
   sendIpcToRenderer("show", showFocus, _("tool-shared-modal-title-loading"));
 };
