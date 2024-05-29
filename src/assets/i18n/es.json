@@ -1,7 +1,7 @@
 {
   "@metadata": {
     "authors": ["Álvaro"],
-    "last-updated": "2024-05-28",
+    "last-updated": "2024-05-29",
     "acbr-version": "3.5.0-beta1",
     "pre-release": "false",
     "comments": "",
@@ -178,6 +178,7 @@
   "ui-modal-prompt-button-delete": "Borrar",
   "ui-modal-prompt-button-save": "Guardar",
   "ui-modal-prompt-button-open": "Abrir",
+  "ui-modal-prompt-button-close-file": "Cerrar Archivo",
   "[NOTE TO TRANSLATORS]ui-modal-prompt-button-open-in-file-browser": "File Browser should be translated the same as in tool-fb-title",
   "ui-modal-prompt-button-open-in-file-browser": "Abrir en Explorador de Archivos",
   "[NOTE TO TRANSLATORS]ui-modal-prompt-button-open-in-acbr-file-browser": "File Browser should be translated the same as in tool-fb-title",
