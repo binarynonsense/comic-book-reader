@@ -36,23 +36,31 @@ function init() {
     sendIpcToRenderer("hs-init");
     updateLocalizedText(false);
     favorites.init();
-    sendFavoritesUpdate();
   }
 }
 
 exports.open = function (showFocus) {
   init();
   // TODO: use showFocus?
-  sendLatestUpdate();
+  buildSections();
 };
 
 exports.close = function () {
   saveFavorites();
 };
 
+exports.refresh = function () {
+  buildSections();
+};
+
 //////////////////////////////////////////////////////////////////////////////
 // TOOL //////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
+
+function buildSections() {
+  sendFavoritesUpdate();
+  sendLatestUpdate();
+}
 
 function sendLatestUpdate() {
   const historyData = history.get();

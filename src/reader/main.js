@@ -176,7 +176,10 @@ function addCurrentToHistory(updateMenu = true) {
   if (g_fileData.path !== "") {
     history.add(g_fileData.path, g_fileData.pageIndex, g_fileData.data);
   }
-  if (updateMenu) rebuildMenuAndToolBars();
+  if (updateMenu) {
+    rebuildMenuAndToolBars();
+    homeScreen.refresh();
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////// IPC SEND //////////////////////////////////////////////////////////////////
