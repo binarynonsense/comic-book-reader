@@ -96,7 +96,7 @@ function buildSections(favorites, latest) {
       getNewCardDiv(CardType.FAVORITES, data, navRow, navColumn)
     );
     if (index % 2 === 0) {
-      navColumn = 1;
+      navColumn = 2;
     } else {
       navRow++;
       navColumn = 0;
@@ -106,6 +106,8 @@ function buildSections(favorites, latest) {
   listDiv.appendChild(
     getNewCardDiv(CardType.ADD_FAVORITE, undefined, navRow, navColumn)
   );
+  navColumn = 0;
+  navRow++;
 
   // LATEST
   const latestDiv = document.querySelector("#hs-latest");
@@ -121,10 +123,20 @@ function buildSections(favorites, latest) {
       listDiv.appendChild(
         getNewCardDiv(CardType.LATEST, data, navRow, navColumn)
       );
+      navColumn++;
+      if (navColumn >= 2) {
+        navColumn = 0;
+        navRow++;
+      }
     } else if (index < 4) {
       listDiv.appendChild(
         getNewCardDiv(CardType.EMPTY, undefined, navRow, navColumn)
       );
+      navColumn++;
+      if (navColumn >= 2) {
+        navColumn = 0;
+        navRow++;
+      }
     }
   }
 
@@ -208,6 +220,12 @@ function getNewCardDiv(cardType, data, navRow, navColumn) {
           );
           event.stopPropagation();
         });
+        if (navRow !== undefined && navColumn !== undefined) {
+          buttonDiv.setAttribute("data-nav-panel", 0);
+          buttonDiv.setAttribute("data-nav-row", navRow);
+          buttonDiv.setAttribute("data-nav-col", navColumn + 1);
+          buttonDiv.setAttribute("tabindex", "0");
+        }
       }
       break;
     case CardType.ADD_FAVORITE:
@@ -219,6 +237,12 @@ function getNewCardDiv(cardType, data, navRow, navColumn) {
         sendIpcToMain("hs-on-add-favorite-clicked");
         event.stopPropagation();
       });
+      if (navRow !== undefined && navColumn !== undefined) {
+        cardDiv.setAttribute("data-nav-panel", 0);
+        cardDiv.setAttribute("data-nav-row", navRow);
+        cardDiv.setAttribute("data-nav-col", navColumn);
+        cardDiv.setAttribute("tabindex", "0");
+      }
       break;
     case CardType.LATEST:
       {
@@ -230,11 +254,23 @@ function getNewCardDiv(cardType, data, navRow, navColumn) {
           sendIpcToMain("hs-open-file", data.path);
           event.stopPropagation();
         });
+        if (navRow !== undefined && navColumn !== undefined) {
+          mainCardDiv.setAttribute("data-nav-panel", 0);
+          mainCardDiv.setAttribute("data-nav-row", navRow);
+          mainCardDiv.setAttribute("data-nav-col", navColumn);
+          mainCardDiv.setAttribute("tabindex", "0");
+        }
       }
       break;
     case CardType.EMPTY:
       cardDiv.classList.add("hs-path-card");
       cardDiv.innerHTML = emptyHtml;
+      if (navRow !== undefined && navColumn !== undefined) {
+        cardDiv.setAttribute("data-nav-panel", 0);
+        cardDiv.setAttribute("data-nav-row", navRow);
+        cardDiv.setAttribute("data-nav-col", navColumn);
+        cardDiv.setAttribute("tabindex", "0");
+      }
       break;
   }
   return cardDiv;

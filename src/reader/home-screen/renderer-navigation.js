@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-// NOTE: modified version of tools-navigation
+// NOTE: based on tools-navigation
 
 export function rebuild(data, focusedPanelID) {
   const root = document.getElementById("home-screen");
@@ -61,13 +61,21 @@ export function navigate(
     let rowId = data.focusedElement.getAttribute("data-nav-row");
     let colId = data.focusedElement.getAttribute("data-nav-col");
     if (upPressed) {
-      colId = 0;
       rowId--;
       if (rowId < 0) rowId = data.tree[panelId].length - 1;
+      if (data.tree[panelId][rowId].length > colId) {
+        // keep at the same column
+      } else {
+        colId = 0;
+      }
     } else if (downPressed) {
-      colId = 0;
       rowId++;
       if (rowId >= data.tree[panelId].length) rowId = 0;
+      if (data.tree[panelId][rowId].length > colId) {
+        // keep at the same column
+      } else {
+        colId = 0;
+      }
     } else if (leftPressed) {
       if (colId > 0) {
         colId--;
@@ -78,7 +86,6 @@ export function navigate(
       }
     }
     data.focusedElement = data.tree[panelId][rowId][colId];
-    console.log(data.focusedElement);
     data.focusedElement.focus();
   }
 }
