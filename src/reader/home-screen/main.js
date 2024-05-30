@@ -130,7 +130,7 @@ function addFavorite(favPath) {
   }
   if (!isAlreadyInList) {
     g_favorites.push({ path: favPath, name: path.basename(favPath) });
-    getFavoritesData();
+    buildSections();
   } else {
     // TODO: show some kind of error modal?
     log.debug("tried to add a favorite already in the list");
@@ -225,7 +225,7 @@ function initOnIpcCallbacks() {
   on("hs-on-modal-favorite-options-remove-clicked", (favIndex, favPath) => {
     if (g_favorites[favIndex].path === favPath) {
       g_favorites.splice(favIndex, 1);
-      getFavoritesData();
+      buildSections();
     } else {
       log.error("Tried to remove a favorite with not matching index and path");
     }
