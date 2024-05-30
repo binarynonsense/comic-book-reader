@@ -92,17 +92,7 @@ function getFavoritesData() {
     favoriteInfo.path = g_favorites[index].path;
     if (g_favorites[index].localizedNameId) {
       // used in the defaults
-      switch (g_favorites[index].localizedNameId) {
-        case "home":
-          favoriteInfo.name = _("tool-fb-shortcuts-places-home");
-          break;
-        case "desktop":
-          favoriteInfo.name = _("tool-fb-shortcuts-places-desktop");
-          break;
-        case "downloads":
-          favoriteInfo.name = _("tool-fb-shortcuts-places-downloads");
-          break;
-      }
+      favoriteInfo.name = getFavoriteLocalizedName(index);
     } else {
       favoriteInfo.name = g_favorites[index].name;
     }
@@ -110,6 +100,19 @@ function getFavoritesData() {
     data.push(favoriteInfo);
   }
   return data;
+}
+
+function getFavoriteLocalizedName(index) {
+  switch (g_favorites[index].localizedNameId) {
+    case "home":
+      return _("tool-fb-shortcuts-places-home");
+    case "desktop":
+      return _("tool-fb-shortcuts-places-desktop");
+    case "downloads":
+      return _("tool-fb-shortcuts-places-downloads");
+    default:
+      return undefined;
+  }
 }
 
 function saveFavorites() {
@@ -214,7 +217,8 @@ function initOnIpcCallbacks() {
       path,
       _("tool-shared-tab-options"),
       _("tool-shared-ui-back"),
-      _("tool-shared-tooltip-remove-from-list")
+      _("tool-shared-tooltip-remove-from-list"),
+      _("ui-modal-prompt-button-edit-name")
     );
   });
 
@@ -226,6 +230,50 @@ function initOnIpcCallbacks() {
       log.error("Tried to remove a favorite with not matching index and path");
     }
   });
+
+  on("hs-on-modal-favorite-options-edit-name-clicked", (favIndex, favPath) => {
+    if (g_favorites[favIndex].path === favPath) {
+      let favName = g_favorites[favIndex].name;
+      if (g_favorites[favIndex].localizedNameId) {
+        favName = getFavoriteLocalizedName(favIndex);
+      }
+      sendIpcToRenderer(
+        "hs-show-modal-favorite-edit-name",
+        favIndex,
+        favPath,
+        favName,
+        _("ui-modal-prompt-button-edit-name"),
+        _("ui-modal-prompt-button-ok"),
+        _("ui-modal-prompt-button-cancel")
+      );
+    } else {
+      log.error("Tried to edit a favorite with not matching index and path");
+    }
+  });
+
+  on(
+    "hs-on-modal-favorite-options-edit-name-ok-clicked",
+    (favIndex, favPath, newName) => {
+      if (g_favorites[favIndex].path === favPath) {
+        if (g_favorites[favIndex].localizedNameId) {
+          let favName = getFavoriteLocalizedName(favIndex);
+          if (newName && newName !== favName) {
+            g_favorites[favIndex].localizedNameId = undefined;
+            g_favorites[favIndex].name = newName;
+            buildSections();
+          }
+        } else {
+          let favName = g_favorites[favIndex].name;
+          if (newName && newName !== favName) {
+            g_favorites[favIndex].name = newName;
+            buildSections();
+          }
+        }
+      } else {
+        log.error("Tried to edit a favorite with not matching index and path");
+      }
+    }
+  );
 }
 
 ///////////////////////////////////////////////////////////////////////////////

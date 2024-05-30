@@ -68,6 +68,10 @@ function initOnIpcCallbacks() {
   on("hs-show-modal-favorite-options", (...args) => {
     showModalFavoriteOptions(...args);
   });
+
+  on("hs-show-modal-favorite-edit-name", (...args) => {
+    showModalFavoriteEditName(...args);
+  });
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -419,12 +423,26 @@ function showModalFavoriteOptions(
   path,
   title,
   textButtonBack,
-  textButtonRemove
+  textButtonRemove,
+  textButtonEditName
 ) {
   if (getOpenModal()) {
     return;
   }
+
   let buttons = [];
+  buttons.push({
+    text: textButtonEditName.toUpperCase(),
+    fullWidth: true,
+    callback: () => {
+      modalClosed();
+      sendIpcToMain(
+        "hs-on-modal-favorite-options-edit-name-clicked",
+        index,
+        path
+      );
+    },
+  });
   buttons.push({
     text: textButtonRemove.toUpperCase(),
     fullWidth: true,
@@ -433,7 +451,6 @@ function showModalFavoriteOptions(
       sendIpcToMain("hs-on-modal-favorite-options-remove-clicked", index, path);
     },
   });
-
   buttons.push({
     text: textButtonBack.toUpperCase(),
     fullWidth: true,
@@ -441,6 +458,7 @@ function showModalFavoriteOptions(
       modalClosed();
     },
   });
+
   showModal({
     showFocus: true,
     title: title,
@@ -453,6 +471,52 @@ function showModalFavoriteOptions(
       key: "Escape",
     },
     buttons: buttons,
+  });
+}
+
+function showModalFavoriteEditName(
+  index,
+  path,
+  name,
+  title,
+  textButton1,
+  textButton2
+) {
+  if (getOpenModal()) {
+    return;
+  }
+
+  showModal({
+    title: title,
+    zIndexDelta: -450,
+    input: { type: "text", default: name },
+    close: {
+      callback: () => {
+        modalClosed();
+      },
+      key: "Escape",
+    },
+    buttons: [
+      {
+        text: textButton1.toUpperCase(),
+        callback: (value) => {
+          sendIpcToMain(
+            "hs-on-modal-favorite-options-edit-name-ok-clicked",
+            index,
+            path,
+            value
+          );
+          modalClosed();
+        },
+        key: "Enter",
+      },
+      {
+        text: textButton2.toUpperCase(),
+        callback: () => {
+          modalClosed();
+        },
+      },
+    ],
   });
 }
 
