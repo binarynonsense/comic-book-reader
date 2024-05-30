@@ -8,6 +8,7 @@
 import { on, sendIpcToMain, showNoBookContent } from "./renderer.js";
 import * as modals from "../shared/renderer/modals.js";
 import * as gamepads from "../shared/renderer/gamepads.js";
+import * as input from "../shared/renderer/input.js";
 
 export function initIpc() {
   initOnIpcCallbacks();
@@ -596,6 +597,8 @@ export function onInputEvent(type, event) {
           event.key === "ArrowDown" ||
           event.key === "ArrowRight" ||
           event.key === "ArrowLeft" ||
+          event.key === "PageDown" ||
+          event.key === "PageUp" ||
           event.key === " " ||
           // disable default zoom in out reset
           (event.key === "-" && event.ctrlKey) ||
@@ -605,126 +608,130 @@ export function onInputEvent(type, event) {
           event.preventDefault();
         }
 
-        function matchesNavKey(keysArray, event) {
-          for (const keyCombination of keysArray) {
-            if (
-              !keyCombination ||
-              keyCombination === "" ||
-              keyCombination === "UNASSIGNED"
-            ) {
-              continue;
-            }
-            const keyParts = keyCombination.split("+");
-            /*             
-             examples:
-             w -> ["w"]
-             + -> ["", ""]
-             Control+2 -> ["Control", "2"]
-             Control++ -> ["Control", "", ""]
-             Control+Shift+2 -> ['Control', 'Shift', '2']
-             Control+Shift++ -> ['Control', 'Shift', '', '']
-            */
-            let key = keyParts[keyParts.length - 1];
-            if (key === "") {
-              key = "+";
-            }
-            let requiresCtrl = false;
-            for (const value of keyParts) {
-              if (value === "Control") {
-                requiresCtrl = true;
-                break;
-              }
-            }
-            let requiresShift = false;
-            for (const value of keyParts) {
-              if (value === "Shift") {
-                requiresShift = true;
-                break;
-              }
-            }
-            let requiresAlt = false;
-            for (const value of keyParts) {
-              if (value === "Alt") {
-                requiresAlt = true;
-                break;
-              }
-            }
-            let matches = true;
-            if (event.key !== key) {
-              matches = false;
-            }
-            // modifiers
-            if (event.ctrlKey !== requiresCtrl) {
-              matches = false;
-            }
-            if (event.shiftKey !== requiresShift) {
-              matches = false;
-            }
-            if (event.altKey !== requiresAlt) {
-              matches = false;
-            }
-            if (matches) return true;
-          }
-          return false;
-        }
-
         if (fileOpen) {
-          if (matchesNavKey(g_navKeys.changePageNext, event)) {
-            if (!event.repeat) {
-              inputGoToNextPage();
-              event.stopPropagation();
-            }
+          if (
+            input.isActionDownThisFrame({
+              source: input.Source.KEYBOARD,
+              commands: g_navKeys.changePageNext,
+              event: event,
+            })
+          ) {
+            inputGoToNextPage();
             event.stopPropagation();
-          } else if (matchesNavKey(g_navKeys.changePagePrev, event)) {
-            if (!event.repeat) {
-              inputGoToPrevPage();
-              event.stopPropagation();
-            }
-          } else if (matchesNavKey(g_navKeys.changePageRight, event)) {
-            if (!event.repeat) {
-              inputGoToLeftPage();
-              event.stopPropagation();
-            }
+          } else if (
+            input.isActionDownThisFrame({
+              source: input.Source.KEYBOARD,
+              commands: g_navKeys.changePagePrev,
+              event: event,
+            })
+          ) {
+            inputGoToPrevPage();
             event.stopPropagation();
-          } else if (matchesNavKey(g_navKeys.changePageLeft, event)) {
-            if (!event.repeat) {
-              inputGoToRightPage();
-              event.stopPropagation();
-            }
-          } else if (matchesNavKey(g_navKeys.changePageFirst, event)) {
-            if (!event.repeat) inputGoToFirstPage();
-          } else if (matchesNavKey(g_navKeys.changePageLast, event)) {
-            if (!event.repeat) inputGoToLastPage();
-          } else if (matchesNavKey(g_navKeys.scrollDown, event)) {
+          } else if (
+            input.isActionDownThisFrame({
+              source: input.Source.KEYBOARD,
+              commands: g_navKeys.changePageRight,
+              event: event,
+            })
+          ) {
+            inputGoToRightPage();
+            event.stopPropagation();
+          } else if (
+            input.isActionDownThisFrame({
+              source: input.Source.KEYBOARD,
+              commands: g_navKeys.changePageLeft,
+              event: event,
+            })
+          ) {
+            inputGoToLeftPage();
+            event.stopPropagation();
+          } else if (
+            input.isActionDownThisFrame({
+              source: input.Source.KEYBOARD,
+              commands: g_navKeys.changePageFirst,
+              event: event,
+            })
+          ) {
+            inputGoToFirstPage();
+            event.stopPropagation();
+          } else if (
+            input.isActionDownThisFrame({
+              source: input.Source.KEYBOARD,
+              commands: g_navKeys.changePageLast,
+              event: event,
+            })
+          ) {
+            inputGoToLastPage();
+            event.stopPropagation();
+          } else if (
+            input.isActionDown({
+              source: input.Source.KEYBOARD,
+              commands: g_navKeys.scrollDown,
+              event: event,
+            })
+          ) {
             // TODO: only check edge if down this frame? like in gamepad
             inputScrollPageDown();
             event.stopPropagation();
-          } else if (matchesNavKey(g_navKeys.scrollUp, event)) {
+          } else if (
+            input.isActionDown({
+              source: input.Source.KEYBOARD,
+              commands: g_navKeys.scrollUp,
+              event: event,
+            })
+          ) {
             // TODO: only check edge if down this frame? like in gamepad
             inputScrollPageUp();
             event.stopPropagation();
-          } else if (matchesNavKey(g_navKeys.scrollLeft, event)) {
+          } else if (
+            input.isActionDown({
+              source: input.Source.KEYBOARD,
+              commands: g_navKeys.scrollLeft,
+              event: event,
+            })
+          ) {
             let container = document.querySelector("#reader");
             let amount = container.offsetWidth / 5;
             container.scrollBy(-amount, 0);
             event.stopPropagation();
-          } else if (matchesNavKey(g_navKeys.scrollRight, event)) {
+          } else if (
+            input.isActionDown({
+              source: input.Source.KEYBOARD,
+              commands: g_navKeys.scrollRight,
+              event: event,
+            })
+          ) {
             let container = document.querySelector("#reader");
             let amount = container.offsetWidth / 5;
             container.scrollBy(amount, 0);
             event.stopPropagation();
-          } else if (matchesNavKey(g_navKeys.zoomInPage, event)) {
-            if (!event.repeat) {
-              inputZoomIn();
-              event.stopPropagation();
-            }
-          } else if (matchesNavKey(g_navKeys.zoomOutPage, event)) {
-            if (!event.repeat) {
-              inputZoomOut();
-              event.stopPropagation();
-            }
-          } else if (matchesNavKey(g_navKeys.zoomResetPage, event)) {
-            if (!event.repeat) inputZoomReset();
+          } else if (
+            input.isActionDownThisFrame({
+              source: input.Source.KEYBOARD,
+              commands: g_navKeys.zoomInPage,
+              event: event,
+            })
+          ) {
+            inputZoomIn();
+            event.stopPropagation();
+          } else if (
+            input.isActionDownThisFrame({
+              source: input.Source.KEYBOARD,
+              commands: g_navKeys.zoomOutPage,
+              event: event,
+            })
+          ) {
+            inputZoomOut();
+            event.stopPropagation();
+          } else if (
+            input.isActionDownThisFrame({
+              source: input.Source.KEYBOARD,
+              commands: g_navKeys.zoomResetPage,
+              event: event,
+            })
+          ) {
+            inputZoomReset();
+            event.stopPropagation();
           }
         }
 
@@ -855,10 +862,10 @@ export function onInputEvent(type, event) {
               ) < 1
             ) {
               // reached bottom
-              inputGoToLeftPage();
+              inputGoToNextPage();
             } else if (event.deltaY < 0 && container.scrollTop <= 0) {
               // reached top
-              inputGoToRightPage();
+              inputGoToPrevPage();
             }
           }
         }
@@ -873,7 +880,7 @@ function inputScrollPageUp(checkEdge = true, factor = 1) {
   const image = container?.firstChild;
   if (reader && container && image) {
     if (g_turnPageOnScrollBoundary && checkEdge && reader.scrollTop <= 0) {
-      inputGoToRightPage();
+      inputGoToPrevPage();
     } else {
       const cs = getComputedStyle(reader);
       const readerHeight = reader.offsetHeight - parseFloat(cs.marginBottom);
@@ -899,7 +906,7 @@ function inputScrollPageDown(checkEdge = true, factor = 1) {
       checkEdge &&
       Math.abs(reader.scrollHeight - reader.scrollTop - reader.clientHeight) < 1
     ) {
-      inputGoToLeftPage();
+      inputGoToNextPage();
     } else {
       const cs = getComputedStyle(reader);
       const readerHeight = reader.offsetHeight - parseFloat(cs.marginBottom);
@@ -922,14 +929,14 @@ function inputGoToPrevPage() {
   sendIpcToMain("prev-page-pressed");
 }
 
-function inputGoToLeftPage() {
+function inputGoToRightPage() {
   sendIpcToMain(
     "mouse-click",
     document.body.clientWidth,
     document.body.clientWidth
   );
 }
-function inputGoToRightPage() {
+function inputGoToLeftPage() {
   sendIpcToMain("mouse-click", 0, document.body.clientWidth);
 }
 function inputGoToFirstPage() {
@@ -982,9 +989,9 @@ export function onGamepadPolled() {
   let fileOpen = g_pagesContainerDiv && g_pagesContainerDiv.innerHTML !== "";
   if (fileOpen) {
     // zoom in/ out
-    if (gamepads.getButton(gamepads.Buttons.LT)) {
+    if (gamepads.getButtonDown(gamepads.Buttons.LT)) {
       inputZoomOut(deltaTime * 10);
-    } else if (gamepads.getButton(gamepads.Buttons.RT)) {
+    } else if (gamepads.getButtonDown(gamepads.Buttons.RT)) {
       inputZoomIn(deltaTime * 10);
     }
     // page up / down
@@ -1000,34 +1007,34 @@ export function onGamepadPolled() {
       );
     }
     // next / prev page
-    if (gamepads.getButtonDown(gamepads.Buttons.LB)) {
-      inputGoToRightPage();
-    } else if (gamepads.getButtonDown(gamepads.Buttons.RB)) {
+    if (gamepads.getButtonDownThisFrame(gamepads.Buttons.LB)) {
       inputGoToLeftPage();
+    } else if (gamepads.getButtonDownThisFrame(gamepads.Buttons.RB)) {
+      inputGoToRightPage();
     }
     // last / first page
     if (
-      gamepads.getButton(gamepads.Buttons.BACK) &&
-      gamepads.getButtonDown(gamepads.Buttons.A)
+      gamepads.getButtonDown(gamepads.Buttons.BACK) &&
+      gamepads.getButtonDownThisFrame(gamepads.Buttons.A)
     ) {
       inputGoToLastPage();
     } else if (
-      gamepads.getButton(gamepads.Buttons.BACK) &&
-      gamepads.getButtonDown(gamepads.Buttons.Y)
+      gamepads.getButtonDown(gamepads.Buttons.BACK) &&
+      gamepads.getButtonDownThisFrame(gamepads.Buttons.Y)
     ) {
       inputGoToFirstPage();
     }
     // change scale mode
-    if (gamepads.getButtonDown(gamepads.Buttons.RS_PRESS)) {
+    if (gamepads.getButtonDownThisFrame(gamepads.Buttons.RS_PRESS)) {
       inputSwitchScaleMode();
     }
   }
   // toggle full screen
-  if (gamepads.getButtonDown(gamepads.Buttons.LS_PRESS)) {
+  if (gamepads.getButtonDownThisFrame(gamepads.Buttons.LS_PRESS)) {
     inputToggleFullScreen();
   }
   // open quick menu
-  if (gamepads.getButtonDown(gamepads.Buttons.START)) {
+  if (gamepads.getButtonDownThisFrame(gamepads.Buttons.START)) {
     inputOpenQuickMenu();
   }
 }

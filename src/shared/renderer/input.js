@@ -10,11 +10,68 @@ import { getTools, getCurrentTool, getCurrentToolName } from "./tools.js";
 import * as modals from "./modals.js";
 import { init as setupGamepads } from "./gamepads.js";
 
+///////////////////////////////////////////////////////////////////////////////
+// INPUT  /////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
 export function init() {
   initKeyboard();
   initMouse();
   initTouchScreen();
   initGamepads();
+}
+
+// TODO: move to top
+export const Source = {
+  KEYBOARD: "keyboard",
+  MOUSE: "mouse",
+  GAMEPAD: "gamepad",
+};
+
+export function isActionDown(action) {
+  if (!action.commands || !action.source) {
+    return false;
+  }
+  switch (action.source) {
+    case Source.KEYBOARD:
+      if (areKeyboardCommandsDown(action.commands, action.event)) {
+        return true;
+      }
+      break;
+  }
+  return false;
+}
+
+export function isActionDownThisFrame(action) {
+  if (!action.commands || !action.source) {
+    return false;
+  }
+  switch (action.source) {
+    case Source.KEYBOARD:
+      if (areKeyboardCommandsDownThisFrame(action.commands, action.event)) {
+        return true;
+      }
+      break;
+  }
+  return false;
+}
+
+function separateCommand(command) {
+  let parts = command.split("+");
+  /*             
+   examples:
+   w -> ["w"]
+   + -> ["", ""]
+   Control+2 -> ["Control", "2"]
+   Control++ -> ["Control", "", ""]
+   Control+Shift+2 -> ['Control', 'Shift', '2']
+   Control+Shift++ -> ['Control', 'Shift', '', '']
+  */
+  if (parts[parts.length - 1] === "") {
+    parts[parts.length - 1] = "+";
+  }
+  parts = parts.filter((part) => part !== "");
+  return parts;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -49,6 +106,63 @@ function initKeyboard() {
     }
     getCurrentTool().onInputEvent("onkeydown", event);
   };
+}
+
+function areKeyboardCommandsDown(commands, event) {
+  if (!commands || !event) {
+    return false;
+  }
+  for (let index = 0; index < commands.length; index++) {
+    const command = commands[index];
+    if (!command || command === "" || command === "UNASSIGNED") {
+      continue;
+    }
+    const keys = separateCommand(command);
+    let key = keys[keys.length - 1];
+    let requiresCtrl = false;
+    for (const value of keys) {
+      if (value === "Control") {
+        requiresCtrl = true;
+        break;
+      }
+    }
+    let requiresShift = false;
+    for (const value of keys) {
+      if (value === "Shift") {
+        requiresShift = true;
+        break;
+      }
+    }
+    let requiresAlt = false;
+    for (const value of keys) {
+      if (value === "Alt") {
+        requiresAlt = true;
+        break;
+      }
+    }
+
+    let matches = true;
+    if (event.key !== key) {
+      matches = false;
+    }
+    // modifiers
+    if (event.ctrlKey !== requiresCtrl) {
+      matches = false;
+    }
+    if (event.shiftKey !== requiresShift) {
+      matches = false;
+    }
+    if (event.altKey !== requiresAlt) {
+      matches = false;
+    }
+    if (matches) return true;
+  }
+  return false;
+}
+
+function areKeyboardCommandsDownThisFrame(commands, event) {
+  if (!event.repeat && areKeyboardCommandsDown(commands, event)) return true;
+  return false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -252,6 +366,36 @@ function initTouchScreen() {
 ///////////////////////////////////////////////////////////////////////////////
 // GAMEPADS ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
+
+export const GamepadButtons = {
+  // Real buttons
+  A: 0,
+  B: 1,
+  X: 2,
+  Y: 3,
+  LB: 4,
+  RB: 5,
+  LT: 6,
+  RT: 7,
+  BACK: 8,
+  START: 9,
+  LS_PRESS: 10,
+  RS_PRESS: 11,
+  DPAD_UP: 12,
+  DPAD_DOWN: 13,
+  DPAD_LEFT: 14,
+  DPAD_RIGHT: 15,
+  GUIDE: 16,
+  // Axes as buttons
+  LS_UP: 17,
+  LS_DOWN: 18,
+  LS_LEFT: 19,
+  LS_RIGHT: 20,
+  RS_UP: 21,
+  RS_DOWN: 22,
+  RS_LEFT: 23,
+  RS_RIGHT: 24,
+};
 
 function initGamepads() {
   setupGamepads(() => {

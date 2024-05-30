@@ -229,37 +229,37 @@ export function onGamepadPolled(modalDiv) {
   let upPressed, downPressed;
   if (dir !== "rtl") {
     upPressed =
-      gamepads.getButtonDown(gamepads.Buttons.DPAD_UP) ||
-      gamepads.getButtonDown(gamepads.Buttons.DPAD_LEFT) ||
-      gamepads.getAxisDown(gamepads.Axes.RS_Y, -1) ||
-      gamepads.getAxisDown(gamepads.Axes.RS_X, -1) ||
-      gamepads.getAxisDown(gamepads.Axes.LS_Y, -1) ||
-      gamepads.getAxisDown(gamepads.Axes.LS_X, -1);
+      gamepads.getButtonDownThisFrame(gamepads.Buttons.DPAD_UP) ||
+      gamepads.getButtonDownThisFrame(gamepads.Buttons.DPAD_LEFT) ||
+      gamepads.getAxisDownThisFrame(gamepads.Axes.RS_Y, -1) ||
+      gamepads.getAxisDownThisFrame(gamepads.Axes.RS_X, -1) ||
+      gamepads.getAxisDownThisFrame(gamepads.Axes.LS_Y, -1) ||
+      gamepads.getAxisDownThisFrame(gamepads.Axes.LS_X, -1);
     downPressed =
-      gamepads.getButtonDown(gamepads.Buttons.DPAD_DOWN) ||
-      gamepads.getButtonDown(gamepads.Buttons.DPAD_RIGHT) ||
-      gamepads.getAxisDown(gamepads.Axes.RS_Y, 1) ||
-      gamepads.getAxisDown(gamepads.Axes.RS_X, 1) ||
-      gamepads.getAxisDown(gamepads.Axes.LS_Y, 1) ||
-      gamepads.getAxisDown(gamepads.Axes.LS_X, 1);
+      gamepads.getButtonDownThisFrame(gamepads.Buttons.DPAD_DOWN) ||
+      gamepads.getButtonDownThisFrame(gamepads.Buttons.DPAD_RIGHT) ||
+      gamepads.getAxisDownThisFrame(gamepads.Axes.RS_Y, 1) ||
+      gamepads.getAxisDownThisFrame(gamepads.Axes.RS_X, 1) ||
+      gamepads.getAxisDownThisFrame(gamepads.Axes.LS_Y, 1) ||
+      gamepads.getAxisDownThisFrame(gamepads.Axes.LS_X, 1);
   } else {
     upPressed =
-      gamepads.getButtonDown(gamepads.Buttons.DPAD_UP) ||
-      gamepads.getButtonDown(gamepads.Buttons.DPAD_RIGHT) ||
-      gamepads.getAxisDown(gamepads.Axes.RS_Y, -1) ||
-      gamepads.getAxisDown(gamepads.Axes.RS_X, 1) ||
-      gamepads.getAxisDown(gamepads.Axes.LS_Y, -1) ||
-      gamepads.getAxisDown(gamepads.Axes.LS_X, 1);
+      gamepads.getButtonDownThisFrame(gamepads.Buttons.DPAD_UP) ||
+      gamepads.getButtonDownThisFrame(gamepads.Buttons.DPAD_RIGHT) ||
+      gamepads.getAxisDownThisFrame(gamepads.Axes.RS_Y, -1) ||
+      gamepads.getAxisDownThisFrame(gamepads.Axes.RS_X, 1) ||
+      gamepads.getAxisDownThisFrame(gamepads.Axes.LS_Y, -1) ||
+      gamepads.getAxisDownThisFrame(gamepads.Axes.LS_X, 1);
     downPressed =
-      gamepads.getButtonDown(gamepads.Buttons.DPAD_DOWN) ||
-      gamepads.getButtonDown(gamepads.Buttons.DPAD_LEFT) ||
-      gamepads.getAxisDown(gamepads.Axes.RS_Y, 1) ||
-      gamepads.getAxisDown(gamepads.Axes.RS_X, -1) ||
-      gamepads.getAxisDown(gamepads.Axes.LS_Y, 1) ||
-      gamepads.getAxisDown(gamepads.Axes.LS_X, -1);
+      gamepads.getButtonDownThisFrame(gamepads.Buttons.DPAD_DOWN) ||
+      gamepads.getButtonDownThisFrame(gamepads.Buttons.DPAD_LEFT) ||
+      gamepads.getAxisDownThisFrame(gamepads.Axes.RS_Y, 1) ||
+      gamepads.getAxisDownThisFrame(gamepads.Axes.RS_X, -1) ||
+      gamepads.getAxisDownThisFrame(gamepads.Axes.LS_Y, 1) ||
+      gamepads.getAxisDownThisFrame(gamepads.Axes.LS_X, -1);
   }
-  const actionPressed = gamepads.getButtonDown(gamepads.Buttons.A);
-  let backPressed = gamepads.getButtonDown(gamepads.Buttons.B);
+  const actionPressed = gamepads.getButtonDownThisFrame(gamepads.Buttons.A);
+  let backPressed = gamepads.getButtonDownThisFrame(gamepads.Buttons.B);
   if (!backPressed) {
     const button = modalDiv.querySelector(".modal-close-button");
     const data = button.getAttribute("data-gp-button");
@@ -267,7 +267,7 @@ export function onGamepadPolled(modalDiv) {
       const gpButtons = data.split(",");
       for (let index = 0; index < gpButtons.length; index++) {
         const gpButton = gpButtons[index];
-        if (gpButton && gamepads.getButtonDown(parseInt(gpButton))) {
+        if (gpButton && gamepads.getButtonDownThisFrame(parseInt(gpButton))) {
           backPressed = true;
           break;
         }

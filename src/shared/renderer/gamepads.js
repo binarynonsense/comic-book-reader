@@ -103,17 +103,15 @@ export function getDeltaTime() {
   return g_deltaTime;
 }
 
-export function getButton(id) {
-  // returns true while the button identified by id is held down
+export function getButtonDown(id) {
   return g_gamepad.buttons[id].pressed;
 }
 
-export function getPrevButton(id) {
+export function getPrevButtonDown(id) {
   return g_prevButtons[id].pressed;
 }
 
-export function getButtonDown(id) {
-  // returns true during the frame the button identified by id was pressed down
+export function getButtonDownThisFrame(id) {
   if (g_gamepad.buttons[id].pressed && !g_prevButtons[id].pressed) {
     return true;
   }
@@ -128,9 +126,7 @@ export function getPrevAxis(id) {
   return g_prevAxes[id];
 }
 
-// TODO: naming could be confusing but I'm trying use something as similar
-// to the names for the button functions (which are inspired by Unity's)
-export function getAxisDown(id, direction) {
+export function getAxisDownThisFrame(id, direction) {
   if (direction >= 0) return g_gamepad.axes[id] > 0.5 && g_prevAxes[id] < 0.5;
   else return g_gamepad.axes[id] < -0.5 && g_prevAxes[id] > -0.5;
 }

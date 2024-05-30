@@ -246,27 +246,27 @@ export function onGamepadPolled() {
     return;
   }
   const upPressed =
-    gamepads.getButtonDown(gamepads.Buttons.DPAD_UP) ||
-    gamepads.getAxisDown(gamepads.Axes.RS_Y, -1) ||
-    gamepads.getAxisDown(gamepads.Axes.LS_Y, -1);
+    gamepads.getButtonDownThisFrame(gamepads.Buttons.DPAD_UP) ||
+    gamepads.getAxisDownThisFrame(gamepads.Axes.RS_Y, -1) ||
+    gamepads.getAxisDownThisFrame(gamepads.Axes.LS_Y, -1);
   const downPressed =
-    gamepads.getButtonDown(gamepads.Buttons.DPAD_DOWN) ||
-    gamepads.getAxisDown(gamepads.Axes.RS_Y, 1) ||
-    gamepads.getAxisDown(gamepads.Axes.LS_Y, 1);
+    gamepads.getButtonDownThisFrame(gamepads.Buttons.DPAD_DOWN) ||
+    gamepads.getAxisDownThisFrame(gamepads.Axes.RS_Y, 1) ||
+    gamepads.getAxisDownThisFrame(gamepads.Axes.LS_Y, 1);
   const leftPressed =
-    gamepads.getButtonDown(gamepads.Buttons.DPAD_LEFT) ||
-    gamepads.getAxisDown(gamepads.Axes.RS_X, -1) ||
-    gamepads.getAxisDown(gamepads.Axes.LS_X, -1);
+    gamepads.getButtonDownThisFrame(gamepads.Buttons.DPAD_LEFT) ||
+    gamepads.getAxisDownThisFrame(gamepads.Axes.RS_X, -1) ||
+    gamepads.getAxisDownThisFrame(gamepads.Axes.LS_X, -1);
   const rightPressed =
-    gamepads.getButtonDown(gamepads.Buttons.DPAD_RIGHT) ||
-    gamepads.getAxisDown(gamepads.Axes.RS_X, 1) ||
-    gamepads.getAxisDown(gamepads.Axes.LS_X, 1);
+    gamepads.getButtonDownThisFrame(gamepads.Buttons.DPAD_RIGHT) ||
+    gamepads.getAxisDownThisFrame(gamepads.Axes.RS_X, 1) ||
+    gamepads.getAxisDownThisFrame(gamepads.Axes.LS_X, 1);
 
   navigation.navigate(
     g_navData,
     document.getElementById("tool-hst-back-button"),
-    gamepads.getButtonDown(gamepads.Buttons.B),
-    gamepads.getButtonDown(gamepads.Buttons.A),
+    gamepads.getButtonDownThisFrame(gamepads.Buttons.B),
+    gamepads.getButtonDownThisFrame(gamepads.Buttons.A),
     upPressed,
     downPressed,
     leftPressed,
