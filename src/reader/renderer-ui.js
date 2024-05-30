@@ -981,7 +981,7 @@ function inputOpenHelpModal() {
 ///////////////////////////////////////////////////////////////////////////////
 
 export function onGamepadPolled() {
-  const deltaTime = gamepads.getDeltaTime();
+  const deltaTime = input.getGamepadsDeltaTime();
   const scrollFactor = deltaTime * 3;
   if (!g_pagesContainerDiv) {
     g_pagesContainerDiv = document.getElementById("pages-container");
@@ -989,52 +989,107 @@ export function onGamepadPolled() {
   let fileOpen = g_pagesContainerDiv && g_pagesContainerDiv.innerHTML !== "";
   if (fileOpen) {
     // zoom in/ out
-    if (gamepads.getButtonDown(gamepads.Buttons.LT)) {
+    if (
+      input.isActionDown({
+        source: input.Source.GAMEPAD,
+        commands: ["LT"],
+      })
+    ) {
       inputZoomOut(deltaTime * 10);
-    } else if (gamepads.getButtonDown(gamepads.Buttons.RT)) {
+    } else if (
+      input.isActionDown({
+        source: input.Source.GAMEPAD,
+        commands: ["RT"],
+      })
+    ) {
       inputZoomIn(deltaTime * 10);
     }
     // page up / down
-    if (gamepads.getAxis(gamepads.Axes.RS_Y) > 0.5) {
+    if (
+      input.isActionDown({
+        source: input.Source.GAMEPAD,
+        commands: ["RS_DOWN"],
+      })
+    ) {
       inputScrollPageDown(
-        gamepads.getPrevAxis(gamepads.Axes.RS_Y) < 0.5,
+        input.isActionDownThisFrame({
+          source: input.Source.GAMEPAD,
+          commands: ["RS_DOWN"],
+        }),
         scrollFactor
       );
-    } else if (gamepads.getAxis(gamepads.Axes.RS_Y) < -0.5) {
+    } else if (
+      input.isActionDown({
+        source: input.Source.GAMEPAD,
+        commands: ["RS_UP"],
+      })
+    ) {
       inputScrollPageUp(
-        gamepads.getPrevAxis(gamepads.Axes.RS_Y) > -0.5,
+        input.isActionDownThisFrame({
+          source: input.Source.GAMEPAD,
+          commands: ["RS_UP"],
+        }),
         scrollFactor
       );
     }
     // next / prev page
-    if (gamepads.getButtonDownThisFrame(gamepads.Buttons.LB)) {
+    if (
+      input.isActionDownThisFrame({
+        source: input.Source.GAMEPAD,
+        commands: ["LB"],
+      })
+    ) {
       inputGoToLeftPage();
-    } else if (gamepads.getButtonDownThisFrame(gamepads.Buttons.RB)) {
+    } else if (
+      input.isActionDownThisFrame({
+        source: input.Source.GAMEPAD,
+        commands: ["RB"],
+      })
+    ) {
       inputGoToRightPage();
     }
     // last / first page
     if (
-      gamepads.getButtonDown(gamepads.Buttons.BACK) &&
-      gamepads.getButtonDownThisFrame(gamepads.Buttons.A)
+      input.isActionDownThisFrame({
+        source: input.Source.GAMEPAD,
+        commands: ["BACK+A"],
+      })
     ) {
       inputGoToLastPage();
     } else if (
-      gamepads.getButtonDown(gamepads.Buttons.BACK) &&
-      gamepads.getButtonDownThisFrame(gamepads.Buttons.Y)
+      input.isActionDownThisFrame({
+        source: input.Source.GAMEPAD,
+        commands: ["BACK+Y"],
+      })
     ) {
       inputGoToFirstPage();
     }
     // change scale mode
-    if (gamepads.getButtonDownThisFrame(gamepads.Buttons.RS_PRESS)) {
+    if (
+      input.isActionDownThisFrame({
+        source: input.Source.GAMEPAD,
+        commands: ["RS_PRESS"],
+      })
+    ) {
       inputSwitchScaleMode();
     }
   }
   // toggle full screen
-  if (gamepads.getButtonDownThisFrame(gamepads.Buttons.LS_PRESS)) {
+  if (
+    input.isActionDownThisFrame({
+      source: input.Source.GAMEPAD,
+      commands: ["LS_PRESS"],
+    })
+  ) {
     inputToggleFullScreen();
   }
   // open quick menu
-  if (gamepads.getButtonDownThisFrame(gamepads.Buttons.START)) {
+  if (
+    input.isActionDownThisFrame({
+      source: input.Source.GAMEPAD,
+      commands: ["START"],
+    })
+  ) {
     inputOpenQuickMenu();
   }
 }

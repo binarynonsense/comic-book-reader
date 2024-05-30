@@ -113,6 +113,7 @@ export function getPrevButtonDown(id) {
 
 export function getButtonDownThisFrame(id) {
   if (g_gamepad.buttons[id].pressed && !g_prevButtons[id].pressed) {
+    console.log("trueee");
     return true;
   }
   return false;
@@ -124,6 +125,11 @@ export function getAxis(id) {
 
 export function getPrevAxis(id) {
   return g_prevAxes[id];
+}
+
+export function getAxisDown(id, direction) {
+  if (direction >= 0) return g_gamepad.axes[id] > 0.5;
+  else return g_gamepad.axes[id] < -0.5;
 }
 
 export function getAxisDownThisFrame(id, direction) {

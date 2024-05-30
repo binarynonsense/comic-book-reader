@@ -8,7 +8,7 @@
 import { getOpenModal } from "../../core/renderer.js";
 import { getTools, getCurrentTool, getCurrentToolName } from "./tools.js";
 import * as modals from "./modals.js";
-import { init as setupGamepads } from "./gamepads.js";
+import * as gamepads from "./gamepads.js";
 
 ///////////////////////////////////////////////////////////////////////////////
 // INPUT  /////////////////////////////////////////////////////////////////////
@@ -28,6 +28,10 @@ export const Source = {
   GAMEPAD: "gamepad",
 };
 
+export function getGamepadsDeltaTime() {
+  return gamepads.getDeltaTime();
+}
+
 export function isActionDown(action) {
   if (!action.commands || !action.source) {
     return false;
@@ -35,6 +39,11 @@ export function isActionDown(action) {
   switch (action.source) {
     case Source.KEYBOARD:
       if (areKeyboardCommandsDown(action.commands, action.event)) {
+        return true;
+      }
+      break;
+    case Source.GAMEPAD:
+      if (areGamepadCommandsDown(action.commands)) {
         return true;
       }
       break;
@@ -49,6 +58,11 @@ export function isActionDownThisFrame(action) {
   switch (action.source) {
     case Source.KEYBOARD:
       if (areKeyboardCommandsDownThisFrame(action.commands, action.event)) {
+        return true;
+      }
+      break;
+    case Source.GAMEPAD:
+      if (areGamepadCommandsDownThisFrame(action.commands)) {
         return true;
       }
       break;
@@ -397,8 +411,19 @@ export const GamepadButtons = {
   RS_RIGHT: 24,
 };
 
+const GamepadButtonToIdAndDirection = {
+  17: { id: gamepads.Axes.LS_Y, direction: -1 },
+  18: { id: gamepads.Axes.LS_Y, direction: 1 },
+  19: { id: gamepads.Axes.LS_X, direction: -1 },
+  20: { id: gamepads.Axes.LS_X, direction: 1 },
+  21: { id: gamepads.Axes.RS_Y, direction: -1 },
+  22: { id: gamepads.Axes.RS_Y, direction: 1 },
+  23: { id: gamepads.Axes.RS_X, direction: -1 },
+  24: { id: gamepads.Axes.RS_X, direction: 1 },
+};
+
 function initGamepads() {
-  setupGamepads(() => {
+  gamepads.init(() => {
     if (getOpenModal()) {
       modals.onGamepadPolled(getOpenModal());
       return;
@@ -407,6 +432,67 @@ function initGamepads() {
       getCurrentTool().onGamepadPolled();
     }
   });
+}
+
+function areGamepadCommandsDownThisFrame(commands) {
+  return areGamepadCommandsDown(commands, true);
+}
+
+function areGamepadCommandsDown(commands, thisFrame = false) {
+  if (!commands) {
+    return false;
+  }
+  for (let index = 0; index < commands.length; index++) {
+    const command = commands[index];
+    if (!command || command === "" || command === "UNASSIGNED") {
+      continue;
+    }
+    const buttons = separateCommand(command);
+    let allTrue = true;
+    for (let index = 0; index < buttons.length; index++) {
+      const button = buttons[index];
+      const buttonId = GamepadButtons[button];
+      if (buttonId === undefined) continue;
+      if (buttonId <= 16) {
+        // buttons
+        if (thisFrame && index === buttons.length - 1) {
+          if (!gamepads.getButtonDownThisFrame(buttonId)) {
+            allTrue = false;
+            break;
+          }
+        } else {
+          if (!gamepads.getButtonDown(buttonId)) {
+            allTrue = false;
+            break;
+          }
+        }
+      } else if (buttonId > 16) {
+        if (thisFrame && index === buttons.length - 1) {
+          if (
+            !gamepads.getAxisDownThisFrame(
+              GamepadButtonToIdAndDirection[buttonId].id,
+              GamepadButtonToIdAndDirection[buttonId].direction
+            )
+          ) {
+            allTrue = false;
+            break;
+          }
+        } else {
+          if (
+            !gamepads.getAxisDown(
+              GamepadButtonToIdAndDirection[buttonId].id,
+              GamepadButtonToIdAndDirection[buttonId].direction
+            )
+          ) {
+            allTrue = false;
+            break;
+          }
+        }
+      }
+    }
+    if (allTrue) return true;
+  }
+  return false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
