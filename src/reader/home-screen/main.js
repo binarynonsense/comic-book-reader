@@ -74,7 +74,13 @@ function getLatestData() {
       if (!fs.existsSync(latestInfo.path)) {
         continue;
       }
-      latestInfo.isFile = !fs.lstatSync(latestInfo.path).isDirectory();
+      if (fs.existsSync(latestInfo.path)) {
+        latestInfo.pathType = !fs.lstatSync(latestInfo.path).isDirectory()
+          ? 0
+          : 1;
+      } else {
+        latestInfo.pathType = -1;
+      }
       data.push(latestInfo);
     } else {
       break;
@@ -96,7 +102,13 @@ function getFavoritesData() {
     } else {
       favoriteInfo.name = g_favorites[index].name;
     }
-    favoriteInfo.isFile = !fs.lstatSync(favoriteInfo.path).isDirectory();
+    if (fs.existsSync(favoriteInfo.path)) {
+      favoriteInfo.pathType = !fs.lstatSync(favoriteInfo.path).isDirectory()
+        ? 0
+        : 1;
+    } else {
+      favoriteInfo.pathType = -1;
+    }
     data.push(favoriteInfo);
   }
   return data;
@@ -218,7 +230,8 @@ function initOnIpcCallbacks() {
       _("tool-shared-tab-options"),
       _("tool-shared-ui-back"),
       _("tool-shared-tooltip-remove-from-list"),
-      _("ui-modal-prompt-button-edit-name")
+      _("ui-modal-prompt-button-edit-name"),
+      _("ui-modal-prompt-button-edit-path")
     );
   });
 
@@ -268,6 +281,35 @@ function initOnIpcCallbacks() {
             g_favorites[favIndex].name = newName;
             buildSections();
           }
+        }
+      } else {
+        log.error("Tried to edit a favorite with not matching index and path");
+      }
+    }
+  );
+
+  on("hs-on-modal-favorite-options-edit-path-clicked", (favIndex, favPath) => {
+    if (g_favorites[favIndex].path === favPath) {
+      sendIpcToRenderer(
+        "hs-show-modal-favorite-edit-path",
+        favIndex,
+        favPath,
+        _("ui-modal-prompt-button-edit-path"),
+        _("ui-modal-prompt-button-ok"),
+        _("ui-modal-prompt-button-cancel")
+      );
+    } else {
+      log.error("Tried to edit a favorite with not matching index and path");
+    }
+  });
+
+  on(
+    "hs-on-modal-favorite-options-edit-path-ok-clicked",
+    (favIndex, favPath, newPath) => {
+      if (g_favorites[favIndex].path === favPath) {
+        if (newPath && newPath !== favPath) {
+          g_favorites[favIndex].path = newPath;
+          buildSections();
         }
       } else {
         log.error("Tried to edit a favorite with not matching index and path");

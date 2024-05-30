@@ -72,6 +72,10 @@ function initOnIpcCallbacks() {
   on("hs-show-modal-favorite-edit-name", (...args) => {
     showModalFavoriteEditName(...args);
   });
+
+  on("hs-show-modal-favorite-edit-path", (...args) => {
+    showModalFavoriteEditPath(...args);
+  });
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -160,23 +164,34 @@ function getNewCardDiv(cardType, data, navRow, navColumn) {
   <div class="hs-path-card-button hs-path-interactive">
     <i class="fas fa-ellipsis-h"></i>
   </div>`;
-  const fileIconHtml = `
+  function getIconHtml() {
+    const fileIconHtml = `
   <i class="hs-path-card-image-file fas fa-file fa-2x fa-fw"></i>`;
-  const folderIconHtml = `
+    const folderIconHtml = `
   <i class="hs-path-card-image-file fas fa-folder fa-2x fa-fw"></i>`;
-  const imagesIconHtml = `
+    const imagesIconHtml = `
   <i class="hs-path-card-image-file fas fa-images fa-2x fa-fw"></i>`;
+    const questionIconHtml = `
+  <i class="hs-path-card-image-file fas fa-question fa-2x fa-fw"></i>`;
+    if (data.pathType === -1) {
+      return questionIconHtml;
+    } else {
+      if (data.pathType === 0) {
+        return fileIconHtml;
+      } else {
+        if (cardType === CardType.LATEST) {
+          return imagesIconHtml;
+        } else {
+          return folderIconHtml;
+        }
+      }
+    }
+  }
   const interactiveHtml = data
     ? `
   <div class="hs-path-card-main hs-path-interactive">
     <div class="hs-path-card-image">
-      ${
-        data.isFile
-          ? fileIconHtml
-          : cardType === CardType.LATEST
-          ? imagesIconHtml
-          : folderIconHtml
-      }
+      ${getIconHtml()}
     </div>
     <div class="hs-path-card-content">
       <span>${data.name}</span
@@ -199,13 +214,17 @@ function getNewCardDiv(cardType, data, navRow, navColumn) {
         cardDiv.classList.add("hs-path-card");
         cardDiv.innerHTML = interactiveHtml;
         const mainCardDiv = cardDiv.querySelector(".hs-path-card-main");
-        mainCardDiv.title = data.isFile
-          ? g_cardLocalization.openInReader
-          : g_cardLocalization.openInSystemBrowser;
+
+        if (data.pathType <= 0) {
+          mainCardDiv.title = g_cardLocalization.openInReader;
+        } else if (data.pathType === 1) {
+          mainCardDiv.title = g_cardLocalization.openInSystemBrowser;
+        }
+
         mainCardDiv.addEventListener("click", function (event) {
-          if (data.isFile) {
+          if (data.pathType <= 0) {
             sendIpcToMain("hs-open-file", data.path);
-          } else {
+          } else if (data.pathType === 1) {
             sendIpcToMain("hs-open-dialog-file", data.path);
           }
           event.stopPropagation();
@@ -216,8 +235,7 @@ function getNewCardDiv(cardType, data, navRow, navColumn) {
           mainCardDiv.setAttribute("data-nav-row", navRow);
           mainCardDiv.setAttribute("data-nav-col", navColumn);
           mainCardDiv.setAttribute("tabindex", "0");
-
-          if (!data.isFile) {
+          if (data.pathType === 1) {
             mainCardDiv.addEventListener("acbr-nav-click", (event) => {
               sendIpcToMain("hs-open-dialog-file", data.path, 1);
             });
@@ -424,7 +442,8 @@ function showModalFavoriteOptions(
   title,
   textButtonBack,
   textButtonRemove,
-  textButtonEditName
+  textButtonEditName,
+  textButtonEditPath
 ) {
   if (getOpenModal()) {
     return;
@@ -438,6 +457,18 @@ function showModalFavoriteOptions(
       modalClosed();
       sendIpcToMain(
         "hs-on-modal-favorite-options-edit-name-clicked",
+        index,
+        path
+      );
+    },
+  });
+  buttons.push({
+    text: textButtonEditPath.toUpperCase(),
+    fullWidth: true,
+    callback: () => {
+      modalClosed();
+      sendIpcToMain(
+        "hs-on-modal-favorite-options-edit-path-clicked",
         index,
         path
       );
@@ -502,6 +533,51 @@ function showModalFavoriteEditName(
         callback: (value) => {
           sendIpcToMain(
             "hs-on-modal-favorite-options-edit-name-ok-clicked",
+            index,
+            path,
+            value
+          );
+          modalClosed();
+        },
+        key: "Enter",
+      },
+      {
+        text: textButton2.toUpperCase(),
+        callback: () => {
+          modalClosed();
+        },
+      },
+    ],
+  });
+}
+
+function showModalFavoriteEditPath(
+  index,
+  path,
+  title,
+  textButton1,
+  textButton2
+) {
+  if (getOpenModal()) {
+    return;
+  }
+
+  showModal({
+    title: title,
+    zIndexDelta: -450,
+    input: { type: "text", default: path },
+    close: {
+      callback: () => {
+        modalClosed();
+      },
+      key: "Escape",
+    },
+    buttons: [
+      {
+        text: textButton1.toUpperCase(),
+        callback: (value) => {
+          sendIpcToMain(
+            "hs-on-modal-favorite-options-edit-path-ok-clicked",
             index,
             path,
             value
