@@ -1,8 +1,8 @@
 {
     "@metadata": {
       "authors": ["Álvaro"],
-      "last-updated": "2023-09-15",
-      "acbr-version": "3.3.0",
+      "last-updated": "2024-05-30",
+      "acbr-version": "3.5.0-beta1",
       "comments": "dark text over light background, with the orange slider",
       "name": "ACBR Light"
     },
@@ -78,5 +78,14 @@
     "--modal-button-danger-bg-color": "#d95055",
     "--modal-button-danger-text-color": "#525252",
     "--modal-button-success-bg-color": "#50d971",
-    "--modal-button-success-text-color": "#525252" 
+    "--modal-button-success-text-color": "#525252",
+
+    "--hs-bg-color": "#1e1e1e",
+    "--hs-text-color": "#666",
+    "--hs-button-normal-bg-color": "#bbb",
+    "--hs-button-normal-text-color": "#444",
+    "--hs-button-accent-bg-color": "#d9af50",
+    "--hs-button-accent-text-color": "#303030",
+    "--hs-path-card-bg-color": "#303030",
+    "--hs-path-card-text-color": "#888"
 }

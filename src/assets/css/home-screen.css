@@ -1,14 +1,3 @@
-:root {
-  --hs-bg-color: #1e1e1e;
-  --hs-text-color: #666;
-  --hs-button-normal-bg-color: #bbb;
-  --hs-button-normal-text-color: #444;
-  --hs-button-accent-bg-color: #d9af50;
-  --hs-button-accent-text-color: #303030;
-  --hs-path-card-bg-color: #303030;
-  --hs-path-card-text-color: #888;
-}
-
 #home-screen {
   width: 100%;
   display: flex;
