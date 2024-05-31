@@ -81,6 +81,24 @@ const g_defaultSettings = {
     zoomResetPage: ["Control+0"],
   },
 
+  navButtons: {
+    scrollUp: ["RS_UP"],
+    scrollDown: ["RS_DOWN"],
+    scrollLeft: ["RS_LEFT"],
+    scrollRight: ["RS_RIGHT"],
+    changePageNext: ["RB"],
+    changePagePrev: ["LB"],
+    changePageRight: ["RB"],
+    changePageLeft: ["LB"],
+    changePageFirst: ["BACK+A"],
+    changePageLast: ["BACK+Y"],
+    zoomInPage: ["RT"],
+    zoomOutPage: ["LT"],
+    zoomResetPage: ["RS_PRESS"],
+    toggleFullScreen: ["LS_PRESS"],
+    quickMenu: ["START"],
+  },
+
   locale: undefined,
   theme: undefined,
 
@@ -460,6 +478,8 @@ function load(info) {
           // good if I don't allow undefines in the savefile
           if (key === "navKeys") {
             loadNavKeys(loadedSettings[key]);
+          } else if (key === "navButtons") {
+            loadNavButtons(loadedSettings[key]);
           } else {
             g_settings[key] = loadedSettings[key];
           }
@@ -476,18 +496,18 @@ function load(info) {
 function loadNavKeys(loadedKeys) {
   checkNavKeysOlderVersion(loadNavKeys);
   for (const navAction in g_settings.navKeys) {
-    let navActionKeys = loadedKeys[navAction];
+    let commands = loadedKeys[navAction];
     if (
-      navActionKeys !== undefined &&
-      Array.isArray(navActionKeys) &&
-      navActionKeys.length <= 2
+      commands !== undefined &&
+      Array.isArray(commands) &&
+      commands.length <= 2
     ) {
       let valid = true;
-      for (const key in navActionKeys) {
-        if (typeof key !== "string") valid = false;
+      for (const command in commands) {
+        if (typeof command !== "string") valid = false;
       }
       if (valid) {
-        g_settings.navKeys[navAction] = navActionKeys;
+        g_settings.navKeys[navAction] = commands;
       }
     }
   }
@@ -502,6 +522,25 @@ function checkNavKeysOlderVersion(loadedKeys) {
   //   loadedKeys.turnToLeftPage = loadedKeys.prevPage;
   //   loadedKeys.prevPage = undefined;
   // }
+}
+
+function loadNavButtons(loadedButtons) {
+  for (const navAction in g_settings.navButtons) {
+    let commands = loadedButtons[navAction];
+    if (
+      commands !== undefined &&
+      Array.isArray(commands) &&
+      commands.length <= 2
+    ) {
+      let valid = true;
+      for (const command in commands) {
+        if (typeof command !== "string") valid = false;
+      }
+      if (valid) {
+        g_settings.navButtons[navAction] = commands;
+      }
+    }
+  }
 }
 
 exports.canEditRars = function () {

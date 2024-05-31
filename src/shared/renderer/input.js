@@ -70,7 +70,7 @@ export function isActionDownThisFrame(action) {
   return false;
 }
 
-function separateCommand(command) {
+export function separateCommand(command) {
   let parts = command.split("+");
   /*             
    examples:

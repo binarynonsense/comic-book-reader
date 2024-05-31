@@ -26,6 +26,7 @@ let g_isMouseCursorVisible = true;
 let g_mouseCursorHideTime = 3500;
 
 let g_navKeys;
+let g_navButtons;
 
 let g_turnPageOnScrollBoundary = true;
 let g_filterMode = 0;
@@ -377,6 +378,10 @@ function initOnIpcCallbacks() {
 
   on("set-nav-keys", (keys) => {
     g_navKeys = keys;
+  });
+
+  on("set-nav-buttons", (buttons) => {
+    g_navButtons = buttons;
   });
 }
 
@@ -991,14 +996,14 @@ export function onGamepadPolled() {
     if (
       input.isActionDown({
         source: input.Source.GAMEPAD,
-        commands: ["LT"],
+        commands: g_navButtons.zoomOutPage,
       })
     ) {
       inputZoomOut(deltaTime * 10);
     } else if (
       input.isActionDown({
         source: input.Source.GAMEPAD,
-        commands: ["RT"],
+        commands: g_navButtons.zoomInPage,
       })
     ) {
       inputZoomIn(deltaTime * 10);
@@ -1007,26 +1012,26 @@ export function onGamepadPolled() {
     if (
       input.isActionDown({
         source: input.Source.GAMEPAD,
-        commands: ["RS_DOWN"],
+        commands: g_navButtons.scrollDown,
       })
     ) {
       inputScrollPageDown(
         input.isActionDownThisFrame({
           source: input.Source.GAMEPAD,
-          commands: ["RS_DOWN"],
+          commands: g_navButtons.scrollDown,
         }),
         scrollFactor
       );
     } else if (
       input.isActionDown({
         source: input.Source.GAMEPAD,
-        commands: ["RS_UP"],
+        commands: g_navButtons.scrollUp,
       })
     ) {
       inputScrollPageUp(
         input.isActionDownThisFrame({
           source: input.Source.GAMEPAD,
-          commands: ["RS_UP"],
+          commands: g_navButtons.scrollUp,
         }),
         scrollFactor
       );

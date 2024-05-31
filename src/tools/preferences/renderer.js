@@ -9,6 +9,7 @@ import { sendIpcToMain as coreSendIpcToMain } from "../../core/renderer.js";
 import { isVersionOlder } from "../../shared/renderer/utils.js";
 import * as modals from "../../shared/renderer/modals.js";
 import * as sound from "../../shared/renderer/sound.js";
+import * as input from "../../shared/renderer/input.js";
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -516,6 +517,10 @@ function initOnIpcCallbacks() {
     updateNavKeys(...args);
   });
 
+  on("update-navbuttons", (...args) => {
+    updateNavButtons(...args);
+  });
+
   on("set-temp-folder", (...args) => {
     updateTempFolder(...args);
   });
@@ -546,6 +551,14 @@ function initOnIpcCallbacks() {
       modalClosed();
     }
     showNavKeysResetAllModal(...args);
+  });
+
+  on("show-nav-buttons-resetall-modal", (...args) => {
+    if (g_openModal) {
+      modals.close(g_openModal);
+      modalClosed();
+    }
+    showNavButtonsResetAllModal(...args);
   });
 
   on("close-modal", () => {
@@ -586,7 +599,7 @@ function updateRarFolder(folderPath) {
 }
 
 function updateNavKeys(
-  actionKeys,
+  actionCommands,
   actionTexts,
   changeText,
   resetText,
@@ -605,14 +618,14 @@ function updateNavKeys(
     sendIpcToMain("click-nav-keys-resetall");
   });
   ////
-  for (const action in actionKeys) {
+  for (const action in actionCommands) {
     const parentLabel = document.createElement("label");
     parentDiv.appendChild(parentLabel);
     const span = document.createElement("span");
     span.innerText = actionTexts[action];
     parentLabel.appendChild(span);
-    for (let index = 0; index < actionKeys[action].length; index++) {
-      const keyText = actionKeys[action][index];
+    for (let index = 0; index < actionCommands[action].length; index++) {
+      const command = actionCommands[action][index];
       ////
       const columnsDiv = document.createElement("div");
       parentDiv.appendChild(columnsDiv);
@@ -620,22 +633,22 @@ function updateNavKeys(
         "tool-shared-columns-parent tool-shared-columns-parent-alignv";
       columnsDiv.style = "padding-top: 0px";
       ////
-      const keyDiv = document.createElement("div");
-      columnsDiv.appendChild(keyDiv);
-      keyDiv.classList = "tool-shared-columns-50-grow";
-      const keyUl = document.createElement("ul");
-      keyDiv.appendChild(keyUl);
-      keyUl.classList = "tools-collection-ul";
-      const keyLi = document.createElement("li");
-      keyUl.appendChild(keyLi);
-      keyLi.classList = "tools-collection-li";
+      const commandDiv = document.createElement("div");
+      columnsDiv.appendChild(commandDiv);
+      commandDiv.classList = "tool-shared-columns-50-grow";
+      const commandUl = document.createElement("ul");
+      commandDiv.appendChild(commandUl);
+      commandUl.classList = "tools-collection-ul";
+      const commandLi = document.createElement("li");
+      commandUl.appendChild(commandLi);
+      commandLi.classList = "tools-collection-li";
 
-      if (keyText === " ") {
-        keyLi.innerText = "SpaceBar";
-      } else if (keyText === "UNASSIGNED") {
-        keyLi.innerText = unassignedText;
+      if (command === " ") {
+        commandLi.innerText = "SpaceBar";
+      } else if (command === "UNASSIGNED") {
+        commandLi.innerText = unassignedText;
       } else {
-        keyLi.innerText = keyText;
+        commandLi.innerText = command;
       }
       ////
       const changeButton = document.createElement("button");
@@ -650,12 +663,117 @@ function updateNavKeys(
       ////
       const resetButton = document.createElement("button");
       columnsDiv.appendChild(resetButton);
-      changeButton.classList == "tool-shared-columns-25-grow";
+      resetButton.classList == "tool-shared-columns-25-grow";
       const resetSpan = document.createElement("span");
       resetButton.appendChild(resetSpan);
       resetSpan.innerText = resetText;
       resetButton.addEventListener("click", function (event) {
         sendIpcToMain("reset-nav-keys", action, index);
+      });
+      ////
+    }
+  }
+}
+
+function updateNavButtons(
+  actionCommands,
+  actionTexts,
+  resetText,
+  resetAllText,
+  unassignedText
+) {
+  const parentDiv = document.getElementById("tool-pre-navbuttons-div");
+  parentDiv.innerHTML = "";
+  ////
+  const resetAllButton = document.createElement("button");
+  parentDiv.appendChild(resetAllButton);
+  const resetAllSpan = document.createElement("span");
+  resetAllButton.appendChild(resetAllSpan);
+  resetAllSpan.innerText = resetAllText;
+  resetAllButton.addEventListener("click", function (event) {
+    sendIpcToMain("click-nav-buttons-resetall");
+  });
+  ////
+  for (const action in actionCommands) {
+    const parentLabel = document.createElement("label");
+    parentDiv.appendChild(parentLabel);
+    const span = document.createElement("span");
+    span.innerText = actionTexts[action];
+    parentLabel.appendChild(span);
+    for (let index = 0; index < actionCommands[action].length; index++) {
+      const command = actionCommands[action][index];
+      ////
+      const columnsDiv = document.createElement("div");
+      parentDiv.appendChild(columnsDiv);
+      columnsDiv.classList =
+        "tool-shared-columns-parent tool-shared-columns-parent-alignv";
+      columnsDiv.style = "padding-top: 0px";
+      //
+      const commandButtonIds = input.separateCommand(command);
+      let length = Math.max(2, commandButtonIds.length);
+      let selectElements = [];
+      for (let selectIndex = 0; selectIndex < length; selectIndex++) {
+        let value = "";
+        if (selectIndex < commandButtonIds.length) {
+          value = commandButtonIds[selectIndex];
+        }
+        const buttonSelect = document.createElement("select");
+        buttonSelect.classList = "tool-shared-columns-25-grow";
+        selectElements.push(buttonSelect);
+        {
+          // empty
+          const option = document.createElement("option");
+          option.value = "";
+          option.innerText = "";
+          buttonSelect.appendChild(option);
+        }
+        for (const buttonName in input.GamepadButtons) {
+          const option = document.createElement("option");
+          option.value = buttonName;
+          option.innerText = buttonName;
+          buttonSelect.appendChild(option);
+          if (value === buttonName) {
+            option.selected = true;
+          }
+        }
+        buttonSelect.addEventListener("change", (event) => {
+          const selects = columnsDiv.querySelectorAll("select");
+          let buttonIds = [];
+          selects.forEach((select) => {
+            buttonIds.push(select.value);
+          });
+          sendIpcToMain(
+            "change-nav-buttons",
+            action,
+            index,
+            buttonIds.reverse()
+          );
+        });
+      }
+      // show in reverse
+      for (
+        let selectIndex = selectElements.length - 1;
+        selectIndex >= 0;
+        selectIndex--
+      ) {
+        columnsDiv.appendChild(selectElements[selectIndex]);
+        // +
+        if (selectIndex > 0) {
+          const plusSpan = document.createElement("span");
+          plusSpan.innerText = "+";
+          columnsDiv.appendChild(plusSpan);
+        }
+      }
+
+      ////
+      const resetButton = document.createElement("button");
+      columnsDiv.appendChild(resetButton);
+      resetButton.classList == "tool-shared-columns-25-grow";
+      const resetSpan = document.createElement("span");
+      resetButton.appendChild(resetSpan);
+      resetSpan.innerText = resetText;
+      resetButton.addEventListener("click", function (event) {
+        sendIpcToMain("reset-nav-buttons", action, index);
       });
       ////
     }
@@ -744,6 +862,39 @@ function showOKModal(title, message, textButton) {
       key: "Escape",
     },
     buttons: buttons,
+  });
+}
+
+function showNavButtonsResetAllModal(title, message, yesText, cancelText) {
+  if (g_openModal) {
+    return;
+  }
+  g_openModal = modals.show({
+    title: title,
+    message: message,
+    zIndexDelta: 5,
+    close: {
+      callback: () => {
+        modalClosed();
+      },
+      key: "Escape",
+    },
+    buttons: [
+      {
+        text: yesText.toUpperCase(),
+        callback: () => {
+          sendIpcToMain("resetall-nav-buttons");
+          modalClosed();
+        },
+        //key: "Enter",
+      },
+      {
+        text: cancelText.toUpperCase(),
+        callback: () => {
+          modalClosed();
+        },
+      },
+    ],
   });
 }
 

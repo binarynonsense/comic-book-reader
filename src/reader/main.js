@@ -76,6 +76,7 @@ exports.init = function (filePath, checkHistory) {
     settings.getValue("cursorVisibility") === 1
   );
   sendIpcToRenderer("set-nav-keys", settings.getValue("navKeys"));
+  sendIpcToRenderer("set-nav-buttons", settings.getValue("navButtons"));
   sendIpcToRenderer(
     "set-page-turn-on-scroll-boundary",
     settings.getValue("turnPageOnScrollBoundary")

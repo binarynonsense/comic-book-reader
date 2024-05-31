@@ -87,6 +87,17 @@ function updateNavKeys() {
   );
 }
 
+function updateNavButtons() {
+  sendIpcToRenderer(
+    "update-navbuttons",
+    settings.getValue("navButtons"),
+    i18n._object("tool-pre-navkeys-actions"),
+    _("tool-shared-ui-reset").toUpperCase(),
+    _("tool-pre-navbuttons-button-resetall").toUpperCase(),
+    _("tool-pre-navbuttons-unassigned-key").toUpperCase()
+  );
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // IPC SEND ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -275,6 +286,8 @@ function initOnIpcCallbacks() {
     sendIpcToRenderer("set-rar-folder", folderPath);
   });
 
+  // keys ///////////////
+
   on("click-nav-keys-change", (action, keyIndex) => {
     sendIpcToRenderer(
       "show-nav-keys-change-modal",
@@ -329,6 +342,68 @@ function initOnIpcCallbacks() {
     reader.sendIpcToRenderer("set-nav-keys", settings.getValue("navKeys"));
     updateNavKeys();
   });
+
+  // buttons /////////////
+
+  on("click-nav-buttons-resetall", () => {
+    sendIpcToRenderer(
+      "show-nav-buttons-resetall-modal",
+      _("tool-pre-navbuttons-button-resetall"),
+      _("tool-pre-navbuttons-modal-resetall-message"),
+      _("ui-modal-prompt-button-yes"),
+      _("ui-modal-prompt-button-cancel")
+    );
+  });
+
+  on("change-nav-buttons", (action, index, buttonIds) => {
+    let navButtons = settings.getValue("navButtons");
+    buttonIds = buttonIds.filter((entry) => entry != "");
+    let newCommand = "";
+    for (let index = 0; index < buttonIds.length; index++) {
+      const id = buttonIds[index];
+      if (id != "") {
+        newCommand += id;
+        if (index < buttonIds.length - 1) {
+          newCommand += "+";
+        }
+      }
+    }
+    navButtons[action][index] = newCommand; // array ref, so this updates the settings
+    reader.sendIpcToRenderer(
+      "set-nav-buttons",
+      settings.getValue("navButtons")
+    );
+    updateNavButtons();
+  });
+
+  on("reset-nav-buttons", (action, index) => {
+    let navButtons = settings.getValue("navButtons");
+    const defaultAction = settings.getDefaultValue("navButtons")[action];
+    let value = "";
+    // The action could have only one default command
+    if (defaultAction.length > index) {
+      value = defaultAction[index];
+    }
+    navButtons[action][index] = value; // array ref, so this updates the settings
+    reader.sendIpcToRenderer(
+      "set-nav-buttons",
+      settings.getValue("navButtons")
+    );
+    updateNavButtons();
+  });
+
+  on("resetall-nav-buttons", () => {
+    // make a copy of the defaults object to update the settings
+    const defaultNavButtons = structuredClone(
+      settings.getDefaultValue("navButtons")
+    );
+    settings.setValue("navButtons", defaultNavButtons);
+    reader.sendIpcToRenderer(
+      "set-nav-buttons",
+      settings.getValue("navButtons")
+    );
+    updateNavButtons();
+  });
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -342,6 +417,7 @@ function updateLocalizedText() {
     getTooltipsLocalization()
   );
   updateNavKeys();
+  updateNavButtons();
 }
 exports.updateLocalizedText = updateLocalizedText;
 
@@ -689,6 +765,10 @@ function getLocalization() {
     {
       id: "tool-pre-navkeys-text",
       text: _("tool-pre-navkeys"),
+    },
+    {
+      id: "tool-pre-navbuttons-text",
+      text: _("tool-pre-navbuttons"),
     },
     //////////////////////////////////////////////
     {
