@@ -11,7 +11,7 @@ import {
   showModal,
   modalClosed,
 } from "../../reader/renderer-ui.js";
-import * as input from "../../shared/renderer/gamepads.js";
+import * as input from "../../shared/renderer/input.js";
 import * as navigation from "./renderer-navigation.js";
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -394,6 +394,7 @@ export function onInputEvent(type, event) {
 ///////////////////////////////////////////////////////////////////////////////
 
 export function onGamepadPolled() {
+  console.log("onGamepadPolled");
   const upPressed =
     input.isActionDownThisFrame({
       source: input.Source.GAMEPAD,
