@@ -22,6 +22,7 @@ const tools = require("../../shared/main/tools");
 ///////////////////////////////////////////////////////////////////////////////
 
 let g_isInitialized = false;
+let g_languageDirection = "ltr";
 let g_favorites;
 
 function init() {
@@ -54,19 +55,31 @@ exports.refresh = function () {
   buildSections();
 };
 
+exports.setLanguageDirection = function (direction) {
+  g_languageDirection = direction;
+  if (g_isInitialized) {
+    buildSections();
+  }
+};
+
 //////////////////////////////////////////////////////////////////////////////
 // TOOL //////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 
 function buildSections() {
-  sendIpcToRenderer("hs-build-sections", getFavoritesData(), getLatestData());
+  sendIpcToRenderer(
+    "hs-build-sections",
+    g_languageDirection,
+    getFavoritesData(),
+    getLatestData()
+  );
 }
 
 function getLatestData() {
   const historyData = history.get();
   const data = [];
   for (let index = 0; index < historyData.length; index++) {
-    if (data.length < 8) {
+    if (data.length < 6) {
       const latestInfo = {};
       const historyDataFile = historyData[historyData.length - index - 1];
       latestInfo.path = historyDataFile.filePath;

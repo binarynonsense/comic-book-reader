@@ -11,7 +11,7 @@ import {
   showModal,
   modalClosed,
 } from "../../reader/renderer-ui.js";
-import * as gamepads from "../../shared/renderer/gamepads.js";
+import * as input from "../../shared/renderer/gamepads.js";
 import * as navigation from "./renderer-navigation.js";
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -20,6 +20,7 @@ import * as navigation from "./renderer-navigation.js";
 
 let g_isInitialized = false;
 let g_navData = {};
+let g_languageDirection = "ltr";
 
 function init() {
   if (!g_isInitialized) {
@@ -89,7 +90,8 @@ const CardType = {
   ADD_FAVORITE: "add favorite",
 };
 
-function buildSections(favorites, latest) {
+function buildSections(languageDirection, favorites, latest) {
+  g_languageDirection = languageDirection;
   // FAVORITES
   const favoritesDiv = document.querySelector("#hs-favorites");
   favoritesDiv.innerHTML = "";
@@ -100,24 +102,46 @@ function buildSections(favorites, latest) {
 
   let navRow = 1;
   let navColumn = 0;
-
-  for (let index = 0; index < favorites.length; index++) {
+  let index = 0;
+  for (; index < favorites.length; index++) {
     const data = favorites[index];
+    if (g_languageDirection === "rtl") {
+      if (index % 2 === 0) {
+        if (index !== 0) navRow++;
+        navColumn = 3;
+        if (index === favorites.length - 1) navColumn = 2;
+      } else {
+        navColumn = 1;
+      }
+    } else {
+      if (index % 2 === 0) {
+        navColumn = 0;
+        if (index !== 0) navRow++;
+      } else {
+        navColumn = 2;
+      }
+    }
     listDiv.appendChild(
       getNewCardDiv(CardType.FAVORITES, data, navRow, navColumn)
     );
-    if (index % 2 === 0) {
-      navColumn = 2;
-    } else {
+  }
+  // Add
+  if (g_languageDirection === "rtl") {
+    navColumn = 0;
+    if (index % 2 === 0 && index !== 0) {
       navRow++;
+    }
+  } else {
+    if (index % 2 === 0) {
       navColumn = 0;
+      if (index !== 0) navRow++;
+    } else {
+      navColumn = 2;
     }
   }
-
   listDiv.appendChild(
     getNewCardDiv(CardType.ADD_FAVORITE, undefined, navRow, navColumn)
   );
-  navColumn = 0;
   navRow++;
 
   // LATEST
@@ -128,26 +152,34 @@ function buildSections(favorites, latest) {
   listDiv.classList.add("hs-path-cards-list");
   latestDiv.appendChild(listDiv);
 
-  for (let index = 0; index < 6; index++) {
+  for (index = 0; index < 6; index++) {
+    if (g_languageDirection === "rtl") {
+      if (index % 2 === 0) {
+        if (index !== 0) navRow++;
+        navColumn = 1;
+        if (index === latest.length - 1) {
+          navColumn = 0;
+        }
+      } else {
+        navColumn = 0;
+      }
+    } else {
+      if (index % 2 === 0) {
+        navColumn = 0;
+        if (index !== 0) navRow++;
+      } else {
+        navColumn = 1;
+      }
+    }
     if (latest && latest.length > index) {
       const data = latest[index];
       listDiv.appendChild(
         getNewCardDiv(CardType.LATEST, data, navRow, navColumn)
       );
-      navColumn++;
-      if (navColumn >= 2) {
-        navColumn = 0;
-        navRow++;
-      }
     } else if (index < 4) {
       listDiv.appendChild(
         getNewCardDiv(CardType.EMPTY, undefined, navRow, navColumn)
       );
-      navColumn++;
-      if (navColumn >= 2) {
-        navColumn = 0;
-        navRow++;
-      }
     }
   }
 
@@ -256,7 +288,12 @@ function getNewCardDiv(cardType, data, navRow, navColumn) {
         if (navRow !== undefined && navColumn !== undefined) {
           buttonDiv.setAttribute("data-nav-panel", 0);
           buttonDiv.setAttribute("data-nav-row", navRow);
-          buttonDiv.setAttribute("data-nav-col", navColumn + 1);
+          if (g_languageDirection === "rtl") {
+            navColumn -= 1;
+          } else {
+            navColumn += 1;
+          }
+          buttonDiv.setAttribute("data-nav-col", navColumn);
           buttonDiv.setAttribute("tabindex", "0");
         }
       }
@@ -298,12 +335,12 @@ function getNewCardDiv(cardType, data, navRow, navColumn) {
     case CardType.EMPTY:
       cardDiv.classList.add("hs-path-card");
       cardDiv.innerHTML = emptyHtml;
-      if (navRow !== undefined && navColumn !== undefined) {
-        cardDiv.setAttribute("data-nav-panel", 0);
-        cardDiv.setAttribute("data-nav-row", navRow);
-        cardDiv.setAttribute("data-nav-col", navColumn);
-        cardDiv.setAttribute("tabindex", "0");
-      }
+      // if (navRow !== undefined && navColumn !== undefined) {
+      //   cardDiv.setAttribute("data-nav-panel", 0);
+      //   cardDiv.setAttribute("data-nav-row", navRow);
+      //   cardDiv.setAttribute("data-nav-col", navColumn);
+      //   cardDiv.setAttribute("tabindex", "0");
+      // }
       break;
   }
   return cardDiv;
@@ -358,25 +395,64 @@ export function onInputEvent(type, event) {
 
 export function onGamepadPolled() {
   const upPressed =
-    gamepads.getButtonDownThisFrame(gamepads.Buttons.DPAD_UP) ||
-    gamepads.getAxisDownThisFrame(gamepads.Axes.RS_Y, -1) ||
-    gamepads.getAxisDownThisFrame(gamepads.Axes.LS_Y, -1);
+    input.isActionDownThisFrame({
+      source: input.Source.GAMEPAD,
+      commands: ["DPAD_UP"],
+    }) ||
+    input.isActionDownThisFrame({
+      source: input.Source.GAMEPAD,
+      commands: ["RS_UP"],
+    }) ||
+    input.isActionDownThisFrame({
+      source: input.Source.GAMEPAD,
+      commands: ["LS_UP"],
+    });
   const downPressed =
-    gamepads.getButtonDownThisFrame(gamepads.Buttons.DPAD_DOWN) ||
-    gamepads.getAxisDownThisFrame(gamepads.Axes.RS_Y, 1) ||
-    gamepads.getAxisDownThisFrame(gamepads.Axes.LS_Y, 1);
+    input.isActionDownThisFrame({
+      source: input.Source.GAMEPAD,
+      commands: ["DPAD_DOWN"],
+    }) ||
+    input.isActionDownThisFrame({
+      source: input.Source.GAMEPAD,
+      commands: ["RS_DOWN"],
+    }) ||
+    input.isActionDownThisFrame({
+      source: input.Source.GAMEPAD,
+      commands: ["LS_DOWN"],
+    });
   const leftPressed =
-    gamepads.getButtonDownThisFrame(gamepads.Buttons.DPAD_LEFT) ||
-    gamepads.getAxisDownThisFrame(gamepads.Axes.RS_X, -1) ||
-    gamepads.getAxisDownThisFrame(gamepads.Axes.LS_X, -1);
+    input.isActionDownThisFrame({
+      source: input.Source.GAMEPAD,
+      commands: ["DPAD_LEFT"],
+    }) ||
+    input.isActionDownThisFrame({
+      source: input.Source.GAMEPAD,
+      commands: ["RS_LEFT"],
+    }) ||
+    input.isActionDownThisFrame({
+      source: input.Source.GAMEPAD,
+      commands: ["LS_LEFT"],
+    });
   const rightPressed =
-    gamepads.getButtonDownThisFrame(gamepads.Buttons.DPAD_RIGHT) ||
-    gamepads.getAxisDownThisFrame(gamepads.Axes.RS_X, 1) ||
-    gamepads.getAxisDownThisFrame(gamepads.Axes.LS_X, 1);
+    input.isActionDownThisFrame({
+      source: input.Source.GAMEPAD,
+      commands: ["DPAD_RIGHT"],
+    }) ||
+    input.isActionDownThisFrame({
+      source: input.Source.GAMEPAD,
+      commands: ["RS_RIGHT"],
+    }) ||
+    input.isActionDownThisFrame({
+      source: input.Source.GAMEPAD,
+      commands: ["LS_RIGHT"],
+    });
 
   navigation.navigate(
     g_navData,
-    gamepads.getButtonDownThisFrame(gamepads.Buttons.A),
+    input.isActionDownThisFrame({
+      source: input.Source.GAMEPAD,
+      commands: ["A"],
+    }),
     upPressed,
     downPressed,
     leftPressed,
