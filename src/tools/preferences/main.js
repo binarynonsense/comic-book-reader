@@ -705,16 +705,16 @@ function getLocalization() {
       id: "tool-pre-hotspots-2columns-text",
       text: _(
         "tool-pre-hotspots-2columns",
-        _("ctxmenu-turnto-leftpage"),
-        _("ctxmenu-turnto-rightpage")
+        _("toolbar-go-left"),
+        _("toolbar-go-right")
       ),
     },
     {
       id: "tool-pre-hotspots-3columns-text",
       text: _(
         "tool-pre-hotspots-3columns",
-        _("ctxmenu-turnto-leftpage"),
-        _("ctxmenu-turnto-rightpage")
+        _("toolbar-go-left"),
+        _("toolbar-go-right")
       ),
     },
     {
