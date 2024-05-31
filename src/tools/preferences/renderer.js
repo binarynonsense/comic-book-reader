@@ -710,6 +710,7 @@ function updateNavButtons(
       columnsDiv.style = "padding-top: 0px";
       //
       const commandButtonIds = input.separateCommand(command);
+      commandButtonIds.reverse();
       let length = Math.max(2, commandButtonIds.length);
       let selectElements = [];
       for (let selectIndex = 0; selectIndex < length; selectIndex++) {
@@ -742,23 +743,19 @@ function updateNavButtons(
           selects.forEach((select) => {
             buttonIds.push(select.value);
           });
-          sendIpcToMain(
-            "change-nav-buttons",
-            action,
-            index,
-            buttonIds.reverse()
-          );
+          sendIpcToMain("change-nav-buttons", action, index, buttonIds);
         });
       }
       // show in reverse
+      selectElements.reverse();
       for (
-        let selectIndex = selectElements.length - 1;
-        selectIndex >= 0;
-        selectIndex--
+        let selectIndex = 0;
+        selectIndex < selectElements.length;
+        selectIndex++
       ) {
         columnsDiv.appendChild(selectElements[selectIndex]);
         // +
-        if (selectIndex > 0) {
+        if (selectIndex < selectElements.length - 1) {
           const plusSpan = document.createElement("span");
           plusSpan.innerText = "+";
           columnsDiv.appendChild(plusSpan);
