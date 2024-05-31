@@ -1,7 +1,7 @@
 {
   "@metadata": {
     "authors": ["trzyglow"],
-    "last-updated": "2024-05-30",
+    "last-updated": "2024-05-31",
     "acbr-version": "3.5.0-beta1",
     "pre-release": "false",
     "comments": "Deutsche Lokalisierung",
@@ -415,9 +415,9 @@
   "tool-pre-loading-ipos": "Icon-position",
   "tool-pre-loading-ipos-0": "Oben Links",
   "tool-pre-loading-ipos-1": "Mitte",
-  "[NEEDS TRANSLATION]tool-pre-mouse": "Mouse",
-  "[NEEDS TRANSLATION]tool-pre-keyboard": "Keyboard",
-  "[NEEDS TRANSLATION]tool-pre-gamepad": "Gamepad",
+  "tool-pre-mouse": "Maus",
+  "tool-pre-keyboard": "Tastatur",
+  "tool-pre-gamepad": "Gamepad",
   "tool-pre-mouse-keyboard": "Maus und Tastatur",
   "tool-pre-hotspots": "Mausklick Hotspots",
   "tool-pre-hotspots-disabled": "Deaktiviert",
