@@ -8,7 +8,6 @@
 import { sendIpcToMain as coreSendIpcToMain } from "../../core/renderer.js";
 import * as modals from "../../shared/renderer/modals.js";
 import * as input from "../../shared/renderer/input.js";
-import * as gamepads from "../../shared/renderer/gamepads.js";
 import * as navigation from "../../shared/renderer/tools-navigation.js";
 
 ///////////////////////////////////////////////////////////////////////////////
