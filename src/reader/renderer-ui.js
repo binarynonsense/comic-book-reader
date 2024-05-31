@@ -7,7 +7,6 @@
 
 import { on, sendIpcToMain, showNoBookContent } from "./renderer.js";
 import * as modals from "../shared/renderer/modals.js";
-import * as gamepads from "../shared/renderer/gamepads.js";
 import * as input from "../shared/renderer/input.js";
 
 export function initIpc() {
