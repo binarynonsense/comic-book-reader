@@ -1660,7 +1660,7 @@ function showModalQuickMenu(
         modalClosed();
       },
       key: "Escape,F1",
-      gpButton: `${gamepads.Buttons.START}`,
+      gpCommand: "START",
     },
     buttons: buttons,
   });

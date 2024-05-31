@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-import * as gamepads from "./gamepads.js";
+import * as input from "./input.js";
 
 export function show(options) {
   let modalDiv;
@@ -90,10 +90,10 @@ export function show(options) {
         button.setAttribute("data-key", options.close.key);
       }
       if (
-        options.close?.gpButton &&
-        typeof options.close.gpButton === "string"
+        options.close?.gpCommand &&
+        typeof options.close.gpCommand === "string"
       ) {
-        button.setAttribute("data-gp-button", options.close.gpButton);
+        button.setAttribute("data-gp-button", options.close.gpCommand);
       }
     }
     // bottom buttons
@@ -229,45 +229,129 @@ export function onGamepadPolled(modalDiv) {
   let upPressed, downPressed;
   if (dir !== "rtl") {
     upPressed =
-      gamepads.getButtonDownThisFrame(gamepads.Buttons.DPAD_UP) ||
-      gamepads.getButtonDownThisFrame(gamepads.Buttons.DPAD_LEFT) ||
-      gamepads.getAxisDownThisFrame(gamepads.Axes.RS_Y, -1) ||
-      gamepads.getAxisDownThisFrame(gamepads.Axes.RS_X, -1) ||
-      gamepads.getAxisDownThisFrame(gamepads.Axes.LS_Y, -1) ||
-      gamepads.getAxisDownThisFrame(gamepads.Axes.LS_X, -1);
+      input.isActionDownThisFrame({
+        source: input.Source.GAMEPAD,
+        commands: ["DPAD_UP"],
+      }) ||
+      input.isActionDownThisFrame({
+        source: input.Source.GAMEPAD,
+        commands: ["DPAD_LEFT"],
+      }) ||
+      input.isActionDownThisFrame({
+        source: input.Source.GAMEPAD,
+        commands: ["RS_UP"],
+      }) ||
+      input.isActionDownThisFrame({
+        source: input.Source.GAMEPAD,
+        commands: ["RS_LEFT"],
+      }) ||
+      input.isActionDownThisFrame({
+        source: input.Source.GAMEPAD,
+        commands: ["LS_UP"],
+      }) ||
+      input.isActionDownThisFrame({
+        source: input.Source.GAMEPAD,
+        commands: ["LS_LEFT"],
+      });
     downPressed =
-      gamepads.getButtonDownThisFrame(gamepads.Buttons.DPAD_DOWN) ||
-      gamepads.getButtonDownThisFrame(gamepads.Buttons.DPAD_RIGHT) ||
-      gamepads.getAxisDownThisFrame(gamepads.Axes.RS_Y, 1) ||
-      gamepads.getAxisDownThisFrame(gamepads.Axes.RS_X, 1) ||
-      gamepads.getAxisDownThisFrame(gamepads.Axes.LS_Y, 1) ||
-      gamepads.getAxisDownThisFrame(gamepads.Axes.LS_X, 1);
+      input.isActionDownThisFrame({
+        source: input.Source.GAMEPAD,
+        commands: ["DPAD_DOWN"],
+      }) ||
+      input.isActionDownThisFrame({
+        source: input.Source.GAMEPAD,
+        commands: ["DPAD_RIGHT"],
+      }) ||
+      input.isActionDownThisFrame({
+        source: input.Source.GAMEPAD,
+        commands: ["RS_DOWN"],
+      }) ||
+      input.isActionDownThisFrame({
+        source: input.Source.GAMEPAD,
+        commands: ["RS_RIGHT"],
+      }) ||
+      input.isActionDownThisFrame({
+        source: input.Source.GAMEPAD,
+        commands: ["LS_DOWN"],
+      }) ||
+      input.isActionDownThisFrame({
+        source: input.Source.GAMEPAD,
+        commands: ["LS_RIGHT"],
+      });
   } else {
     upPressed =
-      gamepads.getButtonDownThisFrame(gamepads.Buttons.DPAD_UP) ||
-      gamepads.getButtonDownThisFrame(gamepads.Buttons.DPAD_RIGHT) ||
-      gamepads.getAxisDownThisFrame(gamepads.Axes.RS_Y, -1) ||
-      gamepads.getAxisDownThisFrame(gamepads.Axes.RS_X, 1) ||
-      gamepads.getAxisDownThisFrame(gamepads.Axes.LS_Y, -1) ||
-      gamepads.getAxisDownThisFrame(gamepads.Axes.LS_X, 1);
+      input.isActionDownThisFrame({
+        source: input.Source.GAMEPAD,
+        commands: ["DPAD_UP"],
+      }) ||
+      input.isActionDownThisFrame({
+        source: input.Source.GAMEPAD,
+        commands: ["DPAD_RIGHT"],
+      }) ||
+      input.isActionDownThisFrame({
+        source: input.Source.GAMEPAD,
+        commands: ["RS_UP"],
+      }) ||
+      input.isActionDownThisFrame({
+        source: input.Source.GAMEPAD,
+        commands: ["RS_RIGHT"],
+      }) ||
+      input.isActionDownThisFrame({
+        source: input.Source.GAMEPAD,
+        commands: ["LS_UP"],
+      }) ||
+      input.isActionDownThisFrame({
+        source: input.Source.GAMEPAD,
+        commands: ["LS_RIGHT"],
+      });
     downPressed =
-      gamepads.getButtonDownThisFrame(gamepads.Buttons.DPAD_DOWN) ||
-      gamepads.getButtonDownThisFrame(gamepads.Buttons.DPAD_LEFT) ||
-      gamepads.getAxisDownThisFrame(gamepads.Axes.RS_Y, 1) ||
-      gamepads.getAxisDownThisFrame(gamepads.Axes.RS_X, -1) ||
-      gamepads.getAxisDownThisFrame(gamepads.Axes.LS_Y, 1) ||
-      gamepads.getAxisDownThisFrame(gamepads.Axes.LS_X, -1);
+      input.isActionDownThisFrame({
+        source: input.Source.GAMEPAD,
+        commands: ["DPAD_DOWN"],
+      }) ||
+      input.isActionDownThisFrame({
+        source: input.Source.GAMEPAD,
+        commands: ["DPAD_LEFT"],
+      }) ||
+      input.isActionDownThisFrame({
+        source: input.Source.GAMEPAD,
+        commands: ["RS_DOWN"],
+      }) ||
+      input.isActionDownThisFrame({
+        source: input.Source.GAMEPAD,
+        commands: ["RS_LEFT"],
+      }) ||
+      input.isActionDownThisFrame({
+        source: input.Source.GAMEPAD,
+        commands: ["LS_DOWN"],
+      }) ||
+      input.isActionDownThisFrame({
+        source: input.Source.GAMEPAD,
+        commands: ["LS_LEFT"],
+      });
   }
-  const actionPressed = gamepads.getButtonDownThisFrame(gamepads.Buttons.A);
-  let backPressed = gamepads.getButtonDownThisFrame(gamepads.Buttons.B);
+  const actionPressed = input.isActionDownThisFrame({
+    source: input.Source.GAMEPAD,
+    commands: ["A"],
+  });
+  let backPressed = input.isActionDownThisFrame({
+    source: input.Source.GAMEPAD,
+    commands: ["B"],
+  });
   if (!backPressed) {
     const button = modalDiv.querySelector(".modal-close-button");
     const data = button.getAttribute("data-gp-button");
     if (data && !button.classList.contains("set-display-none")) {
-      const gpButtons = data.split(",");
-      for (let index = 0; index < gpButtons.length; index++) {
-        const gpButton = gpButtons[index];
-        if (gpButton && gamepads.getButtonDownThisFrame(parseInt(gpButton))) {
+      const gpCommands = data.split(",");
+      for (let index = 0; index < gpCommands.length; index++) {
+        const gpCommand = gpCommands[index];
+        if (
+          gpCommand &&
+          input.isActionDownThisFrame({
+            source: input.Source.GAMEPAD,
+            commands: [gpCommand],
+          })
+        ) {
           backPressed = true;
           break;
         }
