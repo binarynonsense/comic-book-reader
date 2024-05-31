@@ -102,6 +102,10 @@
   background: var(--toolbar-page-slider-thumb-color);
   box-shadow: -100vw 0 0 100vw var(--toolbar-page-slider-left-bg-color);
 }
+#toolbar-page-slider-div[dir="rtl"]
+  #toolbar-page-slider-input::-webkit-slider-thumb {
+  box-shadow: 100vw 0 0 100vw var(--toolbar-page-slider-left-bg-color);
+}
 #toolbar-page-slider-input::-webkit-slider-thumb:hover {
   width: 30px;
 }

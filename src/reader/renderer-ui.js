@@ -354,7 +354,9 @@ function initOnIpcCallbacks() {
   });
 
   on("set-pages-direction", (value) => {
-    document.querySelector("#toolbar-page-slider-div").style.direction = value;
+    document
+      .querySelector("#toolbar-page-slider-div")
+      .setAttribute("dir", value);
     if (value === "rtl") {
       document
         .querySelector("#toolbar-button-set-pagesdirection-ltr")
