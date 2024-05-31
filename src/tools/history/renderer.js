@@ -7,6 +7,7 @@
 
 import { sendIpcToMain as coreSendIpcToMain } from "../../core/renderer.js";
 import * as modals from "../../shared/renderer/modals.js";
+import * as input from "../../shared/renderer/input.js";
 import * as gamepads from "../../shared/renderer/gamepads.js";
 import * as navigation from "../../shared/renderer/tools-navigation.js";
 
@@ -245,28 +246,71 @@ export function onGamepadPolled() {
     modals.onGamepadPolled(getOpenModal());
     return;
   }
+
   const upPressed =
-    gamepads.getButtonDownThisFrame(gamepads.Buttons.DPAD_UP) ||
-    gamepads.getAxisDownThisFrame(gamepads.Axes.RS_Y, -1) ||
-    gamepads.getAxisDownThisFrame(gamepads.Axes.LS_Y, -1);
+    input.isActionDownThisFrame({
+      source: input.Source.GAMEPAD,
+      commands: ["DPAD_UP"],
+    }) ||
+    input.isActionDownThisFrame({
+      source: input.Source.GAMEPAD,
+      commands: ["RS_UP"],
+    }) ||
+    input.isActionDownThisFrame({
+      source: input.Source.GAMEPAD,
+      commands: ["LS_UP"],
+    });
   const downPressed =
-    gamepads.getButtonDownThisFrame(gamepads.Buttons.DPAD_DOWN) ||
-    gamepads.getAxisDownThisFrame(gamepads.Axes.RS_Y, 1) ||
-    gamepads.getAxisDownThisFrame(gamepads.Axes.LS_Y, 1);
+    input.isActionDownThisFrame({
+      source: input.Source.GAMEPAD,
+      commands: ["DPAD_DOWN"],
+    }) ||
+    input.isActionDownThisFrame({
+      source: input.Source.GAMEPAD,
+      commands: ["RS_DOWN"],
+    }) ||
+    input.isActionDownThisFrame({
+      source: input.Source.GAMEPAD,
+      commands: ["LS_DOWN"],
+    });
   const leftPressed =
-    gamepads.getButtonDownThisFrame(gamepads.Buttons.DPAD_LEFT) ||
-    gamepads.getAxisDownThisFrame(gamepads.Axes.RS_X, -1) ||
-    gamepads.getAxisDownThisFrame(gamepads.Axes.LS_X, -1);
+    input.isActionDownThisFrame({
+      source: input.Source.GAMEPAD,
+      commands: ["DPAD_LEFT"],
+    }) ||
+    input.isActionDownThisFrame({
+      source: input.Source.GAMEPAD,
+      commands: ["RS_LEFT"],
+    }) ||
+    input.isActionDownThisFrame({
+      source: input.Source.GAMEPAD,
+      commands: ["LS_LEFT"],
+    });
   const rightPressed =
-    gamepads.getButtonDownThisFrame(gamepads.Buttons.DPAD_RIGHT) ||
-    gamepads.getAxisDownThisFrame(gamepads.Axes.RS_X, 1) ||
-    gamepads.getAxisDownThisFrame(gamepads.Axes.LS_X, 1);
+    input.isActionDownThisFrame({
+      source: input.Source.GAMEPAD,
+      commands: ["DPAD_RIGHT"],
+    }) ||
+    input.isActionDownThisFrame({
+      source: input.Source.GAMEPAD,
+      commands: ["RS_RIGHT"],
+    }) ||
+    input.isActionDownThisFrame({
+      source: input.Source.GAMEPAD,
+      commands: ["LS_RIGHT"],
+    });
 
   navigation.navigate(
     g_navData,
     document.getElementById("tool-hst-back-button"),
-    gamepads.getButtonDownThisFrame(gamepads.Buttons.B),
-    gamepads.getButtonDownThisFrame(gamepads.Buttons.A),
+    input.isActionDownThisFrame({
+      source: input.Source.GAMEPAD,
+      commands: ["B"],
+    }),
+    input.isActionDownThisFrame({
+      source: input.Source.GAMEPAD,
+      commands: ["A"],
+    }),
     upPressed,
     downPressed,
     leftPressed,
