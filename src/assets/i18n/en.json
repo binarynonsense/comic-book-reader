@@ -474,7 +474,9 @@
     "changePageLast": "Go to Last (Change Page)",
     "zoomInPage": "Zoom Page In",
     "zoomOutPage": "Zoom Page Out",
-    "zoomResetPage": "Reset Page Zoom"
+    "zoomResetPage": "Reset Page Zoom",
+    "toggleFullScreen": "Toggle Full Screen",
+    "quickMenu": "Quick Menu"
   },
   "tool-pre-navkeys-unassigned-key": "Unassigned",
   "tool-pre-navkeys-change-press": "Press a valid key to replace the currently assigned one.",

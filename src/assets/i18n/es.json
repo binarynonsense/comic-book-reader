@@ -474,7 +474,9 @@
     "changePageLast": "Ir a la Última (Cambiar Página)",
     "zoomInPage": "Aumentar Zoom de la Página",
     "zoomOutPage": "Reducir Zoom de la Página",
-    "zoomResetPage": "Resetear Zoom de la Página"
+    "zoomResetPage": "Resetear Zoom de la Página",
+    "toggleFullScreen": "Alternar Pantalla Completa",
+    "quickMenu": "Menú Rápido"
   },
   "tool-pre-navkeys-unassigned-key": "Sin Asignar",
   "tool-pre-navkeys-change-press": "Presione una técla válida para reemplazar la asignada actualmente.",

@@ -474,7 +474,9 @@
     "changePageLast": "Gehe zur Letzten Seite",
     "zoomInPage": "Seite heranzoomen",
     "zoomOutPage": "Seite herauszoomen",
-    "zoomResetPage": "Seitenzoom zurücksetzen"
+    "zoomResetPage": "Seitenzoom zurücksetzen",
+    "toggleFullScreen": "Vollbild An/Aus",
+    "quickMenu": "Schnellmenü"
   },
   "tool-pre-navkeys-unassigned-key": "Nicht zugewiesen",
   "tool-pre-navkeys-change-press": "Drücken Sie eine gültige Taste, um die aktuell zugewiesene Taste zu ersetzen.",

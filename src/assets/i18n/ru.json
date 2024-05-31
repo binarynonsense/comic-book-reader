@@ -474,7 +474,9 @@
     "changePageLast": "Перейти к последней (Сменить страницу)",
     "zoomInPage": "Приблизить страницу",
     "zoomOutPage": "Отдалить страницу",
-    "zoomResetPage": "Сбросить масштаб страницы"
+    "zoomResetPage": "Сбросить масштаб страницы",
+    "toggleFullScreen": "Перейти в полноэкранный режим",
+    "quickMenu": "Быстрое меню"
   },
   "tool-pre-navkeys-unassigned-key": "Без назначения",
   "tool-pre-navkeys-change-press": "Нажмите действующую клавишу, чтобы заменить текущую назначенную клавишу.",

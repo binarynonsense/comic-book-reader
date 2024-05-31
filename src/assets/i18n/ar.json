@@ -474,7 +474,9 @@
     "[NEEDS TRANSLATION]changePageLast": "Go to Last (Change Page)",
     "zoomInPage": "تكبير الصفحة",
     "zoomOutPage": "تصغير الصفحة",
-    "zoomResetPage": "إعادة ضبط تكبير/تصغير الصفحة"
+    "zoomResetPage": "إعادة ضبط تكبير/تصغير الصفحة",
+    "toggleFullScreen": "تفعيل خاصية ملء الشاشة",
+    "quickMenu": "القائمة السريعة"
   },
   "tool-pre-navkeys-unassigned-key": "غير مخصص",
   "tool-pre-navkeys-change-press": "اضغط على مفتاح صالح لاستبدال المفتاح المعين حالياً.",
