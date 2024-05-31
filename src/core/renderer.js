@@ -238,12 +238,27 @@ function initTitleBarObserver() {
                   // submenu container
                   node.style.left = "auto";
                   node.style.right = `${node.parentNode.offsetWidth}px`;
-                  const parentRect = node.parentNode.getBoundingClientRect();
-                  const grandParentRect =
-                    node.parentNode.parentNode.parentNode.getBoundingClientRect();
-                  node.style.top = `${
-                    parentRect.top - grandParentRect.bottom
-                  }px`;
+                  if (
+                    node.parentNode.parentNode.parentNode.classList.contains(
+                      "cet-action-item"
+                    )
+                  ) {
+                    // third level submenu
+                    const parentRect = node.parentNode.getBoundingClientRect();
+                    const grandParentRect =
+                      node.parentNode.parentNode.getBoundingClientRect();
+                    node.style.top = `${
+                      parentRect.top - grandParentRect.top
+                    }px`;
+                  } else {
+                    // second level submenu
+                    const parentRect = node.parentNode.getBoundingClientRect();
+                    const grandGrandParentRect =
+                      node.parentNode.parentNode.parentNode.getBoundingClientRect();
+                    node.style.top = `${
+                      parentRect.top - grandGrandParentRect.bottom
+                    }px`;
+                  }
                   // make paths in history submenu always ltr
                   let isHistory = false;
                   const keybindings = node.querySelectorAll(".keybinding");
