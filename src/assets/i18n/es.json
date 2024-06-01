@@ -376,8 +376,8 @@
   "tool-shared-tooltip-move-down-in-list": "Mover Abajo",
   "tool-shared-tooltip-move-left-in-list": "Mover Izda.",
   "tool-shared-tooltip-move-right-in-list": "Mover Dcha.",
-  "tool-shared-tooltip-move-next-in-list": "Mover Siguiente",
-  "tool-shared-tooltip-move-prev-in-list": "Mover Anterior",
+  "tool-shared-tooltip-move-next-in-list": "Mover a Siguiente",
+  "tool-shared-tooltip-move-prev-in-list": "Mover a Anterior",
 
   "tool-pre-title": "Preferencias",
   "tool-pre-all": "Todas las Preferencias",  
