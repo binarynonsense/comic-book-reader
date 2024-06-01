@@ -970,7 +970,7 @@ function inputToggleFullScreen() {
   sendIpcToMain("toolbar-button-clicked", "toolbar-button-fullscreen-enter");
 }
 
-function inputOpenQuickMenu() {
+export function inputOpenQuickMenu() {
   sendIpcToMain("open-quick-menu");
 }
 
@@ -985,6 +985,10 @@ function inputOpenHelpModal() {
 ///////////////////////////////////////////////////////////////////////////////
 // GAMEPAD ////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
+
+export function getNavButtons() {
+  return g_navButtons;
+}
 
 export function onGamepadPolled() {
   const deltaTime = input.getGamepadsDeltaTime();

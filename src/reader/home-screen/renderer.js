@@ -10,6 +10,8 @@ import {
   getOpenModal,
   showModal,
   modalClosed,
+  getNavButtons,
+  inputOpenQuickMenu,
 } from "../../reader/renderer-ui.js";
 import * as input from "../../shared/renderer/input.js";
 import * as navigation from "./renderer-navigation.js";
@@ -366,6 +368,9 @@ export function onInputEvent(type, event) {
         (event.key === "0" && event.ctrlKey)
       ) {
         event.preventDefault();
+      } else if (event.key == "F1") {
+        inputOpenQuickMenu();
+        return;
       }
 
       navigation.navigate(
@@ -394,7 +399,16 @@ export function onInputEvent(type, event) {
 ///////////////////////////////////////////////////////////////////////////////
 
 export function onGamepadPolled() {
-  console.log("onGamepadPolled");
+  if (
+    input.isActionDownThisFrame({
+      source: input.Source.GAMEPAD,
+      commands: getNavButtons().quickMenu,
+    })
+  ) {
+    inputOpenQuickMenu();
+    return;
+  }
+
   const upPressed =
     input.isActionDownThisFrame({
       source: input.Source.GAMEPAD,
