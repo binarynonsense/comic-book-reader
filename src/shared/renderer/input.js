@@ -424,6 +424,7 @@ const GamepadButtonToIdAndDirection = {
 
 function initGamepads() {
   gamepads.init(() => {
+    refreshGamepadButtonsDownList();
     if (getOpenModal()) {
       modals.onGamepadPolled(getOpenModal());
       return;
@@ -434,11 +435,28 @@ function initGamepads() {
   });
 }
 
-function areGamepadCommandsDownThisFrame(commands) {
-  return areGamepadCommandsDown(commands, true);
+let g_gamepadButtonsDownList = [];
+function refreshGamepadButtonsDownList() {
+  g_gamepadButtonsDownList = [];
+  for (const buttonId in GamepadButtons) {
+    if (areGamepadCommandsDown([buttonId], false)) {
+      g_gamepadButtonsDownList.push(buttonId);
+    }
+  }
 }
 
-function areGamepadCommandsDown(commands, thisFrame = false) {
+function compareGamepadButtonIdArrays(a, b) {
+  if (a.sort().join(",") === b.sort().join(",")) {
+    return true;
+  }
+  return false;
+}
+
+function areGamepadCommandsDownThisFrame(commands, strict = true) {
+  return areGamepadCommandsDown(commands, strict, true);
+}
+
+function areGamepadCommandsDown(commands, strict = true, thisFrame = false) {
   if (!commands) {
     return false;
   }
@@ -448,6 +466,13 @@ function areGamepadCommandsDown(commands, thisFrame = false) {
       continue;
     }
     const buttons = separateCommand(command);
+
+    if (strict) {
+      if (!compareGamepadButtonIdArrays(buttons, g_gamepadButtonsDownList)) {
+        return false;
+      }
+    }
+
     let allTrue = true;
     for (let index = 0; index < buttons.length; index++) {
       const button = buttons[index];
