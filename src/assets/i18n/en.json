@@ -372,6 +372,7 @@
   "tool-shared-tooltip-output-folder": "If a file with the same name already exists in the folder, a subfix will be added to the converted file's name so nothing is overwritten.",
   "tool-shared-tooltip-output-page-order": "Only used if the input files are all images, otherwise they will be processed in the order they are listed.",
   "tool-shared-tooltip-remove-from-list": "Remove from List",
+  "[NOTE TO TRANSLATORS]tool-shared-tooltip-move-*": "These entries refer to actions, pressing a button, to move an item on the list to another position on that list: the one visually above (move-up),  visually below (move-down),  visually on the left (move-left),  visually on the right (move-right), the previous one on the list (move-next) or the next one on the list (move-next)",
   "tool-shared-tooltip-move-up-in-list": "Move Up",
   "tool-shared-tooltip-move-down-in-list": "Move Down",
   "tool-shared-tooltip-move-left-in-list": "Move Left",
