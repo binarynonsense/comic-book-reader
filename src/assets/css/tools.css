@@ -177,6 +177,7 @@ html[dir="rtl"] .tools-button-accent i {
   flex-direction: row;
   border-end-start-radius: 3px;
   border-start-start-radius: 3px;
+  align-items: center;
 }
 
 .tools-menu-button-icon {
