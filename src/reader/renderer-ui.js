@@ -1039,33 +1039,49 @@ export function onGamepadPolled() {
       );
     }
     // next / prev page
-    if (
+    else if (
       input.isActionDownThisFrame({
         source: input.Source.GAMEPAD,
-        commands: ["LB"],
+        commands: g_navButtons.changePageNext,
+      })
+    ) {
+      inputGoToNextPage();
+    } else if (
+      input.isActionDownThisFrame({
+        source: input.Source.GAMEPAD,
+        commands: g_navButtons.changePagePrev,
+      })
+    ) {
+      inputGoToPrevPage();
+    }
+    // left / right page
+    else if (
+      input.isActionDownThisFrame({
+        source: input.Source.GAMEPAD,
+        commands: g_navButtons.changePageLeft,
       })
     ) {
       inputGoToLeftPage();
     } else if (
       input.isActionDownThisFrame({
         source: input.Source.GAMEPAD,
-        commands: ["RB"],
+        commands: g_navButtons.changePageRight,
       })
     ) {
       inputGoToRightPage();
     }
     // last / first page
-    if (
+    else if (
       input.isActionDownThisFrame({
         source: input.Source.GAMEPAD,
-        commands: ["BACK+A"],
+        commands: g_navButtons.changePageLast,
       })
     ) {
       inputGoToLastPage();
     } else if (
       input.isActionDownThisFrame({
         source: input.Source.GAMEPAD,
-        commands: ["BACK+Y"],
+        commands: g_navButtons.changePageFirst,
       })
     ) {
       inputGoToFirstPage();
@@ -1074,7 +1090,7 @@ export function onGamepadPolled() {
     if (
       input.isActionDownThisFrame({
         source: input.Source.GAMEPAD,
-        commands: ["RS_PRESS"],
+        commands: g_navButtons.zoomResetPage,
       })
     ) {
       inputSwitchScaleMode();
@@ -1084,7 +1100,7 @@ export function onGamepadPolled() {
   if (
     input.isActionDownThisFrame({
       source: input.Source.GAMEPAD,
-      commands: ["LS_PRESS"],
+      commands: g_navButtons.toggleFullScreen,
     })
   ) {
     inputToggleFullScreen();
@@ -1093,7 +1109,7 @@ export function onGamepadPolled() {
   if (
     input.isActionDownThisFrame({
       source: input.Source.GAMEPAD,
-      commands: ["START"],
+      commands: g_navButtons.quickMenu,
     })
   ) {
     inputOpenQuickMenu();
