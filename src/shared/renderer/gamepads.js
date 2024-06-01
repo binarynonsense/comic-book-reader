@@ -113,7 +113,6 @@ export function getPrevButtonDown(id) {
 
 export function getButtonDownThisFrame(id) {
   if (g_gamepad.buttons[id].pressed && !g_prevButtons[id].pressed) {
-    console.log("trueee");
     return true;
   }
   return false;
