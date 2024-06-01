@@ -372,7 +372,7 @@
   "tool-shared-tooltip-output-folder": "Если в папке уже существует файл с таким названием, то к названию конвертированного файла будет добавлен подфикс, чтобы не произошло перезаписи.",
   "tool-shared-tooltip-output-page-order": "Используется только в том случае, если все входные файлы являются изображениями, в противном случае они будут обрабатываться в том порядке, в котором они перечислены.",
   "tool-shared-tooltip-remove-from-list": "Удалить из списка",
-  "[NOTE TO TRANSLATORS]tool-shared-tooltip-move-*": "These entries refer to actions, pressing a button, to move an item on the list to another position on that list: the one visually above (move-up),  visually below (move-down),  visually on the left (move-left),  visually on the right (move-right), the previous one on the list (move-next) or the next one on the list (move-next)",
+  "[NOTE TO TRANSLATORS]tool-shared-tooltip-move-*": "These entries refer to actions, pressing a button, to move an item on the list to another position on that list: the one visually above (move-up),  visually below (move-down),  visually on the left (move-left),  visually on the right (move-right), the previous one on the list (move-prev) or the next one on the list (move-next)",
   "tool-shared-tooltip-move-up-in-list": "Переместить вверх",
   "tool-shared-tooltip-move-down-in-list": "Переместить вниз",
   "tool-shared-tooltip-move-left-in-list": "Переместить влево",
