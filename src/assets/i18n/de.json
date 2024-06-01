@@ -378,8 +378,8 @@
   "tool-shared-tooltip-move-left-in-list": "Nach links bewegen",
   "tool-shared-tooltip-move-right-in-list": "Nach rechts bewegen",
   "[NOTE TO TRANSLATORS]tool-shared-tooltip-move-next-in-list": "'Move Next' can also be translated to the localized version of 'Move to Next', 'Move to the Next' or 'Move to the Next Position', whichever makes more sense in the target language. Same for 'Move Previous'",
-  "tool-shared-tooltip-move-next-in-list": "Nächstes bewegen",
-  "tool-shared-tooltip-move-prev-in-list": "Vorheriges bewegen",
+  "tool-shared-tooltip-move-next-in-list": "Zur nächsten Position bewegen",
+  "tool-shared-tooltip-move-prev-in-list": "Zur vorherigen Position bewegen",
 
   "tool-pre-title": "Einstellungen",
   "tool-pre-all": "Alle Einstellungen",  
