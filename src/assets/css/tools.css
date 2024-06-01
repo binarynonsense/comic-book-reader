@@ -305,7 +305,7 @@ html[dir="rtl"] .tools-button-accent i {
   overflow-wrap: anywhere;
 }
 #tools label i {
-  margin-left: 5px;
+  margin-inline-start: 5px;
 }
 #tools label span {
   overflow: hidden;
