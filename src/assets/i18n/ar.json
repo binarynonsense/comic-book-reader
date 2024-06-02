@@ -1,7 +1,7 @@
 {
   "@metadata": {
     "authors": ["ahmed-0011"],
-    "last-updated": "2024-06-01",
+    "last-updated": "2024-06-02",
     "acbr-version": "3.5.0-beta1",
     "pre-release": "false",
     "comments": "",
@@ -469,10 +469,10 @@
     "scrollRight": "تمرير الصفحة لليمين",
     "changePageRight": "انتقل إلى اليمين (تغيير الصفحة)",
     "changePageLeft": "انتقل إلى اليسار (تغيير الصفحة)",
-    "changePageNext": "الصفحة التالية (تغيير الصفحة)",
-    "changePagePrev": "الصفحة السابقة (تغيير الصفحة)",
-    "changePageFirst": "انتقل إلى الأولى (تغيير الصفحة)",
-    "changePageLast": "انتقل إلى الأخيرة (تغيير الصفحة)",
+    "changePageNext": "انتقل إلى الصفحة التالية",
+    "changePagePrev": "انتقل إلى الصفحة السابقة",
+    "changePageFirst": "انتقل إلى الصفحة الأولى",
+    "changePageLast": "انتقل إلى الصفحة الأخيرة",
     "zoomInPage": "تكبير الصفحة",
     "zoomOutPage": "تصغير الصفحة",
     "zoomResetPage": "إعادة ضبط تكبير/تصغير الصفحة",
