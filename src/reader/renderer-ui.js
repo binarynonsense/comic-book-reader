@@ -797,22 +797,7 @@ export function onInputEvent(type, event) {
 
     case "mousemove":
       {
-        if (g_mouseCursorTimer) {
-          window.clearTimeout(g_mouseCursorTimer);
-        }
-        if (!g_isMouseCursorVisible) {
-          //document.body.style.cursor = "default";
-          document.querySelector("#reader").style.cursor = "default";
-          g_isMouseCursorVisible = true;
-        }
-        if (g_hideMouseCursor) {
-          g_mouseCursorTimer = window.setTimeout(() => {
-            g_mouseCursorTimer = undefined;
-            //document.body.style.cursor = "none";
-            document.querySelector("#reader").style.cursor = "none";
-            g_isMouseCursorVisible = false;
-          }, g_mouseCursorHideTime);
-        }
+        onMouseMove(fileOpen);
       }
       break;
 
@@ -980,6 +965,28 @@ function inputOpenPropertiesModal() {
 
 function inputOpenHelpModal() {
   sendIpcToMain("open-help-modal");
+}
+
+export function onMouseMove(fileOpen) {
+  if (g_mouseCursorTimer) {
+    window.clearTimeout(g_mouseCursorTimer);
+  }
+  if (!g_isMouseCursorVisible) {
+    //document.body.style.cursor = "default";
+    document.querySelector("#reader").style.cursor = "default";
+    g_isMouseCursorVisible = true;
+  }
+  if (!fileOpen) {
+    document.querySelector("#reader").style.cursor = "default";
+    g_isMouseCursorVisible = true;
+  } else if (g_hideMouseCursor) {
+    g_mouseCursorTimer = window.setTimeout(() => {
+      g_mouseCursorTimer = undefined;
+      //document.body.style.cursor = "none";
+      document.querySelector("#reader").style.cursor = "none";
+      g_isMouseCursorVisible = false;
+    }, g_mouseCursorHideTime);
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -12,6 +12,7 @@ import {
   modalClosed,
   getNavButtons,
   inputOpenQuickMenu,
+  onMouseMove,
 } from "../../reader/renderer-ui.js";
 import * as input from "../../shared/renderer/input.js";
 import * as navigation from "./renderer-navigation.js";
@@ -23,6 +24,7 @@ import * as navigation from "./renderer-navigation.js";
 let g_isInitialized = false;
 let g_navData = {};
 let g_languageDirection = "ltr";
+let g_pagesContainerDiv;
 
 function init() {
   if (!g_isInitialized) {
@@ -395,6 +397,17 @@ export function onInputEvent(type, event) {
     case "body.ondrop":
       {
         sendIpcToMain("open-file", event.dataTransfer.files[0].path);
+      }
+      break;
+
+    case "mousemove":
+      {
+        if (!g_pagesContainerDiv) {
+          g_pagesContainerDiv = document.getElementById("pages-container");
+        }
+        let fileOpen =
+          g_pagesContainerDiv && g_pagesContainerDiv.innerHTML !== "";
+        onMouseMove(fileOpen);
       }
       break;
   }
