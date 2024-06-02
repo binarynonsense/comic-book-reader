@@ -967,6 +967,7 @@ function inputOpenHelpModal() {
   sendIpcToMain("open-help-modal");
 }
 
+// NOTE: also called from home screen
 export function onMouseMove(fileOpen) {
   if (g_mouseCursorTimer) {
     window.clearTimeout(g_mouseCursorTimer);
