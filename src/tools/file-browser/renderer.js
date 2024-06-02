@@ -207,7 +207,7 @@ function showFolderContents(
     }
   }
   updateColumnsHeight();
-  navigation.rebuild(g_navData, 1);
+  navigation.rebuild(g_navData, g_languageDirection === "rtl" ? 0 : 1);
 }
 
 function addFolderContentLi(type, ul, entry, index) {
