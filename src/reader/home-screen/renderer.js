@@ -391,6 +391,12 @@ export function onInputEvent(type, event) {
         event.preventDefault();
       }
       break;
+
+    case "body.ondrop":
+      {
+        sendIpcToMain("open-file", event.dataTransfer.files[0].path);
+      }
+      break;
   }
 }
 
