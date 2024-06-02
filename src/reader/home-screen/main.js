@@ -181,7 +181,7 @@ function on(id, callback) {
 function initOnIpcCallbacks() {
   on("hs-open-dialog-file", (filePath, sourceId) => {
     if (sourceId === 1) {
-      tools.switchTool("tool-file-browser", { path: filePath });
+      tools.switchTool("tool-file-browser", { path: filePath }, true);
     } else {
       reader.onMenuOpenFile(filePath);
     }
