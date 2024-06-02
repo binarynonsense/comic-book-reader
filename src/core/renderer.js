@@ -56,10 +56,14 @@ function onIpcFromMain(event, args) {
           updateCssProperties(args[2]);
         }
         break;
-
       case "update-language-direction":
         {
           updateLanguageDirection(args[2]);
+        }
+        break;
+      case "update-language-locale":
+        {
+          updateLanguageLocale(args[2]);
         }
         break;
       case "replace-inner-html":
@@ -188,6 +192,10 @@ function showModalAlert(title, message, textButton1) {
 ///////////////////////////////////////////////////////////////////////////////
 
 let g_languageDirection = "ltr";
+
+function updateLanguageLocale(newLocale) {
+  document.documentElement.setAttribute("lang", newLocale);
+}
 
 function updateLanguageDirection(newDirection) {
   g_languageDirection = newDirection;

@@ -414,6 +414,9 @@ if (!gotTheLock) {
     }
     reader.setLanguageDirection(direction);
     sendIpcToCoreRenderer("update-language-direction", direction);
+
+    const locale = i18n.getLoadedLocaleData()["@metadata"]["locale"];
+    sendIpcToCoreRenderer("update-language-locale", locale);
   }
   exports.onLanguageChanged = onLanguageChanged;
 
