@@ -540,7 +540,9 @@ function showModalFavoriteOptions(
   textButtonBack,
   textButtonRemove,
   textButtonEditName,
-  textButtonEditPath
+  textButtonEditPath,
+  textButtonMoveForward,
+  textButtonMoveBackward
 ) {
   if (getOpenModal()) {
     return;
@@ -568,6 +570,32 @@ function showModalFavoriteOptions(
         "hs-on-modal-favorite-options-edit-path-clicked",
         index,
         path
+      );
+    },
+  });
+  buttons.push({
+    text: textButtonMoveBackward.toUpperCase(),
+    fullWidth: true,
+    callback: () => {
+      modalClosed();
+      sendIpcToMain(
+        "hs-on-modal-favorite-options-move-clicked",
+        index,
+        path,
+        0
+      );
+    },
+  });
+  buttons.push({
+    text: textButtonMoveForward.toUpperCase(),
+    fullWidth: true,
+    callback: () => {
+      modalClosed();
+      sendIpcToMain(
+        "hs-on-modal-favorite-options-move-clicked",
+        index,
+        path,
+        1
       );
     },
   });

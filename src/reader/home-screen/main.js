@@ -244,7 +244,9 @@ function initOnIpcCallbacks() {
       _("tool-shared-ui-back"),
       _("tool-shared-tooltip-remove-from-list"),
       _("ui-modal-prompt-button-edit-name"),
-      _("ui-modal-prompt-button-edit-path")
+      _("ui-modal-prompt-button-edit-path"),
+      _("tool-shared-tooltip-move-forward-in-list"),
+      _("tool-shared-tooltip-move-backward-in-list")
     );
   });
 
@@ -329,6 +331,30 @@ function initOnIpcCallbacks() {
       }
     }
   );
+
+  on("hs-on-modal-favorite-options-move-clicked", (favIndex, favPath, dir) => {
+    if (g_favorites[favIndex].path === favPath) {
+      if (dir == 0) {
+        // backward
+        if (favIndex > 0) {
+          let temp = g_favorites[favIndex - 1];
+          g_favorites[favIndex - 1] = g_favorites[favIndex];
+          g_favorites[favIndex] = temp;
+          buildSections();
+        }
+      } else if (dir == 1) {
+        // forward
+        if (favIndex < g_favorites.length - 1) {
+          let temp = g_favorites[favIndex + 1];
+          g_favorites[favIndex + 1] = g_favorites[favIndex];
+          g_favorites[favIndex] = temp;
+          buildSections();
+        }
+      }
+    } else {
+      log.error("Tried to move a favorite with not matching index and path");
+    }
+  });
 }
 
 ///////////////////////////////////////////////////////////////////////////////
