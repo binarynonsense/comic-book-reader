@@ -1305,6 +1305,7 @@ function closeCurrentFile(addToHistory = true) {
   updateMenuAndToolbarItems();
   renderTitle();
   sendIpcToRenderer("file-closed");
+  sendIpcToRenderer("set-scrollbar-position", 0);
   sendIpcToPreload("update-menubar");
   sendIpcToRenderer("update-loading", false);
 }
