@@ -399,7 +399,9 @@ function initOnIpcCallbacks() {
     if (g_fileData.type === FileDataType.EPUB_EBOOK) {
       goToPercentage(0);
     } else {
-      goToPage(0);
+      if (g_fileData.pageIndex != 0) {
+        goToPage(0);
+      }
     }
   });
 
@@ -407,7 +409,9 @@ function initOnIpcCallbacks() {
     if (g_fileData.type === FileDataType.EPUB_EBOOK) {
       goToPercentage(100);
     } else {
-      goToPage(g_fileData.numPages - 1);
+      if (g_fileData.pageIndex != g_fileData.numPages - 1) {
+        goToPage(g_fileData.numPages - 1);
+      }
     }
   });
 
