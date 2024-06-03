@@ -128,6 +128,7 @@ exports.setCanOpenTools = setCanOpenTools = function (isEnabled) {
 };
 
 exports.setCanTweakUI = setCanTweakUI = function (isEnabled) {
+  Menu.getApplicationMenu().getMenuItemById("view-layout").enabled = isEnabled;
   Menu.getApplicationMenu().getMenuItemById("scrollbar").enabled = isEnabled;
   Menu.getApplicationMenu().getMenuItemById("toolbar").enabled = isEnabled;
   Menu.getApplicationMenu().getMenuItemById("page-number").enabled = isEnabled;
@@ -158,15 +159,15 @@ exports.setComicBookOpened = setComicBookOpened = function (isEnabled) {
     isEnabled
   );
   EnableItemRecursive(
-    Menu.getApplicationMenu().getMenuItemById("view-layout"),
-    isEnabled
-  );
-  EnableItemRecursive(
     Menu.getApplicationMenu().getMenuItemById("view-zoom"),
     isEnabled
   );
   EnableItemRecursive(
     Menu.getApplicationMenu().getMenuItemById("view-filter"),
+    isEnabled
+  );
+  EnableItemRecursive(
+    Menu.getApplicationMenu().getMenuItemById("view-layout"),
     isEnabled
   );
   EnableItemRecursive(
