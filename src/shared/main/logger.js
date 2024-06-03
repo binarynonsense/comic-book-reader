@@ -25,8 +25,8 @@ exports.debug = function (message) {
   }
 };
 
-exports.warning = function (message) {
-  if (g_isDebug) {
+exports.warning = function (message, showInRelease = false) {
+  if (g_isDebug && !showInRelease) {
     console.log(`${getTime()} ${g_warningTag}`, message);
   }
 };
