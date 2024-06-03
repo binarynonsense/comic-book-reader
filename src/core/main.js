@@ -107,22 +107,6 @@ if (!gotTheLock) {
   // SETUP /////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
-  if (g_launchInfo.platform === "linux" && !process.env.G_SLICE) {
-    if (g_launchInfo.isRelease) {
-      console.log(
-        "The GS_SLICE environment variable is undefined, setting it to 'always-malloc' and relaunching the app. You can avoid this step by launching ACBR using the ACBR.sh script"
-      );
-      process.env.G_SLICE = "always-malloc";
-      app.relaunch();
-      app.exit(0);
-    } else {
-      console.log(
-        "the GS_SLICE environment variable is undefined, you may experience crashes during file conversions"
-      );
-    }
-  }
-
-  tools.init();
   // start logging
   log.init(g_launchInfo);
   log.info("starting ACBR");
@@ -131,8 +115,31 @@ if (!gotTheLock) {
   log.debug("electron version: " + process.versions.electron);
   log.debug("chrome version: " + process.versions.chrome);
   log.debug("node version: " + process.versions.node);
+
+  log.debug("checking environment");
+  if (g_launchInfo.platform === "linux" && !process.env.G_SLICE) {
+    // NOTE: if G_SLICE isn't set to 'always-malloc' the app may crash
+    // during conversions due to an issue with sharp
+    if (g_launchInfo.isRelease) {
+      log.warning(
+        "The GS_SLICE environment variable is undefined, setting it to 'always-malloc' and relaunching the app. You can avoid this step by launching ACBR using the ACBR.sh script",
+        true
+      );
+      process.env.G_SLICE = "always-malloc";
+      app.relaunch();
+      app.exit(0);
+    } else {
+      log.warning(
+        "the GS_SLICE environment variable is undefined, you may experience crashes during file conversions",
+        true
+      );
+    }
+  }
   // show vips warnings from sharp only in dev mode
   if (!g_launchInfo.isDev) process.env.VIPS_WARNING = 1;
+
+  tools.init();
+
   // init window
   const createWindow = () => {
     // get screen size
