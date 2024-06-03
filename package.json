@@ -22,6 +22,7 @@
           "target": "AppImage"
         }
       ],
+      "artifactName": "${productName}.${ext}",
       "asarUnpack": [
         "**/node_modules/sharp/**",
         "**/node_modules/@img/**/*",
