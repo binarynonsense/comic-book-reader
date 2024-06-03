@@ -106,6 +106,23 @@ if (!gotTheLock) {
   //////////////////////////////////////////////////////////////////////////////
   // SETUP /////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
+  console.log("checking");
+
+  if (g_launchInfo.platform === "linux" && !process.env.G_SLICE) {
+    if (g_launchInfo.isRelease) {
+      console.log(
+        "The GS_SLICE environment variable is undefined, setting it to 'always-malloc' and relaunching the app. You can avoid this step by launching ACBR using the ACBR.sh script"
+      );
+      process.env.G_SLICE = "always-malloc";
+      app.relaunch();
+      app.exit(0);
+    } else {
+      console.log(
+        "the GS_SLICE environment variable is undefined, you may experience crashes during file conversions"
+      );
+    }
+  }
+
   tools.init();
   // start logging
   log.init(g_launchInfo);
