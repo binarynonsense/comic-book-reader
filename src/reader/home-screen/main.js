@@ -187,6 +187,10 @@ function initOnIpcCallbacks() {
     }
   });
 
+  on("hs-open-preferences", () => {
+    core.onMenuPreferences();
+  });
+
   on("hs-open-file", (filePath) => {
     reader.tryOpen(filePath);
   });
@@ -366,7 +370,8 @@ function updateLocalizedText(sendFavsUpdate = true) {
   sendIpcToRenderer(
     "hs-update-localization",
     getIdsLocalization(),
-    getCardLocalization()
+    getCardLocalization(),
+    _("menu-file-preferences")
   );
   log.debug("loading favorites");
   if (sendFavsUpdate) getFavoritesData();

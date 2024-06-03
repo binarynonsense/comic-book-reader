@@ -57,6 +57,8 @@
   color: var(--hs-button-accent-text-color) !important;
 }
 
+/* *********************** */
+
 #hs-logo-open {
   display: flex;
   flex-direction: row;
@@ -74,6 +76,34 @@
   width: 150px;
   opacity: 0.3;
   filter: grayscale(100%);
+}
+
+/* *********************** */
+
+#hs-logo-preferences-button {
+  font-size: 20px;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+#hs-logo-preferences-button:hover {
+  filter: brightness(1.2);
+  cursor: pointer;
+}
+
+#hs-logo-preferences-button i {
+  transition: transform 0.2s ease-in-out;
+}
+#hs-logo-preferences-button:hover i {
+  transform: rotate(60deg) scale(1.2);
+}
+
+#hs-logo-preferences-button:active {
+  transform: translateY(1px);
 }
 
 #hs-latest {

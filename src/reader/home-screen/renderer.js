@@ -42,6 +42,18 @@ function init() {
     openFileButton.setAttribute("data-nav-row", 0);
     openFileButton.setAttribute("data-nav-col", 0);
     openFileButton.setAttribute("data-nav-click", 0);
+    ///////////
+    const preferencesButton = document.querySelector(
+      "#hs-logo-preferences-button"
+    );
+    preferencesButton.addEventListener("click", (event) => {
+      sendIpcToMain("hs-open-preferences");
+    });
+    // TODO: enable when preferences can be navigatedusing keys
+    // preferencesButton.setAttribute("data-nav-panel", 0);
+    // preferencesButton.setAttribute("data-nav-row", 0);
+    // preferencesButton.setAttribute("data-nav-col", 1);
+    // preferencesButton.setAttribute("tabindex", "0");
   }
 }
 
@@ -740,7 +752,11 @@ function showModalFavoriteEditPath(
 
 let g_cardLocalization;
 
-function updateLocalization(idsLocalization, cardLocalization) {
+function updateLocalization(
+  idsLocalization,
+  cardLocalization,
+  preferencesTitle
+) {
   // ids
   for (let index = 0; index < idsLocalization.length; index++) {
     const element = idsLocalization[index];
@@ -751,4 +767,9 @@ function updateLocalization(idsLocalization, cardLocalization) {
   }
   // cards
   g_cardLocalization = cardLocalization;
+  // preferences
+  const preferencesButton = document.querySelector(
+    "#hs-logo-preferences-button"
+  );
+  preferencesButton.title = preferencesTitle;
 }
