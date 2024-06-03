@@ -37,6 +37,7 @@ g_launchInfo = {
   platform: os.platform(),
   release: os.release(),
   hostName: os.hostname(),
+  isAppImage: false,
   isSteamDeck: false,
   isGameScope: false,
   isDev: false,
@@ -60,6 +61,9 @@ if (
     // not sure if this is official and will always be so.
     g_launchInfo.isGameScope = true;
   }
+}
+if (process.env.APPIMAGE) {
+  g_launchInfo.isAppImage = true;
 }
 // parse command line arguments
 g_launchInfo.parsedArgs = require("minimist")(
@@ -115,6 +119,9 @@ if (!gotTheLock) {
   log.debug("electron version: " + process.versions.electron);
   log.debug("chrome version: " + process.versions.chrome);
   log.debug("node version: " + process.versions.node);
+  if (g_launchInfo.isAppImage) {
+    log.debug("is AppImage");
+  }
 
   log.debug("checking environment");
   if (g_launchInfo.platform === "linux" && !process.env.G_SLICE) {
@@ -126,8 +133,17 @@ if (!gotTheLock) {
         true
       );
       process.env.G_SLICE = "always-malloc";
-      app.relaunch();
-      app.exit(0);
+      const options = { args: process.argv };
+      if (process.env.APPIMAGE) {
+        // ref: https://github.com/electron-userland/electron-builder/issues/1727
+        options.execPath = process.env.APPIMAGE;
+        options.args.unshift("--appimage-extract-and-run");
+        app.relaunch(options);
+        app.exit(0);
+      } else {
+        app.relaunch();
+        app.exit(0);
+      }
     } else {
       log.warning(
         "the GS_SLICE environment variable is undefined, you may experience crashes during file conversions",
