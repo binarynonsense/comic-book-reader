@@ -32,7 +32,7 @@
   "scripts": {
     "start": "export G_SLICE=always-malloc && electron . --dev",
     "dist:linux": "npm run 7zbin:linux && npm run build:linux && echo '#!/bin/bash\nexport G_SLICE=always-malloc && ./acbr-comic-book-reader \"$@\"' > ./dist/linux-unpacked/ACBR.sh && shx chmod +x ./dist/linux-unpacked/ACBR.sh",
-    "dist:windows": "npm run sharp:windows && npm run build:windows",
+    "dist:windows": "npm run build:windows",
     "dist:cross": "npm run dist:cross-windows && npm run dist:cross-linux",
     "dist:cross-linux": "npm run sharp:linux && npm run dist:linux",
     "dist:cross-windows": "npm run sharp:windows && npm run dist:windows",
