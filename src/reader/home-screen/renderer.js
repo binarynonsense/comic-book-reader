@@ -49,11 +49,23 @@ function init() {
     preferencesButton.addEventListener("click", (event) => {
       sendIpcToMain("hs-open-preferences");
     });
-    // TODO: enable when preferences can be navigatedusing keys
+    // TODO: enable when preferences can be navigated using keys
     // preferencesButton.setAttribute("data-nav-panel", 0);
     // preferencesButton.setAttribute("data-nav-row", 0);
     // preferencesButton.setAttribute("data-nav-col", 1);
     // preferencesButton.setAttribute("tabindex", "0");
+    ///////////
+    const comicConverterButton = document.querySelector(
+      "#hs-logo-convert-comics-button"
+    );
+    comicConverterButton.addEventListener("click", (event) => {
+      sendIpcToMain("hs-open-convert-comics");
+    });
+    // TODO: enable when converter can be navigated using keys
+    // comicConverterButton.setAttribute("data-nav-panel", 0);
+    // comicConverterButton.setAttribute("data-nav-row", 0);
+    // comicConverterButton.setAttribute("data-nav-col", 2);
+    // comicConverterButton.setAttribute("tabindex", "0");
   }
 }
 
@@ -755,7 +767,8 @@ let g_cardLocalization;
 function updateLocalization(
   idsLocalization,
   cardLocalization,
-  preferencesTitle
+  preferencesTitle,
+  comicConverterTitle
 ) {
   // ids
   for (let index = 0; index < idsLocalization.length; index++) {
@@ -772,4 +785,9 @@ function updateLocalization(
     "#hs-logo-preferences-button"
   );
   preferencesButton.title = preferencesTitle;
+  // convert comics
+  const comicConverterButton = document.querySelector(
+    "#hs-logo-convert-comics-button"
+  );
+  comicConverterButton.title = comicConverterTitle;
 }

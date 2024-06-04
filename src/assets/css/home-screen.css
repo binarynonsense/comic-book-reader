@@ -64,7 +64,7 @@
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: 20px;
+  gap: 25px;
   margin-bottom: 25px;
 }
 
@@ -82,8 +82,8 @@
 
 #hs-logo-preferences-button {
   font-size: 20px;
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -106,9 +106,45 @@
   transform: translateY(1px);
 }
 
+/* *********************** */
+
+#hs-logo-convert-comics-button {
+  font-size: 20px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+#hs-logo-convert-comics-button i:last-child {
+  color: var(--hs-bg-color);
+  padding-bottom: 5px;
+}
+
+#hs-logo-convert-comics-button:hover {
+  filter: brightness(1.2);
+  cursor: pointer;
+}
+
+#hs-logo-convert-comics-button i {
+  transition: transform 0.2s ease-in-out;
+}
+#hs-logo-convert-comics-button:hover i {
+  transform: scale(1.2);
+}
+
+#hs-logo-convert-comics-button:active {
+  transform: translateY(1px);
+}
+
+/* *********************** */
+
 #hs-latest {
   padding-bottom: 45px;
 }
+
 /* *********************** */
 
 .hs-path-cards-list {

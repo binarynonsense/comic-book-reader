@@ -191,6 +191,10 @@ function initOnIpcCallbacks() {
     core.onMenuPreferences();
   });
 
+  on("hs-open-convert-comics", () => {
+    core.onMenuToolConvertComics();
+  });
+
   on("hs-open-file", (filePath) => {
     reader.tryOpen(filePath);
   });
@@ -371,7 +375,8 @@ function updateLocalizedText(sendFavsUpdate = true) {
     "hs-update-localization",
     getIdsLocalization(),
     getCardLocalization(),
-    _("menu-file-preferences")
+    _("menu-file-preferences"),
+    _("tool-cc-title")
   );
   log.debug("loading favorites");
   if (sendFavsUpdate) getFavoritesData();
