@@ -64,6 +64,8 @@ export function showNoBookContent(show) {
     document
       .querySelector("#pages-container")
       .classList.add("set-display-none");
+    document.querySelector("#home-screen").scrollTop = 0;
+    document.querySelector("#home-screen").scrollLeft = 0;
   } else {
     document
       .querySelector("#no-book-content")
