@@ -64,7 +64,7 @@
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: 25px;
+  gap: 30px;
   margin-bottom: 25px;
 }
 
@@ -82,8 +82,10 @@
 
 #hs-logo-preferences-button {
   font-size: 20px;
-  width: 40px;
-  height: 40px;
+  width: 30px;
+  height: 30px;
+  min-width: 30px;
+  min-height: 30px;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -110,20 +112,25 @@
 
 #hs-logo-convert-comics-button {
   font-size: 20px;
-  width: 40px;
-  height: 40px;
-  min-width: 40px;
-  min-height: 40px;
+  width: 30px;
+  height: 30px;
+  min-width: 30px;
+  min-height: 30px;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  padding-top: 5px;
+  /* padding-top: 5px; */
+}
+
+#hs-logo-convert-comics-button i {
+  transform: scale(0.9);
 }
 
 #hs-logo-convert-comics-button i:last-child {
   color: var(--hs-bg-color);
-  padding-bottom: 5px;
+  padding-top: 9px;
+  transform: scale(0.8);
 }
 
 #hs-logo-convert-comics-button:hover {
