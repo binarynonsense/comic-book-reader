@@ -785,6 +785,12 @@ export function onInputEvent(type, event) {
       }
       break;
 
+    case "acbr-middleclick":
+      {
+        inputOpenQuickMenu();
+      }
+      break;
+
     // mouse right click: document.oncontextmenu
 
     case "body.ondrop":

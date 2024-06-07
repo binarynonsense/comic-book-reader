@@ -441,6 +441,12 @@ export function onInputEvent(type, event) {
         onMouseMove(fileOpen);
       }
       break;
+
+    case "acbr-middleclick":
+      {
+        inputOpenQuickMenu();
+      }
+      break;
   }
 }
 

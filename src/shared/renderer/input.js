@@ -220,6 +220,12 @@ function initMouse() {
 
   document.addEventListener("mouseup", function (event) {
     g_isMouseDown = false;
+    console.log(event.button);
+    switch (event.button) {
+      case 1:
+        getCurrentTool().onInputEvent("acbr-middleclick");
+        break;
+    }
   });
 
   //mouseleave
