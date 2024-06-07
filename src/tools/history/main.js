@@ -33,7 +33,7 @@ exports.open = function (showFocus) {
   const data = fs.readFileSync(path.join(__dirname, "index.html"));
   sendIpcToCoreRenderer("replace-inner-html", "#tools", data.toString());
   updateLocalizedText();
-  sendIpcToRenderer("show", history.get(), showFocus);
+  sendIpcToRenderer("show", getHistory(), showFocus);
 };
 
 exports.close = function () {
@@ -55,6 +55,33 @@ exports.onToggleFullScreen = function () {
 
 function onCloseClicked() {
   tools.switchTool("reader");
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// TOOL ///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+function getHistory() {
+  let historyCopy = [...history.get()];
+  historyCopy.forEach((fileInfo) => {
+    if (fileInfo.data && fileInfo.data.source) {
+      fileInfo.isOnline = true;
+      if (fileInfo.data.name) {
+        fileInfo.fileName = fileInfo.data.name;
+      } else {
+        fileInfo.fileName = fileInfo.filePath;
+      }
+    } else {
+      fileInfo.fileName = path.basename(fileInfo.filePath);
+      if (fs.existsSync(fileInfo.filePath)) {
+        fileInfo.fileExists = true;
+        if (fs.lstatSync(fileInfo.filePath).isDirectory()) {
+          fileInfo.isDirectory = true;
+        }
+      }
+    }
+  });
+  return historyCopy;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -101,13 +128,13 @@ function initOnIpcCallbacks() {
   on("remove-all", () => {
     history.clear();
     reader.rebuildMenuAndToolBars();
-    sendIpcToRenderer("build-list", history.get());
+    sendIpcToRenderer("build-list", getHistory());
   });
 
   on("remove-item", (itemIndex) => {
     history.removeIndex(itemIndex);
     reader.rebuildMenuAndToolBars();
-    sendIpcToRenderer("build-list", history.get());
+    sendIpcToRenderer("build-list", getHistory());
   });
 
   on("open-item", (itemIndex) => {

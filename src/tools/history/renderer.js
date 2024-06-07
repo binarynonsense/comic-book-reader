@@ -134,26 +134,30 @@ function buildHistoryList(history) {
   ul.innerHTML = "";
   for (let index = history.length - 1; index >= 0; index--) {
     const fileInfo = history[index];
-    const fileName = fileInfo.filePath.replace(/^.*[\\/]/, "");
-    let name = reducePathString(fileInfo.filePath);
-    if (fileInfo.data && fileInfo.data.source) {
-      if (fileInfo.data.name) {
-        name = "[www] " + reducePathString(fileInfo.data.name);
-      } else {
-        name = "[www] " + name;
-      }
-    }
+    const fileName = fileInfo.fileName;
+    let name = reduceNameString(fileName);
     let li = document.createElement("li");
     li.className = "tools-buttons-list-li";
     let buttonSpan = document.createElement("span");
     buttonSpan.className = "tools-buttons-list-button";
-    buttonSpan.innerHTML = `<i class="fas fa-file fa-2x fa-fw"></i>`;
+    if (fileInfo.isOnline) {
+      buttonSpan.innerHTML = `<i class="fas fa-globe fa-2x fa-fw"></i>`;
+    } else if (fileInfo.fileExists) {
+      if (fileInfo.isDirectory) {
+        buttonSpan.innerHTML = `<i class="fas fa-images fa-2x fa-fw"></i>`;
+      } else {
+        buttonSpan.innerHTML = `<i class="fas fa-file fa-2x fa-fw"></i>`;
+      }
+    } else {
+      buttonSpan.innerHTML = `<i class="fas fa-question fa-2x fa-fw"></i>`;
+    }
+
     buttonSpan.title = g_localizedOpenFromListText;
     let multilineText = document.createElement("span");
     multilineText.className = "tools-buttons-list-li-multiline-text";
     {
       let text = document.createElement("span");
-      text.innerText = `${fileName}`;
+      text.innerText = `${name}`;
       multilineText.appendChild(text);
 
       text = document.createElement("span");
@@ -415,5 +419,11 @@ function reducePathString(input) {
     input.length > length
       ? "..." + input.substring(input.length - length, input.length)
       : input;
+  return input;
+}
+
+function reduceNameString(input) {
+  let length = 70;
+  input = input.length > length ? input.substring(0, length) + "..." : input;
   return input;
 }
