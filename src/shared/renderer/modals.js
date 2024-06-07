@@ -161,11 +161,10 @@ export function onInputEvent(modalDiv, type, event) {
     case "onkeydown":
       // input
       const inputElement = modalDiv.querySelector(".modal-input");
-      if (
+      const isInputElementFocused =
         !inputElement.classList.contains("set-display-none") &&
-        inputElement == document.activeElement &&
-        event.key == "Enter"
-      ) {
+        inputElement == document.activeElement;
+      if (isInputElementFocused && event.key == "Enter") {
         const buttons = modalDiv.querySelectorAll(".modal-button");
         buttons.forEach((button) => {
           const key = button.getAttribute("data-key");
@@ -178,6 +177,11 @@ export function onInputEvent(modalDiv, type, event) {
             button.click();
           }
         });
+      } else if (
+        isInputElementFocused &&
+        (event.key == "ArrowLeft" || event.key == "ArrowRight")
+      ) {
+        // just let input do its thing
       } else {
         const dir = document.documentElement.getAttribute("dir");
         const upPressed =
