@@ -676,8 +676,7 @@ export function onInputEvent(type, event) {
               event: event,
             })
           ) {
-            // TODO: only check edge if down this frame? like in gamepad
-            inputScrollPageDown();
+            inputScrollPageDown(!event.repeat);
             event.stopPropagation();
           } else if (
             input.isActionDown({
@@ -686,8 +685,7 @@ export function onInputEvent(type, event) {
               event: event,
             })
           ) {
-            // TODO: only check edge if down this frame? like in gamepad
-            inputScrollPageUp();
+            inputScrollPageUp(!event.repeat);
             event.stopPropagation();
           } else if (
             input.isActionDown({
