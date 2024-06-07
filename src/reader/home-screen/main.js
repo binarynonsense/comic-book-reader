@@ -191,6 +191,10 @@ function initOnIpcCallbacks() {
     core.onMenuPreferences();
   });
 
+  on("hs-open-history", () => {
+    core.onMenuOpenHistoryManager();
+  });
+
   on("hs-open-convert-comics", () => {
     core.onMenuToolConvertComics();
   });
@@ -376,6 +380,7 @@ function updateLocalizedText(sendFavsUpdate = true) {
     getIdsLocalization(),
     getCardLocalization(),
     _("menu-file-preferences"),
+    _("menu-file-openrecent-history"),
     _("tool-cc-title")
   );
   log.debug("loading favorites");

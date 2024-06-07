@@ -49,10 +49,18 @@ function init() {
     preferencesButton.addEventListener("click", (event) => {
       sendIpcToMain("hs-open-preferences");
     });
-    // TODO: enable when preferences can be navigated using keys
     // preferencesButton.setAttribute("data-nav-panel", 0);
     // preferencesButton.setAttribute("data-nav-row", 0);
     // preferencesButton.setAttribute("data-nav-col", 1);
+    // preferencesButton.setAttribute("tabindex", "0");
+    ///////////
+    const historyButton = document.querySelector("#hs-logo-history-button");
+    historyButton.addEventListener("click", (event) => {
+      sendIpcToMain("hs-open-history");
+    });
+    // preferencesButton.setAttribute("data-nav-panel", 0);
+    // preferencesButton.setAttribute("data-nav-row", 0);
+    // preferencesButton.setAttribute("data-nav-col", 2);
     // preferencesButton.setAttribute("tabindex", "0");
     ///////////
     const comicConverterButton = document.querySelector(
@@ -61,10 +69,9 @@ function init() {
     comicConverterButton.addEventListener("click", (event) => {
       sendIpcToMain("hs-open-convert-comics");
     });
-    // TODO: enable when converter can be navigated using keys
     // comicConverterButton.setAttribute("data-nav-panel", 0);
     // comicConverterButton.setAttribute("data-nav-row", 0);
-    // comicConverterButton.setAttribute("data-nav-col", 2);
+    // comicConverterButton.setAttribute("data-nav-col", 3);
     // comicConverterButton.setAttribute("tabindex", "0");
   }
 }
@@ -768,6 +775,7 @@ function updateLocalization(
   idsLocalization,
   cardLocalization,
   preferencesTitle,
+  historyTitle,
   comicConverterTitle
 ) {
   // ids
@@ -785,6 +793,9 @@ function updateLocalization(
     "#hs-logo-preferences-button"
   );
   preferencesButton.title = preferencesTitle;
+  // history
+  const historyButton = document.querySelector("#hs-logo-history-button");
+  historyButton.title = historyTitle;
   // convert comics
   const comicConverterButton = document.querySelector(
     "#hs-logo-convert-comics-button"
