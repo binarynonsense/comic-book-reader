@@ -134,6 +134,7 @@ function buildHistoryList(history) {
   ul.innerHTML = "";
   for (let index = history.length - 1; index >= 0; index--) {
     const fileInfo = history[index];
+    const fileName = fileInfo.filePath.replace(/^.*[\\/]/, "");
     let name = reducePathString(fileInfo.filePath);
     if (fileInfo.data && fileInfo.data.source) {
       if (fileInfo.data.name) {
@@ -148,9 +149,18 @@ function buildHistoryList(history) {
     buttonSpan.className = "tools-buttons-list-button";
     buttonSpan.innerHTML = `<i class="fas fa-file fa-2x fa-fw"></i>`;
     buttonSpan.title = g_localizedOpenFromListText;
-    let text = document.createElement("span");
-    text.innerText = `${name}`;
-    buttonSpan.appendChild(text);
+    let multilineText = document.createElement("span");
+    multilineText.className = "tools-buttons-list-li-multiline-text";
+    {
+      let text = document.createElement("span");
+      text.innerText = `${fileName}`;
+      multilineText.appendChild(text);
+
+      text = document.createElement("span");
+      text.innerHTML = fileInfo.filePath;
+      multilineText.appendChild(text);
+    }
+    buttonSpan.appendChild(multilineText);
     buttonSpan.addEventListener("click", (event) => {
       sendIpcToMain("open-item", index);
     });
@@ -187,6 +197,7 @@ function buildHistoryList(history) {
       li.className = "tools-buttons-list-li";
       let span = document.createElement("span");
       span.innerHTML = `&nbsp;&nbsp;`;
+      span.style.minHeight = "65px";
       li.appendChild(span);
       ul.appendChild(li);
     }

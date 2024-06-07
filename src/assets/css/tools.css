@@ -554,7 +554,7 @@ html[dir="rtl"] .tools-range-bubble {
   color: var(--tools-buttons-list-text-color);
   display: flex;
   flex-direction: row;
-  align-items: center;
+  /* align-items: center; */
   min-height: 45px;
 }
 .tools-buttons-list-li:last-child {
@@ -562,6 +562,22 @@ html[dir="rtl"] .tools-range-bubble {
 }
 .tools-buttons-list-li:nth-child(even) {
   background-color: var(--tools-buttons-list-bg2-color);
+}
+
+.tools-buttons-list-li-multiline-text {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 8px 0;
+}
+.tools-buttons-list-li-multiline-text span:first-child {
+  font-weight: bold;
+  font-size: 120%;
+}
+.tools-buttons-list-li-multiline-text span:last-child:not(:first-child) {
+  font-style: italic;
+  font-size: 80%;
+  word-break: break-all;
 }
 
 .tools-buttons-list-button {
