@@ -20,7 +20,9 @@ switch (process.argv[2]) {
 
 function updateLocalizationFiles(operation, languageId) {
   if (operation === "update") console.log("* update localization files *");
-  if (operation === "state") console.log("* check localization files' state *");
+  else if (operation === "state")
+    console.log("* check localization files' state *");
+
   if (languageId == undefined) {
     console.log("languageId parameter missing");
     return;
