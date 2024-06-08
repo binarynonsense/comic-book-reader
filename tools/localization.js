@@ -27,6 +27,7 @@ function updateLocalizationFiles(operation, languageId) {
     console.log("languageId parameter missing");
     return;
   }
+
   try {
     const englishData = JSON.parse(
       fs.readFileSync("./src/assets/i18n/en.json", "utf8")
