@@ -13,7 +13,7 @@ switch (process.argv[2]) {
   case "state":
     updateLocalizationFiles(process.argv[2], process.argv[3]);
     break;
-  case "license":
+  case "licenses":
     updateLicenseFile();
     break;
   default:

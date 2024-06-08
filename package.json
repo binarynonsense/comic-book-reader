@@ -44,7 +44,7 @@
     "7zbin:linux": "shx chmod +x node_modules/7zip-bin/linux/x64/7za",
     "extras:linux": "echo '#!/bin/bash\\nexport G_SLICE=always-malloc && ./acbr-comic-book-reader \"$@\"' > ./dist/linux-unpacked/ACBR.sh && shx chmod +x ./dist/linux-unpacked/ACBR.sh && echo '#!/bin/bash\\nexport G_SLICE=always-malloc && ./acbr-comic-book-reader.AppImage \"$@\"' > ./dist/ACBR.sh && shx chmod +x ./dist/ACBR.sh && echo ${npm_package_version} > ./dist/linux-unpacked/VERSION && echo ${npm_package_version} > ./dist/VERSION",
     "extras:windows": "echo %npm_package_version% > ./dist/win-unpacked/VERSION",
-    "licenses": "license-checker > licenses/node_modules.txt && shx sed -i 's/path.*node_modules/path: node_modules/' ./licenses/node_modules.txt && shx sed -i 's/licenseFile.*node_modules/licenseFile: node_modules/' ./licenses/node_modules.txt && npm run localization license",
+    "licenses": "license-checker > licenses/node_modules.txt && shx sed -i 's/path.*node_modules/path: node_modules/' ./licenses/node_modules.txt && shx sed -i 's/licenseFile.*node_modules/licenseFile: node_modules/' ./licenses/node_modules.txt && npm run localization licenses",
     "localization:update": "node ./tools/localization.js update all",
     "localization:state": "node ./tools/localization.js state all",
     "localization": "node ./tools/localization.js"
