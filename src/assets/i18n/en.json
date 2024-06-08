@@ -1,6 +1,8 @@
 {
   "@metadata": {
-    "authors": ["Álvaro"],
+    "authors": [
+      "Álvaro"
+    ],
     "last-updated": "2024-05-29",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.5.0-beta1",
@@ -11,7 +13,6 @@
     "native-name": "English",
     "direction": "ltr"
   },
-
   "menu-file": "File",
   "menu-file-open": "Open...",
   "menu-file-openrecent": "Open Recent",
@@ -26,9 +27,8 @@
   "menu-file-page-extract-text": "Extract Text",
   "menu-file-page-extract-palette": "Extract Color Palette",
   "menu-file-page-extract-qr": "Extract QR Code's Text",
-  "menu-file-preferences": "Preferences",  
+  "menu-file-preferences": "Preferences",
   "menu-file-quit": "Quit",
-
   "menu-view": "View",
   "menu-view-zoom": "Zoom",
   "menu-view-zoom-fitwidth": "Fit to Width",
@@ -65,7 +65,6 @@
   "menu-view-showclock": "Show Clock",
   "menu-view-showaudioplayer": "Show Audio Player",
   "menu-view-showbattery": "Show Battery",
-
   "menu-tools": "Tools",
   "menu-tools-convert": "Convert",
   "menu-tools-convert-comics": "Comic Books",
@@ -87,28 +86,24 @@
   "menu-tools-other-xkcd": "xkcd Webcomics",
   "menu-tools-other-librivox": "LibriVox AudioBooks",
   "menu-tools-other-wiktionary": "Wiktionary Dictionary",
-
   "menu-help": "Help",
   "menu-help-about": "About",
   "menu-help-devtools-toggle": "Toggle DevTools",
-
   "menu-shared-top-left": "Top Left",
   "menu-shared-top-center": "Top Center",
   "menu-shared-top-right": "Top Right",
   "menu-shared-bottom-left": "Bottom Left",
   "menu-shared-bottom-center": "Bottom Center",
   "menu-shared-bottom-right": "Bottom Right",
-
   "ctxmenu-copy": "Copy",
   "ctxmenu-paste": "Paste",
   "ctxmenu-select-all": "Select All",
   "ctxmenu-nextpage": "Next Page",
-  "ctxmenu-prevpage": "Previous Page",  
+  "ctxmenu-prevpage": "Previous Page",
   "ctxmenu-rotate": "Rotate",
   "ctxmenu-rotate-clockwise": "Clockwise",
   "ctxmenu-rotate-counterclockwise": "Counterclockwise",
   "ctxmenu-openfile": "Open File...",
-
   "toolbar-go-left": "Go Left",
   "toolbar-go-right": "Go Right",
   "toolbar-rotate-clockwise": "Rotate Clockwise",
@@ -116,7 +111,6 @@
   "toolbar-change-pagesdirection": "Change Pages Direction",
   "toolbar-change-pagesdirection-ltr": "Set Left to Right Pages Direction",
   "toolbar-change-pagesdirection-rtl": "Set Right to Left Pages Direction",
-
   "dialog-file-types-playlists": "Playlist Files",
   "dialog-file-types-audio-playlists": "Audio and Playlist Files",
   "dialog-file-types-comics": "Comic Files",
@@ -124,9 +118,7 @@
   "dialog-file-types-comics-books-images": "Comic, Book and Image Files",
   "dialog-file-types-images": "Image Files",
   "dialog-file-types-text": "Text Files",
-
   "ui-bg-msg": "To open a file use the menu or press <i>Ctrl+O</i>",
-
   "ui-modal-title-foldernotfound": "Folder Not Found",
   "ui-modal-title-filenotfound": "File Not Found",
   "ui-modal-title-foldererror": "Folder Error",
@@ -142,7 +134,7 @@
   "ui-modal-info-couldntopen-7z": "Couldn't open the 7Z file",
   "ui-modal-info-couldntopen-epub": "Couldn't open the EPUB file",
   "ui-modal-info-couldntopen-pdf": "Couldn't open the PDF file",
-  "ui-modal-info-couldntopen-imagesfolder-empty" : "Couldn't open the folder\nNo images found",
+  "ui-modal-info-couldntopen-imagesfolder-empty": "Couldn't open the folder\nNo images found",
   "ui-modal-info-imagesavedto": "Image file saved to",
   "ui-modal-info-errorexportingpage": "Error: Couldn't export the page",
   "ui-modal-info-version": "version",
@@ -167,8 +159,8 @@
   "ui-modal-info-metadata-security-encrypted": "Encrypted",
   "ui-modal-info-metadata-security-unencrypted": "Unencrypted",
   "ui-modal-info-metadata-format": "Format",
-  "ui-modal-info-metadata-comicinfoxml-included": "Included",  
-  "ui-modal-info-metadata-comicinfoxml-notincluded": "Not Included",  
+  "ui-modal-info-metadata-comicinfoxml-included": "Included",
+  "ui-modal-info-metadata-comicinfoxml-notincluded": "Not Included",
   "ui-modal-prompt-button-yes": "Yes",
   "ui-modal-prompt-button-no": "No",
   "ui-modal-prompt-button-ok": "Ok",
@@ -176,7 +168,7 @@
   "ui-modal-prompt-button-edit-name": "Edit Name",
   "ui-modal-prompt-button-edit-path": "Edit Path",
   "ui-modal-prompt-button-remove": "Remove",
-  "ui-modal-prompt-button-delete": "Delete",  
+  "ui-modal-prompt-button-delete": "Delete",
   "ui-modal-prompt-button-save": "Save",
   "ui-modal-prompt-button-open": "Open",
   "ui-modal-prompt-button-close-file": "Close File",
@@ -185,7 +177,7 @@
   "[NOTE TO TRANSLATORS]ui-modal-prompt-button-open-in-acbr-file-browser": "File Browser should be translated the same as in tool-fb-title",
   "ui-modal-prompt-button-open-in-acbr-file-browser": "Open in ACBR's File Browser",
   "ui-modal-prompt-button-open-in-system-file-browser": "Open in System's File Browser",
-  "ui-modal-prompt-button-open-in-reader": "Open in Reader",  
+  "ui-modal-prompt-button-open-in-reader": "Open in Reader",
   "ui-modal-prompt-button-cancel": "Cancel",
   "ui-modal-prompt-button-update": "Update",
   "ui-modal-prompt-button-edit-metadata": "Edit Metadata",
@@ -202,7 +194,6 @@
   "ui-modal-question-button-comicbook": "Comic Book",
   "ui-modal-question-button-ebook": "Ebook",
   "ui-modal-question-openrequestedfile": "Open File?",
-
   "ap-tooltip-button-play": "play",
   "ap-tooltip-button-pause": "pause",
   "ap-tooltip-button-next": "next track",
@@ -219,8 +210,7 @@
   "ap-tooltip-button-clear": "remove all from playlist",
   "ap-tooltip-button-add": "add files to playlist",
   "ap-tooltip-button-delete": "remove selected from playlist",
-  "ap-tooltip-button-save": "save playlist to file", 
-
+  "ap-tooltip-button-save": "save playlist to file",
   "tool-shared-ui-back-to-reader": "Back to Reader",
   "tool-shared-ui-back": "Back",
   "tool-shared-ui-tool": "Tool",
@@ -307,7 +297,6 @@
   "tool-shared-ui-direction-fromlanguage": "Infer from Selected Language",
   "tool-shared-ui-direction-ltr": "Left to Right",
   "tool-shared-ui-direction-rtl": "Right to Left",
-
   "tool-shared-tab-search": "Search",
   "tool-shared-tab-catalog": "Catalog",
   "tool-shared-tab-openurl": "Open Url",
@@ -315,7 +304,6 @@
   "tool-shared-tab-about": "About",
   "tool-shared-tab-settings": "Settings",
   "tool-shared-tab-search-settings": "Search Settings",
-
   "tool-shared-modal-title-warning": "Warning",
   "tool-shared-modal-title-info": "Info",
   "tool-shared-modal-title-alert": "Alert",
@@ -338,7 +326,6 @@
   "tool-shared-modal-title-creation-finished": "Creation Finished",
   "tool-shared-modal-title-creation-canceled": "Creation Canceled",
   "tool-shared-modal-title-creation-failed": "Creation Failed",
-
   "tool-shared-modal-info-conversion-success-num-files": "{0} file/s correctly converted",
   "tool-shared-modal-info-conversion-results": "Converted: {0} | Errors: {1} | Canceled: {2}",
   "tool-shared-modal-info-conversion-error-num-files": "Error: {0} of {1} file/s couldn't be converted",
@@ -349,7 +336,6 @@
   "tool-shared-modal-info-creation-results": "Added: {0} | Errors: {1} | Canceled: {2}",
   "tool-shared-modal-info-creation-error-num-files": "Error: {0} of {1} file/s couldn't be added",
   "tool-shared-modal-info-change-needs-restart": "The program needs to be restarted for this change to take effect",
-
   "tool-shared-modal-log-extracting-pages": "Extracting Pages",
   "tool-shared-modal-log-extracting-page": "Extracting Page",
   "tool-shared-modal-log-page-to-compatible-format": "Converting Page {0} to a Compatible Format (jpg)",
@@ -368,7 +354,6 @@
   "tool-shared-modal-log-extraction-canceled": "Couldn't extract the file, the extraction was canceled",
   "tool-shared-modal-log-creation-error": "Couldn't create the file, an error ocurred",
   "tool-shared-modal-log-creation-canceled": "Couldn't create the file, the creation was canceled",
-
   "tool-shared-tooltip-output-scale": "The size of the pages will be reduced to this percentage of the originals.",
   "tool-shared-tooltip-output-folder": "If a file with the same name already exists in the folder, a subfix will be added to the converted file's name so nothing is overwritten.",
   "tool-shared-tooltip-output-page-order": "Only used if the input files are all images, otherwise they will be processed in the order they are listed.",
@@ -380,10 +365,9 @@
   "tool-shared-tooltip-move-right-in-list": "Move Right",
   "tool-shared-tooltip-move-forward-in-list": "Move Forward",
   "tool-shared-tooltip-move-backward-in-list": "Move Backward",
-
   "tool-pre-title": "Preferences",
-  "tool-pre-all": "All Preferences",  
-  "tool-pre-appearance": "Appearance",  
+  "tool-pre-all": "All Preferences",
+  "tool-pre-appearance": "Appearance",
   "tool-pre-ui": "User Interface",
   "tool-pre-file-formats": "File Formats",
   "tool-pre-text-colors": "Text and Colors",
@@ -420,7 +404,7 @@
   "tool-pre-mouse": "Mouse",
   "tool-pre-keyboard": "Keyboard",
   "tool-pre-gamepad": "Gamepad",
-  "tool-pre-mouse-keyboard": "Mouse and Keyboard",  
+  "tool-pre-mouse-keyboard": "Mouse and Keyboard",
   "tool-pre-hotspots": "Mouse Click Hotspots",
   "tool-pre-hotspots-disabled": "Disabled",
   "[NOTE TO TRANSLATORS]tool-pre-hotspots-Xcolumns": "{0}, {1}... will be replaced in code with that column's use text, for example '2 Columns: Go Left | Go Right' when {0} is fetched from 'toolbar-go-left' and {1} from 'toolbar-go-right'",
@@ -436,7 +420,7 @@
   "tool-pre-autoopen-nextandprev": "Next and Previous Files",
   "tool-pre-page-turn": "Automatic Page Turn",
   "tool-pre-page-turn-default": "Disabled",
-  "tool-pre-page-turn-onscroll": "On scroll boundaries",  
+  "tool-pre-page-turn-onscroll": "On scroll boundaries",
   "tool-pre-formats-library-reading": "Reading Library",
   "tool-pre-formats-library-extraction": "Extraction Library",
   "tool-pre-formats-library-compression": "Compression Library",
@@ -494,17 +478,14 @@
   "tool-pre-advanced-preferences": "Advanced",
   "tool-pre-other-preferences": "Other",
   "tool-pre-tempfolder": "Temp Folder",
-
-  "tool-hst-title": "History",  
+  "tool-hst-title": "History",
   "tool-hst-button-clear-all": "Clear History",
   "tool-hst-tooltip-remove-from-list": "remove from history",
   "tool-hst-tooltip-open-from-list": "open file",
   "tool-hst-modal-clearall-message": "Are you sure you want to delete all the entries in your history?",
-
   "tool-cc-title": "Convert Files Tool",
   "tool-cr-title": "Create File Tool",
   "tool-ci-title": "Convert Images Tool",
-
   "tool-et-title": "Extract Text Tool",
   "tool-et-header-input-file": "Input Image",
   "tool-et-header-output-text": "Output Text",
@@ -514,11 +495,9 @@
   "tool-et-header-language": "Language",
   "tool-et-span-language-checkbox-info": "Include languages that require an internet connection to work",
   "tool-et-modal-info": "",
-
   "tool-ec-title": "Extract Pages Tool",
   "tool-ec-modal-log-extracting-to": "To",
   "tool-ec-tooltip-output-folder": "Inside the provided folder, a subfolder with the same name as the file to be extracted will be created to store the images. If a subfolder with the same name already exists, a subfix will be added to the name so nothing is overwritten.",
-
   "tool-ep-title": "Extract Palette Tool",
   "tool-ep-header-input-file": "Input Image",
   "tool-ep-header-output-palette": "Output Palette",
@@ -531,12 +510,10 @@
   "tool-ep-distance-deltae-threshold": "Delta E Threshold",
   "tool-ep-modal-title-exported": "Palette File Created",
   "tool-ep-modal-title-exporting-error": "Error: Could NOT Create the File",
-
-  "tool-eq-title": "Extract QR Code's Text Tool",  
+  "tool-eq-title": "Extract QR Code's Text Tool",
   "tool-eq-modal-alert-title-errorextracting": "ERROR: Could NOT Extract the Text",
   "tool-eq-modal-alert-msg-errornodatafound": "QR code not found",
-
-  "tool-cq-title": "Create QR Code Tool",  
+  "tool-cq-title": "Create QR Code Tool",
   "tool-cq-header-input-text": "Input Text",
   "tool-cq-header-output-text": "Output Image",
   "tool-cq-button-clear": "Clear Text",
@@ -546,8 +523,7 @@
   "tool-cq-modal-alert-msg-toomuchdata": "The text is too long to be stored in a QR Code",
   "tool-cq-modal-alert-title-successexporting": "QR Code Image File Created",
   "tool-cq-modal-alert-title-errorexporting": "ERROR: Could NOT Save the Image",
-
-  "tool-dcm-title": "Digital Comic Museum",  
+  "tool-dcm-title": "Digital Comic Museum",
   "tool-dcm-publishers-text": "Publishers",
   "tool-dcm-titles-text": "Titles",
   "tool-dcm-comics-text": "Comic Books",
@@ -557,16 +533,14 @@
   "tool-dcm-select-publisher-text": "Select a Publisher",
   "tool-dcm-select-title-text": "Select a Title",
   "tool-dcm-select-comic-text": "Select a Comic Book",
-
   "tool-iab-title": "Internet Archive Books",
-  "tool-iab-options-collections-text": "Collections",  
+  "tool-iab-options-collections-text": "Collections",
   "tool-iab-collection-any": "Any",
-  "tool-iab-options-availability-text": "Availability", 
+  "tool-iab-options-availability-text": "Availability",
   "tool-iab-availability-always": "Always Available",
   "tool-iab-availability-any": "Any (Things May Break)",
   "tool-iab-button-open-ia-browser": "Open Internet Archive In Browser",
   "tool-iab-button-open-donate-browser": "Open Donation Site In Browser",
-
   "tool-gut-title": "Project Gutenberg",
   "tool-gut-text-url": "Ebook's Url",
   "tool-gut-text-options-mirrors": "Download From",
@@ -576,23 +550,17 @@
   "tool-gut-button-options-open-cache-folder": "Open Cache Folder",
   "tool-gut-button-open-pg-browser": "Open Project Gutenberg In Browser",
   "tool-gut-button-open-donate-browser": "Open Donation Site In Browser",
-
   "tool-xkcd-title": "xkcd Webcomics",
   "tool-xkcd-text-catalog-number": "Webcomic Number",
   "tool-xkcd-select-catalog-number-default": "Select a Number",
   "tool-xkcd-button-open-website-browser": "Open xkcd In Browser",
-
   "tool-lvx-title": "LibriVox AudioBooks",
   "tool-lvx-button-open-lvx-browser": "Open LibriVox In Browser",
-
   "tool-wik-title": "Wiktionary Dictionary",
   "tool-wik-button-open-wik-browser": "Open Wiktionary In Browser",
-
   "tool-mc-title": "Merge Files Tool",
-
   "tool-sc-title": "Split Files Tool",
   "tool-sc-number": "Number of Files to Split Into",
-
   "tool-cix-title": "ComicInfo.xml Editor",
   "tool-cix-warning-save-update": "This will update the contents of the ComicInfo.xml file inside the comic book with the new data",
   "tool-cix-warning-save-create": "This will create a ComicInfo.xml file inside the comic book containing the supplied data",
@@ -609,7 +577,6 @@
   "tool-cix-section-creators": "Creators",
   "tool-cix-section-pages": "Pages",
   "tool-cix-section-other-data": "Other",
-
   "[NOTE TO TRANSLATORS cix1]": "Leave the tool-cix-data- entries in English if it's too much work. Only a few people will probably use this particular tool.",
   "[NOTE TO TRANSLATORS cix2]": "reference about some of the texts' meaning/context: https://github.com/binarynonsense/comic-book-reader/blob/master/src/assets/xml/comicinfo/schema/DOCUMENTATION.md",
   "tool-cix-data-title": "Title",
@@ -676,7 +643,6 @@
   "tool-cix-data-page-type-backCover": "Back Cover",
   "tool-cix-data-page-type-other": "Other",
   "tool-cix-data-page-type-deleted": "Deleted",
-
   "tool-cix-search-placeholder-series": "Enter a comic book series name",
   "tool-cix-search-error-invalid-api-key": "Invalid API Key",
   "tool-cix-search-import-warning": "The selected information will be matched to the appropriate metadata fields and their content replaced with it.",
@@ -685,7 +651,6 @@
   "tool-cix-search-api-key-file-path": "API Key File",
   "tool-cix-search-api-key-file-path-info": "A text file containing a valid API key for {0}",
   "tool-cix-search-api-key-not-found": "A text file containing a valid API key for {0} must be assigned in the search settings.",
-
   "tool-fb-title": "File Browser",
   "[NOTE TO TRANSLATORS fb1]": "Places refers to locations/folders like Home, Desktop, Downloads... Home refers to the User's home directory",
   "tool-fb-shortcuts-places": "Places",
@@ -702,7 +667,6 @@
   "tool-fb-browse-back": "Back",
   "tool-fb-browse-parent": "Parent Folder",
   "tool-fb-browse-previous": "Previous Folder",
-
   "home-screen": "Home Screen",
   "home-screen-favorites": "Favorites",
   "home-screen-favorite-folders": "Favorite Folders",

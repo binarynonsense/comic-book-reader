@@ -1,6 +1,8 @@
 {
   "@metadata": {
-    "authors": ["vanja-san"],
+    "authors": [
+      "vanja-san"
+    ],
     "last-updated": "2024-05-29",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.5.0-beta1",
@@ -11,7 +13,6 @@
     "native-name": "Русский",
     "direction": "ltr"
   },
-
   "menu-file": "Файл",
   "menu-file-open": "Открыть...",
   "menu-file-openrecent": "Открыть последнее",
@@ -22,13 +23,12 @@
   "menu-file-extract": "Извлечь",
   "menu-file-properties": "Свойства",
   "menu-file-page": "Страница",
-  "menu-file-page-export": "Экспорт...",  
+  "menu-file-page-export": "Экспорт...",
   "menu-file-page-extract-text": "Извлечь текст",
   "menu-file-page-extract-palette": "Извлечь цветовую палитру",
   "menu-file-page-extract-qr": "Извлечь текст QR-кода",
-  "menu-file-preferences": "Настройки",  
+  "menu-file-preferences": "Настройки",
   "menu-file-quit": "Выход",
-
   "menu-view": "Вид",
   "menu-view-zoom": "Масштаб",
   "menu-view-zoom-fitwidth": "Подогнать по ширине",
@@ -65,7 +65,6 @@
   "menu-view-showclock": "Отображать часы",
   "menu-view-showaudioplayer": "Отображать аудиоплеер",
   "menu-view-showbattery": "Отображать батарею",
-
   "menu-tools": "Инструменты",
   "menu-tools-convert": "Конвертировать",
   "menu-tools-convert-comics": "Комиксы",
@@ -87,18 +86,15 @@
   "menu-tools-other-xkcd": "Веб-комиксы xkcd",
   "menu-tools-other-librivox": "Аудиокниги LibriVox",
   "menu-tools-other-wiktionary": "Викисловарь",
-
   "menu-help": "Справка",
-  "menu-help-about": "О программе", 
+  "menu-help-about": "О программе",
   "menu-help-devtools-toggle": "Переключить режим разработчика",
-
   "menu-shared-top-left": "Сверху слева",
   "menu-shared-top-center": "Сверху по центру",
   "menu-shared-top-right": "Сверху справа",
   "menu-shared-bottom-left": "Снизу слева",
   "menu-shared-bottom-center": "Снизу по центру",
   "menu-shared-bottom-right": "Снизу справа",
-
   "ctxmenu-copy": "Копировать",
   "ctxmenu-paste": "Вставить",
   "ctxmenu-select-all": "Выделить все",
@@ -108,7 +104,6 @@
   "ctxmenu-rotate-clockwise": "По часовой стрелке",
   "ctxmenu-rotate-counterclockwise": "Против часовой стрелки",
   "ctxmenu-openfile": "Открыть файл...",
-
   "toolbar-go-left": "Перейти влево",
   "toolbar-go-right": "Перейти вправо",
   "toolbar-rotate-clockwise": "Повернуть по часовой стрелке",
@@ -116,7 +111,6 @@
   "toolbar-change-pagesdirection": "Изменить направление страниц",
   "toolbar-change-pagesdirection-ltr": "Установить направление страниц слева направо",
   "toolbar-change-pagesdirection-rtl": "Установить направление страниц справа налево",
-
   "dialog-file-types-playlists": "Файлы плейлистов",
   "dialog-file-types-audio-playlists": "Файлы аудио и плейлистов",
   "dialog-file-types-comics": "Файлы комиксов",
@@ -124,9 +118,7 @@
   "dialog-file-types-comics-books-images": "Файлы комиксов, книг и изображений",
   "dialog-file-types-images": "Файлы изображений",
   "dialog-file-types-text": "Текстовые файлы",
-
   "ui-bg-msg": "Чтобы открыть файл, воспользуйтесь меню или нажмите <i>Ctrl+O</i>",
-
   "ui-modal-title-foldernotfound": "Папка не найдена",
   "ui-modal-title-filenotfound": "Файл не найден",
   "ui-modal-title-foldererror": "Ошибка папки",
@@ -142,7 +134,7 @@
   "ui-modal-info-couldntopen-7z": "Не удалось открыть Файл 7Z",
   "ui-modal-info-couldntopen-epub": "Не удалось открыть файл EPUB",
   "ui-modal-info-couldntopen-pdf": "Не удалось открыть файл PDF",
-  "ui-modal-info-couldntopen-imagesfolder-empty" : "Не удалось открыть папку\nИзображения не найдены",
+  "ui-modal-info-couldntopen-imagesfolder-empty": "Не удалось открыть папку\nИзображения не найдены",
   "ui-modal-info-imagesavedto": "Файл изображения сохранён в",
   "ui-modal-info-errorexportingpage": "Ошибка: Не удалось экспортировать страницу",
   "ui-modal-info-version": "Версия",
@@ -167,8 +159,8 @@
   "ui-modal-info-metadata-security-encrypted": "Зашифрованно",
   "ui-modal-info-metadata-security-unencrypted": "Незашифрованно",
   "ui-modal-info-metadata-format": "Формат",
-  "ui-modal-info-metadata-comicinfoxml-included": "Включено",  
-  "ui-modal-info-metadata-comicinfoxml-notincluded": "Не включено",  
+  "ui-modal-info-metadata-comicinfoxml-included": "Включено",
+  "ui-modal-info-metadata-comicinfoxml-notincluded": "Не включено",
   "ui-modal-prompt-button-yes": "Да",
   "ui-modal-prompt-button-no": "Нет",
   "ui-modal-prompt-button-ok": "Ok",
@@ -202,7 +194,6 @@
   "ui-modal-question-button-comicbook": "Комикс",
   "ui-modal-question-button-ebook": "Ebook",
   "ui-modal-question-openrequestedfile": "Открыть файл?",
-
   "ap-tooltip-button-play": "Воспроизвести",
   "ap-tooltip-button-pause": "Приостановить",
   "ap-tooltip-button-next": "Следующий",
@@ -219,8 +210,7 @@
   "ap-tooltip-button-clear": "Очистить плейлист",
   "ap-tooltip-button-add": "Добавить файлы в плейлист",
   "ap-tooltip-button-delete": "Удалить выбранное из плейлиста",
-  "ap-tooltip-button-save": "Сохранить плейлист в файл", 
-
+  "ap-tooltip-button-save": "Сохранить плейлист в файл",
   "tool-shared-ui-back-to-reader": "Назад в ридер",
   "tool-shared-ui-back": "Назад",
   "tool-shared-ui-tool": "Инструмент",
@@ -269,18 +259,18 @@
   "tool-shared-ui-choose": "Обзор",
   "tool-shared-ui-select": "Выбрать",
   "tool-shared-ui-save-as-relative-path": "Сохранить как относительный путь",
-  "tool-shared-ui-pdf-extraction" : "Извлечение PDF",
-  "tool-shared-ui-pdf-extraction-tooltip" : "Похоже, что в большинстве PDF-файлов размер пользовательского блока по умолчанию равен 1 (72 точек на дюйм) независимо от их содержимого, поэтому встроенные изображения страниц комиксов могут быть больше заявленного размера страницы. Этот инструмент включает в себя три метода определения того, какой dpi он использует для вычисления разрешения отображаемой страницы: вы можете позволить инструменту попытаться найти dpi / размер по встроенному изображению или задать значение вручную (72 или 300).",
+  "tool-shared-ui-pdf-extraction": "Извлечение PDF",
+  "tool-shared-ui-pdf-extraction-tooltip": "Похоже, что в большинстве PDF-файлов размер пользовательского блока по умолчанию равен 1 (72 точек на дюйм) независимо от их содержимого, поэтому встроенные изображения страниц комиксов могут быть больше заявленного размера страницы. Этот инструмент включает в себя три метода определения того, какой dpi он использует для вычисления разрешения отображаемой страницы: вы можете позволить инструменту попытаться найти dpi / размер по встроенному изображению или задать значение вручную (72 или 300).",
   "tool-shared-ui-pdf-extraction-o1": "Использовать информацию о встроенном изображении, если это возможно, 300 dpi, если нет",
-  "tool-shared-ui-pdf-extraction-o2" : "Использовать 300 dpi",
-  "tool-shared-ui-pdf-extraction-o3" : "Использовать 72 dpi",
+  "tool-shared-ui-pdf-extraction-o2": "Использовать 300 dpi",
+  "tool-shared-ui-pdf-extraction-o3": "Использовать 72 dpi",
   "tool-shared-ui-creation-password": "Пароль",
   "tool-shared-ui-creation-password-tooltip": "Указанный пароль будет использоваться для шифрования файла/ов, если выходной формат относится к числу поддерживающих этот параметр ({0}). Если оставить пароль пустым, то файл/ы не будут зашифрованы.",
-  "tool-shared-ui-pdf-creation" : "Создание PDF",
-  "tool-shared-ui-pdf-creation-tooltip" : "Данные/разрешение встроенного изображения останутся нетронутыми. Эта опция просто изменяет значение 'размера страницы' (в пунктах), сохранённое в новом PDF, принимая значение пользовательского блока равным 1 (72 dpi), основанное на выбранном значении dpi входных данных.",
-  "tool-shared-ui-pdf-creation-o1" : "Использовать dpi изображения, если оно доступно, 300dpi, если нет",
-  "tool-shared-ui-pdf-creation-o2" : "Использовать 300 dpi",
-  "tool-shared-ui-pdf-creation-o3" : "Использовать 72 dpi",
+  "tool-shared-ui-pdf-creation": "Создание PDF",
+  "tool-shared-ui-pdf-creation-tooltip": "Данные/разрешение встроенного изображения останутся нетронутыми. Эта опция просто изменяет значение 'размера страницы' (в пунктах), сохранённое в новом PDF, принимая значение пользовательского блока равным 1 (72 dpi), основанное на выбранном значении dpi входных данных.",
+  "tool-shared-ui-pdf-creation-o1": "Использовать dpi изображения, если оно доступно, 300dpi, если нет",
+  "tool-shared-ui-pdf-creation-o2": "Использовать 300 dpi",
+  "tool-shared-ui-pdf-creation-o3": "Использовать 72 dpi",
   "tool-shared-ui-epub-creation": "Создание EPUB",
   "tool-shared-ui-epub-creation-image-format-o1": "оставить выбранный формат изображения",
   "tool-shared-ui-epub-creation-image-format-o2": "конвертировать изображения в поддерживаемый формат (EPUB 3 Core Media Types) при необходимости",
@@ -307,7 +297,6 @@
   "tool-shared-ui-direction-fromlanguage": "Вывод на основе выбранного языка",
   "tool-shared-ui-direction-ltr": "Слева направо",
   "tool-shared-ui-direction-rtl": "Справа налево",
-
   "tool-shared-tab-search": "Поиск",
   "tool-shared-tab-catalog": "Каталог",
   "tool-shared-tab-openurl": "Открыть ссылку",
@@ -315,7 +304,6 @@
   "tool-shared-tab-about": "Об этом инструменте",
   "tool-shared-tab-settings": "Настройки",
   "tool-shared-tab-search-settings": "Настройки поиска",
-
   "tool-shared-modal-title-warning": "Предупреждение",
   "tool-shared-modal-title-info": "Информация",
   "tool-shared-modal-title-alert": "Оповещение",
@@ -338,7 +326,6 @@
   "tool-shared-modal-title-creation-finished": "Создание завершено",
   "tool-shared-modal-title-creation-canceled": "Создание отменено",
   "tool-shared-modal-title-creation-failed": "Не удалось создать",
-
   "tool-shared-modal-info-conversion-success-num-files": "{0} файла(ов) успешно конвертировано",
   "tool-shared-modal-info-conversion-results": "Конвертированно: {0} | Ошибок: {1} | Отменено: {2}",
   "tool-shared-modal-info-conversion-error-num-files": "Ошибка: Не удалось конвертировать {0} из {1} файла(ов)",
@@ -349,7 +336,6 @@
   "tool-shared-modal-info-creation-results": "Добавлено: {0} | Ошибок: {1} | Отменено: {2}",
   "tool-shared-modal-info-creation-error-num-files": "Ошибка: Не удалось добавить {0} из {1} файла(ов)",
   "tool-shared-modal-info-change-needs-restart": "Чтобы изменения вступили в силу, программу необходимо перезапустить",
-
   "tool-shared-modal-log-extracting-pages": "Извлечение страниц",
   "tool-shared-modal-log-extracting-page": "Извлечение страницы",
   "tool-shared-modal-log-page-to-compatible-format": "Конвертирование страницы {0} в совместимый формат (jpg)",
@@ -359,7 +345,7 @@
   "tool-shared-modal-log-generating-new-file": "Генерация нового файла",
   "tool-shared-modal-log-generating-new-files": "Создание новых файлов",
   "tool-shared-modal-log-converting-images": "Конвертирование изображений",
-  "tool-shared-modal-log-converting-image": "Конвертирование изображения", 
+  "tool-shared-modal-log-converting-image": "Конвертирование изображения",
   "tool-shared-modal-log-updating-comicinfoxml": "Обновление ComicInfo.xml",
   "tool-shared-modal-log-warning-comicinfoxml": "Внимание: не удалось обновить содержимое ComicInfo.xml.",
   "tool-shared-modal-log-conversion-error": "Не удалось конвертировать файл, произошла ошибка",
@@ -368,7 +354,6 @@
   "tool-shared-modal-log-extraction-canceled": "Не удалось извлечь файл, извлечение было отменено",
   "tool-shared-modal-log-creation-error": "Не удалось создать файл, возникла ошибка",
   "tool-shared-modal-log-creation-canceled": "Не удалось создать файл, создание было отменено",
-
   "tool-shared-tooltip-output-scale": "Размер страниц будет уменьшен до этого процента от размера оригинала.",
   "tool-shared-tooltip-output-folder": "Если в папке уже существует файл с таким названием, то к названию конвертированного файла будет добавлен подфикс, чтобы не произошло перезаписи.",
   "tool-shared-tooltip-output-page-order": "Используется только в том случае, если все входные файлы являются изображениями, в противном случае они будут обрабатываться в том порядке, в котором они перечислены.",
@@ -380,7 +365,6 @@
   "tool-shared-tooltip-move-right-in-list": "Переместить вправо",
   "tool-shared-tooltip-move-forward-in-list": "Переместить следующий",
   "tool-shared-tooltip-move-backward-in-list": "Переместить предыдущий",
-
   "tool-pre-title": "Настройки",
   "tool-pre-all": "Все настройки",
   "tool-pre-appearance": "Внешний вид",
@@ -406,7 +390,7 @@
   "tool-pre-layout-clock": "Часы",
   "tool-pre-layout-pagenum": "Номер страницы",
   "tool-pre-layout-audioplayer": "Аудиоплеер",
-  "tool-pre-layout-battery": "Батарея",  
+  "tool-pre-layout-battery": "Батарея",
   "tool-pre-loading": "Индикатор загрузки",
   "tool-pre-loading-bg": "Фон",
   "tool-pre-loading-bg-0": "Прозрачный",
@@ -436,11 +420,11 @@
   "tool-pre-autoopen-nextandprev": "Следующий и предыдущий файлы",
   "tool-pre-page-turn": "Автоперелистывание страниц",
   "tool-pre-page-turn-default": "Отключено",
-  "tool-pre-page-turn-onscroll": "На границах прокрутки", 
+  "tool-pre-page-turn-onscroll": "На границах прокрутки",
   "tool-pre-formats-library-reading": "Чтение библиотеки",
   "tool-pre-formats-library-extraction": "Извлечение библиотеки",
   "tool-pre-formats-library-compression": "Сжатие библиотеки",
-  "tool-pre-formats-library-value-default": "Библиотека по умолчанию", 
+  "tool-pre-formats-library-value-default": "Библиотека по умолчанию",
   "tool-pre-epub": "EPUB",
   "tool-pre-epub-openas": "Открыть как",
   "tool-pre-epub-openas-0": "Спросить и запомнить",
@@ -494,17 +478,14 @@
   "tool-pre-advanced-preferences": "Дополнительно",
   "tool-pre-other-preferences": "Другое",
   "tool-pre-tempfolder": "Папка Temp",
-
-  "tool-hst-title": "История",  
+  "tool-hst-title": "История",
   "tool-hst-button-clear-all": "Очистить историю",
   "tool-hst-tooltip-remove-from-list": "Удалить из истории",
   "tool-hst-tooltip-open-from-list": "Открыть файл",
   "tool-hst-modal-clearall-message": "Действительно удалить все записи из истории?",
-
   "tool-cc-title": "Инструмент конвертирования файлов",
   "tool-cr-title": "Инструмент создания файла",
   "tool-ci-title": "Инструмент конвертирования изображений",
-
   "tool-et-title": "Инструмент извлечения текста",
   "tool-et-header-input-file": "Входное изображение",
   "tool-et-header-output-text": "Выходной текст",
@@ -512,13 +493,11 @@
   "tool-et-button-copy-text": "Копировать текст",
   "tool-et-button-extract-text": "Извлечь текст",
   "tool-et-header-language": "Язык",
-  "tool-et-span-language-checkbox-info": "Включение языков, для работы которых требуется подключение к интернету",  
+  "tool-et-span-language-checkbox-info": "Включение языков, для работы которых требуется подключение к интернету",
   "tool-et-modal-info": "",
-
   "tool-ec-title": "Инструмент извлечения страниц",
   "tool-ec-modal-log-extracting-to": "в",
   "tool-ec-tooltip-output-folder": "Внутри указанной папки для хранения изображений будет создана вложенная папка с тем же именем, что и извлекаемый файл. Если вложенная папка с таким же именем уже существует, к имени будет добавлен субфикс, чтобы ничего не было перезаписано.",
-
   "tool-ep-title": "Инструмент извлечения палитры",
   "tool-ep-header-input-file": "Входное изображение",
   "tool-ep-header-output-palette": "Выходная палитра",
@@ -531,23 +510,20 @@
   "tool-ep-distance-deltae-threshold": "Порог дельта Е",
   "tool-ep-modal-title-exported": "Файл палитры создан",
   "tool-ep-modal-title-exporting-error": "Ошибка: НЕ удалось создать файл",
-
   "tool-eq-title": "Инструмент для извлечения текста QR-кода",
   "tool-eq-modal-alert-title-errorextracting": "ОШИБКА: НЕ удалось извлечь текст",
   "tool-eq-modal-alert-msg-errornodatafound": "QR-код не найден",
-
-  "tool-cq-title": "Инструмент для создания QR-кода",  
+  "tool-cq-title": "Инструмент для создания QR-кода",
   "tool-cq-header-input-text": "Входной текст",
   "tool-cq-header-output-text": "Выходное изображение",
   "tool-cq-button-clear": "Очистить текст",
   "tool-cq-button-export": "Сохранить изображение в",
-  "tool-et-button-start": "Создать код",
+  "[NEEDS TRANSLATION]tool-cq-button-start": "Create Code",
   "tool-cq-modal-alert-title-errorcreating": "ОШИБКА: НЕ удалось создать код",
   "tool-cq-modal-alert-msg-toomuchdata": "Текст слишком длинный, чтобы его можно было сохранить в QR-коде",
   "tool-cq-modal-alert-title-successexporting": "Файл изображения QR-кода создан",
   "tool-cq-modal-alert-title-errorexporting": "ОШИБКА: НЕ удалось сохранить изображение",
-
-  "tool-dcm-title": "Digital Comic Museum", 
+  "tool-dcm-title": "Digital Comic Museum",
   "tool-dcm-publishers-text": "Издательство",
   "tool-dcm-titles-text": "Названия",
   "tool-dcm-comics-text": "Комиксы",
@@ -557,16 +533,14 @@
   "tool-dcm-select-publisher-text": "Выбрать издателя",
   "tool-dcm-select-title-text": "Выбрать название",
   "tool-dcm-select-comic-text": "Выбрать комикс",
-
   "tool-iab-title": "Internet Archive Books",
-  "tool-iab-options-collections-text": "Коллекции",  
+  "tool-iab-options-collections-text": "Коллекции",
   "tool-iab-collection-any": "Любая",
-  "tool-iab-options-availability-text": "Доступность", 
+  "tool-iab-options-availability-text": "Доступность",
   "tool-iab-availability-always": "Всегда в наличии",
   "tool-iab-availability-any": "Любая (Что-то может сломаться)",
   "tool-iab-button-open-ia-browser": "Открыть Internet Archive в браузере",
   "tool-iab-button-open-donate-browser": "Открыть сайт пожертвования в браузере",
-
   "tool-gut-title": "Project Gutenberg",
   "tool-gut-text-url": "Ссылка на Ebook",
   "tool-gut-text-options-mirrors": "Скачать",
@@ -576,23 +550,17 @@
   "tool-gut-button-options-open-cache-folder": "Открыть папку кэша",
   "tool-gut-button-open-pg-browser": "Открыть Project Gutenberg в браузере",
   "tool-gut-button-open-donate-browser": "Открыть сайт пожертвования в браузере",
-
   "tool-xkcd-title": "Веб-комиксы xkcd",
   "tool-xkcd-text-catalog-number": "Номер веб-комикса",
   "tool-xkcd-select-catalog-number-default": "Выберите номер",
   "tool-xkcd-button-open-website-browser": "Открыть xkcd в браузере",
-
   "tool-lvx-title": "Аудиокниги LibriVox",
   "tool-lvx-button-open-lvx-browser": "Открыть LibriVox в браузере",
-
   "tool-wik-title": "Викисловарь",
   "tool-wik-button-open-wik-browser": "Открыть Викисловарь в браузере",
-
   "tool-mc-title": "Инструмент для слияния файлов",
-
   "tool-sc-title": "Инструмент для разделения файлов",
   "tool-sc-number": "Количество файлов для разделения",
-
   "tool-cix-title": "Редактор ComicInfo.xml",
   "tool-cix-warning-save-update": "В результате содержимое файла ComicInfo.xml внутри комикса будет обновлено новыми данными",
   "tool-cix-warning-save-create": "В результате внутри комикса будет создан файл ComicInfo.xml, содержащий указанные данные",
@@ -609,7 +577,6 @@
   "tool-cix-section-creators": "Создатели",
   "tool-cix-section-pages": "Страницы",
   "tool-cix-section-other-data": "Другое",
-
   "[NOTE TO TRANSLATORS cix1]": "Leave the tool-cix-data- entries in English if it's too much work. Only a few people will probably use this particular tool.",
   "[NOTE TO TRANSLATORS cix2]": "reference about some of the texts' meaning/context: https://github.com/binarynonsense/comic-book-reader/blob/master/src/assets/xml/comicinfo/schema/DOCUMENTATION.md",
   "tool-cix-data-title": "Заголовок",
@@ -676,7 +643,6 @@
   "tool-cix-data-page-type-backCover": "Задняя обложка",
   "tool-cix-data-page-type-other": "Другое",
   "tool-cix-data-page-type-deleted": "Удалено",
-
   "tool-cix-search-placeholder-series": "Введите название серии комиксов",
   "tool-cix-search-error-invalid-api-key": "Неверный ключ API",
   "tool-cix-search-import-warning": "Выбранная информация будет сопоставлена с соответствующими полями метаданных, а их содержимое заменено на нее.",
@@ -685,7 +651,6 @@
   "tool-cix-search-api-key-file-path": "Файл ключа API",
   "tool-cix-search-api-key-file-path-info": "Текстовый файл, содержащий действительный API-ключ для {0}",
   "tool-cix-search-api-key-not-found": "В настройках поиска должен быть назначен текстовый файл, содержащий действительный API-ключ для {0}.",
-
   "tool-fb-title": "Обзор файлов",
   "[NOTE TO TRANSLATORS fb1]": "Places refers to locations/folders like Home, Desktop, Downloads... Home refers to the User's home directory",
   "tool-fb-shortcuts-places": "Расположение",
@@ -702,7 +667,6 @@
   "tool-fb-browse-back": "Назад",
   "tool-fb-browse-parent": "Родительская папка",
   "tool-fb-browse-previous": "Предыдущая папка",
-
   "home-screen": "Домашний экран",
   "home-screen-favorites": "Избранное",
   "home-screen-favorite-folders": "Избранные папки",

@@ -1,6 +1,8 @@
 {
   "@metadata": {
-    "authors": ["Álvaro"],
+    "authors": [
+      "Álvaro"
+    ],
     "last-updated": "2024-05-29",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.5.0-beta1",
@@ -11,7 +13,6 @@
     "native-name": "Español",
     "direction": "ltr"
   },
-
   "menu-file": "Archivo",
   "menu-file-open": "Abrir...",
   "menu-file-openrecent": "Abrir Reciente",
@@ -26,9 +27,8 @@
   "menu-file-page-extract-text": "Extraer Texto",
   "menu-file-page-extract-palette": "Extraer Paleta de Colores",
   "menu-file-page-extract-qr": "Extraer Texto en Código QR",
-  "menu-file-preferences": "Preferencias",  
+  "menu-file-preferences": "Preferencias",
   "menu-file-quit": "Salir",
-
   "menu-view": "Ver",
   "menu-view-zoom": "Zoom",
   "menu-view-zoom-fitwidth": "Ajustar a Ancho",
@@ -65,7 +65,6 @@
   "menu-view-showclock": "Mostrar Reloj",
   "menu-view-showaudioplayer": "Mostrar Reproductor de Audio",
   "menu-view-showbattery": "Mostrar Batería",
-
   "menu-tools": "Herramientas",
   "menu-tools-convert": "Convertir",
   "menu-tools-convert-comics": "Cómics",
@@ -87,28 +86,24 @@
   "menu-tools-other-xkcd": "xkcd Webcómics",
   "menu-tools-other-librivox": "LibriVox AudioLibros",
   "menu-tools-other-wiktionary": "Diccionario Wiktionary",
-
   "menu-help": "Ayuda",
   "menu-help-about": "Acerca de",
   "menu-help-devtools-toggle": "Alternar DevTools",
-
   "menu-shared-top-left": "Arriba izda.",
   "menu-shared-top-center": "Arriba centro",
   "menu-shared-top-right": "Arriba dcha.",
   "menu-shared-bottom-left": "Abajo izda.",
   "menu-shared-bottom-center": "Abajo centro",
   "menu-shared-bottom-right": "Abajo dcha.",
-
   "ctxmenu-copy": "Copiar",
   "ctxmenu-paste": "Pegar",
   "ctxmenu-select-all": "Seleccionar Todo",
   "ctxmenu-nextpage": "Página Siguiente",
-  "ctxmenu-prevpage": "Página Anterior",  
+  "ctxmenu-prevpage": "Página Anterior",
   "ctxmenu-rotate": "Rotar",
   "ctxmenu-rotate-clockwise": "Sentido Horario",
   "ctxmenu-rotate-counterclockwise": "Sentido Anti-horario",
   "ctxmenu-openfile": "Abrir Archivo...",
-
   "toolbar-go-left": "Ir a la Izda.",
   "toolbar-go-right": "Ir a la Dcha.",
   "toolbar-rotate-clockwise": "Rotar en Sentido Horario",
@@ -116,7 +111,6 @@
   "toolbar-change-pagesdirection": "Cambiar Dirección de las Páginas",
   "toolbar-change-pagesdirection-ltr": "Cambiar Dirección de Páginas a de Izda a Dcha.",
   "toolbar-change-pagesdirection-rtl": "Cambiar Dirección de Páginas a de Dcha a Izda.",
-
   "dialog-file-types-playlists": "Archivos de Lista de Reproducción",
   "dialog-file-types-audio-playlists": "Archivos de Música y Lista de Reproducción",
   "dialog-file-types-comics": "Archivos de Cómic",
@@ -124,9 +118,7 @@
   "dialog-file-types-comics-books-images": "Archivos de Cómic, Libro e Imagen",
   "dialog-file-types-images": "Archivos de Imagen",
   "dialog-file-types-text": "Archivos de Texto",
-
   "ui-bg-msg": "Para abrir un archivo, use el menú o presione <i>Ctrl+O</i>",
-
   "ui-modal-title-foldernotfound": "Carpeta No Encontrada",
   "ui-modal-title-filenotfound": "Archivo No Encontrado",
   "ui-modal-title-foldererror": "Error de Carpeta",
@@ -135,14 +127,14 @@
   "ui-modal-info-invalidformat": "Formato Inválido",
   "ui-modal-info-invalidsize": "El archivo es demasiado grande",
   "ui-modal-info-invalidsize-cap-a": "El tamaño máximo soportado por la librería de lectura es {0}",
-  "ui-modal-info-invalidsize-cap-b": "El tamaño máximo soportado es {0}",  
+  "ui-modal-info-invalidsize-cap-b": "El tamaño máximo soportado es {0}",
   "ui-modal-info-couldntopen-rar": "No se pudo abrir el archivo RAR",
   "ui-modal-info-couldntopen-zip": "No se pudo abrir el archivo ZIP",
   "ui-modal-info-couldntopen-zip-aes": "No se pudo abrir el archivo ZIP\nEl cifrado AES para contraseñas no está soportado (sólo ZipCrypto)",
   "ui-modal-info-couldntopen-7z": "No se pudo abrir el archivo 7Z",
   "ui-modal-info-couldntopen-epub": "No se pudo abrir el archivo EPUB",
   "ui-modal-info-couldntopen-pdf": "No se pudo abrir el archivo PDF",
-  "ui-modal-info-couldntopen-imagesfolder-empty" : "No se pudo abrir la carpeta\nNo se encontró ninguna imagen",
+  "ui-modal-info-couldntopen-imagesfolder-empty": "No se pudo abrir la carpeta\nNo se encontró ninguna imagen",
   "ui-modal-info-imagesavedto": "Archivo de imagen salvado en",
   "ui-modal-info-errorexportingpage": "Error: No se pudo exportar la página",
   "ui-modal-info-version": "versión",
@@ -167,8 +159,8 @@
   "ui-modal-info-metadata-security-encrypted": "Encriptado",
   "ui-modal-info-metadata-security-unencrypted": "No Encriptado",
   "ui-modal-info-metadata-format": "Formato",
-  "ui-modal-info-metadata-comicinfoxml-included": "Incluido",  
-  "ui-modal-info-metadata-comicinfoxml-notincluded": "No Incluido",  
+  "ui-modal-info-metadata-comicinfoxml-included": "Incluido",
+  "ui-modal-info-metadata-comicinfoxml-notincluded": "No Incluido",
   "ui-modal-prompt-button-yes": "Sí",
   "ui-modal-prompt-button-no": "No",
   "ui-modal-prompt-button-ok": "Ok",
@@ -202,7 +194,6 @@
   "ui-modal-question-button-comicbook": "Cómic",
   "ui-modal-question-button-ebook": "Ebook",
   "ui-modal-question-openrequestedfile": "Abrir Fichero?",
-
   "ap-tooltip-button-play": "reproducir",
   "ap-tooltip-button-pause": "pausar",
   "ap-tooltip-button-next": "siguiente pista",
@@ -219,8 +210,7 @@
   "ap-tooltip-button-clear": "borrar todos de la lista",
   "ap-tooltip-button-add": "añadir ficheros a la lista",
   "ap-tooltip-button-delete": "borrar seleccionado de la lista",
-  "ap-tooltip-button-save": "guardar lista de reproducción en fichero", 
-  
+  "ap-tooltip-button-save": "guardar lista de reproducción en fichero",
   "tool-shared-ui-back-to-reader": "Volver al Lector",
   "tool-shared-ui-back": "Atrás",
   "tool-shared-ui-tool": "Herramienta",
@@ -307,7 +297,6 @@
   "tool-shared-ui-direction-fromlanguage": "Inferir del Idioma Seleccionado",
   "tool-shared-ui-direction-ltr": "De Izda. a Dcha.",
   "tool-shared-ui-direction-rtl": "De Dcha. a Izda.",
-
   "tool-shared-tab-search": "Buscar",
   "tool-shared-tab-catalog": "Catálogo",
   "tool-shared-tab-openurl": "Abrir Url",
@@ -315,7 +304,6 @@
   "tool-shared-tab-about": "Acerca De",
   "tool-shared-tab-settings": "Configuración",
   "tool-shared-tab-search-settings": "Configuración de Búsqueda",
-
   "tool-shared-modal-title-warning": "Advertencia",
   "tool-shared-modal-title-info": "Info",
   "tool-shared-modal-title-alert": "Alerta",
@@ -338,7 +326,6 @@
   "tool-shared-modal-title-creation-finished": "Creación Finalizada",
   "tool-shared-modal-title-creation-canceled": "Creación Cancelada",
   "tool-shared-modal-title-creation-failed": "Creación Fallida",
-
   "tool-shared-modal-info-conversion-success-num-files": "{0} archivo/s correctamente convertido/s",
   "tool-shared-modal-info-conversion-results": "Convertidos: {0} | Errores: {1} | Cancelados: {2}",
   "tool-shared-modal-info-conversion-error-num-files": "Error: no se pudo convertir {0} archivo/s de {1}",
@@ -349,7 +336,6 @@
   "tool-shared-modal-info-creation-results": "Añadidos: {0} | Errores: {1} | Cancelados: {2}",
   "tool-shared-modal-info-creation-error-num-files": "Error: no se pudo añadir {0} archivo/s de {1}",
   "tool-shared-modal-info-change-needs-restart": "El programa necesita ser reiniciado para que este cambio tenga efecto",
-
   "tool-shared-modal-log-extracting-pages": "Extrayendo páginas",
   "tool-shared-modal-log-extracting-page": "Extrayendo página",
   "tool-shared-modal-log-page-to-compatible-format": "Convirtiendo la página {0} a un formato compatible (jpg)",
@@ -368,7 +354,6 @@
   "tool-shared-modal-log-extraction-canceled": "No se pudo extraer el archivo, la extracción fue cancelada",
   "tool-shared-modal-log-creation-error": "No se pudo crear el archivo, se produjo un error",
   "tool-shared-modal-log-creation-canceled": "No se pudo crear el archivo, la creación fue cancelada",
-
   "tool-shared-tooltip-output-scale": "El tamaño de las páginas se reducirá a este porcentaje de las originales.",
   "tool-shared-tooltip-output-folder": "Si un archivo con el mismo nombre ya existe en la carpeta, se añadirá un subfijo al nombre del archivo de salida para que ningún archivo sea sobreescrito.",
   "tool-shared-tooltip-output-page-order": "Solo se usará si todos los archivos de entrada son imágenes, en caso contrario serán procesados en el orden en que aparecen en la lista.",
@@ -380,10 +365,9 @@
   "tool-shared-tooltip-move-right-in-list": "Mover Dcha.",
   "tool-shared-tooltip-move-forward-in-list": "Mover hacia Delante",
   "tool-shared-tooltip-move-backward-in-list": "Mover hacia Atrás",
-
   "tool-pre-title": "Preferencias",
-  "tool-pre-all": "Todas las Preferencias",  
-  "tool-pre-appearance": "Apariencia",  
+  "tool-pre-all": "Todas las Preferencias",
+  "tool-pre-appearance": "Apariencia",
   "tool-pre-ui": "Interfaz de Usuario",
   "tool-pre-file-formats": "Formatos de Fichero",
   "tool-pre-text-colors": "Texto y Colores",
@@ -436,7 +420,7 @@
   "tool-pre-autoopen-nextandprev": "Siguiente y previo archivos",
   "tool-pre-page-turn": "Cambio de página automático",
   "tool-pre-page-turn-default": "Desactivado",
-  "tool-pre-page-turn-onscroll": "En los límites del scroll",  
+  "tool-pre-page-turn-onscroll": "En los límites del scroll",
   "tool-pre-formats-library-reading": "Librería de Lectura",
   "tool-pre-formats-library-extraction": "Librería de Extracción",
   "tool-pre-formats-library-compression": "Librería de Compresión",
@@ -494,17 +478,14 @@
   "tool-pre-advanced-preferences": "Avanzadas",
   "tool-pre-other-preferences": "Otras",
   "tool-pre-tempfolder": "Carpeta Temporal",
-
-  "tool-hst-title": "Historial",  
+  "tool-hst-title": "Historial",
   "tool-hst-button-clear-all": "Vaciar Historial",
   "tool-hst-tooltip-remove-from-list": "eliminar del historial",
   "tool-hst-tooltip-open-from-list": "abrir fichero",
   "tool-hst-modal-clearall-message": "¿Está seguro de que quiere eliminar todas las entradas de su historial?",
-
   "tool-cc-title": "Herramienta de Conversión de Archivos",
   "tool-cr-title": "Herramienta de Creación de Archivo",
   "tool-ci-title": "Herramienta de Conversión de Imágenes",
-
   "tool-et-title": "Herramienta de Extracción de Texto",
   "tool-et-header-input-file": "Imagen de Entrada",
   "tool-et-header-output-text": "Texto de Salida",
@@ -514,11 +495,9 @@
   "tool-et-header-language": "Idioma",
   "tool-et-span-language-checkbox-info": "Incluir idiomas que requieren una conexión a internet para funcionar",
   "tool-et-modal-info": "",
-
   "tool-ec-title": "Herramienta de Extracción de Páginas",
   "tool-ec-modal-log-extracting-to": "En",
   "tool-ec-tooltip-output-folder": "Dentro de la carpeta indicada, se creará una subcarpeta para guardar las imágenes con el mismo nombre que el archivo a extraer. Si ya existe una subcarpeta con ese nombre, se añadirá un subfijo al nombre para que ningún archivo sea sobreescrito.",
-
   "tool-ep-title": "Herramienta de Cxtracción de Paleta",
   "tool-ep-header-input-file": "Imagen de Entrada",
   "tool-ep-header-output-palette": "Paleta de Salida",
@@ -531,12 +510,10 @@
   "tool-ep-distance-deltae-threshold": "Valor límite para el método Delta E",
   "tool-ep-modal-title-exported": "Archivo de Paleta Creado",
   "tool-ep-modal-title-exporting-error": "Error: No se pudo crear el archivo",
-
   "tool-eq-title": "Herramienta de Extracción de Código QR",
   "tool-eq-modal-alert-title-errorextracting": "ERROR: No se pudo extraer el texto",
   "tool-eq-modal-alert-msg-errornodatafound": "No se encontró el código QR",
-
-  "tool-cq-title": "Herramienta de Creación de Código QR",  
+  "tool-cq-title": "Herramienta de Creación de Código QR",
   "tool-cq-header-input-text": "Texto de entrada",
   "tool-cq-header-output-text": "Imagen de salida",
   "tool-cq-button-clear": "Borrar Texto",
@@ -546,8 +523,7 @@
   "tool-cq-modal-alert-msg-toomuchdata": "El texto es demasiado largo para ser almacenado en un código QR",
   "tool-cq-modal-alert-title-successexporting": "Archivo de Imagen de Código QR Creado",
   "tool-cq-modal-alert-title-errorexporting": "ERROR: No se pudo guardar la imagen",
-
-  "tool-dcm-title": "Digital Comic Museum", 
+  "tool-dcm-title": "Digital Comic Museum",
   "tool-dcm-publishers-text": "Editores",
   "tool-dcm-titles-text": "Títulos",
   "tool-dcm-comics-text": "Cómics",
@@ -557,16 +533,14 @@
   "tool-dcm-select-publisher-text": "Seleccione un Editor",
   "tool-dcm-select-title-text": "Seleccione un Título",
   "tool-dcm-select-comic-text": "Seleccione un Cómic",
-
   "tool-iab-title": "Internet Archive Books",
-  "tool-iab-options-collections-text": "Colecciones",  
+  "tool-iab-options-collections-text": "Colecciones",
   "tool-iab-collection-any": "Cualquiera",
-  "tool-iab-options-availability-text": "Disponibilidad", 
+  "tool-iab-options-availability-text": "Disponibilidad",
   "tool-iab-availability-always": "Siempre disponible",
   "tool-iab-availability-any": "Cualquiera (puede ocasionar errores)",
   "tool-iab-button-open-ia-browser": "Abrir Internet Archive En Navegador",
   "tool-iab-button-open-donate-browser": "Abrir Web De Donativos En Navegador",
-
   "tool-gut-title": "Project Gutenberg",
   "tool-gut-text-url": "Dirección del Ebook",
   "tool-gut-text-options-mirrors": "Descargar de",
@@ -576,23 +550,17 @@
   "tool-gut-button-options-open-cache-folder": "Abrir Carpeta de Caché",
   "tool-gut-button-open-pg-browser": "Abrir Project Gutenberg En Navegador",
   "tool-gut-button-open-donate-browser": "Abrir Web De Donativos En Navegador",
-
   "tool-xkcd-title": "xkcd Webcómics",
   "tool-xkcd-text-catalog-number": "Número del Webcómic",
   "tool-xkcd-select-catalog-number-default": "Seleccione un Número",
   "tool-xkcd-button-open-website-browser": "Abrir xkcd En Navegador",
-
   "tool-lvx-title": "LibriVox AudioLibros",
   "tool-lvx-button-open-lvx-browser": "Abrir LibriVox En Navegador",
-
   "tool-wik-title": "Diccionario Wiktionary",
   "tool-wik-button-open-wik-browser": "Abrir Wiktionary En Navegador",
-
   "tool-mc-title": "Herramienta de Unión de Archivos",
-
   "tool-sc-title": "Herramienta de División de Archivos",
   "tool-sc-number": "Número de ficheros en los que dividir",
-
   "tool-cix-title": "Editor de ComicInfo.xml",
   "tool-cix-warning-save-update": "Esto actualizará los contenidos del fichero ComicInfo.xml en el interior del Comic con los nuevos datos",
   "tool-cix-warning-save-create": "Esto creará un fichero ComicInfo.xml en el interior del Comic conteniendo los datos proporcionados",
@@ -609,7 +577,6 @@
   "tool-cix-section-creators": "Creadores",
   "tool-cix-section-pages": "Páginas",
   "tool-cix-section-other-data": "Otros",
-
   "[NOTE TO TRANSLATORS cix1]": "Leave the tool-cix-data- entries in English if it's too much work. Only a few people will probably use this particular tool.",
   "[NOTE TO TRANSLATORS cix2]": "reference about some of the texts' meaning/context: https://github.com/binarynonsense/comic-book-reader/blob/master/src/assets/xml/comicinfo/schema/DOCUMENTATION.md",
   "tool-cix-data-title": "Título",
@@ -676,7 +643,6 @@
   "tool-cix-data-page-type-backCover": "Contraportada",
   "tool-cix-data-page-type-other": "Otro",
   "tool-cix-data-page-type-deleted": "Borrada",
-
   "tool-cix-search-placeholder-series": "Introduzca el nombre de una serie de cómics",
   "tool-cix-search-error-invalid-api-key": "Clave API Inválida",
   "tool-cix-search-import-warning": "La información seleccionada se asignará a los campos de metadatos apropiados y sus contenidos serán reemplazados con ella.",
@@ -685,7 +651,6 @@
   "tool-cix-search-api-key-file-path": "Archivo de Clave API",
   "tool-cix-search-api-key-file-path-info": "Un archivo de texto que contenga una clave API válida para {0}",
   "tool-cix-search-api-key-not-found": "Un archivo de texto que contenga una clave API válida para {0} debe ser asignado en la configuración de búsqueda.",
-
   "tool-fb-title": "Explorador de Archivos",
   "[NOTE TO TRANSLATORS fb1]": "Places refers to locations/folders like Home, Desktop, Downloads... Home refers to the User's home directory",
   "tool-fb-shortcuts-places": "Lugares",
@@ -702,7 +667,6 @@
   "tool-fb-browse-back": "Atrás",
   "tool-fb-browse-parent": "Carpeta Padre",
   "tool-fb-browse-previous": "Carpeta Anterior",
-
   "home-screen": "Pantalla Principal",
   "home-screen-favorites": "Favoritos",
   "home-screen-favorite-folders": "Carpetas Favoritas",

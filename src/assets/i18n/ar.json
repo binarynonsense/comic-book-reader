@@ -1,6 +1,8 @@
 {
   "@metadata": {
-    "authors": ["ahmed-0011"],
+    "authors": [
+      "ahmed-0011"
+    ],
     "last-updated": "2024-06-02",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.5.0-beta1",
@@ -11,7 +13,6 @@
     "native-name": "العربية",
     "direction": "rtl"
   },
-
   "menu-file": "ملف",
   "menu-file-open": "فتح...",
   "menu-file-openrecent": "فتح مؤخرًا",
@@ -26,9 +27,8 @@
   "menu-file-page-extract-text": "استخراج نص",
   "menu-file-page-extract-palette": "استخراج لوحة الألوان",
   "menu-file-page-extract-qr": "استخراج نص من رمز QR",
-  "menu-file-preferences": "التفضيلات",  
+  "menu-file-preferences": "التفضيلات",
   "menu-file-quit": "إنهاء",
-
   "menu-view": "عرض",
   "menu-view-zoom": "تكبير/تصغير",
   "menu-view-zoom-fitwidth": "مطابق للعرض",
@@ -49,10 +49,10 @@
   "menu-view-layout": "تخطيط الواجهة",
   "menu-view-layout-mode": "الوضع",
   "menu-view-layout-page-mode": "وضع الصفحة",
-  "[NOTE TO TRANSLATORS]mvl1": "صفحة واحدة وصفحة مزدوجة بمعنى تخطيط صفحة واحدة وتخطيط صفحة مزدوجة. إذا كانت ترجمتها إلى صفحة واحدة وصفحتين بدلاً من صفحة واحدة/صفحة مزدوجة تبدو أفضل، فاستخدم ذلك",
+  "[NOTE TO TRANSLATORS]mvl1": "Single Page and Double Page as in Single Page Layout and Double Page Layout. If translating them to One Page and Two Pages instead of Single/Double Page sounds better, use that",
   "menu-view-layout-single-page": "صفحة واحدة",
   "menu-view-layout-double-page": "صفحة مزدوجة",
-  "[NOTE TO TRANSLATORS]mvl2": "مستمر بمعنى تخطيط الواجهة المستمر",
+  "[NOTE TO TRANSLATORS]mvl2": "Continuous as in Continuous Layout",
   "menu-view-layout-continuous": "صفحات متواصلة",
   "[NOTE TO TRANSLATORS]menu-view-layout-pagesdirection": "Pages Direction as in which direction the pages are turned / flow, left to right like an American comic or right to left like manga",
   "menu-view-layout-pagesdirection": "اتجاه الصفحات",
@@ -65,7 +65,6 @@
   "menu-view-showclock": "إظهار الساعة",
   "menu-view-showaudioplayer": "إظهار مشغل الصوت",
   "menu-view-showbattery": "إظهار البطارية",
-
   "menu-tools": "الأدوات",
   "menu-tools-convert": "تحويل",
   "menu-tools-convert-comics": "الكتب المصورة",
@@ -87,18 +86,15 @@
   "menu-tools-other-xkcd": "قصص مصورة من xkcd",
   "menu-tools-other-librivox": "كتب صوتية من LibriVox",
   "menu-tools-other-wiktionary": "قاموس Wiktionary",
-
   "menu-help": "مساعدة",
   "menu-help-about": "عن ACBR",
   "menu-help-devtools-toggle": "تفعيل أدوات المطور",
-
   "menu-shared-top-left": "أعلى اليسار",
   "menu-shared-top-center": "أعلى الوسط",
   "menu-shared-top-right": "أعلى اليمين",
   "menu-shared-bottom-left": "أسفل اليسار",
   "menu-shared-bottom-center": "أسفل الوسط",
   "menu-shared-bottom-right": "أسفل اليمين",
-
   "ctxmenu-copy": "نسخ",
   "ctxmenu-paste": "لصق",
   "ctxmenu-select-all": "تحديد الكل",
@@ -108,7 +104,6 @@
   "ctxmenu-rotate-clockwise": "مع عقارب الساعة",
   "ctxmenu-rotate-counterclockwise": "عكس عقارب الساعة",
   "ctxmenu-openfile": "فتح ملف...",
-
   "toolbar-go-left": "إلى اليسار",
   "toolbar-go-right": "إلى اليمين",
   "toolbar-rotate-clockwise": "تدوير باتجاه عقارب الساعة",
@@ -116,7 +111,6 @@
   "toolbar-change-pagesdirection": "تغيير اتجاه الصفحات",
   "toolbar-change-pagesdirection-ltr": "تعيين اتجاه الصفحات من اليسار إلى اليمين",
   "toolbar-change-pagesdirection-rtl": "تعيين اتجاه الصفحات من اليمين إلى اليسار",
-
   "dialog-file-types-playlists": "ملفات قائمة التشغيل",
   "dialog-file-types-audio-playlists": "ملفات الصوت وقائمة التشغيل",
   "dialog-file-types-comics": "ملفات الكتب المصورة",
@@ -124,9 +118,7 @@
   "dialog-file-types-comics-books-images": "ملفات الصور و الكتب و الكتب المصورة",
   "dialog-file-types-images": "ملفات الصور",
   "dialog-file-types-text": "ملفات نصية",
-
   "ui-bg-msg": "لفتح ملف، استخدم القائمة أو اضغط على <i>Ctrl+O</i>",
-
   "ui-modal-title-foldernotfound": "لم يتم العثور على المجلد",
   "ui-modal-title-filenotfound": "لم يتم العثور على الملف",
   "ui-modal-title-foldererror": "خطأ في المجلد",
@@ -142,7 +134,7 @@
   "ui-modal-info-couldntopen-7z": "تعذر فتح ملف 7Z",
   "ui-modal-info-couldntopen-epub": "تعذر فتح ملف EPUB",
   "ui-modal-info-couldntopen-pdf": "تعذر فتح ملف PDF",
-  "ui-modal-info-couldntopen-imagesfolder-empty" : "تعذر فتح المجلد\nلم يتم العثور على أي صور",
+  "ui-modal-info-couldntopen-imagesfolder-empty": "تعذر فتح المجلد\nلم يتم العثور على أي صور",
   "ui-modal-info-imagesavedto": "تم حفظ الصورة في",
   "ui-modal-info-errorexportingpage": "خطأ: تعذر تصدير الصفحة",
   "ui-modal-info-version": "الإصدار",
@@ -167,8 +159,8 @@
   "ui-modal-info-metadata-security-encrypted": "مشفر",
   "ui-modal-info-metadata-security-unencrypted": "غير مشفر",
   "ui-modal-info-metadata-format": "التنسيق",
-  "ui-modal-info-metadata-comicinfoxml-included": "مضمنة",  
-  "ui-modal-info-metadata-comicinfoxml-notincluded": "غير مضمنة",  
+  "ui-modal-info-metadata-comicinfoxml-included": "مضمنة",
+  "ui-modal-info-metadata-comicinfoxml-notincluded": "غير مضمنة",
   "ui-modal-prompt-button-yes": "نعم",
   "ui-modal-prompt-button-no": "لا",
   "ui-modal-prompt-button-ok": "حسنًا",
@@ -202,7 +194,6 @@
   "ui-modal-question-button-comicbook": "كتاب مصور",
   "ui-modal-question-button-ebook": "كتاب إلكتروني",
   "ui-modal-question-openrequestedfile": "فتح الملف؟",
-
   "ap-tooltip-button-play": "تشغيل",
   "ap-tooltip-button-pause": "إيقاف مؤقت",
   "ap-tooltip-button-next": "المقطع التالي",
@@ -219,8 +210,7 @@
   "ap-tooltip-button-clear": "إزالة الكل من قائمة التشغيل",
   "ap-tooltip-button-add": "إضافة ملفات إلى قائمة التشغيل",
   "ap-tooltip-button-delete": "إزالة المحددة من قائمة التشغيل",
-  "ap-tooltip-button-save": "حفظ قائمة التشغيل في ملف", 
-
+  "ap-tooltip-button-save": "حفظ قائمة التشغيل في ملف",
   "tool-shared-ui-back-to-reader": "العودة إلى القارئ",
   "tool-shared-ui-back": "الخلف",
   "tool-shared-ui-tool": "الأداة",
@@ -234,7 +224,7 @@
   "tool-shared-ui-input-file": "الملف المدخل",
   "tool-shared-ui-input-files": "الملفات المدخلة",
   "tool-shared-ui-input-images": "الصور المدخلة",
-  "tool-shared-ui-add": "أضف",  
+  "tool-shared-ui-add": "أضف",
   "tool-shared-ui-add-file": "أضف ملف",
   "tool-shared-ui-add-files": "أضف ملفات",
   "tool-shared-ui-add-folder": "أضف مجلد",
@@ -307,7 +297,6 @@
   "tool-shared-ui-direction-fromlanguage": "استنتاج بناءً على اللغة المستخدمة",
   "tool-shared-ui-direction-ltr": "من اليسار إلى اليمين",
   "tool-shared-ui-direction-rtl": "من اليمين إلى اليسار",
-
   "tool-shared-tab-search": "البحث",
   "tool-shared-tab-catalog": "الفهرس",
   "tool-shared-tab-openurl": "فتح الرابط",
@@ -315,7 +304,6 @@
   "tool-shared-tab-about": "تفاصيل",
   "tool-shared-tab-settings": "الإعدادات",
   "tool-shared-tab-search-settings": "إعدادات البحث",
-
   "tool-shared-modal-title-warning": "تحذير",
   "tool-shared-modal-title-info": "معلومات",
   "tool-shared-modal-title-alert": "تنبيه",
@@ -338,7 +326,6 @@
   "tool-shared-modal-title-creation-finished": "انتهى الإنشاء",
   "tool-shared-modal-title-creation-canceled": "أُلغي الإنشاء",
   "tool-shared-modal-title-creation-failed": "فشل الإنشاء",
-
   "tool-shared-modal-info-conversion-success-num-files": "{0} من الملفات تم تحويلها بشكل سليم",
   "tool-shared-modal-info-conversion-results": "تم التحويل: {0} | أخطاء: {1} | تم الإلغاء: {2}",
   "tool-shared-modal-info-conversion-error-num-files": "خطأ: تعذر تحويل {0} من أصل {1} ملف",
@@ -349,7 +336,6 @@
   "tool-shared-modal-info-creation-results": "تمت الإضافة: {0} | أخطاء: {1} | تم الإلغاء: {2}",
   "tool-shared-modal-info-creation-error-num-files": "خطأ: تعذر إضافة {0} من أصل {1} ملف",
   "tool-shared-modal-info-change-needs-restart": "يجب إعادة تشغيل البرنامج حتى يدخل هذا التغيير حيز التنفيذ",
-
   "tool-shared-modal-log-extracting-pages": "يتم الآن استخراج الصفحات",
   "tool-shared-modal-log-extracting-page": "استخراج الصفحة",
   "tool-shared-modal-log-page-to-compatible-format": "تحويل الصفحة {0} إلى تنسيق متوافق (jpg)",
@@ -368,7 +354,6 @@
   "tool-shared-modal-log-extraction-canceled": "تم إلغاء الاستخراج، تعذر استخراج الملف",
   "tool-shared-modal-log-creation-error": "حدث خطأ ما، تعذر إنشاء الملف",
   "tool-shared-modal-log-creation-canceled": "تم إلغاء الإنشاء، تعذر إنشاء الملف",
-
   "tool-shared-tooltip-output-scale": "سيتم تقليل حجم الصفحات إلى هذه النسبة المئوية من النسخ الأصلية.",
   "tool-shared-tooltip-output-folder": "إذا كان هناك ملف يحمل نفس الاسم موجود بالفعل في المجلد، فستتم إضافة بادئة فرعية إلى اسم الملف المحول حتى لا يتم الكتابة فوق أي شيء.",
   "tool-shared-tooltip-output-page-order": "تستخدم فقط إذا كانت جميع ملفات المدخلات عبارة عن صور، وإلا ستتم معالجتها بالترتيب المدرجة به.",
@@ -380,10 +365,9 @@
   "tool-shared-tooltip-move-right-in-list": "تحريك لليمين",
   "tool-shared-tooltip-move-forward-in-list": "تحريك للأمام",
   "tool-shared-tooltip-move-backward-in-list": "تحريك للخلف",
-
   "tool-pre-title": "التفضيلات",
-  "tool-pre-all": "جميع التفضيلات",  
-  "tool-pre-appearance": "المظهر",  
+  "tool-pre-all": "جميع التفضيلات",
+  "tool-pre-appearance": "المظهر",
   "tool-pre-ui": "واجهة المستخدم",
   "tool-pre-file-formats": "تنسيقات الملفات",
   "tool-pre-text-colors": "النص والألوان",
@@ -420,7 +404,7 @@
   "tool-pre-mouse": "الفأرة",
   "tool-pre-keyboard": "لوحة المفاتيح",
   "tool-pre-gamepad": "مقبض اللعب",
-  "tool-pre-mouse-keyboard": "الفأرة ولوحة المفاتيح",  
+  "tool-pre-mouse-keyboard": "الفأرة ولوحة المفاتيح",
   "tool-pre-hotspots": "المناطق الفعالة في حال النقر باستخدام الفأرة",
   "tool-pre-hotspots-disabled": "معطل",
   "[NOTE TO TRANSLATORS]tool-pre-hotspots-Xcolumns": "{0}, {1}... will be replaced in code with that column's use text, for example '2 Columns: Go Left | Go Right' when {0} is fetched from 'toolbar-go-left' and {1} from 'toolbar-go-right'",
@@ -436,7 +420,7 @@
   "tool-pre-autoopen-nextandprev": "الملفات التالية و السابقة",
   "tool-pre-page-turn": "قلب الصفحات تلقائيًا",
   "tool-pre-page-turn-default": "معطل",
-  "tool-pre-page-turn-onscroll": "الحدود عند التمرير",  
+  "tool-pre-page-turn-onscroll": "الحدود عند التمرير",
   "tool-pre-formats-library-reading": "مكتبة القراءة",
   "tool-pre-formats-library-extraction": "مكتبة الاستخراج",
   "tool-pre-formats-library-compression": "مكتبة الضغط",
@@ -484,27 +468,24 @@
   "tool-pre-navkeys-change-press": "اضغط على مفتاح صالح لاستبدال المفتاح المعين حالياً.",
   "tool-pre-navkeys-change-modifiers": "المحددات المسموح بها: {0}.",
   "tool-pre-navkeys-change-cancel": "انقر فوق الزر للإلغاء.",
-  "[NOTE TO TRANSLATORS]tool-pre-navkeys-button-resetall": "'إعادة تعيين الكل' بمعنى 'إعادة تعيين جميع المفاتيح المخصصة'",
+  "[NOTE TO TRANSLATORS]tool-pre-navkeys-button-resetall": "'Reset All' as in 'reset all the assigned keys'",
   "tool-pre-navkeys-button-resetall": "إعادة تعيين الكل",
   "tool-pre-navkeys-modal-resetall-message": "هل أنت متأكد من رغبتك في إعادة تعيين المفاتيح المخصصة بالكامل إلى قيمها الافتراضية؟",
   "tool-pre-navbuttons": "تخصيص الأزرار",
-  "[NOTE TO TRANSLATORS]tool-pre-navbuttons-button-resetall": "'إعادة تعيين الكل' كما في 'إعادة تعيين جميع أزرار لوحة الألعاب المعينة'",
+  "[NOTE TO TRANSLATORS]tool-pre-navbuttons-button-resetall": "'Reset All' as in 'reset all the assigned gamepad buttons'",
   "tool-pre-navbuttons-button-resetall": "إعادة تعيين الكل",
   "tool-pre-navbuttons-modal-resetall-message": "هل أنت متأكد من رغبتك في إعادة تعيين المفاتيح المخصصة بالكامل إلى قيمها الافتراضية؟",
   "tool-pre-advanced-preferences": "متقدم",
   "tool-pre-other-preferences": "أخرى",
   "tool-pre-tempfolder": "المجلد المؤقت",
-
-  "tool-hst-title": "التاريخ",  
+  "tool-hst-title": "التاريخ",
   "tool-hst-button-clear-all": "مسح التاريخ",
   "tool-hst-tooltip-remove-from-list": "إزالة من التاريخ",
   "tool-hst-tooltip-open-from-list": "فتح الملف",
   "tool-hst-modal-clearall-message": "هل أنت متأكد من رغبتك في حذف جميع الإدخالات في التاريخ؟",
-
   "tool-cc-title": "أداة تحويل الملفات",
   "tool-cr-title": "أداة إنشاء الملفات",
   "tool-ci-title": "أداة تحويل الصور",
-
   "tool-et-title": "أداة استخراج النصوص",
   "tool-et-header-input-file": "الصورة المدخلة",
   "tool-et-header-output-text": "النص الناتج",
@@ -514,11 +495,9 @@
   "tool-et-header-language": "اللغة",
   "tool-et-span-language-checkbox-info": "اشمل اللغات التي تتطلب اتصالاً بالإنترنت للعمل",
   "tool-et-modal-info": "",
-
   "tool-ec-title": "أداة استخراج الصفحات",
   "tool-ec-modal-log-extracting-to": "إلى",
   "tool-ec-tooltip-output-folder": "في داخل المجلد المزود، سيتم إنشاء مجلد فرعي بنفس اسم الملف المراد استخراجه لتخزين الصور فيه. في حالة وجود مجلد فرعي بنفس الاسم بالفعل، ستتم إضافة بادئة فرعية إلى الاسم حتى لا يتم الكتابة فوق أي شيء.",
-
   "tool-ep-title": "أداة استخراج لوحة الألوان",
   "tool-ep-header-input-file": "الصورة المدخلة",
   "tool-ep-header-output-palette": "لوحة الألوان الناتجة",
@@ -531,12 +510,10 @@
   "tool-ep-distance-deltae-threshold": "عتبة دلتا E",
   "tool-ep-modal-title-exported": "تم إنشاء ملف لوحة الألوان",
   "tool-ep-modal-title-exporting-error": "خطأ: تعذر إنشاء الملف",
-
-  "tool-eq-title": "أداة استخراج نص من رمز الاستجابة السريع (QR Code)",  
+  "tool-eq-title": "أداة استخراج نص من رمز الاستجابة السريع (QR Code)",
   "tool-eq-modal-alert-title-errorextracting": "خطأ: تعذر استخراج النص",
   "tool-eq-modal-alert-msg-errornodatafound": "لم يتم العثور على رمز الاستجابة السريع (QR Code)",
-
-  "tool-cq-title": "أداة إنشاء رمز الاستجابة السريعة (QR Code)",  
+  "tool-cq-title": "أداة إنشاء رمز الاستجابة السريعة (QR Code)",
   "tool-cq-header-input-text": "يرجى إدخال النص",
   "tool-cq-header-output-text": "الصورة الناتجة",
   "tool-cq-button-clear": "مسح النص",
@@ -546,8 +523,7 @@
   "tool-cq-modal-alert-msg-toomuchdata": "النص طويل جداً لكي يتم تخزينه في رمز الاستجابة سريعة (QR Code)",
   "tool-cq-modal-alert-title-successexporting": "تم إنشاء ملف صورة لرمز الاستجابة السريع (QR Code)",
   "tool-cq-modal-alert-title-errorexporting": "خطأ: تعذر حفظ الصورة",
-
-  "tool-dcm-title": "المتحف الرقمي للكتب المصورة",  
+  "tool-dcm-title": "المتحف الرقمي للكتب المصورة",
   "tool-dcm-publishers-text": "الناشرون",
   "tool-dcm-titles-text": "العناوين",
   "tool-dcm-comics-text": "الكتب المصورة",
@@ -557,16 +533,14 @@
   "tool-dcm-select-publisher-text": "اختر ناشرًا",
   "tool-dcm-select-title-text": "اختر عنوانًا",
   "tool-dcm-select-comic-text": "اختر كتابًا مصورًا",
-
   "tool-iab-title": "كتب من أرشيف الإنترنت",
-  "tool-iab-options-collections-text": "التجميعات",  
+  "tool-iab-options-collections-text": "التجميعات",
   "tool-iab-collection-any": "الكل",
-  "tool-iab-options-availability-text": "التوفر", 
+  "tool-iab-options-availability-text": "التوفر",
   "tool-iab-availability-always": "متوفر دائمًا",
   "tool-iab-availability-any": "غير مهم ( الأمور قد لا تعمل بشكل صحيح)",
   "tool-iab-button-open-ia-browser": "فتح أرشيف الإنترنت في المتصفح",
   "tool-iab-button-open-donate-browser": "فتح موقع التبرع في المتصفح",
-
   "tool-gut-title": "مشروع غوتنبرغ",
   "tool-gut-text-url": "رابط الكتاب الإلكتروني",
   "tool-gut-text-options-mirrors": "تنزيل من",
@@ -576,23 +550,17 @@
   "tool-gut-button-options-open-cache-folder": "فتح مجلد التخزين المؤقت",
   "tool-gut-button-open-pg-browser": "فتح مشروع غوتنبرغ في المتصفح",
   "tool-gut-button-open-donate-browser": "فتح موقع التبرع في المتصفح",
-
   "tool-xkcd-title": "قصص مصورة عبر الإنترنت من xkcd",
   "tool-xkcd-text-catalog-number": "رقم القصة المصورة",
   "tool-xkcd-select-catalog-number-default": "اختر رقم",
   "tool-xkcd-button-open-website-browser": "فتح xkcd في المتصفح",
-
   "tool-lvx-title": "كتب LibriVox الصوتية",
   "tool-lvx-button-open-lvx-browser": "فتح LibriVox في المتصفح",
-
   "tool-wik-title": "قاموس Wiktionary",
   "tool-wik-button-open-wik-browser": "فتح Wiktionary في المتصفح",
-
   "tool-mc-title": "أداة دمج الملفات",
-
   "tool-sc-title": "أداة تقسيم الملفات",
   "tool-sc-number": "عدد الملفات المراد التقسيم إليها",
-
   "tool-cix-title": "محرر ComicInfo.xml",
   "tool-cix-warning-save-update": "سيؤدي ذلك إلى تحديث محتويات ملف ComicInfo.xml داخل الكتاب المصور بالبيانات الجديدة",
   "tool-cix-warning-save-create": "سيؤدي هذا إلى إنشاء ملف ComicInfo.xml داخل الكتاب المصور يحتوي على البيانات المزودة",
@@ -609,9 +577,8 @@
   "tool-cix-section-creators": "المؤلفون",
   "tool-cix-section-pages": "الصفحات",
   "tool-cix-section-other-data": "أخرى",
-
-  "[NOTE TO TRANSLATORS cix1]": "اترك إدخالات tool-cix-data- باللغة الإنجليزية إذا كان الأمر يتطلب الكثير من العمل. ربما لن يستخدم هذه الأداة بالذات سوى عدد قليل من الأشخاص.",
-  "[NOTE TO TRANSLATORS cix2]": "مرجع حول معنى/سياق بعض النصوص: https://github.com/binarynonsense/comic-book-reader/blob/master/src/assets/xml/comicinfo/schema/DOCUMENTATION.md",
+  "[NOTE TO TRANSLATORS cix1]": "Leave the tool-cix-data- entries in English if it's too much work. Only a few people will probably use this particular tool.",
+  "[NOTE TO TRANSLATORS cix2]": "reference about some of the texts' meaning/context: https://github.com/binarynonsense/comic-book-reader/blob/master/src/assets/xml/comicinfo/schema/DOCUMENTATION.md",
   "tool-cix-data-title": "العنوان",
   "tool-cix-data-series": "السلسلة",
   "tool-cix-data-number": "الرقم",
@@ -676,7 +643,6 @@
   "tool-cix-data-page-type-backCover": "الغلاف الخلفي",
   "tool-cix-data-page-type-other": "أخرى",
   "tool-cix-data-page-type-deleted": "محذوف",
-
   "tool-cix-search-placeholder-series": "أدخل اسم سلسلة الكتاب المصور",
   "tool-cix-search-error-invalid-api-key": "مفتاح API غير صالح",
   "tool-cix-search-import-warning": "ستتم مطابقة المعلومات المحددة مع حقول البيانات الوصفية المناسبة واستبدال محتواها بها.",
@@ -685,24 +651,22 @@
   "tool-cix-search-api-key-file-path": "ملف يحتوي على مفتاح API",
   "tool-cix-search-api-key-file-path-info": "ملف نصي يحتوي على مفتاح API صالح لـ {0}",
   "tool-cix-search-api-key-not-found": "يجب تعيين ملف نصي يحتوي على مفتاح API صالح لـ {0} في إعدادات البحث.",
-
   "tool-fb-title": "متصفح الملفات",
-  "[NOTE TO TRANSLATORS fb1]": "تشير الأماكن إلى المواقع/المجلدات مثل الرئيسية، سطح المكتب، التنزيلات... الرئيسية تشير إلى المجلد الرئيسي للمستخدم",
+  "[NOTE TO TRANSLATORS fb1]": "Places refers to locations/folders like Home, Desktop, Downloads... Home refers to the User's home directory",
   "tool-fb-shortcuts-places": "الأماكن",
   "tool-fb-shortcuts-places-home": "الرئيسية",
   "tool-fb-shortcuts-places-desktop": "سطح المكتب",
   "tool-fb-shortcuts-places-downloads": "التنزيلات",
-  "[NOTE TO TRANSLATORS fb2]": "الأجهزة مثل محركات الأقراص الصلبة، ومحركات أقراص USB...",
+  "[NOTE TO TRANSLATORS fb2]": "devices as in hard-drives, usb pendrives...",
   "tool-fb-shortcuts-devices": "الأجهزة",
-  "[NOTE TO TRANSLATORS fb3]": "سيتم استبدال {0} بحجم محرك الأقراص، على سبيل المثال: 250 جيجابايت",
+  "[NOTE TO TRANSLATORS fb3]": "{0} will be replaced with the drive's size, e.g: 250 GB",
   "tool-fb-shortcuts-generic-harddrive": "{0} القرص الصلب",
   "tool-fb-shortcuts-generic-drive": "{0} القرص",
-  "[NOTE TO TRANSLATORS fb4]": "إلى أعلى يشير إلى الصعود إلى أعلى في شجرة المجلدات، ويشير الخلف إلى العودة إلى المجلد السابق",
+  "[NOTE TO TRANSLATORS fb4]": "up refers to going up in the folder tree, back refers to going back to the previous folder",
   "tool-fb-browse-up": "إلى اعلى",
   "tool-fb-browse-back": "الخلف",
   "tool-fb-browse-parent": "المجلد الأب",
   "tool-fb-browse-previous": "المجلد السابق",
-
   "home-screen": "الصفحة الرئيسية",
   "home-screen-favorites": "المفضلة",
   "home-screen-favorite-folders": "المجلدات المفضلة",
