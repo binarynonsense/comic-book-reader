@@ -62,7 +62,7 @@ function onCloseClicked() {
 ///////////////////////////////////////////////////////////////////////////////
 
 function getHistory() {
-  let historyCopy = history.getCopy();
+  let historyCopy = history.get();
   historyCopy.forEach((fileInfo) => {
     if (fileInfo.data && fileInfo.data.source) {
       fileInfo.isOnline = true;

@@ -20,19 +20,15 @@ let g_history = [];
 let g_capacity = 100;
 
 exports.get = function () {
-  return g_history;
-};
-
-exports.getCopy = function () {
   return structuredClone(g_history);
 };
 
 exports.set = function (history) {
-  g_history = [...history];
+  g_history = structuredClone(history);
 };
 
 exports.getIndex = function (index) {
-  return g_history[index];
+  return structuredClone(g_history[index]);
 };
 
 exports.removeIndex = function (index) {
