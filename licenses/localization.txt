@@ -1,0 +1,22 @@
+Localization files:
+
+language: Arabic
+authors: ahmed-0011
+license: BSD-2-Clause
+
+language: German
+authors: trzyglow
+license: BSD-2-Clause
+
+language: English
+authors: Álvaro
+license: BSD-2-Clause
+
+language: Spanish
+authors: Álvaro
+license: BSD-2-Clause
+
+language: Russian
+authors: vanja-san
+license: BSD-2-Clause
+
