@@ -23,6 +23,10 @@ exports.get = function () {
   return g_history;
 };
 
+exports.getCopy = function () {
+  return structuredClone(g_history);
+};
+
 exports.set = function (history) {
   g_history = [...history];
 };
