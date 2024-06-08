@@ -541,7 +541,7 @@
   "tool-cq-header-output-text": "Imagen de salida",
   "tool-cq-button-clear": "Borrar Texto",
   "tool-cq-button-export": "Guardar Imagen En",
-  "tool-et-button-start": "Crear Código",
+  "tool-cq-button-start": "Crear Código",
   "tool-cq-modal-alert-title-errorcreating": "ERROR: No se pudo crear el código",
   "tool-cq-modal-alert-msg-toomuchdata": "El texto es demasiado largo para ser almacenado en un código QR",
   "tool-cq-modal-alert-title-successexporting": "Archivo de Imagen de Código QR Creado",
