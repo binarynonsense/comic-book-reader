@@ -220,7 +220,6 @@ function initMouse() {
 
   document.addEventListener("mouseup", function (event) {
     g_isMouseDown = false;
-    console.log(event.button);
     switch (event.button) {
       case 1:
         getCurrentTool().onInputEvent("acbr-middleclick");
@@ -277,7 +276,6 @@ let g_lastTouchEndTime = 0;
 
 function initTouchScreen() {
   document.addEventListener("touchstart", function (event) {
-    // console.log("touchstart");
     g_isTouching = true;
     g_touches = g_prevTouches = event.touches; // event.targetTouches;
     g_touchLastX = g_touches[0].clientX;
@@ -290,7 +288,6 @@ function initTouchScreen() {
   document.addEventListener(
     "touchmove",
     function (event) {
-      // console.log("touchmove");
       g_isTouching = true;
       g_prevTouches = g_touches;
       g_touches = event.touches;
@@ -316,7 +313,6 @@ function initTouchScreen() {
         // pinch-zoom
         // NOTE: added user-scalable:none to index-X.html files to prevent the
         // default pinch zoom
-        // console.log(g_touches);
         let a = g_touches[0].clientX - g_touches[1].clientX;
         let b = g_touches[0].clientY - g_touches[1].clientY;
         const touchesDistance = Math.sqrt(a * a + b * b);
@@ -324,7 +320,6 @@ function initTouchScreen() {
         b = g_prevTouches[0].clientY - g_prevTouches[1].clientY;
         const prevTouchesDistance = Math.sqrt(a * a + b * b);
         if (touchesDistance > 0) {
-          //console.log(touchesDistance);
           if (!getOpenModal()) {
             getCurrentTool().onInputEvent("acbr-pinchzoom", {
               touchesDistance,
@@ -341,7 +336,6 @@ function initTouchScreen() {
   );
 
   document.addEventListener("touchend", function (event) {
-    // console.log("touchend");
     g_isTouching = false;
     if (g_touches.length === 1) {
       const currentTime = Date.now();
@@ -533,64 +527,3 @@ function areGamepadCommandsDown(commands, strict = true, thisFrame = false) {
 // refs:
 // https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key
 // https://developer.mozilla.org/en-US/docs/Web/API/UI_Events/Keyboard_event_key_values
-
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-
-// TODO: unused code, delete when no longer needed as reference
-// const g_pointerEventCache = [];
-// let g_prevPointersDistance = 0;
-
-// document.addEventListener("pointerdown", function (event) {
-//   if (event.pointerType === "touch") {
-//     // add to cache
-//     g_pointerEventCache.push(event);
-//   }
-// });
-
-// document.addEventListener("pointermove", function (event) {
-//   if (event.pointerType === "touch") {
-//     // update in cache
-//     const index = g_pointerEventCache.findIndex(
-//       (cachedEv) => cachedEv.pointerId === event.pointerId
-//     );
-//     g_pointerEventCache[index] = event;
-
-//     if (g_pointerEventCache.length === 2) {
-//       // 2 pointers -> check pinch-zoom
-//       const a =
-//         g_pointerEventCache[0].clientX - g_pointerEventCache[1].clientX;
-//       const b =
-//         g_pointerEventCache[0].clientY - g_pointerEventCache[1].clientY;
-//       const pointerDistance = Math.sqrt(a * a + b * b);
-//       if (g_prevPointersDistance > 0) {
-//         console.log(g_prevPointersDistance);
-//         if (pointerDistance > g_prevPointersDistance) {
-//           if (getOpenModal()) return;
-//           getCurrentTool().onInputEvent("acbr-pinchzoom", { zoom: 1 });
-//         }
-//         if (pointerDistance < g_prevPointersDistance) {
-//           if (getOpenModal()) return;
-//           getCurrentTool().onInputEvent("acbr-pinchzoom", { zoom: -1 });
-//         }
-//       }
-//       g_prevPointersDistance = pointerDistance;
-//     }
-//   }
-// });
-// // ref: https://developer.mozilla.org/en-US/docs/Web/API/Pointer_events/Pinch_zoom_gestures
-
-// document.addEventListener("pointerup", function (event) {
-//   if (event.pointerType === "touch") {
-//     // remove from cache
-//     const index = g_pointerEventCache.findIndex(
-//       (cachedEv) => cachedEv.pointerId === event.pointerId
-//     );
-//     g_pointerEventCache.splice(index, 1);
-
-//     if (g_pointerEventCache.length < 2) {
-//       g_prevPointersDistance = 0;
-//     }
-//   }
-// });
