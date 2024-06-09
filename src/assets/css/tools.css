@@ -231,6 +231,8 @@ html[dir="rtl"] .tools-button-accent i {
   border-bottom: 0px !important;
 }
 
+/* /////////////////////////////////////////////////////////////// */
+
 #tools input[type="text"],
 #tools input[type="number"] {
   width: 100%;
@@ -244,6 +246,8 @@ html[dir="rtl"] .tools-button-accent i {
   user-select: text;
   overflow-wrap: anywhere;
 }
+
+/* /////////////////////////////////////////////////////////////// */
 
 #tools select {
   width: 100%;
@@ -266,6 +270,8 @@ html[dir="rtl"] .tools-button-accent i {
   padding: 15px;
 }
 
+/* /////////////////////////////////////////////////////////////// */
+
 .tools-checkbox-container {
   cursor: pointer;
   width: 100%;
@@ -286,6 +292,74 @@ html[dir="rtl"] .tools-button-accent i {
   cursor: pointer;
   margin-right: 10px;
 }
+
+/* /////////////////////////////////////////////////////////////// */
+
+/* ref: https://www.w3schools.com/howto/howto_css_switch.asp */
+
+.tools-toggle {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  max-width: 50px;
+  height: 27px;
+}
+
+.tools-toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.tools-toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--tools-bg2-color);
+  transition: 0.4s;
+  border: 1px solid var(--tools-text-color);
+  border-radius: 25px;
+  opacity: 0.7;
+}
+.tools-toggle-slider:hover {
+  opacity: 0.8;
+}
+
+.tools-toggle-slider:before {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  content: "⨯";
+  color: var(--tools-bg2-color);
+  font-size: 10px;
+  font-weight: bolder;
+  height: 19px;
+  width: 19px;
+  left: 4px;
+  bottom: 3px;
+  background-color: var(--tools-input-text-color);
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+input:checked + .tools-toggle-slider {
+  /* background-color: var(--tools-button-accent-bg-color); */
+  background-color: var(--tools-input-bg-color);
+  border: 1px solid var(--tools-input-text-color);
+  opacity: 1;
+}
+
+input:checked + .tools-toggle-slider:before {
+  transform: translateX(23px);
+  content: "✓";
+  /* color: green; */
+}
+
+/* /////////////////////////////////////////////////////////////// */
 
 #tools label textarea {
   width: 100%;
@@ -333,6 +407,8 @@ html[dir="rtl"] .tools-button-accent i {
   padding-bottom: 10px;
   line-height: 120%;
 }
+
+/* /////////////////////////////////////////////////////////////// */
 
 .tools-range-wrap {
   position: relative;
@@ -386,6 +462,8 @@ html[dir="rtl"] .tools-button-accent i {
 html[dir="rtl"] .tools-range-bubble {
   transform: translateX(30%);
 }
+
+/* /////////////////////////////////////////////////////////////// */
 
 .tools-html-div {
   margin-top: 15px;
