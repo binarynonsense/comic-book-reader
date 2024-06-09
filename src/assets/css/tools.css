@@ -438,6 +438,7 @@ input:checked + .tools-toggle-slider:before {
 }
 .tools-range::-webkit-slider-thumb:hover {
   transform: scale(1.1);
+  cursor: pointer;
 }
 .tools-range::-webkit-slider-thumb:active {
   transform: scale(1);
