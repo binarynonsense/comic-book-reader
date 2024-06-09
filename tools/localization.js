@@ -53,12 +53,12 @@ function updateLocalizationFiles(operation, languageId) {
           /////////////////////////////////////////////////////////
           const entryValue = entryData[key];
           // TODO: make it check inside tool-pre-navkeys-actions and potential similar entries
-          if (entryValue === undefined) {
+          if (key.startsWith("[NOTE TO")) {
+            newEntryData[key] = englishData[key];
+          } else if (entryValue === undefined) {
             missing++;
             console.log("missing: " + key);
             newEntryData["[NEEDS TRANSLATION]" + key] = englishData[key];
-          } else if (key.startsWith("[NOTE TO")) {
-            newEntryData[key] = englishData[key];
           } else {
             newEntryData[key] = entryValue;
           }
