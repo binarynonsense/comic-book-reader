@@ -82,17 +82,27 @@ function getLatestData() {
     if (data.length < 6) {
       const latestInfo = {};
       const historyDataFile = historyData[historyData.length - index - 1];
-      latestInfo.path = historyDataFile.filePath;
-      latestInfo.name = path.basename(historyDataFile.filePath);
-      if (!fs.existsSync(latestInfo.path)) {
-        continue;
-      }
-      if (fs.existsSync(latestInfo.path)) {
-        latestInfo.pathType = !fs.lstatSync(latestInfo.path).isDirectory()
-          ? 0
-          : 1;
+      latestInfo.index = historyData.length - index - 1;
+      if (historyDataFile.data && historyDataFile.data.source) {
+        latestInfo.pathType = 2;
+        if (historyDataFile.data.name) {
+          latestInfo.name = historyDataFile.data.name;
+        } else {
+          latestInfo.name = historyDataFile.filePath;
+        }
       } else {
-        latestInfo.pathType = -1;
+        latestInfo.path = historyDataFile.filePath;
+        latestInfo.name = path.basename(historyDataFile.filePath);
+        if (!fs.existsSync(latestInfo.path)) {
+          continue;
+        }
+        if (fs.existsSync(latestInfo.path)) {
+          latestInfo.pathType = !fs.lstatSync(latestInfo.path).isDirectory()
+            ? 0
+            : 1;
+        } else {
+          latestInfo.pathType = -1;
+        }
       }
       data.push(latestInfo);
     } else {
@@ -201,6 +211,14 @@ function initOnIpcCallbacks() {
 
   on("hs-open-file", (filePath) => {
     reader.tryOpen(filePath);
+  });
+
+  on("hs-open-history-file", (index) => {
+    reader.tryOpen(
+      history.getIndex(index).filePath,
+      undefined,
+      history.getIndex(index)
+    );
   });
 
   on("hs-on-add-favorite-clicked", () => {

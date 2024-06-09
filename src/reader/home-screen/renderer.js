@@ -240,11 +240,15 @@ function getNewCardDiv(cardType, data, navRow, navColumn) {
   <i class="hs-path-card-image-file fas fa-images fa-2x fa-fw"></i>`;
     const questionIconHtml = `
   <i class="hs-path-card-image-file fas fa-question fa-2x fa-fw"></i>`;
+    const wwwIconHtml = `
+  <i class="hs-path-card-image-file fas fa-globe fa-2x fa-fw"></i>`;
     if (data.pathType === -1) {
       return questionIconHtml;
     } else {
       if (data.pathType === 0) {
         return fileIconHtml;
+      } else if (data.pathType === 2) {
+        return wwwIconHtml;
       } else {
         if (cardType === CardType.LATEST) {
           return imagesIconHtml;
@@ -262,7 +266,7 @@ function getNewCardDiv(cardType, data, navRow, navColumn) {
     </div>
     <div class="hs-path-card-content">
       <span>${data.name}</span
-      ><span>${data.path}</span>
+      >${data.path ? "<span>" + data.path + "</span>" : ""}
     </div>
   </div>
   ${hasButton ? buttonHtml : ""}`
@@ -356,7 +360,7 @@ function getNewCardDiv(cardType, data, navRow, navColumn) {
         const mainCardDiv = cardDiv.querySelector(".hs-path-card-main");
         mainCardDiv.title = g_cardLocalization.openInReader;
         mainCardDiv.addEventListener("click", function (event) {
-          sendIpcToMain("hs-open-file", data.path);
+          sendIpcToMain("hs-open-history-file", data.index);
           event.stopPropagation();
         });
         if (navRow !== undefined && navColumn !== undefined) {

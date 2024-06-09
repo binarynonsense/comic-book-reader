@@ -232,7 +232,7 @@
   font-weight: bolder;
 }
 
-.hs-path-card-content span:last-child {
+.hs-path-card-content span:last-child:not(:first-child) {
   font-size: 12px;
   font-style: italic;
 }
