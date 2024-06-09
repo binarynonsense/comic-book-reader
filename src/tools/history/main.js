@@ -13,6 +13,7 @@ const history = require("../../shared/main/history");
 const reader = require("../../reader/main");
 const contextMenu = require("../../shared/main/tools-menu-context");
 const tools = require("../../shared/main/tools");
+const homeScreen = require("../../reader/home-screen/main");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -129,12 +130,14 @@ function initOnIpcCallbacks() {
     history.clear();
     reader.rebuildMenuAndToolBars();
     sendIpcToRenderer("build-list", getHistory());
+    homeScreen.refresh();
   });
 
   on("remove-item", (itemIndex) => {
     history.removeIndex(itemIndex);
     reader.rebuildMenuAndToolBars();
     sendIpcToRenderer("build-list", getHistory());
+    homeScreen.refresh();
   });
 
   on("open-item", (itemIndex) => {
