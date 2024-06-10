@@ -114,14 +114,21 @@ function chooseFiles(
 }
 exports.chooseFiles = chooseFiles;
 
-function chooseFolder(window, defaultPath) {
+function chooseFolder(window, defaultPath, allowMultipleSelection) {
   if (!fs.existsSync(defaultPath)) {
     defaultPath = undefined;
   }
 
+  let properties;
+  if (allowMultipleSelection) {
+    properties = ["openDirectory", "multiSelections"];
+  } else {
+    properties = ["openDirectory"];
+  }
+
   let folderPath = dialog.showOpenDialogSync(window, {
     defaultPath: defaultPath,
-    properties: ["openDirectory"],
+    properties: properties,
   });
   return folderPath;
 }

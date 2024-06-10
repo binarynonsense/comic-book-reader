@@ -82,12 +82,13 @@ function init(mode, outputFolderPath, canEditRars) {
   document
     .getElementById("tool-cc-back-button")
     .addEventListener("click", (event) => {
-      sendIpcToMain("close");
+      sendIpcToMain("close-clicked");
     });
   document
     .getElementById("tool-cc-start-button")
     .addEventListener("click", (event) => {
-      onStart();
+      //onStart();
+      sendIpcToMain("start-clicked", g_inputList);
     });
   // sections menu
   document
@@ -132,18 +133,18 @@ function init(mode, outputFolderPath, canEditRars) {
       if (g_inputList && g_inputList.length > 0) {
         lastFilePath = g_inputList[g_inputList.length - 1].path;
       }
-      sendIpcToMain("choose-file", lastFilePath);
+      sendIpcToMain("add-file-clicked", lastFilePath);
     });
 
-  // document
-  //   .getElementById("tool-cc-add-folder-button")
-  //   .addEventListener("click", (event) => {
-  //     let lastFilePath = undefined;
-  //     if (g_inputList && g_inputList.length > 0) {
-  //       lastFilePath = g_inputList[g_inputList.length - 1].path;
-  //     }
-  //     sendIpcToMain("choose-folder", lastFilePath);
-  //   });
+  document
+    .getElementById("tool-cc-add-folder-button")
+    .addEventListener("click", (event) => {
+      let lastFilePath = undefined;
+      if (g_inputList && g_inputList.length > 0) {
+        lastFilePath = g_inputList[g_inputList.length - 1].path;
+      }
+      sendIpcToMain("add-folder-clicked", lastFilePath);
+    });
 
   updateOutputFolder(outputFolderPath);
   document
@@ -153,7 +154,7 @@ function init(mode, outputFolderPath, canEditRars) {
       if (g_inputList && g_inputList.length > 0) {
         lastFilePath = g_inputList[g_inputList.length - 1].path;
       }
-      sendIpcToMain("choose-folder", lastFilePath, g_outputFolderPath);
+      sendIpcToMain("change-folder-clicked", lastFilePath, g_outputFolderPath);
     });
 
   g_outputFormatSelect.innerHTML =
@@ -373,26 +374,32 @@ function initOnIpcCallbacks() {
     }
   });
 
-  on("add-file", (filePath, fileType) => {
-    if (filePath === undefined || fileType === undefined) return;
+  on("add-item-to-input-list", (path, type) => {
+    if (path === undefined || type === undefined) return;
 
     for (let index = 0; index < g_inputList.length; index++) {
-      if (g_inputList[index].path === filePath) {
+      if (g_inputList[index].path === path) {
         return;
       }
     }
     let id = g_inputListID++;
     g_inputList.push({
       id: id,
-      path: filePath,
-      type: fileType,
+      path: path,
+      type: type,
     });
 
     let li = document.createElement("li");
     li.className = "tools-collection-li";
+    // icon
+    let icon = document.createElement("span");
+    icon.innerHTML = `<i class="fas ${
+      type === 0 ? "fa-file" : "fa-folder"
+    }"></i>`;
+    li.appendChild(icon);
     // text
     let text = document.createElement("span");
-    text.innerText = reducePathString(filePath);
+    text.innerText = reducePathString(path);
     li.appendChild(text);
     // buttons
     let buttons = document.createElement("span");
@@ -463,6 +470,10 @@ function initOnIpcCallbacks() {
   });
 
   /////////////////////////////////////////////////////////////////////////////
+
+  on("start-accepted", (inputFiles) => {
+    onStart(inputFiles);
+  });
 
   on("start-first-file", () => {
     onStartNextFile();
@@ -753,10 +764,10 @@ function onMoveFileDownInList(element, id) {
   }
 }
 
-function onStart() {
+function onStart(inputFiles) {
   if (!g_openModal) showLogModal(); // TODO: check if first time?
 
-  g_inputFiles = structuredClone(g_inputList);
+  g_inputFiles = inputFiles;
   g_inputFilePath = undefined;
   g_inputFilesIndex = -1;
   g_numErrors = 0;

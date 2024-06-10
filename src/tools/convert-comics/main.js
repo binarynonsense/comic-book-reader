@@ -91,7 +91,7 @@ exports.open = async function (options) {
 
   if (options.inputFilePaths) {
     for (let index = 0; index < options.inputFilePaths.length; index++) {
-      await addFile(options.inputFilePaths[index]);
+      await addPathToInputList(options.inputFilePaths[index]);
     }
   }
   if (options.outputFolderPath) {
@@ -174,7 +174,7 @@ function on(id, callback) {
 }
 
 function initOnIpcCallbacks() {
-  on("close", () => {
+  on("close-clicked", () => {
     onCloseClicked();
   });
 
@@ -182,7 +182,7 @@ function initOnIpcCallbacks() {
     contextMenu.show("minimal", params, onCloseClicked);
   });
 
-  on("choose-file", async (lastFilePath) => {
+  on("add-file-clicked", async (lastFilePath) => {
     let defaultPath;
     if (lastFilePath) defaultPath = path.dirname(lastFilePath);
     try {
@@ -226,14 +226,32 @@ function initOnIpcCallbacks() {
       }
       for (let index = 0; index < filePathsList.length; index++) {
         const filePath = filePathsList[index];
-        await addFile(filePath);
+        addPathToInputList(filePath);
       }
     } catch (err) {
       // TODO: do something?
     }
   });
 
-  on("choose-folder", (inputFilePath, outputFolderPath) => {
+  on("add-folder-clicked", (lastPath) => {
+    let defaultPath;
+    if (lastPath !== undefined) {
+      defaultPath = path.dirname(lastPath);
+    }
+    let folderPathsList = appUtils.chooseFolder(
+      core.getMainWindow(),
+      defaultPath
+    );
+    if (folderPathsList === undefined) {
+      return;
+    }
+    for (let index = 0; index < folderPathsList.length; index++) {
+      const folderPath = folderPathsList[index];
+      addPathToInputList(folderPath);
+    }
+  });
+
+  on("change-folder-clicked", (inputFilePath, outputFolderPath) => {
     let defaultPath;
     if (outputFolderPath !== undefined) {
       defaultPath = outputFolderPath;
@@ -250,11 +268,31 @@ function initOnIpcCallbacks() {
     sendIpcToRenderer("change-output-folder", folderPath);
   });
 
-  on("dragged-files", async (filePaths) => {
+  on("dragged-files", (filePaths) => {
     for (let index = 0; index < filePaths.length; index++) {
       const filePath = filePaths[index];
-      await addFile(filePath);
+      addPathToInputList(filePath);
     }
+  });
+
+  on("start-clicked", async (inputList) => {
+    let inputFiles = [];
+    for (let index = 0; index < inputList.length; index++) {
+      const inputListItem = inputList[index];
+      if (inputListItem.type === 0) {
+        // FILE
+        let type = await getFileType(inputListItem.path);
+        if (type != undefined) {
+          inputFiles.push({
+            path: inputListItem.path,
+            type: type,
+          });
+        }
+      } else {
+        // DIR
+      }
+    }
+    if (inputFiles.length > 0) sendIpcToRenderer("start-accepted", inputFiles);
   });
 
   /////////////////////////
@@ -407,9 +445,19 @@ function initHandleIpcCallbacks() {
 // TOOL ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-async function addFile(filePath) {
+function addPathToInputList(inputPath) {
+  if (fs.existsSync(inputPath)) {
+    let type = 0;
+    if (fs.lstatSync(inputPath)?.isDirectory()) {
+      type = 1;
+    }
+    sendIpcToRenderer("add-item-to-input-list", inputPath, type);
+  }
+}
+
+async function getFileType(filePath) {
   let stats = fs.statSync(filePath);
-  if (!stats.isFile()) return; // avoid folders accidentally getting here
+  if (!stats.isFile()) return undefined; // avoid folders accidentally getting here
   let fileType;
   let fileExtension = path.extname(filePath).toLowerCase();
 
@@ -448,10 +496,10 @@ async function addFile(filePath) {
     ) {
       fileType = FileDataType.IMG;
     } else {
-      return;
+      return undefined;
     }
   }
-  sendIpcToRenderer("add-file", filePath, fileType);
+  return fileType;
 }
 
 function stopError(error, errorMessage) {
