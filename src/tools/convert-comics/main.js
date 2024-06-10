@@ -34,22 +34,18 @@ const ToolMode = {
   CREATE: 1,
 };
 let g_mode = ToolMode.CONVERT;
-let g_imageIndex = 0;
 
 let g_cancel = false;
 let g_worker;
 let g_workerWindow;
-let g_outputPageOrder = "byPosition";
-let g_pdfCreationMethod = "metadata";
-let g_epubCreationImageFormat = "keep-selected";
-let g_epubCreationImageStorage = "files";
-let g_imageFormat = FileExtension.NOT_SET;
-let g_outputFileBaseName;
 
 // hack to allow this at least for files from File>Convert...
 let g_inputPassword = "";
 let g_tempSubFolderPath;
 let g_creationTempSubFolderPath;
+
+let g_uiSelectedOptions = {};
+let g_imageIndex = 0;
 
 function init() {
   if (!g_isInitialized) {
@@ -58,12 +54,7 @@ function init() {
     g_isInitialized = true;
   }
 
-  g_outputPageOrder = "byPosition";
-  g_pdfCreationMethod = "metadata";
-  g_epubCreationImageFormat = "keep-selected";
-  g_epubCreationImageStorage = "files";
-  g_imageFormat = FileExtension.NOT_SET;
-  g_outputFileBaseName = undefined;
+  g_uiSelectedOptions.outputFileBaseName = undefined;
 }
 
 exports.open = async function (options) {
@@ -325,26 +316,6 @@ function initOnIpcCallbacks() {
     }
   });
 
-  on("set-page-order", (order) => {
-    g_outputPageOrder = order;
-  });
-
-  on("set-image-format", (format) => {
-    g_imageFormat = format;
-  });
-
-  on("set-pdf-creation-method", (method) => {
-    g_pdfCreationMethod = method;
-  });
-
-  on("set-epub-creation-image-format", (format) => {
-    g_epubCreationImageFormat = format;
-  });
-
-  on("set-epub-creation-image-storage", (selection) => {
-    g_epubCreationImageStorage = selection;
-  });
-
   on("start", (...args) => {
     start(...args);
   });
@@ -586,11 +557,12 @@ function stopCancel() {
   sendIpcToRenderer("file-finished-canceled");
 }
 
-function start(inputFiles, outputFileBaseName) {
+function start(inputFiles, selectedOptions) {
   g_cancel = false;
-  g_outputFileBaseName = outputFileBaseName;
+  g_uiSelectedOptions = structuredClone(selectedOptions);
   g_imageIndex = 0;
   if (g_mode === ToolMode.CONVERT) {
+    g_uiSelectedOptions.outputFileBaseName = undefined;
     sendIpcToRenderer("start-first-file");
   } else {
     g_tempSubFolderPath = temp.createSubFolder();
@@ -611,7 +583,7 @@ function start(inputFiles, outputFileBaseName) {
       for (let index = 0; index < inputFiles.length; index++) {
         const inputFilePath = inputFiles[index].path;
         let outName = path.basename(inputFilePath);
-        if (g_outputPageOrder === "byPosition") {
+        if (g_uiSelectedOptions.outputPageOrder === "byPosition") {
           const extension = path.extname(inputFilePath);
           outName = g_imageIndex++ + extension;
         }
@@ -625,13 +597,7 @@ function start(inputFiles, outputFileBaseName) {
   }
 }
 
-function startFile(
-  inputFilePath,
-  inputFileType,
-  fileNum,
-  totalFilesNum,
-  pdfExtractionMethod
-) {
+function startFile(inputFilePath, inputFileType, fileNum, totalFilesNum) {
   if (g_cancel === true) {
     stopCancel();
     return;
@@ -750,7 +716,7 @@ function startFile(
         g_mode === ToolMode.CONVERT
           ? g_tempSubFolderPath
           : g_creationTempSubFolderPath,
-        pdfExtractionMethod,
+        g_uiSelectedOptions.inputPdfExtractionMethod,
         _("tool-shared-modal-log-extracting-page") + ": ",
         g_inputPassword
       );
@@ -800,22 +766,16 @@ function copyImagesToTempFolder() {
   g_creationTempSubFolderPath = undefined;
 }
 
-async function resizeImages(
-  inputFilePath,
-  outputScale,
-  outputFormatParams,
-  outputFormat,
-  outputFolderPath,
-  outputSplitNumFiles,
-  password
-) {
+async function resizeImages(inputFilePath) {
   if (g_cancel === true) {
     stopCancel();
     return;
   }
   try {
     const sharp = require("sharp");
-    outputScale = parseInt(outputScale);
+    g_uiSelectedOptions.outputImageScale = parseInt(
+      g_uiSelectedOptions.outputImageScale
+    );
 
     let comicInfoFilePath =
       g_mode === ToolMode.CONVERT
@@ -835,7 +795,7 @@ async function resizeImages(
       return;
     }
     let didResize = false;
-    if (outputScale < 100) {
+    if (g_uiSelectedOptions.outputImageScale < 100) {
       didResize = true;
       sendIpcToRenderer(
         "update-log-text",
@@ -865,7 +825,11 @@ async function resizeImages(
         let data = await sharp(filePath).metadata();
         await sharp(filePath)
           .withMetadata()
-          .resize(Math.round(data.width * (outputScale / 100)))
+          .resize(
+            Math.round(
+              data.width * (g_uiSelectedOptions.outputImageScale / 100)
+            )
+          )
           .toFile(tmpFilePath);
 
         fs.unlinkSync(filePath);
@@ -880,9 +844,9 @@ async function resizeImages(
     }
     let didChangeFormat = false;
     if (
-      outputFormat === FileExtension.PDF ||
-      outputFormat === FileExtension.EPUB ||
-      g_imageFormat != FileExtension.NOT_SET
+      g_uiSelectedOptions.outputFormat === FileExtension.PDF ||
+      g_uiSelectedOptions.outputFormat === FileExtension.EPUB ||
+      g_uiSelectedOptions.outputImageFormat != FileExtension.NOT_SET
     ) {
       sendIpcToRenderer(
         "update-log-text",
@@ -905,8 +869,8 @@ async function resizeImages(
         let filePath = imgFilePaths[index];
         let fileFolderPath = path.dirname(filePath);
         let fileName = path.basename(filePath, path.extname(filePath));
-        let imageFormat = g_imageFormat;
-        if (outputFormat === FileExtension.PDF) {
+        let imageFormat = g_uiSelectedOptions.outputImageFormat;
+        if (g_uiSelectedOptions.outputFormat === FileExtension.PDF) {
           // change to a format compatible with pdfkit if needed
           if (
             imageFormat === FileExtension.WEBP ||
@@ -918,8 +882,9 @@ async function resizeImages(
           }
         }
         if (
-          outputFormat === FileExtension.EPUB &&
-          g_epubCreationImageFormat === "core-media-types-only"
+          g_uiSelectedOptions.outputFormat === FileExtension.EPUB &&
+          g_uiSelectedOptions.outputEpubCreationImageFormat ===
+            "core-media-types-only"
         ) {
           // change to a format supported by the epub specification if needed
           if (
@@ -941,16 +906,23 @@ async function resizeImages(
             await sharp(filePath)
               .withMetadata()
               .jpeg({
-                quality: parseInt(outputFormatParams.jpgQuality),
-                mozjpeg: outputFormatParams.jpgMozjpeg,
+                quality: parseInt(
+                  g_uiSelectedOptions.outputImageFormatParams.jpgQuality
+                ),
+                mozjpeg: g_uiSelectedOptions.outputImageFormatParams.jpgMozjpeg,
               })
               .toFile(tmpFilePath);
           } else if (imageFormat === FileExtension.PNG) {
-            if (parseInt(outputFormatParams.pngQuality) < 100) {
+            if (
+              parseInt(g_uiSelectedOptions.outputImageFormatParams.pngQuality) <
+              100
+            ) {
               await sharp(filePath)
                 .withMetadata()
                 .png({
-                  quality: parseInt(outputFormatParams.pngQuality),
+                  quality: parseInt(
+                    g_uiSelectedOptions.outputImageFormatParams.pngQuality
+                  ),
                 })
                 .toFile(tmpFilePath);
             } else {
@@ -960,14 +932,18 @@ async function resizeImages(
             await sharp(filePath)
               .withMetadata()
               .webp({
-                quality: parseInt(outputFormatParams.webpQuality),
+                quality: parseInt(
+                  g_uiSelectedOptions.outputImageFormatParams.webpQuality
+                ),
               })
               .toFile(tmpFilePath);
           } else if (imageFormat === FileExtension.AVIF) {
             await sharp(filePath)
               .withMetadata()
               .avif({
-                quality: parseInt(outputFormatParams.avifQuality),
+                quality: parseInt(
+                  g_uiSelectedOptions.outputImageFormatParams.avifQuality
+                ),
               })
               .toFile(tmpFilePath);
           }
@@ -984,8 +960,8 @@ async function resizeImages(
     // update comicbook.xml if available, needs changing and the output format is right
     if (
       comicInfoFilePath &&
-      (outputFormat === FileExtension.CBZ ||
-        outputFormat === FileExtension.CB7) &&
+      (g_uiSelectedOptions.outputFormat === FileExtension.CBZ ||
+        g_uiSelectedOptions.outputFormat === FileExtension.CB7) &&
       (didChangeFormat || didResize)
     ) {
       try {
@@ -1061,18 +1037,10 @@ async function resizeImages(
         sendIpcToRenderer("update-log-text", error);
       }
     }
-    let baseFileName = g_outputFileBaseName
-      ? g_outputFileBaseName
+    let baseFileName = g_uiSelectedOptions.outputFileBaseName
+      ? g_uiSelectedOptions.outputFileBaseName
       : path.basename(inputFilePath, path.extname(inputFilePath));
-    createFilesFromImages(
-      baseFileName,
-      outputFolderPath,
-      imgFilePaths,
-      outputFormat,
-      comicInfoFilePath,
-      outputSplitNumFiles,
-      password
-    );
+    createFilesFromImages(baseFileName, imgFilePaths, comicInfoFilePath);
   } catch (error) {
     stopError(error);
   }
@@ -1080,12 +1048,8 @@ async function resizeImages(
 
 async function createFilesFromImages(
   baseFileName,
-  outputFolderPath,
   imgFilePaths,
-  outputFormat,
-  comicInfoFilePath,
-  outputSplitNumFiles,
-  password
+  comicInfoFilePath
 ) {
   if (g_cancel === true) {
     stopCancel();
@@ -1094,7 +1058,7 @@ async function createFilesFromImages(
   try {
     sendIpcToRenderer(
       "update-log-text",
-      outputSplitNumFiles > 1
+      g_uiSelectedOptions.outputSplitNumFiles > 1
         ? _("tool-shared-modal-log-generating-new-files") + "..."
         : _("tool-shared-modal-log-generating-new-file") + "..."
     );
@@ -1125,27 +1089,27 @@ async function createFilesFromImages(
       });
     }
     let extraData = undefined;
-    if (outputFormat === FileExtension.EPUB) {
-      extraData = g_epubCreationImageStorage;
-    } else if (outputFormat === FileExtension.CBR) {
+    if (g_uiSelectedOptions.outputFormat === FileExtension.EPUB) {
+      extraData = g_uiSelectedOptions.outputEpubCreationImageStorage;
+    } else if (g_uiSelectedOptions.outputFormat === FileExtension.CBR) {
       extraData = {
         rarExePath: utils.getRarCommand(settings.getValue("rarExeFolderPath")),
         workingDir: g_tempSubFolderPath,
       };
-    } else if (outputFormat === FileExtension.PDF) {
-      extraData = g_pdfCreationMethod;
+    } else if (g_uiSelectedOptions.outputFormat === FileExtension.PDF) {
+      extraData = g_uiSelectedOptions.outputPdfCreationMethod;
     }
     g_worker.send([
       core.getLaunchInfo(),
       "create",
       baseFileName,
-      outputFolderPath,
-      outputSplitNumFiles,
+      g_uiSelectedOptions.outputFolderPath,
+      g_uiSelectedOptions.outputSplitNumFiles,
       imgFilePaths,
       comicInfoFilePath,
-      outputFormat,
+      g_uiSelectedOptions.outputFormat,
       g_tempSubFolderPath,
-      password,
+      g_uiSelectedOptions.outputPassword,
       extraData,
     ]);
   } catch (error) {
