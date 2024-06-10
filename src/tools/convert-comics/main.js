@@ -91,7 +91,7 @@ exports.open = async function (options) {
 
   if (options.inputFilePaths) {
     for (let index = 0; index < options.inputFilePaths.length; index++) {
-      await addPathToInputList(options.inputFilePaths[index]);
+      addPathToInputList(options.inputFilePaths[index]);
     }
   }
   if (options.outputFolderPath) {
@@ -290,6 +290,25 @@ function initOnIpcCallbacks() {
         }
       } else {
         // DIR
+        let filesInFolder = [];
+        if (g_mode === ToolMode.CONVERT) {
+          filesInFolder = fileUtils.getComicFilesInFolder(inputListItem.path);
+        } else {
+          filesInFolder = fileUtils.getComicAndImageFilesInFolder(
+            inputListItem.path
+          );
+        }
+        for (let j = 0; j < filesInFolder.length; j++) {
+          const element = filesInFolder[j];
+          const filePath = path.join(inputListItem.path, element);
+          let type = await getFileType(filePath);
+          if (type != undefined) {
+            inputFiles.push({
+              path: filePath,
+              type: type,
+            });
+          }
+        }
       }
     }
     if (inputFiles.length > 0) sendIpcToRenderer("start-accepted", inputFiles);
@@ -450,6 +469,18 @@ function addPathToInputList(inputPath) {
     let type = 0;
     if (fs.lstatSync(inputPath)?.isDirectory()) {
       type = 1;
+    } else {
+      if (g_mode === ToolMode.CONVERT) {
+        if (!fileUtils.hasComicBookExtension(inputPath)) return;
+      } else {
+        if (
+          !(
+            fileUtils.hasComicBookExtension(inputPath) ||
+            fileUtils.hasImageExtension(inputPath)
+          )
+        )
+          return;
+      }
     }
     sendIpcToRenderer("add-item-to-input-list", inputPath, type);
   }

@@ -150,7 +150,7 @@ exports.hasBookExtension = function (filePath) {
   return false;
 };
 
-exports.hasComicBookExtension = function (filePath) {
+function hasComicBookExtension(filePath) {
   const allowedFileExtensions = [".cbz", ".cbr", ".pdf", ".epub", ".cb7"];
   let fileExtension = path.extname(filePath).toLowerCase();
   for (i = 0; i < allowedFileExtensions.length; i++) {
@@ -159,7 +159,8 @@ exports.hasComicBookExtension = function (filePath) {
     }
   }
   return false;
-};
+}
+exports.hasComicBookExtension = hasComicBookExtension;
 
 exports.hasEpubExtension = function (filePath) {
   let fileExtension = path.extname(filePath).toLowerCase();
@@ -233,6 +234,95 @@ function getImageFilesInFolder(folderPath) {
   }
 }
 exports.getImageFilesInFolder = getImageFilesInFolder;
+
+///////////////////////////////////////////////////////////////////////////////
+// GET COMICS /////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+const getComicFilesInFolderRecursive = function (folderPath) {
+  let filesArray = [];
+  let dirs = [];
+
+  if (fs.existsSync(folderPath)) {
+    let nodes = fs.readdirSync(folderPath);
+    nodes.forEach((node) => {
+      const nodePath = path.join(folderPath, node);
+      if (fs.lstatSync(nodePath).isDirectory()) {
+        dirs.push(nodePath); // check later so this folder's imgs come first
+      } else {
+        if (hasComicBookExtension(nodePath)) {
+          filesArray.push(nodePath);
+        }
+      }
+    });
+    // now check inner folders
+    dirs.forEach((dir) => {
+      filesArray = filesArray.concat(getImageFilesInFolderRecursive(dir));
+    });
+  }
+  return filesArray;
+};
+exports.getComicFilesInFolderRecursive = getComicFilesInFolderRecursive;
+
+function getComicFilesInFolder(folderPath) {
+  if (fs.existsSync(folderPath) && fs.lstatSync(folderPath).isDirectory()) {
+    let filesInFolder = fs.readdirSync(folderPath);
+    if (filesInFolder.length === 0) {
+      return [];
+    } else {
+      return filesInFolder.filter(hasComicBookExtension);
+    }
+  } else {
+    return [];
+  }
+}
+exports.getComicFilesInFolder = getComicFilesInFolder;
+
+///////////////////////////////////////////////////////////////////////////////
+// GET COMIC BOOKS & IMAGES ///////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+const getComicAndImageFilesInFolderRecursive = function (folderPath) {
+  let filesArray = [];
+  let dirs = [];
+
+  if (fs.existsSync(folderPath)) {
+    let nodes = fs.readdirSync(folderPath);
+    nodes.forEach((node) => {
+      const nodePath = path.join(folderPath, node);
+      if (fs.lstatSync(nodePath).isDirectory()) {
+        dirs.push(nodePath); // check later so this folder's imgs come first
+      } else {
+        if (hasImageExtension(nodePath) || hasComicBookExtension(nodePath)) {
+          filesArray.push(nodePath);
+        }
+      }
+    });
+    // now check inner folders
+    dirs.forEach((dir) => {
+      filesArray = filesArray.concat(getImageFilesInFolderRecursive(dir));
+    });
+  }
+  return filesArray;
+};
+exports.getComicAndImageFilesInFolderRecursive =
+  getComicAndImageFilesInFolderRecursive;
+
+function getComicAndImageFilesInFolder(folderPath) {
+  if (fs.existsSync(folderPath) && fs.lstatSync(folderPath).isDirectory()) {
+    let filesInFolder = fs.readdirSync(folderPath);
+    if (filesInFolder.length === 0) {
+      return [];
+    } else {
+      return filesInFolder.filter((nodePath) => {
+        return hasImageExtension(nodePath) || hasComicBookExtension(nodePath);
+      });
+    }
+  } else {
+    return [];
+  }
+}
+exports.getComicAndImageFilesInFolder = getComicAndImageFilesInFolder;
 
 ///////////////////////////////////////////////////////////////////////////////
 // GET COMIC INFO FILE ////////////////////////////////////////////////////////
