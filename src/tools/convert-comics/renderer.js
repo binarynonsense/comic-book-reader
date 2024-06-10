@@ -12,11 +12,16 @@ import {
 import * as modals from "../../shared/renderer/modals.js";
 import { FileExtension } from "../../shared/renderer/constants.js";
 
-let g_mode = 0; // 0 = convert, 1 = create
+const ToolMode = {
+  CONVERT: 0,
+  CREATE: 1,
+};
+let g_mode = ToolMode.CONVERT;
 
+let g_inputList = [];
 let g_inputFiles = [];
 let g_inputFilesIndex = 0;
-let g_inputFilesID = 0;
+let g_inputListID = 0;
 
 let g_cancel = false;
 let g_numErrors = 0;
@@ -66,9 +71,10 @@ function init(mode, outputFolderPath, canEditRars) {
 
   g_outputFormat = undefined;
   g_outputPdfExtractionMethod = "embedded";
+  g_inputList = [];
   g_inputFiles = [];
   g_inputFilesIndex = -1;
-  g_inputFilesID = 0;
+  g_inputListID = 0;
   g_cancel = false;
   g_numErrors = 0;
 
@@ -123,19 +129,29 @@ function init(mode, outputFolderPath, canEditRars) {
     .getElementById("tool-cc-add-file-button")
     .addEventListener("click", (event) => {
       let lastFilePath = undefined;
-      if (g_inputFiles && g_inputFiles.length > 0) {
-        lastFilePath = g_inputFiles[g_inputFiles.length - 1].path;
+      if (g_inputList && g_inputList.length > 0) {
+        lastFilePath = g_inputList[g_inputList.length - 1].path;
       }
       sendIpcToMain("choose-file", lastFilePath);
     });
+
+  // document
+  //   .getElementById("tool-cc-add-folder-button")
+  //   .addEventListener("click", (event) => {
+  //     let lastFilePath = undefined;
+  //     if (g_inputList && g_inputList.length > 0) {
+  //       lastFilePath = g_inputList[g_inputList.length - 1].path;
+  //     }
+  //     sendIpcToMain("choose-folder", lastFilePath);
+  //   });
 
   updateOutputFolder(outputFolderPath);
   document
     .getElementById("tool-cc-change-folder-button")
     .addEventListener("click", (event) => {
       let lastFilePath = undefined;
-      if (g_inputFiles && g_inputFiles.length > 0) {
-        lastFilePath = g_inputFiles[g_inputFiles.length - 1].path;
+      if (g_inputList && g_inputList.length > 0) {
+        lastFilePath = g_inputList[g_inputList.length - 1].path;
       }
       sendIpcToMain("choose-folder", lastFilePath, g_outputFolderPath);
     });
@@ -212,7 +228,7 @@ function init(mode, outputFolderPath, canEditRars) {
 
   // conversion / creation
   g_outputNameInput = document.querySelector("#tool-cc-output-name-input");
-  if (g_mode === 0) {
+  if (g_mode === ToolMode.CONVERT) {
     document
       .getElementById("tool-cc-output-page-order-label")
       .classList.add("set-display-none");
@@ -360,13 +376,13 @@ function initOnIpcCallbacks() {
   on("add-file", (filePath, fileType) => {
     if (filePath === undefined || fileType === undefined) return;
 
-    for (let index = 0; index < g_inputFiles.length; index++) {
-      if (g_inputFiles[index].path === filePath) {
+    for (let index = 0; index < g_inputList.length; index++) {
+      if (g_inputList[index].path === filePath) {
         return;
       }
     }
-    let id = g_inputFilesID++;
-    g_inputFiles.push({
+    let id = g_inputListID++;
+    g_inputList.push({
       id: id,
       path: filePath,
       type: fileType,
@@ -461,7 +477,7 @@ function initOnIpcCallbacks() {
       avifQuality: document.querySelector("#tool-cc-avif-quality-slider").value,
       webpQuality: document.querySelector("#tool-cc-webp-quality-slider").value,
     };
-    if (g_mode === 0) {
+    if (g_mode === ToolMode.CONVERT) {
       // convert tool
       sendIpcToMain(
         "resize-images",
@@ -497,7 +513,7 @@ function initOnIpcCallbacks() {
   });
 
   on("file-finished-ok", () => {
-    if (g_mode === 1) {
+    if (g_mode === ToolMode.CREATE) {
       if (g_inputFilePath === undefined) {
         // special case, all images done at once
         sendIpcToMain(
@@ -527,7 +543,7 @@ function initOnIpcCallbacks() {
     const modalButtonClose = g_openModal.querySelector(
       "#tool-cc-modal-close-button"
     );
-    if (g_mode === 0) {
+    if (g_mode === ToolMode.CONVERT) {
       modalButtonClose.classList.remove("modal-button-success-color");
       modalButtonClose.classList.add("modal-button-danger-color");
       g_numErrors++;
@@ -616,8 +632,8 @@ function initOnIpcCallbacks() {
 function checkValidData() {
   if (
     g_outputFolderPath === undefined ||
-    g_inputFiles.length <= 0 ||
-    (g_mode === 0 && g_outputNameInput.value === "")
+    g_inputList.length <= 0 ||
+    (g_mode === ToolMode.CONVERT && g_outputNameInput.value === "")
   ) {
     g_startButton.classList.add("tools-disabled");
   } else {
@@ -660,14 +676,14 @@ function updateOutputFolder(folderPath) {
 function onRemoveFileFromList(element, id) {
   element.parentElement.removeChild(element);
   let removeIndex;
-  for (let index = 0; index < g_inputFiles.length; index++) {
-    if (g_inputFiles[index].id === id) {
+  for (let index = 0; index < g_inputList.length; index++) {
+    if (g_inputList[index].id === id) {
       removeIndex = index;
       break;
     }
   }
   if (removeIndex !== undefined) {
-    g_inputFiles.splice(removeIndex, 1);
+    g_inputList.splice(removeIndex, 1);
     checkValidData();
   }
 }
@@ -680,21 +696,21 @@ function onMoveFileUpInList(element, id) {
     let currentNode = parentNode.children[currentIndex];
     let desiredNode = parentNode.children[desiredIndex];
     // swap
-    for (let index = 0; index < g_inputFiles.length; index++) {
-      if (g_inputFiles[index].id === id) {
+    for (let index = 0; index < g_inputList.length; index++) {
+      if (g_inputList[index].id === id) {
         if (index !== currentIndex) {
           console.log("index !== currentIndex || this shouldn't happen!");
           return;
         }
         // hack to do a copy not by reference
         const currentData = JSON.parse(
-          JSON.stringify(g_inputFiles[currentIndex])
+          JSON.stringify(g_inputList[currentIndex])
         );
         const desiredData = JSON.parse(
-          JSON.stringify(g_inputFiles[desiredIndex])
+          JSON.stringify(g_inputList[desiredIndex])
         );
-        g_inputFiles[currentIndex] = desiredData;
-        g_inputFiles[desiredIndex] = currentData;
+        g_inputList[currentIndex] = desiredData;
+        g_inputList[desiredIndex] = currentData;
         // html
         parentNode.insertBefore(currentNode, desiredNode);
         checkValidData();
@@ -713,21 +729,21 @@ function onMoveFileDownInList(element, id) {
     let currentNode = parentNode.children[currentIndex];
     let desiredNode = parentNode.children[desiredIndex];
     // swap
-    for (let index = 0; index < g_inputFiles.length; index++) {
-      if (g_inputFiles[index].id === id) {
+    for (let index = 0; index < g_inputList.length; index++) {
+      if (g_inputList[index].id === id) {
         if (index !== currentIndex) {
           console.log("index !== currentIndex || this shouldn't happen!");
           return;
         }
         // hack to do a copy not by reference
         const currentData = JSON.parse(
-          JSON.stringify(g_inputFiles[currentIndex])
+          JSON.stringify(g_inputList[currentIndex])
         );
         const desiredData = JSON.parse(
-          JSON.stringify(g_inputFiles[desiredIndex])
+          JSON.stringify(g_inputList[desiredIndex])
         );
-        g_inputFiles[currentIndex] = desiredData;
-        g_inputFiles[desiredIndex] = currentData;
+        g_inputList[currentIndex] = desiredData;
+        g_inputList[desiredIndex] = currentData;
         // html
         parentNode.insertBefore(desiredNode, currentNode);
         checkValidData();
@@ -740,6 +756,7 @@ function onMoveFileDownInList(element, id) {
 function onStart() {
   if (!g_openModal) showLogModal(); // TODO: check if first time?
 
+  g_inputFiles = structuredClone(g_inputList);
   g_inputFilePath = undefined;
   g_inputFilesIndex = -1;
   g_numErrors = 0;
@@ -766,7 +783,7 @@ function onStart() {
   sendIpcToMain(
     "start",
     g_inputFiles,
-    g_mode === 0 ? undefined : g_outputNameInput.value
+    g_mode === ToolMode.CONVERT ? undefined : g_outputNameInput.value
   );
 }
 

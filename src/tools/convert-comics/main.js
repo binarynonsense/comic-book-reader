@@ -29,7 +29,11 @@ const tools = require("../../shared/main/tools");
 
 let g_isInitialized = false;
 
-let g_mode = 0; // 0 = convert, 1 = create
+const ToolMode = {
+  CONVERT: 0,
+  CREATE: 1,
+};
+let g_mode = ToolMode.CONVERT;
 let g_imageIndex = 0;
 
 let g_cancel = false;
@@ -185,7 +189,7 @@ function initOnIpcCallbacks() {
       let allowMultipleSelection = true;
       let allowedFileTypesName;
       let allowedFileTypesList;
-      if (g_mode === 0) {
+      if (g_mode === ToolMode.CONVERT) {
         allowedFileTypesName = _("dialog-file-types-comics");
         allowedFileTypesList = [
           FileExtension.CBZ,
@@ -306,7 +310,7 @@ function initOnIpcCallbacks() {
 
   on("end", (wasCanceled, numFiles, numErrors, numAttempted) => {
     if (!wasCanceled) {
-      if (g_mode === 0) {
+      if (g_mode === ToolMode.CONVERT) {
         sendIpcToRenderer(
           "modal-update-title-text",
           _("tool-shared-modal-title-conversion-finished")
@@ -344,13 +348,13 @@ function initOnIpcCallbacks() {
     } else {
       sendIpcToRenderer(
         "modal-update-title-text",
-        g_mode === 0
+        g_mode === ToolMode.CONVERT
           ? _("tool-shared-modal-title-conversion-canceled")
           : _("tool-shared-modal-title-creation-canceled")
       );
       sendIpcToRenderer(
         "update-info-text",
-        g_mode === 0
+        g_mode === ToolMode.CONVERT
           ? _(
               "tool-shared-modal-info-conversion-results",
               numAttempted - numErrors,
@@ -434,7 +438,7 @@ async function addFile(filePath) {
     ) {
       fileType = FileDataType.SEVENZIP;
     } else if (
-      g_mode === 1 &&
+      g_mode === ToolMode.CREATE &&
       (fileExtension === "." + FileExtension.JPG ||
         fileExtension === "." + FileExtension.JPEG ||
         fileExtension === "." + FileExtension.PNG ||
@@ -482,7 +486,7 @@ function stopError(error, errorMessage) {
   sendIpcToRenderer("update-log-text", uiMsg);
   sendIpcToRenderer(
     "update-log-text",
-    g_mode === 0
+    g_mode === ToolMode.CONVERT
       ? _("tool-shared-modal-log-conversion-error")
       : _("tool-shared-modal-log-creation-error")
   );
@@ -496,7 +500,7 @@ function stopCancel() {
   g_creationTempSubFolderPath = undefined;
   sendIpcToRenderer(
     "update-log-text",
-    g_mode === 0
+    g_mode === ToolMode.CONVERT
       ? _("tool-shared-modal-log-conversion-canceled")
       : _("tool-shared-modal-log-creation-canceled")
   );
@@ -507,7 +511,7 @@ function start(inputFiles, outputFileBaseName) {
   g_cancel = false;
   g_outputFileBaseName = outputFileBaseName;
   g_imageIndex = 0;
-  if (g_mode === 0) {
+  if (g_mode === ToolMode.CONVERT) {
     sendIpcToRenderer("start-first-file");
   } else {
     g_tempSubFolderPath = temp.createSubFolder();
@@ -555,7 +559,7 @@ function startFile(
   }
   sendIpcToRenderer(
     "modal-update-title-text",
-    g_mode === 0
+    g_mode === ToolMode.CONVERT
       ? _("tool-shared-modal-title-converting") +
           (totalFilesNum > 1 ? " (" + fileNum + "/" + totalFilesNum + ")" : "")
       : _("tool-shared-modal-title-adding") +
@@ -567,13 +571,13 @@ function startFile(
   );
   sendIpcToRenderer(
     "update-log-text",
-    g_mode === 0
+    g_mode === ToolMode.CONVERT
       ? _("tool-shared-modal-title-converting")
       : _("tool-shared-modal-title-adding")
   );
   sendIpcToRenderer("update-log-text", inputFilePath);
 
-  if (g_mode === 0) {
+  if (g_mode === ToolMode.CONVERT) {
     g_tempSubFolderPath = temp.createSubFolder();
   } else {
     // g_tempSubFolderPath was created on start
@@ -616,7 +620,7 @@ function startFile(
             stopCancel();
             return;
           }
-          if (g_mode === 1) {
+          if (g_mode === ToolMode.CREATE) {
             copyImagesToTempFolder();
           }
           sendIpcToRenderer("file-images-extracted");
@@ -632,7 +636,9 @@ function startFile(
       "extract",
       inputFilePath,
       inputFileType,
-      g_mode === 0 ? g_tempSubFolderPath : g_creationTempSubFolderPath,
+      g_mode === ToolMode.CONVERT
+        ? g_tempSubFolderPath
+        : g_creationTempSubFolderPath,
       g_inputPassword,
     ]);
   } else if (inputFileType === FileDataType.PDF) {
@@ -662,7 +668,9 @@ function startFile(
         "extract-pdf",
         "tool-convert-comics",
         inputFilePath,
-        g_mode === 0 ? g_tempSubFolderPath : g_creationTempSubFolderPath,
+        g_mode === ToolMode.CONVERT
+          ? g_tempSubFolderPath
+          : g_creationTempSubFolderPath,
         pdfExtractionMethod,
         _("tool-shared-modal-log-extracting-page") + ": ",
         g_inputPassword
@@ -682,7 +690,7 @@ exports.onIpcFromToolsWorkerRenderer = function (...args) {
       g_workerWindow.destroy();
       g_workerWindow = undefined;
       if (!args[1]) {
-        if (g_mode === 1) {
+        if (g_mode === ToolMode.CREATE) {
           copyImagesToTempFolder();
         }
         sendIpcToRenderer("file-images-extracted");
@@ -731,7 +739,7 @@ async function resizeImages(
     outputScale = parseInt(outputScale);
 
     let comicInfoFilePath =
-      g_mode === 0
+      g_mode === ToolMode.CONVERT
         ? fileUtils.getComicInfoFileInFolderRecursive(g_tempSubFolderPath)
         : undefined;
     let imgFilePaths =
@@ -1125,7 +1133,7 @@ function getLocalization() {
     {
       id: "tool-cc-title-text",
       text:
-        g_mode === 0
+        g_mode === ToolMode.CONVERT
           ? _("tool-cc-title").toUpperCase()
           : _("tool-cr-title").toUpperCase(),
     },
@@ -1136,7 +1144,7 @@ function getLocalization() {
     {
       id: "tool-cc-start-button-text",
       text:
-        g_mode === 0
+        g_mode === ToolMode.CONVERT
           ? _("tool-shared-ui-convert").toUpperCase()
           : _("tool-shared-ui-create").toUpperCase(),
     },
@@ -1156,11 +1164,15 @@ function getLocalization() {
     },
     {
       id: "tool-cc-input-files-text",
-      text: _("tool-shared-ui-input-files"),
+      text: _("tool-shared-ui-input-list"),
     },
     {
       id: "tool-cc-add-file-button-text",
-      text: _("tool-shared-ui-add").toUpperCase(),
+      text: _("tool-shared-ui-add-file").toUpperCase(),
+    },
+    {
+      id: "tool-cc-add-folder-button-text",
+      text: _("tool-shared-ui-add-folder").toUpperCase(),
     },
     //////////////////////////////////////////////
     {
