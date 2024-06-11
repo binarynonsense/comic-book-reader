@@ -257,7 +257,7 @@ const getComicFilesInFolderRecursive = function (folderPath) {
     });
     // now check inner folders
     dirs.forEach((dir) => {
-      filesArray = filesArray.concat(getImageFilesInFolderRecursive(dir));
+      filesArray = filesArray.concat(getComicFilesInFolderRecursive(dir));
     });
   }
   return filesArray;
@@ -300,7 +300,9 @@ const getComicAndImageFilesInFolderRecursive = function (folderPath) {
     });
     // now check inner folders
     dirs.forEach((dir) => {
-      filesArray = filesArray.concat(getImageFilesInFolderRecursive(dir));
+      filesArray = filesArray.concat(
+        getComicAndImageFilesInFolderRecursive(dir)
+      );
     });
   }
   return filesArray;
