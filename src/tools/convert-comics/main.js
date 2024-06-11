@@ -266,8 +266,9 @@ function initOnIpcCallbacks() {
     }
   });
 
-  on("start-clicked", async (inputList) => {
+  on("start-clicked", async (inputList, selectedOptions) => {
     let inputFiles = [];
+    g_uiSelectedOptions = structuredClone(selectedOptions);
     for (let index = 0; index < inputList.length; index++) {
       const inputListItem = inputList[index];
       if (inputListItem.type === 0) {
@@ -283,21 +284,47 @@ function initOnIpcCallbacks() {
         // DIR
         let filesInFolder = [];
         if (g_mode === ToolMode.CONVERT) {
-          filesInFolder = fileUtils.getComicFilesInFolder(inputListItem.path);
+          if (g_uiSelectedOptions.inputSearchFoldersRecursively) {
+            filesInFolder = fileUtils.getComicFilesInFolderRecursive(
+              inputListItem.path
+            );
+          } else {
+            filesInFolder = fileUtils.getComicFilesInFolder(inputListItem.path);
+          }
         } else {
-          filesInFolder = fileUtils.getComicAndImageFilesInFolder(
-            inputListItem.path
-          );
+          if (g_uiSelectedOptions.inputSearchFoldersRecursively) {
+            filesInFolder = fileUtils.getComicAndImageFilesInFolderRecursive(
+              inputListItem.path
+            );
+          } else {
+            filesInFolder = fileUtils.getComicAndImageFilesInFolder(
+              inputListItem.path
+            );
+          }
         }
-        for (let j = 0; j < filesInFolder.length; j++) {
-          const element = filesInFolder[j];
-          const filePath = path.join(inputListItem.path, element);
-          let type = await getFileType(filePath);
-          if (type != undefined) {
-            inputFiles.push({
-              path: filePath,
-              type: type,
-            });
+        if (g_uiSelectedOptions.inputSearchFoldersRecursively) {
+          for (let j = 0; j < filesInFolder.length; j++) {
+            const element = filesInFolder[j];
+            const filePath = element;
+            let type = await getFileType(filePath);
+            if (type != undefined) {
+              inputFiles.push({
+                path: filePath,
+                type: type,
+              });
+            }
+          }
+        } else {
+          for (let j = 0; j < filesInFolder.length; j++) {
+            const element = filesInFolder[j];
+            const filePath = path.join(inputListItem.path, element);
+            let type = await getFileType(filePath);
+            if (type != undefined) {
+              inputFiles.push({
+                path: filePath,
+                type: type,
+              });
+            }
           }
         }
       }
@@ -557,9 +584,8 @@ function stopCancel() {
   sendIpcToRenderer("file-finished-canceled");
 }
 
-function start(inputFiles, selectedOptions) {
+function start(inputFiles) {
   g_cancel = false;
-  g_uiSelectedOptions = structuredClone(selectedOptions);
   g_imageIndex = 0;
   if (g_mode === ToolMode.CONVERT) {
     g_uiSelectedOptions.outputFileBaseName = undefined;
@@ -1266,6 +1292,10 @@ function getLocalization() {
     {
       id: "tool-cc-advanced-input-options-text",
       text: _("tool-shared-ui-advanced-input-options"),
+    },
+    {
+      id: "tool-cc-folders-recursively-text",
+      text: _("tool-shared-ui-input-folders-recursively"),
     },
     {
       id: "tool-cc-pdf-extraction-text",

@@ -47,7 +47,7 @@ let g_localizedMoveDownInListText;
 let g_localizedModalCancelButtonText;
 let g_localizedModalCloseButtonText;
 
-let g_selectedOptions = {};
+let g_uiSelectedOptions = {};
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -85,8 +85,8 @@ function init(mode, outputFolderPath, canEditRars) {
   document
     .getElementById("tool-cc-start-button")
     .addEventListener("click", (event) => {
-      //onStart();
-      sendIpcToMain("start-clicked", g_inputList);
+      updateSelectedOptions();
+      sendIpcToMain("start-clicked", g_inputList, g_uiSelectedOptions);
     });
   // sections menu
   document
@@ -152,7 +152,7 @@ function init(mode, outputFolderPath, canEditRars) {
       sendIpcToMain(
         "change-folder-clicked",
         lastFilePath,
-        g_selectedOptions.outputFolderPath
+        g_uiSelectedOptions.outputFolderPath
       );
     });
 
@@ -293,38 +293,41 @@ function switchSection(id) {
 }
 
 function updateSelectedOptions() {
-  g_selectedOptions.inputPdfExtractionMethod = document.getElementById(
+  g_uiSelectedOptions.inputSearchFoldersRecursively = document.querySelector(
+    "#tool-cc-folders-recursively-checkbox"
+  ).checked;
+  g_uiSelectedOptions.inputPdfExtractionMethod = document.getElementById(
     "tool-cc-pdf-extraction-select"
   ).value;
   // g_selectedOptions.outputFolderPath is autoupdated
-  g_selectedOptions.outputFormat = g_outputFormatSelect.value;
-  g_selectedOptions.outputImageFormat = g_outputImageFormatSelect.value;
+  g_uiSelectedOptions.outputFormat = g_outputFormatSelect.value;
+  g_uiSelectedOptions.outputImageFormat = g_outputImageFormatSelect.value;
   if (g_mode === ToolMode.CONVERT) {
-    g_selectedOptions.outputFileBaseName = "";
+    g_uiSelectedOptions.outputFileBaseName = "";
   } else {
-    g_selectedOptions.outputFileBaseName = g_outputNameInput.value;
+    g_uiSelectedOptions.outputFileBaseName = g_outputNameInput.value;
   }
-  g_selectedOptions.outputImageScale = document.querySelector(
+  g_uiSelectedOptions.outputImageScale = document.querySelector(
     "#tool-cc-output-image-scale-slider"
   ).value;
-  g_selectedOptions.outputSplitNumFiles = g_outputSplitNumFilesInput.value;
-  g_selectedOptions.outputPassword = g_outputPasswordInput.value;
+  g_uiSelectedOptions.outputSplitNumFiles = g_outputSplitNumFilesInput.value;
+  g_uiSelectedOptions.outputPassword = g_outputPasswordInput.value;
 
-  g_selectedOptions.outputPageOrder = document.getElementById(
+  g_uiSelectedOptions.outputPageOrder = document.getElementById(
     "tool-cc-output-page-order-select"
   ).value;
   console.log(4);
-  g_selectedOptions.outputPdfCreationMethod = document.getElementById(
+  g_uiSelectedOptions.outputPdfCreationMethod = document.getElementById(
     "tool-cc-pdf-creation-select"
   ).value;
-  g_selectedOptions.outputEpubCreationImageFormat = document.getElementById(
+  g_uiSelectedOptions.outputEpubCreationImageFormat = document.getElementById(
     "tool-cc-epub-creation-image-format-select"
   ).value;
-  g_selectedOptions.outputEpubCreationImageStorage = document.getElementById(
+  g_uiSelectedOptions.outputEpubCreationImageStorage = document.getElementById(
     "tool-cc-epub-creation-image-storage-select"
   ).value;
 
-  g_selectedOptions.outputImageFormatParams = {
+  g_uiSelectedOptions.outputImageFormatParams = {
     jpgQuality: document.querySelector("#tool-cc-jpg-quality-slider").value,
     jpgMozjpeg: document.querySelector("#tool-cc-jpg-mozjpeg-checkbox").checked,
     pngQuality: document.querySelector("#tool-cc-png-quality-slider").value,
@@ -625,7 +628,7 @@ function initOnIpcCallbacks() {
 function checkValidData() {
   updateSelectedOptions();
   if (
-    g_selectedOptions.outputFolderPath === undefined ||
+    g_uiSelectedOptions.outputFolderPath === undefined ||
     g_inputList.length <= 0 ||
     (g_mode === ToolMode.CONVERT && g_outputNameInput.value === "")
   ) {
@@ -656,13 +659,13 @@ function checkValidData() {
 }
 
 function updateOutputFolder(folderPath) {
-  g_selectedOptions.outputFolderPath = folderPath;
+  g_uiSelectedOptions.outputFolderPath = folderPath;
   g_outputFolderDiv.innerHTML = "";
   let li = document.createElement("li");
   li.className = "tools-collection-li";
   // text
   let text = document.createElement("span");
-  text.innerText = reducePathString(g_selectedOptions.outputFolderPath);
+  text.innerText = reducePathString(g_uiSelectedOptions.outputFolderPath);
   li.appendChild(text);
   g_outputFolderDiv.appendChild(li);
 }
@@ -772,8 +775,7 @@ function onStart(inputFiles) {
     modalButtonClose.classList.remove("modal-button-danger-color");
   }
 
-  updateSelectedOptions();
-  sendIpcToMain("start", g_inputFiles, g_selectedOptions);
+  sendIpcToMain("start", g_inputFiles);
 }
 
 function onStartNextFile() {
