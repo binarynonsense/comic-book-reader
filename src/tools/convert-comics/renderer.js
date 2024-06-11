@@ -29,8 +29,6 @@ let g_numErrors = 0;
 let g_inputFilePath;
 let g_inputFileType;
 
-let g_outputImageFormatNotSetText = "";
-
 let g_inputListDiv;
 let g_outputFolderDiv;
 let g_startButton;
@@ -41,11 +39,7 @@ let g_outputPasswordInput;
 
 let g_outputNameInput;
 
-let g_localizedRemoveFromListText;
-let g_localizedMoveUpInListText;
-let g_localizedMoveDownInListText;
-let g_localizedModalCancelButtonText;
-let g_localizedModalCloseButtonText;
+let g_localizedTexts = {};
 
 let g_uiSelectedOptions = {};
 
@@ -117,10 +111,6 @@ function init(mode, outputFolderPath, canEditRars) {
 
   g_startButton = document.querySelector("#tool-cc-start-button");
 
-  g_localizedRemoveFromListText = "";
-  g_localizedMoveUpInListText = "";
-  g_localizedMoveDownInListText = "";
-
   document
     .getElementById("tool-cc-add-file-button")
     .addEventListener("click", (event) => {
@@ -142,19 +132,44 @@ function init(mode, outputFolderPath, canEditRars) {
     });
 
   updateOutputFolder(outputFolderPath);
-  document
-    .getElementById("tool-cc-change-folder-button")
-    .addEventListener("click", (event) => {
-      let lastFilePath = undefined;
-      if (g_inputList && g_inputList.length > 0) {
-        lastFilePath = g_inputList[g_inputList.length - 1].path;
+  const outputFolderUl = document.getElementById("tool-cc-output-folder");
+  const outputFolderChangeButton = document.getElementById(
+    "tool-cc-change-folder-button"
+  );
+  outputFolderChangeButton.addEventListener("click", (event) => {
+    let lastFilePath = undefined;
+    if (g_inputList && g_inputList.length > 0) {
+      lastFilePath = g_inputList[g_inputList.length - 1].path;
+    }
+    sendIpcToMain(
+      "change-folder-clicked",
+      lastFilePath,
+      g_uiSelectedOptions.outputFolderPath
+    );
+  });
+
+  const outputFolderOptionSelect = document.getElementById(
+    "tool-cc-output-folder-option-select"
+  );
+  if (g_mode === ToolMode.CONVERT) {
+    outputFolderOptionSelect.innerHTML =
+      `<option value="0">${g_localizedTexts.outputFolderOption0}</option>` +
+      `<option value="1">${g_localizedTexts.outputFolderOption1}</option>`;
+    outputFolderOptionSelect.addEventListener("change", (event) => {
+      if (outputFolderOptionSelect.value === "0") {
+        outputFolderUl.classList.remove("set-display-none");
+        outputFolderChangeButton.classList.remove("set-display-none");
+      } else {
+        outputFolderUl.classList.add("set-display-none");
+        outputFolderChangeButton.classList.add("set-display-none");
       }
-      sendIpcToMain(
-        "change-folder-clicked",
-        lastFilePath,
-        g_uiSelectedOptions.outputFolderPath
-      );
     });
+  } else {
+    outputFolderOptionSelect.classList.add("set-display-none");
+    document
+      .getElementById("tool-cc-tooltip-output-folder")
+      .classList.remove("set-display-none");
+  }
 
   g_outputFormatSelect.innerHTML =
     '<option value="cbz">cbz</option>' +
@@ -172,7 +187,7 @@ function init(mode, outputFolderPath, canEditRars) {
     '<option value="' +
     FileExtension.NOT_SET +
     '">' +
-    g_outputImageFormatNotSetText +
+    g_localizedTexts.outputImageFormatNotSet +
     "</option>" +
     '<option value="jpg">jpg</option>' +
     '<option value="png">png</option>' +
@@ -300,6 +315,9 @@ function updateSelectedOptions() {
     "tool-cc-pdf-extraction-select"
   ).value;
   // g_selectedOptions.outputFolderPath is autoupdated
+  g_uiSelectedOptions.outputFolderOption = document.getElementById(
+    "tool-cc-output-folder-option-select"
+  ).value;
   g_uiSelectedOptions.outputFormat = g_outputFormatSelect.value;
   g_uiSelectedOptions.outputImageFormat = g_outputImageFormatSelect.value;
   if (g_mode === ToolMode.CONVERT) {
@@ -371,8 +389,8 @@ function initOnIpcCallbacks() {
 
   on("hide", () => {});
 
-  on("update-localization", (localization, tooltipsLocalization) => {
-    updateLocalization(localization, tooltipsLocalization);
+  on("update-localization", (...args) => {
+    updateLocalization(...args);
   });
 
   on("update-window", () => {
@@ -420,7 +438,7 @@ function initOnIpcCallbacks() {
     // up icon - clickable
     {
       let button = document.createElement("span");
-      button.title = g_localizedMoveUpInListText;
+      button.title = g_localizedTexts.moveUpInList;
       button.addEventListener("click", (event) => {
         onMoveFileUpInList(li, id);
       });
@@ -431,7 +449,7 @@ function initOnIpcCallbacks() {
     // down icon - clickable
     {
       let button = document.createElement("span");
-      button.title = g_localizedMoveDownInListText;
+      button.title = g_localizedTexts.moveDownInList;
       button.addEventListener("click", (event) => {
         onMoveFileDownInList(li, id);
       });
@@ -442,7 +460,7 @@ function initOnIpcCallbacks() {
     // remove icon - clickable
     {
       let button = document.createElement("span");
-      button.title = g_localizedRemoveFromListText;
+      button.title = g_localizedTexts.removeFromList;
       button.addEventListener("click", (event) => {
         onRemoveFileFromList(li, id);
       });
@@ -766,8 +784,8 @@ function onStart(inputFiles) {
   const modalButtonClose = g_openModal.querySelector(
     "#tool-cc-modal-close-button"
   );
-  modalButtonCancel.innerText = g_localizedModalCancelButtonText;
-  modalButtonClose.innerText = g_localizedModalCloseButtonText;
+  modalButtonCancel.innerText = g_localizedTexts.modalCancelButton;
+  modalButtonClose.innerText = g_localizedTexts.modalCloseButton;
   modalButtonCancel.classList.remove("set-display-none");
   modalButtonClose.classList.add("set-display-none");
   if (g_numErrors === 0) {
@@ -920,17 +938,15 @@ function updateLogText(text, append = true) {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-function updateLocalization(localization, tooltipsLocalization) {
+function updateLocalization(
+  localization,
+  tooltipsLocalization,
+  localizedTexts
+) {
   for (let index = 0; index < localization.length; index++) {
     const element = localization[index];
     const domElement = document.querySelector("#" + element.id);
-    if (element.id === "tool-cc-keep-format-text") {
-      g_outputImageFormatNotSetText = element.text;
-    } else if (element.id === "tool-cc-modal-close-button-text") {
-      g_localizedModalCloseButtonText = element.text;
-    } else if (element.id === "tool-cc-modal-cancel-button-text") {
-      g_localizedModalCancelButtonText = element.text;
-    } else if (domElement !== null) {
+    if (domElement !== null) {
       domElement.innerHTML = element.text;
     }
   }
@@ -938,16 +954,12 @@ function updateLocalization(localization, tooltipsLocalization) {
   for (let index = 0; index < tooltipsLocalization.length; index++) {
     const element = tooltipsLocalization[index];
     const domElement = document.querySelector("#" + element.id);
-    if (element.id === "tool-cc-tooltip-remove-from-list") {
-      g_localizedRemoveFromListText = element.text;
-    } else if (element.id === "tool-cc-tooltip-move-up-in-list") {
-      g_localizedMoveUpInListText = element.text;
-    } else if (element.id === "tool-cc-tooltip-move-down-in-list") {
-      g_localizedMoveDownInListText = element.text;
-    } else if (domElement !== null) {
+    if (domElement !== null) {
       domElement.title = element.text;
     }
   }
+
+  g_localizedTexts = localizedTexts;
 }
 
 function reducePathString(input) {

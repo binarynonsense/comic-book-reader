@@ -1066,13 +1066,19 @@ async function resizeImages(inputFilePath) {
     let baseFileName = g_uiSelectedOptions.outputFileBaseName
       ? g_uiSelectedOptions.outputFileBaseName
       : path.basename(inputFilePath, path.extname(inputFilePath));
-    createFilesFromImages(baseFileName, imgFilePaths, comicInfoFilePath);
+    createFilesFromImages(
+      inputFilePath,
+      baseFileName,
+      imgFilePaths,
+      comicInfoFilePath
+    );
   } catch (error) {
     stopError(error);
   }
 }
 
 async function createFilesFromImages(
+  inputFilePath,
   baseFileName,
   imgFilePaths,
   comicInfoFilePath
@@ -1125,11 +1131,18 @@ async function createFilesFromImages(
     } else if (g_uiSelectedOptions.outputFormat === FileExtension.PDF) {
       extraData = g_uiSelectedOptions.outputPdfCreationMethod;
     }
+    let outputFolderPath = g_uiSelectedOptions.outputFolderPath;
+    if (
+      g_mode === ToolMode.CONVERT &&
+      g_uiSelectedOptions.outputFolderOption == "1"
+    ) {
+      outputFolderPath = path.dirname(inputFilePath);
+    }
     g_worker.send([
       core.getLaunchInfo(),
       "create",
       baseFileName,
-      g_uiSelectedOptions.outputFolderPath,
+      outputFolderPath,
       g_uiSelectedOptions.outputSplitNumFiles,
       imgFilePaths,
       comicInfoFilePath,
@@ -1151,7 +1164,17 @@ function updateLocalizedText() {
   sendIpcToRenderer(
     "update-localization",
     getLocalization(),
-    getTooltipsLocalization()
+    getTooltipsLocalization(),
+    {
+      removeFromList: _("tool-shared-tooltip-remove-from-list"),
+      moveUpInList: _("tool-shared-tooltip-move-up-in-list"),
+      moveDownInList: _("tool-shared-tooltip-move-down-in-list"),
+      outputImageFormatNotSet: _("tool-shared-ui-output-options-format-keep"),
+      modalCloseButton: _("tool-shared-ui-close").toUpperCase(),
+      modalCancelButton: _("tool-shared-ui-cancel").toUpperCase(),
+      outputFolderOption0: _("tool-shared-ui-output-folder-0"),
+      outputFolderOption1: _("tool-shared-ui-output-folder-1"),
+    }
   );
 }
 exports.updateLocalizedText = updateLocalizedText;
@@ -1169,18 +1192,6 @@ function getTooltipsLocalization() {
     {
       id: "tool-cc-tooltip-output-folder",
       text: _("tool-shared-tooltip-output-folder"),
-    },
-    {
-      id: "tool-cc-tooltip-remove-from-list",
-      text: _("tool-shared-tooltip-remove-from-list"),
-    },
-    {
-      id: "tool-cc-tooltip-move-up-in-list",
-      text: _("tool-shared-tooltip-move-up-in-list"),
-    },
-    {
-      id: "tool-cc-tooltip-move-down-in-list",
-      text: _("tool-shared-tooltip-move-down-in-list"),
     },
     {
       id: "tool-cc-tooltip-pdf-extraction",
@@ -1364,18 +1375,5 @@ function getLocalization() {
       text: _("tool-shared-ui-epub-creation-image-storage-o2"),
     },
     //////////////////////////////////////////////
-    {
-      id: "tool-cc-keep-format-text",
-      text: _("tool-shared-ui-output-options-format-keep"),
-    },
-
-    {
-      id: "tool-cc-modal-close-button-text",
-      text: _("tool-shared-ui-close").toUpperCase(),
-    },
-    {
-      id: "tool-cc-modal-cancel-button-text",
-      text: _("tool-shared-ui-cancel").toUpperCase(),
-    },
   ];
 }
