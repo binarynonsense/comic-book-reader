@@ -73,7 +73,7 @@
     "music-metadata": "7.13.4",
     "node-7z": "^3.0.0",
     "node-unrar-js": "^2.0.2",
-    "pdfkit": "^0.13.0",
+    "pdfkit": "^0.15.0",
     "qrcode": "^1.5.3",
     "sanitize-html": "^2.13.0",
     "sharp": "^0.33.4",
