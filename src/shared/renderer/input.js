@@ -232,9 +232,9 @@ function initMouse() {
   document.addEventListener("click", function (event) {
     if (getOpenModal()) return;
     getCurrentTool().onInputEvent("click", event);
-    // TODO: make margin a percentage of the window height?
-    const margin = 10;
-    const deltaTime = Date.now() - g_mouseDownTime;
+    // // TODO: make margin a percentage of the window height?
+    // const margin = 10;
+    // const deltaTime = Date.now() - g_mouseDownTime;
     // const wasDrag =
     //   (deltaTime > 1500 && (g_mouseMovedX > 0 || g_mouseMovedY > 0)) ||
     //   (deltaTime > 500 && (g_mouseMovedX > margin || g_mouseMovedY > margin));
