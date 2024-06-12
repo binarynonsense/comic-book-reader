@@ -235,9 +235,10 @@ function initMouse() {
     // TODO: make margin a percentage of the window height?
     const margin = 10;
     const deltaTime = Date.now() - g_mouseDownTime;
-    const wasDrag =
-      (deltaTime > 1500 && (g_mouseMovedX > 0 || g_mouseMovedY > 0)) ||
-      (deltaTime > 500 && (g_mouseMovedX > margin || g_mouseMovedY > margin));
+    // const wasDrag =
+    //   (deltaTime > 1500 && (g_mouseMovedX > 0 || g_mouseMovedY > 0)) ||
+    //   (deltaTime > 500 && (g_mouseMovedX > margin || g_mouseMovedY > margin));
+    const wasDrag = g_mouseMovedX > 0 || g_mouseMovedY > 0;
     if (!wasDrag && event.pointerType === "mouse") {
       getCurrentTool().onInputEvent("acbr-click", {
         event: event,
