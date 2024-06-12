@@ -582,7 +582,7 @@ if (!gotTheLock) {
 ///////////////////////////////////////////////////////////////////////////////
 
 // NOTE: (2024/05/28) I'm using v29.1.1 of electron as showOpenDialogSync was
-// ignoring defaultPath parameter in 29.1.4, 30.0.6 and 30.0.8 on Linux,
+// ignoring defaultPath parameter in 29.1.4, 30.0.6, 30.0.8 AND 31.0.0 on Linux,
 // always opening in the Home folder (haven't tested Windows).
 // TODO: try newer versions & investigate further.
 
