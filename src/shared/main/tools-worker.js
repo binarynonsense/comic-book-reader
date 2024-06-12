@@ -81,6 +81,7 @@ async function createFiles(
   imgFilePaths,
   comicInfoFilePath,
   outputFormat,
+  outputFileSameName,
   tempFolderPath,
   password,
   extra
@@ -104,13 +105,22 @@ async function createFiles(
         outputFolderPath,
         baseFileName + "." + outputFormat
       );
-      let i = 1;
-      while (fs.existsSync(outputFilePath)) {
-        i++;
-        outputFilePath = path.join(
-          outputFolderPath,
-          baseFileName + " (" + i + ")." + outputFormat
-        );
+
+      if (fs.existsSync(outputFilePath)) {
+        if (outputFileSameName === "0") {
+          let i = 1;
+          while (fs.existsSync(outputFilePath)) {
+            i++;
+            outputFilePath = path.join(
+              outputFolderPath,
+              baseFileName + " (" + i + ")." + outputFormat
+            );
+          }
+        } else if (outputFileSameName === "2") {
+          // skip
+          // shouldn't be here
+          throw "file already exists";
+        }
       }
       filesData.push({
         imgFilePaths: imgFilePaths,
@@ -120,14 +130,24 @@ async function createFiles(
       // multiple files in a subfolder in the output folder
       const subArrays = utils.splitArray(imgFilePaths, outputSplitNumFiles);
       outputSubFolderPath = path.join(outputFolderPath, baseFileName);
-      let i = 1;
-      while (fs.existsSync(outputSubFolderPath)) {
-        i++;
-        outputSubFolderPath = path.join(
-          outputFolderPath,
-          baseFileName + " (" + i + ")"
-        );
+
+      if (fs.existsSync(outputSubFolderPath)) {
+        if (outputFileSameName == "0") {
+          let i = 1;
+          while (fs.existsSync(outputSubFolderPath)) {
+            i++;
+            outputSubFolderPath = path.join(
+              outputFolderPath,
+              baseFileName + " (" + i + ")"
+            );
+          }
+        } else if (outputFileSameName == "2") {
+          // skip
+          // shouldn't be here
+          throw "file already exists";
+        }
       }
+
       for (let index = 0; index < subArrays.length; index++) {
         let outputFilePath = path.join(
           tempFolderPath,
@@ -224,6 +244,13 @@ async function createFiles(
           outputSubFolderPath,
           fileName
         );
+        if (fs.existsSync(filesData[index].outputFilePath)) {
+          if (outputFileSameName != "1") {
+            // skip or unused
+            // shouldn't be here
+            throw "file already exists";
+          }
+        }
         fileUtils.moveFile(tempFilePath, filesData[index].outputFilePath);
       }
       createdFiles.push(filesData[index].outputFilePath);

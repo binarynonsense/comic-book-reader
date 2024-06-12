@@ -531,7 +531,7 @@ async function getFileType(filePath) {
   return fileType;
 }
 
-function stopError(error, errorMessage) {
+function stopError(error, errorMessage, nameAsError = true) {
   let uiMsg = errorMessage;
   if (error) {
     if (error.message) {
@@ -554,19 +554,32 @@ function stopError(error, errorMessage) {
     }
   } else {
     if (!uiMsg) uiMsg = "Unknown error";
-    log.error(errorMessage);
+    if (nameAsError) log.error(errorMessage);
   }
   temp.deleteSubFolder(g_tempSubFolderPath);
   g_tempSubFolderPath = undefined;
   temp.deleteSubFolder(g_creationTempSubFolderPath);
   g_creationTempSubFolderPath = undefined;
-  sendIpcToRenderer("update-log-text", uiMsg);
-  sendIpcToRenderer(
-    "update-log-text",
-    g_mode === ToolMode.CONVERT
-      ? _("tool-shared-modal-log-conversion-error")
-      : _("tool-shared-modal-log-creation-error")
-  );
+  if (nameAsError) {
+    sendIpcToRenderer("update-log-text", uiMsg);
+    sendIpcToRenderer(
+      "update-log-text",
+      g_mode === ToolMode.CONVERT
+        ? _("tool-shared-modal-log-conversion-error")
+        : _("tool-shared-modal-log-creation-error")
+    );
+  } else {
+    // not really an error. if file is skipped, for example
+    sendIpcToRenderer(
+      "update-log-text",
+      g_mode === ToolMode.CONVERT
+        ? _("tool-shared-modal-log-failed-conversion")
+        : _("tool-shared-modal-log-failed-creation")
+    );
+    sendIpcToRenderer("update-log-text", uiMsg);
+  }
+
+  sendIpcToRenderer("update-log-text", " ");
   sendIpcToRenderer("file-finished-error");
 }
 
@@ -581,6 +594,7 @@ function stopCancel() {
       ? _("tool-shared-modal-log-conversion-canceled")
       : _("tool-shared-modal-log-creation-canceled")
   );
+  sendIpcToRenderer("update-log-text", " ");
   sendIpcToRenderer("file-finished-canceled");
 }
 
@@ -647,6 +661,67 @@ function startFile(inputFilePath, inputFileType, fileNum, totalFilesNum) {
       : _("tool-shared-modal-title-adding")
   );
   sendIpcToRenderer("update-log-text", inputFilePath);
+
+  // check if output file name exists and skip mode
+  {
+    if (g_uiSelectedOptions.outputFileSameName === "2") {
+      let outputFolderPath = g_uiSelectedOptions.outputFolderPath;
+      if (
+        g_mode === ToolMode.CONVERT &&
+        g_uiSelectedOptions.outputFolderOption == "1"
+      ) {
+        outputFolderPath = path.dirname(inputFilePath);
+      }
+      let baseFileName = g_uiSelectedOptions.outputFileBaseName
+        ? g_uiSelectedOptions.outputFileBaseName
+        : path.basename(inputFilePath, path.extname(inputFilePath));
+
+      const outputFormat = g_uiSelectedOptions.outputFormat;
+      const outputSplitNumFiles = g_uiSelectedOptions.outputSplitNumFiles;
+
+      let skip = undefined;
+      if (outputSplitNumFiles <= 1) {
+        // just one file in the output folder
+        let outputFilePath = path.join(
+          outputFolderPath,
+          baseFileName + "." + outputFormat
+        );
+        if (fs.existsSync(outputFilePath)) {
+          skip = { path: outputFilePath, isFile: true };
+        }
+      } else {
+        // multiple files in a subfolder in the output folder
+        let outputSubFolderPath = path.join(outputFolderPath, baseFileName);
+        if (fs.existsSync(outputSubFolderPath)) {
+          skip = { path: outputSubFolderPath, isFile: false };
+          // for (let index = 0; index < outputSplitNumFiles; index++) {
+          //   let outputFilePath = path.join(
+          //     outputSubFolderPath,
+          //     `${baseFileName} (${
+          //       index + 1
+          //     }_${outputSplitNumFiles}).${outputFormat}`
+          //   );
+          //   if (fs.existsSync(outputFilePath)) {
+          //     skip = outputFilePath;
+          //   }
+          // }
+        }
+      }
+      if (skip) {
+        stopError(
+          undefined,
+          (skip.isFile
+            ? _("tool-shared-modal-log-failed-reason-output-file-exists")
+            : _("tool-shared-modal-log-failed-reason-output-folder-exists")) +
+            "\n" +
+            skip.path,
+          false
+        );
+        return;
+      }
+    }
+  }
+  ////////////////
 
   if (g_mode === ToolMode.CONVERT) {
     g_tempSubFolderPath = temp.createSubFolder();
@@ -1112,6 +1187,7 @@ async function createFilesFromImages(
           message.files.forEach((element) => {
             sendIpcToRenderer("update-log-text", element);
           });
+          sendIpcToRenderer("update-log-text", " ");
           sendIpcToRenderer("file-finished-ok");
           return;
         } else {
@@ -1147,6 +1223,7 @@ async function createFilesFromImages(
       imgFilePaths,
       comicInfoFilePath,
       g_uiSelectedOptions.outputFormat,
+      g_uiSelectedOptions.outputFileSameName,
       g_tempSubFolderPath,
       g_uiSelectedOptions.outputPassword,
       extraData,
@@ -1174,6 +1251,10 @@ function updateLocalizedText() {
       modalCancelButton: _("tool-shared-ui-cancel").toUpperCase(),
       outputFolderOption0: _("tool-shared-ui-output-folder-0"),
       outputFolderOption1: _("tool-shared-ui-output-folder-1"),
+      outputFileSameNameOption0: _("tool-shared-ui-output-file-same-name-0"),
+      outputFileSameNameOption1:
+        "⚠ " + _("tool-shared-ui-output-file-same-name-1") + " ⚠",
+      outputFileSameNameOption2: _("tool-shared-ui-output-file-same-name-2"),
     }
   );
 }
@@ -1328,6 +1409,10 @@ function getLocalization() {
     {
       id: "tool-cc-advanced-output-options-text",
       text: _("tool-shared-ui-advanced-output-options"),
+    },
+    {
+      id: "tool-cc-output-file-same-name-text",
+      text: _("tool-shared-ui-output-file-same-name"),
     },
     {
       id: "tool-cc-split-num-files-text",

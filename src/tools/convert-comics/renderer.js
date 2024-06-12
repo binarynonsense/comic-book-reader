@@ -229,6 +229,17 @@ function init(mode, outputFolderPath, canEditRars) {
       checkValidData();
     });
   }
+
+  //////
+
+  const outputFileSameNameSelect = document.getElementById(
+    "tool-cc-output-file-same-name-select"
+  );
+  outputFileSameNameSelect.innerHTML =
+    `<option value="0">${g_localizedTexts.outputFileSameNameOption0}</option>` +
+    `<option value="1">${g_localizedTexts.outputFileSameNameOption1}</option>` +
+    `<option value="2">${g_localizedTexts.outputFileSameNameOption2}</option>`;
+
   ////////////////////////////////////////
   checkValidData();
   updateColumnsHeight();
@@ -331,6 +342,9 @@ function updateSelectedOptions() {
   g_uiSelectedOptions.outputSplitNumFiles = g_outputSplitNumFilesInput.value;
   g_uiSelectedOptions.outputPassword = g_outputPasswordInput.value;
 
+  g_uiSelectedOptions.outputFileSameName = document.getElementById(
+    "tool-cc-output-file-same-name-select"
+  ).value;
   g_uiSelectedOptions.outputPageOrder = document.getElementById(
     "tool-cc-output-page-order-select"
   ).value;
@@ -494,8 +508,8 @@ function initOnIpcCallbacks() {
     updateInfoText(text);
   });
 
-  on("update-log-text", (text) => {
-    updateLogText(text);
+  on("update-log-text", (...args) => {
+    updateLogText(...args);
   });
 
   /////////////////////////////////////////////////////////////////////////////
