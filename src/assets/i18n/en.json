@@ -3,7 +3,7 @@
     "authors": [
       "Álvaro"
     ],
-    "last-updated": "2024-06-09",
+    "last-updated": "2024-06-12",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.5.0-beta1",
     "pre-release": "false",
@@ -359,6 +359,13 @@
   "tool-shared-modal-log-converting-image": "Converting Image",
   "tool-shared-modal-log-updating-comicinfoxml": "Updating ComicInfo.xml",
   "tool-shared-modal-log-warning-comicinfoxml": "Warning: couldn't update the contents of ComicInfo.xml",
+  "tool-shared-modal-log-failed-conversion": "Couldn't convert the file",
+  "tool-shared-modal-log-failed-extraction": "Couldn't extract the file",
+  "tool-shared-modal-log-failed-creation": "Couldn't create the file",
+  "tool-shared-modal-log-failed-reason-error": "An error ocurred",
+  "tool-shared-modal-log-failed-reason-canceled": "The process was canceled",
+  "tool-shared-modal-log-failed-reason-output-file-exists": "The output file already exists",
+  "tool-shared-modal-log-failed-reason-output-folder-exists": "The output folder already exists",
   "tool-shared-modal-log-conversion-error": "Couldn't convert the file, an error ocurred",
   "tool-shared-modal-log-conversion-canceled": "Couldn't convert the file, the conversion was canceled",
   "tool-shared-modal-log-extraction-error": "Couldn't extract the file, an error ocurred",
