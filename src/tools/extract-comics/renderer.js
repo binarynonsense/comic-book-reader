@@ -166,10 +166,17 @@ export function initIpc() {
   initOnIpcCallbacks();
 }
 
-function updateColumnsHeight() {
+function updateColumnsHeight(scrollTop = false) {
   const left = document.getElementById("tools-columns-left");
   const right = document.getElementById("tools-columns-right");
   left.style.minHeight = right.offsetHeight + "px";
+  if (scrollTop) {
+    document.getElementById("tools-columns-right").scrollIntoView({
+      behavior: "instant",
+      block: "start",
+      inline: "nearest",
+    });
+  }
 }
 
 function updateSliderBubble(range, bubble) {
@@ -230,9 +237,8 @@ function switchSection(id) {
         .getElementById("tool-ec-advanced-output-options-section-div")
         .classList.remove("set-display-none");
       break;
-      break;
   }
-  updateColumnsHeight();
+  updateColumnsHeight(true);
 }
 
 //////////////////////////////////////////////////////////////////////////////

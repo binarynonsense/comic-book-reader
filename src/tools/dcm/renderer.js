@@ -200,10 +200,17 @@ export function initIpc() {
   initOnIpcCallbacks();
 }
 
-function updateColumnsHeight() {
+function updateColumnsHeight(scrollTop = false) {
   const left = document.getElementById("tools-columns-left");
   const right = document.getElementById("tools-columns-right");
   left.style.minHeight = right.offsetHeight + "px";
+  if (scrollTop) {
+    document.getElementById("tools-columns-right").scrollIntoView({
+      behavior: "instant",
+      block: "start",
+      inline: "nearest",
+    });
+  }
 }
 
 function switchSection(id) {
@@ -235,7 +242,7 @@ function switchSection(id) {
       }
     }
   }
-  updateColumnsHeight();
+  updateColumnsHeight(true);
 }
 
 //////////////////////////////////////////////////////////////////////////////
