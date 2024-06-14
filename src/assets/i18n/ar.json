@@ -473,6 +473,8 @@
   "tool-pre-toolbar": "شريط الأدوات",
   "tool-pre-toolbar-direction": "الاتجاه",
   "[NEEDS TRANSLATION]tool-pre-epub-ebook": "EPUB Ebook",
+  "[NOTE TO TRANSLATORS]tool-pre-home-screen-latest-max": "Latest should be the same as in home-screen-latest, this refers to a preference to set the maximum number of latest files to show in the home screen",
+  "[NEEDS TRANSLATION]tool-pre-home-screen-latest-max": "Latest files limit",
   "tool-pre-navkeys": "تخصيص المفاتيح",
   "tool-pre-navkeys-actions": {
     "scrollUp": "تمرير الصفحة لأعلى",
