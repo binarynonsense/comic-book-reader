@@ -14,6 +14,7 @@ const log = require("../../shared/main/logger");
 const settings = require("../../shared/main/settings");
 const themes = require("../../shared/main/themes");
 const reader = require("../../reader/main");
+const homeScreen = require("../../reader/home-screen/main");
 const appUtils = require("../../shared/main/app-utils");
 const contextMenu = require("../../shared/main/tools-menu-context");
 const temp = require("../../shared/main/temp");
@@ -184,6 +185,11 @@ function initOnIpcCallbacks() {
   on("set-toolbar-direction", (value) => {
     settings.setValue("toolbarDirection", value);
     reader.updateToolbarDirection();
+  });
+
+  on("set-home-screen-latest-max", (value) => {
+    settings.setValue("homeScreenLatestMax", value);
+    homeScreen.updateMaxLatest(value);
   });
 
   on("set-epub-ebook-color-mode", (value) => {
@@ -692,6 +698,15 @@ function getLocalization() {
     {
       id: "tool-pre-loading-ipos-1-text",
       text: _("tool-pre-loading-ipos-1"),
+    },
+    //////////////////////////////////////////////
+    {
+      id: "tool-pre-home-screen-text",
+      text: _("home-screen"),
+    },
+    {
+      id: "tool-pre-home-screen-latest-max-text",
+      text: _("tool-pre-home-screen-latest-max"),
     },
     //////////////////////////////////////////////
     {

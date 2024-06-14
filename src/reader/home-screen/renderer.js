@@ -125,7 +125,7 @@ const CardType = {
   ADD_FAVORITE: "add favorite",
 };
 
-function buildSections(languageDirection, favorites, latest) {
+function buildSections(languageDirection, favorites, latest, maxLatest) {
   g_languageDirection = languageDirection;
   // FAVORITES
   const favoritesDiv = document.querySelector("#hs-favorites");
@@ -180,44 +180,51 @@ function buildSections(languageDirection, favorites, latest) {
   navRow++;
 
   // LATEST
+  const latestTitleDiv = document.querySelector("#hs-latest-title");
   const latestDiv = document.querySelector("#hs-latest");
   latestDiv.innerHTML = "";
+  if (maxLatest <= 0) {
+    latestTitleDiv.classList.add("set-display-none");
+  } else {
+    latestTitleDiv.classList.remove("set-display-none");
 
-  listDiv = document.createElement("div");
-  listDiv.classList.add("hs-path-cards-list");
-  latestDiv.appendChild(listDiv);
+    listDiv = document.createElement("div");
+    listDiv.classList.add("hs-path-cards-list");
+    latestDiv.appendChild(listDiv);
 
-  for (index = 0; index < 6; index++) {
-    if (g_languageDirection === "rtl") {
-      if (index % 2 === 0) {
-        if (index !== 0) navRow++;
-        navColumn = 1;
-        if (index === latest.length - 1) {
+    //const max = Math.max(4, latest.length);
+    const max = Math.max(2, 2 * Math.round(latest.length / 2));
+    for (index = 0; index < max; index++) {
+      if (g_languageDirection === "rtl") {
+        if (index % 2 === 0) {
+          if (index !== 0) navRow++;
+          navColumn = 1;
+          if (index === latest.length - 1) {
+            navColumn = 0;
+          }
+        } else {
           navColumn = 0;
         }
       } else {
-        navColumn = 0;
+        if (index % 2 === 0) {
+          navColumn = 0;
+          if (index !== 0) navRow++;
+        } else {
+          navColumn = 1;
+        }
       }
-    } else {
-      if (index % 2 === 0) {
-        navColumn = 0;
-        if (index !== 0) navRow++;
+      if (latest && latest.length > index) {
+        const data = latest[index];
+        listDiv.appendChild(
+          getNewCardDiv(CardType.LATEST, data, navRow, navColumn)
+        );
       } else {
-        navColumn = 1;
+        listDiv.appendChild(
+          getNewCardDiv(CardType.EMPTY, undefined, navRow, navColumn)
+        );
       }
-    }
-    if (latest && latest.length > index) {
-      const data = latest[index];
-      listDiv.appendChild(
-        getNewCardDiv(CardType.LATEST, data, navRow, navColumn)
-      );
-    } else if (index < 4) {
-      listDiv.appendChild(
-        getNewCardDiv(CardType.EMPTY, undefined, navRow, navColumn)
-      );
     }
   }
-
   // NAVIGATION
   navigation.rebuild(g_navData, 0);
 }

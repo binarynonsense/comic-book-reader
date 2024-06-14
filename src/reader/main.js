@@ -91,7 +91,7 @@ exports.init = function (filePath, checkHistory) {
   showBattery(settings.getValue("showBattery"));
   audioPlayer.init(core.getMainWindow(), "audio-player-container");
   showAudioPlayer(settings.getValue("showAudioPlayer"));
-  homeScreen.open();
+  homeScreen.open(undefined, settings.getValue("homeScreenLatestMax"));
 
   // if the program is called from the os' 'open with' of file association
   if (filePath && filePath !== "" && fs.existsSync(filePath)) {

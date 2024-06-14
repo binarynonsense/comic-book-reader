@@ -24,6 +24,7 @@ const tools = require("../../shared/main/tools");
 let g_isInitialized = false;
 let g_languageDirection = "ltr";
 let g_favorites;
+let g_maxLatest = 6;
 
 function init() {
   if (!g_isInitialized) {
@@ -41,7 +42,8 @@ function init() {
   }
 }
 
-exports.open = function (showFocus) {
+exports.open = function (showFocus, maxLatest) {
+  g_maxLatest = maxLatest;
   init();
   // TODO: use showFocus?
   buildSections();
@@ -62,6 +64,11 @@ exports.setLanguageDirection = function (direction) {
   }
 };
 
+exports.updateMaxLatest = function (maxLatest) {
+  g_maxLatest = maxLatest;
+  buildSections();
+};
+
 //////////////////////////////////////////////////////////////////////////////
 // TOOL //////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
@@ -71,7 +78,8 @@ function buildSections() {
     "hs-build-sections",
     g_languageDirection,
     getFavoritesData(),
-    getLatestData()
+    getLatestData(),
+    g_maxLatest
   );
 }
 
@@ -79,7 +87,7 @@ function getLatestData() {
   const historyData = history.get();
   const data = [];
   for (let index = 0; index < historyData.length; index++) {
-    if (data.length < 6) {
+    if (data.length < g_maxLatest) {
       const latestInfo = {};
       const historyDataFile = historyData[historyData.length - index - 1];
       latestInfo.index = historyData.length - index - 1;

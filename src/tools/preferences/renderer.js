@@ -182,6 +182,17 @@ function init(activeLocale, languages, activeTheme, themes, settings) {
       sendIpcToMain("set-loading-ipos", parseInt(select.value));
     });
   }
+  // home screen latest limit input
+  {
+    let input = document.getElementById(
+      "tool-pre-home-screen-latest-max-input"
+    );
+    input.value = settings.homeScreenLatestMax;
+    input.addEventListener("change", function (event) {
+      if (input.value <= 0) input.value = 0;
+      sendIpcToMain("set-home-screen-latest-max", parseInt(input.value));
+    });
+  }
   // epub ebook color mode select
   {
     let select = document.getElementById(
@@ -493,7 +504,7 @@ function switchSection(id) {
   updateColumnsHeight(true);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 // IPC SEND ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
