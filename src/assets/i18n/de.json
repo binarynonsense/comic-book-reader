@@ -251,6 +251,7 @@
   "tool-shared-ui-output-file-same-name-0": "Ändere den Namen der Ausgangsdatei zu einem nicht verwendeten",
   "tool-shared-ui-output-file-same-name-1": "Überschreibe die existierende Datei",
   "tool-shared-ui-output-file-same-name-2": "Speicher die Ausgangsdatei nicht",
+  "[NEEDS TRANSLATION]tool-shared-ui-output-file-same-name-3": "Overwrite the existing file, unless it's the input file",
   "tool-shared-ui-new-file": "Neue Datei",
   "tool-shared-ui-output-folder": "Ausgangsordner",
   "[NOTE TO TRANSLATORS]tool-shared-ui-output-folder-0": "'Specify one' as in specify an output folder",

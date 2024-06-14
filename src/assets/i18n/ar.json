@@ -251,6 +251,7 @@
   "[NEEDS TRANSLATION]tool-shared-ui-output-file-same-name-0": "Change the output files's name to one not in use",
   "[NEEDS TRANSLATION]tool-shared-ui-output-file-same-name-1": "Overwrite the existing file",
   "[NEEDS TRANSLATION]tool-shared-ui-output-file-same-name-2": "Don't save the output file",
+  "[NEEDS TRANSLATION]tool-shared-ui-output-file-same-name-3": "Overwrite the existing file, unless it's the input file",
   "tool-shared-ui-new-file": "ملف جديد",
   "tool-shared-ui-output-folder": "مجلد المخرجات",
   "[NOTE TO TRANSLATORS]tool-shared-ui-output-folder-0": "'Specify one' as in specify an output folder",

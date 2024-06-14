@@ -251,6 +251,7 @@
   "tool-shared-ui-output-file-same-name-0": "Cambiar el nombre del archivo de salida por uno que no esté en uso",
   "tool-shared-ui-output-file-same-name-1": "Sobreescribir el archivo ya existente",
   "tool-shared-ui-output-file-same-name-2": "No guardar el archivo de salida",
+  "[NEEDS TRANSLATION]tool-shared-ui-output-file-same-name-3": "Overwrite the existing file, unless it's the input file",
   "tool-shared-ui-new-file": "Nuevo Archivo",
   "tool-shared-ui-output-folder": "Carpeta de salida",
   "[NOTE TO TRANSLATORS]tool-shared-ui-output-folder-0": "'Specify one' as in specify an output folder",
