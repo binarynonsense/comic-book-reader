@@ -40,7 +40,6 @@
 .epub-container {
   transform-origin: top left;
   transform: scale(calc(var(--zoom-epub-ebook-scale-factor)));
-  background-color: white;
 }
 
 .epub-container iframe {

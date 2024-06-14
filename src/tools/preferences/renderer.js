@@ -182,6 +182,16 @@ function init(activeLocale, languages, activeTheme, themes, settings) {
       sendIpcToMain("set-loading-ipos", parseInt(select.value));
     });
   }
+  // epub ebook color mode select
+  {
+    let select = document.getElementById(
+      "tool-pre-epub-ebook-color-mode-select"
+    );
+    select.value = settings.epubEbookColorMode;
+    select.addEventListener("change", function (event) {
+      sendIpcToMain("set-epub-ebook-color-mode", parseInt(select.value));
+    });
+  }
   // hotspots select
   {
     let select = document.getElementById("tool-pre-hotspots-select");

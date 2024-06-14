@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2023 Álvaro García
+ * Copyright 2020-2024 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -17,6 +17,9 @@ export function initIpc() {
   initHandlers();
 }
 
+let g_textColor = "black";
+let g_bgColor = "white";
+
 ///////////////////////////////////////////////////////////////////////////////
 // IPC RECEIVE ////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -29,8 +32,8 @@ function initHandlers() {
   });
 
   // EBOOK
-  on("load-epub-ebook", (filePath, pageIndex, cachedPath) => {
-    loadEpubEbook(filePath, pageIndex, cachedPath);
+  on("load-epub-ebook", (...args) => {
+    loadEpubEbook(...args);
   });
 
   on("render-epub-ebook-page-percentage", (percentage) => {
@@ -52,11 +55,37 @@ function initHandlers() {
     refreshEpubEbookPage();
   });
 
+  on("update-epub-ebook-color-mode", (mode) => {
+    if (mode == 1) {
+      // dark
+      g_textColor = "white";
+      g_bgColor = "black";
+    } else {
+      // light
+      g_textColor = "black";
+      g_bgColor = "white";
+    }
+    const iframe = document
+      ?.getElementsByClassName("epub-view")[0]
+      ?.getElementsByTagName("iframe")[0];
+    if (iframe && iframe.contentDocument) {
+      iframe.contentDocument.documentElement.style.setProperty(
+        "--epub-ebook-text-color",
+        `${g_textColor}`
+      );
+      iframe.contentDocument.documentElement.style.setProperty(
+        "--epub-ebook-bg-color",
+        `${g_bgColor}`
+      );
+    }
+  });
+
   on("close-epub-ebook", (event) => {
     if (g_currentEpubEbook.book) {
       g_currentEpubEbook.book.destroy();
       g_currentEpubEbook = {};
     }
+    endContainerObserver();
   });
 }
 
@@ -84,6 +113,7 @@ async function loadEpubEbook(filePath, percentage, cachedPath) {
     const ebookContainer = document.createElement("div");
     ebookContainer.id = "epub-ebook-container";
     container.appendChild(ebookContainer);
+    initContainerObserver();
     g_currentEpubEbook.rendition = await g_currentEpubEbook.book.renderTo(
       "epub-ebook-container",
       {
@@ -95,20 +125,29 @@ async function loadEpubEbook(filePath, percentage, cachedPath) {
     );
     // g_currentEpubEbook.rendition.themes.fontSize("140%");
 
-    g_currentEpubEbook.rendition.on("relocated", function (location) {
-      const iframe = document
-        .getElementsByClassName("epub-view")[0]
-        .getElementsByTagName("iframe")[0];
-      let iframeDoc = iframe.contentDocument;
-      iframeDoc.body.innerHTML =
-        iframeDoc.body.innerHTML +
-        `<style>
-            a, a:hover, a:focus, a:active {
-              text-decoration: none !important;
-              color: black !important;
-            }
-      </style>`;
-    });
+    // g_currentEpubEbook.rendition.on("relocated", function (location) {
+    //   console.log("relocated");
+    //   // const iframe = document
+    //   //   .getElementsByClassName("epub-view")[0]
+    //   //   .getElementsByTagName("iframe")[0];
+    //   // let iframeDoc = iframe.contentDocument;
+    //   // iframeDoc.body.innerHTML =
+    //   //   iframeDoc.body.innerHTML +
+    //   //   `<style>
+    //   //       :root {
+    //   //         --epub-ebook-text-color: white;
+    //   //         --epub-ebook-bg-color: black;
+    //   //       }
+    //   //       a, a:hover, a:focus, a:active {
+    //   //         text-decoration: none !important;
+    //   //         color: var(--epub-ebook-text-color) !important;
+    //   //       }
+    //   //       body{
+    //   //         color: var(--epub-ebook-text-color) !important;
+    //   //         background-color: var(--epub-ebook-bg-color) !important;
+    //   //       }
+    //   // </style>`;
+    // });
 
     await g_currentEpubEbook.rendition.display();
     await g_currentEpubEbook.book.locations.generate(1000);
@@ -236,4 +275,63 @@ function getCurrentPercentage() {
   return g_currentEpubEbook.book.locations.percentageFromCfi(
     currentLocation.start.cfi
   );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// OBSERVER ///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+let g_containerObserver;
+
+function endContainerObserver() {
+  if (g_containerObserver === undefined) return;
+  g_containerObserver.disconnect();
+  g_containerObserver === undefined;
+}
+
+function initContainerObserver() {
+  if (g_containerObserver !== undefined) return;
+  try {
+    // ref: https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver
+    const targetNode = document.querySelector("#epub-ebook-container");
+    const config = { attributes: true, childList: true, subtree: true };
+    const callback = (mutationList, observer) => {
+      for (const mutation of mutationList) {
+        if (mutation.type === "childList") {
+          // a child node has been added or removed
+          if (mutation.addedNodes && mutation.addedNodes.length > 0) {
+            mutation.addedNodes.forEach((node) => {
+              if (node.tagName == "IFRAME") {
+                node.addEventListener(
+                  "load",
+                  (event) => {
+                    const style = document.createElement("style");
+                    style.textContent = `
+                      :root {
+                        --epub-ebook-text-color: ${g_textColor};
+                        --epub-ebook-bg-color: ${g_bgColor};
+                      }
+                      a, a:hover, a:focus, a:active {
+                        text-decoration: none !important;
+                        color: var(--epub-ebook-text-color) !important;
+                      }
+                      body{
+                        color: var(--epub-ebook-text-color)  !important;
+                        background-color: var(--epub-ebook-bg-color)  !important;
+                      }`;
+                    node.contentDocument.head.appendChild(style);
+                  },
+                  { once: true }
+                );
+              }
+            });
+          }
+        }
+      }
+    };
+    g_containerObserver = new MutationObserver(callback);
+    g_containerObserver.observe(targetNode, config);
+  } catch (error) {
+    console.log(error);
+  }
 }

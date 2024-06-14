@@ -186,6 +186,11 @@ function initOnIpcCallbacks() {
     reader.updateToolbarDirection();
   });
 
+  on("set-epub-ebook-color-mode", (value) => {
+    settings.setValue("epubEbookColorMode", value);
+    reader.sendIpcToRenderer("update-epub-ebook-color-mode", value);
+  });
+
   on("set-loading-bg", (value) => {
     settings.setValue("loadingIndicatorBG", value);
     reader.updateLoadingIndicator();
@@ -687,6 +692,27 @@ function getLocalization() {
     {
       id: "tool-pre-loading-ipos-1-text",
       text: _("tool-pre-loading-ipos-1"),
+    },
+    //////////////////////////////////////////////
+    {
+      id: "tool-pre-epub-ebook-text",
+      text:
+        _("tool-pre-epub-ebook") +
+        " (" +
+        _("tool-shared-ui-experimental") +
+        ")",
+    },
+    {
+      id: "tool-pre-epub-ebook-color-mode-text",
+      text: _("tool-shared-ui-color-mode"),
+    },
+    {
+      id: "tool-pre-epub-ebook-color-mode-0-text",
+      text: _("tool-shared-ui-color-mode-light"),
+    },
+    {
+      id: "tool-pre-epub-ebook-color-mode-1-text",
+      text: _("tool-shared-ui-color-mode-dark"),
     },
     //////////////////////////////////////////////
     {

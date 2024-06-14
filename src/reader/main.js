@@ -1226,6 +1226,10 @@ async function openEbookFromPath(filePath, pageIndex, historyEntry) {
       g_fileData.data = { bookType: BookType.EBOOK };
     }
 
+    sendIpcToRenderer(
+      "update-epub-ebook-color-mode",
+      settings.getValue("epubEbookColorMode")
+    );
     sendIpcToRenderer("load-epub-ebook", filePath, pageIndex, cachedPath);
     return true;
   } else {
