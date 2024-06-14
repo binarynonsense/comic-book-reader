@@ -316,13 +316,20 @@ export function initIpc() {
   initOnIpcCallbacks();
 }
 
-function updateColumnsHeight() {
+function updateColumnsHeight(scrollTop = false) {
   // NOTE: a bit of a hack, this should be doable with css but I wasn't able :)
   // Ultimately done so the back button stays fixed even when scrolling and the
   // right column is bigger than a certain ammount
   const left = document.getElementById("tools-columns-left");
   const right = document.getElementById("tools-columns-right");
   left.style.minHeight = right.offsetHeight + "px";
+  if (scrollTop) {
+    document.getElementById("tools-columns-right").scrollIntoView({
+      behavior: "instant",
+      block: "start",
+      inline: "nearest",
+    });
+  }
 }
 
 function switchSection(id) {
@@ -483,7 +490,7 @@ function switchSection(id) {
         .classList.remove("set-display-none");
       break;
   }
-  updateColumnsHeight();
+  updateColumnsHeight(true);
 }
 
 //////////////////////////////////////////////////////////////////////////////
