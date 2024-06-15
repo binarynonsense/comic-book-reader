@@ -183,7 +183,7 @@ function buildSections(languageDirection, favorites, latest, maxLatest) {
   const latestTitleDiv = document.querySelector("#hs-latest-title");
   const latestDiv = document.querySelector("#hs-latest");
   latestDiv.innerHTML = "";
-  if (maxLatest <= 0) {
+  if (maxLatest <= 0 || latest.length <= 0) {
     latestTitleDiv.classList.add("set-display-none");
   } else {
     latestTitleDiv.classList.remove("set-display-none");
@@ -192,8 +192,10 @@ function buildSections(languageDirection, favorites, latest, maxLatest) {
     listDiv.classList.add("hs-path-cards-list");
     latestDiv.appendChild(listDiv);
 
-    //const max = Math.max(4, latest.length);
-    const max = Math.max(2, 2 * Math.round(latest.length / 2));
+    // NOTE: I decided to not show empty slots but I'll leave the
+    // code for that in case I change my mind
+    const max = Math.max(0, latest.length);
+    //const max = Math.max(2, 2 * Math.round(latest.length / 2));
     for (index = 0; index < max; index++) {
       if (g_languageDirection === "rtl") {
         if (index % 2 === 0) {
