@@ -3,7 +3,7 @@
     "authors": [
       "Álvaro"
     ],
-    "last-updated": "2024-06-14",
+    "last-updated": "2024-06-15",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.5.0-beta1",
     "pre-release": "false",
@@ -227,6 +227,7 @@
   "tool-shared-ui-input-images": "Imágenes de entrada",
   "[NOTE TO TRANSLATORS]tool-shared-ui-input-list": "'Input List' as in a list of input files, folders and/or images",
   "tool-shared-ui-input-list": "Lista de entrada",
+  "tool-shared-ui-input-folders-file-type": "Formatos de fichero a buscar en las carpetas de entrada",
   "tool-shared-ui-input-folders-recursively": "Buscar en las carpetas de entrada recursivamente",
   "tool-shared-ui-add": "Añadir",
   "tool-shared-ui-add-file": "Añadir Archivo",
