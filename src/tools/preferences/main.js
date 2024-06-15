@@ -237,6 +237,7 @@ function initOnIpcCallbacks() {
     let relativeFolderPath;
     if (reset) {
       folderPath = temp.getOSTempFolderPath();
+      saveAsRelative = false;
     } else {
       let defaultPath = settings.getValue("tempFolderPath");
       let folderList = appUtils.chooseFolder(core.getMainWindow(), defaultPath);
