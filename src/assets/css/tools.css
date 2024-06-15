@@ -818,3 +818,20 @@ html[dir="rtl"] .tools-range-bubble {
 }
 
 /* /////////////////////////////////////////////////////////////// */
+
+#tool-cc-folders-file-formats-div {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  justify-content: flex-start;
+}
+
+#tool-cc-folders-file-formats-div .tools-checkbox-container {
+  width: auto;
+}
+
+#tool-cc-folders-file-formats-div input[type="checkbox"] {
+  accent-color: var(--tools-input-bg-color);
+}
+
+/* /////////////////////////////////////////////////////////////// */

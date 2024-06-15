@@ -232,13 +232,47 @@ function init(mode, outputFolderPath, canEditRars) {
 
   //////
 
+  const inputSearchFoldersFormatsDiv = document.querySelector(
+    "#tool-cc-folders-file-formats-div"
+  );
+  let formats = [];
+  if (g_mode === ToolMode.CONVERT) {
+    formats = [".cbz", ".cbr", ".pdf", ".epub", ".cb7"];
+  } else {
+    formats = [
+      ".cbz",
+      ".cbr",
+      ".pdf",
+      ".epub",
+      ".cb7",
+      ".jpg",
+      ".png",
+      ".webp",
+      ".avif",
+    ];
+  }
+  formats.forEach((format) => {
+    const label = document.createElement("label");
+    label.classList.add("tools-checkbox-container");
+    inputSearchFoldersFormatsDiv.appendChild(label);
+
+    const input = document.createElement("input");
+    input.type = "checkbox";
+    input.checked = true;
+    label.appendChild(input);
+
+    const span = document.createElement("span");
+    span.innerText = format;
+    label.appendChild(span);
+  });
+
   const outputFileSameNameSelect = document.getElementById(
     "tool-cc-output-file-same-name-select"
   );
   outputFileSameNameSelect.innerHTML =
-    `<option value="0">${g_localizedTexts.outputFileSameNameOption0}</option>` +
-    `<option value="1">${g_localizedTexts.outputFileSameNameOption1}</option>` +
-    `<option value="2">${g_localizedTexts.outputFileSameNameOption2}</option>`;
+    `<option value="rename">${g_localizedTexts.outputFileSameNameOption0}</option>` +
+    `<option value="skip">${g_localizedTexts.outputFileSameNameOption2}</option>` +
+    `<option value="overwrite">${g_localizedTexts.outputFileSameNameOption1}</option>`;
 
   ////////////////////////////////////////
   checkValidData();
@@ -326,6 +360,19 @@ function switchSection(id) {
 }
 
 function updateSelectedOptions() {
+  g_uiSelectedOptions.inputSearchFoldersFormats = [];
+  const inputSearchFoldersFormatsDiv = document.querySelector(
+    "#tool-cc-folders-file-formats-div"
+  );
+  const inputSearchFoldersFormatsInputs =
+    inputSearchFoldersFormatsDiv.querySelectorAll("input");
+  inputSearchFoldersFormatsInputs.forEach((formatInput) => {
+    if (formatInput.checked) {
+      g_uiSelectedOptions.inputSearchFoldersFormats.push(
+        formatInput.parentElement.querySelector("span").innerText
+      );
+    }
+  });
   g_uiSelectedOptions.inputSearchFoldersRecursively = document.querySelector(
     "#tool-cc-folders-recursively-checkbox"
   ).checked;
@@ -355,7 +402,6 @@ function updateSelectedOptions() {
   g_uiSelectedOptions.outputPageOrder = document.getElementById(
     "tool-cc-output-page-order-select"
   ).value;
-  console.log(4);
   g_uiSelectedOptions.outputPdfCreationMethod = document.getElementById(
     "tool-cc-pdf-creation-select"
   ).value;
@@ -375,7 +421,7 @@ function updateSelectedOptions() {
   };
 }
 
-//////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 // IPC SEND ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 

@@ -236,53 +236,20 @@ function getImageFilesInFolder(folderPath) {
 exports.getImageFilesInFolder = getImageFilesInFolder;
 
 ///////////////////////////////////////////////////////////////////////////////
-// GET COMICS /////////////////////////////////////////////////////////////////
+// GET FILES IN FOLDER ////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-const getComicFilesInFolderRecursive = function (folderPath) {
-  let filesArray = [];
-  let dirs = [];
-
-  if (fs.existsSync(folderPath)) {
-    let nodes = fs.readdirSync(folderPath);
-    nodes.forEach((node) => {
-      const nodePath = path.join(folderPath, node);
-      if (fs.lstatSync(nodePath).isDirectory()) {
-        dirs.push(nodePath); // check later so this folder's imgs come first
-      } else {
-        if (hasComicBookExtension(nodePath)) {
-          filesArray.push(nodePath);
-        }
-      }
-    });
-    // now check inner folders
-    dirs.forEach((dir) => {
-      filesArray = filesArray.concat(getComicFilesInFolderRecursive(dir));
-    });
-  }
-  return filesArray;
-};
-exports.getComicFilesInFolderRecursive = getComicFilesInFolderRecursive;
-
-function getComicFilesInFolder(folderPath) {
-  if (fs.existsSync(folderPath) && fs.lstatSync(folderPath).isDirectory()) {
-    let filesInFolder = fs.readdirSync(folderPath);
-    if (filesInFolder.length === 0) {
-      return [];
-    } else {
-      return filesInFolder.filter(hasComicBookExtension);
+function hasAllowedFileExtension(filePath, allowedFileExtensions) {
+  let fileExtension = path.extname(filePath).toLowerCase();
+  for (i = 0; i < allowedFileExtensions.length; i++) {
+    if (fileExtension === allowedFileExtensions[i]) {
+      return true;
     }
-  } else {
-    return [];
   }
+  return false;
 }
-exports.getComicFilesInFolder = getComicFilesInFolder;
 
-///////////////////////////////////////////////////////////////////////////////
-// GET COMIC BOOKS & IMAGES ///////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-
-const getComicAndImageFilesInFolderRecursive = function (folderPath) {
+const getFilesInFolderRecursive = function (folderPath, allowedFileExtensions) {
   let filesArray = [];
   let dirs = [];
 
@@ -293,7 +260,7 @@ const getComicAndImageFilesInFolderRecursive = function (folderPath) {
       if (fs.lstatSync(nodePath).isDirectory()) {
         dirs.push(nodePath); // check later so this folder's imgs come first
       } else {
-        if (hasImageExtension(nodePath) || hasComicBookExtension(nodePath)) {
+        if (hasAllowedFileExtension(nodePath, allowedFileExtensions)) {
           filesArray.push(nodePath);
         }
       }
@@ -301,30 +268,30 @@ const getComicAndImageFilesInFolderRecursive = function (folderPath) {
     // now check inner folders
     dirs.forEach((dir) => {
       filesArray = filesArray.concat(
-        getComicAndImageFilesInFolderRecursive(dir)
+        getFilesInFolderRecursive(dir, allowedFileExtensions)
       );
     });
   }
   return filesArray;
 };
-exports.getComicAndImageFilesInFolderRecursive =
-  getComicAndImageFilesInFolderRecursive;
+exports.getFilesInFolderRecursive = getFilesInFolderRecursive;
 
-function getComicAndImageFilesInFolder(folderPath) {
+function getFilesInFolder(folderPath, allowedFileExtensions) {
   if (fs.existsSync(folderPath) && fs.lstatSync(folderPath).isDirectory()) {
     let filesInFolder = fs.readdirSync(folderPath);
     if (filesInFolder.length === 0) {
       return [];
     } else {
-      return filesInFolder.filter((nodePath) => {
-        return hasImageExtension(nodePath) || hasComicBookExtension(nodePath);
+      // return filesInFolder.filter(hasComicBookExtension);
+      return filesInFolder.filter((filePath) => {
+        return hasAllowedFileExtension(filePath, allowedFileExtensions);
       });
     }
   } else {
     return [];
   }
 }
-exports.getComicAndImageFilesInFolder = getComicAndImageFilesInFolder;
+exports.getFilesInFolder = getFilesInFolder;
 
 ///////////////////////////////////////////////////////////////////////////////
 // GET COMIC INFO FILE ////////////////////////////////////////////////////////

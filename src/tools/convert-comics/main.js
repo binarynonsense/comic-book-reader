@@ -283,24 +283,16 @@ function initOnIpcCallbacks() {
       } else {
         // DIR
         let filesInFolder = [];
-        if (g_mode === ToolMode.CONVERT) {
-          if (g_uiSelectedOptions.inputSearchFoldersRecursively) {
-            filesInFolder = fileUtils.getComicFilesInFolderRecursive(
-              inputListItem.path
-            );
-          } else {
-            filesInFolder = fileUtils.getComicFilesInFolder(inputListItem.path);
-          }
+        if (g_uiSelectedOptions.inputSearchFoldersRecursively) {
+          filesInFolder = fileUtils.getFilesInFolderRecursive(
+            inputListItem.path,
+            g_uiSelectedOptions.inputSearchFoldersFormats
+          );
         } else {
-          if (g_uiSelectedOptions.inputSearchFoldersRecursively) {
-            filesInFolder = fileUtils.getComicAndImageFilesInFolderRecursive(
-              inputListItem.path
-            );
-          } else {
-            filesInFolder = fileUtils.getComicAndImageFilesInFolder(
-              inputListItem.path
-            );
-          }
+          filesInFolder = fileUtils.getFilesInFolder(
+            inputListItem.path,
+            g_uiSelectedOptions.inputSearchFoldersFormats
+          );
         }
         if (g_uiSelectedOptions.inputSearchFoldersRecursively) {
           for (let j = 0; j < filesInFolder.length; j++) {
@@ -664,7 +656,7 @@ function startFile(inputFilePath, inputFileType, fileNum, totalFilesNum) {
 
   // check if output file name exists and skip mode
   {
-    if (g_uiSelectedOptions.outputFileSameName === "2") {
+    if (g_uiSelectedOptions.outputFileSameName === "skip") {
       let outputFolderPath = g_uiSelectedOptions.outputFolderPath;
       if (
         g_mode === ToolMode.CONVERT &&
@@ -1384,6 +1376,10 @@ function getLocalization() {
     {
       id: "tool-cc-advanced-input-options-text",
       text: _("tool-shared-ui-advanced-input-options"),
+    },
+    {
+      id: "tool-cc-folders-file-formats-text",
+      text: _("tool-shared-ui-input-folders-file-type"),
     },
     {
       id: "tool-cc-folders-recursively-text",
