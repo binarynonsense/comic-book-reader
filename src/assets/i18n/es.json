@@ -305,7 +305,7 @@
   "tool-shared-ui-search-network-error": "No se pudo conectar con {0}, ocurrió un error.",
   "tool-shared-ui-button-open-in-acbr": "Abrir en ACBR",
   "tool-shared-ui-button-open-in-browser": "Abrir en navegador",
-  "[NEEDS TRANSLATION]tool-shared-ui-button-open-websitename-in-browser": "Open {0} in Browser",
+  "tool-shared-ui-button-open-websitename-in-browser": "Abrir {0} en navegador",
   "tool-shared-ui-about-text-1": "Esta es una herramienta para buscar entre {0} disponibles en la web \"{1}\" y abrirlos en el navegador del sistema o directamente en ACBR.",
   "tool-shared-ui-about-text-1-comicbooks": "los cómics",
   "tool-shared-ui-about-text-1-books": "los libros",
