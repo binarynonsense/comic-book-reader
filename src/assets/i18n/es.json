@@ -375,6 +375,7 @@
   "tool-shared-modal-log-failed-conversion": "No se pudo convertir el archivo",
   "tool-shared-modal-log-failed-extraction": "No se pudo extraer el archivo",
   "tool-shared-modal-log-failed-creation": "No se pudo crear el archivo",
+  "tool-shared-modal-log-failed-reason-no-valid-file": "No se pudo encontrar ningún archivo válido en la lista de entrada",
   "tool-shared-modal-log-failed-reason-error": "Se produjo un error",
   "tool-shared-modal-log-failed-reason-canceled": "Se canceló el proceso",
   "tool-shared-modal-log-failed-reason-output-file-exists": "El archivo de salida ya existe",

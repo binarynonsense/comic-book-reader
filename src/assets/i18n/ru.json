@@ -375,6 +375,7 @@
   "[NEEDS TRANSLATION]tool-shared-modal-log-failed-conversion": "Couldn't convert the file",
   "[NEEDS TRANSLATION]tool-shared-modal-log-failed-extraction": "Couldn't extract the file",
   "[NEEDS TRANSLATION]tool-shared-modal-log-failed-creation": "Couldn't create the file",
+  "[NEEDS TRANSLATION]tool-shared-modal-log-failed-reason-no-valid-file": "Couldn't find any valid file in the input list",
   "[NEEDS TRANSLATION]tool-shared-modal-log-failed-reason-error": "An error ocurred",
   "[NEEDS TRANSLATION]tool-shared-modal-log-failed-reason-canceled": "The process was canceled",
   "[NEEDS TRANSLATION]tool-shared-modal-log-failed-reason-output-file-exists": "The output file already exists",
