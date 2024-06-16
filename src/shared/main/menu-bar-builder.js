@@ -248,7 +248,7 @@ function buildApplicationMenu(settings, history) {
               submenu: [
                 {
                   id: "pagesdirection-0",
-                  label: _("tool-shared-ui-direction-ltr"),
+                  label: _("menu-view-layout-pagesdirection-ltr"),
                   type: "radio",
                   checked: settings.pagesDirection === 0,
                   click() {
@@ -257,7 +257,7 @@ function buildApplicationMenu(settings, history) {
                 },
                 {
                   id: "pagesdirection-1",
-                  label: _("tool-shared-ui-direction-rtl"),
+                  label: _("menu-view-layout-pagesdirection-rtl"),
                   type: "radio",
                   checked: settings.pagesDirection === 1,
                   click() {

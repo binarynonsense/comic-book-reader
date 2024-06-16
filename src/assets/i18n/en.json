@@ -56,6 +56,8 @@
   "menu-view-layout-continuous": "Continuous",
   "[NOTE TO TRANSLATORS]menu-view-layout-pagesdirection": "Pages Direction as in which direction the pages are turned / flow, left to right like an American comic or right to left like manga",
   "menu-view-layout-pagesdirection": "Pages Direction",
+  "menu-view-layout-pagesdirection-ltr": "Left to Right",
+  "menu-view-layout-pagesdirection-rtl": "Right to Left",
   "menu-view-layout-center-first-page": "Center First Page",
   "menu-view-information": "Information",
   "menu-view-togglefullscreen": "Toggle Full Screen",
