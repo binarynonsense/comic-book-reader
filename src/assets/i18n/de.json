@@ -305,6 +305,7 @@
   "tool-shared-ui-search-network-error": "Konnte keine Verbindung mit {0} herstellen, ein Fehler ist aufgetreten.",
   "tool-shared-ui-button-open-in-acbr": "In ACBR öffnen",
   "tool-shared-ui-button-open-in-browser": "Im Browser öffnen",
+  "[NEEDS TRANSLATION]tool-shared-ui-button-open-websitename-in-browser": "Open {0} in Browser",
   "tool-shared-ui-about-text-1": "Dies ist ein Werkzeug zum suchen nach {0} welche auf der \"{1}\" Website verfügbar sind und sie im Systembrowser oder direkt in ACBR öffnet.",
   "tool-shared-ui-about-text-1-comicbooks": "Comicbüchern",
   "tool-shared-ui-about-text-1-books": "Büchern",

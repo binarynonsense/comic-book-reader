@@ -305,6 +305,7 @@
   "tool-shared-ui-search-network-error": "Не удалось подключиться к {0}, произошла ошибка.",
   "tool-shared-ui-button-open-in-acbr": "Открыть в ACBR",
   "tool-shared-ui-button-open-in-browser": "Открыть в браузере",
+  "[NEEDS TRANSLATION]tool-shared-ui-button-open-websitename-in-browser": "Open {0} in Browser",
   "tool-shared-ui-about-text-1": "Это инструмент для поиска по {0}, доступным на веб-сайте \"{1}\", и открытия их в браузере системы или непосредственно внутри ACBR.",
   "tool-shared-ui-about-text-1-comicbooks": "Комиксы",
   "tool-shared-ui-about-text-1-books": "Книги",

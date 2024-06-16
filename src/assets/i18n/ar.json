@@ -305,6 +305,7 @@
   "tool-shared-ui-search-network-error": "حدث خطأ، تعذر الاتصال بـ {0}.",
   "tool-shared-ui-button-open-in-acbr": "فتح في ACBR",
   "tool-shared-ui-button-open-in-browser": "فتح في المتصفح",
+  "[NEEDS TRANSLATION]tool-shared-ui-button-open-websitename-in-browser": "Open {0} in Browser",
   "tool-shared-ui-about-text-1": "هذه الأداة تستخدم للبحث من خلال {0} المتوفرة في موقع \"{1}\" وفتحها في متصفح النظام أو مباشرة داخل ACBR.",
   "tool-shared-ui-about-text-1-comicbooks": "الكتب المصورة",
   "tool-shared-ui-about-text-1-books": "الكتب",
