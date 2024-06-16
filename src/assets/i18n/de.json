@@ -375,7 +375,7 @@
   "tool-shared-modal-log-failed-conversion": "Konnte die Datei nicht konvertieren",
   "tool-shared-modal-log-failed-extraction": "Konnte die Datei nicht extrahieren",
   "tool-shared-modal-log-failed-creation": "Konnte die Datei nicht erstellen",
-  "[NEEDS TRANSLATION]tool-shared-modal-log-failed-reason-no-valid-file": "Couldn't find any valid file in the input list",
+  "tool-shared-modal-log-failed-reason-no-valid-file": "Konnte keine gültige Datei in der Eingangsliste finden",
   "tool-shared-modal-log-failed-reason-error": "Ein Fehler ist aufgetreten",
   "tool-shared-modal-log-failed-reason-canceled": "Der Prozess wurde abgebrochen",
   "tool-shared-modal-log-failed-reason-output-file-exists": "Die Ausgangsdatei existiert bereits",
