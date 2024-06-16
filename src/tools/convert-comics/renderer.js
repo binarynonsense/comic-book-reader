@@ -471,6 +471,10 @@ function initOnIpcCallbacks() {
     }
   });
 
+  on("show-modal-info", (...args) => {
+    showModalInfo(...args);
+  });
+
   on("add-item-to-input-list", (path, type) => {
     if (path === undefined || type === undefined) return;
 
@@ -999,6 +1003,32 @@ function updateLogText(text, append = true) {
     }
     log.scrollTop = log.scrollHeight;
   }
+}
+
+function showModalInfo(title, message, textButton1) {
+  if (g_openModal) {
+    return;
+  }
+  g_openModal = modals.show({
+    title: title,
+    message: message,
+    zIndexDelta: 5,
+    close: {
+      callback: () => {
+        modalClosed();
+      },
+      key: "Escape",
+    },
+    buttons: [
+      {
+        text: textButton1.toUpperCase(),
+        callback: () => {
+          modalClosed();
+        },
+        key: "Enter",
+      },
+    ],
+  });
 }
 
 ///////////////////////////////////////////////////////////////////////////////

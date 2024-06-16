@@ -322,6 +322,13 @@ function initOnIpcCallbacks() {
       }
     }
     if (inputFiles.length > 0) sendIpcToRenderer("start-accepted", inputFiles);
+    else
+      sendIpcToRenderer(
+        "show-modal-info",
+        _("tool-shared-modal-title-error"),
+        _("tool-shared-modal-log-failed-reason-no-valid-file"),
+        _("tool-shared-ui-close").toUpperCase()
+      );
   });
 
   /////////////////////////
