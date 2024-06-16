@@ -74,7 +74,7 @@
 
 #hs-logo-open img {
   width: 150px;
-  opacity: 0.3;
+  opacity: var(--hs-logo-opacity);
   filter: grayscale(100%);
 }
 
@@ -257,7 +257,7 @@
   align-items: center;
   background-color: color-mix(
     in srgb,
-    var(--hs-path-card-bg-color) 20%,
+    var(--hs-path-card-bg-color) var(--hs-add-card-bg-pct),
     transparent
   );
   color: color-mix(in srgb, var(--hs-path-card-text-color) 60%, transparent);
