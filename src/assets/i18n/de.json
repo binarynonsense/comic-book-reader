@@ -13,6 +13,7 @@
     "native-name": "Deutsch",
     "direction": "ltr"
   },
+  "[NOTE TO TRANSLATORS]capitalization": "The capitalization of some of the entries tries to follow what is used in other reference apps, i.e. Firefox and VS Code. This means that, in English, menu entries, option names and sections, button names and some others are capitalized as titles (for these then, ACBR tries to follow the Chicago style for headlines like in 'Go to First', for example), while the rest of things (modal logs, options inside selects, tooltips...) use normal capitalization ('Couldn't open the file', for example). This may not, and probably won't, be valid or look right for other languages (like Spanish) so, if you can or have doubts, check the references mentioned above to see how they handle it for the target language and always use a capitalization style that is correct for that language.",
   "menu-file": "Datei",
   "menu-file-open": "Öffnen...",
   "menu-file-openrecent": "Zuletzt Verwendete öffnen",
