@@ -268,13 +268,16 @@ function initOnIpcCallbacks() {
 
   on("start-clicked", async (inputList, selectedOptions) => {
     let inputFiles = [];
+    function isAlreadyInInputList(filePath) {
+      return inputFiles.some((e) => e.path === filePath);
+    }
     g_uiSelectedOptions = structuredClone(selectedOptions);
     for (let index = 0; index < inputList.length; index++) {
       const inputListItem = inputList[index];
       if (inputListItem.type === 0) {
         // FILE
         let type = await getFileType(inputListItem.path);
-        if (type != undefined) {
+        if (type != undefined && !isAlreadyInInputList(inputListItem.path)) {
           inputFiles.push({
             path: inputListItem.path,
             type: type,
@@ -299,7 +302,7 @@ function initOnIpcCallbacks() {
             const element = filesInFolder[j];
             const filePath = element;
             let type = await getFileType(filePath);
-            if (type != undefined) {
+            if (type != undefined && !isAlreadyInInputList(filePath)) {
               inputFiles.push({
                 path: filePath,
                 type: type,
@@ -311,7 +314,7 @@ function initOnIpcCallbacks() {
             const element = filesInFolder[j];
             const filePath = path.join(inputListItem.path, element);
             let type = await getFileType(filePath);
-            if (type != undefined) {
+            if (type != undefined && !isAlreadyInInputList(filePath)) {
               inputFiles.push({
                 path: filePath,
                 type: type,
