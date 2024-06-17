@@ -186,7 +186,7 @@ function buildHistoryList(history) {
     {
       let buttonSpan = document.createElement("span");
       buttonSpan.className = "tools-buttons-list-button";
-      buttonSpan.innerHTML = `<i class="fas fa-times fa-2x fa-fw"></i>`;
+      buttonSpan.innerHTML = `<i class="fas fa-times"></i>`;
       buttonSpan.title = g_localizedRemoveFromListText;
       buttonSpan.addEventListener("click", (event) => {
         sendIpcToMain("remove-item", index);
