@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2023 Álvaro García
+ * Copyright 2020-2024 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -244,6 +244,8 @@ function updatePlaylistInfo() {
     let fullName;
     if (file.title && file.artist) {
       fullName = `${file.artist} - ${file.title}`;
+    } else if (file.title) {
+      fullName = `${file.title}`;
     } else {
       var filenameextension = file.url.replace(/^.*[\\\/]/, "");
       var filename = filenameextension.substring(
@@ -251,6 +253,7 @@ function updatePlaylistInfo() {
         filenameextension.lastIndexOf(".")
       );
       //var ext = filenameextension.split(".").pop();
+      if (!filename || filename == "") filename = file.url;
       fullName = filename;
     }
     let content = `<span title="${fullName}\n${file.url}" class="ap-span-playlist-track-title">${fullName}</span
@@ -506,7 +509,7 @@ function onSliderVolumeChanged(slider) {
 }
 
 function getFormatedTimeFromSeconds(seconds) {
-  if (isNaN(seconds)) return "00:00";
+  if (isNaN(seconds) || !isFinite(seconds)) return "--:--";
   let hours = Math.floor(seconds / 3600);
   let minutes = Math.floor((seconds - hours * 3600) / 60);
   seconds = Math.floor(seconds - hours * 3600 - minutes * 60);

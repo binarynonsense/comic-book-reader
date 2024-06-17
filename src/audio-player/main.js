@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2023 Álvaro García
+ * Copyright 2020-2024 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -312,7 +312,7 @@ function getPlaylistFiles(filePath) {
     const fileContents = fs.readFileSync(filePath, "utf-8");
     let files = [];
     fileContents.split(/\r?\n/).forEach((line) => {
-      if (/.mp3|.ogg|.wav$/.test(line)) {
+      if (/.mp3|.ogg|.wav$/.test(line) || /^http:\/\/|https:\/\//.test(line)) {
         line = decodeURI(line);
         if (!/^http:\/\/|https:\/\//.test(line)) {
           if (!path.isAbsolute(line)) {
@@ -347,9 +347,15 @@ function savePlaylistToFile(playlist, filePath, saveAsAbsolutePaths) {
       url = path.relative(saveDir, url);
     }
     let timeText =
-      !file.duration || isNaN(file.duration) ? -1 : parseInt(file.duration);
-    let artistTitleText =
-      file.title && file.artist ? file.artist + " - " + file.title : "";
+      !file.duration || isNaN(file.duration) || !isFinite(file.duration)
+        ? -1
+        : parseInt(file.duration);
+    let artistTitleText = "";
+    if (file.title && file.artist) {
+      artistTitleText = file.artist + " - " + file.title;
+    } else if (file.title) {
+      artistTitleText = file.title;
+    }
     content += `#EXTINF:${timeText},${artistTitleText}\n`;
     content += encodeURI(url) + "\n";
   });
