@@ -31,7 +31,7 @@ Ein Comicbuch Leser und Konverter für CBZ, CBR, CB7, EPUB und PDF Dateien.
 ## Funktionen:
 
 - Windows & Linux Versionen.
-- Kompatible Datei-formate:
+- Kompatible Dateiformate:
 
   - Comicbücher:
     - CBZ, CBR, CB7, PDF und EPUB.<sup>[1]</sup>
@@ -67,7 +67,7 @@ Ein Comicbuch Leser und Konverter für CBZ, CBR, CB7, EPUB und PDF Dateien.
     - Comicbuch Seiten (zu JPG, PNG, AVIF oder WebP).
     - Text (OCR) aus einer Comicbuch Seite oder Bilddatei.
     - QR Code Text aus einer Comicbuch Seite oder Bilddatei.
-    - Eine Farb-palette aus einer Comicbuch Seite oder Bilddatei.
+    - Eine Farbpalette aus einer Comicbuch Seite oder Bilddatei.
       - kann zu einer GPL oder ACO Paletten-datei extrahiert werden.
   - Weiteres:
     - Suche und öffne Bücher/Comics von:
@@ -86,7 +86,7 @@ Ein Comicbuch Leser und Konverter für CBZ, CBR, CB7, EPUB und PDF Dateien.
 >
 > [2]: EPUB E-Books lesen ist ein experimentelles / extra Feature außerhalb des Hauptumfangs des Projektes. Es könnte nicht für alle Dateien funktionieren, und im Bedarfsfall in zukünftigen Versionen entfernt werden.
 >
-> [3]: Das Erstellen und Modifizieren von CBR Dateien ist standardmäßig deaktiviert. Diese Funktionen können über die Einstellungen aktiviert werden, benötigen aber ein Drittanbieter Kommandozeilen-Werkzeug ([rar](https://www.win-rar.com/cmd-shell-mode.html?&L=0) von WinRAR), welches im System installiert sein muss.
+> [3]: Das Erstellen und Modifizieren von CBR Dateien ist standardmäßig deaktiviert. Diese Funktionen können über die Einstellungen aktiviert werden, benötigen aber ein Drittanbieter Kommandozeilen-werkzeug ([rar](https://www.win-rar.com/cmd-shell-mode.html?&L=0) von WinRAR), welches im System installiert sein muss.
 
 ## Downloads:
 
