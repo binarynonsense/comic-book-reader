@@ -185,6 +185,11 @@ a:hover a:visited {
   padding: 2px;
   cursor: pointer;
   color: var(--audioplayer-track-text-color);
+  font-family: monospace;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .ap-div-playlist-track:hover {
@@ -192,18 +197,14 @@ a:hover a:visited {
   color: var(--audioplayer-track-hover-text-color) !important;
 }
 
-.ap-span-playlist-track-time {
-  /* font-family: monospace; */
-  float: right;
-}
+/* .ap-span-playlist-track-time {
+} */
 
 .ap-span-playlist-track-title {
-  display: inline-block;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   width: 195px;
-  /* ellipsis on the left */
   text-align: left;
 }
 
