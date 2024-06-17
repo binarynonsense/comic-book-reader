@@ -16,7 +16,8 @@ Un lector y conversor de cómics para archivos en formato CBZ, CBR, CB7, EPUB y 
   <a href="./README.en.md">English</a> |
   <span>Español</span> | 
   <a href="./README.ru.md">Русский</a> | 
-  <a href="./README.de.md">Deutsch</a>
+  <a href="./README.de.md">Deutsch</a> | 
+  <a href="./README.ar.md">العربية</a>
 </p>
 
 ## Contenidos:
@@ -79,13 +80,12 @@ Un lector y conversor de cómics para archivos en formato CBZ, CBR, CB7, EPUB y 
     - Búsqueda de términos de diccionario de:
       - Diccionario Wiktionary.
 
-
 > Notas:
-> 
+>
 > [1]: Solo imágenes.
-> 
+>
 > [2]: La lectura de Ebooks EPUB es una función experimental/extra más allá de los objectivos principales del proyecto. Es posible que no funcione para todos los archivos y podría eliminarse en versiones futuras si surge la necesidad.
-> 
+>
 > [3]: La creación y modificación de archivos CBR están desactivadas por defecto. Se pueden activar en las preferencias pero requieren que una herramienta de línea de comandos de terceros ([rar](https://www.win-rar.com/cmd-shell-mode.html?&L=0) de WinRAR) se encuentre instalada en el sistema.
 
 ## Descargas:

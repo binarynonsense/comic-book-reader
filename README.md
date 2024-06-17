@@ -16,7 +16,8 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB and PDF files.
   <span>English</span> |
   <a href="./docs/README.es.md">Español</a> | 
   <a href="./docs/README.ru.md">Русский</a> | 
-  <a href="./docs/README.de.md">Deutsch</a>
+  <a href="./docs/README.de.md">Deutsch</a> | 
+  <a href="./docs/README.ar.md">العربية</a>
 </p>
 
 ## Contents:
@@ -45,7 +46,7 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB and PDF files.
 - 'Fit to width', 'fit to height' and a customizable 'scale to height' page views.
 - Page rotation.
 - UI available in:
-   - English, Spanish, Russian and German.
+  - English, Spanish, Russian and German.
 - Automatically restores the previous session's last opened book and page, and remembers the last books' page positions.
 - Portable mode (by creating a file named portable.txt in the same folder as the executable).
 - ComicInfo.xml editor:
@@ -82,9 +83,9 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB and PDF files.
 > Notes:
 >
 > [1]: Images only.
-> 
+>
 > [2]: Reading EPUB Ebooks is an experimental / extra feature outside the main scope of the project. It may not work for all files and could be removed in future versions if necessary.
-> 
+>
 > [3]: Creating and modifying CBR files are disabled by default. They can be enabled in the preferences but require a third-party command-line tool ([rar](https://www.win-rar.com/cmd-shell-mode.html?&L=0) from WinRAR) to be installed in the system.
 
 ## Downloads:
@@ -116,4 +117,4 @@ ACBR's code is released under the BSD 2-Clause [license](./LICENSE). To check th
 
 ## Other:
 
-Screenshots, more details about the controls and other extra information can be found on [the project's Wiki](https://github.com/binarynonsense/comic-book-reader/wiki). 
+Screenshots, more details about the controls and other extra information can be found on [the project's Wiki](https://github.com/binarynonsense/comic-book-reader/wiki).

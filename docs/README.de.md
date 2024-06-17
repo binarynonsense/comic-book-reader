@@ -16,7 +16,8 @@ Ein Comicbuch Leser und Konverter für CBZ, CBR, CB7, EPUB und PDF Dateien.
   <a href="./README.en.md">English</a> | 
   <a href="./README.es.md">Español</a> | 
   <a href="./README.ru.md">Русский</a> | 
-  <span>Deutsch</span>
+  <span>Deutsch</span> | 
+  <a href="./README.ar.md">العربية</a>
 </p>
 
 ## Inhalt:
