@@ -89,7 +89,7 @@
 الإصدار المستقر:
 
 - [ويندوز](https://github.com/binarynonsense/comic-book-reader/releases/latest/download/ACBR_Windows.zip)
-- [ويندوز (EXE)](https://github.com/binarynonsense/comic-book-reader/releases/latest/download/ACBR_Windows_SelfExtracting.exe)
+- [ويندوز (ملف تنفيذي لاستخراج التطبيق في مجلد معين)](https://github.com/binarynonsense/comic-book-reader/releases/latest/download/ACBR_Windows_SelfExtracting.exe)
 - [لينكس](https://github.com/binarynonsense/comic-book-reader/releases/latest/download/ACBR_Linux.zip)
 - [لينكس (AppImage)](https://github.com/binarynonsense/comic-book-reader/releases/latest/download/ACBR_Linux_AppImage.zip)
 
