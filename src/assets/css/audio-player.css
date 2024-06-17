@@ -4,6 +4,7 @@
   justify-items: center;
   flex-direction: column;
   z-index: 10;
+  direction: ltr;
 }
 
 .ap-layout-top-left {
@@ -203,7 +204,6 @@ a:hover a:visited {
   text-overflow: ellipsis;
   width: 195px;
   /* ellipsis on the left */
-  direction: rtl;
   text-align: left;
 }
 
