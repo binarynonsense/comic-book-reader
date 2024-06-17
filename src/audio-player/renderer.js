@@ -655,12 +655,18 @@ function initPlayer(settings, playlist) {
 
   // Events
   g_player.engine.addEventListener("timeupdate", function () {
-    g_player.textTime.innerHTML =
-      getFormatedTimeFromSeconds(this.currentTime) +
-      " / " +
-      getFormatedTimeFromSeconds(this.duration);
-    if (!isNaN(this.duration))
+    if (isNaN(this.duration) || !isFinite(this.duration)) {
+      g_player.textTime.innerHTML = getFormatedTimeFromSeconds(
+        this.currentTime
+      );
+      g_player.sliderTime.value = 0;
+    } else {
+      g_player.textTime.innerHTML =
+        getFormatedTimeFromSeconds(this.currentTime) +
+        " / " +
+        getFormatedTimeFromSeconds(this.duration);
       g_player.sliderTime.value = (100 * this.currentTime) / this.duration;
+    }
   });
 
   g_player.engine.addEventListener("volumechange", function () {
