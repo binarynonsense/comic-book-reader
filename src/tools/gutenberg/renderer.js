@@ -387,24 +387,20 @@ function initOnIpcCallbacks() {
               "name": <string>
             }
           */
+          // create html
           let li = document.createElement("li");
-          li.className = "tools-collection-li";
-          // open icon - clickable
-          let button = document.createElement("span");
-          button.title = openInAcbrText;
-          button.className = "tools-collection-li-button";
-          button.addEventListener("click", (event) => {
-            onSearchResultClicked(bookData.id, bookData.title, 0);
-          });
-          button.innerHTML = `<i class="fa fa-folder-open"></i>`;
-          li.appendChild(button);
-          // text
+          li.className = "tools-buttons-list-li";
+          let buttonSpan = document.createElement("span");
+          buttonSpan.className = "tools-buttons-list-button";
+          buttonSpan.innerHTML = `<i class="fas fa-file fa-2x"></i>`;
+          buttonSpan.title = openInAcbrText;
           let multilineText = document.createElement("span");
-          multilineText.className = "tools-collection-li-multiline-text";
+          multilineText.className = "tools-buttons-list-li-multiline-text";
           {
             let text = document.createElement("span");
             text.innerText = reduceString(bookData.title);
             multilineText.appendChild(text);
+
             let authorNames = [];
             for (let index = 0; index < bookData.authors.length; index++) {
               let author = bookData.authors[index].name;
@@ -427,16 +423,21 @@ function initOnIpcCallbacks() {
               multilineText.appendChild(text);
             }
           }
-          li.appendChild(multilineText);
-          // open url - clickable
-          button = document.createElement("span");
-          button.title = openInBrowserText;
-          button.className = "tools-collection-li-button";
-          button.addEventListener("click", (event) => {
-            onSearchResultClicked(bookData.id, bookData.title, 1);
+          buttonSpan.appendChild(multilineText);
+          buttonSpan.addEventListener("click", (event) => {
+            onSearchResultClicked(bookData.id, bookData.title, 0);
           });
-          button.innerHTML = `<i class="fas fa-link"></i>`;
-          li.appendChild(button);
+          li.appendChild(buttonSpan);
+          {
+            let buttonSpan = document.createElement("span");
+            buttonSpan.className = "tools-buttons-list-button";
+            buttonSpan.innerHTML = `<i class="fas fa-link"></i>`;
+            buttonSpan.title = openInBrowserText;
+            buttonSpan.addEventListener("click", (event) => {
+              onSearchResultClicked(bookData.id, bookData.title, 1);
+            });
+            li.appendChild(buttonSpan);
+          }
           ul.appendChild(li);
         }
         searchResultsDiv.appendChild(ul);

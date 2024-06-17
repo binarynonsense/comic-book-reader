@@ -242,12 +242,12 @@ function initOnIpcCallbacks() {
         ul.className = "tools-collection-ul";
         for (let index = 0; index < searchResults.length; index++) {
           const stationData = searchResults[index];
-
+          // create html
           let li = document.createElement("li");
           li.className = "tools-buttons-list-li";
           let buttonSpan = document.createElement("span");
           buttonSpan.className = "tools-buttons-list-button";
-          buttonSpan.innerHTML = `<i class="fas fa-music fa-2x"></i>`;
+          buttonSpan.innerHTML = `<i class="fas fa-file-audio fa-2x"></i>`;
           buttonSpan.title = openInAcbrText;
           let multilineText = document.createElement("span");
           multilineText.className = "tools-buttons-list-li-multiline-text";
