@@ -32,6 +32,7 @@ exports.init = function () {
   g_tools["tool-wiktionary"] = require("../../tools/wiktionary/main");
   g_tools["tool-comicinfoxml"] = require("../../tools/comicinfoxml/main");
   g_tools["tool-file-browser"] = require("../../tools/file-browser/main");
+  g_tools["tool-radio"] = require("../../tools/radio/main");
 };
 
 exports.getTools = function () {

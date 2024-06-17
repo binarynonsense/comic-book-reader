@@ -24,6 +24,7 @@ import * as toolLibrivox from "../../tools/librivox/renderer.js";
 import * as toolWiktionary from "../../tools/wiktionary/renderer.js";
 import * as toolComicInfoXml from "../../tools/comicinfoxml/renderer.js";
 import * as toolFileBrowser from "../../tools/file-browser/renderer.js";
+import * as toolRadio from "../../tools/radio/renderer.js";
 
 let g_currentTool = "reader";
 let g_tools;
@@ -49,6 +50,7 @@ export function init() {
   g_tools["tool-wiktionary"] = toolWiktionary;
   g_tools["tool-comicinfoxml"] = toolComicInfoXml;
   g_tools["tool-file-browser"] = toolFileBrowser;
+  g_tools["tool-radio"] = toolRadio;
 }
 
 export function getTools() {

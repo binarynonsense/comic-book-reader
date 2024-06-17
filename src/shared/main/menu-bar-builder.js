@@ -614,6 +614,12 @@ function buildApplicationMenu(settings, history) {
                 core.onMenuToolWiktionary();
               },
             },
+            {
+              label: _("menu-tools-other-radio"),
+              click() {
+                core.onMenuToolRadio();
+              },
+            },
           ],
         },
       ],

@@ -560,6 +560,11 @@ if (!gotTheLock) {
     sendIpcToPreload("update-menubar");
   };
 
+  exports.onMenuToolRadio = function () {
+    tools.switchTool("tool-radio");
+    sendIpcToPreload("update-menubar");
+  };
+
   //////////////////
 
   exports.onMenuToggleDevTools = function () {
