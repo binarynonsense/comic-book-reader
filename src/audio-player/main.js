@@ -380,8 +380,8 @@ function getPlaylistFiles(filePath) {
               let file = {
                 url: line,
                 duration,
-                title,
-                artist,
+                title: decodeM3UName(title),
+                artist: decodeM3UName(artist),
               };
               files.push(file);
             }
@@ -419,9 +419,10 @@ function savePlaylistToFile(playlist, filePath, saveAsAbsolutePaths) {
         : parseInt(file.duration);
     let artistTitleText = "";
     if (file.title && file.artist) {
-      artistTitleText = file.artist + " - " + file.title;
+      artistTitleText =
+        encodeM3UName(file.artist) + " - " + encodeM3UName(file.title);
     } else if (file.title) {
-      artistTitleText = file.title;
+      artistTitleText = encodeM3UName(file.title);
     }
     content += `#EXTINF:${timeText},${artistTitleText}\n`;
     content += encodeURI(url) + "\n";
@@ -429,7 +430,18 @@ function savePlaylistToFile(playlist, filePath, saveAsAbsolutePaths) {
   fs.writeFileSync(filePath, content, "utf8");
 }
 
-exports.getSettings = function () {};
+function encodeM3UName(text) {
+  if (!text) return;
+  text = text.replace("-", "%2D");
+  text = text.replace(",", "%2C");
+  return text;
+}
+function decodeM3UName(text) {
+  if (!text) return;
+  text = text.replace("%2D", "-");
+  text = text.replace("%2C", ",");
+  return text;
+}
 
 /////////////////////////////////////////////////////////////////////////////
 
