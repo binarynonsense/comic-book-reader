@@ -12,10 +12,7 @@ contextBridge.exposeInMainWorld("ipc", {
   sendToMain: (...args) => {
     ipcRenderer.send("main", args);
   },
-  sendToMainAndWait: (...args) => {
-    return ipcRenderer.invoke("main", args);
-  },
-
+  sendToMainAndWait: (...args) => ipcRenderer.invoke("main", args),
   addOnIpcCallbackFromMain: (callback) => ipcRenderer.on("renderer", callback),
 });
 

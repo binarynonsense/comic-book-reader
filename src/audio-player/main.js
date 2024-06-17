@@ -91,30 +91,8 @@ function initOnIpcCallbacks() {
     }
     savePlaylistToFile(playlist, filePath, false);
   });
-}
 
-// HANDLE
-
-let g_handleIpcCallbacks = {};
-
-async function handleIpcFromRenderer(...args) {
-  const callback = g_handleIpcCallbacks[args[0]];
-  if (callback) return await callback(...args.slice(1));
-  return;
-}
-exports.handleIpcFromRenderer = handleIpcFromRenderer;
-
-function handle(id, callback) {
-  g_handleIpcCallbacks[id] = callback;
-}
-
-function initHandleIpcCallbacks() {
-  handle("test", async (value) => {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    return value;
-  });
-
-  handle("fill-tags", async (files) => {
+  on("fill-tags", async (files) => {
     const musicmetadata = require("music-metadata");
     let updatedFiles = [];
     for (let index = 0; index < files.length; index++) {
@@ -136,11 +114,62 @@ function initHandleIpcCallbacks() {
         }
       } catch (error) {
         log.error(error);
-        return [];
+        sendIpcToRenderer("tags-filled", []);
       }
     }
-    return updatedFiles;
+    sendIpcToRenderer("tags-filled", updatedFiles);
   });
+}
+
+// HANDLE
+
+let g_handleIpcCallbacks = {};
+
+async function handleIpcFromRenderer(...args) {
+  const callback = g_handleIpcCallbacks[args[0]];
+  if (callback) return await callback(...args.slice(1));
+  return;
+}
+exports.handleIpcFromRenderer = handleIpcFromRenderer;
+
+function handle(id, callback) {
+  g_handleIpcCallbacks[id] = callback;
+}
+
+function initHandleIpcCallbacks() {
+  // TODO: these stopped working, don't seem to wait, try to fix
+  // handle("test", async (value) => {
+  //   await new Promise((resolve) => setTimeout(resolve, 5000));
+  //   return value;
+  // });
+  // handle("fill-tags", async (files) => {
+  //   const musicmetadata = require("music-metadata");
+  //   let updatedFiles = [];
+  //   for (let index = 0; index < files.length; index++) {
+  //     const file = files[index];
+  //     try {
+  //       if (file.title && file.artist) continue;
+  //       if (!/^http:\/\/|https:\/\//.test(file.url)) {
+  //         const metadata = await musicmetadata.parseFile(file.url);
+  //         let didUpdate = false;
+  //         if (metadata?.common?.artist) {
+  //           file.artist = metadata.common.artist;
+  //           didUpdate = true;
+  //         }
+  //         if (metadata?.common?.title) {
+  //           file.title = metadata.common.title;
+  //           didUpdate = true;
+  //         }
+  //         if (didUpdate) updatedFiles.push(file);
+  //       }
+  //     } catch (error) {
+  //       log.error(error);
+  //       return [];
+  //     }
+  //   }
+  //   log.test(updatedFiles);
+  //   return updatedFiles;
+  // });
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -173,10 +202,10 @@ exports.saveSettings = function () {
 function loadSettings() {
   settings.init();
   let playlistPath = path.join(appUtils.getConfigFolder(), "acbr-player.m3u");
-  let fileUrls = getPlaylistFiles(playlistPath);
-  if (fileUrls && fileUrls.length > 0) {
-    fileUrls.forEach((url) => {
-      g_playlist.files.push({ url: url });
+  let files = getPlaylistFiles(playlistPath);
+  if (files && files.length > 0) {
+    files.forEach((file) => {
+      g_playlist.files.push(file);
     });
   }
 }
@@ -255,10 +284,10 @@ function getValidFilePaths(filePaths) {
     ) {
       if (!isAlreadyInArray(outputPaths, filePath)) outputPaths.push(filePath);
     } else if (ext === FileExtension.M3U || ext === FileExtension.M3U8) {
-      const listPaths = getPlaylistFiles(filePath);
-      listPaths.forEach((listPath) => {
-        if (!isAlreadyInArray(outputPaths, listPath))
-          outputPaths.push(listPath);
+      const listFiles = getPlaylistFiles(filePath);
+      listFiles.forEach((listFile) => {
+        if (!isAlreadyInArray(outputPaths, listFile.url))
+          outputPaths.push(listFile.url);
       });
     }
   });
@@ -307,20 +336,58 @@ function callOpenFilesDialog(mode) {
 
 function getPlaylistFiles(filePath) {
   // TODO: this is a quick and dirty implementation, maybe do a more elegant/efficient one
-  // TODO: read duration, title, artist...
   try {
-    const fileContents = fs.readFileSync(filePath, "utf-8");
+    let fileContents = fs.readFileSync(filePath, "utf-8");
+    // remove blank lines
+    fileContents = fileContents.replace(/^(?=\n)$|^\s*|\s*$|\n\n+/gm, "");
     let files = [];
+    let lastLineWasExInf = false;
+    let duration, artist, title;
     fileContents.split(/\r?\n/).forEach((line) => {
-      if (/.mp3|.ogg|.wav$/.test(line) || /^http:\/\/|https:\/\//.test(line)) {
-        line = decodeURI(line);
-        if (!/^http:\/\/|https:\/\//.test(line)) {
-          if (!path.isAbsolute(line)) {
-            line = path.join(path.dirname(filePath), line);
-          }
-          if (!fs.existsSync(line)) line = undefined;
+      line = line.trim();
+      if (line.startsWith("#EXTINF:")) {
+        line = line.replace("#EXTINF:", "");
+        let parts = line.split(",");
+        if (parts.length > 0) {
+          duration = parts[0].trim();
         }
-        if (line) files.push(line);
+        if (parts.length > 1) {
+          let artistAndTitle = parts[1].trim().split("-");
+          if (artistAndTitle.length > 0) {
+            if (artistAndTitle.length > 1) {
+              artist = artistAndTitle[0].trim();
+              title = artistAndTitle[1].trim();
+            } else {
+              title = artistAndTitle[0].trim();
+            }
+          }
+        }
+        lastLineWasExInf = true;
+      } else {
+        if (lastLineWasExInf) {
+          if (
+            /.mp3|.ogg|.wav$/.test(line) ||
+            /^http:\/\/|https:\/\//.test(line)
+          ) {
+            line = decodeURI(line);
+            if (!/^http:\/\/|https:\/\//.test(line)) {
+              if (!path.isAbsolute(line)) {
+                line = path.join(path.dirname(filePath), line);
+              }
+              if (!fs.existsSync(line)) line = undefined;
+            }
+            if (line) {
+              let file = {
+                url: line,
+                duration,
+                title,
+                artist,
+              };
+              files.push(file);
+            }
+          }
+        }
+        lastLineWasExInf = false;
       }
     });
     return files;

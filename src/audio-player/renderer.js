@@ -104,6 +104,23 @@ function initOnIpcCallbacks() {
   on("update-localization", (callback) => {
     updateLocalization(callback);
   });
+
+  on("tags-filled", (updatedFiles) => {
+    if (updatedFiles && updatedFiles.length > 0) {
+      for (let index = 0; index < g_playlist.files.length; index++) {
+        const file = g_playlist.files[index];
+        if (file.title && file.artist) continue;
+        for (let j = 0; j < updatedFiles.length; j++) {
+          const updatedFile = updatedFiles[j];
+          if (updatedFile.url === file.url) {
+            file.artist = updatedFile.artist;
+            file.title = updatedFile.title;
+          }
+        }
+      }
+    }
+    updatePlaylistInfo();
+  });
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -164,22 +181,30 @@ function getNextToFill() {
   return -1;
 }
 
-async function fillTags() {
-  let updatedFiles = await sendIpcToMainAndWait("fill-tags", g_playlist.files);
-  if (updatedFiles && updatedFiles.length > 0) {
-    for (let index = 0; index < g_playlist.files.length; index++) {
-      const file = g_playlist.files[index];
-      if (file.title && file.artist) continue;
-      for (let j = 0; j < updatedFiles.length; j++) {
-        const updatedFile = updatedFiles[j];
-        if (updatedFile.url === file.url) {
-          file.artist = updatedFile.artist;
-          file.title = updatedFile.title;
-        }
-      }
-    }
-  }
-  updatePlaylistInfo();
+// async function fillTags() {
+//   console.log(g_playlist.files);
+//   let updatedFiles = await sendIpcToMainAndWait("fill-tags", g_playlist.files);
+//   let test = await sendIpcToMainAndWait("test", 10);
+//   console.log(updatedFiles);
+//   console.log(test);
+//   if (updatedFiles && updatedFiles.length > 0) {
+//     for (let index = 0; index < g_playlist.files.length; index++) {
+//       const file = g_playlist.files[index];
+//       if (file.title && file.artist) continue;
+//       for (let j = 0; j < updatedFiles.length; j++) {
+//         const updatedFile = updatedFiles[j];
+//         if (updatedFile.url === file.url) {
+//           file.artist = updatedFile.artist;
+//           file.title = updatedFile.title;
+//         }
+//       }
+//     }
+//   }
+//   updatePlaylistInfo();
+// }
+
+function fillTags() {
+  sendIpcToMain("fill-tags", g_playlist.files);
 }
 
 function createTracksList(isRefresh) {
@@ -738,7 +763,6 @@ export function onInputEvent(type, event) {
       const composedPath = event.composedPath();
       for (let index = 0; index < composedPath.length; index++) {
         const element = composedPath[index];
-        console.log(element);
         if (element?.id?.includes("ap-")) {
           let outputPaths = [];
           for (
