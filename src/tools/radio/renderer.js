@@ -322,11 +322,16 @@ async function onSearch() {
 
 async function onSearchResultClicked(index, mode) {
   if (!g_lastSearchResults) return;
-  const bookData = g_lastSearchResults[index];
+  const stationData = g_lastSearchResults[index];
   if (mode === 0) {
-    sendIpcToMain("open", bookData.name, bookData.url_resolved);
+    sendIpcToMain(
+      "open",
+      stationData.stationuuid,
+      stationData.name,
+      stationData.url_resolved
+    );
   } else {
-    openStationLink(bookData.url_resolved);
+    openStationLink(stationData.url_resolved);
   }
 }
 

@@ -101,7 +101,7 @@ function initOnIpcCallbacks() {
     contextMenu.show("edit", params, onCloseClicked);
   });
 
-  on("open", (name, url) => {
+  on("open", (id, name, url) => {
     let playlist = {
       id: name,
       source: "radio",
@@ -110,6 +110,16 @@ function initOnIpcCallbacks() {
     reader.showAudioPlayer(true, false);
     onCloseClicked();
     sendIpcToAudioPlayerRenderer("open-playlist", playlist);
+
+    (async () => {
+      try {
+        // Call the click api as requested by the docs
+        const axios = require("axios").default;
+        await axios.get(`http://de1.api.radio-browser.info/json/url/${id}`, {
+          timeout: 5000,
+        });
+      } catch (error) {}
+    })();
   });
 
   on("search", async (text, options) => {
