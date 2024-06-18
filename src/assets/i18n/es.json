@@ -3,7 +3,7 @@
     "authors": [
       "Álvaro"
     ],
-    "last-updated": "2024-06-15",
+    "last-updated": "2024-06-18",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.5.0-beta1",
     "pre-release": "false",
@@ -321,6 +321,9 @@
   "tool-shared-ui-color-mode": "Modo de color",
   "tool-shared-ui-color-mode-light": "Modo claro",
   "tool-shared-ui-color-mode-dark": "Modo oscuro",
+  "tool-shared-ui-color-mode-custom": "Modo personalizado",
+  "tool-shared-ui-color-text": "Color del texto",
+  "tool-shared-ui-color-background": "Color del fondo",
   "tool-shared-ui-experimental": "Experimental",
   "tool-shared-tab-search": "Buscar",
   "tool-shared-tab-catalog": "Catálogo",
