@@ -55,15 +55,18 @@ function initHandlers() {
     refreshEpubEbookPage();
   });
 
-  on("update-epub-ebook-color-mode", (mode) => {
+  on("update-epub-ebook-color-mode", (mode, textColor, bgColor) => {
     if (mode == 1) {
       // dark
       g_textColor = "white";
       g_bgColor = "black";
-    } else {
+    } else if (mode == 0) {
       // light
       g_textColor = "black";
       g_bgColor = "white";
+    } else {
+      g_textColor = textColor;
+      g_bgColor = bgColor;
     }
     const iframe = document
       ?.getElementsByClassName("epub-view")[0]

@@ -1228,7 +1228,9 @@ async function openEbookFromPath(filePath, pageIndex, historyEntry) {
 
     sendIpcToRenderer(
       "update-epub-ebook-color-mode",
-      settings.getValue("epubEbookColorMode")
+      settings.getValue("epubEbookColorMode"),
+      settings.getValue("epubEbookColorText"),
+      settings.getValue("epubEbookColorBg")
     );
     sendIpcToRenderer("load-epub-ebook", filePath, pageIndex, cachedPath);
     return true;

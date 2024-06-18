@@ -193,14 +193,68 @@ function init(activeLocale, languages, activeTheme, themes, settings) {
       sendIpcToMain("set-home-screen-latest-max", parseInt(input.value));
     });
   }
-  // epub ebook color mode select
+  // epub ebook color mode
   {
-    let select = document.getElementById(
+    const select = document.getElementById(
       "tool-pre-epub-ebook-color-mode-select"
     );
+    const inputTextColor = document.getElementById(
+      "tool-pre-epub-ebook-color-text-input"
+    );
+    const inputBgColor = document.getElementById(
+      "tool-pre-epub-ebook-color-background-input"
+    );
+    const customDiv = document.querySelector(
+      "#tool-pre-epub-ebook-color-custom-inputs-div"
+    );
+
     select.value = settings.epubEbookColorMode;
+    if (select.value == "2") {
+      customDiv.classList.remove("set-display-none");
+    } else {
+      customDiv.classList.add("set-display-none");
+      updateColumnsHeight();
+    }
     select.addEventListener("change", function (event) {
-      sendIpcToMain("set-epub-ebook-color-mode", parseInt(select.value));
+      sendIpcToMain(
+        "set-epub-ebook-color-mode",
+        parseInt(select.value),
+        inputTextColor.value,
+        inputBgColor.value
+      );
+      if (select.value == "2") {
+        customDiv.classList.remove("set-display-none");
+        document
+          .getElementById("tool-pre-epub-ebook-color-custom-inputs-div")
+          .scrollIntoView({
+            behavior: "instant",
+            block: "start",
+            inline: "nearest",
+          });
+      } else {
+        customDiv.classList.add("set-display-none");
+        updateColumnsHeight();
+      }
+    });
+
+    inputTextColor.value = settings.epubEbookColorText;
+    inputTextColor.addEventListener("change", function (event) {
+      sendIpcToMain(
+        "set-epub-ebook-color-mode",
+        2,
+        inputTextColor.value,
+        inputBgColor.value
+      );
+    });
+
+    inputBgColor.value = settings.epubEbookColorBg;
+    inputBgColor.addEventListener("change", function (event) {
+      sendIpcToMain(
+        "set-epub-ebook-color-mode",
+        2,
+        inputTextColor.value,
+        inputBgColor.value
+      );
     });
   }
   // hotspots select

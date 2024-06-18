@@ -192,9 +192,16 @@ function initOnIpcCallbacks() {
     homeScreen.updateMaxLatest(value);
   });
 
-  on("set-epub-ebook-color-mode", (value) => {
-    settings.setValue("epubEbookColorMode", value);
-    reader.sendIpcToRenderer("update-epub-ebook-color-mode", value);
+  on("set-epub-ebook-color-mode", (value, textColor, bgColor) => {
+    if (value) settings.setValue("epubEbookColorMode", value);
+    if (textColor) settings.setValue("epubEbookColorText", textColor);
+    if (bgColor) settings.setValue("epubEbookColorBg", bgColor);
+    reader.sendIpcToRenderer(
+      "update-epub-ebook-color-mode",
+      value,
+      textColor,
+      bgColor
+    );
   });
 
   on("set-loading-bg", (value) => {
@@ -729,6 +736,18 @@ function getLocalization() {
     {
       id: "tool-pre-epub-ebook-color-mode-1-text",
       text: _("tool-shared-ui-color-mode-dark"),
+    },
+    {
+      id: "tool-pre-epub-ebook-color-mode-2-text",
+      text: _("tool-shared-ui-color-mode-custom"),
+    },
+    {
+      id: "tool-pre-epub-ebook-color-text-text",
+      text: _("tool-shared-ui-color-text"),
+    },
+    {
+      id: "tool-pre-epub-ebook-color-background-text",
+      text: _("tool-shared-ui-color-background"),
     },
     //////////////////////////////////////////////
     {

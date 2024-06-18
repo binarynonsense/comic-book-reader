@@ -64,7 +64,9 @@ const g_defaultSettings = {
   filterMode: 0, // 0: none, 1: old paper
   toolbarDirection: 0, // 0: infer from language, 1: ltr, 2: rtl
   homeScreenLatestMax: 6, // integer >= 0
-  epubEbookColorMode: 0, // 0: light, 1: dark
+  epubEbookColorMode: 0, // 0: light, 1: dark, 2: custom
+  epubEbookColorText: "#000000", // rgb color in hex
+  epubEbookColorBg: "#ffffff", // rgb color in hex
   pagesDirection: 0, // 0: ltr, 1: rtl
 
   navKeys: {
@@ -328,9 +330,15 @@ function sanitize(screenWidth, screenHeight) {
   if (
     !Number.isInteger(g_settings.epubEbookColorMode) ||
     g_settings.epubEbookColorMode < 0 ||
-    g_settings.epubEbookColorMode > 1
+    g_settings.epubEbookColorMode > 2
   ) {
     g_settings.epubEbookColorMode = g_defaultSettings.epubEbookColorMode;
+  }
+  if (!isRgbHexColor(g_settings.epubEbookColorText)) {
+    g_settings.epubEbookColorText = g_defaultSettings.epubEbookColorText;
+  }
+  if (!isRgbHexColor(g_settings.epubEbookColorBg)) {
+    g_settings.epubEbookColorBg = g_defaultSettings.epubEbookColorBg;
   }
   if (
     !Number.isInteger(g_settings.pagesDirection) ||
@@ -428,6 +436,13 @@ function sanitize(screenWidth, screenHeight) {
   } else {
     g_settings.rarExeFolderPath = g_defaultSettings.rarExeFolderPath;
   }
+}
+
+function isRgbHexColor(text) {
+  if (typeof text !== "string") {
+    return false;
+  }
+  return /^#[0-9a-f]{6}$/i.test(text);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
