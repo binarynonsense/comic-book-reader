@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2023 Álvaro García
+ * Copyright 2020-2024 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -102,48 +102,57 @@ function initOnIpcCallbacks() {
     onCloseClicked();
   });
 
-  on("search", async (data) => {
-    // NOTE: tried to use the form-data package but couldn't make it work so I do the
-    // axios request in the renderer and send the result here
-    try {
-      const jsdom = require("jsdom");
-      const { JSDOM } = jsdom;
-
-      const dom = new JSDOM(data);
-      const table = dom.window.document.querySelector("#search-results");
-      let results = [];
-      const links = table?.getElementsByTagName("a");
-      if (links && links.length > 0) {
-        for (let index = 0; index < links.length; index++) {
-          const link = links[index];
-          // e.g. index.php?dlid=33252
-          if (link.href.startsWith("index.php?dlid=")) {
-            const name = link.innerHTML;
-            const parts = link.href.split("dlid=");
-            if (parts.length === 2 && isValidBookId(parts[1])) {
-              let result = {
-                name: name,
-                dlid: parts[1],
-              };
-              results.push(result);
-            }
-          }
-        }
-      }
-      if (results.length === 0) throw "0 results";
-      sendIpcToRenderer(
-        "update-results",
-        results,
-        _("tool-shared-ui-search-item-open-acbr"),
-        _("tool-shared-ui-search-item-open-browser")
-      );
-    } catch (error) {
-      if (error !== "0 results") log.error(error);
+  on("search", async (data, connectionError) => {
+    if (!data && connectionError) {
+      log.error(connectionError);
       sendIpcToRenderer(
         "update-results",
         [],
-        _("tool-shared-ui-search-nothing-found")
+        _("tool-shared-ui-search-network-error", "digitalcomicmuseum.com")
       );
+    } else {
+      // NOTE: tried to use the form-data package but couldn't make it work so I do the
+      // axios request in the renderer and send the result here
+      try {
+        const jsdom = require("jsdom");
+        const { JSDOM } = jsdom;
+
+        const dom = new JSDOM(data);
+        const table = dom.window.document.querySelector("#search-results");
+        let results = [];
+        const links = table?.getElementsByTagName("a");
+        if (links && links.length > 0) {
+          for (let index = 0; index < links.length; index++) {
+            const link = links[index];
+            // e.g. index.php?dlid=33252
+            if (link.href.startsWith("index.php?dlid=")) {
+              const name = link.innerHTML;
+              const parts = link.href.split("dlid=");
+              if (parts.length === 2 && isValidBookId(parts[1])) {
+                let result = {
+                  name: name,
+                  dlid: parts[1],
+                };
+                results.push(result);
+              }
+            }
+          }
+        }
+        if (results.length === 0) throw "0 results";
+        sendIpcToRenderer(
+          "update-results",
+          results,
+          _("tool-shared-ui-search-item-open-acbr"),
+          _("tool-shared-ui-search-item-open-browser")
+        );
+      } catch (error) {
+        if (error !== "0 results") log.error(error);
+        sendIpcToRenderer(
+          "update-results",
+          [],
+          _("tool-shared-ui-search-nothing-found")
+        );
+      }
     }
   });
 

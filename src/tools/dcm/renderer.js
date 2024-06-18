@@ -420,12 +420,12 @@ async function onSearch() {
         headers: {
           "Content-Type": "multipart/form-data",
         },
+        timeout: 15000,
       }
     );
     sendIpcToMain("search", response.data);
   } catch (error) {
-    console.log(error);
-    //g_modalInstance.close();
+    sendIpcToMain("search", undefined, error.message);
   }
 }
 
@@ -433,7 +433,7 @@ async function onSearchResultClicked(dlid, openWith) {
   if (openWith === 0) {
     try {
       let infoUrl = `https://digitalcomicmuseum.com/?dlid=${dlid}`;
-      const response = await axios.get(infoUrl);
+      const response = await axios.get(infoUrl, { timeout: 10000 });
       const parser = new DOMParser().parseFromString(
         response.data,
         "text/html"
@@ -507,7 +507,8 @@ function openDCMLink(url) {
 async function getFirstPageInfo(comicId) {
   try {
     const response = await axios.get(
-      `https://digitalcomicmuseum.com/preview/index.php?did=${comicId}&page=${1}`
+      `https://digitalcomicmuseum.com/preview/index.php?did=${comicId}&page=${1}`,
+      { timeout: 10000 }
     );
     const parser = new DOMParser().parseFromString(response.data, "text/html");
     //e.g. <a href="https://digitalcomicmuseum.com/preview/index.php?did=21376&page=2" alt="Comic Page - ZIP"><img src='https://cdn.digitalcomicmuseum.com/preview/cache/21376/ff153p00fc-hag.jpg' width='100%' alt='Comic Page'/><br /></a>
