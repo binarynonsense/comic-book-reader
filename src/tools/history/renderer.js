@@ -53,12 +53,6 @@ function init(history, showFocus) {
   clearButton.addEventListener("click", (event) => {
     showModalConfirmClearAll();
   });
-  clearButton.setAttribute(
-    "data-nav-panel",
-    g_languageDirection !== "rtl" ? 0 : 1
-  );
-  clearButton.setAttribute("data-nav-row", 1);
-  clearButton.setAttribute("data-nav-col", 0);
   // history list
   buildHistoryList(history);
   ////////////////////////////////////////
@@ -136,6 +130,22 @@ function initOnIpcCallbacks() {
 ///////////////////////////////////////////////////////////////////////////////
 
 function buildHistoryList(history) {
+  const clearButton = document.getElementById("tool-hst-clear-button");
+  if (history.length > 0) {
+    clearButton.classList.remove("tools-disabled");
+    clearButton.setAttribute(
+      "data-nav-panel",
+      g_languageDirection !== "rtl" ? 0 : 1
+    );
+    clearButton.setAttribute("data-nav-row", 1);
+    clearButton.setAttribute("data-nav-col", 0);
+  } else {
+    clearButton.classList.add("tools-disabled");
+    clearButton.removeAttribute("data-nav-panel");
+    clearButton.removeAttribute("data-nav-row");
+    clearButton.removeAttribute("data-nav-col");
+  }
+
   // history list
   const ul = document.querySelector("#tool-hst-items-ul");
   ul.innerHTML = "";
