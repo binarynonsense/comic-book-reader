@@ -202,17 +202,17 @@ function buildHistoryList(history) {
     }
     ul.appendChild(li);
   }
-  if (history.length < 10) {
-    for (let index = 0; index < 10 - history.length; index++) {
-      let li = document.createElement("li");
-      li.className = "tools-buttons-list-li";
-      let span = document.createElement("span");
-      span.innerHTML = `&nbsp;&nbsp;`;
-      span.style.minHeight = "65px";
-      li.appendChild(span);
-      ul.appendChild(li);
-    }
-  }
+  // if (history.length < 10) {
+  //   for (let index = 0; index < 10 - history.length; index++) {
+  //     let li = document.createElement("li");
+  //     li.className = "tools-buttons-list-li";
+  //     let span = document.createElement("span");
+  //     span.innerHTML = `&nbsp;&nbsp;`;
+  //     span.style.minHeight = "65px";
+  //     li.appendChild(span);
+  //     ul.appendChild(li);
+  //   }
+  // }
   updateColumnsHeight();
   navigation.rebuild(g_navData, g_languageDirection === "rtl" ? 0 : 1);
 }
