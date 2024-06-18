@@ -3,7 +3,7 @@
     "authors": [
       "trzyglow"
     ],
-    "last-updated": "2024-06-17",
+    "last-updated": "2024-06-18",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.5.0-beta1",
     "pre-release": "false",
@@ -321,9 +321,9 @@
   "tool-shared-ui-color-mode": "Farbmodus",
   "tool-shared-ui-color-mode-light": "Heller Modus",
   "tool-shared-ui-color-mode-dark": "Dunkler Modus",
-  "[NEEDS TRANSLATION]tool-shared-ui-color-mode-custom": "Custom mode",
-  "[NEEDS TRANSLATION]tool-shared-ui-color-text": "Text Color",
-  "[NEEDS TRANSLATION]tool-shared-ui-color-background": "Background Color",
+  "tool-shared-ui-color-mode-custom": "Benutzerdefinierter Modus",
+  "tool-shared-ui-color-text": "Textfarbe",
+  "tool-shared-ui-color-background": "Hintergrundfarbe",
   "tool-shared-ui-experimental": "Experimentell",
   "tool-shared-tab-search": "Suchen",
   "tool-shared-tab-catalog": "Katalog",
