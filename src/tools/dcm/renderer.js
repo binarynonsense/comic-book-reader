@@ -235,6 +235,9 @@ function switchSection(id) {
       g_searchInput.focus();
     } else if (index === 1) {
       if (g_publishersSelect.innerHTML == "") {
+        document
+          .querySelector("#tool-dcm-catalog-error-message-div")
+          .classList.add("set-display-none");
         (async () => {
           await fillPublishers();
           checkValidData();
@@ -579,8 +582,14 @@ async function fillPublishers() {
       let parts = aElement.href.split("cid=");
       g_publishersSelect.innerHTML += `<option value="${parts[1]}">${aElement.innerHTML}</option>`;
     }
+    document
+      .querySelector("#tool-dcm-catalog-error-message-div")
+      .classList.add("set-display-none");
   } catch (error) {
-    console.log(error);
+    // console.log(error);
+    document
+      .querySelector("#tool-dcm-catalog-error-message-div")
+      .classList.remove("set-display-none");
   }
 }
 
@@ -597,8 +606,14 @@ async function fillTitles(publisherId) {
     for (let index = 1; index < data.length; index++) {
       g_titlesSelect.innerHTML += `<option value="${data[index].optionValue}">${data[index].optionDisplay}</option>`;
     }
+    document
+      .querySelector("#tool-dcm-catalog-error-message-div")
+      .classList.add("set-display-none");
   } catch (error) {
-    console.log(error);
+    // console.log(error);
+    document
+      .querySelector("#tool-dcm-catalog-error-message-div")
+      .classList.remove("set-display-none");
   }
 }
 
@@ -616,8 +631,14 @@ async function fillComics(titleId) {
       let parts = data[index].optionValue.split("did=");
       g_comicsSelect.innerHTML += `<option value="${parts[1]}">${data[index].optionDisplay}</option>`;
     }
+    document
+      .querySelector("#tool-dcm-catalog-error-message-div")
+      .classList.add("set-display-none");
   } catch (error) {
-    console.log(error);
+    // console.log(error);
+    document
+      .querySelector("#tool-dcm-catalog-error-message-div")
+      .classList.remove("set-display-none");
   }
 }
 

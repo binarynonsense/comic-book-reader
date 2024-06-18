@@ -108,7 +108,8 @@ function initOnIpcCallbacks() {
       sendIpcToRenderer(
         "update-results",
         [],
-        _("tool-shared-ui-search-network-error", "digitalcomicmuseum.com")
+        "⚠ " +
+          _("tool-shared-ui-search-network-error", "digitalcomicmuseum.com")
       );
     } else {
       // NOTE: tried to use the form-data package but couldn't make it work so I do the
@@ -286,6 +287,12 @@ function getLocalization() {
     {
       id: "tool-dcm-catalog-text",
       text: _("tool-shared-tab-catalog"),
+    },
+    {
+      id: "tool-dcm-catalog-error-message-text",
+      text:
+        "⚠ " +
+        _("tool-shared-ui-search-network-error", "digitalcomicmuseum.com"),
     },
     {
       id: "tool-dcm-publishers-text",
