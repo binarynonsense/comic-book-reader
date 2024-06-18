@@ -433,7 +433,7 @@ async function onSearchResultClicked(dlid, openWith) {
   if (openWith === 0) {
     try {
       let infoUrl = `https://digitalcomicmuseum.com/?dlid=${dlid}`;
-      const response = await axios.get(infoUrl, { timeout: 10000 });
+      const response = await axios.get(infoUrl, { timeout: 15000 });
       const parser = new DOMParser().parseFromString(
         response.data,
         "text/html"
@@ -508,7 +508,7 @@ async function getFirstPageInfo(comicId) {
   try {
     const response = await axios.get(
       `https://digitalcomicmuseum.com/preview/index.php?did=${comicId}&page=${1}`,
-      { timeout: 10000 }
+      { timeout: 15000 }
     );
     const parser = new DOMParser().parseFromString(response.data, "text/html");
     //e.g. <a href="https://digitalcomicmuseum.com/preview/index.php?did=21376&page=2" alt="Comic Page - ZIP"><img src='https://cdn.digitalcomicmuseum.com/preview/cache/21376/ff153p00fc-hag.jpg' width='100%' alt='Comic Page'/><br /></a>
@@ -567,7 +567,8 @@ async function fillPublishers() {
   cleanUpSelected();
   try {
     const response = await axios.get(
-      "https://digitalcomicmuseum.com/preview/index.php"
+      "https://digitalcomicmuseum.com/preview/index.php",
+      { timeout: 15000 }
     );
     const parser = new DOMParser().parseFromString(response.data, "text/html");
     //e.g. <div class='pull-left'><a href='category.php?cid=98'>Ace Magazines</a>
@@ -587,7 +588,8 @@ async function fillTitles(publisherId) {
   cleanUpSelected(false);
   try {
     const response = await axios.get(
-      `https://digitalcomicmuseum.com/preview/select.php?id=${publisherId}`
+      `https://digitalcomicmuseum.com/preview/select.php?id=${publisherId}`,
+      { timeout: 15000 }
     );
     //e.g. [ {"optionValue": "98", "optionDisplay": "Please Select a Comic Title"},{"optionValue": "289", "optionDisplay": "All Love"},...
     let data = response.data;
@@ -604,7 +606,8 @@ async function fillComics(titleId) {
   cleanUpSelected(false, false);
   try {
     const response = await axios.get(
-      `https://digitalcomicmuseum.com/preview/select.php?cid=${titleId}`
+      `https://digitalcomicmuseum.com/preview/select.php?cid=${titleId}`,
+      { timeout: 15000 }
     );
     //e.g. [ {"optionValue": "0", "optionDisplay": "Please Select a Comic Book"},{"optionValue": "https://digitalcomicmuseum.com/preview/index.php?did=7793", "optionDisplay": "World War III #01 (inc)"},...
     let data = response.data;
