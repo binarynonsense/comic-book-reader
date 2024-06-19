@@ -159,9 +159,11 @@ function init(mode, outputFolderPath, canEditRars) {
       if (outputFolderOptionSelect.value === "0") {
         outputFolderUl.classList.remove("set-display-none");
         outputFolderChangeButton.classList.remove("set-display-none");
+        updateColumnsHeight();
       } else {
         outputFolderUl.classList.add("set-display-none");
         outputFolderChangeButton.classList.add("set-display-none");
+        updateColumnsHeight();
       }
     });
   } else {
