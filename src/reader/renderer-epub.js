@@ -293,7 +293,9 @@ function endContainerObserver() {
 }
 
 function initContainerObserver() {
-  if (g_containerObserver !== undefined) return;
+  if (g_containerObserver !== undefined) {
+    endContainerObserver();
+  }
   try {
     // ref: https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver
     const targetNode = document.querySelector("#epub-ebook-container");
