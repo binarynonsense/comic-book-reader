@@ -1106,4 +1106,5 @@ function updateLocalization(localization, tooltipsLocalization) {
       domElement.title = element.text;
     }
   }
+  updateColumnsHeight();
 }
