@@ -156,7 +156,7 @@ function buildSections(languageDirection, favorites, latest, maxLatest) {
       if (index % 2 === 0) {
         if (index !== 0) navRow++;
         navColumn = 3;
-        if (index === favorites.length - 1) navColumn = 2;
+        if (index === favorites.length - 1) navColumn = 1;
       } else {
         navColumn = 1;
       }
