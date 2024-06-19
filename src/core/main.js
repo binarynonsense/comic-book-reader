@@ -320,9 +320,6 @@ if (!gotTheLock) {
       if (settings.getValue("fullScreen")) {
         toggleFullScreen();
       }
-      g_mainWindow.webContents.on("context-menu", function (e, params) {
-        sendIpcToCoreRenderer("show-context-menu", params);
-      });
       g_mainWindow.show();
       log.debug(`start-up time: ${timers.stop("startup")}s`);
     });

@@ -221,9 +221,13 @@ function initMouse() {
   document.addEventListener("mouseup", function (event) {
     g_isMouseDown = false;
     switch (event.button) {
-      case 1:
+      case 1: // middle
         getCurrentTool().onInputEvent("acbr-middleclick");
         break;
+      case 2: // right
+        if (getOpenModal()) return;
+        if (getCurrentTool().onContextMenu)
+          getCurrentTool().onContextMenu([event.pageX, event.pageY]);
     }
   });
 
@@ -260,6 +264,10 @@ function initMouse() {
     getCurrentTool().onInputEvent("wheel", event);
     event.stopPropagation();
     //event.preventDefault();
+  });
+
+  document.addEventListener("contextmenu", (event) => {
+    event.preventDefault();
   });
 }
 ///////////////////////////////////////////////////////////////////////////////

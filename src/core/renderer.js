@@ -109,15 +109,6 @@ function onIpcFromMain(event, args) {
           showModalAlert(args[2], args[3], args[4]);
         }
         break;
-      case "show-context-menu":
-        {
-          if (getOpenModal()) {
-            return;
-          }
-          if (getCurrentTool().onContextMenu)
-            getCurrentTool().onContextMenu(args[2]);
-        }
-        break;
       case "log-to-console":
         {
           console.log(args[2]);
