@@ -407,7 +407,8 @@ function updateLocalizedText(sendFavsUpdate = true) {
     getCardLocalization(),
     _("menu-file-preferences"),
     _("menu-file-openrecent-history"),
-    _("tool-cc-title")
+    _("tool-cc-title"),
+    _("tool-shared-ui-add")
   );
   log.debug("loading favorites");
   if (sendFavsUpdate) getFavoritesData();

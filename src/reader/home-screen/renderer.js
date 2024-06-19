@@ -73,6 +73,18 @@ function init() {
     // comicConverterButton.setAttribute("data-nav-row", 0);
     // comicConverterButton.setAttribute("data-nav-col", 3);
     // comicConverterButton.setAttribute("tabindex", "0");
+    /////////////////////////
+    const addFavoriteButton = document.querySelector(
+      "#hs-favorites-add-button"
+    );
+    addFavoriteButton.addEventListener("click", function (event) {
+      sendIpcToMain("hs-on-add-favorite-clicked");
+      event.stopPropagation();
+    });
+    addFavoriteButton.setAttribute("data-nav-panel", 0);
+    addFavoriteButton.setAttribute("data-nav-row", 1);
+    addFavoriteButton.setAttribute("data-nav-col", 0);
+    addFavoriteButton.setAttribute("tabindex", "0");
   }
 }
 
@@ -135,7 +147,7 @@ function buildSections(languageDirection, favorites, latest, maxLatest) {
   listDiv.classList.add("hs-path-cards-list");
   favoritesDiv.appendChild(listDiv);
 
-  let navRow = 1;
+  let navRow = 2;
   let navColumn = 0;
   let index = 0;
   for (; index < favorites.length; index++) {
@@ -161,22 +173,22 @@ function buildSections(languageDirection, favorites, latest, maxLatest) {
     );
   }
   // Add
-  if (g_languageDirection === "rtl") {
-    navColumn = 0;
-    if (index % 2 === 0 && index !== 0) {
-      navRow++;
-    }
-  } else {
-    if (index % 2 === 0) {
-      navColumn = 0;
-      if (index !== 0) navRow++;
-    } else {
-      navColumn = 2;
-    }
-  }
-  listDiv.appendChild(
-    getNewCardDiv(CardType.ADD_FAVORITE, undefined, navRow, navColumn)
-  );
+  // if (g_languageDirection === "rtl") {
+  //   navColumn = 0;
+  //   if (index % 2 === 0 && index !== 0) {
+  //     navRow++;
+  //   }
+  // } else {
+  //   if (index % 2 === 0) {
+  //     navColumn = 0;
+  //     if (index !== 0) navRow++;
+  //   } else {
+  //     navColumn = 2;
+  //   }
+  // }
+  // listDiv.appendChild(
+  //   getNewCardDiv(CardType.ADD_FAVORITE, undefined, navRow, navColumn)
+  // );
   navRow++;
 
   // LATEST
@@ -795,7 +807,8 @@ function updateLocalization(
   cardLocalization,
   preferencesTitle,
   historyTitle,
-  comicConverterTitle
+  comicConverterTitle,
+  addFavoriteTitle
 ) {
   // ids
   for (let index = 0; index < idsLocalization.length; index++) {
@@ -820,4 +833,7 @@ function updateLocalization(
     "#hs-logo-convert-comics-button"
   );
   comicConverterButton.title = comicConverterTitle;
+  // add favorite
+  const addFavoriteButton = document.querySelector("#hs-favorites-add-button");
+  addFavoriteButton.title = addFavoriteTitle;
 }
