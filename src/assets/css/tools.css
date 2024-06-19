@@ -356,7 +356,6 @@ html[dir="rtl"] .tools-button-accent i {
   display: flex;
   align-items: center;
   justify-content: center;
-  content: "⨯";
   color: var(--tools-input-bg-color);
   font-size: 10px;
   font-weight: bolder;
@@ -367,6 +366,12 @@ html[dir="rtl"] .tools-button-accent i {
   background-color: var(--tools-input-text-color);
   transition: 0.4s;
   border-radius: 50%;
+  /* content: "⨯"; */
+  /* ref: https://stackoverflow.com/questions/14736496/use-font-awesome-icons-in-css */
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  content: "\f00d";
+  padding-inline-start: 1px;
 }
 
 input:checked + .tools-toggle-slider {
@@ -376,8 +381,11 @@ input:checked + .tools-toggle-slider {
 }
 
 input:checked + .tools-toggle-slider:before {
-  transform: translateX(23px);
-  content: "✓";
+  transform: translateX(22px);
+  /* content: "✓"; */
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  content: "\f00c";
 }
 
 /* /////////////////////////////////////////////////////////////// */
