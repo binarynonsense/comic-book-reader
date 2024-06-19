@@ -71,6 +71,7 @@ async function extractPDF(
       const pdf = await pdfjsLib.getDocument({
         url: escapedInputFilePath,
         password: password,
+        isEvalSupported: false,
       }).promise;
       for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
         if (g_cancel) {
@@ -193,6 +194,7 @@ async function extractPDF(
       const pdf = await pdfjsLib.getDocument({
         url: escapedInputFilePath,
         password: password,
+        isEvalSupported: false,
       }).promise;
       for (pageNum of failedPages) {
         if (g_cancel) {

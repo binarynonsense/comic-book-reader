@@ -63,6 +63,7 @@ function loadPdf(filePath, pageIndex, password) {
   var loadingTask = pdfjsLib.getDocument({
     url: escapedInputFilePath,
     password: password,
+    isEvalSupported: false,
   });
   loadingTask.promise
     .then(function (pdf) {
@@ -188,6 +189,7 @@ async function extractPDFImageBuffer(
     const pdf = await pdfjsLib.getDocument({
       url: escapedInputFilePath,
       password: password,
+      isEvalSupported: false,
     }).promise;
     let page = await pdf.getPage(pageNum);
     let pageWidth = page.view[2]; // [left, top, width, height]
