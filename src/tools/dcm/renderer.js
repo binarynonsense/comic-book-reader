@@ -134,6 +134,7 @@ function init() {
       comicId: comicId,
       name: event.target.options[event.target.selectedIndex].text,
       numPages: page.numPages,
+      url: `https://digitalcomicmuseum.com/preview/index.php?did=${comicId}`,
     };
     checkValidData();
   });
@@ -485,6 +486,7 @@ async function onOpenComicUrlInACBR(url) {
       comicId: comicId,
       name: page.name,
       numPages: page.numPages,
+      url: `https://digitalcomicmuseum.com/preview/index.php?did=${comicId}`,
     };
     if (page.url) {
       sendIpcToMain("open", comicData);
