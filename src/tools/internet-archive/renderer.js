@@ -417,6 +417,7 @@ async function onSearchResultClicked(index, mode) {
     comicId: bookData.identifier,
     name: bookData.title,
     numPages: bookData.imagecount,
+    url: `https://archive.org/details/${bookData.identifier}`,
   };
   if (mode === 0) {
     try {
