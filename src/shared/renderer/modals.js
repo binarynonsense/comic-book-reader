@@ -225,6 +225,17 @@ export function onInputEvent(modalDiv, type, event) {
         event.preventDefault();
       }
       break;
+
+    case "acbr-click":
+      {
+        if (event.target.classList.contains("modal")) {
+          const button = modalDiv.querySelector(".modal-close-button");
+          if (!button.classList.contains("set-display-none")) {
+            button.click();
+          }
+        }
+      }
+      break;
   }
 }
 

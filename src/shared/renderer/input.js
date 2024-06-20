@@ -234,7 +234,15 @@ function initMouse() {
   //mouseleave
 
   document.addEventListener("click", function (event) {
-    if (getOpenModal()) return;
+    if (getOpenModal()) {
+      modals.onInputEvent(getOpenModal(), "acbr-click", {
+        event: event,
+        target: event.target,
+        clientX: event.clientX,
+        clientY: event.clientY,
+      });
+      return;
+    }
     getCurrentTool().onInputEvent("click", event);
     // // TODO: make margin a percentage of the window height?
     // const margin = 10;
