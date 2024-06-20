@@ -98,6 +98,25 @@ function getLatestData() {
         } else {
           latestInfo.name = historyDataFile.filePath;
         }
+        if (historyDataFile.data.source) {
+          switch (historyDataFile.data.source) {
+            case "dcm":
+              latestInfo.path =
+                _("tool-dcm-title") + " - " + historyDataFile.data.name;
+              break;
+
+            case "gut":
+              // latestInfo.path = historyDataFile.filePath;
+              latestInfo.path =
+                _("tool-gut-title") + " - " + historyDataFile.data.name;
+              break;
+
+            case "iab":
+              latestInfo.path =
+                _("tool-iab-title") + " - " + historyDataFile.data.name;
+              break;
+          }
+        }
       } else {
         latestInfo.path = historyDataFile.filePath;
         latestInfo.name = path.basename(historyDataFile.filePath);

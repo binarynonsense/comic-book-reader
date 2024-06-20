@@ -72,6 +72,27 @@ function getHistory() {
       } else {
         fileInfo.fileName = fileInfo.filePath;
       }
+      if (fileInfo.data.source) {
+        switch (fileInfo.data.source) {
+          case "dcm":
+            fileInfo.filePath =
+              _("tool-dcm-title") + " - " + fileInfo.data.name;
+            break;
+
+          case "gut":
+            fileInfo.filePath =
+              _("tool-gut-title") + " - " + fileInfo.data.name;
+            break;
+
+          case "iab":
+            fileInfo.filePath =
+              _("tool-iab-title") + " - " + fileInfo.data.name;
+            break;
+
+          default:
+            break;
+        }
+      }
     } else {
       fileInfo.fileName = path.basename(fileInfo.filePath);
       if (fs.existsSync(fileInfo.filePath)) {
