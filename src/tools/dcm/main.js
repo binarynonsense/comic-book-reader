@@ -191,7 +191,7 @@ async function getPageCallback(pageNum, fileData) {
     let comicData = fileData.data;
     const response = await axios.get(
       `https://digitalcomicmuseum.com/preview/index.php?did=${comicData.comicId}&page=${pageNum}`,
-      { timeout: 10000 }
+      { timeout: 15000 }
     );
     const dom = new JSDOM(response.data);
     let images = dom.window.document.getElementsByTagName("img");
