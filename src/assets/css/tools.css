@@ -737,17 +737,6 @@ html[dir="rtl"] .tools-range-bubble {
 
 /* /////////////////////////////////////////////////////////////// */
 
-.tools-tooltip-button {
-  /* padding: 15px;
-  border: none;
-  background-color: var(--tools-button-normal-bg-color);
-  color: var(--tools-button-normal-text-color);
-  font-weight: 600;
-  width: 100%;
-  margin: 5px 0;
-  border-radius: 3px; */
-}
-
 .tools-tooltip-button:hover {
   filter: brightness(1.2);
   transform: scale(1.05);
