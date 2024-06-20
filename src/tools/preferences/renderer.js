@@ -195,7 +195,7 @@ function init(activeLocale, languages, activeTheme, themes, settings) {
   }
   // epub ebook color mode
   {
-    const select = document.getElementById(
+    const selectColorMode = document.getElementById(
       "tool-pre-epub-ebook-color-mode-select"
     );
     const inputTextColor = document.getElementById(
@@ -208,21 +208,21 @@ function init(activeLocale, languages, activeTheme, themes, settings) {
       "#tool-pre-epub-ebook-color-custom-inputs-div"
     );
 
-    select.value = settings.epubEbookColorMode;
-    if (select.value == "2") {
+    selectColorMode.value = settings.epubEbookColorMode;
+    if (selectColorMode.value == "2") {
       customDiv.classList.remove("set-display-none");
     } else {
       customDiv.classList.add("set-display-none");
       updateColumnsHeight();
     }
-    select.addEventListener("change", function (event) {
+    selectColorMode.addEventListener("change", function (event) {
       sendIpcToMain(
         "set-epub-ebook-color-mode",
-        parseInt(select.value),
+        parseInt(selectColorMode.value),
         inputTextColor.value,
         inputBgColor.value
       );
-      if (select.value == "2") {
+      if (selectColorMode.value == "2") {
         customDiv.classList.remove("set-display-none");
         document
           .getElementById("tool-pre-epub-ebook-color-custom-inputs-div")
@@ -239,9 +239,10 @@ function init(activeLocale, languages, activeTheme, themes, settings) {
 
     inputTextColor.value = settings.epubEbookColorText;
     inputTextColor.addEventListener("change", function (event) {
+      if (selectColorMode.value != "2") return;
       sendIpcToMain(
         "set-epub-ebook-color-mode",
-        2,
+        parseInt(selectColorMode.value),
         inputTextColor.value,
         inputBgColor.value
       );
@@ -249,9 +250,10 @@ function init(activeLocale, languages, activeTheme, themes, settings) {
 
     inputBgColor.value = settings.epubEbookColorBg;
     inputBgColor.addEventListener("change", function (event) {
+      if (selectColorMode.value != "2") return;
       sendIpcToMain(
         "set-epub-ebook-color-mode",
-        2,
+        parseInt(selectColorMode.value),
         inputTextColor.value,
         inputBgColor.value
       );

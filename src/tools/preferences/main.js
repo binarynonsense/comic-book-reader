@@ -192,13 +192,13 @@ function initOnIpcCallbacks() {
     homeScreen.updateMaxLatest(value);
   });
 
-  on("set-epub-ebook-color-mode", (value, textColor, bgColor) => {
-    if (value) settings.setValue("epubEbookColorMode", value);
+  on("set-epub-ebook-color-mode", (mode, textColor, bgColor) => {
+    if (mode) settings.setValue("epubEbookColorMode", mode);
     if (textColor) settings.setValue("epubEbookColorText", textColor);
     if (bgColor) settings.setValue("epubEbookColorBg", bgColor);
     reader.sendIpcToRenderer(
       "update-epub-ebook-color-mode",
-      value,
+      mode,
       textColor,
       bgColor
     );
