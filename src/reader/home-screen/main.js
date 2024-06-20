@@ -418,7 +418,7 @@ function initOnIpcCallbacks() {
 // LOCALIZATION ///////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-function updateLocalizedText(sendFavsUpdate = true) {
+function updateLocalizedText(rebuildSections = true) {
   if (!g_isInitialized) return;
   sendIpcToRenderer(
     "hs-update-localization",
@@ -429,8 +429,7 @@ function updateLocalizedText(sendFavsUpdate = true) {
     _("tool-cc-title"),
     _("tool-shared-ui-add")
   );
-  log.debug("loading favorites");
-  if (sendFavsUpdate) getFavoritesData();
+  if (rebuildSections) buildSections();
 }
 exports.updateLocalizedText = updateLocalizedText;
 

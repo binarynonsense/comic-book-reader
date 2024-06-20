@@ -58,6 +58,7 @@ exports.save = function () {
 };
 
 function load() {
+  log.debug("loading favorites");
   g_favorites = {};
   g_favorites.version = getAppVersion();
   g_favorites.data = [];
