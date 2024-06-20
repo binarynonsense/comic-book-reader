@@ -193,9 +193,10 @@ function initOnIpcCallbacks() {
   });
 
   on("set-epub-ebook-color-mode", (mode, textColor, bgColor) => {
-    if (mode) settings.setValue("epubEbookColorMode", mode);
-    if (textColor) settings.setValue("epubEbookColorText", textColor);
-    if (bgColor) settings.setValue("epubEbookColorBg", bgColor);
+    if (mode != undefined) settings.setValue("epubEbookColorMode", mode);
+    if (textColor != undefined)
+      settings.setValue("epubEbookColorText", textColor);
+    if (bgColor != undefined) settings.setValue("epubEbookColorBg", bgColor);
     reader.sendIpcToRenderer(
       "update-epub-ebook-color-mode",
       mode,
