@@ -322,14 +322,16 @@ function initOnIpcCallbacks() {
       for (let index = 0; index < tooltipsLocalization.length; index++) {
         const element = tooltipsLocalization[index];
         const domElement = document.querySelector("#" + element.id);
-        if (
-          domElement.classList &&
-          domElement.classList.contains("tools-tooltip-button")
-        ) {
-          domElement.setAttribute("data-info", element.text);
-          domElement.title = localizedModalTexts.infoTooltip;
-        } else {
-          domElement.title = element.text;
+        if (domElement !== null) {
+          if (
+            domElement.classList &&
+            domElement.classList.contains("tools-tooltip-button")
+          ) {
+            domElement.setAttribute("data-info", element.text);
+            domElement.title = localizedModalTexts.infoTooltip;
+          } else {
+            domElement.title = element.text;
+          }
         }
       }
     }
