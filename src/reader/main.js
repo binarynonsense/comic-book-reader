@@ -1412,6 +1412,7 @@ function goToPage(pageIndex, scrollBarPos = 0) {
     );
   } else if (g_fileData.type === FileDataType.WWW) {
     (async () => {
+      g_fileData.state = FileDataState.LOADING;
       const calledFunc = g_fileData.getPageCallback;
       let response = await g_fileData.getPageCallback(
         g_fileData.pageIndex + 1,
@@ -1424,6 +1425,7 @@ function goToPage(pageIndex, scrollBarPos = 0) {
       if (!response || !response.pageImgSrc) {
         // TODO: handle error
         log.error("download error");
+        g_fileData.state = FileDataState.LOADED;
         sendIpcToRenderer("update-loading", false);
         return;
       }
