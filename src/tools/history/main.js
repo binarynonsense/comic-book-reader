@@ -88,9 +88,6 @@ function getHistory() {
             fileInfo.filePath =
               _("tool-iab-title") + " - " + fileInfo.data.name;
             break;
-
-          default:
-            break;
         }
       }
     } else {
