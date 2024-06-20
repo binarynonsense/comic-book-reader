@@ -277,6 +277,17 @@ function init(mode, outputFolderPath, canEditRars) {
     `<option value="overwrite">${g_localizedTexts.outputFileSameNameOption1}</option>`;
 
   ////////////////////////////////////////
+  // tooltips
+  const tooltipButtons = document.querySelectorAll(".tools-tooltip-button");
+  tooltipButtons.forEach((element) => {
+    element.addEventListener("click", (event) => {
+      sendIpcToMain(
+        "tooltip-button-clicked",
+        element.getAttribute("data-info")
+      );
+    });
+  });
+  ////////////////////////////////////////
   checkValidData();
   updateColumnsHeight();
 }
@@ -1054,7 +1065,15 @@ function updateLocalization(
     const element = tooltipsLocalization[index];
     const domElement = document.querySelector("#" + element.id);
     if (domElement !== null) {
-      domElement.title = element.text;
+      if (
+        domElement.classList &&
+        domElement.classList.contains("tools-tooltip-button")
+      ) {
+        domElement.setAttribute("data-info", element.text);
+        domElement.title = localizedTexts.infoTooltip;
+      } else {
+        domElement.title = element.text;
+      }
     }
   }
 

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2023 Álvaro García
+ * Copyright 2020-2024 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -205,6 +205,17 @@ function init(fileData, isoLanguages, canEditRars) {
       sendIpcToMain("change-api-key-file", g_apiKeyFilePathCheckbox.checked);
     });
   ////////////////////////////////////////
+  // tooltips
+  const tooltipButtons = document.querySelectorAll(".tools-tooltip-button");
+  tooltipButtons.forEach((element) => {
+    element.addEventListener("click", (event) => {
+      sendIpcToMain(
+        "tooltip-button-clicked",
+        element.getAttribute("data-info")
+      );
+    });
+  });
+  ////////////////////////////////////////
   if (!g_openModal) closeModal(g_openModal);
   showProgressModal();
   updateModalTitleText(g_localizedModalTexts.loadingTitle);
@@ -311,7 +322,13 @@ function initOnIpcCallbacks() {
       for (let index = 0; index < tooltipsLocalization.length; index++) {
         const element = tooltipsLocalization[index];
         const domElement = document.querySelector("#" + element.id);
-        if (domElement !== null) {
+        if (
+          domElement.classList &&
+          domElement.classList.contains("tools-tooltip-button")
+        ) {
+          domElement.setAttribute("data-info", element.text);
+          domElement.title = localizedModalTexts.infoTooltip;
+        } else {
           domElement.title = element.text;
         }
       }
@@ -373,6 +390,10 @@ function initOnIpcCallbacks() {
         g_localizedModalTexts.okButton
       );
     }
+  });
+
+  on("show-modal-info", (...args) => {
+    showInfoModal(...args);
   });
 
   /////////////////////////////////////////////////////////////////////////////

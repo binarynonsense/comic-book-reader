@@ -306,6 +306,15 @@ function initOnIpcCallbacks() {
     sendIpcToRenderer("set-rar-folder", folderPath);
   });
 
+  on("tooltip-button-clicked", (text) => {
+    sendIpcToRenderer(
+      "show-ok-modal",
+      _("tool-shared-modal-title-info"),
+      text,
+      _("tool-shared-ui-close").toUpperCase()
+    );
+  });
+
   // keys ///////////////
 
   on("click-nav-keys-change", (action, keyIndex) => {
@@ -434,7 +443,10 @@ function updateLocalizedText() {
   sendIpcToRenderer(
     "update-localization",
     getLocalization(),
-    getTooltipsLocalization()
+    getTooltipsLocalization(),
+    {
+      infoTooltip: _("tool-shared-modal-title-info"),
+    }
   );
   updateNavKeys();
   updateNavButtons();

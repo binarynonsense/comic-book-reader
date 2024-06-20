@@ -241,6 +241,15 @@ function initOnIpcCallbacks() {
     settings.setValue("toolCixApiKeyPath", filePath);
     sendIpcToRenderer("set-api-key-file", filePath, saveAsRelative);
   });
+
+  on("tooltip-button-clicked", (text) => {
+    sendIpcToRenderer(
+      "show-modal-info",
+      _("tool-shared-modal-title-info"),
+      text,
+      _("tool-shared-ui-close").toUpperCase()
+    );
+  });
 }
 
 // HANDLE
@@ -626,6 +635,7 @@ function updateLocalizedText() {
       importingMessage: _("tool-cix-search-import-warning"),
       searchResultsShowIssues: _("tool-cix-search-results-show-issues-list"),
       searchResultsShowMetadata: _("tool-cix-search-results-show-issue-info"),
+      infoTooltip: _("tool-shared-modal-title-info"),
     },
     [
       _("tool-cix-data-page-type-frontcover"),

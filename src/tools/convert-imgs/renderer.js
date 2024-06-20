@@ -135,9 +135,19 @@ function init(outputFolderPath) {
     });
     updateSliderBubble(range, bubble);
   });
-
-  checkValidData();
   ////////////////////////////////////////
+  // tooltips
+  const tooltipButtons = document.querySelectorAll(".tools-tooltip-button");
+  tooltipButtons.forEach((element) => {
+    element.addEventListener("click", (event) => {
+      sendIpcToMain(
+        "tooltip-button-clicked",
+        element.getAttribute("data-info")
+      );
+    });
+  });
+  ////////////////////////////////////////
+  checkValidData();
   updateColumnsHeight();
 }
 
@@ -250,8 +260,8 @@ function initOnIpcCallbacks() {
 
   on("hide", () => {});
 
-  on("update-localization", (localization, tooltipsLocalization) => {
-    updateLocalization(localization, tooltipsLocalization);
+  on("update-localization", (...args) => {
+    updateLocalization(...args);
   });
 
   on("update-window", () => {
@@ -316,6 +326,10 @@ function initOnIpcCallbacks() {
 
   on("update-log-text", (text) => {
     updateLogText(text);
+  });
+
+  on("show-modal-info", (...args) => {
+    showModalInfo(...args);
   });
 
   /////////////////////////////////////////////////////////////////////////////
@@ -605,11 +619,41 @@ function updateLogText(text, append = true) {
   }
 }
 
+function showModalInfo(title, message, textButton1) {
+  if (g_openModal) {
+    return;
+  }
+  g_openModal = modals.show({
+    title: title,
+    message: message,
+    zIndexDelta: 5,
+    close: {
+      callback: () => {
+        modalClosed();
+      },
+      key: "Escape",
+    },
+    buttons: [
+      {
+        text: textButton1.toUpperCase(),
+        callback: () => {
+          modalClosed();
+        },
+        key: "Enter",
+      },
+    ],
+  });
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-function updateLocalization(localization, tooltipsLocalization) {
+function updateLocalization(
+  localization,
+  tooltipsLocalization,
+  localizedTexts
+) {
   for (let index = 0; index < localization.length; index++) {
     const element = localization[index];
     const domElement = document.querySelector("#" + element.id);
@@ -628,7 +672,15 @@ function updateLocalization(localization, tooltipsLocalization) {
     if (element.id === "tool-ci-tooltip-remove-from-list") {
       g_localizedRemoveFromListText = element.text;
     } else if (domElement !== null) {
-      domElement.title = element.text;
+      if (
+        domElement.classList &&
+        domElement.classList.contains("tools-tooltip-button")
+      ) {
+        domElement.setAttribute("data-info", element.text);
+        domElement.title = localizedTexts.infoTooltip;
+      } else {
+        domElement.title = element.text;
+      }
     }
   }
 }

@@ -334,6 +334,15 @@ function initOnIpcCallbacks() {
       );
   });
 
+  on("tooltip-button-clicked", (text) => {
+    sendIpcToRenderer(
+      "show-modal-info",
+      _("tool-shared-modal-title-info"),
+      text,
+      _("tool-shared-ui-close").toUpperCase()
+    );
+  });
+
   /////////////////////////
 
   on("cancel", () => {
@@ -1245,6 +1254,7 @@ function updateLocalizedText() {
     getLocalization(),
     getTooltipsLocalization(),
     {
+      infoTooltip: _("tool-shared-modal-title-info"),
       removeFromList: _("tool-shared-tooltip-remove-from-list"),
       moveUpInList: _("tool-shared-tooltip-move-up-in-list"),
       moveDownInList: _("tool-shared-tooltip-move-down-in-list"),
