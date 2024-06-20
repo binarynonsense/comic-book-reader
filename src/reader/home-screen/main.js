@@ -101,19 +101,25 @@ function getLatestData() {
         if (historyDataFile.data.source) {
           switch (historyDataFile.data.source) {
             case "dcm":
-              latestInfo.path =
-                _("tool-dcm-title") + " - " + historyDataFile.data.name;
+              if (historyDataFile.data.url)
+                latestInfo.path = historyDataFile.data.url;
+              else
+                latestInfo.path =
+                  _("tool-dcm-title") + " - " + historyDataFile.data.name;
               break;
 
             case "gut":
-              // latestInfo.path = historyDataFile.filePath;
-              latestInfo.path =
-                _("tool-gut-title") + " - " + historyDataFile.data.name;
+              latestInfo.path = historyDataFile.filePath;
+              // latestInfo.path =
+              //   _("tool-gut-title") + " - " + historyDataFile.data.name;
               break;
 
             case "iab":
-              latestInfo.path =
-                _("tool-iab-title") + " - " + historyDataFile.data.name;
+              if (historyDataFile.data.url)
+                latestInfo.path = historyDataFile.data.url;
+              else
+                latestInfo.path =
+                  _("tool-iab-title") + " - " + historyDataFile.data.name;
               break;
           }
         }

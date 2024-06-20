@@ -75,18 +75,22 @@ function getHistory() {
       if (fileInfo.data.source) {
         switch (fileInfo.data.source) {
           case "dcm":
-            fileInfo.filePath =
-              _("tool-dcm-title") + " - " + fileInfo.data.name;
+            if (fileInfo.data.url) fileInfo.filePath = fileInfo.data.url;
+            else
+              fileInfo.filePath =
+                _("tool-dcm-title") + " - " + fileInfo.data.name;
             break;
 
-          case "gut":
-            fileInfo.filePath =
-              _("tool-gut-title") + " - " + fileInfo.data.name;
-            break;
+          // case "gut":
+          //   fileInfo.filePath =
+          //     _("tool-gut-title") + " - " + fileInfo.data.name;
+          //   break;
 
           case "iab":
-            fileInfo.filePath =
-              _("tool-iab-title") + " - " + fileInfo.data.name;
+            if (fileInfo.data.url) fileInfo.filePath = fileInfo.data.url;
+            else
+              fileInfo.filePath =
+                _("tool-iab-title") + " - " + fileInfo.data.name;
             break;
         }
       }
