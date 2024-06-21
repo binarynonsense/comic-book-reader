@@ -1,3 +1,26 @@
+## v3.5.0
+
+- Updated some of the core libraries to newer versions.
+- Added mouse click+drag as an input option to scroll a page.
+- Added touch screen input support: drag to scroll a page, pinch-zoom to zoom in and out and double tap to switch between the default zoom levels.
+- Added Arabic localization (contributed by [Ahmed (ahmed-0011)](https://github.com/ahmed-0011)).
+- Made the UI rearrange its components if a right-to-left language is set.
+- Added a Home Screen shown when there's no file opened, with a button to open a file dialog and lists of favorite files and folders and latest files.
+- Added Gamepad button mapping to the preferences.
+- Added preferences, history and a convert files buttons to the Home Screen.
+- Clicking the mouse wheel button now opens the quick menu (it can be configured in the preferences).
+- Added the option to include folders in the input list of the convert and create comics tools. The folders in the input list will be searched for valid files to use during the conversion/creation process (there's an advanced option to enable searching them recursively and another to select which file types are valid).
+- Added an option in the convert comics tool to select between choosing an output folder for all files or saving each one in the same folder as its corresponding input file.
+- Added an advanced option in the convert comics tool to select between overwriting the output file if it already exists, save it with a name not already in use or skip saving it.
+- Added an experimental color mode preference (light or dark) for EPUB ebooks.
+- Added an option in the preferences to set maximum number of latest files shown in the Home Screen.
+- Added a new tool, Internet Radio, to search through the list of radio stations available on radio-browser.info and open them in the system's browser or in ACBR's audio player.
+- Handled trying to open a file by launching a second instance (or from the file explorer when the app is already running). The second instance is canceled, as before, but the already running one now asks for confirmation to open the provided file.
+- Customized the ACBR Light theme so the Home Screen colors fit better with the rest of the design.
+- Fixed left and right arrows not working on input fields inside modals.
+- Fixed mouse drag being detected as click in the reader.
+- Fixed some minor issues.
+
 ## v3.4.1
 
 - Fixed not receiving key events in the input element of some of the modal windows, like the one that's invoked by "Page > Go To...", due to a bug introduced in the previous version.
