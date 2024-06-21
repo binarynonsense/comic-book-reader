@@ -320,7 +320,7 @@ if (!gotTheLock) {
       if (
         forceMultimonitorSize != undefined &&
         forceMultimonitorSize > 0 &&
-        forceMultimonitorSize < 4
+        forceMultimonitorSize < 5
       ) {
         // Special/Experimental start-up to force the window to expand to cover
         // multiple screens
@@ -328,15 +328,21 @@ if (!gotTheLock) {
         let height = 0;
         let width = 0;
         displays.forEach((display) => {
-          width += display.workAreaSize.width;
-          if (height === 0) height = display.workAreaSize.height;
-          else height = Math.min(height, display.workAreaSize.height);
+          let displayWidth = display.workAreaSize.width;
+          let displayHeight = display.workAreaSize.height;
+          if (forceMultimonitorSize === 3) {
+            displayWidth = display.size.width;
+            displayHeight = display.size.height;
+          }
+          width += displayWidth;
+          if (height === 0) height = displayHeight;
+          else height = Math.min(height, displayHeight);
         });
         // NOTE: setSize doesn't seem to work, it limits the size to the
         // bounds of the primary display. But setMinimumSize seems to do the
         // trick. Don't know if this is a universal solution or just my case
         // so I'll leave multiple options for now.
-        if (forceMultimonitorSize === 1) {
+        if (forceMultimonitorSize === 1 || forceMultimonitorSize === 3) {
           g_mainWindow.setSize(width, height);
           g_mainWindow.setMinimumSize(width, height);
         } else if (forceMultimonitorSize === 2) {
@@ -344,7 +350,7 @@ if (!gotTheLock) {
           g_mainWindow.setMinimumSize(width, height);
           reader.sendIpcToRenderer("set-menubar-visibility", false);
           reader.sendIpcToRenderer("set-toolbar-visibility", false);
-        } else if (forceMultimonitorSize === 3) {
+        } else if (forceMultimonitorSize === 4) {
           g_mainWindow.setSize(width, height);
         }
       } else {
