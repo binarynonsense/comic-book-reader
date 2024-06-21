@@ -764,8 +764,8 @@ function getLocalization() {
     },
     //////////////////////////////////////////////
     {
-      id: "tool-pre-mouse-keyboard-text",
-      text: _("tool-pre-mouse-keyboard"),
+      id: "tool-pre-mouse-text",
+      text: _("tool-pre-mouse"),
     },
     {
       id: "tool-pre-hotspots-text",
@@ -836,13 +836,15 @@ function getLocalization() {
       id: "tool-pre-page-turn-onscroll-text",
       text: _("tool-pre-page-turn-onscroll"),
     },
+    //////////////////////////////////////////////
     {
       id: "tool-pre-navkeys-text",
-      text: _("tool-pre-navkeys"),
+      text: _("tool-pre-keyboard") + ": " + _("tool-pre-navkeys"),
     },
+    //////////////////////////////////////////////
     {
       id: "tool-pre-navbuttons-text",
-      text: _("tool-pre-navbuttons"),
+      text: _("tool-pre-gamepad") + ": " + _("tool-pre-navbuttons"),
     },
     //////////////////////////////////////////////
     {
