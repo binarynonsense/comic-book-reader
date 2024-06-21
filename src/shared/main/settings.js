@@ -450,8 +450,7 @@ function sanitize(screenWidth, screenHeight) {
   // EXPERIMENTAL
   if (
     !Number.isInteger(g_settings.experimentalForceMultimonitorSize) ||
-    g_settings.experimentalForceMultimonitorSize < 0 ||
-    g_settings.experimentalForceMultimonitorSize > 1
+    g_settings.experimentalForceMultimonitorSize < 0
   ) {
     g_settings.experimentalForceMultimonitorSize = 0;
   }

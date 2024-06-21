@@ -314,7 +314,16 @@ if (!gotTheLock) {
       }
       // show window
       g_mainWindow.center();
-      if (settings.getValue("experimentalForceMultimonitorSize") === 1) {
+      const forceMultimonitorSize = settings.getValue(
+        "experimentalForceMultimonitorSize"
+      );
+      if (
+        forceMultimonitorSize != undefined &&
+        forceMultimonitorSize > 0 &&
+        forceMultimonitorSize < 3
+      ) {
+        // Special/Experimental start-up to force the window to expand to cover
+        // multiple screens
         const displays = screen.getAllDisplays();
         let height = 0;
         let width = 0;
@@ -323,11 +332,17 @@ if (!gotTheLock) {
           if (height === 0) height = display.workAreaSize.height;
           else height = Math.min(height, display.workAreaSize.height);
         });
-        g_mainWindow.setSize(width, height);
         // NOTE: setSize doesn't seem to work, it limits the size to the
-        // bounds of the primary display. But setMinimumSize seems to so the trick
-        g_mainWindow.setMinimumSize(width, height);
+        // bounds of the primary display. But setMinimumSize seems to do the
+        // trick. Don't know if this is a universal solution or just my case
+        // so I'll leave multiple options for now.
+        if (forceMultimonitorSize === 1) {
+          g_mainWindow.setMinimumSize(width, height);
+        } else if (forceMultimonitorSize === 2) {
+          g_mainWindow.setSize(width, height);
+        }
       } else {
+        // Normal start-up
         if (settings.getValue("maximize")) {
           g_mainWindow.maximize();
         }
