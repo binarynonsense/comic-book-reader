@@ -72,14 +72,14 @@
 
 - Included the ability to drag and drop files into a tool so they are added to its input files list (if the tool has one).
 - Drag and dropping multiple files into the program's icon now initializes the program with the "convert comics" tool open and those files added to the input files list (dropping only one file opens that file in the reader, as in previous versions).
-- Added command line arguments to directly open the provided file/s with the reader or one of the tools, set some of that tool's options... There's more info on [the wiki](https://github.com/binarynonsense/comic-book-reader/wiki).
+- Added command line arguments to directly open the provided file/s with the reader or one of the tools, set some of that tool's options...
 - Improved the keyboard and gamepad page scrolling smoothness.
 - Fixed the "show battery" menu entry not being disabled outside the reader.
 
 ## v3.2.7
 
 - Added a battery level indicator.
-- Simplified the reader's [gamepad controls layout](https://github.com/binarynonsense/comic-book-reader/wiki/Gamepad-Controls-Layout-in-the-Reader) (may expand it in the future).
+- Simplified the reader's gamepad controls layout (may expand it in the future).
 - Fixed the delay between changing the page's image and resetting its position.
 
 ## v3.2.6
@@ -119,8 +119,8 @@
 
 ## v3.2.0
 
-- Added an option in the preferences to enable using a third-party command-line application ([rar](https://www.win-rar.com/cmd-shell-mode.html?&L=0) from WinRAR) to create and modify cbr files.
-- Added the ability to search for and import comic book metadata from Comic Vine to the ComicInfo.xml editor. A [Comic Vine API key](https://comicvine.gamespot.com/api/) is required for it to work.
+- Added an option in the preferences to enable using a third-party command-line application (rar from WinRAR) to create and modify cbr files.
+- Added the ability to search for and import comic book metadata from Comic Vine to the ComicInfo.xml editor. A Comic Vine API key is required for it to work.
 - Added an option in the comic book conversion and creation tools to split the output into multiple files.
 - Added an option in the comic book conversion and creation tools to password protect the output files. Only available for some of the output formats (cbz, cb7, pdf and cbr).
 - Made the creation tool accept not only image files as input but also comic book files.
