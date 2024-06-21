@@ -46,7 +46,7 @@ Ein Comicbuch Leser und Konverter für CBZ, CBR, CB7, EPUB und PDF Dateien.
 - 'Breitenanpassung', 'Höhenanpassung' und eine anpassbare 'Höhenskalierung' Seitenansicht.
 - Seitenrotation.
 - Benutzeroberfläche verfügbar auf:
-  - Englisch, Spanisch, Russisch und Deutsch.
+  - Englisch, Spanisch, Russisch, Deutsch und Arabisch.
 - Automatische Wiederherstellung der vergangenen Sitzung, mit Erinnerung der letzten Seitenposition.
 - Tragbarer Modus (durch das Erstellen einer Datei namens portable.txt im selben Ordner wie die Anwendung).
 - ComicInfo.xml Editor:
