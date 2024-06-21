@@ -3,7 +3,7 @@
 - Updated some of the core libraries to newer versions.
 - Added mouse click+drag as an input option to scroll a page.
 - Added touch screen input support: drag to scroll a page, pinch-zoom to zoom in and out and double tap to switch between the default zoom levels.
-- Added Arabic localization (contributed by [Ahmed (ahmed-0011)](https://github.com/ahmed-0011)).
+- Added Arabic localization (contributed by Ahmed (ahmed-0011)).
 - Made the UI rearrange its components if a right-to-left language is set.
 - Added a Home Screen shown when there's no file opened, with a button to open a file dialog and lists of favorite files and folders and latest files.
 - Added Gamepad button mapping to the preferences.
