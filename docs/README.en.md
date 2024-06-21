@@ -46,7 +46,7 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB and PDF files.
 - 'Fit to width', 'fit to height' and a customizable 'scale to height' page views.
 - Page rotation.
 - UI available in:
-  - English, Spanish, Russian and German.
+  - English, Spanish, Russian, German and Arabic.
 - Automatically restores the previous session's last opened book and page, and remembers the last books' page positions.
 - Portable mode (by creating a file named portable.txt in the same folder as the executable).
 - ComicInfo.xml editor:
@@ -107,7 +107,7 @@ All versions (stable and beta):
 
 - Russian localization by [vanja-san](https://github.com/vanja-san)
 - German localization by [Timo Heidutzek (trzyglow)](https://github.com/trzyglow)
-- Arabic localization by [Ahmed (ahmed-0011)](https://github.com/ahmed-0011) (not yet implemented)
+- Arabic localization by [Ahmed (ahmed-0011)](https://github.com/ahmed-0011)
 
 There's info about how to contribute to the project in the [CONTRIBUTING.md](../CONTRIBUTING.md) file.
 

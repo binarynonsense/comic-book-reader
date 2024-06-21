@@ -46,7 +46,7 @@ Un lector y conversor de cómics para archivos en formato CBZ, CBR, CB7, EPUB y 
 - Vistas de pagina: 'ajustar a anchura', 'ajustar a altura' y 'escalar a altura' personalizable.
 - Rotación de página.
 - Interfaz de usuario disponible en:
-  - Inglés, Español, Ruso y Alemán
+  - Inglés, español, ruso, alemán y árabe.
 - Restaura automáticamente el último cómic, y página, abierto en la sesión anterior, y recuerda las posiciones de página de los últimos cómics.
 - Modo portátil (al crear un archivo llamado portable.txt en la misma carpeta que el ejecutable).
 - Editor de ComicInfo.xml:
@@ -107,7 +107,7 @@ Todas las versiones (estables y betas):
 
 - Traducción al ruso por [vanja-san](https://github.com/vanja-san).
 - Traducción al alemán por [Timo Heidutzek (trzyglow)](https://github.com/trzyglow)
-- Traducción al árabe por [Ahmed (ahmed-0011)](https://github.com/ahmed-0011) (aún sin implementar)
+- Traducción al árabe por [Ahmed (ahmed-0011)](https://github.com/ahmed-0011)
 
 Hay información sobre cómo contribuir al proyecto en el fichero [CONTRIBUTING.md](../CONTRIBUTING.md).
 
