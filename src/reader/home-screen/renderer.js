@@ -13,6 +13,7 @@ import {
   getNavButtons,
   inputOpenQuickMenu,
   onMouseMove,
+  getMouseButtons,
 } from "../../reader/renderer-ui.js";
 import * as input from "../../shared/renderer/input.js";
 import * as navigation from "./renderer-navigation.js";
@@ -467,9 +468,14 @@ export function onInputEvent(type, event) {
       }
       break;
 
-    case "acbr-middleclick":
+    case "acbr-mouseup":
       {
-        inputOpenQuickMenu();
+        if (
+          getMouseButtons().quickMenu &&
+          event.button === getMouseButtons().quickMenu
+        ) {
+          inputOpenQuickMenu();
+        }
       }
       break;
   }

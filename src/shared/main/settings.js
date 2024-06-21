@@ -67,7 +67,8 @@ const g_defaultSettings = {
   epubEbookColorMode: 0, // 0: light, 1: dark, 2: custom
   epubEbookColorText: "#000000", // rgb color in hex
   epubEbookColorBg: "#ffffff", // rgb color in hex
-  pagesDirection: 0, // 0: ltr, 1: rtl
+  pagesDirection: 0, // 0: ltr, 1: rtl,
+  mouseButtonQuickMenu: 1, // -1: unassigned 0-4: mouse button
 
   navKeys: {
     scrollUp: ["w", "ArrowUp"],
@@ -248,6 +249,13 @@ function sanitize(screenWidth, screenHeight) {
     g_settings.cursorVisibility > 1
   ) {
     g_settings.cursorVisibility = g_defaultSettings.cursorVisibility;
+  }
+  if (
+    !Number.isInteger(g_settings.mouseButtonQuickMenu) ||
+    g_settings.mouseButtonQuickMenu < -1 ||
+    g_settings.mouseButtonQuickMenu > 4
+  ) {
+    g_settings.mouseButtonQuickMenu = -1;
   }
   if (
     !Number.isInteger(g_settings.zoomDefault) ||

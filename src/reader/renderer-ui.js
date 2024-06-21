@@ -27,6 +27,10 @@ let g_mouseCursorHideTime = 3500;
 
 let g_navKeys;
 let g_navButtons;
+let g_mouseButtonQuickMenu;
+export function getMouseButtons() {
+  return { quickMenu: g_mouseButtonQuickMenu };
+}
 
 let g_turnPageOnScrollBoundary = true;
 let g_filterMode = 0;
@@ -384,6 +388,10 @@ function initOnIpcCallbacks() {
 
   on("set-nav-buttons", (buttons) => {
     g_navButtons = buttons;
+  });
+
+  on("set-mousebutton-quickmenu", (value) => {
+    g_mouseButtonQuickMenu = value;
   });
 }
 
@@ -785,9 +793,11 @@ export function onInputEvent(type, event) {
       }
       break;
 
-    case "acbr-middleclick":
+    case "acbr-mouseup":
       {
-        inputOpenQuickMenu();
+        if (g_mouseButtonQuickMenu && event.button === g_mouseButtonQuickMenu) {
+          inputOpenQuickMenu();
+        }
       }
       break;
 

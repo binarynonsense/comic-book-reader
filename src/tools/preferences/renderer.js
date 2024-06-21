@@ -19,6 +19,7 @@ let g_isInitialized = false;
 let g_tempFolderPathUl;
 let g_tempFolderPathCheckbox;
 let g_rarExeFolderPathUl;
+let g_localizedTexts = {};
 
 function init(activeLocale, languages, activeTheme, themes, settings) {
   if (!g_isInitialized) {
@@ -274,6 +275,30 @@ function init(activeLocale, languages, activeTheme, themes, settings) {
     select.addEventListener("change", function (event) {
       sendIpcToMain("set-cursor", parseInt(select.value));
     });
+  }
+  // mouse quick menu button select
+  {
+    {
+      let select = document.getElementById(
+        "tool-pre-mousebuttons-quickmenu-select"
+      );
+      const options = [
+        { id: -1, name: g_localizedTexts.unassignedMouseButton },
+        { id: 1, name: "1" },
+        { id: 3, name: "3" },
+        { id: 4, name: "4" },
+      ];
+      for (let option of options) {
+        let opt = document.createElement("option");
+        opt.value = option.id;
+        opt.textContent = option.name;
+        select.appendChild(opt);
+      }
+      select.value = settings.mouseButtonQuickMenu;
+      select.addEventListener("change", function (event) {
+        sendIpcToMain("set-mousebutton-quickmenu", parseInt(select.value));
+      });
+    }
   }
   // autoopen select
   {
@@ -1131,5 +1156,6 @@ function updateLocalization(
       }
     }
   }
+  g_localizedTexts = localizedTexts;
   updateColumnsHeight();
 }

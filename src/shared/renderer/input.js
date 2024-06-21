@@ -220,6 +220,7 @@ function initMouse() {
 
   document.addEventListener("mouseup", function (event) {
     g_isMouseDown = false;
+    getCurrentTool().onInputEvent("acbr-mouseup", event);
     switch (event.button) {
       case 1: // middle
         getCurrentTool().onInputEvent("acbr-middleclick");

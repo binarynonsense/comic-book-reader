@@ -225,6 +225,11 @@ function initOnIpcCallbacks() {
     reader.sendIpcToRenderer("set-hide-inactive-mouse-cursor", value === 1);
   });
 
+  on("set-mousebutton-quickmenu", (value) => {
+    settings.setValue("mouseButtonQuickMenu", value);
+    reader.sendIpcToRenderer("set-mousebutton-quickmenu", value);
+  });
+
   on("set-page-turn", (value) => {
     settings.setValue("turnPageOnScrollBoundary", value);
     reader.sendIpcToRenderer("set-page-turn-on-scroll-boundary", value);
@@ -446,6 +451,7 @@ function updateLocalizedText() {
     getTooltipsLocalization(),
     {
       infoTooltip: _("tool-shared-modal-title-info"),
+      unassignedMouseButton: _("tool-pre-navkeys-unassigned-key"),
     }
   );
   updateNavKeys();
@@ -802,6 +808,14 @@ function getLocalization() {
     {
       id: "tool-pre-cursor-hide-inactive-text",
       text: _("tool-pre-cursor-hide-inactive"),
+    },
+    {
+      id: "tool-pre-mousebuttons-text",
+      text: _("tool-pre-mouse") + ": " + _("tool-pre-navbuttons"),
+    },
+    {
+      id: "tool-pre-mousebuttons-quickmenu-text",
+      text: i18n._object("tool-pre-navkeys-actions").quickMenu,
     },
     //////////////////////////////////////////////
     {

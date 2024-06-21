@@ -78,6 +78,10 @@ exports.init = function (filePath, checkHistory) {
   sendIpcToRenderer("set-nav-keys", settings.getValue("navKeys"));
   sendIpcToRenderer("set-nav-buttons", settings.getValue("navButtons"));
   sendIpcToRenderer(
+    "set-mousebutton-quickmenu",
+    settings.getValue("mouseButtonQuickMenu")
+  );
+  sendIpcToRenderer(
     "set-page-turn-on-scroll-boundary",
     settings.getValue("turnPageOnScrollBoundary")
   );

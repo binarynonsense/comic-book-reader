@@ -13,6 +13,7 @@ import {
   onInputEvent as uiOnInputEvent,
   getOpenModal,
   onGamepadPolled as uiOnGamepadPolled,
+  getMouseButtons,
 } from "./renderer-ui.js";
 import {
   initIpc as pdfInitIpc,
