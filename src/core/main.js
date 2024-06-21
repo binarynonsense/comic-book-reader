@@ -320,7 +320,7 @@ if (!gotTheLock) {
       if (
         forceMultimonitorSize != undefined &&
         forceMultimonitorSize > 0 &&
-        forceMultimonitorSize < 3
+        forceMultimonitorSize < 4
       ) {
         // Special/Experimental start-up to force the window to expand to cover
         // multiple screens
@@ -337,8 +337,14 @@ if (!gotTheLock) {
         // trick. Don't know if this is a universal solution or just my case
         // so I'll leave multiple options for now.
         if (forceMultimonitorSize === 1) {
+          g_mainWindow.setSize(width, height);
           g_mainWindow.setMinimumSize(width, height);
         } else if (forceMultimonitorSize === 2) {
+          g_mainWindow.setSize(width, height);
+          g_mainWindow.setMinimumSize(width, height);
+          reader.sendIpcToRenderer("set-menubar-visibility", false);
+          reader.sendIpcToRenderer("set-toolbar-visibility", false);
+        } else if (forceMultimonitorSize === 3) {
           g_mainWindow.setSize(width, height);
         }
       } else {
