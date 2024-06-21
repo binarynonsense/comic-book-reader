@@ -112,6 +112,9 @@ const g_defaultSettings = {
   // TOOLS
   toolGutUseCache: true,
   toolCixApiKeyPath: undefined,
+
+  // EXPERIMENTAL
+  experimentalForceMultimonitorSize: 0,
 };
 
 exports.get = function () {
@@ -443,6 +446,14 @@ function sanitize(screenWidth, screenHeight) {
     }
   } else {
     g_settings.rarExeFolderPath = g_defaultSettings.rarExeFolderPath;
+  }
+  // EXPERIMENTAL
+  if (
+    !Number.isInteger(g_settings.experimentalForceMultimonitorSize) ||
+    g_settings.experimentalForceMultimonitorSize < 0 ||
+    g_settings.experimentalForceMultimonitorSize > 1
+  ) {
+    g_settings.experimentalForceMultimonitorSize = 0;
   }
 }
 

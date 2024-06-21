@@ -314,11 +314,26 @@ if (!gotTheLock) {
       }
       // show window
       g_mainWindow.center();
-      if (settings.getValue("maximize")) {
-        g_mainWindow.maximize();
-      }
-      if (settings.getValue("fullScreen")) {
-        toggleFullScreen();
+      if (settings.getValue("experimentalForceMultimonitorSize") === 1) {
+        const displays = screen.getAllDisplays();
+        let height = 0;
+        let width = 0;
+        displays.forEach((display) => {
+          width += display.workAreaSize.width;
+          if (height === 0) height = display.workAreaSize.height;
+          else height = Math.min(height, display.workAreaSize.height);
+        });
+        g_mainWindow.setSize(width, height);
+        // NOTE: setSize doesn't seem to work, it limits the size to the
+        // bounds of the primary display. But setMinimumSize seems to so the trick
+        g_mainWindow.setMinimumSize(width, height);
+      } else {
+        if (settings.getValue("maximize")) {
+          g_mainWindow.maximize();
+        }
+        if (settings.getValue("fullScreen")) {
+          toggleFullScreen();
+        }
       }
       g_mainWindow.show();
       log.debug(`start-up time: ${timers.stop("startup")}s`);
