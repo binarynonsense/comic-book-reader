@@ -118,22 +118,30 @@ function initOnIpcCallbacks() {
 
   on("build-drives-data", () => {
     let drivesData = [];
-    drivesData.push({
-      name: _("tool-fb-shortcuts-places-home"),
-      path: appUtils.getHomeFolderPath(),
-      isPlace: true,
-    });
-    drivesData.push({
-      name: _("tool-fb-shortcuts-places-desktop"),
-      path: appUtils.getDesktopFolderPath(),
-      isPlace: true,
-    });
-    drivesData.push({
-      name: _("tool-fb-shortcuts-places-downloads"),
-      path: appUtils.getDownloadsFolderPath(),
-      isPlace: true,
-    });
-
+    // system folders
+    const homeFolderPath = appUtils.getHomeFolderPath();
+    const desktopFolderPath = appUtils.getDesktopFolderPath();
+    const downloadsFolderPath = appUtils.getDownloadsFolderPath();
+    if (homeFolderPath) {
+      drivesData.push({
+        name: _("tool-fb-shortcuts-places-home"),
+        path: homeFolderPath,
+        isPlace: true,
+      });
+      if (desktopFolderPath && desktopFolderPath != homeFolderPath)
+        drivesData.push({
+          name: _("tool-fb-shortcuts-places-desktop"),
+          path: desktopFolderPath,
+          isPlace: true,
+        });
+      if (downloadsFolderPath && downloadsFolderPath != homeFolderPath)
+        drivesData.push({
+          name: _("tool-fb-shortcuts-places-downloads"),
+          path: downloadsFolderPath,
+          isPlace: true,
+        });
+    }
+    // disk drives, usbs...
     const drives = utils.getDriveList();
     drives.forEach((drive) => {
       if (drive.path) {

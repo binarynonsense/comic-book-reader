@@ -114,18 +114,25 @@ function load() {
   } catch (error) {
     log.debug(error);
     // initialize with defaults
-    g_favorites.data.push({
-      localizedNameId: "home",
-      path: getHomeFolderPath(),
-    });
-    g_favorites.data.push({
-      localizedNameId: "desktop",
-      path: getDesktopFolderPath(),
-    });
-    g_favorites.data.push({
-      localizedNameId: "downloads",
-      path: getDownloadsFolderPath(),
-    });
+    const homeFolderPath = getHomeFolderPath();
+    const desktopFolderPath = getDesktopFolderPath();
+    const downloadsFolderPath = getDownloadsFolderPath();
+    if (homeFolderPath) {
+      g_favorites.data.push({
+        localizedNameId: "home",
+        path: homeFolderPath,
+      });
+      if (desktopFolderPath && desktopFolderPath != homeFolderPath)
+        g_favorites.data.push({
+          localizedNameId: "desktop",
+          path: desktopFolderPath,
+        });
+      if (downloadsFolderPath && downloadsFolderPath != homeFolderPath)
+        g_favorites.data.push({
+          localizedNameId: "downloads",
+          path: downloadsFolderPath,
+        });
+    }
   }
 }
 exports.load = load;
