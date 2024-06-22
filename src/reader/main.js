@@ -2372,6 +2372,7 @@ exports.onMenuPagesDirection = function (value) {
 };
 
 async function onMenuFileProperties() {
+  // get metadata //////////////
   if (g_fileData.path && g_fileData.path !== "") {
     // temp epub, delete core.isDev() when done
     if (
@@ -2385,87 +2386,78 @@ async function onMenuFileProperties() {
         g_fileData.metadata,
         g_fileData.password
       );
-      log.test(g_fileData.metadata);
+      // log.test(g_fileData.metadata);
     }
-    // get metadata //////////////
-    let message = "";
-    // path
-    message += `${_("ui-modal-info-metadata-filepath")}: ${g_fileData.path}`;
-    message += "\n";
-    // size
-    let stats = fs.statSync(g_fileData.path);
-    message += `${_("ui-modal-info-metadata-filesize")}: ${(
-      stats.size /
-      (1024 * 1024)
-    ).toFixed(2)} MiB`;
-    message += "\n";
-    // pages
-    message += `${_("ui-modal-info-metadata-numpages")}: ${
-      g_fileData.numPages
-    }`;
-    message += "\n";
+    // create table
+    let html = "";
+    html += `<table>`;
+    function addRow(left, right) {
+      html += `<tr><td>${left}</td><td>${right}</td></tr>`;
+    }
     // title
     if (g_fileData.metadata && g_fileData.metadata.title) {
-      message += `${_("ui-modal-info-metadata-title")}: ${
-        g_fileData.metadata.title
-      }`;
-      message += "\n";
+      addRow(_("ui-modal-info-metadata-title"), g_fileData.metadata.title);
     }
     // author
     if (g_fileData.metadata && g_fileData.metadata.author) {
-      message += `${_("ui-modal-info-metadata-author")}: ${
-        g_fileData.metadata.author
-      }`;
-      message += "\n";
+      addRow(_("ui-modal-info-metadata-author"), g_fileData.metadata.author);
     }
     // publisher
     if (g_fileData.metadata && g_fileData.metadata.publisher) {
-      message += `${_("ui-modal-info-metadata-publisher")}: ${
+      addRow(
+        _("ui-modal-info-metadata-publisher"),
         g_fileData.metadata.publisher
-      }`;
-      message += "\n";
+      );
+    }
+    // format
+    if (g_fileData.metadata && g_fileData.metadata.format) {
+      addRow(_("ui-modal-info-metadata-format"), g_fileData.metadata.format);
+    }
+    // pages
+    addRow(_("ui-modal-info-metadata-numpages"), g_fileData.numPages);
+    // dimensions
+    if (g_fileData.pageDimensions) {
+      addRow(
+        _("ui-modal-info-metadata-pagedimensions"),
+        `${g_fileData.pageDimensions[0]} x ${g_fileData.pageDimensions[1]} ${
+          g_fileData.type === FileDataType.PDF ? "pt" : "px"
+        }`
+      );
     }
     // description
     if (g_fileData.metadata && g_fileData.metadata.description) {
-      message += `${_("ui-modal-info-metadata-description")}: ${
+      addRow(
+        _("ui-modal-info-metadata-description"),
         g_fileData.metadata.description
-      }`;
-      message += "\n";
+      );
     }
     // subject
     if (g_fileData.metadata && g_fileData.metadata.subject) {
-      message += `${_("ui-modal-info-metadata-subject")}: ${
-        g_fileData.metadata.subject
-      }`;
-      message += "\n";
+      addRow(_("ui-modal-info-metadata-subject"), g_fileData.metadata.subject);
     }
     // language
     if (g_fileData.metadata && g_fileData.metadata.language) {
-      message += `${_("ui-modal-info-metadata-language")}: ${
+      addRow(
+        _("ui-modal-info-metadata-language"),
         g_fileData.metadata.language
-      }`;
-      message += "\n";
+      );
     }
     // keywords
     if (g_fileData.metadata && g_fileData.metadata.keywords) {
-      message += `${_("ui-modal-info-metadata-keywords")}: ${
+      addRow(
+        _("ui-modal-info-metadata-keywords"),
         g_fileData.metadata.keywords
-      }`;
-      message += "\n";
+      );
     }
-    // dimensions
-    if (g_fileData.pageDimensions) {
-      message += `${_("ui-modal-info-metadata-pagedimensions")}: ${
-        g_fileData.pageDimensions[0]
-      } x ${g_fileData.pageDimensions[1]}`;
-      if (g_fileData.type === FileDataType.PDF) {
-        message += " pt";
-      } else {
-        message += " px";
-      }
-      message += "\n";
-    }
-
+    /////////////
+    // path
+    addRow(_("ui-modal-info-metadata-filepath"), g_fileData.path);
+    // size
+    let stats = fs.statSync(g_fileData.path);
+    addRow(
+      _("ui-modal-info-metadata-filesize"),
+      `${(stats.size / (1024 * 1024)).toFixed(2)} MiB`
+    );
     // created
     if (
       g_fileData.type === FileDataType.PDF &&
@@ -2478,13 +2470,11 @@ async function onMenuFileProperties() {
       // date = Intl.DateTimeFormat([], {
       //   dayTime: "short",
       // }).format(date);
-      message += `${_("ui-modal-info-metadata-created")}: ${date}`;
-      message += "\n";
+      addRow(_("ui-modal-info-metadata-created"), date);
     } else if (process.platform === "win32") {
       let date = stats.birthtime;
       date = date.toLocaleString();
-      message += `${_("ui-modal-info-metadata-created")}: ${date}`;
-      message += "\n";
+      addRow(_("ui-modal-info-metadata-created"), date);
     }
     // modified
     if (g_fileData.metadata && g_fileData.metadata.modified) {
@@ -2494,38 +2484,27 @@ async function onMenuFileProperties() {
         date = stats.mtime;
       }
       date = date.toLocaleString();
-      message += `${_("ui-modal-info-metadata-modified")}: ${date}`;
-      message += "\n";
+      addRow(_("ui-modal-info-metadata-modified"), date);
     } else {
       let date = stats.mtime.toLocaleString();
-      message += `${_("ui-modal-info-metadata-modified")}: ${date}`;
-      message += "\n";
+      addRow(_("ui-modal-info-metadata-modified"), date);
     }
     // MIME
     let fileType = await FileType.fromFile(g_fileData.path);
     if (fileType !== undefined) {
       // e.g. {ext: 'png', mime: 'image/png'}
-      message += `${_("ui-modal-info-metadata-mimetype")}: ${fileType.mime}`;
-      message += "\n";
+      addRow(_("ui-modal-info-metadata-mimetype"), fileType.mime);
     }
-    // format
-    if (g_fileData.metadata && g_fileData.metadata.format) {
-      message += `${_("ui-modal-info-metadata-format")}: ${
-        g_fileData.metadata.format
-      }`;
-      message += "\n";
+    // creator
+    if (g_fileData.metadata && g_fileData.metadata.creator) {
+      addRow(_("ui-modal-info-metadata-creator"), g_fileData.metadata.creator);
     }
-    // security
-    if (g_fileData.metadata && g_fileData.metadata.encrypted) {
-      message += `${_("ui-modal-info-metadata-security")}: ${_(
-        "ui-modal-info-metadata-security-encrypted"
-      )}`;
-      message += "\n";
-    } else {
-      message += `${_("ui-modal-info-metadata-security")}: ${_(
-        "ui-modal-info-metadata-security-unencrypted"
-      )}`;
-      message += "\n";
+    // producer
+    if (g_fileData.metadata && g_fileData.metadata.producer) {
+      addRow(
+        _("ui-modal-info-metadata-producer"),
+        g_fileData.metadata.producer
+      );
     }
     // comicinfo.xml
     if (
@@ -2534,31 +2513,32 @@ async function onMenuFileProperties() {
       g_fileData.type === FileDataType.SEVENZIP
     ) {
       if (g_fileData.metadata && g_fileData.metadata.comicInfoId) {
-        message += `ComicInfo.xml: ${_(
-          "ui-modal-info-metadata-comicinfoxml-included"
-        )}`;
-        message += "\n";
+        addRow(
+          "ComicInfo.xml",
+          _("ui-modal-info-metadata-comicinfoxml-included")
+        );
       } else {
-        message += `ComicInfo.xml: ${_(
-          "ui-modal-info-metadata-comicinfoxml-notincluded"
-        )}`;
-        message += "\n";
+        addRow(
+          "ComicInfo.xml",
+          _("ui-modal-info-metadata-comicinfoxml-notincluded")
+        );
       }
     }
-    // creator
-    if (g_fileData.metadata && g_fileData.metadata.creator) {
-      message += `${_("ui-modal-info-metadata-creator")}: ${
-        g_fileData.metadata.creator
-      }`;
-      message += "\n";
+    // security
+    if (g_fileData.metadata && g_fileData.metadata.encrypted) {
+      addRow(
+        _("ui-modal-info-metadata-security"),
+        _("ui-modal-info-metadata-security-encrypted")
+      );
+    } else {
+      addRow(
+        _("ui-modal-info-metadata-security"),
+        _("ui-modal-info-metadata-security-unencrypted")
+      );
     }
-    // producer
-    if (g_fileData.metadata && g_fileData.metadata.producer) {
-      message += `${_("ui-modal-info-metadata-producer")}: ${
-        g_fileData.metadata.producer
-      }`;
-      message += "\n";
-    }
+    ///////////////////
+    html += `</table>`;
+
     // send //////////////////////
     const canHaveComicInfo =
       g_fileData.type === FileDataType.ZIP ||
@@ -2580,7 +2560,7 @@ async function onMenuFileProperties() {
     sendIpcToRenderer(
       "show-modal-properties",
       _("menu-file-properties").replace("...", ""),
-      message,
+      html,
       _("tool-shared-ui-close"),
       buttonText
     );

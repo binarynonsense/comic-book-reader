@@ -64,14 +64,25 @@ export function show(options) {
       inputElement.focus();
     }
     // log
-    let logElement = modalDiv.querySelector(".modal-log");
+    let logTextAreaElement = modalDiv.querySelector(".modal-log");
+    let logDivElement = modalDiv.querySelector(".modal-log-div");
     if (options.log && isObject(options.log)) {
-      logElement.classList.remove("set-display-none");
-      if (options.log.message) {
-        logElement.textContent = options.log.message;
+      if (options.log.useDiv) {
+        logDivElement.classList.remove("set-display-none");
+        logTextAreaElement.classList.add("set-display-none");
+        if (options.log.message) {
+          logDivElement.innerHTML = options.log.message;
+        }
+      } else {
+        logDivElement.classList.add("set-display-none");
+        logTextAreaElement.classList.remove("set-display-none");
+        if (options.log.message) {
+          logTextAreaElement.textContent = options.log.message;
+        }
       }
     } else {
-      logElement.classList.add("set-display-none");
+      logTextAreaElement.classList.add("set-display-none");
+      logDivElement.classList.add("set-display-none");
     }
     // close x button
     if (options.close) {
@@ -455,7 +466,8 @@ function getHTMLElement(parent) {
     <div class="modal-progress-bar-animation"></div>
   </div>
   <input class="modal-input set-display-none" />
-  <textarea class="modal-log" readonly></textarea>
+  <textarea class="modal-log"  readonly></textarea>
+  <div class="modal-log-div set-display-none"></div>
   <div class="modal-buttons"></div>       
 </div>`;
   parent.appendChild(modalDiv);

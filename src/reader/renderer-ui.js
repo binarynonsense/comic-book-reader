@@ -1619,7 +1619,7 @@ function showModalProperties(title, message, textButton1, textButton2) {
   });
   g_openModal = modals.show({
     title: title,
-    log: { message: message },
+    log: { message: message, useDiv: true },
     frameWidth: 600,
     zIndexDelta: -450,
     close: {

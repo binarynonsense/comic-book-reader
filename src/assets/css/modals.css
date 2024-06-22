@@ -108,6 +108,69 @@
   text-align: start;
 }
 
+.modal-log-div {
+  margin-top: 10px;
+  width: 100%;
+  height: 150px;
+  color: var(--modal-input-text-color);
+  background-color: var(--modal-input-bg-color);
+  /* padding: 5px; */
+  border: 2px solid var(--modal-input-text-color);
+  resize: none;
+  word-break: break-all;
+  cursor: auto;
+  text-align: start;
+
+  overflow-y: auto;
+  font-size: 16px;
+  line-height: 20px;
+}
+
+.modal-log-div-0 p {
+  margin: 5px;
+}
+/*
+.modal-log-div-1 {
+  display: block;
+  border-inline-start: 3px solid
+    color-mix(in srgb, var(--modal-input-text-color) 30%, transparent);
+  padding-inline-start: 10px;
+}
+
+.modal-log-div-1 p {
+  margin: 5px 0px;
+} */
+
+.modal-log-div table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 14px;
+}
+
+.modal-log-div tr {
+  border-top: 1px solid var(--modal-input-text-color);
+  border-bottom: 1px solid var(--modal-input-text-color);
+  padding: 8px;
+}
+
+.modal-log-div tr:nth-child(even) {
+  background-color: color-mix(in srgb, var(--modal-input-bg-color), #000 10%);
+}
+
+.modal-log-div td {
+  border-inline-end: 1px solid var(--modal-input-text-color);
+  padding: 5px 10px;
+  min-width: 70%;
+  width: 30%;
+  word-break: break-all;
+}
+
+.modal-log-div td:last-child {
+  border-inline-end: 0px;
+  max-width: 70%;
+  width: 70%;
+}
+
 /* ///////////////////////////////// */
 
 .modal-buttons {
