@@ -2414,7 +2414,9 @@ async function onMenuFileProperties() {
       addRow(_("ui-modal-info-metadata-format"), g_fileData.metadata.format);
     }
     // pages
-    addRow(_("ui-modal-info-metadata-numpages"), g_fileData.numPages);
+    if (g_fileData.type != FileDataType.EPUB_EBOOK) {
+      addRow(_("ui-modal-info-metadata-numpages"), g_fileData.numPages);
+    }
     // dimensions
     if (g_fileData.pageDimensions) {
       addRow(
