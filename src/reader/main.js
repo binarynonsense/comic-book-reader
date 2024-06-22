@@ -2409,10 +2409,6 @@ async function onMenuFileProperties() {
         g_fileData.metadata.publisher
       );
     }
-    // format
-    if (g_fileData.metadata && g_fileData.metadata.format) {
-      addRow(_("ui-modal-info-metadata-format"), g_fileData.metadata.format);
-    }
     // pages
     if (g_fileData.type != FileDataType.EPUB_EBOOK) {
       addRow(_("ui-modal-info-metadata-numpages"), g_fileData.numPages);
@@ -2467,6 +2463,16 @@ async function onMenuFileProperties() {
       _("ui-modal-info-metadata-filesize"),
       `${(stats.size / (1024 * 1024)).toFixed(2)} MiB`
     );
+    // MIME
+    let fileType = await FileType.fromFile(g_fileData.path);
+    if (fileType !== undefined) {
+      // e.g. {ext: 'png', mime: 'image/png'}
+      addRow(_("ui-modal-info-metadata-mimetype"), fileType.mime);
+    }
+    // format
+    if (g_fileData.metadata && g_fileData.metadata.format) {
+      addRow(_("ui-modal-info-metadata-format"), g_fileData.metadata.format);
+    }
     // created
     if (
       g_fileData.type === FileDataType.PDF &&
@@ -2497,12 +2503,6 @@ async function onMenuFileProperties() {
     } else {
       let date = stats.mtime.toLocaleString();
       addRow(_("ui-modal-info-metadata-modified"), date);
-    }
-    // MIME
-    let fileType = await FileType.fromFile(g_fileData.path);
-    if (fileType !== undefined) {
-      // e.g. {ext: 'png', mime: 'image/png'}
-      addRow(_("ui-modal-info-metadata-mimetype"), fileType.mime);
     }
     // creator
     if (g_fileData.metadata && g_fileData.metadata.creator) {
