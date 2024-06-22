@@ -535,7 +535,6 @@
   "tool-et-modal-info": "",
   "tool-ec-title": "Extract Pages Tool",
   "tool-ec-modal-log-extracting-to": "To",
-  "tool-ec-tooltip-output-folder": "Inside the provided folder, a subfolder with the same name as the file to be extracted will be created to store the images. If a subfolder with the same name already exists, a subfix will be added to the name so nothing is overwritten.",
   "tool-ep-title": "Extract Palette Tool",
   "tool-ep-header-input-file": "Input Image",
   "tool-ep-header-output-palette": "Output Palette",

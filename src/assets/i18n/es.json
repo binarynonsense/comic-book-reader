@@ -535,7 +535,6 @@
   "tool-et-modal-info": "",
   "tool-ec-title": "Herramienta de extracción de páginas",
   "tool-ec-modal-log-extracting-to": "En",
-  "tool-ec-tooltip-output-folder": "Dentro de la carpeta indicada, se creará una subcarpeta para guardar las imágenes con el mismo nombre que el archivo a extraer. Si ya existe una subcarpeta con ese nombre, se añadirá un subfijo al nombre para que ningún archivo sea sobreescrito.",
   "tool-ep-title": "Herramienta de extracción de paleta",
   "tool-ep-header-input-file": "Imagen de entrada",
   "tool-ep-header-output-palette": "Paleta de salida",

@@ -535,7 +535,6 @@
   "tool-et-modal-info": "",
   "tool-ec-title": "Seitenextraktions-werkzeug",
   "tool-ec-modal-log-extracting-to": "Nach",
-  "tool-ec-tooltip-output-folder": "Im bereitgestellten Ordner wird ein Unterordner mit demselben Namen wie die zu extrahierende Datei, wird zur Speicherung der Bilder angelegt. Wenn ein Unterordner mit demselben Namen bereits existiert, wird ein Suffix zum Namen hinzugefügt damit nichts überschrieben wird.",
   "tool-ep-title": "Palettenextraktions-werkzeug",
   "tool-ep-header-input-file": "Eingangsbild",
   "tool-ep-header-output-palette": "Ausgangspalette",
