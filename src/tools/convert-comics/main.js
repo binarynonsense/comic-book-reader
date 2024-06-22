@@ -1357,6 +1357,10 @@ function getLocalization() {
       text: _("tool-shared-ui-output-options-format"),
     },
     {
+      id: "tool-cc-output-name-text",
+      text: _("ui-modal-info-metadata-filename"),
+    },
+    {
       id: "tool-cc-output-page-order-text",
       text: _("tool-shared-ui-output-options-page-order"),
     },
