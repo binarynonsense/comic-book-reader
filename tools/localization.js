@@ -11,17 +11,20 @@ const fs = require("fs");
 switch (process.argv[2]) {
   case "update":
   case "state":
-    updateLocalizationFiles(process.argv[2], process.argv[3]);
+    updateFiles(process.argv[2], process.argv[3]);
     break;
   case "licenses":
     updateLicenseFile();
+    break;
+  case "unused":
+    findUnusedKeys();
     break;
   default:
     console.log("operation parameter missing");
     return;
 }
 
-function updateLocalizationFiles(operation, languageId) {
+function updateFiles(operation, languageId) {
   if (operation === "update") console.log("* update localization files *");
   else if (operation === "state")
     console.log("* check localization files' state *");
@@ -114,4 +117,59 @@ function updateLicenseFile() {
     console.log("something went wrong");
     console.log(error);
   }
+}
+
+function findUnusedKeys() {
+  try {
+    // get used keys in js files
+    const fileUtils = require("../src/shared/main/file-utils");
+    let filePaths = fileUtils.getFilesInFolderRecursive(
+      path.resolve("./src/"),
+      [".js"]
+    );
+    filePaths = filePaths.filter((filePath) => {
+      if (filePath.includes("src/assets/libs/")) return false;
+      else return true;
+    });
+    let usedKeys = {};
+    filePaths.forEach((filePath) => {
+      const matches = findI18nCalls(filePath);
+      matches.forEach((match) => {
+        usedKeys[match] = true;
+      });
+    });
+    // compare the keys in the english localization file with the found keys
+    let unusedKeys = [];
+    const englishData = JSON.parse(
+      fs.readFileSync("./src/assets/i18n/en.json", "utf8")
+    );
+    for (const key in englishData) {
+      if (
+        !key.startsWith("tool-pre-navkeys-actions") &&
+        !key.startsWith("@meta") &&
+        !key.startsWith("[NOTE TO") &&
+        !usedKeys[key]
+      ) {
+        unusedKeys.push(key);
+      }
+    }
+    console.log(`Found ${unusedKeys.length} unused keys`);
+    const listFilePath = path.resolve("./dist/unusedKeys.txt");
+    console.log("Writing list to: " + listFilePath);
+    fs.writeFileSync(listFilePath, unusedKeys.join("\n"), "utf-8");
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+function findI18nCalls(filePath) {
+  let results = [];
+  const regexp = /_\([\r\n\s]*"(.*?)"/g;
+  const contents = fs.readFileSync(filePath, "utf8");
+  const matches = [...contents.matchAll(regexp)];
+  for (let index = 0; index < matches.length; index++) {
+    const match = matches[index];
+    results.push(match[match.length - 1]);
+  }
+  return results;
 }
