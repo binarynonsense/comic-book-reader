@@ -606,7 +606,6 @@
   "tool-cix-modal-message-could-not-create": "تعذر إنشاء ملف ComicInfo.xml",
   "tool-cix-modal-message-success-update": "تم تحديث ملف ComicInfo.xml بنجاح",
   "tool-cix-modal-message-success-create": "تم إنشاء ملف ComicInfo.xml بنجاح",
-  "tool-cix-section-basic-data": "البيانات الأساسية",
   "tool-cix-section-details": "التفاصيل",
   "tool-cix-section-creators": "المؤلفون",
   "tool-cix-section-pages": "الصفحات",

@@ -606,7 +606,6 @@
   "tool-cix-modal-message-could-not-create": "Не удалось создать файл ComicInfo.xml",
   "tool-cix-modal-message-success-update": "Файл ComicInfo.xml был успешно обновлён",
   "tool-cix-modal-message-success-create": "Файл ComicInfo.xml был успешно создан",
-  "tool-cix-section-basic-data": "Основные данные",
   "tool-cix-section-details": "Подробности",
   "tool-cix-section-creators": "Создатели",
   "tool-cix-section-pages": "Страницы",

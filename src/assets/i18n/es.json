@@ -606,7 +606,6 @@
   "tool-cix-modal-message-could-not-create": "No se pudo crear el archivo ComicInfo.xml",
   "tool-cix-modal-message-success-update": "El archivo ComicInfo.xml se actualizó exitosamente",
   "tool-cix-modal-message-success-create": "El archivo ComicInfo.xml se creó exitosamente",
-  "tool-cix-section-basic-data": "Datos básicos",
   "tool-cix-section-details": "Detalles",
   "tool-cix-section-creators": "Creadores",
   "tool-cix-section-pages": "Páginas",
