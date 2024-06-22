@@ -711,10 +711,8 @@
   "tool-radio-search-options-orderby-clicks": "Klickanzahl",
   "tool-radio-search-options-orderby-bitrate": "Bitrate",
   "home-screen": "Startbildschirm",
+  "[NOTE TO TRANSLATORS]home-screen-favorites": "Favorites as in Favorite files and folders",
   "home-screen-favorites": "Favoriten",
-  "home-screen-favorite-folders": "Lieblingsordner",
-  "home-screen-favorite-files": "Lieblingsdateien",
-  "home-screen-latest-files": "Zuletzt verwendete Dateien",
-  "[NOTE TO TRANSLATORS]home-screen-latest": "Latest as in Latest files and folders",
+  "[NOTE TO TRANSLATORS]home-screen-latest": "Latest as in Latest files used",
   "home-screen-latest": "Zuletzt verwendet"
 }

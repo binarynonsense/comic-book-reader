@@ -711,10 +711,8 @@
   "tool-radio-search-options-orderby-clicks": "Click Count",
   "tool-radio-search-options-orderby-bitrate": "Bitrate",
   "home-screen": "Home Screen",
+  "[NOTE TO TRANSLATORS]home-screen-favorites": "Favorites as in Favorite files and folders",
   "home-screen-favorites": "Favorites",
-  "home-screen-favorite-folders": "Favorite Folders",
-  "home-screen-favorite-files": "Favorite Files",
-  "home-screen-latest-files": "Latest Files",
-  "[NOTE TO TRANSLATORS]home-screen-latest": "Latest as in Latest files and folders",
+  "[NOTE TO TRANSLATORS]home-screen-latest": "Latest as in Latest files used",
   "home-screen-latest": "Latest"
 }
