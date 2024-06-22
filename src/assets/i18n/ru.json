@@ -123,7 +123,6 @@
   "dialog-file-types-comics-books-images": "Файлы комиксов, книг и изображений",
   "dialog-file-types-images": "Файлы изображений",
   "dialog-file-types-text": "Текстовые файлы",
-  "ui-bg-msg": "Чтобы открыть файл, воспользуйтесь меню или нажмите <i>Ctrl+O</i>",
   "ui-modal-title-foldernotfound": "Папка не найдена",
   "ui-modal-title-filenotfound": "Файл не найден",
   "ui-modal-title-foldererror": "Ошибка папки",

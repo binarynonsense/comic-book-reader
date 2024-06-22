@@ -123,7 +123,6 @@
   "dialog-file-types-comics-books-images": "Comic-, Buch-  und Bild-dateien",
   "dialog-file-types-images": "Bild-dateien",
   "dialog-file-types-text": "Textdateien",
-  "ui-bg-msg": "Um eine Datei zu öffnen, verwenden Sie das Menü oder drücken Sie <i>Strg+O</i>",
   "ui-modal-title-foldernotfound": "Ordner nicht gefunden",
   "ui-modal-title-filenotfound": "Datei nicht gefunden",
   "ui-modal-title-foldererror": "Ordnerfehler",

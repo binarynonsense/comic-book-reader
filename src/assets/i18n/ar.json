@@ -123,7 +123,6 @@
   "dialog-file-types-comics-books-images": "ملفات الصور و الكتب و الكتب المصورة",
   "dialog-file-types-images": "ملفات الصور",
   "dialog-file-types-text": "ملفات نصية",
-  "ui-bg-msg": "لفتح ملف، استخدم القائمة أو اضغط على <i>Ctrl+O</i>",
   "ui-modal-title-foldernotfound": "لم يتم العثور على المجلد",
   "ui-modal-title-filenotfound": "لم يتم العثور على الملف",
   "ui-modal-title-foldererror": "خطأ في المجلد",
