@@ -2451,6 +2451,13 @@ async function onMenuFileProperties() {
         g_fileData.metadata.keywords
       );
     }
+    // publication date
+    if (g_fileData.metadata && g_fileData.metadata.publicationDate) {
+      addRow(
+        _("ui-modal-info-metadata-publicationdate"),
+        g_fileData.metadata.publicationDate
+      );
+    }
     /////////////
     // path
     addRow(_("ui-modal-info-metadata-filepath"), g_fileData.path);

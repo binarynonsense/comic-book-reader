@@ -146,7 +146,7 @@
   "ui-modal-info-metadata-title": "Title",
   "ui-modal-info-metadata-author": "Author",
   "ui-modal-info-metadata-publisher": "Publisher",
-  "ui-modal-info-metadata-date": "Date",
+  "ui-modal-info-metadata-publicationdate": "Publication Date",
   "ui-modal-info-metadata-subject": "Subject",
   "ui-modal-info-metadata-description": "Description",
   "ui-modal-info-metadata-keywords": "Keywords",

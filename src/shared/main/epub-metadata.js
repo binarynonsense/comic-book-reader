@@ -96,6 +96,7 @@ exports.getMetadata = async function (filePath, currentMetadata, password) {
     addMetadataEntry("dc:description", "description");
     addMetadataEntry("dc:language", "language");
     addMetadataEntry("dc:publisher", "publisher");
+    addMetadataEntry("dc:date", "publicationDate");
 
     fileMetadata["format"] = "EPUB";
     const formatVersion = json["package"]["@_version"];
