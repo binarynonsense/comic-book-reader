@@ -1432,7 +1432,7 @@ function getLocalization() {
     },
     {
       id: "tool-cc-split-num-files-text",
-      text: _("tool-sc-number"),
+      text: _("tool-shared-ui-creation-split-number"),
     },
     {
       id: "tool-cc-password-text",
