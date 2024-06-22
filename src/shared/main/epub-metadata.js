@@ -101,20 +101,6 @@ exports.getMetadata = async function (filePath, currentMetadata, password) {
     fileMetadata["format"] = "EPUB";
     const formatVersion = json["package"]["@_version"];
     if (formatVersion) fileMetadata["format"] += " v" + formatVersion;
-
-    // pdf example from render-pdf's loadPdf
-    // {
-    //     encrypted: password && password.trim() !== "",
-    //     creator: metadata.info.Creator,
-    //     producer: metadata.info.Producer,
-    //     created: metadata.info.CreationDate,
-    //     modified: metadata.info.ModDate,
-    //     format: "PDF " + metadata.info.PDFFormatVersion,
-    //     author: metadata.info.Author,
-    //     subject: metadata.info.Subject,
-    //     keywords: metadata.info.Keywords,
-    //     title: metadata.info.Title,
-    //   }
     //////////////////////////
     return fileMetadata;
   } catch (error) {
