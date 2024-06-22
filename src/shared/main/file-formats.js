@@ -892,6 +892,51 @@ async function createEpub(
 }
 exports.createEpub = createEpub;
 
+async function getEpubOpfEntriesList(filePath, password) {
+  try {
+    if (password === undefined || password === "") {
+      password = "_";
+    }
+    checkPathTo7ZipBin();
+    const Seven = require("node-7z");
+    let options = {
+      $bin: g_pathTo7zipBin,
+      charset: "UTF-8",
+      password: password,
+    };
+    options.archiveType = "zip";
+    const seven = Seven.test(filePath, options);
+    let opfEntries;
+    let promise = await new Promise((resolve) => {
+      opfEntries = [];
+      seven.on("data", function (data) {
+        if (data.file.toLowerCase().endsWith(".opf")) {
+          opfEntries.push(data.file);
+        }
+      });
+      seven.on("error", (error) => {
+        resolve({ success: false, data: error });
+      });
+      seven.on("end", () => {
+        return resolve({
+          success: true,
+          data: opfEntries,
+        });
+      });
+    });
+
+    if (promise.success === true) {
+      return opfEntries;
+    } else {
+      throw promise.data;
+    }
+  } catch (error) {
+    log.error(error);
+    return undefined;
+  }
+}
+exports.getEpubOpfEntriesList = getEpubOpfEntriesList;
+
 ///////////////////////////////////////////////////////////////////////////////
 // PDF ////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////

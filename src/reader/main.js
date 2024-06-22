@@ -2373,6 +2373,20 @@ exports.onMenuPagesDirection = function (value) {
 
 async function onMenuFileProperties() {
   if (g_fileData.path && g_fileData.path !== "") {
+    // temp epub, delete core.isDev() when done
+    if (
+      core.isDev() &&
+      (g_fileData.type === FileDataType.EPUB_COMIC ||
+        g_fileData.type === FileDataType.EPUB_EBOOK)
+    ) {
+      const epubMetadata = require("../shared/main/epub-metadata");
+      g_fileData.metadata = await epubMetadata.getMetadata(
+        g_fileData.path,
+        g_fileData.metadata,
+        g_fileData.password
+      );
+      log.test(g_fileData.metadata);
+    }
     // get metadata //////////////
     let message = "";
     // path
@@ -2404,10 +2418,31 @@ async function onMenuFileProperties() {
       }`;
       message += "\n";
     }
+    // publisher
+    if (g_fileData.metadata && g_fileData.metadata.publisher) {
+      message += `${_("ui-modal-info-metadata-publisher")}: ${
+        g_fileData.metadata.publisher
+      }`;
+      message += "\n";
+    }
+    // description
+    if (g_fileData.metadata && g_fileData.metadata.description) {
+      message += `${_("ui-modal-info-metadata-description")}: ${
+        g_fileData.metadata.description
+      }`;
+      message += "\n";
+    }
     // subject
     if (g_fileData.metadata && g_fileData.metadata.subject) {
       message += `${_("ui-modal-info-metadata-subject")}: ${
         g_fileData.metadata.subject
+      }`;
+      message += "\n";
+    }
+    // language
+    if (g_fileData.metadata && g_fileData.metadata.language) {
+      message += `${_("ui-modal-info-metadata-language")}: ${
+        g_fileData.metadata.language
       }`;
       message += "\n";
     }
