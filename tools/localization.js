@@ -155,7 +155,7 @@ function findUnusedKeys() {
       }
     }
     console.log(`Found ${unusedKeys.length} unused keys`);
-    const listFilePath = path.resolve("./dist/unusedKeys.txt");
+    const listFilePath = path.resolve("./tools/unusedKeys.txt");
     console.log("Writing list to: " + listFilePath);
     fs.writeFileSync(listFilePath, unusedKeys.join("\n"), "utf-8");
   } catch (error) {
