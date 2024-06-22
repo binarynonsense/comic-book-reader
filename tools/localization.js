@@ -146,6 +146,7 @@ function findUnusedKeys() {
     for (const key in englishData) {
       if (
         !key.startsWith("tool-pre-navkeys-actions") &&
+        !key.startsWith("tool-pre-language-incomplete") &&
         !key.startsWith("@meta") &&
         !key.startsWith("[NOTE TO") &&
         !usedKeys[key]
