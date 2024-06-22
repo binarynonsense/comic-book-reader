@@ -80,8 +80,6 @@
   "menu-tools-extract-text": "Текст из изображения (OCR)",
   "menu-tools-extract-palette": "Цветовую палитру из изображения",
   "menu-tools-extract-qr": "Текст QR-кода из изображения",
-  "menu-tools-merge": "Объединить",
-  "menu-tools-split": "Разделить",
   "menu-tools-other": "Другое",
   "menu-tools-other-dcm": "Digital Comic Museum",
   "menu-tools-other-iab": "Internet Archive Books",
