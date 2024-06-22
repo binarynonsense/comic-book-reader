@@ -594,8 +594,6 @@
   "tool-lvx-button-open-lvx-browser": "Открыть LibriVox в браузере",
   "tool-wik-title": "Викисловарь",
   "tool-wik-button-open-wik-browser": "Открыть Викисловарь в браузере",
-  "tool-mc-title": "Инструмент для слияния файлов",
-  "tool-sc-title": "Инструмент для разделения файлов",
   "tool-sc-number": "Количество файлов для разделения",
   "tool-cix-title": "Редактор ComicInfo.xml",
   "tool-cix-warning-save-update": "В результате содержимое файла ComicInfo.xml внутри комикса будет обновлено новыми данными",

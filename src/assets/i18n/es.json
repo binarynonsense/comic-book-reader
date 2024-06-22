@@ -594,8 +594,6 @@
   "tool-lvx-button-open-lvx-browser": "Abrir LibriVox en navegador",
   "tool-wik-title": "Diccionario Wiktionary",
   "tool-wik-button-open-wik-browser": "Abrir Wiktionary en navegador",
-  "tool-mc-title": "Herramienta de unión de archivos",
-  "tool-sc-title": "Herramienta de división de archivos",
   "tool-sc-number": "Número de archivos en los que dividir",
   "tool-cix-title": "Editor de ComicInfo.xml",
   "tool-cix-warning-save-update": "Esto actualizará los contenidos del archivo ComicInfo.xml en el interior del Comic con los nuevos datos",

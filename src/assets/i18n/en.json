@@ -594,8 +594,6 @@
   "tool-lvx-button-open-lvx-browser": "Open LibriVox In Browser",
   "tool-wik-title": "Wiktionary Dictionary",
   "tool-wik-button-open-wik-browser": "Open Wiktionary In Browser",
-  "tool-mc-title": "Merge Files Tool",
-  "tool-sc-title": "Split Files Tool",
   "tool-sc-number": "Number of Files to Split Into",
   "tool-cix-title": "ComicInfo.xml Editor",
   "tool-cix-warning-save-update": "This will update the contents of the ComicInfo.xml file inside the comic book with the new data",

@@ -594,8 +594,6 @@
   "tool-lvx-button-open-lvx-browser": "فتح LibriVox في المتصفح",
   "tool-wik-title": "قاموس Wiktionary",
   "tool-wik-button-open-wik-browser": "فتح Wiktionary في المتصفح",
-  "tool-mc-title": "أداة دمج الملفات",
-  "tool-sc-title": "أداة تقسيم الملفات",
   "tool-sc-number": "عدد الملفات المراد التقسيم إليها",
   "tool-cix-title": "محرر ComicInfo.xml",
   "tool-cix-warning-save-update": "سيؤدي ذلك إلى تحديث محتويات ملف ComicInfo.xml داخل الكتاب المصور بالبيانات الجديدة",
