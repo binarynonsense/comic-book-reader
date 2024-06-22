@@ -1,3 +1,7 @@
+## v3.5.1
+
+- Fixed missing "Name" label in the output options section of the comic creation tool's UI.
+
 ## v3.5.0
 
 - Updated some of the core libraries to newer versions.
