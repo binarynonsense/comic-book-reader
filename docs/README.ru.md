@@ -71,14 +71,16 @@
       - можно экспортировать в файл палитры GPL или ACO.
   - Другое:
     - поиск и открытые книг/комиксов из:
-      - Digital Comics Museum.
-      - Internet Archive Books.
-      - Project Gutenberg.
-      - xkcd Webcomics.
+      - Digital Comics Museum
+      - Internet Archive Books
+      - Project Gutenberg
+      - xkcd Webcomics
     - поиск и открытие аудиокниг из:
-      - Librivox AudioBooks.
+      - Librivox AudioBooks
     - поиск словарных терминов из:
-      - Викисловаря.
+      - Викисловаря
+    - поиск и открытие потоков радиостанций из:
+      - radio-browser
 
 > Примечания:
 >
