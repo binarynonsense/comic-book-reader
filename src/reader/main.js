@@ -568,9 +568,16 @@ function initOnIpcCallbacks() {
 
   ////////////////////////////////////////////////////////////////////////////
 
-  on("open-comicinfo-xml-tool", () => {
+  on("open-metadata-tool", () => {
     if (g_fileData.path !== undefined) {
-      tools.switchTool("tool-comicinfoxml", g_fileData);
+      if (
+        g_fileData.type === FileDataType.EPUB_COMIC ||
+        g_fileData.type === FileDataType.EPUB_EBOOK
+      ) {
+        tools.switchTool("tool-metadata", g_fileData);
+      } else {
+        tools.switchTool("tool-comicinfoxml", g_fileData);
+      }
     }
   });
 
@@ -2561,6 +2568,12 @@ async function onMenuFileProperties() {
       } else if ((canEditRar || !isRar) && !isEncrypted) {
         buttonText = _("ui-modal-prompt-button-create-xml");
       }
+    } else if (
+      core.isDev() &&
+      (g_fileData.type === FileDataType.EPUB_COMIC ||
+        g_fileData.type === FileDataType.EPUB_EBOOK)
+    ) {
+      buttonText = _("ui-modal-prompt-button-edit-metadata");
     }
 
     sendIpcToRenderer(

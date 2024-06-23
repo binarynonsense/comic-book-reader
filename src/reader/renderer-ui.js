@@ -1607,7 +1607,7 @@ function showModalProperties(title, message, textButton1, textButton2) {
       text: textButton2.toUpperCase(),
       callback: () => {
         modalClosed();
-        sendIpcToMain("open-comicinfo-xml-tool");
+        sendIpcToMain("open-metadata-tool");
       },
     });
   }
