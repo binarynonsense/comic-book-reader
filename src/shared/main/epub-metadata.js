@@ -112,3 +112,65 @@ exports.getMetadataProperties = async function (
     return currentMetadata;
   }
 };
+
+exports.getMetadataFileData = async function (filePath, password) {
+  try {
+    //////////////////
+    const tempFolderPath = temp.createSubFolder();
+    const opfEntries = await fileFormats.getEpubOpfEntriesList(
+      filePath,
+      password
+    );
+    if (!opfEntries || opfEntries.length <= 0) {
+      throw "no metadata file found";
+    }
+    let entryPath;
+    for (let index = 0; index < opfEntries.length; index++) {
+      const opf = opfEntries[index];
+      if (opf.startsWith("OEBPS") || opf.startsWith("OPS")) {
+        entryPath = opf;
+        break;
+      }
+    }
+    if (!entryPath) {
+      throw "no metadata file found";
+    }
+    const buffer = await fileFormats.extract7ZipEntryBuffer(
+      filePath,
+      entryPath,
+      password,
+      tempFolderPath,
+      "zip"
+    );
+    temp.deleteSubFolder(tempFolderPath);
+    const xmlFileData = buffer?.toString();
+    //////////////////////////
+    if (xmlFileData === undefined) {
+      throw "no metadata file found";
+    }
+    const { XMLParser, XMLValidator } = require("fast-xml-parser");
+    const isValidXml = XMLValidator.validate(xmlFileData);
+    if (isValidXml !== true) {
+      throw "invalid xml";
+    }
+    // open
+    const parserOptions = {
+      ignoreAttributes: false,
+      allowBooleanAttributes: true,
+    };
+    const parser = new XMLParser(parserOptions);
+    let json = parser.parse(xmlFileData);
+    if (!json["package"] || !json["package"]["metadata"]) {
+      throw "invalid metadata";
+    }
+    return {
+      filePath,
+      password,
+      entryPath,
+      json,
+    };
+  } catch (error) {
+    log.error(error);
+    return undefined;
+  }
+};

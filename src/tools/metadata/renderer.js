@@ -13,8 +13,9 @@ import * as modals from "../../shared/renderer/modals.js";
 ///////////////////////////////////////////////////////////////////////////////
 
 let g_isInitialized = false;
+let g_epubData;
 
-function init(fileData) {
+function init(format, metadata) {
   if (!g_isInitialized) {
     // things to start only once go here
     g_isInitialized = true;
@@ -29,6 +30,8 @@ function init(fileData) {
   backButton.addEventListener("click", (event) => {
     sendIpcToMain("close");
   });
+  ////////////////////////////////////////
+  initEpub(metadata);
   ////////////////////////////////////////
   updateColumnsHeight();
 }
@@ -98,6 +101,102 @@ function initOnIpcCallbacks() {
 ///////////////////////////////////////////////////////////////////////////////
 // TOOL ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
+
+function initEpub(metadata) {
+  g_epubData = {};
+  g_epubData.json = metadata;
+  // console.log(g_epubData.json);
+  // check if meta refines
+  g_epubData.refines = undefined;
+  const meta = g_epubData.json["meta"];
+  if (meta) {
+    if (Array.isArray(meta)) {
+      meta.forEach((element) => {
+        if (element["@_refines"]) {
+          if (g_epubData.refines == undefined) g_epubData.refines = {};
+          g_epubData.refines[element["@_refines"]] = element;
+        }
+      });
+    } else {
+      if (meta["@_refines"]) {
+        if (g_epubData.refines == undefined) g_epubData.refines = {};
+        g_epubData.refines[meta["@_refines"]] = meta;
+      }
+    }
+  }
+  console.log(g_epubData.refines);
+  // build inputs
+  for (const key in g_epubData.json) {
+    if (key === "dc:title") {
+      buildKey(key, "Title");
+    }
+    if (key === "dc:creator") {
+      buildKey(key, "Author");
+    }
+    if (key === "dc:language") {
+      buildKey(key, "Language");
+    }
+    if (key === "dc:subject") {
+      buildKey(key, "Subject");
+    }
+    if (key === "dc:date") {
+      buildKey(key, "Publication Date");
+    }
+  }
+}
+
+function buildKey(key, labelText) {
+  const rootDiv = document.querySelector(
+    "#tool-metadata-section-0-content-div"
+  );
+  const data = g_epubData.json[key];
+  if (Array.isArray(data)) {
+    data.forEach((element, index, array) => {
+      if (typeof element === "string") {
+        addInputHtml(
+          rootDiv,
+          { key, type: "arrayString", index },
+          labelText,
+          element
+        );
+      } else {
+        addInputHtml(
+          rootDiv,
+          { key, type: "arrayObject", index, id: element["@_id"] },
+          labelText,
+          element["#text"]
+        );
+      }
+    });
+  } else if (typeof data === "string") {
+    addInputHtml(rootDiv, { key, type: "string" }, labelText, data);
+  } else {
+    addInputHtml(
+      rootDiv,
+      { key, type: "object", id: data["@_id"] },
+      "Title",
+      data["#text"]
+    );
+  }
+}
+
+function addInputHtml(rootDiv, source, labelText, inputValue) {
+  const label = document.createElement("label");
+  rootDiv.appendChild(label);
+  const span = document.createElement("span");
+  label.appendChild(span);
+  const input = document.createElement("input");
+  label.appendChild(input);
+
+  span.innerText = labelText;
+  input.value = inputValue ? inputValue : "";
+  input.type = "text";
+  input.spellcheck = "false";
+  input.addEventListener("change", (event) => {
+    console.log(source);
+    console.log(input.value);
+  });
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // EVENT LISTENERS ////////////////////////////////////////////////////////////

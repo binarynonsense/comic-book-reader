@@ -12,6 +12,9 @@ const { _ } = require("../../shared/main/i18n");
 const reader = require("../../reader/main");
 const contextMenu = require("../../shared/main/tools-menu-context");
 const tools = require("../../shared/main/tools");
+const { FileDataType } = require("../../shared/main/constants");
+const epub = require("../../shared/main/epub-metadata");
+const log = require("../../shared/main/logger");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -26,13 +29,30 @@ function init() {
   }
 }
 
-exports.open = function (fileData) {
+let g_metadata;
+
+exports.open = async function (fileData) {
   // called by switchTool when opening tool
   init();
   const data = fs.readFileSync(path.join(__dirname, "index.html"));
   sendIpcToCoreRenderer("replace-inner-html", "#tools", data.toString());
   updateLocalizedText();
-  sendIpcToRenderer("show", fileData);
+  g_metadata = undefined;
+  if (
+    fileData.type === FileDataType.EPUB_COMIC ||
+    fileData.type === FileDataType.EPUB_EBOOK
+  ) {
+    g_metadata = await epub.getMetadataFileData(
+      fileData.path,
+      fileData.password
+    );
+    // log.test(g_metadata);
+    // log.test(g_metadata.json["package"]["metadata"]);
+    // log.test(g_metadata.json["package"]["metadata"]["meta"]);
+    sendIpcToRenderer("show", "epub", g_metadata.json["package"]["metadata"]);
+  } else {
+    sendIpcToRenderer("show", undefined, undefined);
+  }
 };
 
 exports.close = function () {
@@ -119,7 +139,11 @@ function getLocalization() {
   return [
     {
       id: "tool-metadata-title-text",
-      text: _("tool-metadata-title").toUpperCase(),
+      text:
+        _("tool-metadata-title").toUpperCase() +
+        " (" +
+        _("tool-shared-ui-experimental").toUpperCase() +
+        ")",
     },
     {
       id: "tool-metadata-back-button-text",
