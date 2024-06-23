@@ -79,6 +79,8 @@ Un lector y conversor de cómics para archivos en formato CBZ, CBR, CB7, EPUB y 
       - Librivox.
     - Búsqueda de términos de diccionario de:
       - Diccionario Wiktionary.
+    - Buscar y abrir streams de radio de:
+      - radio-browser
 
 > Notas:
 >
