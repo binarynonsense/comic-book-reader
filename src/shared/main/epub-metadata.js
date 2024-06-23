@@ -9,7 +9,11 @@ const fileFormats = require("./file-formats");
 const temp = require("./temp");
 const log = require("./logger");
 
-exports.getMetadata = async function (filePath, currentMetadata, password) {
+exports.getMetadataProperties = async function (
+  filePath,
+  currentMetadata,
+  password
+) {
   let fileMetadata = currentMetadata ? currentMetadata : {};
   try {
     //////////////////

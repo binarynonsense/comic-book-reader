@@ -2379,7 +2379,7 @@ async function onMenuFileProperties() {
       g_fileData.type === FileDataType.EPUB_EBOOK
     ) {
       const epubMetadata = require("../shared/main/epub-metadata");
-      g_fileData.metadata = await epubMetadata.getMetadata(
+      g_fileData.metadata = await epubMetadata.getMetadataProperties(
         g_fileData.path,
         g_fileData.metadata,
         g_fileData.password
