@@ -80,7 +80,7 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB and PDF files.
     - Search dictionary terms from:
       - Wiktionary Dictionary.
     - Search and open radio station streams from:
-      - radio-browser
+      - radio-browser.
 
 > Notes:
 >
