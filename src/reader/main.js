@@ -2374,11 +2374,9 @@ exports.onMenuPagesDirection = function (value) {
 async function onMenuFileProperties() {
   // get metadata //////////////
   if (g_fileData.path && g_fileData.path !== "") {
-    // temp epub, delete core.isDev() when done
     if (
-      core.isDev() &&
-      (g_fileData.type === FileDataType.EPUB_COMIC ||
-        g_fileData.type === FileDataType.EPUB_EBOOK)
+      g_fileData.type === FileDataType.EPUB_COMIC ||
+      g_fileData.type === FileDataType.EPUB_EBOOK
     ) {
       const epubMetadata = require("../shared/main/epub-metadata");
       g_fileData.metadata = await epubMetadata.getMetadata(
@@ -2386,7 +2384,6 @@ async function onMenuFileProperties() {
         g_fileData.metadata,
         g_fileData.password
       );
-      // log.test(g_fileData.metadata);
     }
     // create table
     let html = "";
