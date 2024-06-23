@@ -79,6 +79,8 @@ Ein Comicbuch Leser und Konverter für CBZ, CBR, CB7, EPUB und PDF Dateien.
       - Librivox AudioBooks.
     - Suche Wörterbucheinträge in:
       - Wiktionary Dictionary.
+    - Suche und öffne Radiosender-streams von:
+      - radio-browser.
 
 > Hinweise:
 >
