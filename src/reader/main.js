@@ -2578,7 +2578,7 @@ async function onMenuFileProperties() {
 
     sendIpcToRenderer(
       "show-modal-properties",
-      _("menu-file-properties").replace("...", ""),
+      _("ui-modal-info-metadata-fileproperties"),
       html,
       _("tool-shared-ui-close"),
       buttonText
