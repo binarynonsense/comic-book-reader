@@ -3,7 +3,7 @@
     "authors": [
       "Álvaro"
     ],
-    "last-updated": "2024-06-22",
+    "last-updated": "2024-06-26",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.5.1",
     "pre-release": "false",
@@ -509,6 +509,9 @@
   "tool-pre-tempfolder": "Temp Folder",
   "tool-hst-title": "History",
   "tool-hst-button-clear-all": "Clear History",
+  "[NOTE TO TRANSLATORS]tool-hst-recentfiles": "Recent Files as in most recently opened files",
+  "tool-hst-recentfiles": "Recent Files",
+  "tool-hst-recentfiles-max": "Maximum Recent Files",
   "tool-hst-tooltip-remove-from-list": "Remove from History",
   "tool-hst-tooltip-open-from-list": "Open File",
   "tool-hst-modal-clearall-message": "Are you sure you want to delete all the entries in your history?",
@@ -706,5 +709,7 @@
   "[NOTE TO TRANSLATORS]home-screen-favorites": "Favorites as in Favorite files and folders",
   "home-screen-favorites": "Favorites",
   "[NOTE TO TRANSLATORS]home-screen-latest": "Latest as in Latest files used",
-  "home-screen-latest": "Latest"
+  "home-screen-latest": "Latest",
+  "[NOTE TO TRANSLATORS]home-screen-recent": "Recent as in most recently opened files",
+  "home-screen-recent": "Recent"
 }

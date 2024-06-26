@@ -31,7 +31,11 @@ function init(format, metadata) {
     sendIpcToMain("close");
   });
   ////////////////////////////////////////
-  initEpub(metadata);
+  if (format === "epub") {
+    epubInit(metadata);
+  } else {
+    // NOTE: should NOT be able to reach this for now!!
+  }
   ////////////////////////////////////////
   updateColumnsHeight();
 }
@@ -102,7 +106,7 @@ function initOnIpcCallbacks() {
 // TOOL ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-function initEpub(metadata) {
+function epubInit(metadata) {
   g_epubData = {};
   g_epubData.json = metadata;
   // console.log(g_epubData.json);
@@ -128,24 +132,24 @@ function initEpub(metadata) {
   // build inputs
   for (const key in g_epubData.json) {
     if (key === "dc:title") {
-      buildKey(key, "Title");
+      epubBuildKey(key, "Title");
     }
     if (key === "dc:creator") {
-      buildKey(key, "Author");
+      epubBuildKey(key, "Author");
     }
     if (key === "dc:language") {
-      buildKey(key, "Language");
+      epubBuildKey(key, "Language");
     }
     if (key === "dc:subject") {
-      buildKey(key, "Subject");
+      epubBuildKey(key, "Subject");
     }
     if (key === "dc:date") {
-      buildKey(key, "Publication Date");
+      epubBuildKey(key, "Publication Date");
     }
   }
 }
 
-function buildKey(key, labelText) {
+function epubBuildKey(key, labelText) {
   const rootDiv = document.querySelector(
     "#tool-metadata-section-0-content-div"
   );
@@ -153,14 +157,14 @@ function buildKey(key, labelText) {
   if (Array.isArray(data)) {
     data.forEach((element, index, array) => {
       if (typeof element === "string") {
-        addInputHtml(
+        epubAddInputHtml(
           rootDiv,
           { key, type: "arrayString", index },
           labelText,
           element
         );
       } else {
-        addInputHtml(
+        epubAddInputHtml(
           rootDiv,
           { key, type: "arrayObject", index, id: element["@_id"] },
           labelText,
@@ -169,9 +173,9 @@ function buildKey(key, labelText) {
       }
     });
   } else if (typeof data === "string") {
-    addInputHtml(rootDiv, { key, type: "string" }, labelText, data);
+    epubAddInputHtml(rootDiv, { key, type: "string" }, labelText, data);
   } else {
-    addInputHtml(
+    epubAddInputHtml(
       rootDiv,
       { key, type: "object", id: data["@_id"] },
       "Title",
@@ -180,7 +184,7 @@ function buildKey(key, labelText) {
   }
 }
 
-function addInputHtml(rootDiv, source, labelText, inputValue) {
+function epubAddInputHtml(rootDiv, source, labelText, inputValue) {
   const label = document.createElement("label");
   rootDiv.appendChild(label);
   const span = document.createElement("span");

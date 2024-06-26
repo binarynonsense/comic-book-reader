@@ -46,11 +46,9 @@ exports.open = async function (fileData) {
       fileData.path,
       fileData.password
     );
-    // log.test(g_metadata);
-    // log.test(g_metadata.json["package"]["metadata"]);
-    // log.test(g_metadata.json["package"]["metadata"]["meta"]);
     sendIpcToRenderer("show", "epub", g_metadata.json["package"]["metadata"]);
   } else {
+    // TODO: try making a PDF metadata editor?
     sendIpcToRenderer("show", undefined, undefined);
   }
 };
