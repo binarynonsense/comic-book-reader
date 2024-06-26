@@ -15,7 +15,7 @@ import * as modals from "../../shared/renderer/modals.js";
 let g_isInitialized = false;
 let g_epubData;
 
-function init(format, metadata) {
+function init(format, metadata, version) {
   if (!g_isInitialized) {
     // things to start only once go here
     g_isInitialized = true;
@@ -32,7 +32,7 @@ function init(format, metadata) {
   });
   ////////////////////////////////////////
   if (format === "epub") {
-    epubInit(metadata);
+    epubInit(metadata, version);
   } else {
     // NOTE: should NOT be able to reach this for now!!
   }
@@ -106,47 +106,76 @@ function initOnIpcCallbacks() {
 // TOOL ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-function epubInit(metadata) {
+function epubInit(metadata, version) {
+  // Reorganize info from original metadata
   g_epubData = {};
-  g_epubData.json = metadata;
-  // console.log(g_epubData.json);
-  // check if meta refines
-  g_epubData.refines = undefined;
-  const meta = g_epubData.json["meta"];
-  if (meta) {
-    if (Array.isArray(meta)) {
-      meta.forEach((element) => {
-        if (element["@_refines"]) {
-          if (g_epubData.refines == undefined) g_epubData.refines = {};
-          g_epubData.refines[element["@_refines"]] = element;
-        }
+  g_epubData.version = version;
+  g_epubData.oldMetadata = metadata;
+  g_epubData.metadata = {};
+  g_epubData.unknown = {};
+
+  function entryContentToArray(entry) {
+    entry = structuredClone(entry); // needed??
+    let result = [];
+    if (Array.isArray(entry)) {
+      entry.forEach((element) => {
+        result.push(element);
       });
     } else {
-      if (meta["@_refines"]) {
-        if (g_epubData.refines == undefined) g_epubData.refines = {};
-        g_epubData.refines[meta["@_refines"]] = meta;
-      }
+      result.push(entry);
+    }
+    return result;
+  }
+
+  const knownTags = [
+    "dc:title",
+    "dc:creator",
+    "dc:language",
+    "dc:subject",
+    "dc:date",
+    "dc:publisher",
+  ];
+
+  for (const key in metadata) {
+    if (key === "meta" || knownTags.includes(key)) {
+      g_epubData[key] = entryContentToArray(metadata[key]);
+    } else {
+      // unknown, just copy them
+      g_epubData.unknown[key] = structuredClone(metadata[key]);
     }
   }
-  console.log(g_epubData.refines);
-  // build inputs
-  for (const key in g_epubData.json) {
-    if (key === "dc:title") {
-      epubBuildKey(key, "Title");
+  console.log(g_epubData);
+
+  let metaIndexesToDelete = [];
+  knownTags.forEach((tag) => {
+    if (g_epubData[tag]) {
+      g_epubData[tag].forEach((tagEntry) => {
+        if (tagEntry["@_id"]) {
+          g_epubData["meta"].forEach((meta, metaIndex) => {
+            if (
+              meta["@_refines"] &&
+              meta["@_property"] &&
+              meta["@_refines"] === "#" + tagEntry["@_id"]
+            ) {
+              console.log("match!!");
+              tagEntry["@_" + meta["@_property"]] = meta["#text"];
+              if (meta["@_scheme"]) {
+                tagEntry["@_scheme"] = meta["@_scheme"];
+              }
+              metaIndexesToDelete.push(metaIndex);
+            }
+          });
+        }
+      });
     }
-    if (key === "dc:creator") {
-      epubBuildKey(key, "Author");
-    }
-    if (key === "dc:language") {
-      epubBuildKey(key, "Language");
-    }
-    if (key === "dc:subject") {
-      epubBuildKey(key, "Subject");
-    }
-    if (key === "dc:date") {
-      epubBuildKey(key, "Publication Date");
-    }
-  }
+  });
+  console.log(metaIndexesToDelete);
+
+  g_epubData["meta"] = g_epubData["meta"].filter(
+    (value, index) => !metaIndexesToDelete.includes(index)
+  );
+
+  console.log(g_epubData);
 }
 
 function epubBuildKey(key, labelText) {

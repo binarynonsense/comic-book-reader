@@ -46,7 +46,12 @@ exports.open = async function (fileData) {
       fileData.path,
       fileData.password
     );
-    sendIpcToRenderer("show", "epub", g_metadata.json["package"]["metadata"]);
+    sendIpcToRenderer(
+      "show",
+      "epub",
+      g_metadata.json["package"]["metadata"],
+      g_metadata.json["package"]["@_version"]
+    );
   } else {
     // TODO: try making a PDF metadata editor?
     sendIpcToRenderer("show", undefined, undefined);
@@ -136,9 +141,9 @@ exports.updateLocalizedText = updateLocalizedText;
 function getLocalization() {
   return [
     {
-      id: "tool-metadata-title-text",
+      id: "tool-metadata-cix-title-text",
       text:
-        _("tool-metadata-title").toUpperCase() +
+        _("tool-metadata-cix-title").toUpperCase() +
         " (" +
         _("tool-shared-ui-experimental").toUpperCase() +
         ")",

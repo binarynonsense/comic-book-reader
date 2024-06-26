@@ -10,27 +10,21 @@ import {
   sendIpcToMainAndWait as coreSendIpcToMainAndWait,
 } from "../../core/renderer.js";
 import * as modals from "../../shared/renderer/modals.js";
-import { FileDataType } from "../../shared/renderer/constants.js";
+import * as comicinfo from "./comicinfo/renderer.js";
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+let g_subTool;
+
 let g_isInitialized = false;
 let g_localizedModalTexts;
-let g_localizedPageTypes;
-let g_localizedPageTableHeaders;
 
 let g_saveButton;
-let g_langSelect;
-let g_pagesTable;
 
 let g_hasInfo;
 let g_isEditable;
-let g_fileData;
-let g_canEditRars;
-let g_json;
-let g_fields = [];
 
 let g_searchInput;
 let g_searchButton;
@@ -38,134 +32,44 @@ let g_searchHistory;
 let g_apiKeyFilePathUl;
 let g_apiKeyFilePathCheckbox;
 
-function init(fileData, isoLanguages, canEditRars) {
+function init(...args) {
   if (!g_isInitialized) {
     // things to start only once go here
     g_isInitialized = true;
   }
+  ////////////////////////////////////////
   document.getElementById("tools-columns-right").scrollIntoView({
     behavior: "instant",
     block: "start",
     inline: "nearest",
   });
-
-  g_fileData = fileData;
-  g_hasInfo = g_fileData.metadata.comicInfoId !== undefined;
-  g_canEditRars = canEditRars;
-  g_isEditable =
-    (g_canEditRars || g_fileData.type !== FileDataType.RAR) &&
-    !g_fileData.metadata.encrypted;
   // menu buttons
   document
-    .getElementById("tool-cix-back-button")
+    .getElementById("tool-metadata-back-button")
     .addEventListener("click", (event) => {
       sendIpcToMain("close");
     });
-  g_saveButton = document.getElementById("tool-cix-save-button");
+  g_saveButton = document.getElementById("tool-metadata-save-button");
   g_saveButton.addEventListener("click", (event) => {
     onSave();
   });
   g_saveButton.classList.add("tools-disabled");
   // sections menu
-  for (let index = 0; index < 6; index++) {
+  for (let index = 0; index < 2; index++) {
     document
-      .getElementById(`tool-cix-section-${index}-button`)
+      .getElementById(`tool-metadata-section-${index}-button`)
       .addEventListener("click", (event) => {
         switchSection(index);
       });
   }
   ////////////////////////////////////////
-  g_langSelect = document.getElementById("tool-cix-data-languageiso-select");
-  g_langSelect.innerHTML += `<option value="default"></option>`;
-  isoLanguages.sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0));
-  isoLanguages.forEach((lang, i) => {
-    g_langSelect.innerHTML += `<option value="${lang.code}">${lang.name} (${lang.nativeName})</option>`;
-  });
-
-  g_pagesTable = document.getElementById("tool-cix-pages-data-table");
-  buildPagesTableFromJson(undefined);
-
-  document
-    .getElementById("tool-cix-update-pages-button")
-    .addEventListener("click", (event) => {
-      onUpdatePages();
-    });
-
-  if (g_fileData.type === FileDataType.RAR && !g_canEditRars) {
-    document
-      .getElementById("tool-cix-update-pages-button")
-      .classList.add("tools-disabled");
-    document
-      .getElementById("tool-cix-cbr-no-edit-rar-div")
-      .classList.remove("set-display-none");
-  }
-  if (g_fileData.metadata.encrypted) {
-    document
-      .getElementById("tool-cix-update-pages-button")
-      .classList.add("tools-disabled");
-    document
-      .getElementById("tool-cix-cbr-no-edit-encrypted-div")
-      .classList.remove("set-display-none");
-  }
-  ////////////////////////////////////////
-  // generate fields array
-  let elements = document
-    .querySelector("#tools-columns-right")
-    .getElementsByTagName("input");
-  elements = [
-    ...elements,
-    ...document
-      .querySelector("#tools-columns-right")
-      .getElementsByTagName("select"),
-  ];
-  elements = [
-    ...elements,
-    ...document
-      .querySelector("#tools-columns-right")
-      .getElementsByTagName("textarea"),
-  ];
-  for (let index = 0; index < elements.length; index++) {
-    const element = elements[index];
-    if (!g_isEditable) {
-      const tagName = element.tagName.toLowerCase();
-      if (tagName === "textarea" || tagName === "input") {
-        if (element.id !== "tool-cix-search-input") {
-          element.readOnly = true;
-        }
-      } else {
-        element.classList.add("tools-read-only");
-      }
-    }
-    g_fields.push({
-      element: element,
-      xmlId: element.getAttribute("data-xml-id"),
-      xmlType: element.getAttribute("data-xml-type"),
-    });
-  }
-  // add event listeners
-  g_fields.forEach((field) => {
-    if (field.xmlId) {
-      if (
-        field.element.tagName.toLowerCase() === "input" ||
-        field.element.tagName.toLowerCase() === "textarea"
-      )
-        field.element.addEventListener("input", (event) => {
-          onFieldChanged(field.element);
-        });
-      else if (field.element.tagName.toLowerCase() === "select")
-        field.element.addEventListener("change", (event) => {
-          onFieldChanged(field.element);
-        });
-    }
-  });
-  ////////////////////////////////////////
   // search
-  g_searchButton = document.getElementById("tool-cix-search-button");
+  g_searchButton = document.getElementById("tool-metadata-search-button");
   g_searchButton.addEventListener("click", (event) => {
     onSearch();
   });
 
-  g_searchInput = document.getElementById("tool-cix-search-input");
+  g_searchInput = document.getElementById("tool-metadata-search-input");
   g_searchInput.placeholder = g_localizedModalTexts.searchPlaceholder;
   g_searchInput.addEventListener("input", function (event) {
     if (g_searchInput.value !== "") {
@@ -178,7 +82,7 @@ function init(fileData, isoLanguages, canEditRars) {
     if (
       event.key === "Enter" &&
       !document
-        .getElementById("tool-cix-section-4-content-div")
+        .getElementById("tool-metadata-section-4-content-div")
         .classList.contains("set-display-none")
     ) {
       event.preventDefault();
@@ -188,19 +92,18 @@ function init(fileData, isoLanguages, canEditRars) {
     }
   });
   g_searchInput.focus();
-
   // TODO: cache multiple searches, issue url...
   g_searchHistory = {};
   ////////////////////////////////////////
   // search settings
   g_apiKeyFilePathUl = document.getElementById(
-    "tool-cix-comicvine-api-key-file-ul"
+    "tool-metadata-comicvine-api-key-file-ul"
   );
   g_apiKeyFilePathCheckbox = document.getElementById(
-    "tool-cix-comicvine-api-key-checkbox"
+    "tool-metadata-comicvine-api-key-checkbox"
   );
   document
-    .getElementById("tool-cix-comicvine-api-key-file-change-button")
+    .getElementById("tool-metadata-comicvine-api-key-file-change-button")
     .addEventListener("click", (event) => {
       sendIpcToMain("change-api-key-file", g_apiKeyFilePathCheckbox.checked);
     });
@@ -216,10 +119,11 @@ function init(fileData, isoLanguages, canEditRars) {
     });
   });
   ////////////////////////////////////////
+  g_subTool.init(...args);
   if (!g_openModal) closeModal(g_openModal);
   showProgressModal();
   updateModalTitleText(g_localizedModalTexts.loadingTitle);
-  sendIpcToMain("load-xml");
+  sendIpcToMain("load-metadata");
   ////////////////////////////////////////
   updateColumnsHeight();
 }
@@ -228,7 +132,7 @@ export function initIpc() {
   initOnIpcCallbacks();
 }
 
-function updateColumnsHeight(scrollTop = false) {
+export function updateColumnsHeight(scrollTop = false) {
   const left = document.getElementById("tools-columns-left");
   const right = document.getElementById("tools-columns-right");
   left.style.minHeight = right.offsetHeight + "px";
@@ -241,26 +145,26 @@ function updateColumnsHeight(scrollTop = false) {
   }
 }
 
-function switchSection(id) {
+export function switchSection(id) {
   for (let index = 0; index < 6; index++) {
     if (id === index) {
       document
-        .getElementById(`tool-cix-section-${index}-button`)
+        .getElementById(`tool-metadata-section-${index}-button`)
         .classList.add("tools-menu-button-selected");
       document
-        .getElementById(`tool-cix-section-${index}-content-div`)
+        .getElementById(`tool-metadata-section-${index}-content-div`)
         .classList.remove("set-display-none");
     } else {
       document
-        .getElementById(`tool-cix-section-${index}-button`)
+        .getElementById(`tool-metadata-section-${index}-button`)
         .classList.remove("tools-menu-button-selected");
       document
-        .getElementById(`tool-cix-section-${index}-content-div`)
+        .getElementById(`tool-metadata-section-${index}-content-div`)
         .classList.add("set-display-none");
     }
   }
   updateColumnsHeight(true);
-  if (id === 4) {
+  if (id === 0) {
     g_searchInput.focus();
   }
 }
@@ -300,18 +204,23 @@ function initOnIpcCallbacks() {
 
   on("hide", () => {});
 
+  on("set-subtool", (id) => {
+    // TODO: epub, pdf...
+    if (id === "cix") {
+      g_subTool = comicinfo;
+    }
+  });
+
   on(
     "update-localization",
     (
-      localizedModalTexts,
-      localizedPageTypes,
-      localizedPageTableHeaders,
       localization,
-      tooltipsLocalization
+      tooltipsLocalization,
+      localizedModalTexts,
+      localizedSubTool
     ) => {
       g_localizedModalTexts = localizedModalTexts;
-      g_localizedPageTypes = localizedPageTypes;
-      g_localizedPageTableHeaders = localizedPageTableHeaders;
+      g_subTool?.updateLocalization(localizedModalTexts, localizedSubTool);
       for (let index = 0; index < localization.length; index++) {
         const element = localization[index];
         const domElement = document.querySelector("#" + element.id);
@@ -364,12 +273,12 @@ function initOnIpcCallbacks() {
 
   /////////////////////////////////////////////////////////////////////////////
 
-  on("load-json", (json, error) => {
-    onLoadJson(json, error);
+  on("load-metadata", (json, error) => {
+    g_subTool.onLoadMetadata(json, error);
   });
 
   on("pages-updated", (json) => {
-    onPagesUpdated(json);
+    g_subTool.onPagesUpdated(json);
   });
 
   on("saving-done", (error) => {
@@ -408,16 +317,16 @@ function initOnIpcCallbacks() {
         .classList.remove("set-display-none");
 
       document
-        .querySelector("#tool-cix-search-results-div")
+        .querySelector("#tool-metadata-search-results-div")
         .classList.remove("set-display-none");
       document
-        .querySelector("#tool-cix-search-results-issues-div")
+        .querySelector("#tool-metadata-search-results-issues-div")
         .classList.add("set-display-none");
       document
-        .querySelector("#tool-cix-search-results-issue-div")
+        .querySelector("#tool-metadata-search-results-issue-div")
         .classList.add("set-display-none");
       const searchResultsDiv = document.querySelector(
-        "#tool-cix-search-results-div"
+        "#tool-metadata-search-results-div"
       );
       searchResultsDiv.innerHTML = "";
 
@@ -525,16 +434,16 @@ function initOnIpcCallbacks() {
 
   on("search-issues-results", (searchResults, noResultsText) => {
     document
-      .querySelector("#tool-cix-search-results-div")
+      .querySelector("#tool-metadata-search-results-div")
       .classList.add("set-display-none");
     document
-      .querySelector("#tool-cix-search-results-issues-div")
+      .querySelector("#tool-metadata-search-results-issues-div")
       .classList.remove("set-display-none");
     document
-      .querySelector("#tool-cix-search-results-issue-div")
+      .querySelector("#tool-metadata-search-results-issue-div")
       .classList.add("set-display-none");
     const searchResultsDiv = document.querySelector(
-      "#tool-cix-search-results-issues-div"
+      "#tool-metadata-search-results-issues-div"
     );
     searchResultsDiv.innerHTML = "";
 
@@ -545,13 +454,13 @@ function initOnIpcCallbacks() {
     button.className = "tools-collection-navigation-back";
     button.addEventListener("click", (event) => {
       document
-        .querySelector("#tool-cix-search-results-div")
+        .querySelector("#tool-metadata-search-results-div")
         .classList.remove("set-display-none");
       document
-        .querySelector("#tool-cix-search-results-issues-div")
+        .querySelector("#tool-metadata-search-results-issues-div")
         .classList.add("set-display-none");
       document
-        .querySelector("#tool-cix-search-results-issue-div")
+        .querySelector("#tool-metadata-search-results-issue-div")
         .classList.add("set-display-none");
     });
     button.innerHTML = `<i class="fas fa-angle-left"></i> BACK`;
@@ -631,16 +540,16 @@ function initOnIpcCallbacks() {
 
   on("search-issue-results", (searchResults, localizedImportButtonText) => {
     document
-      .querySelector("#tool-cix-search-results-div")
+      .querySelector("#tool-metadata-search-results-div")
       .classList.add("set-display-none");
     document
-      .querySelector("#tool-cix-search-results-issues-div")
+      .querySelector("#tool-metadata-search-results-issues-div")
       .classList.add("set-display-none");
     document
-      .querySelector("#tool-cix-search-results-issue-div")
+      .querySelector("#tool-metadata-search-results-issue-div")
       .classList.remove("set-display-none");
     const searchResultsDiv = document.querySelector(
-      "#tool-cix-search-results-issue-div"
+      "#tool-metadata-search-results-issue-div"
     );
     searchResultsDiv.innerHTML = "";
 
@@ -650,13 +559,13 @@ function initOnIpcCallbacks() {
     button.className = "tools-collection-navigation-back";
     button.addEventListener("click", (event) => {
       document
-        .querySelector("#tool-cix-search-results-div")
+        .querySelector("#tool-metadata-search-results-div")
         .classList.add("set-display-none");
       document
-        .querySelector("#tool-cix-search-results-issues-div")
+        .querySelector("#tool-metadata-search-results-issues-div")
         .classList.remove("set-display-none");
       document
-        .querySelector("#tool-cix-search-results-issue-div")
+        .querySelector("#tool-metadata-search-results-issue-div")
         .classList.add("set-display-none");
     });
     button.innerHTML = `<i class="fas fa-angle-left"></i> BACK`;
@@ -724,14 +633,14 @@ function initOnIpcCallbacks() {
       if (data.name) {
         compiledData.title = addLine(
           ul,
-          document.getElementById("tool-cix-data-title-text").textContent,
+          document.getElementById("tool-metadata-data-title-text").textContent,
           data.name
         );
       }
       if (data?.volume?.name) {
         compiledData.series = addLine(
           ul,
-          document.getElementById("tool-cix-data-series-text").textContent,
+          document.getElementById("tool-metadata-data-series-text").textContent,
           data.volume.name
         );
       }
@@ -740,19 +649,20 @@ function initOnIpcCallbacks() {
         if (numbers.length > 0)
           compiledData.year = addLine(
             ul,
-            document.getElementById("tool-cix-data-year-text").textContent,
+            document.getElementById("tool-metadata-data-year-text").textContent,
             numbers[0]
           );
         if (numbers.length > 1)
           compiledData.month = addLine(
             ul,
-            document.getElementById("tool-cix-data-month-text").textContent,
+            document.getElementById("tool-metadata-data-month-text")
+              .textContent,
             numbers[1]
           );
         if (numbers.length > 2)
           compiledData.day = addLine(
             ul,
-            document.getElementById("tool-cix-data-day-text").textContent,
+            document.getElementById("tool-metadata-data-day-text").textContent,
             numbers[2]
           );
       }
@@ -762,21 +672,22 @@ function initOnIpcCallbacks() {
       ) {
         compiledData.publisher = addLine(
           ul,
-          document.getElementById("tool-cix-data-publisher-text").textContent,
+          document.getElementById("tool-metadata-data-publisher-text")
+            .textContent,
           g_searchHistory.issues.results.publisher.name
         );
       }
       if (data.issue_number) {
         compiledData.number = addLine(
           ul,
-          document.getElementById("tool-cix-data-number-text").textContent,
+          document.getElementById("tool-metadata-data-number-text").textContent,
           data.issue_number
         );
       }
       if (g_searchHistory.issues.results.count_of_issues) {
         compiledData.totalNumber = addLine(
           ul,
-          document.getElementById("tool-cix-data-count-text").textContent,
+          document.getElementById("tool-metadata-data-count-text").textContent,
           g_searchHistory.issues.results.count_of_issues
         );
       }
@@ -817,7 +728,7 @@ function initOnIpcCallbacks() {
             compiledData[roles[i].name] = addLine(
               ul,
               document.getElementById(
-                `tool-cix-data-${
+                `tool-metadata-data-${
                   roles[i].altName !== undefined
                     ? roles[i].altName
                     : roles[i].name
@@ -839,7 +750,8 @@ function initOnIpcCallbacks() {
         if (arcs !== "")
           compiledData.storyArc = addLine(
             ul,
-            document.getElementById("tool-cix-data-storyarc-text").textContent,
+            document.getElementById("tool-metadata-data-storyarc-text")
+              .textContent,
             arcs
           );
       }
@@ -854,7 +766,8 @@ function initOnIpcCallbacks() {
         if (locations !== "")
           compiledData.locations = addLine(
             ul,
-            document.getElementById("tool-cix-data-locations-text").textContent,
+            document.getElementById("tool-metadata-data-locations-text")
+              .textContent,
             locations
           );
       }
@@ -869,7 +782,7 @@ function initOnIpcCallbacks() {
         if (characters !== "")
           compiledData.characters = addLine(
             ul,
-            document.getElementById("tool-cix-data-characters-text")
+            document.getElementById("tool-metadata-data-characters-text")
               .textContent,
             characters
           );
@@ -885,7 +798,8 @@ function initOnIpcCallbacks() {
         if (teams !== "")
           compiledData.teams = addLine(
             ul,
-            document.getElementById("tool-cix-data-teams-text").textContent,
+            document.getElementById("tool-metadata-data-teams-text")
+              .textContent,
             teams
           );
       }
@@ -894,7 +808,8 @@ function initOnIpcCallbacks() {
       if (data.description) {
         compiledData.summary = addLine(
           ul,
-          document.getElementById("tool-cix-data-summary-text").textContent,
+          document.getElementById("tool-metadata-data-summary-text")
+            .textContent,
           data.description,
           true
         );
@@ -914,32 +829,36 @@ function initOnIpcCallbacks() {
             /////////////////////////////////
             if (compiledData.title && compiledData.title.checkbox.checked) {
               let element = document.getElementById(
-                "tool-cix-data-title-input"
+                "tool-metadata-data-title-input"
               );
               element.value = compiledData.title.text;
               onFieldChanged(element);
             }
             if (compiledData.series && compiledData.series.checkbox.checked) {
               let element = document.getElementById(
-                "tool-cix-data-series-input"
+                "tool-metadata-data-series-input"
               );
               element.value = compiledData.series.text;
               onFieldChanged(element);
             }
             if (compiledData.year && compiledData.year.checkbox.checked) {
-              let element = document.getElementById("tool-cix-data-year-input");
+              let element = document.getElementById(
+                "tool-metadata-data-year-input"
+              );
               element.value = compiledData.year.text;
               onFieldChanged(element);
             }
             if (compiledData.month && compiledData.month.checkbox.checked) {
               let element = document.getElementById(
-                "tool-cix-data-month-input"
+                "tool-metadata-data-month-input"
               );
               element.value = compiledData.month.text;
               onFieldChanged(element);
             }
             if (compiledData.day && compiledData.day.checkbox.checked) {
-              let element = document.getElementById("tool-cix-data-day-input");
+              let element = document.getElementById(
+                "tool-metadata-data-day-input"
+              );
               element.value = compiledData.day.text;
               onFieldChanged(element);
             }
@@ -948,14 +867,14 @@ function initOnIpcCallbacks() {
               compiledData.publisher.checkbox.checked
             ) {
               let element = document.getElementById(
-                "tool-cix-data-publisher-input"
+                "tool-metadata-data-publisher-input"
               );
               element.value = compiledData.publisher.text;
               onFieldChanged(element);
             }
             if (compiledData.number && compiledData.number.checkbox.checked) {
               let element = document.getElementById(
-                "tool-cix-data-number-input"
+                "tool-metadata-data-number-input"
               );
               element.value = compiledData.number.text;
               onFieldChanged(element);
@@ -965,7 +884,7 @@ function initOnIpcCallbacks() {
               compiledData.totalNumber.checkbox.checked
             ) {
               let element = document.getElementById(
-                "tool-cix-data-count-input"
+                "tool-metadata-data-count-input"
               );
               element.value = compiledData.totalNumber.text;
               onFieldChanged(element);
@@ -975,7 +894,7 @@ function initOnIpcCallbacks() {
               compiledData["penciler"].checkbox.checked
             ) {
               let element = document.getElementById(
-                "tool-cix-data-penciller-input"
+                "tool-metadata-data-penciller-input"
               );
               element.value = compiledData["penciler"].text;
               onFieldChanged(element);
@@ -985,7 +904,7 @@ function initOnIpcCallbacks() {
               compiledData["inker"].checkbox.checked
             ) {
               let element = document.getElementById(
-                "tool-cix-data-inker-input"
+                "tool-metadata-data-inker-input"
               );
               element.value = compiledData["inker"].text;
               onFieldChanged(element);
@@ -995,7 +914,7 @@ function initOnIpcCallbacks() {
               compiledData["colorist"].checkbox.checked
             ) {
               let element = document.getElementById(
-                "tool-cix-data-colorist-input"
+                "tool-metadata-data-colorist-input"
               );
               element.value = compiledData["colorist"].text;
               onFieldChanged(element);
@@ -1005,7 +924,7 @@ function initOnIpcCallbacks() {
               compiledData["letterer"].checkbox.checked
             ) {
               let element = document.getElementById(
-                "tool-cix-data-letterer-input"
+                "tool-metadata-data-letterer-input"
               );
               element.value = compiledData["letterer"].text;
               onFieldChanged(element);
@@ -1015,7 +934,7 @@ function initOnIpcCallbacks() {
               compiledData["writer"].checkbox.checked
             ) {
               let element = document.getElementById(
-                "tool-cix-data-writer-input"
+                "tool-metadata-data-writer-input"
               );
               element.value = compiledData["writer"].text;
               onFieldChanged(element);
@@ -1025,7 +944,7 @@ function initOnIpcCallbacks() {
               compiledData["cover"].checkbox.checked
             ) {
               let element = document.getElementById(
-                "tool-cix-data-coverartist-input"
+                "tool-metadata-data-coverartist-input"
               );
               element.value = compiledData["cover"].text;
               onFieldChanged(element);
@@ -1035,7 +954,7 @@ function initOnIpcCallbacks() {
               compiledData["editor"].checkbox.checked
             ) {
               let element = document.getElementById(
-                "tool-cix-data-editor-input"
+                "tool-metadata-data-editor-input"
               );
               element.value = compiledData["editor"].text;
               onFieldChanged(element);
@@ -1045,7 +964,7 @@ function initOnIpcCallbacks() {
               compiledData.storyArc.checkbox.checked
             ) {
               let element = document.getElementById(
-                "tool-cix-data-storyarc-input"
+                "tool-metadata-data-storyarc-input"
               );
               element.value = compiledData.storyArc.text;
               onFieldChanged(element);
@@ -1055,7 +974,7 @@ function initOnIpcCallbacks() {
               compiledData.locations.checkbox.checked
             ) {
               let element = document.getElementById(
-                "tool-cix-data-locations-input"
+                "tool-metadata-data-locations-input"
               );
               element.value = compiledData.locations.text;
               onFieldChanged(element);
@@ -1065,27 +984,27 @@ function initOnIpcCallbacks() {
               compiledData.characters.checkbox.checked
             ) {
               let element = document.getElementById(
-                "tool-cix-data-characters-input"
+                "tool-metadata-data-characters-input"
               );
               element.value = compiledData.characters.text;
               onFieldChanged(element);
             }
             if (compiledData.teams && compiledData.teams.checkbox.checked) {
               let element = document.getElementById(
-                "tool-cix-data-teams-input"
+                "tool-metadata-data-teams-input"
               );
               element.value = compiledData.teams.text;
               onFieldChanged(element);
             }
             if (compiledData.summary && compiledData.summary.checkbox.checked) {
               let element = document.getElementById(
-                "tool-cix-data-summary-textarea"
+                "tool-metadata-data-summary-textarea"
               );
               element.value = compiledData.summary.text;
               onFieldChanged(element);
             }
 
-            switchSection(0);
+            switchSection(2);
             /////////////////////////////////
             //closeModal();
           }
@@ -1127,254 +1046,8 @@ function initOnIpcCallbacks() {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// TOOL ///////////////////////////////////////////////////////////////////////
+// COMICS VINE ////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-
-function onFieldChanged(element) {
-  element.setAttribute("data-changed", true);
-  if (g_isEditable) g_saveButton.classList.remove("tools-disabled");
-}
-
-function onLoadJson(json, error) {
-  g_json = json;
-
-  // fill UI with json data
-  for (let index = 0; index < g_fields.length; index++) {
-    const field = g_fields[index];
-    if (!field.xmlId || !field.xmlType) continue;
-    let value = json["ComicInfo"][field.xmlId];
-    if (value && value !== "") {
-      if (field.xmlType !== "Page") {
-        // sanitize
-        if (field.element.tagName.toLowerCase() === "select") {
-          if (!field.element.querySelector('[value="' + value + '"]')) continue;
-        }
-        // update element's value
-        field.element.value = value;
-      }
-    }
-  }
-
-  buildPagesTableFromJson(g_json);
-
-  //////////////////////////////////
-
-  closeModal();
-  if (error) {
-    showInfoModal(
-      g_localizedModalTexts.errorTitle,
-      g_localizedModalTexts.loadingMessageErrorInvalid,
-      g_localizedModalTexts.okButton
-    );
-  }
-}
-
-function onUpdatePages() {
-  if (g_openModal) closeModal();
-  showProgressModal();
-  updateModalTitleText(g_localizedModalTexts.updatingTitle);
-  sendIpcToMain("update-pages", g_json);
-}
-
-function onPagesUpdated(json) {
-  if (json) {
-    g_json = json;
-    document.getElementById("tool-cix-data-pagecount-input").value =
-      json["ComicInfo"]["Pages"]["Page"].length;
-    onFieldChanged(document.getElementById("tool-cix-data-pagecount-input"));
-    buildPagesTableFromJson(json);
-    if (g_isEditable) g_saveButton.classList.remove("tools-disabled");
-    updateColumnsHeight();
-    closeModal();
-  } else {
-    // TODO: show error
-    closeModal();
-  }
-}
-
-async function onSave() {
-  if (g_openModal) closeModal();
-  showInfoModal(
-    g_localizedModalTexts.warningTitle,
-    g_hasInfo
-      ? g_localizedModalTexts.savingMessageUpdate
-      : g_localizedModalTexts.savingMessageCreate,
-    g_localizedModalTexts.okButton,
-    g_localizedModalTexts.cancelButton,
-    () => {
-      showProgressModal();
-      updateModalTitleText(g_localizedModalTexts.savingTitle);
-      /////////////////////////////////
-      for (let index = 0; index < g_fields.length; index++) {
-        const field = g_fields[index];
-        if (!field.element.getAttribute("data-changed")) continue;
-        let value = field.element.value;
-        if (field.element.tagName.toLowerCase() === "select") {
-          if (value === "default") value = "";
-        }
-        g_json["ComicInfo"][field.xmlId] = value;
-      }
-      // pages already updated, they are updated on input events
-      /////////////////////////////////
-      sendIpcToMain("save-json-to-file", g_json);
-    }
-  );
-}
-
-function buildPagesTableFromJson(json) {
-  if (!g_isEditable) g_pagesTable.classList.add("tools-read-only");
-  if (
-    json &&
-    json["ComicInfo"]["Pages"] &&
-    json["ComicInfo"]["Pages"]["Page"]
-  ) {
-    g_pagesTable.innerHTML = "";
-    g_pagesTable.appendChild(generateTableHeader());
-    let pages = json["ComicInfo"]["Pages"]["Page"];
-    for (let index = 0; index < pages.length; index++) {
-      const pageData = pages[index];
-      if (pageData) {
-        // TODO: check info sanitize
-        g_pagesTable.appendChild(
-          generateTableRow(
-            index,
-            pageData["@_Image"],
-            pageData["@_ImageSize"],
-            pageData["@_ImageWidth"],
-            pageData["@_ImageHeight"],
-            pageData["@_DoublePage"],
-            pageData["@_Type"]
-          )
-        );
-      }
-    }
-  } else {
-    g_pagesTable.innerHTML = "";
-    g_pagesTable.appendChild(generateTableHeader());
-    g_pagesTable.appendChild(generateTableEmptyRow());
-  }
-}
-
-function generateTableHeader() {
-  let tr = document.createElement("tr");
-  let th = document.createElement("th");
-  th.innerText = g_localizedPageTableHeaders[0];
-  tr.appendChild(th);
-  th = document.createElement("th");
-  th.innerText = g_localizedPageTableHeaders[1];
-  tr.appendChild(th);
-  th = document.createElement("th");
-  th.innerText = g_localizedPageTableHeaders[2];
-  tr.appendChild(th);
-  th = document.createElement("th");
-  th.innerText = g_localizedPageTableHeaders[3];
-  tr.appendChild(th);
-  th = document.createElement("th");
-  th.innerText = g_localizedPageTableHeaders[4];
-  tr.appendChild(th);
-  th = document.createElement("th");
-  th.innerText = g_localizedPageTableHeaders[5];
-  tr.appendChild(th);
-  return tr;
-}
-
-function generateTableEmptyRow() {
-  let tr = document.createElement("tr");
-  let td = document.createElement("td");
-  td.innerText = " ";
-  tr.appendChild(td);
-  td = document.createElement("td");
-  td.innerText = " ";
-  tr.appendChild(td);
-  td = document.createElement("td");
-  td.innerText = " ";
-  tr.appendChild(td);
-  td = document.createElement("td");
-  td.innerText = " ";
-  tr.appendChild(td);
-  td = document.createElement("td");
-  td.innerText = " ";
-  tr.appendChild(td);
-  td = document.createElement("td");
-  td.innerText = " ";
-  tr.appendChild(td);
-  return tr;
-}
-
-function generateTableRow(index, id, size, width, height, doublepage, type) {
-  let tr = document.createElement("tr");
-  let td = document.createElement("td");
-  td.innerText = id;
-  tr.appendChild(td);
-  td = document.createElement("td");
-  td.innerText = size;
-  tr.appendChild(td);
-  td = document.createElement("td");
-  td.innerText = width;
-  tr.appendChild(td);
-  td = document.createElement("td");
-  td.innerText = height;
-  tr.appendChild(td);
-  td = document.createElement("td");
-  {
-    let checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.checked = doublepage;
-    td.appendChild(checkbox);
-    checkbox.addEventListener("change", (event) => {
-      g_json["ComicInfo"]["Pages"]["Page"][index]["@_DoublePage"] =
-        checkbox.checked ? "true" : "false";
-      onFieldChanged(checkbox);
-    });
-  }
-  tr.appendChild(td);
-  td = document.createElement("td");
-  {
-    let select = document.createElement("select");
-    select.innerHTML = `<option value="default"></option>
-<option value="FrontCover"${type === "FrontCover" ? " selected" : ""}>${
-      g_localizedPageTypes[0]
-    }</option>
-<option value="InnerCover"${type === "InnerCover" ? " selected" : ""}>${
-      g_localizedPageTypes[1]
-    }</option>
-<option value="Roundup"${type === "Roundup" ? " selected" : ""}>${
-      g_localizedPageTypes[2]
-    }</option>
-<option value="Story"${type === "Story" ? " selected" : ""}>${
-      g_localizedPageTypes[3]
-    }</option>
-<option value="Advertisement"${type === "Advertisement" ? " selected" : ""}>${
-      g_localizedPageTypes[4]
-    }</option>
-<option value="Editorial"${type === "Editorial" ? " selected" : ""}>${
-      g_localizedPageTypes[5]
-    }</option>
-<option value="Letters"${type === "Letters" ? " selected" : ""}>${
-      g_localizedPageTypes[6]
-    }</option>
-<option value="Preview"${type === "Preview" ? " selected" : ""}>${
-      g_localizedPageTypes[7]
-    }</option>
-<option value="BackCover"${type === "BackCover" ? " selected" : ""}>${
-      g_localizedPageTypes[8]
-    }</option>
-<option value="Other"${type === "Other" ? " selected" : ""}>${
-      g_localizedPageTypes[9]
-    }</option>
-<option value="Deleted"${type === "Deleted" ? " selected" : ""}>${
-      g_localizedPageTypes[10]
-    }</option>`;
-    td.appendChild(select);
-    select.addEventListener("change", (event) => {
-      g_json["ComicInfo"]["Pages"]["Page"][index]["@_Type"] =
-        select.value === "default" ? "" : select.value;
-      onFieldChanged(select);
-    });
-  }
-  tr.appendChild(td);
-  return tr;
-}
 
 async function onSearch(pageNum = 1, inputValue = undefined) {
   if (!inputValue) inputValue = g_searchInput.value;
@@ -1486,7 +1159,7 @@ export function getOpenModal() {
   return g_openModal;
 }
 
-function closeModal() {
+export function closeModal() {
   if (g_openModal) {
     modals.close(g_openModal);
     modalClosed();
@@ -1497,7 +1170,7 @@ function modalClosed() {
   g_openModal = undefined;
 }
 
-function showProgressModal() {
+export function showProgressModal() {
   if (g_openModal) {
     return;
   }
@@ -1562,7 +1235,7 @@ function showInfoModal(
   });
 }
 
-function updateModalTitleText(text) {
+export function updateModalTitleText(text) {
   if (g_openModal) g_openModal.querySelector(".modal-title").innerHTML = text;
 }
 

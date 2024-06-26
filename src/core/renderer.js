@@ -71,6 +71,28 @@ function onIpcFromMain(event, args) {
           document.querySelector(args[2]).innerHTML = args[3];
         }
         break;
+      // ref: https://developer.mozilla.org/en-US/docs/Web/API/Element/insertAdjacentHTML
+      case "insert-html-beforebegin":
+        {
+          document
+            .querySelector(args[2])
+            .insertAdjacentHTML("beforebegin", args[3]);
+        }
+        break;
+      case "insert-html-afterbegin":
+        {
+          document
+            .querySelector(args[2])
+            .insertAdjacentHTML("afterbegin", args[3]);
+        }
+        break;
+      case "insert-html-afterend":
+        {
+          document
+            .querySelector(args[2])
+            .insertAdjacentHTML("afterend", args[3]);
+        }
+        break;
       case "append-structure-divs":
         {
           const readerDiv = document.createElement("div");

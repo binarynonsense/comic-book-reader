@@ -4,54 +4,27 @@
   <div id="tools-columns-left">
     <div id="tools-menu-sticky-div">
       <div class="tools-menu-buttons">
-        <button id="tool-cix-back-button" class="tools-button-accent">
+        <button id="tool-metadata-back-button" class="tools-button-accent">
           <i class="fas fa-angle-left"></i>
-          <span id="tool-cix-back-button-text"></span>
+          <span id="tool-metadata-back-button-text"></span>
         </button>
-        <button id="tool-cix-save-button" class="tools-button-normal">
-          <span id="tool-cix-save-button-text"></span>
+        <button id="tool-metadata-save-button" class="tools-button-normal">
+          <span id="tool-metadata-save-button-text"></span>
         </button>
       </div>
       <div class="tools-menu-sections">
         <!-- sections menu -->
-        <div
-          id="tool-cix-section-0-button"
-          class="tools-menu-button tools-menu-button-selected"
-        >
-          <i class="fas fa-book tools-menu-button-icon"></i>
-          <div class="tools-menu-button-text">
-            <span id="tool-cix-section-0-button-text"></span>
-          </div>
-        </div>
-        <div id="tool-cix-section-1-button" class="tools-menu-button">
-          <i class="fas fa-paint-brush tools-menu-button-icon"></i>
-          <div class="tools-menu-button-text">
-            <span id="tool-cix-section-1-button-text"></span>
-          </div>
-        </div>
-        <div id="tool-cix-section-2-button" class="tools-menu-button">
-          <i class="fas fa-book-open tools-menu-button-icon"></i>
-          <div class="tools-menu-button-text">
-            <span id="tool-cix-section-2-button-text"></span>
-          </div>
-        </div>
-        <div id="tool-cix-section-3-button" class="tools-menu-button">
-          <i class="fas fa-list-ul tools-menu-button-icon"></i>
-          <div class="tools-menu-button-text">
-            <span id="tool-cix-section-3-button-text"></span>
-          </div>
-        </div>
         <div class="tools-menu-separator"></div>
-        <div id="tool-cix-section-4-button" class="tools-menu-button">
+        <div id="tool-metadata-section-0-button" class="tools-menu-button">
           <i class="fas fa-search tools-menu-button-icon"></i>
           <div class="tools-menu-button-text">
-            <span id="tool-cix-section-4-button-text"></span>
+            <span id="tool-metadata-section-0-button-text"></span>
           </div>
         </div>
-        <div id="tool-cix-section-5-button" class="tools-menu-button">
+        <div id="tool-metadata-section-1-button" class="tools-menu-button">
           <i class="fas fa-tools tools-menu-button-icon"></i>
           <div class="tools-menu-button-text">
-            <span id="tool-cix-section-5-button-text"></span>
+            <span id="tool-metadata-section-1-button-text"></span>
           </div>
         </div>
       </div>
@@ -59,519 +32,21 @@
   </div>
   <!-- ------------------- RIGTH COLUMN -------------------------------- -->
   <div id="tools-columns-right">
-    <div id="tools-title"><span id="tool-cix-title-text"></span></div>
-    <!-- basic data -->
-    <div
-      id="tool-cix-cbr-no-edit-rar-div"
-      style="margin-bottom: 20px"
-      class="set-display-none"
-    >
-      <label>
-        <i class="fas fa-exclamation-triangle"></i>
-        <span id="tool-cix-cbr-no-edit-rar-text"></span>
-      </label>
-    </div>
-    <div
-      id="tool-cix-cbr-no-edit-encrypted-div"
-      style="margin-bottom: 20px"
-      class="set-display-none"
-    >
-      <label>
-        <i class="fas fa-exclamation-triangle"></i>
-        <span id="tool-cix-cbr-no-edit-encrypted-text"></span>
-      </label>
-    </div>
-
-    <div id="tool-cix-section-0-content-div">
-      <div class="tools-columns-right-section">
-        <h3><span id="tool-cix-section-0-text"></span></h3>
-        <div class="tool-shared-columns-parent">
-          <label class="tool-shared-columns-50-grow">
-            <span id="tool-cix-data-title-text"></span>
-            <input
-              id="tool-cix-data-title-input"
-              data-xml-id="Title"
-              data-xml-type="xs:string"
-              type="text"
-              spellcheck="false"
-            />
-          </label>
-          <label class="tool-shared-columns-25">
-            <span id="tool-cix-data-year-text"></span>
-            <input
-              id="tool-cix-data-year-input"
-              data-xml-id="Year"
-              data-xml-type="xs:int"
-              type="number"
-            />
-          </label>
-          <label class="tool-shared-columns-25">
-            <span id="tool-cix-data-month-text"></span>
-            <input
-              id="tool-cix-data-month-input"
-              data-xml-id="Month"
-              data-xml-type="xs:int"
-              type="number"
-            />
-          </label>
-          <label class="tool-shared-columns-25">
-            <span id="tool-cix-data-day-text"></span>
-            <input
-              id="tool-cix-data-day-input"
-              data-xml-id="Day"
-              data-xml-type="xs:int"
-              type="number"
-            />
-          </label>
-        </div>
-        <div class="tool-shared-columns-parent">
-          <label class="tool-shared-columns-50-grow">
-            <span id="tool-cix-data-series-text"></span>
-            <input
-              id="tool-cix-data-series-input"
-              data-xml-id="Series"
-              data-xml-type="xs:string"
-              type="text"
-              spellcheck="false"
-            />
-          </label>
-          <label class="tool-shared-columns-25">
-            <span id="tool-cix-data-number-text"></span>
-            <input
-              id="tool-cix-data-number-input"
-              data-xml-id="Number"
-              data-xml-type="xs:string"
-              type="text"
-              spellcheck="false"
-            />
-          </label>
-          <label class="tool-shared-columns-25">
-            <span id="tool-cix-data-count-text"></span>
-            <input
-              id="tool-cix-data-count-input"
-              data-xml-id="Count"
-              data-xml-type="xs:int"
-              type="number"
-            />
-          </label>
-          <label class="tool-shared-columns-25">
-            <span id="tool-cix-data-volume-text"></span>
-            <input
-              id="tool-cix-data-volume-input"
-              data-xml-id="Volume"
-              data-xml-type="xs:int"
-              type="number"
-            />
-          </label>
-        </div>
-        <div class="tool-shared-columns-parent">
-          <label class="tool-shared-columns-50-grow">
-            <span id="tool-cix-data-alternateseries-text"></span>
-            <input
-              id="tool-cix-data-alternateseries-input"
-              data-xml-id="AlternateSeries"
-              data-xml-type="xs:string"
-              type="text"
-              spellcheck="false"
-            />
-          </label>
-          <label class="tool-shared-columns-25">
-            <span id="tool-cix-data-alternatenumber-text"></span>
-            <input
-              id="tool-cix-data-alternatenumber-input"
-              data-xml-id="AlternateNumber"
-              data-xml-type="xs:string"
-              type="text"
-              spellcheck="false"
-            />
-          </label>
-          <label class="tool-shared-columns-25">
-            <span id="tool-cix-data-alternatecount-text"></span>
-            <input
-              id="tool-cix-data-alternatecount-input"
-              data-xml-id="AlternateCount"
-              data-xml-type="xs:int"
-              type="number"
-            />
-          </label>
-        </div>
-        <div class="tool-shared-columns-parent">
-          <label class="tool-shared-columns-50">
-            <span id="tool-cix-data-storyarc-text"></span>
-            <input
-              id="tool-cix-data-storyarc-input"
-              data-xml-id="StoryArc"
-              data-xml-type="xs:string"
-              type="text"
-              spellcheck="false"
-            />
-          </label>
-          <label class="tool-shared-columns-50">
-            <span id="tool-cix-data-seriesgroup-text"></span>
-            <input
-              id="tool-cix-data-seriesgroup-input"
-              data-xml-id="SeriesGroup"
-              data-xml-type="xs:string"
-              type="text"
-              spellcheck="false"
-            />
-          </label>
-          <label class="tool-shared-columns-50">
-            <span id="tool-cix-data-publisher-text"></span>
-            <input
-              id="tool-cix-data-publisher-input"
-              data-xml-id="Publisher"
-              data-xml-type="xs:string"
-              type="text"
-              spellcheck="false"
-            />
-          </label>
-          <label class="tool-shared-columns-50">
-            <span id="tool-cix-data-imprint-text"></span>
-            <input
-              id="tool-cix-data-imprint-input"
-              data-xml-id="Imprint"
-              data-xml-type="xs:string"
-              type="text"
-              spellcheck="false"
-            />
-          </label>
-        </div>
-        <div class="tool-shared-columns-parent">
-          <label class="tool-shared-columns-50">
-            <span id="tool-cix-data-format-text"></span>
-            <input
-              id="tool-cix-data-format-input"
-              data-xml-id="Format"
-              data-xml-type="xs:string"
-              type="text"
-              spellcheck="false"
-            />
-          </label>
-          <label class="tool-shared-columns-50">
-            <span id="tool-cix-data-blackwhite-text"></span>
-            <select
-              id="tool-cix-data-blackwhite-select"
-              data-xml-id="BlackAndWhite"
-              data-xml-type="YesNo"
-            >
-              <option value="default"></option>
-              <option
-                value="Unknown"
-                id="tool-cix-data-blackwhite-option-unknown-text"
-              ></option>
-              <option
-                value="No"
-                id="tool-cix-data-blackwhite-option-no-text"
-              ></option>
-              <option
-                value="Yes"
-                id="tool-cix-data-blackwhite-option-yes-text"
-              ></option>
-            </select>
-          </label>
-          <label class="tool-shared-columns-50">
-            <span id="tool-cix-data-manga-text"></span>
-            <select
-              id="tool-cix-data-manga-select"
-              data-xml-id="Manga"
-              data-xml-type="Manga"
-            >
-              <option value="default"></option>
-              <option
-                value="Unknown"
-                id="tool-cix-data-manga-option-unknown-text"
-              ></option>
-              <option
-                value="No"
-                id="tool-cix-data-manga-option-no-text"
-              ></option>
-              <option
-                value="Yes"
-                id="tool-cix-data-manga-option-yes-text"
-              ></option>
-              <option
-                value="YesAndRightToLeft"
-                id="tool-cix-data-manga-option-yesrightleft-text"
-              ></option>
-            </select>
-          </label>
-        </div>
-        <div class="tool-shared-columns-parent">
-          <label class="tool-shared-columns-50">
-            <span id="tool-cix-data-genre-text"></span>
-            <input
-              id="tool-cix-data-genre-input"
-              data-xml-id="Genre"
-              data-xml-type="xs:string"
-              type="text"
-              spellcheck="false"
-            />
-          </label>
-          <label class="tool-shared-columns-50">
-            <span id="tool-cix-data-languageiso-text"></span>
-            <select
-              id="tool-cix-data-languageiso-select"
-              data-xml-id="LanguageISO"
-              data-xml-type="xs:string"
-            ></select>
-          </label>
-          <label class="tool-shared-columns-35">
-            <span id="tool-cix-data-agerating-text"></span>
-            <select
-              id="tool-cix-data-agerating-select"
-              data-xml-id="AgeRating"
-              data-xml-type="AgeRating"
-            >
-              <option value="default"></option>
-              <option value="Unknown">Unknown</option>
-              <option value="Adults Only 18+">Adults Only 18+</option>
-              <option value="Early Childhood">Early Childhood</option>
-              <option value="Everyone">Everyone</option>
-              <option value="Everyone 10+">Everyone 10+</option>
-              <option value="G">G</option>
-              <option value="Kids to Adults">Kids to Adults</option>
-              <option value="M">M</option>
-              <option value="MA15+">MA15+</option>
-              <option value="Mature 17+">Mature 17+</option>
-              <option value="PG">PG</option>
-              <option value="R18+">R18+</option>
-              <option value="Rating Pending">Rating Pending</option>
-              <option value="Teen">Teen</option>
-              <option value="X18+">X18+</option>
-            </select>
-          </label>
-          <label class="tool-shared-columns-25">
-            <span
-              id="tool-cix-data-communityrating-text"
-              data-xml-id="CommunityRating"
-              data-xml-type="Rating"
-            ></span>
-            <input
-              id="tool-cix-data-communityrating-input"
-              type="number"
-              step="0.01"
-              max="5.00"
-              min="0.00"
-            />
-          </label>
-        </div>
-        <label>
-          <span id="tool-cix-data-summary-text"></span>
-          <textarea
-            id="tool-cix-data-summary-textarea"
-            data-xml-id="Summary"
-            data-xml-type="xs:string"
-            spellcheck="false"
-          ></textarea>
-        </label>
-        <div class="tool-shared-columns-parent">
-          <label class="tool-shared-columns-50">
-            <span id="tool-cix-data-characters-text"></span>
-            <input
-              id="tool-cix-data-characters-input"
-              data-xml-id="Characters"
-              data-xml-type="xs:string"
-              type="text"
-              spellcheck="false"
-            />
-          </label>
-          <label class="tool-shared-columns-50">
-            <span id="tool-cix-data-maincharacterorteam-text"></span>
-            <input
-              id="tool-cix-data-maincharacterorteam-input"
-              data-xml-id="MainCharacterOrTeam"
-              data-xml-type="xs:string"
-              type="text"
-              spellcheck="false"
-            />
-          </label>
-        </div>
-        <div class="tool-shared-columns-parent">
-          <label class="tool-shared-columns-50">
-            <span id="tool-cix-data-teams-text"></span>
-            <input
-              id="tool-cix-data-teams-input"
-              data-xml-id="Teams"
-              data-xml-type="xs:string"
-              type="text"
-              spellcheck="false"
-            />
-          </label>
-          <label class="tool-shared-columns-50">
-            <span id="tool-cix-data-locations-text"></span>
-            <input
-              id="tool-cix-data-locations-input"
-              data-xml-id="Locations"
-              data-xml-type="xs:string"
-              type="text"
-              spellcheck="false"
-            />
-          </label>
-        </div>
-      </div>
-    </div>
-    <!-- creators -->
-    <div id="tool-cix-section-1-content-div" class="set-display-none">
-      <div class="tools-columns-right-section">
-        <h3><span id="tool-cix-section-1-text"></span></h3>
-        <label>
-          <span id="tool-cix-data-writer-text"></span>
-          <input
-            id="tool-cix-data-writer-input"
-            data-xml-id="Writer"
-            data-xml-type="xs:string"
-            type="text"
-            spellcheck="false"
-          />
-        </label>
-        <label>
-          <span id="tool-cix-data-penciller-text"></span>
-          <input
-            id="tool-cix-data-penciller-input"
-            data-xml-id="Penciller"
-            data-xml-type="xs:string"
-            type="text"
-            spellcheck="false"
-          />
-        </label>
-        <label>
-          <span id="tool-cix-data-inker-text"></span>
-          <input
-            id="tool-cix-data-inker-input"
-            data-xml-id="Inker"
-            data-xml-type="xs:string"
-            type="text"
-            spellcheck="false"
-          />
-        </label>
-        <label>
-          <span id="tool-cix-data-colorist-text"></span>
-          <input
-            id="tool-cix-data-colorist-input"
-            data-xml-id="Colorist"
-            data-xml-type="xs:string"
-            type="text"
-            spellcheck="false"
-          />
-        </label>
-        <label>
-          <span id="tool-cix-data-letterer-text"></span>
-          <input
-            id="tool-cix-data-letterer-input"
-            data-xml-id="Letterer"
-            data-xml-type="xs:string"
-            type="text"
-            spellcheck="false"
-          />
-        </label>
-        <label>
-          <span id="tool-cix-data-coverartist-text"></span>
-          <input
-            id="tool-cix-data-coverartist-input"
-            data-xml-id="CoverArtist"
-            data-xml-type="xs:string"
-            type="text"
-            spellcheck="false"
-          />
-        </label>
-        <label>
-          <span id="tool-cix-data-editor-text"></span>
-          <input
-            id="tool-cix-data-editor-input"
-            data-xml-id="Editor"
-            data-xml-type="xs:string"
-            type="text"
-            spellcheck="false"
-          />
-        </label>
-      </div>
-    </div>
-    <!-- pages -->
-    <div id="tool-cix-section-2-content-div" class="set-display-none">
-      <div class="tools-columns-right-section">
-        <h3><span id="tool-cix-section-2-text"></span></h3>
-        <label>
-          <span id="tool-cix-data-pagecount-text"></span>
-          <input
-            id="tool-cix-data-pagecount-input"
-            data-xml-id="PageCount"
-            data-xml-type="xs:int"
-            type="number"
-          />
-        </label>
-
-        <label>
-          <span id="tool-cix-data-pages-text"></span>
-          <i
-            id="tool-cix-tooltip-page-data"
-            class="fas fa-question-circle tools-tooltip-button"
-            title="tooltip"
-          ></i>
-        </label>
-        <button id="tool-cix-update-pages-button">
-          <span id="tool-cix-update-pages-button-text"></span>
-        </button>
-        <table id="tool-cix-pages-data-table" class="tools-table"></table>
-      </div>
-    </div>
-    <!-- other data -->
-    <div id="tool-cix-section-3-content-div" class="set-display-none">
-      <div class="tools-columns-right-section">
-        <h3><span id="tool-cix-section-3-text"></span></h3>
-        <label>
-          <span id="tool-cix-data-notes-text"></span>
-          <textarea
-            id="tool-cix-data-notes-textarea"
-            data-xml-id="Notes"
-            data-xml-type="xs:string"
-            spellcheck="false"
-          ></textarea>
-        </label>
-        <label>
-          <span id="tool-cix-data-web-text"></span>
-          <input
-            id="tool-cix-data-web-input"
-            data-xml-id="Web"
-            data-xml-type="xs:string"
-            type="text"
-            spellcheck="false"
-          />
-        </label>
-        <label>
-          <span id="tool-cix-data-scaninformation-text"></span>
-          <textarea
-            id="tool-cix-data-scaninformation-input"
-            data-xml-id="ScanInformation"
-            data-xml-type="xs:string"
-            spellcheck="false"
-          ></textarea>
-        </label>
-        <label>
-          <span id="tool-cix-data-review-text"></span>
-          <textarea
-            id="tool-cix-data-review-textarea"
-            data-xml-id="Review"
-            data-xml-type="xs:string"
-            spellcheck="false"
-          ></textarea>
-        </label>
-      </div>
-    </div>
+    <div id="tools-title"><span id="tool-metadata-cix-title-text"></span></div>
     <!-- search -->
-    <div id="tool-cix-section-4-content-div" class="set-display-none">
+    <div id="tool-metadata-section-0-content-div" class="set-display-none">
       <div id="tool-search-input-div" class="tools-columns-right-section">
-        <h3><span id="tool-cix-search-input-text"></span></h3>
+        <h3><span id="tool-metadata-search-input-text"></span></h3>
         <label>
           <input
-            id="tool-cix-search-input"
+            id="tool-metadata-search-input"
             type="text"
             style="margin-top: 0"
             spellcheck="false"
           />
         </label>
-        <button id="tool-cix-search-button" class="tools-disabled">
-          <span id="tool-cix-search-button-text"></span>
+        <button id="tool-metadata-search-button" class="tools-disabled">
+          <span id="tool-metadata-search-button-text"></span>
         </button>
       </div>
       <div id="tool-search-results-div" class="tools-columns-right-section">
@@ -579,49 +54,54 @@
           id="tool-search-results-h3"
           class="tools-h3-extra-margin-top-2 set-display-none"
         >
-          <span id="tool-cix-search-results-text"></span>
+          <span id="tool-metadata-search-results-text"></span>
         </h3>
         <div
-          id="tool-cix-search-results-div"
+          id="tool-metadata-search-results-div"
           class="set-display-none"
           style="margin-top: 20px"
         ></div>
         <div
-          id="tool-cix-search-results-issues-div"
+          id="tool-metadata-search-results-issues-div"
           class="set-display-none"
           style="margin-top: 20px"
         ></div>
         <div
-          id="tool-cix-search-results-issue-div"
+          id="tool-metadata-search-results-issue-div"
           class="set-display-none"
           style="margin-top: 20px"
         ></div>
       </div>
     </div>
     <!-- search settings -->
-    <div id="tool-cix-section-5-content-div" class="set-display-none">
+    <div id="tool-metadata-section-1-content-div" class="set-display-none">
       <div class="tools-columns-right-section">
-        <h3><span id="tool-cix-comicvine-text"></span></h3>
+        <h3><span id="tool-metadata-comicvine-text"></span></h3>
         <label>
-          <span id="tool-cix-comicvine-api-key-file-text"></span
+          <span id="tool-metadata-comicvine-api-key-file-text"></span
           ><i
-            id="tool-cix-tooltip-comicvine-api-key-file"
+            id="tool-metadata-tooltip-comicvine-api-key-file"
             class="fas fa-question-circle tools-tooltip-button"
             title="tooltip"
           ></i>
           <ul
-            id="tool-cix-comicvine-api-key-file-ul"
+            id="tool-metadata-comicvine-api-key-file-ul"
             class="tools-collection-ul"
           ></ul>
         </label>
-        <button id="tool-cix-comicvine-api-key-file-change-button">
-          <span id="tool-cix-comicvine-api-key-file-change-button-text"></span>
+        <button id="tool-metadata-comicvine-api-key-file-change-button">
+          <span
+            id="tool-metadata-comicvine-api-key-file-change-button-text"
+          ></span>
         </button>
         <label
-          ><span id="tool-cix-comicvine-api-key-checkbox-text"></span
+          ><span id="tool-metadata-comicvine-api-key-checkbox-text"></span
         ></label>
         <label class="tools-toggle">
-          <input type="checkbox" id="tool-cix-comicvine-api-key-checkbox" />
+          <input
+            type="checkbox"
+            id="tool-metadata-comicvine-api-key-checkbox"
+          />
           <span class="tools-toggle-slider"></span>
         </label>
       </div>
