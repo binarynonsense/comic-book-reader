@@ -30,25 +30,25 @@ Un lector y conversor de cómics para archivos en formato CBZ, CBR, CB7, EPUB y 
 
 ## Características:
 
-- Versiones para Windows y Linux.
+- Versiones para Windows y Linux
 - Formatos de archivo compatibles:
 
   - Cómics:
-    - CBZ, CBR, CB7, PDF y EPUB<sup>[1]</sup>.
+    - CBZ, CBR, CB7, PDF y EPUB<sup>[1]</sup>
   - Archivos de imagen:
-    - JPG, PNG, WebP y AVIF.
+    - JPG, PNG, WebP y AVIF
   - Ebooks:
-    - PDF y EPUB<sup>[2]</sup>.
+    - PDF y EPUB<sup>[2]</sup>
 
   Incluyendo archivos PDF, CBZ (cifrado AES no compatible), CB7 y CBR protegidos con contraseña.
 
-- Modos de ventana (IU simple) y pantalla completa (sin IU).
-- Vistas de pagina: 'ajustar a anchura', 'ajustar a altura' y 'escalar a altura' personalizable.
-- Rotación de página.
+- Modos de ventana (IU simple) y pantalla completa (sin IU)
+- Vistas de pagina: 'ajustar a anchura', 'ajustar a altura' y 'escalar a altura' personalizable
+- Rotación de página
 - Interfaz de usuario disponible en:
-  - Inglés, español, ruso, alemán y árabe.
+  - Inglés, español, ruso, alemán y árabe
 - Restaura automáticamente el último cómic, y página, abierto en la sesión anterior, y recuerda las posiciones de página de los últimos cómics.
-- Modo portátil (al crear un archivo llamado portable.txt en la misma carpeta que el ejecutable).
+- Modo portátil (al crear un archivo llamado portable.txt en la misma carpeta que el ejecutable)
 - Editor de ComicInfo.xml:
   - Ver los metadatos almacenados en archivos ComicInfo.xml dentro de cómics CBR, CBZ y CB7.
   - Crear y/o modificar los metadatos almacenados en archivos ComicInfo.xml dentro de cómics CBR<sup>[3]</sup>, CBZ y CB7 no encriptados.
@@ -58,29 +58,29 @@ Un lector y conversor de cómics para archivos en formato CBZ, CBR, CB7, EPUB y 
   - Puede exportar listas de reproducción a archivos M3U.
 - Herramientas:
   - Convertir/Redimensionar:
-    - Cómics (CBR, CBZ, CB7, PDF o EPUB<sup>[1]</sup> a CBR<sup>[3]</sup>, CBZ, CB7, PDF o EPUB).
-    - Imágenes (JPG, PNG, AVIF o WebP).
+    - Cómics (CBR, CBZ, CB7, PDF o EPUB<sup>[1]</sup> a CBR<sup>[3]</sup>, CBZ, CB7, PDF o EPUB)
+    - Imágenes (JPG, PNG, AVIF o WebP)
   - Crear:
-    - Un cómic (CBR<sup>[3]</sup>, CBZ, CB7, PDF o EPUB) a partir de una lista de archivos de imagen y/o cómics.
-    - Una imagen de código QR a partir de un texto.
+    - Un cómic (CBR<sup>[3]</sup>, CBZ, CB7, PDF o EPUB) a partir de una lista de archivos de imagen y/o cómics
+    - Una imagen de código QR a partir de un texto
   - Extraer:
     - Páginas de cómics (a JPG, PNG, AVIF o WebP).
-    - Texto (OCR) de una página de cómic o archivo de imagen.
-    - El texto de un código QR en una página de cómic o un archivo de imagen.
-    - Una paleta de colores de una página de cómic o un archivo de imagen.
+    - Texto (OCR) de una página de cómic o archivo de imagen
+    - El texto de un código QR en una página de cómic o un archivo de imagen
+    - Una paleta de colores de una página de cómic o un archivo de imagen
       - Se puede exportar a un archivo de paleta GPL o ACO.
   - Otras:
     - Buscar y abrir libros/cómics de:
-      - Digital Comics Museum.
-      - Internet Archive Books.
-      - Project Gutenberg.
-      - Webcómics xkcd.
+      - Digital Comics Museum
+      - Internet Archive Books
+      - Project Gutenberg
+      - Webcómics xkcd
     - Buscar y abrir audiolibros de:
-      - Librivox.
+      - Librivox
     - Búsqueda de términos de diccionario de:
-      - Diccionario Wiktionary.
+      - Diccionario Wiktionary
     - Buscar y abrir streams de radio de:
-      - radio-browser.
+      - radio-browser
 
 > Notas:
 >
