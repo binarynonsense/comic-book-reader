@@ -64,7 +64,7 @@ Un lector y conversor de cómics para archivos en formato CBZ, CBR, CB7, EPUB y 
     - Un cómic (CBR<sup>[3]</sup>, CBZ, CB7, PDF o EPUB) a partir de una lista de archivos de imagen y/o cómics
     - Una imagen de código QR a partir de un texto
   - Extraer:
-    - Páginas de cómics (a JPG, PNG, AVIF o WebP).
+    - Páginas de cómics (a JPG, PNG, AVIF o WebP)
     - Texto (OCR) de una página de cómic o archivo de imagen
     - El texto de un código QR en una página de cómic o un archivo de imagen
     - Una paleta de colores de una página de cómic o un archivo de imagen
