@@ -30,57 +30,57 @@ Ein Comicbuch Leser und Konverter für CBZ, CBR, CB7, EPUB und PDF Dateien.
 
 ## Funktionen:
 
-- Windows & Linux Versionen.
+- Windows & Linux Versionen
 - Kompatible Dateiformate:
 
   - Comicbücher:
-    - CBZ, CBR, CB7, PDF und EPUB.<sup>[1]</sup>
+    - CBZ, CBR, CB7, PDF und EPUB<sup>[1]</sup>
   - Bilddateien:
-    - JPG, PNG, WebP und AVIF.
+    - JPG, PNG, WebP und AVIF
   - Ebooks:
-    - PDF und EPUB.<sup>[2]</sup>
+    - PDF und EPUB<sup>[2]</sup>
 
   Dazu gehören Passwort geschützte PDF, CBZ (AES Verschlüsselung nicht unterstützt), CB7 und CBR Dateien.
 
 - Fenster- (einfache Benutzeroberfläche) und Vollbild- (keine Benutzeroberfläche) Modi.
-- 'Breitenanpassung', 'Höhenanpassung' und eine anpassbare 'Höhenskalierung' Seitenansicht.
-- Seitenrotation.
+- 'Breitenanpassung', 'Höhenanpassung' und eine anpassbare 'Höhenskalierung' Seitenansicht
+- Seitenrotation
 - Benutzeroberfläche verfügbar auf:
-  - Englisch, Spanisch, Russisch, Deutsch und Arabisch.
+  - Englisch, Spanisch, Russisch, Deutsch und Arabisch
 - Automatische Wiederherstellung der vergangenen Sitzung, mit Erinnerung der letzten Seitenposition.
-- Tragbarer Modus (durch das Erstellen einer Datei namens portable.txt im selben Ordner wie die Anwendung).
+- Tragbarer Modus (durch das Erstellen einer Datei namens portable.txt im selben Ordner wie die Anwendung)
 - ComicInfo.xml Editor:
   - Ansicht der Metadaten welche in ComicInfo.xml Dateien innerhalb CBR, CBZ und CB7 Comicbüchern gespeichert sind.
   - Erstelle und/oder modifiziere die Metadaten welche in ComicInfo.xml Dateien innerhalb unverschlüsselten CBR<sup>[3]</sup>, CBZ und CB7 Comicbüchern gespeichert sind.
   - Suche nach und importiere Comicbuch Metadaten von Comic Vine (hierfür wird ein [Comic Vine API key](https://comicvine.gamespot.com/api/) benötigt).
 - Integrierter Audio-player:
-  - unterstützt MP3, Ogg, WAV, M3U und M3U8 Dateien.
+  - Unterstützt MP3, Ogg, WAV, M3U und M3U8 Dateien.
   - Kann Playlists als M3U Dateien exportieren.
 - Werkzeuge:
   - Konvertieren/größe Ändern:
-    - Comicbücher (CBR, CBZ, CB7, PDF oder EPUB<sup>[1]</sup> zu CBR<sup>[3]</sup>, CBZ, CB7, PDF oder EPUB).
-    - Bilder (JPG, PNG, AVIF oder WebP).
+    - Comicbücher (CBR, CBZ, CB7, PDF oder EPUB<sup>[1]</sup> zu CBR<sup>[3]</sup>, CBZ, CB7, PDF oder EPUB)
+    - Bilder (JPG, PNG, AVIF oder WebP)
   - Erstelle:
-    - Ein Comicbuch (CBR<sup>[3]</sup>, CBZ, CB7, PDF oder EPUB) aus einer Liste von Bild Dateien und/oder Comicbüchern.
-    - Ein QR Code Bild aus Text.
+    - Ein Comicbuch (CBR<sup>[3]</sup>, CBZ, CB7, PDF oder EPUB) aus einer Liste von Bild Dateien und/oder Comicbüchern
+    - Ein QR Code Bild aus Text
   - Extrahiere:
-    - Comicbuch Seiten (zu JPG, PNG, AVIF oder WebP).
-    - Text (OCR) aus einer Comicbuch Seite oder Bilddatei.
-    - QR Code Text aus einer Comicbuch Seite oder Bilddatei.
-    - Eine Farbpalette aus einer Comicbuch Seite oder Bilddatei.
+    - Comicbuch Seiten (zu JPG, PNG, AVIF oder WebP)
+    - Text (OCR) aus einer Comicbuch Seite oder Bilddatei
+    - QR Code Text aus einer Comicbuch Seite oder Bilddatei
+    - Eine Farbpalette aus einer Comicbuch Seite oder Bilddatei
       - Kann zu einer GPL oder ACO Paletten-datei extrahiert werden.
   - Weiteres:
     - Suche und öffne Bücher/Comics von:
-      - Digital Comics Museum.
-      - Internet Archive Books.
-      - Project Gutenberg.
-      - xkcd Webcomics.
+      - Digital Comics Museum
+      - Internet Archive Books
+      - Project Gutenberg
+      - xkcd Webcomics
     - Suche und öffne Hörbücher von:
-      - Librivox AudioBooks.
+      - Librivox AudioBooks
     - Suche Wörterbucheinträge in:
-      - Wiktionary Dictionary.
+      - Wiktionary Dictionary
     - Suche und öffne Radiosender-streams von:
-      - radio-browser.
+      - radio-browser
 
 > Hinweise:
 >
