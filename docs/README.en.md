@@ -30,25 +30,25 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB and PDF files.
 
 ## Features:
 
-- Windows & Linux versions.
+- Windows & Linux versions
 - Compatible file formats:
 
   - Comic books:
-    - CBZ, CBR, CB7, PDF and EPUB<sup>[1]</sup>.
+    - CBZ, CBR, CB7, PDF and EPUB<sup>[1]</sup>
   - Image files:
-    - JPG, PNG, WebP and AVIF.
+    - JPG, PNG, WebP and AVIF
   - Ebooks:
-    - PDF and EPUB<sup>[2]</sup>.
+    - PDF and EPUB<sup>[2]</sup>
 
   Including password protected PDF, CBZ (AES encryption not supported), CB7 and CBR files.
 
-- Windowed (simple UI) and full-screen (no UI) modes.
-- 'Fit to width', 'fit to height' and a customizable 'scale to height' page views.
-- Page rotation.
+- Windowed (simple UI) and full-screen (no UI) modes
+- 'Fit to width', 'fit to height' and a customizable 'scale to height' page views
+- Page rotation
 - UI available in:
-  - English, Spanish, Russian, German and Arabic.
+  - English, Spanish, Russian, German and Arabic
 - Automatically restores the previous session's last opened book and page, and remembers the last books' page positions.
-- Portable mode (by creating a file named portable.txt in the same folder as the executable).
+- Portable mode (by creating a file named portable.txt in the same folder as the executable)
 - ComicInfo.xml editor:
   - View the metadata stored in ComicInfo.xml files inside CBR, CBZ and CB7 comic books.
   - Create and/or modify the metadata stored in ComicInfo.xml files inside unencrypted CBR<sup>[3]</sup>, CBZ and CB7 comic books.
@@ -58,29 +58,29 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB and PDF files.
   - Can export playlists to M3U files.
 - Tools:
   - Convert/Resize:
-    - Comic books (CBR, CBZ, CB7, PDF or EPUB<sup>[1]</sup> to CBR<sup>[3]</sup>, CBZ, CB7, PDF or EPUB).
-    - Images (JPG, PNG, AVIF or WebP).
+    - Comic books (CBR, CBZ, CB7, PDF or EPUB<sup>[1]</sup> to CBR<sup>[3]</sup>, CBZ, CB7, PDF or EPUB)
+    - Images (JPG, PNG, AVIF or WebP)
   - Create:
-    - A comic book (CBR<sup>[3]</sup>, CBZ, CB7, PDF or EPUB) from a list of image files and/or comic books.
-    - A QR code image from text.
+    - A comic book (CBR<sup>[3]</sup>, CBZ, CB7, PDF or EPUB) from a list of image files and/or comic books
+    - A QR code image from text
   - Extract:
-    - Comic book pages (to JPG, PNG, AVIF or WebP).
-    - Text (OCR) from a comic book page or image file.
-    - A QR code's text from a comic book page or image file.
-    - A color palette from a comic book page or image file.
+    - Comic book pages (to JPG, PNG, AVIF or WebP)
+    - Text (OCR) from a comic book page or image file
+    - A QR code's text from a comic book page or image file
+    - A color palette from a comic book page or image file
       - Can be exported to a GPL or ACO palette file.
   - Other:
     - Search and open books/comics from:
-      - Digital Comics Museum.
-      - Internet Archive Books.
-      - Project Gutenberg.
-      - xkcd Webcomics.
+      - Digital Comics Museum
+      - Internet Archive Books
+      - Project Gutenberg
+      - xkcd Webcomics
     - Search and open audiobooks from:
-      - Librivox AudioBooks.
+      - Librivox AudioBooks
     - Search dictionary terms from:
-      - Wiktionary Dictionary.
+      - Wiktionary Dictionary
     - Search and open radio station streams from:
-      - radio-browser.
+      - radio-browser
 
 > Notes:
 >
