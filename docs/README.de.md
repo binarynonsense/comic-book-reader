@@ -34,11 +34,11 @@ Ein Comicbuch Leser und Konverter für CBZ, CBR, CB7, EPUB und PDF Dateien.
 - Kompatible Dateiformate:
 
   - Comicbücher:
-    - CBZ, CBR, CB7, PDF und EPUB.<sup>[1]</sup>
+    - CBZ, CBR, CB7, PDF und EPUB<sup>[1]</sup>
   - Bilddateien:
-    - JPG, PNG, WebP und AVIF.
+    - JPG, PNG, WebP und AVIF
   - Ebooks:
-    - PDF und EPUB.<sup>[2]</sup>
+    - PDF und EPUB<sup>[2]</sup>
 
   Dazu gehören Passwort geschützte PDF, CBZ (AES Verschlüsselung nicht unterstützt), CB7 und CBR Dateien.
 
@@ -58,8 +58,8 @@ Ein Comicbuch Leser und Konverter für CBZ, CBR, CB7, EPUB und PDF Dateien.
   - Kann Playlists als M3U Dateien exportieren.
 - Werkzeuge:
   - Konvertieren/größe Ändern:
-    - Comicbücher (CBR, CBZ, CB7, PDF oder EPUB<sup>[1]</sup> zu CBR<sup>[3]</sup>, CBZ, CB7, PDF oder EPUB).
-    - Bilder (JPG, PNG, AVIF oder WebP).
+    - Comicbücher (CBR, CBZ, CB7, PDF oder EPUB<sup>[1]</sup> zu CBR<sup>[3]</sup>, CBZ, CB7, PDF oder EPUB)
+    - Bilder (JPG, PNG, AVIF oder WebP)
   - Erstelle:
     - Ein Comicbuch (CBR<sup>[3]</sup>, CBZ, CB7, PDF oder EPUB) aus einer Liste von Bild Dateien und/oder Comicbüchern.
     - Ein QR Code Bild aus Text.
@@ -68,19 +68,19 @@ Ein Comicbuch Leser und Konverter für CBZ, CBR, CB7, EPUB und PDF Dateien.
     - Text (OCR) aus einer Comicbuch Seite oder Bilddatei.
     - QR Code Text aus einer Comicbuch Seite oder Bilddatei.
     - Eine Farbpalette aus einer Comicbuch Seite oder Bilddatei.
-      - kann zu einer GPL oder ACO Paletten-datei extrahiert werden.
+      - Kann zu einer GPL oder ACO Paletten-datei extrahiert werden.
   - Weiteres:
     - Suche und öffne Bücher/Comics von:
-      - Digital Comics Museum.
-      - Internet Archive Books.
-      - Project Gutenberg.
-      - xkcd Webcomics.
+      - Digital Comics Museum
+      - Internet Archive Books
+      - Project Gutenberg
+      - xkcd Webcomics
     - Suche und öffne Hörbücher von:
-      - Librivox AudioBooks.
+      - Librivox AudioBooks
     - Suche Wörterbucheinträge in:
-      - Wiktionary Dictionary.
+      - Wiktionary Dictionary
     - Suche und öffne Radiosender-streams von:
-      - radio-browser.
+      - radio-browser
 
 > Hinweise:
 >
