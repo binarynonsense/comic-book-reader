@@ -23,9 +23,6 @@ let g_localizedModalTexts;
 
 let g_saveButton;
 
-let g_hasInfo;
-let g_isEditable;
-
 let g_searchInput;
 let g_searchButton;
 let g_searchHistory;
@@ -51,11 +48,15 @@ function init(...args) {
     });
   g_saveButton = document.getElementById("tool-metadata-save-button");
   g_saveButton.addEventListener("click", (event) => {
-    onSave();
+    g_subTool.onSave();
   });
   g_saveButton.classList.add("tools-disabled");
   // sections menu
-  for (let index = 0; index < 2; index++) {
+  for (
+    let index = 0;
+    index < document.querySelectorAll(".tools-menu-button").length;
+    index++
+  ) {
     document
       .getElementById(`tool-metadata-section-${index}-button`)
       .addEventListener("click", (event) => {
@@ -82,7 +83,7 @@ function init(...args) {
     if (
       event.key === "Enter" &&
       !document
-        .getElementById("tool-metadata-section-4-content-div")
+        .getElementById("tool-metadata-section-0-content-div")
         .classList.contains("set-display-none")
     ) {
       event.preventDefault();
@@ -146,7 +147,11 @@ export function updateColumnsHeight(scrollTop = false) {
 }
 
 export function switchSection(id) {
-  for (let index = 0; index < 6; index++) {
+  for (
+    let index = 0;
+    index < document.querySelectorAll(".tools-menu-button").length;
+    index++
+  ) {
     if (id === index) {
       document
         .getElementById(`tool-metadata-section-${index}-button`)
@@ -283,24 +288,7 @@ function initOnIpcCallbacks() {
 
   on("saving-done", (error) => {
     closeModal();
-    if (!error) {
-      showInfoModal(
-        g_localizedModalTexts.successTitle,
-        g_hasInfo
-          ? g_localizedModalTexts.savingMessageSuccessUpdate
-          : g_localizedModalTexts.savingMessageSuccessCreate,
-        g_localizedModalTexts.okButton
-      );
-      g_hasInfo = true;
-    } else {
-      showInfoModal(
-        g_localizedModalTexts.errorTitle,
-        g_hasInfo
-          ? g_localizedModalTexts.savingMessageErrorUpdate
-          : g_localizedModalTexts.savingMessageErrorCreate,
-        g_localizedModalTexts.okButton
-      );
-    }
+    g_subTool.onSavingDone(error);
   });
 
   on("show-modal-info", (...args) => {
@@ -583,433 +571,63 @@ function initOnIpcCallbacks() {
       let button = document.createElement("button");
       let text = document.createElement("span");
       text.innerText = localizedImportButtonText;
-      if (!g_isEditable) {
-        button.className = "tools-disabled";
-      }
+      button.className = "tools-disabled";
       button.appendChild(text);
       searchResultsDiv.appendChild(button);
       // ref: https://comicvine.gamespot.com/api/documentation#toc-0-10
       /////////////////////////////////
       let addLine = (ul, title, text, sanitize) => {
-        let li = document.createElement("li");
-        li.className = "tools-collection-li";
-        // checkbox
-        let checkbox = document.createElement("input");
-        checkbox.type = "checkbox";
-        checkbox.checked = true;
-        li.appendChild(checkbox);
-        // text
-        let multilineText = document.createElement("span");
-        multilineText.className =
-          "tools-collection-li-multiline-text tools-collection-selectable";
-        let textSpan = document.createElement("span");
-        textSpan.innerText = title + ":";
-        multilineText.appendChild(textSpan);
-        let sanitizedText = text;
-        textSpan = document.createElement("span");
-        if (!sanitize) {
-          textSpan.innerText = text;
-        } else {
-          textSpan.innerHTML = text;
-          for (
-            let i = 0,
-              elems = textSpan.getElementsByTagName("*"),
-              len = elems.length;
-            i < len;
-            i++
-          ) {
-            elems[i].removeAttribute("style");
+        try {
+          let li = document.createElement("li");
+          li.className = "tools-collection-li";
+          // checkbox
+          let checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.checked = true;
+          li.appendChild(checkbox);
+          // text
+          let multilineText = document.createElement("span");
+          multilineText.className =
+            "tools-collection-li-multiline-text tools-collection-selectable";
+          let textSpan = document.createElement("span");
+          textSpan.innerText = title + ":";
+          multilineText.appendChild(textSpan);
+          let sanitizedText = text;
+          textSpan = document.createElement("span");
+          if (!sanitize) {
+            textSpan.innerText = text;
+          } else {
+            textSpan.innerHTML = text;
+            for (
+              let i = 0,
+                elems = textSpan.getElementsByTagName("*"),
+                len = elems.length;
+              i < len;
+              i++
+            ) {
+              elems[i].removeAttribute("style");
+            }
+            textSpan.textContent = textSpan.innerHTML;
+            sanitizedText = textSpan.textContent;
           }
-          textSpan.textContent = textSpan.innerHTML;
-          sanitizedText = textSpan.textContent;
+          multilineText.appendChild(textSpan);
+          li.appendChild(multilineText);
+          ul.appendChild(li);
+          return { checkbox: checkbox, text: sanitizedText };
+        } catch (error) {
+          // console.log(error);
+          return undefined;
         }
-        multilineText.appendChild(textSpan);
-        li.appendChild(multilineText);
-        ul.appendChild(li);
-        return { checkbox: checkbox, text: sanitizedText };
       };
       /////////////////////////////////
-      let compiledData = {};
-      if (data.name) {
-        compiledData.title = addLine(
-          ul,
-          document.getElementById("tool-metadata-data-title-text").textContent,
-          data.name
-        );
-      }
-      if (data?.volume?.name) {
-        compiledData.series = addLine(
-          ul,
-          document.getElementById("tool-metadata-data-series-text").textContent,
-          data.volume.name
-        );
-      }
-      if (data.cover_date) {
-        let numbers = data.cover_date.split("-");
-        if (numbers.length > 0)
-          compiledData.year = addLine(
-            ul,
-            document.getElementById("tool-metadata-data-year-text").textContent,
-            numbers[0]
-          );
-        if (numbers.length > 1)
-          compiledData.month = addLine(
-            ul,
-            document.getElementById("tool-metadata-data-month-text")
-              .textContent,
-            numbers[1]
-          );
-        if (numbers.length > 2)
-          compiledData.day = addLine(
-            ul,
-            document.getElementById("tool-metadata-data-day-text").textContent,
-            numbers[2]
-          );
-      }
-      if (
-        g_searchHistory.issues.results.publisher &&
-        g_searchHistory.issues.results.publisher.name
-      ) {
-        compiledData.publisher = addLine(
-          ul,
-          document.getElementById("tool-metadata-data-publisher-text")
-            .textContent,
-          g_searchHistory.issues.results.publisher.name
-        );
-      }
-      if (data.issue_number) {
-        compiledData.number = addLine(
-          ul,
-          document.getElementById("tool-metadata-data-number-text").textContent,
-          data.issue_number
-        );
-      }
-      if (g_searchHistory.issues.results.count_of_issues) {
-        compiledData.totalNumber = addLine(
-          ul,
-          document.getElementById("tool-metadata-data-count-text").textContent,
-          g_searchHistory.issues.results.count_of_issues
-        );
-      }
-      if (data.person_credits) {
-        let roles = [
-          { name: "artist", list: "" },
-          { name: "penciler", altName: "penciller", list: "" },
-          { name: "inker", list: "" },
-          { name: "colorist", list: "" },
-          { name: "letterer", list: "" },
-          { name: "writer", list: "" },
-          { name: "cover", altName: "coverartist", list: "" },
-          { name: "editor", list: "" },
-        ];
-        for (let i = 0; i < roles.length; i++) {
-          for (let j = 0; j < data.person_credits.length; j++) {
-            const creator = data.person_credits[j];
-            if (creator.role.toLowerCase().includes(roles[i].name)) {
-              if (roles[i].list !== "") {
-                roles[i].list += ", ";
-              }
-              roles[i].list += creator.name;
-            }
-          }
-        }
-        if (roles[0].list !== "") {
-          if (roles[1].list !== "") {
-            roles[1].list += ", ";
-          }
-          roles[1].list += roles[0].list;
-          if (roles[2].list !== "") {
-            roles[2].list += ", ";
-          }
-          roles[2].list += roles[0].list;
-        }
-        for (let i = 1; i < roles.length; i++) {
-          if (roles[i].list !== "") {
-            compiledData[roles[i].name] = addLine(
-              ul,
-              document.getElementById(
-                `tool-metadata-data-${
-                  roles[i].altName !== undefined
-                    ? roles[i].altName
-                    : roles[i].name
-                }-text`
-              ).textContent,
-              roles[i].list
-            );
-          }
-        }
-      }
-      if (data.story_arc_credits) {
-        let arcs = "";
-        for (let index = 0; index < data.story_arc_credits.length; index++) {
-          arcs += data.story_arc_credits[index].name;
-          if (index < data.story_arc_credits.length - 1) {
-            arcs += ", ";
-          }
-        }
-        if (arcs !== "")
-          compiledData.storyArc = addLine(
-            ul,
-            document.getElementById("tool-metadata-data-storyarc-text")
-              .textContent,
-            arcs
-          );
-      }
-      if (data.location_credits) {
-        let locations = "";
-        for (let index = 0; index < data.location_credits.length; index++) {
-          locations += data.location_credits[index].name;
-          if (index < data.location_credits.length - 1) {
-            locations += ", ";
-          }
-        }
-        if (locations !== "")
-          compiledData.locations = addLine(
-            ul,
-            document.getElementById("tool-metadata-data-locations-text")
-              .textContent,
-            locations
-          );
-      }
-      if (data.character_credits) {
-        let characters = "";
-        for (let index = 0; index < data.character_credits.length; index++) {
-          characters += data.character_credits[index].name;
-          if (index < data.character_credits.length - 1) {
-            characters += ", ";
-          }
-        }
-        if (characters !== "")
-          compiledData.characters = addLine(
-            ul,
-            document.getElementById("tool-metadata-data-characters-text")
-              .textContent,
-            characters
-          );
-      }
-      if (data.team_credits) {
-        let teams = "";
-        for (let index = 0; index < data.team_credits.length; index++) {
-          teams += data.team_credits[index].name;
-          if (index < data.team_credits.length - 1) {
-            teams += ", ";
-          }
-        }
-        if (teams !== "")
-          compiledData.teams = addLine(
-            ul,
-            document.getElementById("tool-metadata-data-teams-text")
-              .textContent,
-            teams
-          );
-      }
-      // TODO:
-      //aliases 	List of aliases the issue is known by. A \n (newline) seperates each alias.
-      if (data.description) {
-        compiledData.summary = addLine(
-          ul,
-          document.getElementById("tool-metadata-data-summary-text")
-            .textContent,
-          data.description,
-          true
-        );
-      }
+      g_subTool.onIssueSearchResults(
+        g_searchHistory,
+        button,
+        ul,
+        data,
+        addLine
+      );
       searchResultsDiv.appendChild(ul);
-
-      button.addEventListener("click", (event) => {
-        if (g_openModal) return;
-        showInfoModal(
-          g_localizedModalTexts.warningTitle,
-          g_localizedModalTexts.importingMessage,
-          g_localizedModalTexts.okButton,
-          g_localizedModalTexts.cancelButton,
-          () => {
-            // showProgressModal();
-            // updateModalTitleText(g_localizedModalTexts.importingTitle);
-            /////////////////////////////////
-            if (compiledData.title && compiledData.title.checkbox.checked) {
-              let element = document.getElementById(
-                "tool-metadata-data-title-input"
-              );
-              element.value = compiledData.title.text;
-              onFieldChanged(element);
-            }
-            if (compiledData.series && compiledData.series.checkbox.checked) {
-              let element = document.getElementById(
-                "tool-metadata-data-series-input"
-              );
-              element.value = compiledData.series.text;
-              onFieldChanged(element);
-            }
-            if (compiledData.year && compiledData.year.checkbox.checked) {
-              let element = document.getElementById(
-                "tool-metadata-data-year-input"
-              );
-              element.value = compiledData.year.text;
-              onFieldChanged(element);
-            }
-            if (compiledData.month && compiledData.month.checkbox.checked) {
-              let element = document.getElementById(
-                "tool-metadata-data-month-input"
-              );
-              element.value = compiledData.month.text;
-              onFieldChanged(element);
-            }
-            if (compiledData.day && compiledData.day.checkbox.checked) {
-              let element = document.getElementById(
-                "tool-metadata-data-day-input"
-              );
-              element.value = compiledData.day.text;
-              onFieldChanged(element);
-            }
-            if (
-              compiledData.publisher &&
-              compiledData.publisher.checkbox.checked
-            ) {
-              let element = document.getElementById(
-                "tool-metadata-data-publisher-input"
-              );
-              element.value = compiledData.publisher.text;
-              onFieldChanged(element);
-            }
-            if (compiledData.number && compiledData.number.checkbox.checked) {
-              let element = document.getElementById(
-                "tool-metadata-data-number-input"
-              );
-              element.value = compiledData.number.text;
-              onFieldChanged(element);
-            }
-            if (
-              compiledData.totalNumber &&
-              compiledData.totalNumber.checkbox.checked
-            ) {
-              let element = document.getElementById(
-                "tool-metadata-data-count-input"
-              );
-              element.value = compiledData.totalNumber.text;
-              onFieldChanged(element);
-            }
-            if (
-              compiledData["penciler"] &&
-              compiledData["penciler"].checkbox.checked
-            ) {
-              let element = document.getElementById(
-                "tool-metadata-data-penciller-input"
-              );
-              element.value = compiledData["penciler"].text;
-              onFieldChanged(element);
-            }
-            if (
-              compiledData["inker"] &&
-              compiledData["inker"].checkbox.checked
-            ) {
-              let element = document.getElementById(
-                "tool-metadata-data-inker-input"
-              );
-              element.value = compiledData["inker"].text;
-              onFieldChanged(element);
-            }
-            if (
-              compiledData["colorist"] &&
-              compiledData["colorist"].checkbox.checked
-            ) {
-              let element = document.getElementById(
-                "tool-metadata-data-colorist-input"
-              );
-              element.value = compiledData["colorist"].text;
-              onFieldChanged(element);
-            }
-            if (
-              compiledData["letterer"] &&
-              compiledData["letterer"].checkbox.checked
-            ) {
-              let element = document.getElementById(
-                "tool-metadata-data-letterer-input"
-              );
-              element.value = compiledData["letterer"].text;
-              onFieldChanged(element);
-            }
-            if (
-              compiledData["writer"] &&
-              compiledData["writer"].checkbox.checked
-            ) {
-              let element = document.getElementById(
-                "tool-metadata-data-writer-input"
-              );
-              element.value = compiledData["writer"].text;
-              onFieldChanged(element);
-            }
-            if (
-              compiledData["cover"] &&
-              compiledData["cover"].checkbox.checked
-            ) {
-              let element = document.getElementById(
-                "tool-metadata-data-coverartist-input"
-              );
-              element.value = compiledData["cover"].text;
-              onFieldChanged(element);
-            }
-            if (
-              compiledData["editor"] &&
-              compiledData["editor"].checkbox.checked
-            ) {
-              let element = document.getElementById(
-                "tool-metadata-data-editor-input"
-              );
-              element.value = compiledData["editor"].text;
-              onFieldChanged(element);
-            }
-            if (
-              compiledData.storyArc &&
-              compiledData.storyArc.checkbox.checked
-            ) {
-              let element = document.getElementById(
-                "tool-metadata-data-storyarc-input"
-              );
-              element.value = compiledData.storyArc.text;
-              onFieldChanged(element);
-            }
-            if (
-              compiledData.locations &&
-              compiledData.locations.checkbox.checked
-            ) {
-              let element = document.getElementById(
-                "tool-metadata-data-locations-input"
-              );
-              element.value = compiledData.locations.text;
-              onFieldChanged(element);
-            }
-            if (
-              compiledData.characters &&
-              compiledData.characters.checkbox.checked
-            ) {
-              let element = document.getElementById(
-                "tool-metadata-data-characters-input"
-              );
-              element.value = compiledData.characters.text;
-              onFieldChanged(element);
-            }
-            if (compiledData.teams && compiledData.teams.checkbox.checked) {
-              let element = document.getElementById(
-                "tool-metadata-data-teams-input"
-              );
-              element.value = compiledData.teams.text;
-              onFieldChanged(element);
-            }
-            if (compiledData.summary && compiledData.summary.checkbox.checked) {
-              let element = document.getElementById(
-                "tool-metadata-data-summary-textarea"
-              );
-              element.value = compiledData.summary.text;
-              onFieldChanged(element);
-            }
-
-            switchSection(2);
-            /////////////////////////////////
-            //closeModal();
-          }
-        );
-      });
     } else {
       let ul = document.createElement("ul");
       ul.className = "tools-collection-ul";
@@ -1030,6 +648,8 @@ function initOnIpcCallbacks() {
     });
     closeModal();
   });
+
+  ///////////////////////////////////////////
 
   on("set-api-key-file", (filePath, saveAsRelative) => {
     g_apiKeyFilePathCheckbox.checked = saveAsRelative;
@@ -1146,7 +766,7 @@ export function onContextMenu(params) {
   if (getOpenModal()) {
     return;
   }
-  sendIpcToMain("show-context-menu", params, g_isEditable);
+  g_subTool.onContextMenu(params);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1190,7 +810,7 @@ export function showProgressModal() {
   });
 }
 
-function showInfoModal(
+export function showInfoModal(
   title,
   message,
   textButton1,
