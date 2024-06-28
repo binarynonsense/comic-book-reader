@@ -362,7 +362,7 @@ function getTooltipsLocalization() {
 function getLocalization() {
   return [
     {
-      id: "tool-metadata-cix-title-text",
+      id: "tool-metadata-title-text",
       text: _("tool-metadata-cix-title").toUpperCase(),
     },
     //////////////////////////////////////////////

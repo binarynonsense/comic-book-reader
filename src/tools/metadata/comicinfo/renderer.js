@@ -140,14 +140,14 @@ function onFieldChanged(element) {
   if (g_isEditable) g_saveButton.classList.remove("tools-disabled");
 }
 
-export function onLoadMetadata(json, error) {
-  g_data = json;
+export function onLoadMetadata(data, error) {
+  g_data = data;
 
   // fill UI with json data
   for (let index = 0; index < g_fields.length; index++) {
     const field = g_fields[index];
     if (!field.xmlId || !field.xmlType) continue;
-    let value = json["ComicInfo"][field.xmlId];
+    let value = data["ComicInfo"][field.xmlId];
     if (value && value !== "") {
       if (field.xmlType !== "Page") {
         // sanitize

@@ -570,14 +570,7 @@ function initOnIpcCallbacks() {
 
   on("open-metadata-tool", () => {
     if (g_fileData.path !== undefined) {
-      if (
-        g_fileData.type === FileDataType.EPUB_COMIC ||
-        g_fileData.type === FileDataType.EPUB_EBOOK
-      ) {
-        tools.switchTool("tool-metadata", g_fileData);
-      } else {
-        tools.switchTool("tool-comicinfoxml", g_fileData);
-      }
+      tools.switchTool("tool-metadata", g_fileData);
     }
   });
 

@@ -30,7 +30,6 @@ exports.init = function () {
   g_tools["tool-xkcd"] = require("../../tools/xkcd/main");
   g_tools["tool-librivox"] = require("../../tools/librivox/main");
   g_tools["tool-wiktionary"] = require("../../tools/wiktionary/main");
-  g_tools["tool-comicinfoxml"] = require("../../tools/comicinfoxml/main");
   g_tools["tool-file-browser"] = require("../../tools/file-browser/main");
   g_tools["tool-radio"] = require("../../tools/radio/main");
   g_tools["tool-metadata"] = require("../../tools/metadata/main");
