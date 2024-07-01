@@ -156,7 +156,6 @@ export function onIssueSearchResults(
   addLine
 ) {
   importButton.classList.remove("tools-disabled");
-  console.log(data);
   let compiledData = {};
   let title;
   if (data?.volume?.name && data.name) {
