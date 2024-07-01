@@ -69,7 +69,7 @@ export function onLoadMetadata(metadata, error) {
     });
   }
   addHtml(detailsDiv, "title", "text", g_data.originalMetadata["title"]);
-  addHtml(detailsDiv, "author", "text", g_data.originalMetadata["title"]);
+  addHtml(detailsDiv, "author", "text", g_data.originalMetadata["author"]);
   addHtml(
     detailsDiv,
     "subject",
