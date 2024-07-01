@@ -45,22 +45,26 @@ exports.close = function () {};
 ///////////////////////////////////////////////////////////////////////////////
 
 exports.loadMetadata = async function () {
-  const { PDFDocument } = require("pdf-lib");
-  const pdf = await PDFDocument.load(fs.readFileSync(g_fileData.path), {
-    updateMetadata: false,
-  });
+  try {
+    const { PDFDocument } = require("pdf-lib");
+    const pdf = await PDFDocument.load(fs.readFileSync(g_fileData.path), {
+      updateMetadata: false,
+    });
 
-  g_metadata = {};
-  g_metadata["title"] = pdf.getTitle();
-  g_metadata["author"] = pdf.getAuthor();
-  g_metadata["subject"] = pdf.getSubject();
-  g_metadata["keywords"] = pdf.getKeywords();
-  g_metadata["creator"] = pdf.getCreator();
-  g_metadata["producer"] = pdf.getProducer();
-  g_metadata["creationDate"] = pdf.getCreationDate();
-  g_metadata["modificationDate"] = pdf.getModificationDate();
+    g_metadata = {};
+    g_metadata["title"] = pdf.getTitle();
+    g_metadata["author"] = pdf.getAuthor();
+    g_metadata["subject"] = pdf.getSubject();
+    g_metadata["keywords"] = pdf.getKeywords();
+    g_metadata["creator"] = pdf.getCreator();
+    g_metadata["producer"] = pdf.getProducer();
+    g_metadata["creationDate"] = pdf.getCreationDate();
+    g_metadata["modificationDate"] = pdf.getModificationDate();
 
-  base.sendIpcToRenderer("load-metadata", g_metadata);
+    base.sendIpcToRenderer("load-metadata", g_metadata);
+  } catch (error) {
+    // TODO: error modal and close?
+  }
 };
 
 exports.saveMetadataToFile = async function (data) {
