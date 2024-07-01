@@ -12,6 +12,7 @@ import {
 import * as modals from "../../shared/renderer/modals.js";
 import * as comicinfo from "./comicinfo/renderer.js";
 import * as epub from "./epub/renderer.js";
+import * as pdf from "./pdf/renderer.js";
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -216,6 +217,8 @@ function initOnIpcCallbacks() {
       g_subTool = comicinfo;
     } else if (id === "epub") {
       g_subTool = epub;
+    } else if (id === "pdf") {
+      g_subTool = pdf;
     }
   });
 

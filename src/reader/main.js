@@ -2384,6 +2384,19 @@ async function onMenuFileProperties() {
         g_fileData.metadata,
         g_fileData.password
       );
+    } else if (g_fileData.type === FileDataType.PDF) {
+      const { PDFDocument } = require("pdf-lib");
+      const pdf = await PDFDocument.load(fs.readFileSync(g_fileData.path), {
+        updateMetadata: false,
+      });
+      g_fileData.metadata.title = pdf.getTitle();
+      g_fileData.metadata.author = pdf.getAuthor();
+      g_fileData.metadata.subject = pdf.getSubject();
+      g_fileData.metadata.keywords = pdf.getKeywords();
+      g_fileData.metadata.creator = pdf.getCreator();
+      g_fileData.metadata.producer = pdf.getProducer();
+      g_fileData.metadata.created = pdf.getCreationDate();
+      g_fileData.metadata.modified = pdf.getModificationDate();
     }
     // create table
     let html = "";
@@ -2477,7 +2490,9 @@ async function onMenuFileProperties() {
       g_fileData.metadata.created
     ) {
       let date = g_fileData.metadata.created;
-      date = utils.parsePdfDate(date);
+      if (typeof date === "string") {
+        date = utils.parsePdfDate(date);
+      }
       date = date.toLocaleString();
       // date = Intl.DateTimeFormat([], {
       //   dayTime: "short",
@@ -2491,7 +2506,9 @@ async function onMenuFileProperties() {
     // modified
     if (g_fileData.metadata && g_fileData.metadata.modified) {
       let date = g_fileData.metadata.modified;
-      date = utils.parsePdfDate(date);
+      if (typeof date === "string") {
+        date = utils.parsePdfDate(date);
+      }
       if (stats.mtime.getTime() > date.getTime()) {
         date = stats.mtime;
       }
@@ -2544,7 +2561,6 @@ async function onMenuFileProperties() {
     }
     ///////////////////
     html += `</table>`;
-
     // send //////////////////////
     const canHaveComicInfo =
       g_fileData.type === FileDataType.ZIP ||
@@ -2563,7 +2579,8 @@ async function onMenuFileProperties() {
       }
     } else if (
       core.isDev() &&
-      (g_fileData.type === FileDataType.EPUB_COMIC ||
+      (g_fileData.type === FileDataType.PDF ||
+        g_fileData.type === FileDataType.EPUB_COMIC ||
         g_fileData.type === FileDataType.EPUB_EBOOK)
     ) {
       buttonText = _("ui-modal-prompt-button-edit-metadata");

@@ -18,6 +18,7 @@ const { FileDataType } = require("../../shared/main/constants");
 
 const comicInfo = require("./comicinfo/main");
 const epub = require("./epub/main");
+const pdf = require("./pdf/main");
 
 const log = require("../../shared/main/logger");
 
@@ -51,6 +52,8 @@ exports.open = function (fileData) {
     g_fileData.type === FileDataType.EPUB_EBOOK
   ) {
     g_subTool = epub;
+  } else if (g_fileData.type === FileDataType.PDF) {
+    g_subTool = pdf;
   } else {
     g_subTool = comicInfo;
   }
