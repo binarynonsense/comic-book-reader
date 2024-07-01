@@ -30,6 +30,11 @@ export function init(fileData) {
 // TOOL ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+function onFieldChanged(element) {
+  g_saveButton.classList.remove("tools-disabled");
+  g_data.modifiedMetadata[element.getAttribute("data-key")] = element.value;
+}
+
 export function onLoadMetadata(metadata, error) {
   g_data = {};
   g_data.originalMetadata = metadata;
@@ -57,9 +62,10 @@ export function onLoadMetadata(metadata, error) {
     span.innerText = g_localizedSubTool[key];
     input.value = value;
     input.spellcheck = false;
+    input.id = `tool-metadata-data-${key}-input`;
+    input.setAttribute("data-key", key);
     input.addEventListener("change", (event) => {
-      g_saveButton.classList.remove("tools-disabled");
-      g_data.modifiedMetadata[key] = input.value;
+      onFieldChanged(input);
     });
   }
   addHtml(detailsDiv, "title", "text", g_data.originalMetadata["title"]);
@@ -128,7 +134,117 @@ export function onIssueSearchResults(
   ul,
   data,
   addLine
-) {}
+) {
+  importButton.classList.remove("tools-disabled");
+  console.log(data);
+  let compiledData = {};
+  let title;
+  if (data?.volume?.name && data.name) {
+    title = data.volume.name + " - " + data.name;
+  } else if (data?.volume?.name) {
+    title = data.volume.name;
+  } else if (data.name) {
+    title = data.name;
+  }
+  if (title) {
+    compiledData.title = addLine(ul, g_localizedSubTool.title, title);
+  }
+  if (data.person_credits) {
+    let roles = [
+      { name: "artist", list: "" },
+      { name: "penciler", altName: "penciller", list: "" },
+      { name: "inker", list: "" },
+      { name: "colorist", list: "" },
+      { name: "letterer", list: "" },
+      { name: "writer", list: "" },
+      { name: "cover", altName: "coverartist", list: "" },
+      { name: "editor", list: "" },
+    ];
+    for (let i = 0; i < roles.length; i++) {
+      for (let j = 0; j < data.person_credits.length; j++) {
+        const creator = data.person_credits[j];
+        if (creator.role.toLowerCase().includes(roles[i].name)) {
+          if (roles[i].list !== "") {
+            roles[i].list += ", ";
+          }
+          roles[i].list += creator.name;
+        }
+      }
+    }
+    if (roles[0].list !== "") {
+      if (roles[1].list !== "") {
+        roles[1].list += ", ";
+      }
+      roles[1].list += roles[0].list;
+      if (roles[2].list !== "") {
+        roles[2].list += ", ";
+      }
+      roles[2].list += roles[0].list;
+    }
+
+    let author = "";
+    for (let i = 1; i < roles.length; i++) {
+      if (roles[i].list && roles[i].list !== "") {
+        if (author != "") {
+          author += "; ";
+        }
+        author += roles[i].name + ": " + roles[i].list;
+      }
+    }
+
+    compiledData.author = addLine(ul, g_localizedSubTool.author, author);
+  }
+
+  if (data.description) {
+    const div = document.createElement("div");
+    div.innerHTML = data.description;
+    compiledData.summary = addLine(
+      ul,
+      g_localizedSubTool.subject,
+      div.innerText,
+      true // just in case
+    );
+  }
+
+  /////////////////////////////////////////
+
+  importButton.addEventListener("click", (event) => {
+    if (base.getOpenModal()) return;
+    onImportSearchResults(compiledData);
+  });
+}
+
+function onImportSearchResults(compiledData) {
+  base.showInfoModal(
+    g_localizedModalTexts.warningTitle,
+    g_localizedModalTexts.importingMessage,
+    g_localizedModalTexts.okButton,
+    g_localizedModalTexts.cancelButton,
+    () => {
+      if (compiledData.title && compiledData.title.checkbox.checked) {
+        let element = document.getElementById("tool-metadata-data-title-input");
+        element.value = compiledData.title.text;
+        onFieldChanged(element);
+      }
+      if (compiledData["author"] && compiledData["author"].checkbox.checked) {
+        let element = document.getElementById(
+          "tool-metadata-data-author-input"
+        );
+        element.value = compiledData["author"].text;
+        onFieldChanged(element);
+      }
+      if (compiledData.summary && compiledData.summary.checkbox.checked) {
+        let element = document.getElementById(
+          "tool-metadata-data-subject-input"
+        );
+        element.value = compiledData.summary.text;
+        onFieldChanged(element);
+      }
+
+      base.switchSection(2);
+    }
+  );
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // LOCALIZATION ///////////////////////////////////////////////////////////////
