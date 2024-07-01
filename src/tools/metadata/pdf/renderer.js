@@ -120,7 +120,22 @@ export async function onSave() {
   );
 }
 
-export function onSavingDone(error) {}
+export function onSavingDone(error) {
+  if (!error) {
+    base.showInfoModal(
+      g_localizedModalTexts.successTitle,
+      g_localizedModalTexts.savingMessageSuccessUpdate,
+      g_localizedModalTexts.okButton
+    );
+    g_hasInfo = true;
+  } else {
+    base.showInfoModal(
+      g_localizedModalTexts.errorTitle,
+      g_localizedModalTexts.savingMessageSuccessUpdate,
+      g_localizedModalTexts.okButton
+    );
+  }
+}
 
 //////////////////////////////////////////////
 

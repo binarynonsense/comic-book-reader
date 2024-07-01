@@ -832,8 +832,8 @@ export function showInfoModal(
     buttons.push({
       text: textButton1,
       callback: () => {
-        if (callbackButton1) callbackButton1();
         modalClosed();
+        if (callbackButton1) callbackButton1();
       },
     });
   }
@@ -841,8 +841,8 @@ export function showInfoModal(
     buttons.push({
       text: textButton2,
       callback: () => {
-        if (callbackButton2) callbackButton2();
         modalClosed();
+        if (callbackButton2) callbackButton2();
       },
     });
   }

@@ -94,8 +94,8 @@ export function show(options) {
           .classList.add("set-display-none");
       }
       button.addEventListener("click", (event) => {
-        if (options.close?.callback) options.close.callback();
         close(modalDiv);
+        if (options.close?.callback) options.close.callback();
       });
       if (options.close?.key && typeof options.close.key === "string") {
         button.setAttribute("data-key", options.close.key);
@@ -121,9 +121,9 @@ export function show(options) {
               : "OK";
           buttonsDiv.appendChild(buttonDiv);
           buttonDiv.addEventListener("click", (event) => {
+            if (!buttonOptions.dontClose) close(modalDiv);
             if (buttonOptions.callback)
               buttonOptions.callback(inputElement.value);
-            if (!buttonOptions.dontClose) close(modalDiv);
           });
           if (buttonOptions.key && typeof buttonOptions.key === "string") {
             buttonDiv.setAttribute("data-key", buttonOptions.key);

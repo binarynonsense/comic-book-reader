@@ -92,6 +92,9 @@ exports.saveMetadataToFile = async function (data) {
 
   const pdfBytes = await pdf.save();
   fs.writeFileSync(g_fileData.path, pdfBytes);
+
+  // TODO: error try catch
+  base.sendIpcToRenderer("saving-done");
 };
 
 ///////////////////////////////////////////////////////////////////////////////
