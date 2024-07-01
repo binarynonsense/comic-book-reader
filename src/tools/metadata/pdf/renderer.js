@@ -140,9 +140,17 @@ export function onIssueSearchResults(
   let compiledData = {};
   let title;
   if (data?.volume?.name && data.name) {
-    title = data.volume.name + " - " + data.name;
+    if (data.issue_number) {
+      title = data.volume.name + " #" + data.issue_number + " - " + data.name;
+    } else {
+      title = data.volume.name + " - " + data.name;
+    }
   } else if (data?.volume?.name) {
-    title = data.volume.name;
+    if (data.issue_number) {
+      title = data.volume.name + " #" + data.issue_number;
+    } else {
+      title = data.volume.name;
+    }
   } else if (data.name) {
     title = data.name;
   }
