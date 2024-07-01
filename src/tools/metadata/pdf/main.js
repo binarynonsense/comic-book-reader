@@ -64,37 +64,48 @@ exports.loadMetadata = async function () {
 };
 
 exports.saveMetadataToFile = async function (data) {
-  const { PDFDocument } = require("pdf-lib");
-  const pdf = await PDFDocument.load(fs.readFileSync(g_fileData.path));
+  try {
+    const { PDFDocument } = require("pdf-lib");
+    const pdf = await PDFDocument.load(fs.readFileSync(g_fileData.path));
 
-  if (data["title"]) pdf.setTitle(data["title"]);
-  if (data["author"]) pdf.setAuthor(data["author"]);
-  if (data["subject"]) pdf.setSubject(data["subject"]);
-  if (data["keywords"]) {
-    if (
-      !Array.isArray(data["keywords"]) &&
-      typeof data["keywords"] === "string"
-    ) {
-      data["keywords"] = [data["keywords"]];
+    if (data["title"]) pdf.setTitle(data["title"]);
+    if (data["author"]) pdf.setAuthor(data["author"]);
+    if (data["subject"]) pdf.setSubject(data["subject"]);
+    if (data["keywords"]) {
+      if (
+        !Array.isArray(data["keywords"]) &&
+        typeof data["keywords"] === "string"
+      ) {
+        data["keywords"] = [data["keywords"]];
+      }
+      pdf.setKeywords(data["keywords"]); // must be array
     }
-    pdf.setKeywords(data["keywords"]); // must be array
-  }
-  if (data["producer"]) pdf.setProducer(data["producer"]);
-  if (data["creator"]) pdf.setCreator(data["creator"]);
-  let creationDate = new Date(data["creationDate"]);
-  if (creationDate && creationDate.toString() !== "Invalid Date") {
-    pdf.setCreationDate(creationDate);
-  }
-  let modificationDate = new Date(data["creationDate"]);
-  if (modificationDate && modificationDate.toString() !== "Invalid Date") {
-    pdf.setCreationDate(modificationDate);
-  }
+    if (data["producer"]) pdf.setProducer(data["producer"]);
+    if (data["creator"]) pdf.setCreator(data["creator"]);
 
-  const pdfBytes = await pdf.save();
-  fs.writeFileSync(g_fileData.path, pdfBytes);
+    if (data["creationDate"]) {
+      let creationDate = new Date(data["creationDate"]);
+      if (creationDate && creationDate.toString() !== "Invalid Date") {
+        pdf.setCreationDate(creationDate);
+      } else {
+        throw { dateError: true };
+      }
+    }
+    if (data["modificationDate"]) {
+      let modificationDate = new Date(data["modificationDate"]);
+      if (modificationDate && modificationDate.toString() !== "Invalid Date") {
+        pdf.setCreationDate(modificationDate);
+      } else {
+        throw { dateError: true };
+      }
+    }
 
-  // TODO: error try catch
-  base.sendIpcToRenderer("saving-done");
+    const pdfBytes = await pdf.save();
+    fs.writeFileSync(g_fileData.path, pdfBytes);
+    base.sendIpcToRenderer("saving-done");
+  } catch (error) {
+    base.sendIpcToRenderer("saving-done", error);
+  }
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -114,6 +125,9 @@ function updateLocalizedText() {
       ),
       savingMessageErrorUpdate: _(
         "tool-metadata-modal-message-could-not-update"
+      ),
+      savingMessageInvalidChanges: _(
+        "tool-metadata-modal-message-invalid-changes"
       ),
       ...baseLocalizedText[2],
     },

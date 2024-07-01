@@ -127,11 +127,16 @@ export function onSavingDone(error) {
       g_localizedModalTexts.savingMessageSuccessUpdate,
       g_localizedModalTexts.okButton
     );
-    g_hasInfo = true;
+  } else if (error.dateError) {
+    base.showInfoModal(
+      g_localizedModalTexts.errorTitle,
+      g_localizedModalTexts.savingMessageInvalidChanges,
+      g_localizedModalTexts.okButton
+    );
   } else {
     base.showInfoModal(
       g_localizedModalTexts.errorTitle,
-      g_localizedModalTexts.savingMessageSuccessUpdate,
+      g_localizedModalTexts.savingMessageErrorUpdate,
       g_localizedModalTexts.okButton
     );
   }
