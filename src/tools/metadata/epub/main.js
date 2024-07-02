@@ -48,16 +48,20 @@ exports.close = function () {};
 ///////////////////////////////////////////////////////////////////////////////
 
 exports.loadMetadata = async function () {
-  g_metadata = await epub.getMetadataFileData(
-    g_fileData.path,
-    g_fileData.password
-  );
-  base.sendIpcToRenderer(
-    "load-metadata",
-    g_metadata.json["package"]["metadata"],
-    g_metadata.json["package"]["@_version"],
-    undefined
-  );
+  try {
+    g_metadata = await epub.getMetadataFileData(
+      g_fileData.path,
+      g_fileData.password
+    );
+    base.sendIpcToRenderer(
+      "load-metadata",
+      g_metadata.json["package"]["metadata"],
+      g_metadata.json["package"]["@_version"],
+      undefined
+    );
+  } catch (error) {
+    // TODO: recover or close with message?
+  }
 };
 
 exports.saveMetadataToFile = async function (data) {};
@@ -74,6 +78,16 @@ function updateLocalizedText() {
     [...baseLocalizedText[1], ...getTooltipsLocalization()],
     {
       ...baseLocalizedText[2],
+    },
+    {
+      uiTitles: _("tool-metadata-epub-titles"),
+      uiTitle: _("ui-modal-info-metadata-title"),
+      uiCreators: _("tool-metadata-section-creators"),
+      uiCreator: _("ui-modal-info-metadata-creator"),
+      uiFileAs: _("tool-metadata-epub-file-as"),
+      uiRole: _("tool-metadata-epub-role"),
+      uiAdd: _("tool-shared-ui-add").toUpperCase(),
+      uiRemove: _("ui-modal-prompt-button-remove").toUpperCase(),
     }
   );
 }
@@ -87,7 +101,11 @@ function getLocalization() {
   return [
     {
       id: "tool-metadata-title-text",
-      text: _("tool-metadata-title").toUpperCase(),
+      text:
+        _("tool-metadata-title").toUpperCase() +
+        " (" +
+        _("tool-shared-ui-experimental").toUpperCase() +
+        ")",
     },
     //////////////////////////////////////////////
     {
@@ -102,6 +120,14 @@ function getLocalization() {
     ////////////////////////////////
   ];
 }
+
+// refs:
+// https://readium.org/architecture/streamer/parser/metadata.html
+// https://www.w3.org/TR/epub/
+// https://web.archive.org/web/20140715081956/http://epubzone.org/news/epub-3-packaging-and-metadata
+// https://sketchytech.blogspot.com/2014/03/epub2-to-epub3-lessons-learnt-in.html
+// https://wiki.kavitareader.com/guides/metadata/epubs
+// https://komga.org/docs/guides/scan-analysis-refresh/
 
 // json metadata examples:
 

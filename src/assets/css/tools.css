@@ -58,6 +58,13 @@ html[dir="rtl"] #tools {
   margin-bottom: 20px;
 }
 
+.tools-columns-right-subsection-1 {
+  padding: 10px 20px;
+  margin-bottom: 10px;
+  /* background-color: color-mix(in srgb, var(--tools-bg2-color) 96%, black); */
+  border: 1px solid var(--tools-input-border-color);
+}
+
 /* /////////////////////////////////////////////////////////////// */
 
 #tools-menu-sticky-div {
@@ -160,6 +167,16 @@ html[dir="rtl"] .tools-button-accent i {
 .tools-button-danger {
   background-color: var(--tools-button-danger-bg-color) !important;
   color: var(--tools-button-danger-text-color) !important;
+}
+
+.tools-input-label-button {
+  padding: 0px !important;
+  height: 35px !important;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  margin: 15px 0px 0px 0px !important;
 }
 
 /* /////////////////////////////////////////////////////////////// */
