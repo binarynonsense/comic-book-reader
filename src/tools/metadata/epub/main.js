@@ -81,13 +81,31 @@ function updateLocalizedText() {
     },
     {
       uiTitles: _("tool-metadata-epub-titles"),
-      uiTitle: _("ui-modal-info-metadata-title"),
       uiCreators: _("tool-metadata-section-creators"),
-      uiCreator: _("ui-modal-info-metadata-creator"),
       uiFileAs: _("tool-metadata-epub-file-as"),
       uiRole: _("tool-metadata-epub-role"),
       uiAdd: _("tool-shared-ui-add").toUpperCase(),
       uiRemove: _("ui-modal-prompt-button-remove").toUpperCase(),
+
+      uiTagNames: {
+        title: _("ui-modal-info-metadata-title"),
+        creator: _("ui-modal-info-metadata-creator"),
+        description: _("ui-modal-info-metadata-description"),
+        subject: _("ui-modal-info-metadata-subject"),
+        language: _("ui-modal-info-metadata-language"),
+        publisher: _("ui-modal-info-metadata-publisher"),
+        date: _("ui-modal-info-metadata-publicationdate"),
+      },
+
+      uiAuthor: _("ui-modal-info-metadata-author"),
+      uiPublisher: _("tool-metadata-data-publisher"),
+      uiTranslator: _("tool-metadata-data-translator"),
+      uiIllustrator: _("tool-metadata-data-illustrator"),
+      uiArtist: _("tool-metadata-data-artist"),
+      uiColorist: _("tool-metadata-data-colorist"),
+      uiNarrator: _("tool-metadata-data-narrator"),
+      uiCoverArtist: _("tool-metadata-data-coverartist"),
+      uiEditor: _("tool-metadata-data-editor"),
     }
   );
 }

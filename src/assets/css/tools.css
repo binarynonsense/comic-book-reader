@@ -58,7 +58,7 @@ html[dir="rtl"] #tools {
   margin-bottom: 20px;
 }
 
-.tools-columns-right-subsection-1 {
+.tools-columns-right-subsection {
   padding: 10px 20px;
   margin-bottom: 10px;
   /* background-color: color-mix(in srgb, var(--tools-bg2-color) 96%, black); */

@@ -47,10 +47,18 @@ export function onLoadMetadata(metadata, version, error) {
         entry = structuredClone(entry); // needed??
         if (Array.isArray(entry)) {
           entry.forEach((element) => {
-            result.push(element);
+            if (typeof element === "string") {
+              result.push({ "#text": element });
+            } else {
+              result.push(element);
+            }
           });
         } else {
-          result.push({ "#text": entry });
+          if (typeof entry === "string") {
+            result.push({ "#text": entry });
+          } else {
+            result.push(entry);
+          }
         }
       }
       return result;
@@ -82,6 +90,7 @@ export function onLoadMetadata(metadata, version, error) {
       if (tempData.known[tag]) {
         tempData.known[tag].forEach((tagEntry) => {
           if (tagEntry["@_id"]) {
+            console.log(tagEntry["@_id"]);
             tempData.known["meta"].forEach((meta, metaIndex) => {
               if (
                 meta["@_refines"] &&
@@ -96,6 +105,7 @@ export function onLoadMetadata(metadata, version, error) {
               }
             });
           }
+          console.log(tagEntry);
         });
       }
     });
@@ -192,6 +202,24 @@ export function onLoadMetadata(metadata, version, error) {
       g_data["creator"].push({});
     }
     //////
+    knownTags.forEach((tag) => {
+      if (tag !== "dc:title" && tag !== "dc:creator") {
+        let newTag = tag.replace("dc:", "");
+        console.log(tag);
+        console.log(tempData.known[tag]);
+        g_data[newTag] = [];
+        if (tempData.known[tag] && tempData.known[tag].length >= 1) {
+          tempData.known[tag].forEach((element) => {
+            g_data[newTag].push({
+              text: element["#text"],
+            });
+          });
+        } else {
+          g_data[newTag].push({});
+        }
+      }
+    });
+    //////
     g_data.version = tempData.version;
     g_data.meta = tempData.meta;
     g_data.unknown = tempData.unknown;
@@ -213,6 +241,164 @@ export function onLoadMetadata(metadata, version, error) {
   }
 }
 
+function onFieldChanged(element) {
+  g_saveButton.classList.remove("tools-disabled");
+}
+
+function addField(parentDiv, key) {
+  let data = g_data[key];
+  const nameLabel = document.createElement("label");
+  {
+    const nameSpan = document.createElement("span");
+    nameSpan.innerText = g_localizedSubTool.uiTagNames[key];
+    nameLabel.appendChild(nameSpan);
+
+    let nameInput;
+    if (key === "description") {
+      nameInput = document.createElement("textarea");
+    } else {
+      nameInput = document.createElement("input");
+      nameInput.type = "text";
+    }
+    if (key === "subject" && data.length > 1) {
+      let text = "";
+      data.forEach((element) => {
+        if (element["text"]) {
+          if (text !== "") {
+            text += "; ";
+          }
+          text += element["text"];
+        }
+      });
+      nameInput.value = text;
+    } else {
+      nameInput.value = data[0]["text"] ? data[0]["text"] : "";
+    }
+
+    nameInput.spellcheck = false;
+    nameInput.addEventListener("change", (event) => {
+      onFieldChanged(nameInput);
+    });
+    nameLabel.appendChild(nameInput);
+  }
+  parentDiv.appendChild(nameLabel);
+}
+
+function addSubFields(parentDiv, index, data, type) {
+  const sectionDiv = document.createElement("div");
+  sectionDiv.classList.add("tool-shared-columns-parent");
+  {
+    const nameLabel = document.createElement("label");
+    nameLabel.classList.add("tool-shared-columns-50-grow");
+    {
+      const nameSpan = document.createElement("span");
+      if (type === "title") {
+        nameSpan.innerText = g_localizedSubTool.uiTagNames.title;
+      } else if (type === "creator") {
+        nameSpan.innerText = g_localizedSubTool.uiTagNames.creator;
+      }
+      nameLabel.appendChild(nameSpan);
+
+      const nameInput = document.createElement("input");
+      nameInput.value = data["text"] ? data["text"] : "";
+      nameInput.type = "text";
+      nameInput.spellcheck = false;
+      nameInput.addEventListener("change", (event) => {
+        onFieldChanged(nameInput);
+      });
+      nameLabel.appendChild(nameInput);
+    }
+    sectionDiv.appendChild(nameLabel);
+
+    const fileAsLabel = document.createElement("label");
+    fileAsLabel.classList.add("tool-shared-columns-25");
+    {
+      const fileAsSpan = document.createElement("span");
+      fileAsSpan.innerText = g_localizedSubTool.uiFileAs;
+      fileAsLabel.appendChild(fileAsSpan);
+
+      const fileAsInput = document.createElement("input");
+      fileAsInput.value = data["fileAs"] ? data["fileAs"] : "";
+      fileAsInput.type = "text";
+      fileAsInput.spellcheck = false;
+      fileAsInput.addEventListener("change", (event) => {
+        onFieldChanged(fileAsInput);
+      });
+      fileAsLabel.appendChild(fileAsInput);
+    }
+    sectionDiv.appendChild(fileAsLabel);
+
+    if (type === "creator") {
+      const roleLabel = document.createElement("label");
+      roleLabel.classList.add("tool-shared-columns-25");
+      {
+        const roleSpan = document.createElement("span");
+        roleSpan.innerText = g_localizedSubTool.uiRole;
+        roleLabel.appendChild(roleSpan);
+
+        const roleSelect = document.createElement("select");
+        // ref: https://www.loc.gov/marc/relators/relaterm.html
+        let optionsHtml = `
+        <option value=""></option>
+        <option value="aut">${g_localizedSubTool.uiAuthor}</option>
+        <option value="art">${g_localizedSubTool.uiArtist}</option>
+        <option value="ill">${g_localizedSubTool.uiIllustrator}</option>
+        <option value="clr">${g_localizedSubTool.uiColorist}</option>
+        <option value="cov">${g_localizedSubTool.uiCoverArtist}</option>
+        <option value="pbl">${g_localizedSubTool.uiPublisher}</option>
+        <option value="trl">${g_localizedSubTool.uiTranslator}</option>
+        <option value="edt">${g_localizedSubTool.uiEditor}</option>
+        <option value="nrt">${g_localizedSubTool.uiNarrator}</option>        
+        `;
+        roleSelect.innerHTML = optionsHtml;
+        function isValidRole(role) {
+          let roles = [
+            "aut",
+            "art",
+            "ill",
+            "clr",
+            "cov",
+            "pbl",
+            "trl",
+            "edt",
+            "nrt",
+          ];
+          return roles.includes(role);
+        }
+        roleSelect.value = isValidRole(data["role"]) ? data["role"] : "";
+        roleSelect.addEventListener("change", (event) => {
+          onFieldChanged(roleSelect);
+        });
+        roleLabel.appendChild(roleSelect);
+      }
+      sectionDiv.appendChild(roleLabel);
+    }
+
+    const removeButtonLabel = document.createElement("label");
+    removeButtonLabel.classList.add("tool-shared-columns-25");
+    {
+      const removeButtonLabelSpan = document.createElement("span");
+      removeButtonLabelSpan.innerHTML = "&nbsp;&nbsp;";
+      removeButtonLabel.appendChild(removeButtonLabelSpan);
+
+      const removeTitleButton = document.createElement("button");
+      removeTitleButton.classList.add("tools-input-label-button");
+      removeButtonLabel.appendChild(removeTitleButton);
+      const removeTitleSpan = document.createElement("span");
+      removeTitleButton.appendChild(removeTitleSpan);
+      removeTitleSpan.innerText = g_localizedSubTool.uiRemove;
+      removeTitleButton.addEventListener("click", function (event) {
+        console.log("click");
+      });
+      if (index === 0) {
+        removeButtonLabel.classList.add("tools-disabled");
+      }
+    }
+    sectionDiv.appendChild(removeButtonLabel);
+  }
+  parentDiv.appendChild(sectionDiv);
+}
+
 function buildSections() {
   console.log(g_data);
   const rootDiv = document.querySelector("#tool-metadata-section-2-lists-div");
@@ -228,67 +414,12 @@ function buildSections() {
     rootDiv.appendChild(titlesLabel);
 
     const titlesDiv = document.createElement("div");
-    titlesDiv.classList.add("tools-columns-right-subsection-1");
+    titlesDiv.classList.add("tools-columns-right-subsection");
     rootDiv.appendChild(titlesDiv);
 
     g_data["title"].forEach((title, index) => {
       title["id"] = "title" + index;
-      const parentDiv = document.createElement("div");
-      parentDiv.classList.add("tool-shared-columns-parent");
-      {
-        const titleLabel = document.createElement("label");
-        titleLabel.classList.add("tool-shared-columns-50-grow");
-        {
-          const titleSpan = document.createElement("span");
-          titleSpan.innerText = g_localizedSubTool.uiTitle;
-          titleLabel.appendChild(titleSpan);
-
-          const titleInput = document.createElement("input");
-          titleInput.value = title["text"] ? title["text"] : "";
-          titleInput.type = "text";
-          titleInput.spellcheck = false;
-          titleLabel.appendChild(titleInput);
-        }
-        parentDiv.appendChild(titleLabel);
-
-        const fileAsLabel = document.createElement("label");
-        fileAsLabel.classList.add("tool-shared-columns-25");
-        {
-          const fileAsSpan = document.createElement("span");
-          fileAsSpan.innerText = g_localizedSubTool.uiFileAs;
-          fileAsLabel.appendChild(fileAsSpan);
-
-          const fileAsInput = document.createElement("input");
-          fileAsInput.value = title["fileAs"] ? title["fileAs"] : "";
-          fileAsInput.type = "text";
-          fileAsInput.spellcheck = false;
-          fileAsLabel.appendChild(fileAsInput);
-        }
-        parentDiv.appendChild(fileAsLabel);
-
-        const removeButtonLabel = document.createElement("label");
-        removeButtonLabel.classList.add("tool-shared-columns-25");
-        {
-          const removeButtonLabelSpan = document.createElement("span");
-          removeButtonLabelSpan.innerHTML = "&nbsp;&nbsp;";
-          removeButtonLabel.appendChild(removeButtonLabelSpan);
-
-          const removeTitleButton = document.createElement("button");
-          removeTitleButton.classList.add("tools-input-label-button");
-          removeButtonLabel.appendChild(removeTitleButton);
-          const removeTitleSpan = document.createElement("span");
-          removeTitleButton.appendChild(removeTitleSpan);
-          removeTitleSpan.innerText = g_localizedSubTool.uiRemove;
-          removeTitleButton.addEventListener("click", function (event) {
-            console.log("click");
-          });
-          if (index === 0) {
-            removeButtonLabel.classList.add("tools-disabled");
-          }
-        }
-        parentDiv.appendChild(removeButtonLabel);
-      }
-      titlesDiv.appendChild(parentDiv);
+      addSubFields(titlesDiv, index, title, "title");
     });
     ////
     const addTitleButton = document.createElement("button");
@@ -309,67 +440,12 @@ function buildSections() {
     rootDiv.appendChild(creatorsLabel);
 
     const creatorsDiv = document.createElement("div");
-    creatorsDiv.classList.add("tools-columns-right-subsection-1");
+    creatorsDiv.classList.add("tools-columns-right-subsection");
     rootDiv.appendChild(creatorsDiv);
 
-    g_data["creator"].forEach((title, index) => {
-      title["id"] = "creator" + index;
-      const parentDiv = document.createElement("div");
-      parentDiv.classList.add("tool-shared-columns-parent");
-      {
-        const titleLabel = document.createElement("label");
-        titleLabel.classList.add("tool-shared-columns-50-grow");
-        {
-          const titleSpan = document.createElement("span");
-          titleSpan.innerText = g_localizedSubTool.uiCreator;
-          titleLabel.appendChild(titleSpan);
-
-          const titleInput = document.createElement("input");
-          titleInput.value = title["text"] ? title["text"] : "";
-          titleInput.type = "text";
-          titleInput.spellcheck = false;
-          titleLabel.appendChild(titleInput);
-        }
-        parentDiv.appendChild(titleLabel);
-
-        const fileAsLabel = document.createElement("label");
-        fileAsLabel.classList.add("tool-shared-columns-25");
-        {
-          const fileAsSpan = document.createElement("span");
-          fileAsSpan.innerText = g_localizedSubTool.uiFileAs;
-          fileAsLabel.appendChild(fileAsSpan);
-
-          const fileAsInput = document.createElement("input");
-          fileAsInput.value = title["fileAs"] ? title["fileAs"] : "";
-          fileAsInput.type = "text";
-          fileAsInput.spellcheck = false;
-          fileAsLabel.appendChild(fileAsInput);
-        }
-        parentDiv.appendChild(fileAsLabel);
-
-        const removeButtonLabel = document.createElement("label");
-        removeButtonLabel.classList.add("tool-shared-columns-25");
-        {
-          const removeButtonLabelSpan = document.createElement("span");
-          removeButtonLabelSpan.innerHTML = "&nbsp;&nbsp;";
-          removeButtonLabel.appendChild(removeButtonLabelSpan);
-
-          const removeTitleButton = document.createElement("button");
-          removeTitleButton.classList.add("tools-input-label-button");
-          removeButtonLabel.appendChild(removeTitleButton);
-          const removeTitleSpan = document.createElement("span");
-          removeTitleButton.appendChild(removeTitleSpan);
-          removeTitleSpan.innerText = g_localizedSubTool.uiRemove;
-          removeTitleButton.addEventListener("click", function (event) {
-            console.log("click");
-          });
-          if (index === 0) {
-            removeButtonLabel.classList.add("tools-disabled");
-          }
-        }
-        parentDiv.appendChild(removeButtonLabel);
-      }
-      creatorsDiv.appendChild(parentDiv);
+    g_data["creator"].forEach((creator, index) => {
+      creator["id"] = "creator" + index;
+      addSubFields(creatorsDiv, index, creator, "creator");
     });
     ////
     const addCreatorButton = document.createElement("button");
@@ -379,25 +455,13 @@ function buildSections() {
     addCreatorSpan.innerText = g_localizedSubTool.uiAdd;
     addCreatorButton.addEventListener("click", function (event) {});
   }
+  // others
+  addField(rootDiv, "description");
+  addField(rootDiv, "subject");
+  addField(rootDiv, "language");
+  addField(rootDiv, "publisher");
+  addField(rootDiv, "date");
 }
-
-// function epubAddInputHtml(rootDiv, source, labelText, inputValue) {
-//   const label = document.createElement("label");
-//   rootDiv.appendChild(label);
-//   const span = document.createElement("span");
-//   label.appendChild(span);
-//   const input = document.createElement("input");
-//   label.appendChild(input);
-
-//   span.innerText = labelText;
-//   input.value = inputValue ? inputValue : "";
-//   input.type = "text";
-//   input.spellcheck = "false";
-//   input.addEventListener("change", (event) => {
-//     console.log(source);
-//     console.log(input.value);
-//   });
-// }
 
 //////////////////////////////////////////////
 
