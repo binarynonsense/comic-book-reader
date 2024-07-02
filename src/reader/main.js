@@ -2441,7 +2441,17 @@ async function onMenuFileProperties() {
     }
     // subject
     if (g_fileData.metadata && g_fileData.metadata.subject) {
-      addRow(_("ui-modal-info-metadata-subject"), g_fileData.metadata.subject);
+      if (g_fileData.type === FileDataType.PDF) {
+        addRow(
+          _("ui-modal-info-metadata-description"),
+          g_fileData.metadata.subject
+        );
+      } else {
+        addRow(
+          _("ui-modal-info-metadata-subject"),
+          g_fileData.metadata.subject
+        );
+      }
     }
     // language
     if (g_fileData.metadata && g_fileData.metadata.language) {

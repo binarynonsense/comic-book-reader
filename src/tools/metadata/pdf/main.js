@@ -144,7 +144,7 @@ function updateLocalizedText() {
     {
       title: _("ui-modal-info-metadata-title"),
       author: _("ui-modal-info-metadata-author"),
-      subject: _("ui-modal-info-metadata-subject"),
+      subject: _("ui-modal-info-metadata-description"),
       keywords: _("ui-modal-info-metadata-keywords"),
       creator: _("ui-modal-info-metadata-creator"),
       producer: _("ui-modal-info-metadata-producer"),
