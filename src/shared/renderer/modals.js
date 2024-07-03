@@ -232,7 +232,11 @@ export function onInputEvent(modalDiv, type, event) {
         event.key != "Tab" &&
         event.key != "Enter"
       ) {
-      } else if (event.key == "Tab") {
+      } else if (
+        event.key == "Tab" ||
+        event.key == "Enter" ||
+        event.key == " "
+      ) {
         event.preventDefault();
       }
       break;
