@@ -208,9 +208,26 @@ export function onLoadMetadata(metadata, version, error) {
       g_data["creator"].push({});
     }
     // TODO: contributor?
-    //////
+    // subject
+    g_data["subject"] = [];
+    let subjectText = "";
+    if (
+      tempData.known["dc:subject"] &&
+      tempData.known["dc:subject"].length >= 0
+    ) {
+      tempData.known["dc:subject"].forEach((subject) => {
+        if (subject["#text"]) {
+          if (subjectText !== "") {
+            subjectText += "; ";
+          }
+          subjectText += subject["#text"];
+        }
+      });
+    }
+    g_data["subject"].push({ text: subjectText });
+    // other
     [...knownTags, "series", "number"].forEach((tag) => {
-      if (tag !== "dc:title" && tag !== "dc:creator") {
+      if (tag !== "dc:title" && tag !== "dc:creator" && tag !== "dc:subject") {
         let newTag = tag.replace("dc:", "");
         g_data[newTag] = [];
         if (tempData.known[tag] && tempData.known[tag].length >= 1) {
@@ -248,6 +265,7 @@ export function onLoadMetadata(metadata, version, error) {
 
 function onFieldChanged(element) {
   g_saveButton.classList.remove("tools-disabled");
+  console.log(g_data);
 }
 
 function addSimpleField(parentDiv, key) {
@@ -265,24 +283,10 @@ function addSimpleField(parentDiv, key) {
       contentInput = document.createElement("input");
       contentInput.type = "text";
     }
-    if (key === "subject" && data.length > 1) {
-      let text = "";
-      data.forEach((element, elementIndex) => {
-        if (element["text"]) {
-          if (text !== "") {
-            text += "; ";
-          }
-          text += element["text"];
-        }
-      });
-      contentInput.value = text;
-    } else {
-      contentInput.value = data[0]["text"] ? data[0]["text"] : "";
-    }
-    data[0]["contentInputElement"] = contentInput;
-
+    contentInput.value = data[0]["text"] ? data[0]["text"] : "";
     contentInput.spellcheck = false;
     contentInput.addEventListener("change", (event) => {
+      data[0]["text"] = contentInput.value;
       onFieldChanged(contentInput);
     });
     contentLabel.appendChild(contentInput);
@@ -311,9 +315,9 @@ function addComplexField(parentDiv, key, index, data) {
       contentInput.type = "text";
       contentInput.spellcheck = false;
       contentInput.addEventListener("change", (event) => {
+        data["text"] = contentInput.value;
         onFieldChanged(contentInput);
       });
-      data["contentInputElement"] = contentInput;
       contentLabel.appendChild(contentInput);
     }
 
@@ -331,9 +335,9 @@ function addComplexField(parentDiv, key, index, data) {
       fileAsInput.type = "text";
       fileAsInput.spellcheck = false;
       fileAsInput.addEventListener("change", (event) => {
+        data["fileAs"] = fileAsInput.value;
         onFieldChanged(fileAsInput);
       });
-      data["fileAsInputElement"] = fileAsInput;
       fileAsLabel.appendChild(fileAsInput);
     }
     sectionDiv.appendChild(fileAsLabel);
@@ -377,9 +381,9 @@ function addComplexField(parentDiv, key, index, data) {
         }
         roleSelect.value = isValidRole(data["role"]) ? data["role"] : "";
         roleSelect.addEventListener("change", (event) => {
+          data["role"] = roleSelect.value;
           onFieldChanged(roleSelect);
         });
-        data["roleSelectElement"] = roleSelect;
         roleLabel.appendChild(roleSelect);
       }
       sectionDiv.appendChild(roleLabel);
