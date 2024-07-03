@@ -265,7 +265,6 @@ export function onLoadMetadata(metadata, version, error) {
 
 function onFieldChanged(element) {
   g_saveButton.classList.remove("tools-disabled");
-  console.log(g_data);
 }
 
 function addSimpleField(parentDiv, key) {
@@ -401,7 +400,11 @@ function addComplexField(parentDiv, key, index, data) {
         const removeTitleSpan = document.createElement("span");
         removeTitleButton.appendChild(removeTitleSpan);
         removeTitleSpan.innerText = g_localizedSubTool.uiRemove;
-        removeTitleButton.addEventListener("click", function (event) {});
+        removeTitleButton.addEventListener("click", function (event) {
+          g_data[key].splice(index, 1);
+          onFieldChanged();
+          buildSections();
+        });
         if (index === 0) {
           removeButtonLabel.classList.add("tools-disabled");
         }
@@ -440,7 +443,11 @@ function buildSections() {
     const addCreatorSpan = document.createElement("span");
     addCreatorButton.appendChild(addCreatorSpan);
     addCreatorSpan.innerText = g_localizedSubTool.uiAdd;
-    addCreatorButton.addEventListener("click", function (event) {});
+    addCreatorButton.addEventListener("click", function (event) {
+      g_data["creator"].push({});
+      onFieldChanged();
+      buildSections();
+    });
     //////
     g_data["creator"].forEach((creator, index) => {
       addComplexField(rootDiv, "creator", index, creator);
