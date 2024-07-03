@@ -80,8 +80,6 @@ function updateLocalizedText() {
       ...baseLocalizedText[2],
     },
     {
-      uiTitles: _("tool-metadata-epub-titles"),
-      uiCreators: _("tool-metadata-section-creators"),
       uiFileAs: _("tool-metadata-epub-file-as"),
       uiRole: _("tool-metadata-epub-role"),
       uiAdd: _("tool-shared-ui-add").toUpperCase(),
@@ -95,6 +93,9 @@ function updateLocalizedText() {
         language: _("ui-modal-info-metadata-language"),
         publisher: _("ui-modal-info-metadata-publisher"),
         date: _("ui-modal-info-metadata-publicationdate"),
+        series: _("tool-metadata-data-series"),
+        number: _("tool-metadata-data-number"),
+        //volume: _("tool-metadata-data-volume"),
       },
 
       uiAuthor: _("ui-modal-info-metadata-author"),
@@ -130,10 +131,18 @@ function getLocalization() {
       id: "tool-metadata-section-2-button-text",
       text: _("tool-metadata-section-details"),
     },
+    {
+      id: "tool-metadata-section-3-button-text",
+      text: _("tool-metadata-section-creators"),
+    },
     ////////////////////////////////
     {
       id: "tool-metadata-section-2-text",
       text: _("tool-metadata-section-details"),
+    },
+    {
+      id: "tool-metadata-section-3-text",
+      text: _("tool-metadata-section-creators"),
     },
     ////////////////////////////////
   ];
