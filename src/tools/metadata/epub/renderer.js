@@ -353,15 +353,15 @@ function addComplexField(parentDiv, key, index, data) {
         // ref: https://www.loc.gov/marc/relators/relaterm.html
         let optionsHtml = `
         <option value=""></option>
-        <option value="aut">${g_localizedSubTool.uiAuthor}</option>
-        <option value="art">${g_localizedSubTool.uiArtist}</option>
-        <option value="ill">${g_localizedSubTool.uiIllustrator}</option>
-        <option value="clr">${g_localizedSubTool.uiColorist}</option>
-        <option value="cov">${g_localizedSubTool.uiCoverArtist}</option>
-        <option value="pbl">${g_localizedSubTool.uiPublisher}</option>
-        <option value="trl">${g_localizedSubTool.uiTranslator}</option>
-        <option value="edt">${g_localizedSubTool.uiEditor}</option>
-        <option value="nrt">${g_localizedSubTool.uiNarrator}</option>        
+        <option value="aut">${g_localizedSubTool.role.aut}</option>
+        <option value="art">${g_localizedSubTool.role.art}</option>
+        <option value="ill">${g_localizedSubTool.role.ill}</option>
+        <option value="clr">${g_localizedSubTool.role.clr}</option>
+        <option value="cov">${g_localizedSubTool.role.cov}</option>
+        <option value="pbl">${g_localizedSubTool.role.pbl}</option>
+        <option value="trl">${g_localizedSubTool.role.trl}</option>
+        <option value="edt">${g_localizedSubTool.role.edt}</option>
+        <option value="nrt">${g_localizedSubTool.role.nrt}</option>        
         `;
         roleSelect.innerHTML = optionsHtml;
         function isValidRole(role) {
@@ -619,7 +619,158 @@ export function onIssueSearchResults(
   ul,
   data,
   addLine
-) {}
+) {
+  importButton.classList.remove("tools-disabled");
+  let compiledData = {};
+  if (data.name) {
+    compiledData.title = addLine(
+      ul,
+      g_localizedSubTool.uiTagNames.title,
+      data.name
+    );
+  }
+  if (data?.volume?.name) {
+    compiledData.series = addLine(
+      ul,
+      g_localizedSubTool.uiTagNames.series,
+      data.volume.name
+    );
+  }
+  if (data.cover_date) {
+    compiledData.date = addLine(
+      ul,
+      g_localizedSubTool.uiTagNames.date,
+      data.cover_date
+    );
+  }
+  if (
+    searchHistory.issues.results.publisher &&
+    searchHistory.issues.results.publisher.name
+  ) {
+    compiledData.publisher = addLine(
+      ul,
+      g_localizedSubTool.uiTagNames.publisher,
+      searchHistory.issues.results.publisher.name
+    );
+  }
+  if (data.issue_number) {
+    compiledData.number = addLine(
+      ul,
+      g_localizedSubTool.uiTagNames.number,
+      data.issue_number
+    );
+  }
+  if (data.description) {
+    const div = document.createElement("div");
+    div.innerHTML = data.description;
+    compiledData.description = addLine(
+      ul,
+      g_localizedSubTool.uiTagNames.description,
+      div.innerText,
+      true // just in case
+    );
+  }
+  if (data.person_credits) {
+    let roles = [
+      { names: ["writer"], altName: "aut", list: "" },
+      { names: ["artist", "penciler", "inker"], altName: "art", list: "" },
+      { names: ["colorist"], altName: "clr", list: "" },
+      { names: ["letterer"], altName: "ill", list: "" },
+      { names: ["cover"], altName: "cov", list: "" },
+      { names: ["editor"], altName: "edt", list: "" },
+    ];
+    function haveCommonItems(array_1, array_2) {
+      const set_1 = new Set(array_1); // set of unique items
+      const common = array_2.filter((item) =>
+        set_1.has(item.toLowerCase().trim())
+      );
+      return common.length > 0;
+    }
+    data.person_credits.forEach((creator) => {
+      roles.forEach((role) => {
+        if (haveCommonItems(role.names, creator.role.split(","))) {
+          if (role.list !== "") {
+            role.list += ", ";
+          }
+          role.list += creator.name;
+        }
+      });
+    });
+    compiledData.creator = {};
+    roles.forEach((role) => {
+      if (role.list !== "") {
+        compiledData.creator[role.altName] = addLine(
+          ul,
+          g_localizedSubTool.role[role.altName],
+          role.list
+        );
+      }
+    });
+  }
+  /////////////////////////////////////////
+
+  importButton.addEventListener("click", (event) => {
+    if (base.getOpenModal()) return;
+    onImportSearchResults(compiledData);
+  });
+}
+
+function onImportSearchResults(compiledData) {
+  base.showInfoModal(
+    g_localizedModalTexts.warningTitle,
+    g_localizedModalTexts.importingMessage,
+    g_localizedModalTexts.okButton,
+    g_localizedModalTexts.cancelButton,
+    () => {
+      let changed = false;
+      if (compiledData.title && compiledData.title.checkbox.checked) {
+        g_data.title = [{ text: compiledData.title.text }];
+        changed = true;
+      }
+      if (compiledData.series && compiledData.series.checkbox.checked) {
+        g_data.series = [{ text: compiledData.series.text }];
+        changed = true;
+      }
+      if (compiledData.date && compiledData.date.checkbox.checked) {
+        g_data.date = [{ text: compiledData.date.text }];
+        changed = true;
+      }
+      if (compiledData.publisher && compiledData.publisher.checkbox.checked) {
+        g_data.publisher = [{ text: compiledData.publisher.text }];
+        changed = true;
+      }
+      if (compiledData.number && compiledData.number.checkbox.checked) {
+        g_data.number = [{ text: compiledData.number.text }];
+        changed = true;
+      }
+      if (
+        compiledData.description &&
+        compiledData.description.checkbox.checked
+      ) {
+        g_data.description = [{ text: compiledData.description.text }];
+        changed = true;
+      }
+      let creatorsCleared = false;
+      for (const key in compiledData.creator) {
+        const creator = compiledData.creator[key];
+        if (creator.checkbox.checked) {
+          if (!creatorsCleared) {
+            creatorsCleared = true;
+            g_data.creator = [];
+          }
+          g_data.creator.push({ text: creator.text, role: key });
+          changed = true;
+        }
+      }
+      //////
+      if (changed) {
+        buildSections();
+        onFieldChanged();
+      }
+      base.switchSection(2);
+    }
+  );
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // LOCALIZATION ///////////////////////////////////////////////////////////////

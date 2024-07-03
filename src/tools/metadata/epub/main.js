@@ -117,15 +117,17 @@ function updateLocalizedText() {
         //volume: _("tool-metadata-data-volume"),
       },
 
-      uiAuthor: _("ui-modal-info-metadata-author"),
-      uiPublisher: _("tool-metadata-data-publisher"),
-      uiTranslator: _("tool-metadata-data-translator"),
-      uiIllustrator: _("tool-metadata-data-illustrator"),
-      uiArtist: _("tool-metadata-data-artist"),
-      uiColorist: _("tool-metadata-data-colorist"),
-      uiNarrator: _("tool-metadata-data-narrator"),
-      uiCoverArtist: _("tool-metadata-data-coverartist"),
-      uiEditor: _("tool-metadata-data-editor"),
+      role: {
+        aut: _("ui-modal-info-metadata-author"),
+        pbl: _("tool-metadata-data-publisher"),
+        trl: _("tool-metadata-data-translator"),
+        ill: _("tool-metadata-data-illustrator"),
+        art: _("tool-metadata-data-artist"),
+        clr: _("tool-metadata-data-colorist"),
+        nrt: _("tool-metadata-data-narrator"),
+        cov: _("tool-metadata-data-coverartist"),
+        edt: _("tool-metadata-data-editor"),
+      },
     }
   );
 }
