@@ -246,15 +246,10 @@ exports.saveMetadataToFile = async function (data) {
     const entryName = isUpdate
       ? g_fileData.metadata.comicInfoId
       : "ComicInfo.xml";
-    // TODO: use 7zip for everything
-    if (g_fileData.type === FileDataType.ZIP) {
-      let buf = Buffer.from(outputXmlData, "utf8");
-      if (
-        !fileFormats.updateZipEntry(g_fileData.path, entryName, buf, isUpdate)
-      ) {
-        throw "error updating zip entry";
-      }
-    } else if (g_fileData.type === FileDataType.SEVENZIP) {
+    if (
+      g_fileData.type === FileDataType.ZIP ||
+      g_fileData.type === FileDataType.SEVENZIP
+    ) {
       const tempFolderPath = temp.createSubFolder();
       const xmlFilePath = path.resolve(tempFolderPath, entryName);
       if (path.dirname(xmlFilePath) !== tempFolderPath) {
@@ -264,7 +259,8 @@ exports.saveMetadataToFile = async function (data) {
       let success = await fileFormats.update7ZipWithFolderContents(
         g_fileData.path,
         tempFolderPath,
-        g_fileData.password
+        g_fileData.password,
+        g_fileData.type === FileDataType.ZIP ? "zip" : undefined
       );
       temp.deleteSubFolder(tempFolderPath);
       if (!success) {
