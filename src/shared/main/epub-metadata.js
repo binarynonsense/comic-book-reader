@@ -207,6 +207,7 @@ exports.saveXmlDataToMetadataFile = async function (xmlData) {
     }
     return true;
   } catch (error) {
+    log.error(error);
     return undefined;
   }
 };
