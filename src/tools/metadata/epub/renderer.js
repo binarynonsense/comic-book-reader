@@ -243,7 +243,7 @@ export function onLoadMetadata(metadata, version, error) {
     });
     //////
     g_data.version = tempData.version;
-    g_data.meta = tempData.meta;
+    g_data.meta = tempData.known.meta;
     g_data.unknown = tempData.unknown;
     ///////////////////////////////////////
     ///////////////////////////////////////
@@ -284,7 +284,7 @@ function addSimpleField(parentDiv, key) {
     }
     contentInput.value = data[0]["text"] ? data[0]["text"] : "";
     contentInput.spellcheck = false;
-    contentInput.addEventListener("change", (event) => {
+    contentInput.addEventListener("input", (event) => {
       data[0]["text"] = contentInput.value;
       onFieldChanged(contentInput);
     });
@@ -313,7 +313,7 @@ function addComplexField(parentDiv, key, index, data) {
       contentInput.value = data["text"] ? data["text"] : "";
       contentInput.type = "text";
       contentInput.spellcheck = false;
-      contentInput.addEventListener("change", (event) => {
+      contentInput.addEventListener("input", (event) => {
         data["text"] = contentInput.value;
         onFieldChanged(contentInput);
       });
@@ -333,7 +333,7 @@ function addComplexField(parentDiv, key, index, data) {
       fileAsInput.value = data["fileAs"] ? data["fileAs"] : "";
       fileAsInput.type = "text";
       fileAsInput.spellcheck = false;
-      fileAsInput.addEventListener("change", (event) => {
+      fileAsInput.addEventListener("input", (event) => {
         data["fileAs"] = fileAsInput.value;
         onFieldChanged(fileAsInput);
       });
@@ -457,9 +457,156 @@ function buildSections() {
 
 //////////////////////////////////////////////
 
-export async function onSave() {}
+export async function onSave() {
+  if (base.getOpenModal()) base.closeModal();
+  base.showInfoModal(
+    g_localizedModalTexts.warningTitle,
+    g_localizedModalTexts.savingMessageUpdate,
+    g_localizedModalTexts.okButton,
+    g_localizedModalTexts.cancelButton,
+    () => {
+      base.showProgressModal();
+      base.updateModalTitleText(g_localizedModalTexts.savingTitle);
+      let metadata = {};
+      /////////////////////////////////
+      console.log(g_data);
+      metadata.meta = structuredClone(g_data.meta);
+      for (const key in g_data.unknown) {
+        metadata[key] = structuredClone(g_data.unknown[key]);
+      }
+      // title
+      let titleData = g_data.title[0];
+      if (titleData != {}) {
+        const id = "title_0";
+        metadata["dc:title"] = { "#text": titleData.text };
+        if (titleData.fileAs) {
+          if (g_data.version >= 3.0) {
+            metadata.meta.push({
+              "#text": element.fileAs,
+              "@_refines": "#" + id,
+              "@_property": "file-as",
+            });
+          } else {
+            metadata["dc:title"]["@_opf:file-as"] = titleData.fileAs;
+          }
+        }
+      }
+      // creator
+      metadata["dc:creator"] = [];
+      g_data.creator.forEach((element, index) => {
+        const id = "creator_" + index;
+        let creator = { "@_id": id, "#text": element.text };
+        if (element.fileAs) {
+          if (g_data.version >= 3.0) {
+            metadata.meta.push({
+              "#text": element.fileAs,
+              "@_refines": "#" + id,
+              "@_property": "file-as",
+            });
+          } else {
+            creator["@_opf:file-as"] = element.fileAs;
+          }
+        }
+        if (element.role) {
+          if (g_data.version >= 3.0) {
+            metadata.meta.push({
+              "#text": element.role,
+              "@_refines": "#" + id,
+              "@_property": "role",
+              "@_scheme": "marc:relators",
+            });
+          } else {
+            creator["@_opf:role"] = element.role;
+          }
+        }
+        metadata["dc:creator"].push(creator);
+      });
+      // subject
+      let subjects = [];
+      let subjectArray = g_data.subject[0].text.split(";");
+      if (!(subjectArray.length === 1 && subjectArray[0].trim() === "")) {
+        subjectArray.forEach((element) => {
+          if (element.trim() !== "") subjects.push({ "#text": element.trim() });
+        });
+      }
+      if (subjects.length > 0) {
+        metadata["dc:subject"] = subjects;
+      }
+      // series & number
+      if (g_data.version >= 3.0) {
+        if (g_data.series[0].text || g_data.number[0].text) {
+          // NOTE: if one is empty epubcheck gives an error, but I've decided to
+          // do it this way anyway as I feel they need to be there even if
+          // some of them have no content as their meaning is lost otherwise.
+          // Could revert to the calibre metas if only one has content...?
+          const id = "series_0";
+          metadata.meta.push({
+            "@_id": id,
+            "@_property": "belongs-to-collection",
+            "#text": g_data.series[0].text,
+          });
+          metadata.meta.push({
+            "@_refines": "#" + id,
+            "@_property": "collection-type",
+            "#text": "series",
+          });
+          metadata.meta.push({
+            "@_refines": "#" + id,
+            "@_property": "group-position",
+            "#text": g_data.number[0].text,
+          });
+        }
+      } else {
+        if (g_data.series) {
+          metadata.meta.push({
+            "@_name": "calibre:series",
+            "@_content": g_data.series[0].text,
+          });
+        }
+        if (g_data.number) {
+          metadata.meta.push({
+            "@_name": "calibre:series_index",
+            "@_content": g_data.number[0].text,
+          });
+        }
+      }
+      // other
+      for (const key in g_data) {
+        if (
+          key !== "meta" &&
+          key !== "unknown" &&
+          key !== "title" &&
+          key !== "creator" &&
+          key !== "subject" &&
+          key !== "series" &&
+          key !== "number" &&
+          key !== "version"
+        ) {
+          if (g_data[key][0].text)
+            metadata["dc:" + key] = { "#text": g_data[key][0].text };
+        }
+      }
+      /////////////////////////////////
+      base.sendIpcToMain("save-metadata-to-file", metadata);
+    }
+  );
+}
 
-export function onSavingDone(error) {}
+export function onSavingDone(error) {
+  if (!error) {
+    base.showInfoModal(
+      g_localizedModalTexts.successTitle,
+      g_localizedModalTexts.savingMessageSuccessUpdate,
+      g_localizedModalTexts.okButton
+    );
+  } else {
+    base.showInfoModal(
+      g_localizedModalTexts.errorTitle,
+      g_localizedModalTexts.savingMessageErrorUpdate,
+      g_localizedModalTexts.okButton
+    );
+  }
+}
 
 //////////////////////////////////////////////
 

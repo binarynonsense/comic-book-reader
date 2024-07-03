@@ -20,7 +20,7 @@ const log = require("../../../shared/main/logger");
 ///////////////////////////////////////////////////////////////////////////////
 
 let g_fileData;
-let g_metadata;
+let g_xmlData;
 
 exports.open = function (fileData) {
   base.sendIpcToCoreRenderer(
@@ -49,14 +49,14 @@ exports.close = function () {};
 
 exports.loadMetadata = async function () {
   try {
-    g_metadata = await epub.getMetadataFileData(
+    g_xmlData = await epub.getMetadataFileXmlData(
       g_fileData.path,
       g_fileData.password
     );
     base.sendIpcToRenderer(
       "load-metadata",
-      g_metadata.json["package"]["metadata"],
-      g_metadata.json["package"]["@_version"],
+      g_xmlData.json["package"]["metadata"],
+      g_xmlData.json["package"]["@_version"],
       undefined
     );
   } catch (error) {
@@ -64,7 +64,17 @@ exports.loadMetadata = async function () {
   }
 };
 
-exports.saveMetadataToFile = async function (data) {};
+exports.saveMetadataToFile = async function (metadata) {
+  // log.test(metadata);
+  let newXmlData = structuredClone(g_xmlData);
+  newXmlData.json["package"]["metadata"] = structuredClone(metadata);
+  let result = await epub.saveXmlDataToMetadataFile(newXmlData);
+  if (result) {
+    base.sendIpcToRenderer("saving-done");
+  } else {
+    base.sendIpcToRenderer("saving-done", "Xml Error");
+  }
+};
 
 ///////////////////////////////////////////////////////////////////////////////
 // LOCALIZATION ///////////////////////////////////////////////////////////////
@@ -77,6 +87,16 @@ function updateLocalizedText() {
     [...baseLocalizedText[0], ...getLocalization()],
     [...baseLocalizedText[1], ...getTooltipsLocalization()],
     {
+      savingMessageUpdate: _("tool-metadata-modal-message-warning-save-update"),
+      savingMessageSuccessUpdate: _(
+        "tool-metadata-modal-message-success-update"
+      ),
+      savingMessageErrorUpdate: _(
+        "tool-metadata-modal-message-could-not-update"
+      ),
+      savingMessageInvalidChanges: _(
+        "tool-metadata-modal-message-invalid-changes"
+      ),
       ...baseLocalizedText[2],
     },
     {

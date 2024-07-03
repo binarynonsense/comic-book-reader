@@ -5,6 +5,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
+const fs = require("fs");
+const path = require("path");
 const fileFormats = require("./file-formats");
 const temp = require("./temp");
 const log = require("./logger");
@@ -113,7 +115,7 @@ exports.getMetadataProperties = async function (
   }
 };
 
-exports.getMetadataFileData = async function (filePath, password) {
+exports.getMetadataFileXmlData = async function (filePath, password) {
   try {
     //////////////////
     const tempFolderPath = temp.createSubFolder();
@@ -171,6 +173,40 @@ exports.getMetadataFileData = async function (filePath, password) {
     };
   } catch (error) {
     log.error(error);
+    return undefined;
+  }
+};
+
+exports.saveXmlDataToMetadataFile = async function (xmlData) {
+  try {
+    const { XMLBuilder } = require("fast-xml-parser");
+    // rebuild
+    const builderOptions = {
+      ignoreAttributes: false,
+      format: true,
+      suppressBooleanAttributes: false, // write booleans with text
+    };
+    const builder = new XMLBuilder(builderOptions);
+    const outputXmlData = builder.build(xmlData.json);
+
+    const tempFolderPath = temp.createSubFolder();
+    const xmlFilePath = path.resolve(tempFolderPath, xmlData.entryPath);
+    if (path.dirname(xmlFilePath) !== tempFolderPath) {
+      fs.mkdirSync(path.dirname(xmlFilePath), { recursive: true });
+    }
+    fs.writeFileSync(xmlFilePath, outputXmlData);
+    let success = await fileFormats.update7ZipWithFolderContents(
+      xmlData.filePath,
+      tempFolderPath,
+      xmlData.password,
+      "zip"
+    );
+    temp.deleteSubFolder(tempFolderPath);
+    if (!success) {
+      throw "error updating 7zip entry";
+    }
+    return true;
+  } catch (error) {
     return undefined;
   }
 };
