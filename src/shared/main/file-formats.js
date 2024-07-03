@@ -660,16 +660,43 @@ async function create7Zip(
 }
 exports.create7Zip = create7Zip;
 
-async function update7ZipEntry(filePath, entryName, workingDir, password) {
+async function update7ZipWithFolderContents(
+  filePath,
+  contentFolderPath,
+  password,
+  archiveType
+) {
   try {
     checkPathTo7ZipBin();
     const Seven = require("node-7z");
-    const seven = Seven.add(filePath, entryName, {
+
+    // Doesn't work, saves everything at the root, internal folders are ignored
+    // {
+    //   let options = {
+    //     $bin: g_pathTo7zipBin,
+    //     charset: "UTF-8",
+    //     password: password,
+    //     workingDir: contentFolderPath,
+    //   };
+    //   if (archiveType && archiveType === "zip") {
+    //     options.archiveType = archiveType;
+    //   }
+
+    //   seven = Seven.add(filePath, entryName, options);
+    // }
+
+    let options = {
       $bin: g_pathTo7zipBin,
       charset: "UTF-8",
-      password: password,
-      workingDir: workingDir,
-    });
+    };
+    if (password && password.trim() !== "") {
+      options.password = password;
+    }
+    if (archiveType && archiveType === "zip") {
+      options.archiveType = archiveType;
+    }
+    const seven = Seven.add(filePath, contentFolderPath + "/*", options);
+
     let promise = await new Promise((resolve) => {
       seven.on("error", (error) => {
         resolve({ success: false, data: error });
@@ -691,7 +718,7 @@ async function update7ZipEntry(filePath, entryName, workingDir, password) {
     return false;
   }
 }
-exports.update7ZipEntry = update7ZipEntry;
+exports.update7ZipWithFolderContents = update7ZipWithFolderContents;
 
 ///////////////////////////////////////////////////////////////////////////////
 // EPUB ///////////////////////////////////////////////////////////////////////
