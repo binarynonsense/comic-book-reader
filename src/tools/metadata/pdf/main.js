@@ -172,6 +172,10 @@ function getLocalization() {
     },
     {
       id: "tool-metadata-section-3-button-text",
+      text: _("tool-metadata-section-creators"),
+    },
+    {
+      id: "tool-metadata-section-4-button-text",
       text: _("tool-metadata-section-other-data"),
     },
     ////////////////////////////////
@@ -181,6 +185,10 @@ function getLocalization() {
     },
     {
       id: "tool-metadata-section-3-text",
+      text: _("tool-metadata-section-creators"),
+    },
+    {
+      id: "tool-metadata-section-4-text",
       text: _("tool-metadata-section-other-data"),
     },
     ////////////////////////////////

@@ -43,9 +43,13 @@ export function onLoadMetadata(metadata, error) {
   const detailsDiv = document.querySelector(
     "#tool-metadata-section-2-content-div"
   );
-  const otherDiv = document.querySelector(
+  const creatorsDiv = document.querySelector(
     "#tool-metadata-section-3-content-div"
   );
+  const otherDiv = document.querySelector(
+    "#tool-metadata-section-4-content-div"
+  );
+  // details
   function addHtml(rootDiv, key, type, value) {
     const label = document.createElement("label");
     rootDiv.appendChild(label);
@@ -69,7 +73,6 @@ export function onLoadMetadata(metadata, error) {
     });
   }
   addHtml(detailsDiv, "title", "text", g_data.originalMetadata["title"]);
-  addHtml(detailsDiv, "author", "text", g_data.originalMetadata["author"]);
   addHtml(
     detailsDiv,
     "subject",
@@ -77,7 +80,9 @@ export function onLoadMetadata(metadata, error) {
     g_data.originalMetadata["subject"]
   );
   addHtml(detailsDiv, "keywords", "text", g_data.originalMetadata["keywords"]);
-
+  // creators
+  addHtml(creatorsDiv, "author", "text", g_data.originalMetadata["author"]);
+  // other
   addHtml(otherDiv, "creator", "text", g_data.originalMetadata["creator"]);
   addHtml(otherDiv, "producer", "text", g_data.originalMetadata["producer"]);
   addHtml(
