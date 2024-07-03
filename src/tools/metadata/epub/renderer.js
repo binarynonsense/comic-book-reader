@@ -469,7 +469,6 @@ export async function onSave() {
       base.updateModalTitleText(g_localizedModalTexts.savingTitle);
       let metadata = {};
       /////////////////////////////////
-      console.log(g_data);
       metadata.meta = structuredClone(g_data.meta);
       for (const key in g_data.unknown) {
         metadata[key] = structuredClone(g_data.unknown[key]);

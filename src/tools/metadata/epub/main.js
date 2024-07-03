@@ -65,7 +65,6 @@ exports.loadMetadata = async function () {
 };
 
 exports.saveMetadataToFile = async function (metadata) {
-  // log.test(metadata);
   let newXmlData = structuredClone(g_xmlData);
   newXmlData.json["package"]["metadata"] = structuredClone(metadata);
   let result = await epub.saveXmlDataToMetadataFile(newXmlData);
