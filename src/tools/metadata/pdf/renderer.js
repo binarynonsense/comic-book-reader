@@ -64,7 +64,7 @@ export function onLoadMetadata(metadata, error) {
     input.spellcheck = false;
     input.id = `tool-metadata-data-${key}-input`;
     input.setAttribute("data-key", key);
-    input.addEventListener("change", (event) => {
+    input.addEventListener("input", (event) => {
       onFieldChanged(input);
     });
   }
