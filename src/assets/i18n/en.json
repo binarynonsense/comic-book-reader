@@ -3,7 +3,7 @@
     "authors": [
       "Álvaro"
     ],
-    "last-updated": "2024-07-03",
+    "last-updated": "2024-07-04",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.6.0-alpha1",
     "pre-release": "false",
@@ -149,7 +149,6 @@
   "ui-modal-info-metadata-publisher": "Publisher",
   "ui-modal-info-metadata-publicationdate": "Publication Date",
   "ui-modal-info-metadata-subject": "Subject",
-  "ui-modal-info-metadata-description": "Description",
   "ui-modal-info-metadata-keywords": "Keywords",
   "ui-modal-info-metadata-language": "Language",
   "ui-modal-info-metadata-creator": "Creator",
@@ -670,6 +669,7 @@
   "tool-metadata-modal-message-could-not-update": "Couldn't update the file's metadata.",
   "tool-metadata-modal-message-invalid-changes": "Some of the changes are not valid.",
   "tool-metadata-modal-message-success-update": "The file's metadata was successfully updated.",
+  "tool-metadata-tooltip-list-separator": "Multiple terms must be separated by a semicolon (;).",
   "tool-metadata-search-placeholder-series": "Enter a comic book series name",
   "tool-metadata-search-error-invalid-api-key": "Invalid API Key",
   "tool-metadata-search-import-warning": "The selected information will be matched to the appropriate metadata fields and their content replaced with it.",
@@ -724,6 +724,6 @@
   "home-screen-favorites": "Favorites",
   "[NOTE TO TRANSLATORS]home-screen-latest": "Latest as in Latest files used",
   "home-screen-latest": "Latest",
-  "[NOTE TO TRANSLATORS]home-screen-recent": "Recent as in most recently opened files",
+  "[NOTE TO TRANSLATORS]home-screen-recent": "Recent as in most recently opened files, plural",
   "home-screen-recent": "Recent"
 }
