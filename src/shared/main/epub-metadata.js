@@ -73,18 +73,18 @@ exports.getMetadataProperties = async function (
       if (contents) {
         if (Array.isArray(contents) && contents.length > 0) {
           fileMetadata[metadataKey] = "";
-          contents.forEach(function (item, index, array) {
+          contents.forEach(function (item) {
             if (typeof contents[0] === "string") {
-              fileMetadata[metadataKey] += item;
-              if (index != array.length - 1) {
+              if (fileMetadata[metadataKey] != "") {
                 fileMetadata[metadataKey] += "; ";
               }
+              fileMetadata[metadataKey] += item;
             } else {
               if (item["#text"]) {
-                fileMetadata[metadataKey] += item["#text"];
-                if (index != array.length - 1) {
+                if (fileMetadata[metadataKey] != "") {
                   fileMetadata[metadataKey] += "; ";
                 }
+                fileMetadata[metadataKey] += item["#text"];
               }
             }
           });
