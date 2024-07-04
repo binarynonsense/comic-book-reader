@@ -381,7 +381,7 @@ async function getIssueData(url) {
 ///////////////////////////////////////////////////////////////////////////////
 
 exports.updateLocalizedText = function () {
-  g_subTool.updateLocalizedText();
+  g_subTool?.updateLocalizedText();
 };
 
 exports.getLocalizedText = function () {
