@@ -323,6 +323,10 @@ function getNewCardDiv(cardType, data, navRow, navColumn) {
           } else if (data.pathType === 1) {
             sendIpcToMain("hs-open-dialog-file", data.path);
           }
+          if (event.pointerType === "mouse") {
+            navigation.refocusFocusedElement(g_navData);
+            navigation.blurFocusedElement(g_navData);
+          }
           event.stopPropagation();
         });
 

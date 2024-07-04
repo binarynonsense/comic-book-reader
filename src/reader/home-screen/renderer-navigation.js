@@ -99,3 +99,11 @@ export function navigate(
     data.focusedElement.focus();
   }
 }
+
+export function refocusFocusedElement(data) {
+  data.focusedElement.focus();
+}
+
+export function blurFocusedElement(data) {
+  data.focusedElement.blur();
+}
