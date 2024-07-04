@@ -2434,18 +2434,12 @@ async function onMenuFileProperties() {
     }
     // description
     if (g_fileData.metadata && g_fileData.metadata.description) {
-      addRow(
-        _("ui-modal-info-metadata-description"),
-        g_fileData.metadata.description
-      );
+      addRow(_("tool-metadata-data-summary"), g_fileData.metadata.description);
     }
     // subject
     if (g_fileData.metadata && g_fileData.metadata.subject) {
       if (g_fileData.type === FileDataType.PDF) {
-        addRow(
-          _("ui-modal-info-metadata-description"),
-          g_fileData.metadata.subject
-        );
+        addRow(_("tool-metadata-data-summary"), g_fileData.metadata.subject);
       } else {
         addRow(
           _("ui-modal-info-metadata-subject"),

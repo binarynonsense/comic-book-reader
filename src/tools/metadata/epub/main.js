@@ -107,7 +107,7 @@ function updateLocalizedText() {
       uiTagNames: {
         title: _("ui-modal-info-metadata-title"),
         creator: _("ui-modal-info-metadata-creator"),
-        description: _("ui-modal-info-metadata-description"),
+        description: _("tool-metadata-data-summary"),
         subject: _("ui-modal-info-metadata-subject"),
         language: _("ui-modal-info-metadata-language"),
         publisher: _("ui-modal-info-metadata-publisher"),
