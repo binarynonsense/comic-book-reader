@@ -746,7 +746,7 @@ function showModalFavoriteEditName(
     buttons: [
       {
         text: textButton1.toUpperCase(),
-        callback: (value) => {
+        callback: (showFocus, value) => {
           sendIpcToMain(
             "hs-on-modal-favorite-options-edit-name-ok-clicked",
             index,
@@ -791,7 +791,7 @@ function showModalFavoriteEditPath(
     buttons: [
       {
         text: textButton1.toUpperCase(),
-        callback: (value) => {
+        callback: (showFocus, value) => {
           sendIpcToMain(
             "hs-on-modal-favorite-options-edit-path-ok-clicked",
             index,

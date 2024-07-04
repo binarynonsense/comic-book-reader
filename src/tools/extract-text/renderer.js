@@ -324,7 +324,7 @@ function showExtractingModal() {
     buttons: [
       {
         text: g_localizedModalCancelButtonText.toUpperCase(),
-        callback: (value) => {
+        callback: (showFocus, value) => {
           sendIpcToMain("cancel-extraction");
           modalClosed(); // reduntant?, cancel calls modal-close
         },

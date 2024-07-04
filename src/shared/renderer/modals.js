@@ -123,7 +123,10 @@ export function show(options) {
           buttonDiv.addEventListener("click", (event) => {
             if (!buttonOptions.dontClose) close(modalDiv);
             if (buttonOptions.callback)
-              buttonOptions.callback(inputElement.value);
+              buttonOptions.callback(
+                event == undefined || event.pointerType !== "mouse",
+                inputElement.value
+              );
           });
           if (buttonOptions.key && typeof buttonOptions.key === "string") {
             buttonDiv.setAttribute("data-key", buttonOptions.key);

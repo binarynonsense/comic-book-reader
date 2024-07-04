@@ -1381,7 +1381,7 @@ function showModalPrompt(
       buttons: [
         {
           text: textButton1.toUpperCase(),
-          callback: (value) => {
+          callback: (showFocus, value) => {
             sendIpcToMain("go-to-page", value);
             modalClosed();
           },
@@ -1410,7 +1410,7 @@ function showModalPrompt(
       buttons: [
         {
           text: textButton1.toUpperCase(),
-          callback: (value) => {
+          callback: (showFocus, value) => {
             sendIpcToMain("enter-scale-value", parseInt(value));
             modalClosed();
           },
@@ -1440,7 +1440,7 @@ function showModalPrompt(
       buttons: [
         {
           text: textButton1.toUpperCase(),
-          callback: (value) => {
+          callback: (showFocus, value) => {
             sendIpcToMain("go-to-percentage", value);
             modalClosed();
           },
@@ -1476,7 +1476,7 @@ function showModalPromptPassword(title, message, textButton1, textButton2) {
     buttons: [
       {
         text: textButton1.toUpperCase(),
-        callback: (value) => {
+        callback: (showFocus, value) => {
           sendIpcToMain("password-entered", value);
           modalClosed();
         },
@@ -1670,17 +1670,17 @@ function showModalQuickMenu(
   buttons.push({
     text: textButtonFileBrowser.toUpperCase(),
     fullWidth: true,
-    callback: () => {
+    callback: (showFocus) => {
       modalClosed();
-      sendIpcToMain("open-file-browser-tool", true);
+      sendIpcToMain("open-file-browser-tool", showFocus);
     },
   });
   buttons.push({
     text: textButtonHistory.toUpperCase(),
     fullWidth: true,
-    callback: () => {
+    callback: (showFocus) => {
       modalClosed();
-      sendIpcToMain("open-history-tool", true);
+      sendIpcToMain("open-history-tool", showFocus);
     },
   });
   buttons.push({
