@@ -143,11 +143,7 @@ function getLocalization() {
   return [
     {
       id: "tool-metadata-title-text",
-      text:
-        _("tool-metadata-title").toUpperCase() +
-        " (" +
-        _("tool-shared-ui-experimental").toUpperCase() +
-        ")",
+      text: _("tool-metadata-title").toUpperCase(),
     },
     //////////////////////////////////////////////
     {
