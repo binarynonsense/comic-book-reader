@@ -667,7 +667,7 @@
   "tool-metadata-data-page-type-deleted": "Borrada",
   "tool-metadata-modal-message-warning-save-update": "Esto actualizará los metadatos del archivo con los nuevos contenidos.",
   "tool-metadata-modal-message-could-not-update": "No se pudieron actualizar los metadatos del archivo.",
-  "tool-metadata-modal-message-invalid-changes": "Algunos d elos cambios no sol válidos.",
+  "tool-metadata-modal-message-invalid-changes": "Algunos de los cambios no sol válidos.",
   "tool-metadata-modal-message-success-update": "Los metadatos del archivo se actualizaron correctamente.",
   "tool-metadata-tooltip-list-separator": "Se deben separar múltiples términos con punto y coma (;).",
   "tool-metadata-tooltip-utc-date-format": "Una fecha UTC en un formato simplificado ISO 8601: YYYY-MM-DD o YYYY-MM-DDTHH:mm:ss.sssZ",
