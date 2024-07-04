@@ -697,7 +697,7 @@ function showModalFavoriteOptions(
   });
 
   showModal({
-    showFocus: true,
+    showFocus: false, // TODO: true if from key/gamepad
     title: title,
     frameWidth: 400,
     zIndexDelta: -450,
