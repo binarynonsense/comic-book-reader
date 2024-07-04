@@ -267,13 +267,24 @@ function onFieldChanged(element) {
   g_saveButton.classList.remove("tools-disabled");
 }
 
-function addSimpleField(parentDiv, key) {
+function addSimpleField(parentDiv, key, tooltip) {
   let data = g_data[key];
   const contentLabel = document.createElement("label");
   {
     const contentSpan = document.createElement("span");
     contentSpan.innerText = g_localizedSubTool.uiTagNames[key];
     contentLabel.appendChild(contentSpan);
+
+    if (tooltip) {
+      const tooltipElement = document.createElement("i");
+      tooltipElement.classList.add("fas");
+      tooltipElement.classList.add("fa-question-circle");
+      tooltipElement.classList.add("tools-tooltip-button");
+      tooltipElement.addEventListener("click", (event) => {
+        base.sendIpcToMain("tooltip-button-clicked", tooltip);
+      });
+      contentLabel.appendChild(tooltipElement);
+    }
 
     let contentInput;
     if (key === "description") {
@@ -430,10 +441,10 @@ function buildSections() {
   }
   // others
   addSimpleField(rootDiv, "description");
-  addSimpleField(rootDiv, "subject");
+  addSimpleField(rootDiv, "subject", g_localizedSubTool.uiTooltipSubject);
   addSimpleField(rootDiv, "language");
   addSimpleField(rootDiv, "publisher");
-  addSimpleField(rootDiv, "date");
+  addSimpleField(rootDiv, "date", g_localizedSubTool.uiTooltipDate);
   // creators
   rootDiv = document.querySelector("#tool-metadata-section-3-lists-div");
   rootDiv.innerHTML = "";

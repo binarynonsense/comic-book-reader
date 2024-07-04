@@ -50,11 +50,22 @@ export function onLoadMetadata(metadata, error) {
     "#tool-metadata-section-4-content-div"
   );
   // details
-  function addHtml(rootDiv, key, type, value) {
+  function addHtml(rootDiv, key, type, value, tooltip) {
     const label = document.createElement("label");
     rootDiv.appendChild(label);
     const span = document.createElement("span");
+    span.innerText = g_localizedSubTool[key];
     label.appendChild(span);
+    if (tooltip) {
+      const tooltipElement = document.createElement("i");
+      tooltipElement.classList.add("fas");
+      tooltipElement.classList.add("fa-question-circle");
+      tooltipElement.classList.add("tools-tooltip-button");
+      tooltipElement.addEventListener("click", (event) => {
+        base.sendIpcToMain("tooltip-button-clicked", tooltip);
+      });
+      label.appendChild(tooltipElement);
+    }
     let input;
     if (type === "textarea") {
       input = document.createElement("textarea");
@@ -63,7 +74,6 @@ export function onLoadMetadata(metadata, error) {
       input.type = "text";
     }
     label.appendChild(input);
-    span.innerText = g_localizedSubTool[key];
     input.value = value;
     input.spellcheck = false;
     input.id = `tool-metadata-data-${key}-input`;
@@ -79,9 +89,21 @@ export function onLoadMetadata(metadata, error) {
     "textarea",
     g_data.originalMetadata["subject"]
   );
-  addHtml(detailsDiv, "keywords", "text", g_data.originalMetadata["keywords"]);
+  addHtml(
+    detailsDiv,
+    "keywords",
+    "text",
+    g_data.originalMetadata["keywords"],
+    g_localizedSubTool.keywordsTooltip
+  );
   // creators
-  addHtml(creatorsDiv, "author", "text", g_data.originalMetadata["author"]);
+  addHtml(
+    creatorsDiv,
+    "author",
+    "text",
+    g_data.originalMetadata["author"],
+    g_localizedSubTool.keywordsTooltip
+  );
   // other
   addHtml(otherDiv, "creator", "text", g_data.originalMetadata["creator"]);
   addHtml(otherDiv, "producer", "text", g_data.originalMetadata["producer"]);
@@ -89,13 +111,15 @@ export function onLoadMetadata(metadata, error) {
     otherDiv,
     "creationDate",
     "text",
-    g_data.originalMetadata["creationDate"].toISOString()
+    g_data.originalMetadata["creationDate"].toISOString(),
+    g_localizedSubTool.dateTooltip
   );
   addHtml(
     otherDiv,
     "modificationDate",
     "text",
-    g_data.originalMetadata["modificationDate"].toISOString()
+    g_data.originalMetadata["modificationDate"].toISOString(),
+    g_localizedSubTool.dateTooltip
   );
   //////////
   base.closeModal();

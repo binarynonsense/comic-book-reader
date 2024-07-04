@@ -103,6 +103,8 @@ function updateLocalizedText() {
       uiRole: _("tool-metadata-epub-role"),
       uiAdd: _("tool-shared-ui-add").toUpperCase(),
       uiRemove: _("ui-modal-prompt-button-remove").toUpperCase(),
+      uiTooltipSubject: _("tool-metadata-tooltip-list-separator"),
+      uiTooltipDate: _("tool-metadata-tooltip-utc-date-format"),
 
       uiTagNames: {
         title: _("ui-modal-info-metadata-title"),

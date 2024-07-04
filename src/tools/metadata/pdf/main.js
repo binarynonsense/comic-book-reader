@@ -146,10 +146,12 @@ function updateLocalizedText() {
       author: _("ui-modal-info-metadata-author"),
       subject: _("tool-metadata-data-summary"),
       keywords: _("ui-modal-info-metadata-keywords"),
+      keywordsTooltip: _("tool-metadata-tooltip-list-separator"),
       creator: _("ui-modal-info-metadata-creator"),
       producer: _("ui-modal-info-metadata-producer"),
       creationDate: _("ui-modal-info-metadata-created"),
       modificationDate: _("ui-modal-info-metadata-modified"),
+      dateTooltip: _("tool-metadata-tooltip-utc-date-format"),
     }
   );
 }
