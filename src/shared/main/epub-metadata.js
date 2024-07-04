@@ -77,13 +77,13 @@ exports.getMetadataProperties = async function (
             if (typeof contents[0] === "string") {
               fileMetadata[metadataKey] += item;
               if (index != array.length - 1) {
-                fileMetadata[metadataKey] += ", ";
+                fileMetadata[metadataKey] += "; ";
               }
             } else {
               if (item["#text"]) {
                 fileMetadata[metadataKey] += item["#text"];
                 if (index != array.length - 1) {
-                  fileMetadata[metadataKey] += ", ";
+                  fileMetadata[metadataKey] += "; ";
                 }
               }
             }
