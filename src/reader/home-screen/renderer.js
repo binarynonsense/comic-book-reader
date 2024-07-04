@@ -79,7 +79,10 @@ function init() {
       "#hs-favorites-add-button"
     );
     addFavoriteButton.addEventListener("click", function (event) {
-      sendIpcToMain("hs-on-add-favorite-clicked");
+      sendIpcToMain(
+        "hs-on-add-favorite-clicked",
+        event == undefined || event.pointerType !== "mouse"
+      );
       event.stopPropagation();
     });
     addFavoriteButton.setAttribute("data-nav-panel", 0);
@@ -339,10 +342,12 @@ function getNewCardDiv(cardType, data, navRow, navColumn) {
         const buttonDiv = cardDiv.querySelector(".hs-path-card-button");
         buttonDiv.title = g_cardLocalization.options;
         buttonDiv.addEventListener("click", function (event) {
+          console.log(event);
           sendIpcToMain(
             "hs-on-favorite-options-clicked",
             data.index,
-            data.path
+            data.path,
+            event == undefined || event.pointerType !== "mouse"
           );
           event.stopPropagation();
         });
@@ -365,7 +370,10 @@ function getNewCardDiv(cardType, data, navRow, navColumn) {
       cardDiv.innerHTML = addFavHtml;
       cardDiv.title = g_cardLocalization.add;
       cardDiv.addEventListener("click", function (event) {
-        sendIpcToMain("hs-on-add-favorite-clicked");
+        sendIpcToMain(
+          "hs-on-add-favorite-clicked",
+          event == undefined || event.pointerType !== "mouse"
+        );
         event.stopPropagation();
       });
       if (navRow !== undefined && navColumn !== undefined) {
@@ -570,7 +578,8 @@ function showModalAddFavorite(
   title,
   textButtonBack,
   textButtonAddFile,
-  textButtonAddFolder
+  textButtonAddFolder,
+  showFocus
 ) {
   if (getOpenModal()) {
     return;
@@ -600,7 +609,7 @@ function showModalAddFavorite(
     },
   });
   showModal({
-    showFocus: false, // TODO: true if from key/gamepad
+    showFocus: showFocus,
     title: title,
     frameWidth: 400,
     zIndexDelta: -450,
@@ -623,7 +632,8 @@ function showModalFavoriteOptions(
   textButtonEditName,
   textButtonEditPath,
   textButtonMoveForward,
-  textButtonMoveBackward
+  textButtonMoveBackward,
+  showFocus
 ) {
   if (getOpenModal()) {
     return;
@@ -697,7 +707,7 @@ function showModalFavoriteOptions(
   });
 
   showModal({
-    showFocus: false, // TODO: true if from key/gamepad
+    showFocus: showFocus,
     title: title,
     frameWidth: 400,
     zIndexDelta: -450,

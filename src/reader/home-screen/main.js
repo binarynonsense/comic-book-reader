@@ -254,13 +254,14 @@ function initOnIpcCallbacks() {
     );
   });
 
-  on("hs-on-add-favorite-clicked", () => {
+  on("hs-on-add-favorite-clicked", (showFocus) => {
     sendIpcToRenderer(
       "hs-show-modal-add-favorite",
       _("home-screen-favorites"),
       _("tool-shared-ui-back"),
       _("tool-shared-ui-add-file"),
-      _("tool-shared-ui-add-folder")
+      _("tool-shared-ui-add-folder"),
+      showFocus
     );
   });
 
@@ -297,7 +298,7 @@ function initOnIpcCallbacks() {
     addFavorite(filePath);
   });
 
-  on("hs-on-favorite-options-clicked", (index, path) => {
+  on("hs-on-favorite-options-clicked", (index, path, showFocus) => {
     // TODO: maybe check index and path match?
     sendIpcToRenderer(
       "hs-show-modal-favorite-options",
@@ -309,7 +310,8 @@ function initOnIpcCallbacks() {
       _("ui-modal-prompt-button-edit-name"),
       _("ui-modal-prompt-button-edit-path"),
       _("tool-shared-tooltip-move-forward-in-list"),
-      _("tool-shared-tooltip-move-backward-in-list")
+      _("tool-shared-tooltip-move-backward-in-list"),
+      showFocus
     );
   });
 
