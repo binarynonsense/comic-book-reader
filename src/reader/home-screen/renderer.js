@@ -474,7 +474,7 @@ export function onInputEvent(type, event) {
           getMouseButtons().quickMenu &&
           event.button === getMouseButtons().quickMenu
         ) {
-          inputOpenQuickMenu();
+          inputOpenQuickMenu(false);
         }
       }
       break;

@@ -582,7 +582,7 @@ function initOnIpcCallbacks() {
     tools.switchTool("tool-history", showFocus);
   });
 
-  on("open-quick-menu", () => {
+  on("open-quick-menu", (showFocus) => {
     sendIpcToRenderer(
       "show-modal-quick-menu",
       _("ui-modal-title-quickmenu"),
@@ -591,7 +591,8 @@ function initOnIpcCallbacks() {
       _("tool-fb-title"), //_("ctxmenu-openfile").replace("...", ""),
       _("menu-file-openrecent-history"),
       _("menu-view-togglefullscreen"),
-      _("menu-file-quit")
+      _("menu-file-quit"),
+      showFocus
     );
   });
 

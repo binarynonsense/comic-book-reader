@@ -796,7 +796,7 @@ export function onInputEvent(type, event) {
     case "acbr-mouseup":
       {
         if (g_mouseButtonQuickMenu && event.button === g_mouseButtonQuickMenu) {
-          inputOpenQuickMenu();
+          inputOpenQuickMenu(false);
         }
       }
       break;
@@ -969,8 +969,8 @@ function inputToggleFullScreen() {
   sendIpcToMain("toolbar-button-clicked", "toolbar-button-fullscreen-enter");
 }
 
-export function inputOpenQuickMenu() {
-  sendIpcToMain("open-quick-menu");
+export function inputOpenQuickMenu(showFocus = true) {
+  sendIpcToMain("open-quick-menu", showFocus);
 }
 
 function inputOpenPropertiesModal() {
@@ -1639,7 +1639,8 @@ function showModalQuickMenu(
   textButtonFileBrowser,
   textButtonHistory,
   textButtonFullscreen,
-  textButtonQuit
+  textButtonQuit,
+  showFocus
 ) {
   if (g_openModal) {
     return;
@@ -1699,7 +1700,7 @@ function showModalQuickMenu(
     },
   });
   g_openModal = modals.show({
-    showFocus: true,
+    showFocus: showFocus,
     title: title,
     frameWidth: 400,
     zIndexDelta: -450,
