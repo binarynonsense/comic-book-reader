@@ -35,6 +35,14 @@ exports.removeIndex = function (index) {
   g_history.splice(index, 1);
 };
 
+exports.changeCapacity = function (capacity) {
+  if (!capacity) return;
+  g_capacity = capacity;
+  if (g_history.length > g_capacity) {
+    g_history.splice(0, g_history.length - capacity);
+  }
+};
+
 exports.init = function (capacity) {
   g_capacity = capacity;
   load();

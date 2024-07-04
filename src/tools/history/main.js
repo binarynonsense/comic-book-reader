@@ -10,10 +10,12 @@ const path = require("path");
 const core = require("../../core/main");
 const { _ } = require("../../shared/main/i18n");
 const history = require("../../shared/main/history");
+const settings = require("../../shared/main/settings");
 const reader = require("../../reader/main");
 const contextMenu = require("../../shared/main/tools-menu-context");
 const tools = require("../../shared/main/tools");
 const homeScreen = require("../../reader/home-screen/main");
+const log = require("../../shared/main/logger");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -34,7 +36,12 @@ exports.open = function (showFocus) {
   const data = fs.readFileSync(path.join(__dirname, "index.html"));
   sendIpcToCoreRenderer("replace-inner-html", "#tools", data.toString());
   updateLocalizedText();
-  sendIpcToRenderer("show", getHistory(), showFocus);
+  sendIpcToRenderer(
+    "show",
+    getHistory(),
+    settings.getValue("history_capacity"),
+    showFocus
+  );
 };
 
 exports.close = function () {
@@ -170,6 +177,14 @@ function initOnIpcCallbacks() {
     );
     onCloseClicked();
   });
+
+  on("set-max-files", (value) => {
+    settings.setValue("history_capacity", value);
+    history.changeCapacity(value);
+    reader.rebuildMenuAndToolBars();
+    sendIpcToRenderer("build-list", getHistory(), value);
+    homeScreen.refresh();
+  });
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -199,6 +214,29 @@ function getLocalization() {
       id: "tool-hst-clear-all-button-text",
       text: _("tool-hst-button-clear-all").toUpperCase(),
     },
+    //////////////////////////////////////////////
+    {
+      id: "tool-hst-section-0-text",
+      text: _("tool-hst-recentfiles"),
+    },
+    {
+      id: "tool-hst-section-1-text",
+      text: _("tool-shared-tab-settings"),
+    },
+    //////////////////////////////////////////////
+    {
+      id: "tool-hst-list-text",
+      text: _("tool-hst-recentfiles"),
+    },
+    //////////////////////////////////////////////
+    {
+      id: "tool-hst-settings-text",
+      text: _("tool-shared-tab-settings"),
+    },
+    {
+      id: "tool-hst-settings-max-files-text",
+      text: _("tool-hst-recentfiles-max"),
+    },
   ];
 }
 
@@ -215,7 +253,7 @@ function getExtraLocalization() {
 
     {
       id: "tool-hst-modal-clearall-title",
-      text: _("tool-hst-button-clear-all"),
+      text: _("tool-shared-modal-title-warning"),
     },
     {
       id: "tool-hst-modal-clearall-message",
@@ -228,6 +266,15 @@ function getExtraLocalization() {
     {
       id: "tool-hst-modal-clearall-cancel",
       text: _("ui-modal-prompt-button-cancel"),
+    },
+
+    {
+      id: "tool-hst-modal-changemaxfiles-title",
+      text: _("tool-shared-modal-title-warning"),
+    },
+    {
+      id: "tool-hst-modal-changemaxfiles-message",
+      text: _("tool-hst-modal-changemaxfiles-message"),
     },
   ];
 }

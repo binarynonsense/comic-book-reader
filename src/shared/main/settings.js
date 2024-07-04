@@ -202,8 +202,8 @@ function sanitize(screenWidth, screenHeight) {
   }
   if (
     !Number.isInteger(g_settings.history_capacity) ||
-    g_settings.history_capacity < 10 ||
-    g_settings.history_capacity > 100
+    g_settings.history_capacity < 1 ||
+    g_settings.history_capacity > 1000
   ) {
     g_settings.history_capacity = g_defaultSettings.history_capacity;
   }

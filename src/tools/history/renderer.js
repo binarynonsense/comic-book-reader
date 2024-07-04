@@ -17,6 +17,7 @@ import * as navigation from "../../shared/renderer/tools-navigation.js";
 let g_isInitialized = false;
 let g_navData = {};
 let g_languageDirection;
+let g_maxFiles;
 
 let g_localizedRemoveFromListText = "";
 let g_localizedOpenFromListText = "";
@@ -25,8 +26,10 @@ let g_localizedModalClearAllTitleText = "";
 let g_localizedModalClearAllMessageText = "";
 let g_localizedModalClearAllOkText = "";
 let g_localizedModalClearAllCancelText = "";
+let g_localizedModalChangeMaxTitleText = "";
+let g_localizedModalChangeMaxMessageText = "";
 
-function init(history, showFocus) {
+function init(history, maxFiles, showFocus) {
   if (!g_isInitialized) {
     // things to start only once go here
     g_isInitialized = true;
@@ -38,6 +41,7 @@ function init(history, showFocus) {
     inline: "nearest",
   });
   g_languageDirection = document.documentElement.getAttribute("dir");
+  g_maxFiles = maxFiles;
   // menu buttons
   const backButton = document.getElementById("tool-hst-back-button");
   backButton.addEventListener("click", (event) => {
@@ -52,6 +56,31 @@ function init(history, showFocus) {
   const clearButton = document.getElementById("tool-hst-clear-button");
   clearButton.addEventListener("click", (event) => {
     showModalConfirmClearAll();
+  });
+  // sections menu
+  for (let index = 0; index < 2; index++) {
+    document
+      .getElementById(`tool-hst-section-${index}-button`)
+      .addEventListener("click", (event) => {
+        switchSection(index);
+      });
+  }
+  // settings
+  const maxFilesInput = document.getElementById(
+    "tool-hst-settings-max-files-input"
+  );
+  maxFilesInput.value = g_maxFiles;
+  maxFilesInput.addEventListener("change", function (event) {
+    const value = parseInt(maxFilesInput.value);
+    if (value) {
+      if (value <= 0) maxFilesInput.value = 1;
+      if (value > 1000) maxFilesInput.value = 1000;
+      showModalConfirmSetMax(maxFilesInput);
+      event.preventDefault();
+      event.stopImmediatePropagation();
+    } else {
+      maxFilesInput.value = g_maxFiles;
+    }
   });
   // history list
   buildHistoryList(history);
@@ -74,6 +103,27 @@ function updateColumnsHeight(scrollTop = false) {
       inline: "nearest",
     });
   }
+}
+
+function switchSection(id) {
+  for (let index = 0; index < 2; index++) {
+    if (id === index) {
+      document
+        .getElementById(`tool-hst-section-${index}-button`)
+        .classList.add("tools-menu-button-selected");
+      document
+        .getElementById(`tool-hst-section-${index}-content-div`)
+        .classList.remove("set-display-none");
+    } else {
+      document
+        .getElementById(`tool-hst-section-${index}-button`)
+        .classList.remove("tools-menu-button-selected");
+      document
+        .getElementById(`tool-hst-section-${index}-content-div`)
+        .classList.add("set-display-none");
+    }
+  }
+  updateColumnsHeight(true);
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -129,7 +179,8 @@ function initOnIpcCallbacks() {
 // TOOL ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-function buildHistoryList(history) {
+function buildHistoryList(history, max) {
+  if (max) g_maxFiles = max;
   const clearButton = document.getElementById("tool-hst-clear-button");
   if (history.length > 0) {
     clearButton.classList.remove("tools-disabled");
@@ -238,6 +289,10 @@ export function onInputEvent(type, event) {
   }
   switch (type) {
     case "onkeydown":
+      if (event.target?.nodeName?.toLowerCase() === "input") {
+        // TODO: HACK, need to make it fully navigatable
+        break;
+      }
       navigation.navigate(
         g_navData,
         document.getElementById("tool-hst-back-button"),
@@ -396,6 +451,44 @@ function showModalConfirmClearAll() {
   });
 }
 
+function showModalConfirmSetMax(inputElement) {
+  if (g_openModal) {
+    return;
+  }
+  g_openModal = modals.show({
+    title: g_localizedModalChangeMaxTitleText,
+    message: g_localizedModalChangeMaxMessageText.replace(
+      "{0}",
+      inputElement.value
+    ),
+    zIndexDelta: 5,
+    close: {
+      callback: () => {
+        inputElement.value = g_maxFiles;
+        modalClosed();
+      },
+      key: "Escape",
+    },
+    buttons: [
+      {
+        text: g_localizedModalClearAllOkText.toUpperCase(),
+        callback: () => {
+          sendIpcToMain("set-max-files", parseInt(inputElement.value));
+          modalClosed();
+        },
+        //key: "Enter",
+      },
+      {
+        text: g_localizedModalClearAllCancelText.toUpperCase(),
+        callback: () => {
+          inputElement.value = g_maxFiles;
+          modalClosed();
+        },
+      },
+    ],
+  });
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -418,7 +511,9 @@ function updateLocalization(localization, tooltipsLocalization) {
       g_localizedRemoveFromListText = element.text;
     } else if (element.id === "tool-hst-tooltip-open-from-list") {
       g_localizedOpenFromListText = element.text;
-    } else if (element.id === "tool-hst-modal-clearall-title") {
+    }
+    //
+    else if (element.id === "tool-hst-modal-clearall-title") {
       g_localizedModalClearAllTitleText = element.text;
     } else if (element.id === "tool-hst-modal-clearall-message") {
       g_localizedModalClearAllMessageText = element.text;
@@ -426,6 +521,12 @@ function updateLocalization(localization, tooltipsLocalization) {
       g_localizedModalClearAllOkText = element.text;
     } else if (element.id === "tool-hst-modal-clearall-cancel") {
       g_localizedModalClearAllCancelText = element.text;
+    }
+    //
+    else if (element.id === "tool-hst-modal-changemaxfiles-title") {
+      g_localizedModalChangeMaxTitleText = element.text;
+    } else if (element.id === "tool-hst-modal-changemaxfiles-message") {
+      g_localizedModalChangeMaxMessageText = element.text;
     }
   }
 }

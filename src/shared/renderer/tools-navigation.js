@@ -50,9 +50,9 @@ export function navigate(
   if (backPressed && backButtonElement) {
     backButtonElement.click();
   } else if (actionPressed) {
-    if (data.focusedElement) {
+    if (data.focusedElement && data.focusedElement === document.activeElement) {
       data.focusedElement.click();
-      document.activeElement.blur();
+      // document.activeElement.blur();
     }
   } else if (upPressed || downPressed || leftPressed || rightPressed) {
     let panelId = data.focusedElement.getAttribute("data-nav-panel");

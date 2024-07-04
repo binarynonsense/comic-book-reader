@@ -515,6 +515,7 @@
   "tool-hst-tooltip-remove-from-list": "Remove from History",
   "tool-hst-tooltip-open-from-list": "Open File",
   "tool-hst-modal-clearall-message": "Are you sure you want to delete all the entries in your history?",
+  "tool-hst-modal-changemaxfiles-message": "Are you sure you want to set the maximum number of entries in your history to {0}?",
   "tool-cc-title": "Convert Files Tool",
   "tool-cr-title": "Create File Tool",
   "tool-ci-title": "Convert Images Tool",
