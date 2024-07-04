@@ -899,6 +899,24 @@ async function resizeImages(inputFilePath) {
       stopError(undefined, "imgFiles === undefined || imgFiles.length === 0");
       return;
     }
+    if (g_mode === ToolMode.CREATE) {
+      // pad numerical names
+      imgFilePaths.forEach((filePath) => {
+        let fileName = path.basename(filePath, path.extname(filePath));
+        let newFilePath = path.join(
+          path.dirname(filePath),
+          utils.padNumber(
+            fileName,
+            Math.max(imgFilePaths.length, g_imageIndex)
+          ) + path.extname(filePath)
+        );
+        if (filePath !== newFilePath) {
+          fileUtils.moveFile(filePath, newFilePath);
+        }
+      });
+      imgFilePaths =
+        fileUtils.getImageFilesInFolderRecursive(g_tempSubFolderPath);
+    }
     imgFilePaths.sort(utils.compare);
 
     // resize
