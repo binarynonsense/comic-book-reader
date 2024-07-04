@@ -353,10 +353,15 @@ function initOnIpcCallbacks() {
         for (let index = 0; index < resultsNum; index++) {
           const data = searchResults.results[index];
           let li = document.createElement("li");
-          li.className = "tools-collection-li";
-          // text
+          li.className = "tools-buttons-list-li";
+          //////////////
+          let buttonSpan = document.createElement("span");
+          buttonSpan.className = "tools-buttons-list-button";
+          buttonSpan.title = g_localizedModalTexts.searchResultsShowIssues;
+          /////
           let multilineText = document.createElement("span");
-          multilineText.className = "tools-collection-li-multiline-text";
+          multilineText.className = "tools-buttons-list-li-multiline-text";
+          multilineText.classList.add("set-flex-grow-1");
           {
             let text = document.createElement("span");
             text.innerText =
@@ -367,7 +372,6 @@ function initOnIpcCallbacks() {
               data?.count_of_issues +
               "; Publisher: " +
               data?.publisher?.name; // + " - " + data.resource_type;
-
             multilineText.appendChild(text);
 
             if (data.description) {
@@ -377,21 +381,16 @@ function initOnIpcCallbacks() {
               multilineText.appendChild(text);
             }
           }
-          li.appendChild(multilineText);
-
-          // open issues list
-          let button = document.createElement("span");
-          button.title = g_localizedModalTexts.searchResultsShowIssues;
-          button.className =
-            "tools-collection-li-button tools-collection-li-button-extra-padding";
-          button.addEventListener("click", (event) => {
+          buttonSpan.appendChild(multilineText);
+          buttonSpan.innerHTML += `<i class="fas fa-angle-right"></i>`;
+          buttonSpan.addEventListener("click", (event) => {
             showProgressModal();
             updateModalTitleText(g_localizedModalTexts.searchingTitle);
             sendIpcToMain("get-volume-data", data.api_detail_url);
           });
-          button.innerHTML = `<i class="fas fa-angle-right"></i>`;
-          li.appendChild(button);
-
+          /////
+          li.appendChild(buttonSpan);
+          ////////////////
           ul.appendChild(li);
         }
         searchResultsDiv.appendChild(ul);
@@ -483,31 +482,31 @@ function initOnIpcCallbacks() {
       ) {
         const data = searchResults.results.issues[index];
         let li = document.createElement("li");
-        li.className = "tools-collection-li";
-        // text
+        li.className = "tools-buttons-list-li";
+        //////////////
+        let buttonSpan = document.createElement("span");
+        buttonSpan.className = "tools-buttons-list-button";
+        buttonSpan.title = g_localizedModalTexts.searchResultsShowMetadata;
+        /////
         let multilineText = document.createElement("span");
-        multilineText.className = "tools-collection-li-multiline-text";
+        multilineText.className = "tools-buttons-list-li-multiline-text";
+        multilineText.classList.add("set-flex-grow-1");
         {
           let text = document.createElement("span");
           text.innerText = `${data.issue_number}`;
           if (data.name) text.innerText += ` - ${data.name}`;
           multilineText.appendChild(text);
         }
-        li.appendChild(multilineText);
-
-        // open issue data
-        let button = document.createElement("span");
-        button.title = g_localizedModalTexts.searchResultsShowMetadata;
-        button.className =
-          "tools-collection-li-button tools-collection-li-button-extra-padding";
-        button.addEventListener("click", (event) => {
+        buttonSpan.appendChild(multilineText);
+        buttonSpan.innerHTML += `<i class="fas fa-angle-right"></i>`;
+        buttonSpan.addEventListener("click", (event) => {
           showProgressModal();
           updateModalTitleText(g_localizedModalTexts.searchingTitle);
           sendIpcToMain("get-issue-data", data.api_detail_url);
         });
-        button.innerHTML = `<i class="fas fa-angle-right"></i>`;
-        li.appendChild(button);
-
+        /////
+        li.appendChild(buttonSpan);
+        ////////////////
         ul.appendChild(li);
       }
       searchResultsDiv.appendChild(ul);

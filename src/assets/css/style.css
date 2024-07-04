@@ -65,6 +65,10 @@ img {
   opacity: 0.2 !important;
 }
 
+.set-flex-grow-1 {
+  flex-grow: 1 !important;
+}
+
 /* SCROLLBAR */
 
 .hidden-scrollbar {
