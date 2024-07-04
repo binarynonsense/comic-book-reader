@@ -10,6 +10,7 @@ const fs = require("fs");
 const path = require("path");
 const { changeDpiDataUrl } = require("changedpi");
 const { FileExtension } = require("../main/constants");
+const { padNumber } = require("../main/utils");
 
 let g_cancel;
 
@@ -165,7 +166,10 @@ async function extractPDF(
         let data = img.replace(/^data:image\/\w+;base64,/, "");
         let buf = Buffer.from(data, "base64");
 
-        let filePath = path.join(folderPath, pageNum + "." + FileExtension.JPG);
+        let filePath = path.join(
+          folderPath,
+          padNumber(pageNum, pdf.numPages) + "." + FileExtension.JPG
+        );
         fs.writeFileSync(filePath, buf, "binary");
         ipcRenderer.send(
           "tools-worker",
@@ -287,7 +291,10 @@ async function extractPDF(
         let data = img.replace(/^data:image\/\w+;base64,/, "");
         let buf = Buffer.from(data, "base64");
 
-        let filePath = path.join(folderPath, pageNum + "." + FileExtension.JPG);
+        let filePath = path.join(
+          folderPath,
+          padNumber(pageNum, pdf.numPages) + "." + FileExtension.JPG
+        );
         fs.writeFileSync(filePath, buf, "binary");
         ipcRenderer.send(
           "tools-worker",

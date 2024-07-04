@@ -204,3 +204,11 @@ exports.parsePdfDate = function (date) {
   // UTC months start in 0
   return new Date(Date.UTC(year, month - 1, day, hour, minute, second));
 };
+
+exports.padNumber = function (number, maximum) {
+  if (!number || !maximum) return number;
+  number = number.toString();
+  maximum = maximum.toString();
+  while (number.length < maximum.length) number = "0" + number;
+  return number;
+};
