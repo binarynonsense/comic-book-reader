@@ -491,11 +491,11 @@ export async function onSave() {
       let titleData = g_data.title[0];
       if (titleData != {}) {
         const id = "title_0";
-        metadata["dc:title"] = { "#text": titleData.text };
+        metadata["dc:title"] = { "@_id": id, "#text": titleData.text };
         if (titleData.fileAs) {
           if (g_data.version >= 3.0) {
             metadata.meta.push({
-              "#text": element.fileAs,
+              "#text": titleData.fileAs,
               "@_refines": "#" + id,
               "@_property": "file-as",
             });
