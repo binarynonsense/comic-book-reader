@@ -636,6 +636,13 @@ export function onIssueSearchResults(
       data.volume.name
     );
   }
+  if (data.issue_number) {
+    compiledData.number = addLine(
+      ul,
+      g_localizedSubTool.uiTagNames.number,
+      data.issue_number
+    );
+  }
   if (data.cover_date) {
     compiledData.date = addLine(
       ul,
@@ -653,13 +660,7 @@ export function onIssueSearchResults(
       searchHistory.issues.results.publisher.name
     );
   }
-  if (data.issue_number) {
-    compiledData.number = addLine(
-      ul,
-      g_localizedSubTool.uiTagNames.number,
-      data.issue_number
-    );
-  }
+
   if (data.description) {
     const div = document.createElement("div");
     div.innerHTML = data.description;

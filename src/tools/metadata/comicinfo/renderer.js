@@ -258,6 +258,13 @@ export function onIssueSearchResults(
       data.volume.name
     );
   }
+  if (data.issue_number) {
+    compiledData.number = addLine(
+      ul,
+      document.getElementById("tool-metadata-data-number-text").textContent,
+      data.issue_number
+    );
+  }
   if (data.cover_date) {
     let numbers = data.cover_date.split("-");
     if (numbers.length > 0)
@@ -287,13 +294,6 @@ export function onIssueSearchResults(
       ul,
       document.getElementById("tool-metadata-data-publisher-text").textContent,
       searchHistory.issues.results.publisher.name
-    );
-  }
-  if (data.issue_number) {
-    compiledData.number = addLine(
-      ul,
-      document.getElementById("tool-metadata-data-number-text").textContent,
-      data.issue_number
     );
   }
   if (searchHistory.issues.results.count_of_issues) {
