@@ -670,6 +670,7 @@
   "[NEEDS TRANSLATION]tool-metadata-modal-message-invalid-changes": "Some of the changes are not valid.",
   "[NEEDS TRANSLATION]tool-metadata-modal-message-success-update": "The file's metadata was successfully updated.",
   "[NEEDS TRANSLATION]tool-metadata-tooltip-list-separator": "Multiple terms must be separated by a semicolon (;).",
+  "[NEEDS TRANSLATION]tool-metadata-tooltip-utc-date-format": "An UTC date in a simplified ISO 8601 format: YYYY-MM-DD or YYYY-MM-DDTHH:mm:ss.sssZ",
   "tool-metadata-search-placeholder-series": "Введите название серии комиксов",
   "tool-metadata-search-error-invalid-api-key": "Неверный ключ API",
   "tool-metadata-search-import-warning": "Выбранная информация будет сопоставлена с соответствующими полями метаданных, а их содержимое заменено на нее.",

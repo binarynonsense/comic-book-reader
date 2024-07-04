@@ -670,6 +670,7 @@
   "tool-metadata-modal-message-invalid-changes": "Some of the changes are not valid.",
   "tool-metadata-modal-message-success-update": "The file's metadata was successfully updated.",
   "tool-metadata-tooltip-list-separator": "Multiple terms must be separated by a semicolon (;).",
+  "tool-metadata-tooltip-utc-date-format": "An UTC date in a simplified ISO 8601 format: YYYY-MM-DD or YYYY-MM-DDTHH:mm:ss.sssZ",
   "tool-metadata-search-placeholder-series": "Enter a comic book series name",
   "tool-metadata-search-error-invalid-api-key": "Invalid API Key",
   "tool-metadata-search-import-warning": "The selected information will be matched to the appropriate metadata fields and their content replaced with it.",

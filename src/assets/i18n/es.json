@@ -670,6 +670,7 @@
   "tool-metadata-modal-message-invalid-changes": "Algunos d elos cambios no sol válidos.",
   "tool-metadata-modal-message-success-update": "Los metadatos del archivo se actualizaron correctamente.",
   "tool-metadata-tooltip-list-separator": "Se deben separar múltiples términos con punto y coma (;).",
+  "tool-metadata-tooltip-utc-date-format": "Una fecha UTC en un formato simplificado ISO 8601: YYYY-MM-DD o YYYY-MM-DDTHH:mm:ss.sssZ",
   "tool-metadata-search-placeholder-series": "Introduzca el nombre de una serie de cómics",
   "tool-metadata-search-error-invalid-api-key": "Clave API inválida",
   "tool-metadata-search-import-warning": "La información seleccionada se asignará a los campos de metadatos apropiados y sus contenidos serán reemplazados con ella.",
