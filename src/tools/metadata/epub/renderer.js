@@ -176,6 +176,9 @@ export function onLoadMetadata(metadata, version, error) {
     // title
     g_data["title"] = [];
     tempData.known["dc:title"].forEach((title) => {
+      if (title["@_opf:file-as"]) {
+        title["@_file-as"] = title["@_opf:file-as"];
+      }
       g_data["title"].push({
         text: title["#text"],
         fileAs: title["@_file-as"],
