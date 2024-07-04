@@ -2583,10 +2583,9 @@ async function onMenuFileProperties() {
         buttonText = _("ui-modal-prompt-button-create-xml");
       }
     } else if (
-      core.isDev() &&
-      (g_fileData.type === FileDataType.PDF ||
-        g_fileData.type === FileDataType.EPUB_COMIC ||
-        g_fileData.type === FileDataType.EPUB_EBOOK)
+      g_fileData.type === FileDataType.PDF ||
+      g_fileData.type === FileDataType.EPUB_COMIC ||
+      g_fileData.type === FileDataType.EPUB_EBOOK
     ) {
       buttonText = _("ui-modal-prompt-button-edit-metadata");
     }
