@@ -684,7 +684,8 @@ function tryOpen(filePath, bookType, historyEntry) {
       if (
         historyEntry.data.source === "dcm" ||
         historyEntry.data.source === "iab" ||
-        historyEntry.data.source === "xkcd"
+        historyEntry.data.source === "xkcd" ||
+        historyEntry.data.source === "cbp"
       ) {
         return tryOpenWWW(pageIndex, historyEntry);
       } else if (historyEntry.data.source === "gut") {
@@ -781,6 +782,10 @@ function tryOpenWWW(pageIndex, historyEntry) {
     return true;
   } else if (data.source === "xkcd") {
     const tool = require("../tools/xkcd/main");
+    openBookFromCallback(data, tool.getPageCallback, pageIndex);
+    return true;
+  } else if (data.source === "cbp") {
+    const tool = require("../tools/cbp/main");
     openBookFromCallback(data, tool.getPageCallback, pageIndex);
     return true;
   }

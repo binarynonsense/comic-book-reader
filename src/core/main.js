@@ -574,6 +574,11 @@ if (!gotTheLock) {
     sendIpcToPreload("update-menubar");
   };
 
+  exports.onMenuToolCBP = function () {
+    tools.switchTool("tool-cbp");
+    sendIpcToPreload("update-menubar");
+  };
+
   exports.onMenuToolIArchive = function () {
     tools.switchTool("tool-internet-archive");
     sendIpcToPreload("update-menubar");

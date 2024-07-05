@@ -33,6 +33,7 @@ exports.init = function () {
   g_tools["tool-file-browser"] = require("../../tools/file-browser/main");
   g_tools["tool-radio"] = require("../../tools/radio/main");
   g_tools["tool-metadata"] = require("../../tools/metadata/main");
+  g_tools["tool-cbp"] = require("../../tools/cbp/main");
 };
 
 exports.getTools = function () {
