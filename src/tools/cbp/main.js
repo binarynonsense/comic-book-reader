@@ -102,7 +102,109 @@ function initOnIpcCallbacks() {
     onCloseClicked();
   });
 
-  on("search", async (text, url, useragent) => {
+  on("search", async (data, query, pageNum, connectionError) => {
+    // try {
+    //   const userAgents = [
+    //     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.5 Safari/605.1.15",
+    //     "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.53 Safari/537.36",
+    //     "Mozilla/5.0 (Windows NT 10.0; Windows; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.114 Safari/537.36",
+    //     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/603.3.8 (KHTML, like Gecko) Version/10.1.2 Safari/603.3.8",
+    //     "Mozilla/5.0 (Windows NT 10.0; Windows; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.114 Safari/537.36",
+    //     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Safari/605.1.15",
+    //     "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.53 Safari/537.36",
+    //     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Safari/605.1.15",
+    //     "Mozilla/5.0 (Windows NT 10.0; Windows; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.114 Safari/537.36",
+    //     "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.53 Safari/537.36",
+    //   ];
+    //   const userAgent =
+    //     userAgents[Math.floor(Math.random() * userAgents.length)];
+    //   log.test(userAgent);
+    //   const axios = require("axios").default;
+    //   const formData = new FormData();
+    //   formData.append("q", query);
+    //   formData.append("category_general", "1");
+    //   formData.append("pageno", pageNum);
+    //   formData.append("language", "en-US");
+    //   formData.append("time_range", "");
+    //   formData.append("safesearch", "1");
+    //   formData.append("theme", "simple");
+    //   const response = await axios.post(
+    //     "https://search.disroot.org/search",
+    //     formData,
+    //     {
+    //       headers: {
+    //         "Content-Type": "multipart/form-data",
+    //         "User-Agent": userAgent,
+    //       },
+    //       timeout: 15000,
+    //     }
+    //   );
+    //   data = response.data;
+    // } catch (error) {
+    //   data = undefined;
+    //   log.test(error);
+    //   connectionError = error.message;
+    // }
+    //////////////////////////////
+    if (connectionError) {
+      log.error(connectionError);
+      sendIpcToRenderer(
+        "update-results",
+        [],
+        "⚠ " + _("tool-shared-ui-search-network-error", "comicbookplus.com")
+      );
+    } else {
+      try {
+        const jsdom = require("jsdom");
+        const { JSDOM } = jsdom;
+        const dom = new JSDOM(data);
+        let results = { links: [], query, pageNum };
+        const resultWrapper = dom.window.document.querySelectorAll(".result");
+        if (resultWrapper && resultWrapper.length > 0) {
+          resultWrapper.forEach((element) => {
+            const a = element.querySelector("h3")?.querySelector("a");
+            if (a && a.href && a.href.includes("dlid")) {
+              let comicId;
+              let parts = a.href.split("dlid=");
+              if (parts.length === 2) {
+                comicId = parts[1];
+              }
+              if (comicId) {
+                results.links.push({
+                  name: a.textContent.replace(" - Comic Book Plus", ""),
+                  dlid: comicId,
+                });
+              }
+            }
+          });
+        }
+        if (results.links.length === 0) {
+          throw "0 results";
+        }
+
+        results.hasNext =
+          dom.window.document.querySelector("form.next_page") !== null;
+        results.hasPrev =
+          dom.window.document.querySelector("form.previous_page") !== null;
+
+        sendIpcToRenderer(
+          "update-results",
+          results,
+          _("tool-shared-ui-search-item-open-acbr"),
+          _("tool-shared-ui-search-item-open-browser")
+        );
+      } catch (error) {
+        if (error !== "0 results") log.error(error);
+        sendIpcToRenderer(
+          "update-results",
+          { links: [], pageNum },
+          _("tool-shared-ui-search-nothing-found")
+        );
+      }
+    }
+  });
+
+  async function searchDDG(text, url, useragent) {
     log.test("+++++++++++");
     console.log(useragent);
     // NOTE: using duckduckgo.com as the search engine
@@ -113,15 +215,17 @@ function initOnIpcCallbacks() {
         }
         // ref: https://duckduckgo.com/duckduckgo-help-pages/results/syntax/
         url = `https://lite.duckduckgo.com/lite/?q=${encodeURIComponent(
-          text + " inurl:dlid site:comicbookplus.com"
+          text + " site:comicbookplus.com"
         )}`;
-        // NOTE: inurl:dlid doesn't really seem to work
+        // NOTE: tried inurl:dlid, doesn't really seem to do anything
+        // text + " inurl:dlid site:comicbookplus.com"
       }
       log.test(url);
       const axios = require("axios").default;
       const response = await axios.get(url, {
         timeout: 15000,
-        headers: { "User-Agent": useragent },
+        // NOTE: tried headers to avoid being ided as a bot, no luck
+        //headers: { "User-Agent": useragent, withCredentials: true },
       });
       let nextUrl;
       // e.g. <a rel="next" href="/lite/?q=mars+site%3Acomicbookplus.com&amp;v=l&amp;kl=wt-wt&amp;l=us-en&amp;p=&amp;s=73&amp;ex=-1&amp;o=json&amp;dl=en&amp;ct=ES&amp;sp=0&amp;vqd=4-111953606416844614702827187214412193094&amp;host_region=eun&amp;dc=97&amp;api=%2Fd.js">
@@ -185,7 +289,7 @@ function initOnIpcCallbacks() {
         _("tool-shared-ui-search-nothing-found")
       );
     }
-  });
+  }
 
   on("open-url-in-browser", (url) => {
     shell.openExternal(url);
