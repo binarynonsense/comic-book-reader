@@ -327,7 +327,6 @@ function initOnIpcCallbacks() {
   /////////////////////////////////////////////////////////////////////////////
 
   on("modal-update-title-text", (text) => {
-    console.log(text);
     updateModalTitleText(text);
   });
 
