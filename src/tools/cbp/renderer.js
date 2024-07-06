@@ -332,38 +332,86 @@ function initOnIpcCallbacks() {
 function generatePaginationHtml(results) {
   let paginationDiv = document.createElement("div");
   paginationDiv.className = "tools-collection-pagination";
-  if (results.pageNum > 1) {
+  if (results.engine === "disroot") {
+    if (results.pageNum > 1) {
+      let span = document.createElement("span");
+      span.className = "tools-collection-pagination-button";
+      span.innerHTML = '<i class="fas fa-angle-double-left"></i>';
+      span.addEventListener("click", (event) => {
+        onSearch({ pageNum: 1, query: results.query });
+      });
+      paginationDiv.appendChild(span);
+    }
+    if (results.hasPrev) {
+      let span = document.createElement("span");
+      span.className = "tools-collection-pagination-button";
+      span.innerHTML = '<i class="fas fa-angle-left"></i>';
+      span.addEventListener("click", (event) => {
+        onSearch({ pageNum: results.pageNum - 1, query: results.query });
+      });
+      paginationDiv.appendChild(span);
+    }
     let span = document.createElement("span");
-    span.className = "tools-collection-pagination-button";
-    span.innerHTML = '<i class="fas fa-angle-double-left"></i>';
-    span.addEventListener("click", (event) => {
-      onSearch(1, results.query);
-    });
+    span.innerHTML = ` | `;
     paginationDiv.appendChild(span);
-  }
-  if (results.hasPrev) {
+    if (results.hasNext) {
+      let span = document.createElement("span");
+      span.className = "tools-collection-pagination-button";
+      span.innerHTML = '<i class="fas fa-angle-right"></i>';
+      span.addEventListener("click", (event) => {
+        onSearch({ pageNum: results.pageNum + 1, query: results.query });
+      });
+      paginationDiv.appendChild(span);
+    }
+    // NOTE: don't know the total number of pages, so can't add a button to
+    // go to the end directly
+  } else if (results.engine === "duckduckgo") {
+    console.log(results);
+    if (results.firstUrl) {
+      let span = document.createElement("span");
+      span.className = "tools-collection-pagination-button";
+      span.innerHTML = '<i class="fas fa-angle-double-left"></i>';
+      span.addEventListener("click", (event) => {
+        onSearch({
+          query: results.query,
+          url: results.firstUrl,
+          firstUrl: results.firstUrl,
+        });
+      });
+      paginationDiv.appendChild(span);
+    }
+    if (results.hasPrev) {
+      let span = document.createElement("span");
+      span.className = "tools-collection-pagination-button";
+      span.innerHTML = '<i class="fas fa-angle-left"></i>';
+      span.addEventListener("click", (event) => {
+        onSearch({
+          query: results.query,
+          url: results.prevUrl,
+          firstUrl: results.firstUrl,
+        });
+      });
+      paginationDiv.appendChild(span);
+    }
     let span = document.createElement("span");
-    span.className = "tools-collection-pagination-button";
-    span.innerHTML = '<i class="fas fa-angle-left"></i>';
-    span.addEventListener("click", (event) => {
-      onSearch(results.pageNum - 1, results.query);
-    });
+    span.innerHTML = ` | `;
     paginationDiv.appendChild(span);
+    if (results.hasNext) {
+      let span = document.createElement("span");
+      span.className = "tools-collection-pagination-button";
+      span.innerHTML = '<i class="fas fa-angle-right"></i>';
+      span.addEventListener("click", (event) => {
+        onSearch({
+          query: results.query,
+          url: results.nextUrl,
+          firstUrl: results.firstUrl,
+        });
+      });
+      paginationDiv.appendChild(span);
+    }
+    // NOTE: don't know the total number of pages, so can't add a button to
+    // go to the end directly
   }
-  let span = document.createElement("span");
-  span.innerHTML = ` | `;
-  paginationDiv.appendChild(span);
-  if (results.hasNext) {
-    let span = document.createElement("span");
-    span.className = "tools-collection-pagination-button";
-    span.innerHTML = '<i class="fas fa-angle-right"></i>';
-    span.addEventListener("click", (event) => {
-      onSearch(results.pageNum + 1, results.query);
-    });
-    paginationDiv.appendChild(span);
-  }
-  // NOTE: don't know the total number of pages, so can't add a button to
-  // go to the end directly
   return paginationDiv;
 }
 
@@ -371,11 +419,33 @@ function generatePaginationHtml(results) {
 // TOOL ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-async function onSearch(pageNum = 1, query = undefined) {
-  if (!query) query = g_searchInput.value + " site:comicbookplus.com";
+async function onSearch(data) {
   if (!g_openModal) showSearchModal(); // TODO: check if first time?
   updateModalTitleText(g_localizedModalSearchingTitleText);
-  sendIpcToMain("search-window", { query, pageNum });
+  let engine = "disroot";
+  if (!data) data = {};
+  if (engine === "disroot") {
+    if (!data.pageNum) data.pageNum = 1;
+    if (!data.query) {
+      data.query = g_searchInput.value + " site:comicbookplus.com";
+    }
+    sendIpcToMain("search-window", {
+      engine,
+      query: data.query,
+      pageNum: data.pageNum,
+    });
+  } else if (engine === "duckduckgo") {
+    // ref: https://duckduckgo.com/duckduckgo-help-pages/results/syntax/
+    if (!data.query) {
+      data.query = g_searchInput.value + " inurl:dlid site:comicbookplus.com";
+    }
+    sendIpcToMain("search-window", {
+      engine,
+      query: data.query,
+      url: data.url,
+      firstUrl: data.firstUrl,
+    });
+  }
 }
 
 async function onSearchResultClicked(dlid, openWith) {
