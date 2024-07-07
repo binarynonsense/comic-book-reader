@@ -200,7 +200,7 @@ function initMouse() {
 
   document.addEventListener("mousemove", function (event) {
     if (!getOpenModal()) {
-      getCurrentTool().onInputEvent("mousemove");
+      getCurrentTool().onInputEvent("mousemove", event);
     }
     if (g_isMouseDown) {
       const mouseDeltaX = event.pageX - g_mouseLastX;
@@ -209,6 +209,7 @@ function initMouse() {
         getCurrentTool().onInputEvent("acbr-onmousedownmove", [
           mouseDeltaX,
           mouseDeltaY,
+          event,
         ]);
       }
       g_mouseLastX = event.pageX;
@@ -319,6 +320,7 @@ function initTouchScreen() {
           getCurrentTool().onInputEvent("acbr-onmousedownmove", [
             touchDeltaX,
             touchDeltaY,
+            event,
           ]);
         }
         g_touchLastX = g_touches[0].clientX;

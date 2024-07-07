@@ -817,11 +817,19 @@ export function onInputEvent(type, event) {
 
     case "acbr-onmousedownmove":
       {
-        const reader = document.getElementById("reader");
-        const container = document.getElementById("pages-container");
-        const image = container?.firstChild;
-        if (reader && container && image) {
-          reader.scrollBy(-event[0], -event[1]);
+        if (
+          event &&
+          event[2] &&
+          event[2]?.target?.id === "toolbar-page-slider-input"
+        ) {
+          // ignore it, as it's moving the toolbar's slider
+        } else {
+          const reader = document.getElementById("reader");
+          const container = document.getElementById("pages-container");
+          const image = container?.firstChild;
+          if (reader && container && image) {
+            reader.scrollBy(-event[0], -event[1]);
+          }
         }
       }
       break;
