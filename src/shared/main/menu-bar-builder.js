@@ -579,15 +579,15 @@ function buildApplicationMenu(settings, history) {
           label: _("menu-tools-other"),
           submenu: [
             {
-              label: _("tool-cbp-title"),
-              click() {
-                core.onMenuToolCBP();
-              },
-            },
-            {
               label: _("menu-tools-other-dcm"),
               click() {
                 core.onMenuToolDCM();
+              },
+            },
+            {
+              label: _("tool-cbp-title"),
+              click() {
+                core.onMenuToolCBP();
               },
             },
             {
