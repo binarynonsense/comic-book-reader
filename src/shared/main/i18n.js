@@ -178,9 +178,9 @@ exports._ = function (...args) {
   });
 };
 
-exports._raw = function (key) {
+exports._raw = function (key, enIfUndefined = true) {
   let data = g_loadedLocaleData[key];
-  if (data === undefined) {
+  if (data === undefined && enIfUndefined) {
     data = g_englishData[key];
   }
   return data;
