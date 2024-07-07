@@ -556,7 +556,7 @@ function getLocalization() {
       id: "tool-cbp--about-1-text",
       text: _(
         "tool-shared-ui-about-text-1",
-        _("tool-shared-ui-about-text-1-comicbooks"),
+        _("tool-shared-ui-about-text-1-comicbooks-audio"),
         _("tool-cbp-title")
       ),
     },

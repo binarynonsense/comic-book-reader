@@ -3,9 +3,9 @@
     "authors": [
       "Álvaro"
     ],
-    "last-updated": "2024-07-04",
+    "last-updated": "2024-07-07",
     "license-id": "BSD-2-Clause",
-    "acbr-version": "3.6.0-alpha1",
+    "acbr-version": "3.6.0-alpha2",
     "pre-release": "false",
     "comments": "",
     "locale": "en",
@@ -312,6 +312,7 @@
   "tool-shared-ui-about-text-1-audiobooks": "the audiobooks",
   "tool-shared-ui-about-text-1-dictionaryterms": "the dictionary terms",
   "tool-shared-ui-about-text-1-radiostations": "the radio stations",
+  "tool-shared-ui-about-text-1-comicbooks-audio": "the comic books and audio files",
   "tool-shared-ui-about-text-2": "It needs an internet connection and could at any point stop working if the website's structure changes.",
   "tool-shared-ui-about-text-3": "If you use it frequently or just like what they are doing, please consider making a donation to help them keep the site alive.",
   "tool-shared-ui-direction-fromlanguage": "Infer from selected language",
