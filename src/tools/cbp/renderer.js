@@ -15,7 +15,9 @@ import axios from "../../assets/libs/axios/dist/esm/axios.js";
 let g_searchInput;
 let g_searchButton;
 
-let g_dcmUrlInput;
+let g_engineSelect;
+
+let g_urlInput;
 let g_openInputInACBRButton;
 let g_openInputInBrowserButton;
 
@@ -23,9 +25,6 @@ let g_localizedSearchPlaceholderText;
 let g_localizedModalCancelButtonText;
 let g_localizedModalCloseButtonText;
 let g_localizedModalSearchingTitleText;
-
-let g_searchResultsPrevUrls;
-let g_searchResultsNextUrl;
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -50,7 +49,7 @@ function init() {
       sendIpcToMain("close");
     });
   // sections menu
-  for (let index = 0; index < 3; index++) {
+  for (let index = 0; index < 4; index++) {
     document
       .getElementById(`tool-cbp-section-${index}-button`)
       .addEventListener("click", (event) => {
@@ -58,7 +57,6 @@ function init() {
       });
   }
   ////////////////////////////////////////
-
   // search
   g_searchButton = document.getElementById("tool-cbp-search-button");
   g_searchButton.addEventListener("click", (event) => {
@@ -89,7 +87,7 @@ function init() {
   });
   g_searchInput.focus();
   // url
-  g_dcmUrlInput = document.getElementById("tool-cbp-url-input");
+  g_urlInput = document.getElementById("tool-cbp-url-input");
   g_openInputInACBRButton = document.getElementById(
     "tool-cbp-open-input-url-acbr-button"
   );
@@ -97,7 +95,7 @@ function init() {
     "tool-cbp-open-input-url-browser-button"
   );
 
-  g_dcmUrlInput.addEventListener("input", (event) => {
+  g_urlInput.addEventListener("input", (event) => {
     if (event.target.value.startsWith("https://comicbookplus.com/?dlid=")) {
       g_openInputInACBRButton.classList.remove("tools-disabled");
       g_openInputInBrowserButton.classList.remove("tools-disabled");
@@ -112,6 +110,10 @@ function init() {
   g_openInputInBrowserButton.addEventListener("click", (event) => {
     onOpenComicUrlInBrowser();
   });
+  // options
+  g_engineSelect = document.getElementById(
+    "tool-cbp-options-search-engine-select"
+  );
   // about
   document
     .getElementById("tool-cbp-open-cbp-browser-button")
@@ -147,7 +149,7 @@ function updateColumnsHeight(scrollTop = false) {
 }
 
 function switchSection(id) {
-  for (let index = 0; index < 3; index++) {
+  for (let index = 0; index < 4; index++) {
     if (id === index) {
       document
         .getElementById(`tool-cbp-section-${index}-button`)
@@ -278,7 +280,13 @@ function initOnIpcCallbacks() {
         li.className = "tools-buttons-list-li";
         let buttonSpan = document.createElement("span");
         buttonSpan.className = "tools-buttons-list-button";
-        buttonSpan.innerHTML = `<i class="fas fa-file fa-2x"></i>`;
+        let iconText = "fas fa-question";
+        if (result.type === "book") {
+          iconText = "fas fa-file";
+        } else if (result.type === "audio") {
+          iconText = "fas fa-file-audio";
+        }
+        buttonSpan.innerHTML = `<i class="${iconText} fa-2x"></i>`;
         buttonSpan.title = openInAcbrText;
         let multilineText = document.createElement("span");
         multilineText.className = "tools-buttons-list-li-multiline-text";
@@ -286,6 +294,11 @@ function initOnIpcCallbacks() {
           let text = document.createElement("span");
           text.innerText = `${result.name}`;
           multilineText.appendChild(text);
+          if (result.summary) {
+            let text = document.createElement("span");
+            text.innerText = `${result.summary}`;
+            multilineText.appendChild(text);
+          }
         }
         buttonSpan.appendChild(multilineText);
         buttonSpan.addEventListener("click", (event) => {
@@ -332,7 +345,7 @@ function initOnIpcCallbacks() {
 function generatePaginationHtml(results) {
   let paginationDiv = document.createElement("div");
   paginationDiv.className = "tools-collection-pagination";
-  if (results.engine === "disroot") {
+  if (results.engine === "cbp" || results.engine === "disroot") {
     if (results.pageNum > 1) {
       let span = document.createElement("span");
       span.className = "tools-collection-pagination-button";
@@ -366,7 +379,6 @@ function generatePaginationHtml(results) {
     // NOTE: don't know the total number of pages, so can't add a button to
     // go to the end directly
   } else if (results.engine === "duckduckgo") {
-    console.log(results);
     if (results.firstUrl) {
       let span = document.createElement("span");
       span.className = "tools-collection-pagination-button";
@@ -422,9 +434,19 @@ function generatePaginationHtml(results) {
 async function onSearch(data) {
   if (!g_openModal) showSearchModal(); // TODO: check if first time?
   updateModalTitleText(g_localizedModalSearchingTitleText);
-  let engine = "disroot";
+  let engine = g_engineSelect.value;
   if (!data) data = {};
-  if (engine === "disroot") {
+  if (engine === "cbp") {
+    if (!data.pageNum) data.pageNum = 1;
+    if (!data.query) {
+      data.query = g_searchInput.value;
+    }
+    sendIpcToMain("search-window", {
+      engine,
+      query: data.query,
+      pageNum: data.pageNum,
+    });
+  } else if (engine === "disroot") {
     if (!data.pageNum) data.pageNum = 1;
     if (!data.query) {
       data.query = g_searchInput.value + " site:comicbookplus.com";
@@ -466,7 +488,7 @@ async function onSearchResultClicked(dlid, openWith) {
 
 async function onOpenComicUrlInACBR(url) {
   try {
-    if (!url) url = g_dcmUrlInput.value;
+    if (!url) url = g_urlInput.value;
     const tmp = document.createElement("a");
     tmp.href = url;
     if (tmp.host === "comicbookplus.com") {
@@ -478,22 +500,26 @@ async function onOpenComicUrlInACBR(url) {
       if (!comicId) return;
 
       let page = await getFirstPageInfo(comicId, 1);
-      let comicData = {
-        source: "cbp",
-        comicId: comicId,
-        name: page.name,
-        numPages: page.numPages,
-        url: `https://comicbookplus.com/?dlid=${comicId}`,
-      };
-      if (page.url) {
-        sendIpcToMain("open", comicData);
+      if (page && page.url) {
+        let comicData = {
+          source: "cbp",
+          comicId: comicId,
+          name: page.name,
+          numPages: page.numPages,
+          url: `https://comicbookplus.com/?dlid=${comicId}`,
+        };
+        if (page.url) {
+          sendIpcToMain("open", comicData);
+        }
+      } else if (page && page.audioUrl) {
+        sendIpcToMain("open-audio", page.audioUrl, page.name);
       }
     }
   } catch (error) {}
 }
 
 function onOpenComicUrlInBrowser(url) {
-  if (!url) url = g_dcmUrlInput.value;
+  if (!url) url = g_urlInput.value;
   openCBPLink(url);
 }
 
@@ -513,16 +539,30 @@ async function getFirstPageInfo(comicId) {
       `https://comicbookplus.com/?dlid=${comicId}`,
       { timeout: 15000 }
     );
-    const regex = /comicnumpages=(.*);/;
+    let numPages;
+    let regex = /comicnumpages=(.*);/;
     let match = response.data.match(regex);
-    let numPages = match[1];
+    if (match && match.length > 0) {
+      numPages = match[1];
+    }
+
     const parser = new DOMParser().parseFromString(response.data, "text/html");
     let title = parser.title.replace(" - Comic Book Plus", "");
     //e.g. <img src="https://box01.comicbookplus.com/viewer/5e/5e287e0a63a5733bb2fd0e5c49f80f4d/9.jpg" id="maincomic" width="975" alt="Book Cover For Space Action 1" onclick="turnpage(1)" itemprop="image">
-    let imageUrl = parser.getElementById("maincomic").src;
-    return { url: imageUrl, numPages: numPages, name: title };
+    let imageUrl = parser.getElementById("maincomic")?.src;
+    if (imageUrl) return { url: imageUrl, numPages: numPages, name: title };
+
+    // maybe it's an mp3
+    regex = /href="(http.*?).mp3">/;
+    match = response.data.match(regex);
+    if (match && match.length > 0) {
+      const audioUrl = match[1] + ".mp3";
+      return { audioUrl, name: title };
+    }
+    return undefined;
   } catch (error) {
     console.error(error);
+    return undefined;
   }
 }
 

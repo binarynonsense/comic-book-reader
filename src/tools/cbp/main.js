@@ -81,6 +81,10 @@ function sendIpcToCoreRenderer(...args) {
   core.sendIpcToRenderer("core", ...args);
 }
 
+function sendIpcToAudioPlayerRenderer(...args) {
+  core.sendIpcToRenderer("audio-player", ...args);
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // IPC RECEIVE ////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -111,6 +115,17 @@ function initOnIpcCallbacks() {
     onCloseClicked();
   });
 
+  on("open-audio", (url, title) => {
+    let playlist = {
+      id: title,
+      source: "cbp",
+      files: [{ url: url, duration: -1, title }],
+    };
+    reader.showAudioPlayer(true, false);
+    onCloseClicked();
+    sendIpcToAudioPlayerRenderer("open-playlist", playlist);
+  });
+
   on("search-window", (data) => {
     try {
       const { BrowserWindow } = require("electron");
@@ -130,7 +145,13 @@ function initOnIpcCallbacks() {
       });
       // g_bgWindow.webContents.openDevTools();
       let url;
-      if (data.engine === "disroot") {
+      if (data.engine === "cbp") {
+        url = `https://comicbookplus.com/search/?q=${encodeURIComponent(
+          data.query
+        )}#gsc.tab=0&gsc.q=${encodeURIComponent(data.query)}&gsc.page=${
+          data.pageNum
+        }`;
+      } else if (data.engine === "disroot") {
         url = `https://search.disroot.org/search?q=${encodeURIComponent(
           data.query
         )}&pageno=${
@@ -156,7 +177,11 @@ function initOnIpcCallbacks() {
       }, 15000);
       g_bgWindow.webContents.on("dom-ready", function () {
         clearTimeout(g_bgWindowTimeOut);
-        g_bgWindow.send("getHtml", "tool-cbp", data);
+        if (data.engine === "cbp") {
+          g_bgWindow.send("getCbpResultsWhenReady", "tool-cbp", data);
+        } else {
+          g_bgWindow.send("getHtml", "tool-cbp", data);
+        }
       });
     } catch (error) {
       log.error(error);
@@ -178,7 +203,86 @@ function initOnIpcCallbacks() {
       const jsdom = require("jsdom");
       const { JSDOM } = jsdom;
       const dom = new JSDOM(data.html);
-      if (data.engine === "disroot") {
+      if (data.engine === "cbp") {
+        try {
+          const gsWebResults =
+            dom.window.document.querySelectorAll(".gs-webResult");
+          if (gsWebResults && gsWebResults.length > 0) {
+            gsWebResults.forEach((gsWebResult) => {
+              const gsTitle = gsWebResult.querySelector("a.gs-title");
+              if (gsTitle && gsTitle.href && gsTitle.href.includes("dlid")) {
+                let comicId;
+                let parts = gsTitle.href.split("dlid=");
+                if (parts.length === 2) {
+                  comicId = parts[1];
+                }
+                if (comicId) {
+                  let type;
+                  let breadCrumb = gsWebResult.querySelector(
+                    ".gs-visibleUrl-breadcrumb"
+                  )?.textContent;
+                  const snippet =
+                    gsWebResult.querySelector(".gs-snippet")?.textContent;
+                  let summary;
+                  if (breadCrumb && snippet) {
+                    summary = breadCrumb;
+                    breadCrumb = breadCrumb.toLowerCase();
+                    if (
+                      breadCrumb.includes("books") ||
+                      breadCrumb.includes("comics") ||
+                      breadCrumb.includes("magazines") ||
+                      breadCrumb.includes("british story papers") ||
+                      breadCrumb.includes("dime novels") ||
+                      breadCrumb.includes("comic strips")
+                    ) {
+                      type = "book";
+                    } else if (breadCrumb.includes("radio")) {
+                      type = "audio";
+                    } else if (breadCrumb.includes("movies")) {
+                      type = "skip";
+                    } else if (breadCrumb.includes("odds and ends")) {
+                      type = "skip";
+                    }
+                    summary += "\n" + snippet;
+                  }
+                  if (type !== "skip") {
+                    results.links.push({
+                      name: gsTitle.textContent.replace(
+                        " - Comic Book Plus",
+                        ""
+                      ),
+                      summary,
+                      dlid: comicId,
+                      type,
+                    });
+                  }
+                }
+              }
+            });
+          }
+          // TODO: maybe check if the gsc-cursor-box has 10 children
+          results.hasNext = results.pageNum < 10;
+          results.hasPrev = results.pageNum > 1;
+          sendIpcToRenderer(
+            "update-results",
+            results,
+            _("tool-shared-ui-search-item-open-acbr"),
+            _("tool-shared-ui-search-item-open-browser")
+          );
+          if (results.links.length === 0) {
+            throw "0 results";
+          }
+        } catch (error) {
+          if (error !== "0 results") log.error(error);
+          results = data;
+          results.links = [];
+          sendIpcToRenderer(
+            "update-results",
+            results,
+            _("tool-shared-ui-search-nothing-found")
+          );
+        }
+      } else if (data.engine === "disroot") {
         try {
           const resultWrapper = dom.window.document.querySelectorAll(".result");
           if (resultWrapper && resultWrapper.length > 0) {
@@ -398,6 +502,10 @@ function getLocalization() {
     },
     {
       id: "tool-cbp-section-2-text",
+      text: _("tool-shared-tab-options"),
+    },
+    {
+      id: "tool-cbp-section-3-text",
       text: _("tool-shared-tab-about"),
     },
     //////////////////////////////////////////////
@@ -429,6 +537,15 @@ function getLocalization() {
     {
       id: "tool-cbp-open-input-url-browser-button-text",
       text: _("tool-shared-ui-button-open-in-browser").toUpperCase(),
+    },
+    //////////////////////////////////////////////
+    {
+      id: "tool-cbp-search-options-text",
+      text: _("tool-shared-ui-search-options"),
+    },
+    {
+      id: "tool-cbp-options-search-engine-text",
+      text: _("tool-gut-text-options-search-engine"),
     },
     //////////////////////////////////////////////
     {
