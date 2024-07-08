@@ -303,7 +303,10 @@ function getLocalization() {
     },
     {
       id: "tool-iab-open-ia-browser-button-text",
-      text: _("tool-iab-button-open-ia-browser").toUpperCase(),
+      text: _(
+        "tool-shared-ui-button-open-websitename-in-browser",
+        "Internet Archive"
+      ).toUpperCase(),
     },
     //////////////////////////////////////////////
     {
@@ -316,7 +319,7 @@ function getLocalization() {
     },
     {
       id: "tool-iab-open-donate-browser-button-text",
-      text: _("tool-dcm-button-open-donate-browser").toUpperCase(),
+      text: _("tool-shared-ui-button-open-donate-browser").toUpperCase(),
     },
     //////////////////////////////////////////////
     {

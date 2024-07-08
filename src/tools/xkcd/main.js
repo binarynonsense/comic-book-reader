@@ -213,7 +213,10 @@ function getLocalization() {
     },
     {
       id: "tool-xkcd-open-dcm-browser-button-text",
-      text: _("tool-xkcd-button-open-website-browser").toUpperCase(),
+      text: _(
+        "tool-shared-ui-button-open-websitename-in-browser",
+        "xkcd"
+      ).toUpperCase(),
     },
   ];
 }

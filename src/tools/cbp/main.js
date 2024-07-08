@@ -591,7 +591,7 @@ function getLocalization() {
     },
     {
       id: "tool-cbp-open-donate-browser-button-text",
-      text: _("tool-dcm-button-open-donate-browser").toUpperCase(),
+      text: _("tool-shared-ui-button-open-donate-browser").toUpperCase(),
     },
     //////////////////////////////////////////////
     {

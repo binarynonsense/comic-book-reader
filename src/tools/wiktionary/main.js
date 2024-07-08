@@ -212,7 +212,10 @@ function getLocalization() {
     },
     {
       id: "tool-wik-open-wik-browser-button-text",
-      text: _("tool-wik-button-open-wik-browser").toUpperCase(),
+      text: _(
+        "tool-shared-ui-button-open-websitename-in-browser",
+        "Wiktionary"
+      ).toUpperCase(),
     },
     //////////////////////////////////////////////
     {
@@ -225,7 +228,7 @@ function getLocalization() {
     },
     {
       id: "tool-wik-open-donate-browser-button-text",
-      text: _("tool-dcm-button-open-donate-browser").toUpperCase(),
+      text: _("tool-shared-ui-button-open-donate-browser").toUpperCase(),
     },
     //////////////////////////////////////////////
     {

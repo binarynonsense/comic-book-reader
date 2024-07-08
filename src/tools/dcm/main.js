@@ -351,7 +351,10 @@ function getLocalization() {
     },
     {
       id: "tool-dcm-open-dcm-browser-button-text",
-      text: _("tool-dcm-button-open-dcm-browser").toUpperCase(),
+      text: _(
+        "tool-shared-ui-button-open-websitename-in-browser",
+        "DCM"
+      ).toUpperCase(),
     },
     //////////////////////////////////////////////
     {
@@ -364,7 +367,7 @@ function getLocalization() {
     },
     {
       id: "tool-dcm-open-donate-browser-button-text",
-      text: _("tool-dcm-button-open-donate-browser").toUpperCase(),
+      text: _("tool-shared-ui-button-open-donate-browser").toUpperCase(),
     },
     //////////////////////////////////////////////
     {

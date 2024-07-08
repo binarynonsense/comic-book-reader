@@ -246,7 +246,10 @@ function getLocalization() {
     },
     {
       id: "tool-lvx-open-lvx-browser-button-text",
-      text: _("tool-lvx-button-open-lvx-browser").toUpperCase(),
+      text: _(
+        "tool-shared-ui-button-open-websitename-in-browser",
+        "LibriVox"
+      ).toUpperCase(),
     },
     //////////////////////////////////////////////
     {
@@ -259,7 +262,7 @@ function getLocalization() {
     },
     {
       id: "tool-lvx-open-donate-browser-button-text",
-      text: _("tool-dcm-button-open-donate-browser").toUpperCase(),
+      text: _("tool-shared-ui-button-open-donate-browser").toUpperCase(),
     },
     //////////////////////////////////////////////
     {

@@ -314,7 +314,10 @@ function getLocalization() {
     },
     {
       id: "tool-gut-open-pg-browser-button-text",
-      text: _("tool-gut-button-open-pg-browser").toUpperCase(),
+      text: _(
+        "tool-shared-ui-button-open-websitename-in-browser",
+        "Project Gutenberg"
+      ).toUpperCase(),
     },
     //////////////////////////////////////////////
     {
@@ -327,7 +330,7 @@ function getLocalization() {
     },
     {
       id: "tool-gut-open-donate-browser-button-text",
-      text: _("tool-dcm-button-open-donate-browser").toUpperCase(),
+      text: _("tool-shared-ui-button-open-donate-browser").toUpperCase(),
     },
     //////////////////////////////////////////////
     {
