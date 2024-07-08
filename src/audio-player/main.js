@@ -259,7 +259,11 @@ function onDroppedFiles(inputPaths) {
   //   playlist.files.push({ url: element });
   // });
   // sendIpcToRenderer("open-playlist", playlist);
-  sendIpcToRenderer("add-to-playlist", outputPaths);
+  let files = [];
+  outputPaths.forEach((element) => {
+    files.push({ url: element });
+  });
+  sendIpcToRenderer("add-to-playlist", files);
 }
 
 function isAlreadyInArray(inputArray, content) {
@@ -320,7 +324,11 @@ function callOpenFilesDialog(mode) {
     return;
   }
   if (mode === 1) {
-    sendIpcToRenderer("add-to-playlist", outputPaths);
+    let files = [];
+    outputPaths.forEach((element) => {
+      files.push({ url: element });
+    });
+    sendIpcToRenderer("add-to-playlist", files);
   } else if (mode === 0) {
     let playlist = {
       id: "",

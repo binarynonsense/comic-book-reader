@@ -75,19 +75,19 @@ function initOnIpcCallbacks() {
     fillTags();
   });
 
-  on("add-to-playlist", (fileUrls, load = false) => {
-    // TODO: MAYBE: start first new song by default after adding?
-    const oldLength = g_tracks.length;
-    fileUrls.forEach((element) => {
-      g_playlist.files.push({ url: element });
-    });
-    createTracksList(g_tracks.length > 0);
-    if (oldLength === 0 || load) {
-      loadTrack(oldLength, 0);
+  on("add-to-playlist", (files, startPlaying = false) => {
+    if (files && Array.isArray(files)) {
+      // TODO: MAYBE: start first new song by default after adding?
+      const oldLength = g_tracks.length;
+      g_playlist.files.push(...files);
+      createTracksList(g_tracks.length > 0);
+      if (oldLength === 0 || startPlaying) {
+        playTrack(oldLength, 0);
+      }
+      refreshUI();
+      fillTimes(); // calls updatePlaylistInfo
+      fillTags();
     }
-    refreshUI();
-    fillTimes(); // calls updatePlaylistInfo
-    fillTags();
   });
 
   on("update-layout-pos", (position) => {
