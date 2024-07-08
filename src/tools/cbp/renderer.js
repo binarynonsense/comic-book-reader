@@ -714,6 +714,7 @@ function showModalOpenInPlayer(
   g_openModal = modals.show({
     showFocus: showFocus,
     title: title,
+    message: page.audioUrl,
     frameWidth: 400,
     zIndexDelta: 5,
     close: {
