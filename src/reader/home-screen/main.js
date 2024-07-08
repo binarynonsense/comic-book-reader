@@ -101,6 +101,7 @@ function getLatestData() {
         if (historyDataFile.data.source) {
           switch (historyDataFile.data.source) {
             case "dcm":
+            case "cbp":
               if (historyDataFile.data.url)
                 latestInfo.path = historyDataFile.data.url;
               else

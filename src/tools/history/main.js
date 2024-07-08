@@ -82,6 +82,7 @@ function getHistory() {
       if (fileInfo.data.source) {
         switch (fileInfo.data.source) {
           case "dcm":
+          case "cbp":
             if (fileInfo.data.url) fileInfo.filePath = fileInfo.data.url;
             else
               fileInfo.filePath =
