@@ -26,6 +26,9 @@ let g_localizedModalCancelButtonText;
 let g_localizedModalCloseButtonText;
 let g_localizedModalSearchingTitleText;
 let g_localizedModalLoadingTitleText;
+let g_localizedModalOpenInPlayerTitleText;
+let g_localizedModalAddToPlaylistButtonText;
+let g_localizedModalNewPlaylistButtonText;
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -217,6 +220,9 @@ function initOnIpcCallbacks() {
       modalSearchingTitleText,
       modalCloseButtonText,
       modalCancelButtonText,
+      modalOpenInPlayerTitleText,
+      modalAddToPlaylistButtonText,
+      modalNewPlaylistButtonText,
       localization
     ) => {
       g_localizedSearchPlaceholderText = searchPlaceHolder;
@@ -224,6 +230,9 @@ function initOnIpcCallbacks() {
       g_localizedModalSearchingTitleText = modalSearchingTitleText;
       g_localizedModalCloseButtonText = modalCloseButtonText;
       g_localizedModalCancelButtonText = modalCancelButtonText;
+      g_localizedModalOpenInPlayerTitleText = modalOpenInPlayerTitleText;
+      g_localizedModalAddToPlaylistButtonText = modalAddToPlaylistButtonText;
+      g_localizedModalNewPlaylistButtonText = modalNewPlaylistButtonText;
       for (let index = 0; index < localization.length; index++) {
         const element = localization[index];
         const domElement = document.querySelector("#" + element.id);
@@ -517,11 +526,19 @@ async function onOpenComicUrlInACBR(url) {
           sendIpcToMain("open", comicData);
         }
       } else if (page && page.audioUrl) {
-        sendIpcToMain("open-audio", page.audioUrl, page.name);
+        showModalOpenInPlayer(
+          page,
+          g_localizedModalOpenInPlayerTitleText,
+          g_localizedModalCancelButtonText,
+          g_localizedModalAddToPlaylistButtonText,
+          g_localizedModalNewPlaylistButtonText
+        );
+        return;
       }
       closeModal();
     }
   } catch (error) {
+    console.error(error);
     closeModal();
   }
 }
@@ -656,6 +673,56 @@ function showProgressModal() {
       hide: true,
     },
     progressBar: {},
+  });
+}
+
+function showModalOpenInPlayer(
+  page,
+  title,
+  textButtonBack,
+  textButtonAddToPlayList,
+  textButtonNewPlaylist,
+  showFocus
+) {
+  if (g_openModal) {
+    closeModal();
+  }
+  let buttons = [];
+  buttons.push({
+    text: textButtonAddToPlayList.toUpperCase(),
+    fullWidth: true,
+    callback: () => {
+      modalClosed();
+      sendIpcToMain("open-audio", page.audioUrl, page.name, 0);
+    },
+  });
+  buttons.push({
+    text: textButtonNewPlaylist.toUpperCase(),
+    fullWidth: true,
+    callback: () => {
+      modalClosed();
+      sendIpcToMain("open-audio", page.audioUrl, page.name, 1);
+    },
+  });
+  buttons.push({
+    text: textButtonBack.toUpperCase(),
+    fullWidth: true,
+    callback: () => {
+      modalClosed();
+    },
+  });
+  g_openModal = modals.show({
+    showFocus: showFocus,
+    title: title,
+    frameWidth: 400,
+    zIndexDelta: 5,
+    close: {
+      callback: () => {
+        modalClosed();
+      },
+      key: "Escape",
+    },
+    buttons: buttons,
   });
 }
 

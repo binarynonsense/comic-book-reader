@@ -115,15 +115,20 @@ function initOnIpcCallbacks() {
     onCloseClicked();
   });
 
-  on("open-audio", (url, title) => {
-    let playlist = {
-      id: title,
-      source: "cbp",
-      files: [{ url: url, duration: -1, title }],
-    };
+  on("open-audio", (url, title, playlistOption) => {
     reader.showAudioPlayer(true, false);
+    if (playlistOption === 0) {
+      let files = [{ url, title, duration: -1 }];
+      sendIpcToAudioPlayerRenderer("add-to-playlist", files, true);
+    } else {
+      let playlist = {
+        id: title,
+        source: "cbp",
+        files: [{ url, duration: -1, title }],
+      };
+      sendIpcToAudioPlayerRenderer("open-playlist", playlist);
+    }
     onCloseClicked();
-    sendIpcToAudioPlayerRenderer("open-playlist", playlist);
   });
 
   on("search-window", (data) => {
@@ -476,7 +481,10 @@ function updateLocalizedText() {
     _("tool-shared-modal-title-loading"),
     _("tool-shared-modal-title-searching"),
     _("tool-shared-ui-close"), // TODO: not used?
-    _("tool-shared-ui-cancel"), // TODO: not used?
+    _("tool-shared-ui-cancel"),
+    _("ui-modal-prompt-button-open-in-audioplayer"),
+    _("ui-modal-prompt-button-add-to-playlist"),
+    _("ui-modal-prompt-button-start-new-playlist"),
     getLocalization()
   );
 }
