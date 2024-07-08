@@ -80,7 +80,7 @@
   "menu-tools-extract-palette": "Paleta de colores de imagen",
   "menu-tools-extract-qr": "Texto en código QR de imagen",
   "menu-tools-other": "Otras",
-  "[NOTE TO TRANSLATORS]tool-other-": "dcm/cbp/iab/gut/librivox/xkcd/wiktionary: contain names of websites, leave those names in English unless there's an official translation",
+  "[NOTE TO TRANSLATORS]menu-tools-other-": "dcm/cbp/iab/gut/librivox/xkcd/wiktionary: contain names of websites, leave those names in English unless there's an official translation",
   "menu-tools-other-dcm": "Digital Comic Museum",
   "menu-tools-other-cbp": "Comic Book Plus",
   "menu-tools-other-iab": "Internet Archive Books",

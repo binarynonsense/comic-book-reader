@@ -80,7 +80,7 @@
   "menu-tools-extract-palette": "لوحة ألوان من صورة",
   "menu-tools-extract-qr": "نص من صورة لرمز الاستجابة السريعة (QR Code)",
   "menu-tools-other": "أخرى",
-  "[NOTE TO TRANSLATORS]tool-other-": "dcm/cbp/iab/gut/librivox/xkcd/wiktionary: contain names of websites, leave those names in English unless there's an official translation",
+  "[NOTE TO TRANSLATORS]menu-tools-other-": "dcm/cbp/iab/gut/librivox/xkcd/wiktionary: contain names of websites, leave those names in English unless there's an official translation",
   "menu-tools-other-dcm": "المتحف الرقمي للقصص المصورة",
   "[NEEDS TRANSLATION]menu-tools-other-cbp": "Comic Book Plus",
   "menu-tools-other-iab": "كتب من أرشيف الإنترنت",
