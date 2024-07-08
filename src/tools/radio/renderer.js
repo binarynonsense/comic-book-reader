@@ -23,6 +23,10 @@ let g_searchButton;
 
 let g_localizedSearchPlaceholderText;
 let g_localizedModalSearchingTitleText;
+let g_localizedModalCancelButtonText;
+let g_localizedModalOpenInPlayerTitleText;
+let g_localizedModalAddToPlaylistButtonText;
+let g_localizedModalNewPlaylistButtonText;
 
 let g_lastSearchResults;
 
@@ -183,9 +187,21 @@ function initOnIpcCallbacks() {
 
   on(
     "update-localization",
-    (searchPlaceHolderText, modalSearchingTitleText, localization) => {
+    (
+      searchPlaceHolderText,
+      modalSearchingTitleText,
+      modalCancelButtonText,
+      modalOpenInPlayerTitleText,
+      modalAddToPlaylistButtonText,
+      modalNewPlaylistButtonText,
+      localization
+    ) => {
       g_localizedSearchPlaceholderText = searchPlaceHolderText;
       g_localizedModalSearchingTitleText = modalSearchingTitleText;
+      g_localizedModalCancelButtonText = modalCancelButtonText;
+      g_localizedModalOpenInPlayerTitleText = modalOpenInPlayerTitleText;
+      g_localizedModalAddToPlaylistButtonText = modalAddToPlaylistButtonText;
+      g_localizedModalNewPlaylistButtonText = modalNewPlaylistButtonText;
       for (let index = 0; index < localization.length; index++) {
         const element = localization[index];
         const domElement = document.querySelector("#" + element.id);
@@ -324,11 +340,12 @@ async function onSearchResultClicked(index, mode) {
   if (!g_lastSearchResults) return;
   const stationData = g_lastSearchResults[index];
   if (mode === 0) {
-    sendIpcToMain(
-      "open",
-      stationData.stationuuid,
-      stationData.name,
-      stationData.url_resolved
+    showModalOpenInPlayer(
+      stationData,
+      g_localizedModalOpenInPlayerTitleText,
+      g_localizedModalCancelButtonText,
+      g_localizedModalAddToPlaylistButtonText,
+      g_localizedModalNewPlaylistButtonText
     );
   } else {
     openStationLink(stationData.url_resolved);
@@ -425,6 +442,69 @@ function showSearchModal() {
       hide: true,
     },
     progressBar: {},
+  });
+}
+
+function showModalOpenInPlayer(
+  stationData,
+  title,
+  textButtonBack,
+  textButtonAddToPlayList,
+  textButtonNewPlaylist,
+  showFocus
+) {
+  if (g_openModal) {
+    closeModal();
+  }
+  let buttons = [];
+  buttons.push({
+    text: textButtonAddToPlayList.toUpperCase(),
+    fullWidth: true,
+    callback: () => {
+      modalClosed();
+      sendIpcToMain(
+        "open",
+        stationData.stationuuid,
+        stationData.name,
+        stationData.url_resolved,
+        0
+      );
+    },
+  });
+  buttons.push({
+    text: textButtonNewPlaylist.toUpperCase(),
+    fullWidth: true,
+    callback: () => {
+      modalClosed();
+      sendIpcToMain(
+        "open",
+        stationData.stationuuid,
+        stationData.name,
+        stationData.url_resolved,
+        1
+      );
+    },
+  });
+  buttons.push({
+    text: textButtonBack.toUpperCase(),
+    fullWidth: true,
+    callback: () => {
+      modalClosed();
+    },
+  });
+  g_openModal = modals.show({
+    showFocus: showFocus,
+    title: title,
+    message: stationData.url_resolved,
+    frameWidth: 400,
+    zIndexDelta: 5,
+    close: {
+      callback: () => {
+        modalClosed();
+      },
+      key: "Escape",
+    },
+    buttons: buttons,
   });
 }
 

@@ -101,19 +101,23 @@ function initOnIpcCallbacks() {
     contextMenu.show("edit", params, onCloseClicked);
   });
 
-  on("open", (id, name, url) => {
-    let playlist = {
-      id: name,
-      source: "radio",
-      files: [{ url: url, duration: -1, title: name }],
-    };
+  on("open", (id, name, url, playlistOption) => {
     reader.showAudioPlayer(true, false);
+    if (playlistOption === 0) {
+      let files = [{ url: url, duration: -1, title: name }];
+      sendIpcToAudioPlayerRenderer("add-to-playlist", files, true);
+    } else {
+      let playlist = {
+        id: name,
+        source: "radio",
+        files: [{ url: url, duration: -1, title: name }],
+      };
+      sendIpcToAudioPlayerRenderer("open-playlist", playlist);
+    }
     onCloseClicked();
-    sendIpcToAudioPlayerRenderer("open-playlist", playlist);
-
+    // Call the click api as requested by the docs
     (async () => {
       try {
-        // Call the click api as requested by the docs
         const axios = require("axios").default;
         await axios.get(`http://de1.api.radio-browser.info/json/url/${id}`, {
           timeout: 5000,
@@ -193,6 +197,10 @@ function updateLocalizedText() {
     "update-localization",
     _("tool-shared-ui-search-placeholder"),
     _("tool-shared-modal-title-searching"),
+    _("tool-shared-ui-cancel"),
+    _("ui-modal-prompt-button-open-in-audioplayer"),
+    _("ui-modal-prompt-button-add-to-playlist"),
+    _("ui-modal-prompt-button-start-new-playlist"),
     getLocalization()
   );
 }
