@@ -227,6 +227,7 @@ function updateLocalizedText() {
     _("tool-dcm-select-publisher-text"),
     _("tool-dcm-select-title-text"),
     _("tool-dcm-select-comic-text"),
+    _("tool-shared-modal-title-loading"),
     _("tool-shared-modal-title-searching"),
     _("tool-shared-ui-close"), // TODO: not used?
     _("tool-shared-ui-cancel"), // TODO: not used?

@@ -35,6 +35,7 @@ let g_localizedSearchPlaceholderText;
 let g_localizedModalCancelButtonText;
 let g_localizedModalCloseButtonText;
 let g_localizedModalSearchingTitleText;
+let g_localizedModalLoadingTitleText;
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -291,6 +292,7 @@ function initOnIpcCallbacks() {
       selectPublisherString,
       selectTitleString,
       selectComicString,
+      modalLoadingTitleText,
       modalSearchingTitleText,
       modalCloseButtonText,
       modalCancelButtonText,
@@ -300,6 +302,7 @@ function initOnIpcCallbacks() {
       g_selectPublisherString = selectPublisherString;
       g_selectTitleString = selectTitleString;
       g_selectComicString = selectComicString;
+      g_localizedModalLoadingTitleText = modalLoadingTitleText;
       g_localizedModalSearchingTitleText = modalSearchingTitleText;
       g_localizedModalCloseButtonText = modalCloseButtonText;
       g_localizedModalCancelButtonText = modalCancelButtonText;
@@ -411,7 +414,7 @@ async function onSearch() {
   let inputValue = g_searchInput.value;
   if (inputValue === "") return;
 
-  if (!g_openModal) showSearchModal(); // TODO: check if first time?
+  if (!g_openModal) showProgressModal(); // TODO: check if first time?
   updateModalTitleText(g_localizedModalSearchingTitleText);
   try {
     const formData = new FormData();
@@ -435,6 +438,8 @@ async function onSearch() {
 async function onSearchResultClicked(dlid, openWith) {
   if (openWith === 0) {
     try {
+      showProgressModal();
+      updateModalTitleText(g_localizedModalLoadingTitleText);
       let infoUrl = `https://digitalcomicmuseum.com/?dlid=${dlid}`;
       const response = await axios.get(infoUrl, { timeout: 15000 });
       const parser = new DOMParser().parseFromString(
@@ -455,6 +460,8 @@ async function onSearchResultClicked(dlid, openWith) {
           }
         }
       }
+      // didn't call onOpenComicUrlInACBR
+      closeModal();
     } catch (error) {
       console.log(error);
     }
@@ -467,6 +474,10 @@ async function onSearchResultClicked(dlid, openWith) {
 //////////////////////////////////////
 
 async function onOpenComicUrlInACBR(url) {
+  if (!g_openModal) {
+    showProgressModal();
+    updateModalTitleText(g_localizedModalLoadingTitleText);
+  }
   if (!url) url = g_dcmUrlInput.value;
   const tmp = document.createElement("a");
   tmp.href = url;
@@ -491,6 +502,7 @@ async function onOpenComicUrlInACBR(url) {
       sendIpcToMain("open", comicData);
     }
   }
+  closeModal();
 }
 
 function onOpenComicUrlInBrowser(url) {
@@ -707,7 +719,7 @@ function modalClosed() {
   g_openModal = undefined;
 }
 
-function showSearchModal() {
+function showProgressModal() {
   if (g_openModal) {
     return;
   }

@@ -25,6 +25,7 @@ let g_localizedSearchPlaceholderText;
 let g_localizedModalCancelButtonText;
 let g_localizedModalCloseButtonText;
 let g_localizedModalSearchingTitleText;
+let g_localizedModalLoadingTitleText;
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -212,12 +213,14 @@ function initOnIpcCallbacks() {
     "update-localization",
     (
       searchPlaceHolder,
+      modalLoadingTitleText,
       modalSearchingTitleText,
       modalCloseButtonText,
       modalCancelButtonText,
       localization
     ) => {
       g_localizedSearchPlaceholderText = searchPlaceHolder;
+      g_localizedModalLoadingTitleText = modalLoadingTitleText;
       g_localizedModalSearchingTitleText = modalSearchingTitleText;
       g_localizedModalCloseButtonText = modalCloseButtonText;
       g_localizedModalCancelButtonText = modalCancelButtonText;
@@ -432,7 +435,7 @@ function generatePaginationHtml(results) {
 ///////////////////////////////////////////////////////////////////////////////
 
 async function onSearch(data) {
-  if (!g_openModal) showSearchModal(); // TODO: check if first time?
+  if (!g_openModal) showProgressModal(); // TODO: check if first time?
   updateModalTitleText(g_localizedModalSearchingTitleText);
   let engine = g_engineSelect.value;
   if (!data) data = {};
@@ -487,6 +490,8 @@ async function onSearchResultClicked(dlid, openWith) {
 //////////////////////////////////////
 
 async function onOpenComicUrlInACBR(url) {
+  showProgressModal();
+  updateModalTitleText(g_localizedModalLoadingTitleText);
   try {
     if (!url) url = g_urlInput.value;
     const tmp = document.createElement("a");
@@ -514,8 +519,11 @@ async function onOpenComicUrlInACBR(url) {
       } else if (page && page.audioUrl) {
         sendIpcToMain("open-audio", page.audioUrl, page.name);
       }
+      closeModal();
     }
-  } catch (error) {}
+  } catch (error) {
+    closeModal();
+  }
 }
 
 function onOpenComicUrlInBrowser(url) {
@@ -631,7 +639,7 @@ function modalClosed() {
   g_openModal = undefined;
 }
 
-function showSearchModal() {
+function showProgressModal() {
   if (g_openModal) {
     return;
   }

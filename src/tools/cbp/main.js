@@ -473,6 +473,7 @@ function updateLocalizedText() {
   sendIpcToRenderer(
     "update-localization",
     _("tool-shared-ui-search-placeholder"),
+    _("tool-shared-modal-title-loading"),
     _("tool-shared-modal-title-searching"),
     _("tool-shared-ui-close"), // TODO: not used?
     _("tool-shared-ui-cancel"), // TODO: not used?
