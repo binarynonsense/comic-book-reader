@@ -172,5 +172,16 @@ function findI18nCalls(filePath) {
     const match = matches[index];
     results.push(match[match.length - 1]);
   }
+
+  {
+    const regexp = /_raw\([\r\n\s]*"(.*?)"/g;
+    const contents = fs.readFileSync(filePath, "utf8");
+    const matches = [...contents.matchAll(regexp)];
+    for (let index = 0; index < matches.length; index++) {
+      const match = matches[index];
+      results.push(match[match.length - 1]);
+    }
+  }
+
   return results;
 }
