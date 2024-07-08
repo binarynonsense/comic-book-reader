@@ -101,12 +101,19 @@ function getLatestData() {
         if (historyDataFile.data.source) {
           switch (historyDataFile.data.source) {
             case "dcm":
-            case "cbp":
               if (historyDataFile.data.url)
                 latestInfo.path = historyDataFile.data.url;
               else
                 latestInfo.path =
                   _("menu-tools-other-dcm") + " - " + historyDataFile.data.name;
+              break;
+
+            case "cbp":
+              if (historyDataFile.data.url)
+                latestInfo.path = historyDataFile.data.url;
+              else
+                latestInfo.path =
+                  _("menu-tools-other-cbp") + " - " + historyDataFile.data.name;
               break;
 
             case "gut":

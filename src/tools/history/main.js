@@ -82,11 +82,17 @@ function getHistory() {
       if (fileInfo.data.source) {
         switch (fileInfo.data.source) {
           case "dcm":
-          case "cbp":
             if (fileInfo.data.url) fileInfo.filePath = fileInfo.data.url;
             else
               fileInfo.filePath =
                 _("menu-tools-other-dcm") + " - " + fileInfo.data.name;
+            break;
+
+          case "cbp":
+            if (fileInfo.data.url) fileInfo.filePath = fileInfo.data.url;
+            else
+              fileInfo.filePath =
+                _("menu-tools-other-cbp") + " - " + fileInfo.data.name;
             break;
 
           // case "gut":
