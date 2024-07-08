@@ -587,7 +587,7 @@ function getLocalization() {
     },
     {
       id: "tool-cbp-donate-1-text",
-      text: _("tool-shared-ui-about-text-3-alt", _("menu-tools-other-cbp")),
+      text: _("tool-shared-ui-donate-text", _("menu-tools-other-cbp")),
     },
     {
       id: "tool-cbp-open-donate-browser-button-text",

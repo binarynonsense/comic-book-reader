@@ -363,7 +363,7 @@ function getLocalization() {
     },
     {
       id: "tool-dcm-donate-1-text",
-      text: _("tool-shared-ui-about-text-3-alt", _("menu-tools-other-dcm")),
+      text: _("tool-shared-ui-donate-text", _("menu-tools-other-dcm")),
     },
     {
       id: "tool-dcm-open-donate-browser-button-text",

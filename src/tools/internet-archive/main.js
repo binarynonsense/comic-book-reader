@@ -315,7 +315,7 @@ function getLocalization() {
     },
     {
       id: "tool-iab-donate-1-text",
-      text: _("tool-shared-ui-about-text-3-alt", "Internet Archive"),
+      text: _("tool-shared-ui-donate-text", "Internet Archive"),
     },
     {
       id: "tool-iab-open-donate-browser-button-text",

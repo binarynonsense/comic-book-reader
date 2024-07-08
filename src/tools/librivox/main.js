@@ -258,7 +258,7 @@ function getLocalization() {
     },
     {
       id: "tool-lvx-donate-1-text",
-      text: _("tool-shared-ui-about-text-3-alt", "LibriVox"),
+      text: _("tool-shared-ui-donate-text", "LibriVox"),
     },
     {
       id: "tool-lvx-open-donate-browser-button-text",

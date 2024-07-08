@@ -224,7 +224,7 @@ function getLocalization() {
     },
     {
       id: "tool-wik-donate-1-text",
-      text: _("tool-shared-ui-about-text-3-alt", "Wiktionary"),
+      text: _("tool-shared-ui-donate-text", "Wiktionary"),
     },
     {
       id: "tool-wik-open-donate-browser-button-text",

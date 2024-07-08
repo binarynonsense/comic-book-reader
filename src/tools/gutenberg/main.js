@@ -326,7 +326,7 @@ function getLocalization() {
     },
     {
       id: "tool-gut-donate-1-text",
-      text: _("tool-shared-ui-about-text-3-alt", _("menu-tools-other-gut")),
+      text: _("tool-shared-ui-donate-text", _("menu-tools-other-gut")),
     },
     {
       id: "tool-gut-open-donate-browser-button-text",
