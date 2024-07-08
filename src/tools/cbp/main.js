@@ -302,6 +302,9 @@ function initOnIpcCallbacks() {
                 if (comicId) {
                   results.links.push({
                     name: a.textContent.replace(" - Comic Book Plus", ""),
+                    summary: element
+                      .querySelector(".content")
+                      ?.textContent?.trim(),
                     dlid: comicId,
                   });
                 }
@@ -350,9 +353,12 @@ function initOnIpcCallbacks() {
           const resultLinks =
             dom.window.document.querySelectorAll(".result-link");
           if (resultLinks && resultLinks.length > 0) {
-            resultLinks.forEach((element) => {
-              if (element.nodeName.toLowerCase() === "a" && element.href) {
-                const href = element.href;
+            resultLinks.forEach((resultLink) => {
+              if (
+                resultLink.nodeName.toLowerCase() === "a" &&
+                resultLink.href
+              ) {
+                const href = resultLink.href;
                 // e.g. <a rel="nofollow" href="//duckduckgo.com/l/?uddg=https%3A%2F%2Fcomicbookplus.com%2F%3Fdlid%3D78597&amp;rut=cf36420565b1828fec62912e62aaedffc513ed9762220eaa4579cbbaa85c670e" class="result-link">Jim Solar Space Sheriff - Battle for Mars - Comic Book Plus</a>
                 const regex = /uddg=(.*)&rut=/;
                 const match = href.match(regex);
@@ -363,11 +369,24 @@ function initOnIpcCallbacks() {
                     comicId = parts[1];
                   }
                   if (comicId) {
+                    // try to get snippet
+                    let summary;
+                    const snippetParent =
+                      resultLink?.parentElement?.nextElementSibling;
+                    if (snippetParent) {
+                      const snippetElement =
+                        snippetParent.querySelector(".result-snippet");
+                      if (snippetElement) {
+                        summary = snippetElement.textContent;
+                      }
+                    }
+                    //////////
                     results.links.push({
-                      name: element.textContent.replace(
+                      name: resultLink.textContent.replace(
                         " - Comic Book Plus",
                         ""
                       ),
+                      summary,
                       dlid: comicId,
                     });
                   }
