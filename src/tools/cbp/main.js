@@ -485,7 +485,7 @@ function getLocalization() {
   return [
     {
       id: "tool-cbp-title-text",
-      text: _("tool-cbp-title").toUpperCase(),
+      text: _("menu-tools-other-cbp").toUpperCase(),
     },
     {
       id: "tool-cbp-back-button-text",
@@ -561,7 +561,7 @@ function getLocalization() {
         _raw("tool-shared-ui-about-text-1-comicbooks-audio", false)
           ? _raw("tool-shared-ui-about-text-1-comicbooks-audio", false)
           : _("tool-shared-ui-about-text-1-comicbooks"),
-        _("tool-cbp-title")
+        _("menu-tools-other-cbp")
       ),
     },
     {
@@ -576,7 +576,7 @@ function getLocalization() {
       id: "tool-cbp-open-cbp-browser-button-text",
       text: _(
         "tool-shared-ui-button-open-websitename-in-browser",
-        _("tool-cbp-title")
+        _("menu-tools-other-cbp")
       ).toUpperCase(),
     },
     {

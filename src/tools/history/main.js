@@ -85,19 +85,19 @@ function getHistory() {
             if (fileInfo.data.url) fileInfo.filePath = fileInfo.data.url;
             else
               fileInfo.filePath =
-                _("tool-dcm-title") + " - " + fileInfo.data.name;
+                _("menu-tools-other-dcm") + " - " + fileInfo.data.name;
             break;
 
           // case "gut":
           //   fileInfo.filePath =
-          //     _("tool-gut-title") + " - " + fileInfo.data.name;
+          //     _("menu-tools-other-gut") + " - " + fileInfo.data.name;
           //   break;
 
           case "iab":
             if (fileInfo.data.url) fileInfo.filePath = fileInfo.data.url;
             else
               fileInfo.filePath =
-                _("tool-iab-title") + " - " + fileInfo.data.name;
+                _("menu-tools-other-iab") + " - " + fileInfo.data.name;
             break;
         }
       }

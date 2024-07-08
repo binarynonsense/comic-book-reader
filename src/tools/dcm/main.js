@@ -239,7 +239,7 @@ function getLocalization() {
   return [
     {
       id: "tool-dcm-title-text",
-      text: _("tool-dcm-title").toUpperCase(),
+      text: _("menu-tools-other-dcm").toUpperCase(),
     },
     {
       id: "tool-dcm-back-button-text",

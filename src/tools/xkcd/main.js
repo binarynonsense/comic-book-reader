@@ -162,7 +162,7 @@ function getLocalization() {
   return [
     {
       id: "tool-xkcd-title-text",
-      text: _("tool-xkcd-title").toUpperCase(),
+      text: _("menu-tools-other-xkcd").toUpperCase(),
     },
     {
       id: "tool-xkcd-back-button-text",

@@ -191,7 +191,7 @@ function getLocalization() {
   return [
     {
       id: "tool-lvx-title-text",
-      text: _("tool-lvx-title").toUpperCase(),
+      text: _("menu-tools-other-librivox").toUpperCase(),
     },
     {
       id: "tool-lvx-back-button-text",

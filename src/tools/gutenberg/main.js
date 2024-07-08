@@ -209,7 +209,7 @@ function getLocalization() {
   return [
     {
       id: "tool-gut-title-text",
-      text: _("tool-gut-title").toUpperCase(),
+      text: _("menu-tools-other-gut").toUpperCase(),
     },
     {
       id: "tool-gut-back-button-text",

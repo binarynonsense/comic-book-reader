@@ -585,7 +585,7 @@ function buildApplicationMenu(settings, history) {
               },
             },
             {
-              label: _("tool-cbp-title"),
+              label: _("menu-tools-other-cbp"),
               click() {
                 core.onMenuToolCBP();
               },
