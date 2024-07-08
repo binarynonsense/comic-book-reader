@@ -267,6 +267,10 @@ function getLocalization() {
       id: "tool-dcm-section-3-text",
       text: _("tool-shared-tab-about"),
     },
+    {
+      id: "tool-dcm-section-4-text",
+      text: _("tool-shared-tab-donate"),
+    },
     //////////////////////////////////////////////
     {
       id: "tool-dcm-search-input-text",
@@ -334,7 +338,7 @@ function getLocalization() {
       text: _("tool-shared-tab-about"),
     },
     {
-      id: "tool-dcm--about-1-text",
+      id: "tool-dcm-about-1-text",
       text: _(
         "tool-shared-ui-about-text-1",
         _("tool-shared-ui-about-text-1-comicbooks"),
@@ -342,16 +346,21 @@ function getLocalization() {
       ),
     },
     {
-      id: "tool-dcm--about-2-text",
+      id: "tool-dcm-about-2-text",
       text: _("tool-shared-ui-about-text-2"),
-    },
-    {
-      id: "tool-dcm--about-3-text",
-      text: _("tool-shared-ui-about-text-3"),
     },
     {
       id: "tool-dcm-open-dcm-browser-button-text",
       text: _("tool-dcm-button-open-dcm-browser").toUpperCase(),
+    },
+    //////////////////////////////////////////////
+    {
+      id: "tool-dcm-donate-text",
+      text: _("tool-shared-ui-donateto-website", _("menu-tools-other-dcm")),
+    },
+    {
+      id: "tool-dcm-donate-1-text",
+      text: _("tool-shared-ui-about-text-3-alt", _("menu-tools-other-dcm")),
     },
     {
       id: "tool-dcm-open-donate-browser-button-text",

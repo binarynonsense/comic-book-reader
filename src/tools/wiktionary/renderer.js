@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2023 Álvaro García
+ * Copyright 2020-2024 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -40,7 +40,7 @@ function init() {
       sendIpcToMain("close");
     });
   // sections menu
-  for (let index = 0; index < 2; index++) {
+  for (let index = 0; index < 3; index++) {
     document
       .getElementById(`tool-wik-section-${index}-button`)
       .addEventListener("click", (event) => {
@@ -113,7 +113,7 @@ function updateColumnsHeight(scrollTop = false) {
 }
 
 function switchSection(id) {
-  for (let index = 0; index < 2; index++) {
+  for (let index = 0; index < 3; index++) {
     if (id === index) {
       document
         .getElementById(`tool-wik-section-${index}-button`)

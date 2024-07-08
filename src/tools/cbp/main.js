@@ -509,6 +509,10 @@ function getLocalization() {
       id: "tool-cbp-section-3-text",
       text: _("tool-shared-tab-about"),
     },
+    {
+      id: "tool-cbp-section-4-text",
+      text: _("tool-shared-tab-donate"),
+    },
     //////////////////////////////////////////////
     {
       id: "tool-cbp-search-input-text",
@@ -554,7 +558,7 @@ function getLocalization() {
       text: _("tool-shared-tab-about"),
     },
     {
-      id: "tool-cbp--about-1-text",
+      id: "tool-cbp-about-1-text",
       text: _(
         "tool-shared-ui-about-text-1",
         // TODO: use just "tool-shared-ui-about-text-1-comicbooks-audio" when
@@ -566,12 +570,8 @@ function getLocalization() {
       ),
     },
     {
-      id: "tool-cbp--about-2-text",
+      id: "tool-cbp-about-2-text",
       text: _("tool-shared-ui-about-text-2"),
-    },
-    {
-      id: "tool-cbp--about-3-text",
-      text: _("tool-shared-ui-about-text-3"),
     },
     {
       id: "tool-cbp-open-cbp-browser-button-text",
@@ -579,6 +579,15 @@ function getLocalization() {
         "tool-shared-ui-button-open-websitename-in-browser",
         _("menu-tools-other-cbp")
       ).toUpperCase(),
+    },
+    //////////////////////////////////////////////
+    {
+      id: "tool-cbp-donate-text",
+      text: _("tool-shared-ui-donateto-website", _("menu-tools-other-cbp")),
+    },
+    {
+      id: "tool-cbp-donate-1-text",
+      text: _("tool-shared-ui-about-text-3-alt", _("menu-tools-other-cbp")),
     },
     {
       id: "tool-cbp-open-donate-browser-button-text",

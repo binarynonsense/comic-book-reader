@@ -49,7 +49,7 @@ function init(collectionsContent, availabilityContent) {
       sendIpcToMain("close");
     });
   // sections menu
-  for (let index = 0; index < 3; index++) {
+  for (let index = 0; index < 4; index++) {
     document
       .getElementById(`tool-iab-section-${index}-button`)
       .addEventListener("click", (event) => {
@@ -132,7 +132,7 @@ function updateColumnsHeight(scrollTop = false) {
 }
 
 function switchSection(id) {
-  for (let index = 0; index < 3; index++) {
+  for (let index = 0; index < 4; index++) {
     if (id === index) {
       document
         .getElementById(`tool-iab-section-${index}-button`)

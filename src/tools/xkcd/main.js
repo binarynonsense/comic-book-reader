@@ -212,10 +212,6 @@ function getLocalization() {
       text: _("tool-shared-ui-about-text-2"),
     },
     {
-      id: "tool-xkcd-about-3-text",
-      text: _("tool-shared-ui-about-text-3"),
-    },
-    {
       id: "tool-xkcd-open-dcm-browser-button-text",
       text: _("tool-xkcd-button-open-website-browser").toUpperCase(),
     },

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2023 Álvaro García
+ * Copyright 2020-2024 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -206,6 +206,10 @@ function getLocalization() {
       id: "tool-lvx-section-1-text",
       text: _("tool-shared-tab-about"),
     },
+    {
+      id: "tool-lvx-section-2-text",
+      text: _("tool-shared-tab-donate"),
+    },
     //////////////////////////////////////////////
     {
       id: "tool-lvx-search-input-text",
@@ -241,16 +245,21 @@ function getLocalization() {
       text: _("tool-shared-ui-about-text-2"),
     },
     {
-      id: "tool-lvx-about-3-text",
-      text: _("tool-shared-ui-about-text-3"),
-    },
-    {
       id: "tool-lvx-open-lvx-browser-button-text",
       text: _("tool-lvx-button-open-lvx-browser").toUpperCase(),
     },
+    //////////////////////////////////////////////
+    {
+      id: "tool-lvx-donate-text",
+      text: _("tool-shared-ui-donateto-website", "LibriVox"),
+    },
+    {
+      id: "tool-lvx-donate-1-text",
+      text: _("tool-shared-ui-about-text-3-alt", "LibriVox"),
+    },
     {
       id: "tool-lvx-open-donate-browser-button-text",
-      text: _("tool-iab-button-open-donate-browser").toUpperCase(),
+      text: _("tool-dcm-button-open-donate-browser").toUpperCase(),
     },
     //////////////////////////////////////////////
     {

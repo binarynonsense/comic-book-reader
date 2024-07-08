@@ -50,7 +50,7 @@ function init() {
       sendIpcToMain("close");
     });
   // sections menu
-  for (let index = 0; index < 4; index++) {
+  for (let index = 0; index < 5; index++) {
     document
       .getElementById(`tool-cbp-section-${index}-button`)
       .addEventListener("click", (event) => {
@@ -121,7 +121,7 @@ function init() {
     .addEventListener("click", (event) => {
       openCBPLink(`https://comicbookplus.com`);
     });
-
+  // donate
   document
     .getElementById("tool-cbp-open-donate-browser-button")
     .addEventListener("click", (event) => {
@@ -150,7 +150,7 @@ function updateColumnsHeight(scrollTop = false) {
 }
 
 function switchSection(id) {
-  for (let index = 0; index < 4; index++) {
+  for (let index = 0; index < 5; index++) {
     if (id === index) {
       document
         .getElementById(`tool-cbp-section-${index}-button`)
