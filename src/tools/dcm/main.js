@@ -14,12 +14,15 @@ const reader = require("../../reader/main");
 const shell = require("electron").shell;
 const contextMenu = require("../../shared/main/tools-menu-context");
 const tools = require("../../shared/main/tools");
+const search = require("../../shared/main/tools-search");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
 let g_isInitialized = false;
+let g_bgWindow;
+let g_bgWindowTimeOut;
 
 function init() {
   if (!g_isInitialized) {
@@ -42,6 +45,7 @@ exports.close = function () {
   // called by switchTool when closing tool
   sendIpcToRenderer("close-modal");
   sendIpcToRenderer("hide"); // clean up
+  cleanUpBgWindow();
 };
 
 exports.onResize = function () {
@@ -58,6 +62,13 @@ exports.onToggleFullScreen = function () {
 
 function onCloseClicked() {
   tools.switchTool("reader");
+}
+
+function cleanUpBgWindow() {
+  if (g_bgWindow) {
+    g_bgWindow.destroy();
+    g_bgWindow = undefined;
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -102,9 +113,27 @@ function initOnIpcCallbacks() {
     onCloseClicked();
   });
 
-  on("search", async (data, connectionError) => {
-    if (!data && connectionError) {
-      log.error(connectionError);
+  on("search", async (data) => {
+    try {
+      log.test("searching dcm");
+      const formData = new FormData();
+      formData.append("terms", data.query);
+      const axios = require("axios").default;
+      const response = await axios.post(
+        "https://digitalcomicmuseum.com/index.php?ACT=dosearch",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          timeout: 15000,
+        }
+      );
+      data.html = response.data;
+    } catch (error) {
+      log.error(error);
+    }
+    if (!data || !data.html) {
       sendIpcToRenderer(
         "update-results",
         [],
@@ -112,15 +141,13 @@ function initOnIpcCallbacks() {
           _("tool-shared-ui-search-network-error", "digitalcomicmuseum.com")
       );
     } else {
-      // NOTE: tried to use the form-data package but couldn't make it work so I do the
-      // axios request in the renderer and send the result here
+      let results = data;
+      results.links = [];
       try {
         const jsdom = require("jsdom");
         const { JSDOM } = jsdom;
-
-        const dom = new JSDOM(data);
+        const dom = new JSDOM(data.html);
         const table = dom.window.document.querySelector("#search-results");
-        let results = [];
         const links = table?.getElementsByTagName("a");
         if (links && links.length > 0) {
           for (let index = 0; index < links.length; index++) {
@@ -132,9 +159,9 @@ function initOnIpcCallbacks() {
               if (parts.length === 2 && isValidBookId(parts[1])) {
                 let result = {
                   name: name,
-                  dlid: parts[1],
+                  id: parts[1],
                 };
-                results.push(result);
+                results.links.push(result);
               }
             }
           }
@@ -148,14 +175,138 @@ function initOnIpcCallbacks() {
         );
       } catch (error) {
         if (error !== "0 results") log.error(error);
+        results = data;
+        results.links = [];
         sendIpcToRenderer(
           "update-results",
-          [],
+          results,
           _("tool-shared-ui-search-nothing-found")
         );
       }
     }
   });
+
+  on("search-window", (data) => {
+    try {
+      const { BrowserWindow } = require("electron");
+      g_bgWindow = new BrowserWindow({
+        parent: core.getMainWindow(),
+        center: true,
+        minWidth: 800,
+        minHeight: 600,
+        show: false,
+        webPreferences: {
+          nodeIntegration: false,
+          preload: path.join(
+            __dirname,
+            "../../shared/main/tools-bg-window-preload.js"
+          ),
+        },
+      });
+      // g_bgWindow.webContents.openDevTools();
+      let url;
+      if (data.engine === "disroot") {
+        url = `https://search.disroot.org/search?q=${encodeURIComponent(
+          data.query
+        )}&pageno=${
+          data.pageNum
+        }&language=en-US&time_range=&safesearch=1&categories=general`;
+      } else if (data.engine === "duckduckgo") {
+        if (data.url) {
+          url = data.url;
+        } else {
+          url = `https://lite.duckduckgo.com/lite/?q=${encodeURIComponent(
+            data.query
+          )}`;
+          data.url = url;
+          data.firstUrl = url;
+        }
+      } else {
+        throw "Unknown engine";
+      }
+      g_bgWindow.loadURL(url);
+      g_bgWindowTimeOut = setTimeout(() => {
+        // cancel if dom-ready takes too long
+        onIpcFromBgWindow(data);
+      }, 15000);
+      g_bgWindow.webContents.on("dom-ready", function () {
+        clearTimeout(g_bgWindowTimeOut);
+        g_bgWindow.send("getHtml", "tool-dcm", data);
+      });
+    } catch (error) {
+      log.error(error);
+      onIpcFromBgWindow(data);
+    }
+  });
+
+  function onIpcFromBgWindow(data) {
+    cleanUpBgWindow();
+    let results = data;
+    results.links = [];
+    if (!data || !data.html) {
+      sendIpcToRenderer(
+        "update-results",
+        results,
+        "⚠ " +
+          _("tool-shared-ui-search-network-error", "digitalcomicmuseum.com")
+      );
+    } else {
+      const jsdom = require("jsdom");
+      const { JSDOM } = jsdom;
+      const dom = new JSDOM(data.html);
+      if (data.engine === "disroot") {
+        try {
+          results = search.searchDisroot(
+            results,
+            dom,
+            "dlid",
+            " - Comic Book Plus"
+          );
+          sendIpcToRenderer(
+            "update-results",
+            results,
+            _("tool-shared-ui-search-item-open-acbr"),
+            _("tool-shared-ui-search-item-open-browser")
+          );
+        } catch (error) {
+          if (error !== "0 results") log.error(error);
+          results = data;
+          results.links = [];
+          sendIpcToRenderer(
+            "update-results",
+            results,
+            _("tool-shared-ui-search-nothing-found")
+          );
+        }
+      } else if (data.engine === "duckduckgo") {
+        try {
+          results = search.searchDDG(
+            results,
+            data.html,
+            dom,
+            "dlid",
+            " - Comic Book Plus"
+          );
+          sendIpcToRenderer(
+            "update-results",
+            results,
+            _("tool-shared-ui-search-item-open-acbr"),
+            _("tool-shared-ui-search-item-open-browser")
+          );
+        } catch (error) {
+          if (error !== "0 results") log.error(error);
+          results = data;
+          results.links = [];
+          sendIpcToRenderer(
+            "update-results",
+            results,
+            _("tool-shared-ui-search-nothing-found")
+          );
+        }
+      }
+    }
+  }
+  exports.onIpcFromBgWindow = onIpcFromBgWindow;
 
   on("open-url-in-browser", (url) => {
     shell.openExternal(url);
@@ -265,10 +416,14 @@ function getLocalization() {
     },
     {
       id: "tool-dcm-section-3-text",
-      text: _("tool-shared-tab-about"),
+      text: _("tool-shared-tab-options"),
     },
     {
       id: "tool-dcm-section-4-text",
+      text: _("tool-shared-tab-about"),
+    },
+    {
+      id: "tool-dcm-section-5-text",
       text: _("tool-shared-tab-donate"),
     },
     //////////////////////////////////////////////
@@ -331,6 +486,15 @@ function getLocalization() {
     {
       id: "tool-dcm-open-input-url-browser-button-text",
       text: _("tool-shared-ui-button-open-in-browser").toUpperCase(),
+    },
+    //////////////////////////////////////////////
+    {
+      id: "tool-dcm-search-options-text",
+      text: _("tool-shared-ui-search-options"),
+    },
+    {
+      id: "tool-dcm-options-search-engine-text",
+      text: _("tool-gut-text-options-search-engine"),
     },
     //////////////////////////////////////////////
     {

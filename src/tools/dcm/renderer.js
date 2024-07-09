@@ -15,6 +15,8 @@ import axios from "../../assets/libs/axios/dist/esm/axios.js";
 let g_searchInput;
 let g_searchButton;
 
+let g_engineSelect;
+
 let g_publishersSelect;
 let g_titlesSelect;
 let g_comicsSelect;
@@ -60,7 +62,7 @@ function init() {
       sendIpcToMain("close");
     });
   // sections menu
-  for (let index = 0; index < 5; index++) {
+  for (let index = 0; index < 6; index++) {
     document
       .getElementById(`tool-dcm-section-${index}-button`)
       .addEventListener("click", (event) => {
@@ -68,7 +70,6 @@ function init() {
       });
   }
   ////////////////////////////////////////
-
   // search
   g_searchButton = document.getElementById("tool-dcm-search-button");
   g_searchButton.addEventListener("click", (event) => {
@@ -179,6 +180,10 @@ function init() {
   g_openInputInBrowserButton.addEventListener("click", (event) => {
     onOpenComicUrlInBrowser();
   });
+  // options
+  g_engineSelect = document.getElementById(
+    "tool-dcm-options-search-engine-select"
+  );
   // about
   document
     .getElementById("tool-dcm-open-dcm-browser-button")
@@ -216,7 +221,7 @@ function updateColumnsHeight(scrollTop = false) {
 }
 
 function switchSection(id) {
-  for (let index = 0; index < 5; index++) {
+  for (let index = 0; index < 6; index++) {
     if (id === index) {
       document
         .getElementById(`tool-dcm-section-${index}-button`)
@@ -351,11 +356,16 @@ function initOnIpcCallbacks() {
       "#tool-dcm-search-results-div"
     );
     searchResultsDiv.innerHTML = "";
+    // pagination top
+    if (results.hasNext || results.hasPrev) {
+      searchResultsDiv.appendChild(generatePaginationHtml(results));
+    }
+    // list
     let ul = document.createElement("ul");
     ul.className = "tools-collection-ul";
-    if (results && results.length > 0) {
-      for (let index = 0; index < results.length; index++) {
-        const result = results[index];
+    if (results && results.links.length > 0) {
+      for (let index = 0; index < results.links.length; index++) {
+        const result = results.links[index];
         let li = document.createElement("li");
         li.className = "tools-buttons-list-li";
         let buttonSpan = document.createElement("span");
@@ -368,10 +378,15 @@ function initOnIpcCallbacks() {
           let text = document.createElement("span");
           text.innerText = `${result.name}`;
           multilineText.appendChild(text);
+          if (result.summary) {
+            let text = document.createElement("span");
+            text.innerText = `${result.summary}`;
+            multilineText.appendChild(text);
+          }
         }
         buttonSpan.appendChild(multilineText);
         buttonSpan.addEventListener("click", (event) => {
-          onSearchResultClicked(result.dlid, 0);
+          onSearchResultClicked(result.id, 0);
         });
         li.appendChild(buttonSpan);
         {
@@ -380,7 +395,7 @@ function initOnIpcCallbacks() {
           buttonSpan.innerHTML = `<i class="fas fa-link"></i>`;
           buttonSpan.title = openInBrowserText;
           buttonSpan.addEventListener("click", (event) => {
-            onSearchResultClicked(result.dlid, 1);
+            onSearchResultClicked(result.id, 1);
           });
           li.appendChild(buttonSpan);
         }
@@ -396,6 +411,11 @@ function initOnIpcCallbacks() {
       ul.appendChild(li);
     }
     searchResultsDiv.appendChild(ul);
+    // pagination top
+    if (results.hasNext || results.hasPrev) {
+      searchResultsDiv.appendChild(generatePaginationHtml(results));
+    }
+
     updateColumnsHeight();
     document.getElementById("tools-columns-right").scrollIntoView({
       behavior: "smooth",
@@ -406,32 +426,127 @@ function initOnIpcCallbacks() {
   });
 }
 
+function generatePaginationHtml(results) {
+  let paginationDiv = document.createElement("div");
+  paginationDiv.className = "tools-collection-pagination";
+  if (results.engine === "dcm") {
+    // do nothing
+    paginationDiv = undefined;
+  } else if (results.engine === "disroot") {
+    if (results.pageNum > 1) {
+      let span = document.createElement("span");
+      span.className = "tools-collection-pagination-button";
+      span.innerHTML = '<i class="fas fa-angle-double-left"></i>';
+      span.addEventListener("click", (event) => {
+        onSearch({ pageNum: 1, query: results.query });
+      });
+      paginationDiv.appendChild(span);
+    }
+    if (results.hasPrev) {
+      let span = document.createElement("span");
+      span.className = "tools-collection-pagination-button";
+      span.innerHTML = '<i class="fas fa-angle-left"></i>';
+      span.addEventListener("click", (event) => {
+        onSearch({ pageNum: results.pageNum - 1, query: results.query });
+      });
+      paginationDiv.appendChild(span);
+    }
+    let span = document.createElement("span");
+    span.innerHTML = ` | `;
+    paginationDiv.appendChild(span);
+    if (results.hasNext) {
+      let span = document.createElement("span");
+      span.className = "tools-collection-pagination-button";
+      span.innerHTML = '<i class="fas fa-angle-right"></i>';
+      span.addEventListener("click", (event) => {
+        onSearch({ pageNum: results.pageNum + 1, query: results.query });
+      });
+      paginationDiv.appendChild(span);
+    }
+    // NOTE: don't know the total number of pages, so can't add a button to
+    // go to the end directly
+  } else if (results.engine === "duckduckgo") {
+    if (results.firstUrl) {
+      let span = document.createElement("span");
+      span.className = "tools-collection-pagination-button";
+      span.innerHTML = '<i class="fas fa-angle-double-left"></i>';
+      span.addEventListener("click", (event) => {
+        onSearch({
+          query: results.query,
+          url: results.firstUrl,
+          firstUrl: results.firstUrl,
+        });
+      });
+      paginationDiv.appendChild(span);
+    }
+    if (results.hasPrev) {
+      let span = document.createElement("span");
+      span.className = "tools-collection-pagination-button";
+      span.innerHTML = '<i class="fas fa-angle-left"></i>';
+      span.addEventListener("click", (event) => {
+        onSearch({
+          query: results.query,
+          url: results.prevUrl,
+          firstUrl: results.firstUrl,
+        });
+      });
+      paginationDiv.appendChild(span);
+    }
+    let span = document.createElement("span");
+    span.innerHTML = ` | `;
+    paginationDiv.appendChild(span);
+    if (results.hasNext) {
+      let span = document.createElement("span");
+      span.className = "tools-collection-pagination-button";
+      span.innerHTML = '<i class="fas fa-angle-right"></i>';
+      span.addEventListener("click", (event) => {
+        onSearch({
+          query: results.query,
+          url: results.nextUrl,
+          firstUrl: results.firstUrl,
+        });
+      });
+      paginationDiv.appendChild(span);
+    }
+    // NOTE: don't know the total number of pages, so can't add a button to
+    // go to the end directly
+  }
+  return paginationDiv;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // TOOL ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-async function onSearch() {
-  let inputValue = g_searchInput.value;
-  if (inputValue === "") return;
-
+async function onSearch(data) {
   if (!g_openModal) showProgressModal(); // TODO: check if first time?
   updateModalTitleText(g_localizedModalSearchingTitleText);
-  try {
-    const formData = new FormData();
-    formData.append("terms", inputValue);
-    const response = await axios.post(
-      "https://digitalcomicmuseum.com/index.php?ACT=dosearch",
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-        timeout: 15000,
-      }
-    );
-    sendIpcToMain("search", response.data);
-  } catch (error) {
-    sendIpcToMain("search", undefined, error.message);
+  let engine = g_engineSelect.value;
+  if (!data) data = {};
+  if (engine === "dcm") {
+    sendIpcToMain("search", { engine, query: g_searchInput.value });
+  } else if (engine === "disroot") {
+    if (!data.pageNum) data.pageNum = 1;
+    if (!data.query) {
+      data.query = g_searchInput.value + " site:digitalcomicmuseum.com";
+    }
+    sendIpcToMain("search-window", {
+      engine,
+      query: data.query,
+      pageNum: data.pageNum,
+    });
+  } else if (engine === "duckduckgo") {
+    // ref: https://duckduckgo.com/duckduckgo-help-pages/results/syntax/
+    if (!data.query) {
+      data.query =
+        g_searchInput.value + " inurl:dlid site:digitalcomicmuseum.com";
+    }
+    sendIpcToMain("search-window", {
+      engine,
+      query: data.query,
+      url: data.url,
+      firstUrl: data.firstUrl,
+    });
   }
 }
 

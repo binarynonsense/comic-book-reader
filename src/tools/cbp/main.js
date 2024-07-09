@@ -45,6 +45,7 @@ exports.close = function () {
   // called by switchTool when closing tool
   sendIpcToRenderer("close-modal");
   sendIpcToRenderer("hide"); // clean up
+  cleanUpBgWindow();
 };
 
 exports.onResize = function () {
