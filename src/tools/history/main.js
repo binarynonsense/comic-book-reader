@@ -8,7 +8,7 @@
 const fs = require("fs");
 const path = require("path");
 const core = require("../../core/main");
-const { _, _raw } = require("../../shared/main/i18n");
+const { _ } = require("../../shared/main/i18n");
 const history = require("../../shared/main/history");
 const settings = require("../../shared/main/settings");
 const reader = require("../../reader/main");
@@ -224,11 +224,7 @@ function getLocalization() {
     //////////////////////////////////////////////
     {
       id: "tool-hst-section-0-text",
-      // TODO: use just "tool-hst-recentfiles" when all translations
-      // have it
-      text: _raw("tool-hst-recentfiles", false)
-        ? _raw("tool-hst-recentfiles", false)
-        : _("home-screen-latest"),
+      text: _("tool-hst-recentfiles"),
     },
     {
       id: "tool-hst-section-1-text",
@@ -238,11 +234,6 @@ function getLocalization() {
     {
       id: "tool-hst-list-text",
       text: _("tool-hst-recentfiles"),
-      // TODO: use just "tool-hst-recentfiles" when all translations
-      // have it
-      text: _raw("tool-hst-recentfiles", false)
-        ? _raw("tool-hst-recentfiles", false)
-        : _("home-screen-latest"),
     },
     //////////////////////////////////////////////
     {
@@ -251,11 +242,7 @@ function getLocalization() {
     },
     {
       id: "tool-hst-settings-max-files-text",
-      // TODO: use just "tool-hst-recentfiles-max" when all translations
-      // have it
-      text: _raw("tool-hst-recentfiles-max", false)
-        ? _raw("tool-hst-recentfiles-max", false)
-        : _("tool-pre-home-screen-latest-max"),
+      text: _("tool-hst-recentfiles-max"),
     },
   ];
 }

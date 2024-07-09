@@ -9,7 +9,7 @@ const { BrowserWindow } = require("electron");
 const fs = require("fs");
 const path = require("path");
 const core = require("../../core/main");
-const { _, _raw } = require("../../shared/main/i18n");
+const { _ } = require("../../shared/main/i18n");
 
 const { FileExtension, FileDataType } = require("../../shared/main/constants");
 const { fork } = require("child_process");
@@ -1376,11 +1376,7 @@ function getLocalization() {
     },
     {
       id: "tool-cc-output-name-text",
-      // TODO: use just "tool-shared-ui-output-options-file-name" when
-      // all translations have it
-      text: _raw("tool-shared-ui-output-options-file-name", false)
-        ? _raw("tool-shared-ui-output-options-file-name", false)
-        : _("ui-modal-info-metadata-filename"),
+      text: _("tool-shared-ui-output-options-file-name"),
     },
     {
       id: "tool-cc-output-page-order-text",

@@ -8,7 +8,7 @@
 const fs = require("fs");
 const path = require("path");
 const core = require("../../core/main");
-const { _, _raw } = require("../../shared/main/i18n");
+const { _ } = require("../../shared/main/i18n");
 const history = require("../../shared/main/history");
 const favorites = require("../../shared/main/favorites");
 const reader = require("../../reader/main");
@@ -461,11 +461,7 @@ function getIdsLocalization() {
     },
     {
       id: "hs-latest-title",
-      // TODO: use just "home-screen-recent" when all translations have it
-      text: (_raw("home-screen-recent", false)
-        ? _raw("home-screen-recent", false)
-        : _("home-screen-latest")
-      ).toUpperCase(),
+      text: _("home-screen-recent").toUpperCase(),
     },
   ];
 }

@@ -9,7 +9,7 @@ const fs = require("fs");
 const path = require("path");
 const core = require("../../core/main");
 const i18n = require("../../shared/main/i18n");
-const { _, _raw } = require("../../shared/main/i18n");
+const { _ } = require("../../shared/main/i18n");
 const log = require("../../shared/main/logger");
 const settings = require("../../shared/main/settings");
 const themes = require("../../shared/main/themes");
@@ -733,11 +733,7 @@ function getLocalization() {
     },
     {
       id: "tool-pre-home-screen-latest-max-text",
-      // TODO: use just "tool-hst-recentfiles-max" when all translations
-      // have it
-      text: _raw("tool-hst-recentfiles-max", false)
-        ? _raw("tool-hst-recentfiles-max", false)
-        : _("tool-pre-home-screen-latest-max"),
+      text: _("tool-hst-recentfiles-max"),
     },
     //////////////////////////////////////////////
     {

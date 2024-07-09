@@ -8,7 +8,7 @@
 const fs = require("fs");
 const path = require("path");
 const core = require("../../core/main");
-const { _, _raw } = require("../../shared/main/i18n");
+const { _ } = require("../../shared/main/i18n");
 const log = require("../../shared/main/logger");
 const reader = require("../../reader/main");
 const shell = require("electron").shell;
@@ -510,11 +510,7 @@ function getLocalization() {
       id: "tool-cbp-about-1-text",
       text: _(
         "tool-shared-ui-about-text-1",
-        // TODO: use just "tool-shared-ui-about-text-1-comicbooks-audio" when
-        // all translations have it
-        _raw("tool-shared-ui-about-text-1-comicbooks-audio", false)
-          ? _raw("tool-shared-ui-about-text-1-comicbooks-audio", false)
-          : _("tool-shared-ui-about-text-1-comicbooks"),
+        _("tool-shared-ui-about-text-1-comicbooks-audio"),
         _("menu-tools-other-cbp")
       ),
     },
