@@ -30,16 +30,13 @@ exports.searchDisroot = function (results, dom, idText, replaceText) {
         }
       });
     }
-
     results.hasNext =
       dom.window.document.querySelector("form.next_page") !== null;
     results.hasPrev =
       dom.window.document.querySelector("form.previous_page") !== null;
-
     if (results.links.length === 0) {
       throw "0 results";
     }
-
     return results;
   } catch (error) {
     throw error;
