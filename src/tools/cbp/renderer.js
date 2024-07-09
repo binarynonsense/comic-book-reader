@@ -314,7 +314,7 @@ function initOnIpcCallbacks() {
         }
         buttonSpan.appendChild(multilineText);
         buttonSpan.addEventListener("click", (event) => {
-          onSearchResultClicked(result.dlid, 0);
+          onSearchResultClicked(result.id, 0);
         });
         li.appendChild(buttonSpan);
         {
@@ -323,7 +323,7 @@ function initOnIpcCallbacks() {
           buttonSpan.innerHTML = `<i class="fas fa-link"></i>`;
           buttonSpan.title = openInBrowserText;
           buttonSpan.addEventListener("click", (event) => {
-            onSearchResultClicked(result.dlid, 1);
+            onSearchResultClicked(result.id, 1);
           });
           li.appendChild(buttonSpan);
         }

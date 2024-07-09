@@ -14,6 +14,7 @@ const reader = require("../../reader/main");
 const shell = require("electron").shell;
 const contextMenu = require("../../shared/main/tools-menu-context");
 const tools = require("../../shared/main/tools");
+const search = require("../../shared/main/tools-search");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -210,6 +211,7 @@ function initOnIpcCallbacks() {
       const dom = new JSDOM(data.html);
       if (data.engine === "cbp") {
         try {
+          log.test("searching cbp");
           const gsWebResults =
             dom.window.document.querySelectorAll(".gs-webResult");
           if (gsWebResults && gsWebResults.length > 0) {
@@ -257,7 +259,7 @@ function initOnIpcCallbacks() {
                         ""
                       ),
                       summary,
-                      dlid: comicId,
+                      id: comicId,
                       type,
                     });
                   }
@@ -289,35 +291,12 @@ function initOnIpcCallbacks() {
         }
       } else if (data.engine === "disroot") {
         try {
-          const resultWrapper = dom.window.document.querySelectorAll(".result");
-          if (resultWrapper && resultWrapper.length > 0) {
-            resultWrapper.forEach((element) => {
-              const a = element.querySelector("h3")?.querySelector("a");
-              if (a && a.href && a.href.includes("dlid")) {
-                let comicId;
-                let parts = a.href.split("dlid=");
-                if (parts.length === 2) {
-                  comicId = parts[1];
-                }
-                if (comicId) {
-                  results.links.push({
-                    name: a.textContent.replace(" - Comic Book Plus", ""),
-                    summary: element
-                      .querySelector(".content")
-                      ?.textContent?.trim(),
-                    dlid: comicId,
-                  });
-                }
-              }
-            });
-          }
-          if (results.links.length === 0) {
-            throw "0 results";
-          }
-          results.hasNext =
-            dom.window.document.querySelector("form.next_page") !== null;
-          results.hasPrev =
-            dom.window.document.querySelector("form.previous_page") !== null;
+          results = search.searchDisroot(
+            results,
+            dom,
+            "dlid",
+            " - Comic Book Plus"
+          );
           sendIpcToRenderer(
             "update-results",
             results,
@@ -336,71 +315,13 @@ function initOnIpcCallbacks() {
         }
       } else if (data.engine === "duckduckgo") {
         try {
-          // e.g. <a rel="next" href="/lite/?q=mars+site%3Acomicbookplus.com&amp;v=l&amp;kl=wt-wt&amp;l=us-en&amp;p=&amp;s=73&amp;ex=-1&amp;o=json&amp;dl=en&amp;ct=ES&amp;sp=0&amp;vqd=4-111953606416844614702827187214412193094&amp;host_region=eun&amp;dc=97&amp;api=%2Fd.js">
-          let regex = /rel="next" href="\/lite\/\?q=(.*)">/;
-          let match = data.html.match(regex);
-          if (match && match[1]) {
-            results.hasNext = true;
-            results.nextUrl = `https://lite.duckduckgo.com/lite/?q=${match[1]}`;
-          }
-          //  <a rel="prev" href="/lite/?q=mars+inurl%3Adlid+site%3Acomicbookplus.com&amp;s=23&amp;v=l&amp;kl=us-en&amp;dc=-74&amp;nextParams=&amp;api=d.js&amp;vqd=4-218811986882710962361145831623280930728&amp;o=json">&lt; Previous Page</a> //
-          regex = /rel="prev" href="\/lite\/\?q=(.*)">/;
-          match = data.html.match(regex);
-          if (match && match[1]) {
-            results.hasPrev = true;
-            results.prevUrl = `https://lite.duckduckgo.com/lite/?q=${match[1]}`;
-          }
-          const resultLinks =
-            dom.window.document.querySelectorAll(".result-link");
-          if (resultLinks && resultLinks.length > 0) {
-            resultLinks.forEach((resultLink) => {
-              if (
-                resultLink.nodeName.toLowerCase() === "a" &&
-                resultLink.href
-              ) {
-                const href = resultLink.href;
-                // e.g. <a rel="nofollow" href="//duckduckgo.com/l/?uddg=https%3A%2F%2Fcomicbookplus.com%2F%3Fdlid%3D78597&amp;rut=cf36420565b1828fec62912e62aaedffc513ed9762220eaa4579cbbaa85c670e" class="result-link">Jim Solar Space Sheriff - Battle for Mars - Comic Book Plus</a>
-                const regex = /uddg=(.*)&rut=/;
-                const match = href.match(regex);
-                if (match && match[1] && match[1].includes("dlid")) {
-                  let comicId;
-                  let parts = decodeURIComponent(match[1]).split("dlid=");
-                  if (parts.length === 2) {
-                    comicId = parts[1];
-                  }
-                  if (comicId) {
-                    // try to get snippet
-                    let summary;
-                    const snippetParent =
-                      resultLink?.parentElement?.nextElementSibling;
-                    if (snippetParent) {
-                      const snippetElement =
-                        snippetParent.querySelector(".result-snippet");
-                      if (snippetElement) {
-                        summary = snippetElement.textContent;
-                      }
-                    }
-                    //////////
-                    results.links.push({
-                      name: resultLink.textContent.replace(
-                        " - Comic Book Plus",
-                        ""
-                      ),
-                      summary,
-                      dlid: comicId,
-                    });
-                  }
-                }
-              }
-            });
-            if (results.links.length === 0) {
-              throw "0 results";
-            }
-          } else {
-            if (data.html.includes("Unfortunately, bots use DuckDuckGo too")) {
-              log.test("DuckDuckGo thinks we are a bot? :S");
-            }
-          }
+          results = search.searchDDG(
+            results,
+            data.html,
+            dom,
+            "dlid",
+            " - Comic Book Plus"
+          );
           sendIpcToRenderer(
             "update-results",
             results,
