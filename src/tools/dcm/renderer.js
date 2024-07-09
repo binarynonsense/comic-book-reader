@@ -451,9 +451,9 @@ function generatePaginationHtml(results) {
       });
       paginationDiv.appendChild(span);
     }
-    let span = document.createElement("span");
-    span.innerHTML = ` | `;
-    paginationDiv.appendChild(span);
+    // let span = document.createElement("span");
+    // span.innerHTML = ` | `;
+    // paginationDiv.appendChild(span);
     if (results.hasNext) {
       let span = document.createElement("span");
       span.className = "tools-collection-pagination-button";
@@ -492,9 +492,9 @@ function generatePaginationHtml(results) {
       });
       paginationDiv.appendChild(span);
     }
-    let span = document.createElement("span");
-    span.innerHTML = ` | `;
-    paginationDiv.appendChild(span);
+    // let span = document.createElement("span");
+    // span.innerHTML = ` | `;
+    // paginationDiv.appendChild(span);
     if (results.hasNext) {
       let span = document.createElement("span");
       span.className = "tools-collection-pagination-button";

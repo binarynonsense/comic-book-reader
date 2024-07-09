@@ -616,8 +616,11 @@ html[dir="rtl"] .tools-range-bubble {
 .tools-collection-pagination {
   margin-top: 15px;
   margin-bottom: 15px;
-  text-align: center;
   width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
 }
 
 .tools-collection-pagination span {
@@ -626,10 +629,17 @@ html[dir="rtl"] .tools-range-bubble {
 
 .tools-collection-pagination-button {
   cursor: pointer;
-  display: inline-block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 25px;
+  width: 25px;
+  background-color: var(--tools-collection-text-color);
+  color: var(--tools-collection-bg-color);
+  border-radius: 3px;
 }
 
-.tools-collection-pagination-button:hover i {
+.tools-collection-pagination-button:hover {
   transform: scale(1.1);
   filter: brightness(1.2);
 }
