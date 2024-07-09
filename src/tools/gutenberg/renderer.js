@@ -431,7 +431,7 @@ function initOnIpcCallbacks() {
           {
             let buttonSpan = document.createElement("span");
             buttonSpan.className = "tools-buttons-list-button";
-            buttonSpan.innerHTML = `<i class="fas fa-link"></i>`;
+            buttonSpan.innerHTML = `<i class="fas fa-external-link-alt"></i>`;
             buttonSpan.title = openInBrowserText;
             buttonSpan.addEventListener("click", (event) => {
               onSearchResultClicked(bookData.id, bookData.title, 1);
