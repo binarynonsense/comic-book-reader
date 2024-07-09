@@ -114,6 +114,8 @@ function initOnIpcCallbacks() {
   });
 
   on("search", async (data) => {
+    let results = data;
+    results.links = [];
     try {
       log.test("searching dcm");
       const formData = new FormData();
@@ -134,15 +136,15 @@ function initOnIpcCallbacks() {
       log.error(error);
     }
     if (!data || !data.html) {
+      results = data;
+      results.links = [];
       sendIpcToRenderer(
         "update-results",
-        [],
+        results,
         "⚠ " +
           _("tool-shared-ui-search-network-error", "digitalcomicmuseum.com")
       );
     } else {
-      let results = data;
-      results.links = [];
       try {
         const jsdom = require("jsdom");
         const { JSDOM } = jsdom;
