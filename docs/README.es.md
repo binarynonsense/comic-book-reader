@@ -38,6 +38,7 @@ Un lector y conversor de cómics para archivos en formato CBZ, CBR, CB7, EPUB y 
     - JPG, PNG, WebP y AVIF
   - Ebooks:
     - PDF y EPUB<sup>[2]</sup>
+    
   Incluyendo archivos PDF, CBZ (cifrado AES no compatible), CB7 y CBR protegidos con contraseña.
 - Modos de ventana (IU simple) y pantalla completa (sin IU)
 - Vistas de pagina: 'ajustar a anchura', 'ajustar a altura' y 'escalar a altura' personalizable
