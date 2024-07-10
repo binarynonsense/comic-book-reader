@@ -3,7 +3,7 @@
     "authors": [
       "Álvaro"
     ],
-    "last-updated": "2024-07-08",
+    "last-updated": "2024-07-09",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.6.0",
     "pre-release": "false",
@@ -484,8 +484,6 @@
   "tool-pre-toolbar": "Toolbar",
   "tool-pre-toolbar-direction": "Direction",
   "tool-pre-epub-ebook": "EPUB Ebook",
-  "[NOTE TO TRANSLATORS]tool-pre-home-screen-latest-max": "Latest should be the same as in home-screen-latest, this refers to a preference to set the maximum number of latest files to show in the home screen",
-  "tool-pre-home-screen-latest-max": "Latest Files Limit",
   "tool-pre-navkeys": "Key Mapping",
   "tool-pre-navkeys-actions": {
     "scrollUp": "Scroll Page Up",
@@ -721,8 +719,6 @@
   "home-screen": "Home Screen",
   "[NOTE TO TRANSLATORS]home-screen-favorites": "Favorites as in Favorite files and folders",
   "home-screen-favorites": "Favorites",
-  "[NOTE TO TRANSLATORS]home-screen-latest": "Latest as in Latest files used",
-  "home-screen-latest": "Latest",
   "[NOTE TO TRANSLATORS]home-screen-recent": "Recent as in most recently opened files, plural",
   "home-screen-recent": "Recent"
 }

@@ -484,8 +484,6 @@
   "tool-pre-toolbar": "Панель инструментов",
   "tool-pre-toolbar-direction": "Направление",
   "tool-pre-epub-ebook": "Эл. книга EPUB",
-  "[NOTE TO TRANSLATORS]tool-pre-home-screen-latest-max": "Latest should be the same as in home-screen-latest, this refers to a preference to set the maximum number of latest files to show in the home screen",
-  "tool-pre-home-screen-latest-max": "Лимит последних файлов",
   "tool-pre-navkeys": "Сопоставление клавиш",
   "tool-pre-navkeys-actions": {
     "scrollUp": "Прокрутка страницы вверх",
@@ -721,8 +719,6 @@
   "home-screen": "Домашний экран",
   "[NOTE TO TRANSLATORS]home-screen-favorites": "Favorites as in Favorite files and folders",
   "home-screen-favorites": "Избранное",
-  "[NOTE TO TRANSLATORS]home-screen-latest": "Latest as in Latest files used",
-  "home-screen-latest": "Последние",
   "[NOTE TO TRANSLATORS]home-screen-recent": "Recent as in most recently opened files, plural",
   "home-screen-recent": "Недавние"
 }
