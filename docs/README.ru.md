@@ -31,7 +31,7 @@
 ## Особенности:
 
 - Совместим с Windows и Linux.
-- Совместимые расширения файлов<sup>[1]</sup>:
+- Совместимые расширения файлов:
   - Комиксы:
     - CBZ, CBR, CB7, PDF и EPUB<sup>[2]</sup>.
   - Изображения:
@@ -47,9 +47,9 @@
 - Переносной режим (создайте файл с именем portable.txt в той же папке, что и исполняемый файл).
 - Редактор ComicInfo.xml:
   - просматривайте метаданные, хранящиеся в файлах ComicInfo.xml в комиксах CBR, CBZ и CB7.
-  - создавайте и/или изменяйте метаданные, хранящиеся в файлах ComicInfo.xml в незашифрованных комиксах CBR<sup>[3]</sup>, CBZ и CB7.
+  - создавайте и/или изменяйте метаданные, хранящиеся в файлах ComicInfo.xml в незашифрованных комиксах CBR<sup>[4]</sup>, CBZ и CB7.
   - найдите и импортируйте метаданные комиксов из Comic Vine (требуется [ключ Comic Vine API](https://comicvine.gamespot.com/api/)).
-- Встроенный аудиоплеер:[4]
+- Встроенный аудиоплеер:
   - поддерживаются расширения файлов MP3, Ogg, WAV, M3U и M3U8
   - можно экспортировать плейлист в файл M3U
 - Инструменты:
@@ -86,9 +86,9 @@
 >
 > [3]: Чтение электронных книг в формате EPUB — это экспериментальная/дополнительная функция, выходящая за рамки основной задачи проекта. Это может работать не для всех файлов и при необходимости может быть удалено в будущих версиях.
 >
-> [3]: По умолчанию создание и изменение файлов CBR отключено. Их можно включить в настройках, но для этого необходимо установить в систему сторонний инструмент командной строки ([rar](https://www.win-rar.com/cmd-shell-mode.html?&L=0) из WinRAR).
+> [4]: По умолчанию создание и изменение файлов CBR отключено. Их можно включить в настройках, но для этого необходимо установить в систему сторонний инструмент командной строки ([rar](https://www.win-rar.com/cmd-shell-mode.html?&L=0) из WinRAR).
 
-##[4]ачать:
+## Скачать:
 
 <a href="https://github.com/binarynonsense/comic-book-reader/releases/latest"><img src="https://shields.io/github/v/release/binarynonsense/comic-book-reader?display_name=tag&label=stable" title="version"></a> <a href="https://github.com/binarynonsense/comic-book-reader/releases"><img src="https://shields.io/github/v/release/binarynonsense/comic-book-reader?display_name=tag&label=latest&include_prereleases" title="version"></a> <a href="https://github.com/binarynonsense/comic-book-reader/releases"><img src="https://shields.io/github/downloads/binarynonsense/comic-book-reader/total?label=downloads" title="total downloads"></a>
 
