@@ -109,11 +109,11 @@ All versions (stable and beta):
 - German localization by [Timo Heidutzek (trzyglow)](https://github.com/trzyglow)
 - Arabic localization by [Ahmed (ahmed-0011)](https://github.com/ahmed-0011)
 
-There's info about how to contribute to the project in the [CONTRIBUTING.md](./CONTRIBUTING.md) file.
+There's info about how to contribute to the project in the [CONTRIBUTING.md](../CONTRIBUTING.md) file.
 
 ## License:
 
-ACBR's code is released under the BSD 2-Clause [license](./LICENSE). To check the licenses of the node modules and other libraries used in the project go to the [licenses](./licenses/) folder.
+ACBR's code is released under the BSD 2-Clause [license](../LICENSE). To check the licenses of the node modules and other libraries used in the project go to the [licenses](../licenses/) folder.
 
 ## Other:
 
