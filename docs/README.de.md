@@ -31,15 +31,13 @@ Ein Comicbuch Leser und Konverter für CBZ, CBR, CB7, EPUB und PDF Dateien.
 ## Funktionen:
 
 - Windows & Linux Versionen
-- Kompatible Dateiformate:
+- Kompatible Dateiformate<sup>[1]</sup>:
   - Comicbücher:
-    - CBZ, CBR, CB7, PDF und EPUB<sup>[1]</sup>
+    - CBZ, CBR, CB7, PDF und EPUB<sup>[2]</sup>
   - Bilddateien:
     - JPG, PNG, WebP und AVIF
   - Ebooks:
-    - PDF und EPUB<sup>[2]</sup>
-    
-  Dazu gehören Passwort geschützte PDF, CBZ (AES Verschlüsselung nicht unterstützt), CB7 und CBR Dateien.
+    - PDF und EPUB<sup>[3]</sup>
 - Fenster- (einfache Benutzeroberfläche) und Vollbild- (keine Benutzeroberfläche) Modi.
 - 'Breitenanpassung', 'Höhenanpassung' und eine anpassbare 'Höhenskalierung' Seitenansicht
 - Seitenrotation
@@ -51,17 +49,17 @@ Ein Comicbuch Leser und Konverter für CBZ, CBR, CB7, EPUB und PDF Dateien.
   - Ansicht der Metadaten welche in ComicInfo.xml Dateien innerhalb CBR, CBZ und CB7 Comicbüchern gespeichert sind.
   - Erstelle und/oder modifiziere die Metadaten welche in ComicInfo.xml Dateien innerhalb unverschlüsselten CBR<sup>[3]</sup>, CBZ und CB7 Comicbüchern gespeichert sind.
   - Suche nach und importiere Comicbuch Metadaten von Comic Vine (hierfür wird ein [Comic Vine API key](https://comicvine.gamespot.com/api/) benötigt).
-- Integrierter Audio-player:
+- Integrierter Audio-player:[4]
   - Unterstützt MP3, Ogg, WAV, M3U und M3U8 Dateien.
   - Kann Playlists als M3U Dateien exportieren.
 - Werkzeuge:
   - Konvertieren/größe Ändern:
-    - Comicbücher (CBR, CBZ, CB7, PDF oder EPUB<sup>[1]</sup> zu CBR<sup>[3]</sup>, CBZ, CB7, PDF oder EPUB)
+    - Comicbücher (CBR, CBZ, CB7, PDF oder EPUB<sup>[2]</sup> zu CBR<sup>[3]</sup>, CBZ, CB7, PDF oder EPUB)
     - Bilder (JPG, PNG, AVIF oder WebP)
-  - Erstelle:
+  - Erstelle:[4]
     - Ein Comicbuch (CBR<sup>[3]</sup>, CBZ, CB7, PDF oder EPUB) aus einer Liste von Bild Dateien und/oder Comicbüchern
     - Ein QR Code Bild aus Text
-  - Extrahiere:
+  - Extrahiere:[4]
     - Comicbuch Seiten (zu JPG, PNG, AVIF oder WebP)
     - Text (OCR) aus einer Comicbuch Seite oder Bilddatei
     - QR Code Text aus einer Comicbuch Seite oder Bilddatei
@@ -82,13 +80,15 @@ Ein Comicbuch Leser und Konverter für CBZ, CBR, CB7, EPUB und PDF Dateien.
 
 > Hinweise:
 >
-> [1]: Nur Bilder.
+> [1]: Dazu gehören Passwort geschützte PDF, CBZ (AES Verschlüsselung nicht unterstützt), CB7 und CBR Dateien.
 >
-> [2]: EPUB E-Books lesen ist ein experimentelles / extra Feature außerhalb des Hauptumfangs des Projektes. Es könnte nicht für alle Dateien funktionieren, und im Bedarfsfall in zukünftigen Versionen entfernt werden.
+> [2]: Nur Bilder.
+>
+> [3]: EPUB E-Books lesen ist ein experimentelles / extra Feature außerhalb des Hauptumfangs des Projektes. Es könnte nicht für alle Dateien funktionieren, und im Bedarfsfall in zukünftigen Versionen entfernt werden.
 >
 > [3]: Das Erstellen und Modifizieren von CBR Dateien ist standardmäßig deaktiviert. Diese Funktionen können über die Einstellungen aktiviert werden, benötigen aber ein Drittanbieter Kommandozeilen-werkzeug ([rar](https://www.win-rar.com/cmd-shell-mode.html?&L=0) von WinRAR), welches im System installiert sein muss.
 
-## Downloads:
+##[4]wnloads:
 
 <a href="https://github.com/binarynonsense/comic-book-reader/releases/latest"><img src="https://shields.io/github/v/release/binarynonsense/comic-book-reader?display_name=tag&label=stable" title="version"></a> <a href="https://github.com/binarynonsense/comic-book-reader/releases"><img src="https://shields.io/github/v/release/binarynonsense/comic-book-reader?display_name=tag&label=latest&include_prereleases" title="version"></a> <a href="https://github.com/binarynonsense/comic-book-reader/releases"><img src="https://shields.io/github/downloads/binarynonsense/comic-book-reader/total?label=downloads" title="total downloads"></a>
 

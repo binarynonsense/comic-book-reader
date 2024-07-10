@@ -31,15 +31,13 @@
 ## Особенности:
 
 - Совместим с Windows и Linux.
-- Совместимые расширения файлов:
+- Совместимые расширения файлов<sup>[1]</sup>:
   - Комиксы:
-    - CBZ, CBR, CB7, PDF и EPUB<sup>[1]</sup>.
+    - CBZ, CBR, CB7, PDF и EPUB<sup>[2]</sup>.
   - Изображения:
     - JPG, PNG, WebP и AVIF.
   - Электронные книги:
-    - PDF и EPUB<sup>[2]</sup>.
-  
-  Включая защищенные паролем файлы PDF, CBZ (шифрование AES не поддерживается), CB7 и CBR.
+    - PDF и EPUB<sup>[3]</sup>.
 - Оконный (простой пользовательский интерфейс) и полноэкранный (без пользовательского интерфейса) режимы.
 - "Подгонка по ширине", "подгонка по высоте" и настраиваемые виды страниц "масштабирование по высоте".
 - Поворот страницы.
@@ -51,7 +49,7 @@
   - просматривайте метаданные, хранящиеся в файлах ComicInfo.xml в комиксах CBR, CBZ и CB7.
   - создавайте и/или изменяйте метаданные, хранящиеся в файлах ComicInfo.xml в незашифрованных комиксах CBR<sup>[3]</sup>, CBZ и CB7.
   - найдите и импортируйте метаданные комиксов из Comic Vine (требуется [ключ Comic Vine API](https://comicvine.gamespot.com/api/)).
-- Встроенный аудиоплеер:
+- Встроенный аудиоплеер:[4]
   - поддерживаются расширения файлов MP3, Ogg, WAV, M3U и M3U8
   - можно экспортировать плейлист в файл M3U
 - Инструменты:
@@ -82,13 +80,15 @@
 
 > Примечания:
 >
-> [1]: Только изображения.
+> [1]: Включая защищенные паролем файлы PDF, CBZ (шифрование AES не поддерживается), CB7 и CBR.
 >
-> [2]: Чтение электронных книг в формате EPUB — это экспериментальная/дополнительная функция, выходящая за рамки основной задачи проекта. Это может работать не для всех файлов и при необходимости может быть удалено в будущих версиях.
+> [2]: Только изображения.
+>
+> [3]: Чтение электронных книг в формате EPUB — это экспериментальная/дополнительная функция, выходящая за рамки основной задачи проекта. Это может работать не для всех файлов и при необходимости может быть удалено в будущих версиях.
 >
 > [3]: По умолчанию создание и изменение файлов CBR отключено. Их можно включить в настройках, но для этого необходимо установить в систему сторонний инструмент командной строки ([rar](https://www.win-rar.com/cmd-shell-mode.html?&L=0) из WinRAR).
 
-## Скачать:
+##[4]ачать:
 
 <a href="https://github.com/binarynonsense/comic-book-reader/releases/latest"><img src="https://shields.io/github/v/release/binarynonsense/comic-book-reader?display_name=tag&label=stable" title="version"></a> <a href="https://github.com/binarynonsense/comic-book-reader/releases"><img src="https://shields.io/github/v/release/binarynonsense/comic-book-reader?display_name=tag&label=latest&include_prereleases" title="version"></a> <a href="https://github.com/binarynonsense/comic-book-reader/releases"><img src="https://shields.io/github/downloads/binarynonsense/comic-book-reader/total?label=downloads" title="total downloads"></a>
 
