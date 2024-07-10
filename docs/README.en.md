@@ -47,19 +47,19 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB and PDF files.
 - Portable mode (by creating a file named portable.txt in the same folder as the executable)
 - ComicInfo.xml editor:
   - View the metadata stored in ComicInfo.xml files inside CBR, CBZ and CB7 comic books.
-  - Create and/or modify the metadata stored in ComicInfo.xml files inside unencrypted CBR<sup>[3]</sup>, CBZ and CB7 comic books.
+  - Create and/or modify the metadata stored in ComicInfo.xml files inside unencrypted CBR<sup>[4]</sup>, CBZ and CB7 comic books.
   - Search for and import comic book metadata from Comic Vine (a [Comic Vine API key](https://comicvine.gamespot.com/api/) is required).
-- Integrated audio player:[4]
+- Integrated audio player:
   - Supports MP3, Ogg, WAV, M3U and M3U8 files.
   - Can export playlists to M3U files.
 - Tools:
   - Convert/Resize:
-    - Comic books (CBR, CBZ, CB7, PDF or EPUB<sup>[2]</sup> to CBR<sup>[3]</sup>, CBZ, CB7, PDF or EPUB)
+    - Comic books (CBR, CBZ, CB7, PDF or EPUB<sup>[2]</sup> to CBR<sup>[4]</sup>, CBZ, CB7, PDF or EPUB)
     - Images (JPG, PNG, AVIF or WebP)
-  - Create:[4]
-    - A comic book (CBR<sup>[3]</sup>, CBZ, CB7, PDF or EPUB) from a list of image files and/or comic books
+  - Create:
+    - A comic book (CBR<sup>[4]</sup>, CBZ, CB7, PDF or EPUB) from a list of image files and/or comic books
     - A QR code image from text
-  - Extract:[4]
+  - Extract:
     - Comic book pages (to JPG, PNG, AVIF or WebP)
     - Text (OCR) from a comic book page or image file
     - A QR code's text from a comic book page or image file
@@ -86,9 +86,9 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB and PDF files.
 >
 > [3]: Reading EPUB Ebooks is an experimental / extra feature outside the main scope of the project. It may not work for all files and could be removed in future versions if necessary.
 >
-> [3]: Creating and modifying CBR files are disabled by default. They can be enabled in the preferences but require a third-party command-line tool ([rar](https://www.win-rar.com/cmd-shell-mode.html?&L=0) from WinRAR) to be installed in the system.
+> [4]: Creating and modifying CBR files are disabled by default. They can be enabled in the preferences but require a third-party command-line tool ([rar](https://www.win-rar.com/cmd-shell-mode.html?&L=0) from WinRAR) to be installed in the system.
 
-##[4]wnloads:
+## Downloads:
 
 <a href="https://github.com/binarynonsense/comic-book-reader/releases/latest"><img src="https://shields.io/github/v/release/binarynonsense/comic-book-reader?display_name=tag&label=stable" title="version"></a> <a href="https://github.com/binarynonsense/comic-book-reader/releases"><img src="https://shields.io/github/v/release/binarynonsense/comic-book-reader?display_name=tag&label=latest&include_prereleases" title="version"></a> <a href="https://github.com/binarynonsense/comic-book-reader/releases"><img src="https://shields.io/github/downloads/binarynonsense/comic-book-reader/total?label=downloads" title="total downloads"></a>
 
@@ -109,11 +109,11 @@ All versions (stable and beta):
 - German localization by [Timo Heidutzek (trzyglow)](https://github.com/trzyglow)
 - Arabic localization by [Ahmed (ahmed-0011)](https://github.com/ahmed-0011)
 
-There's info about how to contribute to the project in the [CONTRIBUTING.md](../CONTRIBUTING.md) file.
+There's info about how to contribute to the project in the [CONTRIBUTING.md](./CONTRIBUTING.md) file.
 
 ## License:
 
-ACBR's code is released under the BSD 2-Clause [license](../LICENSE). To check the licenses of the node modules and other libraries used in the project go to the [licenses](../licenses/) folder.
+ACBR's code is released under the BSD 2-Clause [license](./LICENSE). To check the licenses of the node modules and other libraries used in the project go to the [licenses](./licenses/) folder.
 
 ## Other:
 
