@@ -109,6 +109,9 @@ const g_defaultSettings = {
 
   tempFolderPath: undefined,
 
+  // LINUX
+  linuxSkipGslice: false,
+
   // TOOLS
   toolGutUseCache: true,
   toolCixApiKeyPath: undefined,
@@ -148,7 +151,27 @@ function setDefaultValues() {
 let g_scaleToHeightMin = 25;
 let g_scaleToHeightMax = 500;
 
-function sanitize(screenWidth, screenHeight) {
+exports.capScreenSizes = function (screenWidth, screenHeight) {
+  if (g_settings.width > screenWidth) {
+    g_settings.width = screenWidth;
+  } else if (g_settings.width < g_minSize.width) {
+    g_settings.width = g_minSize.width;
+  }
+  if (g_settings.height > screenHeight) {
+    g_settings.height = screenHeight;
+  } else if (g_settings.height < g_minSize.height) {
+    g_settings.height = g_minSize.height;
+  }
+};
+
+function sanitize() {
+  if (
+    !Number.isInteger(g_settings.width) ||
+    !Number.isInteger(g_settings.height)
+  ) {
+    g_settings.width = g_defaultSize.width;
+    g_settings.height = g_defaultSize.height;
+  }
   if (
     !Number.isInteger(g_settings.fit_mode) ||
     g_settings.fit_mode < 0 ||
@@ -184,23 +207,6 @@ function sanitize(screenWidth, screenHeight) {
     g_settings.fullScreen = g_defaultSettings.fullScreen;
   }
   if (
-    !Number.isInteger(g_settings.width) ||
-    !Number.isInteger(g_settings.height)
-  ) {
-    g_settings.width = g_defaultSize.width;
-    g_settings.height = g_defaultSize.height;
-  }
-  if (g_settings.width > screenWidth) {
-    g_settings.width = screenWidth;
-  } else if (g_settings.width < g_minSize.width) {
-    g_settings.width = g_minSize.width;
-  }
-  if (g_settings.height > screenHeight) {
-    g_settings.height = screenHeight;
-  } else if (g_settings.height < g_minSize.height) {
-    g_settings.height = g_minSize.height;
-  }
-  if (
     !Number.isInteger(g_settings.history_capacity) ||
     g_settings.history_capacity < 1 ||
     g_settings.history_capacity > 1000
@@ -214,7 +220,6 @@ function sanitize(screenWidth, screenHeight) {
   ) {
     g_settings.on_quit_state = g_defaultSettings.on_quit_state;
   }
-
   if (typeof g_settings.showMenuBar !== "boolean") {
     g_settings.showMenuBar = true;
   }
@@ -534,10 +539,10 @@ function load(info) {
         }
       }
     }
-    sanitize(info.screenWidth, info.screenHeight);
+    sanitize();
   } catch (error) {
     log.error(error);
-    sanitize(info.screenWidth, info.screenHeight);
+    sanitize();
   }
 }
 

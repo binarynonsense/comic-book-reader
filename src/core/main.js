@@ -8,7 +8,7 @@
 const timers = require("../shared/main/timers");
 timers.start("startup");
 
-const { app, BrowserWindow, ipcMain } = require("electron");
+const { app, BrowserWindow, ipcMain, screen } = require("electron");
 const os = require("os");
 const fs = require("fs");
 const path = require("path");
@@ -33,6 +33,7 @@ let g_launchInfo = {};
 //////////////////////////////////////////////////////////////////////////////
 // LAUNCH INFO ///////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
+
 g_launchInfo = {
   platform: os.platform(),
   release: os.release(),
@@ -65,6 +66,7 @@ if (
 if (process.env.APPIMAGE) {
   g_launchInfo.isAppImage = true;
 }
+
 // parse command line arguments
 g_launchInfo.parsedArgs = require("minimist")(
   process.argv.slice(g_launchInfo.isRelease ? 1 : 2),
@@ -122,31 +124,40 @@ if (!gotTheLock) {
   if (g_launchInfo.isAppImage) {
     log.debug("is AppImage");
   }
-
+  // load settings
+  settings.init();
+  // check gs_slice
   log.debug("checking environment");
   if (g_launchInfo.platform === "linux" && !process.env.G_SLICE) {
     // NOTE: if G_SLICE isn't set to 'always-malloc' the app may crash
     // during conversions due to an issue with sharp
     if (g_launchInfo.isRelease) {
-      log.warning(
-        "The GS_SLICE environment variable is undefined, setting it to 'always-malloc' and relaunching the app. You can avoid this step by launching ACBR using the ACBR.sh script",
-        true
-      );
-      process.env.G_SLICE = "always-malloc";
-      const options = { args: process.argv };
-      if (process.env.APPIMAGE) {
-        // ref: https://github.com/electron-userland/electron-builder/issues/1727
-        options.execPath = process.env.APPIMAGE;
-        options.args.unshift("--appimage-extract-and-run");
-        app.relaunch(options);
-        app.exit(0);
+      if (!settings.getValue("linuxSkipGslice")) {
+        log.warning(
+          "The GS_SLICE environment variable is undefined, setting it to 'always-malloc' and relaunching the app. You can avoid this step by launching ACBR using the ACBR.sh script",
+          true
+        );
+        process.env.G_SLICE = "always-malloc";
+        const options = { args: process.argv };
+        if (process.env.APPIMAGE) {
+          // ref: https://github.com/electron-userland/electron-builder/issues/1727
+          options.execPath = process.env.APPIMAGE;
+          options.args.unshift("--appimage-extract-and-run");
+          app.relaunch(options);
+          app.exit(0);
+        } else {
+          app.relaunch();
+          app.exit(0);
+        }
       } else {
-        app.relaunch();
-        app.exit(0);
+        log.warning(
+          "The GS_SLICE environment variable is undefined and linuxSkipGslice is set to true in the settings, you may experience crashes during file conversions.",
+          true
+        );
       }
     } else {
       log.warning(
-        "the GS_SLICE environment variable is undefined, you may experience crashes during file conversions",
+        "the GS_SLICE environment variable is undefined, you may experience crashes during file conversions.",
         true
       );
     }
@@ -158,8 +169,7 @@ if (!gotTheLock) {
 
   // init window
   const createWindow = () => {
-    // get screen size
-    const { screen } = require("electron");
+    // screen size
     const primaryDisplay = screen.getPrimaryDisplay();
     g_launchInfo.screenWidth = primaryDisplay.workAreaSize.width;
     g_launchInfo.screenHeight = primaryDisplay.workAreaSize.height;
@@ -175,14 +185,14 @@ if (!gotTheLock) {
       g_launchInfo.screenHeight <= 0
     )
       g_launchInfo.screenHeight = 600;
-    // init before win creation
-    settings.init(g_launchInfo);
-    menuBar.empty();
+    settings.capScreenSizes(
+      g_launchInfo.screenWidth,
+      g_launchInfo.screenHeight
+    );
     if (g_launchInfo.isSteamDeck && g_launchInfo.isGameScope) {
       settings.setValue("width", 1280);
       settings.setValue("height", 800);
     }
-    // log size data
     log.debug("work area width: " + g_launchInfo.screenWidth);
     log.debug("work area height: " + g_launchInfo.screenHeight);
     log.debug("starting width: " + settings.getValue("width"));
@@ -190,6 +200,7 @@ if (!gotTheLock) {
     log.debug("maximized: " + settings.getValue("maximize"));
     log.debug("full screen: " + settings.getValue("fullScreen"));
     // win creation
+    menuBar.empty();
     g_mainWindow = new BrowserWindow({
       width: settings.getValue("width"),
       height: settings.getValue("height"),
