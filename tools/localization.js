@@ -155,9 +155,22 @@ function findUnusedKeys() {
       }
     }
     console.log(`Found ${unusedKeys.length} unused keys`);
-    const listFilePath = path.resolve("./tools/unusedKeys.txt");
+    let listFilePath = path.resolve("./tools/unusedKeys.txt");
     console.log("Writing list to: " + listFilePath);
     fs.writeFileSync(listFilePath, unusedKeys.join("\n"), "utf-8");
+    // do the opposite
+    let usedKeysNoLocalization = [];
+    for (const key in usedKeys) {
+      if (englishData[key] === undefined) {
+        usedKeysNoLocalization.push(key);
+      }
+    }
+    console.log(
+      `Found ${usedKeysNoLocalization.length} used keys without localization`
+    );
+    listFilePath = path.resolve("./tools/usedKeysNoLocalization.txt");
+    console.log("Writing list to: " + listFilePath);
+    fs.writeFileSync(listFilePath, usedKeysNoLocalization.join("\n"), "utf-8");
   } catch (error) {
     console.log(error);
   }
