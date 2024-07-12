@@ -126,7 +126,7 @@ if (!gotTheLock) {
   }
   // load settings
   settings.init();
-  // check gs_slice
+  // check g_slice
   log.debug("checking environment");
   if (g_launchInfo.platform === "linux" && !process.env.G_SLICE) {
     // NOTE: if G_SLICE isn't set to 'always-malloc' the app may crash
@@ -164,9 +164,8 @@ if (!gotTheLock) {
   }
   // show vips warnings from sharp only in dev mode
   if (!g_launchInfo.isDev) process.env.VIPS_WARNING = 1;
-
+  //
   tools.init();
-
   // init window
   const createWindow = () => {
     // screen size
@@ -213,7 +212,6 @@ if (!gotTheLock) {
         preload: path.join(__dirname, "preload.js"),
       },
     });
-    // init after win creation
     // load html
     if (settings.getValue("pdfReadingLib") === 1) {
       g_mainWindow.loadFile(path.join(__dirname, "index-2.html"));
