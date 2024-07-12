@@ -31,7 +31,8 @@
     }
   },
   "scripts": {
-    "start": "export G_SLICE=always-malloc && electron . --dev",
+    "start": "electron . --dev",
+    "start:glib": "export G_SLICE=always-malloc && electron . --dev",
     "dist:linux": "npm run 7zbin:linux && npm run build:linux && npm run extras:linux",
     "dist:windows": "npm run build:windows && npm run extras:windows",
     "dist:cross": "npm run dist:cross-windows && npm run dist:cross-linux",
