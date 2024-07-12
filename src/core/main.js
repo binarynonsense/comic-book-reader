@@ -134,7 +134,7 @@ if (!gotTheLock) {
     if (g_launchInfo.isRelease) {
       if (!settings.getValue("linuxSkipGslice")) {
         log.warning(
-          "The GS_SLICE environment variable is undefined, setting it to 'always-malloc' and relaunching the app. You can avoid this step by launching ACBR using the ACBR.sh script",
+          "The G_SLICE environment variable is undefined, setting it to 'always-malloc' and relaunching the app. You can avoid this step by launching ACBR using the ACBR.sh script",
           true
         );
         process.env.G_SLICE = "always-malloc";
@@ -151,13 +151,13 @@ if (!gotTheLock) {
         }
       } else {
         log.warning(
-          "The GS_SLICE environment variable is undefined and linuxSkipGslice is set to true in the settings, you may experience crashes during file conversions.",
+          "The G_SLICE environment variable is undefined and linuxSkipGslice is set to true in the settings, you may experience crashes during file conversions.",
           true
         );
       }
     } else {
       log.warning(
-        "the GS_SLICE environment variable is undefined, you may experience crashes during file conversions.",
+        "the G_SLICE environment variable is undefined, you may experience crashes during file conversions.",
         true
       );
     }
