@@ -94,8 +94,7 @@ function updateNavButtons() {
     settings.getValue("navButtons"),
     i18n._object("tool-pre-navkeys-actions"),
     _("tool-shared-ui-reset").toUpperCase(),
-    _("tool-pre-navbuttons-button-resetall").toUpperCase(),
-    _("tool-pre-navbuttons-unassigned-key").toUpperCase()
+    _("tool-pre-navbuttons-button-resetall").toUpperCase()
   );
 }
 
@@ -461,13 +460,6 @@ exports.updateLocalizedText = updateLocalizedText;
 
 function getTooltipsLocalization() {
   return [
-    {
-      id: "tool-pre-tooltip-cbr-creation-modification",
-      text: _(
-        "tool-pre-use-system-exe-tooltip",
-        process.platform === "win32" ? '"Rar.exe"' : '"rar"'
-      ),
-    },
     {
       id: "tool-pre-tooltip-rarfolder",
       text: `${_(

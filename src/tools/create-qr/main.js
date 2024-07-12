@@ -262,12 +262,5 @@ function getLocalization() {
       id: "tool-cq-export-button-text",
       text: _("tool-cq-button-export").toUpperCase(),
     },
-
-    //////////////////////////////////////////////
-
-    {
-      id: "tool-cq-modal-close-button-text",
-      text: _("tool-shared-ui-ok").toUpperCase(),
-    },
   ];
 }

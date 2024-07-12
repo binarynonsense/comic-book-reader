@@ -799,8 +799,7 @@ function updateNavButtons(
   actionCommands,
   actionTexts,
   resetText,
-  resetAllText,
-  unassignedText
+  resetAllText
 ) {
   const parentDiv = document.getElementById("tool-pre-navbuttons-div");
   parentDiv.innerHTML = "";

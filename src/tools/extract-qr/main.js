@@ -237,12 +237,5 @@ function getLocalization() {
       id: "tool-eq-copy-text-button-text",
       text: _("tool-et-button-copy-text").toUpperCase(),
     },
-
-    //////////////////////////////////////////////
-
-    {
-      id: "tool-eq-modal-close-button-text",
-      text: _("tool-shared-ui-ok").toUpperCase(),
-    },
   ];
 }
