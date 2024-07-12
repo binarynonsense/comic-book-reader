@@ -22,6 +22,8 @@ let g_settings;
 const g_fileName = "acbr.cfg";
 const g_defaultSize = { width: 1280, height: 720 };
 const g_minSize = { width: 590, height: 410 };
+const g_scaleToHeightMin = 25;
+const g_scaleToHeightMax = 500;
 const g_defaultSettings = {
   version: app.getVersion(),
   date: "",
@@ -120,6 +122,10 @@ const g_defaultSettings = {
   experimentalForceMultimonitorSize: 0,
 };
 
+///////////////////////////////////////////////////////////////////////////////
+// EXPORTS ////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
 exports.get = function () {
   return g_settings;
 };
@@ -144,12 +150,21 @@ exports.getDefaultValue = function (name) {
   return g_defaultSettings[name];
 };
 
-function setDefaultValues() {
-  g_settings = structuredClone(g_defaultSettings);
-}
-
-let g_scaleToHeightMin = 25;
-let g_scaleToHeightMax = 500;
+exports.canEditRars = function () {
+  if (g_settings.cbrCreation === 1) {
+    if (g_settings.rarExeAvailable !== undefined) {
+      return g_settings.rarExeAvailable;
+    } else {
+      if (utils.isRarExeAvailable(g_settings.rarExeFolderPath)) {
+        g_settings.rarExeAvailable = true;
+        return true;
+      } else {
+        g_settings.rarExeAvailable = false;
+        return false;
+      }
+    }
+  } else return false;
+};
 
 exports.capScreenSizes = function (screenWidth, screenHeight) {
   if (g_settings.width > screenWidth) {
@@ -163,6 +178,14 @@ exports.capScreenSizes = function (screenWidth, screenHeight) {
     g_settings.height = g_minSize.height;
   }
 };
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+function setDefaultValues() {
+  g_settings = structuredClone(g_defaultSettings);
+}
 
 function sanitize() {
   if (
@@ -595,19 +618,3 @@ function loadNavButtons(loadedButtons) {
     }
   }
 }
-
-exports.canEditRars = function () {
-  if (g_settings.cbrCreation === 1) {
-    if (g_settings.rarExeAvailable !== undefined) {
-      return g_settings.rarExeAvailable;
-    } else {
-      if (utils.isRarExeAvailable(g_settings.rarExeFolderPath)) {
-        g_settings.rarExeAvailable = true;
-        return true;
-      } else {
-        g_settings.rarExeAvailable = false;
-        return false;
-      }
-    }
-  } else return false;
-};
