@@ -434,6 +434,10 @@ function sanitize() {
   } else {
     g_settings.theme = g_defaultSettings.theme;
   }
+  // LINUX ///////////
+  if (typeof g_settings.linuxSkipGslice !== "boolean") {
+    g_settings.linuxSkipGslice = g_defaultSettings.linuxSkipGslice;
+  }
   // TOOLS ///////////
   if (typeof g_settings.toolGutUseCache !== "boolean") {
     g_settings.toolGutUseCache = g_defaultSettings.toolGutUseCache;
