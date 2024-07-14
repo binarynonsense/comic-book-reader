@@ -45,9 +45,9 @@ Ein Comicbuch Leser und Konverter für CBZ, CBR, CB7, EPUB und PDF Dateien.
   - Englisch, Spanisch, Russisch, Deutsch und Arabisch
 - Automatische Wiederherstellung der vergangenen Sitzung, mit Erinnerung der letzten Seitenposition.
 - Tragbarer Modus (durch das Erstellen einer Datei namens portable.txt im selben Ordner wie die Anwendung)
-- ComicInfo.xml Editor:
-  - Ansicht der Metadaten welche in ComicInfo.xml Dateien innerhalb CBR, CBZ und CB7 Comicbüchern gespeichert sind.
-  - Erstelle und/oder modifiziere die Metadaten welche in ComicInfo.xml Dateien innerhalb unverschlüsselten CBR<sup>[4]</sup>, CBZ und CB7 Comicbüchern gespeichert sind.
+- Metadateneditor:
+  - Ansicht der Metadaten welche in PDF und EPUB Dateien oder ComicInfo.xml Dateien innerhalb CBR, CBZ und CB7 Comicbüchern gespeichert sind.
+  - Erstelle und/oder modifiziere die Metadaten welche in PDF und EPUB Dateien oder ComicInfo.xml Dateien innerhalb unverschlüsselten CBR<sup>[4]</sup>, CBZ und CB7 Comicbüchern gespeichert sind.
   - Suche nach und importiere Comicbuch Metadaten von Comic Vine (hierfür wird ein [Comic Vine API key](https://comicvine.gamespot.com/api/) benötigt).
 - Integrierter Audio-player:
   - Unterstützt MP3, Ogg, WAV, M3U und M3U8 Dateien.
@@ -71,6 +71,7 @@ Ein Comicbuch Leser und Konverter für CBZ, CBR, CB7, EPUB und PDF Dateien.
       - Internet Archive Books
       - Project Gutenberg
       - xkcd Webcomics
+      - Comic Book Plus
     - Suche und öffne Hörbücher von:
       - Librivox AudioBooks
     - Suche Wörterbucheinträge in:
