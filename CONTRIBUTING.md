@@ -4,7 +4,7 @@ I'm not looking for code contributions, as I want to keep this as a personal pro
 
 If you want to update or have suggestions about already available localization files and/or documents, please create an issue to talk about it and check if they have an active maintainer, to propose the changes to them, before creating a pull request.
 
-If you want to create a new localization file for another language, I suggest using the [English one](https://github.com/binarynonsense/comic-book-reader/blob/master/app/assets/i18n/en.json) as a starting point.
+If you want to create a new localization file for another language, I suggest using the [English one](https://github.com/binarynonsense/comic-book-reader/blob/master/src/assets/i18n/en.json) as a starting point.
 
 Álvaro,  
 www.binarynonsense.com
