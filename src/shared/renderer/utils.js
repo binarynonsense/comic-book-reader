@@ -59,3 +59,18 @@ function separateVersionText(version) {
 export async function delay(seconds) {
   return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
 }
+
+export function encodeImgPath(filePath) {
+  let { fileName, folderPath } = getFolderAndNameFromFilePath(filePath);
+  return folderPath + "/" + encodeURIComponent(fileName);
+}
+
+export function getFolderAndNameFromFilePath(filePath) {
+  const lastIndex = Math.max(
+    filePath.lastIndexOf("\\"),
+    filePath.lastIndexOf("/")
+  );
+  const fileName = filePath.substring(lastIndex + 1);
+  const folderPath = filePath.substring(0, lastIndex);
+  return { fileName, folderPath };
+}
