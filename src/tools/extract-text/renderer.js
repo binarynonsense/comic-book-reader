@@ -10,6 +10,7 @@ import {
   sendIpcToMainAndWait as coreSendIpcToMainAndWait,
 } from "../../core/renderer.js";
 import * as modals from "../../shared/renderer/modals.js";
+import { encodeImgPath } from "../../shared/renderer/utils.js";
 import Cropper from "../../assets/libs/cropperjs/dist/cropper.esm.js";
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -104,7 +105,7 @@ function init(filePath) {
     autoCropArea: 1, // 0-1, default 0.8
   });
 
-  if (filePath) g_cropper.replace(filePath);
+  if (filePath) g_cropper.replace(encodeImgPath(filePath));
 
   ////////////////////////////////////////
 
@@ -206,7 +207,7 @@ function initOnIpcCallbacks() {
   });
 
   on("update-image", (filePath) => {
-    g_cropper.replace(filePath);
+    g_cropper.replace(encodeImgPath(filePath));
   });
 
   on("fill-textarea", (text) => {
