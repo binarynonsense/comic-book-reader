@@ -1,3 +1,16 @@
+## v3.6.0
+
+- Added EPUB metadata support to the file properties window.
+- Added an EPUB metadata editor.
+- Added a PDF metadata editor.
+- Added an option in the history tool to set the maximum number of recent files to remember.
+- Added a new tool to search and open comic books and audio files from the website "Comic Book Plus".
+- Changed the way numerical image file names are generated (used during PDF extraction and in the comic creation tool) to pad them with zeros, so viewers that don't use natural sorting display the pages in the correct order.
+- Updated some of the core libraries to newer versions.
+- Fixed modal windows letting Space and Enter key events be passed to their parent element.
+- Fixed moving the toolbar slider sometimes made the page scroll.
+- Fixed some minor issues.
+
 ## v3.5.1
 
 - Fixed missing "Name" label in the output options section of the comic creation tool's UI.
