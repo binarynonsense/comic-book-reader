@@ -1,6 +1,6 @@
 ## v3.6.1
 
-- Fixed broken images in cropper canvas when calling the extract palette, QR and text tools in some specific cases (files with names containing special characters like #).
+- Fixed broken images in the cropper canvas when using the extract palette, QR and text tools in some specific cases (files with names containing special characters like #).
 
 ## v3.6.0
 
