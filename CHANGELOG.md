@@ -1,3 +1,7 @@
+## v3.6.2
+
+- Fixed Delta E method not working in the extract palette tool.
+
 ## v3.6.1
 
 - Fixed broken images in the cropper canvas when using the extract palette, QR and text tools in some specific cases (files with names containing special characters like #).
