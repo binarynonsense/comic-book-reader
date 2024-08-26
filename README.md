@@ -89,7 +89,7 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB and PDF files.
 >
 > [4]: Creating and modifying CBR files are disabled by default. They can be enabled in the preferences but require a third-party command-line tool ([rar](https://www.win-rar.com/cmd-shell-mode.html?&L=0) from WinRAR) to be installed in the system.
 > 
-> [5]: PDF files larger than 2GB are not currently supported.
+> [5]: PDF files larger than 2GB are not supported.
 
 ## Downloads:
 
