@@ -89,7 +89,7 @@ Un lector y conversor de cómics para archivos en formato CBZ, CBR, CB7, EPUB y 
 >
 > [4]: La creación y modificación de archivos CBR están desactivadas por defecto. Se pueden activar en las preferencias pero requieren que una herramienta de línea de comandos de terceros ([rar](https://www.win-rar.com/cmd-shell-mode.html?&L=0) de WinRAR) se encuentre instalada en el sistema.
 >
-> [5]: Actualmente no se admiten archivos PDF de más de 2 GB.
+> [5]: No se admiten archivos PDF de más de 2 GB.
 
 ## Descargas:
 
