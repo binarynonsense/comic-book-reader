@@ -33,11 +33,11 @@ Ein Comicbuch Leser und Konverter für CBZ, CBR, CB7, EPUB und PDF Dateien.
 - Windows & Linux Versionen
 - Kompatible Dateiformate<sup>[1]</sup>:
   - Comicbücher:
-    - CBZ, CBR, CB7, PDF und EPUB<sup>[2]</sup>
+    - CBZ, CBR, CB7, PDF<sup>[5]</sup> und EPUB<sup>[2]</sup>
   - Bilddateien:
     - JPG, PNG, WebP und AVIF
   - Ebooks:
-    - PDF und EPUB<sup>[3]</sup>
+    - PDF<sup>[5]</sup> und EPUB<sup>[3]</sup>
 - Fenster- (einfache Benutzeroberfläche) und Vollbild- (keine Benutzeroberfläche) Modi.
 - 'Breitenanpassung', 'Höhenanpassung' und eine anpassbare 'Höhenskalierung' Seitenansicht
 - Seitenrotation
@@ -54,7 +54,7 @@ Ein Comicbuch Leser und Konverter für CBZ, CBR, CB7, EPUB und PDF Dateien.
   - Kann Playlists als M3U Dateien exportieren.
 - Werkzeuge:
   - Konvertieren/größe Ändern:
-    - Comicbücher (CBR, CBZ, CB7, PDF oder EPUB<sup>[2]</sup> zu CBR<sup>[4]</sup>, CBZ, CB7, PDF oder EPUB)
+    - Comicbücher (CBR, CBZ, CB7, PDF<sup>[5]</sup> oder EPUB<sup>[2]</sup> zu CBR<sup>[4]</sup>, CBZ, CB7, PDF oder EPUB)
     - Bilder (JPG, PNG, AVIF oder WebP)
   - Erstelle:
     - Ein Comicbuch (CBR<sup>[4]</sup>, CBZ, CB7, PDF oder EPUB) aus einer Liste von Bild Dateien und/oder Comicbüchern
@@ -88,6 +88,8 @@ Ein Comicbuch Leser und Konverter für CBZ, CBR, CB7, EPUB und PDF Dateien.
 > [3]: EPUB E-Books lesen ist ein experimentelles / extra Feature außerhalb des Hauptumfangs des Projektes. Es könnte nicht für alle Dateien funktionieren, und im Bedarfsfall in zukünftigen Versionen entfernt werden.
 >
 > [4]: Das Erstellen und Modifizieren von CBR Dateien ist standardmäßig deaktiviert. Diese Funktionen können über die Einstellungen aktiviert werden, benötigen aber ein Drittanbieter Kommandozeilen-werkzeug ([rar](https://www.win-rar.com/cmd-shell-mode.html?&L=0) von WinRAR), welches im System installiert sein muss.
+>
+> [5]: PDF Dateien die größer als 2GB sind, werden nicht unterstützt.
 
 ## Downloads:
 
