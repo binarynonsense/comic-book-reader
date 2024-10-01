@@ -1386,12 +1386,24 @@ function goToPage(pageIndex, scrollBarPos = 0) {
           temp.deleteSubFolder(tempSubFolderPath);
           return;
         } else {
-          // TODO: handle error
-          log.error("worker error");
-          log.error(message[1]);
-          sendIpcToRenderer("update-loading", false);
-          temp.deleteSubFolder(tempSubFolderPath);
-          return;
+          if (message[1] && message[1].toString() === "password required") {
+            log.warning("password required");
+            sendIpcToRenderer(
+              "show-modal-prompt-password",
+              _("ui-modal-prompt-enterpassword"),
+              path.basename(g_fileData.path),
+              _("ui-modal-prompt-button-ok"),
+              _("ui-modal-prompt-button-cancel")
+            );
+            return;
+          } else {
+            // TODO: handle other errors
+            log.error("unhandled worker error");
+            log.error(message[1]);
+            sendIpcToRenderer("update-loading", false);
+            temp.deleteSubFolder(tempSubFolderPath);
+            return;
+          }
         }
       });
     }

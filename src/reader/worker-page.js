@@ -28,9 +28,10 @@ async function extractBase64Image(
   try {
     let buf;
     let mime;
+    let error;
     if (fileType === FileDataType.ZIP) {
       //buf = fileFormats.extractZipEntryBuffer(filePath, entryName, password);
-      buf = await fileFormats.extract7ZipEntryBuffer(
+      let result = await fileFormats.extract7ZipEntryBuffer(
         filePath,
         entryName,
         password,
@@ -38,6 +39,11 @@ async function extractBase64Image(
         "zip"
       );
       mime = "image/" + fileUtils.getMimeType(entryName);
+      if (result.success) {
+        buf = result.data;
+      } else {
+        error = result.data;
+      }
     } else if (fileType === FileDataType.RAR) {
       buf = await fileFormats.extractRarEntryBuffer(
         filePath,
@@ -47,13 +53,18 @@ async function extractBase64Image(
       );
       mime = "image/" + fileUtils.getMimeType(entryName);
     } else if (fileType === FileDataType.SEVENZIP) {
-      buf = await fileFormats.extract7ZipEntryBuffer(
+      let result = await fileFormats.extract7ZipEntryBuffer(
         filePath,
         entryName,
         password,
         tempSubFolderPath
       );
       mime = "image/" + fileUtils.getMimeType(entryName);
+      if (result.success) {
+        buf = result.data;
+      } else {
+        error = result.data;
+      }
     } else if (fileType === FileDataType.EPUB_COMIC) {
       const data = await fileFormats.extractEpubImageBuffer(
         filePath,
@@ -75,7 +86,9 @@ async function extractBase64Image(
       let img64 = "data:" + mime + ";base64," + buf.toString("base64");
       process.send([true, img64, scrollBarPos]);
     } else {
-      throw "empty buffer";
+      if (error) {
+        throw error;
+      } else throw "empty buffer";
     }
   } catch (error) {
     process.send([false, error]);

@@ -403,7 +403,8 @@ async function get7ZipEntriesList(filePath, password, archiveType) {
     if (archiveType && archiveType === "zip") {
       options.archiveType = archiveType;
     }
-    const seven = Seven.test(filePath, options);
+    //const seven = Seven.test(filePath, options);
+    const seven = Seven.list(filePath, options);
 
     let imgEntries;
     let comicInfoId = undefined;
@@ -498,7 +499,6 @@ async function extract7ZipEntryBuffer(
 
     let promise = await new Promise((resolve) => {
       seven.on("error", (error) => {
-        log.error(error);
         resolve({ success: false, data: error });
       });
       seven.on("end", () => {
@@ -512,13 +512,23 @@ async function extract7ZipEntryBuffer(
     let buffer;
     if (promise.success === true) {
       buffer = fs.readFileSync(path.join(tempSubFolderPath, entryName));
-      return buffer;
+      return {
+        success: true,
+        data: buffer,
+      };
     }
     //////////////////////////////////////////
-    return undefined;
+    else throw promise.data;
   } catch (error) {
-    log.error(error);
-    return undefined;
+    if (error && error.stderr && error.stderr.search("password") !== -1) {
+      error = "password required";
+    } else {
+      log.error(error);
+    }
+    return {
+      success: false,
+      data: error,
+    };
   }
 }
 exports.extract7ZipEntryBuffer = extract7ZipEntryBuffer;
