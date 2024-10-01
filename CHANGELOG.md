@@ -1,3 +1,7 @@
+## v3.6.3
+
+- Fixed detecting the wrong number of pages inside CBZ and CB7 files in some rare situations.
+
 ## v3.6.2
 
 - Fixed Delta E method not working in the extract palette tool.
