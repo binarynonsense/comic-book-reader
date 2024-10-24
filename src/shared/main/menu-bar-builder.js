@@ -243,6 +243,82 @@ function buildApplicationMenu(settings, history) {
           label: _("menu-view-layout"),
           submenu: [
             {
+              id: "view-layout-show",
+              label: _("menu-view-layout-show"),
+              submenu: [
+                {
+                  label: _("menu-view-layout-show-scrollbar"),
+                  id: "scrollbar",
+                  type: "checkbox",
+                  checked: settings.showScrollBar,
+                  accelerator: "CommandOrControl+B",
+                  click() {
+                    reader.onMenuToggleScrollBar();
+                  },
+                },
+                {
+                  label: _("menu-view-layout-show-toolbar"),
+                  id: "toolbar",
+                  type: "checkbox",
+                  checked: settings.showToolBar,
+                  accelerator: "CommandOrControl+T",
+                  click() {
+                    reader.onMenuToggleToolBar();
+                  },
+                },
+                {
+                  label: _("menu-view-layout-show-pagenum"),
+                  id: "page-number",
+                  type: "checkbox",
+                  checked: settings.showPageNumber,
+                  accelerator: "CommandOrControl+P",
+                  click() {
+                    reader.onMenuTogglePageNumber();
+                  },
+                },
+                {
+                  label: _("menu-view-layout-show-clock"),
+                  id: "clock",
+                  type: "checkbox",
+                  checked: settings.showClock,
+                  accelerator: "CommandOrControl+J",
+                  click() {
+                    reader.onMenuToggleClock();
+                  },
+                },
+                {
+                  label: _("menu-view-layout-show-battery"),
+                  id: "battery",
+                  type: "checkbox",
+                  checked: settings.showBattery,
+                  accelerator: "CommandOrControl+L",
+                  click() {
+                    reader.onMenuToggleBattery();
+                  },
+                },
+                {
+                  label: _("menu-view-layout-show-loading"),
+                  id: "loading-indicator",
+                  type: "checkbox",
+                  checked: settings.showLoadingIndicator,
+                  // accelerator: "CommandOrControl+M",
+                  click() {
+                    reader.onMenuToggleLoadingIndicator();
+                  },
+                },
+                {
+                  label: _("menu-view-layout-show-audioplayer"),
+                  id: "audio-player",
+                  type: "checkbox",
+                  checked: settings.showAudioPlayer,
+                  accelerator: "CommandOrControl+M",
+                  click() {
+                    core.onMenuToggleAudioPlayer();
+                  },
+                },
+              ],
+            },
+            {
               id: "view-layout-pagesdirection",
               label: _("menu-view-layout-pagesdirection"),
               submenu: [
@@ -266,69 +342,9 @@ function buildApplicationMenu(settings, history) {
                 },
               ],
             },
-            {
-              type: "separator",
-            },
-            {
-              label: _("menu-view-showscrollbar"),
-              id: "scrollbar",
-              type: "checkbox",
-              checked: settings.showScrollBar,
-              accelerator: "CommandOrControl+B",
-              click() {
-                reader.onMenuToggleScrollBar();
-              },
-            },
-            {
-              label: _("menu-view-showtoolbar"),
-              id: "toolbar",
-              type: "checkbox",
-              checked: settings.showToolBar,
-              accelerator: "CommandOrControl+T",
-              click() {
-                reader.onMenuToggleToolBar();
-              },
-            },
-            {
-              label: _("menu-view-showpagenum"),
-              id: "page-number",
-              type: "checkbox",
-              checked: settings.showPageNumber,
-              accelerator: "CommandOrControl+P",
-              click() {
-                reader.onMenuTogglePageNumber();
-              },
-            },
-            {
-              label: _("menu-view-showclock"),
-              id: "clock",
-              type: "checkbox",
-              checked: settings.showClock,
-              accelerator: "CommandOrControl+J",
-              click() {
-                reader.onMenuToggleClock();
-              },
-            },
-            {
-              label: _("menu-view-showbattery"),
-              id: "battery",
-              type: "checkbox",
-              checked: settings.showBattery,
-              accelerator: "CommandOrControl+L",
-              click() {
-                reader.onMenuToggleBattery();
-              },
-            },
-            {
-              label: _("menu-view-showaudioplayer"),
-              id: "audio-player",
-              type: "checkbox",
-              checked: settings.showAudioPlayer,
-              accelerator: "CommandOrControl+M",
-              click() {
-                core.onMenuToggleAudioPlayer();
-              },
-            },
+            // {
+            //   type: "separator",
+            // },
           ],
         },
         {

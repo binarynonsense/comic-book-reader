@@ -34,6 +34,7 @@ export function getMouseButtons() {
 
 let g_turnPageOnScrollBoundary = true;
 let g_filterMode = 0;
+let g_showLoadingIndicator; // = true;
 
 ///////////////////////////////////////////////////////////////////////////////
 // IPC RECEIVE ////////////////////////////////////////////////////////////////
@@ -44,7 +45,7 @@ function initOnIpcCallbacks() {
     addToolbarEventListeners();
   });
   on("update-loading", (isVisible) => {
-    if (isVisible) {
+    if (g_showLoadingIndicator && isVisible) {
       document.querySelector("#loading").classList.add("is-active");
     } else {
       document.querySelector("#loading").classList.remove("is-active");
@@ -310,6 +311,10 @@ function initOnIpcCallbacks() {
     showBattery(isVisible);
   });
 
+  on("set-loading-indicator", (isVisible) => {
+    showLoadingIndicator(isVisible);
+  });
+
   on("set-fullscreen-ui", (isFullscreen) => {
     setFullscreenUI(isFullscreen);
   });
@@ -478,6 +483,10 @@ function showBattery(isVisible) {
   } else {
     document.querySelector("#battery-bubble").classList.add("set-display-none");
   }
+}
+
+function showLoadingIndicator(isVisible) {
+  g_showLoadingIndicator = isVisible;
 }
 
 function setFullscreenUI(isFullscreen) {

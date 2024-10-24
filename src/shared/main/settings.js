@@ -45,6 +45,7 @@ const g_defaultSettings = {
   showClock: false,
   showAudioPlayer: false,
   showBattery: false,
+  showLoadingIndicator: true,
 
   loadLastOpened: true,
   autoOpen: 0, // 0: disabled, 1: next file, 2: next and previous files
@@ -263,6 +264,9 @@ function sanitize() {
   }
   if (typeof g_settings.showBattery !== "boolean") {
     g_settings.showBattery = g_defaultSettings.showBattery;
+  }
+  if (typeof g_settings.showLoadingIndicator !== "boolean") {
+    g_settings.showLoadingIndicator = g_defaultSettings.showLoadingIndicator;
   }
   if (typeof g_settings.loadLastOpened !== "boolean") {
     g_settings.loadLastOpened = g_defaultSettings.loadLastOpened;

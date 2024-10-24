@@ -81,6 +81,11 @@ exports.setBattery = function (isChecked) {
   Menu.getApplicationMenu().getMenuItemById("battery").checked = isChecked;
 };
 
+exports.setLoadingIndicator = function (isChecked) {
+  Menu.getApplicationMenu().getMenuItemById("loading-indicator").checked =
+    isChecked;
+};
+
 exports.setAudioPlayer = function (isChecked) {
   Menu.getApplicationMenu().getMenuItemById("audio-player").checked = isChecked;
 };

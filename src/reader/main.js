@@ -93,6 +93,7 @@ exports.init = function (filePath, checkHistory) {
   showClock(settings.getValue("showClock"));
   sendIpcToRenderer("init-battery");
   showBattery(settings.getValue("showBattery"));
+  showLoadingIndicator(settings.getValue("showLoadingIndicator"));
   audioPlayer.init(core.getMainWindow(), "audio-player-container");
   showAudioPlayer(settings.getValue("showAudioPlayer"));
   homeScreen.open(undefined, settings.getValue("homeScreenLatestMax"));
@@ -1788,6 +1789,17 @@ function toggleBattery() {
   sendIpcToPreload("update-menubar");
 }
 
+function showLoadingIndicator(isVisible) {
+  settings.setValue("showLoadingIndicator", isVisible);
+  sendIpcToRenderer("set-loading-indicator", isVisible);
+  menuBar.setLoadingIndicator(isVisible);
+}
+
+function toggleLoadingIndicator() {
+  showLoadingIndicator(!settings.getValue("showLoadingIndicator"));
+  sendIpcToPreload("update-menubar");
+}
+
 function showAudioPlayer(isVisible, updateMenuBar) {
   settings.setValue("showAudioPlayer", isVisible);
   audioPlayer.open(isVisible);
@@ -2246,6 +2258,10 @@ exports.onMenuToggleClock = function () {
 
 exports.onMenuToggleBattery = function () {
   toggleBattery();
+};
+
+exports.onMenuToggleLoadingIndicator = function () {
+  toggleLoadingIndicator();
 };
 
 function onMenuOpenFile(startPath) {
