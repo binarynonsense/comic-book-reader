@@ -1497,6 +1497,18 @@ function getLocalization() {
       id: "tool-cc-epub-creation-image-storage-o2-text",
       text: _("tool-shared-ui-epub-creation-image-storage-o2"),
     },
+    {
+      id: "tool-cc-imageops-apply-text",
+      text: _("tool-shared-ui-creation-imageops-apply"),
+    },
+    {
+      id: "tool-cc-imageops-brightness-text",
+      text: _("tool-shared-ui-creation-brightnessmultiplier"),
+    },
+    {
+      id: "tool-cc-imageops-saturation-text",
+      text: _("tool-shared-ui-creation-saturationmultiplier"),
+    },
     //////////////////////////////////////////////
   ];
 }
