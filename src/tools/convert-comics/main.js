@@ -878,7 +878,13 @@ function copyImagesToTempFolder() {
   g_creationTempSubFolderPath = undefined;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// IMAGE OPERATIONS ///////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
 async function resizeImages(inputFilePath) {
+  // TODO: do this more efficiently, not saving to file on each step,
+  // usebuffers or bunch all operations together depending on what is needed...
   if (g_cancel === true) {
     stopCancel();
     return;
@@ -919,7 +925,8 @@ async function resizeImages(inputFilePath) {
     }
     imgFilePaths.sort(utils.compare);
 
-    // resize
+    // resize //////////////////////////////////////////////////////////////
+
     if (g_cancel === true) {
       stopCancel();
       return;
@@ -967,7 +974,67 @@ async function resizeImages(inputFilePath) {
       }
     }
 
-    // change image format if requested or pdfkit incompatible (not jpg or png)
+    // apply image ops ////////////////////////////////////////////////////////
+
+    if (g_cancel === true) {
+      stopCancel();
+      return;
+    }
+    let didImageOps = false;
+    if (
+      g_uiSelectedOptions.outputBrightnessApply ||
+      g_uiSelectedOptions.outputSaturationApply
+    ) {
+      didImageOps = true;
+      sendIpcToRenderer(
+        "update-log-text",
+        _("tool-shared-modal-log-editing-images") + "..."
+      );
+      sharp.cache(false);
+      for (let index = 0; index < imgFilePaths.length; index++) {
+        if (g_cancel === true) {
+          stopCancel();
+          return;
+        }
+        sendIpcToRenderer(
+          "update-log-text",
+          _("tool-shared-modal-log-editing-image") +
+            ": " +
+            (index + 1) +
+            " / " +
+            imgFilePaths.length
+        );
+        let filePath = imgFilePaths[index];
+        let fileFolderPath = path.dirname(filePath);
+        let fileName = path.basename(filePath, path.extname(filePath));
+        let tmpFilePath = path.join(
+          fileFolderPath,
+          fileName + "." + FileExtension.TMP
+        );
+        let ops = {};
+        if (g_uiSelectedOptions.outputBrightnessApply) {
+          let value = parseFloat(
+            g_uiSelectedOptions.outputBrightnessMultiplier
+          );
+          if (value <= 0) value = 0.1;
+          ops["brightness"] = value;
+        }
+        if (g_uiSelectedOptions.outputSaturationApply) {
+          let value = parseFloat(
+            g_uiSelectedOptions.outputSaturationMultiplier
+          );
+          if (value <= 0) value = 0.001;
+          ops["saturation"] = value;
+        }
+        await sharp(filePath).withMetadata().modulate(ops).toFile(tmpFilePath);
+
+        fs.unlinkSync(filePath);
+        fileUtils.moveFile(tmpFilePath, filePath);
+      }
+    }
+
+    // change image format ////////////////////////////////////////////////////
+    // if requested or pdfkit incompatible (not jpg or png)
     if (g_cancel === true) {
       stopCancel();
       return;
@@ -1092,7 +1159,7 @@ async function resizeImages(inputFilePath) {
       comicInfoFilePath &&
       (g_uiSelectedOptions.outputFormat === FileExtension.CBZ ||
         g_uiSelectedOptions.outputFormat === FileExtension.CB7) &&
-      (didChangeFormat || didResize)
+      (didChangeFormat || didResize || didImageOps)
     ) {
       try {
         const {
@@ -1180,6 +1247,10 @@ async function resizeImages(inputFilePath) {
     stopError(error);
   }
 }
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 async function createFilesFromImages(
   inputFilePath,

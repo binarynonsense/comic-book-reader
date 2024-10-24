@@ -276,6 +276,72 @@ function init(mode, outputFolderPath, canEditRars) {
     `<option value="skip">${g_localizedTexts.outputFileSameNameOption2}</option>` +
     `<option value="overwrite">${g_localizedTexts.outputFileSameNameOption1}</option>`;
 
+  ////////////////
+
+  function updateImageOpsUI() {
+    if (
+      document.querySelector("#tool-cc-imageops-brightness-checkbox").checked
+    ) {
+      document
+        .querySelector("#tool-cc-imageops-brightness-input")
+        .classList.remove("tools-disabled");
+      document
+        .querySelector("#tool-cc-imageops-brightness-text")
+        .classList.remove("tools-disabled");
+    } else {
+      document
+        .querySelector("#tool-cc-imageops-brightness-input")
+        .classList.add("tools-disabled");
+      document
+        .querySelector("#tool-cc-imageops-brightness-text")
+        .classList.add("tools-disabled");
+    }
+
+    if (
+      document.querySelector("#tool-cc-imageops-saturation-checkbox").checked
+    ) {
+      document
+        .querySelector("#tool-cc-imageops-saturation-input")
+        .classList.remove("tools-disabled");
+      document
+        .querySelector("#tool-cc-imageops-saturation-text")
+        .classList.remove("tools-disabled");
+    } else {
+      document
+        .querySelector("#tool-cc-imageops-saturation-input")
+        .classList.add("tools-disabled");
+      document
+        .querySelector("#tool-cc-imageops-saturation-text")
+        .classList.add("tools-disabled");
+    }
+  }
+
+  updateImageOpsUI();
+
+  document
+    .querySelector("#tool-cc-imageops-brightness-checkbox")
+    .addEventListener("change", (event) => {
+      updateImageOpsUI();
+    });
+  document
+    .querySelector("#tool-cc-imageops-saturation-checkbox")
+    .addEventListener("change", (event) => {
+      updateImageOpsUI();
+    });
+
+  g_uiSelectedOptions.outputBrightnessApply = document.querySelector(
+    "#tool-cc-imageops-brightness-checkbox"
+  ).checked;
+  g_uiSelectedOptions.outputBrightnessMultiplier = document.querySelector(
+    "#tool-cc-imageops-brightness-input"
+  ).value;
+  g_uiSelectedOptions.outputSaturationApply = document.querySelector(
+    "#tool-cc-imageops-saturation-checkbox"
+  ).checked;
+  g_uiSelectedOptions.outputSaturationMultiplier = document.querySelector(
+    "#tool-cc-imageops-saturation-input"
+  ).value;
+
   ////////////////////////////////////////
   // tooltips
   const tooltipButtons = document.querySelectorAll(".tools-tooltip-button");
@@ -432,6 +498,19 @@ function updateSelectedOptions() {
     avifQuality: document.querySelector("#tool-cc-avif-quality-slider").value,
     webpQuality: document.querySelector("#tool-cc-webp-quality-slider").value,
   };
+
+  g_uiSelectedOptions.outputBrightnessApply = document.querySelector(
+    "#tool-cc-imageops-brightness-checkbox"
+  ).checked;
+  g_uiSelectedOptions.outputBrightnessMultiplier = document.querySelector(
+    "#tool-cc-imageops-brightness-input"
+  ).value;
+  g_uiSelectedOptions.outputSaturationApply = document.querySelector(
+    "#tool-cc-imageops-saturation-checkbox"
+  ).checked;
+  g_uiSelectedOptions.outputSaturationMultiplier = document.querySelector(
+    "#tool-cc-imageops-saturation-input"
+  ).value;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
