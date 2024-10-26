@@ -643,6 +643,10 @@ if (!gotTheLock) {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+// NOTE: (2024/10/02) I'm using v32.2.2 of electron as v33.0.2 resulted
+// in huge Linux builds.
+// TODO: try newer versions when available to see if that changes.
+
 // NOTE: (2023/08/02) I'm using v3.x of the tesseract.js module as v4.x
 // was giving errors.
 // TODO: try newer versions & investigate further.
