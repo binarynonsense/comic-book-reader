@@ -412,10 +412,15 @@ async function get7ZipEntriesList(filePath, password, archiveType) {
     let promise = await new Promise((resolve) => {
       imgEntries = [];
       seven.on("data", function (data) {
-        if (fileUtils.hasImageExtension(data.file)) {
-          imgEntries.push(data.file);
-        } else if (data.file.toLowerCase().endsWith("comicinfo.xml")) {
-          comicInfoIds.push(data.file);
+        if (data && data.file) {
+          if (fileUtils.hasImageExtension(data.file)) {
+            imgEntries.push(data.file);
+          } else if (data.file.toLowerCase().endsWith("comicinfo.xml")) {
+            comicInfoIds.push(data.file);
+          }
+        } else {
+          log.test("get7ZipEntriesList invalid data");
+          log.test(data);
         }
       });
       seven.on("error", (error) => {
