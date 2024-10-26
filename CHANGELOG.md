@@ -1,3 +1,10 @@
+## v3.7.0
+
+- Added a menu entry in the 'View > Layout > Show' section to show / hide the loading indicator.
+- Added the possibility of applying some simple image operations to the pages (brightness and saturation) during the conversion to the advanced options of the comics converter tool.
+- Updated some of the core libraries to newer versions.
+- Fixed a bug introduced in the previous version that made exporting pages and reading/editing metadata not work for EPUB, CBZ and CB7 files.
+
 ## v3.6.3
 
 - Fixed detecting the wrong number of pages inside CBZ and CB7 files in some rare situations.
