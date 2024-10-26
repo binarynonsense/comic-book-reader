@@ -643,11 +643,6 @@ if (!gotTheLock) {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-// NOTE: (2024/05/28) I'm using v29.1.1 of electron as showOpenDialogSync was
-// ignoring defaultPath parameter in 29.1.4, 30.0.6, 30.0.8, 31.0.0 AND 31.2.1
-// on Linux, always opening in the same folder (haven't tested Windows).
-// TODO: try newer versions & investigate further.
-
 // NOTE: (2023/08/02) I'm using v3.x of the tesseract.js module as v4.x
 // was giving errors.
 // TODO: try newer versions & investigate further.
