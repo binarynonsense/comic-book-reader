@@ -117,7 +117,6 @@ function initOnIpcCallbacks() {
     let results = data;
     results.links = [];
     try {
-      log.test("searching dcm");
       const formData = new FormData();
       formData.append("terms", data.query);
       const axios = require("axios").default;

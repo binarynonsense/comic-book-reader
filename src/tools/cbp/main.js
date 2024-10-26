@@ -212,7 +212,6 @@ function initOnIpcCallbacks() {
       const dom = new JSDOM(data.html);
       if (data.engine === "cbp") {
         try {
-          log.test("searching cbp");
           const gsWebResults =
             dom.window.document.querySelectorAll(".gs-webResult");
           if (gsWebResults && gsWebResults.length > 0) {

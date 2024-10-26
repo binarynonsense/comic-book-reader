@@ -9,7 +9,6 @@ const log = require("./logger");
 
 exports.searchDisroot = function (results, dom, idText, replaceText) {
   try {
-    log.test("searching disroot");
     const resultWrapper = dom.window.document.querySelectorAll(".result");
     if (resultWrapper && resultWrapper.length > 0) {
       resultWrapper.forEach((element) => {
@@ -45,7 +44,6 @@ exports.searchDisroot = function (results, dom, idText, replaceText) {
 
 exports.searchDDG = function (results, html, dom, idText, replaceText) {
   try {
-    log.test("searching duck duck go");
     // e.g. <a rel="next" href="/lite/?q=mars+site%3Acomicbookplus.com&amp;v=l&amp;kl=wt-wt&amp;l=us-en&amp;p=&amp;s=73&amp;ex=-1&amp;o=json&amp;dl=en&amp;ct=ES&amp;sp=0&amp;vqd=4-111953606416844614702827187214412193094&amp;host_region=eun&amp;dc=97&amp;api=%2Fd.js">
     let regex = /rel="next" href="\/lite\/\?q=(.*)">/;
     let match = html.match(regex);
