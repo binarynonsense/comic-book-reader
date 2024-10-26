@@ -3,9 +3,9 @@
     "authors": [
       "trzyglow"
     ],
-    "last-updated": "2024-07-08",
+    "last-updated": "2024-10-25",
     "license-id": "BSD-2-Clause",
-    "acbr-version": "3.6.0",
+    "acbr-version": "3.7.0-beta1",
     "pre-release": "false",
     "comments": "Deutsche Lokalisierung",
     "locale": "de",
