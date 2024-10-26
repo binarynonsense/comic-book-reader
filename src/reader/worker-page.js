@@ -31,7 +31,7 @@ async function extractBase64Image(
     let error;
     if (fileType === FileDataType.ZIP) {
       //buf = fileFormats.extractZipEntryBuffer(filePath, entryName, password);
-      let result = await fileFormats.extract7ZipEntryBuffer(
+      const result = await fileFormats.extract7ZipEntryBuffer(
         filePath,
         entryName,
         password,
@@ -53,7 +53,7 @@ async function extractBase64Image(
       );
       mime = "image/" + fileUtils.getMimeType(entryName);
     } else if (fileType === FileDataType.SEVENZIP) {
-      let result = await fileFormats.extract7ZipEntryBuffer(
+      const result = await fileFormats.extract7ZipEntryBuffer(
         filePath,
         entryName,
         password,

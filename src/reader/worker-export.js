@@ -36,13 +36,18 @@ async function exportPage(
       //   fileData.pagesPaths[fileData.pageIndex],
       //   fileData.password
       // );
-      buf = await fileFormats.extract7ZipEntryBuffer(
+      const result = await fileFormats.extract7ZipEntryBuffer(
         fileData.path,
         fileData.pagesPaths[fileData.pageIndex],
         fileData.password,
         tempSubFolderPath,
         "zip"
       );
+      if (result.success) {
+        buf = result.data;
+      } else {
+        throw result.data;
+      }
     } else if (fileData.type === FileDataType.RAR) {
       buf = await fileFormats.extractRarEntryBuffer(
         fileData.path,
@@ -51,12 +56,17 @@ async function exportPage(
         tempSubFolderPath
       );
     } else if (fileData.type === FileDataType.SEVENZIP) {
-      buf = await fileFormats.extract7ZipEntryBuffer(
+      const result = await fileFormats.extract7ZipEntryBuffer(
         fileData.path,
         fileData.pagesPaths[fileData.pageIndex],
         fileData.password,
         tempSubFolderPath
       );
+      if (result.success) {
+        buf = result.data;
+      } else {
+        throw result.data;
+      }
     } else if (fileData.type === FileDataType.EPUB_COMIC) {
       let data = await fileFormats.extractEpubImageBuffer(
         fileData.path,

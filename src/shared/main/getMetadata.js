@@ -25,7 +25,7 @@ exports.getMetadata = async function (filePath, currentMetadata, password) {
     if (!entryPath) {
       throw "no metadata file found";
     }
-    const buffer = await fileFormats.extract7ZipEntryBuffer(
+    const result = await fileFormats.extract7ZipEntryBuffer(
       filePath,
       entryPath,
       password,
@@ -33,6 +33,10 @@ exports.getMetadata = async function (filePath, currentMetadata, password) {
       "zip"
     );
     temp.deleteSubFolder(tempFolderPath);
+    const buffer = result.data;
+    if (!result.success) {
+      throw "invalid xml entry";
+    }
     const xmlFileData = buffer?.toString();
     //////////////////////////
     if (xmlFileData === undefined) {
@@ -53,7 +57,6 @@ exports.getMetadata = async function (filePath, currentMetadata, password) {
     if (!json["package"] || !json["package"]["metadata"]) {
       throw "invalid metadata";
     }
-    log.test(json["package"]["metadata"]);
 
     function addMetadataEntry(json, jsonKey, metadataKey) {
       let values = json["package"]["metadata"]["dc:creator"];

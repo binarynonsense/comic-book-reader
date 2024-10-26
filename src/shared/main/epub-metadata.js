@@ -38,7 +38,7 @@ exports.getMetadataProperties = async function (
     if (!entryPath) {
       throw "no metadata file found";
     }
-    const buffer = await fileFormats.extract7ZipEntryBuffer(
+    const result = await fileFormats.extract7ZipEntryBuffer(
       filePath,
       entryPath,
       password,
@@ -46,6 +46,10 @@ exports.getMetadataProperties = async function (
       "zip"
     );
     temp.deleteSubFolder(tempFolderPath);
+    const buffer = result.data;
+    if (!result.success) {
+      throw "invalid xml entry";
+    }
     const xmlFileData = buffer?.toString();
     //////////////////////////
     if (xmlFileData === undefined) {
@@ -137,7 +141,7 @@ exports.getMetadataFileXmlData = async function (filePath, password) {
     if (!entryPath) {
       throw "no metadata file found";
     }
-    const buffer = await fileFormats.extract7ZipEntryBuffer(
+    const result = await fileFormats.extract7ZipEntryBuffer(
       filePath,
       entryPath,
       password,
@@ -145,6 +149,10 @@ exports.getMetadataFileXmlData = async function (filePath, password) {
       "zip"
     );
     temp.deleteSubFolder(tempFolderPath);
+    const buffer = result.data;
+    if (!result.success) {
+      throw "invalid xml entry";
+    }
     const xmlFileData = buffer?.toString();
     //////////////////////////
     if (xmlFileData === undefined) {

@@ -73,7 +73,7 @@ exports.loadMetadata = async function () {
           //   g_fileData.password
           // );
           const tempFolderPath = temp.createSubFolder();
-          buf = await fileFormats.extract7ZipEntryBuffer(
+          const result = await fileFormats.extract7ZipEntryBuffer(
             g_fileData.path,
             g_fileData.metadata.comicInfoId,
             g_fileData.password,
@@ -81,6 +81,9 @@ exports.loadMetadata = async function () {
             "zip"
           );
           temp.deleteSubFolder(tempFolderPath);
+          if (result.success) {
+            buf = result.data;
+          }
         }
         break;
       case FileDataType.RAR:
@@ -98,13 +101,16 @@ exports.loadMetadata = async function () {
       case FileDataType.SEVENZIP:
         {
           const tempFolderPath = temp.createSubFolder();
-          buf = await fileFormats.extract7ZipEntryBuffer(
+          const result = await fileFormats.extract7ZipEntryBuffer(
             g_fileData.path,
             g_fileData.metadata.comicInfoId,
             g_fileData.password,
             tempFolderPath
           );
           temp.deleteSubFolder(tempFolderPath);
+          if (result.success) {
+            buf = result.data;
+          }
         }
         break;
     }
