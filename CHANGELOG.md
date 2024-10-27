@@ -1,3 +1,8 @@
+## v3.7.1
+
+- Updated some of the core libraries to newer versions.
+- Updated the Russian localization.
+
 ## v3.7.0
 
 - Added a menu entry in the 'View > Layout > Show' section to show / hide the loading indicator.
