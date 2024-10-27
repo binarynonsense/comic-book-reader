@@ -1,7 +1,7 @@
 ## v3.7.1
 
 - Updated some of the core libraries to newer versions.
-- Added the missing Russian localization entries so all translations are now up-to-date.
+- Added the missing Russian localization entries so all languages are now up-to-date.
 
 ## v3.7.0
 
