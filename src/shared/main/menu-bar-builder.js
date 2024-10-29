@@ -588,9 +588,6 @@ function buildApplicationMenu(settings, history) {
           ],
         },
         {
-          type: "separator",
-        },
-        {
           label: _("menu-tools-search"),
           submenu: [
             {
@@ -642,6 +639,9 @@ function buildApplicationMenu(settings, history) {
               },
             },
           ],
+        },
+        {
+          type: "separator",
         },
         {
           id: "tools-art",
