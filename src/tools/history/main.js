@@ -85,26 +85,26 @@ function getHistory() {
             if (fileInfo.data.url) fileInfo.filePath = fileInfo.data.url;
             else
               fileInfo.filePath =
-                _("menu-tools-other-dcm") + " - " + fileInfo.data.name;
+                _("menu-tools-dcm") + " - " + fileInfo.data.name;
             break;
 
           case "cbp":
             if (fileInfo.data.url) fileInfo.filePath = fileInfo.data.url;
             else
               fileInfo.filePath =
-                _("menu-tools-other-cbp") + " - " + fileInfo.data.name;
+                _("menu-tools-cbp") + " - " + fileInfo.data.name;
             break;
 
           // case "gut":
           //   fileInfo.filePath =
-          //     _("menu-tools-other-gut") + " - " + fileInfo.data.name;
+          //     _("menu-tools-gut") + " - " + fileInfo.data.name;
           //   break;
 
           case "iab":
             if (fileInfo.data.url) fileInfo.filePath = fileInfo.data.url;
             else
               fileInfo.filePath =
-                _("menu-tools-other-iab") + " - " + fileInfo.data.name;
+                _("menu-tools-iab") + " - " + fileInfo.data.name;
             break;
         }
       }

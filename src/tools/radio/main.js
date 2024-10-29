@@ -210,7 +210,7 @@ function getLocalization() {
   return [
     {
       id: "tool-radio-title-text",
-      text: _("menu-tools-other-radio").toUpperCase(),
+      text: _("menu-tools-radio").toUpperCase(),
     },
     {
       id: "tool-radio-back-button-text",

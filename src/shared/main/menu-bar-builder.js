@@ -591,55 +591,73 @@ function buildApplicationMenu(settings, history) {
           type: "separator",
         },
         {
-          id: "tools-other",
-          label: _("menu-tools-other"),
+          label: _("menu-tools-search"),
           submenu: [
             {
-              label: _("menu-tools-other-dcm"),
+              label: _("menu-tools-dcm"),
               click() {
                 core.onMenuToolDCM();
               },
             },
             {
-              label: _("menu-tools-other-cbp"),
+              label: _("menu-tools-cbp"),
               click() {
                 core.onMenuToolCBP();
               },
             },
             {
-              label: _("menu-tools-other-iab"),
+              label: _("menu-tools-iab"),
               click() {
                 core.onMenuToolIArchive();
               },
             },
             {
-              label: _("menu-tools-other-gut"),
+              label: _("menu-tools-gut"),
               click() {
                 core.onMenuToolGutenberg();
               },
             },
             {
-              label: _("menu-tools-other-xkcd"),
+              label: _("menu-tools-xkcd"),
               click() {
                 core.onMenuToolXkcd();
               },
             },
             {
-              label: _("menu-tools-other-librivox"),
+              label: _("menu-tools-librivox"),
               click() {
                 core.onMenuToolLibrivox();
               },
             },
             {
-              label: _("menu-tools-other-wiktionary"),
+              label: _("menu-tools-wiktionary"),
               click() {
                 core.onMenuToolWiktionary();
               },
             },
             {
-              label: _("menu-tools-other-radio"),
+              label: _("menu-tools-radio"),
               click() {
                 core.onMenuToolRadio();
+              },
+            },
+          ],
+        },
+        {
+          id: "tools-art",
+          label: _("menu-tools-art"),
+          submenu: [
+            {
+              label: _("menu-tools-template-maker"),
+              click() {
+                core.onMenuToolTemplateMaker();
+              },
+            },
+            {
+              label: _("menu-tools-palette-extractor"),
+              enabled: true,
+              click() {
+                core.onMenuToolExtractPalette();
               },
             },
           ],

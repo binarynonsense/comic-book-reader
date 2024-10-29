@@ -223,7 +223,7 @@ function getLocalization() {
   return [
     {
       id: "tool-iab-title-text",
-      text: _("menu-tools-other-iab").toUpperCase(),
+      text: _("menu-tools-iab").toUpperCase(),
     },
     {
       id: "tool-iab-back-button-text",

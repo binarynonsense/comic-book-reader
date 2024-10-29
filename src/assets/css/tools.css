@@ -1,4 +1,4 @@
-#tools {
+#tools:not(:has(iframe)) {
   z-index: 100;
   position: absolute;
   top: calc(var(--menubar-height));
@@ -18,7 +18,7 @@
   scrollbar-gutter: stable;
   user-select: none;
 }
-html[dir="rtl"] #tools {
+html[dir="rtl"] #tools:not(:has(iframe)) {
   background: linear-gradient(
     to right,
     var(--tools-bg2-color) 0%,
@@ -29,6 +29,16 @@ html[dir="rtl"] #tools {
 }
 #tools *:not([data-nav-panel]) {
   outline: none;
+}
+
+#tools:has(iframe) {
+  z-index: 100;
+  position: absolute;
+  top: calc(var(--menubar-height));
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  user-select: none;
 }
 
 #tools-columns {

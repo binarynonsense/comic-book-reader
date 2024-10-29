@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>
+      Comic Book Template Maker | Binary Nonsense | Website of Álvaro García
+    </title>
+    <meta
+      name="description"
+      content="Online comic book page and thumbnails template maker."
+    />
+    <meta
+      name="keywords"
+      content="comic book, comic, page, template, maker, online"
+    />
+    <meta name="author" content="Álvaro García www.binarynonsense.com" />
+    <meta name="copyright" content="Álvaro García www.binarynonsense.com" />
+    <!-- <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; img-src 'self' data:"
+    /> -->
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="./css/style.css" />
+    <link rel="stylesheet" href="./css/tree-view.css" />
+    <link rel="stylesheet" href="./css/loading.css" />
+    <link rel="stylesheet" href="./css/modals.css" />
+    <link href="./libs/fontawesome/css/fontawesome.css" rel="stylesheet" />
+    <link href="./libs/fontawesome/css/solid.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="left">
+      <div class="zoom-button" id="zoom-button-1" title="zoom in">
+        <i class="fa-solid fa-magnifying-glass-plus zoom-button-icon"></i>
+      </div>
+      <div class="zoom-button" id="zoom-button-2" title="zoom out">
+        <i class="fa-solid fa-magnifying-glass-minus zoom-button-icon"></i>
+      </div>
+      <div class="zoom-button" id="zoom-button-3" title="reset view">
+        <i class="fa-solid fa-expand zoom-button-icon"></i>
+      </div>
+      <div id="result-div">
+        <img src="" id="result-img" alt="" />
+      </div>
+    </div>
+    <div id="right-bottom">
+      <div id="buttons">
+        <button id="refresh-button">REFRESH PREVIEW</button>
+        <label class="checkbox-label">
+          <input
+            type="checkbox"
+            id="autorefresh-checkbox"
+            class="refresh"
+            checked
+          />
+          auto-refresh
+        </label>
+      </div>
+    </div>
+    <div id="right">
+      <div class="tab tab-selected" id="tab-1" title="presets">
+        <i class="fa-solid fa-bookmark tab-icon"></i>
+      </div>
+      <div id="tab-1-content">
+        <h3 class="h3-extratop">Template Presets:</h3>
+        <label
+          >load a preset<select id="preset-select" class="refresh"></select
+        ></label>
+        <div class="import-export-buttons">
+          <div
+            id="open-modal-import-preset-button"
+            class="import-export-button"
+            title="import preset from file"
+          >
+            <i class="fa-solid fa-file-arrow-up"></i>
+          </div>
+          <div
+            id="open-modal-export-preset-button"
+            class="import-export-button"
+            title="export settings to preset file"
+          >
+            <i class="fa-solid fa-file-arrow-down"></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab" id="tab-2" title="dimensions">
+        <i class="fa-solid fa-ruler-combined tab-icon"></i>
+      </div>
+      <div id="tab-2-content" class="hidden">
+        <label
+          >units<select id="units-select" class="refresh">
+            <option value="inches">inches</option>
+            <option value="cm">centimeters</option>
+          </select></label
+        >
+
+        <div id="trim-div" class="section">
+          <h3>Trim Area Size:</h3>
+          <div class="columns-parent">
+            <label class="two-columns"
+              >width<input
+                type="number"
+                id="trim-width-input"
+                class="refresh unit-value"
+                step="0.25"
+                min="0"
+                value="6.625"
+            /></label>
+            <label class="two-columns"
+              >height<input
+                type="number"
+                id="trim-height-input"
+                class="refresh unit-value"
+                step="0.25"
+                min="0"
+                value="10.1875"
+            /></label>
+          </div>
+        </div>
+
+        <div id="safe-div" class="section">
+          <h3>Safe Area Margin:</h3>
+          <div class="columns-parent">
+            <label class="two-columns"
+              >top<input
+                type="number"
+                id="safe-margin-top-input"
+                class="refresh unit-value"
+                step="0.25"
+                min="0"
+                value="0.25"
+            /></label>
+            <label class="two-columns"
+              >bottom<input
+                type="number"
+                id="safe-margin-bottom-input"
+                class="refresh unit-value"
+                step="0.25"
+                min="0"
+                value="0.25"
+            /></label>
+          </div>
+          <div class="columns-parent">
+            <label class="two-columns"
+              >left<input
+                type="number"
+                id="safe-margin-left-input"
+                class="refresh unit-value"
+                step="0.25"
+                min="0"
+                value="0.25"
+            /></label>
+            <label class="two-columns"
+              >right<input
+                type="number"
+                id="safe-margin-right-input"
+                class="refresh unit-value"
+                step="0.25"
+                min="0"
+                value="0.25"
+            /></label>
+          </div>
+        </div>
+
+        <div id="bleed-div" class="section">
+          <h3>Bleed Area Margin:</h3>
+          <label
+            >top / bottom / left / right<input
+              type="number"
+              id="bleed-margin-input"
+              class="refresh unit-value"
+              step="0.25"
+              min="0"
+              value="0.125"
+          /></label>
+        </div>
+
+        <div id="paper-div" class="section">
+          <h3>Header Area Margin:</h3>
+          <div class="columns-parent">
+            <label class="two-columns"
+              >top / bottom<input
+                type="number"
+                id="header-margin-top-bottom-input"
+                class="refresh unit-value"
+                step="0.25"
+                min="0"
+                value="0.5"
+            /></label>
+            <label class="two-columns"
+              >left / right<input
+                type="number"
+                id="header-margin-left-right-input"
+                class="refresh unit-value"
+                step="0.25"
+                min="0"
+                value="0.5"
+            /></label>
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>Lines:</h3>
+          <div class="columns-parent">
+            <label class="two-columns"
+              >thin width<input
+                type="number"
+                id="line-width-thin-input"
+                class="refresh unit-value"
+                step="0.005"
+                min="0"
+                value="0.004"
+            /></label>
+            <label class="two-columns"
+              >thick width<input
+                type="number"
+                id="line-width-thick-input"
+                class="refresh unit-value"
+                step="0.005"
+                min="0"
+                value="0.008"
+            /></label>
+          </div>
+          <label
+            >border marks max. length<input
+              type="number"
+              id="border-marks-length-input"
+              class="refresh unit-value"
+              step="0.005"
+              min="0"
+              value="0.085"
+          /></label>
+        </div>
+
+        <div id="panels-div" class="section">
+          <h3>Panels:</h3>
+          <div class="columns-parent">
+            <label class="two-columns"
+              >gutter size<input
+                type="number"
+                id="panel-gutter-size-input"
+                class="refresh unit-value"
+                step="0.05"
+                min="0"
+                value="0.15"
+            /></label>
+            <label class="two-columns"
+              >line width<input
+                type="number"
+                id="panel-line-width-input"
+                class="refresh unit-value"
+                step="0.01"
+                min="0"
+                value="0.025"
+            /></label>
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>Header Text:</h3>
+          <div class="columns-parent">
+            <label class="two-columns"
+              >text height<input
+                type="number"
+                id="header-text-height-input"
+                class="refresh unit-value"
+                step="0.05"
+                min="0"
+                value="0.12"
+            /></label>
+            <label class="two-columns"
+              >line spacing<select
+                id="header-text-spacing-select"
+                class="refresh"
+              >
+                <option value="1.1">x1.1</option>
+                <option value="1.2">x1.2</option>
+                <option value="1.3">x1.3</option>
+                <option value="1.4">x1.4</option>
+                <option value="1.5">x1.5</option>
+                <option value="2">x2</option>
+              </select></label
+            >
+          </div>
+          <div class="columns-parent">
+            <label class="two-columns"
+              >padding left<input
+                type="number"
+                id="header-padding-left-input"
+                class="refresh unit-value"
+                step="0.25"
+                min="0"
+                value="0.21"
+            /></label>
+            <label class="two-columns"
+              >padding bottom<input
+                type="number"
+                id="header-padding-bottom-input"
+                class="refresh unit-value"
+                step="0.25"
+                min="0"
+                value="0.21"
+            /></label>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab" id="tab-3" title="rendering options">
+        <i class="fa-solid fa-paintbrush tab-icon"></i>
+      </div>
+      <div id="tab-3-content" class="hidden">
+        <div class="section">
+          <label
+            >background color<input
+              type="color"
+              id="background-color-input"
+              class="refresh"
+              value="#FFFFFF"
+          /></label>
+          <label
+            >line color<input
+              type="color"
+              id="line-color-input"
+              class="refresh"
+              value="#A4DDED"
+          /></label>
+          <label
+            >line weight<select id="line-thickness-select" class="refresh">
+              <option value="1">x1</option>
+              <option value="2">x2</option>
+              <option value="3">x3</option>
+              <option value="4">x4</option>
+              <option value="5">x5</option>
+              <option value="6">x6</option>
+            </select></label
+          >
+          <label
+            >panel line color<input
+              type="color"
+              id="panel-line-color-input"
+              class="refresh"
+              value="#000000"
+          /></label>
+          <label
+            >panel guides color<input
+              type="color"
+              id="panel-guides-color-input"
+              class="refresh"
+              value="#ff00ff"
+          /></label>
+          <label
+            >header text weight<select
+              id="header-text-weight-select"
+              class="refresh"
+            >
+              <option value="normal">normal</option>
+              <option value="bold">bold</option>
+            </select></label
+          >
+          <label class="checkbox-label">
+            <input
+              type="checkbox"
+              id="paper-draw-bg-checkbox"
+              class="refresh"
+              checked
+            />
+            draw background
+          </label>
+          <label class="checkbox-label">
+            <input
+              type="checkbox"
+              id="paper-draw-header-checkbox"
+              class="refresh"
+              checked
+            />
+            draw header
+          </label>
+          <label class="checkbox-label">
+            <input
+              type="checkbox"
+              id="bleed-draw-checkbox"
+              class="refresh"
+              checked
+            />
+            draw bleed area
+          </label>
+          <label class="checkbox-label">
+            <input
+              type="checkbox"
+              id="trim-draw-checkbox"
+              class="refresh"
+              checked
+            />
+            draw trim area
+          </label>
+          <label class="checkbox-label">
+            <input
+              type="checkbox"
+              id="safe-draw-checkbox"
+              class="refresh"
+              checked
+            />
+            draw safe area
+          </label>
+          <label class="checkbox-label">
+            <input
+              type="checkbox"
+              id="border-marks-draw-checkbox"
+              class="refresh"
+              checked
+            />
+            draw fraction marks
+          </label>
+          <label class="checkbox-label">
+            <input
+              type="checkbox"
+              id="crop-marks-draw-checkbox"
+              class="refresh"
+              checked
+            />
+            draw crop marks
+          </label>
+          <label class="checkbox-label">
+            <input
+              type="checkbox"
+              id="panel-guides-draw-checkbox"
+              class="refresh"
+            />
+            draw panel guides
+          </label>
+          <label class="checkbox-label">
+            <input
+              type="checkbox"
+              id="panels-draw-checkbox"
+              class="refresh"
+              checked
+            />
+            draw panels
+          </label>
+        </div>
+      </div>
+
+      <div class="tab" id="tab-4" title="panel grid">
+        <i class="fa-solid fa-border-all tab-icon"></i>
+      </div>
+      <div id="tab-4-content" class="hidden">
+        <label
+          >load a grid preset
+          <select id="grid-preset-select" class="refresh"></select
+        ></label>
+        <div class="import-export-buttons">
+          <div
+            id="open-modal-import-grid-preset-button"
+            class="import-export-button"
+            title="import preset from file"
+          >
+            <i class="fa-solid fa-file-arrow-up"></i>
+          </div>
+          <div
+            id="open-modal-export-grid-preset-button"
+            class="import-export-button"
+            title="export grid to preset file"
+          >
+            <i class="fa-solid fa-file-arrow-down"></i>
+          </div>
+        </div>
+
+        <label>grid nodes (tree view)</label>
+        <div id="panel-tree-view" class="tree-view">
+          <ul id="panel-tree-view-root" class="tree-view-root"></ul>
+        </div>
+
+        <label>selected node</label>
+        <div class="tree-view-selected-element-view">
+          <label id="panel-tree-view-selected-element-debug"></label>
+          <div class="columns-parent">
+            <label class="two-columns"
+              >type<select id="panel-tree-view-selected-element-type-select">
+                <option value="vgroup">vertical group</option>
+                <option value="hgroup">horizontal group</option>
+                <option value="panel">panel</option>
+              </select></label
+            >
+            <label class="two-columns"
+              >size (%)<input
+                type="number"
+                id="panel-tree-view-selected-element-size-input"
+                step="1"
+                min="0"
+                max="100"
+                value="50"
+            /></label>
+          </div>
+          <button id="panel-tree-view-selected-element-addgroup-button">
+            ADD CHILD GROUP
+          </button>
+          <button id="panel-tree-view-selected-element-addpanel-button">
+            ADD CHILD PANEL
+          </button>
+          <button id="panel-tree-view-selected-element-moveup-button">
+            MOVE UP
+          </button>
+          <button id="panel-tree-view-selected-element-movedown-button">
+            MOVE DOWN
+          </button>
+          <button id="panel-tree-view-selected-element-remove-button">
+            REMOVE
+          </button>
+        </div>
+      </div>
+
+      <div class="tab" id="tab-5" title="header text">
+        <i class="fa-solid fa-align-justify tab-icon"></i>
+      </div>
+      <div id="tab-5-content" class="hidden">
+        <label
+          >load a header preset
+          <select id="header-preset-select" class="refresh"></select
+        ></label>
+        <div class="import-export-buttons">
+          <div
+            id="open-modal-import-header-preset-button"
+            class="import-export-button"
+            title="import preset from file"
+          >
+            <i class="fa-solid fa-file-arrow-up"></i>
+          </div>
+          <div
+            id="open-modal-export-header-preset-button"
+            class="import-export-button"
+            title="export header to preset file"
+          >
+            <i class="fa-solid fa-file-arrow-down"></i>
+          </div>
+        </div>
+
+        <label>header text (tree view)</label>
+        <div id="header-tree-view" class="tree-view">
+          <ul id="header-tree-view-root" class="tree-view-root"></ul>
+        </div>
+
+        <label>selected node</label>
+        <div class="tree-view-selected-element-view">
+          <label id="header-tree-view-selected-element-string-label"
+            >text<input
+              type="text"
+              id="header-tree-view-selected-element-string-input"
+          /></label>
+          <label id="header-tree-view-selected-element-length-label"
+            >length (x text height)<input
+              type="number"
+              id="header-tree-view-selected-element-length-input"
+              min="0"
+          /></label>
+          <button
+            id="header-tree-view-selected-element-addline-button"
+            class="tree-view-button-extra-top-margin"
+          >
+            ADD LINE CHILD
+          </button>
+          <button
+            id="header-tree-view-selected-element-addtext-button"
+            class="tree-view-button-extra-top-margin"
+          >
+            ADD TEXT CHILD
+          </button>
+          <button id="header-tree-view-selected-element-addunderline-button">
+            ADD UNDERLINE CHILD
+          </button>
+          <button id="header-tree-view-selected-element-addspace-button">
+            ADD SPACE CHILD
+          </button>
+          <button id="header-tree-view-selected-element-moveup-button">
+            MOVE UP
+          </button>
+          <button id="header-tree-view-selected-element-movedown-button">
+            MOVE DOWN
+          </button>
+          <button id="header-tree-view-selected-element-remove-button">
+            REMOVE
+          </button>
+        </div>
+      </div>
+
+      <div class="tab" id="tab-6" title="layout (page/thumbnails)">
+        <i class="fa-solid fa-grip tab-icon"></i>
+      </div>
+      <div id="tab-6-content" class="hidden">
+        <h3 class="h3-extratop">Layout options:</h3>
+        <label
+          >page spread<select id="layout-spread-select" class="refresh">
+            <option value="single">single page</option>
+            <option value="double">double page</option>
+          </select></label
+        >
+        <label
+          >ppi<input
+            type="number"
+            id="ppi-input"
+            class="refresh"
+            step="150"
+            value="300"
+        /></label>
+        <label
+          >template type<select id="layout-template-select" class="refresh">
+            <option value="page">page template</option>
+            <option value="thumbnails">thumbnails template</option>
+          </select></label
+        >
+        <div id="layout-page-div">
+          <h3 class="h3-extratop">Page template options:</h3>
+          <label
+            >paper size
+            <select id="layout-page-paper-select" class="refresh">
+              <option value="header">use header area size</option>
+              <option value="a4">A4</option>
+              <option value="b4">B4</option>
+              <option value="us">US Letter</option>
+              <option value="11x17">11x17</option>
+            </select></label
+          >
+          <label
+            >scaling
+            <select id="layout-page-scaling-select" class="refresh">
+              <option value="keep">keep dimensions</option>
+              <option value="scale">scale to fit paper dimensions</option>
+            </select></label
+          >
+        </div>
+        <div id="layout-thumbnails-div" class="hidden">
+          <h3 class="h3-extratop">Thumbnails template options:</h3>
+          <div class="columns-parent">
+            <label class="two-columns"
+              >columns<input
+                type="number"
+                id="layout-thumbnails-columns-input"
+                class="refresh"
+                step="1"
+                min="1"
+                value="3"
+            /></label>
+            <label class="two-columns"
+              >rows<input
+                type="number"
+                id="layout-thumbnails-rows-input"
+                class="refresh"
+                step="1"
+                min="1"
+                value="3"
+            /></label>
+          </div>
+          <label
+            >paper size
+            <select id="layout-thumbnails-paper-select" class="refresh">
+              <option value="a4">DIN A4</option>
+              <option value="us">US Letter</option>
+            </select></label
+          >
+        </div>
+      </div>
+
+      <div class="tab" id="tab-7" title="save as image">
+        <i class="fa-solid fa-floppy-disk tab-icon"></i>
+      </div>
+      <div id="tab-7-content" class="hidden">
+        <h3 class="h3-extratop">Save Template As Image:</h3>
+        <label
+          >file format<select id="save-template-format-select">
+            <option value="png">png</option>
+            <option value="jpg">jpg</option>
+            <option value="pdf">pdf</option>
+            <option value="psd">psd</option>
+          </select></label
+        >
+        <button id="save-template-button">SAVE</button>
+      </div>
+
+      <div class="tab" id="tab-8" title="tool info">
+        <i class="fa-solid fa-circle-info tab-icon"></i>
+      </div>
+      <div id="tab-8-content" class="hidden">
+        <h3>Comic Book Template Maker</h3>
+        <p>Tool to create comic book page and thumbnails templates.</p>
+        <h3>Version:</h3>
+        <p id="info-version-p">0.0.0</p>
+        <p></p>
+        <h3 class="h3-extratop">Made by:</h3>
+        <p>Álvaro García</p>
+        <p>
+          <a href="http://www.binarynonsense.com" target="”_blank”"
+            >www.binarynonsense.com</a
+          >
+        </p>
+      </div>
+    </div>
+
+    <!-- modals template presets -->
+    <div id="import-preset-modal" class="modal">
+      <div class="modal-frame">
+        <div class="modal-topbar">
+          <div class="modal-close-x-button modal-close-button" title="cancel">
+            <i class="fa-solid fa-close"></i>
+          </div>
+        </div>
+        <h3 class="h3-extratop h3-extrabottom">Import Preset From File:</h3>
+        <label class="checkbox-label">
+          <input
+            type="checkbox"
+            id="import-preset-add-checkbox"
+            checked
+            disabled
+          />
+          add to presets list
+        </label>
+        <label class="checkbox-label">
+          <input type="checkbox" id="import-preset-apply-checkbox" checked />
+          apply when loaded
+        </label>
+        <input type="file" id="import-preset-file-input" accept=".json" />
+        <button id="import-preset-button">CHOOSE FILE</button>
+        <button class="modal-close-button">CANCEL</button>
+      </div>
+    </div>
+
+    <div id="export-preset-modal" class="modal">
+      <div class="modal-frame">
+        <div class="modal-topbar">
+          <div class="modal-close-button modal-close-button" title="cancel">
+            <i class="fa-solid fa-close"></i>
+          </div>
+        </div>
+        <h3 class="h3-extratop">Export Current Settings To Preset File:</h3>
+        <label
+          >preset name<input
+            type="text"
+            id="export-preset-name-input"
+            value="comic page"
+        /></label>
+        <label class="checkbox-label">
+          <input
+            type="checkbox"
+            id="export-preset-dimensions-checkbox"
+            checked
+          />
+          export dimensions
+        </label>
+        <label class="checkbox-label">
+          <input
+            type="checkbox"
+            id="export-preset-rendering-checkbox"
+            checked
+          />
+          export rendering options
+        </label>
+        <label class="checkbox-label">
+          <input
+            type="checkbox"
+            id="export-preset-current-grid-checkbox"
+            checked
+          />
+          export panel grid
+        </label>
+        <label class="checkbox-label">
+          <input
+            type="checkbox"
+            id="export-preset-current-header-checkbox"
+            checked
+          />
+          export header text
+        </label>
+        <label class="checkbox-label">
+          <input type="checkbox" id="export-preset-layout-checkbox" checked />
+          export layout
+        </label>
+        <button id="export-preset-button">EXPORT</button>
+        <button class="modal-close-button">CANCEL</button>
+      </div>
+    </div>
+
+    <!-- modals grid presets -->
+    <div id="import-grid-preset-modal" class="modal">
+      <div class="modal-frame">
+        <div class="modal-topbar">
+          <div class="modal-close-x-button modal-close-button" title="cancel">
+            <i class="fa-solid fa-close"></i>
+          </div>
+        </div>
+        <h3 class="h3-extratop h3-extrabottom">
+          Import Grid Preset From File:
+        </h3>
+        <label class="checkbox-label">
+          <input
+            type="checkbox"
+            id="import-grid-preset-add-checkbox"
+            checked
+            disabled
+          />
+          add to presets list
+        </label>
+        <label class="checkbox-label">
+          <input
+            type="checkbox"
+            id="import-grid-preset-apply-checkbox"
+            checked
+          />
+          apply when loaded
+        </label>
+        <input type="file" id="import-grid-preset-file-input" accept=".json" />
+        <button id="import-grid-preset-button">CHOOSE FILE</button>
+        <button class="modal-close-button">CANCEL</button>
+      </div>
+    </div>
+
+    <div id="export-grid-preset-modal" class="modal">
+      <div class="modal-frame">
+        <div class="modal-topbar">
+          <div class="modal-close-x-button modal-close-button" title="cancel">
+            <i class="fa-solid fa-close"></i>
+          </div>
+        </div>
+        <h3 class="h3-extratop">Export Current Grid To Preset File:</h3>
+        <label
+          >preset name<input
+            type="text"
+            id="export-grid-preset-name-input"
+            value="panel grid"
+        /></label>
+        <button id="export-grid-preset-button">EXPORT</button>
+        <button class="modal-close-button">CANCEL</button>
+      </div>
+    </div>
+
+    <!-- modals header presets -->
+    <div id="import-header-preset-modal" class="modal">
+      <div class="modal-frame">
+        <div class="modal-topbar">
+          <div class="modal-close-x-button modal-close-button" title="cancel">
+            <i class="fa-solid fa-close"></i>
+          </div>
+        </div>
+        <h3 class="h3-extratop h3-extrabottom">
+          Import Header Preset From File:
+        </h3>
+        <label class="checkbox-label">
+          <input
+            type="checkbox"
+            id="import-header-preset-add-checkbox"
+            checked
+            disabled
+          />
+          add to presets list
+        </label>
+        <label class="checkbox-label">
+          <input
+            type="checkbox"
+            id="import-header-preset-apply-checkbox"
+            checked
+          />
+          apply when loaded
+        </label>
+        <input
+          type="file"
+          id="import-header-preset-file-input"
+          accept=".json"
+        />
+        <button id="import-header-preset-button">CHOOSE FILE</button>
+        <button class="modal-close-button">CANCEL</button>
+      </div>
+    </div>
+
+    <div id="export-header-preset-modal" class="modal">
+      <div class="modal-frame">
+        <div class="modal-topbar">
+          <div class="modal-close-x-button modal-close-button" title="cancel">
+            <i class="fa-solid fa-close"></i>
+          </div>
+        </div>
+        <h3 class="h3-extratop">Export Current Header To Preset File:</h3>
+        <label
+          >preset name<input
+            type="text"
+            id="export-header-preset-name-input"
+            value="header"
+        /></label>
+        <button id="export-header-preset-button">EXPORT</button>
+        <button class="modal-close-button">CANCEL</button>
+      </div>
+    </div>
+
+    <!-- loading -->
+    <div id="loading">
+      <div id="loading-bg"><div id="loading-spinner"></div></div>
+    </div>
+  </body>
+
+  <script src="./libs/ag-psd/dist/bundle.js"></script>
+  <script src="./libs/panzoom/panzoom.min.js"></script>
+  <script src="./libs/blob-stream/blob-stream.js"></script>
+  <script src="./libs/pdfkit/pdfkit.standalone.js"></script>
+  <script src="./js/main.js" type="module"></script>
+</html>

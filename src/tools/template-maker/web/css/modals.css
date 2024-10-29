@@ -1,0 +1,45 @@
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background-color: rgba(0, 0, 0, 0.8);
+  padding: 20px;
+  overflow: auto;
+}
+
+.modal-frame {
+  padding: 20px;
+  background: #fff;
+  width: 400px;
+  text-align: left;
+}
+
+.modal-topbar {
+  height: 30px;
+  font-size: 20px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: right;
+}
+
+.modal-close-x-button {
+  margin-right: 10px;
+  color: rgb(87, 87, 87);
+}
+.modal-close-x-button:hover {
+  margin-right: 10px;
+  color: rgb(46, 46, 46);
+  cursor: pointer;
+}
+
+.modal.modal-open {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* body.modal-open {
+  overflow: hidden;
+} */

@@ -1,0 +1,67 @@
+:root {
+  --li-bg-alpha: 0.5;
+  --li-icon-size: 100px;
+  --li-icon-thickness: 20px;
+
+  --li-icon-align-self: center;
+  --li-icon-justify-self: center;
+  --li-icon-margin-top-full: 10px;
+  --li-icon-margin-top-win: 40px;
+  --li-icon-margin-left: 10px;
+}
+
+.is-active {
+  display: block !important;
+}
+
+.is-full-screen {
+  margin-top: var(--li-icon-margin-top-full) !important;
+}
+
+/* ref: https://css-tricks.com/single-element-loaders-the-spinner/ */
+
+#loading {
+  display: none;
+}
+
+#loading-bg {
+  display: grid;
+  min-height: 100vh;
+  margin: 0;
+  min-width: 100%;
+  min-height: 100vh;
+  z-index: 50;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, var(--li-bg-alpha));
+}
+
+#loading-spinner {
+  align-self: var(--li-icon-align-self);
+  justify-self: var(--li-icon-justify-self);
+
+  margin-top: var(--li-icon-margin-top-win);
+  margin-left: var(--li-icon-margin-left);
+  background: white;
+
+  width: var(--li-icon-size);
+  padding: var(--li-icon-thickness);
+
+  aspect-ratio: 1;
+  border-radius: 50%;
+  --spinner_mask: conic-gradient(#0000, #000),
+    linear-gradient(#000 0 0) content-box;
+  -webkit-mask: var(--spinner_mask);
+  mask: var(--spinner_mask);
+  -webkit-mask-composite: source-out;
+  mask-composite: subtract;
+  box-sizing: border-box;
+  animation: spinner-anim 1s linear infinite;
+}
+
+@keyframes spinner-anim {
+  to {
+    transform: rotate(1turn);
+  }
+}

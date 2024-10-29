@@ -622,6 +622,11 @@ if (!gotTheLock) {
     sendIpcToPreload("update-menubar");
   };
 
+  exports.onMenuToolTemplateMaker = function () {
+    tools.switchTool("tool-template-maker");
+    sendIpcToPreload("update-menubar");
+  };
+
   //////////////////
 
   exports.onMenuToggleDevTools = function () {

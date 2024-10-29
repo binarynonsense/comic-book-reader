@@ -34,6 +34,7 @@ exports.init = function () {
   g_tools["tool-radio"] = require("../../tools/radio/main");
   g_tools["tool-metadata"] = require("../../tools/metadata/main");
   g_tools["tool-cbp"] = require("../../tools/cbp/main");
+  g_tools["tool-template-maker"] = require("../../tools/template-maker/main");
 };
 
 exports.getTools = function () {

@@ -157,7 +157,7 @@ function getLocalization() {
   return [
     {
       id: "tool-wik-title-text",
-      text: _("menu-tools-other-wiktionary").toUpperCase(),
+      text: _("menu-tools-wiktionary").toUpperCase(),
     },
     {
       id: "tool-wik-back-button-text",

@@ -105,7 +105,7 @@ function getLatestData() {
                 latestInfo.path = historyDataFile.data.url;
               else
                 latestInfo.path =
-                  _("menu-tools-other-dcm") + " - " + historyDataFile.data.name;
+                  _("menu-tools-dcm") + " - " + historyDataFile.data.name;
               break;
 
             case "cbp":
@@ -113,13 +113,13 @@ function getLatestData() {
                 latestInfo.path = historyDataFile.data.url;
               else
                 latestInfo.path =
-                  _("menu-tools-other-cbp") + " - " + historyDataFile.data.name;
+                  _("menu-tools-cbp") + " - " + historyDataFile.data.name;
               break;
 
             case "gut":
               latestInfo.path = historyDataFile.filePath;
               // latestInfo.path =
-              //   _("menu-tools-other-gut") + " - " + historyDataFile.data.name;
+              //   _("menu-tools-gut") + " - " + historyDataFile.data.name;
               break;
 
             case "iab":
@@ -127,7 +127,7 @@ function getLatestData() {
                 latestInfo.path = historyDataFile.data.url;
               else
                 latestInfo.path =
-                  _("menu-tools-other-iab") + " - " + historyDataFile.data.name;
+                  _("menu-tools-iab") + " - " + historyDataFile.data.name;
               break;
           }
         }

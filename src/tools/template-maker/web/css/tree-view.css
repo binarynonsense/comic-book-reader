@@ -1,0 +1,156 @@
+.tree-view {
+  margin: 5px 0px;
+  width: 100%;
+  height: 300px;
+  border: 2px solid #727272;
+  border-radius: 0px;
+  background-color: #fff;
+  padding: 0;
+  user-select: none;
+  overflow: auto;
+}
+
+/* ref: https://iamkate.com/code/tree-views/ */
+
+.tree-view-root {
+  font-size: 15px;
+  --line-spacing: 1.5rem;
+  --marker-radius: 10px;
+  margin: 8px 0;
+  padding: 0;
+}
+
+.tree-view-root li {
+  display: block;
+  position: relative;
+  padding-left: calc(1.92 * var(--line-spacing) - var(--marker-radius) - 2px);
+  padding-top: 4px;
+}
+
+.tree-view-root ul {
+  margin-left: calc(var(--marker-radius) - var(--line-spacing));
+  padding-left: 0;
+}
+
+/* vertical lines */
+
+.tree-view-root ul li {
+  border-left: 2px solid #ddd;
+}
+
+.tree-view-root ul li:last-child {
+  border-color: transparent;
+}
+
+/* horizontal lines */
+
+.tree-view-root ul li::before {
+  content: "";
+  display: block;
+  position: absolute;
+  top: calc(var(--line-spacing) / -2);
+  left: -2px;
+  width: calc(var(--line-spacing) + 2px);
+  height: calc(var(--line-spacing) + 1px);
+  border: solid #ddd;
+  border-width: 0 0 2px 2px;
+  pointer-events: none;
+}
+
+/* summaries */
+
+.tree-view-root summary {
+  display: block;
+  cursor: pointer;
+}
+
+.tree-view-root summary::marker,
+.tree-view-root summary::-webkit-details-marker {
+  display: none;
+}
+
+.tree-view-root summary:focus {
+  outline: none;
+}
+
+.tree-view-root summary:focus-visible {
+  outline: 1px dotted #000;
+}
+
+/* markers */
+
+.tree-view-root li::after,
+.tree-view-root summary::before {
+  content: "";
+  display: block;
+  position: absolute;
+  top: calc(var(--line-spacing) / 1.6 - var(--marker-radius));
+  left: calc(var(--line-spacing) - var(--marker-radius) - 1px);
+  width: calc(1.5 * var(--marker-radius));
+  height: calc(1.5 * var(--marker-radius));
+  background: #ddd;
+  color: #fff;
+}
+
+/* + - buttons */
+
+.tree-view-root summary::before {
+  z-index: 2;
+  background: rgb(129, 129, 129) url("plus-minus.svg") 0 0;
+  background-size: 30px 15px;
+}
+
+.tree-view-root summary:hover:not(:has(*:hover))::before {
+  background-color: #3f51b5;
+}
+
+.tree-view-root details[open] > summary::before {
+  background-position: calc(-1.5 * var(--marker-radius)) 0;
+}
+
+.tree-view-summary-button,
+.tree-view-panel-button {
+  white-space: nowrap;
+}
+
+.tree-view-summary-button:hover {
+  font-weight: bold;
+  color: #3f51b5;
+}
+
+.tree-view-panel-button:hover {
+  font-weight: bold;
+  color: #3f51b5;
+  cursor: pointer;
+}
+
+.tree-view-button-selected {
+  font-weight: bolder;
+  color: #3f51b5;
+}
+
+.tree-view-button-disabled {
+  cursor: default;
+  pointer-events: none;
+  background-color: #cacaca;
+  user-select: none;
+}
+
+.tree-view-button-hidden {
+  display: none;
+}
+
+.tree-view-button-extra-top-margin {
+  margin-top: 10px;
+}
+
+/* ************************* */
+
+.tree-view-selected-element-view {
+  margin: 5px 0px;
+  width: 100%;
+  border: 2px solid #727272;
+  border-radius: 0px;
+  background-color: #fff;
+  padding: 0 10px 5px 10px;
+}

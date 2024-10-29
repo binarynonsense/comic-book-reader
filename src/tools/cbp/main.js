@@ -434,7 +434,7 @@ function getLocalization() {
   return [
     {
       id: "tool-cbp-title-text",
-      text: _("menu-tools-other-cbp").toUpperCase(),
+      text: _("menu-tools-cbp").toUpperCase(),
     },
     {
       id: "tool-cbp-back-button-text",
@@ -510,7 +510,7 @@ function getLocalization() {
       text: _(
         "tool-shared-ui-about-text-1",
         _("tool-shared-ui-about-text-1-comicbooks-audio"),
-        _("menu-tools-other-cbp")
+        _("menu-tools-cbp")
       ),
     },
     {
@@ -521,17 +521,17 @@ function getLocalization() {
       id: "tool-cbp-open-cbp-browser-button-text",
       text: _(
         "tool-shared-ui-button-open-websitename-in-browser",
-        _("menu-tools-other-cbp")
+        _("menu-tools-cbp")
       ).toUpperCase(),
     },
     //////////////////////////////////////////////
     {
       id: "tool-cbp-donate-text",
-      text: _("tool-shared-ui-donateto-website", _("menu-tools-other-cbp")),
+      text: _("tool-shared-ui-donateto-website", _("menu-tools-cbp")),
     },
     {
       id: "tool-cbp-donate-1-text",
-      text: _("tool-shared-ui-donate-text", _("menu-tools-other-cbp")),
+      text: _("tool-shared-ui-donate-text", _("menu-tools-cbp")),
     },
     {
       id: "tool-cbp-open-donate-browser-button-text",

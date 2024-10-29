@@ -1,0 +1,338 @@
+body,
+html {
+  margin: 0;
+  padding: 0;
+  /* background-color: gray; */
+  text-align: center;
+  /* user-select: none; */
+  /* font-size: 10px; */
+}
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+}
+
+.hidden {
+  display: none !important;
+}
+
+#left {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: calc(100% - 300px);
+  height: 100vh;
+  border: rgb(155, 155, 155) 1px solid;
+  /* ref: https://programming.vip/docs/three-ways-of-realizing-transparent-grid-with-css.html */
+  background-image: repeating-conic-gradient(
+    rgb(179, 179, 179) 0 25%,
+    transparent 0 50%
+  );
+  background-size: 20px 20px;
+  background-color: rgba(36, 36, 36, 0.466);
+  overflow: hidden;
+}
+
+#result-div {
+  height: 100%;
+  width: 100%;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+#result-img {
+  object-fit: contain;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+}
+
+#right {
+  position: absolute;
+  right: 0;
+  top: 0px;
+  width: 300px;
+  height: calc(100vh - 120px);
+  overflow-y: auto;
+  text-align: left;
+  padding: 10px 20px;
+  border-left: #727272 2px solid;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: small;
+  background-color: #fff;
+}
+
+#right-bottom {
+  position: absolute;
+  right: 0;
+  bottom: 0px;
+  width: 300px;
+  height: 120px;
+  overflow-y: hidden;
+  text-align: left;
+  padding: 20px;
+  border-left: #727272 2px solid;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: small;
+  border-top: #727272 2px solid;
+  z-index: 20;
+  background-color: white;
+}
+
+.tab {
+  position: fixed;
+  width: 50px;
+  height: 50px;
+  right: 298px;
+  border-left: #727272 2px solid;
+  border-bottom: #727272 2px solid;
+  border-right: #727272 2px solid;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: small;
+  background-color: rgb(199, 199, 199);
+  z-index: 20;
+  user-select: none;
+  padding: 8px 0 0 8px;
+  font-size: 20px;
+  color: #5c5c5c;
+}
+
+.tab-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.tab:hover {
+  background-color: rgb(228, 228, 228);
+  cursor: pointer;
+}
+
+.tab-selected {
+  border-right: white 2px solid;
+  background-color: white;
+}
+
+.tab-selected:hover {
+  background-color: white;
+  cursor: default;
+}
+
+#tab-1 {
+  top: 0px;
+}
+#tab-2 {
+  top: 50px;
+}
+#tab-3 {
+  top: 100px;
+}
+#tab-4 {
+  top: 150px;
+}
+#tab-5 {
+  top: 200px;
+}
+#tab-6 {
+  top: 250px;
+}
+#tab-7 {
+  top: 300px;
+}
+#tab-8 {
+  top: 350px;
+}
+
+h3 {
+  margin: 0;
+  padding: 0;
+  display: block;
+  width: 100%;
+}
+
+.section {
+  margin: 10px 0;
+  padding: 0;
+}
+
+#buttons {
+  margin-bottom: 10px;
+}
+
+input[type="text"],
+input[type="number"] {
+  padding: 5px;
+  margin: 5px 0px;
+  border: 2px solid #727272;
+  font-family: inherit;
+  font-size: inherit;
+  width: 100%;
+  height: 30px;
+}
+
+input[type="color"] {
+  margin: 5px 0px;
+  width: 100%;
+  border: 2px solid #727272;
+  height: 30px;
+}
+
+input[type="file"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+select {
+  margin: 5px 0px;
+  width: 100%;
+  height: 30px;
+  border: 2px solid #727272;
+  border-radius: 0px;
+  background-color: #fff;
+  cursor: pointer;
+}
+@-moz-document url-prefix() {
+  select {
+    padding-bottom: 2px;
+  }
+}
+
+label {
+  margin: 10px 0px 0px 0px;
+  display: inline-block;
+  width: 100%;
+}
+
+.columns-parent {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 10px;
+}
+
+.two-columns {
+  flex: 0 1 50%;
+}
+
+.h3-extratop {
+  margin-top: 10px;
+}
+.h3-extrabottom {
+  margin-bottom: 10px;
+}
+
+[type="checkbox"] {
+  vertical-align: middle;
+}
+
+.checkbox-label {
+  margin: 15px 0px 15px 0px;
+  display: block;
+  cursor: pointer;
+}
+
+.checkbox-label-2 {
+  margin: 15px 0px 15px 20px;
+  display: block;
+  cursor: pointer;
+}
+
+button {
+  /* appearance: none;
+  -webkit-appearance: none; */
+  padding: 10px;
+  border: none;
+  background-color: #3f51b5;
+  color: #fff;
+  font-weight: 600;
+  width: 100%;
+  margin: 5px 0;
+}
+
+button:hover {
+  background-color: #5a6ddd;
+  cursor: pointer;
+}
+
+button:active {
+  background-color: #3f51b5;
+  transform: translateY(1px);
+}
+
+a:link,
+a:visited,
+a:hover,
+a:active {
+  color: #3f51b5;
+}
+
+.zoom-button {
+  position: fixed;
+  width: 30px;
+  height: 30px;
+  left: 20px;
+  border: #727272 2px solid;
+  background-color: rgb(226, 226, 226);
+  z-index: 20;
+  user-select: none;
+  padding: 8px 0 0 8px;
+  font-size: 15px;
+  color: #5c5c5c;
+}
+
+.zoom-button:hover {
+  background-color: rgb(255, 255, 255);
+  cursor: pointer;
+}
+
+.zoom-button-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+#zoom-button-1 {
+  top: 20px;
+}
+#zoom-button-2 {
+  top: 60px;
+}
+#zoom-button-3 {
+  top: 100px;
+}
+
+.import-export-buttons {
+  height: 18px;
+  font-size: 20px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: right;
+  padding-right: 5px;
+  gap: 10px;
+  margin-top: 5px;
+}
+
+.import-export-button {
+  color: rgb(87, 87, 87);
+  /* border: 2px solid #727272; */
+  padding: 2px;
+}
+.import-export-button:hover {
+  color: rgb(46, 46, 46);
+  cursor: pointer;
+}

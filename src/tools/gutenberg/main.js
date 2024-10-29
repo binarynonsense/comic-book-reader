@@ -209,7 +209,7 @@ function getLocalization() {
   return [
     {
       id: "tool-gut-title-text",
-      text: _("menu-tools-other-gut").toUpperCase(),
+      text: _("menu-tools-gut").toUpperCase(),
     },
     {
       id: "tool-gut-back-button-text",
@@ -322,11 +322,11 @@ function getLocalization() {
     //////////////////////////////////////////////
     {
       id: "tool-gut-donate-text",
-      text: _("tool-shared-ui-donateto-website", _("menu-tools-other-gut")),
+      text: _("tool-shared-ui-donateto-website", _("menu-tools-gut")),
     },
     {
       id: "tool-gut-donate-1-text",
-      text: _("tool-shared-ui-donate-text", _("menu-tools-other-gut")),
+      text: _("tool-shared-ui-donate-text", _("menu-tools-gut")),
     },
     {
       id: "tool-gut-open-donate-browser-button-text",
