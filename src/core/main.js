@@ -398,6 +398,11 @@ if (!gotTheLock) {
       settings.setValue("maximize", false);
     });
   };
+  // don't allow opening windows from the renderer
+  g_mainWindow.webContents.setWindowOpenHandler(() => {
+    // ref: https://www.electronjs.org/docs/latest/api/window-open
+    return { action: "deny" };
+  });
 
   app.whenReady().then(() => {
     createWindow();
