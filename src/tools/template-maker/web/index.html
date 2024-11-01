@@ -46,14 +46,14 @@
     <div id="right-bottom">
       <div id="buttons">
         <button id="refresh-button">REFRESH PREVIEW</button>
-        <label class="checkbox-label" id="autorefresh-label">
+        <label class="checkbox-label">
           <input
             type="checkbox"
             id="autorefresh-checkbox"
             class="refresh"
             checked
           />
-          auto-refresh
+          <span id="autorefresh-span">auto-refresh</span>
         </label>
       </div>
     </div>
@@ -89,11 +89,15 @@
         <i class="fa-solid fa-ruler-combined tab-icon"></i>
       </div>
       <div id="tab-2-content" class="hidden">
-        <label></label>
+        <label>
           <span id="dimensions-units-span">units</span
           ><select id="units-select" class="refresh">
-            <option id="dimensions-units-option-inches" value="inches">inches</option>
-            <option id="dimensions-units-option-cm" value="cm">centimeters</option>
+            <option id="dimensions-units-option-inches" value="inches">
+              inches
+            </option>
+            <option id="dimensions-units-option-cm" value="cm">
+              centimeters
+            </option>
           </select></label
         >
 
@@ -101,7 +105,8 @@
           <h3 id="dimensions-trim-area-size-header">Trim Area Size:</h3>
           <div class="columns-parent">
             <label class="two-columns"
-              ><span id="dimensions-trim-area-width-span">width</span><input
+              ><span id="dimensions-trim-area-width-span">width</span
+              ><input
                 type="number"
                 id="trim-width-input"
                 class="refresh unit-value"
@@ -110,7 +115,8 @@
                 value="6.625"
             /></label>
             <label class="two-columns"
-              ><span id="dimensions-trim-area-height-span">height</span><input
+              ><span id="dimensions-trim-area-height-span">height</span
+              ><input
                 type="number"
                 id="trim-height-input"
                 class="refresh unit-value"
@@ -125,7 +131,8 @@
           <h3 id="dimensions-safe-area-margin-header">Safe Area Margin:</h3>
           <div class="columns-parent">
             <label class="two-columns"
-              ><span id="dimensions-safe-area-top-span">top</span><input
+              ><span id="dimensions-safe-area-top-span">top</span
+              ><input
                 type="number"
                 id="safe-margin-top-input"
                 class="refresh unit-value"
@@ -134,7 +141,8 @@
                 value="0.25"
             /></label>
             <label class="two-columns"
-              ><span id="dimensions-safe-area-bottom-span">bottom</span><input
+              ><span id="dimensions-safe-area-bottom-span">bottom</span
+              ><input
                 type="number"
                 id="safe-margin-bottom-input"
                 class="refresh unit-value"
@@ -145,7 +153,8 @@
           </div>
           <div class="columns-parent">
             <label class="two-columns"
-              ><span id="dimensions-safe-area-left-span">left</span><input
+              ><span id="dimensions-safe-area-left-span">left</span
+              ><input
                 type="number"
                 id="safe-margin-left-input"
                 class="refresh unit-value"
@@ -154,7 +163,8 @@
                 value="0.25"
             /></label>
             <label class="two-columns"
-              ><span id="dimensions-safe-area-right-span">right</span><input
+              ><span id="dimensions-safe-area-right-span">right</span
+              ><input
                 type="number"
                 id="safe-margin-right-input"
                 class="refresh unit-value"
@@ -168,7 +178,9 @@
         <div id="bleed-div" class="section">
           <h3 id="dimensions-bleed-area-margin-header">Bleed Area Margin:</h3>
           <label
-            ><span id="dimensions-bleed-area-span">top / bottom / left / right</span><input
+            ><span id="dimensions-bleed-area-span"
+              >top / bottom / left / right</span
+            ><input
               type="number"
               id="bleed-margin-input"
               class="refresh unit-value"
@@ -182,7 +194,9 @@
           <h3 id="dimensions-header-area-margin-header">Header Area Margin:</h3>
           <div class="columns-parent">
             <label class="two-columns"
-              ><span id="dimensions-header-area-topbottom-span">top / bottom</span><input
+              ><span id="dimensions-header-area-topbottom-span"
+                >top / bottom</span
+              ><input
                 type="number"
                 id="header-margin-top-bottom-input"
                 class="refresh unit-value"
@@ -191,7 +205,9 @@
                 value="0.5"
             /></label>
             <label class="two-columns"
-              ><span id="dimensions-header-area-leftright-span">left / right</span><input
+              ><span id="dimensions-header-area-leftright-span"
+                >left / right</span
+              ><input
                 type="number"
                 id="header-margin-left-right-input"
                 class="refresh unit-value"
@@ -206,7 +222,8 @@
           <h3 id="dimensions-lines-header">Lines:</h3>
           <div class="columns-parent">
             <label class="two-columns"
-              ><span id="dimensions-lines-thin-width-span">thin width</span><input
+              ><span id="dimensions-lines-thin-width-span">thin width</span
+              ><input
                 type="number"
                 id="line-width-thin-input"
                 class="refresh unit-value"
@@ -215,7 +232,8 @@
                 value="0.004"
             /></label>
             <label class="two-columns"
-              ><span id="dimensions-lines-thick-width-span">thick width</span><input
+              ><span id="dimensions-lines-thick-width-span">thick width</span
+              ><input
                 type="number"
                 id="line-width-thick-input"
                 class="refresh unit-value"
@@ -225,7 +243,9 @@
             /></label>
           </div>
           <label
-            ><span id="dimensions-lines-bordermarks-span">border marks max. length</span><input
+            ><span id="dimensions-lines-bordermarks-span"
+              >border marks max. length</span
+            ><input
               type="number"
               id="border-marks-length-input"
               class="refresh unit-value"
@@ -239,7 +259,8 @@
           <h3 id="dimensions-panels-header">Panels:</h3>
           <div class="columns-parent">
             <label class="two-columns"
-              ><span id="dimensions-panels-gutter-size-span">gutter size</span><input
+              ><span id="dimensions-panels-gutter-size-span">gutter size</span
+              ><input
                 type="number"
                 id="panel-gutter-size-input"
                 class="refresh unit-value"
@@ -248,7 +269,8 @@
                 value="0.15"
             /></label>
             <label class="two-columns"
-              ><span id="dimensions-panels-line-width-span">line width</span><input
+              ><span id="dimensions-panels-line-width-span">line width</span
+              ><input
                 type="number"
                 id="panel-line-width-input"
                 class="refresh unit-value"
@@ -263,7 +285,8 @@
           <h3 id="dimensions-header-header">Header Text:</h3>
           <div class="columns-parent">
             <label class="two-columns"
-              ><span id="dimensions-header-text-height-span">text height</span><input
+              ><span id="dimensions-header-text-height-span">text height</span
+              ><input
                 type="number"
                 id="header-text-height-input"
                 class="refresh unit-value"
@@ -272,10 +295,8 @@
                 value="0.12"
             /></label>
             <label class="two-columns"
-              ><span id="dimensions-header-line-spacing-span">line spacing</span><select
-                id="header-text-spacing-select"
-                class="refresh"
-              >
+              ><span id="dimensions-header-line-spacing-span">line spacing</span
+              ><select id="header-text-spacing-select" class="refresh">
                 <option value="1.1">x1.1</option>
                 <option value="1.2">x1.2</option>
                 <option value="1.3">x1.3</option>
@@ -287,7 +308,8 @@
           </div>
           <div class="columns-parent">
             <label class="two-columns"
-              ><span id="dimensions-header-padding-left-span">padding left</span><input
+              ><span id="dimensions-header-padding-left-span">padding left</span
+              ><input
                 type="number"
                 id="header-padding-left-input"
                 class="refresh unit-value"
@@ -296,7 +318,9 @@
                 value="0.21"
             /></label>
             <label class="two-columns"
-              ><span id="dimensions-header-padding-bottom-span">padding bottom</span><input
+              ><span id="dimensions-header-padding-bottom-span"
+                >padding bottom</span
+              ><input
                 type="number"
                 id="header-padding-bottom-input"
                 class="refresh unit-value"

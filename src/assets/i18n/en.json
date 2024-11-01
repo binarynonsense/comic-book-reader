@@ -747,7 +747,7 @@
   "[NOTE TO TRANSLATORS]tool-tm-": "Some terms like bleed, trim, safe area... are specific to printing https://en.wikipedia.org/wiki/Bleed_(printing), please take special care localizing them. If you don't know / are not sure and can't find documentation about the right translation for all of them in this context leave the entries below starting with tools-tm- in English",  
   "tool-tm-title": "Comic Book Template Maker",  
   "tool-tm-refresh-button": "REFRESH PREVIEW",
-  "tool-tm-autorefresh-label": "auto-refresh",
+  "tool-tm-autorefresh-span": "auto-refresh",
   "tool-tm-presets-header": "Template presets:",
   "tool-tm-presets-load-preset-span": "load a preset",
   "tool-tm-presets-load-preset-option-0": "select a preset",
