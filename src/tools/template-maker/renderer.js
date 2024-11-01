@@ -13,8 +13,9 @@ import * as modals from "../../shared/renderer/modals.js";
 ///////////////////////////////////////////////////////////////////////////////
 
 let g_isInitialized = false;
+let g_iframe;
 
-function init(filePath) {
+function init(iframeLocalization) {
   if (!g_isInitialized) {
     // things to start only once go here
     g_isInitialized = true;
@@ -24,6 +25,10 @@ function init(filePath) {
     .addEventListener("click", (event) => {
       sendIpcToMain("close");
     });
+  g_iframe = document.getElementById("tool-template-maker-iframe");
+  g_iframe.onload = () => {
+    updateLocalization(undefined, iframeLocalization);
+  };
 
   ////////////////////////////////////////
 }
@@ -63,8 +68,8 @@ function initOnIpcCallbacks() {
 
   on("hide", () => {});
 
-  on("update-localization", (localization) => {
-    updateLocalization(localization);
+  on("update-localization", (...args) => {
+    updateLocalization(...args);
   });
 
   on("modal-close", () => {
@@ -121,12 +126,26 @@ export function onContextMenu(params) {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-function updateLocalization(localization) {
-  for (let index = 0; index < localization.length; index++) {
-    const element = localization[index];
-    const domElement = document.querySelector("#" + element.id);
-    if (domElement !== null) {
-      domElement.innerHTML = element.text;
+function updateLocalization(localization, iframeLocalization) {
+  if (localization) {
+    for (let index = 0; index < localization.length; index++) {
+      const element = localization[index];
+      const domElement = document.querySelector("#" + element.id);
+      if (domElement !== null) {
+        domElement.innerHTML = element.text;
+      }
     }
+  }
+  if (iframeLocalization) {
+    for (let index = 0; index < iframeLocalization.length; index++) {
+      const element = iframeLocalization[index];
+      const domElement = g_iframe.contentWindow.document.querySelector(
+        "#" + element.id
+      );
+      if (domElement !== null) {
+        domElement.innerHTML = element.text;
+      }
+    }
+    // TODO: import/export button, tabs... titles
   }
 }

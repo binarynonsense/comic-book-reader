@@ -9,7 +9,7 @@ const { clipboard } = require("electron");
 const fs = require("fs");
 const path = require("path");
 const core = require("../../core/main");
-const { _ } = require("../../shared/main/i18n");
+const { _, getKeys } = require("../../shared/main/i18n");
 const log = require("../../shared/main/logger");
 const contextMenu = require("../../shared/main/tools-menu-context");
 const tools = require("../../shared/main/tools");
@@ -33,7 +33,7 @@ exports.open = function (filePath) {
   const data = fs.readFileSync(path.join(__dirname, "index.html"));
   sendIpcToCoreRenderer("replace-inner-html", "#tools", data.toString());
 
-  sendIpcToRenderer("show", filePath);
+  sendIpcToRenderer("show", getIframeLocalization());
 
   updateLocalizedText();
 };
@@ -107,7 +107,11 @@ function initOnIpcCallbacks() {
 ///////////////////////////////////////////////////////////////////////////////
 
 function updateLocalizedText() {
-  sendIpcToRenderer("update-localization", getLocalization());
+  sendIpcToRenderer(
+    "update-localization",
+    getLocalization(),
+    getIframeLocalization()
+  );
 }
 
 function getLocalization() {
@@ -117,4 +121,20 @@ function getLocalization() {
       text: _("tool-shared-ui-back-to-reader").toUpperCase(),
     },
   ];
+}
+
+function getIframeLocalization() {
+  const keys = getKeys();
+  const localization = [];
+  // TODO: do all this more efficiently
+  keys.forEach((key) => {
+    if (key.startsWith("tool-tm-")) {
+      localization.push({
+        id: key.replace("tool-tm-", ""),
+        text: _(key),
+        //text: "** " + _(key),
+      });
+    }
+  });
+  return localization;
 }

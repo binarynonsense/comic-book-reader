@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2023 Álvaro García
+ * Copyright 2023-2024 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -51,6 +51,7 @@ export function initPresets() {
   opt.disabled = true;
   opt.selected = true;
   opt.value = 0;
+  opt.id = "presets-load-preset-option-0";
   opt.innerHTML = "select a preset";
   select.appendChild(opt);
   loadPresetFromJson(preset_1);
