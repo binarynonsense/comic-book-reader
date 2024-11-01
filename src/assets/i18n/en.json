@@ -743,5 +743,5 @@
   "tool-radio-search-options-orderby-votes": "Votes",
   "tool-radio-search-options-orderby-clicks": "Click Count",
   "tool-radio-search-options-orderby-bitrate": "Bitrate",
-  "tool-template-maker-back-warning": "Are you sure you want to close this tool? All the unsaved data will be lost."  
+  "tool-tm-back-warning": "Are you sure you want to close this tool? All the unsaved data will be lost."  
 }
