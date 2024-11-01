@@ -743,5 +743,6 @@
   "tool-radio-search-options-orderby-votes": "الأصوات",
   "tool-radio-search-options-orderby-clicks": "عدد النقرات",
   "tool-radio-search-options-orderby-bitrate": "معدل البت",
-  "[NEEDS TRANSLATION]tool-template-maker-back-warning": "Are you sure you want to close this tool? All the unsaved data will be lost."
+  "[NEEDS TRANSLATION]tool-tm-title": "Comic Book Template Maker",
+  "[NEEDS TRANSLATION]tool-tm-back-warning": "Are you sure you want to close this tool? All the unsaved data will be lost."
 }

@@ -743,5 +743,6 @@
   "tool-radio-search-options-orderby-votes": "Votos",
   "tool-radio-search-options-orderby-clicks": "Número de clicks",
   "tool-radio-search-options-orderby-bitrate": "Bitrate",
+  "[NEEDS TRANSLATION]tool-tm-title": "Comic Book Template Maker",
   "tool-tm-back-warning": "¿Está seguro de que desea cerrar esta herramienta? Se perderán todos los datos no guardados."
 }
