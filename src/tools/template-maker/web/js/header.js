@@ -22,13 +22,13 @@ let g_selectedNodeId;
 export function initHeaderText() {
   // text input
   document
-    .getElementById("header-tree-view-selected-element-string-input")
+    .getElementById("header-nodes-tree-selected-string-input")
     .addEventListener("change", function (event) {
       if (g_selectedNodeId) {
         const node = getNodeFromId(g_rootNode, g_selectedNodeId);
         if (node) {
           let text = document.getElementById(
-            "header-tree-view-selected-element-string-input"
+            "header-nodes-tree-selected-string-input"
           ).value;
           // TODO: sanitize?
           node.value = text;
@@ -41,13 +41,13 @@ export function initHeaderText() {
     });
   // length input
   document
-    .getElementById("header-tree-view-selected-element-length-input")
+    .getElementById("header-nodes-tree-selected-length-input")
     .addEventListener("change", function (event) {
       if (g_selectedNodeId) {
         const node = getNodeFromId(g_rootNode, g_selectedNodeId);
         if (node) {
           let length = document.getElementById(
-            "header-tree-view-selected-element-length-input"
+            "header-nodes-tree-selected-length-input"
           ).value;
           // TODO: sanitize?
           node.length = length;
@@ -60,7 +60,7 @@ export function initHeaderText() {
     });
   // add line button
   document
-    .getElementById("header-tree-view-selected-element-addline-button")
+    .getElementById("header-nodes-tree-selected-addline-button")
     .addEventListener("click", function () {
       if (g_selectedNodeId) {
         const node = getNodeFromId(g_rootNode, g_selectedNodeId);
@@ -76,7 +76,7 @@ export function initHeaderText() {
     });
   // add text button
   document
-    .getElementById("header-tree-view-selected-element-addtext-button")
+    .getElementById("header-nodes-tree-selected-addtext-button")
     .addEventListener("click", function () {
       if (g_selectedNodeId) {
         const node = getNodeFromId(g_rootNode, g_selectedNodeId);
@@ -92,7 +92,7 @@ export function initHeaderText() {
     });
   // add space button
   document
-    .getElementById("header-tree-view-selected-element-addspace-button")
+    .getElementById("header-nodes-tree-selected-addspace-button")
     .addEventListener("click", function () {
       if (g_selectedNodeId) {
         const node = getNodeFromId(g_rootNode, g_selectedNodeId);
@@ -108,7 +108,7 @@ export function initHeaderText() {
     });
   // add underline button
   document
-    .getElementById("header-tree-view-selected-element-addunderline-button")
+    .getElementById("header-nodes-tree-selected-addunderline-button")
     .addEventListener("click", function () {
       if (g_selectedNodeId) {
         const node = getNodeFromId(g_rootNode, g_selectedNodeId);
@@ -124,7 +124,7 @@ export function initHeaderText() {
     });
   // move up button
   document
-    .getElementById("header-tree-view-selected-element-moveup-button")
+    .getElementById("header-nodes-tree-selected-moveup-button")
     .addEventListener("click", function () {
       if (g_selectedNodeId) {
         const node = getNodeFromId(g_rootNode, g_selectedNodeId);
@@ -141,7 +141,7 @@ export function initHeaderText() {
     });
   // move up button
   document
-    .getElementById("header-tree-view-selected-element-movedown-button")
+    .getElementById("header-nodes-tree-selected-movedown-button")
     .addEventListener("click", function () {
       if (g_selectedNodeId) {
         const node = getNodeFromId(g_rootNode, g_selectedNodeId);
@@ -158,7 +158,7 @@ export function initHeaderText() {
     });
   // remove button
   document
-    .getElementById("header-tree-view-selected-element-remove-button")
+    .getElementById("header-nodes-tree-selected-remove-button")
     .addEventListener("click", function () {
       if (g_selectedNodeId) {
         const node = getNodeFromId(g_rootNode, g_selectedNodeId);
@@ -319,11 +319,17 @@ function buildHtmlTree(node, htmlParent) {
     li.appendChild(button);
     button.classList = "tree-view-panel-button";
     if (node.type === NodeType.TEXT) {
-      button.textContent = "text";
+      button.textContent = document.querySelector(
+        "#header-node-type-text-span"
+      ).textContent; //"text";
     } else if (node.type === NodeType.SPACE) {
-      button.textContent = "space";
+      button.textContent = button.textContent = document.querySelector(
+        "#header-node-type-space-span"
+      ).textContent; //"space";
     } else {
-      button.textContent = "underline";
+      button.textContent = button.textContent = document.querySelector(
+        "#header-node-type-underline-span"
+      ).textContent; //"underline";
     }
     button.id = node.id;
     if (node.id === g_selectedNodeId)
@@ -349,9 +355,13 @@ function buildHtmlTree(node, htmlParent) {
     summary.appendChild(button);
     button.classList = "tree-view-summary-button";
     if (node.type === NodeType.HEADER) {
-      button.textContent = "header";
+      button.textContent = button.textContent = document.querySelector(
+        "#header-node-type-header-span"
+      ).textContent; //"header";
     } else {
-      button.textContent = "line";
+      button.textContent = button.textContent = document.querySelector(
+        "#header-node-type-line-span"
+      ).textContent; //"line";
     }
     button.id = node.id;
     if (node.id === g_selectedNodeId)
@@ -406,100 +416,98 @@ function setSelectedTreeElementFromId(id) {
     // length & text
     if (node.type === NodeType.HEADER || node.type === NodeType.LINE) {
       document
-        .getElementById("header-tree-view-selected-element-length-label")
+        .getElementById("header-nodes-tree-selected-length-label")
         .classList.add("tree-view-button-hidden");
       document
-        .getElementById("header-tree-view-selected-element-string-label")
+        .getElementById("header-nodes-tree-selected-string-label")
         .classList.add("tree-view-button-hidden");
     } else if (node.type === NodeType.TEXT) {
       document
-        .getElementById("header-tree-view-selected-element-length-label")
+        .getElementById("header-nodes-tree-selected-length-label")
         .classList.add("tree-view-button-hidden");
       document
-        .getElementById("header-tree-view-selected-element-string-label")
+        .getElementById("header-nodes-tree-selected-string-label")
         .classList.remove("tree-view-button-hidden");
-      document.getElementById(
-        "header-tree-view-selected-element-string-input"
-      ).value = node.value;
+      document.getElementById("header-nodes-tree-selected-string-input").value =
+        node.value;
     } else {
       document
-        .getElementById("header-tree-view-selected-element-length-label")
+        .getElementById("header-nodes-tree-selected-length-label")
         .classList.remove("tree-view-button-hidden");
-      document.getElementById(
-        "header-tree-view-selected-element-length-input"
-      ).value = node.length;
+      document.getElementById("header-nodes-tree-selected-length-input").value =
+        node.length;
       document
-        .getElementById("header-tree-view-selected-element-string-label")
+        .getElementById("header-nodes-tree-selected-string-label")
         .classList.add("tree-view-button-hidden");
     }
     // add buttons
     if (node.type === NodeType.HEADER) {
       document
-        .getElementById("header-tree-view-selected-element-addline-button")
+        .getElementById("header-nodes-tree-selected-addline-button")
         .classList.remove("tree-view-button-hidden");
       document
-        .getElementById("header-tree-view-selected-element-addtext-button")
+        .getElementById("header-nodes-tree-selected-addtext-button")
         .classList.add("tree-view-button-hidden");
       document
-        .getElementById("header-tree-view-selected-element-addunderline-button")
+        .getElementById("header-nodes-tree-selected-addunderline-button")
         .classList.add("tree-view-button-hidden");
       document
-        .getElementById("header-tree-view-selected-element-addspace-button")
+        .getElementById("header-nodes-tree-selected-addspace-button")
         .classList.add("tree-view-button-hidden");
     } else if (node.type === NodeType.LINE) {
       document
-        .getElementById("header-tree-view-selected-element-addline-button")
+        .getElementById("header-nodes-tree-selected-addline-button")
         .classList.add("tree-view-button-hidden");
       document
-        .getElementById("header-tree-view-selected-element-addtext-button")
+        .getElementById("header-nodes-tree-selected-addtext-button")
         .classList.remove("tree-view-button-hidden");
       document
-        .getElementById("header-tree-view-selected-element-addunderline-button")
+        .getElementById("header-nodes-tree-selected-addunderline-button")
         .classList.remove("tree-view-button-hidden");
       document
-        .getElementById("header-tree-view-selected-element-addspace-button")
+        .getElementById("header-nodes-tree-selected-addspace-button")
         .classList.remove("tree-view-button-hidden");
     } else {
       document
-        .getElementById("header-tree-view-selected-element-addline-button")
+        .getElementById("header-nodes-tree-selected-addline-button")
         .classList.add("tree-view-button-hidden");
       document
-        .getElementById("header-tree-view-selected-element-addtext-button")
+        .getElementById("header-nodes-tree-selected-addtext-button")
         .classList.add("tree-view-button-hidden");
       document
-        .getElementById("header-tree-view-selected-element-addunderline-button")
+        .getElementById("header-nodes-tree-selected-addunderline-button")
         .classList.add("tree-view-button-hidden");
       document
-        .getElementById("header-tree-view-selected-element-addspace-button")
+        .getElementById("header-nodes-tree-selected-addspace-button")
         .classList.add("tree-view-button-hidden");
     }
     // move up/down buttons
     if (canMoveUp) {
       document
-        .getElementById("header-tree-view-selected-element-moveup-button")
+        .getElementById("header-nodes-tree-selected-moveup-button")
         .classList.remove("tree-view-button-disabled");
     } else {
       document
-        .getElementById("header-tree-view-selected-element-moveup-button")
+        .getElementById("header-nodes-tree-selected-moveup-button")
         .classList.add("tree-view-button-disabled");
     }
     if (canMoveDown) {
       document
-        .getElementById("header-tree-view-selected-element-movedown-button")
+        .getElementById("header-nodes-tree-selected-movedown-button")
         .classList.remove("tree-view-button-disabled");
     } else {
       document
-        .getElementById("header-tree-view-selected-element-movedown-button")
+        .getElementById("header-nodes-tree-selected-movedown-button")
         .classList.add("tree-view-button-disabled");
     }
     // remove button
     if (node.parent === undefined) {
       document
-        .getElementById("header-tree-view-selected-element-remove-button")
+        .getElementById("header-nodes-tree-selected-remove-button")
         .classList.add("tree-view-button-disabled");
     } else {
       document
-        .getElementById("header-tree-view-selected-element-remove-button")
+        .getElementById("header-nodes-tree-selected-remove-button")
         .classList.remove("tree-view-button-disabled");
     }
   } else {

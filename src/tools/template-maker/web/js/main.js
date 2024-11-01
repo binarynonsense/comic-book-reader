@@ -17,21 +17,26 @@ import { initView, resetView } from "./view.js";
 import { initPanels } from "./panels.js";
 import { initHeaderText } from "./header.js";
 import { initModals } from "./modals.js";
+import { showLoading } from "./loading.js";
 
-const g_version = "1.3.0";
+const g_version = "1.3.1";
 
 init();
 
 function init() {
-  initBase();
-  initRenderer();
-  initPresets();
-  initSaveLoad();
-  initView();
-  initPanels();
-  initHeaderText();
-  initModals();
-  drawCompositeImage();
+  showLoading(true);
+  // time out to let electron app load localization
+  setTimeout(() => {
+    initBase();
+    initRenderer();
+    initPresets();
+    initSaveLoad();
+    initView();
+    initPanels();
+    initHeaderText();
+    initModals();
+    drawCompositeImage();
+  }, "100");
 }
 
 export function getVersion() {

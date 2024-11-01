@@ -72,6 +72,7 @@ export function initPresets() {
     opt.disabled = true;
     opt.selected = true;
     opt.value = 0;
+    opt.id = "grid-load-preset-option-0";
     opt.innerHTML = "select a preset";
     select.appendChild(opt);
     loadGridPresetFromJson(gridPreset_0);
@@ -90,6 +91,7 @@ export function initPresets() {
     opt.disabled = true;
     opt.selected = true;
     opt.value = 0;
+    opt.id = "header-load-preset-option-0";
     opt.innerHTML = "select a preset";
     select.appendChild(opt);
     loadHeaderPresetFromJson(headerPreset_0);

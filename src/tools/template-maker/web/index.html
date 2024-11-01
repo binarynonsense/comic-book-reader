@@ -331,6 +331,7 @@
           </div>
         </div>
       </div>
+
       <!-- rendering options//////////////////////////////////////////// -->
       <div class="tab" id="tab-3" title="rendering options">
         <i class="fa-solid fa-paintbrush tab-icon"></i>
@@ -338,21 +339,24 @@
       <div id="tab-3-content" class="hidden">
         <div class="section">
           <label
-            >background color<input
+            ><span id="rendering-bg-color-span">background color</span
+            ><input
               type="color"
               id="background-color-input"
               class="refresh"
               value="#FFFFFF"
           /></label>
           <label
-            >line color<input
+            ><span id="rendering-line-color-span">line color</span
+            ><input
               type="color"
               id="line-color-input"
               class="refresh"
               value="#A4DDED"
           /></label>
           <label
-            >line weight<select id="line-thickness-select" class="refresh">
+            ><span id="rendering-line-weight-span">line weight</span
+            ><select id="line-thickness-select" class="refresh">
               <option value="1">x1</option>
               <option value="2">x2</option>
               <option value="3">x3</option>
@@ -362,26 +366,32 @@
             </select></label
           >
           <label
-            >panel line color<input
+            ><span id="rendering-panel-line-color-span">panel line color</span
+            ><input
               type="color"
               id="panel-line-color-input"
               class="refresh"
               value="#000000"
           /></label>
           <label
-            >panel guides color<input
+            ><span id="rendering-panel-guides-color-span"
+              >panel guides color</span
+            ><input
               type="color"
               id="panel-guides-color-input"
               class="refresh"
               value="#ff00ff"
           /></label>
           <label
-            >header text weight<select
-              id="header-text-weight-select"
-              class="refresh"
-            >
-              <option value="normal">normal</option>
-              <option value="bold">bold</option>
+            ><span id="rendering-header-text-weight-span"
+              >header text weight</span
+            ><select id="header-text-weight-select" class="refresh">
+              <option id="rendering-header-text-weight-option-0" value="normal">
+                normal
+              </option>
+              <option id="rendering-header-text-weight-option-1" value="bold">
+                bold
+              </option>
             </select></label
           >
           <label class="checkbox-label">
@@ -391,7 +401,7 @@
               class="refresh"
               checked
             />
-            draw background
+            <span id="rendering-draw-bg-span">draw background</span>
           </label>
           <label class="checkbox-label">
             <input
@@ -400,7 +410,7 @@
               class="refresh"
               checked
             />
-            draw header
+            <span id="rendering-draw-header-span">draw header</span>
           </label>
           <label class="checkbox-label">
             <input
@@ -409,7 +419,7 @@
               class="refresh"
               checked
             />
-            draw bleed area
+            <span id="rendering-draw-bleed-span">draw bleed area</span>
           </label>
           <label class="checkbox-label">
             <input
@@ -418,7 +428,7 @@
               class="refresh"
               checked
             />
-            draw trim area
+            <span id="rendering-draw-trim-span">draw trim area</span>
           </label>
           <label class="checkbox-label">
             <input
@@ -427,7 +437,7 @@
               class="refresh"
               checked
             />
-            draw safe area
+            <span id="rendering-draw-safe-span">draw safe area</span>
           </label>
           <label class="checkbox-label">
             <input
@@ -436,7 +446,7 @@
               class="refresh"
               checked
             />
-            draw fraction marks
+            <span id="rendering-draw-fraction-span">draw fraction marks</span>
           </label>
           <label class="checkbox-label">
             <input
@@ -445,7 +455,7 @@
               class="refresh"
               checked
             />
-            draw crop marks
+            <span id="rendering-draw-crop-span">draw crop marks</span>
           </label>
           <label class="checkbox-label">
             <input
@@ -453,7 +463,7 @@
               id="panel-guides-draw-checkbox"
               class="refresh"
             />
-            draw panel guides
+            <span id="rendering-draw-panel-guides-span">draw panel guides</span>
           </label>
           <label class="checkbox-label">
             <input
@@ -462,17 +472,18 @@
               class="refresh"
               checked
             />
-            draw panels
+            <span id="rendering-draw-panels-span">draw panels</span>
           </label>
         </div>
       </div>
 
+      <!-- panel grid ///////////////////////////////////////////////////// -->
       <div class="tab" id="tab-4" title="panel grid">
         <i class="fa-solid fa-border-all tab-icon"></i>
       </div>
       <div id="tab-4-content" class="hidden">
         <label
-          >load a grid preset
+          ><span id="grid-load-preset-span">load a grid preset</span>
           <select id="grid-preset-select" class="refresh"></select
         ></label>
         <div class="import-export-buttons">
@@ -492,56 +503,63 @@
           </div>
         </div>
 
-        <label>grid nodes (tree view)</label>
+        <label
+          ><span id="grid-nodes-tree-span">grid nodes (tree view)</span></label
+        >
         <div id="panel-tree-view" class="tree-view">
           <ul id="panel-tree-view-root" class="tree-view-root"></ul>
         </div>
 
-        <label>selected node</label>
+        <label><span id="grid-node-selected-span">selected node</span></label>
         <div class="tree-view-selected-element-view">
-          <label id="panel-tree-view-selected-element-debug"></label>
+          <label id="grid-nodes-tree-selected-debug"></label>
           <div class="columns-parent">
             <label class="two-columns"
-              >type<select id="panel-tree-view-selected-element-type-select">
-                <option value="vgroup">vertical group</option>
-                <option value="hgroup">horizontal group</option>
-                <option value="panel">panel</option>
+              ><span id="grid-node-type-span">type</span
+              ><select id="grid-nodes-tree-selected-type-select">
+                <option id="grid-node-type-option-vgroup" value="vgroup">
+                  vertical group
+                </option>
+                <option id="grid-node-type-option-hgroup" value="hgroup">
+                  horizontal group
+                </option>
+                <option id="grid-node-type-option-panel" value="panel">
+                  panel
+                </option>
               </select></label
             >
             <label class="two-columns"
-              >size (%)<input
+              ><span id="grid-node-size-span">size (%)</span
+              ><input
                 type="number"
-                id="panel-tree-view-selected-element-size-input"
+                id="grid-nodes-tree-selected-size-input"
                 step="1"
                 min="0"
                 max="100"
                 value="50"
             /></label>
           </div>
-          <button id="panel-tree-view-selected-element-addgroup-button">
+          <button id="grid-nodes-tree-selected-addgroup-button">
             ADD CHILD GROUP
           </button>
-          <button id="panel-tree-view-selected-element-addpanel-button">
+          <button id="grid-nodes-tree-selected-addpanel-button">
             ADD CHILD PANEL
           </button>
-          <button id="panel-tree-view-selected-element-moveup-button">
-            MOVE UP
-          </button>
-          <button id="panel-tree-view-selected-element-movedown-button">
+          <button id="grid-nodes-tree-selected-moveup-button">MOVE UP</button>
+          <button id="grid-nodes-tree-selected-movedown-button">
             MOVE DOWN
           </button>
-          <button id="panel-tree-view-selected-element-remove-button">
-            REMOVE
-          </button>
+          <button id="grid-nodes-tree-selected-remove-button">REMOVE</button>
         </div>
       </div>
 
+      <!-- header text" /////////////////////////////////////////////////// -->
       <div class="tab" id="tab-5" title="header text">
         <i class="fa-solid fa-align-justify tab-icon"></i>
       </div>
       <div id="tab-5-content" class="hidden">
         <label
-          >load a header preset
+          ><span id="header-load-preset-span">load a header preset</span>
           <select id="header-preset-select" class="refresh"></select
         ></label>
         <div class="import-export-buttons">
@@ -561,67 +579,83 @@
           </div>
         </div>
 
-        <label>header text (tree view)</label>
+        <label
+          ><span id="header-nodes-tree-span"
+            >header text (tree view)</span
+          ></label
+        >
         <div id="header-tree-view" class="tree-view">
           <ul id="header-tree-view-root" class="tree-view-root"></ul>
         </div>
 
-        <label>selected node</label>
+        <label><span id="header-node-selected-span">selected node</span></label>
         <div class="tree-view-selected-element-view">
-          <label id="header-tree-view-selected-element-string-label"
-            >text<input
-              type="text"
-              id="header-tree-view-selected-element-string-input"
+          <label id="header-nodes-tree-selected-string-label"
+            ><span id="header-node-text-contents-span">text</span
+            ><input type="text" id="header-nodes-tree-selected-string-input"
           /></label>
-          <label id="header-tree-view-selected-element-length-label"
-            >length (x text height)<input
+          <label id="header-nodes-tree-selected-length-label"
+            ><span id="header-node-lenght-multiplier-span"
+              >length (x text height)</span
+            ><input
               type="number"
-              id="header-tree-view-selected-element-length-input"
+              id="header-nodes-tree-selected-length-input"
               min="0"
           /></label>
           <button
-            id="header-tree-view-selected-element-addline-button"
+            id="header-nodes-tree-selected-addline-button"
             class="tree-view-button-extra-top-margin"
           >
             ADD LINE CHILD
           </button>
           <button
-            id="header-tree-view-selected-element-addtext-button"
+            id="header-nodes-tree-selected-addtext-button"
             class="tree-view-button-extra-top-margin"
           >
             ADD TEXT CHILD
           </button>
-          <button id="header-tree-view-selected-element-addunderline-button">
+          <button id="header-nodes-tree-selected-addunderline-button">
             ADD UNDERLINE CHILD
           </button>
-          <button id="header-tree-view-selected-element-addspace-button">
+          <button id="header-nodes-tree-selected-addspace-button">
             ADD SPACE CHILD
           </button>
-          <button id="header-tree-view-selected-element-moveup-button">
-            MOVE UP
-          </button>
-          <button id="header-tree-view-selected-element-movedown-button">
+          <button id="header-nodes-tree-selected-moveup-button">MOVE UP</button>
+          <button id="header-nodes-tree-selected-movedown-button">
             MOVE DOWN
           </button>
-          <button id="header-tree-view-selected-element-remove-button">
-            REMOVE
-          </button>
+          <button id="header-nodes-tree-selected-remove-button">REMOVE</button>
+        </div>
+        <!-- hidden texts -->
+        <div style="display: none">
+          <span id="header-node-type-header-span">header</span>
+          <span id="header-node-type-line-span">line</span>
+          <span id="header-node-type-text-span">text</span>
+          <span id="header-node-type-underline-span">underline</span>
+          <span id="header-node-type-space-span">space</span>
         </div>
       </div>
 
+      <!-- layout //////////////////////////////////////////////////////// -->
       <div class="tab" id="tab-6" title="layout (page/thumbnails)">
         <i class="fa-solid fa-grip tab-icon"></i>
       </div>
       <div id="tab-6-content" class="hidden">
-        <h3 class="h3-extratop">Layout options:</h3>
+        <h3 class="h3-extratop" id="layout-header">Layout options:</h3>
         <label
-          >page spread<select id="layout-spread-select" class="refresh">
-            <option value="single">single page</option>
-            <option value="double">double page</option>
+          ><span id="layout-page-spread-span">page spread</span
+          ><select id="layout-spread-select" class="refresh">
+            <option id="layout-page-spread-option-single" value="single">
+              single page
+            </option>
+            <option id="layout-page-spread-option-double" value="double">
+              double page
+            </option>
           </select></label
         >
         <label
-          >ppi<input
+          ><span id="layout-ppi-span">ppi</span
+          ><input
             type="number"
             id="ppi-input"
             class="refresh"
@@ -629,17 +663,29 @@
             value="300"
         /></label>
         <label
-          >template type<select id="layout-template-select" class="refresh">
-            <option value="page">page template</option>
-            <option value="thumbnails">thumbnails template</option>
+          ><span id="layout-template-type-span">template type</span
+          ><select id="layout-template-select" class="refresh">
+            <option id="layout-template-type-option-page" value="page">
+              page template
+            </option>
+            <option
+              id="layout-template-type-option-thumbnails"
+              value="thumbnails"
+            >
+              thumbnails template
+            </option>
           </select></label
         >
         <div id="layout-page-div">
-          <h3 class="h3-extratop">Page template options:</h3>
+          <h3 class="h3-extratop" id="layout-page-template-header">
+            Page template options:
+          </h3>
           <label
-            >paper size
+            ><span id="layout-page-paper-span">paper size</span>
             <select id="layout-page-paper-select" class="refresh">
-              <option value="header">use header area size</option>
+              <option value="header" id="layout-page-paper-option-0">
+                use header area size
+              </option>
               <option value="a4">A4</option>
               <option value="b4">B4</option>
               <option value="us">US Letter</option>
@@ -647,18 +693,25 @@
             </select></label
           >
           <label
-            >scaling
+            ><span id="layout-page-scaling-span">scaling</span>
             <select id="layout-page-scaling-select" class="refresh">
-              <option value="keep">keep dimensions</option>
-              <option value="scale">scale to fit paper dimensions</option>
+              <option value="keep" id="layout-page-scaling-option-keep">
+                keep dimensions
+              </option>
+              <option value="scale" id="layout-page-scaling-option-scale">
+                scale to fit paper dimensions
+              </option>
             </select></label
           >
         </div>
         <div id="layout-thumbnails-div" class="hidden">
-          <h3 class="h3-extratop">Thumbnails template options:</h3>
+          <h3 class="h3-extratop" id="layout-thumbnails-template-header">
+            Thumbnails template options:
+          </h3>
           <div class="columns-parent">
             <label class="two-columns"
-              >columns<input
+              ><span id="layout-thumbnails-columns-span">columns</span
+              ><input
                 type="number"
                 id="layout-thumbnails-columns-input"
                 class="refresh"
@@ -667,7 +720,8 @@
                 value="3"
             /></label>
             <label class="two-columns"
-              >rows<input
+              ><span id="layout-thumbnails-rows-span">rows</span
+              ><input
                 type="number"
                 id="layout-thumbnails-rows-input"
                 class="refresh"
@@ -677,7 +731,7 @@
             /></label>
           </div>
           <label
-            >paper size
+            ><span id="layout-thumbnails-paper-span">paper size</span>
             <select id="layout-thumbnails-paper-select" class="refresh">
               <option value="a4">DIN A4</option>
               <option value="us">US Letter</option>
@@ -686,13 +740,15 @@
         </div>
       </div>
 
+      <!-- save //////////////////////////////////////////////////////// -->
       <div class="tab" id="tab-7" title="save as image">
         <i class="fa-solid fa-floppy-disk tab-icon"></i>
       </div>
       <div id="tab-7-content" class="hidden">
-        <h3 class="h3-extratop">Save Template As Image:</h3>
+        <h3 class="h3-extratop" id="save-header">Save Template As Image:</h3>
         <label
-          >file format<select id="save-template-format-select">
+          ><span id="save-format-span">file format</span
+          ><select id="save-template-format-select">
             <option value="png">png</option>
             <option value="jpg">jpg</option>
             <option value="pdf">pdf</option>
@@ -702,16 +758,19 @@
         <button id="save-template-button">SAVE</button>
       </div>
 
+      <!-- info //////////////////////////////////////////////////////// -->
       <div class="tab" id="tab-8" title="tool info">
         <i class="fa-solid fa-circle-info tab-icon"></i>
       </div>
       <div id="tab-8-content" class="hidden">
-        <h3>Comic Book Template Maker</h3>
-        <p>Tool to create comic book page and thumbnails templates.</p>
-        <h3>Version:</h3>
+        <h3 id="info-title-header">Comic Book Template Maker</h3>
+        <p id="info-description-p">
+          Tool to create comic book page and thumbnails templates.
+        </p>
+        <h3 id="info-version-header">Version:</h3>
         <p id="info-version-p">0.0.0</p>
         <p></p>
-        <h3 class="h3-extratop">Made by:</h3>
+        <h3 class="h3-extratop" id="info-author-header">Made by:</h3>
         <p>Álvaro García</p>
         <p>
           <a href="http://www.binarynonsense.com" target="”_blank”"

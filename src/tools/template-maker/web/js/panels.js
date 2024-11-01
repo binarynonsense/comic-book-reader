@@ -20,13 +20,13 @@ let g_selectedNodeId;
 export function initPanels() {
   // type select
   document
-    .getElementById("panel-tree-view-selected-element-type-select")
+    .getElementById("grid-nodes-tree-selected-type-select")
     .addEventListener("change", function (event) {
       if (g_selectedNodeId) {
         const node = getNodeFromId(g_rootNode, g_selectedNodeId);
         if (node) {
           const type = document.getElementById(
-            "panel-tree-view-selected-element-type-select"
+            "grid-nodes-tree-selected-type-select"
           ).value;
           if (node.type === type) return;
           const id = node.id;
@@ -78,13 +78,13 @@ export function initPanels() {
 
   // size input
   document
-    .getElementById("panel-tree-view-selected-element-size-input")
+    .getElementById("grid-nodes-tree-selected-size-input")
     .addEventListener("change", function (event) {
       if (g_selectedNodeId) {
         const node = getNodeFromId(g_rootNode, g_selectedNodeId);
         if (node) {
           let percentage = document.getElementById(
-            "panel-tree-view-selected-element-size-input"
+            "grid-nodes-tree-selected-size-input"
           ).value;
           if (percentage < 0) percentage = 0;
           else if (percentage > 100) percentage = 100;
@@ -101,7 +101,7 @@ export function initPanels() {
     });
   // add group button
   document
-    .getElementById("panel-tree-view-selected-element-addgroup-button")
+    .getElementById("grid-nodes-tree-selected-addgroup-button")
     .addEventListener("click", function () {
       if (g_selectedNodeId) {
         const node = getNodeFromId(g_rootNode, g_selectedNodeId);
@@ -116,7 +116,7 @@ export function initPanels() {
     });
   // add panel button
   document
-    .getElementById("panel-tree-view-selected-element-addpanel-button")
+    .getElementById("grid-nodes-tree-selected-addpanel-button")
     .addEventListener("click", function () {
       if (g_selectedNodeId) {
         const node = getNodeFromId(g_rootNode, g_selectedNodeId);
@@ -131,7 +131,7 @@ export function initPanels() {
     });
   // move up button
   document
-    .getElementById("panel-tree-view-selected-element-moveup-button")
+    .getElementById("grid-nodes-tree-selected-moveup-button")
     .addEventListener("click", function () {
       if (g_selectedNodeId) {
         const node = getNodeFromId(g_rootNode, g_selectedNodeId);
@@ -148,7 +148,7 @@ export function initPanels() {
     });
   // move up button
   document
-    .getElementById("panel-tree-view-selected-element-movedown-button")
+    .getElementById("grid-nodes-tree-selected-movedown-button")
     .addEventListener("click", function () {
       if (g_selectedNodeId) {
         const node = getNodeFromId(g_rootNode, g_selectedNodeId);
@@ -165,7 +165,7 @@ export function initPanels() {
     });
   // remove button
   document
-    .getElementById("panel-tree-view-selected-element-remove-button")
+    .getElementById("grid-nodes-tree-selected-remove-button")
     .addEventListener("click", function () {
       if (g_selectedNodeId) {
         const node = getNodeFromId(g_rootNode, g_selectedNodeId);
@@ -322,7 +322,9 @@ function buildHtmlTree(node, htmlParent) {
     let button = document.createElement("div");
     li.appendChild(button);
     button.classList = "tree-view-panel-button";
-    button.textContent = "panel";
+    button.textContent = document.querySelector(
+      "#grid-node-type-option-panel"
+    ).textContent; //"panel";
     button.id = node.id;
     if (node.id === g_selectedNodeId)
       button.classList.add("tree-view-button-selected");
@@ -347,9 +349,13 @@ function buildHtmlTree(node, htmlParent) {
     summary.appendChild(button);
     button.classList = "tree-view-summary-button";
     if (node.type === NodeType.VGROUP) {
-      button.textContent = "vertical group";
+      button.textContent = document.querySelector(
+        "#grid-node-type-option-vgroup"
+      ).textContent; //"vertical group";
     } else {
-      button.textContent = "horizontal group";
+      button.textContent = document.querySelector(
+        "#grid-node-type-option-hgroup"
+      ).textContent; //"horizontal group";
     }
     button.id = node.id;
     if (node.id === g_selectedNodeId)
@@ -403,15 +409,14 @@ function setSelectedTreeElementFromId(id) {
     }
     // debug
     if (false) {
-      document.getElementById(
-        "panel-tree-view-selected-element-debug"
-      ).textContent = node.id;
+      document.getElementById("grid-nodes-tree-selected-debug").textContent =
+        node.id;
       document
-        .getElementById("panel-tree-view-selected-element-debug")
+        .getElementById("grid-nodes-tree-selected-debug")
         .classList.remove("hidden");
     } else {
       document
-        .getElementById("panel-tree-view-selected-element-debug")
+        .getElementById("grid-nodes-tree-selected-debug")
         .classList.add("hidden");
     }
     // type
@@ -425,83 +430,81 @@ function setSelectedTreeElementFromId(id) {
           opt.disabled = false;
         }
       });
-    document.getElementById(
-      "panel-tree-view-selected-element-type-select"
-    ).value = node.type;
+    document.getElementById("grid-nodes-tree-selected-type-select").value =
+      node.type;
     // size
     if (node.parent === undefined) {
       document.getElementById(
-        "panel-tree-view-selected-element-size-input"
+        "grid-nodes-tree-selected-size-input"
       ).disabled = true;
     } else {
       document.getElementById(
-        "panel-tree-view-selected-element-size-input"
+        "grid-nodes-tree-selected-size-input"
       ).disabled = false;
     }
-    document.getElementById(
-      "panel-tree-view-selected-element-size-input"
-    ).value = node.sizePercentage;
+    document.getElementById("grid-nodes-tree-selected-size-input").value =
+      node.sizePercentage;
     // add buttons
     if (node.type === NodeType.PANEL) {
       document
-        .getElementById("panel-tree-view-selected-element-addgroup-button")
+        .getElementById("grid-nodes-tree-selected-addgroup-button")
         .classList.add("tree-view-button-disabled");
       document
-        .getElementById("panel-tree-view-selected-element-addpanel-button")
+        .getElementById("grid-nodes-tree-selected-addpanel-button")
         .classList.add("tree-view-button-disabled");
     } else {
       document
-        .getElementById("panel-tree-view-selected-element-addgroup-button")
+        .getElementById("grid-nodes-tree-selected-addgroup-button")
         .classList.remove("tree-view-button-disabled");
       document
-        .getElementById("panel-tree-view-selected-element-addpanel-button")
+        .getElementById("grid-nodes-tree-selected-addpanel-button")
         .classList.remove("tree-view-button-disabled");
     }
     // move up/down buttons
     if (canMoveUp) {
       document
-        .getElementById("panel-tree-view-selected-element-moveup-button")
+        .getElementById("grid-nodes-tree-selected-moveup-button")
         .classList.remove("tree-view-button-disabled");
     } else {
       document
-        .getElementById("panel-tree-view-selected-element-moveup-button")
+        .getElementById("grid-nodes-tree-selected-moveup-button")
         .classList.add("tree-view-button-disabled");
     }
     if (canMoveDown) {
       document
-        .getElementById("panel-tree-view-selected-element-movedown-button")
+        .getElementById("grid-nodes-tree-selected-movedown-button")
         .classList.remove("tree-view-button-disabled");
     } else {
       document
-        .getElementById("panel-tree-view-selected-element-movedown-button")
+        .getElementById("grid-nodes-tree-selected-movedown-button")
         .classList.add("tree-view-button-disabled");
     }
     // remove button
     if (node.parent === undefined) {
       document
-        .getElementById("panel-tree-view-selected-element-remove-button")
+        .getElementById("grid-nodes-tree-selected-remove-button")
         .classList.add("tree-view-button-disabled");
     } else {
       document
-        .getElementById("panel-tree-view-selected-element-remove-button")
+        .getElementById("grid-nodes-tree-selected-remove-button")
         .classList.remove("tree-view-button-disabled");
     }
   } else {
     // TODO: disable type and size inputs
     document
-      .getElementById("panel-tree-view-selected-element-addgroup-button")
+      .getElementById("grid-nodes-tree-selected-addgroup-button")
       .classList.add("tree-view-button-disabled");
     document
-      .getElementById("panel-tree-view-selected-element-addpanel-button")
+      .getElementById("grid-nodes-tree-selected-addpanel-button")
       .classList.add("tree-view-button-disabled");
     document
-      .getElementById("panel-tree-view-selected-element-moveup-button")
+      .getElementById("grid-nodes-tree-selected-moveup-button")
       .classList.add("tree-view-button-disabled");
     document
-      .getElementById("panel-tree-view-selected-element-movedown-button")
+      .getElementById("grid-nodes-tree-selected-movedown-button")
       .classList.add("tree-view-button-disabled");
     document
-      .getElementById("panel-tree-view-selected-element-remove-button")
+      .getElementById("grid-nodes-tree-selected-remove-button")
       .classList.add("tree-view-button-disabled");
   }
 }

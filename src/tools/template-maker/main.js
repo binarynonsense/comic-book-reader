@@ -131,8 +131,8 @@ function getIframeLocalization() {
     if (key.startsWith("tool-tm-")) {
       localization.push({
         id: key.replace("tool-tm-", ""),
-        text: _(key),
-        //text: "** " + _(key),
+        //text: _(key),
+        text: "** " + _(key),
       });
     }
   });
