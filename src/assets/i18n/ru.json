@@ -235,6 +235,11 @@
   "ap-tooltip-button-add": "Добавить файлы в плейлист",
   "ap-tooltip-button-delete": "Удалить выбранное из плейлиста",
   "ap-tooltip-button-save": "Сохранить плейлист в файл",
+  "home-screen": "Домашний экран",
+  "[NOTE TO TRANSLATORS]home-screen-favorites": "Favorites as in Favorite files and folders",
+  "home-screen-favorites": "Избранное",
+  "[NOTE TO TRANSLATORS]home-screen-recent": "Recent as in most recently opened files, plural",
+  "home-screen-recent": "Недавние",
   "tool-shared-ui-back-to-reader": "Назад в ридер",
   "tool-shared-ui-back": "Назад",
   "tool-shared-ui-tool": "Инструмент",
@@ -738,10 +743,5 @@
   "tool-radio-search-options-orderby-votes": "Голосам",
   "tool-radio-search-options-orderby-clicks": "Количеству кликов",
   "tool-radio-search-options-orderby-bitrate": "Битрейту",
-  "[NEEDS TRANSLATION]tool-template-maker-back-warning": "Are you sure you want to close this tool? All the unsaved data will be lost.",
-  "home-screen": "Домашний экран",
-  "[NOTE TO TRANSLATORS]home-screen-favorites": "Favorites as in Favorite files and folders",
-  "home-screen-favorites": "Избранное",
-  "[NOTE TO TRANSLATORS]home-screen-recent": "Recent as in most recently opened files, plural",
-  "home-screen-recent": "Недавние"
+  "[NEEDS TRANSLATION]tool-template-maker-back-warning": "Are you sure you want to close this tool? All the unsaved data will be lost."
 }

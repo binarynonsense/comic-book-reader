@@ -235,6 +235,11 @@
   "ap-tooltip-button-add": "إضافة ملفات إلى قائمة التشغيل",
   "ap-tooltip-button-delete": "إزالة المحددة من قائمة التشغيل",
   "ap-tooltip-button-save": "حفظ قائمة التشغيل في ملف",
+  "home-screen": "الصفحة الرئيسية",
+  "[NOTE TO TRANSLATORS]home-screen-favorites": "Favorites as in Favorite files and folders",
+  "home-screen-favorites": "المفضلة",
+  "[NOTE TO TRANSLATORS]home-screen-recent": "Recent as in most recently opened files, plural",
+  "home-screen-recent": "الملفات الأخيرة",
   "tool-shared-ui-back-to-reader": "العودة إلى القارئ",
   "tool-shared-ui-back": "الخلف",
   "tool-shared-ui-tool": "الأداة",
@@ -738,10 +743,5 @@
   "tool-radio-search-options-orderby-votes": "الأصوات",
   "tool-radio-search-options-orderby-clicks": "عدد النقرات",
   "tool-radio-search-options-orderby-bitrate": "معدل البت",
-  "[NEEDS TRANSLATION]tool-template-maker-back-warning": "Are you sure you want to close this tool? All the unsaved data will be lost.",
-  "home-screen": "الصفحة الرئيسية",
-  "[NOTE TO TRANSLATORS]home-screen-favorites": "Favorites as in Favorite files and folders",
-  "home-screen-favorites": "المفضلة",
-  "[NOTE TO TRANSLATORS]home-screen-recent": "Recent as in most recently opened files, plural",
-  "home-screen-recent": "الملفات الأخيرة"
+  "[NEEDS TRANSLATION]tool-template-maker-back-warning": "Are you sure you want to close this tool? All the unsaved data will be lost."
 }

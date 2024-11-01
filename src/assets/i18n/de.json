@@ -235,6 +235,11 @@
   "ap-tooltip-button-add": "Füge Dateien der Playlist hinzu",
   "ap-tooltip-button-delete": "Entferne ausgewählte von der Playlist",
   "ap-tooltip-button-save": "Speicher Playlist als Datei",
+  "home-screen": "Startbildschirm",
+  "[NOTE TO TRANSLATORS]home-screen-favorites": "Favorites as in Favorite files and folders",
+  "home-screen-favorites": "Favoriten",
+  "[NOTE TO TRANSLATORS]home-screen-recent": "Recent as in most recently opened files, plural",
+  "home-screen-recent": "Zuletzt geöffnet",
   "tool-shared-ui-back-to-reader": "Zurück zum Reader",
   "tool-shared-ui-back": "Zurück",
   "tool-shared-ui-tool": "Werkzeug",
@@ -738,10 +743,5 @@
   "tool-radio-search-options-orderby-votes": "Stimmen",
   "tool-radio-search-options-orderby-clicks": "Klickanzahl",
   "tool-radio-search-options-orderby-bitrate": "Bitrate",
-  "tool-template-maker-back-warning": "Sind Sie sicher, dass Sie dieses Werkzeug schließen wollen? Alle ungespeicherten Daten gehen verloren.",
-  "home-screen": "Startbildschirm",
-  "[NOTE TO TRANSLATORS]home-screen-favorites": "Favorites as in Favorite files and folders",
-  "home-screen-favorites": "Favoriten",
-  "[NOTE TO TRANSLATORS]home-screen-recent": "Recent as in most recently opened files, plural",
-  "home-screen-recent": "Zuletzt geöffnet"
+  "tool-template-maker-back-warning": "Sind Sie sicher, dass Sie dieses Werkzeug schließen wollen? Alle ungespeicherten Daten gehen verloren."
 }

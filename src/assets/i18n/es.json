@@ -235,6 +235,11 @@
   "ap-tooltip-button-add": "añadir archivos a la lista",
   "ap-tooltip-button-delete": "borrar seleccionado de la lista",
   "ap-tooltip-button-save": "guardar lista de reproducción en archivo",
+  "home-screen": "Pantalla principal",
+  "[NOTE TO TRANSLATORS]home-screen-favorites": "Favorites as in Favorite files and folders",
+  "home-screen-favorites": "Favoritos",
+  "[NOTE TO TRANSLATORS]home-screen-recent": "Recent as in most recently opened files, plural",
+  "home-screen-recent": "Recientes",
   "tool-shared-ui-back-to-reader": "Volver al lector",
   "tool-shared-ui-back": "Atrás",
   "tool-shared-ui-tool": "Herramienta",
@@ -738,10 +743,5 @@
   "tool-radio-search-options-orderby-votes": "Votos",
   "tool-radio-search-options-orderby-clicks": "Número de clicks",
   "tool-radio-search-options-orderby-bitrate": "Bitrate",
-  "tool-template-maker-back-warning": "¿Está seguro de que desea cerrar esta herramienta? Se perderán todos los datos no guardados.",
-  "home-screen": "Pantalla principal",
-  "[NOTE TO TRANSLATORS]home-screen-favorites": "Favorites as in Favorite files and folders",
-  "home-screen-favorites": "Favoritos",
-  "[NOTE TO TRANSLATORS]home-screen-recent": "Recent as in most recently opened files, plural",
-  "home-screen-recent": "Recientes"
+  "tool-template-maker-back-warning": "¿Está seguro de que desea cerrar esta herramienta? Se perderán todos los datos no guardados."
 }
