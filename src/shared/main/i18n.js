@@ -208,6 +208,10 @@ exports._object = function (key) {
   return data;
 };
 
+exports.getKeys = function () {
+  return Object.keys(g_englishData);
+};
+
 // ref: https://stackoverflow.com/questions/37639444/javascript-stringformat-with-array
 String.prototype.myFormatString = function (_array) {
   var s = _array[0];
