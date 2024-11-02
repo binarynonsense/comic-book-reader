@@ -125,15 +125,23 @@ function getLocalization() {
 
 function getIframeLocalization() {
   const keys = getKeys();
-  const localization = [];
+  const localization = { texts: [], titles: [] };
   // TODO: do all this more efficiently
   keys.forEach((key) => {
     if (key.startsWith("tool-tm-")) {
-      localization.push({
-        id: key.replace("tool-tm-", ""),
-        //text: _(key),
-        text: "** " + _(key),
-      });
+      if (key.endsWith("-tagtitle")) {
+        localization.titles.push({
+          id: key.replace("tool-tm-", "").replace("-tagtitle", ""),
+          text: _(key),
+          //text: "** " + _(key),
+        });
+      } else {
+        localization.texts.push({
+          id: key.replace("tool-tm-", ""),
+          text: _(key),
+          //text: "** " + _(key),
+        });
+      }
     }
   });
   return localization;

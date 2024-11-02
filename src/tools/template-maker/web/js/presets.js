@@ -52,7 +52,9 @@ export function initPresets() {
   opt.selected = true;
   opt.value = 0;
   opt.id = "presets-load-preset-option-0";
-  opt.innerHTML = "select a preset";
+  opt.innerHTML = document.getElementById(
+    "presets-load-preset-option-default"
+  ).textContent; //"select a preset";
   select.appendChild(opt);
   loadPresetFromJson(preset_1);
   loadPresetFromJson(preset_2);
@@ -73,7 +75,9 @@ export function initPresets() {
     opt.selected = true;
     opt.value = 0;
     opt.id = "grid-load-preset-option-0";
-    opt.innerHTML = "select a preset";
+    opt.innerHTML = document.getElementById(
+      "presets-load-preset-option-default"
+    ).textContent; //"select a preset";
     select.appendChild(opt);
     loadGridPresetFromJson(gridPreset_0);
     loadGridPresetFromJson(gridPreset_1);
@@ -92,7 +96,9 @@ export function initPresets() {
     opt.selected = true;
     opt.value = 0;
     opt.id = "header-load-preset-option-0";
-    opt.innerHTML = "select a preset";
+    opt.innerHTML = document.getElementById(
+      "presets-load-preset-option-default"
+    ).textContent; //"select a preset";
     select.appendChild(opt);
     loadHeaderPresetFromJson(headerPreset_0);
     loadHeaderPresetFromJson(headerPreset_1);

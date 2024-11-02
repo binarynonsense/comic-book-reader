@@ -158,7 +158,7 @@ export function initSaveLoad() {
       openModal("export-preset-modal");
     });
   document
-    .getElementById("export-preset-button")
+    .getElementById("export-preset-modal-export-button")
     .addEventListener("click", function () {
       let name = document.getElementById("export-preset-name-input").value;
       savePresetFileFromCurrentValues(name);
@@ -171,7 +171,7 @@ export function initSaveLoad() {
       openModal("import-preset-modal");
     });
   document
-    .getElementById("import-preset-button")
+    .getElementById("import-preset-modal-choose-button")
     .addEventListener("click", function () {
       document.getElementById("import-preset-file-input").click();
       closeOpenModal();
@@ -183,7 +183,9 @@ export function initSaveLoad() {
       let reader = new FileReader();
       reader.onload = function (e) {
         let index = loadPresetFromJson(JSON.parse(e.target.result));
-        if (document.getElementById("import-preset-apply-checkbox").checked) {
+        if (
+          document.getElementById("import-preset-modal-apply-checkbox").checked
+        ) {
           setPreset(-1); // load all defaults
           setPreset(index - 1);
           if (document.getElementById("autorefresh-checkbox").checked)
@@ -200,7 +202,7 @@ export function initSaveLoad() {
       openModal("export-grid-preset-modal");
     });
   document
-    .getElementById("export-grid-preset-button")
+    .getElementById("export-grid-preset-modal-export-button")
     .addEventListener("click", function () {
       let name = document.getElementById("export-grid-preset-name-input").value;
       saveGridPresetFileFromCurrentValues(name);
@@ -212,7 +214,7 @@ export function initSaveLoad() {
       openModal("import-grid-preset-modal");
     });
   document
-    .getElementById("import-grid-preset-button")
+    .getElementById("import-grid-preset-modal-choose-button")
     .addEventListener("click", function () {
       document.getElementById("import-grid-preset-file-input").click();
       closeOpenModal();
@@ -242,7 +244,7 @@ export function initSaveLoad() {
       openModal("export-header-preset-modal");
     });
   document
-    .getElementById("export-header-preset-button")
+    .getElementById("export-header-preset-modal-export-button")
     .addEventListener("click", function () {
       let name = document.getElementById(
         "export-header-preset-name-input"
@@ -256,7 +258,7 @@ export function initSaveLoad() {
       openModal("import-header-preset-modal");
     });
   document
-    .getElementById("import-header-preset-button")
+    .getElementById("import-header-preset-modal-choose-button")
     .addEventListener("click", function () {
       document.getElementById("import-header-preset-file-input").click();
       closeOpenModal();

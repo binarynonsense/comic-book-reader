@@ -137,15 +137,23 @@ function updateLocalization(localization, iframeLocalization) {
     }
   }
   if (iframeLocalization) {
-    for (let index = 0; index < iframeLocalization.length; index++) {
-      const element = iframeLocalization[index];
+    for (let index = 0; index < iframeLocalization.texts.length; index++) {
+      const data = iframeLocalization.texts[index];
       const domElement = g_iframe.contentWindow.document.querySelector(
-        "#" + element.id
+        "#" + data.id
       );
       if (domElement !== null) {
-        domElement.innerHTML = element.text;
+        domElement.innerHTML = data.text;
       }
     }
-    // TODO: import/export button, tabs... titles
+    for (let index = 0; index < iframeLocalization.titles.length; index++) {
+      const data = iframeLocalization.titles[index];
+      const domElement = g_iframe.contentWindow.document.querySelector(
+        "#" + data.id
+      );
+      if (domElement !== null) {
+        domElement.title = data.text;
+      }
+    }
   }
 }
