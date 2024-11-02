@@ -23,7 +23,8 @@ function init(iframeLocalization) {
   document
     .getElementById("tool-template-maker-back-button")
     .addEventListener("click", (event) => {
-      sendIpcToMain("close");
+      //sendIpcToMain("close");
+      showModalConfirmClose();
     });
   g_iframe = document.getElementById("tool-template-maker-iframe");
   g_iframe.onload = () => {
@@ -87,23 +88,13 @@ function initOnIpcCallbacks() {
     updateLocalization(...args);
   });
 
-  on("modal-close", () => {
-    modals.close(g_openModal);
-    g_openModal = undefined;
-  });
-
   /////////////////////////////////////////////////////////////////////////////
 
-  on("modal-update-title-text", (text) => {
-    updateModalTitleText(text);
-  });
-
-  on("modal-update-info-text", (text) => {
-    updateModalInfoText(text);
-  });
-
-  on("modal-update-log-text", (text) => {
-    updateModalLogText(text);
+  on("close-modal", () => {
+    if (g_openModal) {
+      modals.close(g_openModal);
+      modalClosed();
+    }
   });
 }
 
@@ -116,10 +107,10 @@ function initOnIpcCallbacks() {
 ///////////////////////////////////////////////////////////////////////////////
 
 export function onInputEvent(type, event) {
-  // if (getOpenModal()) {
-  //   modals.onInputEvent(getOpenModal(), type, event);
-  //   return;
-  // }
+  if (getOpenModal()) {
+    modals.onInputEvent(getOpenModal(), type, event);
+    return;
+  }
   switch (type) {
     case "onkeydown": {
       if (event.key == "Tab") {
@@ -131,10 +122,58 @@ export function onInputEvent(type, event) {
 }
 
 export function onContextMenu(params) {
-  // if (getOpenModal()) {
-  //   return;
-  // }
+  if (getOpenModal()) {
+    return;
+  }
   sendIpcToMain("show-context-menu", params);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// MODALS /////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+let g_openModal;
+
+export function getOpenModal() {
+  return g_openModal;
+}
+
+function modalClosed() {
+  g_openModal = undefined;
+}
+
+let g_modalsLocalization;
+
+function showModalConfirmClose() {
+  if (g_openModal) {
+    return;
+  }
+  g_openModal = modals.show({
+    title: g_modalsLocalization["closeTitle"],
+    message: g_modalsLocalization["closeMessage"],
+    zIndexDelta: 5,
+    close: {
+      callback: () => {
+        modalClosed();
+      },
+      key: "Escape",
+    },
+    buttons: [
+      {
+        text: g_modalsLocalization["closeOk"],
+        callback: () => {
+          sendIpcToMain("close");
+          modalClosed();
+        },
+      },
+      {
+        text: g_modalsLocalization["closeCancel"],
+        callback: () => {
+          modalClosed();
+        },
+      },
+    ],
+  });
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -143,13 +182,14 @@ export function onContextMenu(params) {
 
 function updateLocalization(localization, iframeLocalization) {
   if (localization) {
-    for (let index = 0; index < localization.length; index++) {
-      const element = localization[index];
+    for (let index = 0; index < localization.texts.length; index++) {
+      const element = localization.texts[index];
       const domElement = document.querySelector("#" + element.id);
       if (domElement !== null) {
         domElement.innerHTML = element.text;
       }
     }
+    g_modalsLocalization = localization.modals;
   }
   if (iframeLocalization) {
     for (let index = 0; index < iframeLocalization.texts.length; index++) {

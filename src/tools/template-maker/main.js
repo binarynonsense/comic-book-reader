@@ -115,12 +115,20 @@ function updateLocalizedText() {
 }
 
 function getLocalization() {
-  return [
+  const localization = { texts: [], modals: {} };
+  localization.texts = [
     {
       id: "tool-template-maker-back-button-text",
       text: _("tool-shared-ui-back-to-reader").toUpperCase(),
     },
   ];
+  localization.modals["closeTitle"] = _("tool-shared-modal-title-warning");
+  localization.modals["closeMessage"] = _("tool-tm-back-warning");
+  localization.modals["closeOk"] = _("ui-modal-prompt-button-ok").toUpperCase();
+  localization.modals["closeCancel"] = _(
+    "ui-modal-prompt-button-cancel"
+  ).toUpperCase();
+  return localization;
 }
 
 function getIframeLocalization() {
