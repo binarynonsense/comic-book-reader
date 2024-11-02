@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2023 Álvaro García
+ * Copyright 2023-2024 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -18,11 +18,26 @@ export function initView() {
     .getElementById("zoom-button-1")
     .addEventListener("click", g_panzoom.zoomIn);
   document
+    .getElementById("zoom-button-1")
+    .addEventListener("dblclick", (event) => {
+      event.stopPropagation();
+    });
+  document
     .getElementById("zoom-button-2")
     .addEventListener("click", g_panzoom.zoomOut);
   document
+    .getElementById("zoom-button-2")
+    .addEventListener("dblclick", (event) => {
+      event.stopPropagation();
+    });
+  document
     .getElementById("zoom-button-3")
     .addEventListener("click", g_panzoom.reset);
+  document
+    .getElementById("zoom-button-3")
+    .addEventListener("dblclick", (event) => {
+      event.stopPropagation();
+    });
 
   document
     .getElementById("result-div")
