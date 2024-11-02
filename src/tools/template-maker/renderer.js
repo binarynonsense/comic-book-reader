@@ -28,6 +28,21 @@ function init(iframeLocalization) {
   g_iframe = document.getElementById("tool-template-maker-iframe");
   g_iframe.onload = () => {
     updateLocalization(undefined, iframeLocalization);
+
+    g_iframe.contentWindow.document.onclick = function (clickEvent) {
+      // HACK: this makes the title menu bar close any open menus when
+      // clicking the iframe
+      let titleElement = document.getElementsByClassName("cet-title-right")[0];
+      var titlePosition = titleElement.getBoundingClientRect();
+      var clickEvent = new MouseEvent("mousedown", {
+        view: window,
+        bubbles: true,
+        cancelable: true,
+        screenX: titlePosition.left,
+        screenY: titlePosition.top,
+      });
+      titleElement.dispatchEvent(clickEvent);
+    };
   };
 
   ////////////////////////////////////////
