@@ -15,7 +15,7 @@ import * as modals from "../../shared/renderer/modals.js";
 let g_isInitialized = false;
 let g_iframe;
 
-function init(iframeLocalization) {
+function init(theme, iframeLocalization) {
   if (!g_isInitialized) {
     // things to start only once go here
     g_isInitialized = true;
@@ -44,6 +44,23 @@ function init(iframeLocalization) {
       });
       titleElement.dispatchEvent(clickEvent);
     };
+
+    // Change CSS
+    // function updateCssProperties(newValuesObject) {
+    //   for (const [key, value] of Object.entries(newValuesObject)) {
+    //     g_iframe.contentWindow.document.documentElement.style.setProperty(key, value);
+    //   }
+    // }
+    // console.log(theme);
+    // // TEST
+    // g_iframe.contentWindow.document.documentElement.style.setProperty(
+    //   "--right-bg-color",
+    //   theme["--tools-bg2-color"]
+    // );
+    // g_iframe.contentWindow.document.documentElement.style.setProperty(
+    //   "--right-color",
+    //   theme["--tools-text-color"]
+    // );
   };
 
   ////////////////////////////////////////
@@ -78,8 +95,8 @@ function on(id, callback) {
 }
 
 function initOnIpcCallbacks() {
-  on("show", (filePath) => {
-    init(filePath);
+  on("show", (...args) => {
+    init(...args);
   });
 
   on("hide", () => {});

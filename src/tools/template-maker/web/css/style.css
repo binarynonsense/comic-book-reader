@@ -1,3 +1,9 @@
+:root {
+  --right-bg-color: #fff;
+  --right-color: #3d3d3d;
+  --border-color: #727272;
+}
+
 body,
 html {
   margin: 0;
@@ -59,10 +65,11 @@ html {
   overflow-y: auto;
   text-align: left;
   padding: 10px 20px;
-  border-left: #727272 2px solid;
+  border-left: var(--border-color) 2px solid;
   font-family: Arial, Helvetica, sans-serif;
   font-size: small;
-  background-color: #fff;
+  background-color: var(--right-bg-color);
+  color: var(--right-color);
 }
 
 #right-bottom {
@@ -74,12 +81,12 @@ html {
   overflow-y: hidden;
   text-align: left;
   padding: 20px;
-  border-left: #727272 2px solid;
+  border-left: var(--border-color) 2px solid;
   font-family: Arial, Helvetica, sans-serif;
   font-size: small;
-  border-top: #727272 2px solid;
+  border-top: var(--border-color) 2px solid;
   z-index: 20;
-  background-color: white;
+  background-color: var(--right-bg-color);
 }
 
 .tab {
@@ -87,9 +94,9 @@ html {
   width: 50px;
   height: 50px;
   right: 298px;
-  border-left: #727272 2px solid;
-  border-bottom: #727272 2px solid;
-  border-right: #727272 2px solid;
+  border-left: var(--border-color) 2px solid;
+  border-bottom: var(--border-color) 2px solid;
+  border-right: var(--border-color) 2px solid;
   font-family: Arial, Helvetica, sans-serif;
   font-size: small;
   background-color: rgb(199, 199, 199);
@@ -97,7 +104,9 @@ html {
   user-select: none;
   padding: 8px 0 0 8px;
   font-size: 20px;
-  color: #5c5c5c;
+  /* color: #5c5c5c; */
+  /* color: rgba(var(--right-color), 0.8); */
+  /* color: color-mix(in srgb, var(--right-color), transparent 40%); */
 }
 
 .tab-icon {
@@ -110,17 +119,19 @@ html {
 }
 
 .tab:hover {
-  background-color: rgb(228, 228, 228);
+  /* background-color: rgb(228, 228, 228); */
+  /* background-color: color-mix(in srgb, var(--right-bg-color) 90%, black); */
+  background-color: var(--right-bg-color);
   cursor: pointer;
 }
 
 .tab-selected {
-  border-right: white 2px solid;
-  background-color: white;
+  border-right: var(--right-bg-color) 2px solid;
+  background-color: var(--right-bg-color);
 }
 
 .tab-selected:hover {
-  background-color: white;
+  background-color: var(--right-bg-color);
   cursor: default;
 }
 
@@ -169,7 +180,7 @@ input[type="text"],
 input[type="number"] {
   padding: 5px;
   margin: 5px 0px;
-  border: 2px solid #727272;
+  border: 2px solid var(--border-color);
   font-family: inherit;
   font-size: inherit;
   width: 100%;
@@ -179,7 +190,7 @@ input[type="number"] {
 input[type="color"] {
   margin: 5px 0px;
   width: 100%;
-  border: 2px solid #727272;
+  border: 2px solid var(--border-color);
   height: 30px;
 }
 
@@ -198,7 +209,7 @@ select {
   margin: 5px 0px;
   width: 100%;
   height: 30px;
-  border: 2px solid #727272;
+  border: 2px solid var(--border-color);
   border-radius: 0px;
   background-color: #fff;
   cursor: pointer;
@@ -283,7 +294,7 @@ a:active {
   width: 30px;
   height: 30px;
   left: 20px;
-  border: #727272 2px solid;
+  border: var(--border-color) 2px solid;
   background-color: rgb(226, 226, 226);
   z-index: 20;
   user-select: none;
@@ -330,7 +341,7 @@ a:active {
 
 .import-export-button {
   color: rgb(87, 87, 87);
-  /* border: 2px solid #727272; */
+  /* border: 2px solid var(--border-color) ; */
   padding: 2px;
 }
 .import-export-button:hover {

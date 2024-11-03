@@ -13,6 +13,7 @@ const { _, getKeys } = require("../../shared/main/i18n");
 const log = require("../../shared/main/logger");
 const contextMenu = require("../../shared/main/tools-menu-context");
 const tools = require("../../shared/main/tools");
+const themes = require("../../shared/main/themes");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -33,7 +34,7 @@ exports.open = function (filePath) {
   const data = fs.readFileSync(path.join(__dirname, "index.html"));
   sendIpcToCoreRenderer("replace-inner-html", "#tools", data.toString());
 
-  sendIpcToRenderer("show", getIframeLocalization());
+  sendIpcToRenderer("show", themes.getData(), getIframeLocalization());
 
   updateLocalizedText();
 };
