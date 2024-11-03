@@ -804,7 +804,7 @@
   "tool-tm-rendering-draw-panel-guides-span": "dibujar guías de panel",
   "tool-tm-rendering-draw-panels-span": "dibujar paneles",
   "tool-tm-grid-load-preset-span": "cargar preajustes de cuadrícula",
-  "tool-tm-grid-nodes-tree-span": "nodos de cuadrícula (vista de árbol)",
+  "tool-tm-grid-nodes-tree-span": "cuadrícula (vista de árbol)",
   "tool-tm-grid-node-selected-span": "seleccionar nodo",
   "tool-tm-grid-node-type-span": "tipo",
   "tool-tm-grid-node-type-option-vgroup": "grupo vertical",
