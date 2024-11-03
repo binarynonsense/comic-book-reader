@@ -746,7 +746,7 @@
   "tool-tm-back-warning": "Are you sure you want to close this tool? All the unsaved data will be lost.",
   "[NOTE TO TRANSLATORS]tool-tm-* 1": "Some terms like bleed, trim, safe area, panels, gutter... are specific to printing https://en.wikipedia.org/wiki/Bleed_(printing) and/or comic book art, please take special care localizing them. If you don't know / are not sure and can't find documentation about the right translation for them in this context, or if localizing this particular tool is too much work, you can leave all the entries below that start with 'tools-tm-' in English.",
   "[NOTE TO TRANSLATORS]tool-tm-* 2": "Unless otherwise noted, the word 'line' is used as in 'drawing line', not as in 'text line'.",
-  "[NOTE TO TRANSLATORS]tool-tm-* 3": "The words 'tree' and 'node' are used in this context: https://en.wikipedia.org/wiki/Tree_(abstract_data_type)",
+  "[NOTE TO TRANSLATORS]tool-tm-* 3": "The words 'tree', 'child' and 'node' are used in this context: https://en.wikipedia.org/wiki/Tree_(abstract_data_type)",
   "tool-tm-refresh-button": "REFRESH PREVIEW",
   "tool-tm-autorefresh-span": "auto-refresh",
   "tool-tm-presets-header": "Template presets:",
