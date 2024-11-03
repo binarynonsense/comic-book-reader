@@ -804,7 +804,7 @@
   "tool-tm-rendering-draw-panel-guides-span": "Zeichne Panelführungen",
   "tool-tm-rendering-draw-panels-span": "Zeichne Panels",
   "tool-tm-grid-load-preset-span": "Lade eine Gittervoreinstellung",
-  "[NEEDS TRANSLATION]tool-tm-grid-nodes-tree-span": "grid (tree view)",
+  "tool-tm-grid-nodes-tree-span": "Gitter (Baumansicht)",
   "tool-tm-grid-node-selected-span": "Ausgewählter Knotenpunkt",
   "tool-tm-grid-node-type-span": "Typ",
   "tool-tm-grid-node-type-option-vgroup": "Vertikalgruppe",
