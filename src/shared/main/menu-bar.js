@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2024 Álvaro García
+ * Copyright 2020-2025 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -134,12 +134,18 @@ exports.setCanOpenTools = setCanOpenTools = function (isEnabled) {
 
 exports.setCanTweakUI = setCanTweakUI = function (isEnabled) {
   Menu.getApplicationMenu().getMenuItemById("view-layout").enabled = isEnabled;
-  Menu.getApplicationMenu().getMenuItemById("scrollbar").enabled = isEnabled;
-  Menu.getApplicationMenu().getMenuItemById("toolbar").enabled = isEnabled;
-  Menu.getApplicationMenu().getMenuItemById("page-number").enabled = isEnabled;
-  Menu.getApplicationMenu().getMenuItemById("clock").enabled = isEnabled;
-  Menu.getApplicationMenu().getMenuItemById("battery").enabled = isEnabled;
-  Menu.getApplicationMenu().getMenuItemById("audio-player").enabled = isEnabled;
+  EnableItemRecursive(
+    Menu.getApplicationMenu().getMenuItemById("view-layout-show"),
+    isEnabled
+  );
+  // Menu.getApplicationMenu().getMenuItemById("scrollbar").enabled = isEnabled;
+  // Menu.getApplicationMenu().getMenuItemById("toolbar").enabled = isEnabled;
+  // Menu.getApplicationMenu().getMenuItemById("page-number").enabled = isEnabled;
+  // Menu.getApplicationMenu().getMenuItemById("clock").enabled = isEnabled;
+  // Menu.getApplicationMenu().getMenuItemById("battery").enabled = isEnabled;
+  // Menu.getApplicationMenu().getMenuItemById("audio-player").enabled = isEnabled;
+  // Menu.getApplicationMenu().getMenuItemById("loading-indicator").enabled =
+  //   isEnabled;
 };
 
 exports.setComicBookOpened = setComicBookOpened = function (isEnabled) {
@@ -173,6 +179,10 @@ exports.setComicBookOpened = setComicBookOpened = function (isEnabled) {
   );
   EnableItemRecursive(
     Menu.getApplicationMenu().getMenuItemById("view-layout"),
+    isEnabled
+  );
+  EnableItemRecursive(
+    Menu.getApplicationMenu().getMenuItemById("view-layout-show"),
     isEnabled
   );
   EnableItemRecursive(
