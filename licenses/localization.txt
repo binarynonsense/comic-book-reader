@@ -16,6 +16,10 @@ language: Spanish
 authors: Álvaro
 license: BSD-2-Clause
 
+language: Filipino
+authors: Andrew
+license: BSD-2-Clause
+
 language: Russian
 authors: vanja-san
 license: BSD-2-Clause
