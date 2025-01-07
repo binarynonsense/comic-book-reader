@@ -112,6 +112,7 @@ Todas las versiones (estables y betas):
 - Traducción al ruso por [vanja-san](https://github.com/vanja-san).
 - Traducción al alemán por [Timo Heidutzek (trzyglow)](https://github.com/trzyglow)
 - Traducción al árabe por [Ahmed (ahmed-0011)](https://github.com/ahmed-0011)
+- Traducción al filipino por [AndrewL (CodeByMoriarty)](https://github.com/CodeByMoriarty)
 
 Hay información sobre cómo contribuir al proyecto en el fichero [CONTRIBUTING.md](../CONTRIBUTING.md).
 
