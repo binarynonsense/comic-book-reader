@@ -113,6 +113,7 @@ Lahat ng Bersyon (stable at beta):
 - Russian localization ni [vanja-san](https://github.com/vanja-san)
 - German localization ni [Timo Heidutzek (trzyglow)](https://github.com/trzyglow)
 - Arabic localization ni [Ahmed (ahmed-0011)](https://github.com/ahmed-0011)
+- Filipino localization ni [AndrewL (CodeByMoriarty)](https://github.com/CodeByMoriarty)
 
 May impormasyon kung paano makakatulong sa proyekto sa [CONTRIBUTING.md](../CONTRIBUTING.md) file.
 
