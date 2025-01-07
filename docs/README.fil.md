@@ -13,22 +13,22 @@ Isang comic book reader at converter para sa mga file na CBZ, CBR, CB7, EPUB, at
 ![git_banner](https://github.com/binarynonsense/comic-book-reader/assets/8535921/a8a7f902-4445-4695-9bc0-bbae4cba78f2)
 
 <p align="center">
-  <span>Filipino</span> |
+  <a href="./README.en.md">English</a> |
   <a href="./README.es.md">Español</a> | 
   <a href="./README.ru.md">Русский</a> | 
   <a href="./README.de.md">Deutsch</a> | 
   <a href="./README.ar.md">العربية</a> |
-  <a href="./README.eng.mc">English</a>
+  <span>Filipino</span>
 </p>
 
 
 ## Nilalaman:
 
-- [Mga Tampok](#features)
-- [Mga Pag-download](#downloads)
-- [Mga Kontribusyon](#contributions)
-- [Lisensya](#license)
-- [Iba Pa](#other)
+- [Mga Tampok](#mga-tampok)
+- [Mga Pag-download](#mga-pag-download)
+- [Mga Kontribusyon](#mga-kontribusyon)
+- [Lisensya](#lisensya)
+- [Iba Pa](#iba-pa)
 
 ## Mga Tampok:
 

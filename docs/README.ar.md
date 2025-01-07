@@ -17,7 +17,8 @@
   <a href="./README.es.md">Español</a> | 
   <a href="./README.ru.md">Русский</a> | 
   <a href="./README.de.md">Deutsch</a> | 
-  <span>العربية</span>
+  <span>العربية</span> | 
+  <a href="./README.fil.md">Filipino</a>
 </p>
 
 ## المحتويات:
