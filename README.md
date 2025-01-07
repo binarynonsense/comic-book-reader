@@ -43,7 +43,7 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB and PDF files.
 - 'Fit to width', 'fit to height' and a customizable 'scale to height' page views
 - Page rotation
 - UI available in:
-  - English, Spanish, Russian, German, Arabic and Filipino<sup>(beta)</sup>.
+  - English, Spanish, Russian, German, Arabic and Filipino<sup>(beta)</sup>
 - Automatically restores the previous session's last opened book and page, and remembers the last books' page positions.
 - Portable mode (by creating a file named portable.txt in the same folder as the executable)
 - Metadata editor:
