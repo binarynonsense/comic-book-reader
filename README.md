@@ -112,6 +112,7 @@ All versions (stable and beta):
 - Russian localization by [vanja-san](https://github.com/vanja-san)
 - German localization by [Timo Heidutzek (trzyglow)](https://github.com/trzyglow)
 - Arabic localization by [Ahmed (ahmed-0011)](https://github.com/ahmed-0011)
+- Filipino localization by [AndrewL (CodeByMoriarty)](https://github.com/CodeByMoriarty)
 
 There's info about how to contribute to the project in the [CONTRIBUTING.md](./CONTRIBUTING.md) file.
 
