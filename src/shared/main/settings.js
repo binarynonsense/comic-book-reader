@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2024 Álvaro García
+ * Copyright 2020-2025 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -56,6 +56,7 @@ const g_defaultSettings = {
   loadingIndicatorIconSize: 0, // 0: small, 1: big
   loadingIndicatorIconPos: 0, // 0: top left, 1: center
   layoutClock: 2, // 0 top left, 1 top center, 2 top right .... 5 bottom right
+  clockFormat: 0, // 0: 24h, 1: 12h
   layoutPageNum: 4, // 0 top left, 1 top center, 2 top right .... 5 bottom right
   layoutAudioPlayer: 0, // 0 top left, 3 bottom left - for now
   layoutBattery: 0, // 0 top left, 1 top center, 2 top right .... 5 bottom right
@@ -336,6 +337,13 @@ function sanitize() {
     g_settings.layoutClock > 5
   ) {
     g_settings.layoutClock = g_defaultSettings.layoutClock;
+  }
+  if (
+    !Number.isInteger(g_settings.clockFormat) ||
+    g_settings.clockFormat < 0 ||
+    g_settings.clockFormat > 1
+  ) {
+    g_settings.clockFormat = g_defaultSettings.clockFormat;
   }
   if (
     !Number.isInteger(g_settings.layoutPageNum) ||

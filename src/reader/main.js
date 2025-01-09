@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2024 Álvaro García
+ * Copyright 2020-2025 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -1985,25 +1985,39 @@ function processZoomInput(input, factor) {
   }
 }
 
-///////////////////////////////////////////////////////////////////////////////// CLOCK //////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+// CLOCK //////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
 let g_clockTimeout;
 
 function initClock() {
-  let today = new Date();
-  let h = today.getHours();
-  let m = today.getMinutes();
-  if (m < 10) {
-    m = "0" + m;
-  }
-  let s = today.getSeconds();
-  if (s < 10) {
-    s = "0" + s;
-  }
-  let time = h + ":" + m; // + ":" + s;
+  updateClock();
+}
+
+function updateClock() {
+  // Old method, 24h
+  // let today = new Date();
+  // let h = today.getHours();
+  // let m = today.getMinutes();
+  // if (m < 10) {
+  //   m = "0" + m;
+  // }
+  // let s = today.getSeconds();
+  // if (s < 10) {
+  //   s = "0" + s;
+  // }
+  // let time = h + ":" + m; // + ":" + s;
+
+  // New method, 12h or 24h
+  const time = new Date().toLocaleString([], {
+    hour: "numeric",
+    minute: "numeric",
+    hour12: settings.getValue("clockFormat") === 1,
+  });
+
   sendIpcToRenderer("update-clock", time);
-  g_clockTimeout = setTimeout(initClock, 500);
+  g_clockTimeout = setTimeout(updateClock, 500);
 }
 
 //////////////////////////////////////////////////////////////////////////////

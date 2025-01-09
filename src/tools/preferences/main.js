@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2024 Álvaro García
+ * Copyright 2020-2025 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -164,6 +164,10 @@ function initOnIpcCallbacks() {
   on("set-layout-clock", (value) => {
     settings.setValue("layoutClock", value);
     reader.updateLayoutClock();
+  });
+
+  on("set-clock-format", (value) => {
+    settings.setValue("clockFormat", value);
   });
 
   on("set-layout-pagenum", (value) => {
@@ -584,6 +588,11 @@ function getLocalization() {
     {
       id: "tool-pre-layout-clock-5-text",
       text: _("menu-shared-bottom-right"),
+    },
+
+    {
+      id: "tool-pre-clock-format-text",
+      text: _("tool-pre-clock-format"),
     },
 
     {
