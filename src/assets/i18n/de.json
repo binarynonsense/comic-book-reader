@@ -123,6 +123,7 @@
   "ctxmenu-rotate-clockwise": "In Uhrzeigerrichtung",
   "ctxmenu-rotate-counterclockwise": "Gegen Uhrzeigerrichtung",
   "ctxmenu-openfile": "Öffne Datei...",
+  "[NEEDS TRANSLATION]ctxmenu-closefile": "Close File",
   "toolbar-go-left": "Nach links gehen",
   "toolbar-go-right": "Nach rechts gehen",
   "toolbar-rotate-clockwise": "Rotiere in Uhrzeigerrichtung",
