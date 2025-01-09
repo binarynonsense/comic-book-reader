@@ -452,6 +452,8 @@
   "tool-pre-zoom-fileloading-history": "استخدم تاريخ الملفات (إذا كان متوفرًا)",
   "tool-pre-layout": "تخطيط الواجهة",
   "tool-pre-layout-clock": "الساعة",
+  "[NOTE TO TRANSLATORS]tool-pre-clock-format": "Format as in 12h or 24h time format (i.e. 9:20 PM or 21:20)",
+  "[NEEDS TRANSLATION]tool-pre-clock-format": "Format",
   "tool-pre-layout-pagenum": "رقم الصفحة",
   "tool-pre-layout-audioplayer": "مشغل الصوت",
   "tool-pre-layout-battery": "البطارية",

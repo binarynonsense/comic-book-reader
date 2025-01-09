@@ -3,9 +3,9 @@
     "authors": [
       "Álvaro"
     ],
-    "last-updated": "2024-11-02",
+    "last-updated": "2025-01-09",
     "license-id": "BSD-2-Clause",
-    "acbr-version": "3.8.0-beta1",
+    "acbr-version": "3.8.0-beta2",
     "pre-release": "false",
     "comments": "",
     "locale": "es",
@@ -452,6 +452,8 @@
   "tool-pre-zoom-fileloading-history": "Usar historial del archivo (si disponible)",
   "tool-pre-layout": "Disposición",
   "tool-pre-layout-clock": "Reloj",
+  "[NOTE TO TRANSLATORS]tool-pre-clock-format": "Format as in 12h or 24h time format (i.e. 9:20 PM or 21:20)",
+  "tool-pre-clock-format": "Formato",
   "tool-pre-layout-pagenum": "Número de página",
   "tool-pre-layout-audioplayer": "Reproductor de audio",
   "tool-pre-layout-battery": "Batería",

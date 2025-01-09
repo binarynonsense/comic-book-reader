@@ -452,6 +452,8 @@
   "tool-pre-zoom-fileloading-history": "Gamitin ang kasaysayan ng file (Kung available)",
   "tool-pre-layout": "Layout",
   "tool-pre-layout-clock": "Orasan",
+  "[NOTE TO TRANSLATORS]tool-pre-clock-format": "Format as in 12h or 24h time format (i.e. 9:20 PM or 21:20)",
+  "[NEEDS TRANSLATION]tool-pre-clock-format": "Format",
   "tool-pre-layout-pagenum": "Pahina ng Numero",
   "tool-pre-layout-audioplayer": "Audio Player",
   "tool-pre-layout-battery": "Baterya",
