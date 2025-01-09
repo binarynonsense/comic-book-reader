@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2024 Álvaro García
+ * Copyright 2020-2025 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -115,6 +115,13 @@ function buildContextMenu(isOpen, showRotation) {
       accelerator: "CommandOrControl+O",
       click() {
         reader.onMenuOpenFile();
+      },
+    },
+    {
+      label: _("ctxmenu-closefile"),
+      enabled: isOpen,
+      click() {
+        reader.onMenuCloseFile();
       },
     },
     {
