@@ -287,7 +287,7 @@ html[dir="rtl"] .tools-button-accent i {
 }
 
 #tools input[type="color"] {
-  width: 100%;
+  width: 98%;
   height: 35px;
   padding: 0px;
   background-color: var(--tools-input-bg-color);
