@@ -57,7 +57,7 @@
     "--tools-collection-bg-color": "#ccc",
     "--tools-collection-text-color": "#666",
     "--tools-collection-border-color": "#aaa",
-    "--tools-button-normal-bg-color": "#666",
+    "--tools-button-normal-bg-color": "#777",
     "--tools-button-normal-text-color": "#ddd",
     "--tools-button-accent-bg-color": "#d9af50",
     "--tools-button-accent-text-color": "#303030",
