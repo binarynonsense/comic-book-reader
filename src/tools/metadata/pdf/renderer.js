@@ -40,15 +40,9 @@ export function onLoadMetadata(metadata, error) {
   g_data.originalMetadata = metadata;
   g_data.modifiedMetadata = {};
   // fill UI with data
-  const detailsDiv = document.querySelector(
-    "#tool-metadata-section-2-content-div"
-  );
-  const creatorsDiv = document.querySelector(
-    "#tool-metadata-section-3-content-div"
-  );
-  const otherDiv = document.querySelector(
-    "#tool-metadata-section-4-content-div"
-  );
+  const detailsDiv = document.querySelector("#tool-metadata-pdf-subsection-2");
+  const creatorsDiv = document.querySelector("#tool-metadata-pdf-subsection-3");
+  const otherDiv = document.querySelector("#tool-metadata-pdf-subsection-4");
   // details
   function addHtml(rootDiv, key, type, value, tooltip) {
     const label = document.createElement("label");

@@ -46,23 +46,26 @@
       <div class="tool-shared-columns-parent">
         <div class="tool-shared-columns-50">
           <h3><span id="tool-ep-input-file-text"></span></h3>
-
-          <div id="tool-shared-image-container">
-            <img
-              id="tool-ep-image"
-              src="../assets/images/tests/test_palette.jpg"
-            />
+          <div class="tools-columns-right-subsection">
+            <div id="tool-shared-image-container">
+              <img
+                id="tool-ep-image"
+                src="../assets/images/tests/test_palette.jpg"
+              />
+            </div>
+            <button id="tool-ep-add-file-button">
+              <span id="tool-ep-add-file-button-text"></span>
+            </button>
           </div>
-          <button id="tool-ep-add-file-button">
-            <span id="tool-ep-add-file-button-text"></span>
-          </button>
         </div>
         <div class="tool-shared-columns-50">
           <h3><span id="tool-ep-output-palette-text"></span></h3>
-          <div id="tool-ep-palette"></div>
-          <button id="tool-ep-export-to-file-button">
-            <span id="tool-ep-export-to-file-button-text"></span>
-          </button>
+          <div class="tools-columns-right-subsection">
+            <div id="tool-ep-palette"></div>
+            <button id="tool-ep-export-to-file-button">
+              <span id="tool-ep-export-to-file-button-text"></span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -72,31 +75,33 @@
       class="tools-columns-right-section set-display-none"
     >
       <h3><span id="tool-ep-advanced-output-options-text"></span></h3>
-      <label>
-        <span id="tool-ep-export-format-text"></span>
-        <select id="tool-ep-export-format-select" class="browser-default">
-          <option value="gpl" selected>.gpl</option>
-          <option value="aco">.aco</option>
-        </select>
-      </label>
-      <label>
-        <span id="tool-ep-max-num-colors-text"></span>
-        <select id="tool-ep-max-num-colors-select" class="browser-default">
-          <option value="16" selected>16</option>
-          <option value="32">32</option>
-        </select>
-      </label>
-      <label>
-        <span id="tool-ep-distance-method-text"></span>
-        <select id="tool-ep-distance-method-select" class="browser-default">
-          <option value="euclidean" selected>Euclidean</option>
-          <option value="deltae">Delta E</option>
-        </select>
-      </label>
-      <label>
-        <span id="tool-ep-distance-deltae-threshold-text"></span>
-        <input id="tool-ep-deltae-threshold-input" type="text" value="2" />
-      </label>
+      <div class="tools-columns-right-subsection">
+        <label>
+          <span id="tool-ep-export-format-text"></span>
+          <select id="tool-ep-export-format-select" class="browser-default">
+            <option value="gpl" selected>.gpl</option>
+            <option value="aco">.aco</option>
+          </select>
+        </label>
+        <label>
+          <span id="tool-ep-max-num-colors-text"></span>
+          <select id="tool-ep-max-num-colors-select" class="browser-default">
+            <option value="16" selected>16</option>
+            <option value="32">32</option>
+          </select>
+        </label>
+        <label>
+          <span id="tool-ep-distance-method-text"></span>
+          <select id="tool-ep-distance-method-select" class="browser-default">
+            <option value="euclidean" selected>Euclidean</option>
+            <option value="deltae">Delta E</option>
+          </select>
+        </label>
+        <label>
+          <span id="tool-ep-distance-deltae-threshold-text"></span>
+          <input id="tool-ep-deltae-threshold-input" type="text" value="2" />
+        </label>
+      </div>
     </div>
   </div>
 </div>

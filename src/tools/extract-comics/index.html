@@ -44,13 +44,15 @@
       class="tools-columns-right-section"
     >
       <h3><span id="tool-ec-input-options-text"></span></h3>
-      <label
-        ><span id="tool-ec-input-files-text"></span>
-        <ul id="tool-ec-input-list" class="tools-collection-ul"></ul>
-      </label>
-      <button id="tool-ec-add-file-button">
-        <span id="tool-ec-add-file-button-text"></span>
-      </button>
+      <div class="tools-columns-right-subsection">
+        <label
+          ><span id="tool-ec-input-files-text"></span>
+          <ul id="tool-ec-input-list" class="tools-collection-ul"></ul>
+        </label>
+        <button id="tool-ec-add-file-button">
+          <span id="tool-ec-add-file-button-text"></span>
+        </button>
+      </div>
     </div>
     <!-- output -->
     <div
@@ -58,59 +60,60 @@
       class="tools-columns-right-section"
     >
       <h3><span id="tool-ec-output-options-text"></span></h3>
+      <div class="tools-columns-right-subsection">
+        <label
+          ><span id="tool-ec-output-image-scale-text"></span>
+          <i
+            id="tool-ec-tooltip-output-size"
+            class="fas fa-question-circle tools-tooltip-button"
+            title="tooltip"
+          ></i>
+          <div class="tools-range-wrap">
+            <input
+              type="range"
+              class="tools-range"
+              min="10"
+              max="100"
+              id="tool-ec-output-image-scale-slider"
+              value="100"
+            />
+            <output class="tools-range-bubble set-display-none"></output>
+          </div>
+        </label>
 
-      <label
-        ><span id="tool-ec-output-image-scale-text"></span>
-        <i
-          id="tool-ec-tooltip-output-size"
-          class="fas fa-question-circle tools-tooltip-button"
-          title="tooltip"
-        ></i>
-        <div class="tools-range-wrap">
-          <input
-            type="range"
-            class="tools-range"
-            min="10"
-            max="100"
-            id="tool-ec-output-image-scale-slider"
-            value="100"
-          />
-          <output class="tools-range-bubble set-display-none"></output>
-        </div>
-      </label>
+        <label
+          ><span id="tool-ec-output-image-format-text"></span>
+          <select id="tool-ec-output-image-format-select"></select>
+        </label>
 
-      <label
-        ><span id="tool-ec-output-image-format-text"></span>
-        <select id="tool-ec-output-image-format-select"></select>
-      </label>
+        <label
+          ><span id="tool-ec-output-image-quality-text"></span>
+          <div class="tools-range-wrap">
+            <input
+              type="range"
+              class="tools-range"
+              min="10"
+              max="100"
+              id="tool-ec-output-image-quality-slider"
+              value="80"
+            />
+            <output class="tools-range-bubble set-display-none"></output>
+          </div>
+        </label>
 
-      <label
-        ><span id="tool-ec-output-image-quality-text"></span>
-        <div class="tools-range-wrap">
-          <input
-            type="range"
-            class="tools-range"
-            min="10"
-            max="100"
-            id="tool-ec-output-image-quality-slider"
-            value="80"
-          />
-          <output class="tools-range-bubble set-display-none"></output>
-        </div>
-      </label>
-
-      <label
-        ><span id="tool-ec-output-folder-text"></span
-        ><i
-          id="tool-ec-tooltip-output-folder"
-          class="fas fa-question-circle tools-tooltip-button"
-          title="tooltip"
-        ></i>
-        <ul id="tool-ec-output-folder" class="tools-collection-ul"></ul>
-      </label>
-      <button id="tool-ec-change-folder-button">
-        <span id="tool-ec-change-folder-button-text"></span>
-      </button>
+        <label
+          ><span id="tool-ec-output-folder-text"></span
+          ><i
+            id="tool-ec-tooltip-output-folder"
+            class="fas fa-question-circle tools-tooltip-button"
+            title="tooltip"
+          ></i>
+          <ul id="tool-ec-output-folder" class="tools-collection-ul"></ul>
+        </label>
+        <button id="tool-ec-change-folder-button">
+          <span id="tool-ec-change-folder-button-text"></span>
+        </button>
+      </div>
     </div>
     <!-- advanced input -->
     <div
@@ -118,28 +121,30 @@
       class="tools-columns-right-section set-display-none"
     >
       <h3><span id="tool-ec-advanced-input-options-text"></span></h3>
-      <label
-        ><span id="tool-ec-pdf-extraction-text"></span>
-        <i
-          id="tool-ec-tooltip-pdf-extraction"
-          class="fas fa-question-circle tools-tooltip-button"
-          title="tooltip"
-        ></i>
-        <select id="tool-ec-pdf-extraction-select">
-          <option
-            id="tool-ec-pdf-extraction-o1-text"
-            value="embedded"
-            selected
-          ></option>
-          <option
-            id="tool-ec-pdf-extraction-o2-text"
-            value="render300"
-          ></option>
-          <option
-            id="tool-ec-pdf-extraction-o3-text"
-            value="render72"
-          ></option></select
-      ></label>
+      <div class="tools-columns-right-subsection">
+        <label
+          ><span id="tool-ec-pdf-extraction-text"></span>
+          <i
+            id="tool-ec-tooltip-pdf-extraction"
+            class="fas fa-question-circle tools-tooltip-button"
+            title="tooltip"
+          ></i>
+          <select id="tool-ec-pdf-extraction-select">
+            <option
+              id="tool-ec-pdf-extraction-o1-text"
+              value="embedded"
+              selected
+            ></option>
+            <option
+              id="tool-ec-pdf-extraction-o2-text"
+              value="render300"
+            ></option>
+            <option
+              id="tool-ec-pdf-extraction-o3-text"
+              value="render72"
+            ></option></select
+        ></label>
+      </div>
     </div>
     <!-- advanced output -->
     <div
@@ -147,67 +152,69 @@
       class="tools-columns-right-section set-display-none"
     >
       <h3><span id="tool-ec-advanced-output-options-text"></span></h3>
-      <label
-        ><span id="tool-ec-jpg-quality-text">JPG: quality</span>
-        <div class="tools-range-wrap">
-          <input
-            type="range"
-            class="tools-range"
-            min="10"
-            max="100"
-            id="tool-ec-jpg-quality-slider"
-            value="90"
-          />
-          <output class="tools-range-bubble set-display-none"></output>
-        </div>
-      </label>
-      <label><span id="tool-ec-jpg-mozjpeg-text">JPG: mozjpeg</span> </label>
-      <label class="tools-toggle">
-        <input type="checkbox" id="tool-ec-jpg-mozjpeg-checkbox" />
-        <span class="tools-toggle-slider"></span>
-      </label>
-      <label class="tools-h3-extra-margin-top"
-        ><span id="tool-ec-png-quality-text">PNG: quality</span>
-        <div class="tools-range-wrap">
-          <input
-            type="range"
-            class="tools-range"
-            min="10"
-            max="100"
-            id="tool-ec-png-quality-slider"
-            value="100"
-          />
-          <output class="tools-range-bubble set-display-none"></output>
-        </div>
-      </label>
-      <label class="tools-h3-extra-margin-top"
-        ><span id="tool-ec-avif-quality-text">AVIF: quality</span>
-        <div class="tools-range-wrap">
-          <input
-            type="range"
-            class="tools-range"
-            min="10"
-            max="100"
-            id="tool-ec-avif-quality-slider"
-            value="50"
-          />
-          <output class="tools-range-bubble set-display-none"></output>
-        </div>
-      </label>
-      <label class="tools-h3-extra-margin-top"
-        ><span id="tool-ec-webp-quality-text">WebP: quality</span>
-        <div class="tools-range-wrap">
-          <input
-            type="range"
-            class="tools-range"
-            min="10"
-            max="100"
-            id="tool-ec-webp-quality-slider"
-            value="80"
-          />
-          <output class="tools-range-bubble set-display-none"></output>
-        </div>
-      </label>
+      <div class="tools-columns-right-subsection">
+        <label
+          ><span id="tool-ec-jpg-quality-text">JPG: quality</span>
+          <div class="tools-range-wrap">
+            <input
+              type="range"
+              class="tools-range"
+              min="10"
+              max="100"
+              id="tool-ec-jpg-quality-slider"
+              value="90"
+            />
+            <output class="tools-range-bubble set-display-none"></output>
+          </div>
+        </label>
+        <label><span id="tool-ec-jpg-mozjpeg-text">JPG: mozjpeg</span> </label>
+        <label class="tools-toggle">
+          <input type="checkbox" id="tool-ec-jpg-mozjpeg-checkbox" />
+          <span class="tools-toggle-slider"></span>
+        </label>
+        <label class="tools-h3-extra-margin-top"
+          ><span id="tool-ec-png-quality-text">PNG: quality</span>
+          <div class="tools-range-wrap">
+            <input
+              type="range"
+              class="tools-range"
+              min="10"
+              max="100"
+              id="tool-ec-png-quality-slider"
+              value="100"
+            />
+            <output class="tools-range-bubble set-display-none"></output>
+          </div>
+        </label>
+        <label class="tools-h3-extra-margin-top"
+          ><span id="tool-ec-avif-quality-text">AVIF: quality</span>
+          <div class="tools-range-wrap">
+            <input
+              type="range"
+              class="tools-range"
+              min="10"
+              max="100"
+              id="tool-ec-avif-quality-slider"
+              value="50"
+            />
+            <output class="tools-range-bubble set-display-none"></output>
+          </div>
+        </label>
+        <label class="tools-h3-extra-margin-top"
+          ><span id="tool-ec-webp-quality-text">WebP: quality</span>
+          <div class="tools-range-wrap">
+            <input
+              type="range"
+              class="tools-range"
+              min="10"
+              max="100"
+              id="tool-ec-webp-quality-slider"
+              value="80"
+            />
+            <output class="tools-range-bubble set-display-none"></output>
+          </div>
+        </label>
+      </div>
     </div>
   </div>
 </div>

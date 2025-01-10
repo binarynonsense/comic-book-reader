@@ -44,20 +44,22 @@
       class="tools-columns-right-section"
     >
       <h3><span id="tool-cc-input-options-text"></span></h3>
-      <label
-        ><span id="tool-cc-input-files-text"></span>
-        <ul id="tool-cc-input-list" class="tools-collection-ul"></ul>
-      </label>
-      <div class="tool-shared-columns-parent">
-        <div class="tool-shared-columns-50">
-          <button id="tool-cc-add-file-button">
-            <span id="tool-cc-add-file-button-text"></span>
-          </button>
-        </div>
-        <div class="tool-shared-columns-50">
-          <button id="tool-cc-add-folder-button">
-            <span id="tool-cc-add-folder-button-text"></span>
-          </button>
+      <div class="tools-columns-right-subsection">
+        <label
+          ><span id="tool-cc-input-files-text"></span>
+          <ul id="tool-cc-input-list" class="tools-collection-ul"></ul>
+        </label>
+        <div class="tool-shared-columns-parent">
+          <div class="tool-shared-columns-50">
+            <button id="tool-cc-add-file-button">
+              <span id="tool-cc-add-file-button-text"></span>
+            </button>
+          </div>
+          <div class="tool-shared-columns-50">
+            <button id="tool-cc-add-folder-button">
+              <span id="tool-cc-add-folder-button-text"></span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -67,78 +69,79 @@
       class="tools-columns-right-section"
     >
       <h3><span id="tool-cc-output-options-text"></span></h3>
+      <div class="tools-columns-right-subsection">
+        <label
+          ><span id="tool-cc-output-format-text"></span>
+          <select id="tool-cc-output-format-select"></select>
+        </label>
 
-      <label
-        ><span id="tool-cc-output-format-text"></span>
-        <select id="tool-cc-output-format-select"></select>
-      </label>
+        <label id="tool-cc-output-name-label"
+          ><span id="tool-cc-output-name-text"></span
+          ><input
+            id="tool-cc-output-name-input"
+            type="text"
+            value="New Comic Book File"
+        /></label>
 
-      <label id="tool-cc-output-name-label"
-        ><span id="tool-cc-output-name-text"></span
-        ><input
-          id="tool-cc-output-name-input"
-          type="text"
-          value="New Comic Book File"
-      /></label>
+        <label id="tool-cc-output-page-order-label"
+          ><span id="tool-cc-output-page-order-text"></span
+          ><i
+            id="tool-cc-tooltip-output-page-order"
+            class="fas fa-question-circle tools-tooltip-button"
+            title="tooltip"
+          ></i>
+          <select id="tool-cc-output-page-order-select">
+            <option
+              id="tool-cc-output-page-order-o1-text"
+              value="byPosition"
+              selected
+            ></option>
+            <option
+              id="tool-cc-output-page-order-o2-text"
+              value="byName"
+            ></option>
+          </select>
+        </label>
 
-      <label id="tool-cc-output-page-order-label"
-        ><span id="tool-cc-output-page-order-text"></span
-        ><i
-          id="tool-cc-tooltip-output-page-order"
-          class="fas fa-question-circle tools-tooltip-button"
-          title="tooltip"
-        ></i>
-        <select id="tool-cc-output-page-order-select">
-          <option
-            id="tool-cc-output-page-order-o1-text"
-            value="byPosition"
-            selected
-          ></option>
-          <option
-            id="tool-cc-output-page-order-o2-text"
-            value="byName"
-          ></option>
-        </select>
-      </label>
+        <label
+          ><span id="tool-cc-output-image-scale-text"></span>
+          <i
+            id="tool-cc-tooltip-output-size"
+            class="fas fa-question-circle tools-tooltip-button"
+            title="tooltip"
+          ></i>
+          <div class="tools-range-wrap">
+            <input
+              type="range"
+              class="tools-range"
+              min="10"
+              max="100"
+              id="tool-cc-output-image-scale-slider"
+              value="100"
+            />
+            <output class="tools-range-bubble set-display-none"></output>
+          </div>
+        </label>
 
-      <label
-        ><span id="tool-cc-output-image-scale-text"></span>
-        <i
-          id="tool-cc-tooltip-output-size"
-          class="fas fa-question-circle tools-tooltip-button"
-          title="tooltip"
-        ></i>
-        <div class="tools-range-wrap">
-          <input
-            type="range"
-            class="tools-range"
-            min="10"
-            max="100"
-            id="tool-cc-output-image-scale-slider"
-            value="100"
-          />
-          <output class="tools-range-bubble set-display-none"></output>
-        </div>
-      </label>
+        <label
+          ><span id="tool-cc-output-image-format-text"></span>
+          <select id="tool-cc-output-image-format-select"></select>
+        </label>
 
-      <label
-        ><span id="tool-cc-output-image-format-text"></span>
-        <select id="tool-cc-output-image-format-select"></select>
-      </label>
-
-      <label
-        ><span id="tool-cc-output-folder-text"></span
-        ><i
-          id="tool-cc-tooltip-output-folder"
-          class="fas fa-question-circle tools-tooltip-button set-display-none"
-          title="tooltip"
-        ></i>
-        <select id="tool-cc-output-folder-option-select"></select>
-        <ul id="tool-cc-output-folder" class="tools-collection-ul"></ul>
-      </label>
-      <button id="tool-cc-change-folder-button">
-        <span id="tool-cc-change-folder-button-text"></span>
-      </button>
+        <label
+          ><span id="tool-cc-output-folder-text"></span
+          ><i
+            id="tool-cc-tooltip-output-folder"
+            class="fas fa-question-circle tools-tooltip-button set-display-none"
+            title="tooltip"
+          ></i>
+          <select id="tool-cc-output-folder-option-select"></select>
+          <ul id="tool-cc-output-folder" class="tools-collection-ul"></ul>
+        </label>
+        <button id="tool-cc-change-folder-button">
+          <span id="tool-cc-change-folder-button-text"></span>
+        </button>
+      </div>
     </div>
     <!-- advanced input -->
     <div
@@ -146,35 +149,37 @@
       class="tools-columns-right-section set-display-none"
     >
       <h3><span id="tool-cc-advanced-input-options-text"></span></h3>
-      <label><span id="tool-cc-folders-file-formats-text"></span> </label>
-      <div id="tool-cc-folders-file-formats-div"></div>
-      <label><span id="tool-cc-folders-recursively-text"></span></label>
-      <label class="tools-toggle">
-        <input type="checkbox" id="tool-cc-folders-recursively-checkbox" />
-        <span class="tools-toggle-slider"></span>
-      </label>
-      <label
-        ><span id="tool-cc-pdf-extraction-text"></span>
-        <i
-          id="tool-cc-tooltip-pdf-extraction"
-          class="fas fa-question-circle tools-tooltip-button"
-          title="tooltip"
-        ></i>
-        <select id="tool-cc-pdf-extraction-select">
-          <option
-            id="tool-cc-pdf-extraction-o1-text"
-            value="embedded"
-            selected
-          ></option>
-          <option
-            id="tool-cc-pdf-extraction-o2-text"
-            value="render300"
-          ></option>
-          <option
-            id="tool-cc-pdf-extraction-o3-text"
-            value="render72"
-          ></option></select
-      ></label>
+      <div class="tools-columns-right-subsection">
+        <label><span id="tool-cc-folders-file-formats-text"></span> </label>
+        <div id="tool-cc-folders-file-formats-div"></div>
+        <label><span id="tool-cc-folders-recursively-text"></span></label>
+        <label class="tools-toggle">
+          <input type="checkbox" id="tool-cc-folders-recursively-checkbox" />
+          <span class="tools-toggle-slider"></span>
+        </label>
+        <label
+          ><span id="tool-cc-pdf-extraction-text"></span>
+          <i
+            id="tool-cc-tooltip-pdf-extraction"
+            class="fas fa-question-circle tools-tooltip-button"
+            title="tooltip"
+          ></i>
+          <select id="tool-cc-pdf-extraction-select">
+            <option
+              id="tool-cc-pdf-extraction-o1-text"
+              value="embedded"
+              selected
+            ></option>
+            <option
+              id="tool-cc-pdf-extraction-o2-text"
+              value="render300"
+            ></option>
+            <option
+              id="tool-cc-pdf-extraction-o3-text"
+              value="render72"
+            ></option></select
+        ></label>
+      </div>
     </div>
     <!-- advanced output -->
     <div
@@ -182,163 +187,165 @@
       class="tools-columns-right-section set-display-none"
     >
       <h3><span id="tool-cc-advanced-output-options-text"></span></h3>
-      <label
-        ><span id="tool-cc-output-file-same-name-text"></span>
-        <select id="tool-cc-output-file-same-name-select"></select>
-      </label>
-      <label>
-        <span id="tool-cc-split-num-files-text"></span>
-        <input
-          id="tool-cc-split-num-files-input"
-          type="number"
-          step="1"
-          min="1"
-        />
-      </label>
-      <label>
-        <span id="tool-cc-password-text"></span>
-        <i
-          id="tool-cc-tooltip-password"
-          class="fas fa-question-circle tools-tooltip-button"
-          title="tooltip"
-        ></i>
-        <input id="tool-cc-password-input" type="text" />
-      </label>
+      <div class="tools-columns-right-subsection">
+        <label
+          ><span id="tool-cc-output-file-same-name-text"></span>
+          <select id="tool-cc-output-file-same-name-select"></select>
+        </label>
+        <label>
+          <span id="tool-cc-split-num-files-text"></span>
+          <input
+            id="tool-cc-split-num-files-input"
+            type="number"
+            step="1"
+            min="1"
+          />
+        </label>
+        <label>
+          <span id="tool-cc-password-text"></span>
+          <i
+            id="tool-cc-tooltip-password"
+            class="fas fa-question-circle tools-tooltip-button"
+            title="tooltip"
+          ></i>
+          <input id="tool-cc-password-input" type="text" />
+        </label>
 
-      <!-- TODO: don't use inline css / improve layout -->
-      <label><span id="tool-cc-imageops-apply-text"></span> </label>
-      <label class="tools-checkbox-container"
-        ><input type="checkbox" id="tool-cc-imageops-brightness-checkbox" />
-        <span id="tool-cc-imageops-brightness-text"></span
-        ><input
-          id="tool-cc-imageops-brightness-input"
-          type="number"
-          step="0.5"
-          min="0"
-          value="1"
-          style="width: 100px"
-        />
-      </label>
-      <label class="tools-checkbox-container"
-        ><input type="checkbox" id="tool-cc-imageops-saturation-checkbox" />
-        <span id="tool-cc-imageops-saturation-text"></span
-        ><input
-          id="tool-cc-imageops-saturation-input"
-          type="number"
-          step="0.5"
-          min="0"
-          value="1"
-          style="width: 100px"
-        />
-      </label>
+        <!-- TODO: don't use inline css / improve layout -->
+        <label><span id="tool-cc-imageops-apply-text"></span> </label>
+        <label class="tools-checkbox-container"
+          ><input type="checkbox" id="tool-cc-imageops-brightness-checkbox" />
+          <span id="tool-cc-imageops-brightness-text"></span
+          ><input
+            id="tool-cc-imageops-brightness-input"
+            type="number"
+            step="0.5"
+            min="0"
+            value="1"
+            style="width: 100px"
+          />
+        </label>
+        <label class="tools-checkbox-container"
+          ><input type="checkbox" id="tool-cc-imageops-saturation-checkbox" />
+          <span id="tool-cc-imageops-saturation-text"></span
+          ><input
+            id="tool-cc-imageops-saturation-input"
+            type="number"
+            step="0.5"
+            min="0"
+            value="1"
+            style="width: 100px"
+          />
+        </label>
 
-      <label
-        ><span id="tool-cc-pdf-creation-text"></span>
-        <i
-          id="tool-cc-tooltip-pdf-creation"
-          class="fas fa-question-circle tools-tooltip-button"
-          title="tooltip"
-        ></i>
-        <select id="tool-cc-pdf-creation-select">
+        <label
+          ><span id="tool-cc-pdf-creation-text"></span>
+          <i
+            id="tool-cc-tooltip-pdf-creation"
+            class="fas fa-question-circle tools-tooltip-button"
+            title="tooltip"
+          ></i>
+          <select id="tool-cc-pdf-creation-select">
+            <option
+              id="tool-cc-pdf-creation-o1-text"
+              value="metadata"
+              selected
+            ></option>
+            <option id="tool-cc-pdf-creation-o2-text" value="300dpi"></option>
+            <option
+              id="tool-cc-pdf-creation-o3-text"
+              value="72dpi"
+            ></option></select
+        ></label>
+
+        <label
+          ><span id="tool-cc-epub-creation-text"></span>
+          <select id="tool-cc-epub-creation-image-format-select">
+            <option
+              id="tool-cc-epub-creation-image-format-o1-text"
+              value="keep-selected"
+              selected
+            ></option>
+            <option
+              id="tool-cc-epub-creation-image-format-o2-text"
+              value="core-media-types-only"
+            ></option>
+          </select>
+        </label>
+        <select id="tool-cc-epub-creation-image-storage-select">
           <option
-            id="tool-cc-pdf-creation-o1-text"
-            value="metadata"
+            id="tool-cc-epub-creation-image-storage-o1-text"
+            value="files"
             selected
           ></option>
-          <option id="tool-cc-pdf-creation-o2-text" value="300dpi"></option>
           <option
-            id="tool-cc-pdf-creation-o3-text"
-            value="72dpi"
-          ></option></select
-      ></label>
-
-      <label
-        ><span id="tool-cc-epub-creation-text"></span>
-        <select id="tool-cc-epub-creation-image-format-select">
-          <option
-            id="tool-cc-epub-creation-image-format-o1-text"
-            value="keep-selected"
-            selected
-          ></option>
-          <option
-            id="tool-cc-epub-creation-image-format-o2-text"
-            value="core-media-types-only"
+            id="tool-cc-epub-creation-image-storage-o2-text"
+            value="base64"
           ></option>
         </select>
-      </label>
-      <select id="tool-cc-epub-creation-image-storage-select">
-        <option
-          id="tool-cc-epub-creation-image-storage-o1-text"
-          value="files"
-          selected
-        ></option>
-        <option
-          id="tool-cc-epub-creation-image-storage-o2-text"
-          value="base64"
-        ></option>
-      </select>
 
-      <label class="tools-h3-extra-margin-top"
-        ><span id="tool-cc-jpg-quality-text">JPG: quality</span>
-        <div class="tools-range-wrap">
-          <input
-            type="range"
-            class="tools-range"
-            min="10"
-            max="100"
-            id="tool-cc-jpg-quality-slider"
-            value="90"
-          />
-          <output class="tools-range-bubble set-display-none"></output>
-        </div>
-      </label>
-      <label><span id="tool-cc-jpg-mozjpeg-text">JPG: mozjpeg</span> </label>
-      <label class="tools-toggle">
-        <input type="checkbox" id="tool-cc-jpg-mozjpeg-checkbox" />
-        <span class="tools-toggle-slider"></span>
-      </label>
-      <label class="tools-h3-extra-margin-top"
-        ><span id="tool-cc-png-quality-text">PNG: quality</span>
-        <div class="tools-range-wrap">
-          <input
-            type="range"
-            class="tools-range"
-            min="10"
-            max="100"
-            id="tool-cc-png-quality-slider"
-            value="100"
-          />
-          <output class="tools-range-bubble set-display-none"></output>
-        </div>
-      </label>
-      <label class="tools-h3-extra-margin-top"
-        ><span id="tool-cc-avif-quality-text">AVIF: quality</span>
-        <div class="tools-range-wrap">
-          <input
-            type="range"
-            class="tools-range"
-            min="10"
-            max="100"
-            id="tool-cc-avif-quality-slider"
-            value="50"
-          />
-          <output class="tools-range-bubble set-display-none"></output>
-        </div>
-      </label>
-      <label class="tools-h3-extra-margin-top"
-        ><span id="tool-cc-webp-quality-text">WebP: quality</span>
-        <div class="tools-range-wrap">
-          <input
-            type="range"
-            class="tools-range"
-            min="10"
-            max="100"
-            id="tool-cc-webp-quality-slider"
-            value="80"
-          />
-          <output class="tools-range-bubble set-display-none"></output>
-        </div>
-      </label>
+        <label class="tools-h3-extra-margin-top"
+          ><span id="tool-cc-jpg-quality-text">JPG: quality</span>
+          <div class="tools-range-wrap">
+            <input
+              type="range"
+              class="tools-range"
+              min="10"
+              max="100"
+              id="tool-cc-jpg-quality-slider"
+              value="90"
+            />
+            <output class="tools-range-bubble set-display-none"></output>
+          </div>
+        </label>
+        <label><span id="tool-cc-jpg-mozjpeg-text">JPG: mozjpeg</span> </label>
+        <label class="tools-toggle">
+          <input type="checkbox" id="tool-cc-jpg-mozjpeg-checkbox" />
+          <span class="tools-toggle-slider"></span>
+        </label>
+        <label class="tools-h3-extra-margin-top"
+          ><span id="tool-cc-png-quality-text">PNG: quality</span>
+          <div class="tools-range-wrap">
+            <input
+              type="range"
+              class="tools-range"
+              min="10"
+              max="100"
+              id="tool-cc-png-quality-slider"
+              value="100"
+            />
+            <output class="tools-range-bubble set-display-none"></output>
+          </div>
+        </label>
+        <label class="tools-h3-extra-margin-top"
+          ><span id="tool-cc-avif-quality-text">AVIF: quality</span>
+          <div class="tools-range-wrap">
+            <input
+              type="range"
+              class="tools-range"
+              min="10"
+              max="100"
+              id="tool-cc-avif-quality-slider"
+              value="50"
+            />
+            <output class="tools-range-bubble set-display-none"></output>
+          </div>
+        </label>
+        <label class="tools-h3-extra-margin-top"
+          ><span id="tool-cc-webp-quality-text">WebP: quality</span>
+          <div class="tools-range-wrap">
+            <input
+              type="range"
+              class="tools-range"
+              min="10"
+              max="100"
+              id="tool-cc-webp-quality-slider"
+              value="80"
+            />
+            <output class="tools-range-bubble set-display-none"></output>
+          </div>
+        </label>
+      </div>
     </div>
   </div>
 </div>
