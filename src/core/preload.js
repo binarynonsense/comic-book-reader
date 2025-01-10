@@ -1,11 +1,11 @@
 /**
  * @license
- * Copyright 2023 Álvaro García
+ * Copyright 2023-2025 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-const { contextBridge, ipcRenderer } = require("electron");
+const { contextBridge, ipcRenderer, webUtils } = require("electron");
 const { CustomTitlebar, TitlebarColor } = require("custom-electron-titlebar");
 
 contextBridge.exposeInMainWorld("ipc", {
@@ -16,6 +16,9 @@ contextBridge.exposeInMainWorld("ipc", {
     return ipcRenderer.invoke("main", args);
   },
   addOnIpcCallbackFromMain: (callback) => ipcRenderer.on("renderer", callback),
+  showFilePath(file) {
+    return webUtils.getPathForFile(file);
+  },
 });
 
 ///////////////////////////////////////////////////////////////////////////////

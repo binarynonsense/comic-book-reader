@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2024 Álvaro García
+ * Copyright 2020-2025 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -522,7 +522,7 @@ export function onInputEvent(type, event) {
             index++
           ) {
             const file = event.dataTransfer.files[index];
-            filePaths.push(file.path);
+            filePaths.push(ipc.showFilePath(file));
           }
           sendIpcToMain("dragged-files", filePaths);
         }

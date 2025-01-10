@@ -564,7 +564,7 @@ export function onInputEvent(type, event) {
         let filePaths = [];
         for (let index = 0; index < event.dataTransfer.files.length; index++) {
           const file = event.dataTransfer.files[index];
-          filePaths.push(file.path);
+          filePaths.push(ipc.showFilePath(file));
         }
         sendIpcToMain("dragged-files", filePaths);
       }

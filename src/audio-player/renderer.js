@@ -777,7 +777,7 @@ export function onInputEvent(type, event) {
             index++
           ) {
             const file = event.dataTransfer.files[index];
-            outputPaths.push(file.path);
+            outputPaths.push(ipc.showFilePath(file));
           }
           if (outputPaths.length > 0) sendIpcToMain("on-drop", outputPaths);
           return true;
