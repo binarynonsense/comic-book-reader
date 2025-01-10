@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2024 Álvaro García
+ * Copyright 2020-2025 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -167,7 +167,7 @@ function initOnIpcCallbacks() {
             }
           }
         }
-        if (results.length === 0) throw "0 results";
+        if (results.links.length === 0) throw "0 results";
         sendIpcToRenderer(
           "update-results",
           results,
