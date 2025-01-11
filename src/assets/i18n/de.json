@@ -163,7 +163,7 @@
   "ui-modal-info-version": "Version",
   "[NEEDS TRANSLATION]ui-modal-info-currentversion": "Current version",
   "[NEEDS TRANSLATION]ui-modal-info-latestversion": "Latest version",
-  "[NEEDS TRANSLATION]ui-modal-info-updateavailable-yes": "A newer stable version is available. Click the button to open the download page in your browser.",
+  "[NEEDS TRANSLATION]ui-modal-info-updateavailable-yes": "A newer stable version is available. Click the 'Open' button to open the download page in your browser.",
   "[NEEDS TRANSLATION]ui-modal-info-updateavailable-no": "Didn't find a newer stable version.",
   "ui-modal-info-metadata": "Metadaten",
   "ui-modal-info-metadata-fileproperties": "Datei-eigenschaften",
