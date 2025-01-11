@@ -3,7 +3,7 @@
     "authors": [
       "Álvaro"
     ],
-    "last-updated": "2025-01-09",
+    "last-updated": "2025-01-11",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.8.0-beta2",
     "pre-release": "false",
@@ -162,7 +162,8 @@
   "ui-modal-info-errorexportingpage": "Error: No se pudo exportar la página",
   "ui-modal-info-version": "versión",
   "ui-modal-info-currentversion": "Versión actual",
-  "ui-modal-info-latestversion": "Última Versión",
+  "ui-modal-info-latestversion": "Última versión",
+  "ui-modal-info-lateststableversion": "Última versión estable",
   "ui-modal-info-updateavailable-yes": "Hay disponible una versión estable más reciente. Haga click en el botón 'Abrir' para abrir la página de descarga en su navegador.",
   "ui-modal-info-updateavailable-no": "No se encontró una versión estable más reciente.",
   "ui-modal-info-metadata": "Metadatos",
