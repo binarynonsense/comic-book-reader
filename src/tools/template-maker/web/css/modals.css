@@ -1,3 +1,8 @@
+:root {
+  --modal-frame-bg-color: #fff;
+  --modal-frame-text-color: #575757;
+}
+
 .modal {
   display: none;
   position: fixed;
@@ -10,9 +15,10 @@
 
 .modal-frame {
   padding: 20px;
-  background: #fff;
+  background: var(--modal-frame-bg-color);
   width: 400px;
   text-align: left;
+  color: var(--modal-frame-text-color);
 }
 
 .modal-topbar {
@@ -26,11 +32,13 @@
 
 .modal-close-x-button {
   margin-right: 10px;
-  color: rgb(87, 87, 87);
+  color: var(--modal-frame-text-color);
 }
 .modal-close-x-button:hover {
-  margin-right: 10px;
-  color: rgb(46, 46, 46);
+  /* margin-right: 10px; */
+  /* color: rgb(46, 46, 46); */
+  transform: scale(1.1);
+  filter: brightness(1.2);
   cursor: pointer;
 }
 

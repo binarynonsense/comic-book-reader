@@ -1,8 +1,8 @@
 {
     "@metadata": {
       "authors": ["Álvaro"],
-      "last-updated": "2024-05-30",
-      "acbr-version": "3.5.0-beta1",
+      "last-updated": "2025-01-11",
+      "acbr-version": "3.8.0-beta3",
       "comments": "light text over dark background, with the orange slider",
       "name": "ACBR Dark"
     },
@@ -67,6 +67,23 @@
     "--tools-buttons-list-bg2-color": "#303030",    
     "--tools-buttons-list-text-color": "#aaa",
     "--tools-buttons-list-border-color": "#444",
+
+    "tool-tm--bg-color": "#303030",
+    "tool-tm--text-color": "#aaa",
+    "tool-tm--border-color": "#666",
+    "tool-tm--button-bg-color": "#999",
+    "tool-tm--button-text-color": "#333",
+    "tool-tm--input-bg-color": "#444",
+    "tool-tm--input-text-color": "#aaa",
+    "tool-tm--input-border-color": "#555",
+    "tool-tm--left-bg-color-1": "#666",
+    "tool-tm--left-bg-color-2": "#555",
+    "tool-tm--tree-view-bg-color": "#444",
+    "tool-tm--tree-view-border-color": "#555",
+    "tool-tm--tree-view-line-color": "#aaa",
+    "tool-tm--tree-view-highlight-color": "#ccc",
+    "tool-tm--modal-frame-bg-color": "#525252",
+    "tool-tm--modal-frame-text-color": "#cccccc",
 
     "--modal-text-color": "#cccccc",
     "--modal-bg-color": "#525252",   

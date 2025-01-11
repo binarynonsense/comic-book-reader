@@ -1,10 +1,17 @@
+:root {
+  --tree-view-bg-color: #fff;
+  --tree-view-border-color: #727272;
+  --tree-view-line-color: #ddd;
+  --tree-view-highlight-color: #3f51b5;
+}
+
 .tree-view {
   margin: 5px 0px;
   width: 100%;
   height: 300px;
-  border: 2px solid #727272;
+  border: 2px solid var(--tree-view-border-color);
   border-radius: 0px;
-  background-color: #fff;
+  background-color: var(--tree-view-bg-color);
   padding: 0;
   user-select: none;
   overflow: auto;
@@ -35,7 +42,7 @@
 /* vertical lines */
 
 .tree-view-root ul li {
-  border-left: 2px solid #ddd;
+  border-left: 2px solid var(--tree-view-line-color);
 }
 
 .tree-view-root ul li:last-child {
@@ -52,7 +59,7 @@
   left: -2px;
   width: calc(var(--line-spacing) + 2px);
   height: calc(var(--line-spacing) + 1px);
-  border: solid #ddd;
+  border: solid var(--tree-view-line-color);
   border-width: 0 0 2px 2px;
   pointer-events: none;
 }
@@ -88,20 +95,20 @@
   left: calc(var(--line-spacing) - var(--marker-radius) - 1px);
   width: calc(1.5 * var(--marker-radius));
   height: calc(1.5 * var(--marker-radius));
-  background: #ddd;
-  color: #fff;
+  background: var(--tree-view-line-color);
+  color: var(--tree-view-bg-color);
 }
 
 /* + - buttons */
 
 .tree-view-root summary::before {
   z-index: 2;
-  background: rgb(129, 129, 129) url("plus-minus.svg") 0 0;
+  background: var(--tree-view-line-color) url("plus-minus.svg") 0 0;
   background-size: 30px 15px;
 }
 
 .tree-view-root summary:hover:not(:has(*:hover))::before {
-  background-color: #3f51b5;
+  background-color: var(--tree-view-highlight-color);
 }
 
 .tree-view-root details[open] > summary::before {
@@ -115,24 +122,25 @@
 
 .tree-view-summary-button:hover {
   font-weight: bold;
-  color: #3f51b5;
+  color: var(--tree-view-highlight-color);
 }
 
 .tree-view-panel-button:hover {
   font-weight: bold;
-  color: #3f51b5;
+  color: var(--tree-view-highlight-color);
   cursor: pointer;
 }
 
 .tree-view-button-selected {
   font-weight: bolder;
-  color: #3f51b5;
+  color: var(--tree-view-highlight-color);
 }
 
 .tree-view-button-disabled {
   cursor: default;
   pointer-events: none;
-  background-color: #cacaca;
+  /* background-color: #cacaca; */
+  filter: opacity(0.5);
   user-select: none;
 }
 
@@ -149,8 +157,8 @@
 .tree-view-selected-element-view {
   margin: 5px 0px;
   width: 100%;
-  border: 2px solid #727272;
+  border: 2px solid var(--tree-view-border-color);
   border-radius: 0px;
-  background-color: #fff;
+  background-color: var(--tree-view-bg-color);
   padding: 0 10px 5px 10px;
 }

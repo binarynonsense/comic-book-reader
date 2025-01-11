@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2024 Álvaro García
+ * Copyright 2024-2025 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -46,21 +46,18 @@ function init(theme, iframeLocalization) {
     };
 
     // Change CSS
-    // function updateCssProperties(newValuesObject) {
-    //   for (const [key, value] of Object.entries(newValuesObject)) {
-    //     g_iframe.contentWindow.document.documentElement.style.setProperty(key, value);
-    //   }
-    // }
-    // console.log(theme);
-    // // TEST
-    // g_iframe.contentWindow.document.documentElement.style.setProperty(
-    //   "--right-bg-color",
-    //   theme["--tools-bg2-color"]
-    // );
-    // g_iframe.contentWindow.document.documentElement.style.setProperty(
-    //   "--right-color",
-    //   theme["--tools-text-color"]
-    // );
+    for (const key in theme) {
+      if (key.startsWith("tool-tm")) {
+        g_iframe.contentWindow.document.documentElement.style.setProperty(
+          key.slice("tool-tm".length),
+          theme[key]
+        );
+      }
+    }
+    g_iframe.contentWindow.document.documentElement.style.setProperty(
+      "--zoom-buttons-margin-top",
+      "60px"
+    );
   };
 
   ////////////////////////////////////////

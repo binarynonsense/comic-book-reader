@@ -1,14 +1,23 @@
 :root {
-  --right-bg-color: #fff;
-  --right-color: #3d3d3d;
+  /* --body-bg-color: #000; */
+  --bg-color: #fff;
+  --text-color: #3d3d3d;
   --border-color: #727272;
+  --button-bg-color: #3f51b5;
+  --button-text-color: #fff;
+  --input-bg-color: #fff;
+  --input-text-color: #3d3d3d;
+  --input-border-color: #727272;
+  --left-bg-color-1: #b3b3b3;
+  --left-bg-color-2: #24242477;
+  --zoom-buttons-margin-top: 0px;
 }
 
 body,
 html {
   margin: 0;
   padding: 0;
-  /* background-color: gray; */
+  /* background-color: var(--body-bg-color); */
   text-align: center;
   /* user-select: none; */
   /* font-size: 10px; */
@@ -23,20 +32,30 @@ html {
   display: none !important;
 }
 
+a:link,
+a:visited,
+a:hover,
+a:active {
+  color: var(--text-color);
+  text-decoration: underline;
+}
+
 #left {
   position: absolute;
   left: 0;
   top: 0;
   width: calc(100% - 300px);
   height: 100vh;
-  border: rgb(155, 155, 155) 1px solid;
+  /* border: rgb(155, 155, 155) 1px solid; */
+  border: var(--border-color) 1px solid;
   /* ref: https://programming.vip/docs/three-ways-of-realizing-transparent-grid-with-css.html */
   background-image: repeating-conic-gradient(
-    rgb(179, 179, 179) 0 25%,
+    var(--left-bg-color-1) 0 25%,
     transparent 0 50%
   );
   background-size: 20px 20px;
-  background-color: rgba(36, 36, 36, 0.466);
+  /* background-color: rgba(36, 36, 36, 0.467); */
+  background-color: var(--left-bg-color-2);
   overflow: hidden;
 }
 
@@ -68,8 +87,8 @@ html {
   border-left: var(--border-color) 2px solid;
   font-family: Arial, Helvetica, sans-serif;
   font-size: small;
-  background-color: var(--right-bg-color);
-  color: var(--right-color);
+  background-color: var(--bg-color);
+  color: var(--text-color);
 }
 
 #right-bottom {
@@ -86,7 +105,7 @@ html {
   font-size: small;
   border-top: var(--border-color) 2px solid;
   z-index: 20;
-  background-color: var(--right-bg-color);
+  background-color: var(--bg-color);
 }
 
 .tab {
@@ -99,14 +118,17 @@ html {
   border-right: var(--border-color) 2px solid;
   font-family: Arial, Helvetica, sans-serif;
   font-size: small;
-  background-color: rgb(199, 199, 199);
+  /* background-color: rgb(199, 199, 199); */
+  /* background-color: color-mix(in srgb, var(--bg-color), transparent 20%); */
+  background-color: var(--input-bg-color);
   z-index: 20;
   user-select: none;
   padding: 8px 0 0 8px;
   font-size: 20px;
   /* color: #5c5c5c; */
-  /* color: rgba(var(--right-color), 0.8); */
-  /* color: color-mix(in srgb, var(--right-color), transparent 40%); */
+  /* color: rgba(var(--text-color), 0.8); */
+  /* color: color-mix(in srgb, var(--text-color), transparent 40%); */
+  /* filter: opacity(0.5); */
 }
 
 .tab-icon {
@@ -120,18 +142,20 @@ html {
 
 .tab:hover {
   /* background-color: rgb(228, 228, 228); */
-  /* background-color: color-mix(in srgb, var(--right-bg-color) 90%, black); */
-  background-color: var(--right-bg-color);
+  /* background-color: color-mix(in srgb, var(--bg-color) 90%, black); */
+  background-color: var(--bg-color);
   cursor: pointer;
+  filter: opacity(1);
 }
 
 .tab-selected {
-  border-right: var(--right-bg-color) 2px solid;
-  background-color: var(--right-bg-color);
+  border-right: var(--bg-color) 2px solid;
+  background-color: var(--bg-color);
+  filter: opacity(1);
 }
 
 .tab-selected:hover {
-  background-color: var(--right-bg-color);
+  background-color: var(--bg-color);
   cursor: default;
 }
 
@@ -180,18 +204,24 @@ input[type="text"],
 input[type="number"] {
   padding: 5px;
   margin: 5px 0px;
-  border: 2px solid var(--border-color);
+  border: 1px solid var(--input-border-color);
   font-family: inherit;
   font-size: inherit;
   width: 100%;
   height: 30px;
+  color: var(--input-text-color);
+  background-color: var(--input-bg-color);
+  border-radius: 5px;
 }
 
 input[type="color"] {
   margin: 5px 0px;
   width: 100%;
-  border: 2px solid var(--border-color);
+  border: 1px solid var(--input-border-color);
   height: 30px;
+  color: var(--input-text-color);
+  background-color: var(--input-bg-color);
+  border-radius: 5px;
 }
 
 input[type="file"] {
@@ -203,16 +233,22 @@ input[type="file"] {
   overflow: hidden;
   clip: rect(0, 0, 0, 0);
   border: 0;
+  color: var(--input-text-color);
+  background-color: var(--input-bg-color);
+  border-radius: 5px;
+  border: 1px solid var(--input-border-color);
 }
 
 select {
   margin: 5px 0px;
   width: 100%;
   height: 30px;
-  border: 2px solid var(--border-color);
-  border-radius: 0px;
-  background-color: #fff;
+  border: 2px solid var(--input-border-color);
   cursor: pointer;
+  color: var(--input-text-color);
+  background-color: var(--input-bg-color);
+  border-radius: 5px;
+  border: 1px solid var(--input-border-color);
 }
 @-moz-document url-prefix() {
   select {
@@ -244,20 +280,64 @@ label {
   margin-bottom: 10px;
 }
 
+label:has(input[type="checkbox"]) {
+  cursor: pointer;
+  display: flex !important;
+  flex-direction: row;
+  gap: 8px;
+  align-items: center;
+  user-select: none;
+}
+
 [type="checkbox"] {
+  cursor: pointer;
+  appearance: none;
+  margin: 0;
+  font: inherit;
+  width: 1.6em;
+  height: 1.6em;
+  min-width: 1.6em;
+  min-height: 1.6em;
   vertical-align: middle;
+  border: 1px solid var(--input-border-color);
+  color: var(--input-text-color);
+  background-color: var(--input-bg-color);
+  border-radius: 0.15em;
+  transform: translateY(-0.075em);
+  display: grid;
+  place-content: center;
+}
+
+[type="checkbox"][disabled] {
+  cursor: default;
+}
+
+[type="checkbox"]::before {
+  content: "";
+  width: 0.8em;
+  height: 0.8em;
+  min-width: 0.8em;
+  min-height: 0.8em;
+  clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+  transform: scale(0);
+  box-shadow: inset 1em 1em var(--input-text-color);
+  background-color: var(--input-bg-color);
+}
+
+[type="checkbox"]:checked::before {
+  transform: scale(1);
 }
 
 .checkbox-label {
   margin: 15px 0px 15px 0px;
   display: block;
   cursor: pointer;
+  color: var(--text-color);
 }
 
-.checkbox-label-2 {
-  margin: 15px 0px 15px 20px;
-  display: block;
-  cursor: pointer;
+.checkbox-label:has(input[type="checkbox"][disabled]) {
+  cursor: default;
+  filter: opacity(0.5);
 }
 
 button {
@@ -265,28 +345,23 @@ button {
   -webkit-appearance: none; */
   padding: 10px;
   border: none;
-  background-color: #3f51b5;
-  color: #fff;
+  background-color: var(--button-bg-color);
+  color: var(--button-text-color);
   font-weight: 600;
   width: 100%;
   margin: 5px 0;
+  border-radius: 5px;
 }
 
 button:hover {
-  background-color: #5a6ddd;
+  /* background-color: #5a6ddd; */
+  transform: scale(1.01);
+  filter: brightness(1.2);
   cursor: pointer;
 }
 
 button:active {
-  background-color: #3f51b5;
   transform: translateY(1px);
-}
-
-a:link,
-a:visited,
-a:hover,
-a:active {
-  color: #3f51b5;
 }
 
 .zoom-button {
@@ -295,16 +370,19 @@ a:active {
   height: 30px;
   left: 20px;
   border: var(--border-color) 2px solid;
-  background-color: rgb(226, 226, 226);
+  /* background-color: rgb(226, 226, 226); */
+  background-color: var(--input-bg-color);
   z-index: 20;
   user-select: none;
   padding: 8px 0 0 8px;
   font-size: 15px;
-  color: #5c5c5c;
+  /* color: #5c5c5c; */
+  color: var(--text-color);
 }
 
 .zoom-button:hover {
-  background-color: rgb(255, 255, 255);
+  /* background-color: rgb(255, 255, 255); */
+  background-color: var(--bg-color);
   cursor: pointer;
 }
 
@@ -318,13 +396,13 @@ a:active {
 }
 
 #zoom-button-1 {
-  top: 20px;
+  top: calc(20px + var(--zoom-buttons-margin-top));
 }
 #zoom-button-2 {
-  top: 60px;
+  top: calc(60px + var(--zoom-buttons-margin-top));
 }
 #zoom-button-3 {
-  top: 100px;
+  top: calc(100px + var(--zoom-buttons-margin-top));
 }
 
 .import-export-buttons {
@@ -340,11 +418,14 @@ a:active {
 }
 
 .import-export-button {
-  color: rgb(87, 87, 87);
+  /* color: rgb(87, 87, 87); */
+  color: var(--text-color);
   /* border: 2px solid var(--border-color) ; */
   padding: 2px;
 }
 .import-export-button:hover {
-  color: rgb(46, 46, 46);
+  /* color: rgb(46, 46, 46); */
   cursor: pointer;
+  transform: scale(1.1);
+  filter: brightness(1.2);
 }

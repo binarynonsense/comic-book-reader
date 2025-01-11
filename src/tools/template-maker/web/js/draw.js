@@ -35,6 +35,7 @@ export function drawCompositeImage() {
     let renderedPageData = drawToCanvas(canvas, rootRect);
     fitCanvasContentToLayout(canvas, renderedPageData, () => {
       updatePreviewImage();
+      document.documentElement.style.setProperty("--li-bg-alpha", "0.5");
       showLoading(false);
     });
   }, "100");

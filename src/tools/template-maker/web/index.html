@@ -30,14 +30,16 @@
   </head>
   <body>
     <div id="left">
-      <div class="zoom-button" id="zoom-button-1" title="zoom in">
-        <i class="fa-solid fa-magnifying-glass-plus zoom-button-icon"></i>
-      </div>
-      <div class="zoom-button" id="zoom-button-2" title="zoom out">
-        <i class="fa-solid fa-magnifying-glass-minus zoom-button-icon"></i>
-      </div>
-      <div class="zoom-button" id="zoom-button-3" title="reset view">
-        <i class="fa-solid fa-expand zoom-button-icon"></i>
+      <div id="zoom-buttons">
+        <div class="zoom-button" id="zoom-button-1" title="zoom in">
+          <i class="fa-solid fa-magnifying-glass-plus zoom-button-icon"></i>
+        </div>
+        <div class="zoom-button" id="zoom-button-2" title="zoom out">
+          <i class="fa-solid fa-magnifying-glass-minus zoom-button-icon"></i>
+        </div>
+        <div class="zoom-button" id="zoom-button-3" title="reset view">
+          <i class="fa-solid fa-expand zoom-button-icon"></i>
+        </div>
       </div>
       <div id="result-div">
         <img src="" id="result-img" alt="" />
@@ -828,7 +830,7 @@
       <div class="modal-frame">
         <div class="modal-topbar">
           <div
-            class="modal-close-button modal-close-button"
+            class="modal-close-x-button modal-close-button"
             id="export-preset-modal-close-button"
             title="cancel"
           >
@@ -1061,7 +1063,7 @@
     </div>
 
     <!-- loading -->
-    <div id="loading">
+    <div id="loading" class="is-active">
       <div id="loading-bg"><div id="loading-spinner"></div></div>
     </div>
   </body>
