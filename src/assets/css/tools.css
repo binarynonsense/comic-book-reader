@@ -484,6 +484,11 @@ input:checked + .tools-toggle-slider:before {
   line-height: 120%;
 }
 
+#tools textarea {
+  background-color: var(--tools-input-bg-color);
+  color: var(--tools-input-text-color);
+}
+
 /* /////////////////////////////////////////////////////////////// */
 
 .tools-checkbox-container {
