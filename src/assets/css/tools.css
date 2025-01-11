@@ -174,8 +174,8 @@ html[dir="rtl"] #tools:not(:has(iframe)) {
 }
 
 .tools-button-accent {
-  background-color: var(--tools-button-accent-bg-color) !important;
-  color: var(--tools-button-accent-text-color) !important;
+  /* background-color: var(--tools-button-accent-bg-color) !important;
+  color: var(--tools-button-accent-text-color) !important; */
 }
 
 html[dir="rtl"] .tools-button-accent i {
@@ -198,6 +198,11 @@ html[dir="rtl"] .tools-button-accent i {
 }
 
 /* /////////////////////////////////////////////////////////////// */
+
+.tools-menu-buttons button:not(.tools-button-accent) {
+  background-color: var(--tools-button-accent-bg-color) !important;
+  color: var(--tools-button-accent-text-color) !important;
+}
 
 .tools-menu-button {
   padding: 10px 30px;

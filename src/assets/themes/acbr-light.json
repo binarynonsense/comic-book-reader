@@ -98,14 +98,14 @@
     "--modal-button-success-bg-color": "#50d971",
     "--modal-button-success-text-color": "#525252",
 
-    "--hs-logo-opacity": "0.7",
-    "--hs-bg-color": "#ccc",
-    "--hs-text-color": "#777",
+    "--hs-logo-opacity": "0.6",
+    "--hs-bg-color": "#1e1e1e",
+    "--hs-text-color": "#666",
     "--hs-button-normal-bg-color": "#777",
-    "--hs-button-normal-text-color": "#ddd",
+    "--hs-button-normal-text-color": "#1e1e1e",
     "--hs-button-accent-bg-color": "#d9af50",
     "--hs-button-accent-text-color": "#303030",
-    "--hs-path-card-bg-color": "#ddd",
-    "--hs-path-card-text-color": "#777",
-    "--hs-add-card-bg-pct": "50%"
+    "--hs-path-card-bg-color": "#303030",
+    "--hs-path-card-text-color": "#888",
+    "--hs-add-card-bg-pct": "20%"
 }
