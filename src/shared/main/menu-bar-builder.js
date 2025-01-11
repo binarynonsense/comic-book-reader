@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2024 Álvaro García
+ * Copyright 2020-2025 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -13,6 +13,15 @@ const utils = require("./utils");
 
 function getHelpSubmenu() {
   let menu = [];
+  menu.push({
+    label: _("menu-help-checkupdates"), // + "...",
+    click() {
+      core.onMenuCheckUpdates();
+    },
+  });
+  menu.push({
+    type: "separator",
+  });
   menu.push({
     label: _("menu-help-about"),
     click() {

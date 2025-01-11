@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2024 Álvaro García
+ * Copyright 2020-2025 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -14,6 +14,8 @@ import {
 } from "../shared/renderer/tools.js";
 import * as modals from "../shared/renderer/modals.js";
 import { init as initInput } from "../shared/renderer/input.js";
+import { isVersionOlder } from "../shared/renderer/utils.js";
+import axios from "../assets/libs/axios/dist/esm/axios.js";
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -131,6 +133,11 @@ function onIpcFromMain(event, args) {
           showModalAlert(args[2], args[3], args[4]);
         }
         break;
+      case "show-modal-checkversion":
+        {
+          showModalCheckUpdates(...args.slice(2));
+        }
+        break;
       case "log-to-console":
         {
           console.log(args[2]);
@@ -196,6 +203,132 @@ function showModalAlert(title, message, textButton1) {
       },
     ],
   });
+  if (getCurrentTool() === reader)
+    reader.sendIpcToMain("rebuild-menu-and-toolbar", false);
+}
+
+async function showModalCheckUpdates(currentVersion, texts) {
+  if (g_openModal) {
+    return;
+  }
+  // Searching Modal
+  g_openModal = modals.show({
+    title: texts.titleSearching,
+    message: " ",
+    zIndexDelta: 5,
+    frameWidth: 600,
+    close: {
+      callback: () => {
+        modalClosed();
+      },
+      hide: true,
+    },
+    progressBar: {},
+  });
+  try {
+    const response = await axios.get(
+      `https://api.github.com/repos/binarynonsense/comic-book-reader/releases/latest`,
+      { timeout: 15000 }
+    );
+    // console.log(response.data);
+    let latestVersion = response.data.tag_name;
+    if (!latestVersion) {
+      throw "error version";
+    }
+    latestVersion = latestVersion.replace("v", "");
+    modals.close(g_openModal);
+
+    const isOlder = isVersionOlder(currentVersion, latestVersion);
+    let versionsText =
+      "\n\n" +
+      texts.infoCurrentVersion +
+      ": " +
+      currentVersion +
+      "\n" +
+      texts.infoLatestVersion +
+      ": " +
+      latestVersion;
+    if (isOlder) {
+      // Update Available Modal
+      g_openModal = modals.show({
+        title: texts.titleUpdateAvailable,
+        message: texts.infoUpdateAvailable + versionsText,
+        zIndexDelta: 10,
+        close: {
+          callback: () => {
+            modalClosed();
+          },
+          key: "Escape",
+        },
+        buttons: [
+          {
+            text: texts.buttonOpen.toUpperCase(),
+            callback: () => {
+              modalClosed();
+              reader.sendIpcToMain(
+                "open-url-in-browser",
+                "https://github.com/binarynonsense/comic-book-reader/releases/latest"
+              );
+            },
+          },
+          {
+            text: texts.buttonClose.toUpperCase(),
+            callback: () => {
+              modalClosed();
+            },
+          },
+        ],
+      });
+    } else {
+      // Up to Date Modal
+      g_openModal = modals.show({
+        title: texts.titleUpToDate,
+        message: texts.infoUpToDate + versionsText,
+        zIndexDelta: 10,
+        close: {
+          callback: () => {
+            modalClosed();
+          },
+          key: "Escape",
+        },
+        buttons: [
+          {
+            text: texts.buttonClose.toUpperCase(),
+            callback: () => {
+              modalClosed();
+            },
+          },
+        ],
+      });
+    }
+  } catch (error) {
+    modals.close(g_openModal);
+    // Error Modal
+    g_openModal = modals.show({
+      title: texts.titleError,
+      message:
+        error?.name === "AxiosError"
+          ? texts.infoNetworkError.replace("{0}", "GitHub")
+          : error,
+      zIndexDelta: 10,
+      close: {
+        callback: () => {
+          modalClosed();
+        },
+        key: "Escape",
+      },
+      buttons: [
+        {
+          text: texts.buttonClose.toUpperCase(),
+          callback: () => {
+            modalClosed();
+          },
+        },
+      ],
+    });
+    // console.error(error);
+  }
+
   if (getCurrentTool() === reader)
     reader.sendIpcToMain("rebuild-menu-and-toolbar", false);
 }

@@ -6,6 +6,7 @@
  */
 
 const { app } = require("electron");
+const shell = require("electron").shell;
 
 const fs = require("fs");
 const path = require("path");
@@ -607,6 +608,10 @@ function initOnIpcCallbacks() {
 
   on("toggle-fullscreen", () => {
     core.onMenuToggleFullScreen();
+  });
+
+  on("open-url-in-browser", (url) => {
+    shell.openExternal(url);
   });
 
   on("quit", () => {

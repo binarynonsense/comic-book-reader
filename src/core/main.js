@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2024 Álvaro García
+ * Copyright 2020-2025 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -649,7 +649,25 @@ if (!gotTheLock) {
       i18n._("ui-modal-prompt-button-ok")
     );
   };
+
+  exports.onMenuCheckUpdates = function () {
+    let texts = {
+      titleUpToDate: i18n._("ui-modal-title-versionuptodate"),
+      titleUpdateAvailable: i18n._("ui-modal-title-versionavailable"),
+      titleSearching: i18n._("tool-shared-modal-title-searching"),
+      titleError: i18n._("tool-shared-modal-title-error"),
+      infoUpToDate: i18n._("ui-modal-info-updateavailable-no"),
+      infoUpdateAvailable: i18n._("ui-modal-info-updateavailable-yes"),
+      infoCurrentVersion: i18n._("ui-modal-info-currentversion"),
+      infoLatestVersion: i18n._("ui-modal-info-lateststableversion"),
+      infoNetworkError: i18n._("tool-shared-ui-search-network-error"),
+      buttonOpen: i18n._("ui-modal-prompt-button-open"),
+      buttonClose: i18n._("tool-shared-ui-close"),
+    };
+    sendIpcToCoreRenderer("show-modal-checkversion", app.getVersion(), texts);
+  };
 } // end of instance check if
+
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
