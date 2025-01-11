@@ -109,8 +109,10 @@
 
 #hs-logo-open img {
   width: 150px;
+  /* opacity: var(--hs-logo-opacity);
+  filter: grayscale(100%); */
   opacity: var(--hs-logo-opacity);
-  filter: grayscale(100%);
+  /* filter: grayscale(100%); */
 }
 
 /* *********************** */
