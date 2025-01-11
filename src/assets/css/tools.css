@@ -173,10 +173,10 @@ html[dir="rtl"] #tools:not(:has(iframe)) {
   transform: translateY(1px);
 }
 
-.tools-button-accent {
-  /* background-color: var(--tools-button-accent-bg-color) !important;
-  color: var(--tools-button-accent-text-color) !important; */
-}
+/* .tools-button-accent {
+  background-color: var(--tools-button-accent-bg-color) !important;
+  color: var(--tools-button-accent-text-color) !important;
+} */
 
 html[dir="rtl"] .tools-button-accent i {
   transform: scale(-1, 1);
