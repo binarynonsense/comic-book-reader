@@ -228,8 +228,8 @@ html[dir="rtl"] .tools-button-accent i {
 }
 
 .tools-menu-button:hover {
-  background-color: var(--tools-button-accent-bg-color);
-  color: var(--tools-button-accent-text-color);
+  background-color: var(--tools-button-normal-bg-color);
+  color: var(--tools-button-normal-text-color);
 }
 .tools-menu-button-selected {
   background-color: var(--tools-bg2-color);
