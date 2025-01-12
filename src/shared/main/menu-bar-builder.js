@@ -315,16 +315,6 @@ function buildApplicationMenu(settings, history) {
                     reader.onMenuToggleLoadingIndicator();
                   },
                 },
-                {
-                  label: _("menu-view-layout-show-audioplayer"),
-                  id: "audio-player",
-                  type: "checkbox",
-                  checked: settings.showAudioPlayer,
-                  accelerator: "CommandOrControl+M",
-                  click() {
-                    core.onMenuToggleAudioPlayer();
-                  },
-                },
               ],
             },
             {
@@ -502,6 +492,19 @@ function buildApplicationMenu(settings, history) {
               },
             },
           ],
+        },
+        {
+          type: "separator",
+        },
+        {
+          label: _("menu-view-layout-show-audioplayer"),
+          id: "audio-player",
+          type: "checkbox",
+          checked: settings.showAudioPlayer,
+          accelerator: "CommandOrControl+M",
+          click() {
+            core.onMenuToggleAudioPlayer();
+          },
         },
         {
           type: "separator",
