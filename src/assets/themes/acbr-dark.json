@@ -14,7 +14,7 @@
     "--titlebar-text-color": "#aaaaaa",
     "--titlebar-title-text-color": "#909090",
     "--titlebar-bg-color": "#303030",
-    "--titlebar-focused-bg-color": "#303030",
+    "--titlebar-focused-bg-color": "#444",
   
     "--toolbar-text-color": "#909090",
     "--toolbar-bg-color": "#303030",
