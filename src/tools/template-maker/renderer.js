@@ -23,7 +23,6 @@ function init(theme, iframeLocalization) {
   document
     .getElementById("tool-template-maker-back-button")
     .addEventListener("click", (event) => {
-      //sendIpcToMain("close");
       showModalConfirmClose();
     });
   g_iframe = document.getElementById("tool-template-maker-iframe");
@@ -58,6 +57,12 @@ function init(theme, iframeLocalization) {
       "--zoom-buttons-margin-top",
       "60px"
     );
+
+    g_iframe.contentWindow.document
+      .getElementById("binaryLink")
+      .addEventListener("click", function () {
+        sendIpcToMain("binaryLinkClicked");
+      });
   };
 
   ////////////////////////////////////////

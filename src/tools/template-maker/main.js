@@ -6,6 +6,7 @@
  */
 
 const { clipboard } = require("electron");
+const shell = require("electron").shell;
 const fs = require("fs");
 const path = require("path");
 const core = require("../../core/main");
@@ -92,6 +93,10 @@ function on(id, callback) {
 function initOnIpcCallbacks() {
   on("close", () => {
     onCloseClicked();
+  });
+
+  on("binaryLinkClicked", () => {
+    shell.openExternal("https://www.binarynonsense.com/");
   });
 
   // on("show-context-menu", (params) => {
