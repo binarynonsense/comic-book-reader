@@ -117,6 +117,7 @@
   "menu-shared-bottom-right": "Unten rechts",
   "[NEEDS TRANSLATION]menubar-buttons-minimize": "Minimize",
   "[NEEDS TRANSLATION]menubar-buttons-maximize": "Maximize",
+  "[NEEDS TRANSLATION]menubar-buttons-restoredown": "Restore",
   "[NEEDS TRANSLATION]menubar-buttons-close": "Close",
   "ctxmenu-copy": "Kopieren",
   "ctxmenu-paste": "Einfügen",
