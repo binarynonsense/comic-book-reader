@@ -27,7 +27,7 @@
     "--toolbar-page-slider-thumb-color": "#525252",
   
     "--scrollbar-bg-color": "#1e1e1e",
-    "--scrollbar-color": "#ccc",
+    "--scrollbar-color": "#ddd",
     "--scrollbar-hover-color": "#fafafa",
 
     "--audioplayer-bg-color": "#fafafa",
