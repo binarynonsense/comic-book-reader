@@ -514,6 +514,17 @@ if (!gotTheLock) {
 
     const locale = i18n.getLoadedLocaleData()["@metadata"]["locale"];
     sendIpcToCoreRenderer("update-language-locale", locale);
+
+    sendIpcToPreload(
+      "update-window-buttons",
+      {
+        minimize: i18n._("menubar-buttons-minimize"),
+        maximize: i18n._("menubar-buttons-maximize"),
+        restoreDown: i18n._("menubar-buttons-restoredown"),
+        close: i18n._("menubar-buttons-close"),
+      },
+      g_mainWindow.isMaximized()
+    );
   }
   exports.onLanguageChanged = onLanguageChanged;
 

@@ -38,12 +38,30 @@ window.addEventListener("DOMContentLoaded", () => {
       if (args[1]) g_titlebar.updateBackground(TitlebarColor.fromHex(args[1]));
       if (args[2]) g_titlebar.updateItemBGColor(TitlebarColor.fromHex(args[2]));
       g_titlebar.refreshMenu();
+      // updateWindowButtons();
     } else if (args[0] == "update-title") {
       document.title = args[1];
       g_titlebar.updateTitle(args[1]);
+    } else if (args[0] == "update-window-buttons") {
+      updateWindowButtons(...args.slice(1));
     }
   });
 });
+
+function updateWindowButtons(localizedTexts, inMaximized) {
+  if (localizedTexts) {
+    g_titlebar.currentOptions.tooltips.maximize = localizedTexts.maximize;
+    g_titlebar.currentOptions.tooltips.minimize = localizedTexts.minimize;
+    g_titlebar.currentOptions.tooltips.restoreDown = localizedTexts.restoreDown;
+    g_titlebar.currentOptions.tooltips.close = localizedTexts.close;
+  }
+  g_titlebar.controls.close.title = g_titlebar.currentOptions.tooltips.close;
+  g_titlebar.controls.minimize.title =
+    g_titlebar.currentOptions.tooltips.minimize;
+  g_titlebar.controls.maximize.title = inMaximized
+    ? g_titlebar.currentOptions.tooltips.restoreDown
+    : g_titlebar.currentOptions.tooltips.maximize;
+}
 
 // ref: https://www.electronjs.org/docs/latest/tutorial/tutorial-preload
 // ref: https://www.electronjs.org/docs/latest/tutorial/ipc
