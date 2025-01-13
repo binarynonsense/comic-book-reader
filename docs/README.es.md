@@ -43,7 +43,7 @@ Un lector y conversor de cómics para archivos en formato CBZ, CBR, CB7, EPUB y 
 - Vistas de pagina: 'ajustar a anchura', 'ajustar a altura' y 'escalar a altura' personalizable
 - Rotación de página
 - Interfaz de usuario disponible en:
-  - Inglés, español, ruso, alemán, árabe y filipino<sup>(beta)</sup>.
+  - Inglés, español, ruso, alemán, árabe y filipino
 - Restaura automáticamente el último cómic, y página, abierto en la sesión anterior, y recuerda las posiciones de página de los últimos cómics.
 - Modo portátil (al crear un archivo llamado portable.txt en la misma carpeta que el ejecutable)
 - Editor de metadatos:
@@ -60,7 +60,7 @@ Un lector y conversor de cómics para archivos en formato CBZ, CBR, CB7, EPUB y 
   - Crear:
     - Un cómic (CBR<sup>[4]</sup>, CBZ, CB7, PDF o EPUB) a partir de una lista de archivos de imagen y/o cómics
     - Una imagen de código QR a partir de un texto
-    - Plantillas de páginas y miniaturas de cómic<sup>(beta)</sup>
+    - Plantillas de páginas y miniaturas de cómic
   - Extraer:
     - Páginas de cómics (a JPG, PNG, AVIF o WebP)
     - Texto (OCR) de una página de cómic o archivo de imagen

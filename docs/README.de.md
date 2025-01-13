@@ -43,7 +43,7 @@ Ein Comicbuch Leser und Konverter für CBZ, CBR, CB7, EPUB und PDF Dateien.
 - 'Breitenanpassung', 'Höhenanpassung' und eine anpassbare 'Höhenskalierung' Seitenansicht
 - Seitenrotation
 - Benutzeroberfläche verfügbar auf:
-  - Englisch, Spanisch, Russisch, Deutsch, Arabisch und Filipino<sup>(beta)</sup>
+  - Englisch, Spanisch, Russisch, Deutsch, Arabisch und Filipino
 - Automatische Wiederherstellung der vergangenen Sitzung, mit Erinnerung der letzten Seitenposition.
 - Tragbarer Modus (durch das Erstellen einer Datei namens portable.txt im selben Ordner wie die Anwendung)
 - Metadateneditor:
@@ -60,7 +60,7 @@ Ein Comicbuch Leser und Konverter für CBZ, CBR, CB7, EPUB und PDF Dateien.
   - Erstelle:
     - Ein Comicbuch (CBR<sup>[4]</sup>, CBZ, CB7, PDF oder EPUB) aus einer Liste von Bild Dateien und/oder Comicbüchern
     - Ein QR Code Bild aus Text
-    - Comicbuch Seitenvorlagen und Vorschaubilder<sup>(beta)</sup>
+    - Comicbuch Seitenvorlagen und Vorschaubilder
   - Extrahiere:
     - Comicbuch Seiten (zu JPG, PNG, AVIF oder WebP)
     - Text (OCR) aus einer Comicbuch Seite oder Bilddatei

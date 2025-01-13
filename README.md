@@ -43,7 +43,7 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB and PDF files.
 - 'Fit to width', 'fit to height' and a customizable 'scale to height' page views
 - Page rotation
 - UI available in:
-  - English, Spanish, Russian, German, Arabic and Filipino<sup>(beta)</sup>
+  - English, Spanish, Russian, German, Arabic and Filipino
 - Automatically restores the previous session's last opened book and page, and remembers the last books' page positions.
 - Portable mode (by creating a file named portable.txt in the same folder as the executable)
 - Metadata editor:
@@ -60,7 +60,7 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB and PDF files.
   - Create:
     - A comic book (CBR<sup>[4]</sup>, CBZ, CB7, PDF or EPUB) from a list of image files and/or comic books
     - A QR code image from text
-    - Comic book page and thumbnails templates<sup>(beta)</sup>
+    - Comic book page and thumbnails templates
   - Extract:
     - Comic book pages (to JPG, PNG, AVIF or WebP)
     - Text (OCR) from a comic book page or image file
@@ -90,7 +90,7 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB and PDF files.
 > [3]: Reading EPUB Ebooks is an experimental / extra feature outside the main scope of the project. It may not work for all files and could be removed in future versions if necessary.
 >
 > [4]: Creating and modifying CBR files are disabled by default. They can be enabled in the preferences but require a third-party command-line tool ([rar](https://www.win-rar.com/cmd-shell-mode.html?&L=0) from WinRAR) to be installed in the system.
-> 
+>
 > [5]: PDF files larger than 2GB are not supported.
 
 ## Downloads:
