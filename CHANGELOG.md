@@ -1,3 +1,7 @@
+## v3.8.1
+
+- Fixed search results not showing in metadata editors.
+
 ## v3.8.0
 
 - Added a new tool: Template Maker. A direct port of my comic book page and thumbnails maker app.
