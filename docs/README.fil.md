@@ -21,7 +21,6 @@ Isang comic book reader at converter para sa mga file na CBZ, CBR, CB7, EPUB, at
   <span>Filipino</span>
 </p>
 
-
 ## Nilalaman:
 
 - [Mga Tampok](#mga-tampok)
@@ -44,7 +43,7 @@ Isang comic book reader at converter para sa mga file na CBZ, CBR, CB7, EPUB, at
 - 'Fit to width', 'fit to height' at isang customizable na 'scale to height' page views
 - Pag-ikot ng pahina
 - UI na available sa:
-  - English, Spanish, Russian, German, Arabic at Filipino<sup>(beta)</sup>.
+  - English, Spanish, Russian, German, Arabic at Filipino
 - Awtomatikong nire-restore ang huling binasang libro at pahina ng nakaraang session, at inaalala ang huling posisyon ng mga libro.
 - Portable mode (sa pamamagitan ng paggawa ng file na tinatawag na portable.txt sa parehong folder ng executable)
 - Metadata editor:
@@ -61,7 +60,7 @@ Isang comic book reader at converter para sa mga file na CBZ, CBR, CB7, EPUB, at
   - Create:
     - Gumawa ng comic book (CBR<sup>[4]</sup>, CBZ, CB7, PDF o EPUB) mula sa listahan ng mga imahe at/o comic books
     - Gumawa ng QR code na imahe mula sa text
-    - Mga template ng pahina ng komiks at mga thumbnail<sup>(beta)</sup>
+    - Mga template ng pahina ng komiks at mga thumbnail
   - Extract:
     - Mga pahina ng comic book (sa JPG, PNG, AVIF o WebP)
     - Teksto (OCR) mula sa isang comic book page o image file
@@ -91,7 +90,7 @@ Isang comic book reader at converter para sa mga file na CBZ, CBR, CB7, EPUB, at
 > [3]: Ang pagbabasa ng EPUB Ebooks ay isang eksperimental na / extra feature na labas sa pangunahing layunin ng proyekto. Maaaring hindi ito gumana para sa lahat ng mga file at maaaring tanggalin sa mga susunod na bersyon kung kinakailangan.
 >
 > [4]: Ang paggawa at pagbabago ng mga CBR na file ay naka-disable sa default. Maaaring paganahin ito sa mga preferences ngunit nangangailangan ng isang third-party command-line tool ([rar](https://www.win-rar.com/cmd-shell-mode.html?&L=0) mula sa WinRAR) na naka-install sa sistema.
-> 
+>
 > [5]: Hindi sinusuportahan ang PDF files na higit sa 2GB.
 
 ## Mga Pag-download:
