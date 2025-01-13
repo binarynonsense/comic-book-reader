@@ -60,6 +60,7 @@ Ein Comicbuch Leser und Konverter für CBZ, CBR, CB7, EPUB und PDF Dateien.
   - Erstelle:
     - Ein Comicbuch (CBR<sup>[4]</sup>, CBZ, CB7, PDF oder EPUB) aus einer Liste von Bild Dateien und/oder Comicbüchern
     - Ein QR Code Bild aus Text
+    - Comicbuch Seitenvorlagen und Vorschaubilder<sup>(beta)</sup>
   - Extrahiere:
     - Comicbuch Seiten (zu JPG, PNG, AVIF oder WebP)
     - Text (OCR) aus einer Comicbuch Seite oder Bilddatei
