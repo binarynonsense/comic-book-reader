@@ -1,6 +1,6 @@
 ## v3.8.0
 
-- Added a new tool: Template Maker. It's a direct port of my comic book page and thumbnails maker app.
+- Added a new tool: Template Maker. A direct port of my comic book page and thumbnails maker app.
 - Added a new option in the preferences to set the clock format (12h or 24h).
 - Added a "Close File" entry to the right-click context menu.
 - Added a new entry in the menu (Help > Check for Updates) to check if there's a newer stable version available on github and give the option to open its download page in the browser if there's one.
