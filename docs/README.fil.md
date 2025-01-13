@@ -61,6 +61,7 @@ Isang comic book reader at converter para sa mga file na CBZ, CBR, CB7, EPUB, at
   - Create:
     - Gumawa ng comic book (CBR<sup>[4]</sup>, CBZ, CB7, PDF o EPUB) mula sa listahan ng mga imahe at/o comic books
     - Gumawa ng QR code na imahe mula sa text
+    - Mga template ng pahina ng komiks at mga thumbnail<sup>(beta)</sup>
   - Extract:
     - Mga pahina ng comic book (sa JPG, PNG, AVIF o WebP)
     - Teksto (OCR) mula sa isang comic book page o image file
