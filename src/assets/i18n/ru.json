@@ -128,7 +128,6 @@
   "ctxmenu-rotate-clockwise": "По часовой стрелке",
   "ctxmenu-rotate-counterclockwise": "Против часовой стрелки",
   "ctxmenu-openfile": "Открыть файл...",
-  "[NEEDS TRANSLATION]ctxmenu-closefile": "Close File",
   "toolbar-go-left": "Перейти влево",
   "toolbar-go-right": "Перейти вправо",
   "toolbar-rotate-clockwise": "Повернуть по часовой стрелке",

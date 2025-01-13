@@ -118,7 +118,7 @@ function buildContextMenu(isOpen, showRotation) {
       },
     },
     {
-      label: _("ctxmenu-closefile"),
+      label: _("ui-modal-prompt-button-close-file"),
       enabled: isOpen,
       click() {
         reader.onMenuCloseFile();
