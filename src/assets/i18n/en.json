@@ -3,7 +3,7 @@
     "authors": [
       "Álvaro"
     ],
-    "last-updated": "2025-01-11",
+    "last-updated": "2025-01-15",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.8.0",
     "pre-release": "false",
@@ -301,6 +301,9 @@
   "tool-shared-ui-output-folder-0": "Specify one for all files",
   "[NOTE TO TRANSLATORS]tool-shared-ui-output-folder-1": "'Same as the input file' as in use as output folder the input folder's one",
   "tool-shared-ui-output-folder-1": "Same as the input file",
+  "tool-shared-ui-settings-remember": "Remember Last Used Options",
+  "tool-shared-ui-settings-reset": "Reset Options",
+  "tool-shared-ui-settings-reset-warning": "Are you sure you want to reset this tool's options to their default values?",
   "tool-shared-ui-change": "Change",
   "tool-shared-ui-convert": "Convert",
   "tool-shared-ui-create": "Create",
