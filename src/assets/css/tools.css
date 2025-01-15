@@ -878,10 +878,6 @@ html[dir="rtl"] .tools-range-bubble {
   display: block !important;
 }
 
-.container:has(> :not(.invisible)) {
-  display: block;
-}
-
 #tool-search-results-div > .tools-columns-right-subsection > div {
   margin-top: 10px;
 }
