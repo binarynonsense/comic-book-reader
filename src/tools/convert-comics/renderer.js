@@ -76,7 +76,7 @@ function init(mode, outputFolderPath, canEditRars, loadedOptions) {
     .getElementById("tool-cc-back-button")
     .addEventListener("click", (event) => {
       updateCurrentOptions();
-      sendIpcToMain("save-options", g_currentOptions);
+      sendIpcToMain("save-settings-options", getChangedOptions());
       sendIpcToMain("close-clicked");
     });
   document
@@ -312,122 +312,8 @@ function init(mode, outputFolderPath, canEditRars, loadedOptions) {
   // initOptions calls checkValidData(); -> calls updateColumnsHeight();
 }
 
-let g_defaultOptions;
-let g_currentOptions;
-function initOptions(outputFolderPath, loadedOptions) {
-  g_defaultOptions = toolsSettings.getOptions("tools-columns-right");
-  g_defaultOptions.outputFolderPath = outputFolderPath;
-  if (loadedOptions) {
-    g_currentOptions = loadedOptions;
-    toolsSettings.restoreOptions(
-      document.getElementById("tools-columns-right"),
-      g_currentOptions
-    );
-  } else {
-    g_currentOptions = g_defaultOptions;
-  }
-  changeOutputFolder(g_currentOptions.outputFolderPath);
-  checkValidData();
-}
-
-function updateCurrentOptions() {
-  g_currentOptions = toolsSettings.getOptions("tools-columns-right");
-  g_currentOptions.outputFolderPath = g_uiSelectedOptions.outputFolderPath;
-}
-
 export function initIpc() {
   initOnIpcCallbacks();
-}
-
-function updateFolderOptionUI() {
-  if (g_mode === ToolMode.CONVERT) {
-    const outputFolderOptionSelect = document.getElementById(
-      "tool-cc-output-folder-option-select"
-    );
-    const outputFolderUl = document.getElementById("tool-cc-output-folder");
-    const outputFolderChangeButton = document.getElementById(
-      "tool-cc-change-folder-button"
-    );
-    if (outputFolderOptionSelect.value === "0") {
-      outputFolderUl.classList.remove("set-display-none");
-      outputFolderChangeButton.classList.remove("set-display-none");
-      updateColumnsHeight();
-    } else {
-      outputFolderUl.classList.add("set-display-none");
-      outputFolderChangeButton.classList.add("set-display-none");
-      updateColumnsHeight();
-    }
-  }
-}
-
-function updateImageOpsUI() {
-  if (document.querySelector("#tool-cc-imageops-brightness-checkbox").checked) {
-    document
-      .querySelector("#tool-cc-imageops-brightness-input")
-      .classList.remove("tools-disabled");
-    document
-      .querySelector("#tool-cc-imageops-brightness-text")
-      .classList.remove("tools-disabled");
-  } else {
-    document
-      .querySelector("#tool-cc-imageops-brightness-input")
-      .classList.add("tools-disabled");
-    document
-      .querySelector("#tool-cc-imageops-brightness-text")
-      .classList.add("tools-disabled");
-  }
-
-  if (document.querySelector("#tool-cc-imageops-saturation-checkbox").checked) {
-    document
-      .querySelector("#tool-cc-imageops-saturation-input")
-      .classList.remove("tools-disabled");
-    document
-      .querySelector("#tool-cc-imageops-saturation-text")
-      .classList.remove("tools-disabled");
-  } else {
-    document
-      .querySelector("#tool-cc-imageops-saturation-input")
-      .classList.add("tools-disabled");
-    document
-      .querySelector("#tool-cc-imageops-saturation-text")
-      .classList.add("tools-disabled");
-  }
-}
-
-function updateOutputFolderUI() {
-  g_outputFolderDiv.innerHTML = "";
-  let li = document.createElement("li");
-  li.className = "tools-collection-li";
-  // text
-  let text = document.createElement("span");
-  text.innerText = reducePathString(g_uiSelectedOptions.outputFolderPath);
-  li.appendChild(text);
-  g_outputFolderDiv.appendChild(li);
-}
-
-function updateColumnsHeight(scrollTop = false) {
-  const left = document.getElementById("tools-columns-left");
-  const right = document.getElementById("tools-columns-right");
-  left.style.minHeight = right.offsetHeight + "px";
-  if (scrollTop) {
-    document.getElementById("tools-columns-right").scrollIntoView({
-      behavior: "instant",
-      block: "start",
-      inline: "nearest",
-    });
-  }
-}
-
-function updateSliderBubble(range, bubble) {
-  const val = range.value;
-  const min = range.min ? range.min : 0;
-  const max = range.max ? range.max : 100;
-  const newVal = Number(((val - min) * 100) / (max - min));
-  bubble.innerHTML = range.value;
-  // magic numbers
-  bubble.style["inset-inline-start"] = `calc(${newVal}% - (${
-    newVal * 0.15
-  }px))`;
 }
 
 function switchSection(id) {
@@ -520,6 +406,10 @@ function switchSection(id) {
   updateColumnsHeight(true);
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// SELECTED OPTIONS TO SEND ///////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
 function updateUISelectedOptions() {
   g_uiSelectedOptions.outputBrightnessApply = document.querySelector(
     "#tool-cc-imageops-brightness-checkbox"
@@ -609,6 +499,101 @@ function updateUISelectedOptions() {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+// UPDATE UI //////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+function updateFolderOptionUI() {
+  if (g_mode === ToolMode.CONVERT) {
+    const outputFolderOptionSelect = document.getElementById(
+      "tool-cc-output-folder-option-select"
+    );
+    const outputFolderUl = document.getElementById("tool-cc-output-folder");
+    const outputFolderChangeButton = document.getElementById(
+      "tool-cc-change-folder-button"
+    );
+    if (outputFolderOptionSelect.value === "0") {
+      outputFolderUl.classList.remove("set-display-none");
+      outputFolderChangeButton.classList.remove("set-display-none");
+      updateColumnsHeight();
+    } else {
+      outputFolderUl.classList.add("set-display-none");
+      outputFolderChangeButton.classList.add("set-display-none");
+      updateColumnsHeight();
+    }
+  }
+}
+
+function updateImageOpsUI() {
+  if (document.querySelector("#tool-cc-imageops-brightness-checkbox").checked) {
+    document
+      .querySelector("#tool-cc-imageops-brightness-input")
+      .classList.remove("tools-disabled");
+    document
+      .querySelector("#tool-cc-imageops-brightness-text")
+      .classList.remove("tools-disabled");
+  } else {
+    document
+      .querySelector("#tool-cc-imageops-brightness-input")
+      .classList.add("tools-disabled");
+    document
+      .querySelector("#tool-cc-imageops-brightness-text")
+      .classList.add("tools-disabled");
+  }
+
+  if (document.querySelector("#tool-cc-imageops-saturation-checkbox").checked) {
+    document
+      .querySelector("#tool-cc-imageops-saturation-input")
+      .classList.remove("tools-disabled");
+    document
+      .querySelector("#tool-cc-imageops-saturation-text")
+      .classList.remove("tools-disabled");
+  } else {
+    document
+      .querySelector("#tool-cc-imageops-saturation-input")
+      .classList.add("tools-disabled");
+    document
+      .querySelector("#tool-cc-imageops-saturation-text")
+      .classList.add("tools-disabled");
+  }
+}
+
+function updateOutputFolderUI() {
+  g_outputFolderDiv.innerHTML = "";
+  let li = document.createElement("li");
+  li.className = "tools-collection-li";
+  // text
+  let text = document.createElement("span");
+  text.innerText = reducePathString(g_uiSelectedOptions.outputFolderPath);
+  li.appendChild(text);
+  g_outputFolderDiv.appendChild(li);
+}
+
+function updateColumnsHeight(scrollTop = false) {
+  const left = document.getElementById("tools-columns-left");
+  const right = document.getElementById("tools-columns-right");
+  left.style.minHeight = right.offsetHeight + "px";
+  if (scrollTop) {
+    document.getElementById("tools-columns-right").scrollIntoView({
+      behavior: "instant",
+      block: "start",
+      inline: "nearest",
+    });
+  }
+}
+
+function updateSliderBubble(range, bubble) {
+  const val = range.value;
+  const min = range.min ? range.min : 0;
+  const max = range.max ? range.max : 100;
+  const newVal = Number(((val - min) * 100) / (max - min));
+  bubble.innerHTML = range.value;
+  // magic numbers
+  bubble.style["inset-inline-start"] = `calc(${newVal}% - (${
+    newVal * 0.15
+  }px))`;
+}
+
+///////////////////////////////////////////////////////////////////////////////
 // IPC SEND ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -638,7 +623,7 @@ function on(id, callback) {
 
 function beforeUnloadHandler() {
   updateCurrentOptions();
-  sendIpcToMain("unsaved-options", g_currentOptions);
+  sendIpcToMain("set-unsaved-settings-options", getChangedOptions());
 }
 
 function initOnIpcCallbacks() {
@@ -648,7 +633,6 @@ function initOnIpcCallbacks() {
   });
 
   on("hide", () => {
-    console.log("remove beforeunload");
     window.removeEventListener("beforeunload", beforeUnloadHandler);
   });
 
@@ -1130,6 +1114,46 @@ export function onContextMenu(params) {
     return;
   }
   sendIpcToMain("show-context-menu", params);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// OPTIONS ////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+let g_defaultOptions;
+let g_currentOptions;
+function initOptions(outputFolderPath, loadedOptions) {
+  g_defaultOptions = toolsSettings.getOptions("tools-columns-right");
+  g_defaultOptions.outputFolderPath = outputFolderPath;
+  if (loadedOptions) {
+    g_currentOptions = loadedOptions;
+    toolsSettings.restoreOptions(
+      document.getElementById("tools-columns-right"),
+      g_currentOptions
+    );
+  } else {
+    g_currentOptions = g_defaultOptions;
+  }
+  changeOutputFolder(g_currentOptions.outputFolderPath);
+  checkValidData();
+}
+
+function updateCurrentOptions() {
+  g_currentOptions = toolsSettings.getOptions("tools-columns-right");
+  g_currentOptions.outputFolderPath = g_uiSelectedOptions.outputFolderPath;
+}
+
+function getChangedOptions() {
+  let options;
+  if (g_currentOptions) {
+    options = {};
+    for (const key in g_currentOptions) {
+      if (g_currentOptions[key] !== g_defaultOptions[key]) {
+        options[key] = g_currentOptions[key];
+      }
+    }
+  }
+  return options;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

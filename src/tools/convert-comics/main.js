@@ -47,7 +47,7 @@ let g_creationTempSubFolderPath;
 let g_uiSelectedOptions = {};
 let g_imageIndex = 0;
 
-let g_unsavedOptions;
+let g_unsavedSettingsOptions;
 
 function init() {
   if (!g_isInitialized) {
@@ -121,11 +121,11 @@ exports.close = function () {
 };
 
 exports.onQuit = function () {
-  if (g_unsavedOptions)
+  if (g_unsavedSettingsOptions)
     settings.updateToolOptions(
       `tool-cc-${g_mode}`,
-      g_unsavedOptions["tool-cc-setting-remember-checkbox"]
-        ? g_unsavedOptions
+      g_unsavedSettingsOptions["tool-cc-setting-remember-checkbox"]
+        ? g_unsavedSettingsOptions
         : undefined
     );
 };
@@ -197,16 +197,16 @@ function initOnIpcCallbacks() {
     );
   });
 
-  on("save-options", (options) => {
-    g_unsavedOptions = undefined;
+  on("save-settings-options", (options) => {
+    g_unsavedSettingsOptions = undefined;
     settings.updateToolOptions(
       `tool-cc-${g_mode}`,
       options["tool-cc-setting-remember-checkbox"] ? options : undefined
     );
   });
 
-  on("unsaved-options", (options) => {
-    g_unsavedOptions = options;
+  on("set-unsaved-settings-options", (options) => {
+    g_unsavedSettingsOptions = options;
   });
 
   on("add-file-clicked", async (lastFilePath) => {
