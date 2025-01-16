@@ -384,14 +384,14 @@ if (!gotTheLock) {
       }
       reader.onResize();
       if (tools.getCurrentToolName() !== "reader")
-        tools.getCurrentTool()?.onResize();
+        tools.getCurrentTool().onResize?.();
     });
 
     g_mainWindow.on("maximize", function () {
       settings.setValue("maximize", true);
       reader.onMaximize();
       if (tools.getCurrentToolName() !== "reader")
-        tools.getCurrentTool()?.onMaximize();
+        tools.getCurrentTool().onMaximize?.();
     });
 
     g_mainWindow.on("unmaximize", function () {
@@ -403,7 +403,26 @@ if (!gotTheLock) {
       // ref: https://www.electronjs.org/docs/latest/api/window-open
       return { action: "deny" };
     });
+
+    // let tools save renderer data before closing
+    // UGLY 'HACK' but using beforeunload in the renderer was unreliable
+    g_mainWindow.on("close", function (event) {
+      if (
+        tools.getCurrentToolName() !== "reader" &&
+        tools.getCurrentTool()?.saveAndQuit
+      ) {
+        if (g_quittingPhase !== 2) {
+          event.preventDefault();
+          if (g_quittingPhase === 0) {
+            tools.getCurrentTool().saveAndQuit?.();
+            g_quittingPhase = 1;
+          }
+        }
+      }
+    });
   };
+
+  let g_quittingPhase = 0;
 
   app.whenReady().then(() => {
     createWindow();
@@ -415,7 +434,7 @@ if (!gotTheLock) {
 
   app.on("will-quit", () => {
     if (tools.getCurrentToolName() !== "reader")
-      tools.getCurrentTool()?.onQuit();
+      tools.getCurrentTool().onQuit?.();
     reader.onQuit();
     settings.save();
     history.save();
@@ -491,6 +510,11 @@ if (!gotTheLock) {
     return g_mainWindow;
   };
 
+  exports.forceQuit = function () {
+    g_quittingPhase = 2;
+    g_mainWindow.close();
+  };
+
   function toggleDevTools() {
     g_mainWindow.toggleDevTools();
   }
@@ -500,7 +524,7 @@ if (!gotTheLock) {
     const newState = !g_mainWindow.isFullScreen();
     reader.setFullScreen(newState);
     if (tools.getCurrentToolName() !== "reader") {
-      tools.getCurrentTool()?.onToggleFullScreen(newState);
+      tools.getCurrentTool().onToggleFullScreen?.(newState);
     }
     settings.setValue("fullScreen", newState);
   }
@@ -545,7 +569,8 @@ if (!gotTheLock) {
   };
 
   exports.onMenuQuit = function () {
-    app.quit();
+    // app.quit();
+    g_mainWindow.close();
   };
 
   /////////////

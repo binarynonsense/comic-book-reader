@@ -120,14 +120,8 @@ exports.close = function () {
   g_creationTempSubFolderPath = undefined;
 };
 
-exports.onQuit = function () {
-  if (g_unsavedSettingsOptions)
-    settings.updateToolOptions(
-      `tool-cc-${g_mode}`,
-      g_unsavedSettingsOptions["tool-cc-setting-remember-checkbox"]
-        ? g_unsavedSettingsOptions
-        : undefined
-    );
+exports.saveAndQuit = function () {
+  sendIpcToRenderer("save-and-quit-request");
 };
 
 exports.onResize = function () {
@@ -197,16 +191,14 @@ function initOnIpcCallbacks() {
     );
   });
 
-  on("save-settings-options", (options) => {
-    g_unsavedSettingsOptions = undefined;
+  on("save-settings-options", (options, forceQuit) => {
     settings.updateToolOptions(
       `tool-cc-${g_mode}`,
       options["tool-cc-setting-remember-checkbox"] ? options : undefined
     );
-  });
-
-  on("set-unsaved-settings-options", (options) => {
-    g_unsavedSettingsOptions = options;
+    if (forceQuit) {
+      core.forceQuit();
+    }
   });
 
   on("add-file-clicked", async (lastFilePath) => {

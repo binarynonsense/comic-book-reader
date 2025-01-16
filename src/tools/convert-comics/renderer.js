@@ -621,19 +621,19 @@ function on(id, callback) {
   g_onIpcCallbacks[id] = callback;
 }
 
-function beforeUnloadHandler() {
-  updateCurrentOptions();
-  sendIpcToMain("set-unsaved-settings-options", getChangedOptions());
-}
+// function beforeUnloadHandler(event) {
+//   updateCurrentOptions();
+//   sendIpcToMain("set-unsaved-settings-options", getChangedOptions());
+// }
 
 function initOnIpcCallbacks() {
   on("show", (...args) => {
     init(...args);
-    window.addEventListener("beforeunload", beforeUnloadHandler);
+    //window.addEventListener("beforeunload", beforeUnloadHandler);
   });
 
   on("hide", () => {
-    window.removeEventListener("beforeunload", beforeUnloadHandler);
+    //window.removeEventListener("beforeunload", beforeUnloadHandler);
   });
 
   on("update-localization", (...args) => {
@@ -650,6 +650,11 @@ function initOnIpcCallbacks() {
       modalClosed();
     }
     showResetOptionsModal(...args);
+  });
+
+  on("save-and-quit-request", (...args) => {
+    updateCurrentOptions();
+    sendIpcToMain("save-settings-options", getChangedOptions(), true);
   });
 
   on("close-modal", () => {
