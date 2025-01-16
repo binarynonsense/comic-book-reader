@@ -48,9 +48,6 @@ export function restoreOptions(rootElement, options) {
         if (element.type === "checkbox") {
           element.checked = options[id];
         } else {
-          if (element.value != options[id]) {
-            console.log(id + " changed");
-          }
           element.value = options[id];
         }
       }
