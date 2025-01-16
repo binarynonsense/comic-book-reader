@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2024 Álvaro García
+ * Copyright 2020-2025 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -11,6 +11,7 @@ import {
 } from "../../core/renderer.js";
 import * as modals from "../../shared/renderer/modals.js";
 import { FileExtension } from "../../shared/renderer/constants.js";
+import * as toolsSettings from "../../shared/renderer/tools-settings.js";
 
 let g_inputFiles = [];
 let g_inputFilesIndex = 0;
@@ -43,7 +44,7 @@ let g_localizedModalCloseButtonText;
 
 let g_isInitialized = false;
 
-function init(outputFolderPath) {
+function init(outputFolderPath, loadedOptions) {
   if (!g_isInitialized) {
     // things to start only once go here
     g_isInitialized = true;
@@ -65,6 +66,8 @@ function init(outputFolderPath) {
   document
     .getElementById("tool-ec-back-button")
     .addEventListener("click", (event) => {
+      updateCurrentOptions();
+      sendIpcToMain("save-settings-options", getChangedOptions());
       sendIpcToMain("close");
     });
   document
@@ -82,6 +85,11 @@ function init(outputFolderPath) {
     .getElementById("tool-ec-section-advanced-options-button")
     .addEventListener("click", (event) => {
       switchSection(1);
+    });
+  document
+    .getElementById("tool-ec-section-settings-button")
+    .addEventListener("click", (event) => {
+      switchSection(2);
     });
   ////////////////////////////////////////
   g_inputListDiv = document.querySelector("#tool-ec-input-list");
@@ -108,7 +116,6 @@ function init(outputFolderPath) {
       sendIpcToMain("choose-file", lastFilePath);
     });
 
-  updateOutputFolder(outputFolderPath);
   document
     .getElementById("tool-ec-change-folder-button")
     .addEventListener("click", (event) => {
@@ -157,6 +164,13 @@ function init(outputFolderPath) {
     updateSliderBubble(range, bubble);
   });
   ////////////////////////////////////////
+  // settings
+  document
+    .getElementById("tool-ec-settings-reset-button")
+    .addEventListener("click", (event) => {
+      sendIpcToMain("click-reset-options");
+    });
+  ////////////////////////////////////////
   // tooltips
   const tooltipButtons = document.querySelectorAll(".tools-tooltip-button");
   tooltipButtons.forEach((element) => {
@@ -168,8 +182,8 @@ function init(outputFolderPath) {
     });
   });
   ////////////////////////////////////////
-  checkValidData();
-  updateColumnsHeight();
+  initOptions(outputFolderPath, loadedOptions);
+  // initOptions calls checkValidData(); -> calls updateColumnsHeight();
 }
 
 export function initIpc() {
@@ -211,6 +225,9 @@ function switchSection(id) {
       document
         .getElementById("tool-ec-section-advanced-options-button")
         .classList.remove("tools-menu-button-selected");
+      document
+        .getElementById("tool-ec-section-settings-button")
+        .classList.remove("tools-menu-button-selected");
       // sections
       document
         .getElementById("tool-ec-input-options-section-div")
@@ -223,6 +240,9 @@ function switchSection(id) {
         .classList.add("set-display-none");
       document
         .getElementById("tool-ec-advanced-output-options-section-div")
+        .classList.add("set-display-none");
+      document
+        .getElementById("tool-ec-settings-section-div")
         .classList.add("set-display-none");
       break;
     case 1:
@@ -233,6 +253,9 @@ function switchSection(id) {
       document
         .getElementById("tool-ec-section-advanced-options-button")
         .classList.add("tools-menu-button-selected");
+      document
+        .getElementById("tool-ec-section-settings-button")
+        .classList.remove("tools-menu-button-selected");
       // sections
       document
         .getElementById("tool-ec-input-options-section-div")
@@ -245,6 +268,37 @@ function switchSection(id) {
         .classList.remove("set-display-none");
       document
         .getElementById("tool-ec-advanced-output-options-section-div")
+        .classList.remove("set-display-none");
+      document
+        .getElementById("tool-ec-settings-section-div")
+        .classList.add("set-display-none");
+      break;
+    case 2:
+      // buttons
+      document
+        .getElementById("tool-ec-section-general-options-button")
+        .classList.remove("tools-menu-button-selected");
+      document
+        .getElementById("tool-ec-section-advanced-options-button")
+        .classList.remove("tools-menu-button-selected");
+      document
+        .getElementById("tool-ec-section-settings-button")
+        .classList.add("tools-menu-button-selected");
+      // sections
+      document
+        .getElementById("tool-ec-input-options-section-div")
+        .classList.add("set-display-none");
+      document
+        .getElementById("tool-ec-output-options-section-div")
+        .classList.add("set-display-none");
+      document
+        .getElementById("tool-ec-advanced-input-options-section-div")
+        .classList.add("set-display-none");
+      document
+        .getElementById("tool-ec-advanced-output-options-section-div")
+        .classList.add("set-display-none");
+      document
+        .getElementById("tool-ec-settings-section-div")
         .classList.remove("set-display-none");
       break;
   }
@@ -280,8 +334,8 @@ function on(id, callback) {
 }
 
 function initOnIpcCallbacks() {
-  on("show", (outputFolderPath) => {
-    init(outputFolderPath);
+  on("show", (...args) => {
+    init(...args);
   });
 
   on("hide", () => {});
@@ -292,6 +346,19 @@ function initOnIpcCallbacks() {
 
   on("update-window", () => {
     updateColumnsHeight();
+  });
+
+  on("show-reset-options-modal", (...args) => {
+    if (g_openModal) {
+      modals.close(g_openModal);
+      modalClosed();
+    }
+    showResetOptionsModal(...args);
+  });
+
+  on("save-and-quit-request", (...args) => {
+    updateCurrentOptions();
+    sendIpcToMain("save-settings-options", getChangedOptions(), true);
   });
 
   on("close-modal", () => {
@@ -337,7 +404,7 @@ function initOnIpcCallbacks() {
   });
 
   on("change-output-folder", (folderPath) => {
-    updateOutputFolder(folderPath);
+    changeOutputFolder(folderPath);
     checkValidData();
   });
 
@@ -471,11 +538,11 @@ function checkValidData() {
   } else {
     g_startButton.classList.add("tools-disabled");
   }
+  updateOutputFolderUI();
   updateColumnsHeight();
 }
 
-function updateOutputFolder(folderPath) {
-  g_outputFolderPath = folderPath;
+function updateOutputFolderUI() {
   g_outputFolderDiv.innerHTML = "";
   let li = document.createElement("li");
   li.className = "tools-collection-li";
@@ -484,6 +551,10 @@ function updateOutputFolder(folderPath) {
   text.innerText = reducePathString(g_outputFolderPath);
   li.appendChild(text);
   g_outputFolderDiv.appendChild(li);
+}
+
+function changeOutputFolder(folderPath) {
+  g_outputFolderPath = folderPath;
 }
 
 function onRemoveFile(element, id) {
@@ -586,6 +657,48 @@ export function onContextMenu(params) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+// OPTIONS ////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+let g_defaultOptions;
+let g_currentOptions;
+function initOptions(outputFolderPath, loadedOptions) {
+  g_defaultOptions = toolsSettings.getOptions("tools-columns-right");
+  g_defaultOptions.outputFolderPath = outputFolderPath;
+  if (loadedOptions) {
+    g_currentOptions = loadedOptions;
+    toolsSettings.restoreOptions(
+      document.getElementById("tools-columns-right"),
+      g_currentOptions
+    );
+    if (!g_currentOptions.outputFolderPath)
+      g_currentOptions.outputFolderPath = g_defaultOptions.outputFolderPath;
+  } else {
+    g_currentOptions = g_defaultOptions;
+  }
+  changeOutputFolder(g_currentOptions.outputFolderPath);
+  checkValidData();
+}
+
+function updateCurrentOptions() {
+  g_currentOptions = toolsSettings.getOptions("tools-columns-right");
+  g_currentOptions.outputFolderPath = g_outputFolderPath;
+}
+
+function getChangedOptions() {
+  let options;
+  if (g_currentOptions) {
+    options = {};
+    for (const key in g_currentOptions) {
+      if (g_currentOptions[key] !== g_defaultOptions[key]) {
+        options[key] = g_currentOptions[key];
+      }
+    }
+  }
+  return options;
+}
+
+///////////////////////////////////////////////////////////////////////////////
 // MODALS /////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -683,6 +796,44 @@ function showModalInfo(title, message, textButton1) {
           modalClosed();
         },
         key: "Enter",
+      },
+    ],
+  });
+}
+
+function showResetOptionsModal(title, message, yesText, cancelText) {
+  if (g_openModal) {
+    return;
+  }
+  g_openModal = modals.show({
+    title: title,
+    message: message,
+    zIndexDelta: 5,
+    close: {
+      callback: () => {
+        modalClosed();
+      },
+      key: "Escape",
+    },
+    buttons: [
+      {
+        text: yesText.toUpperCase(),
+        callback: () => {
+          g_currentOptions = g_defaultOptions;
+          toolsSettings.restoreOptions(
+            document.getElementById("tools-columns-right"),
+            g_currentOptions
+          );
+          changeOutputFolder(g_defaultOptions.outputFolderPath);
+          checkValidData();
+          modalClosed();
+        },
+      },
+      {
+        text: cancelText.toUpperCase(),
+        callback: () => {
+          modalClosed();
+        },
       },
     ],
   });

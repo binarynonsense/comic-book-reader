@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2024 Álvaro García
+ * Copyright 2020-2025 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -21,6 +21,7 @@ const contextMenu = require("../../shared/main/tools-menu-context");
 const log = require("../../shared/main/logger");
 const temp = require("../../shared/main/temp");
 const tools = require("../../shared/main/tools");
+const settings = require("../../shared/main/settings");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -60,11 +61,13 @@ exports.open = function (fileData) {
 
   updateLocalizedText();
 
+  let loadedOptions = settings.loadToolOptions(`tool-ec`);
   sendIpcToRenderer(
     "show",
     filePath !== undefined
       ? path.dirname(filePath)
-      : appUtils.getDesktopFolderPath()
+      : appUtils.getDesktopFolderPath(),
+    loadedOptions
   );
 
   updateLocalizedText();
@@ -91,6 +94,10 @@ exports.close = function () {
   }
   temp.deleteSubFolder(g_tempSubFolderPath);
   g_tempSubFolderPath = undefined;
+};
+
+exports.saveAndQuit = function () {
+  sendIpcToRenderer("save-and-quit-request");
 };
 
 exports.onResize = function () {
@@ -148,6 +155,26 @@ function initOnIpcCallbacks() {
 
   on("show-context-menu", (params) => {
     contextMenu.show("minimal", params, onCloseClicked);
+  });
+
+  on("click-reset-options", () => {
+    sendIpcToRenderer(
+      "show-reset-options-modal",
+      _("tool-shared-modal-title-warning"),
+      _("tool-shared-ui-settings-reset-warning"),
+      _("ui-modal-prompt-button-yes"),
+      _("ui-modal-prompt-button-cancel")
+    );
+  });
+
+  on("save-settings-options", (options, forceQuit) => {
+    settings.updateToolOptions(
+      `tool-ec`,
+      options["tool-ec-setting-remember-checkbox"] ? options : undefined
+    );
+    if (forceQuit) {
+      core.forceQuit();
+    }
   });
 
   on("choose-file", async (lastFilePath) => {
@@ -787,6 +814,10 @@ function getLocalization() {
       id: "tool-ec-section-advanced-options-text",
       text: _("tool-shared-ui-advanced-options"),
     },
+    {
+      id: "tool-ec-section-settings-text",
+      text: _("tool-shared-tab-settings"),
+    },
     //////////////////////////////////////////////
     {
       id: "tool-ec-input-options-text",
@@ -869,5 +900,19 @@ function getLocalization() {
       id: "tool-ec-modal-cancel-button-text",
       text: _("tool-shared-ui-cancel").toUpperCase(),
     },
+    //////////////////////////////////////////////
+    {
+      id: "tool-ec-settings-text",
+      text: _("tool-shared-tab-settings"),
+    },
+    {
+      id: "tool-ec-setting-remember-text",
+      text: _("tool-shared-ui-settings-remember"),
+    },
+    {
+      id: "tool-ec-settings-reset-button-text",
+      text: _("tool-shared-ui-settings-reset").toUpperCase(),
+    },
+    //////////////////////////////////////////////
   ];
 }
