@@ -1136,6 +1136,8 @@ function initOptions(outputFolderPath, loadedOptions) {
       document.getElementById("tools-columns-right"),
       g_currentOptions
     );
+    if (!g_currentOptions.outputFolderPath)
+      g_currentOptions.outputFolderPath = g_defaultOptions.outputFolderPath;
   } else {
     g_currentOptions = g_defaultOptions;
   }
