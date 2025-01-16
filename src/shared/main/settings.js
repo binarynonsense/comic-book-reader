@@ -577,6 +577,12 @@ function load(info) {
           }
         }
       }
+      // special case: tools
+      for (const key in loadedSettings) {
+        if (key.startsWith("tool-")) {
+          g_settings[key] = loadedSettings[key];
+        }
+      }
     }
     sanitize();
   } catch (error) {
@@ -634,3 +640,36 @@ function loadNavButtons(loadedButtons) {
     }
   }
 }
+
+function isObject(input) {
+  return typeof input == "object" && input.constructor == Object;
+}
+///////////////////////////////////////////////////////////////////////////////
+// TOOLS //////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+exports.loadToolOptions = function (id) {
+  let toolSettings = g_settings[id];
+  // log.warning(toolSettings);
+  if (toolSettings && isObject(toolSettings)) {
+    const options = toolSettings["options"];
+    if (options && isObject(options)) {
+      // TODO:  sanitize settings
+      return options;
+    }
+  }
+  return undefined;
+};
+
+exports.updateToolOptions = function (id, options) {
+  log.test("saveToolOptions");
+  // log.warning(id);
+  if (options) {
+    g_settings[id] = {};
+    g_settings[id].version = app.getVersion();
+    g_settings[id].options = options;
+  } else {
+    log.test("empty options");
+    g_settings[id] = undefined;
+  }
+};

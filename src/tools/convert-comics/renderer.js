@@ -11,6 +11,7 @@ import {
 } from "../../core/renderer.js";
 import * as modals from "../../shared/renderer/modals.js";
 import { FileExtension } from "../../shared/renderer/constants.js";
+import * as toolsSettings from "../../shared/renderer/tools-settings.js";
 
 const ToolMode = {
   CONVERT: 0,
@@ -49,7 +50,7 @@ let g_uiSelectedOptions = {};
 
 let g_isInitialized = false;
 
-function init(mode, outputFolderPath, canEditRars) {
+function init(mode, outputFolderPath, canEditRars, loadedOptions) {
   g_mode = mode;
   if (!g_isInitialized) {
     // things to start only once go here
@@ -74,12 +75,14 @@ function init(mode, outputFolderPath, canEditRars) {
   document
     .getElementById("tool-cc-back-button")
     .addEventListener("click", (event) => {
+      updateCurrentOptions();
+      sendIpcToMain("save-options", g_currentOptions);
       sendIpcToMain("close-clicked");
     });
   document
     .getElementById("tool-cc-start-button")
     .addEventListener("click", (event) => {
-      updateSelectedOptions();
+      updateUISelectedOptions();
       sendIpcToMain("start-clicked", g_inputList, g_uiSelectedOptions);
     });
   // sections menu
@@ -92,6 +95,11 @@ function init(mode, outputFolderPath, canEditRars) {
     .getElementById("tool-cc-section-advanced-options-button")
     .addEventListener("click", (event) => {
       switchSection(1);
+    });
+  document
+    .getElementById("tool-cc-section-settings-button")
+    .addEventListener("click", (event) => {
+      switchSection(2);
     });
   ////////////////////////////////////////
   g_inputListDiv = document.querySelector("#tool-cc-input-list");
@@ -131,8 +139,6 @@ function init(mode, outputFolderPath, canEditRars) {
       sendIpcToMain("add-folder-clicked", lastFilePath);
     });
 
-  updateOutputFolder(outputFolderPath);
-  const outputFolderUl = document.getElementById("tool-cc-output-folder");
   const outputFolderChangeButton = document.getElementById(
     "tool-cc-change-folder-button"
   );
@@ -156,15 +162,8 @@ function init(mode, outputFolderPath, canEditRars) {
       `<option value="0">${g_localizedTexts.outputFolderOption0}</option>` +
       `<option value="1">${g_localizedTexts.outputFolderOption1}</option>`;
     outputFolderOptionSelect.addEventListener("change", (event) => {
-      if (outputFolderOptionSelect.value === "0") {
-        outputFolderUl.classList.remove("set-display-none");
-        outputFolderChangeButton.classList.remove("set-display-none");
-        updateColumnsHeight();
-      } else {
-        outputFolderUl.classList.add("set-display-none");
-        outputFolderChangeButton.classList.add("set-display-none");
-        updateColumnsHeight();
-      }
+      updateFolderOptionUI();
+      updateColumnsHeight();
     });
   } else {
     outputFolderOptionSelect.classList.add("set-display-none");
@@ -259,6 +258,7 @@ function init(mode, outputFolderPath, canEditRars) {
     inputSearchFoldersFormatsDiv.appendChild(label);
 
     const input = document.createElement("input");
+    input.id = "tool-cc-folders-file-formats-" + format.slice(1);
     input.type = "checkbox";
     input.checked = true;
     label.appendChild(input);
@@ -278,46 +278,6 @@ function init(mode, outputFolderPath, canEditRars) {
 
   ////////////////
 
-  function updateImageOpsUI() {
-    if (
-      document.querySelector("#tool-cc-imageops-brightness-checkbox").checked
-    ) {
-      document
-        .querySelector("#tool-cc-imageops-brightness-input")
-        .classList.remove("tools-disabled");
-      document
-        .querySelector("#tool-cc-imageops-brightness-text")
-        .classList.remove("tools-disabled");
-    } else {
-      document
-        .querySelector("#tool-cc-imageops-brightness-input")
-        .classList.add("tools-disabled");
-      document
-        .querySelector("#tool-cc-imageops-brightness-text")
-        .classList.add("tools-disabled");
-    }
-
-    if (
-      document.querySelector("#tool-cc-imageops-saturation-checkbox").checked
-    ) {
-      document
-        .querySelector("#tool-cc-imageops-saturation-input")
-        .classList.remove("tools-disabled");
-      document
-        .querySelector("#tool-cc-imageops-saturation-text")
-        .classList.remove("tools-disabled");
-    } else {
-      document
-        .querySelector("#tool-cc-imageops-saturation-input")
-        .classList.add("tools-disabled");
-      document
-        .querySelector("#tool-cc-imageops-saturation-text")
-        .classList.add("tools-disabled");
-    }
-  }
-
-  updateImageOpsUI();
-
   document
     .querySelector("#tool-cc-imageops-brightness-checkbox")
     .addEventListener("change", (event) => {
@@ -329,19 +289,13 @@ function init(mode, outputFolderPath, canEditRars) {
       updateImageOpsUI();
     });
 
-  g_uiSelectedOptions.outputBrightnessApply = document.querySelector(
-    "#tool-cc-imageops-brightness-checkbox"
-  ).checked;
-  g_uiSelectedOptions.outputBrightnessMultiplier = document.querySelector(
-    "#tool-cc-imageops-brightness-input"
-  ).value;
-  g_uiSelectedOptions.outputSaturationApply = document.querySelector(
-    "#tool-cc-imageops-saturation-checkbox"
-  ).checked;
-  g_uiSelectedOptions.outputSaturationMultiplier = document.querySelector(
-    "#tool-cc-imageops-saturation-input"
-  ).value;
-
+  ////////////////////////////////////////
+  // settings
+  document
+    .getElementById("tool-cc-settings-reset-button")
+    .addEventListener("click", (event) => {
+      sendIpcToMain("click-reset-options");
+    });
   ////////////////////////////////////////
   // tooltips
   const tooltipButtons = document.querySelectorAll(".tools-tooltip-button");
@@ -354,12 +308,101 @@ function init(mode, outputFolderPath, canEditRars) {
     });
   });
   ////////////////////////////////////////
+  initOptions(outputFolderPath, loadedOptions);
+  // initOptions calls checkValidData(); -> calls updateColumnsHeight();
+}
+
+let g_defaultOptions;
+let g_currentOptions;
+function initOptions(outputFolderPath, loadedOptions) {
+  g_defaultOptions = toolsSettings.getOptions("tools-columns-right");
+  g_defaultOptions.outputFolderPath = outputFolderPath;
+  if (loadedOptions) {
+    g_currentOptions = loadedOptions;
+    toolsSettings.restoreOptions(
+      document.getElementById("tools-columns-right"),
+      g_currentOptions
+    );
+  } else {
+    g_currentOptions = g_defaultOptions;
+  }
+  changeOutputFolder(g_currentOptions.outputFolderPath);
   checkValidData();
-  updateColumnsHeight();
+}
+
+function updateCurrentOptions() {
+  g_currentOptions = toolsSettings.getOptions("tools-columns-right");
+  g_currentOptions.outputFolderPath = g_uiSelectedOptions.outputFolderPath;
 }
 
 export function initIpc() {
   initOnIpcCallbacks();
+}
+
+function updateFolderOptionUI() {
+  if (g_mode === ToolMode.CONVERT) {
+    const outputFolderOptionSelect = document.getElementById(
+      "tool-cc-output-folder-option-select"
+    );
+    const outputFolderUl = document.getElementById("tool-cc-output-folder");
+    const outputFolderChangeButton = document.getElementById(
+      "tool-cc-change-folder-button"
+    );
+    if (outputFolderOptionSelect.value === "0") {
+      outputFolderUl.classList.remove("set-display-none");
+      outputFolderChangeButton.classList.remove("set-display-none");
+      updateColumnsHeight();
+    } else {
+      outputFolderUl.classList.add("set-display-none");
+      outputFolderChangeButton.classList.add("set-display-none");
+      updateColumnsHeight();
+    }
+  }
+}
+
+function updateImageOpsUI() {
+  if (document.querySelector("#tool-cc-imageops-brightness-checkbox").checked) {
+    document
+      .querySelector("#tool-cc-imageops-brightness-input")
+      .classList.remove("tools-disabled");
+    document
+      .querySelector("#tool-cc-imageops-brightness-text")
+      .classList.remove("tools-disabled");
+  } else {
+    document
+      .querySelector("#tool-cc-imageops-brightness-input")
+      .classList.add("tools-disabled");
+    document
+      .querySelector("#tool-cc-imageops-brightness-text")
+      .classList.add("tools-disabled");
+  }
+
+  if (document.querySelector("#tool-cc-imageops-saturation-checkbox").checked) {
+    document
+      .querySelector("#tool-cc-imageops-saturation-input")
+      .classList.remove("tools-disabled");
+    document
+      .querySelector("#tool-cc-imageops-saturation-text")
+      .classList.remove("tools-disabled");
+  } else {
+    document
+      .querySelector("#tool-cc-imageops-saturation-input")
+      .classList.add("tools-disabled");
+    document
+      .querySelector("#tool-cc-imageops-saturation-text")
+      .classList.add("tools-disabled");
+  }
+}
+
+function updateOutputFolderUI() {
+  g_outputFolderDiv.innerHTML = "";
+  let li = document.createElement("li");
+  li.className = "tools-collection-li";
+  // text
+  let text = document.createElement("span");
+  text.innerText = reducePathString(g_uiSelectedOptions.outputFolderPath);
+  li.appendChild(text);
+  g_outputFolderDiv.appendChild(li);
 }
 
 function updateColumnsHeight(scrollTop = false) {
@@ -397,6 +440,9 @@ function switchSection(id) {
       document
         .getElementById("tool-cc-section-advanced-options-button")
         .classList.remove("tools-menu-button-selected");
+      document
+        .getElementById("tool-cc-section-settings-button")
+        .classList.remove("tools-menu-button-selected");
       // sections
       document
         .getElementById("tool-cc-input-options-section-div")
@@ -409,6 +455,9 @@ function switchSection(id) {
         .classList.add("set-display-none");
       document
         .getElementById("tool-cc-advanced-output-options-section-div")
+        .classList.add("set-display-none");
+      document
+        .getElementById("tool-cc-settings-section-div")
         .classList.add("set-display-none");
       break;
     case 1:
@@ -419,6 +468,9 @@ function switchSection(id) {
       document
         .getElementById("tool-cc-section-advanced-options-button")
         .classList.add("tools-menu-button-selected");
+      document
+        .getElementById("tool-cc-section-settings-button")
+        .classList.remove("tools-menu-button-selected");
       // sections
       document
         .getElementById("tool-cc-input-options-section-div")
@@ -432,13 +484,56 @@ function switchSection(id) {
       document
         .getElementById("tool-cc-advanced-output-options-section-div")
         .classList.remove("set-display-none");
+      document
+        .getElementById("tool-cc-settings-section-div")
+        .classList.add("set-display-none");
       break;
+    case 2:
+      // buttons
+      document
+        .getElementById("tool-cc-section-general-options-button")
+        .classList.remove("tools-menu-button-selected");
+      document
+        .getElementById("tool-cc-section-advanced-options-button")
+        .classList.remove("tools-menu-button-selected");
+      document
+        .getElementById("tool-cc-section-settings-button")
+        .classList.add("tools-menu-button-selected");
+      // sections
+      document
+        .getElementById("tool-cc-input-options-section-div")
+        .classList.add("set-display-none");
+      document
+        .getElementById("tool-cc-output-options-section-div")
+        .classList.add("set-display-none");
+      document
+        .getElementById("tool-cc-advanced-input-options-section-div")
+        .classList.add("set-display-none");
+      document
+        .getElementById("tool-cc-advanced-output-options-section-div")
+        .classList.add("set-display-none");
+      document
+        .getElementById("tool-cc-settings-section-div")
+        .classList.remove("set-display-none");
       break;
   }
   updateColumnsHeight(true);
 }
 
-function updateSelectedOptions() {
+function updateUISelectedOptions() {
+  g_uiSelectedOptions.outputBrightnessApply = document.querySelector(
+    "#tool-cc-imageops-brightness-checkbox"
+  ).checked;
+  g_uiSelectedOptions.outputBrightnessMultiplier = document.querySelector(
+    "#tool-cc-imageops-brightness-input"
+  ).value;
+  g_uiSelectedOptions.outputSaturationApply = document.querySelector(
+    "#tool-cc-imageops-saturation-checkbox"
+  ).checked;
+  g_uiSelectedOptions.outputSaturationMultiplier = document.querySelector(
+    "#tool-cc-imageops-saturation-input"
+  ).value;
+
   g_uiSelectedOptions.inputSearchFoldersFormats = [];
   const inputSearchFoldersFormatsDiv = document.querySelector(
     "#tool-cc-folders-file-formats-div"
@@ -541,12 +636,21 @@ function on(id, callback) {
   g_onIpcCallbacks[id] = callback;
 }
 
+function beforeUnloadHandler() {
+  updateCurrentOptions();
+  sendIpcToMain("unsaved-options", g_currentOptions);
+}
+
 function initOnIpcCallbacks() {
   on("show", (...args) => {
     init(...args);
+    window.addEventListener("beforeunload", beforeUnloadHandler);
   });
 
-  on("hide", () => {});
+  on("hide", () => {
+    console.log("remove beforeunload");
+    window.removeEventListener("beforeunload", beforeUnloadHandler);
+  });
 
   on("update-localization", (...args) => {
     updateLocalization(...args);
@@ -554,6 +658,14 @@ function initOnIpcCallbacks() {
 
   on("update-window", () => {
     updateColumnsHeight();
+  });
+
+  on("show-reset-options-modal", (...args) => {
+    if (g_openModal) {
+      modals.close(g_openModal);
+      modalClosed();
+    }
+    showResetOptionsModal(...args);
   });
 
   on("close-modal", () => {
@@ -638,7 +750,7 @@ function initOnIpcCallbacks() {
   });
 
   on("change-output-folder", (folderPath) => {
-    updateOutputFolder(folderPath);
+    changeOutputFolder(folderPath);
     checkValidData();
   });
 
@@ -807,7 +919,12 @@ function initOnIpcCallbacks() {
 ///////////////////////////////////////////////////////////////////////////////
 
 function checkValidData() {
-  updateSelectedOptions();
+  updateImageOpsUI();
+  updateFolderOptionUI();
+  updateOutputFolderUI();
+
+  updateUISelectedOptions();
+
   if (
     g_uiSelectedOptions.outputFolderPath === undefined ||
     g_inputList.length <= 0 ||
@@ -839,16 +956,9 @@ function checkValidData() {
   updateColumnsHeight();
 }
 
-function updateOutputFolder(folderPath) {
+function changeOutputFolder(folderPath) {
   g_uiSelectedOptions.outputFolderPath = folderPath;
-  g_outputFolderDiv.innerHTML = "";
-  let li = document.createElement("li");
-  li.className = "tools-collection-li";
-  // text
-  let text = document.createElement("span");
-  text.innerText = reducePathString(g_uiSelectedOptions.outputFolderPath);
-  li.appendChild(text);
-  g_outputFolderDiv.appendChild(li);
+  // g_currentOptions.outputFolderPath = folderPath;
 }
 
 function onRemoveFileFromList(element, id) {
@@ -1118,6 +1228,43 @@ function showModalInfo(title, message, textButton1) {
           modalClosed();
         },
         key: "Enter",
+      },
+    ],
+  });
+}
+
+function showResetOptionsModal(title, message, yesText, cancelText) {
+  if (g_openModal) {
+    return;
+  }
+  g_openModal = modals.show({
+    title: title,
+    message: message,
+    zIndexDelta: 5,
+    close: {
+      callback: () => {
+        modalClosed();
+      },
+      key: "Escape",
+    },
+    buttons: [
+      {
+        text: yesText.toUpperCase(),
+        callback: () => {
+          g_currentOptions = g_defaultOptions;
+          toolsSettings.restoreOptions(
+            document.getElementById("tools-columns-right"),
+            g_currentOptions
+          );
+          checkValidData();
+          modalClosed();
+        },
+      },
+      {
+        text: cancelText.toUpperCase(),
+        callback: () => {
+          modalClosed();
+        },
       },
     ],
   });

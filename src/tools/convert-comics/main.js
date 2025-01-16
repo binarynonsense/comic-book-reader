@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2024 Álvaro García
+ * Copyright 2020-2025 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -47,6 +47,8 @@ let g_creationTempSubFolderPath;
 let g_uiSelectedOptions = {};
 let g_imageIndex = 0;
 
+let g_unsavedOptions;
+
 function init() {
   if (!g_isInitialized) {
     initOnIpcCallbacks();
@@ -67,6 +69,7 @@ exports.open = async function (options) {
 
   updateLocalizedText();
 
+  let loadedOptions = settings.loadToolOptions(`tool-cc-${g_mode}`);
   sendIpcToRenderer(
     "show",
     g_mode,
@@ -75,7 +78,8 @@ exports.open = async function (options) {
       options.inputFilePaths[0] !== undefined
       ? path.dirname(options.inputFilePaths[0])
       : appUtils.getDesktopFolderPath(),
-    settings.canEditRars()
+    settings.canEditRars(),
+    loadedOptions
   );
 
   updateLocalizedText();
@@ -114,6 +118,16 @@ exports.close = function () {
   temp.deleteSubFolder(g_creationTempSubFolderPath);
   g_tempSubFolderPath = undefined;
   g_creationTempSubFolderPath = undefined;
+};
+
+exports.onQuit = function () {
+  if (g_unsavedOptions)
+    settings.updateToolOptions(
+      `tool-cc-${g_mode}`,
+      g_unsavedOptions["tool-cc-setting-remember-checkbox"]
+        ? g_unsavedOptions
+        : undefined
+    );
 };
 
 exports.onResize = function () {
@@ -171,6 +185,28 @@ function initOnIpcCallbacks() {
 
   on("show-context-menu", (params) => {
     contextMenu.show("minimal", params, onCloseClicked);
+  });
+
+  on("click-reset-options", () => {
+    sendIpcToRenderer(
+      "show-reset-options-modal",
+      _("tool-shared-modal-title-warning"),
+      _("tool-shared-ui-settings-reset-warning"),
+      _("ui-modal-prompt-button-yes"),
+      _("ui-modal-prompt-button-cancel")
+    );
+  });
+
+  on("save-options", (options) => {
+    g_unsavedOptions = undefined;
+    settings.updateToolOptions(
+      `tool-cc-${g_mode}`,
+      options["tool-cc-setting-remember-checkbox"] ? options : undefined
+    );
+  });
+
+  on("unsaved-options", (options) => {
+    g_unsavedOptions = options;
   });
 
   on("add-file-clicked", async (lastFilePath) => {
@@ -1419,6 +1455,10 @@ function getLocalization() {
       id: "tool-cc-section-advanced-options-text",
       text: _("tool-shared-ui-advanced-options"),
     },
+    {
+      id: "tool-cc-section-settings-text",
+      text: _("tool-shared-tab-settings"),
+    },
     //////////////////////////////////////////////
     {
       id: "tool-cc-input-options-text",
@@ -1579,6 +1619,19 @@ function getLocalization() {
     {
       id: "tool-cc-imageops-saturation-text",
       text: _("tool-shared-ui-creation-saturationmultiplier"),
+    },
+    //////////////////////////////////////////////
+    {
+      id: "tool-cc-settings-text",
+      text: _("tool-shared-tab-settings"),
+    },
+    {
+      id: "tool-cc-setting-remember-text",
+      text: _("tool-shared-ui-settings-remember"),
+    },
+    {
+      id: "tool-cc-settings-reset-button-text",
+      text: _("tool-shared-ui-settings-reset").toUpperCase(),
     },
     //////////////////////////////////////////////
   ];
