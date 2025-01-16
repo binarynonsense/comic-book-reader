@@ -230,7 +230,6 @@ async function showModalCheckUpdates(currentVersion, texts) {
       `https://api.github.com/repos/binarynonsense/comic-book-reader/releases/latest`,
       { timeout: 15000 }
     );
-    // console.log(response.data);
     let latestVersion = response.data.tag_name;
     if (!latestVersion) {
       throw "error version";
