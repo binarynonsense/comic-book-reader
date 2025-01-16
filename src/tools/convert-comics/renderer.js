@@ -1287,6 +1287,7 @@ function showResetOptionsModal(title, message, yesText, cancelText) {
             document.getElementById("tools-columns-right"),
             g_currentOptions
           );
+          changeOutputFolder(g_defaultOptions.outputFolderPath);
           checkValidData();
           modalClosed();
         },
