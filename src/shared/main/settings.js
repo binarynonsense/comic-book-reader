@@ -654,6 +654,11 @@ exports.loadToolOptions = function (id) {
   if (toolSettings && isObject(toolSettings)) {
     const options = toolSettings["options"];
     if (options && isObject(options)) {
+      for (const key in options) {
+        if (key.includes("password-input")) {
+          options[key] = atob(options[key]);
+        }
+      }
       // TODO:  sanitize settings
       return options;
     }
@@ -665,6 +670,11 @@ exports.updateToolOptions = function (id, options) {
   if (options) {
     g_settings[id] = {};
     g_settings[id].version = app.getVersion();
+    for (const key in options) {
+      if (key.includes("password-input")) {
+        options[key] = btoa(options[key]);
+      }
+    }
     g_settings[id].options = options;
   } else {
     g_settings[id] = undefined;
