@@ -46,9 +46,6 @@ export function restoreOptions(rootElement, options) {
     if (options.hasOwnProperty(id)) {
       if (options[id] !== null) {
         if (element.type === "checkbox") {
-          if (element.checked != options[id]) {
-            console.log(id + " changed");
-          }
           element.checked = options[id];
         } else {
           if (element.value != options[id]) {
@@ -66,9 +63,6 @@ export function restoreOptions(rootElement, options) {
     const id = element.id;
     if (options.hasOwnProperty(id)) {
       if (options[id] !== null) {
-        if (element.value != options[id]) {
-          console.log(id + " changed");
-        }
         element.value = options[id];
       }
     }
