@@ -21,8 +21,6 @@ export function getOptions(rootId) {
       } else {
         options[element.id] = element.value;
       }
-    } else {
-      //   console.log("discarded " + element.id);
     }
   }
 
@@ -34,13 +32,9 @@ export function getOptions(rootId) {
       !element.parentNode.classList.contains("set-display-none")
     ) {
       options[element.id] = element.value;
-    } else {
-      //   console.log("discarded " + element.id);
     }
   }
 
-  // TODO: delete log
-  console.log(options);
   return options;
 }
 
