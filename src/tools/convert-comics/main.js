@@ -47,8 +47,6 @@ let g_creationTempSubFolderPath;
 let g_uiSelectedOptions = {};
 let g_imageIndex = 0;
 
-let g_unsavedSettingsOptions;
-
 function init() {
   if (!g_isInitialized) {
     initOnIpcCallbacks();

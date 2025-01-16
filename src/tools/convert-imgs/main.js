@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2024 Álvaro García
+ * Copyright 2020-2025 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -16,6 +16,7 @@ const appUtils = require("../../shared/main/app-utils");
 const contextMenu = require("../../shared/main/tools-menu-context");
 const temp = require("../../shared/main/temp");
 const tools = require("../../shared/main/tools");
+const settings = require("../../shared/main/settings");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -43,7 +44,8 @@ exports.open = function () {
 
   updateLocalizedText();
 
-  sendIpcToRenderer("show", appUtils.getDesktopFolderPath());
+  let loadedOptions = settings.loadToolOptions(`tool-ci`);
+  sendIpcToRenderer("show", appUtils.getDesktopFolderPath(), loadedOptions);
 
   updateLocalizedText();
 };
@@ -59,6 +61,10 @@ exports.close = function () {
   }
   temp.deleteSubFolder(g_tempSubFolderPath);
   g_tempSubFolderPath = undefined;
+};
+
+exports.saveAndQuit = function () {
+  sendIpcToRenderer("save-and-quit-request");
 };
 
 exports.onResize = function () {
@@ -116,6 +122,26 @@ function initOnIpcCallbacks() {
 
   on("show-context-menu", (params) => {
     contextMenu.show("minimal", params, onCloseClicked);
+  });
+
+  on("click-reset-options", () => {
+    sendIpcToRenderer(
+      "show-reset-options-modal",
+      _("tool-shared-modal-title-warning"),
+      _("tool-shared-ui-settings-reset-warning"),
+      _("ui-modal-prompt-button-yes"),
+      _("ui-modal-prompt-button-cancel")
+    );
+  });
+
+  on("save-settings-options", (options, forceQuit) => {
+    settings.updateToolOptions(
+      `tool-ci`,
+      options["tool-ci-setting-remember-checkbox"] ? options : undefined
+    );
+    if (forceQuit) {
+      core.forceQuit();
+    }
   });
 
   on("choose-file", async (lastFilePath) => {
@@ -539,6 +565,10 @@ function getLocalization() {
       id: "tool-ci-section-advanced-options-text",
       text: _("tool-shared-ui-advanced-options"),
     },
+    {
+      id: "tool-ci-section-settings-text",
+      text: _("tool-shared-tab-settings"),
+    },
     //////////////////////////////////////////////
     {
       id: "tool-ci-input-options-text",
@@ -592,5 +622,19 @@ function getLocalization() {
       id: "tool-ci-modal-cancel-button-text",
       text: _("tool-shared-ui-cancel").toUpperCase(),
     },
+    //////////////////////////////////////////////
+    {
+      id: "tool-ci-settings-text",
+      text: _("tool-shared-tab-settings"),
+    },
+    {
+      id: "tool-ci-setting-remember-text",
+      text: _("tool-shared-ui-settings-remember"),
+    },
+    {
+      id: "tool-ci-settings-reset-button-text",
+      text: _("tool-shared-ui-settings-reset").toUpperCase(),
+    },
+    //////////////////////////////////////////////
   ];
 }
