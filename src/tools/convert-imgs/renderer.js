@@ -58,6 +58,8 @@ function init(outputFolderPath, loadedOptions) {
   document
     .getElementById("tool-ci-back-button")
     .addEventListener("click", (event) => {
+      updateCurrentOptions();
+      sendIpcToMain("save-settings-options", getChangedOptions());
       sendIpcToMain("close");
     });
   document
@@ -298,8 +300,8 @@ function on(id, callback) {
 }
 
 function initOnIpcCallbacks() {
-  on("show", (outputFolderPath) => {
-    init(outputFolderPath);
+  on("show", (...args) => {
+    init(...args);
   });
 
   on("hide", () => {});
@@ -620,6 +622,8 @@ function initOptions(outputFolderPath, loadedOptions) {
       document.getElementById("tools-columns-right"),
       g_currentOptions
     );
+    if (!g_currentOptions.outputFolderPath)
+      g_currentOptions.outputFolderPath = g_defaultOptions.outputFolderPath;
   } else {
     g_currentOptions = g_defaultOptions;
   }
@@ -629,7 +633,7 @@ function initOptions(outputFolderPath, loadedOptions) {
 
 function updateCurrentOptions() {
   g_currentOptions = toolsSettings.getOptions("tools-columns-right");
-  g_currentOptions.outputFolderPath = g_uiSelectedOptions.outputFolderPath;
+  g_currentOptions.outputFolderPath = g_outputFolderPath;
 }
 
 function getChangedOptions() {
@@ -769,6 +773,7 @@ function showResetOptionsModal(title, message, yesText, cancelText) {
             document.getElementById("tools-columns-right"),
             g_currentOptions
           );
+          changeOutputFolder(g_defaultOptions.outputFolderPath);
           checkValidData();
           modalClosed();
         },
