@@ -414,6 +414,8 @@ if (!gotTheLock) {
   });
 
   app.on("will-quit", () => {
+    if (tools.getCurrentToolName() !== "reader")
+      tools.getCurrentTool()?.onQuit();
     reader.onQuit();
     settings.save();
     history.save();
