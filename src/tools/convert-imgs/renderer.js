@@ -131,6 +131,7 @@ function init(outputFolderPath, loadedOptions) {
       updateSliderBubble(range, bubble);
     });
     range.addEventListener("mousedown", () => {
+      updateSliderBubble(range, bubble);
       bubble.classList.remove("set-display-none");
     });
     range.addEventListener("mouseup", () => {
