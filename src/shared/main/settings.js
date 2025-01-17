@@ -658,13 +658,11 @@ exports.loadToolOptions = function (id) {
         if (key.includes("password-input")) {
           options[key] = atob(options[key]);
         } else if (key == "outputFolderPath") {
-          // check if valid path
           if (!fs.existsSync(options[key])) {
             options[key] = undefined;
           }
         }
       }
-      // TODO:  sanitize settings
       return options;
     }
   }
