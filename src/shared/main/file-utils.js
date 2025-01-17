@@ -110,6 +110,28 @@ exports.getFileSizeGB = function (filePath) {
   }
 };
 
+function generateRandomSubfolderPath(baseFolderPath) {
+  // let randomName = Math.random()
+  //   .toString("36")
+  //   .substring(2, 15)
+  //   .replaceAll(" ", "");
+  const { randomBytes } = require("node:crypto");
+  let randomName = randomBytes(4).toString("hex");
+  return path.join(baseFolderPath, randomName);
+}
+
+exports.createRandomSubfolder = function (baseFolderPath) {
+  let folderPath = generateRandomSubfolderPath(baseFolderPath);
+  let tries = 0;
+  while (fs.existsSync(folderPath)) {
+    tries++;
+    if (tries > 5) return undefined;
+    folderPath = generateRandomSubfolderPath(baseFolderPath);
+  }
+  fs.mkdirSync(folderPath);
+  return folderPath;
+};
+
 ///////////////////////////////////////////////////////////////////////////////
 // EXTENSIONS /////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
