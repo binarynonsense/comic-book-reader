@@ -657,6 +657,11 @@ exports.loadToolOptions = function (id) {
       for (const key in options) {
         if (key.includes("password-input")) {
           options[key] = atob(options[key]);
+        } else if (key == "outputFolderPath") {
+          // check if valid path
+          if (!fs.existsSync(options[key])) {
+            options[key] = undefined;
+          }
         }
       }
       // TODO:  sanitize settings
