@@ -674,6 +674,18 @@ function buildApplicationMenu(settings, history) {
             },
           ],
         },
+        // {
+        //   id: "tools-other",
+        //   label: _("menu-tools-other"),
+        //   submenu: [
+        //     {
+        //       label: _("menu-tools-rss-reader"),
+        //       click() {
+        //         core.onMenuToolRssReader();
+        //       },
+        //     },
+        //   ],
+        // },
       ],
     },
     {

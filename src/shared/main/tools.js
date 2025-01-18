@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2024 Álvaro García
+ * Copyright 2024-2025 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -35,6 +35,7 @@ exports.init = function () {
   g_tools["tool-metadata"] = require("../../tools/metadata/main");
   g_tools["tool-cbp"] = require("../../tools/cbp/main");
   g_tools["tool-template-maker"] = require("../../tools/template-maker/main");
+  g_tools["tool-rss"] = require("../../tools/rss-reader/main");
 };
 
 exports.getTools = function () {

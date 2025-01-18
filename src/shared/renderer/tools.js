@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2024 Álvaro García
+ * Copyright 2024-2025 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -27,6 +27,7 @@ import * as toolFileBrowser from "../../tools/file-browser/renderer.js";
 import * as toolRadio from "../../tools/radio/renderer.js";
 import * as toolCbp from "../../tools/cbp/renderer.js";
 import * as toolTemplateMaker from "../../tools/template-maker/renderer.js";
+import * as toolRssReader from "../../tools/rss-reader/renderer.js";
 
 let g_currentTool = "reader";
 let g_tools;
@@ -55,6 +56,7 @@ export function init() {
   g_tools["tool-metadata"] = toolMetadata;
   g_tools["tool-cbp"] = toolCbp;
   g_tools["tool-template-maker"] = toolTemplateMaker;
+  g_tools["tool-rss"] = toolRssReader;
 }
 
 export function getTools() {

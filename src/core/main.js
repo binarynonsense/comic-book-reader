@@ -621,6 +621,11 @@ if (!gotTheLock) {
     sendIpcToPreload("update-menubar");
   };
 
+  exports.onMenuToolRssReader = function () {
+    tools.switchTool("tool-rss");
+    sendIpcToPreload("update-menubar");
+  };
+
   exports.onMenuToolExtractComics = function () {
     tools.switchTool("tool-extract-comics");
     sendIpcToPreload("update-menubar");
