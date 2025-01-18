@@ -938,6 +938,9 @@
   "[NEEDS TRANSLATION]tool-rss-feeds": "Feeds",
   "[NEEDS TRANSLATION]tool-rss-feed-content": "Content",
   "[NEEDS TRANSLATION]tool-rss-add-feed": "Add Feed",
+  "[NEEDS TRANSLATION]tool-rss-add-feed-success": "The feed has been added.",
+  "[NEEDS TRANSLATION]tool-rss-add-feed-error-already": "A feed with the same URL has already been added.",
   "[NEEDS TRANSLATION]tool-rss-remove-feed": "Remove Feed",
+  "[NEEDS TRANSLATION]tool-rss--remove-feed-warning": "Are you sure you want to remove this feed?",
   "[NEEDS TRANSLATION]tool-rss-feed-error": "The RSS feed isn't valid or there was an error trying to retrieve it."
 }

@@ -938,6 +938,9 @@
   "tool-rss-feeds": "Fuentes",
   "tool-rss-feed-content": "Contenido",
   "tool-rss-add-feed": "Añadir fuente",
+  "tool-rss-add-feed-success": "La fuente ha sido añadida.",
+  "tool-rss-add-feed-error-already": "Una fuente con la misma URL ya ha sido añadida.",
   "tool-rss-remove-feed": "Eliminar fuente",
+  "tool-rss--remove-feed-warning": "¿Está seguro de que quiere eliminar la fuente?",
   "tool-rss-feed-error": "La fuente RSS no es válida o hubo un error al intentar acceder a ella."
 }
