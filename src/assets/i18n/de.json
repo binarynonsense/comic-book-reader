@@ -105,6 +105,7 @@
   "menu-tools-template-maker": "Vorlagenersteller",
   "menu-tools-palette-extractor": "Farbpalettenextrahierer",
   "menu-tools-other": "Anderes",
+  "[NEEDS TRANSLATION]menu-tools-rss-reader": "RSS Reader",
   "menu-help": "Hilfe",
   "menu-help-checkupdates": "Nach Updates suchen",
   "menu-help-about": "Über ACBR",
@@ -932,5 +933,11 @@
   "tool-tm-import-grid-preset-modal-close-button-tagtitle": "abbrechen",
   "tool-tm-export-grid-preset-modal-close-button-tagtitle": "abbrechen",
   "tool-tm-import-header-preset-modal-close-button-tagtitle": "abbrechen",
-  "tool-tm-export-header-preset-modal-close-button-tagtitle": "abbrechen"
+  "tool-tm-export-header-preset-modal-close-button-tagtitle": "abbrechen",
+  "[NOTE TO TRANSLATORS]tool-rss-feeds": "Feeds as in RSS feeds",
+  "[NEEDS TRANSLATION]tool-rss-feeds": "Feeds",
+  "[NEEDS TRANSLATION]tool-rss-feed-content": "Content",
+  "[NEEDS TRANSLATION]tool-rss-add-feed": "Add Feed",
+  "[NEEDS TRANSLATION]tool-rss-remove-feed": "Remove Feed",
+  "[NEEDS TRANSLATION]tool-rss-feed-error": "The RSS feed isn't valid or there was an error trying to retrieve it."
 }

@@ -3,7 +3,7 @@
     "authors": [
       "Álvaro"
     ],
-    "last-updated": "2025-01-15",
+    "last-updated": "2025-01-18",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.8.0",
     "pre-release": "false",
@@ -105,6 +105,7 @@
   "menu-tools-template-maker": "Template Maker",
   "menu-tools-palette-extractor": "Color Palette Extractor",
   "menu-tools-other": "Other",
+  "menu-tools-rss-reader": "RSS Reader",
   "menu-help": "Help",
   "menu-help-checkupdates": "Check for Updates",
   "menu-help-about": "About",
@@ -622,7 +623,7 @@
   "tool-iab-options-availability-text": "Availability",
   "tool-iab-availability-always": "Always Available",
   "tool-iab-availability-any": "Any (Things May Break)",
-  "tool-gut-text-url": "Ebook's Url",
+  "tool-gut-text-url": "Ebook's URL",
   "tool-gut-text-options-mirrors": "Download From",
   "tool-gut-text-options-search-engine": "Search Engine",
   "tool-gut-text-options-cache-folder": "Cache Folder",
@@ -932,5 +933,11 @@
   "tool-tm-import-grid-preset-modal-close-button-tagtitle": "cancel",
   "tool-tm-export-grid-preset-modal-close-button-tagtitle": "cancel",
   "tool-tm-import-header-preset-modal-close-button-tagtitle": "cancel",
-  "tool-tm-export-header-preset-modal-close-button-tagtitle": "cancel"
+  "tool-tm-export-header-preset-modal-close-button-tagtitle": "cancel",
+  "[NOTE TO TRANSLATORS]tool-rss-feeds": "Feeds as in RSS feeds",
+  "tool-rss-feeds": "Feeds",
+  "tool-rss-feed-content": "Content",
+  "tool-rss-add-feed": "Add Feed",
+  "tool-rss-remove-feed": "Remove Feed",
+  "tool-rss-feed-error": "The RSS feed isn't valid or there was an error trying to retrieve it."
 }

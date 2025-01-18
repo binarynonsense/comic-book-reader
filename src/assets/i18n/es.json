@@ -3,7 +3,7 @@
     "authors": [
       "Álvaro"
     ],
-    "last-updated": "2025-01-15",
+    "last-updated": "2025-01-18",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.8.0",
     "pre-release": "false",
@@ -105,6 +105,7 @@
   "menu-tools-template-maker": "Creador de plantillas",
   "menu-tools-palette-extractor": "Extractor de paleta de colores",
   "menu-tools-other": "Otras",
+  "menu-tools-rss-reader": "Lector RSS",
   "menu-help": "Ayuda",
   "menu-help-checkupdates": "Buscar actualizaciones",
   "menu-help-about": "Acerca de",
@@ -932,5 +933,11 @@
   "tool-tm-import-grid-preset-modal-close-button-tagtitle": "cancelar",
   "tool-tm-export-grid-preset-modal-close-button-tagtitle": "cancelar",
   "tool-tm-import-header-preset-modal-close-button-tagtitle": "cancelar",
-  "tool-tm-export-header-preset-modal-close-button-tagtitle": "cancelar"
+  "tool-tm-export-header-preset-modal-close-button-tagtitle": "cancelar",
+  "[NOTE TO TRANSLATORS]tool-rss-feeds": "Feeds as in RSS feeds",
+  "tool-rss-feeds": "Fuentes",
+  "tool-rss-feed-content": "Contenido",
+  "tool-rss-add-feed": "Añadir fuente",
+  "tool-rss-remove-feed": "Eliminar fuente",
+  "tool-rss-feed-error": "La fuente RSS no es válida o hubo un error al intentar acceder a ella."
 }
