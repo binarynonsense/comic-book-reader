@@ -16,8 +16,8 @@ import * as modals from "../../shared/renderer/modals.js";
 ///////////////////////////////////////////////////////////////////////////////
 
 let g_isInitialized = false;
-
-async function init(data) {
+let g_feeds;
+async function init(feeds, feedContent) {
   if (!g_isInitialized) {
     // things to start only once go here
     g_isInitialized = true;
@@ -34,27 +34,65 @@ async function init(data) {
       sendIpcToMain("close");
     });
   // sections menu
-  for (let index = 0; index < 1; index++) {
+  // for (let index = 0; index < 1; index++) {
+  //   document
+  //     .getElementById(`tool-rss-section-${index}-button`)
+  //     .addEventListener("click", (event) => {
+  //       switchSection(index);
+  //     });
+  // }
+  ////////////////////////////////////////
+  g_feeds = feeds;
+  const menu = document.querySelector(".tools-menu-sections");
+  menu.innerHTML = "";
+  g_feeds.forEach((feed, index) => {
+    console.log(feed);
+    menu.innerHTML += `<div
+  id="tool-rss-section-${index}-button"
+  class="tools-menu-button${index == 0 ? " tools-menu-button-selected" : ""}">
+  <i class="fas fa-list-ul tools-menu-button-icon"></i>
+  <div class="tools-menu-button-text">
+    <span id="tool-rss-section-${index}-text">${feed.name}</span>
+  </div>
+</div>`;
+    console.log(menu.innerHTML);
+  });
+  g_feeds.forEach((feed, index) => {
     document
       .getElementById(`tool-rss-section-${index}-button`)
       .addEventListener("click", (event) => {
         switchSection(index);
       });
-  }
-  ////////////////////////////////////////
-  itemsToHtml(data);
+  });
+
+  showFeedContent(feedContent);
   ////////////////////////////////////////
   updateColumnsHeight();
 }
 
-function itemsToHtml(items) {
-  const root = document.getElementById("tool-rss-test");
+function showFeedContent(data) {
+  // console.log(data["rss"]);
+  const root = document.getElementById("tool-rss-items-div");
   root.innerHTML = "";
+  root.innerHTML += `<div id='tool-rss-channel-info'>
+    <div id='tool-rss-channel-info-title'>${data["rss"]["channel"]["title"]}</div>
+    <div id='tool-rss-channel-info-desc'>${data["rss"]["channel"]["description"]}</div>
+    </div>`;
+  itemsToHtml(root, data["rss"]["channel"]["item"]);
+  updateColumnsHeight();
+}
+
+function itemsToHtml(root, items) {
   items.forEach((item) => {
-    console.log(item);
-    root.innerHTML += item.title + "<br>";
-    root.innerHTML += `<img src="${item.enclosure["@_url"]}" style="max-width: 100%;"><br>`;
-    root.innerHTML += item.description + "<br><br><br>";
+    // console.log(item);
+    let html = `<div class='tool-rss-item-div'>
+    <div class="tool-rss-item-title">${item.title}</div>`;
+    if (item.enclosure && item.enclosure["@_url"]) {
+      html += `<div><img src="${item.enclosure["@_url"]}" style="max-width: 100%;"></div>`;
+    }
+    html += `<div>${item.description}</div>    
+    </div>`;
+    root.innerHTML += html;
   });
 }
 
@@ -65,7 +103,15 @@ export function initIpc() {
 function updateColumnsHeight(scrollTop = false) {
   const left = document.getElementById("tools-columns-left");
   const right = document.getElementById("tools-columns-right");
-  left.style.minHeight = right.offsetHeight + "px";
+  const sticky = document.getElementById("tools-menu-sticky-div");
+  const leftOffset = left.offsetHeight;
+  const rightOffset = right.offsetHeight;
+  const stickyOffset = sticky.offsetHeight;
+  if (stickyOffset > rightOffset) {
+    right.style.minHeight = stickyOffset + "px";
+  } else {
+    left.style.minHeight = rightOffset + "px";
+  }
   if (scrollTop) {
     document.getElementById("tools-columns-right").scrollIntoView({
       behavior: "instant",
@@ -76,21 +122,22 @@ function updateColumnsHeight(scrollTop = false) {
 }
 
 function switchSection(id) {
-  for (let index = 0; index < 2; index++) {
+  for (let index = 0; index < g_feeds.length; index++) {
     if (id === index) {
       document
         .getElementById(`tool-rss-section-${index}-button`)
         .classList.add("tools-menu-button-selected");
-      document
-        .getElementById(`tool-rss-section-${index}-content-div`)
-        .classList.remove("set-display-none");
+      // document
+      //   .getElementById(`tool-rss-section-${index}-content-div`)
+      //   .classList.remove("set-display-none");
+      sendIpcToMain("get-feed-content", index);
     } else {
       document
         .getElementById(`tool-rss-section-${index}-button`)
         .classList.remove("tools-menu-button-selected");
-      document
-        .getElementById(`tool-rss-section-${index}-content-div`)
-        .classList.add("set-display-none");
+      // document
+      //   .getElementById(`tool-rss-section-${index}-content-div`)
+      //   .classList.add("set-display-none");
     }
   }
   updateColumnsHeight(true);
@@ -150,6 +197,10 @@ function initOnIpcCallbacks() {
       modals.close(g_openModal);
       modalClosed();
     }
+  });
+
+  on("show-feed-content", (data) => {
+    showFeedContent(data);
   });
 
   /////////////////////////////////////////////////////////////////////////////

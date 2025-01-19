@@ -21,6 +21,17 @@ const axios = require("axios").default;
 
 let g_isInitialized = false;
 
+let g_feeds = [
+  {
+    name: "CBR - Comic News",
+    url: "https://www.cbr.com/feed/category/comics/news/",
+  },
+  {
+    name: "Comics and graphic novels | The Guardian",
+    url: "https://www.theguardian.com/books/comics/rss",
+  },
+];
+
 function init() {
   if (!g_isInitialized) {
     initOnIpcCallbacks();
@@ -35,30 +46,8 @@ exports.open = async function () {
   const data = fs.readFileSync(path.join(__dirname, "index.html"));
   sendIpcToCoreRenderer("replace-inner-html", "#tools", data.toString());
   updateLocalizedText();
-  let html = "";
-  try {
-    const response = await axios.get(
-      `https://www.cbr.com/feed/category/comics/news/`,
-      { timeout: 15000 }
-    );
-    // log.test(response.data);
-    const { XMLParser, XMLValidator } = require("fast-xml-parser");
-    const isValidXml = XMLValidator.validate(response.data);
-    if (isValidXml !== true) {
-      throw "invalid xml";
-    }
-    // open
-    const parserOptions = {
-      ignoreAttributes: false,
-      allowBooleanAttributes: true,
-    };
-    const parser = new XMLParser(parserOptions);
-    let json = parser.parse(response.data);
-    html = json["rss"]["channel"]["item"];
-  } catch (error) {
-    log.error(error);
-  }
-  sendIpcToRenderer("show", html);
+  const feedData = await getFeedContent(0);
+  sendIpcToRenderer("show", g_feeds, feedData);
 };
 
 exports.close = function () {
@@ -119,6 +108,11 @@ function initOnIpcCallbacks() {
   on("show-context-menu", (params) => {
     contextMenu.show("minimal", params, onCloseClicked);
   });
+
+  on("get-feed-content", async (index) => {
+    const feedData = await getFeedContent(index);
+    sendIpcToRenderer("show-feed-content", feedData);
+  });
 }
 
 // HANDLE
@@ -142,6 +136,27 @@ function initHandleIpcCallbacks() {}
 // TOOL ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+async function getFeedContent(feedId) {
+  try {
+    const response = await axios.get(g_feeds[feedId].url, { timeout: 15000 });
+    const { XMLParser, XMLValidator } = require("fast-xml-parser");
+    const isValidXml = XMLValidator.validate(response.data);
+    if (isValidXml !== true) {
+      throw "invalid xml";
+    }
+    // open
+    const parserOptions = {
+      ignoreAttributes: false,
+      allowBooleanAttributes: true,
+    };
+    const parser = new XMLParser(parserOptions);
+    let json = parser.parse(response.data);
+    return json;
+  } catch (error) {
+    log.error(error);
+    return undefined;
+  }
+}
 ///////////////////////////////////////////////////////////////////////////////
 // LOCALIZATION ///////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -161,13 +176,10 @@ function getLocalization() {
       id: "tool-rss-back-button-text",
       text: _("tool-shared-ui-back-to-reader").toUpperCase(),
     },
-    //////////////////////////////////////////////
     {
-      id: "tool-rss-section-0-text",
-      text: _("tool-shared-tab-catalog"),
+      id: "tool-rss-add-button-text",
+      text: _("tool-rss-add-feed").toUpperCase(),
     },
-    //////////////////////////////////////////////
-
     //////////////////////////////////////////////
   ];
 }

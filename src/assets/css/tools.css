@@ -991,3 +991,48 @@ html[dir="rtl"] .tools-range-bubble {
 }
 
 /* /////////////////////////////////////////////////////////////// */
+
+#tool-rss-channel-info {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+
+#tool-rss-channel-info-title {
+  font-size: 1.5em;
+  font-weight: bolder;
+}
+
+#tool-rss-channel-info-desc {
+}
+
+#tool-rss-items-div {
+  display: flex;
+  flex-direction: column;
+  border-radius: 10px;
+  gap: 15px;
+  margin-top: 5px;
+}
+
+.tool-rss-item-div {
+  padding: 15px;
+  background-color: var(--tools-bg2-color);
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  gap: 15px;
+  border-radius: 10px;
+}
+
+.tool-rss-item-title {
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+.tool-rss-item-enclosure {
+  max-width: 100%;
+  max-height: 100px;
+}
+
+/* /////////////////////////////////////////////////////////////// */
