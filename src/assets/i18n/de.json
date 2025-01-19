@@ -3,7 +3,7 @@
     "authors": [
       "trzyglow"
     ],
-    "last-updated": "2025-01-16",
+    "last-updated": "2025-01-19",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.8.0",
     "pre-release": "false",
@@ -105,7 +105,7 @@
   "menu-tools-template-maker": "Vorlagenersteller",
   "menu-tools-palette-extractor": "Farbpalettenextrahierer",
   "menu-tools-other": "Anderes",
-  "[NEEDS TRANSLATION]menu-tools-rss-reader": "RSS Reader",
+  "menu-tools-rss-reader": "RSS Reader",
   "menu-help": "Hilfe",
   "menu-help-checkupdates": "Nach Updates suchen",
   "menu-help-about": "Über ACBR",
@@ -935,12 +935,12 @@
   "tool-tm-import-header-preset-modal-close-button-tagtitle": "abbrechen",
   "tool-tm-export-header-preset-modal-close-button-tagtitle": "abbrechen",
   "[NOTE TO TRANSLATORS]tool-rss-feeds": "Feeds as in RSS feeds",
-  "[NEEDS TRANSLATION]tool-rss-feeds": "Feeds",
-  "[NEEDS TRANSLATION]tool-rss-feed-content": "Content",
-  "[NEEDS TRANSLATION]tool-rss-add-feed": "Add Feed",
-  "[NEEDS TRANSLATION]tool-rss-add-feed-success": "The feed has been added.",
-  "[NEEDS TRANSLATION]tool-rss-add-feed-error-already": "A feed with the same URL has already been added.",
-  "[NEEDS TRANSLATION]tool-rss-remove-feed": "Remove Feed",
-  "[NEEDS TRANSLATION]tool-rss--remove-feed-warning": "Are you sure you want to remove this feed?",
-  "[NEEDS TRANSLATION]tool-rss-feed-error": "The RSS feed isn't valid or there was an error trying to retrieve it."
+  "tool-rss-feeds": "Feeds",
+  "tool-rss-feed-content": "Inhalt",
+  "tool-rss-add-feed": "Feed Hinzufügen",
+  "tool-rss-add-feed-success": "Der Feed wurde hinzugefügt.",
+  "tool-rss-add-feed-error-already": "Ein Feed mit der selben URL wurde bereits hinzugefügt.",
+  "tool-rss-remove-feed": "Feed Entfernen",
+  "tool-rss--remove-feed-warning": "Sind Sie sicher, dass Sie diesen Feed entfernen möchten?",
+  "tool-rss-feed-error": "Der RSS Feed ist entweder nicht gültig oder es gab einen Fehler bei dem Versuch ihn abzurufen."
 }
