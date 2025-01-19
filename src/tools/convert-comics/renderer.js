@@ -12,6 +12,7 @@ import {
 import * as modals from "../../shared/renderer/modals.js";
 import { FileExtension } from "../../shared/renderer/constants.js";
 import * as toolsSettings from "../../shared/renderer/tools-settings.js";
+import * as toolsShared from "../../shared/renderer/tools-shared.js";
 
 const ToolMode = {
   CONVERT: 0,
@@ -199,23 +200,7 @@ function init(mode, outputFolderPath, canEditRars, loadedOptions) {
     checkValidData();
   });
 
-  // ref: https://css-tricks.com/value-bubbles-for-range-inputs/
-  const sliders = document.querySelectorAll(".tools-range-wrap");
-  sliders.forEach((wrap) => {
-    const range = wrap.querySelector(".tools-range");
-    const bubble = wrap.querySelector(".tools-range-bubble");
-    range.addEventListener("input", () => {
-      updateSliderBubble(range, bubble);
-    });
-    range.addEventListener("mousedown", () => {
-      updateSliderBubble(range, bubble);
-      bubble.classList.remove("set-display-none");
-    });
-    range.addEventListener("mouseup", () => {
-      bubble.classList.add("set-display-none");
-    });
-    updateSliderBubble(range, bubble);
-  });
+  toolsShared.initSliders();
 
   // conversion / creation
   g_outputNameInput = document.querySelector("#tool-cc-output-name-input");
@@ -582,18 +567,6 @@ function updateColumnsHeight(scrollTop = false) {
   }
 }
 
-function updateSliderBubble(range, bubble) {
-  const val = range.value;
-  const min = range.min ? range.min : 0;
-  const max = range.max ? range.max : 100;
-  const newVal = Number(((val - min) * 100) / (max - min));
-  bubble.innerHTML = range.value;
-  // magic numbers
-  bubble.style["inset-inline-start"] = `calc(${newVal}% - (${
-    newVal * 0.15
-  }px))`;
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 // IPC SEND ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -912,6 +885,7 @@ function checkValidData() {
   updateImageOpsUI();
   updateFolderOptionUI();
   updateOutputFolderUI();
+  toolsShared.updateSliders();
 
   updateUISelectedOptions();
 

@@ -503,16 +503,23 @@ input:checked + .tools-toggle-slider:before {
 
 .tools-range-wrap {
   position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  margin-top: 5px;
 }
+
 .tools-range {
-  margin-top: 16px;
-  margin-bottom: -10px;
+  margin-top: 2px;
+  margin-bottom: 0px;
   padding: 0;
   width: 100%;
   -webkit-appearance: none;
   appearance: none;
   border-radius: 8px;
   background: var(--tools-input-bg-color);
+  display: inline;
 }
 .tools-range::-webkit-slider-runnable-track {
   background: var(--tools-input-bg-color);
@@ -553,6 +560,19 @@ input:checked + .tools-toggle-slider:before {
 
 html[dir="rtl"] .tools-range-bubble {
   transform: translateX(30%);
+}
+
+.tools-range-ul {
+  display: inline;
+  min-width: 50px;
+  height: 30px;
+}
+
+.tools-range-ul li {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
 }
 
 /* /////////////////////////////////////////////////////////////// */
