@@ -156,8 +156,16 @@ function initOnIpcCallbacks() {
     sendIpcToRenderer("show-feed-content", feedData);
   });
 
-  on("open-url-in-browser", (url) => {
-    shell.openExternal(url);
+  on("open-url-in-browser", (urlString) => {
+    let url;
+    try {
+      url = new URL(urlString);
+      if (url.protocol === "http:" || url.protocol === "https:") {
+        shell.openExternal(urlString);
+      }
+    } catch (e) {
+      return;
+    }
   });
 
   //////////////////
