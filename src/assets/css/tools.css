@@ -1110,12 +1110,25 @@ html[dir="rtl"] .tools-range-bubble {
   padding: 15px;
 }
 
+.tool-rss-item-desc tr td {
+  display: block;
+}
+
+.tool-rss-item-desc img {
+  display: block;
+  padding: 15px 0px;
+}
+
 .tool-rss-item-desc a:link,
 .tool-rss-item-desc a:visited,
 .tool-rss-item-desc a:hover,
 .tool-rss-item-desc a:active {
   color: var(--tools-text-color);
   text-decoration: underline;
+}
+
+.tool-rss-item-desc a:link:has(img) {
+  text-decoration: none;
 }
 
 /* /////////////////////////////////////////////////////////////// */

@@ -32,6 +32,10 @@ let g_defaultFeeds = [
     url: "https://old.reddit.com/r/comicbooks/.rss", // atom
   },
   {
+    name: "The Beat",
+    url: "https://www.comicsbeat.com/feed/",
+  },
+  {
     name: "ComicList: Shipping This Week",
     url: "http://feeds.feedburner.com/ncrl", // atom
   },
