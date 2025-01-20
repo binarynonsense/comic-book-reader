@@ -27,10 +27,6 @@ let g_defaultFeeds = [
     url: "https://www.cbr.com/feed/category/comics/news/",
   },
   {
-    name: "r/comicbooks",
-    url: "https://old.reddit.com/r/comicbooks/.rss", // atom
-  },
-  {
     name: "The Beat",
     url: "https://www.comicsbeat.com/feed/",
   },
@@ -43,13 +39,17 @@ let g_defaultFeeds = [
     url: "http://feeds.feedburner.com/ncrl", // atom
   },
   {
+    name: "r/comicbooks",
+    url: "https://old.reddit.com/r/comicbooks/.rss", // atom
+  },
+  {
     name: "xkcd.com",
     url: "https://xkcd.com/rss.xml",
   },
-  {
-    name: "Project Gutenberg Recently Posted or Updated EBooks",
-    url: "http://www.gutenberg.org/cache/epub/feeds/today.rss",
-  },
+  // {
+  //   name: "Project Gutenberg Recently Posted or Updated EBooks",
+  //   url: "http://www.gutenberg.org/cache/epub/feeds/today.rss",
+  // },
   // {
   //   name: "Comics and graphic novels | The Guardian",
   //   url: "https://www.theguardian.com/books/comics/rss",
