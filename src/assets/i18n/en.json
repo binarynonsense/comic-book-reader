@@ -942,7 +942,7 @@
   "tool-rss-add-feed-success": "The feed has been added.",
   "tool-rss-add-feed-error-already": "A feed with the same URL has already been added.",
   "tool-rss-remove-feed": "Remove Feed",
-  "tool-rss--remove-feed-warning": "Are you sure you want to remove this feed?",
+  "tool-rss-remove-feed-warning": "Are you sure you want to remove this feed?",
   "tool-rss-feed-error": "The RSS feed isn't valid or there was an error trying to retrieve it.",
   "tool-rss-reset-feeds": "Reset Feeds",
   "tool-rss-reset-feeds-warning": "Are you sure you want to remove the current list of feeds and replace it with the default one?"
