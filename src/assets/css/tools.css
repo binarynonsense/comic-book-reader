@@ -1076,11 +1076,8 @@ html[dir="rtl"] .tools-range-bubble {
   justify-content: center;
 }
 
-.tool-rss-item-desc {
-  /* cursor: auto;
-  user-select: text;
-  pointer-events: all; */
-}
+/* .tool-rss-item-desc {
+} */
 .tool-rss-item-desc p,
 .tool-rss-item-desc h1,
 .tool-rss-item-desc h2,
@@ -1103,8 +1100,10 @@ html[dir="rtl"] .tools-range-bubble {
 .tool-rss-item-desc h4,
 .tool-rss-item-desc ul,
 .tool-rss-item-desc table,
-.tool-rss-item-desc img {
+.tool-rss-item-desc img,
+.tool-rss-item-desc pre {
   max-width: 100% !important;
+  white-space: pre-wrap;
 }
 
 .tool-rss-item-desc td {

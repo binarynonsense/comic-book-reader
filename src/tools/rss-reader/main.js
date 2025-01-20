@@ -14,6 +14,7 @@ const tools = require("../../shared/main/tools");
 const log = require("../../shared/main/logger");
 const axios = require("axios").default;
 const sanitizeHtml = require("sanitize-html");
+const { link } = require("pdfkit");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -29,6 +30,10 @@ let g_defaultFeeds = [
   {
     name: "r/comicbooks",
     url: "https://old.reddit.com/r/comicbooks/.rss", // atom
+  },
+  {
+    name: "ComicList: Shipping This Week",
+    url: "http://feeds.feedburner.com/ncrl", // atom
   },
   {
     name: "xkcd.com",
@@ -68,11 +73,12 @@ exports.open = async function () {
   // TODO: load feeds from settings
   if (true) {
     g_feeds = structuredClone(g_defaultFeeds);
-    if (core.isDev() && !core.isRelease())
+    if (core.isDev() && !core.isRelease()) {
       g_feeds.unshift({
         name: "Bad Feed",
         url: "xfr",
       });
+    }
   } else {
   }
   sendIpcToRenderer("show", g_feeds);
@@ -159,7 +165,6 @@ function initOnIpcCallbacks() {
 
   on("on-modal-add-feed-ok-clicked", async (url) => {
     if (url && url !== " ") {
-      log.test(url);
       const data = await getFeedContent(url);
       if (data) {
         g_feeds.push({
@@ -380,13 +385,50 @@ async function getFeedContent(url) {
       else {
         if (data.feed && data.feed.entry) {
           content.url = url;
-          content.name = data.feed.title ? data.feed.title : "Atom Feed";
-          content.description = data.feed.subtitle ? data.feed.subtitle : "";
+          if (data.feed.title) {
+            if (data.feed.title["#text"]) {
+              content.name = data.feed.title["#text"];
+            } else {
+              content.name = data.feed.title;
+            }
+          } else {
+            content.name = "Atom Feed";
+          }
+          if (data.feed.subtitle) {
+            if (data.feed.subtitle["#text"]) {
+              content.description = data.feed.subtitle["#text"];
+            } else {
+              content.description = data.feed.subtitle;
+            }
+          } else {
+            content.description = "";
+          }
           content.items = [];
           data.feed.entry.forEach((item, index) => {
             let itemData = {};
-            itemData.title = item.title;
-            itemData.link = item.link["@_href"];
+
+            if (item.title) {
+              if (item.title["#text"]) {
+                itemData.title = item.title["#text"];
+              } else {
+                itemData.title = item.title;
+              }
+            }
+
+            if (item.link) {
+              if (Array.isArray(item.link)) {
+                for (let index = 0; index < item.link.length; index++) {
+                  const link = item.link[index];
+                  if (link["@_href"]) {
+                    itemData.link = link["@_href"];
+                    if (link["@_rel"] == "alternate") break;
+                  }
+                }
+              } else {
+                itemData.link = item.link["@_href"];
+              }
+            }
+
             if (item.updated) {
               let date = new Date(item.updated);
               itemData.date = date.toLocaleString(undefined, {
@@ -404,7 +446,6 @@ async function getFeedContent(url) {
             }
             content.items.push(itemData);
           });
-          // log.test(content);
           return content;
         }
       }

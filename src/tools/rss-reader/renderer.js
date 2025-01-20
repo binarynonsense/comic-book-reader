@@ -114,11 +114,15 @@ function showFeedContent(data) {
 function itemsToHtml(root, items) {
   try {
     items.forEach((item, index) => {
-      // console.log(item);
       let html = "";
       try {
-        html = `<div class='tool-rss-item-div'>
-    <div class="tool-rss-item-title"><span class="tool-rss-item-title-text">${item.title}</span><i class="fas fa-external-link-alt tool-rss-icon-button" id="tool-rss-item-title-${index}-button" data-src="${item.link}" title="${g_extraLocalization.openInBrowser} (${item.link})"></i></div>`;
+        html = `<div class='tool-rss-item-div'>`;
+
+        html += `<div class="tool-rss-item-title"><span class="tool-rss-item-title-text">${item.title}</span>`;
+        if (item.link) {
+          html += `<i class="fas fa-external-link-alt tool-rss-icon-button" id="tool-rss-item-title-${index}-button" data-src="${item.link}" title="${g_extraLocalization.openInBrowser} (${item.link})"></i>`;
+        }
+        html += `</div>`;
 
         if (item.date) {
           html += `<div class="tool-rss-item-date">${item.date}</div>`;
