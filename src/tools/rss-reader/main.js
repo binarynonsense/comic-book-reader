@@ -14,7 +14,6 @@ const tools = require("../../shared/main/tools");
 const log = require("../../shared/main/logger");
 const axios = require("axios").default;
 const sanitizeHtml = require("sanitize-html");
-const { link } = require("pdfkit");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
