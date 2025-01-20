@@ -1117,6 +1117,7 @@ html[dir="rtl"] .tools-range-bubble {
 .tool-rss-item-desc img {
   display: block;
   padding: 15px 0px;
+  height: auto;
 }
 
 .tool-rss-item-desc a:link,
