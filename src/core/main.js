@@ -506,6 +506,11 @@ if (!gotTheLock) {
   }
   exports.isDev = isDev;
 
+  function isRelease() {
+    return g_launchInfo.isRelease;
+  }
+  exports.isRelease = isRelease;
+
   exports.getMainWindow = function () {
     return g_mainWindow;
   };
