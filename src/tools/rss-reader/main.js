@@ -8,7 +8,6 @@ const fs = require("fs");
 const path = require("path");
 const core = require("../../core/main");
 const { _ } = require("../../shared/main/i18n");
-// const reader = require("../../reader/main");
 const shell = require("electron").shell;
 const contextMenu = require("../../shared/main/tools-menu-context");
 const tools = require("../../shared/main/tools");
@@ -24,20 +23,12 @@ let g_isInitialized = false;
 
 let g_defaultFeeds = [
   {
-    name: "Bad Feed",
-    url: "xfr",
-  },
-  {
     name: "CBR Comic News",
     url: "https://www.cbr.com/feed/category/comics/news/",
   },
   {
     name: "r/comicbooks",
     url: "https://old.reddit.com/r/comicbooks/.rss", // atom
-  },
-  {
-    name: "ComicBookRealm News",
-    url: "https://comicbookrealm.com/rss/news",
   },
   {
     name: "xkcd.com",
@@ -77,11 +68,11 @@ exports.open = async function () {
   // TODO: load feeds from settings
   if (true) {
     g_feeds = structuredClone(g_defaultFeeds);
-    // TODO: delete
-    g_feeds.push({
-      name: "Blog | Binary Nonsense",
-      url: "http://blog.binarynonsense.com/feed.xml", // atom
-    });
+    if (core.isDev() && !core.isRelease())
+      g_feeds.unshift({
+        name: "Bad Feed",
+        url: "xfr",
+      });
   } else {
   }
   sendIpcToRenderer("show", g_feeds);
