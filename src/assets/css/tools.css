@@ -62,6 +62,7 @@ html[dir="rtl"] #tools:not(:has(iframe)) {
   background-color: var(--tools-bg2-color);
   padding: 30px;
   height: fit-content;
+  overflow-x: hidden;
 }
 
 .tools-columns-right-section {
@@ -1038,6 +1039,7 @@ html[dir="rtl"] .tools-range-bubble {
   align-content: center;
   gap: 15px;
   border-radius: 10px;
+  max-width: 100%;
 }
 
 .tool-rss-item-title {
@@ -1085,12 +1087,28 @@ html[dir="rtl"] .tools-range-bubble {
 .tool-rss-item-desc h3,
 .tool-rss-item-desc h4,
 .tool-rss-item-desc ul {
-  margin-top: 20px !important;
+  margin-top: 10px !important;
+  margin-bottom: 10px !important;
   line-height: 150%;
 }
 
 .tool-rss-item-desc li {
   margin-left: 30px !important;
+}
+
+.tool-rss-item-desc p,
+.tool-rss-item-desc h1,
+.tool-rss-item-desc h2,
+.tool-rss-item-desc h3,
+.tool-rss-item-desc h4,
+.tool-rss-item-desc ul,
+.tool-rss-item-desc table,
+.tool-rss-item-desc img {
+  max-width: 100% !important;
+}
+
+.tool-rss-item-desc td {
+  padding: 15px;
 }
 
 .tool-rss-item-desc a:link,

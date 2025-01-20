@@ -14,6 +14,7 @@ const contextMenu = require("../../shared/main/tools-menu-context");
 const tools = require("../../shared/main/tools");
 const log = require("../../shared/main/logger");
 const axios = require("axios").default;
+const sanitizeHtml = require("sanitize-html");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -27,29 +28,33 @@ let g_feeds = [
     url: "xfr",
   },
   {
-    name: "Bad Feed 2",
-    url: "https://comicbookrealm.com/rs",
-  },
-  {
-    name: "CBR - Comic News",
+    name: "CBR Comic News",
     url: "https://www.cbr.com/feed/category/comics/news/",
   },
   {
-    name: "Latest news on ComicBookRealm.com",
+    name: "r/comicbooks",
+    url: "https://old.reddit.com/r/comicbooks/.rss", // atom
+  },
+  {
+    name: "ComicBookRealm News",
     url: "https://comicbookrealm.com/rss/news",
   },
   {
     name: "xkcd.com",
     url: "https://xkcd.com/rss.xml",
   },
+  // {
+  //   name: "Comics and graphic novels | The Guardian",
+  //   url: "https://www.theguardian.com/books/comics/rss",
+  // },
+  // {
+  //   name: "Blog | Binary Nonsense",
+  //   url: "http://blog.binarynonsense.com/feed.xml", // atom
+  // },
   {
-    name: "Comics and graphic novels | The Guardian",
-    url: "https://www.theguardian.com/books/comics/rss",
-  },
-  {
-    name: "Blog | Binary Nonsense",
-    url: "http://blog.binarynonsense.com/feed.xml", // atom!!
-  },
+    name: "ACBR Release Notes",
+    url: "https://github.com/binarynonsense/comic-book-reader/releases.atom",
+  }, // atom
 ];
 
 function init() {
@@ -150,24 +155,15 @@ function initOnIpcCallbacks() {
 
   on("on-modal-add-feed-ok-clicked", async (url) => {
     if (url && url !== " ") {
+      log.test(url);
       const data = await getFeedContent(url);
       if (data) {
-        if (data.rss && data.rss.channel) {
-          if (data.rss.channel.item) {
-            g_feeds.push({
-              name: data.rss.channel.title
-                ? data.rss.channel.title
-                : "RSS Feed",
-              url,
-            });
-          } else {
-          }
-          // sendIpcToRenderer("update-feeds", g_feeds);
-          sendIpcToRenderer("update-feeds", g_feeds, g_feeds.length - 1);
-          return;
-        } else {
-          // TODO: check if atom
-        }
+        g_feeds.push({
+          name: data.name,
+          url,
+        });
+        sendIpcToRenderer("update-feeds", g_feeds, g_feeds.length - 1);
+        return;
       }
     }
     sendIpcToRenderer(
@@ -327,6 +323,7 @@ async function getFeedContent(url) {
     ///////////
     let content = {};
     if (data) {
+      // RSS //////////
       if (data.rss && data.rss.channel && data.rss.channel.item) {
         content.url = url;
         content.name = data.rss.channel.title
@@ -351,11 +348,46 @@ async function getFeedContent(url) {
             itemData.enclosureImgUrl = item.enclosure["@_url"];
           }
           itemData.description = item.description;
+          if (itemData.description) {
+            itemData.description = sanitizeHtml(itemData.description, {
+              allowedTags: sanitizeHtml.defaults.allowedTags.concat(["img"]),
+            });
+          }
           content.items.push(itemData);
         });
         return content;
-      } else {
-        // TODO: check if atom
+      }
+      // ATOM //////////
+      else {
+        if (data.feed && data.feed.entry) {
+          content.url = url;
+          content.name = data.feed.title ? data.feed.title : "Atom Feed";
+          content.description = data.feed.subtitle ? data.feed.subtitle : "";
+          content.items = [];
+          data.feed.entry.forEach((item, index) => {
+            let itemData = {};
+            itemData.title = item.title;
+            itemData.link = item.link["@_href"];
+            if (item.updated) {
+              let date = new Date(item.updated);
+              itemData.date = date.toLocaleString(undefined, {
+                weekday: "long",
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              });
+            }
+            itemData.description = item.content["#text"];
+            if (itemData.description) {
+              itemData.description = sanitizeHtml(itemData.description, {
+                allowedTags: sanitizeHtml.defaults.allowedTags.concat(["img"]),
+              });
+            }
+            content.items.push(itemData);
+          });
+          // log.test(content);
+          return content;
+        }
       }
     }
     //////////
