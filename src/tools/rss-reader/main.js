@@ -36,6 +36,10 @@ let g_defaultFeeds = [
     url: "https://www.comicsbeat.com/feed/",
   },
   {
+    name: "The Comics Journal",
+    url: "https://www.tcj.com/feed/",
+  },
+  {
     name: "ComicList: Shipping This Week",
     url: "http://feeds.feedburner.com/ncrl", // atom
   },
@@ -360,6 +364,7 @@ async function getFeedContent(url) {
         content.description = data.rss.channel.description;
         content.items = [];
         data.rss.channel.item.forEach((item, index) => {
+          // log.test(item);
           let itemData = {};
           itemData.title = item.title;
           itemData.link = item.link;
