@@ -202,6 +202,7 @@
   "ui-modal-prompt-button-edit": "Bearbeiten",
   "ui-modal-prompt-button-edit-name": "Name Bearbeiten",
   "ui-modal-prompt-button-edit-path": "Pfad Bearbeiten",
+  "[NEEDS TRANSLATION]ui-modal-prompt-button-edit-url": "Edit URL",
   "ui-modal-prompt-button-remove": "Entfernen",
   "ui-modal-prompt-button-delete": "Löschen",
   "ui-modal-prompt-button-save": "Speichern",
@@ -942,5 +943,7 @@
   "tool-rss-add-feed-error-already": "Ein Feed mit der selben URL wurde bereits hinzugefügt.",
   "tool-rss-remove-feed": "Feed Entfernen",
   "tool-rss--remove-feed-warning": "Sind Sie sicher, dass Sie diesen Feed entfernen möchten?",
-  "tool-rss-feed-error": "Der RSS Feed ist entweder nicht gültig oder es gab einen Fehler bei dem Versuch ihn abzurufen."
+  "tool-rss-feed-error": "Der RSS Feed ist entweder nicht gültig oder es gab einen Fehler bei dem Versuch ihn abzurufen.",
+  "[NEEDS TRANSLATION]tool-rss-reset-feeds": "Reset Feeds",
+  "[NEEDS TRANSLATION]tool-rss-reset-feeds-warning": "Are you sure you want to remove the current list of feeds and replace it with the default one?"
 }

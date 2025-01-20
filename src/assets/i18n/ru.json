@@ -202,6 +202,7 @@
   "ui-modal-prompt-button-edit": "Изменить",
   "ui-modal-prompt-button-edit-name": "Изменить название",
   "ui-modal-prompt-button-edit-path": "Изменить путь",
+  "[NEEDS TRANSLATION]ui-modal-prompt-button-edit-url": "Edit URL",
   "ui-modal-prompt-button-remove": "Убрать",
   "ui-modal-prompt-button-delete": "Удалить",
   "ui-modal-prompt-button-save": "Сохранить",
@@ -942,5 +943,7 @@
   "[NEEDS TRANSLATION]tool-rss-add-feed-error-already": "A feed with the same URL has already been added.",
   "[NEEDS TRANSLATION]tool-rss-remove-feed": "Remove Feed",
   "[NEEDS TRANSLATION]tool-rss--remove-feed-warning": "Are you sure you want to remove this feed?",
-  "[NEEDS TRANSLATION]tool-rss-feed-error": "The RSS feed isn't valid or there was an error trying to retrieve it."
+  "[NEEDS TRANSLATION]tool-rss-feed-error": "The RSS feed isn't valid or there was an error trying to retrieve it.",
+  "[NEEDS TRANSLATION]tool-rss-reset-feeds": "Reset Feeds",
+  "[NEEDS TRANSLATION]tool-rss-reset-feeds-warning": "Are you sure you want to remove the current list of feeds and replace it with the default one?"
 }
