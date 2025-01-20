@@ -22,7 +22,7 @@ const sanitizeHtml = require("sanitize-html");
 
 let g_isInitialized = false;
 
-let g_feeds = [
+let g_defaultFeeds = [
   {
     name: "Bad Feed",
     url: "xfr",
@@ -57,6 +57,8 @@ let g_feeds = [
   }, // atom
 ];
 
+let g_feeds = {};
+
 function init() {
   if (!g_isInitialized) {
     initOnIpcCallbacks();
@@ -71,6 +73,17 @@ exports.open = async function () {
   const data = fs.readFileSync(path.join(__dirname, "index.html"));
   sendIpcToCoreRenderer("replace-inner-html", "#tools", data.toString());
   updateLocalizedText();
+
+  // TODO: load feeds from settings
+  if (true) {
+    g_feeds = structuredClone(g_defaultFeeds);
+    // TODO: delete
+    g_feeds.push({
+      name: "Blog | Binary Nonsense",
+      url: "http://blog.binarynonsense.com/feed.xml", // atom
+    });
+  } else {
+  }
   sendIpcToRenderer("show", g_feeds);
 };
 
@@ -174,6 +187,21 @@ function initOnIpcCallbacks() {
     );
   });
 
+  on("on-reset-feeds-clicked", () => {
+    sendIpcToRenderer(
+      "show-modal-reset-feeds",
+      _("tool-shared-modal-title-warning"),
+      _("tool-rss-reset-feeds-warning"),
+      _("ui-modal-prompt-button-ok"),
+      _("ui-modal-prompt-button-cancel")
+    );
+  });
+
+  on("on-modal-reset-feeds-ok-clicked", () => {
+    g_feeds = structuredClone(g_defaultFeeds);
+    sendIpcToRenderer("update-feeds", g_feeds, 0);
+  });
+
   //////////////////
 
   on("on-feed-options-clicked", () => {
@@ -197,7 +225,7 @@ function initOnIpcCallbacks() {
         feedIndex,
         feedUrl,
         _("tool-rss-remove-feed"),
-        _("tool-rss--remove-feed-warning"),
+        _("tool-rss-remove-feed-warning"),
         _("ui-modal-prompt-button-ok"),
         _("ui-modal-prompt-button-cancel")
       );
@@ -423,6 +451,10 @@ function getLocalization() {
     {
       id: "tool-rss-add-button-text",
       text: _("tool-rss-add-feed").toUpperCase(),
+    },
+    {
+      id: "tool-rss-reset-button-text",
+      text: _("tool-rss-reset-feeds").toUpperCase(),
     },
     //////////////////////////////////////////////
   ];

@@ -41,6 +41,11 @@ async function init(feeds) {
     .addEventListener("click", (event) => {
       sendIpcToMain("on-add-feed-clicked");
     });
+  document
+    .getElementById("tool-rss-reset-button")
+    .addEventListener("click", (event) => {
+      sendIpcToMain("on-reset-feeds-clicked");
+    });
   ////////////////////////////////////////
   g_feeds = feeds;
   g_currentFeedIndex = 0;
@@ -292,6 +297,9 @@ function initOnIpcCallbacks() {
     showModalInfo(...args);
   });
 
+  on("show-modal-reset-feeds", (...args) => {
+    showModalResetFeeds(...args);
+  });
   /////////////////
 
   on("show-modal-feed-options", (...args) => {
@@ -481,6 +489,39 @@ function showModalInfo(title, message, textButton1) {
           modalClosed();
         },
         key: "Enter",
+      },
+    ],
+  });
+}
+
+function showModalResetFeeds(title, message, textButton1, textButton2) {
+  if (getOpenModal()) {
+    return;
+  }
+
+  g_openModal = modals.show({
+    title,
+    message,
+    zIndexDelta: 5,
+    close: {
+      callback: () => {
+        modalClosed();
+      },
+      key: "Escape",
+    },
+    buttons: [
+      {
+        text: textButton1.toUpperCase(),
+        callback: () => {
+          sendIpcToMain("on-modal-reset-feeds-ok-clicked");
+          modalClosed();
+        },
+      },
+      {
+        text: textButton2.toUpperCase(),
+        callback: () => {
+          modalClosed();
+        },
       },
     ],
   });
