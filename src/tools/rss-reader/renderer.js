@@ -39,12 +39,19 @@ async function init(feeds) {
   document
     .getElementById("tool-rss-add-button")
     .addEventListener("click", (event) => {
-      // TODO
+      sendIpcToMain("on-add-feed-clicked");
     });
   ////////////////////////////////////////
   g_feeds = feeds;
   g_currentFeedIndex = 0;
 
+  buildSections();
+  switchSection(g_currentFeedIndex);
+  ////////////////////////////////////////
+  updateColumnsHeight();
+}
+
+function buildSections() {
   const menu = document.querySelector(".tools-menu-sections");
   menu.innerHTML = "";
   g_feeds.forEach((feed, index) => {
@@ -64,14 +71,10 @@ async function init(feeds) {
         switchSection(index);
       });
   });
-
-  switchSection(0);
-  ////////////////////////////////////////
-  updateColumnsHeight();
 }
 
 function showFeedContent(data) {
-  console.log(data);
+  // console.log(data);
   const root = document.getElementById("tool-rss-items-div");
   root.innerHTML = "";
   try {
@@ -79,19 +82,19 @@ function showFeedContent(data) {
     root.innerHTML += `<div id='tool-rss-channel-info'>
       <div id='tool-rss-channel-info-title'>
         <i class="fas fa-rss"></i>
-        <span id="tool-rss-channel-info-title-text">${data["rss"]["channel"]["title"]}</span>
-        <i class="fas fa-ellipsis-h tool-rss-icon-button" id="tool-rss-channel-info-title-button" title="${g_extraLocalization.edit}"></i>
+        <span id="tool-rss-channel-info-title-text">${data.name}</span>
+        <i class="fas fa-ellipsis-h tool-rss-icon-button" id="tool-rss-channel-info-title-button" title="${g_extraLocalization.options}"></i>
       </div>
-      <div id='tool-rss-channel-info-desc'>${data["rss"]["channel"]["description"]}</div>
+      <div id='tool-rss-channel-info-desc'>${data.description}</div>
     </div>`;
 
-    itemsToHtml(root, data["rss"]["channel"]["item"]);
+    itemsToHtml(root, data.items);
   } catch (error) {
     root.innerHTML += `<div id='tool-rss-channel-info'>
       <div id='tool-rss-channel-info-title'>
         <i class="fas fa-rss"></i>
         <span id="tool-rss-channel-info-title-text">${g_feeds[g_currentFeedIndex].name}</span>
-        <i class="fas fa-ellipsis-h tool-rss-icon-button" id="tool-rss-channel-info-title-button" title="${g_extraLocalization.edit}"></i>
+        <i class="fas fa-ellipsis-h tool-rss-icon-button" id="tool-rss-channel-info-title-button" title="${g_extraLocalization.options}"></i>
       </div>
     </div>`;
     root.innerHTML += `<div>${g_extraLocalization.feedError}</div>`;
@@ -112,16 +115,12 @@ function itemsToHtml(root, items) {
         html = `<div class='tool-rss-item-div'>
     <div class="tool-rss-item-title"><span class="tool-rss-item-title-text">${item.title}</span><i class="fas fa-external-link-alt tool-rss-icon-button" id="tool-rss-item-title-${index}-button" data-src="${item.link}" title="${g_extraLocalization.openInBrowser} (${item.link})"></i></div>`;
 
-        if (item.pubDate) {
-          var date = new Date(item.pubDate);
-          html += `<div class="tool-rss-item-date">${date.toLocaleString(
-            undefined,
-            { weekday: "long", year: "numeric", month: "long", day: "numeric" }
-          )}</div>`;
+        if (item.date) {
+          html += `<div class="tool-rss-item-date">${item.date}</div>`;
         }
 
-        if (item.enclosure && item.enclosure["@_url"]) {
-          html += `<div class="tool-rss-item-enclosure"><img src="${item.enclosure["@_url"]}" style="max-width: 100%;"></div>`;
+        if (item.enclosureImgUrl) {
+          html += `<div class="tool-rss-item-enclosure"><img src="${item.enclosureImgUrl}" style="max-width: 100%;"></div>`;
         }
 
         html += `<div class="tool-rss-item-desc">${item.description}</div>    
@@ -168,24 +167,28 @@ function updateColumnsHeight(scrollTop = false) {
 }
 
 function switchSection(id) {
-  showLoadingModal();
   g_currentFeedIndex = id;
-  for (let index = 0; index < g_feeds.length; index++) {
-    if (id === index) {
-      document
-        .getElementById(`tool-rss-section-${index}-button`)
-        .classList.add("tools-menu-button-selected");
-      // document
-      //   .getElementById(`tool-rss-section-${index}-content-div`)
-      //   .classList.remove("set-display-none");
-      sendIpcToMain("get-feed-content", index);
-    } else {
-      document
-        .getElementById(`tool-rss-section-${index}-button`)
-        .classList.remove("tools-menu-button-selected");
-      // document
-      //   .getElementById(`tool-rss-section-${index}-content-div`)
-      //   .classList.add("set-display-none");
+  if (g_feeds.length <= 0) {
+    showFeedContent();
+  } else {
+    showLoadingModal();
+    for (let index = 0; index < g_feeds.length; index++) {
+      if (id === index) {
+        document
+          .getElementById(`tool-rss-section-${index}-button`)
+          .classList.add("tools-menu-button-selected");
+        // document
+        //   .getElementById(`tool-rss-section-${index}-content-div`)
+        //   .classList.remove("set-display-none");
+        sendIpcToMain("get-feed-content", index);
+      } else {
+        document
+          .getElementById(`tool-rss-section-${index}-button`)
+          .classList.remove("tools-menu-button-selected");
+        // document
+        //   .getElementById(`tool-rss-section-${index}-content-div`)
+        //   .classList.add("set-display-none");
+      }
     }
   }
   updateColumnsHeight(true);
@@ -253,6 +256,15 @@ function initOnIpcCallbacks() {
     closeModal();
   });
 
+  on("update-feeds", (feeds, index) => {
+    g_feeds = feeds;
+    buildSections();
+    if (index) {
+      if (index >= g_feeds.length) index = g_feeds.length - 1;
+      switchSection(index);
+    }
+  });
+
   on("update-feed-name", (feeds, index) => {
     g_feeds = feeds;
     if (index === g_currentFeedIndex) {
@@ -269,6 +281,17 @@ function initOnIpcCallbacks() {
     g_feeds = feeds;
     switchSection(g_currentFeedIndex);
   });
+
+  /////////////////
+
+  on("show-modal-add-feed", (...args) => {
+    showModalAddFeed(...args);
+  });
+
+  on("show-modal-info", (...args) => {
+    showModalInfo(...args);
+  });
+
   /////////////////
 
   on("show-modal-feed-options", (...args) => {
@@ -283,10 +306,13 @@ function initOnIpcCallbacks() {
     showModalFeedEditUrl(...args);
   });
 
+  on("show-modal-feed-remove", (...args) => {
+    showModalFeedRemove(...args);
+  });
+
   /////////////////////////////////////////////////////////////////////////////
 
   on("modal-update-title-text", (text) => {
-    console.log(text);
     updateModalTitleText(text);
   });
 
@@ -398,6 +424,70 @@ function showLoadingModal() {
   });
 }
 
+//////////////
+
+function showModalAddFeed(title, textButton1, textButton2) {
+  if (getOpenModal()) {
+    return;
+  }
+
+  showModal({
+    title: title,
+    zIndexDelta: 5,
+    input: { type: "text", default: "" },
+    close: {
+      callback: () => {
+        modalClosed();
+      },
+      key: "Escape",
+    },
+    buttons: [
+      {
+        text: textButton1.toUpperCase(),
+        callback: (showFocus, value) => {
+          sendIpcToMain("on-modal-add-feed-ok-clicked", value);
+          modalClosed();
+        },
+        key: "Enter",
+      },
+      {
+        text: textButton2.toUpperCase(),
+        callback: () => {
+          modalClosed();
+        },
+      },
+    ],
+  });
+}
+
+function showModalInfo(title, message, textButton1) {
+  if (getOpenModal()) {
+    return;
+  }
+  g_openModal = modals.show({
+    title: title,
+    message: message,
+    zIndexDelta: 5,
+    close: {
+      callback: () => {
+        modalClosed();
+      },
+      key: "Escape",
+    },
+    buttons: [
+      {
+        text: textButton1.toUpperCase(),
+        callback: () => {
+          modalClosed();
+        },
+        key: "Enter",
+      },
+    ],
+  });
+}
+
+//////////////
+
 function showModalFeedOptions(
   title,
   textButtonBack,
@@ -438,18 +528,6 @@ function showModalFeedOptions(
     },
   });
   buttons.push({
-    text: textButtonMoveDown.toUpperCase(),
-    fullWidth: true,
-    callback: () => {
-      modalClosed();
-      sendIpcToMain(
-        "on-modal-feed-options-move-clicked",
-        g_currentFeedIndex,
-        0
-      );
-    },
-  });
-  buttons.push({
     text: textButtonMoveUp.toUpperCase(),
     fullWidth: true,
     callback: () => {
@@ -457,6 +535,20 @@ function showModalFeedOptions(
       sendIpcToMain(
         "on-modal-feed-options-move-clicked",
         g_currentFeedIndex,
+        g_feeds[g_currentFeedIndex].url,
+        0
+      );
+    },
+  });
+  buttons.push({
+    text: textButtonMoveDown.toUpperCase(),
+    fullWidth: true,
+    callback: () => {
+      modalClosed();
+      sendIpcToMain(
+        "on-modal-feed-options-move-clicked",
+        g_currentFeedIndex,
+        g_feeds[g_currentFeedIndex].url,
         1
       );
     },
@@ -466,7 +558,11 @@ function showModalFeedOptions(
     fullWidth: true,
     callback: () => {
       modalClosed();
-      sendIpcToMain("on-modal-feed-options-remove-clicked", g_currentFeedIndex);
+      sendIpcToMain(
+        "on-modal-feed-options-remove-clicked",
+        g_currentFeedIndex,
+        g_feeds[g_currentFeedIndex].url
+      );
     },
   });
   buttons.push({
@@ -557,6 +653,49 @@ function showModalFeedEditUrl(index, url, title, textButton1, textButton2) {
           modalClosed();
         },
         key: "Enter",
+      },
+      {
+        text: textButton2.toUpperCase(),
+        callback: () => {
+          modalClosed();
+        },
+      },
+    ],
+  });
+}
+
+//////////////
+
+function showModalFeedRemove(
+  index,
+  url,
+  title,
+  message,
+  textButton1,
+  textButton2
+) {
+  if (getOpenModal()) {
+    return;
+  }
+
+  g_openModal = modals.show({
+    title,
+    message,
+    zIndexDelta: 5,
+    close: {
+      callback: () => {
+        modalClosed();
+      },
+      key: "Escape",
+    },
+    buttons: [
+      {
+        text: textButton1.toUpperCase(),
+        callback: () => {
+          sendIpcToMain("on-modal-feed-options-remove-ok-clicked", index, url);
+          modalClosed();
+        },
+        //key: "Enter",
       },
       {
         text: textButton2.toUpperCase(),

@@ -8,7 +8,7 @@ const fs = require("fs");
 const path = require("path");
 const core = require("../../core/main");
 const { _ } = require("../../shared/main/i18n");
-const reader = require("../../reader/main");
+// const reader = require("../../reader/main");
 const shell = require("electron").shell;
 const contextMenu = require("../../shared/main/tools-menu-context");
 const tools = require("../../shared/main/tools");
@@ -45,6 +45,10 @@ let g_feeds = [
   {
     name: "Comics and graphic novels | The Guardian",
     url: "https://www.theguardian.com/books/comics/rss",
+  },
+  {
+    name: "Blog | Binary Nonsense",
+    url: "http://blog.binarynonsense.com/feed.xml", // atom!!
   },
 ];
 
@@ -125,13 +129,56 @@ function initOnIpcCallbacks() {
   });
 
   on("get-feed-content", async (index) => {
-    const feedData = await getFeedContent(index);
+    const feedData = await getFeedContent(g_feeds[index].url);
     sendIpcToRenderer("show-feed-content", feedData);
   });
 
   on("open-url-in-browser", (url) => {
     shell.openExternal(url);
   });
+
+  //////////////////
+
+  on("on-add-feed-clicked", () => {
+    sendIpcToRenderer(
+      "show-modal-add-feed",
+      "URL",
+      _("ui-modal-prompt-button-ok"),
+      _("ui-modal-prompt-button-cancel")
+    );
+  });
+
+  on("on-modal-add-feed-ok-clicked", async (url) => {
+    if (url && url !== " ") {
+      const data = await getFeedContent(url);
+      if (data) {
+        if (data.rss && data.rss.channel) {
+          if (data.rss.channel.item) {
+            g_feeds.push({
+              name: data.rss.channel.title
+                ? data.rss.channel.title
+                : "RSS Feed",
+              url,
+            });
+          } else {
+          }
+          // sendIpcToRenderer("update-feeds", g_feeds);
+          sendIpcToRenderer("update-feeds", g_feeds, g_feeds.length - 1);
+          return;
+        } else {
+          // TODO: check if atom
+        }
+      }
+    }
+    sendIpcToRenderer(
+      "show-modal-info",
+      _("tool-shared-modal-title-error"),
+      _("tool-rss-feed-error"),
+      _("ui-modal-prompt-button-ok")
+    );
+  });
+
+  //////////////////
 
   on("on-feed-options-clicked", () => {
     sendIpcToRenderer(
@@ -145,6 +192,27 @@ function initOnIpcCallbacks() {
       _("tool-shared-tooltip-move-down-in-list"),
       false
     );
+  });
+
+  on("on-modal-feed-options-remove-clicked", (feedIndex, feedUrl) => {
+    if (g_feeds[feedIndex].url === feedUrl) {
+      sendIpcToRenderer(
+        "show-modal-feed-remove",
+        feedIndex,
+        feedUrl,
+        _("tool-rss-remove-feed"),
+        _("tool-rss--remove-feed-warning"),
+        _("ui-modal-prompt-button-ok"),
+        _("ui-modal-prompt-button-cancel")
+      );
+    } else {
+      log.error("Tried to remove a feed with not matching index and url");
+    }
+  });
+
+  on("on-modal-feed-options-remove-ok-clicked", (feedIndex, feedUrl) => {
+    g_feeds.splice(feedIndex, 1);
+    sendIpcToRenderer("update-feeds", g_feeds, feedIndex);
   });
 
   on("on-modal-feed-options-edit-name-clicked", (feedIndex, feedUrl) => {
@@ -194,6 +262,30 @@ function initOnIpcCallbacks() {
       sendIpcToRenderer("update-feed-url", g_feeds, feedIndex);
     }
   });
+
+  on("on-modal-feed-options-move-clicked", (feedIndex, feedUrl, dir) => {
+    if (g_feeds[feedIndex].url === feedUrl) {
+      if (dir == 0) {
+        // up
+        if (feedIndex > 0) {
+          let temp = g_feeds[feedIndex - 1];
+          g_feeds[feedIndex - 1] = g_feeds[feedIndex];
+          g_feeds[feedIndex] = temp;
+          sendIpcToRenderer("update-feeds", g_feeds, feedIndex - 1);
+        }
+      } else if (dir == 1) {
+        // down
+        if (feedIndex < g_feeds.length - 1) {
+          let temp = g_feeds[feedIndex + 1];
+          g_feeds[feedIndex + 1] = g_feeds[feedIndex];
+          g_feeds[feedIndex] = temp;
+          sendIpcToRenderer("update-feeds", g_feeds, feedIndex + 1);
+        }
+      }
+    } else {
+      log.error("Tried to move a feed with not matching index and url");
+    }
+  });
 }
 
 // HANDLE
@@ -217,9 +309,9 @@ function initHandleIpcCallbacks() {}
 // TOOL ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-async function getFeedContent(feedId) {
+async function getFeedContent(url) {
   try {
-    const response = await axios.get(g_feeds[feedId].url, { timeout: 15000 });
+    const response = await axios.get(url, { timeout: 15000 });
     const { XMLParser, XMLValidator } = require("fast-xml-parser");
     const isValidXml = XMLValidator.validate(response.data);
     if (isValidXml !== true) {
@@ -231,8 +323,43 @@ async function getFeedContent(feedId) {
       allowBooleanAttributes: true,
     };
     const parser = new XMLParser(parserOptions);
-    let json = parser.parse(response.data);
-    return json;
+    let data = parser.parse(response.data);
+    ///////////
+    let content = {};
+    if (data) {
+      if (data.rss && data.rss.channel && data.rss.channel.item) {
+        content.url = url;
+        content.name = data.rss.channel.title
+          ? data.rss.channel.title
+          : "RSS Feed";
+        content.description = data.rss.channel.description;
+        content.items = [];
+        data.rss.channel.item.forEach((item, index) => {
+          let itemData = {};
+          itemData.title = item.title;
+          itemData.link = item.link;
+          if (item.pubDate) {
+            let date = new Date(item.pubDate);
+            itemData.date = date.toLocaleString(undefined, {
+              weekday: "long",
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            });
+          }
+          if (item.enclosure && item.enclosure["@_url"]) {
+            itemData.enclosureImgUrl = item.enclosure["@_url"];
+          }
+          itemData.description = item.description;
+          content.items.push(itemData);
+        });
+        return content;
+      } else {
+        // TODO: check if atom
+      }
+    }
+    //////////
+    return undefined;
   } catch (error) {
     log.warning(error);
     return undefined;
@@ -272,6 +399,7 @@ function getLocalization() {
 function getExtraLocalization() {
   return {
     edit: _("ui-modal-prompt-button-edit"),
+    options: _("tool-shared-tab-options"),
     feedError: _("tool-rss-feed-error"),
     openInBrowser: _("tool-shared-ui-search-item-open-browser"),
     loadingTitle: _("tool-shared-modal-title-loading"),
