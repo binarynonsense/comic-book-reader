@@ -47,6 +47,10 @@ let g_defaultFeeds = [
     name: "xkcd.com",
     url: "https://xkcd.com/rss.xml",
   },
+  {
+    name: "Project Gutenberg Recently Posted or Updated EBooks",
+    url: "http://www.gutenberg.org/cache/epub/feeds/today.rss",
+  },
   // {
   //   name: "Comics and graphic novels | The Guardian",
   //   url: "https://www.theguardian.com/books/comics/rss",

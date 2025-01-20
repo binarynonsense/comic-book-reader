@@ -189,6 +189,7 @@ function switchSection(id) {
         // document
         //   .getElementById(`tool-rss-section-${index}-content-div`)
         //   .classList.remove("set-display-none");
+        console.log(index);
         sendIpcToMain("get-feed-content", index);
       } else {
         document
@@ -266,9 +267,10 @@ function initOnIpcCallbacks() {
   });
 
   on("update-feeds", (feeds, index) => {
+    closeModal();
     g_feeds = feeds;
     buildSections();
-    if (index) {
+    if (index !== undefined) {
       if (index >= g_feeds.length) index = g_feeds.length - 1;
       switchSection(index);
     }
@@ -459,6 +461,7 @@ function showModalAddFeed(title, textButton1, textButton2) {
         callback: (showFocus, value) => {
           sendIpcToMain("on-modal-add-feed-ok-clicked", value);
           modalClosed();
+          showLoadingModal();
         },
         key: "Enter",
       },
@@ -474,7 +477,7 @@ function showModalAddFeed(title, textButton1, textButton2) {
 
 function showModalInfo(title, message, textButton1) {
   if (getOpenModal()) {
-    return;
+    closeModal();
   }
   g_openModal = modals.show({
     title: title,
