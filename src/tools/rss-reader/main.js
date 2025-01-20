@@ -23,8 +23,24 @@ let g_isInitialized = false;
 
 let g_feeds = [
   {
+    name: "Bad Feed",
+    url: "xfr",
+  },
+  {
+    name: "Bad Feed 2",
+    url: "https://comicbookrealm.com/rs",
+  },
+  {
     name: "CBR - Comic News",
     url: "https://www.cbr.com/feed/category/comics/news/",
+  },
+  {
+    name: "Latest news on ComicBookRealm.com",
+    url: "https://comicbookrealm.com/rss/news",
+  },
+  {
+    name: "xkcd.com",
+    url: "https://xkcd.com/rss.xml",
   },
   {
     name: "Comics and graphic novels | The Guardian",
@@ -46,8 +62,7 @@ exports.open = async function () {
   const data = fs.readFileSync(path.join(__dirname, "index.html"));
   sendIpcToCoreRenderer("replace-inner-html", "#tools", data.toString());
   updateLocalizedText();
-  const feedData = await getFeedContent(0);
-  sendIpcToRenderer("show", g_feeds, feedData);
+  sendIpcToRenderer("show", g_feeds);
 };
 
 exports.close = function () {
@@ -113,6 +128,72 @@ function initOnIpcCallbacks() {
     const feedData = await getFeedContent(index);
     sendIpcToRenderer("show-feed-content", feedData);
   });
+
+  on("open-url-in-browser", (url) => {
+    shell.openExternal(url);
+  });
+
+  on("on-feed-options-clicked", () => {
+    sendIpcToRenderer(
+      "show-modal-feed-options",
+      _("tool-shared-tab-options"),
+      _("tool-shared-ui-back"),
+      _("tool-shared-tooltip-remove-from-list"),
+      _("ui-modal-prompt-button-edit-name"),
+      _("ui-modal-prompt-button-edit-url"),
+      _("tool-shared-tooltip-move-up-in-list"),
+      _("tool-shared-tooltip-move-down-in-list"),
+      false
+    );
+  });
+
+  on("on-modal-feed-options-edit-name-clicked", (feedIndex, feedUrl) => {
+    if (g_feeds[feedIndex].url === feedUrl) {
+      let feedName = g_feeds[feedIndex].name;
+      sendIpcToRenderer(
+        "show-modal-feed-edit-name",
+        feedIndex,
+        feedName,
+        _("ui-modal-prompt-button-edit-name"),
+        _("ui-modal-prompt-button-ok"),
+        _("ui-modal-prompt-button-cancel")
+      );
+    } else {
+      log.error("Tried to edit a feed with not matching index and url");
+    }
+  });
+
+  on("on-modal-feed-options-edit-name-ok-clicked", (feedIndex, newName) => {
+    let feedName = g_feeds[feedIndex].name;
+    if (newName && newName !== feedName) {
+      g_feeds[feedIndex].name = newName;
+      sendIpcToRenderer("update-feed-name", g_feeds, feedIndex);
+    }
+  });
+
+  on("on-modal-feed-options-edit-url-clicked", (feedIndex, feedUrl) => {
+    if (g_feeds[feedIndex].url === feedUrl) {
+      let feedUrl = g_feeds[feedIndex].url;
+      sendIpcToRenderer(
+        "show-modal-feed-edit-url",
+        feedIndex,
+        feedUrl,
+        _("ui-modal-prompt-button-edit-url"),
+        _("ui-modal-prompt-button-ok"),
+        _("ui-modal-prompt-button-cancel")
+      );
+    } else {
+      log.error("Tried to edit a feed with not matching index and url");
+    }
+  });
+
+  on("on-modal-feed-options-edit-url-ok-clicked", (feedIndex, newUrl) => {
+    let feedUrl = g_feeds[feedIndex].url;
+    if (newUrl && newUrl !== feedUrl) {
+      g_feeds[feedIndex].url = newUrl;
+      sendIpcToRenderer("update-feed-url", g_feeds, feedIndex);
+    }
+  });
 }
 
 // HANDLE
@@ -153,7 +234,7 @@ async function getFeedContent(feedId) {
     let json = parser.parse(response.data);
     return json;
   } catch (error) {
-    log.error(error);
+    log.warning(error);
     return undefined;
   }
 }
@@ -162,7 +243,11 @@ async function getFeedContent(feedId) {
 ///////////////////////////////////////////////////////////////////////////////
 
 function updateLocalizedText() {
-  sendIpcToRenderer("update-localization", getLocalization());
+  sendIpcToRenderer(
+    "update-localization",
+    getLocalization(),
+    getExtraLocalization()
+  );
 }
 exports.updateLocalizedText = updateLocalizedText;
 
@@ -170,7 +255,7 @@ function getLocalization() {
   return [
     {
       id: "tool-rss-title-text",
-      text: _("menu-tools-rss-reader").toUpperCase(),
+      text: _("menu-tools-rss-reader").toUpperCase() + " (BETA)",
     },
     {
       id: "tool-rss-back-button-text",
@@ -182,4 +267,13 @@ function getLocalization() {
     },
     //////////////////////////////////////////////
   ];
+}
+
+function getExtraLocalization() {
+  return {
+    edit: _("ui-modal-prompt-button-edit"),
+    feedError: _("tool-rss-feed-error"),
+    openInBrowser: _("tool-shared-ui-search-item-open-browser"),
+    loadingTitle: _("tool-shared-modal-title-loading"),
+  };
 }

@@ -128,7 +128,7 @@ function buildApplicationMenu(settings, history) {
   // ref: https://stackoverflow.com/questions/54105224/electron-modify-a-single-menu-item
   // ref: https://github.com/electron/electron/issues/2717 (push items)
 
-  const menuConfig = Menu.buildFromTemplate([
+  let menuTemplate = [
     {
       label: _("menu-file"),
       submenu: [
@@ -674,25 +674,31 @@ function buildApplicationMenu(settings, history) {
             },
           ],
         },
-        // {
-        //   id: "tools-other",
-        //   label: _("menu-tools-other"),
-        //   submenu: [
-        //     {
-        //       label: _("menu-tools-rss-reader"),
-        //       click() {
-        //         core.onMenuToolRssReader();
-        //       },
-        //     },
-        //   ],
-        // },
+        {
+          id: "tools-other",
+          label: _("menu-tools-other"),
+          submenu: [
+            {
+              label: _("menu-tools-rss-reader"),
+              click() {
+                core.onMenuToolRssReader();
+              },
+            },
+          ],
+        },
       ],
     },
     {
       label: _("menu-help"),
       submenu: getHelpSubmenu(),
     },
-  ]);
+  ];
+
+  // TEMP: hide rss reader if not dev mode
+  if (!core.isDev()) {
+    menuTemplate[2].submenu = menuTemplate[2].submenu.slice(0, -1);
+  }
+  const menuConfig = Menu.buildFromTemplate(menuTemplate);
   Menu.setApplicationMenu(menuConfig);
 }
 exports.buildApplicationMenu = buildApplicationMenu;

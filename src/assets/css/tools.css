@@ -86,6 +86,10 @@ html[dir="rtl"] #tools:not(:has(iframe)) {
   left: 0;
 }
 
+#tools-menu-non-sticky-div {
+  background-color: var(--tools-bg1-color);
+}
+
 .tools-menu-buttons {
   padding: 30px;
 }
@@ -995,16 +999,27 @@ html[dir="rtl"] .tools-range-bubble {
 #tool-rss-channel-info {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 10px;
   margin-bottom: 10px;
 }
 
 #tool-rss-channel-info-title {
-  font-size: 1.5em;
+  font-size: 1.8em;
   font-weight: bolder;
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
+}
+
+#tool-rss-channel-info-title-text {
+  flex-grow: 1;
 }
 
 #tool-rss-channel-info-desc {
+  /* margin-inline-start: 40px; */
+  /* padding-inline-start: 10px; */
+  /* border-inline-start: 2px solid var(--tools-text-color); */
+  filter: opacity(0.7);
 }
 
 #tool-rss-items-div {
@@ -1016,7 +1031,7 @@ html[dir="rtl"] .tools-range-bubble {
 }
 
 .tool-rss-item-div {
-  padding: 15px;
+  padding: 25px;
   background-color: var(--tools-bg2-color);
   display: flex;
   flex-direction: column;
@@ -1026,13 +1041,64 @@ html[dir="rtl"] .tools-range-bubble {
 }
 
 .tool-rss-item-title {
-  font-size: 1.2em;
+  font-size: 1.4em;
   font-weight: bold;
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+}
+
+.tool-rss-item-title-text {
+  flex-grow: 1;
+}
+
+.tool-rss-icon-button:hover {
+  filter: brightness(1.2);
+  transform: scale(1.05);
+  cursor: pointer;
+}
+
+.tool-rss-icon-button:active {
+  transform: translateY(1px);
+}
+
+.tool-rss-item-date {
+  font-size: 0.85em;
+  text-transform: uppercase;
+  filter: opacity(0.7);
 }
 
 .tool-rss-item-enclosure {
   max-width: 100%;
-  max-height: 100px;
+  display: flex;
+  justify-content: center;
+}
+
+.tool-rss-item-desc {
+  /* cursor: auto;
+  user-select: text;
+  pointer-events: all; */
+}
+.tool-rss-item-desc p,
+.tool-rss-item-desc h1,
+.tool-rss-item-desc h2,
+.tool-rss-item-desc h3,
+.tool-rss-item-desc h4,
+.tool-rss-item-desc ul {
+  margin-top: 20px !important;
+  line-height: 150%;
+}
+
+.tool-rss-item-desc li {
+  margin-left: 30px !important;
+}
+
+.tool-rss-item-desc a:link,
+.tool-rss-item-desc a:visited,
+.tool-rss-item-desc a:hover,
+.tool-rss-item-desc a:active {
+  color: var(--tools-text-color);
+  text-decoration: underline;
 }
 
 /* /////////////////////////////////////////////////////////////// */

@@ -202,6 +202,7 @@
   "ui-modal-prompt-button-edit": "Edit",
   "ui-modal-prompt-button-edit-name": "Edit Name",
   "ui-modal-prompt-button-edit-path": "Edit Path",
+  "ui-modal-prompt-button-edit-url": "Edit URL",
   "ui-modal-prompt-button-remove": "Remove",
   "ui-modal-prompt-button-delete": "Delete",
   "ui-modal-prompt-button-save": "Save",
