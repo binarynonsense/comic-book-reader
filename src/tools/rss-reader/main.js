@@ -185,6 +185,18 @@ function initOnIpcCallbacks() {
 
   on("on-modal-add-feed-ok-clicked", async (url) => {
     if (url && url !== " ") {
+      for (let index = 0; index < g_feeds.length; index++) {
+        const feed = g_feeds[index];
+        if (feed.url === url) {
+          sendIpcToRenderer(
+            "show-modal-info",
+            _("tool-shared-modal-title-error"),
+            _("tool-rss-add-feed-error-already"),
+            _("ui-modal-prompt-button-ok")
+          );
+          return;
+        }
+      }
       const data = await getFeedContent(url);
       if (data) {
         g_feeds.push({
