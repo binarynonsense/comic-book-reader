@@ -50,6 +50,10 @@ function separateVersionText(version) {
       /^(?<major>[0-9]+)\.(?<minor>[0-9]+)\.(?<patch>[0-9]+)((-alpha(?<alpha>[0-9]+))|(-beta(?<beta>[0-9]+))*)$/;
     let match = version.match(regex);
     if (match === null) return undefined;
+    if (match.groups.major) match.groups.major = parseInt(match.groups.major);
+    if (match.groups.minor) match.groups.minor = parseInt(match.groups.minor);
+    if (match.groups.patch) match.groups.patch = parseInt(match.groups.patch);
+    if (match.groups.alpha) match.groups.alpha = parseInt(match.groups.alpha);
     return match.groups;
   } catch (error) {
     console.log("match error");
