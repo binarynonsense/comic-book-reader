@@ -720,8 +720,8 @@ if (!gotTheLock) {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-// NOTE: (2024/10/02) I'm using v32.2.2 of electron as v33.0.2 resulted
-// in huge Linux builds.
+// NOTE: (2025/01/21) I'm using v33.3.1 as I tried v34.0.0 and the problem
+// with the defaultPath being ignored in dialogs is back.
 // TODO: try newer versions when available to see if that changes.
 
 // NOTE: (2023/08/02) I'm using v3.x of the tesseract.js module as v4.x
