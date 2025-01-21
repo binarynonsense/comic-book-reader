@@ -28,10 +28,6 @@ let g_defaultFeeds = [
     url: "https://www.cbr.com/feed/category/comics/news/",
   },
   {
-    name: "Bleeding Cool - Comics",
-    url: "https://bleedingcool.com/comics/feed/",
-  },
-  {
     name: "Comics Worth Reading",
     url: "https://comicsworthreading.com/feed/",
   },
@@ -42,6 +38,10 @@ let g_defaultFeeds = [
   {
     name: "The Beat",
     url: "https://www.comicsbeat.com/feed/",
+  },
+  {
+    name: "Bleeding Cool - Comics",
+    url: "https://bleedingcool.com/comics/feed/",
   },
   {
     name: "ComicList: Shipping This Week",
