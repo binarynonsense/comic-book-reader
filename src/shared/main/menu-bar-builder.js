@@ -523,79 +523,84 @@ function buildApplicationMenu(settings, history) {
       label: _("menu-tools"),
       submenu: [
         {
-          label: _("menu-tools-convert"),
+          label: _("menu-tools-files"),
           submenu: [
             {
-              id: "convert-files",
-              label: _("menu-tools-convert-comics"),
-              click() {
-                core.onMenuToolConvertComics();
-              },
+              label: _("menu-tools-convert"),
+              submenu: [
+                {
+                  id: "convert-files",
+                  label: _("menu-tools-convert-comics"),
+                  click() {
+                    core.onMenuToolConvertComics();
+                  },
+                },
+                {
+                  id: "convert-imgs",
+                  label: _("menu-tools-convert-images"),
+                  click() {
+                    core.onMenuToolConvertImages();
+                  },
+                },
+              ],
             },
             {
-              id: "convert-imgs",
-              label: _("menu-tools-convert-images"),
-              click() {
-                core.onMenuToolConvertImages();
-              },
-            },
-          ],
-        },
-        {
-          label: _("menu-tools-create"),
-          submenu: [
-            {
-              id: "create-file",
-              label: _("menu-tools-create-comic"),
-              enabled: true,
-              click() {
-                core.onMenuToolCreateComic();
-              },
-            },
-            {
-              id: "create-qr",
-              label: _("menu-tools-create-qr"),
-              enabled: true,
-              click() {
-                core.onMenuToolCreateQR();
-              },
-            },
-          ],
-        },
-        {
-          label: _("menu-tools-extract"),
-          submenu: [
-            {
-              id: "extract-comics",
-              label: _("menu-tools-extract-comics"),
-              enabled: true,
-              click() {
-                core.onMenuToolExtractComics();
-              },
+              label: _("menu-tools-create"),
+              submenu: [
+                {
+                  id: "create-file",
+                  label: _("menu-tools-create-comic"),
+                  enabled: true,
+                  click() {
+                    core.onMenuToolCreateComic();
+                  },
+                },
+                {
+                  id: "create-qr",
+                  label: _("menu-tools-create-qr"),
+                  enabled: true,
+                  click() {
+                    core.onMenuToolCreateQR();
+                  },
+                },
+              ],
             },
             {
-              id: "extract-palette",
-              label: _("menu-tools-extract-palette"),
-              enabled: true,
-              click() {
-                core.onMenuToolExtractPalette();
-              },
-            },
-            {
-              id: "extract-text",
-              label: _("menu-tools-extract-text"),
-              enabled: true,
-              click() {
-                core.onMenuToolExtractText();
-              },
-            },
-            {
-              id: "extract-qr",
-              label: _("menu-tools-extract-qr"),
-              enabled: true,
-              click() {
-                core.onMenuToolExtractQR();
-              },
+              label: _("menu-tools-extract"),
+              submenu: [
+                {
+                  id: "extract-comics",
+                  label: _("menu-tools-extract-comics"),
+                  enabled: true,
+                  click() {
+                    core.onMenuToolExtractComics();
+                  },
+                },
+                {
+                  id: "extract-palette",
+                  label: _("menu-tools-extract-palette"),
+                  enabled: true,
+                  click() {
+                    core.onMenuToolExtractPalette();
+                  },
+                },
+                {
+                  id: "extract-text",
+                  label: _("menu-tools-extract-text"),
+                  enabled: true,
+                  click() {
+                    core.onMenuToolExtractText();
+                  },
+                },
+                {
+                  id: "extract-qr",
+                  label: _("menu-tools-extract-qr"),
+                  enabled: true,
+                  click() {
+                    core.onMenuToolExtractQR();
+                  },
+                },
+              ],
             },
           ],
         },
@@ -652,9 +657,9 @@ function buildApplicationMenu(settings, history) {
             },
           ],
         },
-        {
-          type: "separator",
-        },
+        // {
+        //   type: "separator",
+        // },
         {
           id: "tools-art",
           label: _("menu-tools-art"),
