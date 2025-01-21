@@ -694,10 +694,9 @@ function buildApplicationMenu(settings, history) {
     },
   ];
 
-  // TEMP: hide rss reader if not dev mode
-  if (!core.isDev()) {
-    menuTemplate[2].submenu = menuTemplate[2].submenu.slice(0, -1);
-  }
+  // if (!core.isDev()) {
+  //   menuTemplate[2].submenu = menuTemplate[2].submenu.slice(0, -1);
+  // }
   const menuConfig = Menu.buildFromTemplate(menuTemplate);
   Menu.setApplicationMenu(menuConfig);
 }

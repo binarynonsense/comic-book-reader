@@ -514,7 +514,7 @@ function getLocalization() {
   return [
     {
       id: "tool-rss-title-text",
-      text: _("menu-tools-rss-reader").toUpperCase() + " (BETA)",
+      text: _("menu-tools-rss-reader").toUpperCase(),
     },
     {
       id: "tool-rss-back-button-text",
