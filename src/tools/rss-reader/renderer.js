@@ -138,7 +138,14 @@ function itemsToHtml(root, items) {
         }
 
         if (item.enclosureImgUrl) {
-          html += `<div class="tool-rss-item-enclosure"><img src="${item.enclosureImgUrl}" style="max-width: 100%;"></div>`;
+          html += `<div class="tool-rss-item-enclosure"><img src="${item.enclosureImgUrl}"></div>`;
+        } else if (item.contentEncoded) {
+          const div = document.createElement("div");
+          div.innerHTML = item.contentEncoded;
+          const image = div.querySelector("img");
+          if (image && image.src) {
+            html += `<div class="tool-rss-item-enclosure"><img src="${image.src}" loading=”lazy”></div>`;
+          }
         }
 
         html += `<div class="tool-rss-item-desc">${item.description}</div>    

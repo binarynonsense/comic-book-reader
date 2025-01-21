@@ -1098,6 +1098,9 @@ html[dir="rtl"] .tools-range-bubble {
   display: flex;
   justify-content: center;
 }
+.tool-rss-item-enclosure img {
+  max-width: 100%;
+}
 
 /* .tool-rss-item-desc {
 } */

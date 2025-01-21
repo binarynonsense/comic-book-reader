@@ -448,6 +448,11 @@ async function getFeedContent(url) {
               allowedTags: sanitizeHtml.defaults.allowedTags.concat(["img"]),
             });
           }
+          if (item["content:encoded"]) {
+            itemData.contentEncoded = sanitizeHtml(item["content:encoded"], {
+              allowedTags: sanitizeHtml.defaults.allowedTags.concat(["img"]),
+            });
+          }
           content.items.push(itemData);
         });
         return content;
