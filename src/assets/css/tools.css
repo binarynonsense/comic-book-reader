@@ -1018,11 +1018,16 @@ html[dir="rtl"] .tools-range-bubble {
 }
 
 #tool-rss-channel-info-desc {
-  /* margin-inline-start: 40px; */
-  /* padding-inline-start: 10px; */
-  /* border-inline-start: 2px solid var(--tools-text-color); */
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
   filter: opacity(0.7);
 }
+/* 
+#tool-rss-channel-info-desc:has(> :nth-child(2):last-child) {
+  padding-inline-start: 10px;
+  border-inline-start: 2px solid var(--tools-text-color);
+} */
 
 #tool-rss-items-div {
   display: flex;

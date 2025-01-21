@@ -87,10 +87,19 @@ function showFeedContent(data) {
     root.innerHTML += `<div id='tool-rss-channel-info'>
       <div id='tool-rss-channel-info-title'>
         <i class="fas fa-rss"></i>
-        <span id="tool-rss-channel-info-title-text">${data.name}</span>
-        <i class="fas fa-ellipsis-h tool-rss-icon-button" id="tool-rss-channel-info-title-button" title="${g_extraLocalization.options}"></i>
+        <span id="tool-rss-channel-info-title-text">${
+          g_feeds[g_currentFeedIndex].name
+        }</span>
+        <i class="fas fa-ellipsis-h tool-rss-icon-button" id="tool-rss-channel-info-title-button" title="${
+          g_extraLocalization.options
+        }"></i>
       </div>
-      <div id='tool-rss-channel-info-desc'>${data.description}</div>
+      <div id='tool-rss-channel-info-desc'>${
+        data.name && data.name !== g_feeds[g_currentFeedIndex].name
+          ? "<span>" + data.name + "</span>"
+          : ""
+      }${data.description ? "<span>" + data.description + "</span>" : ""}
+      </div>
     </div>`;
 
     itemsToHtml(root, data.items);
