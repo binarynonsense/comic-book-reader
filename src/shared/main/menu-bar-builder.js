@@ -124,11 +124,8 @@ function getOpenRecentSubmenu(history) {
   return menu;
 }
 
-function buildApplicationMenu(settings, history) {
-  // ref: https://stackoverflow.com/questions/54105224/electron-modify-a-single-menu-item
-  // ref: https://github.com/electron/electron/issues/2717 (push items)
-
-  let menuTemplate = [
+function getNormalMenu(settings, history) {
+  let menu = [
     {
       label: _("menu-file"),
       submenu: [
@@ -702,6 +699,64 @@ function buildApplicationMenu(settings, history) {
   // if (!core.isDev()) {
   //   menuTemplate[2].submenu = menuTemplate[2].submenu.slice(0, -1);
   // }
+  return menu;
+}
+
+function getToolMenu(settings, history) {
+  let menu = [
+    {
+      label: _("menu-file"),
+      submenu: [
+        {
+          id: "close-tool",
+          label: _("menu-file-closetool"),
+          enabled: true,
+          click() {
+            core.onMenuCloseTool();
+          },
+        },
+        {
+          type: "separator",
+        },
+        {
+          label: _("menu-file-quit"),
+          accelerator: "CommandOrControl+Q",
+          click() {
+            core.onMenuQuit();
+          },
+        },
+      ],
+    },
+    {
+      label: _("menu-view"),
+      submenu: [
+        {
+          label: _("menu-view-togglefullscreen"),
+          accelerator: "F11",
+          click() {
+            core.onMenuToggleFullScreen();
+          },
+        },
+      ],
+    },
+    {
+      label: _("menu-help"),
+      submenu: getHelpSubmenu(),
+    },
+  ];
+
+  return menu;
+}
+
+function buildApplicationMenu(settings, history, isToolOpen) {
+  // ref: https://stackoverflow.com/questions/54105224/electron-modify-a-single-menu-item
+  // ref: https://github.com/electron/electron/issues/2717 (push items)
+  let menuTemplate = [];
+  if (isToolOpen) {
+    menuTemplate = getToolMenu(settings, history);
+  } else {
+    menuTemplate = getNormalMenu(settings, history);
+  }
   const menuConfig = Menu.buildFromTemplate(menuTemplate);
   Menu.setApplicationMenu(menuConfig);
 }

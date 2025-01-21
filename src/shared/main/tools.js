@@ -6,6 +6,7 @@
  */
 
 const core = require("../../core/main");
+const menuBar = require("./menu-bar");
 
 let g_currentTool = "reader";
 let g_tools = {};
@@ -54,6 +55,9 @@ exports.switchTool = function (tool, ...args) {
   if (g_currentTool !== tool) {
     if (g_tools[g_currentTool].close) g_tools[g_currentTool].close();
     g_currentTool = tool;
+    if (g_tools[g_currentTool] !== "reader") {
+      menuBar.rebuild();
+    }
     core.sendIpcToCoreRenderer("show-tool", tool);
     g_tools[tool].open(...args);
   }

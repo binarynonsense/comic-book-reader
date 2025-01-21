@@ -29,7 +29,11 @@ exports.empty = function () {
 };
 
 function rebuild() {
-  builder.buildApplicationMenu(settings.get(), history.get());
+  builder.buildApplicationMenu(
+    settings.get(),
+    history.get(),
+    core.isToolOpen()
+  );
   const themeData = themes.getData();
   core.sendIpcToPreload(
     "update-menubar",

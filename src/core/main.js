@@ -520,6 +520,10 @@ if (!gotTheLock) {
     g_mainWindow.close();
   };
 
+  exports.isToolOpen = function () {
+    return tools.getCurrentToolName() !== "reader";
+  };
+
   function toggleDevTools() {
     g_mainWindow.toggleDevTools();
   }
@@ -576,6 +580,11 @@ if (!gotTheLock) {
   exports.onMenuQuit = function () {
     // app.quit();
     g_mainWindow.close();
+  };
+
+  exports.onMenuCloseTool = function () {
+    tools.switchTool("reader");
+    sendIpcToPreload("update-menubar");
   };
 
   /////////////
