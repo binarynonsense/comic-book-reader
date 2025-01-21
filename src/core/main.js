@@ -690,10 +690,10 @@ if (!gotTheLock) {
   exports.onMenuAbout = function () {
     sendIpcToCoreRenderer(
       "show-modal-info",
-      "ACBR",
-      `ACBR Comic Book Reader\n${i18n._(
+      "ACBR Comic Book Reader",
+      `${i18n._(
         "ui-modal-info-version"
-      )}: ${app.getVersion()}\n(c) Álvaro García\nwww.binarynonsense.com`,
+      )}: ${app.getVersion()}\n© Álvaro García\nwww.binarynonsense.com`,
       i18n._("ui-modal-prompt-button-ok")
     );
   };
