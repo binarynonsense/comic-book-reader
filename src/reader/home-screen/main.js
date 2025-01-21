@@ -250,6 +250,10 @@ function initOnIpcCallbacks() {
     core.onMenuToolConvertComics();
   });
 
+  on("hs-open-rss-reader", () => {
+    core.onMenuToolRssReader();
+  });
+
   on("hs-open-file", (filePath) => {
     reader.tryOpen(filePath);
   });
@@ -443,6 +447,7 @@ function updateLocalizedText(rebuildSections = true) {
     _("menu-file-preferences"),
     _("menu-file-openrecent-history"),
     _("tool-cc-title"),
+    _("menu-tools-rss-reader"),
     _("tool-shared-ui-add")
   );
   if (rebuildSections) buildSections();

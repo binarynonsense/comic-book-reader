@@ -74,6 +74,13 @@ function init() {
     // comicConverterButton.setAttribute("data-nav-row", 0);
     // comicConverterButton.setAttribute("data-nav-col", 3);
     // comicConverterButton.setAttribute("tabindex", "0");
+    ///////////
+    const rssReaderButton = document.querySelector(
+      "#hs-logo-rss-reader-button"
+    );
+    rssReaderButton.addEventListener("click", (event) => {
+      sendIpcToMain("hs-open-rss-reader");
+    });
     /////////////////////////
     const addFavoriteButton = document.querySelector(
       "#hs-favorites-add-button"
@@ -831,6 +838,7 @@ function updateLocalization(
   preferencesTitle,
   historyTitle,
   comicConverterTitle,
+  rssReaderTitle,
   addFavoriteTitle
 ) {
   // ids
@@ -856,6 +864,9 @@ function updateLocalization(
     "#hs-logo-convert-comics-button"
   );
   comicConverterButton.title = comicConverterTitle;
+  // rss reader
+  const rssReaderButton = document.querySelector("#hs-logo-rss-reader-button");
+  rssReaderButton.title = rssReaderTitle;
   // add favorite
   const addFavoriteButton = document.querySelector("#hs-favorites-add-button");
   addFavoriteButton.title = addFavoriteTitle;
