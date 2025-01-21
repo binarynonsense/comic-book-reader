@@ -64,9 +64,10 @@ exports.open = function (fileData) {
   let loadedOptions = settings.loadToolOptions(`tool-ec`);
   sendIpcToRenderer(
     "show",
-    filePath !== undefined
-      ? path.dirname(filePath)
-      : appUtils.getDesktopFolderPath(),
+    // filePath !== undefined
+    //   ? path.dirname(filePath)
+    //   : appUtils.getDesktopFolderPath(),
+    appUtils.getDesktopFolderPath(),
     loadedOptions
   );
 

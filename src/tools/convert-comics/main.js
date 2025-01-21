@@ -71,11 +71,12 @@ exports.open = async function (options) {
   sendIpcToRenderer(
     "show",
     g_mode,
-    options.inputFilePaths &&
-      options.inputFilePaths.length > 0 &&
-      options.inputFilePaths[0] !== undefined
-      ? path.dirname(options.inputFilePaths[0])
-      : appUtils.getDesktopFolderPath(),
+    // options.inputFilePaths &&
+    //   options.inputFilePaths.length > 0 &&
+    //   options.inputFilePaths[0] !== undefined
+    //   ? path.dirname(options.inputFilePaths[0])
+    //   : appUtils.getDesktopFolderPath(),
+    appUtils.getDesktopFolderPath(),
     settings.canEditRars(),
     loadedOptions
   );
