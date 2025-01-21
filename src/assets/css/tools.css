@@ -48,6 +48,7 @@ html[dir="rtl"] #tools:not(:has(iframe)) {
   height: 100%;
   font-size: 14px;
   color: var(--tools-text-color);
+  background-color: var(--tools-bg2-color);
 }
 
 #tools-columns-left {

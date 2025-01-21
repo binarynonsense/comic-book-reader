@@ -163,9 +163,16 @@ export function initIpc() {
 }
 
 function updateColumnsHeight(scrollTop = false) {
+  const columns = document.getElementById("tools-columns");
+  const tools = document.getElementById("tools");
   const left = document.getElementById("tools-columns-left");
   const right = document.getElementById("tools-columns-right");
   left.style.minHeight = right.offsetHeight + "px";
+  if (tools.offsetHeight > columns.offsetHeight) {
+    columns.style.height = "100%";
+  } else {
+    columns.style.height = "fit-content";
+  }
   if (scrollTop) {
     document.getElementById("tools-columns-right").scrollIntoView({
       behavior: "instant",
@@ -189,7 +196,6 @@ function switchSection(id) {
         // document
         //   .getElementById(`tool-rss-section-${index}-content-div`)
         //   .classList.remove("set-display-none");
-        console.log(index);
         sendIpcToMain("get-feed-content", index);
       } else {
         document
