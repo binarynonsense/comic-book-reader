@@ -51,6 +51,11 @@ exports.getCurrentToolName = function () {
   return g_currentTool;
 };
 
+exports.getCurrentToolLocalizedName = function () {
+  let name = g_tools[g_currentTool].getLocalizedName?.();
+  return name;
+};
+
 exports.switchTool = function (tool, ...args) {
   if (g_currentTool !== tool) {
     if (g_tools[g_currentTool].close) g_tools[g_currentTool].close();

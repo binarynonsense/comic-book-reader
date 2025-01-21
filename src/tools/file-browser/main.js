@@ -75,6 +75,10 @@ exports.onToggleFullScreen = function () {
   sendIpcToRenderer("update-window");
 };
 
+exports.getLocalizedName = function () {
+  return _("tool-fb-title");
+};
+
 function onCloseClicked() {
   tools.switchTool("reader");
 }

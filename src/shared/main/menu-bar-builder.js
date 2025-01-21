@@ -702,14 +702,16 @@ function getNormalMenu(settings, history) {
   return menu;
 }
 
-function getToolMenu(settings, history) {
+function getToolMenu(settings, history, toolName) {
   let menu = [
     {
       label: _("menu-file"),
       submenu: [
         {
           id: "close-tool",
-          label: _("menu-file-closetool"),
+          label: toolName
+            ? _("menu-file-closetoolname", toolName)
+            : _("menu-file-closetool"),
           enabled: true,
           click() {
             core.onMenuCloseTool();
@@ -748,12 +750,12 @@ function getToolMenu(settings, history) {
   return menu;
 }
 
-function buildApplicationMenu(settings, history, isToolOpen) {
+function buildApplicationMenu(settings, history, isToolOpen, toolName) {
   // ref: https://stackoverflow.com/questions/54105224/electron-modify-a-single-menu-item
   // ref: https://github.com/electron/electron/issues/2717 (push items)
   let menuTemplate = [];
   if (isToolOpen) {
-    menuTemplate = getToolMenu(settings, history);
+    menuTemplate = getToolMenu(settings, history, toolName);
   } else {
     menuTemplate = getNormalMenu(settings, history);
   }

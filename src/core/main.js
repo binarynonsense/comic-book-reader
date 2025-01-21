@@ -524,6 +524,10 @@ if (!gotTheLock) {
     return tools.getCurrentToolName() !== "reader";
   };
 
+  exports.getCurrentToolLocalizedName = function () {
+    return tools.getCurrentToolLocalizedName();
+  };
+
   function toggleDevTools() {
     g_mainWindow.toggleDevTools();
   }

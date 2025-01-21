@@ -61,6 +61,10 @@ exports.onToggleFullScreen = function () {
   sendIpcToRenderer("update-window");
 };
 
+exports.getLocalizedName = function () {
+  return _("tool-hst-title");
+};
+
 function onCloseClicked() {
   tools.switchTool("reader");
 }

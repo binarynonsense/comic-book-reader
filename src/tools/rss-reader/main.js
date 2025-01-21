@@ -147,6 +147,10 @@ exports.onToggleFullScreen = function () {
   sendIpcToRenderer("update-window");
 };
 
+exports.getLocalizedName = function () {
+  return _("menu-tools-rss-reader");
+};
+
 function onCloseClicked() {
   tools.switchTool("reader");
 }

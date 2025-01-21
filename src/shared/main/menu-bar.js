@@ -32,7 +32,8 @@ function rebuild() {
   builder.buildApplicationMenu(
     settings.get(),
     history.get(),
-    core.isToolOpen()
+    core.isToolOpen(),
+    core.getCurrentToolLocalizedName()
   );
   const themeData = themes.getData();
   core.sendIpcToPreload(

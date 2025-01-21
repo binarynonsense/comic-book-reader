@@ -72,6 +72,10 @@ exports.onToggleFullScreen = function () {
   sendIpcToRenderer("update-window");
 };
 
+exports.getLocalizedName = function () {
+  return _("tool-pre-title");
+};
+
 function onCloseClicked() {
   tools.switchTool("reader");
 }
