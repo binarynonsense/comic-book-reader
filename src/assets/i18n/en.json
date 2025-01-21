@@ -21,7 +21,7 @@
   "menu-file-openrecent": "Open Recent",
   "menu-file-openrecent-history": "History",
   "menu-file-close": "Close",
-  "menu-file-close-tool": "Close Tool",
+  "menu-file-closetool": "Close Tool",
   "menu-file-convert": "Convert",
   "menu-file-extract": "Extract",
   "menu-file-properties": "Properties",

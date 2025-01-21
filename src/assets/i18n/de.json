@@ -21,7 +21,7 @@
   "menu-file-openrecent": "Zuletzt Verwendete öffnen",
   "menu-file-openrecent-history": "Chronik",
   "menu-file-close": "Schließen",
-  "[NEEDS TRANSLATION]menu-file-close-tool": "Close Tool",
+  "[NEEDS TRANSLATION]menu-file-closetool": "Close Tool",
   "menu-file-convert": "Konvertieren",
   "menu-file-extract": "Extrahieren",
   "menu-file-properties": "Eigenschaften",

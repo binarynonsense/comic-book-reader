@@ -21,7 +21,7 @@
   "menu-file-openrecent": "Открыть последнее",
   "menu-file-openrecent-history": "История",
   "menu-file-close": "Закрыть",
-  "[NEEDS TRANSLATION]menu-file-close-tool": "Close Tool",
+  "[NEEDS TRANSLATION]menu-file-closetool": "Close Tool",
   "menu-file-convert": "Конвертировать",
   "menu-file-extract": "Извлечь",
   "menu-file-properties": "Свойства",
