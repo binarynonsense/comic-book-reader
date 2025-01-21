@@ -73,7 +73,7 @@ let g_defaultFeeds = [
   // },
 ];
 
-let g_feeds = {};
+let g_feeds = [];
 
 function init() {
   if (!g_isInitialized) {
@@ -96,16 +96,24 @@ exports.open = async function () {
     loadedOptions.feeds &&
     Array.isArray(loadedOptions.feeds)
   ) {
-    g_feeds = structuredClone(loadedOptions.feeds);
-    // TODO: sanitize feeds
+    g_feeds = [];
+    loadedOptions.feeds.forEach((feed) => {
+      if (typeof feed == "object" && feed.constructor == Object) {
+        if (feed.url && typeof feed.url === "string") {
+          if (!feed.name || typeof feed.name !== "string") feed.name = "???";
+          g_feeds.push(feed);
+        }
+      }
+    });
+    // g_feeds = structuredClone(loadedOptions.feeds);
   } else {
     g_feeds = structuredClone(g_defaultFeeds);
-    if (core.isDev() && !core.isRelease()) {
-      g_feeds.unshift({
-        name: "Bad Feed",
-        url: "xfr",
-      });
-    }
+    // if (core.isDev() && !core.isRelease()) {
+    //   g_feeds.unshift({
+    //     name: "Bad Feed",
+    //     url: "xfr",
+    //   });
+    // }
   }
   sendIpcToRenderer("show", g_feeds);
 };
