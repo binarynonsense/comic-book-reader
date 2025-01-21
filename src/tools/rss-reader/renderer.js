@@ -462,13 +462,14 @@ function showLoadingModal() {
 
 //////////////
 
-function showModalAddFeed(title, textButton1, textButton2) {
+function showModalAddFeed(title, message, textButton1, textButton2) {
   if (getOpenModal()) {
     return;
   }
 
   showModal({
-    title: title,
+    title,
+    message,
     zIndexDelta: 5,
     input: { type: "text", default: "" },
     close: {

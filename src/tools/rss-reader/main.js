@@ -216,6 +216,7 @@ function initOnIpcCallbacks() {
   on("on-add-feed-clicked", () => {
     sendIpcToRenderer(
       "show-modal-add-feed",
+      _("tool-rss-add-feed"),
       "URL",
       _("ui-modal-prompt-button-ok"),
       _("ui-modal-prompt-button-cancel")
