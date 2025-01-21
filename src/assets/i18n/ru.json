@@ -22,6 +22,8 @@
   "menu-file-openrecent-history": "История",
   "menu-file-close": "Закрыть",
   "[NEEDS TRANSLATION]menu-file-closetool": "Close Tool",
+  "[NOTE TO TRANSLATORS]menu-file-closetoolname": "{0} will be replace by a tool's name, e.g: Close RSS Reader or Close History",
+  "[NEEDS TRANSLATION]menu-file-closetoolname": "Close {0}",
   "menu-file-convert": "Конвертировать",
   "menu-file-extract": "Извлечь",
   "menu-file-properties": "Свойства",

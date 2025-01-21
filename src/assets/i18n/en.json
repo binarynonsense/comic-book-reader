@@ -22,6 +22,8 @@
   "menu-file-openrecent-history": "History",
   "menu-file-close": "Close",
   "menu-file-closetool": "Close Tool",
+  "[NOTE TO TRANSLATORS]menu-file-closetoolname": "{0} will be replace by a tool's name, e.g: Close RSS Reader or Close History",
+  "menu-file-closetoolname": "Close {0}", 
   "menu-file-convert": "Convert",
   "menu-file-extract": "Extract",
   "menu-file-properties": "Properties",
