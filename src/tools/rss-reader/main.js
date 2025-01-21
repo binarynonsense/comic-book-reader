@@ -199,6 +199,12 @@ function initOnIpcCallbacks() {
       url = new URL(urlString);
       if (url.protocol === "http:" || url.protocol === "https:") {
         shell.openExternal(urlString);
+      } else {
+        // HACK: for /r/comicbooks
+        if (urlString.startsWith("file:///r/comicbooks")) {
+          urlString = urlString.replace("file://", "https://old.reddit.com");
+          shell.openExternal(urlString);
+        }
       }
     } catch (e) {
       return;
