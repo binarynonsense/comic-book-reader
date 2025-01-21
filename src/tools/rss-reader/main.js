@@ -14,6 +14,7 @@ const tools = require("../../shared/main/tools");
 const log = require("../../shared/main/logger");
 const axios = require("axios").default;
 const sanitizeHtml = require("sanitize-html");
+const settings = require("../../shared/main/settings");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -44,15 +45,19 @@ let g_defaultFeeds = [
   },
   {
     name: "ComicList: Shipping This Week",
-    url: "http://feeds.feedburner.com/ncrl", // atom
+    url: "http://feeds.feedburner.com/ncrl",
   },
   {
     name: "r/comicbooks",
-    url: "https://old.reddit.com/r/comicbooks/.rss", // atom
+    url: "https://old.reddit.com/r/comicbooks/.rss",
   },
   {
     name: "xkcd.com",
     url: "https://xkcd.com/rss.xml",
+  },
+  {
+    name: "ACBR Release Notes",
+    url: "https://github.com/binarynonsense/comic-book-reader/releases.atom",
   },
   // {
   //   name: "Project Gutenberg Recently Posted or Updated EBooks",
@@ -64,12 +69,8 @@ let g_defaultFeeds = [
   // },
   // {
   //   name: "Blog | Binary Nonsense",
-  //   url: "http://blog.binarynonsense.com/feed.xml", // atom
+  //   url: "http://blog.binarynonsense.com/feed.xml",
   // },
-  {
-    name: "ACBR Release Notes",
-    url: "https://github.com/binarynonsense/comic-book-reader/releases.atom",
-  }, // atom
 ];
 
 let g_feeds = {};
@@ -89,8 +90,15 @@ exports.open = async function () {
   sendIpcToCoreRenderer("replace-inner-html", "#tools", data.toString());
   updateLocalizedText();
 
-  // TODO: load feeds from settings
-  if (true) {
+  let loadedOptions = settings.loadToolOptions("tool-rss");
+  if (
+    loadedOptions &&
+    loadedOptions.feeds &&
+    Array.isArray(loadedOptions.feeds)
+  ) {
+    g_feeds = structuredClone(loadedOptions.feeds);
+    // TODO: sanitize feeds
+  } else {
     g_feeds = structuredClone(g_defaultFeeds);
     if (core.isDev() && !core.isRelease()) {
       g_feeds.unshift({
@@ -98,15 +106,25 @@ exports.open = async function () {
         url: "xfr",
       });
     }
-  } else {
   }
   sendIpcToRenderer("show", g_feeds);
 };
 
+function saveSettings() {
+  let options = {};
+  options.feeds = g_feeds;
+  settings.updateToolOptions("tool-rss", options);
+}
+
 exports.close = function () {
   // called by switchTool when closing tool
+  saveSettings();
   sendIpcToRenderer("close-modal");
   sendIpcToRenderer("hide"); // clean up
+};
+
+exports.onQuit = function () {
+  saveSettings();
 };
 
 exports.onResize = function () {
@@ -395,7 +413,6 @@ async function getFeedContent(url) {
         content.description = data.rss.channel.description;
         content.items = [];
         data.rss.channel.item.forEach((item, index) => {
-          // log.test(item);
           let itemData = {};
           itemData.title = item.title;
           itemData.link = item.link;
