@@ -302,6 +302,12 @@ function initOnIpcCallbacks() {
     sendIpcToMain("save-settings-options", getChangedOptions(), true);
   });
 
+  on("save-and-close-request", (...args) => {
+    updateCurrentOptions();
+    sendIpcToMain("save-settings-options", getChangedOptions());
+    sendIpcToMain("close");
+  });
+
   on("close-modal", () => {
     if (g_openModal) {
       modals.close(g_openModal);

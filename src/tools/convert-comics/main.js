@@ -123,6 +123,10 @@ exports.saveAndQuit = function () {
   sendIpcToRenderer("save-and-quit-request");
 };
 
+exports.saveAndClose = function () {
+  sendIpcToRenderer("save-and-close-request");
+};
+
 exports.onResize = function () {
   sendIpcToRenderer("update-window");
 };

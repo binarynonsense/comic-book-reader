@@ -587,8 +587,15 @@ if (!gotTheLock) {
   };
 
   exports.onMenuCloseTool = function () {
-    tools.switchTool("reader");
-    sendIpcToPreload("update-menubar");
+    if (
+      tools.getCurrentToolName() !== "reader" &&
+      tools.getCurrentTool()?.saveAndClose
+    ) {
+      tools.getCurrentTool().saveAndClose();
+    } else {
+      tools.switchTool("reader");
+      sendIpcToPreload("update-menubar");
+    }
   };
 
   /////////////
