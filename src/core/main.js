@@ -522,6 +522,10 @@ if (!gotTheLock) {
     g_mainWindow.close();
   };
 
+  exports.resetQuit = function () {
+    g_quittingPhase = 0;
+  };
+
   exports.isToolOpen = function () {
     return tools.getCurrentToolName() !== "reader";
   };

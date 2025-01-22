@@ -46,6 +46,14 @@ exports.close = function () {
   sendIpcToRenderer("hide");
 };
 
+exports.saveAndQuit = function () {
+  sendIpcToRenderer("save-and-quit-request");
+};
+
+exports.saveAndClose = function () {
+  sendIpcToRenderer("save-and-close-request");
+};
+
 exports.onResize = function () {
   sendIpcToRenderer("update-window");
 };
@@ -93,6 +101,14 @@ function on(id, callback) {
 function initOnIpcCallbacks() {
   on("close", () => {
     onCloseClicked();
+  });
+
+  on("quit", () => {
+    core.forceQuit();
+  });
+
+  on("reset-quit", () => {
+    core.resetQuit();
   });
 
   on("binaryLinkClicked", () => {

@@ -107,7 +107,15 @@ function initOnIpcCallbacks() {
     updateLocalization(...args);
   });
 
-  /////////////////////////////////////////////////////////////////////////////
+  on("save-and-quit-request", (...args) => {
+    showModalConfirmClose(true);
+  });
+
+  on("save-and-close-request", (...args) => {
+    showModalConfirmClose();
+  });
+
+  /////////////////////////////////
 
   on("close-modal", () => {
     if (g_openModal) {
@@ -157,15 +165,26 @@ export function getOpenModal() {
   return g_openModal;
 }
 
+function closeModal() {
+  if (g_openModal) {
+    modals.close(g_openModal);
+    modalClosed();
+  }
+}
+
 function modalClosed() {
   g_openModal = undefined;
 }
 
 let g_modalsLocalization;
 
-function showModalConfirmClose() {
-  if (g_openModal) {
-    return;
+function showModalConfirmClose(quit = false) {
+  // TODO: what if there's a core level one open (won't be able to click this
+  // one)
+  if (getOpenModal()) {
+    closeModal();
+    // just in case
+    sendIpcToMain("reset-quit");
   }
   g_openModal = modals.show({
     title: g_modalsLocalization["closeTitle"],
@@ -181,13 +200,22 @@ function showModalConfirmClose() {
       {
         text: g_modalsLocalization["closeOk"],
         callback: () => {
-          sendIpcToMain("close");
-          modalClosed();
+          if (quit) {
+            // quit program
+            sendIpcToMain("quit");
+          } else {
+            // back to reader
+            sendIpcToMain("close");
+            modalClosed();
+          }
         },
       },
       {
         text: g_modalsLocalization["closeCancel"],
         callback: () => {
+          if (quit) {
+            sendIpcToMain("reset-quit");
+          }
           modalClosed();
         },
       },
