@@ -49,108 +49,91 @@ exports.rebuild = rebuild;
 ///////////////////////////////////////////////////////////////////////////////
 
 exports.setFitToWidth = function () {
-  Menu.getApplicationMenu().getMenuItemById("fit-to-width").checked = true;
-  Menu.getApplicationMenu().getMenuItemById("fit-to-height").checked = false;
-  Menu.getApplicationMenu().getMenuItemById("scale-to-height").checked = false;
+  checkItem(getItem("fit-to-width"), true);
+  checkItem(getItem("fit-to-height"), false);
+  checkItem(getItem("scale-to-height"), false);
 };
 
 exports.setFitToHeight = function () {
-  Menu.getApplicationMenu().getMenuItemById("fit-to-width").checked = false;
-  Menu.getApplicationMenu().getMenuItemById("fit-to-height").checked = true;
-  Menu.getApplicationMenu().getMenuItemById("scale-to-height").checked = false;
+  checkItem(getItem("fit-to-width"), false);
+  checkItem(getItem("fit-to-height"), true);
+  checkItem(getItem("scale-to-height"), false);
 };
 
 exports.setScaleToHeight = function () {
-  Menu.getApplicationMenu().getMenuItemById("fit-to-width").checked = false;
-  Menu.getApplicationMenu().getMenuItemById("fit-to-height").checked = false;
-  Menu.getApplicationMenu().getMenuItemById("scale-to-height").checked = true;
+  checkItem(getItem("fit-to-width"), false);
+  checkItem(getItem("fit-to-height"), false);
+  checkItem(getItem("scale-to-height"), true);
 };
 
 exports.setScrollBar = function (isChecked) {
-  Menu.getApplicationMenu().getMenuItemById("scrollbar").checked = isChecked;
+  checkItem(getItem("scrollbar"), isChecked);
 };
 
 exports.setToolBar = function (isChecked) {
-  Menu.getApplicationMenu().getMenuItemById("toolbar").checked = isChecked;
+  checkItem(getItem("toolbar"), isChecked);
 };
 
 exports.setPageNumber = function (isChecked) {
-  Menu.getApplicationMenu().getMenuItemById("page-number").checked = isChecked;
+  checkItem(getItem("page-number"), isChecked);
 };
 
 exports.setClock = function (isChecked) {
-  Menu.getApplicationMenu().getMenuItemById("clock").checked = isChecked;
+  checkItem(getItem("clock"), isChecked);
 };
 
 exports.setBattery = function (isChecked) {
-  Menu.getApplicationMenu().getMenuItemById("battery").checked = isChecked;
+  checkItem(getItem("battery"), isChecked);
 };
 
 exports.setLoadingIndicator = function (isChecked) {
-  Menu.getApplicationMenu().getMenuItemById("loading-indicator").checked =
-    isChecked;
+  checkItem(getItem("loading-indicator"), isChecked);
 };
 
 exports.setAudioPlayer = function (isChecked) {
-  Menu.getApplicationMenu().getMenuItemById("audio-player").checked = isChecked;
+  checkItem(getItem("audio-player"), isChecked);
 };
 
 exports.setPageRotation = function (value) {
-  if (value === 0)
-    Menu.getApplicationMenu().getMenuItemById("rotation-0").checked = true;
-  if (value === 90)
-    Menu.getApplicationMenu().getMenuItemById("rotation-90").checked = true;
-  if (value === 180)
-    Menu.getApplicationMenu().getMenuItemById("rotation-180").checked = true;
-  if (value === 2700)
-    Menu.getApplicationMenu().getMenuItemById("rotation-270").checked = true;
+  if (value === 0) checkItem(getItem("rotation-0"), true);
+  if (value === 90) checkItem(getItem("rotation-90"), true);
+  if (value === 180) checkItem(getItem("rotation-180"), true);
+  if (value === 2700) checkItem(getItem("rotation-270").cheed, true);
 };
 
 exports.setFilterMode = function (mode) {
-  Menu.getApplicationMenu().getMenuItemById("filter-0").checked = mode === 0;
-  Menu.getApplicationMenu().getMenuItemById("filter-1").checked = mode === 1;
+  checkItem(getItem("filter-0"), mode === 0);
+  checkItem(getItem("filter-1"), mode === 1);
 };
 
 exports.setPagesDirection = function (direction) {
-  Menu.getApplicationMenu().getMenuItemById("pagesdirection-0").checked =
-    direction === 0;
-  Menu.getApplicationMenu().getMenuItemById("pagesdirection-1").checked =
-    direction === 1;
+  checkItem(getItem("pagesdirection-0"), direction === 0);
+  checkItem(getItem("pagesdirection-1"), direction === 1);
 };
 
 ////////////////////////////
 
 exports.setCanOpenBooks = setCanOpenBooks = function (isEnabled) {
-  Menu.getApplicationMenu().getMenuItemById("open-file").enabled = isEnabled;
-  EnableItemRecursive(
-    Menu.getApplicationMenu().getMenuItemById("openrecent-file"),
-    isEnabled
-  );
+  enableItem(getItem("open-file"), isEnabled);
+  enableItemRecursive(getItem("openrecent-file"), isEnabled);
 };
 
 exports.setCanOpenTools = setCanOpenTools = function (isEnabled) {
-  Menu.getApplicationMenu().getMenuItemById("file-preferences").enabled =
-    isEnabled;
-  EnableItemRecursive(
-    Menu.getApplicationMenu().getMenuItemById("tools"),
-    isEnabled
-  );
+  enableItem(getItem("file-preferences"), isEnabled);
+  enableItemRecursive(getItem("tools"), isEnabled);
 };
 
 exports.setCanTweakUI = setCanTweakUI = function (isEnabled) {
-  Menu.getApplicationMenu().getMenuItemById("view-layout").enabled = isEnabled;
-  EnableItemRecursive(
-    Menu.getApplicationMenu().getMenuItemById("view-layout-show"),
-    isEnabled
-  );
-  Menu.getApplicationMenu().getMenuItemById("audio-player").enabled = isEnabled;
-  // Menu.getApplicationMenu().getMenuItemById("scrollbar").enabled = isEnabled;
-  // Menu.getApplicationMenu().getMenuItemById("toolbar").enabled = isEnabled;
-  // Menu.getApplicationMenu().getMenuItemById("page-number").enabled = isEnabled;
-  // Menu.getApplicationMenu().getMenuItemById("clock").enabled = isEnabled;
-  // Menu.getApplicationMenu().getMenuItemById("battery").enabled = isEnabled;
-  // Menu.getApplicationMenu().getMenuItemById("audio-player").enabled = isEnabled;
-  // Menu.getApplicationMenu().getMenuItemById("loading-indicator").enabled =
+  enableItem(getItem("view-layout"), isEnabled);
+  enableItemRecursive(getItem("view-layout-show"), isEnabled);
+  enableItem(getItem("audio-player"), isEnabled);
+  // getItem("scrollbar").enabled, isEnabled);
+  // getItem("toolbar").enabled, isEnabled);
+  // getItem("page-number").enabled, isEnabled);
+  // getItem("clock").enabled, isEnabled);
+  // getItem("battery").enabled, isEnabled);
+  // getItem("audio-player").enabled, isEnabled);
+  // getItem("loading-indicator").enabled =
   //   isEnabled;
 };
 
@@ -158,86 +141,67 @@ exports.setComicBookOpened = setComicBookOpened = function (isEnabled) {
   setCanOpenTools(isEnabled);
   setCanOpenBooks(isEnabled);
   setCanTweakUI(isEnabled);
-  Menu.getApplicationMenu().getMenuItemById("convert-file").enabled = isEnabled;
-  Menu.getApplicationMenu().getMenuItemById("extract-file").enabled = isEnabled;
-  Menu.getApplicationMenu().getMenuItemById("file-properties").enabled =
-    isEnabled;
-  EnableItemRecursive(
-    Menu.getApplicationMenu().getMenuItemById("file-page"),
-    isEnabled
-  );
-  Menu.getApplicationMenu().getMenuItemById("close-file").enabled = isEnabled;
-  EnableItemRecursive(
-    Menu.getApplicationMenu().getMenuItemById("view-rotation"),
-    isEnabled
-  );
-  EnableItemRecursive(
-    Menu.getApplicationMenu().getMenuItemById("view-page"),
-    isEnabled
-  );
-  EnableItemRecursive(
-    Menu.getApplicationMenu().getMenuItemById("view-zoom"),
-    isEnabled
-  );
-  EnableItemRecursive(
-    Menu.getApplicationMenu().getMenuItemById("view-filter"),
-    isEnabled
-  );
-  EnableItemRecursive(
-    Menu.getApplicationMenu().getMenuItemById("view-layout"),
-    isEnabled
-  );
-  EnableItemRecursive(
-    Menu.getApplicationMenu().getMenuItemById("view-layout-show"),
-    isEnabled
-  );
-  EnableItemRecursive(
-    Menu.getApplicationMenu().getMenuItemById("view-layout-pagesdirection"),
-    isEnabled
-  );
+  enableItem(getItem("convert-file"), isEnabled);
+  enableItem(getItem("extract-file"), isEnabled);
+  enableItem(getItem("file-properties"), isEnabled);
+  enableItemRecursive(getItem("file-page"), isEnabled);
+  enableItem(getItem("close-file"), isEnabled);
+  enableItemRecursive(getItem("view-rotation"), isEnabled);
+  enableItemRecursive(getItem("view-page"), isEnabled);
+  enableItemRecursive(getItem("view-zoom"), isEnabled);
+  enableItemRecursive(getItem("view-filter"), isEnabled);
+  enableItemRecursive(getItem("view-layout"), isEnabled);
+  enableItemRecursive(getItem("view-layout-show"), isEnabled);
+  enableItemRecursive(getItem("view-layout-pagesdirection"), isEnabled);
 };
 
 exports.setEpubEbookOpened = function () {
   setComicBookOpened(true);
-  Menu.getApplicationMenu().getMenuItemById("convert-file").enabled = false;
-  Menu.getApplicationMenu().getMenuItemById("extract-file").enabled = false;
-  EnableItemRecursive(
-    Menu.getApplicationMenu().getMenuItemById("file-page"),
-    false
-  );
-  EnableItemRecursive(
-    Menu.getApplicationMenu().getMenuItemById("view-rotation"),
-    false
-  );
-  EnableItemRecursive(
-    Menu.getApplicationMenu().getMenuItemById("view-page"),
-    true
-  );
+  enableItem(getItem("convert-file"), false);
+  enableItem(getItem("extract-file"), false);
+  enableItemRecursive(getItem("file-page"), false);
+  enableItemRecursive(getItem("view-rotation"), false);
+  enableItemRecursive(getItem("view-page"), true);
 };
-
-function EnableItemRecursive(item, isEnabled) {
-  item.enabled = isEnabled;
-  if (item.submenu) {
-    item.submenu.items.forEach((subitem) => {
-      EnableItemRecursive(subitem, isEnabled);
-    });
-  }
-}
 
 exports.setImageOpened = function () {
   setComicBookOpened(true);
-  Menu.getApplicationMenu().getMenuItemById("convert-file").enabled = false;
-  Menu.getApplicationMenu().getMenuItemById("extract-file").enabled = false;
-  Menu.getApplicationMenu().getMenuItemById("file-properties").enabled = false;
-  Menu.getApplicationMenu().getMenuItemById("file-page-export").enabled = false;
+  enableItem(getItem("convert-file"), false);
+  enableItem(getItem("extract-file"), false);
+  enableItem(getItem("file-properties"), false);
+  enableItem(getItem("file-page-export"), false);
 };
 
 exports.setWWWOpened = function () {
   setComicBookOpened(true);
-  Menu.getApplicationMenu().getMenuItemById("convert-file").enabled = false;
-  Menu.getApplicationMenu().getMenuItemById("extract-file").enabled = false;
-  Menu.getApplicationMenu().getMenuItemById("file-properties").enabled = false;
+  enableItem(getItem("convert-file"), false);
+  enableItem(getItem("extract-file"), false);
+  enableItem(getItem("file-properties"), false);
 };
+
+function getItem(id) {
+  return Menu.getApplicationMenu().getMenuItemById(id);
+}
+
+function enableItem(item, isEnabled) {
+  if (!item) return;
+  item.enabled = isEnabled;
+}
+
+function checkItem(item, checked) {
+  if (!item) return;
+  item.checked = checked;
+}
+
+function enableItemRecursive(item, isEnabled) {
+  if (!item) return;
+  item.enabled = isEnabled;
+  if (item.submenu) {
+    item.submenu.items.forEach((subitem) => {
+      enableItemRecursive(subitem, isEnabled);
+    });
+  }
+}
 
 // refs:
 // https://uxdesign.cc/dot-dot-dot-7ce6170bfc7f?gi=ab412e3d4b7d
