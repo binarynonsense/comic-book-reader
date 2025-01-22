@@ -94,6 +94,10 @@ img {
   background: var(--scrollbar-bg-color);
   border-left: 1px #eee;
 }
+#tools::-webkit-scrollbar-track {
+  background: var(--scrollbar-bg-color-tools);
+  border-left: 1px #eee;
+}
 
 /* Handle */
 ::-webkit-scrollbar-thumb {

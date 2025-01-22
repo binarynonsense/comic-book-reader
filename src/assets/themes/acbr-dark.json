@@ -26,9 +26,10 @@
     "--toolbar-page-slider-left-bg-color": "#daa41d",
     "--toolbar-page-slider-thumb-color": "#aaaaaa",
   
-    "--scrollbar-bg-color": "#1e1e1e",
+    "--scrollbar-bg-color": "#222",
     "--scrollbar-color": "#444444",
     "--scrollbar-hover-color": "#777",
+    "--scrollbar-bg-color-tools": "#353535",
 
     "--audioplayer-bg-color": "#303030",
     "--audioplayer-disabled-color": "#999",
