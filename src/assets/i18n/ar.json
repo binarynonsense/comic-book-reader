@@ -94,6 +94,7 @@
   "menu-tools-extract-text": "نص من صورة (OCR)",
   "menu-tools-extract-palette": "لوحة ألوان من صورة",
   "menu-tools-extract-qr": "نص من صورة لرمز الاستجابة السريعة (QR Code)",
+  "[NEEDS TRANSLATION]menu-tools-rename": "Rename",
   "[NEEDS TRANSLATION]menu-tools-search": "Search",
   "[NOTE TO TRANSLATORS]menu-tools-": "dcm/cbp/iab/gut/librivox/xkcd/wiktionary: contain names of websites, leave those names in English unless there's an official translation",
   "menu-tools-dcm": "المتحف الرقمي للقصص المصورة",
@@ -949,5 +950,7 @@
   "[NEEDS TRANSLATION]tool-rss-remove-feed-warning": "Are you sure you want to remove this feed?",
   "[NEEDS TRANSLATION]tool-rss-feed-error": "The RSS feed isn't valid or there was an error trying to retrieve it.",
   "[NEEDS TRANSLATION]tool-rss-reset-feeds": "Reset Feeds",
-  "[NEEDS TRANSLATION]tool-rss-reset-feeds-warning": "Are you sure you want to remove the current list of feeds and replace it with the default one?"
+  "[NEEDS TRANSLATION]tool-rss-reset-feeds-warning": "Are you sure you want to remove the current list of feeds and replace it with the default one?",
+  "[NOTE TO TRANSLATORS]tool-br-title": "Batch Renamer as in a tool to batch/bulk rename files (rename multiple files)",
+  "[NEEDS TRANSLATION]tool-br-title": "Batch Renamer"
 }

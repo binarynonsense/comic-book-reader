@@ -94,6 +94,7 @@
   "menu-tools-extract-text": "Texto de imagen (OCR)",
   "menu-tools-extract-palette": "Paleta de colores de imagen",
   "menu-tools-extract-qr": "Texto en código QR de imagen",
+  "menu-tools-rename": "Renombrar",
   "menu-tools-search": "Buscar",
   "[NOTE TO TRANSLATORS]menu-tools-": "dcm/cbp/iab/gut/librivox/xkcd/wiktionary: contain names of websites, leave those names in English unless there's an official translation",
   "menu-tools-dcm": "Digital Comic Museum",
@@ -949,5 +950,7 @@
   "tool-rss-remove-feed-warning": "¿Está seguro de que quiere eliminar la fuente?",
   "tool-rss-feed-error": "La fuente RSS no es válida o hubo un error al intentar acceder a ella.",
   "tool-rss-reset-feeds": "Reestablecer fuentes",
-  "tool-rss-reset-feeds-warning": "¿Está seguro de que desea eliminar la lista actual de feeds y reemplazarla con la predeterminada?"
+  "tool-rss-reset-feeds-warning": "¿Está seguro de que desea eliminar la lista actual de feeds y reemplazarla con la predeterminada?",
+  "[NOTE TO TRANSLATORS]tool-br-title": "Batch Renamer as in a tool to batch/bulk rename files (rename multiple files)",
+  "tool-br-title": "Renombrador masivo"
 }
