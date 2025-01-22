@@ -94,7 +94,7 @@
   "menu-tools-extract-text": "Text aus Bild (OCR)",
   "menu-tools-extract-palette": "Farb-palette aus Bild",
   "menu-tools-extract-qr": "QR-Code Text aus Bild",
-  "[NEEDS TRANSLATION]menu-tools-rename": "Rename",
+  "menu-tools-rename": "Umbenennen",
   "menu-tools-search": "Suche",
   "[NOTE TO TRANSLATORS]menu-tools-": "dcm/cbp/iab/gut/librivox/xkcd/wiktionary: contain names of websites, leave those names in English unless there's an official translation",
   "menu-tools-dcm": "Digital Comic Museum",
@@ -952,9 +952,9 @@
   "tool-rss-reset-feeds": "Feeds Zurücksetzen",
   "tool-rss-reset-feeds-warning": "Sind Sie sicher, dass Sie die aktuelle Feedliste entfernen und mit der Standardliste ersetzen möchten?",
   "[NOTE TO TRANSLATORS]tool-br-title": "Batch Renamer as in a tool to batch/bulk rename files (rename multiple files)",
-  "[NEEDS TRANSLATION]tool-br-title": "Batch Renamer",
+  "tool-br-title": "Massenumbenenner",
   "[NOTE TO TRANSLATORS]tool-br-preview": "Preview as in the name of summary/explanation of what will happen before taking an action.",
-  "[NEEDS TRANSLATION]tool-br-preview": "Preview",
-  "[NEEDS TRANSLATION]tool-br-newfilename": "New Name",
-  "[NEEDS TRANSLATION]tool-br-rename-warning": "Are you sure you want to continue? Clicking OK will start the files renaming process."
+  "tool-br-preview": "Vorschau",
+  "tool-br-newfilename": "Neuer Name",
+  "tool-br-rename-warning": "Sind Sie sicher, dass Sie fortfahren möchten? 'OK' klicken startet den Umbenennungsprozess."
 }
