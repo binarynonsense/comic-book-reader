@@ -63,6 +63,7 @@ exports.switchTool = function (tool, ...args) {
     if (g_tools[g_currentTool] !== "reader") {
       menuBar.rebuild();
     }
+    core.renderTitle();
     core.sendIpcToCoreRenderer("show-tool", tool);
     g_tools[tool].open(...args);
   }

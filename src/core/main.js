@@ -382,9 +382,11 @@ if (!gotTheLock) {
         settings.setValue("width", width);
         settings.setValue("height", height);
       }
+      renderTitle();
       reader.onResize();
-      if (tools.getCurrentToolName() !== "reader")
+      if (tools.getCurrentToolName() !== "reader") {
         tools.getCurrentTool().onResize?.();
+      }
     });
 
     g_mainWindow.on("maximize", function () {
@@ -566,6 +568,17 @@ if (!gotTheLock) {
     );
   }
   exports.onLanguageChanged = onLanguageChanged;
+
+  function renderTitle() {
+    let title = "ACBR";
+    if (tools.getCurrentToolName() === "reader") {
+      title = reader.generateTitle();
+    } else {
+    }
+    g_mainWindow.setTitle(title);
+    sendIpcToPreload("update-title", title);
+  }
+  exports.renderTitle = renderTitle;
 
   //////////////////////////////////////////////////////////////////////////////
   // MENU MSGS /////////////////////////////////////////////////////////////////
