@@ -576,7 +576,10 @@ function getLocalization() {
 function getExtraLocalization() {
   return {
     edit: _("ui-modal-prompt-button-edit"),
-    options: _("tool-shared-tab-options"),
+    editName: _("ui-modal-prompt-button-edit-name"),
+    reload: _("tool-shared-ui-reload"),
+    remove: _("tool-shared-tooltip-remove-from-list"),
+    options: _("tool-shared-tab-moreoptions"),
     feedError: _("tool-rss-feed-error"),
     openInBrowser: _("tool-shared-ui-search-item-open-browser"),
     loadingTitle: _("tool-shared-modal-title-loading"),

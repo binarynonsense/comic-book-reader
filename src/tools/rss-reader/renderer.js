@@ -82,6 +82,12 @@ function showFeedContent(data) {
   // console.log(data);
   const root = document.getElementById("tool-rss-items-div");
   root.innerHTML = "";
+  const titleButtons = `<div id="tool-rss-channel-info-title-buttons">
+        <i class="fas fa-sync-alt tool-rss-icon-button" id="tool-rss-channel-info-title-reload-button" title="${g_extraLocalization.reload}"></i>
+        <i class="fas fa-pen tool-rss-icon-button" id="tool-rss-channel-info-title-editname-button" title="${g_extraLocalization.editName}"></i>
+        <i class="fas fa-trash-alt  tool-rss-icon-button" id="tool-rss-channel-info-title-remove-button" title="${g_extraLocalization.remove}"></i>
+        <i class="fas fa-ellipsis-h tool-rss-icon-button" id="tool-rss-channel-info-title-options-button" title="${g_extraLocalization.options}"></i>
+        </div>`;
   try {
     //
     root.innerHTML += `<div id='tool-rss-channel-info'>
@@ -90,9 +96,7 @@ function showFeedContent(data) {
         <span id="tool-rss-channel-info-title-text">${
           g_feeds[g_currentFeedIndex].name
         }</span>
-        <i class="fas fa-ellipsis-h tool-rss-icon-button" id="tool-rss-channel-info-title-button" title="${
-          g_extraLocalization.options
-        }"></i>
+        ${titleButtons}
       </div>
       <div id='tool-rss-channel-info-desc'>${
         data.name && data.name !== g_feeds[g_currentFeedIndex].name
@@ -108,15 +112,41 @@ function showFeedContent(data) {
       <div id='tool-rss-channel-info-title'>
         <i class="fas fa-rss"></i>
         <span id="tool-rss-channel-info-title-text">${g_feeds[g_currentFeedIndex].name}</span>
-        <i class="fas fa-ellipsis-h tool-rss-icon-button" id="tool-rss-channel-info-title-button" title="${g_extraLocalization.options}"></i>
+        ${titleButtons}
       </div>
     </div>`;
     root.innerHTML += `<div>${g_extraLocalization.feedError}</div>`;
   }
-  const element = document.getElementById(`tool-rss-channel-info-title-button`);
-  element.addEventListener("click", (event) => {
-    sendIpcToMain("on-feed-options-clicked", g_currentFeedIndex);
-  });
+  document
+    .getElementById(`tool-rss-channel-info-title-options-button`)
+    .addEventListener("click", (event) => {
+      sendIpcToMain("on-feed-options-clicked", g_currentFeedIndex);
+    });
+  document
+    .getElementById(`tool-rss-channel-info-title-reload-button`)
+    .addEventListener("click", (event) => {
+      showLoadingModal();
+      sendIpcToMain("get-feed-content", g_currentFeedIndex);
+    });
+  document
+    .getElementById(`tool-rss-channel-info-title-remove-button`)
+    .addEventListener("click", (event) => {
+      sendIpcToMain(
+        "on-modal-feed-options-remove-clicked",
+        g_currentFeedIndex,
+        g_feeds[g_currentFeedIndex].url
+      );
+    });
+  document
+    .getElementById(`tool-rss-channel-info-title-editname-button`)
+    .addEventListener("click", (event) => {
+      sendIpcToMain(
+        "on-modal-feed-options-edit-name-clicked",
+        g_currentFeedIndex,
+        g_feeds[g_currentFeedIndex].url
+      );
+    });
+
   updateColumnsHeight();
 }
 

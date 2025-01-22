@@ -998,6 +998,10 @@ html[dir="rtl"] .tools-range-bubble {
 
 /* /////////////////////////////////////////////////////////////// */
 
+#tool-rss-section-0-content-div {
+  display: inline-block;
+}
+
 #tool-rss-channel-info {
   display: flex;
   flex-direction: column;
@@ -1016,6 +1020,13 @@ html[dir="rtl"] .tools-range-bubble {
 
 #tool-rss-channel-info-title-text {
   flex-grow: 1;
+}
+
+#tool-rss-channel-info-title-buttons {
+  font-size: 0.7em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 #tool-rss-channel-info-desc {
