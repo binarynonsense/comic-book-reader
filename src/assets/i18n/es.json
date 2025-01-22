@@ -169,7 +169,7 @@
   "ui-modal-info-couldntopen-imagesfolder-empty": "No se pudo abrir la carpeta\nNo se encontró ninguna imagen",
   "ui-modal-info-imagesavedto": "Archivo de imagen salvado en",
   "ui-modal-info-errorexportingpage": "Error: No se pudo exportar la página",
-  "ui-modal-info-version": "versión",
+  "ui-modal-info-version": "Versión",
   "ui-modal-info-currentversion": "Versión actual",
   "ui-modal-info-latestversion": "Última versión",
   "ui-modal-info-lateststableversion": "Última versión estable",
