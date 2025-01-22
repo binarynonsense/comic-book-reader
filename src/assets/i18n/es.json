@@ -955,6 +955,6 @@
   "tool-br-title": "Renombrador masivo",
   "[NOTE TO TRANSLATORS]tool-br-preview": "Preview as in the name of summary/explanation of what will happen before taking an action.",
   "tool-br-preview": "Vista previa",
-  "[NEEDS TRANSLATION]tool-br-newfilename": "New Name",
-  "tool-br-rename-warning": "Are you sure you want to continue? Hacer click en OK comenzará el proceso de renombrado de los ficheros."
+  "tool-br-newfilename": "Nuevo nombre",
+  "tool-br-rename-warning": "Está seguro de que quiere continuar? Hacer click en OK comenzará el proceso de renombrado de los ficheros."
 }
