@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2023 Álvaro García
+ * Copyright 2023-2025 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -8,6 +8,7 @@
 const { Menu } = require("electron");
 const core = require("../../core/main");
 const { _ } = require("./i18n");
+const log = require("./logger");
 
 exports.show = function (type, params, backToReaderCallback) {
   // ref: https://github.com/electron/electron/blob/main/docs/api/web-contents.md#event-context-menu
@@ -78,6 +79,27 @@ exports.show = function (type, params, backToReaderCallback) {
           params.x,
           params.y
         );
+      }
+      break;
+
+    case "copy-img":
+      if (true) {
+        Menu.buildFromTemplate([
+          {
+            label: _("ctxmenu-copyimage"),
+            click: () => {
+              try {
+                core
+                  .getMainWindow()
+                  .webContents.copyImageAt(params[0], params[1]);
+              } catch (error) {
+                log.error(error);
+              }
+            },
+          },
+          { type: "separator" },
+          ...commonEntries,
+        ]).popup(core.getMainWindow(), params.x, params.y);
       }
       break;
 

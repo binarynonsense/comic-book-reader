@@ -229,7 +229,10 @@ function initMouse() {
       case 2: // right
         if (getOpenModal()) return;
         if (getCurrentTool().onContextMenu)
-          getCurrentTool().onContextMenu([event.pageX, event.pageY]);
+          getCurrentTool().onContextMenu(
+            [event.pageX, event.pageY],
+            event.target
+          );
     }
   });
 

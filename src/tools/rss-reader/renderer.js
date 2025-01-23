@@ -432,11 +432,11 @@ export function onInputEvent(type, event) {
   }
 }
 
-export function onContextMenu(params) {
+export function onContextMenu(params, target) {
   if (getOpenModal()) {
     return;
   }
-  sendIpcToMain("show-context-menu", params);
+  sendIpcToMain("show-context-menu", params, target.tagName === "IMG");
 }
 
 ///////////////////////////////////////////////////////////////////////////////

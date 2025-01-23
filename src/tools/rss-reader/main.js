@@ -192,8 +192,12 @@ function initOnIpcCallbacks() {
     onCloseClicked();
   });
 
-  on("show-context-menu", (params) => {
-    contextMenu.show("minimal", params, onCloseClicked);
+  on("show-context-menu", (params, isImg) => {
+    if (isImg) {
+      contextMenu.show("copy-img", params, onCloseClicked);
+    } else {
+      contextMenu.show("minimal", params, onCloseClicked);
+    }
   });
 
   on("get-feed-content", async (index) => {
