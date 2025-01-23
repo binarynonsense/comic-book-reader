@@ -1126,8 +1126,13 @@ html[dir="rtl"] .tools-range-bubble {
   line-height: 150%;
 }
 
+.tool-rss-item-desc ul {
+  line-height: 90%;
+}
+
 .tool-rss-item-desc li {
   margin-left: 30px !important;
+  line-height: 150%;
 }
 
 .tool-rss-item-desc p,
