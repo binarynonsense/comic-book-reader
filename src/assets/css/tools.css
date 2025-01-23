@@ -1000,6 +1000,7 @@ html[dir="rtl"] .tools-range-bubble {
 
 #tool-rss-section-0-content-div {
   display: inline-block;
+  width: 100%;
 }
 
 #tool-rss-channel-info {
