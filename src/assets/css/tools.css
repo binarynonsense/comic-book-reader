@@ -1014,7 +1014,7 @@ html[dir="rtl"] .tools-range-bubble {
 #tool-rss-channel-info-title {
   display: flex;
   flex-direction: row;
-  gap: 15px;
+  justify-content: space-between;
 }
 
 #tool-rss-channel-info-title-button {
@@ -1023,7 +1023,6 @@ html[dir="rtl"] .tools-range-bubble {
   display: flex;
   flex-direction: row;
   gap: 15px;
-  flex-grow: 1;
 }
 #tool-rss-channel-info-title-button.tool-rss-icon-button:hover {
   transform: scale(1.01);
@@ -1032,9 +1031,9 @@ html[dir="rtl"] .tools-range-bubble {
   filter: opacity(0.6);
 }
 
-#tool-rss-channel-info-title-text {
+/* #tool-rss-channel-info-title-text {
   flex-grow: 1;
-}
+} */
 
 #tool-rss-channel-info-title-buttons {
   font-size: 1.1em;
