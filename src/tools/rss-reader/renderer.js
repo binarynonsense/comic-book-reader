@@ -88,16 +88,27 @@ function showFeedContent(data) {
         <i class="fas fa-trash-alt  tool-rss-icon-button" id="tool-rss-channel-info-title-remove-button" title="${g_extraLocalization.remove}"></i>
         <i class="fas fa-ellipsis-h tool-rss-icon-button" id="tool-rss-channel-info-title-options-button" title="${g_extraLocalization.options}"></i>
         </div>`;
-  try {
-    //
-    root.innerHTML += `<div id='tool-rss-channel-info'>
-      <div id='tool-rss-channel-info-title'>
+  const titleText = `
+  <div id='tool-rss-channel-info-title'>
+      <div id='tool-rss-channel-info-title-button' class="${
+        data?.link ? "tool-rss-icon-button" : ""
+      }" title="${
+    data?.link
+      ? g_extraLocalization.openInBrowser + " (" + data?.link + ")"
+      : ""
+  }">
         <i class="fas fa-rss"></i>
         <span id="tool-rss-channel-info-title-text">${
           g_feeds[g_currentFeedIndex].name
-        }</span>
-        ${titleButtons}
+        }</span>        
       </div>
+      ${titleButtons}
+  </div>`;
+  try {
+    //
+    root.innerHTML += `
+    <div id='tool-rss-channel-info'>
+      ${titleText}
       <div id='tool-rss-channel-info-desc'>${
         data.name && data.name !== g_feeds[g_currentFeedIndex].name
           ? "<span>" + data.name + "</span>"
@@ -105,17 +116,15 @@ function showFeedContent(data) {
       }${data.description ? "<span>" + data.description + "</span>" : ""}
       </div>
     </div>`;
-
     itemsToHtml(root, data.items);
   } catch (error) {
-    root.innerHTML += `<div id='tool-rss-channel-info'>
-      <div id='tool-rss-channel-info-title'>
-        <i class="fas fa-rss"></i>
-        <span id="tool-rss-channel-info-title-text">${g_feeds[g_currentFeedIndex].name}</span>
-        ${titleButtons}
+    root.innerHTML += `
+    <div id='tool-rss-channel-info'>
+      ${titleText}
+      <div id='tool-rss-channel-info-desc'>
+      ${g_extraLocalization.feedError}
       </div>
     </div>`;
-    root.innerHTML += `<div>${g_extraLocalization.feedError}</div>`;
   }
   document
     .getElementById(`tool-rss-channel-info-title-options-button`)
@@ -146,6 +155,13 @@ function showFeedContent(data) {
         g_feeds[g_currentFeedIndex].url
       );
     });
+
+  if (data?.link)
+    document
+      .getElementById(`tool-rss-channel-info-title-button`)
+      .addEventListener("click", (event) => {
+        sendIpcToMain("open-url-in-browser", data.link);
+      });
 
   updateColumnsHeight();
 }

@@ -1012,11 +1012,24 @@ html[dir="rtl"] .tools-range-bubble {
 }
 
 #tool-rss-channel-info-title {
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
+}
+
+#tool-rss-channel-info-title-button {
   font-size: 1.8em;
   font-weight: bolder;
   display: flex;
   flex-direction: row;
   gap: 15px;
+  flex-grow: 1;
+}
+#tool-rss-channel-info-title-button.tool-rss-icon-button:hover {
+  transform: scale(1.01);
+}
+#tool-rss-channel-info-title-button:not(.tool-rss-icon-button) {
+  filter: opacity(0.6);
 }
 
 #tool-rss-channel-info-title-text {
@@ -1024,7 +1037,7 @@ html[dir="rtl"] .tools-range-bubble {
 }
 
 #tool-rss-channel-info-title-buttons {
-  font-size: 0.7em;
+  font-size: 1.1em;
   display: flex;
   align-items: center;
   gap: 8px;

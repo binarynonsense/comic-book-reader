@@ -23,6 +23,10 @@ const settings = require("../../shared/main/settings");
 let g_isInitialized = false;
 
 let g_defaultFeeds = [
+  // {
+  //   name: "Bad feed",
+  //   url: "fdfdfd",
+  // },
   {
     name: "CBR Comic News",
     url: "https://www.cbr.com/feed/category/comics/news/",
@@ -429,6 +433,9 @@ async function getFeedContent(url) {
         content.name = data.rss.channel.title
           ? data.rss.channel.title
           : "RSS Feed";
+        content.link = data.rss.channel.link
+          ? data.rss.channel.link
+          : undefined;
         content.description = data.rss.channel.description;
         content.items = [];
         data.rss.channel.item.forEach((item, index) => {
@@ -484,6 +491,20 @@ async function getFeedContent(url) {
           } else {
             content.description = "";
           }
+          if (data.feed.link) {
+            if (Array.isArray(data.feed.link)) {
+              for (let index = 0; index < data.feed.link.length; index++) {
+                const link = data.feed.link[index];
+                if (link["@_href"]) {
+                  content.link = link["@_href"];
+                  if (link["@_rel"] == undefined) break;
+                }
+              }
+            } else {
+              content.link = data.feed.link["@_href"];
+            }
+          }
+
           content.items = [];
           data.feed.entry.forEach((item, index) => {
             let itemData = {};
