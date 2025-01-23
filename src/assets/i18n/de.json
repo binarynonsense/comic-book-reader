@@ -3,7 +3,7 @@
     "authors": [
       "trzyglow"
     ],
-    "last-updated": "2025-01-21",
+    "last-updated": "2025-01-23",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.8.0",
     "pre-release": "false",
@@ -324,7 +324,7 @@
   "tool-shared-ui-import": "Importieren",
   "tool-shared-ui-choose": "Wählen",
   "tool-shared-ui-select": "Auswählen",
-  "[NEEDS TRANSLATION]tool-shared-ui-reload": "Reload",
+  "tool-shared-ui-reload": "Neu laden",
   "tool-shared-ui-save-as-relative-path": "Als relativen Pfad speichern",
   "tool-shared-ui-pdf-extraction": "PDF Extrahierung",
   "tool-shared-ui-pdf-extraction-tooltip": "Die meisten PDF-Dateien scheinen ihre standard Benutzereinheit von 1 (72 dpi) unabhängig ihres Inhaltes zu behalten, weshalb die eingebettete Comic Seite größer als die angegebene Seitengröße sein kann. Dieses Werkzeug enthält drei Verfahren zum Entscheiden, welche dpi zum Berechnen der Auflösung, der gerenderten Seite, verwendet wird: Sie können das Werkzeug versuchen lassen die dpi/Größe des eingebetteten Bildes zu finden, oder manuell einen Wert festlegen (72 oder 300).",
@@ -387,7 +387,7 @@
   "tool-shared-tab-catalog": "Katalog",
   "tool-shared-tab-openurl": "Öffne URL",
   "tool-shared-tab-options": "Optionen",
-  "[NEEDS TRANSLATION]tool-shared-tab-moreoptions": "More Options",
+  "tool-shared-tab-moreoptions": "Mehr Optionen",
   "tool-shared-tab-about": "Über",
   "tool-shared-tab-donate": "Spenden",
   "tool-shared-tab-settings": "Einstellungen",
