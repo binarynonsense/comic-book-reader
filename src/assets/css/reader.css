@@ -105,6 +105,7 @@
   width: fit-content;
   white-space: nowrap;
   direction: ltr;
+  line-height: 100%;
 }
 
 /* ZOOM  *********************************************************/

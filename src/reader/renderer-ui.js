@@ -62,10 +62,18 @@ function initOnIpcCallbacks() {
     // chargingchange
     // chargingtimechange
     // dischargingtimechange
+    function setValue(battery) {
+      bubble.innerHTML = `<span>${battery.charging ? "🗲" : ""}${(
+        battery.level * 100
+      ).toFixed(0)}%</span>`;
+    }
     navigator.getBattery().then(function (battery) {
-      bubble.innerHTML = `<span>${(battery.level * 100).toFixed(0)}%</span>`;
+      setValue(battery);
       battery.addEventListener("levelchange", function () {
-        bubble.innerHTML = `<span>${(this.level * 100).toFixed(0)}%</span>`;
+        setValue(this);
+      });
+      battery.addEventListener("chargingchange", function () {
+        setValue(this);
       });
     });
   });
