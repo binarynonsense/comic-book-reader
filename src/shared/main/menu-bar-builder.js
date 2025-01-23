@@ -124,6 +124,180 @@ function getOpenRecentSubmenu(history) {
   return menu;
 }
 
+function getToolsSubmenu() {
+  return [
+    {
+      label: _("menu-tools-files"),
+      submenu: [
+        {
+          label: _("menu-tools-convert"),
+          submenu: [
+            {
+              id: "convert-files",
+              label: _("menu-tools-convert-comics"),
+              click() {
+                core.onMenuToolConvertComics();
+              },
+            },
+            {
+              id: "convert-imgs",
+              label: _("menu-tools-convert-images"),
+              click() {
+                core.onMenuToolConvertImages();
+              },
+            },
+          ],
+        },
+        {
+          label: _("menu-tools-create"),
+          submenu: [
+            {
+              id: "create-file",
+              label: _("menu-tools-create-comic"),
+              enabled: true,
+              click() {
+                core.onMenuToolCreateComic();
+              },
+            },
+            {
+              id: "create-qr",
+              label: _("menu-tools-create-qr"),
+              enabled: true,
+              click() {
+                core.onMenuToolCreateQR();
+              },
+            },
+          ],
+        },
+        {
+          label: _("menu-tools-extract"),
+          submenu: [
+            {
+              id: "extract-comics",
+              label: _("menu-tools-extract-comics"),
+              enabled: true,
+              click() {
+                core.onMenuToolExtractComics();
+              },
+            },
+            {
+              id: "extract-palette",
+              label: _("menu-tools-extract-palette"),
+              enabled: true,
+              click() {
+                core.onMenuToolExtractPalette();
+              },
+            },
+            {
+              id: "extract-text",
+              label: _("menu-tools-extract-text"),
+              enabled: true,
+              click() {
+                core.onMenuToolExtractText();
+              },
+            },
+            {
+              id: "extract-qr",
+              label: _("menu-tools-extract-qr"),
+              enabled: true,
+              click() {
+                core.onMenuToolExtractQR();
+              },
+            },
+          ],
+        },
+      ],
+    },
+    {
+      label: _("menu-tools-search"),
+      submenu: [
+        {
+          label: _("menu-tools-dcm"),
+          click() {
+            core.onMenuToolDCM();
+          },
+        },
+        {
+          label: _("menu-tools-cbp"),
+          click() {
+            core.onMenuToolCBP();
+          },
+        },
+        {
+          label: _("menu-tools-iab"),
+          click() {
+            core.onMenuToolIArchive();
+          },
+        },
+        {
+          label: _("menu-tools-gut"),
+          click() {
+            core.onMenuToolGutenberg();
+          },
+        },
+        {
+          label: _("menu-tools-xkcd"),
+          click() {
+            core.onMenuToolXkcd();
+          },
+        },
+        {
+          label: _("menu-tools-librivox"),
+          click() {
+            core.onMenuToolLibrivox();
+          },
+        },
+        {
+          label: _("menu-tools-wiktionary"),
+          click() {
+            core.onMenuToolWiktionary();
+          },
+        },
+        {
+          label: _("menu-tools-radio"),
+          click() {
+            core.onMenuToolRadio();
+          },
+        },
+      ],
+    },
+    // {
+    //   type: "separator",
+    // },
+    {
+      id: "tools-art",
+      label: _("menu-tools-art"),
+      submenu: [
+        {
+          label: _("menu-tools-template-maker"),
+          click() {
+            core.onMenuToolTemplateMaker();
+          },
+        },
+        {
+          label: _("menu-tools-palette-extractor"),
+          enabled: true,
+          click() {
+            core.onMenuToolExtractPalette();
+          },
+        },
+      ],
+    },
+    {
+      id: "tools-other",
+      label: _("menu-tools-other"),
+      submenu: [
+        {
+          label: _("menu-tools-rss-reader"),
+          click() {
+            core.onMenuToolRssReader();
+          },
+        },
+      ],
+    },
+  ];
+}
+
 function getNormalMenu(settings, history) {
   let menu = [
     {
@@ -518,177 +692,89 @@ function getNormalMenu(settings, history) {
     {
       id: "tools",
       label: _("menu-tools"),
+      submenu: getToolsSubmenu(),
+    },
+    {
+      label: _("menu-help"),
+      submenu: getHelpSubmenu(),
+    },
+  ];
+
+  // if (!core.isDev()) {
+  //   menuTemplate[2].submenu = menuTemplate[2].submenu.slice(0, -1);
+  // }
+  return menu;
+}
+
+function getHomeScreenMenu(settings, history) {
+  let menu = [
+    {
+      label: _("menu-file"),
       submenu: [
         {
-          label: _("menu-tools-files"),
-          submenu: [
-            {
-              label: _("menu-tools-convert"),
-              submenu: [
-                {
-                  id: "convert-files",
-                  label: _("menu-tools-convert-comics"),
-                  click() {
-                    core.onMenuToolConvertComics();
-                  },
-                },
-                {
-                  id: "convert-imgs",
-                  label: _("menu-tools-convert-images"),
-                  click() {
-                    core.onMenuToolConvertImages();
-                  },
-                },
-              ],
-            },
-            {
-              label: _("menu-tools-create"),
-              submenu: [
-                {
-                  id: "create-file",
-                  label: _("menu-tools-create-comic"),
-                  enabled: true,
-                  click() {
-                    core.onMenuToolCreateComic();
-                  },
-                },
-                {
-                  id: "create-qr",
-                  label: _("menu-tools-create-qr"),
-                  enabled: true,
-                  click() {
-                    core.onMenuToolCreateQR();
-                  },
-                },
-              ],
-            },
-            {
-              label: _("menu-tools-extract"),
-              submenu: [
-                {
-                  id: "extract-comics",
-                  label: _("menu-tools-extract-comics"),
-                  enabled: true,
-                  click() {
-                    core.onMenuToolExtractComics();
-                  },
-                },
-                {
-                  id: "extract-palette",
-                  label: _("menu-tools-extract-palette"),
-                  enabled: true,
-                  click() {
-                    core.onMenuToolExtractPalette();
-                  },
-                },
-                {
-                  id: "extract-text",
-                  label: _("menu-tools-extract-text"),
-                  enabled: true,
-                  click() {
-                    core.onMenuToolExtractText();
-                  },
-                },
-                {
-                  id: "extract-qr",
-                  label: _("menu-tools-extract-qr"),
-                  enabled: true,
-                  click() {
-                    core.onMenuToolExtractQR();
-                  },
-                },
-              ],
-            },
-          ],
+          id: "open-file",
+          label: _("menu-file-open"),
+          accelerator: "CommandOrControl+O",
+          click() {
+            reader.onMenuOpenFile();
+          },
         },
         {
-          label: _("menu-tools-search"),
-          submenu: [
-            {
-              label: _("menu-tools-dcm"),
-              click() {
-                core.onMenuToolDCM();
-              },
-            },
-            {
-              label: _("menu-tools-cbp"),
-              click() {
-                core.onMenuToolCBP();
-              },
-            },
-            {
-              label: _("menu-tools-iab"),
-              click() {
-                core.onMenuToolIArchive();
-              },
-            },
-            {
-              label: _("menu-tools-gut"),
-              click() {
-                core.onMenuToolGutenberg();
-              },
-            },
-            {
-              label: _("menu-tools-xkcd"),
-              click() {
-                core.onMenuToolXkcd();
-              },
-            },
-            {
-              label: _("menu-tools-librivox"),
-              click() {
-                core.onMenuToolLibrivox();
-              },
-            },
-            {
-              label: _("menu-tools-wiktionary"),
-              click() {
-                core.onMenuToolWiktionary();
-              },
-            },
-            {
-              label: _("menu-tools-radio"),
-              click() {
-                core.onMenuToolRadio();
-              },
-            },
-          ],
-        },
-        // {
-        //   type: "separator",
-        // },
-        {
-          id: "tools-art",
-          label: _("menu-tools-art"),
-          submenu: [
-            {
-              label: _("menu-tools-template-maker"),
-              click() {
-                core.onMenuToolTemplateMaker();
-              },
-            },
-            {
-              label: _("menu-tools-palette-extractor"),
-              enabled: true,
-              click() {
-                core.onMenuToolExtractPalette();
-              },
-            },
-          ],
+          id: "openrecent-file",
+          label: _("menu-file-openrecent"),
+          submenu: getOpenRecentSubmenu(history),
         },
         {
-          id: "tools-other",
-          label: _("menu-tools-other"),
-          submenu: [
-            {
-              label: _("menu-tools-rss-reader"),
-              click() {
-                core.onMenuToolRssReader();
-              },
-            },
-          ],
+          type: "separator",
+        },
+        {
+          id: "file-preferences",
+          label: _("menu-file-preferences"),
+          click() {
+            core.onMenuPreferences();
+          },
+        },
+        {
+          type: "separator",
+        },
+        {
+          label: _("menu-file-quit"),
+          accelerator: "CommandOrControl+Q",
+          click() {
+            core.onMenuQuit();
+          },
         },
       ],
+    },
+    {
+      label: _("menu-view"),
+      submenu: [
+        {
+          label: _("menu-view-layout-show-audioplayer"),
+          id: "audio-player",
+          type: "checkbox",
+          checked: settings.showAudioPlayer,
+          accelerator: "CommandOrControl+M",
+          click() {
+            core.onMenuToggleAudioPlayer();
+          },
+        },
+        {
+          type: "separator",
+        },
+        {
+          label: _("menu-view-togglefullscreen"),
+          accelerator: "F11",
+          click() {
+            core.onMenuToggleFullScreen();
+          },
+        },
+      ],
+    },
+    {
+      id: "tools",
+      label: _("menu-tools"),
+      submenu: getToolsSubmenu(),
     },
     {
       label: _("menu-help"),
@@ -757,7 +843,11 @@ function buildApplicationMenu(settings, history, isToolOpen, toolName) {
   if (isToolOpen) {
     menuTemplate = getToolMenu(settings, history, toolName);
   } else {
-    menuTemplate = getNormalMenu(settings, history);
+    if (reader.getFileData().path && reader.getFileData().path !== "") {
+      menuTemplate = getNormalMenu(settings, history);
+    } else {
+      menuTemplate = getHomeScreenMenu(settings, history);
+    }
   }
   const menuConfig = Menu.buildFromTemplate(menuTemplate);
   Menu.setApplicationMenu(menuConfig);

@@ -642,6 +642,10 @@ let g_fileData = {
   metadata: undefined,
 };
 
+exports.getFileData = function () {
+  return g_fileData;
+};
+
 function cleanUpFileData() {
   g_fileData.state = FileDataState.NOT_SET;
   g_fileData.type = FileDataType.NOT_SET;
@@ -1332,6 +1336,7 @@ function closeCurrentFile(addToHistory = true) {
     sendIpcToRenderer("close-epub-ebook");
   }
   cleanUpFileData();
+  menuBar.rebuild();
   updateMenuAndToolbarItems();
   renderTitle();
   sendIpcToRenderer("file-closed");
