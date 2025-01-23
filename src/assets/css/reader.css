@@ -14,6 +14,16 @@
   overflow: auto;
 }
 
+#reader:has(> #pages-container:empty) {
+  margin-bottom: 0px !important;
+}
+#reader:has(> #pages-container:empty) > .info-anchor {
+  display: none !important;
+}
+#reader:has(> #pages-container:empty) > #toolbar {
+  display: none !important;
+}
+
 /* PAGES *********************************************************/
 
 #pages-container {
