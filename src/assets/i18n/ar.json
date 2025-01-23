@@ -126,6 +126,7 @@
   "[NEEDS TRANSLATION]menubar-buttons-restoredown": "Restore",
   "[NEEDS TRANSLATION]menubar-buttons-close": "Close",
   "ctxmenu-copy": "نسخ",
+  "[NEEDS TRANSLATION]ctxmenu-copyimage": "Copy Image",
   "ctxmenu-paste": "لصق",
   "ctxmenu-select-all": "تحديد الكل",
   "ctxmenu-nextpage": "الصفحة التالية",

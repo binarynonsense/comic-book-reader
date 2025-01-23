@@ -126,6 +126,7 @@
   "menubar-buttons-restoredown": "Ibalik",
   "menubar-buttons-close": "Isara",
   "ctxmenu-copy": "Kopyahin",
+  "[NEEDS TRANSLATION]ctxmenu-copyimage": "Copy Image",
   "ctxmenu-paste": "Idikit",
   "ctxmenu-select-all": "Piliin Lahat",
   "ctxmenu-nextpage": "Susunod na Pahina",

@@ -126,6 +126,7 @@
   "[NEEDS TRANSLATION]menubar-buttons-restoredown": "Restore",
   "[NEEDS TRANSLATION]menubar-buttons-close": "Close",
   "ctxmenu-copy": "Копировать",
+  "[NEEDS TRANSLATION]ctxmenu-copyimage": "Copy Image",
   "ctxmenu-paste": "Вставить",
   "ctxmenu-select-all": "Выделить все",
   "ctxmenu-nextpage": "Следующая страница",

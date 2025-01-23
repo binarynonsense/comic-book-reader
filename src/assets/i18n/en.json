@@ -126,6 +126,7 @@
   "menubar-buttons-restoredown": "Restore",
   "menubar-buttons-close": "Close",
   "ctxmenu-copy": "Copy",
+  "ctxmenu-copyimage": "Copy Image",
   "ctxmenu-paste": "Paste",
   "ctxmenu-select-all": "Select All",
   "ctxmenu-nextpage": "Next Page",
