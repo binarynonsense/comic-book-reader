@@ -17,6 +17,8 @@ const contextMenu = require("../../shared/main/tools-menu-context");
 const temp = require("../../shared/main/temp");
 const tools = require("../../shared/main/tools");
 const settings = require("../../shared/main/settings");
+const menuBar = require("../../shared/main/menu-bar");
+const log = require("../../shared/main/logger");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -231,6 +233,8 @@ function initOnIpcCallbacks() {
       outputFormat,
       outputFolderPath
     ) => {
+      menuBar.setCloseTool(false);
+      sendIpcToPreload("update-menubar");
       start(
         inputFiles,
         outputScale,
@@ -249,7 +253,7 @@ function initOnIpcCallbacks() {
     if (!wasCanceled) {
       sendIpcToRenderer(
         "modal-update-title-text",
-        _("tool-shared-modal-title-conversion-finished")
+        _("tool-shared-modal-title-conversion-finished") + " ENDDDD"
       );
 
       if (numErrors > 0) {
@@ -283,6 +287,8 @@ function initOnIpcCallbacks() {
       );
     }
 
+    menuBar.setCloseTool(true);
+    sendIpcToPreload("update-menubar");
     sendIpcToRenderer("show-result");
   });
 }
@@ -509,6 +515,8 @@ async function start(
         _("tool-shared-modal-info-conversion-success-num-files", numFiles)
       );
     }
+    menuBar.setCloseTool(true);
+    sendIpcToPreload("update-menubar");
     sendIpcToRenderer("show-result");
   } catch (err) {
     stopError(err);

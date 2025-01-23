@@ -111,6 +111,10 @@ exports.setPagesDirection = function (direction) {
   checkItem(getItem("pagesdirection-1"), direction === 1);
 };
 
+exports.setCloseTool = function (isEnabled) {
+  enableItem(getItem("close-tool"), isEnabled);
+};
+
 ////////////////////////////
 
 exports.setCanOpenBooks = setCanOpenBooks = function (isEnabled) {

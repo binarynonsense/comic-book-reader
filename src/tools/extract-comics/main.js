@@ -22,6 +22,7 @@ const log = require("../../shared/main/logger");
 const temp = require("../../shared/main/temp");
 const tools = require("../../shared/main/tools");
 const settings = require("../../shared/main/settings");
+const menuBar = require("../../shared/main/menu-bar");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -267,6 +268,8 @@ function initOnIpcCallbacks() {
       totalFilesNum,
       pdfExtractionMethod
     ) => {
+      menuBar.setCloseTool(false);
+      sendIpcToPreload("update-menubar");
       start(
         inputFilePath,
         inputFileType,
@@ -368,6 +371,8 @@ function initOnIpcCallbacks() {
       );
     }
 
+    menuBar.setCloseTool(true);
+    sendIpcToPreload("update-menubar");
     sendIpcToRenderer("show-result");
   });
 }

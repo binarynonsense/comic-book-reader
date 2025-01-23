@@ -22,6 +22,7 @@ const contextMenu = require("../../shared/main/tools-menu-context");
 const log = require("../../shared/main/logger");
 const temp = require("../../shared/main/temp");
 const tools = require("../../shared/main/tools");
+const menuBar = require("../../shared/main/menu-bar");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -386,6 +387,8 @@ function initOnIpcCallbacks() {
   });
 
   on("start", (...args) => {
+    menuBar.setCloseTool(false);
+    sendIpcToPreload("update-menubar");
     start(...args);
   });
 
@@ -462,6 +465,8 @@ function initOnIpcCallbacks() {
       );
     }
 
+    menuBar.setCloseTool(true);
+    sendIpcToPreload("update-menubar");
     sendIpcToRenderer("show-result");
   });
 }
