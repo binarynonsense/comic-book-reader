@@ -10,7 +10,7 @@
 
 Un lector y conversor de cómics para archivos en formato CBZ, CBR, CB7, EPUB y PDF.
 
-![git_banner](https://github.com/binarynonsense/comic-book-reader/assets/8535921/a8a7f902-4445-4695-9bc0-bbae4cba78f2)
+![git_banner](https://github.com/user-attachments/assets/09481c85-8c1d-4e08-b195-e06f598adb16)
 
 <p align="center">
   <a href="./README.en.md">English</a> |
