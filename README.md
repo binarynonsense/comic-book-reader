@@ -54,20 +54,20 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB and PDF files.
   - Supports MP3, Ogg, WAV, M3U and M3U8 files.
   - Can export playlists to M3U files.
 - Tools:
-  - Convert/Resize:
-    - Comic books (CBR, CBZ, CB7, PDF<sup>[5]</sup> or EPUB<sup>[2]</sup> to CBR<sup>[4]</sup>, CBZ, CB7, PDF or EPUB)
-    - Images (JPG, PNG, AVIF or WebP)
-  - Create:
-    - A comic book (CBR<sup>[4]</sup>, CBZ, CB7, PDF or EPUB) from a list of image files and/or comic books
-    - A QR code image from text
-    - Comic book page and thumbnails templates
-  - Extract:
-    - Comic book pages (to JPG, PNG, AVIF or WebP)
-    - Text (OCR) from a comic book page or image file
-    - A QR code's text from a comic book page or image file
-    - A color palette from a comic book page or image file
-      - Can be exported to a GPL or ACO palette file.
-  - Other:
+  - Files:
+    - Convert/Resize:
+      - Comic books (CBR, CBZ, CB7, PDF<sup>[5]</sup> or EPUB<sup>[2]</sup> to CBR<sup>[4]</sup>, CBZ, CB7, PDF or EPUB)
+      - Images (JPG, PNG, AVIF or WebP)
+    - Create:
+      - A comic book (CBR<sup>[4]</sup>, CBZ, CB7, PDF or EPUB) from a list of image files and/or comic books
+      - A QR code image from text
+    - Extract:
+      - Comic book pages (to JPG, PNG, AVIF or WebP)
+      - Text (OCR) from a comic book page or image file
+      - A QR code's text from a comic book page or image file
+      - A color palette from a comic book page or image file
+        - Can be exported to a GPL or ACO palette file.
+  - Search:
     - Search and open books/comics from:
       - Digital Comics Museum
       - Internet Archive Books
@@ -80,6 +80,11 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB and PDF files.
       - Wiktionary Dictionary
     - Search and open radio station streams from:
       - radio-browser
+  - Art:
+    - Comic book page and thumbnails template maker
+    - Color palette extractor
+  - Other:
+    - RSS reader
 
 > Notes:
 >
