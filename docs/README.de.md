@@ -54,7 +54,7 @@ Ein Comicbuch Leser und Konverter für CBZ, CBR, CB7, EPUB und PDF Dateien.
   - Unterstützt MP3, Ogg, WAV, M3U und M3U8 Dateien.
   - Kann Playlists als M3U Dateien exportieren.
 - Werkzeuge:
-  - Dateien
+  - Dateien:
     - Konvertieren/größe Ändern:
       - Comicbücher (CBR, CBZ, CB7, PDF<sup>[5]</sup> oder EPUB<sup>[2]</sup> zu CBR<sup>[4]</sup>, CBZ, CB7, PDF oder EPUB)
       - Bilder (JPG, PNG, AVIF oder WebP)
