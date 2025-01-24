@@ -10,7 +10,7 @@
 
 قارئ للكتب المصورة ومحول لملفات CBZ و CBR و CB7 و EPUB و PDF.
 
-![git_banner](https://github.com/binarynonsense/comic-book-reader/assets/8535921/a8a7f902-4445-4695-9bc0-bbae4cba78f2)
+![git_banner](https://github.com/user-attachments/assets/6ef7ded2-749a-4efd-a6b7-109d0f33d603)
 
 <p align="center">
   <a href="./README.en.md">English</a> | 
