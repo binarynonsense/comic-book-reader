@@ -8,6 +8,7 @@
 export function isVersionOlder(testVersion, referenceVersion) {
   const test = separateVersionText(testVersion);
   const reference = separateVersionText(referenceVersion);
+  console.log([test, reference]);
   if (test === undefined || reference === undefined) return true;
 
   if (test.major < reference.major) return true;
@@ -47,7 +48,7 @@ export function isVersionOlder(testVersion, referenceVersion) {
 function separateVersionText(version) {
   try {
     const regex =
-      /^(?<major>[0-9]+)\.(?<minor>[0-9]+)\.(?<patch>[0-9]+)((-alpha(?<alpha>[0-9]+))|(-beta(?<beta>[0-9]+))*)$/;
+      /^(?<major>[0-9]+)\.(?<minor>[0-9]+)\.(?<patch>[0-9]+)((-alpha(?<alpha>[0-9]+))|(-beta(?<beta>[0-9]+))*.*)$/;
     let match = version.match(regex);
     if (match === null) return undefined;
     if (match.groups.major) match.groups.major = parseInt(match.groups.major);
