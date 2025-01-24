@@ -8,7 +8,6 @@
 export function isVersionOlder(testVersion, referenceVersion) {
   const test = separateVersionText(testVersion);
   const reference = separateVersionText(referenceVersion);
-  console.log([test, reference]);
   if (test === undefined || reference === undefined) return true;
 
   if (test.major < reference.major) return true;
