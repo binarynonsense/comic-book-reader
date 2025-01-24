@@ -726,11 +726,14 @@ if (!gotTheLock) {
 
   exports.onMenuAbout = function () {
     sendIpcToCoreRenderer(
-      "show-modal-info",
+      "show-modal-about",
       "ACBR Comic Book Reader",
-      `${i18n._(
+      `<div id="about-modal-div">${i18n._(
         "ui-modal-info-version"
-      )}: ${app.getVersion()}\n© Álvaro García\nwww.binarynonsense.com`,
+      )}: <span id="about-modal-version">${app.getVersion()}</span>\n© Álvaro García\n<span id="about-modal-link" title="${i18n._(
+        "tool-shared-ui-search-item-open-browser"
+      )}">www.binarynonsense.com</span>
+      </div>`,
       i18n._("ui-modal-prompt-button-ok")
     );
   };

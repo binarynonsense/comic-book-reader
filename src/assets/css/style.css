@@ -108,3 +108,19 @@ img {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--scrollbar-hover-color);
 }
+
+/* /////////////////////////// */
+
+#about-modal-div {
+  margin: 0;
+  padding: 0;
+  user-select: none;
+}
+
+#about-modal-link {
+  text-decoration: underline;
+}
+#about-modal-link:hover {
+  transform: scale(1.05);
+  cursor: pointer;
+}

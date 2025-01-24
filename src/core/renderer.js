@@ -133,6 +133,19 @@ function onIpcFromMain(event, args) {
           showModalAlert(args[2], args[3], args[4]);
         }
         break;
+      case "show-modal-about":
+        {
+          showModalAlert(args[2], args[3], args[4]);
+          document
+            .querySelector("#about-modal-link")
+            .addEventListener("click", (event) => {
+              reader.sendIpcToMain(
+                "open-url-in-browser",
+                "http://www.binarynonsense.com"
+              );
+            });
+        }
+        break;
       case "show-modal-checkversion":
         {
           showModalCheckUpdates(...args.slice(2));
