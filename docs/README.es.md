@@ -54,20 +54,21 @@ Un lector y conversor de cómics para archivos en formato CBZ, CBR, CB7, EPUB y 
   - Admite archivos MP3, Ogg, WAV, M3U y M3U8.
   - Puede exportar listas de reproducción a archivos M3U.
 - Herramientas:
-  - Convertir/Redimensionar:
-    - Cómics (CBR, CBZ, CB7, PDF<sup>[5]</sup> o EPUB<sup>[2]</sup> a CBR<sup>[4]</sup>, CBZ, CB7, PDF o EPUB)
-    - Imágenes (JPG, PNG, AVIF o WebP)
-  - Crear:
-    - Un cómic (CBR<sup>[4]</sup>, CBZ, CB7, PDF o EPUB) a partir de una lista de archivos de imagen y/o cómics
-    - Una imagen de código QR a partir de un texto
-    - Plantillas de páginas y miniaturas de cómic
-  - Extraer:
-    - Páginas de cómics (a JPG, PNG, AVIF o WebP)
-    - Texto (OCR) de una página de cómic o archivo de imagen
-    - El texto de un código QR en una página de cómic o un archivo de imagen
-    - Una paleta de colores de una página de cómic o un archivo de imagen
-      - Se puede exportar a un archivo de paleta GPL o ACO.
-  - Otras:
+  - Ficheros:
+    - Convertir/Redimensionar:
+      - Cómics (CBR, CBZ, CB7, PDF<sup>[5]</sup> o EPUB<sup>[2]</sup> a CBR<sup>[4]</sup>, CBZ, CB7, PDF o EPUB)
+      - Imágenes (JPG, PNG, AVIF o WebP)
+    - Crear:
+      - Un cómic (CBR<sup>[4]</sup>, CBZ, CB7, PDF o EPUB) a partir de una lista de archivos de imagen y/o cómics
+      - Una imagen de código QR a partir de un texto
+      - Plantillas de páginas y miniaturas de cómic
+    - Extraer:
+      - Páginas de cómics (a JPG, PNG, AVIF o WebP)
+      - Texto (OCR) de una página de cómic o archivo de imagen
+      - El texto de un código QR en una página de cómic o un archivo de imagen
+      - Una paleta de colores de una página de cómic o un archivo de imagen
+        - Se puede exportar a un archivo de paleta GPL o ACO.
+  - Buscar:
     - Buscar y abrir libros/cómics de:
       - Digital Comics Museum
       - Internet Archive Books
@@ -80,6 +81,11 @@ Un lector y conversor de cómics para archivos en formato CBZ, CBR, CB7, EPUB y 
       - Diccionario Wiktionary
     - Buscar y abrir streams de radio de:
       - radio-browser
+  - Arte:
+    - Creador de plantillas de páginas y miniaturas de cómic
+    - Extractor de paletta de colores
+  - Otras:
+    - Lector de RSS   
 
 > Notas:
 >
