@@ -54,20 +54,20 @@ Ein Comicbuch Leser und Konverter für CBZ, CBR, CB7, EPUB und PDF Dateien.
   - Unterstützt MP3, Ogg, WAV, M3U und M3U8 Dateien.
   - Kann Playlists als M3U Dateien exportieren.
 - Werkzeuge:
-  - Konvertieren/größe Ändern:
-    - Comicbücher (CBR, CBZ, CB7, PDF<sup>[5]</sup> oder EPUB<sup>[2]</sup> zu CBR<sup>[4]</sup>, CBZ, CB7, PDF oder EPUB)
-    - Bilder (JPG, PNG, AVIF oder WebP)
-  - Erstelle:
-    - Ein Comicbuch (CBR<sup>[4]</sup>, CBZ, CB7, PDF oder EPUB) aus einer Liste von Bild Dateien und/oder Comicbüchern
-    - Ein QR Code Bild aus Text
-    - Comicbuch Seitenvorlagen und Vorschaubilder
-  - Extrahiere:
-    - Comicbuch Seiten (zu JPG, PNG, AVIF oder WebP)
-    - Text (OCR) aus einer Comicbuch Seite oder Bilddatei
-    - QR Code Text aus einer Comicbuch Seite oder Bilddatei
-    - Eine Farbpalette aus einer Comicbuch Seite oder Bilddatei
-      - Kann zu einer GPL oder ACO Paletten-datei extrahiert werden.
-  - Weiteres:
+  - Dateien
+    - Konvertieren/größe Ändern:
+      - Comicbücher (CBR, CBZ, CB7, PDF<sup>[5]</sup> oder EPUB<sup>[2]</sup> zu CBR<sup>[4]</sup>, CBZ, CB7, PDF oder EPUB)
+      - Bilder (JPG, PNG, AVIF oder WebP)
+    - Erstelle:
+      - Ein Comicbuch (CBR<sup>[4]</sup>, CBZ, CB7, PDF oder EPUB) aus einer Liste von Bild Dateien und/oder Comicbüchern
+      - Ein QR Code Bild aus Text
+    - Extrahiere:
+      - Comicbuch Seiten (zu JPG, PNG, AVIF oder WebP)
+      - Text (OCR) aus einer Comicbuch Seite oder Bilddatei
+      - QR Code Text aus einer Comicbuch Seite oder Bilddatei
+      - Eine Farbpalette aus einer Comicbuch Seite oder Bilddatei
+        - Kann zu einer GPL oder ACO Paletten-datei extrahiert werden.
+  - Suche:
     - Suche und öffne Bücher/Comics von:
       - Digital Comics Museum
       - Internet Archive Books
@@ -80,6 +80,11 @@ Ein Comicbuch Leser und Konverter für CBZ, CBR, CB7, EPUB und PDF Dateien.
       - Wiktionary Dictionary
     - Suche und öffne Radiosender-streams von:
       - radio-browser
+  - Kunst:
+    - Comicbuch Seitenvorlagen- und Vorschaubild-ersteller
+    - Farbpalettenextrahierer
+  - Weiteres:
+    - RSS Reader
 
 > Hinweise:
 >
