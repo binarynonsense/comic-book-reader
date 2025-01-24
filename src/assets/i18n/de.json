@@ -3,7 +3,7 @@
     "authors": [
       "trzyglow"
     ],
-    "last-updated": "2025-01-23",
+    "last-updated": "2025-01-24",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.8.0",
     "pre-release": "false",
@@ -126,7 +126,7 @@
   "menubar-buttons-restoredown": "Wiederherstellen",
   "menubar-buttons-close": "Schließen",
   "ctxmenu-copy": "Kopieren",
-  "[NEEDS TRANSLATION]ctxmenu-copyimage": "Copy Image",
+  "ctxmenu-copyimage": "Bild kopieren",
   "ctxmenu-paste": "Einfügen",
   "ctxmenu-select-all": "Alles auswählen",
   "ctxmenu-nextpage": "Nächste Seite",
