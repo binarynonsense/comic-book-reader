@@ -23,11 +23,11 @@ Isang comic book reader at converter para sa mga CBZ, CBR, CB7, EPUB at PDF na m
 
 ## Nilalaman:
 
-- [Mga Tampok](#features)
-- [Mga Pag-download](#downloads)
-- [Mga Kontribusyon](#contributions)
-- [Lisensya](#license)
-- [Iba Pa](#other)
+- [Mga Tampok](#mga-tampok)
+- [Mga Pag-download](#mga-pag-download)
+- [Mga Kontribusyon](#mga-kontribusyon)
+- [Lisensya](#lisensya)
+- [Iba Pa](#iba-pa)
 
 ## Mga Tampok:
 
