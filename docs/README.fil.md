@@ -40,7 +40,7 @@ Isang comic book reader at converter para sa mga CBZ, CBR, CB7, EPUB at PDF na m
     - JPG, PNG, WebP at AVIF
   - Mga Ebooks:
     - PDF<sup>[5]</sup> at EPUB<sup>[3]</sup>
-- Mode ng windowed (simpleng UI) at mode ng buong screen (walang UI)
+- Windowed (simpleng UI) at full-screen (walang UI) na mode
 - 'Fit to width', 'fit to height' at isang nako-customize na 'scale to height' na mga page view
 - Pag-ikot ng pahina
 - UI ay available sa:
@@ -87,13 +87,13 @@ Isang comic book reader at converter para sa mga CBZ, CBR, CB7, EPUB at PDF na m
   - Iba Pa:
     - RSS reader
 
-> Mga Tala:
+> Tandaan:
 >
 > [1]: Kasama ang password-protected na PDF, CBZ (hindi sinusuportahan ang AES encryption), CB7 at CBR na mga file.
 >
 > [2]: Imahe lamang.
 >
-> [3]: Ang pagbabasa ng EPUB Ebooks ay isang eksperimentong / karagdagang tampok na labas sa pangunahing layunin ng proyekto. Maaaring hindi gumana para sa lahat ng mga file at maaaring alisin sa mga susunod na bersyon kung kinakailangan.
+> [3]: Ang pagbabasa ng EPUB Ebooks ay isang eksperimental na / extra feature na labas sa pangunahing layunin ng proyekto. Maaaring hindi ito gumana para sa lahat ng mga file at maaaring tanggalin sa mga susunod na bersyon kung kinakailangan.
 >
 > [4]: Ang paggawa at pagbabago ng mga CBR na file ay naka-disable sa default. Maaari itong paganahin sa mga preferences ngunit nangangailangan ng isang third-party na command-line tool ([rar](https://www.win-rar.com/cmd-shell-mode.html?&L=0) mula sa WinRAR) na naka-install sa system.
 >
@@ -103,7 +103,7 @@ Isang comic book reader at converter para sa mga CBZ, CBR, CB7, EPUB at PDF na m
 
 <a href="https://github.com/binarynonsense/comic-book-reader/releases/latest"><img src="https://shields.io/github/v/release/binarynonsense/comic-book-reader?display_name=tag&label=stable" title="version"></a> <a href="https://github.com/binarynonsense/comic-book-reader/releases"><img src="https://shields.io/github/v/release/binarynonsense/comic-book-reader?display_name=tag&label=latest&include_prereleases" title="version"></a> <a href="http://www.binarynonsense.com/webapps/github-releases-summary/?owner=binarynonsense&name=comic-book-reader"><img src="https://shields.io/github/downloads/binarynonsense/comic-book-reader/total?label=downloads" title="total downloads"></a>
 
-Bersyon na Matatag:
+Stable na Bersyon:
 
 - [Windows](https://github.com/binarynonsense/comic-book-reader/releases/latest/download/ACBR_Windows.zip)
 - [Windows (Self-Extracting)](https://github.com/binarynonsense/comic-book-reader/releases/latest/download/ACBR_Windows_SelfExtracting.exe)
@@ -129,4 +129,5 @@ Ang code ng ACBR ay inilabas sa ilalim ng BSD 2-Clause [lisensya](../LICENSE). P
 
 ## Iba Pa:
 
-Mga screenshot, karagdagang detalye tungkol sa mga kontrol at iba pang ekstrang impormasyon ay matatagpuan sa [wiki ng proyekto](https://github.com/binarynonsense/comic-book-reader/wiki).
+Makikita ang mga screenshots, karagdagang detalye tungkol sa mga controls, at iba pang extra impormasyon sa [Wiki ng proyekto](https://github.com/binarynonsense/comic-book-reader/wiki).
+
