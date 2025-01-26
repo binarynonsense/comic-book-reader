@@ -127,6 +127,7 @@
   "menubar-buttons-close": "Cerrar",
   "ctxmenu-copy": "Copiar",
   "ctxmenu-copyimage": "Copiar imagen",
+  "ctxmenu-saveimageas": "Guardar imagen como",
   "ctxmenu-paste": "Pegar",
   "ctxmenu-select-all": "Seleccionar todo",
   "ctxmenu-nextpage": "Página siguiente",
