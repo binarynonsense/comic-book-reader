@@ -175,7 +175,7 @@
   "ui-modal-info-currentversion": "الإصدار الحالي",
   "ui-modal-info-latestversion": "الإصدار الأخير",
   "ui-modal-info-lateststableversion": "أحدث إصدار مستقر",
-  "ui-modal-info-updateavailable-yes": "هناك نسخة مستقرة أحدث متوفرة. انقر على زر '\فتح'\ لفتح صفحة التنزيل في متصفحك.",
+  "ui-modal-info-updateavailable-yes": "هناك نسخة مستقرة أحدث متوفرة. انقر على زر 'فتح' لفتح صفحة التنزيل في متصفحك.",
   "ui-modal-info-updateavailable-no": "تعذر العثور على إصدار مستقر أحدث.",
   "ui-modal-info-metadata": "البيانات الوصفية",
   "ui-modal-info-metadata-fileproperties": "خصائص الملف",
