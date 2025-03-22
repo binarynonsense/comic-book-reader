@@ -1,0 +1,188 @@
+name: Build ACBR
+on:
+  workflow_dispatch:
+    inputs:
+      createWindows:
+        description: "Create Windows version"
+        required: true
+        default: true
+      createLinux:
+        description: "Create Linux version"
+        required: true
+        default: true
+      addDateToAlphas:
+        description: "Add date to alpha versions"
+        required: true
+        default: true
+      addDateToAll:
+        description: "Add date to any version"
+        required: true
+        default: false
+      releaseWinSelfExtracting:
+        description: "Include Windows Self-Extracting"
+        required: true
+        default: false
+      releaseLinAppImage:
+        description: "Include Linux AppImage"
+        required: true
+        default: false
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-24.04, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: CHECKOUT
+        if: ${{ (matrix.os == 'ubuntu-24.04' && github.event.inputs.createLinux == 'true') || (matrix.os == 'windows-latest' && github.event.inputs.createWindows == 'true') }}
+        uses: actions/checkout@v4
+        with:
+          repository: binarynonsense/comic-book-reader
+
+      - name: SETUP NODE
+        if: ${{ (matrix.os == 'ubuntu-24.04' && github.event.inputs.createLinux == 'true') || (matrix.os == 'windows-latest' && github.event.inputs.createWindows == 'true') }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+
+      - name: INSTALL PACKAGES
+        if: ${{ (matrix.os == 'ubuntu-24.04' && github.event.inputs.createLinux == 'true') || (matrix.os == 'windows-latest' && github.event.inputs.createWindows == 'true') }}
+        run: npm ci
+
+      - name: SET NAME AND VERSION
+        if: ${{ (matrix.os == 'ubuntu-24.04' && github.event.inputs.createLinux == 'true') || (matrix.os == 'windows-latest' && github.event.inputs.createWindows == 'true') }}
+        shell: bash
+        run: |
+          APP_VERSION=$(jq -r .version package.json)
+          BUILD_DATE=$(date '+%Y%m%d-%H%M%S')
+          IS_ALPHA=false
+          if echo "$APP_VERSION" | grep 'alpha'; then
+            IS_ALPHA=true
+          fi
+          ADDTOALL=${{github.event.inputs.addDateToAll }}
+          ADDTOALPHAS=${{github.event.inputs.addDateToAlphas }}
+          ADD_DATE=false
+          if [ "$IS_ALPHA" == true ] &&  [ "$ADDTOALPHAS" == true ]; then
+            ADD_DATE=true
+          fi
+          if [ "$ADDTOALL" == true ]; then
+            ADD_DATE=true
+          fi
+          if [ "$ADD_DATE" == true ]; then
+            NEW_APP_VERSION="${APP_VERSION}-${BUILD_DATE}"
+            jq --arg variable "${NEW_APP_VERSION}" '.version = $variable' package.json > package.json.tmp
+            mv package.json.tmp package.json
+          else
+            NEW_APP_VERSION="${APP_VERSION}"
+          fi
+          echo $NEW_APP_VERSION
+          echo "RELEASE_NAME=$NEW_APP_VERSION" >> $GITHUB_ENV
+
+      - name: RUN DIST (LINUX)
+        if: ${{ matrix.os == 'ubuntu-24.04' && github.event.inputs.createLinux == 'true' }}
+        run: npm run dist:linux
+      - name: RUN DIST (WINDOWS)
+        if: ${{ matrix.os == 'windows-latest' && github.event.inputs.createWindows == 'true' }}
+        run: npm run dist:windows
+
+      - name: LS DIST
+        if: ${{ (matrix.os == 'ubuntu-24.04' && github.event.inputs.createLinux == 'true') || (matrix.os == 'windows-latest' && github.event.inputs.createWindows == 'true') }}
+        shell: bash
+        run: ls ./dist
+
+      - name: PREPARE FILES (LINUX)
+        if: ${{ matrix.os == 'ubuntu-24.04' && github.event.inputs.createLinux == 'true' }}
+        run: |
+          mkdir ./dist/ACBR_Linux_deb
+          mv ./dist/*.deb ./dist/ACBR_Linux_deb/
+          cp -r licenses ./dist/ACBR_Linux_deb/licenses
+          cp ./dist/VERSION ./dist/ACBR_Linux_deb/
+          mv ./dist/ACBR_deb.sh ./dist/ACBR_Linux_deb/ACBR.sh 
+
+          mkdir ./dist/ACBR_Linux_AppImage
+          mv ./dist/*.AppImage ./dist/ACBR_Linux_AppImage/
+          cp -r licenses ./dist/ACBR_Linux_AppImage/licenses
+          mv ./dist/VERSION ./dist/ACBR_Linux_AppImage/
+          mv ./dist/ACBR.sh ./dist/ACBR_Linux_AppImage/ 
+
+          mv ./dist/linux-unpacked ./dist/ACBR_Linux
+          cp -r licenses ./dist/ACBR_Linux/licenses
+          rm  ./dist/ACBR_Linux/LICENSE*
+      - name: PREPARE FILES (WINDOWS)
+        if: ${{ matrix.os == 'windows-latest' && github.event.inputs.createWindows == 'true' }}
+        shell: bash
+        run: |
+          mv ./dist/win-unpacked ./dist/ACBR_Windows
+          cp -r licenses ./dist/ACBR_Windows/licenses
+          rm  ./dist/ACBR_Windows/LICENSE*
+
+      - name: PREPARE ZIPS (LINUX)
+        if: ${{ matrix.os == 'ubuntu-24.04' && github.event.inputs.createLinux == 'true' }}
+        shell: bash
+        run: |
+          cd ./dist
+          zip -r ./ACBR_Linux.zip ./ACBR_Linux
+          zip -r ./ACBR_Linux_AppImage.zip ./ACBR_Linux_AppImage
+          zip -r ./ACBR_Linux_deb.zip ./ACBR_Linux_deb
+      - name: PREPARE ZIPS (WINDOWS)
+        if: ${{ matrix.os == 'windows-latest' && github.event.inputs.createWindows == 'true' }}
+        shell: bash
+        run: |
+          cd ./dist
+          7z a ./ACBR_Windows.zip ./ACBR_Windows
+          RELEASE_SE=${{ github.event.inputs.releaseWinSelfExtracting }}
+          if [ "$RELEASE_SE" == true ]; then
+            7z a -t7z -sfx -m0=lzma2 -mx=9 ACBR_Windows_SelfExtracting.exe ./ACBR_Windows
+          fi
+
+      - name: LS DIST
+        if: ${{ (matrix.os == 'ubuntu-24.04' && github.event.inputs.createLinux == 'true') || (matrix.os == 'windows-latest' && github.event.inputs.createWindows == 'true') }}
+        shell: bash
+        run: ls ./dist
+
+      - name: RELEASE (LINUX) (ALL)
+        if: ${{matrix.os == 'ubuntu-24.04' && github.event.inputs.createLinux == 'true' && github.event.inputs.releaseLinAppImage == 'true' }}
+        uses: softprops/action-gh-release@v2
+        with:
+          prerelease: true
+          draft: true
+          name: v${{env.RELEASE_NAME}} (linux)
+          tag_name: v${{env.RELEASE_NAME}}-linux
+          files: |
+            ./dist/ACBR_Linux.zip
+            ./dist/ACBR_Linux_AppImage.zip
+            ./dist/ACBR_Linux_deb.zip
+      - name: RELEASE (LINUX) (SIMPLE)
+        if: ${{matrix.os == 'ubuntu-24.04' && github.event.inputs.createLinux == 'true' && github.event.inputs.releaseLinAppImage == 'false' }}
+        uses: softprops/action-gh-release@v2
+        with:
+          prerelease: true
+          draft: true
+          name: v${{env.RELEASE_NAME}} (linux)
+          tag_name: v${{env.RELEASE_NAME}}-linux
+          files: |
+            ./dist/ACBR_Linux.zip
+      - name: RELEASE (WINDOWS) (ALL)
+        if: ${{matrix.os == 'windows-latest' && github.event.inputs.createWindows == 'true' && github.event.inputs.releaseWinSelfExtracting == 'true' }}
+        uses: softprops/action-gh-release@v2
+        with:
+          prerelease: true
+          draft: true
+          name: v${{env.RELEASE_NAME}} (windows)
+          tag_name: v${{env.RELEASE_NAME}}-windows
+          files: |
+            ./dist/ACBR_Windows.zip
+            ./dist/ACBR_Windows_SelfExtracting.exe
+      - name: RELEASE (WINDOWS) (SIMPLE)
+        if: ${{matrix.os == 'windows-latest' && github.event.inputs.createWindows == 'true' && github.event.inputs.releaseWinSelfExtracting == 'false' }}
+        uses: softprops/action-gh-release@v2
+        with:
+          prerelease: true
+          draft: true
+          name: v${{env.RELEASE_NAME}} (windows)
+          tag_name: v${{env.RELEASE_NAME}}-windows
+          files: |
+            ./dist/ACBR_Windows.zip
