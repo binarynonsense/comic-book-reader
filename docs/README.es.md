@@ -84,7 +84,7 @@ Un lector y conversor de cómics para archivos en formato CBZ, CBR, CB7, EPUB y 
     - Creador de plantillas de páginas y miniaturas de cómic
     - Extractor de paletta de colores
   - Otras:
-    - Lector de RSS   
+    - Lector de RSS
 
 > Notas:
 >
@@ -108,6 +108,9 @@ Versión estable:
 - [Windows (Self-Extracting)](https://github.com/binarynonsense/comic-book-reader/releases/latest/download/ACBR_Windows_SelfExtracting.exe)
 - [Linux](https://github.com/binarynonsense/comic-book-reader/releases/latest/download/ACBR_Linux.zip)
 - [Linux (AppImage)](https://github.com/binarynonsense/comic-book-reader/releases/latest/download/ACBR_Linux_AppImage.zip)
+- [Linux (deb)](https://github.com/binarynonsense/comic-book-reader/releases/latest/download/ACBR_Linux_deb.zip)
+
+> Nota: Para distribuciones de Linux que requieren la configuración de un perfil de AppArmor para la ejecución de aplicaciones Electron, como Ubuntu 24.04, elija la descarga del paquete deb [Linux (deb)](https://github.com/binarynonsense/comic-book-reader/releases/latest/download/ACBR_Linux_deb.zip), ya que las versiones estándar y AppImage no son actualmente compatibles con ellas debido a esta restricción.
 
 Todas las versiones (estables y betas):
 
