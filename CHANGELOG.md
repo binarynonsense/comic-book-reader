@@ -1,3 +1,8 @@
+## v3.10.1
+
+- Added a .deb package for Linux that should work with distributions, like Ubuntu 24.04, that require setting an AppArmor profile for Electron apps to run, as the regular and AppImage versions don't currently work on them due to that restriction.
+- Updated the Arabic localization.
+
 ## v3.10.0
 
 - Added a new tool: "RSS Reader". A basic RSS and Atom feed reader that includes some default feeds relating to comic books.
