@@ -1,7 +1,7 @@
 {
   "name": "acbr-comic-book-reader",
-  "version": "3.10.0",
-  "description": "ACBR - A comic book reader and converter for CBZ, CBR, CB7, EPUB and PDF files",
+  "version": "3.10.1-beta0",
+  "description": "Comic book reader and converter for CBZ, CBR, CB7, EPUB and PDF files",
   "main": "./src/core/main.js",
   "author": "Álvaro García (www.binarynonsense.com)",
   "license": "BSD-2-Clause",
@@ -10,19 +10,24 @@
     "url": "https://github.com/binarynonsense/comic-book-reader"
   },
   "build": {
+    "productName": "ACBR Comic Book Reader",
     "appId": "com.binarynonsense.acbr",
     "win": {
       "icon": "./src/assets/images/icon_256x256.png"
     },
     "linux": {
-      "category": "Utility",
+      "category": "Graphics",
       "icon": "./src/assets/images/icon_256x256.png",
       "target": [
         {
           "target": "AppImage"
+        },
+        {
+          "target": "deb"
         }
       ],
-      "artifactName": "${productName}.${ext}",
+      "artifactName": "${name}-${version}.${ext}",
+      "maintainer": "web@binarynonsense.com",
       "asarUnpack": [
         "**/node_modules/sharp/**",
         "**/node_modules/@img/**/*",
@@ -53,7 +58,7 @@
   "devDependencies": {
     "del-cli": "^6.0.0",
     "electron": "^33.3.1",
-    "electron-builder": "^25.1.8",
+    "electron-builder": "^26.0.11",
     "license-checker": "^25.0.1",
     "shx": "^0.3.4"
   },
