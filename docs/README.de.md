@@ -108,6 +108,9 @@ Stabile Version:
 - [Windows (selbstextrahierend)](https://github.com/binarynonsense/comic-book-reader/releases/latest/download/ACBR_Windows_SelfExtracting.exe)
 - [Linux](https://github.com/binarynonsense/comic-book-reader/releases/latest/download/ACBR_Linux.zip)
 - [Linux (AppImage)](https://github.com/binarynonsense/comic-book-reader/releases/latest/download/ACBR_Linux_AppImage.zip)
+- [Linux (deb)](https://github.com/binarynonsense/comic-book-reader/releases/latest/download/ACBR_Linux_deb.zip)
+
+> Anmerkung: Für Linux Distributionen welche das Aufsetzen von einem AppArmor Profil zum Ausführen von Electron Apps benötigen, z.B. Ubuntu 24.04, wähle den Download für das deb-Paket [Linux (deb)](https://github.com/binarynonsense/comic-book-reader/releases/latest/download/ACBR_Linux_deb.zip), da die regulären und AppImage Versionen aufgrund dieser Beschränkung aktuell nicht auf ihnen funktionieren.
 
 Alle Versionen (Stabil und Beta):
 
