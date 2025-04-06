@@ -20,13 +20,41 @@ const log = require("../../shared/main/logger");
 ///////////////////////////////////////////////////////////////////////////////
 
 let g_isInitialized = false;
+let g_server = "https:\\de2.api.radio-browser.info";
 
-function init() {
+async function init() {
   if (!g_isInitialized) {
     initOnIpcCallbacks();
     initHandleIpcCallbacks();
     g_isInitialized = true;
+    await getServersList();
   }
+}
+
+async function getServersList() {
+  try {
+    const axios = require("axios").default;
+    const response = await axios.get(
+      `https://all.api.radio-browser.info/json/servers`,
+      { timeout: 10000 }
+    );
+    let urls = [];
+    if (response.data && response.data.length > 0) {
+      response.data.forEach((element) => {
+        if (element.name) urls.push("https://" + element.name);
+      });
+    }
+    if (urls.length > 0) {
+      g_server = urls[Math.floor(Math.random() * urls.length)];
+      log.test(g_server);
+    }
+  } catch (error) {
+    log.error(error);
+  }
+  // refs:
+  // https://api.radio-browser.info/examples/serverlist_fast.js
+  // https://all.api.radio-browser.info/json/servers
+  // https://docs.radio-browser.info/#server-mirrors
 }
 
 exports.open = function () {
@@ -119,7 +147,7 @@ function initOnIpcCallbacks() {
     (async () => {
       try {
         const axios = require("axios").default;
-        await axios.get(`http://de1.api.radio-browser.info/json/url/${id}`, {
+        await axios.get(`${g_server}/json/url/${id}`, {
           timeout: 5000,
         });
       } catch (error) {}
@@ -141,7 +169,7 @@ function initOnIpcCallbacks() {
         }
       }
       const response = await axios.get(
-        `http://de1.api.radio-browser.info/json/stations/search?name=${searchQuery}&hidebroken=false${extraOptions}`,
+        `${g_server}/json/stations/search?name=${searchQuery}&hidebroken=false${extraOptions}`,
         { timeout: 10000 }
       );
 
