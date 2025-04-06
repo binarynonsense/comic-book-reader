@@ -46,7 +46,6 @@ async function getServersList() {
     }
     if (urls.length > 0) {
       g_server = urls[Math.floor(Math.random() * urls.length)];
-      log.test(g_server);
     }
   } catch (error) {
     log.error(error);
