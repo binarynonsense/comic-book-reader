@@ -1082,6 +1082,17 @@ function showNavKeysChangeModal(title, message, textButton, action, keyIndex) {
   });
 
   g_openModalOnInputEvent = (type, event) => {
+    function combinationNotAllowed(ctrlKey, key) {
+      let usedKeys = ["b", "t", "p", "j", "l", "q", "m", "h"];
+      if (ctrlKey) {
+        for (let index = 0; index < usedKeys.length; index++) {
+          const usedKey = usedKeys[index];
+          if (key.toLowerCase() === usedKey) return true;
+        }
+      }
+      return false;
+    }
+
     switch (type) {
       case "onkeydown": {
         if (
@@ -1110,6 +1121,9 @@ function showNavKeysChangeModal(title, message, textButton, action, keyIndex) {
           event.preventDefault();
         } else if (event.key === "Control" || event.key === "Alt") {
           // allowed only as modifiers
+          event.preventDefault();
+        } else if (combinationNotAllowed(event.ctrlKey, event.key)) {
+          sound.playErrorSound();
           event.preventDefault();
         } else {
           sendIpcToMain(
