@@ -6,6 +6,7 @@
  */
 
 import * as reader from "../reader/renderer.js";
+import { getNavKeys } from "../reader/renderer-ui.js";
 import {
   init as initTools,
   getTools,
@@ -368,6 +369,10 @@ function updateLanguageDirection(newDirection) {
   }
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// MENU BAR OBSERVER //////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
 let g_menuBarObserver;
 
 // TITLE BAR HACK to support rtl direction !!!!!!
@@ -375,14 +380,22 @@ let g_menuBarObserver;
 // override its position to flow from right to left, the rest is done in
 // updateLanguageDirection
 function initTitleBarObserver() {
-  if (g_languageDirection !== "rtl") {
-    if (g_menuBarObserver !== undefined) {
-      g_menuBarObserver.disconnect();
-      g_menuBarObserver = undefined;
-    }
-    return;
+  // old code only for rtl
+  // if (g_languageDirection !== "rtl") {
+  //   if (g_menuBarObserver !== undefined) {
+  //     g_menuBarObserver.disconnect();
+  //     g_menuBarObserver = undefined;
+  //   }
+  //   return;
+  // }
+  // if (g_menuBarObserver !== undefined) return;
+
+  // new code: will always observe
+  if (g_menuBarObserver !== undefined) {
+    g_menuBarObserver.disconnect();
+    g_menuBarObserver = undefined;
   }
-  if (g_menuBarObserver !== undefined) return;
+
   try {
     // ref: https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver
     const targetNode = document.querySelector(".cet-menubar");
@@ -392,69 +405,89 @@ function initTitleBarObserver() {
         if (mutation.type === "childList") {
           // a child node has been added or removed
           if (mutation.addedNodes && mutation.addedNodes.length > 0) {
-            mutation.addedNodes.forEach((node) => {
-              if (
-                node.classList &&
-                node.classList.contains("cet-menubar-menu-container")
-              ) {
-                // ref: custom-electron-titlebar/src/menubar/menu/submenu.ts
-                // createSubmenu()
-                // HACK !!!!!
-                if (node.classList.contains("cet-submenu")) {
-                  // submenu container
-                  node.style.left = "auto";
-                  node.style.right = `${node.parentNode.offsetWidth}px`;
-                  if (
-                    node.parentNode.parentNode.parentNode.classList.contains(
-                      "cet-action-item"
-                    )
-                  ) {
-                    // third level submenu
-                    const parentRect = node.parentNode.getBoundingClientRect();
-                    const grandParentRect =
-                      node.parentNode.parentNode.getBoundingClientRect();
-                    node.style.top = `${
-                      parentRect.top - grandParentRect.top
-                    }px`;
-                  } else {
-                    // second level submenu
-                    const parentRect = node.parentNode.getBoundingClientRect();
-                    const grandGrandParentRect =
-                      node.parentNode.parentNode.parentNode.getBoundingClientRect();
-                    node.style.top = `${
-                      parentRect.top - grandGrandParentRect.bottom
-                    }px`;
-                  }
-                  // make paths in history submenu always ltr
-                  let isHistory = false;
-                  const keybindings = node.querySelectorAll(".keybinding");
-                  keybindings.forEach((keybinding) => {
-                    if (keybinding.tagName.toLowerCase() === "span") {
-                      if (keybinding.textContent === "Control+H") {
-                        isHistory = true;
-                      }
-                    }
-                  });
-                  if (isHistory) {
-                    const labels = node.querySelectorAll(".cet-action-label");
-                    labels.forEach((label) => {
-                      if (label.tagName.toLowerCase() === "span") {
-                        label.style.direction = "ltr";
-                      }
-                    });
-                  }
-                } else {
-                  const rect = node.getBoundingClientRect();
-                  const parentRect = node.parentNode.getBoundingClientRect();
-                  node.style.left = `${
-                    parentRect.left - rect.width + parentRect.width
-                  }px`;
-                  node.style.left = `${
-                    parentRect.left - rect.width + parentRect.width
-                  }px`;
+            // keybindings names adjustments
+            // TODO: this is a brute force approach, do something more
+            // performant?
+            const keybindings = targetNode.querySelectorAll(".keybinding");
+            keybindings.forEach((keybinding) => {
+              if (keybinding.tagName.toLowerCase() === "span") {
+                if (keybinding.textContent === "Control++") {
+                  keybinding.textContent = getNavKeys()["zoomInPage"];
+                } else if (keybinding.textContent === "Control+-") {
+                  keybinding.textContent = getNavKeys()["zoomOutPage"];
+                } else if (keybinding.textContent === "Control+0") {
+                  keybinding.textContent = getNavKeys()["zoomResetPage"];
                 }
               }
             });
+            // rtl adjustments
+            if (g_languageDirection === "rtl") {
+              mutation.addedNodes.forEach((node) => {
+                if (
+                  node.classList &&
+                  node.classList.contains("cet-menubar-menu-container")
+                ) {
+                  // ref: custom-electron-titlebar/src/menubar/menu/submenu.ts
+                  // createSubmenu()
+                  // HACK !!!!!
+                  if (node.classList.contains("cet-submenu")) {
+                    // submenu container
+                    node.style.left = "auto";
+                    node.style.right = `${node.parentNode.offsetWidth}px`;
+                    if (
+                      node.parentNode.parentNode.parentNode.classList.contains(
+                        "cet-action-item"
+                      )
+                    ) {
+                      // third level submenu
+                      const parentRect =
+                        node.parentNode.getBoundingClientRect();
+                      const grandParentRect =
+                        node.parentNode.parentNode.getBoundingClientRect();
+                      node.style.top = `${
+                        parentRect.top - grandParentRect.top
+                      }px`;
+                    } else {
+                      // second level submenu
+                      const parentRect =
+                        node.parentNode.getBoundingClientRect();
+                      const grandGrandParentRect =
+                        node.parentNode.parentNode.parentNode.getBoundingClientRect();
+                      node.style.top = `${
+                        parentRect.top - grandGrandParentRect.bottom
+                      }px`;
+                    }
+                    // make paths in history submenu always ltr
+                    let isHistory = false;
+                    const keybindings = node.querySelectorAll(".keybinding");
+                    keybindings.forEach((keybinding) => {
+                      if (keybinding.tagName.toLowerCase() === "span") {
+                        if (keybinding.textContent === "Control+H") {
+                          isHistory = true;
+                        }
+                      }
+                    });
+                    if (isHistory) {
+                      const labels = node.querySelectorAll(".cet-action-label");
+                      labels.forEach((label) => {
+                        if (label.tagName.toLowerCase() === "span") {
+                          label.style.direction = "ltr";
+                        }
+                      });
+                    }
+                  } else {
+                    const rect = node.getBoundingClientRect();
+                    const parentRect = node.parentNode.getBoundingClientRect();
+                    node.style.left = `${
+                      parentRect.left - rect.width + parentRect.width
+                    }px`;
+                    node.style.left = `${
+                      parentRect.left - rect.width + parentRect.width
+                    }px`;
+                  }
+                }
+              });
+            }
           }
         }
       }
@@ -465,3 +498,32 @@ function initTitleBarObserver() {
     console.log(error);
   }
 }
+
+/* <li class="cet-action-item" role="presentation" tabindex="0">
+  <a
+    class="cet-action-menu-item"
+    aria-checked="false"
+    style="color: rgb(238, 238, 238);"
+  >
+    <span
+      class="cet-menu-item-icon checkbox"
+      role="none"
+      style="color: rgb(238, 238, 238);"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        stroke-width="1.5"
+        stroke="currentColor"
+        fill="none"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M5 12l5 5l10 -10"></path>
+      </svg>
+    </span>
+    <span class="cet-action-label">Audio Player</span>
+    <span class="keybinding">Control+M</span>
+  </a>
+</li>; */

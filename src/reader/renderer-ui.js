@@ -26,6 +26,9 @@ let g_isMouseCursorVisible = true;
 let g_mouseCursorHideTime = 3500;
 
 let g_navKeys;
+export function getNavKeys() {
+  return g_navKeys;
+}
 let g_navButtons;
 let g_mouseButtonQuickMenu;
 export function getMouseButtons() {
