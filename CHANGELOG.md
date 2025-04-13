@@ -1,3 +1,8 @@
+## v3.10.2
+
+- Fixed the internet radio tool's search not working due to the queried server no longer being available.
+- Fixed showing the wrong keyboard shortcuts in the menu bar for the zoom related entries.
+
 ## v3.10.1
 
 - Added a .deb package for Linux that should work with distributions, like Ubuntu 24.04, that require setting an AppArmor profile for Electron apps to run, as the regular and AppImage versions don't currently work on them due to that restriction.
