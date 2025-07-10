@@ -204,7 +204,8 @@ if (!gotTheLock) {
       width: settings.getValue("width"),
       height: settings.getValue("height"),
       resizable: true,
-      frame: false,
+      frame: process.platform === "darwin" ? true : false,
+      titleBarStyle: process.platform === "darwin" ? "hidden" : undefined,
       icon: path.join(__dirname, "../assets/images/icon_256x256.png"),
       show: false,
       webPreferences: {

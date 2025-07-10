@@ -28,10 +28,18 @@ contextBridge.exposeInMainWorld("ipc", {
 let g_titlebar;
 
 window.addEventListener("DOMContentLoaded", () => {
-  g_titlebar = new CustomTitlebar({
+  const titlebarOptions = {
     icon: "../assets/images/icon_256x256.png",
     titleHorizontalAlignment: "right",
-  });
+  };
+  
+  if (process.platform === "darwin") {
+    titlebarOptions.enableMacOSWindowControls = true;
+    titlebarOptions.windowControlsOnMacOS = true;
+    titlebarOptions.titleHorizontalAlignment = "center";
+  }
+  
+  g_titlebar = new CustomTitlebar(titlebarOptions);
 
   ipcRenderer.on("preload", (event, args) => {
     if (args[0] == "update-menubar") {
