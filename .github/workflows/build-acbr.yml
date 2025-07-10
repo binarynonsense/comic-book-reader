@@ -1,0 +1,285 @@
+name: Build ACBR
+on:
+  workflow_dispatch:
+    inputs:
+      createWindows:
+        description: "Create Windows version"
+        required: true
+        default: true
+        type: boolean
+      createLinux:
+        description: "Create Linux version"
+        required: true
+        default: true
+        type: boolean
+      createMac:
+        description: "Create Mac version"
+        required: true
+        default: true
+        type: boolean
+      includeLinuxDeb:
+        description: "Include Linux .deb in release"
+        required: true
+        default: true
+        type: boolean
+      includeLinuxAppImage:
+        description: "Include Linux .AppImage in release"
+        required: true
+        default: true
+        type: boolean
+      includeMacDmg:
+        description: "Include Mac .dmg in release"
+        required: true
+        default: true
+        type: boolean
+      includeWindowsExe:
+        description: "Include Windows self-extracting .exe in release"
+        required: true
+        default: true
+        type: boolean
+permissions:
+  contents: write
+
+jobs:
+  determine_version:
+    runs-on: ubuntu-24.04
+    outputs:
+      RELEASE_NAME: ${{ steps.set_version.outputs.RELEASE_NAME }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+          cache: 'npm'
+      - name: Set Name and Version
+        id: set_version
+        shell: bash
+        run: |
+          APP_VERSION=$(jq -r .version package.json)
+          BUILD_DATE=$(date '+%Y%m%d-%H%M%S')
+          if echo "$APP_VERSION" | grep 'alpha'; then
+            NEW_APP_VERSION="${APP_VERSION}-${BUILD_DATE}"
+          else
+            NEW_APP_VERSION="${APP_VERSION}"
+          fi
+          echo "RELEASE_NAME=$NEW_APP_VERSION" >> $GITHUB_OUTPUT
+
+  build:
+    needs: determine_version
+    strategy:
+      matrix:
+        os: [ubuntu-24.04, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+          cache: 'npm'
+      - name: Install Dependencies
+        run: npm ci
+      - name: Run Dist (Linux)
+        if: ${{ matrix.os == 'ubuntu-24.04' && github.event.inputs.createLinux == 'true' }}
+        run: npm run dist:linux
+      - name: Run Dist (Windows)
+        if: ${{ matrix.os == 'windows-latest' && github.event.inputs.createWindows == 'true' }}
+        run: npm run dist:windows
+      - name: Run Dist (Mac)
+        if: ${{ matrix.os == 'macos-latest' && github.event.inputs.createMac == 'true' }}
+        run: npm run dist:mac
+      - name: Prepare Files (Linux)
+        if: ${{ matrix.os == 'ubuntu-24.04' && github.event.inputs.createLinux == 'true' }}
+        shell: bash
+        run: |
+          mkdir -p ./dist/ACBR_Linux_deb
+          mv ./dist/*.deb ./dist/ACBR_Linux_deb/ 2>/dev/null || echo "No .deb files found"
+          cp -r licenses ./dist/ACBR_Linux_deb/licenses 2>/dev/null || echo "Failed to copy licenses"
+          cp ./dist/VERSION ./dist/ACBR_Linux_deb/ 2>/dev/null || echo "No VERSION file found"
+          mv ./dist/ACBR_deb.sh ./dist/ACBR_Linux_deb/ACBR.sh 2>/dev/null || echo "No ACBR_deb.sh found"
+
+          mkdir -p ./dist/ACBR_Linux_AppImage
+          mv ./dist/*.AppImage ./dist/ACBR_Linux_AppImage/ 2>/dev/null || echo "No .AppImage files found"
+          cp -r licenses ./dist/ACBR_Linux_AppImage/licenses 2>/dev/null || echo "Failed to copy licenses"
+          mv ./dist/VERSION ./dist/ACBR_Linux_AppImage/ 2>/dev/null || echo "No VERSION file found"
+          mv ./dist/ACBR.sh ./dist/ACBR_Linux_AppImage/ 2>/dev/null || echo "No ACBR.sh found"
+
+          mv ./dist/linux-unpacked ./dist/ACBR_Linux 2>/dev/null || echo "No linux-unpacked directory found"
+          cp -r licenses ./dist/ACBR_Linux/licenses 2>/dev/null || echo "Failed to copy licenses"
+          rm ./dist/ACBR_Linux/LICENSE* 2>/dev/null || true
+      - name: Prepare Files (Windows)
+        if: ${{ matrix.os == 'windows-latest' && github.event.inputs.createWindows == 'true' }}
+        shell: bash
+        run: |
+          mv ./dist/win-unpacked ./dist/ACBR_Windows 2>/dev/null || echo "No winAscertain: win-unpacked not found"
+          cp -r licenses ./dist/ACBR_Windows/licenses 2>/dev/null || echo "Failed to copy licenses"
+          rm ./dist/ACBR_Windows/LICENSE* 2>/dev/null || true
+      - name: Prepare Files (Mac)
+        if: ${{ matrix.os == 'macos-latest' && github.event.inputs.createMac == 'true' }}
+        shell: bash
+        run: |
+          mkdir -p ./dist/ACBR_Mac
+          mv ./dist/*.dmg ./dist/ACBR_Mac/ 2>/dev/null || echo "No .dmg files found"
+          mv ./dist/*.zip ./dist/ACBR_Mac/ 2>/dev/null || echo "No .zip files found"
+          cp -r licenses ./dist/ACBR_Mac/licenses 2>/dev/null || echo "Failed to copy licenses"
+          cp ./dist/mac/VERSION ./dist/ACBR_Mac/ 2>/dev/null || echo "No VERSION file found"
+      - name: Prepare Zips (Linux)
+        if: ${{ matrix.os == 'ubuntu-24.04' && github.event.inputs.createLinux == 'true' }}
+        shell: bash
+        run: |
+          cd ./dist
+          zip -r ACBR_Linux_${{ needs.determine_version.outputs.RELEASE_NAME }}.zip ACBR_Linux 2>/dev/null || echo "Failed to zip ACBR_Linux"
+          if [ "${{ github.event.inputs.includeLinuxAppImage }}" == "true" ]; then
+            zip -r ACBR_Linux_AppImage_${{ needs.determine_version.outputs.RELEASE_NAME }}.zip ACBR_Linux_AppImage 2>/dev/null || echo "Failed to zip ACBR_Linux_AppImage"
+          fi
+          if [ "${{ github.event.inputs.includeLinuxDeb }}" == "true" ]; then
+            zip -r ACBR_Linux_deb_${{ needs.determine_version.outputs.RELEASE_NAME }}.zip ACBR_Linux_deb 2>/dev/null || echo "Failed to zip ACBR_Linux_deb"
+          fi
+      - name: Prepare Zips (Windows)
+        if: ${{ matrix.os == 'windows-latest' && github.event.inputs.createWindows == 'true' }}
+        shell: bash
+        run: |
+          cd ./dist
+          7z a ACBR_Windows_${{ needs.determine_version.outputs.RELEASE_NAME }}.zip ACBR_Windows 2>/dev/null || echo "Failed to zip ACBR_Windows"
+          if [ "${{ github.event.inputs.includeWindowsExe }}" == "true" ]; then
+            7z a -t7z -sfx -m0=lzma2 -mx=9 ACBR_Windows_SelfExtracting_${{ needs.determine_version.outputs.RELEASE_NAME }}.exe ACBR_Windows 2>/dev/null || echo "Failed to create self-extracting EXE"
+          fi
+      - name: Prepare Zips (Mac)
+        if: ${{ matrix.os == 'macos-latest' && github.event.inputs.createMac == 'true'}}
+        shell: bash
+        run: |
+          cd ./dist
+          zip -r ACBR_Mac_${{ needs.determine_version.outputs.RELEASE_NAME }}.zip ACBR_Mac/*.zip 2>/dev/null || echo "Failed to zip ACBR_Mac zip"
+      - name: Upload Linux Zip
+        if: ${{ matrix.os == 'ubuntu-24.04' && github.event.inputs.createLinux == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ACBR_Linux_${{ needs.determine_version.outputs.RELEASE_NAME }}.zip
+          path: dist/ACBR_Linux_${{ needs.determine_version.outputs.RELEASE_NAME }}.zip
+      - name: Upload Linux AppImage Zip
+        if: ${{ matrix.os == 'ubuntu-24.04' && github.event.inputs.createLinux == 'true' && github.event.inputs.includeLinuxAppImage == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ACBR_Linux_AppImage_${{ needs.determine_version.outputs.RELEASE_NAME }}.zip
+          path: dist/ACBR_Linux_AppImage_${{ needs.determine_version.outputs.RELEASE_NAME }}.zip
+      - name: Upload Linux Deb Zip
+        if: ${{ matrix.os == 'ubuntu-24.04' && github.event.inputs.createLinux == 'true' && github.event.inputs.includeLinuxDeb == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ACBR_Linux_deb_${{ needs.determine_version.outputs.RELEASE_NAME }}.zip
+          path: dist/ACBR_Linux_deb_${{ needs.determine_version.outputs.RELEASE_NAME }}.zip
+      - name: Upload Linux AppImage
+        if: ${{ matrix.os == 'ubuntu-24.04' && github.event.inputs.createLinux == 'true' && github.event.inputs.includeLinuxAppImage == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ACBR_Linux_${{ needs.determine_version.outputs.RELEASE_NAME }}.AppImage
+          path: dist/ACBR_Linux_AppImage/*.AppImage
+      - name: Upload Linux Deb
+        if: ${{ matrix.os == 'ubuntu-24.04' && github.event.inputs.createLinux == 'true' && github.event.inputs.includeLinuxDeb == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ACBR_Linux_${{ needs.determine_version.outputs.RELEASE_NAME }}.deb
+          path: dist/ACBR_Linux_deb/*.deb
+      - name: Upload Windows Zip
+        if: ${{ matrix.os == 'windows-latest' && github.event.inputs.createWindows == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ACBR_Windows_${{ needs.determine_version.outputs.RELEASE_NAME }}.zip
+          path: dist/ACBR_Windows_${{ needs.determine_version.outputs.RELEASE_NAME }}.zip
+      - name: Upload Windows Self-Extracting EXE
+        if: ${{ matrix.os == 'windows-latest' && github.event.inputs.createWindows == 'true' && github.event.inputs.includeWindowsExe == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ACBR_Windows_SelfExtracting_${{ needs.determine_version.outputs.RELEASE_NAME }}.exe
+          path: dist/ACBR_Windows_SelfExtracting_${{ needs.determine_version.outputs.RELEASE_NAME }}.exe
+      - name: Upload Mac Zip
+        if: ${{ matrix.os == 'macos-latest' && github.event.inputs.createMac == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ACBR_Mac_${{ needs.determine_version.outputs.RELEASE_NAME }}.zip
+          path: dist/ACBR_Mac/*.zip
+      - name: Upload Mac DMG
+        if: ${{ matrix.os == 'macos-latest' && github.event.inputs.createMac == 'true' && github.event.inputs.includeMacDmg == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ACBR_Mac_${{ needs.determine_version.outputs.RELEASE_NAME }}.dmg
+          path: dist/ACBR_Mac/*.dmg
+      - name: Clean Up Workspace (Linux/macOS)
+        if: runner.os != 'Windows' && always()
+        shell: bash
+        run: rm -rf dist || echo "Cleanup failed"
+      - name: Clean Up Workspace (Windows)
+        if: runner.os == 'Windows' && always()
+        shell: powershell
+        run: |
+          try {
+            Remove-Item -Path dist -Recurse -Force -ErrorAction Stop
+          } catch {
+            Write-Output "Cleanup failed"
+          }
+
+  release:
+    needs: [determine_version, build]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Download All Artifacts
+        uses: actions/download-artifact@v4
+      - name: Prepare Release Artifacts
+        shell: bash
+        run: |
+          mkdir -p release-artifacts
+          # Include Linux artifacts based on inputs
+          if [ "${{ github.event.inputs.createLinux }}" == "true" ]; then
+            mv ACBR_Linux_${{ needs.determine_version.outputs.RELEASE_NAME }}.zip/ACBR_Linux_${{ needs.determine_version.outputs.RELEASE_NAME }}.zip release-artifacts/ 2>/dev/null || echo "Linux zip not found"
+            if [ "${{ github.event.inputs.includeLinuxAppImage }}" == "true" ]; then
+              # Rename AppImage to include platform
+              for file in ACBR_Linux_${{ needs.determine_version.outputs.RELEASE_NAME }}.AppImage/*.AppImage; do
+                if [ -f "$file" ]; then
+                  mv "$file" "release-artifacts/ACBR_Linux_${{ needs.determine_version.outputs.RELEASE_NAME }}.AppImage"
+                fi
+              done 2>/dev/null || echo "Linux AppImage not found"
+            fi
+            if [ "${{ github.event.inputs.includeLinuxDeb }}" == "true" ]; then
+              # Rename deb to include platform
+              for file in ACBR_Linux_${{ needs.determine_version.outputs.RELEASE_NAME }}.deb/*.deb; do
+                if [ -f "$file" ]; then
+                  mv "$file" "release-artifacts/ACBR_Linux_${{ needs.determine_version.outputs.RELEASE_NAME }}.deb"
+                fi
+              done 2>/dev/null || echo "Linux deb not found"
+            fi
+          fi
+          # Include Windows artifacts based on inputs
+          if [ "${{ github.event.inputs.createWindows }}" == "true" ]; then
+            mv ACBR_Windows_${{ needs.determine_version.outputs.RELEASE_NAME }}.zip/ACBR_Windows_${{ needs.determine_version.outputs.RELEASE_NAME }}.zip release-artifacts/ 2>/dev/null || echo "Windows zip not found"
+            if [ "${{ github.event.inputs.includeWindowsExe }}" == "true" ]; then
+              mv ACBR_Windows_SelfExtracting_${{ needs.determine_version.outputs.RELEASE_NAME }}.exe/ACBR_Windows_SelfExtracting_${{ needs.determine_version.outputs.RELEASE_NAME }}.exe release-artifacts/ 2>/dev/null || echo "Windows self-extracting EXE not found"
+            fi
+          fi
+          # Include Mac artifacts based on inputs
+          if [ "${{ github.event.inputs.createMac }}" == "true" ]; then
+            # Rename Mac zip to include platform
+            for file in ACBR_Mac_${{ needs.determine_version.outputs.RELEASE_NAME }}.zip/*.zip; do
+              if [ -f "$file" ]; then
+                mv "$file" "release-artifacts/ACBR_Mac_${{ needs.determine_version.outputs.RELEASE_NAME }}.zip"
+              fi
+            done 2>/dev/null || echo "Mac zip not found"
+            if [ "${{ github.event.inputs.includeMacDmg }}" == "true" ]; then
+              # Rename dmg to include platform
+              for file in ACBR_Mac_${{ needs.determine_version.outputs.RELEASE_NAME }}.dmg/*.dmg; do
+                if [ -f "$file" ]; then
+                  mv "$file" "release-artifacts/ACBR_Mac_${{ needs.determine_version.outputs.RELEASE_NAME }}.dmg"
+                fi
+              done 2>/dev/null || echo "Mac DMG not found"
+            fi
+          fi
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          prerelease: ${{ contains(needs.determine_version.outputs.RELEASE_NAME, 'alpha') }}
+          draft: true
+          name: v${{ needs.determine_version.outputs.RELEASE_NAME }}
+          tag_name: v${{ needs.determine_version.outputs.RELEASE_NAME }}
+          files: release-artifacts/*

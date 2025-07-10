@@ -15,6 +15,30 @@
     "win": {
       "icon": "./src/assets/images/icon_256x256.png"
     },
+    "mac": {
+      "category": "Graphics",
+      "icon": "./src/assets/images/icon_512x512.png",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "arm64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "arm64"
+          ]
+        }
+      ],
+      "artifactName": "${name}-${version}.${ext}",
+      "asarUnpack": [
+        "**/node_modules/sharp/**",
+        "**/node_modules/@img/**/*",
+        "**/node_modules/7zip-bin/**"
+      ]
+    },
     "linux": {
       "category": "Graphics",
       "icon": "./src/assets/images/icon_256x256.png",
@@ -40,16 +64,21 @@
     "start:glib": "export G_SLICE=always-malloc && electron . --dev",
     "dist:linux": "npm run 7zbin:linux && npm run build:linux && npm run extras:linux",
     "dist:windows": "npm run build:windows && npm run extras:windows",
+    "dist:mac": "npm run 7zbin:mac && npm run build:mac && npm run extras:mac",
     "dist:cross": "npm run dist:cross-windows && npm run dist:cross-linux",
     "dist:cross-linux": "npm run sharp:linux && npm run dist:linux",
     "dist:cross-windows": "npm run sharp:windows && npm run dist:windows",
     "build:linux": "electron-builder --linux --publish never",
     "build:windows": "electron-builder --win --dir --publish never",
+    "build:mac": "electron-builder --mac --publish never",
     "sharp:windows": "del-cli ./node_modules/sharp && npm install --platform=win32 --arch=x64 sharp",
     "sharp:linux": "del-cli ./node_modules/sharp && npm install --platform=linux --arch=x64 sharp",
+    "sharp:mac": "del-cli ./node_modules/sharp && npm install --platform=darwin --arch=arm64 sharp",
     "7zbin:linux": "shx chmod +x node_modules/7zip-bin/linux/x64/7za",
+    "7zbin:mac": "shx chmod +x node_modules/7zip-bin/mac/x64/7za",
     "extras:linux": "echo '#!/bin/bash\\nexport G_SLICE=always-malloc && ./acbr-comic-book-reader \"$@\"' > ./dist/linux-unpacked/ACBR.sh && shx chmod +x ./dist/linux-unpacked/ACBR.sh && echo '#!/bin/bash\\nexport G_SLICE=always-malloc && ./acbr-comic-book-reader.AppImage \"$@\"' > ./dist/ACBR.sh && shx chmod +x ./dist/ACBR.sh && echo '#!/bin/bash\\nexport G_SLICE=always-malloc && acbr-comic-book-reader \"$@\"' > ./dist/ACBR_deb.sh && shx chmod +x ./dist/ACBR_deb.sh && echo ${npm_package_version} > ./dist/linux-unpacked/VERSION && echo ${npm_package_version} > ./dist/VERSION",
     "extras:windows": "echo %npm_package_version% > ./dist/win-unpacked/VERSION",
+    "extras:mac": "shx mkdir -p ./dist/mac && echo ${npm_package_version} > ./dist/mac/VERSION",
     "licenses": "license-checker > licenses/node_modules.txt && shx sed -i 's/path.*node_modules/path: node_modules/' ./licenses/node_modules.txt && shx sed -i 's/licenseFile.*node_modules/licenseFile: node_modules/' ./licenses/node_modules.txt && npm run localization licenses",
     "localization:update": "node ./tools/localization.js update all",
     "localization:state": "node ./tools/localization.js state all",
@@ -57,12 +86,13 @@
   },
   "devDependencies": {
     "del-cli": "^6.0.0",
-    "electron": "^33.3.1",
+    "electron": "^37.2.0",
     "electron-builder": "^26.0.11",
     "license-checker": "^25.0.1",
     "shx": "^0.3.4"
   },
   "dependencies": {
+    "@emnapi/runtime": "^1.4.4",
     "7zip-bin": "^5.2.0",
     "adm-zip": "^0.5.16",
     "axios": "^1.7.9",
