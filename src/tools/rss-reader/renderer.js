@@ -436,6 +436,9 @@ export function onContextMenu(params, target) {
   if (getOpenModal()) {
     return;
   }
+  if (target.tagName === "IMG") {
+    params.push(target.src);
+  }
   sendIpcToMain("show-context-menu", params, target.tagName === "IMG");
 }
 

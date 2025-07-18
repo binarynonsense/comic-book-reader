@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-const { Menu } = require("electron");
+const { Menu, clipboard } = require("electron");
 const core = require("../../core/main");
 const { _ } = require("./i18n");
 const log = require("./logger");
@@ -92,6 +92,17 @@ exports.show = function (type, params, backToReaderCallback) {
                 core
                   .getMainWindow()
                   .webContents.copyImageAt(params[0], params[1]);
+              } catch (error) {
+                log.error(error);
+              }
+            },
+          },
+          {
+            label: _("ctxmenu-copyimageurl"),
+            click: () => {
+              try {
+                clipboard.writeText(params[2]);
+                log.debug(params[2]);
               } catch (error) {
                 log.error(error);
               }
