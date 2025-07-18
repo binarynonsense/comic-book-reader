@@ -12,6 +12,7 @@ import {
   getTools,
   getCurrentTool,
   setCurrentToolName,
+  getCurrentToolName,
 } from "../shared/renderer/tools.js";
 import * as modals from "../shared/renderer/modals.js";
 import { init as initInput } from "../shared/renderer/input.js";
@@ -59,21 +60,25 @@ function onIpcFromMain(event, args) {
           updateCssProperties(args[2]);
         }
         break;
+
       case "update-language-direction":
         {
           updateLanguageDirection(args[2]);
         }
         break;
+
       case "update-language-locale":
         {
           updateLanguageLocale(args[2]);
         }
         break;
+
       case "replace-inner-html":
         {
           document.querySelector(args[2]).innerHTML = args[3];
         }
         break;
+
       // ref: https://developer.mozilla.org/en-US/docs/Web/API/Element/insertAdjacentHTML
       case "insert-html-beforebegin":
         {
@@ -82,6 +87,7 @@ function onIpcFromMain(event, args) {
             .insertAdjacentHTML("beforebegin", args[3]);
         }
         break;
+
       case "insert-html-afterbegin":
         {
           document
@@ -89,6 +95,7 @@ function onIpcFromMain(event, args) {
             .insertAdjacentHTML("afterbegin", args[3]);
         }
         break;
+
       case "insert-html-afterend":
         {
           document
@@ -96,6 +103,7 @@ function onIpcFromMain(event, args) {
             .insertAdjacentHTML("afterend", args[3]);
         }
         break;
+
       case "append-structure-divs":
         {
           const readerDiv = document.createElement("div");
@@ -107,14 +115,37 @@ function onIpcFromMain(event, args) {
           toolsDiv.id = "tools";
           document.body.appendChild(toolsDiv);
 
+          const toolsScrollButton = document.createElement("div");
+          toolsScrollButton.style.display = "none";
+          toolsScrollButton.id = "tools-scroll-to-top-button";
+          document.body.appendChild(toolsScrollButton);
+          toolsScrollButton.innerHTML = '<i class="fas fa-arrow-up"></i>';
+          toolsDiv.addEventListener("scroll", (event) => {
+            if (getCurrentToolName() === "tool-rss") {
+              if (toolsDiv.scrollTop > 20) {
+                toolsScrollButton.style.display = "flex";
+              } else {
+                toolsScrollButton.style.display = "none";
+              }
+            }
+          });
+          toolsScrollButton.addEventListener("click", (event) => {
+            toolsDiv.scrollTop = 0;
+          });
+
           const modalsDiv = document.createElement("div");
           modalsDiv.id = "modals";
           document.body.appendChild(modalsDiv);
         }
         break;
+
       case "show-tool":
         {
           setCurrentToolName(args[2]);
+
+          document.getElementById("tools-scroll-to-top-button").style.display =
+            "none";
+
           if (args[2] === "reader") {
             document
               .getElementById("reader")
@@ -129,11 +160,13 @@ function onIpcFromMain(event, args) {
           }
         }
         break;
+
       case "show-modal-info":
         {
           showModalAlert(args[2], args[3], args[4]);
         }
         break;
+
       case "show-modal-about":
         {
           showModalAlert(args[2], args[3], args[4]);
@@ -147,11 +180,13 @@ function onIpcFromMain(event, args) {
             });
         }
         break;
+
       case "show-modal-checkversion":
         {
           showModalCheckUpdates(...args.slice(2));
         }
         break;
+
       case "log-to-console":
         {
           console.log(args[2]);
