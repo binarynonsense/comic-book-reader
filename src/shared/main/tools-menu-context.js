@@ -108,6 +108,16 @@ exports.show = function (type, params, backToReaderCallback) {
               }
             },
           },
+          {
+            label: _("ctxmenu-saveimageas") + "...",
+            click: () => {
+              try {
+                core.getMainWindow().webContents.downloadURL(params[2]);
+              } catch (error) {
+                log.error(error);
+              }
+            },
+          },
           { type: "separator" },
           ...commonEntries,
         ]).popup(core.getMainWindow(), params.x, params.y);
