@@ -765,6 +765,12 @@ if (!gotTheLock) {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+// NOTE: (2025/07/18) I'm using v0.33.5 of the sharp module as v0.34.3
+// was giving errors during conversions on Linux.
+// ref: https://github.com/lovell/sharp/issues/1449
+// ref: https://github.com/lovell/sharp/issues/4351#issuecomment-2752755211
+// TODO: try newer versions & investigate further.
+
 // NOTE: (2023/08/02) I'm using v3.x of the tesseract.js module as v4.x
 // was giving errors.
 // TODO: try newer versions & investigate further.
