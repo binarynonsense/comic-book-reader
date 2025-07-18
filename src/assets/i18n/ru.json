@@ -389,7 +389,7 @@
   "tool-shared-tab-catalog": "Каталог",
   "tool-shared-tab-openurl": "Открыть ссылку",
   "tool-shared-tab-options": "Параметры",
-  "tool-shared-tab-moreoptions": "Дополнительные параметры"
+  "tool-shared-tab-moreoptions": "Дополнительные параметры",
   "tool-shared-tab-about": "Об этом инструменте",
   "tool-shared-tab-donate": "Пожертвовать",
   "tool-shared-tab-settings": "Настройки",
@@ -772,7 +772,7 @@
   "tool-radio-search-options-orderby-votes": "Голосам",
   "tool-radio-search-options-orderby-clicks": "Количеству кликов",
   "tool-radio-search-options-orderby-bitrate": "Битрейту",
-  "tool-tm-back-warning": "Вы уверены, что хотите закрыть этот инструмент? Все несохраненные данные будут потеряны."
+  "tool-tm-back-warning": "Вы уверены, что хотите закрыть этот инструмент? Все несохраненные данные будут потеряны.",
   "[NOTE TO TRANSLATORS]tool-tm-* 1": "Some terms like bleed, trim, safe area, panels, gutter... are specific to printing https://en.wikipedia.org/wiki/Bleed_(printing) and/or comic book art, please take special care localizing them. If you don't know / are not sure and can't find documentation about the right translation for them in this context, or if localizing this particular tool is too much work, you can leave all the entries below that start with 'tools-tm-' in English.",
   "[NOTE TO TRANSLATORS]tool-tm-* 2": "Unless otherwise noted, the word 'line' is used as in 'drawing line', not as in 'text line'.",
   "[NOTE TO TRANSLATORS]tool-tm-* 3": "The words 'tree', 'child' and 'node' are used in this context: https://en.wikipedia.org/wiki/Tree_(abstract_data_type)",
@@ -799,9 +799,9 @@
   "tool-tm-dimensions-header-area-leftright-span": "лево / право",
   "tool-tm-dimensions-lines-header": "Линии:",
   "[NOTE TO TRANSLATORS]tool-tm-dimensions-lines-thin-width-span": "This refers to the width value of lines set as thin",
-  "tool-tm-dimensions-lines-thin-width-span": "тонкая ширина"
+  "tool-tm-dimensions-lines-thin-width-span": "тонкая ширина",
   "[NOTE TO TRANSLATORS]tool-tm-dimensions-lines-thick-width-span": "This refers to the width value of lines set as thick",
-  "tool-tm-dimensions-lines-thick-width-span": "толстая ширина"
+  "tool-tm-dimensions-lines-thick-width-span": "толстая ширина",
   "[NOTE TO TRANSLATORS]tool-tm-dimensions-lines-bordermarks-span": "This refers to the maximum length the small lines drawn at de borders/edges of the bleed area to mark its fractions and other measurements can have.",
   "tool-tm-dimensions-lines-bordermarks-span": "максимальная длина границ",
   "tool-tm-dimensions-panels-header": "Панели:",
