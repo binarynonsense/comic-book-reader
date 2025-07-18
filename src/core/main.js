@@ -162,6 +162,11 @@ if (!gotTheLock) {
       );
     }
   }
+  // ensure defaultPath works when opening dialogs on linux
+  if (g_launchInfo.platform === "linux") {
+    // ref: https://www.electronjs.org/docs/latest/api/dialog
+    app.commandLine.appendSwitch("xdg-portal-required-version", "4");
+  }
   // show vips warnings from sharp only in dev mode
   if (!g_launchInfo.isDev) process.env.VIPS_WARNING = 1;
   //
@@ -759,10 +764,6 @@ if (!gotTheLock) {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-
-// NOTE: (2025/07/18) I'm using v33.3.1 as I tried v37.2.3 and the problem
-// with the defaultPath being ignored in dialogs is back.
-// TODO: try newer versions when available to see if that changes.
 
 // NOTE: (2023/08/02) I'm using v3.x of the tesseract.js module as v4.x
 // was giving errors.
