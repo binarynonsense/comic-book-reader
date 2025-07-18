@@ -760,7 +760,7 @@ if (!gotTheLock) {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-// NOTE: (2025/01/21) I'm using v33.3.1 as I tried v34.0.0 and the problem
+// NOTE: (2025/07/18) I'm using v33.3.1 as I tried v37.2.3 and the problem
 // with the defaultPath being ignored in dialogs is back.
 // TODO: try newer versions when available to see if that changes.
 
