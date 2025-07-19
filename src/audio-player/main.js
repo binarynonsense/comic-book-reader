@@ -395,7 +395,6 @@ function getPlaylistFiles(filePath) {
                 title: decodeM3UName(title),
                 artist: decodeM3UName(artist),
               };
-              log.test(file);
               files.push(file);
             }
           }
