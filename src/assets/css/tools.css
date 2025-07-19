@@ -55,6 +55,7 @@ html[dir="rtl"] #tools:not(:has(iframe)) {
   width: 400px;
   font-size: 18px;
   background-color: var(--tools-bg1-color);
+  padding-top: 5px;
 }
 
 #tools-columns-right {
