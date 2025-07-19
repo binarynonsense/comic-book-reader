@@ -451,7 +451,7 @@
   "tool-shared-modal-log-extraction-canceled": "No se pudo extraer el archivo, la extracción fue cancelada",
   "tool-shared-modal-log-creation-error": "No se pudo crear el archivo, se produjo un error",
   "tool-shared-modal-log-creation-canceled": "No se pudo crear el archivo, la creación fue cancelada",
-  "tool-shared-tooltip-scrolltotop": "Desplazarse a arriba",
+  "tool-shared-tooltip-scrolltotop": "Volver arriba",
   "tool-shared-tooltip-output-scale": "El tamaño de las páginas se reducirá a este porcentaje de las originales.",
   "tool-shared-tooltip-output-folder": "Si un archivo con el mismo nombre ya existe en la carpeta, se añadirá un subfijo al nombre del archivo de salida para que ningún archivo sea sobreescrito.",
   "tool-shared-tooltip-output-page-order": "Solo se usará si todos los archivos de entrada son imágenes, en caso contrario serán procesados en el orden en que aparecen en la lista.",
