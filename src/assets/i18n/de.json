@@ -285,7 +285,7 @@
   "tool-shared-ui-add-files": "Dateien hinzufügen",
   "tool-shared-ui-add-folder": "Ordner hinzufügen",
   "tool-shared-ui-add-folders": "Ordner hinzufügen",
-  "[NEEDS TRANSLATION]tool-shared-ui-clear-list": "Clear List",
+  "tool-shared-ui-clear-list": "Liste löschen",
   "tool-shared-ui-output-options": "Ausgangsoptionen",
   "tool-shared-ui-advanced-output-options": "Erweiterte Ausgabe-einstellungen",
   "tool-shared-ui-output-options-format-keep": "Das Original behalten",
