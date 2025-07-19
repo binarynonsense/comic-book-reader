@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2024 Álvaro García
+ * Copyright 2025 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -10,7 +10,6 @@ import {
   sendIpcToMainAndWait as coreSendIpcToMainAndWait,
 } from "../../core/renderer.js";
 import * as modals from "../../shared/renderer/modals.js";
-import axios from "../../assets/libs/axios/dist/esm/axios.js";
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
