@@ -354,6 +354,9 @@ function getPlaylistFiles(filePath) {
     fileContents.split(/\r?\n/).forEach((line) => {
       line = line.trim();
       if (line.startsWith("#EXTINF:")) {
+        duration = undefined;
+        artist = "";
+        title = "";
         line = line.replace("#EXTINF:", "");
         let parts = line.split(",");
         if (parts.length > 0) {
@@ -366,6 +369,7 @@ function getPlaylistFiles(filePath) {
               artist = artistAndTitle[0].trim();
               title = artistAndTitle[1].trim();
             } else {
+              artist = "";
               title = artistAndTitle[0].trim();
             }
           }
@@ -391,6 +395,7 @@ function getPlaylistFiles(filePath) {
                 title: decodeM3UName(title),
                 artist: decodeM3UName(artist),
               };
+              log.test(file);
               files.push(file);
             }
           }
