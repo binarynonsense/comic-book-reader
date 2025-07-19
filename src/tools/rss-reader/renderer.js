@@ -173,7 +173,9 @@ function itemsToHtml(root, items) {
       try {
         html = `<div class='tool-rss-item-div'>`;
 
-        html += `<div class="tool-rss-item-title"><span class="tool-rss-item-title-text">${item.title}</span>`;
+        html += `<div class="tool-rss-item-title"><span class="tool-rss-item-title-text">${
+          item.title ? item.title : ""
+        }</span>`;
         if (item.link) {
           html += `<i class="fas fa-external-link-alt tool-rss-icon-button" id="tool-rss-item-title-${index}-button" data-src="${item.link}" title="${g_extraLocalization.openInBrowser} (${item.link})"></i>`;
         }
@@ -183,8 +185,13 @@ function itemsToHtml(root, items) {
           html += `<div class="tool-rss-item-date">${item.date}</div>`;
         }
 
-        if (item.enclosureImgUrl) {
-          html += `<div class="tool-rss-item-enclosure"><img src="${item.enclosureImgUrl}"></div>`;
+        if (item.enclosureUrl) {
+          if (item.enclosureUrl.toLowerCase().endsWith(".mp3")) {
+            html += `<div class="tool-rss-item-enclosure"><i class="fas fa-play-circle tool-rss-item-enclosure-playicon" data-src="${item.enclosureUrl}" data-title="${item.title}"></i></div>`;
+          } else {
+            // TODO: check image extension?
+            html += `<div class="tool-rss-item-enclosure"><img src="${item.enclosureUrl}"></div>`;
+          }
         } else if (item.contentEncoded) {
           const div = document.createElement("div");
           div.innerHTML = item.contentEncoded;
@@ -198,18 +205,41 @@ function itemsToHtml(root, items) {
     </div>`;
       } catch (error) {}
       root.innerHTML += html;
-
-      let links = document.querySelectorAll("a");
-      links.forEach((link) => {
-        if (link.href) {
-          link.title = `${g_extraLocalization.openInBrowser} (${link.href})`;
-          link.addEventListener("click", () => {
-            sendIpcToMain("open-url-in-browser", link.href);
-          });
-        }
-      });
     });
   } catch (error) {}
+
+  let links = document.querySelectorAll("a");
+  links.forEach((link) => {
+    if (link.href) {
+      if (link.href.toLowerCase().endsWith(".mp3")) {
+        link.title = `${g_extraLocalization.openInAudioPlayer} (${link.href})`;
+        link.addEventListener("click", () => {
+          onPlayUrlClicked(link.href, link.href);
+        });
+      } else {
+        link.title = `${g_extraLocalization.openInBrowser} (${link.href})`;
+        link.addEventListener("click", () => {
+          sendIpcToMain("open-url-in-browser", link.href);
+        });
+      }
+    }
+  });
+
+  let mp3Urls = document.querySelectorAll("i");
+  mp3Urls.forEach((mp3Url) => {
+    if (mp3Url.getAttribute("data-src")) {
+      mp3Url.title = `${
+        g_extraLocalization.openInAudioPlayer
+      } (${mp3Url.getAttribute("data-src")})`;
+      mp3Url.addEventListener("click", () => {
+        onPlayUrlClicked(
+          mp3Url.getAttribute("data-src"),
+          mp3Url.getAttribute("data-title")
+        );
+      });
+    }
+  });
+
   for (let index = 0; index < items.length; index++) {
     const element = document.getElementById(
       `tool-rss-item-title-${index}-button`
@@ -412,6 +442,17 @@ function initOnIpcCallbacks() {
 ///////////////////////////////////////////////////////////////////////////////
 // TOOL ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
+
+async function onPlayUrlClicked(url, name) {
+  showModalOpenInPlayer(
+    url,
+    name,
+    g_extraLocalization.openInAudioPlayer,
+    g_extraLocalization.cancel,
+    g_extraLocalization.addToPlaylist,
+    g_extraLocalization.startPlaylist
+  );
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // EVENT LISTENERS ////////////////////////////////////////////////////////////
@@ -824,5 +865,59 @@ function showModalFeedRemove(
         },
       },
     ],
+  });
+}
+
+//////////////
+
+function showModalOpenInPlayer(
+  url,
+  name,
+  title,
+  textButtonBack,
+  textButtonAddToPlayList,
+  textButtonNewPlaylist,
+  showFocus
+) {
+  if (g_openModal) {
+    closeModal();
+  }
+  let buttons = [];
+  buttons.push({
+    text: textButtonAddToPlayList.toUpperCase(),
+    fullWidth: true,
+    callback: () => {
+      modalClosed();
+      sendIpcToMain("open-url-in-audio-player", url, name, 0);
+    },
+  });
+  buttons.push({
+    text: textButtonNewPlaylist.toUpperCase(),
+    fullWidth: true,
+    callback: () => {
+      modalClosed();
+      sendIpcToMain("open-url-in-audio-player", url, name, 1);
+    },
+  });
+  buttons.push({
+    text: textButtonBack.toUpperCase(),
+    fullWidth: true,
+    callback: () => {
+      modalClosed();
+    },
+  });
+  g_openModal = modals.show({
+    showFocus: showFocus,
+    title: title,
+    message: url,
+    frameWidth: 400,
+    zIndexDelta: 5,
+    close: {
+      callback: () => {
+        modalClosed();
+      },
+      key: "Escape",
+    },
+    buttons: buttons,
   });
 }

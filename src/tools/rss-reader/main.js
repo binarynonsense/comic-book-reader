@@ -8,6 +8,7 @@ const fs = require("fs");
 const path = require("path");
 const core = require("../../core/main");
 const { _ } = require("../../shared/main/i18n");
+const reader = require("../../reader/main");
 const shell = require("electron").shell;
 const contextMenu = require("../../shared/main/tools-menu-context");
 const tools = require("../../shared/main/tools");
@@ -171,6 +172,10 @@ function sendIpcToCoreRenderer(...args) {
   core.sendIpcToRenderer("core", ...args);
 }
 
+function sendIpcToAudioPlayerRenderer(...args) {
+  core.sendIpcToRenderer("audio-player", ...args);
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // IPC RECEIVE ////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -221,6 +226,22 @@ function initOnIpcCallbacks() {
     } catch (e) {
       return;
     }
+  });
+
+  on("open-url-in-audio-player", (url, name, playlistOption) => {
+    reader.showAudioPlayer(true, false);
+    if (playlistOption === 0) {
+      let files = [{ url: url, duration: -1, title: name }];
+      sendIpcToAudioPlayerRenderer("add-to-playlist", files, true);
+    } else {
+      let playlist = {
+        id: name,
+        source: "rss",
+        files: [{ url: url, duration: -1, title: name }],
+      };
+      sendIpcToAudioPlayerRenderer("open-playlist", playlist);
+    }
+    onCloseClicked();
   });
 
   //////////////////
@@ -456,7 +477,7 @@ async function getFeedContent(url) {
             });
           }
           if (item.enclosure && item.enclosure["@_url"]) {
-            itemData.enclosureImgUrl = item.enclosure["@_url"];
+            itemData.enclosureUrl = item.enclosure["@_url"];
           }
           itemData.description = item.description;
           if (itemData.description) {
@@ -608,5 +629,10 @@ function getExtraLocalization() {
     feedError: _("tool-rss-feed-error"),
     openInBrowser: _("tool-shared-ui-search-item-open-browser"),
     loadingTitle: _("tool-shared-modal-title-loading"),
+
+    openInAudioPlayer: _("ui-modal-prompt-button-open-in-audioplayer"),
+    cancel: _("tool-shared-ui-cancel"),
+    addToPlaylist: _("ui-modal-prompt-button-add-to-playlist"),
+    startPlaylist: _("ui-modal-prompt-button-start-new-playlist"),
   };
 }

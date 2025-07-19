@@ -1154,8 +1154,16 @@ html[dir="rtl"] .tools-range-bubble {
   display: flex;
   justify-content: center;
 }
+.tool-rss-item-enclosure:has(i) {
+  font-size: 5em;
+}
 .tool-rss-item-enclosure img {
   max-width: 100%;
+}
+.tool-rss-item-enclosure i:hover {
+  filter: brightness(1.2);
+  transform: scale(1.05);
+  cursor: pointer;
 }
 
 /* .tool-rss-item-desc {
