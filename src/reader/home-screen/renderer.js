@@ -81,6 +81,11 @@ function init() {
     rssReaderButton.addEventListener("click", (event) => {
       sendIpcToMain("hs-open-rss-reader");
     });
+    ///////////
+    const quitButton = document.querySelector("#hs-logo-quit-button");
+    quitButton.addEventListener("click", (event) => {
+      sendIpcToMain("hs-quit");
+    });
     /////////////////////////
     const addFavoriteButton = document.querySelector(
       "#hs-favorites-add-button"
@@ -839,6 +844,7 @@ function updateLocalization(
   historyTitle,
   comicConverterTitle,
   rssReaderTitle,
+  quitTitle,
   addFavoriteTitle
 ) {
   // ids
@@ -867,6 +873,9 @@ function updateLocalization(
   // rss reader
   const rssReaderButton = document.querySelector("#hs-logo-rss-reader-button");
   rssReaderButton.title = rssReaderTitle;
+  // quit
+  const quitButton = document.querySelector("#hs-logo-quit-button");
+  quitButton.title = quitTitle;
   // add favorite
   const addFavoriteButton = document.querySelector("#hs-favorites-add-button");
   addFavoriteButton.title = addFavoriteTitle;
