@@ -44,6 +44,10 @@ window.addEventListener("DOMContentLoaded", () => {
       g_titlebar.updateTitle(args[1]);
     } else if (args[0] == "update-window-buttons") {
       updateWindowButtons(...args.slice(1));
+    } else if (args[0] == "update-tools-common") {
+      const localization = args[1];
+      document.getElementById("tools-scroll-to-top-button").title =
+        localization.scrollToTop;
     }
   });
 });

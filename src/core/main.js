@@ -240,12 +240,12 @@ if (!gotTheLock) {
       fileFormats.init(g_launchInfo.isRelease);
       history.init(settings.getValue("history_capacity"));
       i18n.init(g_launchInfo.isDev);
-      onLanguageChanged();
       themes.init();
       sendIpcToCoreRenderer("update-css-properties", themes.getData());
       menuBar.init(g_mainWindow);
       // add extra divs after menuBar init, so its container is already created
       sendIpcToCoreRenderer("append-structure-divs");
+      onLanguageChanged();
       // check command line args and setup initial state
       let inputFilePaths = [];
       let inputFileAndFolderPaths = [];
@@ -575,6 +575,10 @@ if (!gotTheLock) {
       },
       g_mainWindow.isMaximized()
     );
+
+    sendIpcToPreload("update-tools-common", {
+      scrollToTop: i18n._("tool-shared-tooltip-scrolltotop"),
+    });
   }
   exports.onLanguageChanged = onLanguageChanged;
 
