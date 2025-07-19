@@ -451,7 +451,7 @@
   "tool-shared-modal-log-extraction-canceled": "Konnte Datei nicht extrahieren, die Extraktion wurde abgebrochen",
   "tool-shared-modal-log-creation-error": "Konnte Datei nicht erstellen, ein Fehler ist aufgetreten",
   "tool-shared-modal-log-creation-canceled": "Konnte Datei nicht erstellen, die Erstellung wurde abgebrochen",
-  "tool-shared-tooltip-scrolltotop": "Nach oben scrollen",
+  "tool-shared-tooltip-scrolltotop": "Zum Anfang scrollen",
   "tool-shared-tooltip-output-scale": "Die Größe der Seiten wird auf diesen Prozentsatz des Originals reduziert.",
   "tool-shared-tooltip-output-folder": "Wenn eine Datei mit demselben Namen bereits im Ordner existiert, wird ein Suffix zum Namen der konvertierten Datei hinzugefügt damit nichts überschrieben wird.",
   "tool-shared-tooltip-output-page-order": "Nur verwendet wenn alle Eingangsdateien Bilder sind, andernfalls werden sie in der gelisteten Reihenfolge verarbeitet.",
