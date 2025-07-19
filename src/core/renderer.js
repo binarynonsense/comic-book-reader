@@ -133,6 +133,11 @@ function onIpcFromMain(event, args) {
             toolsDiv.scrollTop = 0;
           });
 
+          const audioplayerDiv = document.createElement("div");
+          audioplayerDiv.id = "audio-player-container";
+          audioplayerDiv.classList = "ap-layout-top-left ap-hidden";
+          document.body.appendChild(audioplayerDiv);
+
           const modalsDiv = document.createElement("div");
           modalsDiv.id = "modals";
           document.body.appendChild(modalsDiv);

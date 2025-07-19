@@ -819,6 +819,19 @@ function getToolMenu(settings, history, toolName) {
       label: _("menu-view"),
       submenu: [
         {
+          label: _("menu-view-layout-show-audioplayer"),
+          id: "audio-player",
+          type: "checkbox",
+          checked: settings.showAudioPlayer,
+          accelerator: "CommandOrControl+M",
+          click() {
+            core.onMenuToggleAudioPlayer();
+          },
+        },
+        {
+          type: "separator",
+        },
+        {
           label: _("menu-view-togglefullscreen"),
           accelerator: "F11",
           click() {

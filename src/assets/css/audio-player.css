@@ -3,7 +3,7 @@
   align-items: flex-start;
   justify-items: center;
   flex-direction: column;
-  z-index: 10;
+  z-index: 200;
   direction: ltr;
 }
 
@@ -30,6 +30,8 @@
 
   min-height: 10px;
   min-width: 273px;
+
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
 .ap-frame a,
@@ -92,7 +94,7 @@ a:hover a:visited {
   padding: 5px;
   position: absolute;
   pointer-events: none;
-  z-index: 13;
+  z-index: 203;
 }
 
 #ap-div-time:hover #ap-text-time {
