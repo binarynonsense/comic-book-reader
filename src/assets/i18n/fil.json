@@ -285,6 +285,7 @@
   "tool-shared-ui-add-files": "Idagdag ang mga File",
   "tool-shared-ui-add-folder": "Idagdag ang Folder",
   "tool-shared-ui-add-folders": "Idagdag ang mga Folder",
+  "[NEEDS TRANSLATION]tool-shared-ui-clear-list": "Clear List",
   "tool-shared-ui-output-options": "Mga Opsyon sa Output",
   "tool-shared-ui-advanced-output-options": "Mga Advanced na Opsyon sa Output",
   "tool-shared-ui-output-options-format-keep": "Panatilihin ang orihinal",

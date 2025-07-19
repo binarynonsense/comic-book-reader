@@ -285,6 +285,7 @@
   "tool-shared-ui-add-files": "Добавить файлы",
   "tool-shared-ui-add-folder": "Добавить папку",
   "tool-shared-ui-add-folders": "Добавить папки",
+  "[NEEDS TRANSLATION]tool-shared-ui-clear-list": "Clear List",
   "tool-shared-ui-output-options": "Параметры выхода",
   "tool-shared-ui-advanced-output-options": "Дополнительные параметры выхода",
   "tool-shared-ui-output-options-format-keep": "Оставить оригинал",
