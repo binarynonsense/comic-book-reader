@@ -3,7 +3,7 @@
     "authors": [
       "trzyglow"
     ],
-    "last-updated": "2025-01-26",
+    "last-updated": "2025-07-19",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.10.0",
     "pre-release": "false",
@@ -127,7 +127,7 @@
   "menubar-buttons-close": "Schließen",
   "ctxmenu-copy": "Kopieren",
   "ctxmenu-copyimage": "Bild kopieren",
-  "[NEEDS TRANSLATION]ctxmenu-copyimageurl": "Copy Image URL",
+  "ctxmenu-copyimageurl": "Bild URL kopieren",
   "ctxmenu-saveimageas": "Bild speichern unter",
   "ctxmenu-paste": "Einfügen",
   "ctxmenu-select-all": "Alles auswählen",
@@ -450,7 +450,7 @@
   "tool-shared-modal-log-extraction-canceled": "Konnte Datei nicht extrahieren, die Extraktion wurde abgebrochen",
   "tool-shared-modal-log-creation-error": "Konnte Datei nicht erstellen, ein Fehler ist aufgetreten",
   "tool-shared-modal-log-creation-canceled": "Konnte Datei nicht erstellen, die Erstellung wurde abgebrochen",
-  "[NEEDS TRANSLATION]tool-shared-tooltip-scrolltotop": "Scroll to Top",
+  "tool-shared-tooltip-scrolltotop": "Nach oben scrollen",
   "tool-shared-tooltip-output-scale": "Die Größe der Seiten wird auf diesen Prozentsatz des Originals reduziert.",
   "tool-shared-tooltip-output-folder": "Wenn eine Datei mit demselben Namen bereits im Ordner existiert, wird ein Suffix zum Namen der konvertierten Datei hinzugefügt damit nichts überschrieben wird.",
   "tool-shared-tooltip-output-page-order": "Nur verwendet wenn alle Eingangsdateien Bilder sind, andernfalls werden sie in der gelisteten Reihenfolge verarbeitet.",
