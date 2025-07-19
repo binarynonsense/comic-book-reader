@@ -140,6 +140,16 @@ function init(mode, outputFolderPath, canEditRars, loadedOptions) {
       sendIpcToMain("add-folder-clicked", lastFilePath);
     });
 
+  document
+    .getElementById("tool-cc-clear-list-button")
+    .addEventListener("click", (event) => {
+      // clear list
+      g_inputList = [];
+      g_inputListID = 0;
+      g_inputListDiv.innerHTML = "";
+      checkValidData();
+    });
+
   const outputFolderChangeButton = document.getElementById(
     "tool-cc-change-folder-button"
   );

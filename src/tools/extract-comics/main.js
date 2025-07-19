@@ -841,6 +841,10 @@ function getLocalization() {
       id: "tool-ec-add-file-button-text",
       text: _("tool-shared-ui-add").toUpperCase(),
     },
+    {
+      id: "tool-ec-clear-list-button-text",
+      text: _("tool-shared-ui-clear-list").toUpperCase(),
+    },
     //////////////////////////////////////////////
     {
       id: "tool-ec-output-options-text",

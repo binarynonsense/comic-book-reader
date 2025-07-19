@@ -3,9 +3,9 @@
     "authors": [
       "Álvaro"
     ],
-    "last-updated": "2025-01-24",
+    "last-updated": "2025-07-19",
     "license-id": "BSD-2-Clause",
-    "acbr-version": "3.10.0",
+    "acbr-version": "3.10.3-alpha1",
     "pre-release": "false",
     "comments": "",
     "locale": "es",
@@ -285,6 +285,7 @@
   "tool-shared-ui-add-files": "Añadir archivos",
   "tool-shared-ui-add-folder": "Añadir carpeta",
   "tool-shared-ui-add-folders": "Añadir carpetas",
+  "tool-shared-ui-clear-list": "Vaciar Lista",
   "tool-shared-ui-output-options": "Opciones de salida",
   "tool-shared-ui-advanced-output-options": "Opciones de salida avanzadas",
   "tool-shared-ui-output-options-format-keep": "Mantener el original",

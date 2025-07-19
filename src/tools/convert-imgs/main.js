@@ -594,6 +594,10 @@ function getLocalization() {
       id: "tool-ci-add-file-button-text",
       text: _("tool-shared-ui-add").toUpperCase(),
     },
+    {
+      id: "tool-ci-clear-list-button-text",
+      text: _("tool-shared-ui-clear-list").toUpperCase(),
+    },
     //////////////////////////////////////////////
     {
       id: "tool-ci-output-options-text",

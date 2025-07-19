@@ -108,6 +108,17 @@ function init(outputFolderPath, loadedOptions) {
     });
 
   document
+    .getElementById("tool-ci-clear-list-button")
+    .addEventListener("click", (event) => {
+      // clear list
+      g_inputFiles = [];
+      g_inputFilesIndex = 0;
+      g_inputFilesID = 0;
+      g_inputListDiv.innerHTML = "";
+      checkValidData();
+    });
+
+  document
     .getElementById("tool-ci-change-folder-button")
     .addEventListener("click", (event) => {
       let lastFilePath = undefined;

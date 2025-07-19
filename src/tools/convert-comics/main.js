@@ -1476,6 +1476,10 @@ function getLocalization() {
       id: "tool-cc-add-folder-button-text",
       text: _("tool-shared-ui-add-folder").toUpperCase(),
     },
+    {
+      id: "tool-cc-clear-list-button-text",
+      text: _("tool-shared-ui-clear-list").toUpperCase(),
+    },
     //////////////////////////////////////////////
     {
       id: "tool-cc-output-options-text",
