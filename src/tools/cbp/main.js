@@ -130,7 +130,7 @@ function initOnIpcCallbacks() {
       };
       sendIpcToAudioPlayerRenderer("open-playlist", playlist);
     }
-    onCloseClicked();
+    // onCloseClicked();
   });
 
   on("search-window", (data) => {

@@ -111,7 +111,7 @@ function initOnIpcCallbacks() {
       playlist.files.push({ url: url, duration: -1 });
     });
     reader.showAudioPlayer(true, false);
-    onCloseClicked();
+    // onCloseClicked();
     sendIpcToAudioPlayerRenderer("open-playlist", playlist);
   });
 

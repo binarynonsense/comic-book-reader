@@ -241,7 +241,7 @@ function initOnIpcCallbacks() {
       };
       sendIpcToAudioPlayerRenderer("open-playlist", playlist);
     }
-    onCloseClicked();
+    // onCloseClicked();
   });
 
   //////////////////
