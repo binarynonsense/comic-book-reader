@@ -78,3 +78,24 @@ export function getFolderAndNameFromFilePath(filePath) {
   const folderPath = filePath.substring(0, lastIndex);
   return { fileName, folderPath };
 }
+
+export function hasAudioExtension(text) {
+  text = text.toLowerCase();
+  return text.endsWith(".mp3") || text.endsWith(".aac");
+}
+
+export function hasImageExtension(text) {
+  text = text.toLowerCase();
+  return (
+    text.endsWith(".jpg") ||
+    text.endsWith(".jpeg") ||
+    text.endsWith(".png") ||
+    text.endsWith(".gif") ||
+    text.endsWith(".webp")
+  );
+}
+
+export function hasVideoExtension(text) {
+  text = text.toLowerCase();
+  return text.endsWith(".mp4");
+}
