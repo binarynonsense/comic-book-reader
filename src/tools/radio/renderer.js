@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2025 Álvaro García
+ * Copyright 2024-2025 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -16,20 +16,27 @@ import * as modals from "../../shared/renderer/modals.js";
 ///////////////////////////////////////////////////////////////////////////////
 
 let g_isInitialized = false;
+let g_extraLocalization = {};
 
 let g_searchInput;
 let g_searchButton;
-
-let g_localizedSearchPlaceholderText;
-let g_localizedModalSearchingTitleText;
-let g_localizedModalCancelButtonText;
-let g_localizedModalOpenInPlayerTitleText;
-let g_localizedModalAddToPlaylistButtonText;
-let g_localizedModalNewPlaylistButtonText;
-
 let g_lastSearchResults;
 
-function init() {
+let g_favorites;
+
+export function needsScrollToTopButtonUpdate() {
+  return true;
+}
+
+function init(
+  section,
+  favorites,
+  noResultsText,
+  openInAcbrText,
+  openInBrowserText,
+  addToFavoritesText,
+  removeFromFavoritesText
+) {
   if (!g_isInitialized) {
     // things to start only once go here
     g_isInitialized = true;
@@ -40,8 +47,6 @@ function init() {
     inline: "nearest",
   });
 
-  g_lastSearchResults = undefined;
-
   // menu buttons
   document
     .getElementById("tool-radio-back-button")
@@ -49,14 +54,19 @@ function init() {
       sendIpcToMain("close");
     });
   // sections menu
-  for (let index = 0; index < 3; index++) {
+  for (let index = 0; index < 4; index++) {
     document
       .getElementById(`tool-radio-section-${index}-button`)
       .addEventListener("click", (event) => {
         switchSection(index);
       });
   }
+
   ////////////////////////////////////////
+
+  // favorites
+  g_favorites = favorites;
+
   // search
   g_searchButton = document.getElementById("tool-radio-search-button");
   g_searchButton.addEventListener("click", (event) => {
@@ -64,7 +74,7 @@ function init() {
   });
 
   g_searchInput = document.getElementById("tool-radio-search-input");
-  g_searchInput.placeholder = g_localizedSearchPlaceholderText;
+  g_searchInput.placeholder = g_extraLocalization.searchPlaceHolderText;
   g_searchInput.addEventListener("input", function (event) {
     if (g_searchInput.value !== "") {
       g_searchButton.classList.remove("tools-disabled");
@@ -85,18 +95,7 @@ function init() {
       }
     }
   });
-  g_searchInput.focus();
-  // options
-  //  g_collectionSelect = document.querySelector(
-  //   "#tool-radio-options-collections-select"
-  // );
-  // g_availabilitySelect = document.querySelector(
-  //   "#tool-radio-options-availability-select"
-  // );
 
-  // g_collectionSelect.innerHTML = collectionsContent;
-  // g_availabilitySelect.innerHTML = availabilityContent;
-  // about
   document
     .getElementById("tool-radio-open-radio-browser-button")
     .addEventListener("click", (event) => {
@@ -104,6 +103,18 @@ function init() {
     });
 
   ////////////////////////////////////////
+
+  switchSection(section);
+  if (g_lastSearchResults) {
+    updateSearchResults(
+      g_lastSearchResults,
+      noResultsText,
+      openInAcbrText,
+      openInBrowserText,
+      addToFavoritesText,
+      removeFromFavoritesText
+    );
+  }
   updateColumnsHeight();
 }
 
@@ -125,7 +136,7 @@ function updateColumnsHeight(scrollTop = false) {
 }
 
 function switchSection(id) {
-  for (let index = 0; index < 3; index++) {
+  for (let index = 0; index < 4; index++) {
     if (id === index) {
       document
         .getElementById(`tool-radio-section-${index}-button`)
@@ -142,8 +153,10 @@ function switchSection(id) {
         .classList.add("set-display-none");
     }
 
-    if (index === 0) {
+    if (index === 1) {
       g_searchInput.focus();
+    } else if (index === 0) {
+      buildFavorites();
     }
   }
   updateColumnsHeight(true);
@@ -178,38 +191,22 @@ function on(id, callback) {
 }
 
 function initOnIpcCallbacks() {
-  on("show", () => {
-    init();
+  on("show", (...args) => {
+    init(...args);
   });
 
   on("hide", () => {});
 
-  on(
-    "update-localization",
-    (
-      searchPlaceHolderText,
-      modalSearchingTitleText,
-      modalCancelButtonText,
-      modalOpenInPlayerTitleText,
-      modalAddToPlaylistButtonText,
-      modalNewPlaylistButtonText,
-      localization
-    ) => {
-      g_localizedSearchPlaceholderText = searchPlaceHolderText;
-      g_localizedModalSearchingTitleText = modalSearchingTitleText;
-      g_localizedModalCancelButtonText = modalCancelButtonText;
-      g_localizedModalOpenInPlayerTitleText = modalOpenInPlayerTitleText;
-      g_localizedModalAddToPlaylistButtonText = modalAddToPlaylistButtonText;
-      g_localizedModalNewPlaylistButtonText = modalNewPlaylistButtonText;
-      for (let index = 0; index < localization.length; index++) {
-        const element = localization[index];
-        const domElement = document.querySelector("#" + element.id);
-        if (domElement !== null) {
-          domElement.innerHTML = element.text;
-        }
+  on("update-localization", (localization, extraLocalization) => {
+    for (let index = 0; index < localization.length; index++) {
+      const element = localization[index];
+      const domElement = document.querySelector("#" + element.id);
+      if (domElement !== null) {
+        domElement.innerHTML = element.text;
       }
     }
-  );
+    g_extraLocalization = extraLocalization;
+  });
 
   on("update-window", () => {
     updateColumnsHeight();
@@ -220,6 +217,14 @@ function initOnIpcCallbacks() {
       modals.close(g_openModal);
       modalClosed();
     }
+  });
+
+  /////////////////////////////////////////////////////////////////////////////
+
+  on("rebuild-favorites", (favorites) => {
+    g_favorites = favorites;
+    buildFavorites();
+    updateColumnsHeight();
   });
 
   /////////////////////////////////////////////////////////////////////////////
@@ -240,90 +245,247 @@ function initOnIpcCallbacks() {
 
   on(
     "update-results",
-    (searchResults, noResultsText, openInAcbrText, openInBrowserText) => {
-      // console.log(searchResults);
-      g_lastSearchResults = searchResults;
-      ///////////////////////////////////////////
-      document
-        .querySelector("#tool-search-results-h3")
-        .classList.remove("set-display-none");
-      const searchResultsDiv = document.querySelector(
-        "#tool-radio-search-results-div"
+    (
+      searchResults,
+      scrollToTop,
+      noResultsText,
+      openInAcbrText,
+      openInBrowserText,
+      addToFavoritesText,
+      removeFromFavoritesText
+    ) => {
+      updateSearchResults(
+        searchResults ? searchResults : g_lastSearchResults,
+        scrollToTop,
+        noResultsText,
+        openInAcbrText,
+        openInBrowserText,
+        addToFavoritesText,
+        removeFromFavoritesText
       );
-      searchResultsDiv.innerHTML = "";
-      if (searchResults && searchResults.length > 0) {
-        // list
-        let ul = document.createElement("ul");
-        ul.className = "tools-collection-ul";
-        for (let index = 0; index < searchResults.length; index++) {
-          const stationData = searchResults[index];
-          // create html
-          let li = document.createElement("li");
-          li.className = "tools-buttons-list-li";
-          let buttonSpan = document.createElement("span");
-          buttonSpan.className = "tools-buttons-list-button";
-          buttonSpan.innerHTML = `<i class="fas fa-file-audio fa-2x"></i>`;
-          buttonSpan.title = openInAcbrText;
-          let multilineText = document.createElement("span");
-          multilineText.className = "tools-buttons-list-li-multiline-text";
-          {
-            let text = document.createElement("span");
-            text.innerText = `${stationData.name}`;
-            multilineText.appendChild(text);
-
-            text = document.createElement("span");
-            let extraData = `${stationData.bitrate} kbps | ${stationData.codec} | ${stationData.countrycode} | ${stationData.language} | ${stationData.tags}`;
-            text.innerHTML = extraData;
-            multilineText.appendChild(text);
-          }
-          buttonSpan.appendChild(multilineText);
-          buttonSpan.addEventListener("click", (event) => {
-            onSearchResultClicked(index, 0);
-          });
-          li.appendChild(buttonSpan);
-          {
-            let buttonSpan = document.createElement("span");
-            buttonSpan.className = "tools-buttons-list-button";
-            buttonSpan.innerHTML = `<i class="fas fa-external-link-alt"></i>`;
-            buttonSpan.title = openInBrowserText;
-            buttonSpan.addEventListener("click", (event) => {
-              onSearchResultClicked(index, 1);
-            });
-            li.appendChild(buttonSpan);
-          }
-          ul.appendChild(li);
-        }
-        searchResultsDiv.appendChild(ul);
-      } else {
-        let ul = document.createElement("ul");
-        ul.className = "tools-collection-ul";
-        let li = document.createElement("li");
-        li.className = "tools-collection-li";
-        let text = document.createElement("span");
-        text.innerText = noResultsText;
-        li.appendChild(text);
-        ul.appendChild(li);
-        searchResultsDiv.appendChild(ul);
-      }
-      ///////////////////////////////////////////
-      updateColumnsHeight();
-      document.getElementById("tools-columns-right").scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-        inline: "nearest",
-      });
       closeModal();
     }
   );
+
+  /////////////////////////////////////////////////////////////////////////////
+
+  on("show-modal-add-favorite", (...args) => {
+    showModalAddFavorite(...args);
+  });
+
+  on("show-modal-favorite-options", (...args) => {
+    showModalFavoriteOptions(...args);
+  });
+
+  on("show-modal-favorite-edit-name", (...args) => {
+    showModalFavoriteEditName(...args);
+  });
+
+  on("show-modal-favorite-edit-path", (...args) => {
+    showModalFavoriteEditPath(...args);
+  });
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 // TOOL ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+function buildFavorites() {
+  const favoritesDiv = document.querySelector("#tool-radio-favorites-div");
+  favoritesDiv.innerHTML = "";
+
+  let listDiv = document.createElement("div");
+  listDiv.classList.add("hs-path-cards-list-single");
+  listDiv.style = "padding-top: 5px;";
+  favoritesDiv.appendChild(listDiv);
+
+  if (g_favorites) {
+    let index = 0;
+    for (; index < g_favorites.length; index++) {
+      listDiv.appendChild(getNewCardDiv(g_favorites[index], index));
+    }
+  }
+}
+
+function getNewCardDiv(data, index) {
+  const cardDiv = document.createElement("div");
+  const iconHtml = `
+  <i class="hs-path-card-image-file fas fa-play-circle fa-2x fa-fw"></i>`;
+  const buttonHtml = `
+  <div class="hs-path-card-button hs-path-interactive">
+    <i class="fas fa-ellipsis-h"></i>
+  </div>`;
+
+  cardDiv.classList.add("hs-path-card");
+  cardDiv.innerHTML = `<div class="hs-path-card-main hs-path-interactive">
+  <div class="hs-path-card-image">
+    ${iconHtml}
+  </div>
+  <div class="hs-path-card-content">
+    <span>${data.name}</span
+    ><span>${data.url}</span>
+      </div>
+  </div>
+  ${buttonHtml}`;
+
+  const mainCardDiv = cardDiv.querySelector(".hs-path-card-main");
+  mainCardDiv.title = g_extraLocalization.modalOpenInPlayerTitleText;
+
+  mainCardDiv.addEventListener("click", function (event) {
+    showModalOpenInPlayer(
+      { stationuuid: "", name: data.name, url_resolved: data.url },
+      g_extraLocalization.modalOpenInPlayerTitleText,
+      g_extraLocalization.modalCancelButtonText,
+      g_extraLocalization.modalAddToPlaylistButtonText,
+      g_extraLocalization.modalNewPlaylistButtonText
+    );
+  });
+
+  const buttonDiv = cardDiv.querySelector(".hs-path-card-button");
+  buttonDiv.title = g_extraLocalization.options;
+  buttonDiv.addEventListener("click", function (event) {
+    sendIpcToMain("on-favorite-options-clicked", index, data.url);
+    event.stopPropagation();
+  });
+
+  return cardDiv;
+}
+
+////////////////////////////
+
+function updateSearchResults(
+  searchResults,
+  scrollToTop,
+  noResultsText,
+  openInAcbrText,
+  openInBrowserText,
+  addToFavoritesText,
+  removeFromFavoritesText
+) {
+  let scrollTopPos = document.getElementById("tools").scrollTop;
+  // console.log(searchResults);
+  g_lastSearchResults = searchResults;
+  ///////////////////////////////////////////
+  document
+    .querySelector("#tool-search-results-h3")
+    .classList.remove("set-display-none");
+  const searchResultsDiv = document.querySelector(
+    "#tool-radio-search-results-div"
+  );
+  searchResultsDiv.innerHTML = "";
+  if (searchResults && searchResults.length > 0) {
+    // list
+    let ul = document.createElement("ul");
+    ul.className = "tools-collection-ul";
+    for (let index = 0; index < searchResults.length; index++) {
+      const stationData = searchResults[index];
+      // create html
+      let li = document.createElement("li");
+      li.className = "tools-buttons-list-li";
+      let buttonSpan = document.createElement("span");
+      buttonSpan.className = "tools-buttons-list-button";
+      buttonSpan.innerHTML = `<i class="fas fa-file-audio fa-2x"></i>`;
+      buttonSpan.title = openInAcbrText;
+      let multilineText = document.createElement("span");
+      multilineText.className = "tools-buttons-list-li-multiline-text";
+      {
+        let text = document.createElement("span");
+        text.innerText = `${stationData.name}`;
+        multilineText.appendChild(text);
+
+        text = document.createElement("span");
+        let extraData = `${stationData.bitrate} kbps | ${stationData.codec} | ${stationData.countrycode} | ${stationData.language} | ${stationData.tags}`;
+        text.innerHTML = extraData;
+        multilineText.appendChild(text);
+
+        text = document.createElement("span");
+        text.innerText = `${stationData.url_resolved}`;
+        multilineText.appendChild(text);
+      }
+      buttonSpan.appendChild(multilineText);
+      buttonSpan.addEventListener("click", (event) => {
+        onSearchResultClicked(index, 0);
+      });
+      li.appendChild(buttonSpan);
+      {
+        let buttonSpan = document.createElement("span");
+        buttonSpan.className = "tools-buttons-list-button";
+        let isFavorited = false;
+        for (let i = 0; i < g_favorites.length; i++) {
+          if (g_favorites[i].url == stationData.url_resolved) {
+            isFavorited = true;
+            break;
+          }
+        }
+        if (!isFavorited) {
+          buttonSpan.innerHTML = `<i class="fa-regular fa-heart"></i>`;
+          buttonSpan.title = addToFavoritesText;
+          buttonSpan.addEventListener("click", (event) => {
+            onSearchResultClicked(
+              index,
+              2,
+              buttonSpan,
+              `<i class="fa-solid fa-heart"></i>`,
+              removeFromFavoritesText
+            );
+          });
+        } else {
+          buttonSpan.innerHTML = `<i class="fa-solid fa-heart"></i>`;
+          buttonSpan.title = removeFromFavoritesText;
+          buttonSpan.addEventListener("click", (event) => {
+            onSearchResultClicked(
+              index,
+              3,
+              buttonSpan,
+              `<i class="fa-regular fa-heart"></i>`,
+              addToFavoritesText
+            );
+          });
+        }
+        li.appendChild(buttonSpan);
+      }
+      {
+        let buttonSpan = document.createElement("span");
+        buttonSpan.className = "tools-buttons-list-button";
+        buttonSpan.innerHTML = `<i class="fas fa-external-link-alt"></i>`;
+        buttonSpan.title = openInBrowserText;
+        buttonSpan.addEventListener("click", (event) => {
+          onSearchResultClicked(index, 1);
+        });
+        li.appendChild(buttonSpan);
+      }
+      ul.appendChild(li);
+    }
+    searchResultsDiv.appendChild(ul);
+  } else {
+    let ul = document.createElement("ul");
+    ul.className = "tools-collection-ul";
+    let li = document.createElement("li");
+    li.className = "tools-collection-li";
+    let text = document.createElement("span");
+    text.innerText = noResultsText;
+    li.appendChild(text);
+    ul.appendChild(li);
+    searchResultsDiv.appendChild(ul);
+  }
+  ///////////////////////////////////////////
+  updateColumnsHeight();
+  if (scrollToTop) {
+    document.getElementById("tools-columns-right").scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+      inline: "nearest",
+    });
+  } else {
+    document.getElementById("tools").scrollTop = scrollTopPos;
+  }
+}
+
+//////////////////////////////////////
+
 async function onSearch() {
   if (!g_openModal) showSearchModal(); // TODO: check if first time?
-  updateModalTitleText(g_localizedModalSearchingTitleText);
+  updateModalTitleText(g_extraLocalization.modalSearchingTitleText);
   sendIpcToMain("search", g_searchInput.value, {
     order: document.querySelector("#tool-radio-options-orderby-select").value,
     language: document.querySelector("#tool-radio-options-language-input")
@@ -335,19 +497,37 @@ async function onSearch() {
   });
 }
 
-async function onSearchResultClicked(index, mode) {
+async function onSearchResultClicked(index, mode, element, innerHtml, tooltip) {
   if (!g_lastSearchResults) return;
   const stationData = g_lastSearchResults[index];
   if (mode === 0) {
     showModalOpenInPlayer(
       stationData,
-      g_localizedModalOpenInPlayerTitleText,
-      g_localizedModalCancelButtonText,
-      g_localizedModalAddToPlaylistButtonText,
-      g_localizedModalNewPlaylistButtonText
+      g_extraLocalization.modalOpenInPlayerTitleText,
+      g_extraLocalization.modalCancelButtonText,
+      g_extraLocalization.modalAddToPlaylistButtonText,
+      g_extraLocalization.modalNewPlaylistButtonText
     );
-  } else {
+  } else if (mode === 1) {
     openStationLink(stationData.url_resolved);
+  } else if (mode === 2) {
+    const stationData = g_lastSearchResults[index];
+    // element.innerHTML = innerHtml;
+    // element.title = tooltip;
+    sendIpcToMain(
+      "on-add-result-to-favorites-clicked",
+      stationData.name,
+      stationData.url_resolved
+    );
+  } else if (mode === 3) {
+    const stationData = g_lastSearchResults[index];
+    // element.innerHTML = innerHtml;
+    // element.title = tooltip;
+    sendIpcToMain(
+      "on-remove-result-from-favorites-clicked",
+      stationData.name,
+      stationData.url_resolved
+    );
   }
 }
 
@@ -363,18 +543,6 @@ function openRadioBrowserLink(url) {
 
 function openStationLink(url) {
   sendIpcToMain("open-url-in-browser", url);
-}
-
-//////////////////////////////////////
-
-function reduceString(input) {
-  if (!input) return undefined;
-  let length = 80;
-  input =
-    input.length > length
-      ? "..." + input.substring(input.length - length, input.length)
-      : input;
-  return input;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -422,6 +590,26 @@ function closeModal() {
 
 function modalClosed() {
   g_openModal = undefined;
+}
+
+function updateModalTitleText(text) {
+  if (g_openModal) g_openModal.querySelector(".modal-title").innerHTML = text;
+}
+
+function updateInfoText(text) {
+  if (g_openModal) g_openModal.querySelector(".modal-message").innerHTML = text;
+}
+
+function updateLogText(text, append = true) {
+  if (g_openModal) {
+    const log = g_openModal.querySelector(".modal-log");
+    if (append) {
+      log.innerHTML += "\n" + text;
+    } else {
+      log.innerHTML = text;
+    }
+    log.scrollTop = log.scrollHeight;
+  }
 }
 
 function showSearchModal() {
@@ -507,22 +695,82 @@ function showModalOpenInPlayer(
   });
 }
 
-function updateModalTitleText(text) {
-  if (g_openModal) g_openModal.querySelector(".modal-title").innerHTML = text;
-}
-
-function updateInfoText(text) {
-  if (g_openModal) g_openModal.querySelector(".modal-message").innerHTML = text;
-}
-
-function updateLogText(text, append = true) {
-  if (g_openModal) {
-    const log = g_openModal.querySelector(".modal-log");
-    if (append) {
-      log.innerHTML += "\n" + text;
-    } else {
-      log.innerHTML = text;
-    }
-    log.scrollTop = log.scrollHeight;
+function showModalFavoriteOptions(
+  index,
+  url,
+  title,
+  textButtonBack,
+  textButtonRemove,
+  textButtonEditName,
+  textButtonEditURL,
+  textButtonMoveUp,
+  textButtonMoveDown,
+  showFocus
+) {
+  if (getOpenModal()) {
+    return;
   }
+
+  let buttons = [];
+  // buttons.push({
+  //   text: textButtonEditName.toUpperCase(),
+  //   fullWidth: true,
+  //   callback: () => {
+  //     modalClosed();
+  //     sendIpcToMain("on-modal-favorite-options-edit-name-clicked", index, url);
+  //   },
+  // });
+  // buttons.push({
+  //   text: textButtonEditURL.toUpperCase(),
+  //   fullWidth: true,
+  //   callback: () => {
+  //     modalClosed();
+  //     sendIpcToMain("on-modal-favorite-options-edit-url-clicked", index, url);
+  //   },
+  // });
+  // buttons.push({
+  //   text: textButtonMoveDown.toUpperCase(),
+  //   fullWidth: true,
+  //   callback: () => {
+  //     modalClosed();
+  //     sendIpcToMain("on-modal-favorite-options-move-clicked", index, url, 0);
+  //   },
+  // });
+  // buttons.push({
+  //   text: textButtonMoveUp.toUpperCase(),
+  //   fullWidth: true,
+  //   callback: () => {
+  //     modalClosed();
+  //     sendIpcToMain("on-modal-favorite-options-move-clicked", index, url, 1);
+  //   },
+  // });
+  buttons.push({
+    text: textButtonRemove.toUpperCase(),
+    fullWidth: true,
+    callback: () => {
+      modalClosed();
+      sendIpcToMain("on-modal-favorite-options-remove-clicked", index, url);
+    },
+  });
+  buttons.push({
+    text: textButtonBack.toUpperCase(),
+    fullWidth: true,
+    callback: () => {
+      modalClosed();
+    },
+  });
+
+  g_openModal = modals.show({
+    showFocus: showFocus,
+    title: title,
+    frameWidth: 400,
+    zIndexDelta: 5,
+    close: {
+      callback: () => {
+        modalClosed();
+      },
+      key: "Escape",
+    },
+    buttons: buttons,
+  });
 }

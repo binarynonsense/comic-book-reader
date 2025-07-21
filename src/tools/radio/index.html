@@ -11,25 +11,29 @@
       </div>
       <div class="tools-menu-sections">
         <!-- sections menu -->
-        <div
-          id="tool-radio-section-0-button"
-          class="tools-menu-button tools-menu-button-selected"
-        >
-          <i class="fas fa-search tools-menu-button-icon"></i>
+        <div id="tool-radio-section-0-button" class="tools-menu-button">
+          <!-- <i class="fas fa-bookmark tools-menu-button-icon"></i> -->
+          <i class="fa-solid fa-heart tools-menu-button-icon"></i>
           <div class="tools-menu-button-text">
             <span id="tool-radio-section-0-text"></span>
           </div>
         </div>
         <div id="tool-radio-section-1-button" class="tools-menu-button">
-          <i class="fas fa-tools tools-menu-button-icon"></i>
+          <i class="fas fa-search tools-menu-button-icon"></i>
           <div class="tools-menu-button-text">
             <span id="tool-radio-section-1-text"></span>
           </div>
         </div>
         <div id="tool-radio-section-2-button" class="tools-menu-button">
-          <i class="fas fa-info-circle tools-menu-button-icon"></i>
+          <i class="fas fa-tools tools-menu-button-icon"></i>
           <div class="tools-menu-button-text">
             <span id="tool-radio-section-2-text"></span>
+          </div>
+        </div>
+        <div id="tool-radio-section-3-button" class="tools-menu-button">
+          <i class="fas fa-info-circle tools-menu-button-icon"></i>
+          <div class="tools-menu-button-text">
+            <span id="tool-radio-section-3-text"></span>
           </div>
         </div>
       </div>
@@ -38,8 +42,17 @@
   <!-- ------------------- RIGTH COLUMN -------------------------------- -->
   <div id="tools-columns-right">
     <div id="tools-title"><span id="tool-radio-title-text"></span></div>
+    <!-- favorites -->
+    <div id="tool-radio-section-0-content-div" class="set-display-none">
+      <div class="tools-columns-right-section">
+        <h3><span id="tool-radio-favorites-text">FAVORITES</span></h3>
+        <div class="tools-columns-right-subsection">
+          <div id="tool-radio-favorites-div"></div>
+        </div>
+      </div>
+    </div>
     <!-- search -->
-    <div id="tool-radio-section-0-content-div">
+    <div id="tool-radio-section-1-content-div" class="set-display-none">
       <div id="tool-search-input-div" class="tools-columns-right-section">
         <h3><span id="tool-radio-search-input-text"></span></h3>
         <div class="tools-columns-right-subsection">
@@ -70,7 +83,7 @@
       </div>
     </div>
     <!-- options -->
-    <div id="tool-radio-section-1-content-div" class="set-display-none">
+    <div id="tool-radio-section-2-content-div" class="set-display-none">
       <h3 id="tool-radio-options-text"></h3>
       <div class="tools-columns-right-subsection">
         <label
@@ -124,7 +137,7 @@
       </div>
     </div>
     <!-- about -->
-    <div id="tool-radio-section-2-content-div" class="set-display-none">
+    <div id="tool-radio-section-3-content-div" class="set-display-none">
       <h3 id="tool-radio-about-text"></h3>
       <div class="tools-columns-right-subsection">
         <div class="tools-text-paragraphs">

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2024 Álvaro García
+ * Copyright 2024-2025 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -14,13 +14,16 @@ const shell = require("electron").shell;
 const contextMenu = require("../../shared/main/tools-menu-context");
 const tools = require("../../shared/main/tools");
 const log = require("../../shared/main/logger");
+const settings = require("../../shared/main/settings");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
 let g_isInitialized = false;
+
 let g_server = "https:\\de2.api.radio-browser.info";
+let g_favorites = [];
 
 async function init() {
   if (!g_isInitialized) {
@@ -56,19 +59,58 @@ async function getServersList() {
   // https://docs.radio-browser.info/#server-mirrors
 }
 
-exports.open = function () {
+exports.open = function (section = 1) {
   // called by switchTool when opening tool
   init();
   const data = fs.readFileSync(path.join(__dirname, "index.html"));
   sendIpcToCoreRenderer("replace-inner-html", "#tools", data.toString());
   updateLocalizedText();
-  sendIpcToRenderer("show");
+
+  let loadedOptions = settings.loadToolOptions("tool-radio");
+  if (
+    loadedOptions &&
+    loadedOptions.favorites &&
+    Array.isArray(loadedOptions.favorites)
+  ) {
+    g_favorites = [];
+    loadedOptions.favorites.forEach((favorite) => {
+      if (typeof favorite == "object" && favorite.constructor == Object) {
+        if (favorite.url && typeof favorite.url === "string") {
+          if (!favorite.name || typeof favorite.name !== "string")
+            favorite.name = "???";
+          g_favorites.push(favorite);
+        }
+      }
+    });
+  }
+
+  sendIpcToRenderer(
+    "show",
+    section,
+    g_favorites,
+    _("tool-shared-ui-search-nothing-found"),
+    _("tool-shared-ui-search-item-open-acbr"),
+    _("tool-shared-ui-search-item-open-browser"),
+    _("tool-radio-add-to-favorites"),
+    _("tool-radio-remove-from-favorites")
+  );
 };
+
+function saveSettings() {
+  let options = {};
+  options.favorites = g_favorites;
+  settings.updateToolOptions("tool-radio", options);
+}
 
 exports.close = function () {
   // called by switchTool when closing tool
+  saveSettings();
   sendIpcToRenderer("close-modal");
   sendIpcToRenderer("hide"); // clean up
+};
+
+exports.onQuit = function () {
+  saveSettings();
 };
 
 exports.onResize = function () {
@@ -175,14 +217,18 @@ function initOnIpcCallbacks() {
       sendIpcToRenderer(
         "update-results",
         response.data,
+        true,
         _("tool-shared-ui-search-nothing-found"),
         _("tool-shared-ui-search-item-open-acbr"),
-        _("tool-shared-ui-search-item-open-browser")
+        _("tool-shared-ui-search-item-open-browser"),
+        _("tool-radio-add-to-favorites"),
+        _("tool-radio-remove-from-favorites")
       );
     } catch (error) {
       log.error(error);
       sendIpcToRenderer(
         "update-results",
+        true,
         undefined,
         _("tool-shared-ui-search-nothing-found")
       );
@@ -191,6 +237,38 @@ function initOnIpcCallbacks() {
 
   on("open-url-in-browser", (url) => {
     shell.openExternal(url);
+  });
+
+  on("on-add-result-to-favorites-clicked", (name, url) => {
+    addFavorite(name, url);
+  });
+
+  on("on-remove-result-from-favorites-clicked", (name, url) => {
+    removeFavorite(name, url);
+  });
+
+  on("on-favorite-options-clicked", (index, url) => {
+    sendIpcToRenderer(
+      "show-modal-favorite-options",
+      index,
+      url,
+      _("tool-shared-tab-options"),
+      _("tool-shared-ui-back"),
+      _("tool-shared-tooltip-remove-from-list"),
+      _("ui-modal-prompt-button-edit-name"),
+      _("ui-modal-prompt-button-edit-url"),
+      _("tool-shared-tooltip-move-up-in-list"),
+      _("tool-shared-tooltip-move-down-in-list")
+    );
+  });
+
+  on("on-modal-favorite-options-remove-clicked", (favIndex, favUrl) => {
+    if (g_favorites[favIndex].url === favUrl) {
+      g_favorites.splice(favIndex, 1);
+      rebuildFavorites(false);
+    } else {
+      log.error("Tried to remove a favorite with not matching index and path");
+    }
   });
 }
 
@@ -215,6 +293,53 @@ function initHandleIpcCallbacks() {}
 // TOOL ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+function rebuildFavorites(scrollToTop) {
+  sendIpcToRenderer("rebuild-favorites", g_favorites);
+  sendIpcToRenderer(
+    "update-results",
+    undefined,
+    scrollToTop,
+    _("tool-shared-ui-search-nothing-found"),
+    _("tool-shared-ui-search-item-open-acbr"),
+    _("tool-shared-ui-search-item-open-browser"),
+    _("tool-radio-add-to-favorites"),
+    _("tool-radio-remove-from-favorites")
+  );
+}
+
+function addFavorite(name, url) {
+  let isAlreadyInList = false;
+  for (let index = 0; index < g_favorites.length; index++) {
+    if (g_favorites[index].url === url) {
+      isAlreadyInList = true;
+      break;
+    }
+  }
+  if (!isAlreadyInList) {
+    g_favorites.push({ name, url });
+    rebuildFavorites(false);
+  } else {
+    log.debug("tried to add a favorite already in the list");
+  }
+}
+
+function removeFavorite(name, url) {
+  let isAlreadyInList = false;
+  let index = 0;
+  for (; index < g_favorites.length; index++) {
+    if (g_favorites[index].url === url) {
+      isAlreadyInList = true;
+      break;
+    }
+  }
+  if (isAlreadyInList) {
+    g_favorites.splice(index, 1);
+    rebuildFavorites(false);
+  } else {
+    log.debug("tried to remove a favorite not in the list");
+  }
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // LOCALIZATION ///////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -222,13 +347,8 @@ function initHandleIpcCallbacks() {}
 function updateLocalizedText() {
   sendIpcToRenderer(
     "update-localization",
-    _("tool-shared-ui-search-placeholder"),
-    _("tool-shared-modal-title-searching"),
-    _("tool-shared-ui-cancel"),
-    _("ui-modal-prompt-button-open-in-audioplayer"),
-    _("ui-modal-prompt-button-add-to-playlist"),
-    _("ui-modal-prompt-button-start-new-playlist"),
-    getLocalization()
+    getLocalization(),
+    getExtraLocalization()
   );
 }
 exports.updateLocalizedText = updateLocalizedText;
@@ -246,14 +366,18 @@ function getLocalization() {
     //////////////////////////////////////////////
     {
       id: "tool-radio-section-0-text",
-      text: _("tool-shared-tab-search"),
+      text: _("tool-radio-favorites"),
     },
     {
       id: "tool-radio-section-1-text",
-      text: _("tool-shared-tab-options"),
+      text: _("tool-shared-tab-search"),
     },
     {
       id: "tool-radio-section-2-text",
+      text: _("tool-shared-tab-options"),
+    },
+    {
+      id: "tool-radio-section-3-text",
       text: _("tool-shared-tab-about"),
     },
     //////////////////////////////////////////////
@@ -344,4 +468,17 @@ function getLocalization() {
       text: _("tool-shared-modal-title-searching").toUpperCase(),
     },
   ];
+}
+
+function getExtraLocalization() {
+  return {
+    searchPlaceHolderText: _("tool-shared-ui-search-placeholder"),
+    modalSearchingTitleText: _("tool-shared-modal-title-searching"),
+    modalCancelButtonText: _("tool-shared-ui-cancel"),
+    modalOpenInPlayerTitleText: _("ui-modal-prompt-button-open-in-audioplayer"),
+    modalAddToPlaylistButtonText: _("ui-modal-prompt-button-add-to-playlist"),
+    modalNewPlaylistButtonText: _("ui-modal-prompt-button-start-new-playlist"),
+    // card
+    options: _("tool-shared-tab-options"),
+  };
 }
