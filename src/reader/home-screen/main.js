@@ -254,6 +254,10 @@ function initOnIpcCallbacks() {
     core.onMenuToolRssReader();
   });
 
+  on("hs-open-radio", () => {
+    core.onMenuToolRadio(0);
+  });
+
   on("hs-quit", () => {
     core.onMenuQuit();
   });
@@ -452,6 +456,7 @@ function updateLocalizedText(rebuildSections = true) {
     _("menu-file-openrecent-history"),
     _("tool-cc-title"),
     _("menu-tools-rss-reader"),
+    _("menu-tools-radio"),
     _("menu-file-quit"),
     _("tool-shared-ui-add")
   );
