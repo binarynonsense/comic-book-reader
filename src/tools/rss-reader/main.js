@@ -88,7 +88,7 @@ function init() {
   }
 }
 
-exports.open = async function () {
+exports.open = async function (url) {
   // called by switchTool when opening tool
   init();
   const data = fs.readFileSync(path.join(__dirname, "index.html"));
@@ -120,7 +120,11 @@ exports.open = async function () {
     //   });
     // }
   }
-  sendIpcToRenderer("show", g_feeds);
+  if (url) {
+    startWithUrl(url);
+  } else {
+    sendIpcToRenderer("show", g_feeds);
+  }
 };
 
 function saveSettings() {
@@ -257,35 +261,7 @@ function initOnIpcCallbacks() {
   });
 
   on("on-modal-add-feed-ok-clicked", async (url) => {
-    if (url && url !== " ") {
-      for (let index = 0; index < g_feeds.length; index++) {
-        const feed = g_feeds[index];
-        if (feed.url === url) {
-          sendIpcToRenderer(
-            "show-modal-info",
-            _("tool-shared-modal-title-error"),
-            _("tool-rss-add-feed-error-already"),
-            _("ui-modal-prompt-button-ok")
-          );
-          return;
-        }
-      }
-      const data = await getFeedContent(url);
-      if (data) {
-        g_feeds.push({
-          name: data.name,
-          url,
-        });
-        sendIpcToRenderer("update-feeds", g_feeds, g_feeds.length - 1);
-        return;
-      }
-    }
-    sendIpcToRenderer(
-      "show-modal-info",
-      _("tool-shared-modal-title-error"),
-      _("tool-rss-feed-error"),
-      _("ui-modal-prompt-button-ok")
-    );
+    addFeed(url);
   });
 
   on("on-reset-feeds-clicked", () => {
@@ -433,6 +409,64 @@ function initHandleIpcCallbacks() {}
 ///////////////////////////////////////////////////////////////////////////////
 // TOOL ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
+
+async function startWithUrl(url) {
+  if (url && url !== " ") {
+    // check if already exists
+    for (let index = 0; index < g_feeds.length; index++) {
+      const feed = g_feeds[index];
+      if (feed.url === url) {
+        sendIpcToRenderer("show", g_feeds, index);
+        return;
+      }
+    }
+    // add and then start
+    const data = await getFeedContent(url);
+    if (data) {
+      g_feeds.push({
+        name: data.name,
+        url,
+      });
+      sendIpcToRenderer("show", g_feeds, g_feeds.length - 1);
+      return;
+    }
+    sendIpcToRenderer("show", g_feeds);
+  } else {
+    sendIpcToRenderer("show", g_feeds);
+  }
+}
+
+async function addFeed(url) {
+  if (url && url !== " ") {
+    for (let index = 0; index < g_feeds.length; index++) {
+      const feed = g_feeds[index];
+      if (feed.url === url) {
+        sendIpcToRenderer(
+          "show-modal-info",
+          _("tool-shared-modal-title-error"),
+          _("tool-rss-add-feed-error-already"),
+          _("ui-modal-prompt-button-ok")
+        );
+        return;
+      }
+    }
+    const data = await getFeedContent(url);
+    if (data) {
+      g_feeds.push({
+        name: data.name,
+        url,
+      });
+      sendIpcToRenderer("update-feeds", g_feeds, g_feeds.length - 1);
+      return;
+    }
+  }
+  sendIpcToRenderer(
+    "show-modal-info",
+    _("tool-shared-modal-title-error"),
+    _("tool-rss-feed-error"),
+    _("ui-modal-prompt-button-ok")
+  );
+}
 
 async function getFeedContent(url) {
   try {

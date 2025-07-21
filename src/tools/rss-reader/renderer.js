@@ -20,7 +20,7 @@ let g_feeds;
 let g_extraLocalization = {};
 let g_currentFeedIndex = 0;
 
-async function init(feeds) {
+async function init(feeds, currentFeedIndex = 0) {
   if (!g_isInitialized) {
     // things to start only once go here
     g_isInitialized = true;
@@ -48,7 +48,7 @@ async function init(feeds) {
     });
   ////////////////////////////////////////
   g_feeds = feeds;
-  g_currentFeedIndex = 0;
+  g_currentFeedIndex = currentFeedIndex;
 
   buildSections();
   switchSection(g_currentFeedIndex);
@@ -186,7 +186,7 @@ function itemsToHtml(root, items) {
         }
 
         if (item.enclosureUrl) {
-          if (item.enclosureUrl.toLowerCase().endsWith(".mp3")) {
+          if (item.enclosureUrl.toLowerCase().split("?")[0].endsWith(".mp3")) {
             html += `<div class="tool-rss-item-enclosure"><i class="fas fa-play-circle tool-rss-item-enclosure-playicon" data-src="${item.enclosureUrl}" data-title="${item.title}"></i></div>`;
           } else {
             // TODO: check image extension?
