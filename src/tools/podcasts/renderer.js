@@ -25,6 +25,10 @@ let g_localizedModalSearchingTitleText;
 
 let g_lastSearchResults;
 
+export function needsScrollToTopButtonUpdate() {
+  return true;
+}
+
 function init(section, noResultsText, openInAcbrText, openInBrowserText) {
   if (!g_isInitialized) {
     // things to start only once go here
