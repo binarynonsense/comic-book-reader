@@ -201,6 +201,11 @@
     flex-direction: column;
   }
 } */
+.hs-path-cards-list-single {
+  gap: 6px;
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
 
 .hs-path-interactive {
   border: 1px solid transparent;
