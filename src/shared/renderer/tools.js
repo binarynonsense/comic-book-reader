@@ -76,3 +76,7 @@ export function getCurrentToolName() {
 export function setCurrentToolName(toolName) {
   g_currentTool = toolName;
 }
+
+export function needsScrollToTopButtonUpdate() {
+  return g_tools[g_currentTool]?.needsScrollToTopButtonUpdate();
+}

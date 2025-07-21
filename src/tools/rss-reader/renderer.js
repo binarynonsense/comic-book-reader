@@ -21,6 +21,10 @@ let g_feeds;
 let g_extraLocalization = {};
 let g_currentFeedIndex = 0;
 
+export function needsScrollToTopButtonUpdate() {
+  return true;
+}
+
 async function init(feeds, currentFeedIndex = 0) {
   if (!g_isInitialized) {
     // things to start only once go here
