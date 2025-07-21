@@ -252,7 +252,6 @@ function updateSearchResults(
   searchResultsDiv.innerHTML = "";
   if (searchResults && searchResults.length > 0) {
     // console.log(searchResults);
-    // ref: artworkUrl60 artworkUrl30 artworkUrl100
     // list
     let ul = document.createElement("ul");
     ul.className = "tools-collection-ul";
@@ -277,12 +276,26 @@ function updateSearchResults(
         text.innerHTML = `${podcastData.artistName}`;
         multilineText.appendChild(text);
 
+        // unused: artworkUrl60 artworkUrl30 artworkUrl100
+
         if (podcastData.genres && podcastData.genres.length > 0) {
           text = document.createElement("span");
           text.innerHTML = `${podcastData.genres[0]}`;
           for (let index = 1; index < podcastData.genres.length; index++) {
             text.innerHTML += ` | ${podcastData.genres[index]}`;
           }
+          multilineText.appendChild(text);
+        }
+
+        text = document.createElement("span");
+        text.innerHTML = `${podcastData.trackCount}`;
+        multilineText.appendChild(text);
+
+        if (podcastData.releaseDate) {
+          text = document.createElement("span");
+          text.innerHTML = new Date(
+            podcastData.releaseDate
+          ).toLocaleDateString();
           multilineText.appendChild(text);
         }
 
