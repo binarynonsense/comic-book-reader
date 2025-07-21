@@ -363,7 +363,6 @@ function getNewCardDiv(cardType, data, navRow, navColumn) {
         const buttonDiv = cardDiv.querySelector(".hs-path-card-button");
         buttonDiv.title = g_cardLocalization.options;
         buttonDiv.addEventListener("click", function (event) {
-          console.log(event);
           sendIpcToMain(
             "hs-on-favorite-options-clicked",
             data.index,
