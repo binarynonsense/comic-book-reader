@@ -256,7 +256,13 @@ function getToolsSubmenu() {
         {
           label: _("menu-tools-radio"),
           click() {
-            core.onMenuToolRadio();
+            core.onMenuToolRadio(1);
+          },
+        },
+        {
+          label: _("menu-tools-podcasts"),
+          click() {
+            core.onMenuToolPodcasts();
           },
         },
       ],
@@ -291,6 +297,12 @@ function getToolsSubmenu() {
           label: _("menu-tools-rss-reader"),
           click() {
             core.onMenuToolRssReader();
+          },
+        },
+        {
+          label: _("menu-tools-radio"),
+          click() {
+            core.onMenuToolRadio(0);
           },
         },
       ],
