@@ -717,8 +717,13 @@ if (!gotTheLock) {
     sendIpcToPreload("update-menubar");
   };
 
-  exports.onMenuToolRadio = function () {
-    tools.switchTool("tool-radio");
+  exports.onMenuToolRadio = function (section) {
+    tools.switchTool("tool-radio", section);
+    sendIpcToPreload("update-menubar");
+  };
+
+  exports.onMenuToolPodcasts = function () {
+    tools.switchTool("tool-podcasts");
     sendIpcToPreload("update-menubar");
   };
 
