@@ -10,6 +10,7 @@ import {
   sendIpcToMainAndWait as coreSendIpcToMainAndWait,
 } from "../../core/renderer.js";
 import * as modals from "../../shared/renderer/modals.js";
+import * as utils from "../../shared/renderer/utils.js";
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -186,11 +187,12 @@ function itemsToHtml(root, items) {
         }
 
         if (item.enclosureUrl) {
-          if (item.enclosureUrl.toLowerCase().split("?")[0].endsWith(".mp3")) {
+          if (utils.hasAudioExtension(item.enclosureUrl.split("?")[0])) {
             html += `<div class="tool-rss-item-enclosure"><i class="fas fa-play-circle tool-rss-item-enclosure-playicon" data-src="${item.enclosureUrl}" data-title="${item.title}"></i></div>`;
-          } else {
-            // TODO: check image extension?
+          } else if (utils.hasImageExtension(item.enclosureUrl.split("?")[0])) {
             html += `<div class="tool-rss-item-enclosure"><img src="${item.enclosureUrl}"></div>`;
+          } else if (utils.hasVideoExtension(item.enclosureUrl.split("?")[0])) {
+            html += `<div class="tool-rss-item-enclosure"><i class="fas fa-play-circle tool-rss-item-enclosure-playicon" data-src="${item.enclosureUrl}" data-title="${item.title}"></i></div>`;
           }
         } else if (item.contentEncoded) {
           const div = document.createElement("div");
@@ -211,7 +213,10 @@ function itemsToHtml(root, items) {
   let links = document.querySelectorAll("a");
   links.forEach((link) => {
     if (link.href) {
-      if (link.href.toLowerCase().endsWith(".mp3")) {
+      if (
+        utils.hasAudioExtension(link.href) ||
+        utils.hasVideoExtension(link.href)
+      ) {
         link.title = `${g_extraLocalization.openInAudioPlayer} (${link.href})`;
         link.addEventListener("click", () => {
           onPlayUrlClicked(link.href, link.href);
@@ -227,7 +232,7 @@ function itemsToHtml(root, items) {
 
   let mp3Urls = document.querySelectorAll("i");
   mp3Urls.forEach((mp3Url) => {
-    if (mp3Url.getAttribute("data-src")) {
+    if (!mp3Url.title && mp3Url.getAttribute("data-src")) {
       mp3Url.title = `${
         g_extraLocalization.openInAudioPlayer
       } (${mp3Url.getAttribute("data-src")})`;
