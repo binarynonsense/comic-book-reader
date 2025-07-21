@@ -495,7 +495,15 @@ async function getFeedContent(url) {
         content.link = data.rss.channel.link
           ? data.rss.channel.link
           : undefined;
-        content.description = data.rss.channel.description;
+        if (data.rss.channel.description) {
+          if (data.rss.channel.description["#text"]) {
+            content.description = data.rss.channel.description["#text"];
+          } else {
+            content.description = sanitizeHtml(data.rss.channel.description, {
+              allowedTags: sanitizeHtml.defaults.allowedTags.concat(["img"]),
+            });
+          }
+        }
         content.items = [];
         data.rss.channel.item.forEach((item, index) => {
           let itemData = {};
