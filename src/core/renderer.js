@@ -13,6 +13,7 @@ import {
   getCurrentTool,
   setCurrentToolName,
   getCurrentToolName,
+  needsScrollToTopButtonUpdate,
 } from "../shared/renderer/tools.js";
 import * as modals from "../shared/renderer/modals.js";
 import { init as initInput } from "../shared/renderer/input.js";
@@ -121,7 +122,7 @@ function onIpcFromMain(event, args) {
           document.body.appendChild(toolsScrollButton);
           toolsScrollButton.innerHTML = '<i class="fas fa-arrow-up"></i>';
           toolsDiv.addEventListener("scroll", (event) => {
-            if (getCurrentToolName() === "tool-rss") {
+            if (needsScrollToTopButtonUpdate()) {
               if (toolsDiv.scrollTop > 20) {
                 toolsScrollButton.style.display = "flex";
               } else {
