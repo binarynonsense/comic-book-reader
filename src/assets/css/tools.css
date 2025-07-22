@@ -239,6 +239,9 @@ html[dir="rtl"] .tools-button-accent i {
   filter: brightness(1.2);
   background-color: var(--tools-button-normal-bg-color);
   color: var(--tools-button-normal-text-color);
+  /* border-end-start-radius: 30px;
+  border-start-start-radius: 30px; */
+  border-radius: 5px;
 }
 .tools-menu-button-selected {
   background-color: var(--tools-bg2-color);
