@@ -219,6 +219,9 @@
 .hs-path-interactive:active {
   transform: translateY(1px);
 }
+.hs-path-cards-list-single .hs-path-interactive:hover {
+  transform: scale(1.01);
+}
 
 .hs-path-empty {
   opacity: 0.5;
