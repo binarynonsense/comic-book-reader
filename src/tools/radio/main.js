@@ -203,7 +203,7 @@ function initOnIpcCallbacks() {
     sendIpcToRenderer(
       "show-modal-reset-favorites",
       _("tool-shared-modal-title-warning"),
-      _("tool-radio-reset-feeds-warning"),
+      _("tool-radio-reset-favorites-warning"),
       _("ui-modal-prompt-button-ok"),
       _("ui-modal-prompt-button-cancel")
     );
