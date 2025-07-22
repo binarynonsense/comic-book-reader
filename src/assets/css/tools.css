@@ -708,10 +708,22 @@ html[dir="rtl"] .tools-range-bubble {
   color: var(--tools-collection-bg-color);
   border-radius: 3px;
 }
-
 .tools-collection-pagination-button:hover {
   transform: scale(1.1);
   filter: brightness(1.2);
+}
+
+.tools-collection-pagination-button-disabled {
+  cursor: default;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 25px;
+  width: 25px;
+  background-color: var(--tools-collection-text-color);
+  color: var(--tools-collection-bg-color);
+  border-radius: 3px;
+  filter: opacity(0.2);
 }
 
 .tools-collection-navigation-back {
