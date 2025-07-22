@@ -773,6 +773,7 @@
   "tool-radio-favorites": "Favoriten",
   "tool-radio-add-to-favorites": "Zu Favoriten hinzufügen",
   "tool-radio-remove-from-favorites": "Von Favoriten entfernen",
+  "[NEEDS TRANSLATION]tool-radio-reset-favorites-warning": "Are you sure you want to remove the current list of radio stations and replace it with the default one?",
   "tool-radio-search-options-language": "Sprache (auf Englisch)",
   "tool-radio-search-options-languagecode": "Sprachcode",
   "tool-radio-search-options-countrycode": "Ländercode",

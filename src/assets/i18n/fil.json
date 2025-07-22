@@ -773,6 +773,7 @@
   "[NEEDS TRANSLATION]tool-radio-favorites": "Favorites",
   "[NEEDS TRANSLATION]tool-radio-add-to-favorites": "Add to Favorites",
   "[NEEDS TRANSLATION]tool-radio-remove-from-favorites": "Remove from Favorites",
+  "[NEEDS TRANSLATION]tool-radio-reset-favorites-warning": "Are you sure you want to remove the current list of radio stations and replace it with the default one?",
   "tool-radio-search-options-language": "Wika (Sa Ingles)",
   "tool-radio-search-options-languagecode": "Code ng Wika",
   "tool-radio-search-options-countrycode": "Country Code",
