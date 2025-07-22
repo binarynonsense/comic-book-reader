@@ -78,5 +78,8 @@ export function setCurrentToolName(toolName) {
 }
 
 export function needsScrollToTopButtonUpdate() {
-  return g_tools[g_currentTool]?.needsScrollToTopButtonUpdate();
+  return (
+    g_tools[g_currentTool].needsScrollToTopButtonUpdate &&
+    g_tools[g_currentTool]?.needsScrollToTopButtonUpdate()
+  );
 }
