@@ -467,6 +467,11 @@ function getLocalization() {
     },
     //////////////////////////////////////////////
     {
+      id: "tool-radio-favorites-text",
+      text: _("tool-radio-favorites"),
+    },
+    //////////////////////////////////////////////
+    {
       id: "tool-radio-search-input-text",
       text: _("tool-shared-ui-search-input"),
     },
