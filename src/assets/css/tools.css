@@ -236,6 +236,7 @@ html[dir="rtl"] .tools-button-accent i {
 }
 
 .tools-menu-button:hover {
+  filter: brightness(1.2);
   background-color: var(--tools-button-normal-bg-color);
   color: var(--tools-button-normal-text-color);
 }

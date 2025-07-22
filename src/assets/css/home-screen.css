@@ -212,6 +212,9 @@
 }
 .hs-path-interactive:hover {
   filter: brightness(1.2);
+  background-color: var(--hs-button-normal-bg-color);
+  color: var(--hs-button-normal-text-color);
+
   transform: scale(1.03);
   cursor: pointer;
   border: 1px solid var(--hs-path-card-text-color);
@@ -221,6 +224,16 @@
 }
 .hs-path-cards-list-single .hs-path-interactive:hover {
   transform: scale(1.01);
+}
+
+.hs-path-interactive-use-list-colors {
+  background-color: var(--tools-bg2-color) !important;
+  color: var(--tools-text-color) !important;
+}
+.hs-path-interactive-use-list-colors:hover {
+  filter: brightness(1.2) !important;
+  background-color: var(--tools-button-normal-bg-color) !important;
+  color: var(--tools-button-normal-text-color) !important;
 }
 
 .hs-path-empty {

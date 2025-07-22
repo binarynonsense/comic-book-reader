@@ -345,12 +345,12 @@ function getNewCardDiv(data, index) {
   const iconHtml = `
   <i class="hs-path-card-image-file fas fa-rss-square fa-2x fa-fw"></i>`;
   const buttonHtml = `
-  <div class="hs-path-card-button hs-path-interactive">
+  <div class="hs-path-card-button hs-path-interactive hs-path-interactive-use-list-colors">
     <i class="fas fa-ellipsis-h"></i>
   </div>`;
 
   cardDiv.classList.add("hs-path-card");
-  cardDiv.innerHTML = `<div class="hs-path-card-main hs-path-interactive">
+  cardDiv.innerHTML = `<div class="hs-path-card-main hs-path-interactive hs-path-interactive-use-list-colors">
   <div class="hs-path-card-image">
     ${iconHtml}
   </div>
