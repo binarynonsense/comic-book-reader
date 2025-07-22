@@ -269,7 +269,7 @@ function initOnIpcCallbacks() {
 
   on("on-reset-favorites-clicked", () => {
     sendIpcToRenderer(
-      "show-modal-reset-favorite-feeds",
+      "show-modal-reset-favorites",
       _("tool-shared-modal-title-warning"),
       _("tool-rss-reset-feeds-warning"),
       _("ui-modal-prompt-button-ok"),
