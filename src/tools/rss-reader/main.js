@@ -267,7 +267,7 @@ function initOnIpcCallbacks() {
     }
   );
 
-  on("on-reset-favorite-feeds-clicked", () => {
+  on("on-reset-favorites-clicked", () => {
     sendIpcToRenderer(
       "show-modal-reset-favorite-feeds",
       _("tool-shared-modal-title-warning"),
@@ -277,9 +277,9 @@ function initOnIpcCallbacks() {
     );
   });
 
-  on("on-modal-reset-favorite-feeds-ok-clicked", () => {
+  on("on-modal-reset-favorites-ok-clicked", () => {
     g_favorites = structuredClone(g_defaultFeeds);
-    sendIpcToRenderer("on-favorite-feeds-reset", g_favorites);
+    sendIpcToRenderer("on-favorites-reset", g_favorites);
   });
 
   //////////////////

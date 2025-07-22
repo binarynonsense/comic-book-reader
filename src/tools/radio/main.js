@@ -16,6 +16,8 @@ const tools = require("../../shared/main/tools");
 const log = require("../../shared/main/logger");
 const settings = require("../../shared/main/settings");
 
+// TODO: add reset button to favorites?
+
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -194,6 +196,33 @@ function initOnIpcCallbacks() {
       } catch (error) {}
     })();
   });
+
+  /////////
+
+  on("on-reset-favorites-clicked", () => {
+    sendIpcToRenderer(
+      "show-modal-reset-favorites",
+      _("tool-shared-modal-title-warning"),
+      _("tool-radio-reset-feeds-warning"),
+      _("ui-modal-prompt-button-ok"),
+      _("ui-modal-prompt-button-cancel")
+    );
+  });
+
+  on("on-modal-reset-favorites-ok-clicked", () => {
+    g_favorites = [];
+    sendIpcToRenderer(
+      "on-favorites-reset",
+      g_favorites,
+      _("tool-shared-ui-search-nothing-found"),
+      _("tool-shared-ui-search-item-open-acbr"),
+      _("tool-shared-ui-search-item-open-browser"),
+      _("tool-radio-add-to-favorites"),
+      _("tool-radio-remove-from-favorites")
+    );
+  });
+
+  /////////
 
   on("search", async (text, options) => {
     // ref: https://de1.api.radio-browser.info/#Advanced_station_search
@@ -447,6 +476,11 @@ function getLocalization() {
     {
       id: "tool-radio-back-button-text",
       text: _("tool-shared-ui-back-to-reader").toUpperCase(),
+    },
+    //////////////////////////////////////////////
+    {
+      id: "tool-radio-reset-button-text",
+      text: _("tool-shared-ui-resetlist").toUpperCase(),
     },
     //////////////////////////////////////////////
     {

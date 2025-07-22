@@ -61,7 +61,7 @@ async function init(favorites, url) {
   document
     .getElementById("tool-rss-reset-button")
     .addEventListener("click", (event) => {
-      sendIpcToMain("on-reset-favorite-feeds-clicked");
+      sendIpcToMain("on-reset-favorites-clicked");
     });
 
   ////////////////////////////////////////
@@ -238,7 +238,7 @@ function initOnIpcCallbacks() {
     closeModal();
   });
 
-  on("on-favorite-feeds-reset", (favorites) => {
+  on("on-favorites-reset", (favorites) => {
     g_favorites = favorites;
     buildFavorites();
     closeModal();
@@ -281,8 +281,8 @@ function initOnIpcCallbacks() {
     showModalInfo(...args);
   });
 
-  on("show-modal-reset-favorite-feeds", (...args) => {
-    showModalResetFavoriteFeeds(...args);
+  on("show-modal-reset-favorites", (...args) => {
+    showModalResetFavorites(...args);
   });
   /////////////////
 
@@ -760,7 +760,7 @@ function showModalInfo(title, message, textButton1) {
   });
 }
 
-function showModalResetFavoriteFeeds(title, message, textButton1, textButton2) {
+function showModalResetFavorites(title, message, textButton1, textButton2) {
   if (getOpenModal()) {
     return;
   }
@@ -779,7 +779,7 @@ function showModalResetFavoriteFeeds(title, message, textButton1, textButton2) {
       {
         text: textButton1.toUpperCase(),
         callback: () => {
-          sendIpcToMain("on-modal-reset-favorite-feeds-ok-clicked");
+          sendIpcToMain("on-modal-reset-favorites-ok-clicked");
           modalClosed();
         },
       },

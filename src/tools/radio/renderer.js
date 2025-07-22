@@ -66,6 +66,11 @@ function init(
 
   // favorites
   g_favorites = favorites;
+  document
+    .getElementById("tool-radio-reset-button")
+    .addEventListener("click", (event) => {
+      sendIpcToMain("on-reset-favorites-clicked");
+    });
 
   // search
   g_searchButton = document.getElementById("tool-radio-search-button");
@@ -226,6 +231,37 @@ function initOnIpcCallbacks() {
     buildFavorites();
     updateColumnsHeight();
   });
+
+  on("show-modal-reset-favorites", (...args) => {
+    showModalResetFavorites(...args);
+  });
+
+  on(
+    "on-favorites-reset",
+    (
+      favorites,
+      noResultsText,
+      openInAcbrText,
+      openInBrowserText,
+      addToFavoritesText,
+      removeFromFavoritesText
+    ) => {
+      g_favorites = favorites;
+      buildFavorites();
+      if (g_lastSearchResults) {
+        updateSearchResults(
+          g_lastSearchResults,
+          noResultsText,
+          openInAcbrText,
+          openInBrowserText,
+          addToFavoritesText,
+          removeFromFavoritesText
+        );
+      }
+      updateColumnsHeight();
+      closeModal();
+    }
+  );
 
   /////////////////////////////////////////////////////////////////////////////
 
@@ -849,6 +885,41 @@ function showModalFavoriteEditURL(index, url, title, textButton1, textButton2) {
           modalClosed();
         },
         key: "Enter",
+      },
+      {
+        text: textButton2.toUpperCase(),
+        callback: () => {
+          modalClosed();
+        },
+      },
+    ],
+  });
+}
+
+////
+
+function showModalResetFavorites(title, message, textButton1, textButton2) {
+  if (getOpenModal()) {
+    return;
+  }
+
+  g_openModal = modals.show({
+    title,
+    message,
+    zIndexDelta: 5,
+    close: {
+      callback: () => {
+        modalClosed();
+      },
+      key: "Escape",
+    },
+    buttons: [
+      {
+        text: textButton1.toUpperCase(),
+        callback: () => {
+          sendIpcToMain("on-modal-reset-favorites-ok-clicked");
+          modalClosed();
+        },
       },
       {
         text: textButton2.toUpperCase(),
