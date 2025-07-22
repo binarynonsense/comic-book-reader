@@ -270,6 +270,91 @@ function initOnIpcCallbacks() {
       log.error("Tried to remove a favorite with not matching index and path");
     }
   });
+
+  on("on-modal-favorite-options-edit-name-clicked", (favIndex, favUrl) => {
+    if (g_favorites[favIndex].url === favUrl) {
+      let favName = g_favorites[favIndex].name;
+      sendIpcToRenderer(
+        "show-modal-favorite-edit-name",
+        favIndex,
+        favUrl,
+        favName,
+        _("ui-modal-prompt-button-edit-name"),
+        _("ui-modal-prompt-button-ok"),
+        _("ui-modal-prompt-button-cancel")
+      );
+    } else {
+      log.error("Tried to edit a favorite with not matching index and url");
+    }
+  });
+
+  on(
+    "on-modal-favorite-options-edit-name-ok-clicked",
+    (favIndex, favUrl, newName) => {
+      if (g_favorites[favIndex].url === favUrl) {
+        let favName = g_favorites[favIndex].name;
+        if (newName && newName !== favName) {
+          g_favorites[favIndex].name = newName;
+          rebuildFavorites(false);
+        }
+      } else {
+        log.error("Tried to edit a favorite with not matching index and url");
+      }
+    }
+  );
+
+  on("on-modal-favorite-options-edit-url-clicked", (favIndex, favUrl) => {
+    if (g_favorites[favIndex].url === favUrl) {
+      sendIpcToRenderer(
+        "show-modal-favorite-edit-url",
+        favIndex,
+        favUrl,
+        _("ui-modal-prompt-button-edit-url"),
+        _("ui-modal-prompt-button-ok"),
+        _("ui-modal-prompt-button-cancel")
+      );
+    } else {
+      log.error("Tried to edit a favorite with not matching index and url");
+    }
+  });
+
+  on(
+    "on-modal-favorite-options-edit-url-ok-clicked",
+    (favIndex, favUrl, newUrl) => {
+      if (g_favorites[favIndex].url === favUrl) {
+        if (newUrl && newUrl !== favUrl) {
+          g_favorites[favIndex].url = newUrl;
+          rebuildFavorites(false);
+        }
+      } else {
+        log.error("Tried to edit a favorite with not matching index and url");
+      }
+    }
+  );
+
+  on("on-modal-favorite-options-move-clicked", (favIndex, favUrl, dir) => {
+    if (g_favorites[favIndex].url === favUrl) {
+      if (dir == 0) {
+        // up
+        if (favIndex > 0) {
+          let temp = g_favorites[favIndex - 1];
+          g_favorites[favIndex - 1] = g_favorites[favIndex];
+          g_favorites[favIndex] = temp;
+          rebuildFavorites(false);
+        }
+      } else if (dir == 1) {
+        // down
+        if (favIndex < g_favorites.length - 1) {
+          let temp = g_favorites[favIndex + 1];
+          g_favorites[favIndex + 1] = g_favorites[favIndex];
+          g_favorites[favIndex] = temp;
+          rebuildFavorites(false);
+        }
+      }
+    } else {
+      log.error("Tried to move a favorite with not matching index and url");
+    }
+  });
 }
 
 // HANDLE

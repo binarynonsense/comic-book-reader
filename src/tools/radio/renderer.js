@@ -281,8 +281,8 @@ function initOnIpcCallbacks() {
     showModalFavoriteEditName(...args);
   });
 
-  on("show-modal-favorite-edit-path", (...args) => {
-    showModalFavoriteEditPath(...args);
+  on("show-modal-favorite-edit-url", (...args) => {
+    showModalFavoriteEditURL(...args);
   });
 }
 
@@ -310,7 +310,7 @@ function buildFavorites() {
 function getNewCardDiv(data, index) {
   const cardDiv = document.createElement("div");
   const iconHtml = `
-  <i class="hs-path-card-image-file fas fa-play-circle fa-2x fa-fw"></i>`;
+  <i class="hs-path-card-image-file fas fa-file-audio fa-2x fa-fw"></i>`;
   const buttonHtml = `
   <div class="hs-path-card-button hs-path-interactive">
     <i class="fas fa-ellipsis-h"></i>
@@ -712,38 +712,38 @@ function showModalFavoriteOptions(
   }
 
   let buttons = [];
-  // buttons.push({
-  //   text: textButtonEditName.toUpperCase(),
-  //   fullWidth: true,
-  //   callback: () => {
-  //     modalClosed();
-  //     sendIpcToMain("on-modal-favorite-options-edit-name-clicked", index, url);
-  //   },
-  // });
-  // buttons.push({
-  //   text: textButtonEditURL.toUpperCase(),
-  //   fullWidth: true,
-  //   callback: () => {
-  //     modalClosed();
-  //     sendIpcToMain("on-modal-favorite-options-edit-url-clicked", index, url);
-  //   },
-  // });
-  // buttons.push({
-  //   text: textButtonMoveDown.toUpperCase(),
-  //   fullWidth: true,
-  //   callback: () => {
-  //     modalClosed();
-  //     sendIpcToMain("on-modal-favorite-options-move-clicked", index, url, 0);
-  //   },
-  // });
-  // buttons.push({
-  //   text: textButtonMoveUp.toUpperCase(),
-  //   fullWidth: true,
-  //   callback: () => {
-  //     modalClosed();
-  //     sendIpcToMain("on-modal-favorite-options-move-clicked", index, url, 1);
-  //   },
-  // });
+  buttons.push({
+    text: textButtonEditName.toUpperCase(),
+    fullWidth: true,
+    callback: () => {
+      modalClosed();
+      sendIpcToMain("on-modal-favorite-options-edit-name-clicked", index, url);
+    },
+  });
+  buttons.push({
+    text: textButtonEditURL.toUpperCase(),
+    fullWidth: true,
+    callback: () => {
+      modalClosed();
+      sendIpcToMain("on-modal-favorite-options-edit-url-clicked", index, url);
+    },
+  });
+  buttons.push({
+    text: textButtonMoveUp.toUpperCase(),
+    fullWidth: true,
+    callback: () => {
+      modalClosed();
+      sendIpcToMain("on-modal-favorite-options-move-clicked", index, url, 0);
+    },
+  });
+  buttons.push({
+    text: textButtonMoveDown.toUpperCase(),
+    fullWidth: true,
+    callback: () => {
+      modalClosed();
+      sendIpcToMain("on-modal-favorite-options-move-clicked", index, url, 1);
+    },
+  });
   buttons.push({
     text: textButtonRemove.toUpperCase(),
     fullWidth: true,
@@ -772,5 +772,90 @@ function showModalFavoriteOptions(
       key: "Escape",
     },
     buttons: buttons,
+  });
+}
+
+function showModalFavoriteEditName(
+  index,
+  url,
+  name,
+  title,
+  textButton1,
+  textButton2
+) {
+  if (getOpenModal()) {
+    return;
+  }
+
+  g_openModal = modals.show({
+    title: title,
+    zIndexDelta: 5,
+    input: { type: "text", default: name },
+    close: {
+      callback: () => {
+        modalClosed();
+      },
+      key: "Escape",
+    },
+    buttons: [
+      {
+        text: textButton1.toUpperCase(),
+        callback: (showFocus, value) => {
+          sendIpcToMain(
+            "on-modal-favorite-options-edit-name-ok-clicked",
+            index,
+            url,
+            value
+          );
+          modalClosed();
+        },
+        key: "Enter",
+      },
+      {
+        text: textButton2.toUpperCase(),
+        callback: () => {
+          modalClosed();
+        },
+      },
+    ],
+  });
+}
+
+function showModalFavoriteEditURL(index, url, title, textButton1, textButton2) {
+  if (getOpenModal()) {
+    return;
+  }
+
+  g_openModal = modals.show({
+    title: title,
+    zIndexDelta: 5,
+    input: { type: "text", default: url },
+    close: {
+      callback: () => {
+        modalClosed();
+      },
+      key: "Escape",
+    },
+    buttons: [
+      {
+        text: textButton1.toUpperCase(),
+        callback: (showFocus, value) => {
+          sendIpcToMain(
+            "on-modal-favorite-options-edit-url-ok-clicked",
+            index,
+            url,
+            value
+          );
+          modalClosed();
+        },
+        key: "Enter",
+      },
+      {
+        text: textButton2.toUpperCase(),
+        callback: () => {
+          modalClosed();
+        },
+      },
+    ],
   });
 }
