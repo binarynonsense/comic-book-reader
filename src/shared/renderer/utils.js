@@ -81,7 +81,9 @@ export function getFolderAndNameFromFilePath(filePath) {
 
 export function hasAudioExtension(text) {
   text = text.toLowerCase();
-  return text.endsWith(".mp3") || text.endsWith(".aac");
+  return (
+    text.endsWith(".mp3") || text.endsWith(".aac") || text.endsWith(".m4a")
+  );
 }
 
 export function hasImageExtension(text) {

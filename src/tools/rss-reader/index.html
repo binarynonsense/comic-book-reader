@@ -2,7 +2,7 @@
 <div id="tools-columns">
   <!-- ------------------- LEFT COLUMN -------------------------------- -->
   <div id="tools-columns-left">
-    <div id="tools-menu-non-sticky-div">
+    <div id="tools-menu-sticky-div">
       <div class="tools-menu-buttons">
         <button id="tool-rss-back-button" class="tools-button-accent">
           <i class="fas fa-angle-left"></i>
@@ -11,23 +11,44 @@
         <button id="tool-rss-add-button" class="tools-button-accent">
           <span id="tool-rss-add-button-text"></span>
         </button>
-        <button id="tool-rss-reset-button" class="tools-button-accent">
+        <!-- <button id="tool-rss-reset-button" class="tools-button-accent">
           <span id="tool-rss-reset-button-text"></span>
-        </button>
+        </button> -->
       </div>
       <div class="tools-menu-sections">
         <!-- sections menu -->
+        <div id="tool-rss-section-0-button" class="tools-menu-button">
+          <i class="fa-solid fa-heart tools-menu-button-icon"></i>
+          <div class="tools-menu-button-text">
+            <span id="tool-rss-section-0-text"></span>
+          </div>
+        </div>
+        <div id="tool-rss-section-1-button" class="tools-menu-button">
+          <i class="fa-solid fa-newspaper tools-menu-button-icon"></i>
+          <div class="tools-menu-button-text">
+            <span id="tool-rss-section-1-text"></span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
   <!-- ------------------- RIGTH COLUMN -------------------------------- -->
   <div id="tools-columns-right">
     <div id="tools-title"><span id="tool-rss-title-text"></span></div>
-    <!-- section 0 -->
-    <div id="tool-rss-section-0-content-div">
-      <!-- <h3>
-        <span id="tool-rss-content-text" class="set-display-none"></span>Content
-      </h3> -->
+    <!-- favorites -->
+    <div id="tool-rss-section-0-content-div" class="set-display-none">
+      <div class="tools-columns-right-section">
+        <h3><span id="tool-rss-favorites-text"></span></h3>
+        <div class="tools-columns-right-subsection">
+          <button id="tool-rss-reset-button" class="tools-button-accent">
+            <span id="tool-rss-reset-button-text"></span>
+          </button>
+          <div id="tool-rss-favorites-div"></div>
+        </div>
+      </div>
+    </div>
+    <!-- content -->
+    <div id="tool-rss-section-1-content-div" class="set-display-none">
       <div class="tools-columns-right-subsection">
         <div id="tool-rss-items-div"></div>
       </div>

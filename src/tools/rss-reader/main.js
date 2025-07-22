@@ -78,7 +78,7 @@ let g_defaultFeeds = [
   // },
 ];
 
-let g_feeds = [];
+let g_favorites = [];
 
 function init() {
   if (!g_isInitialized) {
@@ -101,18 +101,18 @@ exports.open = async function (url) {
     loadedOptions.feeds &&
     Array.isArray(loadedOptions.feeds)
   ) {
-    g_feeds = [];
+    g_favorites = [];
     loadedOptions.feeds.forEach((feed) => {
       if (typeof feed == "object" && feed.constructor == Object) {
         if (feed.url && typeof feed.url === "string") {
           if (!feed.name || typeof feed.name !== "string") feed.name = "???";
-          g_feeds.push(feed);
+          g_favorites.push(feed);
         }
       }
     });
     // g_feeds = structuredClone(loadedOptions.feeds);
   } else {
-    g_feeds = structuredClone(g_defaultFeeds);
+    g_favorites = structuredClone(g_defaultFeeds);
     // if (core.isDev() && !core.isRelease()) {
     //   g_feeds.unshift({
     //     name: "Bad Feed",
@@ -120,16 +120,13 @@ exports.open = async function (url) {
     //   });
     // }
   }
-  if (url) {
-    startWithUrl(url);
-  } else {
-    sendIpcToRenderer("show", g_feeds);
-  }
+
+  sendIpcToRenderer("show", g_favorites, url);
 };
 
 function saveSettings() {
   let options = {};
-  options.feeds = g_feeds;
+  options.feeds = g_favorites;
   settings.updateToolOptions("tool-rss", options);
 }
 
@@ -209,9 +206,13 @@ function initOnIpcCallbacks() {
     }
   });
 
-  on("get-feed-content", async (index) => {
-    const feedData = await getFeedContent(g_feeds[index].url);
-    sendIpcToRenderer("show-feed-content", feedData);
+  on("get-feed-content", async (url, index, switchToContent = true) => {
+    if (index >= 0) {
+      const feedData = await getFeedContent(g_favorites[index].url);
+      sendIpcToRenderer("load-feed-content", feedData, index, switchToContent);
+    } else {
+      openFeedURL(url, switchToContent);
+    }
   });
 
   on("open-url-in-browser", (urlString) => {
@@ -245,28 +246,30 @@ function initOnIpcCallbacks() {
       };
       sendIpcToAudioPlayerRenderer("open-playlist", playlist);
     }
-    // onCloseClicked();
   });
 
   //////////////////
 
-  on("on-add-feed-clicked", () => {
+  on("on-open-feed-url-clicked", () => {
     sendIpcToRenderer(
-      "show-modal-add-feed",
-      _("tool-rss-add-feed"),
+      "show-modal-open-feed-url",
+      _("tool-shared-tab-openurl"),
       "URL",
       _("ui-modal-prompt-button-ok"),
       _("ui-modal-prompt-button-cancel")
     );
   });
 
-  on("on-modal-add-feed-ok-clicked", async (url) => {
-    addFeed(url);
-  });
+  on(
+    "on-modal-open-feed-url-ok-clicked",
+    async (url, switchToContent = true) => {
+      openFeedURL(url, switchToContent);
+    }
+  );
 
-  on("on-reset-feeds-clicked", () => {
+  on("on-reset-favorite-feeds-clicked", () => {
     sendIpcToRenderer(
-      "show-modal-reset-feeds",
+      "show-modal-reset-favorite-feeds",
       _("tool-shared-modal-title-warning"),
       _("tool-rss-reset-feeds-warning"),
       _("ui-modal-prompt-button-ok"),
@@ -274,16 +277,17 @@ function initOnIpcCallbacks() {
     );
   });
 
-  on("on-modal-reset-feeds-ok-clicked", () => {
-    g_feeds = structuredClone(g_defaultFeeds);
-    sendIpcToRenderer("update-feeds", g_feeds, 0);
+  on("on-modal-reset-favorite-feeds-ok-clicked", () => {
+    g_favorites = structuredClone(g_defaultFeeds);
+    sendIpcToRenderer("on-favorite-feeds-reset", g_favorites);
   });
 
   //////////////////
 
-  on("on-feed-options-clicked", () => {
+  on("on-feed-options-clicked", (index) => {
     sendIpcToRenderer(
       "show-modal-feed-options",
+      index,
       _("tool-shared-tab-options"),
       _("tool-shared-ui-back"),
       _("tool-shared-tooltip-remove-from-list"),
@@ -295,13 +299,22 @@ function initOnIpcCallbacks() {
     );
   });
 
+  on("on-modal-feed-options-add-clicked", (name, url) => {
+    if (url) {
+      g_favorites.push({ name, url });
+      sendIpcToRenderer("on-favorite-feed-added", g_favorites, name, url);
+    } else {
+      log.error("Tried to add a feed with no url");
+    }
+  });
+
   on("on-modal-feed-options-remove-clicked", (feedIndex, feedUrl) => {
-    if (g_feeds[feedIndex].url === feedUrl) {
+    if (g_favorites[feedIndex].url === feedUrl) {
       sendIpcToRenderer(
-        "show-modal-feed-remove",
+        "show-modal-feed-remove-from-favorites",
         feedIndex,
         feedUrl,
-        _("tool-rss-remove-feed"),
+        _("tool-rss-remove-feed-from-favorites"),
         _("tool-rss-remove-feed-warning"),
         _("ui-modal-prompt-button-ok"),
         _("ui-modal-prompt-button-cancel")
@@ -312,13 +325,13 @@ function initOnIpcCallbacks() {
   });
 
   on("on-modal-feed-options-remove-ok-clicked", (feedIndex, feedUrl) => {
-    g_feeds.splice(feedIndex, 1);
-    sendIpcToRenderer("update-feeds", g_feeds, feedIndex);
+    g_favorites.splice(feedIndex, 1);
+    sendIpcToRenderer("on-favorite-feed-removed", g_favorites, feedIndex);
   });
 
   on("on-modal-feed-options-edit-name-clicked", (feedIndex, feedUrl) => {
-    if (g_feeds[feedIndex].url === feedUrl) {
-      let feedName = g_feeds[feedIndex].name;
+    if (g_favorites[feedIndex].url === feedUrl) {
+      let feedName = g_favorites[feedIndex].name;
       sendIpcToRenderer(
         "show-modal-feed-edit-name",
         feedIndex,
@@ -333,16 +346,20 @@ function initOnIpcCallbacks() {
   });
 
   on("on-modal-feed-options-edit-name-ok-clicked", (feedIndex, newName) => {
-    let feedName = g_feeds[feedIndex].name;
+    let feedName = g_favorites[feedIndex].name;
     if (newName && newName !== feedName) {
-      g_feeds[feedIndex].name = newName;
-      sendIpcToRenderer("update-feed-name", g_feeds, feedIndex);
+      g_favorites[feedIndex].name = newName;
+      sendIpcToRenderer(
+        "on-favorite-feed-name-updated",
+        g_favorites,
+        feedIndex
+      );
     }
   });
 
   on("on-modal-feed-options-edit-url-clicked", (feedIndex, feedUrl) => {
-    if (g_feeds[feedIndex].url === feedUrl) {
-      let feedUrl = g_feeds[feedIndex].url;
+    if (g_favorites[feedIndex].url === feedUrl) {
+      let feedUrl = g_favorites[feedIndex].url;
       sendIpcToRenderer(
         "show-modal-feed-edit-url",
         feedIndex,
@@ -357,30 +374,40 @@ function initOnIpcCallbacks() {
   });
 
   on("on-modal-feed-options-edit-url-ok-clicked", (feedIndex, newUrl) => {
-    let feedUrl = g_feeds[feedIndex].url;
+    let feedUrl = g_favorites[feedIndex].url;
     if (newUrl && newUrl !== feedUrl) {
-      g_feeds[feedIndex].url = newUrl;
-      sendIpcToRenderer("update-feed-url", g_feeds, feedIndex);
+      g_favorites[feedIndex].url = newUrl;
+      sendIpcToRenderer("on-favorite-feed-url-updated", g_favorites, feedIndex);
     }
   });
 
   on("on-modal-feed-options-move-clicked", (feedIndex, feedUrl, dir) => {
-    if (g_feeds[feedIndex].url === feedUrl) {
+    if (g_favorites[feedIndex].url === feedUrl) {
       if (dir == 0) {
         // up
         if (feedIndex > 0) {
-          let temp = g_feeds[feedIndex - 1];
-          g_feeds[feedIndex - 1] = g_feeds[feedIndex];
-          g_feeds[feedIndex] = temp;
-          sendIpcToRenderer("update-feeds", g_feeds, feedIndex - 1);
+          let temp = g_favorites[feedIndex - 1];
+          g_favorites[feedIndex - 1] = g_favorites[feedIndex];
+          g_favorites[feedIndex] = temp;
+          sendIpcToRenderer(
+            "on-favorite-feeds-moved",
+            g_favorites,
+            feedIndex,
+            feedIndex - 1
+          );
         }
       } else if (dir == 1) {
         // down
-        if (feedIndex < g_feeds.length - 1) {
-          let temp = g_feeds[feedIndex + 1];
-          g_feeds[feedIndex + 1] = g_feeds[feedIndex];
-          g_feeds[feedIndex] = temp;
-          sendIpcToRenderer("update-feeds", g_feeds, feedIndex + 1);
+        if (feedIndex < g_favorites.length - 1) {
+          let temp = g_favorites[feedIndex + 1];
+          g_favorites[feedIndex + 1] = g_favorites[feedIndex];
+          g_favorites[feedIndex] = temp;
+          sendIpcToRenderer(
+            "on-favorite-feeds-moved",
+            g_favorites,
+            feedIndex,
+            feedIndex + 1
+          );
         }
       }
     } else {
@@ -410,53 +437,24 @@ function initHandleIpcCallbacks() {}
 // TOOL ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-async function startWithUrl(url) {
+async function openFeedURL(url, switchToContent) {
   if (url && url !== " ") {
-    // check if already exists
-    for (let index = 0; index < g_feeds.length; index++) {
-      const feed = g_feeds[index];
-      if (feed.url === url) {
-        sendIpcToRenderer("show", g_feeds, index);
-        return;
+    const feedData = await getFeedContent(url);
+    if (feedData) {
+      let favoritesIndex = -1;
+      for (let index = 0; index < g_favorites.length; index++) {
+        const feed = g_favorites[index];
+        if (feed.url === url) {
+          favoritesIndex = index;
+          break;
+        }
       }
-    }
-    // add and then start
-    const data = await getFeedContent(url);
-    if (data) {
-      g_feeds.push({
-        name: data.name,
-        url,
-      });
-      sendIpcToRenderer("show", g_feeds, g_feeds.length - 1);
-      return;
-    }
-    sendIpcToRenderer("show", g_feeds);
-  } else {
-    sendIpcToRenderer("show", g_feeds);
-  }
-}
-
-async function addFeed(url) {
-  if (url && url !== " ") {
-    for (let index = 0; index < g_feeds.length; index++) {
-      const feed = g_feeds[index];
-      if (feed.url === url) {
-        sendIpcToRenderer(
-          "show-modal-info",
-          _("tool-shared-modal-title-error"),
-          _("tool-rss-add-feed-error-already"),
-          _("ui-modal-prompt-button-ok")
-        );
-        return;
-      }
-    }
-    const data = await getFeedContent(url);
-    if (data) {
-      g_feeds.push({
-        name: data.name,
-        url,
-      });
-      sendIpcToRenderer("update-feeds", g_feeds, g_feeds.length - 1);
+      sendIpcToRenderer(
+        "load-feed-content",
+        feedData,
+        favoritesIndex,
+        switchToContent
+      );
       return;
     }
   }
@@ -651,13 +649,27 @@ function getLocalization() {
     },
     {
       id: "tool-rss-add-button-text",
-      text: _("tool-rss-add-feed").toUpperCase(),
-    },
-    {
-      id: "tool-rss-reset-button-text",
-      text: _("tool-rss-reset-feeds").toUpperCase(),
+      text: _("tool-shared-tab-openurl").toUpperCase(),
     },
     //////////////////////////////////////////////
+    {
+      id: "tool-rss-reset-button-text",
+      text: _("tool-shared-ui-resetlist").toUpperCase(),
+    },
+    //////////////////////////////////////////////
+    {
+      id: "tool-rss-section-0-text",
+      text: _("tool-rss-favorites"),
+    },
+    {
+      id: "tool-rss-section-1-text",
+      text: _("tool-rss-feed-content"),
+    },
+    //////////////////////////////////////////////
+    {
+      id: "tool-rss-favorites-text",
+      text: _("tool-rss-favorites"),
+    },
   ];
 }
 
@@ -666,8 +678,10 @@ function getExtraLocalization() {
     edit: _("ui-modal-prompt-button-edit"),
     editName: _("ui-modal-prompt-button-edit-name"),
     reload: _("tool-shared-ui-reload"),
-    remove: _("tool-shared-tooltip-remove-from-list"),
-    options: _("tool-shared-tab-moreoptions"),
+    addToFavorites: _("tool-rss-add-to-favorites"),
+    removeFromFavorites: _("tool-rss-remove-from-favorites"),
+    // remove: _("tool-shared-tooltip-remove-from-list"),
+    moreOptions: _("tool-shared-tab-moreoptions"),
     feedError: _("tool-rss-feed-error"),
     openInBrowser: _("tool-shared-ui-search-item-open-browser"),
     loadingTitle: _("tool-shared-modal-title-loading"),
@@ -676,5 +690,10 @@ function getExtraLocalization() {
     cancel: _("tool-shared-ui-cancel"),
     addToPlaylist: _("ui-modal-prompt-button-add-to-playlist"),
     startPlaylist: _("ui-modal-prompt-button-start-new-playlist"),
+    // card
+    options: _("tool-shared-tab-options"),
+    open: _("ui-modal-prompt-button-open"),
+    //
+    noContent: _("tool-rss-no-content-message"),
   };
 }

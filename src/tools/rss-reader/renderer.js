@@ -17,15 +17,17 @@ import * as utils from "../../shared/renderer/utils.js";
 ///////////////////////////////////////////////////////////////////////////////
 
 let g_isInitialized = false;
-let g_feeds;
 let g_extraLocalization = {};
-let g_currentFeedIndex = 0;
+
+let g_favorites;
+let g_currentFeedFavoriteIndex = -1;
+let g_currentFeedData;
 
 export function needsScrollToTopButtonUpdate() {
   return true;
 }
 
-async function init(feeds, currentFeedIndex = 0) {
+async function init(favorites, url) {
   if (!g_isInitialized) {
     // things to start only once go here
     g_isInitialized = true;
@@ -44,54 +46,378 @@ async function init(feeds, currentFeedIndex = 0) {
   document
     .getElementById("tool-rss-add-button")
     .addEventListener("click", (event) => {
-      sendIpcToMain("on-add-feed-clicked");
+      sendIpcToMain("on-open-feed-url-clicked");
     });
-  document
-    .getElementById("tool-rss-reset-button")
-    .addEventListener("click", (event) => {
-      sendIpcToMain("on-reset-feeds-clicked");
-    });
-  ////////////////////////////////////////
-  g_feeds = feeds;
-  g_currentFeedIndex = currentFeedIndex;
 
-  buildSections();
-  switchSection(g_currentFeedIndex);
-  ////////////////////////////////////////
-  updateColumnsHeight();
-}
-
-function buildSections() {
-  const menu = document.querySelector(".tools-menu-sections");
-  menu.innerHTML = "";
-  g_feeds.forEach((feed, index) => {
-    menu.innerHTML += `<div
-  id="tool-rss-section-${index}-button"
-  class="tools-menu-button${index == 0 ? " tools-menu-button-selected" : ""}">
-  <i class="fas fa-rss-square tools-menu-button-icon"></i>
-  <div class="tools-menu-button-text">
-    <span id="tool-rss-section-${index}-text">${feed.name}</span>
-  </div>
-</div>`;
-  });
-  g_feeds.forEach((feed, index) => {
+  // sections menu
+  for (let index = 0; index < 2; index++) {
     document
       .getElementById(`tool-rss-section-${index}-button`)
       .addEventListener("click", (event) => {
         switchSection(index);
       });
-  });
+  }
+
+  document
+    .getElementById("tool-rss-reset-button")
+    .addEventListener("click", (event) => {
+      sendIpcToMain("on-reset-favorite-feeds-clicked");
+    });
+
+  ////////////////////////////////////////
+
+  g_favorites = favorites;
+
+  buildFavorites();
+  if (url) {
+    sendIpcToMain("get-feed-content", url, -1);
+    showLoadingModal();
+  } else if (g_currentFeedData) {
+    showFeedContent(g_currentFeedData, g_currentFeedFavoriteIndex);
+    switchSection(1);
+  } else {
+    removeCurrentFeedContent();
+    switchSection(0);
+  }
+  ////////////////////////////////////////
+  updateColumnsHeight();
 }
 
-function showFeedContent(data) {
-  // console.log(data);
+export function initIpc() {
+  initOnIpcCallbacks();
+}
+
+function updateColumnsHeight(scrollTop = false) {
+  const columns = document.getElementById("tools-columns");
+  const tools = document.getElementById("tools");
+  const left = document.getElementById("tools-columns-left");
+  const right = document.getElementById("tools-columns-right");
+  left.style.minHeight = right.offsetHeight + "px";
+  if (tools.offsetHeight > columns.offsetHeight) {
+    columns.style.height = "100%";
+  } else {
+    columns.style.height = "fit-content";
+  }
+  if (scrollTop) {
+    document.getElementById("tools-columns-right").scrollIntoView({
+      behavior: "instant",
+      block: "start",
+      inline: "nearest",
+    });
+  }
+}
+
+function switchSection(id) {
+  for (let index = 0; index < 2; index++) {
+    if (id === index) {
+      document
+        .getElementById(`tool-rss-section-${index}-button`)
+        .classList.add("tools-menu-button-selected");
+      document
+        .getElementById(`tool-rss-section-${index}-content-div`)
+        .classList.remove("set-display-none");
+    } else {
+      document
+        .getElementById(`tool-rss-section-${index}-button`)
+        .classList.remove("tools-menu-button-selected");
+      document
+        .getElementById(`tool-rss-section-${index}-content-div`)
+        .classList.add("set-display-none");
+    }
+  }
+  updateColumnsHeight(true);
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// IPC SEND ///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+export function sendIpcToMain(...args) {
+  coreSendIpcToMain("tool-rss", ...args);
+}
+
+async function sendIpcToMainAndWait(...args) {
+  return await coreSendIpcToMainAndWait("tool-rss", ...args);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// IPC RECEIVE ////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+let g_onIpcCallbacks = {};
+
+export function onIpcFromMain(args) {
+  const callback = g_onIpcCallbacks[args[0]];
+  if (callback) callback(...args.slice(1));
+  return;
+}
+
+function on(id, callback) {
+  g_onIpcCallbacks[id] = callback;
+}
+
+function initOnIpcCallbacks() {
+  on("show", (...args) => {
+    init(...args);
+  });
+
+  on("hide", () => {});
+
+  on("update-localization", (localization, extraLocalization) => {
+    for (let index = 0; index < localization.length; index++) {
+      const element = localization[index];
+      const domElement = document.querySelector("#" + element.id);
+      if (domElement !== null) {
+        domElement.innerHTML = element.text;
+      }
+    }
+    g_extraLocalization = extraLocalization;
+  });
+
+  on("update-window", () => {
+    updateColumnsHeight();
+  });
+
+  on("close-modal", () => {
+    if (g_openModal) {
+      modals.close(g_openModal);
+      modalClosed();
+    }
+  });
+
+  on("load-feed-content", (data, index, switchToContent) => {
+    showFeedContent(data, index);
+    if (switchToContent) switchSection(1);
+    closeModal();
+  });
+
+  ///////////////
+
+  on("on-favorite-feed-added", (favorites, name, url) => {
+    g_favorites = favorites;
+    buildFavorites();
+    // right now should only be possible from content view
+    if (
+      g_currentFeedData &&
+      g_currentFeedData.name == name &&
+      g_currentFeedData.url == url
+    ) {
+      g_currentFeedFavoriteIndex = g_favorites.length - 1;
+      updateCurrentFeedContentIcons();
+    } else {
+      // just in case
+      removeCurrentFeedContent();
+    }
+    closeModal();
+  });
+
+  on("on-favorite-feed-removed", (favorites, prevIndex) => {
+    g_favorites = favorites;
+    buildFavorites();
+    closeModal();
+    if (g_currentFeedFavoriteIndex >= 0) {
+      if (!g_currentFeedData) {
+        // shouldn't happen
+        removeCurrentFeedContent();
+      }
+      if (g_currentFeedFavoriteIndex === prevIndex) {
+        g_currentFeedFavoriteIndex = -1;
+        // was the same
+        updateCurrentFeedContentIcons();
+      } else {
+        g_currentFeedFavoriteIndex--;
+      }
+    }
+  });
+
+  on("on-favorite-feeds-moved", (favorites, prevIndex, newIndex) => {
+    g_favorites = favorites;
+    buildFavorites();
+    if (g_currentFeedFavoriteIndex == prevIndex)
+      g_currentFeedFavoriteIndex = newIndex;
+    closeModal();
+  });
+
+  on("on-favorite-feeds-reset", (favorites) => {
+    g_favorites = favorites;
+    buildFavorites();
+    closeModal();
+    if (g_currentFeedData) {
+      showFeedContent(g_currentFeedData, -1);
+    } else {
+      removeCurrentFeedContent();
+    }
+  });
+
+  on("on-favorite-feed-name-updated", (feeds, index) => {
+    g_favorites = feeds;
+    buildFavorites();
+    if (index === g_currentFeedFavoriteIndex) {
+      document.getElementById("tool-rss-channel-info-title-text").innerText =
+        g_favorites[g_currentFeedFavoriteIndex].name;
+    }
+    closeModal();
+  });
+
+  on("on-favorite-feed-url-updated", (feeds, index) => {
+    g_favorites = feeds;
+    buildFavorites();
+    closeModal();
+    if (index === g_currentFeedFavoriteIndex) {
+      showLoadingModal();
+      sendIpcToMain("get-feed-content", index);
+    } else {
+      removeCurrentFeedContent();
+    }
+  });
+
+  /////////////////
+
+  on("show-modal-open-feed-url", (...args) => {
+    showModalOpenFeedURL(...args);
+  });
+
+  on("show-modal-info", (...args) => {
+    showModalInfo(...args);
+  });
+
+  on("show-modal-reset-favorite-feeds", (...args) => {
+    showModalResetFavoriteFeeds(...args);
+  });
+  /////////////////
+
+  on("show-modal-feed-options", (...args) => {
+    showModalFeedOptions(...args);
+  });
+
+  on("show-modal-feed-edit-name", (...args) => {
+    showModalFeedEditName(...args);
+  });
+
+  on("show-modal-feed-edit-url", (...args) => {
+    showModalFeedEditUrl(...args);
+  });
+
+  on("show-modal-feed-remove-from-favorites", (...args) => {
+    showModalFeedRemoveFromFavorites(...args);
+  });
+
+  /////////////////////////////////////////////////////////////////////////////
+
+  on("modal-update-title-text", (text) => {
+    updateModalTitleText(text);
+  });
+
+  on("update-info-text", (text) => {
+    updateInfoText(text);
+  });
+
+  on("update-log-text", (text) => {
+    updateLogText(text);
+  });
+
+  /////////////////////////////////////////////////////////////////////////////
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// TOOL ///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+function buildFavorites() {
+  const favoritesDiv = document.querySelector("#tool-rss-favorites-div");
+  favoritesDiv.innerHTML = "";
+
+  let listDiv = document.createElement("div");
+  listDiv.classList.add("hs-path-cards-list-single");
+  listDiv.style = "padding-top: 5px;";
+  favoritesDiv.appendChild(listDiv);
+
+  if (g_favorites) {
+    let index = 0;
+    for (; index < g_favorites.length; index++) {
+      listDiv.appendChild(getNewCardDiv(g_favorites[index], index));
+    }
+  }
+}
+
+function getNewCardDiv(data, index) {
+  const cardDiv = document.createElement("div");
+  const iconHtml = `
+  <i class="hs-path-card-image-file fas fa-rss-square fa-2x fa-fw"></i>`;
+  const buttonHtml = `
+  <div class="hs-path-card-button hs-path-interactive">
+    <i class="fas fa-ellipsis-h"></i>
+  </div>`;
+
+  cardDiv.classList.add("hs-path-card");
+  cardDiv.innerHTML = `<div class="hs-path-card-main hs-path-interactive">
+  <div class="hs-path-card-image">
+    ${iconHtml}
+  </div>
+  <div class="hs-path-card-content">
+    <span>${data.name}</span
+    ><span>${data.url}</span>
+      </div>
+  </div>
+  ${buttonHtml}`;
+
+  const mainCardDiv = cardDiv.querySelector(".hs-path-card-main");
+  mainCardDiv.title = g_extraLocalization.open;
+
+  mainCardDiv.addEventListener("click", function (event) {
+    sendIpcToMain("get-feed-content", data.url, index);
+    showLoadingModal();
+  });
+
+  const buttonDiv = cardDiv.querySelector(".hs-path-card-button");
+  buttonDiv.title = g_extraLocalization.options;
+  buttonDiv.addEventListener("click", function (event) {
+    sendIpcToMain("on-favorite-options-clicked", index, data.url);
+    event.stopPropagation();
+    sendIpcToMain("on-feed-options-clicked", index, false);
+  });
+
+  return cardDiv;
+}
+
+////////////////////////////
+
+function removeCurrentFeedContent() {
+  const contentDiv = document.getElementById("tool-rss-items-div");
+  contentDiv.innerHTML = `<span> ${g_extraLocalization.noContent} </span>`;
+  g_currentFeedData = undefined;
+  g_currentFeedFavoriteIndex = -1;
+}
+
+function updateCurrentFeedContentIcons() {
+  if (g_currentFeedFavoriteIndex < 0) {
+    // not in favs
+    document
+      .getElementById(`tool-rss-channel-info-title-remove-button`)
+      .classList.add("set-display-none");
+    document
+      .getElementById(`tool-rss-channel-info-title-add-button`)
+      .classList.remove("set-display-none");
+  } else {
+    document
+      .getElementById(`tool-rss-channel-info-title-remove-button`)
+      .classList.remove("set-display-none");
+    document
+      .getElementById(`tool-rss-channel-info-title-add-button`)
+      .classList.add("set-display-none");
+  }
+}
+
+function showFeedContent(data, index = -1) {
+  g_currentFeedFavoriteIndex = index;
+  g_currentFeedData = data;
+
   const root = document.getElementById("tool-rss-items-div");
   root.innerHTML = "";
   const titleButtons = `<div id="tool-rss-channel-info-title-buttons">
         <i class="fas fa-sync-alt tool-rss-icon-button" id="tool-rss-channel-info-title-reload-button" title="${g_extraLocalization.reload}"></i>
-        <i class="fas fa-pen tool-rss-icon-button" id="tool-rss-channel-info-title-editname-button" title="${g_extraLocalization.editName}"></i>
-        <i class="fas fa-trash-alt  tool-rss-icon-button" id="tool-rss-channel-info-title-remove-button" title="${g_extraLocalization.remove}"></i>
-        <i class="fas fa-ellipsis-h tool-rss-icon-button" id="tool-rss-channel-info-title-options-button" title="${g_extraLocalization.options}"></i>
+        <i class="fa-regular fa-heart tool-rss-icon-button" id="tool-rss-channel-info-title-add-button" title="${g_extraLocalization.addToFavorites}"></i>
+        <i class="fa-solid fa-heart tool-rss-icon-button" id="tool-rss-channel-info-title-remove-button" title="${g_extraLocalization.removeFromFavorites}"></i>        
         </div>`;
   const titleText = `
   <div id='tool-rss-channel-info-title'>
@@ -104,7 +430,7 @@ function showFeedContent(data) {
   }">
         <i class="fas fa-rss"></i>
         <span id="tool-rss-channel-info-title-text">${
-          g_feeds[g_currentFeedIndex].name
+          index >= 0 ? g_favorites[g_currentFeedFavoriteIndex].name : data.name
         }</span>        
       </div>
       ${titleButtons}
@@ -115,7 +441,9 @@ function showFeedContent(data) {
     <div id='tool-rss-channel-info'>
       ${titleText}
       <div id='tool-rss-channel-info-desc'>${
-        data.name && data.name !== g_feeds[g_currentFeedIndex].name
+        data.name &&
+        (g_currentFeedFavoriteIndex < 0 ||
+          data.name !== g_favorites[g_currentFeedFavoriteIndex].name)
           ? "<span>" + data.name + "</span>"
           : ""
       }${data.description ? "<span>" + data.description + "</span>" : ""}
@@ -123,6 +451,7 @@ function showFeedContent(data) {
     </div>`;
     itemsToHtml(root, data.items);
   } catch (error) {
+    console.log(error);
     root.innerHTML += `
     <div id='tool-rss-channel-info'>
       ${titleText}
@@ -131,35 +460,32 @@ function showFeedContent(data) {
       </div>
     </div>`;
   }
-  document
-    .getElementById(`tool-rss-channel-info-title-options-button`)
-    .addEventListener("click", (event) => {
-      sendIpcToMain("on-feed-options-clicked", g_currentFeedIndex);
-    });
+  /////
   document
     .getElementById(`tool-rss-channel-info-title-reload-button`)
     .addEventListener("click", (event) => {
       showLoadingModal();
-      sendIpcToMain("get-feed-content", g_currentFeedIndex);
+      sendIpcToMain("get-feed-content", data.url, g_currentFeedFavoriteIndex);
+    });
+  /////
+  document
+    .getElementById(`tool-rss-channel-info-title-add-button`)
+    .addEventListener("click", (event) => {
+      sendIpcToMain("on-modal-feed-options-add-clicked", data.name, data.url);
     });
   document
     .getElementById(`tool-rss-channel-info-title-remove-button`)
     .addEventListener("click", (event) => {
       sendIpcToMain(
         "on-modal-feed-options-remove-clicked",
-        g_currentFeedIndex,
-        g_feeds[g_currentFeedIndex].url
+        g_currentFeedFavoriteIndex,
+        g_favorites[g_currentFeedFavoriteIndex].url
       );
     });
-  document
-    .getElementById(`tool-rss-channel-info-title-editname-button`)
-    .addEventListener("click", (event) => {
-      sendIpcToMain(
-        "on-modal-feed-options-edit-name-clicked",
-        g_currentFeedIndex,
-        g_feeds[g_currentFeedIndex].url
-      );
-    });
+
+  updateCurrentFeedContentIcons();
+
+  /////
 
   if (data?.link)
     document
@@ -253,204 +579,15 @@ function itemsToHtml(root, items) {
     const element = document.getElementById(
       `tool-rss-item-title-${index}-button`
     );
-    element.addEventListener("click", (event) => {
-      sendIpcToMain("open-url-in-browser", element.getAttribute("data-src"));
-    });
-  }
-}
-
-export function initIpc() {
-  initOnIpcCallbacks();
-}
-
-function updateColumnsHeight(scrollTop = false) {
-  const columns = document.getElementById("tools-columns");
-  const tools = document.getElementById("tools");
-  const left = document.getElementById("tools-columns-left");
-  const right = document.getElementById("tools-columns-right");
-  left.style.minHeight = right.offsetHeight + "px";
-  if (tools.offsetHeight > columns.offsetHeight) {
-    columns.style.height = "100%";
-  } else {
-    columns.style.height = "fit-content";
-  }
-  if (scrollTop) {
-    document.getElementById("tools-columns-right").scrollIntoView({
-      behavior: "instant",
-      block: "start",
-      inline: "nearest",
-    });
-  }
-}
-
-function switchSection(id) {
-  g_currentFeedIndex = id;
-  if (g_feeds.length <= 0) {
-    showFeedContent();
-  } else {
-    showLoadingModal();
-    for (let index = 0; index < g_feeds.length; index++) {
-      if (id === index) {
-        document
-          .getElementById(`tool-rss-section-${index}-button`)
-          .classList.add("tools-menu-button-selected");
-        // document
-        //   .getElementById(`tool-rss-section-${index}-content-div`)
-        //   .classList.remove("set-display-none");
-        sendIpcToMain("get-feed-content", index);
-      } else {
-        document
-          .getElementById(`tool-rss-section-${index}-button`)
-          .classList.remove("tools-menu-button-selected");
-        // document
-        //   .getElementById(`tool-rss-section-${index}-content-div`)
-        //   .classList.add("set-display-none");
-      }
+    if (element) {
+      element.addEventListener("click", (event) => {
+        sendIpcToMain("open-url-in-browser", element.getAttribute("data-src"));
+      });
+    } else {
+      console.log(`"tool-rss-item-title-${index}-button" not found`);
     }
   }
-  updateColumnsHeight(true);
 }
-
-//////////////////////////////////////////////////////////////////////////////
-// IPC SEND ///////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-
-export function sendIpcToMain(...args) {
-  coreSendIpcToMain("tool-rss", ...args);
-}
-
-async function sendIpcToMainAndWait(...args) {
-  return await coreSendIpcToMainAndWait("tool-rss", ...args);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// IPC RECEIVE ////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-
-let g_onIpcCallbacks = {};
-
-export function onIpcFromMain(args) {
-  const callback = g_onIpcCallbacks[args[0]];
-  if (callback) callback(...args.slice(1));
-  return;
-}
-
-function on(id, callback) {
-  g_onIpcCallbacks[id] = callback;
-}
-
-function initOnIpcCallbacks() {
-  on("show", (...args) => {
-    init(...args);
-  });
-
-  on("hide", () => {});
-
-  on("update-localization", (localization, extraLocalization) => {
-    for (let index = 0; index < localization.length; index++) {
-      const element = localization[index];
-      const domElement = document.querySelector("#" + element.id);
-      if (domElement !== null) {
-        domElement.innerHTML = element.text;
-      }
-    }
-    g_extraLocalization = extraLocalization;
-  });
-
-  on("update-window", () => {
-    updateColumnsHeight();
-  });
-
-  on("close-modal", () => {
-    if (g_openModal) {
-      modals.close(g_openModal);
-      modalClosed();
-    }
-  });
-
-  on("show-feed-content", (data) => {
-    showFeedContent(data);
-    closeModal();
-  });
-
-  on("update-feeds", (feeds, index) => {
-    closeModal();
-    g_feeds = feeds;
-    buildSections();
-    if (index !== undefined) {
-      if (index >= g_feeds.length) index = g_feeds.length - 1;
-      switchSection(index);
-    }
-  });
-
-  on("update-feed-name", (feeds, index) => {
-    g_feeds = feeds;
-    if (index === g_currentFeedIndex) {
-      document.getElementById("tool-rss-channel-info-title-text").innerText =
-        g_feeds[g_currentFeedIndex].name;
-    }
-    document.getElementById(`tool-rss-section-${index}-text`).innerText =
-      g_feeds[index].name;
-
-    closeModal();
-  });
-
-  on("update-feed-url", (feeds, index) => {
-    g_feeds = feeds;
-    switchSection(g_currentFeedIndex);
-  });
-
-  /////////////////
-
-  on("show-modal-add-feed", (...args) => {
-    showModalAddFeed(...args);
-  });
-
-  on("show-modal-info", (...args) => {
-    showModalInfo(...args);
-  });
-
-  on("show-modal-reset-feeds", (...args) => {
-    showModalResetFeeds(...args);
-  });
-  /////////////////
-
-  on("show-modal-feed-options", (...args) => {
-    showModalFeedOptions(...args);
-  });
-
-  on("show-modal-feed-edit-name", (...args) => {
-    showModalFeedEditName(...args);
-  });
-
-  on("show-modal-feed-edit-url", (...args) => {
-    showModalFeedEditUrl(...args);
-  });
-
-  on("show-modal-feed-remove", (...args) => {
-    showModalFeedRemove(...args);
-  });
-
-  /////////////////////////////////////////////////////////////////////////////
-
-  on("modal-update-title-text", (text) => {
-    updateModalTitleText(text);
-  });
-
-  on("update-info-text", (text) => {
-    updateInfoText(text);
-  });
-
-  on("update-log-text", (text) => {
-    updateLogText(text);
-  });
-
-  /////////////////////////////////////////////////////////////////////////////
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// TOOL ///////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
 
 async function onPlayUrlClicked(url, name) {
   showModalOpenInPlayer(
@@ -561,7 +698,7 @@ function showLoadingModal() {
 
 //////////////
 
-function showModalAddFeed(title, message, textButton1, textButton2) {
+function showModalOpenFeedURL(title, message, textButton1, textButton2) {
   if (getOpenModal()) {
     return;
   }
@@ -581,7 +718,7 @@ function showModalAddFeed(title, message, textButton1, textButton2) {
       {
         text: textButton1.toUpperCase(),
         callback: (showFocus, value) => {
-          sendIpcToMain("on-modal-add-feed-ok-clicked", value);
+          sendIpcToMain("on-modal-open-feed-url-ok-clicked", value);
           modalClosed();
           showLoadingModal();
         },
@@ -623,7 +760,7 @@ function showModalInfo(title, message, textButton1) {
   });
 }
 
-function showModalResetFeeds(title, message, textButton1, textButton2) {
+function showModalResetFavoriteFeeds(title, message, textButton1, textButton2) {
   if (getOpenModal()) {
     return;
   }
@@ -642,7 +779,7 @@ function showModalResetFeeds(title, message, textButton1, textButton2) {
       {
         text: textButton1.toUpperCase(),
         callback: () => {
-          sendIpcToMain("on-modal-reset-feeds-ok-clicked");
+          sendIpcToMain("on-modal-reset-favorite-feeds-ok-clicked");
           modalClosed();
         },
       },
@@ -659,6 +796,7 @@ function showModalResetFeeds(title, message, textButton1, textButton2) {
 //////////////
 
 function showModalFeedOptions(
+  favoriteIndex,
   title,
   textButtonBack,
   textButtonRemove,
@@ -680,8 +818,8 @@ function showModalFeedOptions(
       modalClosed();
       sendIpcToMain(
         "on-modal-feed-options-edit-name-clicked",
-        g_currentFeedIndex,
-        g_feeds[g_currentFeedIndex].url
+        favoriteIndex,
+        g_favorites[favoriteIndex].url
       );
     },
   });
@@ -692,8 +830,8 @@ function showModalFeedOptions(
       modalClosed();
       sendIpcToMain(
         "on-modal-feed-options-edit-url-clicked",
-        g_currentFeedIndex,
-        g_feeds[g_currentFeedIndex].url
+        favoriteIndex,
+        g_favorites[favoriteIndex].url
       );
     },
   });
@@ -704,8 +842,8 @@ function showModalFeedOptions(
       modalClosed();
       sendIpcToMain(
         "on-modal-feed-options-move-clicked",
-        g_currentFeedIndex,
-        g_feeds[g_currentFeedIndex].url,
+        favoriteIndex,
+        g_favorites[favoriteIndex].url,
         0
       );
     },
@@ -717,8 +855,8 @@ function showModalFeedOptions(
       modalClosed();
       sendIpcToMain(
         "on-modal-feed-options-move-clicked",
-        g_currentFeedIndex,
-        g_feeds[g_currentFeedIndex].url,
+        favoriteIndex,
+        g_favorites[favoriteIndex].url,
         1
       );
     },
@@ -730,8 +868,8 @@ function showModalFeedOptions(
       modalClosed();
       sendIpcToMain(
         "on-modal-feed-options-remove-clicked",
-        g_currentFeedIndex,
-        g_feeds[g_currentFeedIndex].url
+        favoriteIndex,
+        g_favorites[favoriteIndex].url
       );
     },
   });
@@ -836,7 +974,7 @@ function showModalFeedEditUrl(index, url, title, textButton1, textButton2) {
 
 //////////////
 
-function showModalFeedRemove(
+function showModalFeedRemoveFromFavorites(
   index,
   url,
   title,
