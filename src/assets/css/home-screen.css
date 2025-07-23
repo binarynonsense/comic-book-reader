@@ -118,30 +118,30 @@
   opacity: var(--hs-logo-opacity);
 }
 
-#hs-logo-image img:hover {
-  animation: hs-anim-bounce 2s ease;
+.hs-animate-bounce {
+  animation: hs-animation-bounce 2s ease;
 }
 
-@keyframes hs-anim-bounce {
-  60% {
+@keyframes hs-animation-bounce {
+  0% {
     transform: translateY(0%);
   }
-  70% {
+  10% {
     transform: translateY(-15%);
   }
-  80% {
+  20% {
     transform: translateY(0%);
   }
-  85% {
+  25% {
     transform: translateY(-7%);
   }
-  87% {
+  27% {
     transform: translateY(0%);
   }
-  89% {
+  29% {
     transform: translateY(-3%);
   }
-  90% {
+  30% {
     transform: translateY(0);
   }
 }

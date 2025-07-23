@@ -32,6 +32,16 @@ function init() {
     // things to start only once go here
     g_isInitialized = true;
     ///////////
+    const logoDiv = document.querySelector("#hs-logo-image");
+    logoDiv.addEventListener("click", () => {
+      if (!logoDiv.classList.contains("hs-animate-bounce")) {
+        logoDiv.classList.add("hs-animate-bounce");
+        setTimeout(() => {
+          logoDiv.classList.remove("hs-animate-bounce");
+        }, (2000 * 30) / 100);
+      }
+    });
+    ///////////
     const openFileButton = document.querySelector("#hs-openfile-button");
     openFileButton.addEventListener("click", (event) => {
       sendIpcToMain("hs-open-dialog-file");
