@@ -67,9 +67,9 @@ function init(
   // favorites
   g_favorites = favorites;
   document
-    .getElementById("tool-radio-reset-button")
+    .getElementById("tool-radio-clear-favorites-button")
     .addEventListener("click", (event) => {
-      sendIpcToMain("on-reset-favorites-clicked");
+      sendIpcToMain("on-clear-favorites-clicked");
     });
 
   // search
@@ -232,8 +232,8 @@ function initOnIpcCallbacks() {
     updateColumnsHeight();
   });
 
-  on("show-modal-reset-favorites", (...args) => {
-    showModalResetFavorites(...args);
+  on("show-modal-clear-favorites", (...args) => {
+    showModalClearFavorites(...args);
   });
 
   on(
@@ -898,7 +898,7 @@ function showModalFavoriteEditURL(index, url, title, textButton1, textButton2) {
 
 ////
 
-function showModalResetFavorites(title, message, textButton1, textButton2) {
+function showModalClearFavorites(title, message, textButton1, textButton2) {
   if (getOpenModal()) {
     return;
   }

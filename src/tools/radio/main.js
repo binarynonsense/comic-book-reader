@@ -197,11 +197,11 @@ function initOnIpcCallbacks() {
 
   /////////
 
-  on("on-reset-favorites-clicked", () => {
+  on("on-clear-favorites-clicked", () => {
     sendIpcToRenderer(
-      "show-modal-reset-favorites",
+      "show-modal-clear-favorites",
       _("tool-shared-modal-title-warning"),
-      _("tool-radio-reset-favorites-warning"),
+      _("tool-shared-ui-clear-list-warning"),
       _("ui-modal-prompt-button-ok"),
       _("ui-modal-prompt-button-cancel")
     );
@@ -477,8 +477,8 @@ function getLocalization() {
     },
     //////////////////////////////////////////////
     {
-      id: "tool-radio-reset-button-text",
-      text: _("tool-shared-ui-resetlist").toUpperCase(),
+      id: "tool-radio-clear-favorites-button-text",
+      text: _("tool-shared-ui-clear-list").toUpperCase(),
     },
     //////////////////////////////////////////////
     {
