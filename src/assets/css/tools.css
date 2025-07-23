@@ -837,6 +837,14 @@ html[dir="rtl"] .tools-range-bubble {
   justify-content: flex-start;
 }
 
+.tools-buttons-list-button-disabled {
+  pointer-events: none;
+  cursor: default;
+}
+.tools-buttons-list-button-disabled i {
+  filter: opacity(0.25);
+}
+
 .tools-buttons-list-linkicon-file {
   color: var(--tools-buttons-list-bg1-color) !important;
   padding-inline-start: 5px;
