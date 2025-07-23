@@ -1253,6 +1253,12 @@ html[dir="rtl"] .tools-range-bubble {
   margin-right: auto;
 }
 
+.tool-rss-item-desc hr {
+  border: 1px solid var(--tools-text-color);
+  margin-top: 10px !important;
+  margin-bottom: 10px !important;
+}
+
 .tool-rss-item-desc a:link,
 .tool-rss-item-desc a:visited,
 .tool-rss-item-desc a:hover,
