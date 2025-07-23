@@ -27,6 +27,7 @@ let g_currentFeedContentPage = 0;
 let g_searchInput;
 let g_searchButton;
 let g_lastSearchResults;
+let g_lastSearchType = "podcasts";
 
 export function needsScrollToTopButtonUpdate() {
   return true;
@@ -90,7 +91,7 @@ async function init(section, favorites) {
   });
 
   g_searchInput = document.getElementById("tool-rss-search-input");
-  g_searchInput.placeholder = g_extraLocalization.searchPlaceholder;
+  g_searchInput.placeholder = g_extraLocalization.searchPlaceholderType1;
   g_searchInput.addEventListener("input", function (event) {
     if (g_searchInput.value !== "") {
       g_searchButton.classList.remove("tools-disabled");
@@ -112,14 +113,34 @@ async function init(section, favorites) {
     }
   });
 
+  document.getElementById("tool-rss-search-type-select-id-1").innerText =
+    g_extraLocalization.searchType1;
+  document.getElementById("tool-rss-search-type-select-id-2").innerText =
+    g_extraLocalization.searchType2;
+
+  document
+    .getElementById("tool-rss-search-type-select")
+    .addEventListener("change", (event) => {
+      g_searchInput.value = "";
+      g_searchButton.classList.add("tools-disabled");
+      if (
+        document.getElementById("tool-rss-search-type-select").value ===
+        "podcasts"
+      ) {
+        g_searchInput.placeholder = g_extraLocalization.searchPlaceholderType1;
+      } else {
+        g_searchInput.placeholder = g_extraLocalization.searchPlaceholderType2;
+      }
+    });
+
   ////////////////////////////////////////
 
   if (g_lastSearchResults) {
-    updateSearchResults(g_lastSearchResults);
+    updateSearchResults(g_lastSearchType, g_lastSearchResults);
   }
 
-  // old way, was passig url from separated podcast tool
-  // TOOD: delete when I'm sure I won't need the reference
+  // old way, was passing a url from separated podcast tool
+  // TODO: delete when I'm sure I won't need the reference
   // if (url) {
   //   sendIpcToMain("get-feed-content", url, -1);
   //   showLoadingModal();
@@ -366,8 +387,8 @@ function initOnIpcCallbacks() {
 
   ///////////////////////////////////////////////////////////////
 
-  on("update-results", (searchResults) => {
-    updateSearchResults(searchResults);
+  on("update-results", (...args) => {
+    updateSearchResults(...args);
     closeModal();
   });
 
@@ -858,9 +879,10 @@ async function onPlayUrlClicked(url, name) {
   );
 }
 
-function updateSearchResults(searchResults) {
+function updateSearchResults(type, searchResults) {
   // console.log(searchResults);
   g_lastSearchResults = searchResults;
+  g_lastSearchType = type;
   ///////////////////////////////////////////
   document
     .querySelector("#tool-rss-search-results-h3")
@@ -876,7 +898,9 @@ function updateSearchResults(searchResults) {
     ul.className = "tools-collection-ul";
     for (let index = 0; index < searchResults.length; index++) {
       const resultData = searchResults[index];
-      if (!resultData.feedUrl) break;
+      const resultUrl =
+        type === "podcasts" ? resultData.feedUrl : resultData.url;
+      if (!resultUrl) break;
       // create html
       let li = document.createElement("li");
       li.className = "tools-buttons-list-li";
@@ -886,7 +910,7 @@ function updateSearchResults(searchResults) {
       buttonSpan.title = g_extraLocalization.open;
       let multilineText = document.createElement("span");
       multilineText.className = "tools-buttons-list-li-multiline-text";
-      {
+      if (type === "podcasts") {
         let text = document.createElement("span");
         text.innerText = `${resultData.trackName}`;
         multilineText.appendChild(text);
@@ -919,13 +943,22 @@ function updateSearchResults(searchResults) {
         }
 
         text = document.createElement("span");
-        text.innerHTML = `${resultData.feedUrl}`;
+        text.innerHTML = `${resultUrl}`;
+        multilineText.appendChild(text);
+      } else {
+        // websites
+        let text = document.createElement("span");
+        text.innerText = `${resultData.title}`;
+        multilineText.appendChild(text);
+
+        text = document.createElement("span");
+        text.innerHTML = `${resultUrl}`;
         multilineText.appendChild(text);
       }
       buttonSpan.appendChild(multilineText);
 
       buttonSpan.addEventListener("click", (event) => {
-        onSearchResultClicked(index, 0);
+        onSearchResultClicked(resultUrl, 0);
       });
       li.appendChild(buttonSpan);
       {
@@ -934,7 +967,7 @@ function updateSearchResults(searchResults) {
         buttonSpan.innerHTML = `<i class="fas fa-external-link-alt"></i>`;
         buttonSpan.title = g_extraLocalization.openInBrowser;
         buttonSpan.addEventListener("click", (event) => {
-          onSearchResultClicked(index, 1);
+          onSearchResultClicked(resultUrl, 1);
         });
         li.appendChild(buttonSpan);
       }
@@ -966,17 +999,19 @@ function updateSearchResults(searchResults) {
 async function onSearch() {
   if (!g_openModal) showSearchModal(); // TODO: check if first time?
   updateModalTitleText(g_extraLocalization.searching);
-  sendIpcToMain("search", g_searchInput.value);
+  sendIpcToMain(
+    "search",
+    g_searchInput.value,
+    document.getElementById("tool-rss-search-type-select").value
+  );
 }
 
-async function onSearchResultClicked(index, mode) {
-  if (!g_lastSearchResults) return;
-  const resultData = g_lastSearchResults[index];
+async function onSearchResultClicked(url, mode) {
   if (mode === 0) {
-    sendIpcToMain("get-feed-content", resultData.feedUrl, -1);
+    sendIpcToMain("get-feed-content", url, -1);
     showLoadingModal();
   } else {
-    sendIpcToMain("open-url-in-browser", resultData.feedUrl);
+    sendIpcToMain("open-url-in-browser", url);
   }
 }
 

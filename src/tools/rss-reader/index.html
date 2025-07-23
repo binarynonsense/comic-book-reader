@@ -74,13 +74,28 @@
         <h3><span id="tool-rss-search-input-text"></span></h3>
         <div class="tools-columns-right-subsection">
           <label>
-            <input
-              id="tool-rss-search-input"
-              type="text"
-              placeholder="Search"
-              style="margin-top: 0"
-              spellcheck="false"
-            />
+            <div class="tool-shared-columns-parent">
+              <input
+                id="tool-rss-search-input"
+                type="text"
+                placeholder="Search"
+                style="margin-top: 0"
+                spellcheck="false"
+              />
+              <select
+                id="tool-rss-search-type-select"
+                class="tool-shared-columns-50"
+              >
+                <option
+                  value="podcasts"
+                  id="tool-rss-search-type-select-id-1"
+                ></option>
+                <option
+                  value="websites"
+                  id="tool-rss-search-type-select-id-2"
+                ></option>
+              </select>
+            </div>
           </label>
           <button id="tool-rss-search-button" class="tools-disabled">
             <span id="tool-rss-search-button-text"></span>

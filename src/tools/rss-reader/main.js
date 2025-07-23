@@ -432,23 +432,44 @@ function initOnIpcCallbacks() {
 
   ////
 
-  on("search", async (text) => {
-    // ref: https://performance-partners.apple.com/search-api
-    // ref: https://developer.apple.com/library/archive/documentation/AudioVideo/Conceptual/iTuneSearchAPI/Searching.html
-    try {
-      if (text.trim().length === 0) {
-        throw "query's text is empty";
+  on("search", async (text, type) => {
+    if (type === "podcasts") {
+      // Podcasts
+      // ref: https://performance-partners.apple.com/search-api
+      // ref: https://developer.apple.com/library/archive/documentation/AudioVideo/Conceptual/iTuneSearchAPI/Searching.html
+      try {
+        if (text.trim().length === 0) {
+          throw "query's text is empty";
+        }
+        const axios = require("axios").default;
+        let searchQuery = encodeURIComponent(text);
+        const response = await axios.get(
+          `https://itunes.apple.com/search?entity=podcast&limit=200&term=${searchQuery}`,
+          { timeout: 10000 }
+        );
+        sendIpcToRenderer("update-results", type, response.data.results);
+      } catch (error) {
+        log.error(error);
+        sendIpcToRenderer("update-results", type, undefined);
       }
-      const axios = require("axios").default;
-      let searchQuery = encodeURIComponent(text);
-      const response = await axios.get(
-        `https://itunes.apple.com/search?entity=podcast&limit=200&term=${searchQuery}`,
-        { timeout: 10000 }
-      );
-      sendIpcToRenderer("update-results", response.data.results);
-    } catch (error) {
-      log.error(error);
-      sendIpcToRenderer("update-results", undefined);
+    } else {
+      // Websites
+      // ref: https://feedsearch.dev/api/v1/search?url=arstechnica.com
+      try {
+        if (text.trim().length === 0) {
+          throw "query's text is empty";
+        }
+        const axios = require("axios").default;
+        let searchQuery = encodeURIComponent(text);
+        const response = await axios.get(
+          `https://feedsearch.dev/api/v1/search?url=${searchQuery}`,
+          { timeout: 10000 }
+        );
+        sendIpcToRenderer("update-results", type, response.data);
+      } catch (error) {
+        log.error(error);
+        sendIpcToRenderer("update-results", type, undefined);
+      }
     }
   });
 }
@@ -764,8 +785,17 @@ function getExtraLocalization() {
     moveUpInList: _("tool-shared-tooltip-move-up-in-list"),
     moveDownInList: _("tool-shared-tooltip-move-down-in-list"),
     // search
-    searchPlaceholder: _("tool-shared-ui-search-placeholder"),
     searching: _("tool-shared-modal-title-searching"),
     searchNoResults: _("tool-shared-ui-search-nothing-found"),
+    searchType1: _("tool-rss-search-type-podcasts"),
+    searchType2: _("tool-rss-search-type-websites"),
+    searchPlaceholderType1: _(
+      "tool-rss-search-type-podcasts-placeholder",
+      "comic books"
+    ),
+    searchPlaceholderType2: _(
+      "tool-rss-search-type-websites-placeholder",
+      "binarynonsense.com"
+    ),
   };
 }
