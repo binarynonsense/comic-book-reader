@@ -66,9 +66,13 @@ function initOnIpcCallbacks() {
     // chargingtimechange
     // dischargingtimechange
     function setValue(battery) {
-      bubble.innerHTML = `<span>${battery.charging ? "🗲" : ""}${(
-        battery.level * 100
-      ).toFixed(0)}%</span>`;
+      bubble.innerHTML = `<span>${
+        battery.charging
+          ? `<i class="fa-solid ${
+              battery.level === 1 ? "fa-plug" : "fa-plug-circle-bolt"
+            }"></i> `
+          : ""
+      }${(battery.level * 100).toFixed(0)}%</span>`;
     }
     navigator.getBattery().then(function (battery) {
       setValue(battery);
