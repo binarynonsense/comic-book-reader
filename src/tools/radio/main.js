@@ -280,11 +280,10 @@ function initOnIpcCallbacks() {
     removeFavorite(name, url);
   });
 
-  on("on-favorite-options-clicked", (index, url) => {
+  on("on-favorite-options-clicked", (index) => {
     sendIpcToRenderer(
       "show-modal-favorite-options",
       index,
-      url,
       _("tool-shared-tab-options"),
       _("tool-shared-ui-back"),
       _("tool-shared-tooltip-remove-from-list"),

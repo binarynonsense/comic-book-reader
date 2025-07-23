@@ -329,62 +329,108 @@ function initOnIpcCallbacks() {
 function buildFavorites() {
   const favoritesDiv = document.querySelector("#tool-radio-favorites-div");
   favoritesDiv.innerHTML = "";
+  if (g_favorites && g_favorites.length > 0) {
+    favoritesDiv.style = "padding-top: 20px";
+    // list
+    let ul = document.createElement("ul");
+    ul.className = "tools-collection-ul";
+    for (let index = 0; index < g_favorites.length; index++) {
+      ////////////////
+      const data = g_favorites[index];
+      // create html
+      let li = document.createElement("li");
+      li.className = "tools-buttons-list-li";
+      let buttonSpan = document.createElement("span");
+      buttonSpan.className = "tools-buttons-list-button";
+      buttonSpan.innerHTML = `<i class="fas fa-rss-square fa-2x"></i>`; //fas fa-file-audio
+      buttonSpan.title = g_extraLocalization.open;
+      let multilineText = document.createElement("span");
+      multilineText.className = "tools-buttons-list-li-multiline-text";
+      {
+        let text = document.createElement("span");
+        text.innerText = `${data.name}`;
+        multilineText.appendChild(text);
 
-  let listDiv = document.createElement("div");
-  listDiv.classList.add("hs-path-cards-list-single");
-  listDiv.style = "padding-top: 5px;";
-  favoritesDiv.appendChild(listDiv);
-
-  if (g_favorites) {
-    let index = 0;
-    for (; index < g_favorites.length; index++) {
-      listDiv.appendChild(getNewCardDiv(g_favorites[index], index));
+        text = document.createElement("span");
+        text.innerText = `${data.url}`;
+        multilineText.appendChild(text);
+      }
+      buttonSpan.appendChild(multilineText);
+      buttonSpan.addEventListener("click", (event) => {
+        sendIpcToMain("get-feed-content", data.url, index);
+        showLoadingModal();
+      });
+      li.appendChild(buttonSpan);
+      {
+        let buttonSpan = document.createElement("span");
+        buttonSpan.innerHTML = `<i class="fa-solid fa-arrow-up"></i>`;
+        buttonSpan.title = g_extraLocalization.moveUpInList;
+        if (index > 0) {
+          buttonSpan.className = "tools-buttons-list-button";
+          buttonSpan.addEventListener("click", (event) => {
+            sendIpcToMain(
+              "on-modal-favorite-options-move-clicked",
+              index,
+              g_favorites[index].url,
+              0
+            );
+          });
+        } else {
+          buttonSpan.className =
+            "tools-buttons-list-button tools-buttons-list-button-disabled";
+        }
+        li.appendChild(buttonSpan);
+      }
+      {
+        let buttonSpan = document.createElement("span");
+        buttonSpan.innerHTML = `<i class="fa-solid fa-arrow-down"></i>`;
+        buttonSpan.title = g_extraLocalization.moveDownInList;
+        if (index < g_favorites.length - 1) {
+          buttonSpan.className = "tools-buttons-list-button";
+          buttonSpan.addEventListener("click", (event) => {
+            sendIpcToMain(
+              "on-modal-favorite-options-move-clicked",
+              index,
+              g_favorites[index].url,
+              1
+            );
+          });
+        } else {
+          buttonSpan.className =
+            "tools-buttons-list-button tools-buttons-list-button-disabled";
+        }
+        li.appendChild(buttonSpan);
+      }
+      {
+        let buttonSpan = document.createElement("span");
+        buttonSpan.className = "tools-buttons-list-button";
+        buttonSpan.innerHTML = `<i class="fa-solid fa-xmark"></i>`;
+        buttonSpan.title = g_extraLocalization.removeFromList;
+        buttonSpan.addEventListener("click", (event) => {
+          sendIpcToMain(
+            "on-modal-favorite-options-remove-clicked",
+            index,
+            g_favorites[index].url
+          );
+        });
+        li.appendChild(buttonSpan);
+      }
+      {
+        let buttonSpan = document.createElement("span");
+        buttonSpan.className = "tools-buttons-list-button";
+        buttonSpan.innerHTML = `<i class="fas fa-ellipsis-h"></i>`;
+        buttonSpan.title = g_extraLocalization.options;
+        buttonSpan.addEventListener("click", (event) => {
+          event.stopPropagation();
+          sendIpcToMain("on-favorite-options-clicked", index);
+        });
+        li.appendChild(buttonSpan);
+      }
+      ul.appendChild(li);
+      ////////////////
     }
+    favoritesDiv.appendChild(ul);
   }
-}
-
-function getNewCardDiv(data, index) {
-  const cardDiv = document.createElement("div");
-  const iconHtml = `
-  <i class="hs-path-card-image-file fas fa-file-audio fa-2x fa-fw"></i>`;
-  const buttonHtml = `
-  <div class="hs-path-card-button hs-path-interactive">
-    <i class="fas fa-ellipsis-h"></i>
-  </div>`;
-
-  cardDiv.classList.add("hs-path-card");
-  cardDiv.innerHTML = `<div class="hs-path-card-main hs-path-interactive">
-  <div class="hs-path-card-image">
-    ${iconHtml}
-  </div>
-  <div class="hs-path-card-content">
-    <span>${data.name}</span
-    ><span>${data.url}</span>
-      </div>
-  </div>
-  ${buttonHtml}`;
-
-  const mainCardDiv = cardDiv.querySelector(".hs-path-card-main");
-  mainCardDiv.title = g_extraLocalization.modalOpenInPlayerTitleText;
-
-  mainCardDiv.addEventListener("click", function (event) {
-    showModalOpenInPlayer(
-      { stationuuid: "", name: data.name, url_resolved: data.url },
-      g_extraLocalization.modalOpenInPlayerTitleText,
-      g_extraLocalization.modalCancelButtonText,
-      g_extraLocalization.modalAddToPlaylistButtonText,
-      g_extraLocalization.modalNewPlaylistButtonText
-    );
-  });
-
-  const buttonDiv = cardDiv.querySelector(".hs-path-card-button");
-  buttonDiv.title = g_extraLocalization.options;
-  buttonDiv.addEventListener("click", function (event) {
-    sendIpcToMain("on-favorite-options-clicked", index, data.url);
-    event.stopPropagation();
-  });
-
-  return cardDiv;
 }
 
 ////////////////////////////
@@ -737,8 +783,7 @@ function showModalOpenInPlayer(
 }
 
 function showModalFavoriteOptions(
-  index,
-  url,
+  favoriteIndex,
   title,
   textButtonBack,
   textButtonRemove,
@@ -758,7 +803,11 @@ function showModalFavoriteOptions(
     fullWidth: true,
     callback: () => {
       modalClosed();
-      sendIpcToMain("on-modal-favorite-options-edit-name-clicked", index, url);
+      sendIpcToMain(
+        "on-modal-favorite-options-edit-name-clicked",
+        favoriteIndex,
+        g_favorites[favoriteIndex].url
+      );
     },
   });
   buttons.push({
@@ -766,33 +815,37 @@ function showModalFavoriteOptions(
     fullWidth: true,
     callback: () => {
       modalClosed();
-      sendIpcToMain("on-modal-favorite-options-edit-url-clicked", index, url);
+      sendIpcToMain(
+        "on-modal-favorite-options-edit-url-clicked",
+        favoriteIndex,
+        g_favorites[favoriteIndex].url
+      );
     },
   });
-  buttons.push({
-    text: textButtonMoveUp.toUpperCase(),
-    fullWidth: true,
-    callback: () => {
-      modalClosed();
-      sendIpcToMain("on-modal-favorite-options-move-clicked", index, url, 0);
-    },
-  });
-  buttons.push({
-    text: textButtonMoveDown.toUpperCase(),
-    fullWidth: true,
-    callback: () => {
-      modalClosed();
-      sendIpcToMain("on-modal-favorite-options-move-clicked", index, url, 1);
-    },
-  });
-  buttons.push({
-    text: textButtonRemove.toUpperCase(),
-    fullWidth: true,
-    callback: () => {
-      modalClosed();
-      sendIpcToMain("on-modal-favorite-options-remove-clicked", index, url);
-    },
-  });
+  // buttons.push({
+  //   text: textButtonMoveUp.toUpperCase(),
+  //   fullWidth: true,
+  //   callback: () => {
+  //     modalClosed();
+  //     sendIpcToMain("on-modal-favorite-options-move-clicked", index, url, 0);
+  //   },
+  // });
+  // buttons.push({
+  //   text: textButtonMoveDown.toUpperCase(),
+  //   fullWidth: true,
+  //   callback: () => {
+  //     modalClosed();
+  //     sendIpcToMain("on-modal-favorite-options-move-clicked", index, url, 1);
+  //   },
+  // });
+  // buttons.push({
+  //   text: textButtonRemove.toUpperCase(),
+  //   fullWidth: true,
+  //   callback: () => {
+  //     modalClosed();
+  //     sendIpcToMain("on-modal-favorite-options-remove-clicked", index, url);
+  //   },
+  // });
   buttons.push({
     text: textButtonBack.toUpperCase(),
     fullWidth: true,
