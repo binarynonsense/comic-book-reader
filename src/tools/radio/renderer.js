@@ -320,6 +320,10 @@ function initOnIpcCallbacks() {
   on("show-modal-favorite-edit-url", (...args) => {
     showModalFavoriteEditURL(...args);
   });
+
+  on("show-modal-favorite-remove-from-favorites", (...args) => {
+    showModalFavoriteRemoveFromFavorites(...args);
+  });
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -943,6 +947,53 @@ function showModalFavoriteEditURL(index, url, title, textButton1, textButton2) {
           modalClosed();
         },
         key: "Enter",
+      },
+      {
+        text: textButton2.toUpperCase(),
+        callback: () => {
+          modalClosed();
+        },
+      },
+    ],
+  });
+}
+
+//////////////
+
+function showModalFavoriteRemoveFromFavorites(
+  index,
+  url,
+  title,
+  message,
+  textButton1,
+  textButton2
+) {
+  if (getOpenModal()) {
+    return;
+  }
+
+  g_openModal = modals.show({
+    title,
+    message,
+    zIndexDelta: 5,
+    close: {
+      callback: () => {
+        modalClosed();
+      },
+      key: "Escape",
+    },
+    buttons: [
+      {
+        text: textButton1.toUpperCase(),
+        callback: () => {
+          sendIpcToMain(
+            "on-modal-favorite-options-remove-ok-clicked",
+            index,
+            url
+          );
+          modalClosed();
+        },
+        //key: "Enter",
       },
       {
         text: textButton2.toUpperCase(),

@@ -296,11 +296,23 @@ function initOnIpcCallbacks() {
 
   on("on-modal-favorite-options-remove-clicked", (favIndex, favUrl) => {
     if (g_favorites[favIndex].url === favUrl) {
-      g_favorites.splice(favIndex, 1);
-      rebuildFavorites(false);
+      sendIpcToRenderer(
+        "show-modal-favorite-remove-from-favorites",
+        favIndex,
+        favUrl,
+        _("tool-radio-remove-from-favorites"),
+        _("tool-radio-remove-from-favorites-warning"),
+        _("ui-modal-prompt-button-ok"),
+        _("ui-modal-prompt-button-cancel")
+      );
     } else {
       log.error("Tried to remove a favorite with not matching index and path");
     }
+  });
+
+  on("on-modal-favorite-options-remove-ok-clicked", (favIndex, favUrl) => {
+    g_favorites.splice(favIndex, 1);
+    rebuildFavorites(false);
   });
 
   on("on-modal-favorite-options-edit-name-clicked", (favIndex, favUrl) => {
