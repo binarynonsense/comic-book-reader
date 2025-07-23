@@ -55,9 +55,10 @@
 .modal-close-button {
   padding: 10px;
   border: 0px;
+  color: var(--modal-button-normal-bg-color);
 }
 .modal-close-button:hover {
-  color: var(--modal-button-normal-bg-color);
+  color: var(--modal-button-normal-bg-hover-color);
   filter: brightness(1.2);
   transform: scale(1.1);
   cursor: pointer;
@@ -191,7 +192,7 @@
   border-radius: 3px;
 }
 .modal-buttons button:hover {
-  filter: brightness(1.2);
+  background-color: var(--modal-button-normal-bg-hover-color);
   transform: scale(1.01);
   cursor: pointer;
 }

@@ -33,7 +33,8 @@
 }
 
 #hs-content button:hover {
-  filter: brightness(1.2);
+  /* filter: brightness(1.2); */
+  background-color: var(--hs-button-normal-bg-hover-color);
   transform: scale(1.01);
   cursor: pointer;
 }
@@ -73,10 +74,11 @@
   align-items: center;
   justify-content: center;
   margin-inline-end: 8px;
+  color: var(--hs-button-normal-bg-color);
 }
 
 .hs-section-title-button:hover {
-  filter: brightness(1.2);
+  color: var(--hs-button-normal-bg-hover-color);
   cursor: pointer;
 }
 
@@ -167,10 +169,11 @@
   flex-direction: row;
   align-items: center;
   justify-content: center;
+  color: var(--hs-button-normal-bg-color);
 }
 
 .hs-logo-button:hover {
-  filter: brightness(1.2);
+  color: var(--hs-button-normal-bg-hover-color);
   cursor: pointer;
 }
 
@@ -241,8 +244,7 @@
   border: 1px solid transparent;
 }
 .hs-path-interactive:hover {
-  filter: brightness(1.2);
-  background-color: var(--hs-button-normal-bg-color);
+  background-color: var(--hs-button-normal-bg-hover-color);
   color: var(--hs-button-normal-text-color);
 
   transform: scale(1.03);
@@ -261,8 +263,7 @@
   color: var(--tools-text-color) !important;
 }
 .hs-path-interactive-use-list-colors:hover {
-  filter: brightness(1.12) !important;
-  background-color: var(--tools-button-normal-bg-color) !important;
+  background-color: var(--tools-button-normal-bg-hover-color) !important;
   color: var(--tools-button-normal-text-color) !important;
 }
 
