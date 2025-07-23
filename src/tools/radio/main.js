@@ -185,7 +185,6 @@ function initOnIpcCallbacks() {
       };
       sendIpcToAudioPlayerRenderer("open-playlist", playlist);
     }
-    // onCloseClicked();
     // Call the click api as requested by the docs
     (async () => {
       try {
