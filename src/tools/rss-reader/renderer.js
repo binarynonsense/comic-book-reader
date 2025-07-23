@@ -458,9 +458,8 @@ function buildFavorites() {
         buttonSpan.innerHTML = `<i class="fas fa-ellipsis-h"></i>`;
         buttonSpan.title = g_extraLocalization.options;
         buttonSpan.addEventListener("click", (event) => {
-          sendIpcToMain("on-favorite-options-clicked", index, data.url);
           event.stopPropagation();
-          sendIpcToMain("on-feed-options-clicked", index, false);
+          sendIpcToMain("on-feed-options-clicked", index);
         });
         li.appendChild(buttonSpan);
       }
@@ -1062,44 +1061,6 @@ function showModalFeedOptions(
       );
     },
   });
-  // buttons.push({
-  //   text: textButtonMoveUp.toUpperCase(),
-  //   fullWidth: true,
-  //   callback: () => {
-  //     modalClosed();
-  //     sendIpcToMain(
-  //       "on-modal-feed-options-move-clicked",
-  //       favoriteIndex,
-  //       g_favorites[favoriteIndex].url,
-  //       0
-  //     );
-  //   },
-  // });
-  // buttons.push({
-  //   text: textButtonMoveDown.toUpperCase(),
-  //   fullWidth: true,
-  //   callback: () => {
-  //     modalClosed();
-  //     sendIpcToMain(
-  //       "on-modal-feed-options-move-clicked",
-  //       favoriteIndex,
-  //       g_favorites[favoriteIndex].url,
-  //       1
-  //     );
-  //   },
-  // });
-  // buttons.push({
-  //   text: textButtonRemove.toUpperCase(),
-  //   fullWidth: true,
-  //   callback: () => {
-  //     modalClosed();
-  //     sendIpcToMain(
-  //       "on-modal-feed-options-remove-clicked",
-  //       favoriteIndex,
-  //       g_favorites[favoriteIndex].url
-  //     );
-  //   },
-  // });
   buttons.push({
     text: textButtonBack.toUpperCase(),
     fullWidth: true,
