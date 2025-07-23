@@ -22,7 +22,8 @@ const settings = require("../../shared/main/settings");
 
 let g_isInitialized = false;
 
-let g_server = "https:\\de2.api.radio-browser.info";
+let g_defaultServer = "https:\\de2.api.radio-browser.info";
+let g_server;
 let g_favorites = [];
 
 async function init() {
@@ -49,6 +50,7 @@ async function getServersList() {
     }
     if (urls.length > 0) {
       g_server = urls[Math.floor(Math.random() * urls.length)];
+      log.test(g_server);
     }
   } catch (error) {
     log.error(error);
@@ -188,9 +190,12 @@ function initOnIpcCallbacks() {
     (async () => {
       try {
         const axios = require("axios").default;
-        await axios.get(`${g_server}/json/url/${id}`, {
-          timeout: 5000,
-        });
+        await axios.get(
+          `${g_server ? g_server : g_defaultServer}/json/url/${id}`,
+          {
+            timeout: 5000,
+          }
+        );
       } catch (error) {}
     })();
   });
@@ -237,7 +242,9 @@ function initOnIpcCallbacks() {
         }
       }
       const response = await axios.get(
-        `${g_server}/json/stations/search?name=${searchQuery}&hidebroken=false${extraOptions}`,
+        `${
+          g_server ? g_server : g_defaultServer
+        }/json/stations/search?name=${searchQuery}&hidebroken=false${extraOptions}`,
         { timeout: 10000 }
       );
 
