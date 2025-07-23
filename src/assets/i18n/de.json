@@ -971,7 +971,7 @@
   "tool-rss-remove-feed-warning": "Sind Sie sicher, dass Sie diesen Feed entfernen möchten?",
   "tool-rss-remove-feed-from-favorites": "Feed aus Favoriten entfernen",
   "tool-rss-feed-error": "Der RSS Feed ist entweder nicht gültig oder es gab einen Fehler bei dem Versuch ihn abzurufen.",
-  "tool-rss-no-content-message": "Öffne die URL eined Feeds oder wähle einen aus der Favoritenliste um die Inhalte zu laden.",
+  "tool-rss-no-content-message": "Öffne die URL eines Feeds oder wähle einen aus der Favoritenliste um die Inhalte zu laden.",
   "[NOTE TO TRANSLATORS]tool-br-title": "Batch Renamer as in a tool to batch/bulk rename files (rename multiple files)",
   "tool-br-title": "Massenumbenenner",
   "[NOTE TO TRANSLATORS]tool-br-preview": "Preview as in the name of summary/explanation of what will happen before taking an action.",
