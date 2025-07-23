@@ -260,7 +260,7 @@ function getToolsSubmenu() {
           },
         },
         {
-          label: _("menu-tools-podcasts"),
+          label: _("menu-tools-rssfeeds"),
           click() {
             core.onMenuToolRssReader(1);
           },
