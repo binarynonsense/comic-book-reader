@@ -3,7 +3,7 @@
     "authors": [
       "Álvaro"
     ],
-    "last-updated": "2025-07-21",
+    "last-updated": "2025-07-23",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.11.0-beta1",
     "pre-release": "false",
@@ -972,6 +972,10 @@
   "tool-rss-remove-feed-from-favorites": "Remove Feed from Favorites",
   "tool-rss-feed-error": "The RSS feed isn't valid or there was an error trying to retrieve it.",
   "tool-rss-no-content-message": "Open a feed's URL or select one from the favorites list to load its contents.",
+  "tool-rss-search-type-podcasts": "Podcast Feeds",
+  "tool-rss-search-type-websites": "Website Feeds",
+  "tool-rss-search-type-podcasts-placeholder": "Enter your search terms, e.g. {0}",
+  "tool-rss-search-type-websites-placeholder": "Enter a website URL, e.g. {0}",
   "[NOTE TO TRANSLATORS]tool-br-title": "Batch Renamer as in a tool to batch/bulk rename files (rename multiple files)",
   "tool-br-title": "Batch Renamer",
   "[NOTE TO TRANSLATORS]tool-br-preview": "Preview as in the name of summary/explanation of what will happen before taking an action.",

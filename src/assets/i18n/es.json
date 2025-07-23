@@ -3,7 +3,7 @@
     "authors": [
       "Álvaro"
     ],
-    "last-updated": "2025-07-21",
+    "last-updated": "2025-07-23",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.11.0-beta1",
     "pre-release": "false",
@@ -972,6 +972,10 @@
   "tool-rss-remove-feed-from-favorites": "Eliminar la fuente de favoritas",
   "tool-rss-feed-error": "La fuente no es válida o hubo un error al intentar acceder a ella.",
   "tool-rss-no-content-message": "Abra la URL de una fuente o seleccione una de favoritas para cargar sus contenidos.",
+  "[NEEDS TRANSLATION]tool-rss-search-type-podcasts": "Fuentes de Podcast",
+  "[NEEDS TRANSLATION]tool-rss-search-type-websites": "Fuentes de Páginas Web",
+  "[NEEDS TRANSLATION]tool-rss-search-type-podcasts-placeholder": "Introduzca sus criterios de búsqueda, ej: {0}",
+  "[NEEDS TRANSLATION]tool-rss-search-type-websites-placeholder": "Introduzca la URL de una página web, ej: {0}",
   "[NOTE TO TRANSLATORS]tool-br-title": "Batch Renamer as in a tool to batch/bulk rename files (rename multiple files)",
   "tool-br-title": "Renombrador masivo",
   "[NOTE TO TRANSLATORS]tool-br-preview": "Preview as in the name of summary/explanation of what will happen before taking an action.",
