@@ -1263,4 +1263,16 @@ html[dir="rtl"] .tools-range-bubble {
   text-decoration: none;
 }
 
+#tool-rss-channel-info-desc a:link,
+#tool-rss-channel-info-desc a:visited,
+#tool-rss-channel-info-desc a:hover,
+#tool-rss-channel-info-desc a:active {
+  color: var(--tools-text-color) !important;
+  text-decoration: underline;
+}
+
+#tool-rss-channel-info-desc a:link:has(img) {
+  text-decoration: none;
+}
+
 /* /////////////////////////////////////////////////////////////// */

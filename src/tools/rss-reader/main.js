@@ -553,7 +553,12 @@ async function getFeedContent(url) {
           : undefined;
         if (data.rss.channel.description) {
           if (data.rss.channel.description["#text"]) {
-            content.description = data.rss.channel.description["#text"];
+            content.description = sanitizeHtml(
+              data.rss.channel.description["#text"],
+              {
+                allowedTags: sanitizeHtml.defaults.allowedTags.concat(["img"]),
+              }
+            );
           } else {
             content.description = sanitizeHtml(data.rss.channel.description, {
               allowedTags: sanitizeHtml.defaults.allowedTags.concat(["img"]),
