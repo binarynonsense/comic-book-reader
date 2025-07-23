@@ -1195,8 +1195,10 @@ html[dir="rtl"] .tools-range-bubble {
   cursor: pointer;
 }
 
-/* .tool-rss-item-desc {
-} */
+.tool-rss-desc-prelined {
+  white-space: pre-line;
+}
+
 .tool-rss-item-desc p,
 .tool-rss-item-desc h1,
 .tool-rss-item-desc h2,

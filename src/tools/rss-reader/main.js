@@ -544,6 +544,7 @@ async function getFeedContent(url) {
     if (data) {
       // RSS //////////
       if (data.rss && data.rss.channel && data.rss.channel.item) {
+        log.test("RSS feed");
         content.url = url;
         content.name = data.rss.channel.title
           ? data.rss.channel.title
@@ -600,6 +601,7 @@ async function getFeedContent(url) {
       // ATOM //////////
       else {
         if (data.feed && data.feed.entry) {
+          log.test("Atom feed");
           content.url = url;
           if (data.feed.title) {
             if (data.feed.title["#text"]) {

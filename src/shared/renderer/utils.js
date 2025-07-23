@@ -101,3 +101,9 @@ export function hasVideoExtension(text) {
   text = text.toLowerCase();
   return text.endsWith(".mp4");
 }
+
+export function isStringHTML(str) {
+  // ref: https://stackoverflow.com/questions/15458876/check-if-a-string-is-html-or-not/25381038
+  var doc = new DOMParser().parseFromString(str, "text/html");
+  return Array.from(doc.body.childNodes).some((node) => node.nodeType === 1);
+}

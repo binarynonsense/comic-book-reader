@@ -628,6 +628,13 @@ function showFeedContent(data, index, pageNum, scrollToTop = false) {
   </div>`;
 
     //
+
+    const descPrelineClass = `${
+      utils.isStringHTML(data.description)
+        ? ""
+        : " class='tool-rss-desc-prelined'"
+    }`;
+
     root.innerHTML += `
     <div id='tool-rss-channel-info'>
       ${titleText}
@@ -637,7 +644,11 @@ function showFeedContent(data, index, pageNum, scrollToTop = false) {
           data.name !== g_favorites[g_currentFeedFavoriteIndex].name)
           ? "<span>" + data.name + "</span>"
           : ""
-      }${data.description ? "<span>" + data.description + "</span>" : ""}
+      }${
+      data.description
+        ? `<span${descPrelineClass}>` + data.description + "</span$>"
+        : ""
+    }
       </div>
     </div>`;
 
@@ -816,7 +827,9 @@ function itemsToHtml(root, items, pageNum, itemsPerPage, totalPagesNum) {
           }
         }
 
-        html += `<div class="tool-rss-item-desc">${item.description}</div
+        html += `<div class="tool-rss-item-desc${
+          utils.isStringHTML(item.description) ? "" : " tool-rss-desc-prelined"
+        }">${item.description}</div>
         </div>`;
       } catch (error) {
         html = "";
