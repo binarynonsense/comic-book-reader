@@ -329,8 +329,8 @@ function initOnIpcCallbacks() {
         "show-modal-feed-remove-from-favorites",
         feedIndex,
         feedUrl,
-        _("tool-rss-remove-feed-from-favorites"),
-        _("tool-rss-remove-feed-warning"),
+        _("tool-rss-remove-from-favorites"),
+        _("tool-rss-remove-from-favorites-warning"),
         _("ui-modal-prompt-button-ok"),
         _("ui-modal-prompt-button-cancel")
       );
