@@ -287,7 +287,7 @@ function getNewCardDiv(cardType, data, navRow, navColumn) {
     const fileIconHtml = `
   <i class="hs-path-card-image-file fas fa-file fa-2x fa-fw"></i>`;
     const folderIconHtml = `
-  <i class="hs-path-card-image-file fas fa-folder fa-2x fa-fw"></i>`;
+  <i class="hs-path-card-image-file fas fa-folder-closed fa-2x fa-fw"></i>`;
     const imagesIconHtml = `
   <i class="hs-path-card-image-file fas fa-images fa-2x fa-fw"></i>`;
     const questionIconHtml = `
