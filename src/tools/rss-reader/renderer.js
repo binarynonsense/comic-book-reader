@@ -153,8 +153,15 @@ async function init(section, favorites) {
   // }
 
   if (g_currentFeedData) {
-    showFeedContent(g_currentFeedData, g_currentFeedFavoriteIndex, 0);
+    showFeedContent(
+      g_currentFeedData,
+      g_currentFeedFavoriteIndex,
+      g_currentFeedContentPage
+    );
+  } else {
+    removeCurrentFeedContent();
   }
+
   if (g_currentFeedData && section != 1) {
     switchSection(2);
   } else {
