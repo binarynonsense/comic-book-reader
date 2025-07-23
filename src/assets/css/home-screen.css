@@ -107,12 +107,42 @@
   max-width: 500px !important;
 }
 
-#hs-logo-open img {
+#hs-logo-image {
+  display: inline-block;
+}
+
+#hs-logo-image img {
   width: 150px;
-  /* opacity: var(--hs-logo-opacity);
-  filter: grayscale(100%); */
   opacity: var(--hs-logo-opacity);
+}
+
+#hs-logo-image img:hover {
   /* filter: grayscale(100%); */
+  animation: hs-anim-bounce 2s ease;
+}
+
+@keyframes hs-anim-bounce {
+  10% {
+    transform: translateY(0%);
+  }
+  20% {
+    transform: translateY(-15%);
+  }
+  30% {
+    transform: translateY(0%);
+  }
+  35% {
+    transform: translateY(-7%);
+  }
+  37% {
+    transform: translateY(0%);
+  }
+  39% {
+    transform: translateY(-3%);
+  }
+  40% {
+    transform: translateY(0);
+  }
 }
 
 /* *********************** */
