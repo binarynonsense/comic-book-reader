@@ -262,7 +262,7 @@ function getToolsSubmenu() {
         {
           label: _("menu-tools-podcasts"),
           click() {
-            core.onMenuToolPodcasts();
+            core.onMenuToolRssReader(1);
           },
         },
       ],

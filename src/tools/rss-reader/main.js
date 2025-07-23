@@ -88,7 +88,7 @@ function init() {
   }
 }
 
-exports.open = async function (url) {
+exports.open = async function (section = 0) {
   // called by switchTool when opening tool
   init();
   const data = fs.readFileSync(path.join(__dirname, "index.html"));
@@ -121,7 +121,7 @@ exports.open = async function (url) {
     // }
   }
 
-  sendIpcToRenderer("show", g_favorites, url);
+  sendIpcToRenderer("show", section, g_favorites);
 };
 
 function saveSettings() {
@@ -429,6 +429,28 @@ function initOnIpcCallbacks() {
       log.error("Tried to move a feed with not matching index and url");
     }
   });
+
+  ////
+
+  on("search", async (text) => {
+    // ref: https://performance-partners.apple.com/search-api
+    // ref: https://developer.apple.com/library/archive/documentation/AudioVideo/Conceptual/iTuneSearchAPI/Searching.html
+    try {
+      if (text.trim().length === 0) {
+        throw "query's text is empty";
+      }
+      const axios = require("axios").default;
+      let searchQuery = encodeURIComponent(text);
+      const response = await axios.get(
+        `https://itunes.apple.com/search?entity=podcast&limit=200&term=${searchQuery}`,
+        { timeout: 10000 }
+      );
+      sendIpcToRenderer("update-results", response.data.results);
+    } catch (error) {
+      log.error(error);
+      sendIpcToRenderer("update-results", undefined);
+    }
+  });
 }
 
 // HANDLE
@@ -682,12 +704,33 @@ function getLocalization() {
     },
     {
       id: "tool-rss-section-1-text",
+      text: _("tool-shared-tab-search"),
+    },
+    {
+      id: "tool-rss-section-2-text",
       text: _("tool-rss-feed-content"),
     },
     //////////////////////////////////////////////
     {
       id: "tool-rss-favorites-text",
       text: _("tool-rss-favorites"),
+    },
+    //////////////////////////////////////////////
+    {
+      id: "tool-rss-search-input-text",
+      text: _("tool-shared-ui-search-input"),
+    },
+    {
+      id: "tool-rss-search-input-placeholder-text",
+      text: _("tool-shared-ui-search-placeholder"),
+    },
+    {
+      id: "tool-rss-search-button-text",
+      text: _("tool-shared-ui-search-button").toUpperCase(),
+    },
+    {
+      id: "tool-rss-search-results-text",
+      text: _("tool-shared-ui-search-results"),
     },
   ];
 }
@@ -720,5 +763,9 @@ function getExtraLocalization() {
     // _("ui-modal-prompt-button-edit-url"),
     moveUpInList: _("tool-shared-tooltip-move-up-in-list"),
     moveDownInList: _("tool-shared-tooltip-move-down-in-list"),
+    // search
+    searchPlaceholder: _("tool-shared-ui-search-placeholder"),
+    searching: _("tool-shared-modal-title-searching"),
+    searchNoResults: _("tool-shared-ui-search-nothing-found"),
   };
 }

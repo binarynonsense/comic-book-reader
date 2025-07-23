@@ -24,11 +24,15 @@ let g_currentFeedFavoriteIndex = -1;
 let g_currentFeedData;
 let g_currentFeedContentPage = 0;
 
+let g_searchInput;
+let g_searchButton;
+let g_lastSearchResults;
+
 export function needsScrollToTopButtonUpdate() {
   return true;
 }
 
-async function init(favorites, url) {
+async function init(section, favorites) {
   if (!g_isInitialized) {
     // things to start only once go here
     g_isInitialized = true;
@@ -51,13 +55,15 @@ async function init(favorites, url) {
     });
 
   // sections menu
-  for (let index = 0; index < 2; index++) {
+  for (let index = 0; index < 3; index++) {
     document
       .getElementById(`tool-rss-section-${index}-button`)
       .addEventListener("click", (event) => {
         switchSection(index);
       });
   }
+
+  ////////////////////////////////////////
 
   document
     .getElementById("tool-rss-reset-favorites-button")
@@ -76,17 +82,64 @@ async function init(favorites, url) {
   g_favorites = favorites;
   buildFavorites();
 
-  if (url) {
-    sendIpcToMain("get-feed-content", url, -1);
-    showLoadingModal();
-  } else if (g_currentFeedData) {
-    showFeedContent(g_currentFeedData, g_currentFeedFavoriteIndex, 0);
-    switchSection(1);
-  } else {
-    removeCurrentFeedContent();
-    switchSection(0);
-  }
   ////////////////////////////////////////
+  // search
+  g_searchButton = document.getElementById("tool-rss-search-button");
+  g_searchButton.addEventListener("click", (event) => {
+    onSearch();
+  });
+
+  g_searchInput = document.getElementById("tool-rss-search-input");
+  g_searchInput.placeholder = g_extraLocalization.searchPlaceholder;
+  g_searchInput.addEventListener("input", function (event) {
+    if (g_searchInput.value !== "") {
+      g_searchButton.classList.remove("tools-disabled");
+    } else {
+      g_searchButton.classList.add("tools-disabled");
+    }
+  });
+  g_searchInput.addEventListener("keypress", function (event) {
+    if (
+      event.key === "Enter" &&
+      !document
+        .getElementById("tool-rss-search-input-div")
+        .classList.contains("set-display-none")
+    ) {
+      event.preventDefault();
+      if (g_searchInput.value) {
+        onSearch();
+      }
+    }
+  });
+
+  ////////////////////////////////////////
+
+  if (g_lastSearchResults) {
+    updateSearchResults(g_lastSearchResults);
+  }
+
+  // old way, was passig url from separated podcast tool
+  // TOOD: delete when I'm sure I won't need the reference
+  // if (url) {
+  //   sendIpcToMain("get-feed-content", url, -1);
+  //   showLoadingModal();
+  // } else if (g_currentFeedData) {
+  //   showFeedContent(g_currentFeedData, g_currentFeedFavoriteIndex, 0);
+  //   switchSection(2);
+  // } else {
+  //   removeCurrentFeedContent();
+  //   switchSection(0);
+  // }
+
+  if (g_currentFeedData) {
+    showFeedContent(g_currentFeedData, g_currentFeedFavoriteIndex, 0);
+  }
+  if (g_currentFeedData && section != 1) {
+    switchSection(2);
+  } else {
+    switchSection(section);
+  }
+
   updateColumnsHeight();
 }
 
@@ -115,7 +168,7 @@ function updateColumnsHeight(scrollTop = false) {
 }
 
 function switchSection(id) {
-  for (let index = 0; index < 2; index++) {
+  for (let index = 0; index < 3; index++) {
     if (id === index) {
       document
         .getElementById(`tool-rss-section-${index}-button`)
@@ -131,6 +184,9 @@ function switchSection(id) {
         .getElementById(`tool-rss-section-${index}-content-div`)
         .classList.add("set-display-none");
     }
+  }
+  if (id === 1) {
+    g_searchInput.focus();
   }
   updateColumnsHeight(true);
 }
@@ -192,9 +248,11 @@ function initOnIpcCallbacks() {
     }
   });
 
+  ///////////////
+
   on("load-feed-content", (data, index, switchToContent) => {
     showFeedContent(data, index, 0);
-    if (switchToContent) switchSection(1);
+    if (switchToContent) switchSection(2);
     closeModal();
   });
 
@@ -304,6 +362,13 @@ function initOnIpcCallbacks() {
     } else {
       removeCurrentFeedContent();
     }
+  });
+
+  ///////////////////////////////////////////////////////////////
+
+  on("update-results", (searchResults) => {
+    updateSearchResults(searchResults);
+    closeModal();
   });
 
   /////////////////
@@ -793,6 +858,128 @@ async function onPlayUrlClicked(url, name) {
   );
 }
 
+function updateSearchResults(searchResults) {
+  // console.log(searchResults);
+  g_lastSearchResults = searchResults;
+  ///////////////////////////////////////////
+  document
+    .querySelector("#tool-rss-search-results-h3")
+    .classList.remove("set-display-none");
+  const searchResultsDiv = document.querySelector(
+    "#tool-rss-search-results-div"
+  );
+  searchResultsDiv.innerHTML = "";
+  if (searchResults && searchResults.length > 0) {
+    // console.log(searchResults);
+    // list
+    let ul = document.createElement("ul");
+    ul.className = "tools-collection-ul";
+    for (let index = 0; index < searchResults.length; index++) {
+      const resultData = searchResults[index];
+      if (!resultData.feedUrl) break;
+      // create html
+      let li = document.createElement("li");
+      li.className = "tools-buttons-list-li";
+      let buttonSpan = document.createElement("span");
+      buttonSpan.className = "tools-buttons-list-button";
+      buttonSpan.innerHTML = `<i class="fas fa-rss-square fa-2x"></i>`;
+      buttonSpan.title = g_extraLocalization.open;
+      let multilineText = document.createElement("span");
+      multilineText.className = "tools-buttons-list-li-multiline-text";
+      {
+        let text = document.createElement("span");
+        text.innerText = `${resultData.trackName}`;
+        multilineText.appendChild(text);
+
+        text = document.createElement("span");
+        text.innerHTML = `${resultData.artistName}`;
+        multilineText.appendChild(text);
+
+        // unused: artworkUrl60 artworkUrl30 artworkUrl100
+
+        if (resultData.genres && resultData.genres.length > 0) {
+          text = document.createElement("span");
+          text.innerHTML = `${resultData.genres[0]}`;
+          for (let index = 1; index < resultData.genres.length; index++) {
+            text.innerHTML += ` | ${resultData.genres[index]}`;
+          }
+          multilineText.appendChild(text);
+        }
+
+        text = document.createElement("span");
+        text.innerHTML = `${resultData.trackCount}`;
+        multilineText.appendChild(text);
+
+        if (resultData.releaseDate) {
+          text = document.createElement("span");
+          text.innerHTML = new Date(
+            resultData.releaseDate
+          ).toLocaleDateString();
+          multilineText.appendChild(text);
+        }
+
+        text = document.createElement("span");
+        text.innerHTML = `${resultData.feedUrl}`;
+        multilineText.appendChild(text);
+      }
+      buttonSpan.appendChild(multilineText);
+
+      buttonSpan.addEventListener("click", (event) => {
+        onSearchResultClicked(index, 0);
+      });
+      li.appendChild(buttonSpan);
+      {
+        let buttonSpan = document.createElement("span");
+        buttonSpan.className = "tools-buttons-list-button";
+        buttonSpan.innerHTML = `<i class="fas fa-external-link-alt"></i>`;
+        buttonSpan.title = g_extraLocalization.openInBrowser;
+        buttonSpan.addEventListener("click", (event) => {
+          onSearchResultClicked(index, 1);
+        });
+        li.appendChild(buttonSpan);
+      }
+      ul.appendChild(li);
+    }
+    searchResultsDiv.appendChild(ul);
+  } else {
+    let ul = document.createElement("ul");
+    ul.className = "tools-collection-ul";
+    let li = document.createElement("li");
+    li.className = "tools-collection-li";
+    let text = document.createElement("span");
+    text.innerText = g_extraLocalization.searchNoResults;
+    li.appendChild(text);
+    ul.appendChild(li);
+    searchResultsDiv.appendChild(ul);
+  }
+  ///////////////////////////////////////////
+  updateColumnsHeight();
+  document.getElementById("tools-columns-right").scrollIntoView({
+    behavior: "smooth",
+    block: "start",
+    inline: "nearest",
+  });
+}
+
+//////////////////////////////////////
+
+async function onSearch() {
+  if (!g_openModal) showSearchModal(); // TODO: check if first time?
+  updateModalTitleText(g_extraLocalization.searching);
+  sendIpcToMain("search", g_searchInput.value);
+}
+
+async function onSearchResultClicked(index, mode) {
+  if (!g_lastSearchResults) return;
+  const resultData = g_lastSearchResults[index];
+  if (mode === 0) {
+    sendIpcToMain("get-feed-content", resultData.feedUrl, -1);
+    showLoadingModal();
+  } else {
+    sendIpcToMain("open-url-in-browser", resultData.feedUrl);
+  }
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // EVENT LISTENERS ////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -1254,5 +1441,27 @@ function showModalOpenInPlayer(
       key: "Escape",
     },
     buttons: buttons,
+  });
+}
+
+///////////
+
+function showSearchModal() {
+  if (g_openModal) {
+    return;
+  }
+  g_openModal = modals.show({
+    title: " ",
+    message: " ",
+    zIndexDelta: 5,
+    frameWidth: 600,
+    close: {
+      callback: () => {
+        modalClosed();
+      },
+      // key: "Escape",
+      hide: true,
+    },
+    progressBar: {},
   });
 }

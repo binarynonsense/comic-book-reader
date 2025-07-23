@@ -672,8 +672,8 @@ if (!gotTheLock) {
     sendIpcToPreload("update-menubar");
   };
 
-  exports.onMenuToolRssReader = function () {
-    tools.switchTool("tool-rss");
+  exports.onMenuToolRssReader = function (options) {
+    tools.switchTool("tool-rss", options);
     sendIpcToPreload("update-menubar");
   };
 
@@ -719,11 +719,6 @@ if (!gotTheLock) {
 
   exports.onMenuToolRadio = function (section) {
     tools.switchTool("tool-radio", section);
-    sendIpcToPreload("update-menubar");
-  };
-
-  exports.onMenuToolPodcasts = function () {
-    tools.switchTool("tool-podcasts");
     sendIpcToPreload("update-menubar");
   };
 

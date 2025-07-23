@@ -24,9 +24,15 @@
           </div>
         </div>
         <div id="tool-rss-section-1-button" class="tools-menu-button">
-          <i class="fa-solid fa-newspaper tools-menu-button-icon"></i>
+          <i class="fas fa-search tools-menu-button-icon"></i>
           <div class="tools-menu-button-text">
             <span id="tool-rss-section-1-text"></span>
+          </div>
+        </div>
+        <div id="tool-rss-section-2-button" class="tools-menu-button">
+          <i class="fa-solid fa-newspaper tools-menu-button-icon"></i>
+          <div class="tools-menu-button-text">
+            <span id="tool-rss-section-2-text"></span>
           </div>
         </div>
       </div>
@@ -62,8 +68,39 @@
         </div>
       </div>
     </div>
-    <!-- content -->
+    <!-- search -->
     <div id="tool-rss-section-1-content-div" class="set-display-none">
+      <div id="tool-rss-search-input-div" class="tools-columns-right-section">
+        <h3><span id="tool-rss-search-input-text"></span></h3>
+        <div class="tools-columns-right-subsection">
+          <label>
+            <input
+              id="tool-rss-search-input"
+              type="text"
+              placeholder="Search"
+              style="margin-top: 0"
+              spellcheck="false"
+            />
+          </label>
+          <button id="tool-rss-search-button" class="tools-disabled">
+            <span id="tool-rss-search-button-text"></span>
+          </button>
+        </div>
+      </div>
+      <div id="tool-search-results-div" class="tools-columns-right-section">
+        <h3
+          id="tool-rss-search-results-h3"
+          class="tools-h3-extra-margin-top-2 set-display-none"
+        >
+          <span id="tool-rss-search-results-text"></span>
+        </h3>
+        <div class="tools-columns-right-subsection">
+          <div id="tool-rss-search-results-div"></div>
+        </div>
+      </div>
+    </div>
+    <!-- content -->
+    <div id="tool-rss-section-2-content-div" class="set-display-none">
       <div class="tools-columns-right-subsection">
         <div id="tool-rss-items-div"></div>
       </div>
