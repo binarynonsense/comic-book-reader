@@ -119,30 +119,29 @@
 }
 
 #hs-logo-image img:hover {
-  /* filter: grayscale(100%); */
   animation: hs-anim-bounce 2s ease;
 }
 
 @keyframes hs-anim-bounce {
-  10% {
+  60% {
     transform: translateY(0%);
   }
-  20% {
+  70% {
     transform: translateY(-15%);
   }
-  30% {
+  80% {
     transform: translateY(0%);
   }
-  35% {
+  85% {
     transform: translateY(-7%);
   }
-  37% {
+  87% {
     transform: translateY(0%);
   }
-  39% {
+  89% {
     transform: translateY(-3%);
   }
-  40% {
+  90% {
     transform: translateY(0);
   }
 }
