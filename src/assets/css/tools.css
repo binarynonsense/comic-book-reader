@@ -824,8 +824,8 @@ html[dir="rtl"] .tools-range-bubble {
   overflow: hidden;
 }
 .tools-buttons-list-button:hover {
-  color: var(--tools-buttons-list-bg1-color);
-  background-color: var(--tools-buttons-list-text-color);
+  color: var(--tools-button-normal-text-color);
+  background-color: var(--tools-button-normal-bg-hover-color);
 }
 .tools-buttons-list-button:hover .tools-buttons-list-linkicon-file,
 .tools-buttons-list-button:hover .tools-buttons-list-linkicon-folder {
