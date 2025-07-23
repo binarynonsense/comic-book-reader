@@ -430,7 +430,12 @@ function updateSearchResults(
         multilineText.appendChild(text);
 
         text = document.createElement("span");
-        let extraData = `${stationData.bitrate} kbps | ${stationData.codec} | ${stationData.countrycode} | ${stationData.language} | ${stationData.tags}`;
+        let extraData = `${stationData.bitrate} kbps | ${stationData.codec} | ${
+          stationData.countrycode
+        } | ${stationData.language} | ${stationData.tags.replaceAll(
+          ",",
+          ", "
+        )}`;
         text.innerHTML = extraData;
         multilineText.appendChild(text);
 
