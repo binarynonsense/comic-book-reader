@@ -60,9 +60,15 @@ async function init(favorites, url) {
   }
 
   document
-    .getElementById("tool-rss-reset-button")
+    .getElementById("tool-rss-reset-favorites-button")
     .addEventListener("click", (event) => {
       sendIpcToMain("on-reset-favorites-clicked");
+    });
+
+  document
+    .getElementById("tool-rss-clear-favorites-button")
+    .addEventListener("click", (event) => {
+      sendIpcToMain("on-clear-favorites-clicked");
     });
 
   ////////////////////////////////////////
@@ -244,6 +250,34 @@ function initOnIpcCallbacks() {
     buildFavorites();
     closeModal();
     if (g_currentFeedData) {
+      g_currentFeedFavoriteIndex = -1;
+      // check if it's in the new list
+      for (let i = 0; i < g_favorites.length; i++) {
+        const fav = g_favorites[i];
+        if (
+          fav.name === g_currentFeedData.name &&
+          fav.url === g_currentFeedData.url
+        ) {
+          g_currentFeedFavoriteIndex = i;
+          break;
+        }
+      }
+      showFeedContent(
+        g_currentFeedData,
+        g_currentFeedFavoriteIndex,
+        g_currentFeedContentPage
+      );
+    } else {
+      // just in case
+      removeCurrentFeedContent();
+    }
+  });
+
+  on("on-favorites-clear", (favorites) => {
+    g_favorites = favorites;
+    buildFavorites();
+    closeModal();
+    if (g_currentFeedData) {
       showFeedContent(g_currentFeedData, -1, g_currentFeedContentPage);
     } else {
       removeCurrentFeedContent();
@@ -285,6 +319,11 @@ function initOnIpcCallbacks() {
   on("show-modal-reset-favorites", (...args) => {
     showModalResetFavorites(...args);
   });
+
+  on("show-modal-clear-favorites", (...args) => {
+    showModalClearFavorites(...args);
+  });
+
   /////////////////
 
   on("show-modal-feed-options", (...args) => {
@@ -413,6 +452,7 @@ function updateCurrentFeedContentIcons() {
 function showFeedContent(data, index, pageNum, scrollToTop = false) {
   g_currentFeedFavoriteIndex = index;
   g_currentFeedData = data;
+  g_currentFeedContentPage = pageNum;
 
   const root = document.getElementById("tool-rss-items-div");
   root.innerHTML = "";
@@ -883,6 +923,39 @@ function showModalResetFavorites(title, message, textButton1, textButton2) {
         text: textButton1.toUpperCase(),
         callback: () => {
           sendIpcToMain("on-modal-reset-favorites-ok-clicked");
+          modalClosed();
+        },
+      },
+      {
+        text: textButton2.toUpperCase(),
+        callback: () => {
+          modalClosed();
+        },
+      },
+    ],
+  });
+}
+
+function showModalClearFavorites(title, message, textButton1, textButton2) {
+  if (getOpenModal()) {
+    return;
+  }
+
+  g_openModal = modals.show({
+    title,
+    message,
+    zIndexDelta: 5,
+    close: {
+      callback: () => {
+        modalClosed();
+      },
+      key: "Escape",
+    },
+    buttons: [
+      {
+        text: textButton1.toUpperCase(),
+        callback: () => {
+          sendIpcToMain("on-modal-clear-favorites-ok-clicked");
           modalClosed();
         },
       },

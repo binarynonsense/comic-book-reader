@@ -271,7 +271,7 @@ function initOnIpcCallbacks() {
     sendIpcToRenderer(
       "show-modal-reset-favorites",
       _("tool-shared-modal-title-warning"),
-      _("tool-rss-reset-feeds-warning"),
+      _("tool-shared-ui-reset-list-warning"),
       _("ui-modal-prompt-button-ok"),
       _("ui-modal-prompt-button-cancel")
     );
@@ -280,6 +280,21 @@ function initOnIpcCallbacks() {
   on("on-modal-reset-favorites-ok-clicked", () => {
     g_favorites = structuredClone(g_defaultFeeds);
     sendIpcToRenderer("on-favorites-reset", g_favorites);
+  });
+
+  on("on-clear-favorites-clicked", () => {
+    sendIpcToRenderer(
+      "show-modal-clear-favorites",
+      _("tool-shared-modal-title-warning"),
+      _("tool-shared-ui-clear-list-warning"),
+      _("ui-modal-prompt-button-ok"),
+      _("ui-modal-prompt-button-cancel")
+    );
+  });
+
+  on("on-modal-clear-favorites-ok-clicked", () => {
+    g_favorites = [];
+    sendIpcToRenderer("on-favorites-clear", g_favorites);
   });
 
   //////////////////
@@ -653,8 +668,12 @@ function getLocalization() {
     },
     //////////////////////////////////////////////
     {
-      id: "tool-rss-reset-button-text",
-      text: _("tool-shared-ui-resetlist").toUpperCase(),
+      id: "tool-rss-reset-favorites-button-text",
+      text: _("tool-shared-ui-reset-list").toUpperCase(),
+    },
+    {
+      id: "tool-rss-clear-favorites-button-text",
+      text: _("tool-shared-ui-clear-list").toUpperCase(),
     },
     //////////////////////////////////////////////
     {
