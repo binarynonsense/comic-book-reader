@@ -709,10 +709,16 @@ function getExtraLocalization() {
     cancel: _("tool-shared-ui-cancel"),
     addToPlaylist: _("ui-modal-prompt-button-add-to-playlist"),
     startPlaylist: _("ui-modal-prompt-button-start-new-playlist"),
-    // card
+    // content
+    noContent: _("tool-rss-no-content-message"),
+    // favorites
     options: _("tool-shared-tab-options"),
     open: _("ui-modal-prompt-button-open"),
-    //
-    noContent: _("tool-rss-no-content-message"),
+    back: _("tool-shared-ui-back"),
+    removeFromList: _("tool-shared-tooltip-remove-from-list"),
+    // _("ui-modal-prompt-button-edit-name"),
+    // _("ui-modal-prompt-button-edit-url"),
+    moveUpInList: _("tool-shared-tooltip-move-up-in-list"),
+    moveDownInList: _("tool-shared-tooltip-move-down-in-list"),
   };
 }
