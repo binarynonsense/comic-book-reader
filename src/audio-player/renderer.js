@@ -75,8 +75,19 @@ function initOnIpcCallbacks() {
     fillTags();
   });
 
-  on("add-to-playlist", (files, startPlaying) => {
-    if (files && Array.isArray(files)) {
+  on("add-to-playlist", (files, startPlaying, allowDuplicates = true) => {
+    if (files && Array.isArray(files) && files.length > 0) {
+      if (!allowDuplicates) {
+        const newFiles = files.filter((file) => !isFileInPlaylist(file));
+        if (newFiles.length === 0) {
+          // no new one
+          const listIndex = getPlaylistIndex(files[0]);
+          playTrack(listIndex, 0);
+          return;
+        } else {
+          files = newFiles;
+        }
+      }
       // TODO: MAYBE: start first new song by default after adding?
       const oldLength = g_tracks.length;
       g_playlist.files.push(...files);
@@ -207,6 +218,26 @@ function fillTags() {
   sendIpcToMain("fill-tags", g_playlist.files);
 }
 
+////////////////////////////////////////////////
+
+function isFileInPlaylist(file) {
+  for (let i = 0; i < g_playlist.files.length; i++) {
+    const playlistFile = g_playlist.files[i];
+    if (playlistFile.url === file.url) return true;
+  }
+  return false;
+}
+
+function getPlaylistIndex(file) {
+  for (let i = 0; i < g_playlist.files.length; i++) {
+    const playlistFile = g_playlist.files[i];
+    if (playlistFile.url === file.url) return i;
+  }
+  return -1;
+}
+
+////////////////////////////////////////////////
+
 function createTracksList(isRefresh) {
   let currentFileIndex;
   if (!isRefresh && g_tempAudioElement) {
@@ -314,6 +345,8 @@ function pauseTrack(refresh = true) {
   g_player.isPlaying = false;
   if (refresh) refreshUI();
 }
+
+////////////////////////////////////////////////
 
 function scrollToCurrent() {
   if (
