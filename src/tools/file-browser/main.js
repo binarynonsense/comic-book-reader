@@ -158,7 +158,7 @@ function initOnIpcCallbacks() {
           }
           drivesData.push(drive);
         } catch (error) {
-          log.test(error.message);
+          log.editor(error.message);
         }
       }
     });

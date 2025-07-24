@@ -441,8 +441,8 @@ async function get7ZipEntriesList(filePath, password, archiveType) {
             comicInfoIds.push(data.file);
           }
         } else {
-          log.test("get7ZipEntriesList invalid data");
-          log.test(data);
+          log.editor("get7ZipEntriesList invalid data");
+          log.editor(data);
         }
       });
       seven.on("error", (error) => {

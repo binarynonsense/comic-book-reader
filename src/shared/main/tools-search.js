@@ -99,7 +99,7 @@ exports.searchDDG = function (results, html, dom, idText, replaceText) {
       }
     } else {
       if (html.includes("Unfortunately, bots use DuckDuckGo too")) {
-        log.test("DuckDuckGo thinks we are a bot? :S");
+        log.editor("DuckDuckGo thinks we are a bot? :S");
       }
     }
     return results;

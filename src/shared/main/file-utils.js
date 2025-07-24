@@ -411,7 +411,7 @@ function deleteFolderRecursive(
       }
     }
   } else {
-    log.test("deleteFolderRecursive: !existsSync " + folderPath);
+    log.editor("deleteFolderRecursive: !existsSync " + folderPath);
   }
 }
 exports.deleteFolderRecursive = deleteFolderRecursive;
