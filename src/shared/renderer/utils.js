@@ -5,6 +5,10 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
+///////////////////////////////////////////////////////////////////////////////
+// STRINGS ////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
 export function isVersionOlder(testVersion, referenceVersion) {
   const test = separateVersionText(testVersion);
   const reference = separateVersionText(referenceVersion);
@@ -60,9 +64,15 @@ function separateVersionText(version) {
   }
 }
 
-export async function delay(seconds) {
-  return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
+export function isStringHTML(str) {
+  // ref: https://stackoverflow.com/questions/15458876/check-if-a-string-is-html-or-not/25381038
+  var doc = new DOMParser().parseFromString(str, "text/html");
+  return Array.from(doc.body.childNodes).some((node) => node.nodeType === 1);
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// PATHS //////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 export function encodeImgPath(filePath) {
   let { fileName, folderPath } = getFolderAndNameFromFilePath(filePath);
@@ -102,8 +112,10 @@ export function hasVideoExtension(text) {
   return text.endsWith(".mp4");
 }
 
-export function isStringHTML(str) {
-  // ref: https://stackoverflow.com/questions/15458876/check-if-a-string-is-html-or-not/25381038
-  var doc = new DOMParser().parseFromString(str, "text/html");
-  return Array.from(doc.body.childNodes).some((node) => node.nodeType === 1);
+///////////////////////////////////////////////////////////////////////////////
+// OTHER //////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+export async function delay(seconds) {
+  return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
 }
