@@ -560,6 +560,8 @@ function buildFavorites() {
       ////////////////
     }
     favoritesDiv.appendChild(ul);
+  } else {
+    favoritesDiv.style = "padding-top: 5px";
   }
 }
 
