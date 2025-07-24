@@ -75,7 +75,7 @@ function initOnIpcCallbacks() {
     fillTags();
   });
 
-  on("add-to-playlist", (files, startPlaying, allowDuplicates = true) => {
+  on("add-to-playlist", (files, startPlaying, allowDuplicates = false) => {
     if (files && Array.isArray(files) && files.length > 0) {
       if (!allowDuplicates) {
         const newFiles = files.filter((file) => !isFileInPlaylist(file));
