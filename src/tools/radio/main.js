@@ -36,25 +36,59 @@ async function init() {
 }
 
 async function getServersList() {
+  let urls = [];
   try {
+    log.debug("[Radio] trying to get server from de1.api");
     const axios = require("axios").default;
     const response = await axios.get(
-      `https://all.api.radio-browser.info/json/servers`,
+      `https:\\de1.api.radio-browser.info/json/servers`,
       { timeout: 10000 }
     );
-    let urls = [];
     if (response.data && response.data.length > 0) {
+      for (let i = 0; i < response.data.length; i++) {
+        if (response.data[i].name == "de1.api.radio-browser.info") {
+          // seems to be working so just choose it if it's in the list
+          g_server = "https:\\de1.api.radio-browser.info";
+          log.debug(`[Radio] server set to: ${g_server}`);
+          return;
+        }
+      }
+      // if not, choose at random
       response.data.forEach((element) => {
         if (element.name) urls.push("https://" + element.name);
       });
-    }
-    if (urls.length > 0) {
-      g_server = urls[Math.floor(Math.random() * urls.length)];
-      log.editor(g_server);
+    } else {
+      throw "de1.api no data";
     }
   } catch (error) {
-    log.error(error);
+    log.editorError(error);
+    try {
+      log.debug("[Radio] trying to get server from all.api");
+      const axios = require("axios").default;
+      const response = await axios.get(
+        `https://all.api.radio-browser.info/json/servers`,
+        { timeout: 10000 }
+      );
+      if (response.data && response.data.length > 0) {
+        response.data.forEach((element) => {
+          if (element.name) urls.push("https://" + element.name);
+        });
+      } else {
+        throw "all.api no data";
+      }
+    } catch (error) {
+      log.editorError(error);
+    }
   }
+  if (urls.length > 0) {
+    log.debug("[Radio] choosing at random from the results");
+    g_server = urls[Math.floor(Math.random() * urls.length)];
+    log.debug(`[Radio] server set to: ${g_server}`);
+    return;
+  }
+  log.debug(
+    `[Radio] nothing found, will use the default server: ${g_defaultServer}`
+  );
   // refs:
   // https://api.radio-browser.info/examples/serverlist_fast.js
   // https://all.api.radio-browser.info/json/servers
