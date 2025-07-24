@@ -334,7 +334,7 @@ function buildFavorites() {
   const favoritesDiv = document.querySelector("#tool-radio-favorites-div");
   favoritesDiv.innerHTML = "";
   if (g_favorites && g_favorites.length > 0) {
-    favoritesDiv.style = "padding-top: 20px";
+    favoritesDiv.style = "padding-top: 10px";
     // list
     let ul = document.createElement("ul");
     ul.className = "tools-collection-ul";
@@ -439,6 +439,8 @@ function buildFavorites() {
       ////////////////
     }
     favoritesDiv.appendChild(ul);
+  } else {
+    favoritesDiv.style = "padding-top: 0px";
   }
 }
 
