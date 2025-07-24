@@ -14,7 +14,7 @@ const g_stackTag = "[\x1b[31mSTACK\x1b[0m]";
 const g_debugTag = "[\x1b[36mDEBUG\x1b[0m]";
 
 const g_testTag = "[\x1b[95mTEST\x1b[0m]";
-const g_editorTag = "[\x1b[32mEDITOR\x1b[0m]";
+const g_editorTag = "[\x1b[34mEDITOR\x1b[0m]";
 
 exports.init = function (info) {
   g_isDebug = info.isDev;
