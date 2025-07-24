@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2023-2024 Álvaro García
+ * Copyright 2023-2025 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -8,11 +8,13 @@
 let g_isDebug = false;
 let g_isRelease = true;
 
+const g_warningTag = "[\x1b[93mWARNING\x1b[0m]";
 const g_errorTag = "[\x1b[31mERROR\x1b[0m]";
 const g_stackTag = "[\x1b[31mSTACK\x1b[0m]";
 const g_debugTag = "[\x1b[36mDEBUG\x1b[0m]";
+
 const g_testTag = "[\x1b[95mTEST\x1b[0m]";
-const g_warningTag = "[\x1b[93mWARNING\x1b[0m]";
+const g_editorTag = "[\x1b[32mEDITOR\x1b[0m]";
 
 exports.init = function (info) {
   g_isDebug = info.isDev;
@@ -51,6 +53,12 @@ exports.error = function (message) {
 exports.test = function (message) {
   if (g_isDebug && !g_isRelease) {
     console.log(`${getTime()} ${g_testTag}`, message);
+  }
+};
+
+exports.editor = function (message) {
+  if (g_isDebug && !g_isRelease) {
+    console.log(`${getTime()} ${g_editorTag}`, message);
   }
 };
 
