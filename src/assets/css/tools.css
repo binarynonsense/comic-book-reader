@@ -300,6 +300,11 @@ html[dir="rtl"] .tools-button-accent i {
   overflow-wrap: anywhere;
 }
 
+#tools input[type="text"]::placeholder,
+#tools input[type="number"]::placeholder {
+  filter: opacity(0.6);
+}
+
 #tools input[type="color"] {
   width: 98%;
   height: 35px;
