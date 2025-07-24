@@ -346,7 +346,7 @@ function buildFavorites() {
       li.className = "tools-buttons-list-li";
       let buttonSpan = document.createElement("span");
       buttonSpan.className = "tools-buttons-list-button";
-      buttonSpan.innerHTML = `<i class="fas fa-rss-square fa-2x"></i>`; //fas fa-file-audio
+      buttonSpan.innerHTML = `<i class="fas fa-file-audio fa-2x"></i>`;
       buttonSpan.title = g_extraLocalization.open;
       let multilineText = document.createElement("span");
       multilineText.className = "tools-buttons-list-li-multiline-text";
