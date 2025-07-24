@@ -121,7 +121,7 @@ function initOnIpcCallbacks() {
     reader.showAudioPlayer(true, false);
     if (playlistOption === 0) {
       let files = [{ url, title, duration: -1 }];
-      sendIpcToAudioPlayerRenderer("add-to-playlist", files, true);
+      sendIpcToAudioPlayerRenderer("add-to-playlist", files, true, false);
     } else {
       let playlist = {
         id: title,
