@@ -74,16 +74,21 @@ function init() {
     // preferencesButton.setAttribute("data-nav-col", 2);
     // preferencesButton.setAttribute("tabindex", "0");
     ///////////
-    const comicConverterButton = document.querySelector(
-      "#hs-logo-convert-comics-button"
+    const filesToolsButton = document.querySelector(
+      "#hs-logo-files-tools-button"
     );
-    comicConverterButton.addEventListener("click", (event) => {
-      sendIpcToMain("hs-open-convert-comics");
+    filesToolsButton.addEventListener("click", (event) => {
+      sendIpcToMain("hs-files-tools");
     });
     // comicConverterButton.setAttribute("data-nav-panel", 0);
     // comicConverterButton.setAttribute("data-nav-row", 0);
     // comicConverterButton.setAttribute("data-nav-col", 3);
     // comicConverterButton.setAttribute("tabindex", "0");
+    ///////////
+    const artToolsButton = document.querySelector("#hs-logo-art-tools-button");
+    artToolsButton.addEventListener("click", (event) => {
+      sendIpcToMain("hs-art-tools");
+    });
     ///////////
     const rssReaderButton = document.querySelector(
       "#hs-logo-rss-reader-button"
@@ -154,6 +159,14 @@ function initOnIpcCallbacks() {
 
   on("hs-show-modal-favorite-edit-path", (...args) => {
     showModalFavoriteEditPath(...args);
+  });
+
+  on("hs-show-modal-files-tools", (...args) => {
+    showModalFilesTools(...args);
+  });
+
+  on("hs-show-modal-art-tools", (...args) => {
+    showModalArtTools(...args);
   });
 }
 
@@ -607,6 +620,124 @@ export function onGamepadPolled() {
 // MODALS /////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+function showModalFilesTools(
+  title,
+  textButtonBack,
+  textButtonConvertFiles,
+  textButtonCreateFile,
+  textButtonConvertImages,
+  textButtonExtractComics,
+  showFocus
+) {
+  if (getOpenModal()) {
+    return;
+  }
+  let buttons = [];
+  buttons.push({
+    text: textButtonConvertFiles.toUpperCase(),
+    fullWidth: true,
+    callback: () => {
+      modalClosed();
+      sendIpcToMain("hs-on-modal-files-tools-convert-files-clicked");
+    },
+  });
+  buttons.push({
+    text: textButtonCreateFile.toUpperCase(),
+    fullWidth: true,
+    callback: () => {
+      modalClosed();
+      sendIpcToMain("hs-on-modal-files-tools-create-file-clicked");
+    },
+  });
+  buttons.push({
+    text: textButtonConvertImages.toUpperCase(),
+    fullWidth: true,
+    callback: () => {
+      modalClosed();
+      sendIpcToMain("hs-on-modal-files-tools-convert-images-clicked");
+    },
+  });
+  buttons.push({
+    text: textButtonExtractComics.toUpperCase(),
+    fullWidth: true,
+    callback: () => {
+      modalClosed();
+      sendIpcToMain("hs-on-modal-files-tools-extract-comics-clicked");
+    },
+  });
+  buttons.push({
+    text: textButtonBack.toUpperCase(),
+    fullWidth: true,
+    callback: () => {
+      modalClosed();
+    },
+  });
+  showModal({
+    showFocus: showFocus,
+    title: title,
+    frameWidth: 400,
+    zIndexDelta: -450,
+    close: {
+      callback: () => {
+        modalClosed();
+      },
+      key: "Escape",
+    },
+    buttons: buttons,
+  });
+}
+
+function showModalArtTools(
+  title,
+  textButtonBack,
+  textButtonTemplateMaker,
+  textButtonExtractPalette,
+  showFocus
+) {
+  if (getOpenModal()) {
+    return;
+  }
+  let buttons = [];
+  buttons.push({
+    text: textButtonTemplateMaker.toUpperCase(),
+    fullWidth: true,
+    callback: () => {
+      modalClosed();
+      sendIpcToMain("hs-on-modal-art-tools-template-maker-clicked");
+    },
+  });
+  buttons.push({
+    text: textButtonExtractPalette.toUpperCase(),
+    fullWidth: true,
+    callback: () => {
+      modalClosed();
+      sendIpcToMain("hs-on-modal-art-tools-extract-palette-clicked");
+    },
+  });
+  buttons.push({
+    text: textButtonBack.toUpperCase(),
+    fullWidth: true,
+    callback: () => {
+      modalClosed();
+    },
+  });
+  showModal({
+    showFocus: showFocus,
+    title: title,
+    frameWidth: 400,
+    zIndexDelta: -450,
+    close: {
+      callback: () => {
+        modalClosed();
+      },
+      key: "Escape",
+    },
+    buttons: buttons,
+  });
+}
+
+///////////////////
+
 function showModalAddFavorite(
   title,
   textButtonBack,
@@ -856,7 +987,8 @@ function updateLocalization(
   cardLocalization,
   preferencesTitle,
   historyTitle,
-  comicConverterTitle,
+  filesToolsTitle,
+  artToolsTitle,
   rssReaderTitle,
   radioTitle,
   quitTitle,
@@ -880,11 +1012,14 @@ function updateLocalization(
   // history
   const historyButton = document.querySelector("#hs-logo-history-button");
   historyButton.title = historyTitle;
-  // convert comics
-  const comicConverterButton = document.querySelector(
-    "#hs-logo-convert-comics-button"
+  // files tools
+  const filesToolsButton = document.querySelector(
+    "#hs-logo-files-tools-button"
   );
-  comicConverterButton.title = comicConverterTitle;
+  filesToolsButton.title = filesToolsTitle;
+  // art tools
+  const artToolsButton = document.querySelector("#hs-logo-art-tools-button");
+  artToolsButton.title = artToolsTitle;
   // rss reader
   const rssReaderButton = document.querySelector("#hs-logo-rss-reader-button");
   rssReaderButton.title = rssReaderTitle;

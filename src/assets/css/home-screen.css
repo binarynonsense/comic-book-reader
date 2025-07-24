@@ -199,18 +199,18 @@
 
 /* *********************** */
 
-#hs-logo-convert-comics-button {
+#hs-logo-files-tools-button {
   font-size: 19.5px;
   width: 30px;
   margin-inline-start: -2px;
 }
 
-#hs-logo-convert-comics-button i:last-child {
+#hs-logo-files-tools-button i:last-child {
   color: var(--hs-bg-color);
   padding-top: 9px;
   transform: scale(0.85);
 }
-#hs-logo-convert-comics-button:hover i:last-child {
+#hs-logo-files-tools-button:hover i:last-child {
   transform: scale(1.1);
 }
 

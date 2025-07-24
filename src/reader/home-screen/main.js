@@ -8,7 +8,7 @@
 const fs = require("fs");
 const path = require("path");
 const core = require("../../core/main");
-const { _ } = require("../../shared/main/i18n");
+const { _, _raw } = require("../../shared/main/i18n");
 const history = require("../../shared/main/history");
 const favorites = require("../../shared/main/favorites");
 const reader = require("../../reader/main");
@@ -246,8 +246,66 @@ function initOnIpcCallbacks() {
     core.onMenuOpenHistoryManager();
   });
 
-  on("hs-open-convert-comics", () => {
+  on("hs-files-tools", (showFocus) => {
+    sendIpcToRenderer(
+      "hs-show-modal-files-tools",
+      _raw("home-files-tools", false)
+        ? _raw("home-files-tools", false)
+        : _("menu-tools") + " > " + _("menu-tools-files"),
+      _("tool-shared-ui-back"),
+      _raw("tool-cc-title-alt", false)
+        ? _raw("tool-cc-title-alt", false)
+        : _("tool-cc-title"), // "Convert Files Tool"
+      _raw("tool-cr-title-alt", false)
+        ? _raw("tool-cr-title-alt", false)
+        : _("tool-cr-title"), // "Create File Tool"
+      _raw("tool-ci-title-alt", false)
+        ? _raw("tool-ci-title-alt", false)
+        : _("tool-ci-title"), // "Convert Images Tool"
+      _raw("tool-ec-title-alt", false)
+        ? _raw("tool-ec-title-alt", false)
+        : _("tool-ec-title"), // "Extract Pages Tool"
+      showFocus
+    );
+  });
+
+  on("hs-on-modal-files-tools-convert-files-clicked", () => {
     core.onMenuToolConvertComics();
+  });
+
+  on("hs-on-modal-files-tools-create-file-clicked", () => {
+    core.onMenuToolCreateComic();
+  });
+
+  on("hs-on-modal-files-tools-convert-images-clicked", () => {
+    core.onMenuToolConvertImages();
+  });
+
+  on("hs-on-modal-files-tools-extract-comics-clicked", () => {
+    core.onMenuToolExtractComics();
+  });
+
+  on("hs-art-tools", (showFocus) => {
+    sendIpcToRenderer(
+      "hs-show-modal-art-tools",
+      _raw("home-art-tools", false)
+        ? _raw("home-art-tools", false)
+        : _("menu-tools") + " > " + _("menu-tools-art"),
+      _("tool-shared-ui-back"),
+      _("tool-tm-info-title-header"),
+      _raw("tool-ep-title-alt", false)
+        ? _raw("tool-ep-title-alt", false)
+        : _("tool-ep-title"), // "Extract Palette Tool"
+      showFocus
+    );
+  });
+
+  on("hs-on-modal-art-tools-template-maker-clicked", () => {
+    core.onMenuToolTemplateMaker();
+  });
+
+  on("hs-on-modal-art-tools-extract-palette-clicked", () => {
+    core.onMenuToolExtractPalette();
   });
 
   on("hs-open-rss-reader", () => {
@@ -454,7 +512,12 @@ function updateLocalizedText(rebuildSections = true) {
     getCardLocalization(),
     _("menu-file-preferences"),
     _("menu-file-openrecent-history"),
-    _("tool-cc-title"),
+    _raw("home-files-tools", false)
+      ? _raw("home-files-tools", false)
+      : _("menu-tools") + " > " + _("menu-tools-files"),
+    _raw("home-art-tools", false)
+      ? _raw("home-art-tools", false)
+      : _("menu-tools") + " > " + _("menu-tools-art"),
     _("menu-tools-rss-reader"),
     _("menu-tools-radio"),
     _("menu-file-quit"),
