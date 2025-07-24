@@ -263,7 +263,7 @@ function onDroppedFiles(inputPaths) {
   outputPaths.forEach((element) => {
     files.push({ url: element });
   });
-  sendIpcToRenderer("add-to-playlist", files);
+  sendIpcToRenderer("add-to-playlist", files, false);
 }
 
 function isAlreadyInArray(inputArray, content) {
@@ -328,7 +328,7 @@ function callOpenFilesDialog(mode) {
     outputPaths.forEach((element) => {
       files.push({ url: element });
     });
-    sendIpcToRenderer("add-to-playlist", files);
+    sendIpcToRenderer("add-to-playlist", files, false);
   } else if (mode === 0) {
     let playlist = {
       id: "",

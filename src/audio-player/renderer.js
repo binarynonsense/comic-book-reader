@@ -75,7 +75,7 @@ function initOnIpcCallbacks() {
     fillTags();
   });
 
-  on("add-to-playlist", (files, startPlaying = false) => {
+  on("add-to-playlist", (files, startPlaying) => {
     if (files && Array.isArray(files)) {
       // TODO: MAYBE: start first new song by default after adding?
       const oldLength = g_tracks.length;
