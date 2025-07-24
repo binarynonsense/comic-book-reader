@@ -8,7 +8,7 @@
 const fs = require("fs");
 const path = require("path");
 const core = require("../../core/main");
-const { _ } = require("../../shared/main/i18n");
+const { _, _raw } = require("../../shared/main/i18n");
 
 const { FileExtension } = require("../../shared/main/constants");
 const fileUtils = require("../../shared/main/file-utils");
@@ -558,7 +558,10 @@ function getLocalization() {
   return [
     {
       id: "tool-ci-title-text",
-      text: _("tool-ci-title").toUpperCase(),
+      text: (_raw("tool-ci-title-alt", false)
+        ? _raw("tool-ci-title-alt", false)
+        : _("tool-ci-title")
+      ).toUpperCase(),
     },
     {
       id: "tool-ci-back-button-text",

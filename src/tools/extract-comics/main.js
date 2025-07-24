@@ -9,7 +9,7 @@ const { BrowserWindow } = require("electron");
 const fs = require("fs");
 const path = require("path");
 const core = require("../../core/main");
-const { _ } = require("../../shared/main/i18n");
+const { _, _raw } = require("../../shared/main/i18n");
 
 const { FileExtension, FileDataType } = require("../../shared/main/constants");
 const { fork } = require("child_process");
@@ -805,7 +805,10 @@ function getLocalization() {
   return [
     {
       id: "tool-ec-title-text",
-      text: _("tool-ec-title").toUpperCase(),
+      text: (_raw("tool-ec-title-alt", false)
+        ? _raw("tool-ec-title-alt", false)
+        : _("tool-ec-title")
+      ).toUpperCase(),
     },
     {
       id: "tool-ec-back-button-text",
