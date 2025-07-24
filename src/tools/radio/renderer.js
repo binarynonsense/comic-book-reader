@@ -361,8 +361,13 @@ function buildFavorites() {
       }
       buttonSpan.appendChild(multilineText);
       buttonSpan.addEventListener("click", (event) => {
-        sendIpcToMain("get-feed-content", data.url, index);
-        showLoadingModal();
+        showModalOpenInPlayer(
+          { stationuuid: "", name: data.name, url_resolved: data.url },
+          g_extraLocalization.modalOpenInPlayerTitleText,
+          g_extraLocalization.modalCancelButtonText,
+          g_extraLocalization.modalAddToPlaylistButtonText,
+          g_extraLocalization.modalNewPlaylistButtonText
+        );
       });
       li.appendChild(buttonSpan);
       {
