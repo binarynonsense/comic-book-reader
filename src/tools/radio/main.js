@@ -48,7 +48,7 @@ async function getServersList() {
       for (let i = 0; i < response.data.length; i++) {
         if (response.data[i].name == "de1.api.radio-browser.info") {
           // seems to be working so just choose it if it's in the list
-          g_server = "https:\\de1.api.radio-browser.info";
+          g_server = "https://de1.api.radio-browser.info";
           log.debug(`[Radio] server set to: ${g_server}`);
           return;
         }
