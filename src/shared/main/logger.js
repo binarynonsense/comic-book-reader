@@ -15,6 +15,7 @@ const g_debugTag = "[\x1b[36mDEBUG\x1b[0m]";
 
 const g_testTag = "[\x1b[95mTEST\x1b[0m]";
 const g_editorTag = "[\x1b[34mEDITOR\x1b[0m]";
+const g_editorErrorTag = "[\x1b[31mEDITOR ERROR\x1b[0m]";
 
 exports.init = function (info) {
   g_isDebug = info.isDev;
@@ -59,6 +60,25 @@ exports.test = function (message) {
 exports.editor = function (message) {
   if (g_isDebug && !g_isRelease) {
     console.log(`${getTime()} ${g_editorTag}`, message);
+  }
+};
+
+exports.editorError = function (message) {
+  if (g_isDebug && !g_isRelease) {
+    if (message?.message) {
+      console.log(
+        `${getTime()} ${g_editorErrorTag} ${
+          message.message
+        }\n${getCallerData()}`
+      );
+    } else {
+      console.log(
+        `${getTime()} ${g_editorErrorTag} ${message}\n${getCallerData()}`
+      );
+    }
+    if (message?.stack) {
+      console.log(`${getTime()} ${g_stackTag} ${message.stack}`);
+    }
   }
 };
 
