@@ -66,6 +66,12 @@ function init(
 
   // favorites
   g_favorites = favorites;
+
+  document
+    .getElementById("tool-radio-add-favorite-url-button")
+    .addEventListener("click", (event) => {
+      sendIpcToMain("on-add-favorite-url-clicked");
+    });
   document
     .getElementById("tool-radio-clear-favorites-button")
     .addEventListener("click", (event) => {
@@ -236,6 +242,10 @@ function initOnIpcCallbacks() {
     showModalClearFavorites(...args);
   });
 
+  on("show-modal-add-favorite-url", (...args) => {
+    showModalAddFavoriteURL(...args);
+  });
+
   on(
     "on-favorites-reset",
     (
@@ -305,8 +315,8 @@ function initOnIpcCallbacks() {
 
   /////////////////////////////////////////////////////////////////////////////
 
-  on("show-modal-add-favorite", (...args) => {
-    showModalAddFavorite(...args);
+  on("show-modal-add-favorite-url", (...args) => {
+    showModalAddFavoriteURL(...args);
   });
 
   on("show-modal-favorite-options", (...args) => {
@@ -334,7 +344,7 @@ function buildFavorites() {
   const favoritesDiv = document.querySelector("#tool-radio-favorites-div");
   favoritesDiv.innerHTML = "";
   if (g_favorites && g_favorites.length > 0) {
-    favoritesDiv.style = "padding-top: 10px";
+    favoritesDiv.style = "padding-top: 20px";
     // list
     let ul = document.createElement("ul");
     ul.className = "tools-collection-ul";
@@ -440,7 +450,7 @@ function buildFavorites() {
     }
     favoritesDiv.appendChild(ul);
   } else {
-    favoritesDiv.style = "padding-top: 0px";
+    favoritesDiv.style = "padding-top: 5px";
   }
 }
 
@@ -1013,6 +1023,42 @@ function showModalFavoriteRemoveFromFavorites(
 }
 
 ////
+
+function showModalAddFavoriteURL(title, message, textButton1, textButton2) {
+  if (getOpenModal()) {
+    return;
+  }
+
+  g_openModal = modals.show({
+    title,
+    message,
+    zIndexDelta: 5,
+    input: { type: "text", default: "" },
+    close: {
+      callback: () => {
+        modalClosed();
+      },
+      key: "Escape",
+    },
+    buttons: [
+      {
+        text: textButton1.toUpperCase(),
+        callback: (showFocus, value) => {
+          sendIpcToMain("on-modal-add-favorite-url-ok-clicked", value);
+          modalClosed();
+          showLoadingModal();
+        },
+        key: "Enter",
+      },
+      {
+        text: textButton2.toUpperCase(),
+        callback: () => {
+          modalClosed();
+        },
+      },
+    ],
+  });
+}
 
 function showModalClearFavorites(title, message, textButton1, textButton2) {
   if (getOpenModal()) {

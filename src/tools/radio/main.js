@@ -233,6 +233,22 @@ function initOnIpcCallbacks() {
     })();
   });
 
+  //////////////////
+
+  on("on-add-favorite-url-clicked", () => {
+    sendIpcToRenderer(
+      "show-modal-add-favorite-url",
+      _("tool-shared-tab-addurl"),
+      "URL",
+      _("ui-modal-prompt-button-ok"),
+      _("ui-modal-prompt-button-cancel")
+    );
+  });
+
+  on("on-modal-add-favorite-url-ok-clicked", (url) => {
+    addFavorite(_("tool-radio-radio-station"), url);
+  });
+
   /////////
 
   on("on-clear-favorites-clicked", () => {
@@ -530,6 +546,10 @@ function getLocalization() {
     {
       id: "tool-radio-clear-favorites-button-text",
       text: _("tool-shared-ui-clear-list").toUpperCase(),
+    },
+    {
+      id: "tool-radio-add-favorite-url-button-text",
+      text: _("tool-shared-tab-addurl").toUpperCase(),
     },
     //////////////////////////////////////////////
     {
