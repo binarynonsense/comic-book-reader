@@ -41,7 +41,7 @@ async function getServersList() {
     log.debug("[Radio] trying to get server from de1.api");
     const axios = require("axios").default;
     const response = await axios.get(
-      `https:\\de1.api.radio-browser.info/json/servers`,
+      `https://de1.api.radio-browser.info/json/servers`,
       { timeout: 10000 }
     );
     if (response.data && response.data.length > 0) {
