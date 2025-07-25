@@ -140,6 +140,7 @@ exports.getDriveList = function () {
 };
 
 exports.openURLInBrowser = function (urlString) {
+  // TODO: the TLD check could be done earlier and probably better
   let url;
   try {
     url = new URL(urlString);
