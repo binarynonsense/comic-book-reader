@@ -119,6 +119,19 @@ function initOnIpcCallbacks() {
     }
     sendIpcToRenderer("tags-filled", updatedFiles);
   });
+
+  on("on-play-error", (error) => {
+    if (error == "NotSupportedError") {
+      sendIpcToRenderer(
+        "show-modal-info",
+        _("tool-shared-modal-title-error"),
+        `${_("ui-modal-info-mediaerror-play")}\n${_(
+          "ui-modal-info-mediaerror-4"
+        )}`,
+        _("ui-modal-prompt-button-ok")
+      );
+    }
+  });
 }
 
 // HANDLE

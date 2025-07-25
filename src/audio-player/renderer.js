@@ -9,6 +9,7 @@ import {
   sendIpcToMain as coreSendIpcToMain,
   sendIpcToMainAndWait as coreSendIpcToMainAndWait,
 } from "../core/renderer.js";
+import * as modals from "../shared/renderer/modals.js";
 
 let g_settings;
 let g_player = {};
@@ -131,6 +132,10 @@ function initOnIpcCallbacks() {
       }
     }
     updatePlaylistInfo();
+  });
+
+  on("show-modal-info", (...args) => {
+    showModalAlert(...args);
   });
 }
 
@@ -328,14 +333,28 @@ function loadTrack(index, time) {
     g_player.sliderTime.value = time;
     return true;
   } catch (error) {
+    console.log(error);
     return false;
   }
 }
 
-function playTrack(index, time) {
-  if (!loadTrack(index, time)) return;
-  g_player.engine.play();
-  g_player.isPlaying = true;
+async function playTrack(index, time) {
+  try {
+    if (index === -1) {
+      await g_player.engine.play();
+      g_player.isPlaying = true;
+    } else {
+      if (!loadTrack(index, time)) return;
+      await g_player.engine.play();
+      g_player.isPlaying = true;
+    }
+  } catch (error) {
+    if (error.toString().includes("NotSupportedError")) {
+      sendIpcToMain("on-play-error", "NotSupportedError");
+    } else {
+      console.log(error);
+    }
+  }
   refreshUI();
   scrollToCurrent();
 }
@@ -439,8 +458,7 @@ function refreshUI() {
 
 function onButtonClicked(buttonName) {
   if (buttonName === "play") {
-    g_player.engine.play();
-    g_player.isPlaying = true;
+    playTrack(-1, -1);
   } else if (buttonName === "pause") {
     pauseTrack(false);
   } else if (buttonName === "prev") {
@@ -591,6 +609,28 @@ function shuffleArray(array) {
 
 function initPlayer(settings, playlist) {
   g_player.engine = document.getElementById("html-audio");
+  g_player.engine.addEventListener("error", (error) => {
+    // ref: https://developer.mozilla.org/en-US/docs/Web/API/MediaError/message
+    let message;
+    switch (error.target.error.code) {
+      case MediaError.MEDIA_ERR_ABORTED:
+        message = "Canceled audio playback.";
+        break;
+      case MediaError.MEDIA_ERR_NETWORK:
+        message = "A network error occurred while fetching the audio.";
+        break;
+      case MediaError.MEDIA_ERR_DECODE:
+        userHint = "An error occurred while decoding the audio.";
+        break;
+      case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
+        message = "Audio is missing or is an unsupported format.";
+        break;
+      default:
+        message = "An unknown error occurred.";
+        break;
+    }
+    // console.log(message);
+  });
   ///////
   g_player.buttonOpen = document.getElementById("ap-button-open");
   g_player.buttonOpen.addEventListener("click", function () {
@@ -821,4 +861,44 @@ export function onInputEvent(type, event) {
     default:
       return false;
   }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// MODALS /////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+let g_openModal;
+
+function showModal(config) {
+  g_openModal = modals.show(config);
+}
+
+function modalClosed() {
+  g_openModal = undefined;
+}
+
+function showModalAlert(title, message, textButton1) {
+  if (g_openModal) {
+    return;
+  }
+  showModal({
+    title: title,
+    message: message,
+    zIndexDelta: 6,
+    close: {
+      callback: () => {
+        modalClosed();
+      },
+      key: "Escape",
+    },
+    buttons: [
+      {
+        text: textButton1.toUpperCase(),
+        callback: () => {
+          modalClosed();
+        },
+        key: "Enter",
+      },
+    ],
+  });
 }
