@@ -150,12 +150,8 @@ exports.openURLInBrowser = function (urlString) {
       log.debug(`Opening in browser: ${urlString}`);
       shell.openExternal(urlString);
     } else {
-      if (urlString.startsWith("file://")) {
-        urlString = urlString.replace("file://", "http://");
-        if (!urlString.includes(".")) throw "no tld"; // require TLD
-        log.debug(`Opening in browser: ${urlString}`);
-        shell.openExternal(urlString);
-      }
+      log.warning("Tried to open an invalid URL: " + urlString);
+      return;
     }
   } catch (error) {
     log.editor("Invalid URL, adding http://");
@@ -169,6 +165,8 @@ exports.openURLInBrowser = function (urlString) {
         if (!urlString.includes(".")) throw "no tld"; // require TLD
         log.debug(`Opening in browser: ${urlString}`);
         shell.openExternal(urlString);
+      } else {
+        throw "error";
       }
     } catch (error) {
       log.warning("Tried to open an invalid URL: " + urlString);
