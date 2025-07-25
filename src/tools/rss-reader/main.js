@@ -9,7 +9,6 @@ const path = require("path");
 const core = require("../../core/main");
 const { _ } = require("../../shared/main/i18n");
 const reader = require("../../reader/main");
-const shell = require("electron").shell;
 const contextMenu = require("../../shared/main/tools-menu-context");
 const tools = require("../../shared/main/tools");
 const log = require("../../shared/main/logger");
@@ -217,21 +216,11 @@ function initOnIpcCallbacks() {
   });
 
   on("open-url-in-browser", (urlString) => {
-    let url;
-    try {
-      url = new URL(urlString);
-      if (url.protocol === "http:" || url.protocol === "https:") {
-        shell.openExternal(urlString);
-      } else {
-        // HACK: for /r/comicbooks
-        if (urlString.startsWith("file:///r/comicbooks")) {
-          urlString = urlString.replace("file://", "https://old.reddit.com");
-          shell.openExternal(urlString);
-        }
-      }
-    } catch (e) {
-      return;
+    // HACK: for /r/comicbooks
+    if (urlString.startsWith("file:///r/comicbooks")) {
+      urlString = urlString.replace("file://", "https://old.reddit.com");
     }
+    utils.openURLInBrowser(urlString);
   });
 
   on("open-url-in-audio-player", (url, name, playlistOption) => {
