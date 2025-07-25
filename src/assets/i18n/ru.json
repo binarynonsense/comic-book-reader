@@ -157,6 +157,7 @@
   "ui-modal-title-filenotfound": "Файл не найден",
   "ui-modal-title-foldererror": "Ошибка папки",
   "ui-modal-title-fileerror": "Ошибка файла",
+  "[NEEDS TRANSLATION]ui-modal-title-audioplayererror": "Audio Player Error",
   "ui-modal-title-quickmenu": "Быстрое меню",
   "ui-modal-title-versionchecker": "Проверка версии",
   "ui-modal-title-versionuptodate": "Версия актуальна",

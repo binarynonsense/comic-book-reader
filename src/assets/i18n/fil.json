@@ -157,6 +157,7 @@
   "ui-modal-title-filenotfound": "Hindi Natagpuan ang File",
   "ui-modal-title-foldererror": "Error sa Folder",
   "ui-modal-title-fileerror": "Error sa File",
+  "[NEEDS TRANSLATION]ui-modal-title-audioplayererror": "Audio Player Error",
   "ui-modal-title-quickmenu": "Mabilis na Menu",
   "ui-modal-title-versionchecker": "Tagasuri ng Bersyon",
   "ui-modal-title-versionuptodate": "Bersyon na Ayon",
