@@ -379,7 +379,6 @@ async function playTrack(index, time) {
               hls.destroy();
               break;
             default:
-              // cannot recover
               sendIpcToMain("on-play-error", "NotSupportedError");
               g_player.isPlaying = false;
               g_player.engine.src = undefined;
