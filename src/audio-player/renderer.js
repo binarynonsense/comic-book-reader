@@ -590,8 +590,8 @@ function onButtonClicked(buttonName) {
       } else {
         // the deleted one was the last
         pauseTrack(false);
-        g_currentTrackIndex = 0;
-        if (g_tracks.length > 0) loadTrack(0, 0);
+        g_currentTrackIndex = g_tracks.length - 1;
+        if (g_tracks.length > 0) loadTrack(g_tracks.length - 1, 0);
       }
     } else {
       if (g_currentTrackIndex < selectedTrackIndex) {
