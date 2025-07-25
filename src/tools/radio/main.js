@@ -22,7 +22,7 @@ const utils = require("../../shared/main/utils");
 
 let g_isInitialized = false;
 
-let g_defaultServer = "https:\\de2.api.radio-browser.info";
+let g_defaultServer = "https://de2.api.radio-browser.info";
 let g_server;
 let g_favorites = [];
 
