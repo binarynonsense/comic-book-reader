@@ -1269,11 +1269,9 @@ function showModalFeedOptions(
   favoriteIndex,
   title,
   textButtonBack,
-  textButtonRemove,
   textButtonEditName,
   textButtonEditUrl,
-  textButtonMoveUp,
-  textButtonMoveDown,
+  textButtonOpenURLBrowser,
   showFocus
 ) {
   if (getOpenModal()) {
@@ -1301,6 +1299,17 @@ function showModalFeedOptions(
       sendIpcToMain(
         "on-modal-feed-options-edit-url-clicked",
         favoriteIndex,
+        g_favorites[favoriteIndex].url
+      );
+    },
+  });
+  buttons.push({
+    text: textButtonOpenURLBrowser.toUpperCase(),
+    fullWidth: true,
+    callback: () => {
+      modalClosed();
+      sendIpcToMain(
+        "on-modal-feed-options-open-url-browser-clicked",
         g_favorites[favoriteIndex].url
       );
     },
