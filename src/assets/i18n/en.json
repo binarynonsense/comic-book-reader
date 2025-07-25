@@ -180,6 +180,7 @@
   "ui-modal-info-lateststableversion": "Latest stable version",
   "ui-modal-info-updateavailable-yes": "A newer stable version is available. Click the 'Open' button to open the download page in your browser.",
   "ui-modal-info-updateavailable-no": "Didn't find a newer stable version.",
+  "ui-modal-info-mediaerror-play": "Couldn't play the file.",
   "ui-modal-info-mediaerror-4": "The file is missing, could not be downloaded or the format is not supported.",
   "ui-modal-info-metadata": "Metadata",
   "ui-modal-info-metadata-fileproperties": "File Properties",
