@@ -332,12 +332,18 @@ function loadTrack(index, time) {
       g_tracks[g_currentTrackIndex].fileUrl.endsWith(".m3u8") &&
       Hls.isSupported()
     ) {
+      g_player.engine.usingHsl = true;
+      g_player.sliderTime.value = 0;
+      g_player.engine.currentTime = 0;
     } else {
-      if (g_player.engine.hls) g_player.engine.hls.destroy();
+      g_player.engine.usingHsl = false;
+      if (g_player.engine.hls) {
+        g_player.engine.hls.destroy();
+      }
       g_player.engine.src = g_tracks[g_currentTrackIndex].fileUrl;
+      g_player.sliderTime.value = time;
+      g_player.engine.currentTime = time;
     }
-    g_player.engine.currentTime = time;
-    g_player.sliderTime.value = time;
     return true;
   } catch (error) {
     console.log(error);
@@ -346,49 +352,60 @@ function loadTrack(index, time) {
 }
 
 async function playTrack(index, time) {
-  if (g_tracks[index].fileUrl.endsWith(".m3u8") && Hls.isSupported()) {
-    if (index === -1 && g_player.engine.hls) {
-      await g_player.engine.play();
-      g_player.isPlaying = true;
-    } else {
-      if (g_player.engine.hls) g_player.engine.hls.destroy();
-      g_player.engine.hls = new Hls();
-      g_player.engine.hls.attachMedia(g_player.engine);
-      g_player.engine.hls.on(Hls.Events.MEDIA_ATTACHED, function () {
-        g_player.engine.hls.loadSource(g_tracks[index].fileUrl);
-        if (!loadTrack(index, time)) return;
-        g_player.engine.play();
-        g_player.isPlaying = true;
-        refreshUI();
-        scrollToCurrent();
-      });
-      // ref: https://github.com/video-dev/hls.js/blob/master/docs/API.md#fatal-error-recovery
-      g_player.engine.hls.on(Hls.Events.ERROR, function (event, data) {
-        if (data.fatal) {
-          switch (data.type) {
-            case Hls.ErrorTypes.MEDIA_ERROR:
-              console.log("hls: fatal media error encountered, try to recover");
-              hls.recoverMediaError();
-              break;
-            case Hls.ErrorTypes.NETWORK_ERROR:
-              console.error("hls: fatal network error encountered", data);
-              sendIpcToMain("on-play-error", "NotSupportedError");
-              g_player.isPlaying = false;
-              g_player.engine.src = undefined;
-              refreshUI();
-              hls.destroy();
-              break;
-            default:
-              sendIpcToMain("on-play-error", "NotSupportedError");
-              g_player.isPlaying = false;
-              g_player.engine.src = undefined;
-              refreshUI();
-              hls.destroy();
-              break;
-          }
-        }
-      });
+  let useHsl = false;
+  if (index >= 0) {
+    useHsl = g_tracks[index].fileUrl.endsWith(".m3u8") && Hls.isSupported();
+  } else {
+    useHsl =
+      g_tracks[g_currentTrackIndex].fileUrl.endsWith(".m3u8") &&
+      Hls.isSupported();
+  }
+  if (useHsl) {
+    if (index === -1) {
+      index = g_currentTrackIndex;
     }
+    if (g_player.engine.hls) {
+      g_player.engine.hls.destroy();
+      g_player.engine.usingHsl = false;
+    }
+    g_player.engine.hls = new Hls();
+    g_player.engine.hls.attachMedia(g_player.engine);
+    g_player.engine.hls.on(Hls.Events.MEDIA_ATTACHED, function () {
+      g_player.engine.hls.loadSource(g_tracks[index].fileUrl);
+      if (!loadTrack(index, time)) return;
+      g_player.engine.play();
+      g_player.isPlaying = true;
+      refreshUI();
+      scrollToCurrent();
+    });
+    // ref: https://github.com/video-dev/hls.js/blob/master/docs/API.md#fatal-error-recovery
+    g_player.engine.hls.on(Hls.Events.ERROR, function (event, data) {
+      if (data.fatal) {
+        switch (data.type) {
+          case Hls.ErrorTypes.MEDIA_ERROR:
+            console.log("hls: fatal media error encountered, try to recover");
+            hls.recoverMediaError();
+            break;
+          case Hls.ErrorTypes.NETWORK_ERROR:
+            console.error("hls: fatal network error encountered", data);
+            sendIpcToMain("on-play-error", "NotSupportedError");
+            g_player.isPlaying = false;
+            g_player.engine.src = undefined;
+            refreshUI();
+            g_player.engine.hls.destroy();
+            g_player.engine.usingHsl = false;
+            break;
+          default:
+            sendIpcToMain("on-play-error", "NotSupportedError");
+            g_player.isPlaying = false;
+            g_player.engine.src = undefined;
+            refreshUI();
+            g_player.engine.hls.destroy();
+            g_player.engine.usingHsl = false;
+            break;
+        }
+      }
+    });
   } else {
     try {
       if (index === -1) {
@@ -439,7 +456,7 @@ function scrollToCurrent() {
 
 function refreshUI() {
   if (g_tracks.length > 0) {
-    if (g_player.engine.src) {
+    if (g_player.engine.src || g_player.engine.usingHsl) {
       g_player.buttonPlay.classList.remove("ap-disabled");
       g_player.buttonPause.classList.remove("ap-disabled");
     } else {
@@ -630,9 +647,10 @@ function onPlaylistTrackDoubleClicked(fileIndex) {
 }
 
 function onSliderTimeChanged(slider) {
-  if (!isNaN(g_player.engine.duration))
+  if (!g_player.engine.usingHsl && !isNaN(g_player.engine.duration)) {
     g_player.engine.currentTime =
       (slider.value * g_player.engine.duration) / 100;
+  }
 }
 
 function onSliderVolumeChanged(slider) {
@@ -783,7 +801,11 @@ function initPlayer(settings, playlist) {
 
   // Events
   g_player.engine.addEventListener("timeupdate", function () {
-    if (isNaN(this.duration) || !isFinite(this.duration)) {
+    console.log(g_player.engine.usingHsl);
+    if (g_player.engine.usingHsl) {
+      g_player.textTime.innerHTML = "--/--";
+      g_player.sliderTime.value = 0;
+    } else if (isNaN(this.duration) || !isFinite(this.duration)) {
       g_player.textTime.innerHTML = getFormatedTimeFromSeconds(
         this.currentTime
       );
@@ -794,6 +816,7 @@ function initPlayer(settings, playlist) {
         " / " +
         getFormatedTimeFromSeconds(this.duration);
       g_player.sliderTime.value = (100 * this.currentTime) / this.duration;
+      console.log(g_player.sliderTime.value);
     }
   });
 
@@ -809,6 +832,7 @@ function initPlayer(settings, playlist) {
       !g_playlist.files[fileIndex].duration ||
       g_playlist.files[fileIndex].duration == -1
     ) {
+      if (g_playlist.files[fileIndex].endsWith(".m3u8")) return;
       g_playlist.files[fileIndex].duration = g_player.engine.duration;
       updatePlaylistInfo();
     }
