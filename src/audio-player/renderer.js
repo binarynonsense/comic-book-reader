@@ -372,11 +372,6 @@ async function playTrack(index, time) {
               break;
             case Hls.ErrorTypes.NETWORK_ERROR:
               console.error("hls: fatal network error encountered", data);
-              // All retries and media options have been exhausted.
-              // Immediately trying to restart loading could cause loop loading.
-              // Consider modifying loading policies to best fit your asset
-              // and network conditions (manifestLoadPolicy, playlistLoadPolicy,
-              // fragLoadPolicy).
               sendIpcToMain("on-play-error", "NotSupportedError");
               g_player.isPlaying = false;
               g_player.engine.src = undefined;
