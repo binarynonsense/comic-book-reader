@@ -143,18 +143,37 @@ exports.openURL = function (urlString) {
   let url;
   try {
     url = new URL(urlString);
-    log.editor(url);
+    log.editor(url.href);
+    log.editor(url.protocol);
     if (url.protocol === "http:" || url.protocol === "https:") {
+      if (!urlString.includes(".")) throw "no tld"; // require TLD
+      log.debug(`Opening in browser: ${urlString}`);
       shell.openExternal(urlString);
     } else {
       if (urlString.startsWith("file://")) {
         urlString = urlString.replace("file://", "http://");
+        if (!urlString.includes(".")) throw "no tld"; // require TLD
+        log.debug(`Opening in browser: ${urlString}`);
         shell.openExternal(urlString);
       }
     }
   } catch (error) {
-    log.editorError(error);
-    return;
+    log.editor("Invalid URL, adding http://");
+    // try adding http://, for example for: "binarynonsense.com"
+    try {
+      urlString = "http://" + urlString;
+      url = new URL(urlString);
+      log.editor(url.href);
+      log.editor(url.protocol);
+      if (url.protocol === "http:" || url.protocol === "https:") {
+        if (!urlString.includes(".")) throw "no tld"; // require TLD
+        log.debug(`Opening in browser: ${urlString}`);
+        shell.openExternal(urlString);
+      }
+    } catch (error) {
+      log.warning("Tried to open an invalid URL: " + urlString);
+      return;
+    }
   }
 };
 
