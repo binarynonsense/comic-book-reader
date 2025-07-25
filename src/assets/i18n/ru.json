@@ -180,7 +180,7 @@
   "ui-modal-info-lateststableversion": "Последняя стабильная версия",
   "ui-modal-info-updateavailable-yes": "Доступна более новая стабильная версия. Нажмите кнопку 'Открыть', чтобы перейти на страницу скачивания в вашем браузере.",
   "ui-modal-info-updateavailable-no": "Не найдено более новой стабильной версии.",
-  "[NEEDS TRANSLATION]ui-modal-info-playerror-1": "The file could not be downloaded or the format is not supported.",
+  "[NEEDS TRANSLATION]ui-modal-info-mediaerror-4": "The file is missing, could not be downloaded or the format is not supported.",
   "ui-modal-info-metadata": "Метаданные",
   "ui-modal-info-metadata-fileproperties": "Свойства файла",
   "ui-modal-info-metadata-filename": "Название",
