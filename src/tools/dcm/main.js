@@ -11,10 +11,10 @@ const core = require("../../core/main");
 const { _ } = require("../../shared/main/i18n");
 const log = require("../../shared/main/logger");
 const reader = require("../../reader/main");
-const shell = require("electron").shell;
 const contextMenu = require("../../shared/main/tools-menu-context");
 const tools = require("../../shared/main/tools");
 const search = require("../../shared/main/tools-search");
+const utils = require("../../shared/main/utils");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -310,7 +310,7 @@ function initOnIpcCallbacks() {
   exports.onIpcFromBgWindow = onIpcFromBgWindow;
 
   on("open-url-in-browser", (url) => {
-    shell.openExternal(url);
+    utils.openURL(url);
   });
 }
 

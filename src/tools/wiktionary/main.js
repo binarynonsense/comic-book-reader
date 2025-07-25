@@ -9,9 +9,9 @@ const fs = require("fs");
 const path = require("path");
 const core = require("../../core/main");
 const { _ } = require("../../shared/main/i18n");
-const shell = require("electron").shell;
 const contextMenu = require("../../shared/main/tools-menu-context");
 const tools = require("../../shared/main/tools");
+const utils = require("../../shared/main/utils");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -114,7 +114,7 @@ function initOnIpcCallbacks() {
   });
 
   on("open-url-in-browser", (url) => {
-    shell.openExternal(url);
+    utils.openURL(url);
   });
 }
 

@@ -17,6 +17,7 @@ const appUtils = require("../../shared/main/app-utils");
 const settings = require("../../shared/main/settings");
 const contextMenu = require("../../shared/main/tools-menu-context");
 const tools = require("../../shared/main/tools");
+const utils = require("../../shared/main/utils");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -155,7 +156,7 @@ function initOnIpcCallbacks() {
   });
 
   on("open-url-in-browser", (url) => {
-    shell.openExternal(url);
+    utils.openURL(url);
   });
 
   on("open-path", (path) => {

@@ -6,7 +6,6 @@
  */
 
 const { app } = require("electron");
-const shell = require("electron").shell;
 
 const fs = require("fs");
 const path = require("path");
@@ -614,7 +613,7 @@ function initOnIpcCallbacks() {
   });
 
   on("open-url-in-browser", (url) => {
-    shell.openExternal(url);
+    utils.openURL(url);
   });
 
   on("quit", () => {
