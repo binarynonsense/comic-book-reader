@@ -328,13 +328,60 @@ function loadTrack(index, time) {
   try {
     g_currentTrackIndex = index;
     g_selectedTrackFileIndex = g_tracks[g_currentTrackIndex].fileIndex;
-    g_player.engine.src = g_tracks[g_currentTrackIndex].fileUrl;
+    // g_player.engine.src = g_tracks[g_currentTrackIndex].fileUrl;
+    loadSource(g_tracks[g_currentTrackIndex].fileUrl);
     g_player.engine.currentTime = time;
     g_player.sliderTime.value = time;
     return true;
   } catch (error) {
     console.log(error);
     return false;
+  }
+}
+
+function loadSource(source) {
+  if (source.endsWith(".m3u8") && Hls.isSupported()) {
+    if (g_player.engine.hls) g_player.engine.hls.destroy();
+    g_player.engine.hls = new Hls();
+    g_player.engine.hls.attachMedia(g_player.engine);
+    g_player.engine.hls.on(Hls.Events.MEDIA_ATTACHED, function () {
+      g_player.engine.hls.loadSource(g_tracks[g_currentTrackIndex].fileUrl);
+    });
+    // ref: https://github.com/video-dev/hls.js/blob/master/docs/API.md#fatal-error-recovery
+    g_player.engine.hls.on(Hls.Events.ERROR, function (event, data) {
+      if (data.fatal) {
+        switch (data.type) {
+          case Hls.ErrorTypes.MEDIA_ERROR:
+            console.log("hls: fatal media error encountered, try to recover");
+            hls.recoverMediaError();
+            break;
+          case Hls.ErrorTypes.NETWORK_ERROR:
+            console.error("hls: fatal network error encountered", data);
+            // All retries and media options have been exhausted.
+            // Immediately trying to restart loading could cause loop loading.
+            // Consider modifying loading policies to best fit your asset
+            // and network conditions (manifestLoadPolicy, playlistLoadPolicy,
+            // fragLoadPolicy).
+            sendIpcToMain("on-play-error", "NotSupportedError");
+            g_player.isPlaying = false;
+            g_player.engine.src = undefined;
+            refreshUI();
+            hls.destroy();
+            break;
+          default:
+            // cannot recover
+            sendIpcToMain("on-play-error", "NotSupportedError");
+            g_player.isPlaying = false;
+            g_player.engine.src = undefined;
+            refreshUI();
+            hls.destroy();
+            break;
+        }
+      }
+    });
+  } else {
+    if (g_player.engine.hls) g_player.engine.hls.destroy();
+    g_player.engine.src = source;
   }
 }
 
@@ -350,6 +397,9 @@ async function playTrack(index, time) {
     }
   } catch (error) {
     if (error.toString().includes("NotSupportedError")) {
+      g_player.isPlaying = false;
+      g_player.engine.src = undefined;
+      refreshUI();
       sendIpcToMain("on-play-error", "NotSupportedError");
     } else {
       console.log(error);

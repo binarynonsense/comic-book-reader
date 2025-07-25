@@ -157,6 +157,7 @@
   "ui-modal-title-filenotfound": "لم يتم العثور على الملف",
   "ui-modal-title-foldererror": "خطأ في المجلد",
   "ui-modal-title-fileerror": "خطأ في الملف",
+  "[NEEDS TRANSLATION]ui-modal-title-audioplayererror": "Audio Player Error",
   "ui-modal-title-quickmenu": "القائمة السريعة",
   "ui-modal-title-versionchecker": "التحقق من الإصدار",
   "ui-modal-title-versionuptodate": "الإصدار هو الأحدث",

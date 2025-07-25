@@ -124,7 +124,7 @@ function initOnIpcCallbacks() {
     if (error == "NotSupportedError") {
       sendIpcToRenderer(
         "show-modal-info",
-        _("tool-shared-modal-title-error"),
+        _("ui-modal-title-audioplayererror"),
         `${_("ui-modal-info-mediaerror-play")}\n${_(
           "ui-modal-info-mediaerror-4"
         )}`,

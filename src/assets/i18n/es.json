@@ -157,6 +157,7 @@
   "ui-modal-title-filenotfound": "Archivo no encontrado",
   "ui-modal-title-foldererror": "Error de carpeta",
   "ui-modal-title-fileerror": "Error de archivo",
+  "ui-modal-title-audioplayererror": "Error del reproductor de audio",
   "ui-modal-title-quickmenu": "Menú rápido",
   "ui-modal-title-versionchecker": "Comprobador de versión",
   "ui-modal-title-versionuptodate": "Versión al día",
