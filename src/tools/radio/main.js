@@ -10,11 +10,11 @@ const path = require("path");
 const core = require("../../core/main");
 const { _ } = require("../../shared/main/i18n");
 const reader = require("../../reader/main");
-const shell = require("electron").shell;
 const contextMenu = require("../../shared/main/tools-menu-context");
 const tools = require("../../shared/main/tools");
 const log = require("../../shared/main/logger");
 const settings = require("../../shared/main/settings");
+const utils = require("../../shared/main/utils");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -319,7 +319,7 @@ function initOnIpcCallbacks() {
   });
 
   on("open-url-in-browser", (url) => {
-    shell.openExternal(url);
+    utils.openURL(url);
   });
 
   on("on-add-result-to-favorites-clicked", (name, url) => {
@@ -336,11 +336,9 @@ function initOnIpcCallbacks() {
       index,
       _("tool-shared-tab-options"),
       _("tool-shared-ui-back"),
-      _("tool-shared-tooltip-remove-from-list"),
       _("ui-modal-prompt-button-edit-name"),
       _("ui-modal-prompt-button-edit-url"),
-      _("tool-shared-tooltip-move-up-in-list"),
-      _("tool-shared-tooltip-move-down-in-list")
+      _("tool-shared-ui-search-item-open-browser")
     );
   });
 
@@ -448,6 +446,10 @@ function initOnIpcCallbacks() {
     } else {
       log.error("Tried to move a favorite with not matching index and url");
     }
+  });
+
+  on("on-modal-favorite-options-open-url-browser-clicked", (url) => {
+    utils.openURL(url);
   });
 }
 

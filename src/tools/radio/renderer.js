@@ -807,11 +807,9 @@ function showModalFavoriteOptions(
   favoriteIndex,
   title,
   textButtonBack,
-  textButtonRemove,
   textButtonEditName,
   textButtonEditURL,
-  textButtonMoveUp,
-  textButtonMoveDown,
+  textButtonOpenURLBrowser,
   showFocus
 ) {
   if (getOpenModal()) {
@@ -843,30 +841,17 @@ function showModalFavoriteOptions(
       );
     },
   });
-  // buttons.push({
-  //   text: textButtonMoveUp.toUpperCase(),
-  //   fullWidth: true,
-  //   callback: () => {
-  //     modalClosed();
-  //     sendIpcToMain("on-modal-favorite-options-move-clicked", index, url, 0);
-  //   },
-  // });
-  // buttons.push({
-  //   text: textButtonMoveDown.toUpperCase(),
-  //   fullWidth: true,
-  //   callback: () => {
-  //     modalClosed();
-  //     sendIpcToMain("on-modal-favorite-options-move-clicked", index, url, 1);
-  //   },
-  // });
-  // buttons.push({
-  //   text: textButtonRemove.toUpperCase(),
-  //   fullWidth: true,
-  //   callback: () => {
-  //     modalClosed();
-  //     sendIpcToMain("on-modal-favorite-options-remove-clicked", index, url);
-  //   },
-  // });
+  buttons.push({
+    text: textButtonOpenURLBrowser.toUpperCase(),
+    fullWidth: true,
+    callback: () => {
+      modalClosed();
+      sendIpcToMain(
+        "on-modal-favorite-options-open-url-browser-clicked",
+        g_favorites[favoriteIndex].url
+      );
+    },
+  });
   buttons.push({
     text: textButtonBack.toUpperCase(),
     fullWidth: true,
