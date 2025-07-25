@@ -7,6 +7,7 @@
 
 const path = require("path");
 const log = require("./logger");
+const shell = require("electron").shell;
 
 ///////////////////////////////////////////////////////////////////////////////
 // SHELL //////////////////////////////////////////////////////////////////////
@@ -136,6 +137,25 @@ exports.getDriveList = function () {
     }
   }
   return driveList;
+};
+
+exports.openURL = function (urlString) {
+  let url;
+  try {
+    url = new URL(urlString);
+    log.editor(url);
+    if (url.protocol === "http:" || url.protocol === "https:") {
+      shell.openExternal(urlString);
+    } else {
+      if (urlString.startsWith("file://")) {
+        urlString = urlString.replace("file://", "http://");
+        shell.openExternal(urlString);
+      }
+    }
+  } catch (error) {
+    log.editorError(error);
+    return;
+  }
 };
 
 ///////////////////////////////////////////////////////////////////////////////
