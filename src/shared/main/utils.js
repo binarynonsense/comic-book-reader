@@ -166,7 +166,7 @@ exports.openURLInBrowser = function (urlString) {
         log.debug(`Opening in browser: ${urlString}`);
         shell.openExternal(urlString);
       } else {
-        throw "error";
+        throw "invalid TLD";
       }
     } catch (error) {
       log.warning("Tried to open an invalid URL: " + urlString);
