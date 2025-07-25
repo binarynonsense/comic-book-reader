@@ -180,7 +180,7 @@
   "ui-modal-info-lateststableversion": "Última versión estable",
   "ui-modal-info-updateavailable-yes": "Hay disponible una versión estable más reciente. Haga click en el botón 'Abrir' para abrir la página de descarga en su navegador.",
   "ui-modal-info-updateavailable-no": "No se encontró una versión estable más reciente.",
-  "ui-modal-info-mediaerror-4": "Falta el archivo, no se pudo descargar o el formato no es compatible.",
+  "ui-modal-info-mediaerror-4": "No se encontró el archivo, no se pudo descargar o el formato no es compatible.",
   "ui-modal-info-metadata": "Metadatos",
   "ui-modal-info-metadata-fileproperties": "Propiedades del archivo",
   "ui-modal-info-metadata-filename": "Nombre",
