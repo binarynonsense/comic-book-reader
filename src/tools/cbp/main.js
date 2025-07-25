@@ -346,7 +346,7 @@ function initOnIpcCallbacks() {
   on("search", async (inputData) => {});
 
   on("open-url-in-browser", (url) => {
-    utils.openURL(url);
+    utils.openURLInBrowser(url);
   });
 }
 

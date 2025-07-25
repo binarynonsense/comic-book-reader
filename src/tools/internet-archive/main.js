@@ -159,7 +159,7 @@ function initOnIpcCallbacks() {
   });
 
   on("open-url-in-browser", (url) => {
-    utils.openURL(url);
+    utils.openURLInBrowser(url);
   });
 }
 

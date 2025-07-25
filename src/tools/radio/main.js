@@ -319,7 +319,7 @@ function initOnIpcCallbacks() {
   });
 
   on("open-url-in-browser", (url) => {
-    utils.openURL(url);
+    utils.openURLInBrowser(url);
   });
 
   on("on-add-result-to-favorites-clicked", (name, url) => {
@@ -449,7 +449,7 @@ function initOnIpcCallbacks() {
   });
 
   on("on-modal-favorite-options-open-url-browser-clicked", (url) => {
-    utils.openURL(url);
+    utils.openURLInBrowser(url);
   });
 }
 

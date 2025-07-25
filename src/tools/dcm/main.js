@@ -310,7 +310,7 @@ function initOnIpcCallbacks() {
   exports.onIpcFromBgWindow = onIpcFromBgWindow;
 
   on("open-url-in-browser", (url) => {
-    utils.openURL(url);
+    utils.openURLInBrowser(url);
   });
 }
 

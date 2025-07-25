@@ -429,7 +429,7 @@ function initOnIpcCallbacks() {
   });
 
   on("on-modal-feed-options-open-url-browser-clicked", (url) => {
-    utils.openURL(url);
+    utils.openURLInBrowser(url);
   });
 
   ////

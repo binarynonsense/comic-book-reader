@@ -139,7 +139,7 @@ exports.getDriveList = function () {
   return driveList;
 };
 
-exports.openURL = function (urlString) {
+exports.openURLInBrowser = function (urlString) {
   let url;
   try {
     url = new URL(urlString);
