@@ -15,7 +15,7 @@ const log = require("../../shared/main/logger");
 const axios = require("axios").default;
 const sanitizeHtml = require("sanitize-html");
 const settings = require("../../shared/main/settings");
-const utils = require("../../shared/main/utils");
+const appUtils = require("../../shared/main/app-utils");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -220,7 +220,7 @@ function initOnIpcCallbacks() {
     if (urlString.startsWith("file:///r/comicbooks")) {
       urlString = urlString.replace("file://", "https://old.reddit.com");
     }
-    utils.openURLInBrowser(urlString);
+    appUtils.openURLInBrowser(urlString);
   });
 
   on("open-url-in-audio-player", (url, name, playlistOption) => {
@@ -418,7 +418,7 @@ function initOnIpcCallbacks() {
   });
 
   on("on-modal-feed-options-open-url-browser-clicked", (url) => {
-    utils.openURLInBrowser(url);
+    appUtils.openURLInBrowser(url);
   });
 
   ////

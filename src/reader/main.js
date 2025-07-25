@@ -613,7 +613,7 @@ function initOnIpcCallbacks() {
   });
 
   on("open-url-in-browser", (url) => {
-    utils.openURLInBrowser(url);
+    appUtils.openURLInBrowser(url);
   });
 
   on("quit", () => {

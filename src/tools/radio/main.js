@@ -14,7 +14,7 @@ const contextMenu = require("../../shared/main/tools-menu-context");
 const tools = require("../../shared/main/tools");
 const log = require("../../shared/main/logger");
 const settings = require("../../shared/main/settings");
-const utils = require("../../shared/main/utils");
+const appUtils = require("../../shared/main/app-utils");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -319,7 +319,7 @@ function initOnIpcCallbacks() {
   });
 
   on("open-url-in-browser", (url) => {
-    utils.openURLInBrowser(url);
+    appUtils.openURLInBrowser(url);
   });
 
   on("on-add-result-to-favorites-clicked", (name, url) => {
@@ -449,7 +449,7 @@ function initOnIpcCallbacks() {
   });
 
   on("on-modal-favorite-options-open-url-browser-clicked", (url) => {
-    utils.openURLInBrowser(url);
+    appUtils.openURLInBrowser(url);
   });
 }
 

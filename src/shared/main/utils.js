@@ -1,13 +1,13 @@
 /**
  * @license
- * Copyright 2020-2023 Álvaro García
+ * Copyright 2020-2025 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
 const path = require("path");
 const log = require("./logger");
-const shell = require("electron").shell;
+// NOTE: don't add any electron related requires
 
 ///////////////////////////////////////////////////////////////////////////////
 // SHELL //////////////////////////////////////////////////////////////////////
@@ -137,43 +137,6 @@ exports.getDriveList = function () {
     }
   }
   return driveList;
-};
-
-exports.openURLInBrowser = function (urlString) {
-  // TODO: the TLD check could be done earlier and probably better
-  let url;
-  try {
-    url = new URL(urlString);
-    log.editor(url.href);
-    log.editor(url.protocol);
-    if (url.protocol === "http:" || url.protocol === "https:") {
-      if (!urlString.includes(".")) throw "no tld"; // require TLD
-      log.debug(`Opening in browser: ${urlString}`);
-      shell.openExternal(urlString);
-    } else {
-      log.warning("Tried to open an invalid URL: " + urlString);
-      return;
-    }
-  } catch (error) {
-    log.editor("Invalid URL, adding http://");
-    // try adding http://, for example for: "binarynonsense.com"
-    try {
-      urlString = "http://" + urlString;
-      url = new URL(urlString);
-      log.editor(url.href);
-      log.editor(url.protocol);
-      if (url.protocol === "http:" || url.protocol === "https:") {
-        if (!urlString.includes(".")) throw "no tld"; // require TLD
-        log.debug(`Opening in browser: ${urlString}`);
-        shell.openExternal(urlString);
-      } else {
-        throw "invalid TLD";
-      }
-    } catch (error) {
-      log.warning("Tried to open an invalid URL: " + urlString);
-      return;
-    }
-  }
 };
 
 ///////////////////////////////////////////////////////////////////////////////
