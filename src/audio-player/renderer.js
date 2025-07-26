@@ -831,7 +831,7 @@ function initPlayer(settings, playlist) {
       !g_playlist.files[fileIndex].duration ||
       g_playlist.files[fileIndex].duration == -1
     ) {
-      if (g_playlist.files[fileIndex].endsWith(".m3u8")) return;
+      if (g_playlist.files[fileIndex].url.endsWith(".m3u8")) return;
       g_playlist.files[fileIndex].duration = g_player.engine.duration;
       updatePlaylistInfo();
     }
