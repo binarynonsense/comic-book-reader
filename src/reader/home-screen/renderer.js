@@ -34,11 +34,34 @@ function init() {
     ///////////
     const logoDiv = document.querySelector("#hs-logo-image");
     logoDiv.addEventListener("click", () => {
-      if (!logoDiv.classList.contains("hs-animate-bounce")) {
-        logoDiv.classList.add("hs-animate-bounce");
-        setTimeout(() => {
-          logoDiv.classList.remove("hs-animate-bounce");
-        }, (2000 * 30) / 100);
+      let anim = 1;
+      //anim = Math.floor(Math.random() * 2);
+      if (
+        !logoDiv.classList.contains("hs-animate-bounce") &&
+        !logoDiv.classList.contains("hs-animate-gelatine")
+      ) {
+        if (anim == 0) {
+          if (!logoDiv.classList.contains("hs-animate-bounce")) {
+            logoDiv.classList.add("hs-animate-bounce");
+            setTimeout(() => {
+              logoDiv.classList.remove("hs-animate-bounce");
+            }, (2000 * 30) / 100);
+          }
+        } else if (anim == 1) {
+          if (!logoDiv.classList.contains("hs-animate-gelatine")) {
+            logoDiv.classList.add("hs-animate-gelatine");
+            setTimeout(() => {
+              logoDiv.classList.remove("hs-animate-gelatine");
+            }, 510);
+          }
+        } else if (anim == 2) {
+          if (!logoDiv.classList.contains("hs-animate-hello")) {
+            logoDiv.classList.add("hs-animate-hello");
+            setTimeout(() => {
+              logoDiv.classList.remove("hs-animate-hello");
+            }, 550);
+          }
+        }
       }
     });
     ///////////
