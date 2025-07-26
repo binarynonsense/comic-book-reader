@@ -915,7 +915,12 @@ html[dir="rtl"] .tools-range-bubble {
   width: 100%;
   height: 45px;
 }
-.tool-shared-columns-parent:has(label) {
+.tool-shared-columns-parent:not(:has(div)) {
+  /* like the ones in preferences */
+  height: auto;
+}
+.tool-shared-columns-parent:has(div):has(ul) {
+  /* like the ones in keymapping */
   height: auto;
 }
 
