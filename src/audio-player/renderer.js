@@ -801,7 +801,6 @@ function initPlayer(settings, playlist) {
 
   // Events
   g_player.engine.addEventListener("timeupdate", function () {
-    console.log(g_player.engine.usingHsl);
     if (g_player.engine.usingHsl) {
       g_player.textTime.innerHTML = "--/--";
       g_player.sliderTime.value = 0;
