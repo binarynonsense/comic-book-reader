@@ -915,12 +915,13 @@ html[dir="rtl"] .tools-range-bubble {
   width: 100%;
   height: 45px;
 }
+/* needed in the preferences tool */
 .tool-shared-columns-parent:not(:has(div)) {
-  /* like the ones in preferences */
+  /* like the clock layout preference */
   height: auto;
 }
 .tool-shared-columns-parent:has(div):has(ul) {
-  /* like the ones in keymapping */
+  /* like the double ones in keymapping */
   height: auto;
 }
 
