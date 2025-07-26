@@ -452,12 +452,18 @@ function initTitleBarObserver() {
             const keybindings = targetNode.querySelectorAll(".keybinding");
             keybindings.forEach((keybinding) => {
               if (keybinding.tagName.toLowerCase() === "span") {
-                if (keybinding.textContent === "Control++") {
-                  keybinding.textContent = getNavKeys()["zoomInPage"];
-                } else if (keybinding.textContent === "Control+-") {
-                  keybinding.textContent = getNavKeys()["zoomOutPage"];
-                } else if (keybinding.textContent === "Control+0") {
-                  keybinding.textContent = getNavKeys()["zoomResetPage"];
+                if (
+                  keybinding.textContent === "menu-view-zoom-scaleheight-in"
+                ) {
+                  keybinding.textContent = getNavKeys()["zoomInPage"][0];
+                } else if (
+                  keybinding.textContent === "menu-view-zoom-scaleheight-out"
+                ) {
+                  keybinding.textContent = getNavKeys()["zoomOutPage"][0];
+                } else if (
+                  keybinding.textContent === "menu-view-zoom-scaleheight-reset"
+                ) {
+                  keybinding.textContent = getNavKeys()["zoomResetPage"][0];
                 }
               }
             });

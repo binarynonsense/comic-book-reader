@@ -559,27 +559,26 @@ function getNormalMenu(settings, history) {
               checked: settings.fit_mode == 2,
               submenu: getScaleToHeightSubmenu(settings),
             },
-
             {
               type: "separator",
             },
             {
               label: _("menu-view-zoom-scaleheight-in"),
-              accelerator: "CommandOrControl++",
+              accelerator: "menu-view-zoom-scaleheight-in", //accelerator: "CommandOrControl++",
               click() {
                 reader.onMenuScaleToHeightZoomInput(1);
               },
             },
             {
               label: _("menu-view-zoom-scaleheight-out"),
-              accelerator: "CommandOrControl+-",
+              accelerator: "menu-view-zoom-scaleheight-out",
               click() {
                 reader.onMenuScaleToHeightZoomInput(-1);
               },
             },
             {
               label: _("menu-view-zoom-scaleheight-reset"),
-              accelerator: "CommandOrControl+0",
+              accelerator: "menu-view-zoom-scaleheight-reset",
               click() {
                 reader.onMenuScaleToHeightZoomInput(0);
               },
