@@ -911,7 +911,6 @@ html[dir="rtl"] .tools-range-bubble {
   display: flex;
   flex-wrap: nowrap;
   gap: 10px;
-  /* min-width: 550px; */
   width: 100%;
   height: 45px;
 }
