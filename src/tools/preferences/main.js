@@ -353,11 +353,8 @@ function initOnIpcCallbacks() {
     );
   });
 
-  on("change-nav-keys", (action, index, key, ctrl, alt) => {
+  on("change-nav-keys", (action, index, newValue) => {
     let navKeys = settings.getValue("navKeys");
-    let newValue = key;
-    if (alt) newValue = "Alt+" + newValue;
-    if (ctrl) newValue = "Control+" + newValue;
     navKeys[action][index] = newValue; // array ref, so this updates the settings
     reader.sendIpcToRenderer("set-nav-keys", settings.getValue("navKeys"));
     updateNavKeys();

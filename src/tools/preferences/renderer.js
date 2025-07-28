@@ -729,6 +729,8 @@ function updateRarFolder(folderPath) {
   g_rarExeFolderPathUl.appendChild(li);
 }
 
+let g_navKeys;
+
 function updateNavKeys(
   actionCommands,
   actionTexts,
@@ -737,6 +739,7 @@ function updateNavKeys(
   resetAllText,
   unassignedText
 ) {
+  g_navKeys = actionCommands;
   const parentDiv = document.getElementById("tool-pre-navkeys-div");
   parentDiv.innerHTML = "";
   ////
@@ -1085,12 +1088,14 @@ function showNavKeysChangeModal(title, message, textButton, action, keyIndex) {
   });
 
   g_openModalOnInputEvent = (type, event) => {
-    function combinationNotAllowed(ctrlKey, key) {
-      let usedKeys = ["b", "t", "p", "j", "l", "q", "m", "h"];
-      if (ctrlKey) {
-        for (let index = 0; index < usedKeys.length; index++) {
-          const usedKey = usedKeys[index];
-          if (key.toLowerCase() === usedKey) return true;
+    function combinationNotAllowed(newValue) {
+      // repeats not allowed
+      for (const key in g_navKeys) {
+        for (let i = 0; i < g_navKeys[key].length; i++) {
+          console.log(g_navKeys[key][i]);
+          if (g_navKeys[key][i] === newValue) {
+            return true;
+          }
         }
       }
       return false;
@@ -1098,6 +1103,9 @@ function showNavKeysChangeModal(title, message, textButton, action, keyIndex) {
 
     switch (type) {
       case "onkeydown": {
+        let newValue = event.key;
+        if (event.altKey) newValue = "Alt+" + newValue;
+        if (event.ctrlKey) newValue = "Control+" + newValue;
         if (
           event.key === "Escape" ||
           event.key === "Enter" ||
@@ -1107,19 +1115,6 @@ function showNavKeysChangeModal(title, message, textButton, action, keyIndex) {
           event.key === "CapsLock" ||
           event.key === "Shift" ||
           event.shiftKey
-          //||
-          // event.key === "F1" ||
-          // event.key === "F2" ||
-          // event.key === "F3" ||
-          // event.key === "F4" ||
-          // event.key === "F5" ||
-          // event.key === "F6" ||
-          // event.key === "F7" ||
-          // event.key === "F8" ||
-          // event.key === "F9" ||
-          // event.key === "F10" ||
-          // event.key === "F11" ||
-          // event.key === "F12"
         ) {
           // not allowed
           sound.playErrorSound();
@@ -1127,18 +1122,11 @@ function showNavKeysChangeModal(title, message, textButton, action, keyIndex) {
         } else if (event.key === "Control" || event.key === "Alt") {
           // allowed only as modifiers
           event.preventDefault();
-        } else if (combinationNotAllowed(event.ctrlKey, event.key)) {
+        } else if (combinationNotAllowed(newValue)) {
           sound.playErrorSound();
           event.preventDefault();
         } else {
-          sendIpcToMain(
-            "change-nav-keys",
-            action,
-            keyIndex,
-            event.key,
-            event.ctrlKey,
-            event.altKey
-          );
+          sendIpcToMain("change-nav-keys", action, keyIndex, newValue);
           modals.close(g_openModal);
           modalClosed();
           event.preventDefault();
