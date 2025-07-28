@@ -88,6 +88,18 @@ const g_defaultSettings = {
     zoomInPage: ["+"],
     zoomOutPage: ["-"],
     zoomResetPage: ["Control+0"],
+    toggleFullScreen: ["F11"],
+    toggleScrollBar: ["Control+b"],
+    toggleToolBar: ["Control+t"],
+    togglePageNumber: ["Control+p"],
+    toggleClock: ["Control+j"],
+    toggleBatteryStatus: ["Control+l"],
+    toggleAudioPlayer: ["Control+m"],
+    openFile: ["Control+o"],
+    history: ["Control+h"],
+    quickMenu: ["F1"],
+    fileProperties: ["F2"],
+    quit: ["Control+q"],
   },
 
   navButtons: {

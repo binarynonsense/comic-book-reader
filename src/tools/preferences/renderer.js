@@ -1097,24 +1097,26 @@ function showNavKeysChangeModal(title, message, textButton, action, keyIndex) {
       case "onkeydown": {
         if (
           event.key === "Escape" ||
+          event.key === "Enter" ||
           event.key === "Meta" ||
           event.key === "AltGraph" ||
           event.key === "ContextMenu" ||
           event.key === "CapsLock" ||
           event.key === "Shift" ||
-          event.shiftKey ||
-          event.key === "F1" ||
-          event.key === "F2" ||
-          event.key === "F3" ||
-          event.key === "F4" ||
-          event.key === "F5" ||
-          event.key === "F6" ||
-          event.key === "F7" ||
-          event.key === "F8" ||
-          event.key === "F9" ||
-          event.key === "F10" ||
-          event.key === "F11" ||
-          event.key === "F12"
+          event.shiftKey
+          //||
+          // event.key === "F1" ||
+          // event.key === "F2" ||
+          // event.key === "F3" ||
+          // event.key === "F4" ||
+          // event.key === "F5" ||
+          // event.key === "F6" ||
+          // event.key === "F7" ||
+          // event.key === "F8" ||
+          // event.key === "F9" ||
+          // event.key === "F10" ||
+          // event.key === "F11" ||
+          // event.key === "F12"
         ) {
           // not allowed
           sound.playErrorSound();

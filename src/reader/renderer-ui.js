@@ -629,23 +629,6 @@ export function onInputEvent(type, event) {
   switch (type) {
     case "onkeydown":
       {
-        if (
-          // disable default scrolling
-          event.key === "ArrowUp" ||
-          event.key === "ArrowDown" ||
-          event.key === "ArrowRight" ||
-          event.key === "ArrowLeft" ||
-          event.key === "PageDown" ||
-          event.key === "PageUp" ||
-          event.key === " " ||
-          // disable default zoom in out reset
-          (event.key === "-" && event.ctrlKey) ||
-          (event.key === "+" && event.ctrlKey) ||
-          (event.key === "0" && event.ctrlKey)
-        ) {
-          event.preventDefault();
-        }
-
         if (fileOpen) {
           if (
             input.isActionDownThisFrame({
@@ -768,23 +751,29 @@ export function onInputEvent(type, event) {
           ) {
             inputZoomReset();
             event.stopPropagation();
+          } else if (
+            input.isActionDownThisFrame({
+              source: input.Source.KEYBOARD,
+              commands: g_navKeys.fileProperties,
+              event: event,
+            })
+          ) {
+            inputOpenPropertiesModal();
+            event.stopPropagation();
           }
         }
 
         if (event.key == "Escape") {
           if (!event.repeat) sendIpcToMain("escape-pressed");
         } else if (
-          event.ctrlKey &&
-          event.shiftKey &&
-          (event.key == "i" || event.key == "I")
+          input.isActionDownThisFrame({
+            source: input.Source.KEYBOARD,
+            commands: g_navKeys.quickMenu,
+            event: event,
+          })
         ) {
-          sendIpcToMain("dev-tools-pressed");
-        } else if (event.key == "F1") {
           inputOpenQuickMenu();
-        } else if (event.key == "F2") {
-          inputOpenPropertiesModal();
-        } else if (event.key == "Tab") {
-          event.preventDefault();
+          event.stopPropagation();
         }
       }
       break;
@@ -1743,8 +1732,8 @@ function showModalQuickMenu(
       callback: () => {
         modalClosed();
       },
-      key: "Escape,F1",
-      gpCommand: "START",
+      key: "Escape," + g_navKeys.quickMenu[0],
+      gpCommand: g_navButtons.quickMenu[0],
     },
     buttons: buttons,
   });

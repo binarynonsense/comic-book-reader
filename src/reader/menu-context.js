@@ -112,7 +112,7 @@ function buildContextMenu(isOpen, showRotation) {
     },
     {
       label: _("ctxmenu-openfile"),
-      accelerator: "CommandOrControl+O",
+      // accelerator: "CommandOrControl+O",
       click() {
         reader.onMenuOpenFile();
       },
@@ -129,7 +129,7 @@ function buildContextMenu(isOpen, showRotation) {
     },
     {
       label: _("menu-view-togglefullscreen"),
-      accelerator: "F11",
+      // accelerator: "F11",
       click() {
         core.onMenuToggleFullScreen();
       },

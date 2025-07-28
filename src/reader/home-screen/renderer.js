@@ -14,6 +14,7 @@ import {
   inputOpenQuickMenu,
   onMouseMove,
   getMouseButtons,
+  getNavKeys,
 } from "../../reader/renderer-ui.js";
 import * as input from "../../shared/renderer/input.js";
 import * as navigation from "./renderer-navigation.js";
@@ -501,8 +502,15 @@ export function onInputEvent(type, event) {
         (event.key === "0" && event.ctrlKey)
       ) {
         event.preventDefault();
-      } else if (event.key == "F1") {
+      } else if (
+        input.isActionDownThisFrame({
+          source: input.Source.KEYBOARD,
+          commands: getNavKeys().quickMenu,
+          event: event,
+        })
+      ) {
         inputOpenQuickMenu();
+        event.stopPropagation();
         return;
       }
 

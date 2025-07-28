@@ -1,14 +1,15 @@
 /**
  * @license
- * Copyright 2024 Álvaro García
+ * Copyright 2024-2025 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-import { getOpenModal } from "../../core/renderer.js";
+import { getOpenModal, sendIpcToMain } from "../../core/renderer.js";
 import { getTools, getCurrentTool, getCurrentToolName } from "./tools.js";
 import * as modals from "./modals.js";
 import * as gamepads from "./gamepads.js";
+import { getNavKeys } from "../../reader/renderer-ui.js";
 
 ///////////////////////////////////////////////////////////////////////////////
 // INPUT  /////////////////////////////////////////////////////////////////////
@@ -114,10 +115,108 @@ document.body.ondrop = (event) => {
 
 function initKeyboard() {
   document.onkeydown = function (event) {
+    // TODO: check open file, open history, audio player, scrollbar... accelerators pressed and act accordingly
+    if (
+      event.key === "PageDown" ||
+      event.key === "PageUp" ||
+      event.key === "F1" ||
+      event.key === "F2" ||
+      event.key === "F3" ||
+      event.key === "F4" ||
+      event.key === "F5" ||
+      event.key === "F6" ||
+      event.key === "F7" ||
+      event.key === "F8" ||
+      event.key === "F9" ||
+      event.key === "F10" ||
+      event.key === "F11" ||
+      event.key === "F12" ||
+      (event.key === "-" && event.ctrlKey) ||
+      (event.key === "+" && event.ctrlKey) ||
+      (event.key === "0" && event.ctrlKey)
+    ) {
+      event.preventDefault();
+    } // modals need arrows and enter default, tab?
+
+    // shortcuts - all /////////////////////////////////////////
+
+    function checkShortcut(navKey, message) {
+      if (
+        isActionDownThisFrame({
+          source: Source.KEYBOARD,
+          commands: getNavKeys()[navKey],
+          event: event,
+        })
+      ) {
+        sendIpcToMain("menu-accelerator-pressed", message);
+        return true;
+      }
+      return false;
+    }
+    // if (
+    //       event.ctrlKey &&
+    //       event.shiftKey &&
+    //       (event.key == "i" || event.key == "I")
+    //     ) {
+    //       sendIpcToReaderMain("dev-tools-pressed");
+    //       event.stopPropagation();
+    //     }
+    if (checkShortcut("toggleFullScreen", "fullscreen")) {
+      return;
+    } else if (checkShortcut("quit", "quit")) {
+      return;
+    } else if (checkShortcut("toggleAudioPlayer", "audio-player")) {
+      return;
+    }
+
+    //////////////////////////////////////////////////////////
+
     if (getOpenModal()) {
       modals.onInputEvent(getOpenModal(), "onkeydown", event);
       return;
     }
+
+    //////////////////////////////////////////////////////////
+
+    if (
+      event.key === "ArrowUp" ||
+      event.key === "ArrowDown" ||
+      event.key === "ArrowRight" ||
+      event.key === "ArrowLeft" ||
+      event.key === " " ||
+      // event.key === "Enter" || // TODO: think about this one
+      event.key === "Tab"
+    ) {
+      event.preventDefault();
+    }
+
+    // shortcuts - reader ///////////////////////////////////
+
+    if (getCurrentToolName() === "reader") {
+      // home and reader
+      if (checkShortcut("history", "history")) {
+        return;
+      } else if (checkShortcut("openFile", "open-file")) {
+        return;
+      }
+      // reader only
+      if (document.getElementById("pages-container").hasChildNodes()) {
+        if (checkShortcut("toggleScrollBar", "scrollbar")) {
+          return;
+        } else if (checkShortcut("toggleToolBar", "toolbar")) {
+          return;
+        } else if (checkShortcut("togglePageNumber", "pagenum")) {
+          return;
+        } else if (checkShortcut("toggleClock", "clock")) {
+          return;
+        } else if (checkShortcut("toggleBatteryStatus", "battery")) {
+          return;
+        }
+      }
+    }
+
+    //////////////////////////////////////////////////////////
+
     getCurrentTool().onInputEvent("onkeydown", event);
   };
 }

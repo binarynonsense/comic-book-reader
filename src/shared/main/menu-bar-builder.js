@@ -115,7 +115,7 @@ function getOpenRecentSubmenu(history) {
 
   menu.push({
     label: _("menu-file-openrecent-history"),
-    accelerator: "CommandOrControl+H",
+    accelerator: "acc-hist",
     click() {
       core.onMenuOpenHistoryManager();
     },
@@ -318,7 +318,7 @@ function getNormalMenu(settings, history) {
         {
           id: "open-file",
           label: _("menu-file-open"),
-          accelerator: "CommandOrControl+O",
+          accelerator: "acc-file-open",
           click() {
             reader.onMenuOpenFile();
           },
@@ -420,7 +420,7 @@ function getNormalMenu(settings, history) {
         },
         {
           label: _("menu-file-quit"),
-          accelerator: "CommandOrControl+Q",
+          accelerator: "acc-quit",
           click() {
             core.onMenuQuit();
           },
@@ -443,7 +443,7 @@ function getNormalMenu(settings, history) {
                   id: "scrollbar",
                   type: "checkbox",
                   checked: settings.showScrollBar,
-                  accelerator: "CommandOrControl+B",
+                  accelerator: "acc-scrollbar",
                   click() {
                     reader.onMenuToggleScrollBar();
                   },
@@ -453,7 +453,7 @@ function getNormalMenu(settings, history) {
                   id: "toolbar",
                   type: "checkbox",
                   checked: settings.showToolBar,
-                  accelerator: "CommandOrControl+T",
+                  accelerator: "acc-toolbar",
                   click() {
                     reader.onMenuToggleToolBar();
                   },
@@ -463,7 +463,7 @@ function getNormalMenu(settings, history) {
                   id: "page-number",
                   type: "checkbox",
                   checked: settings.showPageNumber,
-                  accelerator: "CommandOrControl+P",
+                  accelerator: "acc-pagenum",
                   click() {
                     reader.onMenuTogglePageNumber();
                   },
@@ -473,7 +473,7 @@ function getNormalMenu(settings, history) {
                   id: "clock",
                   type: "checkbox",
                   checked: settings.showClock,
-                  accelerator: "CommandOrControl+J",
+                  accelerator: "acc-clock",
                   click() {
                     reader.onMenuToggleClock();
                   },
@@ -483,7 +483,7 @@ function getNormalMenu(settings, history) {
                   id: "battery",
                   type: "checkbox",
                   checked: settings.showBattery,
-                  accelerator: "CommandOrControl+L",
+                  accelerator: "acc-battery",
                   click() {
                     reader.onMenuToggleBattery();
                   },
@@ -493,7 +493,6 @@ function getNormalMenu(settings, history) {
                   id: "loading-indicator",
                   type: "checkbox",
                   checked: settings.showLoadingIndicator,
-                  // accelerator: "CommandOrControl+M",
                   click() {
                     reader.onMenuToggleLoadingIndicator();
                   },
@@ -564,21 +563,21 @@ function getNormalMenu(settings, history) {
             },
             {
               label: _("menu-view-zoom-scaleheight-in"),
-              accelerator: "menu-view-zoom-scaleheight-in", //accelerator: "CommandOrControl++",
+              accelerator: "acc-zoom-in", //accelerator: "CommandOrControl++",
               click() {
                 reader.onMenuScaleToHeightZoomInput(1);
               },
             },
             {
               label: _("menu-view-zoom-scaleheight-out"),
-              accelerator: "menu-view-zoom-scaleheight-out",
+              accelerator: "acc-zoom-out",
               click() {
                 reader.onMenuScaleToHeightZoomInput(-1);
               },
             },
             {
               label: _("menu-view-zoom-scaleheight-reset"),
-              accelerator: "menu-view-zoom-scaleheight-reset",
+              accelerator: "acc-zoom-reset",
               click() {
                 reader.onMenuScaleToHeightZoomInput(0);
               },
@@ -683,7 +682,7 @@ function getNormalMenu(settings, history) {
           id: "audio-player",
           type: "checkbox",
           checked: settings.showAudioPlayer,
-          accelerator: "CommandOrControl+M",
+          accelerator: "acc-audio-player",
           click() {
             core.onMenuToggleAudioPlayer();
           },
@@ -693,7 +692,7 @@ function getNormalMenu(settings, history) {
         },
         {
           label: _("menu-view-togglefullscreen"),
-          accelerator: "F11",
+          accelerator: "acc-fullscreen",
           click() {
             core.onMenuToggleFullScreen();
           },
@@ -725,14 +724,14 @@ function getHomeScreenMenu(settings, history) {
         {
           id: "open-file",
           label: _("menu-file-open"),
-          accelerator: "CommandOrControl+O",
+          accelerator: "acc-file-open",
           click() {
             reader.onMenuOpenFile();
           },
         },
         {
           id: "openrecent-file",
-          label: _("menu-file-openrecent"),
+          label: _("menu-file-open"),
           submenu: getOpenRecentSubmenu(history),
         },
         {
@@ -750,7 +749,7 @@ function getHomeScreenMenu(settings, history) {
         },
         {
           label: _("menu-file-quit"),
-          accelerator: "CommandOrControl+Q",
+          accelerator: "acc-quit",
           click() {
             core.onMenuQuit();
           },
@@ -765,7 +764,7 @@ function getHomeScreenMenu(settings, history) {
           id: "audio-player",
           type: "checkbox",
           checked: settings.showAudioPlayer,
-          accelerator: "CommandOrControl+M",
+          accelerator: "acc-audio-player",
           click() {
             core.onMenuToggleAudioPlayer();
           },
@@ -775,7 +774,7 @@ function getHomeScreenMenu(settings, history) {
         },
         {
           label: _("menu-view-togglefullscreen"),
-          accelerator: "F11",
+          accelerator: "acc-fullscreen",
           click() {
             core.onMenuToggleFullScreen();
           },
@@ -819,7 +818,7 @@ function getToolMenu(settings, history, toolName) {
         },
         {
           label: _("menu-file-quit"),
-          accelerator: "CommandOrControl+Q",
+          accelerator: "acc-quit",
           click() {
             core.onMenuQuit();
           },
@@ -834,7 +833,7 @@ function getToolMenu(settings, history, toolName) {
           id: "audio-player",
           type: "checkbox",
           checked: settings.showAudioPlayer,
-          accelerator: "CommandOrControl+M",
+          accelerator: "acc-audio-player",
           click() {
             core.onMenuToggleAudioPlayer();
           },
@@ -844,7 +843,7 @@ function getToolMenu(settings, history, toolName) {
         },
         {
           label: _("menu-view-togglefullscreen"),
-          accelerator: "F11",
+          accelerator: "acc-fullscreen",
           click() {
             core.onMenuToggleFullScreen();
           },

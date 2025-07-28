@@ -450,20 +450,55 @@ function initTitleBarObserver() {
             // TODO: this is a brute force approach, do something more
             // performant?
             const keybindings = targetNode.querySelectorAll(".keybinding");
+            function getFormatedAccText(key) {
+              let parts = getNavKeys()[key][0].split("+");
+              if (parts.length === 1) return parts[0];
+              else
+                return `${parts[0]}+${
+                  parts[1].length > 1 ? parts[1] : parts[1].toUpperCase()
+                }`;
+            }
             keybindings.forEach((keybinding) => {
               if (keybinding.tagName.toLowerCase() === "span") {
-                if (
-                  keybinding.textContent === "menu-view-zoom-scaleheight-in"
-                ) {
-                  keybinding.textContent = getNavKeys()["zoomInPage"][0];
-                } else if (
-                  keybinding.textContent === "menu-view-zoom-scaleheight-out"
-                ) {
-                  keybinding.textContent = getNavKeys()["zoomOutPage"][0];
-                } else if (
-                  keybinding.textContent === "menu-view-zoom-scaleheight-reset"
-                ) {
-                  keybinding.textContent = getNavKeys()["zoomResetPage"][0];
+                if (keybinding.textContent === "acc-zoom-in") {
+                  keybinding.textContent = getFormatedAccText("zoomInPage");
+                } else if (keybinding.textContent === "acc-zoom-out") {
+                  keybinding.textContent = getFormatedAccText("zoomOutPage");
+                } else if (keybinding.textContent === "acc-zoom-reset") {
+                  keybinding.textContent = getFormatedAccText("zoomResetPage");
+                }
+                ////
+                else if (keybinding.textContent === "acc-hist") {
+                  keybinding.textContent = getFormatedAccText("history");
+                } else if (keybinding.textContent === "acc-file-open") {
+                  keybinding.textContent = getFormatedAccText("openFile");
+                } else if (keybinding.textContent === "acc-quit") {
+                  keybinding.textContent = getFormatedAccText("quit");
+                }
+                ////
+                else if (keybinding.textContent === "acc-scrollbar") {
+                  keybinding.textContent =
+                    getFormatedAccText("toggleScrollBar");
+                } else if (keybinding.textContent === "acc-toolbar") {
+                  keybinding.textContent = getFormatedAccText("toggleToolBar");
+                } else if (keybinding.textContent === "acc-pagenum") {
+                  keybinding.textContent =
+                    getFormatedAccText("togglePageNumber");
+                } else if (keybinding.textContent === "acc-clock") {
+                  keybinding.textContent = getFormatedAccText("toggleClock");
+                } else if (keybinding.textContent === "acc-battery") {
+                  keybinding.textContent = getFormatedAccText(
+                    "toggleBatteryStatus"
+                  );
+                }
+                ////
+                else if (keybinding.textContent === "acc-audio-player") {
+                  keybinding.textContent =
+                    getFormatedAccText("toggleAudioPlayer");
+                } ////
+                else if (keybinding.textContent === "acc-fullscreen") {
+                  keybinding.textContent =
+                    getFormatedAccText("toggleFullScreen");
                 }
               }
             });

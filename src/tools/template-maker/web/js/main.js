@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2023-2024 Álvaro García
+ * Copyright 2023-2025 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -136,16 +136,16 @@ function initBase() {
   }
 }
 
-document.onkeydown = function (event) {
-  if (window.bridge) {
-    // electron
-    if (
-      event.ctrlKey &&
-      event.shiftKey &&
-      (event.key == "i" || event.key == "I")
-    ) {
-      event.preventDefault();
-      window.bridge.toggleDevTools();
-    }
-  }
-};
+// document.onkeydown = function (event) {
+//   if (window.bridge) {
+//     // electron
+//     if (
+//       event.ctrlKey &&
+//       event.shiftKey &&
+//       (event.key == "i" || event.key == "I")
+//     ) {
+//       event.preventDefault();
+//       window.bridge.toggleDevTools();
+//     }
+//   }
+// };

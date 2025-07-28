@@ -489,7 +489,42 @@ if (!gotTheLock) {
   //////////////////////////////////////////////////////////////////////////////
 
   ipcMain.on("main", (event, args) => {
-    tools.getTools()[args[0]]?.onIpcFromRenderer(...args.slice(1));
+    if (args[0] === "menu-accelerator-pressed") {
+      switch (args[1]) {
+        case "fullscreen":
+          toggleFullScreen();
+          break;
+        case "quit":
+          onMenuQuit();
+          break;
+        case "audio-player":
+          onMenuToggleAudioPlayer();
+          break;
+        case "history":
+          onMenuOpenHistoryManager();
+          break;
+        case "open-file":
+          reader.onMenuOpenFile();
+          break;
+        case "scrollbar":
+          reader.onMenuToggleScrollBar();
+          break;
+        case "toolbar":
+          reader.onMenuToggleToolBar();
+          break;
+        case "pagenum":
+          reader.onMenuTogglePageNumber();
+          break;
+        case "clock":
+          reader.onMenuToggleClock();
+          break;
+        case "battery":
+          reader.onMenuToggleBattery();
+          break;
+      }
+    } else {
+      tools.getTools()[args[0]]?.onIpcFromRenderer(...args.slice(1));
+    }
   });
 
   ipcMain.handle("main", async (event, args) => {
@@ -602,15 +637,17 @@ if (!gotTheLock) {
     sendIpcToPreload("update-menubar");
   };
 
-  exports.onMenuOpenHistoryManager = function () {
+  function onMenuOpenHistoryManager() {
     tools.switchTool("tool-history");
     sendIpcToPreload("update-menubar");
-  };
+  }
+  exports.onMenuOpenHistoryManager = onMenuOpenHistoryManager;
 
-  exports.onMenuQuit = function () {
+  function onMenuQuit() {
     // app.quit();
     g_mainWindow.close();
-  };
+  }
+  exports.onMenuQuit = onMenuQuit;
 
   exports.onMenuCloseTool = function () {
     if (
@@ -626,10 +663,11 @@ if (!gotTheLock) {
 
   /////////////
 
-  exports.onMenuToggleAudioPlayer = function () {
+  function onMenuToggleAudioPlayer() {
     reader.showAudioPlayer(!settings.getValue("showAudioPlayer"));
     sendIpcToPreload("update-menubar");
-  };
+  }
+  exports.onMenuToggleAudioPlayer = onMenuToggleAudioPlayer;
 
   exports.onMenuToggleFullScreen = function () {
     toggleFullScreen();

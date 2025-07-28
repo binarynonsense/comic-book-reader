@@ -22,7 +22,7 @@ exports.show = function (type, params, backToReaderCallback) {
     },
     {
       label: _("menu-view-togglefullscreen"),
-      accelerator: "F11",
+      // accelerator: "F11",
       click() {
         core.onMenuToggleFullScreen();
       },
