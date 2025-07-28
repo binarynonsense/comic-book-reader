@@ -17,7 +17,10 @@ import {
 } from "../shared/renderer/tools.js";
 import * as modals from "../shared/renderer/modals.js";
 import { init as initInput } from "../shared/renderer/input.js";
-import { isVersionOlder } from "../shared/renderer/utils.js";
+import {
+  isVersionOlder,
+  getFormattedShortcut,
+} from "../shared/renderer/utils.js";
 import axios from "../assets/libs/axios/dist/esm/axios.js";
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -451,12 +454,8 @@ function initTitleBarObserver() {
             // performant?
             const keybindings = targetNode.querySelectorAll(".keybinding");
             function getFormatedAccText(key) {
-              let parts = getNavKeys()[key][0].split("+");
-              if (parts.length === 1) return parts[0];
-              else
-                return `${parts[0]}+${
-                  parts[1].length > 1 ? parts[1] : parts[1].toUpperCase()
-                }`;
+              let command = getNavKeys()[key][0];
+              return getFormattedShortcut(command);
             }
             keybindings.forEach((keybinding) => {
               if (keybinding.tagName.toLowerCase() === "span") {

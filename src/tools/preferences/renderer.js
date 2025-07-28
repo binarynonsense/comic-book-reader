@@ -6,7 +6,10 @@
  */
 
 import { sendIpcToMain as coreSendIpcToMain } from "../../core/renderer.js";
-import { isVersionOlder } from "../../shared/renderer/utils.js";
+import {
+  isVersionOlder,
+  getFormattedShortcut,
+} from "../../shared/renderer/utils.js";
 import * as modals from "../../shared/renderer/modals.js";
 import * as sound from "../../shared/renderer/sound.js";
 import * as input from "../../shared/renderer/input.js";
@@ -776,7 +779,7 @@ function updateNavKeys(
       } else if (command === "UNASSIGNED") {
         commandLi.innerText = unassignedText;
       } else {
-        commandLi.innerText = command;
+        commandLi.innerText = getFormattedShortcut(command);
       }
       ////
       const changeButton = document.createElement("button");

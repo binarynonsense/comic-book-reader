@@ -119,3 +119,14 @@ export function hasVideoExtension(text) {
 export async function delay(seconds) {
   return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
 }
+
+export function getFormattedShortcut(command) {
+  let parts = command.split("+");
+  let shortcut = "";
+  for (let i = 0; i < parts.length; i++) {
+    let word = parts[i];
+    word = word.charAt(0).toUpperCase() + word.slice(1);
+    shortcut += `${word}${i < parts.length - 1 ? "+" : ""}`;
+  }
+  return shortcut;
+}
