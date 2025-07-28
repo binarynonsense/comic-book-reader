@@ -12,7 +12,6 @@ import {
   getTools,
   getCurrentTool,
   setCurrentToolName,
-  getCurrentToolName,
   needsScrollToTopButtonUpdate,
 } from "../shared/renderer/tools.js";
 import * as modals from "../shared/renderer/modals.js";
