@@ -572,7 +572,17 @@
     "zoomOutPage": "Отдалить страницу",
     "zoomResetPage": "Сбросить масштаб страницы",
     "toggleFullScreen": "Перейти в полноэкранный режим",
-    "quickMenu": "Быстрое меню"
+    "quickMenu": "Быстрое меню",
+    "[NEEDS TRANSLATION]toggleScrollBar": "Toggle Scroll Bar",
+    "[NEEDS TRANSLATION]toggleToolBar": "Toggle Tool Bar",
+    "[NEEDS TRANSLATION]togglePageNumber": "Toggle Page Number",
+    "[NEEDS TRANSLATION]toggleClock": "Toggle Clock",
+    "[NEEDS TRANSLATION]toggleBatteryStatus": "Toggle Battery Status",
+    "[NEEDS TRANSLATION]toggleAudioPlayer": "Toggle Audio Player",
+    "[NEEDS TRANSLATION]openFile": "Open File",
+    "[NEEDS TRANSLATION]history": "Files History",
+    "[NEEDS TRANSLATION]fileProperties": "File Properties",
+    "[NEEDS TRANSLATION]quit": "Quit"
   },
   "tool-pre-navkeys-unassigned-key": "Без назначения",
   "tool-pre-navkeys-change-press": "Нажмите действующую клавишу, чтобы заменить текущую назначенную клавишу.",

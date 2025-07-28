@@ -3,7 +3,7 @@
     "authors": [
       "Álvaro"
     ],
-    "last-updated": "2025-07-23",
+    "last-updated": "2025-07-28",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.11.0-beta1",
     "pre-release": "false",
@@ -572,7 +572,17 @@
     "zoomOutPage": "Reducir zoom de la página",
     "zoomResetPage": "Resetear zoom de la página",
     "toggleFullScreen": "Alternar pantalla completa",
-    "quickMenu": "Menú rápido"
+    "quickMenu": "Menú rápido",
+    "toggleScrollBar": "Alternar barra de desplazamiento",
+    "toggleToolBar": "Alternar barra de herramientas",
+    "togglePageNumber": "Alternar número de página",
+    "toggleClock": "Alternar reloj",
+    "toggleBatteryStatus": "Alternar estado de batería",
+    "toggleAudioPlayer": "Alternar reproductor de audio",
+    "openFile": "Abrir fichero",
+    "history": "Historial de ficheros",
+    "fileProperties": "Propiedades de fichero",
+    "quit": "Salir"
   },
   "tool-pre-navkeys-unassigned-key": "Sin asignar",
   "tool-pre-navkeys-change-press": "Presione una técla válida para reemplazar la asignada actualmente.",

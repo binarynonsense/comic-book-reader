@@ -572,7 +572,17 @@
     "zoomOutPage": "تصغير الصفحة",
     "zoomResetPage": "إعادة ضبط تكبير/تصغير الصفحة",
     "toggleFullScreen": "تفعيل خاصية ملء الشاشة",
-    "quickMenu": "القائمة السريعة"
+    "quickMenu": "القائمة السريعة",
+    "[NEEDS TRANSLATION]toggleScrollBar": "Toggle Scroll Bar",
+    "[NEEDS TRANSLATION]toggleToolBar": "Toggle Tool Bar",
+    "[NEEDS TRANSLATION]togglePageNumber": "Toggle Page Number",
+    "[NEEDS TRANSLATION]toggleClock": "Toggle Clock",
+    "[NEEDS TRANSLATION]toggleBatteryStatus": "Toggle Battery Status",
+    "[NEEDS TRANSLATION]toggleAudioPlayer": "Toggle Audio Player",
+    "[NEEDS TRANSLATION]openFile": "Open File",
+    "[NEEDS TRANSLATION]history": "Files History",
+    "[NEEDS TRANSLATION]fileProperties": "File Properties",
+    "[NEEDS TRANSLATION]quit": "Quit"
   },
   "tool-pre-navkeys-unassigned-key": "غير مخصص",
   "tool-pre-navkeys-change-press": "اضغط على مفتاح صالح لاستبدال المفتاح المعين حالياً.",
