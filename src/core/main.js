@@ -130,9 +130,11 @@ if (!gotTheLock) {
   log.debug("checking environment");
   if (g_launchInfo.platform === "linux" && !process.env.G_SLICE) {
     // NOTE: if G_SLICE isn't set to 'always-malloc' the app may crash
-    // during conversions due to an issue with sharp
+    // during conversions due to an issue with
+    // NOTE: (2025/07/29) This may no longer be true on current so I'm
+    // now not enforcing it by default
     if (g_launchInfo.isRelease) {
-      if (!settings.getValue("linuxSkipGslice")) {
+      if (settings.getValue("linuxEnforceGslice")) {
         log.warning(
           "The G_SLICE environment variable is undefined, setting it to 'always-malloc' and relaunching the app. You can avoid this step by launching ACBR using the ACBR.sh script",
           true
@@ -151,13 +153,13 @@ if (!gotTheLock) {
         }
       } else {
         log.warning(
-          "The G_SLICE environment variable is undefined and linuxSkipGslice is set to true in the settings, you may experience crashes during file conversions.",
+          "The G_SLICE environment variable is undefined and linuxEnforceGslice is set to false in the settings, if you experience crashes during file conversions try running the program using the provided ACBR.sh script, setting G_SLICE to 'always-malloc' or setting linuxEnforceGslice to true.",
           true
         );
       }
     } else {
       log.warning(
-        "the G_SLICE environment variable is undefined, you may experience crashes during file conversions.",
+        "The G_SLICE environment variable is undefined, if you experience crashes during file conversions try running the program using the provided ACBR.sh script, setting G_SLICE to 'always-malloc' or setting linuxEnforceGslice to true.",
         true
       );
     }

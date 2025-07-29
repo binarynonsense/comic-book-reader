@@ -126,7 +126,7 @@ const g_defaultSettings = {
   tempFolderPath: undefined,
 
   // LINUX
-  linuxSkipGslice: false,
+  linuxEnforceGslice: false,
 
   // TOOLS
   toolGutUseCache: true,
@@ -459,8 +459,8 @@ function sanitize() {
     g_settings.theme = g_defaultSettings.theme;
   }
   // LINUX ///////////
-  if (typeof g_settings.linuxSkipGslice !== "boolean") {
-    g_settings.linuxSkipGslice = g_defaultSettings.linuxSkipGslice;
+  if (typeof g_settings.linuxEnforceGslice !== "boolean") {
+    g_settings.linuxEnforceGslice = g_defaultSettings.linuxEnforceGslice;
   }
   // TOOLS ///////////
   if (typeof g_settings.toolGutUseCache !== "boolean") {
