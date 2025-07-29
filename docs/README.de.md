@@ -80,11 +80,13 @@ Ein Comicbuch Leser und Konverter für CBZ, CBR, CB7, EPUB und PDF Dateien.
       - Wiktionary Dictionary
     - Suche und öffne Radiosender-streams von:
       - radio-browser
+    - Suche und öffne RSS Feeds von Podcasts und Websites.
   - Kunst:
     - Comicbuch Seitenvorlagen- und Vorschaubild-ersteller
     - Farbpalettenextrahierer
   - Weiteres:
     - RSS Reader
+    - Internet Radio
 
 > Hinweise:
 >
