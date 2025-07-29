@@ -153,13 +153,13 @@ if (!gotTheLock) {
         }
       } else {
         log.warning(
-          "The G_SLICE environment variable is undefined and linuxEnforceGslice is set to false in the settings, if you experience crashes during file conversions try running the program using the provided ACBR.sh script, setting G_SLICE to 'always-malloc' or setting linuxEnforceGslice to true.",
+          "The G_SLICE environment variable is undefined and linuxEnforceGslice is set to false in the settings, if you experience crashes during file conversions try running the program using the provided ACBR.sh script, setting G_SLICE to 'always-malloc' in your shell or setting linuxEnforceGslice to true in the settings.",
           true
         );
       }
     } else {
       log.warning(
-        "The G_SLICE environment variable is undefined, if you experience crashes during file conversions try running the program using the provided ACBR.sh script, setting G_SLICE to 'always-malloc' or setting linuxEnforceGslice to true.",
+        "The G_SLICE environment variable is undefined, if you experience crashes during file conversions try running the program using the provided ACBR.sh script, setting G_SLICE to 'always-malloc' in your shell or setting linuxEnforceGslice to true in the settings.",
         true
       );
     }
