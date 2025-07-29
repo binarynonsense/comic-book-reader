@@ -80,11 +80,13 @@ Un lector y conversor de cómics para archivos en formato CBZ, CBR, CB7, EPUB y 
       - Diccionario Wiktionary
     - Buscar y abrir streams de radio de:
       - radio-browser
+    - Buscar y abrir fuentes RSS de podcasts y websites.
   - Arte:
     - Creador de plantillas de páginas y miniaturas de cómic
     - Extractor de paletta de colores
   - Otras:
     - Lector de RSS
+    - Radio por internet
 
 > Notas:
 >
