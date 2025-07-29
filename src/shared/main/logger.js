@@ -8,6 +8,7 @@
 let g_isDebug = false;
 let g_isRelease = true;
 
+const g_noticeTag = "[\x1b[33mNOTICE\x1b[0m]";
 const g_warningTag = "[\x1b[93mWARNING\x1b[0m]";
 const g_errorTag = "[\x1b[31mERROR\x1b[0m]";
 const g_stackTag = "[\x1b[31mSTACK\x1b[0m]";
@@ -26,6 +27,10 @@ exports.debug = function (message) {
   if (g_isDebug) {
     console.log(`${getTime()} ${g_debugTag}`, message);
   }
+};
+
+exports.notice = function (message) {
+  console.log(`${getTime()} ${g_noticeTag}`, message);
 };
 
 exports.warning = function (message, alwaysShow = false) {
