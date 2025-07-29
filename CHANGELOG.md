@@ -1,3 +1,16 @@
+## v3.11.0
+
+- Redesigned the layout and added a new section to the RSS Reader tool to search for feeds. You can now search for website feeds (based on the feedsearch.dev API) and podcast feeds (based on the iTunes Search API). For the podcasts one, once you select a feed from the results it opens in the content view, like any other feed, and then you can listen to any episode listed in the feed using ACBR's audio player by clicking on the play button.
+- Added a new section to the Internet Radio tool to save favorite stations and support for m3u8 streams in the Audio Player.
+- Added a 'Scroll to Top' button to the RSS reader.
+- Added a 'Copy Image URL' entry to the context menu that appears when right clicking an image in the RSS reader.
+- Added a 'Save Image As...' entry to the context menu that appears when right clicking an image in the RSS reader.
+- Added a "Clear List" button to the create comic book, extract comic book, convert comic books and convert images tools.
+- Made all menu shortcuts customizable.
+- Tweaked the themes' colors.
+- Updated some of the core libraries.
+- Fixed some minor issues.
+
 ## v3.10.2
 
 - Fixed the internet radio tool's search not working due to the queried server no longer being available.
