@@ -1266,15 +1266,15 @@ export function renderImg64(
       page1Img.classList.add("set-rotate-180");
     }
     page1Img.onload = function () {
-      containerDiv.innerHTML = "";
       const pagesRowDiv = document.createElement("div");
       pagesRowDiv.classList.add("pages-row");
       if (isDoublePages) pagesRowDiv.classList.add("pages-row-2p");
-      containerDiv.appendChild(pagesRowDiv);
       pagesRowDiv.innerHTML = "";
-      pagesRowDiv.appendChild(page1Img);
+      if (!isDoublePages) pagesRowDiv.appendChild(page1Img);
       setFilterClass(page1Img);
       if (!isDoublePages) {
+        containerDiv.innerHTML = "";
+        containerDiv.appendChild(pagesRowDiv);
         if (sendPageLoaded) {
           sendIpcToMain("page-loaded", {
             dimensions: [page1Img.naturalWidth, page1Img.naturalHeight],
@@ -1291,7 +1291,10 @@ export function renderImg64(
           page2Img.classList.add("set-rotate-180");
         }
         page2Img.onload = function () {
+          pagesRowDiv.appendChild(page1Img);
           pagesRowDiv.appendChild(page2Img);
+          containerDiv.innerHTML = "";
+          containerDiv.appendChild(pagesRowDiv);
           setFilterClass(page2Img);
           sendIpcToMain("page-loaded", {
             dimensions: [page2Img.naturalWidth, page2Img.naturalHeight],
