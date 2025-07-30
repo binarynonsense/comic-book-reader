@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2023 Álvaro García
+ * Copyright 2020-2025 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -132,11 +132,16 @@ function renderPdfPage(pageIndex, rotation, scrollBarPos) {
 function renderCurrentPDFPage(rotation, scrollBarPos, sendPageLoaded) {
   // I recreate the canvas every time to avoid some rendering issues when rotating (low res)
   // there's probably a better way, but performance seems similar
-  let container = document.getElementById("pages-container");
-  container.innerHTML = "";
+  let containerDiv = document.getElementById("pages-container");
+  containerDiv.innerHTML = "";
   var canvas = document.createElement("canvas");
-  canvas.id = "page-canvas";
-  container.appendChild(canvas);
+  canvas.classList.add("page-canvas");
+  canvas.classList.add("page");
+  const pagesRowDiv = document.createElement("div");
+  pagesRowDiv.classList.add("pages-row");
+  containerDiv.appendChild(pagesRowDiv);
+  pagesRowDiv.innerHTML = "";
+  pagesRowDiv.appendChild(canvas);
   setFilterClass(canvas);
   var context = canvas.getContext("2d");
 

@@ -370,8 +370,8 @@ function initOnIpcCallbacks() {
 
   on("set-filter", (value) => {
     g_filterMode = value;
-    let img = document.getElementById("page-img");
-    if (!img) img = document.getElementById("page-canvas");
+    let img = document.querySelector(".page-img");
+    if (!img) img = document.querySelector(".page-canvas");
     if (img) {
       setFilterClass(img);
     }
@@ -1245,18 +1245,24 @@ export function renderImg64(
   sendPageLoaded,
   fromRefresh
 ) {
-  let container = document.getElementById("pages-container");
+  const containerDiv = document.getElementById("pages-container");
+
   let title;
   if (fromRefresh) {
-    let img = document.getElementById("page-img");
-    if (!img) img = document.getElementById("page-canvas");
+    let img = document.querySelector(".page-img");
+    if (!img) img = document.querySelector(".page-canvas");
     if (img) title = img.title;
   }
+
   if (rotation === 0 || rotation === 180) {
     var image = new Image();
     image.onload = function () {
-      container.innerHTML = "";
-      container.appendChild(image);
+      containerDiv.innerHTML = "";
+      const pagesRowDiv = document.createElement("div");
+      pagesRowDiv.classList.add("pages-row");
+      containerDiv.appendChild(pagesRowDiv);
+      pagesRowDiv.innerHTML = "";
+      pagesRowDiv.appendChild(image);
       setFilterClass(image);
       if (sendPageLoaded) {
         sendIpcToMain("page-loaded", {
@@ -1266,7 +1272,7 @@ export function renderImg64(
       if (scrollBarPos !== undefined) setScrollBarsPosition(scrollBarPos);
     };
     image.src = img64;
-    image.id = "page-img";
+    image.classList.add("page-img");
     image.classList.add("page");
     if (title && title != "") image.title = title;
     if (rotation === 180) {
@@ -1277,10 +1283,15 @@ export function renderImg64(
   // as I like, so I'll try canvas for these rotations
   else if (rotation === 90 || rotation === 270) {
     var canvas = document.createElement("canvas");
-    canvas.id = "page-canvas";
+    canvas.classList.add("page-canvas");
+    canvas.classList.add("page");
     if (title && title != "") canvas.title = title;
-    container.innerHTML = "";
-    container.appendChild(canvas);
+    containerDiv.innerHTML = "";
+    const pagesRowDiv = document.createElement("div");
+    pagesRowDiv.classList.add("pages-row");
+    containerDiv.appendChild(pagesRowDiv);
+    pagesRowDiv.innerHTML = "";
+    pagesRowDiv.appendChild(canvas);
     setFilterClass(canvas);
     var context = canvas.getContext("2d");
     var image = new Image();

@@ -116,8 +116,8 @@ function initOnIpcCallbacks() {
   });
 
   on("update-img-page-title", (text) => {
-    let img = document.getElementById("page-img");
-    if (!img) img = document.getElementById("page-canvas");
+    let img = document.querySelector(".page-img");
+    if (!img) img = document.querySelector(".page-canvas");
     if (img) img.title = text;
   });
 
