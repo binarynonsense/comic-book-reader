@@ -57,57 +57,6 @@
   user-select: none;
 }
 
-/* INFO *********************************************************/
-
-.info-anchor {
-  position: fixed;
-  border: 0;
-  z-index: 9;
-  user-select: none;
-  pointer-events: none;
-
-  display: flex;
-  flex-direction: row;
-  gap: 3px;
-}
-
-.info-anchor-top {
-  top: calc(var(--menubar-height));
-  margin-top: 10px;
-}
-
-.info-anchor-bottom {
-  bottom: calc(var(--toolbar-height));
-  margin-bottom: 10px;
-}
-
-.info-anchor-left {
-  left: 10px;
-}
-
-.info-anchor-right {
-  right: 25px;
-  align-items: end;
-}
-
-.info-anchor-center {
-  width: 100%;
-  justify-content: center;
-}
-
-.info-bubble {
-  font-size: 15px;
-  color: white;
-  opacity: 0.5;
-  background-color: rgb(109, 109, 109);
-  padding: 2px 5px;
-  border-radius: 5px;
-  width: fit-content;
-  white-space: nowrap;
-  direction: ltr;
-  line-height: 100%;
-}
-
 /* ZOOM  *********************************************************/
 
 .set-rotate-180 {
@@ -181,4 +130,55 @@
 .set-fit-to-width > #epub-ebook-container {
   height: calc((100vw - 25px) / 450 * 600);
   width: calc(100vw - 25px);
+}
+
+/* INFO *********************************************************/
+
+.info-anchor {
+  position: fixed;
+  border: 0;
+  z-index: 9;
+  user-select: none;
+  pointer-events: none;
+
+  display: flex;
+  flex-direction: row;
+  gap: 3px;
+}
+
+.info-anchor-top {
+  top: calc(var(--menubar-height));
+  margin-top: 10px;
+}
+
+.info-anchor-bottom {
+  bottom: calc(var(--toolbar-height));
+  margin-bottom: 10px;
+}
+
+.info-anchor-left {
+  left: 10px;
+}
+
+.info-anchor-right {
+  right: 25px;
+  align-items: end;
+}
+
+.info-anchor-center {
+  width: 100%;
+  justify-content: center;
+}
+
+.info-bubble {
+  font-size: 15px;
+  color: white;
+  opacity: 0.5;
+  background-color: rgb(109, 109, 109);
+  padding: 2px 5px;
+  border-radius: 5px;
+  width: fit-content;
+  white-space: nowrap;
+  direction: ltr;
+  line-height: 100%;
 }
