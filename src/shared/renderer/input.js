@@ -178,22 +178,21 @@ function initKeyboard() {
 
     //////////////////////////////////////////////////////////
 
-    if (
-      event.key === "ArrowUp" ||
-      event.key === "ArrowDown" ||
-      event.key === "ArrowRight" ||
-      event.key === "ArrowLeft" ||
-      event.key === " " ||
-      // event.key === "Enter" || // TODO: think about this one
-      event.key === "Tab"
-    ) {
-      event.preventDefault();
-    }
-
     // shortcuts - reader ///////////////////////////////////
 
     if (getCurrentToolName() === "reader") {
       // home and reader
+      if (
+        event.key === "ArrowUp" ||
+        event.key === "ArrowDown" ||
+        event.key === "ArrowRight" ||
+        event.key === "ArrowLeft" ||
+        event.key === " " ||
+        // event.key === "Enter" || // TODO: think about this one
+        event.key === "Tab"
+      ) {
+        event.preventDefault();
+      }
       if (checkShortcut("history", "history")) {
         return;
       } else if (checkShortcut("openFile", "open-file")) {
