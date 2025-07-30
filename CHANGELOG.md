@@ -1,3 +1,7 @@
+## v3.11.1
+
+- Fixed arrows and space bar not working in some input boxes.
+
 ## v3.11.0
 
 - Redesigned the layout and added a new section to the RSS Reader tool to search for feeds. You can now search for website feeds (based on the feedsearch.dev API) and podcast feeds (based on the iTunes Search API). For the podcasts one, once you select a feed from the results it opens in the content view, like any other feed, and then you can listen to any episode listed in the feed using ACBR's audio player by clicking on the play button.
