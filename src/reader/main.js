@@ -1392,7 +1392,6 @@ function goToPage(pageIndex, scrollBarPos = 0) {
         log.debug(`page load time: ${timers.stop("workerPage")}s`);
         g_workerPage.kill(); // kill it after one use
         if (message[0] === true) {
-          log.test(message[1].length);
           sendIpcToRenderer(
             "render-img-page",
             message[1], //img64s,
