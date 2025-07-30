@@ -40,19 +40,12 @@
 .pages-row {
   display: flex;
   flex-direction: row;
-  /* width: max-content; */
 }
 
 .page {
   pointer-events: none;
   user-select: none;
 }
-
-/* take 50% if 2 or more */
-/* .page:nth-last-child(n + 2),
-.page:nth-last-child(n + 2) ~ .page {
-  width: 50%;
-} */
 
 .page-filter-old-page {
   filter: brightness(80%) saturate(90%) sepia(40%);
@@ -85,17 +78,12 @@
 
 .set-fit-to-width > .pages-row {
   width: 100% !important;
-  /* max-width: auto !important; */
 }
 .set-fit-to-width .page {
   width: 100%;
 }
-/* .set-fit-to-width .page:nth-last-child(n + 2),
-.set-fit-to-width .page:nth-last-child(n + 2) ~ .page {
-  width: 50%;
-} */
+
 .pages-row-2p {
-  /* width: max-content; */
   justify-content: center;
   align-items: center;
 }
