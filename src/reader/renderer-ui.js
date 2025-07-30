@@ -1286,11 +1286,22 @@ export function renderImg64(
         page2Img.src = img64s[1];
         page2Img.classList.add("page-img");
         page2Img.classList.add("page");
+        page1Img.classList.add("page-1");
+        page2Img.classList.add("page-2");
         if (title && title != "") page2Img.title = title;
         if (rotation === 180) {
           page2Img.classList.add("set-rotate-180");
         }
         page2Img.onload = function () {
+          const totalWidth = page1Img.naturalWidth + page2Img.naturalWidth;
+          document.documentElement.style.setProperty(
+            "--zoom-width-page1",
+            `${(100 * page1Img.naturalWidth) / totalWidth}%`
+          );
+          document.documentElement.style.setProperty(
+            "--zoom-width-page2",
+            `${(100 * page2Img.naturalWidth) / totalWidth}%`
+          );
           pagesRowDiv.appendChild(page1Img);
           pagesRowDiv.appendChild(page2Img);
           containerDiv.innerHTML = "";

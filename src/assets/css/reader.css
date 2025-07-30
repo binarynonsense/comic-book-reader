@@ -2,6 +2,8 @@
   --zoom-height-scale: 100;
   --zoom-height-borders: 62px;
   --zoom-epub-ebook-scale-factor: 1;
+  --zoom-width-page1: 50%;
+  --zoom-width-page2: 50%;
 }
 
 #reader {
@@ -51,6 +53,18 @@
   filter: brightness(80%) saturate(90%) sepia(40%);
 }
 
+.pages-row-2p {
+  justify-content: center;
+  align-items: center;
+}
+.pages-row-2p .page {
+  /* width: 50% !important;
+  max-width: fit-content;
+  max-height: 100%; */
+  height: inherit;
+  width: inherit;
+}
+
 /* ZOOM  *********************************************************/
 
 .set-rotate-180 {
@@ -76,22 +90,25 @@
   height: calc(100vh - var(--zoom-height-borders));
 }
 
+/* .set-fit-to-height > .pages-row-2p .page {
+  height: inherit;
+  width: inherit !important;
+} */
+
 .set-fit-to-width > .pages-row {
-  width: 100% !important;
+  width: 100%;
 }
 .set-fit-to-width .page {
   width: 100%;
 }
 
-.pages-row-2p {
-  justify-content: center;
-  align-items: center;
+.set-fit-to-width .page-1 {
+  width: var(--zoom-width-page1);
 }
-.pages-row-2p .page {
-  width: 50% !important;
-  max-width: fit-content;
-  max-height: 100%;
+.set-fit-to-width .page-2 {
+  width: var(--zoom-width-page2);
 }
+
 /* epub */
 
 .epub-container {
