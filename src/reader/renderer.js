@@ -44,16 +44,16 @@ export function initIpc() {
 // PAGES //////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-let g_currentImg64 = null;
+let g_currentImg64s = null;
 
 function cleanUpPages() {
-  g_currentImg64 = null;
+  g_currentImg64s = null;
   cleanUpPdf();
   cleanUpEpub();
 }
 
 export function getCurrentImg64() {
-  return g_currentImg64;
+  return g_currentImg64s;
 }
 
 export function showNoBookContent(show) {
@@ -101,18 +101,18 @@ export function on(id, callback) {
 }
 
 function initOnIpcCallbacks() {
-  on("render-img-page", (img64, rotation, scrollBarPos) => {
-    if (img64) {
+  on("render-img-page", (img64s, rotation, scrollBarPos) => {
+    if (img64s) {
       cleanUpPages();
       showNoBookContent(false);
-      g_currentImg64 = img64;
-      renderImg64(g_currentImg64, rotation, scrollBarPos, true, false);
+      g_currentImg64s = img64s;
+      renderImg64(g_currentImg64s, rotation, scrollBarPos, true, false);
     }
   });
 
   on("refresh-img-page", (rotation) => {
-    if (g_currentImg64)
-      renderImg64(g_currentImg64, rotation, undefined, false, true);
+    if (g_currentImg64s)
+      renderImg64(g_currentImg64s, rotation, undefined, false, true);
   });
 
   on("update-img-page-title", (text) => {

@@ -1239,7 +1239,7 @@ export function updatePageInfo(pageNum, numPages, isPercentage) {
 ///////////////////////////////////////////////////////////////////////////////
 
 export function renderImg64(
-  img64,
+  img64s,
   rotation,
   scrollBarPos,
   sendPageLoaded,
@@ -1255,29 +1255,48 @@ export function renderImg64(
   }
 
   if (rotation === 0 || rotation === 180) {
-    var image = new Image();
-    image.onload = function () {
+    let page1Img = new Image();
+    page1Img.src = img64s[0];
+    page1Img.classList.add("page-img");
+    page1Img.classList.add("page");
+    if (title && title != "") page1Img.title = title;
+    if (rotation === 180) {
+      page1Img.classList.add("set-rotate-180");
+    }
+    page1Img.onload = function () {
       containerDiv.innerHTML = "";
       const pagesRowDiv = document.createElement("div");
       pagesRowDiv.classList.add("pages-row");
       containerDiv.appendChild(pagesRowDiv);
       pagesRowDiv.innerHTML = "";
-      pagesRowDiv.appendChild(image);
-      setFilterClass(image);
-      if (sendPageLoaded) {
-        sendIpcToMain("page-loaded", {
-          dimensions: [image.naturalWidth, image.naturalHeight],
-        });
+      pagesRowDiv.appendChild(page1Img);
+      setFilterClass(page1Img);
+      if (img64s.length === 1) {
+        if (sendPageLoaded) {
+          sendIpcToMain("page-loaded", {
+            dimensions: [page1Img.naturalWidth, page1Img.naturalHeight],
+          });
+        }
+        if (scrollBarPos !== undefined) setScrollBarsPosition(scrollBarPos);
+      } else {
+        let page2Img = new Image();
+        page2Img.src = img64s[1];
+        page2Img.classList.add("page-img");
+        page2Img.classList.add("page");
+        if (title && title != "") page2Img.title = title;
+        if (rotation === 180) {
+          page2Img.classList.add("set-rotate-180");
+        }
+        page2Img.onload = function () {
+          pagesRowDiv.appendChild(page2Img);
+          setFilterClass(page2Img);
+          sendIpcToMain("page-loaded", {
+            dimensions: [page2Img.naturalWidth, page2Img.naturalHeight],
+          });
+          if (scrollBarPos !== undefined) setScrollBarsPosition(scrollBarPos);
+        };
       }
-      if (scrollBarPos !== undefined) setScrollBarsPosition(scrollBarPos);
     };
-    image.src = img64;
-    image.classList.add("page-img");
-    image.classList.add("page");
-    if (title && title != "") image.title = title;
-    if (rotation === 180) {
-      image.classList.add("set-rotate-180");
-    }
   }
   // I use a different method here, I prefer the look of images in <img> when resizing but can't make them rotate
   // as I like, so I'll try canvas for these rotations
@@ -1328,7 +1347,7 @@ export function renderImg64(
       }
       if (scrollBarPos !== undefined) setScrollBarsPosition(scrollBarPos);
     };
-    image.src = img64;
+    image.src = img64s[0];
   }
 }
 

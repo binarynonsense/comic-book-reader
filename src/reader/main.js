@@ -1392,9 +1392,10 @@ function goToPage(pageIndex, scrollBarPos = 0) {
         log.debug(`page load time: ${timers.stop("workerPage")}s`);
         g_workerPage.kill(); // kill it after one use
         if (message[0] === true) {
+          log.test(message[1].length);
           sendIpcToRenderer(
             "render-img-page",
-            message[1], //img64,
+            message[1], //img64s,
             g_fileData.pageRotation,
             message[2]
           );
@@ -1422,11 +1423,16 @@ function goToPage(pageIndex, scrollBarPos = 0) {
         }
       });
     }
+
+    let entryNames = [g_fileData.pagesPaths[g_fileData.pageIndex]];
+    // TODO: TEMPPPPP use spread mode to choose
+    // if (g_fileData.pageIndex + 1 < g_fileData.numPages)
+    //   entryNames.push(g_fileData.pagesPaths[g_fileData.pageIndex + 1]);
     g_workerPage.send([
       core.getLaunchInfo(),
       g_fileData.type,
       g_fileData.path,
-      g_fileData.pagesPaths[g_fileData.pageIndex],
+      entryNames,
       scrollBarPos,
       g_fileData.password,
       tempSubFolderPath,

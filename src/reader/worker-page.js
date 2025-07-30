@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2024 Álvaro García
+ * Copyright 2020-2025 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -12,15 +12,26 @@ const { FileDataType } = require("../shared/main/constants");
 const fileUtils = require("../shared/main/file-utils");
 const log = require("../shared/main/logger");
 
-process.on("message", (message) => {
+process.on("message", async (message) => {
   log.init(message[0]);
-  extractBase64Image(...message.slice(1));
+  const entryNames = message[3];
+  let img64s = [];
+  for (let i = 0; i < entryNames.length; i++) {
+    const result = await extractBase64Image(i, ...message.slice(1));
+    if (!result[0]) {
+      process.send([false, result[1]]);
+      return;
+    }
+    img64s.push(result[1]);
+  }
+  process.send([true, img64s, message[4]]);
 });
 
 async function extractBase64Image(
+  entryNameIndex,
   fileType,
   filePath,
-  entryName,
+  entryNames,
   scrollBarPos,
   password,
   tempSubFolderPath
@@ -33,12 +44,12 @@ async function extractBase64Image(
       //buf = fileFormats.extractZipEntryBuffer(filePath, entryName, password);
       const result = await fileFormats.extract7ZipEntryBuffer(
         filePath,
-        entryName,
+        entryNames[entryNameIndex],
         password,
         tempSubFolderPath,
         "zip"
       );
-      mime = "image/" + fileUtils.getMimeType(entryName);
+      mime = "image/" + fileUtils.getMimeType(entryNames[entryNameIndex]);
       if (result.success) {
         buf = result.data;
       } else {
@@ -47,19 +58,19 @@ async function extractBase64Image(
     } else if (fileType === FileDataType.RAR) {
       buf = await fileFormats.extractRarEntryBuffer(
         filePath,
-        entryName,
+        entryNames[entryNameIndex],
         password,
         tempSubFolderPath
       );
-      mime = "image/" + fileUtils.getMimeType(entryName);
+      mime = "image/" + fileUtils.getMimeType(entryNames[entryNameIndex]);
     } else if (fileType === FileDataType.SEVENZIP) {
       const result = await fileFormats.extract7ZipEntryBuffer(
         filePath,
-        entryName,
+        entryNames[entryNameIndex],
         password,
         tempSubFolderPath
       );
-      mime = "image/" + fileUtils.getMimeType(entryName);
+      mime = "image/" + fileUtils.getMimeType(entryNames[entryNameIndex]);
       if (result.success) {
         buf = result.data;
       } else {
@@ -68,7 +79,7 @@ async function extractBase64Image(
     } else if (fileType === FileDataType.EPUB_COMIC) {
       const data = await fileFormats.extractEpubImageBuffer(
         filePath,
-        entryName
+        entryNames[entryNameIndex]
       );
       buf = data[0];
       mime = data[1];
@@ -76,7 +87,7 @@ async function extractBase64Image(
       // if (!path.isAbsolute(entryName)) {
       //   // FIXME: make it absolute somehow?
       // }
-      const fullPath = path.join(filePath, entryName);
+      const fullPath = path.join(filePath, entryNames[entryNameIndex]);
       buf = fs.readFileSync(fullPath);
       mime = "image/" + fileUtils.getMimeType(fullPath);
     } else {
@@ -84,13 +95,13 @@ async function extractBase64Image(
     }
     if (buf) {
       let img64 = "data:" + mime + ";base64," + buf.toString("base64");
-      process.send([true, img64, scrollBarPos]);
+      return [true, img64, scrollBarPos];
     } else {
       if (error) {
         throw error;
       } else throw "empty buffer";
     }
   } catch (error) {
-    process.send([false, error]);
+    return [false, error];
   }
 }
