@@ -1254,6 +1254,8 @@ export function renderImg64(
     if (img) title = img.title;
   }
 
+  const isDoublePages = img64s.length === 2;
+
   if (rotation === 0 || rotation === 180) {
     let page1Img = new Image();
     page1Img.src = img64s[0];
@@ -1267,11 +1269,12 @@ export function renderImg64(
       containerDiv.innerHTML = "";
       const pagesRowDiv = document.createElement("div");
       pagesRowDiv.classList.add("pages-row");
+      if (isDoublePages) pagesRowDiv.classList.add("pages-row-2p");
       containerDiv.appendChild(pagesRowDiv);
       pagesRowDiv.innerHTML = "";
       pagesRowDiv.appendChild(page1Img);
       setFilterClass(page1Img);
-      if (img64s.length === 1) {
+      if (!isDoublePages) {
         if (sendPageLoaded) {
           sendIpcToMain("page-loaded", {
             dimensions: [page1Img.naturalWidth, page1Img.naturalHeight],
