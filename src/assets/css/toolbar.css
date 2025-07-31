@@ -118,18 +118,29 @@ html[dir="rtl"] #toolbar-button-prev i {
   transform: scale(-1, 1);
 } */
 
-#toolbar-button-set-pagemode-1-href div {
+#toolbar-button-set-pagemode-0-href {
+  font-size: 17px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#toolbar-button-set-pagemode-1-href {
   display: flex;
   gap: 1px;
   justify-content: center;
+  font-size: 17px;
+  align-items: center;
 }
 
-#toolbar-button-set-pagemode-2-href div {
+#toolbar-button-set-pagemode-2-href {
   display: flex;
   gap: 1px;
   justify-content: center;
   font-size: 8px;
   flex-wrap: wrap;
+  align-items: center;
+  align-content: flex-end;
 }
 
 .toolbar-icons-break {
