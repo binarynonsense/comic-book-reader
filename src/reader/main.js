@@ -1766,17 +1766,19 @@ function updateLocalizedText() {
     _("toolbar-go-left"),
     _("toolbar-go-right"),
     [
-      _("menu-view-layout-pagemode-singlepage"),
-      _("menu-view-layout-pagemode-doublepage"),
-      _("menu-view-layout-pagemode-doublepage") +
+      _("toolbar-change-to") + ": " + _("menu-view-layout-pagemode-singlepage"),
+      _("toolbar-change-to") + ": " + _("menu-view-layout-pagemode-doublepage"),
+      _("toolbar-change-to") +
+        ": " +
+        _("menu-view-layout-pagemode-doublepage") +
         " (" +
         _("menu-view-layout-pagemode-centerfirst") +
         ")",
     ],
-    _("tool-shared-ui-direction-ltr"),
-    _("tool-shared-ui-direction-rtl"),
-    _("menu-view-zoom-fitwidth"),
-    _("menu-view-zoom-fitheight"),
+    _("toolbar-change-to") + ": " + _("tool-shared-ui-direction-ltr"),
+    _("toolbar-change-to") + ": " + _("tool-shared-ui-direction-rtl"),
+    _("toolbar-change-to") + ": " + _("menu-view-zoom-fitwidth"),
+    _("toolbar-change-to") + ": " + _("menu-view-zoom-fitheight"),
     _("toolbar-rotate-counterclockwise"),
     _("toolbar-rotate-clockwise"),
     _("menu-view-togglefullscreen")
