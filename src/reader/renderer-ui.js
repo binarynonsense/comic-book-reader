@@ -211,6 +211,8 @@ function initOnIpcCallbacks() {
         tPageModes[0];
       document.querySelector("#toolbar-button-set-pagemode-1-href").title =
         tPageModes[1];
+      document.querySelector("#toolbar-button-set-pagemode-2-href").title =
+        tPageModes[2];
       document.querySelector(
         "#toolbar-button-set-pagesdirection-ltr-href"
       ).title = tChangeDirectionLtr;
@@ -544,12 +546,28 @@ function setPageMode(value, canBeChanged) {
     document
       .querySelector("#toolbar-button-set-pagemode-1")
       .classList.remove("set-display-none");
+    document
+      .querySelector("#toolbar-button-set-pagemode-2")
+      .classList.add("set-display-none");
+  } else if (value === 1) {
+    document
+      .querySelector("#toolbar-button-set-pagemode-0")
+      .classList.add("set-display-none");
+    document
+      .querySelector("#toolbar-button-set-pagemode-1")
+      .classList.add("set-display-none");
+    document
+      .querySelector("#toolbar-button-set-pagemode-2")
+      .classList.remove("set-display-none");
   } else {
     document
       .querySelector("#toolbar-button-set-pagemode-0")
       .classList.remove("set-display-none");
     document
       .querySelector("#toolbar-button-set-pagemode-1")
+      .classList.add("set-display-none");
+    document
+      .querySelector("#toolbar-button-set-pagemode-2")
       .classList.add("set-display-none");
   }
 }
@@ -1218,6 +1236,7 @@ function addToolbarEventListeners() {
   addButtonEvent("toolbar-button-left");
   addButtonEvent("toolbar-button-set-pagemode-0");
   addButtonEvent("toolbar-button-set-pagemode-1");
+  addButtonEvent("toolbar-button-set-pagemode-2");
   addButtonEvent("toolbar-button-set-pagesdirection-ltr");
   addButtonEvent("toolbar-button-set-pagesdirection-rtl");
   addButtonEvent("toolbar-button-fit-to-width");

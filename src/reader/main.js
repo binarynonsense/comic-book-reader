@@ -487,6 +487,9 @@ function initOnIpcCallbacks() {
       case "toolbar-button-set-pagemode-1":
         setPageMode(1);
         break;
+      case "toolbar-button-set-pagemode-2":
+        setPageMode(2);
+        break;
       case "toolbar-button-set-pagesdirection-ltr":
         setPagesDirection(0);
         break;
@@ -1765,6 +1768,10 @@ function updateLocalizedText() {
     [
       _("menu-view-layout-pagemode-singlepage"),
       _("menu-view-layout-pagemode-doublepage"),
+      _("menu-view-layout-pagemode-doublepage") +
+        " (" +
+        _("menu-view-layout-pagemode-centerfirst") +
+        ")",
     ],
     _("tool-shared-ui-direction-ltr"),
     _("tool-shared-ui-direction-rtl"),

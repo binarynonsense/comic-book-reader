@@ -117,3 +117,22 @@
 html[dir="rtl"] #toolbar-button-prev i {
   transform: scale(-1, 1);
 } */
+
+#toolbar-button-set-pagemode-1-href div {
+  display: flex;
+  gap: 1px;
+  justify-content: center;
+}
+
+#toolbar-button-set-pagemode-2-href div {
+  display: flex;
+  gap: 1px;
+  justify-content: center;
+  font-size: 8px;
+  flex-wrap: wrap;
+}
+
+.toolbar-icons-break {
+  flex-basis: 100%;
+  height: 0;
+}
