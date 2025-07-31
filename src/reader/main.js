@@ -482,13 +482,13 @@ function initOnIpcCallbacks() {
         goToLeftPage();
         break;
       case "toolbar-button-set-pagemode-0":
-        setPageMode(0);
+        setPageMode(0, true);
         break;
       case "toolbar-button-set-pagemode-1":
-        setPageMode(1);
+        setPageMode(1, true);
         break;
       case "toolbar-button-set-pagemode-2":
-        setPageMode(2);
+        setPageMode(2, true);
         break;
       case "toolbar-button-set-pagesdirection-ltr":
         setPagesDirection(0);
@@ -1985,7 +1985,7 @@ function setPagesDirection(value, rebuildMenu = true) {
 let g_pageModeCanBeChanged = true;
 function setInitialFixedPageModeSingle() {
   g_pageModeCanBeChanged = false;
-  setPageMode(0);
+  setPageMode(0, false);
 }
 
 function setInitialPageMode(filePath) {
@@ -1997,7 +1997,7 @@ function setInitialPageMode(filePath) {
     if (historyIndex !== undefined) {
       let pageMode = history.getIndex(historyIndex).pageMode;
       if (pageMode !== undefined) {
-        setPageMode(pageMode);
+        setPageMode(pageMode, false);
         return;
       }
     }
@@ -2005,26 +2005,27 @@ function setInitialPageMode(filePath) {
   }
   // use default
   if (settings.getValue("pageModeDefault") === 0) {
-    setPageMode(0);
+    setPageMode(0, false);
     return;
   } else if (settings.getValue("pageModeDefault") === 1) {
-    setPageMode(1);
+    setPageMode(1, false);
     return;
   } else if (settings.getValue("pageModeDefault") === 2) {
-    setPageMode(2);
+    setPageMode(2, false);
     return;
   }
   // use last used
   setPageMode(settings.getValue("page_mode"));
 }
 
-function setPageMode(value) {
+function setPageMode(value, reloadPages) {
   settings.setValue("page_mode", value);
   menuBar.setPageMode(value);
   sendIpcToPreload("update-menubar");
   if (value !== 0) setPageRotation(0);
   sendIpcToRenderer("set-page-mode", value, g_pageModeCanBeChanged);
-  goToPage(g_fileData.pageIndex, (scrollBarPos = 0));
+  if (g_pageModeCanBeChanged && reloadPages)
+    goToPage(g_fileData.pageIndex, (scrollBarPos = 0));
   rebuildMenuAndToolBars();
 }
 
@@ -2592,7 +2593,7 @@ exports.onMenuPagesDirection = function (value) {
 };
 
 exports.onMenuPageMode = function (value) {
-  setPageMode(value);
+  setPageMode(value, true);
 };
 
 async function onMenuFileProperties() {
