@@ -1380,6 +1380,35 @@ function goToPage(pageIndex, scrollBarPos = 0) {
     g_fileData.pageIndex = pageIndex;
   }
 
+  function getGoToIndexes() {
+    let indexes = [];
+    if (settings.getValue("page_mode") === 0) {
+      // single page mode
+      indexes.push(g_fileData.pageIndex);
+    } else if (settings.getValue("page_mode") === 1) {
+      // double page mode
+      if (g_fileData.pageIndex % 2 > 0) {
+        g_fileData.pageIndex--;
+      }
+      indexes.push(g_fileData.pageIndex);
+      if (g_fileData.pageIndex + 1 < g_fileData.numPages)
+        indexes.push(g_fileData.pageIndex + 1);
+    } else {
+      // double page mode center first
+      if (g_fileData.pageIndex === 0) {
+        indexes.push(g_fileData.pageIndex);
+      } else {
+        if (g_fileData.pageIndex % 2 === 0) {
+          g_fileData.pageIndex--;
+        }
+        indexes.push(g_fileData.pageIndex);
+        if (g_fileData.pageIndex + 1 < g_fileData.numPages)
+          indexes.push(g_fileData.pageIndex + 1);
+      }
+    }
+    return indexes;
+  }
+
   if (
     g_fileData.type === FileDataType.ZIP ||
     g_fileData.type === FileDataType.RAR ||
@@ -1440,35 +1469,11 @@ function goToPage(pageIndex, scrollBarPos = 0) {
       });
     }
 
-    // let entryNames = [g_fileData.pagesPaths[g_fileData.pageIndex]];
-    // if (g_fileData.pageIndex + 1 < g_fileData.numPages)
-    //   entryNames.push(g_fileData.pagesPaths[g_fileData.pageIndex + 1]);
-
     let entryNames = [];
-    if (settings.getValue("page_mode") === 0) {
-      // single page mode
-      entryNames.push(g_fileData.pagesPaths[g_fileData.pageIndex]);
-    } else if (settings.getValue("page_mode") === 1) {
-      // double page mode
-      if (g_fileData.pageIndex % 2 > 0) {
-        g_fileData.pageIndex--;
-      }
-      entryNames.push(g_fileData.pagesPaths[g_fileData.pageIndex]);
-      if (g_fileData.pageIndex + 1 < g_fileData.numPages)
-        entryNames.push(g_fileData.pagesPaths[g_fileData.pageIndex + 1]);
-    } else {
-      // double page mode center first
-      if (g_fileData.pageIndex === 0) {
-        entryNames.push(g_fileData.pagesPaths[g_fileData.pageIndex]);
-      } else {
-        if (g_fileData.pageIndex % 2 === 0) {
-          g_fileData.pageIndex--;
-        }
-        entryNames.push(g_fileData.pagesPaths[g_fileData.pageIndex]);
-        if (g_fileData.pageIndex + 1 < g_fileData.numPages)
-          entryNames.push(g_fileData.pagesPaths[g_fileData.pageIndex + 1]);
-      }
-    }
+    let pageIndexes = getGoToIndexes();
+    pageIndexes.forEach((index) => {
+      entryNames.push(g_fileData.pagesPaths[index]);
+    });
 
     // send to worker
     g_workerPage.send([
@@ -1490,9 +1495,10 @@ function goToPage(pageIndex, scrollBarPos = 0) {
     }
   } else if (g_fileData.type === FileDataType.PDF) {
     g_fileData.state = FileDataState.LOADING;
+    let pageIndexes = getGoToIndexes();
     sendIpcToRenderer(
       "render-pdf-page",
-      g_fileData.pageIndex,
+      pageIndexes,
       g_fileData.pageRotation,
       scrollBarPos
     );

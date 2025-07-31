@@ -21,13 +21,13 @@ function initOnIpcCallbacks() {
     loadPdf(filePath, pageIndex, password);
   });
 
-  on("render-pdf-page", (pageIndex, rotation, scrollBarPos) => {
+  on("render-pdf-page", (pageIndexes, rotation, scrollBarPos) => {
     showNoBookContent(false);
-    renderPdfPage(pageIndex, rotation, scrollBarPos);
+    renderPdfPages(pageIndexes, rotation, scrollBarPos);
   });
 
   on("refresh-pdf-page", (rotation) => {
-    refreshPdfPage(rotation);
+    refreshPdfPages(rotation);
   });
 
   on(
@@ -108,74 +108,93 @@ function loadPdf(filePath, pageIndex, password) {
     });
 }
 
-function refreshPdfPage(rotation) {
-  if (g_currentPdf.page) {
-    renderCurrentPDFPage(rotation, undefined, false);
+function refreshPdfPages(rotation) {
+  if (g_currentPdf.pages && g_currentPdf.pages.length > 0) {
+    renderOpenPDFPages(rotation, undefined, false);
   }
 }
 
-function renderPdfPage(pageIndex, rotation, scrollBarPos) {
-  let pageNum = pageIndex + 1; // pdfjs counts from 1
+async function renderPdfPages(pageIndexes, rotation, scrollBarPos) {
+  // NOTE: pdfjs counts from 1
   // ref: https://mozilla.github.io/pdf.js/examples/
-  g_currentPdf.pdf.getPage(pageNum).then(
-    function (page) {
-      g_currentPdf.page = page;
-      renderCurrentPDFPage(rotation, scrollBarPos, true);
-    },
-    function (reason) {
-      // PDF loading error
-      console.error(reason);
+  const isDoublePages = pageIndexes.length === 2;
+  if (!isDoublePages) {
+    g_currentPdf.pdf.getPage(pageIndexes[0] + 1).then(
+      function (page) {
+        g_currentPdf.pages = [];
+        g_currentPdf.pages.push(page);
+        renderOpenPDFPages(rotation, scrollBarPos, true);
+      },
+      function (reason) {
+        // PDF loading error
+        console.error(reason);
+      }
+    );
+  } else {
+    g_currentPdf.pages = [];
+    for (let i = 0; i < pageIndexes.length; i++) {
+      let page = await g_currentPdf.pdf.getPage(pageIndexes[i] + 1);
+      g_currentPdf.pages.push(page);
     }
-  );
+    renderOpenPDFPages(rotation, scrollBarPos, true);
+  }
 }
 
-function renderCurrentPDFPage(rotation, scrollBarPos, sendPageLoaded) {
+async function renderOpenPDFPages(rotation, scrollBarPos, sendPageLoaded) {
   // I recreate the canvas every time to avoid some rendering issues when rotating (low res)
   // there's probably a better way, but performance seems similar
+  const isDoublePages = g_currentPdf.pages.length === 2;
   let containerDiv = document.getElementById("pages-container");
   containerDiv.innerHTML = "";
-  var canvas = document.createElement("canvas");
-  canvas.classList.add("page-canvas");
-  canvas.classList.add("page");
   const pagesRowDiv = document.createElement("div");
   pagesRowDiv.classList.add("pages-row");
+  if (isDoublePages) pagesRowDiv.classList.add("pages-row-2p");
   containerDiv.appendChild(pagesRowDiv);
   pagesRowDiv.innerHTML = "";
-  pagesRowDiv.appendChild(canvas);
-  setFilterClass(canvas);
-  var context = canvas.getContext("2d");
 
-  var desiredWidth = canvas.offsetWidth;
-  var viewport = g_currentPdf.page.getViewport({
-    scale: 1,
-    rotation,
-  });
-  var scale = desiredWidth / viewport.width;
-  var scaledViewport = g_currentPdf.page.getViewport({
-    scale: scale,
-    rotation,
-  });
-
-  canvas.height = scaledViewport.height;
-  canvas.width = desiredWidth;
-
-  var renderContext = {
-    canvasContext: context,
-    viewport: scaledViewport,
-  };
-
-  let renderTask = g_currentPdf.page.render(renderContext);
-  renderTask.promise.then(function () {
-    setScrollBarsPosition(scrollBarPos);
-    if (sendPageLoaded) {
-      const [x1, y1, x2, y2] = g_currentPdf.page.view;
-      const width = x2 - x1;
-      const height = y2 - y1;
-      sendIpcToMain("page-loaded", {
-        dimensions: [width, height],
-      });
+  for (let i = 0; i < g_currentPdf.pages.length; i++) {
+    var canvas = document.createElement("canvas");
+    canvas.classList.add("page-canvas");
+    canvas.classList.add("page");
+    if (isDoublePages) {
+      if (i === 0) canvas.classList.add("page-1");
+      else canvas.classList.add("page-2");
     }
-  });
+    setFilterClass(canvas);
+    pagesRowDiv.appendChild(canvas);
+    var context = canvas.getContext("2d");
+
+    var desiredWidth = canvas.offsetWidth;
+    var viewport = g_currentPdf.pages[i].getViewport({
+      scale: 1,
+      rotation,
+    });
+    var scale = desiredWidth / viewport.width;
+    var scaledViewport = g_currentPdf.pages[i].getViewport({
+      scale: scale,
+      rotation,
+    });
+
+    canvas.height = scaledViewport.height;
+    canvas.width = desiredWidth;
+
+    var renderContext = {
+      canvasContext: context,
+      viewport: scaledViewport,
+    };
+
+    await g_currentPdf.pages[i].render(renderContext).promise;
+  }
+
+  setScrollBarsPosition(scrollBarPos);
+  if (sendPageLoaded) {
+    const [x1, y1, x2, y2] = g_currentPdf.pages[0].view;
+    const width = x2 - x1;
+    const height = y2 - y1;
+    sendIpcToMain("page-loaded", {
+      dimensions: [width, height],
+    });
+  }
 }
 
 async function extractPDFImageBuffer(
