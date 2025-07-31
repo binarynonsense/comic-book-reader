@@ -299,6 +299,7 @@ function initOnIpcCallbacks() {
     updateMenuAndToolbarItems();
     setPageRotation(0, false);
     setInitialZoom(filePath);
+    setInitialFixedPageModeSingle();
     addCurrentToHistory();
     goToPercentage(g_fileData.pageIndex);
     renderPageInfo();
@@ -335,6 +336,7 @@ function initOnIpcCallbacks() {
     updateMenuAndToolbarItems();
     setPageRotation(0, false);
     setInitialZoom(filePath);
+    setInitialPageMode(filePath);
     g_fileData.numPages = numPages;
     addCurrentToHistory();
     goToPage(pageIndex);
@@ -478,6 +480,12 @@ function initOnIpcCallbacks() {
         break;
       case "toolbar-button-left":
         goToLeftPage();
+        break;
+      case "toolbar-button-set-pagemode-0":
+        setPageMode(0);
+        break;
+      case "toolbar-button-set-pagemode-1":
+        setPageMode(1);
         break;
       case "toolbar-button-set-pagesdirection-ltr":
         setPagesDirection(0);
@@ -874,6 +882,7 @@ function openImageFolder(folderPath, filePath, pageIndex) {
   updateMenuAndToolbarItems();
   setPageRotation(0, false);
   setInitialZoom(g_fileData.path);
+  setInitialFixedPageModeSingle();
   goToPage(pageIndex);
 }
 
@@ -923,6 +932,7 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
         updateMenuAndToolbarItems();
         setPageRotation(0, false);
         setInitialZoom(filePath);
+        setInitialPageMode(filePath);
         addCurrentToHistory();
         goToPage(pageIndex);
       } else {
@@ -1002,6 +1012,7 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
           updateMenuAndToolbarItems();
           setPageRotation(0, false);
           setInitialZoom(filePath);
+          setInitialPageMode(filePath);
           addCurrentToHistory();
           goToPage(pageIndex);
         } else {
@@ -1086,6 +1097,7 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
           updateMenuAndToolbarItems();
           setPageRotation(0, false);
           setInitialZoom(filePath);
+          setInitialPageMode(filePath);
           addCurrentToHistory();
           goToPage(pageIndex);
         } else {
@@ -1150,6 +1162,7 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
           updateMenuAndToolbarItems();
           setPageRotation(0, false);
           setInitialZoom(filePath);
+          setInitialPageMode(filePath);
           addCurrentToHistory();
           goToPage(pageIndex);
         } else {
@@ -1288,6 +1301,7 @@ function openBookFromCallback(comicData, getPageCallback, pageIndex = 0) {
   updateMenuAndToolbarItems();
   setPageRotation(0, false);
   setInitialZoom(g_fileData.path);
+  setInitialFixedPageModeSingle();
   goToPage(g_fileData.pageIndex);
 }
 exports.openBookFromCallback = openBookFromCallback;
@@ -1423,10 +1437,37 @@ function goToPage(pageIndex, scrollBarPos = 0) {
       });
     }
 
-    let entryNames = [g_fileData.pagesPaths[g_fileData.pageIndex]];
-    // TODO: TEMPPPPP use spread mode to choose
+    // let entryNames = [g_fileData.pagesPaths[g_fileData.pageIndex]];
     // if (g_fileData.pageIndex + 1 < g_fileData.numPages)
     //   entryNames.push(g_fileData.pagesPaths[g_fileData.pageIndex + 1]);
+
+    let entryNames = [];
+    if (settings.getValue("page_mode") === 0) {
+      // single page mode
+      entryNames.push(g_fileData.pagesPaths[g_fileData.pageIndex]);
+    } else if (settings.getValue("page_mode") === 1) {
+      // double page mode
+      if (g_fileData.pageIndex % 2 > 0) {
+        g_fileData.pageIndex--;
+      }
+      entryNames.push(g_fileData.pagesPaths[g_fileData.pageIndex]);
+      if (g_fileData.pageIndex + 1 < g_fileData.numPages)
+        entryNames.push(g_fileData.pagesPaths[g_fileData.pageIndex + 1]);
+    } else {
+      // double page mode center first
+      if (g_fileData.pageIndex === 0) {
+        entryNames.push(g_fileData.pagesPaths[g_fileData.pageIndex]);
+      } else {
+        if (g_fileData.pageIndex % 2 === 0) {
+          g_fileData.pageIndex--;
+        }
+        entryNames.push(g_fileData.pagesPaths[g_fileData.pageIndex]);
+        if (g_fileData.pageIndex + 1 < g_fileData.numPages)
+          entryNames.push(g_fileData.pagesPaths[g_fileData.pageIndex + 1]);
+      }
+    }
+
+    // send to worker
     g_workerPage.send([
       core.getLaunchInfo(),
       g_fileData.type,
@@ -1492,7 +1533,30 @@ function goToNextPage() {
     goToPage(1);
   } else {
     if (g_fileData.pageIndex + 1 < g_fileData.numPages) {
-      goToPage(g_fileData.pageIndex + 1);
+      if (settings.getValue("page_mode") === 0) {
+        // single page mode
+        goToPage(g_fileData.pageIndex + 1);
+      } else if (settings.getValue("page_mode") === 1) {
+        // double
+        if ((g_fileData.pageIndex + 1) % 2 > 0) {
+          if (g_fileData.pageIndex + 2 < g_fileData.numPages) {
+            g_fileData.pageIndex++;
+            goToPage(g_fileData.pageIndex + 1);
+          }
+        } else {
+          goToPage(g_fileData.pageIndex + 1);
+        }
+      } else {
+        // double center first
+        if ((g_fileData.pageIndex + 1) % 2 === 0) {
+          if (g_fileData.pageIndex + 2 < g_fileData.numPages) {
+            g_fileData.pageIndex++;
+            goToPage(g_fileData.pageIndex + 1);
+          }
+        } else {
+          goToPage(g_fileData.pageIndex + 1);
+        }
+      }
     } else if (
       settings.getValue("autoOpen") === 1 ||
       settings.getValue("autoOpen") === 2
@@ -1507,7 +1571,26 @@ function goToPreviousPage() {
     goToPage(-1);
   } else {
     if (g_fileData.pageIndex - 1 >= 0) {
-      goToPage(g_fileData.pageIndex - 1, 1);
+      if (settings.getValue("page_mode") === 0) {
+        // single page mode
+        goToPage(g_fileData.pageIndex - 1, 1);
+      } else if (settings.getValue("page_mode") === 1) {
+        // double
+        if ((g_fileData.pageIndex - 1) % 2 > 0) {
+          g_fileData.pageIndex--;
+        }
+        goToPage(g_fileData.pageIndex - 1, 1);
+      } else {
+        // double center first
+        if (g_fileData.pageIndex - 1 === 0) {
+          goToPage(g_fileData.pageIndex - 1, 1);
+        } else {
+          if ((g_fileData.pageIndex - 1) % 2 === 0) {
+            g_fileData.pageIndex--;
+          }
+          goToPage(g_fileData.pageIndex - 1, 1);
+        }
+      }
     } else if (settings.getValue("autoOpen") === 2) {
       tryOpeningAdjacentFile(false);
     }
@@ -1628,7 +1711,10 @@ function updateMenuAndToolbarItems(isOpen = true) {
         g_fileData.type === FileDataType.PDF
       ) {
         menuBar.setComicBookOpened(true);
-        sendIpcToRenderer("update-toolbar-rotation-buttons", true);
+        sendIpcToRenderer(
+          "update-toolbar-rotation-buttons",
+          settings.getValue("page_mode") === 0
+        );
         sendIpcToRenderer("update-toolbar-page-buttons", true);
         sendIpcToRenderer("update-toolbar-zoom-buttons", true);
         sendIpcToRenderer("update-toolbar-pagesdirection-buttons", true);
@@ -1676,8 +1762,12 @@ function updateLocalizedText() {
     _("ctxmenu-openfile"),
     _("toolbar-go-left"),
     _("toolbar-go-right"),
-    _("toolbar-change-pagesdirection-ltr"),
-    _("toolbar-change-pagesdirection-rtl"),
+    [
+      _("menu-view-layout-pagemode-singlepage"),
+      _("menu-view-layout-pagemode-doublepage"),
+    ],
+    _("tool-shared-ui-direction-ltr"),
+    _("tool-shared-ui-direction-rtl"),
     _("menu-view-zoom-fitwidth"),
     _("menu-view-zoom-fitheight"),
     _("toolbar-rotate-counterclockwise"),
@@ -1875,6 +1965,60 @@ function setPagesDirection(value, rebuildMenu = true) {
   sendIpcToPreload("update-menubar");
   sendIpcToRenderer("set-pages-direction", g_pagesDirection);
   if (rebuildMenu) rebuildMenuAndToolBars();
+}
+
+let g_pageModeCanBeChanged = true;
+function setInitialFixedPageModeSingle() {
+  g_pageModeCanBeChanged = false;
+  setPageMode(0);
+}
+
+function setInitialPageMode(filePath) {
+  // TODO: preferences to remember las, file, default....
+  // TODO: elesewhere: pdfs specific code
+  g_pageModeCanBeChanged = true;
+  // ref: setInitialZoom
+  // if (settings.getValue("zoomFileLoading") === 1) {
+  //   // use history
+  //   let historyIndex = history.getFilePathIndex(filePath);
+  //   if (historyIndex !== undefined) {
+  //     let fitMode = history.getIndex(historyIndex).fitMode;
+  //     let zoomScale = history.getIndex(historyIndex).zoomScale;
+  //     if (fitMode !== undefined) {
+  //       if (fitMode === 0) {
+  //         setFitToWidth();
+  //         return;
+  //       } else if (fitMode === 1) {
+  //         setFitToHeight();
+  //         return;
+  //       } else if (fitMode === 2 && zoomScale != undefined) {
+  //         setScaleToHeight(zoomScale);
+  //         return;
+  //       }
+  //     }
+  //   }
+  //   // not in history, use default
+  // }
+  // // use default
+  // if (settings.getValue("zoomDefault") === 0) {
+  //   setFitToWidth();
+  //   return;
+  // } else if (settings.getValue("zoomDefault") === 1) {
+  //   setFitToHeight();
+  //   return;
+  // }
+  // use last used
+  setPageMode(settings.getValue("page_mode"));
+}
+
+function setPageMode(value) {
+  settings.setValue("page_mode", value);
+  menuBar.setPageMode(value);
+  sendIpcToPreload("update-menubar");
+  if (value !== 0) setPageRotation(0);
+  sendIpcToRenderer("set-page-mode", value, g_pageModeCanBeChanged);
+  goToPage(g_fileData.pageIndex, (scrollBarPos = 0));
+  rebuildMenuAndToolBars();
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -2438,6 +2582,10 @@ exports.onMenuFilterValue = function (value) {
 
 exports.onMenuPagesDirection = function (value) {
   setPagesDirection(value);
+};
+
+exports.onMenuPageMode = function (value) {
+  setPageMode(value);
 };
 
 async function onMenuFileProperties() {

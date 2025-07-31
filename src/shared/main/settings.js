@@ -29,7 +29,7 @@ const g_defaultSettings = {
   date: "",
   fit_mode: 0, // 0: width, 1: height, 2: scale height
   zoom_scale: 100,
-  page_mode: 0, // 0: single-page, 1: double-page
+  page_mode: 0, // 0: single-page, 1: double-page, 2: double-page first centered
   hotspots_mode: 1, // 0: disabled, 1: 2-columns, 2: 3-columns
   maximize: false,
   fullScreen: false,
@@ -226,7 +226,7 @@ function sanitize() {
   if (
     !Number.isInteger(g_settings.page_mode) ||
     g_settings.page_mode < 0 ||
-    g_settings.page_mode > 1
+    g_settings.page_mode > 2
   ) {
     g_settings.page_mode = g_defaultSettings.page_mode;
   }

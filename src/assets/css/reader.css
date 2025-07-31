@@ -43,6 +43,9 @@
   display: flex;
   flex-direction: row;
 }
+.pages-rtl > .pages-row {
+  flex-direction: row-reverse;
+}
 
 .page {
   pointer-events: none;

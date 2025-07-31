@@ -523,6 +523,43 @@ function getNormalMenu(settings, history) {
                 },
               ],
             },
+            {
+              id: "view-layout-pagemode",
+              label: _("menu-view-layout-pagemode"),
+              submenu: [
+                {
+                  id: "pagemode-0",
+                  label: _("menu-view-layout-pagemode-singlepage"),
+                  type: "radio",
+                  checked: settings.page_mode === 0,
+                  click() {
+                    reader.onMenuPageMode(0);
+                  },
+                },
+                {
+                  id: "pagemode-1",
+                  label: _("menu-view-layout-pagemode-doublepage"),
+                  type: "radio",
+                  checked: settings.page_mode === 1,
+                  click() {
+                    reader.onMenuPageMode(1);
+                  },
+                },
+                {
+                  id: "pagemode-2",
+                  label:
+                    _("menu-view-layout-pagemode-doublepage") +
+                    " (" +
+                    _("menu-view-layout-pagemode-centerfirst") +
+                    ")",
+                  type: "radio",
+                  checked: settings.page_mode === 2,
+                  click() {
+                    reader.onMenuPageMode(2);
+                  },
+                },
+              ],
+            },
             // {
             //   type: "separator",
             // },

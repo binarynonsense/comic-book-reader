@@ -115,6 +115,12 @@ exports.setCloseTool = function (isEnabled) {
   enableItem(getItem("close-tool"), isEnabled);
 };
 
+exports.setPageMode = function (mode) {
+  checkItem(getItem("pagemode-0"), mode === 0);
+  checkItem(getItem("pagemode-1"), mode === 1);
+  checkItem(getItem("pagemode-2"), mode === 2);
+};
+
 ////////////////////////////
 
 exports.setCanOpenBooks = setCanOpenBooks = function (isEnabled) {
@@ -150,13 +156,17 @@ exports.setComicBookOpened = setComicBookOpened = function (isEnabled) {
   enableItem(getItem("file-properties"), isEnabled);
   enableItemRecursive(getItem("file-page"), isEnabled);
   enableItem(getItem("close-file"), isEnabled);
-  enableItemRecursive(getItem("view-rotation"), isEnabled);
+  enableItemRecursive(
+    getItem("view-rotation"),
+    isEnabled && settings.getValue("page_mode") === 0
+  );
   enableItemRecursive(getItem("view-page"), isEnabled);
   enableItemRecursive(getItem("view-zoom"), isEnabled);
   enableItemRecursive(getItem("view-filter"), isEnabled);
   enableItemRecursive(getItem("view-layout"), isEnabled);
   enableItemRecursive(getItem("view-layout-show"), isEnabled);
   enableItemRecursive(getItem("view-layout-pagesdirection"), isEnabled);
+  enableItemRecursive(getItem("view-layout-pagemode"), isEnabled);
 };
 
 exports.setEpubEbookOpened = function () {
@@ -166,6 +176,7 @@ exports.setEpubEbookOpened = function () {
   enableItemRecursive(getItem("file-page"), false);
   enableItemRecursive(getItem("view-rotation"), false);
   enableItemRecursive(getItem("view-page"), true);
+  enableItemRecursive(getItem("view-layout-pagemode"), false);
 };
 
 exports.setImageOpened = function () {
@@ -174,6 +185,7 @@ exports.setImageOpened = function () {
   enableItem(getItem("extract-file"), false);
   enableItem(getItem("file-properties"), false);
   enableItem(getItem("file-page-export"), false);
+  enableItemRecursive(getItem("view-layout-pagemode"), false);
 };
 
 exports.setWWWOpened = function () {
@@ -181,6 +193,7 @@ exports.setWWWOpened = function () {
   enableItem(getItem("convert-file"), false);
   enableItem(getItem("extract-file"), false);
   enableItem(getItem("file-properties"), false);
+  enableItemRecursive(getItem("view-layout-pagemode"), false);
 };
 
 function getItem(id) {

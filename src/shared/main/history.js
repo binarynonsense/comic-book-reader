@@ -98,6 +98,9 @@ function load() {
           if (entry.fitMode !== undefined && isNaN(entry.fitMode)) {
             delete entry.fitMode;
           }
+          if (entry.pageMode !== undefined && isNaN(entry.pageMode)) {
+            delete entry.pageMode;
+          }
           if (entry.zoomScale !== undefined && isNaN(entry.zoomScale)) {
             delete entry.zoomScale;
           }
@@ -130,6 +133,7 @@ exports.add = function (filePath, pageIndex, data) {
     pageIndex: pageIndex,
     fitMode: settings.getValue("fit_mode"),
     zoomScale: settings.getValue("zoom_scale"),
+    pageMode: settings.getValue("page_mode"),
   };
   if (data) {
     newEntry.data = data;

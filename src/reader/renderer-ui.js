@@ -195,6 +195,7 @@ function initOnIpcCallbacks() {
       tOpenFile,
       tPrevious,
       tNext,
+      tPageModes,
       tChangeDirectionLtr,
       tChangeDirectionRtl,
       tFitWidth,
@@ -206,6 +207,10 @@ function initOnIpcCallbacks() {
       document.querySelector("#toolbar-button-open-href").title = tOpenFile;
       document.querySelector("#toolbar-button-left-href").title = tPrevious;
       document.querySelector("#toolbar-button-right-href").title = tNext;
+      document.querySelector("#toolbar-button-set-pagemode-0-href").title =
+        tPageModes[0];
+      document.querySelector("#toolbar-button-set-pagemode-1-href").title =
+        tPageModes[1];
       document.querySelector(
         "#toolbar-button-set-pagesdirection-ltr-href"
       ).title = tChangeDirectionLtr;
@@ -334,6 +339,10 @@ function initOnIpcCallbacks() {
     setFullscreenUI(isFullscreen);
   });
 
+  on("set-page-mode", (...args) => {
+    setPageMode(...args);
+  });
+
   on("set-fit-to-width", () => {
     setFitToWidth();
   });
@@ -388,6 +397,8 @@ function initOnIpcCallbacks() {
       document
         .querySelector("#toolbar-button-set-pagesdirection-rtl")
         .classList.add("set-display-none");
+
+      document.querySelector("#pages-container").classList.add("pages-rtl");
     } else {
       document
         .querySelector("#toolbar-button-set-pagesdirection-ltr")
@@ -395,6 +406,8 @@ function initOnIpcCallbacks() {
       document
         .querySelector("#toolbar-button-set-pagesdirection-rtl")
         .classList.remove("set-display-none");
+
+      document.querySelector("#pages-container").classList.remove("pages-rtl");
     }
   });
 
@@ -517,6 +530,28 @@ function setFullscreenUI(isFullscreen) {
     document.documentElement.style.setProperty("--menubar-height", "30px");
   }
   updateZoom();
+}
+
+let g_pageMode = 0;
+let g_pageModeCanBeChanged = true;
+function setPageMode(value, canBeChanged) {
+  g_pageMode = value;
+  g_pageModeCanBeChanged = canBeChanged;
+  if (value === 0) {
+    document
+      .querySelector("#toolbar-button-set-pagemode-0")
+      .classList.add("set-display-none");
+    document
+      .querySelector("#toolbar-button-set-pagemode-1")
+      .classList.remove("set-display-none");
+  } else {
+    document
+      .querySelector("#toolbar-button-set-pagemode-0")
+      .classList.remove("set-display-none");
+    document
+      .querySelector("#toolbar-button-set-pagemode-1")
+      .classList.add("set-display-none");
+  }
 }
 
 function setFitToWidth() {
@@ -1181,6 +1216,8 @@ function addToolbarEventListeners() {
   addButtonEvent("toolbar-button-rotate-counterclockwise");
   addButtonEvent("toolbar-button-right");
   addButtonEvent("toolbar-button-left");
+  addButtonEvent("toolbar-button-set-pagemode-0");
+  addButtonEvent("toolbar-button-set-pagemode-1");
   addButtonEvent("toolbar-button-set-pagesdirection-ltr");
   addButtonEvent("toolbar-button-set-pagesdirection-rtl");
   addButtonEvent("toolbar-button-fit-to-width");
