@@ -145,6 +145,10 @@ async function renderOpenPDFPages(rotation, scrollBarPos, sendPageLoaded) {
   // there's probably a better way, but performance seems similar
   const isDoublePages = g_currentPdf.pages.length === 2;
   let containerDiv = document.getElementById("pages-container");
+  // NOTE: to improve the flickering when loading new pages, I don't empty
+  // the container yet and create the pages row as a hidden element to
+  // only add it to the container and reveal it the last moment, which is when
+  // I delete the previousrow
   // containerDiv.innerHTML = "";
   const pagesRowDiv = document.createElement("div");
   pagesRowDiv.classList.add("pages-row");
