@@ -402,11 +402,10 @@ function initOnIpcCallbacks() {
 
   on("set-filter", (value) => {
     g_filterMode = value;
-    let img = document.querySelector(".page-img");
-    if (!img) img = document.querySelector(".page-canvas");
-    if (img) {
-      setFilterClass(img);
-    }
+    let pages = document.querySelectorAll(".page");
+    pages.forEach((page) => {
+      setFilterClass(page);
+    });
   });
 
   on("set-pages-direction", (value) => {
