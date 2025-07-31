@@ -52,6 +52,8 @@ const g_defaultSettings = {
   cursorVisibility: 0, // 0: always visible, 1: hide when inactive
   zoomDefault: 2, // 0: width, 1: height, 2: last used
   zoomFileLoading: 0, // 0: use default, 1: use history
+  pageModeDefault: 3, // 0: single, 1: double, 2: double centered, 3: last used
+  pageModeFileLoading: 0, // 0: use default, 1: use history
   loadingIndicatorBG: 1, // 0: transparent, 1: slightly opaque
   loadingIndicatorIconSize: 0, // 0: small, 1: big
   loadingIndicatorIconPos: 0, // 0: top left, 1: center

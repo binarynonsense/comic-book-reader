@@ -558,6 +558,47 @@ function getLocalization() {
     },
     //////////////////////////////////////////////
     {
+      id: "tool-pre-pagemode-text",
+      text: _("menu-view-layout-pagemode"),
+    },
+    {
+      id: "tool-pre-pagemode-default-text",
+      text: _("tool-pre-zoom-default"),
+    },
+    {
+      id: "tool-pre-pagemode-default-0-text",
+      text: _("menu-view-layout-pagemode-singlepage"),
+    },
+    {
+      id: "tool-pre-pagemode-default-1-text",
+      text: _("menu-view-layout-pagemode-doublepage"),
+    },
+    {
+      id: "tool-pre-pagemode-default-2-text",
+      text:
+        _("menu-view-layout-pagemode-doublepage") +
+        " (" +
+        _("menu-view-layout-pagemode-centerfirst") +
+        ")",
+    },
+    {
+      id: "tool-pre-pagemode-default-lastused-text",
+      text: _("tool-pre-zoom-default-lastused"),
+    },
+    {
+      id: "tool-pre-pagemode-fileloading-text",
+      text: _("tool-pre-zoom-fileloading"),
+    },
+    {
+      id: "tool-pre-pagemode-fileloading-default-text",
+      text: _("tool-pre-zoom-fileloading-default"),
+    },
+    {
+      id: "tool-pre-pagemode-fileloading-history-text",
+      text: _("tool-pre-zoom-fileloading-history"),
+    },
+    //////////////////////////////////////////////
+    {
       id: "tool-pre-layout-text",
       text: _("tool-pre-layout"),
     },

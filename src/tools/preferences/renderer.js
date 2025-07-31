@@ -122,6 +122,28 @@ function init(activeLocale, languages, activeTheme, themes, settings) {
       sendIpcToMain("set-setting", "zoomFileLoading", parseInt(select.value));
     });
   }
+  // page mode default select
+  {
+    let select = document.getElementById("tool-pre-pagemode-default-select");
+    select.value = settings.pageModeDefault;
+    select.addEventListener("change", function (event) {
+      sendIpcToMain("set-setting", "pageModeDefault", parseInt(select.value));
+    });
+  }
+  // page mode file loading select
+  {
+    let select = document.getElementById(
+      "tool-pre-pagemode-fileloading-select"
+    );
+    select.value = settings.pageModeFileLoading;
+    select.addEventListener("change", function (event) {
+      sendIpcToMain(
+        "set-setting",
+        "pageModeFileLoading",
+        parseInt(select.value)
+      );
+    });
+  }
   // layout clock select
   {
     let select = document.getElementById("tool-pre-layout-clock-select");

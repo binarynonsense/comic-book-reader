@@ -1990,38 +1990,31 @@ function setInitialFixedPageModeSingle() {
 
 function setInitialPageMode(filePath) {
   // TODO: preferences to remember las, file, default....
-  // TODO: elesewhere: pdfs specific code
   g_pageModeCanBeChanged = true;
   // ref: setInitialZoom
-  // if (settings.getValue("zoomFileLoading") === 1) {
-  //   // use history
-  //   let historyIndex = history.getFilePathIndex(filePath);
-  //   if (historyIndex !== undefined) {
-  //     let fitMode = history.getIndex(historyIndex).fitMode;
-  //     let zoomScale = history.getIndex(historyIndex).zoomScale;
-  //     if (fitMode !== undefined) {
-  //       if (fitMode === 0) {
-  //         setFitToWidth();
-  //         return;
-  //       } else if (fitMode === 1) {
-  //         setFitToHeight();
-  //         return;
-  //       } else if (fitMode === 2 && zoomScale != undefined) {
-  //         setScaleToHeight(zoomScale);
-  //         return;
-  //       }
-  //     }
-  //   }
-  //   // not in history, use default
-  // }
-  // // use default
-  // if (settings.getValue("zoomDefault") === 0) {
-  //   setFitToWidth();
-  //   return;
-  // } else if (settings.getValue("zoomDefault") === 1) {
-  //   setFitToHeight();
-  //   return;
-  // }
+  if (settings.getValue("pageModeFileLoading") === 1) {
+    // use history
+    let historyIndex = history.getFilePathIndex(filePath);
+    if (historyIndex !== undefined) {
+      let pageMode = history.getIndex(historyIndex).pageMode;
+      if (pageMode !== undefined) {
+        setPageMode(pageMode);
+        return;
+      }
+    }
+    // not in history, use default
+  }
+  // use default
+  if (settings.getValue("pageModeDefault") === 0) {
+    setPageMode(0);
+    return;
+  } else if (settings.getValue("pageModeDefault") === 1) {
+    setPageMode(1);
+    return;
+  } else if (settings.getValue("pageModeDefault") === 2) {
+    setPageMode(2);
+    return;
+  }
   // use last used
   setPageMode(settings.getValue("page_mode"));
 }
