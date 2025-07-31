@@ -3,7 +3,7 @@
     "authors": [
       "trzyglow"
     ],
-    "last-updated": "2025-07-28",
+    "last-updated": "2025-07-31",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.11.0",
     "pre-release": "false",
@@ -58,7 +58,7 @@
   "menu-view-layout-pagemode-singlepage": "Einzelseitenansicht",
   "menu-view-layout-pagemode-doublepage": "Zweiseitenansicht",
   "[NOTE TO TRANSLATORS]menu-view-layout-pagemode-centerfirst": "'Center First Page' will be used in combination with 'Double Page' as 'Double Page (Center First Page)'",
-  "[NEEDS TRANSLATION]menu-view-layout-pagemode-centerfirst": "Center First Page",
+  "menu-view-layout-pagemode-centerfirst": "Erste Seite zentrieren",
   "[NOTE TO TRANSLATORS]mvl2": "Continuous as in Continuous Layout",
   "menu-view-layout-continuous": "Durchgehend",
   "[NOTE TO TRANSLATORS]menu-view-layout-pagesdirection": "Pages Direction as in which direction the pages are turned / flow, left to right like an American comic or right to left like manga",
@@ -142,7 +142,7 @@
   "ctxmenu-rotate-counterclockwise": "Gegen Uhrzeigerrichtung",
   "ctxmenu-openfile": "Öffne Datei...",
   "[NOTE TO TRANSLATORS]toolbar-change-to": "'Change to' will be used in the toolbar tooltips in combination with other entries like 'Fit to Width' or 'Double Page', e.g. 'Change to: Double Page'",
-  "[NEEDS TRANSLATION]toolbar-change-to": "Change to",
+  "toolbar-change-to": "Wechseln zu",
   "toolbar-go-left": "Nach links gehen",
   "toolbar-go-right": "Nach rechts gehen",
   "toolbar-rotate-clockwise": "Rotiere in Uhrzeigerrichtung",
