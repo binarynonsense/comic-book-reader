@@ -1989,7 +1989,6 @@ function setInitialFixedPageModeSingle() {
 }
 
 function setInitialPageMode(filePath) {
-  // TODO: preferences to remember las, file, default....
   g_pageModeCanBeChanged = true;
   // ref: setInitialZoom
   if (settings.getValue("pageModeFileLoading") === 1) {
