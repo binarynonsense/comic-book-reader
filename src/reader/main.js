@@ -1727,24 +1727,28 @@ function updateMenuAndToolbarItems(isOpen = true) {
         sendIpcToRenderer("update-toolbar-page-buttons", true);
         sendIpcToRenderer("update-toolbar-zoom-buttons", true);
         sendIpcToRenderer("update-toolbar-pagesdirection-buttons", true);
+        sendIpcToRenderer("update-toolbar-pagemode-buttons", true);
       } else if (g_fileData.type === FileDataType.EPUB_EBOOK) {
         menuBar.setEpubEbookOpened();
         sendIpcToRenderer("update-toolbar-rotation-buttons", false);
         sendIpcToRenderer("update-toolbar-page-buttons", true);
         sendIpcToRenderer("update-toolbar-zoom-buttons", true);
         sendIpcToRenderer("update-toolbar-pagesdirection-buttons", true);
+        sendIpcToRenderer("update-toolbar-pagemode-buttons", false);
       } else if (g_fileData.type === FileDataType.IMGS_FOLDER) {
         menuBar.setImageOpened();
         sendIpcToRenderer("update-toolbar-rotation-buttons", true);
         sendIpcToRenderer("update-toolbar-page-buttons", true);
         sendIpcToRenderer("update-toolbar-zoom-buttons", true);
         sendIpcToRenderer("update-toolbar-pagesdirection-buttons", true);
+        sendIpcToRenderer("update-toolbar-pagemode-buttons", false);
       } else if (g_fileData.type === FileDataType.WWW) {
         menuBar.setWWWOpened();
         sendIpcToRenderer("update-toolbar-rotation-buttons", true);
         sendIpcToRenderer("update-toolbar-page-buttons", true);
         sendIpcToRenderer("update-toolbar-zoom-buttons", true);
         sendIpcToRenderer("update-toolbar-pagesdirection-buttons", true);
+        sendIpcToRenderer("update-toolbar-pagemode-buttons", false);
       } else {
         menuBar.setComicBookOpened(false);
         menuBar.setCanOpenBooks(true);
@@ -1753,6 +1757,7 @@ function updateMenuAndToolbarItems(isOpen = true) {
         sendIpcToRenderer("update-toolbar-page-buttons", false);
         sendIpcToRenderer("update-toolbar-zoom-buttons", false);
         sendIpcToRenderer("update-toolbar-pagesdirection-buttons", false);
+        sendIpcToRenderer("update-toolbar-pagemode-buttons", false);
       }
     } else {
       menuBar.setComicBookOpened(false);

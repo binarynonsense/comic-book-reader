@@ -285,6 +285,27 @@ function initOnIpcCallbacks() {
     }
   });
 
+  on("update-toolbar-pagemode-buttons", (areEnabled) => {
+    const button1 = document.querySelector("#toolbar-button-set-pagemode-0");
+    const button2 = document.querySelector("#toolbar-button-set-pagemode-1");
+    const button3 = document.querySelector("#toolbar-button-set-pagemode-2");
+    if (areEnabled) {
+      button1.classList.remove("set-no-click");
+      button2.classList.remove("set-no-click");
+      button3.classList.remove("set-no-click");
+      button1.classList.remove("set-low-opacity");
+      button2.classList.remove("set-low-opacity");
+      button3.classList.remove("set-low-opacity");
+    } else {
+      button1.classList.add("set-no-click");
+      button2.classList.add("set-no-click");
+      button3.classList.add("set-no-click");
+      button1.classList.add("set-low-opacity");
+      button2.classList.add("set-low-opacity");
+      button3.classList.add("set-low-opacity");
+    }
+  });
+
   on("update-toolbar-pagesdirection-buttons", (areEnabled) => {
     const button1 = document.querySelector(
       "#toolbar-button-set-pagesdirection-ltr"
