@@ -556,6 +556,11 @@ function setFullscreenUI(isFullscreen) {
 
 let g_pageMode = 0;
 let g_pageModeCanBeChanged = true;
+
+export function getPageMode() {
+  return g_pageMode;
+}
+
 function setPageMode(value, canBeChanged) {
   g_pageMode = value;
   g_pageModeCanBeChanged = canBeChanged;
@@ -1351,6 +1356,10 @@ export function renderImg64(
       if (!isDoublePages) {
         containerDiv.innerHTML = "";
         containerDiv.appendChild(pagesRowDiv);
+        if (getPageMode() !== 0) {
+          pagesRowDiv.classList.add("pages-row-2p");
+          page1Img.classList.add("page-centered");
+        }
         if (sendPageLoaded) {
           sendIpcToMain("page-loaded", {
             dimensions: [page1Img.naturalWidth, page1Img.naturalHeight],

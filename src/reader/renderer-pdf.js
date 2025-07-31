@@ -6,7 +6,11 @@
  */
 
 import { on, sendIpcToMain, showNoBookContent } from "./renderer.js";
-import { setScrollBarsPosition, setFilterClass } from "./renderer-ui.js";
+import {
+  setScrollBarsPosition,
+  setFilterClass,
+  getPageMode,
+} from "./renderer-ui.js";
 
 export function initIpc() {
   initOnIpcCallbacks();
@@ -162,8 +166,16 @@ async function renderOpenPDFPages(rotation, scrollBarPos, sendPageLoaded) {
     canvas.classList.add("page-canvas");
     canvas.classList.add("page");
     if (isDoublePages) {
-      if (i === 0) canvas.classList.add("page-1");
-      else canvas.classList.add("page-2");
+      if (i === 0) {
+        canvas.classList.add("page-1");
+      } else {
+        canvas.classList.add("page-2");
+      }
+    } else {
+      if (g_currentPdf.pages.length == 1 && getPageMode() !== 0) {
+        pagesRowDiv.classList.add("pages-row-2p");
+        canvas.classList.add("page-centered");
+      }
     }
     setFilterClass(canvas);
     pagesRowDiv.appendChild(canvas);

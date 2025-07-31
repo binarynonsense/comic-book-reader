@@ -114,6 +114,9 @@
 .set-fit-to-width .page-2 {
   width: var(--zoom-width-page2);
 }
+.set-fit-to-width .page-centered {
+  width: 50%;
+}
 
 /* epub */
 
