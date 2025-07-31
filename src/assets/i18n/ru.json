@@ -141,6 +141,8 @@
   "ctxmenu-rotate-clockwise": "По часовой стрелке",
   "ctxmenu-rotate-counterclockwise": "Против часовой стрелки",
   "ctxmenu-openfile": "Открыть файл...",
+  "[NOTE TO TRANSLATORS]toolbar-change-to": "'Change to' will be used in the toolbar tooltips in combination with other entries like 'Fit to Width' or 'Double Page', e.g. 'Change to: Double Page'",
+  "[NEEDS TRANSLATION]toolbar-change-to": "Change to",
   "toolbar-go-left": "Перейти влево",
   "toolbar-go-right": "Перейти вправо",
   "toolbar-rotate-clockwise": "Повернуть по часовой стрелке",

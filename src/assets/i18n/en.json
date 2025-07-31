@@ -141,6 +141,8 @@
   "ctxmenu-rotate-clockwise": "Clockwise",
   "ctxmenu-rotate-counterclockwise": "Counterclockwise",
   "ctxmenu-openfile": "Open File...",
+  "[NOTE TO TRANSLATORS]toolbar-change-to": "'Change to' will be used in the toolbar tooltips in combination with other entries like 'Fit to Width' or 'Double Page', e.g. 'Change to: Double Page'",
+  "toolbar-change-to": "Change to",
   "toolbar-go-left": "Go Left",
   "toolbar-go-right": "Go Right",
   "toolbar-rotate-clockwise": "Rotate Clockwise",

@@ -141,6 +141,8 @@
   "ctxmenu-rotate-clockwise": "Sentido horario",
   "ctxmenu-rotate-counterclockwise": "Sentido anti-horario",
   "ctxmenu-openfile": "Abrir archivo...",
+  "[NOTE TO TRANSLATORS]toolbar-change-to": "'Change to' will be used in the toolbar tooltips in combination with other entries like 'Fit to Width' or 'Double Page', e.g. 'Change to: Double Page'",
+  "toolbar-change-to": "Cambiar a",
   "toolbar-go-left": "Ir a la izda.",
   "toolbar-go-right": "Ir a la dcha.",
   "toolbar-rotate-clockwise": "Rotar en sentido horario",

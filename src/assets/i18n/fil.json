@@ -141,6 +141,8 @@
   "ctxmenu-rotate-clockwise": "Paikutin Pakanan",
   "ctxmenu-rotate-counterclockwise": "Paikutin Pakaliwa",
   "ctxmenu-openfile": "Buksan ang File...",
+  "[NOTE TO TRANSLATORS]toolbar-change-to": "'Change to' will be used in the toolbar tooltips in combination with other entries like 'Fit to Width' or 'Double Page', e.g. 'Change to: Double Page'",
+  "[NEEDS TRANSLATION]toolbar-change-to": "Change to",
   "toolbar-go-left": "Pumunta Kaliwa",
   "toolbar-go-right": "Pumunta Kanan",
   "toolbar-rotate-clockwise": "Paikutin Pakanan",

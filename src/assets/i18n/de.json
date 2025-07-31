@@ -141,6 +141,8 @@
   "ctxmenu-rotate-clockwise": "In Uhrzeigerrichtung",
   "ctxmenu-rotate-counterclockwise": "Gegen Uhrzeigerrichtung",
   "ctxmenu-openfile": "Öffne Datei...",
+  "[NOTE TO TRANSLATORS]toolbar-change-to": "'Change to' will be used in the toolbar tooltips in combination with other entries like 'Fit to Width' or 'Double Page', e.g. 'Change to: Double Page'",
+  "[NEEDS TRANSLATION]toolbar-change-to": "Change to",
   "toolbar-go-left": "Nach links gehen",
   "toolbar-go-right": "Nach rechts gehen",
   "toolbar-rotate-clockwise": "Rotiere in Uhrzeigerrichtung",
