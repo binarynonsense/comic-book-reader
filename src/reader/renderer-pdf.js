@@ -145,9 +145,10 @@ async function renderOpenPDFPages(rotation, scrollBarPos, sendPageLoaded) {
   // there's probably a better way, but performance seems similar
   const isDoublePages = g_currentPdf.pages.length === 2;
   let containerDiv = document.getElementById("pages-container");
-  containerDiv.innerHTML = "";
+  // containerDiv.innerHTML = "";
   const pagesRowDiv = document.createElement("div");
   pagesRowDiv.classList.add("pages-row");
+  pagesRowDiv.classList.add("pages-row-hidden-rendering");
   if (isDoublePages) pagesRowDiv.classList.add("pages-row-2p");
   containerDiv.appendChild(pagesRowDiv);
   pagesRowDiv.innerHTML = "";
@@ -184,6 +185,11 @@ async function renderOpenPDFPages(rotation, scrollBarPos, sendPageLoaded) {
     };
 
     await g_currentPdf.pages[i].render(renderContext).promise;
+  }
+
+  pagesRowDiv.classList.remove("pages-row-hidden-rendering");
+  while (containerDiv.childNodes.length > 1) {
+    containerDiv.removeChild(containerDiv.firstChild);
   }
 
   setScrollBarsPosition(scrollBarPos);
