@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-const { BrowserWindow } = require("electron");
+const { BrowserWindow, clipboard } = require("electron");
 const fs = require("fs");
 const path = require("path");
 const core = require("../../core/main");
@@ -467,7 +467,12 @@ function initOnIpcCallbacks() {
 
     menuBar.setCloseTool(true);
     sendIpcToPreload("update-menubar");
-    sendIpcToRenderer("show-result");
+    sendIpcToRenderer("show-result", _("tool-shared-modal-log-failed-files"));
+  });
+
+  on("copy-text-to-clipboard", (text) => {
+    clipboard.writeText(text);
+    core.showToast(_("ui-modal-prompt-button-copy-log-notification"), 3000);
   });
 }
 
@@ -1386,6 +1391,7 @@ function updateLocalizedText() {
       outputImageFormatNotSet: _("tool-shared-ui-output-options-format-keep"),
       modalCloseButton: _("tool-shared-ui-close").toUpperCase(),
       modalCancelButton: _("tool-shared-ui-cancel").toUpperCase(),
+      modalCopyLogButton: _("ui-modal-prompt-button-copy-log").toUpperCase(),
       outputFolderOption0: _("tool-shared-ui-output-folder-0"),
       outputFolderOption1: _("tool-shared-ui-output-folder-1"),
       outputFileSameNameOption0: _("tool-shared-ui-output-file-same-name-0"),

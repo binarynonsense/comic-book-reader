@@ -27,6 +27,7 @@ let g_inputListID = 0;
 
 let g_cancel = false;
 let g_numErrors = 0;
+let g_failedFilePaths = [];
 
 let g_inputFilePath;
 let g_inputFileType;
@@ -71,6 +72,7 @@ function init(mode, outputFolderPath, canEditRars, loadedOptions) {
 
   g_cancel = false;
   g_numErrors = 0;
+  g_failedFilePaths = [];
 
   // menu buttons
   document
@@ -815,6 +817,7 @@ function initOnIpcCallbacks() {
       modalButtonClose.classList.remove("modal-button-success-color");
       modalButtonClose.classList.add("modal-button-danger-color");
       g_numErrors++;
+      g_failedFilePaths.push(g_inputFiles[g_inputFilesIndex]);
       if (g_inputFilesIndex < g_inputFiles.length - 1) {
         onStartNextFile();
       } else {
@@ -873,16 +876,30 @@ function initOnIpcCallbacks() {
     );
   });
 
-  on("show-result", () => {
+  on("show-result", (failedFilesText) => {
+    if (g_failedFilePaths.length > 0) {
+      updateLogText(
+        "\n------------ " + failedFilesText + ": ------------\n",
+        true
+      );
+      g_failedFilePaths.forEach((fileData) => {
+        updateLogText(fileData.path, true);
+      });
+    }
+
     const modalButtonCancel = g_openModal.querySelector(
       "#tool-cc-modal-cancel-button"
     );
     const modalButtonClose = g_openModal.querySelector(
       "#tool-cc-modal-close-button"
     );
+    const modalButtonCopyLog = g_openModal.querySelector(
+      "#tool-cc-modal-copylog-button"
+    );
     const modalLoadingBar = g_openModal.querySelector(".modal-progress-bar");
     modalButtonCancel.classList.add("set-display-none");
     modalButtonClose.classList.remove("set-display-none");
+    modalButtonCopyLog.classList.remove("set-display-none");
     modalLoadingBar.classList.add("set-display-none");
     g_openModal
       .querySelector(".modal-close-button")
@@ -1028,6 +1045,7 @@ function onStart(inputFiles) {
   g_inputFilePath = undefined;
   g_inputFilesIndex = -1;
   g_numErrors = 0;
+  g_failedFilePaths = [];
   updateLogText("", false);
 
   g_cancel = false;
@@ -1037,10 +1055,15 @@ function onStart(inputFiles) {
   const modalButtonClose = g_openModal.querySelector(
     "#tool-cc-modal-close-button"
   );
+  const modalButtonCopyLog = g_openModal.querySelector(
+    "#tool-cc-modal-copylog-button"
+  );
   modalButtonCancel.innerText = g_localizedTexts.modalCancelButton;
   modalButtonClose.innerText = g_localizedTexts.modalCloseButton;
+  modalButtonCopyLog.innerText = g_localizedTexts.modalCopyLogButton;
   modalButtonCancel.classList.remove("set-display-none");
   modalButtonClose.classList.add("set-display-none");
+  modalButtonCopyLog.classList.add("set-display-none");
   if (g_numErrors === 0) {
     modalButtonClose.classList.add("modal-button-success-color");
     modalButtonClose.classList.remove("modal-button-danger-color");
@@ -1069,6 +1092,11 @@ function onCancel() {
     .querySelector("#tool-cc-modal-cancel-button")
     .classList.add("set-display-none");
   sendIpcToMain("cancel");
+}
+
+function onCopyLog() {
+  const log = g_openModal.querySelector(".modal-log");
+  sendIpcToMain("copy-text-to-clipboard", log.innerHTML);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1189,12 +1217,20 @@ function showLogModal() {
       {
         text: " ",
         callback: () => {
+          onCopyLog();
+        },
+        fullWidth: true,
+        id: "tool-cc-modal-copylog-button",
+        dontClose: true,
+      },
+      {
+        text: " ",
+        callback: () => {
           onCancel();
         },
         fullWidth: true,
         id: "tool-cc-modal-cancel-button",
         dontClose: true,
-        key: "Escape",
       },
       {
         text: " ",
