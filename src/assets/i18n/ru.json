@@ -462,6 +462,7 @@
   "tool-shared-modal-log-failed-reason-canceled": "Процесс отменён",
   "tool-shared-modal-log-failed-reason-output-file-exists": "Выходной файл уже существует",
   "tool-shared-modal-log-failed-reason-output-folder-exists": "Выходная папка уже существует",
+  "[NEEDS TRANSLATION]tool-shared-modal-log-failed-files": "Failed Files",
   "tool-shared-modal-log-conversion-error": "Не удалось конвертировать файл, произошла ошибка",
   "tool-shared-modal-log-conversion-canceled": "Не удалось конвертировать файл, конвертация была отменена",
   "tool-shared-modal-log-extraction-error": "Не удалось извлечь файл, возникла ошибка",

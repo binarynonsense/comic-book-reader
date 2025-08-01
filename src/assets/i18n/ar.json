@@ -462,6 +462,7 @@
   "tool-shared-modal-log-failed-reason-canceled": "أُلغيت العملية",
   "tool-shared-modal-log-failed-reason-output-file-exists": "الملف المخرج موجود بالفعل",
   "tool-shared-modal-log-failed-reason-output-folder-exists": "مجلد المخرجات موجود بالفعل",
+  "[NEEDS TRANSLATION]tool-shared-modal-log-failed-files": "Failed Files",
   "tool-shared-modal-log-conversion-error": "حدث خطأ ما، تعذر تحويل الملف",
   "tool-shared-modal-log-conversion-canceled": "تم إلغاء التحويل، تعذر تحويل الملف",
   "tool-shared-modal-log-extraction-error": "حدث خطأ ما، تعذر استخراج الملف",

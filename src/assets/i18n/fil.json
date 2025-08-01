@@ -462,6 +462,7 @@
   "tool-shared-modal-log-failed-reason-canceled": "Ang proseso ay kinansela",
   "tool-shared-modal-log-failed-reason-output-file-exists": "Ang output na file ay umiiral na",
   "tool-shared-modal-log-failed-reason-output-folder-exists": "Ang output na folder ay umiiral na",
+  "[NEEDS TRANSLATION]tool-shared-modal-log-failed-files": "Failed Files",
   "tool-shared-modal-log-conversion-error": "Hindi ma-convert ang file, nagkaroon ng error",
   "tool-shared-modal-log-conversion-canceled": "Hindi ma-convert ang file, kinansela ang conversion",
   "tool-shared-modal-log-extraction-error": "Hindi ma-extract ang file, nagkaroon ng error",

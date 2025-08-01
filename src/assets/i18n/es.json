@@ -462,6 +462,7 @@
   "tool-shared-modal-log-failed-reason-canceled": "Se canceló el proceso",
   "tool-shared-modal-log-failed-reason-output-file-exists": "El archivo de salida ya existe",
   "tool-shared-modal-log-failed-reason-output-folder-exists": "La carpeta de salida ya existe",
+  "tool-shared-modal-log-failed-files": "Ficheros fallidos",
   "tool-shared-modal-log-conversion-error": "No se pudo convertir el archivo, se produjo un error",
   "tool-shared-modal-log-conversion-canceled": "No se pudo convertir el archivo, la conversión fue cancelada",
   "tool-shared-modal-log-extraction-error": "No se pudo extraer el archivo, se produjo un error",
