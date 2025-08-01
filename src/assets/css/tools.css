@@ -73,11 +73,8 @@ html[dir="rtl"] #tools:not(:has(iframe)) {
 
 .tools-columns-right-subsection {
   padding: 15px 20px 20px 20px;
-  /* margin-bottom: 10px; */
   /* background-color: color-mix(in srgb, var(--tools-bg2-color) 96%, black); */
-  /* border: 1px solid var(--tools-input-border-color); */
   background-color: var(--tools-bg1-color);
-  /* border-left: 1px solid var(--tools-input-border-color); */
 }
 
 /* /////////////////////////////////////////////////////////////// */
