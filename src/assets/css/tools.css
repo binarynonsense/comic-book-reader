@@ -73,7 +73,7 @@ html[dir="rtl"] #tools:not(:has(iframe)) {
 
 .tools-columns-right-subsection {
   padding: 15px 20px 20px 20px;
-  margin-bottom: 10px;
+  /* margin-bottom: 10px; */
   /* background-color: color-mix(in srgb, var(--tools-bg2-color) 96%, black); */
   /* border: 1px solid var(--tools-input-border-color); */
   background-color: var(--tools-bg1-color);
@@ -926,6 +926,10 @@ html[dir="rtl"] .tools-range-bubble {
 
 .tool-shared-columns-parent-alignv {
   align-items: center;
+}
+
+.tool-shared-columns-parent-extra-margin-bottom {
+  margin-bottom: 10px;
 }
 
 .tool-shared-columns-50 {
