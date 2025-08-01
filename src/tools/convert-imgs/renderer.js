@@ -15,11 +15,9 @@ import * as toolsSettings from "../../shared/renderer/tools-settings.js";
 import * as toolsShared from "../../shared/renderer/tools-shared.js";
 
 let g_inputFiles = [];
-let g_inputFilesIndex = 0;
 let g_inputFilesID = 0;
 
 let g_cancel = false;
-let g_numErrors = 0;
 
 let g_outputFolderPath;
 
@@ -32,6 +30,7 @@ let g_outputImageFormatSelect;
 let g_localizedRemoveFromListText;
 let g_localizedModalCancelButtonText;
 let g_localizedModalCloseButtonText;
+let g_localizedModalCopyLogButtonText;
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -51,7 +50,6 @@ function init(outputFolderPath, loadedOptions) {
   });
 
   g_inputFiles = [];
-  g_inputFilesIndex = 0;
   g_inputFilesID = 0;
   g_cancel = false;
 
@@ -112,7 +110,6 @@ function init(outputFolderPath, loadedOptions) {
     .addEventListener("click", (event) => {
       // clear list
       g_inputFiles = [];
-      g_inputFilesIndex = 0;
       g_inputFilesID = 0;
       g_inputListDiv.innerHTML = "";
       checkValidData();
@@ -385,79 +382,47 @@ function initOnIpcCallbacks() {
 
   /////////////////////////////////////////////////////////////////////////////
 
-  on("finished-ok", () => {
-    if (g_inputFilesIndex < g_inputFiles.length - 1) {
-      g_inputFilesIndex++;
-      onStart(false);
-    } else {
-      sendIpcToMain(
-        "end",
-        false,
-        g_inputFiles.length,
-        g_numErrors,
-        g_inputFilesIndex + 1
+  on(
+    "show-result",
+    (failedFilesText, numFiles, numErrors, failedFilePaths, numAttempts) => {
+      if (failedFilePaths.length > 0) {
+        updateLogText(
+          "\n------------ " + failedFilesText + ": ------------\n",
+          true
+        );
+        failedFilePaths.forEach((filePath) => {
+          updateLogText(filePath, true);
+        });
+      }
+
+      const modalButtonCancel = g_openModal.querySelector(
+        "#tool-ci-modal-cancel-button"
       );
-    }
-  });
-
-  on("finished-error", () => {
-    const modalButtonClose = g_openModal.querySelector(
-      "#tool-ci-modal-close-button"
-    );
-    modalButtonClose.classList.remove("modal-button-success-color");
-    modalButtonClose.classList.add("modal-button-danger-color");
-    g_numErrors++;
-    if (g_inputFilesIndex < g_inputFiles.length - 1) {
-      g_inputFilesIndex++;
-      onStart(false);
-    } else {
-      sendIpcToMain(
-        "end",
-        false,
-        g_inputFiles.length,
-        g_numErrors,
-        g_inputFilesIndex + 1
+      const modalButtonClose = g_openModal.querySelector(
+        "#tool-ci-modal-close-button"
       );
+      const modalButtonCopyLog = g_openModal.querySelector(
+        "#tool-ci-modal-copylog-button"
+      );
+      const modalLoadingBar = g_openModal.querySelector(".modal-progress-bar");
+      modalButtonCancel.classList.add("set-display-none");
+      modalButtonClose.classList.remove("set-display-none");
+      modalButtonCopyLog.classList.remove("set-display-none");
+      modalLoadingBar.classList.add("set-display-none");
+
+      if (numErrors > 0 || numAttempts < numFiles) {
+        modalButtonClose.classList.remove("modal-button-success-color");
+        modalButtonClose.classList.add("modal-button-danger-color");
+      }
+
+      g_openModal
+        .querySelector(".modal-close-button")
+        .classList.remove("set-display-none");
+      g_openModal
+        .querySelector(".modal-topbar")
+        .classList.remove("set-display-none");
     }
-  });
-
-  on("finished-canceled", (numAttempted) => {
-    const modalButtonCancel = g_openModal.querySelector(
-      "#tool-ci-modal-cancel-button"
-    );
-    const modalButtonClose = g_openModal.querySelector(
-      "#tool-ci-modal-close-button"
-    );
-    const modalLoadingBar = g_openModal.querySelector(".modal-progress-bar");
-
-    modalButtonCancel.classList.add("set-display-none");
-    modalButtonClose.classList.remove("set-display-none");
-    {
-      modalButtonClose.classList.remove("modal-button-success-color");
-      modalButtonClose.classList.add("modal-button-danger-color");
-    }
-    modalLoadingBar.classList.add("set-display-none");
-    sendIpcToMain("end", true, g_inputFiles.length, g_numErrors, numAttempted);
-  });
-
-  on("show-result", () => {
-    const modalButtonCancel = g_openModal.querySelector(
-      "#tool-ci-modal-cancel-button"
-    );
-    const modalButtonClose = g_openModal.querySelector(
-      "#tool-ci-modal-close-button"
-    );
-    const modalLoadingBar = g_openModal.querySelector(".modal-progress-bar");
-    modalButtonCancel.classList.add("set-display-none");
-    modalButtonClose.classList.remove("set-display-none");
-    modalLoadingBar.classList.add("set-display-none");
-    g_openModal
-      .querySelector(".modal-close-button")
-      .classList.remove("set-display-none");
-    g_openModal
-      .querySelector(".modal-topbar")
-      .classList.remove("set-display-none");
-  });
+  );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -505,14 +470,10 @@ function onRemoveFile(element, id) {
   }
 }
 
-function onStart(resetCounter = true) {
+function onStart() {
   if (!g_openModal) showLogModal(); // TODO: check if first time?
 
-  if (resetCounter) {
-    g_inputFilesIndex = 0;
-    g_numErrors = 0;
-    updateLogText("", false);
-  }
+  updateLogText("", false);
 
   g_cancel = false;
   const modalButtonCancel = g_openModal.querySelector(
@@ -521,11 +482,16 @@ function onStart(resetCounter = true) {
   const modalButtonClose = g_openModal.querySelector(
     "#tool-ci-modal-close-button"
   );
+  const modalButtonCopyLog = g_openModal.querySelector(
+    "#tool-ci-modal-copylog-button"
+  );
   modalButtonCancel.innerText = g_localizedModalCancelButtonText;
   modalButtonClose.innerText = g_localizedModalCloseButtonText;
+  modalButtonCopyLog.innerText = g_localizedModalCopyLogButtonText;
   modalButtonCancel.classList.remove("set-display-none");
   modalButtonClose.classList.add("set-display-none");
-  if (g_numErrors === 0) {
+  modalButtonCopyLog.classList.add("set-display-none");
+  {
     modalButtonClose.classList.add("modal-button-success-color");
     modalButtonClose.classList.remove("modal-button-danger-color");
   }
@@ -557,6 +523,11 @@ function onCancel() {
     .querySelector("#tool-ci-modal-cancel-button")
     .classList.add("set-display-none");
   sendIpcToMain("cancel");
+}
+
+function onCopyLog() {
+  const log = g_openModal.querySelector(".modal-log");
+  sendIpcToMain("copy-text-to-clipboard", log.innerHTML);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -677,12 +648,20 @@ function showLogModal() {
       {
         text: " ",
         callback: () => {
+          onCopyLog();
+        },
+        fullWidth: true,
+        id: "tool-ci-modal-copylog-button",
+        dontClose: true,
+      },
+      {
+        text: " ",
+        callback: () => {
           onCancel();
         },
         fullWidth: true,
         id: "tool-ci-modal-cancel-button",
         dontClose: true,
-        key: "Escape",
       },
       {
         text: " ",
@@ -797,6 +776,8 @@ function updateLocalization(
       g_localizedModalCloseButtonText = element.text;
     } else if (element.id === "tool-ci-modal-cancel-button-text") {
       g_localizedModalCancelButtonText = element.text;
+    } else if (element.id === "tool-ci-modal-copylog-button-text") {
+      g_localizedModalCopyLogButtonText = element.text;
     } else if (domElement !== null) {
       domElement.innerHTML = element.text;
     }

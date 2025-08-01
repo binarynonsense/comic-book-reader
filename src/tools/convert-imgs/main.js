@@ -5,6 +5,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
+const { clipboard } = require("electron");
 const fs = require("fs");
 const path = require("path");
 const core = require("../../core/main");
@@ -245,51 +246,9 @@ function initOnIpcCallbacks() {
     }
   );
 
-  on("stop-error", (err) => {
-    stopError(err);
-  });
-
-  on("end", (wasCanceled, numFiles, numErrors, numAttempted) => {
-    if (!wasCanceled) {
-      sendIpcToRenderer(
-        "modal-update-title-text",
-        _("tool-shared-modal-title-conversion-finished") + " ENDDDD"
-      );
-
-      if (numErrors > 0) {
-        sendIpcToRenderer(
-          "update-info-text",
-          _(
-            "tool-shared-modal-info-conversion-error-num-files",
-            numErrors,
-            numFiles
-          )
-        );
-      } else {
-        sendIpcToRenderer(
-          "update-info-text",
-          _("tool-shared-modal-info-conversion-success-num-files", numFiles)
-        );
-      }
-    } else {
-      sendIpcToRenderer(
-        "modal-update-title-text",
-        _("tool-shared-modal-title-conversion-canceled")
-      );
-      sendIpcToRenderer(
-        "update-info-text",
-        _(
-          "tool-shared-modal-info-conversion-results",
-          numAttempted - numErrors,
-          numErrors,
-          numFiles - numAttempted
-        )
-      );
-    }
-
-    menuBar.setCloseTool(true);
-    sendIpcToPreload("update-menubar");
-    sendIpcToRenderer("show-result");
+  on("copy-text-to-clipboard", (text) => {
+    clipboard.writeText(text);
+    core.showToast(_("ui-modal-prompt-button-copy-log-notification"), 3000);
   });
 }
 
@@ -355,7 +314,38 @@ function stopError(error) {
     "update-log-text",
     _("tool-shared-modal-log-conversion-error")
   );
-  sendIpcToRenderer("finished-error");
+
+  sendIpcToRenderer(
+    "modal-update-title-text",
+    _("tool-shared-modal-title-conversion-finished") + " ENDDDD"
+  );
+
+  if (g_numErrors > 0) {
+    sendIpcToRenderer(
+      "update-info-text",
+      _(
+        "tool-shared-modal-info-conversion-error-num-files",
+        g_numErrors,
+        g_numFiles
+      )
+    );
+  } else {
+    sendIpcToRenderer(
+      "update-info-text",
+      _("tool-shared-modal-info-conversion-success-num-files", g_numFiles)
+    );
+  }
+
+  menuBar.setCloseTool(true);
+  sendIpcToPreload("update-menubar");
+  sendIpcToRenderer(
+    "show-result",
+    _("tool-shared-modal-log-failed-files"),
+    g_numFiles,
+    g_numErrors,
+    g_failedFilePaths,
+    g_numAttempts
+  );
 }
 
 function stopCancel() {
@@ -365,8 +355,37 @@ function stopCancel() {
     "update-log-text",
     _("tool-shared-modal-log-conversion-canceled")
   );
-  sendIpcToRenderer("finished-canceled");
+
+  sendIpcToRenderer(
+    "modal-update-title-text",
+    _("tool-shared-modal-title-conversion-canceled")
+  );
+  sendIpcToRenderer(
+    "update-info-text",
+    _(
+      "tool-shared-modal-info-conversion-results",
+      g_numAttempts - g_numErrors,
+      g_numErrors,
+      g_numFiles - g_numAttempts
+    )
+  );
+
+  menuBar.setCloseTool(true);
+  sendIpcToPreload("update-menubar");
+  sendIpcToRenderer(
+    "show-result",
+    _("tool-shared-modal-log-failed-files"),
+    g_numFiles,
+    g_numErrors,
+    g_failedFilePaths,
+    g_numAttempts
+  );
 }
+
+let g_numErrors = 0;
+let g_numFiles = 0;
+let g_numAttempts = 0;
+let g_failedFilePaths = [];
 
 async function start(
   imgFiles,
@@ -375,11 +394,13 @@ async function start(
   outputFormat,
   outputFolderPath
 ) {
+  g_cancel = false;
+  g_numErrors = 0;
+  g_failedFilePaths = [];
+  g_numAttempts = 0;
+  g_numFiles = imgFiles.length;
   try {
-    g_cancel = false;
     outputScale = parseInt(outputScale);
-    let numErrors = 0;
-    let numFiles = imgFiles.length;
 
     sendIpcToRenderer(
       "modal-update-title-text",
@@ -397,12 +418,14 @@ async function start(
     // avoid EBUSY error on windows
     sharp.cache(false);
     for (let index = 0; index < imgFiles.length; index++) {
+      g_numAttempts++;
+      let originalFilePath = "???";
       try {
         if (g_cancel === true) {
           stopCancel(index);
           return;
         }
-        let originalFilePath = imgFiles[index].path;
+        originalFilePath = imgFiles[index].path;
         let filePath = path.join(
           g_tempSubFolderPath,
           path.basename(imgFiles[index].path)
@@ -490,7 +513,8 @@ async function start(
         fs.unlinkSync(filePath);
       } catch (err) {
         sendIpcToRenderer("update-log-text", err);
-        numErrors++;
+        g_numErrors++;
+        g_failedFilePaths.push(originalFilePath);
       }
     }
     // DONE /////////////////////
@@ -500,24 +524,31 @@ async function start(
       "modal-update-title-text",
       _("tool-shared-modal-title-conversion-finished")
     );
-    if (numErrors > 0) {
+    if (g_numErrors > 0) {
       sendIpcToRenderer(
         "update-info-text",
         _(
           "tool-shared-modal-info-conversion-error-num-files",
-          numErrors,
-          numFiles
+          g_numErrors,
+          g_numFiles
         )
       );
     } else {
       sendIpcToRenderer(
         "update-info-text",
-        _("tool-shared-modal-info-conversion-success-num-files", numFiles)
+        _("tool-shared-modal-info-conversion-success-num-files", g_numFiles)
       );
     }
     menuBar.setCloseTool(true);
     sendIpcToPreload("update-menubar");
-    sendIpcToRenderer("show-result");
+    sendIpcToRenderer(
+      "show-result",
+      _("tool-shared-modal-log-failed-files"),
+      g_numFiles,
+      g_numErrors,
+      g_failedFilePaths,
+      g_numAttempts
+    );
   } catch (err) {
     stopError(err);
   }
@@ -640,6 +671,10 @@ function getLocalization() {
     {
       id: "tool-ci-modal-cancel-button-text",
       text: _("tool-shared-ui-cancel").toUpperCase(),
+    },
+    {
+      id: "tool-ci-modal-copylog-button-text",
+      text: _("ui-modal-prompt-button-copy-log").toUpperCase(),
     },
     //////////////////////////////////////////////
     {
