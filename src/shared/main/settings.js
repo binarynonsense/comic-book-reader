@@ -76,6 +76,11 @@ const g_defaultSettings = {
   pagesDirection: 0, // 0: ltr, 1: rtl,
   mouseButtonQuickMenu: 1, // -1: unassigned 0-4: mouse button
 
+  checkUpdatesOnStart: 3, // 0: never, 1: always, 2: day, 3: week, 4: month
+  checkUpdatesNotify: 0, // 0: always, 1: once
+  checkUpdatesLastDate: "2025-07-01T10:37:28.188Z",
+  checkUpdatesLastVersionFound: "1.0.0",
+
   navKeys: {
     scrollUp: ["w", "ArrowUp"],
     scrollDown: ["s", "ArrowDown"],
@@ -505,6 +510,37 @@ function sanitize() {
   } else {
     g_settings.rarExeFolderPath = g_defaultSettings.rarExeFolderPath;
   }
+
+  // Updates
+  if (
+    !Number.isInteger(g_settings.checkUpdatesOnStart) ||
+    g_settings.checkUpdatesOnStart < 0 ||
+    g_settings.checkUpdatesOnStart > 4
+  ) {
+    g_settings.checkUpdatesOnStart = g_defaultSettings.checkUpdatesOnStart;
+  }
+  if (
+    !Number.isInteger(g_settings.checkUpdatesNotify) ||
+    g_settings.checkUpdatesNotify < 0 ||
+    g_settings.checkUpdatesNotify > 1
+  ) {
+    g_settings.checkUpdatesNotify = g_defaultSettings.checkUpdatesNotify;
+  }
+  if (
+    typeof g_settings.checkUpdatesLastDate !== "string" ||
+    !Date.parse(g_settings.checkUpdatesLastDate)
+  ) {
+    // TODO: do something better than Date.parse?
+    g_settings.checkUpdatesLastDate = g_defaultSettings.checkUpdatesLastDate;
+  }
+  if (
+    typeof g_settings.checkUpdatesLastVersionFound !== "string" ||
+    !utils.separateVersionText(g_settings.checkUpdatesLastVersionFound)
+  ) {
+    g_settings.checkUpdatesLastVersionFound =
+      g_defaultSettings.checkUpdatesLastVersionFound;
+  }
+
   // EXPERIMENTAL
   if (
     !Number.isInteger(g_settings.experimentalForceMultimonitorSize) ||

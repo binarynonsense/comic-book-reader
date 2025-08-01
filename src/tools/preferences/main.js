@@ -318,6 +318,10 @@ function initOnIpcCallbacks() {
     sendIpcToRenderer("set-rar-folder", folderPath);
   });
 
+  on("request-manual-updates-check", () => {
+    core.onMenuCheckUpdates();
+  });
+
   on("tooltip-button-clicked", (text) => {
     sendIpcToRenderer(
       "show-ok-modal",
@@ -491,23 +495,23 @@ function getLocalization() {
     },
     //////////////////////////////////////////////
     {
-      id: "tool-pre-section-all-text",
-      text: _("tool-pre-all"),
-    },
-    {
-      id: "tool-pre-section-appearance-text",
+      id: "tool-pre-section-0-text",
       text: _("tool-pre-appearance"),
     },
     {
-      id: "tool-pre-section-ui-text",
+      id: "tool-pre-section-1-text",
       text: _("tool-pre-ui"),
     },
     {
-      id: "tool-pre-section-file-formats-text",
+      id: "tool-pre-section-2-formats-text",
       text: _("tool-pre-file-formats"),
     },
     {
-      id: "tool-pre-section-advanced-text",
+      id: "tool-pre-section-3-text",
+      text: _("tool-pre-updates"),
+    },
+    {
+      id: "tool-pre-section-4-text",
       text: _("tool-pre-advanced-preferences"),
     },
     //////////////////////////////////////////////
@@ -973,6 +977,56 @@ function getLocalization() {
     {
       id: "tool-pre-rarfolder-reset-button-text",
       text: _("tool-shared-ui-reset").toUpperCase(),
+    },
+    //////////////////////////////////////////////
+    {
+      id: "tool-pre-updates-autocheck-text",
+      text: _("tool-pre-updates-autocheck"),
+    },
+    {
+      id: "tool-pre-updates-checkonstart-text",
+      text: _("tool-pre-updates-checkonstart"),
+    },
+    {
+      id: "tool-pre-updates-checkonstart-0-text",
+      text: _("tool-pre-updates-checkonstart-0"),
+    },
+    {
+      id: "tool-pre-updates-checkonstart-1-text",
+      text: _("tool-pre-updates-checkonstart-1"),
+    },
+    {
+      id: "tool-pre-updates-checkonstart-2-text",
+      text: _("tool-pre-updates-checkonstart-2"),
+    },
+    {
+      id: "tool-pre-updates-checkonstart-3-text",
+      text: _("tool-pre-updates-checkonstart-3"),
+    },
+    {
+      id: "tool-pre-updates-checkonstart-4-text",
+      text: _("tool-pre-updates-checkonstart-4"),
+    },
+
+    {
+      id: "tool-pre-updates-checknotify-text",
+      text: _("tool-pre-updates-checknotify"),
+    },
+    {
+      id: "tool-pre-updates-checknotify-0-text",
+      text: _("tool-pre-updates-checknotify-0"),
+    },
+    {
+      id: "tool-pre-updates-checknotify-1-text",
+      text: _("tool-pre-updates-checknotify-1"),
+    },
+    {
+      id: "tool-pre-updates-manualcheck-text",
+      text: _("tool-pre-updates-manualcheck"),
+    },
+    {
+      id: "tool-pre-updates-manualcheck-button-text",
+      text: _("menu-help-checkupdates").toUpperCase(),
     },
     //////////////////////////////////////////////
     {

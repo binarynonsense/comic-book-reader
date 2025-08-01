@@ -24,6 +24,7 @@ const appUtils = require("../shared/main/app-utils");
 const fileFormats = require("../shared/main/file-formats");
 const temp = require("../shared/main/temp");
 const tools = require("../shared/main/tools");
+const { _ } = require("../shared/main/i18n");
 
 const reader = require("../reader/main");
 
@@ -638,25 +639,63 @@ if (!gotTheLock) {
   exports.renderTitle = renderTitle;
 
   function startUpCheckForUpdates() {
-    const doCheck = false;
-    if (doCheck) {
-      if (g_workerUpdates === undefined) {
-        g_workerUpdates = fork(path.join(__dirname, "worker-updates.js"));
-        g_workerUpdates.on("message", (message) => {
-          g_workerUpdates.kill(); // kill it after one use
-          if (message[0] === true) {
-            log.test("updates true");
-            log.test(message[1]);
-            return;
-          } else {
-            log.test("updates false");
-            log.test(message[1]);
-            return;
+    try {
+      let doCheck = false;
+      if (settings.getValue("checkUpdatesOnStart") > 0) {
+        if (settings.getValue("checkUpdatesOnStart") === 1) {
+          doCheck = true;
+        } else {
+          const lastDate = new Date(settings.getValue("checkUpdatesLastDate"));
+          const daysPassed = Math.floor(
+            Math.abs(new Date() - lastDate) / (1000 * 60 * 60 * 24)
+          );
+          log.debug("days since last update check: " + daysPassed);
+          if (settings.getValue("checkUpdatesOnStart") === 2) {
+            if (daysPassed >= 1) doCheck = true;
+          } else if (settings.getValue("checkUpdatesOnStart") === 3) {
+            if (daysPassed >= 7) doCheck = true;
+          } else if (settings.getValue("checkUpdatesOnStart") === 4) {
+            if (daysPassed >= 30) doCheck = true;
           }
-        });
+        }
       }
-      // send to worker
-      g_workerUpdates.send([g_launchInfo, app.getVersion()]);
+      if (doCheck) {
+        log.debug("checking for updates");
+        if (g_workerUpdates === undefined) {
+          g_workerUpdates = fork(path.join(__dirname, "worker-updates.js"));
+          g_workerUpdates.on("message", (message) => {
+            const newVersion = message[1];
+            g_workerUpdates.kill(); // kill it after one use
+            if (message[0] === true) {
+              log.debug("update available: " + newVersion);
+              if (
+                settings.getValue("checkUpdatesNotify") === 0 ||
+                newVersion !== settings.getValue("checkUpdatesLastVersionFound")
+              ) {
+                sendIpcToCoreRenderer(
+                  "show-toast-update-available",
+                  _("ui-modal-title-versionavailable")
+                );
+              }
+              settings.setValue("checkUpdatesLastDate", new Date().toJSON());
+              return;
+            } else {
+              if (newVersion) {
+                log.debug("no update available");
+                settings.setValue("checkUpdatesLastDate", new Date().toJSON());
+                settings.setValue("checkUpdatesLastVersionFound", newVersion);
+              } else {
+                log.debug("couldn't retrieve the updates info");
+              }
+              return;
+            }
+          });
+        }
+        // send to worker
+        g_workerUpdates.send([g_launchInfo, app.getVersion()]);
+      }
+    } catch (error) {
+      log.editorError(error);
     }
   }
 
@@ -833,7 +872,7 @@ if (!gotTheLock) {
     };
     sendIpcToCoreRenderer("show-modal-checkversion", app.getVersion(), texts);
   };
-} // end of instance check if
+} // end of if gotTheLock
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////

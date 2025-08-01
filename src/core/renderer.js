@@ -21,6 +21,7 @@ import {
   getFormattedShortcut,
 } from "../shared/renderer/utils.js";
 import axios from "../assets/libs/axios/dist/esm/axios.js";
+import * as toasts from "../shared/renderer/toasts.js";
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -198,6 +199,17 @@ function onIpcFromMain(event, args) {
       case "log-to-console":
         {
           console.log(args[2]);
+        }
+        break;
+
+      case "show-toast-update-available":
+        {
+          toasts.show(args[2], 5000, () => {
+            reader.sendIpcToMain(
+              "open-url-in-browser",
+              "https://github.com/binarynonsense/comic-book-reader/releases/latest"
+            );
+          });
         }
         break;
     }

@@ -25,427 +25,465 @@ let g_rarExeFolderPathUl;
 let g_localizedTexts = {};
 
 function init(activeLocale, languages, activeTheme, themes, settings) {
-  if (!g_isInitialized) {
-    // things to start only once go here
-    g_isInitialized = true;
-  }
-  document.getElementById("tools-columns-right").scrollIntoView({
-    behavior: "instant",
-    block: "start",
-    inline: "nearest",
-  });
-  // close/back button
-  document
-    .getElementById("tool-pre-back-button")
-    .addEventListener("click", (event) => {
-      sendIpcToMain("close");
+  try {
+    if (!g_isInitialized) {
+      // things to start only once go here
+      g_isInitialized = true;
+    }
+    document.getElementById("tools-columns-right").scrollIntoView({
+      behavior: "instant",
+      block: "start",
+      inline: "nearest",
     });
-  // sections menu
-  document
-    .getElementById("tool-pre-section-all-button")
-    .addEventListener("click", (event) => {
-      switchSection(0);
-    });
-  document
-    .getElementById("tool-pre-section-appearance-button")
-    .addEventListener("click", (event) => {
-      switchSection(1);
-    });
-  document
-    .getElementById("tool-pre-section-ui-button")
-    .addEventListener("click", (event) => {
-      switchSection(2);
-    });
-  document
-    .getElementById("tool-pre-section-file-formats-button")
-    .addEventListener("click", (event) => {
-      switchSection(3);
-    });
-  document
-    .getElementById("tool-pre-section-advanced-button")
-    .addEventListener("click", (event) => {
-      switchSection(4);
-    });
-  // languages select
-  {
-    let select = document.getElementById("tool-pre-language-select");
-    // generate options
-    if (languages !== undefined) {
-      for (let language of languages) {
-        let nativeName = language.nativeName;
-        if (isVersionOlder(language.acbrVersion, "3.5.0-beta1")) {
-          nativeName += " (" + language.outdatedText + ")";
+    // close/back button
+    document
+      .getElementById("tool-pre-back-button")
+      .addEventListener("click", (event) => {
+        sendIpcToMain("close");
+      });
+    // sections menu
+    for (let index = 0; index < 5; index++) {
+      document
+        .getElementById(`tool-pre-section-${index}-button`)
+        .addEventListener("click", (event) => {
+          switchSection(index);
+        });
+    }
+    // languages select
+    {
+      let select = document.getElementById("tool-pre-language-select");
+      // generate options
+      if (languages !== undefined) {
+        for (let language of languages) {
+          let nativeName = language.nativeName;
+          if (isVersionOlder(language.acbrVersion, "3.5.0-beta1")) {
+            nativeName += " (" + language.outdatedText + ")";
+          }
+          let opt = document.createElement("option");
+          opt.value = language.locale;
+          opt.textContent = nativeName;
+          opt.selected = language.locale === activeLocale;
+          select.appendChild(opt);
         }
-        let opt = document.createElement("option");
-        opt.value = language.locale;
-        opt.textContent = nativeName;
-        opt.selected = language.locale === activeLocale;
-        select.appendChild(opt);
       }
+      // add listener
+      select.addEventListener("change", function (event) {
+        sendIpcToMain("set-language", select.value);
+      });
     }
-    // add listener
-    select.addEventListener("change", function (event) {
-      sendIpcToMain("set-language", select.value);
-    });
-  }
-  // themes select
-  {
-    let select = document.getElementById("tool-pre-themes-select");
-    // generate options
-    if (themes !== undefined) {
-      for (let theme of themes) {
-        let opt = document.createElement("option");
-        opt.value = theme.filename;
-        opt.textContent = theme.name;
-        opt.selected = theme.filename === activeTheme;
-        select.appendChild(opt);
+    // themes select
+    {
+      let select = document.getElementById("tool-pre-themes-select");
+      // generate options
+      if (themes !== undefined) {
+        for (let theme of themes) {
+          let opt = document.createElement("option");
+          opt.value = theme.filename;
+          opt.textContent = theme.name;
+          opt.selected = theme.filename === activeTheme;
+          select.appendChild(opt);
+        }
       }
+      // add listener
+      select.addEventListener("change", function (event) {
+        sendIpcToMain("set-theme", select.value);
+      });
     }
-    // add listener
-    select.addEventListener("change", function (event) {
-      sendIpcToMain("set-theme", select.value);
-    });
-  }
-  // zoom default select
-  {
-    let select = document.getElementById("tool-pre-zoom-default-select");
-    select.value = settings.zoomDefault;
-    select.addEventListener("change", function (event) {
-      sendIpcToMain("set-setting", "zoomDefault", parseInt(select.value));
-    });
-  }
-  // zoom file loading select
-  {
-    let select = document.getElementById("tool-pre-zoom-fileloading-select");
-    select.value = settings.zoomFileLoading;
-    select.addEventListener("change", function (event) {
-      sendIpcToMain("set-setting", "zoomFileLoading", parseInt(select.value));
-    });
-  }
-  // page mode default select
-  {
-    let select = document.getElementById("tool-pre-pagemode-default-select");
-    select.value = settings.pageModeDefault;
-    select.addEventListener("change", function (event) {
-      sendIpcToMain("set-setting", "pageModeDefault", parseInt(select.value));
-    });
-  }
-  // page mode file loading select
-  {
-    let select = document.getElementById(
-      "tool-pre-pagemode-fileloading-select"
-    );
-    select.value = settings.pageModeFileLoading;
-    select.addEventListener("change", function (event) {
-      sendIpcToMain(
-        "set-setting",
-        "pageModeFileLoading",
-        parseInt(select.value)
+    // zoom default select
+    {
+      let select = document.getElementById("tool-pre-zoom-default-select");
+      select.value = settings.zoomDefault;
+      select.addEventListener("change", function (event) {
+        sendIpcToMain("set-setting", "zoomDefault", parseInt(select.value));
+      });
+    }
+    // zoom file loading select
+    {
+      let select = document.getElementById("tool-pre-zoom-fileloading-select");
+      select.value = settings.zoomFileLoading;
+      select.addEventListener("change", function (event) {
+        sendIpcToMain("set-setting", "zoomFileLoading", parseInt(select.value));
+      });
+    }
+    // page mode default select
+    {
+      let select = document.getElementById("tool-pre-pagemode-default-select");
+      select.value = settings.pageModeDefault;
+      select.addEventListener("change", function (event) {
+        sendIpcToMain("set-setting", "pageModeDefault", parseInt(select.value));
+      });
+    }
+    // page mode file loading select
+    {
+      let select = document.getElementById(
+        "tool-pre-pagemode-fileloading-select"
       );
-    });
-  }
-  // layout clock select
-  {
-    let select = document.getElementById("tool-pre-layout-clock-select");
-    select.value = settings.layoutClock;
-    select.addEventListener("change", function (event) {
-      sendIpcToMain("set-layout-clock", parseInt(select.value));
-    });
-  }
-  // clock format select
-  {
-    let select = document.getElementById("tool-pre-clock-format-select");
-    select.value = settings.clockFormat;
-    select.addEventListener("change", function (event) {
-      sendIpcToMain("set-clock-format", parseInt(select.value));
-    });
-  }
-  // layout pagenum select
-  {
-    let select = document.getElementById("tool-pre-layout-pagenum-select");
-    select.value = settings.layoutPageNum;
-    select.addEventListener("change", function (event) {
-      sendIpcToMain("set-layout-pagenum", parseInt(select.value));
-    });
-  }
-  // layout audioplayer select
-  {
-    let select = document.getElementById("tool-pre-layout-audioplayer-select");
-    select.value = settings.layoutAudioPlayer;
-    select.addEventListener("change", function (event) {
-      sendIpcToMain("set-layout-audioplayer", parseInt(select.value));
-    });
-  }
-  // layout battery select
-  {
-    let select = document.getElementById("tool-pre-layout-battery-select");
-    select.value = settings.layoutBattery;
-    select.addEventListener("change", function (event) {
-      sendIpcToMain("set-layout-battery", parseInt(select.value));
-    });
-  }
-  // toolbar direction select
-  {
-    let select = document.getElementById("tool-pre-toolbar-direction-select");
-    select.value = settings.toolbarDirection;
-    select.addEventListener("change", function (event) {
-      sendIpcToMain("set-toolbar-direction", parseInt(select.value));
-    });
-  }
-  // loading bg select
-  {
-    let select = document.getElementById("tool-pre-loading-bg-select");
-    select.value = settings.loadingIndicatorBG;
-    select.addEventListener("change", function (event) {
-      sendIpcToMain("set-loading-bg", parseInt(select.value));
-    });
-  }
-  // loading isize select
-  {
-    let select = document.getElementById("tool-pre-loading-isize-select");
-    select.value = settings.loadingIndicatorIconSize;
-    select.addEventListener("change", function (event) {
-      sendIpcToMain("set-loading-isize", parseInt(select.value));
-    });
-  }
-  // loading ipos select
-  {
-    let select = document.getElementById("tool-pre-loading-ipos-select");
-    select.value = settings.loadingIndicatorIconPos;
-    select.addEventListener("change", function (event) {
-      sendIpcToMain("set-loading-ipos", parseInt(select.value));
-    });
-  }
-  // home screen latest limit input
-  {
-    let input = document.getElementById(
-      "tool-pre-home-screen-latest-max-input"
-    );
-    input.value = settings.homeScreenLatestMax;
-    input.addEventListener("change", function (event) {
-      if (input.value <= 0) input.value = 0;
-      sendIpcToMain("set-home-screen-latest-max", parseInt(input.value));
-    });
-  }
-  // epub ebook color mode
-  {
-    const selectColorMode = document.getElementById(
-      "tool-pre-epub-ebook-color-mode-select"
-    );
-    const inputTextColor = document.getElementById(
-      "tool-pre-epub-ebook-color-text-input"
-    );
-    const inputBgColor = document.getElementById(
-      "tool-pre-epub-ebook-color-background-input"
-    );
-    const customDiv = document.querySelector(
-      "#tool-pre-epub-ebook-color-custom-inputs-div"
-    );
+      select.value = settings.pageModeFileLoading;
+      select.addEventListener("change", function (event) {
+        sendIpcToMain(
+          "set-setting",
+          "pageModeFileLoading",
+          parseInt(select.value)
+        );
+      });
+    }
+    // layout clock select
+    {
+      let select = document.getElementById("tool-pre-layout-clock-select");
+      select.value = settings.layoutClock;
+      select.addEventListener("change", function (event) {
+        sendIpcToMain("set-layout-clock", parseInt(select.value));
+      });
+    }
+    // clock format select
+    {
+      let select = document.getElementById("tool-pre-clock-format-select");
+      select.value = settings.clockFormat;
+      select.addEventListener("change", function (event) {
+        sendIpcToMain("set-clock-format", parseInt(select.value));
+      });
+    }
+    // layout pagenum select
+    {
+      let select = document.getElementById("tool-pre-layout-pagenum-select");
+      select.value = settings.layoutPageNum;
+      select.addEventListener("change", function (event) {
+        sendIpcToMain("set-layout-pagenum", parseInt(select.value));
+      });
+    }
+    // layout audioplayer select
+    {
+      let select = document.getElementById(
+        "tool-pre-layout-audioplayer-select"
+      );
+      select.value = settings.layoutAudioPlayer;
+      select.addEventListener("change", function (event) {
+        sendIpcToMain("set-layout-audioplayer", parseInt(select.value));
+      });
+    }
+    // layout battery select
+    {
+      let select = document.getElementById("tool-pre-layout-battery-select");
+      select.value = settings.layoutBattery;
+      select.addEventListener("change", function (event) {
+        sendIpcToMain("set-layout-battery", parseInt(select.value));
+      });
+    }
+    // toolbar direction select
+    {
+      let select = document.getElementById("tool-pre-toolbar-direction-select");
+      select.value = settings.toolbarDirection;
+      select.addEventListener("change", function (event) {
+        sendIpcToMain("set-toolbar-direction", parseInt(select.value));
+      });
+    }
+    // loading bg select
+    {
+      let select = document.getElementById("tool-pre-loading-bg-select");
+      select.value = settings.loadingIndicatorBG;
+      select.addEventListener("change", function (event) {
+        sendIpcToMain("set-loading-bg", parseInt(select.value));
+      });
+    }
+    // loading isize select
+    {
+      let select = document.getElementById("tool-pre-loading-isize-select");
+      select.value = settings.loadingIndicatorIconSize;
+      select.addEventListener("change", function (event) {
+        sendIpcToMain("set-loading-isize", parseInt(select.value));
+      });
+    }
+    // loading ipos select
+    {
+      let select = document.getElementById("tool-pre-loading-ipos-select");
+      select.value = settings.loadingIndicatorIconPos;
+      select.addEventListener("change", function (event) {
+        sendIpcToMain("set-loading-ipos", parseInt(select.value));
+      });
+    }
+    // home screen latest limit input
+    {
+      let input = document.getElementById(
+        "tool-pre-home-screen-latest-max-input"
+      );
+      input.value = settings.homeScreenLatestMax;
+      input.addEventListener("change", function (event) {
+        if (input.value <= 0) input.value = 0;
+        sendIpcToMain("set-home-screen-latest-max", parseInt(input.value));
+      });
+    }
+    // epub ebook color mode
+    {
+      const selectColorMode = document.getElementById(
+        "tool-pre-epub-ebook-color-mode-select"
+      );
+      const inputTextColor = document.getElementById(
+        "tool-pre-epub-ebook-color-text-input"
+      );
+      const inputBgColor = document.getElementById(
+        "tool-pre-epub-ebook-color-background-input"
+      );
+      const customDiv = document.querySelector(
+        "#tool-pre-epub-ebook-color-custom-inputs-div"
+      );
 
-    selectColorMode.value = settings.epubEbookColorMode;
-    if (selectColorMode.value == "2") {
-      customDiv.classList.remove("set-display-none");
-    } else {
-      customDiv.classList.add("set-display-none");
-      updateColumnsHeight();
-    }
-    selectColorMode.addEventListener("change", function (event) {
-      sendIpcToMain(
-        "set-epub-ebook-color-mode",
-        parseInt(selectColorMode.value),
-        inputTextColor.value,
-        inputBgColor.value
-      );
+      selectColorMode.value = settings.epubEbookColorMode;
       if (selectColorMode.value == "2") {
         customDiv.classList.remove("set-display-none");
-        document
-          .getElementById("tool-pre-epub-ebook-color-custom-inputs-div")
-          .scrollIntoView({
-            behavior: "instant",
-            block: "start",
-            inline: "nearest",
-          });
       } else {
         customDiv.classList.add("set-display-none");
         updateColumnsHeight();
       }
-    });
+      selectColorMode.addEventListener("change", function (event) {
+        sendIpcToMain(
+          "set-epub-ebook-color-mode",
+          parseInt(selectColorMode.value),
+          inputTextColor.value,
+          inputBgColor.value
+        );
+        if (selectColorMode.value == "2") {
+          customDiv.classList.remove("set-display-none");
+          document
+            .getElementById("tool-pre-epub-ebook-color-custom-inputs-div")
+            .scrollIntoView({
+              behavior: "instant",
+              block: "start",
+              inline: "nearest",
+            });
+        } else {
+          customDiv.classList.add("set-display-none");
+          updateColumnsHeight();
+        }
+      });
 
-    inputTextColor.value = settings.epubEbookColorText;
-    inputTextColor.addEventListener("change", function (event) {
-      if (selectColorMode.value != "2") return;
-      sendIpcToMain(
-        "set-epub-ebook-color-mode",
-        parseInt(selectColorMode.value),
-        inputTextColor.value,
-        inputBgColor.value
-      );
-    });
+      inputTextColor.value = settings.epubEbookColorText;
+      inputTextColor.addEventListener("change", function (event) {
+        if (selectColorMode.value != "2") return;
+        sendIpcToMain(
+          "set-epub-ebook-color-mode",
+          parseInt(selectColorMode.value),
+          inputTextColor.value,
+          inputBgColor.value
+        );
+      });
 
-    inputBgColor.value = settings.epubEbookColorBg;
-    inputBgColor.addEventListener("change", function (event) {
-      if (selectColorMode.value != "2") return;
-      sendIpcToMain(
-        "set-epub-ebook-color-mode",
-        parseInt(selectColorMode.value),
-        inputTextColor.value,
-        inputBgColor.value
-      );
-    });
-  }
-  // hotspots select
-  {
-    let select = document.getElementById("tool-pre-hotspots-select");
-    select.value = settings.hotspots_mode;
-    select.addEventListener("change", function (event) {
-      sendIpcToMain("set-setting", "hotspots_mode", parseInt(select.value));
-    });
-  }
-  // cursor select
-  {
-    let select = document.getElementById("tool-pre-cursor-select");
-    select.value = settings.cursorVisibility;
-    select.addEventListener("change", function (event) {
-      sendIpcToMain("set-cursor", parseInt(select.value));
-    });
-  }
-  // mouse quick menu button select
-  {
-    {
-      let select = document.getElementById(
-        "tool-pre-mousebuttons-quickmenu-select"
-      );
-      const options = [
-        { id: -1, name: g_localizedTexts.unassignedMouseButton },
-        { id: 1, name: "1" },
-        { id: 3, name: "3" },
-        { id: 4, name: "4" },
-      ];
-      for (let option of options) {
-        let opt = document.createElement("option");
-        opt.value = option.id;
-        opt.textContent = option.name;
-        select.appendChild(opt);
-      }
-      select.value = settings.mouseButtonQuickMenu;
-      select.addEventListener("change", function (event) {
-        sendIpcToMain("set-mousebutton-quickmenu", parseInt(select.value));
+      inputBgColor.value = settings.epubEbookColorBg;
+      inputBgColor.addEventListener("change", function (event) {
+        if (selectColorMode.value != "2") return;
+        sendIpcToMain(
+          "set-epub-ebook-color-mode",
+          parseInt(selectColorMode.value),
+          inputTextColor.value,
+          inputBgColor.value
+        );
       });
     }
-  }
-  // autoopen select
-  {
-    let select = document.getElementById("tool-pre-autoopen-select");
-    select.value = settings.autoOpen;
-    select.addEventListener("change", function (event) {
-      sendIpcToMain("set-setting", "autoOpen", parseInt(select.value));
-    });
-  }
-  // turn-page select
-  {
-    let select = document.getElementById("tool-pre-page-turn-select");
-    select.value = settings.turnPageOnScrollBoundary ? "true" : "false";
-    select.addEventListener("change", function (event) {
-      sendIpcToMain("set-page-turn", select.value === "true");
-    });
-  }
-  // epub openas select
-  {
-    let select = document.getElementById("tool-pre-epub-openas-select");
-    select.value = settings.epubOpenAs;
-    select.addEventListener("change", function (event) {
-      sendIpcToMain("set-setting", "epubOpenAs", parseInt(select.value));
-    });
-  }
-  // pdf reading library select
-  {
-    let select = document.getElementById(
-      "tool-pre-pdf-reading-library-version-select"
-    );
-    select.value = settings.pdfReadingLib;
-    select.addEventListener("change", function (event) {
-      sendIpcToMain("set-pdf-reading-lib", parseInt(select.value));
-    });
-  }
-  // cbr creation select
-  {
-    let select = document.getElementById(
-      "tool-pre-cbr-creation-modification-select"
-    );
-    select.value = settings.cbrCreation;
-    select.addEventListener("change", function (event) {
-      if (select.value === "0") {
+    // hotspots select
+    {
+      let select = document.getElementById("tool-pre-hotspots-select");
+      select.value = settings.hotspots_mode;
+      select.addEventListener("change", function (event) {
+        sendIpcToMain("set-setting", "hotspots_mode", parseInt(select.value));
+      });
+    }
+    // cursor select
+    {
+      let select = document.getElementById("tool-pre-cursor-select");
+      select.value = settings.cursorVisibility;
+      select.addEventListener("change", function (event) {
+        sendIpcToMain("set-cursor", parseInt(select.value));
+      });
+    }
+    // mouse quick menu button select
+    {
+      {
+        let select = document.getElementById(
+          "tool-pre-mousebuttons-quickmenu-select"
+        );
+        const options = [
+          { id: -1, name: g_localizedTexts.unassignedMouseButton },
+          { id: 1, name: "1" },
+          { id: 3, name: "3" },
+          { id: 4, name: "4" },
+        ];
+        for (let option of options) {
+          let opt = document.createElement("option");
+          opt.value = option.id;
+          opt.textContent = option.name;
+          select.appendChild(opt);
+        }
+        select.value = settings.mouseButtonQuickMenu;
+        select.addEventListener("change", function (event) {
+          sendIpcToMain("set-mousebutton-quickmenu", parseInt(select.value));
+        });
+      }
+    }
+    // autoopen select
+    {
+      let select = document.getElementById("tool-pre-autoopen-select");
+      select.value = settings.autoOpen;
+      select.addEventListener("change", function (event) {
+        sendIpcToMain("set-setting", "autoOpen", parseInt(select.value));
+      });
+    }
+    // turn-page select
+    {
+      let select = document.getElementById("tool-pre-page-turn-select");
+      select.value = settings.turnPageOnScrollBoundary ? "true" : "false";
+      select.addEventListener("change", function (event) {
+        sendIpcToMain("set-page-turn", select.value === "true");
+      });
+    }
+    // epub openas select
+    {
+      let select = document.getElementById("tool-pre-epub-openas-select");
+      select.value = settings.epubOpenAs;
+      select.addEventListener("change", function (event) {
+        sendIpcToMain("set-setting", "epubOpenAs", parseInt(select.value));
+      });
+    }
+    // pdf reading library select
+    {
+      let select = document.getElementById(
+        "tool-pre-pdf-reading-library-version-select"
+      );
+      select.value = settings.pdfReadingLib;
+      select.addEventListener("change", function (event) {
+        sendIpcToMain("set-pdf-reading-lib", parseInt(select.value));
+      });
+    }
+    // cbr creation select
+    {
+      let select = document.getElementById(
+        "tool-pre-cbr-creation-modification-select"
+      );
+      select.value = settings.cbrCreation;
+      select.addEventListener("change", function (event) {
+        if (select.value === "0") {
+          document
+            .getElementById("tool-pre-rarfolder-div")
+            .classList.add("set-display-none");
+        } else {
+          document
+            .getElementById("tool-pre-rarfolder-div")
+            .classList.remove("set-display-none");
+        }
+        updateColumnsHeight();
+        sendIpcToMain("set-setting", "cbrCreation", parseInt(select.value));
+      });
+    }
+    // rar folder div, ul and buttons
+    {
+      g_rarExeFolderPathUl = document.getElementById("tool-pre-rarfolder-ul");
+      updateRarFolder(settings.rarExeFolderPath);
+      document
+        .getElementById("tool-pre-rarfolder-update-button")
+        .addEventListener("click", (event) => {
+          sendIpcToMain("change-rar-folder", false);
+        });
+      document
+        .getElementById("tool-pre-rarfolder-reset-button")
+        .addEventListener("click", (event) => {
+          sendIpcToMain("change-rar-folder", true);
+        });
+      if (settings.cbrCreation === 0) {
         document
           .getElementById("tool-pre-rarfolder-div")
           .classList.add("set-display-none");
-      } else {
-        document
-          .getElementById("tool-pre-rarfolder-div")
-          .classList.remove("set-display-none");
       }
-      updateColumnsHeight();
-      sendIpcToMain("set-setting", "cbrCreation", parseInt(select.value));
-    });
-  }
-  // rar folder div, ul and buttons
-  {
-    g_rarExeFolderPathUl = document.getElementById("tool-pre-rarfolder-ul");
-    updateRarFolder(settings.rarExeFolderPath);
-    document
-      .getElementById("tool-pre-rarfolder-update-button")
-      .addEventListener("click", (event) => {
-        sendIpcToMain("change-rar-folder", false);
-      });
-    document
-      .getElementById("tool-pre-rarfolder-reset-button")
-      .addEventListener("click", (event) => {
-        sendIpcToMain("change-rar-folder", true);
-      });
-    if (settings.cbrCreation === 0) {
-      document
-        .getElementById("tool-pre-rarfolder-div")
-        .classList.add("set-display-none");
     }
-  }
-  // temp folder ul and buttons
-  {
-    g_tempFolderPathUl = document.getElementById("tool-pre-tempfolder-ul");
-    g_tempFolderPathCheckbox = document.getElementById(
-      "tool-pre-tempfolder-checkbox"
-    );
-    document
-      .getElementById("tool-pre-tempfolder-update-button")
-      .addEventListener("click", (event) => {
-        sendIpcToMain(
-          "change-temp-folder",
-          false,
-          g_tempFolderPathCheckbox.checked
-        );
-      });
-    document
-      .getElementById("tool-pre-tempfolder-reset-button")
-      .addEventListener("click", (event) => {
-        sendIpcToMain(
-          "change-temp-folder",
-          true,
-          g_tempFolderPathCheckbox.checked
-        );
-      });
-  }
-  ////////////////////////////////////////
-  // tooltips
-  const tooltipButtons = document.querySelectorAll(".tools-tooltip-button");
-  tooltipButtons.forEach((element) => {
-    element.addEventListener("click", (event) => {
-      sendIpcToMain(
-        "tooltip-button-clicked",
-        element.getAttribute("data-info")
+    // check updates
+    {
+      let select = document.getElementById(
+        "tool-pre-updates-checkonstart-select"
       );
+      select.value = settings.checkUpdatesOnStart;
+      select.addEventListener("change", function (event) {
+        sendIpcToMain(
+          "set-setting",
+          "checkUpdatesOnStart",
+          parseInt(select.value)
+        );
+      });
+
+      select = document.getElementById("tool-pre-updates-checknotify-select");
+      select.value = settings.checkUpdatesNotify;
+      select.addEventListener("change", function (event) {
+        sendIpcToMain(
+          "set-setting",
+          "checkUpdatesNotify",
+          parseInt(select.value)
+        );
+      });
+
+      document
+        .getElementById("tool-pre-updates-manualcheck-button")
+        .addEventListener("click", (event) => {
+          sendIpcToMain("request-manual-updates-check", true);
+        });
+    }
+    // check updates
+    {
+      let select = document.getElementById(
+        "tool-pre-updates-checkonstart-select"
+      );
+      select.value = settings.checkUpdatesOnStart;
+      select.addEventListener("change", function (event) {
+        sendIpcToMain(
+          "set-setting",
+          "checkUpdatesOnStart",
+          parseInt(select.value)
+        );
+      });
+
+      document
+        .getElementById("tool-pre-rarfolder-reset-button")
+        .addEventListener("click", (event) => {
+          sendIpcToMain("change-rar-folder", true);
+        });
+    }
+    // temp folder ul and buttons
+    {
+      g_tempFolderPathUl = document.getElementById("tool-pre-tempfolder-ul");
+      g_tempFolderPathCheckbox = document.getElementById(
+        "tool-pre-tempfolder-checkbox"
+      );
+      document
+        .getElementById("tool-pre-tempfolder-update-button")
+        .addEventListener("click", (event) => {
+          sendIpcToMain(
+            "change-temp-folder",
+            false,
+            g_tempFolderPathCheckbox.checked
+          );
+        });
+      document
+        .getElementById("tool-pre-tempfolder-reset-button")
+        .addEventListener("click", (event) => {
+          sendIpcToMain(
+            "change-temp-folder",
+            true,
+            g_tempFolderPathCheckbox.checked
+          );
+        });
+    }
+    ////////////////////////////////////////
+    // tooltips
+    const tooltipButtons = document.querySelectorAll(".tools-tooltip-button");
+    tooltipButtons.forEach((element) => {
+      element.addEventListener("click", (event) => {
+        sendIpcToMain(
+          "tooltip-button-clicked",
+          element.getAttribute("data-info")
+        );
+      });
     });
-  });
-  ////////////////////////////////////////
-  switchSection(1);
-  //updateColumnsHeight();
+    ////////////////////////////////////////
+    switchSection(1);
+    //updateColumnsHeight();
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 export function initIpc() {
@@ -469,162 +507,22 @@ function updateColumnsHeight(scrollTop = false) {
 }
 
 function switchSection(id) {
-  switch (id) {
-    case 0:
-      // buttons
+  for (let index = 0; index < 5; index++) {
+    if (id === index) {
       document
-        .getElementById("tool-pre-section-all-button")
+        .getElementById(`tool-pre-section-${index}-button`)
         .classList.add("tools-menu-button-selected");
       document
-        .getElementById("tool-pre-section-appearance-button")
-        .classList.remove("tools-menu-button-selected");
-      document
-        .getElementById("tool-pre-section-ui-button")
-        .classList.remove("tools-menu-button-selected");
-      document
-        .getElementById("tool-pre-section-file-formats-button")
-        .classList.remove("tools-menu-button-selected");
-      document
-        .getElementById("tool-pre-section-advanced-button")
-        .classList.remove("tools-menu-button-selected");
-      // sections
-      document
-        .getElementById("tool-pre-appearance-section-div")
+        .getElementById(`tool-pre-section-${index}-content-div`)
         .classList.remove("set-display-none");
+    } else {
       document
-        .getElementById("tool-pre-ui-section-div")
-        .classList.remove("set-display-none");
-      document
-        .getElementById("tool-pre-file-formats-section-div")
-        .classList.remove("set-display-none");
-      document
-        .getElementById("tool-pre-advanced-section-div")
-        .classList.remove("set-display-none");
-      break;
-    case 1:
-      // buttons
-      document
-        .getElementById("tool-pre-section-all-button")
+        .getElementById(`tool-pre-section-${index}-button`)
         .classList.remove("tools-menu-button-selected");
       document
-        .getElementById("tool-pre-section-appearance-button")
-        .classList.add("tools-menu-button-selected");
-      document
-        .getElementById("tool-pre-section-ui-button")
-        .classList.remove("tools-menu-button-selected");
-      document
-        .getElementById("tool-pre-section-file-formats-button")
-        .classList.remove("tools-menu-button-selected");
-      document
-        .getElementById("tool-pre-section-advanced-button")
-        .classList.remove("tools-menu-button-selected");
-      // sections
-      document
-        .getElementById("tool-pre-appearance-section-div")
-        .classList.remove("set-display-none");
-      document
-        .getElementById("tool-pre-ui-section-div")
+        .getElementById(`tool-pre-section-${index}-content-div`)
         .classList.add("set-display-none");
-      document
-        .getElementById("tool-pre-file-formats-section-div")
-        .classList.add("set-display-none");
-      document
-        .getElementById("tool-pre-advanced-section-div")
-        .classList.add("set-display-none");
-      break;
-    case 2:
-      // buttons
-      document
-        .getElementById("tool-pre-section-all-button")
-        .classList.remove("tools-menu-button-selected");
-      document
-        .getElementById("tool-pre-section-appearance-button")
-        .classList.remove("tools-menu-button-selected");
-      document
-        .getElementById("tool-pre-section-ui-button")
-        .classList.add("tools-menu-button-selected");
-      document
-        .getElementById("tool-pre-section-file-formats-button")
-        .classList.remove("tools-menu-button-selected");
-      document
-        .getElementById("tool-pre-section-advanced-button")
-        .classList.remove("tools-menu-button-selected");
-      // sections
-      document
-        .getElementById("tool-pre-appearance-section-div")
-        .classList.add("set-display-none");
-      document
-        .getElementById("tool-pre-ui-section-div")
-        .classList.remove("set-display-none");
-      document
-        .getElementById("tool-pre-file-formats-section-div")
-        .classList.add("set-display-none");
-      document
-        .getElementById("tool-pre-advanced-section-div")
-        .classList.add("set-display-none");
-      break;
-    case 3:
-      // buttons
-      document
-        .getElementById("tool-pre-section-all-button")
-        .classList.remove("tools-menu-button-selected");
-      document
-        .getElementById("tool-pre-section-appearance-button")
-        .classList.remove("tools-menu-button-selected");
-      document
-        .getElementById("tool-pre-section-ui-button")
-        .classList.remove("tools-menu-button-selected");
-      document
-        .getElementById("tool-pre-section-file-formats-button")
-        .classList.add("tools-menu-button-selected");
-      document
-        .getElementById("tool-pre-section-advanced-button")
-        .classList.remove("tools-menu-button-selected");
-      // sections
-      document
-        .getElementById("tool-pre-appearance-section-div")
-        .classList.add("set-display-none");
-      document
-        .getElementById("tool-pre-ui-section-div")
-        .classList.add("set-display-none");
-      document
-        .getElementById("tool-pre-file-formats-section-div")
-        .classList.remove("set-display-none");
-      document
-        .getElementById("tool-pre-advanced-section-div")
-        .classList.add("set-display-none");
-      break;
-    case 4:
-      // buttons
-      document
-        .getElementById("tool-pre-section-all-button")
-        .classList.remove("tools-menu-button-selected");
-      document
-        .getElementById("tool-pre-section-appearance-button")
-        .classList.remove("tools-menu-button-selected");
-      document
-        .getElementById("tool-pre-section-ui-button")
-        .classList.remove("tools-menu-button-selected");
-      document
-        .getElementById("tool-pre-section-file-formats-button")
-        .classList.remove("tools-menu-button-selected");
-      document
-        .getElementById("tool-pre-section-advanced-button")
-        .classList.add("tools-menu-button-selected");
-      // sections
-      document
-        .getElementById("tool-pre-appearance-section-div")
-        .classList.add("set-display-none");
-      document
-        .getElementById("tool-pre-ui-section-div")
-        .classList.add("set-display-none");
-      document
-        .getElementById("tool-pre-file-formats-section-div")
-        .classList.add("set-display-none");
-      document
-        .getElementById("tool-pre-advanced-section-div")
-        .classList.remove("set-display-none");
-      break;
+    }
   }
   updateColumnsHeight(true);
 }
