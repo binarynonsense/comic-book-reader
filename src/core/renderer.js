@@ -202,6 +202,12 @@ function onIpcFromMain(event, args) {
         }
         break;
 
+      case "show-toast":
+        {
+          toasts.show(args[2], args[3]);
+        }
+        break;
+
       case "show-toast-update-available":
         {
           toasts.show(args[2], 5000, () => {
