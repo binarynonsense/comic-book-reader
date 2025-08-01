@@ -12,6 +12,7 @@ const { app, BrowserWindow, ipcMain, screen } = require("electron");
 const os = require("os");
 const fs = require("fs");
 const path = require("path");
+const { fork } = require("child_process");
 
 const settings = require("../shared/main/settings");
 const history = require("../shared/main/history");
@@ -29,6 +30,7 @@ const reader = require("../reader/main");
 let g_mainWindow;
 let g_isLoaded = false;
 let g_launchInfo = {};
+let g_workerUpdates;
 
 //////////////////////////////////////////////////////////////////////////////
 // LAUNCH INFO ///////////////////////////////////////////////////////////////
@@ -328,6 +330,7 @@ if (!gotTheLock) {
           true
         );
       }
+      startUpCheckForUpdates();
       // show window
       g_mainWindow.center();
       const forceMultimonitorSize = settings.getValue(
@@ -442,6 +445,10 @@ if (!gotTheLock) {
   });
 
   app.on("will-quit", () => {
+    if (g_workerUpdates !== undefined) {
+      g_workerUpdates.kill();
+      g_workerUpdates = undefined;
+    }
     if (tools.getCurrentToolName() !== "reader")
       tools.getCurrentTool().onQuit?.();
     reader.onQuit();
@@ -629,6 +636,29 @@ if (!gotTheLock) {
     sendIpcToPreload("update-title", title);
   }
   exports.renderTitle = renderTitle;
+
+  function startUpCheckForUpdates() {
+    const doCheck = false;
+    if (doCheck) {
+      if (g_workerUpdates === undefined) {
+        g_workerUpdates = fork(path.join(__dirname, "worker-updates.js"));
+        g_workerUpdates.on("message", (message) => {
+          g_workerUpdates.kill(); // kill it after one use
+          if (message[0] === true) {
+            log.test("updates true");
+            log.test(message[1]);
+            return;
+          } else {
+            log.test("updates false");
+            log.test(message[1]);
+            return;
+          }
+        });
+      }
+      // send to worker
+      g_workerUpdates.send([g_launchInfo, app.getVersion()]);
+    }
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   // MENU MSGS /////////////////////////////////////////////////////////////////

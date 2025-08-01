@@ -213,3 +213,64 @@ exports.padNumber = function (number, maximum) {
   while (number.length < maximum.length) number = "0" + number;
   return number;
 };
+
+///////////////////////////////////////////////////////////////////////////////
+// VERSION ////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+// NOTE: these are also in renderer/utils.js. Apply any changes there too.
+
+exports.isVersionOlder = function (testVersion, referenceVersion) {
+  const test = separateVersionText(testVersion);
+  const reference = separateVersionText(referenceVersion);
+  if (test === undefined || reference === undefined) return true;
+
+  if (test.major < reference.major) return true;
+  if (test.major > reference.major) return false;
+  if (test.minor < reference.minor) return true;
+  if (test.minor > reference.minor) return false;
+  if (test.patch < reference.patch) return true;
+  if (test.patch > reference.patch) return false;
+  // TODO: too complex, may have errors, make better/simpler
+  if (test.beta === undefined && test.alpha === undefined) {
+    return false;
+  }
+  if (reference.beta === undefined && reference.alpha === undefined) {
+    if (test.beta !== undefined || test.alpha !== undefined) {
+      return true;
+    }
+  }
+  // both have alpha or beta
+  if (reference.beta !== undefined) {
+    if (test.beta !== undefined) {
+      if (reference.beta > test.beta) return true;
+      else return false;
+    } else {
+      return true;
+    }
+  } else {
+    // reference has alpha
+    if (test.beta !== undefined) {
+      return false;
+    }
+    // beta has alpha
+    if (reference.alpha > test.alpha) return true;
+    else return false;
+  }
+};
+
+function separateVersionText(version) {
+  try {
+    const regex =
+      /^(?<major>[0-9]+)\.(?<minor>[0-9]+)\.(?<patch>[0-9]+)((-alpha(?<alpha>[0-9]+))|(-beta(?<beta>[0-9]+))*.*)$/;
+    let match = version.match(regex);
+    if (match === null) return undefined;
+    if (match.groups.major) match.groups.major = parseInt(match.groups.major);
+    if (match.groups.minor) match.groups.minor = parseInt(match.groups.minor);
+    if (match.groups.patch) match.groups.patch = parseInt(match.groups.patch);
+    if (match.groups.alpha) match.groups.alpha = parseInt(match.groups.alpha);
+    return match.groups;
+  } catch (error) {
+    console.log("match error");
+  }
+}
