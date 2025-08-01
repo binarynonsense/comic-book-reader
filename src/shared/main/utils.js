@@ -274,3 +274,4 @@ function separateVersionText(version) {
     console.log("match error");
   }
 }
+exports.separateVersionText = separateVersionText;
