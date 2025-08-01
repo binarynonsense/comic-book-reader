@@ -253,11 +253,12 @@ function initOnIpcCallbacks() {
         "update-title",
         `${g_fileData.data.name} #${g_fileData.pageIndex + 1}`
       );
-      if (g_fileData.data?.tempData?.title)
+      if (g_fileData.data?.tempData?.title) {
         sendIpcToRenderer(
           "update-img-page-title",
           g_fileData.data.tempData.title
         );
+      }
     }
   });
 

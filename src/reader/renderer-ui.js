@@ -1330,8 +1330,7 @@ export function renderImg64(
 
   let title;
   if (fromRefresh) {
-    let img = document.querySelector(".page-img");
-    if (!img) img = document.querySelector(".page-canvas");
+    let img = document.querySelector(".page");
     if (img) title = img.title;
   }
 
