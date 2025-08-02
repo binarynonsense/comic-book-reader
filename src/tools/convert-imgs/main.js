@@ -468,6 +468,7 @@ async function start(
           fileUtils.moveFile(tmpFilePath, filePath);
         }
         // convert
+        sendIpcToRenderer("update-log-text", "\n");
         sendIpcToRenderer(
           "update-log-text",
           _("tool-shared-modal-log-converting-image") + ": " + originalFilePath
