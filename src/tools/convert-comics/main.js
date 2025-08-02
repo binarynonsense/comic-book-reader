@@ -614,6 +614,7 @@ function stopError(error, errorMessage, nameAsError = true) {
   g_creationTempSubFolderPath = undefined;
   if (nameAsError) {
     sendIpcToRenderer("update-log-text", uiMsg);
+    if (g_mode === ToolMode.CREATE) sendIpcToRenderer("update-log-text", "");
     sendIpcToRenderer(
       "update-log-text",
       g_mode === ToolMode.CONVERT
@@ -646,7 +647,7 @@ function stopCancel() {
       ? _("tool-shared-modal-log-conversion-canceled")
       : _("tool-shared-modal-log-creation-canceled")
   );
-  sendIpcToRenderer("update-log-text", " ");
+  sendIpcToRenderer("update-log-text", "");
   sendIpcToRenderer("file-finished-canceled");
 }
 
@@ -668,7 +669,6 @@ function start(inputFiles) {
       }
     }
     if (areAllImages) {
-      sendIpcToRenderer("update-log-text", "\n");
       sendIpcToRenderer(
         "modal-update-title-text",
         _("tool-shared-modal-title-creating")
@@ -695,6 +695,8 @@ function startFile(inputFilePath, inputFileType, fileNum, totalFilesNum) {
     stopCancel();
     return;
   }
+  if (fileNum !== 1 && g_mode === ToolMode.CREATE)
+    sendIpcToRenderer("update-log-text", "");
   sendIpcToRenderer(
     "modal-update-title-text",
     g_mode === ToolMode.CONVERT
@@ -1305,6 +1307,7 @@ async function createFilesFromImages(
     return;
   }
   try {
+    if (g_mode === ToolMode.CREATE) sendIpcToRenderer("update-log-text", "");
     sendIpcToRenderer(
       "update-log-text",
       g_uiSelectedOptions.outputSplitNumFiles > 1
@@ -1329,7 +1332,7 @@ async function createFilesFromImages(
           message.files.forEach((element) => {
             sendIpcToRenderer("update-log-text", element);
           });
-          sendIpcToRenderer("update-log-text", " ");
+          sendIpcToRenderer("update-log-text", "");
           sendIpcToRenderer("file-finished-ok");
           return;
         } else {
