@@ -668,6 +668,7 @@ function start(inputFiles) {
       }
     }
     if (areAllImages) {
+      sendIpcToRenderer("update-log-text", "\n");
       sendIpcToRenderer(
         "modal-update-title-text",
         _("tool-shared-modal-title-creating")

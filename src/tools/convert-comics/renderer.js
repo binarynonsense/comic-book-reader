@@ -879,7 +879,7 @@ function initOnIpcCallbacks() {
   on("show-result", (failedFilesText) => {
     if (g_failedFilePaths.length > 0) {
       updateLogText(
-        "\n------------ " + failedFilesText + ": ------------\n",
+        "------------ " + failedFilesText + ": ------------\n",
         true
       );
       g_failedFilePaths.forEach((fileData) => {
