@@ -479,7 +479,7 @@ function init(activeLocale, languages, activeTheme, themes, settings) {
       });
     });
     ////////////////////////////////////////
-    switchSection(1);
+    switchSection(0);
     //updateColumnsHeight();
   } catch (error) {
     console.error(error);
