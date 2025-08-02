@@ -387,7 +387,7 @@ function initOnIpcCallbacks() {
     (failedFilesText, numFiles, numErrors, failedFilePaths, numAttempts) => {
       if (failedFilePaths.length > 0) {
         updateLogText(
-          "\n\n------------ " + failedFilesText + ": ------------\n\n",
+          "\n------------ " + failedFilesText + ": ------------\n",
           true
         );
         failedFilePaths.forEach((filePath) => {

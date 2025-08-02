@@ -406,7 +406,6 @@ async function start(
       "modal-update-title-text",
       _("tool-shared-modal-title-converting")
     );
-    sendIpcToRenderer("update-info-text", "");
     sendIpcToRenderer(
       "update-log-text",
       _("tool-shared-modal-log-converting-images") + "..."
@@ -418,6 +417,7 @@ async function start(
     // avoid EBUSY error on windows
     sharp.cache(false);
     for (let index = 0; index < imgFiles.length; index++) {
+      sendIpcToRenderer("update-log-text", "");
       g_numAttempts++;
       let originalFilePath = "???";
       try {
@@ -468,7 +468,6 @@ async function start(
           fileUtils.moveFile(tmpFilePath, filePath);
         }
         // convert
-        sendIpcToRenderer("update-log-text", "\n");
         sendIpcToRenderer(
           "update-log-text",
           _("tool-shared-modal-log-converting-image") + ": " + originalFilePath
