@@ -20,6 +20,7 @@ let g_inputFilesID = 0;
 
 let g_cancel = false;
 let g_numErrors = 0;
+let g_failedFilePaths = [];
 
 let g_inputFilePath;
 let g_inputFileType;
@@ -38,6 +39,7 @@ let g_outputImageFormatSelect;
 let g_localizedRemoveFromListText;
 let g_localizedModalCancelButtonText;
 let g_localizedModalCloseButtonText;
+let g_localizedModalCopyLogButtonText;
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -61,6 +63,7 @@ function init(outputFolderPath, loadedOptions) {
   g_inputFilesID = 0;
   g_cancel = false;
   g_numErrors = 0;
+  g_failedFilePaths = [];
   g_outputPdfExtractionMethod = "embedded";
 
   // menu buttons
@@ -461,6 +464,7 @@ function initOnIpcCallbacks() {
     modalButtonClose.classList.remove("modal-button-success-color");
     modalButtonClose.classList.add("modal-button-danger-color");
     g_numErrors++;
+    g_failedFilePaths.push(g_inputFiles[g_inputFilesIndex]);
     if (g_inputFilesIndex < g_inputFiles.length - 1) {
       g_inputFilesIndex++;
       onStart(false);
@@ -500,17 +504,31 @@ function initOnIpcCallbacks() {
     );
   });
 
-  on("show-result", () => {
+  on("show-result", (failedFilesText) => {
+    if (g_failedFilePaths.length > 0) {
+      updateLogText(
+        "\n------------ " + failedFilesText + ": ------------\n",
+        true
+      );
+      g_failedFilePaths.forEach((fileData) => {
+        updateLogText(fileData.path, true);
+      });
+    }
+
     const modalButtonCancel = g_openModal.querySelector(
       "#tool-ec-modal-cancel-button"
     );
     const modalButtonClose = g_openModal.querySelector(
       "#tool-ec-modal-close-button"
     );
+    const modalButtonCopyLog = g_openModal.querySelector(
+      "#tool-ec-modal-copylog-button"
+    );
     const modalLoadingBar = g_openModal.querySelector(".modal-progress-bar");
     modalButtonCancel.classList.add("set-display-none");
     modalButtonClose.classList.remove("set-display-none");
     modalLoadingBar.classList.add("set-display-none");
+    modalButtonCopyLog.classList.remove("set-display-none");
     g_openModal
       .querySelector(".modal-close-button")
       .classList.remove("set-display-none");
@@ -571,6 +589,7 @@ function onStart(resetCounter = true) {
   if (resetCounter) {
     g_inputFilesIndex = 0;
     g_numErrors = 0;
+    g_failedFilePaths = [];
     updateLogText("", false);
   }
 
@@ -581,15 +600,19 @@ function onStart(resetCounter = true) {
   const modalButtonClose = g_openModal.querySelector(
     "#tool-ec-modal-close-button"
   );
+  const modalButtonCopyLog = g_openModal.querySelector(
+    "#tool-ec-modal-copylog-button"
+  );
   modalButtonCancel.innerText = g_localizedModalCancelButtonText;
   modalButtonClose.innerText = g_localizedModalCloseButtonText;
+  modalButtonCopyLog.innerText = g_localizedModalCopyLogButtonText;
   modalButtonCancel.classList.remove("set-display-none");
   modalButtonClose.classList.add("set-display-none");
+  modalButtonCopyLog.classList.add("set-display-none");
   if (g_numErrors === 0) {
     modalButtonClose.classList.add("modal-button-success-color");
     modalButtonClose.classList.remove("modal-button-danger-color");
   }
-  //g_modalLoadingBar.classList.remove("hide");
 
   g_inputFilePath = g_inputFiles[g_inputFilesIndex].path;
   g_inputFileType = g_inputFiles[g_inputFilesIndex].type;
@@ -611,6 +634,11 @@ function onCancel() {
     .querySelector("#tool-ec-modal-cancel-button")
     .classList.add("set-display-none");
   sendIpcToMain("cancel");
+}
+
+function onCopyLog() {
+  const log = g_openModal.querySelector(".modal-log");
+  sendIpcToMain("copy-text-to-clipboard", log.innerHTML);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -726,12 +754,20 @@ function showLogModal() {
       {
         text: " ",
         callback: () => {
+          onCopyLog();
+        },
+        fullWidth: true,
+        id: "tool-ec-modal-copylog-button",
+        dontClose: true,
+      },
+      {
+        text: " ",
+        callback: () => {
           onCancel();
         },
         fullWidth: true,
         id: "tool-ec-modal-cancel-button",
         dontClose: true,
-        key: "Escape",
       },
       {
         text: " ",
@@ -848,6 +884,8 @@ function updateLocalization(
       g_localizedModalCloseButtonText = element.text;
     } else if (element.id === "tool-ec-modal-cancel-button-text") {
       g_localizedModalCancelButtonText = element.text;
+    } else if (element.id === "tool-ec-modal-copylog-button-text") {
+      g_localizedModalCopyLogButtonText = element.text;
     } else if (domElement !== null) {
       domElement.innerHTML = element.text;
     }

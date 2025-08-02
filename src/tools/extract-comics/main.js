@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-const { BrowserWindow } = require("electron");
+const { BrowserWindow, clipboard } = require("electron");
 const fs = require("fs");
 const path = require("path");
 const core = require("../../core/main");
@@ -373,7 +373,12 @@ function initOnIpcCallbacks() {
 
     menuBar.setCloseTool(true);
     sendIpcToPreload("update-menubar");
-    sendIpcToRenderer("show-result");
+    sendIpcToRenderer("show-result", _("tool-shared-modal-log-failed-files"));
+  });
+
+  on("copy-text-to-clipboard", (text) => {
+    clipboard.writeText(text);
+    core.showToast(_("ui-modal-prompt-button-copy-log-notification"), 3000);
   });
 }
 
@@ -464,7 +469,7 @@ function start(
   pdfExtractionMethod
 ) {
   if (fileNum === 1) g_cancel = false;
-
+  if (fileNum !== 1) sendIpcToRenderer("update-log-text", "");
   sendIpcToRenderer(
     "modal-update-title-text",
     _("tool-shared-modal-title-extracting") +
@@ -916,6 +921,10 @@ function getLocalization() {
     {
       id: "tool-ec-modal-cancel-button-text",
       text: _("tool-shared-ui-cancel").toUpperCase(),
+    },
+    {
+      id: "tool-ec-modal-copylog-button-text",
+      text: _("ui-modal-prompt-button-copy-log").toUpperCase(),
     },
     //////////////////////////////////////////////
     {
