@@ -1071,6 +1071,8 @@ async function createPdf(imgPathsList, outputFilePath, method, password) {
       throw error;
     }
   } catch (error) {
+    log.editorError("error writing pdf to file");
+    if (fs.existsSync(outputFilePath)) fs.unlinkSync(outputFilePath);
     throw error;
   }
 }
