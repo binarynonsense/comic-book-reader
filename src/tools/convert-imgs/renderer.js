@@ -410,6 +410,8 @@ function initOnIpcCallbacks() {
       modalButtonCopyLog.classList.remove("set-display-none");
       modalLoadingBar.classList.add("set-display-none");
 
+      console.log(numFiles);
+      console.log(numAttempts);
       if (numErrors > 0 || numAttempts < numFiles) {
         modalButtonClose.classList.remove("modal-button-success-color");
         modalButtonClose.classList.add("modal-button-danger-color");

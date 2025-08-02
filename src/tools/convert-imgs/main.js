@@ -351,6 +351,7 @@ function stopError(error) {
 function stopCancel() {
   temp.deleteSubFolder(g_tempSubFolderPath);
   g_tempSubFolderPath = undefined;
+  g_numAttempts--;
   sendIpcToRenderer(
     "update-log-text",
     _("tool-shared-modal-log-conversion-canceled")
