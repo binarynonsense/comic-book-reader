@@ -1034,6 +1034,11 @@ async function createPdf(imgPathsList, outputFilePath, method, password) {
     let stream = fs.createWriteStream(outputFilePath);
     // stream.on("finish", function () {
     // });
+    stream.on("error", (error) => {
+      log.editorError("error writing pdf to file (stream event)");
+      log.editorError(error);
+      if (fs.existsSync(outputFilePath)) fs.unlinkSync(outputFilePath);
+    });
     pdf.pipe(stream);
     for (let index = 0; index < imgPathsList.length; index++) {
       const imgPath = imgPathsList[index];
