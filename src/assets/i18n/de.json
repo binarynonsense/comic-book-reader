@@ -133,6 +133,8 @@
   "ctxmenu-copyimage": "Bild kopieren",
   "ctxmenu-copyimageurl": "Bild URL kopieren",
   "ctxmenu-saveimageas": "Bild speichern unter",
+  "[NOTE TO TRANSLATORS]ctxmenu-saveimageto": "'Save Image to' as in save image to which folder",
+  "[NEEDS TRANSLATION]ctxmenu-saveimageto": "Save Image to",
   "ctxmenu-paste": "Einfügen",
   "ctxmenu-select-all": "Alles auswählen",
   "ctxmenu-nextpage": "Nächste Seite",

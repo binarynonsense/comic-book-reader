@@ -133,6 +133,8 @@
   "ctxmenu-copyimage": "نسخ الصورة",
   "[NEEDS TRANSLATION]ctxmenu-copyimageurl": "Copy Image URL",
   "ctxmenu-saveimageas": "حفظ الصورة باسم",
+  "[NOTE TO TRANSLATORS]ctxmenu-saveimageto": "'Save Image to' as in save image to which folder",
+  "[NEEDS TRANSLATION]ctxmenu-saveimageto": "Save Image to",
   "ctxmenu-paste": "لصق",
   "ctxmenu-select-all": "تحديد الكل",
   "ctxmenu-nextpage": "الصفحة التالية",

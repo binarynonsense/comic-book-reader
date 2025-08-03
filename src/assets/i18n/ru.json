@@ -133,6 +133,8 @@
   "ctxmenu-copyimage": "Копировать изображение",
   "[NEEDS TRANSLATION]ctxmenu-copyimageurl": "Copy Image URL",
   "ctxmenu-saveimageas": "Сохранить изображение как",
+  "[NOTE TO TRANSLATORS]ctxmenu-saveimageto": "'Save Image to' as in save image to which folder",
+  "[NEEDS TRANSLATION]ctxmenu-saveimageto": "Save Image to",
   "ctxmenu-paste": "Вставить",
   "ctxmenu-select-all": "Выделить все",
   "ctxmenu-nextpage": "Следующая страница",

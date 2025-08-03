@@ -133,6 +133,8 @@
   "[NEEDS TRANSLATION]ctxmenu-copyimage": "Copy Image",
   "[NEEDS TRANSLATION]ctxmenu-copyimageurl": "Copy Image URL",
   "[NEEDS TRANSLATION]ctxmenu-saveimageas": "Save Image As",
+  "[NOTE TO TRANSLATORS]ctxmenu-saveimageto": "'Save Image to' as in save image to which folder",
+  "[NEEDS TRANSLATION]ctxmenu-saveimageto": "Save Image to",
   "ctxmenu-paste": "Idikit",
   "ctxmenu-select-all": "Piliin Lahat",
   "ctxmenu-nextpage": "Susunod na Pahina",
