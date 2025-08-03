@@ -35,7 +35,7 @@
   align-items: center;
   justify-items: center;
   text-align: center;
-  pointer-events: none;
+  /* pointer-events: none; */
   user-select: none;
 }
 
@@ -63,7 +63,7 @@
 }
 
 .page {
-  pointer-events: none;
+  /* pointer-events: none; */
   user-select: none;
 }
 
