@@ -578,9 +578,6 @@ function initOnIpcCallbacks() {
     } else {
       contextMenu.show("normal", params, g_fileData);
     }
-    // contextMenu
-    //   .getContextMenu(g_fileData)
-    //   .popup(core.getMainWindow(), params.x, params.y);
   });
 
   on("rebuild-menu-and-toolbar", (isOpen) => {
