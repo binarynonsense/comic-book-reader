@@ -75,7 +75,7 @@ exports.show = function (type, params, fileData) {
                 }
                 fs.writeFileSync(outputFilePath, buf, "binary");
                 //
-                core.showToast(_("ui-modal-info-imagesaved"));
+                core.showToast(_("ui-modal-info-imagesaved"), 3000);
               }
             } catch (error) {
               log.error(error);
