@@ -398,7 +398,7 @@ function initOnIpcCallbacks() {
           multilineText.className = "tools-buttons-list-li-multiline-text";
           {
             let text = document.createElement("span");
-            text.innerText = reduceString(bookData.title);
+            text.innerText = bookData.title; //reduceString(bookData.title);
             multilineText.appendChild(text);
 
             let authorNames = [];
