@@ -573,9 +573,14 @@ function initOnIpcCallbacks() {
   });
 
   on("show-context-menu", (params) => {
-    contextMenu
-      .getContextMenu(g_fileData)
-      .popup(core.getMainWindow(), params.x, params.y);
+    if (params[2]) {
+      contextMenu.show("save-image-as", params, g_fileData);
+    } else {
+      contextMenu.show("normal", params, g_fileData);
+    }
+    // contextMenu
+    //   .getContextMenu(g_fileData)
+    //   .popup(core.getMainWindow(), params.x, params.y);
   });
 
   on("rebuild-menu-and-toolbar", (isOpen) => {

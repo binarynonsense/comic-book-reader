@@ -5,14 +5,89 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-const { Menu } = require("electron");
+const { Menu, app } = require("electron");
 const core = require("../core/main");
 const reader = require("./main");
-const { FileDataType } = require("../shared/main/constants");
+const { FileDataType, FileExtension } = require("../shared/main/constants");
 const { _ } = require("../shared/main/i18n");
 
-function buildContextMenu(isOpen, showRotation) {
-  let contextMenu = Menu.buildFromTemplate([
+const log = require("../shared/main/logger");
+const appUtils = require("../shared/main/app-utils");
+const FileType = require("file-type");
+const fs = require("fs");
+const path = require("path");
+
+exports.show = function (type, params, fileData) {
+  let isOpen = true;
+  let showRotation = true;
+  if (fileData.type === FileDataType.NOT_SET) {
+    isOpen = false;
+  } else if (fileData.type === FileDataType.EPUB_EBOOK) {
+    showRotation = false;
+  }
+  //
+  let saveImageAsEntries = [];
+  switch (type) {
+    case "save-image-as":
+      saveImageAsEntries = [
+        {
+          type: "separator",
+        },
+        {
+          label: _("ctxmenu-saveimageto") + "...",
+          click: async () => {
+            try {
+              const dataUrl = params[2];
+              let defaultPath = app.getPath("desktop");
+              let folderList = appUtils.chooseFolder(
+                core.getMainWindow(),
+                defaultPath
+              );
+              if (folderList === undefined) {
+                return;
+              }
+              let outputFolderPath = folderList[0];
+              //
+              if (dataUrl !== undefined) {
+                let data = dataUrl.replace(/^data:image\/\w+;base64,/, "");
+                let buf = Buffer.from(data, "base64");
+                let fileType = await FileType.fromBuffer(buf);
+                let fileExtension = "." + FileExtension.JPG;
+                if (fileType !== undefined) {
+                  fileExtension = "." + fileType.ext;
+                }
+                let fileName =
+                  path.basename(fileData.name, path.extname(fileData.name)) +
+                  "_page_" +
+                  (fileData.pageIndex + 1);
+
+                let outputFilePath = path.join(
+                  outputFolderPath,
+                  fileName + fileExtension
+                );
+                let i = 1;
+                while (fs.existsSync(outputFilePath)) {
+                  i++;
+                  outputFilePath = path.join(
+                    outputFolderPath,
+                    fileName + "(" + i + ")" + fileExtension
+                  );
+                }
+                fs.writeFileSync(outputFilePath, buf, "binary");
+                //
+                core.showToast(_("ui-modal-info-imagesaved"));
+              }
+            } catch (error) {
+              log.error(error);
+              // TODO: show error toast
+            }
+          },
+        },
+      ];
+      break;
+  }
+  //
+  Menu.buildFromTemplate([
     {
       label: _("ctxmenu-nextpage"),
       enabled: isOpen,
@@ -107,12 +182,12 @@ function buildContextMenu(isOpen, showRotation) {
         },
       ],
     },
+    ...saveImageAsEntries,
     {
       type: "separator",
     },
     {
       label: _("ctxmenu-openfile"),
-      // accelerator: "CommandOrControl+O",
       click() {
         reader.onMenuOpenFile();
       },
@@ -129,24 +204,11 @@ function buildContextMenu(isOpen, showRotation) {
     },
     {
       label: _("menu-view-togglefullscreen"),
-      // accelerator: "F11",
       click() {
         core.onMenuToggleFullScreen();
       },
     },
-  ]);
-  return contextMenu;
-}
-
-exports.getContextMenu = function (fileData) {
-  let isOpen = true;
-  let showRotation = true;
-  if (fileData.type === FileDataType.NOT_SET) {
-    isOpen = false;
-  } else if (fileData.type === FileDataType.EPUB_EBOOK) {
-    showRotation = false;
-  }
-  return buildContextMenu(isOpen, showRotation);
+  ]).popup(core.getMainWindow(), params.x, params.y);
 };
 
 function getScaleToHeightSubmenu() {

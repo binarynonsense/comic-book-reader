@@ -153,9 +153,18 @@ export function onInputEvent(type, event) {
   }
 }
 
-export function onContextMenu(params) {
+export function onContextMenu(params, target) {
   if (getOpenModal()) {
     return;
+  }
+  // console.log(document.elementsFromPoint(params[0], params[1]));
+  if (target.tagName === "IMG") {
+    params.push(target.src);
+  } else if (target.tagName === "CANVAS") {
+    // TODO: this is done every time the context menu is opened, doesn't
+    // seem to take long but probably should do it only by explicit request
+    // when clicking Save Image to...
+    params.push(target.toDataURL("image/jpeg"));
   }
   sendIpcToMain("show-context-menu", params);
 }
