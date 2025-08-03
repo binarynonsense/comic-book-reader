@@ -592,6 +592,9 @@
     "[NEEDS TRANSLATION]fileProperties": "File Properties",
     "[NEEDS TRANSLATION]quit": "Quit"
   },
+  "[NOTE TO TRANSLATORS]tool-pre-button-resetall": "'Reset All' as in 'reset all the preferences'",
+  "[NEEDS TRANSLATION]tool-pre-button-resetall": "Reset All",
+  "[NEEDS TRANSLATION]tool-pre-modal-resetall-message": "Are you sure you want to reset all the preferences to their default values?",
   "tool-pre-navkeys-unassigned-key": "غير مخصص",
   "tool-pre-navkeys-change-press": "اضغط على مفتاح صالح لاستبدال المفتاح المعين حالياً.",
   "tool-pre-navkeys-change-modifiers": "المحددات المسموح بها: {0}.",

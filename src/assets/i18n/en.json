@@ -592,6 +592,9 @@
     "fileProperties": "File Properties",
     "quit": "Quit"
   },
+   "[NOTE TO TRANSLATORS]tool-pre-button-resetall": "'Reset All' as in 'reset all the preferences'",
+  "tool-pre-button-resetall": "Reset All",
+  "tool-pre-modal-resetall-message": "Are you sure you want to reset all the preferences to their default values?",
   "tool-pre-navkeys-unassigned-key": "Unassigned",
   "tool-pre-navkeys-change-press": "Press a valid key to replace the currently assigned one.",
   "tool-pre-navkeys-change-modifiers": "Allowed modifiers: {0}.",
