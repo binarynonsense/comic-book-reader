@@ -57,6 +57,10 @@ exports.openURLInBrowser = function (urlString) {
   }
 };
 
+exports.openPathInFileBrowser = function (path) {
+  shell.showItemInFolder(path);
+};
+
 ///////////////////////////////////////////////////////////////////////////////
 // PATHS //////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -200,6 +204,23 @@ exports.chooseSaveAs = chooseSaveAs;
 ///////////////////////////////////////////////////////////////////////////////
 // USER DATA //////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
+
+exports.getConfigFiles = function () {
+  let data = [];
+  let userDataPath = app.getPath("userData");
+  data.push({ name: "acbr.cfg", path: path.join(userDataPath, "acbr.cfg") });
+  data.push({ name: "acbr.hst", path: path.join(userDataPath, "acbr.hst") });
+  data.push({ name: "acbr.fav", path: path.join(userDataPath, "acbr.fav") });
+  data.push({
+    name: "acbr-player.cfg",
+    path: path.join(userDataPath, "acbr-player.cfg"),
+  });
+  data.push({
+    name: "acbr-player.m3u",
+    path: path.join(userDataPath, "acbr-player.m3u"),
+  });
+  return data;
+};
 
 function cleanUpUserDataFolder() {
   // some things are not entirely deleted, but it's good enough :)
