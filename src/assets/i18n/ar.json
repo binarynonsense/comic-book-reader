@@ -180,6 +180,7 @@
   "ui-modal-info-couldntopen-pdf": "تعذر فتح ملف PDF",
   "ui-modal-info-couldntopen-imagesfolder-empty": "تعذر فتح المجلد\nلم يتم العثور على أي صور",
   "ui-modal-info-imagesavedto": "تم حفظ الصورة في",
+  "[NEEDS TRANSLATION]ui-modal-info-imagesaved": "Image file saved",
   "ui-modal-info-errorexportingpage": "خطأ: تعذر تصدير الصفحة",
   "ui-modal-info-version": "الإصدار",
   "ui-modal-info-currentversion": "الإصدار الحالي",

@@ -180,6 +180,7 @@
   "ui-modal-info-couldntopen-pdf": "Hindi mabuksan ang PDF file",
   "ui-modal-info-couldntopen-imagesfolder-empty": "Hindi mabuksan ang folder\nWalang nahanap na mga larawan",
   "ui-modal-info-imagesavedto": "Ang larawan ay na-save sa",
+  "[NEEDS TRANSLATION]ui-modal-info-imagesaved": "Image file saved",
   "ui-modal-info-errorexportingpage": "Error: Hindi ma-export ang pahina",
   "ui-modal-info-version": "bersyon",
   "ui-modal-info-currentversion": "Kasalukuyang bersyon",

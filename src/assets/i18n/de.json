@@ -180,6 +180,7 @@
   "ui-modal-info-couldntopen-pdf": "Konnte PDF-Datei nicht öffnen",
   "ui-modal-info-couldntopen-imagesfolder-empty": "Konnte Ordner nicht öffnen\nKeine Bilder gefunden",
   "ui-modal-info-imagesavedto": "Bild gespeichert nach",
+  "[NEEDS TRANSLATION]ui-modal-info-imagesaved": "Image file saved",
   "ui-modal-info-errorexportingpage": "Fehler: Konnte Seite nicht exportieren",
   "ui-modal-info-version": "Version",
   "ui-modal-info-currentversion": "Aktuelle Version",
