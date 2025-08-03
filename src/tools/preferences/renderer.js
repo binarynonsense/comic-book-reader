@@ -581,6 +581,10 @@ function initOnIpcCallbacks() {
     updateTempFolder(...args);
   });
 
+  on("set-config-files", (...args) => {
+    buildConfigFilesList(...args);
+  });
+
   on("set-rar-folder", (...args) => {
     updateRarFolder(...args);
   });
@@ -843,6 +847,50 @@ function reducePathString(input) {
       ? "..." + input.substring(input.length - length, input.length)
       : input;
   return input;
+}
+
+function buildConfigFilesList(files) {
+  const ul = document.querySelector("#tool-configfiles-items-ul");
+  ul.innerHTML = "";
+  files.forEach((file) => {
+    addConfigFileToList(ul, file);
+  });
+}
+
+function addConfigFileToList(ul, file) {
+  let li = document.createElement("li");
+  li.className = "tools-buttons-list-li";
+  let buttonSpan = document.createElement("span");
+  buttonSpan.className = "tools-buttons-list-button";
+  buttonSpan.innerHTML = `<i class="fas fa-file fa-2x fa-fw"></i>`;
+  buttonSpan.title = g_localizedTexts.openInSystemFileBrowser;
+  let multilineText = document.createElement("span");
+  multilineText.className = "tools-buttons-list-li-multiline-text";
+  {
+    let text = document.createElement("span");
+    text.innerText = file.name;
+    multilineText.appendChild(text);
+
+    text = document.createElement("span");
+    text.innerHTML = file.path;
+    multilineText.appendChild(text);
+  }
+  buttonSpan.appendChild(multilineText);
+  buttonSpan.addEventListener("click", (event) => {
+    sendIpcToMain("open-path-in-file-browser", file.path);
+  });
+  li.appendChild(buttonSpan);
+  // {
+  //   let buttonSpan = document.createElement("span");
+  //   buttonSpan.className = "tools-buttons-list-button";
+  //   buttonSpan.innerHTML = `<i class="fas fa-times"></i>`;
+  //   buttonSpan.title = "temp button tooltip";
+  //   buttonSpan.addEventListener("click", (event) => {
+  //     //sendIpcToMain("remove-item", index);
+  //   });
+  //   li.appendChild(buttonSpan);
+  // }
+  ul.appendChild(li);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -53,6 +53,7 @@ exports.open = function () {
     saveAsRelative = true;
   }
   sendIpcToRenderer("set-temp-folder", tempFolderPath, saveAsRelative);
+  sendIpcToRenderer("set-config-files", appUtils.getConfigFiles());
 };
 
 exports.close = function () {
@@ -452,6 +453,10 @@ function initOnIpcCallbacks() {
     );
     updateNavButtons();
   });
+
+  on("open-path-in-file-browser", (path) => {
+    appUtils.openPathInFileBrowser(path);
+  });
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -473,6 +478,9 @@ function updateLocalizedText() {
         _("tool-pre-modal-resetall-message") +
         "\n\n" +
         _("tool-shared-modal-info-changes-needs-restart"),
+      openInSystemFileBrowser: _(
+        "ui-modal-prompt-button-open-in-system-file-browser"
+      ),
     }
   );
   updateNavKeys();
@@ -1061,6 +1069,11 @@ function getLocalization() {
     {
       id: "tool-pre-tempfolder-checkbox-text",
       text: _("tool-shared-ui-save-as-relative-path"),
+    },
+    //
+    {
+      id: "tool-pre-configfiles-text",
+      text: _("tool-pre-configfiles"),
     },
   ];
 }
