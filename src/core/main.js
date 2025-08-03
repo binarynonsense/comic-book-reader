@@ -131,21 +131,6 @@ if (!gotTheLock) {
   settings.init();
   // check g_slice
   log.debug("checking environment");
-  function restartApp() {
-    cleanUpOnQuit();
-    const options = { args: process.argv };
-    if (process.env.APPIMAGE) {
-      // ref: https://github.com/electron-userland/electron-builder/issues/1727
-      options.execPath = process.env.APPIMAGE;
-      options.args.unshift("--appimage-extract-and-run");
-      app.relaunch(options);
-      app.exit(0);
-    } else {
-      app.relaunch();
-      app.exit(0);
-    }
-  }
-  exports.restartApp = restartApp;
   if (g_launchInfo.platform === "linux" && !process.env.G_SLICE) {
     // NOTE: if G_SLICE isn't set to 'always-malloc' the app may crash
     // during conversions due to an issue with
@@ -559,6 +544,22 @@ if (!gotTheLock) {
   exports.getMainWindow = function () {
     return g_mainWindow;
   };
+
+  function restartApp() {
+    cleanUpOnQuit();
+    const options = { args: process.argv };
+    if (process.env.APPIMAGE) {
+      // ref: https://github.com/electron-userland/electron-builder/issues/1727
+      options.execPath = process.env.APPIMAGE;
+      options.args.unshift("--appimage-extract-and-run");
+      app.relaunch(options);
+      app.exit(0);
+    } else {
+      app.relaunch();
+      app.exit(0);
+    }
+  }
+  exports.restartApp = restartApp;
 
   function cleanUpOnQuit() {
     if (g_workerUpdates !== undefined) {
