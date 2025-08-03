@@ -131,6 +131,21 @@ if (!gotTheLock) {
   settings.init();
   // check g_slice
   log.debug("checking environment");
+  function restartApp() {
+    cleanUpOnQuit();
+    const options = { args: process.argv };
+    if (process.env.APPIMAGE) {
+      // ref: https://github.com/electron-userland/electron-builder/issues/1727
+      options.execPath = process.env.APPIMAGE;
+      options.args.unshift("--appimage-extract-and-run");
+      app.relaunch(options);
+      app.exit(0);
+    } else {
+      app.relaunch();
+      app.exit(0);
+    }
+  }
+  exports.restartApp = restartApp;
   if (g_launchInfo.platform === "linux" && !process.env.G_SLICE) {
     // NOTE: if G_SLICE isn't set to 'always-malloc' the app may crash
     // during conversions due to an issue with
@@ -143,17 +158,7 @@ if (!gotTheLock) {
           true
         );
         process.env.G_SLICE = "always-malloc";
-        const options = { args: process.argv };
-        if (process.env.APPIMAGE) {
-          // ref: https://github.com/electron-userland/electron-builder/issues/1727
-          options.execPath = process.env.APPIMAGE;
-          options.args.unshift("--appimage-extract-and-run");
-          app.relaunch(options);
-          app.exit(0);
-        } else {
-          app.relaunch();
-          app.exit(0);
-        }
+        restartApp();
       } else {
         log.notice(
           "The G_SLICE environment variable is undefined and linuxEnforceGslice is set to false in the settings. If you experience crashes during file conversions try running the program using the provided ACBR.sh script, setting G_SLICE to 'always-malloc' in your shell or setting linuxEnforceGslice to true in the settings.",
@@ -446,19 +451,7 @@ if (!gotTheLock) {
   });
 
   app.on("will-quit", () => {
-    if (g_workerUpdates !== undefined) {
-      g_workerUpdates.kill();
-      g_workerUpdates = undefined;
-    }
-    if (tools.getCurrentToolName() !== "reader")
-      tools.getCurrentTool().onQuit?.();
-    reader.onQuit();
-    settings.save();
-    history.save();
-    // clean up
-    log.info("cleaning up...");
-    temp.cleanUp();
-    appUtils.cleanUpUserDataFolder();
+    cleanUpOnQuit();
   });
 
   app.on("window-all-closed", () => {
@@ -566,6 +559,22 @@ if (!gotTheLock) {
   exports.getMainWindow = function () {
     return g_mainWindow;
   };
+
+  function cleanUpOnQuit() {
+    if (g_workerUpdates !== undefined) {
+      g_workerUpdates.kill();
+      g_workerUpdates = undefined;
+    }
+    if (tools.getCurrentToolName() !== "reader")
+      tools.getCurrentTool().onQuit?.();
+    reader.onQuit();
+    settings.save();
+    history.save();
+    // clean up
+    log.info("cleaning up...");
+    temp.cleanUp();
+    appUtils.cleanUpUserDataFolder();
+  }
 
   exports.forceQuit = function () {
     g_quittingPhase = 2;

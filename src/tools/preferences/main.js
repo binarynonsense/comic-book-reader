@@ -143,6 +143,12 @@ function initOnIpcCallbacks() {
     contextMenu.show("minimal", params, onCloseClicked);
   });
 
+  on("reset-all", () => {
+    log.debug("resetting settings");
+    settings.resetPreferences();
+    core.restartApp();
+  });
+
   on("set-setting", (id, value) => {
     settings.setValue(id, value);
   });
@@ -460,6 +466,13 @@ function updateLocalizedText() {
     {
       infoTooltip: _("tool-shared-modal-title-info"),
       unassignedMouseButton: _("tool-pre-navkeys-unassigned-key"),
+      modalTitleWarning: _("tool-shared-modal-title-warning"),
+      modalButtonOK: _("tool-shared-ui-restart-program"),
+      modalButtonCancel: _("ui-modal-prompt-button-cancel"),
+      resetAllWarning:
+        _("tool-pre-modal-resetall-message") +
+        "\n\n" +
+        _("tool-shared-modal-info-changes-needs-restart"),
     }
   );
   updateNavKeys();
@@ -492,6 +505,10 @@ function getLocalization() {
     {
       id: "tool-pre-back-button-text",
       text: _("tool-shared-ui-back-to-reader").toUpperCase(),
+    },
+    {
+      id: "tool-pre-reset-all-button-text",
+      text: _("tool-pre-button-resetall").toUpperCase(),
     },
     //////////////////////////////////////////////
     {

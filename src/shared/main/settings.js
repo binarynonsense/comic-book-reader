@@ -24,6 +24,7 @@ const g_defaultSize = { width: 1280, height: 720 };
 const g_minSize = { width: 590, height: 410 };
 const g_scaleToHeightMin = 25;
 const g_scaleToHeightMax = 500;
+// NOTE: add new preferences to resetPreferences
 const g_defaultSettings = {
   version: app.getVersion(),
   date: "",
@@ -35,8 +36,9 @@ const g_defaultSettings = {
   fullScreen: false,
   width: g_defaultSize.width,
   height: g_defaultSize.height,
-  history_capacity: 30,
   on_quit_state: 0, // 0: no file, 1: reading file
+
+  history_capacity: 30,
 
   showMenuBar: true,
   showToolBar: true,
@@ -47,7 +49,7 @@ const g_defaultSettings = {
   showBattery: false,
   showLoadingIndicator: true,
 
-  loadLastOpened: true,
+  loadLastOpened: true, // TODO: used????
   autoOpen: 0, // 0: disabled, 1: next file, 2: next and previous files
   cursorVisibility: 0, // 0: always visible, 1: hide when inactive
   zoomDefault: 2, // 0: width, 1: height, 2: last used
@@ -197,6 +199,59 @@ exports.capScreenSizes = function (screenWidth, screenHeight) {
     g_settings.height = screenHeight;
   } else if (g_settings.height < g_minSize.height) {
     g_settings.height = g_minSize.height;
+  }
+};
+
+exports.resetPreferences = function () {
+  const currentSettings = structuredClone(g_settings);
+  setDefaultValues();
+  const preferences = [
+    "hotspots_mode",
+
+    "autoOpen",
+    "cursorVisibility",
+    "zoomDefault",
+    "zoomFileLoading",
+    "pageModeDefault",
+    "pageModeFileLoading",
+    "loadingIndicatorBG",
+    "loadingIndicatorIconSize",
+    "loadingIndicatorIconPos",
+    "layoutClock",
+    "clockFormat",
+    "layoutPageNum",
+    "layoutAudioPlayer",
+    "layoutBattery",
+    "epubOpenAs",
+    "pdfReadingLib",
+    "cbrCreation",
+    "rarExeFolderPath",
+    "turnPageOnScrollBoundary",
+    "toolbarDirection",
+    "homeScreenLatestMax",
+    "epubEbookColorMode",
+    "epubEbookColorText",
+    "epubEbookColorBg",
+    "mouseButtonQuickMenu",
+
+    "checkUpdatesOnStart",
+    "checkUpdatesNotify",
+
+    "navKeys",
+    "navButtons",
+
+    "locale",
+    "theme",
+
+    "tempFolderPath",
+
+    "rarExeAvailable",
+  ];
+  for (const key in currentSettings) {
+    if (!preferences.includes(key)) {
+      log.editor(`keeping "${key}" setting`);
+      g_settings[key] = currentSettings[key];
+    }
   }
 };
 

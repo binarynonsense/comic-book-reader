@@ -35,11 +35,16 @@ function init(activeLocale, languages, activeTheme, themes, settings) {
       block: "start",
       inline: "nearest",
     });
-    // close/back button
+    // menu buttons
     document
       .getElementById("tool-pre-back-button")
       .addEventListener("click", (event) => {
         sendIpcToMain("close");
+      });
+    document
+      .getElementById("tool-pre-reset-all-button")
+      .addEventListener("click", (event) => {
+        showModalConfirmResetAll();
       });
     // sections menu
     for (let index = 0; index < 5; index++) {
@@ -885,6 +890,39 @@ export function getOpenModal() {
 function modalClosed() {
   g_openModal = undefined;
   g_openModalOnInputEvent = undefined;
+}
+
+function showModalConfirmResetAll() {
+  if (g_openModal) {
+    return;
+  }
+  g_openModal = modals.show({
+    title: g_localizedTexts.modalTitleWarning,
+    message: g_localizedTexts.resetAllWarning,
+    zIndexDelta: 5,
+    close: {
+      callback: () => {
+        modalClosed();
+      },
+      key: "Escape",
+    },
+    buttons: [
+      {
+        text: g_localizedTexts.modalButtonOK.toUpperCase(),
+        callback: () => {
+          sendIpcToMain("reset-all");
+          modalClosed();
+        },
+        //key: "Enter",
+      },
+      {
+        text: g_localizedTexts.modalButtonCancel.toUpperCase(),
+        callback: () => {
+          modalClosed();
+        },
+      },
+    ],
+  });
 }
 
 function showOKModal(title, message, textButton) {
