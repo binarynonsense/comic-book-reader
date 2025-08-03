@@ -624,6 +624,7 @@
   "tool-pre-advanced-preferences": "متقدم",
   "tool-pre-other-preferences": "أخرى",
   "tool-pre-tempfolder": "المجلد المؤقت",
+  "[NEEDS TRANSLATION]tool-pre-configfiles": "Configuration Files",
   "tool-hst-title": "التاريخ",
   "tool-hst-button-clear-all": "مسح التاريخ",
   "[NOTE TO TRANSLATORS]tool-hst-recentfiles": "Recent Files as in most recently opened files",

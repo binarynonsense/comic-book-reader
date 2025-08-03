@@ -624,6 +624,7 @@
   "tool-pre-advanced-preferences": "Advanced",
   "tool-pre-other-preferences": "Iba pa",
   "tool-pre-tempfolder": "Temp Folder",
+  "[NEEDS TRANSLATION]tool-pre-configfiles": "Configuration Files",
   "tool-hst-title": "Kasaysayan",
   "tool-hst-button-clear-all": "I-clear ang Kasaysayan",
   "[NOTE TO TRANSLATORS]tool-hst-recentfiles": "Recent Files as in most recently opened files",

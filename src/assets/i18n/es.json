@@ -624,6 +624,7 @@
   "tool-pre-advanced-preferences": "Avanzadas",
   "tool-pre-other-preferences": "Otras",
   "tool-pre-tempfolder": "Carpeta temporal",
+  "tool-pre-configfiles": "Archivos de configuración",
   "tool-hst-title": "Historial",
   "tool-hst-button-clear-all": "Vaciar historial",
   "[NOTE TO TRANSLATORS]tool-hst-recentfiles": "Recent Files as in most recently opened files",

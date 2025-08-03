@@ -624,6 +624,7 @@
   "tool-pre-advanced-preferences": "Erweitert",
   "tool-pre-other-preferences": "Andere",
   "tool-pre-tempfolder": "Temp Ordner",
+  "[NEEDS TRANSLATION]tool-pre-configfiles": "Configuration Files",
   "tool-hst-title": "Chronik",
   "tool-hst-button-clear-all": "Chronik löschen",
   "[NOTE TO TRANSLATORS]tool-hst-recentfiles": "Recent Files as in most recently opened files",

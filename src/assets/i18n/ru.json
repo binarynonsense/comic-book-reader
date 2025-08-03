@@ -624,6 +624,7 @@
   "tool-pre-advanced-preferences": "Дополнительно",
   "tool-pre-other-preferences": "Другое",
   "tool-pre-tempfolder": "Папка Temp",
+  "[NEEDS TRANSLATION]tool-pre-configfiles": "Configuration Files",
   "tool-hst-title": "История",
   "tool-hst-button-clear-all": "Очистить историю",
   "[NOTE TO TRANSLATORS]tool-hst-recentfiles": "Recent Files as in most recently opened files",
