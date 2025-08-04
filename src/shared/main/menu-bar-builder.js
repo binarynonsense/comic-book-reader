@@ -366,48 +366,47 @@ function getNormalMenu(settings, history) {
         {
           type: "separator",
         },
-        {
-          id: "file-page",
-          label: _("menu-file-page"),
-          submenu: [
-            {
-              id: "file-page-export",
-              label: _("menu-file-page-export"),
-              enabled: false,
-              click() {
-                reader.onMenuPageExport();
-              },
-            },
-            {
-              id: "file-page-extract-palette",
-              label: _("menu-file-page-extract-palette"),
-              enabled: false,
-              click() {
-                reader.onMenuPageExtractPalette();
-              },
-            },
-            {
-              id: "file-page-extract-text",
-              label: _("menu-file-page-extract-text"),
-              enabled: false,
-              click() {
-                reader.onMenuPageExtractText();
-              },
-            },
-            {
-              id: "file-page-extract-qr",
-              label: _("menu-file-page-extract-qr"),
-              enabled: false,
-              click() {
-                reader.onMenuPageExtractQR();
-              },
-            },
-          ],
-        },
-
-        {
-          type: "separator",
-        },
+        // {
+        //   id: "file-page",
+        //   label: _("menu-file-page"),
+        //   submenu: [
+        //     {
+        //       id: "file-page-export",
+        //       label: _("menu-file-page-export"),
+        //       enabled: false,
+        //       click() {
+        //         reader.onMenuPageExport();
+        //       },
+        //     },
+        //     {
+        //       id: "file-page-extract-palette",
+        //       label: _("menu-file-page-extract-palette"),
+        //       enabled: false,
+        //       click() {
+        //         reader.onMenuPageExtractPalette();
+        //       },
+        //     },
+        //     {
+        //       id: "file-page-extract-text",
+        //       label: _("menu-file-page-extract-text"),
+        //       enabled: false,
+        //       click() {
+        //         reader.onMenuPageExtractText();
+        //       },
+        //     },
+        //     {
+        //       id: "file-page-extract-qr",
+        //       label: _("menu-file-page-extract-qr"),
+        //       enabled: false,
+        //       click() {
+        //         reader.onMenuPageExtractQR();
+        //       },
+        //     },
+        //   ],
+        // },
+        // {
+        //   type: "separator",
+        // },
         {
           id: "file-preferences",
           label: _("menu-file-preferences"),

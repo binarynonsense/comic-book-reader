@@ -16,6 +16,8 @@ const appUtils = require("../shared/main/app-utils");
 const FileType = require("file-type");
 const fs = require("fs");
 const path = require("path");
+const temp = require("../shared/main/temp");
+const tools = require("../shared/main/tools");
 
 exports.show = function (type, params, fileData) {
   let isOpen = true;
@@ -26,61 +28,41 @@ exports.show = function (type, params, fileData) {
     showRotation = false;
   }
   //
-  let saveImageAsEntries = [];
+  let saveImageEntries = [];
+  let pageExtraEntries = [];
   switch (type) {
-    case "save-image-as":
-      saveImageAsEntries = [
+    case "page":
+      saveImageEntries = [
         {
           type: "separator",
         },
         {
           label: _("ctxmenu-saveimageto") + "...",
-          click: async () => {
-            try {
-              const dataUrl = params[2];
-              let defaultPath = app.getPath("desktop");
-              let folderList = appUtils.chooseFolder(
-                core.getMainWindow(),
-                defaultPath
-              );
-              if (folderList === undefined) {
-                return;
-              }
-              let outputFolderPath = folderList[0];
-              //
-              if (dataUrl !== undefined) {
-                let data = dataUrl.replace(/^data:image\/\w+;base64,/, "");
-                let buf = Buffer.from(data, "base64");
-                let fileType = await FileType.fromBuffer(buf);
-                let fileExtension = "." + FileExtension.JPG;
-                if (fileType !== undefined) {
-                  fileExtension = "." + fileType.ext;
-                }
-                let fileName =
-                  path.basename(fileData.name, path.extname(fileData.name)) +
-                  "_page_" +
-                  (params[3] ? fileData.pageIndex + 1 : fileData.pageIndex + 2);
-
-                let outputFilePath = path.join(
-                  outputFolderPath,
-                  fileName + fileExtension
-                );
-                let i = 1;
-                while (fs.existsSync(outputFilePath)) {
-                  i++;
-                  outputFilePath = path.join(
-                    outputFolderPath,
-                    fileName + "(" + i + ")" + fileExtension
-                  );
-                }
-                fs.writeFileSync(outputFilePath, buf, "binary");
-                //
-                core.showToast(_("ui-modal-info-imagesaved"), 3000);
-              }
-            } catch (error) {
-              log.error(error);
-              // TODO: show error toast
-            }
+          click: () => {
+            exportPage(0, params, fileData);
+          },
+        },
+      ];
+      pageExtraEntries = [
+        {
+          type: "separator",
+        },
+        {
+          label: _("menu-file-page-extract-palette"),
+          click: () => {
+            exportPage(1, params, fileData);
+          },
+        },
+        {
+          label: _("menu-file-page-extract-text"),
+          click: () => {
+            exportPage(2, params, fileData);
+          },
+        },
+        {
+          label: _("menu-file-page-extract-qr"),
+          click: () => {
+            exportPage(3, params, fileData);
           },
         },
       ];
@@ -180,9 +162,10 @@ exports.show = function (type, params, fileData) {
             reader.onGoToPageDialog();
           },
         },
+        ...pageExtraEntries,
       ],
     },
-    ...saveImageAsEntries,
+    ...saveImageEntries,
     {
       type: "separator",
     },
@@ -233,4 +216,71 @@ function getScaleToHeightSubmenu() {
   });
 
   return menu;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// EXPORT ////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+
+async function exportPage(sendToTool, params, fileData) {
+  try {
+    const dataUrl = params[2];
+
+    let outputFolderPath;
+    if (sendToTool !== 0) {
+      outputFolderPath = temp.createSubFolder();
+    } else {
+      let defaultPath = app.getPath("desktop");
+      let folderList = appUtils.chooseFolder(core.getMainWindow(), defaultPath);
+      if (folderList === undefined) {
+        return;
+      }
+      outputFolderPath = folderList[0];
+    }
+
+    if (
+      dataUrl === undefined ||
+      outputFolderPath === undefined ||
+      outputFolderPath === ""
+    ) {
+      throw "error";
+    }
+
+    let data = dataUrl.replace(/^data:image\/\w+;base64,/, "");
+    let buf = Buffer.from(data, "base64");
+    let fileType = await FileType.fromBuffer(buf);
+    let fileExtension = "." + FileExtension.JPG;
+    if (fileType !== undefined) {
+      fileExtension = "." + fileType.ext;
+    }
+    let fileName =
+      path.basename(fileData.name, path.extname(fileData.name)) +
+      "_page_" +
+      (params[3] ? fileData.pageIndex + 1 : fileData.pageIndex + 2);
+
+    let outputFilePath = path.join(outputFolderPath, fileName + fileExtension);
+    let i = 1;
+    while (fs.existsSync(outputFilePath)) {
+      i++;
+      outputFilePath = path.join(
+        outputFolderPath,
+        fileName + "(" + i + ")" + fileExtension
+      );
+    }
+    fs.writeFileSync(outputFilePath, buf, "binary");
+    //
+    if (sendToTool === 1) {
+      tools.switchTool("tool-extract-palette", outputFilePath);
+    } else if (sendToTool === 2) {
+      tools.switchTool("tool-extract-text", outputFilePath);
+    } else if (sendToTool === 3) {
+      tools.switchTool("tool-extract-qr", outputFilePath);
+    } else {
+      //utils.reduceStringFrontEllipsis(message[1], 85)
+      core.showToast(_("ui-modal-info-imagesaved"), 3000);
+    }
+  } catch (error) {
+    log.error(error);
+    // TODO: show error toast
+  }
 }

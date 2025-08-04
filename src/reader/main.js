@@ -386,11 +386,12 @@ function initOnIpcCallbacks() {
   on(
     "pdf-page-dataurl-extracted",
     (error, dataUrl, dpi, outputFolderPath, sendToTool) => {
-      if (error !== undefined) {
-        exportPageError(error);
-      } else {
-        exportPageSaveDataUrl(dataUrl, dpi, outputFolderPath, sendToTool);
-      }
+      // NOTE: no longer used but don't delete in case I need this some day
+      // if (error !== undefined) {
+      //   exportPageError(error);
+      // } else {
+      //   exportPageSaveDataUrl(dataUrl, dpi, outputFolderPath, sendToTool);
+      // }
     }
   );
 
@@ -574,7 +575,7 @@ function initOnIpcCallbacks() {
 
   on("show-context-menu", (params) => {
     if (params[2]) {
-      contextMenu.show("save-image-as", params, g_fileData);
+      contextMenu.show("page", params, g_fileData);
     } else {
       contextMenu.show("normal", params, g_fileData);
     }
@@ -2204,171 +2205,173 @@ function updateClock() {
 // EXPORT ////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 
-async function exportPageStart(sendToTool = 0) {
-  let outputFolderPath;
-  if (sendToTool !== 0) {
-    outputFolderPath = temp.createSubFolder();
-  } else {
-    let defaultPath = app.getPath("desktop");
-    let folderList = appUtils.chooseFolder(core.getMainWindow(), defaultPath);
-    if (folderList === undefined) {
-      return;
-    }
-    outputFolderPath = folderList[0];
-  }
+// NOTE: no longer used but don't delete in case I need them some day
 
-  if (
-    g_fileData.path === "" ||
-    outputFolderPath === undefined ||
-    outputFolderPath === ""
-  ) {
-    return;
-  }
+// async function exportPageStart(sendToTool = 0) {
+//   let outputFolderPath;
+//   if (sendToTool !== 0) {
+//     outputFolderPath = temp.createSubFolder();
+//   } else {
+//     let defaultPath = app.getPath("desktop");
+//     let folderList = appUtils.chooseFolder(core.getMainWindow(), defaultPath);
+//     if (folderList === undefined) {
+//       return;
+//     }
+//     outputFolderPath = folderList[0];
+//   }
 
-  sendIpcToRenderer("update-loading", true);
-  try {
-    if (g_fileData.type === FileDataType.PDF) {
-      sendIpcToRenderer(
-        "extract-pdf-image-buffer",
-        g_fileData.path,
-        g_fileData.pageIndex + 1,
-        outputFolderPath,
-        g_fileData.password,
-        sendToTool
-      );
-      return;
-    } else {
-      if (g_workerExport !== undefined) {
-        // kill it after one use
-        g_workerExport.kill();
-        g_workerExport = undefined;
-      }
+//   if (
+//     g_fileData.path === "" ||
+//     outputFolderPath === undefined ||
+//     outputFolderPath === ""
+//   ) {
+//     return;
+//   }
 
-      let tempSubFolderPath =
-        g_fileData.type === FileDataType.SEVENZIP ||
-        g_fileData.type === FileDataType.ZIP ||
-        g_fileData.type === FileDataType.RAR
-          ? temp.createSubFolder()
-          : undefined;
+//   sendIpcToRenderer("update-loading", true);
+//   try {
+//     if (g_fileData.type === FileDataType.PDF) {
+//       sendIpcToRenderer(
+//         "extract-pdf-image-buffer",
+//         g_fileData.path,
+//         g_fileData.pageIndex + 1,
+//         outputFolderPath,
+//         g_fileData.password,
+//         sendToTool
+//       );
+//       return;
+//     } else {
+//       if (g_workerExport !== undefined) {
+//         // kill it after one use
+//         g_workerExport.kill();
+//         g_workerExport = undefined;
+//       }
 
-      if (g_workerExport === undefined) {
-        g_workerExport = fork(path.join(__dirname, "worker-export.js"));
-        g_workerExport.on("message", (message) => {
-          g_workerExport.kill(); // kill it after one use
-          if (message[0]) {
-            sendIpcToRenderer("update-loading", false);
-            if (message[2] === 1) {
-              tools.switchTool("tool-extract-text", message[1]);
-              sendIpcToPreload("update-menubar");
-            } else if (message[2] === 2) {
-              tools.switchTool("tool-extract-palette", message[1]);
-              sendIpcToPreload("update-menubar");
-            } else if (message[2] === 3) {
-              tools.switchTool("tool-extract-qr", message[1]);
-              sendIpcToPreload("update-menubar");
-            } else {
-              sendIpcToRenderer(
-                "show-modal-info",
-                "",
-                _("ui-modal-info-imagesavedto") +
-                  "\n" +
-                  utils.reduceStringFrontEllipsis(message[1], 85),
-                _("ui-modal-prompt-button-ok")
-              );
-            }
-            temp.deleteSubFolder(tempSubFolderPath);
-            return;
-          } else {
-            exportPageError(message[1]);
-            temp.deleteSubFolder(tempSubFolderPath);
-            return;
-          }
-        });
-      }
-      g_workerExport.send({
-        launchInfo: core.getLaunchInfo(),
-        data: g_fileData,
-        outputFolderPath: outputFolderPath,
-        sendToTool: sendToTool,
-        tempSubFolderPath: tempSubFolderPath,
-      });
-    }
-  } catch (err) {
-    exportPageError(err);
-  }
-}
+//       let tempSubFolderPath =
+//         g_fileData.type === FileDataType.SEVENZIP ||
+//         g_fileData.type === FileDataType.ZIP ||
+//         g_fileData.type === FileDataType.RAR
+//           ? temp.createSubFolder()
+//           : undefined;
 
-function exportPageSaveDataUrl(dataUrl, dpi, outputFolderPath, sendToTool) {
-  if (dataUrl !== undefined) {
-    (async () => {
-      try {
-        const { changeDpiDataUrl } = require("changedpi");
-        let img = changeDpiDataUrl(dataUrl, dpi);
-        let data = img.replace(/^data:image\/\w+;base64,/, "");
-        let buf = Buffer.from(data, "base64");
-        let fileType = await FileType.fromBuffer(buf);
-        let fileExtension = "." + FileExtension.JPG;
-        if (fileType !== undefined) {
-          fileExtension = "." + fileType.ext;
-        }
-        let fileName =
-          path.basename(g_fileData.name, path.extname(g_fileData.name)) +
-          "_page_" +
-          (g_fileData.pageIndex + 1);
+//       if (g_workerExport === undefined) {
+//         g_workerExport = fork(path.join(__dirname, "worker-export.js"));
+//         g_workerExport.on("message", (message) => {
+//           g_workerExport.kill(); // kill it after one use
+//           if (message[0]) {
+//             sendIpcToRenderer("update-loading", false);
+//             if (message[2] === 1) {
+//               tools.switchTool("tool-extract-text", message[1]);
+//               sendIpcToPreload("update-menubar");
+//             } else if (message[2] === 2) {
+//               tools.switchTool("tool-extract-palette", message[1]);
+//               sendIpcToPreload("update-menubar");
+//             } else if (message[2] === 3) {
+//               tools.switchTool("tool-extract-qr", message[1]);
+//               sendIpcToPreload("update-menubar");
+//             } else {
+//               sendIpcToRenderer(
+//                 "show-modal-info",
+//                 "",
+//                 _("ui-modal-info-imagesavedto") +
+//                   "\n" +
+//                   utils.reduceStringFrontEllipsis(message[1], 85),
+//                 _("ui-modal-prompt-button-ok")
+//               );
+//             }
+//             temp.deleteSubFolder(tempSubFolderPath);
+//             return;
+//           } else {
+//             exportPageError(message[1]);
+//             temp.deleteSubFolder(tempSubFolderPath);
+//             return;
+//           }
+//         });
+//       }
+//       g_workerExport.send({
+//         launchInfo: core.getLaunchInfo(),
+//         data: g_fileData,
+//         outputFolderPath: outputFolderPath,
+//         sendToTool: sendToTool,
+//         tempSubFolderPath: tempSubFolderPath,
+//       });
+//     }
+//   } catch (err) {
+//     exportPageError(err);
+//   }
+// }
 
-        let outputFilePath = path.join(
-          outputFolderPath,
-          fileName + fileExtension
-        );
-        let i = 1;
-        while (fs.existsSync(outputFilePath)) {
-          i++;
-          outputFilePath = path.join(
-            outputFolderPath,
-            fileName + "(" + i + ")" + fileExtension
-          );
-        }
-        fs.writeFileSync(outputFilePath, buf, "binary");
+// function exportPageSaveDataUrl(dataUrl, dpi, outputFolderPath, sendToTool) {
+//   if (dataUrl !== undefined) {
+//     (async () => {
+//       try {
+//         const { changeDpiDataUrl } = require("changedpi");
+//         let img = changeDpiDataUrl(dataUrl, dpi);
+//         let data = img.replace(/^data:image\/\w+;base64,/, "");
+//         let buf = Buffer.from(data, "base64");
+//         let fileType = await FileType.fromBuffer(buf);
+//         let fileExtension = "." + FileExtension.JPG;
+//         if (fileType !== undefined) {
+//           fileExtension = "." + fileType.ext;
+//         }
+//         let fileName =
+//           path.basename(g_fileData.name, path.extname(g_fileData.name)) +
+//           "_page_" +
+//           (g_fileData.pageIndex + 1);
 
-        if (sendToTool === 1) {
-          tools.switchTool("tool-extract-text", outputFilePath);
-          sendIpcToPreload("update-menubar");
-        } else if (sendToTool === 2) {
-          tools.switchTool("tool-extract-palette", outputFilePath);
-          sendIpcToPreload("update-menubar");
-        } else if (sendToTool === 3) {
-          tools.switchTool("tool-extract-qr", outputFilePath);
-          sendIpcToPreload("update-menubar");
-        } else {
-          sendIpcToRenderer(
-            "show-modal-info",
-            "",
-            _("ui-modal-info-imagesavedto") +
-              "\n" +
-              utils.reduceStringFrontEllipsis(outputFilePath, 85),
-            _("ui-modal-prompt-button-ok")
-          );
-        }
-        sendIpcToRenderer("update-loading", false);
-      } catch (err) {
-        exportPageError("");
-      }
-    })();
-  } else {
-    exportPageError("");
-  }
-}
+//         let outputFilePath = path.join(
+//           outputFolderPath,
+//           fileName + fileExtension
+//         );
+//         let i = 1;
+//         while (fs.existsSync(outputFilePath)) {
+//           i++;
+//           outputFilePath = path.join(
+//             outputFolderPath,
+//             fileName + "(" + i + ")" + fileExtension
+//           );
+//         }
+//         fs.writeFileSync(outputFilePath, buf, "binary");
 
-function exportPageError(err) {
-  log.error(err);
-  sendIpcToRenderer("update-loading", false);
-  sendIpcToRenderer(
-    "show-modal-info",
-    "",
-    _("ui-modal-info-errorexportingpage"),
-    _("ui-modal-prompt-button-ok")
-  );
-}
+//         if (sendToTool === 1) {
+//           tools.switchTool("tool-extract-text", outputFilePath);
+//           sendIpcToPreload("update-menubar");
+//         } else if (sendToTool === 2) {
+//           tools.switchTool("tool-extract-palette", outputFilePath);
+//           sendIpcToPreload("update-menubar");
+//         } else if (sendToTool === 3) {
+//           tools.switchTool("tool-extract-qr", outputFilePath);
+//           sendIpcToPreload("update-menubar");
+//         } else {
+//           sendIpcToRenderer(
+//             "show-modal-info",
+//             "",
+//             _("ui-modal-info-imagesavedto") +
+//               "\n" +
+//               utils.reduceStringFrontEllipsis(outputFilePath, 85),
+//             _("ui-modal-prompt-button-ok")
+//           );
+//         }
+//         sendIpcToRenderer("update-loading", false);
+//       } catch (err) {
+//         exportPageError("");
+//       }
+//     })();
+//   } else {
+//     exportPageError("");
+//   }
+// }
+
+// function exportPageError(err) {
+//   log.error(err);
+//   sendIpcToRenderer("update-loading", false);
+//   sendIpcToRenderer(
+//     "show-modal-info",
+//     "",
+//     _("ui-modal-info-errorexportingpage"),
+//     _("ui-modal-prompt-button-ok")
+//   );
+// }
 
 //////////////////////////////////////////////////////////////////////////////
 // MENU MSGS /////////////////////////////////////////////////////////////////
@@ -2514,21 +2517,21 @@ exports.onMenuCloseFile = function () {
   closeCurrentFile();
 };
 
-exports.onMenuPageExport = function () {
-  exportPageStart(0);
-};
+// exports.onMenuPageExport = function () {
+//   exportPageStart(0);
+// };
 
-exports.onMenuPageExtractText = function () {
-  exportPageStart(1);
-};
+// exports.onMenuPageExtractText = function () {
+//   exportPageStart(1);
+// };
 
-exports.onMenuPageExtractPalette = function () {
-  exportPageStart(2);
-};
+// exports.onMenuPageExtractPalette = function () {
+//   exportPageStart(2);
+// };
 
-exports.onMenuPageExtractQR = function () {
-  exportPageStart(3);
-};
+// exports.onMenuPageExtractQR = function () {
+//   exportPageStart(3);
+// };
 
 exports.onMenuConvertFile = function () {
   if (g_fileData.path !== undefined) {
