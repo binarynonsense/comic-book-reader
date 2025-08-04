@@ -68,130 +68,139 @@ exports.show = function (type, params, fileData) {
       ];
       break;
   }
-  //
-  Menu.buildFromTemplate([
-    {
-      label: _("ctxmenu-nextpage"),
-      enabled: isOpen,
-      click() {
-        reader.onMenuNextPage();
+  if (isOpen) {
+    Menu.buildFromTemplate([
+      {
+        label: _("ctxmenu-nextpage"),
+        click() {
+          reader.onMenuNextPage();
+        },
       },
-    },
-    {
-      label: _("ctxmenu-prevpage"),
-      enabled: isOpen,
-      click() {
-        reader.onMenuPreviousPage();
+      {
+        label: _("ctxmenu-prevpage"),
+        click() {
+          reader.onMenuPreviousPage();
+        },
       },
-    },
-    {
-      type: "separator",
-    },
-    {
-      label: _("menu-view-zoom"),
-      enabled: isOpen,
-      submenu: [
-        {
-          id: "fit-to-width",
-          label: _("menu-view-zoom-fitwidth"),
-          enabled: isOpen,
-          click() {
-            reader.onMenuFitToWidth();
-          },
-        },
-        {
-          id: "fit-to-height",
-          label: _("menu-view-zoom-fitheight"),
-          enabled: isOpen,
-          click() {
-            reader.onMenuFitToHeight();
-          },
-        },
-        {
-          id: "scale-to-height",
-          label: _("menu-view-zoom-scaleheight"),
-          enabled: isOpen,
-          submenu: getScaleToHeightSubmenu(),
-        },
-      ],
-    },
-    {
-      label: _("ctxmenu-rotate"),
-      enabled: isOpen && showRotation,
-      submenu: [
-        {
-          id: "rotate-clockwise",
-          label: _("ctxmenu-rotate-clockwise"),
-          enabled: isOpen && showRotation,
-          click() {
-            reader.onMenuRotateClockwise();
-          },
-        },
-        {
-          id: "rotation-counterclockwise",
-          enabled: isOpen && showRotation,
-          label: _("ctxmenu-rotate-counterclockwise"),
-          click() {
-            reader.onMenuRotateCounterclockwise();
-          },
-        },
-      ],
-    },
-    {
-      label: _("menu-view-page"),
-      enabled: isOpen,
-      submenu: [
-        {
-          label: _("menu-view-page-first"),
-          enabled: isOpen,
-          click() {
-            reader.onGoToPageFirst();
-          },
-        },
-        {
-          label: _("menu-view-page-last"),
-          enabled: isOpen,
-          click() {
-            reader.onGoToPageLast();
-          },
-        },
-        {
-          label: _("menu-view-page-choose"),
-          enabled: isOpen,
-          click() {
-            reader.onGoToPageDialog();
-          },
-        },
-        ...pageExtraEntries,
-      ],
-    },
-    ...saveImageEntries,
-    {
-      type: "separator",
-    },
-    {
-      label: _("ctxmenu-openfile"),
-      click() {
-        reader.onMenuOpenFile();
+      {
+        type: "separator",
       },
-    },
-    {
-      label: _("ui-modal-prompt-button-close-file"),
-      enabled: isOpen,
-      click() {
-        reader.onMenuCloseFile();
+      {
+        label: _("menu-view-zoom"),
+        submenu: [
+          {
+            id: "fit-to-width",
+            label: _("menu-view-zoom-fitwidth"),
+            click() {
+              reader.onMenuFitToWidth();
+            },
+          },
+          {
+            id: "fit-to-height",
+            label: _("menu-view-zoom-fitheight"),
+            click() {
+              reader.onMenuFitToHeight();
+            },
+          },
+          {
+            id: "scale-to-height",
+            label: _("menu-view-zoom-scaleheight"),
+            submenu: getScaleToHeightSubmenu(),
+          },
+        ],
       },
-    },
-    {
-      type: "separator",
-    },
-    {
-      label: _("menu-view-togglefullscreen"),
-      click() {
-        core.onMenuToggleFullScreen();
+      {
+        label: _("ctxmenu-rotate"),
+        enabled: showRotation,
+        submenu: [
+          {
+            id: "rotate-clockwise",
+            label: _("ctxmenu-rotate-clockwise"),
+            enabled: showRotation,
+            click() {
+              reader.onMenuRotateClockwise();
+            },
+          },
+          {
+            id: "rotation-counterclockwise",
+            enabled: showRotation,
+            label: _("ctxmenu-rotate-counterclockwise"),
+            click() {
+              reader.onMenuRotateCounterclockwise();
+            },
+          },
+        ],
       },
-    },
-  ]).popup(core.getMainWindow(), params.x, params.y);
+      {
+        label: _("menu-view-page"),
+        submenu: [
+          {
+            label: _("menu-view-page-first"),
+            click() {
+              reader.onGoToPageFirst();
+            },
+          },
+          {
+            label: _("menu-view-page-last"),
+            click() {
+              reader.onGoToPageLast();
+            },
+          },
+          {
+            label: _("menu-view-page-choose"),
+            click() {
+              reader.onGoToPageDialog();
+            },
+          },
+          ...pageExtraEntries,
+        ],
+      },
+      ...saveImageEntries,
+      {
+        type: "separator",
+      },
+      {
+        label: _("ctxmenu-openfile"),
+        click() {
+          reader.onMenuOpenFile();
+        },
+      },
+      {
+        label: _("ui-modal-prompt-button-close-file"),
+        click() {
+          reader.onMenuCloseFile();
+        },
+      },
+      {
+        type: "separator",
+      },
+      {
+        label: _("menu-view-togglefullscreen"),
+        click() {
+          core.onMenuToggleFullScreen();
+        },
+      },
+    ]).popup(core.getMainWindow(), params.x, params.y);
+  } else {
+    // Home Screen
+    Menu.buildFromTemplate([
+      {
+        label: _("ctxmenu-openfile"),
+        click() {
+          reader.onMenuOpenFile();
+        },
+      },
+      {
+        type: "separator",
+      },
+      {
+        label: _("menu-view-togglefullscreen"),
+        click() {
+          core.onMenuToggleFullScreen();
+        },
+      },
+    ]).popup(core.getMainWindow(), params.x, params.y);
+  }
 };
 
 function getScaleToHeightSubmenu() {
