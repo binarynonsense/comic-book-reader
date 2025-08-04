@@ -12,11 +12,7 @@ const utils = require("./utils");
 const log = require("./logger");
 const temp = require("./temp");
 
-const {
-  isPortable,
-  getUserDataFolderPath,
-  getExeFolderPath,
-} = require("./app-utils");
+const { getConfigFolder } = require("./app-utils");
 
 let g_settings;
 const g_fileName = "acbr.cfg";
@@ -617,15 +613,7 @@ function isRgbHexColor(text) {
 ///////////////////////////////////////////////////////////////////////////////
 
 exports.save = function () {
-  let cfgFilePath = path.join(getUserDataFolderPath(), g_fileName);
-  if (isPortable()) {
-    cfgFilePath = path.join(getExeFolderPath(), g_fileName);
-    try {
-      fs.accessSync(getExeFolderPath(), fs.constants.W_OK);
-    } catch (err) {
-      log.info("Warning: portable settings' folder not writable");
-    }
-  }
+  let cfgFilePath = path.join(getConfigFolder(), g_fileName);
   let date = new Date().toJSON();
   g_settings.date = date;
   g_settings.version = app.getVersion();
@@ -647,10 +635,7 @@ function load(info) {
   log.debug("loading settings");
   setDefaultValues();
   try {
-    let cfgFilePath = path.join(getUserDataFolderPath(), g_fileName);
-    if (isPortable()) {
-      cfgFilePath = path.join(getExeFolderPath(), g_fileName);
-    }
+    let cfgFilePath = path.join(getConfigFolder(), g_fileName);
     if (fs.existsSync(cfgFilePath)) {
       let data;
       try {
