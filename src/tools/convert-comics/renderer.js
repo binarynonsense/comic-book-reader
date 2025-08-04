@@ -36,6 +36,7 @@ let g_inputListDiv;
 let g_outputFolderDiv;
 let g_startButton;
 let g_outputFormatSelect;
+let g_outputImageScaleSelect;
 let g_outputImageFormatSelect;
 let g_outputSplitNumFilesInput;
 let g_outputPasswordInput;
@@ -110,6 +111,9 @@ function init(mode, outputFolderPath, canEditRars, loadedOptions) {
   g_outputFolderDiv = document.querySelector("#tool-cc-output-folder");
   g_outputFormatSelect = document.querySelector(
     "#tool-cc-output-format-select"
+  );
+  g_outputImageScaleSelect = document.querySelector(
+    "#tool-cc-output-image-scale-select"
   );
   g_outputImageFormatSelect = document.querySelector(
     "#tool-cc-output-image-format-select"
@@ -197,6 +201,10 @@ function init(mode, outputFolderPath, canEditRars, loadedOptions) {
     checkValidData();
   });
 
+  g_outputImageScaleSelect.addEventListener("change", (event) => {
+    checkValidData();
+  });
+
   g_outputImageFormatSelect.innerHTML =
     '<option value="' +
     FileExtension.NOT_SET +
@@ -207,7 +215,6 @@ function init(mode, outputFolderPath, canEditRars, loadedOptions) {
     '<option value="png">png</option>' +
     '<option value="webp">webp</option>' +
     '<option value="avif">avif</option>';
-
   g_outputImageFormatSelect.addEventListener("change", (event) => {
     checkValidData();
   });
@@ -452,8 +459,15 @@ function updateUISelectedOptions() {
   } else {
     g_uiSelectedOptions.outputFileBaseName = g_outputNameInput.value;
   }
-  g_uiSelectedOptions.outputImageScale = document.querySelector(
+  g_uiSelectedOptions.outputImageScaleOption = g_outputImageScaleSelect.value;
+  g_uiSelectedOptions.outputImageScalePercentage = document.querySelector(
     "#tool-cc-output-image-scale-slider"
+  ).value;
+  g_uiSelectedOptions.outputImageScaleHeight = document.querySelector(
+    "#tool-cc-output-image-scale-height-input"
+  ).value;
+  g_uiSelectedOptions.outputImageScaleWidth = document.querySelector(
+    "#tool-cc-output-image-scale-width-input"
   ).value;
   g_uiSelectedOptions.outputSplitNumFiles = g_outputSplitNumFilesInput.value;
   g_uiSelectedOptions.outputPassword = g_outputPasswordInput.value;
@@ -948,6 +962,38 @@ function checkValidData() {
     } else {
       moveDownSpan.classList.remove("tools-disabled");
     }
+  }
+  ///////////////////
+  if (g_outputImageScaleSelect.value === "0") {
+    document
+      .getElementById("tool-cc-output-image-scale-slider")
+      .parentElement.classList.remove("set-display-none");
+    document
+      .getElementById("tool-cc-output-image-scale-height-input")
+      .classList.add("set-display-none");
+    document
+      .getElementById("tool-cc-output-image-scale-width-input")
+      .classList.add("set-display-none");
+  } else if (g_outputImageScaleSelect.value === "1") {
+    document
+      .getElementById("tool-cc-output-image-scale-slider")
+      .parentElement.classList.add("set-display-none");
+    document
+      .getElementById("tool-cc-output-image-scale-height-input")
+      .classList.remove("set-display-none");
+    document
+      .getElementById("tool-cc-output-image-scale-width-input")
+      .classList.add("set-display-none");
+  } else if (g_outputImageScaleSelect.value === "2") {
+    document
+      .getElementById("tool-cc-output-image-scale-slider")
+      .parentElement.classList.add("set-display-none");
+    document
+      .getElementById("tool-cc-output-image-scale-height-input")
+      .classList.add("set-display-none");
+    document
+      .getElementById("tool-cc-output-image-scale-width-input")
+      .classList.remove("set-display-none");
   }
   ///////////////////
   updateColumnsHeight();

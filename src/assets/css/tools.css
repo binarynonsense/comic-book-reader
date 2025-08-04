@@ -512,6 +512,17 @@ input:checked + .tools-toggle-slider:before {
 
 /* /////////////////////////////////////////////////////////////// */
 
+.tools-scale-div {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.tools-scale-div .tools-range-wrap {
+  padding-bottom: 4px;
+}
+
+/* /////////////////////////////////////////////////////////////// */
+
 .tools-range-wrap {
   position: relative;
   display: flex;

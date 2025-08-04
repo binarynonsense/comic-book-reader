@@ -935,10 +935,6 @@ async function resizeImages(inputFilePath) {
   }
   try {
     const sharp = require("sharp");
-    g_uiSelectedOptions.outputImageScale = parseInt(
-      g_uiSelectedOptions.outputImageScale
-    );
-
     let comicInfoFilePath =
       g_mode === ToolMode.CONVERT
         ? fileUtils.getComicInfoFileInFolderRecursive(g_tempSubFolderPath)
@@ -976,7 +972,10 @@ async function resizeImages(inputFilePath) {
       return;
     }
     let didResize = false;
-    if (g_uiSelectedOptions.outputImageScale < 100) {
+    if (
+      g_uiSelectedOptions.outputImageScaleOption !== "0" ||
+      g_uiSelectedOptions.outputImageScalePercentage < 100
+    ) {
       didResize = true;
       sendIpcToRenderer(
         "update-log-text",
@@ -1003,16 +1002,38 @@ async function resizeImages(inputFilePath) {
           fileFolderPath,
           fileName + "." + FileExtension.TMP
         );
-        let data = await sharp(filePath).metadata();
-        await sharp(filePath)
-          .withMetadata()
-          .resize(
-            Math.round(
-              data.width * (g_uiSelectedOptions.outputImageScale / 100)
+        if (g_uiSelectedOptions.outputImageScaleOption === "1") {
+          await sharp(filePath)
+            .withMetadata()
+            .resize({
+              height: parseInt(g_uiSelectedOptions.outputImageScaleHeight),
+              withoutEnlargement: true,
+            })
+            .toFile(tmpFilePath);
+        } else if (g_uiSelectedOptions.outputImageScaleOption === "2") {
+          await sharp(filePath)
+            .withMetadata()
+            .resize({
+              width: parseInt(g_uiSelectedOptions.outputImageScaleWidth),
+              withoutEnlargement: true,
+            })
+            .toFile(tmpFilePath);
+        } else {
+          // scale
+          g_uiSelectedOptions.outputImageScalePercentage = parseInt(
+            g_uiSelectedOptions.outputImageScalePercentage
+          );
+          let data = await sharp(filePath).metadata();
+          await sharp(filePath)
+            .withMetadata()
+            .resize(
+              Math.round(
+                data.width *
+                  (g_uiSelectedOptions.outputImageScalePercentage / 100)
+              )
             )
-          )
-          .toFile(tmpFilePath);
-
+            .toFile(tmpFilePath);
+        }
         fs.unlinkSync(filePath);
         fileUtils.moveFile(tmpFilePath, filePath);
       }
@@ -1411,7 +1432,7 @@ function getTooltipsLocalization() {
   return [
     {
       id: "tool-cc-tooltip-output-size",
-      text: _("tool-shared-tooltip-output-scale"),
+      text: _("tool-shared-tooltip-output-scale-options"),
     },
     {
       id: "tool-cc-tooltip-output-page-order",
@@ -1521,10 +1542,24 @@ function getLocalization() {
       id: "tool-cc-output-page-order-o2-text",
       text: _("tool-shared-ui-output-options-page-order-o2"),
     },
+
     {
       id: "tool-cc-output-image-scale-text",
-      text: _("tool-shared-ui-output-options-scale"),
+      text: _("tool-shared-ui-output-options-scale").replace(" (%)", ""),
     },
+    {
+      id: "tool-cc-output-image-scale-select-0-text",
+      text: _("tool-shared-ui-output-options-scale-percentage"),
+    },
+    {
+      id: "tool-cc-output-image-scale-select-1-text",
+      text: _("tool-shared-ui-output-options-scale-height"),
+    },
+    {
+      id: "tool-cc-output-image-scale-select-2-text",
+      text: _("tool-shared-ui-output-options-scale-width"),
+    },
+
     {
       id: "tool-cc-output-format-text",
       text: _("tool-shared-ui-output-options-format"),

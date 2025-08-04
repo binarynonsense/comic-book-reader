@@ -115,8 +115,69 @@
             ></option>
           </select>
         </label>
-
+        <!--  -->
         <label
+          ><span id="tool-cc-output-image-scale-text"></span>
+          <i
+            id="tool-cc-tooltip-output-size"
+            class="fas fa-question-circle tools-tooltip-button"
+            title="tooltip"
+          ></i>
+          <div
+            class="tool-shared-columns-parent tool-shared-columns-parent-extra-margin-bottom tools-scale-div"
+            style="margin-top: 15px"
+          >
+            <div class="tool-shared-columns-50-grow">
+              <div class="tools-range-wrap">
+                <input
+                  type="range"
+                  class="tools-range"
+                  min="10"
+                  max="100"
+                  id="tool-cc-output-image-scale-slider"
+                  value="100"
+                />
+                <ul class="tools-collection-ul tools-range-ul"></ul>
+                <output class="tools-range-bubble set-display-none"></output>
+              </div>
+              <!--  -->
+              <input
+                id="tool-cc-output-image-scale-height-input"
+                class="set-display-none"
+                type="number"
+                step="50"
+                min="1"
+                value="1000"
+              />
+              <input
+                id="tool-cc-output-image-scale-width-input"
+                class="set-display-none"
+                type="number"
+                step="50"
+                min="1"
+                value="1000"
+              />
+            </div>
+            <div class="tool-shared-columns-25">
+              <select id="tool-cc-output-image-scale-select">
+                <option
+                  id="tool-cc-output-image-scale-select-0-text"
+                  value="0"
+                ></option>
+                <option
+                  id="tool-cc-output-image-scale-select-1-text"
+                  value="1"
+                ></option>
+                <option
+                  id="tool-cc-output-image-scale-select-2-text"
+                  value="2"
+                ></option>
+              </select>
+            </div>
+          </div>
+        </label>
+
+        <!-- <label
           ><span id="tool-cc-output-image-scale-text"></span>
           <i
             id="tool-cc-tooltip-output-size"
@@ -135,8 +196,8 @@
             <ul class="tools-collection-ul tools-range-ul"></ul>
             <output class="tools-range-bubble set-display-none"></output>
           </div>
-        </label>
-
+        </label> -->
+        <!--  -->
         <label
           ><span id="tool-cc-output-image-format-text"></span>
           <select id="tool-cc-output-image-format-select"></select>
