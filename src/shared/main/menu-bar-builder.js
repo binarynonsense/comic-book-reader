@@ -767,7 +767,7 @@ function getHomeScreenMenu(settings, history) {
         },
         {
           id: "openrecent-file",
-          label: _("menu-file-open"),
+          label: _("menu-file-openrecent"),
           submenu: getOpenRecentSubmenu(history),
         },
         {
