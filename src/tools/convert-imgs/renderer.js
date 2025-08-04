@@ -25,6 +25,7 @@ let g_inputListDiv;
 let g_outputFolderDiv;
 let g_startButton;
 let g_outputImageScaleSlider;
+let g_outputImageScaleSelect;
 let g_outputImageFormatSelect;
 
 let g_localizedRemoveFromListText;
@@ -88,6 +89,12 @@ function init(outputFolderPath, loadedOptions) {
   g_outputImageScaleSlider = document.querySelector(
     "#tool-ci-output-image-scale-slider"
   );
+  g_outputImageScaleSelect = document.querySelector(
+    "#tool-ci-output-image-scale-select"
+  );
+  g_outputImageScaleSelect.addEventListener("change", (event) => {
+    checkValidData();
+  });
   g_outputImageFormatSelect = document.querySelector(
     "#tool-ci-output-image-format-select"
   );
@@ -437,6 +444,39 @@ function checkValidData() {
   } else {
     g_startButton.classList.add("tools-disabled");
   }
+  ///////////////////
+  if (g_outputImageScaleSelect.value === "0") {
+    document
+      .getElementById("tool-ci-output-image-scale-slider")
+      .parentElement.classList.remove("set-display-none");
+    document
+      .getElementById("tool-ci-output-image-scale-height-input")
+      .classList.add("set-display-none");
+    document
+      .getElementById("tool-ci-output-image-scale-width-input")
+      .classList.add("set-display-none");
+  } else if (g_outputImageScaleSelect.value === "1") {
+    document
+      .getElementById("tool-ci-output-image-scale-slider")
+      .parentElement.classList.add("set-display-none");
+    document
+      .getElementById("tool-ci-output-image-scale-height-input")
+      .classList.remove("set-display-none");
+    document
+      .getElementById("tool-ci-output-image-scale-width-input")
+      .classList.add("set-display-none");
+  } else if (g_outputImageScaleSelect.value === "2") {
+    document
+      .getElementById("tool-ci-output-image-scale-slider")
+      .parentElement.classList.add("set-display-none");
+    document
+      .getElementById("tool-ci-output-image-scale-height-input")
+      .classList.add("set-display-none");
+    document
+      .getElementById("tool-ci-output-image-scale-width-input")
+      .classList.remove("set-display-none");
+  }
+  ///////////////////
   toolsShared.updateSliders();
   updateOutputFolderUI();
   updateColumnsHeight();
@@ -508,10 +548,23 @@ function onStart() {
     avifQuality: document.querySelector("#tool-ci-avif-quality-slider").value,
     webpQuality: document.querySelector("#tool-ci-webp-quality-slider").value,
   };
+  let scaleParams = {
+    option: g_outputImageScaleSelect.value,
+    value: g_outputImageScaleSlider.value,
+  };
+  if (g_outputImageScaleSelect.value === "1") {
+    scaleParams.value = document.getElementById(
+      "tool-ci-output-image-scale-height-input"
+    ).value;
+  } else if (g_outputImageScaleSelect.value === "2") {
+    scaleParams.value = document.getElementById(
+      "tool-ci-output-image-scale-width-input"
+    ).value;
+  }
   sendIpcToMain(
     "start",
     g_inputFiles,
-    g_outputImageScaleSlider.value,
+    scaleParams,
     imageFormatParams,
     outputFormat,
     g_outputFolderPath

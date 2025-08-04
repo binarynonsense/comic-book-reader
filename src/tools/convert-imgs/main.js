@@ -390,7 +390,7 @@ let g_failedFilePaths = [];
 
 async function start(
   imgFiles,
-  outputScale,
+  outputScaleParams,
   outputFormatParams,
   outputFormat,
   outputFolderPath
@@ -401,8 +401,6 @@ async function start(
   g_numAttempts = 0;
   g_numFiles = imgFiles.length;
   try {
-    outputScale = parseInt(outputScale);
-
     sendIpcToRenderer(
       "modal-update-title-text",
       _("tool-shared-modal-title-converting")
@@ -446,7 +444,10 @@ async function start(
           );
         }
         // resize first if needed
-        if (outputScale < 100) {
+        if (
+          outputScaleParams.option !== "0" ||
+          parseInt(outputScaleParams.value) < 100
+        ) {
           if (g_cancel === true) {
             stopCancel(index);
             return;
@@ -459,12 +460,34 @@ async function start(
             g_tempSubFolderPath,
             fileName + "." + FileExtension.TMP
           );
-          let data = await sharp(filePath).metadata();
-          await sharp(filePath)
-            .withMetadata()
-            .resize(Math.round(data.width * (outputScale / 100)))
-            .toFile(tmpFilePath);
-
+          if (outputScaleParams.option === "1") {
+            await sharp(filePath)
+              .withMetadata()
+              .resize({
+                height: parseInt(outputScaleParams.value),
+                withoutEnlargement: true,
+              })
+              .toFile(tmpFilePath);
+          } else if (outputScaleParams.option === "2") {
+            await sharp(filePath)
+              .withMetadata()
+              .resize({
+                width: parseInt(outputScaleParams.value),
+                withoutEnlargement: true,
+              })
+              .toFile(tmpFilePath);
+          } else {
+            // scale
+            let data = await sharp(filePath).metadata();
+            await sharp(filePath)
+              .withMetadata()
+              .resize(
+                Math.round(
+                  data.width * (parseInt(outputScaleParams.value) / 100)
+                )
+              )
+              .toFile(tmpFilePath);
+          }
           fs.unlinkSync(filePath);
           fileUtils.moveFile(tmpFilePath, filePath);
         }
@@ -475,7 +498,7 @@ async function start(
         );
         sendIpcToRenderer(
           "update-log-text",
-          _("tool-ec-modal-log-extracting-to") + ": " + outputFilePath
+          _("tool-ci-modal-log-extracting-to") + ": " + outputFilePath
         );
         if (outputFormat === FileExtension.JPG) {
           await sharp(filePath)
@@ -573,7 +596,7 @@ function getTooltipsLocalization() {
   return [
     {
       id: "tool-ci-tooltip-output-size",
-      text: _("tool-shared-tooltip-output-scale"),
+      text: _("tool-shared-tooltip-output-scale-options"),
     },
     {
       id: "tool-ci-tooltip-output-folder",
@@ -638,10 +661,24 @@ function getLocalization() {
       id: "tool-ci-output-options-text",
       text: _("tool-shared-ui-output-options"),
     },
+
     {
       id: "tool-ci-output-image-scale-text",
-      text: _("tool-shared-ui-output-options-scale"),
+      text: _("tool-shared-ui-output-options-scale").replace(" (%)", ""),
     },
+    {
+      id: "tool-ci-output-image-scale-select-0-text",
+      text: _("tool-shared-ui-output-options-scale-percentage"),
+    },
+    {
+      id: "tool-ci-output-image-scale-select-1-text",
+      text: _("tool-shared-ui-output-options-scale-height"),
+    },
+    {
+      id: "tool-ci-output-image-scale-select-2-text",
+      text: _("tool-shared-ui-output-options-scale-width"),
+    },
+
     {
       id: "tool-ci-output-image-format-text",
       text: _("tool-shared-ui-output-options-image-format"),
