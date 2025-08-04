@@ -10,11 +10,7 @@ const fs = require("fs");
 const path = require("path");
 const log = require("../shared/main/logger");
 
-const {
-  isPortable,
-  getUserDataFolderPath,
-  getExeFolderPath,
-} = require("../shared/main/app-utils");
+const { getConfigFolder } = require("../shared/main/app-utils");
 
 let g_settings;
 let g_fileName = "acbr-player.cfg";
@@ -81,15 +77,7 @@ function sanitize() {
 ///////////////////////////////////////////////////////////////////////////////
 
 exports.save = function () {
-  let cfgFilePath = path.join(getUserDataFolderPath(), g_fileName);
-  if (isPortable()) {
-    cfgFilePath = path.join(getExeFolderPath(), g_fileName);
-    try {
-      fs.accessSync(getExeFolderPath(), fs.constants.W_OK);
-    } catch (err) {
-      log.info("Warning: portable settings' folder not writable");
-    }
-  }
+  let cfgFilePath = path.join(getConfigFolder(), g_fileName);
   let date = new Date().toJSON();
   g_settings.date = date;
   g_settings.version = app.getVersion();
@@ -105,10 +93,7 @@ exports.save = function () {
 
 function load() {
   setDefaultValues();
-  let cfgFilePath = path.join(getUserDataFolderPath(), g_fileName);
-  if (isPortable()) {
-    cfgFilePath = path.join(getExeFolderPath(), g_fileName);
-  }
+  let cfgFilePath = path.join(getConfigFolder(), g_fileName);
   if (fs.existsSync(cfgFilePath)) {
     let data;
     try {

@@ -10,11 +10,7 @@ const path = require("path");
 const log = require("./logger");
 
 const settings = require("./settings");
-const {
-  isPortable,
-  getUserDataFolderPath,
-  getExeFolderPath,
-} = require("./app-utils");
+const { getConfigFolder } = require("./app-utils");
 
 let g_history = [];
 let g_capacity = 100;
@@ -49,10 +45,7 @@ exports.init = function (capacity) {
 };
 
 exports.save = function () {
-  let hstFilePath = path.join(getUserDataFolderPath(), "acbr.hst");
-  if (fs.existsSync(path.join(getExeFolderPath(), "portable.txt"))) {
-    hstFilePath = path.join(getExeFolderPath(), "acbr.hst");
-  }
+  let hstFilePath = path.join(getConfigFolder(), "acbr.hst");
   const historyJSON = JSON.stringify(g_history, null, 2);
   try {
     fs.writeFileSync(hstFilePath, historyJSON, "utf-8");
@@ -65,10 +58,7 @@ exports.save = function () {
 
 function load() {
   g_history = [];
-  let hstFilePath = path.join(getUserDataFolderPath(), "acbr.hst");
-  if (isPortable()) {
-    hstFilePath = path.join(getExeFolderPath(), "acbr.hst");
-  }
+  let hstFilePath = path.join(getConfigFolder(), "acbr.hst");
   if (fs.existsSync(hstFilePath)) {
     let data;
     try {

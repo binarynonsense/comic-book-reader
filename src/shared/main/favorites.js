@@ -9,9 +9,7 @@ const fs = require("fs");
 const path = require("path");
 const log = require("./logger");
 const {
-  isPortable,
-  getUserDataFolderPath,
-  getExeFolderPath,
+  getConfigFolder,
   getAppVersion,
   getHomeFolderPath,
   getDesktopFolderPath,
@@ -43,10 +41,7 @@ exports.init = function () {
 };
 
 exports.save = function () {
-  let favFilePath = path.join(getUserDataFolderPath(), "acbr.fav");
-  if (fs.existsSync(path.join(getExeFolderPath(), "portable.txt"))) {
-    favFilePath = path.join(getExeFolderPath(), "acbr.fav");
-  }
+  let favFilePath = path.join(getConfigFolder(), "acbr.fav");
   const favsJSON = JSON.stringify(g_favorites, null, 2);
   try {
     fs.writeFileSync(favFilePath, favsJSON, "utf-8");
@@ -63,10 +58,7 @@ function load() {
   g_favorites.version = getAppVersion();
   g_favorites.data = [];
   try {
-    let favFilePath = path.join(getUserDataFolderPath(), "acbr.fav");
-    if (isPortable()) {
-      favFilePath = path.join(getExeFolderPath(), "acbr.fav");
-    }
+    let favFilePath = path.join(getConfigFolder(), "acbr.fav");
     if (fs.existsSync(favFilePath)) {
       let fileData;
       try {
