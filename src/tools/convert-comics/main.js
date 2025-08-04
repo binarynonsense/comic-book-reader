@@ -972,6 +972,9 @@ async function resizeImages(inputFilePath) {
       return;
     }
     let didResize = false;
+    g_uiSelectedOptions.outputImageScalePercentage = parseInt(
+      g_uiSelectedOptions.outputImageScalePercentage
+    );
     if (
       g_uiSelectedOptions.outputImageScaleOption !== "0" ||
       g_uiSelectedOptions.outputImageScalePercentage < 100
@@ -1020,9 +1023,6 @@ async function resizeImages(inputFilePath) {
             .toFile(tmpFilePath);
         } else {
           // scale
-          g_uiSelectedOptions.outputImageScalePercentage = parseInt(
-            g_uiSelectedOptions.outputImageScalePercentage
-          );
           let data = await sharp(filePath).metadata();
           await sharp(filePath)
             .withMetadata()
