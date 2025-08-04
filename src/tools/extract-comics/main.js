@@ -288,34 +288,15 @@ function initOnIpcCallbacks() {
     "resize-images",
     (
       inputFilePath,
-      outputScale,
+      outputScaleParams,
       outputFormatParams,
       outputFormat,
       outputFolderPath
     ) => {
       resizeImages(
         inputFilePath,
-        outputScale,
+        outputScaleParams,
         outputFormatParams,
-        outputFormat,
-        outputFolderPath
-      );
-    }
-  );
-
-  on(
-    "resize-images",
-    (
-      inputFilePath,
-      outputScale,
-      outputQuality,
-      outputFormat,
-      outputFolderPath
-    ) => {
-      resizeImages(
-        inputFilePath,
-        outputScale,
-        outputQuality,
         outputFormat,
         outputFolderPath
       );
@@ -588,7 +569,7 @@ exports.onIpcFromToolsWorkerRenderer = function (...args) {
 
 async function resizeImages(
   inputFilePath,
-  outputScale,
+  outputScaleParams,
   outputFormatParams,
   outputFormat,
   outputFolderPath
@@ -599,7 +580,6 @@ async function resizeImages(
   }
   try {
     const sharp = require("sharp");
-    outputScale = parseInt(outputScale);
 
     let fileName = path.basename(inputFilePath, path.extname(inputFilePath));
     let subFolderPath = path.join(outputFolderPath, fileName);
@@ -622,7 +602,10 @@ async function resizeImages(
       stopCancel();
       return;
     }
-    if (outputScale < 100) {
+    if (
+      outputScaleParams.option !== "0" ||
+      parseInt(outputScaleParams.value) < 100
+    ) {
       sendIpcToRenderer(
         "update-log-text",
         _("tool-shared-modal-log-resizing-images") + "..."
@@ -648,11 +631,32 @@ async function resizeImages(
           fileFolderPath,
           fileName + "." + FileExtension.TMP
         );
-        let data = await sharp(filePath).metadata();
-        await sharp(filePath)
-          .withMetadata()
-          .resize(Math.round(data.width * (outputScale / 100)))
-          .toFile(tmpFilePath);
+        if (outputScaleParams.option === "1") {
+          await sharp(filePath)
+            .withMetadata()
+            .resize({
+              height: parseInt(outputScaleParams.value),
+              withoutEnlargement: true,
+            })
+            .toFile(tmpFilePath);
+        } else if (outputScaleParams.option === "2") {
+          await sharp(filePath)
+            .withMetadata()
+            .resize({
+              width: parseInt(outputScaleParams.value),
+              withoutEnlargement: true,
+            })
+            .toFile(tmpFilePath);
+        } else {
+          // scale
+          let data = await sharp(filePath).metadata();
+          await sharp(filePath)
+            .withMetadata()
+            .resize(
+              Math.round(data.width * (parseInt(outputScaleParams.value) / 100))
+            )
+            .toFile(tmpFilePath);
+        }
 
         fs.unlinkSync(filePath);
         fileUtils.moveFile(tmpFilePath, filePath);
@@ -789,7 +793,7 @@ function getTooltipsLocalization() {
   return [
     {
       id: "tool-ec-tooltip-output-size",
-      text: _("tool-shared-tooltip-output-scale"),
+      text: _("tool-shared-tooltip-output-scale-options"),
     },
     {
       id: "tool-ec-tooltip-output-folder",
@@ -858,10 +862,24 @@ function getLocalization() {
       id: "tool-ec-output-options-text",
       text: _("tool-shared-ui-output-options"),
     },
+
     {
       id: "tool-ec-output-image-scale-text",
-      text: _("tool-shared-ui-output-options-scale"),
+      text: _("tool-shared-ui-output-options-scale").replace(" (%)", ""),
     },
+    {
+      id: "tool-ec-output-image-scale-select-0-text",
+      text: _("tool-shared-ui-output-options-scale-percentage"),
+    },
+    {
+      id: "tool-ec-output-image-scale-select-1-text",
+      text: _("tool-shared-ui-output-options-scale-height"),
+    },
+    {
+      id: "tool-ec-output-image-scale-select-2-text",
+      text: _("tool-shared-ui-output-options-scale-width"),
+    },
+
     {
       id: "tool-ec-output-format-text",
       text: _("tool-shared-ui-output-options-format"),
