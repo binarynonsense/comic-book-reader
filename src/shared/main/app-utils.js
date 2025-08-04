@@ -108,7 +108,7 @@ function isPortable() {
 }
 exports.isPortable = isPortable;
 
-exports.getConfigFolder = function () {
+function getConfigFolder() {
   if (isPortable()) {
     try {
       fs.accessSync(getExeFolderPath(), fs.constants.W_OK);
@@ -118,7 +118,8 @@ exports.getConfigFolder = function () {
     }
   }
   return getUserDataFolderPath();
-};
+}
+exports.getConfigFolder = getConfigFolder;
 
 ///////////////////////////////////////////////////////////////////////////////
 // FILE DIALOGUES /////////////////////////////////////////////////////////////
@@ -207,17 +208,17 @@ exports.chooseSaveAs = chooseSaveAs;
 
 exports.getConfigFiles = function () {
   let data = [];
-  let userDataPath = app.getPath("userData");
-  data.push({ name: "acbr.cfg", path: path.join(userDataPath, "acbr.cfg") });
-  data.push({ name: "acbr.hst", path: path.join(userDataPath, "acbr.hst") });
-  data.push({ name: "acbr.fav", path: path.join(userDataPath, "acbr.fav") });
+  let cfgFolderPath = getConfigFolder();
+  data.push({ name: "acbr.cfg", path: path.join(cfgFolderPath, "acbr.cfg") });
+  data.push({ name: "acbr.hst", path: path.join(cfgFolderPath, "acbr.hst") });
+  data.push({ name: "acbr.fav", path: path.join(cfgFolderPath, "acbr.fav") });
   data.push({
     name: "acbr-player.cfg",
-    path: path.join(userDataPath, "acbr-player.cfg"),
+    path: path.join(cfgFolderPath, "acbr-player.cfg"),
   });
   data.push({
     name: "acbr-player.m3u",
-    path: path.join(userDataPath, "acbr-player.m3u"),
+    path: path.join(cfgFolderPath, "acbr-player.m3u"),
   });
   return data;
 };
