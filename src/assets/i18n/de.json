@@ -3,7 +3,7 @@
     "authors": [
       "trzyglow"
     ],
-    "last-updated": "2025-08-03",
+    "last-updated": "2025-08-04",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.12.0-beta1",
     "pre-release": "false",
@@ -134,7 +134,7 @@
   "ctxmenu-copyimageurl": "Bild URL kopieren",
   "ctxmenu-saveimageas": "Bild speichern unter",
   "[NOTE TO TRANSLATORS]ctxmenu-saveimageto": "'Save Image to' as in save image to which folder",
-  "[NEEDS TRANSLATION]ctxmenu-saveimageto": "Save Image to",
+  "ctxmenu-saveimageto": "Bild speichern in",
   "ctxmenu-paste": "Einfügen",
   "ctxmenu-select-all": "Alles auswählen",
   "ctxmenu-nextpage": "Nächste Seite",
@@ -180,7 +180,7 @@
   "ui-modal-info-couldntopen-pdf": "Konnte PDF-Datei nicht öffnen",
   "ui-modal-info-couldntopen-imagesfolder-empty": "Konnte Ordner nicht öffnen\nKeine Bilder gefunden",
   "ui-modal-info-imagesavedto": "Bild gespeichert nach",
-  "[NEEDS TRANSLATION]ui-modal-info-imagesaved": "Image file saved",
+  "ui-modal-info-imagesaved": "Bilddatei gespeichert",
   "ui-modal-info-errorexportingpage": "Fehler: Konnte Seite nicht exportieren",
   "ui-modal-info-version": "Version",
   "ui-modal-info-currentversion": "Aktuelle Version",
