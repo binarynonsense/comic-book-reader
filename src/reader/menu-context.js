@@ -256,7 +256,7 @@ async function exportPage(sendToTool, params, fileData) {
     let fileName =
       path.basename(fileData.name, path.extname(fileData.name)) +
       "_page_" +
-      (params[3] ? fileData.pageIndex + 1 : fileData.pageIndex + 2);
+      (!params[3] ? fileData.pageIndex + 1 : fileData.pageIndex + 2);
 
     let outputFilePath = path.join(outputFolderPath, fileName + fileExtension);
     let i = 1;
