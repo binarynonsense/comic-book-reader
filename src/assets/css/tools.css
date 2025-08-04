@@ -645,10 +645,17 @@ html[dir="rtl"] .tools-range-bubble {
   flex-direction: row;
   gap: 15px;
   align-items: center;
+  border-left-width: 5px;
 }
 .tools-collection-li:last-child {
   border-bottom: 1px solid var(--tools-collection-border-color);
 }
+
+/* read only ones*/
+/* .tools-collection-li:has(span:only-child),
+.tools-collection-li:not(:has(*)) {
+  border-inline-start: 5px solid var(--tools-collection-border-color);
+} */
 
 .tools-collection-li-button {
   cursor: pointer;
