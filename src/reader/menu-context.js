@@ -59,7 +59,7 @@ exports.show = function (type, params, fileData) {
                 let fileName =
                   path.basename(fileData.name, path.extname(fileData.name)) +
                   "_page_" +
-                  (fileData.pageIndex + 1);
+                  (params[3] ? fileData.pageIndex + 1 : fileData.pageIndex + 2);
 
                 let outputFilePath = path.join(
                   outputFolderPath,

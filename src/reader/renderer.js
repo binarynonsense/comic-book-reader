@@ -160,11 +160,13 @@ export function onContextMenu(params, target) {
   // console.log(document.elementsFromPoint(params[0], params[1]));
   if (target.tagName === "IMG") {
     params.push(target.src);
+    params.push(target.classList.contains("page-2"));
   } else if (target.tagName === "CANVAS") {
     // TODO: this is done every time the context menu is opened, doesn't
     // seem to take long but probably should do it only by explicit request
     // when clicking Save Image to...
     params.push(target.toDataURL("image/jpeg"));
+    params.push(target.classList.contains("page-2"));
   }
   sendIpcToMain("show-context-menu", params);
 }
