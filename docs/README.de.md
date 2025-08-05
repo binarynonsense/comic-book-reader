@@ -40,6 +40,7 @@ Ein Comicbuch Leser und Konverter für CBZ, CBR, CB7, EPUB und PDF Dateien.
   - Ebooks:
     - PDF<sup>[5]</sup> und EPUB<sup>[3]</sup>
 - Fenster- (einfache Benutzeroberfläche) und Vollbild- (keine Benutzeroberfläche) Modi.
+- 'Einzelseite', 'Doppelseite' und 'Doppelseite (erste Seite zentrieren)' Seiten-modi
 - 'Breitenanpassung', 'Höhenanpassung' und eine anpassbare 'Höhenskalierung' Seitenansicht
 - Seitenrotation
 - Benutzeroberfläche verfügbar auf:
