@@ -40,7 +40,7 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB and PDF files.
   - Ebooks:
     - PDF<sup>[5]</sup> and EPUB<sup>[3]</sup>
 - Windowed (simple UI) and full-screen (no UI) modes
-- 'Single page', 'Double page' and 'Double page (center first page)' page modes.
+- 'Single page', 'double page' and 'double page (center first page)' page modes.
 - 'Fit to width', 'fit to height' and a customizable 'scale to height' page views
 - Page rotation
 - UI available in:
