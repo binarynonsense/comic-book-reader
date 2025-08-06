@@ -81,6 +81,15 @@ jobs:
           echo $NEW_APP_VERSION
           echo "RELEASE_NAME=$NEW_APP_VERSION" >> $GITHUB_ENV
 
+      - name: INSTALL FLATPAK-BUILDER AND DEPENDENCIES (LINUX)
+        if: ${{ matrix.os == 'ubuntu-24.04' && github.event.inputs.createLinux == 'true' }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            flatpak \
+            flatpak-builder
+          flatpak --user remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+
       - name: RUN DIST (LINUX)
         if: ${{ matrix.os == 'ubuntu-24.04' && github.event.inputs.createLinux == 'true' }}
         run: npm run dist:linux
@@ -102,11 +111,16 @@ jobs:
           cp ./dist/VERSION ./dist/ACBR_Linux_deb/
           mv ./dist/ACBR_deb.sh ./dist/ACBR_Linux_deb/ACBR.sh 
 
+          mkdir ./dist/ACBR_Linux_flatpak
+          mv ./dist/*.flatpak ./dist/ACBR_Linux_flatpak/
+          cp -r licenses ./dist/ACBR_Linux_flatpak/licenses
+          cp ./dist/VERSION ./dist/ACBR_Linux_flatpak/
+
           mkdir ./dist/ACBR_Linux_AppImage
           mv ./dist/*.AppImage ./dist/ACBR_Linux_AppImage/
           cp -r licenses ./dist/ACBR_Linux_AppImage/licenses
           mv ./dist/VERSION ./dist/ACBR_Linux_AppImage/
-          mv ./dist/ACBR.sh ./dist/ACBR_Linux_AppImage/ 
+          mv ./dist/ACBR.sh ./dist/ACBR_Linux_AppImage/         
 
           mv ./dist/linux-unpacked ./dist/ACBR_Linux
           cp -r licenses ./dist/ACBR_Linux/licenses
@@ -127,6 +141,7 @@ jobs:
           zip -r ./ACBR_Linux.zip ./ACBR_Linux
           zip -r ./ACBR_Linux_AppImage.zip ./ACBR_Linux_AppImage
           zip -r ./ACBR_Linux_deb.zip ./ACBR_Linux_deb
+          zip -r ./ACBR_Linux_flatpak.zip ./ACBR_Linux_flatpak
       - name: PREPARE ZIPS (WINDOWS)
         if: ${{ matrix.os == 'windows-latest' && github.event.inputs.createWindows == 'true' }}
         shell: bash
@@ -155,6 +170,7 @@ jobs:
             ./dist/ACBR_Linux.zip
             ./dist/ACBR_Linux_AppImage.zip
             ./dist/ACBR_Linux_deb.zip
+            ./dist/ACBR_Linux_flatpak.zip
       - name: RELEASE (LINUX) (SIMPLE)
         if: ${{matrix.os == 'ubuntu-24.04' && github.event.inputs.createLinux == 'true' && github.event.inputs.releaseLinAppImage == 'false' }}
         uses: softprops/action-gh-release@v2
