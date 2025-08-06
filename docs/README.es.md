@@ -40,6 +40,7 @@ Un lector y conversor de cómics para archivos en formato CBZ, CBR, CB7, EPUB y 
   - Ebooks:
     - PDF<sup>[5]</sup> y EPUB<sup>[3]</sup>
 - Modos de ventana (IU simple) y pantalla completa (sin IU)
+- Modos de página: 'página simple', 'página doble' y 'página doble (centrar primera página'
 - Vistas de pagina: 'ajustar a anchura', 'ajustar a altura' y 'escalar a altura' personalizable
 - Rotación de página
 - Interfaz de usuario disponible en:
