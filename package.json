@@ -24,6 +24,9 @@
         },
         {
           "target": "deb"
+        },
+        {
+          "target": "flatpak"
         }
       ],
       "artifactName": "${name}-${version}.${ext}",
@@ -32,6 +35,21 @@
         "**/node_modules/sharp/**",
         "**/node_modules/@img/**/*",
         "**/node_modules/7zip-bin/**"
+      ]
+    },
+    "flatpak": {
+      "finishArgs": [
+        "--socket=wayland",
+        "--socket=x11",
+        "--share=ipc",
+        "--device=dri",
+        "--socket=pulseaudio",
+        "--filesystem=home",
+        "--filesystem=host",
+        "--share=network",
+        "--talk-name=org.freedesktop.Notifications",
+        "--socket=system-bus",
+        "--device=all"
       ]
     }
   },
