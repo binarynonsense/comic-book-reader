@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2024 Álvaro García
+ * Copyright 2020-2025 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -10,10 +10,22 @@ const path = require("path");
 const FileType = require("file-type");
 const fileFormats = require("../shared/main/file-formats");
 const { FileExtension, FileDataType } = require("../shared/main/constants");
-const log = require("../shared/main/logger");
+
+let g_useUtilityProcess = false;
 
 process.on("message", (message) => {
-  log.init(message.launchInfo);
+  g_useUtilityProcess = false;
+  exportPage(
+    message.data,
+    message.outputFolderPath,
+    message.sendToTool,
+    message.tempSubFolderPath
+  );
+});
+
+process.parentPort?.once("message", async (event) => {
+  g_useUtilityProcess = true;
+  let message = event.data;
   exportPage(
     message.data,
     message.outputFolderPath,
@@ -91,7 +103,7 @@ async function exportPage(
     // don't know how to send the buffer back (send doesn't seem to work
     // for binary data)
     if (buf === undefined) {
-      process.send([false, "Error: exportPage empty buffer"]);
+      send([false, "Error: exportPage empty buffer"]);
     } else {
       (async () => {
         let fileType = await FileType.fromBuffer(buf);
@@ -119,10 +131,18 @@ async function exportPage(
 
         fs.writeFileSync(outputFilePath, buf, "binary");
 
-        process.send([true, outputFilePath, sendToTool]);
+        send([true, outputFilePath, sendToTool]);
       })();
     }
   } catch (err) {
-    process.send([false, err]);
+    send([false, err]);
+  }
+}
+
+function send(message) {
+  if (g_useUtilityProcess) {
+    process.parentPort.postMessage(message);
+  } else {
+    process.send(message);
   }
 }

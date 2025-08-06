@@ -5,7 +5,12 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-const { BrowserWindow, clipboard } = require("electron");
+const {
+  BrowserWindow,
+  clipboard,
+  utilityProcess,
+  MessageChannelMain,
+} = require("electron");
 const fs = require("fs");
 const path = require("path");
 const core = require("../../core/main");
@@ -482,9 +487,15 @@ function start(
       g_worker = undefined;
     }
     if (g_worker === undefined) {
-      g_worker = fork(
-        path.join(__dirname, "../../shared/main/tools-worker.js")
-      );
+      if (core.useUtilityProcess()) {
+        g_worker = utilityProcess.fork(
+          path.join(__dirname, "../../shared/main/tools-worker.js")
+        );
+      } else {
+        g_worker = fork(
+          path.join(__dirname, "../../shared/main/tools-worker.js")
+        );
+      }
       g_worker.on("message", (message) => {
         g_worker.kill(); // kill it after one use
         if (message.success) {
@@ -502,14 +513,29 @@ function start(
         }
       });
     }
-    g_worker.send([
-      core.getLaunchInfo(),
-      "extract",
-      inputFilePath,
-      inputFileType,
-      g_tempSubFolderPath,
-      g_initialPassword,
-    ]);
+    if (core.useUtilityProcess()) {
+      const { port1 } = new MessageChannelMain();
+      g_worker.send(
+        [
+          core.getLaunchInfo(),
+          "extract",
+          inputFilePath,
+          inputFileType,
+          g_tempSubFolderPath,
+          g_initialPassword,
+        ],
+        [port1]
+      );
+    } else {
+      g_worker.send([
+        core.getLaunchInfo(),
+        "extract",
+        inputFilePath,
+        inputFileType,
+        g_tempSubFolderPath,
+        g_initialPassword,
+      ]);
+    }
   } else if (inputFileType === FileDataType.PDF) {
     sendIpcToRenderer(
       "update-log-text",

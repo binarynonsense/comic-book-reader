@@ -5,7 +5,12 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-const { BrowserWindow, clipboard } = require("electron");
+const {
+  BrowserWindow,
+  clipboard,
+  utilityProcess,
+  MessageChannelMain,
+} = require("electron");
 const fs = require("fs");
 const path = require("path");
 const core = require("../../core/main");
@@ -810,9 +815,15 @@ function startFile(inputFilePath, inputFileType, fileNum, totalFilesNum) {
       g_worker = undefined;
     }
     if (g_worker === undefined) {
-      g_worker = fork(
-        path.join(__dirname, "../../shared/main/tools-worker.js")
-      );
+      if (core.useUtilityProcess()) {
+        g_worker = utilityProcess.fork(
+          path.join(__dirname, "../../shared/main/tools-worker.js")
+        );
+      } else {
+        g_worker = fork(
+          path.join(__dirname, "../../shared/main/tools-worker.js")
+        );
+      }
       g_worker.on("message", (message) => {
         g_worker.kill(); // kill it after one use
         if (message.success) {
@@ -832,16 +843,33 @@ function startFile(inputFilePath, inputFileType, fileNum, totalFilesNum) {
         }
       });
     }
-    g_worker.send([
-      core.getLaunchInfo(),
-      "extract",
-      inputFilePath,
-      inputFileType,
-      g_mode === ToolMode.CONVERT
-        ? g_tempSubFolderPath
-        : g_creationTempSubFolderPath,
-      g_inputPassword,
-    ]);
+    if (core.useUtilityProcess()) {
+      const { port1 } = new MessageChannelMain();
+      g_worker.postMessage(
+        [
+          core.getLaunchInfo(),
+          "extract",
+          inputFilePath,
+          inputFileType,
+          g_mode === ToolMode.CONVERT
+            ? g_tempSubFolderPath
+            : g_creationTempSubFolderPath,
+          g_inputPassword,
+        ],
+        [port1]
+      );
+    } else {
+      g_worker.send([
+        core.getLaunchInfo(),
+        "extract",
+        inputFilePath,
+        inputFileType,
+        g_mode === ToolMode.CONVERT
+          ? g_tempSubFolderPath
+          : g_creationTempSubFolderPath,
+        g_inputPassword,
+      ]);
+    }
   } else if (inputFileType === FileDataType.PDF) {
     sendIpcToRenderer(
       "update-log-text",
@@ -1341,9 +1369,15 @@ async function createFilesFromImages(
       g_worker = undefined;
     }
     if (g_worker === undefined) {
-      g_worker = fork(
-        path.join(__dirname, "../../shared/main/tools-worker.js")
-      );
+      if (core.useUtilityProcess()) {
+        g_worker = utilityProcess.fork(
+          path.join(__dirname, "../../shared/main/tools-worker.js")
+        );
+      } else {
+        g_worker = fork(
+          path.join(__dirname, "../../shared/main/tools-worker.js")
+        );
+      }
       g_worker.on("message", (message) => {
         g_worker.kill(); // kill it after one use
         if (message.success) {
@@ -1380,20 +1414,41 @@ async function createFilesFromImages(
     ) {
       outputFolderPath = path.dirname(inputFilePath);
     }
-    g_worker.send([
-      core.getLaunchInfo(),
-      "create",
-      baseFileName,
-      outputFolderPath,
-      g_uiSelectedOptions.outputSplitNumFiles,
-      imgFilePaths,
-      comicInfoFilePath,
-      g_uiSelectedOptions.outputFormat,
-      g_uiSelectedOptions.outputFileSameName,
-      g_tempSubFolderPath,
-      g_uiSelectedOptions.outputPassword,
-      extraData,
-    ]);
+    if (core.useUtilityProcess()) {
+      const { port1 } = new MessageChannelMain();
+      g_worker.postMessage(
+        [
+          core.getLaunchInfo(),
+          "create",
+          baseFileName,
+          outputFolderPath,
+          g_uiSelectedOptions.outputSplitNumFiles,
+          imgFilePaths,
+          comicInfoFilePath,
+          g_uiSelectedOptions.outputFormat,
+          g_uiSelectedOptions.outputFileSameName,
+          g_tempSubFolderPath,
+          g_uiSelectedOptions.outputPassword,
+          extraData,
+        ],
+        [port1]
+      );
+    } else {
+      g_worker.send([
+        core.getLaunchInfo(),
+        "create",
+        baseFileName,
+        outputFolderPath,
+        g_uiSelectedOptions.outputSplitNumFiles,
+        imgFilePaths,
+        comicInfoFilePath,
+        g_uiSelectedOptions.outputFormat,
+        g_uiSelectedOptions.outputFileSameName,
+        g_tempSubFolderPath,
+        g_uiSelectedOptions.outputPassword,
+        extraData,
+      ]);
+    }
   } catch (error) {
     stopError(error);
   }

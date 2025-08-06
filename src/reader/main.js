@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-const { app } = require("electron");
+const { utilityProcess, MessageChannelMain } = require("electron");
 
 const fs = require("fs");
 const path = require("path");
@@ -1437,7 +1437,13 @@ function goToPage(pageIndex, scrollBarPos = 0) {
         : undefined;
 
     if (g_workerPage === undefined) {
-      g_workerPage = fork(path.join(__dirname, "worker-page.js"));
+      if (core.useUtilityProcess()) {
+        g_workerPage = utilityProcess.fork(
+          path.join(__dirname, "worker-page.js")
+        );
+      } else {
+        g_workerPage = fork(path.join(__dirname, "worker-page.js"));
+      }
       g_workerPage.on("message", (message) => {
         log.debug(`page load time: ${timers.stop("workerPage")}s`);
         g_workerPage.kill(); // kill it after one use
@@ -1480,15 +1486,31 @@ function goToPage(pageIndex, scrollBarPos = 0) {
     });
 
     // send to worker
-    g_workerPage.send([
-      core.getLaunchInfo(),
-      g_fileData.type,
-      g_fileData.path,
-      entryNames,
-      scrollBarPos,
-      g_fileData.password,
-      tempSubFolderPath,
-    ]);
+    if (core.useUtilityProcess()) {
+      const { port1 } = new MessageChannelMain();
+      g_workerPage.postMessage(
+        [
+          core.getLaunchInfo(),
+          g_fileData.type,
+          g_fileData.path,
+          entryNames,
+          scrollBarPos,
+          g_fileData.password,
+          tempSubFolderPath,
+        ],
+        [port1]
+      );
+    } else {
+      g_workerPage.send([
+        core.getLaunchInfo(),
+        g_fileData.type,
+        g_fileData.path,
+        entryNames,
+        scrollBarPos,
+        g_fileData.password,
+        tempSubFolderPath,
+      ]);
+    }
   } else if (g_fileData.type === FileDataType.EPUB_EBOOK) {
     if (pageIndex > 0) {
       g_fileData.state = FileDataState.LOADING;

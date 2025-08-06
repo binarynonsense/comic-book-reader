@@ -8,7 +8,14 @@
 const timers = require("../shared/main/timers");
 timers.start("startup");
 
-const { app, BrowserWindow, ipcMain, screen } = require("electron");
+const {
+  app,
+  BrowserWindow,
+  ipcMain,
+  screen,
+  utilityProcess,
+  MessageChannelMain,
+} = require("electron");
 const os = require("os");
 const fs = require("fs");
 const path = require("path");
@@ -541,6 +548,11 @@ if (!gotTheLock) {
   }
   exports.isRelease = isRelease;
 
+  function useUtilityProcess() {
+    return g_launchInfo.useUtilityProcess;
+  }
+  exports.useUtilityProcess = useUtilityProcess;
+
   exports.getMainWindow = function () {
     return g_mainWindow;
   };
@@ -669,10 +681,18 @@ if (!gotTheLock) {
           }
         }
       }
+
       if (doCheck) {
         log.debug("checking for updates");
         if (g_workerUpdates === undefined) {
-          g_workerUpdates = fork(path.join(__dirname, "worker-updates.js"));
+          if (useUtilityProcess()) {
+            g_workerUpdates = utilityProcess.fork(
+              path.join(__dirname, "worker-updates.js")
+            );
+          } else {
+            g_workerUpdates = fork(path.join(__dirname, "worker-updates.js"));
+          }
+
           g_workerUpdates.on("message", (message) => {
             const newVersion = message[1];
             g_workerUpdates.kill(); // kill it after one use
@@ -702,7 +722,15 @@ if (!gotTheLock) {
           });
         }
         // send to worker
-        g_workerUpdates.send([g_launchInfo, app.getVersion()]);
+        if (useUtilityProcess()) {
+          const { port1 } = new MessageChannelMain();
+          g_workerUpdates.postMessage(
+            [g_launchInfo, app.getVersion()],
+            [port1]
+          );
+        } else {
+          g_workerUpdates.send([g_launchInfo, app.getVersion()]);
+        }
       }
     } catch (error) {
       log.editorError(error);

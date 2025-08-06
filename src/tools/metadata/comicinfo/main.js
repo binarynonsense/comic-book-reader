@@ -5,6 +5,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
+const { utilityProcess, MessageChannelMain } = require("electron");
 const fs = require("fs");
 const path = require("path");
 const core = require("../../../core/main");
@@ -169,9 +170,15 @@ exports.updatePages = function (data) {
     g_worker = undefined;
   }
   if (g_worker === undefined) {
-    g_worker = fork(
-      path.join(__dirname, "../../../shared/main/tools-worker.js")
-    );
+    if (core.useUtilityProcess()) {
+      g_worker = utilityProcess.fork(
+        path.join(__dirname, "../../../shared/main/tools-worker.js")
+      );
+    } else {
+      g_worker = fork(
+        path.join(__dirname, "../../../shared/main/tools-worker.js")
+      );
+    }
     g_worker.on("message", (message) => {
       g_worker.kill(); // kill it after one use
       if (message.success) {
@@ -184,14 +191,29 @@ exports.updatePages = function (data) {
       }
     });
   }
-  g_worker.send([
-    core.getLaunchInfo(),
-    "extract",
-    g_fileData.path,
-    g_fileData.type,
-    tempFolderPath,
-    g_fileData.password,
-  ]);
+  if (core.useUtilityProcess()) {
+    const { port1 } = new MessageChannelMain();
+    g_worker.send(
+      [
+        core.getLaunchInfo(),
+        "extract",
+        g_fileData.path,
+        g_fileData.type,
+        tempFolderPath,
+        g_fileData.password,
+      ],
+      [port1]
+    );
+  } else {
+    g_worker.send([
+      core.getLaunchInfo(),
+      "extract",
+      g_fileData.path,
+      g_fileData.type,
+      tempFolderPath,
+      g_fileData.password,
+    ]);
+  }
 };
 
 async function updatePagesDataFromImages(data, tempFolderPath) {

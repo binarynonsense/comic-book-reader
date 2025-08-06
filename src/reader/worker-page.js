@@ -10,10 +10,8 @@ const path = require("path");
 const fileFormats = require("../shared/main/file-formats");
 const { FileDataType } = require("../shared/main/constants");
 const fileUtils = require("../shared/main/file-utils");
-const log = require("../shared/main/logger");
 
 process.on("message", async (message) => {
-  log.init(message[0]);
   const entryNames = message[3];
   let img64s = [];
   for (let i = 0; i < entryNames.length; i++) {
@@ -25,6 +23,21 @@ process.on("message", async (message) => {
     img64s.push(result[1]);
   }
   process.send([true, img64s, message[4]]);
+});
+
+process.parentPort?.once("message", async (event) => {
+  let message = event.data;
+  const entryNames = message[3];
+  let img64s = [];
+  for (let i = 0; i < entryNames.length; i++) {
+    const result = await extractBase64Image(i, ...message.slice(1));
+    if (!result[0]) {
+      process.parentPort.postMessage([false, result[1]]);
+      return;
+    }
+    img64s.push(result[1]);
+  }
+  process.parentPort.postMessage([true, img64s, message[4]]);
 });
 
 async function extractBase64Image(

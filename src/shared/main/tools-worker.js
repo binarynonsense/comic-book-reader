@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2024 Álvaro García
+ * Copyright 2020-2025 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -11,10 +11,21 @@ const fileFormats = require("./file-formats");
 const { FileExtension, FileDataType } = require("./constants");
 const utils = require("./utils");
 const fileUtils = require("./file-utils");
-const log = require("./logger");
+
+let g_useUtilityProcess = false;
 
 process.on("message", (message) => {
-  log.init(message[0]);
+  g_useUtilityProcess = false;
+  if (message[1] === "extract") {
+    extractImages(...message.slice(2));
+  } else if (message[1] === "create") {
+    createFiles(...message.slice(2));
+  }
+});
+
+process.parentPort?.once("message", async (event) => {
+  g_useUtilityProcess = true;
+  let message = event.data;
   if (message[1] === "extract") {
     extractImages(...message.slice(2));
   } else if (message[1] === "create") {
@@ -55,19 +66,19 @@ async function extractImages(
     } else if (inputFileType === FileDataType.EPUB_COMIC) {
       success = await fileFormats.extractEpub(inputFilePath, tempFolderPath);
     } else {
-      process.send("conversionExtractImages: invalid file type");
+      send("conversionExtractImages: invalid file type");
       return;
     }
     let time = `${timers.stop("extractImages")}s`;
     if (success) {
-      process.send({ success: true, time: time });
+      send({ success: true, time: time });
     } else {
       // TODO: get errors from extraction functions
       throw "error";
     }
   } catch (error) {
     timers.stop("extractImages");
-    process.send({
+    send({
       success: false,
       error: error,
     });
@@ -256,10 +267,18 @@ async function createFiles(
       createdFiles.push(filesData[index].outputFilePath);
     }
     /////////////////////////////
-    process.send({ success: true, files: createdFiles, times: times });
+    send({ success: true, files: createdFiles, times: times });
   } catch (error) {
     // TODO: remove outputSubFolderPath if exists?
     // I'd prefer not to delete things outside the temp folder, just in case
-    process.send({ success: false, error: error });
+    send({ success: false, error: error });
+  }
+}
+
+function send(message) {
+  if (g_useUtilityProcess) {
+    process.parentPort.postMessage(message);
+  } else {
+    process.send(message);
   }
 }

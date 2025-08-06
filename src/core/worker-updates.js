@@ -5,13 +5,23 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-const log = require("../shared/main/logger");
 const utils = require("../shared/main/utils");
 
-process.on("message", async (message) => {
+let g_useUtilityProcess = false;
+
+process.on("message", (message) => {
+  g_useUtilityProcess = false;
+  checkUpdate(message);
+});
+
+process.parentPort?.once("message", async (event) => {
+  g_useUtilityProcess = true;
+  checkUpdate(event.data);
+});
+
+async function checkUpdate(data) {
   try {
-    log.init(message[0]);
-    let currentVersion = message[1];
+    let currentVersion = data[1];
 
     const axios = require("axios").default;
     const response = await axios.get(
@@ -27,12 +37,20 @@ process.on("message", async (message) => {
 
     const isOlder = utils.isVersionOlder(currentVersion, latestVersion);
     if (isOlder) {
-      process.send([true, latestVersion]);
+      send([true, latestVersion]);
     } else {
-      process.send([false, latestVersion]);
+      send([false, latestVersion]);
     }
   } catch (error) {
-    log.editorError(error);
-    process.send([false]);
+    // log.editorError(error);
+    send([false]);
   }
-});
+}
+
+function send(message) {
+  if (g_useUtilityProcess) {
+    process.parentPort.postMessage(message);
+  } else {
+    process.send(message);
+  }
+}
