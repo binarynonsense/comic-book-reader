@@ -76,6 +76,10 @@ if (
 if (process.env.APPIMAGE) {
   g_launchInfo.isAppImage = true;
 }
+if (process.env.container) {
+  // set by flatpak
+  g_launchInfo.useUtilityProcess = true;
+}
 
 // parse command line arguments
 g_launchInfo.parsedArgs = require("minimist")(
@@ -133,6 +137,9 @@ if (!gotTheLock) {
   log.debug("node version: " + process.versions.node);
   if (g_launchInfo.isAppImage) {
     log.debug("is AppImage");
+  }
+  if (g_launchInfo.useUtilityProcess) {
+    log.debug("using utilityProcess");
   }
   // load settings
   settings.init();
