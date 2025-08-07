@@ -151,7 +151,7 @@ if (!gotTheLock) {
   log.debug("checking environment");
   if (g_launchInfo.platform === "linux" && !process.env.G_SLICE) {
     // NOTE: if G_SLICE isn't set to 'always-malloc' the app may crash
-    // during conversions due to an issue with
+    // during conversions due to an issue with sharp
     // NOTE: (2025/07/29) This may no longer be true on current distros.
     // Although I'm still not a 100% sure, I'm now not enforcing it by default
     if (g_launchInfo.isRelease) {
