@@ -473,6 +473,10 @@ function initOnIpcCallbacks() {
     setScaleToHeight(scale);
   });
 
+  on("switch-page-mode", (event) => {
+    switchPageMode();
+  });
+
   ////////////////////////////////////////////////////////////////////////////
 
   on("toolbar-button-clicked", (name) => {
@@ -2107,6 +2111,16 @@ function switchScaleMode() {
     setFitToWidth();
   } else {
     setFitToWidth();
+  }
+}
+
+function switchPageMode() {
+  if (settings.getValue("page_mode") === 0) {
+    setPageMode(1, true);
+  } else if (settings.getValue("page_mode") === 1) {
+    setPageMode(2, true);
+  } else {
+    setPageMode(0, true);
   }
 }
 

@@ -555,7 +555,6 @@ function setFullscreenUI(isFullscreen) {
 }
 
 let g_pageMode = 0;
-let g_pageModeCanBeChanged = true;
 
 export function getPageMode() {
   return g_pageMode;
@@ -563,7 +562,6 @@ export function getPageMode() {
 
 function setPageMode(value, canBeChanged) {
   g_pageMode = value;
-  g_pageModeCanBeChanged = canBeChanged;
   if (value === 0) {
     document
       .querySelector("#toolbar-button-set-pagemode-0")
@@ -763,6 +761,14 @@ export function onInputEvent(type, event) {
             inputGoToLastPage();
             event.stopPropagation();
           } else if (
+            input.isActionDownThisFrame({
+              source: input.Source.KEYBOARD,
+              commands: g_navKeys.changePageMode,
+              event: event,
+            })
+          ) {
+            inputSwitchPageMode();
+          } else if (
             input.isActionDown({
               source: input.Source.KEYBOARD,
               commands: g_navKeys.scrollDown,
@@ -827,7 +833,8 @@ export function onInputEvent(type, event) {
               event: event,
             })
           ) {
-            inputZoomReset();
+            // inputZoomReset();
+            inputSwitchScaleMode();
             event.stopPropagation();
           } else if (
             input.isActionDownThisFrame({
@@ -1067,6 +1074,10 @@ function inputSwitchScaleMode() {
   sendIpcToMain("switch-scale-mode");
 }
 
+function inputSwitchPageMode() {
+  sendIpcToMain("switch-page-mode");
+}
+
 function inputToggleFullScreen() {
   sendIpcToMain("toolbar-button-clicked", "toolbar-button-fullscreen-enter");
 }
@@ -1222,6 +1233,15 @@ export function onGamepadPolled() {
       })
     ) {
       inputSwitchScaleMode();
+    }
+    // change page mode
+    if (
+      input.isActionDownThisFrame({
+        source: input.Source.GAMEPAD,
+        commands: g_navButtons.changePageMode,
+      })
+    ) {
+      inputSwitchPageMode();
     }
   }
   // toggle full screen
