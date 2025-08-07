@@ -76,8 +76,8 @@ if (
 if (process.env.APPIMAGE) {
   g_launchInfo.isAppImage = true;
 }
-if (process.env.container) {
-  // set by flatpak
+if (g_launchInfo.platform === "linux" && process.env.container) {
+  // process.env.container is set by flatpak
   g_launchInfo.useUtilityProcess = true;
 }
 
@@ -175,6 +175,13 @@ if (!gotTheLock) {
   if (g_launchInfo.platform === "linux") {
     // ref: https://www.electronjs.org/docs/latest/api/dialog
     app.commandLine.appendSwitch("xdg-portal-required-version", "4");
+  }
+  // forceUseUtilityProcess?
+  if (settings.getValue("forceUseUtilityProcess")) {
+    log.notice(
+      "Forcing the use of useUtilityProcess as requested by the settings."
+    );
+    g_launchInfo.useUtilityProcess = true;
   }
   // show vips warnings from sharp only in dev mode
   if (!g_launchInfo.isDev) process.env.VIPS_WARNING = 1;

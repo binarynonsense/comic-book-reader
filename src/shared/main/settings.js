@@ -135,6 +135,9 @@ const g_defaultSettings = {
   // LINUX
   linuxEnforceGslice: false,
 
+  // MISC
+  forceUseUtilityProcess: false,
+
   // TOOLS
   toolGutUseCache: true,
   toolCixApiKeyPath: undefined,
