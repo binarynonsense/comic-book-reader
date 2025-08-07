@@ -815,7 +815,6 @@ function initPlayer(settings, playlist) {
         " / " +
         getFormatedTimeFromSeconds(this.duration);
       g_player.sliderTime.value = (100 * this.currentTime) / this.duration;
-      console.log(g_player.sliderTime.value);
     }
   });
 
