@@ -586,6 +586,7 @@
     "changePagePrev": "Перейти к предыдущей (Сменить страницу)",
     "changePageFirst": "Перейти к первой (Сменить страницу)",
     "changePageLast": "Перейти к последней (Сменить страницу)",
+    "[NEEDS TRANSLATION]changePageMode": "Change Page Mode",
     "zoomInPage": "Приблизить страницу",
     "zoomOutPage": "Отдалить страницу",
     "zoomResetPage": "Сбросить масштаб страницы",

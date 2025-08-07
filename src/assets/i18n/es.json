@@ -586,6 +586,7 @@
     "changePagePrev": "Ir a la anterior (Cambiar página)",
     "changePageFirst": "Ir a la primera (Cambiar página)",
     "changePageLast": "Ir a la última (Cambiar página)",
+    "changePageMode": "Cambiar modo de página",
     "zoomInPage": "Aumentar zoom de la página",
     "zoomOutPage": "Reducir zoom de la página",
     "zoomResetPage": "Resetear zoom de la página",
