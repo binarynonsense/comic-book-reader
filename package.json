@@ -52,7 +52,8 @@
         "--device=all",
         "--filesystem=/run/udev:ro",
         "--env=G_SLICE=always-malloc"
-      ]
+      ],
+      "license": "./licenses/acbr.txt"
     }
   },
   "scripts": {
