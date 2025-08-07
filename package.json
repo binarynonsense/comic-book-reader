@@ -77,7 +77,7 @@
   },
   "devDependencies": {
     "del-cli": "^6.0.0",
-    "electron": "^37.2.5",
+    "electron": "^37.2.6",
     "electron-builder": "^26.0.12",
     "license-checker": "^25.0.1",
     "shx": "^0.4.0"
