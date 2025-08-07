@@ -78,6 +78,7 @@ if (process.env.APPIMAGE) {
 }
 if (g_launchInfo.platform === "linux" && process.env.container) {
   // process.env.container is set by flatpak
+  g_launchInfo.isFlatpak = true;
   g_launchInfo.useUtilityProcess = true;
 }
 
@@ -137,6 +138,9 @@ if (!gotTheLock) {
   log.debug("node version: " + process.versions.node);
   if (g_launchInfo.isAppImage) {
     log.debug("is AppImage");
+  }
+  if (g_launchInfo.isFlatpak) {
+    log.debug("is Flatpak");
   }
   if (g_launchInfo.useUtilityProcess) {
     log.debug("using utilityProcess");
