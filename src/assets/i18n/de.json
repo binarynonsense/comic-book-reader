@@ -3,7 +3,7 @@
     "authors": [
       "trzyglow"
     ],
-    "last-updated": "2025-08-05",
+    "last-updated": "2025-08-07",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.12.0",
     "pre-release": "false",
@@ -586,7 +586,7 @@
     "changePagePrev": "Gehe zur vorherigen Seite",
     "changePageFirst": "Gehe zur ersten Seite",
     "changePageLast": "Gehe zur letzten Seite",
-    "[NEEDS TRANSLATION]changePageMode": "Change Page Mode",
+    "changePageMode": "Seiten-modus ändern",
     "zoomInPage": "Seite heranzoomen",
     "zoomOutPage": "Seite herauszoomen",
     "zoomResetPage": "Seitenzoom zurücksetzen",
