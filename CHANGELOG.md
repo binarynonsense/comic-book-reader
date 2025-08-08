@@ -1,3 +1,9 @@
+# v3.12.1
+
+- Added a .flatpak package for Linux that, as an alternative to the recently added .deb, should run in distributions, like Ubuntu 24.04, where the regular and AppImage versions have trouble to by default for not having an AppArmor profile. It's also the only one that currently fully works with the Steam Deck, even on game mode.
+- Added keyboard and gamepad shortcuts to change page mode.
+- Updated some of the core libraries and localization files.
+
 # v3.12.0
 
 - Added the option to show two pages at once in the reader. You can now switch between "Single Page", "Double Page" and "Double Page (Center First Page)" in the "View > Layout > Page Mode" entry of the menu bar, or change it using the tool bar.
