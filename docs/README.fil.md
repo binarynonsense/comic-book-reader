@@ -21,7 +21,6 @@ Isang comic book reader at converter para sa mga CBZ, CBR, CB7, EPUB at PDF na m
   <span>Filipino</span>
 </p>
 
-
 ## Nilalaman:
 
 - [Mga Tampok](#mga-tampok)
@@ -109,6 +108,8 @@ Stable na Bersyon:
 - [Windows (Self-Extracting)](https://github.com/binarynonsense/comic-book-reader/releases/latest/download/ACBR_Windows_SelfExtracting.exe)
 - [Linux](https://github.com/binarynonsense/comic-book-reader/releases/latest/download/ACBR_Linux.zip)
 - [Linux (AppImage)](https://github.com/binarynonsense/comic-book-reader/releases/latest/download/ACBR_Linux_AppImage.zip)
+- [Linux (deb)](https://github.com/binarynonsense/comic-book-reader/releases/latest/download/ACBR_Linux_deb.zip)
+- [Linux (flatpak)](https://github.com/binarynonsense/comic-book-reader/releases/latest/download/ACBR_Linux_flatpak.zip)
 
 Lahat ng bersyon (matatag at beta):
 
@@ -130,4 +131,3 @@ Ang code ng ACBR ay inilabas sa ilalim ng BSD 2-Clause [lisensya](../LICENSE). P
 ## Iba Pa:
 
 Makikita ang mga screenshots, karagdagang detalye tungkol sa mga controls, at iba pang extra impormasyon sa [Wiki ng proyekto](https://github.com/binarynonsense/comic-book-reader/wiki).
-

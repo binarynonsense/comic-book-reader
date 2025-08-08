@@ -112,6 +112,7 @@ Stable version:
 - [Linux](https://github.com/binarynonsense/comic-book-reader/releases/latest/download/ACBR_Linux.zip)
 - [Linux (AppImage)](https://github.com/binarynonsense/comic-book-reader/releases/latest/download/ACBR_Linux_AppImage.zip)
 - [Linux (deb)](https://github.com/binarynonsense/comic-book-reader/releases/latest/download/ACBR_Linux_deb.zip)
+- [Linux (flatpak)](https://github.com/binarynonsense/comic-book-reader/releases/latest/download/ACBR_Linux_flatpak.zip)
 
 > Note: For Linux distributions that require setting an AppArmor profile for Electron apps to run, like Ubuntu 24.04, it's best not to choose the regular or AppImage versions as they probably won't work by default due to that restriction.
 
