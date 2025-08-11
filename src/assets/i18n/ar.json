@@ -586,7 +586,7 @@
     "changePagePrev": "انتقل إلى الصفحة السابقة",
     "changePageFirst": "انتقل إلى الصفحة الأولى",
     "changePageLast": "انتقل إلى الصفحة الأخيرة",
-    "[NEEDS TRANSLATION]changePageMode": "Change Page Mode",
+    "changePageMode": "تبديل وضع الصفحة",
     "zoomInPage": "تكبير الصفحة",
     "zoomOutPage": "تصغير الصفحة",
     "zoomResetPage": "إعادة ضبط تكبير/تصغير الصفحة",
