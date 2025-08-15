@@ -120,6 +120,10 @@ All versions (stable and beta):
 
 - [Releases list](https://github.com/binarynonsense/comic-book-reader/releases)
 
+Also available on:
+
+- [Flathub](https://flathub.org/apps/com.binarynonsense.acbr)
+
 ## Contributions:
 
 - Russian localization by [vanja-san](https://github.com/vanja-san)
