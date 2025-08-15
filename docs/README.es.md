@@ -120,6 +120,10 @@ Todas las versiones (estables y betas):
 
 - [Lista de lanzamientos](https://github.com/binarynonsense/comic-book-reader/releases)
 
+También disponible en:
+
+- [Flathub](https://flathub.org/apps/com.binarynonsense.acbr)
+
 ## Contribuciones:
 
 - Traducción al ruso por [vanja-san](https://github.com/vanja-san).
