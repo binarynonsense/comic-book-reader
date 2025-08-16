@@ -185,7 +185,15 @@ function initHandleIpcCallbacks() {}
 ///////////////////////////////////////////////////////////////////////////////
 
 function getPortableCacheFolder() {
-  return path.join(appUtils.getExeFolderPath(), "acbr-cache", "gutenberg");
+  if (appUtils.isPortable()) {
+    return path.join(appUtils.getExeFolderPath(), "acbr-cache", "gutenberg");
+  } else {
+    return path.join(
+      appUtils.getUserDataFolderPath(),
+      "acbr-cache",
+      "gutenberg"
+    );
+  }
 }
 exports.getPortableCacheFolder = getPortableCacheFolder;
 

@@ -236,6 +236,7 @@ function cleanUpUserDataFolder() {
       "acbr.fav",
       "acbr-player.cfg",
       "acbr-player.m3u",
+      "acbr-cache",
     ];
     let userDataPath = app.getPath("userData");
     if (
