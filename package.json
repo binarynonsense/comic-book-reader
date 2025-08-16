@@ -50,7 +50,9 @@
         "--env=G_SLICE=always-malloc",
         "--env=XCURSOR_PATH=/run/host/user-share/icons:/run/host/share/icons"
       ],
-      "license": "./licenses/acbr.txt"
+      "license": "./licenses/acbr.txt",
+      "baseVersion": "24.08",
+      "runtimeVersion": "24.08"
     }
   },
   "scripts": {
