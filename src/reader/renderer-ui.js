@@ -705,7 +705,42 @@ export function onInputEvent(type, event) {
   switch (type) {
     case "onkeydown":
       {
+        if (
+          event.key === "ArrowUp" ||
+          event.key === "ArrowDown" ||
+          event.key === "ArrowRight" ||
+          event.key === "ArrowLeft" ||
+          event.key === " " ||
+          // event.key === "Enter" || // TODO: think about this one
+          event.key === "Tab"
+        ) {
+          event.preventDefault();
+        }
+        // shortcuts
+        if (input.checkShortcut("history", "history")) {
+          event.stopPropagation();
+          return;
+        } else if (input.checkShortcut("openFile", "open-file")) {
+          event.stopPropagation();
+          return;
+        }
+        if (g_pagesContainerDiv.hasChildNodes()) {
+          if (input.checkShortcut("toggleScrollBar", "scrollbar")) {
+            return;
+          } else if (input.checkShortcut("toggleToolBar", "toolbar")) {
+            return;
+          } else if (input.checkShortcut("togglePageNumber", "pagenum")) {
+            return;
+          } else if (input.checkShortcut("toggleClock", "clock")) {
+            return;
+          } else if (input.checkShortcut("toggleBatteryStatus", "battery")) {
+            return;
+          }
+        }
+        ////
         if (fileOpen) {
+          // TODO: now that home screen handles its own input, if I'm here,
+          // isn't it always open?
           if (
             input.isActionDownThisFrame({
               source: input.Source.KEYBOARD,

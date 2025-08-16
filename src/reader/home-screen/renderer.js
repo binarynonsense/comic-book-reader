@@ -502,7 +502,9 @@ export function onInputEvent(type, event) {
         (event.key === "0" && event.ctrlKey)
       ) {
         event.preventDefault();
-      } else if (
+      }
+      ///
+      if (
         input.isActionDownThisFrame({
           source: input.Source.KEYBOARD,
           commands: getNavKeys().quickMenu,
@@ -510,6 +512,12 @@ export function onInputEvent(type, event) {
         })
       ) {
         inputOpenQuickMenu();
+        event.stopPropagation();
+        return;
+      } else if (input.checkShortcut("history", "history")) {
+        event.stopPropagation();
+        return;
+      } else if (input.checkShortcut("openFile", "open-file")) {
         event.stopPropagation();
         return;
       }

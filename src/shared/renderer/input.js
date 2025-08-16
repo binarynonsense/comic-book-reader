@@ -140,27 +140,6 @@ function initKeyboard() {
 
     // shortcuts - all /////////////////////////////////////////
 
-    function checkShortcut(navKey, message) {
-      if (
-        isActionDownThisFrame({
-          source: Source.KEYBOARD,
-          commands: getNavKeys()[navKey],
-          event: event,
-        })
-      ) {
-        sendIpcToMain("menu-accelerator-pressed", message);
-        return true;
-      }
-      return false;
-    }
-    // if (
-    //       event.ctrlKey &&
-    //       event.shiftKey &&
-    //       (event.key == "i" || event.key == "I")
-    //     ) {
-    //       sendIpcToReaderMain("dev-tools-pressed");
-    //       event.stopPropagation();
-    //     }
     if (checkShortcut("toggleFullScreen", "fullscreen")) {
       return;
     } else if (checkShortcut("quit", "quit")) {
@@ -178,46 +157,22 @@ function initKeyboard() {
 
     //////////////////////////////////////////////////////////
 
-    // shortcuts - reader ///////////////////////////////////
-
-    if (getCurrentToolName() === "reader") {
-      // home and reader
-      if (
-        event.key === "ArrowUp" ||
-        event.key === "ArrowDown" ||
-        event.key === "ArrowRight" ||
-        event.key === "ArrowLeft" ||
-        event.key === " " ||
-        // event.key === "Enter" || // TODO: think about this one
-        event.key === "Tab"
-      ) {
-        event.preventDefault();
-      }
-      if (checkShortcut("history", "history")) {
-        return;
-      } else if (checkShortcut("openFile", "open-file")) {
-        return;
-      }
-      // reader only
-      if (document.getElementById("pages-container").hasChildNodes()) {
-        if (checkShortcut("toggleScrollBar", "scrollbar")) {
-          return;
-        } else if (checkShortcut("toggleToolBar", "toolbar")) {
-          return;
-        } else if (checkShortcut("togglePageNumber", "pagenum")) {
-          return;
-        } else if (checkShortcut("toggleClock", "clock")) {
-          return;
-        } else if (checkShortcut("toggleBatteryStatus", "battery")) {
-          return;
-        }
-      }
-    }
-
-    //////////////////////////////////////////////////////////
-
     getCurrentTool().onInputEvent("onkeydown", event);
   };
+}
+
+export function checkShortcut(navKey, message) {
+  if (
+    isActionDownThisFrame({
+      source: Source.KEYBOARD,
+      commands: getNavKeys()[navKey],
+      event: event,
+    })
+  ) {
+    sendIpcToMain("menu-accelerator-pressed", message);
+    return true;
+  }
+  return false;
 }
 
 function areKeyboardCommandsDown(commands, event) {
