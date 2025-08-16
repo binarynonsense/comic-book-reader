@@ -838,7 +838,15 @@ function startFile(inputFilePath, inputFileType, fileNum, totalFilesNum) {
           sendIpcToRenderer("file-images-extracted");
           return;
         } else {
-          stopError(message.error, "Couldn't extract the file");
+          if (message.error === "no_disk_space") {
+            message.error = _(
+              "tool-shared-modal-log-failed-reason-temp-disk-space"
+            );
+          }
+          stopError(
+            message.error,
+            _("tool-shared-modal-log-failed-extraction")
+          );
           return;
         }
       });

@@ -43,38 +43,53 @@ async function extractImages(
   timers.start("extractImages");
   try {
     let success = false;
+    let result = undefined;
     if (inputFileType === FileDataType.ZIP) {
       // success = fileFormats.extractZip(inputFilePath, tempFolderPath, password);
-      success = await fileFormats.extract7Zip(
+      result = await fileFormats.extract7Zip(
         inputFilePath,
         tempFolderPath,
         password,
         "zip"
       );
     } else if (inputFileType === FileDataType.RAR) {
-      success = await fileFormats.extractRar(
+      result = await fileFormats.extractRar(
         inputFilePath,
         tempFolderPath,
         password
       );
     } else if (inputFileType === FileDataType.SEVENZIP) {
-      success = await fileFormats.extract7Zip(
+      result = await fileFormats.extract7Zip(
         inputFilePath,
         tempFolderPath,
         password
       );
     } else if (inputFileType === FileDataType.EPUB_COMIC) {
+      // TODO: get success and error
       success = await fileFormats.extractEpub(inputFilePath, tempFolderPath);
     } else {
       send("conversionExtractImages: invalid file type");
       return;
     }
     let time = `${timers.stop("extractImages")}s`;
-    if (success) {
-      send({ success: true, time: time });
+    if (result) {
+      if (result.success) {
+        send({ success: true, time: time });
+      } else {
+        if (result.error) {
+          throw result.error;
+        } else throw "Unknown error";
+      }
     } else {
-      // TODO: get errors from extraction functions
-      throw "error";
+      // TODO: get errors from all extraction functions
+      // TODO: eventually delete this path
+      if (success) {
+        send({ success: true, time: time });
+      } else {
+        if (error) {
+          throw error;
+        } else throw "Unknown error";
+      }
     }
   } catch (error) {
     timers.stop("extractImages");

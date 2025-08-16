@@ -162,10 +162,13 @@ async function extractRar(filePath, tempFolderPath, password) {
     });
     const { files } = extractor.extract();
     [...files]; // lazy initialization? the files are not extracted if I don't do this
-    return true;
+    return { success: true };
   } catch (error) {
-    log.error(error);
-    return false;
+    if (error.message && error.message.includes("ENOSPC")) {
+      //ENOSPC: no space left on device, write
+      error = "no_disk_space";
+    }
+    return { success: false, error: error };
   }
 }
 exports.extractRar = extractRar;
@@ -593,13 +596,16 @@ async function extract7Zip(filePath, tempFolderPath, password, archiveType) {
     });
 
     if (promise.success === true) {
-      return true;
+      return { success: true };
     } else if (promise.success === false) {
       throw promise.data;
     }
     throw "Error: unknown error extracting 7z file";
   } catch (error) {
-    return false;
+    if (error.message && error.message.includes("E_FAIL")) {
+      error = "no_disk_space";
+    }
+    return { success: false, error: error };
   }
 }
 exports.extract7Zip = extract7Zip;
