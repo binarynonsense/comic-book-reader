@@ -839,9 +839,10 @@ function startFile(inputFilePath, inputFileType, fileNum, totalFilesNum) {
           return;
         } else {
           if (message.error === "no_disk_space") {
-            message.error = _(
-              "tool-shared-modal-log-failed-reason-temp-disk-space"
-            );
+            message.error =
+              _("tool-shared-modal-log-failed-reason-temp-disk-space") +
+              "\n" +
+              _("tool-shared-modal-log-failed-reason-temp-disk-space-2");
           }
           stopError(
             message.error,
