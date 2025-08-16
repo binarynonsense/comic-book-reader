@@ -1241,6 +1241,7 @@ async function openEbookFromPath(filePath, pageIndex, historyEntry) {
                 };
               }
               if (!fs.existsSync(cacheFolder)) {
+                log.editor("creating gutenberg cache folder");
                 fs.mkdirSync(cacheFolder, { recursive: true });
               }
               fs.writeFileSync(cachedPath, response.data, { flag: "w" });
@@ -1252,6 +1253,8 @@ async function openEbookFromPath(filePath, pageIndex, historyEntry) {
               return false;
             }
           }
+        } else {
+          log.editor("gutenberg cache is disabled");
         }
       }
     }
