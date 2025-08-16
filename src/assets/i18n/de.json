@@ -474,6 +474,7 @@
   "tool-shared-modal-log-failed-reason-canceled": "Der Prozess wurde abgebrochen",
   "tool-shared-modal-log-failed-reason-output-file-exists": "Die Ausgangsdatei existiert bereits",
   "tool-shared-modal-log-failed-reason-output-folder-exists": "Der Ausgangsordner existiert bereits",
+  "[NEEDS TRANSLATION]tool-shared-modal-log-failed-reason-temp-disk-space": "Not enough free disk space in the temp folder",
   "tool-shared-modal-log-failed-files": "Fehlgeschlagene Dateien",
   "tool-shared-modal-log-conversion-error": "Konnte Datei nicht konvertieren, ein Fehler ist aufgetreten",
   "tool-shared-modal-log-conversion-canceled": "Konnte Datei nicht konvertieren, die Konversion wurde abgebrochen",

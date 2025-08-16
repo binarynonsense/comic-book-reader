@@ -1,8 +1,6 @@
 {
   "@metadata": {
-    "authors": [
-      "Álvaro"
-    ],
+    "authors": ["Álvaro"],
     "last-updated": "2025-08-05",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.12.0",
@@ -474,6 +472,7 @@
   "tool-shared-modal-log-failed-reason-canceled": "Se canceló el proceso",
   "tool-shared-modal-log-failed-reason-output-file-exists": "El archivo de salida ya existe",
   "tool-shared-modal-log-failed-reason-output-folder-exists": "La carpeta de salida ya existe",
+  "tool-shared-modal-log-failed-reason-temp-disk-space": "No hay suficiente espacio libre en la carpeta temporal",
   "tool-shared-modal-log-failed-files": "Ficheros fallidos",
   "tool-shared-modal-log-conversion-error": "No se pudo convertir el archivo, se produjo un error",
   "tool-shared-modal-log-conversion-canceled": "No se pudo convertir el archivo, la conversión fue cancelada",

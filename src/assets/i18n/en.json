@@ -1,8 +1,6 @@
 {
   "@metadata": {
-    "authors": [
-      "Álvaro"
-    ],
+    "authors": ["Álvaro"],
     "last-updated": "2025-08-05",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.12.0",
@@ -474,6 +472,7 @@
   "tool-shared-modal-log-failed-reason-canceled": "The process was canceled",
   "tool-shared-modal-log-failed-reason-output-file-exists": "The output file already exists",
   "tool-shared-modal-log-failed-reason-output-folder-exists": "The output folder already exists",
+  "tool-shared-modal-log-failed-reason-temp-disk-space": "Not enough free disk space in the temp folder",
   "tool-shared-modal-log-failed-files": "Failed Files",
   "tool-shared-modal-log-conversion-error": "Couldn't convert the file, an error ocurred",
   "tool-shared-modal-log-conversion-canceled": "Couldn't convert the file, the conversion was canceled",
