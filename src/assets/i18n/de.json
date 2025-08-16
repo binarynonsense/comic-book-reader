@@ -3,7 +3,7 @@
     "authors": [
       "trzyglow"
     ],
-    "last-updated": "2025-08-07",
+    "last-updated": "2025-08-16",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.12.0",
     "pre-release": "false",
@@ -474,8 +474,8 @@
   "tool-shared-modal-log-failed-reason-canceled": "Der Prozess wurde abgebrochen",
   "tool-shared-modal-log-failed-reason-output-file-exists": "Die Ausgangsdatei existiert bereits",
   "tool-shared-modal-log-failed-reason-output-folder-exists": "Der Ausgangsordner existiert bereits",
-  "[NEEDS TRANSLATION]tool-shared-modal-log-failed-reason-temp-disk-space": "Not enough free disk space in the temp folder",
-  "[NEEDS TRANSLATION]tool-shared-modal-log-failed-reason-temp-disk-space-2": "You can select a different folder to be used as temp folder in the 'advanced' section of the program's preferences",
+  "tool-shared-modal-log-failed-reason-temp-disk-space": "Nicht genügend freier Speicherplatz im temporären Ordner",
+  "tool-shared-modal-log-failed-reason-temp-disk-space-2": "Sie können einen anderen Ordner als temporären Ordner über den Abschnitt 'Erweitert' der Programmeinstellungen auswählen",
   "tool-shared-modal-log-failed-files": "Fehlgeschlagene Dateien",
   "tool-shared-modal-log-conversion-error": "Konnte Datei nicht konvertieren, ein Fehler ist aufgetreten",
   "tool-shared-modal-log-conversion-canceled": "Konnte Datei nicht konvertieren, die Konversion wurde abgebrochen",
