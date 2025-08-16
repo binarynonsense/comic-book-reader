@@ -45,10 +45,10 @@
         "--socket=pulseaudio",
         "--filesystem=home",
         "--share=network",
-        "--talk-name=org.freedesktop.Notifications",
         "--device=all",
         "--filesystem=/run/udev:ro",
-        "--env=G_SLICE=always-malloc"
+        "--env=G_SLICE=always-malloc",
+        "--env=XCURSOR_PATH=/run/host/user-share/icons:/run/host/share/icons"
       ],
       "license": "./licenses/acbr.txt"
     }
