@@ -475,6 +475,7 @@
   "tool-shared-modal-log-failed-reason-output-file-exists": "الملف المخرج موجود بالفعل",
   "tool-shared-modal-log-failed-reason-output-folder-exists": "مجلد المخرجات موجود بالفعل",
   "[NEEDS TRANSLATION]tool-shared-modal-log-failed-reason-temp-disk-space": "Not enough free disk space in the temp folder",
+  "[NEEDS TRANSLATION]tool-shared-modal-log-failed-reason-temp-disk-space-2": "You can select a different folder to be used as temp folder in the 'advanced' section of the program's preferences",
   "tool-shared-modal-log-failed-files": "الملفات التي تعذر معالجتها",
   "tool-shared-modal-log-conversion-error": "حدث خطأ ما، تعذر تحويل الملف",
   "tool-shared-modal-log-conversion-canceled": "تم إلغاء التحويل، تعذر تحويل الملف",

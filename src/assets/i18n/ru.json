@@ -475,6 +475,7 @@
   "tool-shared-modal-log-failed-reason-output-file-exists": "Выходной файл уже существует",
   "tool-shared-modal-log-failed-reason-output-folder-exists": "Выходная папка уже существует",
   "[NEEDS TRANSLATION]tool-shared-modal-log-failed-reason-temp-disk-space": "Not enough free disk space in the temp folder",
+  "[NEEDS TRANSLATION]tool-shared-modal-log-failed-reason-temp-disk-space-2": "You can select a different folder to be used as temp folder in the 'advanced' section of the program's preferences",
   "[NEEDS TRANSLATION]tool-shared-modal-log-failed-files": "Failed Files",
   "tool-shared-modal-log-conversion-error": "Не удалось конвертировать файл, произошла ошибка",
   "tool-shared-modal-log-conversion-canceled": "Не удалось конвертировать файл, конвертация была отменена",
