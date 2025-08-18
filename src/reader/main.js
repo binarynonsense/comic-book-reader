@@ -88,7 +88,7 @@ exports.init = function (filePath, checkHistory) {
   );
 
   showScrollBar(settings.getValue("showScrollBar"));
-  showToolBar(settings.getValue("showToolBar"));
+  setToolbar(settings.getValue("showToolBar"));
   showPageNumber(settings.getValue("showPageNumber"));
   initClock();
   showClock(settings.getValue("showClock"));
@@ -117,6 +117,7 @@ exports.init = function (filePath, checkHistory) {
     }
   }
 
+  sendIpcToRenderer("set-toolbar-visibility", false);
   sendIpcToRenderer("update-bg", true);
   sendIpcToRenderer("update-loading", false);
   sendIpcToRenderer("render-page-info", 0, 0, false);
@@ -1792,14 +1793,21 @@ function updateMenuAndToolbarItems(isOpen = true) {
         sendIpcToRenderer("update-toolbar-pagesdirection-buttons", false);
         sendIpcToRenderer("update-toolbar-pagemode-buttons", false);
       }
+
+      sendIpcToRenderer(
+        "set-toolbar-visibility",
+        settings.getValue("showToolBar")
+      );
     } else {
       menuBar.setComicBookOpened(false);
       menuBar.setCanOpenBooks(true);
       menuBar.setCanOpenTools(true);
       menuBar.setCanTweakUI(true);
+      sendIpcToRenderer("set-toolbar-visibility", false);
     }
   } else {
     menuBar.setComicBookOpened(false);
+    sendIpcToRenderer("set-toolbar-visibility", false);
   }
 }
 
@@ -1906,7 +1914,7 @@ function toggleScrollBar() {
   sendIpcToPreload("update-menubar");
 }
 
-function showToolBar(isVisible) {
+function setToolbar(isVisible) {
   settings.setValue("showToolBar", isVisible);
   sendIpcToRenderer("set-toolbar-visibility", isVisible);
   menuBar.setToolBar(isVisible);
@@ -1914,7 +1922,7 @@ function showToolBar(isVisible) {
 }
 
 function toggleToolBar() {
-  showToolBar(!settings.getValue("showToolBar"));
+  setToolbar(!settings.getValue("showToolBar"));
   sendIpcToPreload("update-menubar");
 }
 
