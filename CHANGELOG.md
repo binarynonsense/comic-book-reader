@@ -1,3 +1,10 @@
+# v3.12.2
+
+- Fixed failing to open files from the search results of the gutenberg tool in the flatpak version due to lack of write permissions. The cache to store downloaded files is now created in the same folder as the config files.
+- Fixed not being able to use the space bar and the arrow keys to edit the names of the home screen favorites.
+- Fixed log showing a generic error message when there's not enough free disk space in the temp folder to extract files during conversions (can happen with the default temp folder and moderately big files in the flatpak version, for example).
+- Configured the single-file bundle flatpak version to have similar settings as the flatpak now available on flathub.
+
 # v3.12.1
 
 - Added a .flatpak package for Linux that, as an alternative to the recently added .deb, should run in distributions, like Ubuntu 24.04, where the regular and AppImage versions have trouble to by default for not having an AppArmor profile. It's also the only one that currently fully works with the Steam Deck, even on game mode.
