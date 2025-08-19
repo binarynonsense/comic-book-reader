@@ -132,6 +132,12 @@ function init(outputFolderPath, loadedOptions) {
       sendIpcToMain("choose-folder", lastFilePath, g_outputFolderPath);
     });
 
+  document
+    .getElementById("tool-ci-open-folder-button")
+    .addEventListener("click", (event) => {
+      sendIpcToMain("open-path-in-file-browser", g_outputFolderPath);
+    });
+
   g_outputImageFormatSelect.innerHTML =
     '<option value="jpg">jpg</option>' +
     '<option value="png">png</option>' +

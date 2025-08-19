@@ -148,6 +148,12 @@ function init(outputFolderPath, loadedOptions) {
       sendIpcToMain("choose-folder", lastFilePath, g_outputFolderPath);
     });
 
+  document
+    .getElementById("tool-ec-open-folder-button")
+    .addEventListener("click", (event) => {
+      sendIpcToMain("open-path-in-file-browser", g_outputFolderPath);
+    });
+
   g_outputImageFormatSelect.innerHTML =
     '<option value="' +
     FileExtension.NOT_SET +

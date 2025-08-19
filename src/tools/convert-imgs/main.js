@@ -201,6 +201,10 @@ function initOnIpcCallbacks() {
     sendIpcToRenderer("change-output-folder", folderPath);
   });
 
+  on("open-path-in-file-browser", (path) => {
+    appUtils.openPathInFileBrowser(path);
+  });
+
   on("dragged-files", async (filePaths) => {
     for (let index = 0; index < filePaths.length; index++) {
       const filePath = filePaths[index];
@@ -695,7 +699,10 @@ function getLocalization() {
       id: "tool-ci-change-folder-button-text",
       text: _("tool-shared-ui-change").toUpperCase(),
     },
-
+    {
+      id: "tool-ci-open-folder-button-text",
+      text: _("tool-shared-ui-open").toUpperCase(),
+    },
     //////////////////////////////////////////////
     {
       id: "tool-ci-advanced-output-options-text",
