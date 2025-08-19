@@ -171,6 +171,16 @@ function init(mode, outputFolderPath, canEditRars, loadedOptions) {
     );
   });
 
+  const outputFolderOpenButton = document.getElementById(
+    "tool-cc-open-folder-button"
+  );
+  outputFolderOpenButton.addEventListener("click", (event) => {
+    sendIpcToMain(
+      "open-path-in-file-browser",
+      g_uiSelectedOptions.outputFolderPath
+    );
+  });
+
   const outputFolderOptionSelect = document.getElementById(
     "tool-cc-output-folder-option-select"
   );
@@ -523,13 +533,18 @@ function updateFolderOptionUI() {
     const outputFolderChangeButton = document.getElementById(
       "tool-cc-change-folder-button"
     );
+    const outputFolderOpenButton = document.getElementById(
+      "tool-cc-open-folder-button"
+    );
     if (outputFolderOptionSelect.value === "0") {
       outputFolderUl.classList.remove("set-display-none");
       outputFolderChangeButton.classList.remove("set-display-none");
+      outputFolderOpenButton.classList.remove("set-display-none");
       updateColumnsHeight();
     } else {
       outputFolderUl.classList.add("set-display-none");
       outputFolderChangeButton.classList.add("set-display-none");
+      outputFolderOpenButton.classList.add("set-display-none");
       updateColumnsHeight();
     }
   }
