@@ -57,8 +57,13 @@ exports.openURLInBrowser = function (urlString) {
   }
 };
 
-exports.openPathInFileBrowser = function (path) {
-  shell.showItemInFolder(path);
+exports.openPathInFileBrowser = function (inputPath) {
+  if (!fs.existsSync(inputPath)) return;
+  if (fs.lstatSync(inputPath).isDirectory()) {
+    shell.openPath(inputPath);
+  } else {
+    shell.showItemInFolder(inputPath);
+  }
 };
 
 ///////////////////////////////////////////////////////////////////////////////
