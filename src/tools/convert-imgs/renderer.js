@@ -350,15 +350,20 @@ function initOnIpcCallbacks() {
     let text = document.createElement("span");
     text.innerText = reducePathString(filePath);
     li.appendChild(text);
+    // buttons
+    let buttons = document.createElement("span");
+    buttons.className = "tools-collection-li-buttonset";
+    li.appendChild(buttons);
     // remove icon - clickable
-    let button = document.createElement("span");
-    button.title = g_localizedRemoveFromListText;
-    button.className = "tools-collection-li-button";
-    button.addEventListener("click", (event) => {
-      onRemoveFile(li, id);
-    });
-    button.innerHTML = `<i class="fas fa-window-close"></i>`;
-    li.appendChild(button);
+    {
+      let button = document.createElement("span");
+      button.title = g_localizedRemoveFromListText;
+      button.addEventListener("click", (event) => {
+        onRemoveFile(li, id);
+      });
+      button.innerHTML = `<i class="fas fa-window-close"></i>`;
+      buttons.appendChild(button);
+    }
     g_inputListDiv.appendChild(li);
 
     checkValidData();
