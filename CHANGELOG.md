@@ -1,3 +1,9 @@
+# v3.12.3
+
+- Added a button to open the output folder in the convert comic books, extract comic books, convert images and create comic book tools.
+- Fixed PDF metadata editor showing 'undefined' as the value for some entries if they were empty.
+- Fixed audio player always leaving space for the toolbar when placed at the bottom even in the tools and home screen.
+
 # v3.12.2
 
 - Fixed failing to open files from the search results of the gutenberg tool in the flatpak version due to lack of write permissions. The cache to store downloaded files is now created in the same folder as the config files.
