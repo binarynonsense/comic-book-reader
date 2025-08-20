@@ -105,14 +105,18 @@ export function onLoadMetadata(metadata, error) {
     otherDiv,
     "creationDate",
     "text",
-    g_data.originalMetadata["creationDate"].toISOString(),
+    g_data.originalMetadata["creationDate"]
+      ? g_data.originalMetadata["creationDate"].toISOString()
+      : "",
     g_localizedSubTool.dateTooltip
   );
   addHtml(
     otherDiv,
     "modificationDate",
     "text",
-    g_data.originalMetadata["modificationDate"].toISOString(),
+    g_data.originalMetadata["modificationDate"]
+      ? g_data.originalMetadata["modificationDate"].toISOString()
+      : "",
     g_localizedSubTool.dateTooltip
   );
   //////////
