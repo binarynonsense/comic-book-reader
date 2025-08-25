@@ -101,22 +101,34 @@ export function onLoadMetadata(metadata, error) {
   // other
   addHtml(otherDiv, "creator", "text", g_data.originalMetadata["creator"]);
   addHtml(otherDiv, "producer", "text", g_data.originalMetadata["producer"]);
+  let creationDate = "";
+  try {
+    creationDate = g_data.originalMetadata["creationDate"]
+      ? g_data.originalMetadata["creationDate"].toISOString()
+      : "";
+  } catch (error) {
+    creationDate = "";
+  }
   addHtml(
     otherDiv,
     "creationDate",
     "text",
-    g_data.originalMetadata["creationDate"]
-      ? g_data.originalMetadata["creationDate"].toISOString()
-      : "",
+    creationDate,
     g_localizedSubTool.dateTooltip
   );
+  let modificationDate = "";
+  try {
+    modificationDate = g_data.originalMetadata["modificationDate"]
+      ? g_data.originalMetadata["modificationDate"].toISOString()
+      : "";
+  } catch (error) {
+    creationDate = "";
+  }
   addHtml(
     otherDiv,
     "modificationDate",
     "text",
-    g_data.originalMetadata["modificationDate"]
-      ? g_data.originalMetadata["modificationDate"].toISOString()
-      : "",
+    modificationDate,
     g_localizedSubTool.dateTooltip
   );
   //////////
