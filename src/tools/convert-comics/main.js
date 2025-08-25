@@ -622,26 +622,24 @@ function stopError(error, errorMessage, nameAsError = true) {
   temp.deleteSubFolder(g_creationTempSubFolderPath);
   g_creationTempSubFolderPath = undefined;
   if (nameAsError) {
-    sendIpcToRenderer("update-log-text", uiMsg);
-    if (g_mode === ToolMode.CREATE) sendIpcToRenderer("update-log-text", "");
-    sendIpcToRenderer(
-      "update-log-text",
+    updateModalLogText(uiMsg);
+    if (g_mode === ToolMode.CREATE) updateModalLogText("");
+    updateModalLogText(
       g_mode === ToolMode.CONVERT
         ? _("tool-shared-modal-log-conversion-error")
         : _("tool-shared-modal-log-creation-error")
     );
   } else {
     // not really an error. if file is skipped, for example
-    sendIpcToRenderer(
-      "update-log-text",
+    updateModalLogText(
       g_mode === ToolMode.CONVERT
         ? _("tool-shared-modal-log-failed-conversion")
         : _("tool-shared-modal-log-failed-creation")
     );
-    sendIpcToRenderer("update-log-text", uiMsg);
+    updateModalLogText(uiMsg);
   }
 
-  sendIpcToRenderer("update-log-text", " ");
+  updateModalLogText(" ");
   sendIpcToRenderer("file-finished-error");
 }
 
@@ -650,13 +648,12 @@ function stopCancel() {
   g_tempSubFolderPath = undefined;
   temp.deleteSubFolder(g_creationTempSubFolderPath);
   g_creationTempSubFolderPath = undefined;
-  sendIpcToRenderer(
-    "update-log-text",
+  updateModalLogText(
     g_mode === ToolMode.CONVERT
       ? _("tool-shared-modal-log-conversion-canceled")
       : _("tool-shared-modal-log-creation-canceled")
   );
-  sendIpcToRenderer("update-log-text", "");
+  updateModalLogText("");
   sendIpcToRenderer("file-finished-canceled");
 }
 
@@ -704,8 +701,7 @@ function startFile(inputFilePath, inputFileType, fileNum, totalFilesNum) {
     stopCancel();
     return;
   }
-  if (fileNum !== 1 && g_mode === ToolMode.CREATE)
-    sendIpcToRenderer("update-log-text", "");
+  if (fileNum !== 1 && g_mode === ToolMode.CREATE) updateModalLogText("");
   sendIpcToRenderer(
     "modal-update-title-text",
     g_mode === ToolMode.CONVERT
@@ -718,13 +714,12 @@ function startFile(inputFilePath, inputFileType, fileNum, totalFilesNum) {
     "update-info-text",
     utils.reduceStringFrontEllipsis(inputFilePath)
   );
-  sendIpcToRenderer(
-    "update-log-text",
+  updateModalLogText(
     g_mode === ToolMode.CONVERT
       ? _("tool-shared-modal-title-converting")
       : _("tool-shared-modal-title-adding")
   );
-  sendIpcToRenderer("update-log-text", inputFilePath);
+  updateModalLogText(inputFilePath);
 
   // check if output file name exists and skip mode
   {
@@ -808,10 +803,7 @@ function startFile(inputFilePath, inputFileType, fileNum, totalFilesNum) {
     inputFileType === FileDataType.SEVENZIP ||
     inputFileType === FileDataType.EPUB_COMIC
   ) {
-    sendIpcToRenderer(
-      "update-log-text",
-      _("tool-shared-modal-log-extracting-pages") + "..."
-    );
+    updateModalLogText(_("tool-shared-modal-log-extracting-pages") + "...");
     // ref: https://www.matthewslipper.com/2019/09/22/everything-you-wanted-electron-child-process.html
     if (g_worker !== undefined) {
       // kill it after one use
@@ -884,10 +876,7 @@ function startFile(inputFilePath, inputFileType, fileNum, totalFilesNum) {
       ]);
     }
   } else if (inputFileType === FileDataType.PDF) {
-    sendIpcToRenderer(
-      "update-log-text",
-      _("tool-shared-modal-log-extracting-pages") + "..."
-    );
+    updateModalLogText(_("tool-shared-modal-log-extracting-pages") + "...");
     /////////////////////////
     // use a hidden window for better performance and node api access
     if (g_workerWindow !== undefined) {
@@ -926,7 +915,7 @@ function startFile(inputFilePath, inputFileType, fileNum, totalFilesNum) {
 exports.onIpcFromToolsWorkerRenderer = function (...args) {
   switch (args[0]) {
     case "update-log-text":
-      sendIpcToRenderer("update-log-text", args[1]);
+      updateModalLogText(args[1]);
       break;
     case "pdf-images-extracted":
       g_workerWindow.destroy();
@@ -1021,18 +1010,14 @@ async function resizeImages(inputFilePath) {
       g_uiSelectedOptions.outputImageScalePercentage < 100
     ) {
       didResize = true;
-      sendIpcToRenderer(
-        "update-log-text",
-        _("tool-shared-modal-log-resizing-images") + "..."
-      );
+      updateModalLogText(_("tool-shared-modal-log-resizing-images") + "...");
       sharp.cache(false);
       for (let index = 0; index < imgFilePaths.length; index++) {
         if (g_cancel === true) {
           stopCancel();
           return;
         }
-        sendIpcToRenderer(
-          "update-log-text",
+        updateModalLogText(
           _("tool-shared-modal-log-resizing-image") +
             ": " +
             (index + 1) +
@@ -1092,18 +1077,14 @@ async function resizeImages(inputFilePath) {
       g_uiSelectedOptions.outputSaturationApply
     ) {
       didImageOps = true;
-      sendIpcToRenderer(
-        "update-log-text",
-        _("tool-shared-modal-log-editing-images") + "..."
-      );
+      updateModalLogText(_("tool-shared-modal-log-editing-images") + "...");
       sharp.cache(false);
       for (let index = 0; index < imgFilePaths.length; index++) {
         if (g_cancel === true) {
           stopCancel();
           return;
         }
-        sendIpcToRenderer(
-          "update-log-text",
+        updateModalLogText(
           _("tool-shared-modal-log-editing-image") +
             ": " +
             (index + 1) +
@@ -1151,18 +1132,14 @@ async function resizeImages(inputFilePath) {
       g_uiSelectedOptions.outputFormat === FileExtension.EPUB ||
       g_uiSelectedOptions.outputImageFormat != FileExtension.NOT_SET
     ) {
-      sendIpcToRenderer(
-        "update-log-text",
-        _("tool-shared-modal-log-converting-images") + "..."
-      );
+      updateModalLogText(_("tool-shared-modal-log-converting-images") + "...");
       sharp.cache(false); // avoid EBUSY error on windows
       for (let index = 0; index < imgFilePaths.length; index++) {
         if (g_cancel === true) {
           stopCancel();
           return;
         }
-        sendIpcToRenderer(
-          "update-log-text",
+        updateModalLogText(
           _("tool-shared-modal-log-converting-image") +
             ": " +
             (index + 1) +
@@ -1283,10 +1260,7 @@ async function resizeImages(inputFilePath) {
           const parser = new XMLParser(parserOptions);
           let json = parser.parse(xmlFileData);
           // modify
-          sendIpcToRenderer(
-            "update-log-text",
-            _("tool-shared-modal-log-updating-comicinfoxml")
-          );
+          updateModalLogText(_("tool-shared-modal-log-updating-comicinfoxml"));
 
           if (!json["ComicInfo"]["Pages"]) {
             json["ComicInfo"]["Pages"] = {};
@@ -1333,11 +1307,8 @@ async function resizeImages(inputFilePath) {
         log.debug(
           "Warning: couldn't update the contents of ComicInfo.xml: " + error
         );
-        sendIpcToRenderer(
-          "update-log-text",
-          _("tool-shared-modal-log-warning-comicinfoxml")
-        );
-        sendIpcToRenderer("update-log-text", error);
+        updateModalLogText(_("tool-shared-modal-log-warning-comicinfoxml"));
+        updateModalLogText(error);
       }
     }
     let baseFileName = g_uiSelectedOptions.outputFileBaseName
@@ -1369,9 +1340,8 @@ async function createFilesFromImages(
     return;
   }
   try {
-    if (g_mode === ToolMode.CREATE) sendIpcToRenderer("update-log-text", "");
-    sendIpcToRenderer(
-      "update-log-text",
+    if (g_mode === ToolMode.CREATE) updateModalLogText("");
+    updateModalLogText(
       g_uiSelectedOptions.outputSplitNumFiles > 1
         ? _("tool-shared-modal-log-generating-new-files") + "..."
         : _("tool-shared-modal-log-generating-new-file") + "..."
@@ -1398,9 +1368,9 @@ async function createFilesFromImages(
           temp.deleteSubFolder(g_tempSubFolderPath);
           g_tempSubFolderPath = undefined;
           message.files.forEach((element) => {
-            sendIpcToRenderer("update-log-text", element);
+            updateModalLogText(element);
           });
-          sendIpcToRenderer("update-log-text", "");
+          updateModalLogText("");
           sendIpcToRenderer("file-finished-ok");
           return;
         } else {
@@ -1465,6 +1435,14 @@ async function createFilesFromImages(
   } catch (error) {
     stopError(error);
   }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// LOG ////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+function updateModalLogText(inputText, append = true) {
+  sendIpcToRenderer("update-log-text", inputText, append);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
