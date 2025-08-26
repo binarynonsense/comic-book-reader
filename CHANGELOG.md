@@ -1,3 +1,8 @@
+# v3.12.4
+
+- Fixed convert comic books, extract comic books, convert images and create comic book tools progressively slowing down while processing a large batch of files, which was due to the log text's increasingly bigger length impacting the time it took to update it.
+- Fixed PDF metadata editor getting stuck trying to load data from files with undefined creation and/or modification dates.
+
 # v3.12.3
 
 - Added a button to open the output folder in the convert comic books, extract comic books, convert images and create comic book tools.
