@@ -536,6 +536,18 @@ function initOnIpcCallbacks() {
   });
 
   on("show-result", (failedFilesText) => {
+    // if the full log is huge I also crop it
+    if (fullLogContent.length > 1000000)
+      fullLogContent =
+        "[...]" +
+        fullLogContent.substring(
+          fullLogContent.length - 1000000,
+          fullLogContent.length
+        );
+    modalLog.innerHTML = fullLogContent;
+    modalLog.classList.remove("modal-log-noscrollbar");
+    modalLog.scrollTop = modalLog.scrollHeight;
+
     if (g_failedFilePaths.length > 0) {
       updateLogText(
         "\n------------ " + failedFilesText + ": ------------\n",
@@ -788,6 +800,9 @@ function getChangedOptions() {
 ///////////////////////////////////////////////////////////////////////////////
 
 let g_openModal;
+let modalLog;
+let partialLogContent = "";
+let fullLogContent = "";
 
 export function getOpenModal() {
   return g_openModal;
@@ -844,6 +859,9 @@ function showLogModal() {
       },
     ],
   });
+
+  modalLog = g_openModal.querySelector(".modal-log");
+  modalLog.classList.add("modal-log-noscrollbar");
 }
 
 function updateModalTitleText(text) {
@@ -856,13 +874,21 @@ function updateInfoText(text) {
 
 function updateLogText(text, append = true) {
   if (g_openModal) {
-    const log = g_openModal.querySelector(".modal-log");
     if (append) {
-      log.innerHTML += "\n" + text;
+      partialLogContent += "\n" + text;
+      fullLogContent += "\n" + text;
     } else {
-      log.innerHTML = text;
+      partialLogContent = text;
+      fullLogContent = text;
     }
-    log.scrollTop = log.scrollHeight;
+    // show only enough to fill the viewable area
+    if (partialLogContent.length > 2000)
+      partialLogContent = partialLogContent.substring(
+        partialLogContent.length - 1500,
+        partialLogContent.length
+      );
+    modalLog.innerHTML = partialLogContent;
+    modalLog.scrollTop = modalLog.scrollHeight;
   }
 }
 
