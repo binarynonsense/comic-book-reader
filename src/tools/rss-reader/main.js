@@ -209,7 +209,20 @@ function initOnIpcCallbacks() {
   on("get-feed-content", async (url, index, switchToContent = true) => {
     if (index >= 0) {
       const feedData = await getFeedContent(g_favorites[index].url);
-      sendIpcToRenderer("load-feed-content", feedData, index, switchToContent);
+      if (feedData)
+        sendIpcToRenderer(
+          "load-feed-content",
+          feedData,
+          index,
+          switchToContent
+        );
+      else
+        sendIpcToRenderer(
+          "show-modal-info",
+          _("tool-shared-modal-title-error"),
+          _("tool-rss-feed-error"),
+          _("ui-modal-prompt-button-ok")
+        );
     } else {
       openFeedURL(url, switchToContent);
     }

@@ -702,7 +702,6 @@ function showFeedContent(data, index, pageNum, scrollToTop = false) {
     console.log(error);
     root.innerHTML += `
     <div id='tool-rss-channel-info'>
-      ${titleText}
       <div id='tool-rss-channel-info-desc'>
       ${g_extraLocalization.feedError}
       </div>
