@@ -139,7 +139,8 @@ function onIpcFromMain(event, args) {
 
           const audioplayerDiv = document.createElement("div");
           audioplayerDiv.id = "audio-player-container";
-          audioplayerDiv.classList = "ap-layout-top-left ap-hidden";
+          audioplayerDiv.classList =
+            "ap-layout-top-left ap-hidden ap-zindex-reader";
           document.body.appendChild(audioplayerDiv);
 
           const modalsDiv = document.createElement("div");
@@ -161,11 +162,25 @@ function onIpcFromMain(event, args) {
               .classList.remove("set-display-none");
             document.getElementById("tools").classList.add("set-display-none");
             document.getElementById("tools").innerHTML = "";
+
+            document
+              .getElementById("audio-player-container")
+              .classList.add("ap-zindex-reader");
+            document
+              .getElementById("audio-player-container")
+              .classList.remove("ap-zindex-tools");
           } else {
             document.getElementById("reader").classList.add("set-display-none");
             document
               .getElementById("tools")
               .classList.remove("set-display-none");
+
+            document
+              .getElementById("audio-player-container")
+              .classList.remove("ap-zindex-reader");
+            document
+              .getElementById("audio-player-container")
+              .classList.add("ap-zindex-tools");
           }
         }
         break;

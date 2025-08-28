@@ -3,8 +3,14 @@
   align-items: flex-start;
   justify-items: center;
   flex-direction: column;
-  z-index: 200;
   direction: ltr;
+}
+
+.ap-zindex-reader {
+  z-index: 49;
+}
+.ap-zindex-tools {
+  z-index: 110;
 }
 
 .ap-layout-top-left {
