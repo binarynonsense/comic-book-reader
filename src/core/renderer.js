@@ -278,8 +278,8 @@ function showModalAlert(title, message, textButton1) {
       },
     ],
   });
-  if (getCurrentTool() === reader)
-    reader.sendIpcToMain("rebuild-menu-and-toolbar", false);
+  // if (getCurrentTool() === reader)
+  //   reader.sendIpcToMain("rebuild-menu-and-toolbar", false);
 }
 
 async function showModalCheckUpdates(currentVersion, texts) {
@@ -403,8 +403,8 @@ async function showModalCheckUpdates(currentVersion, texts) {
     // console.error(error);
   }
 
-  if (getCurrentTool() === reader)
-    reader.sendIpcToMain("rebuild-menu-and-toolbar", false);
+  // if (getCurrentTool() === reader)
+  //   reader.sendIpcToMain("rebuild-menu-and-toolbar", false);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
