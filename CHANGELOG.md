@@ -1,3 +1,9 @@
+# v3.12.5
+
+- Fixed RSS reader getting stuck when trying to load a no longer valid favorite feed URL.
+- Fixed audio player showing above some of the modal windows.
+- Fixed some of the modal windows hiding the toolbar while they were open.
+
 # v3.12.4
 
 - Fixed convert comic books, extract comic books, convert images and create comic book tools progressively slowing down while processing a large batch of files, which was due to the log text's increasingly bigger length impacting the time it took to update it.
