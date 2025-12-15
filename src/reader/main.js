@@ -1009,6 +1009,10 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
           return;
         }
         let pagesPaths = rarData.paths;
+        // ignore files in "__MACOSX" folder
+        pagesPaths = pagesPaths.filter(function (item) {
+          return !item.includes("__MACOSX");
+        });
         pagesPaths.sort(utils.compare);
         if (pagesPaths !== undefined && pagesPaths.length > 0) {
           g_fileData.state = FileDataState.LOADED;
@@ -1094,6 +1098,10 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
           return;
         }
         let pagesPaths = zipData.paths;
+        // ignore files in "__MACOSX" folder
+        pagesPaths = pagesPaths.filter(function (item) {
+          return !item.includes("__MACOSX");
+        });
         pagesPaths.sort(utils.compare);
         if (pagesPaths !== undefined && pagesPaths.length > 0) {
           g_fileData.state = FileDataState.LOADED;
@@ -1159,6 +1167,10 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
           return;
         }
         let pagesPaths = sevenData.paths;
+        // ignore files in "__MACOSX" folders
+        pagesPaths = pagesPaths.filter(function (item) {
+          return !item.includes("__MACOSX");
+        });
         pagesPaths.sort(utils.compare);
         if (pagesPaths !== undefined && pagesPaths.length > 0) {
           g_fileData.state = FileDataState.LOADED;
