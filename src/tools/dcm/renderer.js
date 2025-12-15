@@ -579,6 +579,8 @@ async function onSearchResultClicked(dlid, openWith) {
       closeModal();
     } catch (error) {
       console.log(error);
+      // TODO: show some error message in a modal?
+      closeModal();
     }
   } else {
     let url = `https://digitalcomicmuseum.com/?dlid=${dlid}`;
