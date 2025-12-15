@@ -212,15 +212,15 @@ function getToolsSubmenu() {
       label: _("menu-tools-search"),
       submenu: [
         {
-          label: _("menu-tools-dcm"),
-          click() {
-            core.onMenuToolDCM();
-          },
-        },
-        {
           label: _("menu-tools-cbp"),
           click() {
             core.onMenuToolCBP();
+          },
+        },
+        {
+          label: _("menu-tools-dcm"),
+          click() {
+            core.onMenuToolDCM();
           },
         },
         {
