@@ -1392,7 +1392,10 @@ export function renderImg64(
   const isDoublePages = img64s.length === 2;
 
   if (rotation === 0 || rotation === 180) {
-    let page1Img = new Image();
+    //// setup ////
+    let pagesLoaded = 0;
+    let page1Img, page2Img;
+    page1Img = new Image();
     page1Img.src = img64s[0];
     page1Img.classList.add("page-img");
     page1Img.classList.add("page");
@@ -1400,59 +1403,77 @@ export function renderImg64(
     if (rotation === 180) {
       page1Img.classList.add("set-rotate-180");
     }
-    page1Img.onload = function () {
-      const pagesRowDiv = document.createElement("div");
-      pagesRowDiv.classList.add("pages-row");
-      if (isDoublePages) pagesRowDiv.classList.add("pages-row-2p");
+    ////
+    const pagesRowDiv = document.createElement("div");
+    pagesRowDiv.classList.add("pages-row");
+    if (isDoublePages) {
+      page2Img = new Image();
+      page2Img.src = img64s[1];
+      page2Img.classList.add("page-img");
+      page2Img.classList.add("page");
+      page1Img.classList.add("page-1");
+      page2Img.classList.add("page-2");
+      if (title && title != "") page2Img.title = title;
+      if (rotation === 180) {
+        page2Img.classList.add("set-rotate-180");
+      }
+      pagesRowDiv.classList.add("pages-row-2p");
       pagesRowDiv.innerHTML = "";
-      if (!isDoublePages) pagesRowDiv.appendChild(page1Img);
-      setFilterClass(page1Img);
-      if (!isDoublePages) {
-        containerDiv.innerHTML = "";
-        containerDiv.appendChild(pagesRowDiv);
-        if (getPageMode() !== 0) {
-          pagesRowDiv.classList.add("pages-row-2p");
-          page1Img.classList.add("page-centered");
-        }
+      pagesRowDiv.appendChild(page1Img);
+      pagesRowDiv.appendChild(page2Img);
+      containerDiv.innerHTML = "";
+      containerDiv.appendChild(pagesRowDiv);
+      setFilterClass(page2Img);
+    } else {
+      pagesRowDiv.appendChild(page1Img);
+      containerDiv.innerHTML = "";
+      containerDiv.appendChild(pagesRowDiv);
+      if (getPageMode() !== 0) {
+        pagesRowDiv.classList.add("pages-row-2p");
+        page1Img.classList.add("page-centered");
+      }
+    }
+    setFilterClass(page1Img);
+    //// check function ////
+    function checkImageResults() {
+      if (
+        (!isDoublePages && pagesLoaded >= 1) ||
+        (isDoublePages && pagesLoaded >= 2)
+      ) {
         if (sendPageLoaded) {
           sendIpcToMain("page-loaded", {
             dimensions: [page1Img.naturalWidth, page1Img.naturalHeight],
           });
         }
         if (scrollBarPos !== undefined) setScrollBarsPosition(scrollBarPos);
-      } else {
-        let page2Img = new Image();
-        page2Img.src = img64s[1];
-        page2Img.classList.add("page-img");
-        page2Img.classList.add("page");
-        page1Img.classList.add("page-1");
-        page2Img.classList.add("page-2");
-        if (title && title != "") page2Img.title = title;
-        if (rotation === 180) {
-          page2Img.classList.add("set-rotate-180");
-        }
-        page2Img.onload = function () {
-          const totalWidth = page1Img.naturalWidth + page2Img.naturalWidth;
-          document.documentElement.style.setProperty(
-            "--zoom-width-page1",
-            `${(100 * page1Img.naturalWidth) / totalWidth}%`
-          );
-          document.documentElement.style.setProperty(
-            "--zoom-width-page2",
-            `${(100 * page2Img.naturalWidth) / totalWidth}%`
-          );
-          pagesRowDiv.appendChild(page1Img);
-          pagesRowDiv.appendChild(page2Img);
-          containerDiv.innerHTML = "";
-          containerDiv.appendChild(pagesRowDiv);
-          setFilterClass(page2Img);
-          sendIpcToMain("page-loaded", {
-            dimensions: [page2Img.naturalWidth, page2Img.naturalHeight],
-          });
-          if (scrollBarPos !== undefined) setScrollBarsPosition(scrollBarPos);
-        };
       }
+    }
+    //// events ///
+    page1Img.onload = function () {
+      pagesLoaded++;
+      checkImageResults();
     };
+    page1Img.onerror = function () {
+      page1Img.src = "../assets/images/error_page.png";
+    };
+    if (isDoublePages) {
+      page2Img.onload = function () {
+        pagesLoaded++;
+        const totalWidth = page1Img.naturalWidth + page2Img.naturalWidth;
+        document.documentElement.style.setProperty(
+          "--zoom-width-page1",
+          `${(100 * page1Img.naturalWidth) / totalWidth}%`
+        );
+        document.documentElement.style.setProperty(
+          "--zoom-width-page2",
+          `${(100 * page2Img.naturalWidth) / totalWidth}%`
+        );
+        checkImageResults();
+      };
+      page2Img.onerror = function () {
+        page2Img.src = "../assets/images/error_page.png";
+      };
+    }
   }
   // I use a different method here, I prefer the look of images in <img> when resizing but can't make them rotate
   // as I like, so I'll try canvas for these rotations
@@ -1502,6 +1523,9 @@ export function renderImg64(
         });
       }
       if (scrollBarPos !== undefined) setScrollBarsPosition(scrollBarPos);
+    };
+    image.onerror = function () {
+      image.src = "../assets/images/error_page.png";
     };
     image.src = img64s[0];
   }
