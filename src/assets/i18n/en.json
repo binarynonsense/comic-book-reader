@@ -1,8 +1,6 @@
 {
   "@metadata": {
-    "authors": [
-      "Álvaro"
-    ],
+    "authors": ["Álvaro"],
     "last-updated": "2025-08-16",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.12.2",
@@ -143,6 +141,7 @@
   "ctxmenu-rotate-clockwise": "Clockwise",
   "ctxmenu-rotate-counterclockwise": "Counterclockwise",
   "ctxmenu-openfile": "Open File...",
+  "ctxmenu-opencontainingfolder": "Open Containing Folder",
   "[NOTE TO TRANSLATORS]toolbar-change-to": "'Change to' will be used in the toolbar tooltips in combination with other entries like 'Fit to Width' or 'Double Page', e.g. 'Change to: Double Page'",
   "toolbar-change-to": "Change to",
   "toolbar-go-left": "Go Left",
@@ -275,12 +274,14 @@
   "ap-tooltip-button-delete": "remove selected from playlist",
   "ap-tooltip-button-save": "save playlist to file",
   "home-screen": "Home Screen",
-  "[NOTE TO TRANSLATORS]home-screen-favorites": "Favorites as in Favorite files and folders",
-  "home-screen-favorites": "Favorites",
-  "[NOTE TO TRANSLATORS]home-screen-recent": "Recent as in most recently opened files, plural",
-  "home-screen-recent": "Recent",
-  "home-files-tools": "Files Tools",
-  "home-art-tools": "Art Tools",
+  "[NOTE TO TRANSLATORS]home-section-favorites": "Favorites as in Favorite files and folders",
+  "home-section-favorites": "Favorites",
+  "home-modal-button-addtofavorites": "Add to Favorites",
+  "home-modal-button-removefromfavorites": "Remove from Favorites",
+  "[NOTE TO TRANSLATORS]home-section-recent": "Recent as in most recently opened files, plural",
+  "home-section-recent": "Recent",
+  "home-button-files-tools": "Files Tools",
+  "home-button-art-tools": "Art Tools",
   "tool-shared-ui-back-to-reader": "Back to Reader",
   "tool-shared-ui-back": "Back",
   "tool-shared-ui-tool": "Tool",
