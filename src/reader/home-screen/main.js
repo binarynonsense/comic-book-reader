@@ -249,8 +249,8 @@ function initOnIpcCallbacks() {
   on("hs-files-tools", (showFocus) => {
     sendIpcToRenderer(
       "hs-show-modal-files-tools",
-      _raw("home-files-tools", false)
-        ? _raw("home-files-tools", false)
+      _raw("home-button-files-tools", false)
+        ? _raw("home-button-files-tools", false)
         : _("menu-tools") + " > " + _("menu-tools-files"),
       _("tool-shared-ui-back"),
       _raw("tool-cc-title-alt", false)
@@ -288,8 +288,8 @@ function initOnIpcCallbacks() {
   on("hs-art-tools", (showFocus) => {
     sendIpcToRenderer(
       "hs-show-modal-art-tools",
-      _raw("home-art-tools", false)
-        ? _raw("home-art-tools", false)
+      _raw("home-button-art-tools", false)
+        ? _raw("home-button-art-tools", false)
         : _("menu-tools") + " > " + _("menu-tools-art"),
       _("tool-shared-ui-back"),
       _("tool-tm-info-title-header"),
@@ -335,7 +335,7 @@ function initOnIpcCallbacks() {
   on("hs-on-add-favorite-clicked", (showFocus) => {
     sendIpcToRenderer(
       "hs-show-modal-add-favorite",
-      _("home-screen-favorites"),
+      _("home-section-favorites"),
       _("tool-shared-ui-back"),
       _("tool-shared-ui-add-file"),
       _("tool-shared-ui-add-folder"),
@@ -512,11 +512,11 @@ function updateLocalizedText(rebuildSections = true) {
     getCardLocalization(),
     _("menu-file-preferences"),
     _("menu-file-openrecent-history"),
-    _raw("home-files-tools", false)
-      ? _raw("home-files-tools", false)
+    _raw("home-button-files-tools", false)
+      ? _raw("home-button-files-tools", false)
       : _("menu-tools") + " > " + _("menu-tools-files"),
-    _raw("home-art-tools", false)
-      ? _raw("home-art-tools", false)
+    _raw("home-button-art-tools", false)
+      ? _raw("home-button-art-tools", false)
       : _("menu-tools") + " > " + _("menu-tools-art"),
     _("menu-tools-rss-reader"),
     _("menu-tools-radio"),
@@ -535,11 +535,11 @@ function getIdsLocalization() {
     },
     {
       id: "hs-favorites-title",
-      text: _("home-screen-favorites").toUpperCase(),
+      text: _("home-section-favorites").toUpperCase(),
     },
     {
       id: "hs-latest-title",
-      text: _("home-screen-recent").toUpperCase(),
+      text: _("home-section-recent").toUpperCase(),
     },
   ];
 }
