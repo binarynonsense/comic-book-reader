@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2024 Álvaro García
+ * Copyright 2020-2025 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -218,7 +218,10 @@ exports.hasEpubSupportedImageExtension = function (filePath) {
 // GET IMAGES /////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-const getImageFilesInFolderRecursive = function (folderPath) {
+const getImageFilesInFolderRecursive = function (
+  folderPath,
+  ignoreMacOSFolder = true
+) {
   let filesArray = [];
   let dirs = [];
 
@@ -227,7 +230,10 @@ const getImageFilesInFolderRecursive = function (folderPath) {
     nodes.forEach((node) => {
       const nodePath = path.join(folderPath, node);
       if (fs.lstatSync(nodePath).isDirectory()) {
-        dirs.push(nodePath); // check later so this folder's imgs come first
+        if (!ignoreMacOSFolder || node !== "__MACOSX") {
+          // check later so this folder's imgs come first
+          dirs.push(nodePath);
+        }
       } else {
         if (hasImageExtension(nodePath)) {
           filesArray.push(nodePath);
