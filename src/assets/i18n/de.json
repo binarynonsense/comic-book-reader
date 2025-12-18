@@ -3,7 +3,7 @@
     "authors": [
       "trzyglow"
     ],
-    "last-updated": "2025-08-16",
+    "last-updated": "2025-12-18",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.12.2",
     "pre-release": "false",
@@ -143,7 +143,7 @@
   "ctxmenu-rotate-clockwise": "In Uhrzeigerrichtung",
   "ctxmenu-rotate-counterclockwise": "Gegen Uhrzeigerrichtung",
   "ctxmenu-openfile": "Öffne Datei...",
-  "[NEEDS TRANSLATION]ctxmenu-opencontainingfolder": "Open Containing Folder",
+  "ctxmenu-opencontainingfolder": "Beinhaltenden Ordner öffnen",
   "[NOTE TO TRANSLATORS]toolbar-change-to": "'Change to' will be used in the toolbar tooltips in combination with other entries like 'Fit to Width' or 'Double Page', e.g. 'Change to: Double Page'",
   "toolbar-change-to": "Wechseln zu",
   "toolbar-go-left": "Nach links gehen",
@@ -278,8 +278,8 @@
   "home-screen": "Startbildschirm",
   "[NOTE TO TRANSLATORS]home-section-favorites": "Favorites as in Favorite files and folders",
   "home-section-favorites": "Favoriten",
-  "[NEEDS TRANSLATION]home-modal-button-addtofavorites": "Add to Favorites",
-  "[NEEDS TRANSLATION]home-modal-button-removefromfavorites": "Remove from Favorites",
+  "home-modal-button-addtofavorites": "Zu Favoriten hinzufügen",
+  "home-modal-button-removefromfavorites": "Aus Favoriten entfernen",
   "[NOTE TO TRANSLATORS]home-section-recent": "Recent as in most recently opened files, plural",
   "home-section-recent": "Zuletzt geöffnet",
   "home-button-files-tools": "Dateienwerkzeuge",
