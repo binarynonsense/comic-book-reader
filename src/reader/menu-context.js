@@ -172,6 +172,12 @@ exports.show = function (type, params, fileData) {
         },
       },
       {
+        label: _("ctxmenu-opencontainingfolder"),
+        click() {
+          reader.onMenuOpenContainingFolder();
+        },
+      },
+      {
         type: "separator",
       },
       {

@@ -2576,6 +2576,12 @@ exports.onMenuCloseFile = function () {
   closeCurrentFile();
 };
 
+exports.onMenuOpenContainingFolder = function () {
+  if (g_fileData.path) {
+    appUtils.openPathInFileBrowser(path.dirname(g_fileData.path));
+  }
+};
+
 // exports.onMenuPageExport = function () {
 //   exportPageStart(0);
 // };
