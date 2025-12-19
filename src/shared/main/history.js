@@ -151,3 +151,19 @@ function getFilePathIndex(filePath) {
   return foundIndex;
 }
 exports.getFilePathIndex = getFilePathIndex;
+
+function getDataIndex(data) {
+  if (!data) return undefined;
+  let foundIndex;
+  for (let index = 0; index < g_history.length; index++) {
+    const element = g_history[index];
+    // NOTE: crappy comparision, error prone?
+    if (!element.data) continue;
+    if (JSON.stringify(element.data) === JSON.stringify(data)) {
+      foundIndex = index;
+      break;
+    }
+  }
+  return foundIndex;
+}
+exports.getDataIndex = getDataIndex;

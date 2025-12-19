@@ -27,6 +27,8 @@ let g_isInitialized = false;
 let g_navData = {};
 let g_languageDirection = "ltr";
 let g_pagesContainerDiv;
+let g_favorites;
+let g_latest;
 
 function init() {
   if (!g_isInitialized) {
@@ -192,6 +194,10 @@ function initOnIpcCallbacks() {
   on("hs-show-modal-art-tools", (...args) => {
     showModalArtTools(...args);
   });
+
+  on("hs-show-modal-latest-options", (...args) => {
+    showModalLatestOptions(...args);
+  });
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -207,6 +213,8 @@ const CardType = {
 
 function buildSections(languageDirection, favorites, latest, maxLatest) {
   g_languageDirection = languageDirection;
+  g_favorites = favorites;
+  g_latest = latest;
   // FAVORITES
   const favoritesDiv = document.querySelector("#hs-favorites");
   favoritesDiv.innerHTML = "";
@@ -280,21 +288,39 @@ function buildSections(languageDirection, favorites, latest, maxLatest) {
       if (g_languageDirection === "rtl") {
         if (index % 2 === 0) {
           if (index !== 0) navRow++;
-          navColumn = 1;
-          if (index === latest.length - 1) {
-            navColumn = 0;
-          }
+          navColumn = 3;
+          if (index === favorites.length - 1) navColumn = 1;
         } else {
-          navColumn = 0;
+          navColumn = 1;
         }
       } else {
         if (index % 2 === 0) {
           navColumn = 0;
           if (index !== 0) navRow++;
         } else {
-          navColumn = 1;
+          navColumn = 2;
         }
       }
+      // OLD LATEST CODE
+      // if (g_languageDirection === "rtl") {
+      //   if (index % 2 === 0) {
+      //     if (index !== 0) navRow++;
+      //     navColumn = 1;
+      //     if (index === latest.length - 1) {
+      //       navColumn = 0;
+      //     }
+      //   } else {
+      //     navColumn = 0;
+      //   }
+      // } else {
+      //   if (index % 2 === 0) {
+      //     navColumn = 0;
+      //     if (index !== 0) navRow++;
+      //   } else {
+      //     navColumn = 1;
+      //   }
+      // }
+
       if (latest && latest.length > index) {
         const data = latest[index];
         listDiv.appendChild(
@@ -314,7 +340,8 @@ function buildSections(languageDirection, favorites, latest, maxLatest) {
 function getNewCardDiv(cardType, data, navRow, navColumn) {
   const cardDiv = document.createElement("div");
 
-  let hasButton = cardType === CardType.LATEST ? false : true;
+  // let hasButton = cardType === CardType.LATEST ? false : true;
+  let hasButton = true;
 
   const buttonHtml = `
   <div class="hs-path-card-button hs-path-interactive">
@@ -382,10 +409,10 @@ function getNewCardDiv(cardType, data, navRow, navColumn) {
         }
 
         mainCardDiv.addEventListener("click", function (event) {
-          if (data.pathType <= 0) {
-            sendIpcToMain("hs-open-file", data.path);
-          } else if (data.pathType === 1) {
+          if (data.pathType === 1) {
             sendIpcToMain("hs-open-dialog-file", data.path);
+          } else {
+            sendIpcToMain("hs-open-favorite-file", data);
           }
           if (event.pointerType === "mouse") {
             navigation.refocusFocusedElement(g_navData);
@@ -455,19 +482,64 @@ function getNewCardDiv(cardType, data, navRow, navColumn) {
         cardDiv.classList.add("hs-path-card");
         cardDiv.innerHTML = interactiveHtml;
         const mainCardDiv = cardDiv.querySelector(".hs-path-card-main");
+
         mainCardDiv.title = g_cardLocalization.openInReader;
+
         mainCardDiv.addEventListener("click", function (event) {
           sendIpcToMain("hs-open-history-file", data.index);
           event.stopPropagation();
         });
+
         if (navRow !== undefined && navColumn !== undefined) {
           mainCardDiv.setAttribute("data-nav-panel", 0);
           mainCardDiv.setAttribute("data-nav-row", navRow);
           mainCardDiv.setAttribute("data-nav-col", navColumn);
           mainCardDiv.setAttribute("tabindex", "0");
         }
+
+        const buttonDiv = cardDiv.querySelector(".hs-path-card-button");
+        buttonDiv.title = g_cardLocalization.options;
+        buttonDiv.addEventListener("click", function (event) {
+          sendIpcToMain(
+            "hs-on-latest-options-clicked",
+            data.index,
+            data.path,
+            event == undefined || event.pointerType !== "mouse"
+          );
+          event.stopPropagation();
+        });
+        if (navRow !== undefined && navColumn !== undefined) {
+          buttonDiv.setAttribute("data-nav-panel", 0);
+          buttonDiv.setAttribute("data-nav-row", navRow);
+          if (g_languageDirection === "rtl") {
+            navColumn -= 1;
+          } else {
+            navColumn += 1;
+          }
+          buttonDiv.setAttribute("data-nav-col", navColumn);
+          buttonDiv.setAttribute("tabindex", "0");
+        }
       }
       break;
+    // OLD LATEST CODE
+    // case CardType.LATEST:
+    //   {
+    //     cardDiv.classList.add("hs-path-card");
+    //     cardDiv.innerHTML = interactiveHtml;
+    //     const mainCardDiv = cardDiv.querySelector(".hs-path-card-main");
+    //     mainCardDiv.title = g_cardLocalization.openInReader;
+    //     mainCardDiv.addEventListener("click", function (event) {
+    //       sendIpcToMain("hs-open-history-file", data.index);
+    //       event.stopPropagation();
+    //     });
+    //     if (navRow !== undefined && navColumn !== undefined) {
+    //       mainCardDiv.setAttribute("data-nav-panel", 0);
+    //       mainCardDiv.setAttribute("data-nav-row", navRow);
+    //       mainCardDiv.setAttribute("data-nav-col", navColumn);
+    //       mainCardDiv.setAttribute("tabindex", "0");
+    //     }
+    //   }
+    //   break;
     case CardType.EMPTY:
       cardDiv.classList.add("hs-path-card");
       cardDiv.innerHTML = emptyHtml;
@@ -1012,6 +1084,74 @@ function showModalFavoriteEditPath(
         },
       },
     ],
+  });
+}
+
+function showModalLatestOptions(
+  index,
+  path,
+  isFavorite,
+  title,
+  textButtonBack,
+  textButtonFavorite,
+  textButtonOpenFolder,
+  showFocus
+) {
+  if (getOpenModal()) {
+    return;
+  }
+
+  let buttons = [];
+  let isWeb =
+    path === undefined || path.startsWith("http:") || path.startsWith("https:");
+  if (!isFavorite) {
+    buttons.push({
+      text: textButtonFavorite.toUpperCase(),
+      fullWidth: true,
+      callback: () => {
+        modalClosed();
+        sendIpcToMain(
+          "hs-on-modal-latest-options-addtofavorites-clicked",
+          index,
+          path
+        );
+      },
+    });
+  }
+  if (!isWeb) {
+    buttons.push({
+      text: textButtonOpenFolder.toUpperCase(),
+      fullWidth: true,
+      callback: () => {
+        modalClosed();
+        sendIpcToMain(
+          "hs-on-modal-latest-options-openfolder-clicked",
+          index,
+          path
+        );
+      },
+    });
+  }
+  buttons.push({
+    text: textButtonBack.toUpperCase(),
+    fullWidth: true,
+    callback: () => {
+      modalClosed();
+    },
+  });
+
+  showModal({
+    showFocus: showFocus,
+    title: title,
+    frameWidth: 400,
+    zIndexDelta: -450,
+    close: {
+      callback: () => {
+        modalClosed();
+      },
+      key: "Escape",
+    },
+    buttons: buttons,
   });
 }
 

@@ -696,13 +696,43 @@ exports.requestOpenConfirmation = function (filePath) {
   );
 };
 
-function tryOpen(filePath, bookType, historyEntry) {
+function tryOpen(filePath, bookType, historyEntry, hsFavoritesEntry) {
   sendIpcToPreload("update-menubar"); // in case coming from menu
 
   closeCurrentFile();
 
   if (!bookType) bookType = BookType.NOT_SET;
   let pageIndex;
+
+  // home screen data fav path
+
+  if (hsFavoritesEntry) {
+    if (hsFavoritesEntry.data && hsFavoritesEntry.data.source) {
+      let historyIndex = history.getDataIndex(hsFavoritesEntry.data);
+      if (historyIndex !== undefined) {
+        historyEntry = history.getIndex(historyIndex);
+      } else {
+        // not in history
+        if (
+          hsFavoritesEntry.data.source === "dcm" ||
+          hsFavoritesEntry.data.source === "iab" ||
+          hsFavoritesEntry.data.source === "xkcd" ||
+          hsFavoritesEntry.data.source === "cbp"
+        ) {
+          return tryOpenWWW(pageIndex, hsFavoritesEntry);
+        } else if (hsFavoritesEntry.data.source === "gut") {
+          return tryOpenPath(
+            filePath,
+            pageIndex,
+            BookType.EBOOK,
+            hsFavoritesEntry
+          );
+        }
+      }
+    }
+  }
+
+  // normal path
 
   if (!historyEntry) {
     let historyIndex = history.getFilePathIndex(filePath);

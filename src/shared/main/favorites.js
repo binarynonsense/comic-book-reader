@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2024 Álvaro García
+ * Copyright 2024-2025 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -79,23 +79,27 @@ function load() {
         const loadedFavoritesData = loadedFavorites.data;
         for (let index = 0; index < loadedFavoritesData.length; index++) {
           const loadedEntry = loadedFavoritesData[index];
+          let entry = {};
           if (loadedEntry.path && typeof loadedEntry.path === "string") {
-            let entry = { path: loadedEntry.path };
-            if (loadedEntry.name && typeof loadedEntry.name === "string") {
-              entry.name = loadedEntry.name;
-            }
-            if (
-              loadedEntry.localizedNameId &&
-              typeof loadedEntry.localizedNameId === "string"
-            ) {
-              // default favorites like Home, Desktop... will have a
-              // localizedNameId and it will be used to get a localized name
-              // and replace the name key contents
-              entry.localizedNameId = loadedEntry.localizedNameId;
-              entry.name = undefined;
-            }
-            g_favorites.data.push(entry);
+            entry.path = loadedEntry.path;
           }
+          if (loadedEntry.name && typeof loadedEntry.name === "string") {
+            entry.name = loadedEntry.name;
+          }
+          if (
+            loadedEntry.localizedNameId &&
+            typeof loadedEntry.localizedNameId === "string"
+          ) {
+            // default favorites like Home, Desktop... will have a
+            // localizedNameId and it will be used to get a localized name
+            // and replace the name key contents
+            entry.localizedNameId = loadedEntry.localizedNameId;
+            entry.name = undefined;
+          }
+          if (loadedEntry.data && typeof loadedEntry.data === "object") {
+            entry.data = loadedEntry.data;
+          }
+          if (Object.keys(entry).length !== 0) g_favorites.data.push(entry);
         }
       } else {
         throw "invalid favorites format";

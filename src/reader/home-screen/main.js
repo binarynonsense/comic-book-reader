@@ -166,7 +166,9 @@ function getFavoritesData() {
     } else {
       favoriteInfo.name = g_favorites[index].name;
     }
-    if (fs.existsSync(favoriteInfo.path)) {
+    if (g_favorites[index].data && g_favorites[index].data.source) {
+      favoriteInfo.pathType = 2;
+    } else if (fs.existsSync(favoriteInfo.path)) {
       favoriteInfo.pathType = !fs.lstatSync(favoriteInfo.path).isDirectory()
         ? 0
         : 1;
@@ -196,22 +198,64 @@ function saveFavorites() {
   favorites.save();
 }
 
-function addFavorite(favPath) {
-  let isAlreadyInList = false;
+function isFavorite(favPath) {
   for (let index = 0; index < g_favorites.length; index++) {
     if (g_favorites[index].path === favPath) {
-      isAlreadyInList = true;
-      break;
+      return true;
     }
   }
+  return false;
+}
+
+function addFavoriteFromPath(favPath) {
+  let isAlreadyInList = isFavorite(favPath);
   if (!isAlreadyInList) {
-    g_favorites.push({ path: favPath, name: path.basename(favPath) });
+    g_favorites.push({
+      path: favPath,
+      name: path.basename(favPath),
+    });
     buildSections();
   } else {
     // TODO: show some kind of error modal?
     log.debug("tried to add a favorite already in the list");
   }
 }
+
+function addFavoriteFromLatest(fileIndex, filePath) {
+  let isAlreadyInList = isFavorite(filePath);
+  if (!isAlreadyInList) {
+    const historyData = history.get()[fileIndex];
+    /////////
+    let fav;
+    if (historyData.data) {
+      fav = {
+        path: filePath,
+        name: historyData.data.name,
+        data: historyData.data,
+      };
+    } else {
+      fav = {
+        path: filePath,
+        name: path.basename(filePath),
+      };
+    }
+    g_favorites.push(fav);
+    buildSections();
+  } else {
+    // TODO: show some kind of error modal?
+    log.debug("tried to add a favorite already in the list");
+  }
+}
+
+// function removeFavorite(){
+//    // TODO: finish, this is just reference code
+//    if (g_favorites[favIndex].path === favPath) {
+//       g_favorites.splice(favIndex, 1);
+//       buildSections();
+//     } else {
+//       log.error("Tried to remove a favorite with not matching index and path");
+//     }
+// }
 
 ///////////////////////////////////////////////////////////////////////////////
 // IPC SEND ///////////////////////////////////////////////////////////////////
@@ -320,8 +364,18 @@ function initOnIpcCallbacks() {
     core.onMenuQuit();
   });
 
-  on("hs-open-file", (filePath) => {
-    reader.tryOpen(filePath);
+  on("hs-open-favorite-file", (cardData) => {
+    let favorite = g_favorites[cardData.index];
+    if (favorite.data) {
+      reader.tryOpen(
+        cardData.path,
+        undefined,
+        undefined,
+        g_favorites[cardData.index]
+      );
+    } else {
+      reader.tryOpen(cardData.path);
+    }
   });
 
   on("hs-open-history-file", (index) => {
@@ -349,7 +403,7 @@ function initOnIpcCallbacks() {
       return;
     }
     const folderPath = folderList[0];
-    addFavorite(folderPath);
+    addFavoriteFromPath(folderPath);
   });
 
   on("hs-on-modal-add-favorite-file-clicked", () => {
@@ -373,7 +427,7 @@ function initOnIpcCallbacks() {
       return;
     }
     const filePath = filePathsList[0];
-    addFavorite(filePath);
+    addFavoriteFromPath(filePath);
   });
 
   on("hs-on-favorite-options-clicked", (index, path, showFocus) => {
@@ -497,6 +551,33 @@ function initOnIpcCallbacks() {
     } else {
       log.error("Tried to move a favorite with not matching index and path");
     }
+  });
+
+  on("hs-on-latest-options-clicked", (index, path, showFocus) => {
+    sendIpcToRenderer(
+      "hs-show-modal-latest-options",
+      index,
+      path,
+      isFavorite(path),
+      _("tool-shared-tab-options"),
+      _("tool-shared-ui-back"),
+      isFavorite(path)
+        ? _("home-modal-button-removefromfavorites")
+        : _("home-modal-button-addtofavorites"),
+      _("ctxmenu-opencontainingfolder"),
+      showFocus
+    );
+  });
+
+  on(
+    "hs-on-modal-latest-options-addtofavorites-clicked",
+    (fileIndex, filePath) => {
+      addFavoriteFromLatest(fileIndex, filePath);
+    }
+  );
+
+  on("hs-on-modal-latest-options-openfolder-clicked", (fileIndex, filePath) => {
+    appUtils.openPathInFileBrowser(path.dirname(filePath));
   });
 }
 
