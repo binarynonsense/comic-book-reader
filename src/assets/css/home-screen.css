@@ -58,17 +58,15 @@
   user-select: none;
   text-align: start;
   font-size: 15px;
-  margin: 30px 5px;
+  margin: 30px 7px 30px 7px;
   align-items: center;
 }
 
-.hs-section-title i {
+.hs-section-title-icon {
   margin-right: 7px;
 }
 
 .hs-section-title:has(.hs-section-title-button) {
-  /* margin: 25px 0; */
-  margin-right: -7px;
   justify-content: space-between;
 }
 
@@ -78,7 +76,7 @@
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  margin-inline-end: 8px;
+  /* margin-inline-end: 8px; */
   color: var(--hs-button-normal-bg-color);
 }
 

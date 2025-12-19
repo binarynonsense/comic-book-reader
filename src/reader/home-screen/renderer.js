@@ -1221,8 +1221,8 @@ function updateLocalization(
   const favoritesSectionTitleSpan = document.querySelector(
     "#hs-favorites-title"
   );
-  favoritesSectionTitleSpan.innerHTML = `<i class="fa-solid fa-heart"></i><span>${favoritesSectionTitle}</span>`;
+  favoritesSectionTitleSpan.innerHTML = `<i class="fa-solid fa-heart hs-section-title-icon"></i><span>${favoritesSectionTitle}</span>`;
   // latest title
   const latestSectionTitleSpan = document.querySelector("#hs-latest-title");
-  latestSectionTitleSpan.innerHTML = `<i class="fas fa-history"></i><span>${latestSectionTitle}</span>`;
+  latestSectionTitleSpan.innerHTML = `<i class="fas fa-history hs-section-title-icon"></i><span>${latestSectionTitle}</span>`;
 }
