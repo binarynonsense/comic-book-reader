@@ -1130,6 +1130,19 @@ function showModalLatestOptions(
         );
       },
     });
+  } else {
+    buttons.push({
+      text: textButtonFavorite.toUpperCase(),
+      fullWidth: true,
+      callback: () => {
+        modalClosed();
+        sendIpcToMain(
+          "hs-on-modal-latest-options-removefromfavorites-clicked",
+          index,
+          path
+        );
+      },
+    });
   }
   if (!isWeb) {
     buttons.push({

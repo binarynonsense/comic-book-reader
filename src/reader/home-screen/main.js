@@ -199,13 +199,17 @@ function saveFavorites() {
   favorites.save();
 }
 
-function isLocalPathInFavorites(favPath) {
+function getLocalPathIndexInFavorites(favPath) {
   for (let index = 0; index < g_favorites.length; index++) {
     if (g_favorites[index].path === favPath) {
-      return true;
+      return index;
     }
   }
-  return false;
+  return -1;
+}
+
+function isLocalPathInFavorites(favPath) {
+  return getLocalPathIndexInFavorites(favPath) >= 0;
 }
 
 function addFavoriteFromLocalPath(favPath) {
@@ -222,7 +226,7 @@ function addFavoriteFromLocalPath(favPath) {
   }
 }
 
-function isLatestInFavorites(latestIndex) {
+function getLatestIndexInFavorites(latestIndex) {
   const historyData = history.get()[latestIndex];
   if (historyData.data && historyData.data.source) {
     for (let index = 0; index < g_favorites.length; index++) {
@@ -231,13 +235,17 @@ function isLatestInFavorites(latestIndex) {
         JSON.stringify(g_favorites[index].data) ===
         JSON.stringify(historyData.data)
       ) {
-        return true;
+        return index;
       }
     }
-    return false;
+    return -1;
   } else {
-    return isLocalPathInFavorites(historyData.filePath);
+    return getLocalPathIndexInFavorites(historyData.filePath);
   }
+}
+
+function isLatestInFavorites(latestIndex) {
+  return getLatestIndexInFavorites(latestIndex) >= 0;
 }
 
 function addFavoriteFromLatest(index, filePath) {
@@ -275,6 +283,17 @@ function addFavoriteFromLatest(index, filePath) {
 //       log.error("Tried to remove a favorite with not matching index and path");
 //     }
 // }
+
+function removeFavoriteFromLatest(index, filePath) {
+  let favIndex = getLatestIndexInFavorites(index);
+  if (favIndex >= 0) {
+    g_favorites.splice(favIndex, 1);
+    buildSections();
+  } else {
+    // TODO: show some kind of error modal?
+    log.debug("tried to remoe a favorite not in the list");
+  }
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // IPC SEND ///////////////////////////////////////////////////////////////////
@@ -592,6 +611,13 @@ function initOnIpcCallbacks() {
     "hs-on-modal-latest-options-addtofavorites-clicked",
     (fileIndex, filePath) => {
       addFavoriteFromLatest(fileIndex, filePath);
+    }
+  );
+
+  on(
+    "hs-on-modal-latest-options-removefromfavorites-clicked",
+    (fileIndex, filePath) => {
+      removeFavoriteFromLatest(fileIndex, filePath);
     }
   );
 
