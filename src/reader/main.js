@@ -701,80 +701,92 @@ function tryOpen(filePath, bookType, historyEntry, hsFavoritesEntry) {
 
   closeCurrentFile();
 
-  if (!bookType) bookType = BookType.NOT_SET;
-  let pageIndex;
+  try {
+    if (!bookType) bookType = BookType.NOT_SET;
+    let pageIndex;
 
-  // home screen data fav path
+    // home screen data fav path
 
-  if (hsFavoritesEntry) {
-    if (hsFavoritesEntry.data && hsFavoritesEntry.data.source) {
-      let historyIndex = history.getDataIndex(hsFavoritesEntry.data);
-      if (historyIndex !== undefined) {
-        historyEntry = history.getIndex(historyIndex);
-      } else {
-        // not in history
-        if (
-          hsFavoritesEntry.data.source === "dcm" ||
-          hsFavoritesEntry.data.source === "iab" ||
-          hsFavoritesEntry.data.source === "xkcd" ||
-          hsFavoritesEntry.data.source === "cbp"
-        ) {
-          return tryOpenWWW(pageIndex, hsFavoritesEntry);
-        } else if (hsFavoritesEntry.data.source === "gut") {
-          return tryOpenPath(
-            filePath,
-            pageIndex,
-            BookType.EBOOK,
-            hsFavoritesEntry
-          );
+    if (hsFavoritesEntry) {
+      if (hsFavoritesEntry.data && hsFavoritesEntry.data.source) {
+        let historyIndex = history.getDataIndex(hsFavoritesEntry.data);
+        if (historyIndex !== undefined) {
+          historyEntry = history.getIndex(historyIndex);
+        } else {
+          // not in history
+          if (
+            hsFavoritesEntry.data.source === "dcm" ||
+            hsFavoritesEntry.data.source === "iab" ||
+            hsFavoritesEntry.data.source === "xkcd" ||
+            hsFavoritesEntry.data.source === "cbp"
+          ) {
+            return tryOpenWWW(pageIndex, hsFavoritesEntry);
+          } else if (hsFavoritesEntry.data.source === "gut") {
+            return tryOpenPath(
+              filePath,
+              pageIndex,
+              BookType.EBOOK,
+              hsFavoritesEntry
+            );
+          }
         }
       }
     }
-  }
 
-  // normal path
+    // normal path
 
-  if (!historyEntry) {
-    let historyIndex = history.getFilePathIndex(filePath);
-    if (historyIndex !== undefined) {
-      historyEntry = history.getIndex(historyIndex);
-    }
-  }
-
-  if (historyEntry) {
-    pageIndex = historyEntry.pageIndex;
-    if (historyEntry.data && historyEntry.data.source) {
-      if (
-        historyEntry.data.source === "dcm" ||
-        historyEntry.data.source === "iab" ||
-        historyEntry.data.source === "xkcd" ||
-        historyEntry.data.source === "cbp"
-      ) {
-        return tryOpenWWW(pageIndex, historyEntry);
-      } else if (historyEntry.data.source === "gut") {
-        return tryOpenPath(filePath, pageIndex, BookType.EBOOK, historyEntry);
+    if (!historyEntry) {
+      let historyIndex = history.getFilePathIndex(filePath);
+      if (historyIndex !== undefined) {
+        historyEntry = history.getIndex(historyIndex);
       }
     }
-    if (bookType === BookType.NOT_SET && historyEntry?.data?.bookType) {
-      if (settings.getValue("epubOpenAs") === 0)
-        bookType = historyEntry.data.bookType;
+
+    if (historyEntry) {
+      pageIndex = historyEntry.pageIndex;
+      if (historyEntry.data && historyEntry.data.source) {
+        if (
+          historyEntry.data.source === "dcm" ||
+          historyEntry.data.source === "iab" ||
+          historyEntry.data.source === "xkcd" ||
+          historyEntry.data.source === "cbp"
+        ) {
+          return tryOpenWWW(pageIndex, historyEntry);
+        } else if (historyEntry.data.source === "gut") {
+          return tryOpenPath(filePath, pageIndex, BookType.EBOOK, historyEntry);
+        }
+      }
+      if (bookType === BookType.NOT_SET && historyEntry?.data?.bookType) {
+        if (settings.getValue("epubOpenAs") === 0)
+          bookType = historyEntry.data.bookType;
+      }
     }
-  }
 
-  if (fileUtils.hasEpubExtension(filePath) && bookType === BookType.NOT_SET) {
-    // Special case, as epub can be opened as comic or ebook
-    sendIpcToRenderer(
-      "show-modal-question-openas",
-      _("ui-modal-question-ebookorcomic", "Epub"),
-      filePath,
-      _("ui-modal-question-button-comicbook"),
-      _("ui-modal-question-button-ebook"),
-      filePath
-    );
-    return true;
-  }
+    if (fileUtils.hasEpubExtension(filePath) && bookType === BookType.NOT_SET) {
+      // Special case, as epub can be opened as comic or ebook
+      sendIpcToRenderer(
+        "show-modal-question-openas",
+        _("ui-modal-question-ebookorcomic", "Epub"),
+        filePath,
+        _("ui-modal-question-button-comicbook"),
+        _("ui-modal-question-button-ebook"),
+        filePath
+      );
+      return true;
+    }
 
-  if (filePath === undefined || filePath === "" || !fs.existsSync(filePath)) {
+    if (filePath === undefined || filePath === "" || !fs.existsSync(filePath)) {
+      sendIpcToRenderer(
+        "show-modal-info",
+        _("ui-modal-title-filenotfound"),
+        filePath,
+        _("ui-modal-prompt-button-ok")
+      );
+      return false;
+    }
+    return tryOpenPath(filePath, pageIndex, bookType, historyEntry);
+  } catch (error) {
+    log.editorError(error);
     sendIpcToRenderer(
       "show-modal-info",
       _("ui-modal-title-filenotfound"),
@@ -783,7 +795,6 @@ function tryOpen(filePath, bookType, historyEntry, hsFavoritesEntry) {
     );
     return false;
   }
-  return tryOpenPath(filePath, pageIndex, bookType, historyEntry);
 }
 exports.tryOpen = tryOpen;
 
