@@ -519,7 +519,7 @@ function initOnIpcCallbacks() {
     "hs-on-modal-favorite-options-edit-path-ok-clicked",
     (favIndex, favPath, newPath) => {
       if (g_favorites[favIndex].path === favPath) {
-        if (newPath && newPath !== favPath) {
+        if (newPath && newPath !== favPath && fs.existsSync(newPath)) {
           g_favorites[favIndex].path = newPath;
           buildSections();
         }

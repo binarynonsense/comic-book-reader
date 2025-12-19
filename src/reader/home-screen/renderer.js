@@ -927,18 +927,22 @@ function showModalFavoriteOptions(
       );
     },
   });
-  buttons.push({
-    text: textButtonEditPath.toUpperCase(),
-    fullWidth: true,
-    callback: () => {
-      modalClosed();
-      sendIpcToMain(
-        "hs-on-modal-favorite-options-edit-path-clicked",
-        index,
-        path
-      );
-    },
-  });
+  let isWeb =
+    path === undefined || path.startsWith("http:") || path.startsWith("https:");
+  if (!isWeb) {
+    buttons.push({
+      text: textButtonEditPath.toUpperCase(),
+      fullWidth: true,
+      callback: () => {
+        modalClosed();
+        sendIpcToMain(
+          "hs-on-modal-favorite-options-edit-path-clicked",
+          index,
+          path
+        );
+      },
+    });
+  }
   buttons.push({
     text: textButtonMoveBackward.toUpperCase(),
     fullWidth: true,
