@@ -274,16 +274,6 @@ function addFavoriteFromLatest(index, filePath) {
   }
 }
 
-// function removeFavorite(){
-//    // TODO: finish, this is just reference code
-//    if (g_favorites[favIndex].path === favPath) {
-//       g_favorites.splice(favIndex, 1);
-//       buildSections();
-//     } else {
-//       log.error("Tried to remove a favorite with not matching index and path");
-//     }
-// }
-
 function removeFavoriteFromLatest(index, filePath) {
   let favIndex = getLatestIndexInFavorites(index);
   if (favIndex >= 0) {
