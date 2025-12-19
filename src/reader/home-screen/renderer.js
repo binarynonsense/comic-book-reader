@@ -1175,7 +1175,9 @@ function updateLocalization(
   rssReaderTitle,
   radioTitle,
   quitTitle,
-  addFavoriteTitle
+  addFavoriteTitle,
+  favoritesSectionTitle,
+  latestSectionTitle
 ) {
   // ids
   for (let index = 0; index < idsLocalization.length; index++) {
@@ -1215,4 +1217,12 @@ function updateLocalization(
   // add favorite
   const addFavoriteButton = document.querySelector("#hs-favorites-add-button");
   addFavoriteButton.title = addFavoriteTitle;
+  // favorites title
+  const favoritesSectionTitleSpan = document.querySelector(
+    "#hs-favorites-title"
+  );
+  favoritesSectionTitleSpan.innerHTML = `<i class="fa-solid fa-heart"></i><span>${favoritesSectionTitle}</span>`;
+  // latest title
+  const latestSectionTitleSpan = document.querySelector("#hs-latest-title");
+  latestSectionTitleSpan.innerHTML = `<i class="fas fa-history"></i><span>${latestSectionTitle}</span>`;
 }

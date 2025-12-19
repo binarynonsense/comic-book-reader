@@ -53,18 +53,23 @@
 .hs-section-title {
   display: flex;
   flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
   font-weight: bold;
   text-transform: uppercase;
   user-select: none;
   text-align: start;
   font-size: 15px;
-  margin: 30px 0;
+  margin: 30px 5px;
+  align-items: center;
+}
+
+.hs-section-title i {
+  margin-right: 7px;
 }
 
 .hs-section-title:has(.hs-section-title-button) {
-  margin: 25px 0;
+  /* margin: 25px 0; */
+  margin-right: -7px;
+  justify-content: space-between;
 }
 
 .hs-section-title-button {

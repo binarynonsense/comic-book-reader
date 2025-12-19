@@ -602,7 +602,9 @@ function updateLocalizedText(rebuildSections = true) {
     _("menu-tools-rss-reader"),
     _("menu-tools-radio"),
     _("menu-file-quit"),
-    _("tool-shared-ui-add")
+    _("tool-shared-ui-add"),
+    _("home-section-favorites").toUpperCase(),
+    _("home-section-recent").toUpperCase()
   );
   if (rebuildSections) buildSections();
 }
