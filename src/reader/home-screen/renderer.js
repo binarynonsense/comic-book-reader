@@ -27,8 +27,11 @@ let g_isInitialized = false;
 let g_navData = {};
 let g_languageDirection = "ltr";
 let g_pagesContainerDiv;
+
 let g_favorites;
 let g_latest;
+
+let g_draggedCard = null;
 
 function init() {
   if (!g_isInitialized) {
@@ -430,6 +433,53 @@ function getNewCardDiv(cardType, data, navRow, navColumn) {
           event.stopPropagation();
         });
 
+        // dragging ///////////
+        mainCardDiv.draggable = true;
+        // select
+        mainCardDiv.addEventListener("dragstart", function (event) {
+          console.log("drag start");
+          g_draggedCard = event.target;
+          mainCardDiv.classList.add("hs-path-card-main-dragging");
+          mainCardDiv.blur();
+          event.stopPropagation();
+        });
+        mainCardDiv.addEventListener("dragend", function (event) {
+          console.log("drag end");
+          g_draggedCard = undefined;
+          mainCardDiv.classList.remove("hs-path-card-main-dragging");
+          event.stopPropagation();
+        });
+        // drop
+        mainCardDiv.addEventListener("drop", (event) => {
+          if (event.target.classList.contains("hs-path-card-main")) {
+            mainCardDiv.classList.remove("hs-path-card-main-dragging-over");
+            sendIpcToMain(
+              "hs-on-favorite-dropped",
+              g_draggedCard.getAttribute("data-fav-index"),
+              event.target.getAttribute("data-fav-index")
+            );
+            event.preventDefault();
+          }
+        });
+        // receive
+        mainCardDiv.addEventListener("dragover", function (event) {
+          const draggingElement = document.querySelector(
+            ".hs-path-card-main-dragging"
+          );
+          if (draggingElement && mainCardDiv != draggingElement) {
+            event.preventDefault();
+            mainCardDiv.classList.add("hs-path-card-main-dragging-over");
+            event.stopPropagation();
+          }
+        });
+        mainCardDiv.addEventListener("dragleave", function (event) {
+          mainCardDiv.classList.remove("hs-path-card-main-dragging-over");
+          event.stopPropagation();
+        });
+        // data
+        mainCardDiv.setAttribute("data-fav-index", data.index);
+        /////////////
+
         if (navRow !== undefined && navColumn !== undefined) {
           mainCardDiv.setAttribute("data-nav-panel", 0);
           mainCardDiv.setAttribute("data-nav-row", navRow);
@@ -624,10 +674,12 @@ export function onInputEvent(type, event) {
 
     case "body.ondrop":
       {
-        sendIpcToMain(
-          "open-file",
-          ipc.showFilePath(event.dataTransfer.files[0])
-        );
+        if (event.dataTransfer.files[0]) {
+          sendIpcToMain(
+            "open-file",
+            ipc.showFilePath(event.dataTransfer.files[0])
+          );
+        }
       }
       break;
 
@@ -925,6 +977,14 @@ function showModalFavoriteOptions(
 
   let buttons = [];
   buttons.push({
+    text: textButtonRemove.toUpperCase(),
+    fullWidth: true,
+    callback: () => {
+      modalClosed();
+      sendIpcToMain("hs-on-modal-favorite-options-remove-clicked", index, path);
+    },
+  });
+  buttons.push({
     text: textButtonEditName.toUpperCase(),
     fullWidth: true,
     callback: () => {
@@ -952,40 +1012,32 @@ function showModalFavoriteOptions(
       },
     });
   }
-  buttons.push({
-    text: textButtonMoveBackward.toUpperCase(),
-    fullWidth: true,
-    callback: () => {
-      modalClosed();
-      sendIpcToMain(
-        "hs-on-modal-favorite-options-move-clicked",
-        index,
-        path,
-        0
-      );
-    },
-  });
-  buttons.push({
-    text: textButtonMoveForward.toUpperCase(),
-    fullWidth: true,
-    callback: () => {
-      modalClosed();
-      sendIpcToMain(
-        "hs-on-modal-favorite-options-move-clicked",
-        index,
-        path,
-        1
-      );
-    },
-  });
-  buttons.push({
-    text: textButtonRemove.toUpperCase(),
-    fullWidth: true,
-    callback: () => {
-      modalClosed();
-      sendIpcToMain("hs-on-modal-favorite-options-remove-clicked", index, path);
-    },
-  });
+  // buttons.push({
+  //   text: textButtonMoveBackward.toUpperCase(),
+  //   fullWidth: true,
+  //   callback: () => {
+  //     modalClosed();
+  //     sendIpcToMain(
+  //       "hs-on-modal-favorite-options-move-clicked",
+  //       index,
+  //       path,
+  //       0
+  //     );
+  //   },
+  // });
+  // buttons.push({
+  //   text: textButtonMoveForward.toUpperCase(),
+  //   fullWidth: true,
+  //   callback: () => {
+  //     modalClosed();
+  //     sendIpcToMain(
+  //       "hs-on-modal-favorite-options-move-clicked",
+  //       index,
+  //       path,
+  //       1
+  //     );
+  //   },
+  // });
   buttons.push({
     text: textButtonBack.toUpperCase(),
     fullWidth: true,

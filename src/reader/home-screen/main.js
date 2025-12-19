@@ -614,6 +614,13 @@ function initOnIpcCallbacks() {
   on("hs-on-modal-latest-options-openfolder-clicked", (fileIndex, filePath) => {
     appUtils.openPathInFileBrowser(path.dirname(filePath));
   });
+
+  on("hs-on-favorite-dropped", (fromIndex, toIndex) => {
+    let element = g_favorites[fromIndex];
+    g_favorites.splice(fromIndex, 1);
+    g_favorites.splice(toIndex, 0, element);
+    buildSections();
+  });
 }
 
 ///////////////////////////////////////////////////////////////////////////////
