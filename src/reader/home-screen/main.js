@@ -89,8 +89,8 @@ function getLatestData() {
   for (let index = 0; index < historyData.length; index++) {
     if (data.length < g_maxLatest) {
       const latestInfo = {};
-      const historyDataFile = historyData[historyData.length - index - 1];
       latestInfo.index = historyData.length - index - 1;
+      const historyDataFile = historyData[latestInfo.index];
       if (historyDataFile.data && historyDataFile.data.source) {
         latestInfo.pathType = 2;
         if (historyDataFile.data.name) {
@@ -145,6 +145,7 @@ function getLatestData() {
           latestInfo.pathType = -1;
         }
       }
+      latestInfo.isInFavorites = isLatestInFavorites(latestInfo.index);
       data.push(latestInfo);
     } else {
       break;
@@ -198,7 +199,7 @@ function saveFavorites() {
   favorites.save();
 }
 
-function isFavorite(favPath) {
+function isLocalPathInFavorites(favPath) {
   for (let index = 0; index < g_favorites.length; index++) {
     if (g_favorites[index].path === favPath) {
       return true;
@@ -207,8 +208,8 @@ function isFavorite(favPath) {
   return false;
 }
 
-function addFavoriteFromPath(favPath) {
-  let isAlreadyInList = isFavorite(favPath);
+function addFavoriteFromLocalPath(favPath) {
+  let isAlreadyInList = isLocalPathInFavorites(favPath);
   if (!isAlreadyInList) {
     g_favorites.push({
       path: favPath,
@@ -221,10 +222,28 @@ function addFavoriteFromPath(favPath) {
   }
 }
 
-function addFavoriteFromLatest(fileIndex, filePath) {
-  let isAlreadyInList = isFavorite(filePath);
+function isLatestInFavorites(latestIndex) {
+  const historyData = history.get()[latestIndex];
+  if (historyData.data && historyData.data.source) {
+    for (let index = 0; index < g_favorites.length; index++) {
+      if (!g_favorites[index].data) continue;
+      if (
+        JSON.stringify(g_favorites[index].data) ===
+        JSON.stringify(historyData.data)
+      ) {
+        return true;
+      }
+    }
+    return false;
+  } else {
+    return isLocalPathInFavorites(historyData.filePath);
+  }
+}
+
+function addFavoriteFromLatest(index, filePath) {
+  let isAlreadyInList = isLatestInFavorites(index);
   if (!isAlreadyInList) {
-    const historyData = history.get()[fileIndex];
+    const historyData = history.get()[index];
     /////////
     let fav;
     if (historyData.data) {
@@ -403,7 +422,7 @@ function initOnIpcCallbacks() {
       return;
     }
     const folderPath = folderList[0];
-    addFavoriteFromPath(folderPath);
+    addFavoriteFromLocalPath(folderPath);
   });
 
   on("hs-on-modal-add-favorite-file-clicked", () => {
@@ -427,7 +446,7 @@ function initOnIpcCallbacks() {
       return;
     }
     const filePath = filePathsList[0];
-    addFavoriteFromPath(filePath);
+    addFavoriteFromLocalPath(filePath);
   });
 
   on("hs-on-favorite-options-clicked", (index, path, showFocus) => {
@@ -438,7 +457,7 @@ function initOnIpcCallbacks() {
       path,
       _("tool-shared-tab-options"),
       _("tool-shared-ui-back"),
-      _("tool-shared-tooltip-remove-from-list"),
+      _("home-modal-button-removefromfavorites"), //_("tool-shared-tooltip-remove-from-list"),
       _("ui-modal-prompt-button-edit-name"),
       _("ui-modal-prompt-button-edit-path"),
       _("tool-shared-tooltip-move-forward-in-list"),
@@ -558,10 +577,10 @@ function initOnIpcCallbacks() {
       "hs-show-modal-latest-options",
       index,
       path,
-      isFavorite(path),
+      isLatestInFavorites(index),
       _("tool-shared-tab-options"),
       _("tool-shared-ui-back"),
-      isFavorite(path)
+      isLatestInFavorites(index)
         ? _("home-modal-button-removefromfavorites")
         : _("home-modal-button-addtofavorites"),
       _("ctxmenu-opencontainingfolder"),

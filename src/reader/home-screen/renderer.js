@@ -347,6 +347,10 @@ function getNewCardDiv(cardType, data, navRow, navColumn) {
   <div class="hs-path-card-button hs-path-interactive">
     <i class="fas fa-ellipsis-h"></i>
   </div>`;
+  const favMiniIconHtml = `
+  <div class="hs-path-card-favminiicon">
+    <i class="fa-solid fa-heart"></i>
+  </div>`;
   function getIconHtml() {
     const fileIconHtml = `
   <i class="hs-path-card-image-file fas fa-file fa-2x fa-fw"></i>`;
@@ -375,10 +379,15 @@ function getNewCardDiv(cardType, data, navRow, navColumn) {
     }
   }
   const interactiveHtml = data
-    ? `
+    ? `  
   <div class="hs-path-card-main hs-path-interactive">
     <div class="hs-path-card-image">
-      ${getIconHtml()}
+      ${getIconHtml()}     
+      ${
+        cardType === CardType.LATEST && data.isInFavorites
+          ? favMiniIconHtml
+          : ""
+      } 
     </div>
     <div class="hs-path-card-content">
       <span>${data.name}</span

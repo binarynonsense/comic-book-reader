@@ -342,11 +342,21 @@
 }
 
 .hs-path-card-image {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-content: center;
   justify-content: center;
   padding: 10px;
+}
+
+.hs-path-card-favminiicon {
+  position: absolute;
+  top: 0px;
+  left: 6px;
+  font-size: 10px;
+  /* color: var(--hs-path-card-text-color);
+  background-color: var(--hs-path-card-bg-color); */
 }
 
 .hs-path-card-content {
