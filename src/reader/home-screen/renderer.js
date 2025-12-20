@@ -1172,6 +1172,7 @@ function showModalLatestOptions(
   textButtonBack,
   textButtonFavorite,
   textButtonOpenFolder,
+  textButtonFolderFavorite,
   showFocus
 ) {
   if (getOpenModal()) {
@@ -1221,6 +1222,19 @@ function showModalLatestOptions(
         );
       },
     });
+    if (textButtonFolderFavorite)
+      buttons.push({
+        text: textButtonFolderFavorite.toUpperCase(),
+        fullWidth: true,
+        callback: () => {
+          modalClosed();
+          sendIpcToMain(
+            "hs-on-modal-latest-options-addfoldertofavorites-clicked",
+            index,
+            path
+          );
+        },
+      });
   }
   buttons.push({
     text: textButtonBack.toUpperCase(),

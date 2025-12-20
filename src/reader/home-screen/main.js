@@ -275,6 +275,16 @@ function addFavoriteFromLatest(index, filePath) {
   }
 }
 
+function addFavoriteFolderFromLatest(index, filePath) {
+  const historyData = history.get()[index];
+  if (!historyData.filePath || (historyData.data && historyData.data.source))
+    return;
+  const latestPath = path.dirname(historyData.filePath);
+  // TODO: check if valid folder;
+  addFavoriteFromLocalPath(latestPath);
+  // TODO: show modal message if error?
+}
+
 function removeFavoriteFromLatest(index, filePath) {
   let favIndex = getLatestIndexInFavorites(index);
   if (favIndex >= 0) {
@@ -467,7 +477,7 @@ function initOnIpcCallbacks() {
       path,
       _("tool-shared-tab-options"),
       _("tool-shared-ui-back"),
-      _("home-modal-button-removefromfavorites"), //_("tool-shared-tooltip-remove-from-list"),
+      _("home-modal-button-removefromfavorites"),
       _("ui-modal-prompt-button-edit-name"),
       _("ui-modal-prompt-button-edit-path"),
       _("tool-shared-tooltip-move-forward-in-list"),
@@ -582,11 +592,11 @@ function initOnIpcCallbacks() {
     }
   });
 
-  on("hs-on-latest-options-clicked", (index, path, showFocus) => {
+  on("hs-on-latest-options-clicked", (index, filePath, showFocus) => {
     sendIpcToRenderer(
       "hs-show-modal-latest-options",
       index,
-      path,
+      filePath,
       isLatestInFavorites(index),
       _("tool-shared-tab-options"),
       _("tool-shared-ui-back"),
@@ -594,6 +604,9 @@ function initOnIpcCallbacks() {
         ? _("home-modal-button-removefromfavorites")
         : _("home-modal-button-addtofavorites"),
       _("ctxmenu-opencontainingfolder"),
+      !filePath || isLocalPathInFavorites(path.dirname(filePath))
+        ? undefined
+        : _("home-modal-button-addcontainingfoldertofavorites"),
       showFocus
     );
   });
@@ -602,6 +615,13 @@ function initOnIpcCallbacks() {
     "hs-on-modal-latest-options-addtofavorites-clicked",
     (fileIndex, filePath) => {
       addFavoriteFromLatest(fileIndex, filePath);
+    }
+  );
+
+  on(
+    "hs-on-modal-latest-options-addfoldertofavorites-clicked",
+    (fileIndex, filePath) => {
+      addFavoriteFolderFromLatest(fileIndex, filePath);
     }
   );
 
