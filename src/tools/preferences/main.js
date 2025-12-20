@@ -552,6 +552,12 @@ function getLocalization() {
       id: "tool-pre-themes-text",
       text: _("tool-pre-theme"),
     },
+    {
+      id: "tool-pre-themes-select-0",
+      text: `${_("tool-shared-ui-color-mode-automatic")} (${_(
+        "tool-shared-ui-color-mode-automatic-basedonsystem"
+      )})`,
+    },
     //////////////////////////////////////////////
     {
       id: "tool-pre-zoom-text",

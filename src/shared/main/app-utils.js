@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-const { app, dialog } = require("electron");
+const { app, dialog, nativeTheme } = require("electron");
 const shell = require("electron").shell;
 const path = require("path");
 const fs = require("fs");
@@ -64,6 +64,25 @@ exports.openPathInFileBrowser = function (inputPath) {
   } else {
     shell.showItemInFolder(inputPath);
   }
+};
+
+///////////////////////////////////////////////////////////////////////////////
+// THEMES /////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+exports.getShouldUseDarkColors = function () {
+  return nativeTheme.shouldUseDarkColors;
+};
+
+exports.setNativeThemeUpdateEventHandler = function (handler) {
+  nativeTheme.on("updated", () => {
+    log.debug(
+      "native theme updated: " + nativeTheme.shouldUseDarkColors
+        ? "dark"
+        : "light"
+    );
+    handler();
+  });
 };
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -89,6 +89,10 @@ function init(activeLocale, languages, activeTheme, themes, settings) {
           select.appendChild(opt);
         }
       }
+      const selectOption_0 = document.getElementById(
+        "tool-pre-themes-select-0"
+      );
+      if (activeTheme === "acbr-auto-system") selectOption_0.selected = true;
       // add listener
       select.addEventListener("change", function (event) {
         sendIpcToMain("set-theme", select.value);

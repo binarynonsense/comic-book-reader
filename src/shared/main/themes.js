@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2023 Álvaro García
+ * Copyright 2020-2025 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -9,6 +9,9 @@ const path = require("path");
 const fs = require("fs");
 
 const settings = require("./settings");
+const appUtils = require("./app-utils");
+const log = require("./logger");
+const reader = require("../../reader/main");
 
 let g_themeId;
 let g_themeData;
@@ -17,7 +20,9 @@ let g_defaultThemeId = "acbr-dark";
 
 exports.init = function () {
   load(settings.getValue("theme"));
-  settings.setValue("theme", g_themeId);
+  appUtils.setNativeThemeUpdateEventHandler(() => {
+    load(settings.getValue("theme"), true);
+  });
 };
 
 exports.getId = function () {
@@ -28,17 +33,46 @@ exports.getData = function () {
   return g_themeData;
 };
 
-function load(desiredTheme) {
-  let theme = desiredTheme;
-  let data = loadDataFromId(theme);
+function load(themeId, refresh = false) {
+  log.debug("loading theme: " + themeId);
+  if (themeId === "acbr-auto-system") {
+    const useDarkColors = appUtils.getShouldUseDarkColors();
+    let realThemeId;
+    if (useDarkColors) {
+      realThemeId = "acbr-dark";
+    } else {
+      realThemeId = "acbr-light";
+    }
+    let data = loadDataFromId(realThemeId);
+    if (data !== undefined) {
+      g_themeId = themeId;
+      g_themeData = data;
+      if (refresh) {
+        reader.sendIpcToCoreRenderer("update-css-properties", g_themeData);
+        reader.rebuildMenuAndToolBars(false);
+      }
+      return;
+    }
+  }
+  //
+  let data = loadDataFromId(themeId);
   if (data !== undefined) {
-    g_themeId = theme;
+    g_themeId = themeId;
     g_themeData = data;
+    if (refresh) {
+      reader.sendIpcToCoreRenderer("update-css-properties", g_themeData);
+      reader.rebuildMenuAndToolBars(false);
+    }
     return;
   }
   // nothing found, load the default theme
   g_themeId = g_defaultThemeId;
   g_themeData = loadDataFromId(g_themeId);
+  settings.setValue("theme", g_themeId);
+  if (refresh) {
+    reader.sendIpcToCoreRenderer("update-css-properties", g_themeData);
+    reader.rebuildMenuAndToolBars(false);
+  }
 }
 exports.load = load;
 
