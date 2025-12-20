@@ -255,7 +255,7 @@ function addFavoriteFromLatest(index, filePath) {
     const historyData = history.get()[index];
     /////////
     let fav;
-    if (historyData.data) {
+    if (historyData.data && historyData.data.source) {
       fav = {
         path: filePath,
         name: historyData.data.name,
