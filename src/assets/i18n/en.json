@@ -1,9 +1,11 @@
 {
   "@metadata": {
-    "authors": ["Álvaro"],
-    "last-updated": "2025-08-16",
+    "authors": [
+      "Álvaro"
+    ],
+    "last-updated": "2025-12-20",
     "license-id": "BSD-2-Clause",
-    "acbr-version": "3.12.2",
+    "acbr-version": "3.12.6-beta3",
     "pre-release": "false",
     "comments": "",
     "locale": "en",
@@ -278,6 +280,7 @@
   "home-section-favorites": "Favorites",
   "home-modal-button-addtofavorites": "Add to Favorites",
   "home-modal-button-removefromfavorites": "Remove from Favorites",
+  "home-modal-button-addcontainingfoldertofavorites": "Add Containing Folder to Favorites",
   "[NOTE TO TRANSLATORS]home-section-recent": "Recent as in most recently opened files, plural",
   "home-section-recent": "Recent",
   "home-button-files-tools": "Files Tools",

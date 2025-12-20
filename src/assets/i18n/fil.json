@@ -280,6 +280,7 @@
   "home-section-favorites": "Mga Paborito",
   "[NEEDS TRANSLATION]home-modal-button-addtofavorites": "Add to Favorites",
   "[NEEDS TRANSLATION]home-modal-button-removefromfavorites": "Remove from Favorites",
+  "[NEEDS TRANSLATION]home-modal-button-addcontainingfoldertofavorites": "Add Containing Folder to Favorites",
   "[NOTE TO TRANSLATORS]home-section-recent": "Recent as in most recently opened files, plural",
   "home-section-recent": "Mga Kamakailan",
   "[NEEDS TRANSLATION]home-button-files-tools": "Files Tools",
