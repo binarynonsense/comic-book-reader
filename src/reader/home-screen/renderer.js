@@ -214,7 +214,13 @@ const CardType = {
   ADD_FAVORITE: "add favorite",
 };
 
-function buildSections(languageDirection, favorites, latest, maxLatest) {
+function buildSections(
+  languageDirection,
+  favorites,
+  latest,
+  maxLatest,
+  refocus
+) {
   g_languageDirection = languageDirection;
   g_favorites = favorites;
   g_latest = latest;
@@ -337,7 +343,7 @@ function buildSections(languageDirection, favorites, latest, maxLatest) {
     }
   }
   // NAVIGATION
-  navigation.rebuild(g_navData, 0);
+  navigation.rebuild(g_navData, refocus ? 0 : undefined);
 }
 
 function getNewCardDiv(cardType, data, navRow, navColumn) {

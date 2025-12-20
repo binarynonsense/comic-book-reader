@@ -73,13 +73,14 @@ exports.updateMaxLatest = function (maxLatest) {
 // TOOL //////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 
-function buildSections() {
+function buildSections(refocus = true) {
   sendIpcToRenderer(
     "hs-build-sections",
     g_languageDirection,
     getFavoritesData(),
     getLatestData(),
-    g_maxLatest
+    g_maxLatest,
+    refocus
   );
 }
 
@@ -619,7 +620,7 @@ function initOnIpcCallbacks() {
     let element = g_favorites[fromIndex];
     g_favorites.splice(fromIndex, 1);
     g_favorites.splice(toIndex, 0, element);
-    buildSections();
+    buildSections(false);
   });
 }
 
