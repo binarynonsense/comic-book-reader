@@ -328,6 +328,7 @@
 }
 
 .hs-path-card-main {
+  position: relative;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -366,6 +367,23 @@
   /* color: var(--hs-path-card-text-color);
   background-color: var(--hs-path-card-bg-color); */
   pointer-events: none;
+}
+
+.hs-path-card-dragminiicon {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  font-size: 13px;
+  pointer-events: none;
+  opacity: 0.4;
+  display: none;
+}
+.hs-path-card-main:hover .hs-path-card-dragminiicon {
+  display: inline;
+}
+.hs-path-card-main:active .hs-path-card-dragminiicon,
+.hs-path-card-main.hs-path-card-main-dragging .hs-path-card-dragminiicon {
+  opacity: 1;
 }
 
 .hs-path-card-content {

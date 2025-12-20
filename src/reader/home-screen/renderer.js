@@ -356,6 +356,11 @@ function getNewCardDiv(cardType, data, navRow, navColumn) {
   <div class="hs-path-card-button hs-path-interactive">
     <i class="fas fa-ellipsis-h"></i>
   </div>`;
+  //<i class="fa-solid fa-grip"></i>
+  const dragMiniIconHtml = `
+  <div class="hs-path-card-dragminiicon">    
+    <i class="fa-solid fa-arrows-up-down-left-right"></i>
+  </div>`;
   const favMiniIconHtml = `
   <div class="hs-path-card-favminiicon">
     <i class="fa-solid fa-heart"></i>
@@ -390,6 +395,7 @@ function getNewCardDiv(cardType, data, navRow, navColumn) {
   const interactiveHtml = data
     ? `  
   <div class="hs-path-card-main hs-path-interactive">
+    ${cardType === CardType.FAVORITES ? dragMiniIconHtml : ""}
     <div class="hs-path-card-image">
       ${getIconHtml()}     
       ${
