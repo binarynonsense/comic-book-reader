@@ -1,8 +1,6 @@
 {
   "@metadata": {
-    "authors": [
-      "Álvaro"
-    ],
+    "authors": ["Álvaro"],
     "last-updated": "2025-12-20",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.12.6-beta3",
@@ -413,6 +411,9 @@
   "tool-shared-ui-color-mode-light": "Light mode",
   "tool-shared-ui-color-mode-dark": "Dark mode",
   "tool-shared-ui-color-mode-custom": "Custom mode",
+  "tool-shared-ui-color-mode-automatic": "Automatic mode",
+  "tool-shared-ui-color-mode-automatic-basedonsystem": "system settings",
+  "tool-shared-ui-color-mode-automatic-basedontime": "time of day",
   "tool-shared-ui-color-text": "Text Color",
   "tool-shared-ui-color-background": "Background Color",
   "tool-shared-ui-experimental": "Experimental",
