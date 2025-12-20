@@ -981,6 +981,8 @@ function showModalFavoriteOptions(
   textButtonEditPath,
   textButtonMoveForward,
   textButtonMoveBackward,
+  textButtonOpenFolder,
+  textButtonFolderFavorite,
   showFocus
 ) {
   if (getOpenModal()) {
@@ -1023,33 +1025,62 @@ function showModalFavoriteOptions(
         );
       },
     });
+    //
+    if (textButtonOpenFolder)
+      buttons.push({
+        text: textButtonOpenFolder.toUpperCase(),
+        fullWidth: true,
+        callback: () => {
+          modalClosed();
+          sendIpcToMain(
+            "hs-on-modal-favorite-options-openfolder-clicked",
+            index,
+            path
+          );
+        },
+      });
+    if (textButtonFolderFavorite)
+      buttons.push({
+        text: textButtonFolderFavorite.toUpperCase(),
+        fullWidth: true,
+        callback: () => {
+          modalClosed();
+          sendIpcToMain(
+            "hs-on-modal-favorite-options-addfoldertofavorites-clicked",
+            index,
+            path
+          );
+        },
+      });
   }
-  // buttons.push({
-  //   text: textButtonMoveBackward.toUpperCase(),
-  //   fullWidth: true,
-  //   callback: () => {
-  //     modalClosed();
-  //     sendIpcToMain(
-  //       "hs-on-modal-favorite-options-move-clicked",
-  //       index,
-  //       path,
-  //       0
-  //     );
-  //   },
-  // });
-  // buttons.push({
-  //   text: textButtonMoveForward.toUpperCase(),
-  //   fullWidth: true,
-  //   callback: () => {
-  //     modalClosed();
-  //     sendIpcToMain(
-  //       "hs-on-modal-favorite-options-move-clicked",
-  //       index,
-  //       path,
-  //       1
-  //     );
-  //   },
-  // });
+  // TODO: enable move up & down only if using gamepad?
+  buttons.push({
+    text: textButtonMoveBackward.toUpperCase(),
+    fullWidth: true,
+    callback: () => {
+      modalClosed();
+      sendIpcToMain(
+        "hs-on-modal-favorite-options-move-clicked",
+        index,
+        path,
+        0
+      );
+    },
+  });
+  buttons.push({
+    text: textButtonMoveForward.toUpperCase(),
+    fullWidth: true,
+    callback: () => {
+      modalClosed();
+      sendIpcToMain(
+        "hs-on-modal-favorite-options-move-clicked",
+        index,
+        path,
+        1
+      );
+    },
+  });
+  //
   buttons.push({
     text: textButtonBack.toUpperCase(),
     fullWidth: true,

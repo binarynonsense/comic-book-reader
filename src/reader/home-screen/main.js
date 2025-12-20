@@ -469,12 +469,27 @@ function initOnIpcCallbacks() {
     addFavoriteFromLocalPath(filePath);
   });
 
-  on("hs-on-favorite-options-clicked", (index, path, showFocus) => {
+  on("hs-on-favorite-options-clicked", (favIndex, favPath, showFocus) => {
     // TODO: maybe check index and path match?
+    const fav = g_favorites[favIndex];
+
+    let isLocalFile = true;
+    if (fav.data && fav.data.source) {
+      // www
+      isLocalFile = false;
+    } else {
+      // local
+      if (fs.existsSync(favPath)) {
+        if (fs.lstatSync(favPath).isDirectory()) {
+          isLocalFile = false;
+        }
+      }
+    }
+
     sendIpcToRenderer(
       "hs-show-modal-favorite-options",
-      index,
-      path,
+      favIndex,
+      favPath,
       _("tool-shared-tab-options"),
       _("tool-shared-ui-back"),
       _("home-modal-button-removefromfavorites"),
@@ -482,6 +497,10 @@ function initOnIpcCallbacks() {
       _("ui-modal-prompt-button-edit-path"),
       _("tool-shared-tooltip-move-forward-in-list"),
       _("tool-shared-tooltip-move-backward-in-list"),
+      !isLocalFile ? undefined : _("ctxmenu-opencontainingfolder"),
+      !isLocalFile || isLocalPathInFavorites(path.dirname(favPath))
+        ? undefined
+        : _("home-modal-button-addcontainingfoldertofavorites"),
       showFocus
     );
   });
@@ -489,7 +508,7 @@ function initOnIpcCallbacks() {
   on("hs-on-modal-favorite-options-remove-clicked", (favIndex, favPath) => {
     if (g_favorites[favIndex].path === favPath) {
       g_favorites.splice(favIndex, 1);
-      buildSections();
+      buildSections(false);
     } else {
       log.error("Tried to remove a favorite with not matching index and path");
     }
@@ -591,6 +610,25 @@ function initOnIpcCallbacks() {
       log.error("Tried to move a favorite with not matching index and path");
     }
   });
+
+  on(
+    "hs-on-modal-favorite-options-addfoldertofavorites-clicked",
+    (fileIndex, filePath) => {
+      const favData = g_favorites[fileIndex];
+      if (!favData.path || (favData.data && favData.data.source)) return;
+
+      addFavoriteFromLocalPath(path.dirname(favData.path));
+    }
+  );
+
+  on(
+    "hs-on-modal-favorite-options-openfolder-clicked",
+    (fileIndex, filePath) => {
+      appUtils.openPathInFileBrowser(path.dirname(filePath));
+    }
+  );
+
+  /////
 
   on("hs-on-latest-options-clicked", (index, filePath, showFocus) => {
     sendIpcToRenderer(
