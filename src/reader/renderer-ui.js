@@ -903,6 +903,7 @@ export function onInputEvent(type, event) {
         if (fileOpen) {
           if (
             event.target.classList.contains("page") ||
+            event.target.classList.contains("pages-row") ||
             event.target.id === "page-canvas" ||
             event.target.classList.contains("epub-view") ||
             event.target.id === "pages-container" ||
