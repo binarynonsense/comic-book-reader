@@ -172,6 +172,21 @@ function initOnIpcCallbacks() {
     reader.rebuildMenuAndToolBars(false);
   });
 
+  on("set-theme-time-start", (value) => {
+    settings.setValue("themeTimeStart", value);
+    //
+    themes.load(settings.getValue("theme"));
+    sendIpcToCoreRenderer("update-css-properties", themes.getData());
+    reader.rebuildMenuAndToolBars(false);
+  });
+  on("set-theme-time-end", (value) => {
+    settings.setValue("themeTimeEnd", value);
+    //
+    themes.load(settings.getValue("theme"));
+    sendIpcToCoreRenderer("update-css-properties", themes.getData());
+    reader.rebuildMenuAndToolBars(false);
+  });
+
   on("set-layout-clock", (value) => {
     settings.setValue("layoutClock", value);
     reader.updateLayoutClock();
@@ -556,6 +571,12 @@ function getLocalization() {
       id: "tool-pre-themes-select-0",
       text: `${_("tool-shared-ui-color-mode-automatic")} (${_(
         "tool-shared-ui-color-mode-automatic-basedonsystem"
+      )})`,
+    },
+    {
+      id: "tool-pre-themes-select-1",
+      text: `${_("tool-shared-ui-color-mode-automatic")} (${_(
+        "tool-shared-ui-color-mode-automatic-basedontime"
       )})`,
     },
     //////////////////////////////////////////////

@@ -129,6 +129,8 @@ const g_defaultSettings = {
 
   locale: undefined,
   theme: undefined,
+  themeTimeStart: "07:00",
+  themeTimeEnd: "19:00",
 
   tempFolderPath: undefined,
 
@@ -243,6 +245,8 @@ exports.resetPreferences = function () {
 
     "locale",
     "theme",
+    "themeTimeStart",
+    "themeTimeEnd",
 
     "tempFolderPath",
 
@@ -521,6 +525,43 @@ function sanitize() {
   } else {
     g_settings.theme = g_defaultSettings.theme;
   }
+  function padTime(timeString) {
+    const parts = timeString.split(":");
+    let hours = parts[0];
+    let mins = parts[1];
+    if (hours.length < 2) hours = "0" + hours;
+    if (mins.length < 2) mins = "0" + mins;
+    if (hours.length > 2) hours = hours.slice(-2);
+    if (mins.length > 2) mins = mins.slice(-2);
+    return hours + ":" + mins;
+  }
+  function isThemeTimeValid(timeString) {
+    const parts = timeString.split(":");
+    const hours = parseInt(parts[0], 10);
+    const mins = parseInt(parts[1], 10);
+    if (parts.length > 2 || isNaN(hours) || isNaN(mins)) {
+      return false;
+    }
+    if (hours < 0 || hours > 24) return false;
+    if (mins < 0 || mins > 59) return false;
+    return true;
+  }
+  if (
+    typeof g_settings.themeTimeStart !== "string" ||
+    !isThemeTimeValid(g_settings.themeTimeStart)
+  ) {
+    log.editorError("invalid theme time: " + g_settings.themeTimeStart);
+    g_settings.themeTimeStart = g_defaultSettings.themeTimeStart;
+  }
+  g_settings.themeTimeStart = padTime(g_settings.themeTimeStart);
+  if (
+    typeof g_settings.themeTimeEnd !== "string" ||
+    !isThemeTimeValid(g_settings.themeTimeEnd)
+  ) {
+    log.editorError("invalid theme time: " + g_settings.themeTimeEnd);
+    g_settings.themeTimeEnd = g_defaultSettings.themeTimeEnd;
+  }
+  g_settings.themeTimeEnd = padTime(g_settings.themeTimeEnd);
   // LINUX ///////////
   if (typeof g_settings.linuxEnforceGslice !== "boolean") {
     g_settings.linuxEnforceGslice = g_defaultSettings.linuxEnforceGslice;

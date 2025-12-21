@@ -14,6 +14,7 @@ const log = require("./logger");
 const reader = require("../../reader/main");
 
 let g_themeId;
+let g_automaticThemeId;
 let g_themeData;
 
 let g_defaultThemeId = "acbr-dark";
@@ -35,15 +36,18 @@ exports.getData = function () {
 
 function load(themeId, refresh = false) {
   log.debug("loading theme: " + themeId);
-  if (themeId === "acbr-auto-system") {
+  if (themeId === "acbr-auto-system" || themeId === "acbr-auto-time") {
     const useDarkColors = appUtils.getShouldUseDarkColors();
-    let realThemeId;
-    if (useDarkColors) {
-      realThemeId = "acbr-dark";
+    if (themeId === "acbr-auto-system") {
+      if (useDarkColors) {
+        g_automaticThemeId = "acbr-dark";
+      } else {
+        g_automaticThemeId = "acbr-light";
+      }
     } else {
-      realThemeId = "acbr-light";
+      g_automaticThemeId = getAutomaticTimeThemeId();
     }
-    let data = loadDataFromId(realThemeId);
+    let data = loadDataFromId(g_automaticThemeId);
     if (data !== undefined) {
       g_themeId = themeId;
       g_themeData = data;
@@ -51,6 +55,7 @@ function load(themeId, refresh = false) {
         reader.sendIpcToCoreRenderer("update-css-properties", g_themeData);
         reader.rebuildMenuAndToolBars(false);
       }
+      setThemeCheckTimeout();
       return;
     }
   }
@@ -130,4 +135,50 @@ function getListFromFolder(folderPath) {
     }
   }
   return themesList;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// TIME ///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+let g_themeTimeout;
+
+function setThemeCheckTimeout() {
+  if (g_themeTimeout) clearTimeout(g_themeTimeout);
+  if (g_themeId == "acbr-auto-time") {
+    if (g_automaticThemeId !== getAutomaticTimeThemeId()) {
+      load(g_themeId, true);
+    }
+    setTimeout(setThemeCheckTimeout, 1000);
+  }
+}
+
+function getAutomaticTimeThemeId() {
+  //https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input/time
+  const currentDate = new Date();
+  const currentTime = {
+    hours: currentDate.getHours(),
+    minutes: currentDate.getMinutes(),
+    seconds: currentDate.getSeconds(),
+  };
+  const [timeStartHour, timeStartMins] = settings
+    .getValue("themeTimeStart")
+    .split(":");
+  const [timeEndHour, timeEndMins] = settings
+    .getValue("themeTimeEnd")
+    .split(":");
+  function getTotalMins(hours, mins) {
+    return parseInt(hours) * 60 + parseInt(mins);
+  }
+  const currentTimeInMins = getTotalMins(
+    currentTime.hours,
+    currentTime.minutes
+  );
+  const startTimeMins = getTotalMins(timeStartHour, timeStartMins);
+  const endTimeMins = getTotalMins(timeEndHour, timeEndMins);
+  if (currentTimeInMins >= startTimeMins && currentTimeInMins < endTimeMins) {
+    return "acbr-light";
+  } else {
+    return "acbr-dark";
+  }
 }

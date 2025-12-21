@@ -78,7 +78,7 @@ function init(activeLocale, languages, activeTheme, themes, settings) {
     }
     // themes select
     {
-      let select = document.getElementById("tool-pre-themes-select");
+      const select = document.getElementById("tool-pre-themes-select");
       // generate options
       if (themes !== undefined) {
         for (let theme of themes) {
@@ -89,13 +89,48 @@ function init(activeLocale, languages, activeTheme, themes, settings) {
           select.appendChild(opt);
         }
       }
+      // auto options
       const selectOption_0 = document.getElementById(
         "tool-pre-themes-select-0"
       );
-      if (activeTheme === "acbr-auto-system") selectOption_0.selected = true;
+      if (selectOption_0 && activeTheme === "acbr-auto-system") {
+        selectOption_0.selected = true;
+      }
+      const selectOption_1 = document.getElementById(
+        "tool-pre-themes-select-1"
+      );
+      const timesDiv = document.getElementById(
+        "tool-pre-themes-time-inputs-div"
+      );
+      if (selectOption_1 && activeTheme === "acbr-auto-time") {
+        selectOption_1.selected = true;
+        timesDiv.classList.remove("set-display-none");
+      } else {
+        timesDiv.classList.add("set-display-none");
+      }
+      const timeStartInput = document.getElementById(
+        "tool-pre-themes-time-start-input"
+      );
+      timeStartInput.addEventListener("change", function (event) {
+        sendIpcToMain("set-theme-time-start", timeStartInput.value);
+      });
+      const timeEndInput = document.getElementById(
+        "tool-pre-themes-time-end-input"
+      );
+      timeEndInput.addEventListener("change", function (event) {
+        sendIpcToMain("set-theme-time-end", timeEndInput.value);
+      });
+      // TODO: load times from settings
+      timeStartInput.value = settings.themeTimeStart;
+      timeEndInput.value = settings.themeTimeEnd;
       // add listener
       select.addEventListener("change", function (event) {
         sendIpcToMain("set-theme", select.value);
+        if (select.value === "acbr-auto-time") {
+          timesDiv.classList.remove("set-display-none");
+        } else {
+          timesDiv.classList.add("set-display-none");
+        }
       });
     }
     // zoom default select
