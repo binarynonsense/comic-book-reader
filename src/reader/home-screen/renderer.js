@@ -449,14 +449,12 @@ function getNewCardDiv(cardType, data, navRow, navColumn) {
         mainCardDiv.draggable = true;
         // select
         mainCardDiv.addEventListener("dragstart", function (event) {
-          console.log("drag start");
           g_draggedCard = event.target;
           mainCardDiv.classList.add("hs-path-card-main-dragging");
           mainCardDiv.blur();
           event.stopPropagation();
         });
         mainCardDiv.addEventListener("dragend", function (event) {
-          console.log("drag end");
           g_draggedCard = undefined;
           mainCardDiv.classList.remove("hs-path-card-main-dragging");
           event.stopPropagation();
