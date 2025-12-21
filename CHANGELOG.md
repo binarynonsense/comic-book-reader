@@ -1,3 +1,11 @@
+# v3.13.0
+
+- Added some small quality of life improvements to the Home Screen, like drag and drop to sort the favorites list, new options to open the containing folder of a file in one the lists or add one in the recent files list to the favorites one...
+- Added two new theme preferences: one that automatically sets the theme to "ACBR Light" or "ACBR Dark" based on the operative system settings and the other based on the time of day (the time at which the light and dark themes are set can be customized).
+- Added 'Open Containing Folder' entry to the reader's context menu.
+- Fixed CBZ files containing __MACOSX folders failing to load in the reader and convert in the tools as they included invalid image files. __MACOSX folders are now ignored.
+- Fixed invalid page images breaking the reader. When the image corresponding to a page can't be loaded it's now replaced by a generic "file not found" page.
+
 # v3.12.5
 
 - Fixed RSS reader getting stuck when trying to load a no longer valid favorite feed URL.
