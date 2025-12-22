@@ -386,6 +386,29 @@
   opacity: 1;
 }
 
+.hs-path-card-percentageBar {
+  position: absolute;
+  left: 0;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  background-color: var(--hs-path-card-text-color);
+  pointer-events: none;
+  opacity: 0.2;
+  border: 0px;
+  border-end-start-radius: 10px;
+  border-start-start-radius: 10px;
+  clip-path: polygon(
+    0 calc(100% - 3px),
+    100% calc(100% - 3px),
+    100% 100%,
+    0 100%
+  );
+}
+html[dir="rtl"] .hs-path-card-percentageBar {
+  right: 0;
+}
+
 .hs-path-card-content {
   display: flex;
   flex-direction: column;

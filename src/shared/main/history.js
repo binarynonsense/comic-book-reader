@@ -112,7 +112,7 @@ function clear() {
 }
 exports.clear = clear;
 
-exports.add = function (filePath, pageIndex, data) {
+exports.add = function (filePath, pageIndex, numPages, data) {
   let foundIndex = getFilePathIndex(filePath);
   if (foundIndex !== undefined) {
     // remove, to update and put last
@@ -121,6 +121,7 @@ exports.add = function (filePath, pageIndex, data) {
   let newEntry = {
     filePath: filePath,
     pageIndex: pageIndex,
+    numPages: numPages,
     fitMode: settings.getValue("fit_mode"),
     zoomScale: settings.getValue("zoom_scale"),
     pageMode: settings.getValue("page_mode"),

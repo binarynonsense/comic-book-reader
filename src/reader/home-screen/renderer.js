@@ -365,6 +365,15 @@ function getNewCardDiv(cardType, data, navRow, navColumn) {
   <div class="hs-path-card-favminiicon">
     <i class="fa-solid fa-heart"></i>
   </div>`;
+
+  function getPercentageBarHtml(percentage) {
+    if (percentage !== undefined && percentage <= 100) {
+      return `
+  <div class="hs-path-card-percentageBar" style="width:${percentage}%">
+  </div>`;
+    } else return "";
+  }
+
   function getIconHtml() {
     const fileIconHtml = `
   <i class="hs-path-card-image-file fas fa-file fa-2x fa-fw"></i>`;
@@ -392,6 +401,7 @@ function getNewCardDiv(cardType, data, navRow, navColumn) {
       }
     }
   }
+
   const interactiveHtml = data
     ? `  
   <div class="hs-path-card-main hs-path-interactive">
@@ -408,6 +418,7 @@ function getNewCardDiv(cardType, data, navRow, navColumn) {
       <span>${data.name}</span
       >${data.path ? "<span>" + data.path + "</span>" : ""}
     </div>
+     ${data.percentageRead ? getPercentageBarHtml(data.percentageRead) : ""}
   </div>
   ${hasButton ? buttonHtml : ""}`
     : "";

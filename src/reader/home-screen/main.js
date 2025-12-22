@@ -88,68 +88,75 @@ function getLatestData() {
   const historyData = history.get();
   const data = [];
   for (let index = 0; index < historyData.length; index++) {
-    if (data.length < g_maxLatest) {
-      const latestInfo = {};
-      latestInfo.index = historyData.length - index - 1;
-      const historyDataFile = historyData[latestInfo.index];
-      if (historyDataFile.data && historyDataFile.data.source) {
-        latestInfo.pathType = 2;
-        if (historyDataFile.data.name) {
-          latestInfo.name = historyDataFile.data.name;
+    try {
+      if (data.length < g_maxLatest) {
+        const latestInfo = {};
+        latestInfo.index = historyData.length - index - 1;
+        latestInfo.percentageRead = getPercentageReadFromHistoryIndex(
+          latestInfo.index
+        );
+        const historyDataFile = historyData[latestInfo.index];
+        if (historyDataFile.data && historyDataFile.data.source) {
+          latestInfo.pathType = 2;
+          if (historyDataFile.data.name) {
+            latestInfo.name = historyDataFile.data.name;
+          } else {
+            latestInfo.name = historyDataFile.filePath;
+          }
+          if (historyDataFile.data.source) {
+            switch (historyDataFile.data.source) {
+              case "dcm":
+                if (historyDataFile.data.url)
+                  latestInfo.path = historyDataFile.data.url;
+                else
+                  latestInfo.path =
+                    _("menu-tools-dcm") + " - " + historyDataFile.data.name;
+                break;
+
+              case "cbp":
+                if (historyDataFile.data.url)
+                  latestInfo.path = historyDataFile.data.url;
+                else
+                  latestInfo.path =
+                    _("menu-tools-cbp") + " - " + historyDataFile.data.name;
+                break;
+
+              case "gut":
+                latestInfo.path = historyDataFile.filePath;
+                // latestInfo.path =
+                //   _("menu-tools-gut") + " - " + historyDataFile.data.name;
+                break;
+
+              case "iab":
+                if (historyDataFile.data.url)
+                  latestInfo.path = historyDataFile.data.url;
+                else
+                  latestInfo.path =
+                    _("menu-tools-iab") + " - " + historyDataFile.data.name;
+                break;
+            }
+          }
         } else {
-          latestInfo.name = historyDataFile.filePath;
-        }
-        if (historyDataFile.data.source) {
-          switch (historyDataFile.data.source) {
-            case "dcm":
-              if (historyDataFile.data.url)
-                latestInfo.path = historyDataFile.data.url;
-              else
-                latestInfo.path =
-                  _("menu-tools-dcm") + " - " + historyDataFile.data.name;
-              break;
-
-            case "cbp":
-              if (historyDataFile.data.url)
-                latestInfo.path = historyDataFile.data.url;
-              else
-                latestInfo.path =
-                  _("menu-tools-cbp") + " - " + historyDataFile.data.name;
-              break;
-
-            case "gut":
-              latestInfo.path = historyDataFile.filePath;
-              // latestInfo.path =
-              //   _("menu-tools-gut") + " - " + historyDataFile.data.name;
-              break;
-
-            case "iab":
-              if (historyDataFile.data.url)
-                latestInfo.path = historyDataFile.data.url;
-              else
-                latestInfo.path =
-                  _("menu-tools-iab") + " - " + historyDataFile.data.name;
-              break;
+          latestInfo.path = historyDataFile.filePath;
+          latestInfo.name = path.basename(historyDataFile.filePath);
+          if (!fs.existsSync(latestInfo.path)) {
+            continue;
+          }
+          if (fs.existsSync(latestInfo.path)) {
+            latestInfo.pathType = !fs.lstatSync(latestInfo.path).isDirectory()
+              ? 0
+              : 1;
+          } else {
+            latestInfo.pathType = -1;
           }
         }
+        latestInfo.isInFavorites = isLatestInFavorites(latestInfo.index);
+        data.push(latestInfo);
       } else {
-        latestInfo.path = historyDataFile.filePath;
-        latestInfo.name = path.basename(historyDataFile.filePath);
-        if (!fs.existsSync(latestInfo.path)) {
-          continue;
-        }
-        if (fs.existsSync(latestInfo.path)) {
-          latestInfo.pathType = !fs.lstatSync(latestInfo.path).isDirectory()
-            ? 0
-            : 1;
-        } else {
-          latestInfo.pathType = -1;
-        }
+        break;
       }
-      latestInfo.isInFavorites = isLatestInFavorites(latestInfo.index);
-      data.push(latestInfo);
-    } else {
-      break;
+    } catch (error) {
+      log.editorError(error);
     }
   }
   return data;
@@ -159,25 +166,40 @@ function getFavoritesData() {
   if (!g_favorites) g_favorites = favorites.get();
   const data = [];
   for (let index = 0; index < g_favorites.length; index++) {
-    const favoriteInfo = {};
-    favoriteInfo.index = index;
-    favoriteInfo.path = g_favorites[index].path;
-    if (g_favorites[index].localizedNameId) {
-      // used in the defaults
-      favoriteInfo.name = getFavoriteLocalizedName(index);
-    } else {
-      favoriteInfo.name = g_favorites[index].name;
+    try {
+      const favoriteInfo = {};
+      favoriteInfo.index = index;
+      favoriteInfo.path = g_favorites[index].path;
+      if (g_favorites[index].localizedNameId) {
+        // used in the defaults
+        favoriteInfo.name = getFavoriteLocalizedName(index);
+      } else {
+        favoriteInfo.name = g_favorites[index].name;
+      }
+      if (g_favorites[index].data && g_favorites[index].data.source) {
+        favoriteInfo.pathType = 2;
+      } else if (fs.existsSync(favoriteInfo.path)) {
+        favoriteInfo.pathType = !fs.lstatSync(favoriteInfo.path).isDirectory()
+          ? 0
+          : 1;
+      } else {
+        favoriteInfo.pathType = -1;
+      }
+      if (favoriteInfo.pathType !== 1) {
+        if (favoriteInfo.pathType === 0) {
+          favoriteInfo.percentageRead = getPercentageReadFromHistoryIndex(
+            history.getFilePathIndex(favoriteInfo.path)
+          );
+        } else if (favoriteInfo.pathType === 2) {
+          favoriteInfo.percentageRead = getPercentageReadFromHistoryIndex(
+            history.getDataIndex(g_favorites[index].data)
+          );
+        }
+      }
+      data.push(favoriteInfo);
+    } catch (error) {
+      log.editorError(error);
     }
-    if (g_favorites[index].data && g_favorites[index].data.source) {
-      favoriteInfo.pathType = 2;
-    } else if (fs.existsSync(favoriteInfo.path)) {
-      favoriteInfo.pathType = !fs.lstatSync(favoriteInfo.path).isDirectory()
-        ? 0
-        : 1;
-    } else {
-      favoriteInfo.pathType = -1;
-    }
-    data.push(favoriteInfo);
   }
   return data;
 }
@@ -294,6 +316,33 @@ function removeFavoriteFromLatest(index, filePath) {
     // TODO: show some kind of error modal?
     log.debug("tried to remoe a favorite not in the list");
   }
+}
+
+function getPercentageReadFromHistoryIndex(index) {
+  if (index === undefined || !Number.isInteger(index)) return undefined;
+  const historyData = history.get();
+  let pageIndex = historyData[index].pageIndex;
+  let numPages = historyData[index].numPages;
+  if (pageIndex !== undefined && numPages !== undefined) {
+    pageIndex = parseFloat(pageIndex);
+    numPages = parseFloat(numPages);
+    if (!isNaN(pageIndex) && !isNaN(numPages)) {
+      if (
+        historyData[index].data &&
+        historyData[index].data.bookType &&
+        historyData[index].data.bookType === "ebook"
+      ) {
+        if (pageIndex >= 0 && pageIndex <= 100) {
+          return pageIndex;
+        }
+      } else {
+        if (pageIndex <= numPages) {
+          return ((pageIndex + 1) / numPages) * 100;
+        }
+      }
+    }
+  }
+  return undefined;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

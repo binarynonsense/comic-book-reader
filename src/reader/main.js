@@ -183,7 +183,12 @@ function addCurrentToHistory(updateMenu = true) {
   )
     return;
   if (g_fileData.path !== "") {
-    history.add(g_fileData.path, g_fileData.pageIndex, g_fileData.data);
+    history.add(
+      g_fileData.path,
+      g_fileData.pageIndex,
+      g_fileData.numPages,
+      g_fileData.data
+    );
   }
   if (updateMenu) {
     rebuildMenuAndToolBars();
