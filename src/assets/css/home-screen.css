@@ -63,7 +63,7 @@
 }
 
 .hs-section-title-icon {
-  margin-right: 7px;
+  margin-inline-end: 7px;
 }
 
 .hs-section-title:has(.hs-section-title-button) {
