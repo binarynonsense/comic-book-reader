@@ -382,6 +382,19 @@
   background-color: var(--hs-path-card-bg-color); */
   pointer-events: none;
 }
+.hs-path-card-favminiicon {
+  position: absolute;
+  top: 0px;
+  right: 6px;
+  font-size: 10px;
+  /* color: var(--hs-path-card-text-color);
+  background-color: var(--hs-path-card-bg-color); */
+  pointer-events: none;
+}
+html[dir="rtl"] .hs-path-card-favminiicon {
+  right: auto;
+  left: 6px;
+}
 
 .hs-path-card-dragminiicon {
   position: absolute;
