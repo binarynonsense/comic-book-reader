@@ -474,6 +474,13 @@ function initOnIpcCallbacks() {
     );
   });
 
+  //////////
+
+  on("hs-on-collapse-favorites-clicked", (value) => {
+    sendIpcToRenderer("hs-set-favorites-collapse-value", value);
+    buildSections(false);
+  });
+
   on("hs-on-add-favorite-clicked", (showFocus) => {
     sendIpcToRenderer(
       "hs-show-modal-add-favorite",

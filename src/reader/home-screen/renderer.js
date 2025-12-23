@@ -33,6 +33,7 @@ let g_latest;
 
 let g_collapsedNumRowsShown = 3;
 let g_collapseLatest = true;
+let g_collapseFavorites = true;
 
 let g_draggedCard = null;
 
@@ -153,6 +154,21 @@ function init() {
       sendIpcToMain("hs-on-collapse-latest-clicked", false);
       event.stopPropagation();
     });
+    ///////////
+    const collapseFavoritesButton = document.querySelector(
+      "#hs-favorites-collapse-button"
+    );
+    collapseFavoritesButton.addEventListener("click", function (event) {
+      sendIpcToMain("hs-on-collapse-favorites-clicked", true);
+      event.stopPropagation();
+    });
+    const expandFavoritesButton = document.querySelector(
+      "#hs-favorites-expand-button"
+    );
+    expandFavoritesButton.addEventListener("click", function (event) {
+      sendIpcToMain("hs-on-collapse-favorites-clicked", false);
+      event.stopPropagation();
+    });
   }
 }
 
@@ -179,6 +195,10 @@ function initOnIpcCallbacks() {
 
   on("hs-set-latest-collapse-value", (value) => {
     g_collapseLatest = value;
+  });
+
+  on("hs-set-favorites-collapse-value", (value) => {
+    g_collapseFavorites = value;
   });
 
   on("hs-show-modal-add-favorite", (...args) => {
@@ -231,6 +251,10 @@ function buildSections(
   g_languageDirection = languageDirection;
   g_favorites = favorites;
   g_latest = latest;
+
+  let navRow = 1;
+  let navColumn = 0;
+
   // FAVORITES ////////////////////
   const addFavoriteButton = document.querySelector("#hs-favorites-add-button");
   addFavoriteButton.addEventListener("click", function (event) {
@@ -241,9 +265,16 @@ function buildSections(
     event.stopPropagation();
   });
   addFavoriteButton.setAttribute("data-nav-panel", 0);
-  addFavoriteButton.setAttribute("data-nav-row", 1);
-  addFavoriteButton.setAttribute("data-nav-col", 0);
+  addFavoriteButton.setAttribute("data-nav-row", navRow);
+  addFavoriteButton.setAttribute("data-nav-col", navColumn++);
   addFavoriteButton.setAttribute("tabindex", "0");
+
+  const collapseFavoritesButton = document.querySelector(
+    "#hs-favorites-collapse-button"
+  );
+  const expandFavoritesButton = document.querySelector(
+    "#hs-favorites-expand-button"
+  );
 
   const favoritesDiv = document.querySelector("#hs-favorites");
   favoritesDiv.innerHTML = "";
@@ -252,10 +283,41 @@ function buildSections(
   listDiv.classList.add("hs-path-cards-list");
   favoritesDiv.appendChild(listDiv);
 
-  let navRow = 2;
-  let navColumn = 0;
   let index = 0;
-  for (; index < favorites.length; index++) {
+  let max = favorites.length;
+  let showFavoritesEllipsis = false;
+  if (favorites.length <= g_collapsedNumRowsShown * 2) {
+    collapseFavoritesButton.classList.add("set-display-none");
+    expandFavoritesButton.classList.add("set-display-none");
+  } else {
+    if (g_collapseFavorites) {
+      collapseFavoritesButton.classList.add("set-display-none");
+      expandFavoritesButton.classList.remove("set-display-none");
+      collapseFavoritesButton.removeAttribute("data-nav-panel");
+      collapseFavoritesButton.removeAttribute("data-nav-row");
+      collapseFavoritesButton.removeAttribute("data-nav-col");
+      expandFavoritesButton.setAttribute("data-nav-panel", 0);
+      expandFavoritesButton.setAttribute("data-nav-row", navRow);
+      expandFavoritesButton.setAttribute("data-nav-col", navColumn++);
+      expandFavoritesButton.setAttribute("tabindex", "0");
+      max = g_collapsedNumRowsShown * 2;
+      if (favorites.length > max) showFavoritesEllipsis = true;
+    } else {
+      collapseFavoritesButton.classList.remove("set-display-none");
+      expandFavoritesButton.classList.add("set-display-none");
+      collapseFavoritesButton.setAttribute("data-nav-panel", 0);
+      collapseFavoritesButton.setAttribute("data-nav-row", navRow);
+      collapseFavoritesButton.setAttribute("data-nav-col", navColumn++);
+      collapseFavoritesButton.setAttribute("tabindex", "0");
+      expandFavoritesButton.removeAttribute("data-nav-panel");
+      expandFavoritesButton.removeAttribute("data-nav-row");
+      expandFavoritesButton.removeAttribute("data-nav-col");
+    }
+  }
+  ///////
+  navRow = 2;
+  navColumn = 0;
+  for (; index < max; index++) {
     const data = favorites[index];
     if (g_languageDirection === "rtl") {
       if (index % 2 === 0) {
@@ -276,6 +338,12 @@ function buildSections(
     listDiv.appendChild(
       getNewCardDiv(CardType.FAVORITES, data, navRow, navColumn)
     );
+  }
+  if (showFavoritesEllipsis) {
+    const ellipsis = document.createElement("div");
+    ellipsis.classList = "hs-section-ellipsis";
+    ellipsis.innerHTML = `<i class="fa-solid fa-ellipsis"></i>`;
+    favoritesDiv.appendChild(ellipsis);
   }
   // Add
   // if (g_languageDirection === "rtl") {
@@ -331,7 +399,7 @@ function buildSections(
         collapseLatestButton.removeAttribute("data-nav-row");
         collapseLatestButton.removeAttribute("data-nav-col");
         expandLatestButton.setAttribute("data-nav-panel", 0);
-        expandLatestButton.setAttribute("data-nav-row", navRow++);
+        expandLatestButton.setAttribute("data-nav-row", navRow);
         expandLatestButton.setAttribute("data-nav-col", navColumn++);
         expandLatestButton.setAttribute("tabindex", "0");
         max = g_collapsedNumRowsShown * 2;
@@ -340,7 +408,7 @@ function buildSections(
         collapseLatestButton.classList.remove("set-display-none");
         expandLatestButton.classList.add("set-display-none");
         collapseLatestButton.setAttribute("data-nav-panel", 0);
-        collapseLatestButton.setAttribute("data-nav-row", navRow++);
+        collapseLatestButton.setAttribute("data-nav-row", navRow);
         collapseLatestButton.setAttribute("data-nav-col", navColumn++);
         collapseLatestButton.setAttribute("tabindex", "0");
         expandLatestButton.removeAttribute("data-nav-panel");

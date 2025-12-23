@@ -60,6 +60,7 @@
   font-size: 15px;
   margin: 30px 7px 30px 7px;
   align-items: center;
+  margin-inline-end: 2px;
 }
 
 .hs-section-title-icon {
@@ -105,7 +106,7 @@
 }
 
 .hs-section-ellipsis {
-  margin: 20px;
+  margin-top: 20px;
   display: flex;
   justify-content: center;
 }
