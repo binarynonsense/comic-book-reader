@@ -376,7 +376,7 @@
 .hs-path-card-favminiicon {
   position: absolute;
   top: 0px;
-  left: 6px;
+  right: 6px;
   font-size: 10px;
   /* color: var(--hs-path-card-text-color);
   background-color: var(--hs-path-card-bg-color); */
