@@ -548,7 +548,7 @@ function buildFavorites() {
       {
         let buttonSpan = document.createElement("span");
         buttonSpan.className = "tools-buttons-list-button";
-        buttonSpan.innerHTML = `<i class="fas fa-ellipsis-h"></i>`;
+        buttonSpan.innerHTML = `<i class="fas fa-ellipsis-v"></i>`;
         buttonSpan.title = g_extraLocalization.options;
         buttonSpan.addEventListener("click", (event) => {
           event.stopPropagation();
