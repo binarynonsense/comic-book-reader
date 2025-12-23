@@ -1,6 +1,8 @@
 {
   "@metadata": {
-    "authors": ["trzyglow"],
+    "authors": [
+      "trzyglow"
+    ],
     "last-updated": "2025-12-20",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.13.0",
@@ -305,6 +307,9 @@
   "tool-shared-ui-add-files": "Dateien hinzufügen",
   "tool-shared-ui-add-folder": "Ordner hinzufügen",
   "tool-shared-ui-add-folders": "Ordner hinzufügen",
+  "[NOTE TO TRANSLATORS]tool-shared-ui-collapse/expand": "Collapse and Expand as in collapse or expand a list of elements in the UI",
+  "[NEEDS TRANSLATION]tool-shared-ui-collapse": "Collapse",
+  "[NEEDS TRANSLATION]tool-shared-ui-expand": "Expand",
   "tool-shared-ui-clear-list": "Liste löschen",
   "tool-shared-ui-clear-list-warning": "Sind Sie sicher, dass Sie die Liste löschen möchten?",
   "tool-shared-ui-reset-list": "Liste zurücksetzen",
