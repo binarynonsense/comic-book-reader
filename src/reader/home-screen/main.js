@@ -11,6 +11,7 @@ const core = require("../../core/main");
 const { _, _raw } = require("../../shared/main/i18n");
 const history = require("../../shared/main/history");
 const favorites = require("../../shared/main/favorites");
+const settings = require("../../shared/main/settings");
 const reader = require("../../reader/main");
 const log = require("../../shared/main/logger");
 const appUtils = require("../../shared/main/app-utils");
@@ -45,6 +46,14 @@ function init() {
 exports.open = function (showFocus, maxLatest) {
   g_maxLatest = maxLatest;
   init();
+  sendIpcToRenderer(
+    "hs-set-favorites-collapse-value",
+    settings.getValue("homeScreenCollapseFavorites")
+  );
+  sendIpcToRenderer(
+    "hs-set-latest-collapse-value",
+    settings.getValue("homeScreenCollapseLatest")
+  );
   // TODO: use showFocus?
   buildSections();
 };
@@ -477,6 +486,7 @@ function initOnIpcCallbacks() {
   //////////
 
   on("hs-on-collapse-favorites-clicked", (value) => {
+    settings.setValue("homeScreenCollapseFavorites", value);
     sendIpcToRenderer("hs-set-favorites-collapse-value", value);
     buildSections(false);
   });
@@ -687,6 +697,7 @@ function initOnIpcCallbacks() {
   /////////////////
 
   on("hs-on-collapse-latest-clicked", (value) => {
+    settings.setValue("homeScreenCollapseLatest", value);
     sendIpcToRenderer("hs-set-latest-collapse-value", value);
     buildSections(false);
   });
