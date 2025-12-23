@@ -66,12 +66,19 @@
   margin-inline-end: 7px;
 }
 
-.hs-section-title:has(.hs-section-title-button) {
+.hs-section-title:has(.hs-section-title-buttons) {
   justify-content: space-between;
 }
 
+.hs-section-title-buttons {
+  display: flex;
+  flex-direction: row;
+  margin-inline-end: 2px;
+  gap: 10px;
+}
+
 .hs-section-title-button {
-  font-size: 12px;
+  font-size: 24px;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -95,6 +102,12 @@
 
 .hs-section-title-button:hover i {
   transform: scale(1.2);
+}
+
+.hs-section-ellipsis {
+  margin: 20px;
+  display: flex;
+  justify-content: center;
 }
 
 /* *********************** */

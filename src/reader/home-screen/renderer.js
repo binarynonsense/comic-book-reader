@@ -31,6 +31,9 @@ let g_pagesContainerDiv;
 let g_favorites;
 let g_latest;
 
+let g_collapsedNumRowsShown = 3;
+let g_collapseLatest = true;
+
 let g_draggedCard = null;
 
 function init() {
@@ -135,21 +138,21 @@ function init() {
     quitButton.addEventListener("click", (event) => {
       sendIpcToMain("hs-quit");
     });
-    /////////////////////////
-    const addFavoriteButton = document.querySelector(
-      "#hs-favorites-add-button"
+    ///////////
+    const collapseLatestButton = document.querySelector(
+      "#hs-latest-collapse-button"
     );
-    addFavoriteButton.addEventListener("click", function (event) {
-      sendIpcToMain(
-        "hs-on-add-favorite-clicked",
-        event == undefined || event.pointerType !== "mouse"
-      );
+    collapseLatestButton.addEventListener("click", function (event) {
+      sendIpcToMain("hs-on-collapse-latest-clicked", true);
       event.stopPropagation();
     });
-    addFavoriteButton.setAttribute("data-nav-panel", 0);
-    addFavoriteButton.setAttribute("data-nav-row", 1);
-    addFavoriteButton.setAttribute("data-nav-col", 0);
-    addFavoriteButton.setAttribute("tabindex", "0");
+    const expandLatestButton = document.querySelector(
+      "#hs-latest-expand-button"
+    );
+    expandLatestButton.addEventListener("click", function (event) {
+      sendIpcToMain("hs-on-collapse-latest-clicked", false);
+      event.stopPropagation();
+    });
   }
 }
 
@@ -172,6 +175,10 @@ function initOnIpcCallbacks() {
 
   on("hs-build-sections", (...args) => {
     buildSections(...args);
+  });
+
+  on("hs-set-latest-collapse-value", (value) => {
+    g_collapseLatest = value;
   });
 
   on("hs-show-modal-add-favorite", (...args) => {
@@ -224,7 +231,20 @@ function buildSections(
   g_languageDirection = languageDirection;
   g_favorites = favorites;
   g_latest = latest;
-  // FAVORITES
+  // FAVORITES ////////////////////
+  const addFavoriteButton = document.querySelector("#hs-favorites-add-button");
+  addFavoriteButton.addEventListener("click", function (event) {
+    sendIpcToMain(
+      "hs-on-add-favorite-clicked",
+      event == undefined || event.pointerType !== "mouse"
+    );
+    event.stopPropagation();
+  });
+  addFavoriteButton.setAttribute("data-nav-panel", 0);
+  addFavoriteButton.setAttribute("data-nav-row", 1);
+  addFavoriteButton.setAttribute("data-nav-col", 0);
+  addFavoriteButton.setAttribute("tabindex", "0");
+
   const favoritesDiv = document.querySelector("#hs-favorites");
   favoritesDiv.innerHTML = "";
 
@@ -276,23 +296,59 @@ function buildSections(
   // );
   navRow++;
 
-  // LATEST
+  // LATEST //////////////////////
   const latestTitleDiv = document.querySelector("#hs-latest-title");
   const latestDiv = document.querySelector("#hs-latest");
+  const collapseLatestButton = document.querySelector(
+    "#hs-latest-collapse-button"
+  );
+  const expandLatestButton = document.querySelector("#hs-latest-expand-button");
   latestDiv.innerHTML = "";
   if (maxLatest <= 0 || latest.length <= 0) {
     latestTitleDiv.classList.add("set-display-none");
+    collapseLatestButton.classList.add("set-display-none");
+    expandLatestButton.classList.add("set-display-none");
   } else {
     latestTitleDiv.classList.remove("set-display-none");
-
     listDiv = document.createElement("div");
     listDiv.classList.add("hs-path-cards-list");
     latestDiv.appendChild(listDiv);
 
+    let max = latest.length;
     // NOTE: I decided to not show empty slots but I'll leave the
     // code for that in case I change my mind
-    const max = Math.max(0, latest.length);
     //const max = Math.max(2, 2 * Math.round(latest.length / 2));
+    // collapse / expand button ////////////
+    let showLatestEllipsis = false;
+    if (latest.length <= g_collapsedNumRowsShown * 2) {
+      collapseLatestButton.classList.add("set-display-none");
+      expandLatestButton.classList.add("set-display-none");
+    } else {
+      if (g_collapseLatest) {
+        collapseLatestButton.classList.add("set-display-none");
+        expandLatestButton.classList.remove("set-display-none");
+        collapseLatestButton.removeAttribute("data-nav-panel");
+        collapseLatestButton.removeAttribute("data-nav-row");
+        collapseLatestButton.removeAttribute("data-nav-col");
+        expandLatestButton.setAttribute("data-nav-panel", 0);
+        expandLatestButton.setAttribute("data-nav-row", navRow++);
+        expandLatestButton.setAttribute("data-nav-col", navColumn++);
+        expandLatestButton.setAttribute("tabindex", "0");
+        max = g_collapsedNumRowsShown * 2;
+        if (latest.length > max) showLatestEllipsis = true;
+      } else {
+        collapseLatestButton.classList.remove("set-display-none");
+        expandLatestButton.classList.add("set-display-none");
+        collapseLatestButton.setAttribute("data-nav-panel", 0);
+        collapseLatestButton.setAttribute("data-nav-row", navRow++);
+        collapseLatestButton.setAttribute("data-nav-col", navColumn++);
+        collapseLatestButton.setAttribute("tabindex", "0");
+        expandLatestButton.removeAttribute("data-nav-panel");
+        expandLatestButton.removeAttribute("data-nav-row");
+        expandLatestButton.removeAttribute("data-nav-col");
+      }
+    }
+    //////////////////
     for (index = 0; index < max; index++) {
       if (g_languageDirection === "rtl") {
         if (index % 2 === 0) {
@@ -341,6 +397,12 @@ function buildSections(
         );
       }
     }
+    if (showLatestEllipsis) {
+      const ellipsis = document.createElement("div");
+      ellipsis.classList = "hs-section-ellipsis";
+      ellipsis.innerHTML = `<i class="fa-solid fa-ellipsis"></i>`;
+      latestDiv.appendChild(ellipsis);
+    }
   }
   // NAVIGATION
   navigation.rebuild(g_navData, refocus ? 0 : undefined);
@@ -354,7 +416,7 @@ function getNewCardDiv(cardType, data, navRow, navColumn) {
 
   const buttonHtml = `
   <div class="hs-path-card-button hs-path-interactive">
-    <i class="fas fa-ellipsis-h"></i>
+    <i class="fas fa-ellipsis-v"></i>
   </div>`;
   //<i class="fa-solid fa-grip"></i>
   const dragMiniIconHtml = `
@@ -1316,6 +1378,8 @@ function updateLocalization(
   radioTitle,
   quitTitle,
   addFavoriteTitle,
+  collapseTitle,
+  expandTitle,
   favoritesSectionTitle,
   latestSectionTitle
 ) {
@@ -1365,4 +1429,12 @@ function updateLocalization(
   // latest title
   const latestSectionTitleSpan = document.querySelector("#hs-latest-title");
   latestSectionTitleSpan.innerHTML = `<i class="fas fa-history hs-section-title-icon"></i><span>${latestSectionTitle}</span>`;
+  // collapse latests
+  const collapseLatestButton = document.querySelector(
+    "#hs-latest-collapse-button"
+  );
+  collapseLatestButton.title = collapseTitle;
+  // expand latests
+  const expandLatestButton = document.querySelector("#hs-latest-expand-button");
+  expandLatestButton.title = expandTitle;
 }

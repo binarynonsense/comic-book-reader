@@ -677,7 +677,12 @@ function initOnIpcCallbacks() {
     }
   );
 
-  /////
+  /////////////////
+
+  on("hs-on-collapse-latest-clicked", (value) => {
+    sendIpcToRenderer("hs-set-latest-collapse-value", value);
+    buildSections(false);
+  });
 
   on("hs-on-latest-options-clicked", (index, filePath, showFocus) => {
     sendIpcToRenderer(
@@ -753,6 +758,8 @@ function updateLocalizedText(rebuildSections = true) {
     _("menu-tools-radio"),
     _("menu-file-quit"),
     _("tool-shared-ui-add"),
+    _("tool-shared-ui-collapse"),
+    _("tool-shared-ui-expand"),
     _("home-section-favorites").toUpperCase(),
     _("home-section-recent").toUpperCase()
   );
