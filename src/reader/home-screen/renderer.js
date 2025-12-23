@@ -1489,6 +1489,16 @@ function updateLocalization(
   // add favorite
   const addFavoriteButton = document.querySelector("#hs-favorites-add-button");
   addFavoriteButton.title = addFavoriteTitle;
+  // collapse favorites
+  const collapseFavoritesButton = document.querySelector(
+    "#hs-favorites-collapse-button"
+  );
+  collapseFavoritesButton.title = collapseTitle;
+  // expand favorites
+  const expandFavoritesButton = document.querySelector(
+    "#hs-favorites-expand-button"
+  );
+  expandFavoritesButton.title = expandTitle;
   // favorites title
   const favoritesSectionTitleSpan = document.querySelector(
     "#hs-favorites-title"
