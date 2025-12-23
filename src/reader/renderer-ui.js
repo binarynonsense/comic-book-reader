@@ -185,6 +185,10 @@ function initOnIpcCallbacks() {
     else showNoBookContent(false);
   });
 
+  on("update-toolbar-menus-collapse-all", () => {
+    collapseAllToolbarMenus();
+  });
+
   on("update-toolbar-direction", (dir) => {
     document.querySelector("#toolbar").style.direction = dir;
   });
@@ -195,34 +199,21 @@ function initOnIpcCallbacks() {
       tOpenFile,
       tPrevious,
       tNext,
-      tPageModes,
-      tChangeDirectionLtr,
-      tChangeDirectionRtl,
-      tFitWidth,
-      tFitHeight,
       tRotateCounter,
       tRotateClock,
-      tFullScreen
+      tFullScreen,
+
+      tCollapse,
+      tZoom,
+      tZoomModes,
+      tPageMode,
+      tPageModeModes,
+      tPagesDirection,
+      tPagesDirectionModes
     ) => {
       document.querySelector("#toolbar-button-open-href").title = tOpenFile;
       document.querySelector("#toolbar-button-left-href").title = tPrevious;
       document.querySelector("#toolbar-button-right-href").title = tNext;
-      document.querySelector("#toolbar-button-set-pagemode-0-href").title =
-        tPageModes[0];
-      document.querySelector("#toolbar-button-set-pagemode-1-href").title =
-        tPageModes[1];
-      document.querySelector("#toolbar-button-set-pagemode-2-href").title =
-        tPageModes[2];
-      document.querySelector(
-        "#toolbar-button-set-pagesdirection-ltr-href"
-      ).title = tChangeDirectionLtr;
-      document.querySelector(
-        "#toolbar-button-set-pagesdirection-rtl-href"
-      ).title = tChangeDirectionRtl;
-      document.querySelector("#toolbar-button-fit-to-height-href").title =
-        tFitHeight;
-      document.querySelector("#toolbar-button-fit-to-width-href").title =
-        tFitWidth;
       document.querySelector(
         "#toolbar-button-rotate-counterclockwise-href"
       ).title = tRotateCounter;
@@ -232,6 +223,24 @@ function initOnIpcCallbacks() {
         tFullScreen;
       document.querySelector("#toolbar-button-fullscreen-exit-href").title =
         tFullScreen;
+      setToolbarMenuButtonLocalization(
+        "toolbar-button-zoom",
+        tCollapse,
+        tZoom,
+        tZoomModes
+      );
+      setToolbarMenuButtonLocalization(
+        "toolbar-button-pagemode",
+        tCollapse,
+        tPageMode,
+        tPageModeModes
+      );
+      setToolbarMenuButtonLocalization(
+        "toolbar-button-pagesdirection",
+        tCollapse,
+        tPagesDirection,
+        tPagesDirectionModes
+      );
     }
   );
 
@@ -270,59 +279,35 @@ function initOnIpcCallbacks() {
   });
 
   on("update-toolbar-zoom-buttons", (areEnabled) => {
-    const button1 = document.querySelector("#toolbar-button-fit-to-height");
-    const button2 = document.querySelector("#toolbar-button-fit-to-width");
+    const button = document.querySelector("#toolbar-button-zoom");
     if (areEnabled) {
-      button1.classList.remove("set-no-click");
-      button2.classList.remove("set-no-click");
-      button1.classList.remove("set-low-opacity");
-      button2.classList.remove("set-low-opacity");
+      button.classList.remove("set-no-click");
+      button.classList.remove("set-low-opacity");
     } else {
-      button1.classList.add("set-no-click");
-      button2.classList.add("set-no-click");
-      button1.classList.add("set-low-opacity");
-      button2.classList.add("set-low-opacity");
+      button.classList.add("set-no-click");
+      button.classList.add("set-low-opacity");
     }
   });
 
   on("update-toolbar-pagemode-buttons", (areEnabled) => {
-    const button1 = document.querySelector("#toolbar-button-set-pagemode-0");
-    const button2 = document.querySelector("#toolbar-button-set-pagemode-1");
-    const button3 = document.querySelector("#toolbar-button-set-pagemode-2");
+    const button = document.querySelector("#toolbar-button-pagemode");
     if (areEnabled) {
-      button1.classList.remove("set-no-click");
-      button2.classList.remove("set-no-click");
-      button3.classList.remove("set-no-click");
-      button1.classList.remove("set-low-opacity");
-      button2.classList.remove("set-low-opacity");
-      button3.classList.remove("set-low-opacity");
+      button.classList.remove("set-no-click");
+      button.classList.remove("set-low-opacity");
     } else {
-      button1.classList.add("set-no-click");
-      button2.classList.add("set-no-click");
-      button3.classList.add("set-no-click");
-      button1.classList.add("set-low-opacity");
-      button2.classList.add("set-low-opacity");
-      button3.classList.add("set-low-opacity");
+      button.classList.add("set-no-click");
+      button.classList.add("set-low-opacity");
     }
   });
 
   on("update-toolbar-pagesdirection-buttons", (areEnabled) => {
-    const button1 = document.querySelector(
-      "#toolbar-button-set-pagesdirection-ltr"
-    );
-    const button2 = document.querySelector(
-      "#toolbar-button-set-pagesdirection-rtl"
-    );
+    const button = document.querySelector("#toolbar-button-pagesdirection");
     if (areEnabled) {
-      button1.classList.remove("set-no-click");
-      button2.classList.remove("set-no-click");
-      button1.classList.remove("set-low-opacity");
-      button2.classList.remove("set-low-opacity");
+      button.classList.remove("set-no-click");
+      button.classList.remove("set-low-opacity");
     } else {
-      button1.classList.add("set-no-click");
-      button2.classList.add("set-no-click");
-      button1.classList.add("set-low-opacity");
-      button2.classList.add("set-low-opacity");
+      button.classList.add("set-no-click");
+      button.classList.add("set-low-opacity");
     }
   });
 
@@ -409,25 +394,29 @@ function initOnIpcCallbacks() {
   });
 
   on("set-pages-direction", (value) => {
+    setToolbarMenuButtonIcon(
+      "toolbar-button-pagesdirection",
+      value == "ltr" ? 0 : 1
+    );
     document
       .querySelector("#toolbar-page-slider-div")
       .setAttribute("dir", value);
     if (value === "rtl") {
-      document
-        .querySelector("#toolbar-button-set-pagesdirection-ltr")
-        .classList.remove("set-display-none");
-      document
-        .querySelector("#toolbar-button-set-pagesdirection-rtl")
-        .classList.add("set-display-none");
+      // document
+      //   .querySelector("#toolbar-button-set-pagesdirection-ltr")
+      //   .classList.remove("set-display-none");
+      // document
+      //   .querySelector("#toolbar-button-set-pagesdirection-rtl")
+      //   .classList.add("set-display-none");
 
       document.querySelector("#pages-container").classList.add("pages-rtl");
     } else {
-      document
-        .querySelector("#toolbar-button-set-pagesdirection-ltr")
-        .classList.add("set-display-none");
-      document
-        .querySelector("#toolbar-button-set-pagesdirection-rtl")
-        .classList.remove("set-display-none");
+      // document
+      //   .querySelector("#toolbar-button-set-pagesdirection-ltr")
+      //   .classList.add("set-display-none");
+      // document
+      //   .querySelector("#toolbar-button-set-pagesdirection-rtl")
+      //   .classList.remove("set-display-none");
 
       document.querySelector("#pages-container").classList.remove("pages-rtl");
     }
@@ -562,37 +551,8 @@ export function getPageMode() {
 
 function setPageMode(value, canBeChanged) {
   g_pageMode = value;
-  if (value === 0) {
-    document
-      .querySelector("#toolbar-button-set-pagemode-0")
-      .classList.add("set-display-none");
-    document
-      .querySelector("#toolbar-button-set-pagemode-1")
-      .classList.remove("set-display-none");
-    document
-      .querySelector("#toolbar-button-set-pagemode-2")
-      .classList.add("set-display-none");
-  } else if (value === 1) {
-    document
-      .querySelector("#toolbar-button-set-pagemode-0")
-      .classList.add("set-display-none");
-    document
-      .querySelector("#toolbar-button-set-pagemode-1")
-      .classList.add("set-display-none");
-    document
-      .querySelector("#toolbar-button-set-pagemode-2")
-      .classList.remove("set-display-none");
-  } else {
-    document
-      .querySelector("#toolbar-button-set-pagemode-0")
-      .classList.remove("set-display-none");
-    document
-      .querySelector("#toolbar-button-set-pagemode-1")
-      .classList.add("set-display-none");
-    document
-      .querySelector("#toolbar-button-set-pagemode-2")
-      .classList.add("set-display-none");
-  }
+
+  setToolbarMenuButtonIcon("toolbar-button-pagemode", value);
 }
 
 function setFitToWidth() {
@@ -601,12 +561,7 @@ function setFitToWidth() {
   container.classList.remove("set-fit-to-height");
   container.classList.add("set-fit-to-width");
 
-  document
-    .querySelector("#toolbar-button-fit-to-width")
-    .classList.add("set-display-none");
-  document
-    .querySelector("#toolbar-button-fit-to-height")
-    .classList.remove("set-display-none");
+  setToolbarMenuButtonIcon("toolbar-button-zoom", 1);
 }
 
 function setFitToHeight() {
@@ -615,12 +570,7 @@ function setFitToHeight() {
   container.classList.remove("set-fit-to-width");
   container.classList.add("set-fit-to-height");
 
-  document
-    .querySelector("#toolbar-button-fit-to-width")
-    .classList.remove("set-display-none");
-  document
-    .querySelector("#toolbar-button-fit-to-height")
-    .classList.add("set-display-none");
+  setToolbarMenuButtonIcon("toolbar-button-zoom", 0);
 }
 
 function setScaleToHeight(scale) {
@@ -630,12 +580,7 @@ function setScaleToHeight(scale) {
   container.classList.remove("set-fit-to-height");
   container.classList.add("set-scale-to-height");
 
-  document
-    .querySelector("#toolbar-button-fit-to-width")
-    .classList.remove("set-display-none");
-  document
-    .querySelector("#toolbar-button-fit-to-height")
-    .classList.add("set-display-none");
+  setToolbarMenuButtonIcon("toolbar-button-zoom", 2);
 }
 
 function setZoomHeightCssVars(scale) {
@@ -909,6 +854,7 @@ export function onInputEvent(type, event) {
             event.target.id === "pages-container" ||
             event.target.id === "reader"
           ) {
+            collapseAllToolbarMenus();
             const mouseX = event.clientX;
             const bodyX = document.body.clientWidth;
             sendIpcToMain("mouse-click", mouseX, bodyX);
@@ -1304,8 +1250,80 @@ export function onGamepadPolled() {
 // TOOLBAR ////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+function addToolbarMenuButtonEvent(buttonName) {
+  const button = document.getElementById(buttonName);
+  if (!button) return;
+  //expand
+  button.children[0].addEventListener("click", (event) => {
+    collapseAllToolbarMenus();
+    expandToolbarMenuButton(buttonName, true);
+  });
+  // collapse
+  button.children[1].addEventListener("click", (event) => {
+    collapseAllToolbarMenus();
+    expandToolbarMenuButton(buttonName, false);
+  });
+  // menu buttons
+  const menu = button.children[2];
+  for (let index = 0; index < menu.children.length; index++) {
+    const element = menu.children[index];
+    element.addEventListener("click", (event) => {
+      button.children[0].classList.remove("set-display-none");
+      button.children[1].classList.add("set-display-none");
+      button.children[2].classList.add("set-display-none");
+      sendIpcToMain("toolbar-button-clicked", `${buttonName}-menu-${index}`);
+    });
+  }
+}
+function expandToolbarMenuButton(buttonName, value) {
+  const button = document.getElementById(buttonName);
+  if (value === true) {
+    button.children[0].classList.add("set-display-none");
+    button.children[1].classList.remove("set-display-none");
+    button.children[2].classList.remove("set-display-none");
+  } else {
+    button.children[0].classList.remove("set-display-none");
+    button.children[1].classList.add("set-display-none");
+    button.children[2].classList.add("set-display-none");
+  }
+}
+
+function collapseAllToolbarMenus() {
+  const menus = document.querySelectorAll(".toolbar-button-menu");
+  menus.forEach((menu) => {
+    expandToolbarMenuButton(menu.parentElement.id, false);
+  });
+}
+
+function setToolbarMenuButtonIcon(buttonName, buttonIndex) {
+  const button = document.getElementById(buttonName);
+  if (!button) return;
+  const menu = button.children[2];
+  button.children[0].innerHTML = menu.children[buttonIndex].innerHTML;
+}
+
+function setToolbarMenuButtonLocalization(
+  buttonName,
+  tCollapse,
+  titleLocalization,
+  menuLocalization
+) {
+  const button = document.getElementById(buttonName);
+  button.children[0].title = titleLocalization;
+  button.children[1].title = tCollapse;
+  // menu buttons
+  const menu = button.children[2];
+  for (let index = 0; index < menu.children.length; index++) {
+    const element = menu.children[index];
+    element.title = menuLocalization[index];
+  }
+}
+
+////////////////
+
 function addButtonEvent(buttonName) {
   document.getElementById(buttonName).addEventListener("click", (event) => {
+    collapseAllToolbarMenus();
     sendIpcToMain("toolbar-button-clicked", buttonName);
   });
 }
@@ -1315,13 +1333,9 @@ function addToolbarEventListeners() {
   addButtonEvent("toolbar-button-rotate-counterclockwise");
   addButtonEvent("toolbar-button-right");
   addButtonEvent("toolbar-button-left");
-  addButtonEvent("toolbar-button-set-pagemode-0");
-  addButtonEvent("toolbar-button-set-pagemode-1");
-  addButtonEvent("toolbar-button-set-pagemode-2");
-  addButtonEvent("toolbar-button-set-pagesdirection-ltr");
-  addButtonEvent("toolbar-button-set-pagesdirection-rtl");
-  addButtonEvent("toolbar-button-fit-to-width");
-  addButtonEvent("toolbar-button-fit-to-height");
+  addToolbarMenuButtonEvent("toolbar-button-pagemode");
+  addToolbarMenuButtonEvent("toolbar-button-pagesdirection");
+  addToolbarMenuButtonEvent("toolbar-button-zoom");
   addButtonEvent("toolbar-button-fullscreen-enter");
   addButtonEvent("toolbar-button-fullscreen-exit");
   addButtonEvent("toolbar-button-open");
@@ -1329,6 +1343,7 @@ function addToolbarEventListeners() {
   document
     .getElementById("toolbar-page-slider-input")
     .addEventListener("mouseup", (event) => {
+      collapseAllToolbarMenus();
       sendIpcToMain("toolbar-slider-changed", event.currentTarget.value);
     });
   document

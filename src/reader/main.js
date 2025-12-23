@@ -493,26 +493,26 @@ function initOnIpcCallbacks() {
       case "toolbar-button-left":
         goToLeftPage();
         break;
-      case "toolbar-button-set-pagemode-0":
+      case "toolbar-button-pagemode-menu-0":
         setPageMode(0, true);
         break;
-      case "toolbar-button-set-pagemode-1":
+      case "toolbar-button-pagemode-menu-1":
         setPageMode(1, true);
         break;
-      case "toolbar-button-set-pagemode-2":
+      case "toolbar-button-pagemode-menu-2":
         setPageMode(2, true);
         break;
-      case "toolbar-button-set-pagesdirection-ltr":
+      case "toolbar-button-pagesdirection-menu-0":
         setPagesDirection(0);
         break;
-      case "toolbar-button-set-pagesdirection-rtl":
+      case "toolbar-button-pagesdirection-menu-1":
         setPagesDirection(1);
         break;
-      case "toolbar-button-fit-to-width":
-        setFitToWidth();
-        break;
-      case "toolbar-button-fit-to-height":
+      case "toolbar-button-zoom-menu-0":
         setFitToHeight();
+        break;
+      case "toolbar-button-zoom-menu-1":
+        setFitToWidth();
         break;
       case "toolbar-button-fullscreen-enter":
         core.toggleFullScreen();
@@ -584,6 +584,7 @@ function initOnIpcCallbacks() {
   });
 
   on("show-context-menu", (params) => {
+    sendIpcToRenderer("update-toolbar-menus-collapse-all");
     if (params[2]) {
       contextMenu.show("page", params, g_fileData);
     } else {
@@ -1426,6 +1427,7 @@ function closeCurrentFile(addToHistory = true) {
   updateMenuAndToolbarItems();
   renderTitle();
   sendIpcToRenderer("file-closed");
+  sendIpcToRenderer("update-toolbar-menus-collapse-all");
   sendIpcToRenderer("set-scrollbar-position", 0);
   sendIpcToPreload("update-menubar");
   sendIpcToRenderer("update-loading", false);
@@ -1875,23 +1877,31 @@ function updateLocalizedText() {
     _("ctxmenu-openfile"),
     _("toolbar-go-left"),
     _("toolbar-go-right"),
+    _("toolbar-rotate-counterclockwise"),
+    _("toolbar-rotate-clockwise"),
+    _("menu-view-togglefullscreen"),
+    _("tool-shared-ui-collapse"),
+    _("menu-view-zoom"),
     [
-      _("toolbar-change-to") + ": " + _("menu-view-layout-pagemode-singlepage"),
-      _("toolbar-change-to") + ": " + _("menu-view-layout-pagemode-doublepage"),
-      _("toolbar-change-to") +
-        ": " +
-        _("menu-view-layout-pagemode-doublepage") +
+      _("menu-view-zoom-fitheight"),
+      _("menu-view-zoom-fitwidth"),
+      _("menu-view-zoom-scaleheight"),
+    ],
+    _("menu-view-layout-pagemode"),
+    [
+      _("menu-view-layout-pagemode-singlepage"),
+      _("menu-view-layout-pagemode-doublepage"),
+      _("menu-view-layout-pagemode-doublepage") +
         " (" +
         _("menu-view-layout-pagemode-centerfirst") +
         ")",
+      ,
     ],
-    _("toolbar-change-to") + ": " + _("tool-shared-ui-direction-ltr"),
-    _("toolbar-change-to") + ": " + _("tool-shared-ui-direction-rtl"),
-    _("toolbar-change-to") + ": " + _("menu-view-zoom-fitwidth"),
-    _("toolbar-change-to") + ": " + _("menu-view-zoom-fitheight"),
-    _("toolbar-rotate-counterclockwise"),
-    _("toolbar-rotate-clockwise"),
-    _("menu-view-togglefullscreen")
+    _("menu-view-layout-pagesdirection"),
+    [
+      _("menu-view-layout-pagesdirection-ltr"),
+      _("menu-view-layout-pagesdirection-rtl"),
+    ]
   );
   homeScreen.updateLocalizedText();
 }
