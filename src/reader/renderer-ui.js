@@ -1261,12 +1261,23 @@ function addToolbarMenuButtonEvent(buttonName) {
     });
   }
 }
+
 function expandToolbarMenuButton(buttonName, value) {
   const button = document.getElementById(buttonName);
   if (value === true) {
     button.children[0].classList.add("set-display-none");
     button.children[1].classList.remove("set-display-none");
     button.children[2].classList.remove("set-display-none");
+    // menu buttons
+    const menu = button.children[2];
+    for (let index = 0; index < menu.children.length; index++) {
+      const element = menu.children[index];
+      if (button.children[0].innerHTML === element.innerHTML) {
+        element.classList.add("toolbar-button-menu-child-highlight");
+      } else {
+        element.classList.remove("toolbar-button-menu-child-highlight");
+      }
+    }
   } else {
     button.children[0].classList.remove("set-display-none");
     button.children[1].classList.add("set-display-none");

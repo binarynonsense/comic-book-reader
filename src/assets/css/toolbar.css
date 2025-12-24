@@ -156,7 +156,26 @@ html[dir="rtl"] #toolbar-button-prev i {
   position: absolute;
   bottom: 30px;
   background-color: var(--toolbar-bg-color);
-  /* width: 100px;
-  height: 100px;
-  background-color: aquamarine; */
+}
+
+/* ref: https://docs.fontawesome.com/web/add-icons/pseudo-elements */
+.toolbar-button-menu-child-highlight::before {
+  position: absolute;
+  left: -1px;
+  font: var(--fa-font-solid);
+  content: "\f0da";
+  font-size: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0.5;
+}
+.toolbar-button-menu-child-highlight::after {
+  position: absolute;
+  right: -1px;
+  font: var(--fa-font-solid);
+  content: "\f0d9";
+  font-size: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0.5;
 }
