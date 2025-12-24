@@ -276,8 +276,8 @@
 
 /* *********************** */
 
-#hs-latest {
-  padding-bottom: 45px;
+#hs-footer {
+  min-height: 45px;
 }
 
 /* *********************** */
