@@ -402,22 +402,8 @@ function initOnIpcCallbacks() {
       .querySelector("#toolbar-page-slider-div")
       .setAttribute("dir", value);
     if (value === "rtl") {
-      // document
-      //   .querySelector("#toolbar-button-set-pagesdirection-ltr")
-      //   .classList.remove("set-display-none");
-      // document
-      //   .querySelector("#toolbar-button-set-pagesdirection-rtl")
-      //   .classList.add("set-display-none");
-
       document.querySelector("#pages-container").classList.add("pages-rtl");
     } else {
-      // document
-      //   .querySelector("#toolbar-button-set-pagesdirection-ltr")
-      //   .classList.add("set-display-none");
-      // document
-      //   .querySelector("#toolbar-button-set-pagesdirection-rtl")
-      //   .classList.remove("set-display-none");
-
       document.querySelector("#pages-container").classList.remove("pages-rtl");
     }
   });
