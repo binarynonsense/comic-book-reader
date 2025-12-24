@@ -1,8 +1,6 @@
 {
   "@metadata": {
-    "authors": [
-      "Álvaro"
-    ],
+    "authors": ["Álvaro"],
     "last-updated": "2025-12-20",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.13.0",
@@ -307,13 +305,15 @@
   "tool-shared-ui-add-files": "Añadir archivos",
   "tool-shared-ui-add-folder": "Añadir carpeta",
   "tool-shared-ui-add-folders": "Añadir carpetas",
-  "[NOTE TO TRANSLATORS]tool-shared-ui-collapse/expand": "Collapse and Expand as in collapse or expand a list of elements in the UI",
-  "tool-shared-ui-collapse": "Colapsar",
-  "tool-shared-ui-expand": "Expandir",
+  "tool-shared-ui-collapse-list": "Colapsar",
+  "tool-shared-ui-expand-list": "Expandir",
   "tool-shared-ui-clear-list": "Vaciar Lista",
   "tool-shared-ui-clear-list-warning": "¿Está seguro de que desea vaciar esta lista?",
   "tool-shared-ui-reset-list": "Restablecer lista",
   "tool-shared-ui-reset-list-warning": "¿Está seguro de que desea vaciar esta lista y reemplazarla con la predeterminada?",
+  "tool-shared-ui-create-list": "Crear lista",
+  "tool-shared-ui-remove-list": "Eliminar lista",
+  "tool-shared-ui-remove-list-warning": "¿Está seguro de que desea eliminar esta lista?",
   "tool-shared-ui-output-options": "Opciones de salida",
   "tool-shared-ui-advanced-output-options": "Opciones de salida avanzadas",
   "tool-shared-ui-output-options-format-keep": "Mantener el original",
