@@ -58,7 +58,7 @@
   user-select: none;
   text-align: start;
   font-size: 15px;
-  margin: 30px 7px 30px 7px;
+  margin: 0px 7px 30px 7px;
   align-items: center;
   margin-inline-end: 2px;
 }
@@ -105,6 +105,10 @@
   transform: scale(1.2);
 }
 
+.hs-section-content {
+  margin-bottom: 30px;
+}
+
 .hs-section-ellipsis {
   margin-top: 20px;
   display: flex;
@@ -119,7 +123,7 @@
   align-items: center;
   justify-content: center;
   gap: 30px;
-  margin-bottom: 25px;
+  margin-bottom: 45px;
 }
 
 #hs-logo-open button {
@@ -276,8 +280,31 @@
 
 /* *********************** */
 
-#hs-footer {
-  min-height: 45px;
+/* ref: https://stackoverflow.com/questions/14202089/custom-hr-with-image-character-in-the-center */
+.hs-hr {
+  opacity: 0.7;
+  text-align: center;
+  line-height: 1px;
+  height: 1px;
+  font-size: 1em;
+  border-width: 1px 0;
+  border-style: solid;
+  border-color: var(--hs-path-card-bg-color);
+  overflow: visible;
+  box-sizing: content-box;
+  /*  */
+  width: 40%;
+  margin: 10px auto 30px auto;
+}
+
+.hs-hr:after {
+  /* content: "§"; */
+  /* content: "★★★"; */
+  content: "⬥";
+  color: var(--hs-path-card-bg-color);
+  display: inline;
+  background-color: var(--hs-bg-color);
+  padding: 0 0.5em;
 }
 
 /* *********************** */
@@ -493,4 +520,54 @@ html[dir="rtl"] .hs-path-card-percentageBar {
   background-color: var(--hs-path-card-bg-color);
   color: var(--hs-path-card-text-color);
   border: 1px dashed var(--hs-path-card-text-color);
+}
+
+/* ************ FOOTER ************** */
+
+#hs-footer {
+  display: flex;
+  justify-content: center;
+}
+
+/* *********************** */
+
+#hs-addlist {
+  text-transform: uppercase;
+  text-align: center;
+  font-size: 16px;
+  display: flex;
+  /* justify-content: center; */
+  /* padding: 40px 10px 40px 10px; */
+  padding: 10px 5px 0px 5px;
+}
+#hs-addlist-add-button {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* width: 50px; */
+  margin: 30px, auto;
+  color: var(--hs-button-normal-text-color);
+  background-color: var(--hs-button-normal-bg-color);
+  /* border-radius: 5px; */
+  padding: 15px;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+#hs-addlist-add-button i::after {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  font: var(--fa-font-solid);
+  content: "\2b";
+  font-size: 9px;
+}
+#hs-addlist-add-button:hover {
+  background-color: var(--hs-button-normal-bg-hover-color);
+  cursor: pointer;
+  transform: scale(1.03);
+}
+
+#hs-addlist-add-button:active {
+  transform: translateY(1px);
 }

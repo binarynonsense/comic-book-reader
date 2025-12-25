@@ -1880,7 +1880,7 @@ function updateLocalizedText() {
     _("toolbar-rotate-counterclockwise"),
     _("toolbar-rotate-clockwise"),
     _("menu-view-togglefullscreen"),
-    _("tool-shared-ui-collapse"),
+    _("tool-shared-ui-collapse-list"),
     _("menu-view-zoom"),
     [
       _("menu-view-zoom-fitheight"),

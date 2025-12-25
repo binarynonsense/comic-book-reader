@@ -752,6 +752,24 @@ function initOnIpcCallbacks() {
     g_favorites.splice(toIndex, 0, element);
     buildSections(false);
   });
+
+  //////////////////////
+
+  on("hs-on-create-list-clicked", (showFocus) => {
+    sendIpcToRenderer(
+      "hs-show-modal-create-list",
+      "Comics",
+      _("tool-shared-ui-create-list"),
+      _("ui-modal-prompt-button-yes"),
+      _("ui-modal-prompt-button-no"),
+      showFocus
+    );
+  });
+
+  on("hs-on-modal-create-list-ok-clicked", (newName) => {
+    log.test(newName);
+    // TODO: create new list
+  });
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -776,10 +794,11 @@ function updateLocalizedText(rebuildSections = true) {
     _("menu-tools-radio"),
     _("menu-file-quit"),
     _("tool-shared-ui-add"),
-    _("tool-shared-ui-collapse"),
-    _("tool-shared-ui-expand"),
+    _("tool-shared-ui-collapse-list"),
+    _("tool-shared-ui-expand-list"),
     _("home-section-favorites").toUpperCase(),
-    _("home-section-recent").toUpperCase()
+    _("home-section-recent").toUpperCase(),
+    _("tool-shared-ui-create-list")
   );
   if (rebuildSections) buildSections();
 }

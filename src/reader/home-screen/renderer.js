@@ -169,6 +169,11 @@ function init() {
       sendIpcToMain("hs-on-collapse-favorites-clicked", false);
       event.stopPropagation();
     });
+    ///////////
+    const createListButton = document.querySelector("#hs-addlist-add-button");
+    createListButton.addEventListener("click", (event) => {
+      sendIpcToMain("hs-on-create-list-clicked");
+    });
   }
 }
 
@@ -227,6 +232,10 @@ function initOnIpcCallbacks() {
 
   on("hs-show-modal-latest-options", (...args) => {
     showModalLatestOptions(...args);
+  });
+
+  on("hs-show-modal-create-list", (...args) => {
+    showModalCreateList(...args);
   });
 }
 
@@ -314,11 +323,11 @@ function buildSections(
       expandFavoritesButton.removeAttribute("data-nav-col");
     }
   }
+  max = Math.max(2, 2 * Math.round(max / 2));
   ///////
   navRow = 2;
   navColumn = 0;
   for (; index < max; index++) {
-    const data = favorites[index];
     if (g_languageDirection === "rtl") {
       if (index % 2 === 0) {
         if (index !== 0) navRow++;
@@ -335,9 +344,16 @@ function buildSections(
         navColumn = 2;
       }
     }
-    listDiv.appendChild(
-      getNewCardDiv(CardType.FAVORITES, data, navRow, navColumn)
-    );
+    if (favorites && favorites.length > index) {
+      const data = favorites[index];
+      listDiv.appendChild(
+        getNewCardDiv(CardType.FAVORITES, data, navRow, navColumn)
+      );
+    } else {
+      listDiv.appendChild(
+        getNewCardDiv(CardType.EMPTY, undefined, navRow, navColumn)
+      );
+    }
   }
   if (showFavoritesEllipsis) {
     const ellipsis = document.createElement("div");
@@ -372,7 +388,8 @@ function buildSections(
   );
   const expandLatestButton = document.querySelector("#hs-latest-expand-button");
   latestDiv.innerHTML = "";
-  if (maxLatest <= 0 || latest.length <= 0) {
+  if (false) {
+    //(maxLatest <= 0 || latest.length <= 0) {
     latestTitleDiv.classList.add("set-display-none");
     collapseLatestButton.classList.add("set-display-none");
     expandLatestButton.classList.add("set-display-none");
@@ -416,6 +433,7 @@ function buildSections(
         expandLatestButton.removeAttribute("data-nav-col");
       }
     }
+    max = Math.max(2, 2 * Math.round(max / 2));
     //////////////////
     for (index = 0; index < max; index++) {
       if (g_languageDirection === "rtl") {
@@ -472,6 +490,14 @@ function buildSections(
       latestDiv.appendChild(ellipsis);
     }
   }
+  // create list button
+  navRow++;
+  navColumn = 0;
+  const createListButton = document.querySelector("#hs-addlist-add-button");
+  createListButton.setAttribute("data-nav-panel", 0);
+  createListButton.setAttribute("data-nav-row", navRow);
+  createListButton.setAttribute("data-nav-col", navColumn++);
+  createListButton.setAttribute("tabindex", "0");
   // NAVIGATION
   navigation.rebuild(g_navData, refocus ? 0 : undefined);
 }
@@ -1429,6 +1455,47 @@ function showModalLatestOptions(
   });
 }
 
+function showModalCreateList(
+  defaultName,
+  title,
+  textButton1,
+  textButton2,
+  showFocus
+) {
+  if (getOpenModal()) {
+    return;
+  }
+
+  showModal({
+    showFocus: showFocus,
+    title: title,
+    zIndexDelta: -450,
+    input: { type: "text", default: defaultName },
+    close: {
+      callback: () => {
+        modalClosed();
+      },
+      key: "Escape",
+    },
+    buttons: [
+      {
+        text: textButton1.toUpperCase(),
+        callback: (showFocus, value) => {
+          sendIpcToMain("hs-on-modal-create-list-ok-clicked", value);
+          modalClosed();
+        },
+        key: "Enter",
+      },
+      {
+        text: textButton2.toUpperCase(),
+        callback: () => {
+          modalClosed();
+        },
+      },
+    ],
+  });
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -1449,7 +1516,8 @@ function updateLocalization(
   collapseTitle,
   expandTitle,
   favoritesSectionTitle,
-  latestSectionTitle
+  latestSectionTitle,
+  createListTitle
 ) {
   // ids
   for (let index = 0; index < idsLocalization.length; index++) {
@@ -1462,57 +1530,38 @@ function updateLocalization(
   // cards
   g_cardLocalization = cardLocalization;
   // preferences
-  const preferencesButton = document.querySelector(
-    "#hs-logo-preferences-button"
-  );
-  preferencesButton.title = preferencesTitle;
+  document.querySelector("#hs-logo-preferences-button").title =
+    preferencesTitle;
   // history
-  const historyButton = document.querySelector("#hs-logo-history-button");
-  historyButton.title = historyTitle;
+  document.querySelector("#hs-logo-history-button").title = historyTitle;
   // files tools
-  const filesToolsButton = document.querySelector(
-    "#hs-logo-files-tools-button"
-  );
-  filesToolsButton.title = filesToolsTitle;
+  document.querySelector("#hs-logo-files-tools-button").title = filesToolsTitle;
   // art tools
-  const artToolsButton = document.querySelector("#hs-logo-art-tools-button");
-  artToolsButton.title = artToolsTitle;
+  document.querySelector("#hs-logo-art-tools-button").title = artToolsTitle;
   // rss reader
-  const rssReaderButton = document.querySelector("#hs-logo-rss-reader-button");
-  rssReaderButton.title = rssReaderTitle;
+  document.querySelector("#hs-logo-rss-reader-button").title = rssReaderTitle;
   // radio
-  const radioButton = document.querySelector("#hs-logo-radio-button");
-  radioButton.title = radioTitle;
+  document.querySelector("#hs-logo-radio-button").title = radioTitle;
   // quit
-  const quitButton = document.querySelector("#hs-logo-quit-button");
-  quitButton.title = quitTitle;
+  document.querySelector("#hs-logo-quit-button").title = quitTitle;
   // add favorite
-  const addFavoriteButton = document.querySelector("#hs-favorites-add-button");
-  addFavoriteButton.title = addFavoriteTitle;
+  document.querySelector("#hs-favorites-add-button").title = addFavoriteTitle;
   // collapse favorites
-  const collapseFavoritesButton = document.querySelector(
-    "#hs-favorites-collapse-button"
-  );
-  collapseFavoritesButton.title = collapseTitle;
+  document.querySelector("#hs-favorites-collapse-button").title = collapseTitle;
   // expand favorites
-  const expandFavoritesButton = document.querySelector(
-    "#hs-favorites-expand-button"
-  );
-  expandFavoritesButton.title = expandTitle;
+  document.querySelector("#hs-favorites-expand-button").title = expandTitle;
   // favorites title
-  const favoritesSectionTitleSpan = document.querySelector(
+  document.querySelector(
     "#hs-favorites-title"
-  );
-  favoritesSectionTitleSpan.innerHTML = `<i class="fa-solid fa-heart hs-section-title-icon"></i><span>${favoritesSectionTitle}</span>`;
+  ).innerHTML = `<i class="fa-solid fa-heart hs-section-title-icon"></i><span>${favoritesSectionTitle}</span>`;
   // latest title
-  const latestSectionTitleSpan = document.querySelector("#hs-latest-title");
-  latestSectionTitleSpan.innerHTML = `<i class="fas fa-history hs-section-title-icon"></i><span>${latestSectionTitle}</span>`;
+  document.querySelector(
+    "#hs-latest-title"
+  ).innerHTML = `<i class="fas fa-history hs-section-title-icon"></i><span>${latestSectionTitle}</span>`;
   // collapse latests
-  const collapseLatestButton = document.querySelector(
-    "#hs-latest-collapse-button"
-  );
-  collapseLatestButton.title = collapseTitle;
+  document.querySelector("#hs-latest-collapse-button").title = collapseTitle;
   // expand latests
-  const expandLatestButton = document.querySelector("#hs-latest-expand-button");
-  expandLatestButton.title = expandTitle;
+  document.querySelector("#hs-latest-expand-button").title = expandTitle;
+  // create list
+  document.querySelector("#hs-addlist-add-button").title = createListTitle;
 }
