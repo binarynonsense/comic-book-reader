@@ -377,7 +377,7 @@ function buildSections(
       );
     } else {
       listDiv.appendChild(
-        getNewCardDiv(CardType.EMPTY, undefined, navRow, navColumn)
+        getNewCardDiv(CardType.EMPTY, undefined, navRow, navColumn, -1)
       );
     }
   }
@@ -493,11 +493,11 @@ function buildSections(
     if (latest && latest.length > cardIndex) {
       const data = latest[cardIndex];
       listDiv.appendChild(
-        getNewCardDiv(CardType.LATEST, data, navRow, navColumn)
+        getNewCardDiv(CardType.LATEST, data, navRow, navColumn, -2)
       );
     } else {
       listDiv.appendChild(
-        getNewCardDiv(CardType.EMPTY, undefined, navRow, navColumn)
+        getNewCardDiv(CardType.EMPTY, undefined, navRow, navColumn, -2)
       );
     }
   }
@@ -661,7 +661,13 @@ function buildSections(
           );
         } else {
           cardsDiv.appendChild(
-            getNewCardDiv(CardType.EMPTY, undefined, navRow, navColumn)
+            getNewCardDiv(
+              CardType.EMPTY,
+              undefined,
+              navRow,
+              navColumn,
+              listIndex
+            )
           );
         }
       }
@@ -821,42 +827,19 @@ function getNewCardDiv(cardType, data, navRow, navColumn, listIndex) {
         mainCardDiv.addEventListener("drop", (event) => {
           if (event.target.classList.contains("hs-path-card-main")) {
             mainCardDiv.classList.remove("hs-path-card-main-dragging-over");
-            if (cardType == CardType.FAVORITES) {
-              const fromIndex = g_draggedCard.getAttribute(
-                "data-fav-card-index"
-              );
-              const toIndex = event.target.getAttribute("data-fav-card-index");
-              if (fromIndex !== null && toIndex !== null) {
-                sendIpcToMain(
-                  "hs-on-list-card-dropped",
-                  -1,
-                  fromIndex,
-                  toIndex
-                );
-              }
-            } else if (cardType == CardType.USERLIST) {
-              const fromListIndex =
-                g_draggedCard.getAttribute("data-list-index");
-              const toListIndex = event.target.getAttribute("data-list-index");
-              const fromIndex = g_draggedCard.getAttribute(
-                "data-list-card-index"
-              );
-              const toIndex = event.target.getAttribute("data-list-card-index");
-              if (
-                fromListIndex !== null &&
-                toListIndex !== null &&
-                fromListIndex == toListIndex &&
-                fromIndex !== null &&
-                toIndex !== null
-              ) {
-                sendIpcToMain(
-                  "hs-on-list-card-dropped",
-                  fromListIndex,
-                  fromIndex,
-                  toIndex
-                );
-              }
-            }
+            const fromListIndex = g_draggedCard.getAttribute("data-list-index");
+            const toListIndex = event.target.getAttribute("data-list-index");
+            const fromIndex = g_draggedCard.getAttribute(
+              "data-list-card-index"
+            );
+            const toIndex = event.target.getAttribute("data-list-card-index");
+            sendIpcToMain(
+              "hs-on-list-card-dropped",
+              parseInt(fromListIndex),
+              parseInt(toListIndex),
+              parseInt(fromIndex),
+              parseInt(toIndex)
+            );
             event.preventDefault();
           }
         });
@@ -876,12 +859,9 @@ function getNewCardDiv(cardType, data, navRow, navColumn, listIndex) {
           event.stopPropagation();
         });
         // data
-        if (cardType == CardType.FAVORITES) {
-          mainCardDiv.setAttribute("data-fav-card-index", data.index);
-        } else if (cardType == CardType.USERLIST) {
-          mainCardDiv.setAttribute("data-list-card-index", data.index);
-          mainCardDiv.setAttribute("data-list-index", listIndex);
-        }
+        mainCardDiv.setAttribute("data-list-card-index", data.index);
+        mainCardDiv.setAttribute("data-list-index", listIndex);
+
         /////////////
 
         if (navRow !== undefined && navColumn !== undefined) {
@@ -989,12 +969,54 @@ function getNewCardDiv(cardType, data, navRow, navColumn, listIndex) {
     case CardType.EMPTY:
       cardDiv.classList.add("hs-path-card");
       cardDiv.innerHTML = emptyHtml;
+      const mainCardDiv = cardDiv.querySelector(".hs-path-card-main");
       // if (navRow !== undefined && navColumn !== undefined) {
       //   cardDiv.setAttribute("data-nav-panel", 0);
       //   cardDiv.setAttribute("data-nav-row", navRow);
       //   cardDiv.setAttribute("data-nav-col", navColumn);
       //   cardDiv.setAttribute("tabindex", "0");
       // }
+      if (listIndex >= -1) {
+        console.log(listIndex);
+        // don't do for latest
+        // drop
+        cardDiv.addEventListener("drop", (event) => {
+          console.log(event.target);
+          if (event.target.classList.contains("hs-path-card-main")) {
+            mainCardDiv.classList.remove("hs-path-card-main-dragging-over");
+            const fromListIndex = g_draggedCard.getAttribute("data-list-index");
+            const toListIndex = listIndex;
+            const fromIndex = g_draggedCard.getAttribute(
+              "data-list-card-index"
+            );
+            const toIndex = -1;
+            sendIpcToMain(
+              "hs-on-list-card-dropped",
+              parseInt(fromListIndex),
+              parseInt(toListIndex),
+              parseInt(fromIndex),
+              parseInt(toIndex)
+            );
+            event.preventDefault();
+          }
+        });
+        // receive
+        cardDiv.addEventListener("dragover", function (event) {
+          console.log(event.target);
+          const draggingElement = document.querySelector(
+            ".hs-path-card-main-dragging"
+          );
+          if (draggingElement) {
+            event.preventDefault();
+            mainCardDiv.classList.add("hs-path-card-main-dragging-over");
+            event.stopPropagation();
+          }
+        });
+        cardDiv.addEventListener("dragleave", function (event) {
+          mainCardDiv.classList.remove("hs-path-card-main-dragging-over");
+          event.stopPropagation();
+        });
+      }
       break;
   }
   return cardDiv;

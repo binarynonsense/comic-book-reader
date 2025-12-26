@@ -135,6 +135,10 @@ function getPercentageReadFromHistoryIndex(index) {
   return undefined;
 }
 
+//////////////////////////////////////////////////////////////////////////////
+// LISTS - COMMON ////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+
 function getListData(listIndex) {
   if (listIndex === -1) {
     return g_favoritesData;
@@ -143,8 +147,72 @@ function getListData(listIndex) {
   }
 }
 
+function getEntryIndexInList(listIndex, entry) {
+  const listData = getListData(listIndex);
+  if (entry.data && entry.data.source) {
+    for (let index = 0; index < listData.length; index++) {
+      if (!listData[index].data || !listData[index].data.source) continue;
+      if (JSON.stringify(listData[index].data) === JSON.stringify(entry.data)) {
+        return index;
+      }
+    }
+    return -1;
+  } else {
+    return getLocalPathIndexInList(listIndex, entry.path);
+  }
+}
+
+function isEntryInList(listIndex, entry) {
+  return getEntryIndexInList(listIndex, entry) >= 0;
+}
+
+function generateCardsFromSavedData(inputData, isFavoritesList) {
+  const data = [];
+  for (let index = 0; index < inputData.length; index++) {
+    try {
+      const inputBook = inputData[index];
+      const outputBook = {};
+      outputBook.index = index;
+      outputBook.path = inputBook.path;
+      outputBook.name = inputBook.name;
+      if (isFavoritesList) {
+        if (inputBook.localizedNameId) {
+          // used in the defaults
+          outputBook.name = getFavoriteLocalizedName(index);
+        }
+      } else {
+        outputBook.isInFavorites = isLocalPathInList(-1, outputBook.path);
+      }
+      if (inputBook.data && inputBook.data.source) {
+        outputBook.pathType = 2;
+      } else if (fs.existsSync(outputBook.path)) {
+        outputBook.pathType = !fs.lstatSync(outputBook.path).isDirectory()
+          ? 0
+          : 1;
+      } else {
+        outputBook.pathType = -1;
+      }
+      if (outputBook.pathType !== 1) {
+        if (outputBook.pathType === 0) {
+          outputBook.percentageRead = getPercentageReadFromHistoryIndex(
+            history.getFilePathIndex(outputBook.path)
+          );
+        } else if (outputBook.pathType === 2) {
+          outputBook.percentageRead = getPercentageReadFromHistoryIndex(
+            history.getDataIndex(inputBook.data)
+          );
+        }
+      }
+      data.push(outputBook);
+    } catch (error) {
+      log.editorError(error);
+    }
+  }
+  return data;
+}
+
 //////////////////////////////////////////////////////////////////////////////
-// LATEST ////////////////////////////////////////////////////////////////////
+// LISTS - LATEST ////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 
 function getLatestCards() {
@@ -226,7 +294,7 @@ function getLatestCards() {
 }
 
 //////////////////////////////////////////////////////////////////////////////
-// LATEST >-> FAVORITES //////////////////////////////////////////////////////
+// LISTS - LATEST -> FAVORITES //////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 
 function getLatestIndexInFavorites(latestIndex) {
@@ -299,7 +367,7 @@ function removeLatestFromFavorites(index) {
 }
 
 //////////////////////////////////////////////////////////////////////////////
-// FAVORITES /////////////////////////////////////////////////////////////////
+// LISTS - FAVORITES /////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 
 function getFavoritesCards() {
@@ -350,7 +418,7 @@ function addListEntryFromLocalPath(listIndex, localPath) {
 }
 
 //////////////////////////////////////////////////////////////////////////////
-// USER LISTS ////////////////////////////////////////////////////////////////
+// LISTS - USER LISTS ////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 
 function getUserCardsLists() {
@@ -365,55 +433,6 @@ function getUserCardsLists() {
     lists.push(list);
   }
   return lists;
-}
-
-//////////////////////////////////////////////////////////////////////////////
-// COMMON ////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
-
-function generateCardsFromSavedData(inputData, isFavoritesList) {
-  const data = [];
-  for (let index = 0; index < inputData.length; index++) {
-    try {
-      const inputBook = inputData[index];
-      const outputBook = {};
-      outputBook.index = index;
-      outputBook.path = inputBook.path;
-      outputBook.name = inputBook.name;
-      if (isFavoritesList) {
-        if (inputBook.localizedNameId) {
-          // used in the defaults
-          outputBook.name = getFavoriteLocalizedName(index);
-        }
-      } else {
-        outputBook.isInFavorites = isLocalPathInList(-1, outputBook.path);
-      }
-      if (inputBook.data && inputBook.data.source) {
-        outputBook.pathType = 2;
-      } else if (fs.existsSync(outputBook.path)) {
-        outputBook.pathType = !fs.lstatSync(outputBook.path).isDirectory()
-          ? 0
-          : 1;
-      } else {
-        outputBook.pathType = -1;
-      }
-      if (outputBook.pathType !== 1) {
-        if (outputBook.pathType === 0) {
-          outputBook.percentageRead = getPercentageReadFromHistoryIndex(
-            history.getFilePathIndex(outputBook.path)
-          );
-        } else if (outputBook.pathType === 2) {
-          outputBook.percentageRead = getPercentageReadFromHistoryIndex(
-            history.getDataIndex(inputBook.data)
-          );
-        }
-      }
-      data.push(outputBook);
-    } catch (error) {
-      log.editorError(error);
-    }
-  }
-  return data;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -914,13 +933,49 @@ function initOnIpcCallbacks() {
 
   //////////////////////
 
-  on("hs-on-list-card-dropped", (listIndex, fromCardIndex, toCardIndex) => {
-    const listData = getListData(listIndex);
-    let element = listData[fromCardIndex];
-    listData.splice(fromCardIndex, 1);
-    listData.splice(toCardIndex, 0, element);
-    buildSections(false);
-  });
+  on(
+    "hs-on-list-card-dropped",
+    (fromListIndex, toListIndex, fromEntryIndex, toEntryIndex) => {
+      const fromListData = getListData(fromListIndex);
+      const fromEntry = fromListData[fromEntryIndex];
+      if (fromListIndex === toListIndex) {
+        const toListData = getListData(toListIndex);
+        fromListData.splice(fromEntryIndex, 1);
+        if (toEntryIndex === -1) {
+          // empty card
+          toListData.push(fromEntry);
+        } else {
+          if (toEntryIndex >= toListData.length)
+            toEntryIndex = toListData.length - 1;
+          toListData.splice(toEntryIndex, 0, fromEntry);
+        }
+        buildSections(false);
+      } else {
+        const fromListData = getListData(fromListIndex);
+        if (!isEntryInList(toListIndex, fromEntry)) {
+          // const toEntry = fromListData[fromEntryIndex];
+          const toListData = getListData(toListIndex);
+          if (fromListIndex === -1) {
+            // from favs to user list
+            if (fromEntry.localizedNameId) {
+              fromEntry.name = getFavoriteLocalizedName(fromEntryIndex);
+              fromEntry.localizedNameId = undefined;
+            }
+          }
+          if (toEntryIndex === -1) {
+            // empty card
+            toListData.push(fromEntry);
+          } else {
+            toListData.splice(toEntryIndex, 0, fromEntry);
+          }
+          fromListData.splice(fromEntryIndex, 1);
+          buildSections(false);
+        } else {
+          log.editor("dropped entry already in list");
+        }
+      }
+    }
+  );
 
   //////////////////////
 
