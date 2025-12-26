@@ -28,8 +28,7 @@ let g_navData = {};
 let g_languageDirection = "ltr";
 let g_pagesContainerDiv;
 
-let g_favorites;
-let g_latest;
+let g_userLists;
 
 let g_collapsedNumRowsShown = 3;
 let g_collapseLatest = true;
@@ -144,14 +143,14 @@ function init() {
       "#hs-latest-collapse-button"
     );
     collapseLatestButton.addEventListener("click", function (event) {
-      sendIpcToMain("hs-on-collapse-latest-clicked", true);
+      sendIpcToMain("hs-on-collapse-list-clicked", -2, true);
       event.stopPropagation();
     });
     const expandLatestButton = document.querySelector(
       "#hs-latest-expand-button"
     );
     expandLatestButton.addEventListener("click", function (event) {
-      sendIpcToMain("hs-on-collapse-latest-clicked", false);
+      sendIpcToMain("hs-on-collapse-list-clicked", -2, false);
       event.stopPropagation();
     });
     ///////////
@@ -159,14 +158,14 @@ function init() {
       "#hs-favorites-collapse-button"
     );
     collapseFavoritesButton.addEventListener("click", function (event) {
-      sendIpcToMain("hs-on-collapse-favorites-clicked", true);
+      sendIpcToMain("hs-on-collapse-list-clicked", -1, true);
       event.stopPropagation();
     });
     const expandFavoritesButton = document.querySelector(
       "#hs-favorites-expand-button"
     );
     expandFavoritesButton.addEventListener("click", function (event) {
-      sendIpcToMain("hs-on-collapse-favorites-clicked", false);
+      sendIpcToMain("hs-on-collapse-list-clicked", -1, false);
       event.stopPropagation();
     });
     ///////////
@@ -198,29 +197,43 @@ function initOnIpcCallbacks() {
     buildSections(...args);
   });
 
-  on("hs-set-latest-collapse-value", (value) => {
-    g_collapseLatest = value;
+  ///////////
+
+  on("hs-set-list-collapse-value", (listIndex, value) => {
+    if (listIndex === -2) g_collapseLatest = value;
+    else if (listIndex === -1) g_collapseFavorites = value;
+    else {
+      // TODO
+    }
   });
 
-  on("hs-set-favorites-collapse-value", (value) => {
-    g_collapseFavorites = value;
+  ///////////
+
+  on("hs-show-modal-add-list-entry", (...args) => {
+    showModalAddListEntry(...args);
   });
 
-  on("hs-show-modal-add-favorite", (...args) => {
-    showModalAddFavorite(...args);
+  on("hs-show-modal-edit-list-name", (...args) => {
+    showModalEditListName(...args);
   });
 
-  on("hs-show-modal-favorite-options", (...args) => {
-    showModalFavoriteOptions(...args);
+  on("hs-show-modal-remove-list-warning", (...args) => {
+    showModalRemoveListWarning(...args);
   });
 
-  on("hs-show-modal-favorite-edit-name", (...args) => {
-    showModalFavoriteEditName(...args);
+  on("hs-show-modal-list-entry-options", (...args) => {
+    showModalListEntryOptions(...args);
   });
 
-  on("hs-show-modal-favorite-edit-path", (...args) => {
-    showModalFavoriteEditPath(...args);
+  on("hs-show-modal-list-entry-edit-name", (...args) => {
+    showModalListEntryEditName(...args);
   });
+
+  on("hs-show-modal-list-entry-edit-path", (...args) => {
+    showModalListEntryEditPath(...args);
+  });
+
+  ///////////
 
   on("hs-show-modal-files-tools", (...args) => {
     showModalFilesTools(...args);
@@ -247,28 +260,38 @@ const CardType = {
   EMPTY: "empty",
   LATEST: "latest",
   FAVORITES: "favorites",
-  ADD_FAVORITE: "add favorite",
+  USERLIST: "user list",
 };
+
+function isListCollapsed(listIndex) {
+  if (listIndex === -2) return g_collapseLatest;
+  else if (listIndex === -1) return g_collapseFavorites;
+  else {
+    return g_userLists[listIndex].collapsed;
+  }
+}
 
 function buildSections(
   languageDirection,
   favorites,
   latest,
-  maxLatest,
+  userLists,
+  localization,
   refocus
 ) {
   g_languageDirection = languageDirection;
-  g_favorites = favorites;
-  g_latest = latest;
+  g_userLists = userLists;
 
   let navRow = 1;
   let navColumn = 0;
 
   // FAVORITES ////////////////////
+  // title
   const addFavoriteButton = document.querySelector("#hs-favorites-add-button");
   addFavoriteButton.addEventListener("click", function (event) {
     sendIpcToMain(
-      "hs-on-add-favorite-clicked",
+      "hs-on-add-list-entry-clicked",
+      -1,
       event == undefined || event.pointerType !== "mouse"
     );
     event.stopPropagation();
@@ -285,6 +308,7 @@ function buildSections(
     "#hs-favorites-expand-button"
   );
 
+  // cards
   const favoritesDiv = document.querySelector("#hs-favorites");
   favoritesDiv.innerHTML = "";
 
@@ -292,14 +316,13 @@ function buildSections(
   listDiv.classList.add("hs-path-cards-list");
   favoritesDiv.appendChild(listDiv);
 
-  let index = 0;
   let max = favorites.length;
   let showFavoritesEllipsis = false;
   if (favorites.length <= g_collapsedNumRowsShown * 2) {
     collapseFavoritesButton.classList.add("set-display-none");
     expandFavoritesButton.classList.add("set-display-none");
   } else {
-    if (g_collapseFavorites) {
+    if (isListCollapsed(-1)) {
       collapseFavoritesButton.classList.add("set-display-none");
       expandFavoritesButton.classList.remove("set-display-none");
       collapseFavoritesButton.removeAttribute("data-nav-panel");
@@ -324,30 +347,33 @@ function buildSections(
     }
   }
   max = Math.max(2, 2 * Math.round(max / 2));
+
   ///////
+
   navRow = 2;
   navColumn = 0;
-  for (; index < max; index++) {
+
+  for (let cardIndex = 0; cardIndex < max; cardIndex++) {
     if (g_languageDirection === "rtl") {
-      if (index % 2 === 0) {
-        if (index !== 0) navRow++;
+      if (cardIndex % 2 === 0) {
+        if (cardIndex !== 0) navRow++;
         navColumn = 3;
-        if (index === favorites.length - 1) navColumn = 1;
+        if (cardIndex === favorites.length - 1) navColumn = 1;
       } else {
         navColumn = 1;
       }
     } else {
-      if (index % 2 === 0) {
+      if (cardIndex % 2 === 0) {
         navColumn = 0;
-        if (index !== 0) navRow++;
+        if (cardIndex !== 0) navRow++;
       } else {
         navColumn = 2;
       }
     }
-    if (favorites && favorites.length > index) {
-      const data = favorites[index];
+    if (favorites && favorites.length > cardIndex) {
+      const data = favorites[cardIndex];
       listDiv.appendChild(
-        getNewCardDiv(CardType.FAVORITES, data, navRow, navColumn)
+        getNewCardDiv(CardType.FAVORITES, data, navRow, navColumn, -1)
       );
     } else {
       listDiv.appendChild(
@@ -388,109 +414,267 @@ function buildSections(
   );
   const expandLatestButton = document.querySelector("#hs-latest-expand-button");
   latestDiv.innerHTML = "";
-  if (false) {
-    //(maxLatest <= 0 || latest.length <= 0) {
-    latestTitleDiv.classList.add("set-display-none");
+
+  latestTitleDiv.classList.remove("set-display-none");
+  listDiv = document.createElement("div");
+  listDiv.classList.add("hs-path-cards-list");
+  latestDiv.appendChild(listDiv);
+
+  max = latest.length;
+  // collapse / expand button ////////////
+  let showLatestEllipsis = false;
+  if (latest.length <= g_collapsedNumRowsShown * 2) {
     collapseLatestButton.classList.add("set-display-none");
     expandLatestButton.classList.add("set-display-none");
   } else {
-    latestTitleDiv.classList.remove("set-display-none");
-    listDiv = document.createElement("div");
-    listDiv.classList.add("hs-path-cards-list");
-    latestDiv.appendChild(listDiv);
-
-    let max = latest.length;
-    // NOTE: I decided to not show empty slots but I'll leave the
-    // code for that in case I change my mind
-    //const max = Math.max(2, 2 * Math.round(latest.length / 2));
-    // collapse / expand button ////////////
-    let showLatestEllipsis = false;
-    if (latest.length <= g_collapsedNumRowsShown * 2) {
+    if (isListCollapsed(-2)) {
       collapseLatestButton.classList.add("set-display-none");
-      expandLatestButton.classList.add("set-display-none");
+      expandLatestButton.classList.remove("set-display-none");
+      collapseLatestButton.removeAttribute("data-nav-panel");
+      collapseLatestButton.removeAttribute("data-nav-row");
+      collapseLatestButton.removeAttribute("data-nav-col");
+      expandLatestButton.setAttribute("data-nav-panel", 0);
+      expandLatestButton.setAttribute("data-nav-row", navRow);
+      expandLatestButton.setAttribute("data-nav-col", navColumn++);
+      expandLatestButton.setAttribute("tabindex", "0");
+      max = g_collapsedNumRowsShown * 2;
+      if (latest.length > max) showLatestEllipsis = true;
     } else {
-      if (g_collapseLatest) {
-        collapseLatestButton.classList.add("set-display-none");
-        expandLatestButton.classList.remove("set-display-none");
-        collapseLatestButton.removeAttribute("data-nav-panel");
-        collapseLatestButton.removeAttribute("data-nav-row");
-        collapseLatestButton.removeAttribute("data-nav-col");
-        expandLatestButton.setAttribute("data-nav-panel", 0);
-        expandLatestButton.setAttribute("data-nav-row", navRow);
-        expandLatestButton.setAttribute("data-nav-col", navColumn++);
-        expandLatestButton.setAttribute("tabindex", "0");
-        max = g_collapsedNumRowsShown * 2;
-        if (latest.length > max) showLatestEllipsis = true;
-      } else {
-        collapseLatestButton.classList.remove("set-display-none");
-        expandLatestButton.classList.add("set-display-none");
-        collapseLatestButton.setAttribute("data-nav-panel", 0);
-        collapseLatestButton.setAttribute("data-nav-row", navRow);
-        collapseLatestButton.setAttribute("data-nav-col", navColumn++);
-        collapseLatestButton.setAttribute("tabindex", "0");
-        expandLatestButton.removeAttribute("data-nav-panel");
-        expandLatestButton.removeAttribute("data-nav-row");
-        expandLatestButton.removeAttribute("data-nav-col");
-      }
-    }
-    max = Math.max(2, 2 * Math.round(max / 2));
-    //////////////////
-    for (index = 0; index < max; index++) {
-      if (g_languageDirection === "rtl") {
-        if (index % 2 === 0) {
-          if (index !== 0) navRow++;
-          navColumn = 3;
-          if (index === favorites.length - 1) navColumn = 1;
-        } else {
-          navColumn = 1;
-        }
-      } else {
-        if (index % 2 === 0) {
-          navColumn = 0;
-          if (index !== 0) navRow++;
-        } else {
-          navColumn = 2;
-        }
-      }
-      // OLD LATEST CODE
-      // if (g_languageDirection === "rtl") {
-      //   if (index % 2 === 0) {
-      //     if (index !== 0) navRow++;
-      //     navColumn = 1;
-      //     if (index === latest.length - 1) {
-      //       navColumn = 0;
-      //     }
-      //   } else {
-      //     navColumn = 0;
-      //   }
-      // } else {
-      //   if (index % 2 === 0) {
-      //     navColumn = 0;
-      //     if (index !== 0) navRow++;
-      //   } else {
-      //     navColumn = 1;
-      //   }
-      // }
-
-      if (latest && latest.length > index) {
-        const data = latest[index];
-        listDiv.appendChild(
-          getNewCardDiv(CardType.LATEST, data, navRow, navColumn)
-        );
-      } else {
-        listDiv.appendChild(
-          getNewCardDiv(CardType.EMPTY, undefined, navRow, navColumn)
-        );
-      }
-    }
-    if (showLatestEllipsis) {
-      const ellipsis = document.createElement("div");
-      ellipsis.classList = "hs-section-ellipsis";
-      ellipsis.innerHTML = `<i class="fa-solid fa-ellipsis"></i>`;
-      latestDiv.appendChild(ellipsis);
+      collapseLatestButton.classList.remove("set-display-none");
+      expandLatestButton.classList.add("set-display-none");
+      collapseLatestButton.setAttribute("data-nav-panel", 0);
+      collapseLatestButton.setAttribute("data-nav-row", navRow);
+      collapseLatestButton.setAttribute("data-nav-col", navColumn++);
+      collapseLatestButton.setAttribute("tabindex", "0");
+      expandLatestButton.removeAttribute("data-nav-panel");
+      expandLatestButton.removeAttribute("data-nav-row");
+      expandLatestButton.removeAttribute("data-nav-col");
     }
   }
-  // create list button
+  max = Math.max(2, 2 * Math.round(max / 2));
+  //////////////////
+  for (let cardIndex = 0; cardIndex < max; cardIndex++) {
+    if (g_languageDirection === "rtl") {
+      if (cardIndex % 2 === 0) {
+        if (cardIndex !== 0) navRow++;
+        navColumn = 3;
+        if (cardIndex === favorites.length - 1) navColumn = 1;
+      } else {
+        navColumn = 1;
+      }
+    } else {
+      if (cardIndex % 2 === 0) {
+        navColumn = 0;
+        if (cardIndex !== 0) navRow++;
+      } else {
+        navColumn = 2;
+      }
+    }
+    // OLD LATEST CODE
+    // if (g_languageDirection === "rtl") {
+    //   if (index % 2 === 0) {
+    //     if (index !== 0) navRow++;
+    //     navColumn = 1;
+    //     if (index === latest.length - 1) {
+    //       navColumn = 0;
+    //     }
+    //   } else {
+    //     navColumn = 0;
+    //   }
+    // } else {
+    //   if (index % 2 === 0) {
+    //     navColumn = 0;
+    //     if (index !== 0) navRow++;
+    //   } else {
+    //     navColumn = 1;
+    //   }
+    // }
+
+    if (latest && latest.length > cardIndex) {
+      const data = latest[cardIndex];
+      listDiv.appendChild(
+        getNewCardDiv(CardType.LATEST, data, navRow, navColumn)
+      );
+    } else {
+      listDiv.appendChild(
+        getNewCardDiv(CardType.EMPTY, undefined, navRow, navColumn)
+      );
+    }
+  }
+  if (showLatestEllipsis) {
+    const ellipsis = document.createElement("div");
+    ellipsis.classList = "hs-section-ellipsis";
+    ellipsis.innerHTML = `<i class="fa-solid fa-ellipsis"></i>`;
+    latestDiv.appendChild(ellipsis);
+  }
+  // USER LISTS //////////////////
+  const listsDiv = document.querySelector("#hs-lists");
+  listsDiv.innerHTML = "";
+  if (userLists && userLists.length > 0) {
+    for (let listIndex = 0; listIndex < userLists.length; listIndex++) {
+      const list = userLists[listIndex];
+      navRow++;
+      navColumn = 0;
+
+      //title
+      const titleDiv = document.createElement("div");
+      titleDiv.classList = "hs-section-title";
+      titleDiv.innerHTML = `
+      <div><i class="fa-solid fa-list hs-section-title-icon"></i> ${list.name}</div>
+      <div class="hs-section-title-buttons">        
+        <div id="hs-list-${listIndex}-edit-name-button" class="hs-section-title-button">
+          <i class="fa-solid fa-pen"></i>
+        </div>
+         <div id="hs-list-${listIndex}-remove-button" class="hs-section-title-button">
+          <i class="fa-solid fa-trash-can"></i>
+        </div>
+        <div id="hs-list-${listIndex}-add-button" class="hs-section-title-button">
+          <i class="fas fa-plus-circle"></i>
+        </div>
+        <div id="hs-list-${listIndex}-collapse-button" class="hs-section-title-button">
+          <i class="fa-solid fa-circle-chevron-up"></i>
+        </div>
+        <div id="hs-list-${listIndex}-expand-button" class="hs-section-title-button">
+          <i class="fa-solid fa-circle-chevron-down"></i>
+        </div>
+      </div>`;
+      listsDiv.appendChild(titleDiv);
+
+      const contentDiv = document.createElement("div");
+      contentDiv.id = `hs-list-${listIndex}`;
+      contentDiv.classList = "hs-section-content";
+      listsDiv.appendChild(contentDiv);
+
+      const addButton = document.querySelector(
+        `#hs-list-${listIndex}-add-button`
+      );
+      addButton.title = localization.addButtonTitle;
+      addButton.addEventListener("click", function (event) {
+        sendIpcToMain(
+          "hs-on-add-list-entry-clicked",
+          listIndex,
+          event == undefined || event.pointerType !== "mouse"
+        );
+        event.stopPropagation();
+      });
+      addButton.setAttribute("data-nav-panel", 0);
+      addButton.setAttribute("data-nav-row", navRow);
+      addButton.setAttribute("data-nav-col", navColumn++);
+      addButton.setAttribute("tabindex", "0");
+
+      const collapseButton = document.querySelector(
+        `#hs-list-${listIndex}-collapse-button`
+      );
+      collapseButton.title = localization.collapseButtonTitle;
+      collapseButton.addEventListener("click", function (event) {
+        sendIpcToMain("hs-on-collapse-list-clicked", listIndex, true);
+        event.stopPropagation();
+      });
+      const expandButton = document.querySelector(
+        `#hs-list-${listIndex}-expand-button`
+      );
+      expandButton.title = localization.expandButtonTitle;
+      expandButton.addEventListener("click", function (event) {
+        sendIpcToMain("hs-on-collapse-list-clicked", listIndex, false);
+        event.stopPropagation();
+      });
+      const editNameButton = document.querySelector(
+        `#hs-list-${listIndex}-edit-name-button`
+      );
+      editNameButton.title = localization.editNameButtonTitle;
+      editNameButton.addEventListener("click", function (event) {
+        sendIpcToMain("hs-on-edit-list-name-clicked", listIndex);
+        event.stopPropagation();
+      });
+      const removeButton = document.querySelector(
+        `#hs-list-${listIndex}-remove-button`
+      );
+      removeButton.title = localization.removeListButtonTitle;
+      removeButton.addEventListener("click", function (event) {
+        sendIpcToMain("hs-on-remove-list-clicked", listIndex);
+        event.stopPropagation();
+      });
+
+      // cards
+      let cardsDiv = document.createElement("div");
+      cardsDiv.classList.add("hs-path-cards-list");
+      contentDiv.appendChild(cardsDiv);
+
+      let max = list.data.length;
+      let showEllipsis = false;
+      if (list.data.length <= g_collapsedNumRowsShown * 2) {
+        collapseButton.classList.add("set-display-none");
+        expandButton.classList.add("set-display-none");
+      } else {
+        if (isListCollapsed(listIndex)) {
+          collapseButton.classList.add("set-display-none");
+          expandButton.classList.remove("set-display-none");
+          collapseButton.removeAttribute("data-nav-panel");
+          collapseButton.removeAttribute("data-nav-row");
+          collapseButton.removeAttribute("data-nav-col");
+          expandButton.setAttribute("data-nav-panel", 0);
+          expandButton.setAttribute("data-nav-row", navRow);
+          expandButton.setAttribute("data-nav-col", navColumn++);
+          expandButton.setAttribute("tabindex", "0");
+          max = g_collapsedNumRowsShown * 2;
+          if (list.data.length > max) showEllipsis = true;
+        } else {
+          collapseButton.classList.remove("set-display-none");
+          expandButton.classList.add("set-display-none");
+          collapseButton.setAttribute("data-nav-panel", 0);
+          collapseButton.setAttribute("data-nav-row", navRow);
+          collapseButton.setAttribute("data-nav-col", navColumn++);
+          collapseButton.setAttribute("tabindex", "0");
+          expandButton.removeAttribute("data-nav-panel");
+          expandButton.removeAttribute("data-nav-row");
+          expandButton.removeAttribute("data-nav-col");
+        }
+      }
+      max = Math.max(2, 2 * Math.round(max / 2));
+
+      ///////
+
+      navRow++;
+      navColumn = 0;
+
+      for (let cardIndex = 0; cardIndex < max; cardIndex++) {
+        if (g_languageDirection === "rtl") {
+          if (cardIndex % 2 === 0) {
+            if (cardIndex !== 0) navRow++;
+            navColumn = 3;
+            if (cardIndex === list.data.length - 1) navColumn = 1;
+          } else {
+            navColumn = 1;
+          }
+        } else {
+          if (cardIndex % 2 === 0) {
+            navColumn = 0;
+            if (cardIndex !== 0) navRow++;
+          } else {
+            navColumn = 2;
+          }
+        }
+        if (list.data && list.data.length > cardIndex) {
+          const data = list.data[cardIndex];
+          cardsDiv.appendChild(
+            getNewCardDiv(CardType.USERLIST, data, navRow, navColumn, listIndex)
+          );
+        } else {
+          cardsDiv.appendChild(
+            getNewCardDiv(CardType.EMPTY, undefined, navRow, navColumn)
+          );
+        }
+      }
+      if (showEllipsis) {
+        const ellipsis = document.createElement("div");
+        ellipsis.classList = "hs-section-ellipsis";
+        ellipsis.innerHTML = `<i class="fa-solid fa-ellipsis"></i>`;
+        contentDiv.appendChild(ellipsis);
+      }
+    }
+  }
+
+  // CREATE LIST button //////////
   navRow++;
   navColumn = 0;
   const createListButton = document.querySelector("#hs-addlist-add-button");
@@ -498,11 +682,12 @@ function buildSections(
   createListButton.setAttribute("data-nav-row", navRow);
   createListButton.setAttribute("data-nav-col", navColumn++);
   createListButton.setAttribute("tabindex", "0");
+
   // NAVIGATION
   navigation.rebuild(g_navData, refocus ? 0 : undefined);
 }
 
-function getNewCardDiv(cardType, data, navRow, navColumn) {
+function getNewCardDiv(cardType, data, navRow, navColumn, listIndex) {
   const cardDiv = document.createElement("div");
 
   // let hasButton = cardType === CardType.LATEST ? false : true;
@@ -561,11 +746,16 @@ function getNewCardDiv(cardType, data, navRow, navColumn) {
   const interactiveHtml = data
     ? `  
   <div class="hs-path-card-main hs-path-interactive">
-    ${cardType === CardType.FAVORITES ? dragMiniIconHtml : ""}
+    ${
+      cardType === CardType.FAVORITES || cardType === CardType.USERLIST
+        ? dragMiniIconHtml
+        : ""
+    }
     <div class="hs-path-card-image">
       ${getIconHtml()}     
       ${
-        cardType === CardType.LATEST && data.isInFavorites
+        cardType === CardType.LATEST ||
+        (cardType === CardType.USERLIST && data.isInFavorites)
           ? favMiniIconHtml
           : ""
       } 
@@ -581,13 +771,14 @@ function getNewCardDiv(cardType, data, navRow, navColumn) {
   const emptyHtml = `
   <div class="hs-path-card-main hs-path-empty">
   </div>`;
-  const addFavHtml = `
-  <div class="hs-add-card-image">
-    <i class="fas fa-plus-circle fa-2x fa-fw"></i>
-  </div>`;
+  // const addFavHtml = `
+  // <div class="hs-add-card-image">
+  //   <i class="fas fa-plus-circle fa-2x fa-fw"></i>
+  // </div>`;
 
   switch (cardType) {
     case CardType.FAVORITES:
+    case CardType.USERLIST:
       {
         cardDiv.classList.add("hs-path-card");
         cardDiv.innerHTML = interactiveHtml;
@@ -630,11 +821,42 @@ function getNewCardDiv(cardType, data, navRow, navColumn) {
         mainCardDiv.addEventListener("drop", (event) => {
           if (event.target.classList.contains("hs-path-card-main")) {
             mainCardDiv.classList.remove("hs-path-card-main-dragging-over");
-            sendIpcToMain(
-              "hs-on-favorite-dropped",
-              g_draggedCard.getAttribute("data-fav-index"),
-              event.target.getAttribute("data-fav-index")
-            );
+            if (cardType == CardType.FAVORITES) {
+              const fromIndex = g_draggedCard.getAttribute(
+                "data-fav-card-index"
+              );
+              const toIndex = event.target.getAttribute("data-fav-card-index");
+              if (fromIndex !== null && toIndex !== null) {
+                sendIpcToMain(
+                  "hs-on-list-card-dropped",
+                  -1,
+                  fromIndex,
+                  toIndex
+                );
+              }
+            } else if (cardType == CardType.USERLIST) {
+              const fromListIndex =
+                g_draggedCard.getAttribute("data-list-index");
+              const toListIndex = event.target.getAttribute("data-list-index");
+              const fromIndex = g_draggedCard.getAttribute(
+                "data-list-card-index"
+              );
+              const toIndex = event.target.getAttribute("data-list-card-index");
+              if (
+                fromListIndex !== null &&
+                toListIndex !== null &&
+                fromListIndex == toListIndex &&
+                fromIndex !== null &&
+                toIndex !== null
+              ) {
+                sendIpcToMain(
+                  "hs-on-list-card-dropped",
+                  fromListIndex,
+                  fromIndex,
+                  toIndex
+                );
+              }
+            }
             event.preventDefault();
           }
         });
@@ -654,7 +876,12 @@ function getNewCardDiv(cardType, data, navRow, navColumn) {
           event.stopPropagation();
         });
         // data
-        mainCardDiv.setAttribute("data-fav-index", data.index);
+        if (cardType == CardType.FAVORITES) {
+          mainCardDiv.setAttribute("data-fav-card-index", data.index);
+        } else if (cardType == CardType.USERLIST) {
+          mainCardDiv.setAttribute("data-list-card-index", data.index);
+          mainCardDiv.setAttribute("data-list-index", listIndex);
+        }
         /////////////
 
         if (navRow !== undefined && navColumn !== undefined) {
@@ -674,7 +901,8 @@ function getNewCardDiv(cardType, data, navRow, navColumn) {
         buttonDiv.title = g_cardLocalization.options;
         buttonDiv.addEventListener("click", function (event) {
           sendIpcToMain(
-            "hs-on-favorite-options-clicked",
+            "hs-on-list-entry-options-clicked",
+            listIndex,
             data.index,
             data.path,
             event == undefined || event.pointerType !== "mouse"
@@ -694,25 +922,7 @@ function getNewCardDiv(cardType, data, navRow, navColumn) {
         }
       }
       break;
-    case CardType.ADD_FAVORITE:
-      cardDiv.classList.add("hs-add-card");
-      cardDiv.classList.add("hs-path-interactive");
-      cardDiv.innerHTML = addFavHtml;
-      cardDiv.title = g_cardLocalization.add;
-      cardDiv.addEventListener("click", function (event) {
-        sendIpcToMain(
-          "hs-on-add-favorite-clicked",
-          event == undefined || event.pointerType !== "mouse"
-        );
-        event.stopPropagation();
-      });
-      if (navRow !== undefined && navColumn !== undefined) {
-        cardDiv.setAttribute("data-nav-panel", 0);
-        cardDiv.setAttribute("data-nav-row", navRow);
-        cardDiv.setAttribute("data-nav-col", navColumn);
-        cardDiv.setAttribute("tabindex", "0");
-      }
-      break;
+
     case CardType.LATEST:
       {
         cardDiv.classList.add("hs-path-card");
@@ -1087,11 +1297,12 @@ function showModalArtTools(
 
 ///////////////////
 
-function showModalAddFavorite(
+function showModalAddListEntry(
   title,
   textButtonBack,
   textButtonAddFile,
   textButtonAddFolder,
+  listIndex,
   showFocus
 ) {
   if (getOpenModal()) {
@@ -1103,7 +1314,7 @@ function showModalAddFavorite(
     fullWidth: true,
     callback: () => {
       modalClosed();
-      sendIpcToMain("hs-on-modal-add-favorite-file-clicked");
+      sendIpcToMain("hs-on-modal-add-list-file-clicked", listIndex);
     },
   });
   buttons.push({
@@ -1111,7 +1322,7 @@ function showModalAddFavorite(
     fullWidth: true,
     callback: () => {
       modalClosed();
-      sendIpcToMain("hs-on-modal-add-favorite-folder-clicked");
+      sendIpcToMain("hs-on-modal-add-list-folder-clicked", listIndex);
     },
   });
   buttons.push({
@@ -1136,7 +1347,93 @@ function showModalAddFavorite(
   });
 }
 
-function showModalFavoriteOptions(
+function showModalEditListName(
+  listIndex,
+  name,
+  title,
+  textButton1,
+  textButton2
+) {
+  if (getOpenModal()) {
+    return;
+  }
+
+  showModal({
+    title: title,
+    zIndexDelta: -450,
+    input: { type: "text", default: name },
+    close: {
+      callback: () => {
+        modalClosed();
+      },
+      key: "Escape",
+    },
+    buttons: [
+      {
+        text: textButton1.toUpperCase(),
+        callback: (showFocus, value) => {
+          sendIpcToMain(
+            "hs-on-modal-edit-list-name-ok-clicked",
+            listIndex,
+            value
+          );
+          modalClosed();
+        },
+        key: "Enter",
+      },
+      {
+        text: textButton2.toUpperCase(),
+        callback: () => {
+          modalClosed();
+        },
+      },
+    ],
+  });
+}
+
+function showModalRemoveListWarning(
+  listIndex,
+  title,
+  message,
+  textButton1,
+  textButton2
+) {
+  if (getOpenModal()) {
+    return;
+  }
+
+  showModal({
+    title: title,
+    message: message,
+    zIndexDelta: -450,
+    close: {
+      callback: () => {
+        modalClosed();
+      },
+      key: "Escape",
+    },
+    buttons: [
+      {
+        text: textButton1.toUpperCase(),
+        callback: () => {
+          sendIpcToMain("hs-on-remove-list-warning-ok-clicked", listIndex);
+          modalClosed();
+        },
+      },
+      {
+        text: textButton2.toUpperCase(),
+        callback: () => {
+          modalClosed();
+        },
+      },
+    ],
+  });
+}
+
+////////////////
+
+function showModalListEntryOptions(
+  listIndex,
   index,
   path,
   title,
@@ -1147,6 +1444,8 @@ function showModalFavoriteOptions(
   textButtonMoveForward,
   textButtonMoveBackward,
   textButtonOpenFolder,
+  textButtonAddToFavorites,
+  textButtonRemoveFromFavorites,
   textButtonFolderFavorite,
   showFocus
 ) {
@@ -1160,7 +1459,12 @@ function showModalFavoriteOptions(
     fullWidth: true,
     callback: () => {
       modalClosed();
-      sendIpcToMain("hs-on-modal-favorite-options-remove-clicked", index, path);
+      sendIpcToMain(
+        "hs-on-modal-list-entry-options-remove-clicked",
+        listIndex,
+        index,
+        path
+      );
     },
   });
   buttons.push({
@@ -1169,7 +1473,8 @@ function showModalFavoriteOptions(
     callback: () => {
       modalClosed();
       sendIpcToMain(
-        "hs-on-modal-favorite-options-edit-name-clicked",
+        "hs-on-modal-list-entry-options-edit-name-clicked",
+        listIndex,
         index,
         path
       );
@@ -1184,7 +1489,8 @@ function showModalFavoriteOptions(
       callback: () => {
         modalClosed();
         sendIpcToMain(
-          "hs-on-modal-favorite-options-edit-path-clicked",
+          "hs-on-modal-list-entry-options-edit-path-clicked",
+          listIndex,
           index,
           path
         );
@@ -1198,12 +1504,44 @@ function showModalFavoriteOptions(
         callback: () => {
           modalClosed();
           sendIpcToMain(
-            "hs-on-modal-favorite-options-openfolder-clicked",
+            "hs-on-modal-list-entry-options-openfolder-clicked",
+            listIndex,
             index,
             path
           );
         },
       });
+
+    if (textButtonAddToFavorites)
+      buttons.push({
+        text: textButtonAddToFavorites.toUpperCase(),
+        fullWidth: true,
+        callback: () => {
+          modalClosed();
+          sendIpcToMain(
+            "hs-on-modal-list-entry-options-addtofavorites-clicked",
+            listIndex,
+            index,
+            path
+          );
+        },
+      });
+
+    if (textButtonRemoveFromFavorites)
+      buttons.push({
+        text: textButtonRemoveFromFavorites.toUpperCase(),
+        fullWidth: true,
+        callback: () => {
+          modalClosed();
+          sendIpcToMain(
+            "hs-on-modal-list-entry-options-removefavorites-clicked",
+            listIndex,
+            index,
+            path
+          );
+        },
+      });
+
     if (textButtonFolderFavorite)
       buttons.push({
         text: textButtonFolderFavorite.toUpperCase(),
@@ -1211,40 +1549,44 @@ function showModalFavoriteOptions(
         callback: () => {
           modalClosed();
           sendIpcToMain(
-            "hs-on-modal-favorite-options-addfoldertofavorites-clicked",
+            "hs-on-modal-list-entry-options-addfoldertofavorites-clicked",
+            listIndex,
             index,
             path
           );
         },
       });
   }
-  // TODO: enable move up & down only if using gamepad?
-  buttons.push({
-    text: textButtonMoveBackward.toUpperCase(),
-    fullWidth: true,
-    callback: () => {
-      modalClosed();
-      sendIpcToMain(
-        "hs-on-modal-favorite-options-move-clicked",
-        index,
-        path,
-        0
-      );
-    },
-  });
-  buttons.push({
-    text: textButtonMoveForward.toUpperCase(),
-    fullWidth: true,
-    callback: () => {
-      modalClosed();
-      sendIpcToMain(
-        "hs-on-modal-favorite-options-move-clicked",
-        index,
-        path,
-        1
-      );
-    },
-  });
+  if (showFocus) {
+    buttons.push({
+      text: textButtonMoveBackward.toUpperCase(),
+      fullWidth: true,
+      callback: () => {
+        modalClosed();
+        sendIpcToMain(
+          "hs-on-modal-list-entry-options-move-clicked",
+          listIndex,
+          index,
+          path,
+          0
+        );
+      },
+    });
+    buttons.push({
+      text: textButtonMoveForward.toUpperCase(),
+      fullWidth: true,
+      callback: () => {
+        modalClosed();
+        sendIpcToMain(
+          "hs-on-modal-list-entry-options-move-clicked",
+          listIndex,
+          index,
+          path,
+          1
+        );
+      },
+    });
+  }
   //
   buttons.push({
     text: textButtonBack.toUpperCase(),
@@ -1269,7 +1611,8 @@ function showModalFavoriteOptions(
   });
 }
 
-function showModalFavoriteEditName(
+function showModalListEntryEditName(
+  listIndex,
   index,
   path,
   name,
@@ -1296,7 +1639,8 @@ function showModalFavoriteEditName(
         text: textButton1.toUpperCase(),
         callback: (showFocus, value) => {
           sendIpcToMain(
-            "hs-on-modal-favorite-options-edit-name-ok-clicked",
+            "hs-on-modal-list-entry-options-edit-name-ok-clicked",
+            listIndex,
             index,
             path,
             value
@@ -1315,7 +1659,8 @@ function showModalFavoriteEditName(
   });
 }
 
-function showModalFavoriteEditPath(
+function showModalListEntryEditPath(
+  listIndex,
   index,
   path,
   title,
@@ -1341,7 +1686,8 @@ function showModalFavoriteEditPath(
         text: textButton1.toUpperCase(),
         callback: (showFocus, value) => {
           sendIpcToMain(
-            "hs-on-modal-favorite-options-edit-path-ok-clicked",
+            "hs-on-modal-list-entry-options-edit-path-ok-clicked",
+            listIndex,
             index,
             path,
             value

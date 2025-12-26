@@ -68,8 +68,6 @@ const g_defaultSettings = {
   filterMode: 0, // 0: none, 1: old paper
   toolbarDirection: 0, // 0: infer from language, 1: ltr, 2: rtl
   homeScreenLatestMax: 6, // integer >= 0
-  homeScreenCollapseFavorites: false,
-  homeScreenCollapseLatest: false,
   epubEbookColorMode: 0, // 0: light, 1: dark, 2: custom
   epubEbookColorText: "#000000", // rgb color in hex
   epubEbookColorBg: "#ffffff", // rgb color in hex
@@ -234,8 +232,6 @@ exports.resetPreferences = function () {
     "turnPageOnScrollBoundary",
     "toolbarDirection",
     "homeScreenLatestMax",
-    "homeScreenCollapseFavorites",
-    "homeScreenCollapseLatest",
     "epubEbookColorMode",
     "epubEbookColorText",
     "epubEbookColorBg",
@@ -460,14 +456,6 @@ function sanitize() {
     g_settings.homeScreenLatestMax < 0
   ) {
     g_settings.homeScreenLatestMax = g_defaultSettings.homeScreenLatestMax;
-  }
-  if (typeof g_settings.homeScreenCollapseFavorites !== "boolean") {
-    g_settings.homeScreenCollapseFavorites =
-      g_defaultSettings.homeScreenCollapseFavorites;
-  }
-  if (typeof g_settings.homeScreenCollapseLatest !== "boolean") {
-    g_settings.homeScreenCollapseLatest =
-      g_defaultSettings.homeScreenCollapseLatest;
   }
   if (
     !Number.isInteger(g_settings.epubEbookColorMode) ||

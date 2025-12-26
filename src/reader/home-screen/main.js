@@ -24,8 +24,12 @@ const tools = require("../../shared/main/tools");
 
 let g_isInitialized = false;
 let g_languageDirection = "ltr";
-let g_favorites;
+let g_favoritesData;
+let g_userLists;
 let g_maxLatest = 6;
+
+let g_collapseFavorites = false;
+let g_collapseLatest = false;
 
 function init() {
   if (!g_isInitialized) {
@@ -40,26 +44,22 @@ function init() {
     sendIpcToRenderer("hs-init");
     updateLocalizedText(false);
     favorites.init();
+    g_collapseFavorites = favorites.getValue("collapseFavorites");
+    g_collapseLatest = favorites.getValue("collapseLatest");
   }
 }
 
 exports.open = function (showFocus, maxLatest) {
   g_maxLatest = maxLatest;
   init();
-  sendIpcToRenderer(
-    "hs-set-favorites-collapse-value",
-    settings.getValue("homeScreenCollapseFavorites")
-  );
-  sendIpcToRenderer(
-    "hs-set-latest-collapse-value",
-    settings.getValue("homeScreenCollapseLatest")
-  );
+  sendIpcToRenderer("hs-set-list-collapse-value", -1, g_collapseFavorites);
+  sendIpcToRenderer("hs-set-list-collapse-value", -2, g_collapseLatest);
   // TODO: use showFocus?
   buildSections();
 };
 
 exports.close = function () {
-  saveFavorites();
+  saveToFile();
 };
 
 exports.refresh = function () {
@@ -82,18 +82,72 @@ exports.updateMaxLatest = function (maxLatest) {
 // TOOL //////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 
+function saveToFile() {
+  favorites.setData(g_favoritesData);
+  favorites.setLists(g_userLists);
+  favorites.setValue("collapseFavorites", g_collapseFavorites);
+  favorites.setValue("collapseLatest", g_collapseLatest);
+  favorites.save();
+}
+
 function buildSections(refocus = true) {
   sendIpcToRenderer(
     "hs-build-sections",
     g_languageDirection,
-    getFavoritesData(),
-    getLatestData(),
-    g_maxLatest,
+    getFavoritesCards(),
+    getLatestCards(),
+    getUserCardsLists(),
+    {
+      addButtonTitle: _("tool-shared-ui-add"),
+      collapseButtonTitle: _("tool-shared-ui-collapse-list"),
+      expandButtonTitle: _("tool-shared-ui-expand-list"),
+      editNameButtonTitle: _("ui-modal-prompt-button-edit-name"),
+      removeListButtonTitle: _("tool-shared-ui-remove-list"),
+    },
     refocus
   );
 }
 
-function getLatestData() {
+function getPercentageReadFromHistoryIndex(index) {
+  if (index === undefined || !Number.isInteger(index)) return undefined;
+  const historyData = history.get();
+  let pageIndex = historyData[index].pageIndex;
+  let numPages = historyData[index].numPages;
+  if (pageIndex !== undefined && numPages !== undefined) {
+    pageIndex = parseFloat(pageIndex);
+    numPages = parseFloat(numPages);
+    if (!isNaN(pageIndex) && !isNaN(numPages)) {
+      if (
+        historyData[index].data &&
+        historyData[index].data.bookType &&
+        historyData[index].data.bookType === "ebook"
+      ) {
+        if (pageIndex >= 0 && pageIndex <= 100) {
+          return pageIndex;
+        }
+      } else {
+        if (pageIndex <= numPages) {
+          return ((pageIndex + 1) / numPages) * 100;
+        }
+      }
+    }
+  }
+  return undefined;
+}
+
+function getListData(listIndex) {
+  if (listIndex === -1) {
+    return g_favoritesData;
+  } else {
+    return g_userLists[listIndex].data;
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// LATEST ////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+
+function getLatestCards() {
   const historyData = history.get();
   const data = [];
   for (let index = 0; index < historyData.length; index++) {
@@ -171,100 +225,17 @@ function getLatestData() {
   return data;
 }
 
-function getFavoritesData() {
-  if (!g_favorites) g_favorites = favorites.get();
-  const data = [];
-  for (let index = 0; index < g_favorites.length; index++) {
-    try {
-      const favoriteInfo = {};
-      favoriteInfo.index = index;
-      favoriteInfo.path = g_favorites[index].path;
-      if (g_favorites[index].localizedNameId) {
-        // used in the defaults
-        favoriteInfo.name = getFavoriteLocalizedName(index);
-      } else {
-        favoriteInfo.name = g_favorites[index].name;
-      }
-      if (g_favorites[index].data && g_favorites[index].data.source) {
-        favoriteInfo.pathType = 2;
-      } else if (fs.existsSync(favoriteInfo.path)) {
-        favoriteInfo.pathType = !fs.lstatSync(favoriteInfo.path).isDirectory()
-          ? 0
-          : 1;
-      } else {
-        favoriteInfo.pathType = -1;
-      }
-      if (favoriteInfo.pathType !== 1) {
-        if (favoriteInfo.pathType === 0) {
-          favoriteInfo.percentageRead = getPercentageReadFromHistoryIndex(
-            history.getFilePathIndex(favoriteInfo.path)
-          );
-        } else if (favoriteInfo.pathType === 2) {
-          favoriteInfo.percentageRead = getPercentageReadFromHistoryIndex(
-            history.getDataIndex(g_favorites[index].data)
-          );
-        }
-      }
-      data.push(favoriteInfo);
-    } catch (error) {
-      log.editorError(error);
-    }
-  }
-  return data;
-}
-
-function getFavoriteLocalizedName(index) {
-  switch (g_favorites[index].localizedNameId) {
-    case "home":
-      return _("tool-fb-shortcuts-places-home");
-    case "desktop":
-      return _("tool-fb-shortcuts-places-desktop");
-    case "downloads":
-      return _("tool-fb-shortcuts-places-downloads");
-    default:
-      return undefined;
-  }
-}
-
-function saveFavorites() {
-  favorites.set(g_favorites);
-  favorites.save();
-}
-
-function getLocalPathIndexInFavorites(favPath) {
-  for (let index = 0; index < g_favorites.length; index++) {
-    if (g_favorites[index].path === favPath) {
-      return index;
-    }
-  }
-  return -1;
-}
-
-function isLocalPathInFavorites(favPath) {
-  return getLocalPathIndexInFavorites(favPath) >= 0;
-}
-
-function addFavoriteFromLocalPath(favPath) {
-  let isAlreadyInList = isLocalPathInFavorites(favPath);
-  if (!isAlreadyInList) {
-    g_favorites.push({
-      path: favPath,
-      name: path.basename(favPath),
-    });
-    buildSections();
-  } else {
-    // TODO: show some kind of error modal?
-    log.debug("tried to add a favorite already in the list");
-  }
-}
+//////////////////////////////////////////////////////////////////////////////
+// LATEST >-> FAVORITES //////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 
 function getLatestIndexInFavorites(latestIndex) {
   const historyData = history.get()[latestIndex];
   if (historyData.data && historyData.data.source) {
-    for (let index = 0; index < g_favorites.length; index++) {
-      if (!g_favorites[index].data) continue;
+    for (let index = 0; index < g_favoritesData.length; index++) {
+      if (!g_favoritesData[index].data) continue;
       if (
-        JSON.stringify(g_favorites[index].data) ===
+        JSON.stringify(g_favoritesData[index].data) ===
         JSON.stringify(historyData.data)
       ) {
         return index;
@@ -272,7 +243,7 @@ function getLatestIndexInFavorites(latestIndex) {
     }
     return -1;
   } else {
-    return getLocalPathIndexInFavorites(historyData.filePath);
+    return getLocalPathIndexInList(-1, historyData.filePath);
   }
 }
 
@@ -298,7 +269,7 @@ function addFavoriteFromLatest(index, filePath) {
         name: path.basename(filePath),
       };
     }
-    g_favorites.push(fav);
+    g_favoritesData.push(fav);
     buildSections();
   } else {
     // TODO: show some kind of error modal?
@@ -306,52 +277,143 @@ function addFavoriteFromLatest(index, filePath) {
   }
 }
 
-function addFavoriteFolderFromLatest(index, filePath) {
+function addFavoriteFolderFromLatest(index) {
   const historyData = history.get()[index];
   if (!historyData.filePath || (historyData.data && historyData.data.source))
     return;
   const latestPath = path.dirname(historyData.filePath);
   // TODO: check if valid folder;
-  addFavoriteFromLocalPath(latestPath);
+  addListEntryFromLocalPath(-1, latestPath);
   // TODO: show modal message if error?
 }
 
-function removeFavoriteFromLatest(index, filePath) {
+function removeLatestFromFavorites(index) {
   let favIndex = getLatestIndexInFavorites(index);
   if (favIndex >= 0) {
-    g_favorites.splice(favIndex, 1);
+    g_favoritesData.splice(favIndex, 1);
     buildSections();
   } else {
     // TODO: show some kind of error modal?
-    log.debug("tried to remoe a favorite not in the list");
+    log.debug("tried to remove a favorite not in the list");
   }
 }
 
-function getPercentageReadFromHistoryIndex(index) {
-  if (index === undefined || !Number.isInteger(index)) return undefined;
-  const historyData = history.get();
-  let pageIndex = historyData[index].pageIndex;
-  let numPages = historyData[index].numPages;
-  if (pageIndex !== undefined && numPages !== undefined) {
-    pageIndex = parseFloat(pageIndex);
-    numPages = parseFloat(numPages);
-    if (!isNaN(pageIndex) && !isNaN(numPages)) {
-      if (
-        historyData[index].data &&
-        historyData[index].data.bookType &&
-        historyData[index].data.bookType === "ebook"
-      ) {
-        if (pageIndex >= 0 && pageIndex <= 100) {
-          return pageIndex;
-        }
-      } else {
-        if (pageIndex <= numPages) {
-          return ((pageIndex + 1) / numPages) * 100;
-        }
-      }
+//////////////////////////////////////////////////////////////////////////////
+// FAVORITES /////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+
+function getFavoritesCards() {
+  if (!g_favoritesData) g_favoritesData = favorites.getData();
+  return generateCardsFromSavedData(g_favoritesData, true);
+}
+
+function getFavoriteLocalizedName(index) {
+  switch (g_favoritesData[index].localizedNameId) {
+    case "home":
+      return _("tool-fb-shortcuts-places-home");
+    case "desktop":
+      return _("tool-fb-shortcuts-places-desktop");
+    case "downloads":
+      return _("tool-fb-shortcuts-places-downloads");
+    default:
+      return undefined;
+  }
+}
+
+function getLocalPathIndexInList(listIndex, localPath) {
+  const listData = getListData(listIndex);
+  for (let index = 0; index < listData.length; index++) {
+    if (listData[index].path === localPath) {
+      return index;
     }
   }
-  return undefined;
+  return -1;
+}
+
+function isLocalPathInList(listIndex, localPath) {
+  return getLocalPathIndexInList(listIndex, localPath) >= 0;
+}
+
+function addListEntryFromLocalPath(listIndex, localPath) {
+  let isAlreadyInList = isLocalPathInList(listIndex, localPath);
+  if (!isAlreadyInList) {
+    const listData = getListData(listIndex);
+    listData.push({
+      path: localPath,
+      name: path.basename(localPath),
+    });
+    buildSections();
+  } else {
+    // TODO: show some kind of error modal?
+    log.debug("tried to add a favorite already in the list");
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// USER LISTS ////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+
+function getUserCardsLists() {
+  if (!g_userLists) g_userLists = favorites.getLists();
+  let lists = [];
+  for (let listIndex = 0; listIndex < g_userLists.length; listIndex++) {
+    let list = {};
+    list.name = g_userLists[listIndex].name;
+    list.index = listIndex;
+    list.data = generateCardsFromSavedData(g_userLists[listIndex].data, false);
+    list.collapsed = g_userLists[listIndex].collapsed;
+    lists.push(list);
+  }
+  return lists;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// COMMON ////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+
+function generateCardsFromSavedData(inputData, isFavoritesList) {
+  const data = [];
+  for (let index = 0; index < inputData.length; index++) {
+    try {
+      const inputBook = inputData[index];
+      const outputBook = {};
+      outputBook.index = index;
+      outputBook.path = inputBook.path;
+      outputBook.name = inputBook.name;
+      if (isFavoritesList) {
+        if (inputBook.localizedNameId) {
+          // used in the defaults
+          outputBook.name = getFavoriteLocalizedName(index);
+        }
+      } else {
+        outputBook.isInFavorites = isLocalPathInList(-1, outputBook.path);
+      }
+      if (inputBook.data && inputBook.data.source) {
+        outputBook.pathType = 2;
+      } else if (fs.existsSync(outputBook.path)) {
+        outputBook.pathType = !fs.lstatSync(outputBook.path).isDirectory()
+          ? 0
+          : 1;
+      } else {
+        outputBook.pathType = -1;
+      }
+      if (outputBook.pathType !== 1) {
+        if (outputBook.pathType === 0) {
+          outputBook.percentageRead = getPercentageReadFromHistoryIndex(
+            history.getFilePathIndex(outputBook.path)
+          );
+        } else if (outputBook.pathType === 2) {
+          outputBook.percentageRead = getPercentageReadFromHistoryIndex(
+            history.getDataIndex(inputBook.data)
+          );
+        }
+      }
+      data.push(outputBook);
+    } catch (error) {
+      log.editorError(error);
+    }
+  }
+  return data;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -461,14 +523,16 @@ function initOnIpcCallbacks() {
     core.onMenuQuit();
   });
 
+  //////////
+
   on("hs-open-favorite-file", (cardData) => {
-    let favorite = g_favorites[cardData.index];
+    let favorite = g_favoritesData[cardData.index];
     if (favorite.data) {
       reader.tryOpen(
         cardData.path,
         undefined,
         undefined,
-        g_favorites[cardData.index]
+        g_favoritesData[cardData.index]
       );
     } else {
       reader.tryOpen(cardData.path);
@@ -485,33 +549,79 @@ function initOnIpcCallbacks() {
 
   //////////
 
-  on("hs-on-collapse-favorites-clicked", (value) => {
-    settings.setValue("homeScreenCollapseFavorites", value);
-    sendIpcToRenderer("hs-set-favorites-collapse-value", value);
-    buildSections(false);
+  on("hs-on-collapse-list-clicked", (listIndex, value) => {
+    if (listIndex === -2) {
+      g_collapseLatest = value;
+      favorites.setValue("collapseLatest", value);
+      sendIpcToRenderer("hs-set-list-collapse-value", -2, value);
+      buildSections();
+    } else if (listIndex === -1) {
+      g_collapseFavorites = value;
+      favorites.setValue("collapseFavorites", value);
+      sendIpcToRenderer("hs-set-list-collapse-value", -1, value);
+      buildSections();
+    } else {
+      g_userLists[listIndex].collapsed = value;
+      buildSections();
+    }
   });
 
-  on("hs-on-add-favorite-clicked", (showFocus) => {
+  on("hs-on-edit-list-name-clicked", (listIndex) => {
     sendIpcToRenderer(
-      "hs-show-modal-add-favorite",
-      _("home-section-favorites"),
+      "hs-show-modal-edit-list-name",
+      listIndex,
+      g_userLists[listIndex].name,
+      _("ui-modal-prompt-button-edit-name"),
+      _("ui-modal-prompt-button-ok"),
+      _("ui-modal-prompt-button-cancel")
+    );
+  });
+
+  on("hs-on-modal-edit-list-name-ok-clicked", (listIndex, newName) => {
+    if (!newName) {
+      log.error("Tried to change a list entry to an invalid name");
+      return;
+    }
+    const list = g_userLists[listIndex];
+    if (list.name !== newName) {
+      list.name = newName;
+      buildSections();
+    }
+  });
+
+  on("hs-on-remove-list-clicked", (listIndex) => {
+    sendIpcToRenderer(
+      "hs-show-modal-remove-list-warning",
+      listIndex,
+      _("tool-shared-modal-title-warning"),
+      _("tool-shared-ui-remove-list-warning"),
+      _("ui-modal-prompt-button-yes"),
+      _("ui-modal-prompt-button-cancel")
+    );
+  });
+
+  on("hs-on-remove-list-warning-ok-clicked", (listIndex) => {
+    g_userLists.splice(listIndex, 1);
+    buildSections();
+  });
+
+  //////////
+
+  on("hs-on-add-list-entry-clicked", (listIndex, showFocus) => {
+    sendIpcToRenderer(
+      "hs-show-modal-add-list-entry",
+      listIndex === -1
+        ? _("home-section-favorites")
+        : g_userLists[listIndex].name,
       _("tool-shared-ui-back"),
       _("tool-shared-ui-add-file"),
       _("tool-shared-ui-add-folder"),
+      listIndex,
       showFocus
     );
   });
 
-  on("hs-on-modal-add-favorite-folder-clicked", () => {
-    let folderList = appUtils.chooseFolder(core.getMainWindow());
-    if (folderList === undefined || folderList.length <= 0) {
-      return;
-    }
-    const folderPath = folderList[0];
-    addFavoriteFromLocalPath(folderPath);
-  });
-
-  on("hs-on-modal-add-favorite-file-clicked", () => {
+  on("hs-on-modal-add-list-file-clicked", (listIndex) => {
     let allowMultipleSelection = false;
     let allowedFileTypesName = _("dialog-file-types-comics");
     let allowedFileTypesList = [
@@ -532,175 +642,310 @@ function initOnIpcCallbacks() {
       return;
     }
     const filePath = filePathsList[0];
-    addFavoriteFromLocalPath(filePath);
+    addListEntryFromLocalPath(listIndex, filePath);
   });
 
-  on("hs-on-favorite-options-clicked", (favIndex, favPath, showFocus) => {
-    // TODO: maybe check index and path match?
-    const fav = g_favorites[favIndex];
+  on("hs-on-modal-add-list-folder-clicked", (listIndex) => {
+    let folderList = appUtils.chooseFolder(core.getMainWindow());
+    if (folderList === undefined || folderList.length <= 0) {
+      return;
+    }
+    const folderPath = folderList[0];
+    addListEntryFromLocalPath(listIndex, folderPath);
+  });
 
-    let isLocalFile = true;
-    if (fav.data && fav.data.source) {
-      // www
-      isLocalFile = false;
-    } else {
-      // local
-      if (fs.existsSync(favPath)) {
-        if (fs.lstatSync(favPath).isDirectory()) {
-          isLocalFile = false;
+  //////////
+
+  on(
+    "hs-on-list-entry-options-clicked",
+    (listIndex, cardIndex, cardPath, showFocus) => {
+      // TODO: maybe check index and path match?
+      const listData = getListData(listIndex);
+      const listEntry = listData[cardIndex];
+
+      let isLocalFile = true;
+      if (listEntry.data && listEntry.data.source) {
+        // www
+        isLocalFile = false;
+      } else {
+        // local
+        if (fs.existsSync(cardPath)) {
+          if (fs.lstatSync(cardPath).isDirectory()) {
+            isLocalFile = false;
+          }
         }
       }
-    }
 
+      let addToFavorites = undefined;
+      let removeFromFavorites = undefined;
+
+      if (listIndex >= 0) {
+        if (isLocalPathInList(-1, cardPath)) {
+          removeFromFavorites = _("home-modal-button-removefromfavorites");
+        } else {
+          addToFavorites = _("home-modal-button-addtofavorites");
+        }
+      }
+
+      sendIpcToRenderer(
+        "hs-show-modal-list-entry-options",
+        listIndex,
+        cardIndex,
+        cardPath,
+        _("tool-shared-tab-options"),
+        _("tool-shared-ui-back"),
+        listIndex === -1
+          ? _("home-modal-button-removefromfavorites")
+          : _("tool-shared-tooltip-remove-from-list"),
+        _("ui-modal-prompt-button-edit-name"),
+        _("ui-modal-prompt-button-edit-path"),
+        _("tool-shared-tooltip-move-forward-in-list"),
+        _("tool-shared-tooltip-move-backward-in-list"),
+        !isLocalFile ? undefined : _("ctxmenu-opencontainingfolder"),
+        addToFavorites,
+        removeFromFavorites,
+        !isLocalFile || isLocalPathInList(-1, path.dirname(cardPath))
+          ? undefined
+          : _("home-modal-button-addcontainingfoldertofavorites"),
+        showFocus
+      );
+    }
+  );
+
+  on(
+    "hs-on-modal-list-entry-options-remove-clicked",
+    (listIndex, entryIndex, entryPath) => {
+      const listData = getListData(listIndex);
+      if (listData[entryIndex].path === entryPath) {
+        listData.splice(entryIndex, 1);
+        buildSections();
+      } else {
+        log.error(
+          "Tried to remove a list entry with not matching index and path"
+        );
+      }
+    }
+  );
+
+  on(
+    "hs-on-modal-list-entry-options-edit-name-clicked",
+    (listIndex, entryIndex, entryPath) => {
+      const listData = getListData(listIndex);
+      if (listData[entryIndex].path === entryPath) {
+        let entryName = listData[entryIndex].name;
+        if (listIndex === -1 && listData[entryIndex].localizedNameId) {
+          entryName = getFavoriteLocalizedName(entryIndex);
+        }
+        sendIpcToRenderer(
+          "hs-show-modal-list-entry-edit-name",
+          listIndex,
+          entryIndex,
+          entryPath,
+          entryName,
+          _("ui-modal-prompt-button-edit-name"),
+          _("ui-modal-prompt-button-ok"),
+          _("ui-modal-prompt-button-cancel")
+        );
+      } else {
+        log.error(
+          "Tried to edit a list entry with not matching index and path"
+        );
+      }
+    }
+  );
+
+  on(
+    "hs-on-modal-list-entry-options-edit-name-ok-clicked",
+    (listIndex, entryIndex, entryPath, newName) => {
+      if (!newName) {
+        log.error("Tried to change a list entry to an invalid name");
+        return;
+      }
+      const listData = getListData(listIndex);
+      if (listData[entryIndex].path === entryPath) {
+        if (listIndex === -1 && listData[entryIndex].localizedNameId) {
+          let entryName = getFavoriteLocalizedName(entryIndex);
+          if (newName !== entryName) {
+            listData[entryIndex].localizedNameId = undefined;
+            listData[entryIndex].name = newName;
+            buildSections();
+          }
+        } else {
+          let entryName = listData[entryIndex].name;
+          if (newName !== entryName) {
+            listData[entryIndex].name = newName;
+            buildSections();
+          }
+        }
+      } else {
+        log.error(
+          "Tried to edit a list entry with not matching index and path"
+        );
+      }
+    }
+  );
+
+  on(
+    "hs-on-modal-list-entry-options-edit-path-clicked",
+    (listIndex, entryIndex, entryPath) => {
+      const listData = getListData(listIndex);
+      if (listData[entryIndex].path === entryPath) {
+        sendIpcToRenderer(
+          "hs-show-modal-list-entry-edit-path",
+          listIndex,
+          entryIndex,
+          entryPath,
+          _("ui-modal-prompt-button-edit-path"),
+          _("ui-modal-prompt-button-ok"),
+          _("ui-modal-prompt-button-cancel")
+        );
+      } else {
+        log.error(
+          "Tried to edit a list entry with not matching index and path"
+        );
+      }
+    }
+  );
+
+  on(
+    "hs-on-modal-list-entry-options-edit-path-ok-clicked",
+    (listIndex, entryIndex, entryPath, newPath) => {
+      const listData = getListData(listIndex);
+      if (listData[entryIndex].path === entryPath) {
+        if (newPath) {
+          if (newPath === entryPath || !fs.existsSync(newPath)) {
+            log.error("Tried to change a list entry to an invalid path");
+            return;
+          }
+          if (isLocalPathInList(listIndex, newPath)) {
+            log.error(
+              "Tried to change a list entry to an path already in the list"
+            );
+            return;
+          }
+          listData[entryIndex].path = newPath;
+          buildSections();
+        }
+      } else {
+        log.error(
+          "Tried to edit a list entry with not matching index and path"
+        );
+      }
+    }
+  );
+
+  on(
+    "hs-on-modal-list-entry-options-move-clicked",
+    (listIndex, entryIndex, entryPath, dir) => {
+      const listData = getListData(listIndex);
+      if (listData[entryIndex].path === entryPath) {
+        if (dir == 0) {
+          // backward
+          if (entryIndex > 0) {
+            let temp = listData[entryIndex - 1];
+            listData[entryIndex - 1] = listData[entryIndex];
+            listData[entryIndex] = temp;
+            buildSections();
+          }
+        } else if (dir == 1) {
+          // forward
+          if (entryIndex < listData.length - 1) {
+            let temp = listData[entryIndex + 1];
+            listData[entryIndex + 1] = listData[entryIndex];
+            listData[entryIndex] = temp;
+            buildSections();
+          }
+        }
+      } else {
+        log.error(
+          "Tried to move a list entry with not matching index and path"
+        );
+      }
+    }
+  );
+
+  on(
+    "hs-on-modal-list-entry-options-addfoldertofavorites-clicked",
+    (listIndex, entryIndex, entryPath) => {
+      const listData = getListData(listIndex);
+      const entry = listData[entryIndex];
+      if (!entry.path || (entry.data && entry.data.source)) {
+        log.error("Tried to add invalid folder to favorites");
+        return;
+      }
+      addListEntryFromLocalPath(-1, path.dirname(entry.path));
+    }
+  );
+
+  on(
+    "hs-on-modal-list-entry-options-openfolder-clicked",
+    (listIndex, entryIndex, entryPath) => {
+      appUtils.openPathInFileBrowser(path.dirname(entryPath));
+    }
+  );
+
+  on(
+    "hs-on-modal-list-entry-options-addtofavorites-clicked",
+    (listIndex, entryIndex, entryPath) => {
+      const listData = getListData(listIndex);
+      const entry = listData[entryIndex];
+      if (!entry.path || (entry.data && entry.data.source)) {
+        log.error("Tried to add invalid file to favorites");
+        return;
+      }
+      addListEntryFromLocalPath(-1, entry.path);
+      buildSections();
+    }
+  );
+
+  on(
+    "hs-on-modal-list-entry-options-removefavorites-clicked",
+    (listIndex, entryIndex, entryPath) => {
+      let favIndex = getLocalPathIndexInList(-1, entryPath);
+      if (favIndex >= 0) {
+        g_favoritesData.splice(favIndex, 1);
+        buildSections();
+      } else {
+        // TODO: show some kind of error modal?
+        log.error("tried to remove a favorite not in the list");
+      }
+    }
+  );
+
+  //////////////////////
+
+  on("hs-on-list-card-dropped", (listIndex, fromCardIndex, toCardIndex) => {
+    const listData = getListData(listIndex);
+    let element = listData[fromCardIndex];
+    listData.splice(fromCardIndex, 1);
+    listData.splice(toCardIndex, 0, element);
+    buildSections(false);
+  });
+
+  //////////////////////
+
+  on("hs-on-create-list-clicked", (showFocus) => {
     sendIpcToRenderer(
-      "hs-show-modal-favorite-options",
-      favIndex,
-      favPath,
-      _("tool-shared-tab-options"),
-      _("tool-shared-ui-back"),
-      _("home-modal-button-removefromfavorites"),
-      _("ui-modal-prompt-button-edit-name"),
-      _("ui-modal-prompt-button-edit-path"),
-      _("tool-shared-tooltip-move-forward-in-list"),
-      _("tool-shared-tooltip-move-backward-in-list"),
-      !isLocalFile ? undefined : _("ctxmenu-opencontainingfolder"),
-      !isLocalFile || isLocalPathInFavorites(path.dirname(favPath))
-        ? undefined
-        : _("home-modal-button-addcontainingfoldertofavorites"),
+      "hs-show-modal-create-list",
+      "Comics",
+      _("tool-shared-ui-create-list"),
+      _("ui-modal-prompt-button-yes"),
+      _("ui-modal-prompt-button-no"),
       showFocus
     );
   });
 
-  on("hs-on-modal-favorite-options-remove-clicked", (favIndex, favPath) => {
-    if (g_favorites[favIndex].path === favPath) {
-      g_favorites.splice(favIndex, 1);
-      buildSections(false);
-    } else {
-      log.error("Tried to remove a favorite with not matching index and path");
-    }
+  on("hs-on-modal-create-list-ok-clicked", (newName) => {
+    if (!newName) newName = "Comics";
+    let list = {};
+    list.name = newName;
+    list.collapsed = false;
+    list.data = [];
+    g_userLists.push(list);
+    buildSections();
   });
-
-  on("hs-on-modal-favorite-options-edit-name-clicked", (favIndex, favPath) => {
-    if (g_favorites[favIndex].path === favPath) {
-      let favName = g_favorites[favIndex].name;
-      if (g_favorites[favIndex].localizedNameId) {
-        favName = getFavoriteLocalizedName(favIndex);
-      }
-      sendIpcToRenderer(
-        "hs-show-modal-favorite-edit-name",
-        favIndex,
-        favPath,
-        favName,
-        _("ui-modal-prompt-button-edit-name"),
-        _("ui-modal-prompt-button-ok"),
-        _("ui-modal-prompt-button-cancel")
-      );
-    } else {
-      log.error("Tried to edit a favorite with not matching index and path");
-    }
-  });
-
-  on(
-    "hs-on-modal-favorite-options-edit-name-ok-clicked",
-    (favIndex, favPath, newName) => {
-      if (g_favorites[favIndex].path === favPath) {
-        if (g_favorites[favIndex].localizedNameId) {
-          let favName = getFavoriteLocalizedName(favIndex);
-          if (newName && newName !== favName) {
-            g_favorites[favIndex].localizedNameId = undefined;
-            g_favorites[favIndex].name = newName;
-            buildSections();
-          }
-        } else {
-          let favName = g_favorites[favIndex].name;
-          if (newName && newName !== favName) {
-            g_favorites[favIndex].name = newName;
-            buildSections();
-          }
-        }
-      } else {
-        log.error("Tried to edit a favorite with not matching index and path");
-      }
-    }
-  );
-
-  on("hs-on-modal-favorite-options-edit-path-clicked", (favIndex, favPath) => {
-    if (g_favorites[favIndex].path === favPath) {
-      sendIpcToRenderer(
-        "hs-show-modal-favorite-edit-path",
-        favIndex,
-        favPath,
-        _("ui-modal-prompt-button-edit-path"),
-        _("ui-modal-prompt-button-ok"),
-        _("ui-modal-prompt-button-cancel")
-      );
-    } else {
-      log.error("Tried to edit a favorite with not matching index and path");
-    }
-  });
-
-  on(
-    "hs-on-modal-favorite-options-edit-path-ok-clicked",
-    (favIndex, favPath, newPath) => {
-      if (g_favorites[favIndex].path === favPath) {
-        if (newPath && newPath !== favPath && fs.existsSync(newPath)) {
-          g_favorites[favIndex].path = newPath;
-          buildSections();
-        }
-      } else {
-        log.error("Tried to edit a favorite with not matching index and path");
-      }
-    }
-  );
-
-  on("hs-on-modal-favorite-options-move-clicked", (favIndex, favPath, dir) => {
-    if (g_favorites[favIndex].path === favPath) {
-      if (dir == 0) {
-        // backward
-        if (favIndex > 0) {
-          let temp = g_favorites[favIndex - 1];
-          g_favorites[favIndex - 1] = g_favorites[favIndex];
-          g_favorites[favIndex] = temp;
-          buildSections();
-        }
-      } else if (dir == 1) {
-        // forward
-        if (favIndex < g_favorites.length - 1) {
-          let temp = g_favorites[favIndex + 1];
-          g_favorites[favIndex + 1] = g_favorites[favIndex];
-          g_favorites[favIndex] = temp;
-          buildSections();
-        }
-      }
-    } else {
-      log.error("Tried to move a favorite with not matching index and path");
-    }
-  });
-
-  on(
-    "hs-on-modal-favorite-options-addfoldertofavorites-clicked",
-    (fileIndex, filePath) => {
-      const favData = g_favorites[fileIndex];
-      if (!favData.path || (favData.data && favData.data.source)) return;
-
-      addFavoriteFromLocalPath(path.dirname(favData.path));
-    }
-  );
-
-  on(
-    "hs-on-modal-favorite-options-openfolder-clicked",
-    (fileIndex, filePath) => {
-      appUtils.openPathInFileBrowser(path.dirname(filePath));
-    }
-  );
 
   /////////////////
-
-  on("hs-on-collapse-latest-clicked", (value) => {
-    settings.setValue("homeScreenCollapseLatest", value);
-    sendIpcToRenderer("hs-set-latest-collapse-value", value);
-    buildSections(false);
-  });
 
   on("hs-on-latest-options-clicked", (index, filePath, showFocus) => {
     sendIpcToRenderer(
@@ -714,7 +959,7 @@ function initOnIpcCallbacks() {
         ? _("home-modal-button-removefromfavorites")
         : _("home-modal-button-addtofavorites"),
       _("ctxmenu-opencontainingfolder"),
-      !filePath || isLocalPathInFavorites(path.dirname(filePath))
+      !filePath || isLocalPathInList(-1, path.dirname(filePath))
         ? undefined
         : _("home-modal-button-addcontainingfoldertofavorites"),
       showFocus
@@ -738,37 +983,12 @@ function initOnIpcCallbacks() {
   on(
     "hs-on-modal-latest-options-removefromfavorites-clicked",
     (fileIndex, filePath) => {
-      removeFavoriteFromLatest(fileIndex, filePath);
+      removeLatestFromFavorites(fileIndex, filePath);
     }
   );
 
   on("hs-on-modal-latest-options-openfolder-clicked", (fileIndex, filePath) => {
     appUtils.openPathInFileBrowser(path.dirname(filePath));
-  });
-
-  on("hs-on-favorite-dropped", (fromIndex, toIndex) => {
-    let element = g_favorites[fromIndex];
-    g_favorites.splice(fromIndex, 1);
-    g_favorites.splice(toIndex, 0, element);
-    buildSections(false);
-  });
-
-  //////////////////////
-
-  on("hs-on-create-list-clicked", (showFocus) => {
-    sendIpcToRenderer(
-      "hs-show-modal-create-list",
-      "Comics",
-      _("tool-shared-ui-create-list"),
-      _("ui-modal-prompt-button-yes"),
-      _("ui-modal-prompt-button-no"),
-      showFocus
-    );
-  });
-
-  on("hs-on-modal-create-list-ok-clicked", (newName) => {
-    log.test(newName);
-    // TODO: create new list
   });
 }
 
