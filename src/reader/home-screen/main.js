@@ -616,7 +616,12 @@ function initOnIpcCallbacks() {
 
   on("hs-on-modal-edit-list-name-ok-clicked", (listIndex, newName) => {
     if (!newName) {
-      log.error("Tried to change a list entry to an invalid name");
+      log.editor("Tried to change a list entry to an invalid name");
+      sendIpcToCoreRenderer(
+        "show-toast",
+        _("home-action-canceled") + "\n" + _("home-action-edit-name-error"),
+        3000
+      );
       return;
     }
     const list = g_userLists[listIndex];
@@ -795,7 +800,12 @@ function initOnIpcCallbacks() {
     "hs-on-modal-list-entry-options-edit-name-ok-clicked",
     (listIndex, entryIndex, entryPath, newName) => {
       if (!newName) {
-        log.error("Tried to change a list entry to an invalid name");
+        log.editor("Tried to change a list entry to an invalid name");
+        sendIpcToCoreRenderer(
+          "show-toast",
+          _("home-action-canceled") + "\n" + _("home-action-edit-name-error"),
+          3000
+        );
         return;
       }
       const listData = getListData(listIndex);
@@ -851,12 +861,26 @@ function initOnIpcCallbacks() {
       if (listData[entryIndex].path === entryPath) {
         if (newPath) {
           if (newPath === entryPath || !fs.existsSync(newPath)) {
-            log.error("Tried to change a list entry to an invalid path");
+            log.editor("Tried to change a list entry to an invalid path");
+            sendIpcToCoreRenderer(
+              "show-toast",
+              _("home-action-canceled") +
+                "\n" +
+                _("home-action-edit-path-error"),
+              3000
+            );
             return;
           }
           if (isLocalPathInList(listIndex, newPath)) {
-            log.error(
+            log.editor(
               "Tried to change a list entry to an path already in the list"
+            );
+            sendIpcToCoreRenderer(
+              "show-toast",
+              _("home-action-canceled") +
+                "\n" +
+                _("home-action-drag-file-shortcut-error-alreadyinlist"),
+              3000
             );
             return;
           }
@@ -943,7 +967,6 @@ function initOnIpcCallbacks() {
         g_favoritesData.splice(favIndex, 1);
         buildSections();
       } else {
-        // TODO: show some kind of error modal?
         log.error("tried to remove a favorite not in the list");
       }
     }
@@ -1006,7 +1029,9 @@ function initOnIpcCallbacks() {
           log.editor("dropped entry already in list");
           sendIpcToCoreRenderer(
             "show-toast",
-            _("home-action-drag-file-shortcut-error-alreadyinlist"),
+            _("home-action-canceled") +
+              "\n" +
+              _("home-action-drag-file-shortcut-error-alreadyinlist"),
             3000
           );
         }
