@@ -11,7 +11,6 @@ const core = require("../../core/main");
 const { _, _raw } = require("../../shared/main/i18n");
 const history = require("../../shared/main/history");
 const favorites = require("../../shared/main/favorites");
-const settings = require("../../shared/main/settings");
 const reader = require("../../reader/main");
 const log = require("../../shared/main/logger");
 const appUtils = require("../../shared/main/app-utils");
@@ -27,6 +26,7 @@ let g_languageDirection = "ltr";
 let g_favoritesData;
 let g_userLists;
 let g_maxLatest = 6;
+let g_latestCards;
 
 let g_collapseFavorites = false;
 let g_collapseLatest = false;
@@ -139,8 +139,20 @@ function getPercentageReadFromHistoryIndex(index) {
 // LISTS - COMMON ////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 
+function getListName(listIndex) {
+  if (listIndex === -2) {
+    return _("home-section-recent");
+  } else if (listIndex === -1) {
+    return _("home-section-favorites");
+  } else {
+    return g_userLists[listIndex].name;
+  }
+}
+
 function getListData(listIndex) {
-  if (listIndex === -1) {
+  if (listIndex === -2) {
+    return g_latestData;
+  } else if (listIndex === -1) {
     return g_favoritesData;
   } else {
     return g_userLists[listIndex].data;
@@ -181,7 +193,7 @@ function generateCardsFromSavedData(inputData, isFavoritesList) {
           outputBook.name = getFavoriteLocalizedName(index);
         }
       } else {
-        outputBook.isInFavorites = isLocalPathInList(-1, outputBook.path);
+        outputBook.isInFavorites = isEntryInList(-1, inputData[index]);
       }
       if (inputBook.data && inputBook.data.source) {
         outputBook.pathType = 2;
@@ -281,7 +293,7 @@ function getLatestCards() {
             latestInfo.pathType = -1;
           }
         }
-        latestInfo.isInFavorites = isLatestInFavorites(latestInfo.index);
+        latestInfo.isInFavorites = isLatestInList(-1, latestInfo.index);
         data.push(latestInfo);
       } else {
         break;
@@ -290,6 +302,7 @@ function getLatestCards() {
       log.editorError(error);
     }
   }
+  g_latestCards = data;
   return data;
 }
 
@@ -297,13 +310,14 @@ function getLatestCards() {
 // LISTS - LATEST -> FAVORITES //////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 
-function getLatestIndexInFavorites(latestIndex) {
+function getLatestIndexInList(listIndex, latestIndex) {
   const historyData = history.get()[latestIndex];
+  const listData = getListData(listIndex);
   if (historyData.data && historyData.data.source) {
-    for (let index = 0; index < g_favoritesData.length; index++) {
-      if (!g_favoritesData[index].data) continue;
+    for (let index = 0; index < listData.length; index++) {
+      if (!listData[index].data) continue;
       if (
-        JSON.stringify(g_favoritesData[index].data) ===
+        JSON.stringify(listData[index].data) ===
         JSON.stringify(historyData.data)
       ) {
         return index;
@@ -311,37 +325,37 @@ function getLatestIndexInFavorites(latestIndex) {
     }
     return -1;
   } else {
-    return getLocalPathIndexInList(-1, historyData.filePath);
+    return getLocalPathIndexInList(listIndex, historyData.filePath);
   }
 }
 
-function isLatestInFavorites(latestIndex) {
-  return getLatestIndexInFavorites(latestIndex) >= 0;
+function isLatestInList(listIndex, latestIndex) {
+  return getLatestIndexInList(listIndex, latestIndex) >= 0;
 }
 
-function addFavoriteFromLatest(index, filePath) {
-  let isAlreadyInList = isLatestInFavorites(index);
+function addListEntryFromLatest(listIndex, latestIndex) {
+  let isAlreadyInList = isLatestInList(listIndex, latestIndex);
   if (!isAlreadyInList) {
-    const historyData = history.get()[index];
+    const historyData = history.get()[latestIndex];
     /////////
-    let fav;
+    let newEntry;
     if (historyData.data && historyData.data.source) {
-      fav = {
-        path: filePath,
+      newEntry = {
+        path: historyData.filePath,
         name: historyData.data.name,
         data: historyData.data,
       };
     } else {
-      fav = {
-        path: filePath,
-        name: path.basename(filePath),
+      newEntry = {
+        path: historyData.filePath,
+        name: path.basename(historyData.filePath),
       };
     }
-    g_favoritesData.push(fav);
+    getListData(listIndex).push(newEntry);
     buildSections();
   } else {
     // TODO: show some kind of error modal?
-    log.debug("tried to add a favorite already in the list");
+    log.debug("tried to add an entry already in the list");
   }
 }
 
@@ -356,7 +370,7 @@ function addFavoriteFolderFromLatest(index) {
 }
 
 function removeLatestFromFavorites(index) {
-  let favIndex = getLatestIndexInFavorites(index);
+  let favIndex = getLatestIndexInList(-1, index);
   if (favIndex >= 0) {
     g_favoritesData.splice(favIndex, 1);
     buildSections();
@@ -441,6 +455,10 @@ function getUserCardsLists() {
 
 function sendIpcToRenderer(...args) {
   reader.sendIpcToRenderer(...args);
+}
+
+function sendIpcToCoreRenderer(...args) {
+  reader.sendIpcToCoreRenderer(...args);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -935,10 +953,10 @@ function initOnIpcCallbacks() {
 
   on(
     "hs-on-list-card-dropped",
-    (fromListIndex, toListIndex, fromEntryIndex, toEntryIndex) => {
-      const fromListData = getListData(fromListIndex);
-      const fromEntry = fromListData[fromEntryIndex];
+    (fromListIndex, toListIndex, fromEntryIndex, toEntryIndex, showFocus) => {
       if (fromListIndex === toListIndex) {
+        const fromListData = getListData(fromListIndex);
+        const fromEntry = fromListData[fromEntryIndex];
         const toListData = getListData(toListIndex);
         fromListData.splice(fromEntryIndex, 1);
         if (toEntryIndex === -1) {
@@ -951,28 +969,99 @@ function initOnIpcCallbacks() {
         }
         buildSections(false);
       } else {
-        const fromListData = getListData(fromListIndex);
-        if (!isEntryInList(toListIndex, fromEntry)) {
-          // const toEntry = fromListData[fromEntryIndex];
-          const toListData = getListData(toListIndex);
-          if (fromListIndex === -1) {
-            // from favs to user list
-            if (fromEntry.localizedNameId) {
-              fromEntry.name = getFavoriteLocalizedName(fromEntryIndex);
-              fromEntry.localizedNameId = undefined;
-            }
-          }
-          if (toEntryIndex === -1) {
-            // empty card
-            toListData.push(fromEntry);
-          } else {
-            toListData.splice(toEntryIndex, 0, fromEntry);
-          }
-          fromListData.splice(fromEntryIndex, 1);
-          buildSections(false);
+        let showMove = true;
+        let showCopy = true;
+        let wasEntryInList;
+        let fromName;
+        if (fromListIndex === -2) {
+          // from latest
+          showMove = false;
+          wasEntryInList = isLatestInList(toListIndex, fromEntryIndex);
+        } else {
+          const fromListData = getListData(fromListIndex);
+          const fromEntry = fromListData[fromEntryIndex];
+          wasEntryInList = isEntryInList(toListIndex, fromEntry);
+          fromName = fromEntry.name;
+        }
+        if (!wasEntryInList) {
+          /////////////
+          sendIpcToRenderer(
+            "hs-show-modal-drop-card-options",
+            fromListIndex,
+            toListIndex,
+            fromEntryIndex,
+            toEntryIndex,
+            fromName,
+            _(
+              "home-action-drop-file-shortcut-from-to",
+              getListName(fromListIndex),
+              getListName(toListIndex)
+            ),
+            _("tool-shared-ui-back"),
+            showMove ? _("home-action-move-file-shortcut") : undefined,
+            showCopy ? _("home-action-copy-file-shortcut") : undefined,
+            showFocus
+          );
         } else {
           log.editor("dropped entry already in list");
+          sendIpcToCoreRenderer(
+            "show-toast",
+            _("home-action-drag-file-shortcut-error-alreadyinlist"),
+            3000
+          );
         }
+      }
+    }
+  );
+
+  on(
+    "hs-on-modal-drop-card-options-move-clicked",
+    (fromListIndex, toListIndex, fromEntryIndex, toEntryIndex) => {
+      const fromListData = getListData(fromListIndex);
+      const fromEntry = fromListData[fromEntryIndex];
+      const toListData = getListData(toListIndex);
+      if (fromListIndex === -1) {
+        // from favs to user list
+        if (fromEntry.localizedNameId) {
+          fromEntry.name = getFavoriteLocalizedName(fromEntryIndex);
+          fromEntry.localizedNameId = undefined;
+        }
+      }
+      if (toEntryIndex === -1) {
+        // empty card
+        toListData.push(fromEntry);
+      } else {
+        toListData.splice(toEntryIndex, 0, fromEntry);
+      }
+      fromListData.splice(fromEntryIndex, 1);
+      buildSections(false);
+    }
+  );
+
+  on(
+    "hs-on-modal-drop-card-options-copy-clicked",
+    (fromListIndex, toListIndex, fromEntryIndex, toEntryIndex) => {
+      if (fromListIndex === -2) {
+        addListEntryFromLatest(toListIndex, fromEntryIndex);
+        buildSections(false);
+      } else {
+        const fromListData = getListData(fromListIndex);
+        const copiedFromEntry = structuredClone(fromListData[fromEntryIndex]);
+        const toListData = getListData(toListIndex);
+        if (fromListIndex === -1) {
+          // from favs to user list
+          if (copiedFromEntry.localizedNameId) {
+            copiedFromEntry.name = getFavoriteLocalizedName(fromEntryIndex);
+            copiedFromEntry.localizedNameId = undefined;
+          }
+        }
+        if (toEntryIndex === -1) {
+          // empty card
+          toListData.push(copiedFromEntry);
+        } else {
+          toListData.splice(toEntryIndex, 0, copiedFromEntry);
+        }
+        buildSections(false);
       }
     }
   );
@@ -1002,15 +1091,15 @@ function initOnIpcCallbacks() {
 
   /////////////////
 
-  on("hs-on-latest-options-clicked", (index, filePath, showFocus) => {
+  on("hs-on-latest-options-clicked", (latestIndex, filePath, showFocus) => {
     sendIpcToRenderer(
       "hs-show-modal-latest-options",
-      index,
+      latestIndex,
       filePath,
-      isLatestInFavorites(index),
+      isLatestInList(-1, latestIndex),
       _("tool-shared-tab-options"),
       _("tool-shared-ui-back"),
-      isLatestInFavorites(index)
+      isLatestInList(-1, latestIndex)
         ? _("home-modal-button-removefromfavorites")
         : _("home-modal-button-addtofavorites"),
       _("ctxmenu-opencontainingfolder"),
@@ -1024,7 +1113,7 @@ function initOnIpcCallbacks() {
   on(
     "hs-on-modal-latest-options-addtofavorites-clicked",
     (fileIndex, filePath) => {
-      addFavoriteFromLatest(fileIndex, filePath);
+      addListEntryFromLatest(-1, fileIndex, filePath);
     }
   );
 

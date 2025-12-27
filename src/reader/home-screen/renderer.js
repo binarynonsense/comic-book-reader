@@ -233,6 +233,10 @@ function initOnIpcCallbacks() {
     showModalListEntryEditPath(...args);
   });
 
+  on("hs-show-modal-drop-card-options", (...args) => {
+    showModalDropCardOptions(...args);
+  });
+
   ///////////
 
   on("hs-show-modal-files-tools", (...args) => {
@@ -753,14 +757,16 @@ function getNewCardDiv(cardType, data, navRow, navColumn, listIndex) {
     ? `  
   <div class="hs-path-card-main hs-path-interactive">
     ${
-      cardType === CardType.FAVORITES || cardType === CardType.USERLIST
+      cardType === CardType.FAVORITES ||
+      cardType === CardType.LATEST ||
+      cardType === CardType.USERLIST
         ? dragMiniIconHtml
         : ""
     }
     <div class="hs-path-card-image">
       ${getIconHtml()}     
       ${
-        cardType === CardType.LATEST ||
+        (cardType === CardType.LATEST && data.isInFavorites) ||
         (cardType === CardType.USERLIST && data.isInFavorites)
           ? favMiniIconHtml
           : ""
@@ -916,6 +922,27 @@ function getNewCardDiv(cardType, data, navRow, navColumn, listIndex) {
           event.stopPropagation();
         });
 
+        // dragging ///////////
+        mainCardDiv.draggable = true;
+        // select
+        mainCardDiv.addEventListener("dragstart", function (event) {
+          g_draggedCard = event.target;
+          mainCardDiv.classList.add("hs-path-card-main-dragging");
+          mainCardDiv.blur();
+          event.stopPropagation();
+        });
+        mainCardDiv.addEventListener("dragend", function (event) {
+          g_draggedCard = undefined;
+          mainCardDiv.classList.remove("hs-path-card-main-dragging");
+          event.stopPropagation();
+        });
+
+        // data
+        mainCardDiv.setAttribute("data-list-card-index", data.index);
+        mainCardDiv.setAttribute("data-list-index", listIndex);
+
+        /////////////
+
         if (navRow !== undefined && navColumn !== undefined) {
           mainCardDiv.setAttribute("data-nav-panel", 0);
           mainCardDiv.setAttribute("data-nav-row", navRow);
@@ -977,11 +1004,9 @@ function getNewCardDiv(cardType, data, navRow, navColumn, listIndex) {
       //   cardDiv.setAttribute("tabindex", "0");
       // }
       if (listIndex >= -1) {
-        console.log(listIndex);
         // don't do for latest
         // drop
         cardDiv.addEventListener("drop", (event) => {
-          console.log(event.target);
           if (event.target.classList.contains("hs-path-card-main")) {
             mainCardDiv.classList.remove("hs-path-card-main-dragging-over");
             const fromListIndex = g_draggedCard.getAttribute("data-list-index");
@@ -1002,7 +1027,6 @@ function getNewCardDiv(cardType, data, navRow, navColumn, listIndex) {
         });
         // receive
         cardDiv.addEventListener("dragover", function (event) {
-          console.log(event.target);
           const draggingElement = document.querySelector(
             ".hs-path-card-main-dragging"
           );
@@ -1861,6 +1885,75 @@ function showModalCreateList(
         },
       },
     ],
+  });
+}
+
+function showModalDropCardOptions(
+  fromListIndex,
+  toListIndex,
+  fromEntryIndex,
+  toEntryIndex,
+  title,
+  message,
+  textButtonBack,
+  textButtonMove,
+  textButtonCopy,
+  showFocus
+) {
+  if (getOpenModal()) {
+    return;
+  }
+  let buttons = [];
+  if (textButtonMove)
+    buttons.push({
+      text: textButtonMove.toUpperCase(),
+      fullWidth: true,
+      callback: () => {
+        modalClosed();
+        sendIpcToMain(
+          "hs-on-modal-drop-card-options-move-clicked",
+          fromListIndex,
+          toListIndex,
+          fromEntryIndex,
+          toEntryIndex
+        );
+      },
+    });
+  if (textButtonCopy)
+    buttons.push({
+      text: textButtonCopy.toUpperCase(),
+      fullWidth: true,
+      callback: () => {
+        modalClosed();
+        sendIpcToMain(
+          "hs-on-modal-drop-card-options-copy-clicked",
+          fromListIndex,
+          toListIndex,
+          fromEntryIndex,
+          toEntryIndex
+        );
+      },
+    });
+  buttons.push({
+    text: textButtonBack.toUpperCase(),
+    fullWidth: true,
+    callback: () => {
+      modalClosed();
+    },
+  });
+  showModal({
+    showFocus: showFocus,
+    title: title,
+    message: message,
+    frameWidth: 400,
+    zIndexDelta: -450,
+    close: {
+      callback: () => {
+        modalClosed();
+      },
+      key: "Escape",
+    },
+    buttons: buttons,
   });
 }
 
