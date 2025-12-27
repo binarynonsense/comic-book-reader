@@ -333,7 +333,7 @@ function isLatestInList(listIndex, latestIndex) {
   return getLatestIndexInList(listIndex, latestIndex) >= 0;
 }
 
-function addListEntryFromLatest(listIndex, latestIndex) {
+function addListEntryFromLatest(listIndex, latestIndex, listEntryIndex) {
   let isAlreadyInList = isLatestInList(listIndex, latestIndex);
   if (!isAlreadyInList) {
     const historyData = history.get()[latestIndex];
@@ -351,7 +351,14 @@ function addListEntryFromLatest(listIndex, latestIndex) {
         name: path.basename(historyData.filePath),
       };
     }
-    getListData(listIndex).push(newEntry);
+    const listData = getListData(listIndex);
+    if (listEntryIndex !== undefined) {
+      // add before index
+      listData.splice(listEntryIndex, 0, newEntry);
+    } else {
+      // add at the end
+      listData.push(newEntry);
+    }
     buildSections();
   } else {
     // TODO: show some kind of error modal?
@@ -982,11 +989,11 @@ function initOnIpcCallbacks() {
         const fromEntry = fromListData[fromEntryIndex];
         const toListData = getListData(toListIndex);
         fromListData.splice(fromEntryIndex, 1);
-        if (toEntryIndex === -1) {
+        if (toEntryIndex === -1 || toEntryIndex >= toListData.length) {
           // empty card
           toListData.push(fromEntry);
         } else {
-          if (toEntryIndex >= toListData.length)
+          if (toEntryIndex >= toListData.length - 1)
             toEntryIndex = toListData.length - 1;
           toListData.splice(toEntryIndex, 0, fromEntry);
         }
@@ -1067,7 +1074,7 @@ function initOnIpcCallbacks() {
     "hs-on-modal-drop-card-options-copy-clicked",
     (fromListIndex, toListIndex, fromEntryIndex, toEntryIndex) => {
       if (fromListIndex === -2) {
-        addListEntryFromLatest(toListIndex, fromEntryIndex);
+        addListEntryFromLatest(toListIndex, fromEntryIndex, toEntryIndex);
         buildSections(false);
       } else {
         const fromListData = getListData(fromListIndex);
