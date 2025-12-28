@@ -164,6 +164,13 @@ function getEntryIndexInList(listIndex, entry) {
   if (entry.data && entry.data.source) {
     for (let index = 0; index < listData.length; index++) {
       if (!listData[index].data || !listData[index].data.source) continue;
+      if (
+        listData[index].data.source === "xkcd" &&
+        entry.data.source === "xkcd"
+      ) {
+        // custom for xkcd, as numpages can change
+        return index;
+      }
       if (JSON.stringify(listData[index].data) === JSON.stringify(entry.data)) {
         return index;
       }
@@ -315,7 +322,14 @@ function getLatestIndexInList(listIndex, latestIndex) {
   const listData = getListData(listIndex);
   if (historyData.data && historyData.data.source) {
     for (let index = 0; index < listData.length; index++) {
-      if (!listData[index].data) continue;
+      if (!listData[index].data || !listData[index].data.source) continue;
+      if (
+        listData[index].data.source === "xkcd" &&
+        historyData.data.source === "xkcd"
+      ) {
+        // custom for xkcd, as numpages can change
+        return index;
+      }
       if (
         JSON.stringify(listData[index].data) ===
         JSON.stringify(historyData.data)
