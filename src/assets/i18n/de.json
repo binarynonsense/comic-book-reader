@@ -1,11 +1,9 @@
 {
   "@metadata": {
-    "authors": [
-      "trzyglow"
-    ],
+    "authors": ["trzyglow"],
     "last-updated": "2025-12-28",
     "license-id": "BSD-2-Clause",
-    "acbr-version": "3.13.0",
+    "acbr-version": "3.14.0",
     "pre-release": "false",
     "comments": "Deutsche Lokalisierung",
     "locale": "de",
