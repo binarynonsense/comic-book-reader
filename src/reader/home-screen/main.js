@@ -171,6 +171,8 @@ function getEntryIndexInList(listIndex, entry) {
         // custom for xkcd, as numpages can change
         return index;
       }
+      // TODO: make custom comparisions for each source type instead of
+      // using JSON.stringify
       if (JSON.stringify(listData[index].data) === JSON.stringify(entry.data)) {
         return index;
       }
@@ -330,6 +332,8 @@ function getLatestIndexInList(listIndex, latestIndex) {
         // custom for xkcd, as numpages can change
         return index;
       }
+      // TODO: make custom comparisions for each source type instead of
+      // using JSON.stringify
       if (
         JSON.stringify(listData[index].data) ===
         JSON.stringify(historyData.data)
