@@ -354,9 +354,11 @@ function buildSections(
 
   ///////
 
-  navRow = 2;
-  navColumn = 0;
-
+  if (favorites.length > 0) {
+    // if not, just empty cards
+    navRow++;
+    navColumn = 0;
+  }
   for (let cardIndex = 0; cardIndex < max; cardIndex++) {
     if (g_languageDirection === "rtl") {
       if (cardIndex % 2 === 0) {
@@ -408,7 +410,6 @@ function buildSections(
   // listDiv.appendChild(
   //   getNewCardDiv(CardType.ADD_FAVORITE, undefined, navRow, navColumn)
   // );
-  navRow++;
 
   // LATEST //////////////////////
   const latestTitleDiv = document.querySelector("#hs-latest-title");
@@ -431,6 +432,8 @@ function buildSections(
     collapseLatestButton.classList.add("set-display-none");
     expandLatestButton.classList.add("set-display-none");
   } else {
+    navRow++;
+    navColumn = 0;
     if (isListCollapsed(-2)) {
       collapseLatestButton.classList.add("set-display-none");
       expandLatestButton.classList.remove("set-display-none");
@@ -457,6 +460,11 @@ function buildSections(
   }
   max = Math.max(2, 2 * Math.round(max / 2));
   //////////////////
+  if (latest.length > 0) {
+    // if not, just empty cards
+    navRow++;
+    navColumn = 0;
+  }
   for (let cardIndex = 0; cardIndex < max; cardIndex++) {
     if (g_languageDirection === "rtl") {
       if (cardIndex % 2 === 0) {
@@ -549,6 +557,32 @@ function buildSections(
       contentDiv.classList = "hs-section-content";
       listsDiv.appendChild(contentDiv);
 
+      const editNameButton = document.querySelector(
+        `#hs-list-${listIndex}-edit-name-button`
+      );
+      editNameButton.title = localization.editNameButtonTitle;
+      editNameButton.addEventListener("click", function (event) {
+        sendIpcToMain("hs-on-edit-list-name-clicked", listIndex);
+        event.stopPropagation();
+      });
+      editNameButton.setAttribute("data-nav-panel", 0);
+      editNameButton.setAttribute("data-nav-row", navRow);
+      editNameButton.setAttribute("data-nav-col", navColumn++);
+      editNameButton.setAttribute("tabindex", "0");
+
+      const removeButton = document.querySelector(
+        `#hs-list-${listIndex}-remove-button`
+      );
+      removeButton.title = localization.removeListButtonTitle;
+      removeButton.addEventListener("click", function (event) {
+        sendIpcToMain("hs-on-remove-list-clicked", listIndex);
+        event.stopPropagation();
+      });
+      removeButton.setAttribute("data-nav-panel", 0);
+      removeButton.setAttribute("data-nav-row", navRow);
+      removeButton.setAttribute("data-nav-col", navColumn++);
+      removeButton.setAttribute("tabindex", "0");
+
       const addButton = document.querySelector(
         `#hs-list-${listIndex}-add-button`
       );
@@ -580,22 +614,6 @@ function buildSections(
       expandButton.title = localization.expandButtonTitle;
       expandButton.addEventListener("click", function (event) {
         sendIpcToMain("hs-on-collapse-list-clicked", listIndex, false);
-        event.stopPropagation();
-      });
-      const editNameButton = document.querySelector(
-        `#hs-list-${listIndex}-edit-name-button`
-      );
-      editNameButton.title = localization.editNameButtonTitle;
-      editNameButton.addEventListener("click", function (event) {
-        sendIpcToMain("hs-on-edit-list-name-clicked", listIndex);
-        event.stopPropagation();
-      });
-      const removeButton = document.querySelector(
-        `#hs-list-${listIndex}-remove-button`
-      );
-      removeButton.title = localization.removeListButtonTitle;
-      removeButton.addEventListener("click", function (event) {
-        sendIpcToMain("hs-on-remove-list-clicked", listIndex);
         event.stopPropagation();
       });
 
@@ -638,8 +656,11 @@ function buildSections(
 
       ///////
 
-      navRow++;
-      navColumn = 0;
+      if (list.data.length > 0) {
+        // if not, just empty cards
+        navRow++;
+        navColumn = 0;
+      }
 
       for (let cardIndex = 0; cardIndex < max; cardIndex++) {
         if (g_languageDirection === "rtl") {
