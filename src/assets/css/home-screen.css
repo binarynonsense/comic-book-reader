@@ -75,7 +75,7 @@
   display: flex;
   flex-direction: row;
   margin-inline-end: 2px;
-  gap: 6px;
+  gap: 5px;
 }
 
 .hs-section-title-button {
