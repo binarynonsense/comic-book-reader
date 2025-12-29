@@ -245,6 +245,19 @@ function init(activeLocale, languages, activeTheme, themes, settings) {
         sendIpcToMain("set-loading-ipos", parseInt(select.value));
       });
     }
+    // home screen latest position
+    {
+      let select = document.getElementById(
+        "tool-pre-home-screen-latest-position-select"
+      );
+      select.value = settings.homeScreen.latestPosition;
+      select.addEventListener("change", function (event) {
+        sendIpcToMain(
+          "set-home-screen-latest-position",
+          parseInt(select.value)
+        );
+      });
+    }
     // home screen latest max rows
     {
       let input = document.getElementById(
@@ -1179,7 +1192,6 @@ function showNavKeysChangeModal(title, message, textButton, action, keyIndex) {
       // repeats not allowed
       for (const key in g_navKeys) {
         for (let i = 0; i < g_navKeys[key].length; i++) {
-          console.log(g_navKeys[key][i]);
           if (g_navKeys[key][i] === newValue) {
             return true;
           }

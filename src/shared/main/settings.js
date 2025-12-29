@@ -68,6 +68,7 @@ const g_defaultSettings = {
   filterMode: 0, // 0: none, 1: old paper
   toolbarDirection: 0, // 0: infer from language, 1: ltr, 2: rtl
   homeScreen: {
+    latestPosition: 0, // 0: after favs, 1: after others, 2: before favs
     latestMaxRows: 10, // integer >= 1
     latestMaxRowsCollapsed: 2, // integer >= 1
     favoritesMaxRowsCollapsed: 2, // integer >= 1
@@ -782,15 +783,17 @@ function loadHomeScreen(loadedHomeScreen) {
   if (isObject(loadedHomeScreen)) {
     for (const option in g_settings.homeScreen) {
       let value = loadedHomeScreen[option];
-      // NOTE: this only works for now as all settings are integers > 0
-      if (value !== undefined && Number.isInteger(value) && value > 0) {
+      if (value !== undefined && Number.isInteger(value)) {
+        if (option === "latestPosition") {
+          if (value >= 0 && value <= 2) isValid = true;
+        } else {
+          if (value > 0) isValid = true;
+        }
+      }
+      if (isValid) {
         g_settings.homeScreen[option] = value;
-      } else {
-        log.test("NOT VALID");
       }
     }
-  } else {
-    log.test("NOT OBJECTTT");
   }
 }
 

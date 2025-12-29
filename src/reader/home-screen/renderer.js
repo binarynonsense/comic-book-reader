@@ -289,18 +289,67 @@ function buildSections(
   languageDirection,
   favorites,
   latest,
-  userLists,
+  otherLists,
   localization,
   refocus
 ) {
   g_settings = settings;
   g_languageDirection = languageDirection;
-  g_userLists = userLists;
+  g_userLists = otherLists;
 
-  let navRow = 1;
+  let navRow = 0;
   let navColumn = 0;
 
-  // FAVORITES ////////////////////
+  // LISTS
+  const latestPosition = settings.latestPosition;
+  if (latestPosition === 0) {
+    [navRow, navColumn] = buildFavorites(navRow, navColumn, favorites);
+    [navRow, navColumn] = buildLatest(navRow, navColumn, latest);
+    [navRow, navColumn] = buildOtherLists(
+      navRow,
+      navColumn,
+      otherLists,
+      localization
+    );
+  } else if (latestPosition === 1) {
+    [navRow, navColumn] = buildFavorites(navRow, navColumn, favorites);
+    [navRow, navColumn] = buildOtherLists(
+      navRow,
+      navColumn,
+      otherLists,
+      localization
+    );
+    [navRow, navColumn] = buildLatest(navRow, navColumn, latest);
+  } else {
+    [navRow, navColumn] = buildLatest(navRow, navColumn, latest);
+    [navRow, navColumn] = buildFavorites(navRow, navColumn, favorites);
+    [navRow, navColumn] = buildOtherLists(
+      navRow,
+      navColumn,
+      otherLists,
+      localization
+    );
+  }
+
+  // CREATE LIST button //////////
+  navRow++;
+  navColumn = 0;
+  const createListButton = document.querySelector("#hs-addlist-add-button");
+  createListButton.setAttribute("data-nav-panel", 0);
+  createListButton.setAttribute("data-nav-row", navRow);
+  createListButton.setAttribute("data-nav-col", navColumn++);
+  createListButton.setAttribute("tabindex", "0");
+
+  // NAVIGATION
+  navigation.rebuild(g_navData, refocus ? 0 : undefined);
+}
+
+function buildFavorites(navRow, navColumn, favorites) {
+  const favoritesDiv = document.querySelector("#hs-favorites-div");
+  const footerDiv = document.querySelector("#hs-footer");
+  favoritesDiv.parentNode.insertBefore(favoritesDiv, footerDiv);
+  navRow++;
+  navColumn = 0;
   // title
   const addFavoriteButton = document.querySelector("#hs-favorites-add-button");
   addFavoriteButton.addEventListener("click", function (event) {
@@ -324,12 +373,12 @@ function buildSections(
   );
 
   // cards
-  const favoritesDiv = document.querySelector("#hs-favorites");
-  favoritesDiv.innerHTML = "";
+  const favoritesCardsDiv = document.querySelector("#hs-favorites");
+  favoritesCardsDiv.innerHTML = "";
 
   let listDiv = document.createElement("div");
   listDiv.classList.add("hs-path-cards-list");
-  favoritesDiv.appendChild(listDiv);
+  favoritesCardsDiv.appendChild(listDiv);
 
   let max = favorites.length;
   let showFavoritesEllipsis = false;
@@ -402,7 +451,7 @@ function buildSections(
     const ellipsis = document.createElement("div");
     ellipsis.classList = "hs-section-ellipsis";
     ellipsis.innerHTML = `<i class="fa-solid fa-ellipsis"></i>`;
-    favoritesDiv.appendChild(ellipsis);
+    favoritesCardsDiv.appendChild(ellipsis);
   }
   // Add
   // if (g_languageDirection === "rtl") {
@@ -421,22 +470,28 @@ function buildSections(
   // listDiv.appendChild(
   //   getNewCardDiv(CardType.ADD_FAVORITE, undefined, navRow, navColumn)
   // );
+  return [navRow, navColumn];
+}
 
-  // LATEST //////////////////////
+function buildLatest(navRow, navColumn, latest) {
+  const latestDiv = document.querySelector("#hs-latest-div");
+  const footerDiv = document.querySelector("#hs-footer");
+  latestDiv.parentNode.insertBefore(latestDiv, footerDiv);
+  /////
   const latestTitleDiv = document.querySelector("#hs-latest-title");
-  const latestDiv = document.querySelector("#hs-latest");
+  const latestCardsDiv = document.querySelector("#hs-latest");
   const collapseLatestButton = document.querySelector(
     "#hs-latest-collapse-button"
   );
   const expandLatestButton = document.querySelector("#hs-latest-expand-button");
-  latestDiv.innerHTML = "";
+  latestCardsDiv.innerHTML = "";
 
   latestTitleDiv.classList.remove("set-display-none");
-  listDiv = document.createElement("div");
+  let listDiv = document.createElement("div");
   listDiv.classList.add("hs-path-cards-list");
-  latestDiv.appendChild(listDiv);
+  latestCardsDiv.appendChild(listDiv);
 
-  max = latest.length;
+  let max = latest.length;
   // collapse / expand button ////////////
   let showLatestEllipsis = false;
   if (latest.length <= getListMaxRowsCollapsed(-2) * 2) {
@@ -528,17 +583,22 @@ function buildSections(
     const ellipsis = document.createElement("div");
     ellipsis.classList = "hs-section-ellipsis";
     ellipsis.innerHTML = `<i class="fa-solid fa-ellipsis"></i>`;
-    latestDiv.appendChild(ellipsis);
+    latestCardsDiv.appendChild(ellipsis);
   }
-  // USER LISTS //////////////////
-  const listsDiv = document.querySelector("#hs-lists");
-  listsDiv.innerHTML = "";
-  if (userLists && userLists.length > 0) {
-    for (let listIndex = 0; listIndex < userLists.length; listIndex++) {
-      const list = userLists[listIndex];
-      navRow++;
-      navColumn = 0;
 
+  return [navRow, navColumn];
+}
+
+function buildOtherLists(navRow, navColumn, otherLists, localization) {
+  const listsDiv = document.querySelector("#hs-lists");
+  ////
+  const footerDiv = document.querySelector("#hs-footer");
+  listsDiv.parentNode.insertBefore(listsDiv, footerDiv);
+  ////
+  listsDiv.innerHTML = "";
+  if (otherLists && otherLists.length > 0) {
+    for (let listIndex = 0; listIndex < otherLists.length; listIndex++) {
+      const list = otherLists[listIndex];
       //title
       const titleDiv = document.createElement("div");
       titleDiv.classList = "hs-section-title";
@@ -609,6 +669,9 @@ function buildSections(
       // data
       titleDiv.setAttribute("data-list-index", listIndex);
       //////
+
+      navRow++;
+      navColumn = 0;
 
       const contentDiv = document.createElement("div");
       contentDiv.id = `hs-list-${listIndex}`;
@@ -763,17 +826,7 @@ function buildSections(
     }
   }
 
-  // CREATE LIST button //////////
-  navRow++;
-  navColumn = 0;
-  const createListButton = document.querySelector("#hs-addlist-add-button");
-  createListButton.setAttribute("data-nav-panel", 0);
-  createListButton.setAttribute("data-nav-row", navRow);
-  createListButton.setAttribute("data-nav-col", navColumn++);
-  createListButton.setAttribute("tabindex", "0");
-
-  // NAVIGATION
-  navigation.rebuild(g_navData, refocus ? 0 : undefined);
+  return [navRow, navColumn];
 }
 
 function getNewCardDiv(cardType, data, navRow, navColumn, listIndex) {

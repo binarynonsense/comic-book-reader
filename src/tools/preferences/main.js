@@ -225,6 +225,10 @@ function initOnIpcCallbacks() {
     homeScreen.onSettingsUpdated();
   }
 
+  on("set-home-screen-latest-position", (value) => {
+    updateHomeSettingsEntry("latestPosition", value);
+  });
+
   on("set-home-screen-latest-max-rows", (value) => {
     updateHomeSettingsEntry("latestMaxRows", value);
   });
@@ -851,6 +855,22 @@ function getLocalization() {
     {
       id: "tool-pre-home-screen-text",
       text: _("home-screen"),
+    },
+    {
+      id: "tool-pre-home-screen-latest-position-text",
+      text: `${_("home-section-recent")}: ${_("home-list-position")}`,
+    },
+    {
+      id: "tool-pre-home-screen-latest-position-0-text",
+      text: _("home-list-position-0", `"${_("home-section-favorites")}"`),
+    },
+    {
+      id: "tool-pre-home-screen-latest-position-1-text",
+      text: _("home-list-position-0", `"${_("home-section-other-lists")}"`),
+    },
+    {
+      id: "tool-pre-home-screen-latest-position-2-text",
+      text: _("home-list-position-3", `"${_("home-section-favorites")}"`),
     },
     {
       id: "tool-pre-home-screen-latest-max-rows-text",
