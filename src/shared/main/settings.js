@@ -67,7 +67,12 @@ const g_defaultSettings = {
   turnPageOnScrollBoundary: false,
   filterMode: 0, // 0: none, 1: old paper
   toolbarDirection: 0, // 0: infer from language, 1: ltr, 2: rtl
-  homeScreenLatestMax: 6, // integer >= 0
+  homeScreen: {
+    latestMaxRows: 10, // integer >= 1
+    latestMaxRowsCollapsed: 2, // integer >= 1
+    favoritesMaxRowsCollapsed: 2, // integer >= 1
+    otherMaxRowsCollapsed: 2, // integer >= 1
+  },
   epubEbookColorMode: 0, // 0: light, 1: dark, 2: custom
   epubEbookColorText: "#000000", // rgb color in hex
   epubEbookColorBg: "#ffffff", // rgb color in hex
@@ -231,7 +236,7 @@ exports.resetPreferences = function () {
     "rarExeFolderPath",
     "turnPageOnScrollBoundary",
     "toolbarDirection",
-    "homeScreenLatestMax",
+    "homeScreen",
     "epubEbookColorMode",
     "epubEbookColorText",
     "epubEbookColorBg",
@@ -450,12 +455,6 @@ function sanitize() {
     g_settings.toolbarDirection > 2
   ) {
     g_settings.toolbarDirection = g_defaultSettings.toolbarDirection;
-  }
-  if (
-    !Number.isInteger(g_settings.homeScreenLatestMax) ||
-    g_settings.homeScreenLatestMax < 0
-  ) {
-    g_settings.homeScreenLatestMax = g_defaultSettings.homeScreenLatestMax;
   }
   if (
     !Number.isInteger(g_settings.epubEbookColorMode) ||
@@ -708,6 +707,8 @@ function load(info) {
             loadNavKeys(loadedSettings[key]);
           } else if (key === "navButtons") {
             loadNavButtons(loadedSettings[key]);
+          } else if (key === "homeScreen") {
+            loadHomeScreen(loadedSettings[key]);
           } else {
             g_settings[key] = loadedSettings[key];
           }
@@ -774,6 +775,22 @@ function loadNavButtons(loadedButtons) {
         g_settings.navButtons[navAction] = commands;
       }
     }
+  }
+}
+
+function loadHomeScreen(loadedHomeScreen) {
+  if (isObject(loadedHomeScreen)) {
+    for (const option in g_settings.homeScreen) {
+      let value = loadedHomeScreen[option];
+      // NOTE: this only works for now as all settings are integers > 0
+      if (value !== undefined && Number.isInteger(value) && value > 0) {
+        g_settings.homeScreen[option] = value;
+      } else {
+        log.test("NOT VALID");
+      }
+    }
+  } else {
+    log.test("NOT OBJECTTT");
   }
 }
 

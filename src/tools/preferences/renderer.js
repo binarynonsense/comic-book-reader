@@ -245,15 +245,57 @@ function init(activeLocale, languages, activeTheme, themes, settings) {
         sendIpcToMain("set-loading-ipos", parseInt(select.value));
       });
     }
-    // home screen latest limit input
+    // home screen latest max rows
     {
       let input = document.getElementById(
-        "tool-pre-home-screen-latest-max-input"
+        "tool-pre-home-screen-latest-max-rows-input"
       );
-      input.value = settings.homeScreenLatestMax;
+      input.value = settings.homeScreen.latestMaxRows;
       input.addEventListener("change", function (event) {
-        if (input.value <= 0) input.value = 0;
-        sendIpcToMain("set-home-screen-latest-max", parseInt(input.value));
+        if (input.value <= 0) input.value = 1;
+        sendIpcToMain("set-home-screen-latest-max-rows", parseInt(input.value));
+      });
+    }
+    // home screen latest max rows collapsed
+    {
+      let input = document.getElementById(
+        "tool-pre-home-screen-latest-max-rows-collapsed-input"
+      );
+      input.value = settings.homeScreen.latestMaxRowsCollapsed;
+      input.addEventListener("change", function (event) {
+        if (input.value <= 0) input.value = 1;
+        sendIpcToMain(
+          "set-home-screen-latest-max-rows-collapsed",
+          parseInt(input.value)
+        );
+      });
+    }
+    // home screen favorites max rows collapsed
+    {
+      let input = document.getElementById(
+        "tool-pre-home-screen-favorites-max-rows-collapsed-input"
+      );
+      input.value = settings.homeScreen.favoritesMaxRowsCollapsed;
+      input.addEventListener("change", function (event) {
+        if (input.value <= 0) input.value = 1;
+        sendIpcToMain(
+          "set-home-screen-favorites-max-rows-collapsed",
+          parseInt(input.value)
+        );
+      });
+    }
+    // home screen other max rows collapsed
+    {
+      let input = document.getElementById(
+        "tool-pre-home-screen-other-max-rows-collapsed-input"
+      );
+      input.value = settings.homeScreen.otherMaxRowsCollapsed;
+      input.addEventListener("change", function (event) {
+        if (input.value <= 0) input.value = 1;
+        sendIpcToMain(
+          "set-home-screen-other-max-rows-collapsed",
+          parseInt(input.value)
+        );
       });
     }
     // epub ebook color mode

@@ -216,10 +216,32 @@ function initOnIpcCallbacks() {
     reader.updateToolbarDirection();
   });
 
-  on("set-home-screen-latest-max", (value) => {
-    settings.setValue("homeScreenLatestMax", value);
-    homeScreen.updateMaxLatest(value);
+  /////////////////
+
+  function updateHomeSettingsEntry(key, value) {
+    let homeSettings = settings.getValue("homeScreen");
+    homeSettings[key] = value;
+    settings.setValue("homeScreen", homeSettings);
+    homeScreen.onSettingsUpdated();
+  }
+
+  on("set-home-screen-latest-max-rows", (value) => {
+    updateHomeSettingsEntry("latestMaxRows", value);
   });
+
+  on("set-home-screen-latest-max-rows-collapsed", (value) => {
+    updateHomeSettingsEntry("latestMaxRowsCollapsed", value);
+  });
+
+  on("set-home-screen-favorites-max-rows-collapsed", (value) => {
+    updateHomeSettingsEntry("favoritesMaxRowsCollapsed", value);
+  });
+
+  on("set-home-screen-other-max-rows-collapsed", (value) => {
+    updateHomeSettingsEntry("otherMaxRowsCollapsed", value);
+  });
+
+  /////////////////
 
   on("set-epub-ebook-color-mode", (mode, textColor, bgColor) => {
     if (mode != undefined) settings.setValue("epubEbookColorMode", mode);
@@ -831,8 +853,26 @@ function getLocalization() {
       text: _("home-screen"),
     },
     {
-      id: "tool-pre-home-screen-latest-max-text",
-      text: _("tool-hst-recentfiles-max"),
+      id: "tool-pre-home-screen-latest-max-rows-text",
+      text: `${_("home-section-recent")}: ${_("home-list-setting-max-rows")}`,
+    },
+    {
+      id: "tool-pre-home-screen-latest-max-rows-collapsed-text",
+      text: `${_("home-section-recent")}: ${_(
+        "home-list-setting-max-rows"
+      )} ${_("home-list-setting-max-rows-ifcollapsed")}`,
+    },
+    {
+      id: "tool-pre-home-screen-favorites-max-rows-collapsed-text",
+      text: `${_("home-section-favorites")}: ${_(
+        "home-list-setting-max-rows"
+      )} ${_("home-list-setting-max-rows-ifcollapsed")}`,
+    },
+    {
+      id: "tool-pre-home-screen-other-max-rows-collapsed-text",
+      text: `${_("home-section-other-lists")}: ${_(
+        "home-list-setting-max-rows"
+      )} ${_("home-list-setting-max-rows-ifcollapsed")}`,
     },
     //////////////////////////////////////////////
     {

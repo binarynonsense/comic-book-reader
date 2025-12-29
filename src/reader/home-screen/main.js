@@ -10,6 +10,7 @@ const path = require("path");
 const core = require("../../core/main");
 const { _, _raw } = require("../../shared/main/i18n");
 const history = require("../../shared/main/history");
+const settings = require("../../shared/main/settings");
 const favorites = require("../../shared/main/favorites");
 const reader = require("../../reader/main");
 const log = require("../../shared/main/logger");
@@ -25,7 +26,7 @@ let g_isInitialized = false;
 let g_languageDirection = "ltr";
 let g_favoritesData;
 let g_userLists;
-let g_maxLatest = 6;
+let g_settings;
 
 let g_collapseFavorites = false;
 let g_collapseLatest = false;
@@ -48,8 +49,7 @@ function init() {
   }
 }
 
-exports.open = function (showFocus, maxLatest) {
-  g_maxLatest = maxLatest;
+exports.open = function (showFocus) {
   init();
   sendIpcToRenderer("hs-set-list-collapse-value", -1, g_collapseFavorites);
   sendIpcToRenderer("hs-set-list-collapse-value", -2, g_collapseLatest);
@@ -72,8 +72,7 @@ exports.setLanguageDirection = function (direction) {
   }
 };
 
-exports.updateMaxLatest = function (maxLatest) {
-  g_maxLatest = maxLatest;
+exports.onSettingsUpdated = function () {
   buildSections();
 };
 
@@ -92,6 +91,7 @@ function saveToFile() {
 function buildSections(refocus = true) {
   sendIpcToRenderer(
     "hs-build-sections",
+    settings.getValue("homeScreen"),
     g_languageDirection,
     getFavoritesCards(),
     getLatestCards(),
@@ -240,7 +240,7 @@ function getLatestCards() {
   const data = [];
   for (let index = 0; index < historyData.length; index++) {
     try {
-      if (data.length < g_maxLatest) {
+      if (data.length < settings.getValue("homeScreen").latestMaxRows * 2) {
         const latestInfo = {};
         latestInfo.index = historyData.length - index - 1;
         latestInfo.percentageRead = getPercentageReadFromHistoryIndex(
