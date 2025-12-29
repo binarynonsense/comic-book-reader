@@ -35,6 +35,7 @@ let g_collapseLatest = true;
 let g_collapseFavorites = true;
 
 let g_draggedCard = null;
+let g_draggedTitle = null;
 
 function init() {
   if (!g_isInitialized) {
@@ -532,7 +533,7 @@ function buildSections(
       const titleDiv = document.createElement("div");
       titleDiv.classList = "hs-section-title";
       titleDiv.innerHTML = `
-      <div><i class="fa-solid fa-list hs-section-title-icon"></i> ${list.name}</div>
+      <div class="hs-section-title-text"><i class="fa-solid fa-list hs-section-title-icon"></i> ${list.name}</div>
       <div class="hs-section-title-buttons">        
         <div id="hs-list-${listIndex}-edit-name-button" class="hs-section-title-button">
           <i class="fa-solid fa-pen"></i>
@@ -551,6 +552,53 @@ function buildSections(
         </div>
       </div>`;
       listsDiv.appendChild(titleDiv);
+
+      // drag and drop title //////////
+      titleDiv.draggable = true;
+      // select
+      titleDiv.addEventListener("dragstart", function (event) {
+        g_draggedTitle = event.target;
+        titleDiv.classList.add("hs-section-title-dragging");
+        titleDiv.blur();
+        event.stopPropagation();
+      });
+      titleDiv.addEventListener("dragend", function (event) {
+        g_draggedTitle = undefined;
+        titleDiv.classList.remove("hs-section-title-dragging");
+        event.stopPropagation();
+      });
+      // drop
+      titleDiv.addEventListener("drop", (event) => {
+        if (event.target.classList.contains("hs-section-title")) {
+          titleDiv.classList.remove("hs-section-title-dragging-over");
+          const fromListIndex = g_draggedTitle.getAttribute("data-list-index");
+          const toListIndex = event.target.getAttribute("data-list-index");
+          sendIpcToMain(
+            "hs-on-list-dropped",
+            parseInt(fromListIndex),
+            parseInt(toListIndex)
+          );
+          event.preventDefault();
+        }
+      });
+      // receive
+      titleDiv.addEventListener("dragover", function (event) {
+        const draggingElement = document.querySelector(
+          ".hs-section-title-dragging"
+        );
+        if (draggingElement && titleDiv != draggingElement) {
+          event.preventDefault();
+          titleDiv.classList.add("hs-section-title-dragging-over");
+          event.stopPropagation();
+        }
+      });
+      titleDiv.addEventListener("dragleave", function (event) {
+        titleDiv.classList.remove("hs-section-title-dragging-over");
+        event.stopPropagation();
+      });
+      // data
+      titleDiv.setAttribute("data-list-index", listIndex);
+      //////
 
       const contentDiv = document.createElement("div");
       contentDiv.id = `hs-list-${listIndex}`;

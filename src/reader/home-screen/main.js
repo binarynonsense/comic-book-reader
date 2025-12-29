@@ -996,6 +996,22 @@ function initOnIpcCallbacks() {
       }
     }
   );
+  //////////////////////
+
+  on("hs-on-list-dropped", (fromListIndex, toListIndex) => {
+    if (fromListIndex !== toListIndex) {
+      const fromEntry = g_userLists[fromListIndex];
+      g_userLists.splice(fromListIndex, 1);
+      if (toListIndex >= g_userLists.length) {
+        g_userLists.push(fromEntry);
+      } else {
+        if (toListIndex >= g_userLists.length - 1)
+          toListIndex = g_userLists.length - 1;
+        g_userLists.splice(toListIndex, 0, fromEntry);
+      }
+      buildSections(false);
+    }
+  });
 
   //////////////////////
 
@@ -1008,7 +1024,7 @@ function initOnIpcCallbacks() {
         const toListData = getListData(toListIndex);
         fromListData.splice(fromEntryIndex, 1);
         if (toEntryIndex === -1 || toEntryIndex >= toListData.length) {
-          // empty card
+          // empty card or special last case
           toListData.push(fromEntry);
         } else {
           if (toEntryIndex >= toListData.length - 1)

@@ -62,6 +62,16 @@
   align-items: center;
   margin-inline-end: 2px;
 }
+.hs-section-title-dragging {
+  opacity: 0.25;
+}
+.hs-section-title-dragging-over {
+  border: 4px dashed var(--hs-path-card-text-color);
+}
+
+.hs-section-title-text {
+  pointer-events: none;
+}
 
 .hs-section-title-icon {
   margin-inline-end: 7px;
