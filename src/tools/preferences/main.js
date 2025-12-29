@@ -574,10 +574,14 @@ function getLocalization() {
     },
     {
       id: "tool-pre-section-3-text",
-      text: _("tool-pre-updates"),
+      text: _("home-screen"),
     },
     {
       id: "tool-pre-section-4-text",
+      text: _("tool-pre-updates"),
+    },
+    {
+      id: "tool-pre-section-5-text",
       text: _("tool-pre-advanced-preferences"),
     },
     //////////////////////////////////////////////

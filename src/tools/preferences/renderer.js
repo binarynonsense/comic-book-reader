@@ -47,7 +47,7 @@ function init(activeLocale, languages, activeTheme, themes, settings) {
         showModalConfirmResetAll();
       });
     // sections menu
-    for (let index = 0; index < 5; index++) {
+    for (let index = 0; index < 6; index++) {
       document
         .getElementById(`tool-pre-section-${index}-button`)
         .addEventListener("click", (event) => {
@@ -606,7 +606,7 @@ function updateColumnsHeight(scrollTop = false) {
 }
 
 function switchSection(id) {
-  for (let index = 0; index < 5; index++) {
+  for (let index = 0; index < 6; index++) {
     if (id === index) {
       document
         .getElementById(`tool-pre-section-${index}-button`)
