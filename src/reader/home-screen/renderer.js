@@ -30,7 +30,6 @@ let g_pagesContainerDiv;
 
 let g_userLists;
 
-let g_collapsedNumRowsShown = 3;
 let g_collapseLatest = true;
 let g_collapseFavorites = true;
 
@@ -276,6 +275,14 @@ function isListCollapsed(listIndex) {
   }
 }
 
+function getListMaxRows(listIndex) {
+  if (listIndex === -2) return 3;
+  else if (listIndex === -1) return 3;
+  else {
+    return 3;
+  }
+}
+
 function buildSections(
   languageDirection,
   favorites,
@@ -323,7 +330,7 @@ function buildSections(
 
   let max = favorites.length;
   let showFavoritesEllipsis = false;
-  if (favorites.length <= g_collapsedNumRowsShown * 2) {
+  if (favorites.length <= getListMaxRows(-1) * 2) {
     collapseFavoritesButton.classList.add("set-display-none");
     expandFavoritesButton.classList.add("set-display-none");
   } else {
@@ -337,7 +344,7 @@ function buildSections(
       expandFavoritesButton.setAttribute("data-nav-row", navRow);
       expandFavoritesButton.setAttribute("data-nav-col", navColumn++);
       expandFavoritesButton.setAttribute("tabindex", "0");
-      max = g_collapsedNumRowsShown * 2;
+      max = getListMaxRows(-1) * 2;
       if (favorites.length > max) showFavoritesEllipsis = true;
     } else {
       collapseFavoritesButton.classList.remove("set-display-none");
@@ -429,7 +436,7 @@ function buildSections(
   max = latest.length;
   // collapse / expand button ////////////
   let showLatestEllipsis = false;
-  if (latest.length <= g_collapsedNumRowsShown * 2) {
+  if (latest.length <= getListMaxRows(-2) * 2) {
     collapseLatestButton.classList.add("set-display-none");
     expandLatestButton.classList.add("set-display-none");
   } else {
@@ -445,7 +452,7 @@ function buildSections(
       expandLatestButton.setAttribute("data-nav-row", navRow);
       expandLatestButton.setAttribute("data-nav-col", navColumn++);
       expandLatestButton.setAttribute("tabindex", "0");
-      max = g_collapsedNumRowsShown * 2;
+      max = getListMaxRows(-2) * 2;
       if (latest.length > max) showLatestEllipsis = true;
     } else {
       collapseLatestButton.classList.remove("set-display-none");
@@ -672,7 +679,7 @@ function buildSections(
 
       let max = list.data.length;
       let showEllipsis = false;
-      if (list.data.length <= g_collapsedNumRowsShown * 2) {
+      if (list.data.length <= getListMaxRows(listIndex) * 2) {
         collapseButton.classList.add("set-display-none");
         expandButton.classList.add("set-display-none");
       } else {
@@ -686,7 +693,7 @@ function buildSections(
           expandButton.setAttribute("data-nav-row", navRow);
           expandButton.setAttribute("data-nav-col", navColumn++);
           expandButton.setAttribute("tabindex", "0");
-          max = g_collapsedNumRowsShown * 2;
+          max = getListMaxRows(listIndex) * 2;
           if (list.data.length > max) showEllipsis = true;
         } else {
           collapseButton.classList.remove("set-display-none");
