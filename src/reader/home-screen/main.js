@@ -26,7 +26,6 @@ let g_languageDirection = "ltr";
 let g_favoritesData;
 let g_userLists;
 let g_maxLatest = 6;
-let g_latestCards;
 
 let g_collapseFavorites = false;
 let g_collapseLatest = false;
@@ -311,7 +310,6 @@ function getLatestCards() {
       log.editorError(error);
     }
   }
-  g_latestCards = data;
   return data;
 }
 
