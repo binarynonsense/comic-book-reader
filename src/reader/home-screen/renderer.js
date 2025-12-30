@@ -303,6 +303,7 @@ function buildSections(
   // LISTS
   const latestPosition = settings.latestPosition;
   if (latestPosition === 0) {
+    // after favs
     [navRow, navColumn] = buildFavorites(navRow, navColumn, favorites);
     [navRow, navColumn] = buildLatest(navRow, navColumn, latest);
     [navRow, navColumn] = buildOtherLists(
@@ -312,6 +313,8 @@ function buildSections(
       localization
     );
   } else if (latestPosition === 1) {
+    // at the top
+    [navRow, navColumn] = buildLatest(navRow, navColumn, latest);
     [navRow, navColumn] = buildFavorites(navRow, navColumn, favorites);
     [navRow, navColumn] = buildOtherLists(
       navRow,
@@ -319,9 +322,8 @@ function buildSections(
       otherLists,
       localization
     );
-    [navRow, navColumn] = buildLatest(navRow, navColumn, latest);
   } else {
-    [navRow, navColumn] = buildLatest(navRow, navColumn, latest);
+    // at the bottom
     [navRow, navColumn] = buildFavorites(navRow, navColumn, favorites);
     [navRow, navColumn] = buildOtherLists(
       navRow,
@@ -329,6 +331,7 @@ function buildSections(
       otherLists,
       localization
     );
+    [navRow, navColumn] = buildLatest(navRow, navColumn, latest);
   }
 
   // CREATE LIST button //////////

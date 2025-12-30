@@ -68,7 +68,7 @@ const g_defaultSettings = {
   filterMode: 0, // 0: none, 1: old paper
   toolbarDirection: 0, // 0: infer from language, 1: ltr, 2: rtl
   homeScreen: {
-    latestPosition: 0, // 0: after favs, 1: after others, 2: before favs
+    latestPosition: 0, // 0: after favs, 1: top, 2: bottom
     latestMaxRows: 10, // integer >= 1
     latestMaxRowsCollapsed: 2, // integer >= 1
     favoritesMaxRowsCollapsed: 2, // integer >= 1

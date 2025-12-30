@@ -870,11 +870,11 @@ function getLocalization() {
     },
     {
       id: "tool-pre-home-screen-latest-position-1-text",
-      text: _("home-list-position-0", `"${_("home-section-other-lists")}"`),
+      text: _("home-list-position-1"),
     },
     {
       id: "tool-pre-home-screen-latest-position-2-text",
-      text: _("home-list-position-3", `"${_("home-section-favorites")}"`),
+      text: _("home-list-position-2"),
     },
     {
       id: "tool-pre-home-screen-latest-max-rows-text",
