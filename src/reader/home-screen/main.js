@@ -452,10 +452,14 @@ function addListEntryFromLocalPath(listIndex, localPath, doBuild = true) {
     log.editor("tried to add an entry already in the list");
     sendIpcToCoreRenderer(
       "show-toast",
-      _("home-action-canceled") +
-        "\n" +
-        _("home-action-drag-file-shortcut-error-alreadyinlist"),
-      3000
+      `${_("home-action-canceled")}<br>${_(
+        "home-action-drag-file-shortcut-error-alreadyinlist"
+      )}<br><span class="toast-acbr-path">...${path.basename(
+        localPath
+      )}</span>`,
+      3000,
+      undefined,
+      false
     );
   }
 }
