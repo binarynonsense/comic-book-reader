@@ -219,7 +219,7 @@ function onIpcFromMain(event, args) {
 
       case "show-toast":
         {
-          toasts.show(args[2], args[3]);
+          toasts.show(...args.slice(2));
         }
         break;
 
