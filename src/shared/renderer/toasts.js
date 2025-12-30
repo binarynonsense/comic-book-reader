@@ -9,7 +9,7 @@ export function show(...args) {
   generic(...args);
 }
 
-function generic(text, duration, onClick) {
+function generic(text, duration, onClick, escapeMarkup = true) {
   // ref: https://github.com/apvarun/toastify-js/blob/master/README.md
   let toast = Toastify({
     text,
@@ -27,5 +27,6 @@ function generic(text, duration, onClick) {
     },
     duration,
     stopOnFocus: true,
+    escapeMarkup,
   }).showToast();
 }
