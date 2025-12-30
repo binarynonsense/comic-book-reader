@@ -1,11 +1,9 @@
 {
   "@metadata": {
-    "authors": [
-      "vanja-san"
-    ],
+    "authors": ["vanja-san"],
     "last-updated": "2025-12-30",
     "license-id": "BSD-2-Clause",
-    "acbr-version": "3.13.0",
+    "acbr-version": "3.14.0",
     "pre-release": "false",
     "comments": "Русский перевод",
     "locale": "ru",
