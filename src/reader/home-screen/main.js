@@ -439,7 +439,7 @@ function isLocalPathInList(listIndex, localPath) {
   return getLocalPathIndexInList(listIndex, localPath) >= 0;
 }
 
-function addListEntryFromLocalPath(listIndex, localPath) {
+function addListEntryFromLocalPath(listIndex, localPath, doBuild = true) {
   let isAlreadyInList = isLocalPathInList(listIndex, localPath);
   if (!isAlreadyInList) {
     const listData = getListData(listIndex);
@@ -447,10 +447,16 @@ function addListEntryFromLocalPath(listIndex, localPath) {
       path: localPath,
       name: path.basename(localPath),
     });
-    buildSections();
+    if (doBuild) buildSections();
   } else {
-    // TODO: show some kind of error modal?
-    log.debug("tried to add a favorite already in the list");
+    log.editor("tried to add an entry already in the list");
+    sendIpcToCoreRenderer(
+      "show-toast",
+      _("home-action-canceled") +
+        "\n" +
+        _("home-action-drag-file-shortcut-error-alreadyinlist"),
+      3000
+    );
   }
 }
 
@@ -701,15 +707,17 @@ function initOnIpcCallbacks() {
         ? _("home-section-favorites")
         : g_userLists[listIndex].name,
       _("tool-shared-ui-back"),
-      _("tool-shared-ui-add-file"),
-      _("tool-shared-ui-add-folder"),
+      _("tool-shared-ui-add-files"),
+      _("tool-shared-ui-add-folders"),
       listIndex,
       showFocus
     );
   });
 
+  let g_defaultPath;
+
   on("hs-on-modal-add-list-file-clicked", (listIndex) => {
-    let allowMultipleSelection = false;
+    let allowMultipleSelection = true;
     let allowedFileTypesName = _("dialog-file-types-comics");
     let allowedFileTypesList = [
       FileExtension.CBZ,
@@ -718,9 +726,10 @@ function initOnIpcCallbacks() {
       FileExtension.PDF,
       FileExtension.EPUB,
     ];
+    if (!g_defaultPath) g_defaultPath = appUtils.getDesktopFolderPath();
     let filePathsList = appUtils.chooseFiles(
       core.getMainWindow(),
-      undefined,
+      g_defaultPath,
       allowedFileTypesName,
       allowedFileTypesList,
       allowMultipleSelection
@@ -728,17 +737,29 @@ function initOnIpcCallbacks() {
     if (filePathsList === undefined || filePathsList.length <= 0) {
       return;
     }
-    const filePath = filePathsList[0];
-    addListEntryFromLocalPath(listIndex, filePath);
+    g_defaultPath = path.dirname(filePathsList[0]);
+    filePathsList.forEach((filePath) => {
+      addListEntryFromLocalPath(listIndex, filePath, false);
+    });
+    buildSections();
   });
 
   on("hs-on-modal-add-list-folder-clicked", (listIndex) => {
-    let folderList = appUtils.chooseFolder(core.getMainWindow());
+    if (!g_defaultPath) g_defaultPath = appUtils.getDesktopFolderPath();
+    let folderList = appUtils.chooseFolder(
+      core.getMainWindow(),
+      g_defaultPath,
+      true
+    );
     if (folderList === undefined || folderList.length <= 0) {
       return;
     }
-    const folderPath = folderList[0];
-    addListEntryFromLocalPath(listIndex, folderPath);
+
+    g_defaultPath = folderList[0];
+    folderList.forEach((folderPath) => {
+      addListEntryFromLocalPath(listIndex, folderPath, false);
+    });
+    buildSections();
   });
 
   //////////
