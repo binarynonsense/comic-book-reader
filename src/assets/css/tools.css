@@ -263,6 +263,7 @@ html[dir="rtl"] .tools-button-accent i {
   width: fit-content;
   padding: 10px;
   /* border-left: 1px solid var(--tools-input-border-color); */
+  overflow-wrap: anywhere;
 }
 
 .tools-h3-extra-margin-top {
