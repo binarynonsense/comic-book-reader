@@ -18,6 +18,7 @@
   width: 1024px;
   max-width: 1024px;
   padding: 50px;
+  padding-bottom: 0px;
   color: var(--hs-text-color);
 }
 
@@ -537,6 +538,7 @@ html[dir="rtl"] .hs-path-card-percentageBar {
 #hs-footer {
   display: flex;
   justify-content: center;
+  margin-top: auto;
 }
 
 /* *********************** */
@@ -576,8 +578,5 @@ html[dir="rtl"] .hs-path-card-percentageBar {
   background-color: var(--hs-button-normal-bg-hover-color);
   cursor: pointer;
   transform: scale(1.03);
-}
-
-#hs-addlist-add-button:active {
-  transform: translateY(1px);
+  transform-origin: bottom;
 }
