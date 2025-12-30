@@ -206,6 +206,12 @@ function getToolsSubmenu() {
             },
           ],
         },
+        {
+          label: _("tool-fb-title"),
+          click() {
+            core.onMenuToolFileBrowser();
+          },
+        },
       ],
     },
     {

@@ -842,6 +842,11 @@ if (!gotTheLock) {
     sendIpcToPreload("update-menubar");
   };
 
+  exports.onMenuToolFileBrowser = function () {
+    tools.switchTool("tool-file-browser", reader.getFileData());
+    sendIpcToPreload("update-menubar");
+  };
+
   exports.onMenuToolRssReader = function (options) {
     tools.switchTool("tool-rss", options);
     sendIpcToPreload("update-menubar");
