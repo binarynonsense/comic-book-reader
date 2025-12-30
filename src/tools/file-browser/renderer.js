@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2023 Álvaro García
+ * Copyright 2020-2025 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -64,6 +64,8 @@ async function buildPage(drivesData) {
       buttonIcon.className = "fas fa-bookmark tools-menu-button-icon";
     } else if (drive.isUSB) {
       buttonIcon.className = "fab fa-usb tools-menu-button-icon";
+    } else if (drive.isFavorite) {
+      buttonIcon.className = "fas fa-heart tools-menu-button-icon";
     } else {
       buttonIcon.className = "fas fa-hdd tools-menu-button-icon";
     }
