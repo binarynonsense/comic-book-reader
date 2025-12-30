@@ -658,11 +658,11 @@
   "tool-pre-updates-checkonstart-4": "Ежемесячно",
   "tool-pre-updates-checknotify": "Показывать уведомление, если",
   "tool-pre-updates-checknotify-0": "Найдена новая стабильная версия",
-  "tool-pre-updates-checknotify-1": "Найдена новая стабильная версия, но только в первый раз"
+  "tool-pre-updates-checknotify-1": "Найдена новая стабильная версия, но только в первый раз",
   "tool-pre-advanced-preferences": "Дополнительно",
   "tool-pre-other-preferences": "Другое",
   "tool-pre-tempfolder": "Папка Temp",
-  "tool-pre-configfiles": "Файлы конфигурации"
+  "tool-pre-configfiles": "Файлы конфигурации",
   "tool-hst-title": "История",
   "tool-hst-button-clear-all": "Очистить историю",
   "[NOTE TO TRANSLATORS]tool-hst-recentfiles": "Recent Files as in most recently opened files",
@@ -673,7 +673,7 @@
   "tool-hst-modal-clearall-message": "Действительно удалить все записи из истории?",
   "tool-hst-modal-changemaxfiles-message": "Установить максимальное количество записей в истории на {0}?",
   "tool-cc-title": "Инструмент конвертирования файлов",
-  "tool-cc-title-alt": "Конвертировать комиксы"
+  "tool-cc-title-alt": "Конвертировать комиксы",
   "tool-cr-title": "Инструмент создания файла",
   "tool-cr-title-alt": "Создать комикс",
   "tool-ci-title": "Инструмент конвертирования изображений",
@@ -863,7 +863,7 @@
   "tool-radio-add-to-favorites": "Добавить в избранное",
   "tool-radio-remove-from-favorites": "Удалить из избранного",
   "tool-radio-remove-from-favorites-warning": "Вы уверены, что хотите удалить эту радиостанцию?",
-  "tool-radio-radio-station": "Радиостанция"
+  "tool-radio-radio-station": "Радиостанция",
   "tool-radio-search-options-language": "Язык (На английском)",
   "tool-radio-search-options-languagecode": "Код языка",
   "tool-radio-search-options-countrycode": "Код страны",
