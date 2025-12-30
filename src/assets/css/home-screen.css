@@ -245,6 +245,9 @@
   justify-content: center;
   color: var(--hs-button-normal-bg-color);
 }
+#hs-logo-browser-button {
+  font-size: 18px;
+}
 
 .hs-logo-button:hover {
   color: var(--hs-button-normal-bg-hover-color);

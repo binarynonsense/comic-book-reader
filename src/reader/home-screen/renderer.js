@@ -118,6 +118,15 @@ function init() {
       sendIpcToMain("hs-art-tools");
     });
     ///////////
+    const fileBrowserButton = document.querySelector("#hs-logo-browser-button");
+    fileBrowserButton.addEventListener("click", (event) => {
+      sendIpcToMain("hs-open-file-browser");
+    });
+    fileBrowserButton.setAttribute("data-nav-panel", 0);
+    fileBrowserButton.setAttribute("data-nav-row", navRow);
+    fileBrowserButton.setAttribute("data-nav-col", navColumn++);
+    fileBrowserButton.setAttribute("tabindex", "0");
+    ///////////
     const rssReaderButton = document.querySelector(
       "#hs-logo-rss-reader-button"
     );
@@ -2104,6 +2113,7 @@ function updateLocalization(
   historyTitle,
   filesToolsTitle,
   artToolsTitle,
+  fileBrowserTitle,
   rssReaderTitle,
   radioTitle,
   quitTitle,
@@ -2133,6 +2143,8 @@ function updateLocalization(
   document.querySelector("#hs-logo-files-tools-button").title = filesToolsTitle;
   // art tools
   document.querySelector("#hs-logo-art-tools-button").title = artToolsTitle;
+  // file browser
+  document.querySelector("#hs-logo-browser-button").title = fileBrowserTitle;
   // rss reader
   document.querySelector("#hs-logo-rss-reader-button").title = rssReaderTitle;
   // radio

@@ -593,6 +593,10 @@ function initOnIpcCallbacks() {
     core.onMenuToolRssReader();
   });
 
+  on("hs-open-file-browser", () => {
+    tools.switchTool("tool-file-browser");
+  });
+
   on("hs-open-radio", () => {
     core.onMenuToolRadio(0);
   });
@@ -1236,6 +1240,7 @@ function updateLocalizedText(rebuildSections = true) {
     _raw("home-button-art-tools", false)
       ? _raw("home-button-art-tools", false)
       : _("menu-tools") + " > " + _("menu-tools-art"),
+    _("tool-fb-title"),
     _("menu-tools-rss-reader"),
     _("menu-tools-radio"),
     _("menu-file-quit"),
