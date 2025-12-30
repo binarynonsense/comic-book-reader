@@ -66,6 +66,7 @@
 #toolbar-page-numbers {
   user-select: none;
   direction: ltr;
+  text-align: center;
 }
 
 #toolbar-page-slider-div {

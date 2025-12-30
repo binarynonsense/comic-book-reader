@@ -1376,10 +1376,30 @@ export function updatePageInfo(pageNum, numPages, isPercentage) {
     document.getElementById("toolbar-page-slider-input").max = numPages;
     document.getElementById("toolbar-page-slider-input").min = 1;
     document.getElementById("toolbar-page-slider-input").value = pageNum + 1;
-    document.getElementById("toolbar-page-numbers").innerHTML =
-      pageNum + 1 + " / " + numPages;
+
+    let currentPageText = `${pageNum + 1} / ${numPages}`;
+    if (g_pageMode === 1) {
+      if (numPages > 1 && pageNum + 1 < numPages) {
+        currentPageText = `${pageNum + 1}-${pageNum + 2} / ${numPages}`;
+        document.getElementById("toolbar-page-slider-input").value =
+          pageNum + 2;
+      }
+    } else if (g_pageMode === 2) {
+      if (numPages > 1 && pageNum !== 0 && pageNum + 1 < numPages) {
+        currentPageText = `${pageNum + 1}-${pageNum + 2} / ${numPages}`;
+        document.getElementById("toolbar-page-slider-input").value =
+          pageNum + 2;
+      }
+    }
+    document.getElementById("toolbar-page-numbers").innerHTML = currentPageText;
     document.getElementById("page-number-bubble").innerHTML =
-      "<span>" + (pageNum + 1) + " / " + numPages + "</span>";
+      "<span>" + currentPageText + "</span>";
+
+    // calc page text space so slider doesn't change sizes too widely
+    let numChars = numPages.toString().length * (g_pageMode == 0 ? 2 : 3) + 5;
+    document.getElementById(
+      "toolbar-page-numbers"
+    ).style.minWidth = `${numChars}ch`;
   }
 }
 
