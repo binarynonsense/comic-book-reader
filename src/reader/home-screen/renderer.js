@@ -41,6 +41,8 @@ function init() {
   if (!g_isInitialized) {
     // things to start only once go here
     g_isInitialized = true;
+    const navRow = 0;
+    let navColumn = 0;
     ///////////
     const logoDiv = document.querySelector("#hs-logo-image");
     logoDiv.addEventListener("click", () => {
@@ -84,8 +86,8 @@ function init() {
       sendIpcToMain("hs-open-dialog-file", undefined, 1);
     });
     openFileButton.setAttribute("data-nav-panel", 0);
-    openFileButton.setAttribute("data-nav-row", 0);
-    openFileButton.setAttribute("data-nav-col", 0);
+    openFileButton.setAttribute("data-nav-row", navRow);
+    openFileButton.setAttribute("data-nav-col", navColumn++);
     openFileButton.setAttribute("data-nav-click", 0);
     ///////////
     const preferencesButton = document.querySelector(
@@ -94,19 +96,15 @@ function init() {
     preferencesButton.addEventListener("click", (event) => {
       sendIpcToMain("hs-open-preferences");
     });
-    // preferencesButton.setAttribute("data-nav-panel", 0);
-    // preferencesButton.setAttribute("data-nav-row", 0);
-    // preferencesButton.setAttribute("data-nav-col", 1);
-    // preferencesButton.setAttribute("tabindex", "0");
     ///////////
     const historyButton = document.querySelector("#hs-logo-history-button");
     historyButton.addEventListener("click", (event) => {
       sendIpcToMain("hs-open-history");
     });
-    // preferencesButton.setAttribute("data-nav-panel", 0);
-    // preferencesButton.setAttribute("data-nav-row", 0);
-    // preferencesButton.setAttribute("data-nav-col", 2);
-    // preferencesButton.setAttribute("tabindex", "0");
+    historyButton.setAttribute("data-nav-panel", 0);
+    historyButton.setAttribute("data-nav-row", navRow);
+    historyButton.setAttribute("data-nav-col", navColumn++);
+    historyButton.setAttribute("tabindex", "0");
     ///////////
     const filesToolsButton = document.querySelector(
       "#hs-logo-files-tools-button"
@@ -114,10 +112,6 @@ function init() {
     filesToolsButton.addEventListener("click", (event) => {
       sendIpcToMain("hs-files-tools");
     });
-    // comicConverterButton.setAttribute("data-nav-panel", 0);
-    // comicConverterButton.setAttribute("data-nav-row", 0);
-    // comicConverterButton.setAttribute("data-nav-col", 3);
-    // comicConverterButton.setAttribute("tabindex", "0");
     ///////////
     const artToolsButton = document.querySelector("#hs-logo-art-tools-button");
     artToolsButton.addEventListener("click", (event) => {
@@ -140,6 +134,10 @@ function init() {
     quitButton.addEventListener("click", (event) => {
       sendIpcToMain("hs-quit");
     });
+    quitButton.setAttribute("data-nav-panel", 0);
+    quitButton.setAttribute("data-nav-row", navRow);
+    quitButton.setAttribute("data-nav-col", navColumn++);
+    quitButton.setAttribute("tabindex", "0");
     ///////////
     const collapseLatestButton = document.querySelector(
       "#hs-latest-collapse-button"
