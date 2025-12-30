@@ -2587,7 +2587,10 @@ function onMenuOpenFile(startPath) {
       defaultPath = path.dirname(g_fileData.path);
     } else if (
       history.get().length > 0 &&
-      !history.getIndex(history.get().length - 1).data
+      !(
+        history.getIndex(history.get().length - 1).data &&
+        history.getIndex(history.get().length - 1).data.source
+      )
     ) {
       defaultPath = path.dirname(
         history.getIndex(history.get().length - 1).filePath

@@ -17,6 +17,7 @@ const reader = require("../../reader/main");
 const contextMenu = require("../../shared/main/tools-menu-context");
 const tools = require("../../shared/main/tools");
 const favorites = require("../../shared/main/favorites");
+const history = require("../../shared/main/history");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -51,6 +52,16 @@ exports.open = function (fileData, showFocus) {
     } else {
       g_startingFolderPath = path.dirname(fileData.path);
     }
+  } else if (
+    history.get().length > 0 &&
+    !(
+      history.getIndex(history.get().length - 1).data &&
+      history.getIndex(history.get().length - 1).data.source
+    )
+  ) {
+    g_startingFolderPath = path.dirname(
+      history.getIndex(history.get().length - 1).filePath
+    );
   } else {
     g_startingFolderPath = appUtils.getDesktopFolderPath();
   }
