@@ -614,15 +614,15 @@ function initOnIpcCallbacks() {
       g_collapseLatest = value;
       favorites.setValue("collapseLatest", value);
       sendIpcToRenderer("hs-set-list-collapse-value", -2, value);
-      buildSections();
+      buildSections(false);
     } else if (listIndex === -1) {
       g_collapseFavorites = value;
       favorites.setValue("collapseFavorites", value);
       sendIpcToRenderer("hs-set-list-collapse-value", -1, value);
-      buildSections();
+      buildSections(false);
     } else {
       g_userLists[listIndex].collapsed = value;
-      buildSections();
+      buildSections(false);
     }
   });
 
