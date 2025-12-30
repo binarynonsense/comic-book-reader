@@ -493,6 +493,24 @@ function on(id, callback) {
 }
 
 function initOnIpcCallbacks() {
+  let g_logoMsgIndex = -1;
+  on("hs-on-logo-clicked", () => {
+    const time = new Date().toLocaleString([], {
+      hour: "numeric",
+      minute: "numeric",
+      hour12: settings.getValue("clockFormat") === 1,
+    });
+    // _("ui-modal-info-version")
+    const version = `🗨 v${appUtils.getAppVersion()} `;
+    const messages = ["👋😀 ", "🕑 " + time + " ", version];
+    // g_logoMsgIndex = Math.floor(Math.random() * messages.length);
+    g_logoMsgIndex++;
+    if (g_logoMsgIndex >= messages.length) g_logoMsgIndex = 1;
+    setTimeout(() => {
+      sendIpcToCoreRenderer("show-toast", messages[g_logoMsgIndex], 3000);
+    }, 500);
+  });
+
   on("hs-open-dialog-file", (filePath, sourceId) => {
     if (sourceId === 1) {
       tools.switchTool("tool-file-browser", { path: filePath }, true);

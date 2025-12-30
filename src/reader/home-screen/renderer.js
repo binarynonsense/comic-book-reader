@@ -44,6 +44,7 @@ function init() {
     ///////////
     const logoDiv = document.querySelector("#hs-logo-image");
     logoDiv.addEventListener("click", () => {
+      sendIpcToMain("hs-on-logo-clicked");
       let anim = 1;
       //anim = Math.floor(Math.random() * 2);
       if (
