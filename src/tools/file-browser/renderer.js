@@ -78,6 +78,7 @@ async function buildPage(drivesData) {
     buttonDiv.appendChild(textDiv);
     buttonDiv.addEventListener("click", () => {
       sendIpcToMain("change-current-folder", drive.path);
+      buttonDiv.blur();
     });
     buttonDiv.setAttribute(
       "data-nav-panel",
