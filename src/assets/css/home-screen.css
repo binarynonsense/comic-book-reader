@@ -62,7 +62,18 @@
   margin: 0px 7px 30px 7px;
   align-items: center;
   margin-inline-end: 2px;
+  position: relative;
 }
+.hs-section-title[draggable="true"]:active:not(:has(:active))
+  .hs-section-title-icon:after {
+  position: absolute;
+  left: -30px;
+  font: var(--fa-font-solid);
+  content: "\f338";
+  font-size: 19px;
+  opacity: 0.6;
+}
+
 .hs-section-title-dragging {
   opacity: 0.25;
 }

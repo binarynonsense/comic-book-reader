@@ -81,9 +81,11 @@ function init() {
     const openFileButton = document.querySelector("#hs-openfile-button");
     openFileButton.addEventListener("click", (event) => {
       sendIpcToMain("hs-open-dialog-file");
+      event.stopPropagation();
     });
     openFileButton.addEventListener("acbr-nav-click", (event) => {
       sendIpcToMain("hs-open-dialog-file", undefined, 1);
+      event.stopPropagation();
     });
     openFileButton.setAttribute("data-nav-panel", 0);
     openFileButton.setAttribute("data-nav-row", navRow);
@@ -95,11 +97,13 @@ function init() {
     );
     preferencesButton.addEventListener("click", (event) => {
       sendIpcToMain("hs-open-preferences");
+      event.stopPropagation();
     });
     ///////////
     const historyButton = document.querySelector("#hs-logo-history-button");
     historyButton.addEventListener("click", (event) => {
       sendIpcToMain("hs-open-history");
+      event.stopPropagation();
     });
     historyButton.setAttribute("data-nav-panel", 0);
     historyButton.setAttribute("data-nav-row", navRow);
@@ -111,16 +115,19 @@ function init() {
     );
     filesToolsButton.addEventListener("click", (event) => {
       sendIpcToMain("hs-files-tools");
+      event.stopPropagation();
     });
     ///////////
     const artToolsButton = document.querySelector("#hs-logo-art-tools-button");
     artToolsButton.addEventListener("click", (event) => {
       sendIpcToMain("hs-art-tools");
+      event.stopPropagation();
     });
     ///////////
     const fileBrowserButton = document.querySelector("#hs-logo-browser-button");
     fileBrowserButton.addEventListener("click", (event) => {
       sendIpcToMain("hs-open-file-browser");
+      event.stopPropagation();
     });
     fileBrowserButton.setAttribute("data-nav-panel", 0);
     fileBrowserButton.setAttribute("data-nav-row", navRow);
@@ -132,16 +139,19 @@ function init() {
     );
     rssReaderButton.addEventListener("click", (event) => {
       sendIpcToMain("hs-open-rss-reader");
+      event.stopPropagation();
     });
     ///////////
     const radioButton = document.querySelector("#hs-logo-radio-button");
     radioButton.addEventListener("click", (event) => {
       sendIpcToMain("hs-open-radio");
+      event.stopPropagation();
     });
     ///////////
     const quitButton = document.querySelector("#hs-logo-quit-button");
     quitButton.addEventListener("click", (event) => {
       sendIpcToMain("hs-quit");
+      event.stopPropagation();
     });
     quitButton.setAttribute("data-nav-panel", 0);
     quitButton.setAttribute("data-nav-row", navRow);
@@ -181,6 +191,7 @@ function init() {
     const createListButton = document.querySelector("#hs-addlist-add-button");
     createListButton.addEventListener("click", (event) => {
       sendIpcToMain("hs-on-create-list-clicked");
+      event.stopPropagation();
     });
   }
 }
