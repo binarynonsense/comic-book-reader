@@ -233,6 +233,32 @@ function onIpcFromMain(event, args) {
           });
         }
         break;
+
+      case "show-toast-open-url":
+        {
+          toasts.show(
+            args[2],
+            args[3],
+            () => {
+              reader.sendIpcToMain("open-url-in-browser", args[4]);
+            },
+            args[5]
+          );
+        }
+        break;
+
+      case "show-toast-ipc-core":
+        {
+          toasts.show(
+            args[2],
+            args[3],
+            () => {
+              sendIpcToMain(...args[4]);
+            },
+            args[5]
+          );
+        }
+        break;
     }
   } else {
     if (getTools()[args[0]]?.onIpcFromMain) {
