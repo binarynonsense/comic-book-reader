@@ -502,7 +502,7 @@ async function start(
         );
         sendIpcToRenderer(
           "update-log-text",
-          _("tool-ci-modal-log-extracting-to") + ": " + outputFilePath
+          _("tool-ec-modal-log-extracting-to") + ": " + outputFilePath
         );
         if (outputFormat === FileExtension.JPG) {
           await sharp(filePath)
