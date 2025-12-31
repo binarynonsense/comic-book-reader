@@ -1,5 +1,5 @@
 :root {
-  --hs-fireworks-color: rgb(214, 42, 12);
+  --hs-fireworks-color: rgb(223, 163, 53);
 }
 
 #home-screen {
@@ -632,17 +632,23 @@ html[dir="rtl"] .hs-path-card-percentageBar {
         #0000 0
       )
       50% 00%,
-    radial-gradient(circle, var(--hs-fireworks-color) 10.3vmin, #0000 0) 00% 50%,
-    radial-gradient(circle, var(--hs-fireworks-color) 10.5vmin, #0000 0) 50% 99%,
-    radial-gradient(circle, var(--hs-fireworks-color) 0.2vmin, #0000 0) 99% 50%,
-    radial-gradient(circle, var(--hs-fireworks-color) 0.3vmin, #0000 0) 80% 90%,
-    radial-gradient(circle, var(--hs-fireworks-color) 0.5vmin, #0000 0) 95% 90%,
-    radial-gradient(circle, var(--hs-fireworks-color) 0.5vmin, #0000 0) 10% 60%,
-    radial-gradient(circle, var(--hs-fireworks-color) 0.2vmin, #0000 0) 31% 80%,
-    radial-gradient(circle, var(--hs-fireworks-color) 0.3vmin, #0000 0) 80% 10%,
-    radial-gradient(circle, var(--hs-fireworks-color) 0.2vmin, #0000 0) 90% 23%,
-    radial-gradient(circle, var(--hs-fireworks-color) 0.3vmin, #0000 0) 45% 20%,
-    radial-gradient(circle, var(--hs-fireworks-color) 0.5vmin, #0000 0) 13% 24%;
+    radial-gradient(circle, var(--hs-fireworks-color) 12.3vmin, #0000 0) 00% 50%,
+    radial-gradient(circle, var(--hs-fireworks-color) 110.5vmin, #0000 0) 50%
+      99%,
+    radial-gradient(circle, var(--hs-fireworks-color) 120.2vmin, #0000 0) 99%
+      50%,
+    radial-gradient(circle, var(--hs-fireworks-color) 10.3vmin, #0000 0) 80% 90%,
+    radial-gradient(circle, var(--hs-fireworks-color) 112.5vmin, #0000 0) 95%
+      90%,
+    radial-gradient(circle, var(--hs-fireworks-color) 10.5vmin, #0000 0) 10% 60%,
+    radial-gradient(circle, var(--hs-fireworks-color) 115.2vmin, #0000 0) 31%
+      80%,
+    radial-gradient(circle, var(--hs-fireworks-color) 210.3vmin, #0000 0) 80%
+      10%,
+    radial-gradient(circle, var(--hs-fireworks-color) 18.2vmin, #0000 0) 90% 23%,
+    radial-gradient(circle, var(--hs-fireworks-color) 10.3vmin, #0000 0) 45% 20%,
+    radial-gradient(circle, var(--hs-fireworks-color) 110.5vmin, #0000 0) 13%
+      24%;
   background-size: 1vmin 1vmin;
   background-repeat: no-repeat;
   animation: hs-animation-firework 2s normal forwards;
@@ -667,7 +673,7 @@ html[dir="rtl"] .hs-path-card-percentageBar {
     opacity: 1;
   }
   100% {
-    width: 45vmin;
+    width: 85vmin;
     opacity: 0;
   }
 }
