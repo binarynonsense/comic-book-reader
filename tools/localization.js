@@ -147,6 +147,7 @@ function findUnusedKeys() {
       if (
         !key.startsWith("tool-pre-navkeys-actions") &&
         !key.startsWith("tool-pre-language-incomplete") &&
+        !key.startsWith("tool-tm-") &&
         !key.startsWith("@meta") &&
         !key.startsWith("[NOTE TO") &&
         !usedKeys[key]
