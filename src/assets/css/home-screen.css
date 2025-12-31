@@ -607,3 +607,58 @@ html[dir="rtl"] .hs-path-card-percentageBar {
   transform: scale(1.03);
   transform-origin: bottom;
 }
+
+/* ************************ */
+
+/* ref: https://alvaromontoro.com/blog/68002/creating-a-firework-effect-with-css */
+.hs-animate-fireworks,
+.hs-animate-fireworks::before,
+.hs-animate-fireworks::after {
+  --top: 60vh;
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 0.5vmin;
+  aspect-ratio: 1;
+  background: radial-gradient(circle, rgb(214, 42, 12) 0.2vmin, #0000 0) 50% 00%,
+    radial-gradient(circle, rgb(214, 42, 12) 10.3vmin, #0000 0) 00% 50%,
+    radial-gradient(circle, rgb(214, 42, 12) 10.5vmin, #0000 0) 50% 99%,
+    radial-gradient(circle, rgb(214, 42, 12) 0.2vmin, #0000 0) 99% 50%,
+    radial-gradient(circle, rgb(214, 42, 12) 0.3vmin, #0000 0) 80% 90%,
+    radial-gradient(circle, rgb(214, 42, 12) 0.5vmin, #0000 0) 95% 90%,
+    radial-gradient(circle, rgb(214, 42, 12) 0.5vmin, #0000 0) 10% 60%,
+    radial-gradient(circle, rgb(214, 42, 12) 0.2vmin, #0000 0) 31% 80%,
+    radial-gradient(circle, rgb(214, 42, 12) 0.3vmin, #0000 0) 80% 10%,
+    radial-gradient(circle, rgb(214, 42, 12) 0.2vmin, #0000 0) 90% 23%,
+    radial-gradient(circle, rgb(214, 42, 12) 0.3vmin, #0000 0) 45% 20%,
+    radial-gradient(circle, rgb(214, 42, 12) 0.5vmin, #0000 0) 13% 24%;
+  background-size: 1vmin 1vmin;
+  background-repeat: no-repeat;
+  animation: hs-animation-firework 2s normal forwards;
+}
+
+.hs-animate-fireworks::before {
+  transform: translate(-50%, -50%) rotate(25deg) !important;
+}
+
+.hs-animate-fireworks::after {
+  transform: translate(-50%, -50%) rotate(-37deg) !important;
+}
+
+@keyframes hs-animation-firework {
+  0% {
+    transform: translate(-50%, 60vh);
+    width: 0.5vmin;
+    opacity: 1;
+  }
+  50% {
+    width: 0.5vmin;
+    opacity: 1;
+  }
+  100% {
+    width: 45vmin;
+    opacity: 0;
+  }
+}

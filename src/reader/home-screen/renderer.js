@@ -219,6 +219,19 @@ function initOnIpcCallbacks() {
 
   ///////////
 
+  on("hs-animate-fireworks", (...args) => {
+    console.log("hs-animate-fireworks");
+    const fireworksDiv = document.querySelector("#hs-fireworks");
+    if (!fireworksDiv.classList.contains("hs-animate-fireworks")) {
+      fireworksDiv.classList.add("hs-animate-fireworks");
+      setTimeout(() => {
+        fireworksDiv.classList.remove("hs-animate-fireworks");
+      }, 2000);
+    }
+  });
+
+  ///////////
+
   on("hs-set-list-collapse-value", (listIndex, value) => {
     if (listIndex === -2) g_collapseLatest = value;
     else if (listIndex === -1) g_collapseFavorites = value;

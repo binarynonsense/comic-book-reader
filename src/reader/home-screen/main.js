@@ -505,20 +505,62 @@ function on(id, callback) {
 function initOnIpcCallbacks() {
   let g_logoMsgIndex = -1;
   on("hs-on-logo-clicked", () => {
-    const time = new Date().toLocaleString([], {
-      hour: "numeric",
-      minute: "numeric",
-      hour12: settings.getValue("clockFormat") === 1,
-    });
+    const time = `<i class="fa-solid fa-clock"></i>&nbsp;&nbsp;${new Date().toLocaleString(
+      [],
+      {
+        hour: "numeric",
+        minute: "numeric",
+        hour12: settings.getValue("clockFormat") === 1,
+      }
+    )} `;
     // _("ui-modal-info-version")
-    const version = `🗨 v${appUtils.getAppVersion()} `;
-    const messages = ["👋😀 ", "🕑 " + time + " ", version];
+    const version = `<i class="fa-solid fa-code-branch"></i>&nbsp;&nbsp;v${appUtils.getAppVersion()} `; //🗨🕑👋😀
+    const hi = `<i class="fa-solid fa-face-smile-wink" style="font-size: 28px;"></i><i class="fa-solid fa-hand-spock"></i> `;
+    const url = `<i class="fa-solid fa-link"></i>&nbsp;&nbsp;binarynonsense.com`;
+    const messages = [
+      { text: hi, callback: 2 },
+      { text: time + " ", callback: 0 },
+      { text: version, callback: 0 },
+      { text: url, callback: 1 },
+    ];
     // g_logoMsgIndex = Math.floor(Math.random() * messages.length);
     g_logoMsgIndex++;
-    if (g_logoMsgIndex >= messages.length) g_logoMsgIndex = 1;
-    setTimeout(() => {
-      sendIpcToCoreRenderer("show-toast", messages[g_logoMsgIndex], 3000);
-    }, 500);
+    if (g_logoMsgIndex >= messages.length) g_logoMsgIndex = 0;
+    if (messages[g_logoMsgIndex].callback === 0) {
+      setTimeout(() => {
+        sendIpcToCoreRenderer(
+          "show-toast",
+          messages[g_logoMsgIndex].text,
+          3000,
+          undefined,
+          false
+        );
+      }, 500);
+    } else if (messages[g_logoMsgIndex].callback === 2) {
+      setTimeout(() => {
+        sendIpcToCoreRenderer(
+          "show-toast-ipc-core",
+          messages[g_logoMsgIndex].text,
+          3000,
+          ["reader", "hs-on-logo-toast-hi-clicked"],
+          false
+        );
+      }, 500);
+    } else {
+      setTimeout(() => {
+        sendIpcToCoreRenderer(
+          "show-toast-open-url",
+          messages[g_logoMsgIndex].text,
+          3000,
+          "http://www.binarynonsense.com",
+          false
+        );
+      }, 500);
+    }
+  });
+
+  on("hs-on-logo-toast-hi-clicked", () => {
+    sendIpcToRenderer("hs-animate-fireworks");
   });
 
   on("hs-open-dialog-file", (filePath, sourceId) => {
