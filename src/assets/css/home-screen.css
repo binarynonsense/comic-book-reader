@@ -135,6 +135,19 @@
   margin-top: 7px;
   display: flex;
   justify-content: center;
+  position: relative;
+}
+.hs-section-ellipsis:after {
+  position: absolute;
+  font: var(--fa-font-solid);
+  content: "\f141";
+}
+.hs-section-ellipsis:hover:after {
+  position: absolute;
+  font: var(--fa-font-solid);
+  content: "\f107";
+  cursor: pointer;
+  font-size: larger;
 }
 
 /* *********************** */

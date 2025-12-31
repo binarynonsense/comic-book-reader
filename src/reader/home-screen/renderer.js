@@ -472,8 +472,12 @@ function buildFavorites(navRow, navColumn, favorites) {
   if (showFavoritesEllipsis) {
     const ellipsis = document.createElement("div");
     ellipsis.classList = "hs-section-ellipsis";
-    ellipsis.innerHTML = `<i class="fa-solid fa-ellipsis"></i>`;
+    // ellipsis.innerHTML = `<i class="fa-solid fa-ellipsis"></i>`;
     favoritesCardsDiv.appendChild(ellipsis);
+    ellipsis.addEventListener("click", function (event) {
+      sendIpcToMain("hs-on-collapse-list-clicked", -1, false);
+      event.stopPropagation();
+    });
   }
   // Add
   // if (g_languageDirection === "rtl") {
@@ -604,8 +608,12 @@ function buildLatest(navRow, navColumn, latest) {
   if (showLatestEllipsis) {
     const ellipsis = document.createElement("div");
     ellipsis.classList = "hs-section-ellipsis";
-    ellipsis.innerHTML = `<i class="fa-solid fa-ellipsis"></i>`;
+    // ellipsis.innerHTML = `<i class="fa-solid fa-ellipsis"></i>`;
     latestCardsDiv.appendChild(ellipsis);
+    ellipsis.addEventListener("click", function (event) {
+      sendIpcToMain("hs-on-collapse-list-clicked", -2, false);
+      event.stopPropagation();
+    });
   }
 
   return [navRow, navColumn];
@@ -842,8 +850,12 @@ function buildOtherLists(navRow, navColumn, otherLists, localization) {
       if (showEllipsis) {
         const ellipsis = document.createElement("div");
         ellipsis.classList = "hs-section-ellipsis";
-        ellipsis.innerHTML = `<i class="fa-solid fa-ellipsis"></i>`;
+        // ellipsis.innerHTML = `<i class="fa-solid fa-ellipsis"></i>`;
         contentDiv.appendChild(ellipsis);
+        ellipsis.addEventListener("click", function (event) {
+          sendIpcToMain("hs-on-collapse-list-clicked", listIndex, false);
+          event.stopPropagation();
+        });
       }
     }
   }
