@@ -1,3 +1,7 @@
+:root {
+  --hs-fireworks-color: rgb(214, 42, 12);
+}
+
 #home-screen {
   width: 100%;
   display: flex;
@@ -622,18 +626,23 @@ html[dir="rtl"] .hs-path-card-percentageBar {
   transform: translate(-50%, -50%);
   width: 0.5vmin;
   aspect-ratio: 1;
-  background: radial-gradient(circle, rgb(214, 42, 12) 0.2vmin, #0000 0) 50% 00%,
-    radial-gradient(circle, rgb(214, 42, 12) 10.3vmin, #0000 0) 00% 50%,
-    radial-gradient(circle, rgb(214, 42, 12) 10.5vmin, #0000 0) 50% 99%,
-    radial-gradient(circle, rgb(214, 42, 12) 0.2vmin, #0000 0) 99% 50%,
-    radial-gradient(circle, rgb(214, 42, 12) 0.3vmin, #0000 0) 80% 90%,
-    radial-gradient(circle, rgb(214, 42, 12) 0.5vmin, #0000 0) 95% 90%,
-    radial-gradient(circle, rgb(214, 42, 12) 0.5vmin, #0000 0) 10% 60%,
-    radial-gradient(circle, rgb(214, 42, 12) 0.2vmin, #0000 0) 31% 80%,
-    radial-gradient(circle, rgb(214, 42, 12) 0.3vmin, #0000 0) 80% 10%,
-    radial-gradient(circle, rgb(214, 42, 12) 0.2vmin, #0000 0) 90% 23%,
-    radial-gradient(circle, rgb(214, 42, 12) 0.3vmin, #0000 0) 45% 20%,
-    radial-gradient(circle, rgb(214, 42, 12) 0.5vmin, #0000 0) 13% 24%;
+  background: radial-gradient(
+        circle,
+        var(--hs-fireworks-color) 0.2vmin,
+        #0000 0
+      )
+      50% 00%,
+    radial-gradient(circle, var(--hs-fireworks-color) 10.3vmin, #0000 0) 00% 50%,
+    radial-gradient(circle, var(--hs-fireworks-color) 10.5vmin, #0000 0) 50% 99%,
+    radial-gradient(circle, var(--hs-fireworks-color) 0.2vmin, #0000 0) 99% 50%,
+    radial-gradient(circle, var(--hs-fireworks-color) 0.3vmin, #0000 0) 80% 90%,
+    radial-gradient(circle, var(--hs-fireworks-color) 0.5vmin, #0000 0) 95% 90%,
+    radial-gradient(circle, var(--hs-fireworks-color) 0.5vmin, #0000 0) 10% 60%,
+    radial-gradient(circle, var(--hs-fireworks-color) 0.2vmin, #0000 0) 31% 80%,
+    radial-gradient(circle, var(--hs-fireworks-color) 0.3vmin, #0000 0) 80% 10%,
+    radial-gradient(circle, var(--hs-fireworks-color) 0.2vmin, #0000 0) 90% 23%,
+    radial-gradient(circle, var(--hs-fireworks-color) 0.3vmin, #0000 0) 45% 20%,
+    radial-gradient(circle, var(--hs-fireworks-color) 0.5vmin, #0000 0) 13% 24%;
   background-size: 1vmin 1vmin;
   background-repeat: no-repeat;
   animation: hs-animation-firework 2s normal forwards;

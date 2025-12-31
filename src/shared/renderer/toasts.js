@@ -28,5 +28,6 @@ function generic(text, duration, onClick, escapeMarkup = true) {
     duration,
     stopOnFocus: true,
     escapeMarkup,
+    className: onClick ? "toastify-clickable" : undefined,
   }).showToast();
 }
