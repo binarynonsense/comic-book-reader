@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2024-2025 Álvaro García
+ * Copyright 2024-2026 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -26,7 +26,6 @@ let g_isInitialized = false;
 let g_languageDirection = "ltr";
 let g_favoritesData;
 let g_userLists;
-let g_settings;
 
 let g_collapseFavorites = false;
 let g_collapseLatest = false;
@@ -541,7 +540,6 @@ function initOnIpcCallbacks() {
         }, 500);
         break;
       case 2:
-        // _("ui-modal-info-version")
         const version = `<i class="fa-solid fa-code-branch"></i>&nbsp;&nbsp;v${appUtils.getAppVersion()} `; //🗨🕑👋😀
         showLogoUrlToast(
           version,
@@ -624,7 +622,7 @@ function initOnIpcCallbacks() {
       _("tool-tm-info-title-header"),
       _raw("tool-ep-title-alt", false)
         ? _raw("tool-ep-title-alt", false)
-        : _("tool-ep-title"), // "Extract Palette Tool"
+        : _("tool-ep-title"),
       showFocus
     );
   });

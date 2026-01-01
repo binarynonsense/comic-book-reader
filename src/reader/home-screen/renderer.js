@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2024-2025 Álvaro García
+ * Copyright 2024-2026 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -485,7 +485,6 @@ function buildFavorites(navRow, navColumn, favorites) {
   if (showFavoritesEllipsis) {
     const ellipsis = document.createElement("div");
     ellipsis.classList = "hs-section-ellipsis";
-    // ellipsis.innerHTML = `<i class="fa-solid fa-ellipsis"></i>`;
     favoritesCardsDiv.appendChild(ellipsis);
     ellipsis.addEventListener("click", function (event) {
       sendIpcToMain("hs-on-collapse-list-clicked", -1, false);
@@ -621,7 +620,6 @@ function buildLatest(navRow, navColumn, latest) {
   if (showLatestEllipsis) {
     const ellipsis = document.createElement("div");
     ellipsis.classList = "hs-section-ellipsis";
-    // ellipsis.innerHTML = `<i class="fa-solid fa-ellipsis"></i>`;
     latestCardsDiv.appendChild(ellipsis);
     ellipsis.addEventListener("click", function (event) {
       sendIpcToMain("hs-on-collapse-list-clicked", -2, false);
@@ -863,7 +861,6 @@ function buildOtherLists(navRow, navColumn, otherLists, localization) {
       if (showEllipsis) {
         const ellipsis = document.createElement("div");
         ellipsis.classList = "hs-section-ellipsis";
-        // ellipsis.innerHTML = `<i class="fa-solid fa-ellipsis"></i>`;
         contentDiv.appendChild(ellipsis);
         ellipsis.addEventListener("click", function (event) {
           sendIpcToMain("hs-on-collapse-list-clicked", listIndex, false);
@@ -878,8 +875,6 @@ function buildOtherLists(navRow, navColumn, otherLists, localization) {
 
 function getNewCardDiv(cardType, data, navRow, navColumn, listIndex) {
   const cardDiv = document.createElement("div");
-
-  // let hasButton = cardType === CardType.LATEST ? false : true;
   let hasButton = true;
 
   const buttonHtml = `
@@ -1153,35 +1148,10 @@ function getNewCardDiv(cardType, data, navRow, navColumn, listIndex) {
         }
       }
       break;
-    // OLD LATEST CODE
-    // case CardType.LATEST:
-    //   {
-    //     cardDiv.classList.add("hs-path-card");
-    //     cardDiv.innerHTML = interactiveHtml;
-    //     const mainCardDiv = cardDiv.querySelector(".hs-path-card-main");
-    //     mainCardDiv.title = g_cardLocalization.openInReader;
-    //     mainCardDiv.addEventListener("click", function (event) {
-    //       sendIpcToMain("hs-open-history-file", data.index);
-    //       event.stopPropagation();
-    //     });
-    //     if (navRow !== undefined && navColumn !== undefined) {
-    //       mainCardDiv.setAttribute("data-nav-panel", 0);
-    //       mainCardDiv.setAttribute("data-nav-row", navRow);
-    //       mainCardDiv.setAttribute("data-nav-col", navColumn);
-    //       mainCardDiv.setAttribute("tabindex", "0");
-    //     }
-    //   }
-    //   break;
     case CardType.EMPTY:
       cardDiv.classList.add("hs-path-card");
       cardDiv.innerHTML = emptyHtml;
       const mainCardDiv = cardDiv.querySelector(".hs-path-card-main");
-      // if (navRow !== undefined && navColumn !== undefined) {
-      //   cardDiv.setAttribute("data-nav-panel", 0);
-      //   cardDiv.setAttribute("data-nav-row", navRow);
-      //   cardDiv.setAttribute("data-nav-col", navColumn);
-      //   cardDiv.setAttribute("tabindex", "0");
-      // }
       if (listIndex >= -1) {
         // don't do for latest
         // drop
