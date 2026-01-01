@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2025 Álvaro García
+ * Copyright 2020-2026 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -220,6 +220,19 @@ function onIpcFromMain(event, args) {
       case "show-toast":
         {
           toasts.show(...args.slice(2));
+        }
+        break;
+
+      case "show-toast-open-path-in-browser":
+        {
+          toasts.show(
+            args[2],
+            args[3],
+            () => {
+              reader.sendIpcToMain("open-path-in-browser", args[4]);
+            },
+            args[5]
+          );
         }
         break;
 
