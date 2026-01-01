@@ -348,10 +348,10 @@ function isLatestInList(listIndex, latestIndex) {
   return getLatestIndexInList(listIndex, latestIndex) >= 0;
 }
 
-function addListEntryFromLatest(listIndex, latestIndex, listEntryIndex) {
-  let isAlreadyInList = isLatestInList(listIndex, latestIndex);
+function addListEntryFromLatest(latestEntryIndex, toListIndex, toEntryIndex) {
+  let isAlreadyInList = isLatestInList(toListIndex, latestEntryIndex);
   if (!isAlreadyInList) {
-    const historyData = history.get()[latestIndex];
+    const historyData = history.get()[latestEntryIndex];
     /////////
     let newEntry;
     if (historyData.data && historyData.data.source) {
@@ -366,10 +366,10 @@ function addListEntryFromLatest(listIndex, latestIndex, listEntryIndex) {
         name: path.basename(historyData.filePath),
       };
     }
-    const listData = getListData(listIndex);
-    if (listEntryIndex !== undefined) {
+    const listData = getListData(toListIndex);
+    if (toEntryIndex !== undefined) {
       // add before index
-      listData.splice(listEntryIndex, 0, newEntry);
+      listData.splice(toEntryIndex, 0, newEntry);
     } else {
       // add at the end
       listData.push(newEntry);
@@ -1189,7 +1189,7 @@ function initOnIpcCallbacks() {
     "hs-on-modal-drop-card-options-copy-clicked",
     (fromListIndex, toListIndex, fromEntryIndex, toEntryIndex) => {
       if (fromListIndex === -2) {
-        addListEntryFromLatest(toListIndex, fromEntryIndex, toEntryIndex);
+        addListEntryFromLatest(fromEntryIndex, toListIndex, toEntryIndex);
         buildSections(false);
       } else {
         const fromListData = getListData(fromListIndex);
@@ -1260,7 +1260,7 @@ function initOnIpcCallbacks() {
   on(
     "hs-on-modal-latest-options-addtofavorites-clicked",
     (fileIndex, filePath) => {
-      addListEntryFromLatest(-1, fileIndex, filePath);
+      addListEntryFromLatest(fileIndex, -1);
     }
   );
 
