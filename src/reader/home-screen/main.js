@@ -367,7 +367,8 @@ function addListEntryFromLatest(latestEntryIndex, toListIndex, toEntryIndex) {
       };
     }
     const listData = getListData(toListIndex);
-    if (toEntryIndex !== undefined) {
+    if (toEntryIndex !== undefined && toEntryIndex !== -1) {
+      // -1 = empty card
       // add before index
       listData.splice(toEntryIndex, 0, newEntry);
     } else {
