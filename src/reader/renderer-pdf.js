@@ -53,9 +53,11 @@ function initOnIpcCallbacks() {
 ///////////////////////////////////////////////////////////////////////////////
 
 let g_currentPdf = {};
+let g_pageCanvases;
 
 export function cleanUp() {
   g_currentPdf = {};
+  g_pageCanvases = undefined;
 }
 
 function loadPdf(filePath, pageIndex, password) {
@@ -145,17 +147,25 @@ async function renderPdfPages(pageIndexes, rotation, scrollBarPos) {
 }
 
 async function renderOpenPDFPages(rotation, scrollBarPos, sendPageLoaded) {
-  newRenderOpenPDFPages(rotation, scrollBarPos, sendPageLoaded);
-  //await oldRenderOpenPDFPages(rotation, scrollBarPos, sendPageLoaded);
-}
-
-async function newRenderOpenPDFPages(rotation, scrollBarPos, sendPageLoaded) {
-  // This new method discards the canvases and copies ther images to a final
+  // This new method hides the canvases and copies their images to a final
   // img element, as rendering downsized canvases looks worse to me, more
   // 'harsh'/broken, especially for texts.
   ////////////////////////////////////////////////////////////////////////////
-  // NOTE: I recreate the canvas every time to avoid some rendering issues when
-  // rotating (low res) there's probably a better way, but performance seems similar
+  if (!g_pageCanvases) {
+    g_pageCanvases = [];
+    g_pageCanvases.push({
+      canvas: document.createElement("canvas"),
+    });
+    g_pageCanvases.push({
+      canvas: document.createElement("canvas"),
+    });
+  }
+  for (let i = 0; i < g_currentPdf.pages.length; i++) {
+    if (g_pageCanvases[i].renderTask) {
+      return;
+    }
+  }
+  ////////////////////////////////////////////////////////////////////////////
   const containerDiv = document.getElementById("pages-container");
   const isDoublePages = g_currentPdf.pages.length === 2;
   // NOTE: to improve the flickering when loading new pages, I don't empty
@@ -178,7 +188,7 @@ async function newRenderOpenPDFPages(rotation, scrollBarPos, sendPageLoaded) {
   finalPagesRowDiv.innerHTML = "";
 
   for (let i = 0; i < g_currentPdf.pages.length; i++) {
-    const tempCanvas = document.createElement("canvas");
+    const tempCanvas = g_pageCanvases[i].canvas;
     const context = tempCanvas.getContext("2d", { willReadFrequently: true });
     const finalImg = document.createElement("img");
     finalImg.classList.add("page-canvas");
@@ -201,7 +211,6 @@ async function newRenderOpenPDFPages(rotation, scrollBarPos, sendPageLoaded) {
         finalImg.classList.add("page-centered");
       }
     }
-    // setFilterClass(tempCanvas);
     tempPagesRowDiv.appendChild(tempCanvas);
     setFilterClass(finalImg);
     finalPagesRowDiv.appendChild(finalImg);
@@ -225,87 +234,23 @@ async function newRenderOpenPDFPages(rotation, scrollBarPos, sendPageLoaded) {
       viewport: scaledViewport,
     };
 
-    await g_currentPdf.pages[i].render(renderContext).promise;
+    g_pageCanvases[i].renderTask = g_currentPdf.pages[i].render(renderContext);
+    try {
+      await g_pageCanvases[i].renderTask.promise;
+    } catch (error) {
+      console.log(error);
+    }
+    g_pageCanvases[i].renderTask = undefined;
+    // renderTask.promise
+    //   .then(function () {
+    //   })
+    //   .catch(function (error) {
+    //   });
+
     finalImg.src = tempCanvas.toDataURL("image/jpeg");
   }
 
-  // tempPagesRowDiv.classList.remove("pages-row-hidden-rendering");
   finalPagesRowDiv.classList.remove("pages-row-hidden-rendering");
-  while (containerDiv.childNodes.length > 1) {
-    containerDiv.removeChild(containerDiv.firstChild);
-  }
-
-  setScrollBarsPosition(scrollBarPos);
-  if (sendPageLoaded) {
-    const [x1, y1, x2, y2] = g_currentPdf.pages[0].view;
-    const width = x2 - x1;
-    const height = y2 - y1;
-    sendIpcToMain("page-loaded", {
-      dimensions: [width, height],
-    });
-  }
-}
-
-async function oldRenderOpenPDFPages(rotation, scrollBarPos, sendPageLoaded) {
-  // I recreate the canvas every time to avoid some rendering issues when rotating (low res)
-  // there's probably a better way, but performance seems similar
-  let containerDiv = document.getElementById("pages-container");
-  const isDoublePages = g_currentPdf.pages.length === 2;
-  // NOTE: to improve the flickering when loading new pages, I don't empty
-  // the container yet and create the pages row as a hidden element to
-  // only add it to the container and reveal it the last moment, which is when
-  // I delete the previousrow
-  // containerDiv.innerHTML = "";
-  const pagesRowDiv = document.createElement("div");
-  pagesRowDiv.classList.add("pages-row");
-  pagesRowDiv.classList.add("pages-row-hidden-rendering");
-  if (isDoublePages) pagesRowDiv.classList.add("pages-row-2p");
-  containerDiv.appendChild(pagesRowDiv);
-  pagesRowDiv.innerHTML = "";
-
-  for (let i = 0; i < g_currentPdf.pages.length; i++) {
-    let canvas = document.createElement("canvas");
-    canvas.classList.add("page-canvas");
-    canvas.classList.add("page");
-    if (isDoublePages) {
-      if (i === 0) {
-        canvas.classList.add("page-1");
-      } else {
-        canvas.classList.add("page-2");
-      }
-    } else {
-      if (g_currentPdf.pages.length == 1 && getPageMode() !== 0) {
-        pagesRowDiv.classList.add("pages-row-2p");
-        canvas.classList.add("page-centered");
-      }
-    }
-    setFilterClass(canvas);
-    pagesRowDiv.appendChild(canvas);
-    let context = canvas.getContext("2d");
-
-    let desiredWidth = canvas.offsetWidth;
-    let viewport = g_currentPdf.pages[i].getViewport({
-      scale: 1,
-      rotation,
-    });
-    let scale = desiredWidth / viewport.width;
-    let scaledViewport = g_currentPdf.pages[i].getViewport({
-      scale: scale,
-      rotation,
-    });
-
-    canvas.height = scaledViewport.height;
-    canvas.width = desiredWidth;
-
-    let renderContext = {
-      canvasContext: context,
-      viewport: scaledViewport,
-    };
-
-    await g_currentPdf.pages[i].render(renderContext).promise;
-  }
-
-  pagesRowDiv.classList.remove("pages-row-hidden-rendering");
   while (containerDiv.childNodes.length > 1) {
     containerDiv.removeChild(containerDiv.firstChild);
   }
