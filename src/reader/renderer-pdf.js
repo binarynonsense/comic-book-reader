@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2025 Álvaro García
+ * Copyright 2020-2026 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -64,7 +64,7 @@ function loadPdf(filePath, pageIndex, password) {
   let escapedInputFilePath = filePath.replaceAll("#", "%23");
   // hashtags must be escaped so PDF.js doesn't break trying to parse
   // the path, as it looks for patterns like #page=2&zoom=200
-  var loadingTask = pdfjsLib.getDocument({
+  let loadingTask = pdfjsLib.getDocument({
     url: escapedInputFilePath,
     password: password,
     isEvalSupported: false,
@@ -145,10 +145,112 @@ async function renderPdfPages(pageIndexes, rotation, scrollBarPos) {
 }
 
 async function renderOpenPDFPages(rotation, scrollBarPos, sendPageLoaded) {
+  newRenderOpenPDFPages(rotation, scrollBarPos, sendPageLoaded);
+  //await oldRenderOpenPDFPages(rotation, scrollBarPos, sendPageLoaded);
+}
+
+async function newRenderOpenPDFPages(rotation, scrollBarPos, sendPageLoaded) {
+  // This new method discards the canvases and copies ther images to a final
+  // img element, as rendering downsized canvases looks worse to me, more
+  // 'harsh'/broken, especially for texts.
+  ////////////////////////////////////////////////////////////////////////////
+  // NOTE: I recreate the canvas every time to avoid some rendering issues when
+  // rotating (low res) there's probably a better way, but performance seems similar
+  const containerDiv = document.getElementById("pages-container");
+  const isDoublePages = g_currentPdf.pages.length === 2;
+  // NOTE: to improve the flickering when loading new pages, I don't empty
+  // the container yet and create the pages row as a hidden element to
+  // only add it to the container and reveal it the last moment, which is when
+  // I delete the previousrow
+  // containerDiv.innerHTML = "";
+  const tempPagesRowDiv = document.createElement("div");
+  tempPagesRowDiv.classList.add("pages-row");
+  tempPagesRowDiv.classList.add("pages-row-hidden-rendering");
+  if (isDoublePages) tempPagesRowDiv.classList.add("pages-row-2p");
+  containerDiv.appendChild(tempPagesRowDiv);
+  tempPagesRowDiv.innerHTML = "";
+
+  const finalPagesRowDiv = document.createElement("div");
+  finalPagesRowDiv.classList.add("pages-row");
+  finalPagesRowDiv.classList.add("pages-row-hidden-rendering");
+  if (isDoublePages) finalPagesRowDiv.classList.add("pages-row-2p");
+  containerDiv.appendChild(finalPagesRowDiv);
+  finalPagesRowDiv.innerHTML = "";
+
+  for (let i = 0; i < g_currentPdf.pages.length; i++) {
+    const tempCanvas = document.createElement("canvas");
+    const context = tempCanvas.getContext("2d", { willReadFrequently: true });
+    const finalImg = document.createElement("img");
+    finalImg.classList.add("page-canvas");
+    finalImg.classList.add("page");
+    tempCanvas.classList.add("page-canvas");
+    tempCanvas.classList.add("page");
+    if (isDoublePages) {
+      if (i === 0) {
+        tempCanvas.classList.add("page-1");
+        finalImg.classList.add("page-1");
+      } else {
+        tempCanvas.classList.add("page-2");
+        finalImg.classList.add("page-2");
+      }
+    } else {
+      if (g_currentPdf.pages.length == 1 && getPageMode() !== 0) {
+        tempPagesRowDiv.classList.add("pages-row-2p");
+        tempCanvas.classList.add("page-centered");
+        finalPagesRowDiv.classList.add("pages-row-2p");
+        finalImg.classList.add("page-centered");
+      }
+    }
+    // setFilterClass(tempCanvas);
+    tempPagesRowDiv.appendChild(tempCanvas);
+    setFilterClass(finalImg);
+    finalPagesRowDiv.appendChild(finalImg);
+
+    const desiredWidth = tempCanvas.offsetWidth;
+    const viewport = g_currentPdf.pages[i].getViewport({
+      scale: 1,
+      rotation,
+    });
+    const scale = desiredWidth / viewport.width;
+    let scaledViewport = g_currentPdf.pages[i].getViewport({
+      scale: scale,
+      rotation,
+    });
+
+    tempCanvas.height = scaledViewport.height;
+    tempCanvas.width = desiredWidth;
+
+    const renderContext = {
+      canvasContext: context,
+      viewport: scaledViewport,
+    };
+
+    await g_currentPdf.pages[i].render(renderContext).promise;
+    finalImg.src = tempCanvas.toDataURL("image/jpeg");
+  }
+
+  // tempPagesRowDiv.classList.remove("pages-row-hidden-rendering");
+  finalPagesRowDiv.classList.remove("pages-row-hidden-rendering");
+  while (containerDiv.childNodes.length > 1) {
+    containerDiv.removeChild(containerDiv.firstChild);
+  }
+
+  setScrollBarsPosition(scrollBarPos);
+  if (sendPageLoaded) {
+    const [x1, y1, x2, y2] = g_currentPdf.pages[0].view;
+    const width = x2 - x1;
+    const height = y2 - y1;
+    sendIpcToMain("page-loaded", {
+      dimensions: [width, height],
+    });
+  }
+}
+
+async function oldRenderOpenPDFPages(rotation, scrollBarPos, sendPageLoaded) {
   // I recreate the canvas every time to avoid some rendering issues when rotating (low res)
   // there's probably a better way, but performance seems similar
-  const isDoublePages = g_currentPdf.pages.length === 2;
   let containerDiv = document.getElementById("pages-container");
+  const isDoublePages = g_currentPdf.pages.length === 2;
   // NOTE: to improve the flickering when loading new pages, I don't empty
   // the container yet and create the pages row as a hidden element to
   // only add it to the container and reveal it the last moment, which is when
@@ -162,7 +264,7 @@ async function renderOpenPDFPages(rotation, scrollBarPos, sendPageLoaded) {
   pagesRowDiv.innerHTML = "";
 
   for (let i = 0; i < g_currentPdf.pages.length; i++) {
-    var canvas = document.createElement("canvas");
+    let canvas = document.createElement("canvas");
     canvas.classList.add("page-canvas");
     canvas.classList.add("page");
     if (isDoublePages) {
@@ -179,15 +281,15 @@ async function renderOpenPDFPages(rotation, scrollBarPos, sendPageLoaded) {
     }
     setFilterClass(canvas);
     pagesRowDiv.appendChild(canvas);
-    var context = canvas.getContext("2d");
+    let context = canvas.getContext("2d");
 
-    var desiredWidth = canvas.offsetWidth;
-    var viewport = g_currentPdf.pages[i].getViewport({
+    let desiredWidth = canvas.offsetWidth;
+    let viewport = g_currentPdf.pages[i].getViewport({
       scale: 1,
       rotation,
     });
-    var scale = desiredWidth / viewport.width;
-    var scaledViewport = g_currentPdf.pages[i].getViewport({
+    let scale = desiredWidth / viewport.width;
+    let scaledViewport = g_currentPdf.pages[i].getViewport({
       scale: scale,
       rotation,
     });
@@ -195,7 +297,7 @@ async function renderOpenPDFPages(rotation, scrollBarPos, sendPageLoaded) {
     canvas.height = scaledViewport.height;
     canvas.width = desiredWidth;
 
-    var renderContext = {
+    let renderContext = {
       canvasContext: context,
       viewport: scaledViewport,
     };

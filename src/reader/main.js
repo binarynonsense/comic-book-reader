@@ -35,6 +35,7 @@ const {
 const homeScreen = require("./home-screen/main");
 
 let g_resizeEventCounter;
+let g_delayedRefreshPageEvent;
 
 //////////////////////////////////////////////////////////////////////////////
 // SETUP  ////////////////////////////////////////////////////////////////////
@@ -1780,10 +1781,17 @@ function renderPageInfo() {
   );
 }
 
+function onDelayedRefreshPageCall() {
+  if (g_fileData.type === FileDataType.PDF) {
+    sendIpcToRenderer("refresh-pdf-page", g_fileData.pageRotation);
+  }
+}
+
 function renderPageRefresh() {
   if (g_fileData.state === FileDataState.LOADED) {
     if (g_fileData.type === FileDataType.PDF) {
-      sendIpcToRenderer("refresh-pdf-page", g_fileData.pageRotation);
+      clearTimeout(g_delayedRefreshPageEvent);
+      g_delayedRefreshPageEvent = setTimeout(onDelayedRefreshPageCall, 500);
     } else if (
       g_fileData.type === FileDataType.RAR ||
       g_fileData.type === FileDataType.ZIP ||
@@ -2248,8 +2256,8 @@ function setInitialZoom(filePath) {
 }
 
 function processZoomInput(input, factor) {
-  const amount = 5 * factor;
   if (input !== 0 && g_fileData.state !== FileDataState.LOADED) return;
+  const amount = 5 * factor;
   if (input > 0) {
     // zoom in
     if (settings.getValue("fit_mode") === 2) {
