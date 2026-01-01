@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2025 Álvaro García
+ * Copyright 2020-2026 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -636,6 +636,10 @@ function initOnIpcCallbacks() {
 
   on("toggle-fullscreen", () => {
     core.onMenuToggleFullScreen();
+  });
+
+  on("open-path-in-browser", (filePath) => {
+    appUtils.openPathInFileBrowser(filePath);
   });
 
   on("open-url-in-browser", (url) => {
