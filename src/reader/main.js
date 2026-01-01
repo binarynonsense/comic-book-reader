@@ -1791,7 +1791,7 @@ function renderPageRefresh() {
   if (g_fileData.state === FileDataState.LOADED) {
     if (g_fileData.type === FileDataType.PDF) {
       clearTimeout(g_delayedRefreshPageEvent);
-      g_delayedRefreshPageEvent = setTimeout(onDelayedRefreshPageCall, 500);
+      g_delayedRefreshPageEvent = setTimeout(onDelayedRefreshPageCall, 300);
     } else if (
       g_fileData.type === FileDataType.RAR ||
       g_fileData.type === FileDataType.ZIP ||

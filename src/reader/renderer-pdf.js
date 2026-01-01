@@ -53,11 +53,12 @@ function initOnIpcCallbacks() {
 ///////////////////////////////////////////////////////////////////////////////
 
 let g_currentPdf = {};
-let g_pageCanvases;
+let g_renderJobPages;
+let g_latestRenderJobId = 0;
 
 export function cleanUp() {
   g_currentPdf = {};
-  g_pageCanvases = undefined;
+  g_renderJobPages = undefined;
 }
 
 function loadPdf(filePath, pageIndex, password) {
@@ -116,6 +117,12 @@ function loadPdf(filePath, pageIndex, password) {
 
 function refreshPdfPages(rotation) {
   if (g_currentPdf.pages && g_currentPdf.pages.length > 0) {
+    if (g_renderJobPages)
+      for (let i = 0; i < g_currentPdf.pages.length; i++) {
+        if (g_renderJobPages[i].renderTask) {
+          return;
+        }
+      }
     renderOpenPDFPages(rotation, undefined, false);
   }
 }
@@ -151,19 +158,36 @@ async function renderOpenPDFPages(rotation, scrollBarPos, sendPageLoaded) {
   // img element, as rendering downsized canvases looks worse to me, more
   // 'harsh'/broken, especially for texts.
   ////////////////////////////////////////////////////////////////////////////
-  if (!g_pageCanvases) {
-    g_pageCanvases = [];
-    g_pageCanvases.push({
+  const jobId = performance.now();
+  if (!g_renderJobPages) {
+    g_renderJobPages = [];
+    g_renderJobPages.push({
       canvas: document.createElement("canvas"),
     });
-    g_pageCanvases.push({
+    g_renderJobPages.push({
       canvas: document.createElement("canvas"),
     });
   }
+  let canvases = [];
+  let createCanvases = false;
   for (let i = 0; i < g_currentPdf.pages.length; i++) {
-    if (g_pageCanvases[i].renderTask) {
-      return;
+    if (g_renderJobPages[i].renderTask) {
+      createCanvases = true;
+      break;
     }
+  }
+  for (let i = 0; i < g_currentPdf.pages.length; i++) {
+    if (createCanvases) {
+      g_renderJobPages[i].canvas = document.createElement("canvas");
+      g_renderJobPages[i].renderTask = undefined;
+      console.log(
+        `Old PDF job still rendering, create new canvas (p${i}::dt${Math.trunc(
+          g_renderJobPages[i].jobId - jobId
+        )}ms)`
+      );
+    }
+    g_renderJobPages[i].jobId = jobId;
+    canvases.push(g_renderJobPages[i].canvas);
   }
   ////////////////////////////////////////////////////////////////////////////
   const containerDiv = document.getElementById("pages-container");
@@ -188,7 +212,16 @@ async function renderOpenPDFPages(rotation, scrollBarPos, sendPageLoaded) {
   finalPagesRowDiv.innerHTML = "";
 
   for (let i = 0; i < g_currentPdf.pages.length; i++) {
-    const tempCanvas = g_pageCanvases[i].canvas;
+    if (g_renderJobPages[i].jobId !== jobId) {
+      // can change during second page
+      console.log(
+        `Skiping page render (p${i}::dt${Math.trunc(
+          g_renderJobPages[i].jobId - jobId
+        )}ms`
+      );
+      break;
+    }
+    const tempCanvas = canvases[i];
     const context = tempCanvas.getContext("2d", { willReadFrequently: true });
     const finalImg = document.createElement("img");
     finalImg.classList.add("page-canvas");
@@ -234,13 +267,16 @@ async function renderOpenPDFPages(rotation, scrollBarPos, sendPageLoaded) {
       viewport: scaledViewport,
     };
 
-    g_pageCanvases[i].renderTask = g_currentPdf.pages[i].render(renderContext);
+    const renderTask = g_currentPdf.pages[i].render(renderContext);
+    g_renderJobPages[i].renderTask = renderTask;
     try {
-      await g_pageCanvases[i].renderTask.promise;
+      await renderTask.promise;
     } catch (error) {
+      console.log(
+        `(p${i}::dt${Math.trunc(g_renderJobPages[i].jobId - jobId)}ms`
+      );
       console.log(error);
     }
-    g_pageCanvases[i].renderTask = undefined;
     // renderTask.promise
     //   .then(function () {
     //   })
@@ -248,21 +284,40 @@ async function renderOpenPDFPages(rotation, scrollBarPos, sendPageLoaded) {
     //   });
 
     finalImg.src = tempCanvas.toDataURL("image/jpeg");
+    if (g_renderJobPages[i].jobId === jobId) {
+      finalImg.src = tempCanvas.toDataURL("image/jpeg");
+    } else {
+      console.log(
+        `PDF page rendered but didn't use it as it's out of date (p${i}::dt${Math.trunc(
+          g_renderJobPages[i].jobId - jobId
+        )}ms)`
+      );
+    }
   }
 
-  finalPagesRowDiv.classList.remove("pages-row-hidden-rendering");
-  while (containerDiv.childNodes.length > 1) {
-    containerDiv.removeChild(containerDiv.firstChild);
-  }
+  if (g_renderJobPages[0].jobId === jobId) {
+    finalPagesRowDiv.classList.remove("pages-row-hidden-rendering");
+    while (containerDiv.childNodes.length > 1) {
+      containerDiv.removeChild(containerDiv.firstChild);
+    }
 
-  setScrollBarsPosition(scrollBarPos);
-  if (sendPageLoaded) {
-    const [x1, y1, x2, y2] = g_currentPdf.pages[0].view;
-    const width = x2 - x1;
-    const height = y2 - y1;
-    sendIpcToMain("page-loaded", {
-      dimensions: [width, height],
-    });
+    setScrollBarsPosition(scrollBarPos);
+    if (sendPageLoaded) {
+      const [x1, y1, x2, y2] = g_currentPdf.pages[0].view;
+      const width = x2 - x1;
+      const height = y2 - y1;
+      sendIpcToMain("page-loaded", {
+        dimensions: [width, height],
+      });
+    }
+
+    for (let i = 0; i < g_currentPdf.pages.length; i++) {
+      g_renderJobPages[i].renderTask = undefined;
+    }
+  } else {
+    console.log("PDF page render out of date");
+    if (finalPagesRowDiv.parentElement)
+      containerDiv.removeChild(finalPagesRowDiv);
   }
 }
 
