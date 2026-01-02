@@ -117,12 +117,13 @@ function loadPdf(filePath, pageIndex, password) {
 
 function refreshPdfPages(rotation) {
   if (g_currentPdf.pages && g_currentPdf.pages.length > 0) {
-    if (g_renderJobPages)
+    if (g_renderJobPages) {
       for (let i = 0; i < g_currentPdf.pages.length; i++) {
         if (g_renderJobPages[i].renderTask) {
           return;
         }
       }
+    }
     renderOpenPDFPages(rotation, undefined, false);
   }
 }
@@ -248,7 +249,12 @@ async function renderOpenPDFPages(rotation, scrollBarPos, sendPageLoaded) {
     setFilterClass(finalImg);
     finalPagesRowDiv.appendChild(finalImg);
 
-    const desiredWidth = tempCanvas.offsetWidth;
+    // max to clientwith to avoid some issues when the canvas offsetWidth
+    // doesn't correspond to what I want when, for example, changing page mode
+    const desiredWidth = Math.max(
+      tempCanvas.offsetWidth,
+      document.body.clientWidth
+    );
     const viewport = g_currentPdf.pages[i].getViewport({
       scale: 1,
       rotation,
