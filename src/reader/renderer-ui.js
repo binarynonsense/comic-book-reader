@@ -871,10 +871,11 @@ export function onInputEvent(type, event) {
 
     case "body.ondrop":
       {
-        sendIpcToMain(
-          "open-file",
-          ipc.showFilePath(event.dataTransfer.files[0])
-        );
+        if (event.dataTransfer.files && event.dataTransfer.files[0])
+          sendIpcToMain(
+            "open-file",
+            ipc.showFilePath(event.dataTransfer.files[0])
+          );
       }
       break;
 
