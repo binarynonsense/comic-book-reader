@@ -392,6 +392,20 @@ function sanitize() {
   ) {
     g_settings.zoomFileLoading = g_defaultSettings.zoomFileLoading;
   }
+  if (
+    !Number.isInteger(g_settings.pageModeDefault) ||
+    g_settings.pageModeDefault < 0 ||
+    g_settings.pageModeDefault > 3
+  ) {
+    g_settings.pageModeDefault = g_defaultSettings.pageModeDefault;
+  }
+   if (
+    !Number.isInteger(g_settings.pageModeFileLoading) ||
+    g_settings.pageModeFileLoading < 0 ||
+    g_settings.pageModeFileLoading > 1
+  ) {
+    g_settings.pageModeFileLoading = g_defaultSettings.pageModeFileLoading;
+  }
   // loading indicator
   if (
     !Number.isInteger(g_settings.loadingIndicatorBG) ||
