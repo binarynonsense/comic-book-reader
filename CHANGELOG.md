@@ -1,3 +1,7 @@
+# v3.14.1
+
+- Fixed default page mode setting in preferences not being correctly saved when the "Double Page (Center First Page)" option was chosen.
+
 # v3.14.0
 
 - Added the option to create more lists in the Home Screen besides the Favorites and Latest ones.
