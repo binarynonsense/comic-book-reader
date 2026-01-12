@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2025 Álvaro García
+ * Copyright 2020-2026 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -14,7 +14,8 @@ const {
 const fs = require("fs");
 const path = require("path");
 const core = require("../../core/main");
-const { _, _raw } = require("../../shared/main/i18n");
+const { _ } = require("../../shared/main/i18n");
+const localization = require("./main-localization");
 
 const { FileExtension, FileDataType } = require("../../shared/main/constants");
 const { fork } = require("child_process");
@@ -28,6 +29,7 @@ const log = require("../../shared/main/logger");
 const temp = require("../../shared/main/temp");
 const tools = require("../../shared/main/tools");
 const menuBar = require("../../shared/main/menu-bar");
+const timers = require("../../shared/main/timers");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -409,8 +411,8 @@ function initOnIpcCallbacks() {
     stopError(undefined, errorMsg);
   });
 
-  on("resize-images", (...args) => {
-    resizeImages(...args);
+  on("process-images", (...args) => {
+    processImages(...args);
   });
 
   on("resizing-error", (errorMessage) => {
@@ -418,6 +420,7 @@ function initOnIpcCallbacks() {
   });
 
   on("end", (wasCanceled, numFiles, numErrors, numAttempted) => {
+    log.debug(`total conversion time: ${timers.stop("convert-comics")}s`);
     if (!wasCanceled) {
       if (g_mode === ToolMode.CONVERT) {
         sendIpcToRenderer(
@@ -658,6 +661,7 @@ function stopCancel() {
 }
 
 function start(inputFiles) {
+  timers.start("convert-comics");
   g_cancel = false;
   g_imageIndex = 0;
   if (g_mode === ToolMode.CONVERT) {
@@ -956,9 +960,7 @@ function copyImagesToTempFolder() {
 // IMAGE OPERATIONS ///////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-async function resizeImages(inputFilePath) {
-  // TODO: do this more efficiently, not saving to file on each step,
-  // usebuffers or bunch all operations together depending on what is needed...
+async function OLDprocessImages(inputFilePath) {
   if (g_cancel === true) {
     stopCancel();
     return;
@@ -1001,7 +1003,7 @@ async function resizeImages(inputFilePath) {
       stopCancel();
       return;
     }
-    let didResize = false;
+    let resizeNeeded = false;
     g_uiSelectedOptions.outputImageScalePercentage = parseInt(
       g_uiSelectedOptions.outputImageScalePercentage
     );
@@ -1009,7 +1011,7 @@ async function resizeImages(inputFilePath) {
       g_uiSelectedOptions.outputImageScaleOption !== "0" ||
       g_uiSelectedOptions.outputImageScalePercentage < 100
     ) {
-      didResize = true;
+      resizeNeeded = true;
       updateModalLogText(_("tool-shared-modal-log-resizing-images") + "...");
       sharp.cache(false);
       for (let index = 0; index < imgFilePaths.length; index++) {
@@ -1071,12 +1073,12 @@ async function resizeImages(inputFilePath) {
       stopCancel();
       return;
     }
-    let didImageOps = false;
+    let imageOpsNeeded = false;
     if (
       g_uiSelectedOptions.outputBrightnessApply ||
       g_uiSelectedOptions.outputSaturationApply
     ) {
-      didImageOps = true;
+      imageOpsNeeded = true;
       updateModalLogText(_("tool-shared-modal-log-editing-images") + "...");
       sharp.cache(false);
       for (let index = 0; index < imgFilePaths.length; index++) {
@@ -1126,7 +1128,7 @@ async function resizeImages(inputFilePath) {
       stopCancel();
       return;
     }
-    let didChangeFormat = false;
+    let changeFormatNeeded = false;
     if (
       g_uiSelectedOptions.outputFormat === FileExtension.PDF ||
       g_uiSelectedOptions.outputFormat === FileExtension.EPUB ||
@@ -1177,7 +1179,7 @@ async function resizeImages(inputFilePath) {
           }
         }
         if (imageFormat != FileExtension.NOT_SET) {
-          didChangeFormat = true;
+          changeFormatNeeded = true;
           let tmpFilePath = path.join(
             fileFolderPath,
             fileName + "." + FileExtension.TMP
@@ -1242,7 +1244,7 @@ async function resizeImages(inputFilePath) {
       comicInfoFilePath &&
       (g_uiSelectedOptions.outputFormat === FileExtension.CBZ ||
         g_uiSelectedOptions.outputFormat === FileExtension.CB7) &&
-      (didChangeFormat || didResize || didImageOps)
+      (changeFormatNeeded || resizeNeeded || imageOpsNeeded)
     ) {
       try {
         const {
@@ -1311,6 +1313,327 @@ async function resizeImages(inputFilePath) {
         updateModalLogText(error);
       }
     }
+    let baseFileName = g_uiSelectedOptions.outputFileBaseName
+      ? g_uiSelectedOptions.outputFileBaseName
+      : path.basename(inputFilePath, path.extname(inputFilePath));
+    createFilesFromImages(
+      inputFilePath,
+      baseFileName,
+      imgFilePaths,
+      comicInfoFilePath
+    );
+  } catch (error) {
+    stopError(error);
+  }
+}
+
+async function processImages(inputFilePath) {
+  try {
+    const sharp = require("sharp");
+    ///////////////////////////////////////////////
+    // SORT FILES /////////////////////////////////
+    ///////////////////////////////////////////////
+    let comicInfoFilePath =
+      g_mode === ToolMode.CONVERT
+        ? fileUtils.getComicInfoFileInFolderRecursive(g_tempSubFolderPath)
+        : undefined;
+    let imgFilePaths =
+      fileUtils.getImageFilesInFolderRecursive(g_tempSubFolderPath);
+    if (imgFilePaths === undefined || imgFilePaths.length === 0) {
+      stopError(undefined, "imgFiles === undefined || imgFiles.length === 0");
+      return;
+    }
+    if (g_mode === ToolMode.CREATE) {
+      // pad numerical names
+      imgFilePaths.forEach((filePath) => {
+        let fileName = path.basename(filePath, path.extname(filePath));
+        let newFilePath = path.join(
+          path.dirname(filePath),
+          utils.padNumber(
+            fileName,
+            Math.max(imgFilePaths.length, g_imageIndex)
+          ) + path.extname(filePath)
+        );
+        if (filePath !== newFilePath) {
+          fileUtils.moveFile(filePath, newFilePath);
+        }
+      });
+      imgFilePaths =
+        fileUtils.getImageFilesInFolderRecursive(g_tempSubFolderPath);
+    }
+    imgFilePaths.sort(utils.compare);
+    ///////////////////////////////////////////////
+    // CHECK REQUIREMENTS /////////////////////////
+    ///////////////////////////////////////////////
+
+    let resizeNeeded = false;
+    let imageOpsNeeded = false;
+    let updateComicInfoNeeded =
+      comicInfoFilePath &&
+      (g_uiSelectedOptions.outputFormat === FileExtension.CBZ ||
+        g_uiSelectedOptions.outputFormat === FileExtension.CB7) &&
+      (g_uiSelectedOptions.outputImageFormat != FileExtension.NOT_SET ||
+        resizeNeeded ||
+        imageOpsNeeded);
+    g_uiSelectedOptions.outputImageScalePercentage = parseInt(
+      g_uiSelectedOptions.outputImageScalePercentage
+    );
+    if (
+      g_uiSelectedOptions.outputImageScaleOption !== "0" ||
+      g_uiSelectedOptions.outputImageScalePercentage < 100
+    ) {
+      resizeNeeded = true;
+    }
+    if (
+      g_uiSelectedOptions.outputBrightnessApply ||
+      g_uiSelectedOptions.outputSaturationApply
+    ) {
+      imageOpsNeeded = true;
+    }
+    ///////////////////////////////////////////////
+    // MODIFY IMAGES //////////////////////////////
+    ///////////////////////////////////////////////
+    if (g_cancel === true) {
+      stopCancel();
+      return;
+    }
+    sharp.cache(false);
+    if (
+      resizeNeeded ||
+      imageOpsNeeded ||
+      g_uiSelectedOptions.outputFormat === FileExtension.PDF ||
+      g_uiSelectedOptions.outputFormat === FileExtension.EPUB ||
+      g_uiSelectedOptions.outputImageFormat != FileExtension.NOT_SET
+    ) {
+      for (let index = 0; index < imgFilePaths.length; index++) {
+        if (g_cancel === true) {
+          stopCancel();
+          return;
+        }
+        let filePath = imgFilePaths[index];
+        let fileFolderPath = path.dirname(filePath);
+        let fileName = path.basename(filePath, path.extname(filePath));
+        let tmpFilePath = path.join(
+          fileFolderPath,
+          fileName + "." + FileExtension.TMP
+        );
+        let imageInstance;
+        let saveToFile = false;
+        let newFilePath = filePath;
+        // RESIZE /////////////////////////////////////////////////
+        if (resizeNeeded) {
+          saveToFile = true;
+          if (!imageInstance) imageInstance = sharp(filePath);
+          if (g_uiSelectedOptions.outputImageScaleOption === "1") {
+            imageInstance.resize({
+              height: parseInt(g_uiSelectedOptions.outputImageScaleHeight),
+              withoutEnlargement: true,
+            });
+          } else if (g_uiSelectedOptions.outputImageScaleOption === "2") {
+            imageInstance.resize({
+              width: parseInt(g_uiSelectedOptions.outputImageScaleWidth),
+              withoutEnlargement: true,
+            });
+          } else {
+            // scale
+            let data = await sharp(filePath).metadata();
+            imageInstance.resize(
+              Math.round(
+                data.width *
+                  (g_uiSelectedOptions.outputImageScalePercentage / 100)
+              )
+            );
+          }
+        }
+        // IMAGE OPS //////////////////////////////////////////////
+        if (imageOpsNeeded) {
+          saveToFile = true;
+          if (!imageInstance) imageInstance = sharp(filePath);
+          let ops = {};
+          if (g_uiSelectedOptions.outputBrightnessApply) {
+            let value = parseFloat(
+              g_uiSelectedOptions.outputBrightnessMultiplier
+            );
+            if (value <= 0) value = 0.1;
+            ops["brightness"] = value;
+          }
+          if (g_uiSelectedOptions.outputSaturationApply) {
+            let value = parseFloat(
+              g_uiSelectedOptions.outputSaturationMultiplier
+            );
+            if (value <= 0) value = 0.001;
+            ops["saturation"] = value;
+          }
+          imageInstance.modulate(ops);
+        }
+        // CHANGE FORMAT /////////////////////////////////////////////
+        if (
+          g_uiSelectedOptions.outputFormat === FileExtension.PDF ||
+          g_uiSelectedOptions.outputFormat === FileExtension.EPUB ||
+          g_uiSelectedOptions.outputImageFormat != FileExtension.NOT_SET
+        ) {
+          let imageFormat = g_uiSelectedOptions.outputImageFormat;
+          if (g_uiSelectedOptions.outputFormat === FileExtension.PDF) {
+            // change to a format compatible with pdfkit if needed
+            if (
+              imageFormat === FileExtension.WEBP ||
+              imageFormat === FileExtension.AVIF ||
+              (imageFormat === FileExtension.NOT_SET &&
+                !fileUtils.hasPdfKitCompatibleImageExtension(filePath))
+            ) {
+              imageFormat = FileExtension.JPG;
+            }
+          }
+          if (
+            g_uiSelectedOptions.outputFormat === FileExtension.EPUB &&
+            g_uiSelectedOptions.outputEpubCreationImageFormat ===
+              "core-media-types-only"
+          ) {
+            // change to a format supported by the epub specification if needed
+            if (
+              imageFormat === FileExtension.WEBP ||
+              imageFormat === FileExtension.AVIF ||
+              (imageFormat === FileExtension.NOT_SET &&
+                !fileUtils.hasEpubSupportedImageExtension(filePath))
+            ) {
+              imageFormat = FileExtension.JPG;
+            }
+          }
+          if (imageFormat != FileExtension.NOT_SET) {
+            saveToFile = true;
+            if (!imageInstance) imageInstance = sharp(filePath);
+            if (imageFormat === FileExtension.JPG) {
+              imageInstance.jpeg({
+                quality: parseInt(
+                  g_uiSelectedOptions.outputImageFormatParams.jpgQuality
+                ),
+                mozjpeg: g_uiSelectedOptions.outputImageFormatParams.jpgMozjpeg,
+              });
+            } else if (imageFormat === FileExtension.PNG) {
+              if (
+                parseInt(
+                  g_uiSelectedOptions.outputImageFormatParams.pngQuality
+                ) < 100
+              ) {
+                imageInstance.png({
+                  quality: parseInt(
+                    g_uiSelectedOptions.outputImageFormatParams.pngQuality
+                  ),
+                });
+              } else {
+                imageInstance.png();
+              }
+            } else if (imageFormat === FileExtension.WEBP) {
+              imageInstance.webp({
+                quality: parseInt(
+                  g_uiSelectedOptions.outputImageFormatParams.webpQuality
+                ),
+              });
+            } else if (imageFormat === FileExtension.AVIF) {
+              imageInstance.avif({
+                quality: parseInt(
+                  g_uiSelectedOptions.outputImageFormatParams.avifQuality
+                ),
+              });
+            }
+            newFilePath = path.join(
+              fileFolderPath,
+              fileName + "." + imageFormat
+            );
+          }
+        }
+        // SAVE TO FILE ///////////////////////////////////////////
+        if (saveToFile && imageInstance) {
+          updateModalLogText(
+            _("tool-shared-modal-log-converting-image") +
+              ": " +
+              (index + 1) +
+              " / " +
+              imgFilePaths.length
+          );
+          await imageInstance.withMetadata().toFile(tmpFilePath);
+          fs.unlinkSync(filePath);
+          fileUtils.moveFile(tmpFilePath, newFilePath);
+          imgFilePaths[index] = newFilePath;
+        }
+      }
+    }
+    ///////////////////////////////////////////////
+    // COMIC INFO /////////////////////////////////
+    ///////////////////////////////////////////////
+    if (updateComicInfoNeeded) {
+      // update comicbook.xml if available, needs changing and the output format
+      // is right
+      try {
+        const {
+          XMLParser,
+          XMLBuilder,
+          XMLValidator,
+        } = require("fast-xml-parser");
+        const xmlFileData = fs.readFileSync(comicInfoFilePath, "utf8");
+        const isValidXml = XMLValidator.validate(xmlFileData);
+        if (isValidXml === true) {
+          // open
+          const parserOptions = {
+            ignoreAttributes: false,
+          };
+          const parser = new XMLParser(parserOptions);
+          let json = parser.parse(xmlFileData);
+          // modify
+          updateModalLogText(_("tool-shared-modal-log-updating-comicinfoxml"));
+
+          if (!json["ComicInfo"]["Pages"]) {
+            json["ComicInfo"]["Pages"] = {};
+          }
+          if (!json["ComicInfo"]["Pages"]["Page"]) {
+            json["ComicInfo"]["Pages"]["Page"] = [];
+          }
+
+          json["ComicInfo"]["PageCount"] = imgFilePaths.length;
+          let oldPagesArray = json["ComicInfo"]["Pages"]["Page"].slice();
+          json["ComicInfo"]["Pages"]["Page"] = [];
+          for (let index = 0; index < imgFilePaths.length; index++) {
+            let pageData = {
+              "@_Image": "",
+              "@_ImageSize": "",
+              "@_ImageWidth": "",
+              "@_ImageHeight": "",
+            };
+            if (oldPagesArray.length > index) {
+              pageData = oldPagesArray[index];
+            }
+            let filePath = imgFilePaths[index];
+            pageData["@_Image"] = index;
+            let fileStats = fs.statSync(filePath);
+            let fileSizeInBytes = fileStats.size;
+            pageData["@_ImageSize"] = fileSizeInBytes;
+            const metadata = await sharp(filePath).metadata();
+            pageData["@_ImageWidth"] = metadata.width;
+            pageData["@_ImageHeight"] = metadata.height;
+            json["ComicInfo"]["Pages"]["Page"].push(pageData);
+          }
+          // rebuild
+          const builderOptions = {
+            ignoreAttributes: false,
+            format: true,
+          };
+          const builder = new XMLBuilder(builderOptions);
+          let outputXmlData = builder.build(json);
+          fs.writeFileSync(comicInfoFilePath, outputXmlData);
+        } else {
+          throw "ComicInfo.xml is not a valid xml file";
+        }
+      } catch (error) {
+        log.debug(
+          "Warning: couldn't update the contents of ComicInfo.xml: " + error
+        );
+        updateModalLogText(_("tool-shared-modal-log-warning-comicinfoxml"));
+        updateModalLogText(error);
+      }
+    }
+    ///////////////////////////////////////////////
+    // SEND TO NEXT STAGE /////////////////////////
+    ///////////////////////////////////////////////
     let baseFileName = g_uiSelectedOptions.outputFileBaseName
       ? g_uiSelectedOptions.outputFileBaseName
       : path.basename(inputFilePath, path.extname(inputFilePath));
@@ -1452,292 +1775,9 @@ function updateModalLogText(inputText, append = true) {
 function updateLocalizedText() {
   sendIpcToRenderer(
     "update-localization",
-    getLocalization(),
-    getTooltipsLocalization(),
-    {
-      infoTooltip: _("tool-shared-modal-title-info"),
-      removeFromList: _("tool-shared-tooltip-remove-from-list"),
-      moveUpInList: _("tool-shared-tooltip-move-up-in-list"),
-      moveDownInList: _("tool-shared-tooltip-move-down-in-list"),
-      outputImageFormatNotSet: _("tool-shared-ui-output-options-format-keep"),
-      modalCloseButton: _("tool-shared-ui-close").toUpperCase(),
-      modalCancelButton: _("tool-shared-ui-cancel").toUpperCase(),
-      modalCopyLogButton: _("ui-modal-prompt-button-copy-log").toUpperCase(),
-      outputFolderOption0: _("tool-shared-ui-output-folder-0"),
-      outputFolderOption1: _("tool-shared-ui-output-folder-1"),
-      outputFileSameNameOption0: _("tool-shared-ui-output-file-same-name-0"),
-      outputFileSameNameOption1:
-        "⚠ " + _("tool-shared-ui-output-file-same-name-1") + " ⚠",
-      outputFileSameNameOption2: _("tool-shared-ui-output-file-same-name-2"),
-    }
+    localization.getLocalization(g_mode),
+    localization.getTooltipsLocalization(),
+    localization.getLocalizedTexts()
   );
 }
 exports.updateLocalizedText = updateLocalizedText;
-
-function getTooltipsLocalization() {
-  return [
-    {
-      id: "tool-cc-tooltip-output-size",
-      text: _("tool-shared-tooltip-output-scale-options"),
-    },
-    {
-      id: "tool-cc-tooltip-output-page-order",
-      text: _("tool-shared-tooltip-output-page-order"),
-    },
-    {
-      id: "tool-cc-tooltip-output-folder",
-      text: _("tool-shared-tooltip-output-folder"),
-    },
-    {
-      id: "tool-cc-tooltip-pdf-extraction",
-      text: _("tool-shared-ui-pdf-extraction-tooltip"),
-    },
-    {
-      id: "tool-cc-tooltip-password",
-      text: _("tool-shared-ui-creation-password-tooltip", "cbz, cb7, cbr, pdf"),
-    },
-    {
-      id: "tool-cc-tooltip-pdf-creation",
-      text: _("tool-shared-ui-pdf-creation-tooltip"),
-    },
-  ];
-}
-
-function getLocalization() {
-  return [
-    {
-      id: "tool-cc-title-text",
-      text:
-        g_mode === ToolMode.CONVERT
-          ? (_raw("tool-cc-title-alt", false)
-              ? _raw("tool-cc-title-alt", false)
-              : _("tool-cc-title")
-            ).toUpperCase()
-          : (_raw("tool-cr-title-alt", false)
-              ? _raw("tool-cr-title-alt", false)
-              : _("tool-cr-title")
-            ).toUpperCase(),
-    },
-    {
-      id: "tool-cc-back-button-text",
-      text: _("tool-shared-ui-back-to-reader").toUpperCase(),
-    },
-    {
-      id: "tool-cc-start-button-text",
-      text:
-        g_mode === ToolMode.CONVERT
-          ? _("tool-shared-ui-convert").toUpperCase()
-          : _("tool-shared-ui-create").toUpperCase(),
-    },
-    //////////////////////////////////////////////
-    {
-      id: "tool-cc-section-general-options-text",
-      text: _("tool-shared-ui-general-options"),
-    },
-    {
-      id: "tool-cc-section-advanced-options-text",
-      text: _("tool-shared-ui-advanced-options"),
-    },
-    {
-      id: "tool-cc-section-settings-text",
-      text: _("tool-shared-tab-settings"),
-    },
-    //////////////////////////////////////////////
-    {
-      id: "tool-cc-input-options-text",
-      text: _("tool-shared-ui-input-options"),
-    },
-    {
-      id: "tool-cc-input-files-text",
-      text: _("tool-shared-ui-input-list"),
-    },
-    {
-      id: "tool-cc-add-file-button-text",
-      text: _("tool-shared-ui-add-file").toUpperCase(),
-    },
-    {
-      id: "tool-cc-add-folder-button-text",
-      text: _("tool-shared-ui-add-folder").toUpperCase(),
-    },
-    {
-      id: "tool-cc-clear-list-button-text",
-      text: _("tool-shared-ui-clear-list").toUpperCase(),
-    },
-    //////////////////////////////////////////////
-    {
-      id: "tool-cc-output-options-text",
-      text: _("tool-shared-ui-output-options"),
-    },
-    {
-      id: "tool-cc-output-format-text",
-      text: _("tool-shared-ui-output-options-format"),
-    },
-    {
-      id: "tool-cc-output-name-text",
-      text: _("tool-shared-ui-output-options-file-name"),
-    },
-    {
-      id: "tool-cc-output-page-order-text",
-      text: _("tool-shared-ui-output-options-page-order"),
-    },
-    {
-      id: "tool-cc-output-page-order-o1-text",
-      text: _("tool-shared-ui-output-options-page-order-o1"),
-    },
-    {
-      id: "tool-cc-output-page-order-o2-text",
-      text: _("tool-shared-ui-output-options-page-order-o2"),
-    },
-
-    {
-      id: "tool-cc-output-image-scale-text",
-      text: _("tool-shared-ui-output-options-scale").replace(" (%)", ""),
-    },
-    {
-      id: "tool-cc-output-image-scale-select-0-text",
-      text: _("tool-shared-ui-output-options-scale-percentage"),
-    },
-    {
-      id: "tool-cc-output-image-scale-select-1-text",
-      text: _("tool-shared-ui-output-options-scale-height"),
-    },
-    {
-      id: "tool-cc-output-image-scale-select-2-text",
-      text: _("tool-shared-ui-output-options-scale-width"),
-    },
-
-    {
-      id: "tool-cc-output-format-text",
-      text: _("tool-shared-ui-output-options-format"),
-    },
-    {
-      id: "tool-cc-output-image-format-text",
-      text: _("tool-shared-ui-output-options-image-format"),
-    },
-    {
-      id: "tool-cc-output-image-quality-text",
-      text: _("tool-shared-ui-output-options-image-quality"),
-    },
-    {
-      id: "tool-cc-output-folder-text",
-      text: _("tool-shared-ui-output-folder"),
-    },
-    {
-      id: "tool-cc-change-folder-button-text",
-      text: _("tool-shared-ui-change").toUpperCase(),
-    },
-    {
-      id: "tool-cc-open-folder-button-text",
-      text: _("tool-shared-ui-open").toUpperCase(),
-    },
-    //////////////////////////////////////////////
-    {
-      id: "tool-cc-advanced-input-options-text",
-      text: _("tool-shared-ui-advanced-input-options"),
-    },
-    {
-      id: "tool-cc-folders-file-formats-text",
-      text: _("tool-shared-ui-input-folders-file-type"),
-    },
-    {
-      id: "tool-cc-folders-recursively-text",
-      text: _("tool-shared-ui-input-folders-recursively"),
-    },
-    {
-      id: "tool-cc-pdf-extraction-text",
-      text: _("tool-shared-ui-pdf-extraction"),
-    },
-    {
-      id: "tool-cc-pdf-extraction-o1-text",
-      text: _("tool-shared-ui-pdf-extraction-o1"),
-    },
-    {
-      id: "tool-cc-pdf-extraction-o2-text",
-      text: _("tool-shared-ui-pdf-extraction-o2"),
-    },
-    {
-      id: "tool-cc-pdf-extraction-o3-text",
-      text: _("tool-shared-ui-pdf-extraction-o3"),
-    },
-    //////////////////////////////////////////////
-    {
-      id: "tool-cc-advanced-output-options-text",
-      text: _("tool-shared-ui-advanced-output-options"),
-    },
-    {
-      id: "tool-cc-output-file-same-name-text",
-      text: _("tool-shared-ui-output-file-same-name"),
-    },
-    {
-      id: "tool-cc-split-num-files-text",
-      text: _("tool-shared-ui-creation-split-number"),
-    },
-    {
-      id: "tool-cc-password-text",
-      text: _("tool-shared-ui-creation-password"),
-    },
-    {
-      id: "tool-cc-pdf-creation-text",
-      text: _("tool-shared-ui-pdf-creation"),
-    },
-    {
-      id: "tool-cc-pdf-creation-o1-text",
-      text: _("tool-shared-ui-pdf-creation-o1"),
-    },
-    {
-      id: "tool-cc-pdf-creation-o2-text",
-      text: _("tool-shared-ui-pdf-creation-o2"),
-    },
-    {
-      id: "tool-cc-pdf-creation-o3-text",
-      text: _("tool-shared-ui-pdf-creation-o3"),
-    },
-
-    {
-      id: "tool-cc-epub-creation-text",
-      text: _("tool-shared-ui-epub-creation"),
-    },
-    {
-      id: "tool-cc-epub-creation-image-format-o1-text",
-      text: _("tool-shared-ui-epub-creation-image-format-o1"),
-    },
-    {
-      id: "tool-cc-epub-creation-image-format-o2-text",
-      text: _("tool-shared-ui-epub-creation-image-format-o2"),
-    },
-    {
-      id: "tool-cc-epub-creation-image-storage-o1-text",
-      text: _("tool-shared-ui-epub-creation-image-storage-o1"),
-    },
-    {
-      id: "tool-cc-epub-creation-image-storage-o2-text",
-      text: _("tool-shared-ui-epub-creation-image-storage-o2"),
-    },
-    {
-      id: "tool-cc-imageops-apply-text",
-      text: _("tool-shared-ui-creation-imageops-apply"),
-    },
-    {
-      id: "tool-cc-imageops-brightness-text",
-      text: _("tool-shared-ui-creation-brightnessmultiplier"),
-    },
-    {
-      id: "tool-cc-imageops-saturation-text",
-      text: _("tool-shared-ui-creation-saturationmultiplier"),
-    },
-    //////////////////////////////////////////////
-    {
-      id: "tool-cc-settings-text",
-      text: _("tool-shared-tab-settings"),
-    },
-    {
-      id: "tool-cc-setting-remember-text",
-      text: _("tool-shared-ui-settings-remember"),
-    },
-    {
-      id: "tool-cc-settings-reset-button-text",
-      text: _("tool-shared-ui-settings-reset").toUpperCase(),
-    },
-    //////////////////////////////////////////////
-  ];
-}
