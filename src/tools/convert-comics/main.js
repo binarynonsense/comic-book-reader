@@ -411,8 +411,8 @@ function initOnIpcCallbacks() {
     stopError(undefined, errorMsg);
   });
 
-  on("process-images", (...args) => {
-    processImages(...args);
+  on("process-content", (...args) => {
+    processContent(...args);
   });
 
   on("resizing-error", (errorMessage) => {
@@ -785,7 +785,6 @@ function startFile(inputFilePath, inputFileType, fileNum, totalFilesNum) {
     }
   }
   ////////////////
-
   if (g_mode === ToolMode.CONVERT) {
     g_tempSubFolderPath = temp.createSubFolder();
   } else {
@@ -960,376 +959,8 @@ function copyImagesToTempFolder() {
 // IMAGE OPERATIONS ///////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-async function OLDprocessImages(inputFilePath) {
-  if (g_cancel === true) {
-    stopCancel();
-    return;
-  }
+async function processContent(inputFilePath) {
   try {
-    const sharp = require("sharp");
-    let comicInfoFilePath =
-      g_mode === ToolMode.CONVERT
-        ? fileUtils.getComicInfoFileInFolderRecursive(g_tempSubFolderPath)
-        : undefined;
-    let imgFilePaths =
-      fileUtils.getImageFilesInFolderRecursive(g_tempSubFolderPath);
-    if (imgFilePaths === undefined || imgFilePaths.length === 0) {
-      stopError(undefined, "imgFiles === undefined || imgFiles.length === 0");
-      return;
-    }
-    if (g_mode === ToolMode.CREATE) {
-      // pad numerical names
-      imgFilePaths.forEach((filePath) => {
-        let fileName = path.basename(filePath, path.extname(filePath));
-        let newFilePath = path.join(
-          path.dirname(filePath),
-          utils.padNumber(
-            fileName,
-            Math.max(imgFilePaths.length, g_imageIndex)
-          ) + path.extname(filePath)
-        );
-        if (filePath !== newFilePath) {
-          fileUtils.moveFile(filePath, newFilePath);
-        }
-      });
-      imgFilePaths =
-        fileUtils.getImageFilesInFolderRecursive(g_tempSubFolderPath);
-    }
-    imgFilePaths.sort(utils.compare);
-
-    // resize //////////////////////////////////////////////////////////////
-
-    if (g_cancel === true) {
-      stopCancel();
-      return;
-    }
-    let resizeNeeded = false;
-    g_uiSelectedOptions.outputImageScalePercentage = parseInt(
-      g_uiSelectedOptions.outputImageScalePercentage
-    );
-    if (
-      g_uiSelectedOptions.outputImageScaleOption !== "0" ||
-      g_uiSelectedOptions.outputImageScalePercentage < 100
-    ) {
-      resizeNeeded = true;
-      updateModalLogText(_("tool-shared-modal-log-resizing-images") + "...");
-      sharp.cache(false);
-      for (let index = 0; index < imgFilePaths.length; index++) {
-        if (g_cancel === true) {
-          stopCancel();
-          return;
-        }
-        updateModalLogText(
-          _("tool-shared-modal-log-resizing-image") +
-            ": " +
-            (index + 1) +
-            " / " +
-            imgFilePaths.length
-        );
-        let filePath = imgFilePaths[index];
-        let fileFolderPath = path.dirname(filePath);
-        let fileName = path.basename(filePath, path.extname(filePath));
-        let tmpFilePath = path.join(
-          fileFolderPath,
-          fileName + "." + FileExtension.TMP
-        );
-        if (g_uiSelectedOptions.outputImageScaleOption === "1") {
-          await sharp(filePath)
-            .withMetadata()
-            .resize({
-              height: parseInt(g_uiSelectedOptions.outputImageScaleHeight),
-              withoutEnlargement: true,
-            })
-            .toFile(tmpFilePath);
-        } else if (g_uiSelectedOptions.outputImageScaleOption === "2") {
-          await sharp(filePath)
-            .withMetadata()
-            .resize({
-              width: parseInt(g_uiSelectedOptions.outputImageScaleWidth),
-              withoutEnlargement: true,
-            })
-            .toFile(tmpFilePath);
-        } else {
-          // scale
-          let data = await sharp(filePath).metadata();
-          await sharp(filePath)
-            .withMetadata()
-            .resize(
-              Math.round(
-                data.width *
-                  (g_uiSelectedOptions.outputImageScalePercentage / 100)
-              )
-            )
-            .toFile(tmpFilePath);
-        }
-        fs.unlinkSync(filePath);
-        fileUtils.moveFile(tmpFilePath, filePath);
-      }
-    }
-
-    // apply image ops ////////////////////////////////////////////////////////
-
-    if (g_cancel === true) {
-      stopCancel();
-      return;
-    }
-    let imageOpsNeeded = false;
-    if (
-      g_uiSelectedOptions.outputBrightnessApply ||
-      g_uiSelectedOptions.outputSaturationApply
-    ) {
-      imageOpsNeeded = true;
-      updateModalLogText(_("tool-shared-modal-log-editing-images") + "...");
-      sharp.cache(false);
-      for (let index = 0; index < imgFilePaths.length; index++) {
-        if (g_cancel === true) {
-          stopCancel();
-          return;
-        }
-        updateModalLogText(
-          _("tool-shared-modal-log-editing-image") +
-            ": " +
-            (index + 1) +
-            " / " +
-            imgFilePaths.length
-        );
-        let filePath = imgFilePaths[index];
-        let fileFolderPath = path.dirname(filePath);
-        let fileName = path.basename(filePath, path.extname(filePath));
-        let tmpFilePath = path.join(
-          fileFolderPath,
-          fileName + "." + FileExtension.TMP
-        );
-        let ops = {};
-        if (g_uiSelectedOptions.outputBrightnessApply) {
-          let value = parseFloat(
-            g_uiSelectedOptions.outputBrightnessMultiplier
-          );
-          if (value <= 0) value = 0.1;
-          ops["brightness"] = value;
-        }
-        if (g_uiSelectedOptions.outputSaturationApply) {
-          let value = parseFloat(
-            g_uiSelectedOptions.outputSaturationMultiplier
-          );
-          if (value <= 0) value = 0.001;
-          ops["saturation"] = value;
-        }
-        await sharp(filePath).withMetadata().modulate(ops).toFile(tmpFilePath);
-
-        fs.unlinkSync(filePath);
-        fileUtils.moveFile(tmpFilePath, filePath);
-      }
-    }
-
-    // change image format ////////////////////////////////////////////////////
-    // if requested or pdfkit incompatible (not jpg or png)
-    if (g_cancel === true) {
-      stopCancel();
-      return;
-    }
-    let changeFormatNeeded = false;
-    if (
-      g_uiSelectedOptions.outputFormat === FileExtension.PDF ||
-      g_uiSelectedOptions.outputFormat === FileExtension.EPUB ||
-      g_uiSelectedOptions.outputImageFormat != FileExtension.NOT_SET
-    ) {
-      updateModalLogText(_("tool-shared-modal-log-converting-images") + "...");
-      sharp.cache(false); // avoid EBUSY error on windows
-      for (let index = 0; index < imgFilePaths.length; index++) {
-        if (g_cancel === true) {
-          stopCancel();
-          return;
-        }
-        updateModalLogText(
-          _("tool-shared-modal-log-converting-image") +
-            ": " +
-            (index + 1) +
-            " / " +
-            imgFilePaths.length
-        );
-        let filePath = imgFilePaths[index];
-        let fileFolderPath = path.dirname(filePath);
-        let fileName = path.basename(filePath, path.extname(filePath));
-        let imageFormat = g_uiSelectedOptions.outputImageFormat;
-        if (g_uiSelectedOptions.outputFormat === FileExtension.PDF) {
-          // change to a format compatible with pdfkit if needed
-          if (
-            imageFormat === FileExtension.WEBP ||
-            imageFormat === FileExtension.AVIF ||
-            (imageFormat === FileExtension.NOT_SET &&
-              !fileUtils.hasPdfKitCompatibleImageExtension(filePath))
-          ) {
-            imageFormat = FileExtension.JPG;
-          }
-        }
-        if (
-          g_uiSelectedOptions.outputFormat === FileExtension.EPUB &&
-          g_uiSelectedOptions.outputEpubCreationImageFormat ===
-            "core-media-types-only"
-        ) {
-          // change to a format supported by the epub specification if needed
-          if (
-            imageFormat === FileExtension.WEBP ||
-            imageFormat === FileExtension.AVIF ||
-            (imageFormat === FileExtension.NOT_SET &&
-              !fileUtils.hasEpubSupportedImageExtension(filePath))
-          ) {
-            imageFormat = FileExtension.JPG;
-          }
-        }
-        if (imageFormat != FileExtension.NOT_SET) {
-          changeFormatNeeded = true;
-          let tmpFilePath = path.join(
-            fileFolderPath,
-            fileName + "." + FileExtension.TMP
-          );
-          if (imageFormat === FileExtension.JPG) {
-            await sharp(filePath)
-              .withMetadata()
-              .jpeg({
-                quality: parseInt(
-                  g_uiSelectedOptions.outputImageFormatParams.jpgQuality
-                ),
-                mozjpeg: g_uiSelectedOptions.outputImageFormatParams.jpgMozjpeg,
-              })
-              .toFile(tmpFilePath);
-          } else if (imageFormat === FileExtension.PNG) {
-            if (
-              parseInt(g_uiSelectedOptions.outputImageFormatParams.pngQuality) <
-              100
-            ) {
-              await sharp(filePath)
-                .withMetadata()
-                .png({
-                  quality: parseInt(
-                    g_uiSelectedOptions.outputImageFormatParams.pngQuality
-                  ),
-                })
-                .toFile(tmpFilePath);
-            } else {
-              await sharp(filePath).withMetadata().png().toFile(tmpFilePath);
-            }
-          } else if (imageFormat === FileExtension.WEBP) {
-            await sharp(filePath)
-              .withMetadata()
-              .webp({
-                quality: parseInt(
-                  g_uiSelectedOptions.outputImageFormatParams.webpQuality
-                ),
-              })
-              .toFile(tmpFilePath);
-          } else if (imageFormat === FileExtension.AVIF) {
-            await sharp(filePath)
-              .withMetadata()
-              .avif({
-                quality: parseInt(
-                  g_uiSelectedOptions.outputImageFormatParams.avifQuality
-                ),
-              })
-              .toFile(tmpFilePath);
-          }
-          let newFilePath = path.join(
-            fileFolderPath,
-            fileName + "." + imageFormat
-          );
-          fs.unlinkSync(filePath);
-          fileUtils.moveFile(tmpFilePath, newFilePath);
-          imgFilePaths[index] = newFilePath;
-        }
-      }
-    }
-    // update comicbook.xml if available, needs changing and the output format is right
-    if (
-      comicInfoFilePath &&
-      (g_uiSelectedOptions.outputFormat === FileExtension.CBZ ||
-        g_uiSelectedOptions.outputFormat === FileExtension.CB7) &&
-      (changeFormatNeeded || resizeNeeded || imageOpsNeeded)
-    ) {
-      try {
-        const {
-          XMLParser,
-          XMLBuilder,
-          XMLValidator,
-        } = require("fast-xml-parser");
-        const xmlFileData = fs.readFileSync(comicInfoFilePath, "utf8");
-        const isValidXml = XMLValidator.validate(xmlFileData);
-        if (isValidXml === true) {
-          // open
-          const parserOptions = {
-            ignoreAttributes: false,
-          };
-          const parser = new XMLParser(parserOptions);
-          let json = parser.parse(xmlFileData);
-          // modify
-          updateModalLogText(_("tool-shared-modal-log-updating-comicinfoxml"));
-
-          if (!json["ComicInfo"]["Pages"]) {
-            json["ComicInfo"]["Pages"] = {};
-          }
-          if (!json["ComicInfo"]["Pages"]["Page"]) {
-            json["ComicInfo"]["Pages"]["Page"] = [];
-          }
-
-          json["ComicInfo"]["PageCount"] = imgFilePaths.length;
-          let oldPagesArray = json["ComicInfo"]["Pages"]["Page"].slice();
-          json["ComicInfo"]["Pages"]["Page"] = [];
-          for (let index = 0; index < imgFilePaths.length; index++) {
-            let pageData = {
-              "@_Image": "",
-              "@_ImageSize": "",
-              "@_ImageWidth": "",
-              "@_ImageHeight": "",
-            };
-            if (oldPagesArray.length > index) {
-              pageData = oldPagesArray[index];
-            }
-            let filePath = imgFilePaths[index];
-            pageData["@_Image"] = index;
-            let fileStats = fs.statSync(filePath);
-            let fileSizeInBytes = fileStats.size;
-            pageData["@_ImageSize"] = fileSizeInBytes;
-            const metadata = await sharp(filePath).metadata();
-            pageData["@_ImageWidth"] = metadata.width;
-            pageData["@_ImageHeight"] = metadata.height;
-            json["ComicInfo"]["Pages"]["Page"].push(pageData);
-          }
-          // rebuild
-          const builderOptions = {
-            ignoreAttributes: false,
-            format: true,
-          };
-          const builder = new XMLBuilder(builderOptions);
-          let outputXmlData = builder.build(json);
-          fs.writeFileSync(comicInfoFilePath, outputXmlData);
-        } else {
-          throw "ComicInfo.xml is not a valid xml file";
-        }
-      } catch (error) {
-        log.debug(
-          "Warning: couldn't update the contents of ComicInfo.xml: " + error
-        );
-        updateModalLogText(_("tool-shared-modal-log-warning-comicinfoxml"));
-        updateModalLogText(error);
-      }
-    }
-    let baseFileName = g_uiSelectedOptions.outputFileBaseName
-      ? g_uiSelectedOptions.outputFileBaseName
-      : path.basename(inputFilePath, path.extname(inputFilePath));
-    createFilesFromImages(
-      inputFilePath,
-      baseFileName,
-      imgFilePaths,
-      comicInfoFilePath
-    );
-  } catch (error) {
-    stopError(error);
-  }
-}
-
-async function processImages(inputFilePath) {
-  try {
-    const sharp = require("sharp");
     ///////////////////////////////////////////////
     // SORT FILES /////////////////////////////////
     ///////////////////////////////////////////////
@@ -1365,7 +996,6 @@ async function processImages(inputFilePath) {
     ///////////////////////////////////////////////
     // CHECK REQUIREMENTS /////////////////////////
     ///////////////////////////////////////////////
-
     let resizeNeeded = false;
     let imageOpsNeeded = false;
     let updateComicInfoNeeded =
@@ -1397,169 +1027,16 @@ async function processImages(inputFilePath) {
       stopCancel();
       return;
     }
-    sharp.cache(false);
     if (
-      resizeNeeded ||
-      imageOpsNeeded ||
-      g_uiSelectedOptions.outputFormat === FileExtension.PDF ||
-      g_uiSelectedOptions.outputFormat === FileExtension.EPUB ||
-      g_uiSelectedOptions.outputImageFormat != FileExtension.NOT_SET
-    ) {
-      for (let index = 0; index < imgFilePaths.length; index++) {
-        if (g_cancel === true) {
-          stopCancel();
-          return;
-        }
-        let filePath = imgFilePaths[index];
-        let fileFolderPath = path.dirname(filePath);
-        let fileName = path.basename(filePath, path.extname(filePath));
-        let tmpFilePath = path.join(
-          fileFolderPath,
-          fileName + "." + FileExtension.TMP
-        );
-        let imageInstance;
-        let saveToFile = false;
-        let newFilePath = filePath;
-        // RESIZE /////////////////////////////////////////////////
-        if (resizeNeeded) {
-          saveToFile = true;
-          if (!imageInstance) imageInstance = sharp(filePath);
-          if (g_uiSelectedOptions.outputImageScaleOption === "1") {
-            imageInstance.resize({
-              height: parseInt(g_uiSelectedOptions.outputImageScaleHeight),
-              withoutEnlargement: true,
-            });
-          } else if (g_uiSelectedOptions.outputImageScaleOption === "2") {
-            imageInstance.resize({
-              width: parseInt(g_uiSelectedOptions.outputImageScaleWidth),
-              withoutEnlargement: true,
-            });
-          } else {
-            // scale
-            let data = await sharp(filePath).metadata();
-            imageInstance.resize(
-              Math.round(
-                data.width *
-                  (g_uiSelectedOptions.outputImageScalePercentage / 100)
-              )
-            );
-          }
-        }
-        // IMAGE OPS //////////////////////////////////////////////
-        if (imageOpsNeeded) {
-          saveToFile = true;
-          if (!imageInstance) imageInstance = sharp(filePath);
-          let ops = {};
-          if (g_uiSelectedOptions.outputBrightnessApply) {
-            let value = parseFloat(
-              g_uiSelectedOptions.outputBrightnessMultiplier
-            );
-            if (value <= 0) value = 0.1;
-            ops["brightness"] = value;
-          }
-          if (g_uiSelectedOptions.outputSaturationApply) {
-            let value = parseFloat(
-              g_uiSelectedOptions.outputSaturationMultiplier
-            );
-            if (value <= 0) value = 0.001;
-            ops["saturation"] = value;
-          }
-          imageInstance.modulate(ops);
-        }
-        // CHANGE FORMAT /////////////////////////////////////////////
-        if (
-          g_uiSelectedOptions.outputFormat === FileExtension.PDF ||
-          g_uiSelectedOptions.outputFormat === FileExtension.EPUB ||
-          g_uiSelectedOptions.outputImageFormat != FileExtension.NOT_SET
-        ) {
-          let imageFormat = g_uiSelectedOptions.outputImageFormat;
-          if (g_uiSelectedOptions.outputFormat === FileExtension.PDF) {
-            // change to a format compatible with pdfkit if needed
-            if (
-              imageFormat === FileExtension.WEBP ||
-              imageFormat === FileExtension.AVIF ||
-              (imageFormat === FileExtension.NOT_SET &&
-                !fileUtils.hasPdfKitCompatibleImageExtension(filePath))
-            ) {
-              imageFormat = FileExtension.JPG;
-            }
-          }
-          if (
-            g_uiSelectedOptions.outputFormat === FileExtension.EPUB &&
-            g_uiSelectedOptions.outputEpubCreationImageFormat ===
-              "core-media-types-only"
-          ) {
-            // change to a format supported by the epub specification if needed
-            if (
-              imageFormat === FileExtension.WEBP ||
-              imageFormat === FileExtension.AVIF ||
-              (imageFormat === FileExtension.NOT_SET &&
-                !fileUtils.hasEpubSupportedImageExtension(filePath))
-            ) {
-              imageFormat = FileExtension.JPG;
-            }
-          }
-          if (imageFormat != FileExtension.NOT_SET) {
-            saveToFile = true;
-            if (!imageInstance) imageInstance = sharp(filePath);
-            if (imageFormat === FileExtension.JPG) {
-              imageInstance.jpeg({
-                quality: parseInt(
-                  g_uiSelectedOptions.outputImageFormatParams.jpgQuality
-                ),
-                mozjpeg: g_uiSelectedOptions.outputImageFormatParams.jpgMozjpeg,
-              });
-            } else if (imageFormat === FileExtension.PNG) {
-              if (
-                parseInt(
-                  g_uiSelectedOptions.outputImageFormatParams.pngQuality
-                ) < 100
-              ) {
-                imageInstance.png({
-                  quality: parseInt(
-                    g_uiSelectedOptions.outputImageFormatParams.pngQuality
-                  ),
-                });
-              } else {
-                imageInstance.png();
-              }
-            } else if (imageFormat === FileExtension.WEBP) {
-              imageInstance.webp({
-                quality: parseInt(
-                  g_uiSelectedOptions.outputImageFormatParams.webpQuality
-                ),
-              });
-            } else if (imageFormat === FileExtension.AVIF) {
-              imageInstance.avif({
-                quality: parseInt(
-                  g_uiSelectedOptions.outputImageFormatParams.avifQuality
-                ),
-              });
-            }
-            newFilePath = path.join(
-              fileFolderPath,
-              fileName + "." + imageFormat
-            );
-          }
-        }
-        // SAVE TO FILE ///////////////////////////////////////////
-        if (saveToFile && imageInstance) {
-          updateModalLogText(
-            _("tool-shared-modal-log-converting-image") +
-              ": " +
-              (index + 1) +
-              " / " +
-              imgFilePaths.length
-          );
-          await imageInstance.withMetadata().toFile(tmpFilePath);
-          fs.unlinkSync(filePath);
-          fileUtils.moveFile(tmpFilePath, newFilePath);
-          imgFilePaths[index] = newFilePath;
-        }
-      }
-    }
+      !(await processImages({
+        imgFilePaths,
+        resizeNeeded,
+        imageOpsNeeded,
+      }))
+    )
+      return;
     ///////////////////////////////////////////////
-    // COMIC INFO /////////////////////////////////
+    // UPDATE COMIC INFO //////////////////////////
     ///////////////////////////////////////////////
     if (updateComicInfoNeeded) {
       // update comicbook.xml if available, needs changing and the output format
@@ -1607,6 +1084,7 @@ async function processImages(inputFilePath) {
             let fileStats = fs.statSync(filePath);
             let fileSizeInBytes = fileStats.size;
             pageData["@_ImageSize"] = fileSizeInBytes;
+            const sharp = require("sharp");
             const metadata = await sharp(filePath).metadata();
             pageData["@_ImageWidth"] = metadata.width;
             pageData["@_ImageHeight"] = metadata.height;
@@ -1645,6 +1123,180 @@ async function processImages(inputFilePath) {
     );
   } catch (error) {
     stopError(error);
+  }
+}
+
+async function processImages({ imgFilePaths, resizeNeeded, imageOpsNeeded }) {
+  try {
+    // NOTE: I started looking into parallelizing this using workers but given
+    // that, as I understand it, sharp already uses concurrency via libvips, I
+    // decided to leave it like this.
+    const sharp = require("sharp");
+    sharp.cache(false);
+    if (
+      resizeNeeded ||
+      imageOpsNeeded ||
+      g_uiSelectedOptions.outputFormat === FileExtension.PDF ||
+      g_uiSelectedOptions.outputFormat === FileExtension.EPUB ||
+      g_uiSelectedOptions.outputImageFormat != FileExtension.NOT_SET
+    ) {
+      for (let index = 0; index < imgFilePaths.length; index++) {
+        if (g_cancel === true) {
+          stopCancel();
+          return false;
+        }
+        let filePath = imgFilePaths[index];
+        let fileFolderPath = path.dirname(filePath);
+        let fileName = path.basename(filePath, path.extname(filePath));
+        let tmpFilePath = path.join(
+          fileFolderPath,
+          fileName + "." + FileExtension.TMP
+        );
+        let pipeline;
+        let saveToFile = false;
+        let newFilePath = filePath;
+        // RESIZE /////////////////////////////////////////////////
+        if (resizeNeeded) {
+          saveToFile = true;
+          if (!pipeline) pipeline = sharp(filePath);
+          if (g_uiSelectedOptions.outputImageScaleOption === "1") {
+            pipeline.resize({
+              height: parseInt(g_uiSelectedOptions.outputImageScaleHeight),
+              withoutEnlargement: true,
+            });
+          } else if (g_uiSelectedOptions.outputImageScaleOption === "2") {
+            pipeline.resize({
+              width: parseInt(g_uiSelectedOptions.outputImageScaleWidth),
+              withoutEnlargement: true,
+            });
+          } else {
+            // scale
+            let data = await sharp(filePath).metadata();
+            pipeline.resize(
+              Math.round(
+                data.width *
+                  (g_uiSelectedOptions.outputImageScalePercentage / 100)
+              )
+            );
+          }
+        }
+        // IMAGE OPS //////////////////////////////////////////////
+        if (imageOpsNeeded) {
+          saveToFile = true;
+          if (!pipeline) pipeline = sharp(filePath);
+          let ops = {};
+          if (g_uiSelectedOptions.outputBrightnessApply) {
+            let value = parseFloat(
+              g_uiSelectedOptions.outputBrightnessMultiplier
+            );
+            if (value <= 0) value = 0.1;
+            ops["brightness"] = value;
+          }
+          if (g_uiSelectedOptions.outputSaturationApply) {
+            let value = parseFloat(
+              g_uiSelectedOptions.outputSaturationMultiplier
+            );
+            if (value <= 0) value = 0.001;
+            ops["saturation"] = value;
+          }
+          pipeline.modulate(ops);
+        }
+        // CHANGE FORMAT /////////////////////////////////////////////
+        if (
+          g_uiSelectedOptions.outputFormat === FileExtension.PDF ||
+          g_uiSelectedOptions.outputFormat === FileExtension.EPUB ||
+          g_uiSelectedOptions.outputImageFormat != FileExtension.NOT_SET
+        ) {
+          let imageFormat = g_uiSelectedOptions.outputImageFormat;
+          if (g_uiSelectedOptions.outputFormat === FileExtension.PDF) {
+            // change to a format compatible with pdfkit if needed
+            if (
+              imageFormat === FileExtension.WEBP ||
+              imageFormat === FileExtension.AVIF ||
+              (imageFormat === FileExtension.NOT_SET &&
+                !fileUtils.hasPdfKitCompatibleImageExtension(filePath))
+            ) {
+              imageFormat = FileExtension.JPG;
+            }
+          }
+          if (
+            g_uiSelectedOptions.outputFormat === FileExtension.EPUB &&
+            g_uiSelectedOptions.outputEpubCreationImageFormat ===
+              "core-media-types-only"
+          ) {
+            // change to a format supported by the epub specification if needed
+            if (
+              imageFormat === FileExtension.WEBP ||
+              imageFormat === FileExtension.AVIF ||
+              (imageFormat === FileExtension.NOT_SET &&
+                !fileUtils.hasEpubSupportedImageExtension(filePath))
+            ) {
+              imageFormat = FileExtension.JPG;
+            }
+          }
+          if (imageFormat != FileExtension.NOT_SET) {
+            saveToFile = true;
+            if (!pipeline) pipeline = sharp(filePath);
+            if (imageFormat === FileExtension.JPG) {
+              pipeline.jpeg({
+                quality: parseInt(
+                  g_uiSelectedOptions.outputImageFormatParams.jpgQuality
+                ),
+                mozjpeg: g_uiSelectedOptions.outputImageFormatParams.jpgMozjpeg,
+              });
+            } else if (imageFormat === FileExtension.PNG) {
+              if (
+                parseInt(
+                  g_uiSelectedOptions.outputImageFormatParams.pngQuality
+                ) < 100
+              ) {
+                pipeline.png({
+                  quality: parseInt(
+                    g_uiSelectedOptions.outputImageFormatParams.pngQuality
+                  ),
+                });
+              } else {
+                pipeline.png();
+              }
+            } else if (imageFormat === FileExtension.WEBP) {
+              pipeline.webp({
+                quality: parseInt(
+                  g_uiSelectedOptions.outputImageFormatParams.webpQuality
+                ),
+              });
+            } else if (imageFormat === FileExtension.AVIF) {
+              pipeline.avif({
+                quality: parseInt(
+                  g_uiSelectedOptions.outputImageFormatParams.avifQuality
+                ),
+              });
+            }
+            newFilePath = path.join(
+              fileFolderPath,
+              fileName + "." + imageFormat
+            );
+          }
+        }
+        // SAVE TO FILE ///////////////////////////////////////////
+        if (saveToFile && pipeline) {
+          updateModalLogText(
+            _("tool-shared-modal-log-converting-image") +
+              ": " +
+              (index + 1) +
+              " / " +
+              imgFilePaths.length
+          );
+          await pipeline.withMetadata().toFile(tmpFilePath);
+          fs.unlinkSync(filePath);
+          fileUtils.moveFile(tmpFilePath, newFilePath);
+          imgFilePaths[index] = newFilePath;
+        }
+      } // end for
+    }
+    return true;
+  } catch (error) {
+    stopError(error);
+    return false;
   }
 }
 

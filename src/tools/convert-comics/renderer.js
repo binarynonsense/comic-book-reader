@@ -796,7 +796,7 @@ function initOnIpcCallbacks() {
   on("file-images-extracted", () => {
     if (g_mode === ToolMode.CONVERT) {
       // convert tool
-      sendIpcToMain("process-images", g_inputFilePath);
+      sendIpcToMain("process-content", g_inputFilePath);
     } else {
       // create tool
       if (
@@ -804,7 +804,7 @@ function initOnIpcCallbacks() {
         g_inputFilesIndex === g_inputFiles.length - 1
       ) {
         // all done - resize and make file
-        sendIpcToMain("process-images", g_inputFilePath);
+        sendIpcToMain("process-content", g_inputFilePath);
       } else {
         onStartNextFile();
       }
