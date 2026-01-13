@@ -1,8 +1,6 @@
 {
   "@metadata": {
-    "authors": [
-      "Álvaro"
-    ],
+    "authors": ["Álvaro"],
     "last-updated": "2025-12-27",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.14.0",
@@ -500,6 +498,7 @@
   "tool-shared-modal-log-warning-comicinfoxml": "Advertencia: No se pudieron actualizar los contenidos de ComicInfo.xml",
   "tool-shared-modal-log-generating-new-file": "Generando nuevo archivo",
   "tool-shared-modal-log-generating-new-files": "Generando nuevos archivos",
+  "tool-shared-modal-log-total-time": "Tiempo total",
   "tool-shared-modal-log-failed-conversion": "No se pudo convertir el archivo",
   "tool-shared-modal-log-failed-extraction": "No se pudo extraer el archivo",
   "tool-shared-modal-log-failed-creation": "No se pudo crear el archivo",

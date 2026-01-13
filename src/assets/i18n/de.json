@@ -500,6 +500,7 @@
   "tool-shared-modal-log-warning-comicinfoxml": "Warnung: konnte den Inhalt von ComicInfo.xml nicht aktualisieren",
   "tool-shared-modal-log-generating-new-file": "Generiere neue Datei",
   "tool-shared-modal-log-generating-new-files": "Generiere neue Dateien",
+  "[NEEDS TRANSLATION]tool-shared-modal-log-total-time": "Total time",
   "tool-shared-modal-log-failed-conversion": "Konnte die Datei nicht konvertieren",
   "tool-shared-modal-log-failed-extraction": "Konnte die Datei nicht extrahieren",
   "tool-shared-modal-log-failed-creation": "Konnte die Datei nicht erstellen",
