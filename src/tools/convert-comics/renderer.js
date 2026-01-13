@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2025 Álvaro García
+ * Copyright 2020-2026 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -47,14 +47,23 @@ let g_localizedTexts = {};
 
 let g_uiSelectedOptions = {};
 
+let g_defaultImageWorkers;
+
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
 let g_isInitialized = false;
 
-function init(mode, outputFolderPath, canEditRars, loadedOptions) {
+function init(
+  mode,
+  outputFolderPath,
+  canEditRars,
+  loadedOptions,
+  defaultImageWorkers
+) {
   g_mode = mode;
+  g_defaultImageWorkers = defaultImageWorkers;
   if (!g_isInitialized) {
     // things to start only once go here
     g_isInitialized = true;
@@ -231,7 +240,29 @@ function init(mode, outputFolderPath, canEditRars, loadedOptions) {
 
   toolsShared.initSliders();
 
-  // conversion / creation
+  // image processing //
+
+  const imageMultithreadingSelect = document.getElementById(
+    "tool-cc-imageprocessing-multithreading-method-select"
+  );
+  imageMultithreadingSelect.addEventListener("change", (event) => {
+    updateImageMultithreadingUI();
+    updateColumnsHeight();
+  });
+
+  const imageMultithreadingWorkersInput = document.getElementById(
+    "tool-cc-imageprocessing-multithreading-numworkers-input"
+  );
+  if (imageMultithreadingWorkersInput.value <= 0) {
+    imageMultithreadingWorkersInput.value = g_defaultImageWorkers;
+  }
+  imageMultithreadingWorkersInput.addEventListener("change", (event) => {
+    if (imageMultithreadingWorkersInput.value <= 0) {
+      imageMultithreadingWorkersInput.value = g_defaultImageWorkers;
+    }
+  });
+
+  // conversion / creation //
   g_outputNameInput = document.querySelector("#tool-cc-output-name-input");
   if (g_mode === ToolMode.CONVERT) {
     document
@@ -323,7 +354,7 @@ function init(mode, outputFolderPath, canEditRars, loadedOptions) {
     });
   });
   ////////////////////////////////////////
-  initOptions(outputFolderPath, loadedOptions);
+  initOptions(outputFolderPath, loadedOptions, defaultImageWorkers);
   // initOptions calls checkValidData(); -> calls updateColumnsHeight();
 }
 
@@ -352,10 +383,16 @@ function switchSection(id) {
         .getElementById("tool-cc-output-options-section-div")
         .classList.remove("set-display-none");
       document
+        .getElementById("tool-cc-imageprocessing-options-section-div")
+        .classList.remove("set-display-none");
+      document
         .getElementById("tool-cc-advanced-input-options-section-div")
         .classList.add("set-display-none");
       document
         .getElementById("tool-cc-advanced-output-options-section-div")
+        .classList.add("set-display-none");
+      document
+        .getElementById("tool-cc-advanced-imageprocessing-options-section-div")
         .classList.add("set-display-none");
       document
         .getElementById("tool-cc-settings-section-div")
@@ -380,10 +417,16 @@ function switchSection(id) {
         .getElementById("tool-cc-output-options-section-div")
         .classList.add("set-display-none");
       document
+        .getElementById("tool-cc-imageprocessing-options-section-div")
+        .classList.add("set-display-none");
+      document
         .getElementById("tool-cc-advanced-input-options-section-div")
         .classList.remove("set-display-none");
       document
         .getElementById("tool-cc-advanced-output-options-section-div")
+        .classList.remove("set-display-none");
+      document
+        .getElementById("tool-cc-advanced-imageprocessing-options-section-div")
         .classList.remove("set-display-none");
       document
         .getElementById("tool-cc-settings-section-div")
@@ -408,10 +451,16 @@ function switchSection(id) {
         .getElementById("tool-cc-output-options-section-div")
         .classList.add("set-display-none");
       document
+        .getElementById("tool-cc-imageprocessing-options-section-div")
+        .classList.add("set-display-none");
+      document
         .getElementById("tool-cc-advanced-input-options-section-div")
         .classList.add("set-display-none");
       document
         .getElementById("tool-cc-advanced-output-options-section-div")
+        .classList.add("set-display-none");
+      document
+        .getElementById("tool-cc-advanced-imageprocessing-options-section-div")
         .classList.add("set-display-none");
       document
         .getElementById("tool-cc-settings-section-div")
@@ -518,6 +567,19 @@ function updateUISelectedOptions() {
   g_uiSelectedOptions.outputSaturationMultiplier = document.querySelector(
     "#tool-cc-imageops-saturation-input"
   ).value;
+
+  // advanced image operations
+
+  g_uiSelectedOptions.imageProcessingMultithreadingMethod =
+    document.getElementById(
+      "tool-cc-imageprocessing-multithreading-method-select"
+    ).value;
+  g_uiSelectedOptions.imageProcessingNumWorkers = document.getElementById(
+    "tool-cc-imageprocessing-multithreading-numworkers-input"
+  ).value;
+  g_uiSelectedOptions.imageProcessingSharpConcurrency = document.getElementById(
+    "tool-cc-imageprocessing-multithreading-sharpconcurrency-input"
+  ).value;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -547,6 +609,22 @@ function updateFolderOptionUI() {
       outputFolderOpenButton.classList.add("set-display-none");
       updateColumnsHeight();
     }
+  }
+}
+
+function updateImageMultithreadingUI() {
+  const imageMultithreadingSelect = document.getElementById(
+    "tool-cc-imageprocessing-multithreading-method-select"
+  );
+  const method0Div = document.getElementById(
+    "tool-cc-imageprocessing-multithreading-method-0-div"
+  );
+  if (imageMultithreadingSelect.value === "0") {
+    method0Div.classList.remove("set-display-none");
+    updateColumnsHeight();
+  } else {
+    method0Div.classList.add("set-display-none");
+    updateColumnsHeight();
   }
 }
 
@@ -956,6 +1034,7 @@ function initOnIpcCallbacks() {
 ///////////////////////////////////////////////////////////////////////////////
 
 function checkValidData() {
+  updateImageMultithreadingUI();
   updateImageOpsUI();
   updateFolderOptionUI();
   updateOutputFolderUI();

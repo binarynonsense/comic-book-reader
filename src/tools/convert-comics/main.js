@@ -14,6 +14,7 @@ const {
 const fs = require("fs");
 const path = require("path");
 const core = require("../../core/main");
+const os = require("os");
 const { _ } = require("../../shared/main/i18n");
 const localization = require("./main-localization");
 
@@ -86,7 +87,8 @@ exports.open = async function (options) {
     //   : appUtils.getDesktopFolderPath(),
     appUtils.getDesktopFolderPath(),
     settings.canEditRars(),
-    loadedOptions
+    loadedOptions,
+    Math.max(1, Math.floor(os.cpus().length / 2))
   );
 
   updateLocalizedText();
@@ -1027,14 +1029,29 @@ async function processContent(inputFilePath) {
       stopCancel();
       return;
     }
-    if (
-      !(await processImages({
-        imgFilePaths,
-        resizeNeeded,
-        imageOpsNeeded,
-      }))
-    )
-      return;
+    const processingMethod = parseInt(
+      g_uiSelectedOptions.imageProcessingMultithreadingMethod
+    );
+    if (processingMethod === 1) {
+      if (
+        !(await processImages({
+          imgFilePaths,
+          resizeNeeded,
+          imageOpsNeeded,
+        }))
+      )
+        return;
+    } else {
+      // 0
+      if (
+        !(await processImagesWithWorkers({
+          imgFilePaths,
+          resizeNeeded,
+          imageOpsNeeded,
+        }))
+      )
+        return;
+    }
     ///////////////////////////////////////////////
     // UPDATE COMIC INFO //////////////////////////
     ///////////////////////////////////////////////
@@ -1131,8 +1148,6 @@ async function processImages({ imgFilePaths, resizeNeeded, imageOpsNeeded }) {
     // NOTE: I started looking into parallelizing this using workers but given
     // that, as I understand it, sharp already uses concurrency via libvips, I
     // decided to leave it like this.
-    const sharp = require("sharp");
-    sharp.cache(false);
     if (
       resizeNeeded ||
       imageOpsNeeded ||
@@ -1140,6 +1155,9 @@ async function processImages({ imgFilePaths, resizeNeeded, imageOpsNeeded }) {
       g_uiSelectedOptions.outputFormat === FileExtension.EPUB ||
       g_uiSelectedOptions.outputImageFormat != FileExtension.NOT_SET
     ) {
+      const sharp = require("sharp");
+      sharp.concurrency(0);
+      sharp.cache(false);
       for (let index = 0; index < imgFilePaths.length; index++) {
         if (g_cancel === true) {
           stopCancel();
@@ -1298,6 +1316,114 @@ async function processImages({ imgFilePaths, resizeNeeded, imageOpsNeeded }) {
     stopError(error);
     return false;
   }
+}
+
+async function processImagesWithWorkers({
+  imgFilePaths,
+  resizeNeeded,
+  imageOpsNeeded,
+}) {
+  return new Promise((resolve) => {
+    if (
+      resizeNeeded ||
+      imageOpsNeeded ||
+      g_uiSelectedOptions.outputFormat === FileExtension.PDF ||
+      g_uiSelectedOptions.outputFormat === FileExtension.EPUB ||
+      g_uiSelectedOptions.outputImageFormat != FileExtension.NOT_SET
+    ) {
+      const { Worker } = require("worker_threads");
+
+      // process.env.UV_THREADPOOL_SIZE = os.cpus().length;
+
+      let maxWorkers = parseInt(g_uiSelectedOptions.imageProcessingNumWorkers);
+      if (!maxWorkers || maxWorkers <= 0)
+        maxWorkers = Math.max(1, Math.floor(os.cpus().length / 2));
+      let sharpConcurrency = parseInt(
+        g_uiSelectedOptions.imageProcessingSharpConcurrency
+      );
+
+      if (!sharpConcurrency || sharpConcurrency < 0) sharpConcurrency = 1;
+      const sharp = require("sharp");
+      sharp.concurrency(sharpConcurrency);
+      sharp.cache(false);
+
+      const workers = [];
+      const workQueue = imgFilePaths.map((filePath, index) => ({
+        id: index,
+        filePath,
+      }));
+
+      let activeWorkers = 0;
+      let hadErrors = false;
+
+      for (let i = 0; i < maxWorkers; i++) {
+        const worker = new Worker(
+          path.join(__dirname, "main-worker-thread.js")
+        );
+        worker.on("message", (msg) => {
+          if (msg.type === "done") {
+            activeWorkers--;
+            // refresh filePath in case it was changed due to format conversion
+            imgFilePaths[msg.id] = msg.filePath;
+          }
+          if (msg.type === "error") {
+            log.error(`worker error on image #${msg.id}: ${msg.error}`);
+            hadErrors = true;
+            activeWorkers--;
+          }
+          if (!g_cancel) processNextImage(worker);
+          checkForCompletion();
+        });
+        worker.on("error", (error) => {
+          log.error("worker error:", error);
+          hadErrors = true;
+          activeWorkers--;
+          checkForCompletion();
+        });
+        worker.on("exit", (code) => {
+          log.editor(`worker #${i} exited with code: ${code}`);
+        });
+        workers.push(worker);
+        processNextImage(worker);
+      }
+
+      ///////
+
+      function processNextImage(worker) {
+        if (g_cancel || workQueue.length === 0) return;
+        const job = workQueue.shift();
+        activeWorkers++;
+        updateModalLogText(
+          _("tool-shared-modal-log-converting-image") +
+            ": " +
+            (job.id + 1) +
+            " / " +
+            imgFilePaths.length
+        );
+        worker.postMessage({
+          type: "process",
+          id: job.id,
+          filePath: job.filePath,
+          resizeNeeded,
+          imageOpsNeeded,
+          uiOptions: g_uiSelectedOptions,
+        });
+      }
+
+      function checkForCompletion() {
+        if (activeWorkers === 0 && (workQueue.length === 0 || g_cancel)) {
+          shutdownAllWorkers();
+          resolve({
+            state: hadErrors ? "error" : g_cancel ? "cancelled" : "success",
+          });
+        }
+      }
+
+      function shutdownAllWorkers() {
+        workers.forEach((worker) => worker.postMessage({ type: "shutdown" }));
+      }
+    }
+  });
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -115,7 +115,42 @@
             ></option>
           </select>
         </label>
-        <!--  -->
+
+        <label
+          ><span id="tool-cc-output-folder-text"></span
+          ><i
+            id="tool-cc-tooltip-output-folder"
+            class="fas fa-question-circle tools-tooltip-button set-display-none"
+            title="tooltip"
+          ></i>
+          <select id="tool-cc-output-folder-option-select"></select>
+          <ul id="tool-cc-output-folder" class="tools-collection-ul"></ul>
+        </label>
+        <div
+          class="tool-shared-columns-parent tool-shared-columns-parent-extra-margin-bottom tools-scale-div"
+        >
+          <button
+            id="tool-cc-change-folder-button"
+            class="tool-shared-columns-50"
+          >
+            <span id="tool-cc-change-folder-button-text"></span>
+          </button>
+          <button
+            id="tool-cc-open-folder-button"
+            class="tool-shared-columns-50"
+          >
+            <span id="tool-cc-open-folder-button-text"></span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- image processing -->
+    <div
+      id="tool-cc-imageprocessing-options-section-div"
+      class="tools-columns-right-section"
+    >
+      <h3><span id="tool-cc-imageprocessing-options-text"></span></h3>
+      <div class="tools-columns-right-subsection">
         <label
           ><span id="tool-cc-output-image-scale-text"></span>
           <i
@@ -181,33 +216,6 @@
           ><span id="tool-cc-output-image-format-text"></span>
           <select id="tool-cc-output-image-format-select"></select>
         </label>
-
-        <label
-          ><span id="tool-cc-output-folder-text"></span
-          ><i
-            id="tool-cc-tooltip-output-folder"
-            class="fas fa-question-circle tools-tooltip-button set-display-none"
-            title="tooltip"
-          ></i>
-          <select id="tool-cc-output-folder-option-select"></select>
-          <ul id="tool-cc-output-folder" class="tools-collection-ul"></ul>
-        </label>
-        <div
-          class="tool-shared-columns-parent tool-shared-columns-parent-extra-margin-bottom tools-scale-div"
-        >
-          <button
-            id="tool-cc-change-folder-button"
-            class="tool-shared-columns-50"
-          >
-            <span id="tool-cc-change-folder-button-text"></span>
-          </button>
-          <button
-            id="tool-cc-open-folder-button"
-            class="tool-shared-columns-50"
-          >
-            <span id="tool-cc-open-folder-button-text"></span>
-          </button>
-        </div>
       </div>
     </div>
     <!-- advanced input -->
@@ -268,6 +276,7 @@
             min="1"
           />
         </label>
+
         <label>
           <span id="tool-cc-password-text"></span>
           <i
@@ -276,33 +285,6 @@
             title="tooltip"
           ></i>
           <input id="tool-cc-password-input" type="text" />
-        </label>
-
-        <!-- TODO: don't use inline css / improve layout -->
-        <label><span id="tool-cc-imageops-apply-text"></span> </label>
-        <label class="tools-checkbox-container"
-          ><input type="checkbox" id="tool-cc-imageops-brightness-checkbox" />
-          <span id="tool-cc-imageops-brightness-text"></span
-          ><input
-            id="tool-cc-imageops-brightness-input"
-            type="number"
-            step="0.5"
-            min="0"
-            value="1"
-            style="width: 100px"
-          />
-        </label>
-        <label class="tools-checkbox-container"
-          ><input type="checkbox" id="tool-cc-imageops-saturation-checkbox" />
-          <span id="tool-cc-imageops-saturation-text"></span
-          ><input
-            id="tool-cc-imageops-saturation-input"
-            type="number"
-            step="0.5"
-            min="0"
-            value="1"
-            style="width: 100px"
-          />
         </label>
 
         <label
@@ -350,6 +332,91 @@
             value="base64"
           ></option>
         </select>
+      </div>
+    </div>
+    <!-- advanced image processing -->
+    <div
+      id="tool-cc-advanced-imageprocessing-options-section-div"
+      class="tools-columns-right-section set-display-none"
+    >
+      <h3><span id="tool-cc-advanced-imageprocessing-options-text"></span></h3>
+      <div class="tools-columns-right-subsection">
+        <!-- TODO: don't use inline css / improve layout -->
+        <label><span id="tool-cc-imageops-apply-text"></span> </label>
+        <label class="tools-checkbox-container"
+          ><input type="checkbox" id="tool-cc-imageops-brightness-checkbox" />
+          <span id="tool-cc-imageops-brightness-text"></span
+          ><input
+            id="tool-cc-imageops-brightness-input"
+            type="number"
+            step="0.5"
+            min="0"
+            value="1"
+            style="width: 100px"
+          />
+        </label>
+        <label class="tools-checkbox-container"
+          ><input type="checkbox" id="tool-cc-imageops-saturation-checkbox" />
+          <span id="tool-cc-imageops-saturation-text"></span
+          ><input
+            id="tool-cc-imageops-saturation-input"
+            type="number"
+            step="0.5"
+            min="0"
+            value="1"
+            style="width: 100px"
+          />
+        </label>
+        <!--  -->
+        <label
+          ><span id="tool-cc-imageprocessing-multithreading-method-text"></span>
+          <select id="tool-cc-imageprocessing-multithreading-method-select">
+            <option
+              id="tool-cc-imageprocessing-multithreading-method-0-text"
+              value="0"
+              selected
+            ></option>
+            <option
+              id="tool-cc-imageprocessing-multithreading-method-1-text"
+              value="1"
+            ></option></select
+        ></label>
+        <!-- TODO: don't use inline css / improve layout -->
+        <div
+          class="tool-shared-columns-parent"
+          style="margin-bottom: 40px"
+          id="tool-cc-imageprocessing-multithreading-method-0-div"
+        >
+          <div class="tool-shared-columns-50">
+            <label
+              ><span
+                id="tool-cc-imageprocessing-multithreading-numworkers-text"
+              ></span>
+              <input
+                id="tool-cc-imageprocessing-multithreading-numworkers-input"
+                type="number"
+                step="1"
+                min="1"
+                value="-1"
+              />
+            </label>
+          </div>
+          <div class="tool-shared-columns-50">
+            <label
+              ><span
+                id="tool-cc-imageprocessing-multithreading-sharpconcurrency-text"
+                >sharp.concurrency</span
+              >
+              <input
+                id="tool-cc-imageprocessing-multithreading-sharpconcurrency-input"
+                type="number"
+                step="1"
+                min="1"
+                value="1"
+              />
+            </label>
+          </div>
+        </div>
 
         <label class="tools-h3-extra-margin-top"
           ><span id="tool-cc-jpg-quality-text">JPG: quality</span>

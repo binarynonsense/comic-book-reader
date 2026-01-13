@@ -189,6 +189,11 @@ exports.getLocalization = function (mode) {
     },
     //////////////////////////////////////////////
     {
+      id: "tool-cc-imageprocessing-options-text",
+      text: _("tool-shared-ui-imageprocessing-options"),
+    },
+    //////////////////////////////////////////////
+    {
       id: "tool-cc-advanced-input-options-text",
       text: _("tool-shared-ui-advanced-input-options"),
     },
@@ -215,6 +220,27 @@ exports.getLocalization = function (mode) {
     {
       id: "tool-cc-pdf-extraction-o3-text",
       text: _("tool-shared-ui-pdf-extraction-o3"),
+    },
+    //////////////////////////////////////////////
+    {
+      id: "tool-cc-advanced-imageprocessing-options-text",
+      text: _("tool-shared-ui-advanced-imageprocessing-options"),
+    },
+    {
+      id: "tool-cc-imageprocessing-multithreading-method-text",
+      text: _("tool-shared-ui-imageprocessing-multithreading-method"),
+    },
+    {
+      id: "tool-cc-imageprocessing-multithreading-method-0-text",
+      text: _("tool-shared-ui-imageprocessing-multithreading-method-0"),
+    },
+    {
+      id: "tool-cc-imageprocessing-multithreading-method-1-text",
+      text: _("tool-shared-ui-imageprocessing-multithreading-method-1"),
+    },
+    {
+      id: "tool-cc-imageprocessing-multithreading-numworkers-text",
+      text: _("tool-shared-ui-imageprocessing-multithreading-numworkers"),
     },
     //////////////////////////////////////////////
     {
