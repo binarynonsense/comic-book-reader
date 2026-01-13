@@ -1,6 +1,8 @@
 {
   "@metadata": {
-    "authors": ["Álvaro"],
+    "authors": [
+      "Álvaro"
+    ],
     "last-updated": "2025-12-27",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.14.0",
@@ -353,6 +355,12 @@
   "tool-shared-ui-output-file-same-name-1-exception-1": "Excepto si es el archivo de entrada",
   "tool-shared-ui-output-file-same-name-1-exception-2": "Excepto si está en la lista de entrada",
   "tool-shared-ui-output-file-same-name-2": "No guardar el archivo de salida",
+  "tool-shared-ui-imageprocessing-options": "Opciones de procesado de imagen",
+  "tool-shared-ui-advanced-imageprocessing-options": "Opciones avanzadas de procesado de imagen",
+  "tool-shared-ui-imageprocessing-multithreading-method": "Multitarea",
+  "tool-shared-ui-imageprocessing-multithreading-method-0": "Usar hilos de trabajo",
+  "tool-shared-ui-imageprocessing-multithreading-method-1": "No usar hilos de trabajo",
+  "tool-shared-ui-imageprocessing-multithreading-numworkers": "Número de hilos de trabajo",
   "tool-shared-ui-new-file": "Nuevo Archivo",
   "tool-shared-ui-output-folder": "Carpeta de salida",
   "[NOTE TO TRANSLATORS]tool-shared-ui-output-folder-0": "'Specify one' as in specify an output folder",
