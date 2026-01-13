@@ -1022,35 +1022,40 @@ async function processContent(inputFilePath) {
     ) {
       imageOpsNeeded = true;
     }
-    ///////////////////////////////////////////////
-    // MODIFY IMAGES //////////////////////////////
-    ///////////////////////////////////////////////
     if (g_cancel === true) {
       stopCancel();
       return;
     }
+    ///////////////////////////////////////////////
+    // MODIFY IMAGES //////////////////////////////
+    ///////////////////////////////////////////////
     const processingMethod = parseInt(
       g_uiSelectedOptions.imageProcessingMultithreadingMethod
     );
     if (processingMethod === 1) {
-      if (
-        !(await processImages({
-          imgFilePaths,
-          resizeNeeded,
-          imageOpsNeeded,
-        }))
-      )
+      const result = await processImages({
+        imgFilePaths,
+        resizeNeeded,
+        imageOpsNeeded,
+      });
+      if (result.state === "error") {
+        stopError(result.error);
         return;
+      }
     } else {
-      // 0
-      if (
-        !(await processImagesWithWorkers({
-          imgFilePaths,
-          resizeNeeded,
-          imageOpsNeeded,
-        }))
-      )
+      const result = await processImagesWithWorkers({
+        imgFilePaths,
+        resizeNeeded,
+        imageOpsNeeded,
+      });
+      if (result.state === "error") {
+        stopError(result.error);
         return;
+      }
+    }
+    if (g_cancel === true) {
+      stopCancel();
+      return;
     }
     ///////////////////////////////////////////////
     // UPDATE COMIC INFO //////////////////////////
@@ -1160,8 +1165,7 @@ async function processImages({ imgFilePaths, resizeNeeded, imageOpsNeeded }) {
       sharp.cache(false);
       for (let index = 0; index < imgFilePaths.length; index++) {
         if (g_cancel === true) {
-          stopCancel();
-          return false;
+          return { state: "cancelled" };
         }
         let filePath = imgFilePaths[index];
         let fileFolderPath = path.dirname(filePath);
@@ -1311,10 +1315,9 @@ async function processImages({ imgFilePaths, resizeNeeded, imageOpsNeeded }) {
         }
       } // end for
     }
-    return true;
+    return { state: "success" };
   } catch (error) {
-    stopError(error);
-    return false;
+    return { state: "error", error };
   }
 }
 
@@ -1354,7 +1357,7 @@ async function processImagesWithWorkers({
       }));
 
       let activeWorkers = 0;
-      let hadErrors = false;
+      let error = undefined;
 
       for (let i = 0; i < maxWorkers; i++) {
         const worker = new Worker(
@@ -1365,18 +1368,15 @@ async function processImagesWithWorkers({
             activeWorkers--;
             // refresh filePath in case it was changed due to format conversion
             imgFilePaths[msg.id] = msg.filePath;
-          }
-          if (msg.type === "error") {
-            log.error(`worker error on image #${msg.id}: ${msg.error}`);
-            hadErrors = true;
+          } else if (msg.type === "error") {
+            error = `[WORKER] error on image #${msg.id + 1}: ${msg.error}`;
             activeWorkers--;
           }
-          if (!g_cancel) processNextImage(worker);
+          if (!g_cancel && !error) processNextImage(worker);
           checkForCompletion();
         });
         worker.on("error", (error) => {
-          log.error("worker error:", error);
-          hadErrors = true;
+          error = "[WORKER] " + error;
           activeWorkers--;
           checkForCompletion();
         });
@@ -1411,10 +1411,14 @@ async function processImagesWithWorkers({
       }
 
       function checkForCompletion() {
-        if (activeWorkers === 0 && (workQueue.length === 0 || g_cancel)) {
+        if (
+          activeWorkers === 0 &&
+          (workQueue.length === 0 || g_cancel || error)
+        ) {
           shutdownAllWorkers();
           resolve({
-            state: hadErrors ? "error" : g_cancel ? "cancelled" : "success",
+            state: error ? "error" : g_cancel ? "cancelled" : "success",
+            error,
           });
         }
       }
