@@ -31,6 +31,7 @@ const temp = require("../../shared/main/temp");
 const tools = require("../../shared/main/tools");
 const menuBar = require("../../shared/main/menu-bar");
 const timers = require("../../shared/main/timers");
+const { processImage } = require("./main-process-image");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -1174,148 +1175,20 @@ async function processImages({ imgFilePaths, resizeNeeded, imageOpsNeeded }) {
       if (g_cancel === true) {
         return { state: "cancelled" };
       }
-      let filePath = imgFilePaths[index];
-      let fileFolderPath = path.dirname(filePath);
-      let fileName = path.basename(filePath, path.extname(filePath));
-      let tmpFilePath = path.join(
-        fileFolderPath,
-        fileName + "." + FileExtension.TMP
+      updateModalLogText(
+        _("tool-shared-modal-log-converting-image") +
+          ": " +
+          (index + 1) +
+          " / " +
+          imgFilePaths.length
       );
-      let pipeline;
-      let saveToFile = false;
-      let newFilePath = filePath;
-      // RESIZE /////////////////////////////////////////////////
-      if (resizeNeeded) {
-        saveToFile = true;
-        if (!pipeline) pipeline = sharp(filePath);
-        if (g_uiSelectedOptions.outputImageScaleOption === "1") {
-          pipeline.resize({
-            height: parseInt(g_uiSelectedOptions.outputImageScaleHeight),
-            withoutEnlargement: true,
-          });
-        } else if (g_uiSelectedOptions.outputImageScaleOption === "2") {
-          pipeline.resize({
-            width: parseInt(g_uiSelectedOptions.outputImageScaleWidth),
-            withoutEnlargement: true,
-          });
-        } else {
-          // scale
-          let data = await sharp(filePath).metadata();
-          pipeline.resize(
-            Math.round(
-              data.width *
-                (g_uiSelectedOptions.outputImageScalePercentage / 100)
-            )
-          );
-        }
-      }
-      // IMAGE OPS //////////////////////////////////////////////
-      if (imageOpsNeeded) {
-        saveToFile = true;
-        if (!pipeline) pipeline = sharp(filePath);
-        let ops = {};
-        if (g_uiSelectedOptions.outputBrightnessApply) {
-          let value = parseFloat(
-            g_uiSelectedOptions.outputBrightnessMultiplier
-          );
-          if (value <= 0) value = 0.1;
-          ops["brightness"] = value;
-        }
-        if (g_uiSelectedOptions.outputSaturationApply) {
-          let value = parseFloat(
-            g_uiSelectedOptions.outputSaturationMultiplier
-          );
-          if (value <= 0) value = 0.001;
-          ops["saturation"] = value;
-        }
-        pipeline.modulate(ops);
-      }
-      // CHANGE FORMAT /////////////////////////////////////////////
-      if (
-        g_uiSelectedOptions.outputFormat === FileExtension.PDF ||
-        g_uiSelectedOptions.outputFormat === FileExtension.EPUB ||
-        g_uiSelectedOptions.outputImageFormat != FileExtension.NOT_SET
-      ) {
-        let imageFormat = g_uiSelectedOptions.outputImageFormat;
-        if (g_uiSelectedOptions.outputFormat === FileExtension.PDF) {
-          // change to a format compatible with pdfkit if needed
-          if (
-            imageFormat === FileExtension.WEBP ||
-            imageFormat === FileExtension.AVIF ||
-            (imageFormat === FileExtension.NOT_SET &&
-              !fileUtils.hasPdfKitCompatibleImageExtension(filePath))
-          ) {
-            imageFormat = FileExtension.JPG;
-          }
-        }
-        if (
-          g_uiSelectedOptions.outputFormat === FileExtension.EPUB &&
-          g_uiSelectedOptions.outputEpubCreationImageFormat ===
-            "core-media-types-only"
-        ) {
-          // change to a format supported by the epub specification if needed
-          if (
-            imageFormat === FileExtension.WEBP ||
-            imageFormat === FileExtension.AVIF ||
-            (imageFormat === FileExtension.NOT_SET &&
-              !fileUtils.hasEpubSupportedImageExtension(filePath))
-          ) {
-            imageFormat = FileExtension.JPG;
-          }
-        }
-        if (imageFormat != FileExtension.NOT_SET) {
-          saveToFile = true;
-          if (!pipeline) pipeline = sharp(filePath);
-          if (imageFormat === FileExtension.JPG) {
-            pipeline.jpeg({
-              quality: parseInt(
-                g_uiSelectedOptions.outputImageFormatParams.jpgQuality
-              ),
-              mozjpeg: g_uiSelectedOptions.outputImageFormatParams.jpgMozjpeg,
-            });
-          } else if (imageFormat === FileExtension.PNG) {
-            if (
-              parseInt(g_uiSelectedOptions.outputImageFormatParams.pngQuality) <
-              100
-            ) {
-              pipeline.png({
-                quality: parseInt(
-                  g_uiSelectedOptions.outputImageFormatParams.pngQuality
-                ),
-              });
-            } else {
-              pipeline.png();
-            }
-          } else if (imageFormat === FileExtension.WEBP) {
-            pipeline.webp({
-              quality: parseInt(
-                g_uiSelectedOptions.outputImageFormatParams.webpQuality
-              ),
-            });
-          } else if (imageFormat === FileExtension.AVIF) {
-            pipeline.avif({
-              quality: parseInt(
-                g_uiSelectedOptions.outputImageFormatParams.avifQuality
-              ),
-            });
-          }
-          newFilePath = path.join(fileFolderPath, fileName + "." + imageFormat);
-        }
-      }
-      // SAVE TO FILE ///////////////////////////////////////////
-      if (saveToFile && pipeline) {
-        updateModalLogText(
-          _("tool-shared-modal-log-converting-image") +
-            ": " +
-            (index + 1) +
-            " / " +
-            imgFilePaths.length
-        );
-        await pipeline.withMetadata().toFile(tmpFilePath);
-        fs.unlinkSync(filePath);
-        fileUtils.moveFile(tmpFilePath, newFilePath);
-        imgFilePaths[index] = newFilePath;
-      }
+      const result = await processImage(
+        imgFilePaths[index],
+        resizeNeeded,
+        imageOpsNeeded,
+        g_uiSelectedOptions
+      );
+      imgFilePaths[index] = result.filePath;
     } // end for
     return { state: "success" };
   } catch (error) {
