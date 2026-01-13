@@ -1518,7 +1518,7 @@ function goToPage(pageIndex, scrollBarPos = 0) {
         g_workerPage = fork(path.join(__dirname, "worker-page.js"));
       }
       g_workerPage.on("message", (message) => {
-        log.debug(`page load time: ${timers.stop("workerPage")}s`);
+        log.debug(`page load time: ${timers.stop("workerPage").toFixed(2)}s`);
         g_workerPage.kill(); // kill it after one use
         if (message[0] === true) {
           sendIpcToRenderer(

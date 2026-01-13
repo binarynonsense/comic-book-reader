@@ -398,7 +398,7 @@ if (!gotTheLock) {
         }
       }
       g_mainWindow.show();
-      log.debug(`start-up time: ${timers.stop("startup")}s`);
+      log.debug(`start-up time: ${timers.stop("startup").toFixed(2)}s`);
     });
 
     g_mainWindow.on("resize", function () {

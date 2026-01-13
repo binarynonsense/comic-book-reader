@@ -71,7 +71,7 @@ async function extractImages(
       send("conversionExtractImages: invalid file type");
       return;
     }
-    let time = `${timers.stop("extractImages")}s`;
+    let time = `${timers.stop("extractImages").toFixed(2)}s`;
     if (result) {
       if (result.success) {
         send({ success: true, time: time });
@@ -92,7 +92,7 @@ async function extractImages(
       }
     }
   } catch (error) {
-    timers.stop("extractImages");
+    timers.stop("extractImages").toFixed(2);
     send({
       success: false,
       error: error,
@@ -252,9 +252,9 @@ async function createFiles(
             "zip"
           );
         }
-        times.push(`${timers.stop("createFile")}s`);
+        times.push(`${timers.stop("createFile").toFixed(2)}s`);
       } catch (error) {
-        timers.stop("createFile");
+        timers.stop("createFile").toFixed(2);
         throw error;
       }
     }
