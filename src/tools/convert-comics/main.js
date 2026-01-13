@@ -423,7 +423,23 @@ function initOnIpcCallbacks() {
   });
 
   on("end", (wasCanceled, numFiles, numErrors, numAttempted) => {
-    log.debug(`total conversion time: ${timers.stop("convert-comics")}s`);
+    const conversionTime = timers.stop("convert-comics");
+    log.debug(`total conversion time: ${conversionTime.toFixed(2)}s`);
+    if (conversionTime >= 60) {
+      const minutes = Math.floor(conversionTime / 60);
+      const seconds = (conversionTime - minutes * 60).toFixed(0);
+      if (seconds.length < 2) seconds = "0" + seconds;
+      updateModalLogText(
+        `${_("tool-shared-modal-log-total-time")}: ${minutes}m ${seconds}s`
+      );
+    } else {
+      updateModalLogText(
+        `${_("tool-shared-modal-log-total-time")}: ${conversionTime.toFixed(
+          0
+        )}s`
+      );
+    }
+    updateModalLogText("");
     if (!wasCanceled) {
       if (g_mode === ToolMode.CONVERT) {
         sendIpcToRenderer(
