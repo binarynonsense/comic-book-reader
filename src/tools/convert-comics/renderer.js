@@ -1000,18 +1000,6 @@ function initOnIpcCallbacks() {
   });
 
   on("show-result", (failedFilesText) => {
-    // if the full log is huge I also crop it
-    if (fullLogContent.length > 1000000)
-      fullLogContent =
-        "[...]" +
-        fullLogContent.substring(
-          fullLogContent.length - 1000000,
-          fullLogContent.length
-        );
-    modalLog.innerHTML = fullLogContent;
-    modalLog.classList.remove("modal-log-noscrollbar");
-    modalLog.scrollTop = modalLog.scrollHeight;
-
     if (g_failedFilePaths.length > 0) {
       updateLogText(
         "------------ " + failedFilesText + ": ------------\n",
@@ -1021,6 +1009,19 @@ function initOnIpcCallbacks() {
         updateLogText(fileData.path, true);
       });
     }
+
+    // if the full log is huge I also crop it
+    if (g_fullLogContent.length > 1000000) {
+      g_fullLogContent =
+        "[...]" +
+        g_fullLogContent.substring(
+          g_fullLogContent.length - 1000000,
+          g_fullLogContent.length
+        );
+    }
+    g_modalLog.innerHTML = g_fullLogContent;
+    g_modalLog.classList.remove("modal-log-noscrollbar");
+    g_modalLog.scrollTop = g_modalLog.scrollHeight;
 
     const modalButtonCancel = g_openModal.querySelector(
       "#tool-cc-modal-cancel-button"
@@ -1355,9 +1356,9 @@ function getChangedOptions() {
 ///////////////////////////////////////////////////////////////////////////////
 
 let g_openModal;
-let modalLog;
-let partialLogContent = "";
-let fullLogContent = "";
+let g_modalLog;
+let g_partialLogContent = "";
+let g_fullLogContent = "";
 
 export function getOpenModal() {
   return g_openModal;
@@ -1415,8 +1416,8 @@ function showLogModal() {
     ],
   });
 
-  modalLog = g_openModal.querySelector(".modal-log");
-  modalLog.classList.add("modal-log-noscrollbar");
+  g_modalLog = g_openModal.querySelector(".modal-log");
+  g_modalLog.classList.add("modal-log-noscrollbar");
 }
 
 function updateModalTitleText(text) {
@@ -1430,20 +1431,20 @@ function updateInfoText(text) {
 function updateLogText(text, append = true) {
   if (g_openModal) {
     if (append) {
-      partialLogContent += "\n" + text;
-      fullLogContent += "\n" + text;
+      g_partialLogContent += "\n" + text;
+      g_fullLogContent += "\n" + text;
     } else {
-      partialLogContent = text;
-      fullLogContent = text;
+      g_partialLogContent = text;
+      g_fullLogContent = text;
     }
     // show only enough to fill the viewable area
-    if (partialLogContent.length > 2000)
-      partialLogContent = partialLogContent.substring(
-        partialLogContent.length - 1500,
-        partialLogContent.length
+    if (g_partialLogContent.length > 2000)
+      g_partialLogContent = g_partialLogContent.substring(
+        g_partialLogContent.length - 1500,
+        g_partialLogContent.length
       );
-    modalLog.innerHTML = partialLogContent;
-    modalLog.scrollTop = modalLog.scrollHeight;
+    g_modalLog.innerHTML = g_partialLogContent;
+    g_modalLog.scrollTop = g_modalLog.scrollHeight;
   }
 }
 
