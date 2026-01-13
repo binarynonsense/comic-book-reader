@@ -1165,9 +1165,6 @@ async function processContent(inputFilePath) {
 
 async function processImages({ imgFilePaths, resizeNeeded, imageOpsNeeded }) {
   try {
-    // NOTE: I started looking into parallelizing this using workers but given
-    // that, as I understand it, sharp already uses concurrency via libvips, I
-    // decided to leave it like this.
     const sharp = require("sharp");
     sharp.concurrency(0);
     sharp.cache(false);
