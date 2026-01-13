@@ -1036,34 +1036,40 @@ async function processContent(inputFilePath) {
       g_uiSelectedOptions.outputFormat === FileExtension.EPUB ||
       g_uiSelectedOptions.outputImageFormat != FileExtension.NOT_SET
     ) {
-      const processingMethod = parseInt(
-        g_uiSelectedOptions.imageProcessingMultithreadingMethod
-      );
-      if (processingMethod === 1) {
-        const result = await processImages({
-          imgFilePaths,
-          resizeNeeded,
-          imageOpsNeeded,
-        });
-        if (result.state === "error") {
-          stopError(result.error);
-          return;
-        }
-      } else {
-        const result = await processImagesWithWorkers({
-          imgFilePaths,
-          resizeNeeded,
-          imageOpsNeeded,
-        });
-        if (result.state === "error") {
-          stopError(result.error);
-          return;
-        }
+      switch (
+        parseInt(g_uiSelectedOptions.imageProcessingMultithreadingMethod)
+      ) {
+        case 1:
+          {
+            const result = await processImages({
+              imgFilePaths,
+              resizeNeeded,
+              imageOpsNeeded,
+            });
+            if (result.state === "error") {
+              stopError(result.error);
+              return;
+            }
+          }
+          break;
+        default:
+          {
+            const result = await processImagesWithWorkers({
+              imgFilePaths,
+              resizeNeeded,
+              imageOpsNeeded,
+            });
+            if (result.state === "error") {
+              stopError(result.error);
+              return;
+            }
+          }
+          break;
       }
-    }
-    if (g_cancel === true) {
-      stopCancel();
-      return;
+      if (g_cancel === true) {
+        stopCancel();
+        return;
+      }
     }
     ///////////////////////////////////////////////
     // UPDATE COMIC INFO //////////////////////////
