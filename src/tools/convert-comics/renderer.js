@@ -253,13 +253,15 @@ function init(
   const imageMultithreadingWorkersInput = document.getElementById(
     "tool-cc-imageprocessing-multithreading-numworkers-input"
   );
-  if (imageMultithreadingWorkersInput.value <= 0) {
-    imageMultithreadingWorkersInput.value = g_defaultImageWorkers;
-  }
   imageMultithreadingWorkersInput.addEventListener("change", (event) => {
-    if (imageMultithreadingWorkersInput.value <= 0) {
-      imageMultithreadingWorkersInput.value = g_defaultImageWorkers;
-    }
+    updateImageMultithreadingUI();
+  });
+
+  const imageMultithreadingSharpConcInput = document.getElementById(
+    "tool-cc-imageprocessing-multithreading-sharpconcurrency-input"
+  );
+  imageMultithreadingSharpConcInput.addEventListener("change", (event) => {
+    updateImageMultithreadingUI();
   });
 
   // conversion / creation //
@@ -625,6 +627,20 @@ function updateImageMultithreadingUI() {
   } else {
     method0Div.classList.add("set-display-none");
     updateColumnsHeight();
+  }
+  //
+  const imageMultithreadingWorkersInput = document.getElementById(
+    "tool-cc-imageprocessing-multithreading-numworkers-input"
+  );
+  if (imageMultithreadingWorkersInput.value <= 0) {
+    imageMultithreadingWorkersInput.value = g_defaultImageWorkers;
+  }
+  //
+  const imageMultithreadingSharpConcInput = document.getElementById(
+    "tool-cc-imageprocessing-multithreading-sharpconcurrency-input"
+  );
+  if (imageMultithreadingSharpConcInput.value < 0) {
+    imageMultithreadingSharpConcInput.value = 1;
   }
 }
 
