@@ -1422,6 +1422,10 @@ async function processImagesWithWorkers({
       function shutdownAllWorkers() {
         workers.forEach((worker) => worker.postMessage({ type: "shutdown" }));
       }
+    } else {
+      resolve({
+        state: "success",
+      });
     }
   });
 }
