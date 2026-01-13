@@ -1029,28 +1029,36 @@ async function processContent(inputFilePath) {
     ///////////////////////////////////////////////
     // MODIFY IMAGES //////////////////////////////
     ///////////////////////////////////////////////
-    const processingMethod = parseInt(
-      g_uiSelectedOptions.imageProcessingMultithreadingMethod
-    );
-    if (processingMethod === 1) {
-      const result = await processImages({
-        imgFilePaths,
-        resizeNeeded,
-        imageOpsNeeded,
-      });
-      if (result.state === "error") {
-        stopError(result.error);
-        return;
-      }
-    } else {
-      const result = await processImagesWithWorkers({
-        imgFilePaths,
-        resizeNeeded,
-        imageOpsNeeded,
-      });
-      if (result.state === "error") {
-        stopError(result.error);
-        return;
+    if (
+      resizeNeeded ||
+      imageOpsNeeded ||
+      g_uiSelectedOptions.outputFormat === FileExtension.PDF ||
+      g_uiSelectedOptions.outputFormat === FileExtension.EPUB ||
+      g_uiSelectedOptions.outputImageFormat != FileExtension.NOT_SET
+    ) {
+      const processingMethod = parseInt(
+        g_uiSelectedOptions.imageProcessingMultithreadingMethod
+      );
+      if (processingMethod === 1) {
+        const result = await processImages({
+          imgFilePaths,
+          resizeNeeded,
+          imageOpsNeeded,
+        });
+        if (result.state === "error") {
+          stopError(result.error);
+          return;
+        }
+      } else {
+        const result = await processImagesWithWorkers({
+          imgFilePaths,
+          resizeNeeded,
+          imageOpsNeeded,
+        });
+        if (result.state === "error") {
+          stopError(result.error);
+          return;
+        }
       }
     }
     if (g_cancel === true) {
@@ -1153,168 +1161,156 @@ async function processImages({ imgFilePaths, resizeNeeded, imageOpsNeeded }) {
     // NOTE: I started looking into parallelizing this using workers but given
     // that, as I understand it, sharp already uses concurrency via libvips, I
     // decided to leave it like this.
-    if (
-      resizeNeeded ||
-      imageOpsNeeded ||
-      g_uiSelectedOptions.outputFormat === FileExtension.PDF ||
-      g_uiSelectedOptions.outputFormat === FileExtension.EPUB ||
-      g_uiSelectedOptions.outputImageFormat != FileExtension.NOT_SET
-    ) {
-      const sharp = require("sharp");
-      sharp.concurrency(0);
-      sharp.cache(false);
-      for (let index = 0; index < imgFilePaths.length; index++) {
-        if (g_cancel === true) {
-          return { state: "cancelled" };
-        }
-        let filePath = imgFilePaths[index];
-        let fileFolderPath = path.dirname(filePath);
-        let fileName = path.basename(filePath, path.extname(filePath));
-        let tmpFilePath = path.join(
-          fileFolderPath,
-          fileName + "." + FileExtension.TMP
-        );
-        let pipeline;
-        let saveToFile = false;
-        let newFilePath = filePath;
-        // RESIZE /////////////////////////////////////////////////
-        if (resizeNeeded) {
-          saveToFile = true;
-          if (!pipeline) pipeline = sharp(filePath);
-          if (g_uiSelectedOptions.outputImageScaleOption === "1") {
-            pipeline.resize({
-              height: parseInt(g_uiSelectedOptions.outputImageScaleHeight),
-              withoutEnlargement: true,
-            });
-          } else if (g_uiSelectedOptions.outputImageScaleOption === "2") {
-            pipeline.resize({
-              width: parseInt(g_uiSelectedOptions.outputImageScaleWidth),
-              withoutEnlargement: true,
-            });
-          } else {
-            // scale
-            let data = await sharp(filePath).metadata();
-            pipeline.resize(
-              Math.round(
-                data.width *
-                  (g_uiSelectedOptions.outputImageScalePercentage / 100)
-              )
-            );
-          }
-        }
-        // IMAGE OPS //////////////////////////////////////////////
-        if (imageOpsNeeded) {
-          saveToFile = true;
-          if (!pipeline) pipeline = sharp(filePath);
-          let ops = {};
-          if (g_uiSelectedOptions.outputBrightnessApply) {
-            let value = parseFloat(
-              g_uiSelectedOptions.outputBrightnessMultiplier
-            );
-            if (value <= 0) value = 0.1;
-            ops["brightness"] = value;
-          }
-          if (g_uiSelectedOptions.outputSaturationApply) {
-            let value = parseFloat(
-              g_uiSelectedOptions.outputSaturationMultiplier
-            );
-            if (value <= 0) value = 0.001;
-            ops["saturation"] = value;
-          }
-          pipeline.modulate(ops);
-        }
-        // CHANGE FORMAT /////////////////////////////////////////////
-        if (
-          g_uiSelectedOptions.outputFormat === FileExtension.PDF ||
-          g_uiSelectedOptions.outputFormat === FileExtension.EPUB ||
-          g_uiSelectedOptions.outputImageFormat != FileExtension.NOT_SET
-        ) {
-          let imageFormat = g_uiSelectedOptions.outputImageFormat;
-          if (g_uiSelectedOptions.outputFormat === FileExtension.PDF) {
-            // change to a format compatible with pdfkit if needed
-            if (
-              imageFormat === FileExtension.WEBP ||
-              imageFormat === FileExtension.AVIF ||
-              (imageFormat === FileExtension.NOT_SET &&
-                !fileUtils.hasPdfKitCompatibleImageExtension(filePath))
-            ) {
-              imageFormat = FileExtension.JPG;
-            }
-          }
-          if (
-            g_uiSelectedOptions.outputFormat === FileExtension.EPUB &&
-            g_uiSelectedOptions.outputEpubCreationImageFormat ===
-              "core-media-types-only"
-          ) {
-            // change to a format supported by the epub specification if needed
-            if (
-              imageFormat === FileExtension.WEBP ||
-              imageFormat === FileExtension.AVIF ||
-              (imageFormat === FileExtension.NOT_SET &&
-                !fileUtils.hasEpubSupportedImageExtension(filePath))
-            ) {
-              imageFormat = FileExtension.JPG;
-            }
-          }
-          if (imageFormat != FileExtension.NOT_SET) {
-            saveToFile = true;
-            if (!pipeline) pipeline = sharp(filePath);
-            if (imageFormat === FileExtension.JPG) {
-              pipeline.jpeg({
-                quality: parseInt(
-                  g_uiSelectedOptions.outputImageFormatParams.jpgQuality
-                ),
-                mozjpeg: g_uiSelectedOptions.outputImageFormatParams.jpgMozjpeg,
-              });
-            } else if (imageFormat === FileExtension.PNG) {
-              if (
-                parseInt(
-                  g_uiSelectedOptions.outputImageFormatParams.pngQuality
-                ) < 100
-              ) {
-                pipeline.png({
-                  quality: parseInt(
-                    g_uiSelectedOptions.outputImageFormatParams.pngQuality
-                  ),
-                });
-              } else {
-                pipeline.png();
-              }
-            } else if (imageFormat === FileExtension.WEBP) {
-              pipeline.webp({
-                quality: parseInt(
-                  g_uiSelectedOptions.outputImageFormatParams.webpQuality
-                ),
-              });
-            } else if (imageFormat === FileExtension.AVIF) {
-              pipeline.avif({
-                quality: parseInt(
-                  g_uiSelectedOptions.outputImageFormatParams.avifQuality
-                ),
-              });
-            }
-            newFilePath = path.join(
-              fileFolderPath,
-              fileName + "." + imageFormat
-            );
-          }
-        }
-        // SAVE TO FILE ///////////////////////////////////////////
-        if (saveToFile && pipeline) {
-          updateModalLogText(
-            _("tool-shared-modal-log-converting-image") +
-              ": " +
-              (index + 1) +
-              " / " +
-              imgFilePaths.length
+    const sharp = require("sharp");
+    sharp.concurrency(0);
+    sharp.cache(false);
+    for (let index = 0; index < imgFilePaths.length; index++) {
+      if (g_cancel === true) {
+        return { state: "cancelled" };
+      }
+      let filePath = imgFilePaths[index];
+      let fileFolderPath = path.dirname(filePath);
+      let fileName = path.basename(filePath, path.extname(filePath));
+      let tmpFilePath = path.join(
+        fileFolderPath,
+        fileName + "." + FileExtension.TMP
+      );
+      let pipeline;
+      let saveToFile = false;
+      let newFilePath = filePath;
+      // RESIZE /////////////////////////////////////////////////
+      if (resizeNeeded) {
+        saveToFile = true;
+        if (!pipeline) pipeline = sharp(filePath);
+        if (g_uiSelectedOptions.outputImageScaleOption === "1") {
+          pipeline.resize({
+            height: parseInt(g_uiSelectedOptions.outputImageScaleHeight),
+            withoutEnlargement: true,
+          });
+        } else if (g_uiSelectedOptions.outputImageScaleOption === "2") {
+          pipeline.resize({
+            width: parseInt(g_uiSelectedOptions.outputImageScaleWidth),
+            withoutEnlargement: true,
+          });
+        } else {
+          // scale
+          let data = await sharp(filePath).metadata();
+          pipeline.resize(
+            Math.round(
+              data.width *
+                (g_uiSelectedOptions.outputImageScalePercentage / 100)
+            )
           );
-          await pipeline.withMetadata().toFile(tmpFilePath);
-          fs.unlinkSync(filePath);
-          fileUtils.moveFile(tmpFilePath, newFilePath);
-          imgFilePaths[index] = newFilePath;
         }
-      } // end for
-    }
+      }
+      // IMAGE OPS //////////////////////////////////////////////
+      if (imageOpsNeeded) {
+        saveToFile = true;
+        if (!pipeline) pipeline = sharp(filePath);
+        let ops = {};
+        if (g_uiSelectedOptions.outputBrightnessApply) {
+          let value = parseFloat(
+            g_uiSelectedOptions.outputBrightnessMultiplier
+          );
+          if (value <= 0) value = 0.1;
+          ops["brightness"] = value;
+        }
+        if (g_uiSelectedOptions.outputSaturationApply) {
+          let value = parseFloat(
+            g_uiSelectedOptions.outputSaturationMultiplier
+          );
+          if (value <= 0) value = 0.001;
+          ops["saturation"] = value;
+        }
+        pipeline.modulate(ops);
+      }
+      // CHANGE FORMAT /////////////////////////////////////////////
+      if (
+        g_uiSelectedOptions.outputFormat === FileExtension.PDF ||
+        g_uiSelectedOptions.outputFormat === FileExtension.EPUB ||
+        g_uiSelectedOptions.outputImageFormat != FileExtension.NOT_SET
+      ) {
+        let imageFormat = g_uiSelectedOptions.outputImageFormat;
+        if (g_uiSelectedOptions.outputFormat === FileExtension.PDF) {
+          // change to a format compatible with pdfkit if needed
+          if (
+            imageFormat === FileExtension.WEBP ||
+            imageFormat === FileExtension.AVIF ||
+            (imageFormat === FileExtension.NOT_SET &&
+              !fileUtils.hasPdfKitCompatibleImageExtension(filePath))
+          ) {
+            imageFormat = FileExtension.JPG;
+          }
+        }
+        if (
+          g_uiSelectedOptions.outputFormat === FileExtension.EPUB &&
+          g_uiSelectedOptions.outputEpubCreationImageFormat ===
+            "core-media-types-only"
+        ) {
+          // change to a format supported by the epub specification if needed
+          if (
+            imageFormat === FileExtension.WEBP ||
+            imageFormat === FileExtension.AVIF ||
+            (imageFormat === FileExtension.NOT_SET &&
+              !fileUtils.hasEpubSupportedImageExtension(filePath))
+          ) {
+            imageFormat = FileExtension.JPG;
+          }
+        }
+        if (imageFormat != FileExtension.NOT_SET) {
+          saveToFile = true;
+          if (!pipeline) pipeline = sharp(filePath);
+          if (imageFormat === FileExtension.JPG) {
+            pipeline.jpeg({
+              quality: parseInt(
+                g_uiSelectedOptions.outputImageFormatParams.jpgQuality
+              ),
+              mozjpeg: g_uiSelectedOptions.outputImageFormatParams.jpgMozjpeg,
+            });
+          } else if (imageFormat === FileExtension.PNG) {
+            if (
+              parseInt(g_uiSelectedOptions.outputImageFormatParams.pngQuality) <
+              100
+            ) {
+              pipeline.png({
+                quality: parseInt(
+                  g_uiSelectedOptions.outputImageFormatParams.pngQuality
+                ),
+              });
+            } else {
+              pipeline.png();
+            }
+          } else if (imageFormat === FileExtension.WEBP) {
+            pipeline.webp({
+              quality: parseInt(
+                g_uiSelectedOptions.outputImageFormatParams.webpQuality
+              ),
+            });
+          } else if (imageFormat === FileExtension.AVIF) {
+            pipeline.avif({
+              quality: parseInt(
+                g_uiSelectedOptions.outputImageFormatParams.avifQuality
+              ),
+            });
+          }
+          newFilePath = path.join(fileFolderPath, fileName + "." + imageFormat);
+        }
+      }
+      // SAVE TO FILE ///////////////////////////////////////////
+      if (saveToFile && pipeline) {
+        updateModalLogText(
+          _("tool-shared-modal-log-converting-image") +
+            ": " +
+            (index + 1) +
+            " / " +
+            imgFilePaths.length
+        );
+        await pipeline.withMetadata().toFile(tmpFilePath);
+        fs.unlinkSync(filePath);
+        fileUtils.moveFile(tmpFilePath, newFilePath);
+        imgFilePaths[index] = newFilePath;
+      }
+    } // end for
     return { state: "success" };
   } catch (error) {
     return { state: "error", error };
@@ -1327,109 +1323,95 @@ async function processImagesWithWorkers({
   imageOpsNeeded,
 }) {
   return new Promise((resolve) => {
-    if (
-      resizeNeeded ||
-      imageOpsNeeded ||
-      g_uiSelectedOptions.outputFormat === FileExtension.PDF ||
-      g_uiSelectedOptions.outputFormat === FileExtension.EPUB ||
-      g_uiSelectedOptions.outputImageFormat != FileExtension.NOT_SET
-    ) {
-      const { Worker } = require("worker_threads");
+    const { Worker } = require("worker_threads");
 
-      // process.env.UV_THREADPOOL_SIZE = os.cpus().length;
+    // process.env.UV_THREADPOOL_SIZE = os.cpus().length;
 
-      let maxWorkers = parseInt(g_uiSelectedOptions.imageProcessingNumWorkers);
-      if (!maxWorkers || maxWorkers <= 0)
-        maxWorkers = Math.max(1, Math.floor(os.cpus().length / 2));
-      let sharpConcurrency = parseInt(
-        g_uiSelectedOptions.imageProcessingSharpConcurrency
-      );
+    let maxWorkers = parseInt(g_uiSelectedOptions.imageProcessingNumWorkers);
+    if (!maxWorkers || maxWorkers <= 0)
+      maxWorkers = Math.max(1, Math.floor(os.cpus().length / 2));
+    let sharpConcurrency = parseInt(
+      g_uiSelectedOptions.imageProcessingSharpConcurrency
+    );
 
-      if (!sharpConcurrency || sharpConcurrency < 0) sharpConcurrency = 1;
-      const sharp = require("sharp");
-      sharp.concurrency(sharpConcurrency);
-      sharp.cache(false);
+    if (!sharpConcurrency || sharpConcurrency < 0) sharpConcurrency = 1;
+    const sharp = require("sharp");
+    sharp.concurrency(sharpConcurrency);
+    sharp.cache(false);
 
-      const workers = [];
-      const workQueue = imgFilePaths.map((filePath, index) => ({
-        id: index,
-        filePath,
-      }));
+    const workers = [];
+    const workQueue = imgFilePaths.map((filePath, index) => ({
+      id: index,
+      filePath,
+    }));
 
-      let activeWorkers = 0;
-      let error = undefined;
+    let activeWorkers = 0;
+    let error = undefined;
 
-      for (let i = 0; i < maxWorkers; i++) {
-        const worker = new Worker(
-          path.join(__dirname, "main-worker-thread.js")
-        );
-        worker.on("message", (msg) => {
-          if (msg.type === "done") {
-            activeWorkers--;
-            // refresh filePath in case it was changed due to format conversion
-            imgFilePaths[msg.id] = msg.filePath;
-          } else if (msg.type === "error") {
-            error = `[WORKER] error on image #${msg.id + 1}: ${msg.error}`;
-            activeWorkers--;
-          }
-          if (!g_cancel && !error) processNextImage(worker);
-          checkForCompletion();
-        });
-        worker.on("error", (error) => {
-          error = "[WORKER] " + error;
+    for (let i = 0; i < maxWorkers; i++) {
+      const worker = new Worker(path.join(__dirname, "main-worker-thread.js"));
+      worker.on("message", (msg) => {
+        if (msg.type === "done") {
           activeWorkers--;
-          checkForCompletion();
-        });
-        worker.on("exit", (code) => {
-          log.editor(`worker #${i} exited with code: ${code}`);
-        });
-        workers.push(worker);
-        processNextImage(worker);
-      }
-
-      ///////
-
-      function processNextImage(worker) {
-        if (g_cancel || workQueue.length === 0) return;
-        const job = workQueue.shift();
-        activeWorkers++;
-        updateModalLogText(
-          _("tool-shared-modal-log-converting-image") +
-            ": " +
-            (job.id + 1) +
-            " / " +
-            imgFilePaths.length
-        );
-        worker.postMessage({
-          type: "process",
-          id: job.id,
-          filePath: job.filePath,
-          resizeNeeded,
-          imageOpsNeeded,
-          uiOptions: g_uiSelectedOptions,
-        });
-      }
-
-      function checkForCompletion() {
-        if (
-          activeWorkers === 0 &&
-          (workQueue.length === 0 || g_cancel || error)
-        ) {
-          shutdownAllWorkers();
-          resolve({
-            state: error ? "error" : g_cancel ? "cancelled" : "success",
-            error,
-          });
+          // refresh filePath in case it was changed due to format conversion
+          imgFilePaths[msg.id] = msg.filePath;
+        } else if (msg.type === "error") {
+          error = `[WORKER] error on image #${msg.id + 1}: ${msg.error}`;
+          activeWorkers--;
         }
-      }
-
-      function shutdownAllWorkers() {
-        workers.forEach((worker) => worker.postMessage({ type: "shutdown" }));
-      }
-    } else {
-      resolve({
-        state: "success",
+        if (!g_cancel && !error) processNextImage(worker);
+        checkForCompletion();
       });
+      worker.on("error", (error) => {
+        error = "[WORKER] " + error;
+        activeWorkers--;
+        checkForCompletion();
+      });
+      worker.on("exit", (code) => {
+        log.editor(`worker #${i} exited with code: ${code}`);
+      });
+      workers.push(worker);
+      processNextImage(worker);
+    }
+
+    ///////
+
+    function processNextImage(worker) {
+      if (g_cancel || workQueue.length === 0) return;
+      const job = workQueue.shift();
+      activeWorkers++;
+      updateModalLogText(
+        _("tool-shared-modal-log-converting-image") +
+          ": " +
+          (job.id + 1) +
+          " / " +
+          imgFilePaths.length
+      );
+      worker.postMessage({
+        type: "process",
+        id: job.id,
+        filePath: job.filePath,
+        resizeNeeded,
+        imageOpsNeeded,
+        uiOptions: g_uiSelectedOptions,
+      });
+    }
+
+    function checkForCompletion() {
+      if (
+        activeWorkers === 0 &&
+        (workQueue.length === 0 || g_cancel || error)
+      ) {
+        shutdownAllWorkers();
+        resolve({
+          state: error ? "error" : g_cancel ? "cancelled" : "success",
+          error,
+        });
+      }
+    }
+
+    function shutdownAllWorkers() {
+      workers.forEach((worker) => worker.postMessage({ type: "shutdown" }));
     }
   });
 }
