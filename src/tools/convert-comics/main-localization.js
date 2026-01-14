@@ -57,6 +57,14 @@ exports.getTooltipsLocalization = function () {
       id: "tool-cc-tooltip-pdf-creation",
       text: _("tool-shared-ui-pdf-creation-tooltip"),
     },
+    {
+      id: "tool-cc-tooltip-imageops-crop",
+      text: _("tool-shared-ui-imageops-order-before-tooltip"),
+    },
+    {
+      id: "tool-cc-tooltip-imageops-extend",
+      text: _("tool-shared-ui-imageops-order-after-tooltip"),
+    },
   ];
 };
 
@@ -307,6 +315,14 @@ exports.getLocalization = function (mode) {
     {
       id: "tool-cc-imageops-saturation-text",
       text: _("tool-shared-ui-creation-saturationmultiplier"),
+    },
+    {
+      id: "tool-cc-imageops-crop-text",
+      text: `${_("tool-shared-ui-imageops-crop-border")} (px)`,
+    },
+    {
+      id: "tool-cc-imageops-extend-text",
+      text: `${_("tool-shared-ui-imageops-add-border")} (px)`,
     },
     //////////////////////////////////////////////
     {

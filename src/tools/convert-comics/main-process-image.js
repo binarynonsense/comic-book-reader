@@ -17,8 +17,6 @@ exports.processImage = async function (
   uiSelectedOptions
 ) {
   const sharp = require("sharp");
-  // sharp.concurrency(1);
-  // sharp.cache(false);
   ///////////////////////////////////////
   ///////////////////////////////////////
   let fileFolderPath = path.dirname(filePath);
@@ -30,6 +28,35 @@ exports.processImage = async function (
   let pipeline;
   let saveToFile = false;
   let newFilePath = filePath;
+
+  let metadata;
+
+  // IMAGE OPS 1 /////////////////////////////////////////////
+  if (imageOpsNeeded) {
+    if (!pipeline) pipeline = sharp(filePath);
+    if (
+      uiSelectedOptions.outputCropApply &&
+      uiSelectedOptions.outputCropValue > 0
+    ) {
+      let value = parseInt(uiSelectedOptions.outputCropValue);
+      if (value) {
+        if (!metadata) metadata = await sharp(filePath).metadata();
+        let newWidth = metadata.width - value * 2;
+        let newHeight = metadata.height - value * 2;
+        if (newHeight > 0 && newHeight > 0) {
+          pipeline.extract({
+            left: value,
+            top: value,
+            width: newWidth,
+            height: newHeight,
+          });
+          metadata.width = newWidth;
+          metadata.height = newHeight;
+          saveToFile = true;
+        }
+      }
+    }
+  }
   // RESIZE /////////////////////////////////////////////////
   if (resizeNeeded) {
     saveToFile = true;
@@ -46,30 +73,50 @@ exports.processImage = async function (
       });
     } else {
       // scale
-      let data = await sharp(filePath).metadata();
+      if (!metadata) metadata = await sharp(filePath).metadata();
       pipeline.resize(
         Math.round(
-          data.width * (uiSelectedOptions.outputImageScalePercentage / 100)
+          metadata.width * (uiSelectedOptions.outputImageScalePercentage / 100)
         )
       );
     }
   }
-  // IMAGE OPS //////////////////////////////////////////////
+  // IMAGE OPS 2 /////////////////////////////////////////////
   if (imageOpsNeeded) {
-    saveToFile = true;
     if (!pipeline) pipeline = sharp(filePath);
-    let ops = {};
+    let ops;
     if (uiSelectedOptions.outputBrightnessApply) {
+      if (!ops) ops = {};
       let value = parseFloat(uiSelectedOptions.outputBrightnessMultiplier);
       if (value <= 0) value = 0.1;
       ops["brightness"] = value;
+      saveToFile = true;
     }
     if (uiSelectedOptions.outputSaturationApply) {
+      if (!ops) ops = {};
       let value = parseFloat(uiSelectedOptions.outputSaturationMultiplier);
       if (value <= 0) value = 0.001;
       ops["saturation"] = value;
+      saveToFile = true;
     }
-    pipeline.modulate(ops);
+    if (ops) pipeline.modulate(ops);
+    //
+    if (
+      uiSelectedOptions.outputExtendApply &&
+      uiSelectedOptions.outputExtendValue > 0
+    ) {
+      let value = parseInt(uiSelectedOptions.outputExtendValue);
+      if (value) {
+        pipeline.extend({
+          top: value,
+          bottom: value,
+          left: value,
+          right: value,
+          background: uiSelectedOptions.outputExtendColor,
+        });
+        saveToFile = true;
+      }
+    }
   }
   // CHANGE FORMAT /////////////////////////////////////////////
   if (

@@ -1035,7 +1035,11 @@ async function processContent(inputFilePath) {
     }
     if (
       g_uiSelectedOptions.outputBrightnessApply ||
-      g_uiSelectedOptions.outputSaturationApply
+      g_uiSelectedOptions.outputSaturationApply ||
+      (g_uiSelectedOptions.outputCropApply &&
+        g_uiSelectedOptions.outputCropValue > 0) ||
+      (g_uiSelectedOptions.outputExtendApply &&
+        g_uiSelectedOptions.outputExtendValue > 0)
     ) {
       imageOpsNeeded = true;
     }
