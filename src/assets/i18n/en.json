@@ -399,6 +399,7 @@
   "tool-shared-ui-creation-saturationmultiplier": "Saturation Multiplier",
   "tool-shared-ui-imageops-crop": "Crop",
   "tool-shared-ui-imageops-crop-border": "Crop Border",
+  "tool-shared-ui-imageops-add-border": "Add Border",
   "tool-shared-ui-imageops-pixels": "Pixels",
   "tool-shared-ui-pdf-creation": "PDF Creation",
   "tool-shared-ui-pdf-creation-tooltip": "The embedded image's data/resolution will be kept intact, this option just changes the 'page size' value (in points) stored in the new PDF, assuming a userunit value of 1 (72dpi), based on the selected input's dpi.",
