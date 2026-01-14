@@ -536,6 +536,16 @@ function initOnIpcCallbacks() {
   });
 
   on("show-result", (failedFilesText) => {
+    if (g_failedFilePaths.length > 0) {
+      updateLogText(
+        "\n------------ " + failedFilesText + ": ------------\n",
+        true
+      );
+      g_failedFilePaths.forEach((fileData) => {
+        updateLogText(fileData.path, true);
+      });
+    }
+
     // if the full log is huge I also crop it
     if (fullLogContent.length > 1000000)
       fullLogContent =
@@ -547,16 +557,6 @@ function initOnIpcCallbacks() {
     modalLog.innerHTML = fullLogContent;
     modalLog.classList.remove("modal-log-noscrollbar");
     modalLog.scrollTop = modalLog.scrollHeight;
-
-    if (g_failedFilePaths.length > 0) {
-      updateLogText(
-        "\n------------ " + failedFilesText + ": ------------\n",
-        true
-      );
-      g_failedFilePaths.forEach((fileData) => {
-        updateLogText(fileData.path, true);
-      });
-    }
 
     const modalButtonCancel = g_openModal.querySelector(
       "#tool-ec-modal-cancel-button"
