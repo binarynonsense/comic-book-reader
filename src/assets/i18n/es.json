@@ -1,6 +1,8 @@
 {
   "@metadata": {
-    "authors": ["Álvaro"],
+    "authors": [
+      "Álvaro"
+    ],
     "last-updated": "2026-01-14",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.15.0-beta1",
@@ -315,8 +317,8 @@
   "[NOTE TO TRANSLATORS]tool-shared-ui-input-list": "'Input List' as in a list of input files, folders and/or images",
   "tool-shared-ui-input-list": "Lista de entrada",
   "tool-shared-ui-input-folders-contain": "Las carpetas de entrada contienen",
-  "tool-shared-ui-input-folders-contain-0": "Ficheros de cómic",
-  "tool-shared-ui-input-folders-contain-1": "Los ficheros de imagen de un sólo cómic",
+  "tool-shared-ui-input-folders-contain-0": "Archivos de cómic",
+  "tool-shared-ui-input-folders-contain-1": "Cada una los archivos de imagen de un sólo cómic",
   "tool-shared-ui-input-folders-file-type": "Formatos de archivo a buscar en las carpetas de entrada",
   "tool-shared-ui-input-folders-recursively": "Buscar en las carpetas de entrada recursivamente",
   "tool-shared-ui-add": "Añadir",
@@ -519,7 +521,7 @@
   "tool-shared-modal-log-failed-reason-output-folder-exists": "La carpeta de salida ya existe",
   "tool-shared-modal-log-failed-reason-temp-disk-space": "No hay suficiente espacio libre en la carpeta temporal",
   "tool-shared-modal-log-failed-reason-temp-disk-space-2": "Puede seleccionar una carpeta diferente para ser usada como carpeta temporal en la sección 'avanzadas' de las preferencias del programa",
-  "tool-shared-modal-log-failed-files": "Ficheros fallidos",
+  "tool-shared-modal-log-failed-files": "Archivos fallidos",
   "tool-shared-modal-log-conversion-error": "No se pudo convertir el archivo, se produjo un error",
   "tool-shared-modal-log-conversion-canceled": "No se pudo convertir el archivo, la conversión fue cancelada",
   "tool-shared-modal-log-extraction-error": "No se pudo extraer el archivo, se produjo un error",
@@ -643,9 +645,9 @@
     "toggleClock": "Alternar reloj",
     "toggleBatteryStatus": "Alternar estado de batería",
     "toggleAudioPlayer": "Alternar reproductor de audio",
-    "openFile": "Abrir fichero",
-    "history": "Historial de ficheros",
-    "fileProperties": "Propiedades de fichero",
+    "openFile": "Abrir archivo",
+    "history": "Historial de archivos",
+    "fileProperties": "Propiedades de archivo",
     "quit": "Salir"
   },
   "[NOTE TO TRANSLATORS]tool-pre-button-resetall": "'Reset All' as in 'reset all the preferences'",
