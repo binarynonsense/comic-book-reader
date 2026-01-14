@@ -403,6 +403,8 @@
   "[NEEDS TRANSLATION]tool-shared-ui-imageops-crop-border": "Crop Border",
   "[NEEDS TRANSLATION]tool-shared-ui-imageops-add-border": "Add Border",
   "[NEEDS TRANSLATION]tool-shared-ui-imageops-pixels": "Pixels",
+  "[NEEDS TRANSLATION]tool-shared-ui-imageops-order-before-tooltip": "This operation will occur before scaling.",
+  "[NEEDS TRANSLATION]tool-shared-ui-imageops-order-after-tooltip": "This operation will occur after scaling.",
   "tool-shared-ui-pdf-creation": "إنشاء ملف PDF",
   "tool-shared-ui-pdf-creation-tooltip": "سيتم الاحتفاظ ببيانات/دقة الصورة المضمنة كما هي، وهذا الخيار يغير فقط قيمة 'حجم الصفحة' (بالنقاط) المخزنة في ملف PDF الجديد، بافتراض أن قيمة وحدة المستخدم هي 1 (72 نقطة لكل بوصة)، بناءً على قيمة dpi (نقطة لكل بوصة) الخاصة بالملف الاصلي.",
   "tool-shared-ui-pdf-creation-o1": "استخدم dpi (نقطة لكل بوصة) الخاصة بالصورة، إذا كانت متوفرة و 300 نقطة لكل بوصة إذا لم تكن كذلك",

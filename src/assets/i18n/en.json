@@ -401,6 +401,8 @@
   "tool-shared-ui-imageops-crop-border": "Crop Border",
   "tool-shared-ui-imageops-add-border": "Add Border",
   "tool-shared-ui-imageops-pixels": "Pixels",
+  "tool-shared-ui-imageops-order-before-tooltip": "This operation will occur before scaling.",
+  "tool-shared-ui-imageops-order-after-tooltip": "This operation will occur after scaling.",
   "tool-shared-ui-pdf-creation": "PDF Creation",
   "tool-shared-ui-pdf-creation-tooltip": "The embedded image's data/resolution will be kept intact, this option just changes the 'page size' value (in points) stored in the new PDF, assuming a userunit value of 1 (72dpi), based on the selected input's dpi.",
   "tool-shared-ui-pdf-creation-o1": "Use the image's dpi if available, 300dpi if not",
