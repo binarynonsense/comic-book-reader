@@ -30,7 +30,6 @@ let g_numErrors = 0;
 let g_failedFilePaths = [];
 
 let g_inputFilePath;
-let g_inputFileType;
 
 let g_inputListDiv;
 let g_outputFolderDiv;
@@ -281,6 +280,12 @@ function init(
 
   //////
 
+  document
+    .querySelector("#tool-cc-folders-contain-select")
+    .addEventListener("change", (event) => {
+      checkValidData();
+    });
+
   const inputSearchFoldersFormatsDiv = document.querySelector(
     "#tool-cc-folders-file-formats-div"
   );
@@ -514,7 +519,10 @@ function updateUISelectedOptions() {
   g_uiSelectedOptions.outputExtendColor = document.querySelector(
     "#tool-cc-imageops-extend-color-input"
   ).value;
-
+  /////////////////
+  g_uiSelectedOptions.inputFoldersContain = document.getElementById(
+    "tool-cc-folders-contain-select"
+  ).value;
   g_uiSelectedOptions.inputSearchFoldersFormats = [];
   const inputSearchFoldersFormatsDiv = document.querySelector(
     "#tool-cc-folders-file-formats-div"
@@ -531,6 +539,7 @@ function updateUISelectedOptions() {
   g_uiSelectedOptions.inputSearchFoldersRecursively = document.querySelector(
     "#tool-cc-folders-recursively-checkbox"
   ).checked;
+  //////////////////
   g_uiSelectedOptions.inputPdfExtractionMethod = document.getElementById(
     "tool-cc-pdf-extraction-select"
   ).value;
@@ -1115,6 +1124,25 @@ function checkValidData() {
     }
   }
   ///////////////////
+  const folderContentsSelect = document.querySelector(
+    "#tool-cc-folders-contain-select"
+  );
+  if (folderContentsSelect.value === "0") {
+    document
+      .querySelector("#tool-cc-folders-file-formats-div")
+      .classList.remove("set-display-none");
+    document
+      .querySelector("#tool-cc-folders-file-formats-text")
+      .parentElement.classList.remove("set-display-none");
+  } else {
+    document
+      .querySelector("#tool-cc-folders-file-formats-div")
+      .classList.add("set-display-none");
+    document
+      .querySelector("#tool-cc-folders-file-formats-text")
+      .parentElement.classList.add("set-display-none");
+  }
+  ///////////////////
   if (g_outputImageScaleSelect.value === "0") {
     document
       .getElementById("tool-cc-output-image-scale-slider")
@@ -1272,14 +1300,7 @@ function onStart(inputFiles) {
 function onStartNextFile() {
   g_inputFilesIndex++;
   g_inputFilePath = g_inputFiles[g_inputFilesIndex].path;
-  g_inputFileType = g_inputFiles[g_inputFilesIndex].type;
-  sendIpcToMain(
-    "start-file",
-    g_inputFilePath,
-    g_inputFileType,
-    g_inputFilesIndex + 1,
-    g_inputFiles.length
-  );
+  sendIpcToMain("start-file", g_inputFilesIndex, g_inputFiles.length);
 }
 
 function onCancel() {

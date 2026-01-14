@@ -57,6 +57,9 @@ let g_creationTempSubFolderPath;
 let g_uiSelectedOptions = {};
 let g_imageIndex = 0;
 
+let g_inputFiles;
+let g_inputFilesIndex;
+
 function init() {
   if (!g_isInitialized) {
     initOnIpcCallbacks();
@@ -81,11 +84,6 @@ exports.open = async function (options) {
   sendIpcToRenderer(
     "show",
     g_mode,
-    // options.inputFilePaths &&
-    //   options.inputFilePaths.length > 0 &&
-    //   options.inputFilePaths[0] !== undefined
-    //   ? path.dirname(options.inputFilePaths[0])
-    //   : appUtils.getDesktopFolderPath(),
     appUtils.getDesktopFolderPath(),
     settings.canEditRars(),
     loadedOptions,
@@ -187,6 +185,10 @@ function on(id, callback) {
 }
 
 function initOnIpcCallbacks() {
+  ////////////////////////////////////////
+  // UI //////////////////////////////////
+  ////////////////////////////////////////
+
   on("close-clicked", () => {
     onCloseClicked();
   });
@@ -312,10 +314,23 @@ function initOnIpcCallbacks() {
     }
   });
 
+  on("tooltip-button-clicked", (text) => {
+    sendIpcToRenderer(
+      "show-modal-info",
+      _("tool-shared-modal-title-info"),
+      text,
+      _("tool-shared-ui-close").toUpperCase()
+    );
+  });
+
+  ////////////////////////////////////////
+  // CONVERSION //////////////////////////
+  ////////////////////////////////////////
+
   on("start-clicked", async (inputList, selectedOptions) => {
-    let inputFiles = [];
+    g_inputFiles = [];
     function isAlreadyInInputList(filePath) {
-      return inputFiles.some((e) => e.path === filePath);
+      return g_inputFiles.some((e) => e.path === filePath);
     }
     g_uiSelectedOptions = structuredClone(selectedOptions);
     for (let index = 0; index < inputList.length; index++) {
@@ -324,53 +339,72 @@ function initOnIpcCallbacks() {
         // FILE
         let type = await getFileType(inputListItem.path);
         if (type != undefined && !isAlreadyInInputList(inputListItem.path)) {
-          inputFiles.push({
+          g_inputFiles.push({
             path: inputListItem.path,
             type: type,
           });
         }
       } else {
         // DIR
-        let filesInFolder = [];
-        if (g_uiSelectedOptions.inputSearchFoldersRecursively) {
-          filesInFolder = fileUtils.getFilesInFolderRecursive(
-            inputListItem.path,
-            g_uiSelectedOptions.inputSearchFoldersFormats
-          );
-        } else {
-          filesInFolder = fileUtils.getFilesInFolder(
-            inputListItem.path,
-            g_uiSelectedOptions.inputSearchFoldersFormats
-          );
-        }
-        if (g_uiSelectedOptions.inputSearchFoldersRecursively) {
-          for (let j = 0; j < filesInFolder.length; j++) {
-            const element = filesInFolder[j];
-            const filePath = element;
-            let type = await getFileType(filePath);
-            if (type != undefined && !isAlreadyInInputList(filePath)) {
-              inputFiles.push({
-                path: filePath,
-                type: type,
-              });
-            }
+        if (g_uiSelectedOptions.inputFoldersContain === "images") {
+          // folder content = comic book images
+          if (!isAlreadyInInputList(inputListItem.path)) {
+            g_inputFiles.push({
+              path: inputListItem.path,
+              type: FileDataType.IMGS_FOLDER,
+            });
           }
         } else {
-          for (let j = 0; j < filesInFolder.length; j++) {
-            const element = filesInFolder[j];
-            const filePath = path.join(inputListItem.path, element);
-            let type = await getFileType(filePath);
-            if (type != undefined && !isAlreadyInInputList(filePath)) {
-              inputFiles.push({
-                path: filePath,
-                type: type,
-              });
+          // folder content = comic book files
+          let filesInFolder = [];
+          if (g_uiSelectedOptions.inputSearchFoldersRecursively) {
+            filesInFolder = fileUtils.getFilesInFolderRecursive(
+              inputListItem.path,
+              g_uiSelectedOptions.inputSearchFoldersFormats
+            );
+          } else {
+            filesInFolder = fileUtils.getFilesInFolder(
+              inputListItem.path,
+              g_uiSelectedOptions.inputSearchFoldersFormats
+            );
+          }
+          if (g_uiSelectedOptions.inputSearchFoldersRecursively) {
+            for (let j = 0; j < filesInFolder.length; j++) {
+              const element = filesInFolder[j];
+              const filePath = element;
+              let type = await getFileType(filePath);
+              if (type != undefined && !isAlreadyInInputList(filePath)) {
+                // TODO: only add rootFolderPath if setting for keep subfolder structure set (not yet added)
+                g_inputFiles.push({
+                  path: filePath,
+                  type: type,
+                  rootFolderPath: inputListItem.path,
+                });
+                log.test(
+                  path
+                    .relative(inputListItem.path, path.dirname(filePath))
+                    .split(path.sep)
+                );
+              }
+            }
+          } else {
+            for (let j = 0; j < filesInFolder.length; j++) {
+              const element = filesInFolder[j];
+              const filePath = path.join(inputListItem.path, element);
+              let type = await getFileType(filePath);
+              if (type != undefined && !isAlreadyInInputList(filePath)) {
+                g_inputFiles.push({
+                  path: filePath,
+                  type: type,
+                });
+              }
             }
           }
         }
       }
     }
-    if (inputFiles.length > 0) sendIpcToRenderer("start-accepted", inputFiles);
+    if (g_inputFiles.length > 0)
+      sendIpcToRenderer("start-accepted", g_inputFiles);
     else
       sendIpcToRenderer(
         "show-modal-info",
@@ -380,13 +414,18 @@ function initOnIpcCallbacks() {
       );
   });
 
-  on("tooltip-button-clicked", (text) => {
-    sendIpcToRenderer(
-      "show-modal-info",
-      _("tool-shared-modal-title-info"),
-      text,
-      _("tool-shared-ui-close").toUpperCase()
-    );
+  on("start", (...args) => {
+    menuBar.setCloseTool(false);
+    sendIpcToPreload("update-menubar");
+    start(...args);
+  });
+
+  on("start-file", (...args) => {
+    startFile(...args);
+  });
+
+  on("process-content", (...args) => {
+    processContent(...args);
   });
 
   /////////////////////////
@@ -400,22 +439,8 @@ function initOnIpcCallbacks() {
     }
   });
 
-  on("start", (...args) => {
-    menuBar.setCloseTool(false);
-    sendIpcToPreload("update-menubar");
-    start(...args);
-  });
-
-  on("start-file", (...args) => {
-    startFile(...args);
-  });
-
   on("stop-error", (errorMsg) => {
     stopError(undefined, errorMsg);
-  });
-
-  on("process-content", (...args) => {
-    processContent(...args);
   });
 
   on("resizing-error", (errorMessage) => {
@@ -522,162 +547,11 @@ function handle(id, callback) {
   g_handleIpcCallbacks[id] = callback;
 }
 
-function initHandleIpcCallbacks() {
-  // handle(
-  //   "pdf-save-dataurl-to-file",
-  //   async (dataUrl, dpi, folderPath, pageNum) => {
-  //     try {
-  //       const { changeDpiDataUrl } = require("changedpi");
-  //       let img = changeDpiDataUrl(dataUrl, dpi);
-  //       let data = img.replace(/^data:image\/\w+;base64,/, "");
-  //       let buf = Buffer.from(data, "base64");
-  //       let filePath = path.join(folderPath, pageNum + "." + FileExtension.JPG);
-  //       fs.writeFileSync(filePath, buf, "binary");
-  //       return undefined;
-  //     } catch (error) {
-  //       return error;
-  //     }
-  //   }
-  // );
-}
+function initHandleIpcCallbacks() {}
 
 ///////////////////////////////////////////////////////////////////////////////
-// TOOL ///////////////////////////////////////////////////////////////////////
+// TOOL START /////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-
-function addPathToInputList(inputPath) {
-  if (fs.existsSync(inputPath)) {
-    let type = 0;
-    if (fs.lstatSync(inputPath)?.isDirectory()) {
-      type = 1;
-    } else {
-      if (g_mode === ToolMode.CONVERT) {
-        if (!fileUtils.hasComicBookExtension(inputPath)) return;
-      } else {
-        if (
-          !(
-            fileUtils.hasComicBookExtension(inputPath) ||
-            fileUtils.hasImageExtension(inputPath)
-          )
-        )
-          return;
-      }
-    }
-    sendIpcToRenderer("add-item-to-input-list", inputPath, type);
-  }
-}
-
-async function getFileType(filePath) {
-  let stats = fs.statSync(filePath);
-  if (!stats.isFile()) return undefined; // avoid folders accidentally getting here
-  let fileType;
-  let fileExtension = path.extname(filePath).toLowerCase();
-
-  let _fileType = await FileType.fromFile(filePath);
-  if (_fileType !== undefined) {
-    fileExtension = "." + _fileType.ext;
-  }
-  if (fileExtension === "." + FileExtension.PDF) {
-    fileType = FileDataType.PDF;
-  } else if (fileExtension === "." + FileExtension.EPUB) {
-    fileType = FileDataType.EPUB_COMIC;
-  } else {
-    if (
-      fileExtension === "." + FileExtension.RAR ||
-      fileExtension === "." + FileExtension.CBR
-    ) {
-      fileType = FileDataType.RAR;
-    } else if (
-      fileExtension === "." + FileExtension.ZIP ||
-      fileExtension === "." + FileExtension.CBZ
-    ) {
-      fileType = FileDataType.ZIP;
-    } else if (
-      fileExtension === "." + FileExtension.SEVENZIP ||
-      fileExtension === "." + FileExtension.CB7
-    ) {
-      fileType = FileDataType.SEVENZIP;
-    } else if (
-      g_mode === ToolMode.CREATE &&
-      (fileExtension === "." + FileExtension.JPG ||
-        fileExtension === "." + FileExtension.JPEG ||
-        fileExtension === "." + FileExtension.PNG ||
-        fileExtension === "." + FileExtension.WEBP ||
-        fileExtension === "." + FileExtension.BMP ||
-        fileExtension === "." + FileExtension.AVIF)
-    ) {
-      fileType = FileDataType.IMG;
-    } else {
-      return undefined;
-    }
-  }
-  return fileType;
-}
-
-function stopError(error, errorMessage, nameAsError = true) {
-  let uiMsg = errorMessage;
-  if (error) {
-    if (error.message) {
-      uiMsg = (errorMessage ? errorMessage + "\n" : "") + error.message;
-      log.error(uiMsg);
-    } else {
-      const toString = error.toString();
-      if (
-        toString &&
-        toString !== "" &&
-        !toString.includes("[object Object]")
-      ) {
-        uiMsg = (errorMessage ? errorMessage + "\n" : "") + toString;
-        log.error(uiMsg);
-      } else {
-        uiMsg = (errorMessage ? errorMessage + "\n" : "") + "Unknown error";
-        log.error(uiMsg);
-        console.log(error);
-      }
-    }
-  } else {
-    if (!uiMsg) uiMsg = "Unknown error";
-    if (nameAsError) log.error(errorMessage);
-  }
-  temp.deleteSubFolder(g_tempSubFolderPath);
-  g_tempSubFolderPath = undefined;
-  temp.deleteSubFolder(g_creationTempSubFolderPath);
-  g_creationTempSubFolderPath = undefined;
-  if (nameAsError) {
-    updateModalLogText(uiMsg);
-    if (g_mode === ToolMode.CREATE) updateModalLogText("");
-    updateModalLogText(
-      g_mode === ToolMode.CONVERT
-        ? _("tool-shared-modal-log-conversion-error")
-        : _("tool-shared-modal-log-creation-error")
-    );
-  } else {
-    // not really an error. if file is skipped, for example
-    updateModalLogText(
-      g_mode === ToolMode.CONVERT
-        ? _("tool-shared-modal-log-failed-conversion")
-        : _("tool-shared-modal-log-failed-creation")
-    );
-    updateModalLogText(uiMsg);
-  }
-
-  updateModalLogText(" ");
-  sendIpcToRenderer("file-finished-error");
-}
-
-function stopCancel() {
-  temp.deleteSubFolder(g_tempSubFolderPath);
-  g_tempSubFolderPath = undefined;
-  temp.deleteSubFolder(g_creationTempSubFolderPath);
-  g_creationTempSubFolderPath = undefined;
-  updateModalLogText(
-    g_mode === ToolMode.CONVERT
-      ? _("tool-shared-modal-log-conversion-canceled")
-      : _("tool-shared-modal-log-creation-canceled")
-  );
-  updateModalLogText("");
-  sendIpcToRenderer("file-finished-canceled");
-}
 
 function start(inputFiles) {
   timers.start("convert-comics");
@@ -687,6 +561,7 @@ function start(inputFiles) {
     g_uiSelectedOptions.outputFileBaseName = undefined;
     sendIpcToRenderer("start-first-file");
   } else {
+    // ToolMode.CREATE
     g_tempSubFolderPath = temp.createSubFolder();
     // check types
     let areAllImages = true;
@@ -719,11 +594,17 @@ function start(inputFiles) {
   }
 }
 
-function startFile(inputFilePath, inputFileType, fileNum, totalFilesNum) {
+//////////////////////
+
+function startFile(inputFileIndex, totalFilesNum) {
   if (g_cancel === true) {
     stopCancel();
     return;
   }
+  g_inputFilesIndex = inputFileIndex;
+  let inputFilePath = g_inputFiles[inputFileIndex].path;
+  let inputFileType = g_inputFiles[inputFileIndex].type;
+  let fileNum = inputFileIndex + 1;
   if (fileNum !== 1 && g_mode === ToolMode.CREATE) updateModalLogText("");
   sendIpcToRenderer(
     "modal-update-title-text",
@@ -745,6 +626,7 @@ function startFile(inputFilePath, inputFileType, fileNum, totalFilesNum) {
   updateModalLogText(inputFilePath);
 
   // check if output file name exists and skip mode
+  // TODO: 2026: check if keep subfolder structure, as output folder may change
   {
     if (g_uiSelectedOptions.outputFileSameName === "skip") {
       let outputFolderPath = g_uiSelectedOptions.outputFolderPath;
@@ -776,17 +658,6 @@ function startFile(inputFilePath, inputFileType, fileNum, totalFilesNum) {
         let outputSubFolderPath = path.join(outputFolderPath, baseFileName);
         if (fs.existsSync(outputSubFolderPath)) {
           skip = { path: outputSubFolderPath, isFile: false };
-          // for (let index = 0; index < outputSplitNumFiles; index++) {
-          //   let outputFilePath = path.join(
-          //     outputSubFolderPath,
-          //     `${baseFileName} (${
-          //       index + 1
-          //     }_${outputSplitNumFiles}).${outputFormat}`
-          //   );
-          //   if (fs.existsSync(outputFilePath)) {
-          //     skip = outputFilePath;
-          //   }
-          // }
         }
       }
       if (skip) {
@@ -811,7 +682,15 @@ function startFile(inputFilePath, inputFileType, fileNum, totalFilesNum) {
     g_creationTempSubFolderPath = temp.createSubFolder();
   }
   // extract to temp folder
-  if (inputFileType === FileDataType.IMG) {
+  if (inputFileType === FileDataType.IMGS_FOLDER) {
+    log.test(inputFilePath);
+    g_imageIndex = 0;
+    copyImagesToTempFolder(
+      inputFilePath,
+      g_uiSelectedOptions.inputSearchFoldersRecursively
+    );
+    sendIpcToRenderer("file-images-extracted");
+  } else if (inputFileType === FileDataType.IMG) {
     const extension = path.extname(inputFilePath);
     let outName = g_imageIndex++ + extension;
     const outPath = path.join(g_tempSubFolderPath, outName);
@@ -851,7 +730,9 @@ function startFile(inputFilePath, inputFileType, fileNum, totalFilesNum) {
             return;
           }
           if (g_mode === ToolMode.CREATE) {
-            copyImagesToTempFolder();
+            copyImagesToTempFolder(g_creationTempSubFolderPath, true);
+            temp.deleteSubFolder(g_creationTempSubFolderPath);
+            g_creationTempSubFolderPath = undefined;
           }
           sendIpcToRenderer("file-images-extracted");
           return;
@@ -934,6 +815,8 @@ function startFile(inputFilePath, inputFileType, fileNum, totalFilesNum) {
   }
 }
 
+//////////////////////
+
 exports.onIpcFromToolsWorkerRenderer = function (...args) {
   switch (args[0]) {
     case "update-log-text":
@@ -944,7 +827,9 @@ exports.onIpcFromToolsWorkerRenderer = function (...args) {
       g_workerWindow = undefined;
       if (!args[1]) {
         if (g_mode === ToolMode.CREATE) {
-          copyImagesToTempFolder();
+          copyImagesToTempFolder(g_creationTempSubFolderPath, true);
+          temp.deleteSubFolder(g_creationTempSubFolderPath);
+          g_creationTempSubFolderPath = undefined;
         }
         sendIpcToRenderer("file-images-extracted");
       } else stopCancel();
@@ -957,10 +842,154 @@ exports.onIpcFromToolsWorkerRenderer = function (...args) {
   }
 };
 
-function copyImagesToTempFolder() {
-  let imgFilePaths = fileUtils.getImageFilesInFolderRecursive(
-    g_creationTempSubFolderPath
+///////////////////////////////////////////////////////////////////////////////
+// TOOL END ///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+function stopError(error, errorMessage, nameAsError = true) {
+  let uiMsg = errorMessage;
+  if (error) {
+    if (error.message) {
+      uiMsg = (errorMessage ? errorMessage + "\n" : "") + error.message;
+      log.error(uiMsg);
+    } else {
+      const toString = error.toString();
+      if (
+        toString &&
+        toString !== "" &&
+        !toString.includes("[object Object]")
+      ) {
+        uiMsg = (errorMessage ? errorMessage + "\n" : "") + toString;
+        log.error(uiMsg);
+      } else {
+        uiMsg = (errorMessage ? errorMessage + "\n" : "") + "Unknown error";
+        log.error(uiMsg);
+        console.log(error);
+      }
+    }
+  } else {
+    if (!uiMsg) uiMsg = "Unknown error";
+    if (nameAsError) log.error(errorMessage);
+  }
+  temp.deleteSubFolder(g_tempSubFolderPath);
+  g_tempSubFolderPath = undefined;
+  temp.deleteSubFolder(g_creationTempSubFolderPath);
+  g_creationTempSubFolderPath = undefined;
+  if (nameAsError) {
+    updateModalLogText(uiMsg);
+    if (g_mode === ToolMode.CREATE) updateModalLogText("");
+    updateModalLogText(
+      g_mode === ToolMode.CONVERT
+        ? _("tool-shared-modal-log-conversion-error")
+        : _("tool-shared-modal-log-creation-error")
+    );
+  } else {
+    // not really an error. if file is skipped, for example
+    updateModalLogText(
+      g_mode === ToolMode.CONVERT
+        ? _("tool-shared-modal-log-failed-conversion")
+        : _("tool-shared-modal-log-failed-creation")
+    );
+    updateModalLogText(uiMsg);
+  }
+
+  updateModalLogText(" ");
+  sendIpcToRenderer("file-finished-error");
+}
+
+function stopCancel() {
+  temp.deleteSubFolder(g_tempSubFolderPath);
+  g_tempSubFolderPath = undefined;
+  temp.deleteSubFolder(g_creationTempSubFolderPath);
+  g_creationTempSubFolderPath = undefined;
+  updateModalLogText(
+    g_mode === ToolMode.CONVERT
+      ? _("tool-shared-modal-log-conversion-canceled")
+      : _("tool-shared-modal-log-creation-canceled")
   );
+  updateModalLogText("");
+  sendIpcToRenderer("file-finished-canceled");
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// TOOL UTILS /////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+function addPathToInputList(inputPath) {
+  if (fs.existsSync(inputPath)) {
+    let type = 0;
+    if (fs.lstatSync(inputPath)?.isDirectory()) {
+      type = 1;
+    } else {
+      if (g_mode === ToolMode.CONVERT) {
+        if (!fileUtils.hasComicBookExtension(inputPath)) return;
+      } else {
+        if (
+          !(
+            fileUtils.hasComicBookExtension(inputPath) ||
+            fileUtils.hasImageExtension(inputPath)
+          )
+        )
+          return;
+      }
+    }
+    sendIpcToRenderer("add-item-to-input-list", inputPath, type);
+  }
+}
+
+async function getFileType(filePath) {
+  let stats = fs.statSync(filePath);
+  if (!stats.isFile()) return undefined; // avoid folders accidentally getting here
+  let fileType;
+  let fileExtension = path.extname(filePath).toLowerCase();
+
+  let _fileType = await FileType.fromFile(filePath);
+  if (_fileType !== undefined) {
+    fileExtension = "." + _fileType.ext;
+  }
+  if (fileExtension === "." + FileExtension.PDF) {
+    fileType = FileDataType.PDF;
+  } else if (fileExtension === "." + FileExtension.EPUB) {
+    fileType = FileDataType.EPUB_COMIC;
+  } else {
+    if (
+      fileExtension === "." + FileExtension.RAR ||
+      fileExtension === "." + FileExtension.CBR
+    ) {
+      fileType = FileDataType.RAR;
+    } else if (
+      fileExtension === "." + FileExtension.ZIP ||
+      fileExtension === "." + FileExtension.CBZ
+    ) {
+      fileType = FileDataType.ZIP;
+    } else if (
+      fileExtension === "." + FileExtension.SEVENZIP ||
+      fileExtension === "." + FileExtension.CB7
+    ) {
+      fileType = FileDataType.SEVENZIP;
+    } else if (
+      g_mode === ToolMode.CREATE &&
+      (fileExtension === "." + FileExtension.JPG ||
+        fileExtension === "." + FileExtension.JPEG ||
+        fileExtension === "." + FileExtension.PNG ||
+        fileExtension === "." + FileExtension.WEBP ||
+        fileExtension === "." + FileExtension.BMP ||
+        fileExtension === "." + FileExtension.AVIF)
+    ) {
+      fileType = FileDataType.IMG;
+    } else {
+      return undefined;
+    }
+  }
+  return fileType;
+}
+
+function copyImagesToTempFolder(sourceFolderPath, doRecursively) {
+  if (!sourceFolderPath) return;
+  let imgFilePaths;
+  if (doRecursively)
+    imgFilePaths = fileUtils.getImageFilesInFolderRecursive(sourceFolderPath);
+  else imgFilePaths = fileUtils.getImageFilesInFolder(sourceFolderPath);
   if (imgFilePaths !== undefined && imgFilePaths.length > 0) {
     imgFilePaths.sort(utils.compare);
     imgFilePaths.forEach((imgFilePath) => {
@@ -970,8 +999,6 @@ function copyImagesToTempFolder() {
       fs.copyFileSync(imgFilePath, outPath, fs.constants.COPYFILE_EXCL);
     });
   }
-  temp.deleteSubFolder(g_creationTempSubFolderPath);
-  g_creationTempSubFolderPath = undefined;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -990,10 +1017,13 @@ async function processContent(inputFilePath) {
     let imgFilePaths =
       fileUtils.getImageFilesInFolderRecursive(g_tempSubFolderPath);
     if (imgFilePaths === undefined || imgFilePaths.length === 0) {
-      stopError(undefined, "imgFiles === undefined || imgFiles.length === 0");
+      stopError(undefined, _("tool-shared-modal-log-error-noimagesfound"));
       return;
     }
-    if (g_mode === ToolMode.CREATE) {
+    if (
+      g_mode === ToolMode.CREATE ||
+      g_inputFiles[g_inputFilesIndex].type === FileDataType.IMGS_FOLDER
+    ) {
       // pad numerical names
       imgFilePaths.forEach((filePath) => {
         let fileName = path.basename(filePath, path.extname(filePath));

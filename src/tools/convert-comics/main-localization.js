@@ -202,6 +202,18 @@ exports.getLocalization = function (mode) {
     },
     //////////////////////////////////////////////
     {
+      id: "tool-cc-folders-contain-text",
+      text: _("tool-shared-ui-input-folders-contain"),
+    },
+    {
+      id: "tool-cc-folders-contain-o0-text",
+      text: _("tool-shared-ui-input-folders-contain-0"),
+    },
+    {
+      id: "tool-cc-folders-contain-o1-text",
+      text: _("tool-shared-ui-input-folders-contain-1"),
+    },
+    {
       id: "tool-cc-advanced-input-options-text",
       text: _("tool-shared-ui-advanced-input-options"),
     },
