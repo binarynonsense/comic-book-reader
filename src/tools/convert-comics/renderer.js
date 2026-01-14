@@ -685,70 +685,25 @@ function updateImageMultithreadingUI() {
 }
 
 function updateImageOpsUI() {
-  // TODO: limit input boxes values? e.g. crop % between 0 and 100
-  if (document.querySelector("#tool-cc-imageops-brightness-checkbox").checked) {
-    document
-      .querySelector("#tool-cc-imageops-brightness-input")
-      .classList.remove("tools-disabled");
-    document
-      .querySelector("#tool-cc-imageops-brightness-text")
-      .classList.remove("tools-disabled");
-  } else {
-    document
-      .querySelector("#tool-cc-imageops-brightness-input")
-      .classList.add("tools-disabled");
-    document
-      .querySelector("#tool-cc-imageops-brightness-text")
-      .classList.add("tools-disabled");
-  }
-
-  if (document.querySelector("#tool-cc-imageops-saturation-checkbox").checked) {
-    document
-      .querySelector("#tool-cc-imageops-saturation-input")
-      .classList.remove("tools-disabled");
-    document
-      .querySelector("#tool-cc-imageops-saturation-text")
-      .classList.remove("tools-disabled");
-  } else {
-    document
-      .querySelector("#tool-cc-imageops-saturation-input")
-      .classList.add("tools-disabled");
-    document
-      .querySelector("#tool-cc-imageops-saturation-text")
-      .classList.add("tools-disabled");
-  }
-
-  if (document.querySelector("#tool-cc-imageops-crop-checkbox").checked) {
-    document
-      .querySelector("#tool-cc-imageops-crop-input")
-      .classList.remove("tools-disabled");
-    document
-      .querySelector("#tool-cc-imageops-crop-text")
-      .classList.remove("tools-disabled");
-  } else {
-    document
-      .querySelector("#tool-cc-imageops-crop-input")
-      .classList.add("tools-disabled");
-    document
-      .querySelector("#tool-cc-imageops-crop-text")
-      .classList.add("tools-disabled");
-  }
-
-  if (document.querySelector("#tool-cc-imageops-extend-checkbox").checked) {
-    document
-      .querySelector("#tool-cc-imageops-extend-input")
-      .classList.remove("tools-disabled");
-    document
-      .querySelector("#tool-cc-imageops-extend-text")
-      .classList.remove("tools-disabled");
-  } else {
-    document
-      .querySelector("#tool-cc-imageops-extend-input")
-      .classList.add("tools-disabled");
-    document
-      .querySelector("#tool-cc-imageops-extend-text")
-      .classList.add("tools-disabled");
-  }
+  // TODO: validate input boxes values?
+  const checkboxIds = [
+    "#tool-cc-imageops-brightness-checkbox",
+    "#tool-cc-imageops-saturation-checkbox",
+    "#tool-cc-imageops-crop-checkbox",
+    "#tool-cc-imageops-extend-checkbox",
+  ];
+  checkboxIds.forEach((checkboxId) => {
+    const checkbox = document.querySelector(checkboxId);
+    if (checkbox.checked) {
+      checkbox.parentNode
+        .querySelector(".tools-imageop-controls-div")
+        .classList.remove("tools-disabled");
+    } else {
+      checkbox.parentNode
+        .querySelector(".tools-imageop-controls-div")
+        .classList.add("tools-disabled");
+    }
+  });
 }
 
 function updateOutputFolderUI() {

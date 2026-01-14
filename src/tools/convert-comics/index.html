@@ -341,72 +341,85 @@
     >
       <h3><span id="tool-cc-advanced-imageprocessing-options-text"></span></h3>
       <div class="tools-columns-right-subsection">
-        <!-- TODO: don't use inline css / improve layout -->
-        <label><span id="tool-cc-imageops-apply-text"></span> </label>
-        <label class="tools-checkbox-container"
-          ><input type="checkbox" id="tool-cc-imageops-brightness-checkbox" />
-          <span id="tool-cc-imageops-brightness-text"></span
-          ><input
-            id="tool-cc-imageops-brightness-input"
-            type="number"
-            step="0.5"
-            min="0"
-            value="1"
-            style="width: 100px"
-          />
-        </label>
-        <label class="tools-checkbox-container"
-          ><input type="checkbox" id="tool-cc-imageops-saturation-checkbox" />
-          <span id="tool-cc-imageops-saturation-text"></span
-          ><input
-            id="tool-cc-imageops-saturation-input"
-            type="number"
-            step="0.5"
-            min="0"
-            value="1"
-            style="width: 100px"
-          />
-        </label>
-        <label class="tools-checkbox-container"
-          ><input type="checkbox" id="tool-cc-imageops-crop-checkbox" />
-          <span id="tool-cc-imageops-crop-text"></span
-          ><i
-            id="tool-cc-tooltip-imageops-crop"
-            class="fas fa-question-circle tools-tooltip-button"
-            title="tooltip"
-          ></i
-          ><input
-            id="tool-cc-imageops-crop-input"
-            type="number"
-            step="1"
-            min="0"
-            value="0"
-            style="width: 100px"
-          />
-        </label>
-        <label class="tools-checkbox-container"
-          ><input type="checkbox" id="tool-cc-imageops-extend-checkbox" />
-          <span id="tool-cc-imageops-extend-text"></span
-          ><i
-            id="tool-cc-tooltip-imageops-extend"
-            class="fas fa-question-circle tools-tooltip-button"
-            title="tooltip"
-          ></i
-          ><input
-            id="tool-cc-imageops-extend-input"
-            type="number"
-            step="1"
-            min="0"
-            value="0"
-            style="width: 100px"
-          />
-          <input
-            id="tool-cc-imageops-extend-color-input"
-            type="color"
-            value="#000000"
-            style="width: 100px"
-          />
-        </label>
+        <label><span id="tool-cc-imageops-apply-text"></span></label>
+        <!-- image ops -->
+        <div class="tools-imageops-div">
+          <div class="tools-imageop-div">
+            <input type="checkbox" id="tool-cc-imageops-brightness-checkbox" />
+            <div class="tools-imageop-name-div">
+              <span id="tool-cc-imageops-brightness-text"></span>
+            </div>
+            <div class="tools-imageop-controls-div">
+              <input
+                id="tool-cc-imageops-brightness-input"
+                type="number"
+                step="0.5"
+                min="0"
+                value="1"
+              />
+            </div>
+          </div>
+          <div class="tools-imageop-div">
+            <input type="checkbox" id="tool-cc-imageops-saturation-checkbox" />
+            <div class="tools-imageop-name-div">
+              <span id="tool-cc-imageops-saturation-text"></span>
+            </div>
+            <div class="tools-imageop-controls-div">
+              <input
+                id="tool-cc-imageops-saturation-input"
+                type="number"
+                step="0.5"
+                min="0"
+                value="1"
+              />
+            </div>
+          </div>
+          <div class="tools-imageop-div">
+            <input type="checkbox" id="tool-cc-imageops-crop-checkbox" />
+            <div class="tools-imageop-name-div">
+              <span id="tool-cc-imageops-crop-text"></span>
+              <i
+                id="tool-cc-tooltip-imageops-crop"
+                class="fas fa-question-circle tools-tooltip-button"
+                title="tooltip"
+              ></i>
+            </div>
+            <div class="tools-imageop-controls-div">
+              <input
+                id="tool-cc-imageops-crop-input"
+                type="number"
+                step="1"
+                min="0"
+                value="0"
+              />
+            </div>
+          </div>
+          <div class="tools-imageop-div">
+            <input type="checkbox" id="tool-cc-imageops-extend-checkbox" />
+            <div class="tools-imageop-name-div">
+              <span id="tool-cc-imageops-extend-text"></span>
+              <i
+                id="tool-cc-tooltip-imageops-extend"
+                class="fas fa-question-circle tools-tooltip-button"
+                title="tooltip"
+              ></i>
+            </div>
+            <div class="tools-imageop-controls-div">
+              <input
+                id="tool-cc-imageops-extend-input"
+                type="number"
+                step="1"
+                min="0"
+                value="0"
+              />
+              <input
+                id="tool-cc-imageops-extend-color-input"
+                type="color"
+                value="#000000"
+              />
+            </div>
+          </div>
+        </div>
         <!--  -->
         <label
           ><span id="tool-cc-imageprocessing-multithreading-method-text"></span>

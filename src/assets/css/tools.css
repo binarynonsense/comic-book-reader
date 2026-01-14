@@ -984,6 +984,39 @@ html[dir="rtl"] .tools-range-bubble {
 
 /* /////////////////////////////////////////////////////////////// */
 
+.tools-imageops-div {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tools-imageop-div {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: anchor-center;
+}
+.tools-imageop-div input:not([type="checkbox"]) {
+  max-width: 100%;
+}
+
+.tools-imageop-name-div {
+  flex-direction: row;
+  display: flex;
+  flex: 0 1 25%;
+  gap: 5px;
+  align-items: anchor-center;
+}
+.tools-imageop-controls-div {
+  flex-direction: row;
+  display: flex;
+  flex: 0 1 75%;
+  gap: 5px;
+  align-items: anchor-center;
+}
+
+/* /////////////////////////////////////////////////////////////// */
+
 #tool-hst-items-ul,
 #tool-fb-items-ul {
   margin-top: 10px;
