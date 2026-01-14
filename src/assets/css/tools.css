@@ -1004,14 +1004,14 @@ html[dir="rtl"] .tools-range-bubble {
   flex-direction: row;
   display: flex;
   flex: 0 1 25%;
-  gap: 5px;
+  gap: 10px;
   align-items: anchor-center;
 }
 .tools-imageop-controls-div {
   flex-direction: row;
   display: flex;
   flex: 0 1 75%;
-  gap: 5px;
+  gap: 8px;
   align-items: anchor-center;
 }
 
