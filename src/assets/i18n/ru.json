@@ -511,6 +511,7 @@
   "tool-shared-modal-log-generating-new-file": "Генерация нового файла",
   "tool-shared-modal-log-generating-new-files": "Создание новых файлов",
   "[NEEDS TRANSLATION]tool-shared-modal-log-total-time": "Total time",
+  "[NEEDS TRANSLATION]tool-shared-modal-log-error-noimagesfound": "Error: No images found",
   "tool-shared-modal-log-failed-conversion": "Не удалось конвертировать файл",
   "tool-shared-modal-log-failed-extraction": "Не удалось извлечь файл",
   "tool-shared-modal-log-failed-creation": "Не удалось создать файл",

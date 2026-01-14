@@ -511,6 +511,7 @@
   "tool-shared-modal-log-generating-new-file": "Nagguguhit ng bagong file",
   "tool-shared-modal-log-generating-new-files": "Nagguguhit ng mga bagong file",
   "[NEEDS TRANSLATION]tool-shared-modal-log-total-time": "Total time",
+  "[NEEDS TRANSLATION]tool-shared-modal-log-error-noimagesfound": "Error: No images found",
   "tool-shared-modal-log-failed-conversion": "Hindi ma-convert ang file",
   "tool-shared-modal-log-failed-extraction": "Hindi ma-extract ang file",
   "tool-shared-modal-log-failed-creation": "Hindi ma-create ang file",
