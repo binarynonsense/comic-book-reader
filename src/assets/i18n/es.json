@@ -398,6 +398,7 @@
   "tool-shared-ui-creation-brightnessmultiplier": "Multiplicador de brillo",
   "tool-shared-ui-creation-saturationmultiplier": "Multiplicador de saturación",
   "tool-shared-ui-imageops-crop": "Recortar",
+  "tool-shared-ui-imageops-crop-border": "Recortar borde",
   "tool-shared-ui-imageops-pixels": "Píxeles",
   "tool-shared-ui-pdf-creation": "Creación de PDF",
   "tool-shared-ui-pdf-creation-tooltip": "La información/resolución de la imagen incrustada se mantendrá intacta, esta opción sólo cambia el valor de 'tamaño de página' (en puntos) almacenado en el nuevo PDF, asumiendo un valor de userunit de 1 (72dpi), a partir de los dpi de entrada seleccionados.",
