@@ -399,6 +399,8 @@
   "tool-shared-ui-creation-imageops-apply": "I-apply ang Mga Operasyon sa Imahe",
   "tool-shared-ui-creation-brightnessmultiplier": "Multiplier ng Liwanag",
   "tool-shared-ui-creation-saturationmultiplier": "Multiplier ng Saturation",
+  "[NEEDS TRANSLATION]tool-shared-ui-imageops-crop": "Crop",
+  "[NEEDS TRANSLATION]tool-shared-ui-imageops-pixels": "Pixels",
   "tool-shared-ui-pdf-creation": "Paglikha ng PDF",
   "tool-shared-ui-pdf-creation-tooltip": "Ang datos/resolusyon ng naka-embed na imahe ay mananatiling buo. Binabago lamang ng opsyong ito ang halaga ng 'page size' (sa mga puntos) na naka-store sa bagong PDF, batay sa userunit na 1 (72dpi) at piniling dpi ng input.",
   "tool-shared-ui-pdf-creation-o1": "Gamitin ang dpi ng imahe kung available, 300dpi kung hindi",

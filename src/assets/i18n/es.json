@@ -1,9 +1,9 @@
 {
   "@metadata": {
     "authors": ["Álvaro"],
-    "last-updated": "2025-12-27",
+    "last-updated": "2026-01-14",
     "license-id": "BSD-2-Clause",
-    "acbr-version": "3.14.0",
+    "acbr-version": "3.15.0-beta1",
     "pre-release": "false",
     "comments": "",
     "locale": "es",
@@ -397,6 +397,8 @@
   "tool-shared-ui-creation-imageops-apply": "Aplicar operaciones de imagen",
   "tool-shared-ui-creation-brightnessmultiplier": "Multiplicador de brillo",
   "tool-shared-ui-creation-saturationmultiplier": "Multiplicador de saturación",
+  "tool-shared-ui-imageops-crop": "Recortar",
+  "tool-shared-ui-imageops-pixels": "Píxeles",
   "tool-shared-ui-pdf-creation": "Creación de PDF",
   "tool-shared-ui-pdf-creation-tooltip": "La información/resolución de la imagen incrustada se mantendrá intacta, esta opción sólo cambia el valor de 'tamaño de página' (en puntos) almacenado en el nuevo PDF, asumiendo un valor de userunit de 1 (72dpi), a partir de los dpi de entrada seleccionados.",
   "tool-shared-ui-pdf-creation-o1": "Usar los dpi de la imagen si están disponibles, 300dpi si no",

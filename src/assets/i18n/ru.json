@@ -399,6 +399,8 @@
   "tool-shared-ui-creation-imageops-apply": "Применить операции с изображениями",
   "tool-shared-ui-creation-brightnessmultiplier": "Множитель яркости",
   "tool-shared-ui-creation-saturationmultiplier": "Множитель насыщенности",
+  "[NEEDS TRANSLATION]tool-shared-ui-imageops-crop": "Crop",
+  "[NEEDS TRANSLATION]tool-shared-ui-imageops-pixels": "Pixels",
   "tool-shared-ui-pdf-creation": "Создание PDF",
   "tool-shared-ui-pdf-creation-tooltip": "Данные/разрешение встроенного изображения останутся нетронутыми. Эта опция просто изменяет значение 'размера страницы' (в пунктах), сохранённое в новом PDF, принимая значение пользовательского блока равным 1 (72 dpi), основанное на выбранном значении dpi входных данных.",
   "tool-shared-ui-pdf-creation-o1": "Использовать dpi изображения, если оно доступно, 300dpi, если нет",

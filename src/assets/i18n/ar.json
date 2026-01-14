@@ -399,6 +399,8 @@
   "tool-shared-ui-creation-imageops-apply": "تطبيق العمليات على الصور",
   "tool-shared-ui-creation-brightnessmultiplier": "معامل السطوع",
   "tool-shared-ui-creation-saturationmultiplier": "معامل التشبع",
+  "[NEEDS TRANSLATION]tool-shared-ui-imageops-crop": "Crop",
+  "[NEEDS TRANSLATION]tool-shared-ui-imageops-pixels": "Pixels",
   "tool-shared-ui-pdf-creation": "إنشاء ملف PDF",
   "tool-shared-ui-pdf-creation-tooltip": "سيتم الاحتفاظ ببيانات/دقة الصورة المضمنة كما هي، وهذا الخيار يغير فقط قيمة 'حجم الصفحة' (بالنقاط) المخزنة في ملف PDF الجديد، بافتراض أن قيمة وحدة المستخدم هي 1 (72 نقطة لكل بوصة)، بناءً على قيمة dpi (نقطة لكل بوصة) الخاصة بالملف الاصلي.",
   "tool-shared-ui-pdf-creation-o1": "استخدم dpi (نقطة لكل بوصة) الخاصة بالصورة، إذا كانت متوفرة و 300 نقطة لكل بوصة إذا لم تكن كذلك",

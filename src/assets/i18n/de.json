@@ -399,6 +399,8 @@
   "tool-shared-ui-creation-imageops-apply": "Bildoperationen Anwenden",
   "tool-shared-ui-creation-brightnessmultiplier": "Helligkeits-multiplikator",
   "tool-shared-ui-creation-saturationmultiplier": "Sättigungs-multiplikator",
+  "[NEEDS TRANSLATION]tool-shared-ui-imageops-crop": "Crop",
+  "[NEEDS TRANSLATION]tool-shared-ui-imageops-pixels": "Pixels",
   "tool-shared-ui-pdf-creation": "PDF Erstellung",
   "tool-shared-ui-pdf-creation-tooltip": "Die Daten/Auflösung des eingebetteten Bildes werden intakt behalten, diese Option verändert nur die 'Seitengröße' Werte (in Punkten) welche in der neuen PDF gespeichert sind, angenommen bei einer Benutzereinheit von 1 (72 dpi), basierend auf der dpi des gewählten Eingangs.",
   "tool-shared-ui-pdf-creation-o1": "Verwende die dpi des eingebetteten Bildes wenn möglich, 300 dpi wenn nicht",

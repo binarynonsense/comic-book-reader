@@ -1,9 +1,9 @@
 {
   "@metadata": {
     "authors": ["Álvaro"],
-    "last-updated": "2025-12-27",
+    "last-updated": "2026-01-14",
     "license-id": "BSD-2-Clause",
-    "acbr-version": "3.14.0",
+    "acbr-version": "3.15.0-beta1",
     "pre-release": "false",
     "comments": "",
     "locale": "en",
@@ -397,6 +397,8 @@
   "tool-shared-ui-creation-imageops-apply": "Apply Image Operations",
   "tool-shared-ui-creation-brightnessmultiplier": "Brightness Multiplier",
   "tool-shared-ui-creation-saturationmultiplier": "Saturation Multiplier",
+  "tool-shared-ui-imageops-crop": "Crop",
+  "tool-shared-ui-imageops-pixels": "Pixels",
   "tool-shared-ui-pdf-creation": "PDF Creation",
   "tool-shared-ui-pdf-creation-tooltip": "The embedded image's data/resolution will be kept intact, this option just changes the 'page size' value (in points) stored in the new PDF, assuming a userunit value of 1 (72dpi), based on the selected input's dpi.",
   "tool-shared-ui-pdf-creation-o1": "Use the image's dpi if available, 300dpi if not",
