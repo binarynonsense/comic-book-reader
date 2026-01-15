@@ -164,6 +164,12 @@ function init(
       checkValidData();
     });
 
+  document
+    .getElementById("tool-cc-folders-recursively-checkbox")
+    .addEventListener("change", (event) => {
+      checkValidData();
+    });
+
   const outputFolderChangeButton = document.getElementById(
     "tool-cc-change-folder-button"
   );
@@ -544,6 +550,9 @@ function updateUISelectedOptions() {
     "tool-cc-pdf-extraction-select"
   ).value;
   // g_selectedOptions.outputFolderPath is autoupdated
+  g_uiSelectedOptions.outputKeepSubfoldersStructure = document.querySelector(
+    "#tool-cc-keep-subfolders-structure-checkbox"
+  ).checked;
   g_uiSelectedOptions.outputFolderOption = document.getElementById(
     "tool-cc-output-folder-option-select"
   ).value;
@@ -1124,23 +1133,41 @@ function checkValidData() {
     }
   }
   ///////////////////
+  const outputKeepSubfoldersStructureDiv = document.querySelector(
+    "#tool-cc-keep-subfolders-structure-div"
+  );
+  if (
+    g_mode === ToolMode.CONVERT &&
+    document.getElementById("tool-cc-folders-recursively-checkbox").checked &&
+    document.getElementById("tool-cc-folders-contain-select").value === "comics"
+  ) {
+    outputKeepSubfoldersStructureDiv.classList.remove("set-display-none");
+  } else {
+    outputKeepSubfoldersStructureDiv.classList.add("set-display-none");
+  }
+  ///////////////////
   const folderContentsSelect = document.querySelector(
     "#tool-cc-folders-contain-select"
   );
-  if (folderContentsSelect.value === "0") {
-    document
-      .querySelector("#tool-cc-folders-file-formats-div")
-      .classList.remove("set-display-none");
-    document
-      .querySelector("#tool-cc-folders-file-formats-text")
-      .parentElement.classList.remove("set-display-none");
+  if (g_mode === ToolMode.CONVERT) {
+    folderContentsSelect.parentElement.classList.remove("set-display-none");
+    if (folderContentsSelect.value === "comics") {
+      document
+        .querySelector("#tool-cc-folders-file-formats-div")
+        .classList.remove("set-display-none");
+      document
+        .querySelector("#tool-cc-folders-file-formats-text")
+        .parentElement.classList.remove("set-display-none");
+    } else {
+      document
+        .querySelector("#tool-cc-folders-file-formats-div")
+        .classList.add("set-display-none");
+      document
+        .querySelector("#tool-cc-folders-file-formats-text")
+        .parentElement.classList.add("set-display-none");
+    }
   } else {
-    document
-      .querySelector("#tool-cc-folders-file-formats-div")
-      .classList.add("set-display-none");
-    document
-      .querySelector("#tool-cc-folders-file-formats-text")
-      .parentElement.classList.add("set-display-none");
+    folderContentsSelect.parentElement.classList.add("set-display-none");
   }
   ///////////////////
   if (g_outputImageScaleSelect.value === "0") {
@@ -1294,7 +1321,7 @@ function onStart(inputFiles) {
     modalButtonClose.classList.remove("modal-button-danger-color");
   }
 
-  sendIpcToMain("start", g_inputFiles);
+  sendIpcToMain("start");
 }
 
 function onStartNextFile() {

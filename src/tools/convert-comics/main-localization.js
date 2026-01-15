@@ -268,6 +268,10 @@ exports.getLocalization = function (mode) {
       text: _("tool-shared-ui-advanced-output-options"),
     },
     {
+      id: "tool-cc-keep-subfolders-structure-text",
+      text: _("tool-shared-ui-output-options-keep-subfolders"),
+    },
+    {
       id: "tool-cc-output-file-same-name-text",
       text: _("tool-shared-ui-output-file-same-name"),
     },

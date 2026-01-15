@@ -327,91 +327,8 @@ function initOnIpcCallbacks() {
   // CONVERSION //////////////////////////
   ////////////////////////////////////////
 
-  on("start-clicked", async (inputList, selectedOptions) => {
-    g_inputFiles = [];
-    function isAlreadyInInputList(filePath) {
-      return g_inputFiles.some((e) => e.path === filePath);
-    }
-    g_uiSelectedOptions = structuredClone(selectedOptions);
-    for (let index = 0; index < inputList.length; index++) {
-      const inputListItem = inputList[index];
-      if (inputListItem.type === 0) {
-        // FILE
-        let type = await getFileType(inputListItem.path);
-        if (type != undefined && !isAlreadyInInputList(inputListItem.path)) {
-          g_inputFiles.push({
-            path: inputListItem.path,
-            type: type,
-          });
-        }
-      } else {
-        // DIR
-        if (g_uiSelectedOptions.inputFoldersContain === "images") {
-          // folder content = comic book images
-          if (!isAlreadyInInputList(inputListItem.path)) {
-            g_inputFiles.push({
-              path: inputListItem.path,
-              type: FileDataType.IMGS_FOLDER,
-            });
-          }
-        } else {
-          // folder content = comic book files
-          let filesInFolder = [];
-          if (g_uiSelectedOptions.inputSearchFoldersRecursively) {
-            filesInFolder = fileUtils.getFilesInFolderRecursive(
-              inputListItem.path,
-              g_uiSelectedOptions.inputSearchFoldersFormats
-            );
-          } else {
-            filesInFolder = fileUtils.getFilesInFolder(
-              inputListItem.path,
-              g_uiSelectedOptions.inputSearchFoldersFormats
-            );
-          }
-          if (g_uiSelectedOptions.inputSearchFoldersRecursively) {
-            for (let j = 0; j < filesInFolder.length; j++) {
-              const element = filesInFolder[j];
-              const filePath = element;
-              let type = await getFileType(filePath);
-              if (type != undefined && !isAlreadyInInputList(filePath)) {
-                // TODO: only add rootFolderPath if setting for keep subfolder structure set (not yet added)
-                g_inputFiles.push({
-                  path: filePath,
-                  type: type,
-                  rootFolderPath: inputListItem.path,
-                });
-                log.test(
-                  path
-                    .relative(inputListItem.path, path.dirname(filePath))
-                    .split(path.sep)
-                );
-              }
-            }
-          } else {
-            for (let j = 0; j < filesInFolder.length; j++) {
-              const element = filesInFolder[j];
-              const filePath = path.join(inputListItem.path, element);
-              let type = await getFileType(filePath);
-              if (type != undefined && !isAlreadyInInputList(filePath)) {
-                g_inputFiles.push({
-                  path: filePath,
-                  type: type,
-                });
-              }
-            }
-          }
-        }
-      }
-    }
-    if (g_inputFiles.length > 0)
-      sendIpcToRenderer("start-accepted", g_inputFiles);
-    else
-      sendIpcToRenderer(
-        "show-modal-info",
-        _("tool-shared-modal-title-error"),
-        _("tool-shared-modal-log-failed-reason-no-valid-file"),
-        _("tool-shared-ui-close").toUpperCase()
-      );
+  on("start-clicked", async (...args) => {
+    onStartClicked(...args);
   });
 
   on("start", (...args) => {
@@ -443,87 +360,8 @@ function initOnIpcCallbacks() {
     stopError(undefined, errorMsg);
   });
 
-  on("resizing-error", (errorMessage) => {
-    stopError(undefined, errorMessage);
-  });
-
-  on("end", (wasCanceled, numFiles, numErrors, numAttempted) => {
-    const conversionTime = timers.stop("convert-comics");
-    log.debug(`total conversion time: ${conversionTime.toFixed(2)}s`);
-    if (conversionTime >= 60) {
-      const minutes = Math.floor(conversionTime / 60);
-      const seconds = (conversionTime - minutes * 60).toFixed(0);
-      if (seconds.length < 2) seconds = "0" + seconds;
-      updateModalLogText(
-        `${_("tool-shared-modal-log-total-time")}: ${minutes}m ${seconds}s`
-      );
-    } else {
-      updateModalLogText(
-        `${_("tool-shared-modal-log-total-time")}: ${conversionTime.toFixed(
-          0
-        )}s`
-      );
-    }
-    updateModalLogText("");
-    if (!wasCanceled) {
-      if (g_mode === ToolMode.CONVERT) {
-        sendIpcToRenderer(
-          "modal-update-title-text",
-          _("tool-shared-modal-title-conversion-finished")
-        );
-
-        if (numErrors > 0) {
-          sendIpcToRenderer(
-            "update-info-text",
-            _(
-              "tool-shared-modal-info-conversion-error-num-files",
-              numErrors,
-              numFiles
-            )
-          );
-        } else {
-          sendIpcToRenderer(
-            "update-info-text",
-            _("tool-shared-modal-info-conversion-success-num-files", numFiles)
-          );
-        }
-      } else {
-        if (numErrors > 0) {
-          sendIpcToRenderer(
-            "modal-update-title-text",
-            _("tool-shared-modal-title-creation-failed")
-          );
-          sendIpcToRenderer("update-info-text", "");
-        } else {
-          sendIpcToRenderer(
-            "modal-update-title-text",
-            _("tool-shared-modal-title-creation-finished")
-          );
-        }
-      }
-    } else {
-      sendIpcToRenderer(
-        "modal-update-title-text",
-        g_mode === ToolMode.CONVERT
-          ? _("tool-shared-modal-title-conversion-canceled")
-          : _("tool-shared-modal-title-creation-canceled")
-      );
-      sendIpcToRenderer(
-        "update-info-text",
-        g_mode === ToolMode.CONVERT
-          ? _(
-              "tool-shared-modal-info-conversion-results",
-              numAttempted - numErrors,
-              numErrors,
-              numFiles - numAttempted
-            )
-          : ""
-      );
-    }
-
-    menuBar.setCloseTool(true);
-    sendIpcToPreload("update-menubar");
-    sendIpcToRenderer("show-result", _("tool-shared-modal-log-failed-files"));
+  on("end", (...args) => {
+    end(...args);
   });
 
   on("copy-text-to-clipboard", (text) => {
@@ -553,7 +391,112 @@ function initHandleIpcCallbacks() {}
 // TOOL START /////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-function start(inputFiles) {
+async function onStartClicked(inputList, selectedOptions) {
+  g_inputFiles = [];
+
+  function isAlreadyInInputList(filePath) {
+    return g_inputFiles.some((e) => e.path === filePath);
+  }
+
+  g_uiSelectedOptions = structuredClone(selectedOptions);
+  for (let index = 0; index < inputList.length; index++) {
+    const inputListItem = inputList[index];
+    if (inputListItem.type === 0) {
+      // FILE
+      let type = await getFileType(inputListItem.path);
+      if (type != undefined && !isAlreadyInInputList(inputListItem.path)) {
+        g_inputFiles.push({
+          path: inputListItem.path,
+          type: type,
+        });
+      }
+    } else {
+      // DIR
+      if (g_uiSelectedOptions.inputFoldersContain === "images") {
+        // folder content = comic book images
+        if (!isAlreadyInInputList(inputListItem.path)) {
+          g_inputFiles.push({
+            path: inputListItem.path,
+            type: FileDataType.IMGS_FOLDER,
+          });
+        }
+      } else {
+        // folder content = comic book files
+        let filesInFolder = [];
+        if (g_uiSelectedOptions.inputSearchFoldersRecursively) {
+          filesInFolder = fileUtils.getFilesInFolderRecursive(
+            inputListItem.path,
+            g_uiSelectedOptions.inputSearchFoldersFormats
+          );
+        } else {
+          filesInFolder = fileUtils.getFilesInFolder(
+            inputListItem.path,
+            g_uiSelectedOptions.inputSearchFoldersFormats
+          );
+        }
+        if (g_uiSelectedOptions.inputSearchFoldersRecursively) {
+          for (let j = 0; j < filesInFolder.length; j++) {
+            const element = filesInFolder[j];
+            const filePath = element;
+            let type = await getFileType(filePath);
+            if (type != undefined && !isAlreadyInInputList(filePath)) {
+              if (
+                g_uiSelectedOptions.outputKeepSubfoldersStructure &&
+                g_uiSelectedOptions.inputFoldersContain === "comics"
+              ) {
+                let outputFolderPath = path.join(
+                  g_uiSelectedOptions.outputFolderPath,
+                  path.basename(inputListItem.path),
+                  path.relative(inputListItem.path, path.dirname(filePath))
+                );
+                log.test(path.basename(inputListItem.path));
+                log.test(
+                  path.relative(inputListItem.path, path.dirname(filePath))
+                );
+                log.test("outputFolderPath: " + outputFolderPath);
+                g_inputFiles.push({
+                  path: filePath,
+                  type: type,
+                  outputFolderPath,
+                });
+              } else {
+                g_inputFiles.push({
+                  path: filePath,
+                  type: type,
+                });
+              }
+            }
+          }
+        } else {
+          for (let j = 0; j < filesInFolder.length; j++) {
+            const element = filesInFolder[j];
+            const filePath = path.join(inputListItem.path, element);
+            let type = await getFileType(filePath);
+            if (type != undefined && !isAlreadyInInputList(filePath)) {
+              g_inputFiles.push({
+                path: filePath,
+                type: type,
+              });
+            }
+          }
+        }
+      }
+    }
+  }
+  if (g_inputFiles.length > 0)
+    sendIpcToRenderer("start-accepted", g_inputFiles);
+  else
+    sendIpcToRenderer(
+      "show-modal-info",
+      _("tool-shared-modal-title-error"),
+      _("tool-shared-modal-log-failed-reason-no-valid-file"),
+      _("tool-shared-ui-close").toUpperCase()
+    );
+}
+
+//////////////////////
+
+function start() {
   timers.start("convert-comics");
   g_cancel = false;
   g_imageIndex = 0;
@@ -565,8 +508,8 @@ function start(inputFiles) {
     g_tempSubFolderPath = temp.createSubFolder();
     // check types
     let areAllImages = true;
-    for (let index = 0; index < inputFiles.length; index++) {
-      const inputFile = inputFiles[index];
+    for (let index = 0; index < g_inputFiles.length; index++) {
+      const inputFile = g_inputFiles[index];
       if (inputFile.type !== FileDataType.IMG) {
         areAllImages = false;
         break;
@@ -577,8 +520,8 @@ function start(inputFiles) {
         "modal-update-title-text",
         _("tool-shared-modal-title-creating")
       );
-      for (let index = 0; index < inputFiles.length; index++) {
-        const inputFilePath = inputFiles[index].path;
+      for (let index = 0; index < g_inputFiles.length; index++) {
+        const inputFilePath = g_inputFiles[index].path;
         let outName = path.basename(inputFilePath);
         if (g_uiSelectedOptions.outputPageOrder === "byPosition") {
           const extension = path.extname(inputFilePath);
@@ -597,14 +540,15 @@ function start(inputFiles) {
 //////////////////////
 
 function startFile(inputFileIndex, totalFilesNum) {
+  g_inputFilesIndex = inputFileIndex;
+
   if (g_cancel === true) {
     stopCancel();
     return;
   }
-  g_inputFilesIndex = inputFileIndex;
-  let inputFilePath = g_inputFiles[inputFileIndex].path;
-  let inputFileType = g_inputFiles[inputFileIndex].type;
-  let fileNum = inputFileIndex + 1;
+  let inputFilePath = g_inputFiles[g_inputFilesIndex].path;
+  let inputFileType = g_inputFiles[g_inputFilesIndex].type;
+  let fileNum = g_inputFilesIndex + 1;
   if (fileNum !== 1 && g_mode === ToolMode.CREATE) updateModalLogText("");
   sendIpcToRenderer(
     "modal-update-title-text",
@@ -626,10 +570,12 @@ function startFile(inputFileIndex, totalFilesNum) {
   updateModalLogText(inputFilePath);
 
   // check if output file name exists and skip mode
-  // TODO: 2026: check if keep subfolder structure, as output folder may change
   {
     if (g_uiSelectedOptions.outputFileSameName === "skip") {
       let outputFolderPath = g_uiSelectedOptions.outputFolderPath;
+      if (g_inputFiles[g_inputFilesIndex].outputFolderPath) {
+        outputFolderPath = g_inputFiles[g_inputFilesIndex].outputFolderPath;
+      }
       if (
         g_mode === ToolMode.CONVERT &&
         g_uiSelectedOptions.outputFolderOption == "1"
@@ -845,6 +791,83 @@ exports.onIpcFromToolsWorkerRenderer = function (...args) {
 ///////////////////////////////////////////////////////////////////////////////
 // TOOL END ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
+
+function end(wasCanceled, numFiles, numErrors, numAttempted) {
+  const conversionTime = timers.stop("convert-comics");
+  log.debug(`total conversion time: ${conversionTime.toFixed(2)}s`);
+  if (conversionTime >= 60) {
+    const minutes = Math.floor(conversionTime / 60);
+    const seconds = (conversionTime - minutes * 60).toFixed(0);
+    if (seconds.length < 2) seconds = "0" + seconds;
+    updateModalLogText(
+      `${_("tool-shared-modal-log-total-time")}: ${minutes}m ${seconds}s`
+    );
+  } else {
+    updateModalLogText(
+      `${_("tool-shared-modal-log-total-time")}: ${conversionTime.toFixed(0)}s`
+    );
+  }
+  updateModalLogText("");
+  if (!wasCanceled) {
+    if (g_mode === ToolMode.CONVERT) {
+      sendIpcToRenderer(
+        "modal-update-title-text",
+        _("tool-shared-modal-title-conversion-finished")
+      );
+
+      if (numErrors > 0) {
+        sendIpcToRenderer(
+          "update-info-text",
+          _(
+            "tool-shared-modal-info-conversion-error-num-files",
+            numErrors,
+            numFiles
+          )
+        );
+      } else {
+        sendIpcToRenderer(
+          "update-info-text",
+          _("tool-shared-modal-info-conversion-success-num-files", numFiles)
+        );
+      }
+    } else {
+      if (numErrors > 0) {
+        sendIpcToRenderer(
+          "modal-update-title-text",
+          _("tool-shared-modal-title-creation-failed")
+        );
+        sendIpcToRenderer("update-info-text", "");
+      } else {
+        sendIpcToRenderer(
+          "modal-update-title-text",
+          _("tool-shared-modal-title-creation-finished")
+        );
+      }
+    }
+  } else {
+    sendIpcToRenderer(
+      "modal-update-title-text",
+      g_mode === ToolMode.CONVERT
+        ? _("tool-shared-modal-title-conversion-canceled")
+        : _("tool-shared-modal-title-creation-canceled")
+    );
+    sendIpcToRenderer(
+      "update-info-text",
+      g_mode === ToolMode.CONVERT
+        ? _(
+            "tool-shared-modal-info-conversion-results",
+            numAttempted - numErrors,
+            numErrors,
+            numFiles - numAttempted
+          )
+        : ""
+    );
+  }
+
+  menuBar.setCloseTool(true);
+  sendIpcToPreload("update-menubar");
+  sendIpcToRenderer("show-result", _("tool-shared-modal-log-failed-files"));
+}
 
 function stopError(error, errorMessage, nameAsError = true) {
   let uiMsg = errorMessage;
@@ -1408,6 +1431,9 @@ async function createFilesFromImages(
       extraData = g_uiSelectedOptions.outputPdfCreationMethod;
     }
     let outputFolderPath = g_uiSelectedOptions.outputFolderPath;
+    if (g_inputFiles[g_inputFilesIndex].outputFolderPath) {
+      outputFolderPath = g_inputFiles[g_inputFilesIndex].outputFolderPath;
+    }
     if (
       g_mode === ToolMode.CONVERT &&
       g_uiSelectedOptions.outputFolderOption == "1"
