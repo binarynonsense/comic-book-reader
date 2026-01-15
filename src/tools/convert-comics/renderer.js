@@ -203,8 +203,9 @@ function init(
       `<option value="0">${g_localizedTexts.outputFolderOption0}</option>` +
       `<option value="1">${g_localizedTexts.outputFolderOption1}</option>`;
     outputFolderOptionSelect.addEventListener("change", (event) => {
-      updateFolderOptionUI();
-      updateColumnsHeight();
+      // updateFolderOptionUI();
+      // updateColumnsHeight();
+      checkValidData();
     });
   } else {
     outputFolderOptionSelect.classList.add("set-display-none");
@@ -1138,6 +1139,8 @@ function checkValidData() {
   );
   if (
     g_mode === ToolMode.CONVERT &&
+    document.getElementById("tool-cc-output-folder-option-select").value ===
+      "0" &&
     document.getElementById("tool-cc-folders-recursively-checkbox").checked &&
     document.getElementById("tool-cc-folders-contain-select").value === "comics"
   ) {
