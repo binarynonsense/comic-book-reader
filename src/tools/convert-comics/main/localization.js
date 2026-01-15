@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-const { _, _raw } = require("../../shared/main/i18n");
+const { _, _raw } = require("../../../shared/main/i18n");
 
 const ToolMode = {
   CONVERT: 0,

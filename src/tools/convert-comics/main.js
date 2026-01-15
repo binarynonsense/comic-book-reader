@@ -16,7 +16,7 @@ const path = require("path");
 const core = require("../../core/main");
 const os = require("os");
 const { _ } = require("../../shared/main/i18n");
-const localization = require("./main-localization");
+const localization = require("./main/localization");
 
 const { FileExtension, FileDataType } = require("../../shared/main/constants");
 const { fork } = require("child_process");
@@ -31,7 +31,7 @@ const temp = require("../../shared/main/temp");
 const tools = require("../../shared/main/tools");
 const menuBar = require("../../shared/main/menu-bar");
 const timers = require("../../shared/main/timers");
-const { processImage } = require("./main-process-image");
+const { processImage } = require("./main/process-image");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -1298,7 +1298,7 @@ async function processImagesWithWorkers({
     let error = undefined;
 
     for (let i = 0; i < maxWorkers; i++) {
-      const worker = new Worker(path.join(__dirname, "main-worker-thread.js"));
+      const worker = new Worker(path.join(__dirname, "/main/worker-thread.js"));
       worker.on("message", (msg) => {
         if (msg.type === "done") {
           activeWorkers--;

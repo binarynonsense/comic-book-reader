@@ -7,8 +7,8 @@
 
 const fs = require("fs");
 const path = require("path");
-const fileUtils = require("../../shared/main/file-utils");
-const { FileExtension } = require("../../shared/main/constants");
+const fileUtils = require("../../../shared/main/file-utils");
+const { FileExtension } = require("../../../shared/main/constants");
 
 exports.processImage = async function (
   filePath,

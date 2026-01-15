@@ -6,7 +6,7 @@
  */
 
 const { parentPort } = require("worker_threads");
-const { processImage } = require("./main-process-image");
+const { processImage } = require("./process-image");
 
 parentPort.on("message", async (msg) => {
   if (msg.type === "shutdown") {
