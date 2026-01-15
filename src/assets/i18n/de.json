@@ -316,6 +316,7 @@
   "tool-shared-ui-input-images": "Füge Bild/er ein",
   "[NOTE TO TRANSLATORS]tool-shared-ui-input-list": "'Input List' as in a list of input files, folders and/or images",
   "tool-shared-ui-input-list": "Eingangsliste",
+  "[NEEDS TRANSLATION]tool-shared-ui-input-folders": "Input Folders",
   "tool-shared-ui-input-folders-contain": "Eingangsordner enthalten",
   "tool-shared-ui-input-folders-contain-0": "Comicbuchdateien",
   "tool-shared-ui-input-folders-contain-1": "Die Bilddateien eines einzelnen Comics",
