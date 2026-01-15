@@ -77,6 +77,11 @@ html[dir="rtl"] #tools:not(:has(iframe)) {
   background-color: var(--tools-bg1-color);
 }
 
+.tools-option-children {
+  padding-inline-start: 20px;
+  border-inline-start: 3px solid var(--tools-bg2-color);
+}
+
 /* /////////////////////////////////////////////////////////////// */
 
 #tools-menu-sticky-div {
@@ -988,6 +993,7 @@ html[dir="rtl"] .tools-range-bubble {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  margin: 3px 0px 5px 0;
 }
 
 .tools-imageop-div {

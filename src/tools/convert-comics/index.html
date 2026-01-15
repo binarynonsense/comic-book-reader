@@ -225,26 +225,29 @@
     >
       <h3><span id="tool-cc-advanced-input-options-text"></span></h3>
       <div class="tools-columns-right-subsection">
-        <label
-          ><span id="tool-cc-folders-contain-text"></span>
-          <select id="tool-cc-folders-contain-select">
-            <option
-              id="tool-cc-folders-contain-o0-text"
-              value="comics"
-              selected
-            ></option>
-            <option
-              id="tool-cc-folders-contain-o1-text"
-              value="images"
-            ></option></select
-        ></label>
-        <label><span id="tool-cc-folders-file-formats-text"></span> </label>
-        <div id="tool-cc-folders-file-formats-div"></div>
-        <label><span id="tool-cc-folders-recursively-text"></span></label>
-        <label class="tools-toggle">
-          <input type="checkbox" id="tool-cc-folders-recursively-checkbox" />
-          <span class="tools-toggle-slider"></span>
-        </label>
+        <label><span id="tool-cc-input-folders-text"></span> </label>
+        <div class="tools-option-children">
+          <label
+            ><span id="tool-cc-folders-contain-text"></span>
+            <select id="tool-cc-folders-contain-select">
+              <option
+                id="tool-cc-folders-contain-o0-text"
+                value="comics"
+                selected
+              ></option>
+              <option
+                id="tool-cc-folders-contain-o1-text"
+                value="images"
+              ></option></select
+          ></label>
+          <label><span id="tool-cc-folders-file-formats-text"></span> </label>
+          <div id="tool-cc-folders-file-formats-div"></div>
+          <label><span id="tool-cc-folders-recursively-text"></span></label>
+          <label class="tools-toggle">
+            <input type="checkbox" id="tool-cc-folders-recursively-checkbox" />
+            <span class="tools-toggle-slider"></span>
+          </label>
+        </div>
         <label
           ><span id="tool-cc-pdf-extraction-text"></span>
           <i
@@ -461,8 +464,8 @@
         ></label>
         <!-- TODO: don't use inline css / improve layout -->
         <div
-          class="tool-shared-columns-parent"
-          style="margin-bottom: 40px"
+          class="tool-shared-columns-parent tools-option-children"
+          style="min-height: 90px"
           id="tool-cc-imageprocessing-multithreading-method-0-div"
         >
           <div class="tool-shared-columns-50">
