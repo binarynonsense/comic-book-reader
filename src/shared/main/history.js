@@ -17,6 +17,8 @@ const { getConfigFolder } = require("./app-utils");
 let g_recent = [];
 let g_recentCapacity = 100;
 
+let g_home = [];
+
 ///////////////////////////////////////////////////////////////////////////////
 // HISTORY ////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -30,6 +32,7 @@ function save() {
   let history = {};
   history.version = appUtils.getAppVersion();
   history.recent = g_recent;
+  history.home = g_home;
   let hstFilePath = path.join(getConfigFolder(), "acbr.hst");
   const historyJSON = JSON.stringify(history, null, 2);
   try {
@@ -43,6 +46,7 @@ function save() {
 
 function load() {
   g_recent = [];
+  g_home = [];
   let hstFilePath = path.join(getConfigFolder(), "acbr.hst");
   if (fs.existsSync(hstFilePath)) {
     let data;
@@ -66,28 +70,37 @@ function load() {
     }
 
     if (utils.isObject(loadedHistory)) {
+      function loadEntry(entry, toArray) {
+        if (
+          entry.filePath !== undefined &&
+          entry.filePath !== "" &&
+          typeof entry.filePath === "string"
+        ) {
+          if (isNaN(entry.pageIndex)) entry.pageIndex = 0;
+          entry.pageIndex = Number(entry.pageIndex);
+          if (entry.fitMode !== undefined && isNaN(entry.fitMode)) {
+            delete entry.fitMode;
+          }
+          if (entry.pageMode !== undefined && isNaN(entry.pageMode)) {
+            delete entry.pageMode;
+          }
+          if (entry.zoomScale !== undefined && isNaN(entry.zoomScale)) {
+            delete entry.zoomScale;
+          }
+          // TODO: sanitize data bookType if available
+          toArray.push(entry);
+        }
+      }
+      // recent files
       if (loadedHistory.recent && Array.isArray(loadedHistory.recent)) {
         for (let index = 0; index < loadedHistory.recent.length; index++) {
-          const entry = loadedHistory.recent[index];
-          if (
-            entry.filePath !== undefined &&
-            entry.filePath !== "" &&
-            typeof entry.filePath === "string"
-          ) {
-            if (isNaN(entry.pageIndex)) entry.pageIndex = 0;
-            entry.pageIndex = Number(entry.pageIndex);
-            if (entry.fitMode !== undefined && isNaN(entry.fitMode)) {
-              delete entry.fitMode;
-            }
-            if (entry.pageMode !== undefined && isNaN(entry.pageMode)) {
-              delete entry.pageMode;
-            }
-            if (entry.zoomScale !== undefined && isNaN(entry.zoomScale)) {
-              delete entry.zoomScale;
-            }
-            // TODO: sanitize data bookType if available
-            g_recent.push(entry);
-          }
+          loadEntry(loadedHistory.recent[index], g_recent);
+        }
+      }
+      // files from home not in recent
+      if (loadedHistory.home && Array.isArray(loadedHistory.home)) {
+        for (let index = 0; index < loadedHistory.home.length; index++) {
+          loadEntry(loadedHistory.home[index], g_home);
         }
       }
     }
@@ -118,8 +131,12 @@ function getRecentIndex(index) {
   return structuredClone(g_recent[index]);
 }
 
-function removeRecentIndex(index) {
-  g_recent.splice(index, 1);
+function getFilePathIndexInRecent(filePath) {
+  return getFilePathIndexInList(filePath, 0);
+}
+
+function getDataIndexInRecent(data) {
+  return getDataIndexInList(data, 0);
 }
 
 function changeRecentCapacity(capacity) {
@@ -131,7 +148,7 @@ function changeRecentCapacity(capacity) {
 }
 
 function addRecent(filePath, pageIndex, numPages, data) {
-  let foundIndex = getRecentFilePathIndex(filePath);
+  let foundIndex = getFilePathIndexInRecent(filePath);
   if (foundIndex !== undefined) {
     // remove, to update and put last
     g_recent.splice(foundIndex, 1);
@@ -152,35 +169,81 @@ function addRecent(filePath, pageIndex, numPages, data) {
   if (g_recent.length > settings.getValue("history_capacity")) {
     g_recent.splice(0, g_recent.length - settings.getValue("history_capacity"));
   }
+  //
+  foundIndex = getFilePathIndexInHome(filePath);
+  if (foundIndex !== undefined) {
+    // remove from home, as it's now in recent
+    g_home.splice(foundIndex, 1);
+  }
 }
 
-function getRecentFilePathIndex(filePath) {
-  if (!filePath) return undefined;
-  let foundIndex;
-  for (let index = 0; index < g_recent.length; index++) {
-    const element = g_recent[index];
-    if (element.filePath === filePath) {
-      foundIndex = index;
-      break;
+function removeRecentIndex(index) {
+  const entry = g_recent[index];
+  // TODO: is it in a home list??
+  if (true) {
+    let foundIndex = undefined;
+    if (entry.data && entry.data.source) {
+      foundIndex = getDataIndexInHome(entry.data);
+    } else {
+      foundIndex = getFilePathIndexInHome(entry.filePath);
+    }
+    if (!foundIndex) {
+      // not already in home
+      g_home.push(entry);
     }
   }
-  return foundIndex;
+  g_recent.splice(index, 1);
 }
 
-function getRecentDataIndex(data) {
-  if (!data) return undefined;
+///////////////////////////////////////////////////////////////////////////////
+// HOME ////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+function getFilePathIndexInHome(filePath) {
+  return getFilePathIndexInList(filePath, 1);
+}
+
+function getDataIndexInHome(data) {
+  return getDataIndexInList(data, 1);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// COMMON /////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+function getDataIndexInList(data, listIndex) {
+  if (!data || listIndex < 0 || listIndex > 1) return undefined;
   let foundIndex;
-  for (let index = 0; index < g_recent.length; index++) {
-    const element = g_recent[index];
+  const entries = listIndex === 0 ? g_recent : g_home;
+  for (let index = 0; index < entries.length; index++) {
+    const entry = entries[index];
     // NOTE: crappy comparision, error prone?
-    if (!element.data) continue;
-    if (JSON.stringify(element.data) === JSON.stringify(data)) {
+    if (!entry.data) continue;
+    if (JSON.stringify(entry.data) === JSON.stringify(data)) {
       foundIndex = index;
       break;
     }
   }
   return foundIndex;
 }
+
+function getFilePathIndexInList(filePath, listIndex) {
+  if (!filePath || listIndex < 0 || listIndex > 1) return undefined;
+  let foundIndex;
+  const entries = listIndex === 0 ? g_recent : g_home;
+  for (let index = 0; index < entries.length; index++) {
+    const entry = entries[index];
+    if (entry.filePath === filePath) {
+      foundIndex = index;
+      break;
+    }
+  }
+  return foundIndex;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// EXPORTS ////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 module.exports = {
   init,
@@ -193,6 +256,6 @@ module.exports = {
   removeRecentIndex,
   changeRecentCapacity,
   addRecent,
-  getRecentFilePathIndex,
-  getRecentDataIndex,
+  getFilePathIndexInRecent,
+  getDataIndexInRecent,
 };

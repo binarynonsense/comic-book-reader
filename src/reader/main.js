@@ -709,18 +709,15 @@ exports.requestOpenConfirmation = function (filePath) {
 
 function tryOpen(filePath, bookType, historyEntry, hsFavoritesEntry) {
   sendIpcToPreload("update-menubar"); // in case coming from menu
-
   closeCurrentFile();
-
   try {
     if (!bookType) bookType = BookType.NOT_SET;
     let pageIndex;
 
     // home screen data fav path
-
     if (hsFavoritesEntry) {
       if (hsFavoritesEntry.data && hsFavoritesEntry.data.source) {
-        let historyIndex = history.getRecentDataIndex(hsFavoritesEntry.data);
+        let historyIndex = history.getDataIndexInRecent(hsFavoritesEntry.data);
         if (historyIndex !== undefined) {
           historyEntry = history.getRecentIndex(historyIndex);
         } else {
@@ -745,9 +742,8 @@ function tryOpen(filePath, bookType, historyEntry, hsFavoritesEntry) {
     }
 
     // normal path
-
     if (!historyEntry) {
-      let historyIndex = history.getRecentFilePathIndex(filePath);
+      let historyIndex = history.getFilePathIndexInRecent(filePath);
       if (historyIndex !== undefined) {
         historyEntry = history.getRecentIndex(historyIndex);
       }
@@ -927,7 +923,7 @@ function openImageFolder(folderPath, filePath, pageIndex) {
         }
       }
     } else {
-      let historyIndex = history.getRecentFilePathIndex(folderPath);
+      let historyIndex = history.getFilePathIndexInRecent(folderPath);
       if (historyIndex !== undefined) {
         pageIndex = history.getRecentIndex(historyIndex).pageIndex;
       }
@@ -2119,7 +2115,7 @@ function setInitialPageMode(filePath) {
   // ref: setInitialZoom
   if (settings.getValue("pageModeFileLoading") === 1) {
     // use history
-    let historyIndex = history.getRecentFilePathIndex(filePath);
+    let historyIndex = history.getFilePathIndexInRecent(filePath);
     if (historyIndex !== undefined) {
       let pageMode = history.getRecentIndex(historyIndex).pageMode;
       if (pageMode !== undefined) {
@@ -2218,7 +2214,7 @@ function switchPageMode() {
 function setInitialZoom(filePath) {
   if (settings.getValue("zoomFileLoading") === 1) {
     // use history
-    let historyIndex = history.getRecentFilePathIndex(filePath);
+    let historyIndex = history.getFilePathIndexInRecent(filePath);
     if (historyIndex !== undefined) {
       let fitMode = history.getRecentIndex(historyIndex).fitMode;
       let zoomScale = history.getRecentIndex(historyIndex).zoomScale;

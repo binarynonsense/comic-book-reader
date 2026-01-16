@@ -1057,7 +1057,7 @@ function getNewCardDiv(cardType, data, navRow, navColumn, listIndex) {
           if (data.pathType === 1) {
             sendIpcToMain("hs-open-dialog-file", data.path);
           } else {
-            sendIpcToMain("hs-open-favorite-file", data);
+            sendIpcToMain("hs-open-file", data, listIndex);
           }
           if (event.pointerType === "mouse") {
             navigation.refocusFocusedElement(g_navData);
