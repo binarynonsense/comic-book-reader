@@ -48,18 +48,38 @@
 .toast-close {
   background: transparent;
   border: 0;
-  color: white;
+  /* color: white; */
   cursor: pointer;
   font-family: inherit;
   /* font-size: 1em; */
-  opacity: 0.4;
+  /* opacity: 0.4; */
   /* padding: 0 5px; */
 
   position: absolute;
   top: 0;
   right: 0;
-  padding: 5px;
-  font-size: small;
+  /* padding: 5px; */
+  /* font-size: small; */
+  color: var(--modal-button-normal-bg-color);
+
+  font-size: 0;
+  outline: none;
+  padding: 0px 5px 5px 5px;
+}
+.toast-close:hover {
+  color: var(--modal-button-normal-bg-hover-color);
+  filter: brightness(1.2);
+  transform: scale(1.1);
+  cursor: pointer;
+}
+.toast-close:active {
+  transform: scale(0.95);
+}
+.toast-close:after {
+  font-size: medium;
+  font-weight: bolder;
+  content: "🗙";
+  border: 0;
 }
 
 .toastify-right {
