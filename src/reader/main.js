@@ -112,7 +112,9 @@ exports.init = function (filePath, checkHistory) {
     history.getRecent().length > 0 &&
     settings.getValue("on_quit_state") === 1
   ) {
-    const entry = history.getRecentIndex(history.getRecent().length - 1);
+    const entry = history.getEntryInRecentByIndex(
+      history.getRecent().length - 1
+    );
     if (tryOpen(entry.filePath, undefined, entry)) {
       return;
     }
@@ -184,7 +186,7 @@ function addCurrentToHistory(updateMenu = true) {
   )
     return;
   if (g_fileData.path !== "") {
-    history.addRecent(
+    history.addEntryToRecent(
       g_fileData.path,
       g_fileData.pageIndex,
       g_fileData.numPages,
@@ -707,7 +709,7 @@ exports.requestOpenConfirmation = function (filePath) {
   );
 };
 
-function tryOpen(filePath, bookType, historyEntry, hsFavoritesEntry) {
+function tryOpen(filePath, bookType, historyEntry, homeScreenListEntry) {
   sendIpcToPreload("update-menubar"); // in case coming from menu
   closeCurrentFile();
   try {
@@ -715,27 +717,51 @@ function tryOpen(filePath, bookType, historyEntry, hsFavoritesEntry) {
     let pageIndex;
 
     // home screen data fav path
-    if (hsFavoritesEntry) {
-      if (hsFavoritesEntry.data && hsFavoritesEntry.data.source) {
-        let historyIndex = history.getDataIndexInRecent(hsFavoritesEntry.data);
-        if (historyIndex !== undefined) {
-          historyEntry = history.getRecentIndex(historyIndex);
+    if (homeScreenListEntry) {
+      log.test("homeScreenListEntry");
+      if (homeScreenListEntry.data && homeScreenListEntry.data.source) {
+        // check both recent and home lists
+        let listIndex = history.getIndexInRecentByData(
+          homeScreenListEntry.data
+        );
+        if (listIndex !== undefined) {
+          historyEntry = history.getEntryInRecentByIndex(listIndex);
         } else {
+          listIndex = history.getIndexInHomeByData(homeScreenListEntry.data);
+          if (listIndex !== undefined) {
+            historyEntry = history.getEntryInHomeByIndex(listIndex);
+          }
+        }
+        if (!historyEntry) {
           // not in history
           if (
-            hsFavoritesEntry.data.source === "dcm" ||
-            hsFavoritesEntry.data.source === "iab" ||
-            hsFavoritesEntry.data.source === "xkcd" ||
-            hsFavoritesEntry.data.source === "cbp"
+            homeScreenListEntry.data.source === "dcm" ||
+            homeScreenListEntry.data.source === "iab" ||
+            homeScreenListEntry.data.source === "xkcd" ||
+            homeScreenListEntry.data.source === "cbp"
           ) {
-            return tryOpenWWW(pageIndex, hsFavoritesEntry);
-          } else if (hsFavoritesEntry.data.source === "gut") {
+            return tryOpenWWW(pageIndex, homeScreenListEntry);
+          } else if (homeScreenListEntry.data.source === "gut") {
             return tryOpenPath(
               filePath,
               pageIndex,
               BookType.EBOOK,
-              hsFavoritesEntry
+              homeScreenListEntry // has same data as history would
             );
+          }
+        }
+      } else {
+        log.test("no data");
+        // check both recent and home lists
+        let listIndex = history.getIndexInRecentByFilePath(filePath);
+        if (listIndex !== undefined) {
+          historyEntry = history.getEntryInRecentByIndex(listIndex);
+        } else {
+          log.test("check home");
+          listIndex = history.getIndexInHomeByFilePath(filePath);
+          if (listIndex !== undefined) {
+            historyEntry = history.getEntryInHomeByIndex(listIndex);
+            log.test(historyEntry);
           }
         }
       }
@@ -743,9 +769,9 @@ function tryOpen(filePath, bookType, historyEntry, hsFavoritesEntry) {
 
     // normal path
     if (!historyEntry) {
-      let historyIndex = history.getFilePathIndexInRecent(filePath);
-      if (historyIndex !== undefined) {
-        historyEntry = history.getRecentIndex(historyIndex);
+      let listIndex = history.getIndexInRecentByFilePath(filePath);
+      if (listIndex !== undefined) {
+        historyEntry = history.getEntryInRecentByIndex(listIndex);
       }
     }
 
@@ -923,9 +949,9 @@ function openImageFolder(folderPath, filePath, pageIndex) {
         }
       }
     } else {
-      let historyIndex = history.getFilePathIndexInRecent(folderPath);
+      let historyIndex = history.getIndexInRecentByFilePath(folderPath);
       if (historyIndex !== undefined) {
-        pageIndex = history.getRecentIndex(historyIndex).pageIndex;
+        pageIndex = history.getEntryInRecentByIndex(historyIndex).pageIndex;
       }
     }
   }
@@ -2115,9 +2141,9 @@ function setInitialPageMode(filePath) {
   // ref: setInitialZoom
   if (settings.getValue("pageModeFileLoading") === 1) {
     // use history
-    let historyIndex = history.getFilePathIndexInRecent(filePath);
+    let historyIndex = history.getIndexInRecentByFilePath(filePath);
     if (historyIndex !== undefined) {
-      let pageMode = history.getRecentIndex(historyIndex).pageMode;
+      let pageMode = history.getEntryInRecentByIndex(historyIndex).pageMode;
       if (pageMode !== undefined) {
         setPageMode(pageMode, false);
         return;
@@ -2214,10 +2240,10 @@ function switchPageMode() {
 function setInitialZoom(filePath) {
   if (settings.getValue("zoomFileLoading") === 1) {
     // use history
-    let historyIndex = history.getFilePathIndexInRecent(filePath);
+    let historyIndex = history.getIndexInRecentByFilePath(filePath);
     if (historyIndex !== undefined) {
-      let fitMode = history.getRecentIndex(historyIndex).fitMode;
-      let zoomScale = history.getRecentIndex(historyIndex).zoomScale;
+      let fitMode = history.getEntryInRecentByIndex(historyIndex).fitMode;
+      let zoomScale = history.getEntryInRecentByIndex(historyIndex).zoomScale;
       if (fitMode !== undefined) {
         if (fitMode === 0) {
           setFitToWidth();
@@ -2596,12 +2622,13 @@ function onMenuOpenFile(startPath) {
     } else if (
       history.getRecent().length > 0 &&
       !(
-        history.getRecentIndex(history.getRecent().length - 1).data &&
-        history.getRecentIndex(history.getRecent().length - 1).data.source
+        history.getEntryInRecentByIndex(history.getRecent().length - 1).data &&
+        history.getEntryInRecentByIndex(history.getRecent().length - 1).data
+          .source
       )
     ) {
       defaultPath = path.dirname(
-        history.getRecentIndex(history.getRecent().length - 1).filePath
+        history.getEntryInRecentByIndex(history.getRecent().length - 1).filePath
       );
     }
     if (defaultPath && !fs.existsSync(defaultPath)) defaultPath = undefined;

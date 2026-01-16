@@ -214,11 +214,11 @@ function generateCardsFromSavedData(inputData, isFavoritesList) {
       if (outputBook.pathType !== 1) {
         if (outputBook.pathType === 0) {
           outputBook.percentageRead = getPercentageReadFromHistoryIndex(
-            history.getFilePathIndexInRecent(outputBook.path)
+            history.getIndexInRecentByFilePath(outputBook.path)
           );
         } else if (outputBook.pathType === 2) {
           outputBook.percentageRead = getPercentageReadFromHistoryIndex(
-            history.getDataIndexInRecent(inputBook.data)
+            history.getIndexInRecentByData(inputBook.data)
           );
         }
       }
@@ -669,7 +669,7 @@ function initOnIpcCallbacks() {
       if (entry.data) {
         reader.tryOpen(cardData.path, undefined, undefined, entry);
       } else {
-        reader.tryOpen(cardData.path);
+        reader.tryOpen(cardData.path, undefined, undefined, entry);
       }
     } else {
       log.editorError("hs-open-file found no entry");
@@ -678,9 +678,9 @@ function initOnIpcCallbacks() {
 
   on("hs-open-history-file", (index) => {
     reader.tryOpen(
-      history.getRecentIndex(index).filePath,
+      history.getEntryInRecentByIndex(index).filePath,
       undefined,
-      history.getRecentIndex(index)
+      history.getEntryInRecentByIndex(index)
     );
   });
 

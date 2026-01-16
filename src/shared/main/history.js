@@ -127,16 +127,16 @@ function setRecent(recent) {
   g_recent = structuredClone(recent);
 }
 
-function getRecentIndex(index) {
+function getEntryInRecentByIndex(index) {
   return structuredClone(g_recent[index]);
 }
 
-function getFilePathIndexInRecent(filePath) {
-  return getFilePathIndexInList(filePath, 0);
+function getIndexInRecentByFilePath(filePath) {
+  return getIndexInListByFilePath(filePath, 0);
 }
 
-function getDataIndexInRecent(data) {
-  return getDataIndexInList(data, 0);
+function getIndexInRecentByData(data) {
+  return getIndexInListByData(data, 0);
 }
 
 function changeRecentCapacity(capacity) {
@@ -147,8 +147,8 @@ function changeRecentCapacity(capacity) {
   }
 }
 
-function addRecent(filePath, pageIndex, numPages, data) {
-  let foundIndex = getFilePathIndexInRecent(filePath);
+function addEntryToRecent(filePath, pageIndex, numPages, data) {
+  let foundIndex = getIndexInRecentByFilePath(filePath);
   if (foundIndex !== undefined) {
     // remove, to update and put last
     g_recent.splice(foundIndex, 1);
@@ -170,22 +170,22 @@ function addRecent(filePath, pageIndex, numPages, data) {
     g_recent.splice(0, g_recent.length - settings.getValue("history_capacity"));
   }
   //
-  foundIndex = getFilePathIndexInHome(filePath);
+  foundIndex = getIndexInHomeByFilePath(filePath);
   if (foundIndex !== undefined) {
     // remove from home, as it's now in recent
     g_home.splice(foundIndex, 1);
   }
 }
 
-function removeRecentIndex(index) {
+function removeEntryInRecentByIndex(index) {
   const entry = g_recent[index];
   // TODO: is it in a home list??
   if (true) {
     let foundIndex = undefined;
     if (entry.data && entry.data.source) {
-      foundIndex = getDataIndexInHome(entry.data);
+      foundIndex = getIndexInHomeByData(entry.data);
     } else {
-      foundIndex = getFilePathIndexInHome(entry.filePath);
+      foundIndex = getIndexInHomeByFilePath(entry.filePath);
     }
     if (!foundIndex) {
       // not already in home
@@ -199,19 +199,23 @@ function removeRecentIndex(index) {
 // HOME ////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-function getFilePathIndexInHome(filePath) {
-  return getFilePathIndexInList(filePath, 1);
+function getEntryInHomeByIndex(index) {
+  return structuredClone(g_home[index]);
 }
 
-function getDataIndexInHome(data) {
-  return getDataIndexInList(data, 1);
+function getIndexInHomeByFilePath(filePath) {
+  return getIndexInListByFilePath(filePath, 1);
+}
+
+function getIndexInHomeByData(data) {
+  return getIndexInListByData(data, 1);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 // COMMON /////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-function getDataIndexInList(data, listIndex) {
+function getIndexInListByData(data, listIndex) {
   if (!data || listIndex < 0 || listIndex > 1) return undefined;
   let foundIndex;
   const entries = listIndex === 0 ? g_recent : g_home;
@@ -227,7 +231,7 @@ function getDataIndexInList(data, listIndex) {
   return foundIndex;
 }
 
-function getFilePathIndexInList(filePath, listIndex) {
+function getIndexInListByFilePath(filePath, listIndex) {
   if (!filePath || listIndex < 0 || listIndex > 1) return undefined;
   let foundIndex;
   const entries = listIndex === 0 ? g_recent : g_home;
@@ -250,12 +254,17 @@ module.exports = {
   save,
   load,
   clear,
+  //
   getRecent,
   setRecent,
-  getRecentIndex,
-  removeRecentIndex,
+  getEntryInRecentByIndex,
+  removeEntryInRecentByIndex,
   changeRecentCapacity,
-  addRecent,
-  getFilePathIndexInRecent,
-  getDataIndexInRecent,
+  addEntryToRecent,
+  getIndexInRecentByFilePath,
+  getIndexInRecentByData,
+  //
+  getEntryInHomeByIndex,
+  getIndexInHomeByFilePath,
+  getIndexInHomeByData,
 };

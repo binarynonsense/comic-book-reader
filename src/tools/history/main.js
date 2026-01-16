@@ -174,7 +174,7 @@ function initOnIpcCallbacks() {
   });
 
   on("remove-item", (itemIndex) => {
-    history.removeRecentIndex(itemIndex);
+    history.removeEntryInRecentByIndex(itemIndex);
     reader.rebuildMenuAndToolBars();
     sendIpcToRenderer("build-list", getHistory());
     homeScreen.refresh();
@@ -182,9 +182,9 @@ function initOnIpcCallbacks() {
 
   on("open-item", (itemIndex) => {
     reader.tryOpen(
-      history.getRecentIndex(itemIndex).filePath,
+      history.getEntryInRecentByIndex(itemIndex).filePath,
       undefined,
-      history.getRecentIndex(itemIndex)
+      history.getEntryInRecentByIndex(itemIndex)
     );
     onCloseClicked();
   });
