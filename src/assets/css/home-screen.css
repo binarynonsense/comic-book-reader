@@ -475,8 +475,8 @@ html[dir="rtl"] .hs-path-card-typeminiicon {
   right: 45%;
 }
 .hs-path-card-main:hover .hs-path-card-typeminiicon {
-  color: var(--hs-path-card-bg-color);
-  background-color: var(--hs-path-card-text-color);
+  background-color: var(--hs-button-normal-bg-hover-color);
+  color: var(--hs-button-normal-text-color);
 }
 
 .hs-path-card-typeminiicon-www {
