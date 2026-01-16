@@ -174,7 +174,10 @@ function initOnIpcCallbacks() {
   });
 
   on("remove-item", (itemIndex) => {
-    history.removeEntryInRecentByIndex(itemIndex);
+    history.removeEntryInRecentByIndex(
+      itemIndex,
+      homeScreen.isHistoryEntryInFavoritesOrUserLists
+    );
     reader.rebuildMenuAndToolBars();
     sendIpcToRenderer("build-list", getHistory());
     homeScreen.refresh();

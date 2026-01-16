@@ -30,6 +30,8 @@ let g_userLists;
 let g_collapseFavorites = false;
 let g_collapseLatest = false;
 
+let g_hasDoneHistoryCleanup = false;
+
 function init() {
   if (!g_isInitialized) {
     g_isInitialized = true;
@@ -104,6 +106,10 @@ function buildSections(refocus = true) {
     },
     refocus
   );
+  if (!g_hasDoneHistoryCleanup) {
+    g_hasDoneHistoryCleanup = true;
+    cleanHistoryHome();
+  }
 }
 
 function getPercentageReadFromHistoryIndex(index) {
@@ -175,14 +181,53 @@ function getEntryIndexInList(listIndex, entry) {
         return index;
       }
     }
-    return -1;
+    return undefined;
   } else {
     return getLocalPathIndexInList(listIndex, entry.path);
   }
 }
 
 function isEntryInList(listIndex, entry) {
-  return getEntryIndexInList(listIndex, entry) >= 0;
+  return getEntryIndexInList(listIndex, entry) !== undefined;
+}
+
+function isLocalPathInList(listIndex, localPath) {
+  return getLocalPathIndexInList(listIndex, localPath) !== undefined;
+}
+
+function getLocalPathIndexInList(listIndex, localPath) {
+  const listData = getListData(listIndex);
+  for (let index = 0; index < listData.length; index++) {
+    if (listData[index].path === localPath) {
+      return index;
+    }
+  }
+  return undefined;
+}
+
+function addListEntryFromLocalPath(listIndex, localPath, doBuild = true) {
+  let isAlreadyInList = isLocalPathInList(listIndex, localPath);
+  if (!isAlreadyInList) {
+    const listData = getListData(listIndex);
+    listData.push({
+      path: localPath,
+      name: path.basename(localPath),
+    });
+    if (doBuild) buildSections();
+  } else {
+    log.editor("tried to add an entry already in the list");
+    sendIpcToCoreRenderer(
+      "show-toast",
+      `${_("home-action-canceled")}<br>${_(
+        "home-action-drag-file-shortcut-error-alreadyinlist"
+      )}<br><span class="toast-acbr-path">...${path.basename(
+        localPath
+      )}</span>`,
+      3000,
+      undefined,
+      false
+    );
+  }
 }
 
 function generateCardsFromSavedData(inputData, isFavoritesList) {
@@ -228,6 +273,43 @@ function generateCardsFromSavedData(inputData, isFavoritesList) {
     }
   }
   return data;
+}
+
+function isHistoryEntryInFavoritesOrUserLists(entry) {
+  entry.path = entry.filePath; // adapt history data to home card specification
+  if (getEntryIndexInList(-1, entry)) {
+    return true;
+  }
+  for (let index = 0; index < g_userLists.length; index++) {
+    if (getEntryIndexInList(index, entry)) {
+      return true;
+    }
+  }
+  return false;
+}
+exports.isHistoryEntryInFavoritesOrUserLists =
+  isHistoryEntryInFavoritesOrUserLists;
+
+function cleanHistoryHome() {
+  // NOTE: this could be very ineficient as I use it when removing just one
+  // entry in a list in the remove functions. TODO: Improve it later by
+  // using more specific functions in those.
+  const homeHistory = history.getHome();
+  let indicesToDelete = [];
+  for (let index = 0; index < homeHistory.length; index++) {
+    const entry = homeHistory[index];
+    if (
+      history.isEntryInRecent(entry) ||
+      !isHistoryEntryInFavoritesOrUserLists(entry)
+    ) {
+      indicesToDelete.push(index);
+    }
+  }
+  if (indicesToDelete.length === 0) return;
+  indicesToDelete.reverse();
+  indicesToDelete.forEach((index) => {
+    history.removeEntryInHomeByIndex(index);
+  });
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -338,14 +420,14 @@ function getLatestIndexInList(listIndex, latestIndex) {
         return index;
       }
     }
-    return -1;
+    return undefined;
   } else {
     return getLocalPathIndexInList(listIndex, historyData.filePath);
   }
 }
 
 function isLatestInList(listIndex, latestIndex) {
-  return getLatestIndexInList(listIndex, latestIndex) >= 0;
+  return getLatestIndexInList(listIndex, latestIndex) !== undefined;
 }
 
 function addListEntryFromLatest(latestEntryIndex, toListIndex, toEntryIndex) {
@@ -394,9 +476,11 @@ function addFavoriteFolderFromLatest(index) {
 
 function removeLatestFromFavorites(index) {
   let favIndex = getLatestIndexInList(-1, index);
-  if (favIndex >= 0) {
+  if (favIndex) {
     g_favoritesData.splice(favIndex, 1);
     buildSections();
+    ////////
+    cleanHistoryHome();
   } else {
     // TODO: show some kind of error modal?
     log.debug("tried to remove a favorite not in the list");
@@ -425,42 +509,15 @@ function getFavoriteLocalizedName(index) {
   }
 }
 
-function getLocalPathIndexInList(listIndex, localPath) {
-  const listData = getListData(listIndex);
-  for (let index = 0; index < listData.length; index++) {
-    if (listData[index].path === localPath) {
-      return index;
-    }
-  }
-  return -1;
-}
-
-function isLocalPathInList(listIndex, localPath) {
-  return getLocalPathIndexInList(listIndex, localPath) >= 0;
-}
-
-function addListEntryFromLocalPath(listIndex, localPath, doBuild = true) {
-  let isAlreadyInList = isLocalPathInList(listIndex, localPath);
-  if (!isAlreadyInList) {
-    const listData = getListData(listIndex);
-    listData.push({
-      path: localPath,
-      name: path.basename(localPath),
-    });
-    if (doBuild) buildSections();
+function removeEntryInFavorites(listIndex, entryIndex, entryPath) {
+  let favIndex = getLocalPathIndexInList(-1, entryPath);
+  if (favIndex) {
+    g_favoritesData.splice(favIndex, 1);
+    buildSections();
+    ////////
+    cleanHistoryHome();
   } else {
-    log.editor("tried to add an entry already in the list");
-    sendIpcToCoreRenderer(
-      "show-toast",
-      `${_("home-action-canceled")}<br>${_(
-        "home-action-drag-file-shortcut-error-alreadyinlist"
-      )}<br><span class="toast-acbr-path">...${path.basename(
-        localPath
-      )}</span>`,
-      3000,
-      undefined,
-      false
-    );
+    log.error("tried to remove a favorite not in the list");
   }
 }
 
@@ -480,6 +537,18 @@ function getUserCardsLists() {
     lists.push(list);
   }
   return lists;
+}
+
+function removeEntryInUserList(listIndex, entryIndex, entryPath) {
+  const listData = getListData(listIndex);
+  if (listData[entryIndex].path === entryPath) {
+    listData.splice(entryIndex, 1);
+    buildSections();
+    ////////
+    cleanHistoryHome();
+  } else {
+    log.error("Tried to remove a list entry with not matching index and path");
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -869,20 +938,9 @@ function initOnIpcCallbacks() {
     }
   );
 
-  on(
-    "hs-on-modal-list-entry-options-remove-clicked",
-    (listIndex, entryIndex, entryPath) => {
-      const listData = getListData(listIndex);
-      if (listData[entryIndex].path === entryPath) {
-        listData.splice(entryIndex, 1);
-        buildSections();
-      } else {
-        log.error(
-          "Tried to remove a list entry with not matching index and path"
-        );
-      }
-    }
-  );
+  on("hs-on-modal-list-entry-options-remove-clicked", (...args) => {
+    removeEntryInUserList(...args);
+  });
 
   on(
     "hs-on-modal-list-entry-options-edit-name-clicked",
@@ -1074,18 +1132,9 @@ function initOnIpcCallbacks() {
     }
   );
 
-  on(
-    "hs-on-modal-list-entry-options-removefavorites-clicked",
-    (listIndex, entryIndex, entryPath) => {
-      let favIndex = getLocalPathIndexInList(-1, entryPath);
-      if (favIndex >= 0) {
-        g_favoritesData.splice(favIndex, 1);
-        buildSections();
-      } else {
-        log.error("tried to remove a favorite not in the list");
-      }
-    }
-  );
+  on("hs-on-modal-list-entry-options-removefavorites-clicked", (...args) => {
+    removeEntryInFavorites(...args);
+  });
   //////////////////////
 
   on("hs-on-list-dropped", (fromListIndex, toListIndex) => {

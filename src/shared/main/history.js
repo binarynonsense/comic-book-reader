@@ -139,6 +139,14 @@ function getIndexInRecentByData(data) {
   return getIndexInListByData(data, 0);
 }
 
+function isEntryInRecent(entry) {
+  if (entry.data && entry.data.source) {
+    return getIndexInRecentByData(entry.data) !== undefined;
+  } else {
+    return getIndexInRecentByFilePath(entry.filePath) !== undefined;
+  }
+}
+
 function changeRecentCapacity(capacity) {
   if (!capacity) return;
   g_recentCapacity = capacity;
@@ -177,10 +185,13 @@ function addEntryToRecent(filePath, pageIndex, numPages, data) {
   }
 }
 
-function removeEntryInRecentByIndex(index) {
+function removeEntryInRecentByIndex(
+  index,
+  isHistoryEntryInFavoritesOrUserLists
+) {
   const entry = g_recent[index];
-  // TODO: is it in a home list??
-  if (true) {
+  g_recent.splice(index, 1);
+  if (isHistoryEntryInFavoritesOrUserLists(entry)) {
     let foundIndex = undefined;
     if (entry.data && entry.data.source) {
       foundIndex = getIndexInHomeByData(entry.data);
@@ -192,12 +203,15 @@ function removeEntryInRecentByIndex(index) {
       g_home.push(entry);
     }
   }
-  g_recent.splice(index, 1);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 // HOME ////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
+
+function getHome() {
+  return structuredClone(g_home);
+}
 
 function getEntryInHomeByIndex(index) {
   return structuredClone(g_home[index]);
@@ -209,6 +223,10 @@ function getIndexInHomeByFilePath(filePath) {
 
 function getIndexInHomeByData(data) {
   return getIndexInListByData(data, 1);
+}
+
+function removeEntryInHomeByIndex(index) {
+  g_home.splice(index, 1);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -258,13 +276,16 @@ module.exports = {
   getRecent,
   setRecent,
   getEntryInRecentByIndex,
-  removeEntryInRecentByIndex,
-  changeRecentCapacity,
-  addEntryToRecent,
   getIndexInRecentByFilePath,
   getIndexInRecentByData,
+  isEntryInRecent,
+  changeRecentCapacity,
+  addEntryToRecent,
+  removeEntryInRecentByIndex,
   //
+  getHome,
   getEntryInHomeByIndex,
+  removeEntryInHomeByIndex,
   getIndexInHomeByFilePath,
   getIndexInHomeByData,
 };
