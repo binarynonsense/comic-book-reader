@@ -479,6 +479,10 @@ html[dir="rtl"] .hs-path-card-typeminiicon {
   background-color: var(--hs-path-card-text-color);
 }
 
+.hs-path-card-typeminiicon-www {
+  padding: 1px 3px;
+}
+
 /*  */
 
 .hs-path-card-favminiicon {
