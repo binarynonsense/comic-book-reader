@@ -31,7 +31,7 @@ exports.empty = function () {
 function rebuild() {
   builder.buildApplicationMenu(
     settings.get(),
-    history.get(),
+    history.getRecent(),
     core.isToolOpen(),
     core.getCurrentToolLocalizedName()
   );

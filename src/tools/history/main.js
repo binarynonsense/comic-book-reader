@@ -74,7 +74,7 @@ function onCloseClicked() {
 ///////////////////////////////////////////////////////////////////////////////
 
 function getHistory() {
-  let historyCopy = history.get();
+  let historyCopy = history.getRecent();
   historyCopy.forEach((fileInfo) => {
     if (fileInfo.data && fileInfo.data.source) {
       fileInfo.isOnline = true;
@@ -174,7 +174,7 @@ function initOnIpcCallbacks() {
   });
 
   on("remove-item", (itemIndex) => {
-    history.removeIndex(itemIndex);
+    history.removeRecentIndex(itemIndex);
     reader.rebuildMenuAndToolBars();
     sendIpcToRenderer("build-list", getHistory());
     homeScreen.refresh();
@@ -182,16 +182,16 @@ function initOnIpcCallbacks() {
 
   on("open-item", (itemIndex) => {
     reader.tryOpen(
-      history.getIndex(itemIndex).filePath,
+      history.getRecentIndex(itemIndex).filePath,
       undefined,
-      history.getIndex(itemIndex)
+      history.getRecentIndex(itemIndex)
     );
     onCloseClicked();
   });
 
   on("set-max-files", (value) => {
     settings.setValue("history_capacity", value);
-    history.changeCapacity(value);
+    history.changeRecentCapacity(value);
     reader.rebuildMenuAndToolBars();
     sendIpcToRenderer("build-list", getHistory(), value);
     homeScreen.refresh();

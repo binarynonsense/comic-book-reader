@@ -53,14 +53,14 @@ exports.open = function (fileData, showFocus) {
       g_startingFolderPath = path.dirname(fileData.path);
     }
   } else if (
-    history.get().length > 0 &&
+    history.getRecent().length > 0 &&
     !(
-      history.getIndex(history.get().length - 1).data &&
-      history.getIndex(history.get().length - 1).data.source
+      history.getRecentIndex(history.getRecent().length - 1).data &&
+      history.getRecentIndex(history.getRecent().length - 1).data.source
     )
   ) {
     g_startingFolderPath = path.dirname(
-      history.getIndex(history.get().length - 1).filePath
+      history.getRecentIndex(history.getRecent().length - 1).filePath
     );
   } else {
     g_startingFolderPath = appUtils.getDesktopFolderPath();

@@ -109,10 +109,10 @@ exports.init = function (filePath, checkHistory) {
 
   if (
     checkHistory &&
-    history.get().length > 0 &&
+    history.getRecent().length > 0 &&
     settings.getValue("on_quit_state") === 1
   ) {
-    const entry = history.getIndex(history.get().length - 1);
+    const entry = history.getRecentIndex(history.getRecent().length - 1);
     if (tryOpen(entry.filePath, undefined, entry)) {
       return;
     }
@@ -184,7 +184,7 @@ function addCurrentToHistory(updateMenu = true) {
   )
     return;
   if (g_fileData.path !== "") {
-    history.add(
+    history.addRecent(
       g_fileData.path,
       g_fileData.pageIndex,
       g_fileData.numPages,
@@ -720,9 +720,9 @@ function tryOpen(filePath, bookType, historyEntry, hsFavoritesEntry) {
 
     if (hsFavoritesEntry) {
       if (hsFavoritesEntry.data && hsFavoritesEntry.data.source) {
-        let historyIndex = history.getDataIndex(hsFavoritesEntry.data);
+        let historyIndex = history.getRecentDataIndex(hsFavoritesEntry.data);
         if (historyIndex !== undefined) {
-          historyEntry = history.getIndex(historyIndex);
+          historyEntry = history.getRecentIndex(historyIndex);
         } else {
           // not in history
           if (
@@ -747,9 +747,9 @@ function tryOpen(filePath, bookType, historyEntry, hsFavoritesEntry) {
     // normal path
 
     if (!historyEntry) {
-      let historyIndex = history.getFilePathIndex(filePath);
+      let historyIndex = history.getRecentFilePathIndex(filePath);
       if (historyIndex !== undefined) {
-        historyEntry = history.getIndex(historyIndex);
+        historyEntry = history.getRecentIndex(historyIndex);
       }
     }
 
@@ -927,9 +927,9 @@ function openImageFolder(folderPath, filePath, pageIndex) {
         }
       }
     } else {
-      let historyIndex = history.getFilePathIndex(folderPath);
+      let historyIndex = history.getRecentFilePathIndex(folderPath);
       if (historyIndex !== undefined) {
-        pageIndex = history.getIndex(historyIndex).pageIndex;
+        pageIndex = history.getRecentIndex(historyIndex).pageIndex;
       }
     }
   }
@@ -2119,9 +2119,9 @@ function setInitialPageMode(filePath) {
   // ref: setInitialZoom
   if (settings.getValue("pageModeFileLoading") === 1) {
     // use history
-    let historyIndex = history.getFilePathIndex(filePath);
+    let historyIndex = history.getRecentFilePathIndex(filePath);
     if (historyIndex !== undefined) {
-      let pageMode = history.getIndex(historyIndex).pageMode;
+      let pageMode = history.getRecentIndex(historyIndex).pageMode;
       if (pageMode !== undefined) {
         setPageMode(pageMode, false);
         return;
@@ -2218,10 +2218,10 @@ function switchPageMode() {
 function setInitialZoom(filePath) {
   if (settings.getValue("zoomFileLoading") === 1) {
     // use history
-    let historyIndex = history.getFilePathIndex(filePath);
+    let historyIndex = history.getRecentFilePathIndex(filePath);
     if (historyIndex !== undefined) {
-      let fitMode = history.getIndex(historyIndex).fitMode;
-      let zoomScale = history.getIndex(historyIndex).zoomScale;
+      let fitMode = history.getRecentIndex(historyIndex).fitMode;
+      let zoomScale = history.getRecentIndex(historyIndex).zoomScale;
       if (fitMode !== undefined) {
         if (fitMode === 0) {
           setFitToWidth();
@@ -2598,14 +2598,14 @@ function onMenuOpenFile(startPath) {
     if (g_fileData.path !== "") {
       defaultPath = path.dirname(g_fileData.path);
     } else if (
-      history.get().length > 0 &&
+      history.getRecent().length > 0 &&
       !(
-        history.getIndex(history.get().length - 1).data &&
-        history.getIndex(history.get().length - 1).data.source
+        history.getRecentIndex(history.getRecent().length - 1).data &&
+        history.getRecentIndex(history.getRecent().length - 1).data.source
       )
     ) {
       defaultPath = path.dirname(
-        history.getIndex(history.get().length - 1).filePath
+        history.getRecentIndex(history.getRecent().length - 1).filePath
       );
     }
     if (defaultPath && !fs.existsSync(defaultPath)) defaultPath = undefined;

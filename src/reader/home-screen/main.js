@@ -58,7 +58,6 @@ exports.open = function (showFocus) {
 
 exports.close = function () {
   saveToFile();
-  log.test("test");
 };
 
 exports.refresh = function () {
@@ -109,7 +108,7 @@ function buildSections(refocus = true) {
 
 function getPercentageReadFromHistoryIndex(index) {
   if (index === undefined || !Number.isInteger(index)) return undefined;
-  const historyData = history.get();
+  const historyData = history.getRecent();
   let pageIndex = historyData[index].pageIndex;
   let numPages = historyData[index].numPages;
   if (pageIndex !== undefined && numPages !== undefined) {
@@ -215,11 +214,11 @@ function generateCardsFromSavedData(inputData, isFavoritesList) {
       if (outputBook.pathType !== 1) {
         if (outputBook.pathType === 0) {
           outputBook.percentageRead = getPercentageReadFromHistoryIndex(
-            history.getFilePathIndex(outputBook.path)
+            history.getRecentFilePathIndex(outputBook.path)
           );
         } else if (outputBook.pathType === 2) {
           outputBook.percentageRead = getPercentageReadFromHistoryIndex(
-            history.getDataIndex(inputBook.data)
+            history.getRecentDataIndex(inputBook.data)
           );
         }
       }
@@ -236,7 +235,7 @@ function generateCardsFromSavedData(inputData, isFavoritesList) {
 //////////////////////////////////////////////////////////////////////////////
 
 function getLatestCards() {
-  const historyData = history.get();
+  const historyData = history.getRecent();
   const data = [];
   for (let index = 0; index < historyData.length; index++) {
     try {
@@ -318,7 +317,7 @@ function getLatestCards() {
 //////////////////////////////////////////////////////////////////////////////
 
 function getLatestIndexInList(listIndex, latestIndex) {
-  const historyData = history.get()[latestIndex];
+  const historyData = history.getRecent()[latestIndex];
   const listData = getListData(listIndex);
   if (historyData.data && historyData.data.source) {
     for (let index = 0; index < listData.length; index++) {
@@ -352,7 +351,7 @@ function isLatestInList(listIndex, latestIndex) {
 function addListEntryFromLatest(latestEntryIndex, toListIndex, toEntryIndex) {
   let isAlreadyInList = isLatestInList(toListIndex, latestEntryIndex);
   if (!isAlreadyInList) {
-    const historyData = history.get()[latestEntryIndex];
+    const historyData = history.getRecent()[latestEntryIndex];
     /////////
     let newEntry;
     if (historyData.data && historyData.data.source) {
@@ -384,7 +383,7 @@ function addListEntryFromLatest(latestEntryIndex, toListIndex, toEntryIndex) {
 }
 
 function addFavoriteFolderFromLatest(index) {
-  const historyData = history.get()[index];
+  const historyData = history.getRecent()[index];
   if (!historyData.filePath || (historyData.data && historyData.data.source))
     return;
   const latestPath = path.dirname(historyData.filePath);
@@ -671,9 +670,9 @@ function initOnIpcCallbacks() {
 
   on("hs-open-history-file", (index) => {
     reader.tryOpen(
-      history.getIndex(index).filePath,
+      history.getRecentIndex(index).filePath,
       undefined,
-      history.getIndex(index)
+      history.getRecentIndex(index)
     );
   });
 
