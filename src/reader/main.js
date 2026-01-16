@@ -718,7 +718,6 @@ function tryOpen(filePath, bookType, historyEntry, homeScreenListEntry) {
 
     // home screen data fav path
     if (homeScreenListEntry) {
-      log.test("homeScreenListEntry");
       if (homeScreenListEntry.data && homeScreenListEntry.data.source) {
         // check both recent and home lists
         let listIndex = history.getIndexInRecentByData(
@@ -751,17 +750,14 @@ function tryOpen(filePath, bookType, historyEntry, homeScreenListEntry) {
           }
         }
       } else {
-        log.test("no data");
         // check both recent and home lists
         let listIndex = history.getIndexInRecentByFilePath(filePath);
         if (listIndex !== undefined) {
           historyEntry = history.getEntryInRecentByIndex(listIndex);
         } else {
-          log.test("check home");
           listIndex = history.getIndexInHomeByFilePath(filePath);
           if (listIndex !== undefined) {
             historyEntry = history.getEntryInHomeByIndex(listIndex);
-            log.test(historyEntry);
           }
         }
       }
