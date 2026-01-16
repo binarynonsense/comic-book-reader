@@ -449,11 +449,6 @@ async function onStartClicked(inputList, selectedOptions) {
                   path.basename(inputListItem.path),
                   path.relative(inputListItem.path, path.dirname(filePath))
                 );
-                log.test(path.basename(inputListItem.path));
-                log.test(
-                  path.relative(inputListItem.path, path.dirname(filePath))
-                );
-                log.test("outputFolderPath: " + outputFolderPath);
                 g_inputFiles.push({
                   path: filePath,
                   type: type,
@@ -629,7 +624,6 @@ function startFile(inputFileIndex, totalFilesNum) {
   }
   // extract to temp folder
   if (inputFileType === FileDataType.IMGS_FOLDER) {
-    log.test(inputFilePath);
     g_imageIndex = 0;
     copyImagesToTempFolder(
       inputFilePath,
@@ -1317,7 +1311,7 @@ async function processImagesWithWorkers({
         checkForCompletion();
       });
       worker.on("exit", (code) => {
-        log.editor(`worker #${i} exited with code: ${code}`);
+        // log.editor(`worker #${i} exited with code: ${code}`);
       });
       workers.push(worker);
       processNextImage(worker);
