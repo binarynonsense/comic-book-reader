@@ -909,6 +909,40 @@ function getNewCardDiv(cardType, data, navRow, navColumn, listIndex) {
   <div class="hs-path-card-favminiicon">
     <i class="fa-solid fa-heart"></i>
   </div>`;
+  function getTypeMiniIconHtml() {
+    if (data.pathType === 0) {
+      const path = data.path.toLowerCase();
+      const pos = path.lastIndexOf(".");
+      const ext = path.substring(pos + 1);
+      let iconText = "";
+      switch (ext) {
+        case "cbz":
+          iconText = "CBZ";
+          break;
+        case "cbr":
+          iconText = "CBR";
+          break;
+        case "cb7":
+          iconText = "CB7";
+          break;
+        case "epub":
+          iconText = "EPUB";
+          break;
+        case "pdf":
+          iconText = "PDF";
+          break;
+        default:
+          break;
+      }
+      if (iconText !== "") {
+        return `
+        <div class="hs-path-card-typeminiicon">
+          ${iconText}
+        </div>`;
+      }
+    }
+    return "";
+  }
 
   function getPercentageBarHtml(percentage) {
     if (percentage !== undefined && percentage <= 100) {
@@ -964,6 +998,7 @@ function getNewCardDiv(cardType, data, navRow, navColumn, listIndex) {
           ? favMiniIconHtml
           : ""
       } 
+      ${getTypeMiniIconHtml()}
     </div>
     <div class="hs-path-card-content">
       <span>${data.name}</span
