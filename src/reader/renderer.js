@@ -66,6 +66,9 @@ export function showNoBookContent(show) {
       .classList.add("set-display-none");
     document.querySelector("#home-screen").scrollTop = 0;
     document.querySelector("#home-screen").scrollLeft = 0;
+    document
+      .querySelector("#home-scroll-to-top-button")
+      ?.classList.remove("set-display-none");
   } else {
     document
       .querySelector("#no-book-content")
@@ -73,6 +76,9 @@ export function showNoBookContent(show) {
     document
       .querySelector("#pages-container")
       .classList.remove("set-display-none");
+    document
+      .querySelector("#home-scroll-to-top-button")
+      ?.classList.add("set-display-none");
   }
 }
 

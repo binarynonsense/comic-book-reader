@@ -58,6 +58,7 @@ exports.open = function (showFocus) {
 
 exports.close = function () {
   saveToFile();
+  log.test("test");
 };
 
 exports.refresh = function () {
