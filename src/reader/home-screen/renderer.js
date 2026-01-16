@@ -912,8 +912,8 @@ function getNewCardDiv(cardType, data, navRow, navColumn, listIndex) {
   function getTypeMiniIconHtml() {
     if (data.pathType === 2) {
       return `
-        <div class="hs-path-card-typeminiicon">
-          WWW
+        <div class="hs-path-card-typeminiicon hs-path-card-typeminiicon-www">
+          www
         </div>`;
     } else if (data.pathType === 0) {
       const path = data.path.toLowerCase();

@@ -467,8 +467,8 @@
   color: var(--hs-path-card-text-color);
   background-color: var(--hs-path-card-bg-color);
   pointer-events: none;
-  padding: 2px;
-  border-radius: 25%;
+  padding: 2px 3px;
+  border-radius: 4px;
 }
 html[dir="rtl"] .hs-path-card-typeminiicon {
   left: auto;
