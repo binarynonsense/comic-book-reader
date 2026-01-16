@@ -108,7 +108,8 @@ function buildSections(refocus = true) {
   );
   if (!g_hasDoneHistoryCleanup) {
     g_hasDoneHistoryCleanup = true;
-    cleanHistoryHome();
+    log.debug("cleaning up history's home list");
+    cleanHistoryHome(true);
   }
 }
 
@@ -290,7 +291,7 @@ function isHistoryEntryInFavoritesOrUserLists(entry) {
 exports.isHistoryEntryInFavoritesOrUserLists =
   isHistoryEntryInFavoritesOrUserLists;
 
-function cleanHistoryHome() {
+function cleanHistoryHome(doLog = false) {
   // NOTE: this could be very ineficient as I use it when removing just one
   // entry in a list in the remove functions. TODO: Improve it later by
   // using more specific functions in those.
@@ -306,6 +307,7 @@ function cleanHistoryHome() {
     }
   }
   if (indicesToDelete.length === 0) return;
+  if (doLog) log.debug(`deleting ${indicesToDelete.length} outdated entries`);
   indicesToDelete.reverse();
   indicesToDelete.forEach((index) => {
     history.removeEntryInHomeByIndex(index);
