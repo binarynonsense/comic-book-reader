@@ -135,22 +135,36 @@
   margin-bottom: 30px;
 }
 
-.hs-section-ellipsis {
+/*  */
+
+.hs-section-bottom-button {
   margin-top: 7px;
   display: flex;
   justify-content: center;
   position: relative;
+  height: 8px;
 }
-.hs-section-ellipsis:after {
+.hs-section-bottom-button-ellipsis:hover {
+  cursor: pointer;
+}
+.hs-section-bottom-button-ellipsis:after {
   position: absolute;
   font: var(--fa-font-solid);
   content: "\f141";
 }
-.hs-section-ellipsis:hover:after {
+.hs-section-bottom-button-ellipsis:hover:after {
   position: absolute;
   font: var(--fa-font-solid);
   content: "\f107";
+  font-size: larger;
+}
+.hs-section-bottom-button-collapse:hover {
   cursor: pointer;
+}
+.hs-section-bottom-button-collapse:hover:after {
+  position: absolute;
+  font: var(--fa-font-solid);
+  content: "\f106";
   font-size: larger;
 }
 

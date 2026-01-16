@@ -336,8 +336,13 @@ function buildSections(
   const latestPosition = settings.latestPosition;
   if (latestPosition === 0) {
     // after favs
-    [navRow, navColumn] = buildFavorites(navRow, navColumn, favorites);
-    [navRow, navColumn] = buildLatest(navRow, navColumn, latest);
+    [navRow, navColumn] = buildFavorites(
+      navRow,
+      navColumn,
+      favorites,
+      localization
+    );
+    [navRow, navColumn] = buildLatest(navRow, navColumn, latest, localization);
     [navRow, navColumn] = buildOtherLists(
       navRow,
       navColumn,
@@ -346,8 +351,13 @@ function buildSections(
     );
   } else if (latestPosition === 1) {
     // at the top
-    [navRow, navColumn] = buildLatest(navRow, navColumn, latest);
-    [navRow, navColumn] = buildFavorites(navRow, navColumn, favorites);
+    [navRow, navColumn] = buildLatest(navRow, navColumn, latest, localization);
+    [navRow, navColumn] = buildFavorites(
+      navRow,
+      navColumn,
+      favorites,
+      localization
+    );
     [navRow, navColumn] = buildOtherLists(
       navRow,
       navColumn,
@@ -356,14 +366,19 @@ function buildSections(
     );
   } else {
     // at the bottom
-    [navRow, navColumn] = buildFavorites(navRow, navColumn, favorites);
+    [navRow, navColumn] = buildFavorites(
+      navRow,
+      navColumn,
+      favorites,
+      localization
+    );
     [navRow, navColumn] = buildOtherLists(
       navRow,
       navColumn,
       otherLists,
       localization
     );
-    [navRow, navColumn] = buildLatest(navRow, navColumn, latest);
+    [navRow, navColumn] = buildLatest(navRow, navColumn, latest, localization);
   }
 
   // CREATE LIST button //////////
@@ -379,7 +394,7 @@ function buildSections(
   navigation.rebuild(g_navData, refocus ? 0 : undefined);
 }
 
-function buildFavorites(navRow, navColumn, favorites) {
+function buildFavorites(navRow, navColumn, favorites, localization) {
   const favoritesDiv = document.querySelector("#hs-favorites-div");
   const footerDiv = document.querySelector("#hs-footer");
   favoritesDiv.parentNode.insertBefore(favoritesDiv, footerDiv);
@@ -416,7 +431,8 @@ function buildFavorites(navRow, navColumn, favorites) {
   favoritesCardsDiv.appendChild(listDiv);
 
   let max = favorites.length;
-  let showFavoritesEllipsis = false;
+  let showEllipsis = false;
+  let canBeCollapsed = false;
   if (favorites.length <= getListMaxRowsCollapsed(-1) * 2) {
     collapseFavoritesButton.classList.add("set-display-none");
     expandFavoritesButton.classList.add("set-display-none");
@@ -432,8 +448,9 @@ function buildFavorites(navRow, navColumn, favorites) {
       expandFavoritesButton.setAttribute("data-nav-col", navColumn++);
       expandFavoritesButton.setAttribute("tabindex", "0");
       max = getListMaxRowsCollapsed(-1) * 2;
-      if (favorites.length > max) showFavoritesEllipsis = true;
+      if (favorites.length > max) showEllipsis = true;
     } else {
+      canBeCollapsed = true;
       collapseFavoritesButton.classList.remove("set-display-none");
       expandFavoritesButton.classList.add("set-display-none");
       collapseFavoritesButton.setAttribute("data-nav-panel", 0);
@@ -482,15 +499,15 @@ function buildFavorites(navRow, navColumn, favorites) {
       );
     }
   }
-  if (showFavoritesEllipsis) {
-    const ellipsis = document.createElement("div");
-    ellipsis.classList = "hs-section-ellipsis";
-    favoritesCardsDiv.appendChild(ellipsis);
-    ellipsis.addEventListener("click", function (event) {
-      sendIpcToMain("hs-on-collapse-list-clicked", -1, false);
-      event.stopPropagation();
-    });
-  }
+  // bottom button.
+  addSectionBottomButton(
+    -1,
+    favoritesCardsDiv,
+    showEllipsis,
+    canBeCollapsed,
+    localization
+  );
+
   // Add
   // if (g_languageDirection === "rtl") {
   //   navColumn = 0;
@@ -511,7 +528,7 @@ function buildFavorites(navRow, navColumn, favorites) {
   return [navRow, navColumn];
 }
 
-function buildLatest(navRow, navColumn, latest) {
+function buildLatest(navRow, navColumn, latest, localization) {
   const latestDiv = document.querySelector("#hs-latest-div");
   const footerDiv = document.querySelector("#hs-footer");
   latestDiv.parentNode.insertBefore(latestDiv, footerDiv);
@@ -531,7 +548,8 @@ function buildLatest(navRow, navColumn, latest) {
 
   let max = latest.length;
   // collapse / expand button ////////////
-  let showLatestEllipsis = false;
+  let showEllipsis = false;
+  let canBeCollapsed = false;
   if (latest.length <= getListMaxRowsCollapsed(-2) * 2) {
     collapseLatestButton.classList.add("set-display-none");
     expandLatestButton.classList.add("set-display-none");
@@ -549,8 +567,9 @@ function buildLatest(navRow, navColumn, latest) {
       expandLatestButton.setAttribute("data-nav-col", navColumn++);
       expandLatestButton.setAttribute("tabindex", "0");
       max = getListMaxRowsCollapsed(-2) * 2;
-      if (latest.length > max) showLatestEllipsis = true;
+      if (latest.length > max) showEllipsis = true;
     } else {
+      canBeCollapsed = true;
       collapseLatestButton.classList.remove("set-display-none");
       expandLatestButton.classList.add("set-display-none");
       collapseLatestButton.setAttribute("data-nav-panel", 0);
@@ -617,15 +636,14 @@ function buildLatest(navRow, navColumn, latest) {
       );
     }
   }
-  if (showLatestEllipsis) {
-    const ellipsis = document.createElement("div");
-    ellipsis.classList = "hs-section-ellipsis";
-    latestCardsDiv.appendChild(ellipsis);
-    ellipsis.addEventListener("click", function (event) {
-      sendIpcToMain("hs-on-collapse-list-clicked", -2, false);
-      event.stopPropagation();
-    });
-  }
+  // bottom button.
+  addSectionBottomButton(
+    -2,
+    latestCardsDiv,
+    showEllipsis,
+    canBeCollapsed,
+    localization
+  );
 
   return [navRow, navColumn];
 }
@@ -786,6 +804,7 @@ function buildOtherLists(navRow, navColumn, otherLists, localization) {
 
       let max = list.data.length;
       let showEllipsis = false;
+      let canBeCollapsed = false;
       if (list.data.length <= getListMaxRowsCollapsed(listIndex) * 2) {
         collapseButton.classList.add("set-display-none");
         expandButton.classList.add("set-display-none");
@@ -803,6 +822,7 @@ function buildOtherLists(navRow, navColumn, otherLists, localization) {
           max = getListMaxRowsCollapsed(listIndex) * 2;
           if (list.data.length > max) showEllipsis = true;
         } else {
+          canBeCollapsed = true;
           collapseButton.classList.remove("set-display-none");
           expandButton.classList.add("set-display-none");
           collapseButton.setAttribute("data-nav-panel", 0);
@@ -858,15 +878,14 @@ function buildOtherLists(navRow, navColumn, otherLists, localization) {
           );
         }
       }
-      if (showEllipsis) {
-        const ellipsis = document.createElement("div");
-        ellipsis.classList = "hs-section-ellipsis";
-        contentDiv.appendChild(ellipsis);
-        ellipsis.addEventListener("click", function (event) {
-          sendIpcToMain("hs-on-collapse-list-clicked", listIndex, false);
-          event.stopPropagation();
-        });
-      }
+      // bottom button.
+      addSectionBottomButton(
+        listIndex,
+        contentDiv,
+        showEllipsis,
+        canBeCollapsed,
+        localization
+      );
     }
   }
 
@@ -1193,6 +1212,35 @@ function getNewCardDiv(cardType, data, navRow, navColumn, listIndex) {
       break;
   }
   return cardDiv;
+}
+
+function addSectionBottomButton(
+  listIndex,
+  parentDiv,
+  showEllipsis,
+  canBeCollapsed,
+  localization
+) {
+  const bottomButtonDiv = document.createElement("div");
+  bottomButtonDiv.classList = "hs-section-bottom-button";
+  parentDiv.appendChild(bottomButtonDiv);
+  if (showEllipsis) {
+    bottomButtonDiv.classList =
+      "hs-section-bottom-button hs-section-bottom-button-ellipsis";
+    bottomButtonDiv.addEventListener("click", function (event) {
+      sendIpcToMain("hs-on-collapse-list-clicked", listIndex, false);
+      event.stopPropagation();
+    });
+    bottomButtonDiv.title = localization.expandButtonTitle;
+  } else if (canBeCollapsed) {
+    bottomButtonDiv.classList =
+      "hs-section-bottom-button hs-section-bottom-button-collapse";
+    bottomButtonDiv.addEventListener("click", function (event) {
+      sendIpcToMain("hs-on-collapse-list-clicked", listIndex, true);
+      event.stopPropagation();
+    });
+    bottomButtonDiv.title = localization.collapseButtonTitle;
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
