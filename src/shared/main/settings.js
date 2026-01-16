@@ -34,7 +34,7 @@ const g_defaultSettings = {
   height: g_defaultSize.height,
   on_quit_state: 0, // 0: no file, 1: reading file
 
-  history_capacity: 30,
+  history_capacity: 50,
 
   showMenuBar: true,
   showToolBar: true,
@@ -399,7 +399,7 @@ function sanitize() {
   ) {
     g_settings.pageModeDefault = g_defaultSettings.pageModeDefault;
   }
-   if (
+  if (
     !Number.isInteger(g_settings.pageModeFileLoading) ||
     g_settings.pageModeFileLoading < 0 ||
     g_settings.pageModeFileLoading > 1
