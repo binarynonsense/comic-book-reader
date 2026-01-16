@@ -593,7 +593,7 @@ function buildLatest(navRow, navColumn, latest, localization) {
       if (cardIndex % 2 === 0) {
         if (cardIndex !== 0) navRow++;
         navColumn = 3;
-        if (cardIndex === favorites.length - 1) navColumn = 1;
+        if (cardIndex === latest.length - 1) navColumn = 1;
       } else {
         navColumn = 1;
       }
