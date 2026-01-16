@@ -910,7 +910,12 @@ function getNewCardDiv(cardType, data, navRow, navColumn, listIndex) {
     <i class="fa-solid fa-heart"></i>
   </div>`;
   function getTypeMiniIconHtml() {
-    if (data.pathType === 0) {
+    if (data.pathType === 2) {
+      return `
+        <div class="hs-path-card-typeminiicon">
+          WWW
+        </div>`;
+    } else if (data.pathType === 0) {
       const path = data.path.toLowerCase();
       const pos = path.lastIndexOf(".");
       const ext = path.substring(pos + 1);
