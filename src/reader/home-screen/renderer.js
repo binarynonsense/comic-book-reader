@@ -193,6 +193,24 @@ function init() {
       sendIpcToMain("hs-on-create-list-clicked");
       event.stopPropagation();
     });
+
+    // scrolltotop button
+    const scrollToTopButton = document.createElement("div");
+    scrollToTopButton.style.display = "none";
+    scrollToTopButton.id = "home-scroll-to-top-button";
+    document.body.appendChild(scrollToTopButton);
+    scrollToTopButton.innerHTML = '<i class="fas fa-arrow-up"></i>';
+    const homeScreenDiv = document.getElementById("home-screen");
+    homeScreenDiv.addEventListener("scroll", (event) => {
+      if (homeScreenDiv.scrollTop > 150) {
+        scrollToTopButton.style.display = "flex";
+      } else {
+        scrollToTopButton.style.display = "none";
+      }
+    });
+    scrollToTopButton.addEventListener("click", (event) => {
+      homeScreenDiv.scrollTop = 0;
+    });
   }
 }
 
