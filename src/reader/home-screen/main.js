@@ -40,7 +40,7 @@ function init() {
     reader.sendIpcToCoreRenderer(
       "replace-inner-html",
       "#home-screen",
-      data.toString()
+      data.toString(),
     );
     sendIpcToRenderer("hs-init");
     updateLocalizedText(false);
@@ -104,7 +104,7 @@ function buildSections(refocus = true) {
       editNameButtonTitle: _("ui-modal-prompt-button-edit-name"),
       removeListButtonTitle: _("tool-shared-ui-remove-list"),
     },
-    refocus
+    refocus,
   );
   if (!g_hasDoneHistoryCleanup) {
     g_hasDoneHistoryCleanup = true;
@@ -113,36 +113,54 @@ function buildSections(refocus = true) {
   }
 }
 
-function getPercentageReadFromHistoryIndex(index) {
-  if (index === undefined || !Number.isInteger(index)) return undefined;
-  const historyData = history.getRecent();
-  let pageIndex = historyData[index].pageIndex;
-  let numPages = historyData[index].numPages;
-  if (pageIndex !== undefined && numPages !== undefined) {
-    pageIndex = parseFloat(pageIndex);
-    numPages = parseFloat(numPages);
-    if (!isNaN(pageIndex) && !isNaN(numPages)) {
-      if (
-        historyData[index].data &&
-        historyData[index].data.bookType &&
-        historyData[index].data.bookType === "ebook"
-      ) {
-        if (pageIndex >= 0 && pageIndex <= 100) {
-          return pageIndex;
-        }
-      } else {
-        if (pageIndex <= numPages) {
-          return ((pageIndex + 1) / numPages) * 100;
-        }
-      }
-    }
-  }
-  return undefined;
-}
-
 //////////////////////////////////////////////////////////////////////////////
 // LISTS - COMMON ////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
+
+function generateCardsFromSavedData(inputData, isFavoritesList) {
+  const data = [];
+  for (let index = 0; index < inputData.length; index++) {
+    try {
+      const inputBook = inputData[index];
+      const outputBook = {};
+      outputBook.index = index;
+      outputBook.path = inputBook.path;
+      outputBook.name = inputBook.name;
+      if (isFavoritesList) {
+        if (inputBook.localizedNameId) {
+          // used in the defaults
+          outputBook.name = getFavoriteLocalizedName(index);
+        }
+      } else {
+        outputBook.isInFavorites = isEntryInList(-1, inputData[index]);
+      }
+      if (inputBook.data && inputBook.data.source) {
+        outputBook.pathType = 2;
+      } else if (fs.existsSync(outputBook.path)) {
+        outputBook.pathType = !fs.lstatSync(outputBook.path).isDirectory()
+          ? 0
+          : 1;
+      } else {
+        outputBook.pathType = -1;
+      }
+      if (outputBook.pathType !== 1) {
+        if (outputBook.pathType === 0) {
+          outputBook.percentageRead =
+            getEntryPercentageReadFromHistory(inputBook);
+        } else if (outputBook.pathType === 2) {
+          outputBook.percentageRead =
+            getEntryPercentageReadFromHistory(inputBook);
+        }
+      }
+      data.push(outputBook);
+    } catch (error) {
+      log.editorError(error);
+    }
+  }
+  return data;
+}
+
+/////////////////////
 
 function getListName(listIndex) {
   if (listIndex === -2) {
@@ -220,60 +238,15 @@ function addListEntryFromLocalPath(listIndex, localPath, doBuild = true) {
     sendIpcToCoreRenderer(
       "show-toast",
       `${_("home-action-canceled")}<br>${_(
-        "home-action-drag-file-shortcut-error-alreadyinlist"
+        "home-action-drag-file-shortcut-error-alreadyinlist",
       )}<br><span class="toast-acbr-path">...${path.basename(
-        localPath
+        localPath,
       )}</span>`,
       3000,
       undefined,
-      false
+      false,
     );
   }
-}
-
-function generateCardsFromSavedData(inputData, isFavoritesList) {
-  const data = [];
-  for (let index = 0; index < inputData.length; index++) {
-    try {
-      const inputBook = inputData[index];
-      const outputBook = {};
-      outputBook.index = index;
-      outputBook.path = inputBook.path;
-      outputBook.name = inputBook.name;
-      if (isFavoritesList) {
-        if (inputBook.localizedNameId) {
-          // used in the defaults
-          outputBook.name = getFavoriteLocalizedName(index);
-        }
-      } else {
-        outputBook.isInFavorites = isEntryInList(-1, inputData[index]);
-      }
-      if (inputBook.data && inputBook.data.source) {
-        outputBook.pathType = 2;
-      } else if (fs.existsSync(outputBook.path)) {
-        outputBook.pathType = !fs.lstatSync(outputBook.path).isDirectory()
-          ? 0
-          : 1;
-      } else {
-        outputBook.pathType = -1;
-      }
-      if (outputBook.pathType !== 1) {
-        if (outputBook.pathType === 0) {
-          outputBook.percentageRead = getPercentageReadFromHistoryIndex(
-            history.getIndexInRecentByFilePath(outputBook.path)
-          );
-        } else if (outputBook.pathType === 2) {
-          outputBook.percentageRead = getPercentageReadFromHistoryIndex(
-            history.getIndexInRecentByData(inputBook.data)
-          );
-        }
-      }
-      data.push(outputBook);
-    } catch (error) {
-      log.editorError(error);
-    }
-  }
-  return data;
 }
 
 function isHistoryEntryInFavoritesOrUserLists(entry) {
@@ -293,8 +266,8 @@ exports.isHistoryEntryInFavoritesOrUserLists =
 
 function cleanHistoryHome(doLog = false) {
   // NOTE: this could be very ineficient as I use it when removing just one
-  // entry in a list in the remove functions. TODO: Improve it later by
-  // using more specific functions in those.
+  // entry in a list in the remove functions.
+  // TODO: Improve it later by using more specific functions in those.
   const homeHistory = history.getHome();
   let indicesToDelete = [];
   for (let index = 0; index < homeHistory.length; index++) {
@@ -314,6 +287,57 @@ function cleanHistoryHome(doLog = false) {
   });
 }
 
+function getPercentageReadFromHistoryListByIndex(index, listIndex) {
+  if (index === undefined || !Number.isInteger(index)) return undefined;
+  const historyData = listIndex === 0 ? history.getRecent() : history.getHome();
+  let pageIndex = historyData[index].pageIndex;
+  let numPages = historyData[index].numPages;
+  if (pageIndex !== undefined && numPages !== undefined) {
+    pageIndex = parseFloat(pageIndex);
+    numPages = parseFloat(numPages);
+    if (!isNaN(pageIndex) && !isNaN(numPages)) {
+      if (
+        historyData[index].data &&
+        historyData[index].data.bookType &&
+        historyData[index].data.bookType === "ebook"
+      ) {
+        if (pageIndex >= 0 && pageIndex <= 100) {
+          return pageIndex;
+        }
+      } else {
+        if (pageIndex <= numPages) {
+          return ((pageIndex + 1) / numPages) * 100;
+        }
+      }
+    }
+  }
+  return undefined;
+}
+
+function getEntryPercentageReadFromHistory(entry) {
+  if (entry.data && entry.data.source) {
+    let index = history.getIndexInRecentByData(entry.data);
+    if (index !== undefined) {
+      return getPercentageReadFromHistoryListByIndex(index, 0);
+    } else {
+      index = history.getIndexInHomeByData(entry.data);
+      if (index !== undefined) {
+        return getPercentageReadFromHistoryListByIndex(index, 1);
+      }
+    }
+  } else {
+    let index = history.getIndexInRecentByFilePath(entry.path);
+    if (index !== undefined) {
+      return getPercentageReadFromHistoryListByIndex(index, 0);
+    } else {
+      index = history.getIndexInHomeByFilePath(entry.path);
+      if (index !== undefined) {
+        return getPercentageReadFromHistoryListByIndex(index, 1);
+      }
+    }
+  }
+}
+
 //////////////////////////////////////////////////////////////////////////////
 // LISTS - LATEST ////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
@@ -326,8 +350,9 @@ function getLatestCards() {
       if (data.length < settings.getValue("homeScreen").latestMaxRows * 2) {
         const latestInfo = {};
         latestInfo.index = historyData.length - index - 1;
-        latestInfo.percentageRead = getPercentageReadFromHistoryIndex(
-          latestInfo.index
+        latestInfo.percentageRead = getPercentageReadFromHistoryListByIndex(
+          latestInfo.index,
+          0,
         );
         const historyDataFile = historyData[latestInfo.index];
         if (historyDataFile.data && historyDataFile.data.source) {
@@ -594,7 +619,7 @@ function initOnIpcCallbacks() {
             hi,
             3000,
             ["reader", "hs-on-logo-toast-hi-clicked"],
-            false
+            false,
           );
         }, 500);
         break;
@@ -605,7 +630,7 @@ function initOnIpcCallbacks() {
             hour: "numeric",
             minute: "numeric",
             hour12: settings.getValue("clockFormat") === 1,
-          }
+          },
         )} `;
         setTimeout(() => {
           sendIpcToCoreRenderer("show-toast", time, 3000, undefined, false);
@@ -615,7 +640,7 @@ function initOnIpcCallbacks() {
         const version = `<i class="fa-solid fa-code-branch"></i>&nbsp;&nbsp;v${appUtils.getAppVersion()} `; //🗨🕑👋😀
         showLogoUrlToast(
           version,
-          "https://github.com/binarynonsense/comic-book-reader"
+          "https://github.com/binarynonsense/comic-book-reader",
         );
         break;
       case 3:
@@ -664,7 +689,7 @@ function initOnIpcCallbacks() {
       _raw("tool-ec-title-alt", false)
         ? _raw("tool-ec-title-alt", false)
         : _("tool-ec-title"), // "Extract Pages Tool"
-      showFocus
+      showFocus,
     );
   });
 
@@ -695,7 +720,7 @@ function initOnIpcCallbacks() {
       _raw("tool-ep-title-alt", false)
         ? _raw("tool-ep-title-alt", false)
         : _("tool-ep-title"),
-      showFocus
+      showFocus,
     );
   });
 
@@ -751,7 +776,7 @@ function initOnIpcCallbacks() {
     reader.tryOpen(
       history.getEntryInRecentByIndex(index).filePath,
       undefined,
-      history.getEntryInRecentByIndex(index)
+      history.getEntryInRecentByIndex(index),
     );
   });
 
@@ -781,7 +806,7 @@ function initOnIpcCallbacks() {
       g_userLists[listIndex].name,
       _("ui-modal-prompt-button-edit-name"),
       _("ui-modal-prompt-button-ok"),
-      _("ui-modal-prompt-button-cancel")
+      _("ui-modal-prompt-button-cancel"),
     );
   });
 
@@ -791,7 +816,7 @@ function initOnIpcCallbacks() {
       sendIpcToCoreRenderer(
         "show-toast",
         _("home-action-canceled") + "\n" + _("home-action-edit-name-error"),
-        3000
+        3000,
       );
       return;
     }
@@ -809,7 +834,7 @@ function initOnIpcCallbacks() {
       _("tool-shared-modal-title-warning"),
       _("tool-shared-ui-remove-list-warning"),
       _("ui-modal-prompt-button-yes"),
-      _("ui-modal-prompt-button-cancel")
+      _("ui-modal-prompt-button-cancel"),
     );
   });
 
@@ -830,7 +855,7 @@ function initOnIpcCallbacks() {
       _("tool-shared-ui-add-files"),
       _("tool-shared-ui-add-folders"),
       listIndex,
-      showFocus
+      showFocus,
     );
   });
 
@@ -852,7 +877,7 @@ function initOnIpcCallbacks() {
       g_defaultPath,
       allowedFileTypesName,
       allowedFileTypesList,
-      allowMultipleSelection
+      allowMultipleSelection,
     );
     if (filePathsList === undefined || filePathsList.length <= 0) {
       return;
@@ -869,7 +894,7 @@ function initOnIpcCallbacks() {
     let folderList = appUtils.chooseFolder(
       core.getMainWindow(),
       g_defaultPath,
-      true
+      true,
     );
     if (folderList === undefined || folderList.length <= 0) {
       return;
@@ -935,9 +960,9 @@ function initOnIpcCallbacks() {
         !isLocalFile || isLocalPathInList(-1, path.dirname(cardPath))
           ? undefined
           : _("home-modal-button-addcontainingfoldertofavorites"),
-        showFocus
+        showFocus,
       );
-    }
+    },
   );
 
   on("hs-on-modal-list-entry-options-remove-clicked", (...args) => {
@@ -961,14 +986,14 @@ function initOnIpcCallbacks() {
           entryName,
           _("ui-modal-prompt-button-edit-name"),
           _("ui-modal-prompt-button-ok"),
-          _("ui-modal-prompt-button-cancel")
+          _("ui-modal-prompt-button-cancel"),
         );
       } else {
         log.error(
-          "Tried to edit a list entry with not matching index and path"
+          "Tried to edit a list entry with not matching index and path",
         );
       }
-    }
+    },
   );
 
   on(
@@ -979,7 +1004,7 @@ function initOnIpcCallbacks() {
         sendIpcToCoreRenderer(
           "show-toast",
           _("home-action-canceled") + "\n" + _("home-action-edit-name-error"),
-          3000
+          3000,
         );
         return;
       }
@@ -1001,10 +1026,10 @@ function initOnIpcCallbacks() {
         }
       } else {
         log.error(
-          "Tried to edit a list entry with not matching index and path"
+          "Tried to edit a list entry with not matching index and path",
         );
       }
-    }
+    },
   );
 
   on(
@@ -1019,14 +1044,14 @@ function initOnIpcCallbacks() {
           entryPath,
           _("ui-modal-prompt-button-edit-path"),
           _("ui-modal-prompt-button-ok"),
-          _("ui-modal-prompt-button-cancel")
+          _("ui-modal-prompt-button-cancel"),
         );
       } else {
         log.error(
-          "Tried to edit a list entry with not matching index and path"
+          "Tried to edit a list entry with not matching index and path",
         );
       }
-    }
+    },
   );
 
   on(
@@ -1042,20 +1067,20 @@ function initOnIpcCallbacks() {
               _("home-action-canceled") +
                 "\n" +
                 _("home-action-edit-path-error"),
-              3000
+              3000,
             );
             return;
           }
           if (isLocalPathInList(listIndex, newPath)) {
             log.editor(
-              "Tried to change a list entry to an path already in the list"
+              "Tried to change a list entry to an path already in the list",
             );
             sendIpcToCoreRenderer(
               "show-toast",
               _("home-action-canceled") +
                 "\n" +
                 _("home-action-drag-file-shortcut-error-alreadyinlist"),
-              3000
+              3000,
             );
             return;
           }
@@ -1064,10 +1089,10 @@ function initOnIpcCallbacks() {
         }
       } else {
         log.error(
-          "Tried to edit a list entry with not matching index and path"
+          "Tried to edit a list entry with not matching index and path",
         );
       }
-    }
+    },
   );
 
   on(
@@ -1094,10 +1119,10 @@ function initOnIpcCallbacks() {
         }
       } else {
         log.error(
-          "Tried to move a list entry with not matching index and path"
+          "Tried to move a list entry with not matching index and path",
         );
       }
-    }
+    },
   );
 
   on(
@@ -1110,14 +1135,14 @@ function initOnIpcCallbacks() {
         return;
       }
       addListEntryFromLocalPath(-1, path.dirname(entry.path));
-    }
+    },
   );
 
   on(
     "hs-on-modal-list-entry-options-openfolder-clicked",
     (listIndex, entryIndex, entryPath) => {
       appUtils.openPathInFileBrowser(path.dirname(entryPath));
-    }
+    },
   );
 
   on(
@@ -1131,7 +1156,7 @@ function initOnIpcCallbacks() {
       }
       addListEntryFromLocalPath(-1, entry.path);
       buildSections();
-    }
+    },
   );
 
   on("hs-on-modal-list-entry-options-removefavorites-clicked", (...args) => {
@@ -1200,12 +1225,12 @@ function initOnIpcCallbacks() {
             _(
               "home-action-drop-file-shortcut-from-to",
               getListName(fromListIndex),
-              getListName(toListIndex)
+              getListName(toListIndex),
             ),
             _("tool-shared-ui-back"),
             showMove ? _("home-action-move-file-shortcut") : undefined,
             showCopy ? _("home-action-copy-file-shortcut") : undefined,
-            showFocus
+            showFocus,
           );
         } else {
           log.editor("dropped entry already in list");
@@ -1214,11 +1239,11 @@ function initOnIpcCallbacks() {
             _("home-action-canceled") +
               "\n" +
               _("home-action-drag-file-shortcut-error-alreadyinlist"),
-            3000
+            3000,
           );
         }
       }
-    }
+    },
   );
 
   on(
@@ -1242,7 +1267,7 @@ function initOnIpcCallbacks() {
       }
       fromListData.splice(fromEntryIndex, 1);
       buildSections(false);
-    }
+    },
   );
 
   on(
@@ -1270,7 +1295,7 @@ function initOnIpcCallbacks() {
         }
         buildSections(false);
       }
-    }
+    },
   );
 
   //////////////////////
@@ -1282,7 +1307,7 @@ function initOnIpcCallbacks() {
       _("tool-shared-ui-create-list"),
       _("ui-modal-prompt-button-yes"),
       _("ui-modal-prompt-button-no"),
-      showFocus
+      showFocus,
     );
   });
 
@@ -1313,7 +1338,7 @@ function initOnIpcCallbacks() {
       !filePath || isLocalPathInList(-1, path.dirname(filePath))
         ? undefined
         : _("home-modal-button-addcontainingfoldertofavorites"),
-      showFocus
+      showFocus,
     );
   });
 
@@ -1321,21 +1346,21 @@ function initOnIpcCallbacks() {
     "hs-on-modal-latest-options-addtofavorites-clicked",
     (fileIndex, filePath) => {
       addListEntryFromLatest(fileIndex, -1);
-    }
+    },
   );
 
   on(
     "hs-on-modal-latest-options-addfoldertofavorites-clicked",
     (fileIndex, filePath) => {
       addFavoriteFolderFromLatest(fileIndex, filePath);
-    }
+    },
   );
 
   on(
     "hs-on-modal-latest-options-removefromfavorites-clicked",
     (fileIndex, filePath) => {
       removeLatestFromFavorites(fileIndex, filePath);
-    }
+    },
   );
 
   on("hs-on-modal-latest-options-openfolder-clicked", (fileIndex, filePath) => {
@@ -1370,7 +1395,7 @@ function updateLocalizedText(rebuildSections = true) {
     _("tool-shared-ui-expand-list"),
     _("home-section-favorites").toUpperCase(),
     _("home-section-recent").toUpperCase(),
-    _("tool-shared-ui-create-list")
+    _("tool-shared-ui-create-list"),
   );
   if (rebuildSections) buildSections();
 }
@@ -1398,7 +1423,7 @@ function getCardLocalization() {
     options: _("tool-shared-tab-options"),
     add: _("tool-shared-ui-add"),
     openInSystemBrowser: _(
-      "ui-modal-prompt-button-open-in-system-file-browser"
+      "ui-modal-prompt-button-open-in-system-file-browser",
     ),
     openInReader: _("ui-modal-prompt-button-open-in-reader"),
   };
