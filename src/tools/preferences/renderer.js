@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2025 Álvaro García
+ * Copyright 2020-2026 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -23,6 +23,10 @@ let g_tempFolderPathUl;
 let g_tempFolderPathCheckbox;
 let g_rarExeFolderPathUl;
 let g_localizedTexts = {};
+
+export function needsScrollToTopButtonUpdate() {
+  return true;
+}
 
 function init(activeLocale, languages, activeTheme, themes, settings) {
   try {
@@ -91,16 +95,16 @@ function init(activeLocale, languages, activeTheme, themes, settings) {
       }
       // auto options
       const selectOption_0 = document.getElementById(
-        "tool-pre-themes-select-0"
+        "tool-pre-themes-select-0",
       );
       if (selectOption_0 && activeTheme === "acbr-auto-system") {
         selectOption_0.selected = true;
       }
       const selectOption_1 = document.getElementById(
-        "tool-pre-themes-select-1"
+        "tool-pre-themes-select-1",
       );
       const timesDiv = document.getElementById(
-        "tool-pre-themes-time-inputs-div"
+        "tool-pre-themes-time-inputs-div",
       );
       if (selectOption_1 && activeTheme === "acbr-auto-time") {
         selectOption_1.selected = true;
@@ -109,13 +113,13 @@ function init(activeLocale, languages, activeTheme, themes, settings) {
         timesDiv.classList.add("set-display-none");
       }
       const timeStartInput = document.getElementById(
-        "tool-pre-themes-time-start-input"
+        "tool-pre-themes-time-start-input",
       );
       timeStartInput.addEventListener("change", function (event) {
         sendIpcToMain("set-theme-time-start", timeStartInput.value);
       });
       const timeEndInput = document.getElementById(
-        "tool-pre-themes-time-end-input"
+        "tool-pre-themes-time-end-input",
       );
       timeEndInput.addEventListener("change", function (event) {
         sendIpcToMain("set-theme-time-end", timeEndInput.value);
@@ -160,14 +164,14 @@ function init(activeLocale, languages, activeTheme, themes, settings) {
     // page mode file loading select
     {
       let select = document.getElementById(
-        "tool-pre-pagemode-fileloading-select"
+        "tool-pre-pagemode-fileloading-select",
       );
       select.value = settings.pageModeFileLoading;
       select.addEventListener("change", function (event) {
         sendIpcToMain(
           "set-setting",
           "pageModeFileLoading",
-          parseInt(select.value)
+          parseInt(select.value),
         );
       });
     }
@@ -198,7 +202,7 @@ function init(activeLocale, languages, activeTheme, themes, settings) {
     // layout audioplayer select
     {
       let select = document.getElementById(
-        "tool-pre-layout-audioplayer-select"
+        "tool-pre-layout-audioplayer-select",
       );
       select.value = settings.layoutAudioPlayer;
       select.addEventListener("change", function (event) {
@@ -248,20 +252,20 @@ function init(activeLocale, languages, activeTheme, themes, settings) {
     // home screen latest position
     {
       let select = document.getElementById(
-        "tool-pre-home-screen-latest-position-select"
+        "tool-pre-home-screen-latest-position-select",
       );
       select.value = settings.homeScreen.latestPosition;
       select.addEventListener("change", function (event) {
         sendIpcToMain(
           "set-home-screen-latest-position",
-          parseInt(select.value)
+          parseInt(select.value),
         );
       });
     }
     // home screen latest max rows
     {
       let input = document.getElementById(
-        "tool-pre-home-screen-latest-max-rows-input"
+        "tool-pre-home-screen-latest-max-rows-input",
       );
       input.value = settings.homeScreen.latestMaxRows;
       input.addEventListener("change", function (event) {
@@ -272,58 +276,58 @@ function init(activeLocale, languages, activeTheme, themes, settings) {
     // home screen latest max rows collapsed
     {
       let input = document.getElementById(
-        "tool-pre-home-screen-latest-max-rows-collapsed-input"
+        "tool-pre-home-screen-latest-max-rows-collapsed-input",
       );
       input.value = settings.homeScreen.latestMaxRowsCollapsed;
       input.addEventListener("change", function (event) {
         if (input.value <= 0) input.value = 1;
         sendIpcToMain(
           "set-home-screen-latest-max-rows-collapsed",
-          parseInt(input.value)
+          parseInt(input.value),
         );
       });
     }
     // home screen favorites max rows collapsed
     {
       let input = document.getElementById(
-        "tool-pre-home-screen-favorites-max-rows-collapsed-input"
+        "tool-pre-home-screen-favorites-max-rows-collapsed-input",
       );
       input.value = settings.homeScreen.favoritesMaxRowsCollapsed;
       input.addEventListener("change", function (event) {
         if (input.value <= 0) input.value = 1;
         sendIpcToMain(
           "set-home-screen-favorites-max-rows-collapsed",
-          parseInt(input.value)
+          parseInt(input.value),
         );
       });
     }
     // home screen other max rows collapsed
     {
       let input = document.getElementById(
-        "tool-pre-home-screen-other-max-rows-collapsed-input"
+        "tool-pre-home-screen-other-max-rows-collapsed-input",
       );
       input.value = settings.homeScreen.otherMaxRowsCollapsed;
       input.addEventListener("change", function (event) {
         if (input.value <= 0) input.value = 1;
         sendIpcToMain(
           "set-home-screen-other-max-rows-collapsed",
-          parseInt(input.value)
+          parseInt(input.value),
         );
       });
     }
     // epub ebook color mode
     {
       const selectColorMode = document.getElementById(
-        "tool-pre-epub-ebook-color-mode-select"
+        "tool-pre-epub-ebook-color-mode-select",
       );
       const inputTextColor = document.getElementById(
-        "tool-pre-epub-ebook-color-text-input"
+        "tool-pre-epub-ebook-color-text-input",
       );
       const inputBgColor = document.getElementById(
-        "tool-pre-epub-ebook-color-background-input"
+        "tool-pre-epub-ebook-color-background-input",
       );
       const customDiv = document.querySelector(
-        "#tool-pre-epub-ebook-color-custom-inputs-div"
+        "#tool-pre-epub-ebook-color-custom-inputs-div",
       );
 
       selectColorMode.value = settings.epubEbookColorMode;
@@ -338,7 +342,7 @@ function init(activeLocale, languages, activeTheme, themes, settings) {
           "set-epub-ebook-color-mode",
           parseInt(selectColorMode.value),
           inputTextColor.value,
-          inputBgColor.value
+          inputBgColor.value,
         );
         if (selectColorMode.value == "2") {
           customDiv.classList.remove("set-display-none");
@@ -362,7 +366,7 @@ function init(activeLocale, languages, activeTheme, themes, settings) {
           "set-epub-ebook-color-mode",
           parseInt(selectColorMode.value),
           inputTextColor.value,
-          inputBgColor.value
+          inputBgColor.value,
         );
       });
 
@@ -373,7 +377,7 @@ function init(activeLocale, languages, activeTheme, themes, settings) {
           "set-epub-ebook-color-mode",
           parseInt(selectColorMode.value),
           inputTextColor.value,
-          inputBgColor.value
+          inputBgColor.value,
         );
       });
     }
@@ -397,7 +401,7 @@ function init(activeLocale, languages, activeTheme, themes, settings) {
     {
       {
         let select = document.getElementById(
-          "tool-pre-mousebuttons-quickmenu-select"
+          "tool-pre-mousebuttons-quickmenu-select",
         );
         const options = [
           { id: -1, name: g_localizedTexts.unassignedMouseButton },
@@ -444,7 +448,7 @@ function init(activeLocale, languages, activeTheme, themes, settings) {
     // pdf reading library select
     {
       let select = document.getElementById(
-        "tool-pre-pdf-reading-library-version-select"
+        "tool-pre-pdf-reading-library-version-select",
       );
       select.value = settings.pdfReadingLib;
       select.addEventListener("change", function (event) {
@@ -454,7 +458,7 @@ function init(activeLocale, languages, activeTheme, themes, settings) {
     // cbr creation select
     {
       let select = document.getElementById(
-        "tool-pre-cbr-creation-modification-select"
+        "tool-pre-cbr-creation-modification-select",
       );
       select.value = settings.cbrCreation;
       select.addEventListener("change", function (event) {
@@ -494,14 +498,14 @@ function init(activeLocale, languages, activeTheme, themes, settings) {
     // check updates
     {
       let select = document.getElementById(
-        "tool-pre-updates-checkonstart-select"
+        "tool-pre-updates-checkonstart-select",
       );
       select.value = settings.checkUpdatesOnStart;
       select.addEventListener("change", function (event) {
         sendIpcToMain(
           "set-setting",
           "checkUpdatesOnStart",
-          parseInt(select.value)
+          parseInt(select.value),
         );
       });
 
@@ -511,7 +515,7 @@ function init(activeLocale, languages, activeTheme, themes, settings) {
         sendIpcToMain(
           "set-setting",
           "checkUpdatesNotify",
-          parseInt(select.value)
+          parseInt(select.value),
         );
       });
 
@@ -524,14 +528,14 @@ function init(activeLocale, languages, activeTheme, themes, settings) {
     // check updates
     {
       let select = document.getElementById(
-        "tool-pre-updates-checkonstart-select"
+        "tool-pre-updates-checkonstart-select",
       );
       select.value = settings.checkUpdatesOnStart;
       select.addEventListener("change", function (event) {
         sendIpcToMain(
           "set-setting",
           "checkUpdatesOnStart",
-          parseInt(select.value)
+          parseInt(select.value),
         );
       });
 
@@ -545,7 +549,7 @@ function init(activeLocale, languages, activeTheme, themes, settings) {
     {
       g_tempFolderPathUl = document.getElementById("tool-pre-tempfolder-ul");
       g_tempFolderPathCheckbox = document.getElementById(
-        "tool-pre-tempfolder-checkbox"
+        "tool-pre-tempfolder-checkbox",
       );
       document
         .getElementById("tool-pre-tempfolder-update-button")
@@ -553,7 +557,7 @@ function init(activeLocale, languages, activeTheme, themes, settings) {
           sendIpcToMain(
             "change-temp-folder",
             false,
-            g_tempFolderPathCheckbox.checked
+            g_tempFolderPathCheckbox.checked,
           );
         });
       document
@@ -562,7 +566,7 @@ function init(activeLocale, languages, activeTheme, themes, settings) {
           sendIpcToMain(
             "change-temp-folder",
             true,
-            g_tempFolderPathCheckbox.checked
+            g_tempFolderPathCheckbox.checked,
           );
         });
     }
@@ -573,7 +577,7 @@ function init(activeLocale, languages, activeTheme, themes, settings) {
       element.addEventListener("click", (event) => {
         sendIpcToMain(
           "tooltip-button-clicked",
-          element.getAttribute("data-info")
+          element.getAttribute("data-info"),
         );
       });
     });
@@ -760,7 +764,7 @@ function updateNavKeys(
   changeText,
   resetText,
   resetAllText,
-  unassignedText
+  unassignedText,
 ) {
   g_navKeys = actionCommands;
   const parentDiv = document.getElementById("tool-pre-navkeys-div");
@@ -836,7 +840,7 @@ function updateNavButtons(
   actionCommands,
   actionTexts,
   resetText,
-  resetAllText
+  resetAllText,
 ) {
   const parentDiv = document.getElementById("tool-pre-navbuttons-div");
   parentDiv.innerHTML = "";
@@ -1245,7 +1249,7 @@ function showNavKeysChangeModal(title, message, textButton, action, keyIndex) {
 function updateLocalization(
   localization,
   tooltipsLocalization,
-  localizedTexts
+  localizedTexts,
 ) {
   for (let index = 0; index < localization.length; index++) {
     const element = localization[index];

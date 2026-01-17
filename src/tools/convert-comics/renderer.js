@@ -54,12 +54,16 @@ let g_defaultImageWorkers;
 
 let g_isInitialized = false;
 
+export function needsScrollToTopButtonUpdate() {
+  return true;
+}
+
 function init(
   mode,
   outputFolderPath,
   canEditRars,
   loadedOptions,
-  defaultImageWorkers
+  defaultImageWorkers,
 ) {
   g_mode = mode;
   g_defaultImageWorkers = defaultImageWorkers;
@@ -118,16 +122,16 @@ function init(
 
   g_outputFolderDiv = document.querySelector("#tool-cc-output-folder");
   g_outputFormatSelect = document.querySelector(
-    "#tool-cc-output-format-select"
+    "#tool-cc-output-format-select",
   );
   g_outputImageScaleSelect = document.querySelector(
-    "#tool-cc-output-image-scale-select"
+    "#tool-cc-output-image-scale-select",
   );
   g_outputImageFormatSelect = document.querySelector(
-    "#tool-cc-output-image-format-select"
+    "#tool-cc-output-image-format-select",
   );
   g_outputSplitNumFilesInput = document.querySelector(
-    "#tool-cc-split-num-files-input"
+    "#tool-cc-split-num-files-input",
   );
   g_outputSplitNumFilesInput.value = 1;
   g_outputPasswordInput = document.querySelector("#tool-cc-password-input");
@@ -171,7 +175,7 @@ function init(
     });
 
   const outputFolderChangeButton = document.getElementById(
-    "tool-cc-change-folder-button"
+    "tool-cc-change-folder-button",
   );
   outputFolderChangeButton.addEventListener("click", (event) => {
     let lastFilePath = undefined;
@@ -181,22 +185,22 @@ function init(
     sendIpcToMain(
       "change-folder-clicked",
       lastFilePath,
-      g_uiSelectedOptions.outputFolderPath
+      g_uiSelectedOptions.outputFolderPath,
     );
   });
 
   const outputFolderOpenButton = document.getElementById(
-    "tool-cc-open-folder-button"
+    "tool-cc-open-folder-button",
   );
   outputFolderOpenButton.addEventListener("click", (event) => {
     sendIpcToMain(
       "open-path-in-file-browser",
-      g_uiSelectedOptions.outputFolderPath
+      g_uiSelectedOptions.outputFolderPath,
     );
   });
 
   const outputFolderOptionSelect = document.getElementById(
-    "tool-cc-output-folder-option-select"
+    "tool-cc-output-folder-option-select",
   );
   if (g_mode === ToolMode.CONVERT) {
     outputFolderOptionSelect.innerHTML =
@@ -249,7 +253,7 @@ function init(
   // image processing //
 
   const imageMultithreadingSelect = document.getElementById(
-    "tool-cc-imageprocessing-multithreading-method-select"
+    "tool-cc-imageprocessing-multithreading-method-select",
   );
   imageMultithreadingSelect.addEventListener("change", (event) => {
     updateImageMultithreadingUI();
@@ -257,14 +261,14 @@ function init(
   });
 
   const imageMultithreadingWorkersInput = document.getElementById(
-    "tool-cc-imageprocessing-multithreading-numworkers-input"
+    "tool-cc-imageprocessing-multithreading-numworkers-input",
   );
   imageMultithreadingWorkersInput.addEventListener("change", (event) => {
     updateImageMultithreadingUI();
   });
 
   const imageMultithreadingSharpConcInput = document.getElementById(
-    "tool-cc-imageprocessing-multithreading-sharpconcurrency-input"
+    "tool-cc-imageprocessing-multithreading-sharpconcurrency-input",
   );
   imageMultithreadingSharpConcInput.addEventListener("change", (event) => {
     updateImageMultithreadingUI();
@@ -294,7 +298,7 @@ function init(
     });
 
   const inputSearchFoldersFormatsDiv = document.querySelector(
-    "#tool-cc-folders-file-formats-div"
+    "#tool-cc-folders-file-formats-div",
   );
   let formats = [];
   if (g_mode === ToolMode.CONVERT) {
@@ -329,7 +333,7 @@ function init(
   });
 
   const outputFileSameNameSelect = document.getElementById(
-    "tool-cc-output-file-same-name-select"
+    "tool-cc-output-file-same-name-select",
   );
   outputFileSameNameSelect.innerHTML =
     `<option value="rename">${g_localizedTexts.outputFileSameNameOption0}</option>` +
@@ -373,7 +377,7 @@ function init(
     element.addEventListener("click", (event) => {
       sendIpcToMain(
         "tooltip-button-clicked",
-        element.getAttribute("data-info")
+        element.getAttribute("data-info"),
       );
     });
   });
@@ -500,62 +504,62 @@ function switchSection(id) {
 
 function updateUISelectedOptions() {
   g_uiSelectedOptions.outputBrightnessApply = document.querySelector(
-    "#tool-cc-imageops-brightness-checkbox"
+    "#tool-cc-imageops-brightness-checkbox",
   ).checked;
   g_uiSelectedOptions.outputBrightnessMultiplier = document.querySelector(
-    "#tool-cc-imageops-brightness-input"
+    "#tool-cc-imageops-brightness-input",
   ).value;
   g_uiSelectedOptions.outputSaturationApply = document.querySelector(
-    "#tool-cc-imageops-saturation-checkbox"
+    "#tool-cc-imageops-saturation-checkbox",
   ).checked;
   g_uiSelectedOptions.outputSaturationMultiplier = document.querySelector(
-    "#tool-cc-imageops-saturation-input"
+    "#tool-cc-imageops-saturation-input",
   ).value;
   g_uiSelectedOptions.outputCropApply = document.querySelector(
-    "#tool-cc-imageops-crop-checkbox"
+    "#tool-cc-imageops-crop-checkbox",
   ).checked;
   g_uiSelectedOptions.outputCropValue = document.querySelector(
-    "#tool-cc-imageops-crop-input"
+    "#tool-cc-imageops-crop-input",
   ).value;
   g_uiSelectedOptions.outputExtendApply = document.querySelector(
-    "#tool-cc-imageops-extend-checkbox"
+    "#tool-cc-imageops-extend-checkbox",
   ).checked;
   g_uiSelectedOptions.outputExtendValue = document.querySelector(
-    "#tool-cc-imageops-extend-input"
+    "#tool-cc-imageops-extend-input",
   ).value;
   g_uiSelectedOptions.outputExtendColor = document.querySelector(
-    "#tool-cc-imageops-extend-color-input"
+    "#tool-cc-imageops-extend-color-input",
   ).value;
   /////////////////
   g_uiSelectedOptions.inputFoldersContain = document.getElementById(
-    "tool-cc-folders-contain-select"
+    "tool-cc-folders-contain-select",
   ).value;
   g_uiSelectedOptions.inputSearchFoldersFormats = [];
   const inputSearchFoldersFormatsDiv = document.querySelector(
-    "#tool-cc-folders-file-formats-div"
+    "#tool-cc-folders-file-formats-div",
   );
   const inputSearchFoldersFormatsInputs =
     inputSearchFoldersFormatsDiv.querySelectorAll("input");
   inputSearchFoldersFormatsInputs.forEach((formatInput) => {
     if (formatInput.checked) {
       g_uiSelectedOptions.inputSearchFoldersFormats.push(
-        formatInput.parentElement.querySelector("span").innerText
+        formatInput.parentElement.querySelector("span").innerText,
       );
     }
   });
   g_uiSelectedOptions.inputSearchFoldersRecursively = document.querySelector(
-    "#tool-cc-folders-recursively-checkbox"
+    "#tool-cc-folders-recursively-checkbox",
   ).checked;
   //////////////////
   g_uiSelectedOptions.inputPdfExtractionMethod = document.getElementById(
-    "tool-cc-pdf-extraction-select"
+    "tool-cc-pdf-extraction-select",
   ).value;
   // g_selectedOptions.outputFolderPath is autoupdated
   g_uiSelectedOptions.outputKeepSubfoldersStructure = document.querySelector(
-    "#tool-cc-keep-subfolders-structure-checkbox"
+    "#tool-cc-keep-subfolders-structure-checkbox",
   ).checked;
   g_uiSelectedOptions.outputFolderOption = document.getElementById(
-    "tool-cc-output-folder-option-select"
+    "tool-cc-output-folder-option-select",
   ).value;
   g_uiSelectedOptions.outputFormat = g_outputFormatSelect.value;
   g_uiSelectedOptions.outputImageFormat = g_outputImageFormatSelect.value;
@@ -566,31 +570,31 @@ function updateUISelectedOptions() {
   }
   g_uiSelectedOptions.outputImageScaleOption = g_outputImageScaleSelect.value;
   g_uiSelectedOptions.outputImageScalePercentage = document.querySelector(
-    "#tool-cc-output-image-scale-slider"
+    "#tool-cc-output-image-scale-slider",
   ).value;
   g_uiSelectedOptions.outputImageScaleHeight = document.querySelector(
-    "#tool-cc-output-image-scale-height-input"
+    "#tool-cc-output-image-scale-height-input",
   ).value;
   g_uiSelectedOptions.outputImageScaleWidth = document.querySelector(
-    "#tool-cc-output-image-scale-width-input"
+    "#tool-cc-output-image-scale-width-input",
   ).value;
   g_uiSelectedOptions.outputSplitNumFiles = g_outputSplitNumFilesInput.value;
   g_uiSelectedOptions.outputPassword = g_outputPasswordInput.value;
 
   g_uiSelectedOptions.outputFileSameName = document.getElementById(
-    "tool-cc-output-file-same-name-select"
+    "tool-cc-output-file-same-name-select",
   ).value;
   g_uiSelectedOptions.outputPageOrder = document.getElementById(
-    "tool-cc-output-page-order-select"
+    "tool-cc-output-page-order-select",
   ).value;
   g_uiSelectedOptions.outputPdfCreationMethod = document.getElementById(
-    "tool-cc-pdf-creation-select"
+    "tool-cc-pdf-creation-select",
   ).value;
   g_uiSelectedOptions.outputEpubCreationImageFormat = document.getElementById(
-    "tool-cc-epub-creation-image-format-select"
+    "tool-cc-epub-creation-image-format-select",
   ).value;
   g_uiSelectedOptions.outputEpubCreationImageStorage = document.getElementById(
-    "tool-cc-epub-creation-image-storage-select"
+    "tool-cc-epub-creation-image-storage-select",
   ).value;
 
   g_uiSelectedOptions.outputImageFormatParams = {
@@ -602,44 +606,44 @@ function updateUISelectedOptions() {
   };
 
   g_uiSelectedOptions.outputBrightnessApply = document.querySelector(
-    "#tool-cc-imageops-brightness-checkbox"
+    "#tool-cc-imageops-brightness-checkbox",
   ).checked;
   g_uiSelectedOptions.outputBrightnessMultiplier = document.querySelector(
-    "#tool-cc-imageops-brightness-input"
+    "#tool-cc-imageops-brightness-input",
   ).value;
   g_uiSelectedOptions.outputSaturationApply = document.querySelector(
-    "#tool-cc-imageops-saturation-checkbox"
+    "#tool-cc-imageops-saturation-checkbox",
   ).checked;
   g_uiSelectedOptions.outputSaturationMultiplier = document.querySelector(
-    "#tool-cc-imageops-saturation-input"
+    "#tool-cc-imageops-saturation-input",
   ).value;
   g_uiSelectedOptions.outputCropApply = document.querySelector(
-    "#tool-cc-imageops-crop-checkbox"
+    "#tool-cc-imageops-crop-checkbox",
   ).checked;
   g_uiSelectedOptions.outputCropValue = document.querySelector(
-    "#tool-cc-imageops-crop-input"
+    "#tool-cc-imageops-crop-input",
   ).value;
   g_uiSelectedOptions.outputExtendApply = document.querySelector(
-    "#tool-cc-imageops-extend-checkbox"
+    "#tool-cc-imageops-extend-checkbox",
   ).checked;
   g_uiSelectedOptions.outputExtendValue = document.querySelector(
-    "#tool-cc-imageops-extend-input"
+    "#tool-cc-imageops-extend-input",
   ).value;
   g_uiSelectedOptions.outputExtendColor = document.querySelector(
-    "#tool-cc-imageops-extend-color-input"
+    "#tool-cc-imageops-extend-color-input",
   ).value;
 
   // advanced image operations
 
   g_uiSelectedOptions.imageProcessingMultithreadingMethod =
     document.getElementById(
-      "tool-cc-imageprocessing-multithreading-method-select"
+      "tool-cc-imageprocessing-multithreading-method-select",
     ).value;
   g_uiSelectedOptions.imageProcessingNumWorkers = document.getElementById(
-    "tool-cc-imageprocessing-multithreading-numworkers-input"
+    "tool-cc-imageprocessing-multithreading-numworkers-input",
   ).value;
   g_uiSelectedOptions.imageProcessingSharpConcurrency = document.getElementById(
-    "tool-cc-imageprocessing-multithreading-sharpconcurrency-input"
+    "tool-cc-imageprocessing-multithreading-sharpconcurrency-input",
   ).value;
 }
 
@@ -650,14 +654,14 @@ function updateUISelectedOptions() {
 function updateFolderOptionUI() {
   if (g_mode === ToolMode.CONVERT) {
     const outputFolderOptionSelect = document.getElementById(
-      "tool-cc-output-folder-option-select"
+      "tool-cc-output-folder-option-select",
     );
     const outputFolderUl = document.getElementById("tool-cc-output-folder");
     const outputFolderChangeButton = document.getElementById(
-      "tool-cc-change-folder-button"
+      "tool-cc-change-folder-button",
     );
     const outputFolderOpenButton = document.getElementById(
-      "tool-cc-open-folder-button"
+      "tool-cc-open-folder-button",
     );
     if (outputFolderOptionSelect.value === "0") {
       outputFolderUl.classList.remove("set-display-none");
@@ -675,10 +679,10 @@ function updateFolderOptionUI() {
 
 function updateImageMultithreadingUI() {
   const imageMultithreadingSelect = document.getElementById(
-    "tool-cc-imageprocessing-multithreading-method-select"
+    "tool-cc-imageprocessing-multithreading-method-select",
   );
   const method0Div = document.getElementById(
-    "tool-cc-imageprocessing-multithreading-method-0-div"
+    "tool-cc-imageprocessing-multithreading-method-0-div",
   );
   if (imageMultithreadingSelect.value === "0") {
     method0Div.classList.remove("set-display-none");
@@ -689,14 +693,14 @@ function updateImageMultithreadingUI() {
   }
   //
   const imageMultithreadingWorkersInput = document.getElementById(
-    "tool-cc-imageprocessing-multithreading-numworkers-input"
+    "tool-cc-imageprocessing-multithreading-numworkers-input",
   );
   if (imageMultithreadingWorkersInput.value <= 0) {
     imageMultithreadingWorkersInput.value = g_defaultImageWorkers;
   }
   //
   const imageMultithreadingSharpConcInput = document.getElementById(
-    "tool-cc-imageprocessing-multithreading-sharpconcurrency-input"
+    "tool-cc-imageprocessing-multithreading-sharpconcurrency-input",
   );
   if (imageMultithreadingSharpConcInput.value < 0) {
     imageMultithreadingSharpConcInput.value = 1;
@@ -961,7 +965,7 @@ function initOnIpcCallbacks() {
           false,
           g_inputFiles.length,
           0,
-          g_inputFiles.length
+          g_inputFiles.length,
         );
         return;
       }
@@ -974,14 +978,14 @@ function initOnIpcCallbacks() {
         false,
         g_inputFiles.length,
         g_numErrors,
-        g_inputFilesIndex + 1
+        g_inputFilesIndex + 1,
       );
     }
   });
 
   on("file-finished-error", () => {
     const modalButtonClose = g_openModal.querySelector(
-      "#tool-cc-modal-close-button"
+      "#tool-cc-modal-close-button",
     );
     if (g_mode === ToolMode.CONVERT) {
       modalButtonClose.classList.remove("modal-button-success-color");
@@ -996,12 +1000,12 @@ function initOnIpcCallbacks() {
           false,
           g_inputFiles.length,
           g_numErrors,
-          g_inputFilesIndex + 1
+          g_inputFilesIndex + 1,
         );
       }
     } else {
       const modalButtonCancel = g_openModal.querySelector(
-        "#tool-cc-modal-cancel-button"
+        "#tool-cc-modal-cancel-button",
       );
       const modalLoadingBar = g_openModal.querySelector(".modal-progress-bar");
       modalButtonCancel.classList.add("set-display-none");
@@ -1016,17 +1020,17 @@ function initOnIpcCallbacks() {
         false,
         g_inputFiles.length,
         g_inputFiles.length,
-        g_inputFilesIndex // last one wasn't converted or error
+        g_inputFilesIndex, // last one wasn't converted or error
       );
     }
   });
 
   on("file-finished-canceled", () => {
     const modalButtonCancel = g_openModal.querySelector(
-      "#tool-cc-modal-cancel-button"
+      "#tool-cc-modal-cancel-button",
     );
     const modalButtonClose = g_openModal.querySelector(
-      "#tool-cc-modal-close-button"
+      "#tool-cc-modal-close-button",
     );
     const modalLoadingBar = g_openModal.querySelector(".modal-progress-bar");
 
@@ -1042,7 +1046,7 @@ function initOnIpcCallbacks() {
       true,
       g_inputFiles.length,
       g_numErrors,
-      g_inputFilesIndex // last one wasn't converted or error
+      g_inputFilesIndex, // last one wasn't converted or error
     );
   });
 
@@ -1050,7 +1054,7 @@ function initOnIpcCallbacks() {
     if (g_failedFilePaths.length > 0) {
       updateLogText(
         "------------ " + failedFilesText + ": ------------\n",
-        true
+        true,
       );
       g_failedFilePaths.forEach((fileData) => {
         updateLogText(fileData.path, true);
@@ -1063,7 +1067,7 @@ function initOnIpcCallbacks() {
         "[...]" +
         g_fullLogContent.substring(
           g_fullLogContent.length - 1000000,
-          g_fullLogContent.length
+          g_fullLogContent.length,
         );
     }
     g_modalLog.innerHTML = g_fullLogContent;
@@ -1071,13 +1075,13 @@ function initOnIpcCallbacks() {
     g_modalLog.scrollTop = g_modalLog.scrollHeight;
 
     const modalButtonCancel = g_openModal.querySelector(
-      "#tool-cc-modal-cancel-button"
+      "#tool-cc-modal-cancel-button",
     );
     const modalButtonClose = g_openModal.querySelector(
-      "#tool-cc-modal-close-button"
+      "#tool-cc-modal-close-button",
     );
     const modalButtonCopyLog = g_openModal.querySelector(
-      "#tool-cc-modal-copylog-button"
+      "#tool-cc-modal-copylog-button",
     );
     const modalLoadingBar = g_openModal.querySelector(".modal-progress-bar");
     modalButtonCancel.classList.add("set-display-none");
@@ -1120,7 +1124,7 @@ function checkValidData() {
     const element = g_inputListDiv.children[index];
     const moveUpSpan = element.querySelector('[data-type="move-up-in-list"]');
     const moveDownSpan = element.querySelector(
-      '[data-type="move-down-in-list"]'
+      '[data-type="move-down-in-list"]',
     );
     if (index === 0) {
       moveUpSpan.classList.add("tools-disabled");
@@ -1135,7 +1139,7 @@ function checkValidData() {
   }
   ///////////////////
   const outputKeepSubfoldersStructureDiv = document.querySelector(
-    "#tool-cc-keep-subfolders-structure-div"
+    "#tool-cc-keep-subfolders-structure-div",
   );
   if (
     g_mode === ToolMode.CONVERT &&
@@ -1150,7 +1154,7 @@ function checkValidData() {
   }
   ///////////////////
   const folderContentsSelect = document.querySelector(
-    "#tool-cc-folders-contain-select"
+    "#tool-cc-folders-contain-select",
   );
   if (g_mode === ToolMode.CONVERT) {
     folderContentsSelect.parentElement.classList.remove("set-display-none");
@@ -1244,10 +1248,10 @@ function onMoveFileUpInList(element, id) {
         }
         // hack to do a copy not by reference
         const currentData = JSON.parse(
-          JSON.stringify(g_inputList[currentIndex])
+          JSON.stringify(g_inputList[currentIndex]),
         );
         const desiredData = JSON.parse(
-          JSON.stringify(g_inputList[desiredIndex])
+          JSON.stringify(g_inputList[desiredIndex]),
         );
         g_inputList[currentIndex] = desiredData;
         g_inputList[desiredIndex] = currentData;
@@ -1277,10 +1281,10 @@ function onMoveFileDownInList(element, id) {
         }
         // hack to do a copy not by reference
         const currentData = JSON.parse(
-          JSON.stringify(g_inputList[currentIndex])
+          JSON.stringify(g_inputList[currentIndex]),
         );
         const desiredData = JSON.parse(
-          JSON.stringify(g_inputList[desiredIndex])
+          JSON.stringify(g_inputList[desiredIndex]),
         );
         g_inputList[currentIndex] = desiredData;
         g_inputList[desiredIndex] = currentData;
@@ -1305,13 +1309,13 @@ function onStart(inputFiles) {
 
   g_cancel = false;
   const modalButtonCancel = g_openModal.querySelector(
-    "#tool-cc-modal-cancel-button"
+    "#tool-cc-modal-cancel-button",
   );
   const modalButtonClose = g_openModal.querySelector(
-    "#tool-cc-modal-close-button"
+    "#tool-cc-modal-close-button",
   );
   const modalButtonCopyLog = g_openModal.querySelector(
-    "#tool-cc-modal-copylog-button"
+    "#tool-cc-modal-copylog-button",
   );
   modalButtonCancel.innerText = g_localizedTexts.modalCancelButton;
   modalButtonClose.innerText = g_localizedTexts.modalCloseButton;
@@ -1401,7 +1405,7 @@ function initOptions(outputFolderPath, loadedOptions) {
     g_currentOptions = loadedOptions;
     toolsSettings.restoreOptions(
       document.getElementById("tools-columns-right"),
-      g_currentOptions
+      g_currentOptions,
     );
     if (!g_currentOptions.outputFolderPath)
       g_currentOptions.outputFolderPath = g_defaultOptions.outputFolderPath;
@@ -1520,7 +1524,7 @@ function updateLogText(text, append = true) {
     if (g_partialLogContent.length > 2000)
       g_partialLogContent = g_partialLogContent.substring(
         g_partialLogContent.length - 1500,
-        g_partialLogContent.length
+        g_partialLogContent.length,
       );
     g_modalLog.innerHTML = g_partialLogContent;
     g_modalLog.scrollTop = g_modalLog.scrollHeight;
@@ -1574,7 +1578,7 @@ function showResetOptionsModal(title, message, yesText, cancelText) {
           g_currentOptions = g_defaultOptions;
           toolsSettings.restoreOptions(
             document.getElementById("tools-columns-right"),
-            g_currentOptions
+            g_currentOptions,
           );
           changeOutputFolder(g_defaultOptions.outputFolderPath);
           checkValidData();
@@ -1598,7 +1602,7 @@ function showResetOptionsModal(title, message, yesText, cancelText) {
 function updateLocalization(
   localization,
   tooltipsLocalization,
-  localizedTexts
+  localizedTexts,
 ) {
   for (let index = 0; index < localization.length; index++) {
     const element = localization[index];

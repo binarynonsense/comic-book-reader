@@ -29,6 +29,10 @@ let g_localizedModalClearAllCancelText = "";
 let g_localizedModalChangeMaxTitleText = "";
 let g_localizedModalChangeMaxMessageText = "";
 
+export function needsScrollToTopButtonUpdate() {
+  return true;
+}
+
 function init(history, maxFiles, showFocus) {
   if (!g_isInitialized) {
     // things to start only once go here
@@ -49,7 +53,7 @@ function init(history, maxFiles, showFocus) {
   });
   backButton.setAttribute(
     "data-nav-panel",
-    g_languageDirection !== "rtl" ? 0 : 1
+    g_languageDirection !== "rtl" ? 0 : 1,
   );
   backButton.setAttribute("data-nav-row", 0);
   backButton.setAttribute("data-nav-col", 0);
@@ -67,7 +71,7 @@ function init(history, maxFiles, showFocus) {
   }
   // settings
   const maxFilesInput = document.getElementById(
-    "tool-hst-settings-max-files-input"
+    "tool-hst-settings-max-files-input",
   );
   maxFilesInput.value = g_maxFiles;
   maxFilesInput.addEventListener("change", function (event) {
@@ -192,7 +196,7 @@ function buildHistoryList(history, max) {
     clearButton.classList.remove("tools-disabled");
     clearButton.setAttribute(
       "data-nav-panel",
-      g_languageDirection !== "rtl" ? 0 : 1
+      g_languageDirection !== "rtl" ? 0 : 1,
     );
     clearButton.setAttribute("data-nav-row", 1);
     clearButton.setAttribute("data-nav-col", 0);
@@ -244,7 +248,7 @@ function buildHistoryList(history, max) {
     });
     buttonSpan.setAttribute(
       "data-nav-panel",
-      g_languageDirection !== "rtl" ? 1 : 0
+      g_languageDirection !== "rtl" ? 1 : 0,
     );
     buttonSpan.setAttribute("data-nav-row", history.length - 1 - index);
     buttonSpan.setAttribute("data-nav-col", 0);
@@ -260,7 +264,7 @@ function buildHistoryList(history, max) {
       });
       buttonSpan.setAttribute(
         "data-nav-panel",
-        g_languageDirection !== "rtl" ? 1 : 0
+        g_languageDirection !== "rtl" ? 1 : 0,
       );
       buttonSpan.setAttribute("data-nav-row", history.length - 1 - index);
       buttonSpan.setAttribute("data-nav-col", 1);
@@ -307,7 +311,7 @@ export function onInputEvent(type, event) {
         event.key == "ArrowUp",
         event.key == "ArrowDown",
         event.key == "ArrowLeft",
-        event.key == "ArrowRight"
+        event.key == "ArrowRight",
       );
       if (
         event.key == "Tab" ||
@@ -406,7 +410,7 @@ export function onGamepadPolled() {
     upPressed,
     downPressed,
     leftPressed,
-    rightPressed
+    rightPressed,
   );
 }
 
@@ -465,7 +469,7 @@ function showModalConfirmSetMax(inputElement) {
     title: g_localizedModalChangeMaxTitleText,
     message: g_localizedModalChangeMaxMessageText.replace(
       "{0}",
-      inputElement.value
+      inputElement.value,
     ),
     zIndexDelta: 5,
     close: {

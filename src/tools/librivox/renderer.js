@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2024 Álvaro García
+ * Copyright 2020-2026 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -25,6 +25,10 @@ let g_localizedSearchPlaceholderText;
 let g_localizedModalSearchingTitleText;
 
 let g_lastSearchResults;
+
+export function needsScrollToTopButtonUpdate() {
+  return true;
+}
 
 function init() {
   if (!g_isInitialized) {
@@ -189,7 +193,7 @@ function initOnIpcCallbacks() {
           domElement.innerHTML = element.text;
         }
       }
-    }
+    },
   );
 
   on("update-window", () => {
@@ -229,7 +233,7 @@ function initOnIpcCallbacks() {
       pageNum,
       queryPageSize,
       openInAcbrText,
-      openInBrowserText
+      openInBrowserText,
     ) => {
       g_lastSearchResults = searchResults;
       ///////////////////////////////////////////
@@ -237,7 +241,7 @@ function initOnIpcCallbacks() {
         .querySelector("#tool-search-results-h3")
         .classList.remove("set-display-none");
       const searchResultsDiv = document.querySelector(
-        "#tool-lvx-search-results-div"
+        "#tool-lvx-search-results-div",
       );
       searchResultsDiv.innerHTML = "";
       // e.g.
@@ -251,7 +255,7 @@ function initOnIpcCallbacks() {
         if (totalResultsNum > queryPageSize) {
           const totalPagesNum = Math.ceil(totalResultsNum / queryPageSize);
           searchResultsDiv.appendChild(
-            generatePaginationHtml(pageNum, totalPagesNum, queryInputText)
+            generatePaginationHtml(pageNum, totalPagesNum, queryInputText),
           );
         }
         // list
@@ -306,7 +310,7 @@ function initOnIpcCallbacks() {
         if (totalResultsNum > queryPageSize) {
           const totalPagesNum = Math.ceil(totalResultsNum / queryPageSize);
           searchResultsDiv.appendChild(
-            generatePaginationHtml(pageNum, totalPagesNum, queryInputText)
+            generatePaginationHtml(pageNum, totalPagesNum, queryInputText),
           );
         }
       } else {
@@ -328,7 +332,7 @@ function initOnIpcCallbacks() {
         inline: "nearest",
       });
       closeModal();
-    }
+    },
   );
 }
 
@@ -397,7 +401,7 @@ async function onSearchResultClicked(index, mode) {
       const response = await axios.get(downloadsUrl, { timeout: 10000 });
       const parser = new DOMParser().parseFromString(
         response.data,
-        "text/html"
+        "text/html",
       );
       const fileUrls = [];
       const aElements = parser.getElementsByTagName("a");

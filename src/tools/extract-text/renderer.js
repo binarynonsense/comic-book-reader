@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2023 Álvaro García
+ * Copyright 2020-2026 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -28,6 +28,10 @@ let g_outputTextArea;
 let g_copyTextButton;
 
 let g_localizedModalCancelButtonText = "";
+
+export function needsScrollToTopButtonUpdate() {
+  return true;
+}
 
 function init(filePath) {
   if (!g_isInitialized) {
@@ -69,10 +73,10 @@ function init(filePath) {
   g_outputTextArea = document.querySelector("#tool-et-textarea-output");
   g_copyTextButton = document.querySelector("#tool-et-copy-text-button");
   g_languageOfflineSelect = document.querySelector(
-    "#tool-et-language-select-offline"
+    "#tool-et-language-select-offline",
   );
   g_languageOnlineSelect = document.querySelector(
-    "#tool-et-language-select-online"
+    "#tool-et-language-select-online",
   );
   g_languageCheckbox = document.querySelector("#tool-et-language-checkbox");
 

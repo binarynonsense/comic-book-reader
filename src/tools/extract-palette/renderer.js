@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2023 Álvaro García
+ * Copyright 2020-2026 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -18,6 +18,10 @@ import Cropper from "../../assets/libs/cropperjs/dist/cropper.esm.js";
 ///////////////////////////////////////////////////////////////////////////////
 
 let g_isInitialized = false;
+
+export function needsScrollToTopButtonUpdate() {
+  return true;
+}
 
 let g_cropper;
 let g_image;
@@ -72,7 +76,7 @@ function init(filePath) {
   g_image = document.querySelector("#tool-ep-image");
   g_saveButton = document.querySelector("#tool-ep-export-to-file-button");
   g_exportFormatSelect = document.querySelector(
-    "#tool-ep-export-format-select"
+    "#tool-ep-export-format-select",
   );
 
   document
@@ -266,12 +270,12 @@ function onStart() {
   const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
   let distanceMethod = document.getElementById(
-    "tool-ep-distance-method-select"
+    "tool-ep-distance-method-select",
   ).value;
   let distanceThreshold = 120;
   if (distanceMethod === "deltae") {
     distanceThreshold = parseInt(
-      document.getElementById("tool-ep-deltae-threshold-input").value
+      document.getElementById("tool-ep-deltae-threshold-input").value,
     );
     if (distanceThreshold < 0) distanceThreshold = 2;
     else if (distanceThreshold > 49) distanceThreshold = 49;
@@ -279,7 +283,7 @@ function onStart() {
 
   let maxQuantizationDepth = 4;
   let maxNumColors = parseInt(
-    document.getElementById("tool-ep-max-num-colors-select").value
+    document.getElementById("tool-ep-max-num-colors-select").value,
   );
   if (maxNumColors === 32) {
     maxQuantizationDepth = 5;
@@ -290,7 +294,7 @@ function onStart() {
     imageData.data,
     distanceMethod,
     distanceThreshold,
-    maxQuantizationDepth
+    maxQuantizationDepth,
   );
 }
 

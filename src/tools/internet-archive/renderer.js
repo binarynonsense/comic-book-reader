@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2024 Álvaro García
+ * Copyright 2020-2026 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -28,6 +28,10 @@ let g_localizedSearchPlaceholderText;
 let g_localizedModalSearchingTitleText;
 
 let g_lastSearchResults;
+
+export function needsScrollToTopButtonUpdate() {
+  return true;
+}
 
 function init(collectionsContent, availabilityContent) {
   if (!g_isInitialized) {
@@ -89,10 +93,10 @@ function init(collectionsContent, availabilityContent) {
   g_searchInput.focus();
   // options
   g_collectionSelect = document.querySelector(
-    "#tool-iab-options-collections-select"
+    "#tool-iab-options-collections-select",
   );
   g_availabilitySelect = document.querySelector(
-    "#tool-iab-options-availability-select"
+    "#tool-iab-options-availability-select",
   );
 
   g_collectionSelect.innerHTML = collectionsContent;
@@ -203,7 +207,7 @@ function initOnIpcCallbacks() {
           domElement.innerHTML = element.text;
         }
       }
-    }
+    },
   );
 
   on("update-window", () => {
@@ -243,7 +247,7 @@ function initOnIpcCallbacks() {
       pageNum,
       queryPageSize,
       openInAcbrText,
-      openInBrowserText
+      openInBrowserText,
     ) => {
       g_lastSearchResults = searchResults;
       ///////////////////////////////////////////
@@ -251,7 +255,7 @@ function initOnIpcCallbacks() {
         .querySelector("#tool-search-results-h3")
         .classList.remove("set-display-none");
       const searchResultsDiv = document.querySelector(
-        "#tool-iab-search-results-div"
+        "#tool-iab-search-results-div",
       );
       searchResultsDiv.innerHTML = "";
       // e.g.
@@ -265,7 +269,7 @@ function initOnIpcCallbacks() {
         if (totalResultsNum > queryPageSize) {
           const totalPagesNum = Math.ceil(totalResultsNum / queryPageSize);
           searchResultsDiv.appendChild(
-            generatePaginationHtml(pageNum, totalPagesNum, queryInputText)
+            generatePaginationHtml(pageNum, totalPagesNum, queryInputText),
           );
         }
         // list
@@ -321,7 +325,7 @@ function initOnIpcCallbacks() {
         if (totalResultsNum > queryPageSize) {
           const totalPagesNum = Math.ceil(totalResultsNum / queryPageSize);
           searchResultsDiv.appendChild(
-            generatePaginationHtml(pageNum, totalPagesNum, queryInputText)
+            generatePaginationHtml(pageNum, totalPagesNum, queryInputText),
           );
         }
       } else {
@@ -343,7 +347,7 @@ function initOnIpcCallbacks() {
         inline: "nearest",
       });
       closeModal();
-    }
+    },
   );
 }
 
@@ -405,7 +409,7 @@ async function onSearch(pageNum = 1, inputValue = undefined) {
     inputValue,
     pageNum,
     g_collectionSelect.value,
-    g_availabilitySelect.value
+    g_availabilitySelect.value,
   );
 }
 
@@ -445,7 +449,7 @@ async function getBookPagesInfo(comicData) {
   try {
     const response = await axios.get(
       `https://api.archivelab.org/books/${comicData.comicId}/pages`,
-      { timeout: 10000 }
+      { timeout: 10000 },
     );
     return response.data.pages.length;
   } catch (error) {

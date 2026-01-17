@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2024 Álvaro García
+ * Copyright 2020-2026 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -44,6 +44,10 @@ let g_localizedModalLoadingTitleText;
 ///////////////////////////////////////////////////////////////////////////////
 
 let g_isInitialized = false;
+
+export function needsScrollToTopButtonUpdate() {
+  return true;
+}
 
 function init() {
   if (!g_isInitialized) {
@@ -104,10 +108,10 @@ function init() {
   g_titlesSelect = document.querySelector("#tool-dcm-titles-select");
   g_comicsSelect = document.querySelector("#tool-dcm-comics-select");
   g_openSelectedInACBRButton = document.querySelector(
-    "#tool-dcm-open-selected-acbr-button"
+    "#tool-dcm-open-selected-acbr-button",
   );
   g_openSelectedInBrowserButton = document.querySelector(
-    "#tool-dcm-open-selected-browser-button"
+    "#tool-dcm-open-selected-browser-button",
   );
 
   g_publishersSelect.addEventListener("change", (event) => {
@@ -155,16 +159,16 @@ function init() {
   // url
   g_dcmUrlInput = document.getElementById("tool-dcm-url-input");
   g_openInputInACBRButton = document.getElementById(
-    "tool-dcm-open-input-url-acbr-button"
+    "tool-dcm-open-input-url-acbr-button",
   );
   g_openInputInBrowserButton = document.getElementById(
-    "tool-dcm-open-input-url-browser-button"
+    "tool-dcm-open-input-url-browser-button",
   );
 
   g_dcmUrlInput.addEventListener("input", (event) => {
     if (
       event.target.value.startsWith(
-        "https://digitalcomicmuseum.com/preview/index.php?did="
+        "https://digitalcomicmuseum.com/preview/index.php?did=",
       )
     ) {
       g_openInputInACBRButton.classList.remove("tools-disabled");
@@ -182,7 +186,7 @@ function init() {
   });
   // options
   g_engineSelect = document.getElementById(
-    "tool-dcm-options-search-engine-select"
+    "tool-dcm-options-search-engine-select",
   );
   // about
   document
@@ -195,7 +199,7 @@ function init() {
     .getElementById("tool-dcm-open-donate-browser-button")
     .addEventListener("click", (event) => {
       openDCMLink(
-        `https://digitalcomicmuseum.com/forum/index.php?action=treasury`
+        `https://digitalcomicmuseum.com/forum/index.php?action=treasury`,
       );
     });
 
@@ -301,7 +305,7 @@ function initOnIpcCallbacks() {
       modalSearchingTitleText,
       modalCloseButtonText,
       modalCancelButtonText,
-      localization
+      localization,
     ) => {
       g_localizedSearchPlaceholderText = searchPlaceHolder;
       g_selectPublisherString = selectPublisherString;
@@ -318,7 +322,7 @@ function initOnIpcCallbacks() {
           domElement.innerHTML = element.text;
         }
       }
-    }
+    },
   );
 
   on("update-window", () => {
@@ -353,7 +357,7 @@ function initOnIpcCallbacks() {
       .querySelector("#tool-search-results-h3")
       .classList.remove("set-display-none");
     const searchResultsDiv = document.querySelector(
-      "#tool-dcm-search-results-div"
+      "#tool-dcm-search-results-div",
     );
     searchResultsDiv.innerHTML = "";
     // pagination top
@@ -559,7 +563,7 @@ async function onSearchResultClicked(dlid, openWith) {
       const response = await axios.get(infoUrl, { timeout: 15000 });
       const parser = new DOMParser().parseFromString(
         response.data,
-        "text/html"
+        "text/html",
       );
       const links = parser.getElementsByTagName("a");
       for (let index = 0; index < links.length; index++) {
@@ -641,7 +645,7 @@ async function getFirstPageInfo(comicId) {
   try {
     const response = await axios.get(
       `https://digitalcomicmuseum.com/preview/index.php?did=${comicId}&page=${1}`,
-      { timeout: 15000 }
+      { timeout: 15000 },
     );
     const parser = new DOMParser().parseFromString(response.data, "text/html");
     //e.g. <a href="https://digitalcomicmuseum.com/preview/index.php?did=21376&page=2" alt="Comic Page - ZIP"><img src='https://cdn.digitalcomicmuseum.com/preview/cache/21376/ff153p00fc-hag.jpg' width='100%' alt='Comic Page'/><br /></a>
@@ -661,7 +665,7 @@ async function getFirstPageInfo(comicId) {
     title = title.substring(
       title.lastIndexOf("Digital Comic Museum Viewer: ") +
         "Digital Comic Museum Viewer: ".length,
-      title.lastIndexOf(" - ")
+      title.lastIndexOf(" - "),
     );
 
     return { url: imageUrl, numPages: numPages, name: title };
@@ -675,7 +679,7 @@ async function getFirstPageInfo(comicId) {
 function cleanUpSelected(
   cleanPublishers = true,
   cleanTitles = true,
-  cleanComics = true
+  cleanComics = true,
 ) {
   if (cleanPublishers) g_publishersSelect.innerHTML = "";
   if (cleanTitles) g_titlesSelect.innerHTML = "";
@@ -701,7 +705,7 @@ async function fillPublishers() {
   try {
     const response = await axios.get(
       "https://digitalcomicmuseum.com/preview/index.php",
-      { timeout: 15000 }
+      { timeout: 15000 },
     );
     const parser = new DOMParser().parseFromString(response.data, "text/html");
     //e.g. <div class='pull-left'><a href='category.php?cid=98'>Ace Magazines</a>
@@ -728,7 +732,7 @@ async function fillTitles(publisherId) {
   try {
     const response = await axios.get(
       `https://digitalcomicmuseum.com/preview/select.php?id=${publisherId}`,
-      { timeout: 15000 }
+      { timeout: 15000 },
     );
     //e.g. [ {"optionValue": "98", "optionDisplay": "Please Select a Comic Title"},{"optionValue": "289", "optionDisplay": "All Love"},...
     let data = response.data;
@@ -752,7 +756,7 @@ async function fillComics(titleId) {
   try {
     const response = await axios.get(
       `https://digitalcomicmuseum.com/preview/select.php?cid=${titleId}`,
-      { timeout: 15000 }
+      { timeout: 15000 },
     );
     //e.g. [ {"optionValue": "0", "optionDisplay": "Please Select a Comic Book"},{"optionValue": "https://digitalcomicmuseum.com/preview/index.php?did=7793", "optionDisplay": "World War III #01 (inc)"},...
     let data = response.data;

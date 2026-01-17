@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2024 Álvaro García
+ * Copyright 2020-2026 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -22,6 +22,10 @@ let g_searchButton;
 
 let g_localizedSearchPlaceholderText;
 let g_localizedModalSearchingTitleText;
+
+export function needsScrollToTopButtonUpdate() {
+  return true;
+}
 
 function init() {
   if (!g_isInitialized) {
@@ -184,7 +188,7 @@ function initOnIpcCallbacks() {
           domElement.innerHTML = element.text;
         }
       }
-    }
+    },
   );
 
   on("update-window", () => {
@@ -220,7 +224,7 @@ function initOnIpcCallbacks() {
       .querySelector("#tool-search-results-h3")
       .classList.remove("set-display-none");
     const searchResultsDiv = document.querySelector(
-      "#tool-wik-search-results-div"
+      "#tool-wik-search-results-div",
     );
     searchResultsDiv.innerHTML = "";
     content = `<div class="tools-html-div">${content}</div>`;
@@ -247,7 +251,7 @@ async function onSearch(inputValue = undefined) {
   sendIpcToMain(
     "search",
     inputValue,
-    document.getElementById("tool-wik-search-language-select").value
+    document.getElementById("tool-wik-search-language-select").value,
   );
 }
 

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2024 Álvaro García
+ * Copyright 2020-2026 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -37,10 +37,14 @@ let g_localizedModalCancelButtonText;
 let g_localizedModalCloseButtonText;
 let g_localizedModalSearchingTitleText;
 
+export function needsScrollToTopButtonUpdate() {
+  return true;
+}
+
 function init(
   portableCacheFolderPath,
   portableCacheFolderExists,
-  settingsUseCache
+  settingsUseCache,
 ) {
   if (!g_isInitialized) {
     // things to start only once go here
@@ -102,10 +106,10 @@ function init(
   // url
   g_urlInput = document.getElementById("tool-gut-url-input");
   g_openInputInACBRButton = document.getElementById(
-    "tool-gut-open-input-url-acbr-button"
+    "tool-gut-open-input-url-acbr-button",
   );
   g_openInputInBrowserButton = document.getElementById(
-    "tool-gut-open-input-url-browser-button"
+    "tool-gut-open-input-url-browser-button",
   );
 
   g_urlInput.addEventListener("input", (event) => {
@@ -141,11 +145,11 @@ function init(
   g_portableCacheFolderExists = portableCacheFolderExists;
 
   g_cacheFolderInput = document.getElementById(
-    "tool-gut-options-cache-folder-input"
+    "tool-gut-options-cache-folder-input",
   );
   g_cacheFolderInput.value = g_portableCacheFolderPath;
   g_openCacheFolderButton = document.getElementById(
-    "tool-gut-options-open-cache-folder-button"
+    "tool-gut-options-open-cache-folder-button",
   );
   if (g_portableCacheFolderExists) {
     g_openCacheFolderButton.classList.remove("tools-disabled");
@@ -157,7 +161,7 @@ function init(
   });
 
   g_cacheDownloadsCheckbox = document.getElementById(
-    "tool-gut-options-cache-downloads-checkbox"
+    "tool-gut-options-cache-downloads-checkbox",
   );
   if (settingsUseCache) {
     g_cacheDownloadsCheckbox.checked = true;
@@ -262,9 +266,9 @@ function initOnIpcCallbacks() {
       init(
         portableCacheFolderPath,
         portableCacheFolderExists,
-        settingsUseCache
+        settingsUseCache,
       );
-    }
+    },
   );
 
   on("hide", () => {});
@@ -276,7 +280,7 @@ function initOnIpcCallbacks() {
       modalSearchingTitleText,
       modalCloseButtonText,
       modalCancelButtonText,
-      localization
+      localization,
     ) => {
       g_localizedSearchPlaceholderText = searchPlaceHolder;
       g_localizedModalSearchingTitleText = modalSearchingTitleText;
@@ -289,7 +293,7 @@ function initOnIpcCallbacks() {
           domElement.innerHTML = element.text;
         }
       }
-    }
+    },
   );
 
   on("update-window", () => {
@@ -328,13 +332,13 @@ function initOnIpcCallbacks() {
       queryInputText,
       pageNum,
       openInAcbrText,
-      openInBrowserText
+      openInBrowserText,
     ) => {
       document
         .querySelector("#tool-search-results-h3")
         .classList.remove("set-display-none");
       const searchResultsDiv = document.querySelector(
-        "#tool-gut-search-results-div"
+        "#tool-gut-search-results-div",
       );
       searchResultsDiv.innerHTML = "";
       /*
@@ -353,10 +357,10 @@ function initOnIpcCallbacks() {
         // pagination top
         if (totalResultsNum > g_lastSearchPageSize) {
           const totalPagesNum = Math.ceil(
-            totalResultsNum / g_lastSearchPageSize
+            totalResultsNum / g_lastSearchPageSize,
           );
           searchResultsDiv.appendChild(
-            generatePaginationHtml(pageNum, totalPagesNum, queryInputText)
+            generatePaginationHtml(pageNum, totalPagesNum, queryInputText),
           );
         }
         // list
@@ -444,10 +448,10 @@ function initOnIpcCallbacks() {
         // pagination bottom
         if (totalResultsNum > g_lastSearchPageSize) {
           const totalPagesNum = Math.ceil(
-            totalResultsNum / g_lastSearchPageSize
+            totalResultsNum / g_lastSearchPageSize,
           );
           searchResultsDiv.appendChild(
-            generatePaginationHtml(pageNum, totalPagesNum, queryInputText)
+            generatePaginationHtml(pageNum, totalPagesNum, queryInputText),
           );
         }
       } else {
@@ -469,7 +473,7 @@ function initOnIpcCallbacks() {
         inline: "nearest",
       });
       closeModal();
-    }
+    },
   );
 }
 

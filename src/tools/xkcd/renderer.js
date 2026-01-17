@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2023 Álvaro García
+ * Copyright 2020-2026 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -23,6 +23,10 @@ let g_totalNumComics;
 ///////////////////////////////////////////////////////////////////////////////
 
 let g_isInitialized = false;
+
+export function needsScrollToTopButtonUpdate() {
+  return true;
+}
 
 async function init(selectCatalogNumberLocalizedText) {
   if (!g_isInitialized) {
@@ -51,7 +55,7 @@ async function init(selectCatalogNumberLocalizedText) {
   ////////////////////////////////////////
   // catalog
   g_catalogNumberSelect = document.querySelector(
-    "#tool-xkcd-catalog-number-select"
+    "#tool-xkcd-catalog-number-select",
   );
   g_catalogNumberSelect.addEventListener("change", (event) => {
     if (g_catalogNumberSelect.value == -1) {
@@ -64,7 +68,7 @@ async function init(selectCatalogNumberLocalizedText) {
   });
 
   g_openSelectedInACBRButton = document.querySelector(
-    "#tool-xkcd-open-selected-acbr-button"
+    "#tool-xkcd-open-selected-acbr-button",
   );
   g_openSelectedInACBRButton.addEventListener("click", (event) => {
     const number = g_catalogNumberSelect.value;
@@ -79,7 +83,7 @@ async function init(selectCatalogNumberLocalizedText) {
   });
 
   g_openSelectedInBrowserButton = document.querySelector(
-    "#tool-xkcd-open-selected-browser-button"
+    "#tool-xkcd-open-selected-browser-button",
   );
   g_openSelectedInBrowserButton.addEventListener("click", async (event) => {
     const number = g_catalogNumberSelect.value;
@@ -89,7 +93,7 @@ async function init(selectCatalogNumberLocalizedText) {
         `https://xkcd.com/${number}/info.0.json`,
         {
           timeout: 10000,
-        }
+        },
       );
       const url = response?.data?.img;
       if (url) openXkcdLink(url);

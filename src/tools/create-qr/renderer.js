@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2023 Álvaro García
+ * Copyright 2020-2026 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -24,6 +24,10 @@ let g_clearButton;
 let g_exportButton;
 
 let g_localizedModalCloseButtonText = "";
+
+export function needsScrollToTopButtonUpdate() {
+  return true;
+}
 
 function init() {
   if (!g_isInitialized) {

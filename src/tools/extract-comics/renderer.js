@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2025 Álvaro García
+ * Copyright 2020-2026 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -47,6 +47,10 @@ let g_localizedModalCopyLogButtonText;
 ///////////////////////////////////////////////////////////////////////////////
 
 let g_isInitialized = false;
+
+export function needsScrollToTopButtonUpdate() {
+  return true;
+}
 
 function init(outputFolderPath, loadedOptions) {
   if (!g_isInitialized) {
@@ -101,16 +105,16 @@ function init(outputFolderPath, loadedOptions) {
 
   g_outputFolderDiv = document.querySelector("#tool-ec-output-folder");
   g_outputImageScaleSlider = document.querySelector(
-    "#tool-ec-output-image-scale-slider"
+    "#tool-ec-output-image-scale-slider",
   );
   g_outputImageScaleSelect = document.querySelector(
-    "#tool-ec-output-image-scale-select"
+    "#tool-ec-output-image-scale-select",
   );
   g_outputImageScaleSelect.addEventListener("change", (event) => {
     checkValidData();
   });
   g_outputImageFormatSelect = document.querySelector(
-    "#tool-ec-output-image-format-select"
+    "#tool-ec-output-image-format-select",
   );
 
   g_startButton = document.querySelector("#tool-ec-start-button");
@@ -191,7 +195,7 @@ function init(outputFolderPath, loadedOptions) {
     element.addEventListener("click", (event) => {
       sendIpcToMain(
         "tooltip-button-clicked",
-        element.getAttribute("data-info")
+        element.getAttribute("data-info"),
       );
     });
   });
@@ -456,11 +460,11 @@ function initOnIpcCallbacks() {
     };
     if (g_outputImageScaleSelect.value === "1") {
       scaleParams.value = document.getElementById(
-        "tool-ec-output-image-scale-height-input"
+        "tool-ec-output-image-scale-height-input",
       ).value;
     } else if (g_outputImageScaleSelect.value === "2") {
       scaleParams.value = document.getElementById(
-        "tool-ec-output-image-scale-width-input"
+        "tool-ec-output-image-scale-width-input",
       ).value;
     }
     sendIpcToMain(
@@ -469,7 +473,7 @@ function initOnIpcCallbacks() {
       scaleParams,
       imageFormatParams,
       g_outputImageFormatSelect.value,
-      g_outputFolderPath
+      g_outputFolderPath,
     );
   });
 
@@ -483,14 +487,14 @@ function initOnIpcCallbacks() {
         false,
         g_inputFiles.length,
         g_numErrors,
-        g_inputFilesIndex + 1
+        g_inputFilesIndex + 1,
       );
     }
   });
 
   on("finished-error", () => {
     const modalButtonClose = g_openModal.querySelector(
-      "#tool-ec-modal-close-button"
+      "#tool-ec-modal-close-button",
     );
     modalButtonClose.classList.remove("modal-button-success-color");
     modalButtonClose.classList.add("modal-button-danger-color");
@@ -505,17 +509,17 @@ function initOnIpcCallbacks() {
         false,
         g_inputFiles.length,
         g_numErrors,
-        g_inputFilesIndex + 1
+        g_inputFilesIndex + 1,
       );
     }
   });
 
   on("finished-canceled", () => {
     const modalButtonCancel = g_openModal.querySelector(
-      "#tool-ec-modal-cancel-button"
+      "#tool-ec-modal-cancel-button",
     );
     const modalButtonClose = g_openModal.querySelector(
-      "#tool-ec-modal-close-button"
+      "#tool-ec-modal-close-button",
     );
     const modalLoadingBar = g_openModal.querySelector(".modal-progress-bar");
 
@@ -531,7 +535,7 @@ function initOnIpcCallbacks() {
       true,
       g_inputFiles.length,
       g_numErrors,
-      g_inputFilesIndex // last one wasn't converted or error
+      g_inputFilesIndex, // last one wasn't converted or error
     );
   });
 
@@ -539,7 +543,7 @@ function initOnIpcCallbacks() {
     if (g_failedFilePaths.length > 0) {
       updateLogText(
         "\n------------ " + failedFilesText + ": ------------\n",
-        true
+        true,
       );
       g_failedFilePaths.forEach((fileData) => {
         updateLogText(fileData.path, true);
@@ -552,20 +556,20 @@ function initOnIpcCallbacks() {
         "[...]" +
         fullLogContent.substring(
           fullLogContent.length - 1000000,
-          fullLogContent.length
+          fullLogContent.length,
         );
     modalLog.innerHTML = fullLogContent;
     modalLog.classList.remove("modal-log-noscrollbar");
     modalLog.scrollTop = modalLog.scrollHeight;
 
     const modalButtonCancel = g_openModal.querySelector(
-      "#tool-ec-modal-cancel-button"
+      "#tool-ec-modal-cancel-button",
     );
     const modalButtonClose = g_openModal.querySelector(
-      "#tool-ec-modal-close-button"
+      "#tool-ec-modal-close-button",
     );
     const modalButtonCopyLog = g_openModal.querySelector(
-      "#tool-ec-modal-copylog-button"
+      "#tool-ec-modal-copylog-button",
     );
     const modalLoadingBar = g_openModal.querySelector(".modal-progress-bar");
     modalButtonCancel.classList.add("set-display-none");
@@ -671,13 +675,13 @@ function onStart(resetCounter = true) {
 
   g_cancel = false;
   const modalButtonCancel = g_openModal.querySelector(
-    "#tool-ec-modal-cancel-button"
+    "#tool-ec-modal-cancel-button",
   );
   const modalButtonClose = g_openModal.querySelector(
-    "#tool-ec-modal-close-button"
+    "#tool-ec-modal-close-button",
   );
   const modalButtonCopyLog = g_openModal.querySelector(
-    "#tool-ec-modal-copylog-button"
+    "#tool-ec-modal-copylog-button",
   );
   modalButtonCancel.innerText = g_localizedModalCancelButtonText;
   modalButtonClose.innerText = g_localizedModalCloseButtonText;
@@ -699,7 +703,7 @@ function onStart(resetCounter = true) {
     g_inputFileType,
     g_inputFilesIndex + 1,
     g_inputFiles.length,
-    g_outputPdfExtractionMethod
+    g_outputPdfExtractionMethod,
   );
 }
 
@@ -766,7 +770,7 @@ function initOptions(outputFolderPath, loadedOptions) {
     g_currentOptions = loadedOptions;
     toolsSettings.restoreOptions(
       document.getElementById("tools-columns-right"),
-      g_currentOptions
+      g_currentOptions,
     );
     if (!g_currentOptions.outputFolderPath)
       g_currentOptions.outputFolderPath = g_defaultOptions.outputFolderPath;
@@ -885,7 +889,7 @@ function updateLogText(text, append = true) {
     if (partialLogContent.length > 2000)
       partialLogContent = partialLogContent.substring(
         partialLogContent.length - 1500,
-        partialLogContent.length
+        partialLogContent.length,
       );
     modalLog.innerHTML = partialLogContent;
     modalLog.scrollTop = modalLog.scrollHeight;
@@ -939,7 +943,7 @@ function showResetOptionsModal(title, message, yesText, cancelText) {
           g_currentOptions = g_defaultOptions;
           toolsSettings.restoreOptions(
             document.getElementById("tools-columns-right"),
-            g_currentOptions
+            g_currentOptions,
           );
           changeOutputFolder(g_defaultOptions.outputFolderPath);
           checkValidData();
@@ -963,7 +967,7 @@ function showResetOptionsModal(title, message, yesText, cancelText) {
 function updateLocalization(
   localization,
   tooltipsLocalization,
-  localizedTexts
+  localizedTexts,
 ) {
   for (let index = 0; index < localization.length; index++) {
     const element = localization[index];

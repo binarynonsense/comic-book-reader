@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2024 Álvaro García
+ * Copyright 2020-2026 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -30,6 +30,10 @@ let g_searchButton;
 let g_searchHistory;
 let g_apiKeyFilePathUl;
 let g_apiKeyFilePathCheckbox;
+
+export function needsScrollToTopButtonUpdate() {
+  return true;
+}
 
 function init(...args) {
   if (!g_isInitialized) {
@@ -100,10 +104,10 @@ function init(...args) {
   ////////////////////////////////////////
   // search settings
   g_apiKeyFilePathUl = document.getElementById(
-    "tool-metadata-comicvine-api-key-file-ul"
+    "tool-metadata-comicvine-api-key-file-ul",
   );
   g_apiKeyFilePathCheckbox = document.getElementById(
-    "tool-metadata-comicvine-api-key-checkbox"
+    "tool-metadata-comicvine-api-key-checkbox",
   );
   document
     .getElementById("tool-metadata-comicvine-api-key-file-change-button")
@@ -117,7 +121,7 @@ function init(...args) {
     element.addEventListener("click", (event) => {
       sendIpcToMain(
         "tooltip-button-clicked",
-        element.getAttribute("data-info")
+        element.getAttribute("data-info"),
       );
     });
   });
@@ -228,7 +232,7 @@ function initOnIpcCallbacks() {
       localization,
       tooltipsLocalization,
       localizedModalTexts,
-      localizedSubTool
+      localizedSubTool,
     ) => {
       g_localizedModalTexts = localizedModalTexts;
       g_subTool?.updateLocalization(localizedModalTexts, localizedSubTool);
@@ -254,7 +258,7 @@ function initOnIpcCallbacks() {
           }
         }
       }
-    }
+    },
   );
 
   on("update-window", () => {
@@ -320,7 +324,7 @@ function initOnIpcCallbacks() {
         .querySelector("#tool-metadata-search-results-issue-div")
         .classList.add("set-display-none");
       const searchResultsDiv = document.querySelector(
-        "#tool-metadata-search-results-div"
+        "#tool-metadata-search-results-div",
       );
       searchResultsDiv.innerHTML = "";
 
@@ -341,10 +345,10 @@ function initOnIpcCallbacks() {
         // pagination top
         if (totalResultsNum > g_searchHistory.lastSearchPageSize) {
           const totalPagesNum = Math.ceil(
-            totalResultsNum / g_searchHistory.lastSearchPageSize
+            totalResultsNum / g_searchHistory.lastSearchPageSize,
           );
           searchResultsDiv.appendChild(
-            generatePaginationHtml(pageNum, totalPagesNum, queryInputText)
+            generatePaginationHtml(pageNum, totalPagesNum, queryInputText),
           );
         }
         // list
@@ -397,10 +401,10 @@ function initOnIpcCallbacks() {
         // pagination bottom
         if (totalResultsNum > g_searchHistory.lastSearchPageSize) {
           const totalPagesNum = Math.ceil(
-            totalResultsNum / g_searchHistory.lastSearchPageSize
+            totalResultsNum / g_searchHistory.lastSearchPageSize,
           );
           searchResultsDiv.appendChild(
-            generatePaginationHtml(pageNum, totalPagesNum, queryInputText)
+            generatePaginationHtml(pageNum, totalPagesNum, queryInputText),
           );
         }
       } else {
@@ -422,7 +426,7 @@ function initOnIpcCallbacks() {
         inline: "nearest",
       });
       closeModal();
-    }
+    },
   );
 
   on("search-issues-results", (searchResults, noResultsText) => {
@@ -436,7 +440,7 @@ function initOnIpcCallbacks() {
       .querySelector("#tool-metadata-search-results-issue-div")
       .classList.add("set-display-none");
     const searchResultsDiv = document.querySelector(
-      "#tool-metadata-search-results-issues-div"
+      "#tool-metadata-search-results-issues-div",
     );
     searchResultsDiv.innerHTML = "";
 
@@ -472,8 +476,8 @@ function initOnIpcCallbacks() {
         parseInt(a.issue_number) > parseInt(b.issue_number)
           ? 1
           : parseInt(b.issue_number) > parseInt(a.issue_number)
-          ? -1
-          : 0
+            ? -1
+            : 0,
       );
       for (
         let index = 0;
@@ -542,7 +546,7 @@ function initOnIpcCallbacks() {
       .querySelector("#tool-metadata-search-results-issue-div")
       .classList.remove("set-display-none");
     const searchResultsDiv = document.querySelector(
-      "#tool-metadata-search-results-issue-div"
+      "#tool-metadata-search-results-issue-div",
     );
     searchResultsDiv.innerHTML = "";
 
@@ -630,7 +634,7 @@ function initOnIpcCallbacks() {
         button,
         ul,
         data,
-        addLine
+        addLine,
       );
       searchResultsDiv.appendChild(ul);
     } else {
@@ -821,7 +825,7 @@ export function showInfoModal(
   textButton1,
   textButton2,
   callbackButton1,
-  callbackButton2
+  callbackButton2,
 ) {
   if (g_openModal) {
     return;

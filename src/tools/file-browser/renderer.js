@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2025 Álvaro García
+ * Copyright 2020-2026 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -22,6 +22,10 @@ let g_isInitialized = false;
 let g_shortcutsDiv;
 let g_navData = {};
 let g_languageDirection;
+
+export function needsScrollToTopButtonUpdate() {
+  return true;
+}
 
 async function init(showFocus, localizedLoadingText) {
   if (!g_isInitialized) {
@@ -50,7 +54,7 @@ async function buildPage(drivesData) {
   });
   backButton.setAttribute(
     "data-nav-panel",
-    g_languageDirection !== "rtl" ? 0 : 1
+    g_languageDirection !== "rtl" ? 0 : 1,
   );
   backButton.setAttribute("data-nav-row", 0);
   backButton.setAttribute("data-nav-col", 0);
@@ -82,7 +86,7 @@ async function buildPage(drivesData) {
     });
     buttonDiv.setAttribute(
       "data-nav-panel",
-      g_languageDirection !== "rtl" ? 0 : 1
+      g_languageDirection !== "rtl" ? 0 : 1,
     );
     buttonDiv.setAttribute("data-nav-row", index + 1);
     buttonDiv.setAttribute("data-nav-col", 0);
@@ -182,7 +186,7 @@ function showFolderContents(
   folderPath,
   folderContents,
   parentFolder,
-  previousFolder
+  previousFolder,
 ) {
   document.getElementById("tool-fb-current-path-text").innerText = folderPath;
   const ul = document.querySelector("#tool-fb-items-ul");
@@ -262,7 +266,7 @@ function addFolderContentLi(type, ul, entry, index) {
   }
   buttonSpan.setAttribute(
     "data-nav-panel",
-    g_languageDirection !== "rtl" ? 1 : 0
+    g_languageDirection !== "rtl" ? 1 : 0,
   );
   buttonSpan.setAttribute("data-nav-row", index);
   buttonSpan.setAttribute("data-nav-col", 0);
@@ -290,7 +294,7 @@ export function onInputEvent(type, event) {
         event.key == "ArrowUp",
         event.key == "ArrowDown",
         event.key == "ArrowLeft",
-        event.key == "ArrowRight"
+        event.key == "ArrowRight",
       );
       if (
         event.key == "Tab" ||
@@ -389,7 +393,7 @@ export function onGamepadPolled() {
     upPressed,
     downPressed,
     leftPressed,
-    rightPressed
+    rightPressed,
   );
 }
 

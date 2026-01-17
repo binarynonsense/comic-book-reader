@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2024 Álvaro García
+ * Copyright 2024-2026 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -35,6 +35,10 @@ let g_localizedModalNewPlaylistButtonText;
 ///////////////////////////////////////////////////////////////////////////////
 
 let g_isInitialized = false;
+
+export function needsScrollToTopButtonUpdate() {
+  return true;
+}
 
 function init() {
   if (!g_isInitialized) {
@@ -93,10 +97,10 @@ function init() {
   // url
   g_urlInput = document.getElementById("tool-cbp-url-input");
   g_openInputInACBRButton = document.getElementById(
-    "tool-cbp-open-input-url-acbr-button"
+    "tool-cbp-open-input-url-acbr-button",
   );
   g_openInputInBrowserButton = document.getElementById(
-    "tool-cbp-open-input-url-browser-button"
+    "tool-cbp-open-input-url-browser-button",
   );
 
   g_urlInput.addEventListener("input", (event) => {
@@ -116,7 +120,7 @@ function init() {
   });
   // options
   g_engineSelect = document.getElementById(
-    "tool-cbp-options-search-engine-select"
+    "tool-cbp-options-search-engine-select",
   );
   // about
   document
@@ -223,7 +227,7 @@ function initOnIpcCallbacks() {
       modalOpenInPlayerTitleText,
       modalAddToPlaylistButtonText,
       modalNewPlaylistButtonText,
-      localization
+      localization,
     ) => {
       g_localizedSearchPlaceholderText = searchPlaceHolder;
       g_localizedModalLoadingTitleText = modalLoadingTitleText;
@@ -240,7 +244,7 @@ function initOnIpcCallbacks() {
           domElement.innerHTML = element.text;
         }
       }
-    }
+    },
   );
 
   on("update-window", () => {
@@ -275,7 +279,7 @@ function initOnIpcCallbacks() {
       .querySelector("#tool-search-results-h3")
       .classList.remove("set-display-none");
     const searchResultsDiv = document.querySelector(
-      "#tool-cbp-search-results-div"
+      "#tool-cbp-search-results-div",
     );
     searchResultsDiv.innerHTML = "";
     // pagination top
@@ -531,7 +535,7 @@ async function onOpenComicUrlInACBR(url) {
           g_localizedModalOpenInPlayerTitleText,
           g_localizedModalCancelButtonText,
           g_localizedModalAddToPlaylistButtonText,
-          g_localizedModalNewPlaylistButtonText
+          g_localizedModalNewPlaylistButtonText,
         );
         return;
       }
@@ -562,7 +566,7 @@ async function getFirstPageInfo(comicId) {
   try {
     const response = await axios.get(
       `https://comicbookplus.com/?dlid=${comicId}`,
-      { timeout: 15000 }
+      { timeout: 15000 },
     );
     let numPages;
     let regex = /comicnumpages=(.*);/;
@@ -682,7 +686,7 @@ function showModalOpenInPlayer(
   textButtonBack,
   textButtonAddToPlayList,
   textButtonNewPlaylist,
-  showFocus
+  showFocus,
 ) {
   if (g_openModal) {
     closeModal();
