@@ -118,11 +118,11 @@ exports.getLocalization = function (mode) {
     },
     {
       id: "tool-cc-add-file-button-text",
-      text: _("tool-shared-ui-add-file").toUpperCase(),
+      text: _("tool-shared-ui-add-files").toUpperCase(),
     },
     {
       id: "tool-cc-add-folder-button-text",
-      text: _("tool-shared-ui-add-folder").toUpperCase(),
+      text: _("tool-shared-ui-add-folders").toUpperCase(),
     },
     {
       id: "tool-cc-clear-list-button-text",
