@@ -198,7 +198,7 @@ function removeEntryInRecentByIndex(
     } else {
       foundIndex = getIndexInHomeByFilePath(entry.filePath);
     }
-    if (foundIndex !== undefined) {
+    if (foundIndex === undefined) {
       // not already in home
       g_home.push(entry);
     }

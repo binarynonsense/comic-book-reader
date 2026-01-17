@@ -251,11 +251,11 @@ function addListEntryFromLocalPath(listIndex, localPath, doBuild = true) {
 
 function isHistoryEntryInFavoritesOrUserLists(entry) {
   entry.path = entry.filePath; // adapt history data to home card specification
-  if (getEntryIndexInList(-1, entry)) {
+  if (getEntryIndexInList(-1, entry) !== undefined) {
     return true;
   }
   for (let index = 0; index < g_userLists.length; index++) {
-    if (getEntryIndexInList(index, entry)) {
+    if (getEntryIndexInList(index, entry) !== undefined) {
       return true;
     }
   }
