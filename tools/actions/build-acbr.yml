@@ -21,11 +21,11 @@ on:
       releaseWinSelfExtracting:
         description: "Include Windows Self-Extracting"
         required: true
-        default: false
+        default: true
       releaseLinAppImage:
         description: "Include Linux AppImage"
         required: true
-        default: false
+        default: true
 permissions:
   contents: write
 
