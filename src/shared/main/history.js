@@ -187,7 +187,7 @@ function addEntryToRecent(filePath, pageIndex, numPages, data) {
 
 function removeEntryInRecentByIndex(
   index,
-  isHistoryEntryInFavoritesOrUserLists
+  isHistoryEntryInFavoritesOrUserLists,
 ) {
   const entry = g_recent[index];
   g_recent.splice(index, 1);
@@ -239,11 +239,22 @@ function getIndexInListByData(data, listIndex) {
   const entries = listIndex === 0 ? g_recent : g_home;
   for (let index = 0; index < entries.length; index++) {
     const entry = entries[index];
-    // NOTE: crappy comparision, error prone?
     if (!entry.data) continue;
-    if (JSON.stringify(entry.data) === JSON.stringify(data)) {
+    if (
+      data.source &&
+      data.source === "xkcd" &&
+      entry.data.source &&
+      entry.data.source === "xkcd"
+    ) {
+      // xkcd special case
       foundIndex = index;
       break;
+    } else {
+      // NOTE: crappy comparision, error prone?
+      if (JSON.stringify(entry.data) === JSON.stringify(data)) {
+        foundIndex = index;
+        break;
+      }
     }
   }
   return foundIndex;
