@@ -87,7 +87,7 @@ exports.open = async function (options) {
     appUtils.getDesktopFolderPath(),
     settings.canEditRars(),
     loadedOptions,
-    Math.max(1, Math.floor(os.cpus().length / 2))
+    Math.max(1, Math.floor(os.cpus().length / 2)),
   );
 
   updateLocalizedText();
@@ -203,14 +203,14 @@ function initOnIpcCallbacks() {
       _("tool-shared-modal-title-warning"),
       _("tool-shared-ui-settings-reset-warning"),
       _("ui-modal-prompt-button-yes"),
-      _("ui-modal-prompt-button-cancel")
+      _("ui-modal-prompt-button-cancel"),
     );
   });
 
   on("save-settings-options", (options, forceQuit) => {
     settings.updateToolOptions(
       `tool-cc-${g_mode}`,
-      options["tool-cc-setting-remember-checkbox"] ? options : undefined
+      options["tool-cc-setting-remember-checkbox"] ? options : undefined,
     );
     if (forceQuit) {
       core.forceQuit();
@@ -254,7 +254,7 @@ function initOnIpcCallbacks() {
         defaultPath,
         allowedFileTypesName,
         allowedFileTypesList,
-        allowMultipleSelection
+        allowMultipleSelection,
       );
       if (filePathsList === undefined) {
         return;
@@ -275,7 +275,8 @@ function initOnIpcCallbacks() {
     }
     let folderPathsList = appUtils.chooseFolder(
       core.getMainWindow(),
-      defaultPath
+      defaultPath,
+      true,
     );
     if (folderPathsList === undefined) {
       return;
@@ -319,7 +320,7 @@ function initOnIpcCallbacks() {
       "show-modal-info",
       _("tool-shared-modal-title-info"),
       text,
-      _("tool-shared-ui-close").toUpperCase()
+      _("tool-shared-ui-close").toUpperCase(),
     );
   });
 
@@ -426,12 +427,12 @@ async function onStartClicked(inputList, selectedOptions) {
         if (g_uiSelectedOptions.inputSearchFoldersRecursively) {
           filesInFolder = fileUtils.getFilesInFolderRecursive(
             inputListItem.path,
-            g_uiSelectedOptions.inputSearchFoldersFormats
+            g_uiSelectedOptions.inputSearchFoldersFormats,
           );
         } else {
           filesInFolder = fileUtils.getFilesInFolder(
             inputListItem.path,
-            g_uiSelectedOptions.inputSearchFoldersFormats
+            g_uiSelectedOptions.inputSearchFoldersFormats,
           );
         }
         if (g_uiSelectedOptions.inputSearchFoldersRecursively) {
@@ -447,7 +448,7 @@ async function onStartClicked(inputList, selectedOptions) {
                 let outputFolderPath = path.join(
                   g_uiSelectedOptions.outputFolderPath,
                   path.basename(inputListItem.path),
-                  path.relative(inputListItem.path, path.dirname(filePath))
+                  path.relative(inputListItem.path, path.dirname(filePath)),
                 );
                 g_inputFiles.push({
                   path: filePath,
@@ -485,7 +486,7 @@ async function onStartClicked(inputList, selectedOptions) {
       "show-modal-info",
       _("tool-shared-modal-title-error"),
       _("tool-shared-modal-log-failed-reason-no-valid-file"),
-      _("tool-shared-ui-close").toUpperCase()
+      _("tool-shared-ui-close").toUpperCase(),
     );
 }
 
@@ -513,7 +514,7 @@ function start() {
     if (areAllImages) {
       sendIpcToRenderer(
         "modal-update-title-text",
-        _("tool-shared-modal-title-creating")
+        _("tool-shared-modal-title-creating"),
       );
       for (let index = 0; index < g_inputFiles.length; index++) {
         const inputFilePath = g_inputFiles[index].path;
@@ -551,16 +552,16 @@ function startFile(inputFileIndex, totalFilesNum) {
       ? _("tool-shared-modal-title-converting") +
           (totalFilesNum > 1 ? " (" + fileNum + "/" + totalFilesNum + ")" : "")
       : _("tool-shared-modal-title-adding") +
-          (totalFilesNum > 1 ? " (" + fileNum + "/" + totalFilesNum + ")" : "")
+          (totalFilesNum > 1 ? " (" + fileNum + "/" + totalFilesNum + ")" : ""),
   );
   sendIpcToRenderer(
     "update-info-text",
-    utils.reduceStringFrontEllipsis(inputFilePath)
+    utils.reduceStringFrontEllipsis(inputFilePath),
   );
   updateModalLogText(
     g_mode === ToolMode.CONVERT
       ? _("tool-shared-modal-title-converting")
-      : _("tool-shared-modal-title-adding")
+      : _("tool-shared-modal-title-adding"),
   );
   updateModalLogText(inputFilePath);
 
@@ -589,7 +590,7 @@ function startFile(inputFileIndex, totalFilesNum) {
         // just one file in the output folder
         let outputFilePath = path.join(
           outputFolderPath,
-          baseFileName + "." + outputFormat
+          baseFileName + "." + outputFormat,
         );
         if (fs.existsSync(outputFilePath)) {
           skip = { path: outputFilePath, isFile: true };
@@ -609,7 +610,7 @@ function startFile(inputFileIndex, totalFilesNum) {
             : _("tool-shared-modal-log-failed-reason-output-folder-exists")) +
             "\n" +
             skip.path,
-          false
+          false,
         );
         return;
       }
@@ -627,7 +628,7 @@ function startFile(inputFileIndex, totalFilesNum) {
     g_imageIndex = 0;
     copyImagesToTempFolder(
       inputFilePath,
-      g_uiSelectedOptions.inputSearchFoldersRecursively
+      g_uiSelectedOptions.inputSearchFoldersRecursively,
     );
     sendIpcToRenderer("file-images-extracted");
   } else if (inputFileType === FileDataType.IMG) {
@@ -654,11 +655,11 @@ function startFile(inputFileIndex, totalFilesNum) {
     if (g_worker === undefined) {
       if (core.useUtilityProcess()) {
         g_worker = utilityProcess.fork(
-          path.join(__dirname, "../../shared/main/tools-worker.js")
+          path.join(__dirname, "../../shared/main/tools-worker.js"),
         );
       } else {
         g_worker = fork(
-          path.join(__dirname, "../../shared/main/tools-worker.js")
+          path.join(__dirname, "../../shared/main/tools-worker.js"),
         );
       }
       g_worker.on("message", (message) => {
@@ -685,7 +686,7 @@ function startFile(inputFileIndex, totalFilesNum) {
           }
           stopError(
             message.error,
-            _("tool-shared-modal-log-failed-extraction")
+            _("tool-shared-modal-log-failed-extraction"),
           );
           return;
         }
@@ -704,7 +705,7 @@ function startFile(inputFileIndex, totalFilesNum) {
             : g_creationTempSubFolderPath,
           g_inputPassword,
         ],
-        [port1]
+        [port1],
       );
     } else {
       g_worker.send([
@@ -733,7 +734,7 @@ function startFile(inputFileIndex, totalFilesNum) {
       parent: core.getMainWindow(),
     });
     g_workerWindow.loadFile(
-      `${__dirname}/../../shared/renderer/tools-bg-worker.html`
+      `${__dirname}/../../shared/renderer/tools-bg-worker.html`,
     );
 
     g_workerWindow.webContents.on("did-finish-load", function () {
@@ -747,7 +748,7 @@ function startFile(inputFileIndex, totalFilesNum) {
           : g_creationTempSubFolderPath,
         g_uiSelectedOptions.inputPdfExtractionMethod,
         _("tool-shared-modal-log-extracting-page") + ": ",
-        g_inputPassword
+        g_inputPassword,
       );
     });
   } else {
@@ -794,11 +795,11 @@ function end(wasCanceled, numFiles, numErrors, numAttempted) {
     let seconds = (conversionTime - minutes * 60).toFixed(0);
     if (seconds.length < 2) seconds = "0" + seconds;
     updateModalLogText(
-      `${_("tool-shared-modal-log-total-time")}: ${minutes}m ${seconds}s`
+      `${_("tool-shared-modal-log-total-time")}: ${minutes}m ${seconds}s`,
     );
   } else {
     updateModalLogText(
-      `${_("tool-shared-modal-log-total-time")}: ${conversionTime.toFixed(0)}s`
+      `${_("tool-shared-modal-log-total-time")}: ${conversionTime.toFixed(0)}s`,
     );
   }
   updateModalLogText("");
@@ -806,7 +807,7 @@ function end(wasCanceled, numFiles, numErrors, numAttempted) {
     if (g_mode === ToolMode.CONVERT) {
       sendIpcToRenderer(
         "modal-update-title-text",
-        _("tool-shared-modal-title-conversion-finished")
+        _("tool-shared-modal-title-conversion-finished"),
       );
 
       if (numErrors > 0) {
@@ -815,26 +816,26 @@ function end(wasCanceled, numFiles, numErrors, numAttempted) {
           _(
             "tool-shared-modal-info-conversion-error-num-files",
             numErrors,
-            numFiles
-          )
+            numFiles,
+          ),
         );
       } else {
         sendIpcToRenderer(
           "update-info-text",
-          _("tool-shared-modal-info-conversion-success-num-files", numFiles)
+          _("tool-shared-modal-info-conversion-success-num-files", numFiles),
         );
       }
     } else {
       if (numErrors > 0) {
         sendIpcToRenderer(
           "modal-update-title-text",
-          _("tool-shared-modal-title-creation-failed")
+          _("tool-shared-modal-title-creation-failed"),
         );
         sendIpcToRenderer("update-info-text", "");
       } else {
         sendIpcToRenderer(
           "modal-update-title-text",
-          _("tool-shared-modal-title-creation-finished")
+          _("tool-shared-modal-title-creation-finished"),
         );
       }
     }
@@ -843,7 +844,7 @@ function end(wasCanceled, numFiles, numErrors, numAttempted) {
       "modal-update-title-text",
       g_mode === ToolMode.CONVERT
         ? _("tool-shared-modal-title-conversion-canceled")
-        : _("tool-shared-modal-title-creation-canceled")
+        : _("tool-shared-modal-title-creation-canceled"),
     );
     sendIpcToRenderer(
       "update-info-text",
@@ -852,9 +853,9 @@ function end(wasCanceled, numFiles, numErrors, numAttempted) {
             "tool-shared-modal-info-conversion-results",
             numAttempted - numErrors,
             numErrors,
-            numFiles - numAttempted
+            numFiles - numAttempted,
           )
-        : ""
+        : "",
     );
   }
 
@@ -898,14 +899,14 @@ function stopError(error, errorMessage, nameAsError = true) {
     updateModalLogText(
       g_mode === ToolMode.CONVERT
         ? _("tool-shared-modal-log-conversion-error")
-        : _("tool-shared-modal-log-creation-error")
+        : _("tool-shared-modal-log-creation-error"),
     );
   } else {
     // not really an error. if file is skipped, for example
     updateModalLogText(
       g_mode === ToolMode.CONVERT
         ? _("tool-shared-modal-log-failed-conversion")
-        : _("tool-shared-modal-log-failed-creation")
+        : _("tool-shared-modal-log-failed-creation"),
     );
     updateModalLogText(uiMsg);
   }
@@ -922,7 +923,7 @@ function stopCancel() {
   updateModalLogText(
     g_mode === ToolMode.CONVERT
       ? _("tool-shared-modal-log-conversion-canceled")
-      : _("tool-shared-modal-log-creation-canceled")
+      : _("tool-shared-modal-log-creation-canceled"),
   );
   updateModalLogText("");
   sendIpcToRenderer("file-finished-canceled");
@@ -1048,8 +1049,8 @@ async function processContent(inputFilePath) {
           path.dirname(filePath),
           utils.padNumber(
             fileName,
-            Math.max(imgFilePaths.length, g_imageIndex)
-          ) + path.extname(filePath)
+            Math.max(imgFilePaths.length, g_imageIndex),
+          ) + path.extname(filePath),
         );
         if (filePath !== newFilePath) {
           fileUtils.moveFile(filePath, newFilePath);
@@ -1072,7 +1073,7 @@ async function processContent(inputFilePath) {
         resizeNeeded ||
         imageOpsNeeded);
     g_uiSelectedOptions.outputImageScalePercentage = parseInt(
-      g_uiSelectedOptions.outputImageScalePercentage
+      g_uiSelectedOptions.outputImageScalePercentage,
     );
     if (
       g_uiSelectedOptions.outputImageScaleOption !== "0" ||
@@ -1207,7 +1208,7 @@ async function processContent(inputFilePath) {
         }
       } catch (error) {
         log.debug(
-          "Warning: couldn't update the contents of ComicInfo.xml: " + error
+          "Warning: couldn't update the contents of ComicInfo.xml: " + error,
         );
         updateModalLogText(_("tool-shared-modal-log-warning-comicinfoxml"));
         updateModalLogText(error);
@@ -1223,7 +1224,7 @@ async function processContent(inputFilePath) {
       inputFilePath,
       baseFileName,
       imgFilePaths,
-      comicInfoFilePath
+      comicInfoFilePath,
     );
   } catch (error) {
     stopError(error);
@@ -1244,13 +1245,13 @@ async function processImages({ imgFilePaths, resizeNeeded, imageOpsNeeded }) {
           ": " +
           (index + 1) +
           " / " +
-          imgFilePaths.length
+          imgFilePaths.length,
       );
       const result = await processImage(
         imgFilePaths[index],
         resizeNeeded,
         imageOpsNeeded,
-        g_uiSelectedOptions
+        g_uiSelectedOptions,
       );
       imgFilePaths[index] = result.filePath;
     } // end for
@@ -1274,7 +1275,7 @@ async function processImagesWithWorkers({
     if (!maxWorkers || maxWorkers <= 0)
       maxWorkers = Math.max(1, Math.floor(os.cpus().length / 2));
     let sharpConcurrency = parseInt(
-      g_uiSelectedOptions.imageProcessingSharpConcurrency
+      g_uiSelectedOptions.imageProcessingSharpConcurrency,
     );
 
     if (!sharpConcurrency || sharpConcurrency < 0) sharpConcurrency = 1;
@@ -1328,7 +1329,7 @@ async function processImagesWithWorkers({
           ": " +
           (job.id + 1) +
           " / " +
-          imgFilePaths.length
+          imgFilePaths.length,
       );
       worker.postMessage({
         type: "process",
@@ -1367,7 +1368,7 @@ async function createFilesFromImages(
   inputFilePath,
   baseFileName,
   imgFilePaths,
-  comicInfoFilePath
+  comicInfoFilePath,
 ) {
   if (g_cancel === true) {
     stopCancel();
@@ -1378,7 +1379,7 @@ async function createFilesFromImages(
     updateModalLogText(
       g_uiSelectedOptions.outputSplitNumFiles > 1
         ? _("tool-shared-modal-log-generating-new-files") + "..."
-        : _("tool-shared-modal-log-generating-new-file") + "..."
+        : _("tool-shared-modal-log-generating-new-file") + "...",
     );
     if (g_worker !== undefined) {
       // kill it after one use
@@ -1388,11 +1389,11 @@ async function createFilesFromImages(
     if (g_worker === undefined) {
       if (core.useUtilityProcess()) {
         g_worker = utilityProcess.fork(
-          path.join(__dirname, "../../shared/main/tools-worker.js")
+          path.join(__dirname, "../../shared/main/tools-worker.js"),
         );
       } else {
         g_worker = fork(
-          path.join(__dirname, "../../shared/main/tools-worker.js")
+          path.join(__dirname, "../../shared/main/tools-worker.js"),
         );
       }
       g_worker.on("message", (message) => {
@@ -1451,7 +1452,7 @@ async function createFilesFromImages(
           g_uiSelectedOptions.outputPassword,
           extraData,
         ],
-        [port1]
+        [port1],
       );
     } else {
       g_worker.send([
@@ -1491,7 +1492,7 @@ function updateLocalizedText() {
     "update-localization",
     localization.getLocalization(g_mode),
     localization.getTooltipsLocalization(),
-    localization.getLocalizedTexts()
+    localization.getLocalizedTexts(),
   );
 }
 exports.updateLocalizedText = updateLocalizedText;
