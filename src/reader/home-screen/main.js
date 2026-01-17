@@ -202,7 +202,12 @@ function getEntryIndexInList(listIndex, entry) {
     }
     return undefined;
   } else {
-    return getLocalPathIndexInList(listIndex, entry.path);
+    // use filePath as a backup as it's also called by
+    // isHistoryEntryInFavoritesOrUserLists with a history entry
+    return getLocalPathIndexInList(
+      listIndex,
+      entry.path ? entry.path : entry.filePath,
+    );
   }
 }
 
@@ -250,7 +255,8 @@ function addListEntryFromLocalPath(listIndex, localPath, doBuild = true) {
 }
 
 function isHistoryEntryInFavoritesOrUserLists(entry) {
-  entry.path = entry.filePath; // adapt history data to home card specification
+  // NOTE: getEntryIndexInList supports calling with a history entry instead
+  // of a home screen one (will check for path AND filePath)
   if (getEntryIndexInList(-1, entry) !== undefined) {
     return true;
   }
