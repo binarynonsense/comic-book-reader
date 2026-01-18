@@ -65,6 +65,15 @@ exports.getTooltipsLocalization = function () {
       id: "tool-cc-tooltip-imageops-extend",
       text: _("tool-shared-ui-imageops-order-after-tooltip"),
     },
+    {
+      id: "tool-cc-tooltip-keep-subfolders-structure",
+      text: _(
+        "tool-shared-ui-output-options-keep-subfolders-tooltip",
+        _("tool-shared-ui-output-folder"),
+        _("tool-shared-ui-output-folder-0"),
+        _("tool-shared-ui-input-folders-recursively"),
+      ),
+    },
   ];
 };
 

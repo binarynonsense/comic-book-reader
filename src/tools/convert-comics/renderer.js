@@ -1141,7 +1141,12 @@ function checkValidData() {
   const outputKeepSubfoldersStructureDiv = document.querySelector(
     "#tool-cc-keep-subfolders-structure-div",
   );
+  const outputKeepSubfoldersStructureToggle = document.querySelector(
+    "#tool-cc-keep-subfolders-structure-toggle",
+  );
+
   if (g_mode === ToolMode.CONVERT) {
+    outputKeepSubfoldersStructureDiv.classList.remove("set-display-none");
     if (
       document.getElementById("tool-cc-output-folder-option-select").value ===
         "0" &&
@@ -1149,9 +1154,9 @@ function checkValidData() {
       document.getElementById("tool-cc-folders-contain-select").value ===
         "comics"
     ) {
-      outputKeepSubfoldersStructureDiv.classList.remove("tools-disabled");
+      outputKeepSubfoldersStructureToggle.classList.remove("tools-disabled");
     } else {
-      outputKeepSubfoldersStructureDiv.classList.add("tools-disabled");
+      outputKeepSubfoldersStructureToggle.classList.add("tools-disabled");
     }
   } else {
     outputKeepSubfoldersStructureDiv.classList.add("set-display-none");
