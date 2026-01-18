@@ -1,6 +1,8 @@
 {
   "@metadata": {
-    "authors": ["Álvaro"],
+    "authors": [
+      "Álvaro"
+    ],
     "last-updated": "2026-01-14",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.15.0-beta1",
@@ -352,6 +354,7 @@
   "tool-shared-ui-output-options-file": "Archivo",
   "tool-shared-ui-output-options-folder": "Carpeta",
   "tool-shared-ui-output-options-keep-subfolders": "Mantener la estructura de subcarpetas",
+  "[NOTE TO TRANSLATORS] tool-shared-ui-output-options-keep-subfolders-tooltip": "At runtime, {0}, {1} and {2} will be replaced by the localized text (from the corresponding keys in this file) for an option name ('Output Folder'), an option value ('Specify one for all files') and an option name ('Search Input Folders Recusively') respectively.",
   "tool-shared-ui-output-options-keep-subfolders-tooltip": "Replicar la estructura de las carpetas en la lista de entrada en la carpeta de salida y colocar los archivos convertidos en la subcarpeta correspondiente.\n\nSolo disponible cuando \"{0}\" está configurada como \"{1}\" y \"{2}\" está habilitada.",
   "tool-shared-ui-output-file-same-name": "Si el archivo de salida ya existe",
   "tool-shared-ui-output-file-same-name-0": "Cambiar el nombre del archivo de salida por uno que no esté en uso",

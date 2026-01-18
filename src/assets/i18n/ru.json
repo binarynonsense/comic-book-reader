@@ -354,6 +354,7 @@
   "tool-shared-ui-output-options-file": "Файл",
   "tool-shared-ui-output-options-folder": "Папка",
   "[NEEDS TRANSLATION]tool-shared-ui-output-options-keep-subfolders": "Keep Subfolders Structure",
+  "[NOTE TO TRANSLATORS] tool-shared-ui-output-options-keep-subfolders-tooltip": "At runtime, {0}, {1} and {2} will be replaced by the localized text (from the corresponding keys in this file) for an option name ('Output Folder'), an option value ('Specify one for all files') and an option name ('Search Input Folders Recusively') respectively.",
   "[NEEDS TRANSLATION]tool-shared-ui-output-options-keep-subfolders-tooltip": "Replicate the structure of the folders in the input list in the output folder and place the converted files in their corresponding subfolder.\n\nOnly available when \"{0}\" is set to \"{1}\" and \"{2}\" is enabled.",
   "tool-shared-ui-output-file-same-name": "Если выходной файл уже существует",
   "tool-shared-ui-output-file-same-name-0": "Измените название выходного файла на неиспользуемое",
