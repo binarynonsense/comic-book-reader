@@ -225,8 +225,11 @@
     >
       <h3><span id="tool-cc-advanced-input-options-text"></span></h3>
       <div class="tools-columns-right-subsection">
-        <label><span id="tool-cc-input-folders-text"></span> </label>
-        <div class="tools-option-children">
+        <label class="set-display-none"
+          ><span id="tool-cc-input-folders-text"></span>
+        </label>
+        <div>
+          <!-- class="tools-option-children" -->
           <label
             ><span id="tool-cc-folders-contain-text"></span>
             <select id="tool-cc-folders-contain-select">
@@ -279,6 +282,11 @@
     >
       <h3><span id="tool-cc-advanced-output-options-text"></span></h3>
       <div class="tools-columns-right-subsection">
+        <label
+          ><span id="tool-cc-output-file-same-name-text"></span>
+          <select id="tool-cc-output-file-same-name-select"></select>
+        </label>
+
         <div id="tool-cc-keep-subfolders-structure-div">
           <label
             ><span id="tool-cc-keep-subfolders-structure-text"></span
@@ -291,10 +299,7 @@
             <span class="tools-toggle-slider"></span>
           </label>
         </div>
-        <label
-          ><span id="tool-cc-output-file-same-name-text"></span>
-          <select id="tool-cc-output-file-same-name-select"></select>
-        </label>
+
         <label>
           <span id="tool-cc-split-num-files-text"></span>
           <input
