@@ -72,9 +72,10 @@ function load() {
     if (utils.isObject(loadedHistory)) {
       function loadEntry(entry, toArray) {
         if (
-          entry.filePath !== undefined &&
-          entry.filePath !== "" &&
-          typeof entry.filePath === "string"
+          (entry.filePath !== undefined &&
+            entry.filePath !== "" &&
+            typeof entry.filePath === "string") ||
+          entry?.data?.source
         ) {
           if (isNaN(entry.pageIndex)) entry.pageIndex = 0;
           entry.pageIndex = Number(entry.pageIndex);
@@ -156,7 +157,12 @@ function changeRecentCapacity(capacity) {
 }
 
 function addEntryToRecent(filePath, pageIndex, numPages, data) {
-  let foundIndex = getIndexInRecentByFilePath(filePath);
+  let foundIndex;
+  if (data?.source) {
+    foundIndex = getIndexInRecentByData(data);
+  } else {
+    foundIndex = getIndexInRecentByFilePath(filePath);
+  }
   if (foundIndex !== undefined) {
     // remove, to update and put last
     g_recent.splice(foundIndex, 1);

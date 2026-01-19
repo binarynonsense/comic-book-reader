@@ -1387,7 +1387,7 @@ function openBookFromCallback(comicData, getPageCallback, pageIndex = 0) {
   closeCurrentFile();
   g_fileData.state = FileDataState.LOADED;
   g_fileData.type = FileDataType.WWW;
-  g_fileData.path = comicData.url;
+  g_fileData.path = comicData.url ?? comicData.name;
   g_fileData.name = comicData.name;
   g_fileData.pagesPaths = [];
   g_fileData.numPages = comicData.numPages;

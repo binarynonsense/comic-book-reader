@@ -239,7 +239,7 @@ function buildHistoryList(history, max) {
       multilineText.appendChild(text);
 
       text = document.createElement("span");
-      text.innerHTML = fileInfo.filePath;
+      text.innerHTML = fileInfo.filePath ?? "";
       multilineText.appendChild(text);
     }
     buttonSpan.appendChild(multilineText);
