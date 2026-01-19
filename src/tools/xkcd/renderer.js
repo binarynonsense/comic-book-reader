@@ -78,6 +78,7 @@ async function init(selectCatalogNumberLocalizedText) {
       source: "xkcd",
       name: "xkcd",
       numPages: g_totalNumComics,
+      url: "https://xkcd.com/",
     };
     sendIpcToMain("open", comicData, number);
   });

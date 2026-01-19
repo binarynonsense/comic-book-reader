@@ -134,7 +134,7 @@ async function getPageCallback(pageNum, fileData) {
       `https://xkcd.com/${pageNum}/info.0.json`,
       {
         timeout: 10000,
-      }
+      },
     );
     const imageUrl = response?.data?.img;
     return {
@@ -204,7 +204,7 @@ function getLocalization() {
       text: _(
         "tool-shared-ui-about-text-1",
         _("tool-shared-ui-about-text-1-webcomics"),
-        "xkcd"
+        "xkcd",
       ),
     },
     {
@@ -215,7 +215,7 @@ function getLocalization() {
       id: "tool-xkcd-open-dcm-browser-button-text",
       text: _(
         "tool-shared-ui-button-open-websitename-in-browser",
-        "xkcd"
+        "xkcd",
       ).toUpperCase(),
     },
   ];

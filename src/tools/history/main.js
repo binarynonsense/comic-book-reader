@@ -112,7 +112,7 @@ function getHistory() {
             break;
 
           case "xkcd":
-            fileInfo.filePath = "https://xkcd.com/";
+            fileInfo.filePath = fileInfo.data.url;
             break;
         }
       }

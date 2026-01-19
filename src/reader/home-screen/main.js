@@ -137,11 +137,7 @@ function generateCardsFromSavedData(inputData, isFavoritesList) {
       }
       if (inputBook?.data?.source) {
         outputBook.pathType = 2;
-        switch (inputBook.data.source) {
-          case "xkcd":
-            outputBook.path = "https://xkcd.com/";
-            break;
-        }
+        outputBook.path = inputBook.data.url ?? inputBook.path;
       } else if (fs.existsSync(outputBook.path)) {
         outputBook.pathType = !fs.lstatSync(outputBook.path).isDirectory()
           ? 0
@@ -424,7 +420,8 @@ function getLatestCards() {
               break;
 
             case "xkcd":
-              latestInfo.path = "https://xkcd.com/";
+              latestInfo.path =
+                historyDataFile.data.url ?? historyDataFile.filePath;
               break;
           }
         } else {
