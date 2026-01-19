@@ -75,17 +75,17 @@ exports.init = function (filePath, checkHistory) {
   sendIpcToRenderer("add-event-listeners");
   sendIpcToRenderer(
     "set-hide-inactive-mouse-cursor",
-    settings.getValue("cursorVisibility") === 1
+    settings.getValue("cursorVisibility") === 1,
   );
   sendIpcToRenderer("set-nav-keys", settings.getValue("navKeys"));
   sendIpcToRenderer("set-nav-buttons", settings.getValue("navButtons"));
   sendIpcToRenderer(
     "set-mousebutton-quickmenu",
-    settings.getValue("mouseButtonQuickMenu")
+    settings.getValue("mouseButtonQuickMenu"),
   );
   sendIpcToRenderer(
     "set-page-turn-on-scroll-boundary",
-    settings.getValue("turnPageOnScrollBoundary")
+    settings.getValue("turnPageOnScrollBoundary"),
   );
 
   showScrollBar(settings.getValue("showScrollBar"));
@@ -113,7 +113,7 @@ exports.init = function (filePath, checkHistory) {
     settings.getValue("on_quit_state") === 1
   ) {
     const entry = history.getEntryInRecentByIndex(
-      history.getRecent().length - 1
+      history.getRecent().length - 1,
     );
     if (tryOpen(entry.filePath, undefined, entry)) {
       return;
@@ -190,7 +190,7 @@ function addCurrentToHistory(updateMenu = true) {
       g_fileData.path,
       g_fileData.pageIndex,
       g_fileData.numPages,
-      g_fileData.data
+      g_fileData.data,
     );
   }
   if (updateMenu) {
@@ -260,12 +260,12 @@ function initOnIpcCallbacks() {
     if (g_fileData?.data?.source === "xkcd") {
       sendIpcToRenderer(
         "update-title",
-        `${g_fileData.data.name} #${g_fileData.pageIndex + 1}`
+        `${g_fileData.data.name} #${g_fileData.pageIndex + 1}`,
       );
       if (g_fileData.data?.tempData?.title) {
         sendIpcToRenderer(
           "update-img-page-title",
-          g_fileData.data.tempData.title
+          g_fileData.data.tempData.title,
         );
       }
     }
@@ -325,7 +325,7 @@ function initOnIpcCallbacks() {
       "show-modal-info",
       _("ui-modal-title-fileerror"),
       _("ui-modal-info-couldntopen-epub"),
-      _("ui-modal-prompt-button-ok")
+      _("ui-modal-prompt-button-ok"),
     );
   });
 
@@ -367,7 +367,7 @@ function initOnIpcCallbacks() {
           _("ui-modal-prompt-enterpassword"),
           path.basename(g_fileData.path),
           _("ui-modal-prompt-button-ok"),
-          _("ui-modal-prompt-button-cancel")
+          _("ui-modal-prompt-button-cancel"),
         );
       } else if (error.code === 2) {
         // { message: 'Incorrect Password', name: 'PasswordException', code: 2 }
@@ -376,7 +376,7 @@ function initOnIpcCallbacks() {
           _("ui-modal-prompt-enterpassword"),
           path.basename(g_fileData.path),
           _("ui-modal-prompt-button-ok"),
-          _("ui-modal-prompt-button-cancel")
+          _("ui-modal-prompt-button-cancel"),
         );
       }
     } else {
@@ -387,7 +387,7 @@ function initOnIpcCallbacks() {
         "show-modal-info",
         _("ui-modal-title-fileerror"),
         _("ui-modal-info-couldntopen-pdf"),
-        _("ui-modal-prompt-button-ok")
+        _("ui-modal-prompt-button-ok"),
       );
     }
   });
@@ -401,7 +401,7 @@ function initOnIpcCallbacks() {
       // } else {
       //   exportPageSaveDataUrl(dataUrl, dpi, outputFolderPath, sendToTool);
       // }
-    }
+    },
   );
 
   ////////////////////////////////////////////////////////////////////////////
@@ -625,7 +625,7 @@ function initOnIpcCallbacks() {
       _("menu-file-openrecent-history"),
       _("menu-view-togglefullscreen"),
       _("menu-file-quit"),
-      showFocus
+      showFocus,
     );
   });
 
@@ -687,7 +687,7 @@ function cleanUpFileData() {
   g_fileData.numPages = 0;
   g_fileData.pageIndex = 0;
   g_fileData.pageRotation = 0;
-  (g_fileData.pageDimensions = undefined), (g_fileData.password = "");
+  ((g_fileData.pageDimensions = undefined), (g_fileData.password = ""));
   g_fileData.getPageCallback = undefined;
   g_fileData.data = undefined;
   g_fileData.metadata = undefined;
@@ -705,7 +705,7 @@ exports.requestOpenConfirmation = function (filePath) {
     filePath,
     _("ui-modal-prompt-button-ok"),
     _("ui-modal-prompt-button-cancel"),
-    filePath
+    filePath,
   );
 };
 
@@ -721,7 +721,7 @@ function tryOpen(filePath, bookType, historyEntry, homeScreenListEntry) {
       if (homeScreenListEntry.data && homeScreenListEntry.data.source) {
         // check both recent and home lists
         let listIndex = history.getIndexInRecentByData(
-          homeScreenListEntry.data
+          homeScreenListEntry.data,
         );
         if (listIndex !== undefined) {
           historyEntry = history.getEntryInRecentByIndex(listIndex);
@@ -745,7 +745,7 @@ function tryOpen(filePath, bookType, historyEntry, homeScreenListEntry) {
               filePath,
               pageIndex,
               BookType.EBOOK,
-              homeScreenListEntry // has same data as history would
+              homeScreenListEntry, // has same data as history would
             );
           }
         }
@@ -799,7 +799,7 @@ function tryOpen(filePath, bookType, historyEntry, homeScreenListEntry) {
         filePath,
         _("ui-modal-question-button-comicbook"),
         _("ui-modal-question-button-ebook"),
-        filePath
+        filePath,
       );
       return true;
     }
@@ -809,7 +809,7 @@ function tryOpen(filePath, bookType, historyEntry, homeScreenListEntry) {
         "show-modal-info",
         _("ui-modal-title-filenotfound"),
         filePath,
-        _("ui-modal-prompt-button-ok")
+        _("ui-modal-prompt-button-ok"),
       );
       return false;
     }
@@ -820,7 +820,7 @@ function tryOpen(filePath, bookType, historyEntry, homeScreenListEntry) {
       "show-modal-info",
       _("ui-modal-title-filenotfound"),
       filePath,
-      _("ui-modal-prompt-button-ok")
+      _("ui-modal-prompt-button-ok"),
     );
     return false;
   }
@@ -840,7 +840,7 @@ function tryOpenPath(filePath, pageIndex, bookType, historyEntry) {
         "show-modal-info",
         _("ui-modal-title-filenotfound"),
         filePath,
-        _("ui-modal-prompt-button-ok")
+        _("ui-modal-prompt-button-ok"),
       );
       return false;
     }
@@ -855,7 +855,7 @@ function tryOpenPath(filePath, pageIndex, bookType, historyEntry) {
         "show-modal-info",
         _("ui-modal-info-invalidformat"),
         filePath,
-        _("ui-modal-prompt-button-ok")
+        _("ui-modal-prompt-button-ok"),
       );
       return false;
     }
@@ -917,7 +917,7 @@ function openImageFolder(folderPath, filePath, pageIndex) {
       "show-modal-info",
       _("ui-modal-title-foldernotfound"),
       folderPath,
-      _("ui-modal-prompt-button-ok")
+      _("ui-modal-prompt-button-ok"),
     );
     return;
   }
@@ -930,7 +930,7 @@ function openImageFolder(folderPath, filePath, pageIndex) {
       "show-modal-info",
       _("ui-modal-title-foldererror"),
       _("ui-modal-info-couldntopen-imagesfolder-empty"),
-      _("ui-modal-prompt-button-ok")
+      _("ui-modal-prompt-button-ok"),
     );
     return;
   }
@@ -1022,7 +1022,7 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
           "show-modal-info",
           _("ui-modal-title-fileerror"),
           _("ui-modal-info-couldntopen-epub"),
-          _("ui-modal-prompt-button-ok")
+          _("ui-modal-prompt-button-ok"),
         );
         sendIpcToRenderer("update-bg", true);
         sendIpcToRenderer("update-loading", false);
@@ -1036,7 +1036,7 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
         let rarData = await fileFormats.getRarEntriesList(
           filePath,
           password,
-          tempSubFolderPath
+          tempSubFolderPath,
         );
         temp.deleteSubFolder(tempSubFolderPath);
         if (rarData.result === "password required") {
@@ -1053,7 +1053,7 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
             _("ui-modal-prompt-enterpassword"),
             path.basename(g_fileData.path),
             _("ui-modal-prompt-button-ok"),
-            _("ui-modal-prompt-button-cancel")
+            _("ui-modal-prompt-button-cancel"),
           );
           return;
         } else if (rarData.result === "other error") {
@@ -1064,14 +1064,14 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
               _("ui-modal-info-couldntopen-rar") +
                 "\n" +
                 _("ui-modal-info-invalidsize-cap-b", "2GB"),
-              _("ui-modal-prompt-button-ok")
+              _("ui-modal-prompt-button-ok"),
             );
           } else {
             sendIpcToRenderer(
               "show-modal-info",
               _("ui-modal-title-fileerror"),
               _("ui-modal-info-couldntopen-rar"),
-              _("ui-modal-prompt-button-ok")
+              _("ui-modal-prompt-button-ok"),
             );
           }
           sendIpcToRenderer("update-bg", true);
@@ -1106,7 +1106,7 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
             "show-modal-info",
             _("ui-modal-title-fileerror"),
             _("ui-modal-info-couldntopen-rar"),
-            _("ui-modal-prompt-button-ok")
+            _("ui-modal-prompt-button-ok"),
           );
           sendIpcToRenderer("update-bg", true);
           sendIpcToRenderer("update-loading", false);
@@ -1119,7 +1119,7 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
         let zipData = await fileFormats.get7ZipEntriesList(
           filePath,
           password,
-          "zip"
+          "zip",
         );
         if (zipData.result === "password required") {
           if (g_fileData.state !== FileDataState.LOADING) {
@@ -1135,7 +1135,7 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
             _("ui-modal-prompt-enterpassword"),
             path.basename(g_fileData.path),
             _("ui-modal-prompt-button-ok"),
-            _("ui-modal-prompt-button-cancel")
+            _("ui-modal-prompt-button-cancel"),
           );
           return;
         } else if (zipData.result === "other error") {
@@ -1144,7 +1144,7 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
               "show-modal-info",
               _("ui-modal-title-fileerror"),
               _("ui-modal-info-couldntopen-zip-aes"),
-              _("ui-modal-prompt-button-ok")
+              _("ui-modal-prompt-button-ok"),
             );
           } else if (zipData.extra === "over2gb") {
             sendIpcToRenderer(
@@ -1153,14 +1153,14 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
               _("ui-modal-info-couldntopen-zip") +
                 "\n" +
                 _("ui-modal-info-invalidsize-cap-b", "2GB"),
-              _("ui-modal-prompt-button-ok")
+              _("ui-modal-prompt-button-ok"),
             );
           } else {
             sendIpcToRenderer(
               "show-modal-info",
               _("ui-modal-title-fileerror"),
               _("ui-modal-info-couldntopen-zip"),
-              _("ui-modal-prompt-button-ok")
+              _("ui-modal-prompt-button-ok"),
             );
           }
           sendIpcToRenderer("update-bg", true);
@@ -1195,7 +1195,7 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
             "show-modal-info",
             _("ui-modal-title-fileerror"),
             _("ui-modal-info-couldntopen-zip"),
-            _("ui-modal-prompt-button-ok")
+            _("ui-modal-prompt-button-ok"),
           );
           sendIpcToRenderer("update-bg", true);
           sendIpcToRenderer("update-loading", false);
@@ -1206,7 +1206,7 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
       ) {
         let sevenData = await fileFormats.get7ZipEntriesList(
           filePath,
-          password
+          password,
         );
         if (sevenData.result === "password required") {
           if (g_fileData.state !== FileDataState.LOADING) {
@@ -1222,7 +1222,7 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
             _("ui-modal-prompt-enterpassword"),
             path.basename(g_fileData.path),
             _("ui-modal-prompt-button-ok"),
-            _("ui-modal-prompt-button-cancel")
+            _("ui-modal-prompt-button-cancel"),
           );
           return;
         } else if (sevenData.result === "other error") {
@@ -1230,7 +1230,7 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
             "show-modal-info",
             _("ui-modal-title-fileerror"),
             _("ui-modal-info-couldntopen-7z"),
-            _("ui-modal-prompt-button-ok")
+            _("ui-modal-prompt-button-ok"),
           );
           sendIpcToRenderer("update-bg", true);
           sendIpcToRenderer("update-loading", false);
@@ -1264,7 +1264,7 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
             "show-modal-info",
             _("ui-modal-title-fileerror"),
             _("ui-modal-info-couldntopen-7z"),
-            _("ui-modal-prompt-button-ok")
+            _("ui-modal-prompt-button-ok"),
           );
           sendIpcToRenderer("update-bg", true);
           sendIpcToRenderer("update-loading", false);
@@ -1274,7 +1274,7 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
           "show-modal-info",
           _("ui-modal-title-fileerror"),
           _("ui-modal-info-invalidformat"),
-          _("ui-modal-prompt-button-ok")
+          _("ui-modal-prompt-button-ok"),
         );
         sendIpcToRenderer("update-bg", true);
         sendIpcToRenderer("update-loading", false);
@@ -1363,7 +1363,7 @@ async function openEbookFromPath(filePath, pageIndex, historyEntry) {
       "update-epub-ebook-color-mode",
       settings.getValue("epubEbookColorMode"),
       settings.getValue("epubEbookColorText"),
-      settings.getValue("epubEbookColorBg")
+      settings.getValue("epubEbookColorBg"),
     );
     sendIpcToRenderer("load-epub-ebook", filePath, pageIndex, cachedPath);
     return true;
@@ -1374,7 +1374,7 @@ async function openEbookFromPath(filePath, pageIndex, historyEntry) {
       "show-modal-info",
       _("ui-modal-info-invalidformat"),
       filePath,
-      _("ui-modal-prompt-button-ok")
+      _("ui-modal-prompt-button-ok"),
     );
     return false;
   }
@@ -1387,7 +1387,7 @@ function openBookFromCallback(comicData, getPageCallback, pageIndex = 0) {
   closeCurrentFile();
   g_fileData.state = FileDataState.LOADED;
   g_fileData.type = FileDataType.WWW;
-  g_fileData.path = comicData.name;
+  g_fileData.path = comicData.url;
   g_fileData.name = comicData.name;
   g_fileData.pagesPaths = [];
   g_fileData.numPages = comicData.numPages;
@@ -1530,7 +1530,7 @@ function goToPage(pageIndex, scrollBarPos = 0) {
     if (g_workerPage === undefined) {
       if (core.useUtilityProcess()) {
         g_workerPage = utilityProcess.fork(
-          path.join(__dirname, "worker-page.js")
+          path.join(__dirname, "worker-page.js"),
         );
       } else {
         g_workerPage = fork(path.join(__dirname, "worker-page.js"));
@@ -1543,7 +1543,7 @@ function goToPage(pageIndex, scrollBarPos = 0) {
             "render-img-page",
             message[1], //img64s,
             g_fileData.pageRotation,
-            message[2]
+            message[2],
           );
           temp.deleteSubFolder(tempSubFolderPath);
           return;
@@ -1555,7 +1555,7 @@ function goToPage(pageIndex, scrollBarPos = 0) {
               _("ui-modal-prompt-enterpassword"),
               path.basename(g_fileData.path),
               _("ui-modal-prompt-button-ok"),
-              _("ui-modal-prompt-button-cancel")
+              _("ui-modal-prompt-button-cancel"),
             );
             return;
           } else {
@@ -1589,7 +1589,7 @@ function goToPage(pageIndex, scrollBarPos = 0) {
           g_fileData.password,
           tempSubFolderPath,
         ],
-        [port1]
+        [port1],
       );
     } else {
       g_workerPage.send([
@@ -1617,7 +1617,7 @@ function goToPage(pageIndex, scrollBarPos = 0) {
       "render-pdf-page",
       pageIndexes,
       g_fileData.pageRotation,
-      scrollBarPos
+      scrollBarPos,
     );
   } else if (g_fileData.type === FileDataType.WWW) {
     (async () => {
@@ -1625,7 +1625,7 @@ function goToPage(pageIndex, scrollBarPos = 0) {
       const calledFunc = g_fileData.getPageCallback;
       let response = await g_fileData.getPageCallback(
         g_fileData.pageIndex + 1,
-        g_fileData
+        g_fileData,
       );
       if (calledFunc !== g_fileData.getPageCallback) {
         // getPageCallback changed while downloading
@@ -1648,7 +1648,7 @@ function goToPage(pageIndex, scrollBarPos = 0) {
         "render-img-page",
         [response.pageImgSrc],
         g_fileData.pageRotation,
-        scrollBarPos
+        scrollBarPos,
       );
     })(); // async
   }
@@ -1795,7 +1795,7 @@ function renderPageInfo() {
     "render-page-info",
     g_fileData.pageIndex,
     g_fileData.numPages,
-    isPercentage
+    isPercentage,
   );
 }
 
@@ -1846,7 +1846,7 @@ function updateMenuAndToolbarItems(isOpen = true) {
         menuBar.setComicBookOpened(true);
         sendIpcToRenderer(
           "update-toolbar-rotation-buttons",
-          settings.getValue("page_mode") === 0
+          settings.getValue("page_mode") === 0,
         );
         sendIpcToRenderer("update-toolbar-page-buttons", true);
         sendIpcToRenderer("update-toolbar-zoom-buttons", true);
@@ -1886,7 +1886,7 @@ function updateMenuAndToolbarItems(isOpen = true) {
 
       sendIpcToRenderer(
         "set-toolbar-visibility",
-        settings.getValue("showToolBar")
+        settings.getValue("showToolBar"),
       );
     } else {
       menuBar.setComicBookOpened(false);
@@ -1931,7 +1931,7 @@ function updateLocalizedText() {
     [
       _("menu-view-layout-pagesdirection-ltr"),
       _("menu-view-layout-pagesdirection-rtl"),
-    ]
+    ],
   );
   homeScreen.updateLocalizedText();
 }
@@ -1942,7 +1942,7 @@ function updateLoadingIndicator() {
     "update-loading-indicator",
     settings.getValue("loadingIndicatorBG"),
     settings.getValue("loadingIndicatorIconSize"),
-    settings.getValue("loadingIndicatorIconPos")
+    settings.getValue("loadingIndicatorIconPos"),
   );
 }
 exports.updateLoadingIndicator = updateLoadingIndicator;
@@ -1951,7 +1951,7 @@ function updateLayoutClock() {
   sendIpcToRenderer(
     "update-layout-pos",
     settings.getValue("layoutClock"),
-    "#clock-bubble"
+    "#clock-bubble",
   );
 }
 exports.updateLayoutClock = updateLayoutClock;
@@ -1960,7 +1960,7 @@ function updateLayoutPageNum() {
   sendIpcToRenderer(
     "update-layout-pos",
     settings.getValue("layoutPageNum"),
-    "#page-number-bubble"
+    "#page-number-bubble",
   );
 }
 exports.updateLayoutPageNum = updateLayoutPageNum;
@@ -1968,7 +1968,7 @@ exports.updateLayoutPageNum = updateLayoutPageNum;
 function updateLayoutAudioPlayer() {
   sendIpcToAudioPlayerRenderer(
     "update-layout-pos",
-    settings.getValue("layoutAudioPlayer")
+    settings.getValue("layoutAudioPlayer"),
   );
 }
 exports.updateLayoutAudioPlayer = updateLayoutAudioPlayer;
@@ -1977,7 +1977,7 @@ function updateLayoutBattery() {
   sendIpcToRenderer(
     "update-layout-pos",
     settings.getValue("layoutBattery"),
-    "#battery-bubble"
+    "#battery-bubble",
   );
 }
 exports.updateLayoutBattery = updateLayoutBattery;
@@ -2086,12 +2086,12 @@ function setFullScreen(value) {
   } else {
     sendIpcToRenderer(
       "set-scrollbar-visibility",
-      settings.getValue("showScrollBar")
+      settings.getValue("showScrollBar"),
     );
     sendIpcToRenderer("set-menubar-visibility", true);
     sendIpcToRenderer(
       "set-toolbar-visibility",
-      settings.getValue("showToolBar")
+      settings.getValue("showToolBar"),
     );
     sendIpcToRenderer("set-fullscreen-ui", false);
   }
@@ -2557,7 +2557,7 @@ exports.onMenuScaleToHeightZoomInput = function (input) {
 exports.onMenuScaleToHeightEnter = function () {
   sendIpcToPreload("update-menubar");
   let question = `${_(
-    "ui-modal-prompt-scalevalue"
+    "ui-modal-prompt-scalevalue",
   )} (${g_scaleToHeightMin}-${g_scaleToHeightMax}%):`;
   sendIpcToRenderer(
     "show-modal-prompt",
@@ -2565,7 +2565,7 @@ exports.onMenuScaleToHeightEnter = function () {
     "" + settings.getValue("zoom_scale"),
     _("ui-modal-prompt-button-ok"),
     _("ui-modal-prompt-button-cancel"),
-    1
+    1,
   );
 };
 
@@ -2624,7 +2624,8 @@ function onMenuOpenFile(startPath) {
       )
     ) {
       defaultPath = path.dirname(
-        history.getEntryInRecentByIndex(history.getRecent().length - 1).filePath
+        history.getEntryInRecentByIndex(history.getRecent().length - 1)
+          .filePath,
       );
     }
     if (defaultPath && !fs.existsSync(defaultPath)) defaultPath = undefined;
@@ -2651,7 +2652,7 @@ function onMenuOpenFile(startPath) {
     defaultPath,
     allowedFileTypesName,
     allowedFileTypesList,
-    allowMultipleSelection
+    allowMultipleSelection,
   );
   if (fileList === undefined) {
     return;
@@ -2716,7 +2717,7 @@ exports.onGoToPageDialog = function () {
       "" + g_fileData.pageIndex,
       _("ui-modal-prompt-button-ok"),
       _("ui-modal-prompt-button-cancel"),
-      2
+      2,
     );
   } else {
     let question = `${_("ui-modal-prompt-pagenumber")} (1-${
@@ -2727,7 +2728,7 @@ exports.onGoToPageDialog = function () {
       question,
       "" + (g_fileData.pageIndex + 1),
       _("ui-modal-prompt-button-ok"),
-      _("ui-modal-prompt-button-cancel")
+      _("ui-modal-prompt-button-cancel"),
     );
   }
 };
@@ -2773,7 +2774,7 @@ async function onMenuFileProperties() {
       g_fileData.metadata = await epubMetadata.getMetadataProperties(
         g_fileData.path,
         g_fileData.metadata,
-        g_fileData.password
+        g_fileData.password,
       );
     } else if (g_fileData.type === FileDataType.PDF) {
       const { PDFDocument } = require("pdf-lib");
@@ -2807,7 +2808,7 @@ async function onMenuFileProperties() {
     if (g_fileData.metadata && g_fileData.metadata.publisher) {
       addRow(
         _("ui-modal-info-metadata-publisher"),
-        g_fileData.metadata.publisher
+        g_fileData.metadata.publisher,
       );
     }
     // pages
@@ -2820,7 +2821,7 @@ async function onMenuFileProperties() {
         _("ui-modal-info-metadata-pagedimensions"),
         `${g_fileData.pageDimensions[0]} x ${g_fileData.pageDimensions[1]} ${
           g_fileData.type === FileDataType.PDF ? "pt" : "px"
-        }`
+        }`,
       );
     }
     // description
@@ -2834,7 +2835,7 @@ async function onMenuFileProperties() {
       } else {
         addRow(
           _("ui-modal-info-metadata-subject"),
-          g_fileData.metadata.subject
+          g_fileData.metadata.subject,
         );
       }
     }
@@ -2842,21 +2843,21 @@ async function onMenuFileProperties() {
     if (g_fileData.metadata && g_fileData.metadata.language) {
       addRow(
         _("ui-modal-info-metadata-language"),
-        g_fileData.metadata.language
+        g_fileData.metadata.language,
       );
     }
     // keywords
     if (g_fileData.metadata && g_fileData.metadata.keywords) {
       addRow(
         _("ui-modal-info-metadata-keywords"),
-        g_fileData.metadata.keywords
+        g_fileData.metadata.keywords,
       );
     }
     // publication date
     if (g_fileData.metadata && g_fileData.metadata.publicationDate) {
       addRow(
         _("ui-modal-info-metadata-publicationdate"),
-        g_fileData.metadata.publicationDate
+        g_fileData.metadata.publicationDate,
       );
     }
     /////////////
@@ -2866,7 +2867,7 @@ async function onMenuFileProperties() {
     let stats = fs.statSync(g_fileData.path);
     addRow(
       _("ui-modal-info-metadata-filesize"),
-      `${(stats.size / (1024 * 1024)).toFixed(2)} MiB`
+      `${(stats.size / (1024 * 1024)).toFixed(2)} MiB`,
     );
     // MIME
     let fileType = await FileType.fromFile(g_fileData.path);
@@ -2921,7 +2922,7 @@ async function onMenuFileProperties() {
     if (g_fileData.metadata && g_fileData.metadata.producer) {
       addRow(
         _("ui-modal-info-metadata-producer"),
-        g_fileData.metadata.producer
+        g_fileData.metadata.producer,
       );
     }
     // comicinfo.xml
@@ -2933,12 +2934,12 @@ async function onMenuFileProperties() {
       if (g_fileData.metadata && g_fileData.metadata.comicInfoId) {
         addRow(
           "ComicInfo.xml",
-          _("ui-modal-info-metadata-comicinfoxml-included")
+          _("ui-modal-info-metadata-comicinfoxml-included"),
         );
       } else {
         addRow(
           "ComicInfo.xml",
-          _("ui-modal-info-metadata-comicinfoxml-notincluded")
+          _("ui-modal-info-metadata-comicinfoxml-notincluded"),
         );
       }
     }
@@ -2946,12 +2947,12 @@ async function onMenuFileProperties() {
     if (g_fileData.metadata && g_fileData.metadata.encrypted) {
       addRow(
         _("ui-modal-info-metadata-security"),
-        _("ui-modal-info-metadata-security-encrypted")
+        _("ui-modal-info-metadata-security-encrypted"),
       );
     } else {
       addRow(
         _("ui-modal-info-metadata-security"),
-        _("ui-modal-info-metadata-security-unencrypted")
+        _("ui-modal-info-metadata-security-unencrypted"),
       );
     }
     ///////////////////
@@ -2985,7 +2986,7 @@ async function onMenuFileProperties() {
       _("ui-modal-info-metadata-fileproperties"),
       html,
       _("tool-shared-ui-close"),
-      buttonText
+      buttonText,
     );
   }
 }
