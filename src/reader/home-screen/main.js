@@ -949,7 +949,6 @@ function initOnIpcCallbacks() {
   on(
     "hs-on-list-entry-options-clicked",
     (listIndex, cardIndex, cardPath, showFocus) => {
-      log.test(cardPath);
       // TODO: maybe check index and path match?
       const listData = getListData(listIndex);
       const listEntry = listData[cardIndex];
