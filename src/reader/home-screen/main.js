@@ -146,10 +146,10 @@ function generateCardsFromSavedData(inputData, isFavoritesList) {
       if (outputBook.pathType !== 1) {
         if (outputBook.pathType === 0) {
           outputBook.percentageRead =
-            getEntryPercentageReadFromHistory(inputBook);
+            getPercentageReadFromHistoryListByEntry(inputBook);
         } else if (outputBook.pathType === 2) {
           outputBook.percentageRead =
-            getEntryPercentageReadFromHistory(inputBook);
+            getPercentageReadFromHistoryListByEntry(inputBook);
         }
       }
       data.push(outputBook);
@@ -229,7 +229,27 @@ function getLocalPathIndexInList(listIndex, localPath) {
   return undefined;
 }
 
-function addListEntryFromLocalPath(listIndex, localPath, doBuild = true) {
+function addEntryToList(listIndex, entry, doBuild = true) {
+  let isAlreadyInList = isEntryInList(listIndex, entry);
+  if (!isAlreadyInList) {
+    const listData = getListData(listIndex);
+    listData.push(entry);
+    if (doBuild) buildSections();
+  } else {
+    log.editor("tried to add an entry already in the list");
+    sendIpcToCoreRenderer(
+      "show-toast",
+      `${_("home-action-canceled")}<br>${_(
+        "home-action-drag-file-shortcut-error-alreadyinlist",
+      )}<br><span class="toast-acbr-path">...${entry?.name}</span>`,
+      3000,
+      undefined,
+      false,
+    );
+  }
+}
+
+function addEntryToListByLocalPath(listIndex, localPath, doBuild = true) {
   let isAlreadyInList = isLocalPathInList(listIndex, localPath);
   if (!isAlreadyInList) {
     const listData = getListData(listIndex);
@@ -293,19 +313,20 @@ function cleanHistoryHome(doLog = false) {
   });
 }
 
-function getPercentageReadFromHistoryListByIndex(index, listIndex) {
-  if (index === undefined || !Number.isInteger(index)) return undefined;
+function getPercentageReadFromHistoryListByIndex(historyEntryIndex, listIndex) {
+  if (historyEntryIndex === undefined || !Number.isInteger(historyEntryIndex))
+    return undefined;
   const historyData = listIndex === 0 ? history.getRecent() : history.getHome();
-  let pageIndex = historyData[index].pageIndex;
-  let numPages = historyData[index].numPages;
+  let pageIndex = historyData[historyEntryIndex].pageIndex;
+  let numPages = historyData[historyEntryIndex].numPages;
   if (pageIndex !== undefined && numPages !== undefined) {
     pageIndex = parseFloat(pageIndex);
     numPages = parseFloat(numPages);
     if (!isNaN(pageIndex) && !isNaN(numPages)) {
       if (
-        historyData[index].data &&
-        historyData[index].data.bookType &&
-        historyData[index].data.bookType === "ebook"
+        historyData[historyEntryIndex].data &&
+        historyData[historyEntryIndex].data.bookType &&
+        historyData[historyEntryIndex].data.bookType === "ebook"
       ) {
         if (pageIndex >= 0 && pageIndex <= 100) {
           return pageIndex;
@@ -320,7 +341,7 @@ function getPercentageReadFromHistoryListByIndex(index, listIndex) {
   return undefined;
 }
 
-function getEntryPercentageReadFromHistory(entry) {
+function getPercentageReadFromHistoryListByEntry(entry) {
   if (entry.data && entry.data.source) {
     let index = history.getIndexInRecentByData(entry.data);
     if (index !== undefined) {
@@ -428,10 +449,14 @@ function getLatestCards() {
 }
 
 //////////////////////////////////////////////////////////////////////////////
-// LISTS - LATEST -> FAVORITES //////////////////////////////////////////////
+// LISTS - LATEST -> OTHER ///////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 
-function getLatestIndexInList(listIndex, latestIndex) {
+function isLatestInList(listIndex, latestIndex) {
+  return getIndexInListByLatestIndex(listIndex, latestIndex) !== undefined;
+}
+
+function getIndexInListByLatestIndex(listIndex, latestIndex) {
   const historyData = history.getRecent()[latestIndex];
   const listData = getListData(listIndex);
   if (historyData.data && historyData.data.source) {
@@ -459,11 +484,11 @@ function getLatestIndexInList(listIndex, latestIndex) {
   }
 }
 
-function isLatestInList(listIndex, latestIndex) {
-  return getLatestIndexInList(listIndex, latestIndex) !== undefined;
-}
-
-function addListEntryFromLatest(latestEntryIndex, toListIndex, toEntryIndex) {
+function addEntryToListByLatestIndex(
+  latestEntryIndex,
+  toListIndex,
+  toEntryIndex,
+) {
   let isAlreadyInList = isLatestInList(toListIndex, latestEntryIndex);
   if (!isAlreadyInList) {
     const historyData = history.getRecent()[latestEntryIndex];
@@ -497,19 +522,19 @@ function addListEntryFromLatest(latestEntryIndex, toListIndex, toEntryIndex) {
   }
 }
 
-function addFavoriteFolderFromLatest(index) {
-  const historyData = history.getRecent()[index];
+function addFolderToFavoritesByLatestIndex(latestEntryIndex) {
+  const historyData = history.getRecent()[latestEntryIndex];
   if (!historyData.filePath || (historyData.data && historyData.data.source))
     return;
   const latestPath = path.dirname(historyData.filePath);
   // TODO: check if valid folder;
-  addListEntryFromLocalPath(-1, latestPath);
+  addEntryToListByLocalPath(-1, latestPath);
   // TODO: show modal message if error?
 }
 
-function removeLatestFromFavorites(index) {
-  let favIndex = getLatestIndexInList(-1, index);
-  if (favIndex) {
+function removeEntryInFavoritesByLatestIndex(latestEntryIndex) {
+  let favIndex = getIndexInListByLatestIndex(-1, latestEntryIndex);
+  if (favIndex !== undefined) {
     g_favoritesData.splice(favIndex, 1);
     buildSections();
     ////////
@@ -542,9 +567,15 @@ function getFavoriteLocalizedName(index) {
   }
 }
 
-function removeEntryInFavorites(listIndex, entryIndex, entryPath) {
-  let favIndex = getLocalPathIndexInList(-1, entryPath);
-  if (favIndex) {
+function removeEntryInFavoritesByOtherListEntryIndeces(
+  listIndex,
+  entryIndex,
+  entryPath,
+) {
+  const listData = getListData(listIndex);
+  const entry = listData[entryIndex];
+  let favIndex = getEntryIndexInList(-1, entry);
+  if (favIndex !== undefined) {
     g_favoritesData.splice(favIndex, 1);
     buildSections();
     ////////
@@ -572,7 +603,7 @@ function getUserCardsLists() {
   return lists;
 }
 
-function removeEntryInUserList(listIndex, entryIndex, entryPath) {
+function removeEntryInUserListByIndexAndPath(listIndex, entryIndex, entryPath) {
   const listData = getListData(listIndex);
   if (listData[entryIndex].path === entryPath) {
     listData.splice(entryIndex, 1);
@@ -890,7 +921,7 @@ function initOnIpcCallbacks() {
     }
     g_defaultPath = path.dirname(filePathsList[0]);
     filePathsList.forEach((filePath) => {
-      addListEntryFromLocalPath(listIndex, filePath, false);
+      addEntryToListByLocalPath(listIndex, filePath, false);
     });
     buildSections();
   });
@@ -908,7 +939,7 @@ function initOnIpcCallbacks() {
 
     g_defaultPath = folderList[0];
     folderList.forEach((folderPath) => {
-      addListEntryFromLocalPath(listIndex, folderPath, false);
+      addEntryToListByLocalPath(listIndex, folderPath, false);
     });
     buildSections();
   });
@@ -939,7 +970,8 @@ function initOnIpcCallbacks() {
       let removeFromFavorites = undefined;
 
       if (listIndex >= 0) {
-        if (isLocalPathInList(-1, cardPath)) {
+        // if (isLocalPathInList(-1, cardPath)) {
+        if (isEntryInList(-1, listEntry)) {
           removeFromFavorites = _("home-modal-button-removefromfavorites");
         } else {
           addToFavorites = _("home-modal-button-addtofavorites");
@@ -972,7 +1004,7 @@ function initOnIpcCallbacks() {
   );
 
   on("hs-on-modal-list-entry-options-remove-clicked", (...args) => {
-    removeEntryInUserList(...args);
+    removeEntryInUserListByIndexAndPath(...args);
   });
 
   on(
@@ -1140,7 +1172,7 @@ function initOnIpcCallbacks() {
         log.error("Tried to add invalid folder to favorites");
         return;
       }
-      addListEntryFromLocalPath(-1, path.dirname(entry.path));
+      addEntryToListByLocalPath(-1, path.dirname(entry.path));
     },
   );
 
@@ -1156,17 +1188,12 @@ function initOnIpcCallbacks() {
     (listIndex, entryIndex, entryPath) => {
       const listData = getListData(listIndex);
       const entry = listData[entryIndex];
-      if (!entry.path || (entry.data && entry.data.source)) {
-        log.error("Tried to add invalid file to favorites");
-        return;
-      }
-      addListEntryFromLocalPath(-1, entry.path);
-      buildSections();
+      addEntryToList(-1, entry);
     },
   );
 
   on("hs-on-modal-list-entry-options-removefavorites-clicked", (...args) => {
-    removeEntryInFavorites(...args);
+    removeEntryInFavoritesByOtherListEntryIndeces(...args);
   });
   //////////////////////
 
@@ -1280,7 +1307,7 @@ function initOnIpcCallbacks() {
     "hs-on-modal-drop-card-options-copy-clicked",
     (fromListIndex, toListIndex, fromEntryIndex, toEntryIndex) => {
       if (fromListIndex === -2) {
-        addListEntryFromLatest(fromEntryIndex, toListIndex, toEntryIndex);
+        addEntryToListByLatestIndex(fromEntryIndex, toListIndex, toEntryIndex);
         buildSections(false);
       } else {
         const fromListData = getListData(fromListIndex);
@@ -1351,21 +1378,21 @@ function initOnIpcCallbacks() {
   on(
     "hs-on-modal-latest-options-addtofavorites-clicked",
     (fileIndex, filePath) => {
-      addListEntryFromLatest(fileIndex, -1);
+      addEntryToListByLatestIndex(fileIndex, -1);
     },
   );
 
   on(
     "hs-on-modal-latest-options-addfoldertofavorites-clicked",
     (fileIndex, filePath) => {
-      addFavoriteFolderFromLatest(fileIndex, filePath);
+      addFolderToFavoritesByLatestIndex(fileIndex, filePath);
     },
   );
 
   on(
     "hs-on-modal-latest-options-removefromfavorites-clicked",
     (fileIndex, filePath) => {
-      removeLatestFromFavorites(fileIndex, filePath);
+      removeEntryInFavoritesByLatestIndex(fileIndex, filePath);
     },
   );
 

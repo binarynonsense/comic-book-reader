@@ -56,9 +56,12 @@ function init() {
         if (anim == 0) {
           if (!logoDiv.classList.contains("hs-animate-bounce")) {
             logoDiv.classList.add("hs-animate-bounce");
-            setTimeout(() => {
-              logoDiv.classList.remove("hs-animate-bounce");
-            }, (2000 * 30) / 100);
+            setTimeout(
+              () => {
+                logoDiv.classList.remove("hs-animate-bounce");
+              },
+              (2000 * 30) / 100,
+            );
           }
         } else if (anim == 1) {
           if (!logoDiv.classList.contains("hs-animate-gelatine")) {
@@ -93,7 +96,7 @@ function init() {
     openFileButton.setAttribute("data-nav-click", 0);
     ///////////
     const preferencesButton = document.querySelector(
-      "#hs-logo-preferences-button"
+      "#hs-logo-preferences-button",
     );
     preferencesButton.addEventListener("click", (event) => {
       sendIpcToMain("hs-open-preferences");
@@ -111,7 +114,7 @@ function init() {
     historyButton.setAttribute("tabindex", "0");
     ///////////
     const filesToolsButton = document.querySelector(
-      "#hs-logo-files-tools-button"
+      "#hs-logo-files-tools-button",
     );
     filesToolsButton.addEventListener("click", (event) => {
       sendIpcToMain("hs-files-tools");
@@ -135,7 +138,7 @@ function init() {
     fileBrowserButton.setAttribute("tabindex", "0");
     ///////////
     const rssReaderButton = document.querySelector(
-      "#hs-logo-rss-reader-button"
+      "#hs-logo-rss-reader-button",
     );
     rssReaderButton.addEventListener("click", (event) => {
       sendIpcToMain("hs-open-rss-reader");
@@ -159,14 +162,14 @@ function init() {
     quitButton.setAttribute("tabindex", "0");
     ///////////
     const collapseLatestButton = document.querySelector(
-      "#hs-latest-collapse-button"
+      "#hs-latest-collapse-button",
     );
     collapseLatestButton.addEventListener("click", function (event) {
       sendIpcToMain("hs-on-collapse-list-clicked", -2, true);
       event.stopPropagation();
     });
     const expandLatestButton = document.querySelector(
-      "#hs-latest-expand-button"
+      "#hs-latest-expand-button",
     );
     expandLatestButton.addEventListener("click", function (event) {
       sendIpcToMain("hs-on-collapse-list-clicked", -2, false);
@@ -174,14 +177,14 @@ function init() {
     });
     ///////////
     const collapseFavoritesButton = document.querySelector(
-      "#hs-favorites-collapse-button"
+      "#hs-favorites-collapse-button",
     );
     collapseFavoritesButton.addEventListener("click", function (event) {
       sendIpcToMain("hs-on-collapse-list-clicked", -1, true);
       event.stopPropagation();
     });
     const expandFavoritesButton = document.querySelector(
-      "#hs-favorites-expand-button"
+      "#hs-favorites-expand-button",
     );
     expandFavoritesButton.addEventListener("click", function (event) {
       sendIpcToMain("hs-on-collapse-list-clicked", -1, false);
@@ -341,7 +344,7 @@ function buildSections(
   latest,
   otherLists,
   localization,
-  refocus
+  refocus,
 ) {
   g_settings = settings;
   g_languageDirection = languageDirection;
@@ -358,14 +361,14 @@ function buildSections(
       navRow,
       navColumn,
       favorites,
-      localization
+      localization,
     );
     [navRow, navColumn] = buildLatest(navRow, navColumn, latest, localization);
     [navRow, navColumn] = buildOtherLists(
       navRow,
       navColumn,
       otherLists,
-      localization
+      localization,
     );
   } else if (latestPosition === 1) {
     // at the top
@@ -374,13 +377,13 @@ function buildSections(
       navRow,
       navColumn,
       favorites,
-      localization
+      localization,
     );
     [navRow, navColumn] = buildOtherLists(
       navRow,
       navColumn,
       otherLists,
-      localization
+      localization,
     );
   } else {
     // at the bottom
@@ -388,13 +391,13 @@ function buildSections(
       navRow,
       navColumn,
       favorites,
-      localization
+      localization,
     );
     [navRow, navColumn] = buildOtherLists(
       navRow,
       navColumn,
       otherLists,
-      localization
+      localization,
     );
     [navRow, navColumn] = buildLatest(navRow, navColumn, latest, localization);
   }
@@ -424,7 +427,7 @@ function buildFavorites(navRow, navColumn, favorites, localization) {
     sendIpcToMain(
       "hs-on-add-list-entry-clicked",
       -1,
-      event == undefined || event.pointerType !== "mouse"
+      event == undefined || event.pointerType !== "mouse",
     );
     event.stopPropagation();
   });
@@ -434,10 +437,10 @@ function buildFavorites(navRow, navColumn, favorites, localization) {
   addFavoriteButton.setAttribute("tabindex", "0");
 
   const collapseFavoritesButton = document.querySelector(
-    "#hs-favorites-collapse-button"
+    "#hs-favorites-collapse-button",
   );
   const expandFavoritesButton = document.querySelector(
-    "#hs-favorites-expand-button"
+    "#hs-favorites-expand-button",
   );
 
   // cards
@@ -509,11 +512,11 @@ function buildFavorites(navRow, navColumn, favorites, localization) {
     if (favorites && favorites.length > cardIndex) {
       const data = favorites[cardIndex];
       listDiv.appendChild(
-        getNewCardDiv(CardType.FAVORITES, data, navRow, navColumn, -1)
+        getNewCardDiv(CardType.FAVORITES, data, navRow, navColumn, -1),
       );
     } else {
       listDiv.appendChild(
-        getNewCardDiv(CardType.EMPTY, undefined, navRow, navColumn, -1)
+        getNewCardDiv(CardType.EMPTY, undefined, navRow, navColumn, -1),
       );
     }
   }
@@ -523,7 +526,7 @@ function buildFavorites(navRow, navColumn, favorites, localization) {
     favoritesCardsDiv,
     showEllipsis,
     canBeCollapsed,
-    localization
+    localization,
   );
 
   // Add
@@ -554,7 +557,7 @@ function buildLatest(navRow, navColumn, latest, localization) {
   const latestTitleDiv = document.querySelector("#hs-latest-title");
   const latestCardsDiv = document.querySelector("#hs-latest");
   const collapseLatestButton = document.querySelector(
-    "#hs-latest-collapse-button"
+    "#hs-latest-collapse-button",
   );
   const expandLatestButton = document.querySelector("#hs-latest-expand-button");
   latestCardsDiv.innerHTML = "";
@@ -646,11 +649,11 @@ function buildLatest(navRow, navColumn, latest, localization) {
     if (latest && latest.length > cardIndex) {
       const data = latest[cardIndex];
       listDiv.appendChild(
-        getNewCardDiv(CardType.LATEST, data, navRow, navColumn, -2)
+        getNewCardDiv(CardType.LATEST, data, navRow, navColumn, -2),
       );
     } else {
       listDiv.appendChild(
-        getNewCardDiv(CardType.EMPTY, undefined, navRow, navColumn, -2)
+        getNewCardDiv(CardType.EMPTY, undefined, navRow, navColumn, -2),
       );
     }
   }
@@ -660,7 +663,7 @@ function buildLatest(navRow, navColumn, latest, localization) {
     latestCardsDiv,
     showEllipsis,
     canBeCollapsed,
-    localization
+    localization,
   );
 
   return [navRow, navColumn];
@@ -723,7 +726,7 @@ function buildOtherLists(navRow, navColumn, otherLists, localization) {
           sendIpcToMain(
             "hs-on-list-dropped",
             parseInt(fromListIndex),
-            parseInt(toListIndex)
+            parseInt(toListIndex),
           );
           event.preventDefault();
         }
@@ -731,7 +734,7 @@ function buildOtherLists(navRow, navColumn, otherLists, localization) {
       // receive
       titleDiv.addEventListener("dragover", function (event) {
         const draggingElement = document.querySelector(
-          ".hs-section-title-dragging"
+          ".hs-section-title-dragging",
         );
         if (draggingElement && titleDiv != draggingElement) {
           event.preventDefault();
@@ -756,7 +759,7 @@ function buildOtherLists(navRow, navColumn, otherLists, localization) {
       listsDiv.appendChild(contentDiv);
 
       const editNameButton = document.querySelector(
-        `#hs-list-${listIndex}-edit-name-button`
+        `#hs-list-${listIndex}-edit-name-button`,
       );
       editNameButton.title = localization.editNameButtonTitle;
       editNameButton.addEventListener("click", function (event) {
@@ -769,7 +772,7 @@ function buildOtherLists(navRow, navColumn, otherLists, localization) {
       editNameButton.setAttribute("tabindex", "0");
 
       const removeButton = document.querySelector(
-        `#hs-list-${listIndex}-remove-button`
+        `#hs-list-${listIndex}-remove-button`,
       );
       removeButton.title = localization.removeListButtonTitle;
       removeButton.addEventListener("click", function (event) {
@@ -782,14 +785,14 @@ function buildOtherLists(navRow, navColumn, otherLists, localization) {
       removeButton.setAttribute("tabindex", "0");
 
       const addButton = document.querySelector(
-        `#hs-list-${listIndex}-add-button`
+        `#hs-list-${listIndex}-add-button`,
       );
       addButton.title = localization.addButtonTitle;
       addButton.addEventListener("click", function (event) {
         sendIpcToMain(
           "hs-on-add-list-entry-clicked",
           listIndex,
-          event == undefined || event.pointerType !== "mouse"
+          event == undefined || event.pointerType !== "mouse",
         );
         event.stopPropagation();
       });
@@ -799,7 +802,7 @@ function buildOtherLists(navRow, navColumn, otherLists, localization) {
       addButton.setAttribute("tabindex", "0");
 
       const collapseButton = document.querySelector(
-        `#hs-list-${listIndex}-collapse-button`
+        `#hs-list-${listIndex}-collapse-button`,
       );
       collapseButton.title = localization.collapseButtonTitle;
       collapseButton.addEventListener("click", function (event) {
@@ -807,7 +810,7 @@ function buildOtherLists(navRow, navColumn, otherLists, localization) {
         event.stopPropagation();
       });
       const expandButton = document.querySelector(
-        `#hs-list-${listIndex}-expand-button`
+        `#hs-list-${listIndex}-expand-button`,
       );
       expandButton.title = localization.expandButtonTitle;
       expandButton.addEventListener("click", function (event) {
@@ -882,7 +885,13 @@ function buildOtherLists(navRow, navColumn, otherLists, localization) {
         if (list.data && list.data.length > cardIndex) {
           const data = list.data[cardIndex];
           cardsDiv.appendChild(
-            getNewCardDiv(CardType.USERLIST, data, navRow, navColumn, listIndex)
+            getNewCardDiv(
+              CardType.USERLIST,
+              data,
+              navRow,
+              navColumn,
+              listIndex,
+            ),
           );
         } else {
           cardsDiv.appendChild(
@@ -891,8 +900,8 @@ function buildOtherLists(navRow, navColumn, otherLists, localization) {
               undefined,
               navRow,
               navColumn,
-              listIndex
-            )
+              listIndex,
+            ),
           );
         }
       }
@@ -902,7 +911,7 @@ function buildOtherLists(navRow, navColumn, otherLists, localization) {
         contentDiv,
         showEllipsis,
         canBeCollapsed,
-        localization
+        localization,
       );
     }
   }
@@ -1087,7 +1096,7 @@ function getNewCardDiv(cardType, data, navRow, navColumn, listIndex) {
             const fromListIndex = g_draggedCard.getAttribute("data-list-index");
             const toListIndex = event.target.getAttribute("data-list-index");
             const fromIndex = g_draggedCard.getAttribute(
-              "data-list-card-index"
+              "data-list-card-index",
             );
             const toIndex = event.target.getAttribute("data-list-card-index");
             sendIpcToMain(
@@ -1095,7 +1104,7 @@ function getNewCardDiv(cardType, data, navRow, navColumn, listIndex) {
               parseInt(fromListIndex),
               parseInt(toListIndex),
               parseInt(fromIndex),
-              parseInt(toIndex)
+              parseInt(toIndex),
             );
             event.preventDefault();
           }
@@ -1103,7 +1112,7 @@ function getNewCardDiv(cardType, data, navRow, navColumn, listIndex) {
         // receive
         mainCardDiv.addEventListener("dragover", function (event) {
           const draggingElement = document.querySelector(
-            ".hs-path-card-main-dragging"
+            ".hs-path-card-main-dragging",
           );
           if (draggingElement && mainCardDiv != draggingElement) {
             event.preventDefault();
@@ -1142,7 +1151,7 @@ function getNewCardDiv(cardType, data, navRow, navColumn, listIndex) {
             listIndex,
             data.index,
             data.path,
-            event == undefined || event.pointerType !== "mouse"
+            event == undefined || event.pointerType !== "mouse",
           );
           event.stopPropagation();
         });
@@ -1208,7 +1217,7 @@ function getNewCardDiv(cardType, data, navRow, navColumn, listIndex) {
             "hs-on-latest-options-clicked",
             data.index,
             data.path,
-            event == undefined || event.pointerType !== "mouse"
+            event == undefined || event.pointerType !== "mouse",
           );
           event.stopPropagation();
         });
@@ -1238,7 +1247,7 @@ function getNewCardDiv(cardType, data, navRow, navColumn, listIndex) {
             const fromListIndex = g_draggedCard.getAttribute("data-list-index");
             const toListIndex = listIndex;
             const fromIndex = g_draggedCard.getAttribute(
-              "data-list-card-index"
+              "data-list-card-index",
             );
             const toIndex = -1;
             sendIpcToMain(
@@ -1246,7 +1255,7 @@ function getNewCardDiv(cardType, data, navRow, navColumn, listIndex) {
               parseInt(fromListIndex),
               parseInt(toListIndex),
               parseInt(fromIndex),
-              parseInt(toIndex)
+              parseInt(toIndex),
             );
             event.preventDefault();
           }
@@ -1254,7 +1263,7 @@ function getNewCardDiv(cardType, data, navRow, navColumn, listIndex) {
         // receive
         cardDiv.addEventListener("dragover", function (event) {
           const draggingElement = document.querySelector(
-            ".hs-path-card-main-dragging"
+            ".hs-path-card-main-dragging",
           );
           if (draggingElement) {
             event.preventDefault();
@@ -1277,7 +1286,7 @@ function addSectionBottomButton(
   parentDiv,
   showEllipsis,
   canBeCollapsed,
-  localization
+  localization,
 ) {
   const bottomButtonDiv = document.createElement("div");
   bottomButtonDiv.classList = "hs-section-bottom-button";
@@ -1347,7 +1356,7 @@ export function onInputEvent(type, event) {
         event.key == "ArrowUp",
         event.key == "ArrowDown",
         event.key == "ArrowLeft",
-        event.key == "ArrowRight"
+        event.key == "ArrowRight",
       );
       if (
         event.key == "Tab" ||
@@ -1365,7 +1374,7 @@ export function onInputEvent(type, event) {
         if (event.dataTransfer.files[0]) {
           sendIpcToMain(
             "open-file",
-            ipc.showFilePath(event.dataTransfer.files[0])
+            ipc.showFilePath(event.dataTransfer.files[0]),
           );
         }
       }
@@ -1472,7 +1481,7 @@ export function onGamepadPolled() {
     upPressed,
     downPressed,
     leftPressed,
-    rightPressed
+    rightPressed,
   );
 }
 
@@ -1487,7 +1496,7 @@ function showModalFilesTools(
   textButtonCreateFile,
   textButtonConvertImages,
   textButtonExtractComics,
-  showFocus
+  showFocus,
 ) {
   if (getOpenModal()) {
     return;
@@ -1552,7 +1561,7 @@ function showModalArtTools(
   textButtonBack,
   textButtonTemplateMaker,
   textButtonExtractPalette,
-  showFocus
+  showFocus,
 ) {
   if (getOpenModal()) {
     return;
@@ -1604,7 +1613,7 @@ function showModalAddListEntry(
   textButtonAddFile,
   textButtonAddFolder,
   listIndex,
-  showFocus
+  showFocus,
 ) {
   if (getOpenModal()) {
     return;
@@ -1653,7 +1662,7 @@ function showModalEditListName(
   name,
   title,
   textButton1,
-  textButton2
+  textButton2,
 ) {
   if (getOpenModal()) {
     return;
@@ -1676,7 +1685,7 @@ function showModalEditListName(
           sendIpcToMain(
             "hs-on-modal-edit-list-name-ok-clicked",
             listIndex,
-            value
+            value,
           );
           modalClosed();
         },
@@ -1697,7 +1706,7 @@ function showModalRemoveListWarning(
   title,
   message,
   textButton1,
-  textButton2
+  textButton2,
 ) {
   if (getOpenModal()) {
     return;
@@ -1748,7 +1757,7 @@ function showModalListEntryOptions(
   textButtonAddToFavorites,
   textButtonRemoveFromFavorites,
   textButtonFolderFavorite,
-  showFocus
+  showFocus,
 ) {
   if (getOpenModal()) {
     return;
@@ -1764,7 +1773,7 @@ function showModalListEntryOptions(
         "hs-on-modal-list-entry-options-remove-clicked",
         listIndex,
         index,
-        path
+        path,
       );
     },
   });
@@ -1777,12 +1786,15 @@ function showModalListEntryOptions(
         "hs-on-modal-list-entry-options-edit-name-clicked",
         listIndex,
         index,
-        path
+        path,
       );
     },
   });
   let isWeb =
-    path === undefined || path.startsWith("http:") || path.startsWith("https:");
+    path === undefined ||
+    path === "xkcd" ||
+    path.startsWith("http:") ||
+    path.startsWith("https:");
   if (!isWeb) {
     buttons.push({
       text: textButtonEditPath.toUpperCase(),
@@ -1793,7 +1805,7 @@ function showModalListEntryOptions(
           "hs-on-modal-list-entry-options-edit-path-clicked",
           listIndex,
           index,
-          path
+          path,
         );
       },
     });
@@ -1808,56 +1820,56 @@ function showModalListEntryOptions(
             "hs-on-modal-list-entry-options-openfolder-clicked",
             listIndex,
             index,
-            path
-          );
-        },
-      });
-
-    if (textButtonAddToFavorites)
-      buttons.push({
-        text: textButtonAddToFavorites.toUpperCase(),
-        fullWidth: true,
-        callback: () => {
-          modalClosed();
-          sendIpcToMain(
-            "hs-on-modal-list-entry-options-addtofavorites-clicked",
-            listIndex,
-            index,
-            path
-          );
-        },
-      });
-
-    if (textButtonRemoveFromFavorites)
-      buttons.push({
-        text: textButtonRemoveFromFavorites.toUpperCase(),
-        fullWidth: true,
-        callback: () => {
-          modalClosed();
-          sendIpcToMain(
-            "hs-on-modal-list-entry-options-removefavorites-clicked",
-            listIndex,
-            index,
-            path
-          );
-        },
-      });
-
-    if (textButtonFolderFavorite)
-      buttons.push({
-        text: textButtonFolderFavorite.toUpperCase(),
-        fullWidth: true,
-        callback: () => {
-          modalClosed();
-          sendIpcToMain(
-            "hs-on-modal-list-entry-options-addfoldertofavorites-clicked",
-            listIndex,
-            index,
-            path
+            path,
           );
         },
       });
   }
+
+  if (textButtonAddToFavorites)
+    buttons.push({
+      text: textButtonAddToFavorites.toUpperCase(),
+      fullWidth: true,
+      callback: () => {
+        modalClosed();
+        sendIpcToMain(
+          "hs-on-modal-list-entry-options-addtofavorites-clicked",
+          listIndex,
+          index,
+          path,
+        );
+      },
+    });
+
+  if (textButtonRemoveFromFavorites)
+    buttons.push({
+      text: textButtonRemoveFromFavorites.toUpperCase(),
+      fullWidth: true,
+      callback: () => {
+        modalClosed();
+        sendIpcToMain(
+          "hs-on-modal-list-entry-options-removefavorites-clicked",
+          listIndex,
+          index,
+          path,
+        );
+      },
+    });
+
+  if (textButtonFolderFavorite)
+    buttons.push({
+      text: textButtonFolderFavorite.toUpperCase(),
+      fullWidth: true,
+      callback: () => {
+        modalClosed();
+        sendIpcToMain(
+          "hs-on-modal-list-entry-options-addfoldertofavorites-clicked",
+          listIndex,
+          index,
+          path,
+        );
+      },
+    });
   if (showFocus) {
     buttons.push({
       text: textButtonMoveBackward.toUpperCase(),
@@ -1869,7 +1881,7 @@ function showModalListEntryOptions(
           listIndex,
           index,
           path,
-          0
+          0,
         );
       },
     });
@@ -1883,7 +1895,7 @@ function showModalListEntryOptions(
           listIndex,
           index,
           path,
-          1
+          1,
         );
       },
     });
@@ -1919,7 +1931,7 @@ function showModalListEntryEditName(
   name,
   title,
   textButton1,
-  textButton2
+  textButton2,
 ) {
   if (getOpenModal()) {
     return;
@@ -1944,7 +1956,7 @@ function showModalListEntryEditName(
             listIndex,
             index,
             path,
-            value
+            value,
           );
           modalClosed();
         },
@@ -1966,7 +1978,7 @@ function showModalListEntryEditPath(
   path,
   title,
   textButton1,
-  textButton2
+  textButton2,
 ) {
   if (getOpenModal()) {
     return;
@@ -1991,7 +2003,7 @@ function showModalListEntryEditPath(
             listIndex,
             index,
             path,
-            value
+            value,
           );
           modalClosed();
         },
@@ -2016,7 +2028,7 @@ function showModalLatestOptions(
   textButtonFavorite,
   textButtonOpenFolder,
   textButtonFolderFavorite,
-  showFocus
+  showFocus,
 ) {
   if (getOpenModal()) {
     return;
@@ -2024,7 +2036,10 @@ function showModalLatestOptions(
 
   let buttons = [];
   let isWeb =
-    path === undefined || path.startsWith("http:") || path.startsWith("https:");
+    path === undefined ||
+    path === "xkcd" ||
+    path.startsWith("http:") ||
+    path.startsWith("https:");
   if (!isFavorite) {
     buttons.push({
       text: textButtonFavorite.toUpperCase(),
@@ -2034,7 +2049,7 @@ function showModalLatestOptions(
         sendIpcToMain(
           "hs-on-modal-latest-options-addtofavorites-clicked",
           index,
-          path
+          path,
         );
       },
     });
@@ -2047,7 +2062,7 @@ function showModalLatestOptions(
         sendIpcToMain(
           "hs-on-modal-latest-options-removefromfavorites-clicked",
           index,
-          path
+          path,
         );
       },
     });
@@ -2061,7 +2076,7 @@ function showModalLatestOptions(
         sendIpcToMain(
           "hs-on-modal-latest-options-openfolder-clicked",
           index,
-          path
+          path,
         );
       },
     });
@@ -2074,7 +2089,7 @@ function showModalLatestOptions(
           sendIpcToMain(
             "hs-on-modal-latest-options-addfoldertofavorites-clicked",
             index,
-            path
+            path,
           );
         },
       });
@@ -2107,7 +2122,7 @@ function showModalCreateList(
   title,
   textButton1,
   textButton2,
-  showFocus
+  showFocus,
 ) {
   if (getOpenModal()) {
     return;
@@ -2153,7 +2168,7 @@ function showModalDropCardOptions(
   textButtonBack,
   textButtonMove,
   textButtonCopy,
-  showFocus
+  showFocus,
 ) {
   if (getOpenModal()) {
     return;
@@ -2170,7 +2185,7 @@ function showModalDropCardOptions(
           fromListIndex,
           toListIndex,
           fromEntryIndex,
-          toEntryIndex
+          toEntryIndex,
         );
       },
     });
@@ -2185,7 +2200,7 @@ function showModalDropCardOptions(
           fromListIndex,
           toListIndex,
           fromEntryIndex,
-          toEntryIndex
+          toEntryIndex,
         );
       },
     });
@@ -2234,7 +2249,7 @@ function updateLocalization(
   expandTitle,
   favoritesSectionTitle,
   latestSectionTitle,
-  createListTitle
+  createListTitle,
 ) {
   // ids
   for (let index = 0; index < idsLocalization.length; index++) {
@@ -2270,13 +2285,11 @@ function updateLocalization(
   // expand favorites
   document.querySelector("#hs-favorites-expand-button").title = expandTitle;
   // favorites title
-  document.querySelector(
-    "#hs-favorites-title"
-  ).innerHTML = `<i class="fa-solid fa-heart hs-section-title-icon"></i><span>${favoritesSectionTitle}</span>`;
+  document.querySelector("#hs-favorites-title").innerHTML =
+    `<i class="fa-solid fa-heart hs-section-title-icon"></i><span>${favoritesSectionTitle}</span>`;
   // latest title
-  document.querySelector(
-    "#hs-latest-title"
-  ).innerHTML = `<i class="fas fa-history hs-section-title-icon"></i><span>${latestSectionTitle}</span>`;
+  document.querySelector("#hs-latest-title").innerHTML =
+    `<i class="fas fa-history hs-section-title-icon"></i><span>${latestSectionTitle}</span>`;
   // collapse latests
   document.querySelector("#hs-latest-collapse-button").title = collapseTitle;
   // expand latests
