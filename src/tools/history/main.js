@@ -40,7 +40,7 @@ exports.open = function (showFocus) {
     "show",
     getHistory(),
     settings.getValue("history_capacity"),
-    showFocus
+    showFocus,
   );
 };
 
@@ -110,6 +110,10 @@ function getHistory() {
               fileInfo.filePath =
                 _("menu-tools-iab") + " - " + fileInfo.data.name;
             break;
+
+          case "xkcd":
+            fileInfo.filePath = "https://xkcd.com/";
+            break;
         }
       }
     } else {
@@ -176,7 +180,7 @@ function initOnIpcCallbacks() {
   on("remove-item", (itemIndex) => {
     history.removeEntryInRecentByIndex(
       itemIndex,
-      homeScreen.isHistoryEntryInFavoritesOrUserLists
+      homeScreen.isHistoryEntryInFavoritesOrUserLists,
     );
     reader.rebuildMenuAndToolBars();
     sendIpcToRenderer("build-list", getHistory());
@@ -187,7 +191,7 @@ function initOnIpcCallbacks() {
     reader.tryOpen(
       history.getEntryInRecentByIndex(itemIndex).filePath,
       undefined,
-      history.getEntryInRecentByIndex(itemIndex)
+      history.getEntryInRecentByIndex(itemIndex),
     );
     onCloseClicked();
   });
@@ -209,7 +213,7 @@ function updateLocalizedText() {
   sendIpcToRenderer(
     "update-localization",
     getLocalization(),
-    getExtraLocalization()
+    getExtraLocalization(),
   );
 }
 exports.updateLocalizedText = updateLocalizedText;
