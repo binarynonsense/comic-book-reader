@@ -113,6 +113,9 @@ function initOnIpcCallbacks() {
     onCloseClicked();
   });
 
+  // TODO: 2026 disroot and duckduckgo no longer work, I disabled the
+  // option to choose search engines for now
+
   on("search", async (data) => {
     let results = data;
     results.links = [];

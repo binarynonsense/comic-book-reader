@@ -133,6 +133,9 @@ function initOnIpcCallbacks() {
     // onCloseClicked();
   });
 
+  // TODO: 2026 disroot and duckduckgo no longer work, I disabled the
+  // option to choose search engines for now
+
   on("search-window", (data) => {
     try {
       const { BrowserWindow } = require("electron");
@@ -146,7 +149,7 @@ function initOnIpcCallbacks() {
           nodeIntegration: false,
           preload: path.join(
             __dirname,
-            "../../shared/main/tools-bg-window-preload.js"
+            "../../shared/main/tools-bg-window-preload.js",
           ),
         },
       });
@@ -154,13 +157,13 @@ function initOnIpcCallbacks() {
       let url;
       if (data.engine === "cbp") {
         url = `https://comicbookplus.com/search/?q=${encodeURIComponent(
-          data.query
+          data.query,
         )}#gsc.tab=0&gsc.q=${encodeURIComponent(data.query)}&gsc.page=${
           data.pageNum
         }`;
       } else if (data.engine === "disroot") {
         url = `https://search.disroot.org/search?q=${encodeURIComponent(
-          data.query
+          data.query,
         )}&pageno=${
           data.pageNum
         }&language=en-US&time_range=&safesearch=1&categories=general`;
@@ -169,7 +172,7 @@ function initOnIpcCallbacks() {
           url = data.url;
         } else {
           url = `https://lite.duckduckgo.com/lite/?q=${encodeURIComponent(
-            data.query
+            data.query,
           )}`;
           data.url = url;
           data.firstUrl = url;
@@ -204,7 +207,7 @@ function initOnIpcCallbacks() {
       sendIpcToRenderer(
         "update-results",
         results,
-        "⚠ " + _("tool-shared-ui-search-network-error", "comicbookplus.com")
+        "⚠ " + _("tool-shared-ui-search-network-error", "comicbookplus.com"),
       );
     } else {
       const jsdom = require("jsdom");
@@ -226,7 +229,7 @@ function initOnIpcCallbacks() {
                 if (comicId) {
                   let type;
                   let breadCrumb = gsWebResult.querySelector(
-                    ".gs-visibleUrl-breadcrumb"
+                    ".gs-visibleUrl-breadcrumb",
                   )?.textContent;
                   const snippet =
                     gsWebResult.querySelector(".gs-snippet")?.textContent;
@@ -256,7 +259,7 @@ function initOnIpcCallbacks() {
                     results.links.push({
                       name: gsTitle.textContent.replace(
                         " - Comic Book Plus",
-                        ""
+                        "",
                       ),
                       summary,
                       id: comicId,
@@ -274,7 +277,7 @@ function initOnIpcCallbacks() {
             "update-results",
             results,
             _("tool-shared-ui-search-item-open-acbr"),
-            _("tool-shared-ui-search-item-open-browser")
+            _("tool-shared-ui-search-item-open-browser"),
           );
           if (results.links.length === 0) {
             throw "0 results";
@@ -286,7 +289,7 @@ function initOnIpcCallbacks() {
           sendIpcToRenderer(
             "update-results",
             results,
-            _("tool-shared-ui-search-nothing-found")
+            _("tool-shared-ui-search-nothing-found"),
           );
         }
       } else if (data.engine === "disroot") {
@@ -295,13 +298,13 @@ function initOnIpcCallbacks() {
             results,
             dom,
             "dlid",
-            " - Comic Book Plus"
+            " - Comic Book Plus",
           );
           sendIpcToRenderer(
             "update-results",
             results,
             _("tool-shared-ui-search-item-open-acbr"),
-            _("tool-shared-ui-search-item-open-browser")
+            _("tool-shared-ui-search-item-open-browser"),
           );
         } catch (error) {
           if (error !== "0 results") log.error(error);
@@ -310,7 +313,7 @@ function initOnIpcCallbacks() {
           sendIpcToRenderer(
             "update-results",
             results,
-            _("tool-shared-ui-search-nothing-found")
+            _("tool-shared-ui-search-nothing-found"),
           );
         }
       } else if (data.engine === "duckduckgo") {
@@ -320,13 +323,13 @@ function initOnIpcCallbacks() {
             data.html,
             dom,
             "dlid",
-            " - Comic Book Plus"
+            " - Comic Book Plus",
           );
           sendIpcToRenderer(
             "update-results",
             results,
             _("tool-shared-ui-search-item-open-acbr"),
-            _("tool-shared-ui-search-item-open-browser")
+            _("tool-shared-ui-search-item-open-browser"),
           );
         } catch (error) {
           if (error !== "0 results") log.error(error);
@@ -335,7 +338,7 @@ function initOnIpcCallbacks() {
           sendIpcToRenderer(
             "update-results",
             results,
-            _("tool-shared-ui-search-nothing-found")
+            _("tool-shared-ui-search-nothing-found"),
           );
         }
       }
@@ -386,7 +389,7 @@ async function getPageCallback(pageNum, fileData) {
     ) {
       const response = await axios.get(
         `https://comicbookplus.com/?dlid=${comicData.comicId}`,
-        { timeout: 15000 }
+        { timeout: 15000 },
       );
       const dom = new JSDOM(response.data);
       let imageUrl = dom.window.document.getElementById("maincomic").src;
@@ -425,7 +428,7 @@ function updateLocalizedText() {
     _("ui-modal-prompt-button-open-in-audioplayer"),
     _("ui-modal-prompt-button-add-to-playlist"),
     _("ui-modal-prompt-button-start-new-playlist"),
-    getLocalization()
+    getLocalization(),
   );
 }
 exports.updateLocalizedText = updateLocalizedText;
@@ -510,7 +513,7 @@ function getLocalization() {
       text: _(
         "tool-shared-ui-about-text-1",
         _("tool-shared-ui-about-text-1-comicbooks-audio"),
-        _("menu-tools-cbp")
+        _("menu-tools-cbp"),
       ),
     },
     {
@@ -521,7 +524,7 @@ function getLocalization() {
       id: "tool-cbp-open-cbp-browser-button-text",
       text: _(
         "tool-shared-ui-button-open-websitename-in-browser",
-        _("menu-tools-cbp")
+        _("menu-tools-cbp"),
       ).toUpperCase(),
     },
     //////////////////////////////////////////////
