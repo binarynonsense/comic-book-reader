@@ -137,6 +137,11 @@ function generateCardsFromSavedData(inputData, isFavoritesList) {
       }
       if (inputBook?.data?.source) {
         outputBook.pathType = 2;
+        switch (inputBook.data.source) {
+          case "xkcd":
+            outputBook.path = "https://xkcd.com/";
+            break;
+        }
       } else if (fs.existsSync(outputBook.path)) {
         outputBook.pathType = !fs.lstatSync(outputBook.path).isDirectory()
           ? 0
@@ -387,42 +392,40 @@ function getLatestCards() {
           } else {
             latestInfo.name = historyDataFile.filePath;
           }
-          if (historyDataFile.data.source) {
-            switch (historyDataFile.data.source) {
-              case "dcm":
-                if (historyDataFile.data.url)
-                  latestInfo.path = historyDataFile.data.url;
-                else
-                  latestInfo.path =
-                    _("menu-tools-dcm") + " - " + historyDataFile.data.name;
-                break;
+          switch (historyDataFile.data.source) {
+            case "dcm":
+              if (historyDataFile.data.url)
+                latestInfo.path = historyDataFile.data.url;
+              else
+                latestInfo.path =
+                  _("menu-tools-dcm") + " - " + historyDataFile.data.name;
+              break;
 
-              case "cbp":
-                if (historyDataFile.data.url)
-                  latestInfo.path = historyDataFile.data.url;
-                else
-                  latestInfo.path =
-                    _("menu-tools-cbp") + " - " + historyDataFile.data.name;
-                break;
+            case "cbp":
+              if (historyDataFile.data.url)
+                latestInfo.path = historyDataFile.data.url;
+              else
+                latestInfo.path =
+                  _("menu-tools-cbp") + " - " + historyDataFile.data.name;
+              break;
 
-              case "gut":
-                latestInfo.path = historyDataFile.filePath;
-                // latestInfo.path =
-                //   _("menu-tools-gut") + " - " + historyDataFile.data.name;
-                break;
+            case "gut":
+              latestInfo.path = historyDataFile.filePath;
+              // latestInfo.path =
+              //   _("menu-tools-gut") + " - " + historyDataFile.data.name;
+              break;
 
-              case "iab":
-                if (historyDataFile.data.url)
-                  latestInfo.path = historyDataFile.data.url;
-                else
-                  latestInfo.path =
-                    _("menu-tools-iab") + " - " + historyDataFile.data.name;
-                break;
+            case "iab":
+              if (historyDataFile.data.url)
+                latestInfo.path = historyDataFile.data.url;
+              else
+                latestInfo.path =
+                  _("menu-tools-iab") + " - " + historyDataFile.data.name;
+              break;
 
-              case "xkcd":
-                latestInfo.path = historyDataFile.data.name;
-                break;
-            }
+            case "xkcd":
+              latestInfo.path = "https://xkcd.com/";
+              break;
           }
         } else {
           latestInfo.path = historyDataFile.filePath;
