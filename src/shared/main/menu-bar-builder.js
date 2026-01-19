@@ -98,7 +98,7 @@ function getOpenRecentSubmenu(history) {
       if (entry.data.name) {
         label = "[www] " + utils.reduceStringFrontEllipsis(entry.data.name);
       } else {
-        label = "[www] " + label;
+        label = "[www] " + utils.reduceStringFrontEllipsis(entry.data.url);
       }
     } else {
       label = utils.reduceStringFrontEllipsis(entry.filePath);
