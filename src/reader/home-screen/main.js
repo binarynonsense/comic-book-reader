@@ -418,6 +418,10 @@ function getLatestCards() {
                   latestInfo.path =
                     _("menu-tools-iab") + " - " + historyDataFile.data.name;
                 break;
+
+              case "xkcd":
+                latestInfo.path = historyDataFile.data.name;
+                break;
             }
           }
         } else {
