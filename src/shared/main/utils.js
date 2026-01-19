@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2025 Álvaro García
+ * Copyright 2020-2026 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -77,7 +77,7 @@ exports.getDriveList = function () {
                   " " +
                   drive.size.substring(
                     drive.size.length,
-                    drive.size.length - 1
+                    drive.size.length - 1,
                   ) +
                   "iB",
                 path: drive.mountpoint,
@@ -159,6 +159,10 @@ exports.splitArray = function (array, number) {
 };
 
 exports.reduceStringFrontEllipsis = function (input, max = 60) {
+  if (!input) {
+    log.error("reduceStringFrontEllipsis input is undefined");
+    return input;
+  }
   var length = max;
   input =
     input.length > length
