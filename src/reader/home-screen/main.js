@@ -25,6 +25,7 @@ const tools = require("../../shared/main/tools");
 let g_isInitialized = false;
 let g_languageDirection = "ltr";
 let g_favoritesData;
+let g_latestData;
 let g_userLists;
 
 let g_collapseFavorites = false;
@@ -371,6 +372,7 @@ function getPercentageReadFromHistoryListByEntry(entry) {
 
 function getLatestCards() {
   const historyData = history.getRecent();
+  g_latestData = historyData;
   const data = [];
   for (let index = 0; index < historyData.length; index++) {
     try {
@@ -998,6 +1000,7 @@ function initOnIpcCallbacks() {
         !isLocalFile || isLocalPathInList(-1, path.dirname(cardPath))
           ? undefined
           : _("home-modal-button-addcontainingfoldertofavorites"),
+        listEntry?.data?.source,
         showFocus,
       );
     },
@@ -1371,6 +1374,7 @@ function initOnIpcCallbacks() {
       !filePath || isLocalPathInList(-1, path.dirname(filePath))
         ? undefined
         : _("home-modal-button-addcontainingfoldertofavorites"),
+      g_latestData[latestIndex]?.data?.source,
       showFocus,
     );
   });

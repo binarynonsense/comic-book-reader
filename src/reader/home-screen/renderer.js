@@ -1757,6 +1757,7 @@ function showModalListEntryOptions(
   textButtonAddToFavorites,
   textButtonRemoveFromFavorites,
   textButtonFolderFavorite,
+  isWeb,
   showFocus,
 ) {
   if (getOpenModal()) {
@@ -1790,11 +1791,6 @@ function showModalListEntryOptions(
       );
     },
   });
-  let isWeb =
-    path === undefined ||
-    path === "xkcd" ||
-    path.startsWith("http:") ||
-    path.startsWith("https:");
   if (!isWeb) {
     buttons.push({
       text: textButtonEditPath.toUpperCase(),
@@ -2028,6 +2024,7 @@ function showModalLatestOptions(
   textButtonFavorite,
   textButtonOpenFolder,
   textButtonFolderFavorite,
+  isWeb,
   showFocus,
 ) {
   if (getOpenModal()) {
@@ -2035,11 +2032,6 @@ function showModalLatestOptions(
   }
 
   let buttons = [];
-  let isWeb =
-    path === undefined ||
-    path === "xkcd" ||
-    path.startsWith("http:") ||
-    path.startsWith("https:");
   if (!isFavorite) {
     buttons.push({
       text: textButtonFavorite.toUpperCase(),
