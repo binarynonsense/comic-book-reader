@@ -135,7 +135,7 @@ function generateCardsFromSavedData(inputData, isFavoritesList) {
       } else {
         outputBook.isInFavorites = isEntryInList(-1, inputData[index]);
       }
-      if (inputBook.data && inputBook.data.source) {
+      if (inputBook?.data?.source) {
         outputBook.pathType = 2;
       } else if (fs.existsSync(outputBook.path)) {
         outputBook.pathType = !fs.lstatSync(outputBook.path).isDirectory()
@@ -185,7 +185,7 @@ function getListData(listIndex) {
 
 function getEntryIndexInList(listIndex, entry) {
   const listData = getListData(listIndex);
-  if (entry.data && entry.data.source) {
+  if (entry?.data?.source) {
     for (let index = 0; index < listData.length; index++) {
       if (!listData[index].data || !listData[index].data.source) continue;
       if (
@@ -324,11 +324,7 @@ function getPercentageReadFromHistoryListByIndex(historyEntryIndex, listIndex) {
     pageIndex = parseFloat(pageIndex);
     numPages = parseFloat(numPages);
     if (!isNaN(pageIndex) && !isNaN(numPages)) {
-      if (
-        historyData[historyEntryIndex].data &&
-        historyData[historyEntryIndex].data.bookType &&
-        historyData[historyEntryIndex].data.bookType === "ebook"
-      ) {
+      if (historyData[historyEntryIndex]?.data?.bookType === "ebook") {
         if (pageIndex >= 0 && pageIndex <= 100) {
           return pageIndex;
         }
@@ -343,7 +339,7 @@ function getPercentageReadFromHistoryListByIndex(historyEntryIndex, listIndex) {
 }
 
 function getPercentageReadFromHistoryListByEntry(entry) {
-  if (entry.data && entry.data.source) {
+  if (entry?.data?.source) {
     let index = history.getIndexInRecentByData(entry.data);
     if (index !== undefined) {
       return getPercentageReadFromHistoryListByIndex(index, 0);
@@ -384,7 +380,7 @@ function getLatestCards() {
           0,
         );
         const historyDataFile = historyData[latestInfo.index];
-        if (historyDataFile.data && historyDataFile.data.source) {
+        if (historyDataFile?.data?.source) {
           latestInfo.pathType = 2;
           if (historyDataFile.data.name) {
             latestInfo.name = historyDataFile.data.name;
@@ -461,7 +457,7 @@ function isLatestInList(listIndex, latestIndex) {
 function getIndexInListByLatestIndex(listIndex, latestIndex) {
   const historyData = history.getRecent()[latestIndex];
   const listData = getListData(listIndex);
-  if (historyData.data && historyData.data.source) {
+  if (historyData?.data?.source) {
     for (let index = 0; index < listData.length; index++) {
       if (!listData[index].data || !listData[index].data.source) continue;
       if (
@@ -496,7 +492,7 @@ function addEntryToListByLatestIndex(
     const historyData = history.getRecent()[latestEntryIndex];
     /////////
     let newEntry;
-    if (historyData.data && historyData.data.source) {
+    if (historyData?.data?.source) {
       newEntry = {
         path: historyData.filePath,
         name: historyData.data.name,
@@ -526,8 +522,7 @@ function addEntryToListByLatestIndex(
 
 function addFolderToFavoritesByLatestIndex(latestEntryIndex) {
   const historyData = history.getRecent()[latestEntryIndex];
-  if (!historyData.filePath || (historyData.data && historyData.data.source))
-    return;
+  if (!historyData.filePath || historyData?.data?.source) return;
   const latestPath = path.dirname(historyData.filePath);
   // TODO: check if valid folder;
   addEntryToListByLocalPath(-1, latestPath);
@@ -956,7 +951,7 @@ function initOnIpcCallbacks() {
       const listEntry = listData[cardIndex];
 
       let isLocalFile = true;
-      if (listEntry.data && listEntry.data.source) {
+      if (listEntry?.data?.source) {
         // www
         isLocalFile = false;
       } else {
@@ -1171,7 +1166,7 @@ function initOnIpcCallbacks() {
     (listIndex, entryIndex, entryPath) => {
       const listData = getListData(listIndex);
       const entry = listData[entryIndex];
-      if (!entry.path || (entry.data && entry.data.source)) {
+      if (!entry.path || entry?.data?.source) {
         log.error("Tried to add invalid folder to favorites");
         return;
       }
