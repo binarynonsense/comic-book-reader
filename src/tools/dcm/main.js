@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2025 Álvaro García
+ * Copyright 2020-2026 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -128,7 +128,7 @@ function initOnIpcCallbacks() {
             "Content-Type": "multipart/form-data",
           },
           timeout: 15000,
-        }
+        },
       );
       data.html = response.data;
     } catch (error) {
@@ -141,7 +141,7 @@ function initOnIpcCallbacks() {
         "update-results",
         results,
         "⚠ " +
-          _("tool-shared-ui-search-network-error", "digitalcomicmuseum.com")
+          _("tool-shared-ui-search-network-error", "digitalcomicmuseum.com"),
       );
     } else {
       try {
@@ -172,7 +172,7 @@ function initOnIpcCallbacks() {
           "update-results",
           results,
           _("tool-shared-ui-search-item-open-acbr"),
-          _("tool-shared-ui-search-item-open-browser")
+          _("tool-shared-ui-search-item-open-browser"),
         );
       } catch (error) {
         if (error !== "0 results") log.error(error);
@@ -181,7 +181,7 @@ function initOnIpcCallbacks() {
         sendIpcToRenderer(
           "update-results",
           results,
-          _("tool-shared-ui-search-nothing-found")
+          _("tool-shared-ui-search-nothing-found"),
         );
       }
     }
@@ -200,7 +200,7 @@ function initOnIpcCallbacks() {
           nodeIntegration: false,
           preload: path.join(
             __dirname,
-            "../../shared/main/tools-bg-window-preload.js"
+            "../../shared/main/tools-bg-window-preload.js",
           ),
         },
       });
@@ -208,7 +208,7 @@ function initOnIpcCallbacks() {
       let url;
       if (data.engine === "disroot") {
         url = `https://search.disroot.org/search?q=${encodeURIComponent(
-          data.query
+          data.query,
         )}&pageno=${
           data.pageNum
         }&language=en-US&time_range=&safesearch=1&categories=general`;
@@ -217,7 +217,7 @@ function initOnIpcCallbacks() {
           url = data.url;
         } else {
           url = `https://lite.duckduckgo.com/lite/?q=${encodeURIComponent(
-            data.query
+            data.query,
           )}`;
           data.url = url;
           data.firstUrl = url;
@@ -249,7 +249,7 @@ function initOnIpcCallbacks() {
         "update-results",
         results,
         "⚠ " +
-          _("tool-shared-ui-search-network-error", "digitalcomicmuseum.com")
+          _("tool-shared-ui-search-network-error", "digitalcomicmuseum.com"),
       );
     } else {
       const jsdom = require("jsdom");
@@ -261,13 +261,14 @@ function initOnIpcCallbacks() {
             results,
             dom,
             "dlid",
-            " - Comic Book Plus"
+            // TODO: this shouldn't be " - Comic Book Plus"?
+            " - Comic Book Plus",
           );
           sendIpcToRenderer(
             "update-results",
             results,
             _("tool-shared-ui-search-item-open-acbr"),
-            _("tool-shared-ui-search-item-open-browser")
+            _("tool-shared-ui-search-item-open-browser"),
           );
         } catch (error) {
           if (error !== "0 results") log.error(error);
@@ -276,7 +277,7 @@ function initOnIpcCallbacks() {
           sendIpcToRenderer(
             "update-results",
             results,
-            _("tool-shared-ui-search-nothing-found")
+            _("tool-shared-ui-search-nothing-found"),
           );
         }
       } else if (data.engine === "duckduckgo") {
@@ -286,13 +287,14 @@ function initOnIpcCallbacks() {
             data.html,
             dom,
             "dlid",
-            " - Comic Book Plus"
+            // TODO: this shouldn't be " - Comic Book Plus"?
+            " - Comic Book Plus",
           );
           sendIpcToRenderer(
             "update-results",
             results,
             _("tool-shared-ui-search-item-open-acbr"),
-            _("tool-shared-ui-search-item-open-browser")
+            _("tool-shared-ui-search-item-open-browser"),
           );
         } catch (error) {
           if (error !== "0 results") log.error(error);
@@ -301,7 +303,7 @@ function initOnIpcCallbacks() {
           sendIpcToRenderer(
             "update-results",
             results,
-            _("tool-shared-ui-search-nothing-found")
+            _("tool-shared-ui-search-nothing-found"),
           );
         }
       }
@@ -343,7 +345,7 @@ async function getPageCallback(pageNum, fileData) {
     let comicData = fileData.data;
     const response = await axios.get(
       `https://digitalcomicmuseum.com/preview/index.php?did=${comicData.comicId}&page=${pageNum}`,
-      { timeout: 15000 }
+      { timeout: 15000 },
     );
     const dom = new JSDOM(response.data);
     let images = dom.window.document.getElementsByTagName("img");
@@ -383,7 +385,7 @@ function updateLocalizedText() {
     _("tool-shared-modal-title-searching"),
     _("tool-shared-ui-close"), // TODO: not used?
     _("tool-shared-ui-cancel"), // TODO: not used?
-    getLocalization()
+    getLocalization(),
   );
 }
 exports.updateLocalizedText = updateLocalizedText;
@@ -507,7 +509,7 @@ function getLocalization() {
       text: _(
         "tool-shared-ui-about-text-1",
         _("tool-shared-ui-about-text-1-comicbooks"),
-        "Digital Comic Museum"
+        "Digital Comic Museum",
       ),
     },
     {
@@ -518,7 +520,7 @@ function getLocalization() {
       id: "tool-dcm-open-dcm-browser-button-text",
       text: _(
         "tool-shared-ui-button-open-websitename-in-browser",
-        "DCM"
+        "DCM",
       ).toUpperCase(),
     },
     //////////////////////////////////////////////
