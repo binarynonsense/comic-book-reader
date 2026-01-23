@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2025 Álvaro García
+ * Copyright 2020-2026 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -13,16 +13,16 @@ const fileUtils = require("../shared/main/file-utils");
 
 process.on("message", async (message) => {
   const entryNames = message[3];
-  let img64s = [];
+  let images = [];
   for (let i = 0; i < entryNames.length; i++) {
-    const result = await extractBase64Image(i, ...message.slice(1));
+    const result = await extractImageBuffer(i, ...message.slice(1));
     if (!result[0]) {
       process.send([false, result[1]]);
       return;
     }
-    img64s.push(result[1]);
+    images.push({ buffer: result[1], mime: result[2] });
   }
-  process.send([true, img64s, message[4]]);
+  process.send([true, buffers, message[4]]);
 });
 
 process.parentPort?.once("message", async (event) => {
@@ -30,7 +30,7 @@ process.parentPort?.once("message", async (event) => {
   const entryNames = message[3];
   let img64s = [];
   for (let i = 0; i < entryNames.length; i++) {
-    const result = await extractBase64Image(i, ...message.slice(1));
+    const result = await extractImageBuffer(i, ...message.slice(1));
     if (!result[0]) {
       process.parentPort.postMessage([false, result[1]]);
       return;
@@ -40,75 +40,69 @@ process.parentPort?.once("message", async (event) => {
   process.parentPort.postMessage([true, img64s, message[4]]);
 });
 
-async function extractBase64Image(
+async function extractImageBuffer(
   entryNameIndex,
   fileType,
   filePath,
   entryNames,
   scrollBarPos,
   password,
-  tempSubFolderPath
+  tempSubFolderPath,
 ) {
   try {
-    let buf;
+    let buffer;
     let mime;
     let error;
     if (fileType === FileDataType.ZIP) {
-      //buf = fileFormats.extractZipEntryBuffer(filePath, entryName, password);
       const result = await fileFormats.extract7ZipEntryBuffer(
         filePath,
         entryNames[entryNameIndex],
         password,
         tempSubFolderPath,
-        "zip"
+        "zip",
       );
-      mime = "image/" + fileUtils.getMimeType(entryNames[entryNameIndex]);
       if (result.success) {
-        buf = result.data;
+        buffer = result.data;
       } else {
         error = result.data;
       }
     } else if (fileType === FileDataType.RAR) {
-      buf = await fileFormats.extractRarEntryBuffer(
+      buffer = await fileFormats.extractRarEntryBuffer(
         filePath,
         entryNames[entryNameIndex],
         password,
-        tempSubFolderPath
+        tempSubFolderPath,
       );
-      mime = "image/" + fileUtils.getMimeType(entryNames[entryNameIndex]);
     } else if (fileType === FileDataType.SEVENZIP) {
       const result = await fileFormats.extract7ZipEntryBuffer(
         filePath,
         entryNames[entryNameIndex],
         password,
-        tempSubFolderPath
+        tempSubFolderPath,
       );
-      mime = "image/" + fileUtils.getMimeType(entryNames[entryNameIndex]);
       if (result.success) {
-        buf = result.data;
+        buffer = result.data;
       } else {
         error = result.data;
       }
     } else if (fileType === FileDataType.EPUB_COMIC) {
       const data = await fileFormats.extractEpubImageBuffer(
         filePath,
-        entryNames[entryNameIndex]
+        entryNames[entryNameIndex],
       );
-      buf = data[0];
-      mime = data[1];
+      buffer = data[0];
     } else if (fileType === FileDataType.IMGS_FOLDER) {
       // if (!path.isAbsolute(entryName)) {
       //   // FIXME: make it absolute somehow?
       // }
       const fullPath = path.join(filePath, entryNames[entryNameIndex]);
-      buf = fs.readFileSync(fullPath);
-      mime = "image/" + fileUtils.getMimeType(fullPath);
+      buffer = fs.readFileSync(fullPath);
     } else {
       //  TODO: handle error file type not valid
     }
-    if (buf) {
-      let img64 = "data:" + mime + ";base64," + buf.toString("base64");
-      return [true, img64, scrollBarPos];
+    if (buffer) {
+      mime = fileUtils.getImageMimeTypeFromBuffer(buffer);
+      return [true, buffer, mime, scrollBarPos];
     } else {
       if (error) {
         throw error;

@@ -1528,20 +1528,16 @@ function goToPage(pageIndex, scrollBarPos = 0) {
         : undefined;
 
     if (g_workerPage === undefined) {
-      if (core.useUtilityProcess()) {
-        g_workerPage = utilityProcess.fork(
-          path.join(__dirname, "worker-page.js"),
-        );
-      } else {
-        g_workerPage = fork(path.join(__dirname, "worker-page.js"));
-      }
+      g_workerPage = utilityProcess.fork(
+        path.join(__dirname, "worker-page.js"),
+      );
       g_workerPage.on("message", (message) => {
         log.debug(`page load time: ${timers.stop("workerPage").toFixed(2)}s`);
         g_workerPage.kill(); // kill it after one use
         if (message[0] === true) {
           sendIpcToRenderer(
             "render-img-page",
-            message[1], //img64s,
+            message[1], // buffers
             g_fileData.pageRotation,
             message[2],
           );
@@ -1577,22 +1573,9 @@ function goToPage(pageIndex, scrollBarPos = 0) {
     });
 
     // send to worker
-    if (core.useUtilityProcess()) {
-      const { port1 } = new MessageChannelMain();
-      g_workerPage.postMessage(
-        [
-          core.getLaunchInfo(),
-          g_fileData.type,
-          g_fileData.path,
-          entryNames,
-          scrollBarPos,
-          g_fileData.password,
-          tempSubFolderPath,
-        ],
-        [port1],
-      );
-    } else {
-      g_workerPage.send([
+    const { port1 } = new MessageChannelMain();
+    g_workerPage.postMessage(
+      [
         core.getLaunchInfo(),
         g_fileData.type,
         g_fileData.path,
@@ -1600,8 +1583,9 @@ function goToPage(pageIndex, scrollBarPos = 0) {
         scrollBarPos,
         g_fileData.password,
         tempSubFolderPath,
-      ]);
-    }
+      ],
+      [port1],
+    );
   } else if (g_fileData.type === FileDataType.EPUB_EBOOK) {
     if (pageIndex > 0) {
       g_fileData.state = FileDataState.LOADING;

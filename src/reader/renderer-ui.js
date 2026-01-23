@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2025 Álvaro García
+ * Copyright 2020-2026 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -97,59 +97,59 @@ function initOnIpcCallbacks() {
         document.documentElement.style.setProperty("--li-icon-size", "30px");
         document.documentElement.style.setProperty(
           "--li-icon-thickness",
-          "4px"
+          "4px",
         );
       } else {
         document.documentElement.style.setProperty("--li-icon-size", "65px");
         document.documentElement.style.setProperty(
           "--li-icon-thickness",
-          "8px"
+          "8px",
         );
       }
       if (loadingIndicatorIconPos === 0) {
         document.documentElement.style.setProperty(
           "--li-icon-align-self",
-          "normal"
+          "normal",
         );
         document.documentElement.style.setProperty(
           "--li-icon-justify-self",
-          "left"
+          "left",
         );
         document.documentElement.style.setProperty(
           "--li-icon-margin-top-full",
-          "10px"
+          "10px",
         );
         document.documentElement.style.setProperty(
           "--li-icon-margin-top-win",
-          "40px"
+          "40px",
         );
         document.documentElement.style.setProperty(
           "--li-icon-margin-left",
-          "10px"
+          "10px",
         );
       } else {
         document.documentElement.style.setProperty(
           "--li-icon-align-self",
-          "center"
+          "center",
         );
         document.documentElement.style.setProperty(
           "--li-icon-justify-self",
-          "center"
+          "center",
         );
         document.documentElement.style.setProperty(
           "--li-icon-margin-top-full",
-          "0px"
+          "0px",
         );
         document.documentElement.style.setProperty(
           "--li-icon-margin-top-win",
-          "0px"
+          "0px",
         );
         document.documentElement.style.setProperty(
           "--li-icon-margin-left",
-          "0px"
+          "0px",
         );
       }
-    }
+    },
   );
 
   on("update-layout-pos", (value, id) => {
@@ -209,13 +209,13 @@ function initOnIpcCallbacks() {
       tPageMode,
       tPageModeModes,
       tPagesDirection,
-      tPagesDirectionModes
+      tPagesDirectionModes,
     ) => {
       document.querySelector("#toolbar-button-open-href").title = tOpenFile;
       document.querySelector("#toolbar-button-left-href").title = tPrevious;
       document.querySelector("#toolbar-button-right-href").title = tNext;
       document.querySelector(
-        "#toolbar-button-rotate-counterclockwise-href"
+        "#toolbar-button-rotate-counterclockwise-href",
       ).title = tRotateCounter;
       document.querySelector("#toolbar-button-rotate-clockwise-href").title =
         tRotateClock;
@@ -227,27 +227,27 @@ function initOnIpcCallbacks() {
         "toolbar-button-zoom",
         tCollapse,
         tZoom,
-        tZoomModes
+        tZoomModes,
       );
       setToolbarMenuButtonLocalization(
         "toolbar-button-pagemode",
         tCollapse,
         tPageMode,
-        tPageModeModes
+        tPageModeModes,
       );
       setToolbarMenuButtonLocalization(
         "toolbar-button-pagesdirection",
         tCollapse,
         tPagesDirection,
-        tPagesDirectionModes
+        tPagesDirectionModes,
       );
-    }
+    },
   );
 
   on("update-toolbar-rotation-buttons", (areEnabled) => {
     const button1 = document.querySelector("#toolbar-button-rotate-clockwise");
     const button2 = document.querySelector(
-      "#toolbar-button-rotate-counterclockwise"
+      "#toolbar-button-rotate-counterclockwise",
     );
     if (areEnabled) {
       button1.classList.remove("set-no-click");
@@ -369,7 +369,7 @@ function initOnIpcCallbacks() {
     const imgHeight = img.offsetHeight;
     const vh = Math.min(
       document.documentElement.clientHeight || 0,
-      window.innerHeight || 0
+      window.innerHeight || 0,
     );
     // TODO: not getting exactly the value I want, cheat by using the 1.1 multiplier for now
     let scale = parseInt((imgHeight / vh) * 100 * (increment > 0 ? 1.1 : 1));
@@ -396,7 +396,7 @@ function initOnIpcCallbacks() {
   on("set-pages-direction", (value) => {
     setToolbarMenuButtonIcon(
       "toolbar-button-pagesdirection",
-      value == "ltr" ? 0 : 1
+      value == "ltr" ? 0 : 1,
     );
     document
       .querySelector("#toolbar-page-slider-div")
@@ -573,7 +573,7 @@ function setZoomHeightCssVars(scale) {
   if (scale !== undefined)
     document.documentElement.style.setProperty(
       "--zoom-height-scale",
-      `${scale}`
+      `${scale}`,
     );
 
   let isTitlebarHidden = document
@@ -588,7 +588,7 @@ function setZoomHeightCssVars(scale) {
   if (!isToolbarHidden) border += 30;
   document.documentElement.style.setProperty(
     "--zoom-height-borders",
-    `${border}px`
+    `${border}px`,
   );
 }
 
@@ -874,7 +874,7 @@ export function onInputEvent(type, event) {
         if (event.dataTransfer.files && event.dataTransfer.files[0])
           sendIpcToMain(
             "open-file",
-            ipc.showFilePath(event.dataTransfer.files[0])
+            ipc.showFilePath(event.dataTransfer.files[0]),
           );
       }
       break;
@@ -941,7 +941,7 @@ export function onInputEvent(type, event) {
               Math.abs(
                 container.scrollHeight -
                   container.scrollTop -
-                  container.clientHeight
+                  container.clientHeight,
               ) < 1
             ) {
               // reached bottom
@@ -971,7 +971,7 @@ function inputScrollPageUp(checkEdge = true, factor = 1) {
       if (scrollableHeight > 0) {
         const amount = Math.max(
           readerHeight / 100,
-          (factor * scrollableHeight) / 5
+          (factor * scrollableHeight) / 5,
         );
         reader.scrollBy(0, -amount);
       }
@@ -997,7 +997,7 @@ function inputScrollPageDown(checkEdge = true, factor = 1) {
       if (scrollableHeight > 0) {
         const amount = Math.max(
           readerHeight / 100,
-          (factor * scrollableHeight) / 5
+          (factor * scrollableHeight) / 5,
         );
         reader.scrollBy(0, amount);
       }
@@ -1016,7 +1016,7 @@ function inputGoToRightPage() {
   sendIpcToMain(
     "mouse-click",
     document.body.clientWidth,
-    document.body.clientWidth
+    document.body.clientWidth,
   );
 }
 function inputGoToLeftPage() {
@@ -1130,7 +1130,7 @@ export function onGamepadPolled() {
           source: input.Source.GAMEPAD,
           commands: g_navButtons.scrollDown,
         }),
-        scrollFactor
+        scrollFactor,
       );
     } else if (
       input.isActionDown({
@@ -1143,7 +1143,7 @@ export function onGamepadPolled() {
           source: input.Source.GAMEPAD,
           commands: g_navButtons.scrollUp,
         }),
-        scrollFactor
+        scrollFactor,
       );
     }
     // next / prev page
@@ -1304,7 +1304,7 @@ function setToolbarMenuButtonLocalization(
   buttonName,
   tCollapse,
   titleLocalization,
-  menuLocalization
+  menuLocalization,
 ) {
   const button = document.getElementById(buttonName);
   button.children[0].title = titleLocalization;
@@ -1348,9 +1348,8 @@ function addToolbarEventListeners() {
     .getElementById("toolbar-page-slider-input")
     .addEventListener("input", (event) => {
       if (g_toolbarSliderIsPercentage) {
-        document.getElementById(
-          "toolbar-page-numbers"
-        ).innerHTML = `${event.currentTarget.value}.00%`;
+        document.getElementById("toolbar-page-numbers").innerHTML =
+          `${event.currentTarget.value}.00%`;
       } else {
         document.getElementById("toolbar-page-numbers").innerHTML =
           event.currentTarget.value + " / " + event.currentTarget.max;
@@ -1367,10 +1366,10 @@ export function updatePageInfo(pageNum, numPages, isPercentage) {
     document.getElementById("toolbar-page-slider-input").min = 0;
     document.getElementById("toolbar-page-slider-input").value = pageNum;
     document.getElementById("toolbar-page-numbers").innerHTML = `${Number(
-      pageNum
+      pageNum,
     ).toFixed(2)}%`;
     document.getElementById("page-number-bubble").innerHTML = `<span>${Number(
-      pageNum
+      pageNum,
     ).toFixed(2)}%</span>`;
   } else {
     if (numPages === 0) pageNum = -1; // hack to make it show 00 / 00 @ start
@@ -1398,22 +1397,21 @@ export function updatePageInfo(pageNum, numPages, isPercentage) {
 
     // calc page text space so slider doesn't change sizes too widely
     let numChars = numPages.toString().length * (g_pageMode == 0 ? 2 : 3) + 5;
-    document.getElementById(
-      "toolbar-page-numbers"
-    ).style.minWidth = `${numChars}ch`;
+    document.getElementById("toolbar-page-numbers").style.minWidth =
+      `${numChars}ch`;
   }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// IMG64 //////////////////////////////////////////////////////////////////////
+// IMAGE BUFFERS //////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-export function renderImg64(
-  img64s,
+export function renderImageBuffers(
+  buffers,
   rotation,
   scrollBarPos,
   sendPageLoaded,
-  fromRefresh
+  fromRefresh,
 ) {
   const containerDiv = document.getElementById("pages-container");
 
@@ -1423,14 +1421,14 @@ export function renderImg64(
     if (img) title = img.title;
   }
 
-  const isDoublePages = img64s.length === 2;
+  const isDoublePages = buffers.length === 2;
 
   if (rotation === 0 || rotation === 180) {
     //// setup ////
     let pagesLoaded = 0;
     let page1Img, page2Img;
     page1Img = new Image();
-    page1Img.src = img64s[0];
+    assignBufferToImgSrc(buffers[0], page1Img);
     page1Img.classList.add("page-img");
     page1Img.classList.add("page");
     if (title && title != "") page1Img.title = title;
@@ -1442,7 +1440,7 @@ export function renderImg64(
     pagesRowDiv.classList.add("pages-row");
     if (isDoublePages) {
       page2Img = new Image();
-      page2Img.src = img64s[1];
+      assignBufferToImgSrc(buffers[1], page2Img);
       page2Img.classList.add("page-img");
       page2Img.classList.add("page");
       page1Img.classList.add("page-1");
@@ -1496,11 +1494,11 @@ export function renderImg64(
         const totalWidth = page1Img.naturalWidth + page2Img.naturalWidth;
         document.documentElement.style.setProperty(
           "--zoom-width-page1",
-          `${(100 * page1Img.naturalWidth) / totalWidth}%`
+          `${(100 * page1Img.naturalWidth) / totalWidth}%`,
         );
         document.documentElement.style.setProperty(
           "--zoom-width-page2",
-          `${(100 * page2Img.naturalWidth) / totalWidth}%`
+          `${(100 * page2Img.naturalWidth) / totalWidth}%`,
         );
         checkImageResults();
       };
@@ -1537,7 +1535,7 @@ export function renderImg64(
           -1, // hSkew
           0, // vScale
           image.height, // hTrans
-          0 // vTrans
+          0, // vTrans
         );
       } else if (rotation === 270) {
         context.setTransform(
@@ -1546,7 +1544,7 @@ export function renderImg64(
           1, // hSkew
           0, // vScale
           0, // hTrans
-          image.width // vTrans
+          image.width, // vTrans
         );
       }
       context.drawImage(image, 0, 0);
@@ -1561,8 +1559,17 @@ export function renderImg64(
     image.onerror = function () {
       image.src = "../assets/images/error_page.png";
     };
-    image.src = img64s[0];
+    assignBufferToImgSrc(buffers[0], image);
   }
+}
+
+function assignBufferToImgSrc(imgData, imgElement) {
+  const blob = new Blob([imgData.buffer], { type: imgData.mime });
+  const url = URL.createObjectURL(blob);
+  if (imgElement.src.startsWith("blob:")) {
+    URL.revokeObjectURL(imgElement.src);
+  }
+  imgElement.src = url;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1596,7 +1603,7 @@ function initModalsOnIpcCallbacks() {
     "show-modal-prompt",
     (question, defaultValue, textButton1, textButton2, mode = 0) => {
       showModalPrompt(question, defaultValue, textButton1, textButton2, mode);
-    }
+    },
   );
 
   on("show-modal-prompt-password", (...args) => {
@@ -1629,7 +1636,7 @@ function showModalPrompt(
   defaultValue,
   textButton1,
   textButton2,
-  mode = 0
+  mode = 0,
 ) {
   if (g_openModal) {
     return;
@@ -1792,7 +1799,7 @@ function showModalQuestionOpenAs(
   message,
   textButton1,
   textButton2,
-  filePath
+  filePath,
 ) {
   if (g_openModal) {
     return;
@@ -1832,7 +1839,7 @@ function showModalRequestOpenConfirmation(
   message,
   textButton1,
   textButton2,
-  filePath
+  filePath,
 ) {
   if (g_openModal) {
     return;
@@ -1908,7 +1915,7 @@ function showModalQuickMenu(
   textButtonHistory,
   textButtonFullscreen,
   textButtonQuit,
-  showFocus
+  showFocus,
 ) {
   if (g_openModal) {
     return;

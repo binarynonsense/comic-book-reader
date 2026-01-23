@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2025 Álvaro García
+ * Copyright 2020-2026 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -8,7 +8,7 @@
 import { sendIpcToMain as coreSendIpcToMain } from "../core/renderer.js";
 import {
   initIpc as uiInitIpc,
-  renderImg64,
+  renderImageBuffers,
   updatePageInfo,
   onInputEvent as uiOnInputEvent,
   getOpenModal,
@@ -44,16 +44,16 @@ export function initIpc() {
 // PAGES //////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-let g_currentImg64s = null;
+let g_currentImgBuffers;
 
 function cleanUpPages() {
-  g_currentImg64s = null;
+  g_currentImgBuffers = undefined;
   cleanUpPdf();
   cleanUpEpub();
 }
 
-export function getCurrentImg64() {
-  return g_currentImg64s;
+export function getCurrentImgBuffers() {
+  return g_currentImgBuffers;
 }
 
 export function showNoBookContent(show) {
@@ -107,18 +107,24 @@ export function on(id, callback) {
 }
 
 function initOnIpcCallbacks() {
-  on("render-img-page", (img64s, rotation, scrollBarPos) => {
-    if (img64s) {
+  on("render-img-page", (buffers, rotation, scrollBarPos) => {
+    if (buffers) {
       cleanUpPages();
       showNoBookContent(false);
-      g_currentImg64s = img64s;
-      renderImg64(g_currentImg64s, rotation, scrollBarPos, true, false);
+      g_currentImgBuffers = buffers;
+      renderImageBuffers(
+        g_currentImgBuffers,
+        rotation,
+        scrollBarPos,
+        true,
+        false,
+      );
     }
   });
 
   on("refresh-img-page", (rotation) => {
-    if (g_currentImg64s)
-      renderImg64(g_currentImg64s, rotation, undefined, false, true);
+    if (g_currentImgBuffers)
+      renderImageBuffers(g_currentImgBuffers, rotation, undefined, false, true);
   });
 
   on("update-img-page-title", (text) => {

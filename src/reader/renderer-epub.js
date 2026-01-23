@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2024 Álvaro García
+ * Copyright 2020-2026 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -8,10 +8,10 @@
 import {
   on,
   sendIpcToMain,
-  getCurrentImg64,
+  getCurrentImgBuffers,
   showNoBookContent,
 } from "./renderer.js";
-import { renderImg64, setScrollBarsPosition } from "./renderer-ui.js";
+import { renderImageBuffers, setScrollBarsPosition } from "./renderer-ui.js";
 
 export function initIpc() {
   initHandlers();
@@ -27,8 +27,14 @@ let g_bgColor = "white";
 function initHandlers() {
   // COMIC
   on("refresh-epub-comic-page", (rotation) => {
-    if (getCurrentImg64())
-      renderImg64(getCurrentImg64(), rotation, undefined, false, true);
+    if (getCurrentImgBuffers())
+      renderImageBuffers(
+        getCurrentImgBuffers(),
+        rotation,
+        undefined,
+        false,
+        true,
+      );
   });
 
   // EBOOK
@@ -74,11 +80,11 @@ function initHandlers() {
     if (iframe && iframe.contentDocument) {
       iframe.contentDocument.documentElement.style.setProperty(
         "--epub-ebook-text-color",
-        `${g_textColor}`
+        `${g_textColor}`,
       );
       iframe.contentDocument.documentElement.style.setProperty(
         "--epub-ebook-bg-color",
-        `${g_bgColor}`
+        `${g_bgColor}`,
       );
     }
   });
@@ -124,7 +130,7 @@ async function loadEpubEbook(filePath, percentage, cachedPath) {
         width: 450,
         height: 600,
         allowScriptedContent: false,
-      }
+      },
     );
     // g_currentEpubEbook.rendition.themes.fontSize("140%");
 
@@ -190,7 +196,7 @@ async function loadEpubEbook(filePath, percentage, cachedPath) {
           view.contents,
           view.section.cfiBase,
           start,
-          end
+          end,
         );
 
         let totalPages = manager.layout.count(width).pages;
@@ -265,7 +271,7 @@ function refreshEpubEbookPage() {
   const scale = height / 600;
   document.documentElement.style.setProperty(
     "--zoom-epub-ebook-scale-factor",
-    scale
+    scale,
   );
 }
 
@@ -276,7 +282,7 @@ function getEpubEbookCfiFromPercentage(percentage) {
 function getCurrentPercentage() {
   const currentLocation = g_currentEpubEbook.rendition.currentLocation();
   return g_currentEpubEbook.book.locations.percentageFromCfi(
-    currentLocation.start.cfi
+    currentLocation.start.cfi,
   );
 }
 
@@ -326,7 +332,7 @@ function initContainerObserver() {
                       }`;
                     node.contentDocument.head.appendChild(style);
                   },
-                  { once: true }
+                  { once: true },
                 );
               }
             });
