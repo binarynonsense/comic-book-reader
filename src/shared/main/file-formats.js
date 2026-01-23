@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2025 Álvaro García
+ * Copyright 2020-2026 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -121,7 +121,7 @@ async function extractRarEntryBuffer(
   rarPath,
   entryName,
   password,
-  tempSubFolderPath
+  tempSubFolderPath,
 ) {
   try {
     const unrar = require("node-unrar-js");
@@ -178,7 +178,7 @@ function createRar(
   outputFilePath,
   rarExePath,
   workingDir,
-  password
+  password,
 ) {
   try {
     let args = ["a"];
@@ -231,7 +231,7 @@ function createRar(
     const cmdResult = utils.execShellCommand(
       rarExePath,
       args,
-      tempSubfolderPath
+      tempSubfolderPath,
     );
     //const cmdResult = utils.execShellCommand(rarExePath, args, workingDir);
     if (!cmdResult.error || cmdResult.error === false) {
@@ -251,7 +251,7 @@ function updateRarEntry(rarExePath, filePath, entryPath, workingDir, password) {
     const cmdResult = utils.execShellCommand(
       rarExePath,
       ["u", filePath, entryPath],
-      workingDir
+      workingDir,
     );
     if (!cmdResult.error || cmdResult.error === "") {
       return true;
@@ -399,7 +399,7 @@ function checkPathTo7ZipBin() {
       // find the one that works in the release version
       g_pathTo7zipBin = g_pathTo7zipBin.replace(
         "app.asar",
-        "app.asar.unpacked"
+        "app.asar.unpacked",
       );
     }
   }
@@ -505,7 +505,7 @@ async function extract7ZipEntryBuffer(
   entryName,
   password,
   tempSubFolderPath,
-  archiveType
+  archiveType,
 ) {
   try {
     //////////////////////////////////////////
@@ -615,7 +615,7 @@ async function create7Zip(
   outputFilePath,
   password,
   tempFolderPath,
-  archiveType
+  archiveType,
 ) {
   try {
     checkPathTo7ZipBin();
@@ -723,7 +723,7 @@ async function update7ZipWithFolderContents(
   filePath,
   contentFolderPath,
   password,
-  archiveType
+  archiveType,
 ) {
   try {
     checkPathTo7ZipBin();
@@ -961,7 +961,7 @@ async function createEpub(
   imgPathsList,
   outputFilePath,
   tempFolderPath,
-  imageStorageSelection
+  imageStorageSelection,
 ) {
   try {
     const epub = require("./epub-generator");
@@ -969,7 +969,7 @@ async function createEpub(
       imgPathsList,
       outputFilePath,
       tempFolderPath,
-      imageStorageSelection
+      imageStorageSelection,
     );
     return;
   } catch (error) {
@@ -1088,3 +1088,115 @@ async function createPdf(imgPathsList, outputFilePath, method, password) {
   }
 }
 exports.createPdf = createPdf;
+
+async function extractPdf(
+  filePath,
+  tempFolderPath,
+  password,
+  extractionMethod = "embedded",
+) {
+  try {
+    const { PDFiumLibrary } = require("@hyzyla/pdfium");
+    const sharp = require("sharp");
+
+    const MAX_WORKERS = 4;
+
+    const fileBuffer = fs.readFileSync(filePath);
+    const pdfLib = await PDFiumLibrary.init();
+    const pdfDoc = await pdfLib.loadDocument(fileBuffer, password);
+
+    // iterator to array
+    const pages = Array.from(pdfDoc.pages());
+    const totalPages = pages.length;
+    const padLength = totalPages.toString().length;
+
+    let nextPageIndex = 0;
+    let completedPages = 0;
+
+    const processPage = async (index) => {
+      const page = pages[index];
+      const pageWidthPts = page.width;
+      const pageHeightPts = page.height;
+
+      let dpi = 300;
+      if (extractionMethod === "render72") dpi = 72;
+      let scaleFactor = dpi / 72;
+
+      if (extractionMethod === "embedded") {
+        try {
+          const objectsCount = page.objectsCount;
+          let foundImages = [];
+          for (let j = 0; j < objectsCount; j++) {
+            const obj = page.getObject(j);
+            if (obj && obj.type === 1) foundImages.push(obj);
+          }
+          if (foundImages.length === 1) {
+            const img = foundImages[0];
+            const nativeScale = img.width / pageWidthPts;
+            scaleFactor = nativeScale;
+            dpi = Math.round(nativeScale * 72);
+          }
+        } catch (error) {
+          // will use the default scale / dpi
+        }
+      }
+
+      const bigSide = Math.max(pageWidthPts, pageHeightPts);
+      if (bigSide * scaleFactor > 5000) {
+        scaleFactor = 5000 / bigSide;
+        dpi = Math.round(scaleFactor * 72);
+      }
+
+      const bitmap = await page.render({
+        scale: scaleFactor,
+        render: "bitmap",
+      });
+
+      const outputFileName = `${(index + 1).toString().padStart(padLength, "0")}.jpg`;
+      const outputPath = path.join(tempFolderPath, outputFileName);
+
+      // TODO: add chromaSubsampling as an option?
+      // chromaSubsampling: "4:4:4" should be better, but files are bigger
+      await sharp(bitmap.data, {
+        raw: { width: bitmap.width, height: bitmap.height, channels: 4 },
+      })
+        .withMetadata({ density: dpi })
+        .jpeg({ quality: 80, progressive: false }) // chromaSubsampling: "4:4:4"
+        .toFile(outputPath);
+
+      completedPages++;
+      if (process.send) {
+        process.send({
+          type: "extraction-progress",
+          current: completedPages,
+          total: totalPages,
+        });
+      }
+    };
+
+    // parallelize using async workers to increase speed
+    const startWorker = async () => {
+      while (nextPageIndex < totalPages) {
+        const index = nextPageIndex++;
+        await processPage(index);
+      }
+    };
+    const workerPromises = [];
+    for (let i = 0; i < MAX_WORKERS; i++) {
+      workerPromises.push(startWorker());
+    }
+    // wait for them to finish
+    await Promise.all(workerPromises);
+    pdfDoc.destroy();
+    pdfLib.destroy();
+
+    return { success: true };
+  } catch (error) {
+    const message = error.message ? error.message.toLowerCase() : "";
+    let errorType = error.message || "unknown_error";
+    if (message.includes("enospc")) errorType = "no_disk_space";
+    if (message.includes("password")) errorType = "incorrect_password";
+    return { success: false, error: errorType };
+  }
+}
+exports.extractPdf = extractPdf;

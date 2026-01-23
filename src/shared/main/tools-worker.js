@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2025 Álvaro García
+ * Copyright 2020-2026 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -37,7 +37,7 @@ async function extractImages(
   inputFilePath,
   inputFileType,
   tempFolderPath,
-  password
+  password,
 ) {
   const timers = require("./timers");
   timers.start("extractImages");
@@ -50,23 +50,25 @@ async function extractImages(
         inputFilePath,
         tempFolderPath,
         password,
-        "zip"
+        "zip",
       );
     } else if (inputFileType === FileDataType.RAR) {
       result = await fileFormats.extractRar(
         inputFilePath,
         tempFolderPath,
-        password
+        password,
       );
     } else if (inputFileType === FileDataType.SEVENZIP) {
       result = await fileFormats.extract7Zip(
         inputFilePath,
         tempFolderPath,
-        password
+        password,
       );
     } else if (inputFileType === FileDataType.EPUB_COMIC) {
       // TODO: get success and error
       success = await fileFormats.extractEpub(inputFilePath, tempFolderPath);
+    } else if (inputFileType === FileDataType.PDF) {
+      result = await fileFormats.extractPdf(inputFilePath, tempFolderPath);
     } else {
       send("conversionExtractImages: invalid file type");
       return;
@@ -110,7 +112,7 @@ async function createFiles(
   outputFileSameName,
   tempFolderPath,
   password,
-  extra
+  extra,
 ) {
   let outputSubFolderPath;
   if (outputFormat === undefined) outputFormat = FileExtension.CBZ;
@@ -129,7 +131,7 @@ async function createFiles(
       // just one file in the output folder
       let outputFilePath = path.join(
         outputFolderPath,
-        baseFileName + "." + outputFormat
+        baseFileName + "." + outputFormat,
       );
 
       if (fs.existsSync(outputFilePath)) {
@@ -139,7 +141,7 @@ async function createFiles(
             i++;
             outputFilePath = path.join(
               outputFolderPath,
-              baseFileName + " (" + i + ")." + outputFormat
+              baseFileName + " (" + i + ")." + outputFormat,
             );
           }
         } else if (outputFileSameName === "skip") {
@@ -164,7 +166,7 @@ async function createFiles(
             i++;
             outputSubFolderPath = path.join(
               outputFolderPath,
-              baseFileName + " (" + i + ")"
+              baseFileName + " (" + i + ")",
             );
           }
         } else if (outputFileSameName == "skip") {
@@ -177,7 +179,7 @@ async function createFiles(
       for (let index = 0; index < subArrays.length; index++) {
         let outputFilePath = path.join(
           tempFolderPath,
-          `${baseFileName} (${index + 1}_${subArrays.length}).${outputFormat}`
+          `${baseFileName} (${index + 1}_${subArrays.length}).${outputFormat}`,
         );
         filesData.push({
           imgFilePaths: subArrays[index],
@@ -196,14 +198,14 @@ async function createFiles(
             filesData[index].imgFilePaths,
             filesData[index].outputFilePath,
             extra,
-            password
+            password,
           );
         } else if (outputFormat === FileExtension.EPUB) {
           await fileFormats.createEpub(
             filesData[index].imgFilePaths,
             filesData[index].outputFilePath,
             tempFolderPath,
-            extra
+            extra,
           );
         } else if (outputFormat === FileExtension.CB7) {
           if (comicInfoFilePath)
@@ -212,7 +214,7 @@ async function createFiles(
             filesData[index].imgFilePaths,
             filesData[index].outputFilePath,
             password,
-            tempFolderPath
+            tempFolderPath,
           );
         } else if (outputFormat === FileExtension.CBR) {
           if (comicInfoFilePath)
@@ -223,7 +225,7 @@ async function createFiles(
               filesData[index].outputFilePath,
               extra.rarExePath,
               extra.workingDir,
-              password
+              password,
             )
           )
             throw "error creating rar";
@@ -249,7 +251,7 @@ async function createFiles(
             filesData[index].outputFilePath,
             password,
             tempFolderPath,
-            "zip"
+            "zip",
           );
         }
         times.push(`${timers.stop("createFile").toFixed(2)}s`);
@@ -268,7 +270,7 @@ async function createFiles(
         let fileName = path.basename(tempFilePath);
         filesData[index].outputFilePath = path.join(
           outputSubFolderPath,
-          fileName
+          fileName,
         );
         if (fs.existsSync(filesData[index].outputFilePath)) {
           if (outputFileSameName != "overwrite") {
