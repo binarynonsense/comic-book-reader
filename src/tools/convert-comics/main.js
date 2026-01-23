@@ -643,7 +643,8 @@ function startFile(inputFileIndex, totalFilesNum) {
     inputFileType === FileDataType.ZIP ||
     inputFileType === FileDataType.RAR ||
     inputFileType === FileDataType.SEVENZIP ||
-    inputFileType === FileDataType.EPUB_COMIC
+    inputFileType === FileDataType.EPUB_COMIC ||
+    inputFileType === FileDataType.PDF // uses PDFium
   ) {
     updateModalLogText(_("tool-shared-modal-log-extracting-pages") + "...");
     // ref: https://www.matthewslipper.com/2019/09/22/everything-you-wanted-electron-child-process.html
@@ -662,33 +663,42 @@ function startFile(inputFileIndex, totalFilesNum) {
           path.join(__dirname, "../../shared/main/tools-worker.js"),
         );
       }
+      // TODO: if g_cancel is set -> kill worker and stop?
       g_worker.on("message", (message) => {
-        g_worker.kill(); // kill it after one use
-        if (message.success) {
-          log.debug("file extracted in: " + message.time);
-          if (g_cancel === true) {
-            stopCancel();
-            return;
-          }
-          if (g_mode === ToolMode.CREATE) {
-            copyImagesToTempFolder(g_creationTempSubFolderPath, true);
-            temp.deleteSubFolder(g_creationTempSubFolderPath);
-            g_creationTempSubFolderPath = undefined;
-          }
-          sendIpcToRenderer("file-images-extracted");
-          return;
-        } else {
-          if (message.error === "no_disk_space") {
-            message.error =
-              _("tool-shared-modal-log-failed-reason-temp-disk-space") +
-              "\n" +
-              _("tool-shared-modal-log-failed-reason-temp-disk-space-2");
-          }
-          stopError(
-            message.error,
-            _("tool-shared-modal-log-failed-extraction"),
+        if (message.type === "extraction-progress") {
+          updateModalLogText(
+            `${_("tool-shared-modal-log-extracting-pages")}: ${message.current} / ${message.total}`,
           );
           return;
+        } else {
+          // success of failure
+          g_worker.kill(); // kill it after one use
+          if (message.success) {
+            log.debug("file extracted in: " + message.time);
+            if (g_cancel === true) {
+              stopCancel();
+              return;
+            }
+            if (g_mode === ToolMode.CREATE) {
+              copyImagesToTempFolder(g_creationTempSubFolderPath, true);
+              temp.deleteSubFolder(g_creationTempSubFolderPath);
+              g_creationTempSubFolderPath = undefined;
+            }
+            sendIpcToRenderer("file-images-extracted");
+            return;
+          } else {
+            if (message.error === "no_disk_space") {
+              message.error =
+                _("tool-shared-modal-log-failed-reason-temp-disk-space") +
+                "\n" +
+                _("tool-shared-modal-log-failed-reason-temp-disk-space-2");
+            }
+            stopError(
+              message.error,
+              _("tool-shared-modal-log-failed-extraction"),
+            );
+            return;
+          }
         }
       });
     }
@@ -719,7 +729,9 @@ function startFile(inputFileIndex, totalFilesNum) {
         g_inputPassword,
       ]);
     }
-  } else if (inputFileType === FileDataType.PDF) {
+  }
+  // won't be reached if I use the one above with PDFium
+  else if (inputFileType === FileDataType.PDF) {
     updateModalLogText(_("tool-shared-modal-log-extracting-pages") + "...");
     /////////////////////////
     // use a hidden window for better performance and node api access
