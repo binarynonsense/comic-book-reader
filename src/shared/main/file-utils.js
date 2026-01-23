@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2025 Álvaro García
+ * Copyright 2020-2026 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -220,7 +220,7 @@ exports.hasEpubSupportedImageExtension = function (filePath) {
 
 const getImageFilesInFolderRecursive = function (
   folderPath,
-  ignoreMacOSFolder = true
+  ignoreMacOSFolder = true,
 ) {
   let filesArray = [];
   let dirs = [];
@@ -296,7 +296,7 @@ const getFilesInFolderRecursive = function (folderPath, allowedFileExtensions) {
     // now check inner folders
     dirs.forEach((dir) => {
       filesArray = filesArray.concat(
-        getFilesInFolderRecursive(dir, allowedFileExtensions)
+        getFilesInFolderRecursive(dir, allowedFileExtensions),
       );
     });
   }
@@ -362,7 +362,55 @@ function deleteFolderRecursive(
   folderPath,
   logToError,
   pathStartsWith,
-  nameStartsWith
+  nameStartsWith,
+) {
+  if (!fs.existsSync(folderPath)) {
+    log.editor("deleteFolderRecursive: !existsSync " + folderPath);
+    return;
+  }
+  if (nameStartsWith && !path.basename(folderPath).startsWith(nameStartsWith))
+    return;
+  if (pathStartsWith && !folderPath.startsWith(pathStartsWith)) return;
+
+  try {
+    fs.rmSync(folderPath, {
+      recursive: true,
+      force: true,
+      maxRetries: 3,
+      retryDelay: 100,
+    });
+    log.debug("deleted folder: " + folderPath);
+  } catch (error) {
+    if (error.code === "EBUSY" || error.code === "ENOTEMPTY") {
+      log.warning(
+        "folder locked, attempting final delayed retry: " + folderPath,
+      );
+      setTimeout(() => {
+        try {
+          fs.rmSync(folderPath, { recursive: true, force: true });
+          log.debug("retry success: deleted folder: " + folderPath);
+        } catch (retryError) {
+          log.error("couldn't delete folder: " + folderPath);
+          log.error(retryError.code);
+        }
+      }, 500);
+    } else {
+      if (logToError) {
+        log.error("couldn't delete folder: " + folderPath);
+        log.error(error.code);
+      } else {
+        log.debug("couldn't delete folder: " + folderPath);
+        log.debug(error.code);
+      }
+    }
+  }
+}
+
+function deleteFolderRecursiveOLD(
+  folderPath,
+  logToError,
+  pathStartsWith,
+  nameStartsWith,
 ) {
   if (fs.existsSync(folderPath)) {
     if (nameStartsWith) {
@@ -370,7 +418,7 @@ function deleteFolderRecursive(
       if (!folderName.startsWith(nameStartsWith)) {
         log.warning(
           "tried to delete a folder with a name that doesn't start with: " +
-            nameStartsWith
+            nameStartsWith,
         );
         log.warning(folderPath);
         return;
@@ -380,7 +428,7 @@ function deleteFolderRecursive(
       if (!folderPath.startsWith(pathStartsWith)) {
         log.warning(
           "tried to delete a folder with a path that doesn't start with: " +
-            pathStartsWith
+            pathStartsWith,
         );
         log.warning(folderPath);
         return;
