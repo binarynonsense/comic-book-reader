@@ -136,11 +136,81 @@ exports.createRandomSubfolder = function (baseFolderPath) {
 // EXTENSIONS /////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-function getMimeType(filePath) {
-  let mimeType = path.extname(filePath).substring(1);
-  return mimeType;
-}
-exports.getMimeType = getMimeType;
+exports.getImageMimeTypeFromBuffer = function (buffer) {
+  if (!buffer || buffer.length < 12) return "image/png";
+  // need the first 12 bytes
+  const hex = buffer.toString("hex", 0, 12);
+
+  if (hex.startsWith("ffd8ff")) {
+    return "image/jpeg";
+  }
+  if (hex.startsWith("89504e47")) {
+    return "image/png";
+  }
+  if (hex.startsWith("47494638")) {
+    return "image/gif";
+  }
+  if (hex.startsWith("424d")) {
+    return "image/bmp";
+  }
+  // WEBP (RIFF .... WEBP)
+  // hex.slice(16, 24) is the offset for the 8th to 12th byte
+  if (hex.startsWith("52494646") && hex.slice(16, 24) === "57454250") {
+    return "image/webp";
+  }
+  // AVIF (.... ftypavif)
+  // usually starts with 000000 followed by ftypavif (6674797061766966)
+  if (hex.includes("6674797061766966")) {
+    return "image/avif";
+  }
+
+  return "image/png"; // fallback value // TODO: better return undefined?
+};
+
+exports.getFileTypeFromPath = function (filePath) {
+  try {
+    // read 50 bytes
+    const buffer = Buffer.alloc(50);
+    const fd = fs.openSync(filePath, "r");
+    fs.readSync(fd, buffer, 0, 50, 0);
+    fs.closeSync(fd);
+    const hex = buffer.toString("hex").toLowerCase();
+
+    // docs
+    if (hex.startsWith("52617221")) return "rar"; // Rar!
+    if (hex.startsWith("377abcaf")) return "7z"; // 7z
+    if (hex.startsWith("25504446")) return "pdf"; // %PDF
+    // ZIP or EPUB start with PK..
+    if (hex.startsWith("504b0304")) {
+      // EPUB: check the 'mimetype' field starting at offset 30
+      // 'epub+zip' in ASCII
+      if (buffer.toString("ascii", 30, 50).includes("epub+zip")) {
+        return "epub";
+      }
+      return "zip";
+    }
+
+    // images
+    if (hex.startsWith("ffd8ff")) return "jpg";
+    if (hex.startsWith("89504e47")) return "png";
+    if (hex.startsWith("47494638")) return "gif";
+    if (hex.startsWith("424d")) return "bmp";
+    // WebP (RIFF at byte 0, WEBP at byte 8)
+    if (hex.startsWith("52494646") && hex.slice(16, 24) === "57454250") {
+      return "webp";
+    }
+    // AVIF (ftypavif at byte 4)
+    // check index 8 to 24 (8 bytes / 16 hex chars)
+    if (hex.slice(8, 24) === "6674797061766966") {
+      return "avif";
+    }
+
+    return "unknown";
+  } catch (error) {
+    log.error(error);
+    return "unknown";
+  }
+};
 
 function hasImageExtension(filePath) {
   const allowedFileExtensions = [
