@@ -83,6 +83,7 @@
     "shx": "0.4.0"
   },
   "dependencies": {
+    "@hyzyla/pdfium": "2.1.9",
     "7zip-bin": "5.2.0",
     "adm-zip": "0.5.16",
     "axios": "1.11.0",
