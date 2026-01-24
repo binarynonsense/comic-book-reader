@@ -11,36 +11,38 @@ const fileFormats = require("../shared/main/file-formats");
 const { FileDataType } = require("../shared/main/constants");
 const fileUtils = require("../shared/main/file-utils");
 
-process.on("message", async (message) => {
-  const entryNames = message[3];
-  let images = [];
-  for (let i = 0; i < entryNames.length; i++) {
-    const result = await extractImageBuffer(i, ...message.slice(1));
-    if (!result[0]) {
-      process.send([false, result[1]]);
-      return;
-    }
-    images.push({ buffer: result[1], mime: result[2] });
-  }
-  process.send([true, buffers, message[4]]);
-});
-
-process.parentPort?.once("message", async (event) => {
+process.parentPort.on("message", async (event) => {
   let message = event.data;
-  const entryNames = message[3];
-  let img64s = [];
-  for (let i = 0; i < entryNames.length; i++) {
-    const result = await extractImageBuffer(i, ...message.slice(1));
-    if (!result[0]) {
-      process.parentPort.postMessage([false, result[1]]);
-      return;
+  // process.parentPort.postMessage({
+  //   log: `[page worker] message received: ${message.command}`,
+  // });
+  if (message.command === "extract") {
+    const entryNames = message.entryNames;
+    let images = [];
+    let tempSubFolderPath = message.tempSubFolderPath;
+    for (let i = 0; i < entryNames.length; i++) {
+      message.entryNameIndex = i;
+      const result = await extractImageBuffer(message);
+      if (result.success === false) {
+        process.parentPort.postMessage({
+          success: false,
+          error: result.error,
+          tempSubFolderPath,
+        });
+        return;
+      }
+      images.push({ buffer: result.buffer, mime: result.mime });
     }
-    img64s.push(result[1]);
+    process.parentPort.postMessage({
+      success: true,
+      images,
+      tempSubFolderPath,
+      scrollBarPos: message.scrollBarPos,
+    });
   }
-  process.parentPort.postMessage([true, img64s, message[4]]);
 });
 
-async function extractImageBuffer(
+async function extractImageBuffer({
   entryNameIndex,
   fileType,
   filePath,
@@ -48,7 +50,7 @@ async function extractImageBuffer(
   scrollBarPos,
   password,
   tempSubFolderPath,
-) {
+}) {
   try {
     let buffer;
     let mime;
@@ -102,13 +104,13 @@ async function extractImageBuffer(
     }
     if (buffer) {
       mime = fileUtils.getImageMimeTypeFromBuffer(buffer);
-      return [true, buffer, mime, scrollBarPos];
+      return { success: true, buffer, mime, scrollBarPos };
     } else {
       if (error) {
         throw error;
       } else throw "empty buffer";
     }
   } catch (error) {
-    return [false, error];
+    return { success: false, error };
   }
 }

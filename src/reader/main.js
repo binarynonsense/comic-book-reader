@@ -9,7 +9,6 @@ const { utilityProcess, MessageChannelMain } = require("electron");
 
 const fs = require("fs");
 const path = require("path");
-const { fork } = require("child_process");
 const FileType = require("file-type");
 
 const core = require("../core/main");
@@ -25,6 +24,7 @@ const utils = require("../shared/main/utils");
 const fileFormats = require("../shared/main/file-formats");
 const contextMenu = require("./menu-context");
 const audioPlayer = require("../audio-player/main");
+const timers = require("../shared/main/timers");
 const tools = require("../shared/main/tools");
 const {
   FileExtension,
@@ -41,8 +41,6 @@ let g_delayedRefreshPageEvent;
 // SETUP  ////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 
-let g_workerExport;
-let g_workerPage;
 let g_languageDir = "ltr";
 let g_pagesDirection = "ltr";
 
@@ -156,14 +154,8 @@ exports.onQuit = function () {
   addCurrentToHistory(false);
   audioPlayer.saveSettings();
   homeScreen.close();
-  if (g_workerExport !== undefined) {
-    g_workerExport.kill();
-    g_workerExport = undefined;
-  }
-  if (g_workerPage !== undefined) {
-    g_workerPage.kill();
-    g_workerPage = undefined;
-  }
+  killExportWorker();
+  killPageWorker();
 };
 
 exports.onMaximize = function () {
@@ -1446,6 +1438,8 @@ function closeCurrentFile(addToHistory = true) {
     sendIpcToRenderer("close-epub-ebook");
   }
   cleanUpFileData();
+  killPageWorker();
+
   menuBar.rebuild();
   updateMenuAndToolbarItems();
   renderTitle();
@@ -1512,13 +1506,7 @@ function goToPage(pageIndex, scrollBarPos = 0) {
     g_fileData.type === FileDataType.IMGS_FOLDER
   ) {
     g_fileData.state = FileDataState.LOADING;
-    if (g_workerPage !== undefined) {
-      // kill it after one use
-      g_workerPage.kill();
-      g_workerPage = undefined;
-    }
-    const timers = require("../shared/main/timers");
-    timers.start("workerPage");
+    timers.start("pagesExtraction");
 
     let tempSubFolderPath =
       g_fileData.type === FileDataType.SEVENZIP ||
@@ -1527,43 +1515,8 @@ function goToPage(pageIndex, scrollBarPos = 0) {
         ? temp.createSubFolder()
         : undefined;
 
-    if (g_workerPage === undefined) {
-      g_workerPage = utilityProcess.fork(
-        path.join(__dirname, "worker-page.js"),
-      );
-      g_workerPage.on("message", (message) => {
-        log.debug(`page load time: ${timers.stop("workerPage").toFixed(2)}s`);
-        g_workerPage.kill(); // kill it after one use
-        if (message[0] === true) {
-          sendIpcToRenderer(
-            "render-img-page",
-            message[1], // buffers
-            g_fileData.pageRotation,
-            message[2],
-          );
-          temp.deleteSubFolder(tempSubFolderPath);
-          return;
-        } else {
-          if (message[1] && message[1].toString() === "password required") {
-            log.warning("password required");
-            sendIpcToRenderer(
-              "show-modal-prompt-password",
-              _("ui-modal-prompt-enterpassword"),
-              path.basename(g_fileData.path),
-              _("ui-modal-prompt-button-ok"),
-              _("ui-modal-prompt-button-cancel"),
-            );
-            return;
-          } else {
-            // TODO: handle other errors
-            log.error("unhandled worker error");
-            log.error(message[1]);
-            sendIpcToRenderer("update-loading", false);
-            temp.deleteSubFolder(tempSubFolderPath);
-            return;
-          }
-        }
-      });
+    if (startPageWorker()) {
+      // TODO: if pdf load file?
     }
 
     let entryNames = [];
@@ -1572,20 +1525,15 @@ function goToPage(pageIndex, scrollBarPos = 0) {
       entryNames.push(g_fileData.pagesPaths[index]);
     });
 
-    // send to worker
-    const { port1 } = new MessageChannelMain();
-    g_workerPage.postMessage(
-      [
-        core.getLaunchInfo(),
-        g_fileData.type,
-        g_fileData.path,
-        entryNames,
-        scrollBarPos,
-        g_fileData.password,
-        tempSubFolderPath,
-      ],
-      [port1],
-    );
+    sendToPageWorker({
+      command: "extract",
+      fileType: g_fileData.type,
+      filePath: g_fileData.path,
+      entryNames,
+      scrollBarPos,
+      password: g_fileData.password,
+      tempSubFolderPath,
+    });
   } else if (g_fileData.type === FileDataType.EPUB_EBOOK) {
     if (pageIndex > 0) {
       g_fileData.state = FileDataState.LOADING;
@@ -2289,9 +2237,82 @@ function processZoomInput(input, factor) {
       settings.getValue("fit_mode") === 2 ||
       settings.getValue("fit_mode") === 0
     ) {
-      //setScaleToHeight(100);
       setFitToHeight();
     }
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// WORKERS  //////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+
+let g_exportWorker;
+let g_pageWorker;
+
+function startPageWorker() {
+  if (g_pageWorker === undefined) {
+    g_pageWorker = utilityProcess.fork(path.join(__dirname, "worker-page.js"));
+    g_pageWorker.on("message", (message) => {
+      if (message.log) {
+        log.test(message.log);
+        return;
+      }
+      log.debug(
+        `page load time: ${timers.stop("pagesExtraction").toFixed(2)}s`,
+      );
+      if (message.success === true) {
+        sendIpcToRenderer(
+          "render-img-page",
+          message.images, // buffers and mimes
+          g_fileData.pageRotation,
+          message.scrollBarPos,
+        );
+        temp.deleteSubFolder(message.tempSubFolderPath);
+        return;
+      } else if (message.success === false) {
+        if (message?.error?.toString() === "password required") {
+          log.warning("password required");
+          sendIpcToRenderer(
+            "show-modal-prompt-password",
+            _("ui-modal-prompt-enterpassword"),
+            path.basename(g_fileData.path),
+            _("ui-modal-prompt-button-ok"),
+            _("ui-modal-prompt-button-cancel"),
+          );
+          return;
+        } else {
+          // TODO: handle other errors
+          log.error("unhandled worker error");
+          log.error(message.error);
+          sendIpcToRenderer("update-loading", false);
+          temp.deleteSubFolder(message.tempSubFolderPath);
+          return;
+        }
+      }
+    });
+    return true;
+  }
+  return false;
+}
+
+function killPageWorker() {
+  if (g_pageWorker !== undefined) {
+    g_pageWorker.kill();
+    g_pageWorker = undefined;
+  }
+}
+
+function sendToPageWorker(data) {
+  const { port1 } = new MessageChannelMain();
+  g_pageWorker.postMessage(data, [port1]);
+}
+
+///////////////////
+
+function killExportWorker() {
+  if (g_exportWorker !== undefined) {
+    g_exportWorker.kill();
+    g_exportWorker = undefined;
   }
 }
 
@@ -2306,20 +2327,6 @@ function initClock() {
 }
 
 function updateClock() {
-  // Old method, 24h
-  // let today = new Date();
-  // let h = today.getHours();
-  // let m = today.getMinutes();
-  // if (m < 10) {
-  //   m = "0" + m;
-  // }
-  // let s = today.getSeconds();
-  // if (s < 10) {
-  //   s = "0" + s;
-  // }
-  // let time = h + ":" + m; // + ":" + s;
-
-  // New method, 12h or 24h
   const time = new Date().toLocaleString([], {
     hour: "numeric",
     minute: "numeric",
@@ -2329,178 +2336,6 @@ function updateClock() {
   sendIpcToRenderer("update-clock", time);
   g_clockTimeout = setTimeout(updateClock, 500);
 }
-
-//////////////////////////////////////////////////////////////////////////////
-// EXPORT ////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
-
-// NOTE: no longer used but don't delete in case I need them some day
-
-// async function exportPageStart(sendToTool = 0) {
-//   let outputFolderPath;
-//   if (sendToTool !== 0) {
-//     outputFolderPath = temp.createSubFolder();
-//   } else {
-//     let defaultPath = app.getPath("desktop");
-//     let folderList = appUtils.chooseFolder(core.getMainWindow(), defaultPath);
-//     if (folderList === undefined) {
-//       return;
-//     }
-//     outputFolderPath = folderList[0];
-//   }
-
-//   if (
-//     g_fileData.path === "" ||
-//     outputFolderPath === undefined ||
-//     outputFolderPath === ""
-//   ) {
-//     return;
-//   }
-
-//   sendIpcToRenderer("update-loading", true);
-//   try {
-//     if (g_fileData.type === FileDataType.PDF) {
-//       sendIpcToRenderer(
-//         "extract-pdf-image-buffer",
-//         g_fileData.path,
-//         g_fileData.pageIndex + 1,
-//         outputFolderPath,
-//         g_fileData.password,
-//         sendToTool
-//       );
-//       return;
-//     } else {
-//       if (g_workerExport !== undefined) {
-//         // kill it after one use
-//         g_workerExport.kill();
-//         g_workerExport = undefined;
-//       }
-
-//       let tempSubFolderPath =
-//         g_fileData.type === FileDataType.SEVENZIP ||
-//         g_fileData.type === FileDataType.ZIP ||
-//         g_fileData.type === FileDataType.RAR
-//           ? temp.createSubFolder()
-//           : undefined;
-
-//       if (g_workerExport === undefined) {
-//         g_workerExport = fork(path.join(__dirname, "worker-export.js"));
-//         g_workerExport.on("message", (message) => {
-//           g_workerExport.kill(); // kill it after one use
-//           if (message[0]) {
-//             sendIpcToRenderer("update-loading", false);
-//             if (message[2] === 1) {
-//               tools.switchTool("tool-extract-text", message[1]);
-//               sendIpcToPreload("update-menubar");
-//             } else if (message[2] === 2) {
-//               tools.switchTool("tool-extract-palette", message[1]);
-//               sendIpcToPreload("update-menubar");
-//             } else if (message[2] === 3) {
-//               tools.switchTool("tool-extract-qr", message[1]);
-//               sendIpcToPreload("update-menubar");
-//             } else {
-//               sendIpcToRenderer(
-//                 "show-modal-info",
-//                 "",
-//                 _("ui-modal-info-imagesavedto") +
-//                   "\n" +
-//                   utils.reduceStringFrontEllipsis(message[1], 85),
-//                 _("ui-modal-prompt-button-ok")
-//               );
-//             }
-//             temp.deleteSubFolder(tempSubFolderPath);
-//             return;
-//           } else {
-//             exportPageError(message[1]);
-//             temp.deleteSubFolder(tempSubFolderPath);
-//             return;
-//           }
-//         });
-//       }
-//       g_workerExport.send({
-//         launchInfo: core.getLaunchInfo(),
-//         data: g_fileData,
-//         outputFolderPath: outputFolderPath,
-//         sendToTool: sendToTool,
-//         tempSubFolderPath: tempSubFolderPath,
-//       });
-//     }
-//   } catch (err) {
-//     exportPageError(err);
-//   }
-// }
-
-// function exportPageSaveDataUrl(dataUrl, dpi, outputFolderPath, sendToTool) {
-//   if (dataUrl !== undefined) {
-//     (async () => {
-//       try {
-//         const { changeDpiDataUrl } = require("changedpi");
-//         let img = changeDpiDataUrl(dataUrl, dpi);
-//         let data = img.replace(/^data:image\/\w+;base64,/, "");
-//         let buf = Buffer.from(data, "base64");
-//         let fileType = await FileType.fromBuffer(buf);
-//         let fileExtension = "." + FileExtension.JPG;
-//         if (fileType !== undefined) {
-//           fileExtension = "." + fileType.ext;
-//         }
-//         let fileName =
-//           path.basename(g_fileData.name, path.extname(g_fileData.name)) +
-//           "_page_" +
-//           (g_fileData.pageIndex + 1);
-
-//         let outputFilePath = path.join(
-//           outputFolderPath,
-//           fileName + fileExtension
-//         );
-//         let i = 1;
-//         while (fs.existsSync(outputFilePath)) {
-//           i++;
-//           outputFilePath = path.join(
-//             outputFolderPath,
-//             fileName + "(" + i + ")" + fileExtension
-//           );
-//         }
-//         fs.writeFileSync(outputFilePath, buf, "binary");
-
-//         if (sendToTool === 1) {
-//           tools.switchTool("tool-extract-text", outputFilePath);
-//           sendIpcToPreload("update-menubar");
-//         } else if (sendToTool === 2) {
-//           tools.switchTool("tool-extract-palette", outputFilePath);
-//           sendIpcToPreload("update-menubar");
-//         } else if (sendToTool === 3) {
-//           tools.switchTool("tool-extract-qr", outputFilePath);
-//           sendIpcToPreload("update-menubar");
-//         } else {
-//           sendIpcToRenderer(
-//             "show-modal-info",
-//             "",
-//             _("ui-modal-info-imagesavedto") +
-//               "\n" +
-//               utils.reduceStringFrontEllipsis(outputFilePath, 85),
-//             _("ui-modal-prompt-button-ok")
-//           );
-//         }
-//         sendIpcToRenderer("update-loading", false);
-//       } catch (err) {
-//         exportPageError("");
-//       }
-//     })();
-//   } else {
-//     exportPageError("");
-//   }
-// }
-
-// function exportPageError(err) {
-//   log.error(err);
-//   sendIpcToRenderer("update-loading", false);
-//   sendIpcToRenderer(
-//     "show-modal-info",
-//     "",
-//     _("ui-modal-info-errorexportingpage"),
-//     _("ui-modal-prompt-button-ok")
-//   );
-// }
 
 //////////////////////////////////////////////////////////////////////////////
 // MENU MSGS /////////////////////////////////////////////////////////////////
