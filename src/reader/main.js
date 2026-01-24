@@ -2370,7 +2370,7 @@ function startPageWorker() {
               _("ui-modal-prompt-button-cancel"),
             );
           } else {
-            log.error(error);
+            log.error(message.result.error);
             closeCurrentFile();
             sendIpcToRenderer(
               "show-modal-info",
