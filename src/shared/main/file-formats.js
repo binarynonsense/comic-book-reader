@@ -1094,6 +1094,7 @@ async function extractPdf(
   tempFolderPath,
   password,
   extractionMethod = "embedded",
+  send,
 ) {
   try {
     const { PDFiumLibrary } = require("@hyzyla/pdfium");
@@ -1165,8 +1166,8 @@ async function extractPdf(
         .toFile(outputPath);
 
       completedPages++;
-      if (process.send) {
-        process.send({
+      if (send) {
+        send({
           type: "extraction-progress",
           current: completedPages,
           total: totalPages,

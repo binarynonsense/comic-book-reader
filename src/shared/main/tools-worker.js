@@ -38,6 +38,7 @@ async function extractImages(
   inputFileType,
   tempFolderPath,
   password,
+  extraData,
 ) {
   const timers = require("./timers");
   timers.start("extractImages");
@@ -68,7 +69,13 @@ async function extractImages(
       // TODO: get success and error
       success = await fileFormats.extractEpub(inputFilePath, tempFolderPath);
     } else if (inputFileType === FileDataType.PDF) {
-      result = await fileFormats.extractPdf(inputFilePath, tempFolderPath);
+      result = await fileFormats.extractPdf(
+        inputFilePath,
+        tempFolderPath,
+        password,
+        extraData?.pdfExtractionMethod ?? "embedded",
+        send,
+      );
     } else {
       send("conversionExtractImages: invalid file type");
       return;

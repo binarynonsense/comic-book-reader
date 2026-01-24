@@ -714,6 +714,7 @@ function startFile(inputFileIndex, totalFilesNum) {
             ? g_tempSubFolderPath
             : g_creationTempSubFolderPath,
           g_inputPassword,
+          { pdfExtractionMethod: g_uiSelectedOptions.inputPdfExtractionMethod },
         ],
         [port1],
       );
