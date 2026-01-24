@@ -1578,7 +1578,7 @@ function goToPage(pageIndex, scrollBarPos = 0) {
       }
       sendIpcToRenderer(
         "render-img-page",
-        [response.pageImgSrc],
+        [{ url: response.pageImgSrc }],
         g_fileData.pageRotation,
         scrollBarPos,
       );

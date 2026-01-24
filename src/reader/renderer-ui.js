@@ -1407,7 +1407,7 @@ export function updatePageInfo(pageNum, numPages, isPercentage) {
 ///////////////////////////////////////////////////////////////////////////////
 
 export function renderImageBuffers(
-  buffers,
+  images,
   rotation,
   scrollBarPos,
   sendPageLoaded,
@@ -1421,14 +1421,14 @@ export function renderImageBuffers(
     if (img) title = img.title;
   }
 
-  const isDoublePages = buffers.length === 2;
+  const isDoublePages = images.length === 2;
 
   if (rotation === 0 || rotation === 180) {
     //// setup ////
     let pagesLoaded = 0;
     let page1Img, page2Img;
     page1Img = new Image();
-    assignBufferToImgSrc(buffers[0], page1Img);
+    assignImageToImgSrc(images[0], page1Img);
     page1Img.classList.add("page-img");
     page1Img.classList.add("page");
     if (title && title != "") page1Img.title = title;
@@ -1440,7 +1440,7 @@ export function renderImageBuffers(
     pagesRowDiv.classList.add("pages-row");
     if (isDoublePages) {
       page2Img = new Image();
-      assignBufferToImgSrc(buffers[1], page2Img);
+      assignImageToImgSrc(images[1], page2Img);
       page2Img.classList.add("page-img");
       page2Img.classList.add("page");
       page1Img.classList.add("page-1");
@@ -1559,17 +1559,21 @@ export function renderImageBuffers(
     image.onerror = function () {
       image.src = "../assets/images/error_page.png";
     };
-    assignBufferToImgSrc(buffers[0], image);
+    assignImageToImgSrc(images[0], image);
   }
 }
 
-function assignBufferToImgSrc(imgData, imgElement) {
-  const blob = new Blob([imgData.buffer], { type: imgData.mime });
-  const url = URL.createObjectURL(blob);
-  if (imgElement.src.startsWith("blob:")) {
-    URL.revokeObjectURL(imgElement.src);
+function assignImageToImgSrc(image, imgElement) {
+  if (image.url) {
+    imgElement.src = image.url;
+  } else if (image.buffer) {
+    const blob = new Blob([image.buffer], { type: image.mime });
+    const url = URL.createObjectURL(blob);
+    if (imgElement.src.startsWith("blob:")) {
+      URL.revokeObjectURL(imgElement.src);
+    }
+    imgElement.src = url;
   }
-  imgElement.src = url;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
