@@ -1227,6 +1227,8 @@ async function openPdf(filePath, password) {
     const message = error.message?.toLowerCase() || "";
     if (message.includes("password"))
       return { success: false, error: "password required" };
+    if (message.includes("is greater than 2 gib"))
+      return { success: false, error: "over2gb" };
     return { success: false, error };
   }
 }

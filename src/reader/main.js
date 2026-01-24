@@ -2372,12 +2372,23 @@ function startPageWorker() {
           } else {
             log.error(message.result.error);
             closeCurrentFile();
-            sendIpcToRenderer(
-              "show-modal-info",
-              _("ui-modal-title-fileerror"),
-              _("ui-modal-info-couldntopen-pdf"),
-              _("ui-modal-prompt-button-ok"),
-            );
+            if (message.result.error === "over2gb") {
+              sendIpcToRenderer(
+                "show-modal-info",
+                _("ui-modal-title-fileerror"),
+                _("ui-modal-info-couldntopen-pdf") +
+                  "\n" +
+                  _("ui-modal-info-invalidsize-cap-b", "2GB"),
+                _("ui-modal-prompt-button-ok"),
+              );
+            } else {
+              sendIpcToRenderer(
+                "show-modal-info",
+                _("ui-modal-title-fileerror"),
+                _("ui-modal-info-couldntopen-pdf"),
+                _("ui-modal-prompt-button-ok"),
+              );
+            }
           }
         }
       }
