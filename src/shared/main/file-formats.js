@@ -1199,3 +1199,71 @@ async function extractPdf(
   }
 }
 exports.extractPdf = extractPdf;
+
+/////////////////////////
+
+let g_openPdfLib = null;
+let g_openPdfDoc = null;
+let g_openPdfPath = null;
+
+async function openPdf(filePath, password) {
+  try {
+    if (!(g_openPdfLib && g_openPdfDoc && g_openPdfPath === filePath)) {
+      const { PDFiumLibrary } = require("@hyzyla/pdfium");
+      if (!g_openPdfLib) {
+        g_openPdfLib = await PDFiumLibrary.init();
+      }
+      if (g_openPdfDoc) {
+        g_openPdfDoc.destroy();
+      }
+      const data = fs.readFileSync(filePath);
+      g_openPdfDoc = await g_openPdfLib.loadDocument(data, password);
+      g_openPdfPath = filePath;
+    }
+
+    const numPages = Array.from(g_openPdfDoc.pages()).length;
+    return { success: true, numPages };
+  } catch (error) {
+    const msg = error.message?.toLowerCase() || "";
+    if (msg.includes("password"))
+      return { success: false, error: "password required" };
+    return { success: false, error };
+  }
+}
+exports.openPdf = openPdf;
+
+exports.extractPdfPageBuffer = async function (filePath, pageIndex, dpi = 300) {
+  try {
+    if (!g_openPdfDoc || g_openPdfPath != filePath) {
+      return undefined;
+    }
+
+    const page = g_openPdfDoc.getPage(pageIndex);
+    const scaleFactor = dpi / 72;
+
+    const bitmap = await page.render({
+      scale: scaleFactor,
+      render: "bitmap",
+    });
+
+    const sharp = require("sharp");
+    const buffer = await sharp(bitmap.data, {
+      raw: { width: bitmap.width, height: bitmap.height, channels: 4 },
+    })
+      .jpeg({ quality: 80 })
+      .toBuffer();
+
+    return buffer;
+  } catch (error) {
+    return undefined;
+  }
+};
+
+async function closePdf() {
+  if (g_openPdfDoc) {
+    g_openPdfDoc.destroy();
+    g_openPdfDoc = null;
+  }
+  g_openPdfPath = null;
+}
+exports.closePdf = closePdf;

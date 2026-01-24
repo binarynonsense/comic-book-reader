@@ -14,6 +14,7 @@ const fileUtils = require("../shared/main/file-utils");
 process.parentPort.on("message", async (event) => {
   let message = event.data;
   // process.parentPort.postMessage({
+  //   type: "testLog",
   //   log: `[page worker] message received: ${message.command}`,
   // });
   if (message.command === "extract") {
@@ -25,6 +26,7 @@ process.parentPort.on("message", async (event) => {
       const result = await extractImageBuffer(message);
       if (result.success === false) {
         process.parentPort.postMessage({
+          type: "extractResult",
           success: false,
           error: result.error,
           tempSubFolderPath,
@@ -34,11 +36,22 @@ process.parentPort.on("message", async (event) => {
       images.push({ buffer: result.buffer, mime: result.mime });
     }
     process.parentPort.postMessage({
+      type: "extractResult",
       success: true,
       images,
       tempSubFolderPath,
       scrollBarPos: message.scrollBarPos,
     });
+  } else if (message.command === "open") {
+    if (message.fileType === FileDataType.PDF) {
+      const result = await fileFormats.openPdf(
+        message.filePath,
+        message.password,
+      );
+      message.type = "openResult";
+      message.result = result;
+      process.parentPort.postMessage(message);
+    }
   }
 });
 
@@ -50,6 +63,7 @@ async function extractImageBuffer({
   scrollBarPos,
   password,
   tempSubFolderPath,
+  extraData,
 }) {
   try {
     let buffer;
@@ -99,6 +113,12 @@ async function extractImageBuffer({
       // }
       const fullPath = path.join(filePath, entryNames[entryNameIndex]);
       buffer = fs.readFileSync(fullPath);
+    } else if (fileType === FileDataType.PDF) {
+      buffer = await fileFormats.extractPdfPageBuffer(
+        filePath,
+        entryNames[entryNameIndex], // = page number
+        extraData?.dpi,
+      );
     } else {
       //  TODO: handle error file type not valid
     }

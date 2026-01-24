@@ -34,15 +34,17 @@ const {
 } = require("../shared/main/constants");
 const homeScreen = require("./home-screen/main");
 
-let g_resizeEventCounter;
-let g_delayedRefreshPageEvent;
-
 //////////////////////////////////////////////////////////////////////////////
 // SETUP  ////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 
+let g_resizeEventCounter;
+let g_delayedRefreshPageEvent;
+
 let g_languageDir = "ltr";
 let g_pagesDirection = "ltr";
+
+const PDF_ENGINE = "pdfium";
 
 exports.init = function (filePath, checkHistory) {
   initOnIpcCallbacks();
@@ -980,7 +982,24 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
       fileExtension = "." + fileType.ext;
     }
 
-    if (fileExtension === "." + FileExtension.PDF) {
+    if (fileExtension === "." + FileExtension.PDF && PDF_ENGINE === "pdfium") {
+      if (g_fileData.state !== FileDataState.LOADING) {
+        cleanUpFileData();
+        g_fileData.type = FileDataType.PDF;
+        g_fileData.state = FileDataState.LOADING;
+        g_fileData.pageIndex = pageIndex;
+        g_fileData.path = filePath;
+      }
+      startPageWorker();
+      g_fileData.password = password;
+      sendToPageWorker({
+        command: "open",
+        fileType: g_fileData.type,
+        filePath: g_fileData.path,
+        pageIndex,
+        password,
+      });
+    } else if (fileExtension === "." + FileExtension.PDF) {
       if (g_fileData.state !== FileDataState.LOADING) {
         cleanUpFileData();
         g_fileData.type = FileDataType.PDF;
@@ -1438,6 +1457,8 @@ function closeCurrentFile(addToHistory = true) {
     sendIpcToRenderer("close-epub-ebook");
   }
   cleanUpFileData();
+  // TODO: in pdfs, should I call closePdf() in worker and wait??? or
+  // killing the wirker is good enough as it destroys everything
   killPageWorker();
 
   menuBar.rebuild();
@@ -1524,6 +1545,9 @@ function goToPage(pageIndex, scrollBarPos = 0) {
     pageIndexes.forEach((index) => {
       entryNames.push(g_fileData.pagesPaths[index]);
     });
+    if (startPageWorker()) {
+      // TODO: if pdf load file?
+    }
 
     sendToPageWorker({
       command: "extract",
@@ -1534,6 +1558,23 @@ function goToPage(pageIndex, scrollBarPos = 0) {
       password: g_fileData.password,
       tempSubFolderPath,
     });
+  } else if (g_fileData.type === FileDataType.PDF && PDF_ENGINE === "pdfium") {
+    g_fileData.state = FileDataState.LOADING;
+    timers.start("pagesExtraction");
+
+    let pageIndexes = getGoToIndexes();
+    if (startPageWorker()) {
+      // TODO: if pdf load file?
+    }
+    sendToPageWorker({
+      command: "extract",
+      fileType: g_fileData.type,
+      filePath: g_fileData.path,
+      entryNames: pageIndexes,
+      scrollBarPos,
+      password: g_fileData.password,
+      extraData: { dpi: 150 },
+    });
   } else if (g_fileData.type === FileDataType.EPUB_EBOOK) {
     if (pageIndex > 0) {
       g_fileData.state = FileDataState.LOADING;
@@ -1542,7 +1583,9 @@ function goToPage(pageIndex, scrollBarPos = 0) {
       g_fileData.state = FileDataState.LOADING;
       sendIpcToRenderer("render-epub-ebook-page-prev");
     }
-  } else if (g_fileData.type === FileDataType.PDF) {
+  }
+  // PDF old pdfjs method
+  else if (g_fileData.type === FileDataType.PDF) {
     g_fileData.state = FileDataState.LOADING;
     let pageIndexes = getGoToIndexes();
     sendIpcToRenderer(
@@ -2253,40 +2296,89 @@ function startPageWorker() {
   if (g_pageWorker === undefined) {
     g_pageWorker = utilityProcess.fork(path.join(__dirname, "worker-page.js"));
     g_pageWorker.on("message", (message) => {
-      if (message.log) {
+      if (message.type === "testLog") {
         log.test(message.log);
         return;
-      }
-      log.debug(
-        `page load time: ${timers.stop("pagesExtraction").toFixed(2)}s`,
-      );
-      if (message.success === true) {
-        sendIpcToRenderer(
-          "render-img-page",
-          message.images, // buffers and mimes
-          g_fileData.pageRotation,
-          message.scrollBarPos,
+      } else if (message.type === "extractResult") {
+        log.debug(
+          `page load time: ${timers.stop("pagesExtraction").toFixed(2)}s`,
         );
-        temp.deleteSubFolder(message.tempSubFolderPath);
-        return;
-      } else if (message.success === false) {
-        if (message?.error?.toString() === "password required") {
-          log.warning("password required");
+        if (message.success === true) {
           sendIpcToRenderer(
-            "show-modal-prompt-password",
-            _("ui-modal-prompt-enterpassword"),
-            path.basename(g_fileData.path),
-            _("ui-modal-prompt-button-ok"),
-            _("ui-modal-prompt-button-cancel"),
+            "render-img-page",
+            message.images, // buffers and mimes
+            g_fileData.pageRotation,
+            message.scrollBarPos,
           );
-          return;
-        } else {
-          // TODO: handle other errors
-          log.error("unhandled worker error");
-          log.error(message.error);
-          sendIpcToRenderer("update-loading", false);
           temp.deleteSubFolder(message.tempSubFolderPath);
           return;
+        } else if (message.success === false) {
+          if (message?.error?.toString() === "password required") {
+            log.warning("password required");
+            sendIpcToRenderer(
+              "show-modal-prompt-password",
+              _("ui-modal-prompt-enterpassword"),
+              path.basename(g_fileData.path),
+              _("ui-modal-prompt-button-ok"),
+              _("ui-modal-prompt-button-cancel"),
+            );
+            return;
+          } else {
+            // TODO: handle other errors
+            log.error("unhandled worker error");
+            log.error(message.error);
+            sendIpcToRenderer("update-loading", false);
+            temp.deleteSubFolder(message.tempSubFolderPath);
+            return;
+          }
+        }
+      } else if (message.type === "openResult") {
+        if (message.result.success) {
+          const pageIndex = message.pageIndex;
+          //
+          g_fileData.state = FileDataState.LOADED;
+          g_fileData.type = FileDataType.PDF;
+          g_fileData.path = message.filePath;
+          g_fileData.name = path.basename(g_fileData.path);
+          g_fileData.pagesPaths = [];
+          g_fileData.numPages = message.result.numPages;
+          if (pageIndex < 0 || pageIndex >= g_fileData.numPages) pageIndex = 0;
+          g_fileData.pageIndex = pageIndex;
+          // g_fileData.metadata = metadata;
+          updateMenuAndToolbarItems();
+          setPageRotation(0, false);
+          setInitialZoom(g_fileData.path);
+          setInitialPageMode(g_fileData.path);
+          addCurrentToHistory();
+          goToPage(pageIndex);
+          renderPageInfo();
+          renderTitle();
+        } else {
+          if (message.result.error === "password required") {
+            if (g_fileData.state !== FileDataState.LOADING) {
+              cleanUpFileData();
+              g_fileData.state = FileDataState.LOADING;
+              g_fileData.type = FileDataType.PDF;
+              g_fileData.path = message.filePath;
+              g_fileData.pageIndex = message.pageIndex;
+            }
+            sendIpcToRenderer(
+              "show-modal-prompt-password",
+              _("ui-modal-prompt-enterpassword"),
+              path.basename(g_fileData.path),
+              _("ui-modal-prompt-button-ok"),
+              _("ui-modal-prompt-button-cancel"),
+            );
+          } else {
+            log.error(error);
+            closeCurrentFile();
+            sendIpcToRenderer(
+              "show-modal-info",
+              _("ui-modal-title-fileerror"),
+              _("ui-modal-info-couldntopen-pdf"),
+              _("ui-modal-prompt-button-ok"),
+            );
+          }
         }
       }
     });
@@ -2600,6 +2692,7 @@ async function onMenuFileProperties() {
       const pdf = await PDFDocument.load(fs.readFileSync(g_fileData.path), {
         updateMetadata: false,
       });
+      if (!g_fileData.metadata) g_fileData.metadata = {};
       g_fileData.metadata.title = pdf.getTitle();
       g_fileData.metadata.author = pdf.getAuthor();
       g_fileData.metadata.subject = pdf.getSubject();
