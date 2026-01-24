@@ -1224,8 +1224,8 @@ async function openPdf(filePath, password) {
     const numPages = Array.from(g_openPdfDoc.pages()).length;
     return { success: true, numPages };
   } catch (error) {
-    const msg = error.message?.toLowerCase() || "";
-    if (msg.includes("password"))
+    const message = error.message?.toLowerCase() || "";
+    if (message.includes("password"))
       return { success: false, error: "password required" };
     return { success: false, error };
   }
