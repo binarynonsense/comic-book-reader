@@ -8,7 +8,7 @@
 import { sendIpcToMain as coreSendIpcToMain } from "../core/renderer.js";
 import {
   initIpc as uiInitIpc,
-  renderImageBuffers,
+  renderImageBuffers as renderImages,
   updatePageInfo,
   onInputEvent as uiOnInputEvent,
   getOpenModal,
@@ -44,16 +44,16 @@ export function initIpc() {
 // PAGES //////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-let g_currentImgBuffers;
+let g_currentImages;
 
 function cleanUpPages() {
-  g_currentImgBuffers = undefined;
+  g_currentImages = undefined;
   cleanUpPdf();
   cleanUpEpub();
 }
 
 export function getCurrentImgBuffers() {
-  return g_currentImgBuffers;
+  return g_currentImages;
 }
 
 export function showNoBookContent(show) {
@@ -107,24 +107,18 @@ export function on(id, callback) {
 }
 
 function initOnIpcCallbacks() {
-  on("render-img-page", (buffers, rotation, scrollBarPos) => {
-    if (buffers) {
+  on("render-img-page", (images, rotation, scrollBarPos) => {
+    if (images) {
       cleanUpPages();
       showNoBookContent(false);
-      g_currentImgBuffers = buffers;
-      renderImageBuffers(
-        g_currentImgBuffers,
-        rotation,
-        scrollBarPos,
-        true,
-        false,
-      );
+      g_currentImages = images;
+      renderImages(g_currentImages, rotation, scrollBarPos, true, false);
     }
   });
 
   on("refresh-img-page", (rotation) => {
-    if (g_currentImgBuffers)
-      renderImageBuffers(g_currentImgBuffers, rotation, undefined, false, true);
+    if (g_currentImages)
+      renderImages(g_currentImages, rotation, undefined, false, true);
   });
 
   on("update-img-page-title", (text) => {
