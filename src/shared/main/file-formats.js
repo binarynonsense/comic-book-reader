@@ -1166,13 +1166,11 @@ async function extractPdf(
         .toFile(outputPath);
 
       completedPages++;
-      if (send) {
-        send({
-          type: "extraction-progress",
-          current: completedPages,
-          total: totalPages,
-        });
-      }
+      send?.({
+        type: "extraction-progress",
+        current: completedPages,
+        total: totalPages,
+      });
     };
 
     // parallelize using async workers to increase speed
