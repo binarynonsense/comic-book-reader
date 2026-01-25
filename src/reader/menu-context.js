@@ -13,7 +13,7 @@ const { _ } = require("../shared/main/i18n");
 
 const log = require("../shared/main/logger");
 const appUtils = require("../shared/main/app-utils");
-const FileType = require("file-type");
+const fileUtils = require("../shared/main/file-utils");
 const fs = require("fs");
 const path = require("path");
 const temp = require("../shared/main/temp");
@@ -261,13 +261,20 @@ async function exportPage(sendToTool, params, fileData) {
       throw "error";
     }
 
-    let data = dataUrl.replace(/^data:image\/\w+;base64,/, "");
-    let buf = Buffer.from(data, "base64");
-    let fileType = await FileType.fromBuffer(buf);
-    let fileExtension = "." + FileExtension.JPG;
-    if (fileType !== undefined) {
-      fileExtension = "." + fileType.ext;
+    let buffer;
+    if (typeof dataUrl === "string") {
+      let data = dataUrl.replace(/^data:image\/\w+;base64,/, "");
+      buffer = Buffer.from(data, "base64");
+    } else {
+      buffer = Buffer.from(dataUrl);
     }
+
+    let fileExtension = "." + FileExtension.JPG;
+    let fileType = fileUtils.getFileTypeFromBuffer(buffer);
+    if (fileType !== undefined) {
+      fileExtension = "." + fileType;
+    }
+    log.test(fileType);
     let fileName =
       path.basename(fileData.name, path.extname(fileData.name)) +
       "_page_" +
@@ -279,10 +286,10 @@ async function exportPage(sendToTool, params, fileData) {
       i++;
       outputFilePath = path.join(
         outputFolderPath,
-        fileName + "(" + i + ")" + fileExtension
+        fileName + "(" + i + ")" + fileExtension,
       );
     }
-    fs.writeFileSync(outputFilePath, buf, "binary");
+    fs.writeFileSync(outputFilePath, buffer, "binary");
     //
     if (sendToTool === 1) {
       tools.switchTool("tool-extract-palette", outputFilePath);
@@ -297,7 +304,7 @@ async function exportPage(sendToTool, params, fileData) {
         _("ui-modal-info-imagesaved"),
         4000,
         outputFilePath,
-        true
+        true,
       );
     }
   } catch (error) {
