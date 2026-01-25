@@ -167,8 +167,22 @@ exports.getImageMimeTypeFromBuffer = function (buffer) {
   return "image/png"; // fallback value // TODO: better return undefined?
 };
 
-exports.getFileTypeFromPath = function (filePath) {
+exports.getFileTypeFromPath = function (filePath, returnMimeType = false) {
   try {
+    const mimeMap = {
+      rar: "application/x-rar-compressed", //rar: "application/vnd.rar",
+      "7z": "application/x-7z-compressed",
+      pdf: "application/pdf",
+      epub: "application/epub+zip",
+      zip: "application/zip",
+      jpg: "image/jpeg",
+      png: "image/png",
+      gif: "image/gif",
+      bmp: "image/bmp",
+      webp: "image/webp",
+      avif: "image/avif",
+    };
+
     // read 100 bytes
     const buffer = Buffer.alloc(100);
     const fd = fs.openSync(filePath, "r");
@@ -176,40 +190,35 @@ exports.getFileTypeFromPath = function (filePath) {
     fs.closeSync(fd);
     const hex = buffer.toString("hex").toLowerCase();
 
-    // docs
-    if (hex.startsWith("52617221")) return "rar"; // Rar!
-    if (hex.startsWith("377abcaf")) return "7z"; // 7z
-    if (hex.startsWith("25504446")) return "pdf"; // %PDF
-    // ZIP or EPUB start with PK.. (504b0304)
-    if (hex.startsWith("504b0304")) {
+    let type;
+
+    // docs logic
+    if (hex.startsWith("52617221")) type = "rar";
+    else if (hex.startsWith("377abcaf")) type = "7z";
+    else if (hex.startsWith("25504446")) type = "pdf";
+    else if (hex.startsWith("504b0304")) {
       const check = buffer.toString("ascii", 30, 100);
       if (check.includes("mimetype") && check.includes("epub+zip")) {
-        return "epub";
+        type = "epub";
+      } else if (filePath.toLowerCase().endsWith(".epub")) {
+        type = "epub";
+      } else {
+        type = "zip";
       }
-      // not the greatest solution but some epubs are not 100% compliant
-      // with the specification
-      if (filePath.toLowerCase().endsWith(".epub")) {
-        return "epub";
-      }
-      return "zip";
+    }
+    // images logic
+    else if (hex.startsWith("ffd8ff")) type = "jpg";
+    else if (hex.startsWith("89504e47")) type = "png";
+    else if (hex.startsWith("47494638")) type = "gif";
+    else if (hex.startsWith("424d")) type = "bmp";
+    else if (hex.startsWith("52494646") && hex.slice(16, 24) === "57454250") {
+      type = "webp";
+    } else if (hex.slice(8, 24) === "6674797061766966") {
+      type = "avif";
     }
 
-    // images
-    if (hex.startsWith("ffd8ff")) return "jpg";
-    if (hex.startsWith("89504e47")) return "png";
-    if (hex.startsWith("47494638")) return "gif";
-    if (hex.startsWith("424d")) return "bmp";
-    // WebP (RIFF at byte 0, WEBP at byte 8)
-    if (hex.startsWith("52494646") && hex.slice(16, 24) === "57454250") {
-      return "webp";
-    }
-    // AVIF (ftypavif at byte 4)
-    // check index 8 to 24 (8 bytes / 16 hex chars)
-    if (hex.slice(8, 24) === "6674797061766966") {
-      return "avif";
-    }
-
-    return undefined;
+    if (!type) return undefined;
+    return returnMimeType ? mimeMap[type] : type;
   } catch (error) {
     log.error(error);
     return undefined;
