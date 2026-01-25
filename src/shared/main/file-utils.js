@@ -169,10 +169,10 @@ exports.getImageMimeTypeFromBuffer = function (buffer) {
 
 exports.getFileTypeFromPath = function (filePath) {
   try {
-    // read 50 bytes
-    const buffer = Buffer.alloc(50);
+    // read 100 bytes
+    const buffer = Buffer.alloc(100);
     const fd = fs.openSync(filePath, "r");
-    fs.readSync(fd, buffer, 0, 50, 0);
+    fs.readSync(fd, buffer, 0, 100, 0);
     fs.closeSync(fd);
     const hex = buffer.toString("hex").toLowerCase();
 
@@ -180,11 +180,15 @@ exports.getFileTypeFromPath = function (filePath) {
     if (hex.startsWith("52617221")) return "rar"; // Rar!
     if (hex.startsWith("377abcaf")) return "7z"; // 7z
     if (hex.startsWith("25504446")) return "pdf"; // %PDF
-    // ZIP or EPUB start with PK..
+    // ZIP or EPUB start with PK.. (504b0304)
     if (hex.startsWith("504b0304")) {
-      // EPUB: check the 'mimetype' field starting at offset 30
-      // 'epub+zip' in ASCII
-      if (buffer.toString("ascii", 30, 50).includes("epub+zip")) {
+      const check = buffer.toString("ascii", 30, 100);
+      if (check.includes("mimetype") && check.includes("epub+zip")) {
+        return "epub";
+      }
+      // not the greatest solution but some epubs are not 100% compliant
+      // with the specification
+      if (filePath.toLowerCase().endsWith(".epub")) {
         return "epub";
       }
       return "zip";
@@ -205,10 +209,10 @@ exports.getFileTypeFromPath = function (filePath) {
       return "avif";
     }
 
-    return "unknown";
+    return undefined;
   } catch (error) {
     log.error(error);
-    return "unknown";
+    return undefined;
   }
 };
 
