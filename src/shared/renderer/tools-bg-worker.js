@@ -8,7 +8,7 @@
 const { ipcRenderer } = require("electron");
 const fs = require("fs");
 const path = require("path");
-const { changeDpiDataUrl } = require("changedpi");
+const fileUtils = require("../main/file-utils");
 const { FileExtension } = require("../main/constants");
 const { padNumber } = require("../main/utils");
 
@@ -23,7 +23,7 @@ ipcRenderer.on(
     folderPath,
     extractionMethod,
     logText,
-    password
+    password,
   ) => {
     g_cancel = false;
     extractPDF(
@@ -32,9 +32,9 @@ ipcRenderer.on(
       folderPath,
       extractionMethod,
       logText,
-      password
+      password,
     );
-  }
+  },
 );
 
 ipcRenderer.on("cancel", (event) => {
@@ -54,7 +54,7 @@ async function extractPDF(
   folderPath,
   extractionMethod,
   logText,
-  password
+  password,
 ) {
   try {
     // FIRST PASS
@@ -62,7 +62,9 @@ async function extractPDF(
     let pdfjsFolderName = pdfjsFolderName_1;
     let failedPages = [];
     {
-      const pdfjsLib = require(`../../assets/libs/${pdfjsFolderName}/build/pdf.js`);
+      const pdfjsLib = require(
+        `../../assets/libs/${pdfjsFolderName}/build/pdf.js`,
+      );
       // ref: https://kevinnadro.com/blog/parsing-pdfs-in-javascript/
       pdfjsLib.GlobalWorkerOptions.workerSrc = `../../assets/libs/${pdfjsFolderName}/build/pdf.worker.js`;
       //pdfjsLib.disableWorker = true;
@@ -82,7 +84,7 @@ async function extractPDF(
             "tools-worker",
             ipcChannel,
             "pdf-images-extracted",
-            true
+            true,
           );
           return;
         }
@@ -162,20 +164,23 @@ async function extractPDF(
         }
         //////////////////////////////
         let dataUrl = canvas.toDataURL("image/jpeg", 0.8);
-        let img = changeDpiDataUrl(dataUrl, dpi);
-        let data = img.replace(/^data:image\/\w+;base64,/, "");
-        let buf = Buffer.from(data, "base64");
+        // let img = changeDpiDataUrl(dataUrl, dpi);
+        // let data = img.replace(/^data:image\/\w+;base64,/, "");
+        let data = dataUrl.replace(/^data:image\/\w+;base64,/, "");
+        let buffer = Buffer.from(data, "base64");
+        // new way
+        buffer = fileUtils.changeJpegBufferDpi(buffer, dpi);
 
         let filePath = path.join(
           folderPath,
-          padNumber(pageNum, pdf.numPages) + "." + FileExtension.JPG
+          padNumber(pageNum, pdf.numPages) + "." + FileExtension.JPG,
         );
-        fs.writeFileSync(filePath, buf, "binary");
+        fs.writeFileSync(filePath, buffer, "binary");
         ipcRenderer.send(
           "tools-worker",
           ipcChannel,
           "update-log-text",
-          logText + pageNum + " / " + pdf.numPages
+          logText + pageNum + " / " + pdf.numPages,
         );
 
         page.cleanup();
@@ -188,7 +193,9 @@ async function extractPDF(
     pdfjsFolderName = pdfjsFolderName_2;
     if (failedPages.length > 0) {
       console.log("retrying pages: " + failedPages);
-      const pdfjsLib = require(`../../assets/libs/${pdfjsFolderName}/build/pdf.js`);
+      const pdfjsLib = require(
+        `../../assets/libs/${pdfjsFolderName}/build/pdf.js`,
+      );
       // ref: https://kevinnadro.com/blog/parsing-pdfs-in-javascript/
       pdfjsLib.GlobalWorkerOptions.workerSrc = `../../assets/libs/${pdfjsFolderName}/build/pdf.worker.js`;
       //pdfjsLib.disableWorker = true;
@@ -208,7 +215,7 @@ async function extractPDF(
             "tools-worker",
             ipcChannel,
             "pdf-images-extracted",
-            true
+            true,
           );
           return;
         }
@@ -287,20 +294,23 @@ async function extractPDF(
         }
         //////////////////////////////
         let dataUrl = canvas.toDataURL("image/jpeg", 0.8);
-        let img = changeDpiDataUrl(dataUrl, dpi);
-        let data = img.replace(/^data:image\/\w+;base64,/, "");
-        let buf = Buffer.from(data, "base64");
+        // let img = changeDpiDataUrl(dataUrl, dpi); // old way
+        // let data = img.replace(/^data:image\/\w+;base64,/, "");
+        let data = dataUrl.replace(/^data:image\/\w+;base64,/, "");
+        let buffer = Buffer.from(data, "base64");
+        // new way
+        buffer = fileUtils.changeJpegBufferDpi(buffer, dpi);
 
         let filePath = path.join(
           folderPath,
-          padNumber(pageNum, pdf.numPages) + "." + FileExtension.JPG
+          padNumber(pageNum, pdf.numPages) + "." + FileExtension.JPG,
         );
-        fs.writeFileSync(filePath, buf, "binary");
+        fs.writeFileSync(filePath, buffer, "binary");
         ipcRenderer.send(
           "tools-worker",
           ipcChannel,
           "update-log-text",
-          logText + pageNum + " / " + pdf.numPages
+          logText + pageNum + " / " + pdf.numPages,
         );
 
         page.cleanup();

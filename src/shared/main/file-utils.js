@@ -132,6 +132,49 @@ exports.createRandomSubfolder = function (baseFolderPath) {
   return folderPath;
 };
 
+exports.changeJpegBufferDpi = function (buffer, dpi) {
+  /**
+   * ref: JFIF 1.02 Spec https://www.w3.org/Graphics/JPEG/jfif3.pdf
+   * -------------------------------------------------------------------------
+   * Offset | Size | Value       | Description
+   * -------------------------------------------------------------------------
+   * i      | 2    | 0xFF 0xE0   | APP0 Marker
+   * i + 4  | 5    | "JFIF\0"    | Identifier (0x4A 0x46 0x49 0x46 0x00)
+   * i + 13 | 1    | 1           | Density Units (1 = DPI, 2 = Dots/cm)
+   * i + 14 | 2    | 0xHH 0xLL   | Xdensity (16-bit Big Endian)
+   * i + 16 | 2    | 0xHH 0xLL   | Ydensity (16-bit Big Endian)
+   * -------------------------------------------------------------------------
+   */
+  // safety limit for the [i + 17] check
+  const scanLimit = Math.min(buffer.length - 18, 50);
+  if (scanLimit < 0) return buffer;
+
+  for (let i = 0; i < scanLimit; i++) {
+    // Marker
+    if (buffer[i] === 0xff && buffer[i + 1] === 0xe0) {
+      // Identifier
+      if (
+        buffer[i + 4] === 0x4a && // J
+        buffer[i + 5] === 0x46 && // F
+        buffer[i + 6] === 0x49 && // I
+        buffer[i + 7] === 0x46 && // F
+        buffer[i + 8] === 0x00 // \0
+      ) {
+        // Density Units
+        buffer[i + 13] = 1;
+        // Xdensity
+        buffer[i + 14] = (dpi >> 8) & 0xff; // high
+        buffer[i + 15] = dpi & 0xff; // low
+        // Ydensity
+        buffer[i + 16] = (dpi >> 8) & 0xff;
+        buffer[i + 17] = dpi & 0xff;
+        return buffer;
+      }
+    }
+  }
+  return buffer;
+};
+
 ///////////////////////////////////////////////////////////////////////////////
 // FILE TYPE //////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -431,7 +474,7 @@ exports.getComicInfoFileInFolderRecursive = getComicInfoFileInFolderRecursive;
 // DELETE /////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-function deleteFolderRecursive(
+exports.deleteFolderRecursive = function (
   folderPath,
   logToError,
   pathStartsWith,
@@ -477,68 +520,4 @@ function deleteFolderRecursive(
       }
     }
   }
-}
-
-function deleteFolderRecursiveOLD(
-  folderPath,
-  logToError,
-  pathStartsWith,
-  nameStartsWith,
-) {
-  if (fs.existsSync(folderPath)) {
-    if (nameStartsWith) {
-      const folderName = path.basename(folderPath);
-      if (!folderName.startsWith(nameStartsWith)) {
-        log.warning(
-          "tried to delete a folder with a name that doesn't start with: " +
-            nameStartsWith,
-        );
-        log.warning(folderPath);
-        return;
-      }
-    }
-    if (pathStartsWith) {
-      if (!folderPath.startsWith(pathStartsWith)) {
-        log.warning(
-          "tried to delete a folder with a path that doesn't start with: " +
-            pathStartsWith,
-        );
-        log.warning(folderPath);
-        return;
-      }
-    }
-    let files = fs.readdirSync(folderPath);
-    files.forEach((file) => {
-      const entryPath = path.join(folderPath, file);
-      if (fs.lstatSync(entryPath).isDirectory()) {
-        deleteFolderRecursive(entryPath, logToError);
-      } else {
-        try {
-          fs.unlinkSync(entryPath); // delete the file
-        } catch (error) {
-          log.debug("couldn't delete file: " + entryPath);
-        }
-      }
-    });
-    try {
-      fs.rmdirSync(folderPath);
-      log.debug("deleted folder: " + folderPath);
-    } catch (error) {
-      if (error.code == "ENOTEMPTY") {
-        // TODO: retry?
-        // this can happen if for example the temp folder is the same
-        // as the one the conversion is outputing to
-      }
-      if (logToError) {
-        log.error("couldn't delete folder: " + folderPath);
-        log.error(error.code);
-      } else {
-        log.debug("couldn't delete folder: " + folderPath);
-        log.debug(error.code);
-      }
-    }
-  } else {
-    log.editor("deleteFolderRecursive: !existsSync " + folderPath);
-  }
-}
-exports.deleteFolderRecursive = deleteFolderRecursive;
+};

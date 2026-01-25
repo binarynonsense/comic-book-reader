@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2025 Álvaro García
+ * Copyright 2020-2026 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -137,14 +137,14 @@ function initOnIpcCallbacks() {
       _("tool-shared-modal-title-warning"),
       _("tool-shared-ui-settings-reset-warning"),
       _("ui-modal-prompt-button-yes"),
-      _("ui-modal-prompt-button-cancel")
+      _("ui-modal-prompt-button-cancel"),
     );
   });
 
   on("save-settings-options", (options, forceQuit) => {
     settings.updateToolOptions(
       `tool-ci`,
-      options["tool-ci-setting-remember-checkbox"] ? options : undefined
+      options["tool-ci-setting-remember-checkbox"] ? options : undefined,
     );
     if (forceQuit) {
       core.forceQuit();
@@ -170,7 +170,7 @@ function initOnIpcCallbacks() {
         defaultPath,
         allowedFileTypesName,
         allowedFileTypesList,
-        allowMultipleSelection
+        allowMultipleSelection,
       );
       if (filePathsList === undefined) {
         return;
@@ -217,7 +217,7 @@ function initOnIpcCallbacks() {
       "show-modal-info",
       _("tool-shared-modal-title-info"),
       text,
-      _("tool-shared-ui-close").toUpperCase()
+      _("tool-shared-ui-close").toUpperCase(),
     );
   });
 
@@ -236,7 +236,7 @@ function initOnIpcCallbacks() {
       outputScale,
       outputFormatParams,
       outputFormat,
-      outputFolderPath
+      outputFolderPath,
     ) => {
       menuBar.setCloseTool(false);
       sendIpcToPreload("update-menubar");
@@ -245,9 +245,9 @@ function initOnIpcCallbacks() {
         outputScale,
         outputFormatParams,
         outputFormat,
-        outputFolderPath
+        outputFolderPath,
       );
-    }
+    },
   );
 
   on("copy-text-to-clipboard", (text) => {
@@ -271,24 +271,7 @@ function handle(id, callback) {
   g_handleIpcCallbacks[id] = callback;
 }
 
-function initHandleIpcCallbacks() {
-  // handle(
-  //   "pdf-save-dataurl-to-file",
-  //   async (dataUrl, dpi, folderPath, pageNum) => {
-  //     try {
-  //       const { changeDpiDataUrl } = require("changedpi");
-  //       let img = changeDpiDataUrl(dataUrl, dpi);
-  //       let data = img.replace(/^data:image\/\w+;base64,/, "");
-  //       let buf = Buffer.from(data, "base64");
-  //       let filePath = path.join(folderPath, pageNum + "." + FileExtension.JPG);
-  //       fs.writeFileSync(filePath, buf, "binary");
-  //       return undefined;
-  //     } catch (error) {
-  //       return error;
-  //     }
-  //   }
-  // );
-}
+function initHandleIpcCallbacks() {}
 
 ///////////////////////////////////////////////////////////////////////////////
 // TOOL ///////////////////////////////////////////////////////////////////////
@@ -316,12 +299,12 @@ function stopError(error) {
   sendIpcToRenderer("update-log-text", error);
   sendIpcToRenderer(
     "update-log-text",
-    _("tool-shared-modal-log-conversion-error")
+    _("tool-shared-modal-log-conversion-error"),
   );
 
   sendIpcToRenderer(
     "modal-update-title-text",
-    _("tool-shared-modal-title-conversion-finished") + " ENDDDD"
+    _("tool-shared-modal-title-conversion-finished") + " ENDDDD",
   );
 
   if (g_numErrors > 0) {
@@ -330,13 +313,13 @@ function stopError(error) {
       _(
         "tool-shared-modal-info-conversion-error-num-files",
         g_numErrors,
-        g_numFiles
-      )
+        g_numFiles,
+      ),
     );
   } else {
     sendIpcToRenderer(
       "update-info-text",
-      _("tool-shared-modal-info-conversion-success-num-files", g_numFiles)
+      _("tool-shared-modal-info-conversion-success-num-files", g_numFiles),
     );
   }
 
@@ -348,7 +331,7 @@ function stopError(error) {
     g_numFiles,
     g_numErrors,
     g_failedFilePaths,
-    g_numAttempts
+    g_numAttempts,
   );
 }
 
@@ -358,12 +341,12 @@ function stopCancel() {
   g_numAttempts--;
   sendIpcToRenderer(
     "update-log-text",
-    _("tool-shared-modal-log-conversion-canceled")
+    _("tool-shared-modal-log-conversion-canceled"),
   );
 
   sendIpcToRenderer(
     "modal-update-title-text",
-    _("tool-shared-modal-title-conversion-canceled")
+    _("tool-shared-modal-title-conversion-canceled"),
   );
   sendIpcToRenderer(
     "update-info-text",
@@ -371,8 +354,8 @@ function stopCancel() {
       "tool-shared-modal-info-conversion-results",
       g_numAttempts - g_numErrors,
       g_numErrors,
-      g_numFiles - g_numAttempts
-    )
+      g_numFiles - g_numAttempts,
+    ),
   );
 
   menuBar.setCloseTool(true);
@@ -383,7 +366,7 @@ function stopCancel() {
     g_numFiles,
     g_numErrors,
     g_failedFilePaths,
-    g_numAttempts
+    g_numAttempts,
   );
 }
 
@@ -397,7 +380,7 @@ async function start(
   outputScaleParams,
   outputFormatParams,
   outputFormat,
-  outputFolderPath
+  outputFolderPath,
 ) {
   g_cancel = false;
   g_numErrors = 0;
@@ -407,11 +390,11 @@ async function start(
   try {
     sendIpcToRenderer(
       "modal-update-title-text",
-      _("tool-shared-modal-title-converting")
+      _("tool-shared-modal-title-converting"),
     );
     sendIpcToRenderer(
       "update-log-text",
-      _("tool-shared-modal-log-converting-images") + "..."
+      _("tool-shared-modal-log-converting-images") + "...",
     );
 
     const sharp = require("sharp");
@@ -431,20 +414,20 @@ async function start(
         originalFilePath = imgFiles[index].path;
         let filePath = path.join(
           g_tempSubFolderPath,
-          path.basename(imgFiles[index].path)
+          path.basename(imgFiles[index].path),
         );
         fs.copyFileSync(imgFiles[index].path, filePath);
         let fileName = path.basename(filePath, path.extname(filePath));
         let outputFilePath = path.join(
           outputFolderPath,
-          fileName + "." + outputFormat
+          fileName + "." + outputFormat,
         );
         let i = 1;
         while (fs.existsSync(outputFilePath)) {
           i++;
           outputFilePath = path.join(
             outputFolderPath,
-            fileName + "(" + i + ")." + outputFormat
+            fileName + "(" + i + ")." + outputFormat,
           );
         }
         // resize first if needed
@@ -458,11 +441,11 @@ async function start(
           }
           sendIpcToRenderer(
             "update-log-text",
-            _("tool-shared-modal-log-resizing-image") + ": " + originalFilePath
+            _("tool-shared-modal-log-resizing-image") + ": " + originalFilePath,
           );
           let tmpFilePath = path.join(
             g_tempSubFolderPath,
-            fileName + "." + FileExtension.TMP
+            fileName + "." + FileExtension.TMP,
           );
           if (outputScaleParams.option === "1") {
             await sharp(filePath)
@@ -487,8 +470,8 @@ async function start(
               .withMetadata()
               .resize(
                 Math.round(
-                  data.width * (parseInt(outputScaleParams.value) / 100)
-                )
+                  data.width * (parseInt(outputScaleParams.value) / 100),
+                ),
               )
               .toFile(tmpFilePath);
           }
@@ -498,11 +481,11 @@ async function start(
         // convert
         sendIpcToRenderer(
           "update-log-text",
-          _("tool-shared-modal-log-converting-image") + ": " + originalFilePath
+          _("tool-shared-modal-log-converting-image") + ": " + originalFilePath,
         );
         sendIpcToRenderer(
           "update-log-text",
-          _("tool-ec-modal-log-extracting-to") + ": " + outputFilePath
+          _("tool-ec-modal-log-extracting-to") + ": " + outputFilePath,
         );
         if (outputFormat === FileExtension.JPG) {
           await sharp(filePath)
@@ -550,7 +533,7 @@ async function start(
     g_tempSubFolderPath = undefined;
     sendIpcToRenderer(
       "modal-update-title-text",
-      _("tool-shared-modal-title-conversion-finished")
+      _("tool-shared-modal-title-conversion-finished"),
     );
     if (g_numErrors > 0) {
       sendIpcToRenderer(
@@ -558,13 +541,13 @@ async function start(
         _(
           "tool-shared-modal-info-conversion-error-num-files",
           g_numErrors,
-          g_numFiles
-        )
+          g_numFiles,
+        ),
       );
     } else {
       sendIpcToRenderer(
         "update-info-text",
-        _("tool-shared-modal-info-conversion-success-num-files", g_numFiles)
+        _("tool-shared-modal-info-conversion-success-num-files", g_numFiles),
       );
     }
     menuBar.setCloseTool(true);
@@ -575,7 +558,7 @@ async function start(
       g_numFiles,
       g_numErrors,
       g_failedFilePaths,
-      g_numAttempts
+      g_numAttempts,
     );
   } catch (err) {
     stopError(err);
@@ -591,7 +574,7 @@ function updateLocalizedText() {
     "update-localization",
     getLocalization(),
     getTooltipsLocalization(),
-    { infoTooltip: _("tool-shared-modal-title-info") }
+    { infoTooltip: _("tool-shared-modal-title-info") },
   );
 }
 exports.updateLocalizedText = updateLocalizedText;
