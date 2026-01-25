@@ -123,7 +123,7 @@ async function extractImageBuffer({
       //  TODO: handle error file type not valid
     }
     if (buffer) {
-      mime = fileUtils.getImageMimeTypeFromBuffer(buffer);
+      mime = fileUtils.getFileTypeFromBuffer(buffer, true);
       return { success: true, buffer, mime, scrollBarPos };
     } else {
       if (error) {

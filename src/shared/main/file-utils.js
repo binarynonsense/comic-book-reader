@@ -133,41 +133,33 @@ exports.createRandomSubfolder = function (baseFolderPath) {
 };
 
 ///////////////////////////////////////////////////////////////////////////////
-// EXTENSIONS /////////////////////////////////////////////////////////////////
+// FILE TYPE //////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-exports.getImageMimeTypeFromBuffer = function (buffer) {
-  if (!buffer || buffer.length < 12) return "image/png";
-  // need the first 12 bytes
-  const hex = buffer.toString("hex", 0, 12);
-
-  if (hex.startsWith("ffd8ff")) {
-    return "image/jpeg";
+exports.getFileTypeFromPath = function (filePath, returnMimeType = false) {
+  // read 100 bytes
+  const buffer = Buffer.alloc(100);
+  const fd = fs.openSync(filePath, "r");
+  fs.readSync(fd, buffer, 0, 100, 0);
+  fs.closeSync(fd);
+  let type = getFileTypeFromBuffer(buffer, returnMimeType);
+  // ugly hack for epubs that don't strictly follow the spec
+  if (returnMimeType) {
+    if (
+      type === "application/epub+zip" &&
+      filePath.toLowerCase().endsWith(".epub")
+    ) {
+      type = "application/epub+zip";
+    }
+  } else {
+    if (type === "zip" && filePath.toLowerCase().endsWith(".epub")) {
+      type = "epub";
+    }
   }
-  if (hex.startsWith("89504e47")) {
-    return "image/png";
-  }
-  if (hex.startsWith("47494638")) {
-    return "image/gif";
-  }
-  if (hex.startsWith("424d")) {
-    return "image/bmp";
-  }
-  // WEBP (RIFF .... WEBP)
-  // hex.slice(16, 24) is the offset for the 8th to 12th byte
-  if (hex.startsWith("52494646") && hex.slice(16, 24) === "57454250") {
-    return "image/webp";
-  }
-  // AVIF (.... ftypavif)
-  // usually starts with 000000 followed by ftypavif (6674797061766966)
-  if (hex.includes("6674797061766966")) {
-    return "image/avif";
-  }
-
-  return "image/png"; // fallback value // TODO: better return undefined?
+  return type;
 };
 
-exports.getFileTypeFromPath = function (filePath, returnMimeType = false) {
+function getFileTypeFromBuffer(buffer, returnMimeType = false) {
   try {
     const mimeMap = {
       rar: "application/x-rar-compressed", //rar: "application/vnd.rar",
@@ -183,11 +175,6 @@ exports.getFileTypeFromPath = function (filePath, returnMimeType = false) {
       avif: "image/avif",
     };
 
-    // read 100 bytes
-    const buffer = Buffer.alloc(100);
-    const fd = fs.openSync(filePath, "r");
-    fs.readSync(fd, buffer, 0, 100, 0);
-    fs.closeSync(fd);
     const hex = buffer.toString("hex").toLowerCase();
 
     let type;
@@ -199,8 +186,6 @@ exports.getFileTypeFromPath = function (filePath, returnMimeType = false) {
     else if (hex.startsWith("504b0304")) {
       const check = buffer.toString("ascii", 30, 100);
       if (check.includes("mimetype") && check.includes("epub+zip")) {
-        type = "epub";
-      } else if (filePath.toLowerCase().endsWith(".epub")) {
         type = "epub";
       } else {
         type = "zip";
@@ -223,7 +208,12 @@ exports.getFileTypeFromPath = function (filePath, returnMimeType = false) {
     log.error(error);
     return undefined;
   }
-};
+}
+exports.getFileTypeFromBuffer = getFileTypeFromBuffer;
+
+///////////////////////////////////////////////////////////////////////////////
+// EXTENSIONS /////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 function hasImageExtension(filePath) {
   const allowedFileExtensions = [
