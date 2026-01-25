@@ -405,6 +405,7 @@ function checkPathTo7ZipBin() {
   }
   return g_pathTo7zipBin;
 }
+exports.checkPathTo7ZipBin = checkPathTo7ZipBin;
 
 async function get7ZipEntriesList(filePath, password, archiveType) {
   try {

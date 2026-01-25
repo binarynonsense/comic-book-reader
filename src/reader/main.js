@@ -9,7 +9,6 @@ const { utilityProcess, MessageChannelMain } = require("electron");
 
 const fs = require("fs");
 const path = require("path");
-const FileType = require("file-type");
 
 const core = require("../core/main");
 const settings = require("../shared/main/settings");
@@ -156,7 +155,6 @@ exports.onQuit = function () {
   addCurrentToHistory(false);
   audioPlayer.saveSettings();
   homeScreen.close();
-  killExportWorker();
   killPageWorker();
 };
 
@@ -975,13 +973,10 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
   if (!password) password = "";
 
   (async () => {
-    let fileType = await FileType.fromFile(filePath);
+    let fileType = fileUtils.getFileTypeFromPath(filePath);
     if (fileType !== undefined) {
-      // ref: file-type -> https://www.npmjs.com/package/file-type
-      // e.g. {ext: 'png', mime: 'image/png'}
-      fileExtension = "." + fileType.ext;
+      fileExtension = "." + fileType;
     }
-
     if (fileExtension === "." + FileExtension.PDF && PDF_ENGINE === "pdfium") {
       if (g_fileData.state !== FileDataState.LOADING) {
         cleanUpFileData();
@@ -1004,7 +999,8 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
         cleanUpFileData();
         g_fileData.type = FileDataType.PDF;
         g_fileData.state = FileDataState.LOADING;
-        g_fileData.pageIndex = pageIndex;
+        g_fileData.pageIndex = pageIndex; // ref: file-type -> https://www.npmjs.com/package/file-type
+        // e.g. {ext: 'png', mime: 'image/png'}
         g_fileData.path = filePath;
       }
       g_fileData.password = password;
@@ -2289,7 +2285,6 @@ function processZoomInput(input, factor) {
 // WORKERS  //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 
-let g_exportWorker;
 let g_pageWorker;
 
 function startPageWorker() {
@@ -2408,15 +2403,6 @@ function killPageWorker() {
 function sendToPageWorker(data) {
   const { port1 } = new MessageChannelMain();
   g_pageWorker.postMessage(data, [port1]);
-}
-
-///////////////////
-
-function killExportWorker() {
-  if (g_exportWorker !== undefined) {
-    g_exportWorker.kill();
-    g_exportWorker = undefined;
-  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2793,10 +2779,10 @@ async function onMenuFileProperties() {
       `${(stats.size / (1024 * 1024)).toFixed(2)} MiB`,
     );
     // MIME
-    let fileType = await FileType.fromFile(g_fileData.path);
-    if (fileType !== undefined) {
+    let fileMimeType = fileUtils.getFileTypeFromPath(g_fileData.path, true);
+    if (fileMimeType !== undefined) {
       // e.g. {ext: 'png', mime: 'image/png'}
-      addRow(_("ui-modal-info-metadata-mimetype"), fileType.mime);
+      addRow(_("ui-modal-info-metadata-mimetype"), fileMimeType);
     }
     // format
     if (g_fileData.metadata && g_fileData.metadata.format) {

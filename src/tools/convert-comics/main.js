@@ -6,7 +6,7 @@
  */
 
 const {
-  BrowserWindow,
+  // BrowserWindow,
   clipboard,
   utilityProcess,
   MessageChannelMain,
@@ -19,8 +19,6 @@ const { _ } = require("../../shared/main/i18n");
 const localization = require("./main/localization");
 
 const { FileExtension, FileDataType } = require("../../shared/main/constants");
-const { fork } = require("child_process");
-const FileType = require("file-type");
 const fileUtils = require("../../shared/main/file-utils");
 const appUtils = require("../../shared/main/app-utils");
 const settings = require("../../shared/main/settings");
@@ -647,22 +645,16 @@ function startFile(inputFileIndex, totalFilesNum) {
     inputFileType === FileDataType.PDF // uses PDFium
   ) {
     updateModalLogText(_("tool-shared-modal-log-extracting-pages") + "...");
-    // ref: https://www.matthewslipper.com/2019/09/22/everything-you-wanted-electron-child-process.html
+
     if (g_worker !== undefined) {
       // kill it after one use
       g_worker.kill();
       g_worker = undefined;
     }
     if (g_worker === undefined) {
-      if (core.useUtilityProcess()) {
-        g_worker = utilityProcess.fork(
-          path.join(__dirname, "../../shared/main/tools-worker.js"),
-        );
-      } else {
-        g_worker = fork(
-          path.join(__dirname, "../../shared/main/tools-worker.js"),
-        );
-      }
+      g_worker = utilityProcess.fork(
+        path.join(__dirname, "../../shared/main/tools-worker.js"),
+      );
       // TODO: if g_cancel is set -> kill worker and stop?
       g_worker.on("message", (message) => {
         if (message.type === "extraction-progress") {
@@ -671,7 +663,7 @@ function startFile(inputFileIndex, totalFilesNum) {
           );
           return;
         } else {
-          // success of failure
+          // success or failure
           g_worker.kill(); // kill it after one use
           if (message.success) {
             log.debug("file extracted in: " + message.time);
@@ -702,24 +694,9 @@ function startFile(inputFileIndex, totalFilesNum) {
         }
       });
     }
-    if (core.useUtilityProcess()) {
-      const { port1 } = new MessageChannelMain();
-      g_worker.postMessage(
-        [
-          core.getLaunchInfo(),
-          "extract",
-          inputFilePath,
-          inputFileType,
-          g_mode === ToolMode.CONVERT
-            ? g_tempSubFolderPath
-            : g_creationTempSubFolderPath,
-          g_inputPassword,
-          { pdfExtractionMethod: g_uiSelectedOptions.inputPdfExtractionMethod },
-        ],
-        [port1],
-      );
-    } else {
-      g_worker.send([
+    const { port1 } = new MessageChannelMain();
+    g_worker.postMessage(
+      [
         core.getLaunchInfo(),
         "extract",
         inputFilePath,
@@ -728,43 +705,46 @@ function startFile(inputFileIndex, totalFilesNum) {
           ? g_tempSubFolderPath
           : g_creationTempSubFolderPath,
         g_inputPassword,
-      ]);
-    }
+        { pdfExtractionMethod: g_uiSelectedOptions.inputPdfExtractionMethod },
+      ],
+      [port1],
+    );
   }
   // won't be reached if I use the one above with PDFium
-  else if (inputFileType === FileDataType.PDF) {
-    updateModalLogText(_("tool-shared-modal-log-extracting-pages") + "...");
-    /////////////////////////
-    // use a hidden window for better performance and node api access
-    if (g_workerWindow !== undefined) {
-      // shouldn't happen
-      g_workerWindow.destroy();
-      g_workerWindow = undefined;
-    }
-    g_workerWindow = new BrowserWindow({
-      show: false,
-      webPreferences: { nodeIntegration: true, contextIsolation: false },
-      parent: core.getMainWindow(),
-    });
-    g_workerWindow.loadFile(
-      `${__dirname}/../../shared/renderer/tools-bg-worker.html`,
-    );
+  // else if (inputFileType === FileDataType.PDF) {
+  //   updateModalLogText(_("tool-shared-modal-log-extracting-pages") + "...");
+  //   /////////////////////////
+  //   // use a hidden window for better performance and node api access
+  //   if (g_workerWindow !== undefined) {
+  //     // shouldn't happen
+  //     g_workerWindow.destroy();
+  //     g_workerWindow = undefined;
+  //   }
+  //   g_workerWindow = new BrowserWindow({
+  //     show: false,
+  //     webPreferences: { nodeIntegration: true, contextIsolation: false },
+  //     parent: core.getMainWindow(),
+  //   });
+  //   g_workerWindow.loadFile(
+  //     `${__dirname}/../../shared/renderer/tools-bg-worker.html`,
+  //   );
 
-    g_workerWindow.webContents.on("did-finish-load", function () {
-      //g_resizeWindow.webContents.openDevTools();
-      g_workerWindow.webContents.send(
-        "extract-pdf",
-        "tool-convert-comics",
-        inputFilePath,
-        g_mode === ToolMode.CONVERT
-          ? g_tempSubFolderPath
-          : g_creationTempSubFolderPath,
-        g_uiSelectedOptions.inputPdfExtractionMethod,
-        _("tool-shared-modal-log-extracting-page") + ": ",
-        g_inputPassword,
-      );
-    });
-  } else {
+  //   g_workerWindow.webContents.on("did-finish-load", function () {
+  //     //g_resizeWindow.webContents.openDevTools();
+  //     g_workerWindow.webContents.send(
+  //       "extract-pdf",
+  //       "tool-convert-comics",
+  //       inputFilePath,
+  //       g_mode === ToolMode.CONVERT
+  //         ? g_tempSubFolderPath
+  //         : g_creationTempSubFolderPath,
+  //       g_uiSelectedOptions.inputPdfExtractionMethod,
+  //       _("tool-shared-modal-log-extracting-page") + ": ",
+  //       g_inputPassword,
+  //     );
+  //   });
+  // }
+  else {
     stopError(undefined, "start: invalid file type");
   }
 }
@@ -974,9 +954,9 @@ async function getFileType(filePath) {
   let fileType;
   let fileExtension = path.extname(filePath).toLowerCase();
 
-  let _fileType = await FileType.fromFile(filePath);
+  let _fileType = await fileUtils.getFileTypeFromPath(filePath);
   if (_fileType !== undefined) {
-    fileExtension = "." + _fileType.ext;
+    fileExtension = "." + _fileType;
   }
   if (fileExtension === "." + FileExtension.PDF) {
     fileType = FileDataType.PDF;
@@ -1400,15 +1380,9 @@ async function createFilesFromImages(
       g_worker = undefined;
     }
     if (g_worker === undefined) {
-      if (core.useUtilityProcess()) {
-        g_worker = utilityProcess.fork(
-          path.join(__dirname, "../../shared/main/tools-worker.js"),
-        );
-      } else {
-        g_worker = fork(
-          path.join(__dirname, "../../shared/main/tools-worker.js"),
-        );
-      }
+      g_worker = utilityProcess.fork(
+        path.join(__dirname, "../../shared/main/tools-worker.js"),
+      );
       g_worker.on("message", (message) => {
         g_worker.kill(); // kill it after one use
         if (message.success) {
@@ -1448,27 +1422,9 @@ async function createFilesFromImages(
     ) {
       outputFolderPath = path.dirname(inputFilePath);
     }
-    if (core.useUtilityProcess()) {
-      const { port1 } = new MessageChannelMain();
-      g_worker.postMessage(
-        [
-          core.getLaunchInfo(),
-          "create",
-          baseFileName,
-          outputFolderPath,
-          g_uiSelectedOptions.outputSplitNumFiles,
-          imgFilePaths,
-          comicInfoFilePath,
-          g_uiSelectedOptions.outputFormat,
-          g_uiSelectedOptions.outputFileSameName,
-          g_tempSubFolderPath,
-          g_uiSelectedOptions.outputPassword,
-          extraData,
-        ],
-        [port1],
-      );
-    } else {
-      g_worker.send([
+    const { port1 } = new MessageChannelMain();
+    g_worker.postMessage(
+      [
         core.getLaunchInfo(),
         "create",
         baseFileName,
@@ -1481,8 +1437,9 @@ async function createFilesFromImages(
         g_tempSubFolderPath,
         g_uiSelectedOptions.outputPassword,
         extraData,
-      ]);
-    }
+      ],
+      [port1],
+    );
   } catch (error) {
     stopError(error);
   }

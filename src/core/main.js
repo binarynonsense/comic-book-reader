@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2025 Álvaro García
+ * Copyright 2020-2026 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -85,7 +85,7 @@ if (g_launchInfo.platform === "linux" && process.env.container) {
 // parse command line arguments
 g_launchInfo.parsedArgs = require("minimist")(
   process.argv.slice(g_launchInfo.isRelease ? 1 : 2),
-  { boolean: ["dev"], string: ["tool", "output-format", "output-folder"] }
+  { boolean: ["dev"], string: ["tool", "output-format", "output-folder"] },
 );
 g_launchInfo.isDev = g_launchInfo.parsedArgs["dev"] === true;
 
@@ -158,20 +158,20 @@ if (!gotTheLock) {
       if (settings.getValue("linuxEnforceGslice")) {
         log.warning(
           "The G_SLICE environment variable is undefined, setting it to 'always-malloc' and relaunching the app. You can avoid this step by launching ACBR using the ACBR.sh script",
-          true
+          true,
         );
         process.env.G_SLICE = "always-malloc";
         restartApp();
       } else {
         log.notice(
           "The G_SLICE environment variable is undefined and linuxEnforceGslice is set to false in the settings. If you experience crashes during file conversions try running the program using the provided ACBR.sh script, setting G_SLICE to 'always-malloc' in your shell or setting linuxEnforceGslice to true in the settings.",
-          true
+          true,
         );
       }
     } else {
       log.notice(
         "The G_SLICE environment variable is undefined. If you experience crashes during file conversions try running the program using the provided ACBR.sh script, setting G_SLICE to 'always-malloc' in your shell or setting linuxEnforceGslice to true in the settings.",
-        true
+        true,
       );
     }
   }
@@ -183,7 +183,7 @@ if (!gotTheLock) {
   // forceUseUtilityProcess?
   if (settings.getValue("forceUseUtilityProcess")) {
     log.notice(
-      "Forcing the use of useUtilityProcess as requested by the settings."
+      "Forcing the use of useUtilityProcess as requested by the settings.",
     );
     g_launchInfo.useUtilityProcess = true;
   }
@@ -211,7 +211,7 @@ if (!gotTheLock) {
       g_launchInfo.screenHeight = 600;
     settings.capScreenSizes(
       g_launchInfo.screenWidth,
-      g_launchInfo.screenHeight
+      g_launchInfo.screenHeight,
     );
     if (g_launchInfo.isSteamDeck && g_launchInfo.isGameScope) {
       settings.setValue("width", 1280);
@@ -253,7 +253,7 @@ if (!gotTheLock) {
       if (!path.isAbsolute(tempFolderPath)) {
         tempFolderPath = path.resolve(
           appUtils.getExeFolderPath(),
-          tempFolderPath
+          tempFolderPath,
         );
       }
       temp.init(tempFolderPath);
@@ -343,14 +343,14 @@ if (!gotTheLock) {
           inputFileAndFolderPaths.length > 0
             ? inputFileAndFolderPaths[0]
             : undefined,
-          true
+          true,
         );
       }
       startUpCheckForUpdates();
       // show window
       g_mainWindow.center();
       const forceMultimonitorSize = settings.getValue(
-        "experimentalForceMultimonitorSize"
+        "experimentalForceMultimonitorSize",
       );
       if (
         forceMultimonitorSize != undefined &&
@@ -658,7 +658,7 @@ if (!gotTheLock) {
         restoreDown: i18n._("menubar-buttons-restoredown"),
         close: i18n._("menubar-buttons-close"),
       },
-      g_mainWindow.isMaximized()
+      g_mainWindow.isMaximized(),
     );
 
     sendIpcToPreload("update-tools-common", {
@@ -687,7 +687,7 @@ if (!gotTheLock) {
         } else {
           const lastDate = new Date(settings.getValue("checkUpdatesLastDate"));
           const daysPassed = Math.floor(
-            Math.abs(new Date() - lastDate) / (1000 * 60 * 60 * 24)
+            Math.abs(new Date() - lastDate) / (1000 * 60 * 60 * 24),
           );
           log.debug("days since last update check: " + daysPassed);
           if (settings.getValue("checkUpdatesOnStart") === 2) {
@@ -705,7 +705,7 @@ if (!gotTheLock) {
         if (g_workerUpdates === undefined) {
           if (useUtilityProcess()) {
             g_workerUpdates = utilityProcess.fork(
-              path.join(__dirname, "worker-updates.js")
+              path.join(__dirname, "worker-updates.js"),
             );
           } else {
             g_workerUpdates = fork(path.join(__dirname, "worker-updates.js"));
@@ -722,7 +722,7 @@ if (!gotTheLock) {
               ) {
                 sendIpcToCoreRenderer(
                   "show-toast-update-available",
-                  _("ui-modal-title-versionavailable")
+                  _("ui-modal-title-versionavailable"),
                 );
               }
               settings.setValue("checkUpdatesLastDate", new Date().toJSON());
@@ -744,7 +744,7 @@ if (!gotTheLock) {
           const { port1 } = new MessageChannelMain();
           g_workerUpdates.postMessage(
             [g_launchInfo, app.getVersion()],
-            [port1]
+            [port1],
           );
         } else {
           g_workerUpdates.send([g_launchInfo, app.getVersion()]);
@@ -913,12 +913,12 @@ if (!gotTheLock) {
       "show-modal-about",
       "ACBR Comic Book Reader",
       `<div id="about-modal-div">${i18n._(
-        "ui-modal-info-version"
+        "ui-modal-info-version",
       )}: <span id="about-modal-version">${app.getVersion()}</span>\n© Álvaro García\n<span id="about-modal-link" title="${i18n._(
-        "tool-shared-ui-search-item-open-browser"
+        "tool-shared-ui-search-item-open-browser",
       )}">www.binarynonsense.com</span>
       </div>`,
-      i18n._("ui-modal-prompt-button-ok")
+      i18n._("ui-modal-prompt-button-ok"),
     );
   };
 
@@ -959,10 +959,6 @@ if (!gotTheLock) {
 // TODO: test newer versions when available if needed.
 
 // NOTE: I'm freezing the music-metadata module version to 7.13.4 as later
-// versions require projects to be ESM.
-// https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c
-
-// NOTE: I'm freezing the file-type module version to 14.7.1 as later
 // versions require projects to be ESM.
 // https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c
 

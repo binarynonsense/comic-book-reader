@@ -159,13 +159,15 @@ export function onInputEvent(type, event) {
   }
 }
 
-export function onContextMenu(params, target) {
+export async function onContextMenu(params, target) {
   if (getOpenModal()) {
     return;
   }
   // console.log(document.elementsFromPoint(params[0], params[1]));
   if (target.tagName === "IMG") {
-    params.push(target.src);
+    const response = await fetch(target.src);
+    const arrayBuffer = await response.arrayBuffer();
+    params.push(arrayBuffer);
     params.push(target.classList.contains("page-2"));
   } else if (target.tagName === "CANVAS") {
     // TODO: this is done every time the context menu is opened, doesn't

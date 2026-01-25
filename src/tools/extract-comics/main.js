@@ -1,12 +1,12 @@
 /**
  * @license
- * Copyright 2020-2025 Álvaro García
+ * Copyright 2020-2026 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
 const {
-  BrowserWindow,
+  // BrowserWindow,
   clipboard,
   utilityProcess,
   MessageChannelMain,
@@ -17,8 +17,6 @@ const core = require("../../core/main");
 const { _, _raw } = require("../../shared/main/i18n");
 
 const { FileExtension, FileDataType } = require("../../shared/main/constants");
-const { fork } = require("child_process");
-const FileType = require("file-type");
 const fileUtils = require("../../shared/main/file-utils");
 const appUtils = require("../../shared/main/app-utils");
 const utils = require("../../shared/main/utils");
@@ -74,7 +72,7 @@ exports.open = function (fileData) {
     //   ? path.dirname(filePath)
     //   : appUtils.getDesktopFolderPath(),
     appUtils.getDesktopFolderPath(),
-    loadedOptions
+    loadedOptions,
   );
 
   updateLocalizedText();
@@ -174,14 +172,14 @@ function initOnIpcCallbacks() {
       _("tool-shared-modal-title-warning"),
       _("tool-shared-ui-settings-reset-warning"),
       _("ui-modal-prompt-button-yes"),
-      _("ui-modal-prompt-button-cancel")
+      _("ui-modal-prompt-button-cancel"),
     );
   });
 
   on("save-settings-options", (options, forceQuit) => {
     settings.updateToolOptions(
       `tool-ec`,
-      options["tool-ec-setting-remember-checkbox"] ? options : undefined
+      options["tool-ec-setting-remember-checkbox"] ? options : undefined,
     );
     if (forceQuit) {
       core.forceQuit();
@@ -206,7 +204,7 @@ function initOnIpcCallbacks() {
         defaultPath,
         allowedFileTypesName,
         allowedFileTypesList,
-        allowMultipleSelection
+        allowMultipleSelection,
       );
       if (filePathsList === undefined) {
         return;
@@ -253,7 +251,7 @@ function initOnIpcCallbacks() {
       "show-modal-info",
       _("tool-shared-modal-title-info"),
       text,
-      _("tool-shared-ui-close").toUpperCase()
+      _("tool-shared-ui-close").toUpperCase(),
     );
   });
 
@@ -275,7 +273,7 @@ function initOnIpcCallbacks() {
       inputFileType,
       fileNum,
       totalFilesNum,
-      pdfExtractionMethod
+      pdfExtractionMethod,
     ) => {
       menuBar.setCloseTool(false);
       sendIpcToPreload("update-menubar");
@@ -284,9 +282,9 @@ function initOnIpcCallbacks() {
         inputFileType,
         fileNum,
         totalFilesNum,
-        pdfExtractionMethod
+        pdfExtractionMethod,
       );
-    }
+    },
   );
 
   on("stop-error", (err) => {
@@ -300,16 +298,16 @@ function initOnIpcCallbacks() {
       outputScaleParams,
       outputFormatParams,
       outputFormat,
-      outputFolderPath
+      outputFolderPath,
     ) => {
       resizeImages(
         inputFilePath,
         outputScaleParams,
         outputFormatParams,
         outputFormat,
-        outputFolderPath
+        outputFolderPath,
       );
-    }
+    },
   );
 
   on("resizing-error", (err) => {
@@ -320,14 +318,14 @@ function initOnIpcCallbacks() {
     "create-file-from-images",
     (imgFilePaths, outputFormat, outputFilePath) => {
       createFolderWithImages(imgFilePaths, outputFilePath); // outputFilePath is really outputFolderPath
-    }
+    },
   );
 
   on("end", (wasCanceled, numFiles, numErrors, numAttempted) => {
     if (!wasCanceled) {
       sendIpcToRenderer(
         "modal-update-title-text",
-        _("tool-shared-modal-title-extraction-finished")
+        _("tool-shared-modal-title-extraction-finished"),
       );
 
       if (numErrors > 0) {
@@ -336,19 +334,19 @@ function initOnIpcCallbacks() {
           _(
             "tool-shared-modal-info-extraction-error-num-files",
             numErrors,
-            numFiles
-          )
+            numFiles,
+          ),
         );
       } else {
         sendIpcToRenderer(
           "update-info-text",
-          _("tool-shared-modal-info-extraction-success-num-files", numFiles)
+          _("tool-shared-modal-info-extraction-success-num-files", numFiles),
         );
       }
     } else {
       sendIpcToRenderer(
         "modal-update-title-text",
-        _("tool-shared-modal-title-extraction-canceled")
+        _("tool-shared-modal-title-extraction-canceled"),
       );
       sendIpcToRenderer(
         "update-info-text",
@@ -356,8 +354,8 @@ function initOnIpcCallbacks() {
           "tool-shared-modal-info-extraction-results",
           numAttempted - numErrors,
           numErrors,
-          numFiles - numAttempted
-        )
+          numFiles - numAttempted,
+        ),
       );
     }
 
@@ -399,9 +397,9 @@ async function addFile(filePath) {
   let fileType;
   let fileExtension = path.extname(filePath).toLowerCase();
 
-  let _fileType = await FileType.fromFile(filePath);
+  let _fileType = fileUtils.getFileTypeFromPath(filePath);
   if (_fileType !== undefined) {
-    fileExtension = "." + _fileType.ext;
+    fileExtension = "." + _fileType;
   }
   if (fileExtension === "." + FileExtension.PDF) {
     fileType = FileDataType.PDF;
@@ -436,7 +434,7 @@ function stopError(error) {
   sendIpcToRenderer("update-log-text", error);
   sendIpcToRenderer(
     "update-log-text",
-    _("tool-shared-modal-log-extraction-error")
+    _("tool-shared-modal-log-extraction-error"),
   );
   sendIpcToRenderer("finished-error");
 }
@@ -446,7 +444,7 @@ function stopCancel() {
   g_tempSubFolderPath = undefined;
   sendIpcToRenderer(
     "update-log-text",
-    _("tool-shared-modal-log-extraction-canceled")
+    _("tool-shared-modal-log-extraction-canceled"),
   );
   sendIpcToRenderer("finished-canceled");
 }
@@ -456,18 +454,18 @@ function start(
   inputFileType,
   fileNum,
   totalFilesNum,
-  pdfExtractionMethod
+  pdfExtractionMethod,
 ) {
   if (fileNum === 1) g_cancel = false;
   if (fileNum !== 1) sendIpcToRenderer("update-log-text", "");
   sendIpcToRenderer(
     "modal-update-title-text",
     _("tool-shared-modal-title-extracting") +
-      (totalFilesNum > 1 ? " (" + fileNum + "/" + totalFilesNum + ")" : "")
+      (totalFilesNum > 1 ? " (" + fileNum + "/" + totalFilesNum + ")" : ""),
   );
   sendIpcToRenderer(
     "update-info-text",
-    utils.reduceStringFrontEllipsis(inputFilePath)
+    utils.reduceStringFrontEllipsis(inputFilePath),
   );
   sendIpcToRenderer("update-log-text", _("tool-shared-modal-title-extracting"));
   sendIpcToRenderer("update-log-text", inputFilePath);
@@ -478,102 +476,99 @@ function start(
     inputFileType === FileDataType.ZIP ||
     inputFileType === FileDataType.RAR ||
     inputFileType === FileDataType.SEVENZIP ||
-    inputFileType === FileDataType.EPUB_COMIC
+    inputFileType === FileDataType.EPUB_COMIC ||
+    inputFileType === FileDataType.PDF // uses PDFium
   ) {
     sendIpcToRenderer(
       "update-log-text",
-      _("tool-shared-modal-log-extracting-pages") + "..."
+      _("tool-shared-modal-log-extracting-pages") + "...",
     );
-    // ref: https://www.matthewslipper.com/2019/09/22/everything-you-wanted-electron-child-process.html
+
     if (g_worker !== undefined) {
       // kill it after one use
       g_worker.kill();
       g_worker = undefined;
     }
     if (g_worker === undefined) {
-      if (core.useUtilityProcess()) {
-        g_worker = utilityProcess.fork(
-          path.join(__dirname, "../../shared/main/tools-worker.js")
-        );
-      } else {
-        g_worker = fork(
-          path.join(__dirname, "../../shared/main/tools-worker.js")
-        );
-      }
+      g_worker = utilityProcess.fork(
+        path.join(__dirname, "../../shared/main/tools-worker.js"),
+      );
       g_worker.on("message", (message) => {
-        g_worker.kill(); // kill it after one use
-        if (message.success) {
-          log.debug("file extracted in: " + message.time);
-          if (g_cancel === true) {
-            stopCancel();
-            return;
-          }
-          sendIpcToRenderer("images-extracted");
+        if (message.type === "extraction-progress") {
+          sendIpcToRenderer(
+            "update-log-text",
+            `${_("tool-shared-modal-log-extracting-pages")}: ${message.current} / ${message.total}`,
+          );
           return;
         } else {
-          log.error(message.error);
-          stopError("Couldn't extract the file");
-          return;
+          // success or failure
+          g_worker.kill(); // kill it after one use
+          if (message.success) {
+            log.debug("file extracted in: " + message.time);
+            if (g_cancel === true) {
+              stopCancel();
+              return;
+            }
+            sendIpcToRenderer("images-extracted");
+            return;
+          } else {
+            log.error(message.error);
+            stopError("Couldn't extract the file");
+            return;
+          }
         }
       });
     }
-    if (core.useUtilityProcess()) {
-      const { port1 } = new MessageChannelMain();
-      g_worker.send(
-        [
-          core.getLaunchInfo(),
-          "extract",
-          inputFilePath,
-          inputFileType,
-          g_tempSubFolderPath,
-          g_initialPassword,
-        ],
-        [port1]
-      );
-    } else {
-      g_worker.send([
+    const { port1 } = new MessageChannelMain();
+    g_worker.postMessage(
+      [
         core.getLaunchInfo(),
         "extract",
         inputFilePath,
         inputFileType,
         g_tempSubFolderPath,
         g_initialPassword,
-      ]);
-    }
-  } else if (inputFileType === FileDataType.PDF) {
-    sendIpcToRenderer(
-      "update-log-text",
-      _("tool-shared-modal-log-extracting-pages") + "..."
+        { pdfExtractionMethod: pdfExtractionMethod },
+      ],
+      [port1],
     );
-    /////////////////////////
-    // use a hidden window for better performance and node api access
-    if (g_workerWindow !== undefined) {
-      // shouldn't happen
-      g_workerWindow.destroy();
-      g_workerWindow = undefined;
-    }
-    g_workerWindow = new BrowserWindow({
-      show: false,
-      webPreferences: { nodeIntegration: true, contextIsolation: false },
-      parent: core.getMainWindow(),
-    });
-    g_workerWindow.loadFile(
-      `${__dirname}/../../shared/renderer/tools-bg-worker.html`
-    );
+  }
+  // won't be reached if I use the one above with PDFium
+  // else if (inputFileType === FileDataType.PDF) {
+  //   sendIpcToRenderer(
+  //     "update-log-text",
+  //     _("tool-shared-modal-log-extracting-pages") + "...",
+  //   );
+  //   /////////////////////////
+  //   // use a hidden window for better performance and node api access
+  //   if (g_workerWindow !== undefined) {
+  //     // shouldn't happen
+  //     g_workerWindow.destroy();
+  //     g_workerWindow = undefined;
+  //   }
+  //   g_workerWindow = new BrowserWindow({
+  //     show: false,
+  //     webPreferences: { nodeIntegration: true, contextIsolation: false },
+  //     parent: core.getMainWindow(),
+  //   });
+  //   g_workerWindow.loadFile(
+  //     `${__dirname}/../../shared/renderer/tools-bg-worker.html`,
+  //   );
 
-    g_workerWindow.webContents.on("did-finish-load", function () {
-      //g_resizeWindow.webContents.openDevTools();
-      g_workerWindow.webContents.send(
-        "extract-pdf",
-        "tool-extract-comics",
-        inputFilePath,
-        g_tempSubFolderPath,
-        pdfExtractionMethod,
-        _("tool-shared-modal-log-extracting-page") + ": ",
-        g_initialPassword
-      );
-    });
-  } else {
+  //   g_workerWindow.webContents.on("did-finish-load", function () {
+  //     //g_resizeWindow.webContents.openDevTools();
+  //     g_workerWindow.webContents.send(
+  //       "extract-pdf",
+  //       "tool-extract-comics",
+  //       inputFilePath,
+  //       g_tempSubFolderPath,
+  //       pdfExtractionMethod,
+  //       _("tool-shared-modal-log-extracting-page") + ": ",
+  //       g_initialPassword,
+  //     );
+  //   });
+  // }
+  else {
     stopError("start: invalid file type");
   }
 }
@@ -602,7 +597,7 @@ async function resizeImages(
   outputScaleParams,
   outputFormatParams,
   outputFormat,
-  outputFolderPath
+  outputFolderPath,
 ) {
   if (g_cancel === true) {
     stopCancel();
@@ -638,7 +633,7 @@ async function resizeImages(
     ) {
       sendIpcToRenderer(
         "update-log-text",
-        _("tool-shared-modal-log-resizing-images") + "..."
+        _("tool-shared-modal-log-resizing-images") + "...",
       );
       sharp.cache(false);
       for (let index = 0; index < imgFilePaths.length; index++) {
@@ -652,14 +647,14 @@ async function resizeImages(
             ": " +
             (index + 1) +
             " / " +
-            imgFilePaths.length
+            imgFilePaths.length,
         );
         let filePath = imgFilePaths[index];
         let fileFolderPath = path.dirname(filePath);
         let fileName = path.basename(filePath, path.extname(filePath));
         let tmpFilePath = path.join(
           fileFolderPath,
-          fileName + "." + FileExtension.TMP
+          fileName + "." + FileExtension.TMP,
         );
         if (outputScaleParams.option === "1") {
           await sharp(filePath)
@@ -683,7 +678,9 @@ async function resizeImages(
           await sharp(filePath)
             .withMetadata()
             .resize(
-              Math.round(data.width * (parseInt(outputScaleParams.value) / 100))
+              Math.round(
+                data.width * (parseInt(outputScaleParams.value) / 100),
+              ),
             )
             .toFile(tmpFilePath);
         }
@@ -701,7 +698,7 @@ async function resizeImages(
     if (outputFormat != FileExtension.NOT_SET) {
       sendIpcToRenderer(
         "update-log-text",
-        _("tool-shared-modal-log-converting-images") + "..."
+        _("tool-shared-modal-log-converting-images") + "...",
       );
       sharp.cache(false); // avoid EBUSY error on windows
       for (let index = 0; index < imgFilePaths.length; index++) {
@@ -715,14 +712,14 @@ async function resizeImages(
             ": " +
             (index + 1) +
             " / " +
-            imgFilePaths.length
+            imgFilePaths.length,
         );
         let filePath = imgFilePaths[index];
         let fileFolderPath = path.dirname(filePath);
         let fileName = path.basename(filePath, path.extname(filePath));
         let tmpFilePath = path.join(
           fileFolderPath,
-          fileName + "." + FileExtension.TMP
+          fileName + "." + FileExtension.TMP,
         );
         if (outputFormat === FileExtension.JPG) {
           await sharp(filePath)
@@ -760,7 +757,7 @@ async function resizeImages(
         }
         let newFilePath = path.join(
           fileFolderPath,
-          fileName + "." + outputFormat
+          fileName + "." + outputFormat,
         );
         fs.unlinkSync(filePath);
         fileUtils.moveFile(tmpFilePath, newFilePath);
@@ -781,7 +778,7 @@ async function createFolderWithImages(imgFilePaths, outputFolderPath) {
   try {
     sendIpcToRenderer(
       "update-log-text",
-      _("tool-ec-modal-log-extracting-to") + ":"
+      _("tool-ec-modal-log-extracting-to") + ":",
     );
     sendIpcToRenderer("update-log-text", outputFolderPath);
     // create subFolderPath
@@ -814,7 +811,7 @@ function updateLocalizedText() {
     getTooltipsLocalization(),
     {
       infoTooltip: _("tool-shared-modal-title-info"),
-    }
+    },
   );
 }
 exports.updateLocalizedText = updateLocalizedText;
