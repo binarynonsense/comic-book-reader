@@ -83,10 +83,29 @@ if (g_launchInfo.platform === "linux" && process.env.container) {
 }
 
 // parse command line arguments
-g_launchInfo.parsedArgs = require("minimist")(
-  process.argv.slice(g_launchInfo.isRelease ? 1 : 2),
-  { boolean: ["dev"], string: ["tool", "output-format", "output-folder"] },
-);
+// g_launchInfo.parsedArgs = require("minimist")(
+//   process.argv.slice(g_launchInfo.isRelease ? 1 : 2),
+//   { boolean: ["dev"], string: ["tool", "output-format", "output-folder"] },
+// );
+// ref: https://nodejs.org/api/util.html#utilparseargsconfig
+const { parseArgs } = require("node:util");
+const options = {
+  dev: { type: "boolean" },
+  tool: { type: "string" },
+  "output-format": { type: "string" },
+  "output-folder": { type: "string" },
+};
+const { values, positionals } = parseArgs({
+  args: process.argv.slice(g_launchInfo.isRelease ? 1 : 2),
+  options,
+  strict: false,
+});
+// mimic minimist structure for now
+g_launchInfo.parsedArgs = {
+  ...values,
+  _: positionals,
+};
+
 g_launchInfo.isDev = g_launchInfo.parsedArgs["dev"] === true;
 
 //////////////////////////////////////////////////////////////////////////////
