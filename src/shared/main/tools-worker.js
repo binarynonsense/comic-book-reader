@@ -5,8 +5,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 const fileFormats = require("./file-formats");
 const { FileExtension, FileDataType } = require("./constants");
 const utils = require("./utils");

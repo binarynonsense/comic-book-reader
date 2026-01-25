@@ -14,8 +14,8 @@ const { _ } = require("../shared/main/i18n");
 const log = require("../shared/main/logger");
 const appUtils = require("../shared/main/app-utils");
 const fileUtils = require("../shared/main/file-utils");
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 const temp = require("../shared/main/temp");
 const tools = require("../shared/main/tools");
 

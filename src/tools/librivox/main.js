@@ -5,8 +5,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 const core = require("../../core/main");
 const { _ } = require("../../shared/main/i18n");
 const reader = require("../../reader/main");
@@ -125,7 +125,7 @@ function initOnIpcCallbacks() {
       let collectionQuery = `+AND+collection%3A(librivoxaudio)`;
       const response = await axios.get(
         `https://archive.org/advancedsearch.php?${searchQuery}${collectionQuery}+AND+mediatype%3A(audio)&fl[]=identifier&fl[]=title&fl[]=creator&sort[]=&sort[]=&sort[]=&rows=${g_queryPageSize}&page=${pageNum}&output=json`,
-        { timeout: 10000 }
+        { timeout: 10000 },
       );
       sendIpcToRenderer(
         "update-results",
@@ -135,14 +135,14 @@ function initOnIpcCallbacks() {
         pageNum,
         g_queryPageSize,
         _("tool-shared-ui-search-item-open-acbr"),
-        _("tool-shared-ui-search-item-open-browser")
+        _("tool-shared-ui-search-item-open-browser"),
       );
     } catch (error) {
       // console.error(error);
       sendIpcToRenderer(
         "update-results",
         undefined,
-        _("tool-shared-ui-search-nothing-found")
+        _("tool-shared-ui-search-nothing-found"),
       );
     }
   });
@@ -182,7 +182,7 @@ function updateLocalizedText() {
     "update-localization",
     _("tool-shared-ui-search-placeholder"),
     _("tool-shared-modal-title-searching"),
-    getLocalization()
+    getLocalization(),
   );
 }
 exports.updateLocalizedText = updateLocalizedText;
@@ -237,7 +237,7 @@ function getLocalization() {
       text: _(
         "tool-shared-ui-about-text-1",
         _("tool-shared-ui-about-text-1-audiobooks"),
-        "LibriVox"
+        "LibriVox",
       ),
     },
     {
@@ -248,7 +248,7 @@ function getLocalization() {
       id: "tool-lvx-open-lvx-browser-button-text",
       text: _(
         "tool-shared-ui-button-open-websitename-in-browser",
-        "LibriVox"
+        "LibriVox",
       ).toUpperCase(),
     },
     //////////////////////////////////////////////

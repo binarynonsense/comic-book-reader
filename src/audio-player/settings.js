@@ -6,8 +6,8 @@
  */
 
 const { app } = require("electron");
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 const log = require("../shared/main/logger");
 
 const { getConfigFolder } = require("../shared/main/app-utils");

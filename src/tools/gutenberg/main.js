@@ -5,8 +5,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 const core = require("../../core/main");
 const { _ } = require("../../shared/main/i18n");
 const log = require("../../shared/main/logger");
@@ -43,7 +43,7 @@ exports.open = function () {
     "show",
     portableCacheFolderPath,
     fs.existsSync(portableCacheFolderPath),
-    settings.getValue("toolGutUseCache")
+    settings.getValue("toolGutUseCache"),
   );
 };
 
@@ -129,7 +129,7 @@ function initOnIpcCallbacks() {
       let searchQuery = encodeURIComponent(text);
       const response = await axios.get(
         `https://gutendex.com/books?page=${pageNum}&search=${searchQuery}`,
-        { timeout: 10000 }
+        { timeout: 10000 },
       );
       sendIpcToRenderer(
         "update-results",
@@ -138,14 +138,14 @@ function initOnIpcCallbacks() {
         text,
         pageNum,
         _("tool-shared-ui-search-item-open-acbr"),
-        _("tool-shared-ui-search-item-open-browser")
+        _("tool-shared-ui-search-item-open-browser"),
       );
     } catch (error) {
       log.error(error);
       sendIpcToRenderer(
         "update-results",
         undefined,
-        _("tool-shared-ui-search-nothing-found")
+        _("tool-shared-ui-search-nothing-found"),
       );
     }
   });
@@ -191,7 +191,7 @@ function getPortableCacheFolder() {
     return path.join(
       appUtils.getUserDataFolderPath(),
       "acbr-cache",
-      "gutenberg"
+      "gutenberg",
     );
   }
 }
@@ -208,7 +208,7 @@ function updateLocalizedText() {
     _("tool-shared-modal-title-searching"),
     _("tool-shared-ui-close"), // TODO: not used?
     _("tool-shared-ui-cancel"), // TODO: not used?
-    getLocalization()
+    getLocalization(),
   );
 }
 exports.updateLocalizedText = updateLocalizedText;
@@ -313,7 +313,7 @@ function getLocalization() {
       text: _(
         "tool-shared-ui-about-text-1",
         _("tool-shared-ui-about-text-1-books"),
-        "Project Gutenberg"
+        "Project Gutenberg",
       ),
     },
     {
@@ -324,7 +324,7 @@ function getLocalization() {
       id: "tool-gut-open-pg-browser-button-text",
       text: _(
         "tool-shared-ui-button-open-websitename-in-browser",
-        "Project Gutenberg"
+        "Project Gutenberg",
       ).toUpperCase(),
     },
     //////////////////////////////////////////////

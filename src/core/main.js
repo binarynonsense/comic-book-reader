@@ -16,9 +16,9 @@ const {
   utilityProcess,
   MessageChannelMain,
 } = require("electron");
-const os = require("os");
-const fs = require("fs");
-const path = require("path");
+const os = require("node:os");
+const fs = require("node:fs");
+const path = require("node:path");
 const { fork } = require("child_process");
 
 const settings = require("../shared/main/settings");

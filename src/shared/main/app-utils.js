@@ -7,8 +7,8 @@
 
 const { app, dialog, nativeTheme } = require("electron");
 const shell = require("electron").shell;
-const path = require("path");
-const fs = require("fs");
+const path = require("node:path");
+const fs = require("node:fs");
 const fileUtils = require("./file-utils");
 const log = require("./logger");
 
@@ -79,7 +79,7 @@ exports.setNativeThemeUpdateEventHandler = function (handler) {
     log.debug(
       "native theme updated: " + nativeTheme.shouldUseDarkColors
         ? "dark"
-        : "light"
+        : "light",
     );
     handler();
   });
@@ -154,7 +154,7 @@ function chooseFiles(
   defaultPath,
   allowedFileTypesName,
   allowedFileTypesList,
-  allowMultipleSelection
+  allowMultipleSelection,
 ) {
   if (defaultPath !== undefined && !fs.existsSync(defaultPath)) {
     defaultPath = undefined;
@@ -205,7 +205,7 @@ function chooseSaveAs(
   window,
   defaultPath,
   allowedFileTypesName,
-  allowedFileTypesList
+  allowedFileTypesList,
 ) {
   if (!fs.existsSync(path.dirname(defaultPath))) {
     defaultPath = undefined;
@@ -252,7 +252,7 @@ function cleanUpUserDataFolder() {
   try {
     log.debug("cleaning up user data folder");
     log.debug(
-      "the clean up process may fail to delete some files or folders depending on the OS and other circumstances, this is normal and expected"
+      "the clean up process may fail to delete some files or folders depending on the OS and other circumstances, this is normal and expected",
     );
     let keepFiles = [
       "acbr.cfg",

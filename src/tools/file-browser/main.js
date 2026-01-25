@@ -5,8 +5,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 const core = require("../../core/main");
 const { _ } = require("../../shared/main/i18n");
 const log = require("../../shared/main/logger");
@@ -61,7 +61,7 @@ exports.open = function (fileData, showFocus) {
     )
   ) {
     g_startingFolderPath = path.dirname(
-      history.getEntryInRecentByIndex(history.getRecent().length - 1).filePath
+      history.getEntryInRecentByIndex(history.getRecent().length - 1).filePath,
     );
   } else {
     g_startingFolderPath = appUtils.getDesktopFolderPath();
@@ -273,7 +273,7 @@ function updateCurrentFolder(folderPath) {
               path: g_previousFolderPath,
               name: _("tool-fb-browse-back"),
             }
-          : undefined
+          : undefined,
       );
       g_previousFolderPath = folderPath;
     }

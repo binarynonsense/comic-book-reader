@@ -6,8 +6,8 @@
  */
 
 const { clipboard } = require("electron");
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 const core = require("../../core/main");
 const { _ } = require("../../shared/main/i18n");
 const log = require("../../shared/main/logger");
@@ -129,7 +129,7 @@ function initOnIpcCallbacks() {
         undefined,
         allowedFileTypesName,
         allowedFileTypesList,
-        allowMultipleSelection
+        allowMultipleSelection,
       );
       if (filePathsList === undefined || filePathsList.length === 0) {
         return;
@@ -147,11 +147,11 @@ function initOnIpcCallbacks() {
     try {
       sendIpcToRenderer(
         "modal-update-title-text",
-        _("tool-shared-modal-title-extracting").toUpperCase()
+        _("tool-shared-modal-title-extracting").toUpperCase(),
       );
       sendIpcToRenderer(
         "modal-update-info-text",
-        _("tool-et-modal-info").toUpperCase()
+        _("tool-et-modal-info").toUpperCase(),
       );
       let base64 = inputBase64Img;
       let options;

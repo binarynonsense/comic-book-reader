@@ -11,10 +11,10 @@ const {
   utilityProcess,
   MessageChannelMain,
 } = require("electron");
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 const core = require("../../core/main");
-const os = require("os");
+const os = require("node:os");
 const { _ } = require("../../shared/main/i18n");
 const localization = require("./main/localization");
 

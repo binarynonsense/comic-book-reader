@@ -6,8 +6,8 @@
  */
 
 const { Menu } = require("electron");
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 const core = require("../../core/main");
 const { _ } = require("../../shared/main/i18n");
 const appUtils = require("../../shared/main/app-utils");
@@ -66,7 +66,7 @@ exports.open = function (fileData) {
     if (!path.isAbsolute(g_cvApiKeyFilePath)) {
       absoluteFilePath = path.resolve(
         appUtils.getExeFolderPath(),
-        g_cvApiKeyFilePath
+        g_cvApiKeyFilePath,
       );
       saveAsRelative = true;
     }
@@ -190,7 +190,7 @@ function initOnIpcCallbacks() {
       Menu.buildFromTemplate([...commonEntries]).popup(
         core.getMainWindow(),
         params.x,
-        params.y
+        params.y,
       );
     }
   });
@@ -200,7 +200,7 @@ function initOnIpcCallbacks() {
       "show-modal-info",
       _("tool-shared-modal-title-info"),
       text,
-      _("tool-shared-ui-close").toUpperCase()
+      _("tool-shared-ui-close").toUpperCase(),
     );
   });
 
@@ -243,7 +243,7 @@ function initOnIpcCallbacks() {
       defaultPath,
       allowedFileTypesName,
       allowedFileTypesList,
-      allowMultipleSelection
+      allowMultipleSelection,
     );
     if (filePaths === undefined) {
       return;
@@ -298,7 +298,7 @@ async function search(text, pageNum) {
     let searchQuery = encodeURIComponent(text);
     const response = await axios.get(
       `https://comicvine.gamespot.com/api/search/?api_key=${g_cvApiKey}&format=json&resources=${resources}&page=${pageNum}&limit=50&query=${searchQuery}`,
-      { timeout: 10000 }
+      { timeout: 10000 },
     ); //&sort=name:asc
     // TODO: &field_list=name,publisher,id,count_of_issues...
     await utils.delay(1); // to not get banned from the api
@@ -307,7 +307,7 @@ async function search(text, pageNum) {
       response.data,
       _("tool-shared-ui-search-nothing-found"),
       text,
-      pageNum
+      pageNum,
     );
   } catch (error) {
     let errorMsg = _("tool-shared-ui-search-network-error", "Comic Vine");
@@ -328,14 +328,14 @@ async function getVolumeData(url) {
       `${url}?api_key=${g_cvApiKey}&format=json`,
       {
         timeout: 10000,
-      }
+      },
     );
     //&sort=issue_number:asc didn't work, I sort them in renderer
     await utils.delay(1); // to not get banned from the api
     sendIpcToRenderer(
       "search-issues-results",
       response.data,
-      _("tool-shared-ui-search-nothing-found")
+      _("tool-shared-ui-search-nothing-found"),
     );
   } catch (error) {
     let errorMsg = _("tool-shared-ui-search-network-error", "Comic Vine");
@@ -356,13 +356,13 @@ async function getIssueData(url) {
       `${url}?api_key=${g_cvApiKey}&format=json`,
       {
         timeout: 10000,
-      }
+      },
     );
     await utils.delay(1); // to not get banned from the api
     sendIpcToRenderer(
       "search-issue-results",
       response.data,
-      _("tool-shared-ui-import").toUpperCase()
+      _("tool-shared-ui-import").toUpperCase(),
     );
   } catch (error) {
     let errorMsg = _("tool-shared-ui-search-network-error", "Comic Vine");
@@ -403,10 +403,10 @@ exports.getLocalizedText = function () {
       importingTitle: _("tool-shared-modal-title-importing"),
       importingMessage: _("tool-metadata-search-import-warning"),
       searchResultsShowIssues: _(
-        "tool-metadata-search-results-show-issues-list"
+        "tool-metadata-search-results-show-issues-list",
       ),
       searchResultsShowMetadata: _(
-        "tool-metadata-search-results-show-issue-info"
+        "tool-metadata-search-results-show-issue-info",
       ),
       infoTooltip: _("tool-shared-modal-title-info"),
     },

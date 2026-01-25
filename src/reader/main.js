@@ -7,8 +7,8 @@
 
 const { utilityProcess, MessageChannelMain } = require("electron");
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 
 const core = require("../core/main");
 const settings = require("../shared/main/settings");

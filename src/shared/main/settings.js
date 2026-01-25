@@ -6,8 +6,8 @@
  */
 
 const { app } = require("electron");
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 const utils = require("./utils");
 const log = require("./logger");
 const temp = require("./temp");

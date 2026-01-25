@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-const fs = require("fs");
+const fs = require("node:fs");
 
 exports.createFile = function (filePath, palette, name) {
   try {

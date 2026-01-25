@@ -4,8 +4,8 @@
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 const core = require("../../core/main");
 const { _ } = require("../../shared/main/i18n");
 const reader = require("../../reader/main");
@@ -214,14 +214,14 @@ function initOnIpcCallbacks() {
           "load-feed-content",
           feedData,
           index,
-          switchToContent
+          switchToContent,
         );
       else
         sendIpcToRenderer(
           "show-modal-info",
           _("tool-shared-modal-title-error"),
           _("tool-rss-feed-error"),
-          _("ui-modal-prompt-button-ok")
+          _("ui-modal-prompt-button-ok"),
         );
     } else {
       openFeedURL(url, switchToContent);
@@ -259,7 +259,7 @@ function initOnIpcCallbacks() {
       _("tool-shared-tab-openurl"),
       "URL",
       _("ui-modal-prompt-button-ok"),
-      _("ui-modal-prompt-button-cancel")
+      _("ui-modal-prompt-button-cancel"),
     );
   });
 
@@ -267,7 +267,7 @@ function initOnIpcCallbacks() {
     "on-modal-open-feed-url-ok-clicked",
     async (url, switchToContent = true) => {
       openFeedURL(url, switchToContent);
-    }
+    },
   );
 
   on("on-reset-favorites-clicked", () => {
@@ -276,7 +276,7 @@ function initOnIpcCallbacks() {
       _("tool-shared-modal-title-warning"),
       _("tool-shared-ui-reset-list-warning"),
       _("ui-modal-prompt-button-ok"),
-      _("ui-modal-prompt-button-cancel")
+      _("ui-modal-prompt-button-cancel"),
     );
   });
 
@@ -291,7 +291,7 @@ function initOnIpcCallbacks() {
       _("tool-shared-modal-title-warning"),
       _("tool-shared-ui-clear-list-warning"),
       _("ui-modal-prompt-button-ok"),
-      _("ui-modal-prompt-button-cancel")
+      _("ui-modal-prompt-button-cancel"),
     );
   });
 
@@ -310,7 +310,7 @@ function initOnIpcCallbacks() {
       _("tool-shared-ui-back"),
       _("ui-modal-prompt-button-edit-name"),
       _("ui-modal-prompt-button-edit-url"),
-      _("tool-shared-ui-search-item-open-browser")
+      _("tool-shared-ui-search-item-open-browser"),
     );
   });
 
@@ -332,7 +332,7 @@ function initOnIpcCallbacks() {
         _("tool-rss-remove-from-favorites"),
         _("tool-rss-remove-from-favorites-warning"),
         _("ui-modal-prompt-button-ok"),
-        _("ui-modal-prompt-button-cancel")
+        _("ui-modal-prompt-button-cancel"),
       );
     } else {
       log.error("Tried to remove a feed with not matching index and url");
@@ -353,7 +353,7 @@ function initOnIpcCallbacks() {
         feedName,
         _("ui-modal-prompt-button-edit-name"),
         _("ui-modal-prompt-button-ok"),
-        _("ui-modal-prompt-button-cancel")
+        _("ui-modal-prompt-button-cancel"),
       );
     } else {
       log.error("Tried to edit a feed with not matching index and url");
@@ -367,7 +367,7 @@ function initOnIpcCallbacks() {
       sendIpcToRenderer(
         "on-favorite-feed-name-updated",
         g_favorites,
-        feedIndex
+        feedIndex,
       );
     }
   });
@@ -381,7 +381,7 @@ function initOnIpcCallbacks() {
         feedUrl,
         _("ui-modal-prompt-button-edit-url"),
         _("ui-modal-prompt-button-ok"),
-        _("ui-modal-prompt-button-cancel")
+        _("ui-modal-prompt-button-cancel"),
       );
     } else {
       log.error("Tried to edit a feed with not matching index and url");
@@ -408,7 +408,7 @@ function initOnIpcCallbacks() {
             "on-favorite-feeds-moved",
             g_favorites,
             feedIndex,
-            feedIndex - 1
+            feedIndex - 1,
           );
         }
       } else if (dir == 1) {
@@ -421,7 +421,7 @@ function initOnIpcCallbacks() {
             "on-favorite-feeds-moved",
             g_favorites,
             feedIndex,
-            feedIndex + 1
+            feedIndex + 1,
           );
         }
       }
@@ -449,7 +449,7 @@ function initOnIpcCallbacks() {
         let searchQuery = encodeURIComponent(text);
         const response = await axios.get(
           `https://itunes.apple.com/search?entity=podcast&limit=200&term=${searchQuery}`,
-          { timeout: 10000 }
+          { timeout: 10000 },
         );
         sendIpcToRenderer("update-results", type, response.data.results);
       } catch (error) {
@@ -467,7 +467,7 @@ function initOnIpcCallbacks() {
         let searchQuery = encodeURIComponent(text);
         const response = await axios.get(
           `https://feedsearch.dev/api/v1/search?url=${searchQuery}`,
-          { timeout: 10000 }
+          { timeout: 10000 },
         );
         sendIpcToRenderer("update-results", type, response.data);
       } catch (error) {
@@ -515,7 +515,7 @@ async function openFeedURL(url, switchToContent) {
         "load-feed-content",
         feedData,
         favoritesIndex,
-        switchToContent
+        switchToContent,
       );
       return;
     }
@@ -524,7 +524,7 @@ async function openFeedURL(url, switchToContent) {
     "show-modal-info",
     _("tool-shared-modal-title-error"),
     _("tool-rss-feed-error"),
-    _("ui-modal-prompt-button-ok")
+    _("ui-modal-prompt-button-ok"),
   );
 }
 
@@ -562,7 +562,7 @@ async function getFeedContent(url) {
               data.rss.channel.description["#text"],
               {
                 allowedTags: sanitizeHtml.defaults.allowedTags.concat(["img"]),
-              }
+              },
             );
           } else {
             content.description = sanitizeHtml(data.rss.channel.description, {
@@ -701,7 +701,7 @@ function updateLocalizedText() {
   sendIpcToRenderer(
     "update-localization",
     getLocalization(),
-    getExtraLocalization()
+    getExtraLocalization(),
   );
 }
 exports.updateLocalizedText = updateLocalizedText;
@@ -802,11 +802,11 @@ function getExtraLocalization() {
     searchType2: _("tool-rss-search-type-websites"),
     searchPlaceholderType1: _(
       "tool-rss-search-type-podcasts-placeholder",
-      "comic books"
+      "comic books",
     ),
     searchPlaceholderType2: _(
       "tool-rss-search-type-websites-placeholder",
-      "binarynonsense.com"
+      "binarynonsense.com",
     ),
   };
 }

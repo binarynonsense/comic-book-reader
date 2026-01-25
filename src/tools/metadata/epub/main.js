@@ -5,8 +5,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 const core = require("../../../core/main");
 const base = require("../main");
 const { _ } = require("../../../shared/main/i18n");
@@ -28,12 +28,12 @@ exports.open = function (fileData) {
     ".tools-menu-sections",
     fs
       .readFileSync(path.join(__dirname, "index-section-buttons.html"))
-      .toString()
+      .toString(),
   );
   base.sendIpcToCoreRenderer(
     "insert-html-afterend",
     "#tools-title",
-    fs.readFileSync(path.join(__dirname, "index-sections.html")).toString()
+    fs.readFileSync(path.join(__dirname, "index-sections.html")).toString(),
   );
   base.sendIpcToRenderer("set-subtool", "epub");
   updateLocalizedText();
@@ -51,13 +51,13 @@ exports.loadMetadata = async function () {
   try {
     g_xmlData = await epub.getMetadataFileXmlData(
       g_fileData.path,
-      g_fileData.password
+      g_fileData.password,
     );
     base.sendIpcToRenderer(
       "load-metadata",
       g_xmlData.json["package"]["metadata"],
       g_xmlData.json["package"]["@_version"],
-      undefined
+      undefined,
     );
   } catch (error) {
     // TODO: recover or close with message?
@@ -88,13 +88,13 @@ function updateLocalizedText() {
     {
       savingMessageUpdate: _("tool-metadata-modal-message-warning-save-update"),
       savingMessageSuccessUpdate: _(
-        "tool-metadata-modal-message-success-update"
+        "tool-metadata-modal-message-success-update",
       ),
       savingMessageErrorUpdate: _(
-        "tool-metadata-modal-message-could-not-update"
+        "tool-metadata-modal-message-could-not-update",
       ),
       savingMessageInvalidChanges: _(
-        "tool-metadata-modal-message-invalid-changes"
+        "tool-metadata-modal-message-invalid-changes",
       ),
       ...baseLocalizedText[2],
     },
@@ -130,7 +130,7 @@ function updateLocalizedText() {
         cov: _("tool-metadata-data-coverartist"),
         edt: _("tool-metadata-data-editor"),
       },
-    }
+    },
   );
 }
 exports.updateLocalizedText = updateLocalizedText;

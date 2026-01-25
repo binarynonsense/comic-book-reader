@@ -5,8 +5,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 const fileUtils = require("../../../shared/main/file-utils");
 const { FileExtension } = require("../../../shared/main/constants");
 
@@ -14,7 +14,7 @@ exports.processImage = async function (
   filePath,
   resizeNeeded,
   imageOpsNeeded,
-  uiSelectedOptions
+  uiSelectedOptions,
 ) {
   const sharp = require("sharp");
   ///////////////////////////////////////
@@ -23,7 +23,7 @@ exports.processImage = async function (
   let fileName = path.basename(filePath, path.extname(filePath));
   let tmpFilePath = path.join(
     fileFolderPath,
-    fileName + "." + FileExtension.TMP
+    fileName + "." + FileExtension.TMP,
   );
   let pipeline;
   let saveToFile = false;
@@ -76,8 +76,8 @@ exports.processImage = async function (
       if (!metadata) metadata = await sharp(filePath).metadata();
       pipeline.resize(
         Math.round(
-          metadata.width * (uiSelectedOptions.outputImageScalePercentage / 100)
-        )
+          metadata.width * (uiSelectedOptions.outputImageScalePercentage / 100),
+        ),
       );
     }
   }
@@ -157,7 +157,7 @@ exports.processImage = async function (
       if (imageFormat === FileExtension.JPG) {
         pipeline.jpeg({
           quality: parseInt(
-            uiSelectedOptions.outputImageFormatParams.jpgQuality
+            uiSelectedOptions.outputImageFormatParams.jpgQuality,
           ),
           mozjpeg: uiSelectedOptions.outputImageFormatParams.jpgMozjpeg,
         });
@@ -167,7 +167,7 @@ exports.processImage = async function (
         ) {
           pipeline.png({
             quality: parseInt(
-              uiSelectedOptions.outputImageFormatParams.pngQuality
+              uiSelectedOptions.outputImageFormatParams.pngQuality,
             ),
           });
         } else {
@@ -176,13 +176,13 @@ exports.processImage = async function (
       } else if (imageFormat === FileExtension.WEBP) {
         pipeline.webp({
           quality: parseInt(
-            uiSelectedOptions.outputImageFormatParams.webpQuality
+            uiSelectedOptions.outputImageFormatParams.webpQuality,
           ),
         });
       } else if (imageFormat === FileExtension.AVIF) {
         pipeline.avif({
           quality: parseInt(
-            uiSelectedOptions.outputImageFormatParams.avifQuality
+            uiSelectedOptions.outputImageFormatParams.avifQuality,
           ),
         });
       }

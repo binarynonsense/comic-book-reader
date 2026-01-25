@@ -5,8 +5,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 const core = require("../../core/main");
 const i18n = require("../../shared/main/i18n");
 const { _ } = require("../../shared/main/i18n");
@@ -45,7 +45,7 @@ exports.open = function () {
     i18n.getAvailableLocales(),
     themes.getId(),
     themes.getAvailableList(),
-    settings.get()
+    settings.get(),
   );
   let tempFolderPath = settings.getValue("tempFolderPath");
   let saveAsRelative = false;
@@ -89,7 +89,7 @@ function updateNavKeys() {
     _("tool-shared-ui-change").toUpperCase(),
     _("tool-shared-ui-reset").toUpperCase(),
     _("tool-pre-navkeys-button-resetall").toUpperCase(),
-    _("tool-pre-navkeys-unassigned-key").toUpperCase()
+    _("tool-pre-navkeys-unassigned-key").toUpperCase(),
   );
 }
 
@@ -99,7 +99,7 @@ function updateNavButtons() {
     settings.getValue("navButtons"),
     i18n._object("tool-pre-navkeys-actions"),
     _("tool-shared-ui-reset").toUpperCase(),
-    _("tool-pre-navbuttons-button-resetall").toUpperCase()
+    _("tool-pre-navbuttons-button-resetall").toUpperCase(),
   );
 }
 
@@ -256,7 +256,7 @@ function initOnIpcCallbacks() {
       "update-epub-ebook-color-mode",
       mode,
       textColor,
-      bgColor
+      bgColor,
     );
   });
 
@@ -296,7 +296,7 @@ function initOnIpcCallbacks() {
       "show-ok-modal",
       _("tool-shared-modal-title-info"),
       _("tool-shared-modal-info-change-needs-restart"),
-      _("ui-modal-prompt-button-ok")
+      _("ui-modal-prompt-button-ok"),
     );
   });
 
@@ -318,20 +318,20 @@ function initOnIpcCallbacks() {
       if (saveAsRelative) {
         relativeFolderPath = path.relative(
           appUtils.getExeFolderPath(),
-          folderPath
+          folderPath,
         );
       }
     }
     settings.setValue(
       "tempFolderPath",
-      relativeFolderPath ? relativeFolderPath : folderPath
+      relativeFolderPath ? relativeFolderPath : folderPath,
     );
     // TODO: error recovery?
     temp.changeBaseFolderPath(folderPath);
     sendIpcToRenderer(
       "set-temp-folder",
       relativeFolderPath ? relativeFolderPath : folderPath,
-      saveAsRelative
+      saveAsRelative,
     );
   });
 
@@ -375,7 +375,7 @@ function initOnIpcCallbacks() {
       "show-ok-modal",
       _("tool-shared-modal-title-info"),
       text,
-      _("tool-shared-ui-close").toUpperCase()
+      _("tool-shared-ui-close").toUpperCase(),
     );
   });
 
@@ -387,11 +387,11 @@ function initOnIpcCallbacks() {
       i18n._object("tool-pre-navkeys-actions")[action],
       `${_("tool-pre-navkeys-change-press")}\n${_(
         "tool-pre-navkeys-change-modifiers",
-        "Control, Alt"
+        "Control, Alt",
       )}\n\n${_("tool-pre-navkeys-change-cancel")}`,
       _("ui-modal-prompt-button-cancel").toUpperCase(),
       action,
-      keyIndex
+      keyIndex,
     );
   });
 
@@ -401,7 +401,7 @@ function initOnIpcCallbacks() {
       _("tool-pre-navkeys-button-resetall"),
       _("tool-pre-navkeys-modal-resetall-message"),
       _("ui-modal-prompt-button-yes"),
-      _("ui-modal-prompt-button-cancel")
+      _("ui-modal-prompt-button-cancel"),
     );
   });
 
@@ -441,7 +441,7 @@ function initOnIpcCallbacks() {
       _("tool-pre-navbuttons-button-resetall"),
       _("tool-pre-navbuttons-modal-resetall-message"),
       _("ui-modal-prompt-button-yes"),
-      _("ui-modal-prompt-button-cancel")
+      _("ui-modal-prompt-button-cancel"),
     );
   });
 
@@ -461,7 +461,7 @@ function initOnIpcCallbacks() {
     navButtons[action][index] = newCommand; // array ref, so this updates the settings
     reader.sendIpcToRenderer(
       "set-nav-buttons",
-      settings.getValue("navButtons")
+      settings.getValue("navButtons"),
     );
     updateNavButtons();
   });
@@ -477,7 +477,7 @@ function initOnIpcCallbacks() {
     navButtons[action][index] = value; // array ref, so this updates the settings
     reader.sendIpcToRenderer(
       "set-nav-buttons",
-      settings.getValue("navButtons")
+      settings.getValue("navButtons"),
     );
     updateNavButtons();
   });
@@ -485,12 +485,12 @@ function initOnIpcCallbacks() {
   on("resetall-nav-buttons", () => {
     // make a copy of the defaults object to update the settings
     const defaultNavButtons = structuredClone(
-      settings.getDefaultValue("navButtons")
+      settings.getDefaultValue("navButtons"),
     );
     settings.setValue("navButtons", defaultNavButtons);
     reader.sendIpcToRenderer(
       "set-nav-buttons",
-      settings.getValue("navButtons")
+      settings.getValue("navButtons"),
     );
     updateNavButtons();
   });
@@ -520,9 +520,9 @@ function updateLocalizedText() {
         "\n\n" +
         _("tool-shared-modal-info-changes-needs-restart"),
       openInSystemFileBrowser: _(
-        "ui-modal-prompt-button-open-in-system-file-browser"
+        "ui-modal-prompt-button-open-in-system-file-browser",
       ),
-    }
+    },
   );
   updateNavKeys();
   updateNavButtons();
@@ -535,7 +535,7 @@ function getTooltipsLocalization() {
       id: "tool-pre-tooltip-rarfolder",
       text: `${_(
         "tool-pre-rarfolder-tooltip",
-        process.platform === "win32" ? '"Rar.exe"' : '"rar"'
+        process.platform === "win32" ? '"Rar.exe"' : '"rar"',
       )}${
         process.platform === "win32"
           ? " " + _("tool-pre-rarfolder-example", '"C:\\Program Files\\WinRAR"')
@@ -600,13 +600,13 @@ function getLocalization() {
     {
       id: "tool-pre-themes-select-0",
       text: `${_("tool-shared-ui-color-mode-automatic")} (${_(
-        "tool-shared-ui-color-mode-automatic-basedonsystem"
+        "tool-shared-ui-color-mode-automatic-basedonsystem",
       )})`,
     },
     {
       id: "tool-pre-themes-select-1",
       text: `${_("tool-shared-ui-color-mode-automatic")} (${_(
-        "tool-shared-ui-color-mode-automatic-basedontime"
+        "tool-shared-ui-color-mode-automatic-basedontime",
       )})`,
     },
     //////////////////////////////////////////////
@@ -883,19 +883,19 @@ function getLocalization() {
     {
       id: "tool-pre-home-screen-latest-max-rows-collapsed-text",
       text: `${_("home-section-recent")}: ${_(
-        "home-list-setting-max-rows"
+        "home-list-setting-max-rows",
       )} ${_("home-list-setting-max-rows-ifcollapsed")}`,
     },
     {
       id: "tool-pre-home-screen-favorites-max-rows-collapsed-text",
       text: `${_("home-section-favorites")}: ${_(
-        "home-list-setting-max-rows"
+        "home-list-setting-max-rows",
       )} ${_("home-list-setting-max-rows-ifcollapsed")}`,
     },
     {
       id: "tool-pre-home-screen-other-max-rows-collapsed-text",
       text: `${_("home-section-other-lists")}: ${_(
-        "home-list-setting-max-rows"
+        "home-list-setting-max-rows",
       )} ${_("home-list-setting-max-rows-ifcollapsed")}`,
     },
     //////////////////////////////////////////////
@@ -949,7 +949,7 @@ function getLocalization() {
       text: _(
         "tool-pre-hotspots-2columns",
         _("toolbar-go-left"),
-        _("toolbar-go-right")
+        _("toolbar-go-right"),
       ),
     },
     {
@@ -957,7 +957,7 @@ function getLocalization() {
       text: _(
         "tool-pre-hotspots-3columns",
         _("toolbar-go-left"),
-        _("toolbar-go-right")
+        _("toolbar-go-right"),
       ),
     },
     {
@@ -1052,13 +1052,13 @@ function getLocalization() {
     {
       id: "tool-pre-pdf-reading-library-version-0-text",
       text: `${_("tool-pre-pdf-library-version-oldest")} (${_(
-        "tool-pre-pdf-library-version-oldest-desc"
+        "tool-pre-pdf-library-version-oldest-desc",
       )})`,
     },
     {
       id: "tool-pre-pdf-reading-library-version-1-text",
       text: `${_("tool-pre-pdf-library-version-newest")} (${_(
-        "tool-pre-pdf-library-version-newest-desc"
+        "tool-pre-pdf-library-version-newest-desc",
       )})`,
     },
 

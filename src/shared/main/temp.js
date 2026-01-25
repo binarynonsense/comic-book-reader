@@ -5,9 +5,9 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-const os = require("os");
-const fs = require("fs");
-const path = require("path");
+const os = require("node:os");
+const fs = require("node:fs");
+const path = require("node:path");
 
 const log = require("./logger");
 const { deleteFolderRecursive } = require("./file-utils");

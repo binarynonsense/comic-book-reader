@@ -5,8 +5,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 const log = require("./logger");
 
 function getMimeType(filePath) {
@@ -20,7 +20,7 @@ exports.createComic = async function (
   imgPathsList,
   outputFilePath,
   tempFolderPath,
-  imageStorageSelection
+  imageStorageSelection,
 ) {
   try {
     let bookTitle = path.basename(outputFilePath, path.extname(outputFilePath));
@@ -62,7 +62,7 @@ exports.createComic = async function (
     for (let index = 0; index < imgPathsList.length; index++) {
       if (imageStorageSelection !== "base64")
         contentOpf += `\n    <item id="image_${index}" href="images/${index}.${getMimeType(
-          imgPathsList[index]
+          imgPathsList[index],
         )}" media-type="image/${getMimeType(imgPathsList[index])}" />`;
       contentOpf += `\n    <item id="content_${index}" href="page_${index}.xhtml" media-type="application/xhtml+xml" />`;
     }
@@ -118,7 +118,7 @@ exports.createComic = async function (
         pageXhtml += `\n      <img src="${img64}" alt="page_image"/>`;
       } else {
         pageXhtml += `\n      <img src="images/${index}.${getMimeType(
-          imgPathsList[index]
+          imgPathsList[index],
         )}" alt="page_image"/>`;
       }
 
@@ -187,7 +187,7 @@ img {
     for (let index = 0; index < imgPathsList.length; index++) {
       zip.addFile(
         `OEBPS/page_${index}.xhtml`,
-        Buffer.from(pagesXhtml[index], "utf8")
+        Buffer.from(pagesXhtml[index], "utf8"),
       );
     }
     zip.addFile("OEBPS/toc.ncx", Buffer.from(tocNcx, "utf8"));
@@ -213,7 +213,7 @@ img {
       for (let index = 0; index < imgPathsList.length; index++) {
         zip.addFile(
           `OEBPS/images/${index}.${getMimeType(imgPathsList[index])}`,
-          fs.readFileSync(imgPathsList[index])
+          fs.readFileSync(imgPathsList[index]),
         );
       }
     }

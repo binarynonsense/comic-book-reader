@@ -5,8 +5,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 const core = require("../../core/main");
 const { _ } = require("../../shared/main/i18n");
 const log = require("../../shared/main/logger");
@@ -105,7 +105,7 @@ function initOnIpcCallbacks() {
     try {
       sendIpcToRenderer(
         "modal-update-title-text",
-        _("tool-shared-modal-title-creating").toUpperCase()
+        _("tool-shared-modal-title-creating").toUpperCase(),
       );
 
       QRCode.toDataURL(text, {
@@ -138,7 +138,7 @@ function initOnIpcCallbacks() {
             "show-modal-alert",
             _("tool-cq-modal-alert-title-errorcreating"),
             error.message,
-            true
+            true,
           );
         });
     } catch (error) {
@@ -148,7 +148,7 @@ function initOnIpcCallbacks() {
         "show-modal-alert",
         _("tool-cq-modal-alert-title-errorcreating"),
         error.message,
-        true
+        true,
       );
     }
   });
@@ -172,7 +172,7 @@ function initOnIpcCallbacks() {
         i++;
         outputFilePath = path.join(
           outputFolderPath,
-          fileName + "(" + i + ")" + fileExtension
+          fileName + "(" + i + ")" + fileExtension,
         );
       }
       if (!g_imgBase64) {
@@ -185,7 +185,7 @@ function initOnIpcCallbacks() {
         "show-modal-alert",
         _("tool-cq-modal-alert-title-successexporting"),
         utils.reduceStringFrontEllipsis(outputFilePath, 50),
-        false
+        false,
       );
     } catch (error) {
       log.error(error);
@@ -193,7 +193,7 @@ function initOnIpcCallbacks() {
         "show-modal-alert",
         _("tool-cq-modal-alert-title-errorexporting"),
         error.message,
-        true
+        true,
       );
     }
   });

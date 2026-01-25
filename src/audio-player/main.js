@@ -6,8 +6,8 @@
  */
 
 const { app } = require("electron");
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 const { FileExtension } = require("../shared/main/constants");
 const appUtils = require("../shared/main/app-utils");
 const core = require("../core/main");
@@ -75,7 +75,7 @@ function initOnIpcCallbacks() {
     if (!/^http:\/\/|https:\/\//.test(playlist.files[0].url)) {
       defaultPath = path.join(
         path.dirname(playlist.files[0].url),
-        "acbr-playlist.m3u"
+        "acbr-playlist.m3u",
       );
     }
     let allowedFileTypesName = _("dialog-file-types-playlists");
@@ -84,7 +84,7 @@ function initOnIpcCallbacks() {
       g_mainWindow,
       defaultPath,
       allowedFileTypesName,
-      allowedFileTypesList
+      allowedFileTypesList,
     );
     if (filePath === undefined) {
       return;
@@ -126,9 +126,9 @@ function initOnIpcCallbacks() {
         "show-modal-info",
         _("ui-modal-title-audioplayererror"),
         `${_("ui-modal-info-mediaerror-play")}\n${_(
-          "ui-modal-info-mediaerror-4"
+          "ui-modal-info-mediaerror-4",
         )}`,
-        _("ui-modal-prompt-button-ok")
+        _("ui-modal-prompt-button-ok"),
       );
     }
   });
@@ -234,7 +234,7 @@ exports.init = function (mainWindow, parentElementId) {
   sendIpcToCoreRenderer(
     "replace-inner-html",
     "#" + parentElementId,
-    data.toString()
+    data.toString(),
   );
   loadSettings();
   updateLocalizedText();
@@ -327,7 +327,7 @@ function callOpenFilesDialog(mode) {
     defaultPath,
     allowedFileTypesName,
     allowedFileTypesList,
-    allowMultipleSelection
+    allowMultipleSelection,
   );
   if (filePaths === undefined) {
     return;

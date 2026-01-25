@@ -11,8 +11,8 @@ const {
   utilityProcess,
   MessageChannelMain,
 } = require("electron");
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 const core = require("../../core/main");
 const { _, _raw } = require("../../shared/main/i18n");
 

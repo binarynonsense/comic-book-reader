@@ -5,8 +5,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 const core = require("../../core/main");
 const { _, _raw } = require("../../shared/main/i18n");
 const log = require("../../shared/main/logger");
@@ -129,7 +129,7 @@ function initOnIpcCallbacks() {
         undefined,
         allowedFileTypesName,
         allowedFileTypesList,
-        allowMultipleSelection
+        allowMultipleSelection,
       );
       if (filePathsList === undefined || filePathsList.length === 0) {
         return;
@@ -148,18 +148,18 @@ function initOnIpcCallbacks() {
     (data, distanceMethod, distanceThreshold, maxQuantizationDepth) => {
       sendIpcToRenderer(
         "modal-update-title-text",
-        _("tool-shared-modal-title-extracting").toUpperCase()
+        _("tool-shared-modal-title-extracting").toUpperCase(),
       );
       g_currentPalette = palette.getPaletteFromCanvasData(
         data,
         distanceMethod,
         distanceThreshold,
-        maxQuantizationDepth
+        maxQuantizationDepth,
       );
       sendIpcToRenderer("modal-close");
       sendIpcToRenderer("update-palette", g_currentPalette);
       // NOTE: sending the data to a child process seems too slow
-    }
+    },
   );
 
   on("export-to-file", (format) => {
@@ -189,14 +189,14 @@ function initOnIpcCallbacks() {
       let fileExtension = `.${format}`;
       let outputFilePath = path.join(
         outputFolderPath,
-        fileName + fileExtension
+        fileName + fileExtension,
       );
       let i = 1;
       while (fs.existsSync(outputFilePath)) {
         i++;
         outputFilePath = path.join(
           outputFolderPath,
-          fileName + "(" + i + ")" + fileExtension
+          fileName + "(" + i + ")" + fileExtension,
         );
       }
 
@@ -208,13 +208,13 @@ function initOnIpcCallbacks() {
           sendIpcToRenderer(
             "export-file-created",
             _("tool-ep-modal-title-exported"),
-            utils.reduceStringFrontEllipsis(outputFilePath, 50)
+            utils.reduceStringFrontEllipsis(outputFilePath, 50),
           );
         } else {
           sendIpcToRenderer(
             "export-file-error",
             _("tool-ep-modal-title-exporting-error"),
-            utils.reduceStringFrontEllipsis(outputFilePath, 50)
+            utils.reduceStringFrontEllipsis(outputFilePath, 50),
           );
         }
       } else if (format === "aco") {
@@ -225,13 +225,13 @@ function initOnIpcCallbacks() {
           sendIpcToRenderer(
             "export-file-created",
             _("tool-ep-modal-title-exported"),
-            utils.reduceStringFrontEllipsis(outputFilePath, 50)
+            utils.reduceStringFrontEllipsis(outputFilePath, 50),
           );
         } else {
           sendIpcToRenderer(
             "export-file-error",
             _("tool-ep-modal-title-exporting-error"),
-            utils.reduceStringFrontEllipsis(outputFilePath, 50)
+            utils.reduceStringFrontEllipsis(outputFilePath, 50),
           );
         }
       }

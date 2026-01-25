@@ -5,8 +5,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 const core = require("../../core/main");
 const { _ } = require("../../shared/main/i18n");
 const contextMenu = require("../../shared/main/tools-menu-context");
@@ -101,7 +101,7 @@ function initOnIpcCallbacks() {
       let word = encodeURI(text.trim().split(" ")[0]);
       const response = await axios.get(
         `https://${languageId}.wiktionary.org/w/api.php?titles=${word}&action=query&prop=extracts&format=json`,
-        { timeout: 10000 }
+        { timeout: 10000 },
       );
       let searchResults = response.data;
       let content = Object.values(searchResults.query.pages)[0].extract;
@@ -148,7 +148,7 @@ function updateLocalizedText() {
     "update-localization",
     _("tool-shared-ui-search-placeholder"),
     _("tool-shared-modal-title-searching"),
-    getLocalization()
+    getLocalization(),
   );
 }
 exports.updateLocalizedText = updateLocalizedText;
@@ -203,7 +203,7 @@ function getLocalization() {
       text: _(
         "tool-shared-ui-about-text-1",
         _("tool-shared-ui-about-text-1-dictionaryterms"),
-        "Wiktionary"
+        "Wiktionary",
       ),
     },
     {
@@ -214,7 +214,7 @@ function getLocalization() {
       id: "tool-wik-open-wik-browser-button-text",
       text: _(
         "tool-shared-ui-button-open-websitename-in-browser",
-        "Wiktionary"
+        "Wiktionary",
       ).toUpperCase(),
     },
     //////////////////////////////////////////////

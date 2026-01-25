@@ -5,8 +5,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 const fileFormats = require("./file-formats");
 const temp = require("./temp");
 const log = require("./logger");
@@ -14,7 +14,7 @@ const log = require("./logger");
 exports.getMetadataProperties = async function (
   filePath,
   currentMetadata,
-  password
+  password,
 ) {
   let fileMetadata = currentMetadata ? currentMetadata : {};
   try {
@@ -22,7 +22,7 @@ exports.getMetadataProperties = async function (
     const tempFolderPath = temp.createSubFolder();
     const opfEntries = await fileFormats.getEpubOpfEntriesList(
       filePath,
-      password
+      password,
     );
     if (!opfEntries || opfEntries.length <= 0) {
       throw "no metadata file found";
@@ -43,7 +43,7 @@ exports.getMetadataProperties = async function (
       entryPath,
       password,
       tempFolderPath,
-      "zip"
+      "zip",
     );
     temp.deleteSubFolder(tempFolderPath);
     const buffer = result.data;
@@ -125,7 +125,7 @@ exports.getMetadataFileXmlData = async function (filePath, password) {
     const tempFolderPath = temp.createSubFolder();
     const opfEntries = await fileFormats.getEpubOpfEntriesList(
       filePath,
-      password
+      password,
     );
     if (!opfEntries || opfEntries.length <= 0) {
       throw "no metadata file found";
@@ -146,7 +146,7 @@ exports.getMetadataFileXmlData = async function (filePath, password) {
       entryPath,
       password,
       tempFolderPath,
-      "zip"
+      "zip",
     );
     temp.deleteSubFolder(tempFolderPath);
     const buffer = result.data;
@@ -207,7 +207,7 @@ exports.saveXmlDataToMetadataFile = async function (xmlData) {
       xmlData.filePath,
       tempFolderPath,
       xmlData.password,
-      "zip"
+      "zip",
     );
     temp.deleteSubFolder(tempFolderPath);
     if (!success) {

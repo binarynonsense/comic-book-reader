@@ -5,8 +5,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 const core = require("../../core/main");
 const { _ } = require("../../shared/main/i18n");
 const reader = require("../../reader/main");
@@ -42,7 +42,7 @@ async function getServersList() {
     const axios = require("axios").default;
     const response = await axios.get(
       `https://de1.api.radio-browser.info/json/servers`,
-      { timeout: 10000 }
+      { timeout: 10000 },
     );
     if (response.data && response.data.length > 0) {
       for (let i = 0; i < response.data.length; i++) {
@@ -67,7 +67,7 @@ async function getServersList() {
       const axios = require("axios").default;
       const response = await axios.get(
         `https://all.api.radio-browser.info/json/servers`,
-        { timeout: 10000 }
+        { timeout: 10000 },
       );
       if (response.data && response.data.length > 0) {
         response.data.forEach((element) => {
@@ -87,7 +87,7 @@ async function getServersList() {
     return;
   }
   log.debug(
-    `[Radio] nothing found, will use the default server: ${g_defaultServer}`
+    `[Radio] nothing found, will use the default server: ${g_defaultServer}`,
   );
   // refs:
   // https://api.radio-browser.info/examples/serverlist_fast.js
@@ -128,7 +128,7 @@ exports.open = function (section = 1) {
     _("tool-shared-ui-search-item-open-acbr"),
     _("tool-shared-ui-search-item-open-browser"),
     _("tool-radio-add-to-favorites"),
-    _("tool-radio-remove-from-favorites")
+    _("tool-radio-remove-from-favorites"),
   );
 };
 
@@ -227,7 +227,7 @@ function initOnIpcCallbacks() {
           `${g_server ? g_server : g_defaultServer}/json/url/${id}`,
           {
             timeout: 5000,
-          }
+          },
         );
       } catch (error) {}
     })();
@@ -241,7 +241,7 @@ function initOnIpcCallbacks() {
       _("tool-shared-tab-addurl"),
       "URL",
       _("ui-modal-prompt-button-ok"),
-      _("ui-modal-prompt-button-cancel")
+      _("ui-modal-prompt-button-cancel"),
     );
   });
 
@@ -257,7 +257,7 @@ function initOnIpcCallbacks() {
       _("tool-shared-modal-title-warning"),
       _("tool-shared-ui-clear-list-warning"),
       _("ui-modal-prompt-button-ok"),
-      _("ui-modal-prompt-button-cancel")
+      _("ui-modal-prompt-button-cancel"),
     );
   });
 
@@ -270,7 +270,7 @@ function initOnIpcCallbacks() {
       _("tool-shared-ui-search-item-open-acbr"),
       _("tool-shared-ui-search-item-open-browser"),
       _("tool-radio-add-to-favorites"),
-      _("tool-radio-remove-from-favorites")
+      _("tool-radio-remove-from-favorites"),
     );
   });
 
@@ -294,7 +294,7 @@ function initOnIpcCallbacks() {
         `${
           g_server ? g_server : g_defaultServer
         }/json/stations/search?name=${searchQuery}&hidebroken=false${extraOptions}`,
-        { timeout: 10000 }
+        { timeout: 10000 },
       );
 
       sendIpcToRenderer(
@@ -305,7 +305,7 @@ function initOnIpcCallbacks() {
         _("tool-shared-ui-search-item-open-acbr"),
         _("tool-shared-ui-search-item-open-browser"),
         _("tool-radio-add-to-favorites"),
-        _("tool-radio-remove-from-favorites")
+        _("tool-radio-remove-from-favorites"),
       );
     } catch (error) {
       log.error(error);
@@ -313,7 +313,7 @@ function initOnIpcCallbacks() {
         "update-results",
         true,
         undefined,
-        _("tool-shared-ui-search-nothing-found")
+        _("tool-shared-ui-search-nothing-found"),
       );
     }
   });
@@ -338,7 +338,7 @@ function initOnIpcCallbacks() {
       _("tool-shared-ui-back"),
       _("ui-modal-prompt-button-edit-name"),
       _("ui-modal-prompt-button-edit-url"),
-      _("tool-shared-ui-search-item-open-browser")
+      _("tool-shared-ui-search-item-open-browser"),
     );
   });
 
@@ -351,7 +351,7 @@ function initOnIpcCallbacks() {
         _("tool-radio-remove-from-favorites"),
         _("tool-radio-remove-from-favorites-warning"),
         _("ui-modal-prompt-button-ok"),
-        _("ui-modal-prompt-button-cancel")
+        _("ui-modal-prompt-button-cancel"),
       );
     } else {
       log.error("Tried to remove a favorite with not matching index and path");
@@ -373,7 +373,7 @@ function initOnIpcCallbacks() {
         favName,
         _("ui-modal-prompt-button-edit-name"),
         _("ui-modal-prompt-button-ok"),
-        _("ui-modal-prompt-button-cancel")
+        _("ui-modal-prompt-button-cancel"),
       );
     } else {
       log.error("Tried to edit a favorite with not matching index and url");
@@ -392,7 +392,7 @@ function initOnIpcCallbacks() {
       } else {
         log.error("Tried to edit a favorite with not matching index and url");
       }
-    }
+    },
   );
 
   on("on-modal-favorite-options-edit-url-clicked", (favIndex, favUrl) => {
@@ -403,7 +403,7 @@ function initOnIpcCallbacks() {
         favUrl,
         _("ui-modal-prompt-button-edit-url"),
         _("ui-modal-prompt-button-ok"),
-        _("ui-modal-prompt-button-cancel")
+        _("ui-modal-prompt-button-cancel"),
       );
     } else {
       log.error("Tried to edit a favorite with not matching index and url");
@@ -421,7 +421,7 @@ function initOnIpcCallbacks() {
       } else {
         log.error("Tried to edit a favorite with not matching index and url");
       }
-    }
+    },
   );
 
   on("on-modal-favorite-options-move-clicked", (favIndex, favUrl, dir) => {
@@ -484,7 +484,7 @@ function rebuildFavorites(scrollToTop) {
     _("tool-shared-ui-search-item-open-acbr"),
     _("tool-shared-ui-search-item-open-browser"),
     _("tool-radio-add-to-favorites"),
-    _("tool-radio-remove-from-favorites")
+    _("tool-radio-remove-from-favorites"),
   );
 }
 
@@ -529,7 +529,7 @@ function updateLocalizedText() {
   sendIpcToRenderer(
     "update-localization",
     getLocalization(),
-    getExtraLocalization()
+    getExtraLocalization(),
   );
 }
 exports.updateLocalizedText = updateLocalizedText;
@@ -643,7 +643,7 @@ function getLocalization() {
       text: _(
         "tool-shared-ui-about-text-1",
         _("tool-shared-ui-about-text-1-radiostations"),
-        "radio-browser.info"
+        "radio-browser.info",
       ),
     },
     {
@@ -654,7 +654,7 @@ function getLocalization() {
       id: "tool-radio-open-radio-browser-button-text",
       text: _(
         "tool-shared-ui-button-open-websitename-in-browser",
-        "radio-browser"
+        "radio-browser",
       ).toUpperCase(),
     },
     //////////////////////////////////////////////

@@ -6,8 +6,8 @@
  */
 
 const { app } = require("electron");
-const path = require("path");
-const fs = require("fs");
+const path = require("node:path");
+const fs = require("node:fs");
 const sanitizeHtml = require("sanitize-html");
 
 const settings = require("./settings");
@@ -94,7 +94,7 @@ exports.getAvailableLocales = function () {
   let localesList = [];
   // official locales
   localesList = getLocalesFromFolder(
-    path.join(__dirname, "../../assets/i18n/")
+    path.join(__dirname, "../../assets/i18n/"),
   );
   // if (
   //   g_userDataLocalesPath !== undefined &&
@@ -130,7 +130,7 @@ function getLocalesFromFolder(folderPath) {
       for (let file of filesInFolder) {
         try {
           let data = JSON.parse(
-            fs.readFileSync(path.join(folderPath, file), "utf8")
+            fs.readFileSync(path.join(folderPath, file), "utf8"),
           );
           if (
             data !== undefined &&

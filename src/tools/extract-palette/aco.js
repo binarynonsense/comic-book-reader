@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-const fs = require("fs");
+const fs = require("node:fs");
 
 // ref (1): https://www.adobe.com/devnet-apps/photoshop/fileformatashtml/#50577411_pgfId-1055819
 // ref (2): http://www.nomodes.com/aco.html

@@ -5,8 +5,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 const core = require("../../core/main");
 const { _ } = require("../../shared/main/i18n");
 const reader = require("../../reader/main");
@@ -43,14 +43,14 @@ exports.open = function () {
   collectionsContent += `<option value="wwIIarchive">WWII Archive</option>`;
   collectionsContent += `<option value="sciencefiction">The Science Fiction and Fantasy Fiction Collection</option>`;
   collectionsContent += `<option value="">${_(
-    "tool-iab-collection-any"
+    "tool-iab-collection-any",
   )}</option>`;
 
   let availabilityContent = `<option value="0">${_(
-    "tool-iab-availability-always"
+    "tool-iab-availability-always",
   )}</option>`;
   availabilityContent += `<option value="1">${_(
-    "tool-iab-availability-any"
+    "tool-iab-availability-any",
   )}</option>`;
 
   sendIpcToRenderer("show", collectionsContent, availabilityContent);
@@ -136,7 +136,7 @@ function initOnIpcCallbacks() {
       }
       const response = await axios.get(
         `https://archive.org/advancedsearch.php?${searchQuery}${collectionQuery}+AND+mediatype%3A(texts)${readableQuery}&fl[]=identifier&fl[]=imagecount&fl[]=title&fl[]=creator&sort[]=&sort[]=&sort[]=&rows=${g_queryPageSize}&page=${pageNum}&output=json`,
-        { timeout: 10000 }
+        { timeout: 10000 },
       );
       sendIpcToRenderer(
         "update-results",
@@ -146,14 +146,14 @@ function initOnIpcCallbacks() {
         pageNum,
         g_queryPageSize,
         _("tool-shared-ui-search-item-open-acbr"),
-        _("tool-shared-ui-search-item-open-browser")
+        _("tool-shared-ui-search-item-open-browser"),
       );
     } catch (error) {
       // console.error(error);
       sendIpcToRenderer(
         "update-results",
         undefined,
-        _("tool-shared-ui-search-nothing-found")
+        _("tool-shared-ui-search-nothing-found"),
       );
     }
   });
@@ -214,7 +214,7 @@ function updateLocalizedText() {
     "update-localization",
     _("tool-shared-ui-search-placeholder"),
     _("tool-shared-modal-title-searching"),
-    getLocalization()
+    getLocalization(),
   );
 }
 exports.updateLocalizedText = updateLocalizedText;
@@ -294,7 +294,7 @@ function getLocalization() {
       text: _(
         "tool-shared-ui-about-text-1",
         _("tool-shared-ui-about-text-1-books"),
-        "Internet Archive"
+        "Internet Archive",
       ),
     },
     {
@@ -305,7 +305,7 @@ function getLocalization() {
       id: "tool-iab-open-ia-browser-button-text",
       text: _(
         "tool-shared-ui-button-open-websitename-in-browser",
-        "Internet Archive"
+        "Internet Archive",
       ).toUpperCase(),
     },
     //////////////////////////////////////////////

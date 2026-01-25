@@ -6,8 +6,8 @@
  */
 
 const { clipboard } = require("electron");
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 const core = require("../../core/main");
 const { _ } = require("../../shared/main/i18n");
 const log = require("../../shared/main/logger");
@@ -127,7 +127,7 @@ function initOnIpcCallbacks() {
         undefined,
         allowedFileTypesName,
         allowedFileTypesList,
-        allowMultipleSelection
+        allowMultipleSelection,
       );
       if (filePathsList === undefined || filePathsList.length === 0) {
         return;
@@ -145,7 +145,7 @@ function initOnIpcCallbacks() {
     try {
       sendIpcToRenderer(
         "modal-update-title-text",
-        _("tool-shared-modal-title-extracting").toUpperCase()
+        _("tool-shared-modal-title-extracting").toUpperCase(),
       );
       const code = jsQR(imgData, imgWidth, imgHeight);
       if (code && code.data) {
@@ -184,7 +184,7 @@ function cancelExtraction(error) {
       "show-modal-alert",
       _("tool-eq-modal-alert-title-errorextracting"),
       error.message,
-      true
+      true,
     );
   }
 }

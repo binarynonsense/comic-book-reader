@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-const path = require("path");
+const path = require("node:path");
 const log = require("./logger");
 // NOTE: don't add any electron related requires
 

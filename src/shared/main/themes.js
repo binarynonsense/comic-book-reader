@@ -5,8 +5,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-const path = require("path");
-const fs = require("fs");
+const path = require("node:path");
+const fs = require("node:fs");
 
 const settings = require("./settings");
 const appUtils = require("./app-utils");
@@ -87,7 +87,7 @@ function loadDataFromId(themeId) {
   }
   let dataPath = path.join(
     __dirname,
-    "../../assets/themes/" + themeId + ".json"
+    "../../assets/themes/" + themeId + ".json",
   );
   if (!fs.existsSync(dataPath)) {
     return undefined;
@@ -115,7 +115,7 @@ function getListFromFolder(folderPath) {
       for (let file of filesInFolder) {
         try {
           let data = JSON.parse(
-            fs.readFileSync(path.join(folderPath, file), "utf8")
+            fs.readFileSync(path.join(folderPath, file), "utf8"),
           );
           if (
             data !== undefined &&
@@ -172,7 +172,7 @@ function getAutomaticTimeThemeId() {
   }
   const currentTimeInMins = getTotalMins(
     currentTime.hours,
-    currentTime.minutes
+    currentTime.minutes,
   );
   const startTimeMins = getTotalMins(timeStartHour, timeStartMins);
   const endTimeMins = getTotalMins(timeEndHour, timeEndMins);

@@ -7,8 +7,8 @@
 
 const { clipboard } = require("electron");
 const shell = require("electron").shell;
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 const core = require("../../core/main");
 const { _, getKeys } = require("../../shared/main/i18n");
 const log = require("../../shared/main/logger");
@@ -132,7 +132,7 @@ function updateLocalizedText() {
   sendIpcToRenderer(
     "update-localization",
     getLocalization(),
-    getIframeLocalization()
+    getIframeLocalization(),
   );
 }
 
@@ -148,7 +148,7 @@ function getLocalization() {
   localization.modals["closeMessage"] = _("tool-tm-back-warning");
   localization.modals["closeOk"] = _("ui-modal-prompt-button-ok").toUpperCase();
   localization.modals["closeCancel"] = _(
-    "ui-modal-prompt-button-cancel"
+    "ui-modal-prompt-button-cancel",
   ).toUpperCase();
   return localization;
 }

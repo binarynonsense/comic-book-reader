@@ -6,8 +6,8 @@
  */
 
 const { ipcRenderer } = require("electron");
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 const fileUtils = require("../main/file-utils");
 const { FileExtension } = require("../main/constants");
 const { padNumber } = require("../main/utils");
