@@ -34,17 +34,16 @@ exports.open = function (fileData, settings) {
     ".tools-menu-sections",
     fs
       .readFileSync(path.join(__dirname, "index-section-buttons.html"))
-      .toString()
+      .toString(),
   );
   base.sendIpcToCoreRenderer(
     "insert-html-afterend",
     "#tools-title",
-    fs.readFileSync(path.join(__dirname, "index-sections.html")).toString()
+    fs.readFileSync(path.join(__dirname, "index-sections.html")).toString(),
   );
   base.sendIpcToRenderer("set-subtool", "cix");
   updateLocalizedText();
-  const ISO6391 = require("iso-639-1");
-  let languages = ISO6391.getLanguages(ISO6391.getAllCodes());
+  let languages = getISOLanguages();
   base.sendIpcToRenderer("show", fileData, languages, settings.canEditRars());
   g_fileData = fileData;
 };
@@ -79,7 +78,7 @@ exports.loadMetadata = async function () {
             g_fileData.metadata.comicInfoId,
             g_fileData.password,
             tempFolderPath,
-            "zip"
+            "zip",
           );
           temp.deleteSubFolder(tempFolderPath);
           if (result.success) {
@@ -94,7 +93,7 @@ exports.loadMetadata = async function () {
             g_fileData.path,
             g_fileData.metadata.comicInfoId,
             g_fileData.password,
-            tempFolderPath
+            tempFolderPath,
           );
           temp.deleteSubFolder(tempFolderPath);
         }
@@ -106,7 +105,7 @@ exports.loadMetadata = async function () {
             g_fileData.path,
             g_fileData.metadata.comicInfoId,
             g_fileData.password,
-            tempFolderPath
+            tempFolderPath,
           );
           temp.deleteSubFolder(tempFolderPath);
           if (result.success) {
@@ -153,7 +152,7 @@ exports.loadMetadata = async function () {
       base.sendIpcToRenderer(
         "load-metadata",
         data,
-        error === "no comicinfo" ? undefined : error
+        error === "no comicinfo" ? undefined : error,
       );
     } catch (error) {
       // TODO: can't recuperate from this!!
@@ -172,11 +171,11 @@ exports.updatePages = function (data) {
   if (g_worker === undefined) {
     if (core.useUtilityProcess()) {
       g_worker = utilityProcess.fork(
-        path.join(__dirname, "../../../shared/main/tools-worker.js")
+        path.join(__dirname, "../../../shared/main/tools-worker.js"),
       );
     } else {
       g_worker = fork(
-        path.join(__dirname, "../../../shared/main/tools-worker.js")
+        path.join(__dirname, "../../../shared/main/tools-worker.js"),
       );
     }
     g_worker.on("message", (message) => {
@@ -202,7 +201,7 @@ exports.updatePages = function (data) {
         tempFolderPath,
         g_fileData.password,
       ],
-      [port1]
+      [port1],
     );
   } else {
     g_worker.send([
@@ -288,7 +287,7 @@ exports.saveMetadataToFile = async function (data) {
         g_fileData.path,
         tempFolderPath,
         g_fileData.password,
-        g_fileData.type === FileDataType.ZIP ? "zip" : undefined
+        g_fileData.type === FileDataType.ZIP ? "zip" : undefined,
       );
       temp.deleteSubFolder(tempFolderPath);
       if (!success) {
@@ -302,7 +301,7 @@ exports.saveMetadataToFile = async function (data) {
         utils.getRarCommand(settings.getValue("rarExeFolderPath")),
         g_fileData.path,
         entryName,
-        tempFolderPath
+        tempFolderPath,
       );
       temp.deleteSubFolder(tempFolderPath);
       if (!success) {
@@ -333,20 +332,20 @@ function updateLocalizedText() {
       savingMessageUpdate: _("tool-metadata-cix-warning-save-update"),
       savingMessageCreate: _("tool-metadata-cix-warning-save-create"),
       savingMessageSuccessUpdate: _(
-        "tool-metadata-cix-modal-message-success-update"
+        "tool-metadata-cix-modal-message-success-update",
       ),
       savingMessageSuccessCreate: _(
-        "tool-metadata-cix-modal-message-success-create"
+        "tool-metadata-cix-modal-message-success-create",
       ),
       savingMessageErrorUpdate: _(
-        "tool-metadata-cix-modal-message-could-not-update"
+        "tool-metadata-cix-modal-message-could-not-update",
       ),
       savingMessageErrorCreate: _(
-        "tool-metadata-cix-modal-message-could-not-create"
+        "tool-metadata-cix-modal-message-could-not-create",
       ),
 
       loadingMessageErrorInvalid: _(
-        "tool-metadata-cix-modal-message-not-valid"
+        "tool-metadata-cix-modal-message-not-valid",
       ),
       ...baseLocalizedText[2],
     },
@@ -372,7 +371,7 @@ function updateLocalizedText() {
         _("tool-metadata-data-page-table-header-doublepage"),
         _("tool-metadata-data-page-table-header-type"),
       ],
-    ]
+    ],
   );
 }
 exports.updateLocalizedText = updateLocalizedText;
@@ -629,5 +628,204 @@ function getLocalization() {
       id: "tool-metadata-data-review-text",
       text: _("tool-metadata-data-review"),
     },
+  ];
+}
+
+// hardcoded replacement for ISO6391.getLanguages(ISO6391.getAllCodes())
+// so I don't need the library
+// generate:
+// const fs = require('node:fs');
+// const ISO6391 = require('iso-639-1');
+// const data = ISO6391.getLanguages(ISO6391.getAllCodes());
+// const fileContent = `function getISOLanguages() {
+//   return ${JSON.stringify(data, null, 2)};
+// }
+// fs.writeFileSync("./iso-languages.js", fileContent);
+function getISOLanguages() {
+  return [
+    { code: "ab", name: "Abkhazian", nativeName: "аҧсуа бызшәа" },
+    { code: "aa", name: "Afar", nativeName: "Afaraf" },
+    { code: "af", name: "Afrikaans", nativeName: "Afrikaans" },
+    { code: "ak", name: "Akan", nativeName: "Akan" },
+    { code: "sq", name: "Albanian", nativeName: "Shqip" },
+    { code: "am", name: "Amharic", nativeName: "አማርኛ" },
+    { code: "ar", name: "Arabic", nativeName: "العربية" },
+    { code: "an", name: "Aragonese", nativeName: "aragonés" },
+    { code: "hy", name: "Armenian", nativeName: "Հայերեն" },
+    { code: "as", name: "Assamese", nativeName: "অসমীয়া" },
+    { code: "av", name: "Avaric", nativeName: "авар мацӀ" },
+    { code: "ae", name: "Avestan", nativeName: "avesta" },
+    { code: "ay", name: "Aymara", nativeName: "aymar aru" },
+    { code: "az", name: "Azerbaijani", nativeName: "azərbaycan dili" },
+    { code: "bm", name: "Bambara", nativeName: "bamanankan" },
+    { code: "ba", name: "Bashkir", nativeName: "башҡорт теле" },
+    { code: "eu", name: "Basque", nativeName: "euskara" },
+    { code: "be", name: "Belarusian", nativeName: "беларуская мова" },
+    { code: "bn", name: "Bengali", nativeName: "বাংলা" },
+    { code: "bh", name: "Bihari languages", nativeName: "भोजपुरी" },
+    { code: "bi", name: "Bislama", nativeName: "Bislama" },
+    { code: "bs", name: "Bosnian", nativeName: "bosanski jezik" },
+    { code: "br", name: "Breton", nativeName: "brezhoneg" },
+    { code: "bg", name: "Bulgarian", nativeName: "български език" },
+    { code: "my", name: "Burmese", nativeName: "ဗမာစာ" },
+    { code: "ca", name: "Catalan", nativeName: "català" },
+    { code: "ch", name: "Chamorro", nativeName: "Chamoru" },
+    { code: "ce", name: "Chechen", nativeName: "нохчийн мотт" },
+    { code: "ny", name: "Chichewa", nativeName: "chiCheŵa" },
+    { code: "zh", name: "Chinese", nativeName: "中文" },
+    { code: "cv", name: "Chuvash", nativeName: "чӑваш чӗлхи" },
+    { code: "kw", name: "Cornish", nativeName: "Kernewek" },
+    { code: "co", name: "Corsican", nativeName: "corsu" },
+    { code: "cr", name: "Cree", nativeName: "ᓀᐦᐃᔭᐑᐣ" },
+    { code: "hr", name: "Croatian", nativeName: "hrvatski jezik" },
+    { code: "cs", name: "Czech", nativeName: "čeština" },
+    { code: "da", name: "Danish", nativeName: "dansk" },
+    { code: "dv", name: "Divehi", nativeName: "ދިވެހިބަސް" },
+    { code: "nl", name: "Dutch", nativeName: "Nederlands" },
+    { code: "dz", name: "Dzongkha", nativeName: "རྫོང་ཁ" },
+    { code: "en", name: "English", nativeName: "English" },
+    { code: "eo", name: "Esperanto", nativeName: "Esperanto" },
+    { code: "et", name: "Estonian", nativeName: "eesti" },
+    { code: "ee", name: "Ewe", nativeName: "Eʋegbe" },
+    { code: "fo", name: "Faroese", nativeName: "føroyskt" },
+    { code: "fj", name: "Fijian", nativeName: "vosa Vakaviti" },
+    { code: "fi", name: "Finnish", nativeName: "suomi" },
+    { code: "fr", name: "French", nativeName: "français" },
+    { code: "ff", name: "Fulah", nativeName: "Fulfulde" },
+    { code: "gl", name: "Galician", nativeName: "galego" },
+    { code: "ka", name: "Georgian", nativeName: "ქართული" },
+    { code: "de", name: "German", nativeName: "Deutsch" },
+    { code: "el", name: "Greek", nativeName: "ελληνικά" },
+    { code: "gn", name: "Guarani", nativeName: "Avañe'ẽ" },
+    { code: "gu", name: "Gujarati", nativeName: "ગુજરાતી" },
+    { code: "ht", name: "Haitian", nativeName: "Kreyòl ayisyen" },
+    { code: "ha", name: "Hausa", nativeName: "هَوُسَ" },
+    { code: "he", name: "Hebrew", nativeName: "עברית" },
+    { code: "hz", name: "Herero", nativeName: "Otjiherero" },
+    { code: "hi", name: "Hindi", nativeName: "हिन्दी" },
+    { code: "ho", name: "Hiri Motu", nativeName: "Hiri Motu" },
+    { code: "hu", name: "Hungarian", nativeName: "magyar" },
+    { code: "ia", name: "Interlingua", nativeName: "Interlingua" },
+    { code: "id", name: "Indonesian", nativeName: "Bahasa Indonesia" },
+    { code: "ie", name: "Interlingue", nativeName: "Interlingue" },
+    { code: "ga", name: "Irish", nativeName: "Gaeilge" },
+    { code: "ig", name: "Igbo", nativeName: "Asụsụ Igbo" },
+    { code: "ik", name: "Inupiaq", nativeName: "Iñupiaq" },
+    { code: "io", name: "Ido", nativeName: "Ido" },
+    { code: "is", name: "Icelandic", nativeName: "íslenska" },
+    { code: "it", name: "Italian", nativeName: "italiano" },
+    { code: "iu", name: "Inuktitut", nativeName: "ᐃᓄᒃᑎᑐᑦ" },
+    { code: "ja", name: "Japanese", nativeName: "日本語" },
+    { code: "jv", name: "Javanese", nativeName: "Basa Jawa" },
+    { code: "kl", name: "Kalaallisut", nativeName: "kalaallisut" },
+    { code: "kn", name: "Kannada", nativeName: "ಕನ್ನಡ" },
+    { code: "kr", name: "Kanuri", nativeName: "Kanuri" },
+    { code: "ks", name: "Kashmiri", nativeName: "कश्मीरी" },
+    { code: "kk", name: "Kazakh", nativeName: "қазақ тілі" },
+    { code: "km", name: "Central Khmer", nativeName: "ខ្មែរ" },
+    { code: "ki", name: "Kikuyu", nativeName: "Gikuyu" },
+    { code: "rw", name: "Kinyarwanda", nativeName: "Ikinyarwanda" },
+    { code: "ky", name: "Kirghiz", nativeName: "Кыргызча" },
+    { code: "kv", name: "Komi", nativeName: "коми кыв" },
+    { code: "kg", name: "Kongo", nativeName: "Kikongo" },
+    { code: "ko", name: "Korean", nativeName: "한국어" },
+    { code: "ku", name: "Kurdish", nativeName: "Kurdî" },
+    { code: "kj", name: "Kuanyama", nativeName: "Kuanyama" },
+    { code: "la", name: "Latin", nativeName: "latine" },
+    { code: "lb", name: "Luxembourgish", nativeName: "Lëtzebuergesch" },
+    { code: "lg", name: "Ganda", nativeName: "Luganda" },
+    { code: "li", name: "Limburgan", nativeName: "Limburgs" },
+    { code: "ln", name: "Lingala", nativeName: "lingála" },
+    { code: "lo", name: "Lao", nativeName: "ພາສາລາວ" },
+    { code: "lt", name: "Lithuanian", nativeName: "lietuvių kalba" },
+    { code: "lu", name: "Luba-Katanga", nativeName: "Tshiluba" },
+    { code: "lv", name: "Latvian", nativeName: "latviešu valoda" },
+    { code: "gv", name: "Manx", nativeName: "Gaelg" },
+    { code: "mk", name: "Macedonian", nativeName: "македонски јазик" },
+    { code: "mg", name: "Malagasy", nativeName: "fiteny malagasy" },
+    { code: "ms", name: "Malay", nativeName: "bahasa Melayu" },
+    { code: "ml", name: "Malayalam", nativeName: "മലയാളം" },
+    { code: "mt", name: "Maltese", nativeName: "Malti" },
+    { code: "mi", name: "Maori", nativeName: "te reo Māori" },
+    { code: "mr", name: "Marathi", nativeName: "मराठी" },
+    { code: "mh", name: "Marshallese", nativeName: "Kajin M̧ajeļ" },
+    { code: "mn", name: "Mongolian", nativeName: "Монгол хэл" },
+    { code: "na", name: "Nauru", nativeName: "Dorerin Naoero" },
+    { code: "nv", name: "Navajo", nativeName: "Diné bizaad" },
+    { code: "nd", name: "North Ndebele", nativeName: "isiNdebele" },
+    { code: "ne", name: "Nepali", nativeName: "नेपाली" },
+    { code: "ng", name: "Ndonga", nativeName: "Owambo" },
+    { code: "nb", name: "Norwegian Bokmål", nativeName: "Norsk bokmål" },
+    { code: "nn", name: "Norwegian Nynorsk", nativeName: "Norsk nynorsk" },
+    { code: "no", name: "Norwegian", nativeName: "Norsk" },
+    { code: "ii", name: "Nuosu", nativeName: "ꆈꌠ꒿ Nuosuhxop" },
+    { code: "nr", name: "South Ndebele", nativeName: "isiNdebele" },
+    { code: "oc", name: "Occitan", nativeName: "occitan" },
+    { code: "oj", name: "Ojibwa", nativeName: "ᐊᓂᔑᓈᐯᒧᐑᓐ" },
+    { code: "cu", name: "Church Slavic", nativeName: "ѩзыкъ словѣньскъ" },
+    { code: "om", name: "Oromo", nativeName: "Afaan Oromoo" },
+    { code: "or", name: "Oriya", nativeName: "ଓଡ଼ିଆ" },
+    { code: "os", name: "Ossetian", nativeName: "ирон æвзаг" },
+    { code: "pa", name: "Panjabi", nativeName: "ਪੰਜਾਬੀ" },
+    { code: "pi", name: "Pali", nativeName: "पाऴि" },
+    { code: "fa", name: "Persian", nativeName: "فارسی" },
+    { code: "pl", name: "Polish", nativeName: "polski" },
+    { code: "ps", name: "Pashto", nativeName: "پښتو" },
+    { code: "pt", name: "Portuguese", nativeName: "português" },
+    { code: "qu", name: "Quechua", nativeName: "Runa Simi" },
+    { code: "rm", name: "Romansh", nativeName: "rumantsch" },
+    { code: "rn", name: "Rundi", nativeName: "Ikirundi" },
+    { code: "ro", name: "Romanian", nativeName: "română" },
+    { code: "ru", name: "Russian", nativeName: "русский язык" },
+    { code: "sa", name: "Sanskrit", nativeName: "संस्कृतम्" },
+    { code: "sc", name: "Sardinian", nativeName: "sardu" },
+    { code: "sd", name: "Sindhi", nativeName: "सिन्धी" },
+    { code: "se", name: "Northern Sami", nativeName: "davvisámegiella" },
+    { code: "sm", name: "Samoan", nativeName: "gagana fa'a Samoa" },
+    { code: "sg", name: "Sango", nativeName: "yângâ tî sängö" },
+    { code: "sr", name: "Serbian", nativeName: "српски језик" },
+    { code: "gd", name: "Gaelic", nativeName: "Gàidhlig" },
+    { code: "sn", name: "Shona", nativeName: "chiShona" },
+    { code: "si", name: "Sinhala", nativeName: "සිංහල" },
+    { code: "sk", name: "Slovak", nativeName: "slovenčina" },
+    { code: "sl", name: "Slovenian", nativeName: "slovenščina" },
+    { code: "so", name: "Somali", nativeName: "Soomaaliga" },
+    { code: "st", name: "Southern Sotho", nativeName: "Sesotho" },
+    { code: "es", name: "Spanish", nativeName: "español" },
+    { code: "su", name: "Sundanese", nativeName: "Basa Sunda" },
+    { code: "sw", name: "Swahili", nativeName: "Kiswahili" },
+    { code: "ss", name: "Swati", nativeName: "SiSwati" },
+    { code: "sv", name: "Swedish", nativeName: "svenska" },
+    { code: "ta", name: "Tamil", nativeName: "தமிழ்" },
+    { code: "te", name: "Telugu", nativeName: "తెలుగు" },
+    { code: "tg", name: "Tajik", nativeName: "тоҷикӣ" },
+    { code: "th", name: "Thai", nativeName: "ไทย" },
+    { code: "ti", name: "Tigrinya", nativeName: "ትግርኛ" },
+    { code: "bo", name: "Tibetan", nativeName: "བོད་ཡིག" },
+    { code: "tk", name: "Turkmen", nativeName: "Türkmen" },
+    { code: "tl", name: "Tagalog", nativeName: "Wikang Tagalog" },
+    { code: "tn", name: "Tswana", nativeName: "Setswana" },
+    { code: "to", name: "Tonga", nativeName: "faka Tonga" },
+    { code: "tr", name: "Turkish", nativeName: "Türkçe" },
+    { code: "ts", name: "Tsonga", nativeName: "Xitsonga" },
+    { code: "tt", name: "Tatar", nativeName: "татар теле" },
+    { code: "tw", name: "Twi", nativeName: "Twi" },
+    { code: "ty", name: "Tahitian", nativeName: "Reo Tahiti" },
+    { code: "ug", name: "Uighur", nativeName: "ئۇيغۇرچە" },
+    { code: "uk", name: "Ukrainian", nativeName: "українська мова" },
+    { code: "ur", name: "Urdu", nativeName: "اردو" },
+    { code: "uz", name: "Uzbek", nativeName: "O'zbek" },
+    { code: "ve", name: "Venda", nativeName: "Tshivenḓa" },
+    { code: "vi", name: "Vietnamese", nativeName: "Tiếng Việt" },
+    { code: "vo", name: "Volapük", nativeName: "Volapük" },
+    { code: "wa", name: "Walloon", nativeName: "walon" },
+    { code: "cy", name: "Welsh", nativeName: "Cymraeg" },
+    { code: "wo", name: "Wolof", nativeName: "Wolof" },
+    { code: "fy", name: "Western Frisian", nativeName: "Frysk" },
+    { code: "xh", name: "Xhosa", nativeName: "isiXhosa" },
+    { code: "yi", name: "Yiddish", nativeName: "ייִדיש" },
+    { code: "yo", name: "Yoruba", nativeName: "Yorùbá" },
+    { code: "za", name: "Zhuang", nativeName: "Saɯ cueŋƅ" },
+    { code: "zu", name: "Zulu", nativeName: "isiZulu" },
   ];
 }

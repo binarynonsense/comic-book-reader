@@ -45,7 +45,7 @@ export function init(fileData, isoLanguages, canEditRars) {
   g_saveButton = document.getElementById("tool-metadata-save-button");
   ////////////////////////////////////////
   g_langSelect = document.getElementById(
-    "tool-metadata-data-languageiso-select"
+    "tool-metadata-data-languageiso-select",
   );
   g_langSelect.innerHTML += `<option value="default"></option>`;
   isoLanguages.sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0));
@@ -169,7 +169,7 @@ export function onLoadMetadata(data, error) {
     base.showInfoModal(
       g_localizedModalTexts.errorTitle,
       g_localizedModalTexts.loadingMessageErrorInvalid,
-      g_localizedModalTexts.okButton
+      g_localizedModalTexts.okButton,
     );
   }
 }
@@ -201,7 +201,7 @@ export async function onSave() {
       // pages already updated, they are updated on input events
       /////////////////////////////////
       base.sendIpcToMain("save-metadata-to-file", g_data);
-    }
+    },
   );
 }
 
@@ -212,7 +212,7 @@ export function onSavingDone(error) {
       g_hasInfo
         ? g_localizedModalTexts.savingMessageSuccessUpdate
         : g_localizedModalTexts.savingMessageSuccessCreate,
-      g_localizedModalTexts.okButton
+      g_localizedModalTexts.okButton,
     );
     g_hasInfo = true;
   } else {
@@ -221,7 +221,7 @@ export function onSavingDone(error) {
       g_hasInfo
         ? g_localizedModalTexts.savingMessageErrorUpdate
         : g_localizedModalTexts.savingMessageErrorCreate,
-      g_localizedModalTexts.okButton
+      g_localizedModalTexts.okButton,
     );
   }
 }
@@ -237,7 +237,7 @@ export function onIssueSearchResults(
   importButton,
   ul,
   data,
-  addLine
+  addLine,
 ) {
   if (g_isEditable) {
     importButton.classList.remove("tools-disabled");
@@ -248,21 +248,21 @@ export function onIssueSearchResults(
     compiledData.title = addLine(
       ul,
       document.getElementById("tool-metadata-data-title-text").textContent,
-      data.name
+      data.name,
     );
   }
   if (data?.volume?.name) {
     compiledData.series = addLine(
       ul,
       document.getElementById("tool-metadata-data-series-text").textContent,
-      data.volume.name
+      data.volume.name,
     );
   }
   if (data.issue_number) {
     compiledData.number = addLine(
       ul,
       document.getElementById("tool-metadata-data-number-text").textContent,
-      data.issue_number
+      data.issue_number,
     );
   }
   if (data.cover_date) {
@@ -271,19 +271,19 @@ export function onIssueSearchResults(
       compiledData.year = addLine(
         ul,
         document.getElementById("tool-metadata-data-year-text").textContent,
-        numbers[0]
+        numbers[0],
       );
     if (numbers.length > 1)
       compiledData.month = addLine(
         ul,
         document.getElementById("tool-metadata-data-month-text").textContent,
-        numbers[1]
+        numbers[1],
       );
     if (numbers.length > 2)
       compiledData.day = addLine(
         ul,
         document.getElementById("tool-metadata-data-day-text").textContent,
-        numbers[2]
+        numbers[2],
       );
   }
   if (
@@ -293,14 +293,14 @@ export function onIssueSearchResults(
     compiledData.publisher = addLine(
       ul,
       document.getElementById("tool-metadata-data-publisher-text").textContent,
-      searchHistory.issues.results.publisher.name
+      searchHistory.issues.results.publisher.name,
     );
   }
   if (searchHistory.issues.results.count_of_issues) {
     compiledData.totalNumber = addLine(
       ul,
       document.getElementById("tool-metadata-data-count-text").textContent,
-      searchHistory.issues.results.count_of_issues
+      searchHistory.issues.results.count_of_issues,
     );
   }
   if (data.person_credits) {
@@ -342,9 +342,9 @@ export function onIssueSearchResults(
           document.getElementById(
             `tool-metadata-data-${
               roles[i].altName !== undefined ? roles[i].altName : roles[i].name
-            }-text`
+            }-text`,
           ).textContent,
-          roles[i].list
+          roles[i].list,
         );
       }
     }
@@ -361,7 +361,7 @@ export function onIssueSearchResults(
       compiledData.storyArc = addLine(
         ul,
         document.getElementById("tool-metadata-data-storyarc-text").textContent,
-        arcs
+        arcs,
       );
   }
   if (data.location_credits) {
@@ -377,7 +377,7 @@ export function onIssueSearchResults(
         ul,
         document.getElementById("tool-metadata-data-locations-text")
           .textContent,
-        locations
+        locations,
       );
   }
   if (data.character_credits) {
@@ -393,7 +393,7 @@ export function onIssueSearchResults(
         ul,
         document.getElementById("tool-metadata-data-characters-text")
           .textContent,
-        characters
+        characters,
       );
   }
   if (data.team_credits) {
@@ -408,7 +408,7 @@ export function onIssueSearchResults(
       compiledData.teams = addLine(
         ul,
         document.getElementById("tool-metadata-data-teams-text").textContent,
-        teams
+        teams,
       );
   }
   // TODO:
@@ -418,7 +418,7 @@ export function onIssueSearchResults(
       ul,
       document.getElementById("tool-metadata-data-summary-text").textContent,
       data.description,
-      true
+      true,
     );
   }
 
@@ -444,7 +444,7 @@ function onImportSearchResults(compiledData) {
       }
       if (compiledData.series && compiledData.series.checkbox.checked) {
         let element = document.getElementById(
-          "tool-metadata-data-series-input"
+          "tool-metadata-data-series-input",
         );
         element.value = compiledData.series.text;
         onFieldChanged(element);
@@ -466,14 +466,14 @@ function onImportSearchResults(compiledData) {
       }
       if (compiledData.publisher && compiledData.publisher.checkbox.checked) {
         let element = document.getElementById(
-          "tool-metadata-data-publisher-input"
+          "tool-metadata-data-publisher-input",
         );
         element.value = compiledData.publisher.text;
         onFieldChanged(element);
       }
       if (compiledData.number && compiledData.number.checkbox.checked) {
         let element = document.getElementById(
-          "tool-metadata-data-number-input"
+          "tool-metadata-data-number-input",
         );
         element.value = compiledData.number.text;
         onFieldChanged(element);
@@ -491,7 +491,7 @@ function onImportSearchResults(compiledData) {
         compiledData["penciler"].checkbox.checked
       ) {
         let element = document.getElementById(
-          "tool-metadata-data-penciller-input"
+          "tool-metadata-data-penciller-input",
         );
         element.value = compiledData["penciler"].text;
         onFieldChanged(element);
@@ -506,7 +506,7 @@ function onImportSearchResults(compiledData) {
         compiledData["colorist"].checkbox.checked
       ) {
         let element = document.getElementById(
-          "tool-metadata-data-colorist-input"
+          "tool-metadata-data-colorist-input",
         );
         element.value = compiledData["colorist"].text;
         onFieldChanged(element);
@@ -516,49 +516,49 @@ function onImportSearchResults(compiledData) {
         compiledData["letterer"].checkbox.checked
       ) {
         let element = document.getElementById(
-          "tool-metadata-data-letterer-input"
+          "tool-metadata-data-letterer-input",
         );
         element.value = compiledData["letterer"].text;
         onFieldChanged(element);
       }
       if (compiledData["writer"] && compiledData["writer"].checkbox.checked) {
         let element = document.getElementById(
-          "tool-metadata-data-writer-input"
+          "tool-metadata-data-writer-input",
         );
         element.value = compiledData["writer"].text;
         onFieldChanged(element);
       }
       if (compiledData["cover"] && compiledData["cover"].checkbox.checked) {
         let element = document.getElementById(
-          "tool-metadata-data-coverartist-input"
+          "tool-metadata-data-coverartist-input",
         );
         element.value = compiledData["cover"].text;
         onFieldChanged(element);
       }
       if (compiledData["editor"] && compiledData["editor"].checkbox.checked) {
         let element = document.getElementById(
-          "tool-metadata-data-editor-input"
+          "tool-metadata-data-editor-input",
         );
         element.value = compiledData["editor"].text;
         onFieldChanged(element);
       }
       if (compiledData.storyArc && compiledData.storyArc.checkbox.checked) {
         let element = document.getElementById(
-          "tool-metadata-data-storyarc-input"
+          "tool-metadata-data-storyarc-input",
         );
         element.value = compiledData.storyArc.text;
         onFieldChanged(element);
       }
       if (compiledData.locations && compiledData.locations.checkbox.checked) {
         let element = document.getElementById(
-          "tool-metadata-data-locations-input"
+          "tool-metadata-data-locations-input",
         );
         element.value = compiledData.locations.text;
         onFieldChanged(element);
       }
       if (compiledData.characters && compiledData.characters.checkbox.checked) {
         let element = document.getElementById(
-          "tool-metadata-data-characters-input"
+          "tool-metadata-data-characters-input",
         );
         element.value = compiledData.characters.text;
         onFieldChanged(element);
@@ -570,14 +570,14 @@ function onImportSearchResults(compiledData) {
       }
       if (compiledData.summary && compiledData.summary.checkbox.checked) {
         let element = document.getElementById(
-          "tool-metadata-data-summary-textarea"
+          "tool-metadata-data-summary-textarea",
         );
         element.value = compiledData.summary.text;
         onFieldChanged(element);
       }
 
       base.switchSection(2);
-    }
+    },
   );
 }
 
@@ -596,7 +596,7 @@ export function onPagesUpdated(data) {
     document.getElementById("tool-metadata-data-pagecount-input").value =
       data["ComicInfo"]["Pages"]["Page"].length;
     onFieldChanged(
-      document.getElementById("tool-metadata-data-pagecount-input")
+      document.getElementById("tool-metadata-data-pagecount-input"),
     );
     buildPagesTableFromData(data);
     if (g_isEditable) g_saveButton.classList.remove("tools-disabled");
@@ -630,8 +630,8 @@ function buildPagesTableFromData(data) {
             pageData["@_ImageWidth"],
             pageData["@_ImageHeight"],
             pageData["@_DoublePage"],
-            pageData["@_Type"]
-          )
+            pageData["@_Type"],
+          ),
         );
       }
     }
@@ -720,38 +720,38 @@ function generateTableRow(index, id, size, width, height, doublepage, type) {
     let select = document.createElement("select");
     select.innerHTML = `<option value="default"></option>
   <option value="FrontCover"${type === "FrontCover" ? " selected" : ""}>${
-      g_localizedPageTypes[0]
-    }</option>
+    g_localizedPageTypes[0]
+  }</option>
   <option value="InnerCover"${type === "InnerCover" ? " selected" : ""}>${
-      g_localizedPageTypes[1]
-    }</option>
+    g_localizedPageTypes[1]
+  }</option>
   <option value="Roundup"${type === "Roundup" ? " selected" : ""}>${
-      g_localizedPageTypes[2]
-    }</option>
+    g_localizedPageTypes[2]
+  }</option>
   <option value="Story"${type === "Story" ? " selected" : ""}>${
-      g_localizedPageTypes[3]
-    }</option>
+    g_localizedPageTypes[3]
+  }</option>
   <option value="Advertisement"${type === "Advertisement" ? " selected" : ""}>${
-      g_localizedPageTypes[4]
-    }</option>
+    g_localizedPageTypes[4]
+  }</option>
   <option value="Editorial"${type === "Editorial" ? " selected" : ""}>${
-      g_localizedPageTypes[5]
-    }</option>
+    g_localizedPageTypes[5]
+  }</option>
   <option value="Letters"${type === "Letters" ? " selected" : ""}>${
-      g_localizedPageTypes[6]
-    }</option>
+    g_localizedPageTypes[6]
+  }</option>
   <option value="Preview"${type === "Preview" ? " selected" : ""}>${
-      g_localizedPageTypes[7]
-    }</option>
+    g_localizedPageTypes[7]
+  }</option>
   <option value="BackCover"${type === "BackCover" ? " selected" : ""}>${
-      g_localizedPageTypes[8]
-    }</option>
+    g_localizedPageTypes[8]
+  }</option>
   <option value="Other"${type === "Other" ? " selected" : ""}>${
-      g_localizedPageTypes[9]
-    }</option>
+    g_localizedPageTypes[9]
+  }</option>
   <option value="Deleted"${type === "Deleted" ? " selected" : ""}>${
-      g_localizedPageTypes[10]
-    }</option>`;
+    g_localizedPageTypes[10]
+  }</option>`;
     td.appendChild(select);
     select.addEventListener("change", (event) => {
       g_data["ComicInfo"]["Pages"]["Page"][index]["@_Type"] =
