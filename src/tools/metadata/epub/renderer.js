@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2024 Álvaro García
+ * Copyright 2024-2026 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -167,7 +167,7 @@ export function onLoadMetadata(metadata, version, error) {
     }
     // delete used meta entries
     tempData.known["meta"] = tempData.known["meta"].filter(
-      (value, index) => !metaIndexesToDelete.includes(index)
+      (value, index) => !metaIndexesToDelete.includes(index),
     );
     ///////////////////////////////////////
     // reorganize metadata into g_data
@@ -193,20 +193,21 @@ export function onLoadMetadata(metadata, version, error) {
     }
     // creator
     g_data["creator"] = [];
-    tempData.known["dc:creator"].forEach((creator, index) => {
-      if (creator["@_opf:role"]) {
-        creator["@_role"] = creator["@_opf:role"];
-      }
-      if (creator["@_opf:file-as"]) {
-        creator["@_file-as"] = creator["@_opf:file-as"];
-      }
-      g_data["creator"].push({
-        text: creator["#text"],
-        scheme: "marc:relators",
-        role: creator["@_role"],
-        fileAs: creator["@_file-as"],
+    if (tempData.known["dc:creator"])
+      tempData.known["dc:creator"].forEach((creator, index) => {
+        if (creator["@_opf:role"]) {
+          creator["@_role"] = creator["@_opf:role"];
+        }
+        if (creator["@_opf:file-as"]) {
+          creator["@_file-as"] = creator["@_opf:file-as"];
+        }
+        g_data["creator"].push({
+          text: creator["#text"],
+          scheme: "marc:relators",
+          role: creator["@_role"],
+          fileAs: creator["@_file-as"],
+        });
       });
-    });
     if (g_data["creator"].length <= 0) {
       g_data["creator"].push({});
     }
@@ -256,11 +257,12 @@ export function onLoadMetadata(metadata, version, error) {
     base.closeModal();
   } catch (error) {
     base.closeModal();
+    console.log(error);
     if (error) {
       base.showInfoModal(
         g_localizedModalTexts.errorTitle,
         error.message, //g_localizedModalTexts.loadingMessageErrorInvalid,
-        g_localizedModalTexts.okButton
+        g_localizedModalTexts.okButton,
       );
     }
   }
@@ -601,7 +603,7 @@ export async function onSave() {
       }
       /////////////////////////////////
       base.sendIpcToMain("save-metadata-to-file", metadata);
-    }
+    },
   );
 }
 
@@ -610,13 +612,13 @@ export function onSavingDone(error) {
     base.showInfoModal(
       g_localizedModalTexts.successTitle,
       g_localizedModalTexts.savingMessageSuccessUpdate,
-      g_localizedModalTexts.okButton
+      g_localizedModalTexts.okButton,
     );
   } else {
     base.showInfoModal(
       g_localizedModalTexts.errorTitle,
       g_localizedModalTexts.savingMessageErrorUpdate,
-      g_localizedModalTexts.okButton
+      g_localizedModalTexts.okButton,
     );
   }
 }
@@ -632,7 +634,7 @@ export function onIssueSearchResults(
   importButton,
   ul,
   data,
-  addLine
+  addLine,
 ) {
   importButton.classList.remove("tools-disabled");
   let compiledData = {};
@@ -640,28 +642,28 @@ export function onIssueSearchResults(
     compiledData.title = addLine(
       ul,
       g_localizedSubTool.uiTagNames.title,
-      data.name
+      data.name,
     );
   }
   if (data?.volume?.name) {
     compiledData.series = addLine(
       ul,
       g_localizedSubTool.uiTagNames.series,
-      data.volume.name
+      data.volume.name,
     );
   }
   if (data.issue_number) {
     compiledData.number = addLine(
       ul,
       g_localizedSubTool.uiTagNames.number,
-      data.issue_number
+      data.issue_number,
     );
   }
   if (data.cover_date) {
     compiledData.date = addLine(
       ul,
       g_localizedSubTool.uiTagNames.date,
-      data.cover_date
+      data.cover_date,
     );
   }
   if (
@@ -671,7 +673,7 @@ export function onIssueSearchResults(
     compiledData.publisher = addLine(
       ul,
       g_localizedSubTool.uiTagNames.publisher,
-      searchHistory.issues.results.publisher.name
+      searchHistory.issues.results.publisher.name,
     );
   }
 
@@ -682,7 +684,7 @@ export function onIssueSearchResults(
       ul,
       g_localizedSubTool.uiTagNames.description,
       div.innerText,
-      true // just in case
+      true, // just in case
     );
   }
   if (data.person_credits) {
@@ -697,7 +699,7 @@ export function onIssueSearchResults(
     function haveCommonItems(array_1, array_2) {
       const set_1 = new Set(array_1); // set of unique items
       const common = array_2.filter((item) =>
-        set_1.has(item.toLowerCase().trim())
+        set_1.has(item.toLowerCase().trim()),
       );
       return common.length > 0;
     }
@@ -717,7 +719,7 @@ export function onIssueSearchResults(
         compiledData.creator[role.altName] = addLine(
           ul,
           g_localizedSubTool.role[role.altName],
-          role.list
+          role.list,
         );
       }
     });
@@ -783,7 +785,7 @@ function onImportSearchResults(compiledData) {
         onFieldChanged();
       }
       base.switchSection(2);
-    }
+    },
   );
 }
 
