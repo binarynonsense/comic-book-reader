@@ -274,7 +274,6 @@ async function exportPage(sendToTool, params, fileData) {
     if (fileType !== undefined) {
       fileExtension = "." + fileType;
     }
-    log.test(fileType);
     let fileName =
       path.basename(fileData.name, path.extname(fileData.name)) +
       "_page_" +
