@@ -76,7 +76,7 @@ function init(history, maxFiles, showFocus) {
   maxFilesInput.value = g_maxFiles;
   maxFilesInput.addEventListener("change", function (event) {
     const value = parseInt(maxFilesInput.value);
-    if (value) {
+    if (!Number.isNaN(value)) {
       if (value <= 0) maxFilesInput.value = 1;
       if (value > 1000) maxFilesInput.value = 1000;
       showModalConfirmSetMax(maxFilesInput);
