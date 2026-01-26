@@ -12,24 +12,17 @@ const { FileExtension, FileDataType } = require("./constants");
 const utils = require("./utils");
 const fileUtils = require("./file-utils");
 
-let g_useUtilityProcess = false;
+const controller = new AbortController();
+const { signal } = controller;
 
-process.on("message", (message) => {
-  g_useUtilityProcess = false;
-  if (message[1] === "extract") {
-    extractImages(...message.slice(2));
-  } else if (message[1] === "create") {
-    createFiles(...message.slice(2));
-  }
-});
-
-process.parentPort?.once("message", async (event) => {
-  g_useUtilityProcess = true;
+process.parentPort.on("message", async (event) => {
   let message = event.data;
   if (message[1] === "extract") {
     extractImages(...message.slice(2));
   } else if (message[1] === "create") {
     createFiles(...message.slice(2));
+  } else if (message[1] === "cancel") {
+    controller.abort();
   }
 });
 
@@ -73,12 +66,12 @@ async function extractImages(
         inputFilePath,
         tempFolderPath,
         password,
-        extraData?.pdfExtractionMethod ?? "embedded",
+        extraData?.pdfExtractionMethod ?? "300",
         send,
+        signal,
       );
     } else {
-      send("conversionExtractImages: invalid file type");
-      return;
+      throw "invalid file type";
     }
     let time = `${timers.stop("extractImages").toFixed(2)}s`;
     if (result) {
@@ -300,9 +293,5 @@ async function createFiles(
 }
 
 function send(message) {
-  if (g_useUtilityProcess) {
-    process.parentPort.postMessage(message);
-  } else {
-    process.send(message);
-  }
+  process.parentPort.postMessage(message);
 }

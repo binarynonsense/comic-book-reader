@@ -352,6 +352,9 @@ function initOnIpcCallbacks() {
       if (g_workerWindow) {
         g_workerWindow.webContents.send("cancel");
       }
+      if (g_worker) {
+        g_worker.postMessage([core.getLaunchInfo(), "cancel"]);
+      }
     }
   });
 
@@ -655,7 +658,6 @@ function startFile(inputFileIndex, totalFilesNum) {
       g_worker = utilityProcess.fork(
         path.join(__dirname, "../../shared/main/tools-worker.js"),
       );
-      // TODO: if g_cancel is set -> kill worker and stop?
       g_worker.on("message", (message) => {
         if (message.type === "extraction-progress") {
           updateModalLogText(
@@ -694,21 +696,17 @@ function startFile(inputFileIndex, totalFilesNum) {
         }
       });
     }
-    const { port1 } = new MessageChannelMain();
-    g_worker.postMessage(
-      [
-        core.getLaunchInfo(),
-        "extract",
-        inputFilePath,
-        inputFileType,
-        g_mode === ToolMode.CONVERT
-          ? g_tempSubFolderPath
-          : g_creationTempSubFolderPath,
-        g_inputPassword,
-        { pdfExtractionMethod: g_uiSelectedOptions.inputPdfExtractionMethod },
-      ],
-      [port1],
-    );
+    g_worker.postMessage([
+      core.getLaunchInfo(),
+      "extract",
+      inputFilePath,
+      inputFileType,
+      g_mode === ToolMode.CONVERT
+        ? g_tempSubFolderPath
+        : g_creationTempSubFolderPath,
+      g_inputPassword,
+      { pdfExtractionMethod: g_uiSelectedOptions.inputPdfExtractionMethod },
+    ]);
   }
   // won't be reached if I use the one above with PDFium
   // else if (inputFileType === FileDataType.PDF) {
@@ -1422,24 +1420,20 @@ async function createFilesFromImages(
     ) {
       outputFolderPath = path.dirname(inputFilePath);
     }
-    const { port1 } = new MessageChannelMain();
-    g_worker.postMessage(
-      [
-        core.getLaunchInfo(),
-        "create",
-        baseFileName,
-        outputFolderPath,
-        g_uiSelectedOptions.outputSplitNumFiles,
-        imgFilePaths,
-        comicInfoFilePath,
-        g_uiSelectedOptions.outputFormat,
-        g_uiSelectedOptions.outputFileSameName,
-        g_tempSubFolderPath,
-        g_uiSelectedOptions.outputPassword,
-        extraData,
-      ],
-      [port1],
-    );
+    g_worker.postMessage([
+      core.getLaunchInfo(),
+      "create",
+      baseFileName,
+      outputFolderPath,
+      g_uiSelectedOptions.outputSplitNumFiles,
+      imgFilePaths,
+      comicInfoFilePath,
+      g_uiSelectedOptions.outputFormat,
+      g_uiSelectedOptions.outputFileSameName,
+      g_tempSubFolderPath,
+      g_uiSelectedOptions.outputPassword,
+      extraData,
+    ]);
   } catch (error) {
     stopError(error);
   }

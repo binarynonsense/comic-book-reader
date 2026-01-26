@@ -26,7 +26,6 @@ let g_inputFilePath;
 let g_inputFileType;
 
 let g_outputFolderPath;
-let g_outputPdfExtractionMethod = "embedded";
 
 let g_outputImageFormatNotSetText = "";
 
@@ -69,7 +68,6 @@ function init(outputFolderPath, loadedOptions) {
   g_cancel = false;
   g_numErrors = 0;
   g_failedFilePaths = [];
-  g_outputPdfExtractionMethod = "embedded";
 
   // menu buttons
   document
@@ -172,12 +170,6 @@ function init(outputFolderPath, loadedOptions) {
   g_outputImageFormatSelect.addEventListener("change", (event) => {
     checkValidData();
   });
-
-  document
-    .getElementById("tool-ec-pdf-extraction-select")
-    .addEventListener("change", (event) => {
-      g_outputPdfExtractionMethod = event.target.value;
-    });
 
   toolsShared.initSliders();
 
@@ -703,7 +695,7 @@ function onStart(resetCounter = true) {
     g_inputFileType,
     g_inputFilesIndex + 1,
     g_inputFiles.length,
-    g_outputPdfExtractionMethod,
+    document.getElementById("tool-ec-pdf-extraction-select").value,
   );
 }
 

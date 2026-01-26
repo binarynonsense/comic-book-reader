@@ -1094,9 +1094,12 @@ async function extractPdf(
   filePath,
   tempFolderPath,
   password,
-  extractionMethod = "embedded",
+  extractionMethod,
   send,
+  signal,
 ) {
+  let pdfLib = null;
+  let pdfDoc = null;
   try {
     const { PDFiumLibrary } = require("@hyzyla/pdfium");
     const sharp = require("sharp");
@@ -1104,8 +1107,8 @@ async function extractPdf(
     const MAX_WORKERS = 4;
 
     const fileBuffer = fs.readFileSync(filePath);
-    const pdfLib = await PDFiumLibrary.init();
-    const pdfDoc = await pdfLib.loadDocument(fileBuffer, password);
+    pdfLib = await PDFiumLibrary.init();
+    pdfDoc = await pdfLib.loadDocument(fileBuffer, password);
 
     // iterator to array
     const pages = Array.from(pdfDoc.pages());
@@ -1115,53 +1118,60 @@ async function extractPdf(
     let nextPageIndex = 0;
     let completedPages = 0;
 
-    const processPage = async (index) => {
-      const page = pages[index];
-
-      let dpi = parseInt(extractionMethod);
-      let scaleFactor = (dpi ?? 300) / 72;
-
-      const bitmap = await page.render({
-        scale: scaleFactor,
-        render: "bitmap",
-      });
-
+    const processPage = async (index, signal) => {
       const outputFileName = `${(index + 1).toString().padStart(padLength, "0")}.jpg`;
       const outputPath = path.join(tempFolderPath, outputFileName);
+      try {
+        const page = pages[index];
 
-      // TODO: add chromaSubsampling as an option?
-      // chromaSubsampling: "4:4:4" should be better, but files are bigger
-      await sharp(bitmap.data, {
-        raw: { width: bitmap.width, height: bitmap.height, channels: 4 },
-      })
-        .withMetadata({ density: dpi })
-        .jpeg({ quality: 80, progressive: false }) // chromaSubsampling: "4:4:4"
-        .toFile(outputPath);
+        let dpi = parseInt(extractionMethod);
+        dpi = !Number.isNaN(dpi) ? dpi : 300;
+        let scaleFactor = dpi / 72;
 
-      completedPages++;
-      send?.({
-        type: "extraction-progress",
-        current: completedPages,
-        total: totalPages,
-      });
+        const bitmap = await page.render({
+          scale: scaleFactor,
+          render: "bitmap",
+        });
+
+        if (signal?.aborted) return;
+
+        // TODO: add chromaSubsampling as an option?
+        // chromaSubsampling: "4:4:4" should be better, but files are bigger
+        await sharp(bitmap.data, {
+          raw: { width: bitmap.width, height: bitmap.height, channels: 4 },
+        })
+          .withMetadata({ density: dpi })
+          .jpeg({ quality: 80, progressive: false }) // chromaSubsampling: "4:4:4"
+          .toFile(outputPath);
+
+        completedPages++;
+        send?.({
+          type: "extraction-progress",
+          current: completedPages,
+          total: totalPages,
+        });
+      } catch (error) {
+        if (error.name !== "AbortError") throw error;
+      }
     };
 
     // parallelize using async workers to increase speed
-    const startWorker = async () => {
+    const startWorker = async (signal) => {
       while (nextPageIndex < totalPages) {
+        if (signal?.aborted) return;
         const index = nextPageIndex++;
-        await processPage(index);
+        await processPage(index, signal);
       }
     };
     const workerPromises = [];
     for (let i = 0; i < MAX_WORKERS; i++) {
-      workerPromises.push(startWorker());
+      workerPromises.push(startWorker(signal));
     }
     // wait for them to finish
     await Promise.all(workerPromises);
-    pdfDoc.destroy();
-    pdfLib.destroy();
-
+    // TODO: right now I'm passing success even if cancelled, works fine
+    // because the users of the function know it was canceled. Sending an error
+    // will show and error and I don't want that.
     return { success: true };
   } catch (error) {
     const message = error.message ? error.message.toLowerCase() : "";
@@ -1169,6 +1179,9 @@ async function extractPdf(
     if (message.includes("enospc")) errorType = "no_disk_space";
     if (message.includes("password")) errorType = "incorrect_password";
     return { success: false, error: errorType };
+  } finally {
+    if (pdfDoc) pdfDoc.destroy();
+    if (pdfLib) pdfLib.destroy();
   }
 }
 exports.extractPdf = extractPdf;

@@ -9,7 +9,6 @@ const {
   // BrowserWindow,
   clipboard,
   utilityProcess,
-  MessageChannelMain,
 } = require("electron");
 const fs = require("node:fs");
 const path = require("node:path");
@@ -262,6 +261,9 @@ function initOnIpcCallbacks() {
       g_cancel = true;
       if (g_workerWindow) {
         g_workerWindow.webContents.send("cancel");
+      }
+      if (g_worker) {
+        g_worker.postMessage([core.getLaunchInfo(), "cancel"]);
       }
     }
   });
@@ -519,19 +521,15 @@ function start(
         }
       });
     }
-    const { port1 } = new MessageChannelMain();
-    g_worker.postMessage(
-      [
-        core.getLaunchInfo(),
-        "extract",
-        inputFilePath,
-        inputFileType,
-        g_tempSubFolderPath,
-        g_initialPassword,
-        { pdfExtractionMethod: pdfExtractionMethod },
-      ],
-      [port1],
-    );
+    g_worker.postMessage([
+      core.getLaunchInfo(),
+      "extract",
+      inputFilePath,
+      inputFileType,
+      g_tempSubFolderPath,
+      g_initialPassword,
+      { pdfExtractionMethod: pdfExtractionMethod },
+    ]);
   }
   // won't be reached if I use the one above with PDFium
   // else if (inputFileType === FileDataType.PDF) {
