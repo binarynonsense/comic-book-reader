@@ -14,12 +14,10 @@ const {
   ipcMain,
   screen,
   utilityProcess,
-  MessageChannelMain,
 } = require("electron");
 const os = require("node:os");
 const fs = require("node:fs");
 const path = require("node:path");
-const { fork } = require("child_process");
 
 const settings = require("../shared/main/settings");
 const history = require("../shared/main/history");
@@ -79,7 +77,6 @@ if (process.env.APPIMAGE) {
 if (g_launchInfo.platform === "linux" && process.env.container) {
   // process.env.container is set by flatpak
   g_launchInfo.isFlatpak = true;
-  g_launchInfo.useUtilityProcess = true;
 }
 
 // parse command line arguments
@@ -161,9 +158,6 @@ if (!gotTheLock) {
   if (g_launchInfo.isFlatpak) {
     log.debug("is Flatpak");
   }
-  if (g_launchInfo.useUtilityProcess) {
-    log.debug("using utilityProcess");
-  }
   // load settings
   settings.init();
   // check g_slice
@@ -198,13 +192,6 @@ if (!gotTheLock) {
   if (g_launchInfo.platform === "linux") {
     // ref: https://www.electronjs.org/docs/latest/api/dialog
     app.commandLine.appendSwitch("xdg-portal-required-version", "4");
-  }
-  // forceUseUtilityProcess?
-  if (settings.getValue("forceUseUtilityProcess")) {
-    log.notice(
-      "Forcing the use of useUtilityProcess as requested by the settings.",
-    );
-    g_launchInfo.useUtilityProcess = true;
   }
   // show vips warnings from sharp only in dev mode
   if (!g_launchInfo.isDev) process.env.VIPS_WARNING = 1;
@@ -585,11 +572,6 @@ if (!gotTheLock) {
   }
   exports.isRelease = isRelease;
 
-  function useUtilityProcess() {
-    return g_launchInfo.useUtilityProcess;
-  }
-  exports.useUtilityProcess = useUtilityProcess;
-
   exports.getMainWindow = function () {
     return g_mainWindow;
   };
@@ -722,14 +704,9 @@ if (!gotTheLock) {
       if (doCheck) {
         log.debug("checking for updates");
         if (g_workerUpdates === undefined) {
-          if (useUtilityProcess()) {
-            g_workerUpdates = utilityProcess.fork(
-              path.join(__dirname, "worker-updates.js"),
-            );
-          } else {
-            g_workerUpdates = fork(path.join(__dirname, "worker-updates.js"));
-          }
-
+          g_workerUpdates = utilityProcess.fork(
+            path.join(__dirname, "worker-updates.js"),
+          );
           g_workerUpdates.on("message", (message) => {
             const newVersion = message[1];
             g_workerUpdates.kill(); // kill it after one use
@@ -759,15 +736,7 @@ if (!gotTheLock) {
           });
         }
         // send to worker
-        if (useUtilityProcess()) {
-          const { port1 } = new MessageChannelMain();
-          g_workerUpdates.postMessage(
-            [g_launchInfo, app.getVersion()],
-            [port1],
-          );
-        } else {
-          g_workerUpdates.send([g_launchInfo, app.getVersion()]);
-        }
+        g_workerUpdates.postMessage([g_launchInfo, app.getVersion()]);
       }
     } catch (error) {
       log.editorError(error);

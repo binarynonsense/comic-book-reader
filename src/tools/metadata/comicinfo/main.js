@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2024 Álvaro García
+ * Copyright 2020-2026 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -16,7 +16,6 @@ const fileUtils = require("../../../shared/main/file-utils");
 const utils = require("../../../shared/main/utils");
 const fileFormats = require("../../../shared/main/file-formats");
 const { FileDataType } = require("../../../shared/main/constants");
-const { fork } = require("child_process");
 const temp = require("../../../shared/main/temp");
 
 const log = require("../../../shared/main/logger");
@@ -169,15 +168,9 @@ exports.updatePages = function (data) {
     g_worker = undefined;
   }
   if (g_worker === undefined) {
-    if (core.useUtilityProcess()) {
-      g_worker = utilityProcess.fork(
-        path.join(__dirname, "../../../shared/main/tools-worker.js"),
-      );
-    } else {
-      g_worker = fork(
-        path.join(__dirname, "../../../shared/main/tools-worker.js"),
-      );
-    }
+    g_worker = utilityProcess.fork(
+      path.join(__dirname, "../../../shared/main/tools-worker.js"),
+    );
     g_worker.on("message", (message) => {
       g_worker.kill(); // kill it after one use
       if (message.success) {
@@ -190,29 +183,14 @@ exports.updatePages = function (data) {
       }
     });
   }
-  if (core.useUtilityProcess()) {
-    const { port1 } = new MessageChannelMain();
-    g_worker.send(
-      [
-        core.getLaunchInfo(),
-        "extract",
-        g_fileData.path,
-        g_fileData.type,
-        tempFolderPath,
-        g_fileData.password,
-      ],
-      [port1],
-    );
-  } else {
-    g_worker.send([
-      core.getLaunchInfo(),
-      "extract",
-      g_fileData.path,
-      g_fileData.type,
-      tempFolderPath,
-      g_fileData.password,
-    ]);
-  }
+  g_worker.send([
+    core.getLaunchInfo(),
+    "extract",
+    g_fileData.path,
+    g_fileData.type,
+    tempFolderPath,
+    g_fileData.password,
+  ]);
 };
 
 async function updatePagesDataFromImages(data, tempFolderPath) {

@@ -2401,8 +2401,7 @@ function killPageWorker() {
 }
 
 function sendToPageWorker(data) {
-  const { port1 } = new MessageChannelMain();
-  g_pageWorker.postMessage(data, [port1]);
+  g_pageWorker.postMessage(data);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

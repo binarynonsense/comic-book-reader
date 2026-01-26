@@ -1,21 +1,17 @@
 /**
  * @license
- * Copyright 2025 Álvaro García
+ * Copyright 2025-2026 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
 const utils = require("../shared/main/utils");
 
-let g_useUtilityProcess = false;
-
 process.on("message", (message) => {
-  g_useUtilityProcess = false;
   checkUpdate(message);
 });
 
-process.parentPort?.once("message", async (event) => {
-  g_useUtilityProcess = true;
+process.parentPort.once("message", async (event) => {
   checkUpdate(event.data);
 });
 
@@ -26,7 +22,7 @@ async function checkUpdate(data) {
     const axios = require("axios").default;
     const response = await axios.get(
       `https://api.github.com/repos/binarynonsense/comic-book-reader/releases/latest`,
-      { timeout: 15000 }
+      { timeout: 15000 },
     );
 
     let latestVersion = response.data.tag_name;
@@ -48,9 +44,5 @@ async function checkUpdate(data) {
 }
 
 function send(message) {
-  if (g_useUtilityProcess) {
-    process.parentPort.postMessage(message);
-  } else {
-    process.send(message);
-  }
+  process.parentPort.postMessage(message);
 }
