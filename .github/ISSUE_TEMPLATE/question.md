@@ -1,6 +1,6 @@
 ---
 name: Question
-about: Ask for help or clarification of how something works.
+about: Ask for help or a clarification of how something works.
 title: "[QUESTION]: "
 labels: "type: question"
 ---

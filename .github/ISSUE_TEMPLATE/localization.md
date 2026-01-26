@@ -10,9 +10,8 @@ labels: "type: localization"
 
 ### Type of change:
 
-- [ ] **Correction**: Fixing a typo or mistranslation.
-- [ ] **New Translation**: Adding support for a missing language (see the CONTRIBUTING.md file for more info).
-- [ ] **Regional Formatting**: Date, currency, or unit fixes.
+- [ ] Correction (Fixing a typo or mistranslation).
+- [ ] New Translation (Adding support for a missing language - see the CONTRIBUTING.md file for more info).
 
 ### Description:
 
