@@ -30,9 +30,9 @@
           </div>
         </div>
         <div id="tool-pre-section-2-button" class="tools-menu-button">
-          <i class="fas fa-file tools-menu-button-icon"></i>
+          <i class="fas fa-book tools-menu-button-icon"></i>
           <div class="tools-menu-button-text">
-            <span id="tool-pre-section-2-formats-text"></span>
+            <span id="tool-pre-section-2-text"></span>
           </div>
         </div>
         <div id="tool-pre-section-3-button" class="tools-menu-button">
@@ -42,15 +42,21 @@
           </div>
         </div>
         <div id="tool-pre-section-4-button" class="tools-menu-button">
-          <i class="fa-solid fa-download tools-menu-button-icon"></i>
+          <i class="fas fa-file tools-menu-button-icon"></i>
           <div class="tools-menu-button-text">
             <span id="tool-pre-section-4-text"></span>
           </div>
         </div>
         <div id="tool-pre-section-5-button" class="tools-menu-button">
-          <i class="fas fa-tools tools-menu-button-icon"></i>
+          <i class="fa-solid fa-download tools-menu-button-icon"></i>
           <div class="tools-menu-button-text">
             <span id="tool-pre-section-5-text"></span>
+          </div>
+        </div>
+        <div id="tool-pre-section-6-button" class="tools-menu-button">
+          <i class="fas fa-tools tools-menu-button-icon"></i>
+          <div class="tools-menu-button-text">
+            <span id="tool-pre-section-6-text"></span>
           </div>
         </div>
       </div>
@@ -158,6 +164,53 @@
             ></option></select
         ></label>
       </div>
+    </div>
+    <!--  user interface -->
+    <div
+      id="tool-pre-section-1-content-div"
+      class="tools-columns-right-section"
+    >
+      <h3 class="tools-h3-extra-margin-top">
+        <span id="tool-pre-mouse-text"></span>
+      </h3>
+      <div class="tools-columns-right-subsection">
+        <label
+          ><span id="tool-pre-cursor-text"></span
+          ><select id="tool-pre-cursor-select">
+            <option id="tool-pre-cursor-always-text" value="0"></option>
+            <option
+              id="tool-pre-cursor-hide-inactive-text"
+              value="1"
+            ></option></select
+        ></label>
+      </div>
+      <h3 class="tools-h3-extra-margin-top">
+        <span id="tool-pre-mousebuttons-text"></span>
+      </h3>
+      <div class="tools-columns-right-subsection">
+        <label
+          ><span id="tool-pre-mousebuttons-quickmenu-text"></span
+          ><select id="tool-pre-mousebuttons-quickmenu-select"></select
+        ></label>
+      </div>
+      <h3 class="tools-h3-extra-margin-top">
+        <span id="tool-pre-navkeys-text"></span>
+      </h3>
+      <div class="tools-columns-right-subsection">
+        <div id="tool-pre-navkeys-div"></div>
+      </div>
+      <h3 class="tools-h3-extra-margin-top">
+        <span id="tool-pre-navbuttons-text"></span>
+      </h3>
+      <div class="tools-columns-right-subsection">
+        <div id="tool-pre-navbuttons-div"></div>
+      </div>
+    </div>
+    <!-- reader -->
+    <div
+      id="tool-pre-section-2-content-div"
+      class="tools-columns-right-section"
+    >
       <!-- zoom -->
       <h3 class="tools-h3-extra-margin-top">
         <span id="tool-pre-zoom-text"></span>
@@ -234,6 +287,57 @@
             ></option></select
         ></label>
       </div>
+      <!-- mouse -->
+      <h3 class="tools-h3-extra-margin-top">
+        <span id="tool-pre-mouse2-text"></span>
+      </h3>
+      <div class="tools-columns-right-subsection">
+        <label
+          ><span id="tool-pre-hotspots-text"></span
+          ><select id="tool-pre-hotspots-select">
+            <option id="tool-pre-hotspots-disabled-text" value="0"></option>
+            <option id="tool-pre-hotspots-2columns-text" value="1"></option>
+            <option
+              id="tool-pre-hotspots-3columns-text"
+              value="2"
+            ></option></select
+        ></label>
+      </div>
+      <!-- navigation -->
+      <h3 class="tools-h3-extra-margin-top">
+        <span id="tool-pre-navigation-text"></span>
+      </h3>
+      <div class="tools-columns-right-subsection">
+        <label
+          ><span id="tool-pre-autoopen-text"></span
+          ><select id="tool-pre-autoopen-select">
+            <option id="tool-pre-autoopen-disabled-text" value="0"></option>
+            <option id="tool-pre-autoopen-next-text" value="1"></option>
+            <option
+              id="tool-pre-autoopen-nextandprev-text"
+              value="2"
+            ></option></select
+        ></label>
+        <label
+          ><span id="tool-pre-page-turn-text"></span
+          ><select id="tool-pre-page-turn-select">
+            <option id="tool-pre-page-turn-default-text" value="false"></option>
+            <option
+              id="tool-pre-page-turn-onscroll-text"
+              value="true"
+            ></option></select
+        ></label>
+      </div>
+      <!-- history -->
+      <h3 class="tools-h3-extra-margin-top">
+        <span id="tool-pre-history-text"></span>
+      </h3>
+      <div class="tools-columns-right-subsection">
+        <label>
+          <span id="tool-pre-history-recent-max-text"></span>
+          <input id="tool-pre-history-recent-max-input" type="number" />
+        </label>
+      </div>
       <!-- loading indicator -->
       <h3 class="tools-h3-extra-margin-top">
         <span id="tool-pre-loading-text"></span>
@@ -264,197 +368,8 @@
             ></option></select
         ></label>
       </div>
-      <!-- epub ebook -->
-      <h3 class="tools-h3-extra-margin-top">
-        <span id="tool-pre-epub-ebook-text"></span>
-      </h3>
-      <div class="tools-columns-right-subsection">
-        <label
-          ><span id="tool-pre-epub-ebook-color-mode-text"></span
-          ><select id="tool-pre-epub-ebook-color-mode-select">
-            <option
-              id="tool-pre-epub-ebook-color-mode-0-text"
-              value="0"
-            ></option>
-            <option
-              id="tool-pre-epub-ebook-color-mode-1-text"
-              value="1"
-            ></option>
-            <option
-              id="tool-pre-epub-ebook-color-mode-2-text"
-              value="2"
-            ></option></select
-        ></label>
-        <div
-          class="tool-shared-columns-parent"
-          id="tool-pre-epub-ebook-color-custom-inputs-div"
-        >
-          <label class="tool-shared-columns-50-grow">
-            <span id="tool-pre-epub-ebook-color-text-text"></span>
-            <input id="tool-pre-epub-ebook-color-text-input" type="color" />
-          </label>
-          <label class="tool-shared-columns-50-grow">
-            <span id="tool-pre-epub-ebook-color-background-text"></span>
-            <input
-              id="tool-pre-epub-ebook-color-background-input"
-              type="color"
-            />
-          </label>
-        </div>
-      </div>
     </div>
-    <!--  end appearance -->
-    <div
-      id="tool-pre-section-1-content-div"
-      class="tools-columns-right-section"
-    >
-      <h3>
-        <span id="tool-pre-navigation-text"></span>
-      </h3>
-      <div class="tools-columns-right-subsection">
-        <label
-          ><span id="tool-pre-autoopen-text"></span
-          ><select id="tool-pre-autoopen-select">
-            <option id="tool-pre-autoopen-disabled-text" value="0"></option>
-            <option id="tool-pre-autoopen-next-text" value="1"></option>
-            <option
-              id="tool-pre-autoopen-nextandprev-text"
-              value="2"
-            ></option></select
-        ></label>
-        <label
-          ><span id="tool-pre-page-turn-text"></span
-          ><select id="tool-pre-page-turn-select">
-            <option id="tool-pre-page-turn-default-text" value="false"></option>
-            <option
-              id="tool-pre-page-turn-onscroll-text"
-              value="true"
-            ></option></select
-        ></label>
-      </div>
-      <h3 class="tools-h3-extra-margin-top">
-        <span id="tool-pre-mouse-text"></span>
-      </h3>
-      <div class="tools-columns-right-subsection">
-        <label
-          ><span id="tool-pre-hotspots-text"></span
-          ><select id="tool-pre-hotspots-select">
-            <option id="tool-pre-hotspots-disabled-text" value="0"></option>
-            <option id="tool-pre-hotspots-2columns-text" value="1"></option>
-            <option
-              id="tool-pre-hotspots-3columns-text"
-              value="2"
-            ></option></select
-        ></label>
-        <label
-          ><span id="tool-pre-cursor-text"></span
-          ><select id="tool-pre-cursor-select">
-            <option id="tool-pre-cursor-always-text" value="0"></option>
-            <option
-              id="tool-pre-cursor-hide-inactive-text"
-              value="1"
-            ></option></select
-        ></label>
-      </div>
-      <h3 class="tools-h3-extra-margin-top">
-        <span id="tool-pre-mousebuttons-text"></span>
-      </h3>
-      <div class="tools-columns-right-subsection">
-        <label
-          ><span id="tool-pre-mousebuttons-quickmenu-text"></span
-          ><select id="tool-pre-mousebuttons-quickmenu-select"></select
-        ></label>
-      </div>
-      <h3 class="tools-h3-extra-margin-top">
-        <span id="tool-pre-navkeys-text"></span>
-      </h3>
-      <div class="tools-columns-right-subsection">
-        <div id="tool-pre-navkeys-div"></div>
-      </div>
-      <h3 class="tools-h3-extra-margin-top">
-        <span id="tool-pre-navbuttons-text"></span>
-      </h3>
-      <div class="tools-columns-right-subsection">
-        <div id="tool-pre-navbuttons-div"></div>
-      </div>
-    </div>
-    <!--  end ui -->
-    <div
-      id="tool-pre-section-2-content-div"
-      class="tools-columns-right-section"
-    >
-      <h3><span id="tool-pre-epub-text"></span></h3>
-      <div class="tools-columns-right-subsection">
-        <label
-          ><span id="tool-pre-epub-openas-text"></span
-          ><select id="tool-pre-epub-openas-select">
-            <option id="tool-pre-epub-openas-0-text" value="0"></option>
-            <option id="tool-pre-epub-openas-1-text" value="1"></option></select
-        ></label>
-      </div>
-
-      <h3 class="tools-h3-extra-margin-top">
-        <span id="tool-pre-cbr-text"></span>
-      </h3>
-      <div class="tools-columns-right-subsection">
-        <label
-          ><span id="tool-pre-cbr-creation-modification-text"></span>
-          <select id="tool-pre-cbr-creation-modification-select">
-            <option
-              id="tool-pre-cbr-creation-modification-0-text"
-              value="0"
-            ></option>
-            <option
-              id="tool-pre-cbr-creation-modification-1-text"
-              value="1"
-            ></option></select
-        ></label>
-        <div id="tool-pre-rarfolder-div">
-          <label>
-            <span id="tool-pre-rarfolder-text"></span>
-            <i
-              id="tool-pre-tooltip-rarfolder"
-              class="fas fa-question-circle tools-tooltip-button"
-              title="tooltip"
-            ></i>
-            <ul id="tool-pre-rarfolder-ul" class="tools-collection-ul"></ul>
-          </label>
-          <div class="tool-shared-columns-parent">
-            <button
-              id="tool-pre-rarfolder-update-button"
-              class="tool-shared-columns-50-grow"
-            >
-              <span id="tool-pre-rarfolder-update-button-text"></span>
-            </button>
-            <button
-              id="tool-pre-rarfolder-reset-button"
-              class="tool-shared-columns-50-grow"
-            >
-              <span id="tool-pre-rarfolder-reset-button-text"></span>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <h3 class="tools-h3-extra-margin-top">
-        <span id="tool-pre-pdf-text"></span>
-      </h3>
-      <div class="tools-columns-right-subsection">
-        <label
-          ><span id="tool-pre-pdf-reading-library-version-text"></span
-          ><select id="tool-pre-pdf-reading-library-version-select">
-            <option
-              id="tool-pre-pdf-reading-library-version-0-text"
-              value="0"
-            ></option>
-            <option
-              id="tool-pre-pdf-reading-library-version-1-text"
-              value="1"
-            ></option></select
-        ></label>
-      </div>
-    </div>
-    <!--  end file-formats -->
+    <!--  home screen -->
     <div
       id="tool-pre-section-3-content-div"
       class="tools-columns-right-section"
@@ -523,9 +438,138 @@
         </label>
       </div>
     </div>
-    <!--  end home screen -->
+    <!--  file formats -->
     <div
       id="tool-pre-section-4-content-div"
+      class="tools-columns-right-section"
+    >
+      <!-- pdf -->
+      <h3 class="tools-h3-extra-margin-top">
+        <span id="tool-pre-pdf-text"></span>
+      </h3>
+      <div class="tools-columns-right-subsection">
+        <label class="set-display-none"
+          ><span id="tool-pre-pdf-reading-library-version-text"></span
+          ><select id="tool-pre-pdf-reading-library-version-select">
+            <option
+              id="tool-pre-pdf-reading-library-version-0-text"
+              value="0"
+            ></option>
+            <option
+              id="tool-pre-pdf-reading-library-version-1-text"
+              value="1"
+            ></option></select
+        ></label>
+
+        <label
+          ><span id="tool-pre-pdf-reading-dpi-text"></span
+          ><select id="tool-pre-pdf-reading-dpi-select">
+            <option value="600">600 dpi</option>
+            <option value="300" selected>300 dpi</option>
+            <option value="200">200 dpi</option>
+            <option value="150">150 dpi</option>
+            <option value="96">96 dpi</option>
+            <option value="72">72 dpi</option>
+          </select></label
+        >
+      </div>
+      <!-- epub  -->
+      <h3 class="tools-h3-extra-margin-top">
+        <span id="tool-pre-epub-text"></span>
+      </h3>
+      <div class="tools-columns-right-subsection">
+        <label
+          ><span id="tool-pre-epub-openas-text"></span
+          ><select id="tool-pre-epub-openas-select">
+            <option id="tool-pre-epub-openas-0-text" value="0"></option>
+            <option id="tool-pre-epub-openas-1-text" value="1"></option></select
+        ></label>
+      </div>
+      <!-- cbr -->
+      <h3 class="tools-h3-extra-margin-top">
+        <span id="tool-pre-cbr-text"></span>
+      </h3>
+      <div class="tools-columns-right-subsection">
+        <label
+          ><span id="tool-pre-cbr-creation-modification-text"></span>
+          <select id="tool-pre-cbr-creation-modification-select">
+            <option
+              id="tool-pre-cbr-creation-modification-0-text"
+              value="0"
+            ></option>
+            <option
+              id="tool-pre-cbr-creation-modification-1-text"
+              value="1"
+            ></option></select
+        ></label>
+        <div id="tool-pre-rarfolder-div">
+          <label>
+            <span id="tool-pre-rarfolder-text"></span>
+            <i
+              id="tool-pre-tooltip-rarfolder"
+              class="fas fa-question-circle tools-tooltip-button"
+              title="tooltip"
+            ></i>
+            <ul id="tool-pre-rarfolder-ul" class="tools-collection-ul"></ul>
+          </label>
+          <div class="tool-shared-columns-parent">
+            <button
+              id="tool-pre-rarfolder-update-button"
+              class="tool-shared-columns-50-grow"
+            >
+              <span id="tool-pre-rarfolder-update-button-text"></span>
+            </button>
+            <button
+              id="tool-pre-rarfolder-reset-button"
+              class="tool-shared-columns-50-grow"
+            >
+              <span id="tool-pre-rarfolder-reset-button-text"></span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- epub ebook -->
+      <h3 class="tools-h3-extra-margin-top">
+        <span id="tool-pre-epub-ebook-text"></span>
+      </h3>
+      <div class="tools-columns-right-subsection">
+        <label
+          ><span id="tool-pre-epub-ebook-color-mode-text"></span
+          ><select id="tool-pre-epub-ebook-color-mode-select">
+            <option
+              id="tool-pre-epub-ebook-color-mode-0-text"
+              value="0"
+            ></option>
+            <option
+              id="tool-pre-epub-ebook-color-mode-1-text"
+              value="1"
+            ></option>
+            <option
+              id="tool-pre-epub-ebook-color-mode-2-text"
+              value="2"
+            ></option></select
+        ></label>
+        <div
+          class="tool-shared-columns-parent"
+          id="tool-pre-epub-ebook-color-custom-inputs-div"
+        >
+          <label class="tool-shared-columns-50-grow">
+            <span id="tool-pre-epub-ebook-color-text-text"></span>
+            <input id="tool-pre-epub-ebook-color-text-input" type="color" />
+          </label>
+          <label class="tool-shared-columns-50-grow">
+            <span id="tool-pre-epub-ebook-color-background-text"></span>
+            <input
+              id="tool-pre-epub-ebook-color-background-input"
+              type="color"
+            />
+          </label>
+        </div>
+      </div>
+    </div>
+    <!--  updates -->
+    <div
+      id="tool-pre-section-5-content-div"
       class="tools-columns-right-section"
     >
       <h3><span id="tool-pre-updates-autocheck-text"></span></h3>
@@ -576,9 +620,9 @@
         </button>
       </div>
     </div>
-    <!--  end updates -->
+    <!--  advanced -->
     <div
-      id="tool-pre-section-5-content-div"
+      id="tool-pre-section-6-content-div"
       class="tools-columns-right-section"
     >
       <h3><span id="tool-pre-tempfolder-text"></span></h3>
@@ -621,6 +665,6 @@
         ></ul>
       </div>
     </div>
-    <!--  end advanced -->
+    <!--  end  -->
   </div>
 </div>

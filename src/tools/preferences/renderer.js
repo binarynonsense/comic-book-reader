@@ -23,12 +23,14 @@ let g_tempFolderPathUl;
 let g_tempFolderPathCheckbox;
 let g_rarExeFolderPathUl;
 let g_localizedTexts = {};
+let g_settings;
 
 export function needsScrollToTopButtonUpdate() {
   return true;
 }
 
 function init(activeLocale, languages, activeTheme, themes, settings) {
+  g_settings = settings;
   try {
     if (!g_isInitialized) {
       // things to start only once go here
@@ -51,7 +53,7 @@ function init(activeLocale, languages, activeTheme, themes, settings) {
         showModalConfirmResetAll();
       });
     // sections menu
-    for (let index = 0; index < 6; index++) {
+    for (let index = 0; index < 7; index++) {
       document
         .getElementById(`tool-pre-section-${index}-button`)
         .addEventListener("click", (event) => {
@@ -247,6 +249,25 @@ function init(activeLocale, languages, activeTheme, themes, settings) {
       select.value = settings.loadingIndicatorIconPos;
       select.addEventListener("change", function (event) {
         sendIpcToMain("set-loading-ipos", parseInt(select.value));
+      });
+    }
+    // history
+    {
+      const maxFilesInput = document.getElementById(
+        "tool-pre-history-recent-max-input",
+      );
+      maxFilesInput.value = settings.history_capacity;
+      maxFilesInput.addEventListener("change", function (event) {
+        const value = parseInt(maxFilesInput.value);
+        if (!Number.isNaN(value)) {
+          if (value <= 0) maxFilesInput.value = 1;
+          if (value > 1000) maxFilesInput.value = 1000;
+          showModalConfirmSetMax(maxFilesInput, value);
+          event.preventDefault();
+          event.stopImmediatePropagation();
+        } else {
+          maxFilesInput.value = settings.history_capacity;
+        }
       });
     }
     // home screen latest position
@@ -446,13 +467,21 @@ function init(activeLocale, languages, activeTheme, themes, settings) {
       });
     }
     // pdf reading library select
+    // {
+    //   let select = document.getElementById(
+    //     "tool-pre-pdf-reading-library-version-select",
+    //   );
+    //   select.value = settings.pdfReadingLib;
+    //   select.addEventListener("change", function (event) {
+    //     sendIpcToMain("set-pdf-reading-lib", parseInt(select.value));
+    //   });
+    // }
+    // pdf reading dpi
     {
-      let select = document.getElementById(
-        "tool-pre-pdf-reading-library-version-select",
-      );
-      select.value = settings.pdfReadingLib;
+      let select = document.getElementById("tool-pre-pdf-reading-dpi-select");
+      select.value = settings.pdfReadingDpi;
       select.addEventListener("change", function (event) {
-        sendIpcToMain("set-pdf-reading-lib", parseInt(select.value));
+        sendIpcToMain("set-setting", "pdfReadingDpi", parseInt(select.value));
       });
     }
     // cbr creation select
@@ -610,7 +639,7 @@ function updateColumnsHeight(scrollTop = false) {
 }
 
 function switchSection(id) {
-  for (let index = 0; index < 6; index++) {
+  for (let index = 0; index < 7; index++) {
     if (id === index) {
       document
         .getElementById(`tool-pre-section-${index}-button`)
@@ -1240,6 +1269,45 @@ function showNavKeysChangeModal(title, message, textButton, action, keyIndex) {
     }
     return false;
   };
+}
+
+function showModalConfirmSetMax(inputElement, value) {
+  if (g_openModal) {
+    return;
+  }
+  g_openModal = modals.show({
+    title: g_localizedTexts.modalChangeMaxTitleText.toUpperCase(),
+    message: g_localizedTexts.modalChangeMaxMessageText.replace(
+      "{0}",
+      inputElement.value,
+    ),
+    zIndexDelta: 5,
+    close: {
+      callback: () => {
+        inputElement.value = g_settings.history_capacity;
+        modalClosed();
+      },
+      key: "Escape",
+    },
+    buttons: [
+      {
+        text: g_localizedTexts.modalClearAllOkText.toUpperCase(),
+        callback: () => {
+          sendIpcToMain("set-recent-max-files", value);
+          g_settings.history_capacity = value;
+          modalClosed();
+        },
+        //key: "Enter",
+      },
+      {
+        text: g_localizedTexts.modalClearAllCancelText.toUpperCase(),
+        callback: () => {
+          inputElement.value = g_settings.history_capacity;
+          modalClosed();
+        },
+      },
+    ],
+  });
 }
 
 ///////////////////////////////////////////////////////////////////////////////
