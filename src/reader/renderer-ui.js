@@ -1451,15 +1451,8 @@ export function renderImageBuffers(
       }
       pagesRowDiv.classList.add("pages-row-2p");
       pagesRowDiv.innerHTML = "";
-      pagesRowDiv.appendChild(page1Img);
-      pagesRowDiv.appendChild(page2Img);
-      containerDiv.innerHTML = "";
-      containerDiv.appendChild(pagesRowDiv);
       setFilterClass(page2Img);
     } else {
-      pagesRowDiv.appendChild(page1Img);
-      containerDiv.innerHTML = "";
-      containerDiv.appendChild(pagesRowDiv);
       if (getPageMode() !== 0) {
         pagesRowDiv.classList.add("pages-row-2p");
         page1Img.classList.add("page-centered");
@@ -1477,6 +1470,10 @@ export function renderImageBuffers(
             dimensions: [page1Img.naturalWidth, page1Img.naturalHeight],
           });
         }
+        if (page1Img) pagesRowDiv.appendChild(page1Img);
+        if (page2Img) pagesRowDiv.appendChild(page2Img);
+        containerDiv.innerHTML = "";
+        containerDiv.appendChild(pagesRowDiv);
         if (scrollBarPos !== undefined) setScrollBarsPosition(scrollBarPos);
       }
     }
