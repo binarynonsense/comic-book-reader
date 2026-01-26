@@ -1,6 +1,8 @@
 {
   "@metadata": {
-    "authors": ["vanja-san"],
+    "authors": [
+      "vanja-san"
+    ],
     "last-updated": "2025-12-30",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.14.0",
@@ -299,6 +301,8 @@
   "home-action-drag-file-shortcut-error-alreadyinlist": "Список уже содержит эту запись.",
   "home-action-move-file-shortcut": "Переместить",
   "home-action-copy-file-shortcut": "Копировать",
+  "[NEEDS TRANSLATION]tool-reader": "Comic Book Reader",
+  "[NEEDS TRANSLATION]tool-reader-shortversion": "Reader",
   "tool-shared-ui-back-to-reader": "Назад в ридер",
   "tool-shared-ui-back": "Назад",
   "tool-shared-ui-tool": "Инструмент",

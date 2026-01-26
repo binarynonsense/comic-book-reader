@@ -1,6 +1,8 @@
 {
   "@metadata": {
-    "authors": ["Álvaro"],
+    "authors": [
+      "Álvaro"
+    ],
     "last-updated": "2026-01-14",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.15.0",
@@ -299,6 +301,8 @@
   "home-action-drag-file-shortcut-error-alreadyinlist": "La lista ya contiene esa entrada.",
   "home-action-move-file-shortcut": "Mover",
   "home-action-copy-file-shortcut": "Copiar",
+  "tool-reader": "Lector de cómics",
+  "tool-reader-shortversion": "Lector",
   "tool-shared-ui-back-to-reader": "Volver al lector",
   "tool-shared-ui-back": "Atrás",
   "tool-shared-ui-tool": "Herramienta",
@@ -396,8 +400,6 @@
   "tool-shared-ui-pdf-extraction-tooltip": "La mayoría de archivos PDF parecen mantener el valor por defecto de usertunit de 1 (72 dpi) independientemente de su contenido, por lo que las imágenes de páginas de cómic incrustadas pueden ser mayores que el tamaño de página reportado. Esta herramienta incluye tres métodos para decidir qué dpi usa para calcular la resolución de la página a renderizar: puede dejar que la herramienta trate de encontrar la dpi/resolución de la imagen incrustada o fijar el valor manualmente (72 o 300).",
   "tool-shared-ui-pdf-extraction-o-embedded": "Usar la información de la imagen incrustada si es posible, 300dpi si no",
   "tool-shared-ui-pdf-extraction-o-dpi": "Usar {0} dpi",
-  "tool-shared-ui-pdf-extraction-o2": "Usar 300dpi",
-  "tool-shared-ui-pdf-extraction-o3": "Usar 72dpi",
   "tool-shared-ui-creation-split-number": "Número de archivos en los que dividir",
   "tool-shared-ui-creation-password": "Contraseña",
   "tool-shared-ui-creation-password-tooltip": "La contraseña proporcionada se usará para encriptar el/los archivo/s si el formato de salida se encuentra entre los que soportan esta opción ({0}). Si la contraseña se deja en blanco el/los archivo/s no se encriptarán.",

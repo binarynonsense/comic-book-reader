@@ -1,6 +1,8 @@
 {
   "@metadata": {
-    "authors": ["ahmed-0011"],
+    "authors": [
+      "ahmed-0011"
+    ],
     "last-updated": "2025-08-06",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.12.0",
@@ -299,6 +301,8 @@
   "[NEEDS TRANSLATION]home-action-drag-file-shortcut-error-alreadyinlist": "The list already contains that entry.",
   "[NEEDS TRANSLATION]home-action-move-file-shortcut": "Move",
   "[NEEDS TRANSLATION]home-action-copy-file-shortcut": "Copy",
+  "[NEEDS TRANSLATION]tool-reader": "Comic Book Reader",
+  "[NEEDS TRANSLATION]tool-reader-shortversion": "Reader",
   "tool-shared-ui-back-to-reader": "العودة إلى القارئ",
   "tool-shared-ui-back": "الخلف",
   "tool-shared-ui-tool": "الأداة",

@@ -299,6 +299,8 @@
   "home-action-drag-file-shortcut-error-alreadyinlist": "The list already contains that entry.",
   "home-action-move-file-shortcut": "Move",
   "home-action-copy-file-shortcut": "Copy",
+  "tool-reader": "Comic Book Reader",
+  "tool-reader-shortversion": "Reader",
   "tool-shared-ui-back-to-reader": "Back to Reader",
   "tool-shared-ui-back": "Back",
   "tool-shared-ui-tool": "Tool",

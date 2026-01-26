@@ -1,6 +1,8 @@
 {
   "@metadata": {
-    "authors": ["trzyglow"],
+    "authors": [
+      "trzyglow"
+    ],
     "last-updated": "2026-01-19",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.15.0",
@@ -299,6 +301,8 @@
   "home-action-drag-file-shortcut-error-alreadyinlist": "Die Liste enthält bereits diesen Eintrag.",
   "home-action-move-file-shortcut": "Verschieben",
   "home-action-copy-file-shortcut": "Kopieren",
+  "[NEEDS TRANSLATION]tool-reader": "Comic Book Reader",
+  "[NEEDS TRANSLATION]tool-reader-shortversion": "Reader",
   "tool-shared-ui-back-to-reader": "Zurück zum Reader",
   "tool-shared-ui-back": "Zurück",
   "tool-shared-ui-tool": "Werkzeug",
