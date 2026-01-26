@@ -5,12 +5,12 @@ title: "[FEATURE]: "
 labels: "type: feature request"
 ---
 
-### Description
+### Description:
 
 
-### Is your feature request related to a problem?
+### Is your feature request related to a problem:
 
 
-### Additional context / screenshots
+### Additional context / screenshots:
 
 

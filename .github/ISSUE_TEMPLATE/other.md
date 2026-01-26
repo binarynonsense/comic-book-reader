@@ -4,11 +4,11 @@ about: Use this for anything that doesn't fit into the other categories.
 title: "[OTHER]: "
 ---
 
-### Purpose
+### Purpose:
 
 
-### Details
+### Details:
 
 
-### Additional information
+### Additional information:
 

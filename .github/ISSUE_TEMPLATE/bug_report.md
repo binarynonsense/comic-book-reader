@@ -5,14 +5,14 @@ title: "[BUG]: "
 labels: "type: bug / error report"
 ---
 
-### Description
+### Description:
 
 
-### System information
+### System information:
 
-* **OS:**
-* **ACBR Version:**
-* **Build:**
+* OS:
+* ACBR Version:
+* Build:
 
-### Additional context / screenshots
+### Additional context / screenshots:
 

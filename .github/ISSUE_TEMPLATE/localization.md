@@ -5,15 +5,15 @@ title: "[LOC]: "
 labels: "type: localization"
 ---
 
-### Language/Locale
+### Language/Locale:
 
 
-### Type of change
+### Type of change:
 
 - [ ] **Correction**: Fixing a typo or mistranslation.
 - [ ] **New Translation**: Adding support for a missing language (see the CONTRIBUTING.md file for more info).
 - [ ] **Regional Formatting**: Date, currency, or unit fixes.
 
-### Description
+### Description:
 
 

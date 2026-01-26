@@ -5,8 +5,8 @@ title: "[QUESTION]: "
 labels: "type: question"
 ---
 
-### What is your question?
+### What is your question:
 
 
-### What have you tried so far?
+### What have you tried so far:
 
