@@ -7,9 +7,7 @@ labels: "type: localization"
 
 ### Language/Locale
 
-e.g., Spanish (ES), French (FR), etc.
-
-### Type of Change
+### Type of change
 
 - [ ] **Correction**: Fixing a typo or mistranslation.
 - [ ] **New Translation**: Adding support for a missing language (see the CONTRIBUTING.md file for more info).

@@ -9,10 +9,7 @@ labels: "type: feature request"
 
 ### Is your feature request related to a problem?
 
-A clear and concise description of what the problem is.
+### Additional context / screenshots
 
-### Additional Context
-
-Add any other context or screenshots about the feature request here.
 
 

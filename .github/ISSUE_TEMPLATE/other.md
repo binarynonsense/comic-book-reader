@@ -6,12 +6,13 @@ title: "[OTHER]: "
 
 ### Purpose
 
-Briefly explain why you are opening this issue.
+- 
 
 ### Details
 
-Provide as much information as possible here.
+-
 
-### Additional Information
+### Additional information
 
-Is there anything else I should know?
+-
+
