@@ -688,7 +688,7 @@
   "tool-pre-externalfiles": "External Files",
   "tool-pre-externalfiles-load": "Load External Files",
   "tool-pre-externalfiles-folder": "Containing Folder",
-  "tool-pre-externalfiles-type-themes": "Themes",
+  "tool-pre-externalfiles-type-themes": "Color Themes",
   "tool-pre-externalfiles-type-localizations": "Localizations",
   "tool-hst-title": "History",
   "tool-hst-button-clear-all": "Clear History",
