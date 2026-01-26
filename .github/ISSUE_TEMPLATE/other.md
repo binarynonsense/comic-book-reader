@@ -5,10 +5,13 @@ title: "[OTHER]: "
 ---
 
 ### Purpose
-<!-- Briefly explain why you are opening this issue. -->
+
+Briefly explain why you are opening this issue.
 
 ### Details
-<!-- Provide as much information as possible here. -->
+
+Provide as much information as possible here.
 
 ### Additional Information
-<!-- Is there anything else I should know? -->
+
+Is there anything else I should know?
