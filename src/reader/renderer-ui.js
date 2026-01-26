@@ -1511,10 +1511,8 @@ export function renderImageBuffers(
     canvas.classList.add("page-canvas");
     canvas.classList.add("page");
     if (title && title != "") canvas.title = title;
-    containerDiv.innerHTML = "";
     const pagesRowDiv = document.createElement("div");
     pagesRowDiv.classList.add("pages-row");
-    containerDiv.appendChild(pagesRowDiv);
     pagesRowDiv.innerHTML = "";
     pagesRowDiv.appendChild(canvas);
     setFilterClass(canvas);
@@ -1551,6 +1549,8 @@ export function renderImageBuffers(
           dimensions: [image.naturalWidth, image.naturalHeight],
         });
       }
+      containerDiv.innerHTML = "";
+      containerDiv.appendChild(pagesRowDiv);
       if (scrollBarPos !== undefined) setScrollBarsPosition(scrollBarPos);
     };
     image.onerror = function () {
