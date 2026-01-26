@@ -14,7 +14,7 @@ export function rebuild(data, focusedPanelID) {
   for (let panelIndex = 0; panelIndex < 2; panelIndex++) {
     data.tree.push([]);
     const panelElements = root.querySelectorAll(
-      `[data-nav-panel='${panelIndex}']`
+      `[data-nav-panel='${panelIndex}']`,
     );
     for (let index = 0; index < panelElements.length; index++) {
       const element = panelElements[index];
@@ -38,7 +38,7 @@ export function navigate(
   upPressed,
   downPressed,
   leftPressed,
-  rightPressed
+  rightPressed,
 ) {
   if (!data.tree || data.tree.length <= 0) return;
   if (!data.focusedElement) data.focusedElement = data.tree[0][0][0];
@@ -101,9 +101,9 @@ export function navigate(
 }
 
 export function refocusFocusedElement(data) {
-  data.focusedElement.focus();
+  data?.focusedElement?.focus();
 }
 
 export function blurFocusedElement(data) {
-  data.focusedElement.blur();
+  data?.focusedElement?.blur();
 }
