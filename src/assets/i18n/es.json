@@ -1,8 +1,6 @@
 {
   "@metadata": {
-    "authors": [
-      "Álvaro"
-    ],
+    "authors": ["Álvaro"],
     "last-updated": "2026-01-14",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.15.0",
@@ -396,7 +394,8 @@
   "tool-shared-ui-save-as-relative-path": "Guardar como ruta relativa",
   "tool-shared-ui-pdf-extraction": "Extracción de PDF",
   "tool-shared-ui-pdf-extraction-tooltip": "La mayoría de archivos PDF parecen mantener el valor por defecto de usertunit de 1 (72 dpi) independientemente de su contenido, por lo que las imágenes de páginas de cómic incrustadas pueden ser mayores que el tamaño de página reportado. Esta herramienta incluye tres métodos para decidir qué dpi usa para calcular la resolución de la página a renderizar: puede dejar que la herramienta trate de encontrar la dpi/resolución de la imagen incrustada o fijar el valor manualmente (72 o 300).",
-  "tool-shared-ui-pdf-extraction-o1": "Usar la información de la imagen incrustada si es posible, 300dpi si no",
+  "tool-shared-ui-pdf-extraction-o-embedded": "Usar la información de la imagen incrustada si es posible, 300dpi si no",
+  "tool-shared-ui-pdf-extraction-o-dpi": "Usar {0} dpi",
   "tool-shared-ui-pdf-extraction-o2": "Usar 300dpi",
   "tool-shared-ui-pdf-extraction-o3": "Usar 72dpi",
   "tool-shared-ui-creation-split-number": "Número de archivos en los que dividir",

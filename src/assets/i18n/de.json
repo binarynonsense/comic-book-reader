@@ -1,8 +1,6 @@
 {
   "@metadata": {
-    "authors": [
-      "trzyglow"
-    ],
+    "authors": ["trzyglow"],
     "last-updated": "2026-01-19",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.15.0",
@@ -396,9 +394,8 @@
   "tool-shared-ui-save-as-relative-path": "Als relativen Pfad speichern",
   "tool-shared-ui-pdf-extraction": "PDF Extrahierung",
   "tool-shared-ui-pdf-extraction-tooltip": "Die meisten PDF-Dateien scheinen ihre standard Benutzereinheit von 1 (72 dpi) unabhängig ihres Inhaltes zu behalten, weshalb die eingebettete Comic Seite größer als die angegebene Seitengröße sein kann. Dieses Werkzeug enthält drei Verfahren zum Entscheiden, welche dpi zum Berechnen der Auflösung, der gerenderten Seite, verwendet wird: Sie können das Werkzeug versuchen lassen die dpi/Größe des eingebetteten Bildes zu finden, oder manuell einen Wert festlegen (72 oder 300).",
-  "tool-shared-ui-pdf-extraction-o1": "Verwende die Information des eingebetteten Bildes wenn möglich, 300 dpi wenn nicht",
-  "tool-shared-ui-pdf-extraction-o2": "Verwende 300 dpi",
-  "tool-shared-ui-pdf-extraction-o3": "Verwende 72 dpi",
+  "tool-shared-ui-pdf-extraction-o-embedded": "Verwende die Information des eingebetteten Bildes wenn möglich, 300 dpi wenn nicht",
+  "tool-shared-ui-pdf-extraction-o-dpi": "Verwende {0} dpi",
   "tool-shared-ui-creation-split-number": "Anzahl der Dateien, in die aufgeteilt werden soll",
   "tool-shared-ui-creation-password": "Passwort",
   "tool-shared-ui-creation-password-tooltip": "Das bereitgestellte Passwort wird zur Verschlüsselung der Datei/en verwendet, sofern das Ausgangsformat dies unterstützt ({0}). Wenn das Passwort ausgelassen wird, erfolgt keine Verschlüsselung.",

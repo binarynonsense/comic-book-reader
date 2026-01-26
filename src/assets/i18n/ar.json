@@ -1,8 +1,6 @@
 {
   "@metadata": {
-    "authors": [
-      "ahmed-0011"
-    ],
+    "authors": ["ahmed-0011"],
     "last-updated": "2025-08-06",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.12.0",
@@ -396,9 +394,8 @@
   "tool-shared-ui-save-as-relative-path": "حفظ كمسار نسبي",
   "tool-shared-ui-pdf-extraction": "استخراج ملف PDF",
   "tool-shared-ui-pdf-extraction-tooltip": "يبدو أن معظم ملفات PDF تحتفظ بوحدة المستخدم الافتراضية قيمتها 1 (72 نقطة لكل بوصة) بغض النظر عن محتواها، وبالتالي يمكن أن تكون صور الصفحة المصورة المضمنة أكبر من حجم الصفحة المعلن عنه. تتضمن هذه الأداة ثلاثة طرق لتحديد أي dpi (نقطة لكل بوصة) سيتم استخدامه لحساب دقة الصفحة المعروضة: يمكنك السماح للأداة بمحاولة العثور على dpi/الحجم من الصورة المضمنة أو تعيين قيمة يدويًا (72 أو 300).",
-  "tool-shared-ui-pdf-extraction-o1": "استخدم معلومات الصورة المضمنة إن أمكن، 300dpi (نقطة لكل بوصة) إن لم يكن كذلك",
-  "tool-shared-ui-pdf-extraction-o2": "استخدم 300dpi (نقطة لكل بوصة)",
-  "tool-shared-ui-pdf-extraction-o3": "استخدم 720dpi (نقطة لكل بوصة)",
+  "tool-shared-ui-pdf-extraction-o-embedded": "استخدم معلومات الصورة المضمنة إن أمكن، 300dpi (نقطة لكل بوصة) إن لم يكن كذلك",
+  "tool-shared-ui-pdf-extraction-o-dpi": "استخدم {0}dpi (نقطة لكل بوصة)",
   "tool-shared-ui-creation-split-number": "عدد الملفات المراد التقسيم إليها",
   "tool-shared-ui-creation-password": "كلمة المرور",
   "tool-shared-ui-creation-password-tooltip": "سيتم استخدام كلمة المرور المدخلة لتشفير الملف/الملفات إذا كان تنسيق الإخراج من بين التنسيقات التي تدعم هذا الخيار ({0}). إذا تُركت كلمة المرور فارغة، فلن يتم تشفير الملف/الملفات.",

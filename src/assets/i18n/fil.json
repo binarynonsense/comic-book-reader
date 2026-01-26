@@ -1,8 +1,6 @@
 {
   "@metadata": {
-    "authors": [
-      "Andrew"
-    ],
+    "authors": ["Andrew"],
     "last-updated": "2025-01-13",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.8.0",
@@ -396,9 +394,8 @@
   "tool-shared-ui-save-as-relative-path": "I-save bilang Relative Path",
   "tool-shared-ui-pdf-extraction": "Pagkuha ng PDF",
   "tool-shared-ui-pdf-extraction-tooltip": "Karamihan sa mga PDF file ay gumagamit ng default na userunit na 1 (72dpi) kahit ano pa ang kanilang nilalaman. Dahil dito, maaaring mas malaki ang mga naka-embed na imahe kaysa sa iniulat na laki ng pahina. Ang tool na ito ay nag-aalok ng tatlong paraan upang tukuyin ang dpi na gagamitin para kalkulahin ang resolusyon ng pahina: maaaring hayaan ang tool na maghanap ng dpi/laki mula sa naka-embed na imahe o magtakda ng halaga nang manu-mano (72 o 300).",
-  "tool-shared-ui-pdf-extraction-o1": "Gamitin ang impormasyon ng naka-embed na imahe kung maaari, 300dpi kung hindi",
-  "tool-shared-ui-pdf-extraction-o2": "Gamitin ang 300dpi",
-  "tool-shared-ui-pdf-extraction-o3": "Gamitin ang 72dpi",
+  "tool-shared-ui-pdf-extraction-o-embedded": "Gamitin ang impormasyon ng naka-embed na imahe kung maaari, 300dpi kung hindi",
+  "tool-shared-ui-pdf-extraction-o-dpi": "Gamitin ang {0} dpi",
   "tool-shared-ui-creation-split-number": "Bilang ng mga File na Hahatiin",
   "tool-shared-ui-creation-password": "Password",
   "tool-shared-ui-creation-password-tooltip": "Ang ibinigay na password ay gagamitin para i-encrypt ang file/s kung ang output format ay kabilang sa mga sumusuporta sa opsyong ito ({0}). Kapag iniwan itong walang laman, hindi mai-e-encrypt ang file/s.",
