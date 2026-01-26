@@ -1773,11 +1773,11 @@ function renderPageInfo() {
   );
 }
 
-function onDelayedRefreshPageCall() {
-  if (g_fileData.type === FileDataType.PDF) {
-    sendIpcToRenderer("refresh-pdf-page", g_fileData.pageRotation);
-  }
-}
+// function onDelayedRefreshPageCall() {
+//   if (g_fileData.type === FileDataType.PDF) {
+//     sendIpcToRenderer("refresh-pdf-page", g_fileData.pageRotation);
+//   }
+// }
 
 function renderPageRefresh() {
   if (g_fileData.state === FileDataState.LOADED) {
