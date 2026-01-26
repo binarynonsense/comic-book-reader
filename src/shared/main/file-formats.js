@@ -1117,37 +1117,15 @@ async function extractPdf(
 
     const processPage = async (index) => {
       const page = pages[index];
-      const pageWidthPts = page.width;
-      const pageHeightPts = page.height;
 
-      let dpi = 300;
-      if (extractionMethod === "render72") dpi = 72;
-      let scaleFactor = dpi / 72;
+      let dpi = parseInt(extractionMethod);
+      let scaleFactor = dpi ?? 300 / 72;
 
-      if (extractionMethod === "embedded") {
-        try {
-          const objectsCount = page.objectsCount;
-          let foundImages = [];
-          for (let j = 0; j < objectsCount; j++) {
-            const obj = page.getObject(j);
-            if (obj && obj.type === 1) foundImages.push(obj);
-          }
-          if (foundImages.length === 1) {
-            const img = foundImages[0];
-            const nativeScale = img.width / pageWidthPts;
-            scaleFactor = nativeScale;
-            dpi = Math.round(nativeScale * 72);
-          }
-        } catch (error) {
-          // will use the default scale / dpi
-        }
-      }
-
-      const bigSide = Math.max(pageWidthPts, pageHeightPts);
-      if (bigSide * scaleFactor > 5000) {
-        scaleFactor = 5000 / bigSide;
-        dpi = Math.round(scaleFactor * 72);
-      }
+      // const bigSide = Math.max(pageWidthPts, pageHeightPts);
+      // if (bigSide * scaleFactor > 5000) {
+      //   scaleFactor = 5000 / bigSide;
+      //   dpi = Math.round(scaleFactor * 72);
+      // }
 
       const bitmap = await page.render({
         scale: scaleFactor,
