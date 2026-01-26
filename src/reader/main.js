@@ -1569,7 +1569,7 @@ function goToPage(pageIndex, scrollBarPos = 0) {
       entryNames: pageIndexes,
       scrollBarPos,
       password: g_fileData.password,
-      extraData: { dpi: 150 },
+      extraData: { dpi: settings.getValue("pdfReadingDpi") },
     });
   } else if (g_fileData.type === FileDataType.EPUB_EBOOK) {
     if (pageIndex > 0) {

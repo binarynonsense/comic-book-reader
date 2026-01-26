@@ -61,7 +61,8 @@ const g_defaultSettings = {
   layoutAudioPlayer: 0, // 0 top left, 3 bottom left - for now
   layoutBattery: 0, // 0 top left, 1 top center, 2 top right .... 5 bottom right
   epubOpenAs: 0, // 0 ask and remember, 1 always ask
-  pdfReadingLib: 0, // 0 oldest, 1 newest
+  pdfReadingLib: 0, // 0 oldest, 1 newest // DEPRECATED
+  pdfReadingDpi: 300, // 600, 300, 200, 150, 96 or 72
   cbrCreation: 0, // 0 disabled, 1 use command tool if available
   rarExeFolderPath: undefined,
   turnPageOnScrollBoundary: false,
@@ -230,6 +231,7 @@ exports.resetPreferences = function () {
     "layoutBattery",
     "epubOpenAs",
     "pdfReadingLib",
+    "pdfReadingDpi",
     "cbrCreation",
     "rarExeFolderPath",
     "turnPageOnScrollBoundary",
@@ -501,6 +503,17 @@ function sanitize() {
     g_settings.pdfReadingLib > 1
   ) {
     g_settings.pdfReadingLib = g_defaultSettings.pdfReadingLib;
+  }
+  if (
+    !Number.isInteger(g_settings.pdfReadingDpi) ||
+    (g_settings.pdfReadingDpi !== 600 &&
+      g_settings.pdfReadingDpi !== 300 &&
+      g_settings.pdfReadingDpi !== 200 &&
+      g_settings.pdfReadingDpi !== 150 &&
+      g_settings.pdfReadingDpi !== 96 &&
+      g_settings.pdfReadingDpi !== 72)
+  ) {
+    g_settings.pdfReadingDpi = g_defaultSettings.pdfReadingDpi;
   }
   if (
     !Number.isInteger(g_settings.cbrCreation) ||
