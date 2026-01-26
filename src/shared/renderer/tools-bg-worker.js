@@ -95,7 +95,7 @@ async function extractPDF(
         let dpi = 300; // use userUnit some day (if > 1) to set dpi?
         let iPerUnit = 1 / 72;
         let scaleFactor = dpi * iPerUnit; // default: output a 300dpi image instead of 72dpi, which is the pdf default?
-        if (extractionMethod === "render72") {
+        if (extractionMethod === "72") {
           scaleFactor = 1;
           dpi = 72;
         }
@@ -226,7 +226,7 @@ async function extractPDF(
         let dpi = 300; // use userUnit some day (if > 1) to set dpi?
         let iPerUnit = 1 / 72;
         let scaleFactor = dpi * iPerUnit; // default: output a 300dpi image instead of 72dpi, which is the pdf default?
-        if (extractionMethod === "render72") {
+        if (extractionMethod === "72") {
           scaleFactor = 1;
           dpi = 72;
         }

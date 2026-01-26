@@ -1119,13 +1119,7 @@ async function extractPdf(
       const page = pages[index];
 
       let dpi = parseInt(extractionMethod);
-      let scaleFactor = dpi ?? 300 / 72;
-
-      // const bigSide = Math.max(pageWidthPts, pageHeightPts);
-      // if (bigSide * scaleFactor > 5000) {
-      //   scaleFactor = 5000 / bigSide;
-      //   dpi = Math.round(scaleFactor * 72);
-      // }
+      let scaleFactor = (dpi ?? 300) / 72;
 
       const bitmap = await page.render({
         scale: scaleFactor,

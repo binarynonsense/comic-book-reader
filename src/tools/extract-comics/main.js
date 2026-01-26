@@ -940,18 +940,34 @@ function getLocalization() {
       id: "tool-ec-pdf-extraction-text",
       text: _("tool-shared-ui-pdf-extraction"),
     },
-    {
-      id: "tool-ec-pdf-extraction-o1-text",
-      text: _("tool-shared-ui-pdf-extraction-o1"),
-    },
-    {
-      id: "tool-ec-pdf-extraction-o2-text",
-      text: _("tool-shared-ui-pdf-extraction-o2"),
-    },
-    {
-      id: "tool-ec-pdf-extraction-o3-text",
-      text: _("tool-shared-ui-pdf-extraction-o3"),
-    },
+    // {
+    //   id: "tool-ec-pdf-extraction-o-embedded-text",
+    //   text: _("tool-shared-ui-pdf-extraction-o-embedded"),
+    // },
+    // {
+    //   id: "tool-ec-pdf-extraction-o-600-text",
+    //   text: _("tool-shared-ui-pdf-extraction-o-dpi", 600),
+    // },
+    // {
+    //   id: "tool-ec-pdf-extraction-o-300-text",
+    //   text: _("tool-shared-ui-pdf-extraction-o-dpi", 300),
+    // },
+    // {
+    //   id: "tool-ec-pdf-extraction-o-200-text",
+    //   text: _("tool-shared-ui-pdf-extraction-o-dpi", 200),
+    // },
+    // {
+    //   id: "tool-ec-pdf-extraction-o-150-text",
+    //   text: _("tool-shared-ui-pdf-extraction-o-dpi", 150),
+    // },
+    // {
+    //   id: "tool-ec-pdf-extraction-o-96-text",
+    //   text: _("tool-shared-ui-pdf-extraction-o-dpi", 96),
+    // },
+    // {
+    //   id: "tool-ec-pdf-extraction-o-72-text",
+    //   text: _("tool-shared-ui-pdf-extraction-o-dpi", 72),
+    // },
     //////////////////////////////////////////////
     {
       id: "tool-ec-advanced-output-options-text",
