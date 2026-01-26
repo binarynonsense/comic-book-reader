@@ -21,31 +21,28 @@ export function initIpc() {
 ///////////////////////////////////////////////////////////////////////////////
 
 function initOnIpcCallbacks() {
-  on("load-pdf", (filePath, pageIndex, password) => {
-    loadPdf(filePath, pageIndex, password);
-  });
-
-  on("render-pdf-page", (pageIndexes, rotation, scrollBarPos) => {
-    showNoBookContent(false);
-    renderPdfPages(pageIndexes, rotation, scrollBarPos);
-  });
-
-  on("refresh-pdf-page", (rotation) => {
-    refreshPdfPages(rotation);
-  });
-
-  on(
-    "extract-pdf-image-buffer",
-    (filePath, pageNum, outputFolderPath, password, sendToTool) => {
-      extractPDFImageBuffer(
-        filePath,
-        pageNum,
-        outputFolderPath,
-        password,
-        sendToTool
-      );
-    }
-  );
+  // on("load-pdf", (filePath, pageIndex, password) => {
+  //   loadPdf(filePath, pageIndex, password);
+  // });
+  // on("render-pdf-page", (pageIndexes, rotation, scrollBarPos) => {
+  //   showNoBookContent(false);
+  //   renderPdfPages(pageIndexes, rotation, scrollBarPos);
+  // });
+  // on("refresh-pdf-page", (rotation) => {
+  //   refreshPdfPages(rotation);
+  // });
+  // on(
+  //   "extract-pdf-image-buffer",
+  //   (filePath, pageNum, outputFolderPath, password, sendToTool) => {
+  //     extractPDFImageBuffer(
+  //       filePath,
+  //       pageNum,
+  //       outputFolderPath,
+  //       password,
+  //       sendToTool
+  //     );
+  //   }
+  // );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -96,7 +93,7 @@ function loadPdf(filePath, pageIndex, password) {
               subject: metadata.info.Subject,
               keywords: metadata.info.Keywords,
               title: metadata.info.Title,
-            }
+            },
           );
         })
         .catch(function (error) {
@@ -106,7 +103,7 @@ function loadPdf(filePath, pageIndex, password) {
             filePath,
             pageIndex,
             g_currentPdf.pdf.numPages,
-            { encrypted: password && password.trim() !== "" }
+            { encrypted: password && password.trim() !== "" },
           );
         });
     })
@@ -142,7 +139,7 @@ async function renderPdfPages(pageIndexes, rotation, scrollBarPos) {
       function (reason) {
         // PDF loading error
         console.error(reason);
-      }
+      },
     );
   } else {
     g_currentPdf.pages = [];
@@ -183,8 +180,8 @@ async function renderOpenPDFPages(rotation, scrollBarPos, sendPageLoaded) {
       g_renderJobPages[i].renderTask = undefined;
       console.log(
         `Old PDF job still rendering, create new canvas (p${i}::dt${Math.trunc(
-          g_renderJobPages[i].jobId - jobId
-        )}ms)`
+          g_renderJobPages[i].jobId - jobId,
+        )}ms)`,
       );
     }
     g_renderJobPages[i].jobId = jobId;
@@ -217,8 +214,8 @@ async function renderOpenPDFPages(rotation, scrollBarPos, sendPageLoaded) {
       // can change during second page
       console.log(
         `Skiping page render (p${i}::dt${Math.trunc(
-          g_renderJobPages[i].jobId - jobId
-        )}ms`
+          g_renderJobPages[i].jobId - jobId,
+        )}ms`,
       );
       break;
     }
@@ -253,7 +250,7 @@ async function renderOpenPDFPages(rotation, scrollBarPos, sendPageLoaded) {
     // doesn't correspond to what I want when, for example, changing page mode
     const desiredWidth = Math.max(
       tempCanvas.offsetWidth,
-      document.body.clientWidth
+      document.body.clientWidth,
     );
     const viewport = g_currentPdf.pages[i].getViewport({
       scale: 1,
@@ -279,7 +276,7 @@ async function renderOpenPDFPages(rotation, scrollBarPos, sendPageLoaded) {
       await renderTask.promise;
     } catch (error) {
       console.log(
-        `(p${i}::dt${Math.trunc(g_renderJobPages[i].jobId - jobId)}ms`
+        `(p${i}::dt${Math.trunc(g_renderJobPages[i].jobId - jobId)}ms`,
       );
       console.log(error);
     }
@@ -295,8 +292,8 @@ async function renderOpenPDFPages(rotation, scrollBarPos, sendPageLoaded) {
     } else {
       console.log(
         `PDF page rendered but didn't use it as it's out of date (p${i}::dt${Math.trunc(
-          g_renderJobPages[i].jobId - jobId
-        )}ms)`
+          g_renderJobPages[i].jobId - jobId,
+        )}ms)`,
       );
     }
   }
@@ -332,7 +329,7 @@ async function extractPDFImageBuffer(
   pageNum,
   outputFolderPath,
   password,
-  sendToTool
+  sendToTool,
 ) {
   // pdfjsLib.GlobalWorkerOptions.workerSrc =
   //   "../assets/libs/pdfjs-2.3.200/build/pdf.worker.js";
@@ -423,7 +420,7 @@ async function extractPDFImageBuffer(
       dataUrl,
       dpi,
       outputFolderPath,
-      sendToTool
+      sendToTool,
     );
   } catch (err) {
     console.log(err);
@@ -433,7 +430,7 @@ async function extractPDFImageBuffer(
       undefined,
       undefined,
       outputFolderPath,
-      sendToTool
+      sendToTool,
     );
   }
 }
