@@ -6,13 +6,9 @@ title: "[OTHER]: "
 
 ### Purpose
 
-- 
 
 ### Details
 
--
 
 ### Additional information
-
--
 
