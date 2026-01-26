@@ -1122,15 +1122,15 @@ html[dir="rtl"] .tools-range-bubble {
 
 /* /////////////////////////////////////////////////////////////// */
 
-#tool-cc-folders-file-formats-div {
+.tools-checkboxes-row-div {
   display: flex;
   flex-direction: row;
   gap: 20px;
   justify-content: flex-start;
 }
 
-#tool-cc-folders-file-formats-div .tools-checkbox-container {
-  width: auto;
+.tools-checkboxes-row-div .tools-checkbox-container {
+  width: auto !important;
 }
 
 /* /////////////////////////////////////////////////////////////// */
