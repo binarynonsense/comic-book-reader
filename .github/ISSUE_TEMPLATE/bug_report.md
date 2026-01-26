@@ -12,7 +12,7 @@ labels: "type: bug / error report"
 
 * OS:
 * ACBR Version:
-* Build:
+* Build (e.g., .exe, Flatpak, ...):
 
 ### Additional context / screenshots:
 
