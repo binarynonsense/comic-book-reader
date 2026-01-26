@@ -609,6 +609,8 @@
   "tool-pre-epub-openas-0": "Fragen und Erinnern",
   "tool-pre-epub-openas-1": "Immer Fragen",
   "tool-pre-pdf": "PDF",
+  "[NOTE TO TRANSLATORS]tool-pre-pdf-reading-dpi": "This is the title of a select with option: 300 dpi, 150 dpi...",
+  "[NEEDS TRANSLATION]tool-pre-pdf-reading-dpi": "Render Pages in the Reader at",
   "tool-pre-pdf-reading-library-version": "Lesebibliotheks-version",
   "tool-pre-pdf-extracting-library-version": "Extraktionsbibliotheks-version",
   "tool-pre-pdf-library-version-oldest": "Älteste",

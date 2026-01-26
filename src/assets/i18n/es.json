@@ -1,8 +1,6 @@
 {
   "@metadata": {
-    "authors": [
-      "Álvaro"
-    ],
+    "authors": ["Álvaro"],
     "last-updated": "2026-01-14",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.15.0",
@@ -609,6 +607,8 @@
   "tool-pre-epub-openas-0": "Preguntar y recordar",
   "tool-pre-epub-openas-1": "Siempre preguntar",
   "tool-pre-pdf": "PDF",
+  "[NOTE TO TRANSLATORS]tool-pre-pdf-reading-dpi": "This is the title of a select with option: 300 dpi, 150 dpi...",
+  "tool-pre-pdf-reading-dpi": "Renderizar páginas en el lector a",
   "tool-pre-pdf-reading-library-version": "Versión de la librería de lectura",
   "tool-pre-pdf-extracting-library-version": "Versión de la librería de extracción",
   "tool-pre-pdf-library-version-oldest": "Más antigua",
