@@ -22,7 +22,7 @@ let g_isDev = false;
 // ref: https://www.electronjs.org/docs/api/locales
 // ref: https://www.christianengvall.se/electron-localization/
 
-exports.init = function (isDev, loadExternal) {
+exports.init = function (isDev) {
   g_isDev = isDev;
   g_userDataLocalesPath = settings.getValue("loadExternalLocalizations")
     ? path.join(appUtils.getExternalFilesFolder(), "localizations/")
