@@ -29,7 +29,14 @@ export function needsScrollToTopButtonUpdate() {
   return true;
 }
 
-function init(activeLocale, languages, activeTheme, themes, settings) {
+function init(
+  activeLocale,
+  languages,
+  activeTheme,
+  themes,
+  settings,
+  externalFilesFolder,
+) {
   g_settings = settings;
   try {
     if (!g_isInitialized) {
@@ -599,6 +606,50 @@ function init(activeLocale, languages, activeTheme, themes, settings) {
           );
         });
     }
+    // external files
+    {
+      const themesCheckbox = document.querySelector(
+        "#tool-pre-externalfiles-load-types-themes-checkbox",
+      );
+      themesCheckbox.checked = settings.loadExternalThemes;
+      themesCheckbox.addEventListener("change", (event) => {
+        sendIpcToMain(
+          "set-setting",
+          "loadExternalThemes",
+          themesCheckbox.checked,
+        );
+      });
+      const localizationsCheckbox = document.querySelector(
+        "#tool-pre-externalfiles-load-types-localizations-checkbox",
+      );
+      localizationsCheckbox.checked = settings.loadExternalLocalizations;
+      localizationsCheckbox.addEventListener("change", (event) => {
+        sendIpcToMain(
+          "set-setting",
+          "loadExternalLocalizations",
+          localizationsCheckbox.checked,
+        );
+      });
+      // folder
+      const folderUl = document.querySelector(
+        "#tool-pre-externalfiles-folder-ul",
+      );
+      folderUl;
+      folderUl.innerHTML = "";
+      let li = document.createElement("li");
+      li.className = "tools-collection-li";
+      let text = document.createElement("span");
+      text.innerText = reducePathString(externalFilesFolder);
+      li.appendChild(text);
+      folderUl.appendChild(li);
+      // folder button
+      const folderButton = document.querySelector(
+        "#tool-pre-externalfiles-folder-open-button",
+      );
+      folderButton.addEventListener("click", (event) => {
+        sendIpcToMain("open-externalfiles-folder");
+      });
+    }
     ////////////////////////////////////////
     // tooltips
     const tooltipButtons = document.querySelectorAll(".tools-tooltip-button");
@@ -702,6 +753,10 @@ function initOnIpcCallbacks() {
 
   on("update-navbuttons", (...args) => {
     updateNavButtons(...args);
+  });
+
+  on("update-loaded-locale", (locale) => {
+    document.getElementById("tool-pre-language-select").value = locale;
   });
 
   on("set-temp-folder", (...args) => {

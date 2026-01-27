@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2025 Álvaro García
+ * Copyright 2020-2026 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -145,6 +145,32 @@ function getConfigFolder() {
 }
 exports.getConfigFolder = getConfigFolder;
 
+function getExternalFilesFolder() {
+  const configFolder = getConfigFolder();
+  return path.join(configFolder, "/acbr-custom");
+}
+exports.getExternalFilesFolder = getExternalFilesFolder;
+
+function generateExternalFilesFolder() {
+  const baseFolder = getExternalFilesFolder();
+  if (!baseFolder) return;
+  const themesFolder = path.join(baseFolder, "/themes");
+  if (!fs.existsSync(themesFolder)) {
+    log.editor("creating external themes folder: " + themesFolder);
+    fs.mkdirSync(themesFolder, { recursive: true });
+  }
+  const localizationsFolder = path.join(baseFolder, "/localizations");
+  if (!fs.existsSync(localizationsFolder)) {
+    log.editor(
+      "creating external localizations folder: " + localizationsFolder,
+    );
+    fs.mkdirSync(localizationsFolder, { recursive: true });
+  }
+  // TODO: maybe add a readme inside the folders?
+  // fs.writeFileSync
+}
+exports.generateExternalFilesFolder = generateExternalFilesFolder;
+
 ///////////////////////////////////////////////////////////////////////////////
 // FILE DIALOGUES /////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -261,6 +287,7 @@ function cleanUpUserDataFolder() {
       "acbr-player.cfg",
       "acbr-player.m3u",
       "acbr-cache",
+      "acbr-custom",
     ];
     let userDataPath = app.getPath("userData");
     if (

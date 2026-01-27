@@ -700,5 +700,30 @@ exports.getLocalization = function () {
       id: "tool-pre-configfiles-text",
       text: _("tool-pre-configfiles"),
     },
+    //
+    {
+      id: "tool-pre-externalfiles-text",
+      text: _("tool-pre-externalfiles"),
+    },
+    {
+      id: "tool-pre-externalfiles-load-text",
+      text: _("tool-pre-externalfiles-load"),
+    },
+    {
+      id: "tool-pre-externalfiles-load-types-localizations-text",
+      text: _("tool-pre-externalfiles-type-localizations"),
+    },
+    {
+      id: "tool-pre-externalfiles-load-types-themes-text",
+      text: _("tool-pre-externalfiles-type-themes"),
+    },
+    {
+      id: "tool-pre-externalfiles-folder-text",
+      text: _("tool-pre-externalfiles-folder"),
+    },
+    {
+      id: "tool-pre-externalfiles-folder-open-button-text",
+      text: _("tool-shared-ui-open").toUpperCase(),
+    },
   ];
 };

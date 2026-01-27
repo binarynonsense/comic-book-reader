@@ -48,6 +48,7 @@ exports.open = function () {
     themes.getId(),
     themes.getAvailableList(),
     settings.get(),
+    appUtils.getExternalFilesFolder(),
   );
   let tempFolderPath = settings.getValue("tempFolderPath");
   let saveAsRelative = false;
@@ -157,13 +158,17 @@ function initOnIpcCallbacks() {
   });
 
   on("set-language", (value) => {
-    i18n.loadLocale(value);
+    const loadedLocale = i18n.loadLocale(value);
     settings.setValue("locale", i18n.getLoadedLocale());
     core.onLanguageChanged();
     reader.updateToolbarDirection(settings.getValue("toolbarDirection"));
     reader.rebuildMenuAndToolBars(false);
     for (const [key, value] of Object.entries(tools.getTools())) {
       if (value.updateLocalizedText) value.updateLocalizedText();
+    }
+    if (loadedLocale != value) {
+      sendIpcToRenderer("update-loaded-locale", loadedLocale);
+      // TODO: show error modal?
     }
   });
 
@@ -496,6 +501,11 @@ function initOnIpcCallbacks() {
 
   on("open-path-in-file-browser", (path) => {
     appUtils.openPathInFileBrowser(path);
+  });
+
+  on("open-externalfiles-folder", () => {
+    const folderPath = appUtils.getExternalFilesFolder();
+    appUtils.openPathInFileBrowser(folderPath);
   });
 }
 

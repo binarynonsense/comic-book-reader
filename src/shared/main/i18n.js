@@ -1,16 +1,17 @@
 /**
  * @license
- * Copyright 2020-2024 Álvaro García
+ * Copyright 2020-2026 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-const { app } = require("electron");
 const path = require("node:path");
 const fs = require("node:fs");
 const sanitizeHtml = require("sanitize-html");
 
 const settings = require("./settings");
+const appUtils = require("./app-utils");
+const log = require("./logger");
 
 let g_loadedLocale;
 let g_loadedLocaleData;
@@ -21,9 +22,11 @@ let g_isDev = false;
 // ref: https://www.electronjs.org/docs/api/locales
 // ref: https://www.christianengvall.se/electron-localization/
 
-exports.init = function (isDev) {
+exports.init = function (isDev, loadExternal) {
   g_isDev = isDev;
-  g_userDataLocalesPath = path.join(app.getPath("userData"), "i18n/");
+  g_userDataLocalesPath = settings.getValue("loadExternalLocalizations")
+    ? path.join(appUtils.getExternalFilesFolder(), "localizations/")
+    : undefined;
   if (settings.getValue("locale") === undefined) {
     settings.setValue("locale", loadLocale(app.getLocale()));
   } else {
@@ -76,16 +79,44 @@ exports.loadLocale = loadLocale;
 function getLocaleData(locale) {
   let dataPath = path.join(__dirname, "../../assets/i18n/" + locale + ".json");
   if (!fs.existsSync(dataPath)) {
-    dataPath = path.join(g_userDataLocalesPath + locale + ".json");
-    if (!fs.existsSync) {
+    if (g_userDataLocalesPath) {
+      dataPath = path.join(g_userDataLocalesPath, locale + ".json");
+      if (!fs.existsSync(dataPath)) {
+        return undefined;
+      }
+    } else {
       return undefined;
     }
   }
   let data;
   try {
     data = JSON.parse(fs.readFileSync(dataPath, "utf8"));
+    data = sanitizeData(data);
     return data;
-  } catch (e) {
+  } catch (error) {
+    return undefined;
+  }
+}
+
+function isObject(input) {
+  return typeof input == "object" && input.constructor == Object;
+}
+
+function sanitizeData(data) {
+  try {
+    if (
+      !isObject(data) ||
+      !data["@metadata"] ||
+      !isObject(data["@metadata"]) ||
+      !data["@metadata"]["locale"] ||
+      !data["@metadata"]["name"] ||
+      !data["@metadata"]["native-name"] ||
+      !data["@metadata"]["direction"]
+    )
+      throw "error";
+    return data;
+  } catch (error) {
+    log.error("tried to load a malformed localization file");
     return undefined;
   }
 }
@@ -96,27 +127,27 @@ exports.getAvailableLocales = function () {
   localesList = getLocalesFromFolder(
     path.join(__dirname, "../../assets/i18n/"),
   );
-  // if (
-  //   g_userDataLocalesPath !== undefined &&
-  //   fs.existsSync(g_userDataLocalesPath)
-  // ) {
-  //   // user locales
-  //   let userLocalesList = getLocalesFromFolder(g_userDataLocalesPath);
-  //   for (let index = 0; index < userLocalesList.length; index++) {
-  //     const userLocale = userLocalesList[index];
-  //     let found = false;
-  //     for (let index = localesList.length - 1; index >= 0; index--) {
-  //       const locale = localesList[index];
-  //       if (locale.locale === userLocale.locale) {
-  //         found = true;
-  //         break;
-  //       }
-  //     }
-  //     if (!found) {
-  //       localesList.push(userLocale);
-  //     }
-  //   }
-  // }
+  if (
+    g_userDataLocalesPath !== undefined &&
+    fs.existsSync(g_userDataLocalesPath)
+  ) {
+    // user locales
+    let userLocalesList = getLocalesFromFolder(g_userDataLocalesPath);
+    for (let index = 0; index < userLocalesList.length; index++) {
+      const userLocale = userLocalesList[index];
+      let found = false;
+      for (let index = localesList.length - 1; index >= 0; index--) {
+        const locale = localesList[index];
+        if (locale.locale === userLocale.locale) {
+          found = true;
+          break;
+        }
+      }
+      if (!found) {
+        localesList.push(userLocale);
+      }
+    }
+  }
   return localesList;
 };
 

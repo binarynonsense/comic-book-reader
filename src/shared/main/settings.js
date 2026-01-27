@@ -141,6 +141,10 @@ const g_defaultSettings = {
 
   tempFolderPath: undefined,
 
+  // EXTERNAL FILES LOADING
+  loadExternalThemes: false,
+  loadExternalLocalizations: false,
+
   // LINUX
   linuxEnforceGslice: false,
 
@@ -536,16 +540,16 @@ function sanitize() {
 
   /////////////////////
   if (typeof g_settings.locale === "string") {
-    g_settings.locale = g_settings.locale
-      .replace(/[^a-z0-9_\-]/gi, "_")
-      .toLowerCase();
+    g_settings.locale = g_settings.locale.replace(/[^a-zA-Z0-9_\-]/gi, "");
+    if (g_settings.locale === "") g_settings.locale = g_defaultSettings.locale;
+    //.toLowerCase();
   } else {
     g_settings.locale = g_defaultSettings.locale;
   }
   if (typeof g_settings.theme === "string") {
-    g_settings.theme = g_settings.theme
-      .replace(/[^a-z0-9_\-]/gi, "_")
-      .toLowerCase();
+    g_settings.theme = g_settings.theme.replace(/[^a-zA-Z0-9_\-]/gi, "");
+    //.toLowerCase();
+    if (g_settings.theme === "") g_settings.theme = g_defaultSettings.theme;
   } else {
     g_settings.theme = g_defaultSettings.theme;
   }
@@ -586,6 +590,14 @@ function sanitize() {
     g_settings.themeTimeEnd = g_defaultSettings.themeTimeEnd;
   }
   g_settings.themeTimeEnd = padTime(g_settings.themeTimeEnd);
+  // EXTERNAL ///////////
+  if (typeof g_settings.loadExternalThemes !== "boolean") {
+    g_settings.loadExternalThemes = g_defaultSettings.loadExternalThemes;
+  }
+  if (typeof g_settings.loadExternalLocalizations !== "boolean") {
+    g_settings.loadExternalLocalizations =
+      g_defaultSettings.loadExternalLocalizations;
+  }
   // LINUX ///////////
   if (typeof g_settings.linuxEnforceGslice !== "boolean") {
     g_settings.linuxEnforceGslice = g_defaultSettings.linuxEnforceGslice;

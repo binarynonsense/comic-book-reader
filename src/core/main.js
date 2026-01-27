@@ -196,6 +196,8 @@ if (!gotTheLock) {
   // show vips warnings from sharp only in dev mode
   if (!g_launchInfo.isDev) process.env.VIPS_WARNING = 1;
   //
+  appUtils.generateExternalFilesFolder();
+  //
   tools.init();
   // init window
   const createWindow = () => {
@@ -265,7 +267,7 @@ if (!gotTheLock) {
       temp.init(tempFolderPath);
       fileFormats.init(g_launchInfo.isRelease);
       history.init(settings.getValue("history_capacity"));
-      i18n.init(g_launchInfo.isDev);
+      i18n.init(g_launchInfo.isDev, settings.loadExternalLocalizations);
       themes.init();
       sendIpcToCoreRenderer("update-css-properties", themes.getData());
       menuBar.init(g_mainWindow);
