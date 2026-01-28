@@ -13,3 +13,5 @@ acbr-cache/
 /*.jpeg
 /*.png
 /tools/*.txt
+/tools/*.json
+/tools/*.docx
