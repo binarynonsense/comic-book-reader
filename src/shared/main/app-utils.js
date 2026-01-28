@@ -147,27 +147,34 @@ exports.getConfigFolder = getConfigFolder;
 
 function getExternalFilesFolder() {
   const configFolder = getConfigFolder();
-  return path.join(configFolder, "/acbr-custom");
+  return path.join(configFolder, "/acbr-user-extensions");
 }
 exports.getExternalFilesFolder = getExternalFilesFolder;
 
 function generateExternalFilesFolder() {
-  const baseFolder = getExternalFilesFolder();
-  if (!baseFolder) return;
-  const themesFolder = path.join(baseFolder, "/themes");
-  if (!fs.existsSync(themesFolder)) {
-    log.editor("creating external themes folder: " + themesFolder);
-    fs.mkdirSync(themesFolder, { recursive: true });
+  try {
+    const baseFolder = getExternalFilesFolder();
+    if (!baseFolder) return;
+    const themesFolder = path.join(baseFolder, "/themes");
+    if (!fs.existsSync(themesFolder)) {
+      log.editor("creating external themes folder: " + themesFolder);
+      fs.mkdirSync(themesFolder, { recursive: true });
+    }
+    const localesFolder = path.join(baseFolder, "/locales");
+    if (!fs.existsSync(localesFolder)) {
+      log.editor("creating external locales folder: " + localesFolder);
+      fs.mkdirSync(localesFolder, { recursive: true });
+    }
+    const readmePath = path.join(baseFolder, "/README.txt");
+    if (!fs.existsSync(readmePath)) {
+      const content =
+        "Drop your files in the corresponding folder: localization files in /locales, color themes in /themes...";
+      log.editor("creating README: " + readmePath);
+      fs.writeFileSync(readmePath, content, "utf8");
+    }
+  } catch (error) {
+    log.error(error);
   }
-  const localizationsFolder = path.join(baseFolder, "/localizations");
-  if (!fs.existsSync(localizationsFolder)) {
-    log.editor(
-      "creating external localizations folder: " + localizationsFolder,
-    );
-    fs.mkdirSync(localizationsFolder, { recursive: true });
-  }
-  // TODO: maybe add a readme inside the folders?
-  // fs.writeFileSync
 }
 exports.generateExternalFilesFolder = generateExternalFilesFolder;
 
@@ -287,7 +294,7 @@ function cleanUpUserDataFolder() {
       "acbr-player.cfg",
       "acbr-player.m3u",
       "acbr-cache",
-      "acbr-custom",
+      "acbr-user-extensions",
     ];
     let userDataPath = app.getPath("userData");
     if (

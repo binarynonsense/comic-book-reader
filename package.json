@@ -73,7 +73,8 @@
     "licenses": "license-checker > licenses/node_modules.txt && shx sed -i 's/path.*node_modules/path: node_modules/' ./licenses/node_modules.txt && shx sed -i 's/licenseFile.*node_modules/licenseFile: node_modules/' ./licenses/node_modules.txt && npm run localization licenses",
     "localization:update": "node ./tools/localization.js update all",
     "localization:state": "node ./tools/localization.js state all",
-    "localization": "node ./tools/localization.js"
+    "localization": "node ./tools/localization.js",
+    "translate": "node ./tools/translate.js"
   },
   "devDependencies": {
     "del-cli": "6.0.0",

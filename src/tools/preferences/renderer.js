@@ -77,6 +77,9 @@ function init(
           if (isVersionOlder(language.acbrVersion, "3.5.0-beta1")) {
             nativeName += " (" + language.outdatedText + ")";
           }
+          if (language.isExternal) {
+            nativeName += " *";
+          }
           let opt = document.createElement("option");
           opt.value = language.locale;
           opt.textContent = nativeName;

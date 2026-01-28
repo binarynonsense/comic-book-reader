@@ -25,7 +25,7 @@ let g_isDev = false;
 exports.init = function (isDev) {
   g_isDev = isDev;
   g_userDataLocalesPath = settings.getValue("loadExternalLocalizations")
-    ? path.join(appUtils.getExternalFilesFolder(), "localizations/")
+    ? path.join(appUtils.getExternalFilesFolder(), "locales/")
     : undefined;
   if (settings.getValue("locale") === undefined) {
     settings.setValue("locale", loadLocale(app.getLocale()));
@@ -126,13 +126,14 @@ exports.getAvailableLocales = function () {
   // official locales
   localesList = getLocalesFromFolder(
     path.join(__dirname, "../../assets/i18n/"),
+    false,
   );
   if (
     g_userDataLocalesPath !== undefined &&
     fs.existsSync(g_userDataLocalesPath)
   ) {
     // user locales
-    let userLocalesList = getLocalesFromFolder(g_userDataLocalesPath);
+    let userLocalesList = getLocalesFromFolder(g_userDataLocalesPath, true);
     for (let index = 0; index < userLocalesList.length; index++) {
       const userLocale = userLocalesList[index];
       let found = false;
@@ -151,7 +152,7 @@ exports.getAvailableLocales = function () {
   return localesList;
 };
 
-function getLocalesFromFolder(folderPath) {
+function getLocalesFromFolder(folderPath, isExternal) {
   let localesList = [];
   if (fs.existsSync(folderPath)) {
     let filesInFolder = fs.readdirSync(folderPath);
@@ -175,6 +176,7 @@ function getLocalesFromFolder(folderPath) {
               locale: data["@metadata"]["locale"],
               acbrVersion: data["@metadata"]["acbr-version"],
               outdatedText: data["tool-pre-language-incomplete"],
+              isExternal,
             };
             localesList.push(localeInfo);
           }
