@@ -1137,7 +1137,7 @@ async function extractPdf(
     pdfDoc = await pdfLib.loadDocument(fileBuffer, password);
     fileBuffer = null;
     if (typeof global.gc === "function") {
-      // just to make sure fileBuffer is cleaned as asoon as possible
+      // just to make sure fileBuffer is cleaned as soon as possible
       global.gc();
     }
 
