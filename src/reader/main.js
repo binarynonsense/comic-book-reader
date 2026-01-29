@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-const { utilityProcess, MessageChannelMain } = require("electron");
+const { utilityProcess } = require("electron");
 
 const fs = require("node:fs");
 const path = require("node:path");
@@ -38,12 +38,10 @@ const homeScreen = require("./home-screen/main");
 //////////////////////////////////////////////////////////////////////////////
 
 let g_resizeEventCounter;
-let g_delayedRefreshPageEvent;
+// let g_delayedRefreshPageEvent;
 
 let g_languageDir = "ltr";
 let g_pagesDirection = "ltr";
-
-const PDF_ENGINE = "pdfium";
 
 exports.init = function (filePath, checkHistory) {
   initOnIpcCallbacks();
@@ -321,68 +319,69 @@ function initOnIpcCallbacks() {
     );
   });
 
-  ////////////////////////////////////////////////////////////////////////////
+  // pdfjs ////////////////////////////////////////////////////////////////////
 
-  // on("pdf-loaded", (filePath, pageIndex, numPages, metadata) => {
-  //   g_fileData.state = FileDataState.LOADED; // will change inmediately to loading
-  //   // TODO double check loaded is the one loading?
-  //   // TODO change only if correct
-  //   g_fileData.type = FileDataType.PDF;
-  //   g_fileData.path = filePath;
-  //   g_fileData.name = path.basename(filePath);
-  //   g_fileData.pagesPaths = [];
-  //   g_fileData.numPages = numPages;
-  //   if (pageIndex < 0 || pageIndex >= g_fileData.numPages) pageIndex = 0;
-  //   g_fileData.pageIndex = pageIndex;
-  //   g_fileData.metadata = metadata;
-  //   updateMenuAndToolbarItems();
-  //   setPageRotation(0, false);
-  //   setInitialZoom(filePath);
-  //   setInitialPageMode(filePath);
-  //   g_fileData.numPages = numPages;
-  //   addCurrentToHistory();
-  //   goToPage(pageIndex);
-  //   renderPageInfo();
-  //   renderTitle();
-  // });
+  on("pdf-loaded", (filePath, pageIndex, numPages, metadata) => {
+    log.editor("loaded PDF using pdfjs");
+    g_fileData.state = FileDataState.LOADED; // will change inmediately to loading
+    // TODO double check loaded is the one loading?
+    // TODO change only if correct
+    g_fileData.type = FileDataType.PDF;
+    g_fileData.path = filePath;
+    g_fileData.name = path.basename(filePath);
+    g_fileData.pagesPaths = [];
+    g_fileData.numPages = numPages;
+    if (pageIndex < 0 || pageIndex >= g_fileData.numPages) pageIndex = 0;
+    g_fileData.pageIndex = pageIndex;
+    g_fileData.metadata = metadata;
+    updateMenuAndToolbarItems();
+    setPageRotation(0, false);
+    setInitialZoom(filePath);
+    setInitialPageMode(filePath);
+    g_fileData.numPages = numPages;
+    addCurrentToHistory();
+    goToPage(pageIndex);
+    renderPageInfo();
+    renderTitle();
+  });
 
-  // on("pdf-load-failed", (error) => {
-  //   if (
-  //     error !== undefined &&
-  //     error.name !== undefined &&
-  //     error.name === "PasswordException"
-  //   ) {
-  //     if (error.code === 1) {
-  //       // { message: 'No password given', name: 'PasswordException', code: 1 }
-  //       sendIpcToRenderer(
-  //         "show-modal-prompt-password",
-  //         _("ui-modal-prompt-enterpassword"),
-  //         path.basename(g_fileData.path),
-  //         _("ui-modal-prompt-button-ok"),
-  //         _("ui-modal-prompt-button-cancel"),
-  //       );
-  //     } else if (error.code === 2) {
-  //       // { message: 'Incorrect Password', name: 'PasswordException', code: 2 }
-  //       sendIpcToRenderer(
-  //         "show-modal-prompt-password",
-  //         _("ui-modal-prompt-enterpassword"),
-  //         path.basename(g_fileData.path),
-  //         _("ui-modal-prompt-button-ok"),
-  //         _("ui-modal-prompt-button-cancel"),
-  //       );
-  //     }
-  //   } else {
-  //     // unrecoverable error
-  //     log.error(error);
-  //     closeCurrentFile();
-  //     sendIpcToRenderer(
-  //       "show-modal-info",
-  //       _("ui-modal-title-fileerror"),
-  //       _("ui-modal-info-couldntopen-pdf"),
-  //       _("ui-modal-prompt-button-ok"),
-  //     );
-  //   }
-  // });
+  on("pdf-load-failed", (error) => {
+    if (
+      error !== undefined &&
+      error.name !== undefined &&
+      error.name === "PasswordException"
+    ) {
+      if (error.code === 1) {
+        // { message: 'No password given', name: 'PasswordException', code: 1 }
+        sendIpcToRenderer(
+          "show-modal-prompt-password",
+          _("ui-modal-prompt-enterpassword"),
+          path.basename(g_fileData.path),
+          _("ui-modal-prompt-button-ok"),
+          _("ui-modal-prompt-button-cancel"),
+        );
+      } else if (error.code === 2) {
+        // { message: 'Incorrect Password', name: 'PasswordException', code: 2 }
+        sendIpcToRenderer(
+          "show-modal-prompt-password",
+          _("ui-modal-prompt-enterpassword"),
+          path.basename(g_fileData.path),
+          _("ui-modal-prompt-button-ok"),
+          _("ui-modal-prompt-button-cancel"),
+        );
+      }
+    } else {
+      // unrecoverable error
+      log.error(error);
+      closeCurrentFile();
+      sendIpcToRenderer(
+        "show-modal-info",
+        _("ui-modal-title-fileerror"),
+        _("ui-modal-info-couldntopen-pdf"),
+        _("ui-modal-prompt-button-ok"),
+      );
+    }
+  });
 
   // on(
   //   "pdf-page-dataurl-extracted",
@@ -977,7 +976,11 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
     if (fileType !== undefined) {
       fileExtension = "." + fileType;
     }
-    if (fileExtension === "." + FileExtension.PDF && PDF_ENGINE === "pdfium") {
+    if (
+      fileExtension === "." + FileExtension.PDF &&
+      settings.getValue("pdfReadingLibrary") === "pdfium"
+    ) {
+      log.editor("loaded PDF using pdfium");
       if (g_fileData.state !== FileDataState.LOADING) {
         cleanUpFileData();
         g_fileData.type = FileDataType.PDF;
@@ -994,20 +997,21 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
         pageIndex,
         password,
       });
-    }
-    // else if (fileExtension === "." + FileExtension.PDF) {
-    //   if (g_fileData.state !== FileDataState.LOADING) {
-    //     cleanUpFileData();
-    //     g_fileData.type = FileDataType.PDF;
-    //     g_fileData.state = FileDataState.LOADING;
-    //     g_fileData.pageIndex = pageIndex; // ref: file-type -> https://www.npmjs.com/package/file-type
-    //     // e.g. {ext: 'png', mime: 'image/png'}
-    //     g_fileData.path = filePath;
-    //   }
-    //   g_fileData.password = password;
-    //   sendIpcToRenderer("load-pdf", filePath, pageIndex, password);
-    // }
-    else if (fileExtension === "." + FileExtension.EPUB) {
+    } else if (
+      fileExtension === "." + FileExtension.PDF &&
+      settings.getValue("pdfReadingLibrary") !== "pdfium"
+    ) {
+      if (g_fileData.state !== FileDataState.LOADING) {
+        cleanUpFileData();
+        g_fileData.type = FileDataType.PDF;
+        g_fileData.state = FileDataState.LOADING;
+        g_fileData.pageIndex = pageIndex; // ref: file-type -> https://www.npmjs.com/package/file-type
+        // e.g. {ext: 'png', mime: 'image/png'}
+        g_fileData.path = filePath;
+      }
+      g_fileData.password = password;
+      sendIpcToRenderer("load-pdf", filePath, pageIndex, password);
+    } else if (fileExtension === "." + FileExtension.EPUB) {
       let pagesPaths = await fileFormats.getEpubImageIdsList(filePath);
       if (pagesPaths !== undefined && pagesPaths.length > 0) {
         g_fileData.state = FileDataState.LOADED;
@@ -1556,7 +1560,10 @@ function goToPage(pageIndex, scrollBarPos = 0) {
       password: g_fileData.password,
       tempSubFolderPath,
     });
-  } else if (g_fileData.type === FileDataType.PDF && PDF_ENGINE === "pdfium") {
+  } else if (
+    g_fileData.type === FileDataType.PDF &&
+    settings.getValue("pdfReadingLibrary") === "pdfium"
+  ) {
     g_fileData.state = FileDataState.LOADING;
     timers.start("pagesExtraction");
 
@@ -1582,18 +1589,18 @@ function goToPage(pageIndex, scrollBarPos = 0) {
       sendIpcToRenderer("render-epub-ebook-page-prev");
     }
   }
-  // // PDF old pdfjs method
-  // else if (g_fileData.type === FileDataType.PDF) {
-  //   g_fileData.state = FileDataState.LOADING;
-  //   let pageIndexes = getGoToIndexes();
-  //   sendIpcToRenderer(
-  //     "render-pdf-page",
-  //     pageIndexes,
-  //     g_fileData.pageRotation,
-  //     scrollBarPos,
-  //   );
-  // }
-  else if (g_fileData.type === FileDataType.WWW) {
+  // PDF old pdfjs method
+  else if (g_fileData.type === FileDataType.PDF) {
+    g_fileData.state = FileDataState.LOADING;
+    let pageIndexes = getGoToIndexes();
+    sendIpcToRenderer(
+      "render-pdf-page",
+      pageIndexes,
+      g_fileData.pageRotation,
+      scrollBarPos,
+      settings.getValue("pdfReadingDpi"),
+    );
+  } else if (g_fileData.type === FileDataType.WWW) {
     (async () => {
       g_fileData.state = FileDataState.LOADING;
       const calledFunc = g_fileData.getPageCallback;
@@ -1781,11 +1788,14 @@ function renderPageInfo() {
 
 function renderPageRefresh() {
   if (g_fileData.state === FileDataState.LOADED) {
-    // if (g_fileData.type === FileDataType.PDF) {
-    //   clearTimeout(g_delayedRefreshPageEvent);
-    //   g_delayedRefreshPageEvent = setTimeout(onDelayedRefreshPageCall, 300);
-    // } else
     if (
+      g_fileData.type === FileDataType.PDF &&
+      settings.getValue("pdfReadingLibrary") !== "pdfium"
+    ) {
+      // clearTimeout(g_delayedRefreshPageEvent);
+      // g_delayedRefreshPageEvent = setTimeout(onDelayedRefreshPageCall, 300);
+      sendIpcToRenderer("refresh-pdf-page", g_fileData.pageRotation);
+    } else if (
       g_fileData.type === FileDataType.RAR ||
       g_fileData.type === FileDataType.ZIP ||
       g_fileData.type === FileDataType.SEVENZIP ||

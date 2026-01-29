@@ -566,17 +566,33 @@ exports.getLocalization = function () {
       id: "tool-pre-pdf-reading-library-version-text",
       text: _("tool-pre-pdf-reading-library-version"),
     },
+    // {
+    //   id: "tool-pre-pdf-reading-library-version-0-text",
+    //   text: `${_("tool-pre-pdf-library-version-oldest")} (${_(
+    //     "tool-pre-pdf-library-version-oldest-desc",
+    //   )})`,
+    // },
+    // {
+    //   id: "tool-pre-pdf-reading-library-version-1-text",
+    //   text: `${_("tool-pre-pdf-library-version-newest")} (${_(
+    //     "tool-pre-pdf-library-version-newest-desc",
+    //   )})`,
+    // },
     {
       id: "tool-pre-pdf-reading-library-version-0-text",
-      text: `${_("tool-pre-pdf-library-version-oldest")} (${_(
+      text: `PDF.js ${_("tool-pre-pdf-library-version-oldest")} (${_(
         "tool-pre-pdf-library-version-oldest-desc",
       )})`,
     },
     {
       id: "tool-pre-pdf-reading-library-version-1-text",
-      text: `${_("tool-pre-pdf-library-version-newest")} (${_(
+      text: `PDF.js ${_("tool-pre-pdf-library-version-newest")} (${_(
         "tool-pre-pdf-library-version-newest-desc",
       )})`,
+    },
+    {
+      id: "tool-pre-pdf-reading-library-version-2-text",
+      text: `PDFium (${_("tool-shared-ui-experimental").toLowerCase()})`,
     },
 
     {

@@ -61,8 +61,9 @@ const g_defaultSettings = {
   layoutAudioPlayer: 0, // 0 top left, 3 bottom left - for now
   layoutBattery: 0, // 0 top left, 1 top center, 2 top right .... 5 bottom right
   epubOpenAs: 0, // 0 ask and remember, 1 always ask
-  pdfReadingLib: 0, // 0 oldest, 1 newest // DEPRECATED
-  pdfReadingDpi: 300, // 600, 300, 200, 150, 96 or 72
+  // pdfReadingLib: 0, // 0 oldest, 1 newest // DEPRECATED
+  pdfReadingLibrary: "pdfjs_1", // pdfjs_1, pdfjs_2, pdfium
+  pdfReadingDpi: 200, // 300, 200, 150, 96 or 72
   cbrCreation: 0, // 0 disabled, 1 use command tool if available
   rarExeFolderPath: undefined,
   turnPageOnScrollBoundary: false,
@@ -234,7 +235,8 @@ exports.resetPreferences = function () {
     "layoutAudioPlayer",
     "layoutBattery",
     "epubOpenAs",
-    "pdfReadingLib",
+    // "pdfReadingLib",
+    "pdfReadingLibrary",
     "pdfReadingDpi",
     "cbrCreation",
     "rarExeFolderPath",
@@ -501,17 +503,25 @@ function sanitize() {
   ) {
     g_settings.epubOpenAs = g_defaultSettings.epubOpenAs;
   }
+  // if (
+  //   !Number.isInteger(g_settings.pdfReadingLib) ||
+  //   g_settings.pdfReadingLib < 0 ||
+  //   g_settings.pdfReadingLib > 1
+  // ) {
+  //   g_settings.pdfReadingLib = g_defaultSettings.pdfReadingLib;
+  // }
   if (
-    !Number.isInteger(g_settings.pdfReadingLib) ||
-    g_settings.pdfReadingLib < 0 ||
-    g_settings.pdfReadingLib > 1
+    typeof g_settings.pdfReadingLibrary !== "string" ||
+    (g_settings.pdfReadingLibrary !== "pdfjs_1" &&
+      g_settings.pdfReadingLibrary !== "pdfjs_2" &&
+      g_settings.pdfReadingLibrary !== "pdfium")
   ) {
-    g_settings.pdfReadingLib = g_defaultSettings.pdfReadingLib;
+    g_settings.pdfReadingLibrary = g_defaultSettings.pdfReadingLibrary;
   }
   if (
     !Number.isInteger(g_settings.pdfReadingDpi) ||
-    (g_settings.pdfReadingDpi !== 600 &&
-      g_settings.pdfReadingDpi !== 300 &&
+    // g_settings.pdfReadingDpi !== 600 &&
+    (g_settings.pdfReadingDpi !== 300 &&
       g_settings.pdfReadingDpi !== 200 &&
       g_settings.pdfReadingDpi !== 150 &&
       g_settings.pdfReadingDpi !== 96 &&

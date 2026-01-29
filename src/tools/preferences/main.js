@@ -21,6 +21,7 @@ const temp = require("../../shared/main/temp");
 const tools = require("../../shared/main/tools");
 const history = require("../../shared/main/history");
 const localization = require("./main/localization");
+const { FileDataType } = require("../../shared/main/constants");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -253,6 +254,21 @@ function initOnIpcCallbacks() {
   });
 
   /////////////////
+
+  on("set-pdf-reading-lib", (value) => {
+    if (reader.getFileData().type === FileDataType.PDF) {
+      reader.onMenuCloseFile();
+    }
+    settings.setValue("pdfReadingLibrary", value);
+    if (value !== "pdfium") {
+      sendIpcToRenderer(
+        "show-ok-modal",
+        _("tool-shared-modal-title-info"),
+        _("tool-shared-modal-info-change-needs-restart"),
+        _("tool-shared-ui-close").toUpperCase(),
+      );
+    }
+  });
 
   on("set-epub-ebook-color-mode", (mode, textColor, bgColor) => {
     if (mode != undefined) settings.setValue("epubEbookColorMode", mode);

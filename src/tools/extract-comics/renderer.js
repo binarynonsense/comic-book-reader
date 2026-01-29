@@ -696,6 +696,7 @@ function onStart(resetCounter = true) {
     g_inputFilesIndex + 1,
     g_inputFiles.length,
     document.getElementById("tool-ec-pdf-extraction-select").value,
+    document.getElementById("tool-ec-pdf-extraction-lib-select").value,
   );
 }
 

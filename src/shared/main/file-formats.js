@@ -1103,12 +1103,43 @@ async function extractPdf(
   try {
     const { PDFiumLibrary } = require("@hyzyla/pdfium");
     const sharp = require("sharp");
+    const os = require("node:os");
 
-    const MAX_WORKERS = 4;
+    const stats = fs.statSync(filePath);
+    const fileSize_MB = stats.size / (1024 * 1024);
+    const freeRAM_MB = os.freemem() / (1024 * 1024);
 
-    const fileBuffer = fs.readFileSync(filePath);
+    function getNumberWorkers() {
+      // mem limit: 2x the file size in free RAM + 500MB buffer
+      if (freeRAM_MB < fileSize_MB * 2 + 500) {
+        return -2; // cancel extraction
+      }
+      if (fileSize_MB > 800) {
+        return -1; // cancel extraction
+      }
+      // use 4 or 1 worker?
+      if (fileSize_MB > 500) {
+        return 1;
+      }
+      if (fileSize_MB > 300) {
+        return 2;
+      }
+      return 4;
+    }
+
+    const numWorkers = getNumberWorkers();
+    if (numWorkers < 1) {
+      throw `file too big to use with pdfium (code: ${numWorkers}, free mem: ${Math.round(freeRAM_MB)}MB)`;
+    }
+
+    let fileBuffer = fs.readFileSync(filePath);
     pdfLib = await PDFiumLibrary.init();
     pdfDoc = await pdfLib.loadDocument(fileBuffer, password);
+    fileBuffer = null;
+    if (typeof global.gc === "function") {
+      // just to make sure fileBuffer is cleaned as asoon as possible
+      global.gc();
+    }
 
     // iterator to array
     const pages = Array.from(pdfDoc.pages());
@@ -1164,7 +1195,7 @@ async function extractPdf(
       }
     };
     const workerPromises = [];
-    for (let i = 0; i < MAX_WORKERS; i++) {
+    for (let i = 0; i < numWorkers; i++) {
       workerPromises.push(startWorker(signal));
     }
     // wait for them to finish
@@ -1175,10 +1206,9 @@ async function extractPdf(
     return { success: true };
   } catch (error) {
     const message = error.message ? error.message.toLowerCase() : "";
-    let errorType = error.message || "unknown_error";
-    if (message.includes("enospc")) errorType = "no_disk_space";
-    if (message.includes("password")) errorType = "incorrect_password";
-    return { success: false, error: errorType };
+    if (message.includes("enospc")) error = "no_disk_space";
+    if (message.includes("password")) error = "incorrect_password";
+    return { success: false, error };
   } finally {
     if (pdfDoc) pdfDoc.destroy();
     if (pdfLib) pdfLib.destroy();
@@ -1227,7 +1257,18 @@ exports.extractPdfPageBuffer = async function (filePath, pageIndex, dpi = 300) {
     }
 
     const page = g_openPdfDoc.getPage(pageIndex);
-    const scaleFactor = dpi / 72;
+    let scaleFactor = dpi / 72;
+
+    const pageSize = page.getSize(); // Get the size of the page in points (1/72 inch)
+    const pageWidth = pageSize.width;
+    const pageHeight = pageSize.height;
+    const bigSide = pageHeight;
+    if (pageHeight < pageWidth) bigSide = pageWidth;
+    let scaledSide = bigSide * scaleFactor;
+    if (scaledSide > 4000) {
+      // reducing PDF scale factor, img too big
+      scaleFactor = 4000 / bigSide;
+    }
 
     const bitmap = await page.render({
       scale: scaleFactor,

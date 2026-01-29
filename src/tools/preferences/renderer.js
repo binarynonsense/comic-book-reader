@@ -476,7 +476,7 @@ function init(
         sendIpcToMain("set-setting", "epubOpenAs", parseInt(select.value));
       });
     }
-    // pdf reading library select
+    // pdf reading library select OLD
     // {
     //   let select = document.getElementById(
     //     "tool-pre-pdf-reading-library-version-select",
@@ -486,6 +486,16 @@ function init(
     //     sendIpcToMain("set-pdf-reading-lib", parseInt(select.value));
     //   });
     // }
+    // pdf reading library select v2
+    {
+      let select = document.getElementById(
+        "tool-pre-pdf-reading-library-version-select",
+      );
+      select.value = settings.pdfReadingLibrary;
+      select.addEventListener("change", function (event) {
+        sendIpcToMain("set-pdf-reading-lib", select.value);
+      });
+    }
     // pdf reading dpi
     {
       let select = document.getElementById("tool-pre-pdf-reading-dpi-select");

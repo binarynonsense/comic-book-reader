@@ -554,6 +554,9 @@ function updateUISelectedOptions() {
   g_uiSelectedOptions.inputPdfExtractionMethod = document.getElementById(
     "tool-cc-pdf-extraction-select",
   ).value;
+  g_uiSelectedOptions.inputPdfExtractionLib = document.getElementById(
+    "tool-cc-pdf-extraction-lib-select",
+  ).value;
   // g_selectedOptions.outputFolderPath is autoupdated
   g_uiSelectedOptions.outputKeepSubfoldersStructure = document.querySelector(
     "#tool-cc-keep-subfolders-structure-checkbox",

@@ -246,7 +246,10 @@ if (!gotTheLock) {
       },
     });
     // load html
-    if (settings.getValue("pdfReadingLib") === 1) {
+    if (
+      settings.getValue("pdfReadingLibrary") === "pdfjs_1" ||
+      settings.getValue("pdfReadingLibrary") === "pdfium"
+    ) {
       g_mainWindow.loadFile(path.join(__dirname, "index-2.html"));
     } else {
       g_mainWindow.loadFile(path.join(__dirname, "index-1.html"));
@@ -951,6 +954,10 @@ if (!gotTheLock) {
 // NOTE: I'm freezing the music-metadata module version to 7.13.4 as later
 // versions require projects to be ESM.
 // https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c
+
+// NOTE: command to test the memory cage when running the dev script 'npm run
+// start:safe':
+// systemctl show --user --property=MemoryMax,MemorySwapMax run-*.scope
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////

@@ -5,12 +5,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-const {
-  // BrowserWindow,
-  clipboard,
-  utilityProcess,
-  MessageChannelMain,
-} = require("electron");
+const { BrowserWindow, clipboard, utilityProcess } = require("electron");
 const fs = require("node:fs");
 const path = require("node:path");
 const core = require("../../core/main");
@@ -645,18 +640,34 @@ function startFile(inputFileIndex, totalFilesNum) {
     inputFileType === FileDataType.RAR ||
     inputFileType === FileDataType.SEVENZIP ||
     inputFileType === FileDataType.EPUB_COMIC ||
-    inputFileType === FileDataType.PDF // uses PDFium
+    (inputFileType === FileDataType.PDF &&
+      g_uiSelectedOptions.inputPdfExtractionLib === "pdfium")
   ) {
     updateModalLogText(_("tool-shared-modal-log-extracting-pages") + "...");
+    if (core.isDev() && inputFileType === FileDataType.PDF)
+      updateModalLogText("[DEV] pdfium");
 
     if (g_worker !== undefined) {
       // kill it after one use
-      g_worker.kill();
+      g_worker?.kill();
       g_worker = undefined;
     }
     if (g_worker === undefined) {
+      // strip null form env to avoid a weird fix a user
+      const safeEnv = Object.fromEntries(
+        Object.entries(process.env).filter(
+          ([_, value]) => typeof value === "string" && !value.includes("\0"),
+        ),
+      );
       g_worker = utilityProcess.fork(
         path.join(__dirname, "../../shared/main/tools-worker.js"),
+        {
+          env: safeEnv,
+          // enable manual GC and set a 3GB hard cap so the worker crashes
+          // instead the OS hanging if it uses too much memory, like on large
+          // PDFs with pdfium
+          execArgv: ["--js-flags=--expose-gc", "--max-old-space-size=3072"],
+        },
       );
       g_worker.on("message", (message) => {
         if (message.type === "extraction-progress") {
@@ -696,6 +707,12 @@ function startFile(inputFileIndex, totalFilesNum) {
         }
       });
     }
+    g_worker.on("exit", (code) => {
+      g_worker = null;
+      if (code !== 0) {
+        stopError(undefined, `worker crashed with code ${code}`);
+      }
+    });
     g_worker.postMessage([
       core.getLaunchInfo(),
       "extract",
@@ -708,41 +725,41 @@ function startFile(inputFileIndex, totalFilesNum) {
       { pdfExtractionMethod: g_uiSelectedOptions.inputPdfExtractionMethod },
     ]);
   }
-  // won't be reached if I use the one above with PDFium
-  // else if (inputFileType === FileDataType.PDF) {
-  //   updateModalLogText(_("tool-shared-modal-log-extracting-pages") + "...");
-  //   /////////////////////////
-  //   // use a hidden window for better performance and node api access
-  //   if (g_workerWindow !== undefined) {
-  //     // shouldn't happen
-  //     g_workerWindow.destroy();
-  //     g_workerWindow = undefined;
-  //   }
-  //   g_workerWindow = new BrowserWindow({
-  //     show: false,
-  //     webPreferences: { nodeIntegration: true, contextIsolation: false },
-  //     parent: core.getMainWindow(),
-  //   });
-  //   g_workerWindow.loadFile(
-  //     `${__dirname}/../../shared/renderer/tools-bg-worker.html`,
-  //   );
+  // pdfjs
+  else if (inputFileType === FileDataType.PDF) {
+    updateModalLogText(_("tool-shared-modal-log-extracting-pages") + "...");
+    if (core.isDev()) updateModalLogText("[DEV] pdfjs");
+    /////////////////////////
+    // use a hidden window for better performance and node api access
+    if (g_workerWindow !== undefined) {
+      // shouldn't happen
+      g_workerWindow.destroy();
+      g_workerWindow = undefined;
+    }
+    g_workerWindow = new BrowserWindow({
+      show: false,
+      webPreferences: { nodeIntegration: true, contextIsolation: false },
+      parent: core.getMainWindow(),
+    });
+    g_workerWindow.loadFile(
+      `${__dirname}/../../shared/renderer/tools-bg-worker.html`,
+    );
 
-  //   g_workerWindow.webContents.on("did-finish-load", function () {
-  //     //g_resizeWindow.webContents.openDevTools();
-  //     g_workerWindow.webContents.send(
-  //       "extract-pdf",
-  //       "tool-convert-comics",
-  //       inputFilePath,
-  //       g_mode === ToolMode.CONVERT
-  //         ? g_tempSubFolderPath
-  //         : g_creationTempSubFolderPath,
-  //       g_uiSelectedOptions.inputPdfExtractionMethod,
-  //       _("tool-shared-modal-log-extracting-page") + ": ",
-  //       g_inputPassword,
-  //     );
-  //   });
-  // }
-  else {
+    g_workerWindow.webContents.on("did-finish-load", function () {
+      //g_resizeWindow.webContents.openDevTools();
+      g_workerWindow.webContents.send(
+        "extract-pdf",
+        "tool-convert-comics",
+        inputFilePath,
+        g_mode === ToolMode.CONVERT
+          ? g_tempSubFolderPath
+          : g_creationTempSubFolderPath,
+        g_uiSelectedOptions.inputPdfExtractionMethod,
+        _("tool-shared-modal-log-extracting-page") + ": ",
+        g_inputPassword,
+      );
+    });
+  } else {
     stopError(undefined, "start: invalid file type");
   }
 }
@@ -1382,7 +1399,7 @@ async function createFilesFromImages(
         path.join(__dirname, "../../shared/main/tools-worker.js"),
       );
       g_worker.on("message", (message) => {
-        g_worker.kill(); // kill it after one use
+        g_worker?.kill(); // kill it after one use
         if (message.success) {
           log.debug("file/s created in: " + message.times);
           temp.deleteSubFolder(g_tempSubFolderPath);

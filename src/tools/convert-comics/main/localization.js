@@ -242,34 +242,10 @@ exports.getLocalization = function (mode) {
       id: "tool-cc-pdf-extraction-text",
       text: _("tool-shared-ui-pdf-extraction"),
     },
-    // {
-    //   id: "tool-cc-pdf-extraction-o-embedded-text",
-    //   text: _("tool-shared-ui-pdf-extraction-o-embedded"),
-    // },
-    // {
-    //   id: "tool-cc-pdf-extraction-o-600-text",
-    //   text: _("tool-shared-ui-pdf-extraction-o-dpi", 600),
-    // },
-    // {
-    //   id: "tool-cc-pdf-extraction-o-300-text",
-    //   text: _("tool-shared-ui-pdf-extraction-o-dpi", 300),
-    // },
-    // {
-    //   id: "tool-cc-pdf-extraction-o-200-text",
-    //   text: _("tool-shared-ui-pdf-extraction-o-dpi", 200),
-    // },
-    // {
-    //   id: "tool-cc-pdf-extraction-o-150-text",
-    //   text: _("tool-shared-ui-pdf-extraction-o-dpi", 150),
-    // },
-    // {
-    //   id: "tool-cc-pdf-extraction-o-96-text",
-    //   text: _("tool-shared-ui-pdf-extraction-o-dpi", 96),
-    // },
-    // {
-    //   id: "tool-cc-pdf-extraction-o-72-text",
-    //   text: _("tool-shared-ui-pdf-extraction-o-dpi", 72),
-    // },
+    {
+      id: "tool-cc-pdf-extraction-lib-o-pdfium-text",
+      text: `PDFium (${_("tool-shared-ui-experimental").toLowerCase()})`,
+    },
     //////////////////////////////////////////////
     {
       id: "tool-cc-advanced-imageprocessing-options-text",

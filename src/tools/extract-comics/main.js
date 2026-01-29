@@ -5,15 +5,12 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-const {
-  // BrowserWindow,
-  clipboard,
-  utilityProcess,
-} = require("electron");
+const { BrowserWindow, clipboard, utilityProcess } = require("electron");
 const fs = require("node:fs");
 const path = require("node:path");
 const core = require("../../core/main");
-const { _, _raw } = require("../../shared/main/i18n");
+const { _ } = require("../../shared/main/i18n");
+const localization = require("./main/localization");
 
 const { FileExtension, FileDataType } = require("../../shared/main/constants");
 const fileUtils = require("../../shared/main/file-utils");
@@ -276,6 +273,7 @@ function initOnIpcCallbacks() {
       fileNum,
       totalFilesNum,
       pdfExtractionMethod,
+      pdfExtractionLib,
     ) => {
       menuBar.setCloseTool(false);
       sendIpcToPreload("update-menubar");
@@ -285,6 +283,7 @@ function initOnIpcCallbacks() {
         fileNum,
         totalFilesNum,
         pdfExtractionMethod,
+        pdfExtractionLib,
       );
     },
   );
@@ -457,6 +456,7 @@ function start(
   fileNum,
   totalFilesNum,
   pdfExtractionMethod,
+  pdfExtractionLib,
 ) {
   if (fileNum === 1) g_cancel = false;
   if (fileNum !== 1) sendIpcToRenderer("update-log-text", "");
@@ -479,21 +479,36 @@ function start(
     inputFileType === FileDataType.RAR ||
     inputFileType === FileDataType.SEVENZIP ||
     inputFileType === FileDataType.EPUB_COMIC ||
-    inputFileType === FileDataType.PDF // uses PDFium
+    (inputFileType === FileDataType.PDF && pdfExtractionLib === "pdfium")
   ) {
     sendIpcToRenderer(
       "update-log-text",
       _("tool-shared-modal-log-extracting-pages") + "...",
     );
+    if (core.isDev() && inputFileType === FileDataType.PDF)
+      updateModalLogText("[DEV] pdfium");
 
     if (g_worker !== undefined) {
       // kill it after one use
-      g_worker.kill();
+      g_worker?.kill();
       g_worker = undefined;
     }
     if (g_worker === undefined) {
+      // strip null form env to avoid a weird fix a user
+      const safeEnv = Object.fromEntries(
+        Object.entries(process.env).filter(
+          ([_, value]) => typeof value === "string" && !value.includes("\0"),
+        ),
+      );
       g_worker = utilityProcess.fork(
         path.join(__dirname, "../../shared/main/tools-worker.js"),
+        {
+          env: safeEnv,
+          // enable manual GC and set a 3GB hard cap so the worker crashes
+          // instead the OS hanging if it uses too much memory, like on large
+          // PDFs with pdfium
+          execArgv: ["--js-flags=--expose-gc", "--max-old-space-size=3072"],
+        },
       );
       g_worker.on("message", (message) => {
         if (message.type === "extraction-progress") {
@@ -521,6 +536,12 @@ function start(
         }
       });
     }
+    g_worker.on("exit", (code) => {
+      g_worker = null;
+      if (code !== 0) {
+        stopError(undefined, `worker crashed with code ${code}`);
+      }
+    });
     g_worker.postMessage([
       core.getLaunchInfo(),
       "extract",
@@ -531,42 +552,42 @@ function start(
       { pdfExtractionMethod: pdfExtractionMethod },
     ]);
   }
-  // won't be reached if I use the one above with PDFium
-  // else if (inputFileType === FileDataType.PDF) {
-  //   sendIpcToRenderer(
-  //     "update-log-text",
-  //     _("tool-shared-modal-log-extracting-pages") + "...",
-  //   );
-  //   /////////////////////////
-  //   // use a hidden window for better performance and node api access
-  //   if (g_workerWindow !== undefined) {
-  //     // shouldn't happen
-  //     g_workerWindow.destroy();
-  //     g_workerWindow = undefined;
-  //   }
-  //   g_workerWindow = new BrowserWindow({
-  //     show: false,
-  //     webPreferences: { nodeIntegration: true, contextIsolation: false },
-  //     parent: core.getMainWindow(),
-  //   });
-  //   g_workerWindow.loadFile(
-  //     `${__dirname}/../../shared/renderer/tools-bg-worker.html`,
-  //   );
+  // pdfjs
+  else if (inputFileType === FileDataType.PDF) {
+    sendIpcToRenderer(
+      "update-log-text",
+      _("tool-shared-modal-log-extracting-pages") + "...",
+    );
+    if (core.isDev()) updateModalLogText("[DEV] pdfjs");
+    /////////////////////////
+    // use a hidden window for better performance and node api access
+    if (g_workerWindow !== undefined) {
+      // shouldn't happen
+      g_workerWindow.destroy();
+      g_workerWindow = undefined;
+    }
+    g_workerWindow = new BrowserWindow({
+      show: false,
+      webPreferences: { nodeIntegration: true, contextIsolation: false },
+      parent: core.getMainWindow(),
+    });
+    g_workerWindow.loadFile(
+      `${__dirname}/../../shared/renderer/tools-bg-worker.html`,
+    );
 
-  //   g_workerWindow.webContents.on("did-finish-load", function () {
-  //     //g_resizeWindow.webContents.openDevTools();
-  //     g_workerWindow.webContents.send(
-  //       "extract-pdf",
-  //       "tool-extract-comics",
-  //       inputFilePath,
-  //       g_tempSubFolderPath,
-  //       pdfExtractionMethod,
-  //       _("tool-shared-modal-log-extracting-page") + ": ",
-  //       g_initialPassword,
-  //     );
-  //   });
-  // }
-  else {
+    g_workerWindow.webContents.on("did-finish-load", function () {
+      //g_resizeWindow.webContents.openDevTools();
+      g_workerWindow.webContents.send(
+        "extract-pdf",
+        "tool-extract-comics",
+        inputFilePath,
+        g_tempSubFolderPath,
+        pdfExtractionMethod,
+        _("tool-shared-modal-log-extracting-page") + ": ",
+        g_initialPassword,
+      );
+    });
+  } else {
     stopError("start: invalid file type");
   }
 }
@@ -799,209 +820,23 @@ async function createFolderWithImages(imgFilePaths, outputFolderPath) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+// LOG ////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+function updateModalLogText(inputText, append = true) {
+  sendIpcToRenderer("update-log-text", inputText, append);
+}
+
+///////////////////////////////////////////////////////////////////////////////
 // LOCALIZATION ///////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
 function updateLocalizedText() {
   sendIpcToRenderer(
     "update-localization",
-    getLocalization(),
-    getTooltipsLocalization(),
-    {
-      infoTooltip: _("tool-shared-modal-title-info"),
-    },
+    localization.getLocalization(),
+    localization.getTooltipsLocalization(),
+    localization.getLocalizedTexts(),
   );
 }
 exports.updateLocalizedText = updateLocalizedText;
-
-function getTooltipsLocalization() {
-  return [
-    {
-      id: "tool-ec-tooltip-output-size",
-      text: _("tool-shared-tooltip-output-scale-options"),
-    },
-    {
-      id: "tool-ec-tooltip-output-folder",
-      text: _("tool-shared-tooltip-output-folder"),
-    },
-    {
-      id: "tool-ec-tooltip-remove-from-list",
-      text: _("tool-shared-tooltip-remove-from-list"),
-    },
-    {
-      id: "tool-ec-tooltip-pdf-extraction",
-      text: _("tool-shared-ui-pdf-extraction-tooltip"),
-    },
-  ];
-}
-
-function getLocalization() {
-  return [
-    {
-      id: "tool-ec-title-text",
-      text: (_raw("tool-ec-title-alt", false)
-        ? _raw("tool-ec-title-alt", false)
-        : _("tool-ec-title")
-      ).toUpperCase(),
-    },
-    {
-      id: "tool-ec-back-button-text",
-      text: _("tool-shared-ui-back-to-reader").toUpperCase(),
-    },
-    {
-      id: "tool-ec-start-button-text",
-      text: _("tool-shared-ui-extract").toUpperCase(),
-    },
-    //////////////////////////////////////////////
-    {
-      id: "tool-ec-section-general-options-text",
-      text: _("tool-shared-ui-general-options"),
-    },
-    {
-      id: "tool-ec-section-advanced-options-text",
-      text: _("tool-shared-ui-advanced-options"),
-    },
-    {
-      id: "tool-ec-section-settings-text",
-      text: _("tool-shared-tab-settings"),
-    },
-    //////////////////////////////////////////////
-    {
-      id: "tool-ec-input-options-text",
-      text: _("tool-shared-ui-input-options"),
-    },
-    {
-      id: "tool-ec-input-files-text",
-      text: _("tool-shared-ui-input-files"),
-    },
-    {
-      id: "tool-ec-add-file-button-text",
-      text: _("tool-shared-ui-add").toUpperCase(),
-    },
-    {
-      id: "tool-ec-clear-list-button-text",
-      text: _("tool-shared-ui-clear-list").toUpperCase(),
-    },
-    //////////////////////////////////////////////
-    {
-      id: "tool-ec-output-options-text",
-      text: _("tool-shared-ui-output-options"),
-    },
-
-    {
-      id: "tool-ec-output-image-scale-text",
-      text: _("tool-shared-ui-output-options-scale").replace(" (%)", ""),
-    },
-    {
-      id: "tool-ec-output-image-scale-select-0-text",
-      text: _("tool-shared-ui-output-options-scale-percentage"),
-    },
-    {
-      id: "tool-ec-output-image-scale-select-1-text",
-      text: _("tool-shared-ui-output-options-scale-height"),
-    },
-    {
-      id: "tool-ec-output-image-scale-select-2-text",
-      text: _("tool-shared-ui-output-options-scale-width"),
-    },
-
-    {
-      id: "tool-ec-output-format-text",
-      text: _("tool-shared-ui-output-options-format"),
-    },
-    {
-      id: "tool-ec-output-image-format-text",
-      text: _("tool-shared-ui-output-options-image-format"),
-    },
-    {
-      id: "tool-ec-output-image-quality-text",
-      text: _("tool-shared-ui-output-options-image-quality"),
-    },
-    {
-      id: "tool-ec-output-folder-text",
-      text: _("tool-shared-ui-output-folder"),
-    },
-    {
-      id: "tool-ec-change-folder-button-text",
-      text: _("tool-shared-ui-change").toUpperCase(),
-    },
-    {
-      id: "tool-ec-open-folder-button-text",
-      text: _("tool-shared-ui-open").toUpperCase(),
-    },
-    //////////////////////////////////////////////
-    {
-      id: "tool-ec-advanced-input-options-text",
-      text: _("tool-shared-ui-advanced-input-options"),
-    },
-    {
-      id: "tool-ec-pdf-extraction-text",
-      text: _("tool-shared-ui-pdf-extraction"),
-    },
-    // {
-    //   id: "tool-ec-pdf-extraction-o-embedded-text",
-    //   text: _("tool-shared-ui-pdf-extraction-o-embedded"),
-    // },
-    // {
-    //   id: "tool-ec-pdf-extraction-o-600-text",
-    //   text: _("tool-shared-ui-pdf-extraction-o-dpi", 600),
-    // },
-    // {
-    //   id: "tool-ec-pdf-extraction-o-300-text",
-    //   text: _("tool-shared-ui-pdf-extraction-o-dpi", 300),
-    // },
-    // {
-    //   id: "tool-ec-pdf-extraction-o-200-text",
-    //   text: _("tool-shared-ui-pdf-extraction-o-dpi", 200),
-    // },
-    // {
-    //   id: "tool-ec-pdf-extraction-o-150-text",
-    //   text: _("tool-shared-ui-pdf-extraction-o-dpi", 150),
-    // },
-    // {
-    //   id: "tool-ec-pdf-extraction-o-96-text",
-    //   text: _("tool-shared-ui-pdf-extraction-o-dpi", 96),
-    // },
-    // {
-    //   id: "tool-ec-pdf-extraction-o-72-text",
-    //   text: _("tool-shared-ui-pdf-extraction-o-dpi", 72),
-    // },
-    //////////////////////////////////////////////
-    {
-      id: "tool-ec-advanced-output-options-text",
-      text: _("tool-shared-ui-advanced-output-options"),
-    },
-    //////////////////////////////////////////////
-    {
-      id: "tool-ec-keep-format-text",
-      text: _("tool-shared-ui-output-options-format-keep"),
-    },
-
-    {
-      id: "tool-ec-modal-close-button-text",
-      text: _("tool-shared-ui-close").toUpperCase(),
-    },
-    {
-      id: "tool-ec-modal-cancel-button-text",
-      text: _("tool-shared-ui-cancel").toUpperCase(),
-    },
-    {
-      id: "tool-ec-modal-copylog-button-text",
-      text: _("ui-modal-prompt-button-copy-log").toUpperCase(),
-    },
-    //////////////////////////////////////////////
-    {
-      id: "tool-ec-settings-text",
-      text: _("tool-shared-tab-settings"),
-    },
-    {
-      id: "tool-ec-setting-remember-text",
-      text: _("tool-shared-ui-settings-remember"),
-    },
-    {
-      id: "tool-ec-settings-reset-button-text",
-      text: _("tool-shared-ui-settings-reset").toUpperCase(),
-    },
-    //////////////////////////////////////////////
-  ];
-}

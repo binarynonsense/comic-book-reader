@@ -21,28 +21,28 @@ export function initIpc() {
 ///////////////////////////////////////////////////////////////////////////////
 
 function initOnIpcCallbacks() {
-  // on("load-pdf", (filePath, pageIndex, password) => {
-  //   loadPdf(filePath, pageIndex, password);
-  // });
-  // on("render-pdf-page", (pageIndexes, rotation, scrollBarPos) => {
-  //   showNoBookContent(false);
-  //   renderPdfPages(pageIndexes, rotation, scrollBarPos);
-  // });
-  // on("refresh-pdf-page", (rotation) => {
-  //   refreshPdfPages(rotation);
-  // });
-  // on(
-  //   "extract-pdf-image-buffer",
-  //   (filePath, pageNum, outputFolderPath, password, sendToTool) => {
-  //     extractPDFImageBuffer(
-  //       filePath,
-  //       pageNum,
-  //       outputFolderPath,
-  //       password,
-  //       sendToTool
-  //     );
-  //   }
-  // );
+  on("load-pdf", (filePath, pageIndex, password) => {
+    loadPdf(filePath, pageIndex, password);
+  });
+  on("render-pdf-page", (pageIndexes, rotation, scrollBarPos, dpi) => {
+    showNoBookContent(false);
+    renderPdfPages(pageIndexes, rotation, scrollBarPos, dpi);
+  });
+  on("refresh-pdf-page", (rotation) => {
+    refreshPdfPages(rotation);
+  });
+  on(
+    "extract-pdf-image-buffer",
+    (filePath, pageNum, outputFolderPath, password, sendToTool) => {
+      extractPDFImageBuffer(
+        filePath,
+        pageNum,
+        outputFolderPath,
+        password,
+        sendToTool,
+      );
+    },
+  );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -113,19 +113,19 @@ function loadPdf(filePath, pageIndex, password) {
 }
 
 function refreshPdfPages(rotation) {
-  if (g_currentPdf.pages && g_currentPdf.pages.length > 0) {
-    if (g_renderJobPages) {
-      for (let i = 0; i < g_currentPdf.pages.length; i++) {
-        if (g_renderJobPages[i].renderTask) {
-          return;
-        }
-      }
-    }
-    renderOpenPDFPages(rotation, undefined, false);
-  }
+  // if (g_currentPdf.pages && g_currentPdf.pages.length > 0) {
+  //   if (g_renderJobPages) {
+  //     for (let i = 0; i < g_currentPdf.pages.length; i++) {
+  //       if (g_renderJobPages[i].renderTask) {
+  //         return;
+  //       }
+  //     }
+  //   }
+  //   renderOpenPDFPages(rotation, undefined, false);
+  // }
 }
 
-async function renderPdfPages(pageIndexes, rotation, scrollBarPos) {
+async function renderPdfPages(pageIndexes, rotation, scrollBarPos, dpi) {
   // NOTE: pdfjs counts from 1
   // ref: https://mozilla.github.io/pdf.js/examples/
   const isDoublePages = pageIndexes.length === 2;
@@ -134,7 +134,7 @@ async function renderPdfPages(pageIndexes, rotation, scrollBarPos) {
       function (page) {
         g_currentPdf.pages = [];
         g_currentPdf.pages.push(page);
-        renderOpenPDFPages(rotation, scrollBarPos, true);
+        renderOpenPDFPages(rotation, scrollBarPos, true, dpi);
       },
       function (reason) {
         // PDF loading error
@@ -147,11 +147,11 @@ async function renderPdfPages(pageIndexes, rotation, scrollBarPos) {
       let page = await g_currentPdf.pdf.getPage(pageIndexes[i] + 1);
       g_currentPdf.pages.push(page);
     }
-    renderOpenPDFPages(rotation, scrollBarPos, true);
+    renderOpenPDFPages(rotation, scrollBarPos, true, dpi);
   }
 }
 
-async function renderOpenPDFPages(rotation, scrollBarPos, sendPageLoaded) {
+async function renderOpenPDFPages(rotation, scrollBarPos, sendPageLoaded, dpi) {
   // This new method hides the canvases and copies their images to a final
   // img element, as rendering downsized canvases looks worse to me, more
   // 'harsh'/broken, especially for texts.
@@ -246,24 +246,56 @@ async function renderOpenPDFPages(rotation, scrollBarPos, sendPageLoaded) {
     setFilterClass(finalImg);
     finalPagesRowDiv.appendChild(finalImg);
 
-    // max to clientwith to avoid some issues when the canvas offsetWidth
-    // doesn't correspond to what I want when, for example, changing page mode
-    const desiredWidth = Math.max(
-      tempCanvas.offsetWidth,
-      document.body.clientWidth,
-    );
-    const viewport = g_currentPdf.pages[i].getViewport({
-      scale: 1,
-      rotation,
-    });
-    const scale = desiredWidth / viewport.width;
+    // old method
+    // // max to clientwith to avoid some issues when the canvas offsetWidth
+    // // doesn't correspond to what I want when, for example, changing page mode
+    // const desiredWidth = Math.max(
+    //   tempCanvas.offsetWidth,
+    //   document.body.clientWidth,
+    // );
+    // const viewport = g_currentPdf.pages[i].getViewport({
+    //   scale: 1,
+    //   rotation,
+    // });
+    // const scale = desiredWidth / viewport.width;
+    // let scaledViewport = g_currentPdf.pages[i].getViewport({
+    //   scale: scale,
+    //   rotation,
+    // });
+    // tempCanvas.height = scaledViewport.height;
+    // tempCanvas.width = desiredWidth;
+
+    // DPI - SCALE
+    const page = g_currentPdf.pages[i];
+    let pageWidth = page.view[2]; // [left, top, width, height]
+    let pageHeight = page.view[3];
+    let userUnit = page.userUnit; // 1 unit = 1/72 inch
+    let iPerUnit = 1 / 72;
+    let scaleFactor = dpi / 72;
+    // resize if too big?
+    let bigSide = pageHeight;
+    if (pageHeight < pageWidth) bigSide = pageWidth;
+    let scaledSide = bigSide * scaleFactor;
+    if (scaledSide > 4000) {
+      if ((!userUnit || userUnit <= 1) && bigSide > 2500) {
+        // bad userUnit info?
+        scaleFactor = 1;
+      } else {
+        scaleFactor = 4000 / bigSide;
+      }
+      // console.log(
+      //   "reducing PDF scale factor, img too big. forcing scaleFactor = " +
+      //     scaleFactor,
+      // );
+    }
+    // RENDER
     let scaledViewport = g_currentPdf.pages[i].getViewport({
-      scale: scale,
+      scale: scaleFactor,
       rotation,
     });
 
     tempCanvas.height = scaledViewport.height;
-    tempCanvas.width = desiredWidth;
+    tempCanvas.width = scaledViewport.width;
 
     const renderContext = {
       canvasContext: context,

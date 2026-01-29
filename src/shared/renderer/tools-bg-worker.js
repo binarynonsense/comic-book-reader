@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2023 Álvaro García
+ * Copyright 2020-2026 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -103,9 +103,14 @@ async function extractPDF(
         let bigSide = pageHeight;
         if (pageHeight < pageWidth) bigSide = pageWidth;
         let scaledSide = bigSide * scaleFactor;
-        if (scaledSide > 5000) {
+        if (scaledSide > 4500) {
           console.log("reducing PDF scale factor, img too big");
-          scaleFactor = 5000 / bigSide;
+          if ((!userUnit || userUnit <= 1) && bigSide > 2500) {
+            // bad userUnit info?
+            scaleFactor = 1;
+          } else {
+            scaleFactor = 4500 / bigSide;
+          }
           dpi = parseInt(scaleFactor / iPerUnit);
         }
         // RENDER
@@ -234,9 +239,14 @@ async function extractPDF(
         let bigSide = pageHeight;
         if (pageHeight < pageWidth) bigSide = pageWidth;
         let scaledSide = bigSide * scaleFactor;
-        if (scaledSide > 5000) {
+        if (scaledSide > 4500) {
           console.log("reducing PDF scale factor, img too big");
-          scaleFactor = 5000 / bigSide;
+          if ((!userUnit || userUnit <= 1) && bigSide > 2500) {
+            // bad userUnit info?
+            scaleFactor = 1;
+          } else {
+            scaleFactor = 4500 / bigSide;
+          }
           dpi = parseInt(scaleFactor / iPerUnit);
         }
         // RENDER
