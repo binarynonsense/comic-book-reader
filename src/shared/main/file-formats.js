@@ -1232,9 +1232,11 @@ async function openPdf(filePath, password) {
       if (g_openPdfDoc) {
         g_openPdfDoc.destroy();
       }
-      const data = fs.readFileSync(filePath);
+      let data = fs.readFileSync(filePath);
       g_openPdfDoc = await g_openPdfLib.loadDocument(data, password);
       g_openPdfPath = filePath;
+      data = null;
+      if (global.gc) global.gc();
     }
 
     const numPages = Array.from(g_openPdfDoc.pages()).length;
