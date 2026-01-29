@@ -988,7 +988,16 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
         g_fileData.pageIndex = pageIndex;
         g_fileData.path = filePath;
       }
-      startPageWorker();
+      if (!startPageWorker()) {
+        cleanUpFileData();
+        sendIpcToRenderer(
+          "show-modal-info",
+          _("ui-modal-title-fileerror"),
+          _("ui-modal-info-couldntopen-pdf"),
+          _("ui-modal-prompt-button-ok"),
+        );
+        return;
+      }
       g_fileData.password = password;
       sendToPageWorker({
         command: "open",
@@ -1538,18 +1547,11 @@ function goToPage(pageIndex, scrollBarPos = 0) {
         ? temp.createSubFolder()
         : undefined;
 
-    if (startPageWorker()) {
-      // TODO: if pdf load file?
-    }
-
     let entryNames = [];
     let pageIndexes = getGoToIndexes();
     pageIndexes.forEach((index) => {
       entryNames.push(g_fileData.pagesPaths[index]);
     });
-    if (startPageWorker()) {
-      // TODO: if pdf load file?
-    }
 
     sendToPageWorker({
       command: "extract",
@@ -1568,9 +1570,7 @@ function goToPage(pageIndex, scrollBarPos = 0) {
     timers.start("pagesExtraction");
 
     let pageIndexes = getGoToIndexes();
-    if (startPageWorker()) {
-      // TODO: if pdf load file?
-    }
+
     sendToPageWorker({
       command: "extract",
       fileType: g_fileData.type,
@@ -2303,109 +2303,135 @@ function processZoomInput(input, factor) {
 let g_pageWorker;
 
 function startPageWorker() {
-  if (g_pageWorker === undefined) {
-    g_pageWorker = utilityProcess.fork(path.join(__dirname, "worker-page.js"));
-    g_pageWorker.on("message", (message) => {
-      if (message.type === "testLog") {
-        log.test(message.log);
-        return;
-      } else if (message.type === "extractResult") {
-        log.debug(
-          `page load time: ${timers.stop("pagesExtraction").toFixed(2)}s`,
-        );
-        if (message.success === true) {
-          sendIpcToRenderer(
-            "render-img-page",
-            message.images, // buffers and mimes
-            g_fileData.pageRotation,
-            message.scrollBarPos,
-          );
-          temp.deleteSubFolder(message.tempSubFolderPath);
+  try {
+    if (g_pageWorker === undefined) {
+      // strip null form env to avoid a weird fix a user
+      const safeEnv = Object.fromEntries(
+        Object.entries(process.env).filter(
+          ([_, value]) => typeof value === "string" && !value.includes("\0"),
+        ),
+      );
+      g_pageWorker = utilityProcess.fork(
+        path.join(__dirname, "worker-page.js"),
+        {
+          env: safeEnv,
+          // enable manual GC and set a 3GB hard cap so the worker crashes
+          // instead the OS hanging if it uses too much memory, like on large
+          // PDFs with pdfium
+          execArgv: ["--js-flags=--expose-gc", "--max-old-space-size=3072"],
+        },
+      );
+      g_pageWorker.on("message", (message) => {
+        if (message.type === "testLog") {
+          log.test(message.log);
           return;
-        } else if (message.success === false) {
-          if (message?.error?.toString() === "password required") {
-            log.warning("password required");
+        } else if (message.type === "extractResult") {
+          log.debug(
+            `page load time: ${timers.stop("pagesExtraction").toFixed(2)}s`,
+          );
+          if (message.success === true) {
             sendIpcToRenderer(
-              "show-modal-prompt-password",
-              _("ui-modal-prompt-enterpassword"),
-              path.basename(g_fileData.path),
-              _("ui-modal-prompt-button-ok"),
-              _("ui-modal-prompt-button-cancel"),
+              "render-img-page",
+              message.images, // buffers and mimes
+              g_fileData.pageRotation,
+              message.scrollBarPos,
             );
-            return;
-          } else {
-            // TODO: handle other errors
-            log.error("unhandled worker error");
-            log.error(message.error);
-            sendIpcToRenderer("update-loading", false);
             temp.deleteSubFolder(message.tempSubFolderPath);
             return;
-          }
-        }
-      } else if (message.type === "openResult") {
-        if (message.result.success) {
-          const pageIndex = message.pageIndex;
-          //
-          g_fileData.state = FileDataState.LOADED;
-          g_fileData.type = FileDataType.PDF;
-          g_fileData.path = message.filePath;
-          g_fileData.name = path.basename(g_fileData.path);
-          g_fileData.pagesPaths = [];
-          g_fileData.numPages = message.result.numPages;
-          if (pageIndex < 0 || pageIndex >= g_fileData.numPages) pageIndex = 0;
-          g_fileData.pageIndex = pageIndex;
-          // g_fileData.metadata = metadata;
-          updateMenuAndToolbarItems();
-          setPageRotation(0, false);
-          setInitialZoom(g_fileData.path);
-          setInitialPageMode(g_fileData.path);
-          addCurrentToHistory();
-          goToPage(pageIndex);
-          renderPageInfo();
-          renderTitle();
-        } else {
-          if (message.result.error === "password required") {
-            if (g_fileData.state !== FileDataState.LOADING) {
-              cleanUpFileData();
-              g_fileData.state = FileDataState.LOADING;
-              g_fileData.type = FileDataType.PDF;
-              g_fileData.path = message.filePath;
-              g_fileData.pageIndex = message.pageIndex;
-            }
-            sendIpcToRenderer(
-              "show-modal-prompt-password",
-              _("ui-modal-prompt-enterpassword"),
-              path.basename(g_fileData.path),
-              _("ui-modal-prompt-button-ok"),
-              _("ui-modal-prompt-button-cancel"),
-            );
-          } else {
-            log.error(message.result.error);
-            closeCurrentFile();
-            if (message.result.error === "over2gb") {
+          } else if (message.success === false) {
+            if (message?.error?.toString() === "password required") {
+              log.warning("password required");
               sendIpcToRenderer(
-                "show-modal-info",
-                _("ui-modal-title-fileerror"),
-                _("ui-modal-info-couldntopen-pdf") +
-                  "\n" +
-                  _("ui-modal-info-invalidsize-cap-b", "2GB"),
+                "show-modal-prompt-password",
+                _("ui-modal-prompt-enterpassword"),
+                path.basename(g_fileData.path),
                 _("ui-modal-prompt-button-ok"),
+                _("ui-modal-prompt-button-cancel"),
               );
+              return;
             } else {
+              // TODO: handle other errors
+              log.error("unhandled worker error");
+              log.error(message.error);
+              temp.deleteSubFolder(message.tempSubFolderPath);
+              closeCurrentFile();
               sendIpcToRenderer(
                 "show-modal-info",
-                _("ui-modal-title-fileerror"),
+                _("tool-shared-modal-title-error"),
                 _("ui-modal-info-couldntopen-pdf"),
                 _("ui-modal-prompt-button-ok"),
               );
+              return;
+            }
+          }
+        } else if (message.type === "openResult") {
+          if (message.result.success) {
+            const pageIndex = message.pageIndex;
+            //
+            g_fileData.state = FileDataState.LOADED;
+            g_fileData.type = FileDataType.PDF;
+            g_fileData.path = message.filePath;
+            g_fileData.name = path.basename(g_fileData.path);
+            g_fileData.pagesPaths = [];
+            g_fileData.numPages = message.result.numPages;
+            if (pageIndex < 0 || pageIndex >= g_fileData.numPages)
+              pageIndex = 0;
+            g_fileData.pageIndex = pageIndex;
+            // g_fileData.metadata = metadata;
+            updateMenuAndToolbarItems();
+            setPageRotation(0, false);
+            setInitialZoom(g_fileData.path);
+            setInitialPageMode(g_fileData.path);
+            addCurrentToHistory();
+            goToPage(pageIndex);
+            renderPageInfo();
+            renderTitle();
+          } else {
+            if (message.result.error === "password required") {
+              if (g_fileData.state !== FileDataState.LOADING) {
+                cleanUpFileData();
+                g_fileData.state = FileDataState.LOADING;
+                g_fileData.type = FileDataType.PDF;
+                g_fileData.path = message.filePath;
+                g_fileData.pageIndex = message.pageIndex;
+              }
+              sendIpcToRenderer(
+                "show-modal-prompt-password",
+                _("ui-modal-prompt-enterpassword"),
+                path.basename(g_fileData.path),
+                _("ui-modal-prompt-button-ok"),
+                _("ui-modal-prompt-button-cancel"),
+              );
+            } else {
+              log.error(message.result.error);
+              closeCurrentFile();
+              if (message.result.error === "over2gb") {
+                sendIpcToRenderer(
+                  "show-modal-info",
+                  _("ui-modal-title-fileerror"),
+                  _("ui-modal-info-couldntopen-pdf") +
+                    "\n" +
+                    _("ui-modal-info-invalidsize-cap-b", "2GB"),
+                  _("ui-modal-prompt-button-ok"),
+                );
+              } else {
+                sendIpcToRenderer(
+                  "show-modal-info",
+                  _("ui-modal-title-fileerror"),
+                  _("ui-modal-info-couldntopen-pdf"),
+                  _("ui-modal-prompt-button-ok"),
+                );
+              }
             }
           }
         }
-      }
-    });
-    return true;
+      });
+      return true;
+    }
+    return false;
+  } catch (error) {
+    return false;
   }
-  return false;
 }
 
 function killPageWorker() {
