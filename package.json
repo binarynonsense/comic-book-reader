@@ -57,6 +57,7 @@
   },
   "scripts": {
     "start": "electron . --dev",
+    "start:safe": "systemd-run --user --scope -p MemoryMax=4G -p MemorySwapMax=0 electron . --dev --js-flags=\"--expose-gc\"",
     "start:glib": "export G_SLICE=always-malloc && electron . --dev",
     "dist:linux": "npm run 7zbin:linux && npm run build:linux && npm run extras:linux",
     "dist:windows": "npm run build:windows && npm run extras:windows",
