@@ -814,6 +814,16 @@ function getHomeScreenMenu(settings, history) {
       label: _("menu-view"),
       submenu: [
         {
+          label: _("menu-view-layout-show-systemmonitor"),
+          id: "system-monitor",
+          type: "checkbox",
+          checked: settings.showSystemMonitor,
+          // accelerator: "acc-audio-player",
+          click() {
+            core.onMenuToggleSystemMonitor();
+          },
+        },
+        {
           label: _("menu-view-layout-show-audioplayer"),
           id: "audio-player",
           type: "checkbox",
@@ -882,6 +892,16 @@ function getToolMenu(settings, history, toolName) {
     {
       label: _("menu-view"),
       submenu: [
+        {
+          label: _("menu-view-layout-show-systemmonitor"),
+          id: "system-monitor",
+          type: "checkbox",
+          checked: settings.showSystemMonitor,
+          // accelerator: "acc-audio-player",
+          click() {
+            core.onMenuToggleSystemMonitor();
+          },
+        },
         {
           label: _("menu-view-layout-show-audioplayer"),
           id: "audio-player",
