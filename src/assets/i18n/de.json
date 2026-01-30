@@ -3,7 +3,7 @@
     "authors": [
       "trzyglow"
     ],
-    "last-updated": "2026-01-27",
+    "last-updated": "2026-01-30",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.15.0",
     "pre-release": "false",
@@ -83,10 +83,10 @@
   "menu-view-layout-show-audioplayer": "Audioplayer",
   "menu-view-layout-show-battery": "Akkustand",
   "menu-view-layout-show-loading": "Ladeindikator",
-  "[NEEDS TRANSLATION]menu-view-layout-show-systemmonitor": "System Monitor",
-  "[NEEDS TRANSLATION]systemmonitor-memory": "Memory",
-  "[NEEDS TRANSLATION]systemmonitor-memory-total": "Total",
-  "[NEEDS TRANSLATION]systemmonitor-memory-used": "Used",
+  "menu-view-layout-show-systemmonitor": "Systemmonitor",
+  "systemmonitor-memory": "Arbeitsspeicher",
+  "systemmonitor-memory-total": "Gesamt",
+  "systemmonitor-memory-used": "Verwendet",
   "menu-tools": "Werkzeuge",
   "menu-tools-files": "Dateien",
   "menu-tools-convert": "Konvertieren",
