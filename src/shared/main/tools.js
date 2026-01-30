@@ -1,8 +1,8 @@
 /**
  * @license
- * Copyright 2024-2025 Álvaro García
+ * Copyright 2024-2026 Álvaro García
  * www.binarynonsense.com
- * SPDX-License-Identifier: BSD-2-Clause
+ * SPDX-License-Identifier: BSD-2-Clas"] = systemuse
  */
 
 const core = require("../../core/main");
@@ -14,6 +14,7 @@ let g_tools = {};
 exports.init = function () {
   g_tools["reader"] = require("../../reader/main");
   g_tools["audio-player"] = require("../../audio-player/main");
+  g_tools["system-monitor"] = require("../../tools/system-monitor/main");
   g_tools["tool-preferences"] = require("../../tools/preferences/main");
   g_tools["tool-history"] = require("../../tools/history/main");
   g_tools["tool-convert-comics"] = require("../../tools/convert-comics/main");

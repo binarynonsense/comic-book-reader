@@ -143,6 +143,11 @@ function onIpcFromMain(event, args) {
             "ap-layout-top-left ap-hidden ap-zindex-reader";
           document.body.appendChild(audioplayerDiv);
 
+          const systemMonitorDiv = document.createElement("div");
+          systemMonitorDiv.id = "system-monitor-container";
+          systemMonitorDiv.classList = "sm-hidden";
+          document.body.appendChild(systemMonitorDiv);
+
           const modalsDiv = document.createElement("div");
           modalsDiv.id = "modals";
           document.body.appendChild(modalsDiv);
@@ -199,7 +204,7 @@ function onIpcFromMain(event, args) {
             .addEventListener("click", (event) => {
               reader.sendIpcToMain(
                 "open-url-in-browser",
-                "http://www.binarynonsense.com"
+                "http://www.binarynonsense.com",
               );
             });
         }
@@ -231,7 +236,7 @@ function onIpcFromMain(event, args) {
             () => {
               reader.sendIpcToMain("open-path-in-browser", args[4]);
             },
-            args[5]
+            args[5],
           );
         }
         break;
@@ -241,7 +246,7 @@ function onIpcFromMain(event, args) {
           toasts.show(args[2], 5000, () => {
             reader.sendIpcToMain(
               "open-url-in-browser",
-              "https://github.com/binarynonsense/comic-book-reader/releases/latest"
+              "https://github.com/binarynonsense/comic-book-reader/releases/latest",
             );
           });
         }
@@ -255,7 +260,7 @@ function onIpcFromMain(event, args) {
             () => {
               reader.sendIpcToMain("open-url-in-browser", args[4]);
             },
-            args[5]
+            args[5],
           );
         }
         break;
@@ -268,7 +273,7 @@ function onIpcFromMain(event, args) {
             () => {
               sendIpcToMain(...args[4]);
             },
-            args[5]
+            args[5],
           );
         }
         break;
@@ -357,7 +362,7 @@ async function showModalCheckUpdates(currentVersion, texts) {
   try {
     const response = await axios.get(
       `https://api.github.com/repos/binarynonsense/comic-book-reader/releases/latest`,
-      { timeout: 15000 }
+      { timeout: 15000 },
     );
     let latestVersion = response.data.tag_name;
     if (!latestVersion) {
@@ -395,7 +400,7 @@ async function showModalCheckUpdates(currentVersion, texts) {
               modalClosed();
               reader.sendIpcToMain(
                 "open-url-in-browser",
-                "https://github.com/binarynonsense/comic-book-reader/releases/latest"
+                "https://github.com/binarynonsense/comic-book-reader/releases/latest",
               );
             },
           },
@@ -558,7 +563,7 @@ function initTitleBarObserver() {
                   keybinding.textContent = getFormatedAccText("toggleClock");
                 } else if (keybinding.textContent === "acc-battery") {
                   keybinding.textContent = getFormatedAccText(
-                    "toggleBatteryStatus"
+                    "toggleBatteryStatus",
                   );
                 }
                 ////
@@ -588,7 +593,7 @@ function initTitleBarObserver() {
                     node.style.right = `${node.parentNode.offsetWidth}px`;
                     if (
                       node.parentNode.parentNode.parentNode.classList.contains(
-                        "cet-action-item"
+                        "cet-action-item",
                       )
                     ) {
                       // third level submenu

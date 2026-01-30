@@ -42,6 +42,7 @@ const g_defaultSettings = {
   showPageNumber: true,
   showClock: false,
   showAudioPlayer: false,
+  showSystemMonitor: false,
   showBattery: false,
   showLoadingIndicator: true,
 
@@ -352,6 +353,9 @@ function sanitize() {
   }
   if (typeof g_settings.showAudioPlayer !== "boolean") {
     g_settings.showAudioPlayer = g_defaultSettings.showAudioPlayer;
+  }
+  if (typeof g_settings.showSystemMonitor !== "boolean") {
+    g_settings.showSystemMonitor = g_defaultSettings.showSystemMonitor;
   }
   if (typeof g_settings.showBattery !== "boolean") {
     g_settings.showBattery = g_defaultSettings.showBattery;

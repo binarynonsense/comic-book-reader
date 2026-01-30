@@ -722,6 +722,16 @@ function getNormalMenu(settings, history) {
           type: "separator",
         },
         {
+          label: _("menu-view-layout-show-systemmonitor"),
+          id: "system-monitor",
+          type: "checkbox",
+          checked: settings.showSystemMonitor,
+          // accelerator: "acc-audio-player",
+          click() {
+            core.onMenuToggleSystemMonitor();
+          },
+        },
+        {
           label: _("menu-view-layout-show-audioplayer"),
           id: "audio-player",
           type: "checkbox",

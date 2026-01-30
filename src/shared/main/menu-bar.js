@@ -33,13 +33,13 @@ function rebuild() {
     settings.get(),
     history.getRecent(),
     core.isToolOpen(),
-    core.getCurrentToolLocalizedName()
+    core.getCurrentToolLocalizedName(),
   );
   const themeData = themes.getData();
   core.sendIpcToPreload(
     "update-menubar",
     themeData["--titlebar-bg-color"],
-    themeData["--titlebar-focused-bg-color"]
+    themeData["--titlebar-focused-bg-color"],
   );
 }
 exports.rebuild = rebuild;
@@ -92,6 +92,10 @@ exports.setLoadingIndicator = function (isChecked) {
 
 exports.setAudioPlayer = function (isChecked) {
   checkItem(getItem("audio-player"), isChecked);
+};
+
+exports.setSystemMonitor = function (isChecked) {
+  checkItem(getItem("systemMonitor"), isChecked);
 };
 
 exports.setPageRotation = function (value) {
@@ -158,7 +162,7 @@ exports.setComicBookOpened = setComicBookOpened = function (isEnabled) {
   enableItem(getItem("close-file"), isEnabled);
   enableItemRecursive(
     getItem("view-rotation"),
-    isEnabled && settings.getValue("page_mode") === 0
+    isEnabled && settings.getValue("page_mode") === 0,
   );
   enableItemRecursive(getItem("view-page"), isEnabled);
   enableItemRecursive(getItem("view-zoom"), isEnabled);

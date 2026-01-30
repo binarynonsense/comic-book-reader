@@ -1,12 +1,13 @@
 /**
  * @license
- * Copyright 2024-2025 Álvaro García
+ * Copyright 2024-2026 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
 import * as reader from "../../reader/renderer.js";
 import * as audioPlayer from "../../audio-player/renderer.js";
+import * as systemMonitor from "../../tools/system-monitor/renderer.js";
 import * as toolPreferences from "../../tools/preferences/renderer.js";
 import * as toolHistory from "../../tools/history/renderer.js";
 import * as toolConvertComics from "../../tools/convert-comics/renderer.js";
@@ -36,6 +37,7 @@ export function init() {
   g_tools = {};
   g_tools["reader"] = reader;
   g_tools["audio-player"] = audioPlayer;
+  g_tools["system-monitor"] = systemMonitor;
   g_tools["tool-preferences"] = toolPreferences;
   g_tools["tool-history"] = toolHistory;
   g_tools["tool-convert-comics"] = toolConvertComics;

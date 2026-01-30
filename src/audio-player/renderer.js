@@ -311,7 +311,7 @@ function updatePlaylistInfo() {
       var filenameextension = file.url.replace(/^.*[\\\/]/, "");
       var filename = filenameextension.substring(
         0,
-        filenameextension.lastIndexOf(".")
+        filenameextension.lastIndexOf("."),
       );
       //var ext = filenameextension.split(".").pop();
       if (!filename || filename == "") filename = file.url;
@@ -761,7 +761,7 @@ function initPlayer(settings, playlist) {
   });
   //////
   g_player.divPlaylistTracks = document.getElementById(
-    "ap-div-playlist-tracks"
+    "ap-div-playlist-tracks",
   );
 
   g_player.buttonShuffleOn = document.getElementById("ap-button-shuffle-on");
@@ -806,7 +806,7 @@ function initPlayer(settings, playlist) {
       g_player.sliderTime.value = 0;
     } else if (isNaN(this.duration) || !isFinite(this.duration)) {
       g_player.textTime.innerHTML = getFormatedTimeFromSeconds(
-        this.currentTime
+        this.currentTime,
       );
       g_player.sliderTime.value = 0;
     } else {

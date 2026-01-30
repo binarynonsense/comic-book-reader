@@ -32,6 +32,7 @@ const tools = require("../shared/main/tools");
 const { _ } = require("../shared/main/i18n");
 
 const reader = require("../reader/main");
+const systemMonitor = require("../tools/system-monitor/main");
 
 let g_mainWindow;
 let g_isLoaded = false;
@@ -274,7 +275,6 @@ if (!gotTheLock) {
       themes.init();
       sendIpcToCoreRenderer("update-css-properties", themes.getData());
       menuBar.init(g_mainWindow);
-      startSystemMonitorWorker();
       // add extra divs after menuBar init, so its container is already created
       sendIpcToCoreRenderer("append-structure-divs");
       onLanguageChanged();
@@ -358,6 +358,8 @@ if (!gotTheLock) {
           true,
         );
       }
+      systemMonitor.init(g_mainWindow, "system-monitor-container");
+      showSystemMonitor(settings.getValue("showSystemMonitor"));
       startUpCheckForUpdates();
       // show window
       g_mainWindow.center();
@@ -495,12 +497,12 @@ if (!gotTheLock) {
   //////////////////////////////////////////////////////////////////////////////
 
   function sendIpcToRenderer(...args) {
-    g_mainWindow.webContents.send("renderer", args);
+    g_mainWindow?.webContents?.send("renderer", args);
   }
   exports.sendIpcToRenderer = sendIpcToRenderer;
 
   function sendIpcToPreload(...args) {
-    g_mainWindow.webContents.send("preload", args);
+    g_mainWindow?.webContents?.send("preload", args);
   }
   exports.sendIpcToPreload = sendIpcToPreload;
 
@@ -599,6 +601,7 @@ if (!gotTheLock) {
   exports.restartApp = restartApp;
 
   function cleanUpOnQuit() {
+    systemMonitor.quit();
     if (g_updatesWorker !== undefined) {
       g_updatesWorker.kill();
       g_updatesWorker = undefined;
@@ -749,39 +752,13 @@ if (!gotTheLock) {
     }
   }
 
-  let g_systemMonitorWorker = undefined;
-  function startSystemMonitorWorker() {
-    return;
-    // TODO: reenable when UI and settings are ready
-    try {
-      const { Worker } = require("node:worker_threads");
-      const workerPath = path.join(__dirname, "worker-system-monitor.js");
-
-      log.debug("starting system monitor");
-
-      const worker = new Worker(workerPath);
-      worker.on("message", (stats) => {
-        // TODO: send stats to renderer
-        // log.test(stats);
-      });
-      worker.on("error", (error) => {
-        log.error("[Core] system monitor worker error:", error);
-      });
-      worker.on("exit", (code) => {
-        if (g_systemMonitorWorker === worker) {
-          g_systemMonitorWorker = undefined;
-        }
-        if (code !== 0) {
-          log.error(`[Core] worker stopped with exit code ${code}`);
-          // restart? setTimeout(startResourceWorker, 5000);
-        }
-      });
-
-      g_systemMonitorWorker = worker;
-    } catch (error) {
-      log.debug("couldn't start the system monitor");
-    }
+  function showSystemMonitor(isVisible, updateMenuBar) {
+    settings.setValue("showSystemMonitor", isVisible);
+    systemMonitor.open(isVisible);
+    menuBar.setSystemMonitor(isVisible);
+    if (updateMenuBar) sendIpcToPreload("update-menubar");
   }
+  exports.showSystemMonitor = showSystemMonitor;
 
   function showToast(text, duration) {
     sendIpcToCoreRenderer("show-toast", text, duration);
@@ -828,6 +805,12 @@ if (!gotTheLock) {
     sendIpcToPreload("update-menubar");
   }
   exports.onMenuToggleAudioPlayer = onMenuToggleAudioPlayer;
+
+  function onMenuToggleSystemMonitor() {
+    showSystemMonitor(!settings.getValue("showSystemMonitor"));
+    sendIpcToPreload("update-menubar");
+  }
+  exports.onMenuToggleSystemMonitor = onMenuToggleSystemMonitor;
 
   exports.onMenuToggleFullScreen = function () {
     toggleFullScreen();

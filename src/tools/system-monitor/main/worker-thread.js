@@ -13,6 +13,12 @@ let prevCpuStats = { idle: 0, total: 0 };
 let smoothedCpu = 0;
 let isFirstRun = true;
 
+parentPort.on("message", (message) => {
+  if (message === "shutdown") {
+    process.exit(0);
+  }
+});
+
 setInterval(() => {
   const stats = getSystemStats();
   if (parentPort) {
@@ -110,9 +116,9 @@ function getSystemStats() {
     }
 
     return {
-      cpu: smoothedCpu, //.toFixed(1),
-      memoryUsed: usedGiB, //.toFixed(1),
-      memoryTotal: totalGiB, //.toFixed(1),
+      cpu: smoothedCpu,
+      memoryUsed: usedGiB,
+      memoryTotal: totalGiB,
       mode: !useFallback ? "proc" : "generic",
     };
   } catch (error) {

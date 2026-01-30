@@ -1,0 +1,113 @@
+#system-monitor-container {
+  display: flex;
+  align-items: flex-start;
+  justify-items: center;
+  flex-direction: column;
+  direction: ltr;
+  z-index: 1000;
+
+  position: fixed;
+  top: calc(var(--menubar-height) + 10px);
+  /* left: 50%;
+  transform: translateX(-50%); */
+  right: 10px;
+}
+
+#sm-frame {
+  border: 0;
+  user-select: none;
+
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+}
+
+.sm-hidden {
+  display: none !important;
+}
+
+/* ------ circular progress widgets ------ */
+
+.sm-circular-bar {
+  --sm-size: 80px;
+  --sm-thickness: 10px;
+  --sm-current-size: var(--sm-size, 100px);
+  --sm-current-thickness: var(--sm-thickness, 10px);
+
+  position: relative;
+  width: var(--sm-current-size);
+  height: var(--sm-current-size);
+  border-radius: 50%;
+  display: inline-block;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.sm-bar-fill {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 180deg,
+    var(--systemmonitor-circle-bar-color) 0%,
+    var(--systemmonitor-circle-bar-color) calc(var(--sm-progress, 0) * 1%),
+    var(--systemmonitor-circle-bar-bg-color) calc(var(--sm-progress, 0) * 1%),
+    var(--systemmonitor-circle-bar-bg-color) 100%
+  );
+  transition: background 0.3s ease;
+}
+
+.sm-center-mask {
+  position: absolute;
+  inset: var(--sm-current-thickness);
+  background: var(--systemmonitor-circle-center-color);
+  border-radius: 50%;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+
+  /* overflow: hidden; */
+}
+
+.sm-label {
+  margin: 0;
+  padding: 0;
+  line-height: 1;
+  font-family: sans-serif;
+  pointer-events: none;
+  z-index: 1;
+  text-shadow:
+    1px 1px 3px rgb(0 0 0 / var(--systemmonitor-label-shadow-opacity)),
+    -1px -1px 3px rgb(0 0 0 / var(--systemmonitor-label-shadow-opacity));
+  /* to make span text fit to width using Container Queries */
+  container-type: inline-size;
+  width: 50px;
+  overflow: hidden;
+}
+
+.sm-label span {
+  display: block;
+  width: 100%;
+  text-align: center;
+  white-space: nowrap;
+  display: inline-block;
+  /* to make span text fit to width */
+  /* 12cqi = 12% of container width. clamp() ensures it doesn't get too tiny or too huge. */
+  font-size: clamp(8px, 15cqi, 18px);
+}
+
+.sm-label .sm-name {
+  font-size: 10px;
+  color: var(--systemmonitor-label-name-text-color);
+}
+
+.sm-label .sm-value {
+  font-size: 15px;
+  font-weight: bold;
+  color: var(--systemmonitor-label-value-text-color);
+}
