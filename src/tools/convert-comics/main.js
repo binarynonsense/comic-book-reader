@@ -651,7 +651,7 @@ function startFile(inputFileIndex, totalFilesNum) {
 
     killWorker();
     if (g_worker === undefined) {
-      log.editor("[CC] starting worker");
+      log.editor("[CC] starting worker (extract)");
       // strip null form env to avoid a weird fix a user
       const safeEnv = Object.fromEntries(
         Object.entries(process.env).filter(
@@ -900,7 +900,7 @@ function stopError(error, errorMessage, nameAsError = true) {
       } else {
         uiMsg = (errorMessage ? errorMessage + "\n" : "") + "Unknown error";
         log.error(uiMsg);
-        console.log(error);
+        log.error(error);
       }
     }
   } else {
@@ -1401,26 +1401,41 @@ async function createFilesFromImages(
     );
     killWorker();
     if (g_worker === undefined) {
-      g_worker = utilityProcess.fork(
+      log.editor("[CC] starting worker (create)");
+      const worker = utilityProcess.fork(
         path.join(__dirname, "../../shared/main/tools-worker.js"),
       );
-      g_worker.on("message", (message) => {
-        killWorker();
-        if (message.success) {
-          log.debug("file/s created in: " + message.times);
-          temp.deleteSubFolder(g_tempSubFolderPath);
-          g_tempSubFolderPath = undefined;
-          message.files.forEach((element) => {
-            updateModalLogText(element);
-          });
-          updateModalLogText("");
-          sendIpcToRenderer("file-finished-ok");
+      worker.on("message", (message) => {
+        if (message.type === "testLog") {
+          log.test(message.log);
+          return;
+        } else if (message.type === "editorLog") {
+          log.editor("[CC] " + message.log);
+          return;
+        } else if (message.type === "extraction-progress") {
+          updateModalLogText(
+            `${_("tool-shared-modal-log-extracting-pages")}: ${message.current} / ${message.total}`,
+          );
           return;
         } else {
-          stopError(message.error);
-          return;
+          killWorker();
+          if (message.success) {
+            log.debug("file/s created in: " + message.times);
+            temp.deleteSubFolder(g_tempSubFolderPath);
+            g_tempSubFolderPath = undefined;
+            message.files.forEach((element) => {
+              updateModalLogText(element);
+            });
+            updateModalLogText("");
+            sendIpcToRenderer("file-finished-ok");
+            return;
+          } else {
+            stopError(message.error);
+            return;
+          }
         }
       });
+      g_worker = worker;
     }
     let extraData = undefined;
     if (g_uiSelectedOptions.outputFormat === FileExtension.EPUB) {
