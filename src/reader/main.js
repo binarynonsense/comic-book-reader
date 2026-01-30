@@ -322,7 +322,7 @@ function initOnIpcCallbacks() {
   // pdfjs ////////////////////////////////////////////////////////////////////
 
   on("pdf-loaded", (filePath, pageIndex, numPages, metadata) => {
-    log.editor("loaded PDF using pdfjs");
+    log.editor("loading PDF using pdfjs");
     g_fileData.state = FileDataState.LOADED; // will change inmediately to loading
     // TODO double check loaded is the one loading?
     // TODO change only if correct
@@ -976,50 +976,37 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
     if (fileType !== undefined) {
       fileExtension = "." + fileType;
     }
-    if (
-      fileExtension === "." + FileExtension.PDF &&
-      settings.getValue("pdfReadingLibrary") === "pdfium"
-    ) {
-      log.editor("loaded PDF using pdfium");
-      if (g_fileData.state !== FileDataState.LOADING) {
-        cleanUpFileData();
-        g_fileData.type = FileDataType.PDF;
-        g_fileData.state = FileDataState.LOADING;
-        g_fileData.pageIndex = pageIndex;
-        g_fileData.path = filePath;
+    if (fileExtension === "." + FileExtension.PDF) {
+      if (settings.getValue("pdfReadingLibrary") === "pdfium") {
+        log.editor("loading PDF using pdfium");
+        if (g_fileData.state !== FileDataState.LOADING) {
+          cleanUpFileData();
+          g_fileData.type = FileDataType.PDF;
+          g_fileData.state = FileDataState.LOADING;
+          g_fileData.pageIndex = pageIndex;
+          g_fileData.path = filePath;
+        }
+        startPageWorker();
+        g_fileData.password = password;
+        sendToPageWorker({
+          command: "open",
+          fileType: g_fileData.type,
+          filePath: g_fileData.path,
+          pageIndex,
+          password,
+        });
+      } else {
+        // pdfjs
+        if (g_fileData.state !== FileDataState.LOADING) {
+          cleanUpFileData();
+          g_fileData.type = FileDataType.PDF;
+          g_fileData.state = FileDataState.LOADING;
+          g_fileData.pageIndex = pageIndex;
+          g_fileData.path = filePath;
+        }
+        g_fileData.password = password;
+        sendIpcToRenderer("load-pdf", filePath, pageIndex, password);
       }
-      if (!startPageWorker()) {
-        cleanUpFileData();
-        sendIpcToRenderer(
-          "show-modal-info",
-          _("ui-modal-title-fileerror"),
-          _("ui-modal-info-couldntopen-pdf"),
-          _("ui-modal-prompt-button-ok"),
-        );
-        return;
-      }
-      g_fileData.password = password;
-      sendToPageWorker({
-        command: "open",
-        fileType: g_fileData.type,
-        filePath: g_fileData.path,
-        pageIndex,
-        password,
-      });
-    } else if (
-      fileExtension === "." + FileExtension.PDF &&
-      settings.getValue("pdfReadingLibrary") !== "pdfium"
-    ) {
-      if (g_fileData.state !== FileDataState.LOADING) {
-        cleanUpFileData();
-        g_fileData.type = FileDataType.PDF;
-        g_fileData.state = FileDataState.LOADING;
-        g_fileData.pageIndex = pageIndex; // ref: file-type -> https://www.npmjs.com/package/file-type
-        // e.g. {ext: 'png', mime: 'image/png'}
-        g_fileData.path = filePath;
-      }
-      g_fileData.password = password;
-      sendIpcToRenderer("load-pdf", filePath, pageIndex, password);
     } else if (fileExtension === "." + FileExtension.EPUB) {
       let pagesPaths = await fileFormats.getEpubImageIdsList(filePath);
       if (pagesPaths !== undefined && pagesPaths.length > 0) {
@@ -1552,6 +1539,13 @@ function goToPage(pageIndex, scrollBarPos = 0) {
     pageIndexes.forEach((index) => {
       entryNames.push(g_fileData.pagesPaths[index]);
     });
+
+    // keep killing the worker for the old methods, should be slower
+    // but from my initial test doesn't seem significant, so I'll keep
+    // doing to not break anything (it may be helping to avoid memory
+    // leaks)
+    killPageWorker();
+    startPageWorker();
 
     sendToPageWorker({
       command: "extract",
@@ -2305,6 +2299,7 @@ let g_pageWorker;
 function startPageWorker() {
   try {
     if (g_pageWorker === undefined) {
+      log.editor("start page worker");
       // strip null form env to avoid a weird fix a user
       const safeEnv = Object.fromEntries(
         Object.entries(process.env).filter(
@@ -2325,102 +2320,121 @@ function startPageWorker() {
         if (message.type === "testLog") {
           log.test(message.log);
           return;
-        } else if (message.type === "extractResult") {
-          log.debug(
-            `page load time: ${timers.stop("pagesExtraction").toFixed(2)}s`,
-          );
-          if (message.success === true) {
-            sendIpcToRenderer(
-              "render-img-page",
-              message.images, // buffers and mimes
-              g_fileData.pageRotation,
-              message.scrollBarPos,
-            );
-            temp.deleteSubFolder(message.tempSubFolderPath);
-            return;
-          } else if (message.success === false) {
-            if (message?.error?.toString() === "password required") {
-              log.warning("password required");
-              sendIpcToRenderer(
-                "show-modal-prompt-password",
-                _("ui-modal-prompt-enterpassword"),
-                path.basename(g_fileData.path),
-                _("ui-modal-prompt-button-ok"),
-                _("ui-modal-prompt-button-cancel"),
-              );
-              return;
-            } else {
-              // TODO: handle other errors
-              log.error("unhandled worker error");
-              log.error(message.error);
-              temp.deleteSubFolder(message.tempSubFolderPath);
-              closeCurrentFile();
-              sendIpcToRenderer(
-                "show-modal-info",
-                _("tool-shared-modal-title-error"),
-                _("ui-modal-info-couldntopen-pdf"),
-                _("ui-modal-prompt-button-ok"),
-              );
-              return;
-            }
+        } else {
+          if (
+            !(
+              g_fileData.type === FileDataType.PDF &&
+              settings.getValue("pdfReadingLibrary") === "pdfium"
+            )
+          ) {
+            // keep killing the worker for the old methods, should be slower
+            // but from my initial test doesn't seem significant, so I'll keep
+            // doing to not break anything (it may be helping to avoid memory
+            // leaks)
+            killPageWorker();
           }
-        } else if (message.type === "openResult") {
-          if (message.result.success) {
-            const pageIndex = message.pageIndex;
-            //
-            g_fileData.state = FileDataState.LOADED;
-            g_fileData.type = FileDataType.PDF;
-            g_fileData.path = message.filePath;
-            g_fileData.name = path.basename(g_fileData.path);
-            g_fileData.pagesPaths = [];
-            g_fileData.numPages = message.result.numPages;
-            if (pageIndex < 0 || pageIndex >= g_fileData.numPages)
-              pageIndex = 0;
-            g_fileData.pageIndex = pageIndex;
-            // g_fileData.metadata = metadata;
-            updateMenuAndToolbarItems();
-            setPageRotation(0, false);
-            setInitialZoom(g_fileData.path);
-            setInitialPageMode(g_fileData.path);
-            addCurrentToHistory();
-            goToPage(pageIndex);
-            renderPageInfo();
-            renderTitle();
-          } else {
-            if (message.result.error === "password required") {
-              if (g_fileData.state !== FileDataState.LOADING) {
-                cleanUpFileData();
-                g_fileData.state = FileDataState.LOADING;
-                g_fileData.type = FileDataType.PDF;
-                g_fileData.path = message.filePath;
-                g_fileData.pageIndex = message.pageIndex;
-              }
+          if (message.type === "extractResult") {
+            log.debug(
+              `page load time: ${timers.stop("pagesExtraction").toFixed(2)}s`,
+            );
+            if (message.success === true) {
               sendIpcToRenderer(
-                "show-modal-prompt-password",
-                _("ui-modal-prompt-enterpassword"),
-                path.basename(g_fileData.path),
-                _("ui-modal-prompt-button-ok"),
-                _("ui-modal-prompt-button-cancel"),
+                "render-img-page",
+                message.images, // buffers and mimes
+                g_fileData.pageRotation,
+                message.scrollBarPos,
               );
-            } else {
-              log.error(message.result.error);
-              closeCurrentFile();
-              if (message.result.error === "over2gb") {
+              temp.deleteSubFolder(message.tempSubFolderPath);
+              return;
+            } else if (message.success === false) {
+              if (message?.error?.toString() === "password required") {
+                log.warning("password required");
                 sendIpcToRenderer(
-                  "show-modal-info",
-                  _("ui-modal-title-fileerror"),
-                  _("ui-modal-info-couldntopen-pdf") +
-                    "\n" +
-                    _("ui-modal-info-invalidsize-cap-b", "2GB"),
+                  "show-modal-prompt-password",
+                  _("ui-modal-prompt-enterpassword"),
+                  path.basename(g_fileData.path),
                   _("ui-modal-prompt-button-ok"),
+                  _("ui-modal-prompt-button-cancel"),
+                );
+                return;
+              } else {
+                // TODO: handle other errors
+                log.error("unhandled worker error");
+                log.error(message.error);
+                temp.deleteSubFolder(message.tempSubFolderPath);
+                if (g_fileData.type === FileDataType.PDF) {
+                  closeCurrentFile();
+                  sendIpcToRenderer(
+                    "show-modal-info",
+                    _("tool-shared-modal-title-error"),
+                    _("ui-modal-info-couldntopen-pdf"),
+                    _("ui-modal-prompt-button-ok"),
+                  );
+                }
+                return;
+              }
+            }
+          } else if (message.type === "openResult") {
+            if (message.result.success) {
+              const pageIndex = message.pageIndex;
+              //
+              g_fileData.state = FileDataState.LOADED;
+              g_fileData.type = FileDataType.PDF;
+              g_fileData.path = message.filePath;
+              g_fileData.name = path.basename(g_fileData.path);
+              g_fileData.pagesPaths = [];
+              g_fileData.numPages = message.result.numPages;
+              if (pageIndex < 0 || pageIndex >= g_fileData.numPages)
+                pageIndex = 0;
+              g_fileData.pageIndex = pageIndex;
+              // g_fileData.metadata = metadata;
+              updateMenuAndToolbarItems();
+              setPageRotation(0, false);
+              setInitialZoom(g_fileData.path);
+              setInitialPageMode(g_fileData.path);
+              addCurrentToHistory();
+              goToPage(pageIndex);
+              renderPageInfo();
+              renderTitle();
+            } else {
+              if (message.result.error === "password required") {
+                if (g_fileData.state !== FileDataState.LOADING) {
+                  cleanUpFileData();
+                  g_fileData.state = FileDataState.LOADING;
+                  g_fileData.type = FileDataType.PDF;
+                  g_fileData.path = message.filePath;
+                  g_fileData.pageIndex = message.pageIndex;
+                }
+                sendIpcToRenderer(
+                  "show-modal-prompt-password",
+                  _("ui-modal-prompt-enterpassword"),
+                  path.basename(g_fileData.path),
+                  _("ui-modal-prompt-button-ok"),
+                  _("ui-modal-prompt-button-cancel"),
                 );
               } else {
-                sendIpcToRenderer(
-                  "show-modal-info",
-                  _("ui-modal-title-fileerror"),
-                  _("ui-modal-info-couldntopen-pdf"),
-                  _("ui-modal-prompt-button-ok"),
-                );
+                log.error(message.result.error);
+                closeCurrentFile();
+                // TODO: shouldn't be PDF only?
+                // for now it's ok as other types don't use the worker
+                // to call "open"
+                if (message.result.error === "over2gb") {
+                  sendIpcToRenderer(
+                    "show-modal-info",
+                    _("ui-modal-title-fileerror"),
+                    _("ui-modal-info-couldntopen-pdf") +
+                      "\n" +
+                      _("ui-modal-info-invalidsize-cap-b", "2GB"),
+                    _("ui-modal-prompt-button-ok"),
+                  );
+                } else {
+                  sendIpcToRenderer(
+                    "show-modal-info",
+                    _("ui-modal-title-fileerror"),
+                    _("ui-modal-info-couldntopen-pdf"),
+                    _("ui-modal-prompt-button-ok"),
+                  );
+                }
               }
             }
           }
@@ -2436,6 +2450,7 @@ function startPageWorker() {
 
 function killPageWorker() {
   if (g_pageWorker !== undefined) {
+    log.editor("kill page worker");
     g_pageWorker.kill();
     g_pageWorker = undefined;
   }
