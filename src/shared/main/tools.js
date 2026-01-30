@@ -13,7 +13,7 @@ let g_tools = {};
 
 exports.init = function () {
   g_tools["reader"] = require("../../reader/main");
-  g_tools["audio-player"] = require("../../audio-player/main");
+  g_tools["audio-player"] = require("../../tools/audio-player/main");
   g_tools["system-monitor"] = require("../../tools/system-monitor/main");
   g_tools["tool-preferences"] = require("../../tools/preferences/main");
   g_tools["tool-history"] = require("../../tools/history/main");

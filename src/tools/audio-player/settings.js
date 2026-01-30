@@ -8,9 +8,9 @@
 const { app } = require("electron");
 const fs = require("node:fs");
 const path = require("node:path");
-const log = require("../shared/main/logger");
+const log = require("../../shared/main/logger");
 
-const { getConfigFolder } = require("../shared/main/app-utils");
+const { getConfigFolder } = require("../../shared/main/app-utils");
 
 let g_settings;
 let g_fileName = "acbr-player.cfg";

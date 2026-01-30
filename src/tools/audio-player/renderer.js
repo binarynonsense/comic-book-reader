@@ -8,8 +8,8 @@
 import {
   sendIpcToMain as coreSendIpcToMain,
   sendIpcToMainAndWait as coreSendIpcToMainAndWait,
-} from "../core/renderer.js";
-import * as modals from "../shared/renderer/modals.js";
+} from "../../core/renderer.js";
+import * as modals from "../../shared/renderer/modals.js";
 
 let g_settings;
 let g_player = {};

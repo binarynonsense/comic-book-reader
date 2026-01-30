@@ -22,7 +22,7 @@ const temp = require("../shared/main/temp");
 const utils = require("../shared/main/utils");
 const fileFormats = require("../shared/main/file-formats");
 const contextMenu = require("./menu-context");
-const audioPlayer = require("../audio-player/main");
+const audioPlayer = require("../tools/audio-player/main");
 const timers = require("../shared/main/timers");
 const tools = require("../shared/main/tools");
 const {

@@ -8,13 +8,13 @@
 const { app } = require("electron");
 const fs = require("node:fs");
 const path = require("node:path");
-const { FileExtension } = require("../shared/main/constants");
-const appUtils = require("../shared/main/app-utils");
-const core = require("../core/main");
-const reader = require("../reader/main");
+const { FileExtension } = require("../../shared/main/constants");
+const appUtils = require("../../shared/main/app-utils");
+const core = require("../../core/main");
+const reader = require("../../reader/main");
 const settings = require("./settings");
-const { _ } = require("../shared/main/i18n");
-const log = require("../shared/main/logger");
+const { _ } = require("../../shared/main/i18n");
+const log = require("../../shared/main/logger");
 
 let g_mainWindow;
 let g_parentElementId;
