@@ -1,7 +1,7 @@
 {
   "@metadata": {
     "authors": ["Álvaro"],
-    "last-updated": "2026-01-14",
+    "last-updated": "2026-01-30",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.15.0",
     "pre-release": "false",
@@ -81,6 +81,10 @@
   "menu-view-layout-show-audioplayer": "Audio Player",
   "menu-view-layout-show-battery": "Battery Status",
   "menu-view-layout-show-loading": "Loading Indicator",
+  "menu-view-layout-show-systemmonitor": "System Monitor",
+  "systemmonitor-memory": "Memory",
+  "systemmonitor-memory-total": "Total",
+  "systemmonitor-memory-used": "Used",
   "menu-tools": "Tools",
   "menu-tools-files": "Files",
   "menu-tools-convert": "Convert",
