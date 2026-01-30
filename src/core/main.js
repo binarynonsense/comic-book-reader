@@ -36,7 +36,7 @@ const reader = require("../reader/main");
 let g_mainWindow;
 let g_isLoaded = false;
 let g_launchInfo = {};
-let g_workerUpdates;
+let g_updatesWorker;
 
 //////////////////////////////////////////////////////////////////////////////
 // LAUNCH INFO ///////////////////////////////////////////////////////////////
@@ -274,6 +274,7 @@ if (!gotTheLock) {
       themes.init();
       sendIpcToCoreRenderer("update-css-properties", themes.getData());
       menuBar.init(g_mainWindow);
+      startSystemMonitorWorker();
       // add extra divs after menuBar init, so its container is already created
       sendIpcToCoreRenderer("append-structure-divs");
       onLanguageChanged();
@@ -598,9 +599,9 @@ if (!gotTheLock) {
   exports.restartApp = restartApp;
 
   function cleanUpOnQuit() {
-    if (g_workerUpdates !== undefined) {
-      g_workerUpdates.kill();
-      g_workerUpdates = undefined;
+    if (g_updatesWorker !== undefined) {
+      g_updatesWorker.kill();
+      g_updatesWorker = undefined;
     }
     if (tools.getCurrentToolName() !== "reader")
       tools.getCurrentTool().onQuit?.();
@@ -708,13 +709,13 @@ if (!gotTheLock) {
 
       if (doCheck) {
         log.debug("checking for updates");
-        if (g_workerUpdates === undefined) {
-          g_workerUpdates = utilityProcess.fork(
+        if (g_updatesWorker === undefined) {
+          g_updatesWorker = utilityProcess.fork(
             path.join(__dirname, "worker-updates.js"),
           );
-          g_workerUpdates.on("message", (message) => {
+          g_updatesWorker.on("message", (message) => {
             const newVersion = message[1];
-            g_workerUpdates.kill(); // kill it after one use
+            g_updatesWorker.kill(); // kill it after one use
             if (message[0] === true) {
               log.debug("update available: " + newVersion);
               if (
@@ -741,10 +742,44 @@ if (!gotTheLock) {
           });
         }
         // send to worker
-        g_workerUpdates.postMessage([g_launchInfo, app.getVersion()]);
+        g_updatesWorker.postMessage([g_launchInfo, app.getVersion()]);
       }
     } catch (error) {
       log.editorError(error);
+    }
+  }
+
+  let g_systemMonitorWorker = undefined;
+  function startSystemMonitorWorker() {
+    return;
+    // TODO: reenable when UI and settings are ready
+    try {
+      const { Worker } = require("node:worker_threads");
+      const workerPath = path.join(__dirname, "worker-system-monitor.js");
+
+      log.debug("starting system monitor");
+
+      const worker = new Worker(workerPath);
+      worker.on("message", (stats) => {
+        // TODO: send stats to renderer
+        // log.test(stats);
+      });
+      worker.on("error", (error) => {
+        log.error("[Core] system monitor worker error:", error);
+      });
+      worker.on("exit", (code) => {
+        if (g_systemMonitorWorker === worker) {
+          g_systemMonitorWorker = undefined;
+        }
+        if (code !== 0) {
+          log.error(`[Core] worker stopped with exit code ${code}`);
+          // restart? setTimeout(startResourceWorker, 5000);
+        }
+      });
+
+      g_systemMonitorWorker = worker;
+    } catch (error) {
+      log.debug("couldn't start the system monitor");
     }
   }
 
