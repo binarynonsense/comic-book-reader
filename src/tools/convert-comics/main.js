@@ -110,10 +110,8 @@ exports.close = function () {
     g_workerWindow = undefined;
   }
 
-  if (g_worker !== undefined) {
-    g_worker.kill();
-    g_worker = undefined;
-  }
+  killWorker();
+
   temp.deleteSubFolder(g_tempSubFolderPath);
   g_tempSubFolderPath = undefined;
   temp.deleteSubFolder(g_creationTempSubFolderPath);
@@ -342,13 +340,17 @@ function initOnIpcCallbacks() {
   /////////////////////////
 
   on("cancel", () => {
+    log.editor("[CC] cancel received");
     if (!g_cancel) {
       g_cancel = true;
       if (g_workerWindow) {
         g_workerWindow.webContents.send("cancel");
       }
       if (g_worker) {
+        log.editor("[CC] sending cancel to worker");
         g_worker.postMessage([core.getLaunchInfo(), "cancel"]);
+      } else {
+        log.editor("[CC] can't send cancel to worker, no g_worker");
       }
     }
   });
@@ -647,19 +649,16 @@ function startFile(inputFileIndex, totalFilesNum) {
     if (core.isDev() && inputFileType === FileDataType.PDF)
       updateModalLogText("[DEV] pdfium");
 
-    if (g_worker !== undefined) {
-      // kill it after one use
-      g_worker?.kill();
-      g_worker = undefined;
-    }
+    killWorker();
     if (g_worker === undefined) {
+      log.editor("[CC] starting worker");
       // strip null form env to avoid a weird fix a user
       const safeEnv = Object.fromEntries(
         Object.entries(process.env).filter(
           ([_, value]) => typeof value === "string" && !value.includes("\0"),
         ),
       );
-      g_worker = utilityProcess.fork(
+      const worker = utilityProcess.fork(
         path.join(__dirname, "../../shared/main/tools-worker.js"),
         {
           env: safeEnv,
@@ -669,15 +668,21 @@ function startFile(inputFileIndex, totalFilesNum) {
           execArgv: ["--js-flags=--expose-gc", "--max-old-space-size=3072"],
         },
       );
-      g_worker.on("message", (message) => {
-        if (message.type === "extraction-progress") {
+      worker.on("message", (message) => {
+        if (message.type === "testLog") {
+          log.test(message.log);
+          return;
+        } else if (message.type === "editorLog") {
+          log.editor("[CC] " + message.log);
+          return;
+        } else if (message.type === "extraction-progress") {
           updateModalLogText(
             `${_("tool-shared-modal-log-extracting-pages")}: ${message.current} / ${message.total}`,
           );
           return;
         } else {
           // success or failure
-          g_worker.kill(); // kill it after one use
+          killWorker();
           if (message.success) {
             log.debug("file extracted in: " + message.time);
             if (g_cancel === true) {
@@ -706,24 +711,29 @@ function startFile(inputFileIndex, totalFilesNum) {
           }
         }
       });
+      worker.on("error", (error) => {
+        log.editor(`[CC] worker error: ${error}`);
+      });
+      worker.on("exit", (code) => {
+        if (g_worker === worker) g_worker = undefined;
+        if (code !== 0) {
+          log.editor(`[CC] worker crashed with code ${code}`);
+          stopError(undefined, `worker crashed with code ${code}`);
+        }
+      });
+      worker.postMessage([
+        core.getLaunchInfo(),
+        "extract",
+        inputFilePath,
+        inputFileType,
+        g_mode === ToolMode.CONVERT
+          ? g_tempSubFolderPath
+          : g_creationTempSubFolderPath,
+        g_inputPassword,
+        { pdfExtractionMethod: g_uiSelectedOptions.inputPdfExtractionMethod },
+      ]);
+      g_worker = worker;
     }
-    g_worker.on("exit", (code) => {
-      g_worker = null;
-      if (code !== 0) {
-        stopError(undefined, `worker crashed with code ${code}`);
-      }
-    });
-    g_worker.postMessage([
-      core.getLaunchInfo(),
-      "extract",
-      inputFilePath,
-      inputFileType,
-      g_mode === ToolMode.CONVERT
-        ? g_tempSubFolderPath
-        : g_creationTempSubFolderPath,
-      g_inputPassword,
-      { pdfExtractionMethod: g_uiSelectedOptions.inputPdfExtractionMethod },
-    ]);
   }
   // pdfjs
   else if (inputFileType === FileDataType.PDF) {
@@ -1320,7 +1330,7 @@ async function processImagesWithWorkers({
         checkForCompletion();
       });
       worker.on("exit", (code) => {
-        // log.editor(`worker #${i} exited with code: ${code}`);
+        // log.editor(`[CC] worker #${i} exited with code: ${code}`);
       });
       workers.push(worker);
       processNextImage(worker);
@@ -1389,17 +1399,13 @@ async function createFilesFromImages(
         ? _("tool-shared-modal-log-generating-new-files") + "..."
         : _("tool-shared-modal-log-generating-new-file") + "...",
     );
-    if (g_worker !== undefined) {
-      // kill it after one use
-      g_worker.kill();
-      g_worker = undefined;
-    }
+    killWorker();
     if (g_worker === undefined) {
       g_worker = utilityProcess.fork(
         path.join(__dirname, "../../shared/main/tools-worker.js"),
       );
       g_worker.on("message", (message) => {
-        g_worker?.kill(); // kill it after one use
+        killWorker();
         if (message.success) {
           log.debug("file/s created in: " + message.times);
           temp.deleteSubFolder(g_tempSubFolderPath);
@@ -1453,6 +1459,18 @@ async function createFilesFromImages(
     ]);
   } catch (error) {
     stopError(error);
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// WORKER /////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+function killWorker() {
+  if (g_worker !== undefined) {
+    log.editor("[CC] killing worker");
+    g_worker?.kill();
+    g_worker = undefined;
   }
 }
 

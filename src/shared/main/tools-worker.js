@@ -17,6 +17,10 @@ const { signal } = controller;
 
 process.parentPort.on("message", async (event) => {
   let message = event.data;
+  process.parentPort.postMessage({
+    type: "editorLog",
+    log: `[tools worker] message received: ${message[1]}`,
+  });
   if (message[1] === "extract") {
     extractImages(...message.slice(2));
   } else if (message[1] === "create") {

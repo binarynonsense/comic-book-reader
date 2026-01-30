@@ -89,10 +89,8 @@ exports.close = function () {
     g_workerWindow = undefined;
   }
 
-  if (g_worker !== undefined) {
-    g_worker.kill();
-    g_worker = undefined;
-  }
+  killWorker();
+
   temp.deleteSubFolder(g_tempSubFolderPath);
   g_tempSubFolderPath = undefined;
 };
@@ -260,7 +258,10 @@ function initOnIpcCallbacks() {
         g_workerWindow.webContents.send("cancel");
       }
       if (g_worker) {
+        log.editor("[EC] sending cancel to worker");
         g_worker.postMessage([core.getLaunchInfo(), "cancel"]);
+      } else {
+        log.editor("[EC] can't send cancel to worker, no g_worker");
       }
     }
   });
@@ -488,19 +489,16 @@ function start(
     if (core.isDev() && inputFileType === FileDataType.PDF)
       updateModalLogText("[DEV] pdfium");
 
-    if (g_worker !== undefined) {
-      // kill it after one use
-      g_worker?.kill();
-      g_worker = undefined;
-    }
+    killWorker();
     if (g_worker === undefined) {
+      log.editor("[EC] starting worker");
       // strip null form env to avoid a weird fix a user
       const safeEnv = Object.fromEntries(
         Object.entries(process.env).filter(
           ([_, value]) => typeof value === "string" && !value.includes("\0"),
         ),
       );
-      g_worker = utilityProcess.fork(
+      const worker = utilityProcess.fork(
         path.join(__dirname, "../../shared/main/tools-worker.js"),
         {
           env: safeEnv,
@@ -510,8 +508,14 @@ function start(
           execArgv: ["--js-flags=--expose-gc", "--max-old-space-size=3072"],
         },
       );
-      g_worker.on("message", (message) => {
-        if (message.type === "extraction-progress") {
+      worker.on("message", (message) => {
+        if (message.type === "testLog") {
+          log.test(message.log);
+          return;
+        } else if (message.type === "editorLog") {
+          log.editor("[EC] " + message.log);
+          return;
+        } else if (message.type === "extraction-progress") {
           sendIpcToRenderer(
             "update-log-text",
             `${_("tool-shared-modal-log-extracting-pages")}: ${message.current} / ${message.total}`,
@@ -519,7 +523,7 @@ function start(
           return;
         } else {
           // success or failure
-          g_worker.kill(); // kill it after one use
+          killWorker(); // kill it after one use
           if (message.success) {
             log.debug("file extracted in: " + message.time);
             if (g_cancel === true) {
@@ -535,22 +539,26 @@ function start(
           }
         }
       });
+      worker.on("error", (error) => {
+        log.editor(`[EC] worker error: ${error}`);
+      });
+      worker.on("exit", (code) => {
+        if (g_worker === worker) g_worker = undefined;
+        if (code !== 0) {
+          stopError(undefined, `worker crashed with code ${code}`);
+        }
+      });
+      worker.postMessage([
+        core.getLaunchInfo(),
+        "extract",
+        inputFilePath,
+        inputFileType,
+        g_tempSubFolderPath,
+        g_initialPassword,
+        { pdfExtractionMethod: pdfExtractionMethod },
+      ]);
+      g_worker = worker;
     }
-    g_worker.on("exit", (code) => {
-      g_worker = null;
-      if (code !== 0) {
-        stopError(undefined, `worker crashed with code ${code}`);
-      }
-    });
-    g_worker.postMessage([
-      core.getLaunchInfo(),
-      "extract",
-      inputFilePath,
-      inputFileType,
-      g_tempSubFolderPath,
-      g_initialPassword,
-      { pdfExtractionMethod: pdfExtractionMethod },
-    ]);
   }
   // pdfjs
   else if (inputFileType === FileDataType.PDF) {
@@ -816,6 +824,18 @@ async function createFolderWithImages(imgFilePaths, outputFolderPath) {
     }
   } catch (err) {
     stopError(err);
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// WORKER /////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+function killWorker() {
+  if (g_worker !== undefined) {
+    log.editor("[EC] killing worker");
+    g_worker?.kill();
+    g_worker = undefined;
   }
 }
 
