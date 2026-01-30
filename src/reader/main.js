@@ -1556,24 +1556,30 @@ function goToPage(pageIndex, scrollBarPos = 0) {
       password: g_fileData.password,
       tempSubFolderPath,
     });
-  } else if (
-    g_fileData.type === FileDataType.PDF &&
-    settings.getValue("pdfReadingLibrary") === "pdfium"
-  ) {
+  } else if (g_fileData.type === FileDataType.PDF) {
     g_fileData.state = FileDataState.LOADING;
-    timers.start("pagesExtraction");
-
     let pageIndexes = getGoToIndexes();
-
-    sendToPageWorker({
-      command: "extract",
-      fileType: g_fileData.type,
-      filePath: g_fileData.path,
-      entryNames: pageIndexes,
-      scrollBarPos,
-      password: g_fileData.password,
-      extraData: { dpi: settings.getValue("pdfReadingDpi") },
-    });
+    if (settings.getValue("pdfReadingLibrary") === "pdfium") {
+      timers.start("pagesExtraction");
+      sendToPageWorker({
+        command: "extract",
+        fileType: g_fileData.type,
+        filePath: g_fileData.path,
+        entryNames: pageIndexes,
+        scrollBarPos,
+        password: g_fileData.password,
+        extraData: { dpi: settings.getValue("pdfReadingDpi") },
+      });
+    } else {
+      // pdfjs
+      sendIpcToRenderer(
+        "render-pdf-page",
+        pageIndexes,
+        g_fileData.pageRotation,
+        scrollBarPos,
+        settings.getValue("pdfReadingDpi"),
+      );
+    }
   } else if (g_fileData.type === FileDataType.EPUB_EBOOK) {
     if (pageIndex > 0) {
       g_fileData.state = FileDataState.LOADING;
@@ -1582,18 +1588,6 @@ function goToPage(pageIndex, scrollBarPos = 0) {
       g_fileData.state = FileDataState.LOADING;
       sendIpcToRenderer("render-epub-ebook-page-prev");
     }
-  }
-  // PDF old pdfjs method
-  else if (g_fileData.type === FileDataType.PDF) {
-    g_fileData.state = FileDataState.LOADING;
-    let pageIndexes = getGoToIndexes();
-    sendIpcToRenderer(
-      "render-pdf-page",
-      pageIndexes,
-      g_fileData.pageRotation,
-      scrollBarPos,
-      settings.getValue("pdfReadingDpi"),
-    );
   } else if (g_fileData.type === FileDataType.WWW) {
     (async () => {
       g_fileData.state = FileDataState.LOADING;
