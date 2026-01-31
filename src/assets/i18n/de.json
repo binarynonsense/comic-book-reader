@@ -620,6 +620,7 @@
   "[NOTE TO TRANSLATORS]tool-pre-pdf-reading-dpi": "This is the title of a select with option: 300 dpi, 150 dpi...",
   "tool-pre-pdf-reading-dpi": "Seiten im Reader rendern mit",
   "tool-pre-pdf-reading-library-version": "Lesebibliotheks-version",
+  "[NEEDS TRANSLATION]tool-pre-pdf-reading-library-version-modal-1": "The version change will be applied the next time a PDF file is open.",
   "tool-pre-pdf-extracting-library-version": "Extraktionsbibliotheks-version",
   "tool-pre-pdf-library-version-oldest": "Älteste",
   "tool-pre-pdf-library-version-oldest-desc": "Schneller, aber weniger robust",

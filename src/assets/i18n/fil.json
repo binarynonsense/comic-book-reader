@@ -620,6 +620,7 @@
   "[NOTE TO TRANSLATORS]tool-pre-pdf-reading-dpi": "This is the title of a select with option: 300 dpi, 150 dpi...",
   "[NEEDS TRANSLATION]tool-pre-pdf-reading-dpi": "Render Pages in the Reader at",
   "tool-pre-pdf-reading-library-version": "Bersyon ng Reading Library",
+  "[NEEDS TRANSLATION]tool-pre-pdf-reading-library-version-modal-1": "The version change will be applied the next time a PDF file is open.",
   "tool-pre-pdf-extracting-library-version": "Bersyon ng Extracting Library",
   "tool-pre-pdf-library-version-oldest": "Pinakamababa",
   "tool-pre-pdf-library-version-oldest-desc": "Mas mabilis ngunit hindi kasing tibay",

@@ -1,8 +1,6 @@
 {
   "@metadata": {
-    "authors": [
-      "Álvaro"
-    ],
+    "authors": ["Álvaro"],
     "last-updated": "2026-01-30",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.15.0",
@@ -620,6 +618,7 @@
   "[NOTE TO TRANSLATORS]tool-pre-pdf-reading-dpi": "This is the title of a select with option: 300 dpi, 150 dpi...",
   "tool-pre-pdf-reading-dpi": "Renderizar páginas en el lector a",
   "tool-pre-pdf-reading-library-version": "Versión de la librería de lectura",
+  "tool-pre-pdf-reading-library-version-modal-1": "El cambio de versión será aplicado la próxima vez que se abra un archivo PDF.",
   "tool-pre-pdf-extracting-library-version": "Versión de la librería de extracción",
   "tool-pre-pdf-library-version-oldest": "Más antigua",
   "tool-pre-pdf-library-version-oldest-desc": "más rápida pero menos robusta",
