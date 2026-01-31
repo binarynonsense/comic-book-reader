@@ -1,6 +1,8 @@
 {
   "@metadata": {
-    "authors": ["Álvaro"],
+    "authors": [
+      "Álvaro"
+    ],
     "last-updated": "2026-01-30",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.15.0",
@@ -185,6 +187,10 @@
   "ui-modal-info-imagesavedto": "Archivo de imagen guardado en",
   "ui-modal-info-imagesaved": "Archivo de imagen guardado",
   "ui-modal-info-errorexportingpage": "Error: No se pudo exportar la página",
+  "ui-modal-info-systemmonitor-retricted": "Estas estadísticas son inexactas. La monitorización del sistema está restringida por los permisos del sandbox de Flatpak.",
+  "ui-modal-info-checkwiki": "Puede encontrar más información en la {0} de ACBR.",
+  "[NOTE TO TRANSLATORS]ui-modal-info-checkwiki-wiki": "this one will go inside the {0} in the one above to form 'You can find more information on ACBR's wiki.', but needs to be separated to add some html code around it",
+  "ui-modal-info-checkwiki-wiki": "wiki",
   "ui-modal-info-version": "Versión",
   "ui-modal-info-currentversion": "Versión actual",
   "ui-modal-info-latestversion": "Última versión",
