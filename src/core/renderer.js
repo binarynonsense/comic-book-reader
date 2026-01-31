@@ -313,7 +313,7 @@ function modalClosed() {
     reader.sendIpcToMain("rebuild-menu-and-toolbar", true);
 }
 
-function showModalAlert(title, message, textButton1) {
+export function showModalAlert(title, message, textButton1) {
   if (g_openModal) {
     return;
   }

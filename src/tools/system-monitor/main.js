@@ -46,7 +46,26 @@ function on(id, callback) {
 }
 
 function initOnIpcCallbacks() {
-  on("close-cliked", () => {});
+  on("on-warning-icon-clicked", () => {
+    let message = `
+    <div id="sm-modal-div">${_("ui-modal-info-systemmonitor-retricted")}\n\n${_(
+      "ui-modal-info-checkwiki",
+      _("ui-modal-info-checkwiki-wiki"),
+    )}</div>`;
+    // _() sanitizes html so I have to add the span later
+    message = message.replace(
+      _("ui-modal-info-checkwiki-wiki"),
+      `<span id="sm-modal-link" title="${_(
+        "tool-shared-ui-search-item-open-browser",
+      )}">${_("ui-modal-info-checkwiki-wiki")}</span>`,
+    );
+    sendIpcToRenderer(
+      "show-modal-warning",
+      _("tool-shared-modal-title-warning"),
+      message,
+      _("ui-modal-prompt-button-ok"),
+    );
+  });
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -77,12 +96,20 @@ exports.open = function (isVisible) {
       const workerPath = path.join(__dirname, "/main/worker-thread.js");
 
       const worker = new Worker(workerPath);
-      worker.on("message", (stats) => {
-        sendIpcToRenderer(
-          "update-stats",
-          stats,
-          `${_("systemmonitor-memory-used")}: ${stats.memoryUsed.toFixed(1)}GiB / ${_("systemmonitor-memory-total")}: ${stats.memoryTotal.toFixed(1)}GiB`,
-        );
+      worker.on("message", (message) => {
+        if (message.type === "stats") {
+          if (message.stats.error) {
+            sendIpcToRenderer("update-stats", message.stats, ``);
+          } else {
+            sendIpcToRenderer(
+              "update-stats",
+              message.stats,
+              `${_("systemmonitor-memory-used")}: ${message.stats.memoryUsed.toFixed(1)}GiB / ${_("systemmonitor-memory-total")}: ${message.stats.memoryTotal.toFixed(1)}GiB`,
+            );
+          }
+        } else if (message.type === "test-log") {
+          log.test(message.text);
+        }
       });
       worker.on("error", (error) => {
         log.error("[System Monitor] worker error:", error);
@@ -120,7 +147,12 @@ function shutdownWorker() {
 }
 
 function updateLocalizedText() {
-  if (g_mainWindow) sendIpcToRenderer("update-localization", getLocalization());
+  if (g_mainWindow)
+    sendIpcToRenderer(
+      "update-localization",
+      getLocalization(),
+      getTooltipsLocalization(),
+    );
 }
 exports.updateLocalizedText = updateLocalizedText;
 
@@ -131,6 +163,15 @@ function getLocalization() {
     {
       id: "sm-memory-widget-name-text",
       text: _("systemmonitor-memory"),
+    },
+  ];
+}
+
+function getTooltipsLocalization() {
+  return [
+    {
+      id: "sm-warning-icon",
+      text: _("tool-shared-modal-title-warning"),
     },
   ];
 }

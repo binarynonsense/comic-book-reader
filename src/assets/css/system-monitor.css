@@ -5,7 +5,6 @@
   flex-direction: column;
   direction: ltr;
   z-index: 1000;
-
   position: fixed;
   top: calc(var(--menubar-height) + 10px);
   /* left: 50%;
@@ -16,7 +15,6 @@
 #sm-frame {
   border: 0;
   user-select: none;
-
   display: flex;
   flex-direction: row;
   gap: 10px;
@@ -29,6 +27,40 @@
   display: none !important;
 }
 
+#sm-cpu-widget {
+  position: relative;
+}
+
+/* ------ warning icon ------------------- */
+
+#sm-warning-icon {
+  position: absolute;
+  left: -5px;
+  top: 15px;
+  color: #d97706;
+  cursor: pointer;
+  font-size: 15px;
+}
+#sm-warning-icon:hover {
+  transform: scale(1.1);
+}
+#sm-warning-icon:active {
+  transform: scale(0.9);
+}
+
+#sm-modal-div {
+  margin: 0;
+  padding: 0;
+  user-select: none;
+}
+
+#sm-modal-link {
+  text-decoration: underline;
+}
+#sm-modal-link:hover {
+  transform: scale(1.05);
+  cursor: pointer;
+}
 /* ------ circular progress widgets ------ */
 
 .sm-circular-bar {
@@ -57,6 +89,15 @@
     var(--systemmonitor-circle-bar-bg-color) 100%
   );
   transition: background 0.3s ease;
+}
+.sm-bar-fill-alert {
+  background: conic-gradient(
+    from 180deg,
+    var(--systemmonitor-circle-bar-alert-color) 0%,
+    var(--systemmonitor-circle-bar-alert-color) calc(var(--sm-progress, 0) * 1%),
+    var(--systemmonitor-circle-bar-bg-color) calc(var(--sm-progress, 0) * 1%),
+    var(--systemmonitor-circle-bar-bg-color) 100%
+  );
 }
 
 .sm-center-mask {

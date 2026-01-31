@@ -9,9 +9,9 @@ const { parentPort } = require("node:worker_threads");
 const fs = require("node:fs");
 const os = require("node:os");
 
-let prevCpuStats = { idle: 0, total: 0 };
-let smoothedCpu = 0;
-let isFirstRun = true;
+let g_prevCpuStats = { idle: 0, total: 0 };
+let g_smoothedCpu = 0;
+let g_isFirstRun = true;
 
 parentPort.on("message", (message) => {
   if (message === "shutdown") {
@@ -21,16 +21,14 @@ parentPort.on("message", (message) => {
 
 setInterval(() => {
   const stats = getSystemStats();
-  if (parentPort) {
-    parentPort.postMessage(stats);
-  }
+  parentPort?.postMessage({ type: "stats", stats: stats });
 }, 1000);
 
 function getCpuPercent(currentIdleTicks, currentTotalTicks) {
-  const diffIdle = currentIdleTicks - prevCpuStats.idle;
-  const diffTotal = currentTotalTicks - prevCpuStats.total;
+  const diffIdle = currentIdleTicks - g_prevCpuStats.idle;
+  const diffTotal = currentTotalTicks - g_prevCpuStats.total;
   const raw = diffTotal > 0 ? (1 - diffIdle / diffTotal) * 100 : 0;
-  prevCpuStats = { idle: currentIdleTicks, total: currentTotalTicks };
+  g_prevCpuStats = { idle: currentIdleTicks, total: currentTotalTicks };
   return raw;
 }
 
@@ -39,6 +37,8 @@ function getSystemStats() {
     let totalGiB, usedGiB, rawCpuPercent;
 
     let useFallback = true;
+    let isHostData = false;
+    let showWarningIcon = false;
     let memInfo, statData;
 
     if (os.platform() === "linux") {
@@ -47,8 +47,29 @@ function getSystemStats() {
         // per node's docs using fs.existsSync could generate a race condition,
         // better just directly try reading, althoug with this particular proc
         // files I'm not sure it could happen
+        try {
+          memInfo = fs.readFileSync("/run/host/proc/meminfo", "utf8");
+          statData = fs
+            .readFileSync("/run/host/proc/stat", "utf8")
+            .split("\n")[0];
+          isHostData = true;
+        } catch (error) {
+          try {
+            // Standard path (sandboxed in Flatpak, accurate elsewhere)
+            memInfo = fs.readFileSync("/proc/meminfo", "utf8");
+            statData = fs.readFileSync("/proc/stat", "utf8").split("\n")[0];
+          } catch (error) {
+            // will use fallback as useFallback is still true
+          }
+        }
         memInfo = fs.readFileSync("/proc/meminfo", "utf8");
         statData = fs.readFileSync("/proc/stat", "utf8").split("\n")[0];
+        const isFlatpak = fs.existsSync("/.flatpak-info");
+        // check for pid isolation: if in Flatpak and pids < 20 processes,
+        // the sandbox is hiding the host system's activity so the data is
+        // inaccurate
+        const pids = fs.readdirSync("/proc").filter((f) => /^\d+$/.test(f));
+        isRestricted = isFlatpak && pids.length < 20;
         // mem:
         // memInfo example:
         // MemTotal:       16369524 kB
@@ -81,6 +102,15 @@ function getSystemStats() {
       }
     }
 
+    if (!isHostData && fs.existsSync("/.flatpak-info")) {
+      showWarningIcon = true;
+    }
+
+    // parentPort?.postMessage({
+    //   type: "test-log",
+    //   text: `isHostData: ${isHostData} | useFallback: ${useFallback}`,
+    // });
+
     if (useFallback) {
       // fallback method
       // mem:
@@ -105,21 +135,22 @@ function getSystemStats() {
       rawCpuPercent = getCpuPercent(currentCpuIdle, currentCpuTotal);
     }
 
-    if (isFirstRun) {
-      smoothedCpu = rawCpuPercent;
-      isFirstRun = false;
+    if (g_isFirstRun) {
+      g_smoothedCpu = rawCpuPercent;
+      g_isFirstRun = false;
     } else {
       // exponentially smooth it to avoid too much jitter
       // ref: https://en.wikipedia.org/wiki/Exponential_smoothing
       const factor = 0.3; // 0 to 1
-      smoothedCpu = rawCpuPercent * factor + smoothedCpu * (1 - factor);
+      g_smoothedCpu = rawCpuPercent * factor + g_smoothedCpu * (1 - factor);
     }
 
     return {
-      cpu: smoothedCpu,
+      cpu: g_smoothedCpu,
       memoryUsed: usedGiB,
       memoryTotal: totalGiB,
       mode: !useFallback ? "proc" : "generic",
+      warningIcon: showWarningIcon ? "warning" : "none",
     };
   } catch (error) {
     return {
@@ -127,6 +158,7 @@ function getSystemStats() {
       memoryUsed: undefined,
       memoryTotal: undefined,
       error: error.message,
+      warningIcon: "error",
     };
   }
 }

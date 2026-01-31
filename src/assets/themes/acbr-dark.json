@@ -51,6 +51,7 @@
 
   "--systemmonitor-circle-bar-bg-color": "#444",
   "--systemmonitor-circle-bar-color": "#3daee9",
+  "--systemmonitor-circle-bar-alert-color": "#c33",
   "--systemmonitor-circle-center-color": "#303030",
   "--systemmonitor-label-name-text-color": "#aaa",
   "--systemmonitor-label-value-text-color": "#ccc",

@@ -497,12 +497,16 @@ if (!gotTheLock) {
   //////////////////////////////////////////////////////////////////////////////
 
   function sendIpcToRenderer(...args) {
-    g_mainWindow?.webContents?.send("renderer", args);
+    if (g_mainWindow && !g_mainWindow.isDestroyed()) {
+      g_mainWindow?.webContents?.send("renderer", args);
+    }
   }
   exports.sendIpcToRenderer = sendIpcToRenderer;
 
   function sendIpcToPreload(...args) {
-    g_mainWindow?.webContents?.send("preload", args);
+    if (g_mainWindow && !g_mainWindow.isDestroyed()) {
+      g_mainWindow?.webContents?.send("preload", args);
+    }
   }
   exports.sendIpcToPreload = sendIpcToPreload;
 
@@ -601,6 +605,7 @@ if (!gotTheLock) {
   exports.restartApp = restartApp;
 
   function cleanUpOnQuit() {
+    g_mainWindow = undefined;
     systemMonitor.quit();
     if (g_updatesWorker !== undefined) {
       g_updatesWorker.kill();
