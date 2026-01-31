@@ -10,6 +10,7 @@
   /* left: 50%;
   transform: translateX(-50%); */
   right: 10px;
+  padding: 20px;
 }
 
 #sm-frame {
@@ -20,7 +21,9 @@
   gap: 10px;
   align-items: center;
   justify-content: center;
-  padding: 10px;
+  --sm-frame-scale: 1;
+  transform: scale(var(--sm-frame-scale));
+  transform-origin: top right;
 }
 
 .sm-hidden {

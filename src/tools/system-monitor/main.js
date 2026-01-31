@@ -12,6 +12,7 @@ const { Worker } = require("node:worker_threads");
 const core = require("../../core/main");
 const log = require("../../shared/main/logger");
 const { _ } = require("../../shared/main/i18n");
+const settings = require("../../shared/main/settings");
 
 let g_worker = undefined;
 let g_mainWindow, g_parentElementId;
@@ -91,7 +92,12 @@ exports.init = function (mainWindow, parentElementId) {
 exports.open = function (isVisible) {
   if (isVisible) {
     try {
-      sendIpcToRenderer("show", true, g_parentElementId);
+      sendIpcToRenderer(
+        "show",
+        true,
+        g_parentElementId,
+        settings.getValue("systemMonitorScale"),
+      );
       log.debug("opening system monitor");
       const workerPath = path.join(__dirname, "/main/worker-thread.js");
 

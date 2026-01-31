@@ -41,7 +41,7 @@ export function on(id, callback) {
 }
 
 function initOnIpcCallbacks() {
-  on("show", (isVisible, elementId) => {
+  on("show", (isVisible, elementId, scale) => {
     if (!g_isInitialized) {
       document
         .querySelector("#sm-warning-icon")
@@ -52,6 +52,8 @@ function initOnIpcCallbacks() {
     }
     if (isVisible) {
       document.getElementById(elementId).classList.remove("sm-hidden");
+      const parent = document.getElementById("sm-frame");
+      parent.style.setProperty("--sm-frame-scale", scale);
     } else {
       document.getElementById(elementId).classList.add("sm-hidden");
     }
