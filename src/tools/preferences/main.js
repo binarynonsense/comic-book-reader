@@ -258,16 +258,15 @@ function initOnIpcCallbacks() {
   on("set-pdf-reading-lib", (value) => {
     if (reader.getFileData().type === FileDataType.PDF) {
       reader.onMenuCloseFile();
-    }
-    settings.setValue("pdfReadingLibrary", value);
-    if (value !== "pdfium") {
       sendIpcToRenderer(
         "show-ok-modal",
         _("tool-shared-modal-title-info"),
-        _("tool-shared-modal-info-change-needs-restart"),
-        _("tool-shared-ui-close").toUpperCase(),
+        _("ui-modal-info-willclosetoapply"),
+        _("ui-modal-prompt-button-ok").toUpperCase(),
       );
     }
+    settings.setValue("pdfReadingLibrary", value);
+    reader.setPdfLibVersion(value);
   });
 
   on("set-epub-ebook-color-mode", (mode, textColor, bgColor) => {

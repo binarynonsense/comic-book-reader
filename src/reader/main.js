@@ -62,6 +62,8 @@ exports.init = function (filePath, checkHistory) {
   }
   setPagesDirection(settings.getValue("pagesDirection"));
 
+  setPdfLibVersion();
+
   updateLoadingIndicator();
   updateLayoutClock();
   updateLayoutPageNum();
@@ -2146,6 +2148,14 @@ function setPageMode(value, reloadPages) {
     goToPage(g_fileData.pageIndex, (scrollBarPos = 0));
   rebuildMenuAndToolBars();
 }
+
+function setPdfLibVersion() {
+  sendIpcToRenderer(
+    "set-pdf-lib-version",
+    settings.getValue("pdfReadingLibrary"),
+  );
+}
+exports.setPdfLibVersion = setPdfLibVersion;
 
 //////////////////////////////////////////////////////////////////////////////
 // ZOOM //////////////////////////////////////////////////////////////////////

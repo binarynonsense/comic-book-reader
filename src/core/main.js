@@ -246,15 +246,7 @@ if (!gotTheLock) {
         preload: path.join(__dirname, "preload.js"),
       },
     });
-    // load html
-    if (
-      settings.getValue("pdfReadingLibrary") === "pdfjs_1" ||
-      settings.getValue("pdfReadingLibrary") === "pdfium"
-    ) {
-      g_mainWindow.loadFile(path.join(__dirname, "index-2.html"));
-    } else {
-      g_mainWindow.loadFile(path.join(__dirname, "index-1.html"));
-    }
+    g_mainWindow.loadFile(path.join(__dirname, "index.html"));
     // win events
     g_mainWindow.webContents.on("did-finish-load", function () {
       g_isLoaded = true;

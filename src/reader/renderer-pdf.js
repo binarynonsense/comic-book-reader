@@ -16,11 +16,17 @@ export function initIpc() {
   initOnIpcCallbacks();
 }
 
+let g_settingsPdfLibVersion;
+let g_currentPdfLibVersion;
+
 ///////////////////////////////////////////////////////////////////////////////
 // IPC RECEIVE ////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
 function initOnIpcCallbacks() {
+  on("set-pdf-lib-version", (version) => {
+    g_settingsPdfLibVersion = version;
+  });
   on("load-pdf", (filePath, pageIndex, password) => {
     loadPdf(filePath, pageIndex, password);
   });
@@ -51,27 +57,90 @@ function initOnIpcCallbacks() {
 
 let g_currentPdf = {};
 let g_renderJobPages;
-let g_latestRenderJobId = 0;
+let g_currentLoadingTask = null;
 
-export function cleanUp() {
+export async function cleanUp() {
+  // pdfjs: tell the worker to shut down and release the file
+  if (g_currentLoadingTask) {
+    try {
+      await g_currentLoadingTask.destroy();
+    } catch (e) {
+      console.error("Error during task destruction:", e);
+    }
+    g_currentLoadingTask = null;
+  }
   g_currentPdf = {};
+  // last pages rendered reference
   g_renderJobPages = undefined;
 }
 
-function loadPdf(filePath, pageIndex, password) {
-  // pdfjsLib.GlobalWorkerOptions.workerSrc =
-  //   "../assets/libs/pdfjs-2.3.200/build/pdf.worker.js";
+async function loadPdfjsLib(version) {
+  if (g_currentLoadingTask) {
+    // clean up memory: kill background worker process if pdf is open
+    await g_currentLoadingTask.destroy();
+    g_currentLoadingTask = null;
+  }
+
+  window.pdfjsLib = null;
+  delete window["pdfjs-dist/build/pdf"];
+
+  const basePath = `../assets/libs/pdfjs-${version}/build/`;
+  const libPath = `${basePath}pdf.js`;
+  const workerPath = `${basePath}pdf.worker.js`;
+
+  // remove the old <script> elements from the HTML
+  document
+    .querySelectorAll(".pdf-version-script")
+    .forEach((element) => element.remove());
+
+  // dynamic loading
+  return new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.className = "pdf-version-script";
+
+    // the timestamp (?t=...) forces Electron to bypass the cache to make sure it
+    // loads the code I want
+    script.src = `${libPath}?t=${Date.now()}`;
+
+    script.onload = () => {
+      // window["pdfjs-dist/build/pdf"] is the internal key PDF.js uses when
+      // loaded via script
+      const lib = window["pdfjs-dist/build/pdf"];
+      if (lib) {
+        window.pdfjsLib = lib;
+        lib.GlobalWorkerOptions.workerSrc = workerPath;
+        console.log(`setting pdfjs v${lib.version}`);
+        resolve(lib);
+      } else {
+        reject(new Error("error loading the PDF library"));
+      }
+    };
+
+    script.onerror = () =>
+      reject(new Error(`failed to load the script: ${libPath}`));
+
+    document.head.appendChild(script);
+  });
+}
+
+async function loadPdf(filePath, pageIndex, password) {
+  g_currentPdfLibVersion = g_settingsPdfLibVersion;
+  await loadPdfjsLib(
+    g_currentPdfLibVersion === "pdfjs_2" ? "3.8.162" : "2.3.200",
+  );
+
   let escapedInputFilePath = filePath.replaceAll("#", "%23");
   // hashtags must be escaped so PDF.js doesn't break trying to parse
   // the path, as it looks for patterns like #page=2&zoom=200
-  let loadingTask = pdfjsLib.getDocument({
+  await cleanUp();
+  g_currentLoadingTask = pdfjsLib.getDocument({
     url: escapedInputFilePath,
     password: password,
     isEvalSupported: false,
   });
-  loadingTask.promise
+
+  g_currentLoadingTask.promise
     .then(function (pdf) {
-      cleanUp();
       g_currentPdf.pdf = pdf;
       //console.log(g_currentPdf.pdf);
       g_currentPdf.pdf
@@ -219,7 +288,7 @@ async function renderOpenPDFPages(rotation, scrollBarPos, sendPageLoaded, dpi) {
       );
       break;
     }
-    const tempCanvas = canvases[i];
+    let tempCanvas = canvases[i];
     const context = tempCanvas.getContext("2d", { willReadFrequently: true });
     const finalImg = document.createElement("img");
     finalImg.classList.add("page-canvas");
@@ -318,7 +387,6 @@ async function renderOpenPDFPages(rotation, scrollBarPos, sendPageLoaded, dpi) {
     //   .catch(function (error) {
     //   });
 
-    finalImg.src = tempCanvas.toDataURL("image/jpeg");
     if (g_renderJobPages[i].jobId === jobId) {
       finalImg.src = tempCanvas.toDataURL("image/jpeg");
     } else {
@@ -328,6 +396,12 @@ async function renderOpenPDFPages(rotation, scrollBarPos, sendPageLoaded, dpi) {
         )}ms)`,
       );
     }
+    // clean page rendering cache
+    g_currentPdf.pages[i].cleanup();
+    // be gc friendly
+    tempCanvas.width = 0;
+    tempCanvas.height = 0;
+    tempCanvas = null;
   }
 
   if (g_renderJobPages[0].jobId === jobId) {

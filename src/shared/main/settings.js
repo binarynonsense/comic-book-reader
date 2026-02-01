@@ -82,6 +82,7 @@ const g_defaultSettings = {
   epubEbookColorBg: "#ffffff", // rgb color in hex
   pagesDirection: 0, // 0: ltr, 1: rtl,
   mouseButtonQuickMenu: 1, // -1: unassigned 0-4: mouse button
+  systemMonitorScale: 1.0,
 
   checkUpdatesOnStart: 3, // 0: never, 1: always, 2: day, 3: week, 4: month
   checkUpdatesNotify: 0, // 0: always, 1: once
@@ -248,6 +249,7 @@ exports.resetPreferences = function () {
     "epubEbookColorText",
     "epubEbookColorBg",
     "mouseButtonQuickMenu",
+    //"systemMonitorScale", // TOOD: add when included in preferences tool
 
     "checkUpdatesOnStart",
     "checkUpdatesNotify",
@@ -386,6 +388,13 @@ function sanitize() {
     g_settings.mouseButtonQuickMenu > 4
   ) {
     g_settings.mouseButtonQuickMenu = -1;
+  }
+  if (
+    typeof g_settings.systemMonitorScale !== "number" ||
+    g_settings.systemMonitorScale < 0.5 ||
+    g_settings.systemMonitorScale > 1.5
+  ) {
+    g_settings.systemMonitorScale = g_defaultSettings.systemMonitorScale;
   }
   if (
     !Number.isInteger(g_settings.zoomDefault) ||
