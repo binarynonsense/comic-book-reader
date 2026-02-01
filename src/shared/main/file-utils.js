@@ -139,20 +139,23 @@ exports.changeJpegBufferDpi = function (buffer, dpi) {
    * Offset | Size | Value       | Description
    * -------------------------------------------------------------------------
    * i      | 2    | 0xFF 0xE0   | APP0 Marker
+   * i + 2  | 2    | 0xHH 0xLL   | Length of segment (usually 16 bytes)
    * i + 4  | 5    | "JFIF\0"    | Identifier (0x4A 0x46 0x49 0x46 0x00)
-   * i + 13 | 1    | 1           | Density Units (1 = DPI, 2 = Dots/cm)
-   * i + 14 | 2    | 0xHH 0xLL   | Xdensity (16-bit Big Endian)
-   * i + 16 | 2    | 0xHH 0xLL   | Ydensity (16-bit Big Endian)
+   * i + 9  | 1    | 0x01        | Major Version
+   * i + 10 | 1    | 0x01 or 02  | Minor Version
+   * i + 11 | 1    | 1           | Density Units (1 = DPI, 2 = Dots/cm)
+   * i + 12 | 2    | 0xHH 0xLL   | Xdensity (16-bit Big Endian)
+   * i + 14 | 2    | 0xHH 0xLL   | Ydensity (16-bit Big Endian)
+   * i + 16 | 1    | 0           | Xthumbnail
+   * i + 17 | 1    | 0           | Ythumbnail
    * -------------------------------------------------------------------------
    */
-  // safety limit for the [i + 17] check
-  const scanLimit = Math.min(buffer.length - 18, 50);
+  const scanLimit = Math.min(buffer.length - 18, 128);
   if (scanLimit < 0) return buffer;
 
   for (let i = 0; i < scanLimit; i++) {
-    // Marker
+    // Identifier
     if (buffer[i] === 0xff && buffer[i + 1] === 0xe0) {
-      // Identifier
       if (
         buffer[i + 4] === 0x4a && // J
         buffer[i + 5] === 0x46 && // F
@@ -160,14 +163,19 @@ exports.changeJpegBufferDpi = function (buffer, dpi) {
         buffer[i + 7] === 0x46 && // F
         buffer[i + 8] === 0x00 // \0
       ) {
+        const segmentLength = buffer.readUInt16BE(i + 2);
+        if (segmentLength !== 16) {
+          console.warn(
+            `[JFIF] segment length is ${segmentLength}, expected 16.`,
+          );
+        }
         // Density Units
-        buffer[i + 13] = 1;
-        // Xdensity
-        buffer[i + 14] = (dpi >> 8) & 0xff; // high
-        buffer[i + 15] = dpi & 0xff; // low
-        // Ydensity
-        buffer[i + 16] = (dpi >> 8) & 0xff;
-        buffer[i + 17] = dpi & 0xff;
+        buffer[i + 11] = 1;
+        // X Density
+        buffer.writeUInt16BE(dpi, i + 12);
+        // Y Density
+        buffer.writeUInt16BE(dpi, i + 14);
+
         return buffer;
       }
     }
