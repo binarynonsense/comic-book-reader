@@ -144,6 +144,18 @@ exports.getLocalization = function () {
       text: _("tool-shared-ui-advanced-output-options"),
     },
     {
+      id: "tool-ec-pdf-extraction-lib-o-pdfjs1-text",
+      text: `PDF.js ${_("tool-pre-pdf-library-version-oldest")} (${_(
+        "tool-pre-pdf-library-version-oldest-desc",
+      )})`,
+    },
+    {
+      id: "tool-ec-pdf-extraction-lib-o-pdfjs2-text",
+      text: `PDF.js ${_("tool-pre-pdf-library-version-newest")} (${_(
+        "tool-pre-pdf-library-version-newest-desc",
+      )})`,
+    },
+    {
       id: "tool-ec-pdf-extraction-lib-o-pdfium-text",
       text: `PDFium (${_("tool-shared-ui-experimental").toLowerCase()})`,
     },

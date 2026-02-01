@@ -767,6 +767,8 @@ function startFile(inputFileIndex, totalFilesNum) {
         g_uiSelectedOptions.inputPdfExtractionMethod,
         _("tool-shared-modal-log-extracting-page") + ": ",
         g_inputPassword,
+        core.isDev(),
+        g_uiSelectedOptions.inputPdfExtractionLib,
       );
     });
   } else {

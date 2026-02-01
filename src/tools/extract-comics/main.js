@@ -593,6 +593,8 @@ function start(
         pdfExtractionMethod,
         _("tool-shared-modal-log-extracting-page") + ": ",
         g_initialPassword,
+        core.isDev(),
+        pdfExtractionLib,
       );
     });
   } else {
