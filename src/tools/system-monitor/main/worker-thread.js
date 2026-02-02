@@ -12,6 +12,7 @@ const os = require("node:os");
 let g_prevCpuStats = { idle: 0, total: 0 };
 let g_smoothedCpu = 0;
 let g_isFirstRun = true;
+let g_hasShownFlatpakSpawnError = false;
 
 parentPort.on("message", (message) => {
   if (message === "shutdown") {
@@ -70,10 +71,14 @@ function getSystemStats() {
             isHostData = true;
           } catch (error) {
             // try the native way, less accurate
-            parentPort?.postMessage({
-              type: "dev-error-log",
-              text: `error launching flatpak-spawn msg: ${error.message} | stderr: ${error.stderr?.toString()}`,
-            });
+            if (!g_hasShownFlatpakSpawnError) {
+              // show only once, no need to fill the terminal
+              g_hasShownFlatpakSpawnError = true;
+              parentPort?.postMessage({
+                type: "dev-error-log",
+                text: `error launching flatpak-spawn msg: ${error.message} | stderr: ${error.stderr?.toString()}`,
+              });
+            }
           }
         }
         if (!isHostData) {
