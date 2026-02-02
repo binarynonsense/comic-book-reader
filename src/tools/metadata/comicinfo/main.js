@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-const { utilityProcess, MessageChannelMain } = require("electron");
+const { utilityProcess } = require("electron");
 const fs = require("node:fs");
 const path = require("node:path");
 const core = require("../../../core/main");
@@ -169,15 +169,10 @@ exports.updatePages = function (data) {
   }
   if (g_worker === undefined) {
     // strip null from env to avoid exception
-    const safeEnv = Object.fromEntries(
-      Object.entries(process.env).filter(
-        ([_, value]) => typeof value === "string" && !value.includes("\0"),
-      ),
-    );
     g_worker = utilityProcess.fork(
       path.join(__dirname, "../../../shared/main/tools-worker.js"),
       {
-        env: safeEnv,
+        env: utils.getSafeEnv(),
       },
     );
     g_worker.on("message", (message) => {

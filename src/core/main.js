@@ -27,6 +27,7 @@ const themes = require("../shared/main/themes");
 const menuBar = require("../shared/main/menu-bar");
 const appUtils = require("../shared/main/app-utils");
 const fileFormats = require("../shared/main/file-formats");
+const utils = require("../shared/main/utils");
 const temp = require("../shared/main/temp");
 const tools = require("../shared/main/tools");
 const { _ } = require("../shared/main/i18n");
@@ -712,17 +713,10 @@ if (!gotTheLock) {
       if (doCheck) {
         log.debug("checking for updates");
         if (g_updatesWorker === undefined) {
-          // strip null from env to avoid exception
-          const safeEnv = Object.fromEntries(
-            Object.entries(process.env).filter(
-              ([_, value]) =>
-                typeof value === "string" && !value.includes("\0"),
-            ),
-          );
           g_updatesWorker = utilityProcess.fork(
             path.join(__dirname, "worker-updates.js"),
             {
-              env: safeEnv,
+              env: utils.getSafeEnv(),
             },
           );
           g_updatesWorker.on("message", (message) => {

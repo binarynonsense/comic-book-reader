@@ -492,16 +492,10 @@ function start(
     killWorker();
     if (g_worker === undefined) {
       log.editor("[EC] starting worker");
-      // strip null from env to avoid exception
-      const safeEnv = Object.fromEntries(
-        Object.entries(process.env).filter(
-          ([_, value]) => typeof value === "string" && !value.includes("\0"),
-        ),
-      );
       const worker = utilityProcess.fork(
         path.join(__dirname, "../../shared/main/tools-worker.js"),
         {
-          env: safeEnv,
+          env: utils.getSafeEnv(),
           // enable manual GC and set a 3GB hard cap so the worker crashes
           // instead the OS hanging if it uses too much memory, like on large
           // PDFs with pdfium

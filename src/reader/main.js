@@ -2304,16 +2304,10 @@ function startPageWorker() {
   try {
     if (g_pageWorker === undefined) {
       log.editor("start page worker");
-      // strip null from env to avoid exception
-      const safeEnv = Object.fromEntries(
-        Object.entries(process.env).filter(
-          ([_, value]) => typeof value === "string" && !value.includes("\0"),
-        ),
-      );
       g_pageWorker = utilityProcess.fork(
         path.join(__dirname, "worker-page.js"),
         {
-          env: safeEnv,
+          env: utils.getSafeEnv(),
           // enable manual GC and set a 3GB hard cap so the worker crashes
           // instead the OS hanging if it uses too much memory, like on large
           // PDFs with pdfium
