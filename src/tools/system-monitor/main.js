@@ -115,6 +115,8 @@ exports.open = function (isVisible) {
           }
         } else if (message.type === "test-log") {
           log.test(message.text);
+        } else if (message.type === "dev-error-log") {
+          if (core?.isDev()) log.error(message.text);
         }
       });
       worker.on("error", (error) => {

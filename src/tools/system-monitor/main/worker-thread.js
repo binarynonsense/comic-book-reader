@@ -44,27 +44,50 @@ function getSystemStats() {
     if (os.platform() === "linux") {
       // linux method: more precise, I think
       try {
-        // per node's docs using fs.existsSync could generate a race condition,
-        // better just directly try reading, althoug with this particular proc
-        // files I'm not sure it could happen
-        try {
-          memInfo = fs.readFileSync("/run/host/proc/meminfo", "utf8");
-          statData = fs
-            .readFileSync("/run/host/proc/stat", "utf8")
-            .split("\n")[0];
-          isHostData = true;
-        } catch (error) {
+        const isFlatpak = fs.existsSync("/.flatpak-info");
+        if (isFlatpak) {
           try {
-            // Standard path (sandboxed in Flatpak, accurate elsewhere)
+            // try to escape sandbox via D-Bus
+            // needs flatpak override --user --talk-name=org.freedesktop.Flatpak com.binarynonsense.acbr
+            // NOTE: using just flatpak-spawn, without /usr/bin/, didn't work
+            // NOTE: I do this spawn method because checking, for example,
+            // /run/host/proc/meminfo, as some refs suggested, didn't work
+            const { execSync } = require("child_process");
+            memInfo = execSync(
+              "/usr/bin/flatpak-spawn --host cat /proc/meminfo 2>/dev/null",
+              {
+                encoding: "utf8",
+                shell: true,
+              },
+            );
+            statData = execSync(
+              "/usr/bin/flatpak-spawn --host cat /proc/stat 2>/dev/null",
+              {
+                encoding: "utf8",
+                shell: true,
+              },
+            ).split("\n")[0];
+            isHostData = true;
+          } catch (error) {
+            // try the native way, less accurate
+            parentPort?.postMessage({
+              type: "dev-error-log",
+              text: `error launching flatpak-spawn msg: ${error.message} | stderr: ${error.stderr?.toString()}`,
+            });
+          }
+        }
+        if (!isHostData) {
+          // native way (sandboxed in Flatpak, accurate elsewhere)
+          try {
+            // per node's docs using fs.existsSync could generate a race
+            // condition, better just directly try reading, although with these
+            // particular proc files I'm not sure it could happen
             memInfo = fs.readFileSync("/proc/meminfo", "utf8");
             statData = fs.readFileSync("/proc/stat", "utf8").split("\n")[0];
           } catch (error) {
-            // will use fallback as useFallback is still true
+            throw "permission error";
           }
         }
-        memInfo = fs.readFileSync("/proc/meminfo", "utf8");
-        statData = fs.readFileSync("/proc/stat", "utf8").split("\n")[0];
-        const isFlatpak = fs.existsSync("/.flatpak-info");
         // check for pid isolation: if in Flatpak and pids < 20 processes,
         // the sandbox is hiding the host system's activity so the data is
         // inaccurate
@@ -100,10 +123,9 @@ function getSystemStats() {
       } catch (error) {
         // use fallback
       }
-    }
-
-    if (!isHostData && fs.existsSync("/.flatpak-info")) {
-      showWarningIcon = true;
+      if (!isHostData && fs.existsSync("/.flatpak-info")) {
+        showWarningIcon = true;
+      }
     }
 
     // parentPort?.postMessage({
