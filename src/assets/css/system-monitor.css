@@ -38,8 +38,8 @@
 
 #sm-warning-icon {
   position: absolute;
-  left: -5px;
-  top: 15px;
+  left: -15px;
+  top: 5px;
   color: #d97706;
   cursor: pointer;
   font-size: 15px;
