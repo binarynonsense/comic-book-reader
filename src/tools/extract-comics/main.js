@@ -492,7 +492,7 @@ function start(
     killWorker();
     if (g_worker === undefined) {
       log.editor("[EC] starting worker");
-      // strip null form env to avoid a weird fix a user
+      // strip null form env to avoid exception
       const safeEnv = Object.fromEntries(
         Object.entries(process.env).filter(
           ([_, value]) => typeof value === "string" && !value.includes("\0"),

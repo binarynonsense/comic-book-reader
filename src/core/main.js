@@ -712,8 +712,18 @@ if (!gotTheLock) {
       if (doCheck) {
         log.debug("checking for updates");
         if (g_updatesWorker === undefined) {
+          // strip null from env to avoid exception
+          const safeEnv = Object.fromEntries(
+            Object.entries(process.env).filter(
+              ([_, value]) =>
+                typeof value === "string" && !value.includes("\0"),
+            ),
+          );
           g_updatesWorker = utilityProcess.fork(
             path.join(__dirname, "worker-updates.js"),
+            {
+              env: safeEnv,
+            },
           );
           g_updatesWorker.on("message", (message) => {
             const newVersion = message[1];

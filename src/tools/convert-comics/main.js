@@ -652,7 +652,7 @@ function startFile(inputFileIndex, totalFilesNum) {
     killWorker();
     if (g_worker === undefined) {
       log.editor("[CC] starting worker (extract)");
-      // strip null form env to avoid a weird fix a user
+      // strip null from env to avoid exception
       const safeEnv = Object.fromEntries(
         Object.entries(process.env).filter(
           ([_, value]) => typeof value === "string" && !value.includes("\0"),
@@ -1404,8 +1404,17 @@ async function createFilesFromImages(
     killWorker();
     if (g_worker === undefined) {
       log.editor("[CC] starting worker (create)");
+      // strip null from env to avoid exception
+      const safeEnv = Object.fromEntries(
+        Object.entries(process.env).filter(
+          ([_, value]) => typeof value === "string" && !value.includes("\0"),
+        ),
+      );
       const worker = utilityProcess.fork(
         path.join(__dirname, "../../shared/main/tools-worker.js"),
+        {
+          env: safeEnv,
+        },
       );
       worker.on("message", (message) => {
         if (message.type === "testLog") {

@@ -168,8 +168,17 @@ exports.updatePages = function (data) {
     g_worker = undefined;
   }
   if (g_worker === undefined) {
+    // strip null from env to avoid exception
+    const safeEnv = Object.fromEntries(
+      Object.entries(process.env).filter(
+        ([_, value]) => typeof value === "string" && !value.includes("\0"),
+      ),
+    );
     g_worker = utilityProcess.fork(
       path.join(__dirname, "../../../shared/main/tools-worker.js"),
+      {
+        env: safeEnv,
+      },
     );
     g_worker.on("message", (message) => {
       g_worker.kill(); // kill it after one use

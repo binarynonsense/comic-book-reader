@@ -2304,7 +2304,7 @@ function startPageWorker() {
   try {
     if (g_pageWorker === undefined) {
       log.editor("start page worker");
-      // strip null form env to avoid a weird fix a user
+      // strip null from env to avoid exception
       const safeEnv = Object.fromEntries(
         Object.entries(process.env).filter(
           ([_, value]) => typeof value === "string" && !value.includes("\0"),
