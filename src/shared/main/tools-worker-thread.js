@@ -6,28 +6,32 @@
  */
 
 const { parentPort } = require("worker_threads");
-const { processImage } = require("./process-image");
+const { processImage } = require("./tools-process-image");
 
-parentPort.on("message", async (msg) => {
-  if (msg.type === "shutdown") {
+parentPort.on("message", async (message) => {
+  // parentPort.postMessage({
+  //   type: "test-log",
+  //   text: message.type,
+  // });
+  if (message.type === "shutdown") {
     process.exit(0);
-  } else if (msg.type === "process") {
+  } else if (message.type === "process") {
     try {
       const result = await processImage(
-        msg.filePath,
-        msg.resizeNeeded,
-        msg.imageOpsNeeded,
-        msg.uiOptions
+        message.filePath,
+        message.resizeNeeded,
+        message.imageOpsNeeded,
+        message.uiOptions,
       );
       parentPort.postMessage({
         type: "done",
-        id: msg.id,
+        id: message.id,
         filePath: result.filePath,
       });
     } catch (error) {
       parentPort.postMessage({
         type: "error",
-        id: msg.id,
+        id: message.id,
         error: error.message,
       });
     }

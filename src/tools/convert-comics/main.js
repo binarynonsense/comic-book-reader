@@ -24,7 +24,7 @@ const temp = require("../../shared/main/temp");
 const tools = require("../../shared/main/tools");
 const menuBar = require("../../shared/main/menu-bar");
 const timers = require("../../shared/main/timers");
-const { processImage } = require("./main/process-image");
+const { processImage } = require("../../shared/main/tools-process-image");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -1307,14 +1307,18 @@ async function processImagesWithWorkers({
     let error = undefined;
 
     for (let i = 0; i < maxWorkers; i++) {
-      const worker = new Worker(path.join(__dirname, "/main/worker-thread.js"));
-      worker.on("message", (msg) => {
-        if (msg.type === "done") {
+      const worker = new Worker(
+        path.join(__dirname, "../../shared/main/tools-worker-thread.js"),
+      );
+      worker.on("message", (message) => {
+        if (message.type === "test-log") {
+          log.test(message.text);
+        } else if (message.type === "done") {
           activeWorkers--;
           // refresh filePath in case it was changed due to format conversion
-          imgFilePaths[msg.id] = msg.filePath;
-        } else if (msg.type === "error") {
-          error = `[WORKER] error on image #${msg.id + 1}: ${msg.error}`;
+          imgFilePaths[message.id] = message.filePath;
+        } else if (message.type === "error") {
+          error = `[WORKER] error on image #${message.id + 1}: ${message.error}`;
           activeWorkers--;
         }
         if (!g_cancel && !error) processNextImage(worker);
