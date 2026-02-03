@@ -199,10 +199,6 @@ if (!gotTheLock) {
   }
   // show vips warnings from sharp only in dev mode
   if (!g_launchInfo.isDev) process.env.VIPS_WARNING = 1;
-  //
-  appUtils.generateExternalFilesFolder();
-  //
-  tools.init();
   // init window
   const createWindow = () => {
     // screen size
@@ -264,6 +260,8 @@ if (!gotTheLock) {
         );
       }
       temp.init(tempFolderPath);
+      appUtils.generateExternalFilesFolder();
+      tools.init();
       fileFormats.init(g_launchInfo.isRelease);
       history.init(settings.getValue("history_capacity"));
       i18n.init(g_launchInfo.isDev);
