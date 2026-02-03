@@ -83,7 +83,7 @@ exports.getLocalization = function () {
     },
     {
       id: "tool-ec-add-file-button-text",
-      text: _("tool-shared-ui-add").toUpperCase(),
+      text: _("tool-shared-ui-add-files").toUpperCase(),
     },
     {
       id: "tool-ec-clear-list-button-text",
