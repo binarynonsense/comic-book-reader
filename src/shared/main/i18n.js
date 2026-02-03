@@ -161,6 +161,8 @@ function getLocalesFromFolder(folderPath, isExternal) {
     } else {
       for (let file of filesInFolder) {
         try {
+          path.extname;
+          if (path.extname(file) !== ".json") continue;
           let data = JSON.parse(
             fs.readFileSync(path.join(folderPath, file), "utf8"),
           );
@@ -171,6 +173,11 @@ function getLocalesFromFolder(folderPath, isExternal) {
             data["@metadata"]["locale"] !== undefined &&
             (g_isDev || data["@metadata"]["pre-release"] === "false")
           ) {
+            if (
+              path.basename(file, path.extname(file)) !==
+              data["@metadata"]["locale"]
+            )
+              continue;
             let localeInfo = {
               nativeName: data["@metadata"]["native-name"],
               locale: data["@metadata"]["locale"],
