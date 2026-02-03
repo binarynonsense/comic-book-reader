@@ -41,6 +41,8 @@ let g_localizedModalCancelButtonText;
 let g_localizedModalCloseButtonText;
 let g_localizedModalCopyLogButtonText;
 
+let g_defaultImageWorkers;
+
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -51,11 +53,53 @@ export function needsScrollToTopButtonUpdate() {
   return true;
 }
 
-function init(outputFolderPath, loadedOptions) {
+function init(outputFolderPath, loadedOptions, defaultImageWorkers) {
   if (!g_isInitialized) {
     // things to start only once go here
     g_isInitialized = true;
   }
+  g_defaultImageWorkers = defaultImageWorkers;
+
+  //////////////////////////
+
+  document
+    .getElementById("tool-ec-add-folder-button")
+    .parentElement.classList.add("set-display-none");
+  document
+    .getElementById("tool-ec-output-name-label")
+    .classList.add("set-display-none");
+  document
+    .getElementById("tool-ec-output-page-order-label")
+    .classList.add("set-display-none");
+  document
+    .getElementById("tool-ec-output-folder-option-select")
+    .classList.add("set-display-none");
+  document
+    .getElementById("tool-ec-output-format-text")
+    .parentElement.classList.add("set-display-none");
+  ////////
+  document
+    .getElementById("tool-ec-folders-file-formats-text")
+    .parentElement.classList.add("set-display-none");
+  document
+    .getElementById("tool-ec-folders-contain-text")
+    .parentElement.classList.add("set-display-none");
+  document
+    .getElementById("tool-ec-folders-file-formats-div")
+    .classList.add("set-display-none");
+  document
+    .getElementById("tool-ec-folders-recursively-text")
+    .parentElement.classList.add("set-display-none");
+  document
+    .getElementById("tool-ec-folders-recursively-checkbox")
+    .parentElement.classList.add("set-display-none");
+  //
+  document
+    .getElementById("tool-ec-advanced-output-options-section-div")
+    .classList.add("set-display-none");
+
+  /////////////////////////////
+
   document.getElementById("tools-columns-right").scrollIntoView({
     behavior: "instant",
     block: "start",
@@ -174,6 +218,54 @@ function init(outputFolderPath, loadedOptions) {
   toolsShared.initSliders();
 
   ////////////////////////////////////////
+  // image processing //
+
+  const imageMultithreadingSelect = document.getElementById(
+    "tool-ec-imageprocessing-multithreading-method-select",
+  );
+  imageMultithreadingSelect.addEventListener("change", (event) => {
+    updateImageMultithreadingUI();
+    updateColumnsHeight();
+  });
+
+  const imageMultithreadingWorkersInput = document.getElementById(
+    "tool-ec-imageprocessing-multithreading-numworkers-input",
+  );
+  imageMultithreadingWorkersInput.addEventListener("change", (event) => {
+    updateImageMultithreadingUI();
+  });
+
+  const imageMultithreadingSharpConcInput = document.getElementById(
+    "tool-ec-imageprocessing-multithreading-sharpconcurrency-input",
+  );
+  imageMultithreadingSharpConcInput.addEventListener("change", (event) => {
+    updateImageMultithreadingUI();
+  });
+
+  ////////////////
+
+  document
+    .querySelector("#tool-ec-imageops-brightness-checkbox")
+    .addEventListener("change", (event) => {
+      updateImageOpsUI();
+    });
+  document
+    .querySelector("#tool-ec-imageops-saturation-checkbox")
+    .addEventListener("change", (event) => {
+      updateImageOpsUI();
+    });
+  document
+    .querySelector("#tool-ec-imageops-crop-checkbox")
+    .addEventListener("change", (event) => {
+      updateImageOpsUI();
+    });
+  document
+    .querySelector("#tool-ec-imageops-extend-checkbox")
+    .addEventListener("change", (event) => {
+      updateImageOpsUI();
+    });
+
+  ////////////////////////////////////////
   // settings
   document
     .getElementById("tool-ec-settings-reset-button")
@@ -234,10 +326,16 @@ function switchSection(id) {
         .getElementById("tool-ec-output-options-section-div")
         .classList.remove("set-display-none");
       document
+        .getElementById("tool-ec-imageprocessing-options-section-div")
+        .classList.remove("set-display-none");
+      document
         .getElementById("tool-ec-advanced-input-options-section-div")
         .classList.add("set-display-none");
+      // document
+      //   .getElementById("tool-ec-advanced-output-options-section-div")
+      //   .classList.add("set-display-none");
       document
-        .getElementById("tool-ec-advanced-output-options-section-div")
+        .getElementById("tool-ec-advanced-imageprocessing-options-section-div")
         .classList.add("set-display-none");
       document
         .getElementById("tool-ec-settings-section-div")
@@ -262,10 +360,16 @@ function switchSection(id) {
         .getElementById("tool-ec-output-options-section-div")
         .classList.add("set-display-none");
       document
+        .getElementById("tool-ec-imageprocessing-options-section-div")
+        .classList.add("set-display-none");
+      document
         .getElementById("tool-ec-advanced-input-options-section-div")
         .classList.remove("set-display-none");
+      // document
+      //   .getElementById("tool-ec-advanced-output-options-section-div")
+      //   .classList.remove("set-display-none");
       document
-        .getElementById("tool-ec-advanced-output-options-section-div")
+        .getElementById("tool-ec-advanced-imageprocessing-options-section-div")
         .classList.remove("set-display-none");
       document
         .getElementById("tool-ec-settings-section-div")
@@ -290,10 +394,16 @@ function switchSection(id) {
         .getElementById("tool-ec-output-options-section-div")
         .classList.add("set-display-none");
       document
-        .getElementById("tool-ec-advanced-input-options-section-div")
+        .getElementById("tool-ec-imageprocessing-options-section-div")
         .classList.add("set-display-none");
       document
-        .getElementById("tool-ec-advanced-output-options-section-div")
+        .getElementById("tool-ec-advanced-input-options-section-div")
+        .classList.add("set-display-none");
+      // document
+      //   .getElementById("tool-ec-advanced-output-options-section-div")
+      //   .classList.add("set-display-none");
+      document
+        .getElementById("tool-ec-advanced-imageprocessing-options-section-div")
         .classList.add("set-display-none");
       document
         .getElementById("tool-ec-settings-section-div")
@@ -309,10 +419,6 @@ function switchSection(id) {
 
 export function sendIpcToMain(...args) {
   coreSendIpcToMain("tool-extract-comics", ...args);
-}
-
-async function sendIpcToMainAndWait(...args) {
-  return await coreSendIpcToMainAndWait("tool-extract-comics", ...args);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -437,8 +543,51 @@ function initOnIpcCallbacks() {
 
   /////////////////////////////////////////////////////////////////////////////
 
-  on("images-extracted", () => {
-    let imageFormatParams = {
+  function getUiSelectedOptions() {
+    let uiSelectedOptions = {};
+    uiSelectedOptions.outputBrightnessApply = document.querySelector(
+      "#tool-ec-imageops-brightness-checkbox",
+    ).checked;
+    uiSelectedOptions.outputBrightnessMultiplier = document.querySelector(
+      "#tool-ec-imageops-brightness-input",
+    ).value;
+    uiSelectedOptions.outputSaturationApply = document.querySelector(
+      "#tool-ec-imageops-saturation-checkbox",
+    ).checked;
+    uiSelectedOptions.outputSaturationMultiplier = document.querySelector(
+      "#tool-ec-imageops-saturation-input",
+    ).value;
+    uiSelectedOptions.outputCropApply = document.querySelector(
+      "#tool-ec-imageops-crop-checkbox",
+    ).checked;
+    uiSelectedOptions.outputCropValue = document.querySelector(
+      "#tool-ec-imageops-crop-input",
+    ).value;
+    uiSelectedOptions.outputExtendApply = document.querySelector(
+      "#tool-ec-imageops-extend-checkbox",
+    ).checked;
+    uiSelectedOptions.outputExtendValue = document.querySelector(
+      "#tool-ec-imageops-extend-input",
+    ).value;
+    uiSelectedOptions.outputExtendColor = document.querySelector(
+      "#tool-ec-imageops-extend-color-input",
+    ).value;
+
+    // advanced image operations
+
+    uiSelectedOptions.imageProcessingMultithreadingMethod =
+      document.getElementById(
+        "tool-ec-imageprocessing-multithreading-method-select",
+      ).value;
+    uiSelectedOptions.imageProcessingNumWorkers = document.getElementById(
+      "tool-ec-imageprocessing-multithreading-numworkers-input",
+    ).value;
+    uiSelectedOptions.imageProcessingSharpConcurrency = document.getElementById(
+      "tool-ec-imageprocessing-multithreading-sharpconcurrency-input",
+    ).value;
+
+    ////
+    uiSelectedOptions.outputImageFormatParams = {
       jpgQuality: document.querySelector("#tool-ec-jpg-quality-slider").value,
       jpgMozjpeg: document.querySelector("#tool-ec-jpg-mozjpeg-checkbox")
         .checked,
@@ -446,25 +595,27 @@ function initOnIpcCallbacks() {
       avifQuality: document.querySelector("#tool-ec-avif-quality-slider").value,
       webpQuality: document.querySelector("#tool-ec-webp-quality-slider").value,
     };
-    let scaleParams = {
-      option: g_outputImageScaleSelect.value,
-      value: g_outputImageScaleSlider.value,
-    };
-    if (g_outputImageScaleSelect.value === "1") {
-      scaleParams.value = document.getElementById(
-        "tool-ec-output-image-scale-height-input",
-      ).value;
-    } else if (g_outputImageScaleSelect.value === "2") {
-      scaleParams.value = document.getElementById(
-        "tool-ec-output-image-scale-width-input",
-      ).value;
-    }
+
+    uiSelectedOptions.outputImageScaleOption = g_outputImageScaleSelect.value;
+    uiSelectedOptions.outputImageScalePercentage = document.querySelector(
+      "#tool-ec-output-image-scale-slider",
+    ).value;
+    uiSelectedOptions.outputImageScaleHeight = document.querySelector(
+      "#tool-ec-output-image-scale-height-input",
+    ).value;
+    uiSelectedOptions.outputImageScaleWidth = document.querySelector(
+      "#tool-ec-output-image-scale-width-input",
+    ).value;
+
+    uiSelectedOptions.outputImageFormat = g_outputImageFormatSelect.value;
+
+    return uiSelectedOptions;
+  }
+  on("images-extracted", () => {
     sendIpcToMain(
-      "resize-images",
+      "process-images",
       g_inputFilePath,
-      scaleParams,
-      imageFormatParams,
-      g_outputImageFormatSelect.value,
+      getUiSelectedOptions(),
       g_outputFolderPath,
     );
   });
@@ -621,8 +772,62 @@ function checkValidData() {
   }
   ///////////////////
   toolsShared.updateSliders();
+  updateImageMultithreadingUI();
+  updateImageOpsUI();
   updateOutputFolderUI();
   updateColumnsHeight();
+}
+
+function updateImageMultithreadingUI() {
+  const imageMultithreadingSelect = document.getElementById(
+    "tool-ec-imageprocessing-multithreading-method-select",
+  );
+  const method0Div = document.getElementById(
+    "tool-ec-imageprocessing-multithreading-method-0-div",
+  );
+  if (imageMultithreadingSelect.value === "0") {
+    method0Div.classList.remove("set-display-none");
+    updateColumnsHeight();
+  } else {
+    method0Div.classList.add("set-display-none");
+    updateColumnsHeight();
+  }
+  //
+  const imageMultithreadingWorkersInput = document.getElementById(
+    "tool-ec-imageprocessing-multithreading-numworkers-input",
+  );
+  if (imageMultithreadingWorkersInput.value <= 0) {
+    imageMultithreadingWorkersInput.value = g_defaultImageWorkers;
+  }
+  //
+  const imageMultithreadingSharpConcInput = document.getElementById(
+    "tool-ec-imageprocessing-multithreading-sharpconcurrency-input",
+  );
+  if (imageMultithreadingSharpConcInput.value < 0) {
+    imageMultithreadingSharpConcInput.value = 1;
+  }
+}
+
+function updateImageOpsUI() {
+  // TODO: validate input boxes values?
+  const checkboxIds = [
+    "#tool-ec-imageops-brightness-checkbox",
+    "#tool-ec-imageops-saturation-checkbox",
+    "#tool-ec-imageops-crop-checkbox",
+    "#tool-ec-imageops-extend-checkbox",
+  ];
+  checkboxIds.forEach((checkboxId) => {
+    const checkbox = document.querySelector(checkboxId);
+    if (checkbox.checked) {
+      checkbox.parentNode
+        .querySelector(".tools-imageop-controls-div")
+        .classList.remove("tools-disabled");
+    } else {
+      checkbox.parentNode
+        .querySelector(".tools-imageop-controls-div")
+        .classList.add("tools-disabled");
+    }
+  });
 }
 
 function updateOutputFolderUI() {
@@ -690,7 +895,7 @@ function onStart(resetCounter = true) {
   g_inputFileType = g_inputFiles[g_inputFilesIndex].type;
 
   sendIpcToMain(
-    "start",
+    "start-file",
     g_inputFilePath,
     g_inputFileType,
     g_inputFilesIndex + 1,

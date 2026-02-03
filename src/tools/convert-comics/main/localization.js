@@ -45,10 +45,10 @@ exports.getTooltipsLocalization = function () {
       id: "tool-cc-tooltip-output-folder",
       text: _("tool-shared-tooltip-output-folder"),
     },
-    {
-      id: "tool-cc-tooltip-pdf-extraction",
-      text: _("tool-shared-ui-pdf-extraction-tooltip"),
-    },
+    // {
+    //   id: "tool-cc-tooltip-pdf-extraction",
+    //   text: _("tool-shared-ui-pdf-extraction-tooltip"),
+    // },
     {
       id: "tool-cc-tooltip-password",
       text: _("tool-shared-ui-creation-password-tooltip", "cbz, cb7, cbr, pdf"),

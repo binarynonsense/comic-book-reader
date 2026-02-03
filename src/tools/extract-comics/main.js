@@ -8,6 +8,7 @@
 const { BrowserWindow, clipboard, utilityProcess } = require("electron");
 const fs = require("node:fs");
 const path = require("node:path");
+const os = require("node:os");
 const core = require("../../core/main");
 const { _ } = require("../../shared/main/i18n");
 const localization = require("./main/localization");
@@ -22,6 +23,7 @@ const temp = require("../../shared/main/temp");
 const tools = require("../../shared/main/tools");
 const settings = require("../../shared/main/settings");
 const menuBar = require("../../shared/main/menu-bar");
+const { processImage } = require("../../shared/main/tools-process-image");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -37,6 +39,8 @@ let g_workerWindow;
 let g_initialPassword = "";
 let g_tempSubFolderPath;
 
+let g_uiSelectedOptions = {};
+
 function init() {
   if (!g_isInitialized) {
     initOnIpcCallbacks();
@@ -45,6 +49,7 @@ function init() {
   }
 
   g_initialPassword = "";
+  g_uiSelectedOptions.outputFileBaseName = undefined;
 }
 
 exports.open = function (fileData) {
@@ -56,8 +61,14 @@ exports.open = function (fileData) {
     fileType = fileData.type;
     g_initialPassword = fileData.password;
   }
-  const data = fs.readFileSync(path.join(__dirname, "index.html"));
-  sendIpcToCoreRenderer("replace-inner-html", "#tools", data.toString());
+  const data = fs.readFileSync(
+    path.join(__dirname, "../convert-comics/index.html"),
+  );
+  sendIpcToCoreRenderer(
+    "replace-inner-html",
+    "#tools",
+    data.toString().replaceAll("tool-cc-", "tool-ec-"),
+  );
 
   updateLocalizedText();
 
@@ -69,6 +80,7 @@ exports.open = function (fileData) {
     //   : appUtils.getDesktopFolderPath(),
     appUtils.getDesktopFolderPath(),
     loadedOptions,
+    Math.max(1, Math.floor(os.cpus().length / 2)),
   );
 
   updateLocalizedText();
@@ -266,62 +278,30 @@ function initOnIpcCallbacks() {
     }
   });
 
-  on(
-    "start",
-    (
-      inputFilePath,
-      inputFileType,
-      fileNum,
-      totalFilesNum,
-      pdfExtractionMethod,
-      pdfExtractionLib,
-    ) => {
-      menuBar.setCloseTool(false);
-      sendIpcToPreload("update-menubar");
-      start(
-        inputFilePath,
-        inputFileType,
-        fileNum,
-        totalFilesNum,
-        pdfExtractionMethod,
-        pdfExtractionLib,
-      );
-    },
-  );
+  on("start-file", (...args) => {
+    menuBar.setCloseTool(false);
+    sendIpcToPreload("update-menubar");
+    startFile(...args);
+  });
 
   on("stop-error", (err) => {
     stopError(err);
   });
 
-  on(
-    "resize-images",
-    (
-      inputFilePath,
-      outputScaleParams,
-      outputFormatParams,
-      outputFormat,
-      outputFolderPath,
-    ) => {
-      resizeImages(
-        inputFilePath,
-        outputScaleParams,
-        outputFormatParams,
-        outputFormat,
-        outputFolderPath,
-      );
-    },
-  );
-
-  on("resizing-error", (err) => {
-    stopError(err);
+  on("process-images", (...args) => {
+    processContent(...args);
   });
 
-  on(
-    "create-file-from-images",
-    (imgFilePaths, outputFormat, outputFilePath) => {
-      createFolderWithImages(imgFilePaths, outputFilePath); // outputFilePath is really outputFolderPath
-    },
-  );
+  // on("resizing-error", (err) => {
+  //   stopError(err);
+  // });
+
+  // on(
+  //   "create-file-from-images",
+  //   (imgFilePaths, outputFormat, outputFilePath) => {
+  //     createFolderWithImages(imgFilePaths, outputFilePath); // outputFilePath is really outputFolderPath
+  //   },
+  // );
 
   on("end", (wasCanceled, numFiles, numErrors, numAttempted) => {
     if (!wasCanceled) {
@@ -451,7 +431,7 @@ function stopCancel() {
   sendIpcToRenderer("finished-canceled");
 }
 
-function start(
+function startFile(
   inputFilePath,
   inputFileType,
   fileNum,
@@ -615,20 +595,20 @@ exports.onIpcFromToolsWorkerRenderer = function (...args) {
   }
 };
 
-async function resizeImages(
+async function processContent(
   inputFilePath,
-  outputScaleParams,
-  outputFormatParams,
-  outputFormat,
+  uiSelectedOptions,
   outputFolderPath,
 ) {
   if (g_cancel === true) {
     stopCancel();
     return;
   }
+  g_uiSelectedOptions = uiSelectedOptions;
   try {
-    const sharp = require("sharp");
-
+    ///////////////////////////////////////////////
+    // SORT FILES /////////////////////////////////
+    ///////////////////////////////////////////////
     let fileName = path.basename(inputFilePath, path.extname(inputFilePath));
     let subFolderPath = path.join(outputFolderPath, fileName);
     let i = 1;
@@ -645,152 +625,217 @@ async function resizeImages(
     }
     imgFilePaths.sort(utils.compare);
 
-    // resize
-    if (g_cancel === true) {
-      stopCancel();
-      return;
+    ///////////////////////////////////////////////
+    // CHECK REQUIREMENTS /////////////////////////
+    ///////////////////////////////////////////////
+    let resizeNeeded = false;
+    let imageOpsNeeded = false;
+    g_uiSelectedOptions.outputImageScalePercentage = parseInt(
+      g_uiSelectedOptions.outputImageScalePercentage,
+    );
+    if (
+      g_uiSelectedOptions.outputImageScaleOption !== "0" ||
+      g_uiSelectedOptions.outputImageScalePercentage < 100
+    ) {
+      resizeNeeded = true;
     }
     if (
-      outputScaleParams.option !== "0" ||
-      parseInt(outputScaleParams.value) < 100
+      g_uiSelectedOptions.outputBrightnessApply ||
+      g_uiSelectedOptions.outputSaturationApply ||
+      (g_uiSelectedOptions.outputCropApply &&
+        g_uiSelectedOptions.outputCropValue > 0) ||
+      (g_uiSelectedOptions.outputExtendApply &&
+        g_uiSelectedOptions.outputExtendValue > 0)
     ) {
-      sendIpcToRenderer(
-        "update-log-text",
-        _("tool-shared-modal-log-resizing-images") + "...",
-      );
-      sharp.cache(false);
-      for (let index = 0; index < imgFilePaths.length; index++) {
-        if (g_cancel === true) {
-          stopCancel();
-          return;
-        }
-        sendIpcToRenderer(
-          "update-log-text",
-          _("tool-shared-modal-log-resizing-image") +
-            ": " +
-            (index + 1) +
-            " / " +
-            imgFilePaths.length,
-        );
-        let filePath = imgFilePaths[index];
-        let fileFolderPath = path.dirname(filePath);
-        let fileName = path.basename(filePath, path.extname(filePath));
-        let tmpFilePath = path.join(
-          fileFolderPath,
-          fileName + "." + FileExtension.TMP,
-        );
-        if (outputScaleParams.option === "1") {
-          await sharp(filePath)
-            .withMetadata()
-            .resize({
-              height: parseInt(outputScaleParams.value),
-              withoutEnlargement: true,
-            })
-            .toFile(tmpFilePath);
-        } else if (outputScaleParams.option === "2") {
-          await sharp(filePath)
-            .withMetadata()
-            .resize({
-              width: parseInt(outputScaleParams.value),
-              withoutEnlargement: true,
-            })
-            .toFile(tmpFilePath);
-        } else {
-          // scale
-          let data = await sharp(filePath).metadata();
-          await sharp(filePath)
-            .withMetadata()
-            .resize(
-              Math.round(
-                data.width * (parseInt(outputScaleParams.value) / 100),
-              ),
-            )
-            .toFile(tmpFilePath);
-        }
-
-        fs.unlinkSync(filePath);
-        fileUtils.moveFile(tmpFilePath, filePath);
-      }
+      imageOpsNeeded = true;
     }
-
-    // change image format
     if (g_cancel === true) {
       stopCancel();
       return;
     }
-    if (outputFormat != FileExtension.NOT_SET) {
-      sendIpcToRenderer(
-        "update-log-text",
-        _("tool-shared-modal-log-converting-images") + "...",
-      );
-      sharp.cache(false); // avoid EBUSY error on windows
-      for (let index = 0; index < imgFilePaths.length; index++) {
-        if (g_cancel === true) {
-          stopCancel();
-          return;
-        }
-        sendIpcToRenderer(
-          "update-log-text",
-          _("tool-shared-modal-log-converting-image") +
-            ": " +
-            (index + 1) +
-            " / " +
-            imgFilePaths.length,
-        );
-        let filePath = imgFilePaths[index];
-        let fileFolderPath = path.dirname(filePath);
-        let fileName = path.basename(filePath, path.extname(filePath));
-        let tmpFilePath = path.join(
-          fileFolderPath,
-          fileName + "." + FileExtension.TMP,
-        );
-        if (outputFormat === FileExtension.JPG) {
-          await sharp(filePath)
-            .withMetadata()
-            .jpeg({
-              quality: parseInt(outputFormatParams.jpgQuality),
-              mozjpeg: outputFormatParams.jpgMozjpeg,
-            })
-            .toFile(tmpFilePath);
-        } else if (outputFormat === FileExtension.PNG) {
-          if (parseInt(outputFormatParams.pngQuality) < 100) {
-            await sharp(filePath)
-              .withMetadata()
-              .png({
-                quality: parseInt(outputFormatParams.pngQuality),
-              })
-              .toFile(tmpFilePath);
-          } else {
-            await sharp(filePath).withMetadata().png().toFile(tmpFilePath);
+    ///////////////////////////////////////////////
+    // MODIFY IMAGES //////////////////////////////
+    ///////////////////////////////////////////////
+    if (
+      resizeNeeded ||
+      imageOpsNeeded ||
+      g_uiSelectedOptions.outputImageFormat != FileExtension.NOT_SET
+    ) {
+      switch (
+        parseInt(g_uiSelectedOptions.imageProcessingMultithreadingMethod)
+      ) {
+        case 1:
+          {
+            const result = await processImages({
+              imgFilePaths,
+              resizeNeeded,
+              imageOpsNeeded,
+            });
+            if (result.state === "error") {
+              stopError(result.error);
+              return;
+            }
           }
-        } else if (outputFormat === FileExtension.WEBP) {
-          await sharp(filePath)
-            .withMetadata()
-            .webp({
-              quality: parseInt(outputFormatParams.webpQuality),
-            })
-            .toFile(tmpFilePath);
-        } else if (outputFormat === FileExtension.AVIF) {
-          await sharp(filePath)
-            .withMetadata()
-            .avif({
-              quality: parseInt(outputFormatParams.avifQuality),
-            })
-            .toFile(tmpFilePath);
-        }
-        let newFilePath = path.join(
-          fileFolderPath,
-          fileName + "." + outputFormat,
-        );
-        fs.unlinkSync(filePath);
-        fileUtils.moveFile(tmpFilePath, newFilePath);
-        imgFilePaths[index] = newFilePath;
+          break;
+        default:
+          {
+            const result = await processImagesWithWorkers({
+              imgFilePaths,
+              resizeNeeded,
+              imageOpsNeeded,
+            });
+            if (result.state === "error") {
+              stopError(result.error);
+              return;
+            }
+          }
+          break;
+      }
+      if (g_cancel === true) {
+        stopCancel();
+        return;
       }
     }
+    ///////////////////////////////////////////////
+    // SEND TO NEXT STAGE /////////////////////////
+    ///////////////////////////////////////////////
     createFolderWithImages(imgFilePaths, subFolderPath);
   } catch (error) {
     stopError(error);
   }
+}
+
+async function processImages({ imgFilePaths, resizeNeeded, imageOpsNeeded }) {
+  try {
+    const sharp = require("sharp");
+    sharp.concurrency(0);
+    sharp.cache(false);
+    for (let index = 0; index < imgFilePaths.length; index++) {
+      if (g_cancel === true) {
+        return { state: "cancelled" };
+      }
+      updateModalLogText(
+        _("tool-shared-modal-log-converting-image") +
+          ": " +
+          (index + 1) +
+          " / " +
+          imgFilePaths.length,
+      );
+      const result = await processImage(
+        imgFilePaths[index],
+        resizeNeeded,
+        imageOpsNeeded,
+        g_uiSelectedOptions,
+      );
+      imgFilePaths[index] = result.filePath;
+    } // end for
+    return { state: "success" };
+  } catch (error) {
+    return { state: "error", error };
+  }
+}
+
+async function processImagesWithWorkers({
+  imgFilePaths,
+  resizeNeeded,
+  imageOpsNeeded,
+}) {
+  return new Promise((resolve) => {
+    const { Worker } = require("worker_threads");
+
+    // process.env.UV_THREADPOOL_SIZE = os.cpus().length;
+
+    let maxWorkers = parseInt(g_uiSelectedOptions.imageProcessingNumWorkers);
+    if (!maxWorkers || maxWorkers <= 0)
+      maxWorkers = Math.max(1, Math.floor(os.cpus().length / 2));
+    let sharpConcurrency = parseInt(
+      g_uiSelectedOptions.imageProcessingSharpConcurrency,
+    );
+
+    if (!sharpConcurrency || sharpConcurrency < 0) sharpConcurrency = 1;
+    const sharp = require("sharp");
+    sharp.concurrency(sharpConcurrency);
+    sharp.cache(false);
+
+    const workers = [];
+    const workQueue = imgFilePaths.map((filePath, index) => ({
+      id: index,
+      filePath,
+    }));
+
+    let activeWorkers = 0;
+    let error = undefined;
+
+    for (let i = 0; i < maxWorkers; i++) {
+      const worker = new Worker(
+        path.join(__dirname, "../../shared/main/tools-worker-thread.js"),
+      );
+      worker.on("message", (message) => {
+        if (message.type === "test-log") {
+          log.test(message.text);
+        } else if (message.type === "done") {
+          activeWorkers--;
+          // refresh filePath in case it was changed due to format conversion
+          imgFilePaths[message.id] = message.filePath;
+        } else if (message.type === "error") {
+          error = `[WORKER] error on image #${message.id + 1}: ${message.error}`;
+          activeWorkers--;
+        }
+        if (!g_cancel && !error) processNextImage(worker);
+        checkForCompletion();
+      });
+      worker.on("error", (error) => {
+        error = "[WORKER] " + error;
+        activeWorkers--;
+        checkForCompletion();
+      });
+      worker.on("exit", (code) => {
+        // log.editor(`[CC] worker #${i} exited with code: ${code}`);
+      });
+      workers.push(worker);
+      processNextImage(worker);
+    }
+
+    ///////
+
+    function processNextImage(worker) {
+      if (g_cancel || workQueue.length === 0) return;
+      const job = workQueue.shift();
+      activeWorkers++;
+      updateModalLogText(
+        _("tool-shared-modal-log-converting-image") +
+          ": " +
+          (job.id + 1) +
+          " / " +
+          imgFilePaths.length,
+      );
+      worker.postMessage({
+        type: "process",
+        id: job.id,
+        filePath: job.filePath,
+        resizeNeeded,
+        imageOpsNeeded,
+        uiOptions: g_uiSelectedOptions,
+      });
+    }
+
+    function checkForCompletion() {
+      if (
+        activeWorkers === 0 &&
+        (workQueue.length === 0 || g_cancel || error)
+      ) {
+        shutdownAllWorkers();
+        resolve({
+          state: error ? "error" : g_cancel ? "cancelled" : "success",
+          error,
+        });
+      }
+    }
+
+    function shutdownAllWorkers() {
+      workers.forEach((worker) => worker.postMessage({ type: "shutdown" }));
+    }
+  });
 }
 
 async function createFolderWithImages(imgFilePaths, outputFolderPath) {

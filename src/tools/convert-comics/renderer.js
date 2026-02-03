@@ -503,33 +503,6 @@ function switchSection(id) {
 ///////////////////////////////////////////////////////////////////////////////
 
 function updateUISelectedOptions() {
-  g_uiSelectedOptions.outputBrightnessApply = document.querySelector(
-    "#tool-cc-imageops-brightness-checkbox",
-  ).checked;
-  g_uiSelectedOptions.outputBrightnessMultiplier = document.querySelector(
-    "#tool-cc-imageops-brightness-input",
-  ).value;
-  g_uiSelectedOptions.outputSaturationApply = document.querySelector(
-    "#tool-cc-imageops-saturation-checkbox",
-  ).checked;
-  g_uiSelectedOptions.outputSaturationMultiplier = document.querySelector(
-    "#tool-cc-imageops-saturation-input",
-  ).value;
-  g_uiSelectedOptions.outputCropApply = document.querySelector(
-    "#tool-cc-imageops-crop-checkbox",
-  ).checked;
-  g_uiSelectedOptions.outputCropValue = document.querySelector(
-    "#tool-cc-imageops-crop-input",
-  ).value;
-  g_uiSelectedOptions.outputExtendApply = document.querySelector(
-    "#tool-cc-imageops-extend-checkbox",
-  ).checked;
-  g_uiSelectedOptions.outputExtendValue = document.querySelector(
-    "#tool-cc-imageops-extend-input",
-  ).value;
-  g_uiSelectedOptions.outputExtendColor = document.querySelector(
-    "#tool-cc-imageops-extend-color-input",
-  ).value;
   /////////////////
   g_uiSelectedOptions.inputFoldersContain = document.getElementById(
     "tool-cc-folders-contain-select",
@@ -607,6 +580,8 @@ function updateUISelectedOptions() {
     avifQuality: document.querySelector("#tool-cc-avif-quality-slider").value,
     webpQuality: document.querySelector("#tool-cc-webp-quality-slider").value,
   };
+
+  /////
 
   g_uiSelectedOptions.outputBrightnessApply = document.querySelector(
     "#tool-cc-imageops-brightness-checkbox",

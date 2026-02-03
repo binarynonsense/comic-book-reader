@@ -27,9 +27,17 @@ exports.getTooltipsLocalization = function () {
       id: "tool-ec-tooltip-remove-from-list",
       text: _("tool-shared-tooltip-remove-from-list"),
     },
+    // {
+    //   id: "tool-ec-tooltip-pdf-extraction",
+    //   text: _("tool-shared-ui-pdf-extraction-tooltip"),
+    // },
     {
-      id: "tool-ec-tooltip-pdf-extraction",
-      text: _("tool-shared-ui-pdf-extraction-tooltip"),
+      id: "tool-ec-tooltip-imageops-crop",
+      text: _("tool-shared-ui-imageops-order-before-tooltip"),
+    },
+    {
+      id: "tool-ec-tooltip-imageops-extend",
+      text: _("tool-shared-ui-imageops-order-after-tooltip"),
     },
   ];
 };
@@ -130,6 +138,11 @@ exports.getLocalization = function () {
     },
     //////////////////////////////////////////////
     {
+      id: "tool-ec-imageprocessing-options-text",
+      text: _("tool-shared-ui-imageprocessing-options"),
+    },
+    //////////////////////////////////////////////
+    {
       id: "tool-ec-advanced-input-options-text",
       text: _("tool-shared-ui-advanced-input-options"),
     },
@@ -161,6 +174,27 @@ exports.getLocalization = function () {
     },
     //////////////////////////////////////////////
     {
+      id: "tool-ec-advanced-imageprocessing-options-text",
+      text: _("tool-shared-ui-advanced-imageprocessing-options"),
+    },
+    {
+      id: "tool-ec-imageprocessing-multithreading-method-text",
+      text: _("tool-shared-ui-imageprocessing-multithreading-method"),
+    },
+    {
+      id: "tool-ec-imageprocessing-multithreading-method-0-text",
+      text: _("tool-shared-ui-imageprocessing-multithreading-method-0"),
+    },
+    {
+      id: "tool-ec-imageprocessing-multithreading-method-1-text",
+      text: _("tool-shared-ui-imageprocessing-multithreading-method-1"),
+    },
+    {
+      id: "tool-ec-imageprocessing-multithreading-numworkers-text",
+      text: _("tool-shared-ui-imageprocessing-multithreading-numworkers"),
+    },
+    //////////////////////////////////////////////
+    {
       id: "tool-ec-keep-format-text",
       text: _("tool-shared-ui-output-options-format-keep"),
     },
@@ -189,6 +223,27 @@ exports.getLocalization = function () {
     {
       id: "tool-ec-settings-reset-button-text",
       text: _("tool-shared-ui-settings-reset").toUpperCase(),
+    },
+    //////////////////////////////////////////////
+    {
+      id: "tool-ec-imageops-apply-text",
+      text: _("tool-shared-ui-creation-imageops-apply"),
+    },
+    {
+      id: "tool-ec-imageops-brightness-text",
+      text: _("tool-shared-ui-creation-brightnessmultiplier"),
+    },
+    {
+      id: "tool-ec-imageops-saturation-text",
+      text: _("tool-shared-ui-creation-saturationmultiplier"),
+    },
+    {
+      id: "tool-ec-imageops-crop-text",
+      text: `${_("tool-shared-ui-imageops-crop-border")} (px)`,
+    },
+    {
+      id: "tool-ec-imageops-extend-text",
+      text: `${_("tool-shared-ui-imageops-add-border")} (px)`,
     },
     //////////////////////////////////////////////
   ];

@@ -8,8 +8,8 @@
 const { BrowserWindow, clipboard, utilityProcess } = require("electron");
 const fs = require("node:fs");
 const path = require("node:path");
-const core = require("../../core/main");
 const os = require("node:os");
+const core = require("../../core/main");
 const { _ } = require("../../shared/main/i18n");
 const localization = require("./main/localization");
 
@@ -60,6 +60,7 @@ function init() {
     g_isInitialized = true;
   }
 
+  g_initialPassword = "";
   g_uiSelectedOptions.outputFileBaseName = undefined;
 }
 
