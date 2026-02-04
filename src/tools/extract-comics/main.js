@@ -439,7 +439,7 @@ function startFile(
   inputFileType,
   fileNum,
   totalFilesNum,
-  pdfExtractionMethod,
+  pdfExtractionDpi,
   pdfExtractionLib,
 ) {
   if (fileNum === 1) g_cancel = false;
@@ -532,7 +532,7 @@ function startFile(
         inputFileType,
         g_tempSubFolderPath,
         g_initialPassword,
-        { pdfExtractionMethod: pdfExtractionMethod },
+        { pdfExtractionDpi },
       ]);
       g_worker = worker;
     }
@@ -567,7 +567,7 @@ function startFile(
         "tool-extract-comics",
         inputFilePath,
         g_tempSubFolderPath,
-        pdfExtractionMethod,
+        pdfExtractionDpi,
         _("tool-shared-modal-log-extracting-page") + ": ",
         g_initialPassword,
         core.isDev(),

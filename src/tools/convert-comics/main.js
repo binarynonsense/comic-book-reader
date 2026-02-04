@@ -728,7 +728,7 @@ function startFile(inputFileIndex, totalFilesNum) {
           ? g_tempSubFolderPath
           : g_creationTempSubFolderPath,
         g_inputPassword,
-        { pdfExtractionMethod: g_uiSelectedOptions.inputPdfExtractionMethod },
+        { pdfExtractionDpi: g_uiSelectedOptions.inputPdfExtractionDpi },
       ]);
       g_worker = worker;
     }
@@ -762,7 +762,7 @@ function startFile(inputFileIndex, totalFilesNum) {
         g_mode === ToolMode.CONVERT
           ? g_tempSubFolderPath
           : g_creationTempSubFolderPath,
-        g_uiSelectedOptions.inputPdfExtractionMethod,
+        g_uiSelectedOptions.inputPdfExtractionDpi,
         _("tool-shared-modal-log-extracting-page") + ": ",
         g_inputPassword,
         core.isDev(),

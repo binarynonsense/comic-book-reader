@@ -524,7 +524,7 @@ function updateUISelectedOptions() {
     "#tool-cc-folders-recursively-checkbox",
   ).checked;
   //////////////////
-  g_uiSelectedOptions.inputPdfExtractionMethod = document.getElementById(
+  g_uiSelectedOptions.inputPdfExtractionDpi = document.getElementById(
     "tool-cc-pdf-extraction-select",
   ).value;
   g_uiSelectedOptions.inputPdfExtractionLib = document.getElementById(
