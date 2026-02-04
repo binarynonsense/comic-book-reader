@@ -657,7 +657,7 @@ function startFile(inputFileIndex, totalFilesNum) {
     if (g_worker === undefined) {
       log.editor("[CC] starting worker (extract)");
       const worker = utilityProcess.fork(
-        path.join(__dirname, "../../shared/main/tools-worker.js"),
+        path.join(__dirname, "../../shared/main/tools-worker-process.js"),
         {
           env: utils.getSafeEnv(),
           // enable manual GC and set a 3GB hard cap so the worker crashes
@@ -1286,7 +1286,7 @@ async function createFilesFromImages(
     if (g_worker === undefined) {
       log.editor("[CC] starting worker (create)");
       const worker = utilityProcess.fork(
-        path.join(__dirname, "../../shared/main/tools-worker.js"),
+        path.join(__dirname, "../../shared/main/tools-worker-process.js"),
         {
           env: utils.getSafeEnv(),
         },

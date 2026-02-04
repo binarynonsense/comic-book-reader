@@ -476,7 +476,7 @@ function startFile(
     if (g_worker === undefined) {
       log.editor("[EC] starting worker");
       const worker = utilityProcess.fork(
-        path.join(__dirname, "../../shared/main/tools-worker.js"),
+        path.join(__dirname, "../../shared/main/tools-worker-process.js"),
         {
           env: utils.getSafeEnv(),
           // enable manual GC and set a 3GB hard cap so the worker crashes

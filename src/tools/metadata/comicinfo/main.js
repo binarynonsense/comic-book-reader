@@ -170,7 +170,7 @@ exports.updatePages = function (data) {
   if (g_worker === undefined) {
     // strip null from env to avoid exception
     g_worker = utilityProcess.fork(
-      path.join(__dirname, "../../../shared/main/tools-worker.js"),
+      path.join(__dirname, "../../../shared/main/tools-worker-process.js"),
       {
         env: utils.getSafeEnv(),
       },
