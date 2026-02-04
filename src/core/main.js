@@ -865,7 +865,7 @@ if (!gotTheLock) {
   };
 
   exports.onMenuToolExtractComics = function () {
-    tools.switchTool("tool-extract-comics");
+    tools.switchTool("tool-convert-comics", { mode: 2 });
     sendIpcToPreload("update-menubar");
   };
 

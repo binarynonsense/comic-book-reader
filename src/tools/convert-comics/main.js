@@ -38,6 +38,7 @@ let g_isInitialized = false;
 const ToolMode = {
   CONVERT: 0,
   CREATE: 1,
+  EXTRACT: 2,
 };
 let g_mode = ToolMode.CONVERT;
 
@@ -219,7 +220,7 @@ function initOnIpcCallbacks() {
       let allowMultipleSelection = true;
       let allowedFileTypesName;
       let allowedFileTypesList;
-      if (g_mode === ToolMode.CONVERT) {
+      if (g_mode === ToolMode.CONVERT || g_mode === ToolMode.EXTRACT) {
         allowedFileTypesName = _("dialog-file-types-comics");
         allowedFileTypesList = [
           FileExtension.CBZ,
@@ -498,7 +499,7 @@ function start() {
   timers.start("convert-comics");
   g_cancel = false;
   g_imageIndex = 0;
-  if (g_mode === ToolMode.CONVERT) {
+  if (g_mode === ToolMode.CONVERT || g_mode === ToolMode.EXTRACT) {
     g_uiSelectedOptions.outputFileBaseName = undefined;
     sendIpcToRenderer("start-first-file");
   } else {
@@ -548,23 +549,23 @@ function startFile(inputFileIndex, totalFilesNum) {
   let inputFileType = g_inputFiles[g_inputFilesIndex].type;
   let fileNum = g_inputFilesIndex + 1;
   if (fileNum !== 1 && g_mode === ToolMode.CREATE) updateModalLogText("");
+  let updateTitle;
+  if (g_mode === ToolMode.CONVERT)
+    updateTitle = _("tool-shared-modal-title-converting");
+  else if (g_mode === ToolMode.CREATE)
+    updateTitle = _("tool-shared-modal-title-adding");
+  else if (g_mode === ToolMode.EXTRACT)
+    updateTitle = _("tool-shared-modal-title-extracting");
   sendIpcToRenderer(
     "modal-update-title-text",
-    g_mode === ToolMode.CONVERT
-      ? _("tool-shared-modal-title-converting") +
-          (totalFilesNum > 1 ? " (" + fileNum + "/" + totalFilesNum + ")" : "")
-      : _("tool-shared-modal-title-adding") +
-          (totalFilesNum > 1 ? " (" + fileNum + "/" + totalFilesNum + ")" : ""),
+    updateTitle +
+      (totalFilesNum > 1 ? " (" + fileNum + "/" + totalFilesNum + ")" : ""),
   );
   sendIpcToRenderer(
     "update-info-text",
     utils.reduceStringFrontEllipsis(inputFilePath),
   );
-  updateModalLogText(
-    g_mode === ToolMode.CONVERT
-      ? _("tool-shared-modal-title-converting")
-      : _("tool-shared-modal-title-adding"),
-  );
+  updateModalLogText(updateTitle);
   updateModalLogText(inputFilePath);
 
   // check if output file name exists and skip mode
@@ -580,15 +581,20 @@ function startFile(inputFileIndex, totalFilesNum) {
       ) {
         outputFolderPath = path.dirname(inputFilePath);
       }
-      let baseFileName = g_uiSelectedOptions.outputFileBaseName
-        ? g_uiSelectedOptions.outputFileBaseName
-        : path.basename(inputFilePath, path.extname(inputFilePath));
+      let baseFileName =
+        g_uiSelectedOptions.outputFileBaseName ??
+        path.basename(inputFilePath, path.extname(inputFilePath));
 
       const outputFormat = g_uiSelectedOptions.outputFormat;
       const outputSplitNumFiles = g_uiSelectedOptions.outputSplitNumFiles;
 
       let skip = undefined;
-      if (outputSplitNumFiles <= 1) {
+      if (outputFormat === FileDataType.IMGS_FOLDER) {
+        let outputSubFolderPath = path.join(outputFolderPath, baseFileName);
+        if (fs.existsSync(outputSubFolderPath)) {
+          skip = { path: outputSubFolderPath, isFile: false };
+        }
+      } else if (outputSplitNumFiles <= 1) {
         // just one file in the output folder
         let outputFilePath = path.join(
           outputFolderPath,
@@ -619,7 +625,7 @@ function startFile(inputFileIndex, totalFilesNum) {
     }
   }
   ////////////////
-  if (g_mode === ToolMode.CONVERT) {
+  if (g_mode === ToolMode.CONVERT || g_mode === ToolMode.EXTRACT) {
     g_tempSubFolderPath = temp.createSubFolder();
   } else {
     // g_tempSubFolderPath was created on start
@@ -724,7 +730,7 @@ function startFile(inputFileIndex, totalFilesNum) {
         "extract",
         inputFilePath,
         inputFileType,
-        g_mode === ToolMode.CONVERT
+        g_mode === ToolMode.CONVERT || g_mode === ToolMode.EXTRACT
           ? g_tempSubFolderPath
           : g_creationTempSubFolderPath,
         g_inputPassword,
@@ -764,7 +770,7 @@ function startFile(inputFileIndex, totalFilesNum) {
         "extract-pdf",
         "tool-convert-comics",
         inputFilePath,
-        g_mode === ToolMode.CONVERT
+        g_mode === ToolMode.CONVERT || g_mode === ToolMode.EXTRACT
           ? g_tempSubFolderPath
           : g_creationTempSubFolderPath,
         _("tool-shared-modal-log-extracting-page") + ": ",
@@ -852,6 +858,27 @@ function end(wasCanceled, numFiles, numErrors, numAttempted) {
           _("tool-shared-modal-info-conversion-success-num-files", numFiles),
         );
       }
+    } else if (g_mode === ToolMode.EXTRACT) {
+      sendIpcToRenderer(
+        "modal-update-title-text",
+        _("tool-shared-modal-title-extraction-finished"),
+      );
+
+      if (numErrors > 0) {
+        sendIpcToRenderer(
+          "update-info-text",
+          _(
+            "tool-shared-modal-info-extraction-error-num-files",
+            numErrors,
+            numFiles,
+          ),
+        );
+      } else {
+        sendIpcToRenderer(
+          "update-info-text",
+          _("tool-shared-modal-info-extraction-success-num-files", numFiles),
+        );
+      }
     } else {
       if (numErrors > 0) {
         sendIpcToRenderer(
@@ -871,7 +898,9 @@ function end(wasCanceled, numFiles, numErrors, numAttempted) {
       "modal-update-title-text",
       g_mode === ToolMode.CONVERT
         ? _("tool-shared-modal-title-conversion-canceled")
-        : _("tool-shared-modal-title-creation-canceled"),
+        : g_mode === ToolMode.EXTRACT
+          ? _("tool-shared-modal-title-extraction-canceled")
+          : _("tool-shared-modal-title-creation-canceled"),
     );
     sendIpcToRenderer(
       "update-info-text",
@@ -882,7 +911,14 @@ function end(wasCanceled, numFiles, numErrors, numAttempted) {
             numErrors,
             numFiles - numAttempted,
           )
-        : "",
+        : g_mode === ToolMode.EXTRACT
+          ? _(
+              "tool-shared-modal-info-extraction-results",
+              numAttempted - numErrors,
+              numErrors,
+              numFiles - numAttempted,
+            )
+          : "",
     );
   }
 
@@ -926,14 +962,18 @@ function stopError(error, errorMessage, nameAsError = true) {
     updateModalLogText(
       g_mode === ToolMode.CONVERT
         ? _("tool-shared-modal-log-conversion-error")
-        : _("tool-shared-modal-log-creation-error"),
+        : g_mode === ToolMode.EXTRACT
+          ? _("tool-shared-modal-log-extraction-error")
+          : _("tool-shared-modal-log-creation-error"),
     );
   } else {
     // not really an error. if file is skipped, for example
     updateModalLogText(
       g_mode === ToolMode.CONVERT
         ? _("tool-shared-modal-log-failed-conversion")
-        : _("tool-shared-modal-log-failed-creation"),
+        : g_mode === ToolMode.EXTRACT
+          ? _("tool-shared-modal-log-failed-extraction")
+          : _("tool-shared-modal-log-failed-creation"),
     );
     updateModalLogText(uiMsg);
   }
@@ -950,7 +990,9 @@ function stopCancel() {
   updateModalLogText(
     g_mode === ToolMode.CONVERT
       ? _("tool-shared-modal-log-conversion-canceled")
-      : _("tool-shared-modal-log-creation-canceled"),
+      : g_mode === ToolMode.EXTRACT
+        ? _("tool-shared-modal-log-extraction-canceled")
+        : _("tool-shared-modal-log-creation-canceled"),
   );
   updateModalLogText("");
   sendIpcToRenderer("file-finished-canceled");
@@ -966,7 +1008,7 @@ function addPathToInputList(inputPath) {
     if (fs.lstatSync(inputPath)?.isDirectory()) {
       type = 1;
     } else {
-      if (g_mode === ToolMode.CONVERT) {
+      if (g_mode === ToolMode.CONVERT || g_mode === ToolMode.EXTRACT) {
         if (!fileUtils.hasComicBookExtension(inputPath)) return;
       } else {
         if (
@@ -1256,15 +1298,33 @@ async function processContent(inputFilePath) {
     ///////////////////////////////////////////////
     // SEND TO NEXT STAGE /////////////////////////
     ///////////////////////////////////////////////
-    let baseFileName = g_uiSelectedOptions.outputFileBaseName
-      ? g_uiSelectedOptions.outputFileBaseName
-      : path.basename(inputFilePath, path.extname(inputFilePath));
-    createFilesFromImages(
-      inputFilePath,
-      baseFileName,
-      imgFilePaths,
-      comicInfoFilePath,
-    );
+    if (g_uiSelectedOptions.outputFormat === FileDataType.IMGS_FOLDER) {
+      let outputFolderPath = g_uiSelectedOptions.outputFolderPath;
+      let subFolderName = path.basename(
+        inputFilePath,
+        path.extname(inputFilePath),
+      );
+      let subFolderPath = path.join(outputFolderPath, subFolderName);
+      let i = 1;
+      while (fs.existsSync(subFolderPath)) {
+        i++;
+        subFolderPath = path.join(
+          outputFolderPath,
+          subFolderName + "(" + i + ")",
+        );
+      }
+      createFolderWithImages(imgFilePaths, subFolderPath);
+    } else {
+      let baseFileName =
+        g_uiSelectedOptions.outputFileBaseName ??
+        path.basename(inputFilePath, path.extname(inputFilePath));
+      createFilesFromImages(
+        inputFilePath,
+        baseFileName,
+        imgFilePaths,
+        comicInfoFilePath,
+      );
+    }
   } catch (error) {
     stopError(error);
   }
@@ -1367,6 +1427,36 @@ async function createFilesFromImages(
       g_uiSelectedOptions.outputPassword,
       extraData,
     ]);
+  } catch (error) {
+    stopError(error);
+  }
+}
+
+async function createFolderWithImages(imgFilePaths, outputFolderPath) {
+  if (g_cancel === true) {
+    stopCancel();
+    return;
+  }
+  try {
+    sendIpcToRenderer(
+      "update-log-text",
+      _("tool-ec-modal-log-extracting-to") + ":",
+    );
+    sendIpcToRenderer("update-log-text", outputFolderPath);
+    // create subFolderPath
+    if (!fs.existsSync(outputFolderPath)) {
+      fs.mkdirSync(outputFolderPath);
+      for (let index = 0; index < imgFilePaths.length; index++) {
+        let oldPath = imgFilePaths[index];
+        let newPath = path.join(outputFolderPath, path.basename(oldPath));
+        fileUtils.moveFile(oldPath, newPath);
+      }
+      temp.deleteSubFolder(g_tempSubFolderPath);
+      g_tempSubFolderPath = undefined;
+      sendIpcToRenderer("file-finished-ok");
+    } else {
+      stopError("tool-ec folder shouldn't exist");
+    }
   } catch (error) {
     stopError(error);
   }

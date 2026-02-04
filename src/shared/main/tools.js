@@ -18,7 +18,6 @@ exports.init = function () {
   g_tools["tool-preferences"] = require("../../tools/preferences/main");
   g_tools["tool-history"] = require("../../tools/history/main");
   g_tools["tool-convert-comics"] = require("../../tools/convert-comics/main");
-  g_tools["tool-extract-comics"] = require("../../tools/extract-comics/main");
   g_tools["tool-convert-imgs"] = require("../../tools/convert-imgs/main");
   g_tools["tool-extract-palette"] = require("../../tools/extract-palette/main");
   g_tools["tool-extract-text"] = require("../../tools/extract-text/main");

@@ -10,6 +10,7 @@ const { _, _raw } = require("../../../shared/main/i18n");
 const ToolMode = {
   CONVERT: 0,
   CREATE: 1,
+  EXTRACT: 2,
 };
 
 exports.getLocalizedTexts = function () {
@@ -28,6 +29,7 @@ exports.getLocalizedTexts = function () {
     outputFileSameNameOption1:
       "⚠ " + _("tool-shared-ui-output-file-same-name-1") + " ⚠",
     outputFileSameNameOption2: _("tool-shared-ui-output-file-same-name-2"),
+    outputFormatFolder: _("tool-shared-ui-output-options-folder"),
   };
 };
 
@@ -87,10 +89,15 @@ exports.getLocalization = function (mode) {
               ? _raw("tool-cc-title-alt", false)
               : _("tool-cc-title")
             ).toUpperCase()
-          : (_raw("tool-cr-title-alt", false)
-              ? _raw("tool-cr-title-alt", false)
-              : _("tool-cr-title")
-            ).toUpperCase(),
+          : mode === ToolMode.EXTRACT
+            ? (_raw("tool-ec-title-alt", false)
+                ? _raw("tool-ec-title-alt", false)
+                : _("tool-ec-title")
+              ).toUpperCase()
+            : (_raw("tool-cr-title-alt", false)
+                ? _raw("tool-cr-title-alt", false)
+                : _("tool-cr-title")
+              ).toUpperCase(),
     },
     {
       id: "tool-cc-back-button-text",
@@ -101,7 +108,9 @@ exports.getLocalization = function (mode) {
       text:
         mode === ToolMode.CONVERT
           ? _("tool-shared-ui-convert").toUpperCase()
-          : _("tool-shared-ui-create").toUpperCase(),
+          : mode === ToolMode.EXTRACT
+            ? _("tool-shared-ui-extract").toUpperCase()
+            : _("tool-shared-ui-create").toUpperCase(),
     },
     //////////////////////////////////////////////
     {

@@ -2663,7 +2663,11 @@ exports.onMenuConvertFile = function () {
 
 exports.onMenuExtractFile = function () {
   if (g_fileData.path !== undefined) {
-    tools.switchTool("tool-extract-comics", g_fileData);
+    tools.switchTool("tool-convert-comics", {
+      mode: 2,
+      inputFilePaths: [g_fileData.path],
+      inputPassword: g_fileData.password,
+    });
   }
   sendIpcToPreload("update-menubar");
 };

@@ -11,7 +11,6 @@ import * as systemMonitor from "../../tools/system-monitor/renderer.js";
 import * as toolPreferences from "../../tools/preferences/renderer.js";
 import * as toolHistory from "../../tools/history/renderer.js";
 import * as toolConvertComics from "../../tools/convert-comics/renderer.js";
-import * as toolExtractComics from "../../tools/extract-comics/renderer.js";
 import * as toolConvertImgs from "../../tools/convert-imgs/renderer.js";
 import * as toolExtractPalette from "../../tools/extract-palette/renderer.js";
 import * as toolExtractText from "../../tools/extract-text/renderer.js";
@@ -41,7 +40,6 @@ export function init() {
   g_tools["tool-preferences"] = toolPreferences;
   g_tools["tool-history"] = toolHistory;
   g_tools["tool-convert-comics"] = toolConvertComics;
-  g_tools["tool-extract-comics"] = toolExtractComics;
   g_tools["tool-convert-imgs"] = toolConvertImgs;
   g_tools["tool-extract-palette"] = toolExtractPalette;
   g_tools["tool-extract-text"] = toolExtractText;

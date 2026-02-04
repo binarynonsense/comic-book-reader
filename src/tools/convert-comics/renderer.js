@@ -17,6 +17,7 @@ import * as toolsShared from "../../shared/renderer/tools-shared.js";
 const ToolMode = {
   CONVERT: 0,
   CREATE: 1,
+  EXTRACT: 2,
 };
 let g_mode = ToolMode.CONVERT;
 
@@ -118,6 +119,45 @@ function init(
     .addEventListener("click", (event) => {
       switchSection(2);
     });
+  ////////////////////////////////////////
+  if (g_mode === ToolMode.EXTRACT) {
+    // BRUTE FORCE DISABLE
+    document
+      .getElementById("tool-cc-add-folder-button")
+      .parentElement.classList.add("set-display-none");
+    document
+      .getElementById("tool-cc-output-name-label")
+      .classList.add("set-display-none");
+    document
+      .getElementById("tool-cc-output-page-order-label")
+      .classList.add("set-display-none");
+    document
+      .getElementById("tool-cc-output-folder-option-select")
+      .classList.add("set-display-none");
+    document
+      .getElementById("tool-cc-output-format-text")
+      .parentElement.classList.add("set-display-none");
+    ////////
+    document
+      .getElementById("tool-cc-folders-file-formats-text")
+      .parentElement.classList.add("set-display-none");
+    document
+      .getElementById("tool-cc-folders-contain-text")
+      .parentElement.classList.add("set-display-none");
+    document
+      .getElementById("tool-cc-folders-file-formats-div")
+      .classList.add("set-display-none");
+    document
+      .getElementById("tool-cc-folders-recursively-text")
+      .parentElement.classList.add("set-display-none");
+    document
+      .getElementById("tool-cc-folders-recursively-checkbox")
+      .parentElement.classList.add("set-display-none");
+    //
+    document
+      .getElementById("tool-cc-advanced-output-options-section-div")
+      .classList.add("set-display-none");
+  }
   ////////////////////////////////////////
   g_inputListDiv = document.querySelector("#tool-cc-input-list");
 
@@ -221,9 +261,10 @@ function init(
     });
   } else {
     outputFolderOptionSelect.classList.add("set-display-none");
-    document
-      .getElementById("tool-cc-tooltip-output-folder")
-      .classList.remove("set-display-none");
+    if (g_mode === ToolMode.CREATE)
+      document
+        .getElementById("tool-cc-tooltip-output-folder")
+        .classList.remove("set-display-none");
   }
 
   g_outputFormatSelect.innerHTML =
@@ -233,6 +274,9 @@ function init(
     '<option value="cb7">cb7</option>';
   if (canEditRars) {
     g_outputFormatSelect.innerHTML += '<option value="cbr">cbr</option>';
+  }
+  if (g_mode === ToolMode.EXTRACT) {
+    g_outputFormatSelect.innerHTML += `<option value="imgs folder">${g_localizedTexts.outputFormatFolder}</option>`;
   }
   g_outputFormatSelect.addEventListener("change", (event) => {
     checkValidData();
@@ -284,7 +328,7 @@ function init(
 
   // conversion / creation //
   g_outputNameInput = document.querySelector("#tool-cc-output-name-input");
-  if (g_mode === ToolMode.CONVERT) {
+  if (g_mode === ToolMode.CONVERT || g_mode === ToolMode.EXTRACT) {
     document
       .getElementById("tool-cc-output-page-order-label")
       .classList.add("set-display-none");
@@ -309,7 +353,7 @@ function init(
     "#tool-cc-folders-file-formats-div",
   );
   let formats = [];
-  if (g_mode === ToolMode.CONVERT) {
+  if (g_mode === ToolMode.CONVERT || g_mode === ToolMode.EXTRACT) {
     formats = [".cbz", ".cbr", ".pdf", ".epub", ".cb7"];
   } else {
     formats = [
@@ -424,9 +468,10 @@ function switchSection(id) {
       document
         .getElementById("tool-cc-advanced-input-options-section-div")
         .classList.add("set-display-none");
-      document
-        .getElementById("tool-cc-advanced-output-options-section-div")
-        .classList.add("set-display-none");
+      if (g_mode !== ToolMode.EXTRACT)
+        document
+          .getElementById("tool-cc-advanced-output-options-section-div")
+          .classList.add("set-display-none");
       document
         .getElementById("tool-cc-advanced-imageprocessing-options-section-div")
         .classList.add("set-display-none");
@@ -458,9 +503,10 @@ function switchSection(id) {
       document
         .getElementById("tool-cc-advanced-input-options-section-div")
         .classList.remove("set-display-none");
-      document
-        .getElementById("tool-cc-advanced-output-options-section-div")
-        .classList.remove("set-display-none");
+      if (g_mode !== ToolMode.EXTRACT)
+        document
+          .getElementById("tool-cc-advanced-output-options-section-div")
+          .classList.remove("set-display-none");
       document
         .getElementById("tool-cc-advanced-imageprocessing-options-section-div")
         .classList.remove("set-display-none");
@@ -492,9 +538,10 @@ function switchSection(id) {
       document
         .getElementById("tool-cc-advanced-input-options-section-div")
         .classList.add("set-display-none");
-      document
-        .getElementById("tool-cc-advanced-output-options-section-div")
-        .classList.add("set-display-none");
+      if (g_mode !== ToolMode.EXTRACT)
+        document
+          .getElementById("tool-cc-advanced-output-options-section-div")
+          .classList.add("set-display-none");
       document
         .getElementById("tool-cc-advanced-imageprocessing-options-section-div")
         .classList.add("set-display-none");
@@ -551,8 +598,10 @@ function updateUISelectedOptions() {
     "tool-cc-output-folder-option-select",
   ).value;
   g_uiSelectedOptions.outputFormat = g_outputFormatSelect.value;
+  if (g_mode === ToolMode.EXTRACT)
+    g_uiSelectedOptions.outputFormat = "imgs folder";
   g_uiSelectedOptions.outputImageFormat = g_outputImageFormatSelect.value;
-  if (g_mode === ToolMode.CONVERT) {
+  if (g_mode === ToolMode.CONVERT || g_mode === ToolMode.EXTRACT) {
     g_uiSelectedOptions.outputFileBaseName = "";
   } else {
     g_uiSelectedOptions.outputFileBaseName = g_outputNameInput.value;
@@ -930,8 +979,7 @@ function initOnIpcCallbacks() {
   });
 
   on("file-images-extracted", () => {
-    if (g_mode === ToolMode.CONVERT) {
-      // convert tool
+    if (g_mode === ToolMode.CONVERT || g_mode === ToolMode.EXTRACT) {
       sendIpcToMain("process-content", g_inputFilePath);
     } else {
       // create tool
@@ -978,7 +1026,7 @@ function initOnIpcCallbacks() {
     const modalButtonClose = g_openModal.querySelector(
       "#tool-cc-modal-close-button",
     );
-    if (g_mode === ToolMode.CONVERT) {
+    if (g_mode === ToolMode.CONVERT || g_mode === ToolMode.EXTRACT) {
       modalButtonClose.classList.remove("modal-button-success-color");
       modalButtonClose.classList.add("modal-button-danger-color");
       g_numErrors++;
@@ -1099,12 +1147,18 @@ function checkValidData() {
   updateOutputFolderUI();
   toolsShared.updateSliders();
 
+  if (g_outputFormatSelect.value === "") g_outputFormatSelect.value = "cbz";
+
+  //////////////////////////////////////
+
   updateUISelectedOptions();
+
+  // update UI /////////////////////////
 
   if (
     g_uiSelectedOptions.outputFolderPath === undefined ||
     g_inputList.length <= 0 ||
-    (g_mode === ToolMode.CONVERT && g_outputNameInput.value === "")
+    (g_mode === ToolMode.CREATE && g_outputNameInput.value === "")
   ) {
     g_startButton.classList.add("tools-disabled");
   } else {
