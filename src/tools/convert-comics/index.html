@@ -261,32 +261,55 @@
             class="fas fa-question-circle tools-tooltip-button"
             title="tooltip"
           ></i> -->
-          <select id="tool-cc-pdf-extraction-select">
-            <!-- <option
-              id="tool-cc-pdf-extraction-o-embedded-text"
-              value="embedded"
-              selected
-            ></option> -->
-            <!-- <option id="tool-cc-pdf-extraction-o-600-text" value="600">
-              600 dpi
-            </option> -->
-            <option id="tool-cc-pdf-extraction-o-300-text" value="300" selected>
-              300 dpi
-            </option>
-            <option id="tool-cc-pdf-extraction-o-200-text" value="200">
-              200 dpi
-            </option>
-            <option id="tool-cc-pdf-extraction-o-150-text" value="150">
-              150 dpi
-            </option>
-            <option id="tool-cc-pdf-extraction-o-96-text" value="96">
-              96 dpi
-            </option>
-            <option id="tool-cc-pdf-extraction-o-72-text" value="72">
-              72 dpi
-            </option>
-          </select></label
-        >
+          <div
+            class="tool-shared-columns-parent tool-shared-columns-parent-extra-margin-bottom tools-scale-div"
+            style="margin-top: 15px"
+          >
+            <div class="tool-shared-columns-50-grow">
+              <select id="tool-cc-pdf-extraction-dpi-select">
+                <option
+                  id="tool-cc-pdf-extraction-o-300-text"
+                  value="300"
+                  selected
+                >
+                  300
+                </option>
+                <option id="tool-cc-pdf-extraction-o-200-text" value="200">
+                  200
+                </option>
+                <option id="tool-cc-pdf-extraction-o-150-text" value="150">
+                  150
+                </option>
+                <option id="tool-cc-pdf-extraction-o-96-text" value="96">
+                  96
+                </option>
+                <option id="tool-cc-pdf-extraction-o-72-text" value="72">
+                  72
+                </option>
+              </select>
+              <!--  -->
+              <input
+                id="tool-cc-pdf-extraction-method-height-input"
+                class="set-display-none"
+                type="number"
+                step="50"
+                min="1"
+                value="3056"
+              />
+            </div>
+            <div class="tool-shared-columns-25">
+              <select id="tool-cc-pdf-extraction-method-select">
+                <option
+                  id="tool-cc-pdf-extraction-method-select-0-text"
+                  value="0"
+                ></option>
+                <option
+                  id="tool-cc-pdf-extraction-method-select-1-text"
+                  value="1"
+                ></option>
+              </select>
+            </div></div
+        ></label>
         <select id="tool-cc-pdf-extraction-lib-select">
           <option
             id="tool-cc-pdf-extraction-lib-o-pdfjs1-text"

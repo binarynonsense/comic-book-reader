@@ -728,7 +728,12 @@ function startFile(inputFileIndex, totalFilesNum) {
           ? g_tempSubFolderPath
           : g_creationTempSubFolderPath,
         g_inputPassword,
-        { pdfExtractionDpi: g_uiSelectedOptions.inputPdfExtractionDpi },
+        {
+          method: g_uiSelectedOptions.inputPdfExtractionMethod,
+          dpi: g_uiSelectedOptions.inputPdfExtractionDpi,
+          height: g_uiSelectedOptions.inputPdfExtractionHeight,
+          lib: g_uiSelectedOptions.inputPdfExtractionLib,
+        },
       ]);
       g_worker = worker;
     }
@@ -762,11 +767,15 @@ function startFile(inputFileIndex, totalFilesNum) {
         g_mode === ToolMode.CONVERT
           ? g_tempSubFolderPath
           : g_creationTempSubFolderPath,
-        g_uiSelectedOptions.inputPdfExtractionDpi,
         _("tool-shared-modal-log-extracting-page") + ": ",
         g_inputPassword,
         core.isDev(),
-        g_uiSelectedOptions.inputPdfExtractionLib,
+        {
+          method: g_uiSelectedOptions.inputPdfExtractionMethod,
+          dpi: g_uiSelectedOptions.inputPdfExtractionDpi,
+          height: g_uiSelectedOptions.inputPdfExtractionHeight,
+          lib: g_uiSelectedOptions.inputPdfExtractionLib,
+        },
       );
     });
   } else {

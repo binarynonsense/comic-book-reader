@@ -243,6 +243,14 @@ exports.getLocalization = function (mode) {
       text: _("tool-shared-ui-pdf-extraction"),
     },
     {
+      id: "tool-cc-pdf-extraction-method-select-0-text",
+      text: "dpi",
+    },
+    {
+      id: "tool-cc-pdf-extraction-method-select-1-text",
+      text: _("tool-shared-ui-output-options-scale-height"),
+    },
+    {
       id: "tool-cc-pdf-extraction-lib-o-pdfjs1-text",
       text: `PDF.js ${_("tool-pre-pdf-library-version-oldest")} (${_(
         "tool-pre-pdf-library-version-oldest-desc",

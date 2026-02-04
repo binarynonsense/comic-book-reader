@@ -439,8 +439,7 @@ function startFile(
   inputFileType,
   fileNum,
   totalFilesNum,
-  pdfExtractionDpi,
-  pdfExtractionLib,
+  extraData,
 ) {
   if (fileNum === 1) g_cancel = false;
   if (fileNum !== 1) sendIpcToRenderer("update-log-text", "");
@@ -463,7 +462,7 @@ function startFile(
     inputFileType === FileDataType.RAR ||
     inputFileType === FileDataType.SEVENZIP ||
     inputFileType === FileDataType.EPUB_COMIC ||
-    (inputFileType === FileDataType.PDF && pdfExtractionLib === "pdfium")
+    (inputFileType === FileDataType.PDF && extraData?.lib === "pdfium")
   ) {
     sendIpcToRenderer(
       "update-log-text",
@@ -532,7 +531,7 @@ function startFile(
         inputFileType,
         g_tempSubFolderPath,
         g_initialPassword,
-        { pdfExtractionDpi },
+        extraData,
       ]);
       g_worker = worker;
     }
@@ -567,11 +566,10 @@ function startFile(
         "tool-extract-comics",
         inputFilePath,
         g_tempSubFolderPath,
-        pdfExtractionDpi,
         _("tool-shared-modal-log-extracting-page") + ": ",
         g_initialPassword,
         core.isDev(),
-        pdfExtractionLib,
+        extraData,
       );
     });
   } else {

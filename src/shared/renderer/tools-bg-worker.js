@@ -14,32 +14,10 @@ const { padNumber } = require("../main/utils");
 
 let g_cancel;
 
-ipcRenderer.on(
-  "extract-pdf",
-  (
-    event,
-    ipcChannel,
-    filePath,
-    folderPath,
-    extractionMethod,
-    logText,
-    password,
-    isDev,
-    pdfLibVersion,
-  ) => {
-    g_cancel = false;
-    extractPDF(
-      ipcChannel,
-      filePath,
-      folderPath,
-      extractionMethod,
-      logText,
-      password,
-      isDev,
-      pdfLibVersion,
-    );
-  },
-);
+ipcRenderer.on("extract-pdf", (...args) => {
+  g_cancel = false;
+  extractPDF(...args.slice(1));
+});
 
 ipcRenderer.on("cancel", (event) => {
   if (!g_cancel) g_cancel = true;
@@ -56,11 +34,10 @@ async function extractPDF(
   ipcChannel,
   filePath,
   folderPath,
-  extractionMethod,
   logText,
   password,
   isDev,
-  pdfLibVersion,
+  extraData,
 ) {
   let pdf = null;
   let loadingTask = null;
@@ -68,7 +45,7 @@ async function extractPDF(
   try {
     let totalPages = 1;
     const pdfjsFolderName =
-      pdfLibVersion === "pdfjs_2" ? pdfjsFolderName_2 : pdfjsFolderName_1;
+      extraData.lib === "pdfjs_2" ? pdfjsFolderName_2 : pdfjsFolderName_1;
     const pdfjsLib = require(
       `../../assets/libs/${pdfjsFolderName}/build/pdf.js`,
     );
@@ -122,16 +99,23 @@ async function extractPDF(
       let pageWidth = page.view[2];
       let pageHeight = page.view[3];
       const userUnit = page.userUnit;
-      let dpi = parseInt(extractionMethod);
       const iPerUnit = 1 / 72;
-      let scaleFactor = dpi * iPerUnit;
+      let dpi = 300;
+      let scaleFactor;
 
-      let bigSide = Math.max(pageWidth, pageHeight);
-      let scaledSide = bigSide * scaleFactor;
-      if (scaledSide > 4500) {
-        scaleFactor =
-          (!userUnit || userUnit <= 1) && bigSide > 2500 ? 1 : 4500 / bigSide;
-        dpi = parseInt(scaleFactor / iPerUnit);
+      if (extraData.method === "1") {
+        scaleFactor = extraData.height / pageHeight;
+      } else {
+        dpi = parseInt(extraData.dpi);
+        scaleFactor = dpi * iPerUnit;
+        //
+        let bigSide = Math.max(pageWidth, pageHeight);
+        let scaledSide = bigSide * scaleFactor;
+        if (scaledSide > 4500) {
+          scaleFactor =
+            (!userUnit || userUnit <= 1) && bigSide > 2500 ? 1 : 4500 / bigSide;
+          dpi = parseInt(scaleFactor / iPerUnit);
+        }
       }
 
       const viewport = page.getViewport({ scale: scaleFactor });

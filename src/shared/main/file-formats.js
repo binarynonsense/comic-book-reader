@@ -1094,7 +1094,7 @@ async function extractPdf(
   filePath,
   tempFolderPath,
   password,
-  extractionMethod,
+  extraData,
   send,
   signal,
 ) {
@@ -1155,9 +1155,16 @@ async function extractPdf(
       try {
         const page = pages[index];
 
-        let dpi = parseInt(extractionMethod);
-        dpi = !Number.isNaN(dpi) ? dpi : 300;
-        let scaleFactor = dpi / 72;
+        let scaleFactor;
+        let dpi = 300;
+
+        if (extraData.method === "1") {
+          scaleFactor = extraData.height / page.getSize().height;
+        } else {
+          dpi = parseInt(extraData.dpi);
+          dpi = !Number.isNaN(dpi) ? dpi : 300;
+          scaleFactor = dpi / 72;
+        }
 
         const bitmap = await page.render({
           scale: scaleFactor,

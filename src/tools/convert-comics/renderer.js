@@ -34,6 +34,7 @@ let g_inputFilePath;
 let g_inputListDiv;
 let g_outputFolderDiv;
 let g_startButton;
+let g_inputPdfExtractionMethodSelect;
 let g_outputFormatSelect;
 let g_outputImageScaleSelect;
 let g_outputImageFormatSelect;
@@ -119,6 +120,13 @@ function init(
     });
   ////////////////////////////////////////
   g_inputListDiv = document.querySelector("#tool-cc-input-list");
+
+  g_inputPdfExtractionMethodSelect = document.querySelector(
+    "#tool-cc-pdf-extraction-method-select",
+  );
+  g_inputPdfExtractionMethodSelect.addEventListener("change", (event) => {
+    checkValidData();
+  });
 
   g_outputFolderDiv = document.querySelector("#tool-cc-output-folder");
   g_outputFormatSelect = document.querySelector(
@@ -524,8 +532,13 @@ function updateUISelectedOptions() {
     "#tool-cc-folders-recursively-checkbox",
   ).checked;
   //////////////////
+  g_uiSelectedOptions.inputPdfExtractionMethod =
+    g_inputPdfExtractionMethodSelect.value;
   g_uiSelectedOptions.inputPdfExtractionDpi = document.getElementById(
-    "tool-cc-pdf-extraction-select",
+    "tool-cc-pdf-extraction-dpi-select",
+  ).value;
+  g_uiSelectedOptions.inputPdfExtractionHeight = document.getElementById(
+    "tool-cc-pdf-extraction-method-height-input",
   ).value;
   g_uiSelectedOptions.inputPdfExtractionLib = document.getElementById(
     "tool-cc-pdf-extraction-lib-select",
@@ -1114,6 +1127,22 @@ function checkValidData() {
     } else {
       moveDownSpan.classList.remove("tools-disabled");
     }
+  }
+  ///////////////////
+  if (g_inputPdfExtractionMethodSelect.value === "0") {
+    document
+      .getElementById("tool-cc-pdf-extraction-dpi-select")
+      .classList.remove("set-display-none");
+    document
+      .getElementById("tool-cc-pdf-extraction-method-height-input")
+      .classList.add("set-display-none");
+  } else if (g_inputPdfExtractionMethodSelect.value === "1") {
+    document
+      .getElementById("tool-cc-pdf-extraction-dpi-select")
+      .classList.add("set-display-none");
+    document
+      .getElementById("tool-cc-pdf-extraction-method-height-input")
+      .classList.remove("set-display-none");
   }
   ///////////////////
   const outputKeepSubfoldersStructureDiv = document.querySelector(

@@ -150,7 +150,14 @@ exports.getLocalization = function () {
       id: "tool-ec-pdf-extraction-text",
       text: _("tool-shared-ui-pdf-extraction"),
     },
-
+    {
+      id: "tool-ec-pdf-extraction-method-select-0-text",
+      text: "dpi",
+    },
+    {
+      id: "tool-ec-pdf-extraction-method-select-1-text",
+      text: _("tool-shared-ui-output-options-scale-height"),
+    },
     //////////////////////////////////////////////
     {
       id: "tool-ec-advanced-output-options-text",

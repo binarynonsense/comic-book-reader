@@ -32,7 +32,7 @@ let g_outputImageFormatNotSetText = "";
 let g_inputListDiv;
 let g_outputFolderDiv;
 let g_startButton;
-let g_outputImageScaleSlider;
+let g_inputPdfExtractionMethodSelect;
 let g_outputImageScaleSelect;
 let g_outputImageFormatSelect;
 
@@ -145,10 +145,15 @@ function init(outputFolderPath, loadedOptions, defaultImageWorkers) {
   ////////////////////////////////////////
   g_inputListDiv = document.querySelector("#tool-ec-input-list");
 
-  g_outputFolderDiv = document.querySelector("#tool-ec-output-folder");
-  g_outputImageScaleSlider = document.querySelector(
-    "#tool-ec-output-image-scale-slider",
+  g_inputPdfExtractionMethodSelect = document.querySelector(
+    "#tool-ec-pdf-extraction-method-select",
   );
+  g_inputPdfExtractionMethodSelect.addEventListener("change", (event) => {
+    checkValidData();
+  });
+
+  g_outputFolderDiv = document.querySelector("#tool-ec-output-folder");
+
   g_outputImageScaleSelect = document.querySelector(
     "#tool-ec-output-image-scale-select",
   );
@@ -739,6 +744,22 @@ function checkValidData() {
     g_startButton.classList.add("tools-disabled");
   }
   ///////////////////
+  if (g_inputPdfExtractionMethodSelect.value === "0") {
+    document
+      .getElementById("tool-ec-pdf-extraction-dpi-select")
+      .classList.remove("set-display-none");
+    document
+      .getElementById("tool-ec-pdf-extraction-method-height-input")
+      .classList.add("set-display-none");
+  } else if (g_inputPdfExtractionMethodSelect.value === "1") {
+    document
+      .getElementById("tool-ec-pdf-extraction-dpi-select")
+      .classList.add("set-display-none");
+    document
+      .getElementById("tool-ec-pdf-extraction-method-height-input")
+      .classList.remove("set-display-none");
+  }
+  ///////////////////
   if (g_outputImageScaleSelect.value === "0") {
     document
       .getElementById("tool-ec-output-image-scale-slider")
@@ -900,8 +921,14 @@ function onStart(resetCounter = true) {
     g_inputFileType,
     g_inputFilesIndex + 1,
     g_inputFiles.length,
-    document.getElementById("tool-ec-pdf-extraction-select").value,
-    document.getElementById("tool-ec-pdf-extraction-lib-select").value,
+    {
+      method: g_inputPdfExtractionMethodSelect.value,
+      dpi: document.getElementById("tool-ec-pdf-extraction-dpi-select").value,
+      height: document.getElementById(
+        "tool-ec-pdf-extraction-method-height-input",
+      ).value,
+      lib: document.getElementById("tool-ec-pdf-extraction-lib-select").value,
+    },
   );
 }
 

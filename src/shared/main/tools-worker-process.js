@@ -70,7 +70,7 @@ async function extractImages(
         inputFilePath,
         tempFolderPath,
         password,
-        extraData?.pdfExtractionDpi ?? "300",
+        extraData,
         send,
         signal,
       );
