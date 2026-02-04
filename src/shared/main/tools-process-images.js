@@ -10,7 +10,144 @@ const path = require("node:path");
 const fileUtils = require("./file-utils");
 const { FileExtension } = require("./constants");
 
-exports.processImage = async function (
+exports.processImages = async function ({
+  imgFilePaths,
+  resizeNeeded,
+  imageOpsNeeded,
+  updateModalLogText,
+  modalInfoText,
+  uiSelectedOptions,
+  getCancel,
+}) {
+  try {
+    const sharp = require("sharp");
+    sharp.concurrency(0);
+    sharp.cache(false);
+    for (let index = 0; index < imgFilePaths.length; index++) {
+      if (getCancel()) {
+        return { state: "cancelled" };
+      }
+      updateModalLogText(
+        modalInfoText + ": " + (index + 1) + " / " + imgFilePaths.length,
+      );
+      const result = await processImage(
+        imgFilePaths[index],
+        resizeNeeded,
+        imageOpsNeeded,
+        uiSelectedOptions,
+      );
+      imgFilePaths[index] = result.filePath;
+    } // end for
+    return { state: "success" };
+  } catch (error) {
+    return { state: "error", error };
+  }
+};
+
+exports.processImagesWithWorkers = async function ({
+  imgFilePaths,
+  resizeNeeded,
+  imageOpsNeeded,
+  updateModalLogText,
+  modalInfoText,
+  uiSelectedOptions,
+  getCancel,
+}) {
+  return new Promise((resolve) => {
+    const { Worker } = require("worker_threads");
+
+    // process.env.UV_THREADPOOL_SIZE = os.cpus().length;
+
+    let maxWorkers = parseInt(uiSelectedOptions.imageProcessingNumWorkers);
+    if (!maxWorkers || maxWorkers <= 0)
+      maxWorkers = Math.max(1, Math.floor(os.cpus().length / 2));
+    let sharpConcurrency = parseInt(
+      uiSelectedOptions.imageProcessingSharpConcurrency,
+    );
+
+    if (!sharpConcurrency || sharpConcurrency < 0) sharpConcurrency = 1;
+    const sharp = require("sharp");
+    sharp.concurrency(sharpConcurrency);
+    sharp.cache(false);
+
+    const workers = [];
+    const workQueue = imgFilePaths.map((filePath, index) => ({
+      id: index,
+      filePath,
+    }));
+
+    let activeWorkers = 0;
+    let error = undefined;
+
+    for (let i = 0; i < maxWorkers; i++) {
+      const worker = new Worker(
+        path.join(__dirname, "../../shared/main/tools-worker-thread.js"),
+      );
+      worker.on("message", (message) => {
+        if (message.type === "test-log") {
+          log.test(message.text);
+        } else if (message.type === "done") {
+          activeWorkers--;
+          // refresh filePath in case it was changed due to format conversion
+          imgFilePaths[message.id] = message.filePath;
+        } else if (message.type === "error") {
+          error = `[WORKER] error on image #${message.id + 1}: ${message.error}`;
+          activeWorkers--;
+        }
+        if (!getCancel() && !error) processNextImage(worker);
+        checkForCompletion();
+      });
+      worker.on("error", (error) => {
+        error = "[WORKER] " + error;
+        activeWorkers--;
+        checkForCompletion();
+      });
+      worker.on("exit", (code) => {
+        // log.editor(`[CC] worker #${i} exited with code: ${code}`);
+      });
+      workers.push(worker);
+      processNextImage(worker);
+    }
+
+    ///////
+
+    function processNextImage(worker) {
+      if (getCancel() || workQueue.length === 0) return;
+      const job = workQueue.shift();
+      activeWorkers++;
+      updateModalLogText(
+        modalInfoText + ": " + (job.id + 1) + " / " + imgFilePaths.length,
+      );
+      worker.postMessage({
+        type: "process",
+        id: job.id,
+        filePath: job.filePath,
+        resizeNeeded,
+        imageOpsNeeded,
+        uiOptions: uiSelectedOptions,
+      });
+    }
+
+    function checkForCompletion() {
+      if (
+        activeWorkers === 0 &&
+        (workQueue.length === 0 || getCancel() || error)
+      ) {
+        shutdownAllWorkers();
+        resolve({
+          state: error ? "error" : getCancel() ? "cancelled" : "success",
+          error,
+        });
+      }
+    }
+
+    function shutdownAllWorkers() {
+      workers.forEach((worker) => worker.postMessage({ type: "shutdown" }));
+    }
+  });
+};
+
+async function processImage(
   filePath,
   resizeNeeded,
   imageOpsNeeded,
@@ -196,4 +333,5 @@ exports.processImage = async function (
     fileUtils.moveFile(tmpFilePath, newFilePath);
   }
   return { filePath: newFilePath };
-};
+}
+exports.processImage = processImage;

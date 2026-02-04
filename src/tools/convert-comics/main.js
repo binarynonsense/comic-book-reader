@@ -24,7 +24,10 @@ const temp = require("../../shared/main/temp");
 const tools = require("../../shared/main/tools");
 const menuBar = require("../../shared/main/menu-bar");
 const timers = require("../../shared/main/timers");
-const { processImage } = require("../../shared/main/tools-process-image");
+const {
+  processImages,
+  processImagesWithWorkers,
+} = require("../../shared/main/tools-process-images");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -1129,6 +1132,12 @@ async function processContent(inputFilePath) {
               imgFilePaths,
               resizeNeeded,
               imageOpsNeeded,
+              updateModalLogText,
+              modalInfoText: _("tool-shared-modal-log-converting-image"),
+              uiSelectedOptions: g_uiSelectedOptions,
+              getCancel: () => {
+                return g_cancel;
+              },
             });
             if (result.state === "error") {
               stopError(result.error);
@@ -1142,6 +1151,12 @@ async function processContent(inputFilePath) {
               imgFilePaths,
               resizeNeeded,
               imageOpsNeeded,
+              updateModalLogText,
+              modalInfoText: _("tool-shared-modal-log-converting-image"),
+              uiSelectedOptions: g_uiSelectedOptions,
+              getCancel: () => {
+                return g_cancel;
+              },
             });
             if (result.state === "error") {
               stopError(result.error);
@@ -1244,139 +1259,6 @@ async function processContent(inputFilePath) {
   } catch (error) {
     stopError(error);
   }
-}
-
-async function processImages({ imgFilePaths, resizeNeeded, imageOpsNeeded }) {
-  try {
-    const sharp = require("sharp");
-    sharp.concurrency(0);
-    sharp.cache(false);
-    for (let index = 0; index < imgFilePaths.length; index++) {
-      if (g_cancel === true) {
-        return { state: "cancelled" };
-      }
-      updateModalLogText(
-        _("tool-shared-modal-log-converting-image") +
-          ": " +
-          (index + 1) +
-          " / " +
-          imgFilePaths.length,
-      );
-      const result = await processImage(
-        imgFilePaths[index],
-        resizeNeeded,
-        imageOpsNeeded,
-        g_uiSelectedOptions,
-      );
-      imgFilePaths[index] = result.filePath;
-    } // end for
-    return { state: "success" };
-  } catch (error) {
-    return { state: "error", error };
-  }
-}
-
-async function processImagesWithWorkers({
-  imgFilePaths,
-  resizeNeeded,
-  imageOpsNeeded,
-}) {
-  return new Promise((resolve) => {
-    const { Worker } = require("worker_threads");
-
-    // process.env.UV_THREADPOOL_SIZE = os.cpus().length;
-
-    let maxWorkers = parseInt(g_uiSelectedOptions.imageProcessingNumWorkers);
-    if (!maxWorkers || maxWorkers <= 0)
-      maxWorkers = Math.max(1, Math.floor(os.cpus().length / 2));
-    let sharpConcurrency = parseInt(
-      g_uiSelectedOptions.imageProcessingSharpConcurrency,
-    );
-
-    if (!sharpConcurrency || sharpConcurrency < 0) sharpConcurrency = 1;
-    const sharp = require("sharp");
-    sharp.concurrency(sharpConcurrency);
-    sharp.cache(false);
-
-    const workers = [];
-    const workQueue = imgFilePaths.map((filePath, index) => ({
-      id: index,
-      filePath,
-    }));
-
-    let activeWorkers = 0;
-    let error = undefined;
-
-    for (let i = 0; i < maxWorkers; i++) {
-      const worker = new Worker(
-        path.join(__dirname, "../../shared/main/tools-worker-thread.js"),
-      );
-      worker.on("message", (message) => {
-        if (message.type === "test-log") {
-          log.test(message.text);
-        } else if (message.type === "done") {
-          activeWorkers--;
-          // refresh filePath in case it was changed due to format conversion
-          imgFilePaths[message.id] = message.filePath;
-        } else if (message.type === "error") {
-          error = `[WORKER] error on image #${message.id + 1}: ${message.error}`;
-          activeWorkers--;
-        }
-        if (!g_cancel && !error) processNextImage(worker);
-        checkForCompletion();
-      });
-      worker.on("error", (error) => {
-        error = "[WORKER] " + error;
-        activeWorkers--;
-        checkForCompletion();
-      });
-      worker.on("exit", (code) => {
-        // log.editor(`[CC] worker #${i} exited with code: ${code}`);
-      });
-      workers.push(worker);
-      processNextImage(worker);
-    }
-
-    ///////
-
-    function processNextImage(worker) {
-      if (g_cancel || workQueue.length === 0) return;
-      const job = workQueue.shift();
-      activeWorkers++;
-      updateModalLogText(
-        _("tool-shared-modal-log-converting-image") +
-          ": " +
-          (job.id + 1) +
-          " / " +
-          imgFilePaths.length,
-      );
-      worker.postMessage({
-        type: "process",
-        id: job.id,
-        filePath: job.filePath,
-        resizeNeeded,
-        imageOpsNeeded,
-        uiOptions: g_uiSelectedOptions,
-      });
-    }
-
-    function checkForCompletion() {
-      if (
-        activeWorkers === 0 &&
-        (workQueue.length === 0 || g_cancel || error)
-      ) {
-        shutdownAllWorkers();
-        resolve({
-          state: error ? "error" : g_cancel ? "cancelled" : "success",
-          error,
-        });
-      }
-    }
-
-    function shutdownAllWorkers() {
-      workers.forEach((worker) => worker.postMessage({ type: "shutdown" }));
-    }
-  });
 }
 
 ///////////////////////////////////////////////////////////////////////////////

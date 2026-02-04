@@ -6,7 +6,7 @@
  */
 
 const { parentPort } = require("worker_threads");
-const { processImage } = require("./tools-process-image");
+const { processImage } = require("./tools-process-images");
 
 parentPort.on("message", async (message) => {
   // parentPort.postMessage({
