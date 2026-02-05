@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-const { BrowserWindow, clipboard, utilityProcess } = require("electron");
+const { BrowserWindow, clipboard } = require("electron");
 const fs = require("node:fs");
 const path = require("node:path");
 const os = require("node:os");
@@ -24,6 +24,7 @@ const temp = require("../../shared/main/temp");
 const tools = require("../../shared/main/tools");
 const menuBar = require("../../shared/main/menu-bar");
 const timers = require("../../shared/main/timers");
+const forkUtils = require("../../shared/main/fork-utils");
 const {
   processImages,
   processImagesWithWorkers,
@@ -539,253 +540,251 @@ function start() {
 //////////////////////
 
 function startFile(inputFileIndex, totalFilesNum) {
-  g_inputFilesIndex = inputFileIndex;
+  try {
+    g_inputFilesIndex = inputFileIndex;
 
-  if (g_cancel === true) {
-    stopCancel();
-    return;
-  }
-  let inputFilePath = g_inputFiles[g_inputFilesIndex].path;
-  let inputFileType = g_inputFiles[g_inputFilesIndex].type;
-  let fileNum = g_inputFilesIndex + 1;
-  if (fileNum !== 1 && g_mode === ToolMode.CREATE) updateModalLogText("");
-  let updateTitle;
-  if (g_mode === ToolMode.CONVERT)
-    updateTitle = _("tool-shared-modal-title-converting");
-  else if (g_mode === ToolMode.CREATE)
-    updateTitle = _("tool-shared-modal-title-adding");
-  else if (g_mode === ToolMode.EXTRACT)
-    updateTitle = _("tool-shared-modal-title-extracting");
-  sendIpcToRenderer(
-    "modal-update-title-text",
-    updateTitle +
-      (totalFilesNum > 1 ? " (" + fileNum + "/" + totalFilesNum + ")" : ""),
-  );
-  sendIpcToRenderer(
-    "update-info-text",
-    utils.reduceStringFrontEllipsis(inputFilePath),
-  );
-  updateModalLogText(updateTitle);
-  updateModalLogText(inputFilePath);
-
-  // check if output file name exists and skip mode
-  {
-    if (g_uiSelectedOptions.outputFileSameName === "skip") {
-      let outputFolderPath = g_uiSelectedOptions.outputFolderPath;
-      if (g_inputFiles[g_inputFilesIndex].outputFolderPath) {
-        outputFolderPath = g_inputFiles[g_inputFilesIndex].outputFolderPath;
-      }
-      if (
-        g_mode === ToolMode.CONVERT &&
-        g_uiSelectedOptions.outputFolderOption == "1"
-      ) {
-        outputFolderPath = path.dirname(inputFilePath);
-      }
-      let baseFileName =
-        g_uiSelectedOptions.outputFileBaseName ??
-        path.basename(inputFilePath, path.extname(inputFilePath));
-
-      const outputFormat = g_uiSelectedOptions.outputFormat;
-      const outputSplitNumFiles = g_uiSelectedOptions.outputSplitNumFiles;
-
-      let skip = undefined;
-      if (outputFormat === FileDataType.IMGS_FOLDER) {
-        let outputSubFolderPath = path.join(outputFolderPath, baseFileName);
-        if (fs.existsSync(outputSubFolderPath)) {
-          skip = { path: outputSubFolderPath, isFile: false };
-        }
-      } else if (outputSplitNumFiles <= 1) {
-        // just one file in the output folder
-        let outputFilePath = path.join(
-          outputFolderPath,
-          baseFileName + "." + outputFormat,
-        );
-        if (fs.existsSync(outputFilePath)) {
-          skip = { path: outputFilePath, isFile: true };
-        }
-      } else {
-        // multiple files in a subfolder in the output folder
-        let outputSubFolderPath = path.join(outputFolderPath, baseFileName);
-        if (fs.existsSync(outputSubFolderPath)) {
-          skip = { path: outputSubFolderPath, isFile: false };
-        }
-      }
-      if (skip) {
-        stopError(
-          undefined,
-          (skip.isFile
-            ? _("tool-shared-modal-log-failed-reason-output-file-exists")
-            : _("tool-shared-modal-log-failed-reason-output-folder-exists")) +
-            "\n" +
-            skip.path,
-          false,
-        );
-        return;
-      }
+    if (g_cancel === true) {
+      stopCancel();
+      return;
     }
-  }
-  ////////////////
-  if (g_mode === ToolMode.CONVERT || g_mode === ToolMode.EXTRACT) {
-    g_tempSubFolderPath = temp.createSubFolder();
-  } else {
-    // g_tempSubFolderPath was created on start
-    g_creationTempSubFolderPath = temp.createSubFolder();
-  }
-  // extract to temp folder
-  if (inputFileType === FileDataType.IMGS_FOLDER) {
-    g_imageIndex = 0;
-    copyImagesToTempFolder(
-      inputFilePath,
-      g_uiSelectedOptions.inputSearchFoldersRecursively,
+    let inputFilePath = g_inputFiles[g_inputFilesIndex].path;
+    let inputFileType = g_inputFiles[g_inputFilesIndex].type;
+    let fileNum = g_inputFilesIndex + 1;
+    if (fileNum !== 1 && g_mode === ToolMode.CREATE) updateModalLogText("");
+    let updateTitle;
+    if (g_mode === ToolMode.CONVERT)
+      updateTitle = _("tool-shared-modal-title-converting");
+    else if (g_mode === ToolMode.CREATE)
+      updateTitle = _("tool-shared-modal-title-adding");
+    else if (g_mode === ToolMode.EXTRACT)
+      updateTitle = _("tool-shared-modal-title-extracting");
+    sendIpcToRenderer(
+      "modal-update-title-text",
+      updateTitle +
+        (totalFilesNum > 1 ? " (" + fileNum + "/" + totalFilesNum + ")" : ""),
     );
-    sendIpcToRenderer("file-images-extracted");
-  } else if (inputFileType === FileDataType.IMG) {
-    const extension = path.extname(inputFilePath);
-    let outName = g_imageIndex++ + extension;
-    const outPath = path.join(g_tempSubFolderPath, outName);
-    fs.copyFileSync(inputFilePath, outPath, fs.constants.COPYFILE_EXCL);
-    temp.deleteSubFolder(g_creationTempSubFolderPath);
-    g_creationTempSubFolderPath = undefined;
-    sendIpcToRenderer("file-images-extracted");
-  } else if (
-    inputFileType === FileDataType.ZIP ||
-    inputFileType === FileDataType.RAR ||
-    inputFileType === FileDataType.SEVENZIP ||
-    inputFileType === FileDataType.EPUB_COMIC ||
-    (inputFileType === FileDataType.PDF &&
-      g_uiSelectedOptions.inputPdfExtractionLib === "pdfium")
-  ) {
-    updateModalLogText(_("tool-shared-modal-log-extracting-pages") + "...");
-    if (core.isDev() && inputFileType === FileDataType.PDF)
-      updateModalLogText("[DEV] pdfium");
+    sendIpcToRenderer(
+      "update-info-text",
+      utils.reduceStringFrontEllipsis(inputFilePath),
+    );
+    updateModalLogText(updateTitle);
+    updateModalLogText(inputFilePath);
 
-    killWorker();
-    if (g_worker === undefined) {
-      log.editor("[CC] starting worker (extract)");
-      const worker = utilityProcess.fork(
-        path.join(__dirname, "../../shared/main/tools-worker-process.js"),
-        {
-          env: utils.getSafeEnv(),
-          // enable manual GC and set a 3GB hard cap so the worker crashes
-          // instead the OS hanging if it uses too much memory, like on large
-          // PDFs with pdfium
-          execArgv: ["--js-flags=--expose-gc", "--max-old-space-size=3072"],
-        },
-      );
-      worker.on("message", (message) => {
-        if (message.type === "testLog") {
-          log.test(message.log);
-          return;
-        } else if (message.type === "editorLog") {
-          log.editor("[CC] " + message.log);
-          return;
-        } else if (message.type === "extraction-progress") {
-          updateModalLogText(
-            `${_("tool-shared-modal-log-extracting-pages")}: ${message.current} / ${message.total}`,
+    // check if output file name exists and skip mode
+    {
+      if (g_uiSelectedOptions.outputFileSameName === "skip") {
+        let outputFolderPath = g_uiSelectedOptions.outputFolderPath;
+        if (g_inputFiles[g_inputFilesIndex].outputFolderPath) {
+          outputFolderPath = g_inputFiles[g_inputFilesIndex].outputFolderPath;
+        }
+        if (
+          g_mode === ToolMode.CONVERT &&
+          g_uiSelectedOptions.outputFolderOption == "1"
+        ) {
+          outputFolderPath = path.dirname(inputFilePath);
+        }
+        let baseFileName =
+          g_uiSelectedOptions.outputFileBaseName ??
+          path.basename(inputFilePath, path.extname(inputFilePath));
+
+        const outputFormat = g_uiSelectedOptions.outputFormat;
+        const outputSplitNumFiles = g_uiSelectedOptions.outputSplitNumFiles;
+
+        let skip = undefined;
+        if (outputFormat === FileDataType.IMGS_FOLDER) {
+          let outputSubFolderPath = path.join(outputFolderPath, baseFileName);
+          if (fs.existsSync(outputSubFolderPath)) {
+            skip = { path: outputSubFolderPath, isFile: false };
+          }
+        } else if (outputSplitNumFiles <= 1) {
+          // just one file in the output folder
+          let outputFilePath = path.join(
+            outputFolderPath,
+            baseFileName + "." + outputFormat,
           );
-          return;
+          if (fs.existsSync(outputFilePath)) {
+            skip = { path: outputFilePath, isFile: true };
+          }
         } else {
-          // success or failure
-          killWorker();
-          if (message.success) {
-            log.debug("file extracted in: " + message.time);
-            if (g_cancel === true) {
-              stopCancel();
-              return;
-            }
-            if (g_mode === ToolMode.CREATE) {
-              copyImagesToTempFolder(g_creationTempSubFolderPath, true);
-              temp.deleteSubFolder(g_creationTempSubFolderPath);
-              g_creationTempSubFolderPath = undefined;
-            }
-            sendIpcToRenderer("file-images-extracted");
-            return;
-          } else {
-            if (message.error === "no_disk_space") {
-              message.error =
-                _("tool-shared-modal-log-failed-reason-temp-disk-space") +
-                "\n" +
-                _("tool-shared-modal-log-failed-reason-temp-disk-space-2");
-            }
-            stopError(
-              message.error,
-              _("tool-shared-modal-log-failed-extraction"),
-            );
-            return;
+          // multiple files in a subfolder in the output folder
+          let outputSubFolderPath = path.join(outputFolderPath, baseFileName);
+          if (fs.existsSync(outputSubFolderPath)) {
+            skip = { path: outputSubFolderPath, isFile: false };
           }
         }
-      });
-      worker.on("error", (error) => {
-        log.editor(`[CC] worker error: ${error}`);
-      });
-      worker.on("exit", (code) => {
-        if (g_worker === worker) g_worker = undefined;
-        if (code !== 0) {
-          log.editor(`[CC] worker crashed with code ${code}`);
-          stopError(undefined, `worker crashed with code ${code}`);
+        if (skip) {
+          stopError(
+            undefined,
+            (skip.isFile
+              ? _("tool-shared-modal-log-failed-reason-output-file-exists")
+              : _("tool-shared-modal-log-failed-reason-output-folder-exists")) +
+              "\n" +
+              skip.path,
+            false,
+          );
+          return;
         }
-      });
-      worker.postMessage([
-        core.getLaunchInfo(),
-        "extract",
-        inputFilePath,
-        inputFileType,
-        g_mode === ToolMode.CONVERT || g_mode === ToolMode.EXTRACT
-          ? g_tempSubFolderPath
-          : g_creationTempSubFolderPath,
-        g_inputPassword,
-        {
-          method: g_uiSelectedOptions.inputPdfExtractionMethod,
-          dpi: g_uiSelectedOptions.inputPdfExtractionDpi,
-          height: g_uiSelectedOptions.inputPdfExtractionHeight,
-          lib: g_uiSelectedOptions.inputPdfExtractionLib,
-        },
-      ]);
-      g_worker = worker;
+      }
     }
-  }
-  // pdfjs
-  else if (inputFileType === FileDataType.PDF) {
-    updateModalLogText(_("tool-shared-modal-log-extracting-pages") + "...");
-    if (core.isDev()) updateModalLogText("[DEV] pdfjs");
-    /////////////////////////
-    // use a hidden window for better performance and node api access
-    if (g_workerWindow !== undefined) {
-      // shouldn't happen
-      g_workerWindow.destroy();
-      g_workerWindow = undefined;
+    ////////////////
+    if (g_mode === ToolMode.CONVERT || g_mode === ToolMode.EXTRACT) {
+      g_tempSubFolderPath = temp.createSubFolder();
+    } else {
+      // g_tempSubFolderPath was created on start
+      g_creationTempSubFolderPath = temp.createSubFolder();
     }
-    g_workerWindow = new BrowserWindow({
-      show: false,
-      webPreferences: { nodeIntegration: true, contextIsolation: false },
-      parent: core.getMainWindow(),
-    });
-    g_workerWindow.loadFile(
-      `${__dirname}/../../shared/renderer/tools-bg-worker.html`,
-    );
-
-    g_workerWindow.webContents.on("did-finish-load", function () {
-      //g_resizeWindow.webContents.openDevTools();
-      g_workerWindow.webContents.send(
-        "extract-pdf",
-        "tool-convert-comics",
+    // extract to temp folder
+    if (inputFileType === FileDataType.IMGS_FOLDER) {
+      g_imageIndex = 0;
+      copyImagesToTempFolder(
         inputFilePath,
-        g_mode === ToolMode.CONVERT || g_mode === ToolMode.EXTRACT
-          ? g_tempSubFolderPath
-          : g_creationTempSubFolderPath,
-        _("tool-shared-modal-log-extracting-page") + ": ",
-        g_inputPassword,
-        core.isDev(),
-        {
-          method: g_uiSelectedOptions.inputPdfExtractionMethod,
-          dpi: g_uiSelectedOptions.inputPdfExtractionDpi,
-          height: g_uiSelectedOptions.inputPdfExtractionHeight,
-          lib: g_uiSelectedOptions.inputPdfExtractionLib,
-        },
+        g_uiSelectedOptions.inputSearchFoldersRecursively,
       );
-    });
-  } else {
-    stopError(undefined, "start: invalid file type");
+      sendIpcToRenderer("file-images-extracted");
+    } else if (inputFileType === FileDataType.IMG) {
+      const extension = path.extname(inputFilePath);
+      let outName = g_imageIndex++ + extension;
+      const outPath = path.join(g_tempSubFolderPath, outName);
+      fs.copyFileSync(inputFilePath, outPath, fs.constants.COPYFILE_EXCL);
+      temp.deleteSubFolder(g_creationTempSubFolderPath);
+      g_creationTempSubFolderPath = undefined;
+      sendIpcToRenderer("file-images-extracted");
+    } else if (
+      inputFileType === FileDataType.ZIP ||
+      inputFileType === FileDataType.RAR ||
+      inputFileType === FileDataType.SEVENZIP ||
+      inputFileType === FileDataType.EPUB_COMIC ||
+      (inputFileType === FileDataType.PDF &&
+        g_uiSelectedOptions.inputPdfExtractionLib === "pdfium")
+    ) {
+      updateModalLogText(_("tool-shared-modal-log-extracting-pages") + "...");
+      if (core.isDev() && inputFileType === FileDataType.PDF)
+        updateModalLogText("[DEV] pdfium");
+
+      killWorker();
+      if (g_worker === undefined) {
+        log.editor("[CC] starting worker (extract)");
+        const worker = forkUtils.fork(
+          path.join(__dirname, "../../shared/main/tools-worker-process.js"),
+          { exposeGC: true, memoryLimit: 3072 },
+        );
+        worker.on("message", (message) => {
+          if (message.type === "testLog") {
+            log.test(message.log);
+            return;
+          } else if (message.type === "editorLog") {
+            log.editor("[CC] " + message.log);
+            return;
+          } else if (message.type === "extraction-progress") {
+            updateModalLogText(
+              `${_("tool-shared-modal-log-extracting-pages")}: ${message.current} / ${message.total}`,
+            );
+            return;
+          } else {
+            // success or failure
+            killWorker();
+            if (message.success) {
+              log.debug("file extracted in: " + message.time);
+              if (g_cancel === true) {
+                stopCancel();
+                return;
+              }
+              if (g_mode === ToolMode.CREATE) {
+                copyImagesToTempFolder(g_creationTempSubFolderPath, true);
+                temp.deleteSubFolder(g_creationTempSubFolderPath);
+                g_creationTempSubFolderPath = undefined;
+              }
+              sendIpcToRenderer("file-images-extracted");
+              return;
+            } else {
+              if (message.error === "no_disk_space") {
+                message.error =
+                  _("tool-shared-modal-log-failed-reason-temp-disk-space") +
+                  "\n" +
+                  _("tool-shared-modal-log-failed-reason-temp-disk-space-2");
+              }
+              stopError(
+                message.error,
+                _("tool-shared-modal-log-failed-extraction"),
+              );
+              return;
+            }
+          }
+        });
+        worker.on("error", (error) => {
+          log.editor(`[CC] worker error: ${error}`);
+        });
+        worker.on("exit", (code) => {
+          if (g_worker === worker) g_worker = undefined;
+          if (code !== 0) {
+            log.editor(`[CC] worker crashed with code ${code}`);
+            stopError(undefined, `worker crashed with code ${code}`);
+          }
+        });
+        worker.postMessage([
+          core.getLaunchInfo(),
+          "extract",
+          inputFilePath,
+          inputFileType,
+          g_mode === ToolMode.CONVERT || g_mode === ToolMode.EXTRACT
+            ? g_tempSubFolderPath
+            : g_creationTempSubFolderPath,
+          g_inputPassword,
+          {
+            method: g_uiSelectedOptions.inputPdfExtractionMethod,
+            dpi: g_uiSelectedOptions.inputPdfExtractionDpi,
+            height: g_uiSelectedOptions.inputPdfExtractionHeight,
+            lib: g_uiSelectedOptions.inputPdfExtractionLib,
+          },
+        ]);
+        g_worker = worker;
+      }
+    }
+    // pdfjs
+    else if (inputFileType === FileDataType.PDF) {
+      updateModalLogText(_("tool-shared-modal-log-extracting-pages") + "...");
+      if (core.isDev()) updateModalLogText("[DEV] pdfjs");
+      /////////////////////////
+      // use a hidden window for better performance and node api access
+      if (g_workerWindow !== undefined) {
+        // shouldn't happen
+        g_workerWindow.destroy();
+        g_workerWindow = undefined;
+      }
+      g_workerWindow = new BrowserWindow({
+        show: false,
+        webPreferences: { nodeIntegration: true, contextIsolation: false },
+        parent: core.getMainWindow(),
+      });
+      g_workerWindow.loadFile(
+        `${__dirname}/../../shared/renderer/tools-bg-worker.html`,
+      );
+
+      g_workerWindow.webContents.on("did-finish-load", function () {
+        //g_resizeWindow.webContents.openDevTools();
+        g_workerWindow.webContents.send(
+          "extract-pdf",
+          "tool-convert-comics",
+          inputFilePath,
+          g_mode === ToolMode.CONVERT || g_mode === ToolMode.EXTRACT
+            ? g_tempSubFolderPath
+            : g_creationTempSubFolderPath,
+          _("tool-shared-modal-log-extracting-page") + ": ",
+          g_inputPassword,
+          core.isDev(),
+          {
+            method: g_uiSelectedOptions.inputPdfExtractionMethod,
+            dpi: g_uiSelectedOptions.inputPdfExtractionDpi,
+            height: g_uiSelectedOptions.inputPdfExtractionHeight,
+            lib: g_uiSelectedOptions.inputPdfExtractionLib,
+          },
+        );
+      });
+    } else {
+      stopError(undefined, "start: invalid file type");
+    }
+  } catch (error) {
+    stopError(error);
   }
 }
 
@@ -1354,11 +1353,8 @@ async function createFilesFromImages(
     killWorker();
     if (g_worker === undefined) {
       log.editor("[CC] starting worker (create)");
-      const worker = utilityProcess.fork(
+      const worker = forkUtils.fork(
         path.join(__dirname, "../../shared/main/tools-worker-process.js"),
-        {
-          env: utils.getSafeEnv(),
-        },
       );
       worker.on("message", (message) => {
         if (message.type === "testLog") {

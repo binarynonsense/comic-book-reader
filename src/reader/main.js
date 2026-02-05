@@ -5,8 +5,6 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-const { utilityProcess } = require("electron");
-
 const fs = require("node:fs");
 const path = require("node:path");
 
@@ -20,6 +18,7 @@ const fileUtils = require("../shared/main/file-utils");
 const appUtils = require("../shared/main/app-utils");
 const temp = require("../shared/main/temp");
 const utils = require("../shared/main/utils");
+const forkUtils = require("../shared/main/fork-utils");
 const fileFormats = require("../shared/main/file-formats");
 const contextMenu = require("./menu-context");
 const audioPlayer = require("../tools/audio-player/main");
@@ -961,19 +960,24 @@ function openImageFolder(folderPath, filePath, pageIndex) {
   goToPage(pageIndex);
 }
 
-function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
+async function openComicBookFromPath(
+  filePath,
+  pageIndex,
+  password,
+  historyEntry,
+) {
   if (filePath === undefined || filePath === "" || !fs.existsSync(filePath)) {
     return;
   }
 
-  sendIpcToRenderer("update-loading", true);
-  sendIpcToRenderer("update-bg", false);
+  try {
+    sendIpcToRenderer("update-loading", true);
+    sendIpcToRenderer("update-bg", false);
 
-  let fileExtension = path.extname(filePath).toLowerCase();
-  if (!pageIndex) pageIndex = 0;
-  if (!password) password = "";
+    let fileExtension = path.extname(filePath).toLowerCase();
+    if (!pageIndex) pageIndex = 0;
+    if (!password) password = "";
 
-  (async () => {
     let fileType = fileUtils.getFileTypeFromPath(filePath);
     if (fileType !== undefined) {
       fileExtension = "." + fileType;
@@ -1292,7 +1296,19 @@ function openComicBookFromPath(filePath, pageIndex, password, historyEntry) {
         return;
       }
     }
-  })(); // async
+  } catch (error) {
+    cleanUpFileData();
+    sendIpcToRenderer(
+      "show-modal-info",
+      _("tool-shared-modal-title-error-unknown"),
+      error?.message || error,
+      _("ui-modal-prompt-button-ok"),
+    );
+    sendIpcToRenderer("update-bg", true);
+    sendIpcToRenderer("update-loading", false);
+    log.editorError("error opening book: " + error);
+    return;
+  }
 }
 
 async function openEbookFromPath(filePath, pageIndex, historyEntry) {
@@ -1484,144 +1500,155 @@ function goToPage(pageIndex, scrollBarPos = 0) {
     return;
   }
 
-  sendIpcToRenderer("update-loading", true);
-  if (g_fileData.type !== FileDataType.EPUB_EBOOK) {
-    if (pageIndex < 0 || pageIndex >= g_fileData.numPages) return;
-    g_fileData.pageIndex = pageIndex;
-  }
+  try {
+    sendIpcToRenderer("update-loading", true);
+    if (g_fileData.type !== FileDataType.EPUB_EBOOK) {
+      if (pageIndex < 0 || pageIndex >= g_fileData.numPages) return;
+      g_fileData.pageIndex = pageIndex;
+    }
 
-  function getGoToIndexes() {
-    let indexes = [];
-    if (settings.getValue("page_mode") === 0) {
-      // single page mode
-      indexes.push(g_fileData.pageIndex);
-    } else if (settings.getValue("page_mode") === 1) {
-      // double page mode
-      if (g_fileData.pageIndex % 2 > 0) {
-        g_fileData.pageIndex--;
-      }
-      indexes.push(g_fileData.pageIndex);
-      if (g_fileData.pageIndex + 1 < g_fileData.numPages)
-        indexes.push(g_fileData.pageIndex + 1);
-    } else {
-      // double page mode center first
-      if (g_fileData.pageIndex === 0) {
+    function getGoToIndexes() {
+      let indexes = [];
+      if (settings.getValue("page_mode") === 0) {
+        // single page mode
         indexes.push(g_fileData.pageIndex);
-      } else {
-        if (g_fileData.pageIndex % 2 === 0) {
+      } else if (settings.getValue("page_mode") === 1) {
+        // double page mode
+        if (g_fileData.pageIndex % 2 > 0) {
           g_fileData.pageIndex--;
         }
         indexes.push(g_fileData.pageIndex);
         if (g_fileData.pageIndex + 1 < g_fileData.numPages)
           indexes.push(g_fileData.pageIndex + 1);
+      } else {
+        // double page mode center first
+        if (g_fileData.pageIndex === 0) {
+          indexes.push(g_fileData.pageIndex);
+        } else {
+          if (g_fileData.pageIndex % 2 === 0) {
+            g_fileData.pageIndex--;
+          }
+          indexes.push(g_fileData.pageIndex);
+          if (g_fileData.pageIndex + 1 < g_fileData.numPages)
+            indexes.push(g_fileData.pageIndex + 1);
+        }
       }
+      return indexes;
     }
-    return indexes;
-  }
 
-  if (
-    g_fileData.type === FileDataType.ZIP ||
-    g_fileData.type === FileDataType.RAR ||
-    g_fileData.type === FileDataType.SEVENZIP ||
-    g_fileData.type === FileDataType.EPUB_COMIC ||
-    g_fileData.type === FileDataType.IMGS_FOLDER
-  ) {
-    g_fileData.state = FileDataState.LOADING;
-    timers.start("pagesExtraction");
-
-    let tempSubFolderPath =
-      g_fileData.type === FileDataType.SEVENZIP ||
+    if (
       g_fileData.type === FileDataType.ZIP ||
-      g_fileData.type === FileDataType.RAR
-        ? temp.createSubFolder()
-        : undefined;
-
-    let entryNames = [];
-    let pageIndexes = getGoToIndexes();
-    pageIndexes.forEach((index) => {
-      entryNames.push(g_fileData.pagesPaths[index]);
-    });
-
-    // keep killing the worker for the old methods, should be slower
-    // but from my initial test doesn't seem significant, so I'll keep
-    // doing to not break anything (it may be helping to avoid memory
-    // leaks)
-    killPageWorker();
-    startPageWorker();
-
-    sendToPageWorker({
-      command: "extract",
-      fileType: g_fileData.type,
-      filePath: g_fileData.path,
-      entryNames,
-      scrollBarPos,
-      password: g_fileData.password,
-      tempSubFolderPath,
-    });
-  } else if (g_fileData.type === FileDataType.PDF) {
-    g_fileData.state = FileDataState.LOADING;
-    let pageIndexes = getGoToIndexes();
-    if (settings.getValue("pdfReadingLibrary") === "pdfium") {
+      g_fileData.type === FileDataType.RAR ||
+      g_fileData.type === FileDataType.SEVENZIP ||
+      g_fileData.type === FileDataType.EPUB_COMIC ||
+      g_fileData.type === FileDataType.IMGS_FOLDER
+    ) {
+      g_fileData.state = FileDataState.LOADING;
       timers.start("pagesExtraction");
+
+      let tempSubFolderPath =
+        g_fileData.type === FileDataType.SEVENZIP ||
+        g_fileData.type === FileDataType.ZIP ||
+        g_fileData.type === FileDataType.RAR
+          ? temp.createSubFolder()
+          : undefined;
+
+      let entryNames = [];
+      let pageIndexes = getGoToIndexes();
+      pageIndexes.forEach((index) => {
+        entryNames.push(g_fileData.pagesPaths[index]);
+      });
+
+      // keep killing the worker for the old methods, should be slower
+      // but from my initial test doesn't seem significant, so I'll keep
+      // doing to not break anything (it may be helping to avoid memory
+      // leaks)
+      killPageWorker();
+      startPageWorker();
+
       sendToPageWorker({
         command: "extract",
         fileType: g_fileData.type,
         filePath: g_fileData.path,
-        entryNames: pageIndexes,
+        entryNames,
         scrollBarPos,
         password: g_fileData.password,
-        extraData: { dpi: settings.getValue("pdfReadingDpi") },
+        tempSubFolderPath,
       });
-    } else {
-      // pdfjs
-      sendIpcToRenderer(
-        "render-pdf-page",
-        pageIndexes,
-        g_fileData.pageRotation,
-        scrollBarPos,
-        settings.getValue("pdfReadingDpi"),
-      );
-    }
-  } else if (g_fileData.type === FileDataType.EPUB_EBOOK) {
-    if (pageIndex > 0) {
+    } else if (g_fileData.type === FileDataType.PDF) {
       g_fileData.state = FileDataState.LOADING;
-      sendIpcToRenderer("render-epub-ebook-page-next");
-    } else if (pageIndex < 0) {
-      g_fileData.state = FileDataState.LOADING;
-      sendIpcToRenderer("render-epub-ebook-page-prev");
-    }
-  } else if (g_fileData.type === FileDataType.WWW) {
-    (async () => {
-      g_fileData.state = FileDataState.LOADING;
-      const calledFunc = g_fileData.getPageCallback;
-      let response = await g_fileData.getPageCallback(
-        g_fileData.pageIndex + 1,
-        g_fileData,
-      );
-      if (calledFunc !== g_fileData.getPageCallback) {
-        // getPageCallback changed while downloading
-        return;
+      let pageIndexes = getGoToIndexes();
+      if (settings.getValue("pdfReadingLibrary") === "pdfium") {
+        timers.start("pagesExtraction");
+        sendToPageWorker({
+          command: "extract",
+          fileType: g_fileData.type,
+          filePath: g_fileData.path,
+          entryNames: pageIndexes,
+          scrollBarPos,
+          password: g_fileData.password,
+          extraData: { dpi: settings.getValue("pdfReadingDpi") },
+        });
+      } else {
+        // pdfjs
+        sendIpcToRenderer(
+          "render-pdf-page",
+          pageIndexes,
+          g_fileData.pageRotation,
+          scrollBarPos,
+          settings.getValue("pdfReadingDpi"),
+        );
       }
-      if (!response || !response.pageImgSrc) {
-        // TODO: handle error
-        log.error("download error");
-        g_fileData.state = FileDataState.LOADED;
-        sendIpcToRenderer("update-loading", false);
-        return;
+    } else if (g_fileData.type === FileDataType.EPUB_EBOOK) {
+      if (pageIndex > 0) {
+        g_fileData.state = FileDataState.LOADING;
+        sendIpcToRenderer("render-epub-ebook-page-next");
+      } else if (pageIndex < 0) {
+        g_fileData.state = FileDataState.LOADING;
+        sendIpcToRenderer("render-epub-ebook-page-prev");
       }
-      g_fileData.pagesPaths = [response.pageImgUrl];
-      if (response.tempData) {
-        if (g_fileData.data) {
-          g_fileData.data.tempData = response.tempData;
+    } else if (g_fileData.type === FileDataType.WWW) {
+      (async () => {
+        g_fileData.state = FileDataState.LOADING;
+        const calledFunc = g_fileData.getPageCallback;
+        let response = await g_fileData.getPageCallback(
+          g_fileData.pageIndex + 1,
+          g_fileData,
+        );
+        if (calledFunc !== g_fileData.getPageCallback) {
+          // getPageCallback changed while downloading
+          return;
         }
-      }
-      sendIpcToRenderer(
-        "render-img-page",
-        [{ url: response.pageImgSrc }],
-        g_fileData.pageRotation,
-        scrollBarPos,
-      );
-    })(); // async
+        if (!response || !response.pageImgSrc) {
+          // TODO: handle error
+          log.error("download error");
+          g_fileData.state = FileDataState.LOADED;
+          sendIpcToRenderer("update-loading", false);
+          return;
+        }
+        g_fileData.pagesPaths = [response.pageImgUrl];
+        if (response.tempData) {
+          if (g_fileData.data) {
+            g_fileData.data.tempData = response.tempData;
+          }
+        }
+        sendIpcToRenderer(
+          "render-img-page",
+          [{ url: response.pageImgSrc }],
+          g_fileData.pageRotation,
+          scrollBarPos,
+        );
+      })(); // async
+    }
+  } catch (error) {
+    closeCurrentFile();
+    sendIpcToRenderer(
+      "show-modal-info",
+      _("tool-shared-modal-title-error-unknown"),
+      error?.message || error,
+      _("ui-modal-prompt-button-ok"),
+    );
+    log.editorError("error in gotopage: " + error);
   }
 }
 
@@ -2304,16 +2331,10 @@ function startPageWorker() {
   try {
     if (g_pageWorker === undefined) {
       log.editor("start page worker");
-      g_pageWorker = utilityProcess.fork(
-        path.join(__dirname, "worker-page.js"),
-        {
-          env: utils.getSafeEnv(),
-          // enable manual GC and set a 3GB hard cap so the worker crashes
-          // instead the OS hanging if it uses too much memory, like on large
-          // PDFs with pdfium
-          execArgv: ["--js-flags=--expose-gc", "--max-old-space-size=3072"],
-        },
-      );
+      g_pageWorker = forkUtils.fork(path.join(__dirname, "worker-page.js"), {
+        exposeGC: true,
+        memoryLimit: 3072,
+      });
       g_pageWorker.on("message", (message) => {
         if (message.type === "testLog") {
           log.test(message.log);
@@ -2442,7 +2463,7 @@ function startPageWorker() {
     }
     return false;
   } catch (error) {
-    return false;
+    throw error;
   }
 }
 

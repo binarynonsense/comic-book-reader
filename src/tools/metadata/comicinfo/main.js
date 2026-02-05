@@ -5,7 +5,6 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-const { utilityProcess } = require("electron");
 const fs = require("node:fs");
 const path = require("node:path");
 const core = require("../../../core/main");
@@ -17,6 +16,7 @@ const utils = require("../../../shared/main/utils");
 const fileFormats = require("../../../shared/main/file-formats");
 const { FileDataType } = require("../../../shared/main/constants");
 const temp = require("../../../shared/main/temp");
+const forkUtils = require("../../../shared/main/fork-utils");
 
 const log = require("../../../shared/main/logger");
 
@@ -161,40 +161,42 @@ exports.loadMetadata = async function () {
 };
 
 exports.updatePages = function (data) {
-  let tempFolderPath = temp.createSubFolder();
-  if (g_worker !== undefined) {
-    // kill it after one use
-    g_worker.kill();
-    g_worker = undefined;
+  try {
+    let tempFolderPath = temp.createSubFolder();
+    if (g_worker !== undefined) {
+      // kill it after one use
+      g_worker.kill();
+      g_worker = undefined;
+    }
+    if (g_worker === undefined) {
+      // strip null from env to avoid exception
+      g_worker = forkUtils.fork(
+        path.join(__dirname, "../../../shared/main/tools-worker-process.js"),
+      );
+      g_worker.on("message", (message) => {
+        g_worker.kill(); // kill it after one use
+        if (message.success) {
+          updatePagesDataFromImages(data, tempFolderPath);
+          return;
+        } else {
+          base.sendIpcToRenderer("pages-updated", undefined);
+          temp.deleteSubFolder(tempFolderPath);
+          return;
+        }
+      });
+    }
+    g_worker.send([
+      core.getLaunchInfo(),
+      "extract",
+      g_fileData.path,
+      g_fileData.type,
+      tempFolderPath,
+      g_fileData.password,
+    ]);
+  } catch (error) {
+    // TODO: recuperate???
+    log.error(error);
   }
-  if (g_worker === undefined) {
-    // strip null from env to avoid exception
-    g_worker = utilityProcess.fork(
-      path.join(__dirname, "../../../shared/main/tools-worker-process.js"),
-      {
-        env: utils.getSafeEnv(),
-      },
-    );
-    g_worker.on("message", (message) => {
-      g_worker.kill(); // kill it after one use
-      if (message.success) {
-        updatePagesDataFromImages(data, tempFolderPath);
-        return;
-      } else {
-        base.sendIpcToRenderer("pages-updated", undefined);
-        temp.deleteSubFolder(tempFolderPath);
-        return;
-      }
-    });
-  }
-  g_worker.send([
-    core.getLaunchInfo(),
-    "extract",
-    g_fileData.path,
-    g_fileData.type,
-    tempFolderPath,
-    g_fileData.password,
-  ]);
 };
 
 async function updatePagesDataFromImages(data, tempFolderPath) {

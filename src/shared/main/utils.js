@@ -222,20 +222,6 @@ exports.isObject = function isObject(input) {
   return typeof input == "object" && input.constructor == Object;
 };
 
-exports.getSafeEnv = function (env = process.env) {
-  // sanitizes an environment object by removing binary null bytes (\0)
-  // from all keys and values. thhis prevents a bug a user had that
-  // made Electron's utilityProcess.fork break
-  return Object.fromEntries(
-    Object.entries(env)
-      .filter(([key, value]) => typeof value === "string")
-      .map(([key, value]) => [
-        key.replace(/\0/g, ""),
-        value.replace(/\0/g, ""),
-      ]),
-  );
-};
-
 ///////////////////////////////////////////////////////////////////////////////
 // VERSION ////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////

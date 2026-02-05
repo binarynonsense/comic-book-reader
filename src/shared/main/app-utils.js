@@ -295,6 +295,7 @@ function cleanUpUserDataFolder() {
       "acbr-player.m3u",
       "acbr-cache",
       "acbr-user-extensions",
+      "acbr-fork-debug.log",
     ];
     let userDataPath = app.getPath("userData");
     if (

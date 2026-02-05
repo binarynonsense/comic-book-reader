@@ -8,13 +8,7 @@
 const timers = require("../shared/main/timers");
 timers.start("startup");
 
-const {
-  app,
-  BrowserWindow,
-  ipcMain,
-  screen,
-  utilityProcess,
-} = require("electron");
+const { app, BrowserWindow, ipcMain, screen } = require("electron");
 const os = require("node:os");
 const fs = require("node:fs");
 const path = require("node:path");
@@ -27,7 +21,7 @@ const themes = require("../shared/main/themes");
 const menuBar = require("../shared/main/menu-bar");
 const appUtils = require("../shared/main/app-utils");
 const fileFormats = require("../shared/main/file-formats");
-const utils = require("../shared/main/utils");
+const forkUtils = require("../shared/main/fork-utils");
 const temp = require("../shared/main/temp");
 const tools = require("../shared/main/tools");
 const { _ } = require("../shared/main/i18n");
@@ -711,11 +705,8 @@ if (!gotTheLock) {
       if (doCheck) {
         log.debug("checking for updates");
         if (g_updatesWorker === undefined) {
-          g_updatesWorker = utilityProcess.fork(
+          g_updatesWorker = forkUtils.fork(
             path.join(__dirname, "worker-updates.js"),
-            {
-              env: utils.getSafeEnv(),
-            },
           );
           g_updatesWorker.on("message", (message) => {
             const newVersion = message[1];
