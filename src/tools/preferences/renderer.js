@@ -619,6 +619,16 @@ function init(
           );
         });
     }
+    // logger
+    {
+      document.getElementById("tool-pre-logger-savetofile-checkbox").checked =
+        settings.logToFile;
+      document
+        .getElementById("tool-pre-logger-savetofile-checkbox")
+        .addEventListener("change", (event) => {
+          sendIpcToMain("change-log-to-file", event.target.checked);
+        });
+    }
     // external files
     {
       const themesCheckbox = document.querySelector(
@@ -1044,15 +1054,25 @@ function reducePathString(input) {
   return input;
 }
 
-function buildConfigFilesList(files) {
-  const ul = document.querySelector("#tool-configfiles-items-ul");
+function buildConfigFilesList(configFiles, logFile) {
+  let ul = document.querySelector("#tool-configfiles-items-ul");
   ul.innerHTML = "";
-  files.forEach((file) => {
-    addConfigFileToList(ul, file);
+  configFiles.forEach((file) => {
+    addFileToList(ul, file);
   });
+  //
+  ul = document.querySelector("#tool-logger-savetofile-path-ul");
+  if (logFile.length > 0) {
+    ul.innerHTML = "";
+    logFile.forEach((file) => {
+      addFileToList(ul, file);
+    });
+  } else {
+    ul.classList = "set-display-none";
+  }
 }
 
-function addConfigFileToList(ul, file) {
+function addFileToList(ul, file) {
   let li = document.createElement("li");
   li.className = "tools-buttons-list-li";
   let buttonSpan = document.createElement("span");

@@ -92,9 +92,7 @@ async function extractImages(
       if (success) {
         send({ success: true, time: time });
       } else {
-        if (error) {
-          throw error;
-        } else throw "Unknown error";
+        throw "Unknown error";
       }
     }
   } catch (error) {

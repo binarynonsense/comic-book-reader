@@ -57,7 +57,11 @@ exports.open = function () {
     saveAsRelative = true;
   }
   sendIpcToRenderer("set-temp-folder", tempFolderPath, saveAsRelative);
-  sendIpcToRenderer("set-config-files", appUtils.getConfigFiles());
+  let configFiles = appUtils.getConfigFiles();
+  configFiles = configFiles.filter((value) => fs.existsSync(value.path));
+  let logFiles = appUtils.getLogFile();
+  logFiles = logFiles.filter((value) => fs.existsSync(value.path));
+  sendIpcToRenderer("set-config-files", configFiles, logFiles);
 };
 
 exports.close = function () {
@@ -317,6 +321,10 @@ function initOnIpcCallbacks() {
   on("set-page-turn", (value) => {
     settings.setValue("turnPageOnScrollBoundary", value);
     reader.sendIpcToRenderer("set-page-turn-on-scroll-boundary", value);
+  });
+
+  on("change-log-to-file", (value) => {
+    settings.setValue("logToFile", value);
   });
 
   on("change-temp-folder", (reset, saveAsRelative) => {

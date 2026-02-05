@@ -83,6 +83,7 @@ const g_defaultSettings = {
   pagesDirection: 0, // 0: ltr, 1: rtl,
   mouseButtonQuickMenu: 1, // -1: unassigned 0-4: mouse button
   systemMonitorScale: 1.0,
+  logToFile: false,
 
   checkUpdatesOnStart: 3, // 0: never, 1: always, 2: day, 3: week, 4: month
   checkUpdatesNotify: 0, // 0: always, 1: once
@@ -250,6 +251,7 @@ exports.resetPreferences = function () {
     "epubEbookColorBg",
     "mouseButtonQuickMenu",
     //"systemMonitorScale", // TOOD: add when included in preferences tool
+    "logToFile",
 
     "checkUpdatesOnStart",
     "checkUpdatesNotify",
@@ -560,7 +562,9 @@ function sanitize() {
   ) {
     g_settings.filterMode = g_defaultSettings.filterMode;
   }
-
+  if (typeof g_settings.logToFile !== "boolean") {
+    g_settings.logToFile = g_defaultSettings.logToFile;
+  }
   /////////////////////
   if (typeof g_settings.locale === "string") {
     g_settings.locale = g_settings.locale.replace(/[^a-zA-Z0-9_\-]/gi, "");

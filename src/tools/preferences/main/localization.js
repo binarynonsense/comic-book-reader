@@ -713,6 +713,15 @@ exports.getLocalization = function () {
     },
     //
     {
+      id: "tool-pre-logger-text",
+      text: _("tool-pre-logger"),
+    },
+    {
+      id: "tool-pre-logger-savetofile-checkbox-text",
+      text: _("tool-pre-logger-savetofile"),
+    },
+    //
+    {
       id: "tool-pre-configfiles-text",
       text: _("tool-pre-configfiles"),
     },

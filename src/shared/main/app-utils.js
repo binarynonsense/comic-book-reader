@@ -280,6 +280,16 @@ exports.getConfigFiles = function () {
   return data;
 };
 
+exports.getLogFile = function () {
+  let data = [];
+  let cfgFolderPath = getConfigFolder();
+  data.push({
+    name: "acbr.log",
+    path: path.join(cfgFolderPath, "acbr.log"),
+  });
+  return data;
+};
+
 function cleanUpUserDataFolder() {
   // some things are not entirely deleted, but it's good enough :)
   try {
@@ -295,6 +305,7 @@ function cleanUpUserDataFolder() {
       "acbr-player.m3u",
       "acbr-cache",
       "acbr-user-extensions",
+      "acbr.log",
       "acbr-fork-debug.log",
     ];
     let userDataPath = app.getPath("userData");

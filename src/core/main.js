@@ -603,6 +603,11 @@ if (!gotTheLock) {
     reader.onQuit();
     settings.save();
     history.save();
+    if (settings.getValue("logToFile"))
+      log.saveLogFile(
+        path.join(appUtils.getConfigFolder(), "acbr.log"),
+        appUtils.getAppVersion(),
+      );
     // clean up
     log.info("cleaning up...");
     temp.cleanUp();

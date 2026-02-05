@@ -569,6 +569,7 @@ function startFile(inputFileIndex, totalFilesNum) {
     );
     updateModalLogText(updateTitle);
     updateModalLogText(inputFilePath);
+    log.debug(`${updateTitle}: ${inputFilePath}`);
 
     // check if output file name exists and skip mode
     {
@@ -658,6 +659,7 @@ function startFile(inputFileIndex, totalFilesNum) {
         g_uiSelectedOptions.inputPdfExtractionLib === "pdfium")
     ) {
       updateModalLogText(_("tool-shared-modal-log-extracting-pages") + "...");
+      log.debug(_("tool-shared-modal-log-extracting-pages") + "...");
       if (core.isDev() && inputFileType === FileDataType.PDF)
         updateModalLogText("[DEV] pdfium");
 
@@ -743,6 +745,7 @@ function startFile(inputFileIndex, totalFilesNum) {
     // pdfjs
     else if (inputFileType === FileDataType.PDF) {
       updateModalLogText(_("tool-shared-modal-log-extracting-pages") + "...");
+      log.debug(_("tool-shared-modal-log-extracting-pages") + "...");
       if (core.isDev()) updateModalLogText("[DEV] pdfjs");
       /////////////////////////
       // use a hidden window for better performance and node api access
@@ -1173,6 +1176,7 @@ async function processContent(inputFilePath) {
       g_uiSelectedOptions.outputFormat === FileExtension.EPUB ||
       g_uiSelectedOptions.outputImageFormat != FileExtension.NOT_SET
     ) {
+      log.debug(_("tool-shared-modal-log-converting-images"));
       switch (
         parseInt(g_uiSelectedOptions.imageProcessingMultithreadingMethod)
       ) {
@@ -1350,6 +1354,11 @@ async function createFilesFromImages(
         ? _("tool-shared-modal-log-generating-new-files") + "..."
         : _("tool-shared-modal-log-generating-new-file") + "...",
     );
+    log.debug(
+      g_uiSelectedOptions.outputSplitNumFiles > 1
+        ? _("tool-shared-modal-log-generating-new-files") + "..."
+        : _("tool-shared-modal-log-generating-new-file") + "...",
+    );
     killWorker();
     if (g_worker === undefined) {
       log.editor("[CC] starting worker (create)");
@@ -1364,9 +1373,6 @@ async function createFilesFromImages(
           log.editor("[CC] " + message.log);
           return;
         } else if (message.type === "extraction-progress") {
-          updateModalLogText(
-            `${_("tool-shared-modal-log-extracting-pages")}: ${message.current} / ${message.total}`,
-          );
           return;
         } else {
           killWorker();

@@ -5,6 +5,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
+const fs = require("node:fs");
+
 let g_isDebug = false;
 let g_isRelease = true;
 
@@ -18,42 +20,59 @@ const g_testTag = "[\x1b[95mTEST\x1b[0m]";
 const g_editorTag = "[\x1b[34mEDITOR\x1b[0m]";
 const g_editorErrorTag = "[\x1b[31mEDITOR ERROR\x1b[0m]";
 
+let g_log;
+
 exports.init = function (info) {
   g_isDebug = info.isDev;
   g_isRelease = info.isRelease;
+  g_log = "";
+};
+
+exports.saveLogFile = function (filePath, version) {
+  g_log += "\n" + "=".repeat(40) + "\n\n";
+  g_log += `ACBR version: ${version}\n`;
+  g_log += `Date: ${new Date().toISOString()}\n`;
+  fs.writeFileSync(filePath, g_log);
 };
 
 exports.debug = function (message) {
   if (g_isDebug) {
     console.log(`${getTime()} ${g_debugTag}`, message);
   }
+  g_log += `${getTime()} [DEBUG] ${message}\n`;
 };
 
 exports.notice = function (message) {
   console.log(`${getTime()} ${g_noticeTag}`, message);
+  g_log += `${getTime()} [NOTICE] ${message}\n`;
 };
 
 exports.warning = function (message, alwaysShow = false) {
   if (alwaysShow || g_isDebug) {
     console.log(`${getTime()} ${g_warningTag}`, message);
   }
+  g_log += `${getTime()} [WARNING] ${message}\n`;
 };
 
 exports.info = function (message) {
   console.log(getTime() + " " + message);
+  g_log += `${getTime()} [INFO] ${message}\n`;
 };
 
 exports.error = function (message) {
   if (message?.message) {
     console.log(
-      `${getTime()} ${g_errorTag} ${message.message}\n${getCallerData()}`
+      `${getTime()} ${g_errorTag} ${message.message}\n${getCallerData()}`,
     );
+    g_log += `${getTime()} [ERROR] ${message.message}\n${getCallerData()}\n`;
   } else {
     console.log(`${getTime()} ${g_errorTag} ${message}\n${getCallerData()}`);
+    g_log += `${getTime()} [ERROR] ${message}\n${getCallerData()}\n`;
   }
   if (g_isDebug && message?.stack) {
     console.log(`${getTime()} ${g_stackTag} ${message.stack}`);
   }
+  if (message?.stack) g_log += `${getTime()} [STACK] ${message.stack}\n`;
 };
 
 exports.test = function (message) {
@@ -74,11 +93,11 @@ exports.editorError = function (message) {
       console.log(
         `${getTime()} ${g_editorErrorTag} ${
           message.message
-        }\n${getCallerData()}`
+        }\n${getCallerData()}`,
       );
     } else {
       console.log(
-        `${getTime()} ${g_editorErrorTag} ${message}\n${getCallerData()}`
+        `${getTime()} ${g_editorErrorTag} ${message}\n${getCallerData()}`,
       );
     }
     if (message?.stack) {
