@@ -696,6 +696,8 @@
   "tool-pre-advanced-preferences": "Дополнительно",
   "tool-pre-other-preferences": "Другое",
   "tool-pre-tempfolder": "Папка Temp",
+  "[NEEDS TRANSLATION]tool-pre-logger": "Event Logger",
+  "[NEEDS TRANSLATION]tool-pre-logger-savetofile": "Save Log to File",
   "tool-pre-configfiles": "Файлы конфигурации",
   "[NEEDS TRANSLATION]tool-pre-externalfiles": "External Files",
   "[NEEDS TRANSLATION]tool-pre-externalfiles-load": "Load External Files",

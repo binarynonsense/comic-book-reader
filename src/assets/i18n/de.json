@@ -696,6 +696,8 @@
   "tool-pre-advanced-preferences": "Erweitert",
   "tool-pre-other-preferences": "Andere",
   "tool-pre-tempfolder": "Temp Ordner",
+  "[NEEDS TRANSLATION]tool-pre-logger": "Event Logger",
+  "[NEEDS TRANSLATION]tool-pre-logger-savetofile": "Save Log to File",
   "tool-pre-configfiles": "Konfigurationsdateien",
   "tool-pre-externalfiles": "Externe Dateien",
   "tool-pre-externalfiles-load": "Lade externe Dateien",

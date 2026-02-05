@@ -696,6 +696,8 @@
   "tool-pre-advanced-preferences": "Advanced",
   "tool-pre-other-preferences": "Iba pa",
   "tool-pre-tempfolder": "Temp Folder",
+  "[NEEDS TRANSLATION]tool-pre-logger": "Event Logger",
+  "[NEEDS TRANSLATION]tool-pre-logger-savetofile": "Save Log to File",
   "[NEEDS TRANSLATION]tool-pre-configfiles": "Configuration Files",
   "[NEEDS TRANSLATION]tool-pre-externalfiles": "External Files",
   "[NEEDS TRANSLATION]tool-pre-externalfiles-load": "Load External Files",

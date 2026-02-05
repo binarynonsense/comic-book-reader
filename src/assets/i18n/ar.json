@@ -696,6 +696,8 @@
   "tool-pre-advanced-preferences": "متقدم",
   "tool-pre-other-preferences": "أخرى",
   "tool-pre-tempfolder": "المجلد المؤقت",
+  "[NEEDS TRANSLATION]tool-pre-logger": "Event Logger",
+  "[NEEDS TRANSLATION]tool-pre-logger-savetofile": "Save Log to File",
   "tool-pre-configfiles": "ملفات الإعدادات",
   "[NEEDS TRANSLATION]tool-pre-externalfiles": "External Files",
   "[NEEDS TRANSLATION]tool-pre-externalfiles-load": "Load External Files",

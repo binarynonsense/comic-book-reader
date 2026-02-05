@@ -1,6 +1,8 @@
 {
   "@metadata": {
-    "authors": ["Álvaro"],
+    "authors": [
+      "Álvaro"
+    ],
     "last-updated": "2026-01-30",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.15.0",
@@ -694,6 +696,8 @@
   "tool-pre-advanced-preferences": "Avanzadas",
   "tool-pre-other-preferences": "Otras",
   "tool-pre-tempfolder": "Carpeta temporal",
+  "tool-pre-logger": "Registro de eventos",
+  "tool-pre-logger-savetofile": "Guardar registro en archivo",
   "tool-pre-configfiles": "Archivos de configuración",
   "tool-pre-externalfiles": "Archivos externos",
   "tool-pre-externalfiles-load": "Cargar archivos externos",
