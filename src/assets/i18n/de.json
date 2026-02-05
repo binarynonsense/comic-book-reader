@@ -3,7 +3,7 @@
     "authors": [
       "trzyglow"
     ],
-    "last-updated": "2026-01-30",
+    "last-updated": "2026-02-05",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.15.0",
     "pre-release": "false",
@@ -485,7 +485,7 @@
   "tool-shared-modal-title-info": "Info",
   "tool-shared-modal-title-alert": "Alarm",
   "tool-shared-modal-title-error": "Fehler",
-  "[NEEDS TRANSLATION]tool-shared-modal-title-error-unknown": "Unknown Error",
+  "tool-shared-modal-title-error-unknown": "Unbekannter Fehler",
   "tool-shared-modal-title-success": "Erfolg",
   "tool-shared-modal-title-notification": "Benachrichtigung",
   "tool-shared-modal-title-extracting": "Extrahieren",
