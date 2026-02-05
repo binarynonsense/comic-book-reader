@@ -483,6 +483,7 @@
   "tool-shared-modal-title-info": "Info",
   "tool-shared-modal-title-alert": "Alerta",
   "tool-shared-modal-title-error": "Error",
+  "tool-shared-modal-title-error-unknown": "Error desconocido",
   "tool-shared-modal-title-success": "Éxito",
   "tool-shared-modal-title-notification": "Notificación",
   "tool-shared-modal-title-extracting": "Extrayendo",

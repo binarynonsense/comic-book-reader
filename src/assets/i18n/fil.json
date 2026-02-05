@@ -485,6 +485,7 @@
   "tool-shared-modal-title-info": "Impormasyon",
   "tool-shared-modal-title-alert": "Alerto",
   "tool-shared-modal-title-error": "Error",
+  "[NEEDS TRANSLATION]tool-shared-modal-title-error-unknown": "Unknown Error",
   "tool-shared-modal-title-success": "Tagumpay",
   "tool-shared-modal-title-notification": "Notipikasyon",
   "tool-shared-modal-title-extracting": "Kinukuha",

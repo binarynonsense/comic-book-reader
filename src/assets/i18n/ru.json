@@ -485,6 +485,7 @@
   "tool-shared-modal-title-info": "Информация",
   "tool-shared-modal-title-alert": "Оповещение",
   "tool-shared-modal-title-error": "Ошибка",
+  "[NEEDS TRANSLATION]tool-shared-modal-title-error-unknown": "Unknown Error",
   "tool-shared-modal-title-success": "Успех",
   "tool-shared-modal-title-notification": "Уведомление",
   "tool-shared-modal-title-extracting": "Извлечение",

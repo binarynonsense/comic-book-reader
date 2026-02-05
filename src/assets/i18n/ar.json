@@ -485,6 +485,7 @@
   "tool-shared-modal-title-info": "معلومات",
   "tool-shared-modal-title-alert": "تنبيه",
   "tool-shared-modal-title-error": "خطأ",
+  "[NEEDS TRANSLATION]tool-shared-modal-title-error-unknown": "Unknown Error",
   "tool-shared-modal-title-success": "نجاح",
   "tool-shared-modal-title-notification": "إشعار",
   "tool-shared-modal-title-extracting": "يتم الآن الاستخراج",
