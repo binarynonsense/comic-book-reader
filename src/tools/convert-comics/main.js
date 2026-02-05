@@ -929,6 +929,7 @@ function end(wasCanceled, numFiles, numErrors, numAttempted) {
 function stopError(error, errorMessage, nameAsError = true) {
   let uiMsg = errorMessage;
   if (error) {
+    log.error(error);
     if (error.message) {
       uiMsg = (errorMessage ? errorMessage + "\n" : "") + error.message;
       log.error(uiMsg);
@@ -944,7 +945,6 @@ function stopError(error, errorMessage, nameAsError = true) {
       } else {
         uiMsg = (errorMessage ? errorMessage + "\n" : "") + "Unknown error";
         log.error(uiMsg);
-        log.error(error);
       }
     }
   } else {
