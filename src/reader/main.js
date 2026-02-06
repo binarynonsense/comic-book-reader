@@ -2339,6 +2339,12 @@ function startPageWorker() {
         if (message.type === "testLog") {
           log.test(message.log);
           return;
+        } else if (message.type === "editorLog") {
+          log.editor(message.log);
+          return;
+        } else if (message.type === "debugLog") {
+          log.debug(message.log);
+          return;
         } else {
           if (
             !(

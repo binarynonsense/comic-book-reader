@@ -211,3 +211,7 @@ async function extractImageBuffer({
     return { success: false, error };
   }
 }
+
+function send(message) {
+  process.parentPort.postMessage(message);
+}

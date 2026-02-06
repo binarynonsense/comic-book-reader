@@ -1375,9 +1375,12 @@ async function createFilesFromImages(
         } else if (message.type === "editorLog") {
           log.editor("[CC] " + message.log);
           return;
+        } else if (message.type === "debugLog") {
+          log.debug("[CC] " + message.log);
+          return;
         } else if (message.type === "extraction-progress") {
           return;
-        } else {
+        } else if (message.type === undefined) {
           killWorker();
           if (message.success) {
             log.debug("file/s created in: " + message.times);
