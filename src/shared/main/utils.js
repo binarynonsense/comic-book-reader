@@ -47,8 +47,10 @@ exports.getRarCommand = getRarCommand;
 exports.isRarExeAvailable = function (rarFolderPath) {
   const cmdResult = execShellCommand(getRarCommand(rarFolderPath));
   if (!cmdResult.error || cmdResult.error === "") {
+    log.debug("rar exe available");
     return true;
   } else {
+    log.debug("rar exe not available");
     return false;
   }
 };
