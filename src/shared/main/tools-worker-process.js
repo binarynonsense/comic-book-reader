@@ -5,6 +5,46 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
+///////////////////////////////////////////////////////////////////////////////
+// ENV CLEAN UP ///////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+function getSafeEnv(env = process.env) {
+  // sanitizes an environment object by removing binary null bytes (\0)
+  // from all keys and values. this prevents a bug a user had that
+  // made Electron's utilityProcess.fork break
+  return Object.fromEntries(
+    Object.entries(env)
+      .filter(
+        ([key, value]) => typeof key === "string" && typeof value === "string",
+      )
+      .map(([key, value]) => [
+        key.replace(/\0/g, ""),
+        value.replace(/\0/g, ""),
+      ]),
+  );
+}
+
+const safeEnv = getSafeEnv(process.env);
+for (const key in process.env) {
+  delete process.env[key];
+}
+Object.assign(process.env, safeEnv);
+
+// wrap spawn as a failsafe for node-7z
+const cp = require("child_process");
+const originalSpawn = cp.spawn;
+cp.spawn = function (command, args, options) {
+  // create a copy of options so we don't modify the library's original object
+  const opts = options ? Object.assign({}, options) : {};
+  opts.env = getSafeEnv(opts.env || process.env);
+  return originalSpawn.call(this, command, args, opts);
+};
+
+///////////////////////////////////////////////////////////////////////////////
+// WROKER /////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
 const fs = require("node:fs");
 const path = require("node:path");
 const fileFormats = require("./file-formats");
