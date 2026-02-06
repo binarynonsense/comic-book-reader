@@ -677,12 +677,15 @@ function startFile(inputFileIndex, totalFilesNum) {
           } else if (message.type === "editorLog") {
             log.editor("[CC] " + message.log);
             return;
+          } else if (message.type === "debugLog") {
+            log.debug("[CC] " + message.log);
+            return;
           } else if (message.type === "extraction-progress") {
             updateModalLogText(
               `${_("tool-shared-modal-log-extracting-pages")}: ${message.current} / ${message.total}`,
             );
             return;
-          } else {
+          } else if (message.type === undefined) {
             // success or failure
             killWorker();
             if (message.success) {

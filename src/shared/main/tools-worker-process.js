@@ -35,14 +35,31 @@ Object.assign(process.env, safeEnv);
 const cp = require("child_process");
 const originalSpawn = cp.spawn;
 cp.spawn = function (command, args, options) {
+  send({
+    type: "editorLog",
+    log: `[tools worker] [spawn wrapper] spawn called`,
+  });
   // create a copy of options so we don't modify the library's original object
   const opts = options ? Object.assign({}, options) : {};
-  opts.env = getSafeEnv(opts.env || process.env);
+  const rawEnv = opts.env || process.env;
+  // log bad entry
+  for (const key in rawEnv) {
+    if (typeof key === "string" && typeof rawEnv[key] === "string") {
+      if (key.includes("\0") || rawEnv[key].includes("\0")) {
+        send({
+          type: "debugLog",
+          log: `[tools worker] [spawn wrapper] null byte found in: ${key.replace(/\0/g, "[NULL]")}`,
+        });
+      }
+    }
+  }
+  // sanitize
+  opts.env = getSafeEnv(rawEnv);
   return originalSpawn.call(this, command, args, opts);
 };
 
 ///////////////////////////////////////////////////////////////////////////////
-// WROKER /////////////////////////////////////////////////////////////////////
+// WORKER /////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
 const fs = require("node:fs");
@@ -57,7 +74,7 @@ const { signal } = controller;
 
 process.parentPort.on("message", async (event) => {
   let message = event.data;
-  process.parentPort.postMessage({
+  send({
     type: "editorLog",
     log: `[tools worker] message received: ${message[1]}`,
   });

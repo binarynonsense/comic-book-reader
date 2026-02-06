@@ -174,14 +174,16 @@ exports.updatePages = function (data) {
         path.join(__dirname, "../../../shared/main/tools-worker-process.js"),
       );
       g_worker.on("message", (message) => {
-        g_worker.kill(); // kill it after one use
-        if (message.success) {
-          updatePagesDataFromImages(data, tempFolderPath);
-          return;
-        } else {
-          base.sendIpcToRenderer("pages-updated", undefined);
-          temp.deleteSubFolder(tempFolderPath);
-          return;
+        if (message.type === undefined) {
+          g_worker.kill(); // kill it after one use
+          if (message.success) {
+            updatePagesDataFromImages(data, tempFolderPath);
+            return;
+          } else {
+            base.sendIpcToRenderer("pages-updated", undefined);
+            temp.deleteSubFolder(tempFolderPath);
+            return;
+          }
         }
       });
     }
