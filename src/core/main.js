@@ -36,16 +36,71 @@ let g_updatesWorker;
 
 // app.commandLine.appendSwitch("js-flags", "--expose-gc");
 
-//////////////////////////////////////////////////////////////////////////////
-// SANITIZE ENV //////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+// ENV CLEAN UP ///////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
-// prevent bugs due to malformed entries containing null bytes
-const safeEnv = forkUtils.getSafeEnv(process.env);
+// sanitize the environment by removing binary null bytes (\0)
+// from all keys and values. this prevents a bug a user had
+
+function getSafeEnv(env = process.env) {
+  return Object.fromEntries(
+    Object.entries(env)
+      .filter(
+        ([key, value]) => typeof key === "string" && typeof value === "string",
+      )
+      .map(([key, value]) => [
+        key.replace(/\0/g, ""),
+        value.replace(/\0/g, ""),
+      ]),
+  );
+}
+
+const safeEnv = getSafeEnv(process.env);
 for (const key in process.env) {
   delete process.env[key];
 }
 Object.assign(process.env, safeEnv);
+
+// wrap spawn as a failsafe for node-7z
+const cp = require("child_process");
+const originalSpawn = cp.spawn;
+cp.spawn = function (command, args, options) {
+  log.editor(`[core] [spawn wrapper] spawn called`);
+  // create a copy of options so we don't modify the library's original object
+  const opts = options ? Object.assign({}, options) : {};
+  const rawEnv = opts.env || process.env;
+  // log bad entry
+  for (const key in rawEnv) {
+    if (typeof key === "string" && typeof rawEnv[key] === "string") {
+      if (key.includes("\0") || rawEnv[key].includes("\0")) {
+        log.debug(
+          `[core] [spawn wrapper] null byte found in: ${key.replace(/\0/g, "[NULL]")}`,
+        );
+      }
+    }
+  }
+  // sanitize
+  opts.env = getSafeEnv(rawEnv);
+  return originalSpawn.call(this, command, args, opts);
+};
+
+// wrap execFileSync for the rar exe calls
+const originalExecFileSync = cp.execFileSync;
+cp.execFileSync = function (command, args, options) {
+  log.editor(`[core] [execFileSync wrapper] called for ${command}`);
+  let finalArgs = args;
+  let finalOptions = options;
+  // handle optional args: if only 2 params are passed, args is actually the
+  // options object in execFileSync
+  if (!finalOptions && !Array.isArray(finalArgs)) {
+    finalOptions = finalArgs;
+    finalArgs = undefined;
+  }
+  const opts = finalOptions ? Object.assign({}, finalOptions) : {};
+  opts.env = getSafeEnv(opts.env || process.env);
+  return originalExecFileSync.call(this, command, finalArgs, opts);
+};
 
 //////////////////////////////////////////////////////////////////////////////
 // LAUNCH INFO ///////////////////////////////////////////////////////////////
