@@ -9,10 +9,10 @@
 // ENV CLEAN UP ///////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+// sanitize the environment by removing binary null bytes (\0)
+// from all keys and values. this prevents a bug a user had
+
 function getSafeEnv(env = process.env) {
-  // sanitizes an environment object by removing binary null bytes (\0)
-  // from all keys and values. this prevents a bug a user had that
-  // made Electron's utilityProcess.fork break
   return Object.fromEntries(
     Object.entries(env)
       .filter(
@@ -56,6 +56,26 @@ cp.spawn = function (command, args, options) {
   // sanitize
   opts.env = getSafeEnv(rawEnv);
   return originalSpawn.call(this, command, args, opts);
+};
+
+// wrap execFileSync for the rar exe calls
+const originalExecFileSync = cp.execFileSync;
+cp.execFileSync = function (command, args, options) {
+  send({
+    type: "editorLog",
+    log: `[tools worker] [execFileSync wrapper] called for ${command}`,
+  });
+  let finalArgs = args;
+  let finalOptions = options;
+  // handle optional args: if only 2 params are passed, args is actually the
+  // options object in execFileSync
+  if (!finalOptions && !Array.isArray(finalArgs)) {
+    finalOptions = finalArgs;
+    finalArgs = undefined;
+  }
+  const opts = finalOptions ? Object.assign({}, finalOptions) : {};
+  opts.env = getSafeEnv(opts.env || process.env);
+  return originalExecFileSync.call(this, command, finalArgs, opts);
 };
 
 ///////////////////////////////////////////////////////////////////////////////
