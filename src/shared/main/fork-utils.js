@@ -5,9 +5,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-const { app, utilityProcess } = require("electron");
-const fs = require("node:fs");
-const path = require("node:path");
+const { utilityProcess } = require("electron");
 
 const log = require("./logger");
 
@@ -42,26 +40,22 @@ exports.fork = function (scriptPath, config = {}) {
     }
 
     return utilityProcess.fork(scriptPath, {
-      ...(config?.options || {}), // Safety for the spread
+      ...(config?.options || {}),
       env: safeEnv,
       execArgv: execArgv,
     });
   } catch (error) {
-    const logPath = path.join(app.getPath("userData"), "acbr-fork-debug.log");
-    const saveToFile = true;
-    ////
     const errorMessage = error.message || "";
-    const isNullError = errorMessage.toLowerCase().includes("null bytes");
+    log.error(`utility process fork failed: ${errorMessage}`);
 
+    const isNullError = errorMessage.toLowerCase().includes("null bytes");
     if (isNullError) {
-      let logMessage = `--- NULL BYTE ERROR: ${new Date().toISOString()} ---\n`;
-      logMessage += `ACBR Version: ${app.getVersion()}\n`;
-      logMessage += `Error message: ${errorMessage}\n\n`;
+      let logMessage = `--- NULL BYTE ERROR ---\n`;
       // '00' is the C-style null terminator byte.
       // Example from a bug report:
       // 'Console' in hex is '43 6f 6e 73 6f 6c 65'.
       // 'Console\0' appears as '43 6f 6e 73 6f 6c 65 00'.
-      logMessage += `Hex Dump Analysis (Finding the '00' byte):\n`;
+      logMessage += `hex dump analysis (finding the '00' byte):\n`;
 
       for (const [key, value] of Object.entries(rawEnv)) {
         if (typeof value === "string") {
@@ -72,36 +66,35 @@ exports.fork = function (scriptPath, config = {}) {
           }
         }
       }
+      log.debug(logMessage);
 
-      if (saveToFile) {
-        try {
-          let shouldAppend = true;
+      // if (true) {
+      //   try {
+      //     let shouldAppend = true;
 
-          if (fs.existsSync(logPath)) {
-            const stats = fs.statSync(logPath);
-            if (stats.size > 1024 * 1024) shouldAppend = false;
-          }
+      //     if (fs.existsSync(logPath)) {
+      //       const stats = fs.statSync(logPath);
+      //       if (stats.size > 1024 * 1024) shouldAppend = false;
+      //     }
 
-          if (shouldAppend) {
-            fs.appendFileSync(
-              logPath,
-              logMessage + "\n" + "=".repeat(40) + "\n",
-            );
-          } else {
-            fs.writeFileSync(
-              logPath,
-              "[LOG RESET - FILE TOO LARGE]\n" + logMessage + "\n",
-            );
-          }
+      //     if (shouldAppend) {
+      //       fs.appendFileSync(
+      //         logPath,
+      //         logMessage + "\n" + "=".repeat(40) + "\n",
+      //       );
+      //     } else {
+      //       fs.writeFileSync(
+      //         logPath,
+      //         "[LOG RESET - FILE TOO LARGE]\n" + logMessage + "\n",
+      //       );
+      //     }
 
-          log.debug(`diagnostic log updated at: ${logPath}`);
-        } catch (error) {
-          log.error("log failed", error);
-        }
-      }
+      //     log.debug(`diagnostic log updated at: ${logPath}`);
+      //   } catch (error) {
+      //     log.error("log failed", error);
+      //   }
+      // }
     }
-
-    log.error(`utility process fork failed: ${errorMessage}`);
     throw error;
   }
 };
