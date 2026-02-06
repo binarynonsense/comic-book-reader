@@ -5,37 +5,6 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-const timers = require("../shared/main/timers");
-timers.start("startup");
-
-const { app, BrowserWindow, ipcMain, screen } = require("electron");
-const os = require("node:os");
-const fs = require("node:fs");
-const path = require("node:path");
-
-const settings = require("../shared/main/settings");
-const history = require("../shared/main/history");
-const i18n = require("../shared/main/i18n");
-const log = require("../shared/main/logger");
-const themes = require("../shared/main/themes");
-const menuBar = require("../shared/main/menu-bar");
-const appUtils = require("../shared/main/app-utils");
-const fileFormats = require("../shared/main/file-formats");
-const forkUtils = require("../shared/main/fork-utils");
-const temp = require("../shared/main/temp");
-const tools = require("../shared/main/tools");
-const { _ } = require("../shared/main/i18n");
-
-const reader = require("../reader/main");
-const systemMonitor = require("../tools/system-monitor/main");
-
-let g_mainWindow;
-let g_isLoaded = false;
-let g_launchInfo = {};
-let g_updatesWorker;
-
-// app.commandLine.appendSwitch("js-flags", "--expose-gc");
-
 ///////////////////////////////////////////////////////////////////////////////
 // ENV CLEAN UP ///////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -66,7 +35,7 @@ Object.assign(process.env, safeEnv);
 const cp = require("child_process");
 const originalSpawn = cp.spawn;
 cp.spawn = function (command, args, options) {
-  log.editor(`[core] [spawn wrapper] spawn called`);
+  log?.editor?.(`[core] [spawn wrapper] spawn called`);
   // create a copy of options so we don't modify the library's original object
   const opts = options ? Object.assign({}, options) : {};
   const rawEnv = opts.env || process.env;
@@ -74,7 +43,7 @@ cp.spawn = function (command, args, options) {
   for (const key in rawEnv) {
     if (typeof key === "string" && typeof rawEnv[key] === "string") {
       if (key.includes("\0") || rawEnv[key].includes("\0")) {
-        log.debug(
+        log?.debug?.(
           `[core] [spawn wrapper] null byte found in: ${key.replace(/\0/g, "[NULL]")}`,
         );
       }
@@ -88,7 +57,7 @@ cp.spawn = function (command, args, options) {
 // wrap execFileSync for the rar exe calls
 const originalExecFileSync = cp.execFileSync;
 cp.execFileSync = function (command, args, options) {
-  log.editor(`[core] [execFileSync wrapper] called for ${command}`);
+  log?.editor?.(`[core] [execFileSync wrapper] called for ${command}`);
   let finalArgs = args;
   let finalOptions = options;
   // handle optional args: if only 2 params are passed, args is actually the
@@ -101,6 +70,41 @@ cp.execFileSync = function (command, args, options) {
   opts.env = getSafeEnv(opts.env || process.env);
   return originalExecFileSync.call(this, command, finalArgs, opts);
 };
+
+//////////////////////////////////////////////////////////////////////////////
+// SETUP /////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+
+const timers = require("../shared/main/timers");
+timers.start("startup");
+
+const { app, BrowserWindow, ipcMain, screen } = require("electron");
+const os = require("node:os");
+const fs = require("node:fs");
+const path = require("node:path");
+
+const settings = require("../shared/main/settings");
+const history = require("../shared/main/history");
+const i18n = require("../shared/main/i18n");
+const log = require("../shared/main/logger");
+const themes = require("../shared/main/themes");
+const menuBar = require("../shared/main/menu-bar");
+const appUtils = require("../shared/main/app-utils");
+const fileFormats = require("../shared/main/file-formats");
+const forkUtils = require("../shared/main/fork-utils");
+const temp = require("../shared/main/temp");
+const tools = require("../shared/main/tools");
+const { _ } = require("../shared/main/i18n");
+
+const reader = require("../reader/main");
+const systemMonitor = require("../tools/system-monitor/main");
+
+let g_mainWindow;
+let g_isLoaded = false;
+let g_launchInfo = {};
+let g_updatesWorker;
+
+// app.commandLine.appendSwitch("js-flags", "--expose-gc");
 
 //////////////////////////////////////////////////////////////////////////////
 // LAUNCH INFO ///////////////////////////////////////////////////////////////
