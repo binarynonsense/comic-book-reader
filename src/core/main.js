@@ -606,6 +606,7 @@ if (!gotTheLock) {
     if (settings.getValue("logToFile"))
       log.saveLogFile(
         path.join(appUtils.getConfigFolder(), "acbr.log"),
+        path.join(appUtils.getConfigFolder(), "acbr-prev.log"),
         appUtils.getAppVersion(),
       );
     // clean up

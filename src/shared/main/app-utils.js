@@ -278,6 +278,7 @@ exports.getLogFile = function () {
   let data = [];
   let cfgFolderPath = getConfigFolder();
   data.push(getFileData("acbr.log", cfgFolderPath));
+  data.push(getFileData("acbr-prev.log", cfgFolderPath));
   return data;
 };
 
@@ -304,6 +305,8 @@ function cleanUpUserDataFolder() {
       "acbr-cache",
       "acbr-user-extensions",
       "acbr.log",
+      "acbr-prev.log",
+      //
       "acbr-fork-debug.log",
     ];
     let userDataPath = app.getPath("userData");

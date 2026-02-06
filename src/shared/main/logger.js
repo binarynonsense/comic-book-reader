@@ -28,11 +28,20 @@ exports.init = function (info) {
   g_log = "";
 };
 
-exports.saveLogFile = function (filePath, version) {
-  g_log += "\n" + "=".repeat(40) + "\n\n";
-  g_log += `ACBR version: ${version}\n`;
-  g_log += `Date: ${new Date().toISOString()}\n`;
-  fs.writeFileSync(filePath, g_log);
+exports.saveLogFile = function (filePath, prevFilePath, version) {
+  try {
+    g_log =
+      `\n${"=".repeat(80)}\n\nACBR version: ${version}\nDate: ${new Date().toISOString()}\n\n${"-".repeat(80)}\n\n` +
+      g_log;
+    g_log += `\n${"=".repeat(80)}\n`;
+
+    if (fs.existsSync(filePath)) {
+      try {
+        fs.renameSync(filePath, prevFilePath);
+      } catch (error) {}
+    }
+    fs.writeFileSync(filePath, g_log);
+  } catch (error) {}
 };
 
 exports.debug = function (message) {
