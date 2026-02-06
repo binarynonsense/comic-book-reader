@@ -266,29 +266,27 @@ exports.chooseSaveAs = chooseSaveAs;
 exports.getConfigFiles = function () {
   let data = [];
   let cfgFolderPath = getConfigFolder();
-  data.push({ name: "acbr.cfg", path: path.join(cfgFolderPath, "acbr.cfg") });
-  data.push({ name: "acbr.hst", path: path.join(cfgFolderPath, "acbr.hst") });
-  data.push({ name: "acbr.fav", path: path.join(cfgFolderPath, "acbr.fav") });
-  data.push({
-    name: "acbr-player.cfg",
-    path: path.join(cfgFolderPath, "acbr-player.cfg"),
-  });
-  data.push({
-    name: "acbr-player.m3u",
-    path: path.join(cfgFolderPath, "acbr-player.m3u"),
-  });
+  data.push(getFileData("acbr.cfg", cfgFolderPath));
+  data.push(getFileData("acbr.hst", cfgFolderPath));
+  data.push(getFileData("acbr.fav", cfgFolderPath));
+  data.push(getFileData("acbr-player.cfg", cfgFolderPath));
+  data.push(getFileData("acbr-player.m3u", cfgFolderPath));
   return data;
 };
 
 exports.getLogFile = function () {
   let data = [];
   let cfgFolderPath = getConfigFolder();
-  data.push({
-    name: "acbr.log",
-    path: path.join(cfgFolderPath, "acbr.log"),
-  });
+  data.push(getFileData("acbr.log", cfgFolderPath));
   return data;
 };
+
+function getFileData(fileName, folderPath) {
+  const name = fileName;
+  const filePath = path.join(folderPath, fileName);
+  const exists = fs.existsSync(filePath);
+  return { name, path: filePath, exists };
+}
 
 function cleanUpUserDataFolder() {
   // some things are not entirely deleted, but it's good enough :)

@@ -627,7 +627,20 @@ function init(
         .getElementById("tool-pre-logger-savetofile-checkbox")
         .addEventListener("change", (event) => {
           sendIpcToMain("change-log-to-file", event.target.checked);
+          if (event.target.checked)
+            document
+              .querySelector("#tool-logger-savetofile-path-ul")
+              .classList.remove("set-display-none");
+          else
+            document
+              .querySelector("#tool-logger-savetofile-path-ul")
+              .classList.add("set-display-none");
         });
+
+      if (!settings.logToFile)
+        document
+          .querySelector("#tool-logger-savetofile-path-ul")
+          .classList.add("set-display-none");
     }
     // external files
     {
@@ -1055,12 +1068,13 @@ function reducePathString(input) {
 }
 
 function buildConfigFilesList(configFiles, logFile) {
+  // config files
   let ul = document.querySelector("#tool-configfiles-items-ul");
   ul.innerHTML = "";
   configFiles.forEach((file) => {
     addFileToList(ul, file);
   });
-  //
+  // log file
   ul = document.querySelector("#tool-logger-savetofile-path-ul");
   if (logFile.length > 0) {
     ul.innerHTML = "";
@@ -1077,6 +1091,7 @@ function addFileToList(ul, file) {
   li.className = "tools-buttons-list-li";
   let buttonSpan = document.createElement("span");
   buttonSpan.className = "tools-buttons-list-button";
+  if (!file.exists) buttonSpan.className += " tools-disabled";
   buttonSpan.innerHTML = `<i class="fas fa-file fa-2x fa-fw"></i>`;
   buttonSpan.title = g_localizedTexts.openInSystemFileBrowser;
   let multilineText = document.createElement("span");
@@ -1091,9 +1106,10 @@ function addFileToList(ul, file) {
     multilineText.appendChild(text);
   }
   buttonSpan.appendChild(multilineText);
-  buttonSpan.addEventListener("click", (event) => {
-    sendIpcToMain("open-path-in-file-browser", file.path);
-  });
+  if (file.exists)
+    buttonSpan.addEventListener("click", (event) => {
+      sendIpcToMain("open-path-in-file-browser", file.path);
+    });
   li.appendChild(buttonSpan);
   // {
   //   let buttonSpan = document.createElement("span");

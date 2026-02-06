@@ -58,9 +58,7 @@ exports.open = function () {
   }
   sendIpcToRenderer("set-temp-folder", tempFolderPath, saveAsRelative);
   let configFiles = appUtils.getConfigFiles();
-  configFiles = configFiles.filter((value) => fs.existsSync(value.path));
   let logFiles = appUtils.getLogFile();
-  logFiles = logFiles.filter((value) => fs.existsSync(value.path));
   sendIpcToRenderer("set-config-files", configFiles, logFiles);
 };
 
