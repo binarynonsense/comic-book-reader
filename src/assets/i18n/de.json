@@ -3,7 +3,7 @@
     "authors": [
       "trzyglow"
     ],
-    "last-updated": "2026-02-05",
+    "last-updated": "2026-02-06",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.15.0",
     "pre-release": "false",
@@ -696,8 +696,8 @@
   "tool-pre-advanced-preferences": "Erweitert",
   "tool-pre-other-preferences": "Andere",
   "tool-pre-tempfolder": "Temp Ordner",
-  "[NEEDS TRANSLATION]tool-pre-logger": "Event Logger",
-  "[NEEDS TRANSLATION]tool-pre-logger-savetofile": "Save Log to File",
+  "tool-pre-logger": "Ereignisprotokollierer",
+  "tool-pre-logger-savetofile": "Protokoll als Datei speichern",
   "tool-pre-configfiles": "Konfigurationsdateien",
   "tool-pre-externalfiles": "Externe Dateien",
   "tool-pre-externalfiles-load": "Lade externe Dateien",
