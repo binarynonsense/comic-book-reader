@@ -1,3 +1,17 @@
+# v3.16.0
+
+- Added an alternative PDF library, based on PDFium, that can be used instead of the default one, based on PDFjs, both in the Reader and the conversion tools. It can be set as the one to be used for the Reader in the program's preferences (File Formats section), and in the advanced settings of each tool for them. Hopefully, this may be of help as an alternative if a PDF file happens to have stability or compatibility issues with the default library. One current limitation is that some big files that the default one is able to load will fail to do with this new one.
+- Added a new section in the Preferences, Comic Book Reader, and moved some of the settings there.
+- Added a new setting in the Preferences, in the PDF subsection of the File Formats section, to select the dpi at which the pages of a PDF file are rendered in the Reader.
+- Added a new subsection in the Preferences, Advanced > External Files, to allow loading external files to add more localizations. I've also made a [repository](https://github.com/binarynonsense/acbr-unofficial-extensions) to share some unofficial ones I made using machine translation. One of my requirements to include a localization as part of ACBR is that it must be human made, for quality reasons, but I thought this would be useful for users that want to generate their own using that type of tools or test a human made one they are working on.
+- Added a System Monitor 'widget' that shows the system total CPU and Memory use. To show or hide it use the menu entry View > System Monitor. To get more accurate stats in the Flatpak version some extra permissions are required (see the [wiki](https://github.com/binarynonsense/comic-book-reader/wiki) for more info).
+- Added an advanced option in the conversion tools to extract PDF pages based on a target height instead of dpi.
+- Improved the memory management and simplicity in the code that uses the PDFjs library.
+- Implemented the image processing (scale, change image format...) speed improvements from the previous version in the "Extract Comic Books" tool.
+- Added a new advanced option in the preferences to enable saving the debug events log to file (useful for bug reports).
+- Made the program resilient against malformed environment variables containing null bytes.
+- Fixed dpi calculations when rendering PDF pages with the default library. Resulting files are often bigger now for the same dpi setting, but that's because the previous calculations resulted in real dpis lower than the requested one.
+
 # v3.15.0
 
 - Increased, significantly, the speed of conversions that require image processing (scale, change image format...) in the "Convert Comic Books" tool by piping all the image processing operations for a page together, instead of doing them in stages as before, and also using worker threads to work on multiple pages at once. There are now advanced options to fine tune some parameters of this new method, which is now the default, in the tool's settings section (or to select the old method, which has the new operation piping but doesn't use worker threads, just in case it works better in some cases).
