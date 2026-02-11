@@ -206,6 +206,9 @@ exports.getFileTypeFromPath = function (filePath, returnMimeType = false) {
     if (type === "zip" && filePath.toLowerCase().endsWith(".epub")) {
       type = "epub";
     }
+    if (type === "mobi") {
+      if (filePath.toLowerCase().endsWith(".azw3")) type = "azw3";
+    }
   }
   return type;
 };
@@ -217,6 +220,8 @@ function getFileTypeFromBuffer(buffer, returnMimeType = false) {
       "7z": "application/x-7z-compressed",
       pdf: "application/pdf",
       epub: "application/epub+zip",
+      mobi: "application/x-mobipocket-ebook",
+      azw3: "application/vnd.amazon.mobi8-ebook",
       zip: "application/zip",
       jpg: "image/jpeg",
       png: "image/png",
@@ -234,7 +239,10 @@ function getFileTypeFromBuffer(buffer, returnMimeType = false) {
     if (hex.startsWith("52617221")) type = "rar";
     else if (hex.startsWith("377abcaf")) type = "7z";
     else if (hex.startsWith("25504446")) type = "pdf";
-    else if (hex.startsWith("504b0304")) {
+    // MOBI/AZW3 logic: "BOOKMOBI" signature starts at offset 60
+    else if (buffer.toString("ascii", 60, 68) === "BOOKMOBI") {
+      type = "mobi";
+    } else if (hex.startsWith("504b0304")) {
       const check = buffer.toString("ascii", 30, 100);
       if (check.includes("mimetype") && check.includes("epub+zip")) {
         type = "epub";
