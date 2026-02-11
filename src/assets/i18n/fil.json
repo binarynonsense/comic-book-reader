@@ -195,6 +195,8 @@
   "ui-modal-info-version": "bersyon",
   "ui-modal-info-currentversion": "Kasalukuyang bersyon",
   "ui-modal-info-latestversion": "Pinakabagong bersyon",
+  "[NOTE TO TRANSLATORS]ui-modal-info-licenses": "'Licenses' as in 'Software Licenses'",
+  "[NEEDS TRANSLATION]ui-modal-info-licenses": "Licenses",
   "ui-modal-info-lateststableversion": "Pinakabagong stable na bersyon",
   "ui-modal-info-updateavailable-yes": "May available na mas bagong stable na bersyon. I-click ang 'Buksan' na button upang buksan ang pahina ng pag-download sa iyong browser.",
   "ui-modal-info-updateavailable-no": "Walang natagpuang mas bagong stable na bersyon.",

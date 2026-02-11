@@ -195,6 +195,8 @@
   "ui-modal-info-version": "الإصدار",
   "ui-modal-info-currentversion": "الإصدار الحالي",
   "ui-modal-info-latestversion": "الإصدار الأخير",
+  "[NOTE TO TRANSLATORS]ui-modal-info-licenses": "'Licenses' as in 'Software Licenses'",
+  "[NEEDS TRANSLATION]ui-modal-info-licenses": "Licenses",
   "ui-modal-info-lateststableversion": "أحدث إصدار مستقر",
   "ui-modal-info-updateavailable-yes": "هناك نسخة مستقرة أحدث متوفرة. انقر على زر 'فتح' لفتح صفحة التنزيل في متصفحك.",
   "ui-modal-info-updateavailable-no": "تعذر العثور على إصدار مستقر أحدث.",

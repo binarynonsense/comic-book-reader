@@ -1,8 +1,6 @@
 {
   "@metadata": {
-    "authors": [
-      "Álvaro"
-    ],
+    "authors": ["Álvaro"],
     "last-updated": "2026-02-06",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.16.0",
@@ -195,6 +193,8 @@
   "ui-modal-info-version": "Versión",
   "ui-modal-info-currentversion": "Versión actual",
   "ui-modal-info-latestversion": "Última versión",
+  "[NOTE TO TRANSLATORS]ui-modal-info-licenses": "'Licenses' as in 'Software Licenses'",
+  "ui-modal-info-licenses": "Licencias",
   "ui-modal-info-lateststableversion": "Última versión estable",
   "ui-modal-info-updateavailable-yes": "Hay disponible una versión estable más reciente. Haga click en el botón 'Abrir' para abrir la página de descarga en su navegador.",
   "ui-modal-info-updateavailable-no": "No se encontró una versión estable más reciente.",

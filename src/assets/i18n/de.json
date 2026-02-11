@@ -195,6 +195,8 @@
   "ui-modal-info-version": "Version",
   "ui-modal-info-currentversion": "Aktuelle Version",
   "ui-modal-info-latestversion": "Neuste Version",
+  "[NOTE TO TRANSLATORS]ui-modal-info-licenses": "'Licenses' as in 'Software Licenses'",
+  "[NEEDS TRANSLATION]ui-modal-info-licenses": "Licenses",
   "ui-modal-info-lateststableversion": "Neuste stabile Version",
   "ui-modal-info-updateavailable-yes": "Eine neuere stabile Version ist verfügbar. Klicken Sie den 'Öffnen' Button um die Downloadseite im Browser zu öffnen.",
   "ui-modal-info-updateavailable-no": "Konnte keine neuere stabile Version finden.",
