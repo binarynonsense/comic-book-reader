@@ -3,7 +3,7 @@
     "authors": [
       "trzyglow"
     ],
-    "last-updated": "2026-02-06",
+    "last-updated": "2026-02-12",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.16.0",
     "pre-release": "false",
@@ -196,7 +196,7 @@
   "ui-modal-info-currentversion": "Aktuelle Version",
   "ui-modal-info-latestversion": "Neuste Version",
   "[NOTE TO TRANSLATORS]ui-modal-info-licenses": "'Licenses' as in 'Software Licenses'",
-  "[NEEDS TRANSLATION]ui-modal-info-licenses": "Licenses",
+  "ui-modal-info-licenses": "Lizenzen",
   "ui-modal-info-lateststableversion": "Neuste stabile Version",
   "ui-modal-info-updateavailable-yes": "Eine neuere stabile Version ist verfügbar. Klicken Sie den 'Öffnen' Button um die Downloadseite im Browser zu öffnen.",
   "ui-modal-info-updateavailable-no": "Konnte keine neuere stabile Version finden.",
