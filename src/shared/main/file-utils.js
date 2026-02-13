@@ -229,6 +229,7 @@ function getFileTypeFromBuffer(buffer, returnMimeType = false) {
       bmp: "image/bmp",
       webp: "image/webp",
       avif: "image/avif",
+      fb2: "application/x-fictionbook+xml",
     };
 
     const hex = buffer.toString("hex").toLowerCase();
@@ -239,9 +240,19 @@ function getFileTypeFromBuffer(buffer, returnMimeType = false) {
     if (hex.startsWith("52617221")) type = "rar";
     else if (hex.startsWith("377abcaf")) type = "7z";
     else if (hex.startsWith("25504446")) type = "pdf";
-    // MOBI/AZW3 logic: "BOOKMOBI" signature starts at offset 60
+    else if (hex.startsWith("434f4e54")) {
+      type = "azw3"; // kindle KFX
+    }
+    // MOBI/AZW3: "BOOKMOBI" signature starts at offset 60
     else if (buffer.toString("ascii", 60, 68) === "BOOKMOBI") {
-      type = "mobi";
+      const version = buffer.readUInt32BE(76);
+      if (version >= 8) {
+        type = "azw3";
+      } else {
+        type = "mobi";
+      }
+    } else if (hex.startsWith("54505a42")) {
+      type = "azw3"; // kindle print replica (AZW4)
     } else if (hex.startsWith("504b0304")) {
       const check = buffer.toString("ascii", 30, 100);
       if (check.includes("mimetype") && check.includes("epub+zip")) {
@@ -260,6 +271,16 @@ function getFileTypeFromBuffer(buffer, returnMimeType = false) {
     } else if (hex.slice(8, 24) === "6674797061766966") {
       type = "avif";
     }
+    // fb2
+    else {
+      const checkFb2 = buffer.toString("ascii", 0, 50).toLowerCase();
+      if (
+        checkFb2.includes("<fictionbook") ||
+        checkFb2.includes("http://www.gribuser.ru")
+      ) {
+        type = "fb2";
+      }
+    }
 
     if (!type) return undefined;
     return returnMimeType ? mimeMap[type] : type;
@@ -269,6 +290,67 @@ function getFileTypeFromBuffer(buffer, returnMimeType = false) {
   }
 }
 exports.getFileTypeFromBuffer = getFileTypeFromBuffer;
+
+exports.getEpubType = async function (filePath) {
+  const Seven = require("node-7z");
+
+  //////////////
+  // bin logic copied from my seven-zip.js file
+  const isWin = process.platform === "win32";
+  const binName = isWin ? "7z.exe" : "7zz";
+  let pathTo7zip;
+  const isPackaged =
+    process.resourcesPath.includes("app.asar") ||
+    !process.resourcesPath.includes("node_modules");
+  if (isPackaged) {
+    pathTo7zip = path.join(
+      process.resourcesPath,
+      "bin",
+      "7zip",
+      isWin ? "win" : "linux",
+      binName,
+    );
+  } else {
+    pathTo7zip = path.join(
+      __dirname,
+      "../../",
+      "assets",
+      "bin",
+      "7zip",
+      isWin ? "win" : "linux",
+      binName,
+    );
+  }
+  //////////////
+
+  return new Promise((resolve) => {
+    let imageCount = 0;
+    let htmlCount = 0;
+
+    const stream = Seven.list(filePath, { $bin: pathTo7zip });
+
+    stream.on("data", (data) => {
+      const name = data.file.toLowerCase();
+      if (name.match(/\.(jpg|jpeg|png|webp|avif)$/)) imageCount++;
+      if (name.match(/\.(xhtml|html)$/)) htmlCount++;
+    });
+
+    stream.on("end", () => {
+      // hackish logic, may need to tweak it:
+      // comic: roughly 1 image per page
+      // ebook: many text pages vs few images
+      const isComic = imageCount > 10 && imageCount >= htmlCount - 5;
+      const result = isComic ? "comic" : "ebook";
+      log.editor("epub detected as: " + result);
+      resolve(result);
+    });
+
+    stream.on("error", (err) => {
+      log.error("7z list error:", err);
+      resolve("ebook");
+    });
+  });
+};
 
 ///////////////////////////////////////////////////////////////////////////////
 // EXTENSIONS /////////////////////////////////////////////////////////////////
