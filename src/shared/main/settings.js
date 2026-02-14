@@ -61,9 +61,20 @@ const g_defaultSettings = {
   layoutPageNum: 4, // 0 top left, 1 top center, 2 top right .... 5 bottom right
   layoutAudioPlayer: 0, // 0 top left, 3 bottom left - for now
   layoutBattery: 0, // 0 top left, 1 top center, 2 top right .... 5 bottom right
-  epubOpenAs: 0, // 0 ask and remember, 1 always ask
-  // pdfReadingLib: 0, // 0 oldest, 1 newest // DEPRECATED
-  pdfReadingLibrary: "pdfjs_1", // pdfjs_1, pdfjs_2, pdfium
+  epubBookType: 0, // 0 autodetect, 1 ask
+  rememberEpubBookType: true,
+  epubEbook: {
+    customSize: false,
+    width: 800,
+    height: 1100,
+    margin: 40,
+    fontSize: 22,
+    dpi: 144,
+    customColors: false,
+    colorText: "#000000", // rgb color in hex
+    colorBg: "#ffffff", // rgb color in hex
+  },
+  pdfReadingLibrary: "default", // default, pdfjs_older, pdfjs_newer, mupdf
   pdfReadingDpi: 200, // 300, 200, 150, 96 or 72
   cbrCreation: 0, // 0 disabled, 1 use command tool if available
   rarExeFolderPath: undefined,
@@ -77,9 +88,6 @@ const g_defaultSettings = {
     favoritesMaxRowsCollapsed: 2, // integer >= 1
     otherMaxRowsCollapsed: 2, // integer >= 1
   },
-  epubEbookColorMode: 0, // 0: light, 1: dark, 2: custom
-  epubEbookColorText: "#000000", // rgb color in hex
-  epubEbookColorBg: "#ffffff", // rgb color in hex
   pagesDirection: 0, // 0: ltr, 1: rtl,
   mouseButtonQuickMenu: 1, // -1: unassigned 0-4: mouse button
   systemMonitorScale: 1.0,
@@ -176,6 +184,10 @@ exports.setValue = function (name, value) {
   g_settings[name] = value;
 };
 
+exports.setChildValue = function (name, childName, value) {
+  g_settings[name][childName] = value;
+};
+
 exports.init = function (...args) {
   load(...args);
 };
@@ -237,8 +249,8 @@ exports.resetPreferences = function () {
     "layoutPageNum",
     "layoutAudioPlayer",
     "layoutBattery",
-    "epubOpenAs",
-    // "pdfReadingLib",
+    "epubBookType",
+    "rememberEpubBookType",
     "pdfReadingLibrary",
     "pdfReadingDpi",
     "cbrCreation",
@@ -246,9 +258,7 @@ exports.resetPreferences = function () {
     "turnPageOnScrollBoundary",
     "toolbarDirection",
     "homeScreen",
-    "epubEbookColorMode",
-    "epubEbookColorText",
-    "epubEbookColorBg",
+    "epubEbook",
     "mouseButtonQuickMenu",
     //"systemMonitorScale", // TOOD: add when included in preferences tool
     "logToFile",
@@ -492,19 +502,6 @@ function sanitize() {
     g_settings.toolbarDirection = g_defaultSettings.toolbarDirection;
   }
   if (
-    !Number.isInteger(g_settings.epubEbookColorMode) ||
-    g_settings.epubEbookColorMode < 0 ||
-    g_settings.epubEbookColorMode > 2
-  ) {
-    g_settings.epubEbookColorMode = g_defaultSettings.epubEbookColorMode;
-  }
-  if (!isRgbHexColor(g_settings.epubEbookColorText)) {
-    g_settings.epubEbookColorText = g_defaultSettings.epubEbookColorText;
-  }
-  if (!isRgbHexColor(g_settings.epubEbookColorBg)) {
-    g_settings.epubEbookColorBg = g_defaultSettings.epubEbookColorBg;
-  }
-  if (
     !Number.isInteger(g_settings.pagesDirection) ||
     g_settings.pagesDirection < 0 ||
     g_settings.pagesDirection > 1
@@ -512,24 +509,21 @@ function sanitize() {
     g_settings.pagesDirection = g_defaultSettings.pagesDirection;
   }
   if (
-    !Number.isInteger(g_settings.epubOpenAs) ||
-    g_settings.epubOpenAs < 0 ||
-    g_settings.epubOpenAs > 1
+    !Number.isInteger(g_settings.epubBookType) ||
+    g_settings.epubBookType < 0 ||
+    g_settings.epubBookType > 1
   ) {
-    g_settings.epubOpenAs = g_defaultSettings.epubOpenAs;
+    g_settings.epubBookType = g_defaultSettings.epubBookType;
   }
-  // if (
-  //   !Number.isInteger(g_settings.pdfReadingLib) ||
-  //   g_settings.pdfReadingLib < 0 ||
-  //   g_settings.pdfReadingLib > 1
-  // ) {
-  //   g_settings.pdfReadingLib = g_defaultSettings.pdfReadingLib;
-  // }
+  if (typeof g_settings.rememberEpubBookType !== "boolean") {
+    g_settings.rememberEpubBookType = g_defaultSettings.rememberEpubBookType;
+  }
   if (
     typeof g_settings.pdfReadingLibrary !== "string" ||
-    (g_settings.pdfReadingLibrary !== "pdfjs_1" &&
-      g_settings.pdfReadingLibrary !== "pdfjs_2" &&
-      g_settings.pdfReadingLibrary !== "pdfium")
+    (g_settings.pdfReadingLibrary !== "default" &&
+      g_settings.pdfReadingLibrary !== "pdfjs_older" &&
+      g_settings.pdfReadingLibrary !== "pdfjs_newer" &&
+      g_settings.pdfReadingLibrary !== "mupdf")
   ) {
     g_settings.pdfReadingLibrary = g_defaultSettings.pdfReadingLibrary;
   }
@@ -773,6 +767,8 @@ function load(info) {
             loadNavButtons(loadedSettings[key]);
           } else if (key === "homeScreen") {
             loadHomeScreen(loadedSettings[key]);
+          } else if (key === "epubEbook") {
+            loadEpubEbook(loadedSettings[key]);
           } else {
             g_settings[key] = loadedSettings[key];
           }
@@ -856,6 +852,57 @@ function loadHomeScreen(loadedHomeScreen) {
       if (isValid) {
         g_settings.homeScreen[option] = value;
       }
+    }
+  }
+}
+
+function loadEpubEbook(loaded) {
+  if (isObject(loaded)) {
+    if (typeof loaded.customSize !== "boolean") {
+      g_settings.epubEbook.customSize = g_defaultSettings.epubEbook.customSize;
+    } else {
+      g_settings.epubEbook.customSize = loaded.customSize;
+    }
+    if (!Number.isInteger(loaded.width) || loaded.width < 1) {
+      g_settings.epubEbook.width = g_defaultSettings.epubEbook.width;
+    } else {
+      g_settings.epubEbook.width = loaded.width;
+    }
+    if (!Number.isInteger(loaded.height) || loaded.height < 1) {
+      g_settings.epubEbook.height = g_defaultSettings.epubEbook.height;
+    } else {
+      g_settings.epubEbook.height = loaded.height;
+    }
+    if (!Number.isInteger(loaded.margin) || loaded.margin < 0) {
+      g_settings.epubEbook.margin = g_defaultSettings.epubEbook.margin;
+    } else {
+      g_settings.epubEbook.fontSize = loaded.fontSize;
+    }
+    if (!Number.isInteger(loaded.fontSize) || loaded.fontSize < 1) {
+      g_settings.epubEbook.fontSize = g_defaultSettings.epubEbook.fontSize;
+    } else {
+      g_settings.epubEbook.fontSize = loaded.fontSize;
+    }
+    if (!Number.isInteger(loaded.dpi) || loaded.dpi < 1) {
+      g_settings.epubEbook.dpi = g_defaultSettings.epubEbook.dpi;
+    } else {
+      g_settings.epubEbook.dpi = loaded.dpi;
+    }
+    if (typeof loaded.customColors !== "boolean") {
+      g_settings.epubEbook.customColors =
+        g_defaultSettings.epubEbook.customColors;
+    } else {
+      g_settings.epubEbook.customColors = loaded.customColors;
+    }
+    if (!isRgbHexColor(loaded.colorText)) {
+      g_settings.epubEbook.colorText = g_defaultSettings.epubEbook.colorText;
+    } else {
+      g_settings.epubEbook.colorText = loaded.colorText;
+    }
+    if (!isRgbHexColor(loaded.colorBg)) {
+      g_settings.epubEbook.colorBg = g_defaultSettings.epubEbook.colorBg;
+    } else {
+      g_settings.epubEbook.colorBg = loaded.colorBg;
     }
   }
 }

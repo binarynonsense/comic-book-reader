@@ -443,52 +443,6 @@
       id="tool-pre-section-4-content-div"
       class="tools-columns-right-section"
     >
-      <!-- pdf -->
-      <h3 class="tools-h3-extra-margin-top">
-        <span id="tool-pre-pdf-text"></span>
-      </h3>
-      <div class="tools-columns-right-subsection">
-        <label
-          ><span id="tool-pre-pdf-reading-library-version-text"></span
-          ><select id="tool-pre-pdf-reading-library-version-select">
-            <option
-              id="tool-pre-pdf-reading-library-version-0-text"
-              value="pdfjs_1"
-            ></option>
-            <option
-              id="tool-pre-pdf-reading-library-version-1-text"
-              value="pdfjs_2"
-            ></option>
-            <option
-              id="tool-pre-pdf-reading-library-version-2-text"
-              value="pdfium"
-            ></option></select
-        ></label>
-
-        <label
-          ><span id="tool-pre-pdf-reading-dpi-text"></span
-          ><select id="tool-pre-pdf-reading-dpi-select">
-            <!-- <option value="600">600 dpi</option> -->
-            <option value="300" selected>300 dpi</option>
-            <option value="200">200 dpi</option>
-            <option value="150">150 dpi</option>
-            <option value="96">96 dpi</option>
-            <option value="72">72 dpi</option>
-          </select></label
-        >
-      </div>
-      <!-- epub  -->
-      <h3 class="tools-h3-extra-margin-top">
-        <span id="tool-pre-epub-text"></span>
-      </h3>
-      <div class="tools-columns-right-subsection">
-        <label
-          ><span id="tool-pre-epub-openas-text"></span
-          ><select id="tool-pre-epub-openas-select">
-            <option id="tool-pre-epub-openas-0-text" value="0"></option>
-            <option id="tool-pre-epub-openas-1-text" value="1"></option></select
-        ></label>
-      </div>
       <!-- cbr -->
       <h3 class="tools-h3-extra-margin-top">
         <span id="tool-pre-cbr-text"></span>
@@ -532,42 +486,134 @@
           </div>
         </div>
       </div>
-      <!-- epub ebook -->
+      <!-- pdf -->
       <h3 class="tools-h3-extra-margin-top">
-        <span id="tool-pre-epub-ebook-text"></span>
+        <span id="tool-pre-pdf-text"></span>
       </h3>
       <div class="tools-columns-right-subsection">
         <label
-          ><span id="tool-pre-epub-ebook-color-mode-text"></span
-          ><select id="tool-pre-epub-ebook-color-mode-select">
+          ><span id="tool-pre-pdf-reading-library-version-text"></span
+          ><select id="tool-pre-pdf-reading-library-version-select">
             <option
-              id="tool-pre-epub-ebook-color-mode-0-text"
-              value="0"
+              id="tool-pre-pdf-reading-library-version-0-text"
+              value="default"
             ></option>
             <option
-              id="tool-pre-epub-ebook-color-mode-1-text"
-              value="1"
+              id="tool-pre-pdf-reading-library-version-1-text"
+              value="mupdf"
             ></option>
             <option
-              id="tool-pre-epub-ebook-color-mode-2-text"
-              value="2"
+              id="tool-pre-pdf-reading-library-version-2-text"
+              value="pdfjs_newer"
+            ></option>
+            <option
+              id="tool-pre-pdf-reading-library-version-3-text"
+              value="pdfjs_older"
             ></option></select
         ></label>
-        <div
-          class="tool-shared-columns-parent"
-          id="tool-pre-epub-ebook-color-custom-inputs-div"
+
+        <label
+          ><span id="tool-pre-pdf-reading-dpi-text"></span
+          ><select id="tool-pre-pdf-reading-dpi-select">
+            <!-- <option value="600">600 dpi</option> -->
+            <option value="300" selected>300 dpi</option>
+            <option value="200">200 dpi</option>
+            <option value="150">150 dpi</option>
+            <option value="96">96 dpi</option>
+            <option value="72">72 dpi</option>
+          </select></label
         >
-          <label class="tool-shared-columns-50-grow">
-            <span id="tool-pre-epub-ebook-color-text-text"></span>
-            <input id="tool-pre-epub-ebook-color-text-input" type="color" />
-          </label>
-          <label class="tool-shared-columns-50-grow">
-            <span id="tool-pre-epub-ebook-color-background-text"></span>
-            <input
-              id="tool-pre-epub-ebook-color-background-input"
-              type="color"
-            />
-          </label>
+      </div>
+      <!-- epub  -->
+      <h3 class="tools-h3-extra-margin-top">
+        <span id="tool-pre-epub-text"></span>
+      </h3>
+      <div class="tools-columns-right-subsection">
+        <label
+          ><span id="tool-pre-epub-booktype-text"></span
+          ><select id="tool-pre-epub-booktype-select">
+            <option id="tool-pre-epub-booktype-0-text" value="0"></option>
+            <option
+              id="tool-pre-epub-booktype-1-text"
+              value="1"
+            ></option></select
+        ></label>
+        <label
+          ><span id="tool-pre-epub-booktype-remember-checkbox-text"></span
+        ></label>
+        <label class="tools-toggle">
+          <input
+            type="checkbox"
+            id="tool-pre-epub-booktype-remember-checkbox"
+          />
+          <span class="tools-toggle-slider"></span>
+        </label>
+        <!-- epub ebook -->
+        <label><span id="tool-pre-epub-ebook-rendering-text"></span></label>
+        <!-- size -->
+        <div
+          class="tools-checkboxed-options-row-div"
+          style="margin-bottom: 10px"
+        >
+          <input type="checkbox" id="tool-pre-epub-ebook-size-checkbox" />
+          <div
+            class="tools-checkboxed-options-row-controls-100-div"
+            id="tool-pre-epub-ebook-size-div"
+          >
+            <div class="tool-shared-columns-parent" style="min-height: 90px">
+              <div class="tool-shared-columns-25">
+                <label
+                  ><span id="tool-pre-epub-ebook-width-input-text"></span>
+                  <input id="tool-pre-epub-ebook-width-input" type="number"
+                /></label>
+              </div>
+              <div class="tool-shared-columns-25">
+                <label
+                  ><span id="tool-pre-epub-ebook-height-input-text"></span>
+                  <input id="tool-pre-epub-ebook-height-input" type="number"
+                /></label>
+              </div>
+              <div class="tool-shared-columns-25">
+                <label
+                  ><span id="tool-pre-epub-ebook-margin-input-text"></span>
+                  <input id="tool-pre-epub-ebook-margin-input" type="number"
+                /></label>
+              </div>
+              <div class="tool-shared-columns-25">
+                <label
+                  ><span id="tool-pre-epub-ebook-fontsize-input-text"></span>
+                  <input id="tool-pre-epub-ebook-fontsize-input" type="number"
+                /></label>
+              </div>
+              <div class="tool-shared-columns-25">
+                <label
+                  ><span id="tool-pre-epub-ebook-dpi-input-text">dpi</span>
+                  <input id="tool-pre-epub-ebook-dpi-input" type="number"
+                /></label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- colors -->
+        <div class="tools-checkboxed-options-row-div">
+          <input type="checkbox" id="tool-pre-epub-ebook-colors-checkbox" />
+          <div
+            class="tools-checkboxed-options-row-controls-100-div tool-shared-columns-parent"
+            id="tool-pre-epub-ebook-colors-div"
+            style="min-height: 90px"
+          >
+            <label class="tool-shared-columns-50">
+              <span id="tool-pre-epub-ebook-color-text-text"></span>
+              <input id="tool-pre-epub-ebook-color-text-input" type="color" />
+            </label>
+            <label class="tool-shared-columns-50">
+              <span id="tool-pre-epub-ebook-color-background-text"></span>
+              <input
+                id="tool-pre-epub-ebook-color-background-input"
+                type="color"
+              />
+            </label>
+          </div>
         </div>
       </div>
     </div>

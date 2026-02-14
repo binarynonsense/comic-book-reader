@@ -236,13 +236,15 @@ function initOnIpcCallbacks() {
     if (data) {
       if (data.error) {
         // TODO: handle errors loading pages
-      } else if (g_fileData.type === FileDataType.EPUB_EBOOK) {
-        if (data.percentage) {
-          g_fileData.pageIndex = Number(data.percentage).toFixed(2);
-        } else {
-          // shouldn't happen?
-        }
-      } else if (data.dimensions) {
+      }
+      // else if (g_fileData.type === FileDataType.EPUB_EBOOK) {
+      //   if (data.percentage) {
+      //     g_fileData.pageIndex = Number(data.percentage).toFixed(2);
+      //   } else {
+      //     // shouldn't happen?
+      //   }
+      // }
+      else if (data.dimensions) {
         g_fileData.pageDimensions = data.dimensions;
       }
     }
@@ -292,33 +294,33 @@ function initOnIpcCallbacks() {
 
   ////////////////////////////////////////////////////////////////////////////
 
-  on("epub-ebook-loaded", (filePath, percentage) => {
-    g_fileData.state = FileDataState.LOADED; // will change inmediately to loading
-    g_fileData.type = FileDataType.EPUB_EBOOK;
-    if (percentage < 0 || percentage >= 100) percentage = 0;
-    g_fileData.pageIndex = percentage;
-    updateMenuAndToolbarItems();
-    setPageRotation(0, false);
-    setInitialZoom(filePath);
-    setInitialFixedPageModeSingle();
-    addCurrentToHistory();
-    goToPercentage(g_fileData.pageIndex);
-    renderPageInfo();
-    renderTitle();
-  });
+  // on("epub-ebook-loaded", (filePath, percentage) => {
+  //   g_fileData.state = FileDataState.LOADED; // will change inmediately to loading
+  //   g_fileData.type = FileDataType.EPUB_EBOOK;
+  //   if (percentage < 0 || percentage >= 100) percentage = 0;
+  //   g_fileData.pageIndex = percentage;
+  //   updateMenuAndToolbarItems();
+  //   setPageRotation(0, false);
+  //   setInitialZoom(filePath);
+  //   setInitialFixedPageModeSingle();
+  //   addCurrentToHistory();
+  //   goToPercentage(g_fileData.pageIndex);
+  //   renderPageInfo();
+  //   renderTitle();
+  // });
 
-  on("epub-ebook-load-failed", (error) => {
-    // unrecoverable error
-    sendIpcToRenderer("update-loading", false);
-    log.error(error.message);
-    closeCurrentFile(false);
-    sendIpcToRenderer(
-      "show-modal-info",
-      _("ui-modal-title-fileerror"),
-      _("ui-modal-info-couldntopen-epub"),
-      _("ui-modal-prompt-button-ok"),
-    );
-  });
+  // on("epub-ebook-load-failed", (error) => {
+  //   // unrecoverable error
+  //   sendIpcToRenderer("update-loading", false);
+  //   log.error(error.message);
+  //   closeCurrentFile(false);
+  //   sendIpcToRenderer(
+  //     "show-modal-info",
+  //     _("ui-modal-title-fileerror"),
+  //     _("ui-modal-info-couldntopen-epub"),
+  //     _("ui-modal-prompt-button-ok"),
+  //   );
+  // });
 
   // pdfjs ////////////////////////////////////////////////////////////////////
 
@@ -409,23 +411,23 @@ function initOnIpcCallbacks() {
   });
 
   on("home-pressed", () => {
-    if (g_fileData.type === FileDataType.EPUB_EBOOK) {
-      goToPercentage(0);
-    } else {
-      if (g_fileData.pageIndex != 0) {
-        goToPage(0);
-      }
+    // if (g_fileData.type === FileDataType.EPUB_EBOOK) {
+    //   goToPercentage(0);
+    // } else {
+    if (g_fileData.pageIndex != 0) {
+      goToPage(0);
     }
+    // }
   });
 
   on("end-pressed", () => {
-    if (g_fileData.type === FileDataType.EPUB_EBOOK) {
-      goToPercentage(100);
-    } else {
-      if (g_fileData.pageIndex != g_fileData.numPages - 1) {
-        goToPage(g_fileData.numPages - 1);
-      }
+    // if (g_fileData.type === FileDataType.EPUB_EBOOK) {
+    //   goToPercentage(100);
+    // } else {
+    if (g_fileData.pageIndex != g_fileData.numPages - 1) {
+      goToPage(g_fileData.numPages - 1);
     }
+    // }
   });
 
   on("next-page-pressed", () => {
@@ -529,15 +531,15 @@ function initOnIpcCallbacks() {
 
   on("toolbar-slider-changed", (value) => {
     if (g_fileData.state === FileDataState.LOADED) {
-      if (g_fileData.type === FileDataType.EPUB_EBOOK) {
-        goToPercentage(value);
+      // if (g_fileData.type === FileDataType.EPUB_EBOOK) {
+      //   goToPercentage(value);
+      //   return;
+      // } else {
+      value -= 1; // from 1 based to 0 based
+      if (value !== g_fileData.pageIndex) {
+        goToPage(value);
         return;
-      } else {
-        value -= 1; // from 1 based to 0 based
-        if (value !== g_fileData.pageIndex) {
-          goToPage(value);
-          return;
-        }
+        // }
       }
     }
     renderPageInfo();
@@ -701,7 +703,7 @@ exports.requestOpenConfirmation = function (filePath) {
   );
 };
 
-function tryOpen(filePath, bookType, historyEntry, homeScreenListEntry) {
+async function tryOpen(filePath, bookType, historyEntry, homeScreenListEntry) {
   sendIpcToPreload("update-menubar"); // in case coming from menu
   closeCurrentFile();
   try {
@@ -778,22 +780,31 @@ function tryOpen(filePath, bookType, historyEntry, homeScreenListEntry) {
         }
       }
       if (bookType === BookType.NOT_SET && historyEntry?.data?.bookType) {
-        if (settings.getValue("epubOpenAs") === 0)
+        if (settings.getValue("rememberEpubBookType")) {
           bookType = historyEntry.data.bookType;
+          log.editor("epub type remembered: " + bookType);
+        }
       }
     }
 
     if (fileUtils.hasEpubExtension(filePath) && bookType === BookType.NOT_SET) {
       // Special case, as epub can be opened as comic or ebook
-      sendIpcToRenderer(
-        "show-modal-question-openas",
-        _("ui-modal-question-ebookorcomic", "Epub"),
-        filePath,
-        _("ui-modal-question-button-comicbook"),
-        _("ui-modal-question-button-ebook"),
-        filePath,
-      );
-      return true;
+      if (settings.getValue("epubBookType") === 0) {
+        // autodetect
+        const epubType = await fileUtils.getEpubType(filePath);
+        bookType = epubType === "comic" ? BookType.COMIC : BookType.EBOOK;
+      } else {
+        // ask
+        sendIpcToRenderer(
+          "show-modal-question-openas",
+          _("ui-modal-question-ebookorcomic", "Epub"),
+          filePath,
+          _("ui-modal-question-button-comicbook"),
+          _("ui-modal-question-button-ebook"),
+          filePath,
+        );
+        return true;
+      }
     }
 
     if (filePath === undefined || filePath === "" || !fs.existsSync(filePath)) {
@@ -821,47 +832,50 @@ exports.tryOpen = tryOpen;
 
 function tryOpenPath(filePath, pageIndex, bookType, historyEntry) {
   if (bookType === BookType.EBOOK) {
-    if (fileUtils.hasEpubExtension(filePath)) {
-      return openEbookFromPath(filePath, pageIndex, historyEntry);
-    } else {
-      // ERROR ??????
-    }
-  } else {
-    if (!fs.existsSync(filePath)) {
-      sendIpcToRenderer(
-        "show-modal-info",
-        _("ui-modal-title-filenotfound"),
-        filePath,
-        _("ui-modal-prompt-button-ok"),
-      );
-      return false;
-    }
-    if (
-      !(
-        fs.lstatSync(filePath).isDirectory() ||
-        fileUtils.hasComicBookExtension(filePath) ||
-        fileUtils.hasImageExtension(filePath)
-      )
-    ) {
-      sendIpcToRenderer(
-        "show-modal-info",
-        _("ui-modal-info-invalidformat"),
-        filePath,
-        _("ui-modal-prompt-button-ok"),
-      );
-      return false;
-    }
-    if (fs.lstatSync(filePath).isDirectory()) {
-      openImageFolder(filePath, undefined, pageIndex);
-      return true;
-    } else if (fileUtils.hasComicBookExtension(filePath)) {
-      openComicBookFromPath(filePath, pageIndex, "", historyEntry);
-      return true;
-    } else if (fileUtils.hasImageExtension(filePath)) {
-      openImageFile(filePath);
-      return true;
-    }
+    g_fileData.type = FileDataType.EPUB_EBOOK;
   }
+  // if (bookType === BookType.EBOOK) {
+  //   if (fileUtils.hasEpubExtension(filePath)) {
+  //     return openEbookFromPath(filePath, pageIndex, historyEntry);
+  //   } else {
+  //     // ERROR ??????
+  //   }
+  // } else {
+  if (!fs.existsSync(filePath)) {
+    sendIpcToRenderer(
+      "show-modal-info",
+      _("ui-modal-title-filenotfound"),
+      filePath,
+      _("ui-modal-prompt-button-ok"),
+    );
+    return false;
+  }
+  if (
+    !(
+      fs.lstatSync(filePath).isDirectory() ||
+      fileUtils.hasComicBookExtension(filePath) ||
+      fileUtils.hasImageExtension(filePath)
+    )
+  ) {
+    sendIpcToRenderer(
+      "show-modal-info",
+      _("ui-modal-info-invalidformat"),
+      filePath,
+      _("ui-modal-prompt-button-ok"),
+    );
+    return false;
+  }
+  if (fs.lstatSync(filePath).isDirectory()) {
+    openImageFolder(filePath, undefined, pageIndex);
+    return true;
+  } else if (fileUtils.hasComicBookExtension(filePath)) {
+    openComicBookFromPath(filePath, pageIndex, "", historyEntry);
+    return true;
+  } else if (fileUtils.hasImageExtension(filePath)) {
+    openImageFile(filePath);
+    return true;
+  }
+  // }
   return false;
 }
 
@@ -979,12 +993,13 @@ async function openComicBookFromPath(
     if (!password) password = "";
 
     let fileType = fileUtils.getFileTypeFromPath(filePath);
+    fileType = undefined;
     if (fileType !== undefined) {
       fileExtension = "." + fileType;
     }
     if (fileExtension === "." + FileExtension.PDF) {
-      if (settings.getValue("pdfReadingLibrary") === "pdfium") {
-        log.editor("loading PDF using pdfium");
+      if (!settings.getValue("pdfReadingLibrary").startsWith("pdfjs")) {
+        log.editor("loading PDF using mupdf");
         if (g_fileData.state !== FileDataState.LOADING) {
           cleanUpFileData();
           g_fileData.type = FileDataType.PDF;
@@ -1014,33 +1029,55 @@ async function openComicBookFromPath(
         sendIpcToRenderer("load-pdf", filePath, pageIndex, password);
       }
     } else if (fileExtension === "." + FileExtension.EPUB) {
-      let pagesPaths = await fileFormats.getEpubImageIdsList(filePath);
-      if (pagesPaths !== undefined && pagesPaths.length > 0) {
-        g_fileData.state = FileDataState.LOADED;
-        g_fileData.type = FileDataType.EPUB_COMIC;
-        g_fileData.path = filePath;
-        g_fileData.name = path.basename(filePath);
-        g_fileData.pagesPaths = pagesPaths; // not really paths, ids
-        g_fileData.numPages = pagesPaths.length;
-        if (pageIndex < 0 || pageIndex >= g_fileData.numPages) pageIndex = 0;
-        g_fileData.pageIndex = pageIndex;
+      if (g_fileData.type === FileDataType.EPUB_EBOOK) {
+        if (g_fileData.state !== FileDataState.LOADING) {
+          cleanUpFileData();
+          g_fileData.type = FileDataType.EPUB_EBOOK;
+          g_fileData.state = FileDataState.LOADING;
+          g_fileData.pageIndex = pageIndex;
+          g_fileData.path = filePath;
+          g_fileData.data = { bookType: BookType.EBOOK };
+        }
+        startPageWorker();
         g_fileData.password = password;
-        g_fileData.data = { bookType: BookType.COMIC };
-        updateMenuAndToolbarItems();
-        setPageRotation(0, false);
-        setInitialZoom(filePath);
-        setInitialPageMode(filePath);
-        addCurrentToHistory();
-        goToPage(pageIndex);
+        const tempSubFolderPath = temp.createSubFolder();
+        sendToPageWorker({
+          command: "open",
+          fileType: g_fileData.type,
+          filePath: g_fileData.path,
+          pageIndex,
+          tempSubFolderPath,
+          config: settings.getValue("epubEbook"),
+        });
       } else {
-        sendIpcToRenderer(
-          "show-modal-info",
-          _("ui-modal-title-fileerror"),
-          _("ui-modal-info-couldntopen-epub"),
-          _("ui-modal-prompt-button-ok"),
-        );
-        sendIpcToRenderer("update-bg", true);
-        sendIpcToRenderer("update-loading", false);
+        let pagesPaths = await fileFormats.getEpubImageIdsList(filePath);
+        if (pagesPaths !== undefined && pagesPaths.length > 0) {
+          g_fileData.state = FileDataState.LOADED;
+          g_fileData.type = FileDataType.EPUB_COMIC;
+          g_fileData.path = filePath;
+          g_fileData.name = path.basename(filePath);
+          g_fileData.pagesPaths = pagesPaths; // not really paths, ids
+          g_fileData.numPages = pagesPaths.length;
+          if (pageIndex < 0 || pageIndex >= g_fileData.numPages) pageIndex = 0;
+          g_fileData.pageIndex = pageIndex;
+          g_fileData.password = password;
+          g_fileData.data = { bookType: BookType.COMIC };
+          updateMenuAndToolbarItems();
+          setPageRotation(0, false);
+          setInitialZoom(filePath);
+          setInitialPageMode(filePath);
+          addCurrentToHistory();
+          goToPage(pageIndex);
+        } else {
+          sendIpcToRenderer(
+            "show-modal-info",
+            _("ui-modal-title-fileerror"),
+            _("ui-modal-info-couldntopen-epub"),
+            _("ui-modal-prompt-button-ok"),
+          );
+          sendIpcToRenderer("update-bg", true);
+          sendIpcToRenderer("update-loading", false);
+        }
       }
     } else {
       if (
@@ -1048,10 +1085,15 @@ async function openComicBookFromPath(
         fileExtension === "." + FileExtension.CBR
       ) {
         const tempSubFolderPath = temp.createSubFolder();
-        let rarData = await fileFormats.getRarEntriesList(
+        // let rarData = await fileFormats.getRarEntriesList(
+        //   filePath,
+        //   password,
+        //   tempSubFolderPath,
+        // );
+        let rarData = await fileFormats.get7ZipEntriesList(
           filePath,
           password,
-          tempSubFolderPath,
+          "rar",
         );
         temp.deleteSubFolder(tempSubFolderPath);
         if (rarData.result === "password required") {
@@ -1311,102 +1353,102 @@ async function openComicBookFromPath(
   }
 }
 
-async function openEbookFromPath(filePath, pageIndex, historyEntry) {
-  if (filePath === undefined || filePath === "") {
-    return false;
-  }
-  closeCurrentFile(); // in case coming from tool and bypassing tryopen
-  let fileExtension = path.extname(filePath).toLowerCase();
-  if (fileExtension === "." + FileExtension.EPUB) {
-    let data;
-    let cachedPath;
-    let name = path.basename(filePath);
-    if (historyEntry?.data?.source === "gut") {
-      data = historyEntry.data;
-      if (data.name && data.name != "") name = data.name;
-      // cached file
-      if (filePath.startsWith("http")) {
-        if (settings.getValue("toolGutUseCache")) {
-          sendIpcToRenderer("update-loading", true);
-          sendIpcToRenderer("update-bg", false);
-          const url = filePath;
-          const tool = require("../tools/gutenberg/main");
-          const cacheFolder = tool.getPortableCacheFolder();
-          const fileName = path.basename(filePath);
-          cachedPath = path.join(cacheFolder, fileName);
+// async function openEbookFromPath(filePath, pageIndex, historyEntry) {
+//   if (filePath === undefined || filePath === "") {
+//     return false;
+//   }
+//   closeCurrentFile(); // in case coming from tool and bypassing tryopen
+//   let fileExtension = path.extname(filePath).toLowerCase();
+//   if (fileExtension === "." + FileExtension.EPUB) {
+//     let data;
+//     let cachedPath;
+//     let name = path.basename(filePath);
+//     if (historyEntry?.data?.source === "gut") {
+//       data = historyEntry.data;
+//       if (data.name && data.name != "") name = data.name;
+//       // cached file
+//       if (filePath.startsWith("http")) {
+//         if (settings.getValue("toolGutUseCache")) {
+//           sendIpcToRenderer("update-loading", true);
+//           sendIpcToRenderer("update-bg", false);
+//           const url = filePath;
+//           const tool = require("../tools/gutenberg/main");
+//           const cacheFolder = tool.getPortableCacheFolder();
+//           const fileName = path.basename(filePath);
+//           cachedPath = path.join(cacheFolder, fileName);
 
-          if (!fs.existsSync(cachedPath)) {
-            try {
-              // download it
-              const axios = require("axios").default;
-              const response = await axios.get(url, {
-                responseType: "arraybuffer",
-                timeout: 10000,
-              });
+//           if (!fs.existsSync(cachedPath)) {
+//             try {
+//               // download it
+//               const axios = require("axios").default;
+//               const response = await axios.get(url, {
+//                 responseType: "arraybuffer",
+//                 timeout: 10000,
+//               });
 
-              if (!response?.data) {
-                throw {
-                  name: "GenericError",
-                  message: "Invalid response data",
-                };
-              }
-              if (!fs.existsSync(cacheFolder)) {
-                log.editor("creating gutenberg cache folder");
-                fs.mkdirSync(cacheFolder, { recursive: true });
-              }
-              fs.writeFileSync(cachedPath, response.data, { flag: "w" });
-            } catch (error) {
-              log.error(error?.message);
-              // couldn't download file -> abort
-              sendIpcToRenderer("update-loading", false);
-              sendIpcToRenderer("update-bg", true);
-              return false;
-            }
-          }
-        } else {
-          log.editor("gutenberg cache is disabled");
-        }
-      }
-    }
+//               if (!response?.data) {
+//                 throw {
+//                   name: "GenericError",
+//                   message: "Invalid response data",
+//                 };
+//               }
+//               if (!fs.existsSync(cacheFolder)) {
+//                 log.editor("creating gutenberg cache folder");
+//                 fs.mkdirSync(cacheFolder, { recursive: true });
+//               }
+//               fs.writeFileSync(cachedPath, response.data, { flag: "w" });
+//             } catch (error) {
+//               log.error(error?.message);
+//               // couldn't download file -> abort
+//               sendIpcToRenderer("update-loading", false);
+//               sendIpcToRenderer("update-bg", true);
+//               return false;
+//             }
+//           }
+//         } else {
+//           log.editor("gutenberg cache is disabled");
+//         }
+//       }
+//     }
 
-    sendIpcToRenderer("update-loading", true);
-    sendIpcToRenderer("update-bg", false);
-    cleanUpFileData();
+//     sendIpcToRenderer("update-loading", true);
+//     sendIpcToRenderer("update-bg", false);
+//     cleanUpFileData();
 
-    g_fileData.type = FileDataType.EPUB_EBOOK;
-    g_fileData.state = FileDataState.LOADING;
-    g_fileData.path = filePath;
-    g_fileData.name = name;
-    if (!pageIndex || pageIndex < 0 || pageIndex >= 100) pageIndex = 0;
-    g_fileData.pageIndex = pageIndex;
-    g_fileData.numPages = 100;
-    if (data) {
-      g_fileData.data = data;
-    } else {
-      g_fileData.data = { bookType: BookType.EBOOK };
-    }
+//     g_fileData.type = FileDataType.EPUB_EBOOK;
+//     g_fileData.state = FileDataState.LOADING;
+//     g_fileData.path = filePath;
+//     g_fileData.name = name;
+//     if (!pageIndex || pageIndex < 0 || pageIndex >= 100) pageIndex = 0;
+//     g_fileData.pageIndex = pageIndex;
+//     g_fileData.numPages = 100;
+//     if (data) {
+//       g_fileData.data = data;
+//     } else {
+//       g_fileData.data = { bookType: BookType.EBOOK };
+//     }
 
-    sendIpcToRenderer(
-      "update-epub-ebook-color-mode",
-      settings.getValue("epubEbookColorMode"),
-      settings.getValue("epubEbookColorText"),
-      settings.getValue("epubEbookColorBg"),
-    );
-    sendIpcToRenderer("load-epub-ebook", filePath, pageIndex, cachedPath);
-    return true;
-  } else {
-    sendIpcToRenderer("update-loading", false);
-    sendIpcToRenderer("update-bg", true);
-    sendIpcToRenderer(
-      "show-modal-info",
-      _("ui-modal-info-invalidformat"),
-      filePath,
-      _("ui-modal-prompt-button-ok"),
-    );
-    return false;
-  }
-}
-exports.openEbookFromPath = openEbookFromPath;
+//     sendIpcToRenderer(
+//       "update-epub-ebook-color-mode",
+//       settings.getValue("epubEbookColorMode"),
+//       settings.getValue("epubEbookColorText"),
+//       settings.getValue("epubEbookColorBg"),
+//     );
+//     sendIpcToRenderer("load-epub-ebook", filePath, pageIndex, cachedPath);
+//     return true;
+//   } else {
+//     sendIpcToRenderer("update-loading", false);
+//     sendIpcToRenderer("update-bg", true);
+//     sendIpcToRenderer(
+//       "show-modal-info",
+//       _("ui-modal-info-invalidformat"),
+//       filePath,
+//       _("ui-modal-prompt-button-ok"),
+//     );
+//     return false;
+//   }
+// }
+// exports.openEbookFromPath = openEbookFromPath;
 
 function openBookFromCallback(comicData, getPageCallback, pageIndex = 0) {
   sendIpcToRenderer("update-bg", false);
@@ -1469,9 +1511,9 @@ function closeCurrentFile(addToHistory = true) {
   sendIpcToRenderer("close-modal");
   if (g_fileData.type === FileDataType.NOT_SET) return;
   if (addToHistory) addCurrentToHistory(); // add the one I'm closing to history
-  if (g_fileData.type === FileDataType.EPUB_EBOOK) {
-    sendIpcToRenderer("close-epub-ebook");
-  }
+  // if (g_fileData.type === FileDataType.EPUB_EBOOK) {
+  //   sendIpcToRenderer("close-epub-ebook");
+  // }
   cleanUpFileData();
   // TODO: in pdfs, should I call closePdf() in worker and wait??? or
   // killing the wirker is good enough as it destroys everything
@@ -1502,10 +1544,10 @@ function goToPage(pageIndex, scrollBarPos = 0) {
 
   try {
     sendIpcToRenderer("update-loading", true);
-    if (g_fileData.type !== FileDataType.EPUB_EBOOK) {
-      if (pageIndex < 0 || pageIndex >= g_fileData.numPages) return;
-      g_fileData.pageIndex = pageIndex;
-    }
+    // if (g_fileData.type !== FileDataType.EPUB_EBOOK) {
+    if (pageIndex < 0 || pageIndex >= g_fileData.numPages) return;
+    g_fileData.pageIndex = pageIndex;
+    // }
 
     function getGoToIndexes() {
       let indexes = [];
@@ -1578,7 +1620,7 @@ function goToPage(pageIndex, scrollBarPos = 0) {
     } else if (g_fileData.type === FileDataType.PDF) {
       g_fileData.state = FileDataState.LOADING;
       let pageIndexes = getGoToIndexes();
-      if (settings.getValue("pdfReadingLibrary") === "pdfium") {
+      if (!settings.getValue("pdfReadingLibrary").startsWith("pdfjs")) {
         timers.start("pagesExtraction");
         sendToPageWorker({
           command: "extract",
@@ -1600,13 +1642,26 @@ function goToPage(pageIndex, scrollBarPos = 0) {
         );
       }
     } else if (g_fileData.type === FileDataType.EPUB_EBOOK) {
-      if (pageIndex > 0) {
-        g_fileData.state = FileDataState.LOADING;
-        sendIpcToRenderer("render-epub-ebook-page-next");
-      } else if (pageIndex < 0) {
-        g_fileData.state = FileDataState.LOADING;
-        sendIpcToRenderer("render-epub-ebook-page-prev");
-      }
+      // if (pageIndex > 0) {
+      //   g_fileData.state = FileDataState.LOADING;
+      //   sendIpcToRenderer("render-epub-ebook-page-next");
+      // } else if (pageIndex < 0) {
+      //   g_fileData.state = FileDataState.LOADING;
+      //   sendIpcToRenderer("render-epub-ebook-page-prev");
+      // }
+      g_fileData.state = FileDataState.LOADING;
+      let pageIndexes = getGoToIndexes();
+      timers.start("pagesExtraction");
+      let tempSubFolderPath = temp.createSubFolder();
+      sendToPageWorker({
+        command: "extract",
+        fileType: g_fileData.type,
+        filePath: g_fileData.path,
+        entryNames: pageIndexes,
+        scrollBarPos,
+        tempSubFolderPath,
+        config: settings.getValue("epubEbook"),
+      });
     } else if (g_fileData.type === FileDataType.WWW) {
       (async () => {
         g_fileData.state = FileDataState.LOADING;
@@ -1653,72 +1708,72 @@ function goToPage(pageIndex, scrollBarPos = 0) {
 }
 
 function goToNextPage() {
-  if (g_fileData.type === FileDataType.EPUB_EBOOK) {
-    goToPage(1);
-  } else {
-    if (g_fileData.pageIndex + 1 < g_fileData.numPages) {
-      if (settings.getValue("page_mode") === 0) {
-        // single page mode
-        goToPage(g_fileData.pageIndex + 1);
-      } else if (settings.getValue("page_mode") === 1) {
-        // double
-        if ((g_fileData.pageIndex + 1) % 2 > 0) {
-          if (g_fileData.pageIndex + 2 < g_fileData.numPages) {
-            g_fileData.pageIndex++;
-            goToPage(g_fileData.pageIndex + 1);
-          }
-        } else {
+  // if (g_fileData.type === FileDataType.EPUB_EBOOK) {
+  //   goToPage(1);
+  // } else {
+  if (g_fileData.pageIndex + 1 < g_fileData.numPages) {
+    if (settings.getValue("page_mode") === 0) {
+      // single page mode
+      goToPage(g_fileData.pageIndex + 1);
+    } else if (settings.getValue("page_mode") === 1) {
+      // double
+      if ((g_fileData.pageIndex + 1) % 2 > 0) {
+        if (g_fileData.pageIndex + 2 < g_fileData.numPages) {
+          g_fileData.pageIndex++;
           goToPage(g_fileData.pageIndex + 1);
         }
       } else {
-        // double center first
-        if ((g_fileData.pageIndex + 1) % 2 === 0) {
-          if (g_fileData.pageIndex + 2 < g_fileData.numPages) {
-            g_fileData.pageIndex++;
-            goToPage(g_fileData.pageIndex + 1);
-          }
-        } else {
+        goToPage(g_fileData.pageIndex + 1);
+      }
+    } else {
+      // double center first
+      if ((g_fileData.pageIndex + 1) % 2 === 0) {
+        if (g_fileData.pageIndex + 2 < g_fileData.numPages) {
+          g_fileData.pageIndex++;
           goToPage(g_fileData.pageIndex + 1);
         }
+      } else {
+        goToPage(g_fileData.pageIndex + 1);
       }
-    } else if (
-      settings.getValue("autoOpen") === 1 ||
-      settings.getValue("autoOpen") === 2
-    ) {
-      tryOpeningAdjacentFile(true);
     }
+  } else if (
+    settings.getValue("autoOpen") === 1 ||
+    settings.getValue("autoOpen") === 2
+  ) {
+    tryOpeningAdjacentFile(true);
   }
+  // }
 }
 
 function goToPreviousPage() {
-  if (g_fileData.type === FileDataType.EPUB_EBOOK) {
-    goToPage(-1);
-  } else {
-    if (g_fileData.pageIndex - 1 >= 0) {
-      if (settings.getValue("page_mode") === 0) {
-        // single page mode
+  // if (g_fileData.type === FileDataType.EPUB_EBOOK) {
+  //   goToPage(-1);
+  // } else {
+  if (g_fileData.pageIndex - 1 >= 0) {
+    if (settings.getValue("page_mode") === 0) {
+      // single page mode
+      goToPage(g_fileData.pageIndex - 1, 1);
+    } else if (settings.getValue("page_mode") === 1) {
+      // double
+      if ((g_fileData.pageIndex - 1) % 2 > 0) {
+        g_fileData.pageIndex--;
+      }
+      goToPage(g_fileData.pageIndex - 1, 1);
+    } else {
+      // double center first
+      if (g_fileData.pageIndex - 1 === 0) {
         goToPage(g_fileData.pageIndex - 1, 1);
-      } else if (settings.getValue("page_mode") === 1) {
-        // double
-        if ((g_fileData.pageIndex - 1) % 2 > 0) {
+      } else {
+        if ((g_fileData.pageIndex - 1) % 2 === 0) {
           g_fileData.pageIndex--;
         }
         goToPage(g_fileData.pageIndex - 1, 1);
-      } else {
-        // double center first
-        if (g_fileData.pageIndex - 1 === 0) {
-          goToPage(g_fileData.pageIndex - 1, 1);
-        } else {
-          if ((g_fileData.pageIndex - 1) % 2 === 0) {
-            g_fileData.pageIndex--;
-          }
-          goToPage(g_fileData.pageIndex - 1, 1);
-        }
       }
-    } else if (settings.getValue("autoOpen") === 2) {
-      tryOpeningAdjacentFile(false);
     }
+  } else if (settings.getValue("autoOpen") === 2) {
+    tryOpeningAdjacentFile(false);
   }
+  // }
 }
 
 function goToRightPage() {
@@ -1737,24 +1792,24 @@ function goToLeftPage() {
   }
 }
 
-function goToPercentage(percentage) {
-  if (
-    g_fileData.state !== FileDataState.LOADED ||
-    g_fileData.type === FileDataType.NOT_SET
-  ) {
-    sendIpcToRenderer("update-bg", true);
-    sendIpcToRenderer("update-loading", false);
-    return;
-  }
-  sendIpcToRenderer("update-loading", true);
+// function goToPercentage(percentage) {
+//   if (
+//     g_fileData.state !== FileDataState.LOADED ||
+//     g_fileData.type === FileDataType.NOT_SET
+//   ) {
+//     sendIpcToRenderer("update-bg", true);
+//     sendIpcToRenderer("update-loading", false);
+//     return;
+//   }
+//   sendIpcToRenderer("update-loading", true);
 
-  if (g_fileData.type === FileDataType.EPUB_EBOOK) {
-    if (percentage < 0 || percentage > 100) return;
-    g_fileData.pageIndex = percentage;
-    g_fileData.state = FileDataState.LOADING;
-    sendIpcToRenderer("render-epub-ebook-page-percentage", percentage);
-  }
-}
+//   if (g_fileData.type === FileDataType.EPUB_EBOOK) {
+//     if (percentage < 0 || percentage > 100) return;
+//     g_fileData.pageIndex = percentage;
+//     g_fileData.state = FileDataState.LOADING;
+//     sendIpcToRenderer("render-epub-ebook-page-percentage", percentage);
+//   }
+// }
 
 //////////////////////////////////////////////////////////////////////////////
 // RENDER ////////////////////////////////////////////////////////////////////
@@ -1788,7 +1843,7 @@ exports.generateTitle = function () {
 };
 
 function renderPageInfo() {
-  let isPercentage = g_fileData.type === FileDataType.EPUB_EBOOK;
+  let isPercentage = false; // g_fileData.type === FileDataType.EPUB_EBOOK;
   sendIpcToRenderer(
     "render-page-info",
     g_fileData.pageIndex,
@@ -1807,7 +1862,7 @@ function renderPageRefresh() {
   if (g_fileData.state === FileDataState.LOADED) {
     if (
       g_fileData.type === FileDataType.PDF &&
-      settings.getValue("pdfReadingLibrary") !== "pdfium"
+      settings.getValue("pdfReadingLibrary").startsWith("pdfjs")
     ) {
       // clearTimeout(g_delayedRefreshPageEvent);
       // g_delayedRefreshPageEvent = setTimeout(onDelayedRefreshPageCall, 300);
@@ -1824,7 +1879,8 @@ function renderPageRefresh() {
     } else if (g_fileData.type === FileDataType.EPUB_COMIC) {
       sendIpcToRenderer("refresh-epub-comic-page", g_fileData.pageRotation);
     } else if (g_fileData.type === FileDataType.EPUB_EBOOK) {
-      sendIpcToRenderer("refresh-epub-ebook-page", g_fileData.pageRotation);
+      // sendIpcToRenderer("refresh-epub-ebook-page", g_fileData.pageRotation);
+      sendIpcToRenderer("refresh-img-page", g_fileData.pageRotation);
     }
   }
 }
@@ -1856,12 +1912,21 @@ function updateMenuAndToolbarItems(isOpen = true) {
         sendIpcToRenderer("update-toolbar-pagesdirection-buttons", true);
         sendIpcToRenderer("update-toolbar-pagemode-buttons", true);
       } else if (g_fileData.type === FileDataType.EPUB_EBOOK) {
-        menuBar.setEpubEbookOpened();
-        sendIpcToRenderer("update-toolbar-rotation-buttons", false);
+        // menuBar.setEpubEbookOpened();
+        // sendIpcToRenderer("update-toolbar-rotation-buttons", false);
+        // sendIpcToRenderer("update-toolbar-page-buttons", true);
+        // sendIpcToRenderer("update-toolbar-zoom-buttons", true);
+        // sendIpcToRenderer("update-toolbar-pagesdirection-buttons", true);
+        // sendIpcToRenderer("update-toolbar-pagemode-buttons", false);
+        menuBar.setComicBookOpened(true);
+        sendIpcToRenderer(
+          "update-toolbar-rotation-buttons",
+          settings.getValue("page_mode") === 0,
+        );
         sendIpcToRenderer("update-toolbar-page-buttons", true);
         sendIpcToRenderer("update-toolbar-zoom-buttons", true);
         sendIpcToRenderer("update-toolbar-pagesdirection-buttons", true);
-        sendIpcToRenderer("update-toolbar-pagemode-buttons", false);
+        sendIpcToRenderer("update-toolbar-pagemode-buttons", true);
       } else if (g_fileData.type === FileDataType.IMGS_FOLDER) {
         menuBar.setImageOpened();
         sendIpcToRenderer("update-toolbar-rotation-buttons", true);
@@ -2348,8 +2413,9 @@ function startPageWorker() {
         } else {
           if (
             !(
-              g_fileData.type === FileDataType.PDF &&
-              settings.getValue("pdfReadingLibrary") === "pdfium"
+              (g_fileData.type === FileDataType.PDF &&
+                !settings.getValue("pdfReadingLibrary").startsWith("pdfjs")) ||
+              g_fileData.type === FileDataType.EPUB_EBOOK
             )
           ) {
             // keep killing the worker for the old methods, should be slower
@@ -2401,16 +2467,18 @@ function startPageWorker() {
             }
           } else if (message.type === "openResult") {
             if (message.result.success) {
-              const pageIndex = message.pageIndex;
+              temp.deleteSubFolder(message.tempSubFolderPath);
+              let pageIndex = message.pageIndex;
               //
               g_fileData.state = FileDataState.LOADED;
-              g_fileData.type = FileDataType.PDF;
+              g_fileData.type = message.fileType;
               g_fileData.path = message.filePath;
               g_fileData.name = path.basename(g_fileData.path);
               g_fileData.pagesPaths = [];
               g_fileData.numPages = message.result.numPages;
-              if (pageIndex < 0 || pageIndex >= g_fileData.numPages)
-                pageIndex = 0;
+              if (pageIndex < 0) pageIndex = 0;
+              else if (pageIndex >= g_fileData.numPages)
+                pageIndex = g_fileData.numPages - 1;
               g_fileData.pageIndex = pageIndex;
               // g_fileData.metadata = metadata;
               updateMenuAndToolbarItems();
@@ -2701,46 +2769,46 @@ exports.onMenuExtractFile = function () {
 
 exports.onGoToPageDialog = function () {
   sendIpcToPreload("update-menubar");
-  if (g_fileData.type === FileDataType.EPUB_EBOOK) {
-    let question = `${_("ui-modal-prompt-pagepercentage")} (0-100):`;
-    sendIpcToRenderer(
-      "show-modal-prompt",
-      question,
-      "" + g_fileData.pageIndex,
-      _("ui-modal-prompt-button-ok"),
-      _("ui-modal-prompt-button-cancel"),
-      2,
-    );
-  } else {
-    let question = `${_("ui-modal-prompt-pagenumber")} (1-${
-      g_fileData.numPages
-    }):`;
-    sendIpcToRenderer(
-      "show-modal-prompt",
-      question,
-      "" + (g_fileData.pageIndex + 1),
-      _("ui-modal-prompt-button-ok"),
-      _("ui-modal-prompt-button-cancel"),
-    );
-  }
+  // if (g_fileData.type === FileDataType.EPUB_EBOOK) {
+  //   let question = `${_("ui-modal-prompt-pagepercentage")} (0-100):`;
+  //   sendIpcToRenderer(
+  //     "show-modal-prompt",
+  //     question,
+  //     "" + g_fileData.pageIndex,
+  //     _("ui-modal-prompt-button-ok"),
+  //     _("ui-modal-prompt-button-cancel"),
+  //     2,
+  //   );
+  // } else {
+  let question = `${_("ui-modal-prompt-pagenumber")} (1-${
+    g_fileData.numPages
+  }):`;
+  sendIpcToRenderer(
+    "show-modal-prompt",
+    question,
+    "" + (g_fileData.pageIndex + 1),
+    _("ui-modal-prompt-button-ok"),
+    _("ui-modal-prompt-button-cancel"),
+  );
+  // }
 };
 
 exports.onGoToPageFirst = function () {
   sendIpcToPreload("update-menubar");
-  if (g_fileData.type === FileDataType.EPUB_EBOOK) {
-    goToPercentage(0);
-  } else {
-    goToPage(0);
-  }
+  // if (g_fileData.type === FileDataType.EPUB_EBOOK) {
+  //   goToPercentage(0);
+  // } else {
+  goToPage(0);
+  // }
 };
 
 exports.onGoToPageLast = function () {
   sendIpcToPreload("update-menubar");
-  if (g_fileData.type === FileDataType.EPUB_EBOOK) {
-    goToPercentage(100);
-  } else {
-    goToPage(g_fileData.numPages - 1);
-  }
+  // if (g_fileData.type === FileDataType.EPUB_EBOOK) {
+  //   goToPercentage(100);
+  // } else {
+  goToPage(g_fileData.numPages - 1);
+  // }
 };
 
 exports.onMenuFilterValue = function (value) {
@@ -2805,9 +2873,9 @@ async function onMenuFileProperties() {
       );
     }
     // pages
-    if (g_fileData.type != FileDataType.EPUB_EBOOK) {
-      addRow(_("ui-modal-info-metadata-numpages"), g_fileData.numPages);
-    }
+    // if (g_fileData.type != FileDataType.EPUB_EBOOK) {
+    addRow(_("ui-modal-info-metadata-numpages"), g_fileData.numPages);
+    // }
     // dimensions
     if (g_fileData.pageDimensions) {
       addRow(

@@ -249,7 +249,7 @@ exports.getLocalization = function (mode) {
     },
     {
       id: "tool-cc-pdf-extraction-text",
-      text: _("tool-shared-ui-pdf-extraction"),
+      text: _("tool-shared-ui-format-extraction", "PDF"),
     },
     {
       id: "tool-cc-pdf-extraction-method-select-0-text",
@@ -272,8 +272,12 @@ exports.getLocalization = function (mode) {
       )})`,
     },
     {
-      id: "tool-cc-pdf-extraction-lib-o-pdfium-text",
-      text: `PDFium (${_("tool-shared-ui-experimental").toLowerCase()})`,
+      id: "tool-cc-pdf-extraction-lib-o-mupdf-text",
+      text: `MuPDF`,
+    },
+    {
+      id: "tool-cc-pdf-extraction-lib-o-default-text",
+      text: `${_("tool-pre-formats-library-value-default")} (MuPDF)`,
     },
     //////////////////////////////////////////////
     {
@@ -319,7 +323,7 @@ exports.getLocalization = function (mode) {
     },
     {
       id: "tool-cc-pdf-creation-text",
-      text: _("tool-shared-ui-pdf-creation"),
+      text: _("tool-shared-ui-format-creation", "PDF"),
     },
     {
       id: "tool-cc-pdf-creation-o1-text",
@@ -336,7 +340,7 @@ exports.getLocalization = function (mode) {
 
     {
       id: "tool-cc-epub-creation-text",
-      text: _("tool-shared-ui-epub-creation"),
+      text: _("tool-shared-ui-format-creation", "EPUB"),
     },
     {
       id: "tool-cc-epub-creation-image-format-o1-text",

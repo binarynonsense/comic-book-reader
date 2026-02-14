@@ -1,0 +1,1 @@
+This application includes the 7-Zip binary. The source code for 7-Zip can be found at the official website (https://www.7-zip.org) or SourceForge (https://sourceforge.net/projects/sevenzip/files/).

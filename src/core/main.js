@@ -32,7 +32,7 @@ for (const key in process.env) {
 Object.assign(process.env, safeEnv);
 
 // wrap spawn as a failsafe for node-7z
-const cp = require("child_process");
+const cp = require("node:child_process");
 const originalSpawn = cp.spawn;
 cp.spawn = function (command, args, options) {
   log?.editor?.(`[core] [spawn wrapper] spawn called`);
@@ -326,7 +326,6 @@ if (!gotTheLock) {
       temp.init(tempFolderPath);
       appUtils.generateExternalFilesFolder();
       tools.init();
-      fileFormats.init(g_launchInfo.isRelease);
       history.init(settings.getValue("history_capacity"));
       i18n.init(g_launchInfo.isDev);
       themes.init();
@@ -988,6 +987,10 @@ if (!gotTheLock) {
   };
 
   exports.onMenuAbout = function () {
+    const licensesPath = app.isPackaged
+      ? path.join(process.resourcesPath, "licenses")
+      : path.join(__dirname, "../../licenses");
+    log.debug(licensesPath);
     sendIpcToCoreRenderer(
       "show-modal-about",
       "ACBR Comic Book Reader",
@@ -998,6 +1001,8 @@ if (!gotTheLock) {
       )}">www.binarynonsense.com</span>
       </div>`,
       i18n._("ui-modal-prompt-button-ok"),
+      i18n._("ui-modal-info-licenses"),
+      licensesPath,
     );
   };
 

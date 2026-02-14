@@ -45,7 +45,7 @@ async function extractPDF(
   try {
     let totalPages = 1;
     const pdfjsFolderName =
-      extraData.lib === "pdfjs_2" ? pdfjsFolderName_2 : pdfjsFolderName_1;
+      extraData.lib === "pdfjs_newer" ? pdfjsFolderName_2 : pdfjsFolderName_1;
     const pdfjsLib = require(
       `../../assets/libs/${pdfjsFolderName}/build/pdf.js`,
     );

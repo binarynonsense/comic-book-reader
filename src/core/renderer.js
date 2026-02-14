@@ -192,21 +192,13 @@ function onIpcFromMain(event, args) {
 
       case "show-modal-info":
         {
-          showModalAlert(args[2], args[3], args[4]);
+          showModalAlert(...args.slice(1));
         }
         break;
 
       case "show-modal-about":
         {
-          showModalAlert(args[2], args[3], args[4]);
-          document
-            .querySelector("#about-modal-link")
-            .addEventListener("click", (event) => {
-              reader.sendIpcToMain(
-                "open-url-in-browser",
-                "http://www.binarynonsense.com",
-              );
-            });
+          showModalAbout(...args.slice(2));
         }
         break;
 
@@ -337,8 +329,53 @@ export function showModalAlert(title, message, textButton1) {
       },
     ],
   });
-  // if (getCurrentTool() === reader)
-  //   reader.sendIpcToMain("rebuild-menu-and-toolbar", false);
+}
+
+export function showModalAbout(
+  title,
+  message,
+  textButton1,
+  textButton2,
+  licensesPath,
+) {
+  if (g_openModal) {
+    return;
+  }
+  g_openModal = modals.show({
+    title: title,
+    message: message,
+    zIndexDelta: 10,
+    close: {
+      callback: () => {
+        modalClosed();
+      },
+      key: "Escape",
+    },
+    buttons: [
+      {
+        text: textButton2.toUpperCase(),
+        callback: () => {
+          reader.sendIpcToMain("open-path-in-browser", licensesPath);
+          modalClosed();
+        },
+      },
+      {
+        text: textButton1.toUpperCase(),
+        callback: () => {
+          modalClosed();
+        },
+      },
+    ],
+  });
+
+  document
+    .querySelector("#about-modal-link")
+    .addEventListener("click", (event) => {
+      reader.sendIpcToMain(
+        "open-url-in-browser",
+        "http://www.binarynonsense.com",
+      );
+    });
 }
 
 async function showModalCheckUpdates(currentVersion, texts) {

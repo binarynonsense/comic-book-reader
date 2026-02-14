@@ -346,72 +346,6 @@ function init(
         );
       });
     }
-    // epub ebook color mode
-    {
-      const selectColorMode = document.getElementById(
-        "tool-pre-epub-ebook-color-mode-select",
-      );
-      const inputTextColor = document.getElementById(
-        "tool-pre-epub-ebook-color-text-input",
-      );
-      const inputBgColor = document.getElementById(
-        "tool-pre-epub-ebook-color-background-input",
-      );
-      const customDiv = document.querySelector(
-        "#tool-pre-epub-ebook-color-custom-inputs-div",
-      );
-
-      selectColorMode.value = settings.epubEbookColorMode;
-      if (selectColorMode.value == "2") {
-        customDiv.classList.remove("set-display-none");
-      } else {
-        customDiv.classList.add("set-display-none");
-        updateColumnsHeight();
-      }
-      selectColorMode.addEventListener("change", function (event) {
-        sendIpcToMain(
-          "set-epub-ebook-color-mode",
-          parseInt(selectColorMode.value),
-          inputTextColor.value,
-          inputBgColor.value,
-        );
-        if (selectColorMode.value == "2") {
-          customDiv.classList.remove("set-display-none");
-          document
-            .getElementById("tool-pre-epub-ebook-color-custom-inputs-div")
-            .scrollIntoView({
-              behavior: "instant",
-              block: "start",
-              inline: "nearest",
-            });
-        } else {
-          customDiv.classList.add("set-display-none");
-          updateColumnsHeight();
-        }
-      });
-
-      inputTextColor.value = settings.epubEbookColorText;
-      inputTextColor.addEventListener("change", function (event) {
-        if (selectColorMode.value != "2") return;
-        sendIpcToMain(
-          "set-epub-ebook-color-mode",
-          parseInt(selectColorMode.value),
-          inputTextColor.value,
-          inputBgColor.value,
-        );
-      });
-
-      inputBgColor.value = settings.epubEbookColorBg;
-      inputBgColor.addEventListener("change", function (event) {
-        if (selectColorMode.value != "2") return;
-        sendIpcToMain(
-          "set-epub-ebook-color-mode",
-          parseInt(selectColorMode.value),
-          inputTextColor.value,
-          inputBgColor.value,
-        );
-      });
-    }
     // hotspots select
     {
       let select = document.getElementById("tool-pre-hotspots-select");
@@ -468,25 +402,125 @@ function init(
         sendIpcToMain("set-page-turn", select.value === "true");
       });
     }
-    // epub openas select
+    // epub select
     {
-      let select = document.getElementById("tool-pre-epub-openas-select");
-      select.value = settings.epubOpenAs;
+      let select = document.getElementById("tool-pre-epub-booktype-select");
+      select.value = settings.epubBookType;
       select.addEventListener("change", function (event) {
-        sendIpcToMain("set-setting", "epubOpenAs", parseInt(select.value));
+        sendIpcToMain("set-setting", "epubBookType", parseInt(select.value));
+      });
+
+      let checkbox = document.getElementById(
+        "tool-pre-epub-booktype-remember-checkbox",
+      );
+      checkbox.checked = settings.rememberEpubBookType;
+      checkbox.addEventListener("change", (event) => {
+        sendIpcToMain("set-setting", "rememberEpubBookType", checkbox.checked);
       });
     }
-    // pdf reading library select OLD
-    // {
-    //   let select = document.getElementById(
-    //     "tool-pre-pdf-reading-library-version-select",
-    //   );
-    //   select.value = settings.pdfReadingLib;
-    //   select.addEventListener("change", function (event) {
-    //     sendIpcToMain("set-pdf-reading-lib", parseInt(select.value));
-    //   });
-    // }
-    // pdf reading library select v2
+    // epub ebook
+    {
+      const widthInput = document.getElementById(
+        "tool-pre-epub-ebook-width-input",
+      );
+      widthInput.value = settings.epubEbook.width;
+      widthInput.addEventListener("change", function (event) {
+        updateEpubEbookSettings();
+      });
+      const heightInput = document.getElementById(
+        "tool-pre-epub-ebook-height-input",
+      );
+      heightInput.value = settings.epubEbook.height;
+      heightInput.addEventListener("change", function (event) {
+        updateEpubEbookSettings();
+      });
+      const marginInput = document.getElementById(
+        "tool-pre-epub-ebook-margin-input",
+      );
+      marginInput.value = settings.epubEbook.margin;
+      marginInput.addEventListener("change", function (event) {
+        updateEpubEbookSettings();
+      });
+      const fontSizeInput = document.getElementById(
+        "tool-pre-epub-ebook-fontsize-input",
+      );
+      fontSizeInput.value = settings.epubEbook.fontSize;
+      fontSizeInput.addEventListener("change", function (event) {
+        updateEpubEbookSettings();
+      });
+      const dpiInput = document.getElementById("tool-pre-epub-ebook-dpi-input");
+      dpiInput.value = settings.epubEbook.dpi;
+      dpiInput.addEventListener("change", function (event) {
+        updateEpubEbookSettings();
+      });
+      // colors
+      const inputTextColor = document.getElementById(
+        "tool-pre-epub-ebook-color-text-input",
+      );
+      const inputBgColor = document.getElementById(
+        "tool-pre-epub-ebook-color-background-input",
+      );
+      inputTextColor.value = settings.epubEbook.colorText;
+      inputTextColor.addEventListener("change", function (event) {
+        updateEpubEbookSettings();
+      });
+      inputBgColor.value = settings.epubEbook.colorBg;
+      inputBgColor.addEventListener("change", function (event) {
+        updateEpubEbookSettings();
+      });
+      //////
+      const sizeCheckbox = document.querySelector(
+        "#tool-pre-epub-ebook-size-checkbox",
+      );
+      sizeCheckbox.checked = settings.epubEbook.customSize;
+      sizeCheckbox.addEventListener("change", (event) => {
+        updateEpubEbookSettings();
+        updateEpubEbookUI();
+      });
+      const colorsCheckbox = document.querySelector(
+        "#tool-pre-epub-ebook-colors-checkbox",
+      );
+      colorsCheckbox.checked = settings.epubEbook.customColors;
+      colorsCheckbox.addEventListener("change", (event) => {
+        updateEpubEbookSettings();
+        updateEpubEbookUI();
+      });
+      function updateEpubEbookUI() {
+        const checkboxIds = [
+          "#tool-pre-epub-ebook-size-checkbox",
+          "#tool-pre-epub-ebook-colors-checkbox",
+        ];
+        checkboxIds.forEach((checkboxId) => {
+          const checkbox = document.querySelector(checkboxId);
+          if (checkbox.checked) {
+            checkbox.parentNode
+              .querySelector(".tools-checkboxed-options-row-controls-100-div")
+              .classList.remove("tools-disabled");
+          } else {
+            checkbox.parentNode
+              .querySelector(".tools-checkboxed-options-row-controls-100-div")
+              .classList.add("tools-disabled");
+          }
+        });
+      }
+      //////
+      function updateEpubEbookSettings() {
+        sendIpcToMain("set-epub-ebook-settings", {
+          customSize: sizeCheckbox.checked,
+          width: widthInput.value,
+          height: heightInput.value,
+          margin: marginInput.value,
+          fontSize: fontSizeInput.value,
+          dpi: dpiInput.value,
+          customColors: colorsCheckbox.checked,
+          colorText: inputTextColor.value,
+          colorBg: inputBgColor.value,
+        });
+      }
+      ///////
+      updateEpubEbookUI();
+    }
+    // pdf reading library select
     {
       let select = document.getElementById(
         "tool-pre-pdf-reading-library-version-select",

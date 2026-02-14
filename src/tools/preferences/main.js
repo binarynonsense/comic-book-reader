@@ -257,31 +257,49 @@ function initOnIpcCallbacks() {
 
   /////////////////
 
+  let g_pdfWillCloseToApplyModalShown = false;
   on("set-pdf-reading-lib", (value) => {
     if (reader.getFileData().type === FileDataType.PDF) {
       reader.onMenuCloseFile();
-      sendIpcToRenderer(
-        "show-ok-modal",
-        _("tool-shared-modal-title-info"),
-        _("ui-modal-info-willclosetoapply"),
-        _("ui-modal-prompt-button-ok").toUpperCase(),
-      );
+      if (!g_pdfWillCloseToApplyModalShown) {
+        // g_pdfWillCloseToApplyModalShown = true;
+        sendIpcToRenderer(
+          "show-ok-modal",
+          _("tool-shared-modal-title-info"),
+          _("ui-modal-info-willclosetoapply"),
+          _("ui-modal-prompt-button-ok").toUpperCase(),
+        );
+      }
     }
     settings.setValue("pdfReadingLibrary", value);
     reader.setPdfLibVersion(value);
   });
 
-  on("set-epub-ebook-color-mode", (mode, textColor, bgColor) => {
-    if (mode != undefined) settings.setValue("epubEbookColorMode", mode);
-    if (textColor != undefined)
-      settings.setValue("epubEbookColorText", textColor);
-    if (bgColor != undefined) settings.setValue("epubEbookColorBg", bgColor);
-    reader.sendIpcToRenderer(
-      "update-epub-ebook-color-mode",
-      mode,
-      textColor,
-      bgColor,
-    );
+  let g_epubEbookWillCloseToApplyModalShown = false;
+  on("set-epub-ebook-settings", (values) => {
+    if (reader.getFileData().type === FileDataType.EPUB_EBOOK) {
+      // TODO: if epub ebook open -> reload it on back to reader?
+      // check percentage?
+      reader.onMenuCloseFile();
+      if (!g_epubEbookWillCloseToApplyModalShown) {
+        // g_epubEbookWillCloseToApplyModalShown = true;
+        sendIpcToRenderer(
+          "show-ok-modal",
+          _("tool-shared-modal-title-info"),
+          _("ui-modal-info-willclosetoapply"),
+          _("ui-modal-prompt-button-ok").toUpperCase(),
+        );
+      }
+    }
+    settings.setChildValue("epubEbook", "customSize", values.customSize);
+    settings.setChildValue("epubEbook", "width", parseInt(values.width));
+    settings.setChildValue("epubEbook", "height", parseInt(values.height));
+    settings.setChildValue("epubEbook", "margin", parseInt(values.margin));
+    settings.setChildValue("epubEbook", "fontSize", parseInt(values.fontSize));
+    settings.setChildValue("epubEbook", "dpi", parseInt(values.dpi));
+    settings.setChildValue("epubEbook", "customColors", values.customColors);
+    settings.setChildValue("epubEbook", "colorText", values.colorText);
+    settings.setChildValue("epubEbook", "colorBg", values.colorBg);
   });
 
   on("set-recent-max-files", (value) => {

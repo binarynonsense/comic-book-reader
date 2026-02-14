@@ -312,16 +312,20 @@
         ></label>
         <select id="tool-cc-pdf-extraction-lib-select">
           <option
+            id="tool-cc-pdf-extraction-lib-o-default-text"
+            value="default"
+          ></option>
+          <option
+            id="tool-cc-pdf-extraction-lib-o-mupdf-text"
+            value="mupdf"
+          ></option>
+          <option
             id="tool-cc-pdf-extraction-lib-o-pdfjs1-text"
-            value="pdfjs_1"
+            value="pdfjs_older"
           ></option>
           <option
             id="tool-cc-pdf-extraction-lib-o-pdfjs2-text"
-            value="pdfjs_2"
-          ></option>
-          <option
-            id="tool-cc-pdf-extraction-lib-o-pdfium-text"
-            value="pdfium"
+            value="pdfjs_newer"
           ></option>
         </select>
       </div>
@@ -436,12 +440,12 @@
         <label><span id="tool-cc-imageops-apply-text"></span></label>
         <!-- image ops -->
         <div class="tools-imageops-div">
-          <div class="tools-imageop-div">
+          <div class="tools-checkboxed-options-row-div">
             <input type="checkbox" id="tool-cc-imageops-brightness-checkbox" />
-            <div class="tools-imageop-name-div">
+            <div class="tools-checkboxed-options-row-name-div">
               <span id="tool-cc-imageops-brightness-text"></span>
             </div>
-            <div class="tools-imageop-controls-div">
+            <div class="tools-checkboxed-options-row-controls-div">
               <input
                 id="tool-cc-imageops-brightness-input"
                 type="number"
@@ -451,12 +455,12 @@
               />
             </div>
           </div>
-          <div class="tools-imageop-div">
+          <div class="tools-checkboxed-options-row-div">
             <input type="checkbox" id="tool-cc-imageops-saturation-checkbox" />
-            <div class="tools-imageop-name-div">
+            <div class="tools-checkboxed-options-row-name-div">
               <span id="tool-cc-imageops-saturation-text"></span>
             </div>
-            <div class="tools-imageop-controls-div">
+            <div class="tools-checkboxed-options-row-controls-div">
               <input
                 id="tool-cc-imageops-saturation-input"
                 type="number"
@@ -466,9 +470,9 @@
               />
             </div>
           </div>
-          <div class="tools-imageop-div">
+          <div class="tools-checkboxed-options-row-div">
             <input type="checkbox" id="tool-cc-imageops-crop-checkbox" />
-            <div class="tools-imageop-name-div">
+            <div class="tools-checkboxed-options-row-name-div">
               <span id="tool-cc-imageops-crop-text"></span>
               <i
                 id="tool-cc-tooltip-imageops-crop"
@@ -476,7 +480,7 @@
                 title="tooltip"
               ></i>
             </div>
-            <div class="tools-imageop-controls-div">
+            <div class="tools-checkboxed-options-row-controls-div">
               <input
                 id="tool-cc-imageops-crop-input"
                 type="number"
@@ -486,9 +490,9 @@
               />
             </div>
           </div>
-          <div class="tools-imageop-div">
+          <div class="tools-checkboxed-options-row-div">
             <input type="checkbox" id="tool-cc-imageops-extend-checkbox" />
-            <div class="tools-imageop-name-div">
+            <div class="tools-checkboxed-options-row-name-div">
               <span id="tool-cc-imageops-extend-text"></span>
               <i
                 id="tool-cc-tooltip-imageops-extend"
@@ -496,7 +500,7 @@
                 title="tooltip"
               ></i>
             </div>
-            <div class="tools-imageop-controls-div">
+            <div class="tools-checkboxed-options-row-controls-div">
               <input
                 id="tool-cc-imageops-extend-input"
                 type="number"

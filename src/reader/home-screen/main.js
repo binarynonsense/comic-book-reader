@@ -325,14 +325,8 @@ function getPercentageReadFromHistoryListByIndex(historyEntryIndex, listIndex) {
     pageIndex = parseFloat(pageIndex);
     numPages = parseFloat(numPages);
     if (!isNaN(pageIndex) && !isNaN(numPages)) {
-      if (historyData[historyEntryIndex]?.data?.bookType === "ebook") {
-        if (pageIndex >= 0 && pageIndex <= 100) {
-          return pageIndex;
-        }
-      } else {
-        if (pageIndex <= numPages) {
-          return ((pageIndex + 1) / numPages) * 100;
-        }
+      if (pageIndex <= numPages) {
+        return ((pageIndex + 1) / numPages) * 100;
       }
     }
   }

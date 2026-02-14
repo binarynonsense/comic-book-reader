@@ -32,7 +32,7 @@ for (const key in process.env) {
 Object.assign(process.env, safeEnv);
 
 // wrap spawn as a failsafe for node-7z
-const cp = require("child_process");
+const cp = require("node:child_process");
 const originalSpawn = cp.spawn;
 cp.spawn = function (command, args, options) {
   send({
@@ -121,9 +121,26 @@ process.parentPort.on("message", async (event) => {
     });
   } else if (message.command === "open") {
     if (message.fileType === FileDataType.PDF) {
-      const result = await fileFormats.openPdf(
+      ////
+      // const result = await fileFormats.openPdf(
+      //   message.filePath,
+      //   message.password,
+      // );
+      // message.type = "openResult";
+      // message.result = result;
+      // process.parentPort.postMessage(message);
+      const result = await fileFormats.openMuPdf(
         message.filePath,
         message.password,
+      );
+      message.type = "openResult";
+      message.result = result;
+      process.parentPort.postMessage(message);
+    } else if (message.fileType === FileDataType.EPUB_EBOOK) {
+      const result = await fileFormats.openMuEpub(
+        message.filePath,
+        message.tempSubFolderPath,
+        message.config,
       );
       message.type = "openResult";
       message.result = result;
@@ -141,6 +158,7 @@ async function extractImageBuffer({
   password,
   tempSubFolderPath,
   extraData,
+  config,
 }) {
   try {
     let buffer;
@@ -160,12 +178,24 @@ async function extractImageBuffer({
         error = result.data;
       }
     } else if (fileType === FileDataType.RAR) {
-      buffer = await fileFormats.extractRarEntryBuffer(
+      // buffer = await fileFormats.extractRarEntryBuffer(
+      //   filePath,
+      //   entryNames[entryNameIndex],
+      //   password,
+      //   tempSubFolderPath,
+      // );
+      result = await fileFormats.extract7ZipEntryBuffer(
         filePath,
         entryNames[entryNameIndex],
         password,
         tempSubFolderPath,
+        "rar",
       );
+      if (result.success) {
+        buffer = result.data;
+      } else {
+        error = result.data;
+      }
     } else if (fileType === FileDataType.SEVENZIP) {
       const result = await fileFormats.extract7ZipEntryBuffer(
         filePath,
@@ -191,11 +221,35 @@ async function extractImageBuffer({
       const fullPath = path.join(filePath, entryNames[entryNameIndex]);
       buffer = fs.readFileSync(fullPath);
     } else if (fileType === FileDataType.PDF) {
-      buffer = await fileFormats.extractPdfPageBuffer(
+      // buffer = await fileFormats.extractPdfPageBuffer(
+      //   filePath,
+      //   entryNames[entryNameIndex], // = page number
+      //   extraData?.dpi,
+      // );
+      const result = await fileFormats.extractMuPdfPageBuffer(
         filePath,
-        entryNames[entryNameIndex], // = page number
+        entryNames[entryNameIndex], // = page numbe
+        password,
         extraData?.dpi,
+        4500,
       );
+      if (result.success) {
+        buffer = result.data;
+      } else {
+        error = result.data;
+      }
+    } else if (fileType === FileDataType.EPUB_EBOOK) {
+      const result = await fileFormats.extractMuEpubPageBuffer(
+        filePath,
+        entryNames[entryNameIndex],
+        tempSubFolderPath,
+        config,
+      );
+      if (result.success) {
+        buffer = result.data;
+      } else {
+        error = result.data;
+      }
     } else {
       //  TODO: handle error file type not valid
     }

@@ -24,9 +24,10 @@ exports.show = function (type, params, fileData) {
   let showRotation = true;
   if (fileData.type === FileDataType.NOT_SET) {
     isOpen = false;
-  } else if (fileData.type === FileDataType.EPUB_EBOOK) {
-    showRotation = false;
   }
+  // else if (fileData.type === FileDataType.EPUB_EBOOK) {
+  //   showRotation = false;
+  // }
   //
   let saveImageEntries = [];
   let pageExtraEntries = [];

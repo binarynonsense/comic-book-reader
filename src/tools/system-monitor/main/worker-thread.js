@@ -53,7 +53,7 @@ function getSystemStats() {
             // NOTE: using just flatpak-spawn, without /usr/bin/, didn't work
             // NOTE: I do this spawn method because checking, for example,
             // /run/host/proc/meminfo, as some refs suggested, didn't work
-            const { execSync } = require("child_process");
+            const { execSync } = require("node:child_process");
             memInfo = execSync(
               "/usr/bin/flatpak-spawn --host cat /proc/meminfo 2>/dev/null",
               {

@@ -114,7 +114,7 @@ async function loadPdfjsLib(version) {
 async function loadPdf(filePath, pageIndex, password) {
   g_currentPdfLibVersion = g_settingsPdfLibVersion;
   await loadPdfjsLib(
-    g_currentPdfLibVersion === "pdfjs_2" ? "3.8.162" : "2.3.200",
+    g_currentPdfLibVersion === "pdfjs_newer" ? "3.8.162" : "2.3.200",
   );
 
   let escapedInputFilePath = filePath.replaceAll("#", "%23");

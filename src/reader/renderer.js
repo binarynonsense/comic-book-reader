@@ -20,7 +20,7 @@ import {
 } from "./renderer-pdf.js";
 import {
   initIpc as epubInitIpc,
-  cleanUp as cleanUpEpub,
+  // cleanUp as cleanUpEpub,
 } from "./renderer-epub.js";
 import {
   onInputEvent as modalOnInputEvent,
@@ -49,7 +49,7 @@ let g_currentImages;
 function cleanUpPages() {
   g_currentImages = undefined;
   cleanUpPdf();
-  cleanUpEpub();
+  // cleanUpEpub();
 }
 
 export function getCurrentImgBuffers() {

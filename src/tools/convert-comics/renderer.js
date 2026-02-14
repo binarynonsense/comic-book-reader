@@ -759,11 +759,11 @@ function updateImageOpsUI() {
     const checkbox = document.querySelector(checkboxId);
     if (checkbox.checked) {
       checkbox.parentNode
-        .querySelector(".tools-imageop-controls-div")
+        .querySelector(".tools-checkboxed-options-row-controls-div")
         .classList.remove("tools-disabled");
     } else {
       checkbox.parentNode
-        .querySelector(".tools-imageop-controls-div")
+        .querySelector(".tools-checkboxed-options-row-controls-div")
         .classList.add("tools-disabled");
     }
   });
@@ -1147,6 +1147,9 @@ function checkValidData() {
   updateOutputFolderUI();
   toolsShared.updateSliders();
 
+  if (document.getElementById("tool-cc-pdf-extraction-lib-select").value === "")
+    document.getElementById("tool-cc-pdf-extraction-lib-select").value =
+      "default";
   if (g_outputFormatSelect.value === "") g_outputFormatSelect.value = "cbz";
 
   //////////////////////////////////////

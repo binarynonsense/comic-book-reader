@@ -1,0 +1,17 @@
+MuPDF Components
+----------------
+This application includes a compiled version of MuPDF (mutool), 
+licensed under the GNU AGPL v3.
+
+Base Source Code:
+https://github.com/ArtifexSoftware/mupdf (Tag: v1.27.0)
+
+Build Instructions & Corresponding Source Scripts:
+The following GitHub Action was used to apply static linking 
+modifications and generate the universal binary:
+https://github.com/binarynonsense/acbr-builder/blob/main/.github/workflows/build-mupdf.yml
+
+Under the terms of the AGPL, the combination of the base source 
+and this build script constitutes the Corresponding Source.
+
+MuPDF is a registered trademark of Artifex Software, Inc.

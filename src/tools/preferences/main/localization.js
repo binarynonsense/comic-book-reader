@@ -413,39 +413,6 @@ exports.getLocalization = function () {
     },
     //////////////////////////////////////////////
     {
-      id: "tool-pre-epub-ebook-text",
-      text:
-        _("tool-pre-epub-ebook") +
-        " (" +
-        _("tool-shared-ui-experimental") +
-        ")",
-    },
-    {
-      id: "tool-pre-epub-ebook-color-mode-text",
-      text: _("tool-shared-ui-color-mode"),
-    },
-    {
-      id: "tool-pre-epub-ebook-color-mode-0-text",
-      text: _("tool-shared-ui-color-mode-light"),
-    },
-    {
-      id: "tool-pre-epub-ebook-color-mode-1-text",
-      text: _("tool-shared-ui-color-mode-dark"),
-    },
-    {
-      id: "tool-pre-epub-ebook-color-mode-2-text",
-      text: _("tool-shared-ui-color-mode-custom"),
-    },
-    {
-      id: "tool-pre-epub-ebook-color-text-text",
-      text: _("tool-shared-ui-color-text"),
-    },
-    {
-      id: "tool-pre-epub-ebook-color-background-text",
-      text: _("tool-shared-ui-color-background"),
-    },
-    //////////////////////////////////////////////
-    {
       id: "tool-pre-mouse-text",
       text: _("tool-pre-mouse"),
     },
@@ -545,19 +512,74 @@ exports.getLocalization = function () {
       id: "tool-pre-epub-text",
       text: _("tool-pre-epub"),
     },
-    {
-      id: "tool-pre-epub-openas-text",
-      text: _("tool-pre-epub-openas"),
-    },
-    {
-      id: "tool-pre-epub-openas-0-text",
-      text: _("tool-pre-epub-openas-0"),
-    },
-    {
-      id: "tool-pre-epub-openas-1-text",
-      text: _("tool-pre-epub-openas-1"),
-    },
 
+    {
+      id: "tool-pre-epub-booktype-text",
+      text: _("tool-pre-booktype"),
+    },
+    {
+      id: "tool-pre-epub-booktype-0-text",
+      text: _("tool-pre-booktype-0"),
+    },
+    {
+      id: "tool-pre-epub-booktype-1-text",
+      text: _("tool-pre-booktype-1"),
+    },
+    {
+      id: "tool-pre-epub-booktype-remember-checkbox-text",
+      text: _("tool-pre-booktype-remember"),
+    },
+    ////
+    {
+      id: "tool-pre-epub-ebook-rendering-text",
+      text: _("tool-shared-ui-ebook-rendering"),
+    },
+    {
+      id: "tool-pre-epub-ebook-width-input-text",
+      text: _("tool-shared-ui-output-options-scale-width"),
+    },
+    {
+      id: "tool-pre-epub-ebook-height-input-text",
+      text: _("tool-shared-ui-output-options-scale-height"),
+    },
+    {
+      id: "tool-pre-epub-ebook-fontsize-input-text",
+      text: _("tool-shared-ui-ebook-rendering-fontsize"),
+    },
+    {
+      id: "tool-pre-epub-ebook-margin-input-text",
+      text: _("tool-shared-ui-ebook-rendering-margin"),
+    },
+    ////
+    {
+      id: "tool-pre-epub-ebook-color-mode-text",
+      text: _("tool-shared-ui-color-mode"),
+    },
+    {
+      id: "tool-pre-epub-ebook-color-mode-0-text",
+      text: "default",
+    },
+    {
+      id: "tool-pre-epub-ebook-color-mode-1-text",
+      text: _("tool-shared-ui-color-mode-light"),
+    },
+    {
+      id: "tool-pre-epub-ebook-color-mode-2-text",
+      text: _("tool-shared-ui-color-mode-dark"),
+    },
+    {
+      id: "tool-pre-epub-ebook-color-mode-3-text",
+      text: _("tool-shared-ui-color-mode-custom"),
+    },
+    {
+      id: "tool-pre-epub-ebook-color-text-text",
+      text: _("tool-shared-ui-color-text"),
+    },
+    {
+      id: "tool-pre-epub-ebook-color-background-text",
+      text: _("tool-shared-ui-color-background"),
+    },
+    //////////
     {
       id: "tool-pre-pdf-text",
       text: _("tool-pre-pdf"),
@@ -566,33 +588,25 @@ exports.getLocalization = function () {
       id: "tool-pre-pdf-reading-library-version-text",
       text: _("tool-pre-pdf-reading-library-version"),
     },
-    // {
-    //   id: "tool-pre-pdf-reading-library-version-0-text",
-    //   text: `${_("tool-pre-pdf-library-version-oldest")} (${_(
-    //     "tool-pre-pdf-library-version-oldest-desc",
-    //   )})`,
-    // },
-    // {
-    //   id: "tool-pre-pdf-reading-library-version-1-text",
-    //   text: `${_("tool-pre-pdf-library-version-newest")} (${_(
-    //     "tool-pre-pdf-library-version-newest-desc",
-    //   )})`,
-    // },
     {
       id: "tool-pre-pdf-reading-library-version-0-text",
+      text: `${_("tool-pre-formats-library-value-default")} (MuPDF)`,
+    },
+    {
+      id: "tool-pre-pdf-reading-library-version-1-text",
+      text: `MuPDF`,
+    },
+    {
+      id: "tool-pre-pdf-reading-library-version-2-text",
       text: `PDF.js ${_("tool-pre-pdf-library-version-oldest")} (${_(
         "tool-pre-pdf-library-version-oldest-desc",
       )})`,
     },
     {
-      id: "tool-pre-pdf-reading-library-version-1-text",
+      id: "tool-pre-pdf-reading-library-version-3-text",
       text: `PDF.js ${_("tool-pre-pdf-library-version-newest")} (${_(
         "tool-pre-pdf-library-version-newest-desc",
       )})`,
-    },
-    {
-      id: "tool-pre-pdf-reading-library-version-2-text",
-      text: `PDFium (${_("tool-shared-ui-experimental").toLowerCase()})`,
     },
 
     {

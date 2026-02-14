@@ -32,7 +32,7 @@ for (const key in process.env) {
 Object.assign(process.env, safeEnv);
 
 // wrap spawn as a failsafe for node-7z
-const cp = require("child_process");
+const cp = require("node:child_process");
 const originalSpawn = cp.spawn;
 cp.spawn = function (command, args, options) {
   send({
@@ -89,8 +89,8 @@ const { FileExtension, FileDataType } = require("./constants");
 const utils = require("./utils");
 const fileUtils = require("./file-utils");
 
-const controller = new AbortController();
-const { signal } = controller;
+// const controller = new AbortController();
+// const { signal } = controller;
 
 process.parentPort.on("message", async (event) => {
   let message = event.data;
@@ -103,7 +103,10 @@ process.parentPort.on("message", async (event) => {
   } else if (message[1] === "create") {
     createFiles(...message.slice(2));
   } else if (message[1] === "cancel") {
-    controller.abort();
+    // controller.abort();
+    fileFormats.stopMuPdfExtraction();
+    fileFormats.stopMuEpubExtraction();
+    fileFormats.stop7zExtraction();
   }
 });
 
@@ -128,10 +131,16 @@ async function extractImages(
         "zip",
       );
     } else if (inputFileType === FileDataType.RAR) {
-      result = await fileFormats.extractRar(
+      // result = await fileFormats.extractRar(
+      //   inputFilePath,
+      //   tempFolderPath,
+      //   password,
+      // );
+      result = await fileFormats.extract7Zip(
         inputFilePath,
         tempFolderPath,
         password,
+        "rar",
       );
     } else if (inputFileType === FileDataType.SEVENZIP) {
       result = await fileFormats.extract7Zip(
@@ -142,14 +151,28 @@ async function extractImages(
     } else if (inputFileType === FileDataType.EPUB_COMIC) {
       // TODO: get success and error
       success = await fileFormats.extractEpub(inputFilePath, tempFolderPath);
+    } else if (inputFileType === FileDataType.EPUB_EBOOK) {
+      result = await fileFormats.extractMuEpub(
+        inputFilePath,
+        tempFolderPath,
+        extraData,
+        send,
+      );
     } else if (inputFileType === FileDataType.PDF) {
-      result = await fileFormats.extractPdf(
+      // result = await fileFormats.extractPdf(
+      //   inputFilePath,
+      //   tempFolderPath,
+      //   password,
+      //   extraData,
+      //   send,
+      //   signal,
+      // );
+      result = await fileFormats.extractMuPdf(
         inputFilePath,
         tempFolderPath,
         password,
         extraData,
         send,
-        signal,
       );
     } else {
       throw "invalid file type";
@@ -158,6 +181,8 @@ async function extractImages(
     if (result) {
       if (result.success) {
         send({ success: true, time: time });
+      } else if (result.cancelled) {
+        send({ success: false, cancelled: true });
       } else {
         if (result.error) {
           throw result.error;

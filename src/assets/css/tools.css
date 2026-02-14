@@ -999,27 +999,33 @@ html[dir="rtl"] .tools-range-bubble {
   margin: 3px 0px 5px 0;
 }
 
-.tools-imageop-div {
+.tools-checkboxed-options-row-div {
   display: flex;
   flex-direction: row;
   gap: 10px;
   align-items: anchor-center;
 }
-.tools-imageop-div input:not([type="checkbox"]) {
+.tools-checkboxed-options-row-div input:not([type="checkbox"]) {
   max-width: 100%;
 }
 
-.tools-imageop-name-div {
+.tools-checkboxed-options-row-name-div {
   flex-direction: row;
   display: flex;
   flex: 0 1 25%;
   gap: 10px;
   align-items: anchor-center;
 }
-.tools-imageop-controls-div {
+.tools-checkboxed-options-row-controls-div {
   flex-direction: row;
   display: flex;
   flex: 0 1 75%;
+  gap: 8px;
+  align-items: anchor-center;
+}
+.tools-checkboxed-options-row-controls-100-div {
+  flex-direction: row;
+  display: flex;
   gap: 8px;
   align-items: anchor-center;
 }

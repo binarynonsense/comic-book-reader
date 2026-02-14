@@ -655,13 +655,18 @@ function startFile(inputFileIndex, totalFilesNum) {
       inputFileType === FileDataType.RAR ||
       inputFileType === FileDataType.SEVENZIP ||
       inputFileType === FileDataType.EPUB_COMIC ||
+      inputFileType === FileDataType.EPUB_EBOOK ||
       (inputFileType === FileDataType.PDF &&
-        g_uiSelectedOptions.inputPdfExtractionLib === "pdfium")
+        !g_uiSelectedOptions.inputPdfExtractionLib.startsWith("pdfjs"))
     ) {
       updateModalLogText(_("tool-shared-modal-log-extracting-pages") + "...");
       log.debug(_("tool-shared-modal-log-extracting-pages") + "...");
-      if (core.isDev() && inputFileType === FileDataType.PDF)
-        updateModalLogText("[DEV] pdfium");
+      if (core.isDev()) {
+        if (inputFileType === FileDataType.PDF)
+          updateModalLogText("[DEV] mupdf pdf");
+        if (inputFileType === FileDataType.EPUB_EBOOK)
+          updateModalLogText("[DEV] mupdf epub");
+      }
 
       killWorker();
       if (g_worker === undefined) {
@@ -688,12 +693,12 @@ function startFile(inputFileIndex, totalFilesNum) {
           } else if (message.type === undefined) {
             // success or failure
             killWorker();
-            if (message.success) {
-              log.debug("file extracted in: " + message.time);
+            if (message.success || message.cancelled) {
               if (g_cancel === true) {
                 stopCancel();
                 return;
               }
+              log.debug("file extracted in: " + message.time);
               if (g_mode === ToolMode.CREATE) {
                 copyImagesToTempFolder(g_creationTempSubFolderPath, true);
                 temp.deleteSubFolder(g_creationTempSubFolderPath);
@@ -1042,7 +1047,9 @@ async function getFileType(filePath) {
   if (fileExtension === "." + FileExtension.PDF) {
     fileType = FileDataType.PDF;
   } else if (fileExtension === "." + FileExtension.EPUB) {
-    fileType = FileDataType.EPUB_COMIC;
+    const epubType = await fileUtils.getEpubType(filePath);
+    fileType =
+      epubType === "comic" ? FileDataType.EPUB_COMIC : FileDataType.EPUB_EBOOK;
   } else {
     if (
       fileExtension === "." + FileExtension.RAR ||
@@ -1440,6 +1447,37 @@ async function createFilesFromImages(
   }
 }
 
+// async function createFolderWithImages(imgFilePaths, outputFolderPath) {
+//   if (g_cancel === true) {
+//     stopCancel();
+//     return;
+//   }
+//   try {
+//     sendIpcToRenderer(
+//       "update-log-text",
+//       _("tool-ec-modal-log-extracting-to") + ":",
+//     );
+//     sendIpcToRenderer("update-log-text", outputFolderPath);
+//     // create subFolderPath
+//     if (!fs.existsSync(outputFolderPath)) {
+//       fs.mkdirSync(outputFolderPath);
+//       for (let index = 0; index < imgFilePaths.length; index++) {
+//         let oldPath = imgFilePaths[index];
+//         log.test(oldPath);
+//         let newPath = path.join(outputFolderPath, path.basename(oldPath));
+//         fileUtils.moveFile(oldPath, newPath);
+//       }
+//       temp.deleteSubFolder(g_tempSubFolderPath);
+//       g_tempSubFolderPath = undefined;
+//       sendIpcToRenderer("file-finished-ok");
+//     } else {
+//       stopError("tool-ec folder shouldn't exist");
+//     }
+//   } catch (error) {
+//     stopError(error);
+//   }
+// }
+
 async function createFolderWithImages(imgFilePaths, outputFolderPath) {
   if (g_cancel === true) {
     stopCancel();
@@ -1451,12 +1489,15 @@ async function createFolderWithImages(imgFilePaths, outputFolderPath) {
       _("tool-ec-modal-log-extracting-to") + ":",
     );
     sendIpcToRenderer("update-log-text", outputFolderPath);
-    // create subFolderPath
+
     if (!fs.existsSync(outputFolderPath)) {
-      fs.mkdirSync(outputFolderPath);
+      fs.mkdirSync(outputFolderPath, { recursive: true });
+      const baseTempPath = path.normalize(g_tempSubFolderPath);
       for (let index = 0; index < imgFilePaths.length; index++) {
-        let oldPath = imgFilePaths[index];
-        let newPath = path.join(outputFolderPath, path.basename(oldPath));
+        const oldPath = path.normalize(imgFilePaths[index]);
+        const relativePath = path.relative(baseTempPath, oldPath);
+        const newPath = path.join(outputFolderPath, relativePath);
+        fs.mkdirSync(path.dirname(newPath), { recursive: true });
         fileUtils.moveFile(oldPath, newPath);
       }
       temp.deleteSubFolder(g_tempSubFolderPath);

@@ -1,0 +1,34 @@
+7-ZIP BINARIES
+===============================================================
+
+1. DOWNLOAD SOURCES
+-------------------
+Go to https://www.7-zip.org and download:
+
+Windows: "64-bit Windows x64" (the .exe installer)
+  -> Filename example: 7z2409-x64.exe
+
+Linux:   "64-bit Linux x86-64" (the .tar.xz console version)
+  -> Filename example: 7z2409-linux-x64.tar.xz
+
+2. EXTRACTION (LINUX CLI)
+--------------------------------------
+Windows files:
+  7z x 7z2409-x64.exe -o./win_temp
+  Files to keep: 7z.exe and 7z.dll
+
+Linux files:
+  tar -xf 7z2409-linux-x64.tar.xz
+  Files to keep: 7zz
+
+3. TEST
+---------------------------------------
+To check RAR codecs ("D" flag next to Rar5):
+  Linux:   ./7zz i | grep Rar
+  Windows: .\7z.exe i | findstr Rar
+
+To test full extraction of an archive:
+  Linux:   ./7zz x "path/to/archive.ext" -o"./output_folder"
+  Windows: .\7z.exe x "path/to/archive.ext" -o".\output_folder"
+
+ 
