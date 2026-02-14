@@ -130,4 +130,4 @@ Hay información sobre cómo contribuir al proyecto en el fichero [CONTRIBUTING.
 
 ## Otros:
 
-Capturas de pantalla, más información sobre los controles y otra información extra se pueden encontrar en [la Wiki del proyecto](https://github.com/binarynonsense/comic-book-reader/wiki).
+Se pueden encontrar capturas de pantalla y más información en [la Wiki del proyecto](https://github.com/binarynonsense/comic-book-reader/wiki).
