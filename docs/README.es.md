@@ -117,14 +117,15 @@ También disponible en:
 
 ## Contribuciones:
 
-- Diseño y Programación:
-  - [Álvaro García (binarynonsense)](https://github.com/binarynonsense/)
-- Localizaciones:
-  - [Álvaro García (binarynonsense)](https://github.com/binarynonsense/) (English, Español)
-  - [vanja-san](https://github.com/vanja-san) (Русский)
-  - [Timo Heidutzek (trzyglow)](https://github.com/trzyglow) (Deutsch)
-  - [Ahmed (ahmed-0011)](https://github.com/ahmed-0011) (العربية)
-  - [AndrewL (CodeByMoriarty)](https://github.com/CodeByMoriarty) (Filipino)
+Diseño y Programación:
+- [Álvaro García (binarynonsense)](https://github.com/binarynonsense/)
+  
+Localizaciones:
+- [Álvaro García (binarynonsense)](https://github.com/binarynonsense/) (English, Español)
+- [vanja-san](https://github.com/vanja-san) (Русский)
+- [Timo Heidutzek (trzyglow)](https://github.com/trzyglow) (Deutsch)
+- [Ahmed (ahmed-0011)](https://github.com/ahmed-0011) (العربية)
+- [AndrewL (CodeByMoriarty)](https://github.com/CodeByMoriarty) (Filipino)
 
 Hay información sobre cómo contribuir al proyecto en el fichero [CONTRIBUTING.md](../CONTRIBUTING.md).
 
