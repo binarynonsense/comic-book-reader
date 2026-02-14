@@ -130,4 +130,4 @@ There's info about how to contribute to the project in the [CONTRIBUTING.md](./C
 
 ## Other:
 
-Screenshots, more details about the controls and other extra information can be found on [the project's Wiki](https://github.com/binarynonsense/comic-book-reader/wiki).
+Screenshots and more details can be found on [the project's Wiki](https://github.com/binarynonsense/comic-book-reader/wiki).
