@@ -26,7 +26,6 @@ Ein Comicbuch Leser und Konverter für CBZ, CBR, CB7, EPUB und PDF Dateien.
 - [Funktionen](#funktionen)
 - [Downloads](#downloads)
 - [Beiträge](#beiträge)
-- [Lizenz](#lizenz)
 - [Anderes](#anderes)
 
 ## Funktionen:
@@ -132,10 +131,6 @@ Auch verfügbar auf:
 - Philippinische Lokalisierung von [AndrewL (CodeByMoriarty)](https://github.com/CodeByMoriarty)
 
 Informationen darüber, wie man zu dem Projekt beitragen kann, gibt es im [CONTRIBUTING.md](../CONTRIBUTING.md) Dokument.
-
-## Lizenz:
-
-ACBRs Code ist unter der BSD 2-Clause [Lizenz](../LICENSE) veröffentlicht. Um die Lizenzen der Knoten-Module, sowie weiteren Libraries, welche in diesem Projekt verwendet wurden, zu überprüfen begeben Sie sich zum [Lizenzen](../licenses/) Ordner.
 
 ## Anderes:
 

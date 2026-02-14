@@ -26,7 +26,6 @@ Un lector y conversor de cómics para archivos en formato CBZ, CBR, CB7, EPUB y 
 - [Características](#características)
 - [Descargas](#descargas)
 - [Contribuciones](#contribuciones)
-- [Licencia](#licencia)
 - [Otros](#otros)
 
 ## Características:
@@ -132,10 +131,6 @@ También disponible en:
 - Traducción al filipino por [AndrewL (CodeByMoriarty)](https://github.com/CodeByMoriarty)
 
 Hay información sobre cómo contribuir al proyecto en el fichero [CONTRIBUTING.md](../CONTRIBUTING.md).
-
-## Licencia:
-
-El código de ACBR se publica bajo la [licencia](../LICENSE) BSD 2-Clause. Para comprobar las licencias de los módulos de node y otras librerías utilizadas en el proyecto, vaya a la carpeta [licencias](../licenses/).
 
 ## Otros:
 

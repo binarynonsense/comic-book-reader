@@ -26,7 +26,6 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB and PDF files.
 - [Features](#features)
 - [Downloads](#downloads)
 - [Contributions](#contributions)
-- [License](#license)
 - [Other](#other)
 
 ## Features:
@@ -132,10 +131,6 @@ Also available on:
 - Filipino localization by [AndrewL (CodeByMoriarty)](https://github.com/CodeByMoriarty)
 
 There's info about how to contribute to the project in the [CONTRIBUTING.md](../CONTRIBUTING.md) file.
-
-## License:
-
-ACBR's code is released under the BSD 2-Clause [license](../LICENSE). To check the licenses of the node modules and other libraries used in the project go to the [licenses](../licenses/) folder.
 
 ## Other:
 
