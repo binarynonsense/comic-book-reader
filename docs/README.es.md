@@ -1,11 +1,3 @@
-<p align="right">  
-  <a href="#downloads"><img src="https://user-images.githubusercontent.com/8535921/189104931-527ab8bc-8757-4e04-8150-5207d2077bb8.png" title="linux"></a>
-  <a href="#downloads"><img src="https://user-images.githubusercontent.com/8535921/189104940-ade062d9-d2e0-4e08-83a4-f34cdb457025.png" title="windows"></a>
-  <a href="#license"><img src="https://user-images.githubusercontent.com/8535921/189119543-b1f7cc20-bd0e-44e7-811a-c23b0ccdf767.png" title="open source"></a>
-  <a href="http://www.binarynonsense.com/"><img src="https://user-images.githubusercontent.com/8535921/189104953-7ac2d4d1-7d36-483b-8cc9-3568d1cbf6e5.png" title="my website"></a>
-  <a href="https://mastodon.social/@binarynonsense"><img src="https://github.com/binarynonsense/comic-book-reader/assets/8535921/053fff88-5e38-4928-8b50-9ecaf1be20f1" title="my mastodon"></a>
-</p>
-
 # ACBR - Comic Book Reader
 
 Un lector y conversor de cómics para archivos en formato CBZ, CBR, CB7, EPUB y PDF.
@@ -125,10 +117,14 @@ También disponible en:
 
 ## Contribuciones:
 
-- Traducción al ruso por [vanja-san](https://github.com/vanja-san).
-- Traducción al alemán por [Timo Heidutzek (trzyglow)](https://github.com/trzyglow)
-- Traducción al árabe por [Ahmed (ahmed-0011)](https://github.com/ahmed-0011)
-- Traducción al filipino por [AndrewL (CodeByMoriarty)](https://github.com/CodeByMoriarty)
+- Diseño y Programación:
+  - [Álvaro García (binarynonsense)](https://github.com/binarynonsense/)
+- Localizaciones:
+  - [Álvaro García (binarynonsense)](https://github.com/binarynonsense/) (English, Español)
+  - [vanja-san](https://github.com/vanja-san) (Русский)
+  - [Timo Heidutzek (trzyglow)](https://github.com/trzyglow) (Deutsch)
+  - [Ahmed (ahmed-0011)](https://github.com/ahmed-0011) (العربية)
+  - [AndrewL (CodeByMoriarty)](https://github.com/CodeByMoriarty) (Filipino)
 
 Hay información sobre cómo contribuir al proyecto en el fichero [CONTRIBUTING.md](../CONTRIBUTING.md).
 
