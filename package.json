@@ -12,9 +12,23 @@
   "build": {
     "productName": "ACBR Comic Book Reader",
     "appId": "com.binarynonsense.acbr",
+    "electronLanguages": [
+      "en-US"
+    ],
     "files": [
       "**/*",
-      "!src/assets/bin/**/*"
+      "!src/assets/bin/**/*",
+      "!tools/**/*",
+      "!licenses/**/*",
+      "!.vscode/**/*",
+      "!docs/**/*",
+      "!.npmrc",
+      "!**/node_modules/@img/sharp-libvips-linux-arm64/**/*",
+      "!**/node_modules/@img/sharp-libvips-win32-ia32/**/*",
+      "!**/node_modules/@img/sharp-libvips-darwin-x64/**/*",
+      "!**/node_modules/*/{CHANGELOG.md,README.md,test,tests,examples,docs}",
+      "!**/*.{map,ts,md,txt}",
+      "!**/node_modules/.bin/**/*"
     ],
     "win": {
       "icon": "./src/assets/images/icon_256x256.png",
