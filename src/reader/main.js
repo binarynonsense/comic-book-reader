@@ -1357,6 +1357,8 @@ async function openComicBookFromPath(
 
 async function openEbookFromPath(filePath, pageIndex, historyEntry) {
   if (filePath === undefined || filePath === "") {
+    sendIpcToRenderer("update-loading", false);
+    sendIpcToRenderer("update-bg", true);
     return false;
   }
   closeCurrentFile(); // in case coming from tool and bypassing tryopen
@@ -1521,21 +1523,18 @@ function closeCurrentFile(addToHistory = true) {
   sendIpcToRenderer("close-modal");
   if (g_fileData.type === FileDataType.NOT_SET) return;
   if (addToHistory) addCurrentToHistory(); // add the one I'm closing to history
+
   if (
     g_fileData.tempPath &&
     path.basename(path.dirname(g_fileData.tempPath)) === "acbr-tmp"
   ) {
     try {
       fs.unlinkSync(g_fileData.tempPath);
-      log.test("deleted temp file: " + g_fileData.tempPath);
     } catch (error) {}
   }
-  // if (g_fileData.type === FileDataType.EPUB_EBOOK) {
-  //   sendIpcToRenderer("close-epub-ebook");
-  // }
   cleanUpFileData();
   // TODO: in pdfs, should I call closePdf() in worker and wait??? or
-  // killing the wirker is good enough as it destroys everything
+  // killing the worker is good enough as it destroys everything
   killPageWorker();
 
   menuBar.rebuild();
