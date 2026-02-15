@@ -31,6 +31,10 @@ exports.getOSTempFolderPath = function () {
   return os.tmpdir();
 };
 
+exports.getBaseFolder = function () {
+  return g_baseFolderPath;
+};
+
 function setBaseFolder(parentFolderPath) {
   if (!parentFolderPath) {
     throw "setBaseFolder: undefined parent path";
