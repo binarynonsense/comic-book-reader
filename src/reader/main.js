@@ -673,6 +673,9 @@ exports.getFileData = function () {
 };
 
 function cleanUpFileData() {
+  for (const key in g_fileData) {
+    g_fileData[key] = undefined;
+  }
   g_fileData.state = FileDataState.NOT_SET;
   g_fileData.type = FileDataType.NOT_SET;
   g_fileData.path = "";
@@ -681,10 +684,7 @@ function cleanUpFileData() {
   g_fileData.numPages = 0;
   g_fileData.pageIndex = 0;
   g_fileData.pageRotation = 0;
-  ((g_fileData.pageDimensions = undefined), (g_fileData.password = ""));
-  g_fileData.getPageCallback = undefined;
-  g_fileData.data = undefined;
-  g_fileData.metadata = undefined;
+  g_fileData.password = "";
 }
 
 exports.updateFileDataMetadataEntry = function (name, value) {
@@ -832,7 +832,8 @@ exports.tryOpen = tryOpen;
 
 function tryOpenPath(filePath, pageIndex, bookType, historyEntry) {
   if (bookType === BookType.EBOOK) {
-    g_fileData.type = FileDataType.EPUB_EBOOK;
+    openEbookFromPath(filePath, pageIndex, historyEntry);
+    return true;
   }
   // if (bookType === BookType.EBOOK) {
   //   if (fileUtils.hasEpubExtension(filePath)) {
@@ -1030,6 +1031,7 @@ async function openComicBookFromPath(
       }
     } else if (fileExtension === "." + FileExtension.EPUB) {
       if (g_fileData.type === FileDataType.EPUB_EBOOK) {
+        log.editorError("shouldn't be here???");
         if (g_fileData.state !== FileDataState.LOADING) {
           cleanUpFileData();
           g_fileData.type = FileDataType.EPUB_EBOOK;
@@ -1353,102 +1355,110 @@ async function openComicBookFromPath(
   }
 }
 
-// async function openEbookFromPath(filePath, pageIndex, historyEntry) {
-//   if (filePath === undefined || filePath === "") {
-//     return false;
-//   }
-//   closeCurrentFile(); // in case coming from tool and bypassing tryopen
-//   let fileExtension = path.extname(filePath).toLowerCase();
-//   if (fileExtension === "." + FileExtension.EPUB) {
-//     let data;
-//     let cachedPath;
-//     let name = path.basename(filePath);
-//     if (historyEntry?.data?.source === "gut") {
-//       data = historyEntry.data;
-//       if (data.name && data.name != "") name = data.name;
-//       // cached file
-//       if (filePath.startsWith("http")) {
-//         if (settings.getValue("toolGutUseCache")) {
-//           sendIpcToRenderer("update-loading", true);
-//           sendIpcToRenderer("update-bg", false);
-//           const url = filePath;
-//           const tool = require("../tools/gutenberg/main");
-//           const cacheFolder = tool.getPortableCacheFolder();
-//           const fileName = path.basename(filePath);
-//           cachedPath = path.join(cacheFolder, fileName);
+async function openEbookFromPath(filePath, pageIndex, historyEntry) {
+  if (filePath === undefined || filePath === "") {
+    return false;
+  }
+  closeCurrentFile(); // in case coming from tool and bypassing tryopen
+  let fileExtension = path.extname(filePath).toLowerCase();
+  if (fileExtension === "." + FileExtension.EPUB) {
+    let data;
+    let cachedPath;
+    let tempPath;
+    let name = path.basename(filePath);
+    if (historyEntry?.data?.source === "gut") {
+      data = historyEntry.data;
+      if (data.name && data.name != "") name = data.name;
+      // cached file
+      if (filePath.startsWith("http")) {
+        sendIpcToRenderer("update-loading", true);
+        sendIpcToRenderer("update-bg", false);
+        const url = filePath;
+        const tool = require("../tools/gutenberg/main");
+        let cacheFolder;
+        const fileName = path.basename(filePath);
+        if (settings.getValue("toolGutUseCache")) {
+          cacheFolder = tool.getPortableCacheFolder();
+          cachedPath = path.join(cacheFolder, fileName);
+        } else {
+          cacheFolder = temp.getBaseFolder();
+          cachedPath = path.join(cacheFolder, fileName);
+          tempPath = cachedPath;
+        }
 
-//           if (!fs.existsSync(cachedPath)) {
-//             try {
-//               // download it
-//               const axios = require("axios").default;
-//               const response = await axios.get(url, {
-//                 responseType: "arraybuffer",
-//                 timeout: 10000,
-//               });
+        if (!fs.existsSync(cachedPath)) {
+          try {
+            // download it
+            const axios = require("axios").default;
+            const response = await axios.get(url, {
+              responseType: "arraybuffer",
+              timeout: 10000,
+            });
 
-//               if (!response?.data) {
-//                 throw {
-//                   name: "GenericError",
-//                   message: "Invalid response data",
-//                 };
-//               }
-//               if (!fs.existsSync(cacheFolder)) {
-//                 log.editor("creating gutenberg cache folder");
-//                 fs.mkdirSync(cacheFolder, { recursive: true });
-//               }
-//               fs.writeFileSync(cachedPath, response.data, { flag: "w" });
-//             } catch (error) {
-//               log.error(error?.message);
-//               // couldn't download file -> abort
-//               sendIpcToRenderer("update-loading", false);
-//               sendIpcToRenderer("update-bg", true);
-//               return false;
-//             }
-//           }
-//         } else {
-//           log.editor("gutenberg cache is disabled");
-//         }
-//       }
-//     }
+            if (!response?.data) {
+              throw {
+                name: "GenericError",
+                message: "Invalid response data",
+              };
+            }
+            if (!tempPath && !fs.existsSync(cacheFolder)) {
+              log.editor("creating gutenberg cache folder");
+              fs.mkdirSync(cacheFolder, { recursive: true });
+            }
+            fs.writeFileSync(cachedPath, response.data, { flag: "w" });
+          } catch (error) {
+            log.error(error?.message);
+            // couldn't download file -> abort
+            sendIpcToRenderer("update-loading", false);
+            sendIpcToRenderer("update-bg", true);
+            return false;
+          }
+        }
+      }
+    }
 
-//     sendIpcToRenderer("update-loading", true);
-//     sendIpcToRenderer("update-bg", false);
-//     cleanUpFileData();
+    sendIpcToRenderer("update-loading", true);
+    sendIpcToRenderer("update-bg", false);
 
-//     g_fileData.type = FileDataType.EPUB_EBOOK;
-//     g_fileData.state = FileDataState.LOADING;
-//     g_fileData.path = filePath;
-//     g_fileData.name = name;
-//     if (!pageIndex || pageIndex < 0 || pageIndex >= 100) pageIndex = 0;
-//     g_fileData.pageIndex = pageIndex;
-//     g_fileData.numPages = 100;
-//     if (data) {
-//       g_fileData.data = data;
-//     } else {
-//       g_fileData.data = { bookType: BookType.EBOOK };
-//     }
+    if (g_fileData.state !== FileDataState.LOADING) {
+      cleanUpFileData();
+      g_fileData.type = FileDataType.EPUB_EBOOK;
+      g_fileData.state = FileDataState.LOADING;
+      g_fileData.pageIndex = pageIndex;
+      g_fileData.path = filePath;
+      g_fileData.cachedPath = cachedPath;
+      g_fileData.tempPath = tempPath;
+      if (data) {
+        g_fileData.data = data;
+      } else {
+        g_fileData.data = { bookType: BookType.EBOOK };
+      }
+    }
+    startPageWorker();
+    const tempSubFolderPath = temp.createSubFolder();
+    sendToPageWorker({
+      command: "open",
+      fileType: g_fileData.type,
+      filePath: g_fileData.cachedPath ?? g_fileData.path,
+      pageIndex,
+      tempSubFolderPath,
+      config: settings.getValue("epubEbook"),
+    });
 
-//     sendIpcToRenderer(
-//       "update-epub-ebook-color-mode",
-//       settings.getValue("epubEbookColorMode"),
-//       settings.getValue("epubEbookColorText"),
-//       settings.getValue("epubEbookColorBg"),
-//     );
-//     sendIpcToRenderer("load-epub-ebook", filePath, pageIndex, cachedPath);
-//     return true;
-//   } else {
-//     sendIpcToRenderer("update-loading", false);
-//     sendIpcToRenderer("update-bg", true);
-//     sendIpcToRenderer(
-//       "show-modal-info",
-//       _("ui-modal-info-invalidformat"),
-//       filePath,
-//       _("ui-modal-prompt-button-ok"),
-//     );
-//     return false;
-//   }
-// }
-// exports.openEbookFromPath = openEbookFromPath;
+    return true;
+  } else {
+    sendIpcToRenderer("update-loading", false);
+    sendIpcToRenderer("update-bg", true);
+    sendIpcToRenderer(
+      "show-modal-info",
+      _("ui-modal-info-invalidformat"),
+      filePath,
+      _("ui-modal-prompt-button-ok"),
+    );
+    return false;
+  }
+}
+exports.openEbookFromPath = openEbookFromPath;
 
 function openBookFromCallback(comicData, getPageCallback, pageIndex = 0) {
   sendIpcToRenderer("update-bg", false);
@@ -1511,6 +1521,15 @@ function closeCurrentFile(addToHistory = true) {
   sendIpcToRenderer("close-modal");
   if (g_fileData.type === FileDataType.NOT_SET) return;
   if (addToHistory) addCurrentToHistory(); // add the one I'm closing to history
+  if (
+    g_fileData.tempPath &&
+    path.basename(path.dirname(g_fileData.tempPath)) === "acbr-tmp"
+  ) {
+    try {
+      fs.unlinkSync(g_fileData.tempPath);
+      log.test("deleted temp file: " + g_fileData.tempPath);
+    } catch (error) {}
+  }
   // if (g_fileData.type === FileDataType.EPUB_EBOOK) {
   //   sendIpcToRenderer("close-epub-ebook");
   // }
@@ -1656,7 +1675,7 @@ function goToPage(pageIndex, scrollBarPos = 0) {
       sendToPageWorker({
         command: "extract",
         fileType: g_fileData.type,
-        filePath: g_fileData.path,
+        filePath: g_fileData.cachedPath ?? g_fileData.path,
         entryNames: pageIndexes,
         scrollBarPos,
         tempSubFolderPath,
@@ -2471,9 +2490,9 @@ function startPageWorker() {
               let pageIndex = message.pageIndex;
               //
               g_fileData.state = FileDataState.LOADED;
-              g_fileData.type = message.fileType;
-              g_fileData.path = message.filePath;
-              g_fileData.name = path.basename(g_fileData.path);
+              // g_fileData.type = message.fileType;
+              // g_fileData.path = message.filePath;
+              // g_fileData.name = path.basename(g_fileData.path);
               g_fileData.pagesPaths = [];
               g_fileData.numPages = message.result.numPages;
               if (pageIndex < 0) pageIndex = 0;
