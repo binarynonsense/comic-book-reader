@@ -1007,6 +1007,7 @@ async function openComicBookFromPath(
           g_fileData.state = FileDataState.LOADING;
           g_fileData.pageIndex = pageIndex;
           g_fileData.path = filePath;
+          g_fileData.name = path.basename(filePath);
         }
         startPageWorker();
         g_fileData.password = password;
@@ -1430,6 +1431,7 @@ async function openEbookFromPath(filePath, pageIndex, historyEntry) {
       g_fileData.path = filePath;
       g_fileData.cachedPath = cachedPath;
       g_fileData.tempPath = tempPath;
+      g_fileData.name = name;
       if (data) {
         g_fileData.data = data;
       } else {
