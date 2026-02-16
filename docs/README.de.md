@@ -125,10 +125,15 @@ Auch verfügbar auf:
 
 ## Beiträge:
 
-- Russische Lokalisierung von [vanja-san](https://github.com/vanja-san)
-- Deutsche Lokalisierung von [Timo Heidutzek (trzyglow)](https://github.com/trzyglow)
-- Arabische Lokalisierung von [Ahmed (ahmed-0011)](https://github.com/ahmed-0011)
-- Philippinische Lokalisierung von [AndrewL (CodeByMoriarty)](https://github.com/CodeByMoriarty)
+Design and Programmierung:
+- [Álvaro García (binarynonsense)](https://github.com/binarynonsense)
+
+Lokalisierungen:
+- [Álvaro García (binarynonsense)](https://github.com/binarynonsense) (English, Español)
+- [vanja-san](https://github.com/vanja-san) (Русский)
+- [Timo Heidutzek (trzyglow)](https://github.com/trzyglow) (Deutsch)
+- [Ahmed (ahmed-0011)](https://github.com/ahmed-0011) (العربية)
+- [AndrewL (CodeByMoriarty)](https://github.com/CodeByMoriarty) (Filipino)
 
 Informationen darüber, wie man zu dem Projekt beitragen kann, gibt es im [CONTRIBUTING.md](../CONTRIBUTING.md) Dokument.
 
