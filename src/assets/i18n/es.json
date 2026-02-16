@@ -1,6 +1,8 @@
 {
   "@metadata": {
-    "authors": ["Álvaro"],
+    "authors": [
+      "Álvaro"
+    ],
     "last-updated": "2026-02-06",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.16.0",
@@ -171,7 +173,7 @@
   "ui-modal-title-versionchecker": "Comprobador de versión",
   "ui-modal-title-versionuptodate": "Versión al día",
   "ui-modal-title-versionavailable": "Actualización disponible",
-  "ui-modal-info-invalidformat": "Formato inválido",
+  "ui-modal-info-invalidformat": "Formato de archivo inválido",
   "ui-modal-info-invalidsize": "El archivo es demasiado grande",
   "ui-modal-info-invalidsize-cap-a": "El tamaño máximo soportado por la librería de lectura es {0}",
   "ui-modal-info-invalidsize-cap-b": "El tamaño máximo soportado es {0}",

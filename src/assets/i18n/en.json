@@ -171,7 +171,7 @@
   "ui-modal-title-versionchecker": "Version Checker",
   "ui-modal-title-versionuptodate": "Version Up to Date",
   "ui-modal-title-versionavailable": "Update Available",
-  "ui-modal-info-invalidformat": "Not a valid file format",
+  "ui-modal-info-invalidformat": "Invalid file format",
   "ui-modal-info-invalidsize": "The file is too big",
   "ui-modal-info-invalidsize-cap-a": "The maximum file size supported by the reading library is {0}",
   "ui-modal-info-invalidsize-cap-b": "The maximum supported file size is {0}",
