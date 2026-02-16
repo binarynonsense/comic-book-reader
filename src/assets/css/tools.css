@@ -78,8 +78,27 @@ html[dir="rtl"] #tools:not(:has(iframe)) {
 }
 
 .tools-option-children {
-  padding-inline-start: 20px;
-  border-inline-start: 3px solid var(--tools-bg2-color);
+  padding-inline-start: 15px;
+  /* border-inline-start: 3px solid var(--tools-bg2-color); */
+}
+
+.tools-option-children > label {
+  position: relative;
+}
+
+/* "• └ › ↳ ∙" */
+.tools-option-children > label::before {
+  content: "└";
+  position: absolute;
+  left: -15px;
+  /* top: -5px; */
+  font-weight: bold;
+  opacity: 0.4;
+}
+html[dir="rtl"] .tools-option-children > label::before {
+  content: "┘";
+  right: -15px;
+  left: auto;
 }
 
 /* /////////////////////////////////////////////////////////////// */
