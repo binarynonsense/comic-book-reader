@@ -207,6 +207,10 @@ function chooseFiles(
         name: allowedFileTypesName,
         extensions: allowedFileTypesList,
       },
+      {
+        name: "",
+        extensions: ["*"],
+      },
     ],
     properties: properties,
   });

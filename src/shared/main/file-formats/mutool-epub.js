@@ -117,6 +117,7 @@ exports.openMuEpub = async function (filePath, tempSubFolderPath, config) {
     const child = spawn(binPath, args, { shell: process.platform === "win32" });
 
     let numPages = 0;
+    let hasContent = false;
     let stderr = "";
 
     child.stdout.on("data", (chunk) => {
@@ -124,6 +125,10 @@ exports.openMuEpub = async function (filePath, tempSubFolderPath, config) {
       const matches = content.match(/<page/g);
       if (matches) {
         numPages += matches.length;
+      }
+      // if <char
+      if (!hasContent && content.includes("<char")) {
+        hasContent = true;
       }
     });
 
@@ -136,7 +141,15 @@ exports.openMuEpub = async function (filePath, tempSubFolderPath, config) {
         } catch (error) {}
       }
       if (code === 0) {
-        resolve({ success: true, numPages });
+        if (numPages > 0 && !hasContent) {
+          // found pages but zero characters! must be a pure azw3
+          resolve({
+            success: false,
+            error: "no content",
+          });
+        } else {
+          resolve({ success: true, numPages });
+        }
       } else {
         resolve({ success: false, error: stderr });
       }
@@ -406,6 +419,16 @@ function getCss(config) {
       return "";
     }
   }
+  function getPage() {
+    if (config.customColors) {
+      // fix fb2 black left margin
+      return `@page { 
+        background-color: ${config.colorBg} !important;
+      }`;
+    } else {
+      return "";
+    }
+  }
   function getMargin() {
     if (config.customColors) {
       return `${config.margin}`;
@@ -415,6 +438,7 @@ function getCss(config) {
   }
   // fix margins being too big in test gutenberg ebook epub v3
   let css = `
+    ${getPage()}
     :root, html, body { 
       margin: 0 !important; 
       padding: 0 !important; 

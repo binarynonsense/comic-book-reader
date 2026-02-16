@@ -188,29 +188,34 @@ exports.changeJpegBufferDpi = function (buffer, dpi) {
 ///////////////////////////////////////////////////////////////////////////////
 
 exports.getFileTypeFromPath = function (filePath, returnMimeType = false) {
-  // read 100 bytes
-  const buffer = Buffer.alloc(100);
-  const fd = fs.openSync(filePath, "r");
-  fs.readSync(fd, buffer, 0, 100, 0);
-  fs.closeSync(fd);
-  let type = getFileTypeFromBuffer(buffer, returnMimeType);
-  // ugly hack for epubs that don't strictly follow the spec
-  if (returnMimeType) {
-    if (
-      type === "application/epub+zip" &&
-      filePath.toLowerCase().endsWith(".epub")
-    ) {
-      type = "application/epub+zip";
+  try {
+    // read 100 bytes
+    const buffer = Buffer.alloc(512);
+    const fd = fs.openSync(filePath, "r");
+    fs.readSync(fd, buffer, 0, 512, 0);
+    fs.closeSync(fd);
+    let type = getFileTypeFromBuffer(buffer, returnMimeType);
+    // ugly hack for epubs that don't strictly follow the spec
+    if (returnMimeType) {
+      if (
+        type === "application/epub+zip" &&
+        filePath.toLowerCase().endsWith(".epub")
+      ) {
+        type = "application/epub+zip";
+      }
+    } else {
+      if (type === "zip" && filePath.toLowerCase().endsWith(".epub")) {
+        type = "epub";
+      }
+      if (type === "mobi") {
+        if (filePath.toLowerCase().endsWith(".azw3")) type = "azw3";
+      }
     }
-  } else {
-    if (type === "zip" && filePath.toLowerCase().endsWith(".epub")) {
-      type = "epub";
-    }
-    if (type === "mobi") {
-      if (filePath.toLowerCase().endsWith(".azw3")) type = "azw3";
-    }
+    return type;
+  } catch (error) {
+    // http path for example
+    return undefined;
   }
-  return type;
 };
 
 function getFileTypeFromBuffer(buffer, returnMimeType = false) {
@@ -254,9 +259,13 @@ function getFileTypeFromBuffer(buffer, returnMimeType = false) {
     } else if (hex.startsWith("54505a42")) {
       type = "azw3"; // kindle print replica (AZW4)
     } else if (hex.startsWith("504b0304")) {
-      const check = buffer.toString("ascii", 30, 100);
-      if (check.includes("mimetype") && check.includes("epub+zip")) {
+      const checkEpub = buffer.toString("ascii", 30, 100);
+      // hack to check for .fb2 file inside
+      const checkInternalFiles = buffer.toString("ascii", 0, 500).toLowerCase();
+      if (checkEpub.includes("mimetype") && checkEpub.includes("epub+zip")) {
         type = "epub";
+      } else if (checkInternalFiles.includes(".fb2")) {
+        type = "fb2 zipped";
       } else {
         type = "zip";
       }
@@ -273,10 +282,10 @@ function getFileTypeFromBuffer(buffer, returnMimeType = false) {
     }
     // fb2
     else {
-      const checkFb2 = buffer.toString("ascii", 0, 50).toLowerCase();
+      const checkFb2 = buffer.toString("utf8").toLowerCase();
       if (
         checkFb2.includes("<fictionbook") ||
-        checkFb2.includes("http://www.gribuser.ru")
+        checkFb2.includes("gribuser.ru")
       ) {
         type = "fb2";
       }
@@ -376,7 +385,15 @@ function hasImageExtension(filePath) {
 exports.hasImageExtension = hasImageExtension;
 
 exports.hasBookExtension = function (filePath) {
-  const allowedFileExtensions = [".cbz", ".cbr", ".pdf", ".epub", ".cb7"];
+  const allowedFileExtensions = [
+    ".cbz",
+    ".cbr",
+    ".pdf",
+    ".epub",
+    ".cb7",
+    ".mobi",
+    ".fb2",
+  ];
   let fileExtension = path.extname(filePath).toLowerCase();
   for (i = 0; i < allowedFileExtensions.length; i++) {
     if (fileExtension === allowedFileExtensions[i]) {
@@ -387,7 +404,15 @@ exports.hasBookExtension = function (filePath) {
 };
 
 function hasComicBookExtension(filePath) {
-  const allowedFileExtensions = [".cbz", ".cbr", ".pdf", ".epub", ".cb7"];
+  const allowedFileExtensions = [
+    ".cbz",
+    ".cbr",
+    ".pdf",
+    ".epub",
+    ".cb7",
+    ".mobi",
+    ".fb2",
+  ];
   let fileExtension = path.extname(filePath).toLowerCase();
   for (i = 0; i < allowedFileExtensions.length; i++) {
     if (fileExtension === allowedFileExtensions[i]) {
@@ -524,7 +549,6 @@ function getFilesInFolder(folderPath, allowedFileExtensions) {
     if (filesInFolder.length === 0) {
       return [];
     } else {
-      // return filesInFolder.filter(hasComicBookExtension);
       return filesInFolder.filter((filePath) => {
         return hasAllowedFileExtension(filePath, allowedFileExtensions);
       });

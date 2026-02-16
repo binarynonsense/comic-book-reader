@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2023 Álvaro García
+ * Copyright 2020-2026 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -16,6 +16,9 @@ exports.FileExtension = {
   PDF: "pdf",
   CB7: "cb7",
   SEVENZIP: "7z",
+  MOBI: "mobi",
+  AZW3: "azw3",
+  FB2: "fb2",
 
   JPG: "jpg",
   JPEG: "jpeg",
@@ -43,14 +46,28 @@ exports.FileDataState = {
 
 exports.FileDataType = {
   NOT_SET: "not set",
-  PDF: "pdf",
-  IMG: "img",
-  IMGS_FOLDER: "imgs folder",
+
   ZIP: "zip",
   RAR: "rar",
+  SEVENZIP: "7z",
+
+  PDF: "pdf",
+  MOBI: "mobi",
+  AZW3: "azw3",
+  FB2: "fb2",
+  FB2_ZIPPED: "fb2 zipped",
+  EPUB: "epub",
   EPUB_COMIC: "epub comic",
   EPUB_EBOOK: "epub ebook",
-  SEVENZIP: "7z",
+
+  IMG: "img",
+  IMGS_FOLDER: "imgs folder",
+  JPG: "jpg",
+  PNG: "png",
+  WEBP: "webp",
+  BMP: "bmp",
+  AVIF: "avif",
+
   WWW: "www",
 };
 

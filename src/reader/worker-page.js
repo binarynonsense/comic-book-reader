@@ -136,7 +136,12 @@ process.parentPort.on("message", async (event) => {
       message.type = "openResult";
       message.result = result;
       process.parentPort.postMessage(message);
-    } else if (message.fileType === FileDataType.EPUB_EBOOK) {
+    } else if (
+      message.fileType === FileDataType.EPUB_EBOOK ||
+      message.fileType === FileDataType.AZW3 ||
+      message.fileType === FileDataType.MOBI ||
+      message.fileType === FileDataType.FB2
+    ) {
       const result = await fileFormats.openMuEpub(
         message.filePath,
         message.tempSubFolderPath,
@@ -238,7 +243,12 @@ async function extractImageBuffer({
       } else {
         error = result.data;
       }
-    } else if (fileType === FileDataType.EPUB_EBOOK) {
+    } else if (
+      fileType === FileDataType.EPUB_EBOOK ||
+      fileType === FileDataType.AZW3 ||
+      fileType === FileDataType.MOBI ||
+      fileType === FileDataType.FB2
+    ) {
       const result = await fileFormats.extractMuEpubPageBuffer(
         filePath,
         entryNames[entryNameIndex],

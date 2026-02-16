@@ -902,6 +902,8 @@ function initOnIpcCallbacks() {
       FileExtension.CB7,
       FileExtension.PDF,
       FileExtension.EPUB,
+      FileExtension.MOBI,
+      FileExtension.FB2,
     ];
     if (!g_defaultPath) g_defaultPath = appUtils.getDesktopFolderPath();
     let filePathsList = appUtils.chooseFiles(

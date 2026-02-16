@@ -277,7 +277,12 @@ function initOnIpcCallbacks() {
 
   let g_epubEbookWillCloseToApplyModalShown = false;
   on("set-epub-ebook-settings", (values) => {
-    if (reader.getFileData().type === FileDataType.EPUB_EBOOK) {
+    if (
+      reader.getFileData().type === FileDataType.EPUB_EBOOK ||
+      reader.getFileData().type === FileDataType.MOBI ||
+      reader.getFileData().type === FileDataType.AZW3 ||
+      reader.getFileData().type === FileDataType.FB2
+    ) {
       // TODO: if epub ebook open -> reload it on back to reader?
       // check percentage?
       reader.onMenuCloseFile();

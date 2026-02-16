@@ -311,7 +311,7 @@ if (!gotTheLock) {
     });
     g_mainWindow.loadFile(path.join(__dirname, "index.html"));
     // win events
-    g_mainWindow.webContents.on("did-finish-load", function () {
+    g_mainWindow.webContents.on("did-finish-load", async function () {
       g_isLoaded = true;
       let tempFolderPath = settings.getValue("tempFolderPath");
       if (!tempFolderPath) {
@@ -370,7 +370,7 @@ if (!gotTheLock) {
         isValidTool(g_launchInfo.parsedArgs["tool"])
       ) {
         // start reader with no file open
-        reader.init(undefined, false);
+        await reader.init(undefined, false);
         // start tool
         switch (g_launchInfo.parsedArgs["tool"]) {
           case "cc":
@@ -399,7 +399,7 @@ if (!gotTheLock) {
         }
       } else if (inputFilePaths.length > 1) {
         // start reader with no file open
-        reader.init(undefined, false);
+        await reader.init(undefined, false);
         // start tool
         tools.switchTool("tool-convert-comics", {
           mode: 0,
@@ -407,7 +407,7 @@ if (!gotTheLock) {
         });
       } else {
         // start reader, open file if available
-        reader.init(
+        await reader.init(
           inputFileAndFolderPaths.length > 0
             ? inputFileAndFolderPaths[0]
             : undefined,
