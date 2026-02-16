@@ -136,9 +136,7 @@ exports.openMuEpub = async function (filePath, tempSubFolderPath, config) {
         } catch (error) {}
       }
       if (code === 0) {
-        // hack: add +1 to numPages as some times one page is missing otherwise
-        const finalCount = numPages > 0 ? numPages + 1 : 0;
-        resolve({ success: true, numPages: finalCount });
+        resolve({ success: true, numPages });
       } else {
         resolve({ success: false, error: stderr });
       }
@@ -155,6 +153,7 @@ exports.extractMuEpubPageBuffer = async function (
   config,
   format = "jpg",
 ) {
+  pageIndex++; // mutool starts pages at 1
   const binPath = getMuToolBinPath();
 
   return new Promise((resolve) => {
@@ -260,7 +259,7 @@ exports.extractMuEpub = async function (
   g_isCancelled = false;
 
   try {
-    const openInfo = await exports.openMuEpub(filePath);
+    const openInfo = await exports.openMuEpub(filePath, tempFolderPath, config);
     if (!openInfo.success) return { success: false, error: openInfo.error };
 
     const totalPages = openInfo.numPages;
@@ -421,7 +420,7 @@ function getCss(config) {
       padding: 0 !important; 
       width: 100% !important; 
       max-width: none !important;
-    }g_fileData.p
+    }
 
     div, section, article, main {
       margin-left: 0 !important;

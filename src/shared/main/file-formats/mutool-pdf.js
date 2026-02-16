@@ -109,6 +109,8 @@ exports.extractMuPdfPageBuffer = async function (
   const { spawn } = require("node:child_process");
   const sharp = require("sharp");
 
+  pageIndex++; // mutool starts pages at 1
+
   return new Promise((resolve) => {
     const args = [
       "draw",
