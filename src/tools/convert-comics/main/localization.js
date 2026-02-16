@@ -247,6 +247,7 @@ exports.getLocalization = function (mode) {
       id: "tool-cc-folders-recursively-text",
       text: _("tool-shared-ui-input-folders-recursively"),
     },
+    /////////////////
     {
       id: "tool-cc-pdf-extraction-text",
       text: _("tool-shared-ui-format-extraction", "PDF"),
@@ -278,6 +279,81 @@ exports.getLocalization = function (mode) {
     {
       id: "tool-cc-pdf-extraction-lib-o-default-text",
       text: `${_("tool-pre-formats-library-value-default")} (MuPDF)`,
+    },
+    /////////////////
+    {
+      id: "tool-cc-epub-extraction-text",
+      text: _("tool-shared-ui-format-extraction", "EPUB"),
+    },
+    {
+      id: "tool-cc-epub-extraction-booktype-text",
+      text: _("tool-pre-booktype"),
+    },
+    {
+      id: "tool-cc-epub-extraction-booktype-0-text",
+      text: _("tool-pre-booktype-0"),
+    },
+    {
+      id: "tool-cc-epub-extraction-booktype-1-text",
+      text: _("ui-modal-question-button-comicbook"),
+    },
+    {
+      id: "tool-cc-epub-extraction-booktype-2-text",
+      text: _("ui-modal-question-button-ebook"),
+    },
+    {
+      id: "tool-cc-epub-extraction-booktype-remember-checkbox-text",
+      text: _("tool-pre-booktype-remember"),
+    },
+    ////
+    {
+      id: "tool-cc-epub-extraction-ebook-rendering-text",
+      text: _("tool-shared-ui-ebook-rendering"),
+    },
+    {
+      id: "tool-cc-epub-extraction-ebook-width-input-text",
+      text: _("tool-shared-ui-output-options-scale-width"),
+    },
+    {
+      id: "tool-cc-epub-extraction-ebook-height-input-text",
+      text: _("tool-shared-ui-output-options-scale-height"),
+    },
+    {
+      id: "tool-cc-epub-extraction-ebook-fontsize-input-text",
+      text: _("tool-shared-ui-ebook-rendering-fontsize"),
+    },
+    {
+      id: "tool-cc-epub-extraction-ebook-margin-input-text",
+      text: _("tool-shared-ui-ebook-rendering-margin"),
+    },
+    ////
+    {
+      id: "tool-cc-epub-extraction-ebook-color-mode-text",
+      text: _("tool-shared-ui-color-mode"),
+    },
+    {
+      id: "tool-cc-epub-extraction-ebook-color-mode-0-text",
+      text: "default",
+    },
+    {
+      id: "tool-cc-epub-extraction-ebook-color-mode-1-text",
+      text: _("tool-shared-ui-color-mode-light"),
+    },
+    {
+      id: "tool-cc-epub-extraction-ebook-color-mode-2-text",
+      text: _("tool-shared-ui-color-mode-dark"),
+    },
+    {
+      id: "tool-cc-epub-extraction-ebook-color-mode-3-text",
+      text: _("tool-shared-ui-color-mode-custom"),
+    },
+    {
+      id: "tool-cc-epub-extraction-ebook-color-text-text",
+      text: _("tool-shared-ui-color-text"),
+    },
+    {
+      id: "tool-cc-epub-extraction-ebook-color-background-text",
+      text: _("tool-shared-ui-color-background"),
     },
     //////////////////////////////////////////////
     {

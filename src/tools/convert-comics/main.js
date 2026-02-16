@@ -731,6 +731,19 @@ function startFile(inputFileIndex, totalFilesNum) {
             stopError(undefined, `worker crashed with code ${code}`);
           }
         });
+        function getExtraData(inputFileType) {
+          if (inputFileType === FileDataType.PDF) {
+            return {
+              method: g_uiSelectedOptions.inputPdfExtractionMethod,
+              dpi: g_uiSelectedOptions.inputPdfExtractionDpi,
+              height: g_uiSelectedOptions.inputPdfExtractionHeight,
+              lib: g_uiSelectedOptions.inputPdfExtractionLib,
+            };
+          } else if (inputFileType === FileDataType.EPUB_EBOOK) {
+            return g_uiSelectedOptions.inputEpubExtraction;
+          }
+          return undefined;
+        }
         worker.postMessage([
           core.getLaunchInfo(),
           "extract",
@@ -740,12 +753,7 @@ function startFile(inputFileIndex, totalFilesNum) {
             ? g_tempSubFolderPath
             : g_creationTempSubFolderPath,
           g_inputPassword,
-          {
-            method: g_uiSelectedOptions.inputPdfExtractionMethod,
-            dpi: g_uiSelectedOptions.inputPdfExtractionDpi,
-            height: g_uiSelectedOptions.inputPdfExtractionHeight,
-            lib: g_uiSelectedOptions.inputPdfExtractionLib,
-          },
+          getExtraData(inputFileType),
         ]);
         g_worker = worker;
       }
@@ -1047,9 +1055,18 @@ async function getFileType(filePath) {
   if (fileExtension === "." + FileExtension.PDF) {
     fileType = FileDataType.PDF;
   } else if (fileExtension === "." + FileExtension.EPUB) {
-    const epubType = await fileUtils.getEpubType(filePath);
-    fileType =
-      epubType === "comic" ? FileDataType.EPUB_COMIC : FileDataType.EPUB_EBOOK;
+    if (g_uiSelectedOptions.inputEpubExtraction === "0") {
+      // autodetect
+      const epubType = await fileUtils.getEpubType(filePath);
+      fileType =
+        epubType === "comic"
+          ? FileDataType.EPUB_COMIC
+          : FileDataType.EPUB_EBOOK;
+    } else if (g_uiSelectedOptions.inputEpubExtraction === "1") {
+      fileType = FileDataType.EPUB_COMIC;
+    } else {
+      fileType = FileDataType.EPUB_EBOOK;
+    }
   } else {
     if (
       fileExtension === "." + FileExtension.RAR ||

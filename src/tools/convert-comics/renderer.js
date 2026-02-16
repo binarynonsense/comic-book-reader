@@ -302,7 +302,23 @@ function init(
 
   toolsShared.initSliders();
 
-  // image processing //
+  //////////////////////////////
+  {
+    const sizeCheckbox = document.querySelector(
+      "#tool-cc-epub-extraction-ebook-size-checkbox",
+    );
+    sizeCheckbox.addEventListener("change", (event) => {
+      updateEpubEbookUI();
+    });
+    const colorsCheckbox = document.querySelector(
+      "#tool-cc-epub-extraction-ebook-colors-checkbox",
+    );
+    colorsCheckbox.addEventListener("change", (event) => {
+      updateEpubEbookUI();
+    });
+  }
+
+  // image processing //////////
 
   const imageMultithreadingSelect = document.getElementById(
     "tool-cc-imageprocessing-multithreading-method-select",
@@ -590,6 +606,37 @@ function updateUISelectedOptions() {
   g_uiSelectedOptions.inputPdfExtractionLib = document.getElementById(
     "tool-cc-pdf-extraction-lib-select",
   ).value;
+  //////////////////
+  g_uiSelectedOptions.inputEpubExtraction = {
+    bookType: document.getElementById("tool-cc-epub-extraction-booktype-select")
+      .value,
+    customSize: document.querySelector(
+      "#tool-cc-epub-extraction-ebook-size-checkbox",
+    ).checked,
+    width: document.getElementById("tool-cc-epub-extraction-ebook-width-input")
+      .value,
+    height: document.getElementById(
+      "tool-cc-epub-extraction-ebook-height-input",
+    ).value,
+    margin: document.getElementById(
+      "tool-cc-epub-extraction-ebook-margin-input",
+    ).value,
+    fontSize: document.getElementById(
+      "tool-cc-epub-extraction-ebook-fontsize-input",
+    ).value,
+    dpi: document.getElementById("tool-cc-epub-extraction-ebook-dpi-input")
+      .value,
+    customColors: document.querySelector(
+      "#tool-cc-epub-extraction-ebook-colors-checkbox",
+    ).checked,
+    colorText: document.getElementById(
+      "tool-cc-epub-extraction-ebook-color-text-input",
+    ).value,
+    colorBg: document.getElementById(
+      "tool-cc-epub-extraction-ebook-color-background-input",
+    ).value,
+  };
+  //////////////////
   // g_selectedOptions.outputFolderPath is autoupdated
   g_uiSelectedOptions.outputKeepSubfoldersStructure = document.querySelector(
     "#tool-cc-keep-subfolders-structure-checkbox",
@@ -715,6 +762,25 @@ function updateFolderOptionUI() {
       updateColumnsHeight();
     }
   }
+}
+
+function updateEpubEbookUI() {
+  const checkboxIds = [
+    "#tool-cc-epub-extraction-ebook-size-checkbox",
+    "#tool-cc-epub-extraction-ebook-colors-checkbox",
+  ];
+  checkboxIds.forEach((checkboxId) => {
+    const checkbox = document.querySelector(checkboxId);
+    if (checkbox.checked) {
+      checkbox.parentNode
+        .querySelector(".tools-checkboxed-options-row-controls-100-div")
+        .classList.remove("tools-disabled");
+    } else {
+      checkbox.parentNode
+        .querySelector(".tools-checkboxed-options-row-controls-100-div")
+        .classList.add("tools-disabled");
+    }
+  });
 }
 
 function updateImageMultithreadingUI() {
@@ -1145,6 +1211,8 @@ function checkValidData() {
   updateImageOpsUI();
   updateFolderOptionUI();
   updateOutputFolderUI();
+  updateEpubEbookUI();
+
   toolsShared.updateSliders();
 
   if (document.getElementById("tool-cc-pdf-extraction-lib-select").value === "")
