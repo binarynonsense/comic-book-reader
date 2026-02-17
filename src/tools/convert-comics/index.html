@@ -243,11 +243,16 @@
                 value="images"
               ></option></select
           ></label>
-          <label><span id="tool-cc-folders-file-formats-text"></span></label>
-          <div
-            id="tool-cc-folders-file-formats-div"
-            class="tools-checkboxes-row-div"
-          ></div>
+          <div class="tools-option-children">
+            <label class="tools-option-children-bullet"
+              ><span id="tool-cc-folders-file-formats-text"></span
+            ></label>
+            <div
+              id="tool-cc-folders-file-formats-div"
+              class="tools-checkboxes-row-div"
+            ></div>
+          </div>
+
           <label><span id="tool-cc-folders-recursively-text"></span></label>
           <label class="tools-toggle">
             <input type="checkbox" id="tool-cc-folders-recursively-checkbox" />
@@ -352,11 +357,11 @@
               ></option></select
           ></label>
           <!-- epub ebook -->
-          <label
+          <!-- <label
             ><span id="tool-cc-epub-extraction-ebook-rendering-text"></span
-          ></label>
+          ></label> -->
           <!-- size -->
-          <div
+          <!-- <div
             class="tools-checkboxed-options-row-div"
             style="margin-bottom: 10px"
           >
@@ -399,7 +404,7 @@
                     <input
                       id="tool-cc-epub-extraction-ebook-margin-input"
                       type="number"
-                      value="40"
+                      value="80"
                   /></label>
                 </div>
                 <div class="tool-shared-columns-25">
@@ -426,9 +431,9 @@
                 </div>
               </div>
             </div>
-          </div>
+          </div> -->
           <!-- colors -->
-          <div class="tools-checkboxed-options-row-div">
+          <!-- <div class="tools-checkboxed-options-row-div">
             <input
               type="checkbox"
               id="tool-cc-epub-extraction-ebook-colors-checkbox"
@@ -457,8 +462,116 @@
                 />
               </label>
             </div>
+          </div> -->
+        </div>
+        <!-- ebook-rendering -->
+        <label style="margin-top: 20px"
+          ><span id="tool-cc-epub-extraction-ebook-rendering-text"></span
+        ></label>
+        <!-- size -->
+        <div
+          class="tools-checkboxed-options-row-div"
+          style="margin-bottom: 10px"
+        >
+          <input
+            type="checkbox"
+            id="tool-cc-epub-extraction-ebook-size-checkbox"
+          />
+          <div
+            class="tools-checkboxed-options-row-controls-100-div"
+            id="tool-cc-epub-extraction-ebook-size-div"
+          >
+            <div class="tool-shared-columns-parent" style="min-height: 90px">
+              <div class="tool-shared-columns-25">
+                <label
+                  ><span
+                    id="tool-cc-epub-extraction-ebook-width-input-text"
+                  ></span>
+                  <input
+                    id="tool-cc-epub-extraction-ebook-width-input"
+                    type="number"
+                    value="800"
+                /></label>
+              </div>
+              <div class="tool-shared-columns-25">
+                <label
+                  ><span
+                    id="tool-cc-epub-extraction-ebook-height-input-text"
+                  ></span>
+                  <input
+                    id="tool-cc-epub-extraction-ebook-height-input"
+                    type="number"
+                    value="1100"
+                /></label>
+              </div>
+              <div class="tool-shared-columns-25">
+                <label
+                  ><span
+                    id="tool-cc-epub-extraction-ebook-margin-input-text"
+                  ></span>
+                  <input
+                    id="tool-cc-epub-extraction-ebook-margin-input"
+                    type="number"
+                    value="80"
+                /></label>
+              </div>
+              <div class="tool-shared-columns-25">
+                <label
+                  ><span
+                    id="tool-cc-epub-extraction-ebook-fontsize-input-text"
+                  ></span>
+                  <input
+                    id="tool-cc-epub-extraction-ebook-fontsize-input"
+                    type="number"
+                    value="22"
+                /></label>
+              </div>
+              <div class="tool-shared-columns-25">
+                <label
+                  ><span id="tool-cc-epub-extraction-ebook-dpi-input-text"
+                    >dpi</span
+                  >
+                  <input
+                    id="tool-cc-epub-extraction-ebook-dpi-input"
+                    type="number"
+                    value="144"
+                /></label>
+              </div>
+            </div>
           </div>
         </div>
+        <!-- colors -->
+        <div class="tools-checkboxed-options-row-div">
+          <input
+            type="checkbox"
+            id="tool-cc-epub-extraction-ebook-colors-checkbox"
+          />
+          <div
+            class="tools-checkboxed-options-row-controls-100-div tool-shared-columns-parent"
+            id="tool-cc-epub-extraction-ebook-colors-div"
+            style="min-height: 90px"
+          >
+            <label class="tool-shared-columns-50">
+              <span id="tool-cc-epub-extraction-ebook-color-text-text"></span>
+              <input
+                id="tool-cc-epub-extraction-ebook-color-text-input"
+                type="color"
+                value="3056"
+              />
+            </label>
+            <label class="tool-shared-columns-50">
+              <span
+                id="tool-cc-epub-extraction-ebook-color-background-text"
+              ></span>
+              <input
+                id="tool-cc-epub-extraction-ebook-color-background-input"
+                type="color"
+                value="#ffffff"
+              />
+            </label>
+          </div>
+        </div>
+        <!--  -->
       </div>
     </div>
     <!-- advanced output -->

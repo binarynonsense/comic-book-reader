@@ -35,10 +35,10 @@ Object.assign(process.env, safeEnv);
 const cp = require("node:child_process");
 const originalSpawn = cp.spawn;
 cp.spawn = function (command, args, options) {
-  send({
-    type: "editorLog",
-    log: `[tools worker] [spawn wrapper] spawn called`,
-  });
+  // send({
+  //   type: "editorLog",
+  //   log: `[tools worker] [spawn wrapper] spawn called`,
+  // });
   // create a copy of options so we don't modify the library's original object
   const opts = options ? Object.assign({}, options) : {};
   const rawEnv = opts.env || process.env;
@@ -151,7 +151,12 @@ async function extractImages(
     } else if (inputFileType === FileDataType.EPUB_COMIC) {
       // TODO: get success and error
       success = await fileFormats.extractEpub(inputFilePath, tempFolderPath);
-    } else if (inputFileType === FileDataType.EPUB_EBOOK) {
+    } else if (
+      inputFileType === FileDataType.EPUB_EBOOK ||
+      inputFileType === FileDataType.AZW3 ||
+      inputFileType === FileDataType.MOBI ||
+      inputFileType === FileDataType.FB2
+    ) {
       result = await fileFormats.extractMuEpub(
         inputFilePath,
         tempFolderPath,

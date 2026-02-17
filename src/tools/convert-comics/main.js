@@ -229,6 +229,8 @@ function initOnIpcCallbacks() {
           FileExtension.CB7,
           FileExtension.PDF,
           FileExtension.EPUB,
+          FileExtension.MOBI,
+          FileExtension.FB2,
         ];
       } else {
         allowedFileTypesName = _("dialog-file-types-comics-images");
@@ -244,6 +246,8 @@ function initOnIpcCallbacks() {
           FileExtension.CB7,
           FileExtension.PDF,
           FileExtension.EPUB,
+          FileExtension.MOBI,
+          FileExtension.FB2,
         ];
       }
       let filePathsList = appUtils.chooseFiles(
@@ -569,7 +573,7 @@ function startFile(inputFileIndex, totalFilesNum) {
     );
     updateModalLogText(updateTitle);
     updateModalLogText(inputFilePath);
-    log.debug(`${updateTitle}: ${inputFilePath}`);
+    log.debug(`[CC] ${updateTitle}: ${inputFilePath}`);
 
     // check if output file name exists and skip mode
     {
@@ -654,17 +658,25 @@ function startFile(inputFileIndex, totalFilesNum) {
       inputFileType === FileDataType.ZIP ||
       inputFileType === FileDataType.RAR ||
       inputFileType === FileDataType.SEVENZIP ||
+      inputFileType === FileDataType.MOBI ||
+      inputFileType === FileDataType.AZW3 ||
+      inputFileType === FileDataType.FB2 ||
       inputFileType === FileDataType.EPUB_COMIC ||
       inputFileType === FileDataType.EPUB_EBOOK ||
       (inputFileType === FileDataType.PDF &&
         !g_uiSelectedOptions.inputPdfExtractionLib.startsWith("pdfjs"))
     ) {
       updateModalLogText(_("tool-shared-modal-log-extracting-pages") + "...");
-      log.debug(_("tool-shared-modal-log-extracting-pages") + "...");
+      log.debug("[CC] " + _("tool-shared-modal-log-extracting-pages") + "...");
       if (core.isDev()) {
         if (inputFileType === FileDataType.PDF)
           updateModalLogText("[DEV] mupdf pdf");
-        if (inputFileType === FileDataType.EPUB_EBOOK)
+        if (
+          inputFileType === FileDataType.EPUB_EBOOK ||
+          inputFileType === FileDataType.MOBI ||
+          inputFileType === FileDataType.AZW3 ||
+          inputFileType === FileDataType.FB2
+        )
           updateModalLogText("[DEV] mupdf epub");
       }
 
@@ -698,7 +710,7 @@ function startFile(inputFileIndex, totalFilesNum) {
                 stopCancel();
                 return;
               }
-              log.debug("file extracted in: " + message.time);
+              log.debug("[CC] file extracted in: " + message.time);
               if (g_mode === ToolMode.CREATE) {
                 copyImagesToTempFolder(g_creationTempSubFolderPath, true);
                 temp.deleteSubFolder(g_creationTempSubFolderPath);
@@ -739,7 +751,12 @@ function startFile(inputFileIndex, totalFilesNum) {
               height: g_uiSelectedOptions.inputPdfExtractionHeight,
               lib: g_uiSelectedOptions.inputPdfExtractionLib,
             };
-          } else if (inputFileType === FileDataType.EPUB_EBOOK) {
+          } else if (
+            inputFileType === FileDataType.EPUB_EBOOK ||
+            inputFileType === FileDataType.MOBI ||
+            inputFileType === FileDataType.AZW3 ||
+            inputFileType === FileDataType.FB2
+          ) {
             return g_uiSelectedOptions.inputEpubExtraction;
           }
           return undefined;
@@ -761,7 +778,7 @@ function startFile(inputFileIndex, totalFilesNum) {
     // pdfjs
     else if (inputFileType === FileDataType.PDF) {
       updateModalLogText(_("tool-shared-modal-log-extracting-pages") + "...");
-      log.debug(_("tool-shared-modal-log-extracting-pages") + "...");
+      log.debug("[CC] " + _("tool-shared-modal-log-extracting-pages") + "...");
       if (core.isDev()) updateModalLogText("[DEV] pdfjs");
       /////////////////////////
       // use a hidden window for better performance and node api access
@@ -840,7 +857,7 @@ exports.onIpcFromToolsWorkerRenderer = function (...args) {
 
 function end(wasCanceled, numFiles, numErrors, numAttempted) {
   const conversionTime = timers.stop("convert-comics");
-  log.debug(`total conversion time: ${conversionTime.toFixed(2)}s`);
+  log.debug(`[CC] total conversion time: ${conversionTime.toFixed(2)}s`);
   if (conversionTime >= 60) {
     const minutes = Math.floor(conversionTime / 60);
     let seconds = (conversionTime - minutes * 60).toFixed(0);
@@ -1044,60 +1061,51 @@ function addPathToInputList(inputPath) {
 
 async function getFileType(filePath) {
   let stats = fs.statSync(filePath);
-  if (!stats.isFile()) return undefined; // avoid folders accidentally getting here
-  let fileType;
-  let fileExtension = path.extname(filePath).toLowerCase();
+  // avoid folders accidentally getting here
+  if (!stats.isFile()) return undefined;
+  // let fileExtension = path.extname(filePath).toLowerCase();
 
-  let _fileType = await fileUtils.getFileTypeFromPath(filePath);
-  if (_fileType !== undefined) {
-    fileExtension = "." + _fileType;
+  let detectedFileType = await fileUtils.getFileTypeFromPath(filePath);
+  log.debug("[CC] " + filePath + " detected as: " + detectedFileType);
+  if (detectedFileType === undefined) {
+    return undefined;
   }
-  if (fileExtension === "." + FileExtension.PDF) {
-    fileType = FileDataType.PDF;
-  } else if (fileExtension === "." + FileExtension.EPUB) {
-    if (g_uiSelectedOptions.inputEpubExtraction === "0") {
+  //////////
+  if (detectedFileType === FileDataType.EPUB) {
+    if (g_uiSelectedOptions.inputEpubExtraction.bookType === "0") {
       // autodetect
       const epubType = await fileUtils.getEpubType(filePath);
-      fileType =
-        epubType === "comic"
-          ? FileDataType.EPUB_COMIC
-          : FileDataType.EPUB_EBOOK;
-    } else if (g_uiSelectedOptions.inputEpubExtraction === "1") {
-      fileType = FileDataType.EPUB_COMIC;
+      log.debug(`[CC] epub book type autodetected as: ${epubType}`);
+      return epubType === "comic"
+        ? FileDataType.EPUB_COMIC
+        : FileDataType.EPUB_EBOOK;
+    } else if (g_uiSelectedOptions.inputEpubExtraction.bookType === "1") {
+      return FileDataType.EPUB_COMIC;
     } else {
-      fileType = FileDataType.EPUB_EBOOK;
+      return FileDataType.EPUB_EBOOK;
     }
+  } else if (
+    detectedFileType === FileDataType.PDF ||
+    detectedFileType === FileDataType.RAR ||
+    detectedFileType === FileDataType.ZIP ||
+    detectedFileType === FileDataType.SEVENZIP ||
+    detectedFileType === FileDataType.MOBI ||
+    detectedFileType === FileDataType.AZW3 ||
+    detectedFileType === FileDataType.FB2
+  ) {
+    return detectedFileType;
+  } else if (
+    g_mode === ToolMode.CREATE &&
+    (detectedFileType === FileDataType.JPG ||
+      detectedFileType === FileDataType.PNG ||
+      detectedFileType === FileDataType.WEBP ||
+      detectedFileType === FileDataType.BMP ||
+      detectedFileType === FileDataType.AVIF)
+  ) {
+    return FileDataType.IMG;
   } else {
-    if (
-      fileExtension === "." + FileExtension.RAR ||
-      fileExtension === "." + FileExtension.CBR
-    ) {
-      fileType = FileDataType.RAR;
-    } else if (
-      fileExtension === "." + FileExtension.ZIP ||
-      fileExtension === "." + FileExtension.CBZ
-    ) {
-      fileType = FileDataType.ZIP;
-    } else if (
-      fileExtension === "." + FileExtension.SEVENZIP ||
-      fileExtension === "." + FileExtension.CB7
-    ) {
-      fileType = FileDataType.SEVENZIP;
-    } else if (
-      g_mode === ToolMode.CREATE &&
-      (fileExtension === "." + FileExtension.JPG ||
-        fileExtension === "." + FileExtension.JPEG ||
-        fileExtension === "." + FileExtension.PNG ||
-        fileExtension === "." + FileExtension.WEBP ||
-        fileExtension === "." + FileExtension.BMP ||
-        fileExtension === "." + FileExtension.AVIF)
-    ) {
-      fileType = FileDataType.IMG;
-    } else {
-      return undefined;
-    }
+    return undefined;
   }
-  return fileType;
 }
 
 function copyImagesToTempFolder(sourceFolderPath, doRecursively) {
@@ -1203,7 +1211,7 @@ async function processContent(inputFilePath) {
       g_uiSelectedOptions.outputFormat === FileExtension.EPUB ||
       g_uiSelectedOptions.outputImageFormat != FileExtension.NOT_SET
     ) {
-      log.debug(_("tool-shared-modal-log-converting-images"));
+      log.debug("[CC] " + _("tool-shared-modal-log-converting-images"));
       switch (
         parseInt(g_uiSelectedOptions.imageProcessingMultithreadingMethod)
       ) {
@@ -1319,7 +1327,9 @@ async function processContent(inputFilePath) {
         }
       } catch (error) {
         log.debug(
-          "Warning: couldn't update the contents of ComicInfo.xml: " + error,
+          "[CC] " +
+            "Warning: couldn't update the contents of ComicInfo.xml: " +
+            error,
         );
         updateModalLogText(_("tool-shared-modal-log-warning-comicinfoxml"));
         updateModalLogText(error);
@@ -1383,8 +1393,8 @@ async function createFilesFromImages(
     );
     log.debug(
       g_uiSelectedOptions.outputSplitNumFiles > 1
-        ? _("tool-shared-modal-log-generating-new-files") + "..."
-        : _("tool-shared-modal-log-generating-new-file") + "...",
+        ? "[CC] " + _("tool-shared-modal-log-generating-new-files") + "..."
+        : "[CC] " + _("tool-shared-modal-log-generating-new-file") + "...",
     );
     killWorker();
     if (g_worker === undefined) {
@@ -1407,7 +1417,7 @@ async function createFilesFromImages(
         } else if (message.type === undefined) {
           killWorker();
           if (message.success) {
-            log.debug("file/s created in: " + message.times);
+            log.debug("[CC] file/s created in: " + message.times);
             temp.deleteSubFolder(g_tempSubFolderPath);
             g_tempSubFolderPath = undefined;
             message.files.forEach((element) => {
