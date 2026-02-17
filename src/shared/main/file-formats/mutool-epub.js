@@ -24,7 +24,7 @@ let g_isCancelled = false;
 let g_defaultEpubConfig = {
   width: 800,
   height: 1100,
-  margin: 40,
+  margin: 80,
   fontSize: 22,
   dpi: 144,
 };
@@ -420,25 +420,22 @@ function getCss(config) {
     }
   }
   function getPage() {
-    if (config.customColors) {
-      // fix fb2 black left margin
-      return `@page { 
-        background-color: ${config.colorBg} !important;
+    // control amrgin and also fix fb2 black left margin
+    return `@page { 
+        margin: ${getMargin()}pt !important;
+        ${config.customColors ? `background-color: ${config.colorBg} !important;` : ``};
       }`;
-    } else {
-      return "";
-    }
   }
   function getMargin() {
-    if (config.customColors) {
+    if (config.customSize) {
       return `${config.margin}`;
     } else {
       return `${g_defaultEpubConfig.margin}`;
     }
   }
-  // fix margins being too big in test gutenberg ebook epub v3
   let css = `
     ${getPage()}
+
     :root, html, body { 
       margin: 0 !important; 
       padding: 0 !important; 
@@ -455,9 +452,13 @@ function getCss(config) {
     }
 
     body { 
-      padding: ${getMargin()}px !important; 
       box-sizing: border-box !important;
       ${getColors()}
+    }
+
+    a, a:link, a:visited {
+      color: inherit;
+      text-decoration: none;
     }
 
     img { 

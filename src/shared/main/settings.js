@@ -67,7 +67,7 @@ const g_defaultSettings = {
     customSize: false,
     width: 800,
     height: 1100,
-    margin: 40,
+    margin: 80,
     fontSize: 22,
     dpi: 144,
     customColors: false,
@@ -876,7 +876,7 @@ function loadEpubEbook(loaded) {
     if (!Number.isInteger(loaded.margin) || loaded.margin < 0) {
       g_settings.epubEbook.margin = g_defaultSettings.epubEbook.margin;
     } else {
-      g_settings.epubEbook.fontSize = loaded.fontSize;
+      g_settings.epubEbook.margin = loaded.margin;
     }
     if (!Number.isInteger(loaded.fontSize) || loaded.fontSize < 1) {
       g_settings.epubEbook.fontSize = g_defaultSettings.epubEbook.fontSize;
