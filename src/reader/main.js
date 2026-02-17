@@ -778,6 +778,7 @@ async function tryOpen(filePath, bookType, historyEntry, homeScreenListEntry) {
 
     if (historyEntry) {
       pageIndex = historyEntry.pageIndex;
+      if (!Number.isInteger(pageIndex)) pageIndex = 0;
       if (historyEntry.data && historyEntry.data.source) {
         if (
           historyEntry.data.source === "dcm" ||
@@ -1028,15 +1029,13 @@ async function openComicBookFromPath(
     sendIpcToRenderer("update-loading", true);
     sendIpcToRenderer("update-bg", false);
 
-    let fileExtension = path.extname(filePath).toLowerCase();
+    // let fileExtension = path.extname(filePath).toLowerCase();
     if (!pageIndex) pageIndex = 0;
     if (!password) password = "";
 
-    let fileType = fileUtils.getFileTypeFromPath(filePath);
-    fileType = undefined;
-    if (fileType !== undefined) {
-      fileExtension = "." + fileType;
-    }
+    if (!detectedFileType)
+      detectedFileType = fileUtils.getFileTypeFromPath(filePath);
+
     if (detectedFileType === FileDataType.PDF) {
       if (!settings.getValue("pdfReadingLibrary").startsWith("pdfjs")) {
         log.editor("loading PDF using mupdf");
