@@ -13,6 +13,7 @@ module.exports = {
   ...require("./file-formats/pdfkit"),
   ...require("./file-formats/pdfium"),
   ...require("./file-formats/unrar-js"),
+  ...require("./file-formats/rar"),
   ...require("./file-formats/seven-zip"),
   ...require("./file-formats/adm-zip"),
 };
