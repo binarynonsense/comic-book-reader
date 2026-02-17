@@ -1,3 +1,9 @@
+# v3.17.0
+
+- Added support for reading, converting from and extracting EPUB, FB2 and MOBI ebooks (newer formats like KF8 (AZW3) are not compatible).
+- Increased the performance reading and converting PDF and RAR files. Also, files of those types bigger than 2GB are now supported.
+- Fixed a bug introduced in the previous version that made the app not launch for new users.
+
 # v3.16.0
 
 - Added an alternative PDF library, based on PDFium, that can be used instead of the default one, based on PDFjs, both in the Reader and the conversion tools. It can be set as the one to be used for the Reader in the program's preferences (File Formats section), and in the advanced settings of each tool for them. Hopefully, this may be of help as an alternative if a PDF file happens to have stability or compatibility issues with the default library. One current limitation is that some big files that the default one is able to load will fail to do with this new one.
