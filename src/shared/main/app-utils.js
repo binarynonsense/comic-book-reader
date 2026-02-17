@@ -20,6 +20,10 @@ exports.getAppVersion = function () {
   return app.getVersion();
 };
 
+exports.getSystemLocale = function () {
+  return app.getLocale();
+};
+
 exports.openURLInBrowser = function (urlString) {
   // TODO: the TLD check could be done earlier and probably better
   let url;

@@ -28,7 +28,7 @@ exports.init = function (isDev) {
     ? path.join(appUtils.getExternalFilesFolder(), "locales/")
     : undefined;
   if (settings.getValue("locale") === undefined) {
-    settings.setValue("locale", loadLocale(app.getLocale()));
+    settings.setValue("locale", loadLocale(appUtils.getSystemLocale()));
   } else {
     settings.setValue("locale", loadLocale(settings.getValue("locale")));
   }

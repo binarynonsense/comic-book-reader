@@ -108,7 +108,7 @@ function load() {
   }
   // limit how many are remembered
   if (g_recent.length > g_recentCapacity) {
-    g_recent.splice(0, g_recent.length - capacity);
+    g_recent.splice(0, g_recent.length - g_recentCapacity);
   }
 }
 
