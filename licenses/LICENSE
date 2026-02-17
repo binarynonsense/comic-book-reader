@@ -1,5 +1,6 @@
 This application is distributed as a bundled work under the GNU Affero General Public License v3.
-The core source code of the application is licensed under the BSD 2-Clause License. 
+The core source code of the application is licensed under the BSD 2-Clause License.
 All components, including third-party libraries and binaries, retain their original licenses.
 Please refer to the licenses/ folder for the full text of all applicable licenses and detailed attribution.
+
 Source code is available at: https://github.com/binarynonsense/comic-book-reader
