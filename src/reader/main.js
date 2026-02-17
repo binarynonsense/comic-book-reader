@@ -1449,9 +1449,10 @@ async function openEbookFromPath(
   sendIpcToRenderer("update-loading", true);
   sendIpcToRenderer("update-bg", false);
 
+  if (!detectedFileType)
+    detectedFileType = fileUtils.getFileTypeFromPath(cachedPath ?? filePath);
   if (g_fileData.state !== FileDataState.LOADING) {
     cleanUpFileData();
-    // NOTE: using this for mobi and fb2 too for now
     g_fileData.type =
       detectedFileType === FileDataType.EPUB
         ? FileDataType.EPUB_EBOOK
