@@ -457,8 +457,8 @@ function getCss(config) {
     }
 
     a, a:link, a:visited {
-      color: inherit;
-      text-decoration: none;
+      color: inherit !important;
+      text-decoration: none !important;
     }
 
     img { 
