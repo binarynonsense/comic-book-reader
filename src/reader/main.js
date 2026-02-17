@@ -1463,6 +1463,7 @@ async function openEbookFromPath(
     g_fileData.cachedPath = cachedPath;
     g_fileData.tempPath = tempPath;
     g_fileData.name = name;
+    if (historyEntry?.numPages) g_fileData.prevNumPages = historyEntry.numPages;
     if (data) {
       g_fileData.data = data;
     } else {
@@ -2528,7 +2529,21 @@ function startPageWorker() {
               g_fileData.pagesPaths = [];
               g_fileData.numPages = message.result.numPages;
               if (pageIndex < 0) pageIndex = 0;
-              else if (pageIndex >= g_fileData.numPages)
+              if (
+                g_fileData.prevNumPages &&
+                g_fileData.type !== FileDataType.PDF
+              ) {
+                if (g_fileData.prevNumPages !== g_fileData.numPages) {
+                  // total pages changed, maybe  due to rendering config
+                  // changes -> adjust pageIndex?
+                  log.editor("old pageIndex: " + pageIndex);
+                  const oldPercentage = pageIndex / g_fileData.prevNumPages;
+                  pageIndex = Math.round(g_fileData.numPages * oldPercentage);
+                  log.editor("new pageIndex: " + pageIndex);
+                }
+                g_fileData.prevNumPages = undefined;
+              }
+              if (pageIndex >= g_fileData.numPages)
                 pageIndex = g_fileData.numPages - 1;
               g_fileData.pageIndex = pageIndex;
               // g_fileData.metadata = metadata;
