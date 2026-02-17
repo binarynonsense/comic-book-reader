@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2025 Álvaro García
+ * Copyright 2020-2026 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -12,6 +12,7 @@ const { _ } = require("../../shared/main/i18n");
 const contextMenu = require("../../shared/main/tools-menu-context");
 const tools = require("../../shared/main/tools");
 const appUtils = require("../../shared/main/app-utils");
+const log = require("../../shared/main/logger");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -101,13 +102,20 @@ function initOnIpcCallbacks() {
       let word = encodeURI(text.trim().split(" ")[0]);
       const response = await axios.get(
         `https://${languageId}.wiktionary.org/w/api.php?titles=${word}&action=query&prop=extracts&format=json`,
-        { timeout: 10000 },
+        {
+          timeout: 10000,
+          headers: {
+            "User-Agent":
+              "ACBR/1.0 (https://github.com/binarynonsense/comic-book-reader) axios/1.x",
+          },
+        },
       );
       let searchResults = response.data;
       let content = Object.values(searchResults.query.pages)[0].extract;
       if (!content || content === "") throw "error";
       sendIpcToRenderer("update-results", content);
     } catch (error) {
+      log.error(error);
       content = _("tool-shared-ui-search-nothing-found");
       sendIpcToRenderer("update-results", content);
     }
