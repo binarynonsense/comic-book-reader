@@ -1,6 +1,6 @@
 # ACBR - Comic Book Reader
 
-Un lector y conversor de cómics para archivos en formato CBZ, CBR, CB7, EPUB y PDF.
+Un lector y conversor de cómics para archivos en formato CBZ, CBR, CB7, EPUB, FB2, MOBI y PDF.
 
 ![git_banner](https://github.com/user-attachments/assets/6ef7ded2-749a-4efd-a6b7-109d0f33d603)
 
@@ -25,13 +25,13 @@ Un lector y conversor de cómics para archivos en formato CBZ, CBR, CB7, EPUB y 
 - Versiones para Windows y Linux
 - Formatos de archivo compatibles<sup>[1]</sup>:
   - Cómics:
-    - CBZ, CBR, CB7, PDF<sup>[5]</sup> y EPUB<sup>[2]</sup>
+    - CBZ, CBR, CB7, PDF y EPUB
   - Archivos de imagen:
     - JPG, PNG, WebP y AVIF
   - Ebooks:
-    - PDF<sup>[5]</sup> y EPUB<sup>[3]</sup>
+    - PDF, FB2, MOBI y EPUB
 - Modos de ventana (IU simple) y pantalla completa (sin IU)
-- Modos de página: 'página simple', 'página doble' y 'página doble (centrar primera página'
+- Modos de página: 'página simple', 'página doble' y 'página doble (centrar primera página')
 - Vistas de pagina: 'ajustar a anchura', 'ajustar a altura' y 'escalar a altura' personalizable
 - Rotación de página
 - Interfaz de usuario disponible en:
@@ -40,7 +40,7 @@ Un lector y conversor de cómics para archivos en formato CBZ, CBR, CB7, EPUB y 
 - Modo portátil (al crear un archivo llamado portable.txt en la misma carpeta que el ejecutable)
 - Editor de metadatos:
   - Ver los metadatos en archivos PDF y EPUB o almacenados en archivos ComicInfo.xml dentro de cómics CBR, CBZ y CB7.
-  - Crear y/o modificar los metadatos en archivos PDF y EPUB o almacenados en archivos ComicInfo.xml dentro de cómics CBR<sup>[4]</sup>, CBZ y CB7 no encriptados.
+  - Crear y/o modificar los metadatos en archivos PDF y EPUB o almacenados en archivos ComicInfo.xml dentro de cómics CBR<sup>[3]</sup>, CBZ y CB7 no encriptados.
   - Buscar e importar metadatos de cómics de Comic Vine (es necesaria una [clave API de Comic Vine](https://comicvine.gamespot.com/api/)).
 - Reproductor de audio integrado:
   - Admite archivos MP3, Ogg, WAV, M3U y M3U8.
@@ -48,10 +48,10 @@ Un lector y conversor de cómics para archivos en formato CBZ, CBR, CB7, EPUB y 
 - Herramientas:
   - Ficheros:
     - Convertir/Redimensionar:
-      - Cómics (CBR, CBZ, CB7, PDF<sup>[5]</sup> o EPUB<sup>[2]</sup> a CBR<sup>[4]</sup>, CBZ, CB7, PDF o EPUB)
+      - Cómics y libros (CBR, CBZ, CB7, FB2, MOBI, PDF o EPUB) a cómics (CBR<sup>[3]</sup>, CBZ, CB7, PDF o EPUB<sup>[2]</sup>)
       - Imágenes (JPG, PNG, AVIF o WebP)
     - Crear:
-      - Un cómic (CBR<sup>[4]</sup>, CBZ, CB7, PDF o EPUB) a partir de una lista de archivos de imagen y/o cómics
+      - Un cómic (CBR<sup>[3]</sup>, CBZ, CB7, PDF o EPUB<sup>[2]</sup>) a partir de una lista de archivos de imagen, libros y/o cómics
       - Una imagen de código QR a partir de un texto
     - Extraer:
       - Páginas de cómics (a JPG, PNG, AVIF o WebP)
@@ -82,15 +82,11 @@ Un lector y conversor de cómics para archivos en formato CBZ, CBR, CB7, EPUB y 
 
 > Notas:
 >
-> [1]: Incluyendo archivos PDF, CBZ (cifrado AES no compatible), CB7 y CBR protegidos con contraseña.
+> [1]: Incluyendo archivos PDF, CBZ, CB7 y CBR protegidos con contraseña.
 >
 > [2]: Solo imágenes.
 >
-> [3]: La lectura de Ebooks EPUB es una función experimental/extra más allá de los objectivos principales del proyecto. Es posible que no funcione para todos los archivos y podría eliminarse en versiones futuras si surge la necesidad.
->
-> [4]: La creación y modificación de archivos CBR están desactivadas por defecto. Se pueden activar en las preferencias pero requieren que una herramienta de línea de comandos de terceros ([rar](https://www.win-rar.com/cmd-shell-mode.html?&L=0) de WinRAR) se encuentre instalada en el sistema.
->
-> [5]: No se admiten archivos PDF de más de 2 GB.
+> [3]: La creación y modificación de archivos CBR están desactivadas por defecto. Se pueden activar en las preferencias pero requieren que una herramienta de línea de comandos de terceros ([rar](https://www.win-rar.com/cmd-shell-mode.html?&L=0) de WinRAR) se encuentre instalada en el sistema.
 
 ## Descargas:
 

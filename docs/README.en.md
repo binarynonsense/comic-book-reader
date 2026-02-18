@@ -1,6 +1,6 @@
 # ACBR - Comic Book Reader
 
-A comic book reader and converter for CBZ, CBR, CB7, EPUB and PDF files.
+A comic book reader and converter for CBZ, CBR, CB7, EPUB, FB2, MOBI and PDF files.
 
 ![git_banner](https://github.com/user-attachments/assets/6ef7ded2-749a-4efd-a6b7-109d0f33d603)
 
@@ -25,11 +25,11 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB and PDF files.
 - Windows & Linux versions
 - Compatible file formats<sup>[1]</sup>:
   - Comic books:
-    - CBZ, CBR, CB7, PDF<sup>[5]</sup> and EPUB<sup>[2]</sup>
+    - CBZ, CBR, CB7, PDF and EPUB
   - Image files:
     - JPG, PNG, WebP and AVIF
   - Ebooks:
-    - PDF<sup>[5]</sup> and EPUB<sup>[3]</sup>
+    - PDF, FB2, MOBI and EPUB
 - Windowed (simple UI) and full-screen (no UI) modes
 - 'Single page', 'double page' and 'double page (center first page)' page modes
 - 'Fit to width', 'fit to height' and a customizable 'scale to height' page views
@@ -40,7 +40,7 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB and PDF files.
 - Portable mode (by creating a file named portable.txt in the same folder as the executable)
 - Metadata editor:
   - View the metadata in PDF and EPUB files or stored in ComicInfo.xml files inside CBR, CBZ and CB7 comic books.
-  - Create and/or modify the metadata in PDF and EPUB files or stored in ComicInfo.xml files inside unencrypted CBR<sup>[4]</sup>, CBZ and CB7 comic books.
+  - Create and/or modify the metadata in PDF and EPUB files or stored in ComicInfo.xml files inside unencrypted CBR<sup>[3]</sup>, CBZ and CB7 comic books.
   - Search for and import comic book metadata from Comic Vine (a [Comic Vine API key](https://comicvine.gamespot.com/api/) is required).
 - Integrated audio player:
   - Supports MP3, Ogg, WAV, M3U and M3U8 files.
@@ -48,10 +48,10 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB and PDF files.
 - Tools:
   - Files:
     - Convert/Resize:
-      - Comic books (CBR, CBZ, CB7, PDF<sup>[5]</sup> or EPUB<sup>[2]</sup> to CBR<sup>[4]</sup>, CBZ, CB7, PDF or EPUB)
+      - Comic books and ebooks (CBR, CBZ, CB7, FB2, MOBI, PDF or EPUB) to comic books (CBR<sup>[3]</sup>, CBZ, CB7, PDF or EPUB<sup>[2]</sup>)
       - Images (JPG, PNG, AVIF or WebP)
     - Create:
-      - A comic book (CBR<sup>[4]</sup>, CBZ, CB7, PDF or EPUB) from a list of image files and/or comic books
+      - A comic book (CBR<sup>[3]</sup>, CBZ, CB7, PDF or EPUB<sup>[2]</sup>) from a list of image files, ebooks and/or comic books
       - A QR code image from text
     - Extract:
       - Comic book pages (to JPG, PNG, AVIF or WebP)
@@ -82,15 +82,11 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB and PDF files.
 
 > Notes:
 >
-> [1]: Including password protected PDF, CBZ (AES encryption not supported), CB7 and CBR files.
+> [1]: Including password protected PDF, CBZ, CB7 and CBR files.
 >
 > [2]: Images only.
 >
-> [3]: Reading EPUB Ebooks is an experimental / extra feature outside the main scope of the project. It may not work for all files and could be removed in future versions if necessary.
->
-> [4]: Creating and modifying CBR files are disabled by default. They can be enabled in the preferences but require a third-party command-line tool ([rar](https://www.win-rar.com/cmd-shell-mode.html?&L=0) from WinRAR) to be installed in the system.
->
-> [5]: PDF files larger than 2GB are not supported.
+> [3]: Creating and modifying CBR files are disabled by default. They can be enabled in the preferences but require a third-party command-line tool ([rar](https://www.win-rar.com/cmd-shell-mode.html?&L=0) from WinRAR) to be installed in the system.
 
 ## Downloads:
 
