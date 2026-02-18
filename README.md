@@ -29,7 +29,7 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB, FB2, MOBI and PDF fil
   - Image files:
     - JPG, PNG, WebP and AVIF
   - Ebooks:
-    - PDF, FB2, MOBI and EPUB
+    - PDF, FB2, MOBI<sup>[4]</sup> and EPUB
 - Windowed (simple UI) and full-screen (no UI) modes
 - 'Single page', 'double page' and 'double page (center first page)' page modes
 - 'Fit to width', 'fit to height' and a customizable 'scale to height' page views
@@ -48,10 +48,10 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB, FB2, MOBI and PDF fil
 - Tools:
   - Files:
     - Convert/Resize:
-      - Comic books and ebooks (CBR, CBZ, CB7, FB2, MOBI, PDF or EPUB) to comic books (CBR<sup>[3]</sup>, CBZ, CB7, PDF or EPUB<sup>[2]</sup>)
+      - Comic books and ebooks (CBR, CBZ, CB7, FB2, MOBI<sup>[4]</sup>, PDF or EPUB) to comic books (CBR<sup>[3]</sup>, CBZ, CB7, PDF or EPUB<sup>[2]</sup>)
       - Images (JPG, PNG, AVIF or WebP)
     - Create:
-      - A comic book (CBR<sup>[3]</sup>, CBZ, CB7, PDF or EPUB) from a list of image files, ebooks and/or comic books
+      - A comic book (CBR<sup>[3]</sup>, CBZ, CB7, PDF or EPUB<sup>[2]</sup>) from a list of image files, ebooks and/or comic books
       - A QR code image from text
     - Extract:
       - Comic book pages (to JPG, PNG, AVIF or WebP)
@@ -87,6 +87,8 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB, FB2, MOBI and PDF fil
 > [2]: Images only.
 >
 > [3]: Creating and modifying CBR files are disabled by default. They can be enabled in the preferences but require a third-party command-line tool ([rar](https://www.win-rar.com/cmd-shell-mode.html?&L=0) from WinRAR) to be installed in the system.
+>
+> [4]: Only legacy MOBI (MOBI 7) files are supported. Newer formats like KF8 (AZW3) are not compatible.
 
 ## Downloads:
 

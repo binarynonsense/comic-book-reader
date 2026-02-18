@@ -29,7 +29,7 @@ Un lector y conversor de cómics para archivos en formato CBZ, CBR, CB7, EPUB, F
   - Archivos de imagen:
     - JPG, PNG, WebP y AVIF
   - Ebooks:
-    - PDF, FB2, MOBI y EPUB
+    - PDF, FB2, MOBI<sup>[4]</sup> y EPUB
 - Modos de ventana (IU simple) y pantalla completa (sin IU)
 - Modos de página: 'página simple', 'página doble' y 'página doble (centrar primera página')
 - Vistas de pagina: 'ajustar a anchura', 'ajustar a altura' y 'escalar a altura' personalizable
@@ -48,7 +48,7 @@ Un lector y conversor de cómics para archivos en formato CBZ, CBR, CB7, EPUB, F
 - Herramientas:
   - Ficheros:
     - Convertir/Redimensionar:
-      - Cómics y libros (CBR, CBZ, CB7, FB2, MOBI, PDF o EPUB) a cómics (CBR<sup>[3]</sup>, CBZ, CB7, PDF o EPUB<sup>[2]</sup>)
+      - Cómics y libros (CBR, CBZ, CB7, FB2, MOBI<sup>[4]</sup>, PDF o EPUB) a cómics (CBR<sup>[3]</sup>, CBZ, CB7, PDF o EPUB<sup>[2]</sup>)
       - Imágenes (JPG, PNG, AVIF o WebP)
     - Crear:
       - Un cómic (CBR<sup>[3]</sup>, CBZ, CB7, PDF o EPUB<sup>[2]</sup>) a partir de una lista de archivos de imagen, libros y/o cómics
@@ -87,6 +87,8 @@ Un lector y conversor de cómics para archivos en formato CBZ, CBR, CB7, EPUB, F
 > [2]: Solo imágenes.
 >
 > [3]: La creación y modificación de archivos CBR están desactivadas por defecto. Se pueden activar en las preferencias pero requieren que una herramienta de línea de comandos de terceros ([rar](https://www.win-rar.com/cmd-shell-mode.html?&L=0) de WinRAR) se encuentre instalada en el sistema.
+>
+> [4]: Solo se admiten archivos legacy MOBI (MOBI 7). Los formatos más recientes, como KF8 (AZW3), no son compatibles.
 
 ## Descargas:
 
