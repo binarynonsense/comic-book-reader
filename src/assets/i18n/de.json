@@ -3,7 +3,7 @@
     "authors": [
       "trzyglow"
     ],
-    "last-updated": "2026-02-16",
+    "last-updated": "2026-02-18",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.16.0",
     "pre-release": "false",
@@ -173,7 +173,7 @@
   "ui-modal-title-versionchecker": "Versionsprüfer",
   "ui-modal-title-versionuptodate": "Version ist Aktuell",
   "ui-modal-title-versionavailable": "Update Verfügbar",
-  "ui-modal-info-invalidformat": "Kein gültiges Dateiformat",
+  "ui-modal-info-invalidformat": "Ungültiges Dateiformat",
   "ui-modal-info-invalidsize": "Die Datei ist zu groß",
   "ui-modal-info-invalidsize-cap-a": "Die maximale Dateigröße, welche von der Lesebibliothek unterstützt wird, ist {0}",
   "ui-modal-info-invalidsize-cap-b": "Die maximal unterstützte Dateigröße ist {0}",
