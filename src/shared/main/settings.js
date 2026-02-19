@@ -636,16 +636,10 @@ function sanitize() {
   }
   // TEMP FOLDER
   if (
-    g_settings.tempFolderPath &&
-    typeof g_settings.tempFolderPath === "string"
+    !g_settings.tempFolderPath ||
+    typeof g_settings.tempFolderPath !== "string" ||
+    !temp.isValidParentFolder(g_settings.tempFolderPath)
   ) {
-    if (
-      !fs.existsSync(g_settings.tempFolderPath) ||
-      !fs.lstatSync(g_settings.tempFolderPath).isDirectory()
-    ) {
-      g_settings.tempFolderPath = temp.getOSTempFolderPath();
-    }
-  } else {
     g_settings.tempFolderPath = temp.getOSTempFolderPath();
   }
   // RAR FOLDER

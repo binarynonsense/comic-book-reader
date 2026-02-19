@@ -364,23 +364,35 @@ function initOnIpcCallbacks() {
       if (folderPath === undefined || folderPath === "") return;
       // TODO: check if writable?
       if (saveAsRelative) {
+        log.test("saveasrelative");
         relativeFolderPath = path.relative(
           appUtils.getExeFolderPath(),
           folderPath,
         );
+        log.test(relativeFolderPath);
       }
     }
-    settings.setValue(
-      "tempFolderPath",
-      relativeFolderPath ? relativeFolderPath : folderPath,
-    );
-    // TODO: error recovery?
-    temp.changeBaseFolderPath(folderPath);
-    sendIpcToRenderer(
-      "set-temp-folder",
-      relativeFolderPath ? relativeFolderPath : folderPath,
-      saveAsRelative,
-    );
+
+    if (temp.changeBaseFolderPath(folderPath)) {
+      log.test();
+      settings.setValue(
+        "tempFolderPath",
+        relativeFolderPath ? relativeFolderPath : folderPath,
+      );
+      sendIpcToRenderer(
+        "set-temp-folder",
+        relativeFolderPath ? relativeFolderPath : folderPath,
+        saveAsRelative,
+      );
+    } else {
+      // undo any changes in the ui
+      let tempFolderPath = settings.getValue("tempFolderPath");
+      let saveAsRelative = false;
+      if (!path.isAbsolute(tempFolderPath)) {
+        saveAsRelative = true;
+      }
+      sendIpcToRenderer("set-temp-folder", tempFolderPath, saveAsRelative);
+    }
   });
 
   on("change-rar-folder", (reset) => {
