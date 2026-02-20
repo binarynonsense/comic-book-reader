@@ -504,6 +504,7 @@ function start() {
   timers.start("convert-comics");
   g_cancel = false;
   g_imageIndex = 0;
+  g_inputFilesIndex = undefined;
   if (g_mode === ToolMode.CONVERT || g_mode === ToolMode.EXTRACT) {
     g_uiSelectedOptions.outputFileBaseName = undefined;
     sendIpcToRenderer("start-first-file");
@@ -1446,7 +1447,10 @@ async function createFilesFromImages(
       extraData = g_uiSelectedOptions.outputPdfCreationMethod;
     }
     let outputFolderPath = g_uiSelectedOptions.outputFolderPath;
-    if (g_inputFiles[g_inputFilesIndex].outputFolderPath) {
+    if (
+      g_inputFilesIndex !== undefined &&
+      g_inputFiles[g_inputFilesIndex].outputFolderPath
+    ) {
       outputFolderPath = g_inputFiles[g_inputFilesIndex].outputFolderPath;
     }
     if (
