@@ -1,3 +1,8 @@
+# v3.17.1
+
+- Fixed creating a comic book from only images not working in the previous version.
+- Fixed setting a non-writable folder as temp folder breaking the app.
+
 # v3.17.0
 
 - Added support for reading, converting from and extracting EPUB, FB2 and MOBI ebooks (newer formats like KF8 (AZW3) are not compatible).
