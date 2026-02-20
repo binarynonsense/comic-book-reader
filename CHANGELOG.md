@@ -1,15 +1,15 @@
-# v3.17.1
+## v3.17.1
 
 - Fixed creating a comic book from only images not working in the previous version.
 - Fixed setting a non-writable folder as temp folder breaking the app.
 
-# v3.17.0
+## v3.17.0
 
 - Added support for reading, converting from and extracting EPUB, FB2 and MOBI ebooks (newer formats like KF8 (AZW3) are not compatible).
 - Increased the performance reading and converting PDF and RAR files. Also, files of those types bigger than 2GB are now supported.
 - Fixed a bug introduced in the previous version that made the app not launch for new users.
 
-# v3.16.0
+## v3.16.0
 
 - Added an alternative PDF library, based on PDFium, that can be used instead of the default one, based on PDFjs, both in the Reader and the conversion tools. It can be set as the one to be used for the Reader in the program's preferences (File Formats section), and in the advanced settings of each tool for them. Hopefully, this may be of help as an alternative if a PDF file happens to have stability or compatibility issues with the default library. One current limitation is that some big files that the default one is able to load will fail to do with this new one.
 - Added a new section in the Preferences, Comic Book Reader, and moved some of the settings there.
@@ -23,7 +23,7 @@
 - Made the program resilient against malformed environment variables containing null bytes.
 - Fixed dpi calculations when rendering PDF pages with the default library. Resulting files are often bigger now for the same dpi setting, but that's because the previous calculations resulted in real dpis lower than the requested one.
 
-# v3.15.0
+## v3.15.0
 
 - Increased, significantly, the speed of conversions that require image processing (scale, change image format...) in the "Convert Comic Books" tool by piping all the image processing operations for a page together, instead of doing them in stages as before, and also using worker threads to work on multiple pages at once. There are now advanced options to fine tune some parameters of this new method, which is now the default, in the tool's settings section (or to select the old method, which has the new operation piping but doesn't use worker threads, just in case it works better in some cases).
 - Added the total time the conversion took to the end of the log in the "Convert Comic Books" tool.
@@ -38,11 +38,11 @@
 - Fixed book in user list in "Home Screen" not opening if it wasn't in the recent history.
 - Fixed the final log being truncated in some of the tools if errors occurred.
 
-# v3.14.1
+## v3.14.1
 
 - Fixed default page mode setting in preferences not being correctly saved when the "Double Page (Center First Page)" option was chosen.
 
-# v3.14.0
+## v3.14.0
 
 - Added the option to create more lists in the Home Screen besides the Favorites and Latest ones.
 - Added a representation of a book's completion percentage in the Home Screen lists. It shows as a thin line at the bottom of a book's card which gets longer the closer the last page read was compared to the total number of pages (if the page was the last one, the line will have a 100% length). It'll only appear for books in the history that have also been opened after this feature was added, as it needs some data not stored in the history by previous versions.
@@ -53,7 +53,7 @@
 - Changed some buttons in the reader's toolbar (zoom, pages direction and page mode) so that they now show the icon corresponding to the current state for the corresponding setting and clicking them opens a vertical submenu where the user can choose from all the available options.
 - Fixed not showing any space between the text and the icon in the list titles in the Home Screen for rtl languages.
 
-# v3.13.0
+## v3.13.0
 
 - Added some small quality of life improvements to the Home Screen, like drag and drop to sort the favorites list, new options to open the containing folder of a file in one the lists or add one in the recent files list to the favorites one...
 - Added two new theme preferences: one that automatically sets the theme to "ACBR Light" or "ACBR Dark" based on the operative system settings and the other based on the time of day (the time at which the light and dark themes are set can be customized).
@@ -61,37 +61,37 @@
 - Fixed CBZ files containing __MACOSX folders failing to load in the reader and convert in the tools as they included invalid image files. __MACOSX folders are now ignored.
 - Fixed invalid page images breaking the reader. When the image corresponding to a page can't be loaded it's now replaced by a generic "file not found" page.
 
-# v3.12.5
+## v3.12.5
 
 - Fixed RSS reader getting stuck when trying to load a no longer valid favorite feed URL.
 - Fixed audio player showing above some of the modal windows.
 - Fixed some of the modal windows hiding the toolbar while they were open.
 
-# v3.12.4
+## v3.12.4
 
 - Fixed convert comic books, extract comic books, convert images and create comic book tools progressively slowing down while processing a large batch of files, which was due to the log text's increasingly bigger length impacting the time it took to update it.
 - Fixed PDF metadata editor getting stuck trying to load data from files with undefined creation and/or modification dates.
 
-# v3.12.3
+## v3.12.3
 
 - Added a button to open the output folder in the convert comic books, extract comic books, convert images and create comic book tools.
 - Fixed PDF metadata editor showing 'undefined' as the value for some entries if they were empty.
 - Fixed audio player always leaving space for the toolbar when placed at the bottom even in the tools and home screen.
 
-# v3.12.2
+## v3.12.2
 
 - Fixed failing to open files from the search results of the gutenberg tool in the flatpak version due to lack of write permissions. The cache to store downloaded files is now created in the same folder as the config files.
 - Fixed not being able to use the space bar and the arrow keys to edit the names of the home screen favorites.
 - Fixed log showing a generic error message when there's not enough free disk space in the temp folder to extract files during conversions (can happen with the default temp folder and moderately big files in the flatpak version, for example).
 - Configured the single-file bundle flatpak version to have similar settings as the flatpak now available on flathub.
 
-# v3.12.1
+## v3.12.1
 
 - Added a .flatpak package for Linux that, as an alternative to the recently added .deb, should run in distributions, like Ubuntu 24.04, where the regular and AppImage versions have trouble to by default for not having an AppArmor profile. It's also the only one that currently fully works with the Steam Deck, even on game mode.
 - Added keyboard and gamepad shortcuts to change page mode.
 - Updated some of the core libraries and localization files.
 
-# v3.12.0
+## v3.12.0
 
 - Added the option to show two pages at once in the reader. You can now switch between "Single Page", "Double Page" and "Double Page (Center First Page)" in the "View > Layout > Page Mode" entry of the menu bar, or change it using the tool bar.
 - Added more scaling options to some of the tools (convert comic books, create comic book, convert images and extract comic books). Now the pages can be scaled by percentage, height or width.
