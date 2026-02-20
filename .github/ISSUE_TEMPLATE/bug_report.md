@@ -16,3 +16,7 @@ labels: "type: bug / error report"
 
 ### Additional context / screenshots:
 
+### Session Log:
+
+(See: https://github.com/binarynonsense/comic-book-reader/wiki/How-to-Enable-Log-Files-for-Bug-Reports)
+
