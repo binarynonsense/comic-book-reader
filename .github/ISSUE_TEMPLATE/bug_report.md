@@ -1,6 +1,6 @@
 ---
 name: Bug Report
-about: Report a glitch or broken feature.
+about: Report an error, glitch, broken feature...
 title: "[BUG]: "
 labels: "type: bug / error report"
 ---
