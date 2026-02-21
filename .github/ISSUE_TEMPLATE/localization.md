@@ -1,7 +1,7 @@
 ---
 name: Localization
 about: Suggest translations, point typos...
-title: "[LOC]: "
+title: "[LOC] "
 labels: "type: localization"
 ---
 

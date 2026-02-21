@@ -1,7 +1,7 @@
 ---
 name: Bug Report
 about: Report an error, glitch, broken feature...
-title: "[BUG]: "
+title: "[BUG] "
 labels: "type: bug / error report"
 ---
 

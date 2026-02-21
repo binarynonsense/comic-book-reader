@@ -1,7 +1,7 @@
 ---
 name: Question
 about: Ask for help or a clarification of how something works.
-title: "[QUESTION]: "
+title: "[QUESTION] "
 labels: "type: question"
 ---
 
