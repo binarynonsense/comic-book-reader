@@ -39,6 +39,7 @@ exports.FileExtension = {
   MP4: "mp4",
   AVI: "avi",
   MKV: "mkv",
+  OGV: "ogv",
 
   TMP: "tmp",
 };
