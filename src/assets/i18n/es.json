@@ -1,6 +1,8 @@
 {
   "@metadata": {
-    "authors": ["Álvaro"],
+    "authors": [
+      "Álvaro"
+    ],
     "last-updated": "2026-02-20",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.17.0",
@@ -281,7 +283,6 @@
   "ap-tooltip-button-prev": "psita anterior",
   "ap-tooltip-button-open": "abrir archivos de audio",
   "ap-tooltip-button-open-media": "abrir archivos multimedia",
-  "ap-tooltip-button-open-yt-video": "abrir vídeo de youtube",
   "ap-tooltip-button-volume-off": "apagar volumen",
   "ap-tooltip-button-volume-on": "encender volumen",
   "ap-tooltip-button-playlist": "alternar lista de reproducción",
