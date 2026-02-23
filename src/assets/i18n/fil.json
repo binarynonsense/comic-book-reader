@@ -283,6 +283,7 @@
   "ap-tooltip-button-prev": "nakaraang track",
   "ap-tooltip-button-open": "buksan ang mga audio file",
   "[NEEDS TRANSLATION]ap-tooltip-button-open-media": "open media files",
+  "[NEEDS TRANSLATION]ap-tooltip-button-open-yt-video": "open youtube video",
   "ap-tooltip-button-volume-off": "i-mute ang tunog",
   "ap-tooltip-button-volume-on": "i-on ang tunog",
   "ap-tooltip-button-playlist": "i-toggle ang playlist",

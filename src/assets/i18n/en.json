@@ -281,6 +281,7 @@
   "ap-tooltip-button-prev": "prev track",
   "ap-tooltip-button-open": "open audio files",
   "ap-tooltip-button-open-media": "open media files",
+  "ap-tooltip-button-open-yt-video": "open youtube video",
   "ap-tooltip-button-volume-off": "turn volume off",
   "ap-tooltip-button-volume-on": "turn volume on",
   "ap-tooltip-button-playlist": "toggle playlist",

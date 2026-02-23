@@ -283,6 +283,7 @@
   "ap-tooltip-button-prev": "المقطع السابق",
   "ap-tooltip-button-open": "فتح ملفات الصوت",
   "[NEEDS TRANSLATION]ap-tooltip-button-open-media": "open media files",
+  "[NEEDS TRANSLATION]ap-tooltip-button-open-yt-video": "open youtube video",
   "ap-tooltip-button-volume-off": "إيقاف الصوت",
   "ap-tooltip-button-volume-on": "تشغيل الصوت",
   "ap-tooltip-button-playlist": "إظهار/إخفاء قائمة التشغيل",

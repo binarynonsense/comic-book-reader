@@ -281,6 +281,7 @@
   "ap-tooltip-button-prev": "psita anterior",
   "ap-tooltip-button-open": "abrir archivos de audio",
   "ap-tooltip-button-open-media": "abrir archivos multimedia",
+  "ap-tooltip-button-open-yt-video": "abrir vídeo de youtube",
   "ap-tooltip-button-volume-off": "apagar volumen",
   "ap-tooltip-button-volume-on": "encender volumen",
   "ap-tooltip-button-playlist": "alternar lista de reproducción",
