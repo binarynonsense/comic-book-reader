@@ -35,6 +35,11 @@ exports.FileExtension = {
   PLS: "pls",
   XSPF: "xspf",
 
+  WEBM: "webm",
+  MP4: "mp4",
+  AVI: "avi",
+  MKV: "mkv",
+
   TMP: "tmp",
 };
 
