@@ -21,7 +21,6 @@ const utils = require("../shared/main/utils");
 const forkUtils = require("../shared/main/fork-utils");
 const fileFormats = require("../shared/main/file-formats");
 const contextMenu = require("./menu-context");
-const audioPlayer = require("../tools/audio-player/main");
 const timers = require("../shared/main/timers");
 const tools = require("../shared/main/tools");
 const {
@@ -31,7 +30,6 @@ const {
   BookType,
 } = require("../shared/main/constants");
 const homeScreen = require("./home-screen/main");
-const EPub = require("epub");
 
 //////////////////////////////////////////////////////////////////////////////
 // SETUP  ////////////////////////////////////////////////////////////////////
@@ -95,7 +93,9 @@ exports.init = async function (filePath, checkHistory) {
   sendIpcToRenderer("init-battery");
   showBattery(settings.getValue("showBattery"));
   showLoadingIndicator(settings.getValue("showLoadingIndicator"));
-  audioPlayer.init(core.getMainWindow(), "audio-player-container");
+  tools
+    .getTools()
+    ["audio-player"].init(core.getMainWindow(), "audio-player-container");
   showAudioPlayer(settings.getValue("showAudioPlayer"));
   homeScreen.open(undefined);
 
@@ -153,7 +153,7 @@ exports.onQuit = function () {
   clearTimeout(g_clockTimeout);
   settings.setValue("on_quit_state", g_fileData.path === "" ? 0 : 1);
   addCurrentToHistory(false);
-  audioPlayer.saveSettings();
+  tools.getTools()["audio-player"].saveSettings();
   homeScreen.close();
   killPageWorker();
 };
@@ -2187,7 +2187,7 @@ function toggleLoadingIndicator() {
 
 function showAudioPlayer(isVisible, updateMenuBar) {
   settings.setValue("showAudioPlayer", isVisible);
-  audioPlayer.open(isVisible);
+  tools.getTools()["audio-player"].open(isVisible);
   menuBar.setAudioPlayer(isVisible);
   if (updateMenuBar) sendIpcToPreload("update-menubar");
 }

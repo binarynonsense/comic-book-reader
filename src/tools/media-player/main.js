@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2024 Álvaro García
+ * Copyright 2020-2026 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -12,9 +12,10 @@ const { FileExtension } = require("../../shared/main/constants");
 const appUtils = require("../../shared/main/app-utils");
 const core = require("../../core/main");
 const reader = require("../../reader/main");
-const settings = require("./settings");
+const settings = require("./main/settings");
 const { _ } = require("../../shared/main/i18n");
 const log = require("../../shared/main/logger");
+const { getLocalization } = require("./main/localization");
 
 let g_mainWindow;
 let g_parentElementId;
@@ -53,12 +54,49 @@ function initOnIpcCallbacks() {
     g_playlist = _playlist;
   });
 
-  on("open-files", () => {
-    callOpenFilesDialog(0);
+  on("on-open-clicked", (mode) => {
+    if (mode === 0) {
+      sendIpcToRenderer(
+        "show-modal-open",
+        _("ui-modal-prompt-button-open"),
+        _("ui-modal-prompt-button-cancel"),
+        _("menu-tools-files"),
+        "URL",
+        0,
+      );
+    } else {
+      sendIpcToRenderer(
+        "show-modal-open",
+        _("tool-shared-ui-add"),
+        _("ui-modal-prompt-button-cancel"),
+        _("menu-tools-files"),
+        "URL",
+        1,
+      );
+    }
   });
 
-  on("add-files", () => {
-    callOpenFilesDialog(1);
+  on("on-open-url-clicked", (mode) => {
+    sendIpcToRenderer(
+      "show-modal-open-url",
+      "", //_("tool-shared-tab-openurl"),
+      "URL",
+      _("ui-modal-prompt-button-ok"),
+      _("ui-modal-prompt-button-cancel"),
+      mode,
+    );
+  });
+
+  on("on-modal-open-url-ok-clicked", (urlData) => {
+    addUrl(urlData);
+  });
+
+  on("on-open-file-clicked", (mode) => {
+    if (mode === 0) {
+      callOpenFilesDialog(0);
+    } else {
+      callOpenFilesDialog(1);
+    }
   });
 
   on("on-drop", (inputPaths) => {
@@ -86,7 +124,7 @@ function initOnIpcCallbacks() {
       allowedFileTypesName,
       allowedFileTypesList,
     );
-    if (filePath === undefined) {
+    if (!filePath || filePath === "") {
       return;
     }
     savePlaylistToFile(playlist, filePath, false);
@@ -149,41 +187,7 @@ function handle(id, callback) {
   g_handleIpcCallbacks[id] = callback;
 }
 
-function initHandleIpcCallbacks() {
-  // TODO: these stopped working, don't seem to wait, try to fix
-  // handle("test", async (value) => {
-  //   await new Promise((resolve) => setTimeout(resolve, 5000));
-  //   return value;
-  // });
-  // handle("fill-tags", async (files) => {
-  //   const musicmetadata = require("music-metadata");
-  //   let updatedFiles = [];
-  //   for (let index = 0; index < files.length; index++) {
-  //     const file = files[index];
-  //     try {
-  //       if (file.title && file.artist) continue;
-  //       if (!/^http:\/\/|https:\/\//.test(file.url)) {
-  //         const metadata = await musicmetadata.parseFile(file.url);
-  //         let didUpdate = false;
-  //         if (metadata?.common?.artist) {
-  //           file.artist = metadata.common.artist;
-  //           didUpdate = true;
-  //         }
-  //         if (metadata?.common?.title) {
-  //           file.title = metadata.common.title;
-  //           didUpdate = true;
-  //         }
-  //         if (didUpdate) updatedFiles.push(file);
-  //       }
-  //     } catch (error) {
-  //       log.error(error);
-  //       return [];
-  //     }
-  //   }
-  //   log.test(updatedFiles);
-  //   return updatedFiles;
-  // });
-}
+function initHandleIpcCallbacks() {}
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -229,7 +233,7 @@ exports.init = function (mainWindow, parentElementId) {
   initOnIpcCallbacks();
   initHandleIpcCallbacks();
   g_mainWindow = mainWindow;
-  const data = fs.readFileSync(path.join(__dirname, "index.html"));
+  const data = fs.readFileSync(path.join(__dirname, "html/index.html"));
   g_parentElementId = parentElementId;
   sendIpcToCoreRenderer(
     "replace-inner-html",
@@ -245,6 +249,10 @@ function updateLocalizedText() {
 }
 exports.updateLocalizedText = updateLocalizedText;
 
+///////////////////////////////////////////////////////////////////////////////
+// ADD FILES //////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
 function onDroppedFiles(inputPaths) {
   let filePaths = [];
   for (let index = 0; index < inputPaths.length; index++) {
@@ -259,8 +267,8 @@ function onDroppedFiles(inputPaths) {
       filePaths.push(inputPath);
     }
   }
-  let outputPaths = getValidFilePaths(filePaths);
-  if (outputPaths.length == 0) {
+  let files = getValidFiles(filePaths);
+  if (files.length == 0) {
     return;
   }
   // let playlist = {
@@ -272,55 +280,64 @@ function onDroppedFiles(inputPaths) {
   //   playlist.files.push({ url: element });
   // });
   // sendIpcToRenderer("open-playlist", playlist);
-  let files = [];
-  outputPaths.forEach((element) => {
-    files.push({ url: element });
-  });
   sendIpcToRenderer("add-to-playlist", files, false);
 }
 
-function isAlreadyInArray(inputArray, content) {
-  for (let index = 0; index < inputArray.length; index++) {
-    const element = inputArray[index];
-    if (content === element) {
-      return true;
+function getValidFiles(filePaths) {
+  function isAlreadyInArray(inputArray, content) {
+    for (let index = 0; index < inputArray.length; index++) {
+      const element = inputArray[index];
+      if (content === element) {
+        return true;
+      }
     }
+    return false;
   }
-  return false;
-}
-
-function getValidFilePaths(filePaths) {
   let outputPaths = [];
+  let files = [];
   filePaths.forEach((filePath) => {
     let ext = path.extname(filePath);
     if (ext !== "") ext = ext.substring(1);
     if (
       ext === FileExtension.MP3 ||
       ext === FileExtension.OGG ||
-      ext === FileExtension.WAV
+      ext === FileExtension.WAV ||
+      ext === FileExtension.WEBM ||
+      ext === FileExtension.AVI ||
+      ext === FileExtension.MP4 ||
+      ext === FileExtension.MKV ||
+      ext === FileExtension.OGV
     ) {
       if (!isAlreadyInArray(outputPaths, filePath)) outputPaths.push(filePath);
+      files.push({ url: filePath });
     } else if (ext === FileExtension.M3U || ext === FileExtension.M3U8) {
       const listFiles = getPlaylistFiles(filePath);
       listFiles.forEach((listFile) => {
-        if (!isAlreadyInArray(outputPaths, listFile.url))
+        if (!isAlreadyInArray(outputPaths, listFile.url)) {
           outputPaths.push(listFile.url);
+          files.push(listFile);
+        }
       });
     }
   });
-  return outputPaths;
+  return files;
 }
 
 function callOpenFilesDialog(mode) {
   let defaultPath;
   let allowMultipleSelection = true;
-  let allowedFileTypesName = _("dialog-file-types-audio-playlists");
+  let allowedFileTypesName = _("dialog-file-types-video-audio-playlists");
   let allowedFileTypesList = [
     FileExtension.MP3,
     FileExtension.OGG,
     FileExtension.WAV,
     FileExtension.M3U,
     FileExtension.M3U8,
+    FileExtension.WEBM,
+    FileExtension.AVI,
+    FileExtension.MP4,
+    FileExtension.MKV,
+    FileExtension.OGV,
   ];
   let filePaths = appUtils.chooseFiles(
     g_mainWindow,
@@ -332,15 +349,11 @@ function callOpenFilesDialog(mode) {
   if (filePaths === undefined) {
     return;
   }
-  let outputPaths = getValidFilePaths(filePaths);
-  if (outputPaths.length == 0) {
+  let files = getValidFiles(filePaths);
+  if (files.length == 0) {
     return;
   }
   if (mode === 1) {
-    let files = [];
-    outputPaths.forEach((element) => {
-      files.push({ url: element });
-    });
     sendIpcToRenderer("add-to-playlist", files, false);
   } else if (mode === 0) {
     let playlist = {
@@ -348,12 +361,36 @@ function callOpenFilesDialog(mode) {
       source: "filesystem",
       files: [],
     };
-    outputPaths.forEach((element) => {
-      playlist.files.push({ url: element });
+    files.forEach((element) => {
+      playlist.files.push(element);
     });
     sendIpcToRenderer("open-playlist", playlist);
   }
 }
+
+function addUrl(urlData) {
+  // test: https://www.youtube.com/watch?v=dQw4w9WgXcQ
+  // test: https://www.youtube.com/watch?v=zKhEkRhhnO0
+  if (/^http:\/\/|https:\/\//.test(urlData.value)) {
+    if (urlData.mode === 1) {
+      let files = [];
+      files.push({ url: urlData.value });
+      sendIpcToRenderer("add-to-playlist", files, false);
+    } else if (urlData.mode === 0) {
+      let playlist = {
+        id: "",
+        source: "filesystem",
+        files: [],
+      };
+      playlist.files.push({ url: urlData.value });
+      sendIpcToRenderer("open-playlist", playlist);
+    }
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// PLAYLIST ///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 function getPlaylistFiles(filePath) {
   // TODO: this is a quick and dirty implementation, maybe do a more elegant/efficient one
@@ -391,7 +428,7 @@ function getPlaylistFiles(filePath) {
       } else {
         if (lastLineWasExInf) {
           if (
-            /.mp3|.ogg|.wav$/.test(line) ||
+            /.mp3|.ogg|.wav|.mkv|.mp4|.avi|.ogv|.webm|.wmv$/.test(line) ||
             /^http:\/\/|https:\/\//.test(line)
           ) {
             line = decodeURI(line);
@@ -417,6 +454,7 @@ function getPlaylistFiles(filePath) {
     });
     return files;
   } catch (error) {
+    log.error(error);
     return [];
   }
 }
@@ -430,29 +468,31 @@ function savePlaylistToFile(playlist, filePath, saveAsAbsolutePaths) {
     additional properties as key-value pairs
     #EXTINF:123 logo="cover.jpg",Track Title
   */
-  let content = "#EXTM3U\n";
-  playlist.files.forEach((file) => {
-    let url = file.url;
-    if (!saveAsAbsolutePaths && !/^http:\/\/|https:\/\//.test(url)) {
-      // make paths relative to playlist file folder
-      let saveDir = path.dirname(filePath);
-      url = path.relative(saveDir, url);
-    }
-    let timeText =
-      !file.duration || isNaN(file.duration) || !isFinite(file.duration)
-        ? -1
-        : parseInt(file.duration);
-    let artistTitleText = "";
-    if (file.title && file.artist) {
-      artistTitleText =
-        encodeM3UName(file.artist) + " - " + encodeM3UName(file.title);
-    } else if (file.title) {
-      artistTitleText = encodeM3UName(file.title);
-    }
-    content += `#EXTINF:${timeText},${artistTitleText}\n`;
-    content += encodeURI(url) + "\n";
-  });
-  fs.writeFileSync(filePath, content, "utf8");
+  try {
+    let content = "#EXTM3U\n";
+    playlist.files.forEach((file) => {
+      let url = file.url;
+      if (!saveAsAbsolutePaths && !/^http:\/\/|https:\/\//.test(url)) {
+        // make paths relative to playlist file folder
+        let saveDir = path.dirname(filePath);
+        url = path.relative(saveDir, url);
+      }
+      let timeText =
+        !file.duration || isNaN(file.duration) || !isFinite(file.duration)
+          ? -1
+          : parseInt(file.duration);
+      let artistTitleText = "";
+      if (file.title && file.artist) {
+        artistTitleText =
+          encodeM3UName(file.artist) + " - " + encodeM3UName(file.title);
+      } else if (file.title) {
+        artistTitleText = encodeM3UName(file.title);
+      }
+      content += `#EXTINF:${timeText},${artistTitleText}\n`;
+      content += encodeURI(url) + "\n";
+    });
+    fs.writeFileSync(filePath, content, "utf8");
+  } catch (error) {}
 }
 
 function encodeM3UName(text) {
@@ -466,80 +506,4 @@ function decodeM3UName(text) {
   text = text.replace("%2D", "-");
   text = text.replace("%2C", ",");
   return text;
-}
-
-/////////////////////////////////////////////////////////////////////////////
-
-function getLocalization() {
-  return [
-    {
-      id: "ap-button-play",
-      text: _("ap-tooltip-button-play"),
-    },
-    {
-      id: "ap-button-pause",
-      text: _("ap-tooltip-button-pause"),
-    },
-    {
-      id: "ap-button-next",
-      text: _("ap-tooltip-button-next"),
-    },
-    {
-      id: "ap-button-prev",
-      text: _("ap-tooltip-button-prev"),
-    },
-    {
-      id: "ap-button-open",
-      text: _("ap-tooltip-button-open"),
-    },
-    {
-      id: "ap-button-volume-off",
-      text: _("ap-tooltip-button-volume-off"),
-    },
-    {
-      id: "ap-button-volume-on",
-      text: _("ap-tooltip-button-volume-on"),
-    },
-    {
-      id: "ap-button-playlist",
-      text: _("ap-tooltip-button-playlist"),
-    },
-    {
-      id: "ap-button-close",
-      text: _("ap-tooltip-button-close"),
-    },
-    {
-      id: "ap-button-shuffle-off",
-      text: _("ap-tooltip-button-shuffle-off"),
-    },
-    {
-      id: "ap-button-shuffle-on",
-      text: _("ap-tooltip-button-shuffle-on"),
-    },
-    {
-      id: "ap-button-repeat-off",
-      text: _("ap-tooltip-button-repeat-off"),
-    },
-    {
-      id: "ap-button-repeat-on",
-      text: _("ap-tooltip-button-repeat-on"),
-    },
-
-    {
-      id: "ap-button-clear",
-      text: _("ap-tooltip-button-clear"),
-    },
-    {
-      id: "ap-button-add",
-      text: _("ap-tooltip-button-add"),
-    },
-    {
-      id: "ap-button-delete",
-      text: _("ap-tooltip-button-delete"),
-    },
-    {
-      id: "ap-button-save",
-      text: _("ap-tooltip-button-save"),
-    },
-  ];
 }

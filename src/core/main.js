@@ -90,7 +90,6 @@ const log = require("../shared/main/logger");
 const themes = require("../shared/main/themes");
 const menuBar = require("../shared/main/menu-bar");
 const appUtils = require("../shared/main/app-utils");
-const fileFormats = require("../shared/main/file-formats");
 const forkUtils = require("../shared/main/fork-utils");
 const temp = require("../shared/main/temp");
 const tools = require("../shared/main/tools");
@@ -105,6 +104,16 @@ let g_launchInfo = {};
 let g_updatesWorker;
 
 // app.commandLine.appendSwitch("js-flags", "--expose-gc");
+// process.env["ELECTRON_DISABLE_SECURITY_WARNINGS"] = "true";
+// // 0 = INFO
+// // 1 = WARNING
+// // 2 = ERROR
+// // 3 = FATAL
+// // 4 = NUM_SEVERITIES
+// app.commandLine.appendSwitch("log-level", "3");
+// app.commandLine.appendSwitch("silent-debugger-extension-api");
+// if (app.isPackaged) {
+// }
 
 //////////////////////////////////////////////////////////////////////////////
 // LAUNCH INFO ///////////////////////////////////////////////////////////////
@@ -528,6 +537,40 @@ if (!gotTheLock) {
     app.on("activate", () => {
       if (BrowserWindow.getAllWindows().length === 0) createWindow();
     });
+    // header fixes for the video player's youtube support
+    // avoids errors 153 and 152-4
+    // ref: https://www.electronjs.org/docs/latest/api/web-request
+    const originalUA = g_mainWindow.webContents.getUserAgent();
+    g_mainWindow.webContents.setUserAgent(
+      originalUA.replace(/Electron\/[0-9\.]+\s/g, ""),
+    );
+    const { session } = require("electron");
+    session.defaultSession.webRequest.onBeforeSendHeaders(
+      { urls: ["<all_urls>"] },
+      (details, callback) => {
+        if (
+          details.url.includes("youtube") ||
+          details.url.includes("googlevideo")
+        ) {
+          details.requestHeaders["Referer"] =
+            "https://www.youtube-nocookie.com";
+          details.requestHeaders["Origin"] = "https://www.youtube-nocookie.com";
+          delete details.requestHeaders["Sec-Fetch-Site"];
+          delete details.requestHeaders["Sec-Fetch-Mode"];
+          delete details.requestHeaders["Sec-Fetch-Dest"];
+        }
+        callback({ cancel: false, requestHeaders: details.requestHeaders });
+      },
+    );
+    // session.defaultSession.webRequest.onHeadersReceived(
+    //   { urls: ["https://www.youtube-nocookie.com*"] },
+    //   (details, callback) => {
+    //     details.responseHeaders["Access-Control-Allow-Origin"] = ["*"];
+    //     delete details.responseHeaders["X-Frame-Options"];
+    //     delete details.responseHeaders["Content-Security-Policy"];
+    //     callback({ cancel: false, responseHeaders: details.responseHeaders });
+    //   },
+    // );
   });
 
   app.on("will-quit", () => {
@@ -1037,10 +1080,6 @@ if (!gotTheLock) {
 // NOTE: (2023/08/02) I'm using v3.x of the tesseract.js module as v4.x
 // was giving errors.
 // TODO: try newer versions & investigate further.
-
-// NOTE: I'm freezing the epubjs module version to 0.3.93 as I'm customizing
-// some of its functions from my code and later versions may break things.
-// TODO: test newer versions when available if needed.
 
 // NOTE: I'm freezing the music-metadata module version to 7.13.4 as later
 // versions require projects to be ESM.

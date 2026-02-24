@@ -26,12 +26,7 @@
     <a id="ap-button-volume-on" class="ap-button ap-hidden" title="volume on"
       ><i class="fa fa-volume-off" aria-hidden="true"></i
     ></a>
-    <input
-      id="ap-slider-volume"
-      class="ap-slider ap-hidden"
-      type="range"
-      value="100"
-    />
+    <input id="ap-slider-volume" class="ap-slider" type="range" value="100" />
     <div id="ap-text-volume">100%</div>
   </div>
   <div class="ap-separator"></div>
@@ -39,10 +34,13 @@
     ><i class="fa fa-list" aria-hidden="true"></i
   ></a>
   <a id="ap-button-close" class="ap-button" title="hide"
-    ><i class="fa fa-times"></i></i
+    ><i class="fa fa-times"></i
   ></a>
   <!-- "fas fa-angle-up" "fa fa-times" -->
 </div>
+<!-- ---------------  HTML VIDEO PLAYER ---------------  -->
+<div id="ap-div-video" class="ap-frame"><video id="html-audio"></video></div>
+<div id="ap-div-ytvideo" class="ap-frame"></div>
 <!-- ---------------   PLAYLIST    ---------------  -->
 <div id="ap-div-playlist" class="ap-frame">
   <div id="ap-div-playlist-tracks"></div>
@@ -66,19 +64,17 @@
   </div>
   <div id="ap-span-playlist-buttons-left">
     <a id="ap-button-clear" class="ap-button" title=""
-    ><i class="fas fa-trash-alt" ></i
-  ></a>
+      ><i class="fas fa-trash-alt"></i
+    ></a>
     <a id="ap-button-add" class="ap-button" title=""
-      ><i class="fas fa-plus" ></i
+      ><i class="fas fa-plus"></i
     ></a>
     <a id="ap-button-delete" class="ap-button" title=""
       ><i class="fas fa-minus"></i
     ></a>
     <div class="ap-separator"></div>
     <a id="ap-button-save" class="ap-button" title=""
-    ><i class="fas fa-save"></i
-  ></a>
+      ><i class="fas fa-save"></i
+    ></a>
   </div>
 </div>
-<!-- ---------------  HTML AUDIO PLAYER ---------------  -->
-<audio id="html-audio"></audio>

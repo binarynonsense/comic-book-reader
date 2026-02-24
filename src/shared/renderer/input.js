@@ -153,6 +153,9 @@ function initKeyboard() {
     if (getOpenModal()) {
       modals.onInputEvent(getOpenModal(), "onkeydown", event);
       return;
+    } else if (getTools()["audio-player"].getOpenModal()) {
+      getTools()["audio-player"].onInputEvent("onkeydown", event);
+      return;
     }
 
     //////////////////////////////////////////////////////////
@@ -284,7 +287,7 @@ function initMouse() {
         if (getCurrentTool().onContextMenu)
           getCurrentTool().onContextMenu(
             [event.pageX, event.pageY],
-            event.target
+            event.target,
           );
     }
   });
@@ -408,7 +411,7 @@ function initTouchScreen() {
       event.preventDefault();
       event.stopImmediatePropagation();
     },
-    { passive: false }
+    { passive: false },
   );
 
   document.addEventListener("touchend", function (event) {
@@ -572,7 +575,7 @@ function areGamepadCommandsDown(commands, strict = true, thisFrame = false) {
           if (
             !gamepads.getAxisDownThisFrame(
               GamepadButtonToIdAndDirection[buttonId].id,
-              GamepadButtonToIdAndDirection[buttonId].direction
+              GamepadButtonToIdAndDirection[buttonId].direction,
             )
           ) {
             allTrue = false;
@@ -582,7 +585,7 @@ function areGamepadCommandsDown(commands, strict = true, thisFrame = false) {
           if (
             !gamepads.getAxisDown(
               GamepadButtonToIdAndDirection[buttonId].id,
-              GamepadButtonToIdAndDirection[buttonId].direction
+              GamepadButtonToIdAndDirection[buttonId].direction,
             )
           ) {
             allTrue = false;

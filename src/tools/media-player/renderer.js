@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2025 Álvaro García
+ * Copyright 2020-2026 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -10,12 +10,14 @@ import {
   sendIpcToMainAndWait as coreSendIpcToMainAndWait,
 } from "../../core/renderer.js";
 import * as modals from "../../shared/renderer/modals.js";
+import * as yt from "./renderer/youtube.js";
 
 let g_settings;
 let g_player = {};
 let g_playlist;
 let g_tracks = [];
 let g_currentTrackIndex = 0;
+let g_loadedTrackIndex = -1;
 let g_tempAudioElement;
 let g_tempAudioIndex;
 let g_selectedTrackFileIndex;
@@ -55,6 +57,16 @@ export function on(id, callback) {
 function initOnIpcCallbacks() {
   on("init", (settings, playlist) => {
     initPlayer(settings, playlist);
+    // load css
+    var head = document.getElementsByTagName("head")[0];
+    var link = document.createElement("link");
+    link.type = "text/css";
+    link.rel = "stylesheet";
+    link.href = "../tools/media-player/html/style.css";
+    head.appendChild(link);
+    // yt
+    yt.init(onYTError);
+    // yt.createNewPlayer("ap-div-ytvideo", "dQw4w9WgXcQ");
   });
 
   on("show", (isVisible, elementId) => {
@@ -137,6 +149,14 @@ function initOnIpcCallbacks() {
   on("show-modal-info", (...args) => {
     showModalAlert(...args);
   });
+
+  on("show-modal-open", (...args) => {
+    showModalOpen(...args);
+  });
+
+  on("show-modal-open-url", (...args) => {
+    showModalOpenURL(...args);
+  });
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -187,6 +207,14 @@ function fillTimes() {
   }
 }
 
+function updateCurrentFileTags(title, artist, duration) {
+  let index = g_tracks[g_currentTrackIndex].fileIndex;
+  if (title) g_playlist.files[index].title = title;
+  if (artist) g_playlist.files[index].artist = artist;
+  if (duration) g_playlist.files[index].duration = duration;
+  updatePlaylistInfo();
+}
+
 function getNextToFill() {
   for (let index = g_tempAudioIndex; index < g_playlist.files.length; index++) {
     const file = g_playlist.files[index];
@@ -196,28 +224,6 @@ function getNextToFill() {
   }
   return -1;
 }
-
-// async function fillTags() {
-//   console.log(g_playlist.files);
-//   let updatedFiles = await sendIpcToMainAndWait("fill-tags", g_playlist.files);
-//   let test = await sendIpcToMainAndWait("test", 10);
-//   console.log(updatedFiles);
-//   console.log(test);
-//   if (updatedFiles && updatedFiles.length > 0) {
-//     for (let index = 0; index < g_playlist.files.length; index++) {
-//       const file = g_playlist.files[index];
-//       if (file.title && file.artist) continue;
-//       for (let j = 0; j < updatedFiles.length; j++) {
-//         const updatedFile = updatedFiles[j];
-//         if (updatedFile.url === file.url) {
-//           file.artist = updatedFile.artist;
-//           file.title = updatedFile.title;
-//         }
-//       }
-//     }
-//   }
-//   updatePlaylistInfo();
-// }
 
 function fillTags() {
   sendIpcToMain("fill-tags", g_playlist.files);
@@ -325,27 +331,39 @@ function updatePlaylistInfo() {
 }
 
 function loadTrack(index, time) {
+  g_player.isYoutube = false;
+  g_player.isVideo = false;
+  refreshUI();
   try {
     g_currentTrackIndex = index;
     g_selectedTrackFileIndex = g_tracks[g_currentTrackIndex].fileIndex;
     if (
-      g_tracks[g_currentTrackIndex].fileUrl.endsWith(".m3u8") &&
-      Hls.isSupported()
+      g_tracks[g_currentTrackIndex].fileUrl.startsWith("http") &&
+      yt.getYouTubeVideoIdFromUrl(g_tracks[g_currentTrackIndex].fileUrl)
     ) {
-      g_player.engine.usingHsl = true;
-      g_player.sliderTime.value = 0;
-      g_player.engine.currentTime = 0;
+      g_player.isYoutube = true;
     } else {
-      g_player.engine.usingHsl = false;
-      if (g_player.engine.hls) {
-        g_player.engine.hls.destroy();
+      if (
+        g_tracks[g_currentTrackIndex].fileUrl.endsWith(".m3u8") &&
+        Hls.isSupported()
+      ) {
+        g_player.engine.usingHsl = true;
+        g_player.sliderTime.value = 0;
+        g_player.engine.currentTime = 0;
+      } else {
+        g_player.engine.usingHsl = false;
+        if (g_player.engine.hls) {
+          g_player.engine.hls.destroy();
+        }
+        g_player.engine.src = g_tracks[g_currentTrackIndex].fileUrl;
+        g_player.sliderTime.value = time;
+        g_player.engine.currentTime = time;
       }
-      g_player.engine.src = g_tracks[g_currentTrackIndex].fileUrl;
-      g_player.sliderTime.value = time;
-      g_player.engine.currentTime = time;
+      g_loadedTrackIndex = g_currentTrackIndex;
     }
     return true;
   } catch (error) {
+    g_loadedTrackIndex = -1;
     console.log(error);
     return false;
   }
@@ -390,7 +408,7 @@ async function playTrack(index, time) {
             console.error("hls: fatal network error encountered", data);
             sendIpcToMain("on-play-error", "NotSupportedError");
             g_player.isPlaying = false;
-            g_player.engine.src = undefined;
+            g_player.engine.src = "";
             refreshUI();
             g_player.engine.hls.destroy();
             g_player.engine.usingHsl = false;
@@ -398,7 +416,7 @@ async function playTrack(index, time) {
           default:
             sendIpcToMain("on-play-error", "NotSupportedError");
             g_player.isPlaying = false;
-            g_player.engine.src = undefined;
+            g_player.engine.src = "";
             refreshUI();
             g_player.engine.hls.destroy();
             g_player.engine.usingHsl = false;
@@ -408,18 +426,48 @@ async function playTrack(index, time) {
     });
   } else {
     try {
-      if (index === -1) {
-        await g_player.engine.play();
+      if (g_loadedTrackIndex > -1 && index === -1) {
         g_player.isPlaying = true;
+        if (g_player.isYoutube) {
+          if (yt.onPlayClicked()) g_player.isPlaying = true;
+          refreshUI();
+          scrollToCurrent();
+          return;
+        }
+        await g_player.engine.play();
+        refreshUI();
+        scrollToCurrent();
       } else {
+        if (index === -1) index = g_currentTrackIndex;
+        yt.destroyPlayer();
         if (!loadTrack(index, time)) return;
+        if (g_tracks[index].fileUrl.startsWith("http")) {
+          const ytId = yt.getYouTubeVideoIdFromUrl(g_tracks[index].fileUrl);
+          if (ytId) {
+            yt.createNewPlayer(
+              ytId,
+              g_player.engine.volume,
+              refreshUI,
+              updateCurrentFileTags,
+            );
+            g_player.engine.src = "";
+            g_player.isPlaying = true;
+            g_player.isVideo = false;
+            g_player.isYoutube = true;
+            g_loadedTrackIndex = index;
+            refreshUI();
+            scrollToCurrent();
+            return;
+          }
+        }
+        // load "normal" track
         await g_player.engine.play();
         g_player.isPlaying = true;
       }
     } catch (error) {
       if (error.toString().includes("NotSupportedError")) {
         g_player.isPlaying = false;
-        g_player.engine.src = undefined;
+        g_player.engine.src = "";
         refreshUI();
         sendIpcToMain("on-play-error", "NotSupportedError");
       } else {
@@ -432,8 +480,12 @@ async function playTrack(index, time) {
 }
 
 function pauseTrack(refresh = true) {
-  g_player.engine.pause();
-  g_player.isPlaying = false;
+  if (g_player.isYoutube) {
+    if (yt.onPauseClicked()) g_player.isPlaying = false;
+  } else {
+    g_player.engine.pause();
+    g_player.isPlaying = false;
+  }
   if (refresh) refreshUI();
 }
 
@@ -455,8 +507,23 @@ function scrollToCurrent() {
 }
 
 function refreshUI() {
+  if (g_player.isVideo) {
+    g_player.engine.parentNode.classList.remove("set-display-none");
+  } else {
+    g_player.engine.parentNode.classList.add("set-display-none");
+  }
+  if (
+    g_player.isYoutube &&
+    document.getElementById("ap-div-ytvideo").childElementCount > 0
+  ) {
+    document
+      .getElementById("ap-div-ytvideo")
+      .classList.remove("set-display-none");
+  } else {
+    document.getElementById("ap-div-ytvideo").classList.add("set-display-none");
+  }
   if (g_tracks.length > 0) {
-    if (g_player.engine.src || g_player.engine.usingHsl) {
+    if (g_player.isYoutube || g_player.engine.src || g_player.engine.usingHsl) {
       g_player.buttonPlay.classList.remove("ap-disabled");
       g_player.buttonPause.classList.remove("ap-disabled");
     } else {
@@ -542,7 +609,7 @@ function onButtonClicked(buttonName) {
       playTrack(0, 0);
     else playTrack(g_currentTrackIndex + 1, 0);
   } else if (buttonName === "open") {
-    sendIpcToMain("open-files");
+    sendIpcToMain("on-open-clicked", 0);
   } else if (buttonName === "playlist") {
     if (g_player.divPlaylist.classList.contains("ap-hidden")) {
       g_player.divPlaylist.classList.remove("ap-hidden");
@@ -554,9 +621,15 @@ function onButtonClicked(buttonName) {
   } else if (buttonName === "volume-off") {
     g_player.lastVolume = g_player.engine.volume;
     g_player.engine.volume = 0;
+    if (g_player.isYoutube) {
+      yt.updateVolume(g_player.engine.volume);
+    }
   } else if (buttonName === "volume-on") {
     if (g_player.lastVolume) g_player.engine.volume = g_player.lastVolume;
     else g_player.engine.volume = 1;
+    if (g_player.isYoutube) {
+      yt.updateVolume(g_player.engine.volume);
+    }
   } else if (buttonName === "close") {
     sendIpcToMain("close");
   }
@@ -578,7 +651,7 @@ function onButtonClicked(buttonName) {
     g_selectedTrackFileIndex = undefined;
     pauseTrack(true);
   } else if (buttonName === "add") {
-    sendIpcToMain("add-files");
+    sendIpcToMain("on-open-clicked", 1);
   } else if (buttonName === "delete") {
     if (g_tracks.length <= 0 || g_selectedTrackFileIndex === undefined) return;
     let currentTrackFileIndex = g_tracks[g_currentTrackIndex].fileIndex;
@@ -655,6 +728,18 @@ function onSliderTimeChanged(slider) {
 
 function onSliderVolumeChanged(slider) {
   g_player.engine.volume = slider.value / 100;
+  if (g_player.isYoutube) {
+    yt.updateVolume(g_player.engine.volume);
+  }
+}
+
+function onYTError(type) {
+  // if (type === "cancelled")
+  // "connection error" loading error" "stall error"
+  g_player.isPlaying = false;
+  // g_player.engine.src = "";
+  // g_player.isYoutube = false;
+  g_loadedTrackIndex = -1;
 }
 
 function getFormatedTimeFromSeconds(seconds) {
@@ -823,6 +908,15 @@ function initPlayer(settings, playlist) {
     g_player.sliderVolume.value = this.volume * 100;
   });
 
+  g_player.engine.addEventListener("loadedmetadata", () => {
+    if (g_player.engine.videoWidth > 0) {
+      g_player.isVideo = true;
+    } else {
+      g_player.isVideo = false;
+    }
+    refreshUI();
+  });
+
   g_player.engine.addEventListener("loadeddata", function () {
     if (g_tracks.length <= 0) return;
     let fileIndex = g_tracks[g_currentTrackIndex].fileIndex;
@@ -914,6 +1008,10 @@ function sendConfigUpdateTimeout() {
 ///////////////////////////////////////////////////////////////////////////////
 
 export function onInputEvent(type, event) {
+  if (getOpenModal()) {
+    modals.onInputEvent(getOpenModal(), type, event);
+    return;
+  }
   switch (type) {
     case "body.ondrop": {
       const composedPath = event.composedPath();
@@ -946,6 +1044,10 @@ export function onInputEvent(type, event) {
 
 let g_openModal;
 
+export function getOpenModal() {
+  return g_openModal;
+}
+
 function showModal(config) {
   g_openModal = modals.show(config);
 }
@@ -975,6 +1077,99 @@ function showModalAlert(title, message, textButton1) {
           modalClosed();
         },
         key: "Enter",
+      },
+    ],
+  });
+}
+
+function showModalOpen(
+  title,
+  textButtonBack,
+  textButtonOpenFile,
+  textButtonOpenUrl,
+  mode,
+  showFocus,
+) {
+  if (getOpenModal()) {
+    return;
+  }
+
+  let buttons = [];
+  buttons.push({
+    text: textButtonOpenFile.toUpperCase(),
+    fullWidth: true,
+    callback: () => {
+      modalClosed();
+      sendIpcToMain("on-open-file-clicked", mode);
+    },
+  });
+  buttons.push({
+    text: textButtonOpenUrl.toUpperCase(),
+    fullWidth: true,
+    callback: () => {
+      modalClosed();
+      sendIpcToMain("on-open-url-clicked", mode);
+    },
+  });
+  buttons.push({
+    text: textButtonBack.toUpperCase(),
+    fullWidth: true,
+    callback: () => {
+      modalClosed();
+    },
+  });
+
+  g_openModal = modals.show({
+    showFocus: showFocus,
+    title: title,
+    frameWidth: 400,
+    zIndexDelta: 6,
+    close: {
+      callback: () => {
+        modalClosed();
+      },
+      key: "Escape",
+    },
+    buttons: buttons,
+  });
+}
+
+function showModalOpenURL(title, message, textButton1, textButton2, mode) {
+  if (g_openModal) {
+    return;
+  }
+
+  g_openModal = modals.show({
+    title,
+    message,
+    zIndexDelta: 6,
+    input: { type: "text", default: "" },
+    close: {
+      callback: () => {
+        modalClosed();
+      },
+      key: "Escape",
+    },
+    buttons: [
+      {
+        text: textButton1.toUpperCase(),
+        callback: (showFocus, value) => {
+          const ytId = yt.getYouTubeVideoIdFromUrl(value);
+          sendIpcToMain("on-modal-open-url-ok-clicked", {
+            value,
+            ytId: ytId,
+            mode,
+          });
+          modalClosed();
+          showLoadingModal();
+        },
+        key: "Enter",
+      },
+      {
+        text: textButton2.toUpperCase(),
+        callback: () => {
+          modalClosed();
+        },
       },
     ],
   });

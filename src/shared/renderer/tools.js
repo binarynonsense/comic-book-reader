@@ -6,7 +6,7 @@
  */
 
 import * as reader from "../../reader/renderer.js";
-import * as audioPlayer from "../../tools/audio-player/renderer.js";
+import * as mediaPlayer from "../../tools/media-player/renderer.js";
 import * as systemMonitor from "../../tools/system-monitor/renderer.js";
 import * as toolPreferences from "../../tools/preferences/renderer.js";
 import * as toolHistory from "../../tools/history/renderer.js";
@@ -35,7 +35,7 @@ let g_tools;
 export function init() {
   g_tools = {};
   g_tools["reader"] = reader;
-  g_tools["audio-player"] = audioPlayer;
+  g_tools["audio-player"] = mediaPlayer;
   g_tools["system-monitor"] = systemMonitor;
   g_tools["tool-preferences"] = toolPreferences;
   g_tools["tool-history"] = toolHistory;

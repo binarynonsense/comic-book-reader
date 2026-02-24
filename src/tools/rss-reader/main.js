@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2025 Álvaro García
+ * Copyright 2025-2026 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -780,7 +780,7 @@ function getExtraLocalization() {
     openInBrowser: _("tool-shared-ui-search-item-open-browser"),
     loadingTitle: _("tool-shared-modal-title-loading"),
 
-    openInAudioPlayer: _("ui-modal-prompt-button-open-in-audioplayer"),
+    openInAudioPlayer: _("ui-modal-prompt-button-open-in-mediaplayer"),
     cancel: _("tool-shared-ui-cancel"),
     addToPlaylist: _("ui-modal-prompt-button-add-to-playlist"),
     startPlaylist: _("ui-modal-prompt-button-start-new-playlist"),

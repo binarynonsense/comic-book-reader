@@ -732,7 +732,7 @@ function getNormalMenu(settings, history) {
           },
         },
         {
-          label: _("menu-view-layout-show-audioplayer"),
+          label: _("menu-view-layout-show-mediaplayer"),
           id: "audio-player",
           type: "checkbox",
           checked: settings.showAudioPlayer,
@@ -824,7 +824,7 @@ function getHomeScreenMenu(settings, history) {
           },
         },
         {
-          label: _("menu-view-layout-show-audioplayer"),
+          label: _("menu-view-layout-show-mediaplayer"),
           id: "audio-player",
           type: "checkbox",
           checked: settings.showAudioPlayer,
@@ -903,7 +903,7 @@ function getToolMenu(settings, history, toolName) {
           },
         },
         {
-          label: _("menu-view-layout-show-audioplayer"),
+          label: _("menu-view-layout-show-mediaplayer"),
           id: "audio-player",
           type: "checkbox",
           checked: settings.showAudioPlayer,

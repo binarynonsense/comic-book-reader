@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2020-2023 Álvaro García
+ * Copyright 2020-2026 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -8,9 +8,9 @@
 const { app } = require("electron");
 const fs = require("node:fs");
 const path = require("node:path");
-const log = require("../../shared/main/logger");
+const log = require("../../../shared/main/logger");
 
-const { getConfigFolder } = require("../../shared/main/app-utils");
+const { getConfigFolder } = require("../../../shared/main/app-utils");
 
 let g_settings;
 let g_fileName = "acbr-player.cfg";
