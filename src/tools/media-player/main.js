@@ -16,6 +16,7 @@ const settings = require("./main/settings");
 const { _ } = require("../../shared/main/i18n");
 const log = require("../../shared/main/logger");
 const { getLocalization } = require("./main/localization");
+const ffmpeg = require("./main/ffmpeg");
 
 let g_mainWindow;
 let g_parentElementId;
@@ -49,6 +50,8 @@ function on(id, callback) {
 }
 
 function initOnIpcCallbacks() {
+  ffmpeg.initOnIpcCallbacks(on, sendIpcToRenderer);
+
   on("update-config", (_settings, _playlist) => {
     settings.set(_settings);
     g_playlist = _playlist;
@@ -177,6 +180,7 @@ function initOnIpcCallbacks() {
 let g_handleIpcCallbacks = {};
 
 async function handleIpcFromRenderer(...args) {
+  log.test("handleIpcFromRenderer");
   const callback = g_handleIpcCallbacks[args[0]];
   if (callback) return await callback(...args.slice(1));
   return;
@@ -187,7 +191,100 @@ function handle(id, callback) {
   g_handleIpcCallbacks[id] = callback;
 }
 
-function initHandleIpcCallbacks() {}
+function initHandleIpcCallbacks() {
+  //////////////////////
+  handle("mp-is-video-stream", async (filePath) => {
+    try {
+      const mm = require("music-metadata");
+      const metadata = await mm.parseFile(filePath, { skipCovers: true });
+
+      // 1. Explicit Video Flags (The "Gold Standard")
+      const hasExplicitVideo =
+        metadata.streams?.some((s) => s.codec_type === "video") ||
+        JSON.stringify(metadata.native).toLowerCase().includes("video");
+
+      // 2. Container + Multi-Track Check (The "Reliable Fallback")
+      // If it's a container known for video (MKV/MP4/AVI/MOV) and has > 1 track, it's a video.
+      const videoContainers = ["matroska", "isom", "mp42", "mov", "avi"];
+      const container = metadata.format.tagTypes?.[0]?.toLowerCase() || "";
+      const isVideoContainer = videoContainers.some((ext) =>
+        container.includes(ext),
+      );
+
+      const trackCount =
+        metadata.native?.matroska?.length ||
+        metadata.native?.["ISO/IEC 14496-12"]?.length ||
+        0;
+
+      const finalDecision = !!(
+        hasExplicitVideo ||
+        (isVideoContainer && trackCount > 1)
+      );
+
+      log.test(
+        `Tracks: ${trackCount} | Container: ${container} | Decision: ${finalDecision}`,
+      );
+
+      return finalDecision;
+    } catch (error) {
+      return false;
+    }
+  });
+
+  // handle("mp-is-video-stream", async (filePath) => {
+  //   log.test("--- MP IS VIDEO STREAM PROBE ---");
+  //   try {
+  //     const mm = require("music-metadata");
+  //     // Using skipCovers: true makes it slightly faster
+  //     const metadata = await mm.parseFile(filePath, { skipCovers: true });
+
+  //     // 1. Check if ANY native track (Matroska, MP4, etc) contains "video"
+  //     const hasVideoInNative = Object.values(metadata.native || {}).some(
+  //       (tracks) =>
+  //         tracks.some((track) => {
+  //           // Stringify the whole track object and look for "video"
+  //           const trackData = JSON.stringify(track).toLowerCase();
+  //           return (
+  //             trackData.includes("video") ||
+  //             trackData.includes("v_hevc") ||
+  //             trackData.includes("avc")
+  //           );
+  //         }),
+  //     );
+
+  //     // 2. Check for common video codec hints if strings fail
+  //     const videoCodecs = ["hevc", "h265", "h264", "avc", "vp8", "vp9", "av1"];
+  //     const hasVideoCodec =
+  //       metadata.format.codec &&
+  //       videoCodecs.some((c) =>
+  //         metadata.format.codec.toLowerCase().includes(c),
+  //       );
+
+  //     // 3. The "Last Stand" check:
+  //     // If it's a Matroska or MP4 and has more than 1 native track entry, it's almost certainly video+audio
+  //     const nativeTrackCount = metadata.native?.matroska?.length || 0;
+  //     const isMultiTrackContainer = nativeTrackCount > 1;
+
+  //     const finalDecision = !!(
+  //       hasVideoInNative ||
+  //       hasVideoCodec ||
+  //       isMultiTrackContainer
+  //     );
+
+  //     log.test(
+  //       `Tracks Count: ${nativeTrackCount} | Found Video in Native: ${hasVideoInNative}`,
+  //     );
+  //     log.test(`Final Decision: ${finalDecision}`);
+
+  //     return finalDecision;
+  //   } catch (error) {
+  //     console.error("Metadata probe failed:", error);
+  //     return false;
+  //   }
+  // });
+
+  //////////////////////
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -195,9 +292,14 @@ function initHandleIpcCallbacks() {}
 
 let g_didShow = false;
 
-exports.open = function (isVisible) {
+exports.open = async function (isVisible) {
   if (isVisible & !g_didShow) {
-    sendIpcToRenderer("init", settings.get(), g_playlist);
+    sendIpcToRenderer(
+      "init",
+      settings.get(),
+      g_playlist,
+      await ffmpeg.getValidFfmpegPath(), // TODO: get setting if available
+    );
     g_didShow = true;
   }
   sendIpcToRenderer("show", isVisible, g_parentElementId);
