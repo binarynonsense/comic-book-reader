@@ -13,7 +13,7 @@ contextBridge.exposeInMainWorld("ipc", {
     ipcRenderer.send("main", args);
   },
   sendToMainAndWait: (...args) => {
-    return ipcRenderer.invoke("main", args);
+    return ipcRenderer.invoke("main", ...args);
   },
   addOnIpcCallbackFromMain: (callback) => ipcRenderer.on("renderer", callback),
   showFilePath(file) {
