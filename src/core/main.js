@@ -72,13 +72,55 @@ cp.execFileSync = function (command, args, options) {
 };
 
 //////////////////////////////////////////////////////////////////////////////
+// UNHANDLED /////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+
+process.on("unhandledRejection", (reason, promise) => {
+  console.error(
+    "critical: unhandled rejection at:",
+    promise,
+    "reason:",
+    reason,
+  );
+});
+
+process.on("uncaughtException", (error) => {
+  // TODO: localize buttons and title
+  const stackTrace = error.stack || error.toString();
+  if (app.isReady()) {
+    const clickedIndex = dialog.showMessageBoxSync({
+      type: "error",
+      title: "Critical Main Process Error",
+      message: "A fatal error occurred in the Main process.",
+      detail: stackTrace,
+      buttons: ["Copy Error & Close", "Close App"],
+      defaultId: 0, // enter
+      cancelId: 1, // esc
+    });
+    if (clickedIndex === 0) {
+      clipboard.writeText(stackTrace);
+    }
+  } else {
+    dialog.showErrorBox("Startup Error", error.stack || error.toString());
+  }
+  app.quit();
+});
+
+//////////////////////////////////////////////////////////////////////////////
 // SETUP /////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 
 const timers = require("../shared/main/timers");
 timers.start("startup");
 
-const { app, BrowserWindow, ipcMain, screen } = require("electron");
+const {
+  app,
+  BrowserWindow,
+  ipcMain,
+  screen,
+  dialog,
+  clipboard,
+} = require("electron");
 const os = require("node:os");
 const fs = require("node:fs");
 const path = require("node:path");
@@ -657,8 +699,8 @@ if (!gotTheLock) {
     }
   });
 
-  ipcMain.handle("main", async (event, args) => {
-    tools.getTools()[args[0]]?.handleIpcFromRenderer(...args.slice(1));
+  ipcMain.handle("main", async (event, ...args) => {
+    return tools.getTools()[args[0]]?.handleIpcFromRenderer(...args.slice(1));
   });
 
   ipcMain.on("tools-worker", (event, ...args) => {
