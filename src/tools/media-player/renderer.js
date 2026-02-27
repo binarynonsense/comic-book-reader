@@ -10,20 +10,15 @@ import {
   sendIpcToMainAndWait as coreSendIpcToMainAndWait,
 } from "../../core/renderer.js";
 import * as modals from "../../shared/renderer/modals.js";
+import * as playlist from "./renderer/playlist.js";
 import * as yt from "./renderer/youtube.js";
 import * as ffmpeg from "./renderer/ffmpeg.js";
 
 let g_settings;
 let g_player = {};
-let g_playlist;
-let g_tracks = [];
-let g_currentTrackIndex = 0;
-let g_loadedTrackIndex = -1;
-let g_tempAudioElement;
-let g_tempAudioIndex;
-let g_selectedTrackFileIndex;
-
 let g_ffmpegAvailable = false;
+
+let g_loadedTrackIndex = -1;
 let g_currentLoadId = 0;
 
 const PlayerState = {
@@ -68,10 +63,8 @@ export function on(id, callback) {
 function initOnIpcCallbacks() {
   ffmpeg.initOnIpcCallbacks(on);
 
-  on("init", (settings, playlist, ffmpegAvailable) => {
-    g_ffmpegAvailable = ffmpegAvailable;
-    ffmpeg.init(sendIpcToMain);
-    initPlayer(settings, playlist);
+  on("init", (settings, loadedPlaylist, ffmpegAvailable) => {
+    initPlayer(settings, loadedPlaylist, ffmpegAvailable);
     // load css
     var head = document.getElementsByTagName("head")[0];
     var link = document.createElement("link");
@@ -79,9 +72,6 @@ function initOnIpcCallbacks() {
     link.rel = "stylesheet";
     link.href = "../tools/media-player/html/style.css";
     head.appendChild(link);
-    // yt
-    yt.init(onYTError);
-    // yt.createNewPlayer("ap-div-ytvideo", "dQw4w9WgXcQ");
   });
 
   on("show", (isVisible, elementId) => {
@@ -93,40 +83,16 @@ function initOnIpcCallbacks() {
   });
 
   on("open-playlist", (playlist) => {
-    pauseTrack(false);
-    g_playlist = playlist;
-    g_selectedTrackFileIndex = undefined;
-    createTracksList(false);
-    updatePlaylistInfo();
-    playTrack(g_currentTrackIndex, 0);
-    fillTimes();
-    fillTags();
+    playlist.openPlaylist(playlist);
+    playTrack(playlist.getCurrentTrackIndex(), 0);
   });
 
-  on("add-to-playlist", (files, startPlaying, allowDuplicates = false) => {
-    if (files && Array.isArray(files) && files.length > 0) {
-      if (!allowDuplicates) {
-        const newFiles = files.filter((file) => !isFileInPlaylist(file));
-        if (newFiles.length === 0) {
-          // no new one
-          const listIndex = getPlaylistIndex(files[0]);
-          playTrack(listIndex, 0);
-          return;
-        } else {
-          files = newFiles;
-        }
-      }
-      // TODO: MAYBE: start first new song by default after adding?
-      const oldLength = g_tracks.length;
-      g_playlist.files.push(...files);
-      createTracksList(g_tracks.length > 0);
-      if (oldLength === 0 || startPlaying) {
-        playTrack(oldLength, 0);
-      }
-      refreshUI();
-      fillTimes(); // calls updatePlaylistInfo
-      fillTags();
+  on("add-to-playlist", (...args) => {
+    const trackIndex = playlist.addToPlaylist(...args);
+    if (trackIndex !== undefined) {
+      playTrack(trackIndex, 0);
     }
+    refreshUI();
   });
 
   on("update-layout-pos", (position) => {
@@ -144,21 +110,8 @@ function initOnIpcCallbacks() {
     updateLocalization(callback);
   });
 
-  on("tags-filled", (updatedFiles) => {
-    if (updatedFiles && updatedFiles.length > 0) {
-      for (let index = 0; index < g_playlist.files.length; index++) {
-        const file = g_playlist.files[index];
-        if (file.title && file.artist) continue;
-        for (let j = 0; j < updatedFiles.length; j++) {
-          const updatedFile = updatedFiles[j];
-          if (updatedFile.url === file.url) {
-            file.artist = updatedFile.artist;
-            file.title = updatedFile.title;
-          }
-        }
-      }
-    }
-    updatePlaylistInfo();
+  on("tags-filled", (...args) => {
+    playlist.onTagsFilled(...args);
   });
 
   on("show-modal-info", (...args) => {
@@ -188,163 +141,6 @@ function updateLocalization(localization) {
   }
 }
 
-function fillTimes() {
-  try {
-    g_tempAudioIndex = 0;
-    g_tempAudioIndex = getNextToFill();
-    if (g_tempAudioIndex >= 0) {
-      if (!g_tempAudioElement)
-        g_tempAudioElement = document.createElement("audio");
-      g_tempAudioElement.muted = true;
-      g_tempAudioElement.preload = true;
-      g_tempAudioElement.src = g_playlist.files[g_tempAudioIndex].url;
-      g_tempAudioElement.addEventListener("loadeddata", function () {
-        g_playlist.files[g_tempAudioIndex].duration =
-          g_tempAudioElement.duration;
-        g_tempAudioIndex++;
-        g_tempAudioIndex = getNextToFill();
-        if (
-          g_tempAudioIndex > 0 &&
-          g_tempAudioIndex < g_playlist.files.length
-        ) {
-          g_tempAudioElement.src = g_playlist.files[g_tempAudioIndex].url;
-        } else {
-          g_tempAudioElement.removeAttribute("src");
-          g_tempAudioElement = null;
-          updatePlaylistInfo();
-        }
-      });
-    } else {
-      updatePlaylistInfo();
-    }
-  } catch (error) {
-    // TODO
-  }
-}
-
-function updateCurrentFileTags(title, artist, duration) {
-  let index = g_tracks[g_currentTrackIndex].fileIndex;
-  if (title) g_playlist.files[index].title = title;
-  if (artist) g_playlist.files[index].artist = artist;
-  if (duration) g_playlist.files[index].duration = duration;
-  updatePlaylistInfo();
-}
-
-function getNextToFill() {
-  for (let index = g_tempAudioIndex; index < g_playlist.files.length; index++) {
-    const file = g_playlist.files[index];
-    if (file.duration) continue;
-    if (/^http:\/\/|https:\/\//.test(file.url)) continue;
-    return index;
-  }
-  return -1;
-}
-
-function fillTags() {
-  sendIpcToMain("fill-tags", g_playlist.files);
-}
-
-////////////////////////////////////////////////
-
-function isFileInPlaylist(file) {
-  for (let i = 0; i < g_playlist.files.length; i++) {
-    const playlistFile = g_playlist.files[i];
-    if (playlistFile.url === file.url) return true;
-  }
-  return false;
-}
-
-function getPlaylistIndex(file) {
-  for (let i = 0; i < g_playlist.files.length; i++) {
-    const playlistFile = g_playlist.files[i];
-    if (playlistFile.url === file.url) return i;
-  }
-  return -1;
-}
-
-////////////////////////////////////////////////
-
-function createTracksList(isRefresh) {
-  let currentFileIndex;
-  if (!isRefresh && g_tempAudioElement) {
-    // playlist changed, abort time background retrieval
-    g_tempAudioElement.removeAttribute("src");
-    g_tempAudioElement = null;
-  }
-  if (isRefresh && g_tracks.length > 0)
-    currentFileIndex = g_tracks[g_currentTrackIndex].fileIndex;
-  g_tracks = [];
-  for (let index = 0; index < g_playlist.files.length; index++) {
-    if (g_settings.shuffle && currentFileIndex === index) {
-      continue;
-    }
-    g_tracks.push({ fileIndex: index, fileUrl: g_playlist.files[index].url });
-  }
-  // shuffled
-  if (g_settings.shuffle) {
-    g_tracks = shuffleArray(g_tracks);
-    if (currentFileIndex !== undefined) {
-      g_tracks.unshift({
-        fileIndex: currentFileIndex,
-        fileUrl: g_playlist.files[currentFileIndex].url,
-      });
-    }
-    g_currentTrackIndex = 0;
-  } else {
-    // linear
-    if (currentFileIndex !== undefined) g_currentTrackIndex = currentFileIndex;
-    else g_currentTrackIndex = 0;
-  }
-}
-
-function updatePlaylistInfo() {
-  g_player.divPlaylistTracks.innerHTML = "";
-  if (!g_playlist || g_tracks.length === 0) {
-    return;
-  }
-  for (let index = 0; index < g_playlist.files.length; index++) {
-    const file = g_playlist.files[index];
-    let duration = "--:--";
-    const div = document.createElement("div");
-    div.id = "ap-playlist-track-" + index;
-    div.classList.add("ap-div-playlist-track");
-    if (g_tracks[g_currentTrackIndex].fileIndex === index) {
-      div.classList.add("ap-div-playlist-current-track");
-    }
-    if (index === g_selectedTrackFileIndex) {
-      div.classList.add("ap-div-playlist-selected-track");
-    }
-    if (file.duration !== undefined && file.duration >= 0) {
-      duration = getFormatedTimeFromSeconds(file.duration);
-    }
-    div.addEventListener("click", function () {
-      onPlaylistTrackClicked(index);
-    });
-    div.addEventListener("dblclick", function () {
-      onPlaylistTrackDoubleClicked(index);
-    });
-    let fullName;
-    if (file.title && file.artist) {
-      fullName = `${file.artist} - ${file.title}`;
-    } else if (file.title) {
-      fullName = `${file.title}`;
-    } else {
-      var filenameextension = file.url.replace(/^.*[\\\/]/, "");
-      var filename = filenameextension.substring(
-        0,
-        filenameextension.lastIndexOf("."),
-      );
-      //var ext = filenameextension.split(".").pop();
-      if (!filename || filename == "") filename = file.url;
-      fullName = filename;
-    }
-    let content = `<span title="${fullName}\n${file.url}" class="ap-span-playlist-track-title">${fullName}</span
-  ><span class="ap-span-playlist-track-time">${duration}</span>`;
-    div.innerHTML = content;
-    g_player.divPlaylistTracks.appendChild(div);
-  }
-}
-
 function clearPlayer() {
   g_player.engine.pause();
   g_player.engine.src = "";
@@ -355,20 +151,30 @@ function clearPlayer() {
   g_player.usingFfmpeg = false;
 }
 
-function loadTrack(index, time) {
+/////////////////////////////////////////////////////////////////////
+
+export function loadTrack(index, time) {
   clearPlayer();
   refreshUI();
   try {
-    g_currentTrackIndex = index;
-    g_selectedTrackFileIndex = g_tracks[g_currentTrackIndex].fileIndex;
+    playlist.setCurrentTrackIndex(index);
+    playlist.setSelectedTrackFileIndex(
+      playlist.getTracks()[playlist.getCurrentTrackIndex()].fileIndex,
+    );
     if (
-      g_tracks[g_currentTrackIndex].fileUrl.startsWith("http") &&
-      yt.getYouTubeVideoIdFromUrl(g_tracks[g_currentTrackIndex].fileUrl)
+      playlist
+        .getTracks()
+        [playlist.getCurrentTrackIndex()].fileUrl.startsWith("http") &&
+      yt.getYouTubeVideoIdFromUrl(
+        playlist.getTracks()[playlist.getCurrentTrackIndex()].fileUrl,
+      )
     ) {
       g_player.isYoutube = true;
     } else {
       if (
-        g_tracks[g_currentTrackIndex].fileUrl.endsWith(".m3u8") &&
+        playlist
+          .getTracks()
+          [playlist.getCurrentTrackIndex()].fileUrl.endsWith(".m3u8") &&
         Hls.isSupported()
       ) {
         g_player.engine.usingHsl = true;
@@ -379,11 +185,12 @@ function loadTrack(index, time) {
         if (g_player.engine.hls) {
           g_player.engine.hls.destroy();
         }
-        g_player.engine.src = g_tracks[g_currentTrackIndex].fileUrl;
+        g_player.engine.src =
+          playlist.getTracks()[playlist.getCurrentTrackIndex()].fileUrl;
         g_player.sliderTime.value = time;
         g_player.engine.currentTime = time;
       }
-      g_loadedTrackIndex = g_currentTrackIndex;
+      g_loadedTrackIndex = playlist.getCurrentTrackIndex();
     }
     return true;
   } catch (error) {
@@ -393,18 +200,22 @@ function loadTrack(index, time) {
   }
 }
 
-async function playTrack(index, time) {
+export async function playTrack(index, time) {
   let useHsl = false;
   if (index >= 0) {
-    useHsl = g_tracks[index].fileUrl.endsWith(".m3u8") && Hls.isSupported();
+    useHsl =
+      playlist.getTracks()[index].fileUrl.endsWith(".m3u8") &&
+      Hls.isSupported();
   } else {
     useHsl =
-      g_tracks[g_currentTrackIndex].fileUrl.endsWith(".m3u8") &&
+      playlist
+        .getTracks()
+        [playlist.getCurrentTrackIndex()].fileUrl.endsWith(".m3u8") &&
       Hls.isSupported();
   }
   if (useHsl) {
     if (index === -1) {
-      index = g_currentTrackIndex;
+      index = playlist.getCurrentTrackIndex();
     }
     if (g_player.engine.hls) {
       g_player.engine.hls.destroy();
@@ -413,12 +224,12 @@ async function playTrack(index, time) {
     g_player.engine.hls = new Hls();
     g_player.engine.hls.attachMedia(g_player.engine);
     g_player.engine.hls.on(Hls.Events.MEDIA_ATTACHED, function () {
-      g_player.engine.hls.loadSource(g_tracks[index].fileUrl);
+      g_player.engine.hls.loadSource(playlist.getTracks()[index].fileUrl);
       if (!loadTrack(index, time)) return;
       g_player.engine.play();
       g_player.isPlaying = true;
       refreshUI();
-      scrollToCurrent();
+      playlist.scrollToCurrent();
     });
     // ref: https://github.com/video-dev/hls.js/blob/master/docs/API.md#fatal-error-recovery
     g_player.engine.hls.on(Hls.Events.ERROR, function (event, data) {
@@ -455,12 +266,12 @@ async function playTrack(index, time) {
         if (g_player.isYoutube) {
           if (yt.onPlayClicked()) g_player.isPlaying = true;
           refreshUI();
-          scrollToCurrent();
+          playlist.scrollToCurrent();
           return;
         }
         // await g_player.engine.play();
         // refreshUI();
-        // scrollToCurrent();
+        // playlist.scrollToCurrent();
         // TODO: check if already initialized, and just play pause?
         // load "normal" track
         g_player.engine.muted = true;
@@ -473,7 +284,9 @@ async function playTrack(index, time) {
         ) {
           const isActuallyVideo = await sendIpcToMainAndWait(
             "mp-is-video-stream",
-            decodeURI(g_tracks[g_currentTrackIndex].fileUrl),
+            decodeURI(
+              playlist.getTracks()[playlist.getCurrentTrackIndex()].fileUrl,
+            ),
           );
 
           if (loadId !== g_currentLoadId) return;
@@ -486,24 +299,26 @@ async function playTrack(index, time) {
         g_player.engine.muted = wasMuted;
         g_player.isPlaying = true;
       } else {
-        if (index === -1) index = g_currentTrackIndex;
+        if (index === -1) index = playlist.getCurrentTrackIndex();
         yt.destroyPlayer();
         if (!loadTrack(index, time)) return;
-        if (g_tracks[index].fileUrl.startsWith("http")) {
-          const ytId = yt.getYouTubeVideoIdFromUrl(g_tracks[index].fileUrl);
+        if (playlist.getTracks()[index].fileUrl.startsWith("http")) {
+          const ytId = yt.getYouTubeVideoIdFromUrl(
+            playlist.getTracks()[index].fileUrl,
+          );
           if (ytId) {
             yt.createNewPlayer(
               ytId,
               g_player.engine.volume,
               refreshUI,
-              updateCurrentFileTags,
+              playlist.updateCurrentFileTags,
             );
             clearPlayer();
             g_player.isPlaying = true;
             g_player.isYoutube = true;
             g_loadedTrackIndex = index;
             refreshUI();
-            scrollToCurrent();
+            playlist.scrollToCurrent();
             return;
           }
         }
@@ -518,7 +333,9 @@ async function playTrack(index, time) {
         ) {
           const isActuallyVideo = await sendIpcToMainAndWait(
             "mp-is-video-stream",
-            decodeURI(g_tracks[g_currentTrackIndex].fileUrl),
+            decodeURI(
+              playlist.getTracks()[playlist.getCurrentTrackIndex()].fileUrl,
+            ),
           );
 
           if (loadId !== g_currentLoadId) return;
@@ -548,7 +365,10 @@ async function playTrack(index, time) {
           g_player.usingFfmpeg = true;
           g_player.isPlaying = true;
           console.log("unsupported natively, try loading with ffmpeg");
-          sendIpcToMain("vp-load-video", g_tracks[g_currentTrackIndex].fileUrl);
+          sendIpcToMain(
+            "vp-load-video",
+            playlist.getTracks()[playlist.getCurrentTrackIndex()].fileUrl,
+          );
         } else {
           // normal native path
           clearPlayer();
@@ -561,7 +381,7 @@ async function playTrack(index, time) {
     }
   }
   refreshUI();
-  scrollToCurrent();
+  playlist.scrollToCurrent();
 }
 
 function pauseTrack(refresh = true) {
@@ -574,22 +394,18 @@ function pauseTrack(refresh = true) {
   if (refresh) refreshUI();
 }
 
-////////////////////////////////////////////////
-
-function scrollToCurrent() {
-  if (
-    g_currentTrackIndex !== undefined &&
-    g_tracks.length > g_currentTrackIndex
-  ) {
-    let index = g_tracks[g_currentTrackIndex].fileIndex;
-    let divId = "ap-playlist-track-" + index;
-    document.getElementById(divId).scrollIntoView({
-      behavior: "smooth",
-      block: "nearest",
-      inline: "nearest",
-    });
+function onPlaylistTrackDoubleClicked(fileIndex) {
+  let newTrackIndex;
+  for (let index = 0; index < playlist.getTracks().length; index++) {
+    if (playlist.getTracks()[index].fileIndex === fileIndex) {
+      newTrackIndex = index;
+      break;
+    }
   }
+  if (newTrackIndex !== undefined) playTrack(newTrackIndex, 0);
 }
+
+/////////////////////////////////////////////////////////////////////
 
 function refreshUI() {
   if (g_player.isVideo) {
@@ -607,7 +423,7 @@ function refreshUI() {
   } else {
     document.getElementById("ap-div-ytvideo").classList.add("set-display-none");
   }
-  if (g_tracks.length > 0) {
+  if (playlist.getTracks().length > 0) {
     if (g_player.isYoutube || g_player.engine.src || g_player.engine.usingHsl) {
       g_player.buttonPlay.classList.remove("ap-disabled");
       g_player.buttonPause.classList.remove("ap-disabled");
@@ -624,12 +440,15 @@ function refreshUI() {
       g_player.buttonPause.classList.add("set-display-none");
     }
 
-    if (g_settings.repeat || g_currentTrackIndex > 0) {
+    if (g_settings.repeat || playlist.getCurrentTrackIndex() > 0) {
       g_player.buttonPrev.classList.remove("ap-disabled");
     } else {
       g_player.buttonPrev.classList.add("ap-disabled");
     }
-    if (g_settings.repeat || g_tracks.length - 1 > g_currentTrackIndex) {
+    if (
+      g_settings.repeat ||
+      playlist.getTracks().length - 1 > playlist.getCurrentTrackIndex()
+    ) {
       g_player.buttonNext.classList.remove("ap-disabled");
     } else {
       g_player.buttonNext.classList.add("ap-disabled");
@@ -665,19 +484,22 @@ function refreshUI() {
     g_player.buttonRepeatOn.classList.remove("ap-hidden");
   }
 
-  if (g_tracks.length > 0) {
+  if (playlist.getTracks().length > 0) {
     g_player.buttonClear.classList.remove("ap-disabled");
     g_player.buttonSave.classList.remove("ap-disabled");
   } else {
     g_player.buttonClear.classList.add("ap-disabled");
     g_player.buttonSave.classList.add("ap-disabled");
   }
-  if (g_tracks.length > 0 && g_selectedTrackFileIndex !== undefined) {
+  if (
+    playlist.getTracks().length > 0 &&
+    playlist.getSelectedTrackFileIndex() !== undefined
+  ) {
     g_player.buttonDelete.classList.remove("ap-disabled");
   } else {
     g_player.buttonDelete.classList.add("ap-disabled");
   }
-  updatePlaylistInfo();
+  playlist.updatePlaylistInfo();
 }
 
 function onButtonClicked(buttonName) {
@@ -686,13 +508,16 @@ function onButtonClicked(buttonName) {
   } else if (buttonName === "pause") {
     pauseTrack(false);
   } else if (buttonName === "prev") {
-    if (g_settings.repeat && g_currentTrackIndex === 0)
-      playTrack(g_tracks.length - 1, 0);
-    else playTrack(g_currentTrackIndex - 1, 0);
+    if (g_settings.repeat && playlist.getCurrentTrackIndex() === 0)
+      playTrack(playlist.getTracks().length - 1, 0);
+    else playTrack(playlist.getCurrentTrackIndex() - 1, 0);
   } else if (buttonName === "next") {
-    if (g_settings.repeat && g_currentTrackIndex === g_tracks.length - 1)
+    if (
+      g_settings.repeat &&
+      playlist.getCurrentTrackIndex() === playlist.getTracks().length - 1
+    )
       playTrack(0, 0);
-    else playTrack(g_currentTrackIndex + 1, 0);
+    else playTrack(playlist.getCurrentTrackIndex() + 1, 0);
   } else if (buttonName === "open") {
     sendIpcToMain("on-open-clicked", 0);
   } else if (buttonName === "playlist") {
@@ -730,78 +555,73 @@ function onButtonClicked(buttonName) {
   } else if (buttonName === "repeat-off") {
     g_settings.repeat = false;
   } else if (buttonName === "clear") {
-    if (g_tracks.length <= 0) return;
-    g_playlist.files = [];
-    g_tracks = [];
-    g_selectedTrackFileIndex = undefined;
+    if (playlist.getTracks().length <= 0) return;
+    playlist.getPlaylist().files = [];
+    playlist.setTracks([]);
+    playlist.setSelectedTrackFileIndex(undefined);
     pauseTrack(true);
   } else if (buttonName === "add") {
     sendIpcToMain("on-open-clicked", 1);
   } else if (buttonName === "delete") {
-    if (g_tracks.length <= 0 || g_selectedTrackFileIndex === undefined) return;
-    let currentTrackFileIndex = g_tracks[g_currentTrackIndex].fileIndex;
+    if (
+      playlist.getTracks().length <= 0 ||
+      playlist.getSelectedTrackFileIndex() === undefined
+    )
+      return;
+    let currentTrackFileIndex =
+      playlist.getTracks()[playlist.getCurrentTrackIndex()].fileIndex;
     // delete
-    g_playlist.files.splice(g_selectedTrackFileIndex, 1);
+    playlist
+      .getPlaylist()
+      .files.splice(playlist.getSelectedTrackFileIndex(), 1);
     let selectedTrackIndex = 0;
-    for (let index = 0; index < g_tracks.length; index++) {
-      const track = g_tracks[index];
-      if (track.fileIndex === g_selectedTrackFileIndex)
+    for (let index = 0; index < playlist.getTracks().length; index++) {
+      const track = playlist.getTracks()[index];
+      if (track.fileIndex === playlist.getSelectedTrackFileIndex())
         selectedTrackIndex = index;
-      if (track.fileIndex > g_selectedTrackFileIndex) {
+      if (track.fileIndex > playlist.getSelectedTrackFileIndex()) {
         track.fileIndex--;
-        track.fileUrl = g_playlist.files[track.fileIndex].url;
+        track.fileUrl = playlist.getPlaylist().files[track.fileIndex].url;
       }
     }
-    g_tracks.splice(selectedTrackIndex, 1);
+    playlist.getTracks().splice(selectedTrackIndex, 1);
     // update current index / playing track if needed
-    if (currentTrackFileIndex === g_selectedTrackFileIndex) {
+    if (currentTrackFileIndex === playlist.getSelectedTrackFileIndex()) {
       // deleting the current one
-      if (g_currentTrackIndex < g_tracks.length) {
+      if (playlist.getCurrentTrackIndex() < playlist.getTracks().length) {
         if (g_player.isPlaying) {
-          playTrack(g_currentTrackIndex, 0);
+          playTrack(playlist.getCurrentTrackIndex(), 0);
         } else {
-          loadTrack(g_currentTrackIndex, 0);
+          loadTrack(playlist.getCurrentTrackIndex(), 0);
         }
       } else {
         // the deleted one was the last
         pauseTrack(false);
-        g_currentTrackIndex = g_tracks.length - 1;
-        if (g_tracks.length > 0) loadTrack(g_tracks.length - 1, 0);
+        playlist.setCurrentTrackIndex(playlist.getTracks().length - 1);
+        if (playlist.getTracks().length > 0)
+          loadTrack(playlist.getTracks().length - 1, 0);
       }
     } else {
-      if (g_currentTrackIndex < selectedTrackIndex) {
+      if (playlist.getCurrentTrackIndex() < selectedTrackIndex) {
         // keep the same
       } else {
-        g_currentTrackIndex--;
+        playlist.setCurrentTrackIndex(playlist.getCurrentTrackIndex() - 1);
       }
     }
-    if (g_tracks.length > 0) {
-      g_selectedTrackFileIndex = g_tracks[g_currentTrackIndex].fileIndex;
+    if (playlist.getTracks().length > 0) {
+      playlist.setSelectedTrackFileIndex(
+        playlist.getTracks()[playlist.getCurrentTrackIndex()].fileIndex,
+      );
     } else {
-      g_selectedTrackFileIndex = undefined;
+      playlist.setSelectedTrackFileIndex(undefined);
     }
-    updatePlaylistInfo();
+    playlist.updatePlaylistInfo();
   } else if (buttonName === "save-playlist") {
-    if (g_playlist.files.length > 0) sendIpcToMain("save-playlist", g_playlist);
+    if (playlist.getPlaylist().files.length > 0)
+      sendIpcToMain("save-playlist", playlist.getPlaylist());
   }
 
   refreshUI();
-}
-
-function onPlaylistTrackClicked(fileIndex) {
-  g_selectedTrackFileIndex = fileIndex;
-  updatePlaylistInfo();
-}
-
-function onPlaylistTrackDoubleClicked(fileIndex) {
-  let newTrackIndex;
-  for (let index = 0; index < g_tracks.length; index++) {
-    if (g_tracks[index].fileIndex === fileIndex) {
-      newTrackIndex = index;
-      break;
-    }
-  }
-  if (newTrackIndex !== undefined) playTrack(newTrackIndex, 0);
 }
 
 function onSliderTimeChanged(slider) {
@@ -809,8 +629,10 @@ function onSliderTimeChanged(slider) {
   if (g_player.usingFfmpeg) {
     ffmpeg.setTime(targetSecond);
   } else if (!g_player.engine.usingHsl && !isNaN(g_player.engine.duration)) {
-    g_player.engine.currentTime =
-      (targetSecond * g_player.engine.duration) / 100;
+    if (g_player.engine.duration != Infinity) {
+      g_player.engine.currentTime =
+        (targetSecond * g_player.engine.duration) / 100;
+    }
   }
 }
 
@@ -828,31 +650,14 @@ function onYTError(type) {
   refreshUI();
 }
 
-function getFormatedTimeFromSeconds(seconds) {
-  if (isNaN(seconds) || !isFinite(seconds)) return "--:--";
-  let hours = Math.floor(seconds / 3600);
-  let minutes = Math.floor((seconds - hours * 3600) / 60);
-  seconds = Math.floor(seconds - hours * 3600 - minutes * 60);
-  if (minutes < 10) minutes = "0" + minutes;
-  if (seconds < 10) seconds = "0" + seconds;
-  return minutes + ":" + seconds;
-}
+function initPlayer(settings, loadedPlaylist, ffmpegAvailable) {
+  g_ffmpegAvailable = ffmpegAvailable;
+  ffmpeg.init(sendIpcToMain);
+  yt.init(onYTError);
 
-// ref: https://en.wikipedia.org/wiki/Fisher-Yates_shuffle#The_modern_algorithm
-// ref: https://www.geeksforgeeks.org/how-to-shuffle-an-array-using-javascript/
-function shuffleArray(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    let j = Math.floor(Math.random() * (i + 1));
-    let temp = array[i];
-    array[i] = array[j];
-    array[j] = temp;
-  }
-
-  return array;
-}
-
-function initPlayer(settings, playlist) {
+  // init engine ////
   g_player.engine = document.getElementById("ap-html-video");
+
   g_player.engine.addEventListener("error", (error) => {
     // ref: https://developer.mozilla.org/en-US/docs/Web/API/MediaError/message
     let message;
@@ -873,9 +678,77 @@ function initPlayer(settings, playlist) {
         message = "An unknown error occurred.";
         break;
     }
-    // console.log(message);
   });
-  ///////
+  g_player.engine.addEventListener("timeupdate", function () {
+    if (g_player.usingFfmpeg) {
+      ffmpeg.onSliderTimeTimeUpdate(
+        g_player.engine,
+        g_player.sliderTime,
+        g_player.textTime,
+      );
+    } else {
+      if (g_player.engine.usingHsl) {
+        g_player.textTime.innerHTML = "--/--";
+        g_player.sliderTime.value = 0;
+      } else if (isNaN(this.duration) || !isFinite(this.duration)) {
+        g_player.textTime.innerHTML = playlist.getFormatedTimeFromSeconds(
+          this.currentTime,
+        );
+        g_player.sliderTime.value = 0;
+      } else {
+        g_player.textTime.innerHTML =
+          playlist.getFormatedTimeFromSeconds(this.currentTime) +
+          " / " +
+          playlist.getFormatedTimeFromSeconds(this.duration);
+        g_player.sliderTime.value = (100 * this.currentTime) / this.duration;
+      }
+    }
+  });
+
+  g_player.engine.addEventListener("volumechange", function () {
+    g_player.textVolume.innerHTML = `${Math.floor(this.volume * 100)}%`;
+    g_player.sliderVolume.value = this.volume * 100;
+  });
+
+  g_player.engine.addEventListener("loadedmetadata", () => {
+    if (g_player.engine.videoWidth > 0) {
+      g_player.isVideo = true;
+    } else {
+      g_player.isVideo = false;
+    }
+    refreshUI();
+  });
+
+  g_player.engine.addEventListener("loadeddata", function () {
+    if (playlist.getTracks().length <= 0) return;
+    let fileIndex =
+      playlist.getTracks()[playlist.getCurrentTrackIndex()].fileIndex;
+    if (
+      !playlist.getPlaylist().files[fileIndex].duration ||
+      playlist.getPlaylist().files[fileIndex].duration == -1
+    ) {
+      if (playlist.getPlaylist().files[fileIndex].url.endsWith(".m3u8")) return;
+      playlist.getPlaylist().files[fileIndex].duration =
+        g_player.engine.duration;
+      playlist.updatePlaylistInfo();
+    }
+  });
+
+  g_player.engine.addEventListener("ended", function () {
+    if (playlist.getTracks().length - 1 > playlist.getCurrentTrackIndex()) {
+      playTrack(playlist.getCurrentTrackIndex() + 1, 0);
+    } else {
+      if (g_settings.repeat) {
+        playTrack(0, 0);
+      } else {
+        pauseTrack(false);
+        loadTrack(0, 0);
+      }
+    }
+    refreshUI();
+  });
+
+  // init UI ////
   g_player.buttonOpen = document.getElementById("ap-button-open");
   g_player.buttonOpen.addEventListener("click", function () {
     onButtonClicked("open");
@@ -968,75 +841,6 @@ function initPlayer(settings, playlist) {
   g_player.buttonSave.addEventListener("click", function () {
     onButtonClicked("save-playlist");
   });
-  //////
-
-  // Events
-  g_player.engine.addEventListener("timeupdate", function () {
-    if (g_player.usingFfmpeg) {
-      ffmpeg.onSliderTimeTimeUpdate(
-        g_player.engine,
-        g_player.sliderTime,
-        g_player.textTime,
-      );
-    } else {
-      if (g_player.engine.usingHsl) {
-        g_player.textTime.innerHTML = "--/--";
-        g_player.sliderTime.value = 0;
-      } else if (isNaN(this.duration) || !isFinite(this.duration)) {
-        g_player.textTime.innerHTML = getFormatedTimeFromSeconds(
-          this.currentTime,
-        );
-        g_player.sliderTime.value = 0;
-      } else {
-        g_player.textTime.innerHTML =
-          getFormatedTimeFromSeconds(this.currentTime) +
-          " / " +
-          getFormatedTimeFromSeconds(this.duration);
-        g_player.sliderTime.value = (100 * this.currentTime) / this.duration;
-      }
-    }
-  });
-
-  g_player.engine.addEventListener("volumechange", function () {
-    g_player.textVolume.innerHTML = `${Math.floor(this.volume * 100)}%`;
-    g_player.sliderVolume.value = this.volume * 100;
-  });
-
-  g_player.engine.addEventListener("loadedmetadata", () => {
-    if (g_player.engine.videoWidth > 0) {
-      g_player.isVideo = true;
-    } else {
-      g_player.isVideo = false;
-    }
-    refreshUI();
-  });
-
-  g_player.engine.addEventListener("loadeddata", function () {
-    if (g_tracks.length <= 0) return;
-    let fileIndex = g_tracks[g_currentTrackIndex].fileIndex;
-    if (
-      !g_playlist.files[fileIndex].duration ||
-      g_playlist.files[fileIndex].duration == -1
-    ) {
-      if (g_playlist.files[fileIndex].url.endsWith(".m3u8")) return;
-      g_playlist.files[fileIndex].duration = g_player.engine.duration;
-      updatePlaylistInfo();
-    }
-  });
-
-  g_player.engine.addEventListener("ended", function () {
-    if (g_tracks.length - 1 > g_currentTrackIndex) {
-      playTrack(g_currentTrackIndex + 1, 0);
-    } else {
-      if (g_settings.repeat) {
-        playTrack(0, 0);
-      } else {
-        pauseTrack(false);
-        loadTrack(0, 0);
-      }
-    }
-    refreshUI();
-  });
 
   // stop wheel scroll from propagating through the player
   g_player.divPlaylist.addEventListener("wheel", function (event) {
@@ -1048,9 +852,19 @@ function initPlayer(settings, playlist) {
       event.stopPropagation();
     });
 
-  // load settings & playlist
+  // load settings & playlist ////////////
   g_settings = settings;
-  g_playlist = playlist;
+
+  const loadTrackIndex = playlist.init(
+    g_player,
+    loadedPlaylist,
+    g_settings,
+    g_ffmpegAvailable,
+    sendIpcToMain,
+    onPlaylistTrackDoubleClicked,
+  );
+  if (loadTrackIndex !== undefined)
+    loadTrack(loadTrackIndex, g_settings.currentTime ?? 0);
 
   g_player.isPlaying = false;
   g_player.engine.volume = g_settings.volume;
@@ -1059,25 +873,9 @@ function initPlayer(settings, playlist) {
   if (g_settings.showPlaylist)
     g_player.divPlaylist.classList.remove("ap-hidden");
   else g_player.divPlaylist.classList.add("ap-hidden");
-  if (g_playlist.files.length > 0) {
-    createTracksList(false);
-    let trackIndex = 0;
-    if (g_settings.currentFileIndex) {
-      for (let index = 0; index < g_tracks.length; index++) {
-        const track = g_tracks[index];
-        if (track.fileIndex === g_settings.currentFileIndex) {
-          trackIndex = index;
-          break;
-        }
-      }
-    }
-    loadTrack(trackIndex, g_settings.currentTime ?? 0);
-    refreshUI();
-    fillTimes(); // calls updatePlaylistInfo
-    fillTags();
-  }
+
   refreshUI();
-  setTimeout(scrollToCurrent, 100);
+  setTimeout(playlist.scrollToCurrent, 100);
 
   // will send settings and playlist to main
   // so on quit the info is immediately available
@@ -1088,11 +886,12 @@ function initPlayer(settings, playlist) {
 let g_configUpdateTimeout;
 function sendConfigUpdateTimeout() {
   g_settings.volume = g_player.engine.volume;
-  if (g_tracks.length > 0)
-    g_settings.currentFileIndex = g_tracks[g_currentTrackIndex].fileIndex;
+  if (playlist.getTracks().length > 0)
+    g_settings.currentFileIndex =
+      playlist.getTracks()[playlist.getCurrentTrackIndex()].fileIndex;
   else g_settings.currentFileIndex = undefined;
   g_settings.currentTime = g_player.engine.currentTime;
-  sendIpcToMain("update-config", g_settings, g_playlist);
+  sendIpcToMain("update-config", g_settings, playlist.getPlaylist());
   g_configUpdateTimeout = setTimeout(sendConfigUpdateTimeout, 2000);
 }
 // TODO: call clearTimeout(g_configUpdateTimeout); on exit?
