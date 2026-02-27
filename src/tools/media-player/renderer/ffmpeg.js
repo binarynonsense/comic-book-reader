@@ -34,8 +34,7 @@ export function initOnIpcCallbacks(on) {
     document
       .getElementById("ap-html-video-loading-div")
       .classList.add("set-display-none");
-    // TODO: show modal?
-    closePlayer();
+    sendIpcToMain("on-play-error", "NotSupportedError");
   });
 }
 
