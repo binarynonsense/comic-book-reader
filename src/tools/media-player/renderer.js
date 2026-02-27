@@ -37,11 +37,11 @@ export function initIpc() {
 ///////////////////////////////////////////////////////////////////////////////
 
 function sendIpcToMain(...args) {
-  coreSendIpcToMain("audio-player", ...args);
+  coreSendIpcToMain("media-player", ...args);
 }
 
 async function sendIpcToMainAndWait(...args) {
-  return await coreSendIpcToMainAndWait("audio-player", ...args);
+  return await coreSendIpcToMainAndWait("media-player", ...args);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -76,9 +76,9 @@ function initOnIpcCallbacks() {
 
   on("show", (isVisible, elementId) => {
     if (isVisible) {
-      document.getElementById(elementId).classList.remove("ap-hidden");
+      document.getElementById(elementId).classList.remove("mp-hidden");
     } else {
-      document.getElementById(elementId).classList.add("ap-hidden");
+      document.getElementById(elementId).classList.add("mp-hidden");
     }
   });
 
@@ -96,13 +96,13 @@ function initOnIpcCallbacks() {
   });
 
   on("update-layout-pos", (position) => {
-    let container = document.getElementById("audio-player-container");
+    let container = document.getElementById("media-player-container");
     if (position == 0) {
-      container.classList.remove("ap-layout-bottom-left");
-      container.classList.add("ap-layout-top-left");
+      container.classList.remove("mp-layout-bottom-left");
+      container.classList.add("mp-layout-top-left");
     } else {
-      container.classList.add("ap-layout-bottom-left");
-      container.classList.remove("ap-layout-top-left");
+      container.classList.add("mp-layout-bottom-left");
+      container.classList.remove("mp-layout-top-left");
     }
   });
 
@@ -415,21 +415,21 @@ function refreshUI() {
   }
   if (
     g_player.isYoutube &&
-    document.getElementById("ap-div-ytvideo").childElementCount > 0
+    document.getElementById("mp-div-ytvideo").childElementCount > 0
   ) {
     document
-      .getElementById("ap-div-ytvideo")
+      .getElementById("mp-div-ytvideo")
       .classList.remove("set-display-none");
   } else {
-    document.getElementById("ap-div-ytvideo").classList.add("set-display-none");
+    document.getElementById("mp-div-ytvideo").classList.add("set-display-none");
   }
   if (playlist.getTracks().length > 0) {
     if (g_player.isYoutube || g_player.engine.src || g_player.engine.usingHsl) {
-      g_player.buttonPlay.classList.remove("ap-disabled");
-      g_player.buttonPause.classList.remove("ap-disabled");
+      g_player.buttonPlay.classList.remove("mp-disabled");
+      g_player.buttonPause.classList.remove("mp-disabled");
     } else {
-      g_player.buttonPlay.classList.add("ap-disabled");
-      g_player.buttonPause.classList.add("ap-disabled");
+      g_player.buttonPlay.classList.add("mp-disabled");
+      g_player.buttonPause.classList.add("mp-disabled");
     }
 
     if (g_player.isPlaying) {
@@ -441,63 +441,63 @@ function refreshUI() {
     }
 
     if (g_settings.repeat || playlist.getCurrentTrackIndex() > 0) {
-      g_player.buttonPrev.classList.remove("ap-disabled");
+      g_player.buttonPrev.classList.remove("mp-disabled");
     } else {
-      g_player.buttonPrev.classList.add("ap-disabled");
+      g_player.buttonPrev.classList.add("mp-disabled");
     }
     if (
       g_settings.repeat ||
       playlist.getTracks().length - 1 > playlist.getCurrentTrackIndex()
     ) {
-      g_player.buttonNext.classList.remove("ap-disabled");
+      g_player.buttonNext.classList.remove("mp-disabled");
     } else {
-      g_player.buttonNext.classList.add("ap-disabled");
+      g_player.buttonNext.classList.add("mp-disabled");
     }
   } else {
     g_player.buttonPlay.classList.remove("set-display-none");
-    g_player.buttonPlay.classList.add("ap-disabled");
+    g_player.buttonPlay.classList.add("mp-disabled");
     g_player.buttonPause.classList.add("set-display-none");
-    g_player.buttonPrev.classList.add("ap-disabled");
-    g_player.buttonNext.classList.add("ap-disabled");
+    g_player.buttonPrev.classList.add("mp-disabled");
+    g_player.buttonNext.classList.add("mp-disabled");
   }
 
   if (g_player.engine.volume > 0) {
-    g_player.buttonVolumeOn.classList.add("ap-hidden");
-    g_player.buttonVolumeOff.classList.remove("ap-hidden");
+    g_player.buttonVolumeOn.classList.add("mp-hidden");
+    g_player.buttonVolumeOff.classList.remove("mp-hidden");
   } else {
-    g_player.buttonVolumeOn.classList.remove("ap-hidden");
-    g_player.buttonVolumeOff.classList.add("ap-hidden");
+    g_player.buttonVolumeOn.classList.remove("mp-hidden");
+    g_player.buttonVolumeOff.classList.add("mp-hidden");
   }
 
   if (g_settings.shuffle) {
-    g_player.buttonShuffleOff.classList.remove("ap-hidden");
-    g_player.buttonShuffleOn.classList.add("ap-hidden");
+    g_player.buttonShuffleOff.classList.remove("mp-hidden");
+    g_player.buttonShuffleOn.classList.add("mp-hidden");
   } else {
-    g_player.buttonShuffleOff.classList.add("ap-hidden");
-    g_player.buttonShuffleOn.classList.remove("ap-hidden");
+    g_player.buttonShuffleOff.classList.add("mp-hidden");
+    g_player.buttonShuffleOn.classList.remove("mp-hidden");
   }
   if (g_settings.repeat) {
-    g_player.buttonRepeatOff.classList.remove("ap-hidden");
-    g_player.buttonRepeatOn.classList.add("ap-hidden");
+    g_player.buttonRepeatOff.classList.remove("mp-hidden");
+    g_player.buttonRepeatOn.classList.add("mp-hidden");
   } else {
-    g_player.buttonRepeatOff.classList.add("ap-hidden");
-    g_player.buttonRepeatOn.classList.remove("ap-hidden");
+    g_player.buttonRepeatOff.classList.add("mp-hidden");
+    g_player.buttonRepeatOn.classList.remove("mp-hidden");
   }
 
   if (playlist.getTracks().length > 0) {
-    g_player.buttonClear.classList.remove("ap-disabled");
-    g_player.buttonSave.classList.remove("ap-disabled");
+    g_player.buttonClear.classList.remove("mp-disabled");
+    g_player.buttonSave.classList.remove("mp-disabled");
   } else {
-    g_player.buttonClear.classList.add("ap-disabled");
-    g_player.buttonSave.classList.add("ap-disabled");
+    g_player.buttonClear.classList.add("mp-disabled");
+    g_player.buttonSave.classList.add("mp-disabled");
   }
   if (
     playlist.getTracks().length > 0 &&
     playlist.getSelectedTrackFileIndex() !== undefined
   ) {
-    g_player.buttonDelete.classList.remove("ap-disabled");
+    g_player.buttonDelete.classList.remove("mp-disabled");
   } else {
-    g_player.buttonDelete.classList.add("ap-disabled");
+    g_player.buttonDelete.classList.add("mp-disabled");
   }
   playlist.updatePlaylistInfo();
 }
@@ -521,11 +521,11 @@ function onButtonClicked(buttonName) {
   } else if (buttonName === "open") {
     sendIpcToMain("on-open-clicked", 0);
   } else if (buttonName === "playlist") {
-    if (g_player.divPlaylist.classList.contains("ap-hidden")) {
-      g_player.divPlaylist.classList.remove("ap-hidden");
+    if (g_player.divPlaylist.classList.contains("mp-hidden")) {
+      g_player.divPlaylist.classList.remove("mp-hidden");
       g_settings.showPlaylist = true;
     } else {
-      g_player.divPlaylist.classList.add("ap-hidden");
+      g_player.divPlaylist.classList.add("mp-hidden");
       g_settings.showPlaylist = false;
     }
   } else if (buttonName === "volume-off") {
@@ -656,7 +656,7 @@ function initPlayer(settings, loadedPlaylist, ffmpegAvailable) {
   yt.init(onYTError);
 
   // init engine ////
-  g_player.engine = document.getElementById("ap-html-video");
+  g_player.engine = document.getElementById("mp-html-video");
 
   g_player.engine.addEventListener("error", (error) => {
     // ref: https://developer.mozilla.org/en-US/docs/Web/API/MediaError/message
@@ -749,44 +749,44 @@ function initPlayer(settings, loadedPlaylist, ffmpegAvailable) {
   });
 
   // init UI ////
-  g_player.buttonOpen = document.getElementById("ap-button-open");
+  g_player.buttonOpen = document.getElementById("mp-button-open");
   g_player.buttonOpen.addEventListener("click", function () {
     onButtonClicked("open");
   });
 
-  g_player.buttonPlay = document.getElementById("ap-button-play");
+  g_player.buttonPlay = document.getElementById("mp-button-play");
   g_player.buttonPlay.addEventListener("click", function () {
     onButtonClicked("play");
   });
-  g_player.buttonPause = document.getElementById("ap-button-pause");
+  g_player.buttonPause = document.getElementById("mp-button-pause");
   g_player.buttonPause.addEventListener("click", function () {
     onButtonClicked("pause");
   });
-  g_player.buttonPrev = document.getElementById("ap-button-prev");
+  g_player.buttonPrev = document.getElementById("mp-button-prev");
   g_player.buttonPrev.addEventListener("click", function () {
     onButtonClicked("prev");
   });
-  g_player.buttonNext = document.getElementById("ap-button-next");
+  g_player.buttonNext = document.getElementById("mp-button-next");
   g_player.buttonNext.addEventListener("click", function () {
     onButtonClicked("next");
   });
 
-  g_player.textTime = document.getElementById("ap-text-time");
-  g_player.sliderTime = document.getElementById("ap-slider-time");
+  g_player.textTime = document.getElementById("mp-text-time");
+  g_player.sliderTime = document.getElementById("mp-slider-time");
   g_player.sliderTime.addEventListener("input", function () {
     onSliderTimeChanged(g_player.sliderTime);
   });
 
-  g_player.buttonVolumeOff = document.getElementById("ap-button-volume-off");
+  g_player.buttonVolumeOff = document.getElementById("mp-button-volume-off");
   g_player.buttonVolumeOff.addEventListener("click", function () {
     onButtonClicked("volume-off");
   });
-  g_player.buttonVolumeOn = document.getElementById("ap-button-volume-on");
+  g_player.buttonVolumeOn = document.getElementById("mp-button-volume-on");
   g_player.buttonVolumeOn.addEventListener("click", function () {
     onButtonClicked("volume-on");
   });
-  g_player.textVolume = document.getElementById("ap-text-volume");
-  g_player.sliderVolume = document.getElementById("ap-slider-volume");
+  g_player.textVolume = document.getElementById("mp-text-volume");
+  g_player.sliderVolume = document.getElementById("mp-slider-volume");
   g_player.sliderVolume.addEventListener("input", function () {
     onSliderVolumeChanged(g_player.sliderVolume);
   });
@@ -794,50 +794,50 @@ function initPlayer(settings, loadedPlaylist, ffmpegAvailable) {
     refreshUI();
   });
 
-  g_player.divPlaylist = document.getElementById("ap-div-playlist");
-  g_player.buttonPlaylist = document.getElementById("ap-button-playlist");
+  g_player.divPlaylist = document.getElementById("mp-div-playlist");
+  g_player.buttonPlaylist = document.getElementById("mp-button-playlist");
   g_player.buttonPlaylist.addEventListener("click", function () {
     onButtonClicked("playlist");
   });
-  g_player.buttonClose = document.getElementById("ap-button-close");
+  g_player.buttonClose = document.getElementById("mp-button-close");
   g_player.buttonClose.addEventListener("click", function () {
     onButtonClicked("close");
   });
   //////
   g_player.divPlaylistTracks = document.getElementById(
-    "ap-div-playlist-tracks",
+    "mp-div-playlist-tracks",
   );
 
-  g_player.buttonShuffleOn = document.getElementById("ap-button-shuffle-on");
+  g_player.buttonShuffleOn = document.getElementById("mp-button-shuffle-on");
   g_player.buttonShuffleOn.addEventListener("click", function () {
     onButtonClicked("shuffle-on");
   });
-  g_player.buttonShuffleOff = document.getElementById("ap-button-shuffle-off");
+  g_player.buttonShuffleOff = document.getElementById("mp-button-shuffle-off");
   g_player.buttonShuffleOff.addEventListener("click", function () {
     onButtonClicked("shuffle-off");
   });
-  g_player.buttonRepeatOn = document.getElementById("ap-button-repeat-on");
+  g_player.buttonRepeatOn = document.getElementById("mp-button-repeat-on");
   g_player.buttonRepeatOn.addEventListener("click", function () {
     onButtonClicked("repeat-on");
   });
-  g_player.buttonRepeatOff = document.getElementById("ap-button-repeat-off");
+  g_player.buttonRepeatOff = document.getElementById("mp-button-repeat-off");
   g_player.buttonRepeatOff.addEventListener("click", function () {
     onButtonClicked("repeat-off");
   });
 
-  g_player.buttonClear = document.getElementById("ap-button-clear");
+  g_player.buttonClear = document.getElementById("mp-button-clear");
   g_player.buttonClear.addEventListener("click", function () {
     onButtonClicked("clear");
   });
-  g_player.buttonAdd = document.getElementById("ap-button-add");
+  g_player.buttonAdd = document.getElementById("mp-button-add");
   g_player.buttonAdd.addEventListener("click", function () {
     onButtonClicked("add");
   });
-  g_player.buttonDelete = document.getElementById("ap-button-delete");
+  g_player.buttonDelete = document.getElementById("mp-button-delete");
   g_player.buttonDelete.addEventListener("click", function () {
     onButtonClicked("delete");
   });
-  g_player.buttonSave = document.getElementById("ap-button-save");
+  g_player.buttonSave = document.getElementById("mp-button-save");
   g_player.buttonSave.addEventListener("click", function () {
     onButtonClicked("save-playlist");
   });
@@ -847,7 +847,7 @@ function initPlayer(settings, loadedPlaylist, ffmpegAvailable) {
     event.stopPropagation();
   });
   document
-    .getElementById("ap-div-topbar")
+    .getElementById("mp-div-topbar")
     .addEventListener("wheel", function (event) {
       event.stopPropagation();
     });
@@ -871,8 +871,8 @@ function initPlayer(settings, loadedPlaylist, ffmpegAvailable) {
   g_player.textVolume.innerHTML = `${Math.floor(g_settings.volume * 100)}%`;
   g_player.sliderVolume.value = g_settings.volume * 100;
   if (g_settings.showPlaylist)
-    g_player.divPlaylist.classList.remove("ap-hidden");
-  else g_player.divPlaylist.classList.add("ap-hidden");
+    g_player.divPlaylist.classList.remove("mp-hidden");
+  else g_player.divPlaylist.classList.add("mp-hidden");
 
   refreshUI();
   setTimeout(playlist.scrollToCurrent, 100);
@@ -910,7 +910,7 @@ export function onInputEvent(type, event) {
       const composedPath = event.composedPath();
       for (let index = 0; index < composedPath.length; index++) {
         const element = composedPath[index];
-        if (element?.id?.includes("ap-")) {
+        if (element?.id?.includes("mp-")) {
           let outputPaths = [];
           for (
             let index = 0;

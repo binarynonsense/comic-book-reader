@@ -178,7 +178,7 @@ function sendIpcToCoreRenderer(...args) {
 }
 
 function sendIpcToAudioPlayerRenderer(...args) {
-  core.sendIpcToRenderer("audio-player", ...args);
+  core.sendIpcToRenderer("media-player", ...args);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

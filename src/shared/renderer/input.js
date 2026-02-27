@@ -100,7 +100,7 @@ document.ondragover = document.ondrop = (event) => {
 document.body.ondrop = (event) => {
   if (getOpenModal()) return;
   if (getCurrentToolName() === "reader") {
-    if (!getTools()["audio-player"].onInputEvent("body.ondrop", event)) {
+    if (!getTools()["media-player"].onInputEvent("body.ondrop", event)) {
       getTools()["reader"].onInputEvent("body.ondrop", event);
     }
   } else {
@@ -144,7 +144,7 @@ function initKeyboard() {
       return;
     } else if (checkShortcut("quit", "quit")) {
       return;
-    } else if (checkShortcut("toggleAudioPlayer", "audio-player")) {
+    } else if (checkShortcut("toggleAudioPlayer", "media-player")) {
       return;
     }
 
@@ -153,8 +153,8 @@ function initKeyboard() {
     if (getOpenModal()) {
       modals.onInputEvent(getOpenModal(), "onkeydown", event);
       return;
-    } else if (getTools()["audio-player"].getOpenModal()) {
-      getTools()["audio-player"].onInputEvent("onkeydown", event);
+    } else if (getTools()["media-player"].getOpenModal()) {
+      getTools()["media-player"].onInputEvent("onkeydown", event);
       return;
     }
 

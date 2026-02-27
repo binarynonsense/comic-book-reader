@@ -669,7 +669,7 @@ if (!gotTheLock) {
         case "quit":
           onMenuQuit();
           break;
-        case "audio-player":
+        case "media-player":
           onMenuToggleAudioPlayer();
           break;
         case "history":
@@ -735,7 +735,7 @@ if (!gotTheLock) {
     if (process.env.APPIMAGE) {
       // ref: https://github.com/electron-userland/electron-builder/issues/1727
       options.execPath = process.env.APPIMAGE;
-      options.args.unshift("--appimage-extract-and-run");
+      options.args.unshift("--mppimage-extract-and-run");
       app.relaunch(options);
       app.exit(0);
     } else {

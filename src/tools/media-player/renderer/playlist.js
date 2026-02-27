@@ -260,13 +260,13 @@ export function updatePlaylistInfo() {
     const file = g_playlist.files[index];
     let duration = "--:--";
     const div = document.createElement("div");
-    div.id = "ap-playlist-track-" + index;
-    div.classList.add("ap-div-playlist-track");
+    div.id = "mp-playlist-track-" + index;
+    div.classList.add("mp-div-playlist-track");
     if (g_tracks[g_currentTrackIndex].fileIndex === index) {
-      div.classList.add("ap-div-playlist-current-track");
+      div.classList.add("mp-div-playlist-current-track");
     }
     if (index === g_selectedTrackFileIndex) {
-      div.classList.add("ap-div-playlist-selected-track");
+      div.classList.add("mp-div-playlist-selected-track");
     }
     if (file.duration !== undefined && file.duration >= 0) {
       duration = getFormatedTimeFromSeconds(file.duration);
@@ -292,8 +292,8 @@ export function updatePlaylistInfo() {
       if (!filename || filename == "") filename = file.url;
       fullName = filename;
     }
-    let content = `<span title="${fullName}\n${file.url}" class="ap-span-playlist-track-title">${fullName}</span
-  ><span class="ap-span-playlist-track-time">${duration}</span>`;
+    let content = `<span title="${fullName}\n${file.url}" class="mp-span-playlist-track-title">${fullName}</span
+  ><span class="mp-span-playlist-track-time">${duration}</span>`;
     div.innerHTML = content;
     g_player.divPlaylistTracks.appendChild(div);
   }
@@ -307,7 +307,7 @@ export function scrollToCurrent() {
     g_tracks.length > g_currentTrackIndex
   ) {
     let index = g_tracks[g_currentTrackIndex].fileIndex;
-    let divId = "ap-playlist-track-" + index;
+    let divId = "mp-playlist-track-" + index;
     document.getElementById(divId).scrollIntoView({
       behavior: "smooth",
       block: "nearest",

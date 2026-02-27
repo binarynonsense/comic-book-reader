@@ -95,7 +95,7 @@ exports.init = async function (filePath, checkHistory) {
   showLoadingIndicator(settings.getValue("showLoadingIndicator"));
   tools
     .getTools()
-    ["audio-player"].init(core.getMainWindow(), "audio-player-container");
+    ["media-player"].init(core.getMainWindow(), "media-player-container");
   showAudioPlayer(settings.getValue("showAudioPlayer"));
   homeScreen.open(undefined);
 
@@ -153,7 +153,7 @@ exports.onQuit = function () {
   clearTimeout(g_clockTimeout);
   settings.setValue("on_quit_state", g_fileData.path === "" ? 0 : 1);
   addCurrentToHistory(false);
-  tools.getTools()["audio-player"].saveSettings();
+  tools.getTools()["media-player"].saveSettings();
   homeScreen.close();
   killPageWorker();
 };
@@ -206,7 +206,7 @@ function sendIpcToCoreRenderer(...args) {
 exports.sendIpcToCoreRenderer = sendIpcToCoreRenderer;
 
 function sendIpcToAudioPlayerRenderer(...args) {
-  core.sendIpcToRenderer("audio-player", ...args);
+  core.sendIpcToRenderer("media-player", ...args);
 }
 
 function sendIpcToPreload(...args) {
@@ -2187,7 +2187,7 @@ function toggleLoadingIndicator() {
 
 function showAudioPlayer(isVisible, updateMenuBar) {
   settings.setValue("showAudioPlayer", isVisible);
-  tools.getTools()["audio-player"].open(isVisible);
+  tools.getTools()["media-player"].open(isVisible);
   menuBar.setAudioPlayer(isVisible);
   if (updateMenuBar) sendIpcToPreload("update-menubar");
 }

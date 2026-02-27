@@ -91,7 +91,7 @@ exports.setLoadingIndicator = function (isChecked) {
 };
 
 exports.setAudioPlayer = function (isChecked) {
-  checkItem(getItem("audio-player"), isChecked);
+  checkItem(getItem("media-player"), isChecked);
 };
 
 exports.setSystemMonitor = function (isChecked) {
@@ -140,13 +140,13 @@ exports.setCanOpenTools = setCanOpenTools = function (isEnabled) {
 exports.setCanTweakUI = setCanTweakUI = function (isEnabled) {
   enableItem(getItem("view-layout"), isEnabled);
   enableItemRecursive(getItem("view-layout-show"), isEnabled);
-  enableItem(getItem("audio-player"), isEnabled);
+  enableItem(getItem("media-player"), isEnabled);
   // getItem("scrollbar").enabled, isEnabled);
   // getItem("toolbar").enabled, isEnabled);
   // getItem("page-number").enabled, isEnabled);
   // getItem("clock").enabled, isEnabled);
   // getItem("battery").enabled, isEnabled);
-  // getItem("audio-player").enabled, isEnabled);
+  // getItem("media-player").enabled, isEnabled);
   // getItem("loading-indicator").enabled =
   //   isEnabled;
 };

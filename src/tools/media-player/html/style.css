@@ -1,4 +1,4 @@
-#audio-player-container {
+#media-player-container {
   display: flex;
   align-items: flex-start;
   justify-items: center;
@@ -6,56 +6,56 @@
   direction: ltr;
 }
 
-.ap-zindex-reader {
+.mp-zindex-reader {
   z-index: 49;
 }
-.ap-zindex-tools {
+.mp-zindex-tools {
   z-index: 110;
 }
 
-.ap-layout-top-left {
+.mp-layout-top-left {
   position: fixed;
   top: calc(var(--menubar-height) + 10px);
   left: 10px;
 }
 
-.ap-layout-bottom-left {
+.mp-layout-bottom-left {
   position: fixed;
   bottom: calc(var(--toolbar-height) + 10px);
   left: 10px;
 }
 
-.ap-frame {
+.mp-frame {
   border: 0;
   user-select: none;
 
   font-size: 15px;
-  background-color: var(--audioplayer-bg-color);
+  background-color: var(--mediaplayer-bg-color);
   padding: 5px 5px;
   border-radius: 5px;
 
   min-height: 10px;
-  --ap-frame-width: 290px;
-  min-width: var(--ap-frame-width);
+  --mp-frame-width: 290px;
+  min-width: var(--mp-frame-width);
 
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
-#audio-player-container:has(
-    #ap-div-video:not(.set-display-none),
-    #ap-div-ytvideo:not(.set-display-none)
+#media-player-container:has(
+    #mp-div-video:not(.set-display-none),
+    #mp-div-ytvideo:not(.set-display-none)
   )
-  .ap-frame {
-  --ap-frame-width: 500px;
+  .mp-frame {
+  --mp-frame-width: 500px;
 }
 
-.ap-frame a,
+.mp-frame a,
 a:hover a:visited {
   text-decoration: none;
   cursor: pointer;
 }
 
-#ap-div-video {
+#mp-div-video {
   background: #000;
   margin-top: 7px;
   height: 286px;
@@ -66,7 +66,7 @@ a:hover a:visited {
   padding: 0;
 }
 
-#ap-div-video video {
+#mp-div-video video {
   background: #000;
   position: absolute;
   top: 0;
@@ -87,7 +87,7 @@ a:hover a:visited {
   z-index: 20;
 } */
 
-#ap-html-video-loading-div {
+#mp-html-video-loading-div {
   position: absolute;
   inset: 0;
   background: rgba(0, 0, 0, 0.7);
@@ -97,7 +97,7 @@ a:hover a:visited {
   z-index: 20;
 }
 
-.ap-html-video-loading-spinner {
+.mp-html-video-loading-spinner {
   width: 40px;
   height: 40px;
   border: 4px solid #333;
@@ -113,7 +113,7 @@ a:hover a:visited {
 
 /* -------------------------------------------------- */
 
-#ap-div-ytvideo {
+#mp-div-ytvideo {
   background: #000;
   margin-top: 7px;
   height: 286px;
@@ -123,7 +123,7 @@ a:hover a:visited {
   overflow: hidden;
 }
 
-#ap-div-ytvideo iframe {
+#mp-div-ytvideo iframe {
   position: absolute;
   top: 0;
   left: 0;
@@ -137,60 +137,60 @@ a:hover a:visited {
 
 /* -------------------------------------------------- */
 
-#ap-div-playlist {
+#mp-div-playlist {
   margin-top: 7px;
   width: 260px;
 }
 
-.ap-separator {
+.mp-separator {
   display: inline;
   margin-left: 5px;
   margin-right: 5px;
-  border-left: var(--audioplayer-separator-color) solid 1px;
+  border-left: var(--mediaplayer-separator-color) solid 1px;
 }
 
-.ap-disabled {
-  color: var(--audioplayer-disabled-color) !important;
+.mp-disabled {
+  color: var(--mediaplayer-disabled-color) !important;
   opacity: 0.3 !important;
   pointer-events: none;
 }
 
-.ap-hidden {
+.mp-hidden {
   display: none !important;
 }
 
 /* -------------------------------------------------- */
 
-.ap-button {
+.mp-button {
   margin-right: 3px;
   margin-left: 3px;
-  color: var(--audioplayer-button-color);
+  color: var(--mediaplayer-button-color);
 }
 
-.ap-button:hover {
-  color: var(--audioplayer-button-hover-color);
+.mp-button:hover {
+  color: var(--mediaplayer-button-hover-color);
   transform: scale(1.1);
   display: inline-block;
 }
 
-.ap-button:active {
+.mp-button:active {
   transform: scale(0.9);
 }
 
 /* -------------------------------------------------- */
 
-#ap-div-topbar {
+#mp-div-topbar {
   display: flex;
   flex-direction: row;
 }
 
-#ap-div-time {
+#mp-div-time {
   display: inline;
   margin-left: 3px;
 }
 
-#ap-text-time,
-#ap-text-volume {
+#mp-text-time,
+#mp-text-volume {
   display: inline;
   visibility: hidden;
   background-color: black !important;
@@ -204,14 +204,14 @@ a:hover a:visited {
   flex-grow: 1;
 }
 
-#ap-div-time {
+#mp-div-time {
   display: inline-flex;
   flex-grow: 1;
   align-items: center;
   position: relative;
 }
 
-#ap-div-time:hover #ap-text-time {
+#mp-div-time:hover #mp-text-time {
   visibility: visible;
   min-width: 100px;
   position: absolute;
@@ -219,38 +219,38 @@ a:hover a:visited {
   left: 0;
 }
 
-#ap-slider-time {
+#mp-slider-time {
   flex-grow: 1;
 }
 
-#ap-div-volume {
+#mp-div-volume {
   position: relative;
 }
 /* 
-#ap-div-volume:hover #ap-slider-volume {
+#mp-div-volume:hover #mp-slider-volume {
   display: inline !important;
 } */
 
-#ap-slider-volume {
+#mp-slider-volume {
   width: 30px;
 }
 
-#ap-div-volume:hover #ap-text-volume {
+#mp-div-volume:hover #mp-text-volume {
   visibility: visible;
   position: absolute;
   top: 15px;
   left: 0;
 }
 
-#ap-div-volume:hover #ap-slider-volume {
+#mp-div-volume:hover #mp-slider-volume {
   display: inline-block !important;
 }
 
-#ap-button-playlist {
+#mp-button-playlist {
   margin-left: 5px;
 }
 
-.ap-slider {
+.mp-slider {
   display: inline-block;
   vertical-align: middle;
   margin-bottom: 3px;
@@ -263,7 +263,7 @@ a:hover a:visited {
   appearance: none;
   height: 5px;
   width: 60px;
-  background: var(--audioplayer-slider-right-bg-color);
+  background: var(--mediaplayer-slider-right-bg-color);
   outline: none;
   -webkit-transition: 0.2s;
   transition: opacity 0.2s;
@@ -271,29 +271,29 @@ a:hover a:visited {
   overflow: hidden;
 }
 
-.ap-slider:hover {
-  background: var(--audioplayer-slider-hover-right-bg-color);
+.mp-slider:hover {
+  background: var(--mediaplayer-slider-hover-right-bg-color);
 }
 
-.ap-slider::-webkit-slider-thumb {
+.mp-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   width: 5px;
-  background: var(--audioplayer-slider-left-bg-color);
+  background: var(--mediaplayer-slider-left-bg-color);
   border-radius: 5px;
-  box-shadow: -100vw 0 0 100vw var(--audioplayer-slider-left-bg-color);
+  box-shadow: -100vw 0 0 100vw var(--mediaplayer-slider-left-bg-color);
 }
-.ap-slider:hover::-webkit-slider-thumb {
-  background: var(--audioplayer-slider-hover-left-bg-color);
-  box-shadow: -100vw 0 0 100vw var(--audioplayer-slider-hover-left-bg-color);
+.mp-slider:hover::-webkit-slider-thumb {
+  background: var(--mediaplayer-slider-hover-left-bg-color);
+  box-shadow: -100vw 0 0 100vw var(--mediaplayer-slider-hover-left-bg-color);
 }
 
 /* ************* PLAYLIST ************* */
 
-#ap-div-playlist-tracks {
+#mp-div-playlist-tracks {
   clear: both;
   margin: 3px 2px 3px 2px;
   padding: 5px;
-  background-color: var(--audioplayer-tracks-bg-color);
+  background-color: var(--mediaplayer-tracks-bg-color);
   border-radius: 5px;
   min-height: 0px;
   max-height: 200px;
@@ -301,16 +301,16 @@ a:hover a:visited {
   overflow-y: scroll;
 }
 
-#ap-div-playlist-tracks::-webkit-scrollbar {
+#mp-div-playlist-tracks::-webkit-scrollbar {
   width: 5px;
 }
 
-.ap-div-playlist-track {
+.mp-div-playlist-track {
   font-size: 11px;
   width: 100%;
   padding: 2px;
   cursor: pointer;
-  color: var(--audioplayer-track-text-color);
+  color: var(--mediaplayer-track-text-color);
   font-family: monospace;
   display: flex;
   flex-direction: row;
@@ -318,15 +318,15 @@ a:hover a:visited {
   align-items: center;
 }
 
-.ap-div-playlist-track:hover {
-  background-color: var(--audioplayer-track-hover-bg-color) !important;
-  color: var(--audioplayer-track-hover-text-color) !important;
+.mp-div-playlist-track:hover {
+  background-color: var(--mediaplayer-track-hover-bg-color) !important;
+  color: var(--mediaplayer-track-hover-text-color) !important;
 }
 
-/* .ap-span-playlist-track-time {
+/* .mp-span-playlist-track-time {
 } */
 
-.ap-span-playlist-track-title {
+.mp-span-playlist-track-title {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -334,35 +334,35 @@ a:hover a:visited {
   text-align: left;
 }
 
-.ap-div-playlist-current-track {
-  color: var(--audioplayer-track-current-text-color) !important;
-  background-color: var(--audioplayer-track-current-bg-color);
+.mp-div-playlist-current-track {
+  color: var(--mediaplayer-track-current-text-color) !important;
+  background-color: var(--mediaplayer-track-current-bg-color);
 }
 
-.ap-div-playlist-selected-track {
-  background-color: var(--audioplayer-track-selected-bg-color);
-  color: var(--audioplayer-track-selected-text-color);
+.mp-div-playlist-selected-track {
+  background-color: var(--mediaplayer-track-selected-bg-color);
+  color: var(--mediaplayer-track-selected-text-color);
 }
 
-#ap-span-playlist-buttons-right {
+#mp-span-playlist-buttons-right {
   float: right;
   display: inline;
   margin-top: 3px;
   margin-right: 5px;
 }
 
-#ap-span-playlist-buttons-left {
+#mp-span-playlist-buttons-left {
   float: left;
   display: inline;
   margin-top: 3px;
   margin-left: 5px;
 }
 
-#ap-button-shuffle-on,
-#ap-button-shuffle-off {
+#mp-button-shuffle-on,
+#mp-button-shuffle-off {
   margin-right: 8px;
 }
 
-#ap-button-save {
+#mp-button-save {
   margin-left: 7px;
 }

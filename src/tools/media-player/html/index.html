@@ -1,84 +1,84 @@
-<div id="ap-div-topbar" class="ap-frame">
-  <a id="ap-button-open" class="ap-button" title="open files"
+<div id="mp-div-topbar" class="mp-frame">
+  <a id="mp-button-open" class="mp-button" title="open files"
     ><i class="fa fa-folder-open" aria-hidden="true"></i
   ></a>
-  <div class="ap-separator"></div>
-  <a id="ap-button-prev" class="ap-button" title="previous track"
+  <div class="mp-separator"></div>
+  <a id="mp-button-prev" class="mp-button" title="previous track"
     ><i class="fa fa-step-backward" aria-hidden="true"></i
   ></a>
-  <a id="ap-button-play" class="ap-button" title="play"
+  <a id="mp-button-play" class="mp-button" title="play"
     ><i class="fa fa-play" aria-hidden="true"></i
   ></a>
-  <a id="ap-button-pause" class="ap-button" title="pause"
+  <a id="mp-button-pause" class="mp-button" title="pause"
     ><i class="fa fa-pause" aria-hidden="true"></i
   ></a>
-  <a id="ap-button-next" class="ap-button" title="next track"
+  <a id="mp-button-next" class="mp-button" title="next track"
     ><i class="fa fa-step-forward" aria-hidden="true"></i
   ></a>
-  <div id="ap-div-time">
-    <input id="ap-slider-time" class="ap-slider" type="range" value="0" />
-    <div id="ap-text-time">00:00 / 00:00</div>
+  <div id="mp-div-time">
+    <input id="mp-slider-time" class="mp-slider" type="range" value="0" />
+    <div id="mp-text-time">00:00 / 00:00</div>
   </div>
-  <div id="ap-div-volume">
-    <a id="ap-button-volume-off" class="ap-button" title="volume off"
+  <div id="mp-div-volume">
+    <a id="mp-button-volume-off" class="mp-button" title="volume off"
       ><i class="fa fa-volume-up" aria-hidden="true"></i
     ></a>
-    <a id="ap-button-volume-on" class="ap-button ap-hidden" title="volume on"
+    <a id="mp-button-volume-on" class="mp-button ap-hidden" title="volume on"
       ><i class="fa fa-volume-off" aria-hidden="true"></i
     ></a>
-    <input id="ap-slider-volume" class="ap-slider" type="range" value="100" />
-    <div id="ap-text-volume">100%</div>
+    <input id="mp-slider-volume" class="mp-slider" type="range" value="100" />
+    <div id="mp-text-volume">100%</div>
   </div>
-  <div class="ap-separator"></div>
-  <a id="ap-button-playlist" class="ap-button" title="toggle playlist"
+  <div class="mp-separator"></div>
+  <a id="mp-button-playlist" class="mp-button" title="toggle playlist"
     ><i class="fa fa-list" aria-hidden="true"></i
   ></a>
-  <a id="ap-button-close" class="ap-button" title="hide"
+  <a id="mp-button-close" class="mp-button" title="hide"
     ><i class="fa fa-times"></i
   ></a>
   <!-- "fas fa-angle-up" "fa fa-times" -->
 </div>
 <!-- ---------------  HTML VIDEO PLAYER ---------------  -->
-<div id="ap-div-video" class="ap-frame">
-  <div id="ap-html-video-loading-div" class="set-display-none">
-    <div class="ap-html-video-loading-spinner"></div>
+<div id="mp-div-video" class="mp-frame">
+  <div id="mp-html-video-loading-div" class="set-display-none">
+    <div class="mp-html-video-loading-spinner"></div>
   </div>
-  <video id="ap-html-video"></video>
+  <video id="mp-html-video"></video>
 </div>
-<div id="ap-div-ytvideo" class="ap-frame"></div>
+<div id="mp-div-ytvideo" class="mp-frame"></div>
 <!-- ---------------   PLAYLIST    ---------------  -->
-<div id="ap-div-playlist" class="ap-frame">
-  <div id="ap-div-playlist-tracks"></div>
-  <div id="ap-span-playlist-buttons-right">
-    <a id="ap-button-shuffle-off" class="ap-button" title="toggle shuffle"
+<div id="mp-div-playlist" class="mp-frame">
+  <div id="mp-div-playlist-tracks"></div>
+  <div id="mp-span-playlist-buttons-right">
+    <a id="mp-button-shuffle-off" class="mp-button" title="toggle shuffle"
       ><i class="fa fa-random" aria-hidden="true"></i
       ><i class="far fa-check-square fa-sm" style="margin-left: 5px"></i
     ></a>
-    <a id="ap-button-shuffle-on" class="ap-button" title="toggle shuffle"
+    <a id="mp-button-shuffle-on" class="mp-button" title="toggle shuffle"
       ><i class="fa fa-random" aria-hidden="true"></i
       ><i class="far fa-square fa-sm" style="margin-left: 5px"></i
     ></a>
-    <a id="ap-button-repeat-off" class="ap-button" title="toggle repeat"
+    <a id="mp-button-repeat-off" class="mp-button" title="toggle repeat"
       ><i class="fa fa-sync-alt fa-sm" aria-hidden="true"></i
       ><i class="far fa-check-square fa-sm" style="margin-left: 5px"></i
     ></a>
-    <a id="ap-button-repeat-on" class="ap-button" title="toggle repeat"
+    <a id="mp-button-repeat-on" class="mp-button" title="toggle repeat"
       ><i class="fa fa-sync-alt fa-sm" aria-hidden="true"></i
       ><i class="far fa-square fa-sm" style="margin-left: 5px"></i
     ></a>
   </div>
-  <div id="ap-span-playlist-buttons-left">
-    <a id="ap-button-clear" class="ap-button" title=""
+  <div id="mp-span-playlist-buttons-left">
+    <a id="mp-button-clear" class="mp-button" title=""
       ><i class="fas fa-trash-alt"></i
     ></a>
-    <a id="ap-button-add" class="ap-button" title=""
+    <a id="mp-button-add" class="mp-button" title=""
       ><i class="fas fa-plus"></i
     ></a>
-    <a id="ap-button-delete" class="ap-button" title=""
+    <a id="mp-button-delete" class="mp-button" title=""
       ><i class="fas fa-minus"></i
     ></a>
-    <div class="ap-separator"></div>
-    <a id="ap-button-save" class="ap-button" title=""
+    <div class="mp-separator"></div>
+    <a id="mp-button-save" class="mp-button" title=""
       ><i class="fas fa-save"></i
     ></a>
   </div>

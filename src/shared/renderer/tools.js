@@ -35,7 +35,7 @@ let g_tools;
 export function init() {
   g_tools = {};
   g_tools["reader"] = reader;
-  g_tools["audio-player"] = mediaPlayer;
+  g_tools["media-player"] = mediaPlayer;
   g_tools["system-monitor"] = systemMonitor;
   g_tools["tool-preferences"] = toolPreferences;
   g_tools["tool-history"] = toolHistory;

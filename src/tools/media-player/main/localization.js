@@ -10,73 +10,73 @@ const { _ } = require("../../../shared/main/i18n");
 exports.getLocalization = function () {
   return [
     {
-      id: "ap-button-play",
-      text: _("ap-tooltip-button-play"),
+      id: "mp-button-play",
+      text: _("mp-tooltip-button-play"),
     },
     {
-      id: "ap-button-pause",
-      text: _("ap-tooltip-button-pause"),
+      id: "mp-button-pause",
+      text: _("mp-tooltip-button-pause"),
     },
     {
-      id: "ap-button-next",
-      text: _("ap-tooltip-button-next"),
+      id: "mp-button-next",
+      text: _("mp-tooltip-button-next"),
     },
     {
-      id: "ap-button-prev",
-      text: _("ap-tooltip-button-prev"),
+      id: "mp-button-prev",
+      text: _("mp-tooltip-button-prev"),
     },
     {
-      id: "ap-button-open",
+      id: "mp-button-open",
       text: _("tool-shared-ui-open"),
     },
     {
-      id: "ap-button-volume-off",
-      text: _("ap-tooltip-button-volume-off"),
+      id: "mp-button-volume-off",
+      text: _("mp-tooltip-button-volume-off"),
     },
     {
-      id: "ap-button-volume-on",
-      text: _("ap-tooltip-button-volume-on"),
+      id: "mp-button-volume-on",
+      text: _("mp-tooltip-button-volume-on"),
     },
     {
-      id: "ap-button-playlist",
-      text: _("ap-tooltip-button-playlist"),
+      id: "mp-button-playlist",
+      text: _("mp-tooltip-button-playlist"),
     },
     {
-      id: "ap-button-close",
-      text: _("ap-tooltip-button-close"),
+      id: "mp-button-close",
+      text: _("mp-tooltip-button-close"),
     },
     {
-      id: "ap-button-shuffle-off",
-      text: _("ap-tooltip-button-shuffle-off"),
+      id: "mp-button-shuffle-off",
+      text: _("mp-tooltip-button-shuffle-off"),
     },
     {
-      id: "ap-button-shuffle-on",
-      text: _("ap-tooltip-button-shuffle-on"),
+      id: "mp-button-shuffle-on",
+      text: _("mp-tooltip-button-shuffle-on"),
     },
     {
-      id: "ap-button-repeat-off",
-      text: _("ap-tooltip-button-repeat-off"),
+      id: "mp-button-repeat-off",
+      text: _("mp-tooltip-button-repeat-off"),
     },
     {
-      id: "ap-button-repeat-on",
-      text: _("ap-tooltip-button-repeat-on"),
+      id: "mp-button-repeat-on",
+      text: _("mp-tooltip-button-repeat-on"),
     },
 
     {
-      id: "ap-button-clear",
-      text: _("ap-tooltip-button-clear"),
+      id: "mp-button-clear",
+      text: _("mp-tooltip-button-clear"),
     },
     {
-      id: "ap-button-add",
-      text: _("ap-tooltip-button-add"),
+      id: "mp-button-add",
+      text: _("mp-tooltip-button-add"),
     },
     {
-      id: "ap-button-delete",
-      text: _("ap-tooltip-button-delete"),
+      id: "mp-button-delete",
+      text: _("mp-tooltip-button-delete"),
     },
     {
-      id: "ap-button-save",
-      text: _("ap-tooltip-button-save"),
+      id: "mp-button-save",
+      text: _("mp-tooltip-button-save"),
     },
   ];
 };

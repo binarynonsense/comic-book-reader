@@ -138,9 +138,9 @@ function onIpcFromMain(event, args) {
           });
 
           const audioplayerDiv = document.createElement("div");
-          audioplayerDiv.id = "audio-player-container";
+          audioplayerDiv.id = "media-player-container";
           audioplayerDiv.classList =
-            "ap-layout-top-left ap-hidden ap-zindex-reader";
+            "mp-layout-top-left ap-hidden ap-zindex-reader";
           document.body.appendChild(audioplayerDiv);
 
           const systemMonitorDiv = document.createElement("div");
@@ -169,11 +169,11 @@ function onIpcFromMain(event, args) {
             document.getElementById("tools").innerHTML = "";
 
             document
-              .getElementById("audio-player-container")
-              .classList.add("ap-zindex-reader");
+              .getElementById("media-player-container")
+              .classList.add("mp-zindex-reader");
             document
-              .getElementById("audio-player-container")
-              .classList.remove("ap-zindex-tools");
+              .getElementById("media-player-container")
+              .classList.remove("mp-zindex-tools");
           } else {
             document.getElementById("reader").classList.add("set-display-none");
             document
@@ -181,11 +181,11 @@ function onIpcFromMain(event, args) {
               .classList.remove("set-display-none");
 
             document
-              .getElementById("audio-player-container")
-              .classList.remove("ap-zindex-reader");
+              .getElementById("media-player-container")
+              .classList.remove("mp-zindex-reader");
             document
-              .getElementById("audio-player-container")
-              .classList.add("ap-zindex-tools");
+              .getElementById("media-player-container")
+              .classList.add("mp-zindex-tools");
           }
         }
         break;

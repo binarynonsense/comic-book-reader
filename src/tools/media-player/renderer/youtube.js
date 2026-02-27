@@ -32,7 +32,7 @@ const onError = (type) => {
   destroyPlayer();
 
   // TODO: real localized messages, not the type string
-  const playerDiv = document.getElementById("ap-div-ytvideo");
+  const playerDiv = document.getElementById("mp-div-ytvideo");
   playerDiv.innerHTML = `
         <div style="background:#000; color:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%;">
             <p>${type}</p>
@@ -54,7 +54,7 @@ export function createNewPlayer(videoId, volume, refreshUI, updateTrackData) {
     if (typeof YT !== "undefined" && YT.Player && YT.loaded) {
       clearInterval(checkYT);
 
-      const container = document.getElementById("ap-div-ytvideo");
+      const container = document.getElementById("mp-div-ytvideo");
       if (!container) return;
 
       if (g_ytPlayer && typeof g_ytPlayer.destroy === "function") {
@@ -63,7 +63,7 @@ export function createNewPlayer(videoId, volume, refreshUI, updateTrackData) {
       container.innerHTML = "";
 
       const iframe = document.createElement("iframe");
-      iframe.id = "ap-iframe-ytvideo";
+      iframe.id = "mp-iframe-ytvideo";
       iframe.style.border = "none";
       iframe.referrerPolicy = "strict-origin-when-cross-origin";
       iframe.allow =
@@ -147,7 +147,7 @@ export function destroyPlayer() {
     g_ytPlayer.destroy();
     g_ytPlayer = null;
   }
-  const container = document.getElementById("ap-div-ytvideo");
+  const container = document.getElementById("mp-div-ytvideo");
   if (container) container.innerHTML = "";
 }
 
@@ -260,8 +260,8 @@ function stopProgressLoop() {
 ///////////////////////////////////////////////////////////////////////////////
 
 function updateUI(current, total) {
-  const slider = document.getElementById("ap-slider-time");
-  const timeText = document.getElementById("ap-text-time");
+  const slider = document.getElementById("mp-slider-time");
+  const timeText = document.getElementById("mp-text-time");
   const currentSec = Math.round(current || 0);
   const totalSec = Math.round(total || 0);
   if (slider) {
@@ -281,8 +281,8 @@ function formatTime(time) {
 }
 
 function addSliderHandler() {
-  const slider = document.getElementById("ap-slider-time");
-  const timeText = document.getElementById("ap-text-time");
+  const slider = document.getElementById("mp-slider-time");
+  const timeText = document.getElementById("mp-text-time");
   slider.addEventListener("input", (e) => {
     if (g_ytPlayer && g_ytPlayer.seekTo) {
       const seekTarget = Math.floor(e.target.value);

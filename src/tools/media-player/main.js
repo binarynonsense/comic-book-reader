@@ -26,7 +26,7 @@ let g_parentElementId;
 ///////////////////////////////////////////////////////////////////////////////
 
 function sendIpcToRenderer(...args) {
-  core.sendIpcToRenderer("audio-player", ...args);
+  core.sendIpcToRenderer("media-player", ...args);
 }
 
 function sendIpcToCoreRenderer(...args) {

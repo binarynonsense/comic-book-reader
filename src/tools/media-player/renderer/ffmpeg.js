@@ -23,8 +23,8 @@ export function initOnIpcCallbacks(on) {
   on("mp-ffmpeg-video-metadata", (data) => {
     g_ffmpegSeekOffset = 0;
     g_totalDuration = data.duration;
-    document.getElementById("ap-slider-time").max = Math.floor(g_totalDuration);
-    document.getElementById("ap-text-time").innerText =
+    document.getElementById("mp-slider-time").max = Math.floor(g_totalDuration);
+    document.getElementById("mp-text-time").innerText =
       formatTime(g_totalDuration);
     startStream(0);
   });
@@ -32,7 +32,7 @@ export function initOnIpcCallbacks(on) {
   on("mp-ffmpeg-player-error", (error) => {
     console.log(error);
     document
-      .getElementById("ap-html-video-loading-div")
+      .getElementById("mp-html-video-loading-div")
       .classList.add("set-display-none");
     sendIpcToMain("on-play-error", "NotSupportedError");
   });
@@ -41,10 +41,10 @@ export function initOnIpcCallbacks(on) {
 /////////////////////
 
 // function openPlayer(filePath = null) {
-// document.getElementById("ap-html-video-loading-div").classList.remove("set-display-none");
+// document.getElementById("mp-html-video-loading-div").classList.remove("set-display-none");
 //   sendToMain("mp-ffmpeg-open-player");
 //   if (filePath) {
-// document.getElementById("ap-html-video-loading-div").classList.remove("set-display-none");
+// document.getElementById("mp-html-video-loading-div").classList.remove("set-display-none");
 //     sendToMain("mp-ffmpeg-load-video", filePath);
 //   }
 // }
@@ -53,7 +53,7 @@ let g_ffmpegSeekOffset = 0;
 
 export function setTime(seconds) {
   document
-    .getElementById("ap-html-video-loading-div")
+    .getElementById("mp-html-video-loading-div")
     .classList.remove("set-display-none");
   g_ffmpegSeekOffset = Math.floor(seconds); // remember where we jumped to
   startStream(g_ffmpegSeekOffset);
@@ -71,7 +71,7 @@ export function onSliderTimeTimeUpdate(videoElement, inputSlider, textDiv) {
 /////////////////////
 
 function startStream(time) {
-  g_videoTag = document.getElementById("ap-html-video");
+  g_videoTag = document.getElementById("mp-html-video");
   g_videoTag.pause();
   g_videoTag.src = "";
   g_videoTag.load();
