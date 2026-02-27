@@ -366,7 +366,7 @@ export async function playTrack(index, time) {
           g_player.isPlaying = true;
           console.log("unsupported natively, try loading with ffmpeg");
           sendIpcToMain(
-            "vp-load-video",
+            "mp-ffmpeg-load-video",
             playlist.getTracks()[playlist.getCurrentTrackIndex()].fileUrl,
           );
         } else {

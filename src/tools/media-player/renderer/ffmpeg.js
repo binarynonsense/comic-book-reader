@@ -12,15 +12,15 @@ let sendIpcToMain;
 
 export function init(_sendIpcToMain) {
   sendIpcToMain = _sendIpcToMain;
-  sendIpcToMain("vp-open-player");
+  sendIpcToMain("mp-ffmpeg-open-player");
 }
 
 export function initOnIpcCallbacks(on) {
-  on("vp-server-ready", (data) => {
+  on("mp-ffmpeg-server-ready", (data) => {
     g_activePort = data.port;
   });
 
-  on("vp-video-metadata", (data) => {
+  on("mp-ffmpeg-video-metadata", (data) => {
     g_ffmpegSeekOffset = 0;
     g_totalDuration = data.duration;
     document.getElementById("ap-slider-time").max = Math.floor(g_totalDuration);
@@ -29,7 +29,7 @@ export function initOnIpcCallbacks(on) {
     startStream(0);
   });
 
-  on("vp-player-error", (error) => {
+  on("mp-ffmpeg-player-error", (error) => {
     console.log(error);
     document
       .getElementById("ap-html-video-loading-div")
@@ -42,10 +42,10 @@ export function initOnIpcCallbacks(on) {
 
 // function openPlayer(filePath = null) {
 // document.getElementById("ap-html-video-loading-div").classList.remove("set-display-none");
-//   sendToMain("vp-open-player");
+//   sendToMain("mp-ffmpeg-open-player");
 //   if (filePath) {
 // document.getElementById("ap-html-video-loading-div").classList.remove("set-display-none");
-//     sendToMain("vp-load-video", filePath);
+//     sendToMain("mp-ffmpeg-load-video", filePath);
 //   }
 // }
 

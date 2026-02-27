@@ -87,7 +87,7 @@ function startVideoServer() {
   });
 
   g_videoServer.listen(0, "127.0.0.1", () => {
-    sendIpcToRenderer("vp-server-ready", {
+    sendIpcToRenderer("mp-ffmpeg-server-ready", {
       port: g_videoServer.address().port,
     });
   });
@@ -100,25 +100,27 @@ function startVideoServer() {
 exports.initOnIpcCallbacks = function (on, _sendIpcToRenderer) {
   sendIpcToRenderer = _sendIpcToRenderer;
 
-  on("vp-open-player", () => startVideoServer());
+  on("mp-ffmpeg-open-player", () => startVideoServer());
 
-  on("vp-load-video", async (filePath) => {
+  on("mp-ffmpeg-load-video", async (filePath) => {
     g_activeVideoPath = filePath;
     try {
       const savedPath = undefined; //getStoredPathFromPrefs();
       g_userFfmpegPath = await getValidFfmpegPath(savedPath);
       const duration = await getMetadata(g_userFfmpegPath, filePath);
-      if (duration) sendIpcToRenderer("vp-video-metadata", { duration });
+      if (duration) sendIpcToRenderer("mp-ffmpeg-video-metadata", { duration });
       else
-        sendIpcToRenderer("vp-player-error", {
+        sendIpcToRenderer("mp-ffmpeg-player-error", {
           message: "Invalid video format.",
         });
     } catch (error) {
-      sendIpcToRenderer("vp-player-error", { message: error.message || error });
+      sendIpcToRenderer("mp-ffmpeg-player-error", {
+        message: error.message || error,
+      });
     }
   });
 
-  on("vp-close-player", () => {
+  on("mp-ffmpeg-close-player", () => {
     if (g_ffmpegProcess) {
       g_ffmpegProcess.kill("SIGKILL");
       g_ffmpegProcess = null;
