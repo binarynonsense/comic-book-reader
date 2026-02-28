@@ -35,7 +35,7 @@
   border-radius: 5px;
 
   min-height: 10px;
-  --mp-frame-width: 290px;
+  --mp-frame-width: 300px;
   min-width: var(--mp-frame-width);
 
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
@@ -57,7 +57,6 @@ a:hover a:visited {
 
 #mp-div-video {
   background: #000;
-  margin-top: 7px;
   height: 286px;
   position: relative;
   display: flex;
@@ -87,7 +86,8 @@ a:hover a:visited {
   z-index: 20;
 } */
 
-#mp-html-video-loading-div {
+#mp-html-video-loading-div,
+#mp-yt-video-loading-div {
   position: absolute;
   inset: 0;
   background: rgba(0, 0, 0, 0.7);
@@ -115,7 +115,6 @@ a:hover a:visited {
 
 #mp-div-ytvideo {
   background: #000;
-  margin-top: 7px;
   height: 286px;
   position: relative;
   display: flex;
@@ -137,10 +136,8 @@ a:hover a:visited {
 
 /* -------------------------------------------------- */
 
-#mp-div-playlist {
-  margin-top: 7px;
-  width: 260px;
-}
+/* #mp-div-playlist {
+} */
 
 .mp-separator {
   display: inline;
@@ -165,12 +162,19 @@ a:hover a:visited {
   margin-right: 3px;
   margin-left: 3px;
   color: var(--mediaplayer-button-color);
+  min-width: 15px;
+  display: inline-flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
 }
 
-.mp-button:hover {
+.mp-button:hover i {
   color: var(--mediaplayer-button-hover-color);
   transform: scale(1.1);
   display: inline-block;
+  transform-origin: center;
 }
 
 .mp-button:active {

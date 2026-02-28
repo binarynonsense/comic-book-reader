@@ -13,40 +13,39 @@ let g_tracks = [];
 let g_currentTrackIndex = 0;
 let g_selectedTrackFileIndex;
 
-let g_ffmpegAvailable = false; // not used?
 let g_player;
 let g_settings;
 
-let sendIpcToMain, onPlaylistTrackDoubleClicked;
+let sendIpcToMain, onPlaylistTrackDoubleClicked, refreshUI;
 
 export function init(
   player,
   loadedPlaylist,
   settings,
-  ffmpegAvailable,
   _sendIpcToMain,
   _onPlaylistTrackDoubleClicked,
+  _refreshUI,
 ) {
   sendIpcToMain = _sendIpcToMain;
   onPlaylistTrackDoubleClicked = _onPlaylistTrackDoubleClicked;
+  refreshUI = _refreshUI;
+
   g_player = player;
   g_playlist = loadedPlaylist;
   g_settings = settings;
-  g_ffmpegAvailable = ffmpegAvailable;
+
   if (g_playlist.files.length > 0) {
     createTracksList(false);
     let trackIndex = 0;
     if (g_settings.currentFileIndex) {
-      for (let index = 0; index < g_playlist.length; index++) {
-        const track = g_playlist[index];
+      for (let index = 0; index < g_tracks.length; index++) {
+        const track = g_tracks[index];
         if (track.fileIndex === g_settings.currentFileIndex) {
           trackIndex = index;
           break;
         }
       }
     }
-    // loadTrack(trackIndex, g_settings.currentTime ?? 0);
-    // refreshUI();
     fillTimes(); // calls updatePlaylistInfo
     fillTags();
     return trackIndex;
@@ -84,12 +83,10 @@ export function setSelectedTrackFileIndex(selectedTrackFileIndex) {
 }
 
 export function openPlaylist(playlist) {
-  pauseTrack(false);
   g_playlist = playlist;
   g_selectedTrackFileIndex = undefined;
   createTracksList(false);
   updatePlaylistInfo();
-  //   playTrack(g_currentTrackIndex, 0);
   fillTimes();
   fillTags();
 }
@@ -102,7 +99,6 @@ export function addToPlaylist(files, startPlaying, allowDuplicates = false) {
       if (newFiles.length === 0) {
         // no new one
         const listIndex = getPlaylistIndex(files[0]);
-        // playTrack(listIndex, 0);
         return listIndex;
       } else {
         files = newFiles;
@@ -113,10 +109,8 @@ export function addToPlaylist(files, startPlaying, allowDuplicates = false) {
     g_playlist.files.push(...files);
     createTracksList(g_tracks.length > 0);
     if (oldLength === 0 || startPlaying) {
-      //   playTrack(oldLength, 0);
       returnTrackIndex = oldLength;
     }
-    // refreshUI();
     fillTimes(); // calls updatePlaylistInfo
     fillTags();
   }
@@ -218,7 +212,7 @@ function getPlaylistIndex(file) {
 
 ////////////////////////////////////////////////
 
-function createTracksList(isRefresh) {
+export function createTracksList(isRefresh) {
   let currentFileIndex;
   if (!isRefresh && g_tempAudioElement) {
     // playlist changed, abort time background retrieval
@@ -252,7 +246,7 @@ function createTracksList(isRefresh) {
 }
 
 export function updatePlaylistInfo() {
-  g_player.divPlaylistTracks.innerHTML = "";
+  g_player.html.divPlaylistTracks.innerHTML = "";
   if (!g_playlist || g_tracks.length === 0) {
     return;
   }
@@ -295,7 +289,7 @@ export function updatePlaylistInfo() {
     let content = `<span title="${fullName}\n${file.url}" class="mp-span-playlist-track-title">${fullName}</span
   ><span class="mp-span-playlist-track-time">${duration}</span>`;
     div.innerHTML = content;
-    g_player.divPlaylistTracks.appendChild(div);
+    g_player.html.divPlaylistTracks.appendChild(div);
   }
 }
 
@@ -319,6 +313,7 @@ export function scrollToCurrent() {
 function onPlaylistTrackClicked(fileIndex) {
   g_selectedTrackFileIndex = fileIndex;
   updatePlaylistInfo();
+  refreshUI();
 }
 
 // ref: https://en.wikipedia.org/wiki/Fisher-Yates_shuffle#The_modern_algorithm

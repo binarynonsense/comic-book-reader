@@ -8,7 +8,7 @@
 // ref: https://developers.google.com/youtube/iframe_api_reference
 
 let g_ytPlayer;
-let g_rendererErrorHandler;
+let rendererOnError;
 
 window.onYouTubeIframeAPIReady = function () {
   // console.log("onYouTubeIframeAPIReady");
@@ -18,8 +18,8 @@ export function getPlayer() {
   return g_ytPlayer;
 }
 
-export function init(handler) {
-  g_rendererErrorHandler = handler;
+export function init(onError) {
+  rendererOnError = onError;
   addSliderHandler();
 }
 
@@ -28,21 +28,26 @@ export function init(handler) {
 ///////////////////////////////////////////////////////////////////////////////
 
 const onError = (type) => {
-  console.error(type);
-  destroyPlayer();
-
-  // TODO: real localized messages, not the type string
-  const playerDiv = document.getElementById("mp-div-ytvideo");
-  playerDiv.innerHTML = `
-        <div style="background:#000; color:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%;">
-            <p>${type}</p>
-        </div>
-    `;
-
-  g_rendererErrorHandler(type);
+  // console.error(type);
+  // destroyPlayer();
+  // // TODO: real localized messages, not the type string
+  // const playerDiv = document.getElementById("mp-div-ytvideo");
+  // playerDiv.innerHTML = `
+  //       <div style="background:#000; color:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%;">
+  //           <p>${type}</p>
+  //       </div>
+  //   `;
+  rendererOnError(type);
 };
 
-export function createNewPlayer(videoId, volume, refreshUI, updateTrackData) {
+export function createNewPlayer(
+  videoId,
+  time,
+  volume,
+  refreshUI,
+  updateTrackData,
+  onPlaySucceeded,
+) {
   if (!window.YT) {
     const tag = document.createElement("script");
     tag.src = "https://www.youtube.com/iframe_api";
@@ -60,7 +65,6 @@ export function createNewPlayer(videoId, volume, refreshUI, updateTrackData) {
       if (g_ytPlayer && typeof g_ytPlayer.destroy === "function") {
         g_ytPlayer.destroy();
       }
-      container.innerHTML = "";
 
       const iframe = document.createElement("iframe");
       iframe.id = "mp-iframe-ytvideo";
@@ -97,9 +101,11 @@ export function createNewPlayer(videoId, volume, refreshUI, updateTrackData) {
         new window.YT.Player(iframe.id, {
           events: {
             onReady: (event) => {
+              onPlaySucceeded();
               clearTimeout(connectionTimeout);
               g_ytPlayer = event.target;
               g_ytPlayer.playVideo();
+              if (time && time > 0) g_ytPlayer.seekTo(time, true);
               updateVolume(volume);
               const videoData = g_ytPlayer.getVideoData();
               const videoTitle = videoData.title;
@@ -147,15 +153,21 @@ export function destroyPlayer() {
     g_ytPlayer.destroy();
     g_ytPlayer = null;
   }
-  const container = document.getElementById("mp-div-ytvideo");
-  if (container) container.innerHTML = "";
+
+  // const container = document.getElementById("mp-div-ytvideo");
+  // if (container) container.innerHTML = "";
+  const iframe = document.getElementById("mp-iframe-ytvideo");
+  if (iframe) {
+    // iframe.parentElement = null;
+    iframe.remove();
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 // CONTROLS ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-export function onPlayClicked() {
+export function onPlay() {
   if (g_ytPlayer && g_ytPlayer.getPlayerState) {
     const state = g_ytPlayer.getPlayerState();
     if (state !== 1) {
@@ -166,7 +178,7 @@ export function onPlayClicked() {
   return false;
 }
 
-export function onPauseClicked() {
+export function onPause() {
   if (g_ytPlayer && g_ytPlayer.getPlayerState) {
     const state = g_ytPlayer.getPlayerState();
     if (state === 1) {

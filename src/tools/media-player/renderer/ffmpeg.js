@@ -8,9 +8,18 @@ let g_activePort = null;
 let g_totalDuration = 0;
 let g_videoTag;
 
-let sendIpcToMain;
+let onPlaySucceeded, setPlayerState, sendIpcToMain;
 
-export function init(_sendIpcToMain) {
+// NOTE: this must be synced with the one in renderer
+const PlayerState = {
+  NOT_SET: "not set",
+  LOADING: "loading",
+  PLAYING: "playing",
+  PAUSED: "paused",
+};
+
+export function init(_setPlayerState, _sendIpcToMain) {
+  setPlayerState = _setPlayerState;
   sendIpcToMain = _sendIpcToMain;
   sendIpcToMain("mp-ffmpeg-open-player");
 }
@@ -23,38 +32,25 @@ export function initOnIpcCallbacks(on) {
   on("mp-ffmpeg-video-metadata", (data) => {
     g_ffmpegSeekOffset = 0;
     g_totalDuration = data.duration;
+    if (data.time && data.time >= g_totalDuration) data.time = 0;
     document.getElementById("mp-slider-time").max = Math.floor(g_totalDuration);
     document.getElementById("mp-text-time").innerText =
       formatTime(g_totalDuration);
-    startStream(0);
+    startStream(data.time);
   });
 
   on("mp-ffmpeg-player-error", (error) => {
     console.log(error);
-    document
-      .getElementById("mp-html-video-loading-div")
-      .classList.add("set-display-none");
     sendIpcToMain("on-play-error", "NotSupportedError");
   });
 }
 
 /////////////////////
 
-// function openPlayer(filePath = null) {
-// document.getElementById("mp-html-video-loading-div").classList.remove("set-display-none");
-//   sendToMain("mp-ffmpeg-open-player");
-//   if (filePath) {
-// document.getElementById("mp-html-video-loading-div").classList.remove("set-display-none");
-//     sendToMain("mp-ffmpeg-load-video", filePath);
-//   }
-// }
-
 let g_ffmpegSeekOffset = 0;
 
 export function setTime(seconds) {
-  document
-    .getElementById("mp-html-video-loading-div")
-    .classList.remove("set-display-none");
+  setPlayerState(PlayerState.LOADING, true);
   g_ffmpegSeekOffset = Math.floor(seconds); // remember where we jumped to
   startStream(g_ffmpegSeekOffset);
 }
@@ -71,11 +67,13 @@ export function onSliderTimeTimeUpdate(videoElement, inputSlider, textDiv) {
 /////////////////////
 
 function startStream(time) {
+  g_ffmpegSeekOffset = Math.floor(time ?? 0);
   g_videoTag = document.getElementById("mp-html-video");
   g_videoTag.pause();
   g_videoTag.src = "";
   g_videoTag.load();
-  const timestamp = time ?? 0;
+  const timestamp = g_ffmpegSeekOffset;
+  console.log("timestamp: " + timestamp);
   g_videoTag.src = `http://127.0.0.1:${g_activePort}/video?t=${timestamp}&cb=${Date.now()}`;
   g_videoTag.play().catch((e) => {
     if (e.name !== "AbortError") console.error("[ffmpeg] Play failed:", e);

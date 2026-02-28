@@ -24,23 +24,27 @@ let sendIpcToRenderer;
 
 let g_lastResponse = null;
 
+function closeCurrentVideo() {
+  // kill old response still hanging
+  if (g_lastResponse) {
+    try {
+      g_lastResponse.end();
+      g_lastResponse.destroy();
+    } catch (error) {}
+  }
+  g_lastResponse = null;
+  // kill the old ffmpeg
+  if (g_ffmpegProcess) {
+    g_ffmpegProcess.kill("SIGKILL");
+    g_ffmpegProcess = null;
+  }
+}
+
 function startVideoServer() {
   if (g_videoServer) return;
   g_videoServer = http.createServer((req, res) => {
-    // kill old response still hanging
-    if (g_lastResponse) {
-      try {
-        g_lastResponse.end();
-        g_lastResponse.destroy();
-      } catch (e) {}
-    }
+    closeCurrentVideo();
     g_lastResponse = res;
-    // kill the old ffmpeg
-    if (g_ffmpegProcess) {
-      g_ffmpegProcess.kill("SIGKILL");
-      g_ffmpegProcess = null;
-    }
-
     const requestUrl = new URL(req.url, `http://127.0.0.1`);
     const seekTime = requestUrl.searchParams.get("t") || "0";
 
@@ -100,15 +104,18 @@ function startVideoServer() {
 exports.initOnIpcCallbacks = function (on, _sendIpcToRenderer) {
   sendIpcToRenderer = _sendIpcToRenderer;
 
-  on("mp-ffmpeg-open-player", () => startVideoServer());
+  on("mp-ffmpeg-open-player", () => {
+    startVideoServer();
+  });
 
-  on("mp-ffmpeg-load-video", async (filePath) => {
+  on("mp-ffmpeg-load-video", async (filePath, time) => {
     g_activeVideoPath = filePath;
     try {
       const savedPath = undefined; //getStoredPathFromPrefs();
       g_userFfmpegPath = await getValidFfmpegPath(savedPath);
       const duration = await getMetadata(g_userFfmpegPath, filePath);
-      if (duration) sendIpcToRenderer("mp-ffmpeg-video-metadata", { duration });
+      if (duration)
+        sendIpcToRenderer("mp-ffmpeg-video-metadata", { duration, time });
       else
         sendIpcToRenderer("mp-ffmpeg-player-error", {
           message: "Invalid video format.",
@@ -118,6 +125,13 @@ exports.initOnIpcCallbacks = function (on, _sendIpcToRenderer) {
         message: error.message || error,
       });
     }
+  });
+
+  on("mp-ffmpeg-close-video", () => {
+    try {
+      log.editor("mp-ffmpeg-close-video");
+      closeCurrentVideo();
+    } catch (error) {}
   });
 
   on("mp-ffmpeg-close-player", () => {

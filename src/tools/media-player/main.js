@@ -194,34 +194,13 @@ function handle(id, callback) {
 
 function initHandleIpcCallbacks() {
   //////////////////////
-  handle("mp-is-video-stream", async (filePath) => {
+  handle("mp-get-file-metadata", async (filePath) => {
     try {
       const mm = require("music-metadata");
       const metadata = await mm.parseFile(filePath, { skipCovers: true });
-
-      const hasExplicitVideo =
-        metadata.streams?.some((s) => s.codec_type === "video") ||
-        JSON.stringify(metadata.native).toLowerCase().includes("video");
-
-      const videoContainers = ["matroska", "isom", "mp42", "mov", "avi"];
-      const container = metadata.format.tagTypes?.[0]?.toLowerCase() || "";
-      const isVideoContainer = videoContainers.some((ext) =>
-        container.includes(ext),
-      );
-
-      const trackCount =
-        metadata.native?.matroska?.length ||
-        metadata.native?.["ISO/IEC 14496-12"]?.length ||
-        0;
-
-      const finalDecision = !!(
-        hasExplicitVideo ||
-        (isVideoContainer && trackCount > 1)
-      );
-
-      return finalDecision;
+      return metadata;
     } catch (error) {
-      return false;
+      return undefined;
     }
   });
 }

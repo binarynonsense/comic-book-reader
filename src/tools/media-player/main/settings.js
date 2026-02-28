@@ -44,6 +44,7 @@ function setDefaultValues() {
     repeat: false,
     currentFileIndex: undefined,
     currentTime: 0,
+    currentDuration: undefined,
     showPlaylist: true,
   };
 }
