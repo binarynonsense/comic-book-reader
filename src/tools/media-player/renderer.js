@@ -652,10 +652,6 @@ function initUI() {
 
   //////
 
-  g_player.html.ytVideoDiv = document.getElementById("mp-div-ytvideo");
-  g_player.html.ytVideoLoadingDiv = document.getElementById(
-    "mp-yt-video-loading-div",
-  );
   g_player.html.videoDiv = document.getElementById("mp-div-video");
   g_player.html.videoLoadingDiv = document.getElementById(
     "mp-html-video-loading-div",
@@ -675,20 +671,12 @@ function initUI() {
 function refreshUI() {
   if (
     g_player.engineType === PlayerEngineType.FFMPEG ||
-    g_player.mediaType === PlayerMediaType.VIDEO
+    g_player.mediaType === PlayerMediaType.VIDEO ||
+    g_player.engineType === PlayerEngineType.YOUTUBE
   ) {
     g_player.html.videoDiv.classList.remove("set-display-none");
   } else {
     g_player.html.videoDiv.classList.add("set-display-none");
-  }
-
-  if (
-    g_player.engineType === PlayerEngineType.YOUTUBE &&
-    g_player.html.ytVideoDiv.childElementCount > 0
-  ) {
-    g_player.html.ytVideoDiv.classList.remove("set-display-none");
-  } else {
-    g_player.html.ytVideoDiv.classList.add("set-display-none");
   }
 
   if (playlist.getTracks().length > 0) {
@@ -706,21 +694,15 @@ function refreshUI() {
     if (g_player.state === PlayerState.LOADING) {
       if (
         g_player.engineType === PlayerEngineType.FFMPEG ||
-        g_player.mediaType === PlayerMediaType.VIDEO
+        g_player.mediaType === PlayerMediaType.VIDEO ||
+        g_player.engineType === PlayerEngineType.YOUTUBE
       ) {
         g_player.html.videoLoadingDiv.classList.remove("set-display-none");
       } else {
         g_player.html.videoLoadingDiv.classList.add("set-display-none");
       }
-      //
-      if (g_player.engineType === PlayerEngineType.YOUTUBE) {
-        g_player.html.ytVideoLoadingDiv.classList.remove("set-display-none");
-      } else {
-        g_player.html.ytVideoLoadingDiv.classList.add("set-display-none");
-      }
     } else {
       g_player.html.videoLoadingDiv.classList.add("set-display-none");
-      g_player.html.ytVideoLoadingDiv.classList.add("set-display-none");
     }
 
     if (g_player.state === PlayerState.PLAYING) {
@@ -751,8 +733,6 @@ function refreshUI() {
     g_player.html.buttonPrev.classList.add("mp-disabled");
     g_player.html.buttonNext.classList.add("mp-disabled");
 
-    g_player.html.ytVideoLoadingDiv.classList.add("set-display-none");
-    g_player.html.ytVideoDiv.classList.add("set-display-none");
     g_player.html.videoLoadingDiv.classList.add("set-display-none");
     g_player.html.videoDiv.classList.add("set-display-none");
   }

@@ -55,7 +55,7 @@ export function createNewPlayer(
     g_connectionTimeout = null;
   }, 6000);
 
-  const container = document.getElementById("mp-div-ytvideo");
+  const container = document.getElementById("mp-div-video");
   if (!container) return;
 
   if (!window.YT) {
@@ -179,11 +179,8 @@ export function destroyPlayer() {
     g_ytPlayer = null;
   }
 
-  // const container = document.getElementById("mp-div-ytvideo");
-  // if (container) container.innerHTML = "";
   const iframe = document.getElementById("mp-iframe-ytvideo");
   if (iframe) {
-    // iframe.parentElement = null;
     iframe.remove();
   }
 }
