@@ -8,6 +8,9 @@
 // ref: https://developers.google.com/youtube/iframe_api_reference
 
 let g_ytPlayer;
+let g_checkYTInterval = null;
+let g_connectionTimeout = null;
+
 let rendererOnError;
 
 window.onYouTubeIframeAPIReady = function () {
@@ -27,19 +30,6 @@ export function init(onError) {
 // CREATE / DESTROY ///////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-const onError = (type) => {
-  // console.error(type);
-  // destroyPlayer();
-  // // TODO: real localized messages, not the type string
-  // const playerDiv = document.getElementById("mp-div-ytvideo");
-  // playerDiv.innerHTML = `
-  //       <div style="background:#000; color:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%;">
-  //           <p>${type}</p>
-  //       </div>
-  //   `;
-  rendererOnError(type);
-};
-
 export function createNewPlayer(
   videoId,
   time,
@@ -49,107 +39,140 @@ export function createNewPlayer(
   onPlaySucceeded,
   onEnded,
 ) {
+  if (g_connectionTimeout) clearTimeout(g_connectionTimeout);
+  g_connectionTimeout = setTimeout(() => {
+    console.error("MASTER WATCHDOG: YT failed to initialize in 6s");
+
+    if (g_checkYTInterval) {
+      clearInterval(g_checkYTInterval);
+      g_checkYTInterval = null;
+    }
+
+    const iframe = document.getElementById("mp-iframe-ytvideo");
+    if (iframe) iframe.remove();
+    rendererOnError("connection error");
+
+    g_connectionTimeout = null;
+  }, 6000);
+
+  const container = document.getElementById("mp-div-ytvideo");
+  if (!container) return;
+
   if (!window.YT) {
     const tag = document.createElement("script");
     tag.src = "https://www.youtube.com/iframe_api";
     const firstScriptTag = document.getElementsByTagName("script")[0];
-    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+    if (firstScriptTag && firstScriptTag.parentNode) {
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+    } else {
+      (document.head || document.documentElement).appendChild(tag);
+    }
   }
 
-  const checkYT = setInterval(() => {
+  g_checkYTInterval = setInterval(() => {
     if (typeof YT !== "undefined" && YT.Player && YT.loaded) {
-      clearInterval(checkYT);
+      clearInterval(g_checkYTInterval);
 
-      const container = document.getElementById("mp-div-ytvideo");
-      if (!container) return;
-
-      if (g_ytPlayer && typeof g_ytPlayer.destroy === "function") {
-        g_ytPlayer.destroy();
-      }
-
-      const iframe = document.createElement("iframe");
-      iframe.id = "mp-iframe-ytvideo";
-      iframe.style.border = "none";
-      iframe.referrerPolicy = "strict-origin-when-cross-origin";
-      iframe.allow =
-        "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
-      iframe.allowFullscreen = true;
-      //   iframe.src = `https://www.youtube-nocookie.com/embed/${videoId}?enablejsapi=1&autoplay=1&mute=1&rel=0&origin=https://www.youtube.com&controls=0&modestbranding=1&showinfo=0&iv_load_policy=3`;
-      iframe.src = `https://www.youtube-nocookie.com/embed/${videoId}?enablejsapi=1&rel=0&controls=0&modestbranding=1&showinfo=0&iv_load_policy=3`;
-      iframe.style.pointerEvents = "none";
-
-      container.appendChild(iframe);
-      refreshUI();
-
-      window.YT.ready(async function () {
-        // fast internet check
-        const isYoutubeUp = await fetch("https://www.youtube.com", {
-          mode: "no-cors",
-          cache: "no-store",
-        })
-          .then(() => true)
-          .catch(() => false);
-
-        if (!isYoutubeUp) {
-          onError("connection error");
-          return;
+      // setTimeout to prevent a synchronous hang from blocking the timer above
+      setTimeout(async () => {
+        if (g_ytPlayer && typeof g_ytPlayer.destroy === "function") {
+          g_ytPlayer.destroy();
         }
 
-        const connectionTimeout = setTimeout(() => {
-          onError("connection error");
-        }, 3000);
+        const iframe = document.createElement("iframe");
+        iframe.id = "mp-iframe-ytvideo";
+        iframe.style.border = "none";
+        iframe.referrerPolicy = "strict-origin-when-cross-origin";
+        iframe.allow =
+          "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+        iframe.allowFullscreen = true;
+        //   iframe.src = `https://www.youtube-nocookie.com/embed/${videoId}?enablejsapi=1&autoplay=1&mute=1&rel=0&origin=https://www.youtube.com&controls=0&modestbranding=1&showinfo=0&iv_load_policy=3`;
+        // iframe.src = `https://www.youtube-nocookie.com/embed/${videoId}?enablejsapi=1&rel=0&controls=0&modestbranding=1&showinfo=0&iv_load_policy=3`;
+        // iframe.style.pointerEvents = "none";
+        const origin = window.location.origin;
+        iframe.src = `https://www.youtube-nocookie.com/embed/${videoId}?enablejsapi=1&rel=0&controls=0&modestbranding=1&showinfo=0&iv_load_policy=3&origin=${origin}`;
+        iframe.style.pointerEvents = "none";
 
-        new window.YT.Player(iframe.id, {
-          events: {
-            onReady: (event) => {
-              onPlaySucceeded();
-              clearTimeout(connectionTimeout);
-              g_ytPlayer = event.target;
-              g_ytPlayer.playVideo();
-              if (time && time > 0) g_ytPlayer.seekTo(time, true);
-              updateVolume(volume);
-              const videoData = g_ytPlayer.getVideoData();
-              const videoTitle = videoData.title;
-              const duration = g_ytPlayer.getDuration();
-              updateTrackData(videoTitle, undefined, duration);
-            },
-            onError: (event) => {
-              clearTimeout(connectionTimeout);
-              const errorCode = event.data;
-              console.log("YT player onError code: ", errorCode);
-              if (errorCode === 100) {
-                console.log("video not found");
-              } else if (errorCode === 101 || errorCode === 150) {
-                console.log("can't play in embedded player");
-              } else {
-                console.log("an error occurred loading the video");
-              }
-              onError("loading error");
-            },
-            onStateChange: (event) => {
-              if (
-                event.data === YT.PlayerState.PLAYING ||
-                event.data === YT.PlayerState.BUFFERING
-              ) {
-                startProgressLoop();
-              } else if (event.data === YT.PlayerState.ENDED) {
-                stopProgressLoop();
-                // show 100% time
-                const duration = g_ytPlayer.getDuration();
-                updateUI(duration, duration);
-                onEnded();
-              } else {
-                stopProgressLoop();
-              }
-            },
-          },
+        container.appendChild(iframe);
+        refreshUI();
+
+        window.YT.ready(async function () {
+          try {
+            // fast internet check
+            const controller = new AbortController();
+            const fetchTimeout = setTimeout(() => controller.abort(), 2500);
+            await fetch("https://www.youtube.com", {
+              mode: "no-cors",
+              cache: "no-store",
+              signal: controller.signal,
+            });
+            clearTimeout(fetchTimeout);
+            // create player
+            new window.YT.Player(iframe.id, {
+              events: {
+                onReady: (event) => {
+                  clearTimeout(g_connectionTimeout);
+                  onPlaySucceeded();
+                  g_ytPlayer = event.target;
+                  g_ytPlayer.playVideo();
+                  if (time && time > 0) g_ytPlayer.seekTo(time, true);
+                  updateVolume(volume);
+                  const videoData = g_ytPlayer.getVideoData();
+                  const videoTitle = videoData.title;
+                  const duration = g_ytPlayer.getDuration();
+                  updateTrackData(videoTitle, undefined, duration);
+                },
+                onError: (event) => {
+                  clearTimeout(g_connectionTimeout);
+                  const errorCode = event.data;
+                  console.log("YT player onError code: ", errorCode);
+                  if (errorCode === 100) {
+                    console.log("video not found");
+                  } else if (errorCode === 101 || errorCode === 150) {
+                    console.log("can't play in embedded player");
+                  } else {
+                    console.log("an error occurred loading the video");
+                  }
+                  rendererOnError("loading error");
+                },
+                onStateChange: (event) => {
+                  if (
+                    event.data === YT.PlayerState.PLAYING ||
+                    event.data === YT.PlayerState.BUFFERING
+                  ) {
+                    startProgressLoop();
+                  } else if (event.data === YT.PlayerState.ENDED) {
+                    stopProgressLoop();
+                    // show 100% time
+                    const duration = g_ytPlayer.getDuration();
+                    updateUI(duration, duration);
+                    onEnded();
+                  } else {
+                    stopProgressLoop();
+                  }
+                },
+              },
+            });
+          } catch (error) {
+            clearTimeout(g_connectionTimeout);
+            rendererOnError("connection error");
+          }
         });
-      });
+      }, 0);
     }
   }, 100);
 }
 
 export function destroyPlayer() {
+  if (g_checkYTInterval) {
+    clearInterval(g_checkYTInterval);
+    g_checkYTInterval = null;
+  }
+  if (g_connectionTimeout) {
+    clearTimeout(g_connectionTimeout);
+    g_connectionTimeout = null;
+  }
+
   stopProgressLoop();
   if (g_ytPlayer && typeof g_ytPlayer.destroy === "function") {
     g_ytPlayer.destroy();
@@ -247,7 +270,7 @@ function startProgressLoop() {
         g_stallCheckCounter++;
         if (g_stallCheckCounter >= 20) {
           // 10 seconds total -> kill it, no connection?
-          onError("stall error");
+          rendererOnError("stall error");
           return;
         }
       } else {
