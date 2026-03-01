@@ -47,6 +47,7 @@ export function createNewPlayer(
   refreshUI,
   updateTrackData,
   onPlaySucceeded,
+  onEnded,
 ) {
   if (!window.YT) {
     const tag = document.createElement("script");
@@ -136,6 +137,7 @@ export function createNewPlayer(
                 // show 100% time
                 const duration = g_ytPlayer.getDuration();
                 updateUI(duration, duration);
+                onEnded();
               } else {
                 stopProgressLoop();
               }

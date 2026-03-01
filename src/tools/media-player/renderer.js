@@ -170,19 +170,7 @@ function initPlayer() {
   });
 
   g_player.engine.addEventListener("ended", function () {
-    if (playlist.getTracks().length - 1 > playlist.getCurrentTrackIndex()) {
-      onPlay(playlist.getCurrentTrackIndex() + 1, 0);
-    } else {
-      if (g_settings.repeat) {
-        onPlay(0, 0);
-      } else {
-        onPause();
-        clearPlayer();
-        g_player.trackIndex = 0;
-        playlist.setCurrentTrackIndex(0);
-      }
-    }
-    refreshUI();
+    onEnded();
   });
 }
 
@@ -383,6 +371,7 @@ async function onPlay(trackIndex = undefined, time = 0) {
             refreshUI,
             playlist.updateCurrentFileTags,
             onPlaySucceeded,
+            onEnded,
           );
         } else {
           // NATIVE
@@ -478,6 +467,23 @@ function onPlaylistTrackDoubleClicked(fileIndex) {
     }
   }
   if (newTrackIndex !== undefined) onPlay(newTrackIndex, 0);
+}
+
+function onEnded() {
+  if (playlist.getTracks().length - 1 > playlist.getCurrentTrackIndex()) {
+    onPlay(playlist.getCurrentTrackIndex() + 1, 0);
+  } else {
+    if (g_settings.repeat) {
+      onPlay(0, 0);
+    } else {
+      onPause();
+      clearPlayer();
+      g_player.trackIndex = 0;
+      playlist.setCurrentTrackIndex(0);
+    }
+  }
+  playlist.scrollToCurrent();
+  refreshUI();
 }
 
 //////
