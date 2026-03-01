@@ -1,10 +1,13 @@
+:root {
+  --mp-frame-width: 300px;
+}
+
 #media-player-container {
   display: flex;
   align-items: flex-start;
   justify-items: center;
   flex-direction: column;
   direction: ltr;
-  --mp-frame-width: 300px;
   min-width: var(--mp-frame-width);
   gap: 3px;
 }
@@ -43,9 +46,9 @@
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
-#media-player-container:has(#mp-div-video:not(.set-display-none)) {
+/* #media-player-container:has(#mp-div-video:not(.set-display-none)) {
   --mp-frame-width: 500px;
-}
+} */
 
 .mp-frame a,
 a:hover a:visited {
@@ -55,7 +58,8 @@ a:hover a:visited {
 
 #mp-div-video {
   background: #000;
-  height: 286px;
+  /* height: 286px; */
+  aspect-ratio: 16 / 9;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -148,15 +152,65 @@ a:hover a:visited {
   gap: 5px;
 }
 
-.mp-button:hover i {
-  color: var(--mediaplayer-button-hover-color);
+.mp-button:hover i,
+.mp-button:hover .repeat-number {
+  color: var(--mediaplayer-button-hover-color) !important;
+}
+
+.mp-button:hover .repeat-number {
+  margin-top: 1px;
+}
+
+.mp-button:not(.fa-stack):hover i {
   transform: scale(1.1);
   display: inline-block;
   transform-origin: center;
 }
 
+.mp-button.fa-stack:hover {
+  transform: scale(1.1);
+  transform-origin: center;
+}
+
 .mp-button:active {
   transform: scale(0.9);
+}
+
+.mp-button-stacked {
+  width: 1em !important;
+  height: 1em !important;
+  line-height: 1em;
+  display: inline-flex;
+  vertical-align: middle;
+
+  position: relative;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+.mp-button-stacked .fa-stack-1x {
+  line-height: inherit;
+  color: inherit;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  line-height: inherit;
+}
+
+.mp-button-stacked .repeat-number {
+  font-size: 0.5em;
+  font-family: sans-serif;
+  font-weight: 900;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+  margin-top: -1px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 /* -------------------------------------------------- */
@@ -328,9 +382,11 @@ a:hover a:visited {
 
 #mp-span-playlist-buttons-right {
   float: right;
-  display: inline;
+  display: inline-flex;
   margin-top: 3px;
   margin-right: 5px;
+  align-items: center;
+  justify-content: center;
 }
 
 #mp-span-playlist-buttons-left {

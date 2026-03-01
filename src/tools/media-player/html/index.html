@@ -44,10 +44,6 @@
   <a id="mp-button-settings" class="mp-button" title="settings"
     ><i class="fa fa-gear" aria-hidden="true"></i
   ></a>
-  <!-- <a id="mp-button-close" class="mp-button" title="hide"
-    ><i class="fa fa-times"></i
-  ></a> -->
-  <!-- "fas fa-angle-up" "fa fa-times" -->
 </div>
 <!-- ---------------  VIDEO PLAYERS---------------  -->
 <div id="mp-div-video" class="mp-frame">
@@ -60,22 +56,24 @@
 <div id="mp-div-playlist" class="mp-frame">
   <div id="mp-div-playlist-tracks"></div>
   <div id="mp-span-playlist-buttons-right">
-    <a id="mp-button-shuffle-off" class="mp-button" title="toggle shuffle"
-      ><i class="fa fa-random" aria-hidden="true"></i
-      ><i class="far fa-check-square fa-sm"></i
-    ></a>
-    <a id="mp-button-shuffle-on" class="mp-button" title="toggle shuffle"
-      ><i class="fa fa-random" aria-hidden="true"></i
-      ><i class="far fa-square fa-sm"></i
-    ></a>
-    <a id="mp-button-repeat-off" class="mp-button" title="toggle repeat"
-      ><i class="fa fa-sync-alt fa-sm" aria-hidden="true"></i
-      ><i class="far fa-check-square fa-sm"></i
-    ></a>
-    <a id="mp-button-repeat-on" class="mp-button" title="toggle repeat"
-      ><i class="fa fa-sync-alt fa-sm" aria-hidden="true"></i
-      ><i class="far fa-square fa-sm"></i
-    ></a>
+    <a id="mp-button-shuffle-off" class="fa-stack mp-button mp-button-stacked">
+      <i class="fa fa-random fa-stack-1x" style="opacity: 0.3"></i>
+      <i class="fa-solid fa-slash fa-stack-1x"></i>
+    </a>
+    <a id="mp-button-shuffle-on" class="mp-button">
+      <i class="fa fa-random"></i>
+    </a>
+    <a id="mp-button-repeat-off" class="fa-stack mp-button mp-button-stacked">
+      <i class="fa-solid fa-repeat fa-stack-1x" style="opacity: 0.3"></i>
+      <i class="fa-solid fa-slash fa-stack-1x"></i>
+    </a>
+    <a id="mp-button-repeat-1" class="mp-button mp-button-stacked fa-stack">
+      <i class="fa-solid fa-repeat fa-stack-1x"></i>
+      <strong class="fa-stack-1x repeat-number">1</strong>
+    </a>
+    <a id="mp-button-repeat-all" class="mp-button">
+      <i class="fa-solid fa-repeat"></i>
+    </a>
   </div>
   <div id="mp-span-playlist-buttons-left">
     <a id="mp-button-clear" class="mp-button" title=""

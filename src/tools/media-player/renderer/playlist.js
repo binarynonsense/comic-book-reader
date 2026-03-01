@@ -223,13 +223,13 @@ export function createTracksList(isRefresh) {
     currentFileIndex = g_tracks[g_currentTrackIndex].fileIndex;
   g_tracks = [];
   for (let index = 0; index < g_playlist.files.length; index++) {
-    if (g_settings.shuffle && currentFileIndex === index) {
+    if (g_settings.shuffle === 1 && currentFileIndex === index) {
       continue;
     }
     g_tracks.push({ fileIndex: index, fileUrl: g_playlist.files[index].url });
   }
   // shuffled
-  if (g_settings.shuffle) {
+  if (g_settings.shuffle === 1) {
     g_tracks = shuffleArray(g_tracks);
     if (currentFileIndex !== undefined) {
       g_tracks.unshift({
@@ -240,8 +240,16 @@ export function createTracksList(isRefresh) {
     g_currentTrackIndex = 0;
   } else {
     // linear
-    if (currentFileIndex !== undefined) g_currentTrackIndex = currentFileIndex;
-    else g_currentTrackIndex = 0;
+    if (currentFileIndex !== undefined) {
+      g_currentTrackIndex = 0;
+      for (let index = 0; index < g_tracks.length; index++) {
+        const track = g_tracks[index];
+        if (track.fileIndex === currentFileIndex) {
+          g_currentTrackIndex = index;
+          break;
+        }
+      }
+    } else g_currentTrackIndex = 0;
   }
 }
 

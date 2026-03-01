@@ -40,12 +40,13 @@ function setDefaultValues() {
     version: app.getVersion(),
     date: "",
     volume: 0.8,
-    shuffle: false,
-    repeat: false,
+    shuffle: 0,
+    repeat: 0,
     currentFileIndex: undefined,
     currentTime: 0,
     currentDuration: undefined,
     showPlaylist: true,
+    size: 0,
   };
 }
 
@@ -56,11 +57,19 @@ function sanitize() {
   if (g_settings.volume < 0 || g_settings.volume > 1) {
     g_settings.volume = 0.8;
   }
-  if (typeof g_settings.shuffle !== "boolean") {
-    g_settings.shuffle = false;
+  if (
+    !Number.isInteger(g_settings.shuffle) ||
+    g_settings.shuffle < 0 ||
+    g_settings.shuffle > 1
+  ) {
+    g_settings.shuffle = 0;
   }
-  if (typeof g_settings.repeat !== "boolean") {
-    g_settings.repeat = false;
+  if (
+    !Number.isInteger(g_settings.repeat) ||
+    g_settings.repeat < 0 ||
+    g_settings.repeat > 2
+  ) {
+    g_settings.repeat = 0;
   }
   if (isNaN(g_settings.currentFileIndex)) {
     g_settings.currentFileIndex = undefined;
@@ -70,6 +79,13 @@ function sanitize() {
   }
   if (typeof g_settings.showPlaylist !== "boolean") {
     g_settings.showPlaylist = true;
+  }
+  if (
+    !Number.isInteger(g_settings.size) ||
+    g_settings.repeat < 0 ||
+    g_settings.repeat > 2
+  ) {
+    g_settings.repeat = 0;
   }
 }
 

@@ -199,6 +199,7 @@ function onInit(settings, loadedPlaylist, ffmpegAvailable) {
 
   // load settings & playlist ////
   g_settings = settings;
+  console.log(g_settings);
 
   const loadTrackIndex = playlist.init(
     g_player,
@@ -347,9 +348,9 @@ async function onPlay(trackIndex = undefined, time = 0) {
                 break;
               case Hls.ErrorTypes.NETWORK_ERROR:
                 console.error("hls: fatal network error encountered", data);
-                throw new Error("NotSupportedError");
+                onError("NotSupportedError");
               default:
-                throw new Error("NotSupportedError");
+                onError("NotSupportedError");
             }
           }
         });
@@ -470,10 +471,14 @@ function onPlaylistTrackDoubleClicked(fileIndex) {
 }
 
 function onEnded() {
+  if (g_settings.repeat === 1) {
+    onPlay();
+    return;
+  }
   if (playlist.getTracks().length - 1 > playlist.getCurrentTrackIndex()) {
     onPlay(playlist.getCurrentTrackIndex() + 1, 0);
   } else {
-    if (g_settings.repeat) {
+    if (g_settings.repeat === 2) {
       onPlay(0, 0);
     } else {
       onPause();
@@ -506,7 +511,7 @@ export function onContextMenu(params) {
   if (getOpenModal()) {
     return;
   }
-  sendIpcToMain("show-context-menu", params);
+  sendIpcToMain("show-context-menu", params, g_settings);
 }
 
 ///////
@@ -622,15 +627,21 @@ function initUI() {
   g_player.html.buttonShuffleOff.addEventListener("click", function () {
     onButtonClicked("shuffle-off");
   });
-  g_player.html.buttonRepeatOn = document.getElementById("mp-button-repeat-on");
-  g_player.html.buttonRepeatOn.addEventListener("click", function () {
-    onButtonClicked("repeat-on");
+  g_player.html.buttonRepeatAll = document.getElementById(
+    "mp-button-repeat-all",
+  );
+  g_player.html.buttonRepeatAll.addEventListener("click", function () {
+    onButtonClicked("repeat-all");
   });
   g_player.html.buttonRepeatOff = document.getElementById(
     "mp-button-repeat-off",
   );
   g_player.html.buttonRepeatOff.addEventListener("click", function () {
     onButtonClicked("repeat-off");
+  });
+  g_player.html.buttonRepeat1 = document.getElementById("mp-button-repeat-1");
+  g_player.html.buttonRepeat1.addEventListener("click", function () {
+    onButtonClicked("repeat-1");
   });
 
   g_player.html.buttonClear = document.getElementById("mp-button-clear");
@@ -669,6 +680,14 @@ function initUI() {
 }
 
 function refreshUI() {
+  if (g_settings.size === 0) {
+    document.documentElement.style.setProperty("--mp-frame-width", `300px`);
+  } else if (g_settings.size === 1) {
+    document.documentElement.style.setProperty("--mp-frame-width", `500px`);
+  } else if (g_settings.size === 2) {
+    document.documentElement.style.setProperty("--mp-frame-width", `100%`);
+  }
+
   if (
     g_player.engineType === PlayerEngineType.FFMPEG ||
     g_player.mediaType === PlayerMediaType.VIDEO ||
@@ -713,13 +732,13 @@ function refreshUI() {
       g_player.html.buttonPause.classList.add("set-display-none");
     }
 
-    if (g_settings.repeat || playlist.getCurrentTrackIndex() > 0) {
+    if (g_settings.repeat === 2 || playlist.getCurrentTrackIndex() > 0) {
       g_player.html.buttonPrev.classList.remove("mp-disabled");
     } else {
       g_player.html.buttonPrev.classList.add("mp-disabled");
     }
     if (
-      g_settings.repeat ||
+      g_settings.repeat === 2 ||
       playlist.getTracks().length - 1 > playlist.getCurrentTrackIndex()
     ) {
       g_player.html.buttonNext.classList.remove("mp-disabled");
@@ -745,19 +764,26 @@ function refreshUI() {
     g_player.html.buttonVolumeOff.classList.add("mp-hidden");
   }
 
-  if (g_settings.shuffle) {
-    g_player.html.buttonShuffleOff.classList.remove("mp-hidden");
-    g_player.html.buttonShuffleOn.classList.add("mp-hidden");
-  } else {
+  if (g_settings.shuffle === 1) {
     g_player.html.buttonShuffleOff.classList.add("mp-hidden");
     g_player.html.buttonShuffleOn.classList.remove("mp-hidden");
-  }
-  if (g_settings.repeat) {
-    g_player.html.buttonRepeatOff.classList.remove("mp-hidden");
-    g_player.html.buttonRepeatOn.classList.add("mp-hidden");
   } else {
+    g_player.html.buttonShuffleOff.classList.remove("mp-hidden");
+    g_player.html.buttonShuffleOn.classList.add("mp-hidden");
+  }
+
+  if (g_settings.repeat === 0) {
+    g_player.html.buttonRepeatOff.classList.remove("mp-hidden");
+    g_player.html.buttonRepeatAll.classList.add("mp-hidden");
+    g_player.html.buttonRepeat1.classList.add("mp-hidden");
+  } else if (g_settings.repeat === 1) {
     g_player.html.buttonRepeatOff.classList.add("mp-hidden");
-    g_player.html.buttonRepeatOn.classList.remove("mp-hidden");
+    g_player.html.buttonRepeatAll.classList.add("mp-hidden");
+    g_player.html.buttonRepeat1.classList.remove("mp-hidden");
+  } else if (g_settings.repeat === 2) {
+    g_player.html.buttonRepeatOff.classList.add("mp-hidden");
+    g_player.html.buttonRepeatAll.classList.remove("mp-hidden");
+    g_player.html.buttonRepeat1.classList.add("mp-hidden");
   }
 
   if (playlist.getTracks().length > 0) {
@@ -784,18 +810,23 @@ function onButtonClicked(buttonName) {
   } else if (buttonName === "pause") {
     onPause();
   } else if (buttonName === "prev") {
-    if (g_settings.repeat && playlist.getCurrentTrackIndex() === 0)
+    if (g_settings.repeat === 2 && playlist.getCurrentTrackIndex() === 0)
       onPlay(playlist.getTracks().length - 1, 0);
     else onPlay(playlist.getCurrentTrackIndex() - 1, 0);
   } else if (buttonName === "next") {
     if (
-      g_settings.repeat &&
+      g_settings.repeat === 2 &&
       playlist.getCurrentTrackIndex() === playlist.getTracks().length - 1
     )
       onPlay(0, 0);
     else onPlay(playlist.getCurrentTrackIndex() + 1, 0);
   } else if (buttonName === "open") {
     sendIpcToMain("on-open-clicked", 0);
+    // sendIpcToMain(
+    //   "show-button-menu",
+    //   "open",
+    //   g_player.html.buttonOpen.getBoundingClientRect(),
+    // );
   }
   // else if (buttonName === "playlist") {
   //   onTogglePlaylist();
@@ -817,21 +848,38 @@ function onButtonClicked(buttonName) {
   //   sendIpcToMain("close");
   // }
   else if (buttonName === "settings") {
-    const rect = g_player.html.buttonSettings.getBoundingClientRect();
-    sendIpcToMain("show-settings", { x: rect.top, y: rect.left });
+    sendIpcToMain(
+      "show-button-menu",
+      "settings",
+      g_player.html.buttonSettings.getBoundingClientRect(),
+      g_settings,
+    );
   }
   // playlist
+  // NOTE: suffle and repeat are a bit different in meaning (on, off, 1)
+  // they are meant to signify the actual state, not the desired action
   else if (buttonName === "shuffle-on") {
-    g_settings.shuffle = true;
+    g_settings.shuffle = 0;
     playlist.createTracksList(true);
+    g_player.trackIndex = playlist.getCurrentTrackIndex();
   } else if (buttonName === "shuffle-off") {
-    g_settings.shuffle = false;
+    g_settings.shuffle = 1;
     playlist.createTracksList(true);
-  } else if (buttonName === "repeat-on") {
-    g_settings.repeat = true;
-  } else if (buttonName === "repeat-off") {
-    g_settings.repeat = false;
-  } else if (buttonName === "clear") {
+    g_player.trackIndex = playlist.getCurrentTrackIndex();
+  }
+  //
+  else if (buttonName === "repeat-off") {
+    console.log("repeat-off");
+    g_settings.repeat = 1;
+  } else if (buttonName === "repeat-1") {
+    console.log("repeat-1");
+    g_settings.repeat = 2;
+  } else if (buttonName === "repeat-all") {
+    console.log("repeat-all");
+    g_settings.repeat = 0;
+  }
+  //
+  else if (buttonName === "clear") {
     if (playlist.getTracks().length <= 0) return;
     playlist.getPlaylist().files = [];
     playlist.setTracks([]);
@@ -1014,7 +1062,6 @@ function initOnIpcCallbacks() {
   });
 
   on("on-context-menu", (...args) => {
-    console.log(args[0]);
     switch (args[0]) {
       case "toggle-playlist":
         onTogglePlaylist();
@@ -1022,6 +1069,15 @@ function initOnIpcCallbacks() {
 
       case "hide":
         sendIpcToMain("close");
+        break;
+
+      case "open-files":
+        sendIpcToMain("on-open-file-clicked", 0);
+        break;
+
+      case "set-size":
+        g_settings.size = args[1];
+        refreshUI();
         break;
     }
   });
