@@ -4,6 +4,9 @@
   justify-items: center;
   flex-direction: column;
   direction: ltr;
+  --mp-frame-width: 300px;
+  min-width: var(--mp-frame-width);
+  gap: 3px;
 }
 
 .mp-zindex-reader {
@@ -35,17 +38,15 @@
   border-radius: 5px;
 
   min-height: 10px;
-  --mp-frame-width: 300px;
-  min-width: var(--mp-frame-width);
+  width: 100%;
 
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
 #media-player-container:has(
-    #mp-div-video:not(.set-display-none),
-    #mp-div-ytvideo:not(.set-display-none)
-  )
-  .mp-frame {
+  #mp-div-video:not(.set-display-none),
+  #mp-div-ytvideo:not(.set-display-none)
+) {
   --mp-frame-width: 500px;
 }
 

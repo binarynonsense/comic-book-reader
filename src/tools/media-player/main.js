@@ -17,6 +17,7 @@ const { _ } = require("../../shared/main/i18n");
 const log = require("../../shared/main/logger");
 const { getLocalization } = require("./main/localization");
 const ffmpeg = require("./main/ffmpeg");
+const contextMenu = require("./main/menu-context");
 
 let g_mainWindow;
 let g_parentElementId;
@@ -174,6 +175,14 @@ function initOnIpcCallbacks() {
         _("ui-modal-prompt-button-ok"),
       );
     }
+  });
+
+  on("show-context-menu", (params) => {
+    contextMenu.show("normal", params, sendIpcToRenderer);
+  });
+
+  on("show-settings", (params) => {
+    contextMenu.show("settings", params, sendIpcToRenderer);
   });
 }
 

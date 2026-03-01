@@ -284,6 +284,16 @@ function initMouse() {
         break;
       case 2: // right
         if (getOpenModal()) return;
+        if (true) {
+          // TODO: check only if Media Player is open
+          if (event.target.closest(".mp-frame")) {
+            getTools()["media-player"].onContextMenu(
+              [event.pageX, event.pageY],
+              event.target,
+            );
+            return;
+          }
+        }
         if (getCurrentTool().onContextMenu)
           getCurrentTool().onContextMenu(
             [event.pageX, event.pageY],

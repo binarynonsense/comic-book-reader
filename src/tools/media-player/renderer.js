@@ -502,6 +502,15 @@ function onError(error) {
 
 ///////
 
+export function onContextMenu(params) {
+  if (getOpenModal()) {
+    return;
+  }
+  sendIpcToMain("show-context-menu", params);
+}
+
+///////
+
 async function isVideoMetadata(metadata) {
   if (!metadata) return false;
   try {
@@ -584,13 +593,17 @@ function initUI() {
   });
 
   g_player.html.divPlaylist = document.getElementById("mp-div-playlist");
-  g_player.html.buttonPlaylist = document.getElementById("mp-button-playlist");
-  g_player.html.buttonPlaylist.addEventListener("click", function () {
-    onButtonClicked("playlist");
-  });
-  g_player.html.buttonClose = document.getElementById("mp-button-close");
-  g_player.html.buttonClose.addEventListener("click", function () {
-    onButtonClicked("close");
+  // g_player.html.buttonPlaylist = document.getElementById("mp-button-playlist");
+  // g_player.html.buttonPlaylist.addEventListener("click", function () {
+  //   onButtonClicked("playlist");
+  // });
+  // g_player.html.buttonClose = document.getElementById("mp-button-close");
+  // g_player.html.buttonClose.addEventListener("click", function () {
+  //   onButtonClicked("close");
+  // });
+  g_player.html.buttonSettings = document.getElementById("mp-button-settings");
+  g_player.html.buttonSettings.addEventListener("click", function () {
+    onButtonClicked("settings");
   });
   //////
   g_player.html.divPlaylistTracks = document.getElementById(
@@ -803,15 +816,11 @@ function onButtonClicked(buttonName) {
     else onPlay(playlist.getCurrentTrackIndex() + 1, 0);
   } else if (buttonName === "open") {
     sendIpcToMain("on-open-clicked", 0);
-  } else if (buttonName === "playlist") {
-    if (g_player.html.divPlaylist.classList.contains("mp-hidden")) {
-      g_player.html.divPlaylist.classList.remove("mp-hidden");
-      g_settings.showPlaylist = true;
-    } else {
-      g_player.html.divPlaylist.classList.add("mp-hidden");
-      g_settings.showPlaylist = false;
-    }
-  } else if (buttonName === "volume-off") {
+  }
+  // else if (buttonName === "playlist") {
+  //   onTogglePlaylist();
+  // }
+  else if (buttonName === "volume-off") {
     g_player.lastVolume = g_player.engine.volume;
     g_player.engine.volume = 0;
     if (g_player.engineType === PlayerEngineType.YOUTUBE) {
@@ -823,8 +832,13 @@ function onButtonClicked(buttonName) {
     if (g_player.engineType === PlayerEngineType.YOUTUBE) {
       yt.updateVolume(g_player.engine.volume);
     }
-  } else if (buttonName === "close") {
-    sendIpcToMain("close");
+  }
+  // else if (buttonName === "close") {
+  //   sendIpcToMain("close");
+  // }
+  else if (buttonName === "settings") {
+    const rect = g_player.html.buttonSettings.getBoundingClientRect();
+    sendIpcToMain("show-settings", { x: rect.top, y: rect.left });
   }
   // playlist
   else if (buttonName === "shuffle-on") {
@@ -1018,6 +1032,29 @@ function initOnIpcCallbacks() {
   on("show-modal-open-url", (...args) => {
     showModalOpenURL(...args);
   });
+
+  on("on-context-menu", (...args) => {
+    console.log(args[0]);
+    switch (args[0]) {
+      case "toggle-playlist":
+        onTogglePlaylist();
+        break;
+
+      case "hide":
+        sendIpcToMain("close");
+        break;
+    }
+  });
+}
+
+function onTogglePlaylist() {
+  if (g_player.html.divPlaylist.classList.contains("mp-hidden")) {
+    g_player.html.divPlaylist.classList.remove("mp-hidden");
+    g_settings.showPlaylist = true;
+  } else {
+    g_player.html.divPlaylist.classList.add("mp-hidden");
+    g_settings.showPlaylist = false;
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
