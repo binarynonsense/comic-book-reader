@@ -60,7 +60,7 @@ function clearPlayer() {
   }
 
   setPlayerState(PlayerState.NOT_SET);
-  g_player.mediaType = PlayerMediaType.NOT_SET;
+  // g_player.mediaType = PlayerMediaType.NOT_SET;
   g_player.engineType = PlayerEngineType.NOT_SET;
 
   if (g_player.engine) {
@@ -351,6 +351,7 @@ async function onPlay(trackIndex = undefined, time = 0) {
           yt.getYouTubeVideoIdFromUrl(playlist.getTracks()[trackIndex].fileUrl)
         ) {
           g_player.engineType = PlayerEngineType.YOUTUBE;
+          g_player.mediaType = PlayerMediaType.VIDEO;
           const ytId = yt.getYouTubeVideoIdFromUrl(
             playlist.getTracks()[trackIndex].fileUrl,
           );
@@ -397,6 +398,7 @@ async function onPlay(trackIndex = undefined, time = 0) {
           }
           setPlayerState(PlayerState.LOADING);
           g_player.engineType = PlayerEngineType.FFMPEG;
+          g_player.mediaType = PlayerMediaType.VIDEO;
           g_player.engine.pause();
           // console.log(
           //   "[Media Player] unsupported natively, will try loading with ffmpeg",
@@ -893,10 +895,7 @@ function refreshUI() {
 
   if (
     g_settings.size === 2 ||
-    (g_settings.showVideo &&
-      (g_player.engineType === PlayerEngineType.FFMPEG ||
-        g_player.mediaType === PlayerMediaType.VIDEO ||
-        g_player.engineType === PlayerEngineType.YOUTUBE))
+    (g_settings.showVideo && g_player.mediaType === PlayerMediaType.VIDEO)
   ) {
     g_player.html.videoDiv.classList.remove("set-display-none");
   } else {
