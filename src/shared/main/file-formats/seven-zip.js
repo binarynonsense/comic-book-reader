@@ -66,7 +66,7 @@ function checkPathTo7ZipBin() {
 
 exports.get7ZipEntriesList = async function (filePath, password, archiveType) {
   try {
-    const { spawn } = require("child_process");
+    const { spawn } = require("node:child_process");
     const Seven = require("node-7z");
     checkPathTo7ZipBin();
     // ZIP, 7Z
@@ -191,7 +191,7 @@ exports.extract7ZipEntryBuffer = async function (
   archiveType,
 ) {
   try {
-    const { execFile } = require("child_process");
+    const { execFile } = require("node:child_process");
     const fs = require("fs");
     const path = require("path");
     checkPathTo7ZipBin();
@@ -251,7 +251,7 @@ exports.extract7Zip = async function (
   archiveType,
 ) {
   try {
-    const { spawn } = require("child_process");
+    const { spawn } = require("node:child_process");
     const Seven = require("node-7z");
     const path = require("path");
     checkPathTo7ZipBin();

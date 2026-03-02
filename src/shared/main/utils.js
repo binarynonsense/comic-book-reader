@@ -23,7 +23,7 @@ function execShellCommand(command, args, workingDir) {
       stdio: ["pipe", "pipe", null],
     };
     if (workingDir) options.cwd = workingDir;
-    const execFileSync = require("child_process").execFileSync;
+    const execFileSync = require("node:child_process").execFileSync;
     const stdout = execFileSync(command, args, options);
     return { error: false, stdout: stdout, stderr: undefined };
   } catch (error) {

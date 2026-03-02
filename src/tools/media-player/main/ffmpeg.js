@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-const { spawn, exec } = require("child_process");
+const { spawn, exec } = require("node:child_process");
 const http = require("node:http");
 const fs = require("node:fs");
 
