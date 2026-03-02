@@ -49,16 +49,46 @@ exports.show = function (type, params, settings, sendIpcToRenderer) {
   function getCommonEntries(settings) {
     return [
       {
+        label: _("mp-tooltip-button-play"),
+        click() {
+          sendIpcToRenderer("on-context-menu", "play");
+        },
+      },
+      {
+        label: _("mp-tooltip-button-pause"),
+        click() {
+          sendIpcToRenderer("on-context-menu", "pause");
+        },
+      },
+      {
+        label: _("mp-tooltip-button-next"),
+        click() {
+          sendIpcToRenderer("on-context-menu", "next");
+        },
+      },
+      {
+        label: _("mp-tooltip-button-prev"),
+        click() {
+          sendIpcToRenderer("on-context-menu", "prev");
+        },
+      },
+      { type: "separator" },
+      {
         label: _("tool-shared-ui-open"),
         submenu: [...openSubmenu],
       },
-      ...getSizeSubmenu(settings),
-      ...getVideoAreaSubmenu(settings),
       {
-        label: _("mp-tooltip-button-playlist"),
-        click() {
-          sendIpcToRenderer("on-context-menu", "toggle-playlist");
-        },
+        label: _("menu-view"),
+        submenu: [
+          ...getSizeSubmenu(settings),
+          ...getVideoAreaSubmenu(settings),
+          {
+            label: _("mp-tooltip-button-playlist"),
+            click() {
+              sendIpcToRenderer("on-context-menu", "toggle-playlist");
+            },
+          },
+        ],
       },
       { type: "separator" },
       {

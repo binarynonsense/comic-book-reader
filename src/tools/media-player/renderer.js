@@ -452,6 +452,28 @@ function onPlaylistTrackDoubleClicked(fileIndex) {
   if (newTrackIndex !== undefined) onPlay(newTrackIndex, 0);
 }
 
+function onNextTrack() {
+  if (
+    g_settings.repeat === 2 ||
+    playlist.getTracks().length - 1 > playlist.getCurrentTrackIndex()
+  ) {
+    if (
+      g_settings.repeat === 2 &&
+      playlist.getCurrentTrackIndex() === playlist.getTracks().length - 1
+    )
+      onPlay(0, 0);
+    else onPlay(playlist.getCurrentTrackIndex() + 1, 0);
+  }
+}
+
+function onPrevTrack() {
+  if (g_settings.repeat === 2 || playlist.getCurrentTrackIndex() > 0) {
+    if (g_settings.repeat === 2 && playlist.getCurrentTrackIndex() === 0)
+      onPlay(playlist.getTracks().length - 1, 0);
+    else onPlay(playlist.getCurrentTrackIndex() - 1, 0);
+  }
+}
+
 function onEnded() {
   if (g_settings.repeat === 1) {
     onPlay();
@@ -981,16 +1003,9 @@ function onButtonClicked(buttonName) {
   } else if (buttonName === "pause") {
     onPause();
   } else if (buttonName === "prev") {
-    if (g_settings.repeat === 2 && playlist.getCurrentTrackIndex() === 0)
-      onPlay(playlist.getTracks().length - 1, 0);
-    else onPlay(playlist.getCurrentTrackIndex() - 1, 0);
+    onPrevTrack();
   } else if (buttonName === "next") {
-    if (
-      g_settings.repeat === 2 &&
-      playlist.getCurrentTrackIndex() === playlist.getTracks().length - 1
-    )
-      onPlay(0, 0);
-    else onPlay(playlist.getCurrentTrackIndex() + 1, 0);
+    onNextTrack();
   } else if (buttonName === "open") {
     sendIpcToMain("on-open-clicked", 0);
     // sendIpcToMain(
@@ -1233,6 +1248,26 @@ function initOnIpcCallbacks() {
 
       case "set-show-video":
         g_settings.showVideo = args[1];
+        refreshUI();
+        break;
+
+      case "play":
+        onPlay();
+        refreshUI();
+        break;
+
+      case "pause":
+        onPause();
+        refreshUI();
+        break;
+
+      case "next":
+        onNextTrack();
+        refreshUI();
+        break;
+
+      case "prev":
+        onPrevTrack();
         refreshUI();
         break;
     }
