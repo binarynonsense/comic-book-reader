@@ -261,8 +261,9 @@ async function onPlay(trackIndex = undefined, time = 0) {
         refreshUI();
         return;
       } else if (g_player.engineType === PlayerEngineType.YOUTUBE) {
-        yt.onPlay();
-        setPlayerState(PlayerState.PLAYING);
+        if (yt.onPlay()) {
+          setPlayerState(PlayerState.PLAYING);
+        }
         refreshUI();
         playlist.scrollToCurrent();
         return;
