@@ -47,6 +47,7 @@ function setDefaultValues() {
     currentDuration: undefined,
     showPlaylist: true,
     size: 0,
+    showVideo: 0,
   };
 }
 
@@ -86,6 +87,13 @@ function sanitize() {
     g_settings.repeat > 2
   ) {
     g_settings.repeat = 0;
+  }
+  if (
+    !Number.isInteger(g_settings.showVideo) ||
+    g_settings.showVideo < 0 ||
+    g_settings.showVideo > 2
+  ) {
+    g_settings.showVideo = 0;
   }
 }
 

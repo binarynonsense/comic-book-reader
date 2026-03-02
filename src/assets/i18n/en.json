@@ -291,9 +291,9 @@
   "mp-menu-playlist-shuffletracks": "Shuffle Mode",
   "mp-tooltip-button-playlist-shufflemode": "Change Shuffle Mode",
   "mp-tooltip-button-playlist-repeatmode": "Change Repeat Mode",
-  "mp-tooltip-button-playlist-clear": "Remove All Tracks from Playlist",
-  "mp-tooltip-button-playlist-add": "Add Tracks to Playlist",
-  "mp-tooltip-button-playlist-delete": "Remove Selected Track from Playlist",
+  "mp-tooltip-button-playlist-clear": "Remove All Tracks",
+  "mp-tooltip-button-playlist-add": "Add Tracks",
+  "mp-tooltip-button-playlist-delete": "Remove Selected Track",
   "mp-tooltip-button-playlist-save": "Save Playlist to File",
 
   "mp-menu-TEMPPPP2": "DEV NOTE: This entries are a work in progress",
@@ -305,6 +305,8 @@
   "mp-menu-videoarea-autohide": "Show for Videos",
   "mp-menu-videoarea-visible": "Show Always",
   "mp-menu-videoarea-hidden": "Hide Always",
+
+  "mp-menu-TEMPPPP3": "DEV NOTE: This entries are a work in progress",
 
   "home-screen": "Home Screen",
   "home-button-files-tools": "Files Tools",

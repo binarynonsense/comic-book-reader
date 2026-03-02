@@ -53,6 +53,7 @@ exports.show = function (type, params, settings, sendIpcToRenderer) {
         submenu: [...openSubmenu],
       },
       ...getSizeSubmenu(settings),
+      ...getVideoAreaSubmenu(settings),
       {
         label: _("mp-tooltip-button-playlist"),
         click() {
@@ -96,6 +97,40 @@ exports.show = function (type, params, settings, sendIpcToRenderer) {
             checked: settings.size === 2,
             click() {
               sendIpcToRenderer("on-context-menu", "set-size", 2);
+            },
+          },
+        ],
+      },
+    ];
+  }
+
+  function getVideoAreaSubmenu(settings) {
+    return [
+      {
+        label: _("mp-menu-videoarea"),
+        submenu: [
+          {
+            label: _("mp-menu-videoarea-autohide"),
+            type: "radio",
+            checked: settings.showVideo === 0,
+            click() {
+              sendIpcToRenderer("on-context-menu", "set-show-video", 0);
+            },
+          },
+          {
+            label: _("mp-menu-videoarea-visible"),
+            type: "radio",
+            checked: settings.showVideo === 1,
+            click() {
+              sendIpcToRenderer("on-context-menu", "set-show-video", 1);
+            },
+          },
+          {
+            label: _("mp-menu-videoarea-hidden"),
+            type: "radio",
+            checked: settings.showVideo === 2,
+            click() {
+              sendIpcToRenderer("on-context-menu", "set-show-video", 2);
             },
           },
         ],

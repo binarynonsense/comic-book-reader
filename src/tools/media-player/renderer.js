@@ -684,9 +684,11 @@ function refreshUI() {
   }
 
   if (
-    g_player.engineType === PlayerEngineType.FFMPEG ||
-    g_player.mediaType === PlayerMediaType.VIDEO ||
-    g_player.engineType === PlayerEngineType.YOUTUBE
+    g_settings.showVideo !== 2 &&
+    (g_settings.showVideo === 1 ||
+      g_player.engineType === PlayerEngineType.FFMPEG ||
+      g_player.mediaType === PlayerMediaType.VIDEO ||
+      g_player.engineType === PlayerEngineType.YOUTUBE)
   ) {
     g_player.html.videoDiv.classList.remove("set-display-none");
   } else {
@@ -1069,6 +1071,11 @@ function initOnIpcCallbacks() {
 
       case "set-size":
         g_settings.size = args[1];
+        refreshUI();
+        break;
+
+      case "set-show-video":
+        g_settings.showVideo = args[1];
         refreshUI();
         break;
     }
