@@ -670,7 +670,7 @@ function initUI() {
 
   //////
 
-  g_player.html.videoDiv = document.getElementById("mp-div-video");
+  g_player.html.videoDiv = document.getElementById("mp-video-div");
   g_player.html.videoLoadingDiv = document.getElementById(
     "mp-html-video-loading-div",
   );

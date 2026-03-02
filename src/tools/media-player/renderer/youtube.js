@@ -55,7 +55,7 @@ export function createNewPlayer(
     g_connectionTimeout = null;
   }, 6000);
 
-  const container = document.getElementById("mp-div-video");
+  const container = document.getElementById("mp-video-div");
   if (!container) return;
 
   if (!window.YT) {

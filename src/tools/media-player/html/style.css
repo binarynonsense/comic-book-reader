@@ -23,7 +23,7 @@
 #media-player-container.mp-layout-fullscreen #mp-div-playlist {
   display: none;
 }
-#media-player-container.mp-layout-fullscreen #mp-div-video {
+#media-player-container.mp-layout-fullscreen #mp-video-div {
   height: 100% !important;
   border-radius: 0 !important;
 }
@@ -73,7 +73,7 @@ a:hover a:visited {
   cursor: pointer;
 }
 
-#mp-div-video {
+#mp-video-div {
   background: #000;
   aspect-ratio: 16 / 9;
   position: relative;
@@ -83,7 +83,7 @@ a:hover a:visited {
   padding: 0;
 }
 
-#mp-div-video video {
+#mp-video-div video {
   background: #000;
   position: absolute;
   top: 0;
@@ -95,7 +95,7 @@ a:hover a:visited {
   transform: translateX(-50%);
 }
 
-#mp-div-video iframe {
+#mp-video-div iframe {
   position: absolute;
   top: 0;
   left: 0;
