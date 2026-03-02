@@ -13,6 +13,7 @@ import * as modals from "../../shared/renderer/modals.js";
 import * as playlist from "./renderer/playlist.js";
 import * as yt from "./renderer/youtube.js";
 import * as ffmpeg from "./renderer/ffmpeg.js";
+import * as spectrumVisualizer from "./renderer/spectrum.js";
 
 let g_settings;
 let g_ffmpegAvailable = false;
@@ -172,6 +173,9 @@ async function onInit(settings, loadedPlaylist, ffmpegAvailable) {
 
     // init UI ////
     initUI();
+
+    // TODO: start only if audio / settings... and stop if not needed
+    spectrumVisualizer.start();
 
     // init player ////
     initPlayer();
