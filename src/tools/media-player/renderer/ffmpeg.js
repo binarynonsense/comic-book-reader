@@ -4,11 +4,12 @@
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
+
 let g_activePort = null;
 let g_totalDuration = 0;
 let g_videoTag;
 
-let onPlaySucceeded, setPlayerState, sendIpcToMain;
+let setPlayerState, sendIpcToMain;
 
 // NOTE: this must be synced with the one in renderer
 const PlayerState = {
@@ -21,7 +22,6 @@ const PlayerState = {
 export function init(_setPlayerState, _sendIpcToMain) {
   setPlayerState = _setPlayerState;
   sendIpcToMain = _sendIpcToMain;
-  sendIpcToMain("mp-ffmpeg-open-player");
 }
 
 export function initOnIpcCallbacks(on) {
@@ -32,6 +32,7 @@ export function initOnIpcCallbacks(on) {
   on("mp-ffmpeg-video-metadata", (data) => {
     g_ffmpegSeekOffset = 0;
     g_totalDuration = data.duration;
+    g_activePort = data.port;
     if (data.time && data.time >= g_totalDuration) data.time = 0;
     document.getElementById("mp-slider-time").max = Math.floor(g_totalDuration);
     document.getElementById("mp-text-time").innerText =
@@ -79,11 +80,6 @@ function startStream(time) {
     if (e.name !== "AbortError") console.error("[ffmpeg] Play failed:", e);
   });
 }
-
-// g_videoTag.oncanplay = () => {
-//   g_videoTag.volume = savedVolume;
-//   document.getElementById("loadingOverlay").classList.add("hidden");
-// };
 
 const formatTime = (s) => {
   if (!s || !isFinite(s)) return "00:00";
