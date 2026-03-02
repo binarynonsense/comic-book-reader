@@ -111,26 +111,15 @@ function initPlayer() {
   });
 
   g_player.engine.addEventListener("timeupdate", function () {
+    g_player.html.updateTimeStatusText();
     if (g_player.engineType === PlayerEngineType.FFMPEG) {
-      ffmpeg.onSliderTimeTimeUpdate(
-        g_player.engine,
-        g_player.html.sliderTime,
-        g_player.html.textTime,
-      );
+      ffmpeg.onSliderTimeTimeUpdate(g_player.engine, g_player.html.sliderTime);
     } else if (g_player.engineType === PlayerEngineType.NATIVE) {
       if (g_player.usingHsl) {
-        g_player.html.textTime.innerHTML = "--/--";
         g_player.html.sliderTime.value = 0;
       } else if (isNaN(this.duration) || !isFinite(this.duration)) {
-        g_player.html.textTime.innerHTML = playlist.getFormatedTimeFromSeconds(
-          this.currentTime,
-        );
         g_player.html.sliderTime.value = 0;
       } else {
-        g_player.html.textTime.innerHTML =
-          playlist.getFormatedTimeFromSeconds(this.currentTime) +
-          " / " +
-          playlist.getFormatedTimeFromSeconds(this.duration);
         g_player.html.sliderTime.max = this.duration;
         g_player.html.sliderTime.value = this.currentTime;
       }
@@ -138,7 +127,6 @@ function initPlayer() {
   });
 
   g_player.engine.addEventListener("volumechange", function () {
-    g_player.html.textVolume.innerHTML = `${Math.floor(this.volume * 100)}%`;
     g_player.html.sliderVolume.value = this.volume * 100;
   });
 
@@ -175,61 +163,59 @@ function initPlayer() {
 // BASE ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-function onInit(settings, loadedPlaylist, ffmpegAvailable) {
-  g_ffmpegAvailable = ffmpegAvailable;
+async function onInit(settings, loadedPlaylist, ffmpegAvailable) {
+  try {
+    g_ffmpegAvailable = ffmpegAvailable;
 
-  // load css ////
-  var head = document.getElementsByTagName("head")[0];
-  var link = document.createElement("link");
-  link.type = "text/css";
-  link.rel = "stylesheet";
-  link.href = "../tools/media-player/html/style.css";
-  head.appendChild(link);
+    // load css ////
+    await loadStylesheet("../tools/media-player/html/style.css");
 
-  // init UI ////
-  initUI();
+    // init UI ////
+    initUI();
 
-  // init player ////
-  initPlayer();
-  ffmpeg.init(setPlayerState, sendIpcToMain);
-  yt.init(onError);
+    // init player ////
+    initPlayer();
+    ffmpeg.init(setPlayerState, sendIpcToMain);
+    yt.init(onError);
 
-  // load settings & playlist ////
-  g_settings = settings;
+    // load settings & playlist ////
+    g_settings = settings;
 
-  const loadTrackIndex = playlist.init(
-    g_player,
-    loadedPlaylist,
-    g_settings,
-    sendIpcToMain,
-    onPlaylistTrackDoubleClicked,
-    refreshUI,
-  );
-  if (loadTrackIndex !== undefined) {
-    playlist.setCurrentTrackIndex(loadTrackIndex);
-    playlist.setSelectedTrackFileIndex(
-      playlist.getTracks()[loadTrackIndex].fileIndex,
+    const loadTrackIndex = playlist.init(
+      g_player,
+      loadedPlaylist,
+      g_settings,
+      sendIpcToMain,
+      onPlaylistTrackDoubleClicked,
+      refreshUI,
     );
-    g_player.trackIndex = loadTrackIndex;
-    g_player.pendingTime = g_settings.currentTime;
-    g_player.html.sliderTime.max = g_settings.currentDuration;
-    g_player.html.sliderTime.value = g_player.pendingTime;
+    if (loadTrackIndex !== undefined) {
+      playlist.setCurrentTrackIndex(loadTrackIndex);
+      playlist.setSelectedTrackFileIndex(
+        playlist.getTracks()[loadTrackIndex].fileIndex,
+      );
+      g_player.trackIndex = loadTrackIndex;
+      g_player.pendingTime = g_settings.currentTime;
+      g_player.html.sliderTime.max = g_settings.currentDuration;
+      g_player.html.sliderTime.value = g_player.pendingTime;
+    }
+
+    g_player.engine.volume = g_settings.volume;
+    g_player.html.sliderVolume.value = g_settings.volume * 100;
+    if (g_settings.showPlaylist)
+      g_player.html.divPlaylist.classList.remove("mp-hidden");
+    else g_player.html.divPlaylist.classList.add("mp-hidden");
+
+    ////////////////
+    refreshUI();
+    setTimeout(playlist.scrollToCurrent, 100);
+    // will send settings and playlist to main
+    // so on quit the info is immediately available
+    // TODO: maybe do it a more efficient way
+    sendConfigUpdateTimeout();
+  } catch (error) {
+    console.log(error);
   }
-
-  g_player.engine.volume = g_settings.volume;
-  g_player.html.textVolume.innerHTML = `${Math.floor(g_settings.volume * 100)}%`;
-  g_player.html.sliderVolume.value = g_settings.volume * 100;
-  if (g_settings.showPlaylist)
-    g_player.html.divPlaylist.classList.remove("mp-hidden");
-  else g_player.html.divPlaylist.classList.add("mp-hidden");
-
-  ////////////////
-  refreshUI();
-  setTimeout(playlist.scrollToCurrent, 100);
-  // will send settings and playlist to main
-  // so on quit the info is immediately available
-  // TODO: maybe do it a more efficient way
-  sendConfigUpdateTimeout();
 }
 
 let g_configUpdateTimeout;
@@ -544,6 +530,20 @@ async function isVideoMetadata(metadata) {
 // UI /////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+function loadStylesheet(href) {
+  return new Promise((resolve, reject) => {
+    const link = document.createElement("link");
+    link.type = "text/css";
+    link.rel = "stylesheet";
+    link.href = href;
+
+    link.onload = () => resolve(link);
+    link.onerror = () => reject(new Error(`style load failed for ${href}`));
+
+    document.head.appendChild(link);
+  });
+}
+
 function initUI() {
   g_player.html.buttonOpen = document.getElementById("mp-button-open");
   g_player.html.buttonOpen.addEventListener("click", function () {
@@ -567,12 +567,6 @@ function initUI() {
     onButtonClicked("next");
   });
 
-  g_player.html.textTime = document.getElementById("mp-text-time");
-  g_player.html.sliderTime = document.getElementById("mp-slider-time");
-  g_player.html.sliderTime.addEventListener("input", function () {
-    onSliderTimeChanged(g_player.html.sliderTime);
-  });
-
   g_player.html.buttonVolumeOff = document.getElementById(
     "mp-button-volume-off",
   );
@@ -582,14 +576,6 @@ function initUI() {
   g_player.html.buttonVolumeOn = document.getElementById("mp-button-volume-on");
   g_player.html.buttonVolumeOn.addEventListener("click", function () {
     onButtonClicked("volume-on");
-  });
-  g_player.html.textVolume = document.getElementById("mp-text-volume");
-  g_player.html.sliderVolume = document.getElementById("mp-slider-volume");
-  g_player.html.sliderVolume.addEventListener("input", function () {
-    onSliderVolumeChanged(g_player.html.sliderVolume);
-  });
-  g_player.html.sliderVolume.addEventListener("change", function () {
-    refreshUI();
   });
 
   g_player.html.divPlaylist = document.getElementById("mp-div-playlist");
@@ -672,23 +658,211 @@ function initUI() {
     .addEventListener("wheel", function (event) {
       event.stopPropagation();
     });
+
+  // Hide Show Topbar on mouse move if full size
+  g_player.html.playerDiv = document.getElementById("media-player-container");
+  g_player.html.topBar = document.getElementById("mp-div-topbar");
+  g_player.html.topBarShowTimeOut;
+  g_player.html.isHoveringTopBar = false;
+
+  function showTopBar() {
+    g_player.html.topBar.style.opacity = "1";
+    g_player.html.topBar.style.visibility = "visible";
+  }
+
+  function hideTopBar() {
+    if (g_settings.size === 2 && !g_player.html.isHoveringTopBar) {
+      g_player.html.topBar.style.opacity = "0";
+      g_player.html.topBar.style.visibility = "hidden";
+    }
+  }
+
+  g_player.html.playerDiv.addEventListener("mousemove", () => {
+    showTopBar();
+    clearTimeout(g_player.html.topBarShowTimeOut);
+    if (g_settings.size === 2 && !g_player.html.isHoveringTopBar) {
+      g_player.html.topBarShowTimeOut = setTimeout(hideTopBar, 3000);
+    }
+  });
+
+  g_player.html.topBar.addEventListener("mouseenter", () => {
+    g_player.html.isHoveringTopBar = true;
+    clearTimeout(g_player.html.topBarShowTimeOut);
+    showTopBar();
+  });
+
+  g_player.html.topBar.addEventListener("mouseleave", () => {
+    g_player.html.isHoveringTopBar = false;
+    if (g_settings.size === 2) {
+      clearTimeout(g_player.html.topBarShowTimeOut);
+      g_player.html.topBarShowTimeOut = setTimeout(hideTopBar, 5000);
+    }
+  });
+
+  // slider Time ///////////
+  function updateTimeStatusText() {
+    const slider = g_player.html.sliderTime;
+    const statusT = g_player.html.sliderTimeStatusOverlay;
+
+    if (slider && statusT) {
+      const maxSeconds = parseFloat(slider.max) || 0;
+      const currentSeconds = parseFloat(slider.value) || 0;
+
+      const formattedCurrent =
+        playlist.getFormatedTimeFromSeconds(currentSeconds);
+      const formattedTotal = playlist.getFormatedTimeFromSeconds(maxSeconds);
+
+      statusT.textContent = formattedCurrent + " / " + formattedTotal;
+    }
+  }
+  g_player.html.updateTimeStatusText = updateTimeStatusText;
+
+  g_player.html.sliderTime = document.getElementById("mp-slider-time");
+
+  const style = getComputedStyle(document.documentElement);
+  const rawValue = style.getPropertyValue("--mp-slider-thumb-width").trim();
+  g_player.html.sliderThumbWidth = parseInt(rawValue, 10);
+
+  g_player.html.sliderTime.addEventListener("input", function () {
+    onSliderTimeChanged(g_player.html.sliderTime);
+  });
+
+  g_player.html.sliderTimeHoverTooltip = document.getElementById(
+    "mp-slider-time-hover-tooltip",
+  );
+  g_player.html.sliderTimeStatusOverlay = document.getElementById(
+    "mp-slider-time-status-overlay",
+  );
+
+  g_player.html.sliderTime.addEventListener("mousemove", (event) => {
+    const slider = g_player.html.sliderTime;
+    const hoveredSeconds = getSliderValueAtMouse(slider, event);
+
+    const formattedHover = playlist.getFormatedTimeFromSeconds(hoveredSeconds);
+    const hoverT = g_player.html.sliderTimeHoverTooltip;
+    hoverT.textContent = formattedHover;
+    hoverT.style.display = "block";
+
+    const rect = slider.getBoundingClientRect();
+    hoverT.style.left = event.clientX - rect.left + "px";
+
+    updateTimeStatusText();
+    g_player.html.sliderTimeStatusOverlay.style.display = "block";
+  });
+
+  g_player.html.sliderTime.addEventListener("mouseleave", () => {
+    g_player.html.sliderTimeHoverTooltip.style.display = "none";
+    g_player.html.sliderTimeStatusOverlay.style.display = "none";
+  });
+
+  // slider volume///////////////////
+
+  function updateVolumeStatusText() {
+    const slider = g_player.html.sliderVolume;
+    const statusT = g_player.html.sliderVolumeStatusOverlay;
+    if (slider && statusT) {
+      const currentVal = parseFloat(slider.value) || 0;
+      statusT.textContent = Math.floor(currentVal) + "%";
+    }
+  }
+  g_player.html.updateVolumeStatusText = updateVolumeStatusText;
+
+  g_player.html.sliderVolume = document.getElementById("mp-slider-volume");
+
+  g_player.html.sliderVolume.addEventListener("input", function () {
+    onSliderVolumeChanged(g_player.html.sliderVolume);
+  });
+
+  g_player.html.sliderVolume.addEventListener("change", function () {
+    refreshUI();
+  });
+
+  g_player.html.sliderVolumeHoverTooltip = document.getElementById(
+    "mp-slider-volume-hover-tooltip",
+  );
+  g_player.html.sliderVolumeStatusOverlay = document.getElementById(
+    "mp-slider-volume-status-overlay",
+  );
+
+  g_player.html.sliderVolume.addEventListener("mousemove", (event) => {
+    const slider = g_player.html.sliderVolume;
+    const hoveredVal = getSliderValueAtMouse(slider, event);
+
+    const hoverT = g_player.html.sliderVolumeHoverTooltip;
+    hoverT.textContent = Math.round(hoveredVal) + "%";
+    hoverT.style.display = "block";
+
+    const rect = slider.getBoundingClientRect();
+    hoverT.style.left = event.clientX - rect.left + "px";
+
+    updateVolumeStatusText();
+    g_player.html.sliderVolumeStatusOverlay.style.display = "block";
+  });
+
+  g_player.html.sliderVolume.addEventListener("mouseleave", () => {
+    g_player.html.sliderVolumeHoverTooltip.style.display = "none";
+    g_player.html.sliderVolumeStatusOverlay.style.display = "none";
+  });
+}
+
+function onSliderTimeChanged(slider) {
+  const targetSecond = parseFloat(slider.value);
+  g_player.html.updateTimeStatusText();
+  if (g_player.engineType === PlayerEngineType.FFMPEG) {
+    ffmpeg.setTime(targetSecond);
+  } else if (!g_player.usingHsl && !isNaN(g_player.engine.duration)) {
+    if (g_player.engine.duration != Infinity) {
+      g_player.engine.currentTime = targetSecond;
+    }
+  }
+}
+
+function getSliderValueAtMouse(slider, event) {
+  const rect = slider.getBoundingClientRect();
+  const min = parseFloat(slider.min) || 0;
+  const max = parseFloat(slider.max) || 100;
+  const step = parseFloat(slider.step) || 1;
+
+  const thumbWidth = g_player.html.sliderThumbWidth;
+  const activeWidth = rect.width - thumbWidth;
+  let x = event.clientX - rect.left - thumbWidth / 2;
+  x = Math.max(0, Math.min(x, activeWidth));
+  const percent = x / activeWidth;
+  const rawValue = min + (max - min) * percent;
+
+  return Math.round(rawValue / step) * step;
+}
+
+function onSliderVolumeChanged(slider) {
+  g_player.engine.volume = parseFloat(slider.value) / 100;
+  g_player.html.updateVolumeStatusText();
+  if (g_player.engineType === PlayerEngineType.YOUTUBE) {
+    yt.updateVolume(g_player.engine.volume);
+  }
 }
 
 function refreshUI() {
-  if (g_settings.size === 0) {
-    document.documentElement.style.setProperty("--mp-frame-width", `300px`);
-  } else if (g_settings.size === 1) {
-    document.documentElement.style.setProperty("--mp-frame-width", `500px`);
-  } else if (g_settings.size === 2) {
+  if (g_settings.size === 2) {
+    g_player.html.playerDiv.classList.add("mp-layout-fullscreen");
     document.documentElement.style.setProperty("--mp-frame-width", `100%`);
+  } else {
+    g_player.html.playerDiv.classList.remove("mp-layout-fullscreen");
+    g_player.html.topBar.style.opacity = "1";
+    g_player.html.topBar.style.visibility = "visible";
+    if (g_settings.size === 0) {
+      document.documentElement.style.setProperty("--mp-frame-width", `300px`);
+    } else if (g_settings.size === 1) {
+      document.documentElement.style.setProperty("--mp-frame-width", `500px`);
+    }
   }
 
   if (
-    g_settings.showVideo !== 2 &&
-    (g_settings.showVideo === 1 ||
-      g_player.engineType === PlayerEngineType.FFMPEG ||
-      g_player.mediaType === PlayerMediaType.VIDEO ||
-      g_player.engineType === PlayerEngineType.YOUTUBE)
+    g_settings.size === 2 ||
+    (g_settings.showVideo !== 2 &&
+      (g_settings.showVideo === 1 ||
+        g_player.engineType === PlayerEngineType.FFMPEG ||
+        g_player.mediaType === PlayerMediaType.VIDEO ||
+        g_player.engineType === PlayerEngineType.YOUTUBE))
   ) {
     g_player.html.videoDiv.classList.remove("set-display-none");
   } else {
@@ -943,24 +1117,6 @@ function onButtonClicked(buttonName) {
   }
   //////
   refreshUI();
-}
-
-function onSliderTimeChanged(slider) {
-  const targetSecond = parseInt(slider.value);
-  if (g_player.engineType === PlayerEngineType.FFMPEG) {
-    ffmpeg.setTime(targetSecond);
-  } else if (!g_player.usingHsl && !isNaN(g_player.engine.duration)) {
-    if (g_player.engine.duration != Infinity) {
-      g_player.engine.currentTime = targetSecond;
-    }
-  }
-}
-
-function onSliderVolumeChanged(slider) {
-  g_player.engine.volume = slider.value / 100;
-  if (g_player.engineType === PlayerEngineType.YOUTUBE) {
-    yt.updateVolume(g_player.engine.volume);
-  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -1,5 +1,6 @@
 :root {
   --mp-frame-width: 300px;
+  --mp-slider-thumb-width: 5px;
 }
 
 #media-player-container {
@@ -10,6 +11,20 @@
   direction: ltr;
   min-width: var(--mp-frame-width);
   gap: 3px;
+}
+#media-player-container.mp-layout-fullscreen #mp-div-topbar {
+  position: fixed;
+  bottom: 20px;
+  width: 500px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
+}
+#media-player-container.mp-layout-fullscreen #mp-div-playlist {
+  display: none;
+}
+#media-player-container.mp-layout-fullscreen #mp-div-video {
+  height: 100% !important;
 }
 
 .mp-zindex-reader {
@@ -31,24 +46,25 @@
   left: 10px;
 }
 
+.mp-layout-fullscreen {
+  position: fixed;
+  width: 100% !important;
+  height: 100% !important;
+  top: calc(var(--menubar-height));
+  left: 0px !important;
+}
+
 .mp-frame {
   border: 0;
   user-select: none;
-
   font-size: 15px;
   background-color: var(--mediaplayer-bg-color);
   padding: 5px 5px;
   border-radius: 5px;
-
   min-height: 10px;
   width: 100%;
-
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
-
-/* #media-player-container:has(#mp-div-video:not(.set-display-none)) {
-  --mp-frame-width: 500px;
-} */
 
 .mp-frame a,
 a:hover a:visited {
@@ -58,7 +74,6 @@ a:hover a:visited {
 
 #mp-div-video {
   background: #000;
-  /* height: 286px; */
   aspect-ratio: 16 / 9;
   position: relative;
   display: flex;
@@ -117,9 +132,6 @@ a:hover a:visited {
 }
 
 /* -------------------------------------------------- */
-
-/* #mp-div-playlist {
-} */
 
 .mp-separator {
   display: inline;
@@ -240,47 +252,111 @@ a:hover a:visited {
   flex-grow: 1;
 }
 
-#mp-div-time {
-  display: inline-flex;
-  flex-grow: 1;
-  align-items: center;
-  position: relative;
-}
+/* *************** */
 
-#mp-div-time:hover #mp-text-time {
-  visibility: visible;
-  min-width: 100px;
-  position: absolute;
-  top: 15px;
-  left: 0;
+.mp-time-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+  margin-left: 2px;
+  margin-right: 4px;
 }
 
 #mp-slider-time {
-  flex-grow: 1;
+  flex: 1;
+  width: 100%;
+  margin: 0;
+  cursor: pointer;
 }
+
+#mp-slider-time-hover-tooltip {
+  position: absolute;
+  display: none;
+  pointer-events: none;
+  top: 25px;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.85);
+  color: #fff;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  z-index: 1000;
+  white-space: nowrap;
+}
+
+#mp-slider-time-status-overlay {
+  position: absolute;
+  display: none;
+  pointer-events: none;
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-left: 10px;
+  background: rgba(0, 0, 0, 0.85);
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 100;
+}
+
+/* *************** */
 
 #mp-div-volume {
   position: relative;
+  display: inline-flex;
 }
-/* 
-#mp-div-volume:hover #mp-slider-volume {
-  display: inline !important;
-} */
 
-#mp-slider-volume {
+.mp-volume-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-grow: 0;
   width: 30px;
 }
 
-#mp-div-volume:hover #mp-text-volume {
-  visibility: visible;
-  position: absolute;
-  top: 15px;
-  left: 0;
+#mp-slider-volume {
+  width: 100%;
+  cursor: pointer;
 }
 
-#mp-div-volume:hover #mp-slider-volume {
-  display: inline-block !important;
+#mp-slider-volume-hover-tooltip {
+  position: absolute;
+  display: none;
+  pointer-events: none;
+  top: 25px;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.85);
+  color: #fff;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  z-index: 1000;
+  white-space: nowrap;
 }
+
+#mp-slider-volume-status-overlay {
+  position: absolute;
+  display: none;
+  pointer-events: none;
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-left: 8px;
+  background: rgba(0, 0, 0, 0.85);
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 100;
+}
+
+/* *********************** */
 
 #mp-button-playlist {
   margin-left: 5px;
@@ -313,7 +389,7 @@ a:hover a:visited {
 
 .mp-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 5px;
+  width: var(--mp-slider-thumb-width);
   background: var(--mediaplayer-slider-left-bg-color);
   border-radius: 5px;
   box-shadow: -100vw 0 0 100vw var(--mediaplayer-slider-left-bg-color);

@@ -15,10 +15,19 @@
   <a id="mp-button-next" class="mp-button" title="next track"
     ><i class="fa fa-step-forward" aria-hidden="true"></i
   ></a>
-  <div id="mp-div-time">
+  <!-- <div id="mp-div-time">
     <input id="mp-slider-time" class="mp-slider" type="range" value="0" />
     <div id="mp-text-time">00:00 / 00:00</div>
+  </div> -->
+  <div class="mp-time-wrapper">
+    <div id="mp-slider-time-hover-tooltip">00:00</div>
+
+    <!-- Using your existing slider ID -->
+    <input id="mp-slider-time" class="mp-slider" type="range" value="0" />
+
+    <div id="mp-slider-time-status-overlay">00:00 / 00:00</div>
   </div>
+
   <div id="mp-div-volume">
     <a
       id="mp-button-volume-off"
@@ -29,13 +38,26 @@
     ></a>
     <a
       id="mp-button-volume-on"
-      class="mp-button ap-hidden"
+      class="mp-button mp-hidden"
       title="volume on"
       style="max-width: 20px; min-width: 20px"
       ><i class="fa fa-volume-off" aria-hidden="true"></i
     ></a>
-    <input id="mp-slider-volume" class="mp-slider" type="range" value="100" />
-    <div id="mp-text-volume">100%</div>
+    <!-- <input id="mp-slider-volume" class="mp-slider" type="range" value="100" />
+    <div id="mp-text-volume">100%</div> -->
+    <div class="mp-volume-wrapper">
+      <div id="mp-slider-volume-hover-tooltip">0%</div>
+      <input
+        id="mp-slider-volume"
+        class="mp-slider"
+        type="range"
+        min="0"
+        max="100"
+        step="1"
+        value="1"
+      />
+      <div id="mp-slider-volume-status-overlay">50%</div>
+    </div>
   </div>
   <div class="mp-separator"></div>
   <!-- <a id="mp-button-playlist" class="mp-button" title="toggle playlist"

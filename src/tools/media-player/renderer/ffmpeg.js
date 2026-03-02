@@ -35,8 +35,6 @@ export function initOnIpcCallbacks(on) {
     g_activePort = data.port;
     if (data.time && data.time >= g_totalDuration) data.time = 0;
     document.getElementById("mp-slider-time").max = Math.floor(g_totalDuration);
-    document.getElementById("mp-text-time").innerText =
-      formatTime(g_totalDuration);
     startStream(data.time);
   });
 
@@ -55,10 +53,8 @@ export function setTime(seconds) {
   startStream(g_ffmpegSeekOffset);
 }
 
-export function onSliderTimeTimeUpdate(videoElement, inputSlider, textDiv) {
+export function onSliderTimeTimeUpdate(videoElement, inputSlider) {
   const currentTotalSeconds = g_ffmpegSeekOffset + videoElement.currentTime;
-  textDiv.innerHTML =
-    formatTime(currentTotalSeconds) + " / " + formatTime(inputSlider.max);
   if (inputSlider.max > 0) {
     inputSlider.value = currentTotalSeconds;
   }
