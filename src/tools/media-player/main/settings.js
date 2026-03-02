@@ -45,9 +45,10 @@ function setDefaultValues() {
     currentFileIndex: undefined,
     currentTime: 0,
     currentDuration: undefined,
-    showPlaylist: true,
     size: 0,
-    showVideo: 0,
+    showPlaylist: true,
+    showVideo: true,
+    showSpectrum: true,
   };
 }
 
@@ -78,9 +79,6 @@ function sanitize() {
   if (isNaN(g_settings.currentTime)) {
     g_settings.currentTime = 0;
   }
-  if (typeof g_settings.showPlaylist !== "boolean") {
-    g_settings.showPlaylist = true;
-  }
   if (
     !Number.isInteger(g_settings.size) ||
     g_settings.repeat < 0 ||
@@ -88,12 +86,21 @@ function sanitize() {
   ) {
     g_settings.repeat = 0;
   }
-  if (
-    !Number.isInteger(g_settings.showVideo) ||
-    g_settings.showVideo < 0 ||
-    g_settings.showVideo > 2
-  ) {
-    g_settings.showVideo = 0;
+  // if (
+  //   !Number.isInteger(g_settings.showVideo) ||
+  //   g_settings.showVideo < 0 ||
+  //   g_settings.showVideo > 2
+  // ) {
+  //   g_settings.showVideo = 0;
+  // }
+  if (typeof g_settings.showPlaylist !== "boolean") {
+    g_settings.showPlaylist = true;
+  }
+  if (typeof g_settings.showVideo !== "boolean") {
+    g_settings.showVideo = true;
+  }
+  if (typeof g_settings.showSpectrum !== "boolean") {
+    g_settings.showSpectrum = true;
   }
 }
 

@@ -24,8 +24,14 @@
   display: none;
 }
 #media-player-container.mp-layout-fullscreen #mp-video-div {
-  height: 100% !important;
+  height: calc(100% - var(--menubar-height));
   border-radius: 0 !important;
+}
+#media-player-container.mp-layout-fullscreen #mp-spectrum-div {
+  border-radius: 0 !important;
+  height: calc(100% - var(--menubar-height));
+  border-radius: 0 !important;
+  position: fixed;
 }
 
 .mp-zindex-reader {
@@ -489,7 +495,7 @@ a:hover a:visited {
 
 #mp-spectrum-div {
   position: relative;
-  height: var(--dynamic-height, 150px);
+  aspect-ratio: 16 / 9;
   background: #050505;
   display: flex;
   align-items: center;

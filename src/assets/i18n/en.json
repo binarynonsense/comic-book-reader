@@ -302,9 +302,11 @@
   "mp-menu-size-medium": "Medium",
   "mp-menu-size-big": "Big",
   "mp-menu-videoarea": "Video Area",
-  "mp-menu-videoarea-autohide": "Show for Videos",
-  "mp-menu-videoarea-visible": "Show Always",
-  "mp-menu-videoarea-hidden": "Hide Always",
+  "mp-menu-widget-forvideo": "Show for Video",
+  "mp-menu-widget-foraudio": "Show for Audio",
+  "mp-menu-widget-visible": "Show Always",
+  "mp-menu-widget-hidden": "Hide Always",
+  "mp-menu-spectrum": "Spectrum Visualizer",
 
   "mp-menu-TEMPPPP3": "DEV NOTE: This entries are a work in progress",
 

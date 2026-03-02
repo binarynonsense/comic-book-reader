@@ -678,6 +678,8 @@ function initUI() {
     "mp-html-video-loading-div",
   );
 
+  g_player.html.spectrumDiv = document.getElementById("mp-spectrum-div");
+
   // stop wheel scroll from propagating through the player
   g_player.html.divPlaylist.addEventListener("wheel", function (event) {
     event.stopPropagation();
@@ -891,15 +893,23 @@ function refreshUI() {
 
   if (
     g_settings.size === 2 ||
-    (g_settings.showVideo !== 2 &&
-      (g_settings.showVideo === 1 ||
-        g_player.engineType === PlayerEngineType.FFMPEG ||
+    (g_settings.showVideo &&
+      (g_player.engineType === PlayerEngineType.FFMPEG ||
         g_player.mediaType === PlayerMediaType.VIDEO ||
         g_player.engineType === PlayerEngineType.YOUTUBE))
   ) {
     g_player.html.videoDiv.classList.remove("set-display-none");
   } else {
     g_player.html.videoDiv.classList.add("set-display-none");
+  }
+
+  if (
+    (g_settings.size === 2 || g_settings.showSpectrum) &&
+    g_player.mediaType === PlayerMediaType.AUDIO
+  ) {
+    g_player.html.spectrumDiv.classList.remove("set-display-none");
+  } else {
+    g_player.html.spectrumDiv.classList.add("set-display-none");
   }
 
   if (playlist.getTracks().length > 0) {
@@ -1242,6 +1252,20 @@ function initOnIpcCallbacks() {
     switch (args[0]) {
       case "toggle-playlist":
         onTogglePlaylist();
+        break;
+
+      case "toggle-video":
+        g_settings.showVideo = !g_settings.showVideo;
+        refreshUI();
+        break;
+
+      case "toggle-spectrum":
+        g_settings.showSpectrum = !g_settings.showSpectrum;
+        refreshUI();
+        break;
+
+      case "hide":
+        sendIpcToMain("close");
         break;
 
       case "hide":

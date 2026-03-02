@@ -49,6 +49,56 @@ exports.show = function (type, params, settings, sendIpcToRenderer) {
   function getCommonEntries(settings) {
     return [
       {
+        label: _("tool-shared-ui-open"),
+        submenu: [...openSubmenu],
+      },
+      {
+        label: _("menu-view"),
+        submenu: [
+          ...getSizeSubmenu(settings),
+          { type: "separator" },
+          // ...getVideoAreaSubmenu(settings),
+          {
+            label: _("mp-menu-videoarea"),
+            // id: "",
+            type: "checkbox",
+            checked: settings.showVideo,
+            enabled: settings.size !== 2,
+            click() {
+              sendIpcToRenderer("on-context-menu", "toggle-video");
+            },
+          },
+          {
+            label: _("mp-menu-spectrum"),
+            // id: "",
+            type: "checkbox",
+            checked: settings.showSpectrum,
+            enabled: settings.size !== 2,
+            click() {
+              sendIpcToRenderer("on-context-menu", "toggle-spectrum");
+            },
+          },
+          {
+            label: _("mp-menu-playlist"),
+            // id: "",
+            type: "checkbox",
+            checked: settings.showPlaylist,
+            enabled: settings.size !== 2,
+            click() {
+              sendIpcToRenderer("on-context-menu", "toggle-playlist");
+            },
+          },
+          // ...getSpectrumSubmenu(settings),
+          // {
+          //   label: _("mp-tooltip-button-playlist"),
+          //   click() {
+          //     sendIpcToRenderer("on-context-menu", "toggle-playlist");
+          //   },
+          // },
+        ],
+      },
+      { type: "separator" },
+      {
         label: _("mp-tooltip-button-play"),
         click() {
           sendIpcToRenderer("on-context-menu", "play");
@@ -71,24 +121,6 @@ exports.show = function (type, params, settings, sendIpcToRenderer) {
         click() {
           sendIpcToRenderer("on-context-menu", "prev");
         },
-      },
-      { type: "separator" },
-      {
-        label: _("tool-shared-ui-open"),
-        submenu: [...openSubmenu],
-      },
-      {
-        label: _("menu-view"),
-        submenu: [
-          ...getSizeSubmenu(settings),
-          ...getVideoAreaSubmenu(settings),
-          {
-            label: _("mp-tooltip-button-playlist"),
-            click() {
-              sendIpcToRenderer("on-context-menu", "toggle-playlist");
-            },
-          },
-        ],
       },
       { type: "separator" },
       {
@@ -140,7 +172,7 @@ exports.show = function (type, params, settings, sendIpcToRenderer) {
         label: _("mp-menu-videoarea"),
         submenu: [
           {
-            label: _("mp-menu-videoarea-autohide"),
+            label: _("mp-menu-widget-forvideo"),
             type: "radio",
             checked: settings.showVideo === 0,
             click() {
@@ -148,7 +180,7 @@ exports.show = function (type, params, settings, sendIpcToRenderer) {
             },
           },
           {
-            label: _("mp-menu-videoarea-visible"),
+            label: _("mp-menu-widget-visible"),
             type: "radio",
             checked: settings.showVideo === 1,
             click() {
@@ -156,11 +188,45 @@ exports.show = function (type, params, settings, sendIpcToRenderer) {
             },
           },
           {
-            label: _("mp-menu-videoarea-hidden"),
+            label: _("mp-menu-widget-hidden"),
             type: "radio",
             checked: settings.showVideo === 2,
             click() {
               sendIpcToRenderer("on-context-menu", "set-show-video", 2);
+            },
+          },
+        ],
+      },
+    ];
+  }
+
+  function getSpectrumSubmenu(settings) {
+    return [
+      {
+        label: _("mp-menu-spectrum"),
+        submenu: [
+          {
+            label: _("mp-menu-widget-foraudio"),
+            type: "radio",
+            checked: settings.showSpectrum === 0,
+            click() {
+              sendIpcToRenderer("on-context-menu", "set-show-spectrum", 0);
+            },
+          },
+          {
+            label: _("mp-menu-widget-visible"),
+            type: "radio",
+            checked: settings.showSpectrum === 1,
+            click() {
+              sendIpcToRenderer("on-context-menu", "set-show-spectrum", 1);
+            },
+          },
+          {
+            label: _("mp-menu-widget-hidden"),
+            type: "radio",
+            checked: settings.showSpectrum === 2,
+            click() {
+              sendIpcToRenderer("on-context-menu", "set-show-spectrum", 2);
             },
           },
         ],
