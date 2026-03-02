@@ -408,9 +408,11 @@ a:hover a:visited {
   background-color: var(--mediaplayer-tracks-bg-color);
   border-radius: 5px;
   min-height: 0px;
-  max-height: 200px;
+  /* max-height: 200px; */
   overflow-x: hidden;
   overflow-y: scroll;
+  /* trick: multiply by a huge number so clamp gives one or the other */
+  height: clamp(100px, calc((var(--mp-frame-width) - 300px) * 9999), 200px);
 }
 
 #mp-div-playlist-tracks::-webkit-scrollbar {
