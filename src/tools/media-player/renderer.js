@@ -836,6 +836,10 @@ function initUI() {
 
 function onSliderTimeChanged(slider) {
   const targetSecond = parseFloat(slider.value);
+  if (g_player.pendingTime !== undefined) {
+    console.log("g_player.pendingTime !== undefined");
+    g_player.pendingTime = targetSecond;
+  }
   g_player.html.updateTimeStatusText();
   if (g_player.engineType === PlayerEngineType.FFMPEG) {
     ffmpeg.setTime(targetSecond, g_player.state);
