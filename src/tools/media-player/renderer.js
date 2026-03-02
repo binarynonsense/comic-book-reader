@@ -73,6 +73,8 @@ function clearPlayer() {
   yt.destroyPlayer();
 
   g_player.trackIndex = playlist.getCurrentTrackIndex();
+  g_player.trackMetadata = undefined;
+  g_player.trackHasVideoMetadata = undefined;
 }
 
 function initPlayer() {
@@ -134,8 +136,8 @@ function initPlayer() {
     g_player.html.sliderVolume.value = this.volume * 100;
   });
 
-  g_player.engine.addEventListener("loadedmetadata", () => {
-    if (g_player.engine.videoWidth > 0) {
+  g_player.engine.addEventListener("loadedmetadata", async () => {
+    if (g_player.engine.videoWidth > 0 || g_player.trackHasVideoMetadata) {
       g_player.mediaType = PlayerMediaType.VIDEO;
     } else {
       g_player.mediaType = PlayerMediaType.AUDIO;
@@ -300,7 +302,7 @@ async function onPlay(trackIndex = undefined, time = 0) {
     const wasMuted = g_player.engine.muted;
     setPlayerState(PlayerState.LOADING);
     try {
-      const metadata = await sendIpcToMainAndWait(
+      g_player.trackMetadata = await sendIpcToMainAndWait(
         "mp-get-file-metadata",
         decodeURI(playlist.getTracks()[trackIndex].fileUrl),
       );
@@ -368,6 +370,9 @@ async function onPlay(trackIndex = undefined, time = 0) {
           // NATIVE
           g_player.engine.muted = true;
           g_player.engineType = PlayerEngineType.NATIVE;
+          g_player.trackHasVideoMetadata = await isVideoMetadata(
+            g_player.trackMetadata,
+          );
           await g_player.engine.play();
           await new Promise((r) => setTimeout(r, 250));
           if (loadId !== g_currentLoadId) return;
@@ -375,9 +380,8 @@ async function onPlay(trackIndex = undefined, time = 0) {
             g_player.engine.videoWidth === 0 &&
             g_player.engine.webkitVideoDecodedByteCount === 0
           ) {
-            const isActuallyVideo = await isVideoMetadata(metadata);
             if (loadId !== g_currentLoadId) return;
-            if (isActuallyVideo) {
+            if (g_player.trackHasVideoMetadata) {
               throw new Error("NotSupportedError");
             }
           }
