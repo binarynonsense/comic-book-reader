@@ -35,7 +35,7 @@ Object.assign(process.env, safeEnv);
 const cp = require("node:child_process");
 const originalSpawn = cp.spawn;
 cp.spawn = function (command, args, options) {
-  log?.editor?.(`[core] [spawn wrapper] spawn called`);
+  log?.editor?.(`[core] [spawn wrapper] spawn called for ${command}`);
   // create a copy of options so we don't modify the library's original object
   const opts = options ? Object.assign({}, options) : {};
   const rawEnv = opts.env || process.env;
