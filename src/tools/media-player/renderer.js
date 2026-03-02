@@ -226,8 +226,6 @@ function sendConfigUpdateTimeout() {
       playlist.getTracks()[playlist.getCurrentTrackIndex()].fileIndex;
   else g_settings.currentFileIndex = undefined;
 
-  // g_settings.currentTime = g_player.engine.currentTime;
-  // g_settings.currentDuration = g_player.engine.duration;
   g_settings.currentTime = parseInt(g_player.html.sliderTime.value);
   g_settings.currentDuration = parseInt(g_player.html.sliderTime.max);
 
@@ -264,6 +262,7 @@ async function onPlay(trackIndex = undefined, time = 0) {
         return;
       } else if (g_player.engineType === PlayerEngineType.YOUTUBE) {
         yt.onPlay();
+        setPlayerState(PlayerState.PLAYING);
         refreshUI();
         playlist.scrollToCurrent();
         return;
