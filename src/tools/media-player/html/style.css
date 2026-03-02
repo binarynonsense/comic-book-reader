@@ -9,7 +9,7 @@
   justify-items: center;
   flex-direction: column;
   direction: ltr;
-  min-width: var(--mp-frame-width);
+  width: var(--mp-frame-width);
   gap: 3px;
 }
 #media-player-container.mp-layout-fullscreen #mp-div-topbar {
@@ -428,6 +428,7 @@ a:hover a:visited {
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  gap: 10px;
 }
 
 .mp-div-playlist-track:hover {
@@ -442,8 +443,8 @@ a:hover a:visited {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  width: 195px;
   text-align: left;
+  flex: 1;
 }
 
 .mp-div-playlist-current-track {
