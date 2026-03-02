@@ -44,6 +44,8 @@ const PlayerEngineType = {
 let g_player = { html: {} };
 
 function setPlayerState(state, doUIRefresh = false) {
+  // console.log("setPlayerState " + state);
+  // console.trace("stack trace");
   g_player.state = state;
   if (doUIRefresh) refreshUI();
 }
@@ -82,8 +84,9 @@ function initPlayer() {
 
   g_player.engine.addEventListener("canplay", function () {
     if (
-      g_player.engineType === PlayerEngineType.NATIVE ||
-      g_player.engineType === PlayerEngineType.FFMPEG
+      (g_player.engineType === PlayerEngineType.NATIVE ||
+        g_player.engineType === PlayerEngineType.FFMPEG) &&
+      g_player.state !== PlayerState.PAUSED
     ) {
       onPlaySucceeded();
     }
@@ -835,7 +838,7 @@ function onSliderTimeChanged(slider) {
   const targetSecond = parseFloat(slider.value);
   g_player.html.updateTimeStatusText();
   if (g_player.engineType === PlayerEngineType.FFMPEG) {
-    ffmpeg.setTime(targetSecond);
+    ffmpeg.setTime(targetSecond, g_player.state);
   } else if (!g_player.usingHsl && !isNaN(g_player.engine.duration)) {
     if (g_player.engine.duration != Infinity) {
       g_player.engine.currentTime = targetSecond;

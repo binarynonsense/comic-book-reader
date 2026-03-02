@@ -47,10 +47,10 @@ export function initOnIpcCallbacks(on) {
 
 let g_ffmpegSeekOffset = 0;
 
-export function setTime(seconds) {
+export function setTime(seconds, prevPlayerState) {
   setPlayerState(PlayerState.LOADING, true);
   g_ffmpegSeekOffset = Math.floor(seconds); // remember where we jumped to
-  startStream(g_ffmpegSeekOffset);
+  startStream(g_ffmpegSeekOffset, prevPlayerState);
 }
 
 export function onSliderTimeTimeUpdate(videoElement, inputSlider) {
@@ -62,7 +62,7 @@ export function onSliderTimeTimeUpdate(videoElement, inputSlider) {
 
 /////////////////////
 
-function startStream(time) {
+function startStream(time, prevPlayerState) {
   g_ffmpegSeekOffset = Math.floor(time ?? 0);
   g_videoTag = document.getElementById("mp-html-video");
   g_videoTag.pause();
@@ -73,6 +73,10 @@ function startStream(time) {
   g_videoTag.play().catch((e) => {
     if (e.name !== "AbortError") console.error("[ffmpeg] Play failed:", e);
   });
+  if (prevPlayerState !== undefined && prevPlayerState === PlayerState.PAUSED) {
+    g_videoTag.pause();
+    setPlayerState(PlayerState.PAUSED);
+  }
 }
 
 const formatTime = (s) => {
