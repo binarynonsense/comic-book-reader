@@ -43,7 +43,6 @@ const PlayerEngineType = {
 let g_player = { html: {} };
 
 function setPlayerState(state, doUIRefresh = false) {
-  console.log("setPlayerState: " + state);
   g_player.state = state;
   if (doUIRefresh) refreshUI();
 }
@@ -81,12 +80,10 @@ function initPlayer() {
   // ref: https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement
 
   g_player.engine.addEventListener("canplay", function () {
-    console.log("canplay");
     if (
       g_player.engineType === PlayerEngineType.NATIVE ||
       g_player.engineType === PlayerEngineType.FFMPEG
     ) {
-      console.log("call onPlaySucceeded");
       onPlaySucceeded();
     }
   });
@@ -199,7 +196,6 @@ function onInit(settings, loadedPlaylist, ffmpegAvailable) {
 
   // load settings & playlist ////
   g_settings = settings;
-  console.log(g_settings);
 
   const loadTrackIndex = playlist.init(
     g_player,
@@ -255,7 +251,6 @@ function sendConfigUpdateTimeout() {
 // TODO: call clearTimeout(g_configUpdateTimeout); on exit?
 
 async function onPlay(trackIndex = undefined, time = 0) {
-  console.log("onPlay");
   try {
     if (trackIndex === undefined && g_player.pendingTime && time === 0) {
       time = g_player.pendingTime;
@@ -316,7 +311,6 @@ async function onPlay(trackIndex = undefined, time = 0) {
         "mp-get-file-metadata",
         decodeURI(playlist.getTracks()[trackIndex].fileUrl),
       );
-      console.log(metadata);
       g_player.engine.src = playlist.getTracks()[trackIndex].fileUrl;
 
       const useHsl =
@@ -324,7 +318,6 @@ async function onPlay(trackIndex = undefined, time = 0) {
         Hls.isSupported();
       if (useHsl) {
         // NATIVE HSL
-        console.log("HSL");
         g_player.engine.hls = new Hls();
         g_player.engine.hls.attachMedia(g_player.engine);
         g_player.engine.hls.on(Hls.Events.MEDIA_ATTACHED, async function () {
@@ -342,12 +335,15 @@ async function onPlay(trackIndex = undefined, time = 0) {
             switch (data.type) {
               case Hls.ErrorTypes.MEDIA_ERROR:
                 console.log(
-                  "hls: fatal media error encountered, try to recover",
+                  "[Media Player] hls: fatal media error encountered, try to recover",
                 );
                 hls.recoverMediaError();
                 break;
               case Hls.ErrorTypes.NETWORK_ERROR:
-                console.error("hls: fatal network error encountered", data);
+                console.error(
+                  "[Media Player] hls: fatal network error encountered",
+                  data,
+                );
                 onError("NotSupportedError");
               default:
                 onError("NotSupportedError");
@@ -376,7 +372,6 @@ async function onPlay(trackIndex = undefined, time = 0) {
           );
         } else {
           // NATIVE
-          console.log("NATIVE");
           g_player.engine.muted = true;
           g_player.engineType = PlayerEngineType.NATIVE;
           await g_player.engine.play();
@@ -403,15 +398,16 @@ async function onPlay(trackIndex = undefined, time = 0) {
             return;
           }
           if (g_player.engineType === PlayerEngineType.FFMPEG) {
-            console.log("unsupported even with ffmpeg");
+            console.log("[Media Player] unsupported even with ffmpeg");
             onError(error);
             return;
           }
-          console.log("FFMPEG");
           setPlayerState(PlayerState.LOADING);
           g_player.engineType = PlayerEngineType.FFMPEG;
           g_player.engine.pause();
-          console.log("unsupported natively, try loading with ffmpeg");
+          // console.log(
+          //   "[Media Player] unsupported natively, will try loading with ffmpeg",
+          // );
           sendIpcToMain(
             "mp-ffmpeg-load-video",
             playlist.getTracks()[trackIndex].fileUrl,
@@ -494,8 +490,7 @@ function onEnded() {
 //////
 
 function onError(error) {
-  console.log("onError");
-  console.log(error);
+  console.log("[Media Player] " + error);
   if (error.toString().includes("NotSupportedError")) {
     sendIpcToMain("on-play-error", "NotSupportedError");
   } else {
@@ -869,13 +864,10 @@ function onButtonClicked(buttonName) {
   }
   //
   else if (buttonName === "repeat-off") {
-    console.log("repeat-off");
     g_settings.repeat = 1;
   } else if (buttonName === "repeat-1") {
-    console.log("repeat-1");
     g_settings.repeat = 2;
   } else if (buttonName === "repeat-all") {
-    console.log("repeat-all");
     g_settings.repeat = 0;
   }
   //
@@ -1106,241 +1098,6 @@ function updateLocalization(localization) {
     }
   }
 }
-
-///////////////////////////////////////////////////////////////////////////////
-// WILL DELETE ////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-
-// export function loadTrack(index, time) {
-//   clearPlayer();
-//   refreshUI();
-//   try {
-//     playlist.setCurrentTrackIndex(index);
-//     playlist.setSelectedTrackFileIndex(
-//       playlist.getTracks()[playlist.getCurrentTrackIndex()].fileIndex,
-//     );
-//     if (
-//       playlist
-//         .getTracks()
-//         [playlist.getCurrentTrackIndex()].fileUrl.startsWith("http") &&
-//       yt.getYouTubeVideoIdFromUrl(
-//         playlist.getTracks()[playlist.getCurrentTrackIndex()].fileUrl,
-//       )
-//     ) {
-//       g_player.isYoutube = true;
-//     } else {
-//       if (
-//         playlist
-//           .getTracks()
-//           [playlist.getCurrentTrackIndex()].fileUrl.endsWith(".m3u8") &&
-//         Hls.isSupported()
-//       ) {
-//         g_player.usingHsl = true;
-//         g_player.html.sliderTime.value = 0;
-//         g_player.engine.currentTime = 0;
-//       } else {
-//         g_player.usingHsl = false;
-//         if (g_player.engine.hls) {
-//           g_player.engine.hls.destroy();
-//         }
-//         g_player.engine.src =
-//           playlist.getTracks()[playlist.getCurrentTrackIndex()].fileUrl;
-//         g_player.html.sliderTime.value = time;
-//         g_player.engine.currentTime = time;
-//       }
-//       g_loadedTrackIndex = playlist.getCurrentTrackIndex();
-//     }
-//     return true;
-//   } catch (error) {
-//     g_loadedTrackIndex = -1;
-//     console.log(error);
-//     return false;
-//   }
-// }
-
-// export async function playTrack(index, time) {
-//   let useHsl = false;
-//   if (index >= 0) {
-//     useHsl =
-//       playlist.getTracks()[index].fileUrl.endsWith(".m3u8") &&
-//       Hls.isSupported();
-//   } else {
-//     useHsl =
-//       playlist
-//         .getTracks()
-//         [playlist.getCurrentTrackIndex()].fileUrl.endsWith(".m3u8") &&
-//       Hls.isSupported();
-//   }
-//   if (useHsl) {
-//     if (index === -1) {
-//       index = playlist.getCurrentTrackIndex();
-//     }
-//     if (g_player.engine.hls) {
-//       g_player.engine.hls.destroy();
-//       g_player.usingHsl = false;
-//     }
-//     g_player.engine.hls = new Hls();
-//     g_player.engine.hls.attachMedia(g_player.engine);
-//     g_player.engine.hls.on(Hls.Events.MEDIA_ATTACHED, function () {
-//       g_player.engine.hls.loadSource(playlist.getTracks()[index].fileUrl);
-//       if (!loadTrack(index, time)) return;
-//       g_player.engine.play();
-//       g_player.isPlaying = true;
-//       refreshUI();
-//       playlist.scrollToCurrent();
-//     });
-//     // ref: https://github.com/video-dev/hls.js/blob/master/docs/API.md#fatal-error-recovery
-//     g_player.engine.hls.on(Hls.Events.ERROR, function (event, data) {
-//       if (data.fatal) {
-//         switch (data.type) {
-//           case Hls.ErrorTypes.MEDIA_ERROR:
-//             console.log("hls: fatal media error encountered, try to recover");
-//             hls.recoverMediaError();
-//             break;
-//           case Hls.ErrorTypes.NETWORK_ERROR:
-//             console.error("hls: fatal network error encountered", data);
-//             sendIpcToMain("on-play-error", "NotSupportedError");
-//             clearPlayer();
-//             refreshUI();
-//             g_player.engine.hls.destroy();
-//             g_player.usingHsl = false;
-//             break;
-//           default:
-//             sendIpcToMain("on-play-error", "NotSupportedError");
-//             clearPlayer();
-//             refreshUI();
-//             g_player.engine.hls.destroy();
-//             g_player.usingHsl = false;
-//             break;
-//         }
-//       }
-//     });
-//   } else {
-//     const loadId = ++g_currentLoadId;
-//     const wasMuted = g_player.engine.muted;
-//     try {
-//       if (g_loadedTrackIndex > -1 && index === -1) {
-//         g_player.isPlaying = true;
-//         if (g_player.isYoutube) {
-//           if (yt.onPlay()) g_player.isPlaying = true;
-//           refreshUI();
-//           playlist.scrollToCurrent();
-//           return;
-//         }
-//         // await g_player.engine.play();
-//         // refreshUI();
-//         // playlist.scrollToCurrent();
-//         // TODO: check if already initialized, and just play pause?
-//         // load "normal" track
-//         g_player.engine.muted = true;
-//         await g_player.engine.play();
-//         await new Promise((r) => setTimeout(r, 250));
-//         if (loadId !== g_currentLoadId) return;
-//         if (
-//           g_player.engine.videoWidth === 0 &&
-//           g_player.engine.webkitVideoDecodedByteCount === 0
-//         ) {
-//           const isActuallyVideo = await isVideoMetadata(
-//             decodeURI(
-//               playlist.getTracks()[playlist.getCurrentTrackIndex()].fileUrl,
-//             ),
-//           );
-
-//           if (loadId !== g_currentLoadId) return;
-
-//           if (isActuallyVideo) {
-//             clearPlayer();
-//             throw new Error("NotSupportedError");
-//           }
-//         }
-//         g_player.engine.muted = wasMuted;
-//         g_player.isPlaying = true;
-//       } else {
-//         if (index === -1) index = playlist.getCurrentTrackIndex();
-//         yt.destroyPlayer();
-//         if (!loadTrack(index, time)) return;
-//         if (playlist.getTracks()[index].fileUrl.startsWith("http")) {
-//           const ytId = yt.getYouTubeVideoIdFromUrl(
-//             playlist.getTracks()[index].fileUrl,
-//           );
-//           if (ytId) {
-//             yt.createNewPlayer(
-//               ytId,
-//               g_player.engine.volume,
-//               refreshUI,
-//               playlist.updateCurrentFileTags,
-//             );
-//             clearPlayer();
-//             g_player.isPlaying = true;
-//             g_player.isYoutube = true;
-//             g_loadedTrackIndex = index;
-//             refreshUI();
-//             playlist.scrollToCurrent();
-//             return;
-//           }
-//         }
-//         // load "normal" track
-//         g_player.engine.muted = true;
-//         await g_player.engine.play();
-//         await new Promise((r) => setTimeout(r, 250));
-//         if (loadId !== g_currentLoadId) return;
-//         if (
-//           g_player.engine.videoWidth === 0 &&
-//           g_player.engine.webkitVideoDecodedByteCount === 0
-//         ) {
-//           const isActuallyVideo = await isVideoMetadata(
-//             decodeURI(
-//               playlist.getTracks()[playlist.getCurrentTrackIndex()].fileUrl,
-//             ),
-//           );
-
-//           if (loadId !== g_currentLoadId) return;
-
-//           if (isActuallyVideo) {
-//             clearPlayer();
-//             throw new Error("NotSupportedError");
-//           }
-//         }
-//         g_player.engine.muted = wasMuted;
-//         g_player.isPlaying = true;
-//       }
-//     } catch (error) {
-//       g_player.engine.muted = wasMuted;
-//       if (error.toString().includes("NotSupportedError")) {
-//         if (g_ffmpegAvailable) {
-//           if (loadId !== g_currentLoadId) {
-//             return;
-//           }
-//           if (g_player.usingFfmpeg) {
-//             console.log("unsupported even with ffmpeg");
-//             clearPlayer();
-//             refreshUI();
-//             sendIpcToMain("on-play-error", "NotSupportedError");
-//             return;
-//           }
-//           g_player.usingFfmpeg = true;
-//           g_player.isPlaying = true;
-//           console.log("unsupported natively, try loading with ffmpeg");
-//           sendIpcToMain(
-//             "mp-ffmpeg-load-video",
-//             playlist.getTracks()[playlist.getCurrentTrackIndex()].fileUrl,
-//           );
-//         } else {
-//           // normal native path
-//           clearPlayer();
-//           refreshUI();
-//           sendIpcToMain("on-play-error", "NotSupportedError");
-//         }
-//       } else {
-//         console.log(error);
-//       }
-//     }
-//   }
-//   refreshUI();
-//   playlist.scrollToCurrent();
-// }
-
-/////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
 // EVENT LISTENERS ////////////////////////////////////////////////////////////

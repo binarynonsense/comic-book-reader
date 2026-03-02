@@ -41,7 +41,6 @@ export function initOnIpcCallbacks(on) {
   });
 
   on("mp-ffmpeg-player-error", (error) => {
-    console.log(error);
     sendIpcToMain("on-play-error", "NotSupportedError");
   });
 }
@@ -74,7 +73,6 @@ function startStream(time) {
   g_videoTag.src = "";
   g_videoTag.load();
   const timestamp = g_ffmpegSeekOffset;
-  console.log("timestamp: " + timestamp);
   g_videoTag.src = `http://127.0.0.1:${g_activePort}/video?t=${timestamp}&cb=${Date.now()}`;
   g_videoTag.play().catch((e) => {
     if (e.name !== "AbortError") console.error("[ffmpeg] Play failed:", e);

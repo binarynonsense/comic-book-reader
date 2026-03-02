@@ -87,7 +87,9 @@ async function startVideoServer() {
       );
 
       g_ffmpegProcess.on("exit", (code, signal) => {
-        log.editor(`FFmpeg exited with code ${code} and signal ${signal}`);
+        log.editor(
+          `[ffmpeg] ffmpeg exited with code ${code} and signal ${signal}`,
+        );
       });
 
       g_ffmpegProcess.stdout.pipe(res);
@@ -149,7 +151,6 @@ exports.initOnIpcCallbacks = function (on, _sendIpcToRenderer) {
 
   on("mp-ffmpeg-close-video", () => {
     try {
-      log.editor("mp-ffmpeg-close-video");
       closeCurrentVideo();
     } catch (error) {}
   });
@@ -228,7 +229,7 @@ async function getMetadata(bin, file) {
 const { app } = require("electron");
 
 app.on("will-quit", () => {
-  log.debug("cleaning up ffmpeg");
+  log.debug("[ffmpeg] cleaning up");
   if (g_ffmpegProcess) {
     try {
       g_ffmpegProcess.kill("SIGKILL");
