@@ -1,8 +1,6 @@
 {
   "@metadata": {
-    "authors": [
-      "trzyglow"
-    ],
+    "authors": ["trzyglow"],
     "last-updated": "2026-02-21",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.17.0",
@@ -286,7 +284,7 @@
   "mp-tooltip-button-volume-off": "Lautstärke aus",
   "mp-tooltip-button-volume-on": "Lautstärke an",
   "mp-tooltip-button-playlist": "Playlist umschalten",
-  "mp-tooltip-button-close": "Verstecken",
+  "mp-menu-hide": "Verstecken",
   "mp-tooltip-button-shuffle-off": "Schalte shuffle Playlist aus",
   "mp-tooltip-button-shuffle-on": "Schalte shuffle Playlist an",
   "mp-tooltip-button-repeat-off": "Schalte wiederholende Playlist aus",
@@ -294,7 +292,7 @@
   "mp-tooltip-button-clear": "Entferne alle von der Playlist",
   "mp-tooltip-button-add": "Füge Dateien der Playlist hinzu",
   "mp-tooltip-button-delete": "Entferne ausgewählte von der Playlist",
-  "mp-tooltip-button-save": "Speicher Playlist als Datei",
+  "mp-tooltip-button-playlist-save": "Speicher Playlist als Datei",
   "home-screen": "Startbildschirm",
   "home-button-files-tools": "Dateienwerkzeuge",
   "home-button-art-tools": "Kunstwerkzeuge",

@@ -1,8 +1,6 @@
 {
   "@metadata": {
-    "authors": [
-      "ahmed-0011"
-    ],
+    "authors": ["ahmed-0011"],
     "last-updated": "2025-08-06",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.12.0",
@@ -286,7 +284,7 @@
   "mp-tooltip-button-volume-off": "إيقاف الصوت",
   "mp-tooltip-button-volume-on": "تشغيل الصوت",
   "mp-tooltip-button-playlist": "إظهار/إخفاء قائمة التشغيل",
-  "mp-tooltip-button-close": "إخفاء مشغل الصوت",
+  "mp-menu-hide": "إخفاء مشغل الصوت",
   "mp-tooltip-button-shuffle-off": "تعطيل الخلط لقائمة التشغيل",
   "mp-tooltip-button-shuffle-on": "تفعيل الخلط لقائمة التشغيل",
   "mp-tooltip-button-repeat-off": "تعطيل تكرار قائمة التشغيل",
@@ -294,7 +292,7 @@
   "mp-tooltip-button-clear": "إزالة الكل من قائمة التشغيل",
   "mp-tooltip-button-add": "إضافة ملفات إلى قائمة التشغيل",
   "mp-tooltip-button-delete": "إزالة المحددة من قائمة التشغيل",
-  "mp-tooltip-button-save": "حفظ قائمة التشغيل في ملف",
+  "mp-tooltip-button-playlist-save": "حفظ قائمة التشغيل في ملف",
   "home-screen": "الصفحة الرئيسية",
   "home-button-files-tools": "أدوات الملفات",
   "home-button-art-tools": "أدوات فنية",

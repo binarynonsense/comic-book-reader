@@ -1,8 +1,6 @@
 {
   "@metadata": {
-    "authors": [
-      "Álvaro"
-    ],
+    "authors": ["Álvaro"],
     "last-updated": "2026-02-20",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.17.0",
@@ -286,7 +284,7 @@
   "mp-tooltip-button-volume-off": "apagar volumen",
   "mp-tooltip-button-volume-on": "encender volumen",
   "mp-tooltip-button-playlist": "alternar lista de reproducción",
-  "mp-tooltip-button-close": "esconder",
+  "mp-menu-hide": "esconder",
   "mp-tooltip-button-shuffle-off": "desactivar reproducción aleatoria",
   "mp-tooltip-button-shuffle-on": "activar reproducción aleatoria",
   "mp-tooltip-button-repeat-off": "desactivar repetir",
@@ -294,7 +292,7 @@
   "mp-tooltip-button-clear": "borrar todos de la lista",
   "mp-tooltip-button-add": "añadir archivos a la lista",
   "mp-tooltip-button-delete": "borrar seleccionado de la lista",
-  "mp-tooltip-button-save": "guardar lista de reproducción en archivo",
+  "mp-tooltip-button-playlist-save": "guardar lista de reproducción en archivo",
   "home-screen": "Pantalla principal",
   "home-button-files-tools": "Herramientas de archivo",
   "home-button-art-tools": "Herramientas de arte",

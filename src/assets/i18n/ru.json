@@ -1,8 +1,6 @@
 {
   "@metadata": {
-    "authors": [
-      "vanja-san"
-    ],
+    "authors": ["vanja-san"],
     "last-updated": "2025-12-30",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.14.0",
@@ -286,7 +284,7 @@
   "mp-tooltip-button-volume-off": "Отключить звук",
   "mp-tooltip-button-volume-on": "Включить звук",
   "mp-tooltip-button-playlist": "Переключить плейлист",
-  "mp-tooltip-button-close": "Скрыть",
+  "mp-menu-hide": "Скрыть",
   "mp-tooltip-button-shuffle-off": "Отключить случайный порядок в плейлисте",
   "mp-tooltip-button-shuffle-on": "Включить случайный порядок в плейлисте",
   "mp-tooltip-button-repeat-off": "Отключить повтор плейлиста",
@@ -294,7 +292,7 @@
   "mp-tooltip-button-clear": "Очистить плейлист",
   "mp-tooltip-button-add": "Добавить файлы в плейлист",
   "mp-tooltip-button-delete": "Удалить выбранное из плейлиста",
-  "mp-tooltip-button-save": "Сохранить плейлист в файл",
+  "mp-tooltip-button-playlist-save": "Сохранить плейлист в файл",
   "home-screen": "Домашний экран",
   "home-button-files-tools": "Инструменты файлов",
   "home-button-art-tools": "Арт-инструменты",

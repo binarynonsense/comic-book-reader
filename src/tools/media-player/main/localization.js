@@ -47,23 +47,23 @@ exports.getLocalization = function () {
     },
     {
       id: "mp-button-shuffle-off",
-      text: _("mp-tooltip-button-shufflemode"),
+      text: _("mp-tooltip-button-playlist-shufflemode"),
     },
     {
       id: "mp-button-shuffle-on",
-      text: _("mp-tooltip-button-shufflemode"),
+      text: _("mp-tooltip-button-playlist-shufflemode"),
     },
     {
       id: "mp-button-repeat-off",
-      text: _("mp-tooltip-button-repeatmode"),
+      text: _("mp-tooltip-button-playlist-repeatmode"),
     },
     {
       id: "mp-button-repeat-1",
-      text: _("mp-tooltip-button-repeatmode"),
+      text: _("mp-tooltip-button-playlist-repeatmode"),
     },
     {
       id: "mp-button-repeat-all",
-      text: _("mp-tooltip-button-repeatmode"),
+      text: _("mp-tooltip-button-playlist-repeatmode"),
     },
 
     {
@@ -80,7 +80,7 @@ exports.getLocalization = function () {
     },
     {
       id: "mp-button-save",
-      text: _("mp-tooltip-button-save"),
+      text: _("mp-tooltip-button-playlist-save"),
     },
   ];
 };

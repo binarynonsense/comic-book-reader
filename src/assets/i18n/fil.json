@@ -1,8 +1,6 @@
 {
   "@metadata": {
-    "authors": [
-      "Andrew"
-    ],
+    "authors": ["Andrew"],
     "last-updated": "2026-02-10",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.16.0",
@@ -286,7 +284,7 @@
   "mp-tooltip-button-volume-off": "i-mute ang tunog",
   "mp-tooltip-button-volume-on": "i-on ang tunog",
   "mp-tooltip-button-playlist": "i-toggle ang playlist",
-  "mp-tooltip-button-close": "itago",
+  "mp-menu-hide": "itago",
   "mp-tooltip-button-shuffle-off": "i-off ang shuffle playlist",
   "mp-tooltip-button-shuffle-on": "i-on ang shuffle playlist",
   "mp-tooltip-button-repeat-off": "i-off ang repeat playlist",
@@ -294,7 +292,7 @@
   "mp-tooltip-button-clear": "alisin ang lahat mula sa playlist",
   "mp-tooltip-button-add": "idagdag ang mga file sa playlist",
   "mp-tooltip-button-delete": "alisin ang napili mula sa playlist",
-  "mp-tooltip-button-save": "i-save ang playlist sa file",
+  "mp-tooltip-button-playlist-save": "i-save ang playlist sa file",
   "home-screen": "Home Screen",
   "home-button-files-tools": "Mga Tool sa File",
   "home-button-art-tools": "Mga Tool sa Sining",
