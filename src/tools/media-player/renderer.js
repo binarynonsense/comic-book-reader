@@ -1081,19 +1081,20 @@ function onButtonClicked(buttonName) {
     // update current index / playing track if needed
     if (currentTrackFileIndex === playlist.getSelectedTrackFileIndex()) {
       // deleting the current one
+      onPause();
+      clearPlayer();
       if (playlist.getCurrentTrackIndex() < playlist.getTracks().length) {
         if (g_player.state === PlayerState.PLAYING) {
           onPlay(playlist.getCurrentTrackIndex(), 0);
         } else {
-          // loadTrack(playlist.getCurrentTrackIndex(), 0);
+          g_player.trackIndex = playlist.getCurrentTrackIndex();
         }
       } else {
         // the deleted one was the last
         onPause();
         playlist.setCurrentTrackIndex(playlist.getTracks().length - 1);
         if (playlist.getTracks().length > 0) {
-          // TODO
-          // loadTrack(playlist.getTracks().length - 1, 0);
+          g_player.trackIndex = playlist.getTracks().length - 1;
         }
       }
     } else {
