@@ -61,7 +61,7 @@ exports.show = function (type, params, data, sendIpcToRenderer) {
             label: _("mp-menu-videoarea"),
             type: "checkbox",
             checked: data.settings.showVideo,
-            enabled: data.settings.size !== 2,
+            enabled: !data.settings.fullView,
             click() {
               sendIpcToRenderer("on-context-menu", "toggle-video");
             },
@@ -70,7 +70,7 @@ exports.show = function (type, params, data, sendIpcToRenderer) {
             label: _("mp-menu-spectrum"),
             type: "checkbox",
             checked: data.settings.showSpectrum,
-            enabled: data.settings.size !== 2,
+            enabled: !data.settings.fullView,
             click() {
               sendIpcToRenderer("on-context-menu", "toggle-spectrum");
             },
@@ -79,7 +79,7 @@ exports.show = function (type, params, data, sendIpcToRenderer) {
             label: _("mp-menu-playlist"),
             type: "checkbox",
             checked: data.settings.showPlaylist,
-            enabled: data.settings.size !== 2,
+            enabled: !data.settings.fullView,
             click() {
               sendIpcToRenderer("on-context-menu", "toggle-playlist");
             },
