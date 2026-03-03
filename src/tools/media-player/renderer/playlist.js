@@ -68,6 +68,11 @@ export function setTracks(tracks) {
   g_tracks = tracks;
 }
 
+export function getTrack(index) {
+  if (index === undefined || index >= g_tracks.length) return undefined;
+  return g_tracks[index];
+}
+
 export function getCurrentTrackIndex() {
   return g_currentTrackIndex;
 }

@@ -713,6 +713,9 @@ function initUI() {
     onButtonClicked("close-spectrum");
   });
 
+  g_player.html.videoTitleDiv = document.getElementById("mp-video-title");
+  g_player.html.spectrumTitleDiv = document.getElementById("mp-spectrum-title");
+
   //////
 
   g_player.html.videoDiv = document.getElementById("mp-video-div");
@@ -741,12 +744,16 @@ function initUI() {
   function showTopBar() {
     g_player.html.topBar.style.opacity = "1";
     g_player.html.topBar.style.visibility = "visible";
+    g_player.html.videoTitleDiv.classList.remove("set-display-none");
+    g_player.html.spectrumTitleDiv.classList.remove("set-display-none");
   }
 
   function hideTopBar() {
     if (g_settings.fullView && !g_player.html.isHoveringTopBar) {
       g_player.html.topBar.style.opacity = "0";
       g_player.html.topBar.style.visibility = "hidden";
+      g_player.html.videoTitleDiv.classList.add("set-display-none");
+      g_player.html.spectrumTitleDiv.classList.add("set-display-none");
     }
   }
 
@@ -919,6 +926,24 @@ function onSliderVolumeChanged(slider) {
 }
 
 function refreshUI() {
+  let trackTitle;
+  const track = playlist.getTrack(g_player.trackIndex);
+  if (
+    track !== undefined &&
+    playlist.getPlaylist().files.length > track.fileIndex
+  ) {
+    const file = playlist.getPlaylist().files[track.fileIndex];
+    let fullName;
+    if (file.title && file.artist) {
+      fullName = `${file.title} - ${file.artist}`;
+    } else if (file.title) {
+      fullName = `${file.title}`;
+    }
+    trackTitle = fullName ?? file.url;
+  }
+  g_player.html.videoTitleDiv.innerText = trackTitle ?? "";
+  g_player.html.spectrumTitleDiv.innerText = trackTitle ?? "";
+
   if (g_settings.fullView) {
     g_player.html.playerDiv.classList.add("mp-layout-fullscreen");
     document.documentElement.style.setProperty("--mp-frame-width", `500px`);
@@ -934,21 +959,22 @@ function refreshUI() {
   }
 
   if (
-    g_settings.fullView ||
-    (g_settings.showVideo && g_player.mediaType === PlayerMediaType.VIDEO)
-  ) {
-    g_player.html.videoDiv.classList.remove("set-display-none");
-  } else {
-    g_player.html.videoDiv.classList.add("set-display-none");
-  }
-
-  if (
     (g_settings.fullView || g_settings.showSpectrum) &&
     g_player.mediaType === PlayerMediaType.AUDIO
   ) {
     g_player.html.spectrumDiv.classList.remove("set-display-none");
   } else {
     g_player.html.spectrumDiv.classList.add("set-display-none");
+  }
+
+  if (
+    (g_settings.fullView &&
+      g_player.html.spectrumDiv.classList.contains("set-display-none")) ||
+    (g_settings.showVideo && g_player.mediaType === PlayerMediaType.VIDEO)
+  ) {
+    g_player.html.videoDiv.classList.remove("set-display-none");
+  } else {
+    g_player.html.videoDiv.classList.add("set-display-none");
   }
 
   if (playlist.getTracks().length > 0) {
