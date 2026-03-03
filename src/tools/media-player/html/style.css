@@ -42,6 +42,9 @@
 }
 #media-player-container.mp-layout-fullscreen .mp-widget-title-div {
   opacity: 1;
+  top: 3cqh;
+  left: 3cqh;
+  font-size: 3.5cqh;
 }
 /* #media-player-container:not(.mp-layout-fullscreen) #mp-video-div {
 } */
@@ -183,10 +186,6 @@ a:hover a:visited {
   color: rgb(197, 197, 197);
   font-size: 18px;
   opacity: 0;
-  /* transition: opacity 0.2s ease-in-out; */
-  /* text-shadow:
-    0px 0px 5px rgba(0, 0, 0, 0.8),
-    0px 0px 10px rgba(0, 0, 0, 0.5); */
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
 }
 #mp-video-div:hover .mp-widget-close-button {
@@ -214,17 +213,19 @@ a:hover a:visited {
 
 .mp-widget-title-div {
   position: absolute;
-  top: 5px;
+  top: 8px;
   left: 8px;
   background: transparent;
   border: none;
   pointer-events: none;
+
   color: rgb(224, 224, 224);
-  /* font-size: 13px; */
-  font-size: 5cqh;
-  opacity: 0;
+  font-size: 10px;
   /* transition: opacity 0.2s ease-in-out; */
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+  font-weight: bold;
+  font-family: monospace;
+  /* text-transform: uppercase; */
 
   white-space: nowrap;
   overflow: hidden;
@@ -232,6 +233,8 @@ a:hover a:visited {
   text-align: left;
   width: 80%;
   padding: 5px;
+
+  opacity: 0;
 }
 #mp-video-div:hover #mp-video-title {
   opacity: 1;

@@ -940,6 +940,12 @@ function refreshUI() {
       fullName = `${file.title}`;
     }
     trackTitle = fullName ?? file.url;
+    if (
+      !trackTitle.startsWith("http://") &&
+      !trackTitle.startsWith("https://")
+    ) {
+      trackTitle = trackTitle.split(/[\\/]/).pop();
+    }
   }
   g_player.html.videoTitleDiv.innerText = trackTitle ?? "";
   g_player.html.spectrumTitleDiv.innerText = trackTitle ?? "";
