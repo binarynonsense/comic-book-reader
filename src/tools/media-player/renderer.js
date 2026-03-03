@@ -693,6 +693,24 @@ function initUI() {
   g_player.html.buttonSave.addEventListener("click", function () {
     onButtonClicked("save-playlist");
   });
+  g_player.html.buttonClosePlaylist = document.getElementById(
+    "mp-button-close-playlist",
+  );
+  g_player.html.buttonClosePlaylist.addEventListener("click", function () {
+    onButtonClicked("close-playlist");
+  });
+  g_player.html.buttonCloseVideoArea = document.getElementById(
+    "mp-video-close-button",
+  );
+  g_player.html.buttonCloseVideoArea.addEventListener("click", function () {
+    onButtonClicked("close-videoarea");
+  });
+  g_player.html.buttonCloseSpectrum = document.getElementById(
+    "mp-spectrum-close-button",
+  );
+  g_player.html.buttonCloseSpectrum.addEventListener("click", function () {
+    onButtonClicked("close-spectrum");
+  });
 
   //////
 
@@ -1069,9 +1087,6 @@ function onButtonClicked(buttonName) {
       getContextMenuData(),
     );
   }
-  // else if (buttonName === "playlist") {
-  //   onTogglePlaylist();
-  // }
   // else if (buttonName === "close") {
   //   sendIpcToMain("close");
   // }
@@ -1157,6 +1172,12 @@ function onButtonClicked(buttonName) {
   } else if (buttonName === "save-playlist") {
     if (playlist.getPlaylist().files.length > 0)
       sendIpcToMain("save-playlist", playlist.getPlaylist());
+  } else if (buttonName === "close-playlist") {
+    showPlaylist(false);
+  } else if (buttonName === "close-videoarea") {
+    g_settings.showVideo = false;
+  } else if (buttonName === "close-spectrum") {
+    g_settings.showSpectrum = false;
   }
   //////
   refreshUI();
@@ -1270,7 +1291,7 @@ function initOnIpcCallbacks() {
         break;
 
       case "toggle-playlist":
-        onTogglePlaylist();
+        showPlaylist(!g_settings.showPlaylist);
         break;
 
       case "toggle-video":
@@ -1343,8 +1364,9 @@ function initOnIpcCallbacks() {
   });
 }
 
-function onTogglePlaylist() {
-  if (g_player.html.divPlaylist.classList.contains("mp-hidden")) {
+function showPlaylist(show) {
+  g_settings.showPlaylist = show;
+  if (show) {
     g_player.html.divPlaylist.classList.remove("mp-hidden");
     g_settings.showPlaylist = true;
   } else {

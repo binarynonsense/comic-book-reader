@@ -18,7 +18,7 @@
   width: 500px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 3;
+  z-index: 10;
   padding: 20px;
 }
 #media-player-container.mp-layout-fullscreen #mp-div-playlist {
@@ -28,11 +28,17 @@
   height: calc(100% - var(--menubar-height));
   border-radius: 0 !important;
 }
+#media-player-container.mp-layout-fullscreen #mp-video-close-button {
+  display: none;
+}
 #media-player-container.mp-layout-fullscreen #mp-spectrum-div {
   border-radius: 0 !important;
   height: calc(100% - var(--menubar-height));
   border-radius: 0 !important;
   position: fixed;
+}
+#media-player-container.mp-layout-fullscreen #mp-spectrum-close-button {
+  display: none;
 }
 
 .mp-zindex-reader {
@@ -63,6 +69,7 @@
 }
 
 .mp-frame {
+  position: relative;
   border: 0;
   user-select: none;
   font-size: 15px;
@@ -160,6 +167,41 @@ a:hover a:visited {
 
 /* -------------------------------------------------- */
 
+.mp-widget-close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 8;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: rgb(197, 197, 197);
+  font-size: 18px;
+  opacity: 0;
+  /* transition: opacity 0.2s ease-in-out; */
+  text-shadow:
+    0px 0px 5px rgba(0, 0, 0, 0.8),
+    0px 0px 10px rgba(0, 0, 0, 0.5);
+}
+#mp-video-div:hover .mp-widget-close-button {
+  opacity: 1;
+}
+#mp-spectrum-div:hover .mp-widget-close-button {
+  opacity: 1;
+}
+.mp-widget-close-button:focus {
+  outline: none;
+}
+.mp-widget-close-button:hover {
+  transform: scale(1.1);
+  filter: brightness(1.1);
+}
+.mp-widget-close-button:active {
+  transform: scale(0.9);
+}
+
+/* -------------------------------------------------- */
+
 .mp-button {
   margin-right: 3px;
   margin-left: 3px;
@@ -173,11 +215,11 @@ a:hover a:visited {
 }
 
 .mp-button:hover i,
-.mp-button:hover .repeat-number {
+.mp-button:hover .mp-repeat-number {
   color: var(--mediaplayer-button-hover-color) !important;
 }
 
-.mp-button:hover .repeat-number {
+.mp-button:hover .mp-repeat-number {
   margin-top: 1px;
 }
 
@@ -219,18 +261,22 @@ a:hover a:visited {
   line-height: inherit;
 }
 
-.mp-button-stacked .repeat-number {
+.mp-button-stacked .mp-repeat-number {
   font-size: 0.5em;
-  font-family: sans-serif;
+  font-family: serif;
   font-weight: 900;
   display: flex;
   justify-content: center;
   align-items: center;
   pointer-events: none;
-  margin-top: -1px;
+  margin-top: -2px;
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.mp-button-smaller {
+  transform: scale(0.9);
 }
 
 /* -------------------------------------------------- */
@@ -325,7 +371,7 @@ a:hover a:visited {
   flex-grow: 0;
   /* width: 30px; */
   /* trick: multiply by a huge number so clamp gives one or the other */
-  width: clamp(30px, calc((var(--mp-frame-width) - 300px) * 9999), 100px);
+  width: clamp(30px, calc((var(--mp-frame-width) - 300px) * 9999), 80px);
 }
 
 #mp-slider-volume {
@@ -474,25 +520,18 @@ a:hover a:visited {
   float: right;
   display: inline-flex;
   margin-top: 3px;
-  margin-right: 5px;
+  /* margin-right: 5px; */
   align-items: center;
   justify-content: center;
 }
 
 #mp-span-playlist-buttons-left {
   float: left;
-  display: inline;
+  display: inline-flex;
   margin-top: 3px;
-  margin-left: 5px;
-}
-
-#mp-button-shuffle-on,
-#mp-button-shuffle-off {
-  margin-right: 8px;
-}
-
-#mp-button-save {
-  margin-left: 7px;
+  /* margin-left: 5px; */
+  justify-content: center;
+  gap: 2px;
 }
 
 /* ***************************************** */
@@ -530,7 +569,7 @@ a:hover a:visited {
   height: 100%;
   display: block;
   position: relative;
-  z-index: 5;
+  z-index: 3;
   background: transparent;
 }
 
@@ -541,7 +580,7 @@ a:hover a:visited {
   width: 100%;
   height: 100%;
   pointer-events: none;
-  z-index: 10;
+  z-index: 4;
   background: linear-gradient(
     to bottom,
     transparent 4px,

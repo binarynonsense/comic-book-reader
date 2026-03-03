@@ -56,12 +56,18 @@
 </div>
 <!-- ---------------  VIDEO PLAYERS---------------  -->
 <div id="mp-video-div" class="mp-frame">
+  <button id="mp-video-close-button" class="mp-widget-close-button">
+    <i class="fas fa-times"></i>
+  </button>
   <div id="mp-html-video-loading-div" class="set-display-none">
     <div class="mp-html-video-loading-spinner"></div>
   </div>
   <video id="mp-html-video"></video>
 </div>
 <div id="mp-spectrum-div" class="mp-frame">
+  <button id="mp-spectrum-close-button" class="mp-widget-close-button">
+    <i class="fas fa-times"></i>
+  </button>
   <canvas id="mp-spectrum-canvas" width="400" height="100"></canvas>
   <div class="mp-spectrum-grid"></div>
 </div>
@@ -69,24 +75,12 @@
 <div id="mp-div-playlist" class="mp-frame">
   <div id="mp-div-playlist-tracks"></div>
   <div id="mp-span-playlist-buttons-right">
-    <a id="mp-button-shuffle-off" class="fa-stack mp-button mp-button-stacked">
-      <i class="fa fa-random fa-stack-1x" style="opacity: 0.3"></i>
-      <i class="fa-solid fa-slash fa-stack-1x"></i>
-    </a>
-    <a id="mp-button-shuffle-on" class="mp-button">
-      <i class="fa fa-random"></i>
-    </a>
-    <a id="mp-button-repeat-off" class="fa-stack mp-button mp-button-stacked">
-      <i class="fa-solid fa-repeat fa-stack-1x" style="opacity: 0.3"></i>
-      <i class="fa-solid fa-slash fa-stack-1x"></i>
-    </a>
-    <a id="mp-button-repeat-1" class="mp-button mp-button-stacked fa-stack">
-      <i class="fa-solid fa-repeat fa-stack-1x"></i>
-      <strong class="fa-stack-1x repeat-number">1</strong>
-    </a>
-    <a id="mp-button-repeat-all" class="mp-button">
-      <i class="fa-solid fa-repeat"></i>
-    </a>
+    <a
+      id="mp-button-close-playlist"
+      class="mp-button mp-button-smaller"
+      title=""
+      ><i class="fa-solid fa-circle-xmark"></i
+    ></a>
   </div>
   <div id="mp-span-playlist-buttons-left">
     <a id="mp-button-clear" class="mp-button" title=""
@@ -102,5 +96,33 @@
     <a id="mp-button-save" class="mp-button" title=""
       ><i class="fas fa-save"></i
     ></a>
+    <div class="mp-separator"></div>
+    <a
+      id="mp-button-shuffle-off"
+      class="fa-stack mp-button mp-button-stacked mp-button-smaller"
+    >
+      <i class="fa fa-random fa-stack-1x" style="opacity: 0.3"></i>
+      <i class="fa-solid fa-slash fa-stack-1x"></i>
+    </a>
+    <a id="mp-button-shuffle-on" class="mp-button mp-button-smaller">
+      <i class="fa fa-random"></i>
+    </a>
+    <a
+      id="mp-button-repeat-off"
+      class="fa-stack mp-button mp-button-stacked mp-button-smaller"
+    >
+      <i class="fa-solid fa-repeat fa-stack-1x" style="opacity: 0.3"></i>
+      <i class="fa-solid fa-slash fa-stack-1x"></i>
+    </a>
+    <a
+      id="mp-button-repeat-1"
+      class="mp-button mp-button-stacked fa-stack mp-button-smaller"
+    >
+      <i class="fa-solid fa-repeat fa-stack-1x"></i>
+      <strong class="fa-stack-1x mp-repeat-number">1</strong>
+    </a>
+    <a id="mp-button-repeat-all" class="mp-button mp-button-smaller">
+      <i class="fa-solid fa-repeat"></i>
+    </a>
   </div>
 </div>

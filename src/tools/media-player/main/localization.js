@@ -37,10 +37,18 @@ exports.getLocalization = function () {
       id: "mp-button-volume-on",
       text: _("mp-tooltip-button-volume-on"),
     },
-    // {
-    //   id: "mp-button-playlist",
-    //   text: _("mp-tooltip-button-playlist"),
-    // },
+    {
+      id: "mp-button-close-playlist",
+      text: _("mp-tooltip-button-playlist-hide"),
+    },
+    {
+      id: "mp-video-close-button",
+      text: _("mp-tooltip-button-videoarea-hide"),
+    },
+    {
+      id: "mp-spectrum-close-button",
+      text: _("mp-tooltip-button-spectrum-hide"),
+    },
     {
       id: "mp-button-settings",
       text: _("tool-shared-tab-settings"),
