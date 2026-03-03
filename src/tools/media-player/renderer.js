@@ -134,8 +134,7 @@ function initPlayer() {
 
   g_player.engine.addEventListener("loadeddata", function () {
     if (playlist.getTracks().length <= 0) return;
-    let fileIndex =
-      playlist.getTracks()[playlist.getCurrentTrackIndex()].fileIndex;
+    let fileIndex = playlist.getCurrentTrackFileIndex();
     if (
       !playlist.getPlaylist().files[fileIndex].duration ||
       playlist.getPlaylist().files[fileIndex].duration == -1
@@ -217,8 +216,7 @@ let g_configUpdateTimeout;
 function sendConfigUpdateTimeout() {
   g_settings.volume = g_player.engine.volume;
   if (playlist.getTracks().length > 0)
-    g_settings.currentFileIndex =
-      playlist.getTracks()[playlist.getCurrentTrackIndex()].fileIndex;
+    g_settings.currentFileIndex = playlist.getCurrentTrackFileIndex();
   else g_settings.currentFileIndex = undefined;
 
   g_settings.currentTime = parseInt(g_player.html.sliderTime.value);
@@ -523,7 +521,7 @@ export function onContextMenu(params) {
   if (getOpenModal()) {
     return;
   }
-  sendIpcToMain("show-context-menu", params, g_settings, getButtonStates());
+  sendIpcToMain("show-context-menu", params, getContextMenuData());
 }
 
 function showSpectrumVisualizer(show) {
@@ -1068,8 +1066,7 @@ function onButtonClicked(buttonName) {
       "show-button-menu",
       "settings",
       g_player.html.buttonSettings.getBoundingClientRect(),
-      g_settings,
-      getButtonStates(),
+      getContextMenuData(),
     );
   }
   // else if (buttonName === "playlist") {
@@ -1109,8 +1106,7 @@ function onButtonClicked(buttonName) {
       playlist.getSelectedTrackFileIndex() === undefined
     )
       return;
-    let currentTrackFileIndex =
-      playlist.getTracks()[playlist.getCurrentTrackIndex()].fileIndex;
+    let currentTrackFileIndex = playlist.getCurrentTrackFileIndex();
     // delete
     playlist
       .getPlaylist()
@@ -1153,9 +1149,7 @@ function onButtonClicked(buttonName) {
       }
     }
     if (playlist.getTracks().length > 0) {
-      playlist.setSelectedTrackFileIndex(
-        playlist.getTracks()[playlist.getCurrentTrackIndex()].fileIndex,
-      );
+      playlist.setSelectedTrackFileIndex(playlist.getCurrentTrackFileIndex());
     } else {
       playlist.setSelectedTrackFileIndex(undefined);
     }
@@ -1166,6 +1160,15 @@ function onButtonClicked(buttonName) {
   }
   //////
   refreshUI();
+}
+
+function getContextMenuData() {
+  return {
+    settings: g_settings,
+    buttonStates: getButtonStates(),
+    playlist: playlist.getPlaylist(),
+    currentFileIndex: playlist.getCurrentTrackFileIndex(),
+  };
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1262,6 +1265,10 @@ function initOnIpcCallbacks() {
 
   on("on-context-menu", (...args) => {
     switch (args[0]) {
+      case "play-track":
+        onPlaylistTrackDoubleClicked(args[1]);
+        break;
+
       case "toggle-playlist":
         onTogglePlaylist();
         break;

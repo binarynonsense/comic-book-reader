@@ -177,22 +177,15 @@ function initOnIpcCallbacks() {
     }
   });
 
-  on("show-context-menu", (params, settings, buttonStates) => {
-    contextMenu.show(
-      "normal",
-      params,
-      settings,
-      buttonStates,
-      sendIpcToRenderer,
-    );
+  on("show-context-menu", (params, data) => {
+    contextMenu.show("normal", params, data, sendIpcToRenderer);
   });
 
-  on("show-button-menu", (type, rect, settings, buttonStates) => {
+  on("show-button-menu", (type, rect, data) => {
     contextMenu.show(
       type,
       { x: rect.top, y: rect.left },
-      settings,
-      buttonStates,
+      data,
       sendIpcToRenderer,
     );
   });

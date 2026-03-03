@@ -75,6 +75,14 @@ export function setCurrentTrackIndex(currentTrackIndex) {
   g_currentTrackIndex = currentTrackIndex;
 }
 
+export function getCurrentTrackFileIndex() {
+  try {
+    return g_tracks[g_currentTrackIndex].fileIndex;
+  } catch (error) {
+    return undefined;
+  }
+}
+
 export function getSelectedTrackFileIndex() {
   return g_selectedTrackFileIndex;
 }

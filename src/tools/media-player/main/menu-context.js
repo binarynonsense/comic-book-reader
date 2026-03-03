@@ -10,13 +10,7 @@ const core = require("../../../core/main");
 const { _ } = require("../../../shared/main/i18n");
 const log = require("../../../shared/main/logger");
 
-exports.show = function (
-  type,
-  params,
-  settings,
-  buttonStates,
-  sendIpcToRenderer,
-) {
+exports.show = function (type, params, data, sendIpcToRenderer) {
   // ref: https://github.com/electron/electron/blob/main/docs/api/web-contents.md#event-context-menu
   // core.onMenuToggleFullScreen();
 
@@ -52,7 +46,7 @@ exports.show = function (
     },
   ];
 
-  function getCommonEntries(settings, player) {
+  function getCommonEntries(data) {
     return [
       {
         label: _("tool-shared-ui-open"),
@@ -61,13 +55,13 @@ exports.show = function (
       {
         label: _("menu-view"),
         submenu: [
-          ...getSizeSubmenu(settings),
+          ...getSizeSubmenu(data),
           { type: "separator" },
           {
             label: _("mp-menu-videoarea"),
             type: "checkbox",
-            checked: settings.showVideo,
-            enabled: settings.size !== 2,
+            checked: data.settings.showVideo,
+            enabled: data.settings.size !== 2,
             click() {
               sendIpcToRenderer("on-context-menu", "toggle-video");
             },
@@ -75,8 +69,8 @@ exports.show = function (
           {
             label: _("mp-menu-spectrum"),
             type: "checkbox",
-            checked: settings.showSpectrum,
-            enabled: settings.size !== 2,
+            checked: data.settings.showSpectrum,
+            enabled: data.settings.size !== 2,
             click() {
               sendIpcToRenderer("on-context-menu", "toggle-spectrum");
             },
@@ -84,8 +78,8 @@ exports.show = function (
           {
             label: _("mp-menu-playlist"),
             type: "checkbox",
-            checked: settings.showPlaylist,
-            enabled: settings.size !== 2,
+            checked: data.settings.showPlaylist,
+            enabled: data.settings.size !== 2,
             click() {
               sendIpcToRenderer("on-context-menu", "toggle-playlist");
             },
@@ -94,39 +88,39 @@ exports.show = function (
           {
             label: _("mp-menu-fullview"),
             type: "checkbox",
-            checked: settings.fullView,
+            checked: data.settings.fullView,
             click() {
               sendIpcToRenderer("on-context-menu", "toggle-fullview");
             },
           },
         ],
       },
-      ...getPlaylistSubmenu(settings),
+      ...getPlaylistSubmenu(data),
       { type: "separator" },
       {
         label: _("mp-tooltip-button-play"),
-        enabled: buttonStates.play,
+        enabled: data.buttonStates.play,
         click() {
           sendIpcToRenderer("on-context-menu", "play");
         },
       },
       {
         label: _("mp-tooltip-button-pause"),
-        enabled: buttonStates.pause,
+        enabled: data.buttonStates.pause,
         click() {
           sendIpcToRenderer("on-context-menu", "pause");
         },
       },
       {
         label: _("mp-tooltip-button-next"),
-        enabled: buttonStates.next,
+        enabled: data.buttonStates.next,
         click() {
           sendIpcToRenderer("on-context-menu", "next");
         },
       },
       {
         label: _("mp-tooltip-button-prev"),
-        enabled: buttonStates.prev,
+        enabled: data.buttonStates.prev,
         click() {
           sendIpcToRenderer("on-context-menu", "prev");
         },
@@ -141,16 +135,16 @@ exports.show = function (
     ];
   }
 
-  function getSizeSubmenu(settings) {
+  function getSizeSubmenu(data) {
     return [
       {
         label: _("mp-menu-miniplayer"),
-        enabled: !settings.fullView,
+        enabled: !data.settings.fullView,
         submenu: [
           {
             label: _("mp-menu-size-small"),
             type: "radio",
-            checked: settings.size === 0,
+            checked: data.settings.size === 0,
             click() {
               sendIpcToRenderer("on-context-menu", "set-size", 0);
             },
@@ -158,7 +152,7 @@ exports.show = function (
           {
             label: _("mp-menu-size-medium"),
             type: "radio",
-            checked: settings.size === 1,
+            checked: data.settings.size === 1,
             click() {
               sendIpcToRenderer("on-context-menu", "set-size", 1);
             },
@@ -168,51 +162,65 @@ exports.show = function (
     ];
   }
 
-  function getPlaylistSubmenu(settings) {
-    return [
-      {
-        label: _("mp-menu-playlist"),
-        submenu: [
-          {
-            label: _("mp-menu-playlist-repeattracks"),
-            submenu: [
-              {
-                label: _("mp-menu-playlist-repeattracks-off"),
-                type: "radio",
-                checked: settings.repeat === 0,
-                click() {
-                  sendIpcToRenderer("on-context-menu", "set-repeat", 0);
-                },
-              },
-              {
-                label: _("mp-menu-playlist-repeattracks-one"),
-                type: "radio",
-                checked: settings.repeat === 1,
-                click() {
-                  sendIpcToRenderer("on-context-menu", "set-repeat", 1);
-                },
-              },
-              {
-                label: _("mp-menu-playlist-repeattracks-all"),
-                type: "radio",
-                checked: settings.repeat === 2,
-                click() {
-                  sendIpcToRenderer("on-context-menu", "set-repeat", 2);
-                },
-              },
-            ],
-          },
-          {
-            label: _("mp-menu-playlist-shuffletracks"),
-            type: "checkbox",
-            checked: settings.shuffle === 1,
-            click() {
-              sendIpcToRenderer("on-context-menu", "toggle-shuffle");
+  function getPlaylistSubmenu(data) {
+    try {
+      return [
+        {
+          label: _("mp-menu-playlist"),
+          submenu: [
+            {
+              label: _("mp-menu-playlist-tracks"),
+              submenu: data.playlist.files.map((file, index) => ({
+                label: `${index === data.currentFileIndex ? `[${index + 1}]` : index + 1} - ${file.title ?? file.url}`,
+                click: () =>
+                  sendIpcToRenderer("on-context-menu", "play-track", index),
+              })),
             },
-          },
-        ],
-      },
-    ];
+            { type: "separator" },
+            {
+              label: _("mp-menu-playlist-repeattracks"),
+              submenu: [
+                {
+                  label: _("mp-menu-playlist-repeattracks-off"),
+                  type: "radio",
+                  checked: data.settings.repeat === 0,
+                  click() {
+                    sendIpcToRenderer("on-context-menu", "set-repeat", 0);
+                  },
+                },
+                {
+                  label: _("mp-menu-playlist-repeattracks-one"),
+                  type: "radio",
+                  checked: data.settings.repeat === 1,
+                  click() {
+                    sendIpcToRenderer("on-context-menu", "set-repeat", 1);
+                  },
+                },
+                {
+                  label: _("mp-menu-playlist-repeattracks-all"),
+                  type: "radio",
+                  checked: data.settings.repeat === 2,
+                  click() {
+                    sendIpcToRenderer("on-context-menu", "set-repeat", 2);
+                  },
+                },
+              ],
+            },
+            {
+              label: _("mp-menu-playlist-shuffletracks"),
+              type: "checkbox",
+              checked: data.settings.shuffle === 1,
+              click() {
+                sendIpcToRenderer("on-context-menu", "toggle-shuffle");
+              },
+            },
+          ],
+        },
+      ];
+    } catch (error) {
+      log.error(error);
+      return "";
+    }
   }
 
   ////////////////////////////////////////////////////////////////////////////
@@ -220,12 +228,13 @@ exports.show = function (
 
   switch (type) {
     case "normal":
-    case "settings":
+    case "data.settings":
     default:
-      Menu.buildFromTemplate([
-        ...header,
-        ...getCommonEntries(settings, buttonStates),
-      ]).popup(core.getMainWindow(), params.x, params.y);
+      Menu.buildFromTemplate([...header, ...getCommonEntries(data)]).popup(
+        core.getMainWindow(),
+        params.x,
+        params.y,
+      );
       break;
 
     case "open":
