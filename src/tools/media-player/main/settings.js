@@ -46,6 +46,7 @@ function setDefaultValues() {
     currentTime: 0,
     currentDuration: undefined,
     size: 0,
+    fullView: false,
     showPlaylist: true,
     showVideo: true,
     showSpectrum: true,
@@ -82,17 +83,13 @@ function sanitize() {
   if (
     !Number.isInteger(g_settings.size) ||
     g_settings.repeat < 0 ||
-    g_settings.repeat > 2
+    g_settings.repeat > 1
   ) {
     g_settings.repeat = 0;
   }
-  // if (
-  //   !Number.isInteger(g_settings.showVideo) ||
-  //   g_settings.showVideo < 0 ||
-  //   g_settings.showVideo > 2
-  // ) {
-  //   g_settings.showVideo = 0;
-  // }
+  if (typeof g_settings.fullView !== "boolean") {
+    g_settings.fullView = false;
+  }
   if (typeof g_settings.showPlaylist !== "boolean") {
     g_settings.showPlaylist = true;
   }

@@ -300,10 +300,11 @@
   "mp-tooltip-button-playlist-save": "Save Playlist to File",
 
   "mp-menu-TEMPPPP2": "DEV NOTE: This entries are a work in progress",
-  "mp-menu-size": "Size",
+  "mp-menu-miniplayer": "Mini Player",
   "mp-menu-size-small": "Small",
   "mp-menu-size-medium": "Medium",
   "mp-menu-size-big": "Big",
+  "mp-menu-fullview": "Full View",
   "mp-menu-video": "Video",
   "mp-menu-audio": "Audio",
   "mp-menu-videoarea": "Video Area",

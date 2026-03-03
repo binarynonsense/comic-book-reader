@@ -727,7 +727,7 @@ function initUI() {
   }
 
   function hideTopBar() {
-    if (g_settings.size === 2 && !g_player.html.isHoveringTopBar) {
+    if (g_settings.fullView && !g_player.html.isHoveringTopBar) {
       g_player.html.topBar.style.opacity = "0";
       g_player.html.topBar.style.visibility = "hidden";
     }
@@ -736,7 +736,7 @@ function initUI() {
   g_player.html.playerDiv.addEventListener("mousemove", () => {
     showTopBar();
     clearTimeout(g_player.html.topBarShowTimeOut);
-    if (g_settings.size === 2 && !g_player.html.isHoveringTopBar) {
+    if (g_settings.fullView && !g_player.html.isHoveringTopBar) {
       g_player.html.topBarShowTimeOut = setTimeout(hideTopBar, 3000);
     }
   });
@@ -749,7 +749,7 @@ function initUI() {
 
   g_player.html.topBar.addEventListener("mouseleave", () => {
     g_player.html.isHoveringTopBar = false;
-    if (g_settings.size === 2) {
+    if (g_settings.fullView) {
       clearTimeout(g_player.html.topBarShowTimeOut);
       g_player.html.topBarShowTimeOut = setTimeout(hideTopBar, 5000);
     }
@@ -902,7 +902,7 @@ function onSliderVolumeChanged(slider) {
 }
 
 function refreshUI() {
-  if (g_settings.size === 2) {
+  if (g_settings.fullView) {
     g_player.html.playerDiv.classList.add("mp-layout-fullscreen");
     document.documentElement.style.setProperty("--mp-frame-width", `100%`);
   } else {
@@ -917,7 +917,7 @@ function refreshUI() {
   }
 
   if (
-    g_settings.size === 2 ||
+    g_settings.fullView ||
     (g_settings.showVideo && g_player.mediaType === PlayerMediaType.VIDEO)
   ) {
     g_player.html.videoDiv.classList.remove("set-display-none");
@@ -926,7 +926,7 @@ function refreshUI() {
   }
 
   if (
-    (g_settings.size === 2 || g_settings.showSpectrum) &&
+    (g_settings.fullView || g_settings.showSpectrum) &&
     g_player.mediaType === PlayerMediaType.AUDIO
   ) {
     g_player.html.spectrumDiv.classList.remove("set-display-none");
@@ -1293,6 +1293,11 @@ function initOnIpcCallbacks() {
         refreshUI();
         break;
 
+      case "toggle-fullview":
+        g_settings.fullView = !g_settings.fullView;
+        refreshUI();
+        break;
+
       case "set-repeat":
         onSetRepeatMode(args[1]);
         refreshUI();
@@ -1392,7 +1397,14 @@ export function onInputEvent(type, event) {
       break;
     case "acbr-doubleclick":
       {
-        console.log("acbr-doubleclick");
+        if (
+          event.target.closest("#mp-video-div") ||
+          event.target.closest("#mp-spectrum-div")
+        ) {
+          g_settings.fullView = !g_settings.fullView;
+          refreshUI();
+          return;
+        }
       }
       break;
     default:
@@ -1417,7 +1429,7 @@ function onMouseMove() {
     document.querySelector("#mp-spectrum-div").style.cursor = "default";
     g_isMouseCursorVisible = true;
   }
-  if (g_settings.size !== 2) {
+  if (!g_settings.fullView) {
     document.querySelector("#mp-html-video").style.cursor = "default";
     if (document.querySelector("#mp-iframe-ytvideo"))
       document.querySelector("#mp-iframe-ytvideo").style.cursor = "default";
@@ -1425,7 +1437,6 @@ function onMouseMove() {
     g_isMouseCursorVisible = true;
   } else if (g_hideMouseCursor) {
     g_mouseCursorTimer = setTimeout(() => {
-      console.log("Hide");
       g_mouseCursorTimer = undefined;
       document.querySelector("#mp-html-video").style.cursor = "none";
       if (document.querySelector("#mp-iframe-ytvideo"))

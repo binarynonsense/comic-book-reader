@@ -90,6 +90,15 @@ exports.show = function (
               sendIpcToRenderer("on-context-menu", "toggle-playlist");
             },
           },
+          { type: "separator" },
+          {
+            label: _("mp-menu-fullview"),
+            type: "checkbox",
+            checked: settings.fullView,
+            click() {
+              sendIpcToRenderer("on-context-menu", "toggle-fullview");
+            },
+          },
         ],
       },
       ...getPlaylistSubmenu(settings),
@@ -135,7 +144,8 @@ exports.show = function (
   function getSizeSubmenu(settings) {
     return [
       {
-        label: _("mp-menu-size"),
+        label: _("mp-menu-miniplayer"),
+        enabled: !settings.fullView,
         submenu: [
           {
             label: _("mp-menu-size-small"),
@@ -151,14 +161,6 @@ exports.show = function (
             checked: settings.size === 1,
             click() {
               sendIpcToRenderer("on-context-menu", "set-size", 1);
-            },
-          },
-          {
-            label: _("mp-menu-size-big"),
-            type: "radio",
-            checked: settings.size === 2,
-            click() {
-              sendIpcToRenderer("on-context-menu", "set-size", 2);
             },
           },
         ],
