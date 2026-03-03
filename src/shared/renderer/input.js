@@ -154,12 +154,17 @@ function initKeyboard() {
       modals.onInputEvent(getOpenModal(), "onkeydown", event);
       return;
     } else if (getTools()["media-player"].getOpenModal()) {
-      getTools()["media-player"].onInputEvent("onkeydown", event);
+      modals.onInputEvent(
+        getTools()["media-player"].getOpenModal(),
+        "onkeydown",
+        event,
+      );
       return;
     }
 
     //////////////////////////////////////////////////////////
 
+    getTools()["media-player"].onInputEvent("onkeydown", event);
     getCurrentTool().onInputEvent("onkeydown", event);
   };
 }
@@ -315,6 +320,7 @@ function initMouse() {
       });
       return;
     }
+    getTools()["media-player"].onInputEvent("click", event);
     getCurrentTool().onInputEvent("click", event);
     // // TODO: make margin a percentage of the window height?
     // const margin = 10;
@@ -337,7 +343,7 @@ function initMouse() {
     // disabled for now, maybe add an option to enable some day
     // if (getOpenModal()) return;
     // getCurrentTool().onInputEvent("acbr-doubleclick", event);
-    getTools()["media-player"].onInputEvent("acbr-doubleclick", event);
+    getTools()["media-player"].onInputEvent("dblclick", event);
   });
 
   document.addEventListener("wheel", function (event) {

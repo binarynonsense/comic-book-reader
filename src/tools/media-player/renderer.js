@@ -1432,6 +1432,8 @@ function updateLocalization(localization) {
 // EVENT LISTENERS ////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+let g_clickTimer = null;
+
 export function onInputEvent(type, event) {
   if (getOpenModal()) {
     modals.onInputEvent(getOpenModal(), type, event);
@@ -1458,19 +1460,70 @@ export function onInputEvent(type, event) {
       }
       return false;
     }
+    case "onkeydown":
+      if (event.key === " ") {
+        if (g_settings.fullView) {
+          event.preventDefault();
+          if (g_player.state === PlayerState.PLAYING) onPause();
+          else if (
+            g_player.state === PlayerState.PAUSED ||
+            g_player.state === PlayerState.NOT_SET
+          )
+            onPlay();
+        }
+      }
+      break;
     case "mousemove":
       {
         onMouseMove();
       }
       break;
-    case "acbr-doubleclick":
+    case "click":
       {
-        if (
-          event.target.closest("#mp-video-div") ||
-          event.target.closest("#mp-spectrum-div")
-        ) {
-          g_settings.fullView = !g_settings.fullView;
-          refreshUI();
+        const videoCliked = event.target.closest("#mp-video-div");
+        const spectrumCliked = event.target.closest("#mp-spectrum-div");
+        if (videoCliked || spectrumCliked) {
+          if (g_clickTimer) {
+            clearTimeout(g_clickTimer);
+            g_clickTimer = null;
+            return;
+          }
+
+          g_clickTimer = setTimeout(() => {
+            g_clickTimer = null;
+            if (g_player.state === PlayerState.PLAYING) onPause();
+            else if (
+              g_player.state === PlayerState.PAUSED ||
+              g_player.state === PlayerState.NOT_SET
+            )
+              onPlay();
+          }, 250);
+
+          return;
+        }
+      }
+      break;
+    case "dblclick":
+      {
+        const videoCliked = event.target.closest("#mp-video-div");
+        const spectrumCliked = event.target.closest("#mp-spectrum-div");
+        if (videoCliked || spectrumCliked) {
+          clearTimeout(g_clickTimer);
+          // 3 click zones
+          const rect = (
+            spectrumCliked ? g_player.html.spectrumDiv : g_player.html.videoDiv
+          ).getBoundingClientRect();
+          const x = event.clientX - rect.left;
+          const width = rect.width;
+          if (x < width * 0.25) {
+            // left
+          } else if (x < width * 0.75) {
+            // center
+            g_settings.fullView = !g_settings.fullView;
+            refreshUI();
+          } else {
+            // right
+          }
           return;
         }
       }
