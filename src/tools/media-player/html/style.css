@@ -19,6 +19,7 @@
   left: 50%;
   transform: translateX(-50%);
   z-index: 3;
+  padding: 20px;
 }
 #media-player-container.mp-layout-fullscreen #mp-div-playlist {
   display: none;
@@ -322,12 +323,15 @@ a:hover a:visited {
   display: flex;
   align-items: center;
   flex-grow: 0;
-  width: 30px;
+  /* width: 30px; */
+  /* trick: multiply by a huge number so clamp gives one or the other */
+  width: clamp(30px, calc((var(--mp-frame-width) - 300px) * 9999), 100px);
 }
 
 #mp-slider-volume {
   width: 100%;
   cursor: pointer;
+  flex: 1;
 }
 
 #mp-slider-volume-hover-tooltip {

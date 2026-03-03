@@ -902,7 +902,7 @@ function onSliderVolumeChanged(slider) {
 function refreshUI() {
   if (g_settings.fullView) {
     g_player.html.playerDiv.classList.add("mp-layout-fullscreen");
-    document.documentElement.style.setProperty("--mp-frame-width", `100%`);
+    document.documentElement.style.setProperty("--mp-frame-width", `500px`);
   } else {
     g_player.html.playerDiv.classList.remove("mp-layout-fullscreen");
     g_player.html.topBar.style.opacity = "1";
