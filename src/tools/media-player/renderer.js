@@ -529,6 +529,16 @@ export function onContextMenu(params) {
   sendIpcToMain("show-context-menu", params, g_settings);
 }
 
+function onShowSpectrumVisualizer(show) {
+  if (show) {
+    g_settings.showSpectrum = true;
+    spectrumVisualizer.start();
+  } else {
+    g_settings.showSpectrum = false;
+    spectrumVisualizer.stop();
+  }
+}
+
 ///////
 
 async function isVideoMetadata(metadata) {
@@ -1262,13 +1272,7 @@ function initOnIpcCallbacks() {
         break;
 
       case "toggle-spectrum":
-        if (g_settings.showSpectrum) {
-          g_settings.showSpectrum = false;
-          spectrumVisualizer.stop();
-        } else {
-          g_settings.showSpectrum = true;
-          spectrumVisualizer.start();
-        }
+        onShowSpectrumVisualizer(!g_settings.showSpectrum);
         refreshUI();
         break;
 
