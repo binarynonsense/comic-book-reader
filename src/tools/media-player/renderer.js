@@ -179,9 +179,6 @@ async function onInit(settings, loadedPlaylist, ffmpegAvailable) {
     // init UI ////
     initUI();
 
-    // TODO: start only if audio / settings... and stop if not needed
-    spectrumVisualizer.start();
-
     // init player ////
     initPlayer();
     ffmpeg.init(setPlayerState, sendIpcToMain);
@@ -214,6 +211,8 @@ async function onInit(settings, loadedPlaylist, ffmpegAvailable) {
     if (g_settings.showPlaylist)
       g_player.html.divPlaylist.classList.remove("mp-hidden");
     else g_player.html.divPlaylist.classList.add("mp-hidden");
+
+    if (g_settings.showSpectrum) spectrumVisualizer.start();
 
     ////////////////
     refreshUI();
@@ -1263,7 +1262,13 @@ function initOnIpcCallbacks() {
         break;
 
       case "toggle-spectrum":
-        g_settings.showSpectrum = !g_settings.showSpectrum;
+        if (g_settings.showSpectrum) {
+          g_settings.showSpectrum = false;
+          spectrumVisualizer.stop();
+        } else {
+          g_settings.showSpectrum = true;
+          spectrumVisualizer.start();
+        }
         refreshUI();
         break;
 
