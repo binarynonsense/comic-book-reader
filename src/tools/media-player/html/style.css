@@ -18,7 +18,7 @@
   width: 500px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 1;
+  z-index: 3;
 }
 #media-player-container.mp-layout-fullscreen #mp-div-playlist {
   display: none;
@@ -121,7 +121,7 @@ a:hover a:visited {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 20;
+  z-index: 2;
 }
 
 .mp-html-video-loading-spinner {
