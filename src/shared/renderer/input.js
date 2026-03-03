@@ -257,6 +257,7 @@ function initMouse() {
   document.addEventListener("mousemove", function (event) {
     if (!getOpenModal()) {
       getCurrentTool().onInputEvent("mousemove", event);
+      getTools()["media-player"].onInputEvent("mousemove", event);
     }
     if (g_isMouseDown) {
       const mouseDeltaX = event.pageX - g_mouseLastX;
@@ -336,6 +337,7 @@ function initMouse() {
     // disabled for now, maybe add an option to enable some day
     // if (getOpenModal()) return;
     // getCurrentTool().onInputEvent("acbr-doubleclick", event);
+    getTools()["media-player"].onInputEvent("acbr-doubleclick", event);
   });
 
   document.addEventListener("wheel", function (event) {

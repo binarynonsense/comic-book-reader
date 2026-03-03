@@ -1385,8 +1385,54 @@ export function onInputEvent(type, event) {
       }
       return false;
     }
+    case "mousemove":
+      {
+        onMouseMove();
+      }
+      break;
+    case "acbr-doubleclick":
+      {
+        console.log("acbr-doubleclick");
+      }
+      break;
     default:
       return false;
+  }
+}
+
+let g_hideMouseCursor = true;
+let g_mouseCursorTimer;
+let g_isMouseCursorVisible = true;
+let g_mouseCursorHideTime = 3000;
+
+function onMouseMove() {
+  if (!g_settings) return;
+  if (g_mouseCursorTimer) {
+    clearTimeout(g_mouseCursorTimer);
+  }
+  if (!g_isMouseCursorVisible) {
+    document.querySelector("#mp-html-video").style.cursor = "default";
+    if (document.querySelector("#mp-iframe-ytvideo"))
+      document.querySelector("#mp-iframe-ytvideo").style.cursor = "default";
+    document.querySelector("#mp-spectrum-div").style.cursor = "default";
+    g_isMouseCursorVisible = true;
+  }
+  if (g_settings.size !== 2) {
+    document.querySelector("#mp-html-video").style.cursor = "default";
+    if (document.querySelector("#mp-iframe-ytvideo"))
+      document.querySelector("#mp-iframe-ytvideo").style.cursor = "default";
+    document.querySelector("#mp-spectrum-div").style.cursor = "default";
+    g_isMouseCursorVisible = true;
+  } else if (g_hideMouseCursor) {
+    g_mouseCursorTimer = setTimeout(() => {
+      console.log("Hide");
+      g_mouseCursorTimer = undefined;
+      document.querySelector("#mp-html-video").style.cursor = "none";
+      if (document.querySelector("#mp-iframe-ytvideo"))
+        document.querySelector("#mp-iframe-ytvideo").style.cursor = "none";
+      document.querySelector("#mp-spectrum-div").style.cursor = "none";
+      g_isMouseCursorVisible = false;
+    }, g_mouseCursorHideTime);
   }
 }
 
