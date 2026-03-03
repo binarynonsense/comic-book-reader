@@ -40,6 +40,7 @@ function setDefaultValues() {
     version: app.getVersion(),
     date: "",
     volume: 0.8,
+    muted: false,
     shuffle: 0,
     repeat: 0,
     currentFileIndex: undefined,
@@ -59,6 +60,9 @@ function sanitize() {
   }
   if (g_settings.volume < 0 || g_settings.volume > 1) {
     g_settings.volume = 0.8;
+  }
+  if (typeof g_settings.muted !== "boolean") {
+    g_settings.muted = false;
   }
   if (
     !Number.isInteger(g_settings.shuffle) ||

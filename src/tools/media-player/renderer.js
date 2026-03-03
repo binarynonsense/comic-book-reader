@@ -412,6 +412,7 @@ async function onPlay(trackIndex = undefined, time = 0) {
 }
 
 function onPlaySucceeded() {
+  g_player.engine.muted = g_settings.muted;
   setPlayerState(PlayerState.PLAYING);
   playlist.setCurrentTrackIndex(g_player.trackIndex);
   refreshUI();
@@ -1008,12 +1009,14 @@ function refreshUI() {
     g_player.html.videoDiv.classList.add("set-display-none");
   }
 
-  if (g_player.engine.volume > 0) {
+  if (!g_settings.muted) {
     g_player.html.buttonVolumeOn.classList.add("mp-hidden");
     g_player.html.buttonVolumeOff.classList.remove("mp-hidden");
+    g_player.html.sliderVolume.classList.remove("mp-disabled");
   } else {
     g_player.html.buttonVolumeOn.classList.remove("mp-hidden");
     g_player.html.buttonVolumeOff.classList.add("mp-hidden");
+    g_player.html.sliderVolume.classList.add("mp-disabled");
   }
 
   if (g_settings.shuffle === 1) {
@@ -1068,17 +1071,21 @@ function onButtonClicked(buttonName) {
   } else if (buttonName === "open") {
     sendIpcToMain("on-open-clicked", 0);
   } else if (buttonName === "volume-off") {
-    g_player.lastVolume = g_player.engine.volume;
-    g_player.engine.volume = 0;
-    if (g_player.engineType === PlayerEngineType.YOUTUBE) {
-      yt.updateVolume(g_player.engine.volume);
-    }
+    g_settings.muted = true;
+    g_player.engine.muted = true;
+    // g_player.lastVolume = g_player.engine.volume;
+    // g_player.engine.volume = 0;
+    // if (g_player.engineType === PlayerEngineType.YOUTUBE) {
+    //   yt.updateVolume(g_player.engine.volume);
+    // }
   } else if (buttonName === "volume-on") {
-    if (g_player.lastVolume) g_player.engine.volume = g_player.lastVolume;
-    else g_player.engine.volume = 1;
-    if (g_player.engineType === PlayerEngineType.YOUTUBE) {
-      yt.updateVolume(g_player.engine.volume);
-    }
+    g_settings.muted = false;
+    g_player.engine.muted = false;
+    // if (g_player.lastVolume) g_player.engine.volume = g_player.lastVolume;
+    // else g_player.engine.volume = 1;
+    // if (g_player.engineType === PlayerEngineType.YOUTUBE) {
+    //   yt.updateVolume(g_player.engine.volume);
+    // }
   } else if (buttonName === "settings") {
     sendIpcToMain(
       "show-button-menu",
