@@ -189,6 +189,7 @@ export function updateCurrentFileTags(title, artist, duration) {
   if (artist) g_playlist.files[index].artist = artist;
   if (duration) g_playlist.files[index].duration = duration;
   updatePlaylistInfo();
+  refreshUI();
 }
 
 function getNextToFill() {
