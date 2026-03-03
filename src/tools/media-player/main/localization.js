@@ -47,23 +47,23 @@ exports.getLocalization = function () {
     },
     {
       id: "mp-button-shuffle-off",
-      text: _("mp-tooltip-button-playlist-shufflemode"),
+      text: _("mp-tooltip-button-playlist-shuffletracks"),
     },
     {
       id: "mp-button-shuffle-on",
-      text: _("mp-tooltip-button-playlist-shufflemode"),
+      text: _("mp-tooltip-button-playlist-shuffletracks"),
     },
     {
       id: "mp-button-repeat-off",
-      text: _("mp-tooltip-button-playlist-repeatmode"),
+      text: _("mp-tooltip-button-playlist-repeattracks"),
     },
     {
       id: "mp-button-repeat-1",
-      text: _("mp-tooltip-button-playlist-repeatmode"),
+      text: _("mp-tooltip-button-playlist-repeattracks"),
     },
     {
       id: "mp-button-repeat-all",
-      text: _("mp-tooltip-button-playlist-repeatmode"),
+      text: _("mp-tooltip-button-playlist-repeattracks"),
     },
 
     {

@@ -14,6 +14,11 @@ import * as playlist from "./renderer/playlist.js";
 import * as yt from "./renderer/youtube.js";
 import * as ffmpeg from "./renderer/ffmpeg.js";
 import * as spectrumVisualizer from "./renderer/spectrum.js";
+import {
+  PlayerState,
+  PlayerMediaType,
+  PlayerEngineType,
+} from "./renderer/constants.js";
 
 let g_settings;
 let g_ffmpegAvailable = false;
@@ -22,24 +27,6 @@ let g_currentLoadId = 0;
 ///////////////////////////////////////////////////////////////////////////////
 // PLAYER /////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-
-const PlayerState = {
-  NOT_SET: "not set",
-  LOADING: "loading",
-  PLAYING: "playing",
-  PAUSED: "paused",
-};
-const PlayerMediaType = {
-  NOT_SET: "not set",
-  AUDIO: "audio",
-  VIDEO: "video",
-};
-const PlayerEngineType = {
-  NOT_SET: "not set",
-  NATIVE: "native",
-  FFMPEG: "ffmpeg",
-  YOUTUBE: "youtube",
-};
 
 let g_player = { html: {} };
 
@@ -486,6 +473,16 @@ function onPrevTrack() {
   }
 }
 
+function onSetRepeatMode(mode) {
+  g_settings.repeat = mode;
+}
+
+function onSetShuffleMode(mode) {
+  g_settings.shuffle = mode;
+  playlist.createTracksList(true);
+  g_player.trackIndex = playlist.getCurrentTrackIndex();
+}
+
 function onEnded() {
   if (g_settings.repeat === 1) {
     onPlay();
@@ -526,7 +523,7 @@ export function onContextMenu(params) {
   if (getOpenModal()) {
     return;
   }
-  sendIpcToMain("show-context-menu", params, g_settings);
+  sendIpcToMain("show-context-menu", params, g_settings, getButtonStates());
 }
 
 function showSpectrumVisualizer(show) {
@@ -586,6 +583,19 @@ function loadStylesheet(href) {
 
     document.head.appendChild(link);
   });
+}
+
+function getButtonStates() {
+  return {
+    play:
+      !g_player.html.buttonPlay.classList.contains("mp-disabled") &&
+      !g_player.html.buttonPlay.classList.contains("set-display-none"),
+    pause:
+      !g_player.html.buttonPause.classList.contains("mp-disabled") &&
+      !g_player.html.buttonPause.classList.contains("set-display-none"),
+    next: !g_player.html.buttonNext.classList.contains("mp-disabled"),
+    prev: !g_player.html.buttonPrev.classList.contains("mp-disabled"),
+  };
 }
 
 function initUI() {
@@ -1041,16 +1051,7 @@ function onButtonClicked(buttonName) {
     onNextTrack();
   } else if (buttonName === "open") {
     sendIpcToMain("on-open-clicked", 0);
-    // sendIpcToMain(
-    //   "show-button-menu",
-    //   "open",
-    //   g_player.html.buttonOpen.getBoundingClientRect(),
-    // );
-  }
-  // else if (buttonName === "playlist") {
-  //   onTogglePlaylist();
-  // }
-  else if (buttonName === "volume-off") {
+  } else if (buttonName === "volume-off") {
     g_player.lastVolume = g_player.engine.volume;
     g_player.engine.volume = 0;
     if (g_player.engineType === PlayerEngineType.YOUTUBE) {
@@ -1062,37 +1063,36 @@ function onButtonClicked(buttonName) {
     if (g_player.engineType === PlayerEngineType.YOUTUBE) {
       yt.updateVolume(g_player.engine.volume);
     }
-  }
-  // else if (buttonName === "close") {
-  //   sendIpcToMain("close");
-  // }
-  else if (buttonName === "settings") {
+  } else if (buttonName === "settings") {
     sendIpcToMain(
       "show-button-menu",
       "settings",
       g_player.html.buttonSettings.getBoundingClientRect(),
       g_settings,
+      getButtonStates(),
     );
   }
+  // else if (buttonName === "playlist") {
+  //   onTogglePlaylist();
+  // }
+  // else if (buttonName === "close") {
+  //   sendIpcToMain("close");
+  // }
   // playlist
   // NOTE: suffle and repeat are a bit different in meaning (on, off, 1)
   // they are meant to signify the actual state, not the desired action
   else if (buttonName === "shuffle-on") {
-    g_settings.shuffle = 0;
-    playlist.createTracksList(true);
-    g_player.trackIndex = playlist.getCurrentTrackIndex();
+    onSetShuffleMode(0);
   } else if (buttonName === "shuffle-off") {
-    g_settings.shuffle = 1;
-    playlist.createTracksList(true);
-    g_player.trackIndex = playlist.getCurrentTrackIndex();
+    onSetShuffleMode(1);
   }
   //
   else if (buttonName === "repeat-off") {
-    g_settings.repeat = 1;
+    onSetRepeatMode(1);
   } else if (buttonName === "repeat-1") {
-    g_settings.repeat = 2;
+    onSetRepeatMode(2);
   } else if (buttonName === "repeat-all") {
-    g_settings.repeat = 0;
+    onSetRepeatMode(0);
   }
   //
   else if (buttonName === "clear") {
@@ -1290,6 +1290,16 @@ function initOnIpcCallbacks() {
 
       case "set-size":
         g_settings.size = args[1];
+        refreshUI();
+        break;
+
+      case "set-repeat":
+        onSetRepeatMode(args[1]);
+        refreshUI();
+        break;
+
+      case "toggle-shuffle":
+        onSetShuffleMode(g_settings.shuffle === 0 ? 1 : 0);
         refreshUI();
         break;
 

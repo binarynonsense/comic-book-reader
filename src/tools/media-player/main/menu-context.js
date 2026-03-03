@@ -10,7 +10,13 @@ const core = require("../../../core/main");
 const { _ } = require("../../../shared/main/i18n");
 const log = require("../../../shared/main/logger");
 
-exports.show = function (type, params, settings, sendIpcToRenderer) {
+exports.show = function (
+  type,
+  params,
+  settings,
+  buttonStates,
+  sendIpcToRenderer,
+) {
   // ref: https://github.com/electron/electron/blob/main/docs/api/web-contents.md#event-context-menu
   // core.onMenuToggleFullScreen();
 
@@ -46,7 +52,7 @@ exports.show = function (type, params, settings, sendIpcToRenderer) {
     },
   ];
 
-  function getCommonEntries(settings) {
+  function getCommonEntries(settings, player) {
     return [
       {
         label: _("tool-shared-ui-open"),
@@ -57,10 +63,8 @@ exports.show = function (type, params, settings, sendIpcToRenderer) {
         submenu: [
           ...getSizeSubmenu(settings),
           { type: "separator" },
-          // ...getVideoAreaSubmenu(settings),
           {
             label: _("mp-menu-videoarea"),
-            // id: "",
             type: "checkbox",
             checked: settings.showVideo,
             enabled: settings.size !== 2,
@@ -70,7 +74,6 @@ exports.show = function (type, params, settings, sendIpcToRenderer) {
           },
           {
             label: _("mp-menu-spectrum"),
-            // id: "",
             type: "checkbox",
             checked: settings.showSpectrum,
             enabled: settings.size !== 2,
@@ -80,7 +83,6 @@ exports.show = function (type, params, settings, sendIpcToRenderer) {
           },
           {
             label: _("mp-menu-playlist"),
-            // id: "",
             type: "checkbox",
             checked: settings.showPlaylist,
             enabled: settings.size !== 2,
@@ -88,36 +90,34 @@ exports.show = function (type, params, settings, sendIpcToRenderer) {
               sendIpcToRenderer("on-context-menu", "toggle-playlist");
             },
           },
-          // ...getSpectrumSubmenu(settings),
-          // {
-          //   label: _("mp-tooltip-button-playlist"),
-          //   click() {
-          //     sendIpcToRenderer("on-context-menu", "toggle-playlist");
-          //   },
-          // },
         ],
       },
+      ...getPlaylistSubmenu(settings),
       { type: "separator" },
       {
         label: _("mp-tooltip-button-play"),
+        enabled: buttonStates.play,
         click() {
           sendIpcToRenderer("on-context-menu", "play");
         },
       },
       {
         label: _("mp-tooltip-button-pause"),
+        enabled: buttonStates.pause,
         click() {
           sendIpcToRenderer("on-context-menu", "pause");
         },
       },
       {
         label: _("mp-tooltip-button-next"),
+        enabled: buttonStates.next,
         click() {
           sendIpcToRenderer("on-context-menu", "next");
         },
       },
       {
         label: _("mp-tooltip-button-prev"),
+        enabled: buttonStates.prev,
         click() {
           sendIpcToRenderer("on-context-menu", "prev");
         },
@@ -166,67 +166,46 @@ exports.show = function (type, params, settings, sendIpcToRenderer) {
     ];
   }
 
-  function getVideoAreaSubmenu(settings) {
+  function getPlaylistSubmenu(settings) {
     return [
       {
-        label: _("mp-menu-videoarea"),
+        label: _("mp-menu-playlist"),
         submenu: [
           {
-            label: _("mp-menu-widget-forvideo"),
-            type: "radio",
-            checked: settings.showVideo === 0,
-            click() {
-              sendIpcToRenderer("on-context-menu", "set-show-video", 0);
-            },
+            label: _("mp-menu-playlist-repeattracks"),
+            submenu: [
+              {
+                label: _("mp-menu-playlist-repeattracks-off"),
+                type: "radio",
+                checked: settings.repeat === 0,
+                click() {
+                  sendIpcToRenderer("on-context-menu", "set-repeat", 0);
+                },
+              },
+              {
+                label: _("mp-menu-playlist-repeattracks-one"),
+                type: "radio",
+                checked: settings.repeat === 1,
+                click() {
+                  sendIpcToRenderer("on-context-menu", "set-repeat", 1);
+                },
+              },
+              {
+                label: _("mp-menu-playlist-repeattracks-all"),
+                type: "radio",
+                checked: settings.repeat === 2,
+                click() {
+                  sendIpcToRenderer("on-context-menu", "set-repeat", 2);
+                },
+              },
+            ],
           },
           {
-            label: _("mp-menu-widget-visible"),
-            type: "radio",
-            checked: settings.showVideo === 1,
+            label: _("mp-menu-playlist-shuffletracks"),
+            type: "checkbox",
+            checked: settings.shuffle === 1,
             click() {
-              sendIpcToRenderer("on-context-menu", "set-show-video", 1);
-            },
-          },
-          {
-            label: _("mp-menu-widget-hidden"),
-            type: "radio",
-            checked: settings.showVideo === 2,
-            click() {
-              sendIpcToRenderer("on-context-menu", "set-show-video", 2);
-            },
-          },
-        ],
-      },
-    ];
-  }
-
-  function getSpectrumSubmenu(settings) {
-    return [
-      {
-        label: _("mp-menu-spectrum"),
-        submenu: [
-          {
-            label: _("mp-menu-widget-foraudio"),
-            type: "radio",
-            checked: settings.showSpectrum === 0,
-            click() {
-              sendIpcToRenderer("on-context-menu", "set-show-spectrum", 0);
-            },
-          },
-          {
-            label: _("mp-menu-widget-visible"),
-            type: "radio",
-            checked: settings.showSpectrum === 1,
-            click() {
-              sendIpcToRenderer("on-context-menu", "set-show-spectrum", 1);
-            },
-          },
-          {
-            label: _("mp-menu-widget-hidden"),
-            type: "radio",
-            checked: settings.showSpectrum === 2,
-            click() {
-              sendIpcToRenderer("on-context-menu", "set-show-spectrum", 2);
+              sendIpcToRenderer("on-context-menu", "toggle-shuffle");
             },
           },
         ],
@@ -241,11 +220,10 @@ exports.show = function (type, params, settings, sendIpcToRenderer) {
     case "normal":
     case "settings":
     default:
-      Menu.buildFromTemplate([...header, ...getCommonEntries(settings)]).popup(
-        core.getMainWindow(),
-        params.x,
-        params.y,
-      );
+      Menu.buildFromTemplate([
+        ...header,
+        ...getCommonEntries(settings, buttonStates),
+      ]).popup(core.getMainWindow(), params.x, params.y);
       break;
 
     case "open":

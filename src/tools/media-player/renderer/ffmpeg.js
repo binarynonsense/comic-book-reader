@@ -5,19 +5,13 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
+import { PlayerState } from "./constants.js";
+
 let g_activePort = null;
 let g_totalDuration = 0;
 let g_videoTag;
 
 let setPlayerState, sendIpcToMain;
-
-// NOTE: this must be synced with the one in renderer
-const PlayerState = {
-  NOT_SET: "not set",
-  LOADING: "loading",
-  PLAYING: "playing",
-  PAUSED: "paused",
-};
 
 export function init(_setPlayerState, _sendIpcToMain) {
   setPlayerState = _setPlayerState;
@@ -78,10 +72,3 @@ function startStream(time, prevPlayerState) {
     setPlayerState(PlayerState.PAUSED);
   }
 }
-
-const formatTime = (s) => {
-  if (!s || !isFinite(s)) return "00:00";
-  const m = Math.floor(s / 60),
-    ss = Math.floor(s % 60);
-  return `${m.toString().padStart(2, "0")}:${ss.toString().padStart(2, "0")}`;
-};
