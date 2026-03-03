@@ -37,6 +37,8 @@ export function start() {
       canvas.width = canvas.clientWidth * dpr;
       canvas.height = canvas.clientHeight * dpr;
       ctx.scale(dpr, dpr);
+
+      g_peaks = new Array(g_analyser.frequencyBinCount).fill(0);
     });
     g_resizeObserver.observe(container);
   }
