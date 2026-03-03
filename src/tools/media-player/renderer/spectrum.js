@@ -118,7 +118,7 @@ export function start() {
       // bar
       ctx.fillRect(x, canvasHeight - verticalGap - barH, barWidth - 1, barH);
       // peak
-      ctx.fillStyle = "#DCDCDC";
+      ctx.fillStyle = "#b3b3b3";
       const peakY = Math.floor(canvasHeight - verticalGap - g_peaks[i]);
       ctx.fillRect(x, peakY - 2, barWidth - 1, 2);
     }
