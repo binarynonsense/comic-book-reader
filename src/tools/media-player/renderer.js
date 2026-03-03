@@ -529,7 +529,7 @@ export function onContextMenu(params) {
   sendIpcToMain("show-context-menu", params, g_settings);
 }
 
-function onShowSpectrumVisualizer(show) {
+function showSpectrumVisualizer(show) {
   if (show) {
     g_settings.showSpectrum = true;
     spectrumVisualizer.start();
@@ -1272,7 +1272,7 @@ function initOnIpcCallbacks() {
         break;
 
       case "toggle-spectrum":
-        onShowSpectrumVisualizer(!g_settings.showSpectrum);
+        showSpectrumVisualizer(!g_settings.showSpectrum);
         refreshUI();
         break;
 
