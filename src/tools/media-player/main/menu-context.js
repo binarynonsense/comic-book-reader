@@ -55,8 +55,6 @@ exports.show = function (type, params, data, sendIpcToRenderer) {
       {
         label: _("menu-view"),
         submenu: [
-          ...getSizeSubmenu(data),
-          { type: "separator" },
           {
             label: _("mp-menu-videoarea"),
             type: "checkbox",
@@ -85,12 +83,30 @@ exports.show = function (type, params, data, sendIpcToRenderer) {
             },
           },
           { type: "separator" },
+          ...getSizeSubmenu(data),
+          { type: "separator" },
+          // {
+          //   label: _("mp-menu-fullview"),
+          //   type: "checkbox",
+          //   checked: data.settings.fullView,
+          //   click() {
+          //     sendIpcToRenderer("on-context-menu", "toggle-fullview");
+          //   },
+          // },
+          {
+            label: _("mp-menu-compactview"),
+            type: "radio",
+            checked: !data.settings.fullView,
+            click() {
+              sendIpcToRenderer("on-context-menu", "set-fullview", false);
+            },
+          },
           {
             label: _("mp-menu-fullview"),
-            type: "checkbox",
+            type: "radio",
             checked: data.settings.fullView,
             click() {
-              sendIpcToRenderer("on-context-menu", "toggle-fullview");
+              sendIpcToRenderer("on-context-menu", "set-fullview", true);
             },
           },
         ],
@@ -138,8 +154,8 @@ exports.show = function (type, params, data, sendIpcToRenderer) {
   function getSizeSubmenu(data) {
     return [
       {
-        label: _("mp-menu-miniplayer"),
-        enabled: !data.settings.fullView,
+        label: _("mp-menu-compactviewsize"),
+        // enabled: !data.settings.fullView,
         submenu: [
           {
             label: _("mp-menu-size-small"),

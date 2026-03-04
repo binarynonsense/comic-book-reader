@@ -1397,6 +1397,11 @@ function initOnIpcCallbacks() {
         refreshUI();
         break;
 
+      case "set-fullview":
+        g_settings.fullView = args[1];
+        refreshUI();
+        break;
+
       case "set-repeat":
         onSetRepeatMode(args[1]);
         refreshUI();
