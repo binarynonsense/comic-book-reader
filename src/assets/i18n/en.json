@@ -279,13 +279,12 @@
   "mp-tooltip-button-pause": "Pause",
   "mp-tooltip-button-next": "Next Track",
   "mp-tooltip-button-prev": "Prev Track",
+  "mp-tooltip-button-fastforward": "Fast Forward",
+  "mp-tooltip-button-rewind": "Rewind",
   "mp-tooltip-button-volume-off": "Turn Volume Off",
   "mp-tooltip-button-volume-on": "Turn Volume On",
-
   "mp-tooltip-button-playlist": "Toggle Playlist",
   "mp-menu-hide": "Hide",
-
-  "mp-menu-TEMPPPP": "DEV NOTE: This entries are a work in progress",
   "mp-menu-playlist": "Playlist",
   "mp-menu-playlist-tracks": "Tracks",
   "mp-menu-playlist-repeattracks": "Repeat Mode",
@@ -301,10 +300,9 @@
   "mp-tooltip-button-playlist-save": "Save Playlist to File",
   "mp-tooltip-button-playlist-hide": "Hide Playlist",
   "mp-tooltip-button-videoarea-hide": "Hide Video Area",
-  "mp-tooltip-button-spectrum-hide": "Hide Spectrum Analizer",
-
-  "mp-menu-TEMPPPP2": "DEV NOTE: This entries are a work in progress",
-  "mp-menu-miniplayer": "Mini Player",
+  "mp-tooltip-button-spectrum-hide": "Hide Spectrum Visualizer",
+  "mp-menu-compactview": "Compact View",
+  "mp-menu-compactviewsize": "Compact View Size",
   "mp-menu-size-small": "Small",
   "mp-menu-size-medium": "Medium",
   "mp-menu-size-big": "Big",
@@ -313,9 +311,6 @@
   "mp-menu-audio": "Audio",
   "mp-menu-videoarea": "Video Area",
   "mp-menu-spectrum": "Spectrum Visualizer",
-
-  "mp-menu-TEMPPPP3": "DEV NOTE: This entries are a work in progress",
-
   "home-screen": "Home Screen",
   "home-button-files-tools": "Files Tools",
   "home-button-art-tools": "Art Tools",
