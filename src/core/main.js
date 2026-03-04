@@ -36,8 +36,15 @@ const cp = require("node:child_process");
 const originalSpawn = cp.spawn;
 cp.spawn = function (command, args, options) {
   log?.editor?.(`[core] [spawn wrapper] spawn called for ${command}`);
+  let finalArgs = args;
+  let finalOptions = options;
+  // handle optional args if only 2 params are passed
+  if (!finalOptions && !Array.isArray(finalArgs)) {
+    finalOptions = finalArgs;
+    finalArgs = [];
+  }
   // create a copy of options so we don't modify the library's original object
-  const opts = options ? Object.assign({}, options) : {};
+  const opts = finalOptions ? Object.assign({}, finalOptions) : {};
   const rawEnv = opts.env || process.env;
   // log bad entry
   for (const key in rawEnv) {
@@ -51,24 +58,28 @@ cp.spawn = function (command, args, options) {
   }
   // sanitize
   opts.env = getSafeEnv(rawEnv);
-  return originalSpawn.call(this, command, args, opts);
+  return originalSpawn.call(this, command, finalArgs, opts);
 };
 
 // wrap execFileSync for the rar exe calls
 const originalExecFileSync = cp.execFileSync;
 cp.execFileSync = function (command, args, options) {
-  log?.editor?.(`[core] [execFileSync wrapper] called for ${command}`);
-  let finalArgs = args;
-  let finalOptions = options;
-  // handle optional args: if only 2 params are passed, args is actually the
-  // options object in execFileSync
-  if (!finalOptions && !Array.isArray(finalArgs)) {
-    finalOptions = finalArgs;
-    finalArgs = undefined;
+  try {
+    log?.editor?.(`[core] [execFileSync wrapper] called for ${command}`);
+    let finalArgs = args;
+    let finalOptions = options;
+    // handle optional args: if only 2 params are passed, args is actually the
+    // options object in execFileSync
+    if (!finalOptions && !Array.isArray(finalArgs)) {
+      finalOptions = finalArgs;
+      finalArgs = undefined;
+    }
+    const opts = finalOptions ? Object.assign({}, finalOptions) : {};
+    opts.env = getSafeEnv(opts.env || process.env);
+    return originalExecFileSync.call(this, command, finalArgs, opts);
+  } catch (error) {
+    return { error };
   }
-  const opts = finalOptions ? Object.assign({}, finalOptions) : {};
-  opts.env = getSafeEnv(opts.env || process.env);
-  return originalExecFileSync.call(this, command, finalArgs, opts);
 };
 
 //////////////////////////////////////////////////////////////////////////////
