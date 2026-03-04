@@ -1334,9 +1334,9 @@ function initOnIpcCallbacks() {
 
   on("show", (isVisible, elementId) => {
     if (isVisible) {
-      document.getElementById(elementId).classList.remove("mp-hidden");
+      document.getElementById(elementId).classList.remove("set-display-none");
     } else {
-      document.getElementById(elementId).classList.add("mp-hidden");
+      document.getElementById(elementId).classList.add("set-display-none");
     }
   });
 

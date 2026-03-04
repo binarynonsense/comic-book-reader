@@ -140,7 +140,7 @@ function onIpcFromMain(event, args) {
           const audioplayerDiv = document.createElement("div");
           audioplayerDiv.id = "media-player-container";
           audioplayerDiv.classList =
-            "mp-layout-top-left mp-hidden mp-zindex-reader";
+            "mp-layout-top-left set-display-none mp-zindex-reader";
           document.body.appendChild(audioplayerDiv);
 
           const systemMonitorDiv = document.createElement("div");
