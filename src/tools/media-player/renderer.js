@@ -179,7 +179,7 @@ async function onInit(settings, loadedPlaylist) {
 
     // init player ////
     initPlayer();
-    ffmpeg.init(setPlayerState, sendIpcToMain);
+    ffmpeg.init(setPlayerState, sendIpcToMain, onError);
     yt.init(onError, updateTimeStatusText);
 
     // load settings & playlist ////

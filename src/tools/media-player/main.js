@@ -169,7 +169,7 @@ function initOnIpcCallbacks() {
     if (error == "NotSupportedError") {
       sendIpcToRenderer(
         "show-modal-info",
-        _("ui-modal-title-audioplayererror"),
+        _("ui-modal-title-mediaplayererror"),
         `${_("ui-modal-info-mediaerror-play")}\n${_(
           "ui-modal-info-mediaerror-4",
         )}`,
@@ -280,7 +280,7 @@ exports.init = function (mainWindow, parentElementId, ffmpegPath) {
 exports.updateFfmpegPath = function (ffmpegPath) {
   g_ffmpegPath = ffmpegPath;
   ffmpeg.updateFfmpegPath(ffmpegPath);
-  sendIpcToRenderer("update-ffmpeg-available", g_ffmpegPath ? true : false);
+  sendIpcToRenderer("update-ffmpeg-available", ffmpegPath ? true : false);
 };
 
 function updateLocalizedText() {

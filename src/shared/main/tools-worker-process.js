@@ -68,25 +68,21 @@ cp.spawn = function (command, args, options) {
 // wrap execFileSync for the rar exe calls
 const originalExecFileSync = cp.execFileSync;
 cp.execFileSync = function (command, args, options) {
-  try {
-    send({
-      type: "editorLog",
-      log: `[tools worker] [execFileSync wrapper] called for ${command}`,
-    });
-    let finalArgs = args;
-    let finalOptions = options;
-    // handle optional args: if only 2 params are passed, args is actually the
-    // options object in execFileSync
-    if (!finalOptions && !Array.isArray(finalArgs)) {
-      finalOptions = finalArgs;
-      finalArgs = undefined;
-    }
-    const opts = finalOptions ? Object.assign({}, finalOptions) : {};
-    opts.env = getSafeEnv(opts.env || process.env);
-    return originalExecFileSync.call(this, command, finalArgs, opts);
-  } catch (error) {
-    return { error };
+  send({
+    type: "editorLog",
+    log: `[tools worker] [execFileSync wrapper] called for ${command}`,
+  });
+  let finalArgs = args;
+  let finalOptions = options;
+  // handle optional args: if only 2 params are passed, args is actually the
+  // options object in execFileSync
+  if (!finalOptions && !Array.isArray(finalArgs)) {
+    finalOptions = finalArgs;
+    finalArgs = undefined;
   }
+  const opts = finalOptions ? Object.assign({}, finalOptions) : {};
+  opts.env = getSafeEnv(opts.env || process.env);
+  return originalExecFileSync.call(this, command, finalArgs, opts);
 };
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -221,7 +221,7 @@ exports.canUseFFmpeg = function () {
   if (g_settings.ffmpegExeAvailable !== undefined) {
     return g_settings.ffmpegExeAvailable;
   } else {
-    if (utils.isFfmpegExeAvailable(g_settings.rarExeFolderPath)) {
+    if (utils.isFfmpegExeAvailable(g_settings.ffmpegExeFolderPath)) {
       g_settings.ffmpegExeAvailable = true;
       return true;
     } else {

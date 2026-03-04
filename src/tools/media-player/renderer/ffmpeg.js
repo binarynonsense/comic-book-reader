@@ -11,11 +11,12 @@ let g_activePort = null;
 let g_totalDuration = 0;
 let g_videoTag;
 
-let setPlayerState, sendIpcToMain;
+let setPlayerState, sendIpcToMain, onError;
 
-export function init(_setPlayerState, _sendIpcToMain) {
+export function init(_setPlayerState, _sendIpcToMain, _onError) {
   setPlayerState = _setPlayerState;
   sendIpcToMain = _sendIpcToMain;
+  onError = _onError;
 }
 
 export function initOnIpcCallbacks(on) {
@@ -33,7 +34,7 @@ export function initOnIpcCallbacks(on) {
   });
 
   on("mp-ffmpeg-player-error", (error) => {
-    sendIpcToMain("on-play-error", "NotSupportedError");
+    onError("NotSupportedError");
   });
 }
 
