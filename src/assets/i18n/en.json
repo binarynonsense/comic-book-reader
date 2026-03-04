@@ -726,7 +726,7 @@
   "tool-pre-updates-checknotify-1": "A newer stable version is found, but only the first time",
   "tool-pre-advanced-preferences": "Advanced",
   "tool-pre-thirdpartyexes": "Third-Party Executables",
-  "tool-pre-use-system-exe": "use third-party tool",
+  "tool-pre-use-system-exe": "use third-party executable",
   "tool-pre-execfolder": "Executable's Folder",
   "tool-pre-other-preferences": "Other",
   "tool-pre-tempfolder": "Temp Folder",
