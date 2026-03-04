@@ -270,9 +270,9 @@ async function onPlay(trackIndex = undefined, time = 0) {
       } else if (g_player.engineType === PlayerEngineType.YOUTUBE) {
         if (yt.onPlay()) {
           setPlayerState(PlayerState.PLAYING);
+          refreshUI();
+          playlist.scrollToCurrent();
         }
-        refreshUI();
-        playlist.scrollToCurrent();
         return;
       }
     }
@@ -420,7 +420,7 @@ async function onPlay(trackIndex = undefined, time = 0) {
     }
     //////
     refreshUI();
-    playlist.scrollToCurrent();
+    // playlist.scrollToCurrent();
   } catch (error) {
     // TODO
   }
@@ -1420,16 +1420,19 @@ function initOnIpcCallbacks() {
       case "set-size":
         g_settings.size = args[1];
         refreshUI();
+        playlist.scrollToCurrent();
         break;
 
       case "toggle-fullview":
         g_settings.fullView = !g_settings.fullView;
         refreshUI();
+        playlist.scrollToCurrent();
         break;
 
       case "set-fullview":
         g_settings.fullView = args[1];
         refreshUI();
+        playlist.scrollToCurrent();
         break;
 
       case "set-repeat":
@@ -1605,6 +1608,7 @@ export function onInputEvent(type, event) {
             // center
             g_settings.fullView = !g_settings.fullView;
             refreshUI();
+            playlist.scrollToCurrent();
           } else {
             // right
             showVideoActionIcon(
