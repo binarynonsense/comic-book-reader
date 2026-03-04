@@ -728,6 +728,8 @@
   "tool-pre-execfolder": "Executable's Folder",
   "tool-pre-execfolder-tooltip": "The absolute path of the folder containing the executable {0}. You can leave it blank if it is included in your system's PATH environment variable.",
   "tool-pre-execfolder-example": "Example: {0}.",
+  "[NOTE TO TRANSLATORS] tool-pre-execfolder-error": "{0} will be replaced with the name of an executable file, like ffmpeg.exe, rar...",
+  "tool-pre-execfolder-error": "Couldn't find a working version of the {0} executable in that folder.",
   "tool-pre-other-preferences": "Other",
   "tool-pre-tempfolder": "Temp Folder",
   "tool-pre-logger": "Event Logger",

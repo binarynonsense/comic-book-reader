@@ -729,6 +729,8 @@
   "tool-pre-execfolder": "Folder ng Ikatlong-Parteng Executable",
   "tool-pre-execfolder-tooltip": "Ang absolutong landas ng folder na naglalaman ng executable na {0}. Maaari mong iwanang blangko kung ito ay kasama sa PATH environment variable ng iyong sistema.",
   "tool-pre-execfolder-example": "Halimbawa: {0}.",
+  "[NOTE TO TRANSLATORS] tool-pre-execfolder-error": "{0} will be replaced with the name of an executable file, like ffmpeg.exe, rar...",
+  "[NEEDS TRANSLATION]tool-pre-execfolder-error": "Couldn't find a working version of the {0} executable in that folder.",
   "tool-pre-other-preferences": "Iba pa",
   "tool-pre-tempfolder": "Temp Folder",
   "tool-pre-logger": "Tagatala ng Kaganapan",

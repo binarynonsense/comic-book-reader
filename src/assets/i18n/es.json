@@ -1,8 +1,6 @@
 {
   "@metadata": {
-    "authors": [
-      "Álvaro"
-    ],
+    "authors": ["Álvaro"],
     "last-updated": "2026-02-20",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.17.0",
@@ -729,6 +727,8 @@
   "tool-pre-execfolder": "Carpeta del ejecutable",
   "tool-pre-execfolder-tooltip": "La ruta absoluta de la carpeta que contiene el ejecutable {0}. Puede dejarla en blanco si ya está incluida en la variable de entorno PATH de su sistema.",
   "tool-pre-execfolder-example": "Ejemplo: {0}.",
+  "[NOTE TO TRANSLATORS] tool-pre-execfolder-error": "{0} will be replaced with the name of an executable file, like ffmpeg.exe, rar...",
+  "tool-pre-execfolder-error": "No se pudo encontrar una versión funcional del ejecutable {0} en esa carpeta.",
   "tool-pre-other-preferences": "Otras",
   "tool-pre-tempfolder": "Carpeta temporal",
   "tool-pre-logger": "Registro de eventos",
