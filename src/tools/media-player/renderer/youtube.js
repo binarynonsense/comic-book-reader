@@ -381,13 +381,6 @@ function updateUI(current, total) {
   rendererUpdateTimeStatusText();
 }
 
-function formatTime(time) {
-  const totalSeconds = Math.round(time || 0);
-  const mins = Math.floor(totalSeconds / 60);
-  const secs = totalSeconds % 60;
-  return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
-}
-
 export function getYouTubeVideoIdFromUrl(url) {
   if (!url || typeof url !== "string") return null;
   const regex =
