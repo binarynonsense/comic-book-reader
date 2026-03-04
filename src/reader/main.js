@@ -95,7 +95,9 @@ exports.init = async function (filePath, checkHistory) {
   showLoadingIndicator(settings.getValue("showLoadingIndicator"));
   tools
     .getTools()
-    ["media-player"].init(core.getMainWindow(), "media-player-container");
+    [
+      "media-player"
+    ].init(core.getMainWindow(), "media-player-container", settings.canUseFFmpeg() ? utils.getFfmpegCommand(settings.getValue("ffmpegExeFolderPath")) : undefined);
   showAudioPlayer(settings.getValue("showAudioPlayer"));
   homeScreen.open(undefined);
 

@@ -34,11 +34,24 @@ exports.getTooltipsLocalization = function () {
     {
       id: "tool-pre-tooltip-rarfolder",
       text: `${_(
-        "tool-pre-rarfolder-tooltip",
+        "tool-pre-execfolder-tooltip",
         process.platform === "win32" ? '"Rar.exe"' : '"rar"',
       )}${
         process.platform === "win32"
-          ? " " + _("tool-pre-rarfolder-example", '"C:\\Program Files\\WinRAR"')
+          ? " " +
+            _("tool-pre-execfolder-example", '"C:\\Program Files\\WinRAR"')
+          : ""
+      }`,
+    },
+    {
+      id: "tool-pre-tooltip-ffmpegfolder",
+      text: `${_(
+        "tool-pre-execfolder-tooltip",
+        process.platform === "win32" ? '"ffmpeg.exe"' : '"ffmpeg"',
+      )}${
+        process.platform === "win32"
+          ? " " +
+            _("tool-pre-execfolder-example", '"C:\\ffmpeg\\bin\\ffmpeg.exe"')
           : ""
       }`,
     },
@@ -82,10 +95,14 @@ exports.getLocalization = function () {
     },
     {
       id: "tool-pre-section-5-text",
-      text: _("tool-pre-updates"),
+      text: _("tool-pre-thirdpartyexes"),
     },
     {
       id: "tool-pre-section-6-text",
+      text: _("tool-pre-updates"),
+    },
+    {
+      id: "tool-pre-section-7-text",
       text: _("tool-pre-advanced-preferences"),
     },
     //////////////////////////////////////////////
@@ -640,23 +657,9 @@ exports.getLocalization = function () {
     },
     {
       id: "tool-pre-cbr-creation-modification-1-text",
-      text:
-        _("tool-pre-cbr-creation-modification-enabled") +
-        " (" +
-        _("tool-pre-use-system-exe") +
-        ")",
-    },
-    {
-      id: "tool-pre-rarfolder-text",
-      text: _("tool-pre-execfolder"),
-    },
-    {
-      id: "tool-pre-rarfolder-update-button-text",
-      text: _("tool-shared-ui-change").toUpperCase(),
-    },
-    {
-      id: "tool-pre-rarfolder-reset-button-text",
-      text: _("tool-shared-ui-reset").toUpperCase(),
+      text: `${_("tool-pre-cbr-creation-modification-enabled")} (${_(
+        "tool-pre-use-system-exe",
+      )}: ${process.platform === "win32" ? "Rar.exe" : "rar"})`,
     },
     //////////////////////////////////////////////
     {
@@ -763,6 +766,39 @@ exports.getLocalization = function () {
     {
       id: "tool-pre-externalfiles-folder-open-button-text",
       text: _("tool-shared-ui-open").toUpperCase(),
+    },
+    //////////////////////////////////////////////
+    {
+      id: "tool-pre-thirdparty-rar-text",
+      text: process.platform === "win32" ? "Rar.exe" : "rar",
+    },
+    {
+      id: "tool-pre-rarfolder-text",
+      text: _("tool-pre-execfolder"),
+    },
+    {
+      id: "tool-pre-rarfolder-update-button-text",
+      text: _("tool-shared-ui-change").toUpperCase(),
+    },
+    {
+      id: "tool-pre-rarfolder-reset-button-text",
+      text: _("tool-shared-ui-reset").toUpperCase(),
+    },
+    {
+      id: "tool-pre-thirdparty-ffmpeg-text",
+      text: process.platform === "win32" ? "ffmpeg.exe" : "ffmpeg",
+    },
+    {
+      id: "tool-pre-ffmpegfolder-text",
+      text: _("tool-pre-execfolder"),
+    },
+    {
+      id: "tool-pre-ffmpegfolder-update-button-text",
+      text: _("tool-shared-ui-change").toUpperCase(),
+    },
+    {
+      id: "tool-pre-ffmpegfolder-reset-button-text",
+      text: _("tool-shared-ui-reset").toUpperCase(),
     },
   ];
 };

@@ -78,6 +78,7 @@ const g_defaultSettings = {
   pdfReadingDpi: 200, // 300, 200, 150, 96 or 72
   cbrCreation: 0, // 0 disabled, 1 use command tool if available
   rarExeFolderPath: undefined,
+  ffmpegExeFolderPath: undefined,
   turnPageOnScrollBoundary: false,
   filterMode: 0, // 0: none, 1: old paper
   toolbarDirection: 0, // 0: infer from language, 1: ltr, 2: rtl
@@ -216,6 +217,20 @@ exports.canEditRars = function () {
   } else return false;
 };
 
+exports.canUseFFmpeg = function () {
+  if (g_settings.ffmpegExeAvailable !== undefined) {
+    return g_settings.ffmpegExeAvailable;
+  } else {
+    if (utils.isFfmpegExeAvailable(g_settings.rarExeFolderPath)) {
+      g_settings.ffmpegExeAvailable = true;
+      return true;
+    } else {
+      g_settings.ffmpegExeAvailable = false;
+      return false;
+    }
+  }
+};
+
 exports.capScreenSizes = function (screenWidth, screenHeight) {
   if (g_settings.width > screenWidth) {
     g_settings.width = screenWidth;
@@ -255,6 +270,7 @@ exports.resetPreferences = function () {
     "pdfReadingDpi",
     "cbrCreation",
     "rarExeFolderPath",
+    "ffmpegExeFolderPath",
     "turnPageOnScrollBoundary",
     "toolbarDirection",
     "homeScreen",
@@ -277,6 +293,7 @@ exports.resetPreferences = function () {
     "tempFolderPath",
 
     "rarExeAvailable",
+    "ffmpegExeAvailable",
   ];
   for (const key in currentSettings) {
     if (!preferences.includes(key)) {
@@ -658,6 +675,20 @@ function sanitize() {
   } else {
     g_settings.rarExeFolderPath = g_defaultSettings.rarExeFolderPath;
   }
+  // FFMPEG FOLDER
+  if (
+    g_settings.ffmpegExeFolderPath &&
+    typeof g_settings.ffmpegExeFolderPath === "string"
+  ) {
+    if (
+      !fs.existsSync(g_settings.ffmpegExeFolderPath) ||
+      !fs.lstatSync(g_settings.ffmpegExeFolderPath).isDirectory()
+    ) {
+      g_settings.ffmpegExeFolderPath = g_defaultSettings.ffmpegExeFolderPath;
+    }
+  } else {
+    g_settings.ffmpegExeFolderPath = g_defaultSettings.ffmpegExeFolderPath;
+  }
 
   // Updates
   if (
@@ -718,6 +749,7 @@ exports.save = function () {
     g_settings.tempFolderPath = undefined;
   }
   g_settings.rarExeAvailable = undefined;
+  g_settings.ffmpegExeAvailable = undefined;
   const settingsJSON = JSON.stringify(g_settings, null, 2);
   try {
     fs.writeFileSync(cfgFilePath, settingsJSON, "utf-8");

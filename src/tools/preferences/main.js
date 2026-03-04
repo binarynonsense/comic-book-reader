@@ -15,6 +15,7 @@ const settings = require("../../shared/main/settings");
 const themes = require("../../shared/main/themes");
 const reader = require("../../reader/main");
 const homeScreen = require("../../reader/home-screen/main");
+const utils = require("../../shared/main/utils");
 const appUtils = require("../../shared/main/app-utils");
 const contextMenu = require("../../shared/main/tools-menu-context");
 const temp = require("../../shared/main/temp");
@@ -374,7 +375,6 @@ function initOnIpcCallbacks() {
     }
 
     if (temp.changeBaseFolderPath(folderPath)) {
-      log.test();
       settings.setValue(
         "tempFolderPath",
         relativeFolderPath ? relativeFolderPath : folderPath,
@@ -424,6 +424,42 @@ function initOnIpcCallbacks() {
     settings.setValue("rarExeFolderPath", folderPath);
     settings.setValue("rarExeAvailable", undefined);
     sendIpcToRenderer("set-rar-folder", folderPath);
+  });
+
+  on("change-ffmpeg-folder", (reset) => {
+    let folderPath;
+    if (reset) {
+      folderPath = undefined;
+    } else {
+      let defaultPath = settings.getValue("ffmpegExeFolderPath");
+      if (defaultPath === undefined && process.platform === "win32") {
+        let ffmpegPath = "C:\\ffmpeg\\bin";
+        if (fs.existsSync(ffmpegPath)) {
+          defaultPath = ffmpegPath;
+          log.debug("found potential ffmpeg folder: " + defaultPath);
+        } else {
+          ffmpegPath = "D:\\ffmpeg\\bin";
+          if (fs.existsSync(ffmpegPath)) {
+            defaultPath = ffmpegPath;
+            log.debug("found potential ffmpeg folder: " + defaultPath);
+          }
+        }
+      }
+      let folderList = appUtils.chooseFolder(core.getMainWindow(), defaultPath);
+      if (folderList === undefined) {
+        return;
+      }
+      folderPath = folderList[0];
+      if (folderPath === undefined || folderPath === "") return;
+    }
+    settings.setValue("ffmpegExeFolderPath", folderPath);
+    settings.setValue("ffmpegExeAvailable", undefined);
+    tools
+      .getTools()
+      [
+        "media-player"
+      ].updateFfmpegPath(settings.canUseFFmpeg() ? utils.getFfmpegCommand(settings.getValue("ffmpegExeFolderPath")) : undefined);
+    sendIpcToRenderer("set-ffmpeg-folder", folderPath);
   });
 
   on("request-manual-updates-check", () => {

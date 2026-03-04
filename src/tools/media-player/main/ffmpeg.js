@@ -14,7 +14,7 @@ const log = require("../../../shared/main/logger");
 let g_ffmpegProcess = null;
 let g_videoServer = null;
 let g_activeVideoPath = "";
-let g_userFfmpegPath = "";
+let g_ffmpegPath = "";
 
 let sendIpcToRenderer;
 
@@ -55,7 +55,7 @@ async function startVideoServer() {
       res.writeHead(200, { "Content-Type": "video/mp4" });
 
       g_ffmpegProcess = spawn(
-        g_userFfmpegPath,
+        g_ffmpegPath,
         [
           "-ss",
           seekTime.toString(), // timestamp
@@ -115,6 +115,11 @@ async function startVideoServer() {
   });
 }
 
+exports.updateFfmpegPath = function (ffmpegPath) {
+  g_ffmpegPath = ffmpegPath;
+  log.test("[ffmpeg] updateFfmpegPath: " + g_ffmpegPath);
+};
+
 ///////////////////////////////////////////////////////////////////////////////
 // IPC RECEIVE ////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -125,11 +130,9 @@ exports.initOnIpcCallbacks = function (on, _sendIpcToRenderer) {
   on("mp-ffmpeg-load-video", async (filePath, time) => {
     g_activeVideoPath = filePath;
     try {
-      const savedPath = undefined; // getStoredPathFromPrefs();
-      g_userFfmpegPath = await getValidFfmpegPath(savedPath);
       const server = await startVideoServer();
       const port = server.address().port;
-      const duration = await getMetadata(g_userFfmpegPath, filePath);
+      const duration = await getMetadata(g_ffmpegPath, filePath);
 
       if (duration) {
         sendIpcToRenderer("mp-ffmpeg-video-metadata", {
@@ -173,23 +176,23 @@ exports.initOnIpcCallbacks = function (on, _sendIpcToRenderer) {
 // HELPERS ////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-async function getValidFfmpegPath(customPath) {
-  if (customPath && fs.existsSync(customPath)) return customPath;
+// async function getValidFfmpegPath(customPath) {
+//   if (customPath && fs.existsSync(customPath)) return customPath;
 
-  return new Promise((resolve, reject) => {
-    const cmd = process.platform === "win32" ? "where ffmpeg" : "which ffmpeg";
+//   return new Promise((resolve, reject) => {
+//     const cmd = process.platform === "win32" ? "where ffmpeg" : "which ffmpeg";
 
-    exec(cmd, (err, stdout) => {
-      if (!err && stdout) {
-        const path = stdout.trim().split("\n")[0].trim();
-        resolve(path);
-      } else {
-        reject("ffmpeg binary not found in system PATH");
-      }
-    });
-  });
-}
-exports.getValidFfmpegPath = getValidFfmpegPath;
+//     exec(cmd, (err, stdout) => {
+//       if (!err && stdout) {
+//         const path = stdout.trim().split("\n")[0].trim();
+//         resolve(path);
+//       } else {
+//         reject("ffmpeg binary not found in system PATH");
+//       }
+//     });
+//   });
+// }
+// exports.getValidFfmpegPath = getValidFfmpegPath;
 
 async function getMetadata(bin, file) {
   const probe = bin.replace(/ffmpeg(\.exe)?$/i, "ffprobe$1");

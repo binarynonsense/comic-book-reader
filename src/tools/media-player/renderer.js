@@ -169,10 +169,8 @@ function initPlayer() {
 // BASE ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-async function onInit(settings, loadedPlaylist, ffmpegAvailable) {
+async function onInit(settings, loadedPlaylist) {
   try {
-    g_ffmpegAvailable = ffmpegAvailable;
-
     // load css ////
     await loadStylesheet("../tools/media-player/html/style.css");
 
@@ -1338,6 +1336,11 @@ function initOnIpcCallbacks() {
     } else {
       document.getElementById(elementId).classList.add("set-display-none");
     }
+  });
+
+  on("update-ffmpeg-available", (ffmpegAvailable) => {
+    g_ffmpegAvailable = ffmpegAvailable;
+    console.log("update-ffmpeg-available: " + g_ffmpegAvailable);
   });
 
   on("open-playlist", (newPlaylist) => {

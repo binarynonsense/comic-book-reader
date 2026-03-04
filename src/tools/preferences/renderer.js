@@ -22,6 +22,7 @@ let g_isInitialized = false;
 let g_tempFolderPathUl;
 let g_tempFolderPathCheckbox;
 let g_rarExeFolderPathUl;
+let g_ffmpegExeFolderPathUl;
 let g_localizedTexts = {};
 let g_settings;
 
@@ -60,7 +61,7 @@ function init(
         showModalConfirmResetAll();
       });
     // sections menu
-    for (let index = 0; index < 7; index++) {
+    for (let index = 0; index < 8; index++) {
       document
         .getElementById(`tool-pre-section-${index}-button`)
         .addEventListener("click", (event) => {
@@ -545,16 +546,16 @@ function init(
       );
       select.value = settings.cbrCreation;
       select.addEventListener("change", function (event) {
-        if (select.value === "0") {
-          document
-            .getElementById("tool-pre-rarfolder-div")
-            .classList.add("set-display-none");
-        } else {
-          document
-            .getElementById("tool-pre-rarfolder-div")
-            .classList.remove("set-display-none");
-        }
-        updateColumnsHeight();
+        // if (select.value === "0") {
+        //   document
+        //     .getElementById("tool-pre-rarfolder-div")
+        //     .classList.add("set-display-none");
+        // } else {
+        //   document
+        //     .getElementById("tool-pre-rarfolder-div")
+        //     .classList.remove("set-display-none");
+        // }
+        // updateColumnsHeight();
         sendIpcToMain("set-setting", "cbrCreation", parseInt(select.value));
       });
     }
@@ -572,11 +573,28 @@ function init(
         .addEventListener("click", (event) => {
           sendIpcToMain("change-rar-folder", true);
         });
-      if (settings.cbrCreation === 0) {
-        document
-          .getElementById("tool-pre-rarfolder-div")
-          .classList.add("set-display-none");
-      }
+      // if (settings.cbrCreation === 0) {
+      //   document
+      //     .getElementById("tool-pre-rarfolder-div")
+      //     .classList.add("set-display-none");
+      // }
+    }
+    // ffmpeg folder div, ul and buttons
+    {
+      g_ffmpegExeFolderPathUl = document.getElementById(
+        "tool-pre-ffmpegfolder-ul",
+      );
+      updateFfmpegFolder(settings.ffmpegExeFolderPath);
+      document
+        .getElementById("tool-pre-ffmpegfolder-update-button")
+        .addEventListener("click", (event) => {
+          sendIpcToMain("change-ffmpeg-folder", false);
+        });
+      document
+        .getElementById("tool-pre-ffmpegfolder-reset-button")
+        .addEventListener("click", (event) => {
+          sendIpcToMain("change-ffmpeg-folder", true);
+        });
     }
     // check updates
     {
@@ -760,7 +778,7 @@ function updateColumnsHeight(scrollTop = false) {
 }
 
 function switchSection(id) {
-  for (let index = 0; index < 7; index++) {
+  for (let index = 0; index < 8; index++) {
     if (id === index) {
       document
         .getElementById(`tool-pre-section-${index}-button`)
@@ -841,6 +859,10 @@ function initOnIpcCallbacks() {
     updateRarFolder(...args);
   });
 
+  on("set-ffmpeg-folder", (...args) => {
+    updateFfmpegFolder(...args);
+  });
+
   on("show-ok-modal", (...args) => {
     if (g_openModal) {
       modals.close(g_openModal);
@@ -908,6 +930,18 @@ function updateRarFolder(folderPath) {
   else text.innerText = reducePathString(folderPath);
   li.appendChild(text);
   g_rarExeFolderPathUl.appendChild(li);
+}
+
+function updateFfmpegFolder(folderPath) {
+  g_ffmpegExeFolderPathUl.innerHTML = "";
+  let li = document.createElement("li");
+  li.className = "tools-collection-li";
+  // text
+  let text = document.createElement("span");
+  if (!folderPath || folderPath.trim() === "") text.innerHTML = "&nbsp;";
+  else text.innerText = reducePathString(folderPath);
+  li.appendChild(text);
+  g_ffmpegExeFolderPathUl.appendChild(li);
 }
 
 let g_navKeys;

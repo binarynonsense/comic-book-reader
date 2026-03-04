@@ -32,25 +32,49 @@ function execShellCommand(command, args, workingDir) {
 }
 exports.execShellCommand = execShellCommand;
 
-function getRarCommand(rarFolderPath) {
+function getRarCommand(folderPath) {
   let command = "rar";
   if (process.platform === "win32") {
     command = "Rar.exe";
   }
-  if (rarFolderPath && rarFolderPath.trim !== "") {
-    command = path.join(rarFolderPath, command);
+  if (folderPath && folderPath.trim() !== "") {
+    command = path.join(folderPath, command);
   }
   return command;
 }
 exports.getRarCommand = getRarCommand;
 
-exports.isRarExeAvailable = function (rarFolderPath) {
-  const cmdResult = execShellCommand(getRarCommand(rarFolderPath));
-  if (!cmdResult.error || cmdResult.error === "") {
+exports.isRarExeAvailable = function (folderPath) {
+  const cmdResult = execShellCommand(getRarCommand(folderPath));
+  if (!cmdResult.error) {
     log.debug("rar exe available");
     return true;
   } else {
     log.debug("rar exe not available");
+    return false;
+  }
+};
+
+function getFfmpegCommand(folderPath) {
+  let command = "ffmpeg";
+  if (process.platform === "win32") {
+    command = "ffmpeg.exe";
+  }
+  if (folderPath && folderPath.trim() !== "") {
+    command = path.join(folderPath, command);
+  }
+  return command;
+}
+exports.getFfmpegCommand = getFfmpegCommand;
+
+exports.isFfmpegExeAvailable = function (folderPath) {
+  const exePath = getFfmpegCommand(folderPath);
+  const cmdResult = execShellCommand(exePath, ["-version"]);
+  if (!cmdResult.error) {
+    log.debug("ffmpeg exe available");
+    return true;
+  } else {
+    log.debug("ffmpeg exe not available");
     return false;
   }
 };

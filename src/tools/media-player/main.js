@@ -21,6 +21,7 @@ const contextMenu = require("./main/menu-context");
 
 let g_mainWindow;
 let g_parentElementId;
+let g_ffmpegPath;
 
 ///////////////////////////////////////////////////////////////////////////////
 // IPC SEND ///////////////////////////////////////////////////////////////////
@@ -227,12 +228,7 @@ let g_didShow = false;
 
 exports.open = async function (isVisible) {
   if (isVisible & !g_didShow) {
-    sendIpcToRenderer(
-      "init",
-      settings.get(),
-      g_playlist,
-      await ffmpeg.getValidFfmpegPath(), // TODO: get setting if available
-    );
+    sendIpcToRenderer("init", settings.get(), g_playlist);
     g_didShow = true;
   }
   sendIpcToRenderer("show", isVisible, g_parentElementId);
@@ -264,10 +260,12 @@ function loadSettings() {
 
 /////////////////////////////////////////////////////////////////////////
 
-exports.init = function (mainWindow, parentElementId) {
+exports.init = function (mainWindow, parentElementId, ffmpegPath) {
+  exports.updateFfmpegPath(ffmpegPath);
   initOnIpcCallbacks();
   initHandleIpcCallbacks();
   g_mainWindow = mainWindow;
+  initOnIpcCallbacks;
   const data = fs.readFileSync(path.join(__dirname, "html/index.html"));
   g_parentElementId = parentElementId;
   sendIpcToCoreRenderer(
@@ -277,6 +275,13 @@ exports.init = function (mainWindow, parentElementId) {
   );
   loadSettings();
   updateLocalizedText();
+};
+
+exports.updateFfmpegPath = function (ffmpegPath) {
+  g_ffmpegPath = ffmpegPath;
+  ffmpeg.updateFfmpegPath(ffmpegPath);
+  sendIpcToRenderer("update-ffmpeg-available", g_ffmpegPath ? true : false);
+  log.test("[player] updateFfmpegPath: " + g_ffmpegPath);
 };
 
 function updateLocalizedText() {
