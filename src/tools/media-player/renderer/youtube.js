@@ -10,6 +10,9 @@
 let g_ytPlayer;
 let g_checkYTInterval = null;
 let g_connectionTimeout = null;
+let g_videoResizeObserver = null;
+let g_isFirstResize = true;
+let g_resizeDebounceTimer = null;
 
 let rendererOnError;
 
@@ -120,6 +123,34 @@ export function createNewPlayer(
                   const videoTitle = videoData.title;
                   const duration = g_ytPlayer.getDuration();
                   updateTrackData(videoTitle, undefined, duration);
+                  // reload on resize to hopefully change the quality
+                  const container = document.getElementById("mp-video-div");
+                  g_videoResizeObserver = new ResizeObserver((entries) => {
+                    if (g_isFirstResize) {
+                      g_isFirstResize = false;
+                      return;
+                    }
+                    clearTimeout(g_resizeDebounceTimer);
+                    const { width } = entries[0].contentRect;
+                    g_resizeDebounceTimer = setTimeout(() => {
+                      const state = g_ytPlayer?.getPlayerState();
+                      if (
+                        state === YT.PlayerState.PLAYING ||
+                        state === YT.PlayerState.BUFFERING
+                      ) {
+                        let target = "hd1080";
+                        // if (width > 2500) target = "highres";
+                        // else
+                        if (width > 1200) target = "hd1080";
+                        else if (width > 800) target = "hd720";
+                        else if (width > 600)
+                          target = "large"; // 480p
+                        else target = "medium"; // 360p
+                        reloadVideo(target);
+                      }
+                    }, 300);
+                  });
+                  g_videoResizeObserver.observe(container);
                 },
                 onError: (event) => {
                   clearTimeout(g_connectionTimeout);
@@ -163,6 +194,10 @@ export function createNewPlayer(
 }
 
 export function destroyPlayer() {
+  g_isFirstResize = true;
+  clearTimeout(g_resizeDebounceTimer);
+  g_resizeDebounceTimer = null;
+
   if (g_checkYTInterval) {
     clearInterval(g_checkYTInterval);
     g_checkYTInterval = null;
@@ -170,6 +205,10 @@ export function destroyPlayer() {
   if (g_connectionTimeout) {
     clearTimeout(g_connectionTimeout);
     g_connectionTimeout = null;
+  }
+  if (g_videoResizeObserver) {
+    g_videoResizeObserver.disconnect();
+    g_videoResizeObserver = null;
   }
 
   stopProgressLoop();
@@ -182,6 +221,44 @@ export function destroyPlayer() {
   if (iframe) {
     iframe.remove();
   }
+}
+
+function reloadVideo(maxQualityParam = "hd1080") {
+  if (
+    !g_ytPlayer ||
+    typeof g_ytPlayer.getAvailableQualityLevels !== "function"
+  ) {
+    return;
+  }
+
+  const currentTime = g_ytPlayer.getCurrentTime();
+  const videoData = g_ytPlayer.getVideoData();
+  const videoId = videoData ? videoData["video_id"] : null;
+  if (!videoId) return;
+
+  const qualityMap = {
+    highres: 4320,
+    hd2160: 2160,
+    hd1440: 1440,
+    hd1080: 1080,
+    hd720: 720,
+    large: 480,
+    medium: 360,
+    small: 240,
+    tiny: 144,
+  };
+
+  const availableLevels = g_ytPlayer.getAvailableQualityLevels();
+  const maxVal = qualityMap[maxQualityParam] || 1080;
+  const bestSuggested =
+    availableLevels.find((level) => (qualityMap[level] || 0) <= maxVal) ||
+    "default";
+
+  g_ytPlayer.loadVideoById({
+    videoId: videoId,
+    startSeconds: currentTime,
+    suggestedQuality: bestSuggested,
+  });
 }
 
 ///////////////////////////////////////////////////////////////////////////////
