@@ -118,7 +118,7 @@ function initPlayer() {
   });
 
   g_player.engine.addEventListener("timeupdate", function () {
-    g_player.html.updateTimeStatusText();
+    updateTimeStatusText();
     if (g_player.engineType === PlayerEngineType.FFMPEG) {
       ffmpeg.onSliderTimeTimeUpdate(g_player.engine, g_player.html.sliderTime);
     } else if (g_player.engineType === PlayerEngineType.NATIVE) {
@@ -182,7 +182,7 @@ async function onInit(settings, loadedPlaylist, ffmpegAvailable) {
     // init player ////
     initPlayer();
     ffmpeg.init(setPlayerState, sendIpcToMain);
-    yt.init(onError);
+    yt.init(onError, updateTimeStatusText);
 
     // load settings & playlist ////
     g_settings = settings;
@@ -496,7 +496,7 @@ function setTime(targetSecond) {
     }
   }
   g_player.html.sliderTime.value = targetSecond;
-  g_player.html.updateTimeStatusText();
+  updateTimeStatusText();
 }
 
 function onNextTrack() {
@@ -829,23 +829,6 @@ function initUI() {
   });
 
   // slider Time ///////////
-  function updateTimeStatusText() {
-    const slider = g_player.html.sliderTime;
-    const statusT = g_player.html.sliderTimeStatusOverlay;
-
-    if (slider && statusT) {
-      const maxSeconds = parseFloat(slider.max) || 0;
-      const currentSeconds = parseFloat(slider.value) || 0;
-
-      const formattedCurrent =
-        playlist.getFormatedTimeFromSeconds(currentSeconds);
-      const formattedTotal = playlist.getFormatedTimeFromSeconds(maxSeconds);
-
-      statusT.textContent = formattedCurrent + " / " + formattedTotal;
-    }
-  }
-  g_player.html.updateTimeStatusText = updateTimeStatusText;
-
   g_player.html.sliderTime = document.getElementById("mp-slider-time");
 
   const style = getComputedStyle(document.documentElement);
@@ -1248,6 +1231,22 @@ function onButtonClicked(buttonName) {
   }
   //////
   refreshUI();
+}
+
+function updateTimeStatusText() {
+  const slider = g_player.html.sliderTime;
+  const statusT = g_player.html.sliderTimeStatusOverlay;
+
+  if (slider && statusT) {
+    const maxSeconds = parseFloat(slider.max) || 0;
+    const currentSeconds = parseFloat(slider.value) || 0;
+
+    const formattedCurrent =
+      playlist.getFormatedTimeFromSeconds(currentSeconds);
+    const formattedTotal = playlist.getFormatedTimeFromSeconds(maxSeconds);
+
+    statusT.textContent = formattedCurrent + " / " + formattedTotal;
+  }
 }
 
 function getContextMenuData() {

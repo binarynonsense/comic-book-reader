@@ -341,21 +341,6 @@ a:hover a:visited {
   margin-left: 3px;
 }
 
-#mp-text-time,
-#mp-text-volume {
-  display: inline;
-  visibility: hidden;
-  background-color: black !important;
-  color: #fff;
-  text-align: center;
-  border-radius: 6px;
-  padding: 5px;
-  position: absolute;
-  pointer-events: none;
-  z-index: 203;
-  flex-grow: 1;
-}
-
 /* *************** */
 
 .mp-time-wrapper {

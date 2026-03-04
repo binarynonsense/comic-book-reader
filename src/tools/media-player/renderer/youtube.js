@@ -14,7 +14,7 @@ let g_videoResizeObserver = null;
 let g_isFirstResize = true;
 let g_resizeDebounceTimer = null;
 
-let rendererOnError;
+let rendererOnError, rendererUpdateTimeStatusText;
 
 window.onYouTubeIframeAPIReady = function () {
   // console.log("onYouTubeIframeAPIReady");
@@ -24,8 +24,9 @@ export function getPlayer() {
   return g_ytPlayer;
 }
 
-export function init(onError) {
+export function init(onError, updateTimeStatusText) {
   rendererOnError = onError;
+  rendererUpdateTimeStatusText = updateTimeStatusText;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -371,16 +372,13 @@ function stopProgressLoop() {
 
 function updateUI(current, total) {
   const slider = document.getElementById("mp-slider-time");
-  const timeText = document.getElementById("mp-text-time");
   const currentSec = Math.round(current || 0);
   const totalSec = Math.round(total || 0);
   if (slider) {
     slider.max = totalSec;
     slider.value = currentSec;
   }
-  if (timeText) {
-    timeText.textContent = `${formatTime(currentSec)} / ${formatTime(totalSec)}`;
-  }
+  rendererUpdateTimeStatusText();
 }
 
 function formatTime(time) {
