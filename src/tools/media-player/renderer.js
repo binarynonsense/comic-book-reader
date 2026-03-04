@@ -71,6 +71,15 @@ function clearPlayer() {
   g_player.trackIndex = playlist.getCurrentTrackIndex();
   g_player.trackMetadata = undefined;
   g_player.trackHasVideoMetadata = undefined;
+
+  if (g_player.html.topBarShowTimeOut) {
+    clearTimeout(g_player.html.topBarShowTimeOut);
+    g_player.html.topBarShowTimeOut = undefined;
+  }
+  if (g_player.html.restoreMuteTimeOut) {
+    clearTimeout(g_player.html.restoreMuteTimeOut);
+    g_player.html.restoreMuteTimeOut = undefined;
+  }
 }
 
 function initPlayer() {
