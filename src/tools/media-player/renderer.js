@@ -34,6 +34,15 @@ function setPlayerState(state, doUIRefresh = false) {
   // console.log("setPlayerState " + state);
   // console.trace("stack trace");
   g_player.state = state;
+  clearTimeout(g_player.html.restoreMuteTimeOut);
+
+  if (state === PlayerState.PLAYING) {
+    g_player.html.restoreMuteTimeOut = setTimeout(() => {
+      g_player.engine.muted = g_settings.muted;
+      g_player.html.restoreMuteTimeOut = undefined;
+    }, 1000);
+  }
+
   if (doUIRefresh) refreshUI();
 }
 
@@ -413,7 +422,6 @@ async function onPlay(trackIndex = undefined, time = 0) {
 }
 
 function onPlaySucceeded() {
-  g_player.engine.muted = g_settings.muted;
   setPlayerState(PlayerState.PLAYING);
   playlist.setCurrentTrackIndex(g_player.trackIndex);
   refreshUI();
