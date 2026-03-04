@@ -1263,6 +1263,41 @@ function getContextMenuData() {
   };
 }
 
+function showVideoActionIcon(action, container) {
+  const iconMap = {
+    play: "fa-play",
+    pause: "fa-pause",
+    rewind: "fa-backward",
+    ff: "fa-forward",
+  };
+  const icon = document.createElement("i");
+  icon.className = `fa-solid ${iconMap[action] || "fa-circle"}`;
+  Object.assign(icon.style, {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    fontSize: "33.3cqh", // 1/3 of the height
+    color: "rgba(255, 255, 255, 0.8",
+    textShadow: "0 0 15px rgba(0, 0, 0, 0.4)",
+    pointerEvents: "none",
+    zIndex: "11",
+  });
+  container.appendChild(icon);
+  const animation = icon.animate(
+    [
+      { opacity: 1, transform: "translate(-50%, -50%) scale(1)" },
+      { opacity: 0, transform: "translate(-50%, -50%) scale(1.5)" },
+    ],
+    {
+      duration: 400,
+      easing: "ease-out",
+    },
+  );
+  // clean up after finish
+  animation.onfinish = () => icon.remove();
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // IPC SEND ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -1517,9 +1552,9 @@ export function onInputEvent(type, event) {
       break;
     case "click":
       {
-        const videoCliked = event.target.closest("#mp-video-div");
-        const spectrumCliked = event.target.closest("#mp-spectrum-div");
-        if (videoCliked || spectrumCliked) {
+        const videoElementClicked = event.target.closest("#mp-video-div");
+        const spectrumElementCliked = event.target.closest("#mp-spectrum-div");
+        if (videoElementClicked || spectrumElementCliked) {
           if (g_clickTimer) {
             clearTimeout(g_clickTimer);
             g_clickTimer = null;
@@ -1528,12 +1563,22 @@ export function onInputEvent(type, event) {
 
           g_clickTimer = setTimeout(() => {
             g_clickTimer = null;
-            if (g_player.state === PlayerState.PLAYING) onPause();
-            else if (
+            if (g_player.state === PlayerState.PLAYING) {
+              showVideoActionIcon(
+                "pause",
+                spectrumElementCliked ?? videoElementClicked,
+              );
+              onPause();
+            } else if (
               g_player.state === PlayerState.PAUSED ||
               g_player.state === PlayerState.NOT_SET
-            )
+            ) {
+              showVideoActionIcon(
+                "play",
+                spectrumElementCliked ?? videoElementClicked,
+              );
               onPlay();
+            }
           }, 250);
 
           return;
@@ -1542,18 +1587,24 @@ export function onInputEvent(type, event) {
       break;
     case "dblclick":
       {
-        const videoCliked = event.target.closest("#mp-video-div");
-        const spectrumCliked = event.target.closest("#mp-spectrum-div");
-        if (videoCliked || spectrumCliked) {
+        const videoElementClicked = event.target.closest("#mp-video-div");
+        const spectrumElementClicked = event.target.closest("#mp-spectrum-div");
+        if (videoElementClicked || spectrumElementClicked) {
           clearTimeout(g_clickTimer);
           // 3 click zones
           const rect = (
-            spectrumCliked ? g_player.html.spectrumDiv : g_player.html.videoDiv
+            spectrumElementClicked
+              ? g_player.html.spectrumDiv
+              : g_player.html.videoDiv
           ).getBoundingClientRect();
           const x = event.clientX - rect.left;
           const width = rect.width;
           if (x < width * 0.25) {
             // left
+            showVideoActionIcon(
+              "rewind",
+              spectrumElementClicked ?? videoElementClicked,
+            );
             onRewind();
           } else if (x < width * 0.75) {
             // center
@@ -1561,6 +1612,10 @@ export function onInputEvent(type, event) {
             refreshUI();
           } else {
             // right
+            showVideoActionIcon(
+              "ff",
+              spectrumElementClicked ?? videoElementClicked,
+            );
             onFastForward();
           }
           return;
