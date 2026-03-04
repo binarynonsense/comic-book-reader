@@ -648,7 +648,7 @@ exports.getLocalization = function () {
     },
     {
       id: "tool-pre-rarfolder-text",
-      text: _("tool-pre-rarfolder"),
+      text: _("tool-pre-execfolder"),
     },
     {
       id: "tool-pre-rarfolder-update-button-text",
