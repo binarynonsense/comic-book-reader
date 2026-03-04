@@ -297,6 +297,7 @@ async function onPlay(trackIndex = undefined, time = 0) {
         Hls.isSupported();
       if (useHsl) {
         // NATIVE HSL
+        g_player.usingHsl = true;
         g_player.engine.hls = new Hls();
         g_player.engine.hls.attachMedia(g_player.engine);
         g_player.engine.hls.on(Hls.Events.MEDIA_ATTACHED, async function () {
@@ -448,6 +449,41 @@ function onPlaylistTrackDoubleClicked(fileIndex) {
     }
   }
   if (newTrackIndex !== undefined) onPlay(newTrackIndex, 0);
+}
+
+function onFastForward() {
+  setTime(parseFloat(g_player.html.sliderTime.value) + 10);
+}
+
+function onRewind() {
+  setTime(parseFloat(g_player.html.sliderTime.value) - 10);
+}
+
+function setTime(targetSecond) {
+  if (g_player.pendingTime !== undefined) {
+    g_player.pendingTime = targetSecond;
+  }
+
+  if (
+    g_player.engineType !== PlayerEngineType.YOUTUBE &&
+    isNaN(g_player.engine.duration)
+  )
+    return;
+  if (targetSecond < 0) targetSecond = 0;
+  if (targetSecond > g_player.html.sliderTime.max)
+    targetSecond = g_player.html.sliderTime.max;
+
+  if (g_player.engineType === PlayerEngineType.FFMPEG) {
+    ffmpeg.setTime(targetSecond, g_player.state);
+  } else if (g_player.engineType === PlayerEngineType.YOUTUBE) {
+    yt.setTime(targetSecond);
+  } else if (!g_player.usingHsl) {
+    if (g_player.engine.duration != Infinity) {
+      g_player.engine.currentTime = targetSecond;
+    }
+  }
+  g_player.html.sliderTime.value = targetSecond;
+  g_player.html.updateTimeStatusText();
 }
 
 function onNextTrack() {
@@ -887,18 +923,7 @@ function initUI() {
 
 function onSliderTimeChanged(slider) {
   const targetSecond = parseFloat(slider.value);
-  if (g_player.pendingTime !== undefined) {
-    console.log("g_player.pendingTime !== undefined");
-    g_player.pendingTime = targetSecond;
-  }
-  g_player.html.updateTimeStatusText();
-  if (g_player.engineType === PlayerEngineType.FFMPEG) {
-    ffmpeg.setTime(targetSecond, g_player.state);
-  } else if (!g_player.usingHsl && !isNaN(g_player.engine.duration)) {
-    if (g_player.engine.duration != Infinity) {
-      g_player.engine.currentTime = targetSecond;
-    }
-  }
+  setTime(targetSecond);
 }
 
 function getSliderValueAtMouse(slider, event) {
@@ -1105,19 +1130,9 @@ function onButtonClicked(buttonName) {
   } else if (buttonName === "volume-off") {
     g_settings.muted = true;
     g_player.engine.muted = true;
-    // g_player.lastVolume = g_player.engine.volume;
-    // g_player.engine.volume = 0;
-    // if (g_player.engineType === PlayerEngineType.YOUTUBE) {
-    //   yt.updateVolume(g_player.engine.volume);
-    // }
   } else if (buttonName === "volume-on") {
     g_settings.muted = false;
     g_player.engine.muted = false;
-    // if (g_player.lastVolume) g_player.engine.volume = g_player.lastVolume;
-    // else g_player.engine.volume = 1;
-    // if (g_player.engineType === PlayerEngineType.YOUTUBE) {
-    //   yt.updateVolume(g_player.engine.volume);
-    // }
   } else if (buttonName === "settings") {
     sendIpcToMain(
       "show-button-menu",
@@ -1517,12 +1532,14 @@ export function onInputEvent(type, event) {
           const width = rect.width;
           if (x < width * 0.25) {
             // left
+            onRewind();
           } else if (x < width * 0.75) {
             // center
             g_settings.fullView = !g_settings.fullView;
             refreshUI();
           } else {
             // right
+            onFastForward();
           }
           return;
         }

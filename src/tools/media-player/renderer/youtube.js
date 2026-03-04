@@ -23,7 +23,6 @@ export function getPlayer() {
 
 export function init(onError) {
   rendererOnError = onError;
-  addSliderHandler();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -227,9 +226,9 @@ export function updateVolume(value) {
   }
 }
 
-export function seekToTime(seconds) {
+export function setTime(targetSeconds) {
   if (g_ytPlayer && g_ytPlayer.seekTo) {
-    g_ytPlayer.seekTo(seconds, true);
+    g_ytPlayer.seekTo(targetSeconds, true);
   }
 }
 
@@ -312,21 +311,6 @@ function formatTime(time) {
   const mins = Math.floor(totalSeconds / 60);
   const secs = totalSeconds % 60;
   return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
-}
-
-function addSliderHandler() {
-  const slider = document.getElementById("mp-slider-time");
-  const timeText = document.getElementById("mp-text-time");
-  slider.addEventListener("input", (e) => {
-    if (g_ytPlayer && g_ytPlayer.seekTo) {
-      const seekTarget = Math.floor(e.target.value);
-      const total = Math.floor(g_ytPlayer.getDuration());
-      g_ytPlayer.seekTo(seekTarget, true);
-      if (timeText && total > 1) {
-        timeText.textContent = `${formatTime(seekTarget)} / ${formatTime(total)}`;
-      }
-    }
-  });
 }
 
 export function getYouTubeVideoIdFromUrl(url) {
