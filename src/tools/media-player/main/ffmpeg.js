@@ -117,7 +117,6 @@ async function startVideoServer() {
 
 exports.updateFfmpegPath = function (ffmpegPath) {
   g_ffmpegPath = ffmpegPath;
-  log.test("[ffmpeg] updateFfmpegPath: " + g_ffmpegPath);
 };
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -1340,7 +1340,6 @@ function initOnIpcCallbacks() {
 
   on("update-ffmpeg-available", (ffmpegAvailable) => {
     g_ffmpegAvailable = ffmpegAvailable;
-    console.log("update-ffmpeg-available: " + g_ffmpegAvailable);
   });
 
   on("open-playlist", (newPlaylist) => {

@@ -281,7 +281,6 @@ exports.updateFfmpegPath = function (ffmpegPath) {
   g_ffmpegPath = ffmpegPath;
   ffmpeg.updateFfmpegPath(ffmpegPath);
   sendIpcToRenderer("update-ffmpeg-available", g_ffmpegPath ? true : false);
-  log.test("[player] updateFfmpegPath: " + g_ffmpegPath);
 };
 
 function updateLocalizedText() {
