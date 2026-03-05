@@ -797,6 +797,7 @@ function initUI() {
           if (value < 0) value = 0;
         }
         g_player.html.sliderVolume.value = value;
+        g_player.engine.volume = value / 100;
         updateVolumeStatusText();
       }
       event.stopPropagation();
