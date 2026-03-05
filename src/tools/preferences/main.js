@@ -438,6 +438,15 @@ function initOnIpcCallbacks() {
       }
       folderPath = folderList[0];
       if (folderPath === undefined || folderPath === "") return;
+      if (!utils.isRarExeAvailable(folderPath)) {
+        sendIpcToRenderer(
+          "show-ok-modal",
+          _("tool-shared-modal-title-error"),
+          _("tool-pre-execfolder-error", `"${utils.getRarCommand()}"`, ""),
+          _("tool-shared-ui-close").toUpperCase(),
+        );
+        return;
+      }
     }
     settings.setValue("rarExeFolderPath", folderPath);
     settings.setValue("rarExeAvailable", undefined);
@@ -472,6 +481,15 @@ function initOnIpcCallbacks() {
       }
       folderPath = folderList[0];
       if (folderPath === undefined || folderPath === "") return;
+      if (!utils.isFfmpegExeAvailable(folderPath)) {
+        sendIpcToRenderer(
+          "show-ok-modal",
+          _("tool-shared-modal-title-error"),
+          _("tool-pre-execfolder-error", `"${utils.getFfmpegCommand()}"`, ""),
+          _("tool-shared-ui-close").toUpperCase(),
+        );
+        return;
+      }
     }
     settings.setValue("ffmpegExeFolderPath", folderPath);
     settings.setValue("ffmpegExeAvailable", undefined);
