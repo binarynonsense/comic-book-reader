@@ -358,7 +358,7 @@ async function onPlay(trackIndex = undefined, time = 0) {
           yt.createNewPlayer(
             ytId,
             time,
-            g_player.engine.volume,
+            g_settings.muted ? 0 : g_player.engine.volume,
             refreshUI,
             playlist.updateCurrentFileTags,
             onPlaySucceeded,
@@ -784,6 +784,8 @@ function initUI() {
         !g_settings.muted &&
         (event.target.id === "mp-slider-volume" ||
           event.target.classList.contains("fa-volume-up") ||
+          event.target.classList.contains("fa-volume-low") ||
+          event.target.classList.contains("fa-volume-off") ||
           event.target.classList.contains("mp-volume-wrapper"))
       ) {
         let value = parseInt(g_player.html.sliderVolume.value);
@@ -797,8 +799,7 @@ function initUI() {
           if (value < 0) value = 0;
         }
         g_player.html.sliderVolume.value = value;
-        g_player.engine.volume = value / 100;
-        updateVolumeStatusText();
+        onSliderVolumeChanged(g_player.html.sliderVolume);
       }
       event.stopPropagation();
     });
@@ -888,22 +889,10 @@ function initUI() {
 
   // slider volume///////////////////
 
-  function updateVolumeStatusText() {
-    const slider = g_player.html.sliderVolume;
-    const statusT = g_player.html.sliderVolumeStatusOverlay;
-    if (slider && statusT) {
-      const currentVal = parseFloat(slider.value) || 0;
-      statusT.textContent = Math.floor(currentVal) + "%";
-    }
-  }
-  g_player.html.updateVolumeStatusText = updateVolumeStatusText;
-
   g_player.html.sliderVolume = document.getElementById("mp-slider-volume");
-
   g_player.html.sliderVolume.addEventListener("input", function () {
     onSliderVolumeChanged(g_player.html.sliderVolume);
   });
-
   g_player.html.sliderVolume.addEventListener("change", function () {
     refreshUI();
   });
@@ -926,7 +915,7 @@ function initUI() {
     const rect = slider.getBoundingClientRect();
     hoverT.style.left = event.clientX - rect.left + "px";
 
-    updateVolumeStatusText();
+    updateVolumeUI();
     g_player.html.sliderVolumeStatusOverlay.style.display = "block";
   });
 
@@ -959,9 +948,49 @@ function getSliderValueAtMouse(slider, event) {
 
 function onSliderVolumeChanged(slider) {
   g_player.engine.volume = parseFloat(slider.value) / 100;
-  g_player.html.updateVolumeStatusText();
+  updateVolumeUI();
   if (g_player.engineType === PlayerEngineType.YOUTUBE) {
     yt.updateVolume(g_player.engine.volume);
+  }
+}
+
+function updateVolumeUI() {
+  const slider = g_player.html.sliderVolume;
+  const statusT = g_player.html.sliderVolumeStatusOverlay;
+  if (slider && statusT) {
+    const currentVal = parseFloat(slider.value) || 0;
+    statusT.textContent = Math.floor(currentVal) + "%";
+  }
+  // buttons
+  if (!g_settings.muted) {
+    g_player.html.sliderVolume.classList.remove("mp-disabled");
+    g_player.html.buttonVolumeOn.classList.add("mp-hidden");
+    g_player.html.buttonVolumeOff.classList.remove("mp-hidden");
+
+    const updateVolumeIcon = (id) => {
+      const useTag = g_player.html.buttonVolumeOff.querySelector("use");
+      if (useTag) {
+        const spritePath =
+          "../assets/libs/fontawesome7/sprites_custom/volume_sheet.svg";
+        useTag.setAttribute("href", `${spritePath}#${id}`);
+        console.log(`${spritePath}#${id}`);
+      }
+    };
+
+    const volume = g_player.engine.volume;
+    if (volume === 0) {
+      updateVolumeIcon("volume-off");
+    } else if (volume < 0.2) {
+      updateVolumeIcon("volume-low");
+    } else if (volume < 0.7) {
+      updateVolumeIcon("volume");
+    } else {
+      updateVolumeIcon("volume-high");
+    }
+  } else {
+    g_player.html.sliderVolume.classList.add("mp-disabled");
+    g_player.html.buttonVolumeOn.classList.remove("mp-hidden");
+    g_player.html.buttonVolumeOff.classList.add("mp-hidden");
   }
 }
 
@@ -1081,15 +1110,7 @@ function refreshUI() {
     g_player.html.videoDiv.classList.add("set-display-none");
   }
 
-  if (!g_settings.muted) {
-    g_player.html.buttonVolumeOn.classList.add("mp-hidden");
-    g_player.html.buttonVolumeOff.classList.remove("mp-hidden");
-    g_player.html.sliderVolume.classList.remove("mp-disabled");
-  } else {
-    g_player.html.buttonVolumeOn.classList.remove("mp-hidden");
-    g_player.html.buttonVolumeOff.classList.add("mp-hidden");
-    g_player.html.sliderVolume.classList.add("mp-disabled");
-  }
+  updateVolumeUI();
 
   if (g_settings.shuffle === 1) {
     g_player.html.buttonShuffleOff.classList.add("mp-hidden");
@@ -1145,9 +1166,15 @@ function onButtonClicked(buttonName) {
   } else if (buttonName === "volume-off") {
     g_settings.muted = true;
     g_player.engine.muted = true;
+    if (g_player.engineType === PlayerEngineType.YOUTUBE) {
+      yt.updateVolume(0);
+    }
   } else if (buttonName === "volume-on") {
     g_settings.muted = false;
     g_player.engine.muted = false;
+    if (g_player.engineType === PlayerEngineType.YOUTUBE) {
+      yt.updateVolume(g_player.engine.volume);
+    }
   } else if (buttonName === "settings") {
     sendIpcToMain(
       "show-button-menu",
