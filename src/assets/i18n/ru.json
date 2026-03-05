@@ -731,6 +731,7 @@
   "tool-pre-execfolder-example": "Например: {0}.",
   "[NOTE TO TRANSLATORS] tool-pre-execfolder-error": "{0} will be replaced with the name of an executable file, like ffmpeg.exe, rar... {1} is there just in case something needs to be added after path",
   "[NEEDS TRANSLATION]tool-pre-execfolder-error": "Couldn't find a working version of the {0} executable in that path{1}.",
+  "[NEEDS TRANSLATION]tool-pre-execfolder-success": "Found a working version of the {0} executable in that path{1}.",
   "tool-pre-other-preferences": "Другое",
   "tool-pre-tempfolder": "Папка Temp",
   "[NEEDS TRANSLATION]tool-pre-logger": "Event Logger",

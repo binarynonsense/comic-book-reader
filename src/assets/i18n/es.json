@@ -731,6 +731,7 @@
   "tool-pre-execfolder-example": "Ejemplo: {0}.",
   "[NOTE TO TRANSLATORS] tool-pre-execfolder-error": "{0} will be replaced with the name of an executable file, like ffmpeg.exe, rar... {1} is there just in case something needs to be added after path",
   "tool-pre-execfolder-error": "No se pudo encontrar una versión funcional del ejecutable {0} en esa ruta{1}.",
+  "tool-pre-execfolder-success": "Se encontró una versión funcional del ejecutable {0} en esa ruta{1}",
   "tool-pre-other-preferences": "Otras",
   "tool-pre-tempfolder": "Carpeta temporal",
   "tool-pre-logger": "Registro de eventos",
