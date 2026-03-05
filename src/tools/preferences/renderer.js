@@ -562,7 +562,6 @@ function init(
     // rar folder div, ul and buttons
     {
       g_rarExeFolderPathUl = document.getElementById("tool-pre-rarfolder-ul");
-      updateRarFolder(settings.rarExeFolderPath);
       document
         .getElementById("tool-pre-rarfolder-update-button")
         .addEventListener("click", (event) => {
@@ -584,7 +583,6 @@ function init(
       g_ffmpegExeFolderPathUl = document.getElementById(
         "tool-pre-ffmpegfolder-ul",
       );
-      updateFfmpegFolder(settings.ffmpegExeFolderPath);
       document
         .getElementById("tool-pre-ffmpegfolder-update-button")
         .addEventListener("click", (event) => {
@@ -856,11 +854,11 @@ function initOnIpcCallbacks() {
   });
 
   on("set-rar-folder", (...args) => {
-    updateRarFolder(...args);
+    updateExecFolder(g_rarExeFolderPathUl, ...args);
   });
 
   on("set-ffmpeg-folder", (...args) => {
-    updateFfmpegFolder(...args);
+    updateExecFolder(g_ffmpegExeFolderPathUl, ...args);
   });
 
   on("show-ok-modal", (...args) => {
@@ -920,8 +918,8 @@ function updateTempFolder(folderPath, saveAsRelative) {
   g_tempFolderPathCheckbox.checked = saveAsRelative;
 }
 
-function updateRarFolder(folderPath) {
-  g_rarExeFolderPathUl.innerHTML = "";
+function updateExecFolder(ul, folderPath, isValid, localization) {
+  ul.innerHTML = "";
   let li = document.createElement("li");
   li.className = "tools-collection-li";
   // text
@@ -929,19 +927,24 @@ function updateRarFolder(folderPath) {
   if (!folderPath || folderPath.trim() === "") text.innerHTML = "&nbsp;";
   else text.innerText = reducePathString(folderPath);
   li.appendChild(text);
-  g_rarExeFolderPathUl.appendChild(li);
-}
-
-function updateFfmpegFolder(folderPath) {
-  g_ffmpegExeFolderPathUl.innerHTML = "";
-  let li = document.createElement("li");
-  li.className = "tools-collection-li";
-  // text
-  let text = document.createElement("span");
-  if (!folderPath || folderPath.trim() === "") text.innerHTML = "&nbsp;";
-  else text.innerText = reducePathString(folderPath);
-  li.appendChild(text);
-  g_ffmpegExeFolderPathUl.appendChild(li);
+  // buttons
+  let buttons = document.createElement("span");
+  buttons.className = "tools-collection-li-infoset";
+  li.appendChild(buttons);
+  // valid/invalid icon
+  {
+    let button = document.createElement("span");
+    button.addEventListener("click", (event) => {});
+    if (isValid) {
+      button.innerHTML = `<i class="fa-regular fa-circle-check"></i>`;
+      button.title = localization.valid;
+    } else {
+      button.innerHTML = `<i class="fa-regular fa-circle-xmark"></i>`;
+      button.title = localization.invalid;
+    }
+    buttons.appendChild(button);
+  }
+  ul.appendChild(li);
 }
 
 let g_navKeys;

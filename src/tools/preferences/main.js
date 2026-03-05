@@ -61,6 +61,24 @@ exports.open = function () {
   let configFiles = appUtils.getConfigFiles();
   let logFiles = appUtils.getLogFile();
   sendIpcToRenderer("set-config-files", configFiles, logFiles);
+  sendIpcToRenderer(
+    "set-rar-folder",
+    settings.getValue("rarExeFolderPath"),
+    settings.canEditRars(),
+    {
+      valid: _("tool-pre-execfolder-validpath"),
+      invalid: _("tool-pre-execfolder-invalidpath"),
+    },
+  );
+  sendIpcToRenderer(
+    "set-ffmpeg-folder",
+    settings.getValue("ffmpegExeFolderPath"),
+    settings.canUseFFmpeg(),
+    {
+      valid: _("tool-pre-execfolder-validpath"),
+      invalid: _("tool-pre-execfolder-invalidpath"),
+    },
+  );
 };
 
 exports.close = function () {
@@ -423,7 +441,10 @@ function initOnIpcCallbacks() {
     }
     settings.setValue("rarExeFolderPath", folderPath);
     settings.setValue("rarExeAvailable", undefined);
-    sendIpcToRenderer("set-rar-folder", folderPath);
+    sendIpcToRenderer("set-rar-folder", folderPath, settings.canEditRars(), {
+      valid: _("tool-pre-execfolder-validpath"),
+      invalid: _("tool-pre-execfolder-invalidpath"),
+    });
   });
 
   on("change-ffmpeg-folder", (reset) => {
@@ -459,7 +480,15 @@ function initOnIpcCallbacks() {
       [
         "media-player"
       ].updateFfmpegPath(settings.canUseFFmpeg() ? utils.getFfmpegCommand(settings.getValue("ffmpegExeFolderPath")) : undefined);
-    sendIpcToRenderer("set-ffmpeg-folder", folderPath);
+    sendIpcToRenderer(
+      "set-ffmpeg-folder",
+      folderPath,
+      settings.canUseFFmpeg(),
+      {
+        valid: _("tool-pre-execfolder-validpath"),
+        invalid: _("tool-pre-execfolder-invalidpath"),
+      },
+    );
   });
 
   on("request-manual-updates-check", () => {

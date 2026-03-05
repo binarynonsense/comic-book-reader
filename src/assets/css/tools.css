@@ -704,6 +704,13 @@ html[dir="rtl"] .tools-range-bubble {
   border-bottom: 1px solid var(--tools-collection-border-color);
 }
 
+.tools-collection-li-infoset {
+  margin-left: auto;
+  display: flex;
+  flex-direction: row;
+  gap: 0px;
+}
+
 .tools-collection-li-buttonset {
   margin-left: auto;
   display: flex;
