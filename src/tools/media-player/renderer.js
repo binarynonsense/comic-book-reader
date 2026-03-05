@@ -779,6 +779,25 @@ function initUI() {
   document
     .getElementById("mp-div-topbar")
     .addEventListener("wheel", function (event) {
+      if (
+        !g_settings.muted &&
+        (event.target.id === "mp-slider-volume" ||
+          event.target.classList.contains("fa-volume-up") ||
+          event.target.classList.contains("mp-volume-wrapper"))
+      ) {
+        let value = parseInt(g_player.html.sliderVolume.value);
+        if (event.deltaY < 0) {
+          // up
+          value += 1;
+          if (value > 100) value = 100;
+        } else if (event.deltaY > 0) {
+          // down
+          value -= 1;
+          if (value < 0) value = 0;
+        }
+        g_player.html.sliderVolume.value = value;
+        updateVolumeStatusText();
+      }
       event.stopPropagation();
     });
 
