@@ -204,6 +204,7 @@ async function onInit(settings, loadedPlaylist) {
       g_player.html.sliderTime.value = g_player.pendingTime;
     }
 
+    g_player.engine.muted = g_settings.muted;
     g_player.engine.volume = g_settings.volume;
     g_player.html.sliderVolume.value = g_settings.volume * 100;
     if (g_settings.showPlaylist)
