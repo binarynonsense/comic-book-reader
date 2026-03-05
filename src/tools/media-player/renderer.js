@@ -118,9 +118,8 @@ function initPlayer() {
   });
 
   g_player.engine.addEventListener("timeupdate", function () {
-    updateTimeStatusText();
     if (g_player.engineType === PlayerEngineType.FFMPEG) {
-      ffmpeg.onSliderTimeTimeUpdate(g_player.engine, g_player.html.sliderTime);
+      ffmpeg.onSliderTimeUpdate(g_player.engine, g_player.html.sliderTime);
     } else if (g_player.engineType === PlayerEngineType.NATIVE) {
       if (g_player.usingHsl) {
         g_player.html.sliderTime.value = 0;
@@ -131,10 +130,13 @@ function initPlayer() {
         g_player.html.sliderTime.value = this.currentTime;
       }
     }
+    updateTimeUI();
   });
 
   g_player.engine.addEventListener("volumechange", function () {
-    g_player.html.sliderVolume.value = this.volume * 100;
+    g_player.html.sliderVolume.value = getVolumeExponentialFromLinear(
+      g_player.engine.volume,
+    );
   });
 
   g_player.engine.addEventListener("loadedmetadata", async () => {
@@ -180,7 +182,7 @@ async function onInit(settings, loadedPlaylist) {
     // init player ////
     initPlayer();
     ffmpeg.init(setPlayerState, sendIpcToMain, onError);
-    yt.init(onError, updateTimeStatusText);
+    yt.init(onError, updateTimeUI);
 
     // load settings & playlist ////
     g_settings = settings;
@@ -206,7 +208,9 @@ async function onInit(settings, loadedPlaylist) {
 
     g_player.engine.muted = g_settings.muted;
     g_player.engine.volume = g_settings.volume;
-    g_player.html.sliderVolume.value = g_settings.volume * 100;
+    g_player.html.sliderVolume.value = getVolumeExponentialFromLinear(
+      g_settings.volume,
+    );
     if (g_settings.showPlaylist)
       g_player.html.divPlaylist.classList.remove("mp-hidden");
     else g_player.html.divPlaylist.classList.add("mp-hidden");
@@ -495,7 +499,7 @@ function setTime(targetSecond) {
     }
   }
   g_player.html.sliderTime.value = targetSecond;
-  updateTimeStatusText();
+  updateTimeUI();
 }
 
 function onNextTrack() {
@@ -780,22 +784,15 @@ function initUI() {
   document
     .getElementById("mp-div-topbar")
     .addEventListener("wheel", function (event) {
-      if (
-        !g_settings.muted &&
-        (event.target.id === "mp-slider-volume" ||
-          event.target.classList.contains("fa-volume-up") ||
-          event.target.classList.contains("fa-volume-low") ||
-          event.target.classList.contains("fa-volume-off") ||
-          event.target.classList.contains("mp-volume-wrapper"))
-      ) {
-        let value = parseInt(g_player.html.sliderVolume.value);
+      if (!g_settings.muted && event.target.closest("#mp-div-volume")) {
+        let value = parseFloat(g_player.html.sliderVolume.value);
         if (event.deltaY < 0) {
           // up
-          value += 1;
-          if (value > 100) value = 100;
+          value += 0.01;
+          if (value > 1) value = 1;
         } else if (event.deltaY > 0) {
           // down
-          value -= 1;
+          value -= 0.01;
           if (value < 0) value = 0;
         }
         g_player.html.sliderVolume.value = value;
@@ -804,7 +801,7 @@ function initUI() {
       event.stopPropagation();
     });
 
-  // Hide Show Topbar on mouse move if full size
+  // hide/show topbar on mouse move if full size
   g_player.html.playerDiv = document.getElementById("media-player-container");
   g_player.html.topBar = document.getElementById("mp-div-topbar");
   g_player.html.topBarShowTimeOut;
@@ -878,7 +875,7 @@ function initUI() {
     const rect = slider.getBoundingClientRect();
     hoverT.style.left = event.clientX - rect.left + "px";
 
-    updateTimeStatusText();
+    updateTimeUI();
     g_player.html.sliderTimeStatusOverlay.style.display = "block";
   });
 
@@ -909,7 +906,7 @@ function initUI() {
     const hoveredVal = getSliderValueAtMouse(slider, event);
 
     const hoverT = g_player.html.sliderVolumeHoverTooltip;
-    hoverT.textContent = Math.round(hoveredVal) + "%";
+    hoverT.textContent = Math.round(hoveredVal * 100) + "%";
     hoverT.style.display = "block";
 
     const rect = slider.getBoundingClientRect();
@@ -928,6 +925,7 @@ function initUI() {
 function onSliderTimeChanged(slider) {
   const targetSecond = parseFloat(slider.value);
   setTime(targetSecond);
+  updateSliderFill(slider);
 }
 
 function getSliderValueAtMouse(slider, event) {
@@ -946,12 +944,40 @@ function getSliderValueAtMouse(slider, event) {
   return Math.round(rawValue / step) * step;
 }
 
+const updateSliderFill = (slider) => {
+  const value = parseFloat(slider.value);
+  const min = parseFloat(slider.min) || 0;
+  const max = parseFloat(slider.max) || 100;
+  const percent = ((value - min) / (max - min)) * 100;
+  if (value <= min) {
+    slider.style.background = `var(--mp-slider-current-right-color)`;
+  } else if (value >= max) {
+    slider.style.background = `var(--mp-slider-current-left-color)`;
+  } else {
+    slider.style.background = `linear-gradient(to right, 
+      var(--mp-slider-current-left-color) ${percent}%, 
+      var(--mp-slider-current-right-color) ${percent}%)`;
+  }
+};
+
 function onSliderVolumeChanged(slider) {
-  g_player.engine.volume = parseFloat(slider.value) / 100;
+  g_player.engine.volume = getVolumeLinearFromExponential(
+    parseFloat(slider.value),
+  );
   updateVolumeUI();
   if (g_player.engineType === PlayerEngineType.YOUTUBE) {
     yt.updateVolume(g_player.engine.volume);
   }
+}
+
+function getVolumeLinearFromExponential(logVolume) {
+  // return Math.pow(logVolume, 3);
+  return Math.pow(logVolume, 2);
+}
+
+function getVolumeExponentialFromLinear(linearVolume) {
+  // return Math.cbrt(linearVolume);
+  return Math.sqrt(linearVolume);
 }
 
 function updateVolumeUI() {
@@ -959,8 +985,9 @@ function updateVolumeUI() {
   const statusT = g_player.html.sliderVolumeStatusOverlay;
   if (slider && statusT) {
     const currentVal = parseFloat(slider.value) || 0;
-    statusT.textContent = Math.floor(currentVal) + "%";
+    statusT.textContent = Math.floor(currentVal * 100) + "%";
   }
+  updateSliderFill(slider);
   // buttons
   if (!g_settings.muted) {
     g_player.html.sliderVolume.classList.remove("mp-disabled");
@@ -973,16 +1000,15 @@ function updateVolumeUI() {
         const spritePath =
           "../assets/libs/fontawesome7/sprites_custom/volume_sheet.svg";
         useTag.setAttribute("href", `${spritePath}#${id}`);
-        console.log(`${spritePath}#${id}`);
       }
     };
 
     const volume = g_player.engine.volume;
     if (volume === 0) {
       updateVolumeIcon("volume-off");
-    } else if (volume < 0.2) {
+    } else if (volume < 0.0625) {
       updateVolumeIcon("volume-low");
-    } else if (volume < 0.7) {
+    } else if (volume < 0.36) {
       updateVolumeIcon("volume");
     } else {
       updateVolumeIcon("volume-high");
@@ -1111,6 +1137,7 @@ function refreshUI() {
   }
 
   updateVolumeUI();
+  updateTimeUI();
 
   if (g_settings.shuffle === 1) {
     g_player.html.buttonShuffleOff.classList.add("mp-hidden");
@@ -1279,9 +1306,11 @@ function onButtonClicked(buttonName) {
   refreshUI();
 }
 
-function updateTimeStatusText() {
+function updateTimeUI() {
   const slider = g_player.html.sliderTime;
   const statusT = g_player.html.sliderTimeStatusOverlay;
+
+  updateSliderFill(g_player.html.sliderTime);
 
   if (slider && statusT) {
     const maxSeconds = parseFloat(slider.max) || 0;

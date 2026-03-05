@@ -39,7 +39,7 @@ function setDefaultValues() {
   g_settings = {
     version: app.getVersion(),
     date: "",
-    volume: 0.8,
+    volume: 0.25,
     muted: false,
     shuffle: 0,
     repeat: 0,

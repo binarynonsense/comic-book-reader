@@ -48,7 +48,7 @@ export function setTime(seconds, prevPlayerState) {
   startStream(g_ffmpegSeekOffset, prevPlayerState);
 }
 
-export function onSliderTimeTimeUpdate(videoElement, inputSlider) {
+export function onSliderTimeUpdate(videoElement, inputSlider) {
   const currentTotalSeconds = g_ffmpegSeekOffset + videoElement.currentTime;
   if (inputSlider.max > 0) {
     inputSlider.value = currentTotalSeconds;

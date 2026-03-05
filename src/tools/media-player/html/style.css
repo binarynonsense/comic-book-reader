@@ -469,12 +469,7 @@ a:hover a:visited {
   white-space: nowrap;
   z-index: 100;
 }
-
 /* *********************** */
-
-#mp-button-playlist {
-  margin-left: 5px;
-}
 
 .mp-slider {
   display: inline-block;
@@ -489,28 +484,30 @@ a:hover a:visited {
   appearance: none;
   height: 5px;
   width: 60px;
-  background: var(--mediaplayer-slider-right-bg-color);
   outline: none;
-  -webkit-transition: 0.2s;
   transition: opacity 0.2s;
   border-radius: 3px;
-  overflow: hidden;
+
+  background: var(--mediaplayer-slider-right-bg-color);
+  --mp-slider-current-left-color: var(--mediaplayer-slider-left-bg-color);
+  --mp-slider-current-right-color: var(--mediaplayer-slider-right-bg-color);
 }
 
 .mp-slider:hover {
-  background: var(--mediaplayer-slider-hover-right-bg-color);
+  --mp-slider-current-left-color: var(--mediaplayer-slider-hover-left-bg-color);
+  --mp-slider-current-right-color: var(
+    --mediaplayer-slider-hover-right-bg-color
+  );
 }
 
 .mp-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   width: var(--mp-slider-thumb-width);
-  background: var(--mediaplayer-slider-left-bg-color);
-  border-radius: 5px;
-  box-shadow: -100vw 0 0 100vw var(--mediaplayer-slider-left-bg-color);
-}
-.mp-slider:hover::-webkit-slider-thumb {
-  background: var(--mediaplayer-slider-hover-left-bg-color);
-  box-shadow: -100vw 0 0 100vw var(--mediaplayer-slider-hover-left-bg-color);
+  height: var(--mp-slider-thumb-width);
+  background: #00000000; /* transparent */
+  border-radius: 0;
+  border: none;
+  box-shadow: none;
 }
 
 /* ************* PLAYLIST ************* */
