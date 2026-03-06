@@ -18,6 +18,10 @@ exports.getLocalization = function () {
       text: _("mp-tooltip-button-pause"),
     },
     {
+      id: "mp-button-stop",
+      text: _("mp-tooltip-button-stop"),
+    },
+    {
       id: "mp-button-next",
       text: _("mp-tooltip-button-next"),
     },

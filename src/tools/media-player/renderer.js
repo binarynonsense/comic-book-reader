@@ -456,6 +456,13 @@ async function onPause() {
   }
 }
 
+async function onStop() {
+  if (g_player.state === PlayerState.LOADING) {
+    clearPlayer();
+    refreshUI();
+  }
+}
+
 function onPlaylistTrackDoubleClicked(fileIndex) {
   let newTrackIndex;
   for (let index = 0; index < playlist.getTracks().length; index++) {
@@ -663,6 +670,11 @@ function initUI() {
   g_player.html.buttonPause.addEventListener("click", function () {
     onButtonClicked("pause");
   });
+
+  g_player.html.buttonStop = document.getElementById("mp-button-stop");
+  g_player.html.buttonStop.addEventListener("click", function () {
+    onButtonClicked("stop");
+  });
   g_player.html.buttonPrev = document.getElementById("mp-button-prev");
   g_player.html.buttonPrev.addEventListener("click", function () {
     onButtonClicked("prev");
@@ -684,14 +696,6 @@ function initUI() {
   });
 
   g_player.html.divPlaylist = document.getElementById("mp-div-playlist");
-  // g_player.html.buttonPlaylist = document.getElementById("mp-button-playlist");
-  // g_player.html.buttonPlaylist.addEventListener("click", function () {
-  //   onButtonClicked("playlist");
-  // });
-  // g_player.html.buttonClose = document.getElementById("mp-button-close");
-  // g_player.html.buttonClose.addEventListener("click", function () {
-  //   onButtonClicked("close");
-  // });
   g_player.html.buttonSettings = document.getElementById("mp-button-settings");
   g_player.html.buttonSettings.addEventListener("click", function () {
     onButtonClicked("settings");
@@ -1089,6 +1093,19 @@ function refreshUI() {
       g_player.html.buttonPlay.classList.add("mp-disabled");
       g_player.html.buttonPause.classList.add("mp-disabled");
     }
+    if (g_player.state === PlayerState.PLAYING) {
+      g_player.html.buttonPlay.classList.add("set-display-none");
+      g_player.html.buttonPause.classList.remove("set-display-none");
+      g_player.html.buttonStop.classList.add("set-display-none");
+    } else if (g_player.state === PlayerState.LOADING) {
+      g_player.html.buttonPlay.classList.add("set-display-none");
+      g_player.html.buttonPause.classList.add("set-display-none");
+      g_player.html.buttonStop.classList.remove("set-display-none");
+    } else {
+      g_player.html.buttonPlay.classList.remove("set-display-none");
+      g_player.html.buttonPause.classList.add("set-display-none");
+      g_player.html.buttonStop.classList.add("set-display-none");
+    }
 
     if (g_player.state === PlayerState.LOADING) {
       if (
@@ -1102,14 +1119,6 @@ function refreshUI() {
       }
     } else {
       g_player.html.videoLoadingDiv.classList.add("set-display-none");
-    }
-
-    if (g_player.state === PlayerState.PLAYING) {
-      g_player.html.buttonPlay.classList.add("set-display-none");
-      g_player.html.buttonPause.classList.remove("set-display-none");
-    } else {
-      g_player.html.buttonPlay.classList.remove("set-display-none");
-      g_player.html.buttonPause.classList.add("set-display-none");
     }
 
     if (g_settings.repeat === 2 || playlist.getCurrentTrackIndex() > 0) {
@@ -1129,6 +1138,7 @@ function refreshUI() {
     g_player.html.buttonPlay.classList.remove("set-display-none");
     g_player.html.buttonPlay.classList.add("mp-disabled");
     g_player.html.buttonPause.classList.add("set-display-none");
+    g_player.html.buttonStop.classList.add("set-display-none");
     g_player.html.buttonPrev.classList.add("mp-disabled");
     g_player.html.buttonNext.classList.add("mp-disabled");
 
@@ -1184,6 +1194,8 @@ function onButtonClicked(buttonName) {
     onPlay();
   } else if (buttonName === "pause") {
     onPause();
+  } else if (buttonName === "stop") {
+    onStop();
   } else if (buttonName === "prev") {
     onPrevTrack();
   } else if (buttonName === "next") {
