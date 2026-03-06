@@ -611,8 +611,9 @@ if (!gotTheLock) {
         callback({ cancel: false, requestHeaders: details.requestHeaders });
       },
     );
-    // NOTE: potential fix for youtube playing in the media player
-    // it wasn't needed in the end by keeping it for now for reference
+
+    // NOTE: potential fix for youtube playing in the media player.
+    // it wasn't needed in the end by keeping it for now for reference.
     // session.defaultSession.webRequest.onHeadersReceived(
     //   { urls: ["https://www.youtube-nocookie.com*"] },
     //   (details, callback) => {
@@ -622,6 +623,7 @@ if (!gotTheLock) {
     //     callback({ cancel: false, responseHeaders: details.responseHeaders });
     //   },
     // );
+
     // NOTE: potential fix for old radio streams that don't send headers to
     // inject CORS headers to prevent chromium from muting cross-origin media
     // when connected to the spectrum visualizer.
