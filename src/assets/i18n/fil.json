@@ -279,6 +279,8 @@
   "ui-modal-question-openrequestedfile": "Buksan ang File?",
   "mp-tooltip-button-play": "magpatugtog",
   "mp-tooltip-button-pause": "i-pause",
+  "[NEEDS TRANSLATION]mp-tooltip-button-stop": "Stop",
+  "[NEEDS TRANSLATION]mp-tooltip-button-reload": "Reload",
   "mp-tooltip-button-next": "susunod na track",
   "mp-tooltip-button-prev": "nakaraang track",
   "[NEEDS TRANSLATION]mp-tooltip-button-fastforward": "Fast Forward",

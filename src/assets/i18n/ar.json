@@ -279,6 +279,8 @@
   "ui-modal-question-openrequestedfile": "فتح الملف؟",
   "mp-tooltip-button-play": "تشغيل",
   "mp-tooltip-button-pause": "إيقاف مؤقت",
+  "[NEEDS TRANSLATION]mp-tooltip-button-stop": "Stop",
+  "[NEEDS TRANSLATION]mp-tooltip-button-reload": "Reload",
   "mp-tooltip-button-next": "المقطع التالي",
   "mp-tooltip-button-prev": "المقطع السابق",
   "[NEEDS TRANSLATION]mp-tooltip-button-fastforward": "Fast Forward",

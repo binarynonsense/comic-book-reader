@@ -279,6 +279,8 @@
   "ui-modal-question-openrequestedfile": "Открыть файл?",
   "mp-tooltip-button-play": "Воспроизвести",
   "mp-tooltip-button-pause": "Приостановить",
+  "[NEEDS TRANSLATION]mp-tooltip-button-stop": "Stop",
+  "[NEEDS TRANSLATION]mp-tooltip-button-reload": "Reload",
   "mp-tooltip-button-next": "Следующий",
   "mp-tooltip-button-prev": "Предыдущий",
   "[NEEDS TRANSLATION]mp-tooltip-button-fastforward": "Fast Forward",
