@@ -253,11 +253,13 @@ html[dir="rtl"] .tools-button-accent i {
 }
 
 .tools-menu-button-icon {
-  /* padding-inline-end: 30px; */
-  max-width: 0px;
-  align-content: center;
-  justify-content: center;
   min-width: 50px;
+  text-align: center;
+  max-width: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: inherit;
 }
 
 .tools-menu-button:hover {
