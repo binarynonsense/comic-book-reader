@@ -7,7 +7,6 @@
 
 const { spawn, exec } = require("node:child_process");
 const http = require("node:http");
-const fs = require("node:fs");
 
 const log = require("../../../shared/main/logger");
 
@@ -25,9 +24,9 @@ let sendIpcToRenderer;
 let g_lastResponse = null;
 
 function closeCurrentVideo() {
-  log.editor("[ffmpeg] closing current video");
   // kill old response still hanging
   if (g_lastResponse) {
+    log.editor("[ffmpeg] destroying g_lastResponse");
     try {
       g_lastResponse.end();
       g_lastResponse.destroy();
@@ -36,6 +35,7 @@ function closeCurrentVideo() {
   g_lastResponse = null;
   // kill the old ffmpeg
   if (g_ffmpegProcess) {
+    log.editor("[ffmpeg] killing g_ffmpegProcess");
     g_ffmpegProcess.kill("SIGKILL");
     g_ffmpegProcess = null;
   }
@@ -175,6 +175,7 @@ exports.initOnIpcCallbacks = function (on, _sendIpcToRenderer) {
 // HELPERS ////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+// const fs = require("node:fs");
 // async function getValidFfmpegPath(customPath) {
 //   if (customPath && fs.existsSync(customPath)) return customPath;
 
@@ -231,7 +232,7 @@ async function getMetadata(bin, file) {
 const { app } = require("electron");
 
 app.on("will-quit", () => {
-  log.debug("[ffmpeg] cleaning up");
+  if (g_ffmpegProcess || g_videoServer) log.debug("[ffmpeg] cleaning up");
   if (g_ffmpegProcess) {
     try {
       g_ffmpegProcess.kill("SIGKILL");
