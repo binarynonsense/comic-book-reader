@@ -33,6 +33,23 @@ let g_player = { html: {} };
 function setPlayerState(state, doUIRefresh = false) {
   // console.log("setPlayerState " + state);
   // console.trace("stack trace");
+  if (g_player.html.loadingWatchdog) {
+    clearTimeout(g_player.html.loadingWatchdog);
+    g_player.html.loadingWatchdog = null;
+  }
+
+  if (state === PlayerState.LOADING) {
+    const watchdogId = g_currentLoadId;
+    g_player.html.loadingWatchdog = setTimeout(() => {
+      if (
+        g_player.state === PlayerState.LOADING &&
+        watchdogId === g_currentLoadId
+      ) {
+        onError("NotSupportedError");
+      }
+    }, 8000);
+  }
+
   g_player.state = state;
   clearTimeout(g_player.html.restoreMuteTimeOut);
 
@@ -47,10 +64,12 @@ function setPlayerState(state, doUIRefresh = false) {
 }
 
 function clearPlayer() {
-  if (g_player.engine && g_player.engine.src !== "") {
+  g_currentLoadId++;
+
+  if (g_player.engine && g_player.engine.hasAttribute("src")) {
     g_player.engine.pause();
-    g_player.engine.src = "";
-    g_player.engine.load();
+    g_player.engine.removeAttribute("src");
+    g_player.engine.load(); // reset the engine's memory
     g_player.html.sliderTime.max = 100;
     g_player.html.sliderTime.value = 0;
   }
@@ -62,13 +81,20 @@ function clearPlayer() {
   if (g_player.engine) {
     g_player.usingHsl = false;
     if (g_player.engine.hls) {
+      g_player.engine.hls.detachMedia();
       g_player.engine.hls.destroy();
+      g_player.engine.hls = null;
     }
   }
   sendIpcToMain("mp-ffmpeg-close-video");
   yt.destroyPlayer();
 
-  g_player.trackIndex = playlist.getCurrentTrackIndex();
+  // g_player.trackIndex = playlist.getCurrentTrackIndex();
+  if (g_player.trackIndex) playlist.setCurrentTrackIndex(g_player.trackIndex);
+  else {
+    g_player.trackIndex = playlist.getCurrentTrackIndex();
+  }
+  playlist.scrollToCurrent();
   g_player.trackMetadata = undefined;
   g_player.trackHasVideoMetadata = undefined;
 
@@ -76,6 +102,8 @@ function clearPlayer() {
   g_player.html.topBarShowTimeOut = undefined;
   clearTimeout(g_player.html.restoreMuteTimeOut);
   g_player.html.restoreMuteTimeOut = undefined;
+  clearTimeout(g_player.html.loadingWatchdog);
+  g_player.html.loadingWatchdog = undefined;
 }
 
 function initPlayer() {
@@ -97,23 +125,27 @@ function initPlayer() {
 
   g_player.engine.addEventListener("error", (error) => {
     // ref: https://developer.mozilla.org/en-US/docs/Web/API/MediaError/message
-    let message;
-    switch (error.target.error.code) {
-      case MediaError.MEDIA_ERR_ABORTED:
-        message = "Canceled audio playback.";
-        break;
-      case MediaError.MEDIA_ERR_NETWORK:
-        message = "A network error occurred while fetching the audio.";
-        break;
-      case MediaError.MEDIA_ERR_DECODE:
-        message = "An error occurred while decoding the audio.";
-        break;
-      case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
-        message = "Audio is missing or is an unsupported format.";
-        break;
-      default:
-        message = "An unknown error occurred.";
-        break;
+    const engineError = g_player.engine.error;
+    if (!engineError) return;
+    if (
+      g_player.engineType === PlayerEngineType.NATIVE &&
+      g_player.state === PlayerState.LOADING
+    ) {
+      if (engineError.code === MediaError.MEDIA_ERR_NETWORK) {
+        if (g_player.state === PlayerState.LOADING) {
+          onError("NotSupportedError");
+        }
+      }
+    } else if (
+      g_player.engineType === PlayerEngineType.NATIVE &&
+      g_player.state === PlayerState.PLAYING
+    ) {
+      if (
+        engineError.code === MediaError.MEDIA_ERR_NETWORK ||
+        engineError.code === MediaError.MEDIA_ERR_DECODE
+      ) {
+        onError("NotSupportedError");
+      }
     }
   });
 
@@ -266,9 +298,10 @@ async function onPlay(trackIndex = undefined, time = 0) {
         g_player.engineType === PlayerEngineType.NATIVE ||
         g_player.engineType === PlayerEngineType.FFMPEG
       ) {
-        g_player.engine.play();
+        await g_player.engine.play().catch(() => {});
         setPlayerState(PlayerState.PLAYING);
         refreshUI();
+        playlist.scrollToCurrent();
         return;
       } else if (g_player.engineType === PlayerEngineType.YOUTUBE) {
         if (yt.onPlay()) {
@@ -318,17 +351,24 @@ async function onPlay(trackIndex = undefined, time = 0) {
         g_player.engine.hls = new Hls();
         g_player.engine.hls.attachMedia(g_player.engine);
         g_player.engine.hls.on(Hls.Events.MEDIA_ATTACHED, async function () {
-          g_player.engine.hls.loadSource(
-            playlist.getTracks()[trackIndex].fileUrl,
-          );
-          g_player.html.sliderTime.value = 0;
-          g_player.engine.currentTime = 0;
-          g_player.engineType = PlayerEngineType.NATIVE;
-          await g_player.engine.play();
+          try {
+            g_player.engine.hls.loadSource(
+              playlist.getTracks()[trackIndex].fileUrl,
+            );
+            g_player.html.sliderTime.value = 0;
+            g_player.engine.currentTime = 0;
+            g_player.engineType = PlayerEngineType.NATIVE;
+            await g_player.engine.play();
+          } catch (error) {
+            if (error.name?.includes("AbortError")) return;
+            console.log("[Media Player] hls play failed:", error);
+            onError(error);
+          }
         });
         // ref: https://github.com/video-dev/hls.js/blob/master/docs/API.md#fatal-error-recovery
         g_player.engine.hls.on(Hls.Events.ERROR, function (event, data) {
           if (data.fatal) {
+            const currentSrc = g_player.engine.getAttribute("src");
             switch (data.type) {
               case Hls.ErrorTypes.MEDIA_ERROR:
                 console.log(
@@ -341,9 +381,13 @@ async function onPlay(trackIndex = undefined, time = 0) {
                   "[Media Player] hls: fatal network error encountered",
                   data,
                 );
+                if (!currentSrc || currentSrc === "") return;
                 onError("NotSupportedError");
+                break;
               default:
+                if (!currentSrc || currentSrc === "") return;
                 onError("NotSupportedError");
+                break;
             }
           }
         });
@@ -392,7 +436,13 @@ async function onPlay(trackIndex = undefined, time = 0) {
       }
     } catch (error) {
       g_player.engine.muted = wasMuted;
-      if (error.toString().includes("NotSupportedError")) {
+      if (error.name === "AbortError") {
+        return;
+      }
+      if (
+        error.name?.includes("NotSupportedError") ||
+        error.message?.includes("NotSupportedError")
+      ) {
         if (g_ffmpegAvailable) {
           if (loadId !== g_currentLoadId) {
             return;
@@ -406,9 +456,6 @@ async function onPlay(trackIndex = undefined, time = 0) {
           g_player.engineType = PlayerEngineType.FFMPEG;
           g_player.mediaType = PlayerMediaType.VIDEO;
           g_player.engine.pause();
-          // console.log(
-          //   "[Media Player] unsupported natively, will try loading with ffmpeg",
-          // );
           sendIpcToMain(
             "mp-ffmpeg-load-video",
             playlist.getTracks()[trackIndex].fileUrl,
@@ -417,6 +464,8 @@ async function onPlay(trackIndex = undefined, time = 0) {
         } else {
           onError(error);
         }
+      } else if (error.name === "AbortError") {
+        return;
       } else {
         onError(error);
       }
@@ -565,8 +614,9 @@ function onEnded() {
 //////
 
 function onError(error) {
-  console.log("[Media Player] " + error);
-  if (error.toString().includes("NotSupportedError")) {
+  const errorString = error?.message || error?.toString() || "Unknown Error";
+  console.log("[Media Player] " + errorString);
+  if (errorString.includes("NotSupportedError")) {
     sendIpcToMain("on-play-error", "NotSupportedError");
   } else {
     sendIpcToMain("on-play-error", "NotSupportedError");
