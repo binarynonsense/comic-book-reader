@@ -611,6 +611,8 @@ if (!gotTheLock) {
         callback({ cancel: false, requestHeaders: details.requestHeaders });
       },
     );
+    // NOTE: potential fix for youtube playing in the media player
+    // it wasn't needed in the end by keeping it for now for reference
     // session.defaultSession.webRequest.onHeadersReceived(
     //   { urls: ["https://www.youtube-nocookie.com*"] },
     //   (details, callback) => {
@@ -620,6 +622,18 @@ if (!gotTheLock) {
     //     callback({ cancel: false, responseHeaders: details.responseHeaders });
     //   },
     // );
+    // NOTE: potential fix for old radio streams that don't send headers to
+    // inject CORS headers to prevent chromium from muting cross-origin media
+    // when connected to the spectrum visualizer.
+    // session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
+    //   if (details.resourceType === "media") {
+    //     const responseHeaders = { ...details.responseHeaders };
+    //     responseHeaders["access-control-allow-origin"] = ["*"];
+    //     responseHeaders["access-control-expose-headers"] = ["*"];
+    //     return callback({ responseHeaders });
+    //   }
+    //   callback({ responseHeaders: details.responseHeaders });
+    // });
   });
 
   app.on("will-quit", () => {
