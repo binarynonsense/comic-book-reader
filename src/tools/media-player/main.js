@@ -59,11 +59,16 @@ function initOnIpcCallbacks() {
     g_playlist = _playlist;
   });
 
-  on("on-open-clicked", (mode) => {
+  on("on-open-clicked", (mode, trackNum) => {
     if (mode === 0) {
       sendIpcToRenderer(
         "show-modal-open",
-        _("ui-modal-prompt-button-open"),
+        _("ui-modal-prompt-button-open-in-mediaplayer"),
+        trackNum
+          ? _("tool-shared-modal-title-note") +
+              ": " +
+              _("mp-modal-info-open-will-start-new-playlist")
+          : "",
         _("ui-modal-prompt-button-cancel"),
         _("menu-tools-files"),
         "URL",
@@ -72,7 +77,8 @@ function initOnIpcCallbacks() {
     } else {
       sendIpcToRenderer(
         "show-modal-open",
-        _("tool-shared-ui-add"),
+        _("ui-modal-prompt-button-add-to-playlist"),
+        "",
         _("ui-modal-prompt-button-cancel"),
         _("menu-tools-files"),
         "URL",

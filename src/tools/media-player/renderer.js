@@ -1189,7 +1189,7 @@ function onButtonClicked(buttonName) {
   } else if (buttonName === "next") {
     onNextTrack();
   } else if (buttonName === "open") {
-    sendIpcToMain("on-open-clicked", 0);
+    sendIpcToMain("on-open-clicked", 0, playlist.getTracks().length);
   } else if (buttonName === "volume-off") {
     g_settings.muted = true;
     g_player.engine.muted = true;
@@ -1786,6 +1786,7 @@ function showModalAlert(title, message, textButton1) {
 
 function showModalOpen(
   title,
+  message,
   textButtonBack,
   textButtonOpenFile,
   textButtonOpenUrl,
@@ -1823,7 +1824,8 @@ function showModalOpen(
 
   g_openModal = modals.show({
     showFocus: showFocus,
-    title: title,
+    title,
+    message,
     frameWidth: 400,
     zIndexDelta: 6,
     close: {

@@ -76,15 +76,15 @@ exports.getLocalization = function () {
 
     {
       id: "mp-button-clear",
-      text: _("mp-tooltip-button-clear"),
+      text: _("mp-tooltip-button-playlist-clear"),
     },
     {
       id: "mp-button-add",
-      text: _("mp-tooltip-button-add"),
+      text: _("mp-tooltip-button-playlist-add"),
     },
     {
       id: "mp-button-delete",
-      text: _("mp-tooltip-button-delete"),
+      text: _("mp-tooltip-button-playlist-delete"),
     },
     {
       id: "mp-button-save",
