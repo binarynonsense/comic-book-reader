@@ -1,8 +1,6 @@
 {
   "@metadata": {
-    "authors": [
-      "Álvaro"
-    ],
+    "authors": ["Álvaro"],
     "last-updated": "2026-02-20",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.17.0",
@@ -313,6 +311,7 @@
   "mp-menu-audio": "Audio",
   "mp-menu-videoarea": "Área de vídeo",
   "mp-menu-spectrum": "Visulaizador de espactro",
+  "mp-modal-info-open-will-start-new-playlist": "Esto iniciará una nueva lista de reproducción.",
   "home-screen": "Pantalla principal",
   "home-button-files-tools": "Herramientas de archivo",
   "home-button-art-tools": "Herramientas de arte",
@@ -516,6 +515,7 @@
   "tool-shared-tab-search-settings": "Configuración de búsqueda",
   "tool-shared-modal-title-warning": "Advertencia",
   "tool-shared-modal-title-info": "Info",
+  "tool-shared-modal-title-note": "Nota",
   "tool-shared-modal-title-alert": "Alerta",
   "tool-shared-modal-title-error": "Error",
   "tool-shared-modal-title-error-unknown": "Error desconocido",
@@ -731,7 +731,6 @@
   "tool-pre-execfolder-example": "Ejemplo: {0}.",
   "[NOTE TO TRANSLATORS] tool-pre-execfolder-error": "{0} will be replaced with the name of an executable file, like ffmpeg.exe, rar... {1} is there just in case something needs to be added after path",
   "tool-pre-execfolder-error": "No se pudo encontrar una versión funcional del ejecutable {0} en esa ruta{1}.",
-  "[NEEDS TRANSLATION]tool-pre-execfolder-success": "Found a working version of the {0} executable in that path{1}.",
   "tool-pre-execfolder-validpath": "Ruta válida",
   "tool-pre-execfolder-invalidpath": "Ruta inválida",
   "tool-pre-other-preferences": "Otras",
