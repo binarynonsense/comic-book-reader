@@ -67,6 +67,7 @@ function clearPlayer() {
   g_currentLoadId++;
 
   clearPlayerSubtitle();
+  g_player.externalSubtitles = [];
 
   if (g_player.engine && g_player.engine.hasAttribute("src")) {
     g_player.engine.pause();
@@ -281,6 +282,7 @@ async function onInit(settings, loadedPlaylist) {
     else g_player.html.divPlaylist.classList.add("mp-hidden");
 
     if (g_settings.showSpectrum) spectrumVisualizer.start();
+    setSubtitleHighContrastMode(g_settings.subtitleHighContrastMode);
 
     ////////////////
     refreshUI();
@@ -723,6 +725,14 @@ function showSpectrumVisualizer(show) {
 // SUBTITLES //////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+function clearPlayerSubtitle() {
+  g_player.subtitle = undefined;
+  if (g_player?.html?.videoSubtitleDiv)
+    g_player.html.videoSubtitleDiv.textContent = "";
+  if (g_player?.html?.sliderTime)
+    updateSubtitleUI(g_player.html.sliderTime.value);
+}
+
 async function loadEmbeddedSubtitle(filePath, subIndex) {
   if (
     g_player.trackMetadata &&
@@ -746,12 +756,52 @@ async function loadEmbeddedSubtitle(filePath, subIndex) {
   }
 }
 
-function clearPlayerSubtitle() {
-  g_player.subtitle = undefined;
-  if (g_player?.html?.videoSubtitleDiv)
-    g_player.html.videoSubtitleDiv.textContent = "";
-  if (g_player?.html?.sliderTime)
-    updateSubtitleUI(g_player.html.sliderTime.value);
+function addExternalSubtitleData(title, data) {
+  if (data && title) {
+    g_player.externalSubtitles.push({
+      title,
+      data,
+    });
+    loadExternalSubtitle(g_player.externalSubtitles.length - 1);
+  }
+}
+
+async function loadExternalSubtitle(subIndex) {
+  if (
+    g_player.externalSubtitles &&
+    g_player.externalSubtitles.length >= subIndex
+  ) {
+    const subtitle = g_player.externalSubtitles[subIndex];
+    if (subtitle.data) {
+      g_player.subtitle = {
+        type: "external",
+        index: subIndex,
+        data: subtitle.data,
+        dataIndex: -1,
+      };
+    }
+  }
+}
+
+function canLoadSubtitles() {
+  return (
+    g_player.state !== PlayerState.NOT_SET &&
+    g_player.mediaType === PlayerMediaType.VIDEO &&
+    g_player.engineType !== PlayerEngineType.YOUTUBE
+  );
+}
+
+function setSubtitleHighContrastMode(isOn) {
+  g_settings.subtitleHighContrastMode = isOn;
+  if (isOn) {
+    g_player.html.videoSubtitleDiv.classList.add(
+      "mp-video-subtitle-high-contrast",
+    );
+  } else {
+    g_player.html.videoSubtitleDiv.classList.remove(
+      "mp-video-subtitle-high-contrast",
+    );
+  }
 }
 
 function updateSubtitleUI(relativeTime) {
@@ -769,10 +819,14 @@ function updateSubtitleUI(relativeTime) {
   if (index !== g_player.subtitle.dataIndex) {
     if (index !== -1) {
       const sub = g_player.subtitle.data[index];
-      g_player.html.videoSubtitleDiv.textContent = sub.text.replace(
-        /\n/g,
-        " / ",
-      );
+      g_player.html.videoSubtitleDiv.innerHTML = "";
+      sub.text.split("\n").forEach((lineText, index, array) => {
+        const span = document.createElement("span");
+        span.textContent = lineText;
+        span.className = "mp-video-subtitle-line";
+        g_player.html.videoSubtitleDiv.appendChild(span);
+      });
+      // g_player.html.videoSubtitleDiv.textContent = sub.text;
     } else {
       g_player.html.videoSubtitleDiv.textContent = "";
     }
@@ -1513,7 +1567,8 @@ function getContextMenuData() {
     currentFileIndex: playlist.getCurrentTrackFileIndex(),
     trackMetadata: g_player.trackMetadata,
     subtitle: g_player.subtitle,
-    playerState: g_player.state,
+    canLoadSubtitles: canLoadSubtitles(),
+    externalSubtitles: g_player.externalSubtitles,
   };
 }
 
@@ -1615,6 +1670,10 @@ function initOnIpcCallbacks() {
       onPlay(trackIndex, 0);
     }
     refreshUI();
+  });
+
+  on("add-subtitle-from-file", (...args) => {
+    addExternalSubtitleData(...args);
   });
 
   on("update-layout-pos", (position) => {
@@ -1747,6 +1806,23 @@ function initOnIpcCallbacks() {
         );
         updateSubtitleUI(g_player.html.sliderTime.value);
         refreshUI();
+        break;
+
+      case "load-external-subtitle-track":
+        loadExternalSubtitle(args[1]);
+        updateSubtitleUI(g_player.html.sliderTime.value);
+        refreshUI();
+        break;
+
+      case "toggle-subtitle-high-contrast-mode":
+        setSubtitleHighContrastMode(!g_settings.subtitleHighContrastMode);
+        break;
+
+      case "add-subtitle-file":
+        sendIpcToMain(
+          "on-add-subtitle-file-clicked",
+          decodeURI(playlist.getTracks()[g_player.trackIndex].fileUrl),
+        );
         break;
     }
   });

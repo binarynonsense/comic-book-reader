@@ -6,6 +6,9 @@
  */
 
 const fs = require("node:fs");
+const path = require("node:path");
+
+const log = require("../../../shared/main/logger");
 
 function srtTimeToSeconds(timeString) {
   if (!timeString) return 0;
@@ -57,10 +60,35 @@ exports.parseSRT = function (data) {
 
 exports.loadExternalSRT = function (filePath) {
   try {
+    if (path.extname(filePath).toLowerCase() !== ".srt") {
+      return [];
+    }
+
+    const fd = fs.openSync(filePath, "r");
+    const initialBuffer = Buffer.alloc(1024);
+    fs.readSync(fd, initialBuffer, 0, 1024, 0);
+    fs.closeSync(fd);
+
+    // binary file test, check for null bytes
+    // NOTE: may fail with utf-16... for now utf-8 and ascii only are loaded then
+    if (initialBuffer.includes(0)) {
+      log.test("binary!!!!");
+      return [];
+    }
+
     const rawData = fs.readFileSync(filePath, "utf8");
+
+    // quick structure test
+    const timeMatchRegex =
+      /(\d{2}:\d{2}:\d{2}[,\.]\d{3})\s*-->\s*(\d{2}:\d{2}:\d{2}[,\.]\d{3})/;
+    if (!timeMatchRegex.test(rawData.slice(0, 2000))) {
+      log.test("SRT structure not found !!!!");
+      return [];
+    }
+
     return exports.parseSRT(rawData);
   } catch (error) {
-    console.error("[subtitles] failed to read external SRT file:", error);
+    log.debug("[subtitles] failed to read external SRT file:", error);
     return [];
   }
 };

@@ -51,6 +51,7 @@ function setDefaultValues() {
     showPlaylist: true,
     showVideo: true,
     showSpectrum: true,
+    subtitleHighContrastMode: false,
   };
 }
 
@@ -102,6 +103,9 @@ function sanitize() {
   }
   if (typeof g_settings.showSpectrum !== "boolean") {
     g_settings.showSpectrum = true;
+  }
+  if (typeof g_settings.subtitleHighContrastMode !== "boolean") {
+    g_settings.subtitleHighContrastMode = false;
   }
 }
 

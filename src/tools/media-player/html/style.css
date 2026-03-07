@@ -250,20 +250,42 @@ a:hover a:visited {
   z-index: 7;
 }
 
+/*  */
+
 #mp-video-subtitle {
   position: absolute;
   inset: 0;
+  pointer-events: none;
   display: flex;
-  align-items: end;
-  justify-content: center;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 6cqh 8cqw;
+  gap: 0.5cqh;
+
   color: rgb(224, 224, 224);
   font-size: 5cqh;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
   font-weight: bold;
   text-align: center;
-  width: 100%;
-  padding: 6cqh 8cqw;
-  pointer-events: none;
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
+}
+
+.mp-video-subtitle-line {
+  display: inline-block;
+  white-space: pre-wrap;
+  text-wrap: balance;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+#mp-video-subtitle.mp-video-subtitle-high-contrast .mp-video-subtitle-line {
+  background-color: rgba(0, 0, 0, 0.75);
+  padding: 0.1em 0.4em;
+  border-radius: 0.2em;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  color: #ffffff;
 }
 
 /* -------------------------------------------------- */

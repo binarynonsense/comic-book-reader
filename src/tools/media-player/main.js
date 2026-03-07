@@ -197,6 +197,10 @@ function initOnIpcCallbacks() {
       sendIpcToRenderer,
     );
   });
+
+  on("on-add-subtitle-file-clicked", (...args) => {
+    callAddSubtitleFromFileDialog(...args);
+  });
 }
 
 // HANDLE
@@ -400,6 +404,28 @@ function getValidFiles(filePaths) {
     }
   });
   return files;
+}
+
+async function callAddSubtitleFromFileDialog(filePath) {
+  try {
+    let allowMultipleSelection = false;
+    let allowedFileTypesName = _("mp-menu-subtitle");
+    let allowedFileTypesList = ["srt"];
+    let filePaths = appUtils.chooseFiles(
+      g_mainWindow,
+      filePath,
+      allowedFileTypesName,
+      allowedFileTypesList,
+      allowMultipleSelection,
+    );
+    if (filePaths === undefined || filePaths.length <= 0) {
+      return;
+    }
+    const data = await subtitles.loadExternalSRT(filePaths[0]);
+    if (!data || data.length <= 0) return;
+    const title = path.basename(filePaths[0]);
+    sendIpcToRenderer("add-subtitle-from-file", title, data);
+  } catch (error) {}
 }
 
 function callOpenFilesDialog(mode) {

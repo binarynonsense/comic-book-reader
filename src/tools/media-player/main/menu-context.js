@@ -186,13 +186,14 @@ exports.show = function (type, params, data, sendIpcToRenderer) {
         submenu: [
           {
             label: _("mp-menu-subtitle-addfile") + "...",
+            enabled: data.canLoadSubtitles,
             click() {
-              // TODO: dialog
-              // sendIpcToRenderer("on-context-menu", "add-subtitle-file", subtitleData);
+              sendIpcToRenderer("on-context-menu", "add-subtitle-file");
             },
           },
           {
             label: _("mp-menu-media-track"),
+            enabled: data.canLoadSubtitles,
             submenu: [
               {
                 label: _("mp-menu-media-track-disabled"),
@@ -205,12 +206,55 @@ exports.show = function (type, params, data, sendIpcToRenderer) {
                   );
                 },
               },
+              ...getExternalSubtitleTracks(data),
               ...getEmbeddedSubtitleTracks(data),
             ],
+          },
+          { type: "separator" },
+          {
+            label: _("mp-menu-subtitle-highcontrastmode"),
+            type: "checkbox",
+            checked: data.settings.subtitleHighContrastMode,
+            click() {
+              sendIpcToRenderer(
+                "on-context-menu",
+                "toggle-subtitle-high-contrast-mode",
+              );
+            },
           },
         ],
       },
     ];
+  }
+
+  function getExternalSubtitleTracks(data) {
+    try {
+      let result = [];
+      if (data?.externalSubtitles?.length > 0) {
+        const subtitles = data.externalSubtitles;
+        for (let index = 0; index < subtitles.length; index++) {
+          const subtitle = subtitles[index];
+          result.push({
+            label: subtitle.title,
+            type: "radio",
+            checked:
+              data.subtitle &&
+              data.subtitle.type === "external" &&
+              data.subtitle.index === index,
+            click() {
+              sendIpcToRenderer(
+                "on-context-menu",
+                "load-external-subtitle-track",
+                index,
+              );
+            },
+          });
+        }
+      }
+      return result;
+    } catch (error) {
+      return [];
+    }
   }
 
   function getEmbeddedSubtitleTracks(data) {
@@ -232,7 +276,7 @@ exports.show = function (type, params, data, sendIpcToRenderer) {
                 "on-context-menu",
                 "load-embedded-subtitle-track",
                 index,
-              ); // disabled
+              );
             },
           });
         }
