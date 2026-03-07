@@ -409,7 +409,7 @@ function getValidFiles(filePaths) {
 async function callAddSubtitleFromFileDialog(filePath) {
   try {
     let allowMultipleSelection = false;
-    let allowedFileTypesName = _("mp-menu-subtitle");
+    let allowedFileTypesName = _("mp-menu-subtitle") + " (.srt)";
     let allowedFileTypesList = ["srt"];
     let filePaths = appUtils.chooseFiles(
       g_mainWindow,
