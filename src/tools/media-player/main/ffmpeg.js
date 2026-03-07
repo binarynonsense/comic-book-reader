@@ -131,7 +131,7 @@ exports.initOnIpcCallbacks = function (on, _sendIpcToRenderer) {
     try {
       const server = await startVideoServer();
       const port = server.address().port;
-      const duration = await getMetadata(g_ffmpegPath, filePath);
+      const duration = await getMetadataDuration(g_ffmpegPath, filePath);
 
       if (duration) {
         sendIpcToRenderer("mp-ffmpeg-video-metadata", {
@@ -194,7 +194,7 @@ exports.initOnIpcCallbacks = function (on, _sendIpcToRenderer) {
 // }
 // exports.getValidFfmpegPath = getValidFfmpegPath;
 
-async function getMetadata(bin, file) {
+async function getMetadataDuration(bin, file) {
   const probe = bin.replace(/ffmpeg(\.exe)?$/i, "ffprobe$1");
   return new Promise((resolve) => {
     // ffprobe
@@ -224,6 +224,276 @@ async function getMetadata(bin, file) {
     });
   });
 }
+
+// async function getMetadataExtended(bin, file) {
+//   if (!bin) bin = g_ffmpegPath;
+//   const probe = bin.replace(/ffmpeg(\.exe)?$/i, "ffprobe$1");
+
+//   return new Promise((resolve) => {
+//     const cmd = `"${probe}" -v error -show_entries format=duration,format_name -show_entries stream=codec_name,codec_type -show_entries stream_disposition=attached_pic -of json "${file}"`;
+
+//     exec(cmd, (err, stdout) => {
+//       if (!err && stdout) {
+//         try {
+//           const data = JSON.parse(stdout);
+//           const streams = data.streams || [];
+
+//           const realVideoStreams = streams.filter(
+//             (s) =>
+//               s.codec_type === "video" && s.disposition?.attached_pic !== 1,
+//           );
+
+//           const audioStreams = streams.filter((s) => s.codec_type === "audio");
+
+//           resolve({
+//             usedFFprobe: true,
+//             duration: parseFloat(data.format?.duration) || null,
+//             container: data.format?.format_name || "",
+//             videoCodecs: realVideoStreams.map((s) => s.codec_name),
+//             audioCodecs: audioStreams.map((s) => s.codec_name),
+//             hasVideo: realVideoStreams.length > 0,
+//             hasAudio: audioStreams.length > 0,
+//           });
+//           return;
+//         } catch (error) {}
+//       }
+
+//       exec(`"${bin}" -i "${file}" -f null -`, (fe, fo, fe2) => {
+//         const output = fe2 || "";
+//         const match = output.match(
+//           /Duration: (\d{2}):(\d{2}):(\d{2})\.(\d{2})/,
+//         );
+//         let total = null;
+//         if (match) {
+//           total =
+//             parseInt(match[1]) * 3600 +
+//             parseInt(match[2]) * 60 +
+//             parseInt(match[3]);
+//         }
+
+//         resolve({
+//           usedFFprobe: false,
+//           duration: total,
+//           container: "",
+//           videoCodecs: [],
+//           audioCodecs: [],
+//           hasVideo: output.toLowerCase().includes("video:"),
+//           hasAudio: output.toLowerCase().includes("audio:"),
+//         });
+//       });
+//     });
+//   });
+// }
+
+async function getMetadataComplete(bin, file) {
+  if (!bin) bin = g_ffmpegPath;
+  const probe = bin.replace(/ffmpeg(\.exe)?$/i, "ffprobe$1");
+
+  const fallbackObj = {
+    usedFFprobe: false,
+    duration: null,
+    container: "",
+    sizeBytes: 0,
+    bitrate: 0,
+    title: "",
+    artist: "",
+    comment: "",
+    hasVideo: false,
+    width: 0,
+    height: 0,
+    videoCodecs: [],
+    hasAudio: false,
+    audioCodecs: [],
+    sampleRate: null,
+    channels: null,
+    audioTracks: [],
+    subtitles: [],
+  };
+
+  return new Promise((resolve) => {
+    const cmd = `"${probe}" -v error -show_entries format=duration,format_name,size,bit_rate:format_tags:stream=index,codec_name,codec_type,width,height,sample_rate,channels,channel_layout:stream_tags:stream_disposition=attached_pic -of json "${file}"`;
+
+    exec(cmd, (error, stdout, stderr) => {
+      if (!error && stdout) {
+        try {
+          const data = JSON.parse(stdout);
+          const streams = data?.streams || [];
+          const format = data?.format || {};
+          const fTags = format?.tags || {};
+
+          const vStreams = streams.filter(
+            (s) =>
+              s.codec_type === "video" && s.disposition?.attached_pic !== 1,
+          );
+          const aStreams = streams.filter((s) => s.codec_type === "audio");
+          const sStreams = streams.filter((s) => s.codec_type === "subtitle");
+
+          const mainVideo = vStreams[0] || {};
+          const mainAudio = aStreams[0] || {};
+          const vTags = mainVideo?.tags || {};
+
+          resolve({
+            usedFFprobe: true,
+            duration: parseFloat(format.duration) || null,
+            container: format.format_name || "",
+            sizeBytes: parseInt(format.size) || 0,
+            bitrate: parseInt(format.bit_rate) || 0,
+
+            title:
+              fTags.title || fTags.TITLE || vTags.title || vTags.TITLE || "",
+            artist: fTags.artist || fTags.ARTIST || fTags.composer || "",
+            comment:
+              fTags.comment || fTags.DESCRIPTION || fTags.description || "",
+
+            hasVideo: vStreams.length > 0,
+            width: mainVideo.width || 0,
+            height: mainVideo.height || 0,
+            videoCodecs: vStreams.map((st) => st.codec_name).filter(Boolean),
+
+            hasAudio: aStreams.length > 0,
+            audioCodecs: aStreams.map((st) => st.codec_name).filter(Boolean),
+            sampleRate: mainAudio.sample_rate
+              ? parseInt(mainAudio.sample_rate)
+              : null,
+            channels: mainAudio.channels || null,
+
+            audioTracks: aStreams.map((st, i) => ({
+              index: st.index ?? i,
+              codec: st.codec_name || "unknown",
+              language: st.tags?.language || st.tags?.LANGUAGE || "und",
+              name: st.tags?.title || st.tags?.TITLE || `Track ${i + 1}`,
+            })),
+
+            subtitles: sStreams.map((st, i) => ({
+              index: st.index ?? i,
+              codec: st.codec_name || "unknown",
+              language: st.tags?.language || st.tags?.LANGUAGE || "und",
+              title: st.tags?.title || st.tags?.TITLE || `Subtitle ${i + 1}`,
+              isExternal: false,
+            })),
+          });
+          return;
+        } catch (error) {}
+      }
+
+      // fallback
+      exec(
+        `"${bin}" -i "${file}" -f null -`,
+        (errorFallback, stdoutFallback, stderrFallback) => {
+          const info = stderrFallback || "";
+          const match = info.match(
+            /Duration: (\d{2}):(\d{2}):(\d{2})\.(\d{2})/,
+          );
+          let total = null;
+          if (match) {
+            total =
+              parseInt(match[1]) * 3600 +
+              parseInt(match[2]) * 60 +
+              parseInt(match[3]);
+          }
+
+          resolve({
+            ...fallbackObj,
+            duration: total,
+            hasVideo: info.toLowerCase().includes("video:"),
+            hasAudio: info.toLowerCase().includes("audio:"),
+          });
+        },
+      );
+    });
+  });
+}
+
+exports.getMetadataComplete = getMetadataComplete;
+
+// async function extractSubtitleText(bin, file, index) {
+//   if (!bin) bin = g_ffmpegPath;
+//   return new Promise((resolve) => {
+//     const cmd = `"${bin}" -i "${file}" -map 0:${index} -f srt -`;
+//     exec(
+//       cmd,
+//       { encoding: "utf8", maxBuffer: 1024 * 1024 * 10 },
+//       (error, stdout, stderr) => {
+//         // remove any BOM/hidden whitespace
+//         const cleanStdout = stdout ? stdout.toString().trim() : "";
+//         if (!error && cleanStdout.length > 0) {
+//           resolve(cleanStdout);
+//         } else {
+//           resolve(null);
+//         }
+//       },
+//     );
+//   });
+// }
+// exports.extractSubtitleText = extractSubtitleText;
+
+const { spawn } = require("child_process");
+
+async function extractSubtitleText(bin, file, index) {
+  const ffmpegPath = bin || g_ffmpegPath;
+
+  return new Promise((resolve) => {
+    try {
+      const args = [
+        "-loglevel",
+        "error", // only show errors
+        "-i",
+        file,
+        "-map",
+        `0:${index}`,
+        "-f",
+        "srt",
+        "-", // output to stdout
+      ];
+
+      const child = spawn(ffmpegPath, args);
+      let stdoutData = [];
+      let stderrData = [];
+
+      // 30 seconds timeout to prevent hanging on corrupted files
+      const timeout = setTimeout(() => {
+        child.kill("SIGKILL");
+        console.error("FFmpeg extraction timed out for file:", file);
+        resolve(null);
+      }, 30000);
+
+      child.stdout.on("data", (chunk) => {
+        stdoutData.push(chunk);
+      });
+
+      child.stderr.on("data", (chunk) => {
+        stderrData.push(chunk);
+      });
+
+      child.on("close", (code) => {
+        clearTimeout(timeout);
+        if (code !== 0) {
+          if (code !== null) {
+            console.error(
+              `ffmpeg failed (code ${code}):`,
+              Buffer.concat(stderrData).toString(),
+            );
+          }
+          return resolve(null);
+        }
+        // combine chunks and strip the Byte Order Mark (\uFEFF)
+        const fullOutput = Buffer.concat(stdoutData).toString("utf8");
+        const cleanOutput = fullOutput.replace(/^\uFEFF/, "").trim();
+        resolve(cleanOutput.length > 0 ? cleanOutput : null);
+      });
+
+      child.on("error", (error) => {
+        clearTimeout(timeout);
+        console.error("failed to start FFmpeg process:", error);
+        resolve(null);
+      });
+    } catch (error) {
+      console.error("unexpected error during extraction:", error);
+      resolve(null);
+    }
+  });
+}
+exports.extractSubtitleText = extractSubtitleText;
 
 ///////////////////////////////////////////////////////////////////////////////
 // CLEANUP ////////////////////////////////////////////////////////////////////

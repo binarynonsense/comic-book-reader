@@ -55,19 +55,28 @@ export function onSliderTimeUpdate(videoElement, inputSlider) {
   }
 }
 
+export function getTimeOffset() {
+  return g_ffmpegSeekOffset;
+}
+
 /////////////////////
 
 function startStream(time, prevPlayerState) {
-  g_ffmpegSeekOffset = Math.floor(time ?? 0);
   g_videoTag = document.getElementById("mp-html-video");
+  if (!g_videoTag) return;
+
   g_videoTag.pause();
-  g_videoTag.src = "";
-  g_videoTag.load();
+  g_ffmpegSeekOffset = Math.floor(time ?? 0);
   const timestamp = g_ffmpegSeekOffset;
   g_videoTag.src = `http://127.0.0.1:${g_activePort}/video?t=${timestamp}&cb=${Date.now()}`;
-  g_videoTag.play().catch((e) => {
-    if (e.name !== "AbortError") console.error("[ffmpeg] Play failed:", e);
+
+  g_videoTag.play().catch((error) => {
+    if (error.name !== "AbortError") {
+      console.error("[ffmpeg] Play failed:", error);
+      // TODO: ?
+    }
   });
+
   if (prevPlayerState !== undefined && prevPlayerState === PlayerState.PAUSED) {
     g_videoTag.pause();
     setPlayerState(PlayerState.PAUSED);

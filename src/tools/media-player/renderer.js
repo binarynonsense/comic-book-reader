@@ -23,6 +23,7 @@ import {
 let g_settings;
 let g_ffmpegAvailable = false;
 let g_currentLoadId = 0;
+let g_currentSubtitleIndex = -1;
 
 ///////////////////////////////////////////////////////////////////////////////
 // PLAYER /////////////////////////////////////////////////////////////////////
@@ -47,7 +48,7 @@ function setPlayerState(state, doUIRefresh = false) {
       ) {
         onError("NotSupportedError");
       }
-    }, 8000);
+    }, 18000);
   }
 
   g_player.state = state;
@@ -65,6 +66,9 @@ function setPlayerState(state, doUIRefresh = false) {
 
 function clearPlayer() {
   g_currentLoadId++;
+
+  g_currentSubtitleIndex = -1;
+  g_player.subtitleData = undefined;
 
   if (g_player.engine && g_player.engine.hasAttribute("src")) {
     g_player.engine.pause();
@@ -150,6 +154,8 @@ function initPlayer() {
   });
 
   g_player.engine.addEventListener("timeupdate", function () {
+    if (g_player.html.sliderTimeIsSeeking) return;
+    updateSubtitle(g_player.engine.currentTime);
     if (g_player.engineType === PlayerEngineType.FFMPEG) {
       ffmpeg.onSliderTimeUpdate(g_player.engine, g_player.html.sliderTime);
     } else if (g_player.engineType === PlayerEngineType.NATIVE) {
@@ -194,7 +200,36 @@ function initPlayer() {
     }
   });
 
+  // g_player.engine.addEventListener('seeked', () => {
+  //     updateSubtitle(g_player.engine.currentTime);
+  // });
+
+  g_player.engine.addEventListener("stalled", () => {
+    console.warn("[Media Player] network stalled. ffmpeg might be hanging.");
+  });
+
+  g_player.engine.addEventListener("waiting", () => {
+    // console.log("[Media Player] buffering... waiting for data.");
+  });
+
   g_player.engine.addEventListener("ended", function () {
+    if (g_player.engineType === PlayerEngineType.FFMPEG) {
+      const currentPos = g_player.engine.currentTime + ffmpeg.getTimeOffset();
+      const totalDuration = g_player.trackMetadata.duration;
+      const diff = Math.abs(totalDuration - currentPos);
+      if (diff > 5) {
+        // unexpected end
+        // TODO: test this, is 5 secs a good value?
+        console.warn(
+          "[ffmpeg] stream ended prematurely? process likely crashed, attempting auto-resume at:",
+          currentPos,
+        );
+        const resumeTime = Math.floor(currentPos);
+        setTime(resumeTime, PlayerState.PLAYING);
+        return;
+      }
+    }
+    // normal end
     onEnded();
   });
 }
@@ -336,10 +371,16 @@ async function onPlay(trackIndex = undefined, time = 0) {
     const wasMuted = g_player.engine.muted;
     setPlayerState(PlayerState.LOADING);
     try {
-      g_player.trackMetadata = await sendIpcToMainAndWait(
-        "mp-get-file-metadata",
-        decodeURI(playlist.getTracks()[trackIndex].fileUrl),
-      );
+      if (g_ffmpegAvailable) {
+        g_player.trackMetadata = await sendIpcToMainAndWait(
+          "mp-get-file-metadata-complete",
+          decodeURI(playlist.getTracks()[trackIndex].fileUrl),
+        );
+        g_player.subtitleData = g_player.trackMetadata?.subtitleData;
+      } else {
+        g_player.trackMetadata = undefined;
+      }
+
       g_player.engine.src = playlist.getTracks()[trackIndex].fileUrl;
 
       const useHsl =
@@ -416,9 +457,46 @@ async function onPlay(trackIndex = undefined, time = 0) {
           // NATIVE
           g_player.engine.muted = true;
           g_player.engineType = PlayerEngineType.NATIVE;
-          g_player.trackHasVideoMetadata = await isVideoMetadata(
-            g_player.trackMetadata,
-          );
+
+          // check metadata ////
+          if (g_player.trackMetadata && g_player.trackMetadata.hasVideo) {
+            g_player.trackHasVideoMetadata = true;
+
+            const metadata = g_player.trackMetadata;
+            const fileUrl = playlist
+              .getTracks()
+              [trackIndex].fileUrl.toLowerCase();
+            const badAudioCodecs = ["ac3", "dts", "eac3", "truehd"];
+            const heavyContainers = ["matroska", "avi", "flv", "mov", "wmv"];
+            const riskyExtensions = [".mkv", ".avi", ".flv", ".mov", ".wmv"];
+
+            let useFFmpeg = false;
+
+            if (metadata.usedFFprobe) {
+              const hasBadAudio = metadata.audioCodecs.some((c) =>
+                badAudioCodecs.includes(c),
+              );
+              const isHeavyContainer = heavyContainers.some((c) =>
+                metadata.container.includes(c),
+              );
+
+              if (hasBadAudio || isHeavyContainer) {
+                useFFmpeg = true;
+              }
+            } else {
+              // fallback
+              const hasRiskyExt = riskyExtensions.some((ext) =>
+                fileUrl.endsWith(ext),
+              );
+              if (hasRiskyExt) {
+                useFFmpeg = true;
+              }
+            }
+            if (useFFmpeg) {
+              throw new Error("NotSupportedError");
+            }
+          }
+          //////
           await g_player.engine.play();
           await new Promise((r) => setTimeout(r, 250));
           if (loadId !== g_currentLoadId) return;
@@ -427,7 +505,7 @@ async function onPlay(trackIndex = undefined, time = 0) {
             g_player.engine.webkitVideoDecodedByteCount === 0
           ) {
             if (loadId !== g_currentLoadId) return;
-            if (g_player.trackHasVideoMetadata) {
+            if (g_player.trackMetadata && g_player.trackMetadata.hasVideo) {
               throw new Error("NotSupportedError");
             }
           }
@@ -906,16 +984,23 @@ function initUI() {
   const rawValue = style.getPropertyValue("--mp-slider-thumb-width").trim();
   g_player.html.sliderThumbWidth = parseInt(rawValue, 10);
 
-  g_player.html.sliderTime.addEventListener("input", function () {
-    onSliderTimeChanged(g_player.html.sliderTime);
+  // only update on mouse up
+  g_player.html.sliderTime.addEventListener("pointerdown", (e) => {
+    g_player.html.sliderTimeIsSeeking = true;
+    // capture the events anywhere, not only over the slider
+    g_player.html.sliderTime.setPointerCapture(e.pointerId);
+    const endSeeking = () => {
+      g_player.html.sliderTimeIsSeeking = false;
+      onSliderTimeChanged(g_player.html.sliderTime);
+    };
+    g_player.html.sliderTime.addEventListener("pointerup", endSeeking, {
+      once: true,
+    });
+    g_player.html.sliderTime.addEventListener("pointercancel", endSeeking, {
+      once: true,
+    });
   });
-
-  g_player.html.sliderTimeHoverTooltip = document.getElementById(
-    "mp-slider-time-hover-tooltip",
-  );
-  g_player.html.sliderTimeStatusOverlay = document.getElementById(
-    "mp-slider-time-status-overlay",
-  );
+  //////
 
   g_player.html.sliderTime.addEventListener("mousemove", (event) => {
     const slider = g_player.html.sliderTime;
@@ -938,8 +1023,14 @@ function initUI() {
     g_player.html.sliderTimeStatusOverlay.style.display = "none";
   });
 
-  // slider volume///////////////////
+  g_player.html.sliderTimeHoverTooltip = document.getElementById(
+    "mp-slider-time-hover-tooltip",
+  );
+  g_player.html.sliderTimeStatusOverlay = document.getElementById(
+    "mp-slider-time-status-overlay",
+  );
 
+  // slider volume///////////////////
   g_player.html.sliderVolume = document.getElementById("mp-slider-volume");
   g_player.html.sliderVolume.addEventListener("input", function () {
     onSliderVolumeChanged(g_player.html.sliderVolume);
@@ -1428,6 +1519,33 @@ function showVideoActionIcon(action, container) {
   );
   // clean up after finish
   animation.onfinish = () => icon.remove();
+}
+
+function updateSubtitle(relativeTime) {
+  if (!g_player.subtitleData || g_player.subtitleData.length === 0) return;
+
+  let absoluteTime = relativeTime;
+  if (g_player.engineType === PlayerEngineType.FFMPEG) {
+    absoluteTime += ffmpeg.getTimeOffset();
+  }
+  const index = g_player.subtitleData.findIndex(
+    (subtitle) =>
+      absoluteTime >= subtitle.start && absoluteTime <= subtitle.end,
+  );
+
+  if (index !== g_currentSubtitleIndex) {
+    if (index !== -1) {
+      const sub = g_player.subtitleData[index];
+      // TODO: html here
+      console.log(
+        `[SUB ON @ ${absoluteTime.toFixed(2)}s] ${sub.text.replace(/\n/g, " / ")}`,
+      );
+    } else {
+      // TODO: html here
+      console.log(`[SUB OFF @ ${absoluteTime.toFixed(2)}s]`);
+    }
+    g_currentSubtitleIndex = index;
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////

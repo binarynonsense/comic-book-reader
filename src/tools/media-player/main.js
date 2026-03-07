@@ -17,6 +17,7 @@ const { _ } = require("../../shared/main/i18n");
 const log = require("../../shared/main/logger");
 const { getLocalization } = require("./main/localization");
 const ffmpeg = require("./main/ffmpeg");
+const subtitles = require("./main/subtitles");
 const contextMenu = require("./main/menu-context");
 
 let g_mainWindow;
@@ -214,13 +215,40 @@ function handle(id, callback) {
 }
 
 function initHandleIpcCallbacks() {
-  //////////////////////
-  handle("mp-get-file-metadata", async (filePath) => {
+  // handle("mp-get-file-metadata", async (filePath) => {
+  //   try {
+  //     const mm = require("music-metadata");
+  //     const metadata = await mm.parseFile(filePath, { skipCovers: true });
+  //     return metadata;
+  //   } catch (error) {
+  //     return undefined;
+  //   }
+  // });
+
+  handle("mp-get-file-metadata-complete", async (filePath) => {
     try {
-      const mm = require("music-metadata");
-      const metadata = await mm.parseFile(filePath, { skipCovers: true });
+      const metadata = await ffmpeg.getMetadataComplete(undefined, filePath);
+      metadata.subtitleData = [];
+      if (metadata.subtitles.length > 0) {
+        const testIndex = metadata.subtitles[0].index;
+        const srtText = await ffmpeg.extractSubtitleText(
+          undefined,
+          filePath,
+          testIndex,
+        );
+
+        if (srtText) {
+          const subtitleArray = subtitles.parseSRT(srtText);
+          if (subtitleArray.length > 0) {
+            metadata.subtitleData = subtitleArray;
+          }
+        } else {
+          log.editor("extractSubtitleText: srtText is null or empty");
+        }
+      }
       return metadata;
     } catch (error) {
+      log.editor(error);
       return undefined;
     }
   });
