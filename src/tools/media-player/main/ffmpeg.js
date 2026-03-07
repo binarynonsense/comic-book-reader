@@ -427,8 +427,6 @@ exports.getMetadataComplete = getMetadataComplete;
 // }
 // exports.extractSubtitleText = extractSubtitleText;
 
-const { spawn } = require("child_process");
-
 async function extractSubtitleText(bin, file, index) {
   const ffmpegPath = bin || g_ffmpegPath;
 
