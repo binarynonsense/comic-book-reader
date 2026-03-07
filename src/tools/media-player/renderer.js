@@ -898,6 +898,7 @@ function initUI() {
   });
 
   g_player.html.videoTitleDiv = document.getElementById("mp-video-title");
+  g_player.html.videoSubtitleDiv = document.getElementById("mp-video-subtitle");
   g_player.html.spectrumTitleDiv = document.getElementById("mp-spectrum-title");
 
   //////
@@ -1537,12 +1538,17 @@ function updateSubtitle(relativeTime) {
     if (index !== -1) {
       const sub = g_player.subtitleData[index];
       // TODO: html here
-      console.log(
-        `[SUB ON @ ${absoluteTime.toFixed(2)}s] ${sub.text.replace(/\n/g, " / ")}`,
+      // console.log(
+      //   `[SUB ON @ ${absoluteTime.toFixed(2)}s] ${sub.text.replace(/\n/g, " / ")}`,
+      // );
+      g_player.html.videoSubtitleDiv.textContent = sub.text.replace(
+        /\n/g,
+        " / ",
       );
     } else {
       // TODO: html here
-      console.log(`[SUB OFF @ ${absoluteTime.toFixed(2)}s]`);
+      // console.log(`[SUB OFF @ ${absoluteTime.toFixed(2)}s]`);
+      g_player.html.videoSubtitleDiv.textContent = "";
     }
     g_currentSubtitleIndex = index;
   }
