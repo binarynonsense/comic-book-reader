@@ -31,7 +31,7 @@ Ein Comicbuch Leser und Konverter für CBZ, CBR, CB7, EPUB, FB2, MOBI und PDF Da
   - Ebooks:
     - PDF, FB2, MOBI<sup>[4]</sup> und EPUB
 - Fenster- (einfache Benutzeroberfläche) und Vollbild- (keine Benutzeroberfläche) Modi.
-- 'Einzelseite', 'Doppelseite' und 'Doppelseite (erste Seite zentrieren)' Seiten-modi
+- 'Einzelseite', 'Doppelseite' und 'Doppelseite (erste Seite zentrieren)' Seitenmodi
 - 'Breitenanpassung', 'Höhenanpassung' und eine anpassbare 'Höhenskalierung' Seitenansicht
 - Seitenrotation
 - Benutzeroberfläche verfügbar auf:
@@ -42,7 +42,7 @@ Ein Comicbuch Leser und Konverter für CBZ, CBR, CB7, EPUB, FB2, MOBI und PDF Da
   - Ansicht der Metadaten welche in PDF und EPUB Dateien oder ComicInfo.xml Dateien innerhalb CBR, CBZ und CB7 Comicbüchern gespeichert sind.
   - Erstelle und/oder modifiziere die Metadaten welche in PDF und EPUB Dateien oder ComicInfo.xml Dateien innerhalb unverschlüsselten CBR<sup>[3]</sup>, CBZ und CB7 Comicbüchern gespeichert sind.
   - Suche nach und importiere Comicbuch Metadaten von Comic Vine (hierfür wird ein [Comic Vine API key](https://comicvine.gamespot.com/api/) benötigt).
-- Integrierter Audio-player:
+- Integrierter Audioplayer:
   - Unterstützt MP3, Ogg, WAV, M3U und M3U8 Dateien.
   - Kann Playlists als M3U Dateien exportieren.
 - Werkzeuge:
@@ -58,7 +58,7 @@ Ein Comicbuch Leser und Konverter für CBZ, CBR, CB7, EPUB, FB2, MOBI und PDF Da
       - Text (OCR) aus einer Comicbuch Seite oder Bilddatei
       - QR Code Text aus einer Comicbuch Seite oder Bilddatei
       - Eine Farbpalette aus einer Comicbuch Seite oder Bilddatei
-        - Kann zu einer GPL oder ACO Paletten-datei extrahiert werden.
+        - Kann zu einer GPL oder ACO Palettendatei extrahiert werden.
   - Suche:
     - Suche und öffne Bücher/Comics von:
       - Digital Comics Museum
@@ -70,11 +70,11 @@ Ein Comicbuch Leser und Konverter für CBZ, CBR, CB7, EPUB, FB2, MOBI und PDF Da
       - Librivox AudioBooks
     - Suche Wörterbucheinträge in:
       - Wiktionary Dictionary
-    - Suche und öffne Radiosender-streams von:
+    - Suche und öffne Radiosenderstreams von:
       - radio-browser
     - Suche und öffne RSS Feeds von Podcasts und Websites.
   - Kunst:
-    - Comicbuch Seitenvorlagen- und Vorschaubild-ersteller
+    - Comicbuch Seitenvorlagen- und Vorschaubildersteller
     - Farbpalettenextrahierer
   - Weiteres:
     - RSS Reader
