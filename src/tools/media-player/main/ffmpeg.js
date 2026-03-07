@@ -24,20 +24,20 @@ let sendIpcToRenderer;
 let g_lastResponse = null;
 
 function closeCurrentVideo() {
-  // kill old response still hanging
-  if (g_lastResponse) {
-    log.editor("[ffmpeg] destroying g_lastResponse");
-    try {
-      g_lastResponse.end();
-      g_lastResponse.destroy();
-    } catch (error) {}
-  }
-  g_lastResponse = null;
-  // kill the old ffmpeg
   if (g_ffmpegProcess) {
     log.editor("[ffmpeg] killing g_ffmpegProcess");
+    if (g_ffmpegProcess.stdout) {
+      g_ffmpegProcess.stdout.unpipe();
+      g_ffmpegProcess.stdout.destroy();
+    }
     g_ffmpegProcess.kill("SIGKILL");
     g_ffmpegProcess = null;
+  }
+  if (g_lastResponse) {
+    log.editor("[ffmpeg] destroying g_lastResponse");
+    g_lastResponse.end();
+    g_lastResponse.destroy();
+    g_lastResponse = null;
   }
 }
 
@@ -49,10 +49,19 @@ async function startVideoServer() {
       closeCurrentVideo();
       g_lastResponse = res;
 
+      req.on("close", () => {
+        if (g_lastResponse === res) {
+          closeCurrentVideo();
+        }
+      });
+
       const requestUrl = new URL(req.url, `http://127.0.0.1`);
       const seekTime = requestUrl.searchParams.get("t") || "0";
 
-      res.writeHead(200, { "Content-Type": "video/mp4" });
+      res.writeHead(200, {
+        "Content-Type": "video/mp4",
+        Connection: "close", // drop the old connection
+      });
 
       g_ffmpegProcess = spawn(
         g_ffmpegPath,
@@ -62,7 +71,7 @@ async function startVideoServer() {
           "-i",
           g_activeVideoPath, // file path
           "-loglevel",
-          "quiet", // don't feel stderr
+          "quiet", // don't fill stderr
           "-c:v",
           "libx264", // convert to h264 so chromium can play it
           "-preset",
@@ -91,15 +100,11 @@ async function startVideoServer() {
           `[ffmpeg] ffmpeg exited with code ${code} and signal ${signal}`,
         );
       });
+      g_ffmpegProcess.stdout.on("error", (err) => {
+        log.editor(`[ffmpeg] stdout error: ${err.message}`);
+      });
 
       g_ffmpegProcess.stdout.pipe(res);
-
-      req.on("close", () => {
-        if (g_ffmpegProcess) {
-          g_ffmpegProcess.kill();
-          g_ffmpegProcess = null;
-        }
-      });
     });
 
     g_videoServer.once("error", (error) => {
@@ -332,6 +337,15 @@ async function getMetadataComplete(bin, file) {
           const mainAudio = aStreams[0] || {};
           const vTags = mainVideo?.tags || {};
 
+          const textCodecs = [
+            "subrip",
+            "ass",
+            "ssa",
+            "mov_text",
+            "webvtt",
+            "text",
+          ];
+
           resolve({
             usedFFprobe: true,
             duration: parseFloat(format.duration) || null,
@@ -364,13 +378,38 @@ async function getMetadataComplete(bin, file) {
               name: st.tags?.title || st.tags?.TITLE || `Track ${i + 1}`,
             })),
 
-            subtitles: sStreams.map((st, i) => ({
-              index: st.index ?? i,
-              codec: st.codec_name || "unknown",
-              language: st.tags?.language || st.tags?.LANGUAGE || "und",
-              title: st.tags?.title || st.tags?.TITLE || `Subtitle ${i + 1}`,
-              isExternal: false,
-            })),
+            // subtitles: sStreams
+            //   .filter((st) => textCodecs.includes(st.codec_name?.toLowerCase()))
+            //   .map((st, i) => ({
+            //     index: st.index ?? i,
+            //     codec: st.codec_name || "unknown",
+            //     language: st.tags?.language || st.tags?.LANGUAGE || "und",
+            //     title: st.tags?.title || st.tags?.TITLE || `Subtitle ${i + 1}`,
+            //     isExternal: false,
+            //   })),
+            subtitles: sStreams
+              .filter((st) =>
+                ["subrip", "ass", "ssa", "mov_text", "webvtt", "text"].includes(
+                  st.codec_name?.toLowerCase(),
+                ),
+              )
+              .map((st, i) => {
+                const lang = (
+                  st.tags?.language ||
+                  st.tags?.LANGUAGE ||
+                  "und"
+                ).toUpperCase();
+                const codec = (st.codec_name || "SRT").toUpperCase();
+                const displayTitle =
+                  st.tags?.title || st.tags?.TITLE || `${lang} [${codec}]`;
+                return {
+                  index: st.index ?? i,
+                  codec: st.codec_name || "unknown",
+                  language: lang.toLowerCase(),
+                  title: displayTitle,
+                  isExternal: false,
+                };
+              }),
           });
           return;
         } catch (error) {}
@@ -427,6 +466,10 @@ exports.getMetadataComplete = getMetadataComplete;
 // }
 // exports.extractSubtitleText = extractSubtitleText;
 
+// subtitle formats
+// safe: subrip, ass, vtt, mov_text.
+// will fail: hdmv_pgs_subtitle, dvd_subtitle.
+
 async function extractSubtitleText(bin, file, index) {
   const ffmpegPath = bin || g_ffmpegPath;
 
@@ -439,6 +482,8 @@ async function extractSubtitleText(bin, file, index) {
         file,
         "-map",
         `0:${index}`,
+        "-c:s",
+        "srt", // force conversion to SRT text format
         "-f",
         "srt",
         "-", // output to stdout
