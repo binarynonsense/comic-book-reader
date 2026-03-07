@@ -23,7 +23,6 @@ import {
 let g_settings;
 let g_ffmpegAvailable = false;
 let g_currentLoadId = 0;
-let g_currentSubtitleIndex = -1;
 
 ///////////////////////////////////////////////////////////////////////////////
 // PLAYER /////////////////////////////////////////////////////////////////////
@@ -67,8 +66,9 @@ function setPlayerState(state, doUIRefresh = false) {
 function clearPlayer() {
   g_currentLoadId++;
 
-  g_currentSubtitleIndex = -1;
-  g_player.subtitleData = undefined;
+  g_player.subtitle = undefined;
+  if (g_player?.html?.videoSubtitleDiv)
+    g_player.html.videoSubtitleDiv.textContent = "";
 
   if (g_player.engine && g_player.engine.hasAttribute("src")) {
     g_player.engine.pause();
@@ -155,7 +155,7 @@ function initPlayer() {
 
   g_player.engine.addEventListener("timeupdate", function () {
     if (g_player.html.sliderTimeIsSeeking) return;
-    updateSubtitle(g_player.engine.currentTime);
+    updateSubtitleUI(g_player.engine.currentTime);
     if (g_player.engineType === PlayerEngineType.FFMPEG) {
       ffmpeg.onSliderTimeUpdate(g_player.engine, g_player.html.sliderTime);
     } else if (g_player.engineType === PlayerEngineType.NATIVE) {
@@ -376,7 +376,6 @@ async function onPlay(trackIndex = undefined, time = 0) {
           "mp-get-file-metadata-complete",
           decodeURI(playlist.getTracks()[trackIndex].fileUrl),
         );
-        g_player.subtitleData = g_player.trackMetadata?.subtitleData;
       } else {
         g_player.trackMetadata = undefined;
       }
@@ -722,34 +721,56 @@ function showSpectrumVisualizer(show) {
   }
 }
 
-///////
+///////////////////////////////////////////////////////////////////////////////
+// SUBTITLES //////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
-async function isVideoMetadata(metadata) {
-  if (!metadata) return false;
-  try {
-    const hasExplicitVideo =
-      metadata.streams?.some((s) => s.codec_type === "video") ||
-      JSON.stringify(metadata.native).toLowerCase().includes("video");
-
-    const videoContainers = ["matroska", "isom", "mp42", "mov", "avi"];
-    const container = metadata.format.tagTypes?.[0]?.toLowerCase() || "";
-    const isVideoContainer = videoContainers.some((ext) =>
-      container.includes(ext),
+async function loadEmbeddedSubtitle(filePath, subIndex) {
+  if (
+    g_player.trackMetadata &&
+    g_player.trackMetadata.subtitles &&
+    g_player.trackMetadata.subtitles.length >= subIndex
+  ) {
+    const data = await sendIpcToMainAndWait(
+      "mp-get-embedded-subtitle",
+      filePath,
+      g_player.trackMetadata.subtitles[subIndex].index,
     );
 
-    const trackCount =
-      metadata.native?.matroska?.length ||
-      metadata.native?.["ISO/IEC 14496-12"]?.length ||
-      0;
+    if (data) {
+      g_player.subtitle = {
+        type: "embedded",
+        index: subIndex,
+        data,
+        dataIndex: -1,
+      };
+    }
+  }
+}
 
-    const isVideo = !!(
-      hasExplicitVideo ||
-      (isVideoContainer && trackCount > 1)
-    );
+function updateSubtitleUI(relativeTime) {
+  if (!g_player?.subtitle?.data || g_player.subtitle.data.length === 0) return;
 
-    return isVideo;
-  } catch (error) {
-    return false;
+  let absoluteTime = relativeTime;
+  if (g_player.engineType === PlayerEngineType.FFMPEG) {
+    absoluteTime += ffmpeg.getTimeOffset();
+  }
+  const index = g_player.subtitle.data.findIndex(
+    (subtitle) =>
+      absoluteTime >= subtitle.start && absoluteTime <= subtitle.end,
+  );
+
+  if (index !== g_player.subtitle.dataIndex) {
+    if (index !== -1) {
+      const sub = g_player.subtitle.data[index];
+      g_player.html.videoSubtitleDiv.textContent = sub.text.replace(
+        /\n/g,
+        " / ",
+      );
+    } else {
+      g_player.html.videoSubtitleDiv.textContent = "";
+    }
+    g_player.subtitle.dataIndex = index;
   }
 }
 
@@ -1484,6 +1505,9 @@ function getContextMenuData() {
     buttonStates: getButtonStates(),
     playlist: playlist.getPlaylist(),
     currentFileIndex: playlist.getCurrentTrackFileIndex(),
+    trackMetadata: g_player.trackMetadata,
+    subtitle: g_player.subtitle,
+    playerState: g_player.state,
   };
 }
 
@@ -1520,38 +1544,6 @@ function showVideoActionIcon(action, container) {
   );
   // clean up after finish
   animation.onfinish = () => icon.remove();
-}
-
-function updateSubtitle(relativeTime) {
-  if (!g_player.subtitleData || g_player.subtitleData.length === 0) return;
-
-  let absoluteTime = relativeTime;
-  if (g_player.engineType === PlayerEngineType.FFMPEG) {
-    absoluteTime += ffmpeg.getTimeOffset();
-  }
-  const index = g_player.subtitleData.findIndex(
-    (subtitle) =>
-      absoluteTime >= subtitle.start && absoluteTime <= subtitle.end,
-  );
-
-  if (index !== g_currentSubtitleIndex) {
-    if (index !== -1) {
-      const sub = g_player.subtitleData[index];
-      // TODO: html here
-      // console.log(
-      //   `[SUB ON @ ${absoluteTime.toFixed(2)}s] ${sub.text.replace(/\n/g, " / ")}`,
-      // );
-      g_player.html.videoSubtitleDiv.textContent = sub.text.replace(
-        /\n/g,
-        " / ",
-      );
-    } else {
-      // TODO: html here
-      // console.log(`[SUB OFF @ ${absoluteTime.toFixed(2)}s]`);
-      g_player.html.videoSubtitleDiv.textContent = "";
-    }
-    g_currentSubtitleIndex = index;
-  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1732,6 +1724,22 @@ function initOnIpcCallbacks() {
 
       case "prev":
         onPrevTrack();
+        refreshUI();
+        break;
+
+      ////
+
+      case "load-disabled-subtitle-track":
+        g_player.subtitle = undefined;
+        refreshUI();
+        break;
+
+      case "load-embedded-subtitle-track":
+        loadEmbeddedSubtitle(
+          decodeURI(playlist.getTracks()[g_player.trackIndex].fileUrl),
+          args[1],
+        );
+        updateSubtitleUI(g_player.html.sliderTime.value);
         refreshUI();
         break;
     }

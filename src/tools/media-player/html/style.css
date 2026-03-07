@@ -256,17 +256,13 @@ a:hover a:visited {
   display: flex;
   align-items: end;
   justify-content: center;
-
   color: rgb(224, 224, 224);
   font-size: 5cqh;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
   font-weight: bold;
-
-  white-space: nowrap;
   text-align: center;
   width: 100%;
   padding: 6cqh 8cqw;
-
   pointer-events: none;
 }
 

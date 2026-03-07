@@ -215,6 +215,40 @@ function handle(id, callback) {
 }
 
 function initHandleIpcCallbacks() {
+  handle("mp-get-file-metadata-complete", async (filePath) => {
+    try {
+      const metadata = await ffmpeg.getMetadataComplete(undefined, filePath);
+      return metadata;
+    } catch (error) {
+      log.editor(error);
+      return undefined;
+    }
+  });
+
+  handle("mp-get-embedded-subtitle", async (filePath, index) => {
+    try {
+      const srtText = await ffmpeg.extractSubtitleText(
+        undefined,
+        filePath,
+        index,
+      );
+
+      if (srtText) {
+        const subtitleData = subtitles.parseSRT(srtText);
+        if (subtitleData.length > 0) {
+          return subtitleData;
+        }
+      } else {
+        log.editor("extractSubtitleText: srtText is null or empty");
+      }
+      return undefined;
+    } catch (error) {
+      log.editor(error);
+      return undefined;
+    }
+  });
+
+  // old code
   // handle("mp-get-file-metadata", async (filePath) => {
   //   try {
   //     const mm = require("music-metadata");
@@ -224,34 +258,6 @@ function initHandleIpcCallbacks() {
   //     return undefined;
   //   }
   // });
-
-  handle("mp-get-file-metadata-complete", async (filePath) => {
-    try {
-      const metadata = await ffmpeg.getMetadataComplete(undefined, filePath);
-      metadata.subtitleData = [];
-      if (metadata.subtitles.length > 0) {
-        const testIndex = metadata.subtitles[0].index;
-        const srtText = await ffmpeg.extractSubtitleText(
-          undefined,
-          filePath,
-          testIndex,
-        );
-
-        if (srtText) {
-          const subtitleArray = subtitles.parseSRT(srtText);
-          if (subtitleArray.length > 0) {
-            metadata.subtitleData = subtitleArray;
-          }
-        } else {
-          log.editor("extractSubtitleText: srtText is null or empty");
-        }
-      }
-      return metadata;
-    } catch (error) {
-      log.editor(error);
-      return undefined;
-    }
-  });
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -52,6 +52,7 @@ exports.show = function (type, params, data, sendIpcToRenderer) {
         label: _("tool-shared-ui-open"),
         submenu: [...openSubmenu],
       },
+      ...getSubtitleSubmenu(data),
       {
         label: _("menu-view"),
         submenu: [
@@ -176,6 +177,70 @@ exports.show = function (type, params, data, sendIpcToRenderer) {
         ],
       },
     ];
+  }
+
+  function getSubtitleSubmenu(data) {
+    return [
+      {
+        label: _("mp-menu-subtitle"),
+        submenu: [
+          {
+            label: _("mp-menu-subtitle-addfile") + "...",
+            click() {
+              // TODO: dialog
+              // sendIpcToRenderer("on-context-menu", "add-subtitle-file", subtitleData);
+            },
+          },
+          {
+            label: _("mp-menu-media-track"),
+            submenu: [
+              {
+                label: _("mp-menu-media-track-disabled"),
+                type: "radio",
+                checked: !data.subtitle,
+                click() {
+                  sendIpcToRenderer(
+                    "on-context-menu",
+                    "load-disabled-subtitle-track",
+                  );
+                },
+              },
+              ...getEmbeddedSubtitleTracks(data),
+            ],
+          },
+        ],
+      },
+    ];
+  }
+
+  function getEmbeddedSubtitleTracks(data) {
+    try {
+      let result = [];
+      if (data?.trackMetadata?.subtitles) {
+        const subtitles = data.trackMetadata.subtitles;
+        for (let index = 0; index < subtitles.length; index++) {
+          const subtitle = subtitles[index];
+          result.push({
+            label: subtitle.title,
+            type: "radio",
+            checked:
+              data.subtitle &&
+              data.subtitle.type === "embedded" &&
+              data.subtitle.index === index,
+            click() {
+              sendIpcToRenderer(
+                "on-context-menu",
+                "load-embedded-subtitle-track",
+                index,
+              ); // disabled
+            },
+          });
+        }
+      }
+      return result;
+    } catch (error) {
+      return [];
+    }
   }
 
   function getPlaylistSubmenu(data) {
