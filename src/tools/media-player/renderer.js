@@ -66,9 +66,7 @@ function setPlayerState(state, doUIRefresh = false) {
 function clearPlayer() {
   g_currentLoadId++;
 
-  g_player.subtitle = undefined;
-  if (g_player?.html?.videoSubtitleDiv)
-    g_player.html.videoSubtitleDiv.textContent = "";
+  clearPlayerSubtitle();
 
   if (g_player.engine && g_player.engine.hasAttribute("src")) {
     g_player.engine.pause();
@@ -746,6 +744,14 @@ async function loadEmbeddedSubtitle(filePath, subIndex) {
       };
     }
   }
+}
+
+function clearPlayerSubtitle() {
+  g_player.subtitle = undefined;
+  if (g_player?.html?.videoSubtitleDiv)
+    g_player.html.videoSubtitleDiv.textContent = "";
+  if (g_player?.html?.sliderTime)
+    updateSubtitleUI(g_player.html.sliderTime.value);
 }
 
 function updateSubtitleUI(relativeTime) {
@@ -1730,7 +1736,7 @@ function initOnIpcCallbacks() {
       ////
 
       case "load-disabled-subtitle-track":
-        g_player.subtitle = undefined;
+        clearPlayerSubtitle();
         refreshUI();
         break;
 
