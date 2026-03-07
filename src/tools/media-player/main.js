@@ -413,7 +413,7 @@ async function callAddSubtitleFromFileDialog(filePath) {
     let allowedFileTypesList = ["srt"];
     let filePaths = appUtils.chooseFiles(
       g_mainWindow,
-      filePath,
+      path.dirname(filePath),
       allowedFileTypesName,
       allowedFileTypesList,
       allowMultipleSelection,
