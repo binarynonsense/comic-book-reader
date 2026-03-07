@@ -89,6 +89,12 @@ exports.test = function (message) {
     console.log(`${getTime()} ${g_testTag}`, message);
   }
 };
+// TODO: test this version and replace if better
+// exports.test = function (...args) { // accept any number of arguments
+//   if (g_isDebug && !g_isRelease) {
+//     console.log(`${getTime()} ${g_testTag}`, ...args);
+//   }
+// };
 
 exports.editor = function (message) {
   if (g_isDebug && !g_isRelease) {
