@@ -1,8 +1,6 @@
 {
   "@metadata": {
-    "authors": [
-      "Álvaro"
-    ],
+    "authors": ["Álvaro"],
     "last-updated": "2026-02-20",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.17.0",
@@ -319,6 +317,7 @@
   "mp-menu-media-track-disabled": "Desactivada",
   "mp-menu-subtitle": "Subtítulo",
   "mp-menu-subtitle-addfile": "Añadir archivo de subtítulo",
+  "mp-menu-subtitle-highcontrastmode": "Modo de alto contraste",
   "mp-menu-videoarea": "Área de vídeo",
   "mp-menu-spectrum": "Visualizador de espectro",
   "mp-modal-info-open-will-start-new-playlist": "Esto iniciará una nueva lista de reproducción.",
