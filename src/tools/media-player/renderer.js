@@ -379,7 +379,10 @@ async function onPlay(trackIndex = undefined, time = 0) {
     const wasMuted = g_player.engine.muted;
     setPlayerState(PlayerState.LOADING);
     try {
-      if (g_ffmpegAvailable) {
+      if (
+        g_ffmpegAvailable &&
+        !playlist.getTracks()[trackIndex].fileUrl.startsWith("http")
+      ) {
         g_player.trackMetadata = await sendIpcToMainAndWait(
           "mp-get-file-metadata-complete",
           decodeURI(playlist.getTracks()[trackIndex].fileUrl),
