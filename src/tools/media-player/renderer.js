@@ -376,6 +376,7 @@ async function onPlay(trackIndex = undefined, time = 0) {
           "mp-get-file-metadata-complete",
           decodeURI(playlist.getTracks()[trackIndex].fileUrl),
         );
+        // console.log(g_player.trackMetadata);
       } else {
         g_player.trackMetadata = undefined;
       }
@@ -537,6 +538,7 @@ async function onPlay(trackIndex = undefined, time = 0) {
             "mp-ffmpeg-load-video",
             playlist.getTracks()[trackIndex].fileUrl,
             time,
+            g_player.trackMetadata,
           );
         } else {
           onError(error);
