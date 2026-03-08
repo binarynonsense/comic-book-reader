@@ -1,6 +1,8 @@
 {
   "@metadata": {
-    "authors": ["Álvaro"],
+    "authors": [
+      "Álvaro"
+    ],
     "last-updated": "2026-02-20",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.17.0",
@@ -315,6 +317,8 @@
   "mp-menu-audio": "Audio",
   "mp-menu-media-track": "Pista",
   "mp-menu-media-track-disabled": "Desactivada",
+  "[NOTE TOT TRANSLATORS]mp-menu-media-track-automatic": "Automatic as in, the track (for video, audio, subtile...) will be selected automatically",
+  "[NEEDS TRANSLATION]mp-menu-media-track-automatic": "Automatic",
   "mp-menu-subtitle": "Subtítulo",
   "mp-menu-subtitle-addfile": "Añadir archivo de subtítulo",
   "mp-menu-subtitle-highcontrastmode": "Modo de alto contraste",
