@@ -67,7 +67,37 @@ async function startVideoServer(metadata) {
         Connection: "close", // drop the old connection
       });
 
+      const sTime = parseFloat(seekTime) || 0;
+      const totalDuration = parseFloat(metadata?.duration);
+      const remainingTime =
+        totalDuration && totalDuration > sTime ? totalDuration - sTime : null;
+
       const avFlags = getAudioVideoFlags(metadata, videoIndex, audioIndex);
+      // const flags = [
+      //   "-ss",
+      //   seekTime.toString(), // timestamp
+      //   "-stream_loop",
+      //   "-1", // loop indefinitely
+      //   "-i",
+      //   g_activeVideoPath, // file path
+      //   "-t",
+      //   metadata.duration.toString(), // force to the max duration
+      //   "-loglevel",
+      //   "quiet", // don't fill stderr
+      //   ...avFlags, // dynamic mapping and codecs
+      //   "-preset",
+      //   "ultrafast", // quicker for seeking
+      //   "-tune",
+      //   "zerolatency", // no lookahead buffer and internal frame caching
+      //   "-f",
+      //   "mp4",
+      //   "-movflags",
+      //   // frag_keyframe: fragmented MP4 to play as it's built
+      //   // empty_moov: allows stream to start without a fixed duration header
+      //   // default_base_moof: helps the browser align the chunks of video
+      //   "frag_keyframe+empty_moov+default_base_moof",
+      //   "pipe:1", // directs data to stdout
+      // ];
       const flags = [
         "-ss",
         seekTime.toString(), // timestamp
@@ -76,6 +106,19 @@ async function startVideoServer(metadata) {
         "-loglevel",
         "quiet", // don't fill stderr
         ...avFlags, // dynamic mapping and codecs
+      ];
+
+      if (remainingTime !== null) {
+        // t: if there is video and audio, freeze the last frame to fill any gap
+        flags.push("-t", remainingTime.toString());
+        if (metadata?.hasVideo && metadata?.hasAudio) {
+          // tpad=stop=-1: repeat the last frame indefinitely, -t cuts it at end
+          // tpad=stop=-1:stop_mode=clone: would clone the last frame
+          flags.push("-vf", "tpad=stop=-1");
+        }
+      }
+
+      flags.push(
         "-preset",
         "ultrafast", // quicker for seeking
         "-tune",
@@ -88,7 +131,7 @@ async function startVideoServer(metadata) {
         // default_base_moof: helps the browser align the chunks of video
         "frag_keyframe+empty_moov+default_base_moof",
         "pipe:1", // directs data to stdout
-      ];
+      );
       log.editor(`[ffmpeg] flags: ${flags}`);
 
       g_ffmpegProcess = spawn(g_ffmpegPath, flags, {
@@ -247,7 +290,7 @@ async function getMetadataComplete(bin, file) {
       "-v",
       "error",
       "-show_entries",
-      "format=duration,format_name,size,bit_rate:format_tags:stream=index,codec_name,codec_type,width,height,sample_rate,channels,channel_layout:stream_tags:stream_disposition=attached_pic",
+      "format=duration,format_name,size,bit_rate:format_tags:stream=index,codec_name,codec_type,width,height,sample_rate,channels,channel_layout,duration:stream_tags:stream_disposition=attached_pic",
       "-of",
       "json",
       file,
@@ -331,6 +374,10 @@ async function getMetadataComplete(bin, file) {
               return {
                 index: st.index ?? i,
                 codec: codec,
+                duration:
+                  parseDuration(st.duration) ||
+                  parseDuration(st.tags?.DURATION) ||
+                  parseDuration(data.format?.duration),
                 language: lang.toLowerCase(),
                 title: `${title} [${codec}]`,
                 // isDefault: st.disposition?.default === 1,
@@ -341,6 +388,10 @@ async function getMetadataComplete(bin, file) {
             videoTracks: vStreams.map((st, i) => ({
               index: st.index ?? i,
               codec: st.codec_name || "unknown",
+              duration:
+                parseDuration(st.duration) ||
+                parseDuration(st.tags?.DURATION) ||
+                parseDuration(data.format?.duration),
               width: st.width || 0,
               height: st.height || 0,
               language: st.tags?.language || st.tags?.LANGUAGE || "und",
@@ -419,6 +470,17 @@ async function getMetadataComplete(bin, file) {
   });
 }
 exports.getMetadataComplete = getMetadataComplete;
+
+function parseDuration(val) {
+  if (!val || val === "N/A") return null;
+  if (!isNaN(val)) return parseFloat(val);
+  // handle HH:MM:SS.ms strings
+  const parts = val.split(":").map(parseFloat);
+  if (parts.length === 3) {
+    return parts[0] * 3600 + parts[1] * 60 + parts[2];
+  }
+  return parseFloat(val) || null;
+}
 
 async function extractSubtitleText(bin, file, index) {
   const ffmpegPath = bin || g_ffmpegPath;
