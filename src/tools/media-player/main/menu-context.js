@@ -382,6 +382,71 @@ exports.show = function (type, params, data, sendIpcToRenderer) {
           },
           { type: "separator" },
           {
+            label: _("tool-shared-ui-ebook-rendering-fontsize"),
+            submenu: [
+              {
+                label: "80%",
+                type: "radio",
+                checked: data.settings.subtitleFontSize === 0.8,
+                click() {
+                  sendIpcToRenderer(
+                    "on-context-menu",
+                    "set-subtitle-font-size",
+                    0.8,
+                  );
+                },
+              },
+              {
+                label: "90%",
+                type: "radio",
+                checked: data.settings.subtitleFontSize === 0.9,
+                click() {
+                  sendIpcToRenderer(
+                    "on-context-menu",
+                    "set-subtitle-font-size",
+                    0.9,
+                  );
+                },
+              },
+              {
+                label: "100%",
+                type: "radio",
+                checked: data.settings.subtitleFontSize === 1,
+                click() {
+                  sendIpcToRenderer(
+                    "on-context-menu",
+                    "set-subtitle-font-size",
+                    1,
+                  );
+                },
+              },
+              {
+                label: "110%",
+                type: "radio",
+                checked: data.settings.subtitleFontSize === 1.1,
+                click() {
+                  sendIpcToRenderer(
+                    "on-context-menu",
+                    "set-subtitle-font-size",
+                    1.1,
+                  );
+                },
+              },
+              {
+                label: "120%",
+                type: "radio",
+                checked: data.settings.subtitleFontSize === 1.2,
+                click() {
+                  sendIpcToRenderer(
+                    "on-context-menu",
+                    "set-subtitle-font-size",
+                    1.2,
+                  );
+                },
+              },
+            ],
+          },
+          {
             label: _("mp-menu-subtitle-highcontrastmode"),
             type: "checkbox",
             checked: data.settings.subtitleHighContrastMode,

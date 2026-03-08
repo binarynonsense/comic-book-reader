@@ -52,6 +52,7 @@ function setDefaultValues() {
     showVideo: true,
     showSpectrum: true,
     subtitleHighContrastMode: false,
+    subtitleFontSize: 1,
   };
 }
 
@@ -106,6 +107,17 @@ function sanitize() {
   }
   if (typeof g_settings.subtitleHighContrastMode !== "boolean") {
     g_settings.subtitleHighContrastMode = false;
+  }
+  if (isNaN(g_settings.subtitleFontSize)) {
+    g_settings.subtitleFontSize = 1;
+  } else if (
+    g_settings.subtitleFontSize !== 0.8 &&
+    g_settings.subtitleFontSize !== 0.9 &&
+    g_settings.subtitleFontSize !== 1 &&
+    g_settings.subtitleFontSize !== 1.1 &&
+    g_settings.subtitleFontSize !== 1.2
+  ) {
+    g_settings.subtitleFontSize = 1;
   }
 }
 

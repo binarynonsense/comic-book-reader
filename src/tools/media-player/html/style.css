@@ -1,6 +1,7 @@
 :root {
   --mp-frame-width: 300px;
   --mp-slider-thumb-width: 5px;
+  --mp-subtitle-font-size: 5cqh;
 }
 
 #media-player-container {
@@ -264,7 +265,7 @@ a:hover a:visited {
   gap: 0.5cqh;
 
   color: rgb(224, 224, 224);
-  font-size: 5cqh;
+  font-size: var(--mp-subtitle-font-size);
   font-weight: bold;
   text-align: center;
   font-family:

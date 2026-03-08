@@ -290,6 +290,7 @@ async function onInit(settings, loadedPlaylist) {
 
     if (g_settings.showSpectrum) spectrumVisualizer.start();
     setSubtitleHighContrastMode(g_settings.subtitleHighContrastMode);
+    setSubtitleFontSize(g_settings.subtitleFontSize);
 
     ////////////////
     refreshUI();
@@ -830,6 +831,15 @@ function setSubtitleHighContrastMode(isOn) {
       "mp-video-subtitle-high-contrast",
     );
   }
+}
+
+function setSubtitleFontSize(size) {
+  g_settings.subtitleFontSize = size;
+  const cssSize = `${5 * size}cqh`;
+  document.documentElement.style.setProperty(
+    "--mp-subtitle-font-size",
+    cssSize,
+  );
 }
 
 function updateSubtitleUI(relativeTime) {
@@ -1841,6 +1851,10 @@ function initOnIpcCallbacks() {
         loadExternalSubtitle(args[1]);
         updateSubtitleUI(g_player.html.sliderTime.value);
         refreshUI();
+        break;
+
+      case "set-subtitle-font-size":
+        setSubtitleFontSize(args[1]);
         break;
 
       case "toggle-subtitle-high-contrast-mode":
