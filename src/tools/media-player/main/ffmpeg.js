@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-const { spawn, exec } = require("node:child_process");
+const { spawn } = require("node:child_process");
 const http = require("node:http");
 
 const log = require("../../../shared/main/logger");
@@ -41,7 +41,45 @@ function closeCurrentVideo() {
   }
 }
 
-async function startVideoServer() {
+function getAudioVideoFlags(
+  metadata,
+  videoIndex = undefined,
+  audioIndex = undefined,
+) {
+  if (!metadata || (videoIndex === undefined && audioIndex === undefined)) {
+    // let ffmpeg decide the best tracks
+    const autoFlags = [];
+    if (!metadata || metadata.hasVideo) {
+      autoFlags.push("-c:v", "libx264");
+    } else {
+      autoFlags.push("-vn"); // no video
+    }
+    if (!metadata || metadata.hasAudio) {
+      autoFlags.push("-c:a", "aac", "-ac", "2");
+    } else {
+      autoFlags.push("-an"); // no audio
+    }
+    return autoFlags;
+  }
+
+  const flags = [];
+  if (metadata.hasVideo) {
+    const vIdx = videoIndex ?? metadata.videoTracks[0]?.index;
+    flags.push("-map", `0:${vIdx}`, "-c:v", "libx264");
+  } else {
+    flags.push("-vn");
+  }
+  if (metadata.hasAudio) {
+    const aIdx = audioIndex ?? metadata.audioTracks[0]?.index;
+    flags.push("-map", `0:${aIdx}`, "-c:a", "aac", "-ac", "2");
+  } else {
+    flags.push("-an");
+  }
+
+  return flags;
+}
+
+async function startVideoServer(metadata, videoIndex, audioIndex) {
   if (g_videoServer) return g_videoServer;
 
   return new Promise((resolve, reject) => {
@@ -63,6 +101,8 @@ async function startVideoServer() {
         Connection: "close", // drop the old connection
       });
 
+      const avFlags = getAudioVideoFlags(metadata, videoIndex, audioIndex);
+
       g_ffmpegProcess = spawn(
         g_ffmpegPath,
         [
@@ -72,14 +112,11 @@ async function startVideoServer() {
           g_activeVideoPath, // file path
           "-loglevel",
           "quiet", // don't fill stderr
-          "-c:v",
-          "libx264", // convert to h264 so chromium can play it
+          ...avFlags, // dynamic mapping and codecs
           "-preset",
           "ultrafast", // quicker for seeking
           "-tune",
           "zerolatency", // no lookahead buffer and internal frame caching
-          "-c:a",
-          "aac", // aac audio for the mp4
           "-f",
           "mp4",
           "-movflags",
@@ -131,12 +168,12 @@ exports.updateFfmpegPath = function (ffmpegPath) {
 exports.initOnIpcCallbacks = function (on, _sendIpcToRenderer) {
   sendIpcToRenderer = _sendIpcToRenderer;
 
-  on("mp-ffmpeg-load-video", async (filePath, time) => {
+  on("mp-ffmpeg-load-video", async (filePath, time, metadata) => {
     g_activeVideoPath = filePath;
     try {
-      const server = await startVideoServer();
+      const server = await startVideoServer(metadata);
       const port = server.address().port;
-      const duration = await getMetadataDuration(g_ffmpegPath, filePath);
+      const duration = metadata.duration;
 
       if (duration) {
         sendIpcToRenderer("mp-ffmpeg-video-metadata", {
@@ -180,116 +217,6 @@ exports.initOnIpcCallbacks = function (on, _sendIpcToRenderer) {
 // HELPERS ////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-// const fs = require("node:fs");
-// async function getValidFfmpegPath(customPath) {
-//   if (customPath && fs.existsSync(customPath)) return customPath;
-
-//   return new Promise((resolve, reject) => {
-//     const cmd = process.platform === "win32" ? "where ffmpeg" : "which ffmpeg";
-
-//     exec(cmd, (err, stdout) => {
-//       if (!err && stdout) {
-//         const path = stdout.trim().split("\n")[0].trim();
-//         resolve(path);
-//       } else {
-//         reject("ffmpeg binary not found in system PATH");
-//       }
-//     });
-//   });
-// }
-// exports.getValidFfmpegPath = getValidFfmpegPath;
-
-async function getMetadataDuration(bin, file) {
-  const probe = bin.replace(/ffmpeg(\.exe)?$/i, "ffprobe$1");
-  return new Promise((resolve) => {
-    // ffprobe
-    const cmd = `"${probe}" -v error -select_streams v:0 -show_entries format=duration -of json "${file}"`;
-    exec(cmd, (err, stdout) => {
-      if (!err && stdout) {
-        try {
-          resolve(JSON.parse(stdout).format.duration);
-        } catch (e) {
-          resolve(null);
-        }
-      } else {
-        // ffmpeg fallback
-        exec(`"${bin}" -i "${file}" -f null -`, (fe, fo, fe2) => {
-          const match = (fe2 || "").match(
-            /Duration: (\d{2}):(\d{2}):(\d{2})\.(\d{2})/,
-          );
-          if (match) {
-            const total =
-              parseInt(match[1]) * 3600 +
-              parseInt(match[2]) * 60 +
-              parseInt(match[3]);
-            resolve(total);
-          } else resolve(null);
-        });
-      }
-    });
-  });
-}
-
-// async function getMetadataExtended(bin, file) {
-//   if (!bin) bin = g_ffmpegPath;
-//   const probe = bin.replace(/ffmpeg(\.exe)?$/i, "ffprobe$1");
-
-//   return new Promise((resolve) => {
-//     const cmd = `"${probe}" -v error -show_entries format=duration,format_name -show_entries stream=codec_name,codec_type -show_entries stream_disposition=attached_pic -of json "${file}"`;
-
-//     exec(cmd, (err, stdout) => {
-//       if (!err && stdout) {
-//         try {
-//           const data = JSON.parse(stdout);
-//           const streams = data.streams || [];
-
-//           const realVideoStreams = streams.filter(
-//             (s) =>
-//               s.codec_type === "video" && s.disposition?.attached_pic !== 1,
-//           );
-
-//           const audioStreams = streams.filter((s) => s.codec_type === "audio");
-
-//           resolve({
-//             usedFFprobe: true,
-//             duration: parseFloat(data.format?.duration) || null,
-//             container: data.format?.format_name || "",
-//             videoCodecs: realVideoStreams.map((s) => s.codec_name),
-//             audioCodecs: audioStreams.map((s) => s.codec_name),
-//             hasVideo: realVideoStreams.length > 0,
-//             hasAudio: audioStreams.length > 0,
-//           });
-//           return;
-//         } catch (error) {}
-//       }
-
-//       exec(`"${bin}" -i "${file}" -f null -`, (fe, fo, fe2) => {
-//         const output = fe2 || "";
-//         const match = output.match(
-//           /Duration: (\d{2}):(\d{2}):(\d{2})\.(\d{2})/,
-//         );
-//         let total = null;
-//         if (match) {
-//           total =
-//             parseInt(match[1]) * 3600 +
-//             parseInt(match[2]) * 60 +
-//             parseInt(match[3]);
-//         }
-
-//         resolve({
-//           usedFFprobe: false,
-//           duration: total,
-//           container: "",
-//           videoCodecs: [],
-//           audioCodecs: [],
-//           hasVideo: output.toLowerCase().includes("video:"),
-//           hasAudio: output.toLowerCase().includes("audio:"),
-//         });
-//       });
-//     });
-//   });
-// }
-
 async function getMetadataComplete(bin, file) {
   if (!bin) bin = g_ffmpegPath;
   const probe = bin.replace(/ffmpeg(\.exe)?$/i, "ffprobe$1");
@@ -316,10 +243,38 @@ async function getMetadataComplete(bin, file) {
   };
 
   return new Promise((resolve) => {
-    const cmd = `"${probe}" -v error -show_entries format=duration,format_name,size,bit_rate:format_tags:stream=index,codec_name,codec_type,width,height,sample_rate,channels,channel_layout:stream_tags:stream_disposition=attached_pic -of json "${file}"`;
+    const TIMEOUT_MS = 5000;
+    let resolved = false;
 
-    exec(cmd, (error, stdout, stderr) => {
-      if (!error && stdout) {
+    const args = [
+      "-v",
+      "error",
+      "-show_entries",
+      "format=duration,format_name,size,bit_rate:format_tags:stream=index,codec_name,codec_type,width,height,sample_rate,channels,channel_layout:stream_tags:stream_disposition=attached_pic",
+      "-of",
+      "json",
+      file,
+    ];
+
+    const child = spawn(probe, args);
+    let stdout = "";
+
+    // timer just in case it hangs
+    const timer = setTimeout(() => {
+      if (!resolved) {
+        child.kill("SIGKILL");
+      }
+    }, TIMEOUT_MS);
+
+    child.stdout.on("data", (data) => {
+      stdout += data;
+    });
+
+    child.on("close", (code) => {
+      clearTimeout(timer);
+      if (resolved) return;
+
+      if (code === 0 && stdout) {
         try {
           const data = JSON.parse(stdout);
           const streams = data?.streams || [];
@@ -328,7 +283,11 @@ async function getMetadataComplete(bin, file) {
 
           const vStreams = streams.filter(
             (s) =>
-              s.codec_type === "video" && s.disposition?.attached_pic !== 1,
+              s.codec_type === "video" &&
+              s.disposition?.attached_pic !== 1 &&
+              s.codec_name !== "mjpeg" &&
+              s.codec_name !== "png" &&
+              s.codec_name !== "bmp",
           );
           const aStreams = streams.filter((s) => s.codec_type === "audio");
           const sStreams = streams.filter((s) => s.codec_type === "subtitle");
@@ -337,15 +296,7 @@ async function getMetadataComplete(bin, file) {
           const mainAudio = aStreams[0] || {};
           const vTags = mainVideo?.tags || {};
 
-          const textCodecs = [
-            "subrip",
-            "ass",
-            "ssa",
-            "mov_text",
-            "webvtt",
-            "text",
-          ];
-
+          resolved = true;
           resolve({
             usedFFprobe: true,
             duration: parseFloat(format.duration) || null,
@@ -371,22 +322,37 @@ async function getMetadataComplete(bin, file) {
               : null,
             channels: mainAudio.channels || null,
 
-            audioTracks: aStreams.map((st, i) => ({
+            audioTracks: aStreams.map((st, i) => {
+              const lang = (
+                st.tags?.language ||
+                st.tags?.LANGUAGE ||
+                "und"
+              ).toUpperCase();
+              const codec = (st.codec_name || "unknown").toUpperCase();
+              const title =
+                st.tags?.title || st.tags?.TITLE || `Track ${i + 1}`;
+              return {
+                index: st.index ?? i,
+                codec: codec,
+                language: lang.toLowerCase(),
+                name: `${title} [${codec}]`,
+                isDefault: st.disposition?.default === 1,
+                isForced: st.disposition?.forced === 1,
+              };
+            }),
+
+            videoTracks: vStreams.map((st, i) => ({
               index: st.index ?? i,
               codec: st.codec_name || "unknown",
+              width: st.width || 0,
+              height: st.height || 0,
               language: st.tags?.language || st.tags?.LANGUAGE || "und",
-              name: st.tags?.title || st.tags?.TITLE || `Track ${i + 1}`,
+              name:
+                st.tags?.title || st.tags?.TITLE || `${st.width}x${st.height}`,
+              isDefault: st.disposition?.default === 1,
+              isForced: st.disposition?.forced === 1,
             })),
 
-            // subtitles: sStreams
-            //   .filter((st) => textCodecs.includes(st.codec_name?.toLowerCase()))
-            //   .map((st, i) => ({
-            //     index: st.index ?? i,
-            //     codec: st.codec_name || "unknown",
-            //     language: st.tags?.language || st.tags?.LANGUAGE || "und",
-            //     title: st.tags?.title || st.tags?.TITLE || `Subtitle ${i + 1}`,
-            //     isExternal: false,
-            //   })),
             subtitles: sStreams
               .filter((st) =>
                 ["subrip", "ass", "ssa", "mov_text", "webvtt", "text"].includes(
@@ -415,60 +381,47 @@ async function getMetadataComplete(bin, file) {
         } catch (error) {}
       }
 
-      // fallback
-      exec(
-        `"${bin}" -i "${file}" -f null -`,
-        (errorFallback, stdoutFallback, stderrFallback) => {
-          const info = stderrFallback || "";
-          const match = info.match(
-            /Duration: (\d{2}):(\d{2}):(\d{2})\.(\d{2})/,
-          );
-          let total = null;
-          if (match) {
-            total =
-              parseInt(match[1]) * 3600 +
-              parseInt(match[2]) * 60 +
-              parseInt(match[3]);
-          }
+      // fallback using spawn for the null muxer check
+      const fallbackChild = spawn(bin, ["-i", file, "-f", "null", "-"]);
+      let fallbackStderr = "";
 
-          resolve({
-            ...fallbackObj,
-            duration: total,
-            hasVideo: info.toLowerCase().includes("video:"),
-            hasAudio: info.toLowerCase().includes("audio:"),
-          });
-        },
-      );
+      // timer just in case it hangs
+      const fallbackTimer = setTimeout(() => {
+        if (!resolved) {
+          fallbackChild.kill("SIGKILL");
+        }
+      }, TIMEOUT_MS);
+
+      fallbackChild.stderr.on("data", (data) => {
+        fallbackStderr += data;
+      });
+
+      fallbackChild.on("close", () => {
+        clearTimeout(fallbackTimer);
+        if (resolved) return;
+        resolved = true;
+
+        const info = fallbackStderr || "";
+        const match = info.match(/Duration: (\d{2}):(\d{2}):(\d{2})\.(\d{2})/);
+        let total = null;
+        if (match) {
+          total =
+            parseInt(match[1]) * 3600 +
+            parseInt(match[2]) * 60 +
+            parseInt(match[3]);
+        }
+
+        resolve({
+          ...fallbackObj,
+          duration: total,
+          hasVideo: info.toLowerCase().includes("video:"),
+          hasAudio: info.toLowerCase().includes("audio:"),
+        });
+      });
     });
   });
 }
-
 exports.getMetadataComplete = getMetadataComplete;
-
-// async function extractSubtitleText(bin, file, index) {
-//   if (!bin) bin = g_ffmpegPath;
-//   return new Promise((resolve) => {
-//     const cmd = `"${bin}" -i "${file}" -map 0:${index} -f srt -`;
-//     exec(
-//       cmd,
-//       { encoding: "utf8", maxBuffer: 1024 * 1024 * 10 },
-//       (error, stdout, stderr) => {
-//         // remove any BOM/hidden whitespace
-//         const cleanStdout = stdout ? stdout.toString().trim() : "";
-//         if (!error && cleanStdout.length > 0) {
-//           resolve(cleanStdout);
-//         } else {
-//           resolve(null);
-//         }
-//       },
-//     );
-//   });
-// }
-// exports.extractSubtitleText = extractSubtitleText;
-
-// subtitle formats
-// safe: subrip, ass, vtt, mov_text.
-// will fail: hdmv_pgs_subtitle, dvd_subtitle.
 
 async function extractSubtitleText(bin, file, index) {
   const ffmpegPath = bin || g_ffmpegPath;
