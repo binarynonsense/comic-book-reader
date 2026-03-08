@@ -383,6 +383,8 @@ async function onPlay(trackIndex = undefined, time = 0) {
         g_ffmpegAvailable &&
         !playlist.getTracks()[trackIndex].fileUrl.startsWith("http")
       ) {
+        // I skip getting the metadata for all urls
+        // TODO: maybe also do it for urls with video extension?
         g_player.trackMetadata = await sendIpcToMainAndWait(
           "mp-get-file-metadata-complete",
           decodeURI(playlist.getTracks()[trackIndex].fileUrl),
