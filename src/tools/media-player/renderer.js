@@ -201,7 +201,6 @@ function initPlayer() {
   });
 
   // g_player.engine.addEventListener('seeked', () => {
-  //     updateSubtitle(g_player.engine.currentTime);
   // });
 
   g_player.engine.addEventListener("stalled", () => {
@@ -214,9 +213,9 @@ function initPlayer() {
 
   g_player.engine.addEventListener("ended", function () {
     if (g_player.engineType === PlayerEngineType.FFMPEG) {
-      // NOTE: only try once if I try to repeat too close in time to
-      // prevent files with multiple tracks with different duration to
-      // make this go into an infinite loop of retries
+      // NOTE: only tries once if attempting to repeat again too close in
+      // time, to prevent files with multiple tracks with different duration
+      // making the resume code go into an infinite loop of retries
       const now = Date.now();
       const currentPos =
         g_player.engine.currentTime + (ffmpeg.getTimeOffset() || 0);

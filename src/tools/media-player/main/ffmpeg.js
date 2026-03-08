@@ -73,31 +73,6 @@ async function startVideoServer(metadata) {
         totalDuration && totalDuration > sTime ? totalDuration - sTime : null;
 
       const avFlags = getAudioVideoFlags(metadata, videoIndex, audioIndex);
-      // const flags = [
-      //   "-ss",
-      //   seekTime.toString(), // timestamp
-      //   "-stream_loop",
-      //   "-1", // loop indefinitely
-      //   "-i",
-      //   g_activeVideoPath, // file path
-      //   "-t",
-      //   metadata.duration.toString(), // force to the max duration
-      //   "-loglevel",
-      //   "quiet", // don't fill stderr
-      //   ...avFlags, // dynamic mapping and codecs
-      //   "-preset",
-      //   "ultrafast", // quicker for seeking
-      //   "-tune",
-      //   "zerolatency", // no lookahead buffer and internal frame caching
-      //   "-f",
-      //   "mp4",
-      //   "-movflags",
-      //   // frag_keyframe: fragmented MP4 to play as it's built
-      //   // empty_moov: allows stream to start without a fixed duration header
-      //   // default_base_moof: helps the browser align the chunks of video
-      //   "frag_keyframe+empty_moov+default_base_moof",
-      //   "pipe:1", // directs data to stdout
-      // ];
       const flags = [
         "-ss",
         seekTime.toString(), // timestamp
