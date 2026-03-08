@@ -41,11 +41,85 @@ function closeCurrentVideo() {
   }
 }
 
-function getAudioVideoFlags(
-  metadata,
-  videoIndex = undefined,
-  audioIndex = undefined,
-) {
+async function startVideoServer(metadata) {
+  if (g_videoServer) return g_videoServer;
+
+  return new Promise((resolve, reject) => {
+    g_videoServer = http.createServer((req, res) => {
+      closeCurrentVideo();
+      g_lastResponse = res;
+
+      req.on("close", () => {
+        if (g_lastResponse === res) {
+          closeCurrentVideo();
+        }
+      });
+
+      const requestUrl = new URL(req.url, `http://127.0.0.1`);
+      const seekTime = requestUrl.searchParams.get("t") || "0";
+
+      res.writeHead(200, {
+        "Content-Type": "video/mp4",
+        Connection: "close", // drop the old connection
+      });
+
+      const avFlags = getAudioVideoFlags(metadata);
+      const flags = [
+        "-ss",
+        seekTime.toString(), // timestamp
+        "-i",
+        g_activeVideoPath, // file path
+        "-loglevel",
+        "quiet", // don't fill stderr
+        ...avFlags, // dynamic mapping and codecs
+        "-preset",
+        "ultrafast", // quicker for seeking
+        "-tune",
+        "zerolatency", // no lookahead buffer and internal frame caching
+        "-f",
+        "mp4",
+        "-movflags",
+        // frag_keyframe: fragmented MP4 to play as it's built
+        // empty_moov: allows stream to start without a fixed duration header
+        // default_base_moof: helps the browser align the chunks of video
+        "frag_keyframe+empty_moov+default_base_moof",
+        "pipe:1", // directs data to stdout
+      ];
+      log.editor(`[ffmpeg] flags: ${flags}`);
+
+      g_ffmpegProcess = spawn(g_ffmpegPath, flags, {
+        // stdin: ignored, stdout: piped to res, stderr: ignored
+        stdio: ["ignore", "pipe", "ignore"],
+      });
+
+      g_ffmpegProcess.on("exit", (code, signal) => {
+        log.editor(
+          `[ffmpeg] ffmpeg exited with code ${code} and signal ${signal}`,
+        );
+      });
+      g_ffmpegProcess.stdout.on("error", (err) => {
+        log.editor(`[ffmpeg] stdout error: ${err.message}`);
+      });
+
+      g_ffmpegProcess.stdout.pipe(res);
+    });
+
+    g_videoServer.once("error", (error) => {
+      g_videoServer = null;
+      reject(error);
+    });
+
+    g_videoServer.listen(0, "127.0.0.1", () => {
+      const port = g_videoServer.address().port;
+      log.editor(`[ffmpeg] server active on port ${port}`);
+      resolve(g_videoServer);
+    });
+  });
+}
+
+function getAudioVideoFlags(metadata) {
+  const videoIndex = metadata?.videoIndex;
+  const audioIndex = metadata?.audioIndex;
   if (!metadata || (videoIndex === undefined && audioIndex === undefined)) {
     // let ffmpeg decide the best tracks
     const autoFlags = [];
@@ -75,86 +149,7 @@ function getAudioVideoFlags(
   } else {
     flags.push("-an");
   }
-
   return flags;
-}
-
-async function startVideoServer(metadata, videoIndex, audioIndex) {
-  if (g_videoServer) return g_videoServer;
-
-  return new Promise((resolve, reject) => {
-    g_videoServer = http.createServer((req, res) => {
-      closeCurrentVideo();
-      g_lastResponse = res;
-
-      req.on("close", () => {
-        if (g_lastResponse === res) {
-          closeCurrentVideo();
-        }
-      });
-
-      const requestUrl = new URL(req.url, `http://127.0.0.1`);
-      const seekTime = requestUrl.searchParams.get("t") || "0";
-
-      res.writeHead(200, {
-        "Content-Type": "video/mp4",
-        Connection: "close", // drop the old connection
-      });
-
-      const avFlags = getAudioVideoFlags(metadata, videoIndex, audioIndex);
-
-      g_ffmpegProcess = spawn(
-        g_ffmpegPath,
-        [
-          "-ss",
-          seekTime.toString(), // timestamp
-          "-i",
-          g_activeVideoPath, // file path
-          "-loglevel",
-          "quiet", // don't fill stderr
-          ...avFlags, // dynamic mapping and codecs
-          "-preset",
-          "ultrafast", // quicker for seeking
-          "-tune",
-          "zerolatency", // no lookahead buffer and internal frame caching
-          "-f",
-          "mp4",
-          "-movflags",
-          // frag_keyframe: fragmented MP4 to play as it's built
-          // empty_moov: allows stream to start without a fixed duration header
-          // default_base_moof: helps the browser align the chunks of video
-          "frag_keyframe+empty_moov+default_base_moof",
-          "pipe:1", // directs data to stdout
-        ],
-        {
-          // stdin: ignored, stdout: piped to res, stderr: ignored
-          stdio: ["ignore", "pipe", "ignore"],
-        },
-      );
-
-      g_ffmpegProcess.on("exit", (code, signal) => {
-        log.editor(
-          `[ffmpeg] ffmpeg exited with code ${code} and signal ${signal}`,
-        );
-      });
-      g_ffmpegProcess.stdout.on("error", (err) => {
-        log.editor(`[ffmpeg] stdout error: ${err.message}`);
-      });
-
-      g_ffmpegProcess.stdout.pipe(res);
-    });
-
-    g_videoServer.once("error", (error) => {
-      g_videoServer = null;
-      reject(error);
-    });
-
-    g_videoServer.listen(0, "127.0.0.1", () => {
-      const port = g_videoServer.address().port;
-      log.editor(`[ffmpeg] server active on port ${port}`);
-      resolve(g_videoServer);
-    });
-  });
 }
 
 exports.updateFfmpegPath = function (ffmpegPath) {
