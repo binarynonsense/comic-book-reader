@@ -65,6 +65,7 @@ function setPlayerState(state, doUIRefresh = false) {
 
 function clearPlayer() {
   g_currentLoadId++;
+  g_player.lastCrashResumeAttempt = 0;
 
   clearPlayerSubtitle();
   g_player.externalSubtitles = [];
@@ -213,16 +214,23 @@ function initPlayer() {
 
   g_player.engine.addEventListener("ended", function () {
     if (g_player.engineType === PlayerEngineType.FFMPEG) {
-      const currentPos = g_player.engine.currentTime + ffmpeg.getTimeOffset();
-      const totalDuration = g_player.trackMetadata.duration;
+      // NOTE: only try once if I try to repeat too close in time to
+      // prevent files with multiple tracks with different duration to
+      // make this go into an infinite loop of retries
+      const now = Date.now();
+      const currentPos =
+        g_player.engine.currentTime + (ffmpeg.getTimeOffset() || 0);
+      const totalDuration = g_player.trackMetadata?.duration || 0;
       const diff = Math.abs(totalDuration - currentPos);
-      if (diff > 5) {
-        // unexpected end
-        // TODO: test this, is 5 secs a good value?
+      if (g_player.lastCrashResumeAttempt === undefined) {
+        g_player.lastCrashResumeAttempt = 0;
+      }
+      if (diff > 5 && now - g_player.lastCrashResumeAttempt > 5000) {
         console.warn(
-          "[ffmpeg] stream ended prematurely? process likely crashed, attempting auto-resume at:",
+          "[ffmpeg] potential crash, attempting resume at:",
           currentPos,
         );
+        g_player.lastCrashResumeAttempt = now;
         const resumeTime = Math.floor(currentPos);
         setTime(resumeTime, PlayerState.PLAYING);
         return;
