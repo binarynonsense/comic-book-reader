@@ -52,6 +52,8 @@ exports.show = function (type, params, data, sendIpcToRenderer) {
         label: _("tool-shared-ui-open"),
         submenu: [...openSubmenu],
       },
+      ...getVideoSubmenu(data),
+      ...getAudioSubmenu(data),
       ...getSubtitleSubmenu(data),
       {
         label: _("menu-view"),
@@ -179,7 +181,175 @@ exports.show = function (type, params, data, sendIpcToRenderer) {
     ];
   }
 
+  function getVideoSubmenu(data) {
+    function getVideoTracks(data) {
+      try {
+        let result = [];
+        if (data?.trackMetadata?.videoTracks) {
+          const tracks = data.trackMetadata.videoTracks;
+          for (let index = 0; index < tracks.length; index++) {
+            const track = data.trackMetadata.videoTracks[index];
+            result.push({
+              label: track.title,
+              type: "radio",
+              checked: data.trackMetadata.videoIndex === track.index,
+              click() {
+                sendIpcToRenderer(
+                  "on-context-menu",
+                  "load-video-track",
+                  track.index,
+                );
+              },
+            });
+          }
+        }
+        return result;
+        audio;
+      } catch (error) {
+        return [];
+      }
+    }
+    // final return
+    return [
+      {
+        label: _("mp-menu-video"),
+        submenu: [
+          {
+            label: _("mp-menu-media-track"),
+            enabled: data.canSetAudioVideo.video,
+            submenu: [
+              {
+                label: _("mp-menu-media-track-automatic"),
+                type: "radio",
+                checked:
+                  data.trackMetadata === undefined ||
+                  data.trackMetadata.videoIndex === undefined,
+                click() {
+                  sendIpcToRenderer("on-context-menu", "load-video-track", -1);
+                },
+              },
+              ...getVideoTracks(data),
+            ],
+          },
+        ],
+      },
+    ];
+  }
+
+  function getAudioSubmenu(data) {
+    function getAudioTracks(data) {
+      try {
+        let result = [];
+        if (data?.trackMetadata?.audioTracks) {
+          const tracks = data.trackMetadata.audioTracks;
+          for (let index = 0; index < tracks.length; index++) {
+            const track = data.trackMetadata.audioTracks[index];
+            result.push({
+              label: track.title,
+              type: "radio",
+              checked: data.trackMetadata.audioIndex === track.index,
+              click() {
+                sendIpcToRenderer(
+                  "on-context-menu",
+                  "load-audio-track",
+                  track.index,
+                );
+              },
+            });
+          }
+        }
+        return result;
+      } catch (error) {
+        return [];
+      }
+    }
+    // final return
+    return [
+      {
+        label: _("mp-menu-audio"),
+        submenu: [
+          {
+            label: _("mp-menu-media-track"),
+            enabled: data.canSetAudioVideo.audio,
+            submenu: [
+              {
+                label: _("mp-menu-media-track-automatic"),
+                type: "radio",
+                checked:
+                  data.trackMetadata === undefined ||
+                  data.trackMetadata.audioIndex === undefined,
+                click() {
+                  sendIpcToRenderer("on-context-menu", "load-audio-track", -1);
+                },
+              },
+              ...getAudioTracks(data),
+            ],
+          },
+        ],
+      },
+    ];
+  }
+
   function getSubtitleSubmenu(data) {
+    function getExternalSubtitleTracks(data) {
+      try {
+        let result = [];
+        if (data?.externalSubtitles?.length > 0) {
+          const subtitles = data.externalSubtitles;
+          for (let index = 0; index < subtitles.length; index++) {
+            const subtitle = subtitles[index];
+            result.push({
+              label: subtitle.title,
+              type: "radio",
+              checked:
+                data.subtitle &&
+                data.subtitle.type === "external" &&
+                data.subtitle.index === index,
+              click() {
+                sendIpcToRenderer(
+                  "on-context-menu",
+                  "load-external-subtitle-track",
+                  index,
+                );
+              },
+            });
+          }
+        }
+        return result;
+      } catch (error) {
+        return [];
+      }
+    }
+    function getEmbeddedSubtitleTracks(data) {
+      try {
+        let result = [];
+        if (data?.trackMetadata?.subtitles) {
+          const subtitles = data.trackMetadata.subtitles;
+          for (let index = 0; index < subtitles.length; index++) {
+            const subtitle = subtitles[index];
+            result.push({
+              label: subtitle.title,
+              type: "radio",
+              checked:
+                data.subtitle &&
+                data.subtitle.type === "embedded" &&
+                data.subtitle.index === index,
+              click() {
+                sendIpcToRenderer(
+                  "on-context-menu",
+                  "load-embedded-subtitle-track",
+                  index,
+                );
+              },
+            });
+          }
+        }
+        return result;
+      } catch (error) {
+        return [];
+      }
+    }
+    // final return
     return [
       {
         label: _("mp-menu-subtitle"),
@@ -225,66 +395,6 @@ exports.show = function (type, params, data, sendIpcToRenderer) {
         ],
       },
     ];
-  }
-
-  function getExternalSubtitleTracks(data) {
-    try {
-      let result = [];
-      if (data?.externalSubtitles?.length > 0) {
-        const subtitles = data.externalSubtitles;
-        for (let index = 0; index < subtitles.length; index++) {
-          const subtitle = subtitles[index];
-          result.push({
-            label: subtitle.title,
-            type: "radio",
-            checked:
-              data.subtitle &&
-              data.subtitle.type === "external" &&
-              data.subtitle.index === index,
-            click() {
-              sendIpcToRenderer(
-                "on-context-menu",
-                "load-external-subtitle-track",
-                index,
-              );
-            },
-          });
-        }
-      }
-      return result;
-    } catch (error) {
-      return [];
-    }
-  }
-
-  function getEmbeddedSubtitleTracks(data) {
-    try {
-      let result = [];
-      if (data?.trackMetadata?.subtitles) {
-        const subtitles = data.trackMetadata.subtitles;
-        for (let index = 0; index < subtitles.length; index++) {
-          const subtitle = subtitles[index];
-          result.push({
-            label: subtitle.title,
-            type: "radio",
-            checked:
-              data.subtitle &&
-              data.subtitle.type === "embedded" &&
-              data.subtitle.index === index,
-            click() {
-              sendIpcToRenderer(
-                "on-context-menu",
-                "load-embedded-subtitle-track",
-                index,
-              );
-            },
-          });
-        }
-      }
-      return result;
-    } catch (error) {
-      return [];
-    }
   }
 
   function getPlaylistSubmenu(data) {

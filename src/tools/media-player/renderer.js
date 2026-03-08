@@ -625,7 +625,12 @@ function setTime(targetSecond) {
     targetSecond = g_player.html.sliderTime.max;
 
   if (g_player.engineType === PlayerEngineType.FFMPEG) {
-    ffmpeg.setTime(targetSecond, g_player.state);
+    ffmpeg.setTime(
+      targetSecond,
+      g_player.state,
+      g_player.trackMetadata.audioIndex,
+      g_player.trackMetadata.videoIndex,
+    );
   } else if (g_player.engineType === PlayerEngineType.YOUTUBE) {
     yt.setTime(targetSecond);
   } else if (!g_player.usingHsl) {
@@ -791,6 +796,20 @@ function canLoadSubtitles() {
     g_player.mediaType === PlayerMediaType.VIDEO &&
     g_player.engineType !== PlayerEngineType.YOUTUBE
   );
+}
+
+function canSetAudioVideo() {
+  const data = {
+    audio:
+      g_player.state !== PlayerState.NOT_SET &&
+      g_player.engineType !== PlayerEngineType.YOUTUBE &&
+      g_player.mediaType !== PlayerMediaType.NOT_SET,
+    video:
+      g_player.state !== PlayerState.NOT_SET &&
+      g_player.engineType !== PlayerEngineType.YOUTUBE &&
+      g_player.mediaType === PlayerMediaType.VIDEO,
+  };
+  return data;
 }
 
 function setSubtitleHighContrastMode(isOn) {
@@ -1571,6 +1590,7 @@ function getContextMenuData() {
     subtitle: g_player.subtitle,
     canLoadSubtitles: canLoadSubtitles(),
     externalSubtitles: g_player.externalSubtitles,
+    canSetAudioVideo: canSetAudioVideo(),
   };
 }
 
@@ -1825,6 +1845,42 @@ function initOnIpcCallbacks() {
           "on-add-subtitle-file-clicked",
           decodeURI(playlist.getTracks()[g_player.trackIndex].fileUrl),
         );
+        break;
+
+      case "load-audio-track":
+        try {
+          const newIndex = args[1];
+          if (
+            g_player.engineType === PlayerEngineType.FFMPEG &&
+            newIndex !== g_player.trackMetadata.audioIndex
+          ) {
+            g_player.trackMetadata.audioIndex = newIndex;
+            ffmpeg.setTime(
+              parseFloat(g_player.html.sliderTime.value),
+              g_player.state,
+              newIndex,
+              g_player.trackMetadata.videoIndex,
+            );
+          }
+        } catch (error) {}
+        break;
+
+      case "load-video-track":
+        try {
+          const newIndex = args[1];
+          if (
+            g_player.engineType === PlayerEngineType.FFMPEG &&
+            newIndex !== g_player.trackMetadata.videoIndex
+          ) {
+            g_player.trackMetadata.videoIndex = newIndex;
+            ffmpeg.setTime(
+              parseFloat(g_player.html.sliderTime.value),
+              g_player.state,
+              g_player.trackMetadata.audioIndex,
+              newIndex,
+            );
+          }
+        } catch (error) {}
         break;
     }
   });

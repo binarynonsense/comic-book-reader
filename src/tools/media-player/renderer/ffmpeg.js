@@ -42,10 +42,10 @@ export function initOnIpcCallbacks(on) {
 
 let g_ffmpegSeekOffset = 0;
 
-export function setTime(seconds, prevPlayerState) {
+export function setTime(seconds, prevPlayerState, audioIndex, videoIndex) {
   setPlayerState(PlayerState.LOADING, true);
   g_ffmpegSeekOffset = Math.floor(seconds); // remember where we jumped to
-  startStream(g_ffmpegSeekOffset, prevPlayerState);
+  startStream(g_ffmpegSeekOffset, prevPlayerState, audioIndex, videoIndex);
 }
 
 export function onSliderTimeUpdate(videoElement, inputSlider) {
@@ -61,14 +61,21 @@ export function getTimeOffset() {
 
 /////////////////////
 
-function startStream(time, prevPlayerState) {
+function startStream(time, prevPlayerState, audioIndex, videoIndex) {
   g_videoTag = document.getElementById("mp-html-video");
   if (!g_videoTag) return;
 
   g_videoTag.pause();
   g_ffmpegSeekOffset = Math.floor(time ?? 0);
   const timestamp = g_ffmpegSeekOffset;
-  g_videoTag.src = `http://127.0.0.1:${g_activePort}/video?t=${timestamp}&cb=${Date.now()}`;
+  let url = `http://127.0.0.1:${g_activePort}/video?t=${timestamp}&cb=${Date.now()}`;
+  if (audioIndex !== undefined && audioIndex >= 0) {
+    url += `&a=${audioIndex}`;
+  }
+  if (videoIndex !== undefined && videoIndex >= 0) {
+    url += `&v=${videoIndex}`;
+  }
+  g_videoTag.src = url;
 
   g_videoTag.play().catch((error) => {
     if (error.name !== "AbortError") {

@@ -57,13 +57,17 @@ async function startVideoServer(metadata) {
 
       const requestUrl = new URL(req.url, `http://127.0.0.1`);
       const seekTime = requestUrl.searchParams.get("t") || "0";
+      const videoIndex =
+        requestUrl.searchParams.get("v") || metadata?.videoIndex;
+      const audioIndex =
+        requestUrl.searchParams.get("a") || metadata?.audioIndex;
 
       res.writeHead(200, {
         "Content-Type": "video/mp4",
         Connection: "close", // drop the old connection
       });
 
-      const avFlags = getAudioVideoFlags(metadata);
+      const avFlags = getAudioVideoFlags(metadata, videoIndex, audioIndex);
       const flags = [
         "-ss",
         seekTime.toString(), // timestamp
@@ -117,9 +121,7 @@ async function startVideoServer(metadata) {
   });
 }
 
-function getAudioVideoFlags(metadata) {
-  const videoIndex = metadata?.videoIndex;
-  const audioIndex = metadata?.audioIndex;
+function getAudioVideoFlags(metadata, videoIndex, audioIndex) {
   if (!metadata || (videoIndex === undefined && audioIndex === undefined)) {
     // let ffmpeg decide the best tracks
     const autoFlags = [];
@@ -330,9 +332,9 @@ async function getMetadataComplete(bin, file) {
                 index: st.index ?? i,
                 codec: codec,
                 language: lang.toLowerCase(),
-                name: `${title} [${codec}]`,
-                isDefault: st.disposition?.default === 1,
-                isForced: st.disposition?.forced === 1,
+                title: `${title} [${codec}]`,
+                // isDefault: st.disposition?.default === 1,
+                // isForced: st.disposition?.forced === 1,
               };
             }),
 
@@ -342,10 +344,10 @@ async function getMetadataComplete(bin, file) {
               width: st.width || 0,
               height: st.height || 0,
               language: st.tags?.language || st.tags?.LANGUAGE || "und",
-              name:
+              title:
                 st.tags?.title || st.tags?.TITLE || `${st.width}x${st.height}`,
-              isDefault: st.disposition?.default === 1,
-              isForced: st.disposition?.forced === 1,
+              // isDefault: st.disposition?.default === 1,
+              // isForced: st.disposition?.forced === 1,
             })),
 
             subtitles: sStreams
