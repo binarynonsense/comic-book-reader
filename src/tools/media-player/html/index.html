@@ -12,7 +12,7 @@
   <a id="mp-button-pause" class="mp-button" title="pause"
     ><i class="fa fa-pause" aria-hidden="true"></i
   ></a>
-  <a id="mp-button-stop" class="mp-button set-display-none" title="stop"
+  <a id="mp-button-stop" class="mp-button mp-hidden" title="stop"
     ><i class="fa fa-stop" aria-hidden="true"></i
   ></a>
   <a id="mp-button-next" class="mp-button" title="next track"
@@ -72,18 +72,18 @@
   ></a>
 </div>
 <!-- ---------------  VIDEO PLAYERS---------------  -->
-<div id="mp-video-div" class="mp-frame">
+<div id="mp-video-div" class="mp-frame mp-hidden">
   <button id="mp-video-close-button" class="mp-widget-close-button">
     <i class="fas fa-times"></i>
   </button>
   <video id="mp-html-video" crossorigin="anonymous"></video>
   <div id="mp-video-title" class="mp-widget-title-div"></div>
   <div id="mp-video-subtitle"></div>
-  <div id="mp-html-video-loading-div" class="set-display-none">
+  <div id="mp-html-video-loading-div" class="mp-hidden">
     <div class="mp-html-video-loading-spinner"></div>
   </div>
 </div>
-<div id="mp-spectrum-div" class="mp-frame">
+<div id="mp-spectrum-div" class="mp-frame mp-hidden">
   <button id="mp-spectrum-close-button" class="mp-widget-close-button">
     <i class="fas fa-times"></i>
   </button>
@@ -92,7 +92,7 @@
   <div class="mp-spectrum-grid"></div>
 </div>
 <!-- ---------------   PLAYLIST    ---------------  -->
-<div id="mp-div-playlist" class="mp-frame">
+<div id="mp-div-playlist" class="mp-frame mp-hidden">
   <div id="mp-div-playlist-tracks"></div>
   <div id="mp-span-playlist-buttons-right">
     <a

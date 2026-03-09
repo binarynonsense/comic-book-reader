@@ -901,10 +901,10 @@ function getButtonStates() {
   return {
     play:
       !g_player.html.buttonPlay.classList.contains("mp-disabled") &&
-      !g_player.html.buttonPlay.classList.contains("set-display-none"),
+      !g_player.html.buttonPlay.classList.contains("mp-hidden"),
     pause:
       !g_player.html.buttonPause.classList.contains("mp-disabled") &&
-      !g_player.html.buttonPause.classList.contains("set-display-none"),
+      !g_player.html.buttonPause.classList.contains("mp-hidden"),
     next: !g_player.html.buttonNext.classList.contains("mp-disabled"),
     prev: !g_player.html.buttonPrev.classList.contains("mp-disabled"),
   };
@@ -1069,16 +1069,16 @@ function initUI() {
   function showTopBar() {
     g_player.html.topBar.style.opacity = "1";
     g_player.html.topBar.style.visibility = "visible";
-    g_player.html.videoTitleDiv.classList.remove("set-display-none");
-    g_player.html.spectrumTitleDiv.classList.remove("set-display-none");
+    g_player.html.videoTitleDiv.classList.remove("mp-hidden");
+    g_player.html.spectrumTitleDiv.classList.remove("mp-hidden");
   }
 
   function hideTopBar() {
     if (g_settings.fullView && !g_player.html.isHoveringTopBar) {
       g_player.html.topBar.style.opacity = "0";
       g_player.html.topBar.style.visibility = "hidden";
-      g_player.html.videoTitleDiv.classList.add("set-display-none");
-      g_player.html.spectrumTitleDiv.classList.add("set-display-none");
+      g_player.html.videoTitleDiv.classList.add("mp-hidden");
+      g_player.html.spectrumTitleDiv.classList.add("mp-hidden");
     }
   }
 
@@ -1335,19 +1335,19 @@ function refreshUI() {
     (g_settings.fullView || g_settings.showSpectrum) &&
     g_player.mediaType === PlayerMediaType.AUDIO
   ) {
-    g_player.html.spectrumDiv.classList.remove("set-display-none");
+    g_player.html.spectrumDiv.classList.remove("mp-hidden");
   } else {
-    g_player.html.spectrumDiv.classList.add("set-display-none");
+    g_player.html.spectrumDiv.classList.add("mp-hidden");
   }
 
   if (
     (g_settings.fullView &&
-      g_player.html.spectrumDiv.classList.contains("set-display-none")) ||
+      g_player.html.spectrumDiv.classList.contains("mp-hidden")) ||
     (g_settings.showVideo && g_player.mediaType === PlayerMediaType.VIDEO)
   ) {
-    g_player.html.videoDiv.classList.remove("set-display-none");
+    g_player.html.videoDiv.classList.remove("mp-hidden");
   } else {
-    g_player.html.videoDiv.classList.add("set-display-none");
+    g_player.html.videoDiv.classList.add("mp-hidden");
   }
 
   if (playlist.getTracks().length > 0) {
@@ -1362,17 +1362,17 @@ function refreshUI() {
       g_player.html.buttonPause.classList.add("mp-disabled");
     }
     if (g_player.state === PlayerState.PLAYING) {
-      g_player.html.buttonPlay.classList.add("set-display-none");
-      g_player.html.buttonPause.classList.remove("set-display-none");
-      g_player.html.buttonStop.classList.add("set-display-none");
+      g_player.html.buttonPlay.classList.add("mp-hidden");
+      g_player.html.buttonPause.classList.remove("mp-hidden");
+      g_player.html.buttonStop.classList.add("mp-hidden");
     } else if (g_player.state === PlayerState.LOADING) {
-      g_player.html.buttonPlay.classList.add("set-display-none");
-      g_player.html.buttonPause.classList.add("set-display-none");
-      g_player.html.buttonStop.classList.remove("set-display-none");
+      g_player.html.buttonPlay.classList.add("mp-hidden");
+      g_player.html.buttonPause.classList.add("mp-hidden");
+      g_player.html.buttonStop.classList.remove("mp-hidden");
     } else {
-      g_player.html.buttonPlay.classList.remove("set-display-none");
-      g_player.html.buttonPause.classList.add("set-display-none");
-      g_player.html.buttonStop.classList.add("set-display-none");
+      g_player.html.buttonPlay.classList.remove("mp-hidden");
+      g_player.html.buttonPause.classList.add("mp-hidden");
+      g_player.html.buttonStop.classList.add("mp-hidden");
     }
 
     if (g_player.state === PlayerState.LOADING) {
@@ -1381,12 +1381,12 @@ function refreshUI() {
         g_player.mediaType === PlayerMediaType.VIDEO ||
         g_player.engineType === PlayerEngineType.YOUTUBE
       ) {
-        g_player.html.videoLoadingDiv.classList.remove("set-display-none");
+        g_player.html.videoLoadingDiv.classList.remove("mp-hidden");
       } else {
-        g_player.html.videoLoadingDiv.classList.add("set-display-none");
+        g_player.html.videoLoadingDiv.classList.add("mp-hidden");
       }
     } else {
-      g_player.html.videoLoadingDiv.classList.add("set-display-none");
+      g_player.html.videoLoadingDiv.classList.add("mp-hidden");
     }
 
     if (g_settings.repeat === 2 || playlist.getCurrentTrackIndex() > 0) {
@@ -1403,15 +1403,15 @@ function refreshUI() {
       g_player.html.buttonNext.classList.add("mp-disabled");
     }
   } else {
-    g_player.html.buttonPlay.classList.remove("set-display-none");
+    g_player.html.buttonPlay.classList.remove("mp-hidden");
     g_player.html.buttonPlay.classList.add("mp-disabled");
-    g_player.html.buttonPause.classList.add("set-display-none");
-    g_player.html.buttonStop.classList.add("set-display-none");
+    g_player.html.buttonPause.classList.add("mp-hidden");
+    g_player.html.buttonStop.classList.add("mp-hidden");
     g_player.html.buttonPrev.classList.add("mp-disabled");
     g_player.html.buttonNext.classList.add("mp-disabled");
 
-    g_player.html.videoLoadingDiv.classList.add("set-display-none");
-    g_player.html.videoDiv.classList.add("set-display-none");
+    g_player.html.videoLoadingDiv.classList.add("mp-hidden");
+    g_player.html.videoDiv.classList.add("mp-hidden");
   }
 
   updateVolumeUI();
