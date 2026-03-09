@@ -5,6 +5,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
+const fs = require("node:fs");
 const { spawn } = require("node:child_process");
 const http = require("node:http");
 
@@ -116,10 +117,25 @@ async function startVideoServer() {
       );
       log.editor(`[ffmpeg] flags: ${flags}`);
 
-      g_ffmpegProcess = spawn(g_ffmpegPath, flags, {
+      ////////////
+      let finalPath = g_ffmpegPath;
+      let finalFlags = flags;
+      if (
+        process.platform === "linux" &&
+        !g_ffmpegPath.includes("/") &&
+        !g_ffmpegPath.includes("\\")
+      ) {
+        // system command
+        if (fs.existsSync("/.flatpak-info")) {
+          finalPath = "flatpak-spawn";
+          finalFlags = ["--host", g_ffmpegPath, ...flags];
+        }
+      }
+      g_ffmpegProcess = spawn(finalPath, finalFlags, {
         // stdin: ignored, stdout: piped to res, stderr: ignored
         stdio: ["ignore", "pipe", "ignore"],
       });
+      //////////
 
       g_ffmpegProcess.on("exit", (code, signal) => {
         log.editor(

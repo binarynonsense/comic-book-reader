@@ -5,6 +5,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
+const fs = require("node:fs");
 const path = require("node:path");
 const log = require("./logger");
 // NOTE: don't add any electron related requires
@@ -17,6 +18,19 @@ function execShellCommand(command, args, workingDir) {
   //ref: https://nodejs.org/api/child_process.html#child_processexecfilesyncfile-args-options
   // ref: https://nodejs.org/api/child_process.html#child_process_options_stdio
   try {
+    let finalCommand = command;
+    let finalArgs = args || [];
+    if (
+      process.platform === "linux" &&
+      !command.includes("/") &&
+      !command.includes("\\")
+    ) {
+      // system command
+      if (fs.existsSync("/.flatpak-info")) {
+        finalCommand = "flatpak-spawn";
+        finalArgs = ["--host", command, ...finalArgs];
+      }
+    }
     let options = {
       windowsHide: true,
       encoding: "utf8",
@@ -24,7 +38,7 @@ function execShellCommand(command, args, workingDir) {
     };
     if (workingDir) options.cwd = workingDir;
     const execFileSync = require("node:child_process").execFileSync;
-    const stdout = execFileSync(command, args, options);
+    const stdout = execFileSync(finalCommand, finalArgs, options);
     return { error: false, stdout: stdout, stderr: undefined };
   } catch (error) {
     return { error: true, stdout: undefined, stderr: error };
