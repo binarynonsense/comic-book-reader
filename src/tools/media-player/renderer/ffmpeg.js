@@ -89,3 +89,123 @@ function startStream(time, prevPlayerState, audioIndex, videoIndex) {
     setPlayerState(PlayerState.PAUSED);
   }
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// HELPERS ////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+export async function getNativeCapabilities() {
+  const videoCodecs = [
+    "avc1.42E01E", // H.264 (Base)
+    "avc1.64001E", // H.264 (High)
+    "vp8",
+    "vp09.00.10.08", // VP9
+    "av01.0.04M.08", // AV1
+    "hev1.1.6.L93.B0", // HEVC/H.265
+  ];
+
+  const audioCodecs = [
+    "mp4a.40.2", // AAC
+    "opus",
+    "vorbis",
+    "mp3",
+    "flac",
+  ];
+
+  const check = async (type, codec) => {
+    if (!window.navigator.mediaCapabilities) return false;
+
+    let contentType = "";
+    if (type === "video") {
+      if (codec.includes("avc1") || codec.includes("hev1")) {
+        contentType = `video/mp4; codecs="${codec}"`;
+      } else if (codec.includes("vp") || codec.includes("av01")) {
+        contentType = `video/webm; codecs="${codec}"`;
+      } else {
+        contentType = `video/mp4; codecs="${codec}"`; // fallback
+      }
+    } else {
+      if (codec.includes("mp4a")) {
+        contentType = `audio/mp4; codecs="${codec}"`;
+      } else if (codec === "mp3") {
+        contentType = "audio/mpeg";
+      } else if (codec === "flac") {
+        contentType = "audio/flac";
+      } else if (codec === "opus" || codec === "vorbis") {
+        contentType = `audio/webm; codecs="${codec}"`;
+      } else {
+        contentType = `audio/mp4; codecs="${codec}"`; // fallback
+      }
+    }
+
+    const config = {
+      type: "file",
+      [type]: {
+        contentType: contentType,
+        width: 1920,
+        height: 1080,
+        bitrate: 5000000,
+        framerate: 30,
+      },
+    };
+
+    try {
+      const result = await navigator.mediaCapabilities.decodingInfo(config);
+      return result.supported;
+    } catch (e) {
+      return false;
+    }
+  };
+
+  const results = {
+    video: [],
+    audio: [],
+    formats: ["mp4", "webm", "ogg", "mov", "matroska"],
+  };
+
+  for (const codec of videoCodecs) {
+    if (await check("video", codec)) {
+      if (codec.startsWith("avc1")) results.video.push("h264");
+      else if (codec.startsWith("vp09")) results.video.push("vp9");
+      else if (codec.startsWith("hev1")) results.video.push("hevc");
+      else if (codec.startsWith("av01")) results.video.push("av1");
+      else results.video.push(codec.toLowerCase());
+    }
+  }
+  for (const codec of audioCodecs) {
+    if (await check("audio", codec)) {
+      if (codec.startsWith("mp4a")) results.audio.push("aac");
+      else results.audio.push(codec.toLowerCase());
+    }
+  }
+
+  // use Set to ensure no repetitions (like h264)
+  return {
+    video: [...new Set(results.video)],
+    audio: [...new Set(results.audio)],
+    formats: results.formats,
+  };
+}
+
+// TODO: tests
+export function isFileNative(metadata, nativeCaps) {
+  if (!metadata || !nativeCaps) return false;
+  const videoCodecs = metadata.videoCodecs || [];
+  const audioCodecs = metadata.audioCodecs || [];
+  const container = (metadata.container || "").toLowerCase();
+  //
+  const isContainerOk = (nativeCaps.formats || []).some((format) =>
+    container.includes(format.toLowerCase()),
+  );
+  if (!isContainerOk) return false;
+  // every track must be supported
+  const videoOk = videoCodecs.every((codec) =>
+    (nativeCaps.video || []).includes(codec.toLowerCase()),
+  );
+  if (!videoOk) return false;
+  // every track must be supported
+  const audioOk = audioCodecs.every((codec) =>
+    (nativeCaps.audio || []).includes(codec.toLowerCase()),
+  );
+  return audioOk;
+}

@@ -257,6 +257,8 @@ async function onInit(settings, loadedPlaylist) {
     ffmpeg.init(setPlayerState, sendIpcToMain, onError);
     yt.init(onError, updateTimeUI);
 
+    // console.log(await ffmpeg.getNativeCapabilities());
+
     // load settings & playlist ////
     g_settings = settings;
 

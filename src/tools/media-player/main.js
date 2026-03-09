@@ -222,6 +222,8 @@ function initHandleIpcCallbacks() {
   handle("mp-get-file-metadata-complete", async (filePath) => {
     try {
       const metadata = await ffmpeg.getMetadataComplete(undefined, filePath);
+      // const capabilities = await ffmpeg.getFfmpegCapabilities();
+      // log.test(capabilities);
       return metadata;
     } catch (error) {
       log.editor(error);

@@ -525,6 +525,93 @@ async function extractSubtitleText(bin, file, index) {
 }
 exports.extractSubtitleText = extractSubtitleText;
 
+async function getFfmpegCapabilities(bin) {
+  const ffmpegPath = bin || g_ffmpegPath;
+  const TIMEOUT_MS = 5000;
+
+  const results = {
+    formats: [],
+    codecs: { video: [], audio: [], subtitle: [] },
+  };
+
+  const getFfmpegText = (args) => {
+    return new Promise((resolve) => {
+      let resolved = false;
+      let stdout = "";
+      const child = spawn(ffmpegPath, args);
+
+      const timer = setTimeout(() => {
+        if (!resolved) {
+          child.kill("SIGKILL");
+          resolved = true;
+          resolve(null);
+        }
+      }, TIMEOUT_MS);
+
+      child.stdout.on("data", (data) => (stdout += data));
+      child.on("close", (code) => {
+        clearTimeout(timer);
+        if (resolved) return;
+        resolved = true;
+        resolve(code === 0 ? stdout : null);
+      });
+      child.on("error", () => {
+        clearTimeout(timer);
+        if (!resolved) {
+          resolved = true;
+          resolve(null);
+        }
+      });
+    });
+  };
+
+  try {
+    // formats (containers)
+    const formatOut = await getFfmpegText(["-formats"]);
+    if (formatOut) {
+      formatOut.split("\n").forEach((line) => {
+        // example: D mp4 MP4 (MPEG-4 Part 14)
+        const match = line.match(/^\s{1,3}([DE ]{2})\s+([a-z0-9,]+)\s+/);
+        if (match && match[1].includes("D")) {
+          match[2].split(",").forEach((fmt) => {
+            if (!results.formats.includes(fmt)) results.formats.push(fmt);
+          });
+        }
+      });
+    }
+
+    // codecs
+    const codecOut = await getFfmpegText(["-codecs"]);
+    if (codecOut) {
+      // examples:
+      // D.V..S h264 H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10
+      // D.A.L. aac AAC (Advanced Audio Coding)
+      // D.S... ass SSA/ASS subtitles
+      codecOut.split("\n").forEach((line) => {
+        // flags are 6 chars: [Decode][Encode][Type][Intra][Lossy][Lossless]
+        const match = line.match(/^\s([D.][E.][VAS.][I.][L.][S.])\s+(\S+)/);
+        if (match) {
+          const flags = match[1];
+          const name = match[2];
+          // character 0 must be 'D' for decoding
+          if (flags[0] === "D") {
+            const typeChar = flags[2]; // character 2 is the type (V, A, or S)
+            if (typeChar === "V") results.codecs.video.push(name);
+            else if (typeChar === "A") results.codecs.audio.push(name);
+            else if (typeChar === "S") results.codecs.subtitle.push(name);
+          }
+        }
+      });
+    }
+
+    return results;
+  } catch (error) {
+    log.error("[ffmpeg] binary capability check failed: " + error);
+    return results;
+  }
+}
+exports.getFfmpegCapabilities = getFfmpegCapabilities;
+
 ///////////////////////////////////////////////////////////////////////////////
 // CLEANUP ////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
