@@ -296,6 +296,10 @@ html[dir="rtl"] .tools-button-accent i {
   overflow-wrap: anywhere;
 }
 
+.tools-h3-no-text-transform {
+  text-transform: none !important;
+}
+
 .tools-h3-extra-margin-top {
   margin-top: 20px !important;
 }

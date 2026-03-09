@@ -786,7 +786,10 @@ exports.getLocalization = function () {
     },
     {
       id: "tool-pre-thirdparty-ffmpeg-text",
-      text: process.platform === "win32" ? "ffmpeg.exe" : "ffmpeg",
+      text:
+        process.platform === "win32"
+          ? "ffmpeg.exe + ffprobe.exe"
+          : "ffmpeg + ffprobe",
     },
     {
       id: "tool-pre-ffmpegfolder-text",
