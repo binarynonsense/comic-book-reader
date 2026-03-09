@@ -52,9 +52,11 @@ exports.show = function (type, params, data, sendIpcToRenderer) {
         label: _("tool-shared-ui-open"),
         submenu: [...openSubmenu],
       },
+      { type: "separator" },
       ...getVideoSubmenu(data),
       ...getAudioSubmenu(data),
       ...getSubtitleSubmenu(data),
+      { type: "separator" },
       {
         label: _("menu-view"),
         submenu: [
@@ -114,8 +116,8 @@ exports.show = function (type, params, data, sendIpcToRenderer) {
           },
         ],
       },
-      ...getPlaylistSubmenu(data),
       { type: "separator" },
+      ...getPlaylistSubmenu(data),
       {
         label: _("mp-tooltip-button-play"),
         enabled: data.buttonStates.play,
