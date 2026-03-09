@@ -21,7 +21,8 @@ let sendIpcToRenderer;
 // SERVER /////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-let g_lastResponse = null;
+let g_currentResponse = null;
+let g_currentMetadata;
 
 function closeCurrentVideo() {
   if (g_ffmpegProcess) {
@@ -33,24 +34,26 @@ function closeCurrentVideo() {
     g_ffmpegProcess.kill("SIGKILL");
     g_ffmpegProcess = null;
   }
-  if (g_lastResponse) {
+  if (g_currentResponse) {
     log.editor("[ffmpeg] destroying g_lastResponse");
-    g_lastResponse.end();
-    g_lastResponse.destroy();
-    g_lastResponse = null;
+    g_currentResponse.end();
+    g_currentResponse.destroy();
+    g_currentResponse = null;
   }
+  // NOTE: can't do the following here or things go wrong:
+  // g_currentMetadata = undefined;
 }
 
-async function startVideoServer(metadata) {
+async function startVideoServer() {
   if (g_videoServer) return g_videoServer;
 
   return new Promise((resolve, reject) => {
     g_videoServer = http.createServer((req, res) => {
       closeCurrentVideo();
-      g_lastResponse = res;
+      g_currentResponse = res;
 
       req.on("close", () => {
-        if (g_lastResponse === res) {
+        if (g_currentResponse === res) {
           closeCurrentVideo();
         }
       });
@@ -58,9 +61,9 @@ async function startVideoServer(metadata) {
       const requestUrl = new URL(req.url, `http://127.0.0.1`);
       const seekTime = requestUrl.searchParams.get("t") || "0";
       const videoIndex =
-        requestUrl.searchParams.get("v") || metadata?.videoIndex;
+        requestUrl.searchParams.get("v") || g_currentMetadata?.videoIndex;
       const audioIndex =
-        requestUrl.searchParams.get("a") || metadata?.audioIndex;
+        requestUrl.searchParams.get("a") || g_currentMetadata?.audioIndex;
 
       res.writeHead(200, {
         "Content-Type": "video/mp4",
@@ -68,11 +71,15 @@ async function startVideoServer(metadata) {
       });
 
       const sTime = parseFloat(seekTime) || 0;
-      const totalDuration = parseFloat(metadata?.duration);
+      const totalDuration = parseFloat(g_currentMetadata?.duration);
       const remainingTime =
         totalDuration && totalDuration > sTime ? totalDuration - sTime : null;
 
-      const avFlags = getAudioVideoFlags(metadata, videoIndex, audioIndex);
+      const avFlags = getAudioVideoFlags(
+        g_currentMetadata,
+        videoIndex,
+        audioIndex,
+      );
       const flags = [
         "-ss",
         seekTime.toString(), // timestamp
@@ -86,7 +93,7 @@ async function startVideoServer(metadata) {
       if (remainingTime !== null) {
         // t: if there is video and audio, freeze the last frame to fill any gap
         flags.push("-t", remainingTime.toString());
-        if (metadata?.hasVideo && metadata?.hasAudio) {
+        if (g_currentMetadata?.hasVideo && g_currentMetadata?.hasAudio) {
           // tpad=stop=-1: repeat the last frame indefinitely, -t cuts it at end
           // tpad=stop=-1:stop_mode=clone: would clone the last frame
           flags.push("-vf", "tpad=stop=-1");
@@ -186,9 +193,10 @@ exports.initOnIpcCallbacks = function (on, _sendIpcToRenderer) {
   on("mp-ffmpeg-load-video", async (filePath, time, metadata) => {
     g_activeVideoPath = filePath;
     try {
-      const server = await startVideoServer(metadata);
+      g_currentMetadata = metadata;
+      const server = await startVideoServer();
       const port = server.address().port;
-      const duration = metadata.duration;
+      const duration = g_currentMetadata.duration;
 
       if (duration) {
         sendIpcToRenderer("mp-ffmpeg-video-metadata", {
