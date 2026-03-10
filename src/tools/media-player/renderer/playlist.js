@@ -338,10 +338,7 @@ export function scrollToCurrent() {
 export function scrollToLast() {
   if (g_tracks.length > 0) {
     let index = g_tracks[g_tracks.length - 1].fileIndex;
-    console.log(index);
     let divId = "mp-playlist-track-" + index;
-    console.log(divId);
-    console.log(document.getElementById(divId));
     document.getElementById(divId).scrollIntoView({
       behavior: "smooth",
       block: "nearest",
