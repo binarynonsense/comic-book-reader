@@ -149,7 +149,14 @@ function initOnIpcCallbacks() {
       const file = files[index];
       try {
         if (file.title && file.artist) continue;
-        if (!/^http:\/\/|https:\/\//.test(file.url)) {
+        // if (!/^http:\/\/|https:\/\//.test(file.url)) {
+        const lowercaseUrl = file.url.toLowerCase();
+        if (
+          !lowercaseUrl.startsWith("http") &&
+          (lowercaseUrl.endsWith(".mp3") ||
+            lowercaseUrl.endsWith(".ogg") ||
+            lowercaseUrl.endsWith(".flac"))
+        ) {
           const metadata = await musicmetadata.parseFile(file.url);
           let didUpdate = false;
           if (metadata?.common?.artist) {
@@ -160,7 +167,9 @@ function initOnIpcCallbacks() {
             file.title = metadata.common.title;
             didUpdate = true;
           }
-          if (didUpdate) updatedFiles.push(file);
+          if (didUpdate) {
+            updatedFiles.push(file);
+          }
         }
       } catch (error) {
         log.debug(
