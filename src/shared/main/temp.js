@@ -28,6 +28,9 @@ exports.changeBaseFolderPath = function (parentFolderPath) {
 };
 
 exports.getOSTempFolderPath = function () {
+  if (fs.existsSync("/.flatpak-info")) {
+    return path.join(require("electron").app.getPath("userData"));
+  }
   return os.tmpdir();
 };
 

@@ -20,15 +20,36 @@ function execShellCommand(command, args, workingDir) {
   try {
     let finalCommand = command;
     let finalArgs = args || [];
-    if (
-      process.platform === "linux" &&
-      !command.includes("/") &&
-      !command.includes("\\")
-    ) {
-      // system command
-      if (fs.existsSync("/.flatpak-info")) {
+
+    if (process.platform === "linux" && fs.existsSync("/.flatpak-info")) {
+      // map internal ~/.config/app
+      // to host ~/.var/app/id/config/app
+      const toHost = (originalPath) => {
+        const id = process.env.FLATPAK_ID;
+        if (id === undefined || typeof originalPath !== "string")
+          return originalPath;
+        const home = require("os").homedir();
+        // if the path is in the sandbox's config area, translate it
+        if (originalPath.includes(`${home}/.config`)) {
+          return originalPath.replace(
+            `${home}/.config`,
+            `${home}/.var/app/${id}/config`,
+          );
+        }
+        return originalPath;
+      };
+
+      if (!command.includes("/") && !command.includes("\\")) {
         finalCommand = "flatpak-spawn";
-        finalArgs = ["--host", command, ...finalArgs];
+        // translate workingDir AND all arguments (like the output .cbr path)
+        // only add --directory if workingDir is defined
+        let flatpakArgs = ["--host"];
+        if (workingDir) {
+          const hostDir = toHost(workingDir);
+          flatpakArgs.push(`--directory=${hostDir}`);
+        }
+
+        finalArgs = [...flatpakArgs, command, ...finalArgs.map(toHost)];
       }
     }
     let options = {

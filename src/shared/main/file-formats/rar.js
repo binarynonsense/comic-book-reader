@@ -75,15 +75,9 @@ function createRar(
       args,
       tempSubfolderPath,
     );
-    //const cmdResult = utils.execShellCommand(rarExePath, args, workingDir);
-    if (!cmdResult.error || cmdResult.error === false) {
-      return true;
-    } else {
-      throw cmdResult.stderr;
-    }
+    return cmdResult;
   } catch (error) {
-    //console.log(error);
-    return false;
+    return { error: true, stdout: undefined, stderr: error };
   }
 }
 exports.createRar = createRar;

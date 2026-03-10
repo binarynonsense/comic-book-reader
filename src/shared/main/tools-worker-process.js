@@ -335,16 +335,16 @@ async function createFiles(
         } else if (outputFormat === FileExtension.CBR) {
           if (comicInfoFilePath)
             filesData[index].imgFilePaths.push(comicInfoFilePath);
-          if (
-            !fileFormats.createRar(
-              filesData[index].imgFilePaths,
-              filesData[index].outputFilePath,
-              extra.rarExePath,
-              extra.workingDir,
-              password,
-            )
-          )
-            throw "error creating rar";
+          const cmdResult = fileFormats.createRar(
+            filesData[index].imgFilePaths,
+            filesData[index].outputFilePath,
+            extra.rarExePath,
+            extra.workingDir,
+            password,
+          );
+          if (cmdResult.error) {
+            throw "error creating rar: " + cmdResult.stderr;
+          }
         } else {
           //cbz
           if (comicInfoFilePath)
