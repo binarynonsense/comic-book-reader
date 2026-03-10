@@ -98,7 +98,7 @@ function clearPlayer() {
   else {
     g_player.trackIndex = playlist.getCurrentTrackIndex();
   }
-  playlist.scrollToCurrent();
+  // playlist.scrollToCurrent();
   g_player.trackMetadata = undefined;
   g_player.trackHasVideoMetadata = undefined;
 
