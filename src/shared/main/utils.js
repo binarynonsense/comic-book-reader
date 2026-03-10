@@ -41,14 +41,13 @@ function execShellCommand(command, args, workingDir) {
 
       if (!command.includes("/") && !command.includes("\\")) {
         finalCommand = "flatpak-spawn";
-        // translate workingDir AND all arguments (like the output .cbr path)
+        // translate workingDir AND all arguments (like an output path)
         // only add --directory if workingDir is defined
         let flatpakArgs = ["--host"];
         if (workingDir) {
           const hostDir = toHost(workingDir);
           flatpakArgs.push(`--directory=${hostDir}`);
         }
-
         finalArgs = [...flatpakArgs, command, ...finalArgs.map(toHost)];
       }
     }
