@@ -1711,9 +1711,11 @@ function initOnIpcCallbacks() {
   });
 
   on("add-to-playlist", (...args) => {
-    const trackIndex = playlist.addToPlaylist(...args);
+    const [trackIndex, addedSome] = playlist.addToPlaylist(...args);
     if (trackIndex !== undefined) {
       onPlay(trackIndex, 0);
+    } else if (addedSome) {
+      setTimeout(playlist.scrollToLast, 100);
     }
     refreshUI();
   });

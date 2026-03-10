@@ -106,18 +106,20 @@ export function openPlaylist(playlist) {
 
 export function addToPlaylist(files, startPlaying, allowDuplicates = false) {
   let returnTrackIndex;
+  let addedSome = false;
   if (files && Array.isArray(files) && files.length > 0) {
     if (!allowDuplicates) {
       const newFiles = files.filter((file) => !isFileInPlaylist(file));
       if (newFiles.length === 0) {
         // no new one
         const listIndex = getPlaylistIndex(files[0]);
-        return listIndex;
+        return [listIndex, addedSome];
       } else {
         files = newFiles;
       }
     }
     // TODO: MAYBE: start first new song by default after adding?
+    addedSome = files.length > 0;
     const oldLength = g_tracks.length;
     g_playlist.files.push(...files);
     createTracksList(g_tracks.length > 0);
@@ -127,7 +129,7 @@ export function addToPlaylist(files, startPlaying, allowDuplicates = false) {
     fillTimes(); // calls updatePlaylistInfo
     fillTags();
   }
-  return returnTrackIndex;
+  return [returnTrackIndex, addedSome];
 }
 
 export function onTagsFilled(updatedFiles) {
@@ -150,6 +152,7 @@ export function onTagsFilled(updatedFiles) {
 //////////////
 
 function fillTimes() {
+  // TODO: update this now that I do videos?
   try {
     g_tempAudioIndex = 0;
     g_tempAudioIndex = getNextToFill();
@@ -324,6 +327,21 @@ export function scrollToCurrent() {
   ) {
     let index = g_tracks[g_currentTrackIndex].fileIndex;
     let divId = "mp-playlist-track-" + index;
+    document.getElementById(divId).scrollIntoView({
+      behavior: "smooth",
+      block: "nearest",
+      inline: "nearest",
+    });
+  }
+}
+
+export function scrollToLast() {
+  if (g_tracks.length > 0) {
+    let index = g_tracks[g_tracks.length - 1].fileIndex;
+    console.log(index);
+    let divId = "mp-playlist-track-" + index;
+    console.log(divId);
+    console.log(document.getElementById(divId));
     document.getElementById(divId).scrollIntoView({
       behavior: "smooth",
       block: "nearest",
