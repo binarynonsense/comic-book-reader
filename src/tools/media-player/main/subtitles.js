@@ -72,7 +72,6 @@ exports.loadExternalSRT = function (filePath) {
     // binary file test, check for null bytes
     // NOTE: may fail with utf-16... for now utf-8 and ascii only are loaded then
     if (initialBuffer.includes(0)) {
-      log.test("binary!!!!");
       return [];
     }
 
@@ -82,7 +81,6 @@ exports.loadExternalSRT = function (filePath) {
     const timeMatchRegex =
       /(\d{2}:\d{2}:\d{2}[,\.]\d{3})\s*-->\s*(\d{2}:\d{2}:\d{2}[,\.]\d{3})/;
     if (!timeMatchRegex.test(rawData.slice(0, 2000))) {
-      log.test("SRT structure not found !!!!");
       return [];
     }
 

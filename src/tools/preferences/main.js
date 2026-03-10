@@ -383,12 +383,10 @@ function initOnIpcCallbacks() {
       if (folderPath === undefined || folderPath === "") return;
       // TODO: check if writable?
       if (saveAsRelative) {
-        log.test("saveasrelative");
         relativeFolderPath = path.relative(
           appUtils.getExeFolderPath(),
           folderPath,
         );
-        log.test(relativeFolderPath);
       }
     }
 
