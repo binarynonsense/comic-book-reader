@@ -1292,7 +1292,69 @@ function updateVolumeUI() {
   }
 }
 
+function updateVideoView(video, crop, aspect, zoom) {
+  if (!video) return;
+  // const video = document.getElementById("mp-html-video");
+  const container = document.getElementById("mp-video-div");
+  const containerRatio = container.clientWidth / container.clientHeight;
+
+  // reset
+  video.style.setProperty("--video-zoom", zoom || 1);
+  video.style.width = "100%";
+  video.style.height = "100%";
+
+  // aspect ratio
+  if (aspect && aspect !== "original") {
+    // fill the new ratio
+    video.style.objectFit = "fill";
+    video.style.aspectRatio = aspect;
+  } else {
+    // original video pixels
+    video.style.objectFit = "contain";
+    video.style.aspectRatio = "auto";
+  }
+
+  // crop
+  if (crop && crop !== "original") {
+    // change the element shape and force 'cover' (zoom)
+    video.style.objectFit = "cover";
+    video.style.aspectRatio = crop;
+    // add bars to the container if the crop ratio
+    // doesn't match the container ratio.
+    const [w, h] = crop.split("/").map(Number);
+    const targetRatio = w / h;
+    if (targetRatio > containerRatio) {
+      video.style.width = "100%";
+      video.style.height = "auto";
+    } else {
+      video.style.width = "auto";
+      video.style.height = "100%";
+    }
+  } else {
+    // no crop, but add bars to the container if needed due to aspect
+    const ratioToFit = aspect && aspect !== "original" ? aspect : "auto";
+    if (ratioToFit !== "auto") {
+      const [w, h] = ratioToFit.split("/").map(Number);
+      const targetRatio = w / h;
+      if (targetRatio > containerRatio) {
+        video.style.width = "100%";
+        video.style.height = "auto";
+      } else {
+        video.style.width = "auto";
+        video.style.height = "100%";
+      }
+    }
+  }
+}
+
 function refreshUI() {
+  updateVideoView(
+    document.getElementById("mp-html-video"),
+    g_settings.videoCrop,
+    g_settings.videoAspectRatio,
+    1,
+  );
+
   let trackTitle;
   const track = playlist.getTrack(g_player.trackIndex);
   if (
@@ -1615,6 +1677,8 @@ function getContextMenuData() {
     canLoadSubtitles: canLoadSubtitles(),
     externalSubtitles: g_player.externalSubtitles,
     canSetAudioVideo: canSetAudioVideo(),
+    isVideo: g_player.mediaType === PlayerMediaType.VIDEO,
+    isYoutube: g_player.engineType === PlayerEngineType.YOUTUBE,
   };
 }
 
@@ -1911,6 +1975,16 @@ function initOnIpcCallbacks() {
             );
           }
         } catch (error) {}
+        break;
+
+      case "load-video-crop":
+        g_settings.videoCrop = args[1];
+        refreshUI();
+        break;
+
+      case "load-video-aspectratio":
+        g_settings.videoAspectRatio = args[1];
+        refreshUI();
         break;
     }
   });

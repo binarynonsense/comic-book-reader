@@ -53,6 +53,8 @@ function setDefaultValues() {
     showSpectrum: true,
     subtitleHighContrastMode: false,
     subtitleFontSize: 1,
+    videoCrop: "original",
+    videoAspectRatio: "original",
   };
 }
 
@@ -118,6 +120,12 @@ function sanitize() {
     g_settings.subtitleFontSize !== 1.2
   ) {
     g_settings.subtitleFontSize = 1;
+  }
+  if (typeof g_settings.videoCrop !== "string") {
+    g_settings.videoCrop = "original";
+  }
+  if (typeof g_settings.videoAspectRatio !== "string") {
+    g_settings.videoAspectRatio = "original";
   }
 }
 

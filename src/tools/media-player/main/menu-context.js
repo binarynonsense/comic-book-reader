@@ -184,6 +184,7 @@ exports.show = function (type, params, data, sendIpcToRenderer) {
   }
 
   function getVideoSubmenu(data) {
+    // tracks
     function getVideoTracks(data) {
       try {
         let result = [];
@@ -206,11 +207,69 @@ exports.show = function (type, params, data, sendIpcToRenderer) {
           }
         }
         return result;
-        audio;
       } catch (error) {
         return [];
       }
     }
+    // crop & aspect
+    const aspectRatios = {
+      "1:1": "1/1",
+      "4:3": "4/3",
+      "5:4": "5/4",
+      "16:9": "16/9", // hd standard
+      "16:10": "16/10",
+      "21:9": "21/9", // ultrawide
+      "1.85:1": "185/100", // us widescreen cinema
+      "2.21:1": "221/100", // 70 mm cinema
+      "2.35:1": "235/100", // anamorphic
+      "2.39:1": "239/100", // modern panavision
+    };
+
+    function getVideoCrops(data) {
+      try {
+        let result = [];
+        for (const key in aspectRatios) {
+          result.push({
+            label: key,
+            type: "radio",
+            checked: data.settings.videoCrop === aspectRatios[key],
+            click() {
+              sendIpcToRenderer(
+                "on-context-menu",
+                "load-video-crop",
+                aspectRatios[key],
+              );
+            },
+          });
+        }
+        return result;
+      } catch (error) {
+        return [];
+      }
+    }
+    function getVideoAspectRatios(data) {
+      try {
+        let result = [];
+        for (const key in aspectRatios) {
+          result.push({
+            label: key,
+            type: "radio",
+            checked: data.settings.videoAspectRatio === aspectRatios[key],
+            click() {
+              sendIpcToRenderer(
+                "on-context-menu",
+                "load-video-aspectratio",
+                aspectRatios[key],
+              );
+            },
+          });
+        }
+        return result;
+      } catch (error) {
+        return [];
+      }
+    }
+
     // final return
     return [
       {
@@ -231,6 +290,44 @@ exports.show = function (type, params, data, sendIpcToRenderer) {
                 },
               },
               ...getVideoTracks(data),
+            ],
+          },
+          {
+            label: _("tool-shared-ui-imageops-crop"),
+            enabled: data.isVideo && !data.isYoutube,
+            submenu: [
+              {
+                label: _("tool-pre-zoom-default"),
+                type: "radio",
+                checked: data.settings.videoCrop === "original",
+                click() {
+                  sendIpcToRenderer(
+                    "on-context-menu",
+                    "load-video-crop",
+                    "original",
+                  );
+                },
+              },
+              ...getVideoCrops(data),
+            ],
+          },
+          {
+            label: _("mp-menu-video-aspectratio"),
+            enabled: data.isVideo && !data.isYoutube,
+            submenu: [
+              {
+                label: _("tool-pre-zoom-default"),
+                type: "radio",
+                checked: data.settings.videoAspectRatio === "original",
+                click() {
+                  sendIpcToRenderer(
+                    "on-context-menu",
+                    "load-video-aspectratio",
+                    "original",
+                  );
+                },
+              },
+              ...getVideoAspectRatios(data),
             ],
           },
         ],
