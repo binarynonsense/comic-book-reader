@@ -10,4 +10,4 @@ I'm only looking for localization contributions. Please don't send any code chan
 ## Checklist
 
 - [ ] I only created or edited localization and/or documentation files.
-- [ ] I wrote these translations myself and did not use machine translation.
+- [ ] These translations are not the unproofed result of an AI translator.
