@@ -312,6 +312,7 @@
   "mp-menu-media": "Media",
   "mp-menu-media-open": "Open Media",
   "mp-menu-video": "Video",
+  "mp-menu-video-aspectratio": "Aspect Ratio",
   "mp-menu-audio": "Audio",
   "mp-menu-media-track": "Track",
   "mp-menu-media-track-disabled": "Disabled",

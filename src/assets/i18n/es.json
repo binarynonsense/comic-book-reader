@@ -1,8 +1,6 @@
 {
   "@metadata": {
-    "authors": [
-      "Álvaro"
-    ],
+    "authors": ["Álvaro"],
     "last-updated": "2026-02-20",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.17.0",
@@ -314,6 +312,7 @@
   "mp-menu-media": "Medio",
   "mp-menu-media-open": "Abrir medio",
   "mp-menu-video": "Vídeo",
+  "mp-menu-video-aspectratio": "Relación de aspecto",
   "mp-menu-audio": "Audio",
   "mp-menu-media-track": "Pista",
   "mp-menu-media-track-disabled": "Desactivada",
