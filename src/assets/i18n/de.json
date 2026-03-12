@@ -3,7 +3,7 @@
     "authors": [
       "trzyglow"
     ],
-    "last-updated": "2026-03-08",
+    "last-updated": "2026-03-12",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.17.0",
     "pre-release": "false",
@@ -314,7 +314,7 @@
   "mp-menu-media": "Medien",
   "mp-menu-media-open": "Medien öffnen",
   "mp-menu-video": "Video",
-  "[NEEDS TRANSLATION]mp-menu-video-aspectratio": "Aspect Ratio",
+  "mp-menu-video-aspectratio": "Seitenverhältnis",
   "mp-menu-audio": "Audio",
   "mp-menu-media-track": "Spur",
   "mp-menu-media-track-disabled": "Deaktiviert",
