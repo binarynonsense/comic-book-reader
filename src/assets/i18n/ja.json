@@ -314,6 +314,7 @@
   "mp-menu-media": "メディア",
   "mp-menu-media-open": "メディアを開く",
   "mp-menu-video": "ビデオ",
+  "[NEEDS TRANSLATION]mp-menu-video-aspectratio": "Aspect Ratio",
   "mp-menu-audio": "オーディオ",
   "mp-menu-media-track": "トラック",
   "mp-menu-media-track-disabled": "無効",
