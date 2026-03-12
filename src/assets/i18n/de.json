@@ -318,7 +318,7 @@
   "mp-menu-audio": "Audio",
   "mp-menu-media-track": "Spur",
   "mp-menu-media-track-disabled": "Deaktiviert",
-  "[NOTE TOT TRANSLATORS]mp-menu-media-track-automatic": "Automatic as in, the track (for video, audio, subtile...) will be selected automatically",
+  "[NOTE TO TRANSLATORS]mp-menu-media-track-automatic": "Automatic as in, the track (for video, audio, subtile...) will be selected automatically",
   "mp-menu-media-track-automatic": "Automatisch",
   "mp-menu-subtitle": "Untertitel",
   "mp-menu-subtitle-addfile": "Untertiteldatei hinzufügen",

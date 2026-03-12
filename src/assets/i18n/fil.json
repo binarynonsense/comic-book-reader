@@ -318,7 +318,7 @@
   "[NEEDS TRANSLATION]mp-menu-audio": "Audio",
   "[NEEDS TRANSLATION]mp-menu-media-track": "Track",
   "[NEEDS TRANSLATION]mp-menu-media-track-disabled": "Disabled",
-  "[NOTE TOT TRANSLATORS]mp-menu-media-track-automatic": "Automatic as in, the track (for video, audio, subtile...) will be selected automatically",
+  "[NOTE TO TRANSLATORS]mp-menu-media-track-automatic": "Automatic as in, the track (for video, audio, subtile...) will be selected automatically",
   "[NEEDS TRANSLATION]mp-menu-media-track-automatic": "Automatic",
   "[NEEDS TRANSLATION]mp-menu-subtitle": "Subtitle",
   "[NEEDS TRANSLATION]mp-menu-subtitle-addfile": "Add Subtitle File",

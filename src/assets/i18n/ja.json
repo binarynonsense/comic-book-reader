@@ -318,7 +318,7 @@
   "mp-menu-audio": "オーディオ",
   "mp-menu-media-track": "トラック",
   "mp-menu-media-track-disabled": "無効",
-  "[NOTE TOT TRANSLATORS]mp-menu-media-track-automatic": "Automatic as in, the track (for video, audio, subtile...) will be selected automatically",
+  "[NOTE TO TRANSLATORS]mp-menu-media-track-automatic": "Automatic as in, the track (for video, audio, subtile...) will be selected automatically",
   "mp-menu-media-track-automatic": "自動",
   "mp-menu-subtitle": "字幕",
   "mp-menu-subtitle-addfile": "字幕ファイルを追加",
