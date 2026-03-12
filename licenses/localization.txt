@@ -20,6 +20,10 @@ language: Filipino
 authors: Andrew
 license: BSD-2-Clause
 
+language: Japanese
+authors: coolvitto
+license: BSD-2-Clause
+
 language: Russian
 authors: vanja-san
 license: BSD-2-Clause
