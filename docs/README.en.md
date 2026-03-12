@@ -4,15 +4,6 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB, FB2, MOBI and PDF fil
 
 ![git_banner](https://github.com/user-attachments/assets/6ef7ded2-749a-4efd-a6b7-109d0f33d603)
 
-<p align="center">
-  <span>English</span> |
-  <a href="./README.es.md">Español</a> | 
-  <a href="./README.ru.md">Русский</a> | 
-  <a href="./README.de.md">Deutsch</a> | 
-  <a href="./README.ar.md">العربية</a> | 
-  <a href="./README.fil.md">Filipino</a>
-</p>
-
 ## Contents:
 
 - [Features](#features)

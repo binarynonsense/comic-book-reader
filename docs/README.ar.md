@@ -12,15 +12,6 @@
 
 ![git_banner](https://github.com/user-attachments/assets/6ef7ded2-749a-4efd-a6b7-109d0f33d603)
 
-<p align="center">
-  <a href="./README.en.md">English</a> | 
-  <a href="./README.es.md">Español</a> | 
-  <a href="./README.ru.md">Русский</a> | 
-  <a href="./README.de.md">Deutsch</a> | 
-  <span>العربية</span> | 
-  <a href="./README.fil.md">Filipino</a>
-</p>
-
 ## المحتويات:
 
 - [الميزات](#الميزات)
