@@ -1,6 +1,6 @@
 ## Translation Pull Request
 
-I'm only looking for localization contributions. Please don't send any code changes or machine-generated translations (like Google Translate), as I won't be able to merge them. More info in the CONTRIBUTING.md file.
+I'm only looking for localization contributions. Please don't send any code changes, as I won't be able to merge them. More info in the CONTRIBUTING.md file.
 
 ### What changed?
 
