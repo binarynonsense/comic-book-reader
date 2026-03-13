@@ -341,6 +341,7 @@ a:hover a:visited {
 /* -------------------------------------------------- */
 
 .mp-button {
+  position: relative;
   margin-right: 3px;
   margin-left: 3px;
   color: var(--mediaplayer-button-color);
@@ -357,9 +358,20 @@ a:hover a:visited {
   color: var(--mediaplayer-button-hover-color) !important;
 }
 
-/* .mp-button:hover .mp-repeat-number {
-  margin-top: 1px;
-} */
+.mp-button.mp-off-miniicon::after {
+  position: absolute;
+  top: 4px;
+  right: -3px;
+  font: var(--fa-font-solid);
+  content: "\f00d";
+  font-size: 7px;
+  color: var(--mediaplayer-bg-color);
+  background-color: var(--mediaplayer-button-color);
+  padding: 0px 1px;
+}
+.mp-button.mp-off-miniicon:hover::after {
+  background-color: var(--mediaplayer-button-hover-color);
+}
 
 .mp-button:not(.fa-stack):hover i {
   transform: scale(1.1);

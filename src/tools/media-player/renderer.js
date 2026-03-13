@@ -1414,6 +1414,12 @@ function refreshUI() {
     }
   }
 
+  if (g_settings.showPlaylist) {
+    g_player.html.buttonTogglePlaylist.classList.remove("mp-off-miniicon");
+  } else {
+    g_player.html.buttonTogglePlaylist.classList.add("mp-off-miniicon");
+  }
+
   if (
     (g_settings.fullView || g_settings.showSpectrum) &&
     g_player.mediaType === PlayerMediaType.AUDIO
@@ -1426,6 +1432,11 @@ function refreshUI() {
     g_player.html.buttonToggleSpectrum.classList.remove("mp-disabled");
   } else {
     g_player.html.buttonToggleSpectrum.classList.add("mp-disabled");
+  }
+  if (g_settings.showSpectrum) {
+    g_player.html.buttonToggleSpectrum.classList.remove("mp-off-miniicon");
+  } else {
+    g_player.html.buttonToggleSpectrum.classList.add("mp-off-miniicon");
   }
 
   if (
@@ -1441,6 +1452,11 @@ function refreshUI() {
     g_player.html.buttonToggleVideoArea.classList.remove("mp-disabled");
   } else {
     g_player.html.buttonToggleVideoArea.classList.add("mp-disabled");
+  }
+  if (g_settings.showVideo) {
+    g_player.html.buttonToggleVideoArea.classList.remove("mp-off-miniicon");
+  } else {
+    g_player.html.buttonToggleVideoArea.classList.add("mp-off-miniicon");
   }
 
   if (playlist.getTracks().length > 0) {
