@@ -142,6 +142,16 @@ function initPlayer() {
     }
     ///
     if (
+      // g_player.mediaType === PlayerMediaType.AUDIO &&
+      !g_player.hasFixedDuration
+    ) {
+      playlist.updateTrackFileTags(
+        g_player.trackIndex,
+        undefined,
+        undefined,
+        -1,
+      );
+    } else if (
       g_player.trackIndex !== undefined &&
       g_player.engineType === PlayerEngineType.NATIVE
     ) {
@@ -149,17 +159,7 @@ function initPlayer() {
       if (Number.isFinite(duration) && duration > 0) {
         const fileIndex = playlist.getTracks()[g_player.trackIndex].fileIndex;
         const file = playlist.getPlaylist().files[fileIndex];
-        if (
-          // g_player.mediaType === PlayerMediaType.AUDIO &&
-          !g_player.hasFixedDuration
-        ) {
-          playlist.updateTrackFileTags(
-            g_player.trackIndex,
-            undefined,
-            undefined,
-            -1,
-          );
-        } else if (file.duration !== g_player.engine.duration) {
+        if (file.duration !== g_player.engine.duration) {
           if (file.url.endsWith(".m3u8")) return;
           playlist.updateTrackFileTags(
             g_player.trackIndex,
