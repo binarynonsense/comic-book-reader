@@ -367,7 +367,7 @@ function shuffleArray(array) {
 }
 
 export function getFormatedTimeFromSeconds(seconds, targetLength = 0) {
-  if (isNaN(seconds) || !isFinite(seconds)) return "--:--";
+  if (isNaN(seconds) || !isFinite(seconds) || seconds < 0) return "--:--";
   let h = Math.floor(seconds / 3600);
   let m = Math.floor((seconds % 3600) / 60);
   let s = Math.floor(seconds % 60);

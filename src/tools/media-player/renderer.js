@@ -66,6 +66,7 @@ function setPlayerState(state, doUIRefresh = false) {
 function clearPlayer() {
   g_currentLoadId++;
   g_player.lastCrashResumeAttempt = 0;
+  g_player.hasFixedDuration = false;
 
   clearPlayerSubtitle();
   g_player.externalSubtitles = [];
@@ -183,6 +184,11 @@ function initPlayer() {
     } else {
       g_player.mediaType = PlayerMediaType.AUDIO;
     }
+    g_player.hasFixedDuration = !(
+      g_player.engine.duration === Infinity ||
+      (g_player.engine.seekable.length > 0 &&
+        g_player.engine.seekable.start(0) > 0)
+    );
     refreshUI();
   });
 
@@ -575,6 +581,12 @@ async function onPlay(trackIndex = undefined, time = 0) {
 function onPlaySucceeded() {
   setPlayerState(PlayerState.PLAYING);
   playlist.setCurrentTrackIndex(g_player.trackIndex);
+  if (
+    g_player.mediaType === PlayerMediaType.AUDIO &&
+    !g_player.hasFixedDuration
+  ) {
+    playlist.updateCurrentFileTags(undefined, undefined, -1);
+  }
   refreshUI();
   playlist.scrollToCurrent();
 }
@@ -1144,23 +1156,29 @@ function initUI() {
   //////
 
   g_player.html.sliderTime.addEventListener("mousemove", (event) => {
-    const slider = g_player.html.sliderTime;
-    const hoveredSeconds = getSliderValueAtMouse(slider, event);
+    if (g_player.hasFixedDuration) {
+      const slider = g_player.html.sliderTime;
+      const hoveredSeconds = getSliderValueAtMouse(slider, event);
 
-    const formattedHover = playlist.getFormatedTimeFromSeconds(hoveredSeconds);
-    const hoverT = g_player.html.sliderTimeHoverTooltip;
-    hoverT.textContent = formattedHover;
-    hoverT.style.display = "block";
+      const formattedHover =
+        playlist.getFormatedTimeFromSeconds(hoveredSeconds);
+      const hoverT = g_player.html.sliderTimeHoverTooltip;
+      hoverT.textContent = formattedHover;
+      hoverT.style.display = "block";
 
-    const rect = slider.getBoundingClientRect();
+      const rect = slider.getBoundingClientRect();
 
-    // TODO: calculate teh hardcoded offsets
-    if (g_settings.showAdvancedControls) {
-      g_player.html.sliderTimeStatusOverlay.style.display = "none";
-      hoverT.style.left = event.clientX - rect.left + 80 + "px";
+      // TODO: calculate teh hardcoded offsets
+      if (g_settings.showAdvancedControls) {
+        g_player.html.sliderTimeStatusOverlay.style.display = "none";
+        hoverT.style.left = event.clientX - rect.left + 80 + "px";
+      } else {
+        g_player.html.sliderTimeStatusOverlay.style.display = "block";
+        hoverT.style.left = event.clientX - rect.left + 30 + "px";
+      }
     } else {
-      g_player.html.sliderTimeStatusOverlay.style.display = "block";
-      hoverT.style.left = event.clientX - rect.left + 30 + "px";
+      g_player.html.sliderTimeHoverTooltip.style.display = "none";
+      g_player.html.sliderTimeStatusOverlay.style.display = "none";
     }
 
     updateTimeUI();
@@ -1748,11 +1766,15 @@ function updateTimeUI() {
     const maxSeconds = parseFloat(slider.max) || 0;
     const currentSeconds = parseFloat(slider.value) || 0;
 
-    const formattedTotal = playlist.getFormatedTimeFromSeconds(maxSeconds);
-    const formattedCurrent = playlist.getFormatedTimeFromSeconds(
-      currentSeconds,
-      formattedTotal.length,
-    );
+    let formattedTotal = g_player.hasFixedDuration
+      ? playlist.getFormatedTimeFromSeconds(maxSeconds)
+      : "--:--";
+    let formattedCurrent = g_player.hasFixedDuration
+      ? playlist.getFormatedTimeFromSeconds(
+          currentSeconds,
+          formattedTotal.length,
+        )
+      : "--:--";
 
     if (g_settings.showAdvancedControls) {
       const currentDiv = document.getElementById("mp-time-current-span");
