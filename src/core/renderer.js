@@ -604,9 +604,9 @@ function initTitleBarObserver() {
                   );
                 }
                 ////
-                else if (keybinding.textContent === "acc-audio-player") {
+                else if (keybinding.textContent === "acc-media-player") {
                   keybinding.textContent =
-                    getFormatedAccText("toggleAudioPlayer");
+                    getFormatedAccText("toggleMediaPlayer");
                 } ////
                 else if (keybinding.textContent === "acc-fullscreen") {
                   keybinding.textContent =

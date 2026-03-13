@@ -120,7 +120,7 @@ const g_defaultSettings = {
     togglePageNumber: ["Control+p"],
     toggleClock: ["Control+j"],
     toggleBatteryStatus: ["Control+l"],
-    toggleAudioPlayer: ["Control+m"],
+    toggleMediaPlayer: ["Control+m"],
     openFile: ["Control+o"],
     history: ["Control+h"],
     quickMenu: ["F1"],

@@ -693,7 +693,7 @@ if (!gotTheLock) {
           onMenuQuit();
           break;
         case "media-player":
-          onMenuToggleAudioPlayer();
+          onMenuToggleMediaPlayer();
           break;
         case "history":
           onMenuOpenHistoryManager();
@@ -975,11 +975,11 @@ if (!gotTheLock) {
 
   /////////////
 
-  function onMenuToggleAudioPlayer() {
+  function onMenuToggleMediaPlayer() {
     reader.showAudioPlayer(!settings.getValue("showAudioPlayer"));
     sendIpcToPreload("update-menubar");
   }
-  exports.onMenuToggleAudioPlayer = onMenuToggleAudioPlayer;
+  exports.onMenuToggleMediaPlayer = onMenuToggleMediaPlayer;
 
   function onMenuToggleSystemMonitor() {
     showSystemMonitor(!settings.getValue("showSystemMonitor"));

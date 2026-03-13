@@ -726,7 +726,7 @@ function getNormalMenu(settings, history) {
           id: "system-monitor",
           type: "checkbox",
           checked: settings.showSystemMonitor,
-          // accelerator: "acc-audio-player",
+          // accelerator: "acc-media-player",
           click() {
             core.onMenuToggleSystemMonitor();
           },
@@ -736,9 +736,9 @@ function getNormalMenu(settings, history) {
           id: "media-player",
           type: "checkbox",
           checked: settings.showAudioPlayer,
-          accelerator: "acc-audio-player",
+          accelerator: "acc-media-player",
           click() {
-            core.onMenuToggleAudioPlayer();
+            core.onMenuToggleMediaPlayer();
           },
         },
         {
@@ -818,7 +818,7 @@ function getHomeScreenMenu(settings, history) {
           id: "system-monitor",
           type: "checkbox",
           checked: settings.showSystemMonitor,
-          // accelerator: "acc-audio-player",
+          // accelerator: "acc-media-player",
           click() {
             core.onMenuToggleSystemMonitor();
           },
@@ -828,9 +828,9 @@ function getHomeScreenMenu(settings, history) {
           id: "media-player",
           type: "checkbox",
           checked: settings.showAudioPlayer,
-          accelerator: "acc-audio-player",
+          accelerator: "acc-media-player",
           click() {
-            core.onMenuToggleAudioPlayer();
+            core.onMenuToggleMediaPlayer();
           },
         },
         {
@@ -897,7 +897,7 @@ function getToolMenu(settings, history, toolName) {
           id: "system-monitor",
           type: "checkbox",
           checked: settings.showSystemMonitor,
-          // accelerator: "acc-audio-player",
+          // accelerator: "acc-media-player",
           click() {
             core.onMenuToggleSystemMonitor();
           },
@@ -907,9 +907,9 @@ function getToolMenu(settings, history, toolName) {
           id: "media-player",
           type: "checkbox",
           checked: settings.showAudioPlayer,
-          accelerator: "acc-audio-player",
+          accelerator: "acc-media-player",
           click() {
-            core.onMenuToggleAudioPlayer();
+            core.onMenuToggleMediaPlayer();
           },
         },
         {

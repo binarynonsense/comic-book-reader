@@ -144,7 +144,7 @@ function initKeyboard() {
       return;
     } else if (checkShortcut("quit", "quit")) {
       return;
-    } else if (checkShortcut("toggleAudioPlayer", "media-player")) {
+    } else if (checkShortcut("toggleMediaPlayer", "media-player")) {
       return;
     }
 
