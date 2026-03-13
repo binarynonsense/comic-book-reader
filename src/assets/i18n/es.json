@@ -1,6 +1,8 @@
 {
   "@metadata": {
-    "authors": ["Álvaro"],
+    "authors": [
+      "Álvaro"
+    ],
     "last-updated": "2026-02-20",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.17.0",
@@ -130,6 +132,8 @@
   "menu-shared-bottom-left": "Abajo izda.",
   "menu-shared-bottom-center": "Abajo centro",
   "menu-shared-bottom-right": "Abajo dcha.",
+  "[NOTE TO TRANSLATORS]menu-shared-toggle": "Toggle will be used in menu entries or button tooltips/names as the name of the UI element + (Toggle), for example: 'Tool Bar (Toggle)'. Meaning if you click the button/menu that element will be toggled on/off. If a direct translation sounds off, you could use the one for On/Off or maybe Switch, Enable/Disable... if that sounds/fits better",
+  "menu-shared-toggle": "Alternar",
   "menubar-buttons-minimize": "Minimizar",
   "menubar-buttons-maximize": "Maximizar",
   "menubar-buttons-restoredown": "Restaurar",
@@ -704,7 +708,7 @@
     "togglePageNumber": "Alternar número de página",
     "toggleClock": "Alternar reloj",
     "toggleBatteryStatus": "Alternar estado de batería",
-    "toggleAudioPlayer": "Alternar reproductor de audio",
+    "toggleMediaPlayer": "Alternar reproductor multimedia",
     "openFile": "Abrir archivo",
     "history": "Historial de archivos",
     "fileProperties": "Propiedades de archivo",
