@@ -1314,8 +1314,11 @@ function checkValidData() {
         .querySelector("#tool-cc-folders-file-formats-text")
         .parentElement.classList.add("set-display-none");
     }
-  } else {
+  } else if (g_mode === ToolMode.CREATE) {
     folderContentsSelect.parentElement.classList.add("set-display-none");
+    document
+      .querySelector("#tool-cc-folders-file-formats-text")
+      .parentElement.parentElement.classList.remove("tools-option-children");
   }
   ///////////////////
   if (g_outputImageScaleSelect.value === "0") {
