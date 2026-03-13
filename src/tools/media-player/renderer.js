@@ -75,7 +75,7 @@ function clearPlayer() {
     g_player.engine.pause();
     g_player.engine.removeAttribute("src");
     g_player.engine.load(); // reset the engine's memory
-    g_player.html.sliderTime.max = 100;
+    g_player.html.sliderTime.max = 0;
     g_player.html.sliderTime.value = 0;
   }
 
@@ -126,6 +126,54 @@ function initPlayer() {
     ) {
       onPlaySucceeded();
     }
+  });
+
+  function updateDurationData() {
+    const hasFixedDuration =
+      !g_player.usingHsl &&
+      !(
+        g_player.engine.duration === Infinity ||
+        (g_player.engine.seekable.length > 0 &&
+          g_player.engine.seekable.start(0) > 0)
+      );
+    if (hasFixedDuration !== g_player.hasFixedDuration) {
+      g_player.hasFixedDuration = hasFixedDuration;
+      refreshUI();
+    }
+    ///
+    if (
+      g_player.trackIndex !== undefined &&
+      g_player.engineType === PlayerEngineType.NATIVE
+    ) {
+      const duration = g_player.engine.duration;
+      if (Number.isFinite(duration) && duration > 0) {
+        const fileIndex = playlist.getTracks()[g_player.trackIndex].fileIndex;
+        const file = playlist.getPlaylist().files[fileIndex];
+        if (
+          // g_player.mediaType === PlayerMediaType.AUDIO &&
+          !g_player.hasFixedDuration
+        ) {
+          playlist.updateTrackFileTags(
+            g_player.trackIndex,
+            undefined,
+            undefined,
+            -1,
+          );
+        } else if (file.duration !== g_player.engine.duration) {
+          if (file.url.endsWith(".m3u8")) return;
+          playlist.updateTrackFileTags(
+            g_player.trackIndex,
+            undefined,
+            undefined,
+            g_player.engine.duration,
+          );
+        }
+      }
+    }
+  }
+
+  g_player.engine.addEventListener("durationchange", function () {
+    updateDurationData();
   });
 
   g_player.engine.addEventListener("error", (error) => {
@@ -184,26 +232,22 @@ function initPlayer() {
     } else {
       g_player.mediaType = PlayerMediaType.AUDIO;
     }
-    g_player.hasFixedDuration = !(
-      g_player.engine.duration === Infinity ||
-      (g_player.engine.seekable.length > 0 &&
-        g_player.engine.seekable.start(0) > 0)
-    );
-    refreshUI();
+    updateDurationData();
   });
 
   g_player.engine.addEventListener("loadeddata", function () {
-    if (playlist.getTracks().length <= 0) return;
-    let fileIndex = playlist.getCurrentTrackFileIndex();
-    if (
-      !playlist.getPlaylist().files[fileIndex].duration ||
-      playlist.getPlaylist().files[fileIndex].duration == -1
-    ) {
-      if (playlist.getPlaylist().files[fileIndex].url.endsWith(".m3u8")) return;
-      playlist.getPlaylist().files[fileIndex].duration =
-        g_player.engine.duration;
-      playlist.updatePlaylistInfo();
-    }
+    // if (playlist.getTracks().length <= 0) return;
+    // let fileIndex = playlist.getCurrentTrackFileIndex();
+    // if (
+    //   !playlist.getPlaylist().files[fileIndex].duration ||
+    //   playlist.getPlaylist().files[fileIndex].duration == -1
+    // ) {
+    //   if (playlist.getPlaylist().files[fileIndex].url.endsWith(".m3u8")) return;
+    //   playlist.getPlaylist().files[fileIndex].duration =
+    //     g_player.engine.duration;
+    //   playlist.updatePlaylistInfo();
+    // }
+    updateDurationData();
   });
 
   // g_player.engine.addEventListener('seeked', () => {
@@ -555,6 +599,18 @@ async function onPlay(trackIndex = undefined, time = 0) {
           g_player.engineType = PlayerEngineType.FFMPEG;
           g_player.mediaType = PlayerMediaType.VIDEO;
           g_player.engine.pause();
+          if (g_player.trackMetadata && g_player.trackMetadata.duration) {
+            const fileIndex = playlist.getTracks()[trackIndex].fileIndex;
+            const file = playlist.getPlaylist().files[fileIndex];
+            if (file.duration !== g_player.trackMetadata.duration) {
+              playlist.updateTrackFileTags(
+                trackIndex,
+                undefined,
+                undefined,
+                g_player.trackMetadata.duration,
+              );
+            }
+          }
           sendIpcToMain(
             "mp-ffmpeg-load-video",
             playlist.getTracks()[trackIndex].fileUrl,
@@ -581,12 +637,6 @@ async function onPlay(trackIndex = undefined, time = 0) {
 function onPlaySucceeded() {
   setPlayerState(PlayerState.PLAYING);
   playlist.setCurrentTrackIndex(g_player.trackIndex);
-  if (
-    g_player.mediaType === PlayerMediaType.AUDIO &&
-    !g_player.hasFixedDuration
-  ) {
-    playlist.updateCurrentFileTags(undefined, undefined, -1);
-  }
   refreshUI();
   playlist.scrollToCurrent();
 }
@@ -1934,7 +1984,8 @@ function initOnIpcCallbacks() {
     onStop();
     playlist.openPlaylist(newPlaylist);
     playlist.setCurrentTrackIndex(0);
-    onPlay(playlist.getCurrentTrackIndex(), 0);
+    g_player.trackIndex = playlist.getCurrentTrackIndex();
+    onPlay(g_player.trackIndex, 0);
   });
 
   on("add-to-playlist", (...args) => {

@@ -148,7 +148,7 @@ function initOnIpcCallbacks() {
     for (let index = 0; index < files.length; index++) {
       const file = files[index];
       try {
-        if (file.title && file.artist) continue;
+        if (file.title && file.artist && file.duration !== undefined) continue;
         // if (!/^http:\/\/|https:\/\//.test(file.url)) {
         const lowercaseUrl = file.url.toLowerCase();
         if (
@@ -165,6 +165,10 @@ function initOnIpcCallbacks() {
           }
           if (metadata?.common?.title) {
             file.title = metadata.common.title;
+            didUpdate = true;
+          }
+          if (file.duration === undefined && metadata?.format?.duration) {
+            file.duration = metadata.format.duration;
             didUpdate = true;
           }
           if (didUpdate) {
@@ -232,7 +236,6 @@ function initHandleIpcCallbacks() {
     try {
       const metadata = await ffmpeg.getMetadataComplete(undefined, filePath);
       // const capabilities = await ffmpeg.getFfmpegCapabilities();
-      // log.test(capabilities);
       return metadata;
     } catch (error) {
       log.editor(error);

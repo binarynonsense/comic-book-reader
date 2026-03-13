@@ -46,7 +46,8 @@ export function init(
         }
       }
     }
-    fillTimes(); // calls updatePlaylistInfo
+    // fillTimes(); // calls updatePlaylistInfo
+    updatePlaylistInfo();
     fillTags();
     return trackIndex;
   }
@@ -99,8 +100,8 @@ export function openPlaylist(playlist) {
   g_playlist = playlist;
   g_selectedTrackFileIndex = undefined;
   createTracksList(false);
+  // fillTimes(); // calls updatePlaylistInfo
   updatePlaylistInfo();
-  fillTimes();
   fillTags();
 }
 
@@ -126,7 +127,8 @@ export function addToPlaylist(files, startPlaying, allowDuplicates = false) {
     if (oldLength === 0 || startPlaying) {
       returnTrackIndex = oldLength;
     }
-    fillTimes(); // calls updatePlaylistInfo
+    // fillTimes(); // calls updatePlaylistInfo
+    updatePlaylistInfo();
     fillTags();
   }
   return [returnTrackIndex, addedSome];
@@ -142,6 +144,7 @@ export function onTagsFilled(updatedFiles) {
         if (updatedFile.url === file.url) {
           file.artist = updatedFile.artist;
           file.title = updatedFile.title;
+          if (file.duration === undefined) file.duration = updatedFile.duration;
         }
       }
     }
@@ -151,58 +154,64 @@ export function onTagsFilled(updatedFiles) {
 
 //////////////
 
-function fillTimes() {
-  // TODO: update this now that I do videos?
-  try {
-    g_tempAudioIndex = 0;
-    g_tempAudioIndex = getNextToFill();
-    if (g_tempAudioIndex >= 0) {
-      if (!g_tempAudioElement)
-        g_tempAudioElement = document.createElement("audio");
-      g_tempAudioElement.muted = true;
-      g_tempAudioElement.preload = true;
-      g_tempAudioElement.src = g_playlist.files[g_tempAudioIndex].url;
-      g_tempAudioElement.addEventListener("loadeddata", function () {
-        g_playlist.files[g_tempAudioIndex].duration =
-          g_tempAudioElement.duration;
-        g_tempAudioIndex++;
-        g_tempAudioIndex = getNextToFill();
-        if (
-          g_tempAudioIndex > 0 &&
-          g_tempAudioIndex < g_playlist.files.length
-        ) {
-          g_tempAudioElement.src = g_playlist.files[g_tempAudioIndex].url;
-        } else {
-          g_tempAudioElement.removeAttribute("src");
-          g_tempAudioElement = null;
-          updatePlaylistInfo();
-        }
-      });
-    } else {
-      updatePlaylistInfo();
-    }
-  } catch (error) {
-    // TODO
-  }
-}
+// function fillTimes() {
+//   function getNextToFill() {
+//     for (
+//       let index = g_tempAudioIndex;
+//       index < g_playlist.files.length;
+//       index++
+//     ) {
+//       const file = g_playlist.files[index];
+//       if (file.duration) continue;
+//       if (/^http:\/\/|https:\/\//.test(file.url)) continue;
+//       return index;
+//     }
+//     return -1;
+//   }
+//   try {
+//     g_tempAudioIndex = 0;
+//     g_tempAudioIndex = getNextToFill();
+//     if (g_tempAudioIndex >= 0) {
+//       if (!g_tempAudioElement)
+//         g_tempAudioElement = document.createElement("audio");
+//       g_tempAudioElement.muted = true;
+//       g_tempAudioElement.preload = true;
+//       g_tempAudioElement.src = g_playlist.files[g_tempAudioIndex].url;
+//       g_tempAudioElement.addEventListener("loadeddata", function () {
+//         g_playlist.files[g_tempAudioIndex].duration =
+//           g_tempAudioElement.duration;
+//         g_tempAudioIndex++;
+//         g_tempAudioIndex = getNextToFill();
+//         if (
+//           g_tempAudioIndex > 0 &&
+//           g_tempAudioIndex < g_playlist.files.length
+//         ) {
+//           g_tempAudioElement.src = g_playlist.files[g_tempAudioIndex].url;
+//         } else {
+//           g_tempAudioElement.removeAttribute("src");
+//           g_tempAudioElement = null;
+//           updatePlaylistInfo();
+//         }
+//       });
+//     } else {
+//       updatePlaylistInfo();
+//     }
+//   } catch (error) {
+//     // TODO
+//   }
+// }
 
 export function updateCurrentFileTags(title, artist, duration) {
-  let index = g_tracks[g_currentTrackIndex].fileIndex;
+  updateTrackFileTags(g_currentTrackIndex, title, artist, duration);
+}
+
+export function updateTrackFileTags(trackIndex, title, artist, duration) {
+  let index = g_tracks[trackIndex].fileIndex;
   if (title) g_playlist.files[index].title = title;
   if (artist) g_playlist.files[index].artist = artist;
   if (duration) g_playlist.files[index].duration = duration;
   updatePlaylistInfo();
   refreshUI();
-}
-
-function getNextToFill() {
-  for (let index = g_tempAudioIndex; index < g_playlist.files.length; index++) {
-    const file = g_playlist.files[index];
-    if (file.duration) continue;
-    if (/^http:\/\/|https:\/\//.test(file.url)) continue;
-    return index;
-  }
-  return -1;
 }
 
 function fillTags() {
