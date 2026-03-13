@@ -237,7 +237,7 @@ function initOnIpcCallbacks() {
   });
 
   on("open-url-in-audio-player", (url, name, playlistOption) => {
-    reader.showAudioPlayer(true, false);
+    reader.showMediaPlayer(true, false);
     if (playlistOption === 0) {
       let files = [{ url: url, duration: -1, title: name }];
       sendIpcToAudioPlayerRenderer("add-to-playlist", files, true, false);

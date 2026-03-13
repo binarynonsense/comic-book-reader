@@ -118,7 +118,7 @@ function initOnIpcCallbacks() {
   });
 
   on("open-audio", (url, title, playlistOption) => {
-    reader.showAudioPlayer(true, false);
+    reader.showMediaPlayer(true, false);
     if (playlistOption === 0) {
       let files = [{ url, title, duration: -1 }];
       sendIpcToAudioPlayerRenderer("add-to-playlist", files, true, false);

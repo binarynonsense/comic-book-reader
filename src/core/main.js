@@ -976,7 +976,7 @@ if (!gotTheLock) {
   /////////////
 
   function onMenuToggleMediaPlayer() {
-    reader.showAudioPlayer(!settings.getValue("showAudioPlayer"));
+    reader.showMediaPlayer(!settings.getValue("showAudioPlayer"));
     sendIpcToPreload("update-menubar");
   }
   exports.onMenuToggleMediaPlayer = onMenuToggleMediaPlayer;

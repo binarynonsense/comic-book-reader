@@ -98,7 +98,7 @@ exports.init = async function (filePath, checkHistory) {
     [
       "media-player"
     ].init(core.getMainWindow(), "media-player-container", settings.canUseFFmpeg() ? utils.getFfmpegCommand(settings.getValue("ffmpegExeFolderPath")) : undefined);
-  showAudioPlayer(settings.getValue("showAudioPlayer"));
+  showMediaPlayer(settings.getValue("showAudioPlayer"));
   homeScreen.open(undefined);
 
   // if the program is called from the os' 'open with' of file association
@@ -2187,13 +2187,13 @@ function toggleLoadingIndicator() {
   sendIpcToPreload("update-menubar");
 }
 
-function showAudioPlayer(isVisible, updateMenuBar) {
+function showMediaPlayer(isVisible, updateMenuBar) {
   settings.setValue("showAudioPlayer", isVisible);
   tools.getTools()["media-player"].open(isVisible);
   menuBar.setAudioPlayer(isVisible);
   if (updateMenuBar) sendIpcToPreload("update-menubar");
 }
-exports.showAudioPlayer = showAudioPlayer;
+exports.showMediaPlayer = showMediaPlayer;
 
 function setFullScreen(value) {
   core.getMainWindow().setFullScreen(value);

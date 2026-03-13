@@ -110,7 +110,7 @@ function initOnIpcCallbacks() {
     fileUrls.forEach((url) => {
       playlist.files.push({ url: url, duration: -1 });
     });
-    reader.showAudioPlayer(true, false);
+    reader.showMediaPlayer(true, false);
     // onCloseClicked();
     sendIpcToAudioPlayerRenderer("open-playlist", playlist);
   });
