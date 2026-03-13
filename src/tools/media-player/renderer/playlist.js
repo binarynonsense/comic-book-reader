@@ -281,7 +281,10 @@ export function updatePlaylistInfo() {
     const div = document.createElement("div");
     div.id = "mp-playlist-track-" + index;
     div.classList.add("mp-div-playlist-track");
-    if (g_tracks[g_currentTrackIndex].fileIndex === index) {
+    if (
+      g_currentTrackIndex !== undefined &&
+      g_tracks[g_currentTrackIndex].fileIndex === index
+    ) {
       div.classList.add("mp-div-playlist-current-track");
     }
     if (index === g_selectedTrackFileIndex) {

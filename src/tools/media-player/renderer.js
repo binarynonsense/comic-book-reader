@@ -1931,8 +1931,9 @@ function initOnIpcCallbacks() {
   });
 
   on("open-playlist", (newPlaylist) => {
-    onPause();
+    onStop();
     playlist.openPlaylist(newPlaylist);
+    playlist.setCurrentTrackIndex(0);
     onPlay(playlist.getCurrentTrackIndex(), 0);
   });
 

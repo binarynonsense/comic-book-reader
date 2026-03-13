@@ -116,7 +116,7 @@ function initOnIpcCallbacks() {
   });
 
   on("close", () => {
-    reader.showAudioPlayer(false, true);
+    reader.showMediaPlayer(false, true);
   });
 
   on("save-playlist", (playlist) => {
