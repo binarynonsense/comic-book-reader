@@ -54,6 +54,22 @@ exports.getLocalization = function () {
       text: _("mp-tooltip-button-spectrum-hide"),
     },
     {
+      id: "mp-button-toggle-advancedcontrols",
+      text: `${_("mp-menu-advancedcontrols")} (${_("menu-shared-toggle")})`,
+    },
+    {
+      id: "mp-button-toggle-playlist",
+      text: `${_("mp-menu-playlist")} (${_("menu-shared-toggle")})`,
+    },
+    {
+      id: "mp-button-toggle-videoarea",
+      text: `${_("mp-menu-videoarea")} (${_("menu-shared-toggle")})`,
+    },
+    {
+      id: "mp-button-toggle-spectrum",
+      text: `${_("mp-menu-spectrum")} (${_("menu-shared-toggle")})`,
+    },
+    {
       id: "mp-button-settings",
       text: _("tool-shared-tab-settings"),
     },

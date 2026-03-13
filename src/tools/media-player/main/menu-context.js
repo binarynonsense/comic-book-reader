@@ -61,6 +61,14 @@ exports.show = function (type, params, data, sendIpcToRenderer) {
         label: _("menu-view"),
         submenu: [
           {
+            label: _("mp-menu-advancedcontrols"),
+            type: "checkbox",
+            checked: data.settings.showAdvancedControls,
+            click() {
+              sendIpcToRenderer("on-context-menu", "toggle-advancedcontrols");
+            },
+          },
+          {
             label: _("mp-menu-videoarea"),
             type: "checkbox",
             checked: data.settings.showVideo,

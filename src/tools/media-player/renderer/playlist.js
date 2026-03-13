@@ -366,12 +366,31 @@ function shuffleArray(array) {
   return array;
 }
 
-export function getFormatedTimeFromSeconds(seconds) {
+// export function getFormatedTimeFromSeconds(seconds) {
+//   if (isNaN(seconds) || !isFinite(seconds)) return "--:--";
+//   let hours = Math.floor(seconds / 3600);
+//   let minutes = Math.floor((seconds - hours * 3600) / 60);
+//   seconds = Math.floor(seconds - hours * 3600 - minutes * 60);
+//   if (minutes < 10) minutes = "0" + minutes;
+//   if (seconds < 10) seconds = "0" + seconds;
+//   return minutes + ":" + seconds;
+// }
+export function getFormatedTimeFromSeconds(seconds, targetLength = 0) {
   if (isNaN(seconds) || !isFinite(seconds)) return "--:--";
-  let hours = Math.floor(seconds / 3600);
-  let minutes = Math.floor((seconds - hours * 3600) / 60);
-  seconds = Math.floor(seconds - hours * 3600 - minutes * 60);
-  if (minutes < 10) minutes = "0" + minutes;
-  if (seconds < 10) seconds = "0" + seconds;
-  return minutes + ":" + seconds;
+
+  let h = Math.floor(seconds / 3600);
+  let m = Math.floor((seconds % 3600) / 60);
+  let s = Math.floor(seconds % 60);
+
+  let timeStr = "";
+
+  // If the target length is 7 or more (e.g., "0:00:00"), we MUST show hours
+  if (h > 0 || targetLength >= 7) {
+    timeStr = `${h}:${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+  } else {
+    timeStr = `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+  }
+
+  // If we still need to reach a specific length (like padding "1:22" to match "10:22")
+  return timeStr.padStart(targetLength, "0");
 }
