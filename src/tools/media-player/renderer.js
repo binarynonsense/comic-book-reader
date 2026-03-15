@@ -637,6 +637,11 @@ async function onPlay(trackIndex = undefined, time = 0) {
 }
 
 function onPlaySucceeded() {
+  if (g_player.mediaType === PlayerMediaType.AUDIO && g_settings.fullView) {
+    // just to make sure the sprectrum visualizer is on
+    setFullView(g_settings.fullView);
+  }
+
   if (g_player.engineType === PlayerEngineType.YOUTUBE) {
     g_player.hasFixedDuration = true;
   }
@@ -1905,6 +1910,28 @@ function showVideoActionIcon(action, container) {
   animation.onfinish = () => icon.remove();
 }
 
+function setFullView(isOn) {
+  g_settings.fullView = isOn;
+  if (isOn) {
+    if (
+      g_player.mediaType === PlayerMediaType.AUDIO &&
+      !spectrumVisualizer.isRunning()
+    ) {
+      spectrumVisualizer.start();
+    }
+  } else {
+    if (
+      g_player.mediaType === PlayerMediaType.AUDIO &&
+      !g_settings.showSpectrum &&
+      spectrumVisualizer.isRunning()
+    ) {
+      spectrumVisualizer.stop();
+    }
+  }
+  refreshUI();
+  playlist.scrollToCurrent();
+}
+
 function showSpectrumVisualizer(show) {
   if (show) {
     g_settings.showSpectrum = true;
@@ -2094,15 +2121,11 @@ function initOnIpcCallbacks() {
         break;
 
       case "toggle-fullview":
-        g_settings.fullView = !g_settings.fullView;
-        refreshUI();
-        playlist.scrollToCurrent();
+        setFullView(!g_settings.fullView);
         break;
 
       case "set-fullview":
-        g_settings.fullView = args[1];
-        refreshUI();
-        playlist.scrollToCurrent();
+        setFullView(args[1]);
         break;
 
       case "set-repeat":
@@ -2348,9 +2371,7 @@ export function onInputEvent(type, event) {
             onRewind();
           } else if (x < width * 0.75) {
             // center
-            g_settings.fullView = !g_settings.fullView;
-            refreshUI();
-            playlist.scrollToCurrent();
+            setFullView(!g_settings.fullView);
           } else {
             // right
             showVideoActionIcon(

@@ -20,6 +20,10 @@ let g_pulseLight = true;
 let g_pulseSensitivity = 1.9; //1.5; //1.8;
 let g_pulseFloor = 0.1; //0.2;
 
+export function isRunning() {
+  return g_resizeObserver !== null;
+}
+
 export function start() {
   const video = document.getElementById("mp-html-video");
   const canvas = document.getElementById("mp-spectrum-canvas");
