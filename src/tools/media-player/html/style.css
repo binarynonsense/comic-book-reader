@@ -351,6 +351,7 @@ a:hover a:visited {
   justify-content: center;
   align-items: center;
   gap: 5px;
+  font-size: 1.04em;
 }
 
 .mp-button:hover i,
