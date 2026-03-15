@@ -84,7 +84,7 @@
   "menu-view-layout-show-mediaplayer": "Медиаплеер",
   "menu-view-layout-show-battery": "Состояние батареи",
   "menu-view-layout-show-loading": "Индикатор загрузки",
-  "menu-view-layout-show-systemmonitor": "Мониторинг системы",
+  "menu-view-layout-show-systemmonitor": "Системный мониторинг",
   "systemmonitor-memory": "Память",
   "systemmonitor-memory-total": "Общая",
   "systemmonitor-memory-used": "Использованно",
