@@ -637,6 +637,9 @@ async function onPlay(trackIndex = undefined, time = 0) {
 }
 
 function onPlaySucceeded() {
+  if (g_player.engineType === PlayerEngineType.YOUTUBE) {
+    g_player.hasFixedDuration = true;
+  }
   if (g_player.state === PlayerState.PAUSED) {
     // HACK: I set PAUSED in startStream in ffmpeg when comming from a seek
     // that was paused before doing it,to be able to know I shouldn't resume
@@ -1196,14 +1199,14 @@ function initUI() {
   g_player.html.sliderThumbWidth = parseInt(rawValue, 10);
 
   // only update on mouse up
-  g_player.html.sliderTime.addEventListener("pointerdown", (e) => {
-    if (e.button !== 0) return;
+  g_player.html.sliderTime.addEventListener("pointerdown", (event) => {
+    if (event.button !== 0) return;
     g_player.html.sliderTimeIsSeeking = true;
     // capture the events anywhere, not only over the slider
-    g_player.html.sliderTime.setPointerCapture(e.pointerId);
+    g_player.html.sliderTime.setPointerCapture(event.pointerId);
     const endSeeking = () => {
       g_player.html.sliderTimeIsSeeking = false;
-      onSliderTimeChanged(g_player.html.sliderTime);
+      onSliderTimeChanged(g_player.html.sliderTime, event);
     };
     g_player.html.sliderTime.addEventListener("pointerup", endSeeking, {
       once: true,
@@ -1292,8 +1295,13 @@ function initUI() {
   });
 }
 
-function onSliderTimeChanged(slider) {
-  const targetSecond = parseFloat(slider.value);
+function onSliderTimeChanged(slider, event) {
+  // const targetSecond = parseFloat(slider.value);
+  const targetSecond = parseFloat(
+    g_player.engineType === PlayerEngineType.YOUTUBE
+      ? getSliderValueAtMouse(slider, event)
+      : slider.value,
+  );
   setTime(targetSecond);
   updateSliderFill(slider);
 }
