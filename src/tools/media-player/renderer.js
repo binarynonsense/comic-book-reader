@@ -80,7 +80,7 @@ function clearPlayer() {
   }
 
   setPlayerState(PlayerState.NOT_SET);
-  // g_player.mediaType = PlayerMediaType.NOT_SET;
+  g_player.mediaType = PlayerMediaType.NOT_SET;
   g_player.engineType = PlayerEngineType.NOT_SET;
 
   if (g_player.engine) {
@@ -1503,68 +1503,11 @@ function refreshUI() {
       trackTitle = trackTitle.split(/[\\/]/).pop();
     }
   }
+  //
   g_player.html.videoTitleDiv.innerText = trackTitle ?? "";
   g_player.html.spectrumTitleDiv.innerText = trackTitle ?? "";
 
-  if (g_settings.fullView) {
-    g_player.html.playerDiv.classList.add("mp-layout-fullscreen");
-    document.documentElement.style.setProperty("--mp-frame-width", `500px`);
-  } else {
-    g_player.html.playerDiv.classList.remove("mp-layout-fullscreen");
-    g_player.html.topBar.style.opacity = "1";
-    g_player.html.topBar.style.visibility = "visible";
-    if (g_settings.size === 0) {
-      document.documentElement.style.setProperty("--mp-frame-width", `300px`);
-    } else if (g_settings.size === 1) {
-      document.documentElement.style.setProperty("--mp-frame-width", `500px`);
-    }
-  }
-
-  if (g_settings.showPlaylist) {
-    g_player.html.buttonTogglePlaylist.classList.remove("mp-off-miniicon");
-  } else {
-    g_player.html.buttonTogglePlaylist.classList.add("mp-off-miniicon");
-  }
-
-  if (
-    (g_settings.fullView || g_settings.showSpectrum) &&
-    g_player.mediaType === PlayerMediaType.AUDIO
-  ) {
-    g_player.html.spectrumDiv.classList.remove("mp-hidden");
-  } else {
-    g_player.html.spectrumDiv.classList.add("mp-hidden");
-  }
-  if (!g_settings.fullView && g_player.mediaType === PlayerMediaType.AUDIO) {
-    g_player.html.buttonToggleSpectrum.classList.remove("mp-disabled");
-  } else {
-    g_player.html.buttonToggleSpectrum.classList.add("mp-disabled");
-  }
-  if (g_settings.showSpectrum) {
-    g_player.html.buttonToggleSpectrum.classList.remove("mp-off-miniicon");
-  } else {
-    g_player.html.buttonToggleSpectrum.classList.add("mp-off-miniicon");
-  }
-
-  if (
-    (g_settings.fullView &&
-      g_player.html.spectrumDiv.classList.contains("mp-hidden")) ||
-    (g_settings.showVideo && g_player.mediaType === PlayerMediaType.VIDEO)
-  ) {
-    g_player.html.videoDiv.classList.remove("mp-hidden");
-  } else {
-    g_player.html.videoDiv.classList.add("mp-hidden");
-  }
-  if (!g_settings.fullView && g_player.mediaType === PlayerMediaType.VIDEO) {
-    g_player.html.buttonToggleVideoArea.classList.remove("mp-disabled");
-  } else {
-    g_player.html.buttonToggleVideoArea.classList.add("mp-disabled");
-  }
-  if (g_settings.showVideo) {
-    g_player.html.buttonToggleVideoArea.classList.remove("mp-off-miniicon");
-  } else {
-    g_player.html.buttonToggleVideoArea.classList.add("mp-off-miniicon");
-  }
-
+  // play buttons /////////////////////////////////////////////////////////////
   if (playlist.getTracks().length > 0) {
     if (
       g_player.trackIndex !== undefined &&
@@ -1582,14 +1525,6 @@ function refreshUI() {
       g_player.html.buttonPause.classList.add("mp-disabled");
     }
     if (g_settings.showAdvancedControls) {
-      if (g_settings.fullView) {
-        g_player.html.buttonFullViewIsOn.classList.remove("mp-hidden");
-        g_player.html.buttonFullViewIsOff.classList.add("mp-hidden");
-      } else {
-        g_player.html.buttonFullViewIsOn.classList.add("mp-hidden");
-        g_player.html.buttonFullViewIsOff.classList.remove("mp-hidden");
-      }
-      ///
       g_player.html.buttonStop.classList.remove("mp-hidden");
       if (g_player.state !== PlayerState.NOT_SET) {
         g_player.html.buttonStop.classList.remove("mp-disabled");
@@ -1607,8 +1542,6 @@ function refreshUI() {
         g_player.html.buttonPause.classList.add("mp-hidden");
       }
     } else {
-      g_player.html.buttonFullViewIsOn.classList.add("mp-hidden");
-      g_player.html.buttonFullViewIsOff.classList.add("mp-hidden");
       if (g_player.state === PlayerState.PLAYING) {
         g_player.html.buttonPlay.classList.add("mp-hidden");
         g_player.html.buttonPause.classList.remove("mp-hidden");
@@ -1652,6 +1585,7 @@ function refreshUI() {
       g_player.html.buttonNext.classList.add("mp-disabled");
     }
   } else {
+    // no tracks in playlist
     if (g_settings.showAdvancedControls) {
       g_player.html.buttonPlay.classList.remove("mp-hidden");
       g_player.html.buttonPlay.classList.add("mp-disabled");
@@ -1670,6 +1604,82 @@ function refreshUI() {
 
     g_player.html.videoLoadingDiv.classList.add("mp-hidden");
     g_player.html.videoDiv.classList.add("mp-hidden");
+  }
+  ///////////////////////////////////////////////////////////////////////////
+  if (g_settings.fullView) {
+    g_player.html.playerDiv.classList.add("mp-layout-fullscreen");
+    document.documentElement.style.setProperty("--mp-frame-width", `500px`);
+    //
+    g_player.html.buttonTogglePlaylist.classList.add("mp-disabled");
+  } else {
+    g_player.html.playerDiv.classList.remove("mp-layout-fullscreen");
+    g_player.html.topBar.style.opacity = "1";
+    g_player.html.topBar.style.visibility = "visible";
+    if (g_settings.size === 0) {
+      document.documentElement.style.setProperty("--mp-frame-width", `300px`);
+    } else if (g_settings.size === 1) {
+      document.documentElement.style.setProperty("--mp-frame-width", `500px`);
+    }
+    //
+    g_player.html.buttonTogglePlaylist.classList.remove("mp-disabled");
+  }
+
+  if (g_settings.showPlaylist) {
+    g_player.html.buttonTogglePlaylist.classList.remove("mp-off-miniicon");
+  } else {
+    g_player.html.buttonTogglePlaylist.classList.add("mp-off-miniicon");
+  }
+
+  if (g_settings.showAdvancedControls) {
+    if (g_settings.fullView) {
+      g_player.html.buttonFullViewIsOn.classList.remove("mp-hidden");
+      g_player.html.buttonFullViewIsOff.classList.add("mp-hidden");
+    } else {
+      g_player.html.buttonFullViewIsOn.classList.add("mp-hidden");
+      g_player.html.buttonFullViewIsOff.classList.remove("mp-hidden");
+    }
+  } else {
+    g_player.html.buttonFullViewIsOn.classList.add("mp-hidden");
+    g_player.html.buttonFullViewIsOff.classList.add("mp-hidden");
+  }
+
+  if (
+    (g_settings.fullView || g_settings.showSpectrum) &&
+    g_player.mediaType === PlayerMediaType.AUDIO
+  ) {
+    g_player.html.spectrumDiv.classList.remove("mp-hidden");
+  } else {
+    g_player.html.spectrumDiv.classList.add("mp-hidden");
+  }
+  if (!g_settings.fullView && g_player.mediaType === PlayerMediaType.AUDIO) {
+    g_player.html.buttonToggleSpectrum.classList.remove("mp-disabled");
+  } else {
+    g_player.html.buttonToggleSpectrum.classList.add("mp-disabled");
+  }
+  if (g_settings.showSpectrum) {
+    g_player.html.buttonToggleSpectrum.classList.remove("mp-off-miniicon");
+  } else {
+    g_player.html.buttonToggleSpectrum.classList.add("mp-off-miniicon");
+  }
+
+  if (
+    (g_settings.fullView &&
+      g_player.html.spectrumDiv.classList.contains("mp-hidden")) ||
+    (g_settings.showVideo && g_player.mediaType === PlayerMediaType.VIDEO)
+  ) {
+    g_player.html.videoDiv.classList.remove("mp-hidden");
+  } else {
+    g_player.html.videoDiv.classList.add("mp-hidden");
+  }
+  if (!g_settings.fullView && g_player.mediaType === PlayerMediaType.VIDEO) {
+    g_player.html.buttonToggleVideoArea.classList.remove("mp-disabled");
+  } else {
+    g_player.html.buttonToggleVideoArea.classList.add("mp-disabled");
+  }
+  if (g_settings.showVideo) {
+    g_player.html.buttonToggleVideoArea.classList.remove("mp-off-miniicon");
+  } else {
+    g_player.html.buttonToggleVideoArea.classList.add("mp-off-miniicon");
   }
 
   updateVolumeUI();
@@ -1782,10 +1792,10 @@ function onButtonClicked(buttonName) {
   //
   else if (buttonName === "clear") {
     if (playlist.getTracks().length <= 0) return;
+    onStop();
     playlist.getPlaylist().files = [];
     playlist.setTracks([]);
     playlist.setSelectedTrackFileIndex(undefined);
-    onPause();
   } else if (buttonName === "add") {
     sendIpcToMain("on-open-clicked", 1);
   } else if (buttonName === "delete") {
@@ -1949,7 +1959,6 @@ function showVideoActionIcon(action, container) {
 }
 
 function setFullView(isOn) {
-  console.log(isOn);
   g_settings.fullView = isOn;
   if (isOn) {
     if (
