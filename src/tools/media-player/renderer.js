@@ -120,10 +120,12 @@ function initPlayer() {
 
   g_player.engine.addEventListener("canplay", function () {
     if (
-      (g_player.engineType === PlayerEngineType.NATIVE ||
-        g_player.engineType === PlayerEngineType.FFMPEG) &&
-      g_player.state !== PlayerState.PAUSED
+      g_player.engineType === PlayerEngineType.NATIVE ||
+      g_player.engineType === PlayerEngineType.FFMPEG
+      //   &&
+      // g_player.state !== PlayerState.PAUSED
     ) {
+      // NOTE: onPlaySucceded will check PlayerState.PAUSED
       onPlaySucceeded();
     }
   });
@@ -635,7 +637,14 @@ async function onPlay(trackIndex = undefined, time = 0) {
 }
 
 function onPlaySucceeded() {
-  setPlayerState(PlayerState.PLAYING);
+  if (g_player.state === PlayerState.PAUSED) {
+    // HACK: I set PAUSED in startStream in ffmpeg when comming from a seek
+    // that was paused before doing it,to be able to know I shouldn't resume
+    // playing.
+    // TODO: find a better way to handle that.
+  } else {
+    setPlayerState(PlayerState.PLAYING);
+  }
   playlist.setCurrentTrackIndex(g_player.trackIndex);
   refreshUI();
   playlist.scrollToCurrent();
