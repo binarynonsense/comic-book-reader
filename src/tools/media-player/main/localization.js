@@ -74,23 +74,31 @@ exports.getLocalization = function () {
       text: _("tool-shared-tab-settings"),
     },
     {
-      id: "mp-button-shuffle-off",
+      id: "mp-button-fullview-is-on",
+      text: `${_("mp-menu-fullview")} (${_("menu-shared-toggle")})`,
+    },
+    {
+      id: "mp-button-fullview-is-off",
+      text: `${_("mp-menu-fullview")} (${_("menu-shared-toggle")})`,
+    },
+    {
+      id: "mp-button-shuffle-is-off",
       text: _("mp-tooltip-button-playlist-shuffletracks"),
     },
     {
-      id: "mp-button-shuffle-on",
+      id: "mp-button-shuffle-is-on",
       text: _("mp-tooltip-button-playlist-shuffletracks"),
     },
     {
-      id: "mp-button-repeat-off",
+      id: "mp-button-repeat-is-off",
       text: _("mp-tooltip-button-playlist-repeattracks"),
     },
     {
-      id: "mp-button-repeat-1",
+      id: "mp-button-repeat-is-1",
       text: _("mp-tooltip-button-playlist-repeattracks"),
     },
     {
-      id: "mp-button-repeat-all",
+      id: "mp-button-repeat-is-all",
       text: _("mp-tooltip-button-playlist-repeattracks"),
     },
 

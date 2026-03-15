@@ -1048,38 +1048,54 @@ function initUI() {
   g_player.html.buttonAdvancedControls.addEventListener("click", function () {
     onButtonClicked("toggle-advancedcontrols");
   });
+
+  g_player.html.buttonFullViewIsOn = document.getElementById(
+    "mp-button-fullview-is-on",
+  );
+  g_player.html.buttonFullViewIsOn.addEventListener("click", function () {
+    onButtonClicked("fullview-is-on");
+  });
+
+  g_player.html.buttonFullViewIsOff = document.getElementById(
+    "mp-button-fullview-is-off",
+  );
+  g_player.html.buttonFullViewIsOff.addEventListener("click", function () {
+    onButtonClicked("fullview-is-off");
+  });
   //////
   g_player.html.divPlaylistTracks = document.getElementById(
     "mp-div-playlist-tracks",
   );
 
-  g_player.html.buttonShuffleOn = document.getElementById(
-    "mp-button-shuffle-on",
+  g_player.html.buttonShuffleIsOn = document.getElementById(
+    "mp-button-shuffle-is-on",
   );
-  g_player.html.buttonShuffleOn.addEventListener("click", function () {
-    onButtonClicked("shuffle-on");
+  g_player.html.buttonShuffleIsOn.addEventListener("click", function () {
+    onButtonClicked("shuffle-is-on");
   });
-  g_player.html.buttonShuffleOff = document.getElementById(
-    "mp-button-shuffle-off",
+  g_player.html.buttonShuffleIsOff = document.getElementById(
+    "mp-button-shuffle-is-off",
   );
-  g_player.html.buttonShuffleOff.addEventListener("click", function () {
-    onButtonClicked("shuffle-off");
+  g_player.html.buttonShuffleIsOff.addEventListener("click", function () {
+    onButtonClicked("shuffle-is-off");
   });
-  g_player.html.buttonRepeatAll = document.getElementById(
-    "mp-button-repeat-all",
+  g_player.html.buttonRepeatIsAll = document.getElementById(
+    "mp-button-repeat-is-all",
   );
-  g_player.html.buttonRepeatAll.addEventListener("click", function () {
-    onButtonClicked("repeat-all");
+  g_player.html.buttonRepeatIsAll.addEventListener("click", function () {
+    onButtonClicked("repeat-is-all");
   });
-  g_player.html.buttonRepeatOff = document.getElementById(
-    "mp-button-repeat-off",
+  g_player.html.buttonRepeatIsOff = document.getElementById(
+    "mp-button-repeat-is-off",
   );
-  g_player.html.buttonRepeatOff.addEventListener("click", function () {
-    onButtonClicked("repeat-off");
+  g_player.html.buttonRepeatIsOff.addEventListener("click", function () {
+    onButtonClicked("repeat-is-off");
   });
-  g_player.html.buttonRepeat1 = document.getElementById("mp-button-repeat-1");
-  g_player.html.buttonRepeat1.addEventListener("click", function () {
-    onButtonClicked("repeat-1");
+  g_player.html.buttonRepeatIs1 = document.getElementById(
+    "mp-button-repeat-is-1",
+  );
+  g_player.html.buttonRepeatIs1.addEventListener("click", function () {
+    onButtonClicked("repeat-is-1");
   });
 
   g_player.html.buttonClear = document.getElementById("mp-button-clear");
@@ -1566,6 +1582,14 @@ function refreshUI() {
       g_player.html.buttonPause.classList.add("mp-disabled");
     }
     if (g_settings.showAdvancedControls) {
+      if (g_settings.fullView) {
+        g_player.html.buttonFullViewIsOn.classList.remove("mp-hidden");
+        g_player.html.buttonFullViewIsOff.classList.add("mp-hidden");
+      } else {
+        g_player.html.buttonFullViewIsOn.classList.add("mp-hidden");
+        g_player.html.buttonFullViewIsOff.classList.remove("mp-hidden");
+      }
+      ///
       g_player.html.buttonStop.classList.remove("mp-hidden");
       if (g_player.state !== PlayerState.NOT_SET) {
         g_player.html.buttonStop.classList.remove("mp-disabled");
@@ -1583,6 +1607,8 @@ function refreshUI() {
         g_player.html.buttonPause.classList.add("mp-hidden");
       }
     } else {
+      g_player.html.buttonFullViewIsOn.classList.add("mp-hidden");
+      g_player.html.buttonFullViewIsOff.classList.add("mp-hidden");
       if (g_player.state === PlayerState.PLAYING) {
         g_player.html.buttonPlay.classList.add("mp-hidden");
         g_player.html.buttonPause.classList.remove("mp-hidden");
@@ -1650,25 +1676,25 @@ function refreshUI() {
   updateTimeUI();
 
   if (g_settings.shuffle === 1) {
-    g_player.html.buttonShuffleOff.classList.add("mp-hidden");
-    g_player.html.buttonShuffleOn.classList.remove("mp-hidden");
+    g_player.html.buttonShuffleIsOff.classList.add("mp-hidden");
+    g_player.html.buttonShuffleIsOn.classList.remove("mp-hidden");
   } else {
-    g_player.html.buttonShuffleOff.classList.remove("mp-hidden");
-    g_player.html.buttonShuffleOn.classList.add("mp-hidden");
+    g_player.html.buttonShuffleIsOff.classList.remove("mp-hidden");
+    g_player.html.buttonShuffleIsOn.classList.add("mp-hidden");
   }
 
   if (g_settings.repeat === 0) {
-    g_player.html.buttonRepeatOff.classList.remove("mp-hidden");
-    g_player.html.buttonRepeatAll.classList.add("mp-hidden");
-    g_player.html.buttonRepeat1.classList.add("mp-hidden");
+    g_player.html.buttonRepeatIsOff.classList.remove("mp-hidden");
+    g_player.html.buttonRepeatIsAll.classList.add("mp-hidden");
+    g_player.html.buttonRepeatIs1.classList.add("mp-hidden");
   } else if (g_settings.repeat === 1) {
-    g_player.html.buttonRepeatOff.classList.add("mp-hidden");
-    g_player.html.buttonRepeatAll.classList.add("mp-hidden");
-    g_player.html.buttonRepeat1.classList.remove("mp-hidden");
+    g_player.html.buttonRepeatIsOff.classList.add("mp-hidden");
+    g_player.html.buttonRepeatIsAll.classList.add("mp-hidden");
+    g_player.html.buttonRepeatIs1.classList.remove("mp-hidden");
   } else if (g_settings.repeat === 2) {
-    g_player.html.buttonRepeatOff.classList.add("mp-hidden");
-    g_player.html.buttonRepeatAll.classList.remove("mp-hidden");
-    g_player.html.buttonRepeat1.classList.add("mp-hidden");
+    g_player.html.buttonRepeatIsOff.classList.add("mp-hidden");
+    g_player.html.buttonRepeatIsAll.classList.remove("mp-hidden");
+    g_player.html.buttonRepeatIs1.classList.add("mp-hidden");
   }
 
   if (playlist.getTracks().length > 0) {
@@ -1728,18 +1754,30 @@ function onButtonClicked(buttonName) {
   // playlist
   // NOTE: suffle and repeat are a bit different in meaning (on, off, 1)
   // they are meant to signify the actual state, not the desired action
-  else if (buttonName === "shuffle-on") {
+  else if (buttonName === "shuffle-is-on") {
     onSetShuffleMode(0);
-  } else if (buttonName === "shuffle-off") {
+  } else if (buttonName === "shuffle-is-off") {
     onSetShuffleMode(1);
   }
   //
-  else if (buttonName === "repeat-off") {
+  else if (buttonName === "repeat-is-off") {
     onSetRepeatMode(1);
-  } else if (buttonName === "repeat-1") {
+  } else if (buttonName === "repeat-is-1") {
     onSetRepeatMode(2);
-  } else if (buttonName === "repeat-all") {
+  } else if (buttonName === "repeat-is-all") {
     onSetRepeatMode(0);
+  }
+  //
+  else if (buttonName === "shuffle-is-on") {
+    onSetShuffleMode(0);
+  } else if (buttonName === "shuffle-is-off") {
+    onSetShuffleMode(1);
+  }
+  //
+  else if (buttonName === "fullview-is-on") {
+    setFullView(false);
+  } else if (buttonName === "fullview-is-off") {
+    setFullView(true);
   }
   //
   else if (buttonName === "clear") {
@@ -1911,6 +1949,7 @@ function showVideoActionIcon(action, container) {
 }
 
 function setFullView(isOn) {
+  console.log(isOn);
   g_settings.fullView = isOn;
   if (isOn) {
     if (
