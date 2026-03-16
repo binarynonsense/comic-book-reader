@@ -883,13 +883,13 @@ async function loadEmbeddedSubtitle(filePath, subIndex) {
   }
 }
 
-function addExternalSubtitleData(title, data) {
+function addExternalSubtitleData(title, data, loadIt = true) {
   if (data && title) {
     g_player.externalSubtitles.push({
       title,
       data,
     });
-    loadExternalSubtitle(g_player.externalSubtitles.length - 1);
+    if (loadIt) loadExternalSubtitle(g_player.externalSubtitles.length - 1);
   }
 }
 

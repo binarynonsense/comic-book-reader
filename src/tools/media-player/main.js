@@ -66,28 +66,8 @@ function initOnIpcCallbacks() {
     // log.test(totalTime);
   });
 
-  on("load-subtitle-if-same-name", async (filePath) => {
-    try {
-      if (!filePath) return;
-      const dir = path.dirname(filePath);
-      const ext = path.extname(filePath);
-      const name = path.basename(filePath, ext);
-      const lowerPath = path.join(dir, `${name}.srt`);
-      const upperPath = path.join(dir, `${name}.SRT`);
-      let finalSrtPath;
-      if (fs.existsSync(lowerPath)) {
-        finalSrtPath = lowerPath;
-      } else if (fs.existsSync(upperPath)) {
-        finalSrtPath = upperPath;
-      }
-      if (!finalSrtPath) return;
-      // TODO:
-      const data = await subtitles.loadExternalSRT(finalSrtPath);
-      if (!data || data.length <= 0) return;
-      const title = name;
-      log.editor("auto loading subtitle: " + finalSrtPath);
-      sendIpcToRenderer("add-subtitle-from-file", title, data);
-    } catch (error) {}
+  on("load-subtitle-if-same-name", async (...args) => {
+    autoLoadVideoSubtitles(...args);
   });
 
   on("on-open-clicked", (mode, trackNum) => {
@@ -450,28 +430,6 @@ function getValidFiles(filePaths) {
   return files;
 }
 
-async function callAddSubtitleFromFileDialog(filePath) {
-  try {
-    let allowMultipleSelection = false;
-    let allowedFileTypesName = _("mp-menu-subtitle") + " (.srt)";
-    let allowedFileTypesList = ["srt"];
-    let filePaths = appUtils.chooseFiles(
-      g_mainWindow,
-      path.dirname(filePath),
-      allowedFileTypesName,
-      allowedFileTypesList,
-      allowMultipleSelection,
-    );
-    if (filePaths === undefined || filePaths.length <= 0) {
-      return;
-    }
-    const data = await subtitles.loadExternalSRT(filePaths[0]);
-    if (!data || data.length <= 0) return;
-    const title = path.basename(filePaths[0]);
-    sendIpcToRenderer("add-subtitle-from-file", title, data);
-  } catch (error) {}
-}
-
 function callOpenFilesDialog(mode) {
   let defaultPath;
   let allowMultipleSelection = true;
@@ -535,6 +493,117 @@ function addUrl(urlData) {
       sendIpcToRenderer("open-playlist", playlist);
     }
   }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// SUBTITLES //////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+async function callAddSubtitleFromFileDialog(filePath) {
+  try {
+    let allowMultipleSelection = false;
+    let allowedFileTypesName = _("mp-menu-subtitle") + " (.srt)";
+    let allowedFileTypesList = ["srt"];
+    let filePaths = appUtils.chooseFiles(
+      g_mainWindow,
+      path.dirname(filePath),
+      allowedFileTypesName,
+      allowedFileTypesList,
+      allowMultipleSelection,
+    );
+    if (filePaths === undefined || filePaths.length <= 0) {
+      return;
+    }
+    const data = await subtitles.loadExternalSRT(filePaths[0]);
+    if (!data || data.length <= 0) return;
+    const title = path.basename(filePaths[0]);
+    sendIpcToRenderer("add-subtitle-from-file", title, data);
+  } catch (error) {}
+}
+
+function getMatchingSrtFilesInSameFolder(videoPath) {
+  if (!videoPath) return [];
+  try {
+    const dir = path.dirname(videoPath);
+    const ext = path.extname(videoPath);
+    const name = path.basename(videoPath, ext);
+    const exactMatch = `${name}.srt`;
+    const files = fs.readdirSync(dir);
+    const srtFilePaths = files
+      .filter((file) => {
+        const fileLower = file.toLowerCase();
+        return (
+          fileLower.startsWith(name.toLowerCase()) && fileLower.endsWith(".srt")
+        );
+      })
+      .sort((a, b) => {
+        // exact name match gets priority
+        if (a.toLowerCase() === exactMatch.toLowerCase()) return -1;
+        if (b.toLowerCase() === exactMatch.toLowerCase()) return 1;
+        return a.localeCompare(b);
+      })
+      .map((file) => path.join(dir, file));
+    return srtFilePaths;
+  } catch (error) {
+    return [];
+  }
+}
+
+function getMatchingSrtFiles(videoPath) {
+  if (!videoPath) return [];
+  try {
+    const dir = path.dirname(videoPath);
+    const ext = path.extname(videoPath);
+    const name = path.basename(videoPath, ext);
+    const exactMatch = `${name}.srt`;
+    const subDirs = ["", "subs", "subtitles"];
+    if (process.platform === "linux") {
+      subDirs.push("Subs", "Subtitles");
+    }
+    let allSrtPaths = [];
+    subDirs.forEach((sub) => {
+      const targetDir = path.join(dir, sub);
+      if (fs.existsSync(targetDir) && fs.statSync(targetDir).isDirectory()) {
+        const files = fs.readdirSync(targetDir);
+        const matches = files
+          .filter((file) => {
+            const fileLower = file.toLowerCase();
+            return (
+              fileLower.startsWith(name.toLowerCase()) &&
+              fileLower.endsWith(".srt")
+            );
+          })
+          .map((file) => path.join(targetDir, file));
+        allSrtPaths = allSrtPaths.concat(matches);
+      }
+    });
+    return [...new Set(allSrtPaths)].sort((a, b) => {
+      const baseA = path.basename(a).toLowerCase();
+      const baseB = path.basename(b).toLowerCase();
+      const targetLower = exactMatch.toLowerCase();
+      // exact name match gets priority
+      if (baseA === targetLower) return -1;
+      if (baseB === targetLower) return 1;
+      return baseA.localeCompare(baseB);
+    });
+  } catch (error) {
+    return [];
+  }
+}
+
+async function autoLoadVideoSubtitles(videoPath) {
+  try {
+    if (!videoPath) return;
+    const subs = getMatchingSrtFiles(videoPath);
+    if (!subs || subs.length <= 0) return;
+    for (const [index, srtPath] of subs.entries()) {
+      const data = await subtitles.loadExternalSRT(srtPath);
+      if (!data || data.length <= 0) continue;
+      const title = path.basename(srtPath);
+      log.editor("auto loading subtitle: " + srtPath);
+      sendIpcToRenderer("add-subtitle-from-file", title, data, index === 0);
+    }
+  } catch (error) {}
 }
 
 ///////////////////////////////////////////////////////////////////////////////
