@@ -240,6 +240,7 @@ function initOnIpcCallbacks() {
       { x: rect.top, y: rect.left },
       data,
       sendIpcToRenderer,
+      openRecent,
     );
   });
 
