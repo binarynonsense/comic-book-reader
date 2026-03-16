@@ -66,6 +66,30 @@ function initOnIpcCallbacks() {
     // log.test(totalTime);
   });
 
+  on("load-subtitle-if-same-name", async (filePath) => {
+    try {
+      if (!filePath) return;
+      const dir = path.dirname(filePath);
+      const ext = path.extname(filePath);
+      const name = path.basename(filePath, ext);
+      const lowerPath = path.join(dir, `${name}.srt`);
+      const upperPath = path.join(dir, `${name}.SRT`);
+      let finalSrtPath;
+      if (fs.existsSync(lowerPath)) {
+        finalSrtPath = lowerPath;
+      } else if (fs.existsSync(upperPath)) {
+        finalSrtPath = upperPath;
+      }
+      if (!finalSrtPath) return;
+      // TODO:
+      const data = await subtitles.loadExternalSRT(finalSrtPath);
+      if (!data || data.length <= 0) return;
+      const title = name;
+      log.editor("auto loading subtitle: " + finalSrtPath);
+      sendIpcToRenderer("add-subtitle-from-file", title, data);
+    } catch (error) {}
+  });
+
   on("on-open-clicked", (mode, trackNum) => {
     if (mode === 0) {
       sendIpcToRenderer(

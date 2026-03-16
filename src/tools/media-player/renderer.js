@@ -67,6 +67,7 @@ function clearPlayer() {
   g_currentLoadId++;
   g_player.lastCrashResumeAttempt = 0;
   g_player.hasFixedDuration = false;
+  g_player.triedAutoloadingSubtitle = false;
 
   clearPlayerSubtitle();
   g_player.externalSubtitles = [];
@@ -661,10 +662,10 @@ function onPlaySucceeded() {
     // just to make sure the sprectrum visualizer is on
     setFullView(g_settings.fullView);
   }
-
   if (g_player.engineType === PlayerEngineType.YOUTUBE) {
     g_player.hasFixedDuration = true;
   }
+  ///////
   if (g_player.state === PlayerState.PAUSED) {
     // HACK: I set PAUSED in startStream in ffmpeg when comming from a seek
     // that was paused before doing it,to be able to know I shouldn't resume
@@ -676,6 +677,21 @@ function onPlaySucceeded() {
   playlist.setCurrentTrackIndex(g_player.trackIndex);
   refreshUI();
   playlist.scrollToCurrent();
+  ///////
+  if (
+    !g_player.triedAutoloadingSubtitle &&
+    g_player.engineType !== PlayerEngineType.YOUTUBE &&
+    g_player.mediaType === PlayerMediaType.VIDEO
+  ) {
+    try {
+      g_player.triedAutoloadingSubtitle = true;
+      if (!playlist.getTracks()[g_player.trackIndex].fileUrl.startsWith("http"))
+        sendIpcToMain(
+          "load-subtitle-if-same-name",
+          playlist.getTracks()[g_player.trackIndex].fileUrl,
+        );
+    } catch (error) {}
+  }
 }
 
 async function onPause() {
@@ -880,7 +896,7 @@ function addExternalSubtitleData(title, data) {
 async function loadExternalSubtitle(subIndex) {
   if (
     g_player.externalSubtitles &&
-    g_player.externalSubtitles.length >= subIndex
+    g_player.externalSubtitles.length > subIndex
   ) {
     const subtitle = g_player.externalSubtitles[subIndex];
     if (subtitle.data) {
