@@ -440,8 +440,9 @@ async function onPlay(trackIndex = undefined, time = 0) {
       return;
     }
 
-    // load and play
+    // TODO: maybe not add if it's the starting one?
     AddCurrentToHistory();
+    // load and play
     clearPlayer();
     g_player.trackIndex = trackIndex;
     playlist.setSelectedTrackFileIndex(
