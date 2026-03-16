@@ -60,12 +60,13 @@ function initOnIpcCallbacks() {
     try {
       settings.set(_settings);
       g_playlist = _playlist;
-      if (_historyData)
+      if (_historyData) {
         history.addEntryToRecent(
           _historyData.url,
           _historyData.currentTime,
           _historyData.totalTime,
         );
+      }
       //
       history.save();
       settings.save();
@@ -361,7 +362,11 @@ exports.init = function (mainWindow, parentElementId, ffmpegPath) {
 };
 
 exports.saveAndQuit = function () {
-  sendIpcToRenderer("save-and-quit-request");
+  if (g_didShow) {
+    sendIpcToRenderer("save-and-quit-request");
+  } else {
+    core.startToolsQuit();
+  }
 };
 
 exports.updateFfmpegPath = function (ffmpegPath) {

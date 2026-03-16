@@ -358,36 +358,40 @@ async function onInit(settings, loadedPlaylist) {
 }
 
 function onSaveAndQuitRequested() {
-  // settings
-  g_settings.volume = g_player.engine.volume;
-  if (playlist.getTracks().length > 0)
-    g_settings.currentFileIndex = playlist.getCurrentTrackFileIndex();
-  else g_settings.currentFileIndex = undefined;
-  g_settings.currentTime = parseInt(g_player.html.sliderTime.value);
-  g_settings.currentDuration = parseInt(g_player.html.sliderTime.max);
-  // history
   let historyData;
-  if (
-    g_player.trackIndex !== undefined &&
-    g_player.trackIndex === playlist.getCurrentTrackIndex()
-  ) {
-    const fileIndex = playlist.getCurrentTrackFileIndex();
-    if (fileIndex === undefined) return;
-    const file = playlist.getPlaylist().files[fileIndex];
-    if (file === undefined) return;
-    historyData = {
-      url: file.url,
-      currentTime: g_player.html.sliderTime.value,
-      totalTime: g_player.html.sliderTime.max,
-    };
+  try {
+    // settings
+    g_settings.volume = g_player.engine.volume;
+    if (playlist.getTracks().length > 0)
+      g_settings.currentFileIndex = playlist.getCurrentTrackFileIndex();
+    else g_settings.currentFileIndex = undefined;
+    g_settings.currentTime = parseInt(g_player.html.sliderTime.value);
+    g_settings.currentDuration = parseInt(g_player.html.sliderTime.max);
+    // history
+
+    if (
+      g_player.trackIndex !== undefined &&
+      g_player.trackIndex === playlist.getCurrentTrackIndex()
+    ) {
+      const fileIndex = playlist.getCurrentTrackFileIndex();
+      if (fileIndex === undefined) return;
+      const file = playlist.getPlaylist().files[fileIndex];
+      if (file === undefined) return;
+      historyData = {
+        url: file.url,
+        currentTime: g_player.html.sliderTime.value,
+        totalTime: g_player.html.sliderTime.max,
+      };
+    }
+  } catch (error) {
+  } finally {
+    sendIpcToMain(
+      "save-on-quit",
+      g_settings,
+      playlist.getPlaylist(),
+      historyData,
+    );
   }
-  /////////
-  sendIpcToMain(
-    "save-on-quit",
-    g_settings,
-    playlist.getPlaylist(),
-    historyData,
-  );
 }
 
 // let g_configUpdateTimeout;
