@@ -60,6 +60,12 @@ function initOnIpcCallbacks() {
     g_playlist = _playlist;
   });
 
+  on("add-to-history", (file, currentTime, totalTime) => {
+    // log.test(file);
+    // log.test(currentTime);
+    // log.test(totalTime);
+  });
+
   on("on-open-clicked", (mode, trackNum) => {
     if (mode === 0) {
       sendIpcToRenderer(

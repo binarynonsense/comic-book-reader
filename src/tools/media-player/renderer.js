@@ -373,6 +373,24 @@ function sendConfigUpdateTimeout() {
 }
 // TODO: call clearTimeout(g_configUpdateTimeout); on exit?
 
+function AddCurrentToHistory() {
+  try {
+    if (
+      g_player.trackIndex !== undefined &&
+      g_player.trackIndex === playlist.getCurrentTrackIndex()
+    ) {
+      const fileIndex = playlist.getCurrentTrackFileIndex();
+      const file = playlist.getPlaylist().files[fileIndex];
+      sendIpcToMain(
+        "add-to-history",
+        file,
+        g_player.html.sliderTime.value,
+        g_player.html.sliderTime.max,
+      );
+    }
+  } catch (error) {}
+}
+
 async function onPlay(trackIndex = undefined, time = 0) {
   try {
     if (trackIndex === undefined && g_player.pendingTime && time === 0) {
@@ -423,6 +441,7 @@ async function onPlay(trackIndex = undefined, time = 0) {
     }
 
     // load and play
+    AddCurrentToHistory();
     clearPlayer();
     g_player.trackIndex = trackIndex;
     playlist.setSelectedTrackFileIndex(
@@ -1793,8 +1812,7 @@ function onButtonClicked(buttonName) {
   else if (buttonName === "clear") {
     if (playlist.getTracks().length <= 0) return;
     onStop();
-    playlist.getPlaylist().files = [];
-    playlist.setTracks([]);
+    playlist.clearPlaylist();
     playlist.setSelectedTrackFileIndex(undefined);
   } else if (buttonName === "add") {
     sendIpcToMain("on-open-clicked", 1);

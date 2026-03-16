@@ -279,6 +279,13 @@ export function createTracksList(isRefresh) {
   }
 }
 
+export function clearPlaylist() {
+  g_playlist.files = [];
+  g_tracks = [];
+  g_selectedTrackFileIndex = undefined;
+  g_currentTrackIndex = 0;
+}
+
 export function updatePlaylistInfo() {
   g_player.html.divPlaylistTracks.innerHTML = "";
   if (!g_playlist || g_tracks.length === 0) {
@@ -292,6 +299,7 @@ export function updatePlaylistInfo() {
     div.classList.add("mp-div-playlist-track");
     if (
       g_currentTrackIndex !== undefined &&
+      g_currentTrackIndex < g_tracks.length &&
       g_tracks[g_currentTrackIndex].fileIndex === index
     ) {
       div.classList.add("mp-div-playlist-current-track");
