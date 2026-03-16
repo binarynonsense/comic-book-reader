@@ -577,6 +577,7 @@ function getMatchingSrtFiles(videoPath) {
         allSrtPaths = allSrtPaths.concat(matches);
       }
     });
+    // use set so there're no repeats, just in case
     return [...new Set(allSrtPaths)].sort((a, b) => {
       const baseA = path.basename(a).toLowerCase();
       const baseB = path.basename(b).toLowerCase();
