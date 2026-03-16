@@ -13,6 +13,7 @@ const appUtils = require("../../shared/main/app-utils");
 const core = require("../../core/main");
 const reader = require("../../reader/main");
 const settings = require("./main/settings");
+const history = require("./main/history");
 const { _ } = require("../../shared/main/i18n");
 const log = require("../../shared/main/logger");
 const { getLocalization } = require("./main/localization");
@@ -55,15 +56,35 @@ function on(id, callback) {
 function initOnIpcCallbacks() {
   ffmpeg.initOnIpcCallbacks(on, sendIpcToRenderer);
 
-  on("update-config", (_settings, _playlist) => {
-    settings.set(_settings);
-    g_playlist = _playlist;
+  on("save-on-quit", (_settings, _playlist, _historyData) => {
+    try {
+      settings.set(_settings);
+      g_playlist = _playlist;
+      if (_historyData)
+        history.addEntryToRecent(
+          _historyData.url,
+          _historyData.currentTime,
+          _historyData.totalTime,
+        );
+      //
+      history.save();
+      settings.save();
+      let playlistPath = path.join(
+        appUtils.getConfigFolder(),
+        "acbr-player.m3u",
+      );
+      savePlaylistToFile(g_playlist, playlistPath, false);
+      log.info("playlist saved to: " + playlistPath);
+    } catch (error) {
+    } finally {
+      core.startToolsQuit();
+    }
   });
 
   on("add-to-history", (file, currentTime, totalTime) => {
-    // log.test(file);
-    // log.test(currentTime);
-    // log.test(totalTime);
+    if (file && file.url) {
+      history.addEntryToRecent(file.url, currentTime, totalTime);
+    }
   });
 
   on("load-subtitle-if-same-name", async (...args) => {
@@ -209,7 +230,7 @@ function initOnIpcCallbacks() {
   });
 
   on("show-context-menu", (params, data) => {
-    contextMenu.show("normal", params, data, sendIpcToRenderer);
+    contextMenu.show("normal", params, data, sendIpcToRenderer, openRecent);
   });
 
   on("show-button-menu", (type, rect, data) => {
@@ -308,13 +329,6 @@ let g_playlist = {
   files: [],
 };
 
-exports.saveSettings = function () {
-  settings.save();
-  let playlistPath = path.join(appUtils.getConfigFolder(), "acbr-player.m3u");
-  savePlaylistToFile(g_playlist, playlistPath, false);
-  log.info("playlist saved to: " + playlistPath);
-};
-
 function loadSettings() {
   settings.init();
   let playlistPath = path.join(appUtils.getConfigFolder(), "acbr-player.m3u");
@@ -342,7 +356,12 @@ exports.init = function (mainWindow, parentElementId, ffmpegPath) {
     data.toString(),
   );
   loadSettings();
+  history.init();
   updateLocalizedText();
+};
+
+exports.saveAndQuit = function () {
+  sendIpcToRenderer("save-and-quit-request");
 };
 
 exports.updateFfmpegPath = function (ffmpegPath) {
@@ -473,6 +492,17 @@ function callOpenFilesDialog(mode) {
     });
     sendIpcToRenderer("open-playlist", playlist);
   }
+}
+
+function openRecent(filePath) {
+  // let playlist = {
+  //   id: "",
+  //   source: "filesystem",
+  //   files: [],
+  // };
+  // playlist.files.push({ url: filePath });
+  // sendIpcToRenderer("open-playlist", playlist);
+  sendIpcToRenderer("add-to-playlist", [{ url: filePath }], true);
 }
 
 function addUrl(urlData) {

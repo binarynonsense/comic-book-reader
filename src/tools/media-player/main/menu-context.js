@@ -8,9 +8,11 @@
 const { Menu } = require("electron");
 const core = require("../../../core/main");
 const { _ } = require("../../../shared/main/i18n");
+const utils = require("../../../shared/main/utils");
 const log = require("../../../shared/main/logger");
+const history = require("./history");
 
-exports.show = function (type, params, data, sendIpcToRenderer) {
+exports.show = function (type, params, data, sendIpcToRenderer, openRecent) {
   // ref: https://github.com/electron/electron/blob/main/docs/api/web-contents.md#event-context-menu
   // core.onMenuToggleFullScreen();
 
@@ -46,11 +48,44 @@ exports.show = function (type, params, data, sendIpcToRenderer) {
     },
   ];
 
+  function getOpenRecentMenu() {
+    let menu = [];
+    let recent = history.getRecent();
+    const reverseHistory = recent.slice().reverse();
+    let length = reverseHistory.length;
+    if (length > 10) length = 10;
+    for (let index = 0; index < length; index++) {
+      const entry = reverseHistory[index];
+      let label = utils.reduceStringFrontEllipsis(entry.filePath);
+      menu.push({
+        label,
+        click() {
+          openRecent(entry.filePath);
+        },
+      });
+    }
+    menu.push({
+      type: "separator",
+    });
+    menu.push({
+      label: _("tool-hst-button-clear-all"),
+      enabled: history.getRecentLength() > 0,
+      click() {
+        history.clear();
+      },
+    });
+    return menu;
+  }
+
   function getCommonEntries(data) {
     return [
       {
         label: _("tool-shared-ui-open"),
         submenu: [...openSubmenu],
+      },
+      {
+        label: _("menu-file-openrecent"),
+        submenu: [...getOpenRecentMenu()],
       },
       { type: "separator" },
       ...getVideoSubmenu(data),

@@ -64,6 +64,8 @@ function setPlayerState(state, doUIRefresh = false) {
 }
 
 function clearPlayer() {
+  addCurrentToHistory();
+
   g_currentLoadId++;
   g_player.lastCrashResumeAttempt = 0;
   g_player.hasFixedDuration = false;
@@ -350,31 +352,62 @@ async function onInit(settings, loadedPlaylist) {
     ////////////////
     refreshUI();
     setTimeout(playlist.scrollToCurrent, 100);
-    // will send settings and playlist to main
-    // so on quit the info is immediately available
-    // TODO: maybe do it a more efficient way
-    sendConfigUpdateTimeout();
   } catch (error) {
     console.log(error);
   }
 }
 
-let g_configUpdateTimeout;
-function sendConfigUpdateTimeout() {
+function onSaveAndQuitRequested() {
+  // settings
   g_settings.volume = g_player.engine.volume;
   if (playlist.getTracks().length > 0)
     g_settings.currentFileIndex = playlist.getCurrentTrackFileIndex();
   else g_settings.currentFileIndex = undefined;
-
   g_settings.currentTime = parseInt(g_player.html.sliderTime.value);
   g_settings.currentDuration = parseInt(g_player.html.sliderTime.max);
-
-  sendIpcToMain("update-config", g_settings, playlist.getPlaylist());
-  g_configUpdateTimeout = setTimeout(sendConfigUpdateTimeout, 2000);
+  // history
+  let historyData;
+  if (
+    g_player.trackIndex !== undefined &&
+    g_player.trackIndex === playlist.getCurrentTrackIndex()
+  ) {
+    const fileIndex = playlist.getCurrentTrackFileIndex();
+    if (fileIndex === undefined) return;
+    const file = playlist.getPlaylist().files[fileIndex];
+    if (file === undefined) return;
+    historyData = {
+      url: file.url,
+      currentTime: g_player.html.sliderTime.value,
+      totalTime: g_player.html.sliderTime.max,
+    };
+  }
+  /////////
+  sendIpcToMain(
+    "save-on-quit",
+    g_settings,
+    playlist.getPlaylist(),
+    historyData,
+  );
 }
-// TODO: call clearTimeout(g_configUpdateTimeout); on exit?
 
-function AddCurrentToHistory() {
+// let g_configUpdateTimeout;
+// function sendConfigUpdateTimeout() {
+//   g_settings.volume = g_player.engine.volume;
+//   if (playlist.getTracks().length > 0)
+//     g_settings.currentFileIndex = playlist.getCurrentTrackFileIndex();
+//   else g_settings.currentFileIndex = undefined;
+
+//   g_settings.currentTime = parseInt(g_player.html.sliderTime.value);
+//   g_settings.currentDuration = parseInt(g_player.html.sliderTime.max);
+
+//   sendIpcToMain("update-config", g_settings, playlist.getPlaylist());
+//   g_configUpdateTimeout = setTimeout(sendConfigUpdateTimeout, 2000);
+
+//   addCurrentToHistory();
+// }
+// // TODO: call clearTimeout(g_configUpdateTimeout); on exit?
+
+function addCurrentToHistory() {
   try {
     if (
       g_player.trackIndex !== undefined &&
@@ -441,8 +474,6 @@ async function onPlay(trackIndex = undefined, time = 0) {
       return;
     }
 
-    // TODO: maybe not add if it's the starting one?
-    AddCurrentToHistory();
     // load and play
     clearPlayer();
     g_player.trackIndex = trackIndex;
@@ -677,6 +708,7 @@ function onPlaySucceeded() {
   playlist.setCurrentTrackIndex(g_player.trackIndex);
   refreshUI();
   playlist.scrollToCurrent();
+  addCurrentToHistory();
   ///////
   if (
     !g_player.triedAutoloadingSubtitle &&
@@ -2101,6 +2133,10 @@ function initOnIpcCallbacks() {
     } else {
       document.getElementById(elementId).classList.add("set-display-none");
     }
+  });
+
+  on("save-and-quit-request", (...args) => {
+    onSaveAndQuitRequested(...args);
   });
 
   on("update-ffmpeg-available", (ffmpegAvailable) => {

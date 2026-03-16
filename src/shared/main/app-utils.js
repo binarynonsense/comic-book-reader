@@ -309,6 +309,7 @@ function cleanUpUserDataFolder() {
       "acbr.hst",
       "acbr.fav",
       "acbr-player.cfg",
+      "acbr-player.hst",
       "acbr-player.m3u",
       "acbr-cache",
       "acbr-user-extensions",

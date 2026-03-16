@@ -155,7 +155,6 @@ exports.onQuit = function () {
   clearTimeout(g_clockTimeout);
   settings.setValue("on_quit_state", g_fileData.path === "" ? 0 : 1);
   addCurrentToHistory(false);
-  tools.getTools()["media-player"].saveSettings();
   homeScreen.close();
   killPageWorker();
 };

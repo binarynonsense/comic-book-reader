@@ -563,19 +563,43 @@ if (!gotTheLock) {
     // let tools save renderer data before closing
     // UGLY 'HACK' but using beforeunload in the renderer was unreliable
     g_mainWindow.on("close", function (event) {
-      if (
-        tools.getCurrentToolName() !== "reader" &&
-        tools.getCurrentTool()?.saveAndQuit
-      ) {
-        if (g_quittingPhase !== 2) {
+      try {
+        // log.test("g_quittingPhase: " + g_quittingPhase);
+        if (g_quittingPhase === 0) {
           event.preventDefault();
-          if (g_quittingPhase === 0) {
-            tools.getCurrentTool().saveAndQuit?.();
-            g_quittingPhase = 1;
+          g_quittingPhase = 1;
+          tools.getTools()["media-player"].saveAndQuit();
+        } else if (g_quittingPhase === 1) {
+          event.preventDefault();
+          // waiting for media player data
+        } else if (
+          tools.getCurrentToolName() !== "reader" &&
+          tools.getCurrentTool()?.saveAndQuit
+        ) {
+          if (g_quittingPhase < 4) {
+            event.preventDefault();
+            if (g_quittingPhase === 2) {
+              tools.getCurrentTool().saveAndQuit?.();
+              g_quittingPhase = 3;
+            }
           }
         }
-      }
+      } catch (error) {}
     });
+    // g_mainWindow.on("close", function (event) {
+    //   if (
+    //     tools.getCurrentToolName() !== "reader" &&
+    //     tools.getCurrentTool()?.saveAndQuit
+    //   ) {
+    //     if (g_quittingPhase !== 2) {
+    //       event.preventDefault();
+    //       if (g_quittingPhase === 0) {
+    //         tools.getCurrentTool().saveAndQuit?.();
+    //         g_quittingPhase = 1;
+    //       }
+    //     }
+    //   }
+    // });
   };
 
   let g_quittingPhase = 0;
@@ -792,12 +816,20 @@ if (!gotTheLock) {
     appUtils.cleanUpUserDataFolder();
   }
 
-  exports.forceQuit = function () {
+  exports.startToolsQuit = function () {
+    log.editor("startToolsQuit");
     g_quittingPhase = 2;
     g_mainWindow.close();
   };
 
+  exports.forceQuit = function () {
+    log.editor("forceQuit");
+    g_quittingPhase = 4;
+    g_mainWindow.close();
+  };
+
   exports.resetQuit = function () {
+    log.editor("resetQuit");
     g_quittingPhase = 0;
   };
 
