@@ -26,27 +26,33 @@ exports.show = function (type, params, data, sendIpcToRenderer, openRecent) {
     { type: "separator" },
   ];
 
-  const openSubmenu = [
-    {
-      label: _("menu-tools-files") + "...",
-      click() {
-        sendIpcToRenderer("on-context-menu", "open-files");
+  function getOpenSubmenu() {
+    return [
+      {
+        label: _("menu-tools-files") + "...",
+        click() {
+          sendIpcToRenderer("on-context-menu", "open-files");
+        },
       },
-    },
-    {
-      label: "URL...",
-      click() {
-        sendIpcToRenderer(
-          "show-modal-open-url",
-          _("mp-menu-open-openurl"),
-          "URL",
-          _("ui-modal-prompt-button-ok"),
-          _("ui-modal-prompt-button-cancel"),
-          0,
-        );
+      {
+        label: "URL...",
+        click() {
+          sendIpcToRenderer(
+            "show-modal-open-url",
+            _("mp-menu-open-openurl"),
+            "URL",
+            _("ui-modal-prompt-button-ok"),
+            _("ui-modal-prompt-button-cancel"),
+            0,
+          );
+        },
       },
-    },
-  ];
+      {
+        label: _("home-section-recent"),
+        submenu: [...getOpenRecentMenu()],
+      },
+    ];
+  }
 
   function getOpenRecentMenu() {
     let menu = [];
@@ -81,11 +87,7 @@ exports.show = function (type, params, data, sendIpcToRenderer, openRecent) {
     return [
       {
         label: _("tool-shared-ui-open"),
-        submenu: [...openSubmenu],
-      },
-      {
-        label: _("menu-file-openrecent"),
-        submenu: [...getOpenRecentMenu()],
+        submenu: [...getOpenSubmenu()],
       },
       { type: "separator" },
       ...getVideoSubmenu(data),
