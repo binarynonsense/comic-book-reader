@@ -394,23 +394,6 @@ function onSaveAndQuitRequested() {
   }
 }
 
-// let g_configUpdateTimeout;
-// function sendConfigUpdateTimeout() {
-//   g_settings.volume = g_player.engine.volume;
-//   if (playlist.getTracks().length > 0)
-//     g_settings.currentFileIndex = playlist.getCurrentTrackFileIndex();
-//   else g_settings.currentFileIndex = undefined;
-
-//   g_settings.currentTime = parseInt(g_player.html.sliderTime.value);
-//   g_settings.currentDuration = parseInt(g_player.html.sliderTime.max);
-
-//   sendIpcToMain("update-config", g_settings, playlist.getPlaylist());
-//   g_configUpdateTimeout = setTimeout(sendConfigUpdateTimeout, 2000);
-
-//   addCurrentToHistory();
-// }
-// // TODO: call clearTimeout(g_configUpdateTimeout); on exit?
-
 function addCurrentToHistory() {
   try {
     if (
