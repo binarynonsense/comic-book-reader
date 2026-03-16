@@ -13,19 +13,47 @@ const log = require("./logger");
 // GENERAL ////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-exports.moveFile = function (oldPath, newPath) {
-  try {
-    fs.renameSync(oldPath, newPath);
-  } catch (error) {
-    if (error.code === "EXDEV") {
-      // EXDEV = cross-device link not permitted.
-      fs.copyFileSync(oldPath, newPath);
-      fs.unlinkSync(oldPath);
-    } else {
+exports.moveFile = function (oldPath, newPath, throwUnlinkError = true) {
+  const retries = 5;
+  const delay = 100;
+  for (let i = 0; i < retries; i++) {
+    try {
+      return fs.renameSync(oldPath, newPath);
+    } catch (error) {
+      const isLocked = error.code === "EBUSY" || error.code === "EPERM";
+      if (isLocked && i < retries - 1) {
+        const stop = Date.now() + delay;
+        while (Date.now() < stop) {}
+        continue;
+      }
+      if (error.code === "EXDEV" || isLocked) {
+        // EXDEV = cross-device link not permitted.
+        fs.copyFileSync(oldPath, newPath);
+        try {
+          return exports.safeUnlinkSync(oldPath);
+        } catch (unlinkError) {
+          if (throwUnlinkError) throw unlinkError;
+          return;
+        }
+      }
       throw error;
     }
   }
 };
+
+// exports.moveFile = function (oldPath, newPath) {
+//   try {
+//     fs.renameSync(oldPath, newPath);
+//   } catch (error) {
+//     if (error.code === "EXDEV") {
+//       // EXDEV = cross-device link not permitted.
+//       fs.copyFileSync(oldPath, newPath);
+//       fs.unlinkSync(oldPath);
+//     } else {
+//       throw error;
+//     }
+//   }
+// };
 
 exports.getFolderContents = function (folderPath) {
   try {
@@ -640,6 +668,41 @@ exports.deleteFolderRecursive = function (
         log.debug("couldn't delete folder: " + folderPath);
         log.debug(error.code);
       }
+    }
+  }
+};
+
+exports.safeUnlinkSync = function (filePath, retries = 5, delay = 100) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      fs.unlinkSync(filePath);
+      return;
+    } catch (error) {
+      const isLocked = error.code === "EBUSY" || error.code === "EPERM";
+      if (isLocked && i < retries - 1) {
+        const stop = Date.now() + delay;
+        while (Date.now() < stop) {
+          // wait
+        }
+        continue;
+      }
+      throw error;
+    }
+  }
+};
+
+exports.safeUnlink = async function (filePath, throwError = true, retries = 5) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      await fs.promises.unlink(filePath);
+      return;
+    } catch (error) {
+      if (error.code === "EBUSY" && i < retries - 1) {
+        await new Promise((resolve) => setTimeout(resolve, 100));
+        continue;
+      }
+      if (throwError) throw error;
+      else return;
     }
   }
 };

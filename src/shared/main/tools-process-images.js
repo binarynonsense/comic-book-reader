@@ -329,7 +329,8 @@ async function processImage(
   // SAVE TO FILE ///////////////////////////////////////////
   if (saveToFile && pipeline) {
     await pipeline.withMetadata().toFile(tmpFilePath);
-    fs.unlinkSync(filePath);
+    // fs.unlinkSync(filePath);
+    fileUtils.safeUnlink(filePath, false);
     fileUtils.moveFile(tmpFilePath, newFilePath);
   }
   return { filePath: newFilePath };

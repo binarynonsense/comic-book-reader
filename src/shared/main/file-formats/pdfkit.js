@@ -7,6 +7,7 @@
 
 const fs = require("node:fs");
 const log = require("../logger");
+const fileUtils = require("../file-utils");
 
 ///////////////////////////////////////////////////////////////////////////////
 // PDF ////////////////////////////////////////////////////////////////////////
@@ -28,7 +29,10 @@ async function createPdf(imgPathsList, outputFilePath, method, password) {
     stream.on("error", (error) => {
       log.editorError("error writing pdf to file (stream event)");
       log.editorError(error);
-      if (fs.existsSync(outputFilePath)) fs.unlinkSync(outputFilePath);
+      if (fs.existsSync(outputFilePath)) {
+        // fs.unlinkSync(outputFilePath);
+        fileUtils.safeUnlink(outputFilePath, false);
+      }
     });
     pdf.pipe(stream);
     for (let index = 0; index < imgPathsList.length; index++) {
@@ -68,7 +72,10 @@ async function createPdf(imgPathsList, outputFilePath, method, password) {
     }
   } catch (error) {
     log.editorError("error writing pdf to file");
-    if (fs.existsSync(outputFilePath)) fs.unlinkSync(outputFilePath);
+    if (fs.existsSync(outputFilePath)) {
+      // fs.unlinkSync(outputFilePath);
+      fileUtils.safeUnlink(outputFilePath, false);
+    }
     throw error;
   }
 }

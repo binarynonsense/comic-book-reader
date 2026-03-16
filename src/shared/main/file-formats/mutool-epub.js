@@ -7,6 +7,7 @@
 
 const path = require("node:path");
 const fs = require("node:fs");
+const fileUtils = require("../file-utils");
 
 ///////////////////////////////////////////////////////////////////////////////
 // MUPDF: EPUB / MOBI / AZW3 //////////////////////////////////////////////////
@@ -136,9 +137,10 @@ exports.openMuEpub = async function (filePath, tempSubFolderPath, config) {
 
     child.on("close", (code) => {
       if (fs.existsSync(cssFilePath)) {
-        try {
-          fs.unlinkSync(cssFilePath);
-        } catch (error) {}
+        // try {
+        //   fs.unlinkSync(cssFilePath);
+        // } catch (error) {}
+        fileUtils.safeUnlink(cssFilePath, false);
       }
       if (code === 0) {
         if (numPages > 0 && !hasContent) {
@@ -217,10 +219,12 @@ exports.extractMuEpubPageBuffer = async function (
     child.stderr.on("data", (data) => (stderr += data.toString()));
 
     child.on("close", async (code) => {
-      if (cssFilePath && fs.existsSync(cssFilePath))
-        try {
-          fs.unlinkSync(cssFilePath);
-        } catch (error) {}
+      if (cssFilePath && fs.existsSync(cssFilePath)) {
+        // try {
+        //   fs.unlinkSync(cssFilePath);
+        // } catch (error) {}
+        fileUtils.safeUnlink(cssFilePath, false);
+      }
       if (code === 0) {
         const fullBuffer = Buffer.concat(stdoutChunks);
         const endHeaderIndex = fullBuffer.indexOf("ENDHDR\n");
@@ -395,10 +399,12 @@ exports.extractMuEpub = async function (
       await Promise.all(batch.map((p) => processPage(p)));
     }
 
-    if (cssFilePath && fs.existsSync(cssFilePath))
-      try {
-        fs.unlinkSync(cssFilePath);
-      } catch (e) {}
+    if (cssFilePath && fs.existsSync(cssFilePath)) {
+      // try {
+      //   fs.unlinkSync(cssFilePath);
+      // } catch (e) {}
+      fileUtils.safeUnlink(cssFilePath, false);
+    }
 
     return { success: !g_isCancelled, cancelled: g_isCancelled };
   } catch (error) {

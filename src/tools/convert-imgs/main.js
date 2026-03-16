@@ -475,7 +475,8 @@ async function start(
               )
               .toFile(tmpFilePath);
           }
-          fs.unlinkSync(filePath);
+          // fs.unlinkSync(filePath);
+          fileUtils.safeUnlink(filePath, false);
           fileUtils.moveFile(tmpFilePath, filePath);
         }
         // convert
@@ -521,7 +522,8 @@ async function start(
             })
             .toFile(outputFilePath);
         }
-        fs.unlinkSync(filePath);
+        // fs.unlinkSync(filePath);
+        fileUtils.safeUnlink(filePath, false);
       } catch (err) {
         sendIpcToRenderer("update-log-text", err);
         g_numErrors++;
