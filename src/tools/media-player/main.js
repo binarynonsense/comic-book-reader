@@ -501,14 +501,15 @@ function callOpenFilesDialog(mode) {
 }
 
 function openRecent(filePath) {
-  // let playlist = {
-  //   id: "",
-  //   source: "filesystem",
-  //   files: [],
-  // };
-  // playlist.files.push({ url: filePath });
-  // sendIpcToRenderer("open-playlist", playlist);
-  sendIpcToRenderer("add-to-playlist", [{ url: filePath }], true);
+  let playlist = {
+    id: "",
+    source: "filesystem",
+    files: [],
+  };
+  playlist.files.push({ url: filePath });
+  sendIpcToRenderer("open-playlist", playlist);
+  ///
+  // sendIpcToRenderer("add-to-playlist", [{ url: filePath }], true);
 }
 
 function addUrl(urlData) {
