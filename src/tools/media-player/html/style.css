@@ -825,6 +825,7 @@ a:hover a:visited {
 }
 
 .mp-spectrum-grid {
+  --grid-row-height: round(2cqh, 1px);
   position: absolute;
   top: 0;
   left: 0;
@@ -834,9 +835,9 @@ a:hover a:visited {
   z-index: 6;
   background: linear-gradient(
     to bottom,
-    transparent 4px,
-    rgba(0, 0, 0, 0.2) 4px,
-    rgba(0, 0, 0, 0.2) 5px
+    transparent calc(var(--grid-row-height) - 1px),
+    rgba(0, 0, 0, 0.2) calc(var(--grid-row-height) - 1px),
+    rgba(0, 0, 0, 0.2) var(--grid-row-height)
   );
-  background-size: 100% 5px;
+  background-size: 100% var(--grid-row-height);
 }
