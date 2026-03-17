@@ -107,14 +107,17 @@ Auch verfügbar auf:
 ## Beiträge:
 
 Design and Programmierung:
+
 - [Álvaro García (binarynonsense)](https://github.com/binarynonsense)
 
 Lokalisierungen:
+
 - [Álvaro García (binarynonsense)](https://github.com/binarynonsense) (English, Español)
 - [vanja-san](https://github.com/vanja-san) (Русский)
 - [Timo Heidutzek (trzyglow)](https://github.com/trzyglow) (Deutsch)
 - [Ahmed (ahmed-0011)](https://github.com/ahmed-0011) (العربية)
 - [AndrewL (CodeByMoriarty)](https://github.com/CodeByMoriarty) (Filipino)
+- [coolvitto](https://github.com/coolvitto) (日本語)
 
 Informationen darüber, wie man zu dem Projekt beitragen kann, gibt es im [CONTRIBUTING.md](../CONTRIBUTING.md) Dokument.
 
