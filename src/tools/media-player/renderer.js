@@ -1029,6 +1029,9 @@ function getButtonStates() {
     pause:
       !g_player.html.buttonPause.classList.contains("mp-disabled") &&
       !g_player.html.buttonPause.classList.contains("mp-hidden"),
+    stop:
+      !g_player.html.buttonStop.classList.contains("mp-disabled") &&
+      !g_player.html.buttonStop.classList.contains("mp-hidden"),
     next: !g_player.html.buttonNext.classList.contains("mp-disabled"),
     prev: !g_player.html.buttonPrev.classList.contains("mp-disabled"),
   };
@@ -2256,6 +2259,11 @@ function initOnIpcCallbacks() {
 
       case "pause":
         onPause();
+        refreshUI();
+        break;
+
+      case "stop":
+        onStop();
         refreshUI();
         break;
 

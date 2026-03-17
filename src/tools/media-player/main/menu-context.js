@@ -165,28 +165,35 @@ exports.show = function (type, params, data, sendIpcToRenderer, openRecent) {
       ...getPlaylistSubmenu(data),
       {
         label: _("mp-tooltip-button-play"),
-        enabled: data.buttonStates.play,
+        visible: data.buttonStates.play,
         click() {
           sendIpcToRenderer("on-context-menu", "play");
         },
       },
       {
         label: _("mp-tooltip-button-pause"),
-        enabled: data.buttonStates.pause,
+        visible: data.buttonStates.pause,
         click() {
           sendIpcToRenderer("on-context-menu", "pause");
         },
       },
       {
+        label: _("mp-tooltip-button-stop"),
+        visible: data.buttonStates.stop,
+        click() {
+          sendIpcToRenderer("on-context-menu", "stop");
+        },
+      },
+      {
         label: _("mp-tooltip-button-next"),
-        enabled: data.buttonStates.next,
+        visible: data.buttonStates.next,
         click() {
           sendIpcToRenderer("on-context-menu", "next");
         },
       },
       {
         label: _("mp-tooltip-button-prev"),
-        enabled: data.buttonStates.prev,
+        visible: data.buttonStates.prev,
         click() {
           sendIpcToRenderer("on-context-menu", "prev");
         },
