@@ -1563,7 +1563,7 @@ function closeCurrentFile(addToHistory = true) {
     g_fileData.tempPath &&
     path.basename(path.dirname(g_fileData.tempPath)) === "acbr-tmp"
   ) {
-    fileUtils.safeUnlink(filePath, false);
+    fileUtils.safeUnlink(filePath, false).catch((error) => {});
   }
   cleanUpFileData();
   // TODO: in pdfs, should I call closePdf() in worker and wait??? or

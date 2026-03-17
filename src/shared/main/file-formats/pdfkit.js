@@ -31,7 +31,7 @@ async function createPdf(imgPathsList, outputFilePath, method, password) {
       log.editorError(error);
       if (fs.existsSync(outputFilePath)) {
         // fs.unlinkSync(outputFilePath);
-        fileUtils.safeUnlink(outputFilePath, false);
+        fileUtils.safeUnlink(outputFilePath, false).catch((error) => {});
       }
     });
     pdf.pipe(stream);
@@ -74,7 +74,7 @@ async function createPdf(imgPathsList, outputFilePath, method, password) {
     log.editorError("error writing pdf to file");
     if (fs.existsSync(outputFilePath)) {
       // fs.unlinkSync(outputFilePath);
-      fileUtils.safeUnlink(outputFilePath, false);
+      fileUtils.safeUnlink(outputFilePath, false).catch((error) => {});
     }
     throw error;
   }

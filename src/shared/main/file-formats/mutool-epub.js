@@ -140,7 +140,7 @@ exports.openMuEpub = async function (filePath, tempSubFolderPath, config) {
         // try {
         //   fs.unlinkSync(cssFilePath);
         // } catch (error) {}
-        fileUtils.safeUnlink(cssFilePath, false);
+        fileUtils.safeUnlink(cssFilePath, false).catch((error) => {});
       }
       if (code === 0) {
         if (numPages > 0 && !hasContent) {
@@ -223,7 +223,7 @@ exports.extractMuEpubPageBuffer = async function (
         // try {
         //   fs.unlinkSync(cssFilePath);
         // } catch (error) {}
-        fileUtils.safeUnlink(cssFilePath, false);
+        fileUtils.safeUnlink(cssFilePath, false).catch((error) => {});
       }
       if (code === 0) {
         const fullBuffer = Buffer.concat(stdoutChunks);
@@ -403,7 +403,7 @@ exports.extractMuEpub = async function (
       // try {
       //   fs.unlinkSync(cssFilePath);
       // } catch (e) {}
-      fileUtils.safeUnlink(cssFilePath, false);
+      fileUtils.safeUnlink(cssFilePath, false).catch((error) => {});
     }
 
     return { success: !g_isCancelled, cancelled: g_isCancelled };
