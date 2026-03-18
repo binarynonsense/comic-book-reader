@@ -351,14 +351,18 @@ function initOnIpcCallbacks() {
     reader.updateLoadingIndicator();
   });
 
-  on("set-custom-filter-values", (gamma, brightness, contrast, saturation) => {
-    settings.setChildValue("customFilter", "gamma", gamma);
-    settings.setChildValue("customFilter", "brightness", brightness);
-    settings.setChildValue("customFilter", "contrast", contrast);
-    settings.setChildValue("customFilter", "saturation", saturation);
-    log.test(settings.getValue("customFilter"));
-    reader.setFilter(settings.getValue("filterMode"));
-  });
+  on(
+    "set-custom-filter-values",
+    (gamma, blackLevel, whiteLevel, brightness, contrast, saturation) => {
+      settings.setChildValue("customFilter", "gamma", gamma);
+      settings.setChildValue("customFilter", "blackLevel", blackLevel);
+      settings.setChildValue("customFilter", "whiteLevel", whiteLevel);
+      settings.setChildValue("customFilter", "brightness", brightness);
+      settings.setChildValue("customFilter", "contrast", contrast);
+      settings.setChildValue("customFilter", "saturation", saturation);
+      reader.setFilter(settings.getValue("filterMode"));
+    },
+  );
 
   on("set-cursor", (value) => {
     settings.setValue("cursorVisibility", value);

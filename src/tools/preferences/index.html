@@ -383,7 +383,7 @@
         <label><span id="tool-pre-filters-custom-text"></span></label>
         <div class="tools-option-children" style="margin-bottom: 10px">
           <div class="tool-shared-columns-parent" style="min-height: 90px">
-            <div class="tool-shared-columns-25">
+            <div class="tool-shared-columns-25-grow">
               <label
                 ><span id="tool-pre-filters-custom-gamma-input-text"></span>
                 <input
@@ -395,7 +395,37 @@
                   max="5"
               /></label>
             </div>
-            <div class="tool-shared-columns-25">
+            <div class="tool-shared-columns-25-grow">
+              <label
+                ><span
+                  id="tool-pre-filters-custom-level-black-input-text"
+                ></span>
+                <input
+                  id="tool-pre-filters-custom-level-black-input"
+                  type="number"
+                  value="0"
+                  step="0.01"
+                  min="0"
+                  max="1"
+              /></label>
+            </div>
+            <div class="tool-shared-columns-25-grow">
+              <label
+                ><span
+                  id="tool-pre-filters-custom-level-white-input-text"
+                ></span>
+                <input
+                  id="tool-pre-filters-custom-level-white-input"
+                  type="number"
+                  value="1"
+                  step="0.01"
+                  min="0"
+                  max="1"
+              /></label>
+            </div>
+          </div>
+          <div class="tool-shared-columns-parent" style="min-height: 90px">
+            <div class="tool-shared-columns-25-grow">
               <label
                 ><span
                   id="tool-pre-filters-custom-brightness-input-text"
@@ -409,7 +439,7 @@
                   max="5"
               /></label>
             </div>
-            <div class="tool-shared-columns-25">
+            <div class="tool-shared-columns-25-grow">
               <label
                 ><span id="tool-pre-filters-custom-contrast-input-text"></span>
                 <input
@@ -421,7 +451,7 @@
                   max="5"
               /></label>
             </div>
-            <div class="tool-shared-columns-25">
+            <div class="tool-shared-columns-25-grow">
               <label
                 ><span
                   id="tool-pre-filters-custom-saturation-input-text"
@@ -435,8 +465,11 @@
                   max="5"
               /></label>
             </div>
-            <div id="tool-pre-filters-custom-anchor"></div>
           </div>
+          <button id="tool-pre-filters-custom-reset-button">
+            <span id="tool-pre-filters-custom-reset-button-text"></span>
+          </button>
+          <div id="tool-pre-filters-custom-anchor"></div>
         </div>
       </div>
     </div>

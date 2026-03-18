@@ -396,19 +396,31 @@ exports.getLocalization = function () {
     },
     {
       id: "tool-pre-filters-custom-gamma-input-text",
-      text: _("tool-pre-filters-custom-gamma"),
+      text: _("tool-pre-filters-custom-gamma") + " (0.01-5.0)",
+    },
+    {
+      id: "tool-pre-filters-custom-level-black-input-text",
+      text: _("tool-pre-filters-custom-level-black") + " (0.0-1.0)",
+    },
+    {
+      id: "tool-pre-filters-custom-level-white-input-text",
+      text: _("tool-pre-filters-custom-level-white") + " (0.0-1.0)",
     },
     {
       id: "tool-pre-filters-custom-brightness-input-text",
-      text: _("tool-pre-filters-custom-brightness"),
+      text: _("tool-pre-filters-custom-brightness") + " (0.0-5.0)",
     },
     {
       id: "tool-pre-filters-custom-contrast-input-text",
-      text: _("tool-pre-filters-custom-contrast"),
+      text: _("tool-pre-filters-custom-contrast") + " (0.0-5.0)",
     },
     {
       id: "tool-pre-filters-custom-saturation-input-text",
-      text: _("tool-pre-filters-custom-saturation"),
+      text: _("tool-pre-filters-custom-saturation") + " (0.0-5.0)",
+    },
+    {
+      id: "tool-pre-filters-custom-reset-button-text",
+      text: _("tool-shared-ui-reset").toUpperCase(),
     },
     //////////////////////////////////////////////
     {

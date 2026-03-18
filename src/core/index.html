@@ -25,16 +25,21 @@
     <script src="../assets/libs/hlsjs/hls.js"></script>
     <script src="../assets/libs/toastify/toastify.js"></script>
     <script src="./renderer.js" type="module"></script>
-    <!-- hidden svg gamma filter -->
+    <!-- hidden svg gamma & levels filter -->
     <svg
       style="position: absolute; width: 0; height: 0; pointer-events: none"
       aria-hidden="true"
     >
-      <filter id="gamma-filter">
-        <feComponentTransfer>
+      <filter id="gamma-levels-filter">
+        <feComponentTransfer result="gammaOut">
           <feFuncR type="gamma" exponent="1" />
           <feFuncG type="gamma" exponent="1" />
           <feFuncB type="gamma" exponent="1" />
+        </feComponentTransfer>
+        <feComponentTransfer in="gammaOut">
+          <feFuncR type="linear" slope="1" intercept="0" />
+          <feFuncG type="linear" slope="1" intercept="0" />
+          <feFuncB type="linear" slope="1" intercept="0" />
         </feComponentTransfer>
       </filter>
     </svg>

@@ -634,35 +634,41 @@ export function setFilterClass(element) {
 
 function setCustomFilter(
   gamma = 1,
+  blackLevel = 0,
+  whiteLevel = 1,
   brightness = 1,
   contrast = 1,
   saturation = 1,
 ) {
   const clamp = (num, min, max) => Math.min(Math.max(num, min), max);
+  // internal levels calculation
+  const levelsSlope = 1 / Math.max(whiteLevel - blackLevel, 0.01);
+  const levelsIntercept = -blackLevel * levelsSlope;
   const safeGamma = clamp(gamma, 0.01, 5.0);
+  const safeLevelsSlope = clamp(levelsSlope, 0, 10.0);
+  const safeLevelsIntercept = clamp(levelsIntercept, -5.0, 5.0);
   const safeBrightness = clamp(brightness, 0, 5.0);
   const safeContrast = clamp(contrast, 0, 5.0);
   const safeSaturation = clamp(saturation, 0, 5.0);
   // svg filter
   const gammaChannels = document.querySelectorAll(
-    "#gamma-filter feFuncR, #gamma-filter feFuncG, #gamma-filter feFuncB",
+    "#gamma-levels-filter feComponentTransfer:first-of-type > [type='gamma']",
   );
   gammaChannels.forEach((channel) =>
     channel.setAttribute("exponent", safeGamma),
   );
+  const levelChannels = document.querySelectorAll(
+    "#gamma-levels-filter feComponentTransfer:nth-of-type(2) > [type='linear']",
+  );
+  levelChannels.forEach((channel) => {
+    channel.setAttribute("slope", safeLevelsSlope);
+    channel.setAttribute("intercept", safeLevelsIntercept);
+  });
   // css vars
-  document.documentElement.style.setProperty(
-    "--page-filter-custom-brightness",
-    safeBrightness,
-  );
-  document.documentElement.style.setProperty(
-    "--page-filter-custom-contrast",
-    safeContrast,
-  );
-  document.documentElement.style.setProperty(
-    "--page-filter-custom-saturation",
-    safeSaturation,
-  );
+  const rootStyle = document.documentElement.style;
+  rootStyle.setProperty("--page-filter-custom-brightness", safeBrightness);
+  rootStyle.setProperty("--page-filter-custom-contrast", safeContrast);
+  rootStyle.setProperty("--page-filter-custom-saturation", safeSaturation);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

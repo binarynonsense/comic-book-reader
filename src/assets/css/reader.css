@@ -76,7 +76,8 @@
 }
 
 .page-filter-custom {
-  filter: url(#gamma-filter) brightness(var(--page-filter-custom-brightness))
+  filter: url(#gamma-levels-filter)
+    brightness(var(--page-filter-custom-brightness))
     contrast(var(--page-filter-custom-contrast))
     saturate(var(--page-filter-custom-saturation));
   image-rendering: high-quality;

@@ -81,7 +81,14 @@ const g_defaultSettings = {
   ffmpegExeFolderPath: undefined,
   turnPageOnScrollBoundary: false,
   filterMode: 0, // 0: none, 1: old paper, 2: custom
-  customFilter: { gamma: 1, brightness: 1, contrast: 1, saturation: 1 },
+  customFilter: {
+    gamma: 1,
+    blackLevel: 0,
+    whiteLevel: 1,
+    brightness: 1,
+    contrast: 1,
+    saturation: 1,
+  },
   toolbarDirection: 0, // 0: infer from language, 1: ltr, 2: rtl
   homeScreen: {
     latestPosition: 0, // 0: after favs, 1: top, 2: bottom
@@ -946,6 +953,8 @@ function loadCustomFilter(loadedFilter) {
       if (value !== undefined && typeof value === "number") {
         if (option === "gamma") {
           if (value >= 0.01 && value <= 5) isValid = true;
+        } else if (option === "whiteLevel" || option === "blackLevel") {
+          if (value >= 0 && value <= 1) isValid = true;
         } else {
           if (value >= 0 && value <= 5) isValid = true;
         }
@@ -954,6 +963,15 @@ function loadCustomFilter(loadedFilter) {
         g_settings.customFilter[option] = value;
       }
     }
+  }
+  if (
+    g_settings.customFilter["blackLevel"] >=
+    g_settings.customFilter["whiteLevel"]
+  ) {
+    if (g_settings.customFilter["whiteLevel"] <= 0)
+      g_settings.customFilter["whiteLevel"] = 0.01;
+    g_settings.customFilter["blackLevel"] =
+      g_settings.customFilter["whiteLevel"] - 0.01;
   }
 }
 

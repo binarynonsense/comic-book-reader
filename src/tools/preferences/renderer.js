@@ -267,47 +267,101 @@ function init(
 
     // custom filter selects
     {
-      let gammaSelect = document.getElementById(
+      let gammaInput = document.getElementById(
         "tool-pre-filters-custom-gamma-input",
       );
-      gammaSelect.value = settings.customFilter.gamma;
-      let brightnessSelect = document.getElementById(
+      gammaInput.value = settings.customFilter.gamma;
+      let blackLevelInput = document.getElementById(
+        "tool-pre-filters-custom-level-black-input",
+      );
+      blackLevelInput.value = settings.customFilter.blackLevel;
+      let whiteLevelInput = document.getElementById(
+        "tool-pre-filters-custom-level-white-input",
+      );
+      whiteLevelInput.value = settings.customFilter.whiteLevel;
+      let brightnessInput = document.getElementById(
         "tool-pre-filters-custom-brightness-input",
       );
-      brightnessSelect.value = settings.customFilter.brightness;
-      let contrastSelect = document.getElementById(
+      brightnessInput.value = settings.customFilter.brightness;
+      let contrastInput = document.getElementById(
         "tool-pre-filters-custom-contrast-input",
       );
-      contrastSelect.value = settings.customFilter.contrast;
-      let saturationSelect = document.getElementById(
+      contrastInput.value = settings.customFilter.contrast;
+      let saturationInput = document.getElementById(
         "tool-pre-filters-custom-saturation-input",
       );
-      saturationSelect.value = settings.customFilter.saturation;
+      saturationInput.value = settings.customFilter.saturation;
 
       function onCustomFilterInputChange(input, min = 0) {
         if (input.value < min) input.value = min;
         if (input.value > 5) input.value = 5;
         sendIpcToMain(
           "set-custom-filter-values",
-          gammaSelect.value,
-          brightnessSelect.value,
-          contrastSelect.value,
-          saturationSelect.value,
+          parseFloat(gammaInput.value),
+          parseFloat(blackLevelInput.value),
+          parseFloat(whiteLevelInput.value),
+          parseFloat(brightnessInput.value),
+          parseFloat(contrastInput.value),
+          parseFloat(saturationInput.value),
+        );
+      }
+      function onCustomFilterInputChangeLevels(input) {
+        if (input.value < 0) input.value = 0;
+        if (input.value > 1) input.value = 1;
+        if (blackLevelInput.value >= whiteLevelInput.value) {
+          if (whiteLevelInput.value <= 0) whiteLevelInput.value = 0.01;
+          blackLevelInput.value = whiteLevelInput.value - 0.01;
+        }
+        sendIpcToMain(
+          "set-custom-filter-values",
+          parseFloat(gammaInput.value),
+          parseFloat(blackLevelInput.value),
+          parseFloat(whiteLevelInput.value),
+          parseFloat(brightnessInput.value),
+          parseFloat(contrastInput.value),
+          parseFloat(saturationInput.value),
         );
       }
 
-      gammaSelect.addEventListener("change", function (event) {
-        onCustomFilterInputChange(gammaSelect, 0.01);
+      gammaInput.addEventListener("change", function (event) {
+        onCustomFilterInputChange(gammaInput, 0.01);
       });
-      brightnessSelect.addEventListener("change", function (event) {
-        onCustomFilterInputChange(brightnessSelect);
+      brightnessInput.addEventListener("change", function (event) {
+        onCustomFilterInputChange(brightnessInput);
       });
-      contrastSelect.addEventListener("change", function (event) {
-        onCustomFilterInputChange(contrastSelect);
+      contrastInput.addEventListener("change", function (event) {
+        onCustomFilterInputChange(contrastInput);
       });
-      saturationSelect.addEventListener("change", function (event) {
-        onCustomFilterInputChange(saturationSelect);
+      saturationInput.addEventListener("change", function (event) {
+        onCustomFilterInputChange(saturationInput);
       });
+
+      blackLevelInput.addEventListener("change", function (event) {
+        onCustomFilterInputChangeLevels(blackLevelInput);
+      });
+      whiteLevelInput.addEventListener("change", function (event) {
+        onCustomFilterInputChangeLevels(whiteLevelInput);
+      });
+
+      document
+        .getElementById("tool-pre-filters-custom-reset-button")
+        .addEventListener("click", (event) => {
+          gammaInput.value = 1;
+          blackLevelInput.value = 0;
+          whiteLevelInput.value = 1;
+          brightnessInput.value = 1;
+          contrastInput.value = 1;
+          saturationInput.value = 1;
+          sendIpcToMain(
+            "set-custom-filter-values",
+            parseFloat(gammaInput.value),
+            parseFloat(blackLevelInput.value),
+            parseFloat(whiteLevelInput.value),
+            parseFloat(brightnessInput.value),
+            parseFloat(contrastInput.value),
+            parseFloat(saturationInput.value),
+          );
+        });
     }
 
     // history

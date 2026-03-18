@@ -2233,6 +2233,8 @@ function setFilter(value, rebuildMenu = true) {
   if (value === 2) {
     data = [
       settings.getValue("customFilter").gamma ?? 1,
+      settings.getValue("customFilter").blackLevel ?? 0,
+      settings.getValue("customFilter").whiteLevel ?? 1,
       settings.getValue("customFilter").brightness ?? 1,
       settings.getValue("customFilter").contrast ?? 1,
       settings.getValue("customFilter").saturation ?? 1,
