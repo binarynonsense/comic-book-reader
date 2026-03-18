@@ -26,16 +26,18 @@ Ein Comicbuch Leser und Konverter für CBZ, CBR, CB7, EPUB, FB2, MOBI und PDF Da
 - 'Breitenanpassung', 'Höhenanpassung' und eine anpassbare 'Höhenskalierung' Seitenansicht
 - Seitenrotation
 - Benutzeroberfläche verfügbar auf:
-  - Englisch, Spanisch, Russisch, Deutsch, Arabisch und Filipino
+  - Englisch, Spanisch, Russisch, Deutsch, Arabisch, Filipino und Japanisch
 - Automatische Wiederherstellung der vergangenen Sitzung, mit Erinnerung der letzten Seitenposition.
 - Tragbarer Modus (durch das Erstellen einer Datei namens portable.txt im selben Ordner wie die Anwendung)
 - Metadateneditor:
   - Ansicht der Metadaten welche in PDF und EPUB Dateien oder ComicInfo.xml Dateien innerhalb CBR, CBZ und CB7 Comicbüchern gespeichert sind.
   - Erstelle und/oder modifiziere die Metadaten welche in PDF und EPUB Dateien oder ComicInfo.xml Dateien innerhalb unverschlüsselten CBR<sup>[3]</sup>, CBZ und CB7 Comicbüchern gespeichert sind.
   - Suche nach und importiere Comicbuch Metadaten von Comic Vine (hierfür wird ein [Comic Vine API key](https://comicvine.gamespot.com/api/) benötigt).
-- Integrierter Audioplayer:
-  - Unterstützt MP3, Ogg, WAV, M3U und M3U8 Dateien.
+- Integrierter Mediaplayer:
+  - Audio: MP3, Ogg, WAV, M3U und M3U8 Dateien
+  - Video: Web-kompatible Codecs und Formate wie MP4 und WebM, Youtube URLs und SRT Untertiteldateien
   - Kann Playlists als M3U Dateien exportieren.
+  - Mehr Formate, Codecs und Funktionen werden unterstützt falls FFmpeg [verfügbar](https://github.com/binarynonsense/comic-book-reader/wiki/Third%E2%80%90Party-Executables-(rar,-ffmpeg...)) ist.
 - Werkzeuge:
   - Dateien:
     - Konvertieren/größe Ändern:
