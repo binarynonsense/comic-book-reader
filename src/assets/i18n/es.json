@@ -1,8 +1,6 @@
 {
   "@metadata": {
-    "authors": [
-      "Álvaro"
-    ],
+    "authors": ["Álvaro"],
     "last-updated": "2026-03-18",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.18.0",
@@ -645,6 +643,8 @@
   "tool-pre-filters": "Filtros",
   "tool-pre-filters-custom": "Filtro personalizado",
   "tool-pre-filters-custom-gamma": "Gamma",
+  "tool-pre-filters-custom-level-white": "Nivel de blancos",
+  "tool-pre-filters-custom-level-black": "Nivel de negros",
   "tool-pre-filters-custom-brightness": "Brillo",
   "tool-pre-filters-custom-contrast": "Contraste",
   "tool-pre-filters-custom-saturation": "Saturación",

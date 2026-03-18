@@ -645,6 +645,8 @@
   "[NEEDS TRANSLATION]tool-pre-filters": "Filters",
   "[NEEDS TRANSLATION]tool-pre-filters-custom": "Custom Filter",
   "[NEEDS TRANSLATION]tool-pre-filters-custom-gamma": "Gamma",
+  "[NEEDS TRANSLATION]tool-pre-filters-custom-level-white": "White Level",
+  "[NEEDS TRANSLATION]tool-pre-filters-custom-level-black": "Black Level",
   "[NEEDS TRANSLATION]tool-pre-filters-custom-brightness": "Brightness",
   "[NEEDS TRANSLATION]tool-pre-filters-custom-contrast": "Contrast",
   "[NEEDS TRANSLATION]tool-pre-filters-custom-saturation": "Saturation",

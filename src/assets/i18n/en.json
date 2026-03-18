@@ -643,6 +643,8 @@
   "tool-pre-filters": "Filters",
   "tool-pre-filters-custom": "Custom Filter",
   "tool-pre-filters-custom-gamma": "Gamma",
+  "tool-pre-filters-custom-level-white": "White Level",
+  "tool-pre-filters-custom-level-black": "Black Level",
   "tool-pre-filters-custom-brightness": "Brightness",
   "tool-pre-filters-custom-contrast": "Contrast",
   "tool-pre-filters-custom-saturation": "Saturation",
