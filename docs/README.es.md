@@ -37,7 +37,7 @@ Un lector y conversor de cómics para archivos en formato CBZ, CBR, CB7, EPUB, F
   - Audio: archivos MP3, Ogg, WAV, M3U y M3U8
   - Vídeo: códecs y formatos compatibles con la web como MP4 y WebM, URLs de YouTube y archivos de subtítulos SRT
   - Puede exportar listas de reproducción a archivos M3U.
-  - Admite más formatos, códecs y funciones si ffmpeg está [disponible](https://github.com/binarynonsense/comic-book-reader/wiki/Third%E2%80%90Party-Executables-(rar,-ffmpeg...)).
+  - Admite más formatos, códecs y funciones si FFmpeg está [disponible](<https://github.com/binarynonsense/comic-book-reader/wiki/Third%E2%80%90Party-Executables-(rar,-ffmpeg...)>).
 - Herramientas:
   - Ficheros:
     - Convertir/Redimensionar:
@@ -109,9 +109,11 @@ También disponible en:
 ## Contribuciones:
 
 Diseño y Programación:
+
 - [Álvaro García (binarynonsense)](https://github.com/binarynonsense/)
-  
+
 Localizaciones:
+
 - [Álvaro García (binarynonsense)](https://github.com/binarynonsense/) (English, Español)
 - [vanja-san](https://github.com/vanja-san) (Русский)
 - [Timo Heidutzek (trzyglow)](https://github.com/trzyglow) (Deutsch)

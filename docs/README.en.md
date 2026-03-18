@@ -37,7 +37,7 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB, FB2, MOBI and PDF fil
   - Audio: MP3, Ogg, WAV, M3U and M3U8 files
   - Video: web-compatible codecs and formats like MP4 and WebM, Youtube URLs and SRT subtitle files
   - Can export playlists to M3U files.
-  - More formats, codecs and features are supported if ffmpeg is [available](https://github.com/binarynonsense/comic-book-reader/wiki/Third%E2%80%90Party-Executables-(rar,-ffmpeg...)).
+  - More formats, codecs and features are supported if FFmpeg is [available](<https://github.com/binarynonsense/comic-book-reader/wiki/Third%E2%80%90Party-Executables-(rar,-ffmpeg...)>).
 - Tools:
   - Files:
     - Convert/Resize:
