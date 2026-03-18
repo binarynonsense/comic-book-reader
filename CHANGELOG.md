@@ -1,3 +1,12 @@
+## v3.18.0
+
+- Overhauled the audio player and made it a media player. It now also plays video files (supports web-compatible codecs and formats like MP4 and WebM) and youtube URLs and shows subtitles from SRT files. If FFmpeg is installed and in the system's PATH, or its path is configured in the preferences, it will support many other containers and codecs (MKV, AVI, WMV, H.265...), multiple video and audio tracks and embedded subtitles.
+- Added a section in the Preferences, Third-Party Executables, to configure the paths for optional executables like rar or ffmpeg.
+- Added a new localization file, Japanese, contributed by coolvitto.
+- Added some improvements to the deletion and move operations to make them more resiliant against potential short external locks by OneDrive or similar external programs of the temporary files and folders created during conversions.
+- Set a better default temp folder for the flatpak version.
+- Fixed the flatpak version not finding the rar binary in the system's PATH (if available).
+
 ## v3.17.1
 
 - Fixed creating a comic book from only images not working in the previous version.
@@ -14,8 +23,8 @@
 - Added an alternative PDF library, based on PDFium, that can be used instead of the default one, based on PDFjs, both in the Reader and the conversion tools. It can be set as the one to be used for the Reader in the program's preferences (File Formats section), and in the advanced settings of each tool for them. Hopefully, this may be of help as an alternative if a PDF file happens to have stability or compatibility issues with the default library. One current limitation is that some big files that the default one is able to load will fail to do with this new one.
 - Added a new section in the Preferences, Comic Book Reader, and moved some of the settings there.
 - Added a new setting in the Preferences, in the PDF subsection of the File Formats section, to select the dpi at which the pages of a PDF file are rendered in the Reader.
-- Added a new subsection in the Preferences, Advanced > External Files, to allow loading external files to add more localizations. I've also made a [repository](https://github.com/binarynonsense/acbr-unofficial-extensions) to share some unofficial ones I made using machine translation. One of my requirements to include a localization as part of ACBR is that it must be human made, for quality reasons, but I thought this would be useful for users that want to generate their own using that type of tools or test a human made one they are working on.
-- Added a System Monitor 'widget' that shows the system total CPU and Memory use. To show or hide it use the menu entry View > System Monitor. To get more accurate stats in the Flatpak version some extra permissions are required (see the [wiki](https://github.com/binarynonsense/comic-book-reader/wiki) for more info).
+- Added a new subsection in the Preferences, Advanced > External Files, to allow loading external files to add more localizations.
+- Added a System Monitor 'widget' that shows the system total CPU and Memory use. To show or hide it use the menu entry View > System Monitor. To get more accurate stats in the Flatpak version some extra permissions are required (see the wiki for more info).
 - Added an advanced option in the conversion tools to extract PDF pages based on a target height instead of dpi.
 - Improved the memory management and simplicity in the code that uses the PDFjs library.
 - Implemented the image processing (scale, change image format...) speed improvements from the previous version in the "Extract Comic Books" tool.
