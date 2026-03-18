@@ -1,6 +1,8 @@
 {
   "@metadata": {
-    "authors": ["vanja-san"],
+    "authors": [
+      "vanja-san"
+    ],
     "last-updated": "2026-03-15",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.17.0",
@@ -49,6 +51,8 @@
   "menu-view-filter": "Фильтр",
   "menu-view-filter-0": "Ничего",
   "menu-view-filter-1": "Старая бумага",
+  "[NEEDS TRANSLATION]menu-view-filter-2": "Custom",
+  "[NEEDS TRANSLATION]menu-view-filter-adjustfilters": "Adjust Filters",
   "menu-view-layout": "Макет",
   "menu-view-layout-mode": "Режим",
   "menu-view-layout-pagemode": "Режим страницы",
@@ -638,6 +642,12 @@
   "tool-pre-loading-ipos": "Разположение иконки",
   "tool-pre-loading-ipos-0": "Сверху слева",
   "tool-pre-loading-ipos-1": "По центру",
+  "[NEEDS TRANSLATION]tool-pre-filters": "Filters",
+  "[NEEDS TRANSLATION]tool-pre-filters-custom": "Custom Filter",
+  "[NEEDS TRANSLATION]tool-pre-filters-custom-gamma": "Gamma",
+  "[NEEDS TRANSLATION]tool-pre-filters-custom-brightness": "Brightness",
+  "[NEEDS TRANSLATION]tool-pre-filters-custom-contrast": "Contrast",
+  "[NEEDS TRANSLATION]tool-pre-filters-custom-saturation": "Saturation",
   "tool-pre-mouse": "Мышь",
   "tool-pre-keyboard": "Клавиатура",
   "tool-pre-gamepad": "Геймпад",
