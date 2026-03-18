@@ -976,8 +976,8 @@ if (!gotTheLock) {
   // MENU MSGS /////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
-  exports.onMenuPreferences = function () {
-    tools.switchTool("tool-preferences");
+  exports.onMenuPreferences = function (...args) {
+    tools.switchTool("tool-preferences", ...args);
     sendIpcToPreload("update-menubar");
   };
 

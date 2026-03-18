@@ -37,6 +37,8 @@ function init(
   themes,
   settings,
   externalFilesFolder,
+  startSection,
+  scrollTo,
 ) {
   g_settings = settings;
   try {
@@ -262,6 +264,52 @@ function init(
         sendIpcToMain("set-loading-ipos", parseInt(select.value));
       });
     }
+
+    // custom filter selects
+    {
+      let gammaSelect = document.getElementById(
+        "tool-pre-filters-custom-gamma-input",
+      );
+      gammaSelect.value = settings.customFilter.gamma;
+      let brightnessSelect = document.getElementById(
+        "tool-pre-filters-custom-brightness-input",
+      );
+      brightnessSelect.value = settings.customFilter.brightness;
+      let contrastSelect = document.getElementById(
+        "tool-pre-filters-custom-contrast-input",
+      );
+      contrastSelect.value = settings.customFilter.contrast;
+      let saturationSelect = document.getElementById(
+        "tool-pre-filters-custom-saturation-input",
+      );
+      saturationSelect.value = settings.customFilter.saturation;
+
+      function onCustomFilterInputChange(input, min = 0) {
+        if (input.value < min) input.value = min;
+        if (input.value > 5) input.value = 5;
+        sendIpcToMain(
+          "set-custom-filter-values",
+          gammaSelect.value,
+          brightnessSelect.value,
+          contrastSelect.value,
+          saturationSelect.value,
+        );
+      }
+
+      gammaSelect.addEventListener("change", function (event) {
+        onCustomFilterInputChange(gammaSelect, 0.01);
+      });
+      brightnessSelect.addEventListener("change", function (event) {
+        onCustomFilterInputChange(brightnessSelect);
+      });
+      contrastSelect.addEventListener("change", function (event) {
+        onCustomFilterInputChange(contrastSelect);
+      });
+      saturationSelect.addEventListener("change", function (event) {
+        onCustomFilterInputChange(saturationSelect);
+      });
+    }
+
     // history
     {
       const maxFilesInput = document.getElementById(
@@ -748,8 +796,16 @@ function init(
       });
     });
     ////////////////////////////////////////
-    switchSection(0);
+    if (startSection) switchSection(startSection);
+    else switchSection(0);
     //updateColumnsHeight();
+    if (scrollTo) {
+      document.getElementById(scrollTo).scrollIntoView({
+        behavior: "instant",
+        block: "nearest",
+        inline: "nearest",
+      });
+    }
   } catch (error) {
     console.error(error);
   }

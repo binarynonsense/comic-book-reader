@@ -25,5 +25,18 @@
     <script src="../assets/libs/hlsjs/hls.js"></script>
     <script src="../assets/libs/toastify/toastify.js"></script>
     <script src="./renderer.js" type="module"></script>
+    <!-- hidden svg gamma filter -->
+    <svg
+      style="position: absolute; width: 0; height: 0; pointer-events: none"
+      aria-hidden="true"
+    >
+      <filter id="gamma-filter">
+        <feComponentTransfer>
+          <feFuncR type="gamma" exponent="1" />
+          <feFuncG type="gamma" exponent="1" />
+          <feFuncB type="gamma" exponent="1" />
+        </feComponentTransfer>
+      </filter>
+    </svg>
   </body>
 </html>

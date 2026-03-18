@@ -2229,9 +2229,19 @@ function setFilter(value, rebuildMenu = true) {
   settings.setValue("filterMode", value);
   menuBar.setFilterMode(value);
   sendIpcToPreload("update-menubar");
-  sendIpcToRenderer("set-filter", value);
+  let data;
+  if (value === 2) {
+    data = [
+      settings.getValue("customFilter").gamma ?? 1,
+      settings.getValue("customFilter").brightness ?? 1,
+      settings.getValue("customFilter").contrast ?? 1,
+      settings.getValue("customFilter").saturation ?? 1,
+    ];
+  }
+  sendIpcToRenderer("set-filter", value, data);
   if (rebuildMenu) rebuildMenuAndToolBars();
 }
+exports.setFilter = setFilter;
 
 function setPagesDirection(value, rebuildMenu = true) {
   g_pagesDirection = value === 1 ? "rtl" : "ltr";

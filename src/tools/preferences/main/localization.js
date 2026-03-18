@@ -387,6 +387,31 @@ exports.getLocalization = function () {
     },
     //////////////////////////////////////////////
     {
+      id: "tool-pre-filters-text",
+      text: _("tool-pre-filters"),
+    },
+    {
+      id: "tool-pre-filters-custom-text",
+      text: _("tool-pre-filters-custom"),
+    },
+    {
+      id: "tool-pre-filters-custom-gamma-input-text",
+      text: _("tool-pre-filters-custom-gamma"),
+    },
+    {
+      id: "tool-pre-filters-custom-brightness-input-text",
+      text: _("tool-pre-filters-custom-brightness"),
+    },
+    {
+      id: "tool-pre-filters-custom-contrast-input-text",
+      text: _("tool-pre-filters-custom-contrast"),
+    },
+    {
+      id: "tool-pre-filters-custom-saturation-input-text",
+      text: _("tool-pre-filters-custom-saturation"),
+    },
+    //////////////////////////////////////////////
+    {
       id: "tool-pre-home-screen-text",
       text: _("home-screen"),
     },

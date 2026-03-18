@@ -23,6 +23,7 @@ const tools = require("../../shared/main/tools");
 const history = require("../../shared/main/history");
 const localization = require("./main/localization");
 const { FileDataType } = require("../../shared/main/constants");
+const { scrollToCurrent } = require("../media-player/renderer/playlist");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -37,7 +38,7 @@ function init() {
   }
 }
 
-exports.open = function () {
+exports.open = function (startSection, scrollTo) {
   // called by switchTool when opening tool
   init();
   const data = fs.readFileSync(path.join(__dirname, "index.html"));
@@ -51,6 +52,8 @@ exports.open = function () {
     themes.getAvailableList(),
     settings.get(),
     appUtils.getExternalFilesFolder(),
+    startSection,
+    scrollTo,
   );
   let tempFolderPath = settings.getValue("tempFolderPath");
   let saveAsRelative = false;
@@ -346,6 +349,15 @@ function initOnIpcCallbacks() {
   on("set-loading-ipos", (value) => {
     settings.setValue("loadingIndicatorIconPos", value);
     reader.updateLoadingIndicator();
+  });
+
+  on("set-custom-filter-values", (gamma, brightness, contrast, saturation) => {
+    settings.setChildValue("customFilter", "gamma", gamma);
+    settings.setChildValue("customFilter", "brightness", brightness);
+    settings.setChildValue("customFilter", "contrast", contrast);
+    settings.setChildValue("customFilter", "saturation", saturation);
+    log.test(settings.getValue("customFilter"));
+    reader.setFilter(settings.getValue("filterMode"));
   });
 
   on("set-cursor", (value) => {

@@ -80,7 +80,8 @@ const g_defaultSettings = {
   rarExeFolderPath: undefined,
   ffmpegExeFolderPath: undefined,
   turnPageOnScrollBoundary: false,
-  filterMode: 0, // 0: none, 1: old paper
+  filterMode: 0, // 0: none, 1: old paper, 2: custom
+  customFilter: { gamma: 1, brightness: 1, contrast: 1, saturation: 1 },
   toolbarDirection: 0, // 0: infer from language, 1: ltr, 2: rtl
   homeScreen: {
     latestPosition: 0, // 0: after favs, 1: top, 2: bottom
@@ -272,11 +273,12 @@ exports.resetPreferences = function () {
     "rarExeFolderPath",
     "ffmpegExeFolderPath",
     "turnPageOnScrollBoundary",
+    "customFilter",
     "toolbarDirection",
     "homeScreen",
     "epubEbook",
     "mouseButtonQuickMenu",
-    //"systemMonitorScale", // TOOD: add when included in preferences tool
+    //"systemMonitorScale", // TODO: add when included in preferences tool
     "logToFile",
 
     "checkUpdatesOnStart",
@@ -569,7 +571,7 @@ function sanitize() {
   if (
     !Number.isInteger(g_settings.filterMode) ||
     g_settings.filterMode < 0 ||
-    g_settings.filterMode > 1
+    g_settings.filterMode > 2
   ) {
     g_settings.filterMode = g_defaultSettings.filterMode;
   }
@@ -795,6 +797,8 @@ function load(info) {
             loadHomeScreen(loadedSettings[key]);
           } else if (key === "epubEbook") {
             loadEpubEbook(loadedSettings[key]);
+          } else if (key === "customFilter") {
+            loadCustomFilter(loadedSettings[key]);
           } else {
             g_settings[key] = loadedSettings[key];
           }
@@ -868,6 +872,7 @@ function loadHomeScreen(loadedHomeScreen) {
   if (isObject(loadedHomeScreen)) {
     for (const option in g_settings.homeScreen) {
       let value = loadedHomeScreen[option];
+      let isValid = false;
       if (value !== undefined && Number.isInteger(value)) {
         if (option === "latestPosition") {
           if (value >= 0 && value <= 2) isValid = true;
@@ -929,6 +934,25 @@ function loadEpubEbook(loaded) {
       g_settings.epubEbook.colorBg = g_defaultSettings.epubEbook.colorBg;
     } else {
       g_settings.epubEbook.colorBg = loaded.colorBg;
+    }
+  }
+}
+
+function loadCustomFilter(loadedFilter) {
+  if (isObject(loadedFilter)) {
+    for (const option in g_settings.customFilter) {
+      let value = loadedFilter[option];
+      let isValid = false;
+      if (value !== undefined && typeof value === "number") {
+        if (option === "gamma") {
+          if (value >= 0.01 && value <= 5) isValid = true;
+        } else {
+          if (value >= 0 && value <= 5) isValid = true;
+        }
+      }
+      if (isValid) {
+        g_settings.customFilter[option] = value;
+      }
     }
   }
 }

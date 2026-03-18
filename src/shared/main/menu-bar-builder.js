@@ -716,6 +716,27 @@ function getNormalMenu(settings, history) {
                 reader.onMenuFilterValue(1);
               },
             },
+            {
+              id: "filter-2",
+              label: _("menu-view-filter-2"),
+              type: "radio",
+              checked: settings.filterMode === 2,
+              click() {
+                reader.onMenuFilterValue(2);
+              },
+            },
+            {
+              type: "separator",
+            },
+            {
+              label: _("menu-view-filter-adjustfilters"),
+              click() {
+                core.onMenuPreferences(
+                  2, // reader section
+                  "tool-pre-filters-custom-anchor",
+                );
+              },
+            },
           ],
         },
         {

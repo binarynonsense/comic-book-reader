@@ -4,6 +4,10 @@
   --zoom-epub-ebook-scale-factor: 1;
   --zoom-width-page1: 50%;
   --zoom-width-page2: 50%;
+
+  --page-filter-custom-brightness: 1;
+  --page-filter-custom-contrast: 1;
+  --page-filter-custom-saturation: 1;
 }
 
 #reader {
@@ -69,6 +73,13 @@
 
 .page-filter-old-page {
   filter: brightness(80%) saturate(90%) sepia(40%);
+}
+
+.page-filter-custom {
+  filter: url(#gamma-filter) brightness(var(--page-filter-custom-brightness))
+    contrast(var(--page-filter-custom-contrast))
+    saturate(var(--page-filter-custom-saturation));
+  image-rendering: high-quality;
 }
 
 /* ZOOM  *********************************************************/

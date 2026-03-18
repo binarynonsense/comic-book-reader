@@ -385,9 +385,12 @@ function initOnIpcCallbacks() {
     updatePageInfo(pageNum, numPages, isPercentage);
   });
 
-  on("set-filter", (value) => {
+  on("set-filter", (value, data) => {
     g_filterMode = value;
     let pages = document.querySelectorAll(".page");
+    if (value === 2) {
+      setCustomFilter(...data);
+    }
     pages.forEach((page) => {
       setFilterClass(page);
     });
@@ -617,8 +620,49 @@ export function setScrollBarsPosition(position) {
 }
 
 export function setFilterClass(element) {
-  if (g_filterMode === 0) element.classList.remove("page-filter-old-page");
-  else if (g_filterMode === 1) element.classList.add("page-filter-old-page");
+  if (g_filterMode === 1) {
+    element.classList.add("page-filter-old-page");
+    element.classList.remove("page-filter-custom");
+  } else if (g_filterMode === 2) {
+    element.classList.remove("page-filter-old-page");
+    element.classList.add("page-filter-custom");
+  } else {
+    element.classList.remove("page-filter-old-page");
+    element.classList.remove("page-filter-custom");
+  }
+}
+
+function setCustomFilter(
+  gamma = 1,
+  brightness = 1,
+  contrast = 1,
+  saturation = 1,
+) {
+  const clamp = (num, min, max) => Math.min(Math.max(num, min), max);
+  const safeGamma = clamp(gamma, 0.01, 5.0);
+  const safeBrightness = clamp(brightness, 0, 5.0);
+  const safeContrast = clamp(contrast, 0, 5.0);
+  const safeSaturation = clamp(saturation, 0, 5.0);
+  // svg filter
+  const gammaChannels = document.querySelectorAll(
+    "#gamma-filter feFuncR, #gamma-filter feFuncG, #gamma-filter feFuncB",
+  );
+  gammaChannels.forEach((channel) =>
+    channel.setAttribute("exponent", safeGamma),
+  );
+  // css vars
+  document.documentElement.style.setProperty(
+    "--page-filter-custom-brightness",
+    safeBrightness,
+  );
+  document.documentElement.style.setProperty(
+    "--page-filter-custom-contrast",
+    safeContrast,
+  );
+  document.documentElement.style.setProperty(
+    "--page-filter-custom-saturation",
+    safeSaturation,
+  );
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -108,6 +108,7 @@ exports.setPageRotation = function (value) {
 exports.setFilterMode = function (mode) {
   checkItem(getItem("filter-0"), mode === 0);
   checkItem(getItem("filter-1"), mode === 1);
+  checkItem(getItem("filter-2"), mode === 2);
 };
 
 exports.setPagesDirection = function (direction) {
