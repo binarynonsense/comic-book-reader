@@ -439,12 +439,23 @@ exports.getLocalization = function (mode) {
       text: _("tool-shared-ui-creation-imageops-apply"),
     },
     {
+      id: "tool-cc-imageops-levels-text",
+      text:
+        _("tool-pre-filters-custom-level-white") +
+        " / " +
+        _("tool-pre-filters-custom-level-black"),
+    },
+    {
+      id: "tool-cc-imageops-gamma-text",
+      text: _("tool-pre-filters-custom-gamma"),
+    },
+    {
       id: "tool-cc-imageops-brightness-text",
-      text: _("tool-shared-ui-creation-brightnessmultiplier"),
+      text: _("tool-pre-filters-custom-brightness"),
     },
     {
       id: "tool-cc-imageops-saturation-text",
-      text: _("tool-shared-ui-creation-saturationmultiplier"),
+      text: _("tool-pre-filters-custom-saturation"),
     },
     {
       id: "tool-cc-imageops-crop-text",
@@ -453,6 +464,10 @@ exports.getLocalization = function (mode) {
     {
       id: "tool-cc-imageops-extend-text",
       text: `${_("tool-shared-ui-imageops-add-border")} (px)`,
+    },
+    {
+      id: "tool-cc-imageops-reset-button-text",
+      text: _("tool-shared-ui-reset").toUpperCase(),
     },
     //////////////////////////////////////////////
     {

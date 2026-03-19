@@ -1189,6 +1189,8 @@ async function processContent(inputFilePath) {
       resizeNeeded = true;
     }
     if (
+      g_uiSelectedOptions.outputLevelsApply ||
+      g_uiSelectedOptions.outputGammaApply ||
       g_uiSelectedOptions.outputBrightnessApply ||
       g_uiSelectedOptions.outputSaturationApply ||
       (g_uiSelectedOptions.outputCropApply &&

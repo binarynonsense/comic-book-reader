@@ -221,22 +221,57 @@ async function processImage(
   // IMAGE OPS 2 /////////////////////////////////////////////
   if (imageOpsNeeded) {
     if (!pipeline) pipeline = sharp(filePath);
-    let ops;
+    //////
+    if (uiSelectedOptions.outputLevelsApply) {
+      let blackLevel = parseFloat(uiSelectedOptions.outputBlackLevelValue);
+      let whiteLevel = parseFloat(uiSelectedOptions.outputWhiteLevelValue);
+      if (
+        blackLevel !== undefined &&
+        whiteLevel !== undefined &&
+        !(blackLevel == 0 && whiteLevel == 1)
+      ) {
+        if (blackLevel > 1) blackLevel = 1;
+        if (whiteLevel > 1) whiteLevel = 1;
+        if (blackLevel >= whiteLevel) {
+          if (whiteLevel <= 0) whiteLevel = 0.01;
+          blackLevel = whiteLevel - 0.01;
+        }
+        const range = Math.max(whiteLevel - blackLevel, 0.0001);
+        // slope (a)
+        const a = 1 / range;
+        // offset (b)
+        const b = -(blackLevel * a) * 255;
+        pipeline.linear(a, b);
+        saveToFile = true;
+      }
+    }
+    //////
+    // if (uiSelectedOptions.outputGammaApply) {
+    //   let value = parseFloat(uiSelectedOptions.outputGammaValue);
+    //   if (value != 2.2) {
+    //     if (value < 1) value = 1;
+    //     if (value > 3) value = 3;
+    //     pipeline.gamma(value);
+    //     saveToFile = true;
+    //   }
+    // }
+    //////
+    let modulateOps;
     if (uiSelectedOptions.outputBrightnessApply) {
-      if (!ops) ops = {};
+      if (!modulateOps) modulateOps = {};
       let value = parseFloat(uiSelectedOptions.outputBrightnessMultiplier);
-      if (value <= 0) value = 0.1;
-      ops["brightness"] = value;
+      if (value < 0) value = 0;
+      modulateOps["brightness"] = value;
       saveToFile = true;
     }
     if (uiSelectedOptions.outputSaturationApply) {
-      if (!ops) ops = {};
+      if (!modulateOps) modulateOps = {};
       let value = parseFloat(uiSelectedOptions.outputSaturationMultiplier);
-      if (value <= 0) value = 0.001;
-      ops["saturation"] = value;
+      if (value < 0) value = 0;
+      modulateOps["saturation"] = value;
       saveToFile = true;
     }
-    if (ops) pipeline.modulate(ops);
+    if (modulateOps) pipeline.modulate(modulateOps);
     //
     if (
       uiSelectedOptions.outputExtendApply &&

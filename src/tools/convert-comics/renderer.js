@@ -410,25 +410,50 @@ function init(
 
   ////////////////
 
+  const inputs = document
+    .querySelector("#tool-cc-imageops-levels-checkbox")
+    .parentNode.parentNode.querySelectorAll('input[type="number"]');
+  inputs.forEach((input) => {
+    input.addEventListener("change", (event) => {
+      updateImageOpsUIInputs();
+    });
+  });
+
+  document
+    .querySelector("#tool-cc-imageops-levels-checkbox")
+    .addEventListener("change", (event) => {
+      updateImageOpsUICheckboxes();
+    });
+  // document
+  //   .querySelector("#tool-cc-imageops-gamma-checkbox")
+  //   .addEventListener("change", (event) => {
+  //     updateImageOpsUICheckboxes();
+  //   });
   document
     .querySelector("#tool-cc-imageops-brightness-checkbox")
     .addEventListener("change", (event) => {
-      updateImageOpsUI();
+      updateImageOpsUICheckboxes();
     });
   document
     .querySelector("#tool-cc-imageops-saturation-checkbox")
     .addEventListener("change", (event) => {
-      updateImageOpsUI();
+      updateImageOpsUICheckboxes();
     });
   document
     .querySelector("#tool-cc-imageops-crop-checkbox")
     .addEventListener("change", (event) => {
-      updateImageOpsUI();
+      updateImageOpsUICheckboxes();
     });
   document
     .querySelector("#tool-cc-imageops-extend-checkbox")
     .addEventListener("change", (event) => {
-      updateImageOpsUI();
+      updateImageOpsUICheckboxes();
+    });
+
+  document
+    .querySelector("#tool-cc-imageops-reset-button")
+    .addEventListener("click", (event) => {
+      resetImageOpsUI();
     });
 
   ////////////////////////////////////////
@@ -690,8 +715,23 @@ function updateUISelectedOptions() {
     webpQuality: document.querySelector("#tool-cc-webp-quality-slider").value,
   };
 
-  /////
+  /////////////////////////////////////////////////////////
 
+  g_uiSelectedOptions.outputLevelsApply = document.querySelector(
+    "#tool-cc-imageops-levels-checkbox",
+  ).checked;
+  g_uiSelectedOptions.outputBlackLevelValue = document.querySelector(
+    "#tool-cc-imageops-level-black-input",
+  ).value;
+  g_uiSelectedOptions.outputWhiteLevelValue = document.querySelector(
+    "#tool-cc-imageops-level-white-input",
+  ).value;
+  // g_uiSelectedOptions.outputGammaApply = document.querySelector(
+  //   "#tool-cc-imageops-gamma-checkbox",
+  // ).checked;
+  // g_uiSelectedOptions.outputGammaValue = document.querySelector(
+  //   "#tool-cc-imageops-gamma-input",
+  // ).value;
   g_uiSelectedOptions.outputBrightnessApply = document.querySelector(
     "#tool-cc-imageops-brightness-checkbox",
   ).checked;
@@ -813,9 +853,10 @@ function updateImageMultithreadingUI() {
   }
 }
 
-function updateImageOpsUI() {
-  // TODO: validate input boxes values?
+function updateImageOpsUICheckboxes() {
   const checkboxIds = [
+    "#tool-cc-imageops-levels-checkbox",
+    // "#tool-cc-imageops-gamma-checkbox",
     "#tool-cc-imageops-brightness-checkbox",
     "#tool-cc-imageops-saturation-checkbox",
     "#tool-cc-imageops-crop-checkbox",
@@ -833,6 +874,54 @@ function updateImageOpsUI() {
         .classList.add("tools-disabled");
     }
   });
+}
+
+function updateImageOpsUIInputs() {
+  const inputs = document
+    .querySelector("#tool-cc-imageops-levels-checkbox")
+    .parentNode.parentNode.querySelectorAll('input[type="number"]');
+  inputs.forEach((input) => {
+    let value = parseFloat(input.value);
+    const min = parseFloat(input.min);
+    const max = parseFloat(input.max);
+    // if ((!isNaN(min) && value < min) || (!isNaN(max) && value > max)) {
+    //   const defaultValue = parseFloat(input.getAttribute("data-default"));
+    //   if (!isNaN(defaultValue)) {
+    //     value = defaultValue;
+    //   }
+    // }
+    if (!isNaN(min) && value < min) value = min;
+    if (!isNaN(max) && value > max) value = max;
+    input.value = value;
+  });
+  // levels specific check
+  const blackLevelInput = document.getElementById(
+    "tool-cc-imageops-level-black-input",
+  );
+  const whiteLevelInput = document.getElementById(
+    "tool-cc-imageops-level-white-input",
+  );
+  if (blackLevelInput.value >= whiteLevelInput.value) {
+    if (whiteLevelInput.value <= 0) whiteLevelInput.value = 0.01;
+    blackLevelInput.value = whiteLevelInput.value - 0.01;
+  }
+}
+
+function resetImageOpsUI() {
+  const inputs = document
+    .querySelector("#tool-cc-imageops-levels-checkbox")
+    .parentNode.parentNode.querySelectorAll("input");
+  inputs.forEach((input) => {
+    if (input.type === "checkbox") {
+      input.checked = false;
+    } else {
+      const defaultValue = input.getAttribute("data-default");
+      if (defaultValue !== null) {
+        input.value = defaultValue;
+      }
+    }
+  });
+  updateImageOpsUICheckboxes();
 }
 
 function updateOutputFolderUI() {
@@ -1208,7 +1297,8 @@ function initOnIpcCallbacks() {
 
 function checkValidData() {
   updateImageMultithreadingUI();
-  updateImageOpsUI();
+  updateImageOpsUICheckboxes();
+  updateImageOpsUIInputs();
   updateFolderOptionUI();
   updateOutputFolderUI();
   updateEpubEbookUI();
