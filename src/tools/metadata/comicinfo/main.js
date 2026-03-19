@@ -8,6 +8,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const core = require("../../../core/main");
+const settings = require("../../../shared/main/settings");
 const base = require("../main");
 const { _ } = require("../../../shared/main/i18n");
 const reader = require("../../../reader/main");
@@ -88,13 +89,17 @@ exports.loadMetadata = async function () {
       case FileDataType.RAR:
         {
           const tempFolderPath = temp.createSubFolder();
-          buf = await fileFormats.extractRarEntryBuffer(
+          const result = await fileFormats.extract7ZipEntryBuffer(
             g_fileData.path,
             g_fileData.metadata.comicInfoId,
             g_fileData.password,
             tempFolderPath,
+            "rar",
           );
           temp.deleteSubFolder(tempFolderPath);
+          if (result.success) {
+            buf = result.data;
+          }
         }
         break;
       case FileDataType.SEVENZIP:
