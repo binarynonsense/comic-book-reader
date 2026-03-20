@@ -195,8 +195,9 @@ html[dir="rtl"] .tools-option-children > label::before {
   color: var(--tools-button-normal-text-color);
   font-weight: 600;
   width: 100%;
-  height: 100%;
-  min-height: 45px;
+  /* height: 100%;
+  min-height: 45px; */
+  height: 45px;
   margin: 5px 0;
   border-radius: 3px;
   display: flex;
@@ -979,7 +980,7 @@ html[dir="rtl"] .tools-range-bubble {
   flex-wrap: nowrap;
   gap: 10px;
   width: 100%;
-  height: 45px;
+  /* height: 45px; */
 }
 /* needed in the preferences tool */
 .tool-shared-columns-parent:not(:has(div)) {
@@ -997,6 +998,14 @@ html[dir="rtl"] .tools-range-bubble {
 
 .tool-shared-columns-parent-extra-margin-bottom {
   margin-bottom: 10px;
+}
+
+.tool-shared-columns-100 {
+  flex: 0 1 100%;
+}
+
+.tool-shared-columns-75 {
+  flex: 0 1 75%;
 }
 
 .tool-shared-columns-50 {
@@ -1179,6 +1188,17 @@ html[dir="rtl"] .tools-range-bubble {
 
 .tools-checkboxes-row-div .tools-checkbox-container {
   width: auto !important;
+}
+
+/* /////////////////////////////////////////////////////////////// */
+
+.tool-pre-filters-custom-preview-div {
+  margin-top: 10px;
+}
+
+.tool-pre-filters-custom-preview-div img {
+  width: 100%;
+  border: 1px solid var(--tools-input-border-color);
 }
 
 /* /////////////////////////////////////////////////////////////// */

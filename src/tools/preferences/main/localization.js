@@ -28,6 +28,7 @@ exports.getExtraLocalization = function () {
     modalClearAllCancelText: _("ui-modal-prompt-button-cancel"),
     //
     filterCustom: _("tool-pre-filters-custom"),
+    filterPreview: _("tool-metadata-data-page-type-preview"),
     filterName: _("tool-radio-search-options-orderby-name"),
     filterGamma: _("tool-pre-filters-custom-gamma") + " (0.01-5.0)",
     filterLevelWhite: _("tool-pre-filters-custom-level-white") + " (0.0-1.0)",

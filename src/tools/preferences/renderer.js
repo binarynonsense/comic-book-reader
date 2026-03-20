@@ -1232,117 +1232,134 @@ function buildCustomFilters(settings, initializeAll = false) {
     const filter = settings.customFilters[index];
     let html = `
     <div class="tools-rectangle-children" style="margin-top: 20px">
-      <label
-        ><span>${g_localizedTexts.filterName}</span>
-        <input
-          id="tool-pre-filters-custom-${index}-name-input"
-          type="text"
-          value="${filter.name}"
-      /></label>
-      <div class="tool-shared-columns-parent" style="min-height: 90px">
-        <div class="tool-shared-columns-25-grow">
+      <div class="tool-shared-columns-parent" style="gap:20px">
+        <div class="tool-shared-columns-100">
           <label
-            ><span>${g_localizedTexts.filterGamma}</span>
-            <input
-              id="tool-pre-filters-custom-${index}-gamma-input"
-              type="number"
-              value="${filter.gamma}"
-              step="0.1"
-              min="0.01"
-              max="5"
+          ><span>${g_localizedTexts.filterName}</span>
+          <input
+            id="tool-pre-filters-custom-${index}-name-input"
+            type="text"
+            value="${filter.name}"
           /></label>
-        </div>
-        <div class="tool-shared-columns-25-grow">
-          <label
-            ><span>${g_localizedTexts.filterLevelBlack}</span>
-            <input
-              id="tool-pre-filters-custom-${index}-level-black-input"
-              type="number"
-              value="${filter.blackLevel}"
-              step="0.01"
-              min="0"
-              max="1"
-          /></label>
-        </div>
-        <div class="tool-shared-columns-25-grow">
-          <label
-            ><span>${g_localizedTexts.filterLevelWhite}</span>
-            <input
-              id="tool-pre-filters-custom-${index}-level-white-input"
-              type="number"
-              value="${filter.whiteLevel}"
-              step="0.01"
-              min="0"
-              max="1"
-          /></label>
-        </div>
-      </div>
-      <div class="tool-shared-columns-parent" style="min-height: 90px">
-        <div class="tool-shared-columns-25">
-          <label
-            ><span>${g_localizedTexts.filterBrightness}</span>
-            <input
-              id="tool-pre-filters-custom-${index}-brightness-input"
-              type="number"
-              value="${filter.brightness}"
-              step="0.1"
-              min="0"
-              max="5"
-          /></label>
-        </div>
-        <div class="tool-shared-columns-25">
-          <label
-            ><span>${g_localizedTexts.filterContrast}</span>
-            <input
-              id="tool-pre-filters-custom-${index}-contrast-input"
-              type="number"
-              value="${filter.contrast}"
-              step="0.1"
-              min="0"
-              max="5"
-          /></label>
-        </div>
-        <div class="tool-shared-columns-25">
-          <label
-            ><span>${g_localizedTexts.filterSaturation}</span>
-            <input
-              id="tool-pre-filters-custom-${index}-saturation-input"
-              type="number"
-              value="${filter.saturation}"
-              step="0.1"
-              min="0"
-              max="5"
-          /></label>
-        </div>
-        <div class="tool-shared-columns-25">
-          <label
-            ><span>${g_localizedTexts.filterSepia}</span>
-            <input
-              id="tool-pre-filters-custom-${index}-sepia-input"
-              type="number"
-              value="${filter.sepia}"
-              step="0.1"
-              min="0"
-              max="5"
-          /></label>
-        </div>
-      </div>
-      <div class="tool-shared-columns-parent" style="margin-bottom: 10px">
-        <div class="tool-shared-columns-50">
-          <button id="tool-pre-filters-custom-${index}-reset-button">
-            <span>${g_localizedTexts.filterResetValues}</span>
-          </button>
-        </div>
-        <div class="tool-shared-columns-50">
-          <button id="tool-pre-filters-custom-${index}-delete-button">
-            <span>${g_localizedTexts.filterDeleteFilter}</span>
-          </button>
-        </div>
-      </div>
+          <div class="tool-shared-columns-parent" style="min-height: 90px">            
+            <div class="tool-shared-columns-50">
+              <label
+                ><span>${g_localizedTexts.filterLevelBlack}</span>
+                <input
+                  id="tool-pre-filters-custom-${index}-level-black-input"
+                  type="number"
+                  value="${filter.blackLevel}"
+                  step="0.01"
+                  min="0"
+                  max="1"
+              /></label>
+            </div>
+            <div class="tool-shared-columns-50">
+              <label
+                ><span>${g_localizedTexts.filterLevelWhite}</span>
+                <input
+                  id="tool-pre-filters-custom-${index}-level-white-input"
+                  type="number"
+                  value="${filter.whiteLevel}"
+                  step="0.01"
+                  min="0"
+                  max="1"
+              /></label>
+            </div>
+          </div>
+          <div class="tool-shared-columns-parent" style="min-height: 90px">
+            <div class="tool-shared-columns-50">
+              <label
+                ><span>${g_localizedTexts.filterGamma}</span>
+                <input
+                  id="tool-pre-filters-custom-${index}-gamma-input"
+                  type="number"
+                  value="${filter.gamma}"
+                  step="0.1"
+                  min="0.01"
+                  max="5"
+              /></label>
+            </div>
+            <div class="tool-shared-columns-50">
+              <label
+                ><span>${g_localizedTexts.filterBrightness}</span>
+                <input
+                  id="tool-pre-filters-custom-${index}-brightness-input"
+                  type="number"
+                  value="${filter.brightness}"
+                  step="0.1"
+                  min="0"
+                  max="5"
+              /></label>
+            </div>            
+          </div>
+          <div class="tool-shared-columns-parent" style="margin-bottom: 10px">
+            <div class="tool-shared-columns-50">
+              <label
+                ><span>${g_localizedTexts.filterContrast}</span>
+                <input
+                  id="tool-pre-filters-custom-${index}-contrast-input"
+                  type="number"
+                  value="${filter.contrast}"
+                  step="0.1"
+                  min="0"
+                  max="5"
+              /></label>
+            </div>
+            <div class="tool-shared-columns-50">
+              <label
+                ><span>${g_localizedTexts.filterSaturation}</span>
+                <input
+                  id="tool-pre-filters-custom-${index}-saturation-input"
+                  type="number"
+                  value="${filter.saturation}"
+                  step="0.1"
+                  min="0"
+                  max="5"
+              /></label>
+            </div>
+          </div>
+          <div class="tool-shared-columns-parent" style="margin-bottom: 10px">            
+            <div class="tool-shared-columns-50">
+              <label
+                ><span>${g_localizedTexts.filterSepia}</span>
+                <input
+                  id="tool-pre-filters-custom-${index}-sepia-input"
+                  type="number"
+                  value="${filter.sepia}"
+                  step="0.1"
+                  min="0"
+                  max="5"
+              /></label>
+            </div>
+          </div>
+          <div class="tool-shared-columns-parent" style="margin-bottom: 10px">
+            <div class="tool-shared-columns-50">
+              <button id="tool-pre-filters-custom-${index}-reset-button">
+                <span>${g_localizedTexts.filterResetValues}</span>
+              </button>
+            </div>
+            <div class="tool-shared-columns-50">
+              <button id="tool-pre-filters-custom-${index}-delete-button">
+                <span>${g_localizedTexts.filterDeleteFilter}</span>
+              </button>
+            </div>
+          </div>
+        </div>        
+      </div>      
     </div>
     `;
     parentDiv.innerHTML += html;
   }
+  // TODO: unfinished, need to solve the svg problem
+  // <div class="tool-shared-columns-25">
+  //   <label
+  //     ><span>${g_localizedTexts.filterPreview}</span>
+  //     <div class="tool-pre-filters-custom-preview-div"><img id="tool-pre-filters-custom-${index}-preview-src-img" src="../assets/images/filter_preview.jpg" style="margin-bottom:10px" />
+  //     <img id="tool-pre-filters-custom-${index}-preview-dst-img" src="../assets/images/filter_preview.jpg" /></div>
+  //   </label>
+  // </div>
+
   // connections and texts
   for (let index = 0; index < settings.customFilters.length; index++) {
     const filter = settings.customFilters[index];
@@ -1370,6 +1387,18 @@ function buildCustomFilters(settings, initializeAll = false) {
     const sepiaInput = document.querySelector(
       `#tool-pre-filters-custom-${index}-sepia-input`,
     );
+
+    // TODO: unfinished, need to solve the svg problem
+    // const previewImg = document.querySelector(
+    //   `#tool-pre-filters-custom-${index}-preview-dst-img`,
+    // );
+
+    // function updatePreviewImg(gamma) {
+    //   previewImg.setAttribute(
+    //     "style",
+    //     `filter: url(#gamma-levels-filter) brightness(${brightness}) contrast(var(--page-filter-custom-contrast)) saturate(var(--page-filter-custom-saturation)) sepia(var(--page-filter-custom-sepia)); image-rendering: high-quality;`,
+    //   );
+    // }
 
     function sendValues() {
       sendIpcToMain(
