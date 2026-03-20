@@ -769,7 +769,7 @@ function getFilters(settings) {
   let entries = [];
   entries.push({
     id: "filter-0",
-    label: _("menu-view-filter-0"),
+    label: _("menu-view-filter-none"),
     type: "radio",
     checked: settings.filterMode === 0,
     click() {
@@ -781,7 +781,9 @@ function getFilters(settings) {
     const filter = filters[index];
     let name = filter.name;
     if (name === "ACBR Old Paper") {
-      name = _("menu-view-filter-1");
+      name = _("menu-view-filter-oldpaper");
+    } else if (name === "ACBR Grayscale") {
+      name = _("menu-view-filter-grayscale");
     }
     entries.push({
       id: "filter-" + (index + 1),

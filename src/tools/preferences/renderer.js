@@ -1228,12 +1228,20 @@ function addFileToList(ul, file) {
 function buildCustomFilters(settings, initializeAll = false) {
   const parentDiv = document.querySelector("#tool-pre-filters-custom-div");
   parentDiv.innerHTML = "";
+  let imgSrc = "../assets/images/filter_preview.jpg";
+  const pagesContainer = document.querySelector("#pages-container");
+  if (pagesContainer) {
+    const pageImg = pagesContainer.querySelector(".page-img");
+    if (pageImg && pageImg.src) {
+      imgSrc = pageImg.src;
+    }
+  }
   for (let index = 0; index < settings.customFilters.length; index++) {
     const filter = settings.customFilters[index];
     let html = `
     <div class="tools-rectangle-children" style="margin-top: 20px">
       <div class="tool-shared-columns-parent" style="gap:20px">
-        <div class="tool-shared-columns-100">
+        <div class="tool-shared-columns-75">
           <label
           ><span>${g_localizedTexts.filterName}</span>
           <input
@@ -1345,21 +1353,37 @@ function buildCustomFilters(settings, initializeAll = false) {
               </button>
             </div>
           </div>
-        </div>        
+        </div>
+        <div class="tool-shared-columns-25">
+          <label
+            ><span>${g_localizedTexts.filterPreview}</span>
+            <div class="tool-pre-filters-custom-preview-div"><img id="tool-pre-filters-custom-${index}-preview-src-img" src="${imgSrc}" />
+            <i class="fa-solid fa-arrow-down"></i>
+            <img id="tool-pre-filters-custom-${index}-preview-dst-img" src="${imgSrc}" /></div>
+          </label>
+        </div>
       </div>      
     </div>
+    <svg
+      style="position: absolute; width: 0; height: 0; pointer-events: none"
+      aria-hidden="true"
+    >
+      <filter id="tool-pre-filters-custom-${index}-gamma-levels-filter">
+        <feComponentTransfer result="gammaOut">
+          <feFuncR type="gamma" exponent="1" />
+          <feFuncG type="gamma" exponent="1" />
+          <feFuncB type="gamma" exponent="1" />
+        </feComponentTransfer>
+        <feComponentTransfer in="gammaOut">
+          <feFuncR type="linear" slope="1" intercept="0" />
+          <feFuncG type="linear" slope="1" intercept="0" />
+          <feFuncB type="linear" slope="1" intercept="0" />
+        </feComponentTransfer>
+      </filter>
+    </svg>
     `;
     parentDiv.innerHTML += html;
   }
-  // TODO: unfinished, need to solve the svg problem
-  // <div class="tool-shared-columns-25">
-  //   <label
-  //     ><span>${g_localizedTexts.filterPreview}</span>
-  //     <div class="tool-pre-filters-custom-preview-div"><img id="tool-pre-filters-custom-${index}-preview-src-img" src="../assets/images/filter_preview.jpg" style="margin-bottom:10px" />
-  //     <img id="tool-pre-filters-custom-${index}-preview-dst-img" src="../assets/images/filter_preview.jpg" /></div>
-  //   </label>
-  // </div>
-
   // connections and texts
   for (let index = 0; index < settings.customFilters.length; index++) {
     const filter = settings.customFilters[index];
@@ -1388,23 +1412,76 @@ function buildCustomFilters(settings, initializeAll = false) {
       `#tool-pre-filters-custom-${index}-sepia-input`,
     );
 
-    // TODO: unfinished, need to solve the svg problem
-    // const previewImg = document.querySelector(
-    //   `#tool-pre-filters-custom-${index}-preview-dst-img`,
-    // );
+    const previewImg = document.querySelector(
+      `#tool-pre-filters-custom-${index}-preview-dst-img`,
+    );
 
-    // function updatePreviewImg(gamma) {
-    //   previewImg.setAttribute(
-    //     "style",
-    //     `filter: url(#gamma-levels-filter) brightness(${brightness}) contrast(var(--page-filter-custom-contrast)) saturate(var(--page-filter-custom-saturation)) sepia(var(--page-filter-custom-sepia)); image-rendering: high-quality;`,
-    //   );
-    // }
+    function updatePreviewImg(
+      gamma,
+      blackLevel,
+      whiteLevel,
+      brightness,
+      contrast,
+      saturation,
+      sepia,
+    ) {
+      const clamp = (num, min, max) => Math.min(Math.max(num, min), max);
+      // internal levels calculation
+      const levelsSlope = 1 / Math.max(whiteLevel - blackLevel, 0.01);
+      const levelsIntercept = -blackLevel * levelsSlope;
+      const safeGamma = clamp(gamma, 0.01, 5.0);
+      const safeLevelsSlope = clamp(levelsSlope, 0, 10.0);
+      const safeLevelsIntercept = clamp(levelsIntercept, -5.0, 5.0);
+      const safeBrightness = clamp(brightness, 0, 5.0);
+      const safeContrast = clamp(contrast, 0, 5.0);
+      const safeSaturation = clamp(saturation, 0, 5.0);
+      const safeSepia = clamp(sepia, 0, 5.0);
+      // svg filter
+      const gammaChannels = document.querySelectorAll(
+        `#tool-pre-filters-custom-${index}-gamma-levels-filter feComponentTransfer:first-of-type > [type='gamma']`,
+      );
+      gammaChannels.forEach((channel) =>
+        channel.setAttribute("exponent", safeGamma),
+      );
+      const levelChannels = document.querySelectorAll(
+        `#tool-pre-filters-custom-${index}-gamma-levels-filter  feComponentTransfer:nth-of-type(2) > [type='linear']`,
+      );
+      levelChannels.forEach((channel) => {
+        channel.setAttribute("slope", safeLevelsSlope);
+        channel.setAttribute("intercept", safeLevelsIntercept);
+      });
+      //
+      previewImg.setAttribute(
+        "style",
+        `filter: url(#tool-pre-filters-custom-${index}-gamma-levels-filter) brightness(${safeBrightness}) contrast(${safeContrast}) saturate(${safeSaturation}) sepia(${safeSepia}); image-rendering: high-quality;`,
+      );
+    }
+
+    updatePreviewImg(
+      parseFloat(gammaInput.value),
+      parseFloat(blackLevelInput.value),
+      parseFloat(whiteLevelInput.value),
+      parseFloat(brightnessInput.value),
+      parseFloat(contrastInput.value),
+      parseFloat(saturationInput.value),
+      parseFloat(sepiaInput.value),
+    );
 
     function sendValues() {
       sendIpcToMain(
         "set-custom-filter-values",
         index,
         nameInput.value,
+        parseFloat(gammaInput.value),
+        parseFloat(blackLevelInput.value),
+        parseFloat(whiteLevelInput.value),
+        parseFloat(brightnessInput.value),
+        parseFloat(contrastInput.value),
+        parseFloat(saturationInput.value),
+        parseFloat(sepiaInput.value),
+      );
+
+      updatePreviewImg(
         parseFloat(gammaInput.value),
         parseFloat(blackLevelInput.value),
         parseFloat(whiteLevelInput.value),

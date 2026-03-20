@@ -1194,9 +1194,14 @@ html[dir="rtl"] .tools-range-bubble {
 
 .tool-pre-filters-custom-preview-div {
   margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
 }
 
 .tool-pre-filters-custom-preview-div img {
+  position: relative;
   width: 100%;
   border: 1px solid var(--tools-input-border-color);
 }

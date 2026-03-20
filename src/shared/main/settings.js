@@ -33,6 +33,18 @@ exports.getOldPaperFilter = function () {
     sepia: 0.4,
   };
 };
+exports.getGrayscaleFilter = function () {
+  return {
+    name: "ACBR Grayscale",
+    gamma: 1,
+    blackLevel: 0,
+    whiteLevel: 1,
+    brightness: 1,
+    contrast: 1,
+    saturation: 0,
+    sepia: 0,
+  };
+};
 
 // NOTE: add new preferences to resetPreferences
 const g_defaultSettings = {
@@ -95,7 +107,7 @@ const g_defaultSettings = {
   ffmpegExeFolderPath: undefined,
   turnPageOnScrollBoundary: false,
   filterMode: 0, // 0: none
-  customFilters: [exports.getOldPaperFilter()],
+  customFilters: [exports.getOldPaperFilter(), exports.getGrayscaleFilter()],
   toolbarDirection: 0, // 0: infer from language, 1: ltr, 2: rtl
   homeScreen: {
     latestPosition: 0, // 0: after favs, 1: top, 2: bottom

@@ -427,6 +427,7 @@ function initOnIpcCallbacks() {
       let filters = settings.getValue("customFilters");
       filters = [];
       filters.push(settings.getOldPaperFilter());
+      filters.push(settings.getGrayscaleFilter());
       settings.setValue("customFilters", filters);
       sendIpcToRenderer("rebuild-filters", settings.get());
       settings.setValue("filterMode", 0);
