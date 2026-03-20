@@ -23,7 +23,6 @@ const tools = require("../../shared/main/tools");
 const history = require("../../shared/main/history");
 const localization = require("./main/localization");
 const { FileDataType } = require("../../shared/main/constants");
-const { scrollToCurrent } = require("../media-player/renderer/playlist");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
