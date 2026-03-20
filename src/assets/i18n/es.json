@@ -1,8 +1,6 @@
 {
   "@metadata": {
-    "authors": [
-      "Álvaro"
-    ],
+    "authors": ["Álvaro"],
     "last-updated": "2026-03-18",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.18.0",
@@ -49,9 +47,10 @@
   "menu-view-page-last": "Ir a última",
   "menu-view-page-choose": "Ir a...",
   "menu-view-filter": "Filtro",
-  "menu-view-filter-0": "Ninguno",
-  "menu-view-filter-1": "Papel viejo",
-  "menu-view-filter-2": "Personalizado",
+  "menu-view-filter-none": "Ninguno",
+  "menu-view-filter-oldpaper": "Papel viejo",
+  "menu-view-filter-custom": "Personalizado",
+  "menu-view-filter-grayscale": "Escala de grises",
   "menu-view-filter-managefilters": "Gestionar filtros",
   "menu-view-layout": "Disposición",
   "menu-view-layout-mode": "Modo",
