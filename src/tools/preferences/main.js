@@ -742,6 +742,7 @@ function initOnIpcCallbacks() {
 function updateLocalizedText() {
   sendIpcToRenderer(
     "update-localization",
+    settings.get(),
     localization.getLocalization(),
     localization.getTooltipsLocalization(),
     localization.getExtraLocalization(),

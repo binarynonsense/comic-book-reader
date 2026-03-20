@@ -1898,6 +1898,7 @@ function showModalConfirmSetMax(inputElement, value) {
 ///////////////////////////////////////////////////////////////////////////////
 
 function updateLocalization(
+  settings,
   localization,
   tooltipsLocalization,
   localizedTexts,
@@ -1925,5 +1926,6 @@ function updateLocalization(
     }
   }
   g_localizedTexts = localizedTexts;
+  buildCustomFilters(settings);
   updateColumnsHeight();
 }
