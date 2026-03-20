@@ -8,6 +8,7 @@
   --page-filter-custom-brightness: 1;
   --page-filter-custom-contrast: 1;
   --page-filter-custom-saturation: 1;
+  --page-filter-custom-sepia: 0;
 }
 
 #reader {
@@ -79,7 +80,8 @@
   filter: url(#gamma-levels-filter)
     brightness(var(--page-filter-custom-brightness))
     contrast(var(--page-filter-custom-contrast))
-    saturate(var(--page-filter-custom-saturation));
+    saturate(var(--page-filter-custom-saturation))
+    sepia(var(--page-filter-custom-sepia));
   image-rendering: high-quality;
 }
 

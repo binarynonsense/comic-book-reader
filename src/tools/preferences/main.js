@@ -353,16 +353,79 @@ function initOnIpcCallbacks() {
 
   on(
     "set-custom-filter-values",
-    (gamma, blackLevel, whiteLevel, brightness, contrast, saturation) => {
-      settings.setChildValue("customFilter", "gamma", gamma);
-      settings.setChildValue("customFilter", "blackLevel", blackLevel);
-      settings.setChildValue("customFilter", "whiteLevel", whiteLevel);
-      settings.setChildValue("customFilter", "brightness", brightness);
-      settings.setChildValue("customFilter", "contrast", contrast);
-      settings.setChildValue("customFilter", "saturation", saturation);
-      reader.setFilter(settings.getValue("filterMode"));
+    (
+      index,
+      name,
+      gamma,
+      blackLevel,
+      whiteLevel,
+      brightness,
+      contrast,
+      saturation,
+      sepia,
+    ) => {
+      try {
+        let filters = settings.getValue("customFilters");
+        filters[index].name = name;
+        filters[index].gamma = gamma;
+        filters[index].blackLevel = blackLevel;
+        filters[index].whiteLevel = whiteLevel;
+        filters[index].brightness = brightness;
+        filters[index].contrast = contrast;
+        filters[index].saturation = saturation;
+        filters[index].sepia = sepia;
+        settings.setValue("customFilters", filters);
+        reader.setFilter(settings.getValue("filterMode"));
+      } catch (error) {
+        log.editorError(error);
+      }
     },
   );
+
+  on("delete-custom-filter", (index) => {
+    try {
+      let filters = settings.getValue("customFilters");
+      filters.splice(index, 1);
+      settings.setValue("customFilters", filters);
+      const currentFilter = settings.getValue("filterMode");
+      if (currentFilter === index + 1) {
+        settings.setValue("filterMode", 0);
+      } else if (currentFilter > index + 1) {
+        settings.setValue("filterMode", index - 1);
+      }
+      reader.setFilter(settings.getValue("filterMode"));
+      sendIpcToRenderer("rebuild-filters", settings.get());
+      reader.rebuildMenuAndToolBars(false); // needed?
+    } catch (error) {
+      log.editorError(error);
+    }
+  });
+
+  on("add-custom-filter", () => {
+    try {
+      let filters = settings.getValue("customFilters");
+      filters.push(settings.getDefaultCustomFilter());
+      settings.setValue("customFilters", filters);
+      sendIpcToRenderer("rebuild-filters", settings.get());
+      reader.rebuildMenuAndToolBars(false); // needed?
+    } catch (error) {
+      log.editorError(error);
+    }
+  });
+
+  on("reset-custom-filters", () => {
+    try {
+      let filters = settings.getValue("customFilters");
+      filters = [];
+      filters.push(settings.getOldPaperFilter());
+      settings.setValue("customFilters", filters);
+      sendIpcToRenderer("rebuild-filters", settings.get());
+      settings.setValue("filterMode", 0);
+      reader.rebuildMenuAndToolBars(false); // needed?
+    } catch (error) {
+      log.editorError(error);
+    }
+  });
 
   on("set-cursor", (value) => {
     settings.setValue("cursorVisibility", value);

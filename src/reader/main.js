@@ -2226,18 +2226,21 @@ function setPageRotation(value, refreshPage) {
 }
 
 function setFilter(value, rebuildMenu = true) {
+  const numFilters = settings.getValue("customFilters").length + 1;
+  if (value < 0 || value > numFilters - 1) return;
   settings.setValue("filterMode", value);
-  menuBar.setFilterMode(value);
+  menuBar.setFilterMode(value, numFilters);
   sendIpcToPreload("update-menubar");
   let data;
-  if (value === 2) {
+  if (value > 0) {
     data = [
-      settings.getValue("customFilter").gamma ?? 1,
-      settings.getValue("customFilter").blackLevel ?? 0,
-      settings.getValue("customFilter").whiteLevel ?? 1,
-      settings.getValue("customFilter").brightness ?? 1,
-      settings.getValue("customFilter").contrast ?? 1,
-      settings.getValue("customFilter").saturation ?? 1,
+      settings.getValue("customFilters")[value - 1].gamma ?? 1,
+      settings.getValue("customFilters")[value - 1].blackLevel ?? 0,
+      settings.getValue("customFilters")[value - 1].whiteLevel ?? 1,
+      settings.getValue("customFilters")[value - 1].brightness ?? 1,
+      settings.getValue("customFilters")[value - 1].contrast ?? 1,
+      settings.getValue("customFilters")[value - 1].saturation ?? 1,
+      settings.getValue("customFilters")[value - 1].sepia ?? 0,
     ];
   }
   sendIpcToRenderer("set-filter", value, data);

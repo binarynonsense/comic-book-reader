@@ -20,6 +20,20 @@ const g_defaultSize = { width: 1280, height: 720 };
 const g_minSize = { width: 590, height: 410 };
 const g_scaleToHeightMin = 25;
 const g_scaleToHeightMax = 500;
+
+exports.getOldPaperFilter = function () {
+  return {
+    name: "ACBR Old Paper",
+    gamma: 1,
+    blackLevel: 0,
+    whiteLevel: 1,
+    brightness: 0.8,
+    contrast: 1,
+    saturation: 0.9,
+    sepia: 0.4,
+  };
+};
+
 // NOTE: add new preferences to resetPreferences
 const g_defaultSettings = {
   version: app.getVersion(),
@@ -80,15 +94,8 @@ const g_defaultSettings = {
   rarExeFolderPath: undefined,
   ffmpegExeFolderPath: undefined,
   turnPageOnScrollBoundary: false,
-  filterMode: 0, // 0: none, 1: old paper, 2: custom
-  customFilter: {
-    gamma: 1,
-    blackLevel: 0,
-    whiteLevel: 1,
-    brightness: 1,
-    contrast: 1,
-    saturation: 1,
-  },
+  filterMode: 0, // 0: none
+  customFilters: [exports.getOldPaperFilter()],
   toolbarDirection: 0, // 0: infer from language, 1: ltr, 2: rtl
   homeScreen: {
     latestPosition: 0, // 0: after favs, 1: top, 2: bottom
@@ -280,7 +287,7 @@ exports.resetPreferences = function () {
     "rarExeFolderPath",
     "ffmpegExeFolderPath",
     "turnPageOnScrollBoundary",
-    "customFilter",
+    "customFilters",
     "toolbarDirection",
     "homeScreen",
     "epubEbook",
@@ -578,7 +585,7 @@ function sanitize() {
   if (
     !Number.isInteger(g_settings.filterMode) ||
     g_settings.filterMode < 0 ||
-    g_settings.filterMode > 2
+    g_settings.filterMode >= g_settings.customFilters.length + 1
   ) {
     g_settings.filterMode = g_defaultSettings.filterMode;
   }
@@ -769,7 +776,7 @@ exports.save = function () {
   log.info("settings saved to: " + cfgFilePath);
 };
 
-function load(info) {
+function load() {
   log.debug("loading settings");
   setDefaultValues();
   try {
@@ -804,8 +811,8 @@ function load(info) {
             loadHomeScreen(loadedSettings[key]);
           } else if (key === "epubEbook") {
             loadEpubEbook(loadedSettings[key]);
-          } else if (key === "customFilter") {
-            loadCustomFilter(loadedSettings[key]);
+          } else if (key === "customFilters") {
+            loadCustomFilters(loadedSettings[key]);
           } else {
             g_settings[key] = loadedSettings[key];
           }
@@ -945,33 +952,60 @@ function loadEpubEbook(loaded) {
   }
 }
 
+function loadCustomFilters(loadedFilters) {
+  if (Array.isArray(loadedFilters)) {
+    g_settings.customFilters = [];
+    loadedFilters.forEach((loadedFilter) => {
+      loadCustomFilter(loadedFilter);
+    });
+  } else {
+    // keep the default
+  }
+}
+
+exports.getDefaultCustomFilter = function () {
+  return {
+    name: "Filter",
+    gamma: 1,
+    blackLevel: 0,
+    whiteLevel: 1,
+    brightness: 1,
+    contrast: 1,
+    saturation: 1,
+    sepia: 0,
+  };
+};
+
 function loadCustomFilter(loadedFilter) {
   if (isObject(loadedFilter)) {
-    for (const option in g_settings.customFilter) {
+    const filter = exports.getDefaultCustomFilter();
+    for (const option in filter) {
       let value = loadedFilter[option];
       let isValid = false;
-      if (value !== undefined && typeof value === "number") {
-        if (option === "gamma") {
-          if (value >= 0.01 && value <= 5) isValid = true;
-        } else if (option === "whiteLevel" || option === "blackLevel") {
-          if (value >= 0 && value <= 1) isValid = true;
-        } else {
-          if (value >= 0 && value <= 5) isValid = true;
+      if (value !== undefined) {
+        if (typeof value === "number") {
+          if (option === "gamma") {
+            if (value >= 0.01 && value <= 5) isValid = true;
+          } else if (option === "whiteLevel" || option === "blackLevel") {
+            if (value >= 0 && value <= 1) isValid = true;
+          } else {
+            if (value >= 0 && value <= 5) isValid = true;
+          }
+        } else if (typeof value === "string") {
+          if (option === "name") {
+            isValid = true;
+          }
         }
       }
       if (isValid) {
-        g_settings.customFilter[option] = value;
+        filter[option] = value;
       }
     }
-  }
-  if (
-    g_settings.customFilter["blackLevel"] >=
-    g_settings.customFilter["whiteLevel"]
-  ) {
-    if (g_settings.customFilter["whiteLevel"] <= 0)
-      g_settings.customFilter["whiteLevel"] = 0.01;
-    g_settings.customFilter["blackLevel"] =
-      g_settings.customFilter["whiteLevel"] - 0.01;
+    if (filter["blackLevel"] >= filter["whiteLevel"]) {
+      if (filter["whiteLevel"] <= 0) filter["whiteLevel"] = 0.01;
+      filter["blackLevel"] = filter["whiteLevel"] - 0.01;
+    }
+    g_settings.customFilters.push(filter);
   }
 }
 

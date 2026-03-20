@@ -105,10 +105,10 @@ exports.setPageRotation = function (value) {
   if (value === 2700) checkItem(getItem("rotation-270").cheed, true);
 };
 
-exports.setFilterMode = function (mode) {
-  checkItem(getItem("filter-0"), mode === 0);
-  checkItem(getItem("filter-1"), mode === 1);
-  checkItem(getItem("filter-2"), mode === 2);
+exports.setFilterMode = function (mode, numFilters) {
+  for (let index = 0; index < numFilters; index++) {
+    checkItem(getItem("filter-" + index), mode === index);
+  }
 };
 
 exports.setPagesDirection = function (direction) {

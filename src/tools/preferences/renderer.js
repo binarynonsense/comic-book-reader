@@ -265,104 +265,8 @@ function init(
       });
     }
 
-    // custom filter selects
-    {
-      let gammaInput = document.getElementById(
-        "tool-pre-filters-custom-gamma-input",
-      );
-      gammaInput.value = settings.customFilter.gamma;
-      let blackLevelInput = document.getElementById(
-        "tool-pre-filters-custom-level-black-input",
-      );
-      blackLevelInput.value = settings.customFilter.blackLevel;
-      let whiteLevelInput = document.getElementById(
-        "tool-pre-filters-custom-level-white-input",
-      );
-      whiteLevelInput.value = settings.customFilter.whiteLevel;
-      let brightnessInput = document.getElementById(
-        "tool-pre-filters-custom-brightness-input",
-      );
-      brightnessInput.value = settings.customFilter.brightness;
-      let contrastInput = document.getElementById(
-        "tool-pre-filters-custom-contrast-input",
-      );
-      contrastInput.value = settings.customFilter.contrast;
-      let saturationInput = document.getElementById(
-        "tool-pre-filters-custom-saturation-input",
-      );
-      saturationInput.value = settings.customFilter.saturation;
-
-      function onCustomFilterInputChange(input, min = 0) {
-        if (input.value < min) input.value = min;
-        if (input.value > 5) input.value = 5;
-        sendIpcToMain(
-          "set-custom-filter-values",
-          parseFloat(gammaInput.value),
-          parseFloat(blackLevelInput.value),
-          parseFloat(whiteLevelInput.value),
-          parseFloat(brightnessInput.value),
-          parseFloat(contrastInput.value),
-          parseFloat(saturationInput.value),
-        );
-      }
-      function onCustomFilterInputChangeLevels(input) {
-        if (input.value < 0) input.value = 0;
-        if (input.value > 1) input.value = 1;
-        if (blackLevelInput.value >= whiteLevelInput.value) {
-          if (whiteLevelInput.value <= 0) whiteLevelInput.value = 0.01;
-          blackLevelInput.value = whiteLevelInput.value - 0.01;
-        }
-        sendIpcToMain(
-          "set-custom-filter-values",
-          parseFloat(gammaInput.value),
-          parseFloat(blackLevelInput.value),
-          parseFloat(whiteLevelInput.value),
-          parseFloat(brightnessInput.value),
-          parseFloat(contrastInput.value),
-          parseFloat(saturationInput.value),
-        );
-      }
-
-      gammaInput.addEventListener("change", function (event) {
-        onCustomFilterInputChange(gammaInput, 0.01);
-      });
-      brightnessInput.addEventListener("change", function (event) {
-        onCustomFilterInputChange(brightnessInput);
-      });
-      contrastInput.addEventListener("change", function (event) {
-        onCustomFilterInputChange(contrastInput);
-      });
-      saturationInput.addEventListener("change", function (event) {
-        onCustomFilterInputChange(saturationInput);
-      });
-
-      blackLevelInput.addEventListener("change", function (event) {
-        onCustomFilterInputChangeLevels(blackLevelInput);
-      });
-      whiteLevelInput.addEventListener("change", function (event) {
-        onCustomFilterInputChangeLevels(whiteLevelInput);
-      });
-
-      document
-        .getElementById("tool-pre-filters-custom-reset-button")
-        .addEventListener("click", (event) => {
-          gammaInput.value = 1;
-          blackLevelInput.value = 0;
-          whiteLevelInput.value = 1;
-          brightnessInput.value = 1;
-          contrastInput.value = 1;
-          saturationInput.value = 1;
-          sendIpcToMain(
-            "set-custom-filter-values",
-            parseFloat(gammaInput.value),
-            parseFloat(blackLevelInput.value),
-            parseFloat(whiteLevelInput.value),
-            parseFloat(brightnessInput.value),
-            parseFloat(contrastInput.value),
-            parseFloat(saturationInput.value),
-          );
-        });
-    }
+    // custom filters
+    buildCustomFilters(settings, true);
 
     // history
     {
@@ -955,6 +859,14 @@ function initOnIpcCallbacks() {
     document.getElementById("tool-pre-language-select").value = locale;
   });
 
+  on("rebuild-filters", (settings) => {
+    buildCustomFilters(settings);
+    updateColumnsHeight();
+    document
+      .getElementById("tools")
+      .scrollTo(0, document.getElementById("tools").scrollHeight);
+  });
+
   on("set-temp-folder", (...args) => {
     updateTempFolder(...args);
   });
@@ -1303,6 +1215,246 @@ function addFileToList(ul, file) {
   //   li.appendChild(buttonSpan);
   // }
   ul.appendChild(li);
+}
+
+function buildCustomFilters(settings, initializeAll = false) {
+  const parentDiv = document.querySelector("#tool-pre-filters-custom-div");
+  parentDiv.innerHTML = "";
+  for (let index = 0; index < settings.customFilters.length; index++) {
+    const filter = settings.customFilters[index];
+    let html = `
+    <div class="tools-rectangle-children" style="margin-top: 20px">
+      <label
+        ><span>${g_localizedTexts.filterName}</span>
+        <input
+          id="tool-pre-filters-custom-${index}-name-input"
+          type="text"
+          value="${filter.name}"
+      /></label>
+      <div class="tool-shared-columns-parent" style="min-height: 90px">
+        <div class="tool-shared-columns-25-grow">
+          <label
+            ><span>${g_localizedTexts.filterGamma}</span>
+            <input
+              id="tool-pre-filters-custom-${index}-gamma-input"
+              type="number"
+              value="${filter.gamma}"
+              step="0.1"
+              min="0.01"
+              max="5"
+          /></label>
+        </div>
+        <div class="tool-shared-columns-25-grow">
+          <label
+            ><span>${g_localizedTexts.filterLevelBlack}</span>
+            <input
+              id="tool-pre-filters-custom-${index}-level-black-input"
+              type="number"
+              value="${filter.blackLevel}"
+              step="0.01"
+              min="0"
+              max="1"
+          /></label>
+        </div>
+        <div class="tool-shared-columns-25-grow">
+          <label
+            ><span>${g_localizedTexts.filterLevelWhite}</span>
+            <input
+              id="tool-pre-filters-custom-${index}-level-white-input"
+              type="number"
+              value="${filter.whiteLevel}"
+              step="0.01"
+              min="0"
+              max="1"
+          /></label>
+        </div>
+      </div>
+      <div class="tool-shared-columns-parent" style="min-height: 90px">
+        <div class="tool-shared-columns-25">
+          <label
+            ><span>${g_localizedTexts.filterBrightness}</span>
+            <input
+              id="tool-pre-filters-custom-${index}-brightness-input"
+              type="number"
+              value="${filter.brightness}"
+              step="0.1"
+              min="0"
+              max="5"
+          /></label>
+        </div>
+        <div class="tool-shared-columns-25">
+          <label
+            ><span>${g_localizedTexts.filterContrast}</span>
+            <input
+              id="tool-pre-filters-custom-${index}-contrast-input"
+              type="number"
+              value="${filter.contrast}"
+              step="0.1"
+              min="0"
+              max="5"
+          /></label>
+        </div>
+        <div class="tool-shared-columns-25">
+          <label
+            ><span>${g_localizedTexts.filterSaturation}</span>
+            <input
+              id="tool-pre-filters-custom-${index}-saturation-input"
+              type="number"
+              value="${filter.saturation}"
+              step="0.1"
+              min="0"
+              max="5"
+          /></label>
+        </div>
+        <div class="tool-shared-columns-25">
+          <label
+            ><span>${g_localizedTexts.filterSepia}</span>
+            <input
+              id="tool-pre-filters-custom-${index}-sepia-input"
+              type="number"
+              value="${filter.sepia}"
+              step="0.1"
+              min="0"
+              max="5"
+          /></label>
+        </div>
+      </div>
+      <div class="tool-shared-columns-parent" style="margin-bottom: 10px">
+        <div class="tool-shared-columns-50">
+          <button id="tool-pre-filters-custom-${index}-reset-button">
+            <span>${g_localizedTexts.filterResetValues}</span>
+          </button>
+        </div>
+        <div class="tool-shared-columns-50">
+          <button id="tool-pre-filters-custom-${index}-delete-button">
+            <span>${g_localizedTexts.filterDeleteFilter}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+    `;
+    parentDiv.innerHTML += html;
+  }
+  // connections and texts
+  for (let index = 0; index < settings.customFilters.length; index++) {
+    const filter = settings.customFilters[index];
+    const nameInput = document.querySelector(
+      `#tool-pre-filters-custom-${index}-name-input`,
+    );
+    const gammaInput = document.querySelector(
+      `#tool-pre-filters-custom-${index}-gamma-input`,
+    );
+    const blackLevelInput = document.querySelector(
+      `#tool-pre-filters-custom-${index}-level-black-input`,
+    );
+    const whiteLevelInput = document.querySelector(
+      `#tool-pre-filters-custom-${index}-level-white-input`,
+    );
+    const brightnessInput = document.querySelector(
+      `#tool-pre-filters-custom-${index}-brightness-input`,
+    );
+    const contrastInput = document.querySelector(
+      `#tool-pre-filters-custom-${index}-contrast-input`,
+    );
+    const saturationInput = document.querySelector(
+      `#tool-pre-filters-custom-${index}-saturation-input`,
+    );
+    const sepiaInput = document.querySelector(
+      `#tool-pre-filters-custom-${index}-sepia-input`,
+    );
+
+    function sendValues() {
+      sendIpcToMain(
+        "set-custom-filter-values",
+        index,
+        nameInput.value,
+        parseFloat(gammaInput.value),
+        parseFloat(blackLevelInput.value),
+        parseFloat(whiteLevelInput.value),
+        parseFloat(brightnessInput.value),
+        parseFloat(contrastInput.value),
+        parseFloat(saturationInput.value),
+        parseFloat(sepiaInput.value),
+      );
+    }
+
+    function onCustomFilterInputChange(input, min = 0) {
+      if (input.type === "text") {
+        // set default?
+      } else {
+        if (input.value < min) input.value = min;
+        if (input.value > 5) input.value = 5;
+      }
+      sendValues();
+    }
+
+    function onCustomFilterInputChangeLevels(input) {
+      if (input.value < 0) input.value = 0;
+      if (input.value > 1) input.value = 1;
+      if (blackLevelInput.value >= whiteLevelInput.value) {
+        if (whiteLevelInput.value <= 0) whiteLevelInput.value = 0.01;
+        blackLevelInput.value = whiteLevelInput.value - 0.01;
+      }
+      sendValues(index);
+    }
+
+    nameInput.addEventListener("change", function (event) {
+      onCustomFilterInputChange(nameInput, 0.01);
+    });
+    gammaInput.addEventListener("change", function (event) {
+      onCustomFilterInputChange(gammaInput, 0.01);
+    });
+    brightnessInput.addEventListener("change", function (event) {
+      onCustomFilterInputChange(brightnessInput);
+    });
+    contrastInput.addEventListener("change", function (event) {
+      onCustomFilterInputChange(contrastInput);
+    });
+    saturationInput.addEventListener("change", function (event) {
+      onCustomFilterInputChange(saturationInput);
+    });
+    sepiaInput.addEventListener("change", function (event) {
+      onCustomFilterInputChange(sepiaInput);
+    });
+    blackLevelInput.addEventListener("change", function (event) {
+      onCustomFilterInputChangeLevels(blackLevelInput);
+    });
+    whiteLevelInput.addEventListener("change", function (event) {
+      onCustomFilterInputChangeLevels(whiteLevelInput);
+    });
+    //
+    document
+      .getElementById(`tool-pre-filters-custom-${index}-reset-button`)
+      .addEventListener("click", (event) => {
+        nameInput.value = g_localizedTexts.filterCustom;
+        gammaInput.value = 1;
+        blackLevelInput.value = 0;
+        whiteLevelInput.value = 1;
+        brightnessInput.value = 1;
+        contrastInput.value = 1;
+        saturationInput.value = 1;
+        sepiaInput.value = 0;
+        sendValues();
+      });
+    document
+      .getElementById(`tool-pre-filters-custom-${index}-delete-button`)
+      .addEventListener("click", (event) => {
+        sendIpcToMain("delete-custom-filter", index);
+      });
+  }
+
+  if (initializeAll) {
+    document
+      .getElementById(`tool-pre-filters-add-button`)
+      .addEventListener("click", (event) => {
+        sendIpcToMain("add-custom-filter");
+      });
+    document
+      .getElementById(`tool-pre-filters-reset-button`)
+      .addEventListener("click", (event) => {
+        sendIpcToMain("reset-custom-filters");
+      });
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////

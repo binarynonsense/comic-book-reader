@@ -379,99 +379,23 @@
         <span id="tool-pre-filters-text"></span>
       </h3>
       <div class="tools-columns-right-subsection">
-        <!-- custom -->
-        <label><span id="tool-pre-filters-custom-text"></span></label>
-        <div class="tools-option-children" style="margin-bottom: 10px">
-          <div class="tool-shared-columns-parent" style="min-height: 90px">
-            <div class="tool-shared-columns-25-grow">
-              <label
-                ><span id="tool-pre-filters-custom-gamma-input-text"></span>
-                <input
-                  id="tool-pre-filters-custom-gamma-input"
-                  type="number"
-                  value="1"
-                  step="0.1"
-                  min="0.01"
-                  max="5"
-              /></label>
-            </div>
-            <div class="tool-shared-columns-25-grow">
-              <label
-                ><span
-                  id="tool-pre-filters-custom-level-black-input-text"
-                ></span>
-                <input
-                  id="tool-pre-filters-custom-level-black-input"
-                  type="number"
-                  value="0"
-                  step="0.01"
-                  min="0"
-                  max="1"
-              /></label>
-            </div>
-            <div class="tool-shared-columns-25-grow">
-              <label
-                ><span
-                  id="tool-pre-filters-custom-level-white-input-text"
-                ></span>
-                <input
-                  id="tool-pre-filters-custom-level-white-input"
-                  type="number"
-                  value="1"
-                  step="0.01"
-                  min="0"
-                  max="1"
-              /></label>
-            </div>
+        <div class="tool-shared-columns-parent">
+          <div class="tool-shared-columns-50">
+            <button id="tool-pre-filters-add-button">
+              <span id="tool-pre-filters-add-button-text"></span>
+            </button>
           </div>
-          <div class="tool-shared-columns-parent" style="min-height: 90px">
-            <div class="tool-shared-columns-25-grow">
-              <label
-                ><span
-                  id="tool-pre-filters-custom-brightness-input-text"
-                ></span>
-                <input
-                  id="tool-pre-filters-custom-brightness-input"
-                  type="number"
-                  value="1"
-                  step="0.1"
-                  min="0"
-                  max="5"
-              /></label>
-            </div>
-            <div class="tool-shared-columns-25-grow">
-              <label
-                ><span id="tool-pre-filters-custom-contrast-input-text"></span>
-                <input
-                  id="tool-pre-filters-custom-contrast-input"
-                  type="number"
-                  value="1"
-                  step="0.1"
-                  min="0"
-                  max="5"
-              /></label>
-            </div>
-            <div class="tool-shared-columns-25-grow">
-              <label
-                ><span
-                  id="tool-pre-filters-custom-saturation-input-text"
-                ></span>
-                <input
-                  id="tool-pre-filters-custom-saturation-input"
-                  type="number"
-                  value="1"
-                  step="0.1"
-                  min="0"
-                  max="5"
-              /></label>
-            </div>
+          <div class="tool-shared-columns-50">
+            <button id="tool-pre-filters-reset-button">
+              <span id="tool-pre-filters-reset-button-text"></span>
+            </button>
           </div>
-          <button id="tool-pre-filters-custom-reset-button">
-            <span id="tool-pre-filters-custom-reset-button-text"></span>
-          </button>
-          <div id="tool-pre-filters-custom-anchor"></div>
         </div>
+        <!-- custom -->
+        <div id="tool-pre-filters-custom-div"></div>
+        <!-- end custom filters div -->
       </div>
+      <div id="tool-pre-filters-custom-anchor"></div>
     </div>
     <!--  home screen -->
     <div
@@ -564,31 +488,6 @@
               value="1"
             ></option></select
         ></label>
-        <!-- <div id="tool-pre-rarfolder-div">
-          <label>
-            <span id="tool-pre-rarfolder-text"></span>
-            <i
-              id="tool-pre-tooltip-rarfolder"
-              class="fas fa-question-circle tools-tooltip-button"
-              title="tooltip"
-            ></i>
-            <ul id="tool-pre-rarfolder-ul" class="tools-collection-ul"></ul>
-          </label>
-          <div class="tool-shared-columns-parent">
-            <button
-              id="tool-pre-rarfolder-update-button"
-              class="tool-shared-columns-50-grow"
-            >
-              <span id="tool-pre-rarfolder-update-button-text"></span>
-            </button>
-            <button
-              id="tool-pre-rarfolder-reset-button"
-              class="tool-shared-columns-50-grow"
-            >
-              <span id="tool-pre-rarfolder-reset-button-text"></span>
-            </button>
-          </div>
-        </div> -->
       </div>
       <!-- pdf -->
       <h3 class="tools-h3-extra-margin-top">

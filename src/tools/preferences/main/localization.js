@@ -26,6 +26,18 @@ exports.getExtraLocalization = function () {
     modalChangeMaxMessageText: _("tool-hst-modal-changemaxfiles-message"),
     modalClearAllOkText: _("ui-modal-prompt-button-yes"),
     modalClearAllCancelText: _("ui-modal-prompt-button-cancel"),
+    //
+    filterCustom: _("tool-pre-filters-custom"),
+    filterName: _("tool-radio-search-options-orderby-name"),
+    filterGamma: _("tool-pre-filters-custom-gamma") + " (0.01-5.0)",
+    filterLevelWhite: _("tool-pre-filters-custom-level-white") + " (0.0-1.0)",
+    filterLevelBlack: _("tool-pre-filters-custom-level-black") + " (0.0-1.0)",
+    filterBrightness: _("tool-pre-filters-custom-brightness") + " (0.0-5.0)",
+    filterContrast: _("tool-pre-filters-custom-contrast") + " (0.0-5.0)",
+    filterSaturation: _("tool-pre-filters-custom-saturation") + " (0.0-5.0)",
+    filterSepia: _("tool-pre-filters-custom-sepia") + " (0.0-5.0)",
+    filterResetValues: _("tool-pre-filters-custom-resetvalues").toUpperCase(),
+    filterDeleteFilter: _("tool-pre-filters-custom-deletefilter").toUpperCase(),
   };
 };
 
@@ -391,36 +403,12 @@ exports.getLocalization = function () {
       text: _("tool-pre-filters"),
     },
     {
-      id: "tool-pre-filters-custom-text",
-      text: _("tool-pre-filters-custom"),
+      id: "tool-pre-filters-add-button-text",
+      text: _("tool-pre-filters-addnewfilter").toUpperCase(),
     },
     {
-      id: "tool-pre-filters-custom-gamma-input-text",
-      text: _("tool-pre-filters-custom-gamma") + " (0.01-5.0)",
-    },
-    {
-      id: "tool-pre-filters-custom-level-black-input-text",
-      text: _("tool-pre-filters-custom-level-black") + " (0.0-1.0)",
-    },
-    {
-      id: "tool-pre-filters-custom-level-white-input-text",
-      text: _("tool-pre-filters-custom-level-white") + " (0.0-1.0)",
-    },
-    {
-      id: "tool-pre-filters-custom-brightness-input-text",
-      text: _("tool-pre-filters-custom-brightness") + " (0.0-5.0)",
-    },
-    {
-      id: "tool-pre-filters-custom-contrast-input-text",
-      text: _("tool-pre-filters-custom-contrast") + " (0.0-5.0)",
-    },
-    {
-      id: "tool-pre-filters-custom-saturation-input-text",
-      text: _("tool-pre-filters-custom-saturation") + " (0.0-5.0)",
-    },
-    {
-      id: "tool-pre-filters-custom-reset-button-text",
-      text: _("tool-shared-ui-reset").toUpperCase(),
+      id: "tool-pre-filters-reset-button-text",
+      text: _("tool-pre-filters-resetfilters").toUpperCase(),
     },
     //////////////////////////////////////////////
     {

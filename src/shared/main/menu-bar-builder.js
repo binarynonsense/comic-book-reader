@@ -698,38 +698,12 @@ function getNormalMenu(settings, history) {
           id: "view-filter",
           label: _("menu-view-filter"),
           submenu: [
-            {
-              id: "filter-0",
-              label: _("menu-view-filter-0"),
-              type: "radio",
-              checked: settings.filterMode === 0,
-              click() {
-                reader.onMenuFilterValue(0);
-              },
-            },
-            {
-              id: "filter-1",
-              label: _("menu-view-filter-1"),
-              type: "radio",
-              checked: settings.filterMode === 1,
-              click() {
-                reader.onMenuFilterValue(1);
-              },
-            },
-            {
-              id: "filter-2",
-              label: _("menu-view-filter-2"),
-              type: "radio",
-              checked: settings.filterMode === 2,
-              click() {
-                reader.onMenuFilterValue(2);
-              },
-            },
+            ...getFilters(settings),
             {
               type: "separator",
             },
             {
-              label: _("menu-view-filter-adjustfilters"),
+              label: _("menu-view-filter-managefilters"),
               click() {
                 core.onMenuPreferences(
                   2, // reader section
@@ -789,6 +763,37 @@ function getNormalMenu(settings, history) {
   //   menuTemplate[2].submenu = menuTemplate[2].submenu.slice(0, -1);
   // }
   return menu;
+}
+
+function getFilters(settings) {
+  let entries = [];
+  entries.push({
+    id: "filter-0",
+    label: _("menu-view-filter-0"),
+    type: "radio",
+    checked: settings.filterMode === 0,
+    click() {
+      reader.onMenuFilterValue(0);
+    },
+  });
+  const filters = settings.customFilters;
+  for (let index = 0; index < filters.length; index++) {
+    const filter = filters[index];
+    let name = filter.name;
+    if (name === "ACBR Old Paper") {
+      name = _("menu-view-filter-1");
+    }
+    entries.push({
+      id: "filter-" + (index + 1),
+      label: name,
+      type: "radio",
+      checked: settings.filterMode === index + 1,
+      click() {
+        reader.onMenuFilterValue(index + 1);
+      },
+    });
+  }
+  return entries;
 }
 
 function getHomeScreenMenu(settings, history) {

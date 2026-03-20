@@ -388,7 +388,7 @@ function initOnIpcCallbacks() {
   on("set-filter", (value, data) => {
     g_filterMode = value;
     let pages = document.querySelectorAll(".page");
-    if (value === 2) {
+    if (value > 0) {
       setCustomFilter(...data);
     }
     pages.forEach((page) => {
@@ -620,14 +620,9 @@ export function setScrollBarsPosition(position) {
 }
 
 export function setFilterClass(element) {
-  if (g_filterMode === 1) {
-    element.classList.add("page-filter-old-page");
-    element.classList.remove("page-filter-custom");
-  } else if (g_filterMode === 2) {
-    element.classList.remove("page-filter-old-page");
+  if (g_filterMode > 0) {
     element.classList.add("page-filter-custom");
   } else {
-    element.classList.remove("page-filter-old-page");
     element.classList.remove("page-filter-custom");
   }
 }
@@ -639,6 +634,7 @@ function setCustomFilter(
   brightness = 1,
   contrast = 1,
   saturation = 1,
+  sepia = 0,
 ) {
   const clamp = (num, min, max) => Math.min(Math.max(num, min), max);
   // internal levels calculation
@@ -650,6 +646,7 @@ function setCustomFilter(
   const safeBrightness = clamp(brightness, 0, 5.0);
   const safeContrast = clamp(contrast, 0, 5.0);
   const safeSaturation = clamp(saturation, 0, 5.0);
+  const safeSepia = clamp(sepia, 0, 5.0);
   // svg filter
   const gammaChannels = document.querySelectorAll(
     "#gamma-levels-filter feComponentTransfer:first-of-type > [type='gamma']",
@@ -669,6 +666,7 @@ function setCustomFilter(
   rootStyle.setProperty("--page-filter-custom-brightness", safeBrightness);
   rootStyle.setProperty("--page-filter-custom-contrast", safeContrast);
   rootStyle.setProperty("--page-filter-custom-saturation", safeSaturation);
+  rootStyle.setProperty("--page-filter-custom-sepia", safeSepia);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
