@@ -412,6 +412,16 @@ function initOnIpcCallbacks() {
     }
   });
 
+  on("reset-custom-filters-warning", () => {
+    sendIpcToRenderer(
+      "show-custom-filters-reset-warning-modal",
+      _("tool-pre-filters-resetfilters"),
+      _("tool-pre-filters-resetfilters-warning"),
+      _("ui-modal-prompt-button-yes"),
+      _("ui-modal-prompt-button-cancel"),
+    );
+  });
+
   on("reset-custom-filters", () => {
     try {
       let filters = settings.getValue("customFilters");

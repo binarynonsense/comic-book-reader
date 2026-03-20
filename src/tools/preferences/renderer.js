@@ -899,6 +899,14 @@ function initOnIpcCallbacks() {
     showNavKeysChangeModal(...args);
   });
 
+  on("show-custom-filters-reset-warning-modal", (...args) => {
+    if (g_openModal) {
+      modals.close(g_openModal);
+      modalClosed();
+    }
+    showCustomFiltersResetModal(...args);
+  });
+
   on("show-nav-keys-resetall-modal", (...args) => {
     if (g_openModal) {
       modals.close(g_openModal);
@@ -1452,7 +1460,7 @@ function buildCustomFilters(settings, initializeAll = false) {
     document
       .getElementById(`tool-pre-filters-reset-button`)
       .addEventListener("click", (event) => {
-        sendIpcToMain("reset-custom-filters");
+        sendIpcToMain("reset-custom-filters-warning");
       });
   }
 }
@@ -1562,6 +1570,38 @@ function showOKModal(title, message, textButton) {
       key: "Escape",
     },
     buttons: buttons,
+  });
+}
+
+function showCustomFiltersResetModal(title, message, yesText, cancelText) {
+  if (g_openModal) {
+    return;
+  }
+  g_openModal = modals.show({
+    title: title,
+    message: message,
+    zIndexDelta: 5,
+    close: {
+      callback: () => {
+        modalClosed();
+      },
+      key: "Escape",
+    },
+    buttons: [
+      {
+        text: yesText.toUpperCase(),
+        callback: () => {
+          sendIpcToMain("reset-custom-filters");
+          modalClosed();
+        },
+      },
+      {
+        text: cancelText.toUpperCase(),
+        callback: () => {
+          modalClosed();
+        },
+      },
+    ],
   });
 }
 
