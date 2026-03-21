@@ -79,7 +79,7 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB, FB2, MOBI and PDF fil
 >
 > [2]: Images only.
 >
-> [3]: Creating and modifying CBR files are disabled by default. They can be enabled in the preferences but require a third-party command-line tool ([rar](https://www.win-rar.com/cmd-shell-mode.html?&L=0) from WinRAR) to be installed in the system.
+> [3]: Creating and modifying CBR files are disabled by default. They can be enabled in the preferences but require a third-party command-line tool ([rar](https://github.com/binarynonsense/comic-book-reader/wiki/Third%E2%80%90Party-Executables-(rar,-ffmpeg...))) to be installed in the system.
 >
 > [4]: Only legacy MOBI (MOBI 7) files are supported. Newer formats like KF8 (AZW3) are not compatible.
 
