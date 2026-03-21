@@ -1,7 +1,7 @@
 {
   "@metadata": {
     "authors": ["trzyglow"],
-    "last-updated": "2026-03-20",
+    "last-updated": "2026-03-21",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.18.0",
     "pre-release": "false",
@@ -50,7 +50,7 @@
   "menu-view-filter-none": "Keiner",
   "menu-view-filter-oldpaper": "Altes Papier",
   "menu-view-filter-custom": "Benutzerdefiniert",
-  "[NEEDS TRANSLATION]menu-view-filter-grayscale": "Grayscale",
+  "menu-view-filter-grayscale": "Graustufen",
   "menu-view-filter-managefilters": "Filter verwalten",
   "menu-view-layout": "Layout",
   "menu-view-layout-mode": "Modus",
