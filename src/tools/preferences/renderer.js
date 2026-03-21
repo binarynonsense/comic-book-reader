@@ -760,7 +760,7 @@ function init(
     if (scrollTo) {
       document.getElementById(scrollTo).scrollIntoView({
         behavior: "instant",
-        block: "nearest",
+        block: "start",
         inline: "nearest",
       });
     }
