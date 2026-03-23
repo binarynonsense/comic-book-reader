@@ -315,7 +315,22 @@ function getToolsSubmenu() {
         },
       ],
     },
+    ...getWorkInProgressSubmenu(),
   ];
+}
+
+function getWorkInProgressSubmenu() {
+  if (!core.isDev() || core.isRelease()) {
+    return [];
+  } else {
+    return [
+      {
+        id: "tools-wip",
+        label: "[DEV] Work in Progress",
+        submenu: [],
+      },
+    ];
+  }
 }
 
 function getNormalMenu(settings, history) {
