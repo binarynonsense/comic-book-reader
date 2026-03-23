@@ -57,7 +57,7 @@ exports.getCurrentToolLocalizedName = function () {
 };
 
 exports.switchTool = function (tool, ...args) {
-  if (g_currentTool !== tool) {
+  if (g_currentTool !== tool && g_tools[tool] !== undefined) {
     if (g_tools[g_currentTool].close) g_tools[g_currentTool].close();
     g_currentTool = tool;
     if (g_tools[g_currentTool] !== "reader") {
