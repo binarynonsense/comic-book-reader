@@ -1168,6 +1168,10 @@ if (!gotTheLock) {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+// NOTE: (2026/03/23) I'm using v37.X of electron as v40.X broke the youtube
+// player due to changes in header security and I wasn't able to fix it for now.
+// TODO: keep trying to find a solution.
+
 // NOTE: (2025/07/18) I'm using v0.33.5 of the sharp module as v0.34.3
 // was giving errors during conversions on Linux.
 // ref: https://github.com/lovell/sharp/issues/1449
