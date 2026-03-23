@@ -293,6 +293,7 @@
   "mp-tooltip-button-volume-off": "音量をオフ",
   "mp-tooltip-button-volume-on": "音量をオン",
   "mp-tooltip-button-playlist": "再生リストを表示/非表示",
+  "[NEEDS TRANSLATION]mp-tooltip-button-takescreenshot": "Take Screenshot",
   "mp-menu-hide": "非表示",
   "mp-menu-playlist": "再生リスト",
   "mp-menu-playlist-tracks": "トラック",

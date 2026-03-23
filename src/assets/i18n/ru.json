@@ -293,6 +293,7 @@
   "mp-tooltip-button-volume-off": "Отключить звук",
   "mp-tooltip-button-volume-on": "Включить звук",
   "mp-tooltip-button-playlist": "Переключить плейлист",
+  "[NEEDS TRANSLATION]mp-tooltip-button-takescreenshot": "Take Screenshot",
   "mp-menu-hide": "Скрыть",
   "mp-menu-playlist": "Плейлист",
   "mp-menu-playlist-tracks": "Треки",

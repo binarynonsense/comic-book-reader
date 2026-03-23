@@ -291,6 +291,7 @@
   "mp-tooltip-button-volume-off": "Apagar volumen",
   "mp-tooltip-button-volume-on": "Encender volumen",
   "mp-tooltip-button-playlist": "Alternar lista de reproducción",
+  "mp-tooltip-button-takescreenshot": "Capturar pantalla",
   "mp-menu-hide": "Esconder",
   "mp-menu-playlist": "Lista de reproducción",
   "mp-menu-playlist-tracks": "Pistas",

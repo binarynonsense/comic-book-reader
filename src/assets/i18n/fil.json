@@ -293,6 +293,7 @@
   "mp-tooltip-button-volume-off": "i-mute ang tunog",
   "mp-tooltip-button-volume-on": "i-on ang tunog",
   "mp-tooltip-button-playlist": "i-toggle ang playlist",
+  "[NEEDS TRANSLATION]mp-tooltip-button-takescreenshot": "Take Screenshot",
   "mp-menu-hide": "itago",
   "[NEEDS TRANSLATION]mp-menu-playlist": "Playlist",
   "[NEEDS TRANSLATION]mp-menu-playlist-tracks": "Tracks",
