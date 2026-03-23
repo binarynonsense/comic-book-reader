@@ -70,6 +70,10 @@ exports.getLocalization = function () {
       text: `${_("mp-menu-spectrum")} (${_("menu-shared-toggle")})`,
     },
     {
+      id: "mp-button-takescreenshot",
+      text: _("mp-tooltip-button-takescreenshot"),
+    },
+    {
       id: "mp-button-settings",
       text: _("tool-shared-tab-settings"),
     },

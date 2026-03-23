@@ -247,6 +247,45 @@ function initOnIpcCallbacks() {
   on("on-add-subtitle-file-clicked", (...args) => {
     callAddSubtitleFromFileDialog(...args);
   });
+
+  on("save-screenshot", (buffer) => {
+    try {
+      function getScreenshotName() {
+        const now = new Date();
+        const pad = (num, size = 2) => String(num).padStart(size, "0");
+        const date =
+          now.getFullYear() + pad(now.getMonth() + 1) + pad(now.getDate());
+        const time =
+          pad(now.getHours()) +
+          pad(now.getMinutes()) +
+          pad(now.getSeconds()) +
+          pad(now.getMilliseconds(), 3);
+        return `Screenshot_${date}_${time}.jpg`;
+      }
+      const outputFolderPath = appUtils.getScreenshotsFolderPath();
+      if (!fs.existsSync(outputFolderPath)) {
+        log.editor("creating screenshots folder: " + outputFolderPath);
+        fs.mkdirSync(outputFolderPath, { recursive: true });
+      }
+      const outputFilePath = path.join(outputFolderPath, getScreenshotName());
+      try {
+        fs.writeFileSync(outputFilePath, buffer, { flag: "wx" });
+      } catch (error) {
+        // error.code === "EEXIST"
+        throw error;
+      }
+      log.debug(_("ui-modal-info-imagesaved") + ": " + outputFilePath);
+      core.sendIpcToCoreRenderer(
+        "show-toast-open-path-in-browser",
+        _("ui-modal-info-imagesaved"),
+        4000,
+        outputFilePath,
+        true,
+      );
+    } catch (error) {
+      log.editorError(error);
+    }
+  });
 }
 
 // HANDLE

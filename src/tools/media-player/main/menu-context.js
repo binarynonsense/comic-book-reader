@@ -382,6 +382,13 @@ exports.show = function (type, params, data, sendIpcToRenderer, openRecent) {
               ...getVideoAspectRatios(data),
             ],
           },
+          {
+            label: _("mp-tooltip-button-takescreenshot"),
+            enabled: data.buttonStates.takescreenshot,
+            click() {
+              sendIpcToRenderer("on-context-menu", "takescreenshot");
+            },
+          },
         ],
       },
     ];

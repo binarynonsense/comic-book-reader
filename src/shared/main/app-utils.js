@@ -113,6 +113,10 @@ function getUserDataFolderPath() {
 }
 exports.getUserDataFolderPath = getUserDataFolderPath;
 
+exports.getScreenshotsFolderPath = function () {
+  return path.join(app.getPath("userData"), "acbr-screenshots");
+};
+
 function getExeFolderPath() {
   if (process.platform === "linux") {
     if (process.env.APPIMAGE) {
@@ -315,6 +319,7 @@ function cleanUpUserDataFolder() {
       "acbr-user-extensions",
       "acbr.log",
       "acbr-prev.log",
+      "acbr-screenshots",
       //
       "acbr-fork-debug.log",
     ];

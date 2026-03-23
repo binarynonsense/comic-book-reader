@@ -868,6 +868,35 @@ export function onContextMenu(params) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+// HELPERS ////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+async function takeVideoScreenshot() {
+  try {
+    const videoElement = g_player.engine;
+    const canvas = document.createElement("canvas");
+    canvas.width = videoElement.videoWidth;
+    canvas.height = videoElement.videoHeight;
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+    // const dataUrl = canvas.toDataURL("image/jpg");
+    // const link = document.createElement("a");
+    // link.href = dataUrl;
+    // link.download = "screenshot.jpg";
+    // link.click();
+    //
+    let blob = await new Promise((resolve) =>
+      canvas.toBlob(resolve, "image/jpeg", 0.8),
+    );
+    let arrayBuffer = await blob.arrayBuffer();
+    let buffer = new Uint8Array(arrayBuffer);
+    sendIpcToMain("save-screenshot", buffer);
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
 // SUBTITLES //////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -1034,6 +1063,9 @@ function getButtonStates() {
       !g_player.html.buttonStop.classList.contains("mp-hidden"),
     next: !g_player.html.buttonNext.classList.contains("mp-disabled"),
     prev: !g_player.html.buttonPrev.classList.contains("mp-disabled"),
+    takescreenshot:
+      !g_player.html.buttonTakeScreenshot.classList.contains("mp-disabled") &&
+      !g_player.html.buttonTakeScreenshot.classList.contains("mp-hidden"),
   };
 }
 
@@ -1119,6 +1151,12 @@ function initUI() {
   );
   g_player.html.buttonFullViewIsOff.addEventListener("click", function () {
     onButtonClicked("fullview-is-off");
+  });
+  g_player.html.buttonTakeScreenshot = document.getElementById(
+    "mp-button-takescreenshot",
+  );
+  g_player.html.buttonTakeScreenshot.addEventListener("click", function () {
+    onButtonClicked("takescreenshot");
   });
   //////
   g_player.html.divPlaylistTracks = document.getElementById(
@@ -1740,6 +1778,21 @@ function refreshUI() {
     g_player.html.buttonToggleVideoArea.classList.add("mp-off-miniicon");
   }
 
+  if (g_settings.showAdvancedControls) {
+    g_player.html.buttonTakeScreenshot.classList.remove("mp-hidden");
+  } else {
+    g_player.html.buttonTakeScreenshot.classList.add("mp-hidden");
+  }
+  if (
+    g_player.mediaType === PlayerMediaType.VIDEO &&
+    g_player.engine.videoWidth > 0 &&
+    g_player.state !== PlayerState.LOADING
+  ) {
+    g_player.html.buttonTakeScreenshot.classList.remove("mp-disabled");
+  } else {
+    g_player.html.buttonTakeScreenshot.classList.add("mp-disabled");
+  }
+
   updateVolumeUI();
   updateTimeUI();
 
@@ -1928,6 +1981,8 @@ function onButtonClicked(buttonName) {
   } else if (buttonName === "toggle-advancedcontrols") {
     showAdvancedControls(!g_settings.showAdvancedControls);
     refreshUI();
+  } else if (buttonName === "takescreenshot") {
+    takeVideoScreenshot();
   }
   //////
   refreshUI();
@@ -2359,6 +2414,12 @@ function initOnIpcCallbacks() {
         g_settings.videoAspectRatio = args[1];
         refreshUI();
         break;
+
+      ////
+
+      case "takescreenshot":
+        takeVideoScreenshot();
+        break;
     }
   });
 }
@@ -2419,6 +2480,10 @@ export function onInputEvent(type, event) {
             g_player.state === PlayerState.NOT_SET
           )
             onPlay();
+        }
+      } else if (event.key === "s" && event.ctrlKey) {
+        if (g_settings.fullView) {
+          takeVideoScreenshot();
         }
       }
       break;
