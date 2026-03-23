@@ -892,7 +892,7 @@ async function takeVideoScreenshot() {
     let buffer = new Uint8Array(arrayBuffer);
     sendIpcToMain("save-screenshot", buffer);
   } catch (error) {
-    console.log(error);
+    // console.log(error);
   }
 }
 
