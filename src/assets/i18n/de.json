@@ -3,7 +3,7 @@
     "authors": [
       "trzyglow"
     ],
-    "last-updated": "2026-03-21",
+    "last-updated": "2026-03-24",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.18.0",
     "pre-release": "false",
@@ -293,7 +293,7 @@
   "mp-tooltip-button-volume-off": "Lautstärke aus",
   "mp-tooltip-button-volume-on": "Lautstärke an",
   "mp-tooltip-button-playlist": "Playlist umschalten",
-  "[NEEDS TRANSLATION]mp-tooltip-button-takescreenshot": "Take Screenshot",
+  "mp-tooltip-button-takescreenshot": "Screenshot aufnehmen",
   "mp-menu-hide": "Verstecken",
   "mp-menu-playlist": "Playlist",
   "mp-menu-playlist-tracks": "Tracks",
