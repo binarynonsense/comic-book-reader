@@ -21,6 +21,7 @@ const utils = require("../shared/main/utils");
 const forkUtils = require("../shared/main/fork-utils");
 const fileFormats = require("../shared/main/file-formats");
 const contextMenu = require("./main/menu-context");
+const pagesLoader = require("./main/pages-loader");
 const timers = require("../shared/main/timers");
 const tools = require("../shared/main/tools");
 const {
@@ -43,6 +44,7 @@ let g_pagesDirection = "ltr";
 
 exports.init = async function (filePath, checkHistory) {
   initOnIpcCallbacks();
+  pagesLoader.init(sendIpcToRenderer, closeCurrentFile);
 
   const data = fs.readFileSync(path.join(__dirname, "index.html"));
   sendIpcToCoreRenderer("replace-inner-html", "#reader", data.toString());
@@ -234,6 +236,8 @@ exports.on = on;
 function initOnIpcCallbacks() {
   on("page-loaded", (data) => {
     g_fileData.state = FileDataState.LOADED;
+    const time = timers.stop("pagesExtraction");
+    if (!isNaN(time)) log.debug(`page load time: ${time.toFixed(2)}s`);
     sendIpcToRenderer("update-loading", false);
     if (data) {
       if (data.error) {
@@ -1555,6 +1559,7 @@ function tryOpeningAdjacentFile(next) {
 }
 
 function closeCurrentFile(addToHistory = true) {
+  pagesLoader.onBookClosed(g_fileData);
   sendIpcToRenderer("close-modal");
   if (g_fileData.type === FileDataType.NOT_SET) return;
   if (addToHistory) addCurrentToHistory(); // add the one I'm closing to history
@@ -1584,7 +1589,7 @@ function closeCurrentFile(addToHistory = true) {
 // PAGE NAVIGATION ///////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 
-function goToPage(pageIndex, scrollBarPos = 0) {
+async function goToPage(pageIndex, scrollBarPos = 0) {
   // scrollbar: 0 top - 1 bottom
   if (
     g_fileData.state !== FileDataState.LOADED ||
@@ -1629,121 +1634,141 @@ function goToPage(pageIndex, scrollBarPos = 0) {
       return indexes;
     }
 
+    // TEMPP!!!!!
     if (
       g_fileData.type === FileDataType.ZIP ||
       g_fileData.type === FileDataType.RAR ||
       g_fileData.type === FileDataType.SEVENZIP ||
       g_fileData.type === FileDataType.EPUB_COMIC ||
-      g_fileData.type === FileDataType.IMGS_FOLDER
-    ) {
-      g_fileData.state = FileDataState.LOADING;
-      timers.start("pagesExtraction");
-
-      let tempSubFolderPath =
-        g_fileData.type === FileDataType.SEVENZIP ||
-        g_fileData.type === FileDataType.ZIP ||
-        g_fileData.type === FileDataType.RAR
-          ? temp.createSubFolder()
-          : undefined;
-
-      let entryNames = [];
-      let pageIndexes = getGoToIndexes();
-      pageIndexes.forEach((index) => {
-        entryNames.push(g_fileData.pagesPaths[index]);
-      });
-
-      // keep killing the worker for the old methods, should be slower
-      // but from my initial test doesn't seem significant, so I'll keep
-      // doing to not break anything (it may be helping to avoid memory
-      // leaks)
-      killPageWorker();
-      startPageWorker();
-
-      sendToPageWorker({
-        command: "extract",
-        fileType: g_fileData.type,
-        filePath: g_fileData.path,
-        entryNames,
-        scrollBarPos,
-        password: g_fileData.password,
-        tempSubFolderPath,
-      });
-    } else if (g_fileData.type === FileDataType.PDF) {
-      g_fileData.state = FileDataState.LOADING;
-      let pageIndexes = getGoToIndexes();
-      if (!settings.getValue("pdfReadingLibrary").startsWith("pdfjs")) {
-        timers.start("pagesExtraction");
-        sendToPageWorker({
-          command: "extract",
-          fileType: g_fileData.type,
-          filePath: g_fileData.path,
-          entryNames: pageIndexes,
-          scrollBarPos,
-          password: g_fileData.password,
-          extraData: { dpi: settings.getValue("pdfReadingDpi") },
-        });
-      } else {
-        // pdfjs
-        sendIpcToRenderer(
-          "render-pdf-page",
-          pageIndexes,
-          g_fileData.pageRotation,
-          scrollBarPos,
-          settings.getValue("pdfReadingDpi"),
-        );
-      }
-    } else if (
+      g_fileData.type === FileDataType.IMGS_FOLDER ||
+      g_fileData.type === FileDataType.PDF ||
       g_fileData.type === FileDataType.EPUB_EBOOK ||
       g_fileData.type === FileDataType.AZW3 ||
       g_fileData.type === FileDataType.MOBI ||
-      g_fileData.type === FileDataType.FB2
+      g_fileData.type === FileDataType.FB2 ||
+      g_fileData.type === FileDataType.WWW
     ) {
+      // loader experimental
       g_fileData.state = FileDataState.LOADING;
-      let pageIndexes = getGoToIndexes();
-      timers.start("pagesExtraction");
-      let tempSubFolderPath = temp.createSubFolder();
-      sendToPageWorker({
-        command: "extract",
-        fileType: g_fileData.type,
-        filePath: g_fileData.cachedPath ?? g_fileData.path,
-        entryNames: pageIndexes,
-        scrollBarPos,
-        tempSubFolderPath,
-        config: settings.getValue("epubEbook"),
-      });
-    } else if (g_fileData.type === FileDataType.WWW) {
-      (async () => {
-        g_fileData.state = FileDataState.LOADING;
-        const calledFunc = g_fileData.getPageCallback;
-        let response = await g_fileData.getPageCallback(
-          g_fileData.pageIndex + 1,
-          g_fileData,
-        );
-        if (calledFunc !== g_fileData.getPageCallback) {
-          // getPageCallback changed while downloading
-          return;
-        }
-        if (!response || !response.pageImgSrc) {
-          // TODO: handle error
-          log.error("download error");
-          g_fileData.state = FileDataState.LOADED;
-          sendIpcToRenderer("update-loading", false);
-          return;
-        }
-        g_fileData.pagesPaths = [response.pageImgUrl];
-        if (response.tempData) {
-          if (g_fileData.data) {
-            g_fileData.data.tempData = response.tempData;
-          }
-        }
-        sendIpcToRenderer(
-          "render-img-page",
-          [{ url: response.pageImgSrc }],
-          g_fileData.pageRotation,
-          scrollBarPos,
-        );
-      })(); // async
+      await pagesLoader.getPages(g_fileData, getGoToIndexes(), scrollBarPos);
     }
+    // else if (
+    //   g_fileData.type === FileDataType.ZIP ||
+    //   g_fileData.type === FileDataType.RAR ||
+    //   g_fileData.type === FileDataType.SEVENZIP ||
+    //   g_fileData.type === FileDataType.EPUB_COMIC ||
+    //   g_fileData.type === FileDataType.IMGS_FOLDER
+    // ) {
+    //   g_fileData.state = FileDataState.LOADING;
+    //   timers.start("pagesExtraction");
+
+    //   let tempSubFolderPath =
+    //     g_fileData.type === FileDataType.SEVENZIP ||
+    //     g_fileData.type === FileDataType.ZIP ||
+    //     g_fileData.type === FileDataType.RAR
+    //       ? temp.createSubFolder()
+    //       : undefined;
+
+    //   let entryNames = [];
+    //   let pageIndexes = getGoToIndexes();
+    //   pageIndexes.forEach((index) => {
+    //     entryNames.push(g_fileData.pagesPaths[index]);
+    //   });
+
+    //   // keep killing the worker for the old methods, should be slower
+    //   // but from my initial test doesn't seem significant, so I'll keep
+    //   // doing to not break anything (it may be helping to avoid memory
+    //   // leaks)
+    //   killPageWorker();
+    //   startPageWorker();
+
+    //   sendToPageWorker({
+    //     command: "extract",
+    //     fileType: g_fileData.type,
+    //     filePath: g_fileData.path,
+    //     entryNames,
+    //     scrollBarPos,
+    //     password: g_fileData.password,
+    //     tempSubFolderPath,
+    //   });
+    // } else if (g_fileData.type === FileDataType.PDF) {
+    //   g_fileData.state = FileDataState.LOADING;
+    //   let pageIndexes = getGoToIndexes();
+    //   if (!settings.getValue("pdfReadingLibrary").startsWith("pdfjs")) {
+    //     timers.start("pagesExtraction");
+    //     sendToPageWorker({
+    //       command: "extract",
+    //       fileType: g_fileData.type,
+    //       filePath: g_fileData.path,
+    //       entryNames: pageIndexes,
+    //       scrollBarPos,
+    //       password: g_fileData.password,
+    //       extraData: { dpi: settings.getValue("pdfReadingDpi") },
+    //     });
+    //   } else {
+    //     // pdfjs
+    //     sendIpcToRenderer(
+    //       "render-pdf-page",
+    //       pageIndexes,
+    //       g_fileData.pageRotation,
+    //       scrollBarPos,
+    //       settings.getValue("pdfReadingDpi"),
+    //     );
+    //   }
+    // }
+    // else if (
+    //   g_fileData.type === FileDataType.EPUB_EBOOK ||
+    //   g_fileData.type === FileDataType.AZW3 ||
+    //   g_fileData.type === FileDataType.MOBI ||
+    //   g_fileData.type === FileDataType.FB2
+    // ) {
+    //   g_fileData.state = FileDataState.LOADING;
+    //   let pageIndexes = getGoToIndexes();
+    //   timers.start("pagesExtraction");
+    //   let tempSubFolderPath = temp.createSubFolder();
+    //   sendToPageWorker({
+    //     command: "extract",
+    //     fileType: g_fileData.type,
+    //     filePath: g_fileData.cachedPath ?? g_fileData.path,
+    //     entryNames: pageIndexes,
+    //     scrollBarPos,
+    //     tempSubFolderPath,
+    //     config: settings.getValue("epubEbook"),
+    //   });
+    // }
+    // else if (g_fileData.type === FileDataType.WWW) {
+    //   (async () => {
+    //     g_fileData.state = FileDataState.LOADING;
+    //     const calledFunc = g_fileData.getPageCallback;
+    //     let response = await g_fileData.getPageCallback(
+    //       g_fileData.pageIndex + 1,
+    //       g_fileData,
+    //     );
+    //     if (calledFunc !== g_fileData.getPageCallback) {
+    //       // getPageCallback changed while downloading
+    //       return;
+    //     }
+    //     if (!response || !response.pageImgSrc) {
+    //       // TODO: handle error
+    //       log.error("download error");
+    //       g_fileData.state = FileDataState.LOADED;
+    //       sendIpcToRenderer("update-loading", false);
+    //       return;
+    //     }
+    //     g_fileData.pagesPaths = [response.pageImgUrl];
+    //     if (response.tempData) {
+    //       if (g_fileData.data) {
+    //         g_fileData.data.tempData = response.tempData;
+    //       }
+    //     }
+    //     sendIpcToRenderer(
+    //       "render-img-page",
+    //       [{ url: response.pageImgSrc }],
+    //       g_fileData.pageRotation,
+    //       scrollBarPos,
+    //     );
+    //   })(); // async
+    // }
   } catch (error) {
     closeCurrentFile();
     sendIpcToRenderer(
