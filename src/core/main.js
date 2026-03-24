@@ -1120,6 +1120,11 @@ if (!gotTheLock) {
     sendIpcToPreload("update-menubar");
   };
 
+  exports.onMenuToolDrawingStudio = function () {
+    tools.switchTool("tool-drawing");
+    sendIpcToPreload("update-menubar");
+  };
+
   //////////////////
 
   exports.onMenuToggleDevTools = function () {

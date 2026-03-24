@@ -27,6 +27,7 @@ import * as toolFileBrowser from "../../tools/file-browser/renderer.js";
 import * as toolRadio from "../../tools/radio/renderer.js";
 import * as toolCbp from "../../tools/cbp/renderer.js";
 import * as toolTemplateMaker from "../../tools/template-maker/renderer.js";
+import * as toolDrawing from "../../tools/drawing/renderer.js";
 import * as toolRssReader from "../../tools/rss-reader/renderer.js";
 
 let g_currentTool = "reader";
@@ -56,6 +57,7 @@ export function init() {
   g_tools["tool-metadata"] = toolMetadata;
   g_tools["tool-cbp"] = toolCbp;
   g_tools["tool-template-maker"] = toolTemplateMaker;
+  g_tools["tool-drawing"] = toolDrawing;
   g_tools["tool-rss"] = toolRssReader;
 }
 

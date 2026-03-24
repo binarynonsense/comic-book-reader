@@ -327,7 +327,14 @@ function getWorkInProgressSubmenu() {
       {
         id: "tools-wip",
         label: "[DEV] Work in Progress",
-        submenu: [],
+        submenu: [
+          {
+            label: "Drawing Studio",
+            click() {
+              core.onMenuToolDrawingStudio();
+            },
+          },
+        ],
       },
     ];
   }
