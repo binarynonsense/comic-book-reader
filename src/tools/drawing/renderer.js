@@ -13,13 +13,14 @@ import * as modals from "../../shared/renderer/modals.js";
 
 let g_isInitialized = false;
 
-function init() {
+async function init() {
   if (!g_isInitialized) {
     // things to start only once go here
     g_isInitialized = true;
   }
   ////////////////////////////////////////
 
+  await toggleEasyBrush(true);
   initComicPage("drawing-page", 1200, 3000);
   window.addEventListener("pointerup", handlePointerUp);
   g_layers.ink.addEventListener("pointerdown", handlePointerDown);
@@ -61,7 +62,15 @@ function initOnIpcCallbacks() {
     init(...args);
   });
 
-  on("hide", () => {});
+  on("hide", async () => {
+    await toggleEasyBrush(false);
+    // TODO: !!!!!!!!!!!!!
+    // set brush/module instances to null
+    // remove event listeners
+    // clear canvases
+    // const ctx = canvas.getContext('2d');
+    // ctx.clearRect(0, 0, canvas.width, canvas.height);
+  });
 
   //   on("update-localization", (...args) => {
   //     updateLocalization(...args);
@@ -320,6 +329,40 @@ export function onContextMenu(params) {
   //     return;
   //   }
   //   sendIpcToMain("show-context-menu", params);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// LIBRARY ////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+async function toggleEasyBrush(active) {
+  const libPath = "../assets/libs/easy-brush/easy-brush-browser.js";
+  const scriptClass = "easy-brush-script";
+  // clean up ////
+  // remove the script tag
+  document
+    .querySelectorAll(`.${scriptClass}`)
+    .forEach((element) => element.remove());
+  // remove the lib itself
+  if (window.EasyBrush) {
+    delete window.EasyBrush;
+  }
+  // load ////
+  if (active) {
+    return new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.className = scriptClass;
+      script.src = `${libPath}?t=${Date.now()}`;
+      script.onload = () => {
+        if (window.EasyBrush) {
+          resolve(window.EasyBrush);
+        } else {
+          reject(new Error("EasyBrush global not found"));
+        }
+      };
+      document.head.appendChild(script);
+    });
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
