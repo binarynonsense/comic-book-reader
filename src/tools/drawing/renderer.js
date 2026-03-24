@@ -79,10 +79,10 @@ function initOnIpcCallbacks() {
   /////////////////////////////////
 
   on("close-modal", () => {
-    if (g_openModal) {
-      modals.close(g_openModal);
-      modalClosed();
-    }
+    // if (g_openModal) {
+    //   modals.close(g_openModal);
+    //   modalClosed();
+    // }
   });
 }
 
