@@ -10,8 +10,8 @@ import {
   sendIpcToMain,
   getCurrentImgBuffers,
   showNoBookContent,
-} from "./renderer.js";
-import { renderImageBuffers, setScrollBarsPosition } from "./renderer-ui.js";
+} from "../renderer.js";
+import { renderImageBuffers, setScrollBarsPosition } from "./ui.js";
 
 export function initIpc() {
   initHandlers();

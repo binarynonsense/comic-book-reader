@@ -5,9 +5,9 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-import { on, sendIpcToMain, showNoBookContent } from "./renderer.js";
-import * as modals from "../shared/renderer/modals.js";
-import * as input from "../shared/renderer/input.js";
+import { on, sendIpcToMain, showNoBookContent } from "../renderer.js";
+import * as modals from "../../shared/renderer/modals.js";
+import * as input from "../../shared/renderer/input.js";
 
 export function initIpc() {
   initOnIpcCallbacks();

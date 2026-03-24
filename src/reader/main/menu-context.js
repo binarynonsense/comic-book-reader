@@ -6,18 +6,18 @@
  */
 
 const { Menu, app } = require("electron");
-const core = require("../core/main");
-const reader = require("./main");
-const { FileDataType, FileExtension } = require("../shared/main/constants");
-const { _ } = require("../shared/main/i18n");
+const core = require("../../core/main");
+const reader = require("../main");
+const { FileDataType, FileExtension } = require("../../shared/main/constants");
+const { _ } = require("../../shared/main/i18n");
 
-const log = require("../shared/main/logger");
-const appUtils = require("../shared/main/app-utils");
-const fileUtils = require("../shared/main/file-utils");
+const log = require("../../shared/main/logger");
+const appUtils = require("../../shared/main/app-utils");
+const fileUtils = require("../../shared/main/file-utils");
 const fs = require("node:fs");
 const path = require("node:path");
-const temp = require("../shared/main/temp");
-const tools = require("../shared/main/tools");
+const temp = require("../../shared/main/temp");
+const tools = require("../../shared/main/tools");
 
 exports.show = function (type, params, fileData) {
   let isOpen = true;

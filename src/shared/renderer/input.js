@@ -9,7 +9,7 @@ import { getOpenModal, sendIpcToMain } from "../../core/renderer.js";
 import { getTools, getCurrentTool, getCurrentToolName } from "./tools.js";
 import * as modals from "./modals.js";
 import * as gamepads from "./gamepads.js";
-import { getNavKeys } from "../../reader/renderer-ui.js";
+import { getNavKeys } from "../../reader/renderer/ui.js";
 
 ///////////////////////////////////////////////////////////////////////////////
 // INPUT  /////////////////////////////////////////////////////////////////////

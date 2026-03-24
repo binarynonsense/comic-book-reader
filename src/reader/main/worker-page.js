@@ -91,9 +91,9 @@ cp.execFileSync = function (command, args, options) {
 
 const fs = require("node:fs");
 const path = require("node:path");
-const fileFormats = require("../shared/main/file-formats");
-const { FileDataType } = require("../shared/main/constants");
-const fileUtils = require("../shared/main/file-utils");
+const fileFormats = require("../../shared/main/file-formats");
+const { FileDataType } = require("../../shared/main/constants");
+const fileUtils = require("../../shared/main/file-utils");
 
 process.parentPort.on("message", async (event) => {
   let message = event.data;

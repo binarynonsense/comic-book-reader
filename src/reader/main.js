@@ -20,7 +20,7 @@ const temp = require("../shared/main/temp");
 const utils = require("../shared/main/utils");
 const forkUtils = require("../shared/main/fork-utils");
 const fileFormats = require("../shared/main/file-formats");
-const contextMenu = require("./menu-context");
+const contextMenu = require("./main/menu-context");
 const timers = require("../shared/main/timers");
 const tools = require("../shared/main/tools");
 const {
@@ -2459,10 +2459,13 @@ function startPageWorker() {
   try {
     if (g_pageWorker === undefined) {
       log.editor("start page worker");
-      g_pageWorker = forkUtils.fork(path.join(__dirname, "worker-page.js"), {
-        exposeGC: true,
-        memoryLimit: 3072,
-      });
+      g_pageWorker = forkUtils.fork(
+        path.join(__dirname, "./main/worker-page.js"),
+        {
+          exposeGC: true,
+          memoryLimit: 3072,
+        },
+      );
       g_pageWorker.on("message", (message) => {
         if (message.type === "testLog") {
           log.test(message.log);

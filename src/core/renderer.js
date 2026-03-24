@@ -6,7 +6,7 @@
  */
 
 import * as reader from "../reader/renderer.js";
-import { getNavKeys } from "../reader/renderer-ui.js";
+import { getNavKeys } from "../reader/renderer/ui.js";
 import {
   init as initTools,
   getTools,

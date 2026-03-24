@@ -15,7 +15,7 @@ import {
   onMouseMove,
   getMouseButtons,
   getNavKeys,
-} from "../../reader/renderer-ui.js";
+} from "../../reader/renderer/ui.js";
 import * as input from "../../shared/renderer/input.js";
 import * as navigation from "./renderer/navigation.js";
 

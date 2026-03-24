@@ -13,15 +13,15 @@ import {
   onInputEvent as uiOnInputEvent,
   getOpenModal,
   onGamepadPolled as uiOnGamepadPolled,
-} from "./renderer-ui.js";
+} from "./renderer/ui.js";
 import {
   initIpc as pdfInitIpc,
   cleanUp as cleanUpPdf,
-} from "./renderer-pdf.js";
+} from "./renderer/pdf.js";
 import {
   initIpc as epubInitIpc,
   // cleanUp as cleanUpEpub,
-} from "./renderer-epub.js";
+} from "./renderer/epub.js";
 import {
   onInputEvent as modalOnInputEvent,
   onGamepadPolled as modalOnGamepadPolled,
