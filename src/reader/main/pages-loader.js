@@ -275,7 +275,7 @@ function updatePageCacheSize() {
   }
   g_currentPageCacheMB = totalBytes / (1024 * 1024);
   log.editor(
-    `[PAGES][CACHE] cache size ${g_currentPageCacheMB}MB - ${g_pageCache.size} entries`,
+    `[PAGES][CACHE] cache size ${g_currentPageCacheMB.toFixed(2)}MB - ${g_pageCache.size} entries`,
   );
   const sortedIndexes = Array.from(g_pageCache.keys()).sort((a, b) => a - b);
   log.editor("[PAGES][CACHE] current indexes: " + sortedIndexes.join(", "));
