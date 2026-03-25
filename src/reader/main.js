@@ -44,6 +44,8 @@ let g_pagesDirection = "ltr";
 
 exports.init = async function (filePath, checkHistory) {
   initOnIpcCallbacks();
+
+  updatePagesCacheSize();
   pagesLoader.init(sendIpcToRenderer, closeCurrentFile);
 
   const data = fs.readFileSync(path.join(__dirname, "index.html"));
@@ -2138,6 +2140,11 @@ function updateToolbarDirection() {
   sendIpcToRenderer("update-toolbar-direction", direction);
 }
 exports.updateToolbarDirection = updateToolbarDirection;
+
+function updatePagesCacheSize() {
+  pagesLoader.setCacheSize(settings.getValue("pagesCacheSize"));
+}
+exports.updatePagesCacheSize = updatePagesCacheSize;
 
 //////////////////////////////////////////////////////////////////////////////
 // SHOW/HIDE /////////////////////////////////////////////////////////////////

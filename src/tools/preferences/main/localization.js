@@ -400,6 +400,19 @@ exports.getLocalization = function () {
     },
     //////////////////////////////////////////////
     {
+      id: "tool-pre-pagescache-text",
+      text: _("tool-pre-pagescache"),
+    },
+    {
+      id: "tool-pre-pagescache-size-text",
+      text: _("ui-modal-info-metadata-filesize") + " (MB)",
+    },
+    {
+      id: "tool-pre-pagescache-size-reset-button-text",
+      text: _("tool-shared-ui-reset").toUpperCase(),
+    },
+    //////////////////////////////////////////////
+    {
       id: "tool-pre-filters-text",
       text: _("tool-pre-filters"),
     },

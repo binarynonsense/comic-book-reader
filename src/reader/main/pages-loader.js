@@ -40,7 +40,13 @@ exports.onBookClosed = function (fileData) {
   killPageWorker(g_pageWorkerMain);
   killPageWorker(g_pageWorkerBG);
   clearCache();
-  deleteTempCacheFolder();
+};
+
+exports.setCacheSize = function (value) {
+  log.editor("[PAGES] set cache size limit: " + value);
+  g_pageCacheLimitMB = value;
+  killPageWorker(g_pageWorkerBG);
+  clearCache();
 };
 
 //////////////////////////////////////////////////////////////////////////////
@@ -291,7 +297,7 @@ async function fetchPages(pageWorker, fileData, pageIndexes) {
 const g_pageCache = new Map();
 const g_minPages = 3;
 let g_currentPageCacheMB = 0;
-const g_pageCacheLimitMB = 32;
+let g_pageCacheLimitMB = 32;
 // g_bgFetchedPages is used to avoid an infinite delete-fetch-delete... loop
 let g_bgFetchedPages = new Set();
 

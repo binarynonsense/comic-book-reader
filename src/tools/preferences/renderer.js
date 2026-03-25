@@ -265,6 +265,29 @@ function init(
       });
     }
 
+    // pages cache
+    {
+      const size = document.getElementById("tool-pre-pagescache-size-input");
+      size.value = settings.pagesCacheSize;
+      size.addEventListener("change", function (event) {
+        const value = parseInt(size.value);
+        if (!Number.isNaN(value)) {
+          if (value <= 0) size.value = 1;
+        } else {
+          size.value = settings.pagesCacheSize;
+        }
+        sendIpcToMain("set-pages-cache-size", value);
+      });
+
+      document
+        .getElementById("tool-pre-pagescache-size-reset-button")
+        .addEventListener("click", (event) => {
+          if (parseInt(size.value) === 32) return;
+          size.value = 32; // TODO: not hardcode, get from somewhere?
+          sendIpcToMain("set-pages-cache-size", 32);
+        });
+    }
+
     // custom filters
     buildCustomFilters(settings, true);
 

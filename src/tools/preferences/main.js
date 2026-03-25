@@ -350,6 +350,11 @@ function initOnIpcCallbacks() {
     reader.updateLoadingIndicator();
   });
 
+  on("set-pages-cache-size", (value) => {
+    settings.setValue("pagesCacheSize", value);
+    reader.updatePagesCacheSize();
+  });
+
   on(
     "set-custom-filter-values",
     (

@@ -61,6 +61,7 @@ const g_defaultSettings = {
   on_quit_state: 0, // 0: no file, 1: reading file
 
   history_capacity: 50,
+  pagesCacheSize: 32, // int 0 - any
 
   showMenuBar: true,
   showToolBar: true,
@@ -277,6 +278,9 @@ exports.resetPreferences = function () {
   const preferences = [
     "hotspots_mode",
 
+    "history_capacity",
+    "pagesCacheSize",
+
     "autoOpen",
     "cursorVisibility",
     "zoomDefault",
@@ -387,6 +391,12 @@ function sanitize() {
     g_settings.history_capacity > 1000
   ) {
     g_settings.history_capacity = g_defaultSettings.history_capacity;
+  }
+  if (
+    !Number.isInteger(g_settings.pagesCacheSize) ||
+    g_settings.pagesCacheSize < 1
+  ) {
+    g_settings.pagesCacheSize = g_defaultSettings.pagesCacheSize;
   }
   if (
     !Number.isInteger(g_settings.on_quit_state) ||
