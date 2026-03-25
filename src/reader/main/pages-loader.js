@@ -40,7 +40,37 @@ exports.onBookClosed = function (fileData) {
   killPageWorker(g_pageWorkerMain);
   killPageWorker(g_pageWorkerBG);
   clearCache();
+  deleteTempCacheFolder();
 };
+
+//////////////////////////////////////////////////////////////////////////////
+// TEMP FOLDERS //////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+
+let g_tempCacheFolder;
+
+function createTempCacheFolder() {
+  g_tempCacheFolder = temp.createSubFolder();
+}
+
+function deleteTempCacheFolder() {
+  if (!g_tempCacheFolder) return;
+  const tempCacheFolder = g_tempCacheFolder;
+  g_tempCacheFolder = undefined;
+  // use a timeout to avoid folders not really deleting if called too fast
+  setTimeout(() => {
+    temp.deleteSubFolder(tempCacheFolder);
+  }, 200);
+}
+
+function createTempPageFolder() {
+  if (!g_tempCacheFolder) createTempCacheFolder();
+  return temp.createSubFolder(g_tempCacheFolder);
+}
+
+function deleteTempPageFolder(folderPath) {
+  temp.deleteSubFolder(folderPath);
+}
 
 //////////////////////////////////////////////////////////////////////////////
 // PAGES /////////////////////////////////////////////////////////////////////
@@ -108,7 +138,7 @@ function sendCurrentRequestResult() {
 
 function pagesFetched(message) {
   if (message.success === true) {
-    temp.deleteSubFolder(message.tempSubFolderPath);
+    deleteTempPageFolder(message.tempSubFolderPath);
     message.images.forEach((image) => {
       cachePage(image.pageIndex, image, g_fileData.pageIndex);
     });
@@ -148,7 +178,7 @@ function pagesFetched(message) {
       // TODO: handle other errors
       log.error("[PAGES] unhandled worker error");
       log.error("[PAGES] " + message.error);
-      temp.deleteSubFolder(message.tempSubFolderPath);
+      deleteTempPageFolder(message.tempSubFolderPath);
       const type = g_fileData.type;
       closeCurrentFile();
       sendIpcToRenderer(
@@ -204,7 +234,7 @@ async function fetchPages(pageWorker, fileData, pageIndexes) {
       g_fileData.type === FileDataType.AZW3 ||
       g_fileData.type === FileDataType.MOBI ||
       g_fileData.type === FileDataType.FB2
-        ? temp.createSubFolder()
+        ? createTempPageFolder()
         : undefined;
 
     startPageWorker(pageWorker);
@@ -439,6 +469,7 @@ function killPageWorker(pageWorker) {
       g_bgFetchedPages = new Set();
     }
   }
+  deleteTempCacheFolder();
 }
 
 function sendToPageWorker(pageWorker, data) {

@@ -75,8 +75,10 @@ function deleteBaseFolder() {
   deleteFolderRecursive(g_baseFolderPath, true, undefined, "acbr-tmp");
 }
 
-exports.createSubFolder = function () {
-  let folderPath = fs.mkdtempSync(path.join(g_baseFolderPath, "acbr-tmp-"));
+exports.createSubFolder = function (baseFolderPath) {
+  let folderPath = fs.mkdtempSync(
+    path.join(baseFolderPath ?? g_baseFolderPath, "acbr-tmp-"),
+  );
   log.debug("created folder: " + folderPath);
   return folderPath;
 };
