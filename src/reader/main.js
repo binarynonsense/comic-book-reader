@@ -159,6 +159,7 @@ exports.onQuit = function () {
   addCurrentToHistory(false);
   homeScreen.close();
   killPageWorker();
+  pagesLoader.onQuit();
 };
 
 exports.onMaximize = function () {

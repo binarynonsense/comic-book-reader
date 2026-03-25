@@ -30,6 +30,11 @@ exports.init = function (_sendIpcToRenderer, _closeCurrentFile) {
   closeCurrentFile = _closeCurrentFile;
 };
 
+exports.onQuit = function () {
+  killPageWorker(g_pageWorkerMain);
+  killPageWorker(g_pageWorkerBG);
+};
+
 exports.onBookClosed = function (fileData) {
   g_fileData = undefined;
   killPageWorker(g_pageWorkerMain);
@@ -427,7 +432,7 @@ function startPageWorker(pageWorker) {
 
 function killPageWorker(pageWorker) {
   if (pageWorker.process !== undefined) {
-    log.editor("[PAGES] kill page worker");
+    log.editor("[PAGES] kill page worker " + pageWorker.id);
     pageWorker.process.kill();
     pageWorker.process = undefined;
     if (pageWorker.id === "bg") {
