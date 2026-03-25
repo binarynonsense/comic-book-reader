@@ -102,11 +102,13 @@ process.parentPort.on("message", async (event) => {
   //   log: `[page worker] message received: ${message.command}`,
   // });
   if (message.command === "extract") {
+    const pageIndexes = message.pageIndexes;
     const entryNames = message.entryNames;
+    const workerId = message.extraData.workerId;
     let images = [];
     let tempSubFolderPath = message.tempSubFolderPath;
     for (let i = 0; i < entryNames.length; i++) {
-      message.entryNameIndex = i;
+      message.entryName = entryNames[i];
       const result = await extractImageBuffer(message);
       if (result.success === false) {
         process.parentPort.postMessage({
@@ -114,10 +116,15 @@ process.parentPort.on("message", async (event) => {
           success: false,
           error: result.error,
           tempSubFolderPath,
+          workerId,
         });
         return;
       }
-      images.push({ buffer: result.buffer, mime: result.mime });
+      images.push({
+        pageIndex: pageIndexes[i],
+        buffer: result.buffer,
+        mime: result.mime,
+      });
     }
     process.parentPort.postMessage({
       type: "extractResult",
@@ -125,6 +132,7 @@ process.parentPort.on("message", async (event) => {
       images,
       tempSubFolderPath,
       scrollBarPos: message.scrollBarPos,
+      workerId,
     });
   } else if (message.command === "open") {
     if (message.fileType === FileDataType.PDF) {
@@ -152,7 +160,7 @@ process.parentPort.on("message", async (event) => {
       const result = await fileFormats.openMuEpub(
         message.filePath,
         message.tempSubFolderPath,
-        message.config,
+        message.extraData.config,
       );
       message.type = "openResult";
       message.result = result;
@@ -162,15 +170,13 @@ process.parentPort.on("message", async (event) => {
 });
 
 async function extractImageBuffer({
-  entryNameIndex,
+  entryName,
   fileType,
   filePath,
-  entryNames,
   scrollBarPos,
   password,
   tempSubFolderPath,
   extraData,
-  config,
 }) {
   try {
     let buffer;
@@ -179,7 +185,7 @@ async function extractImageBuffer({
     if (fileType === FileDataType.ZIP) {
       const result = await fileFormats.extract7ZipEntryBuffer(
         filePath,
-        entryNames[entryNameIndex],
+        entryName,
         password,
         tempSubFolderPath,
         "zip",
@@ -198,7 +204,7 @@ async function extractImageBuffer({
       // );
       result = await fileFormats.extract7ZipEntryBuffer(
         filePath,
-        entryNames[entryNameIndex],
+        entryName,
         password,
         tempSubFolderPath,
         "rar",
@@ -211,7 +217,7 @@ async function extractImageBuffer({
     } else if (fileType === FileDataType.SEVENZIP) {
       const result = await fileFormats.extract7ZipEntryBuffer(
         filePath,
-        entryNames[entryNameIndex],
+        entryName,
         password,
         tempSubFolderPath,
       );
@@ -223,14 +229,14 @@ async function extractImageBuffer({
     } else if (fileType === FileDataType.EPUB_COMIC) {
       const data = await fileFormats.extractEpubImageBuffer(
         filePath,
-        entryNames[entryNameIndex],
+        entryName,
       );
       buffer = data[0];
     } else if (fileType === FileDataType.IMGS_FOLDER) {
       // if (!path.isAbsolute(entryName)) {
       //   // FIXME: make it absolute somehow?
       // }
-      const fullPath = path.join(filePath, entryNames[entryNameIndex]);
+      const fullPath = path.join(filePath, entryName);
       buffer = fs.readFileSync(fullPath);
     } else if (fileType === FileDataType.PDF) {
       // buffer = await fileFormats.extractPdfPageBuffer(
@@ -240,7 +246,7 @@ async function extractImageBuffer({
       // );
       const result = await fileFormats.extractMuPdfPageBuffer(
         filePath,
-        entryNames[entryNameIndex], // = page numbe
+        entryName, // = page number
         password,
         extraData?.dpi,
         4500,
@@ -258,9 +264,9 @@ async function extractImageBuffer({
     ) {
       const result = await fileFormats.extractMuEpubPageBuffer(
         filePath,
-        entryNames[entryNameIndex],
+        entryName, // = page number
         tempSubFolderPath,
-        config,
+        extraData.config,
       );
       if (result.success) {
         buffer = result.data;

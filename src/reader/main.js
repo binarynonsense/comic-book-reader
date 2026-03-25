@@ -1483,7 +1483,7 @@ async function openEbookFromPath(
     filePath: g_fileData.cachedPath ?? g_fileData.path,
     pageIndex,
     tempSubFolderPath,
-    config: settings.getValue("epubEbook"),
+    extraData: { config: settings.getValue("epubEbook") },
   });
 
   return true;
@@ -1650,7 +1650,7 @@ async function goToPage(pageIndex, scrollBarPos = 0) {
     ) {
       // loader experimental
       g_fileData.state = FileDataState.LOADING;
-      await pagesLoader.getPages(g_fileData, getGoToIndexes(), scrollBarPos);
+      await pagesLoader.loadPage(g_fileData, getGoToIndexes(), scrollBarPos);
     }
     // else if (
     //   g_fileData.type === FileDataType.ZIP ||
