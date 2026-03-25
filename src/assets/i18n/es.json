@@ -1,6 +1,8 @@
 {
   "@metadata": {
-    "authors": ["Álvaro"],
+    "authors": [
+      "Álvaro"
+    ],
     "last-updated": "2026-03-18",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.18.0",
@@ -643,7 +645,6 @@
   "tool-pre-loading-ipos-0": "Arriba izda.",
   "tool-pre-loading-ipos-1": "Centro",
   "tool-pre-pagescache": "Caché de páginas",
-  "tool-pre-pagescache-size": "Tamaño",
   "tool-pre-filters": "Filtros",
   "tool-pre-filters-addnewfilter": "Añadir nuevo filtro",
   "tool-pre-filters-resetfilters": "Restablecer filtros predeterminados",
