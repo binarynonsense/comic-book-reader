@@ -644,6 +644,8 @@
   "tool-pre-loading-ipos": "Разположение иконки",
   "tool-pre-loading-ipos-0": "Сверху слева",
   "tool-pre-loading-ipos-1": "По центру",
+  "[NEEDS TRANSLATION]tool-pre-pagescache": "Pages Cache",
+  "[NEEDS TRANSLATION]tool-pre-pagescache-size": "Size",
   "[NEEDS TRANSLATION]tool-pre-filters": "Filters",
   "[NEEDS TRANSLATION]tool-pre-filters-addnewfilter": "Add New Filter",
   "[NEEDS TRANSLATION]tool-pre-filters-resetfilters": "Reset Default Filters",

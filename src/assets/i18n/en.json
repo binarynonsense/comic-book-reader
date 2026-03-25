@@ -642,6 +642,8 @@
   "tool-pre-loading-ipos": "Icon Position",
   "tool-pre-loading-ipos-0": "Top left",
   "tool-pre-loading-ipos-1": "Center",
+  "tool-pre-pagescache": "Pages Cache",
+  "tool-pre-pagescache-size": "Size",
   "tool-pre-filters": "Filters",
   "tool-pre-filters-addnewfilter": "Add New Filter",
   "tool-pre-filters-resetfilters": "Reset Default Filters",
