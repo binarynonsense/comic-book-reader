@@ -373,11 +373,13 @@ let g_playlist = {
 function loadSettings() {
   settings.init();
   let playlistPath = path.join(appUtils.getConfigFolder(), "acbr-player.m3u");
-  let files = getPlaylistFiles(playlistPath);
-  if (files && files.length > 0) {
-    files.forEach((file) => {
-      g_playlist.files.push(file);
-    });
+  if (fs.existsSync(playlistPath)) {
+    let files = getPlaylistFiles(playlistPath);
+    if (files && files.length > 0) {
+      files.forEach((file) => {
+        g_playlist.files.push(file);
+      });
+    }
   }
 }
 
