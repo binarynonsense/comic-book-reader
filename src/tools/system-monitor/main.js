@@ -10,6 +10,7 @@ const path = require("node:path");
 const { Worker } = require("node:worker_threads");
 
 const core = require("../../core/main");
+const pagesLoader = require("../../reader/main/pages-loader");
 const log = require("../../shared/main/logger");
 const { _ } = require("../../shared/main/i18n");
 const settings = require("../../shared/main/settings");
@@ -97,6 +98,7 @@ exports.open = function (isVisible) {
         true,
         g_parentElementId,
         settings.getValue("systemMonitorScale"),
+        core.isDev(),
       );
       log.debug("opening system monitor");
       const workerPath = path.join(__dirname, "/main/worker-thread.js");
@@ -104,13 +106,20 @@ exports.open = function (isVisible) {
       const worker = new Worker(workerPath);
       worker.on("message", (message) => {
         if (message.type === "stats") {
+          // pages cache
+          let cacheStats;
+          if (core.isDev()) {
+            cacheStats = pagesLoader.getCacheStats();
+          }
+          //
           if (message.stats.error) {
-            sendIpcToRenderer("update-stats", message.stats, ``);
+            sendIpcToRenderer("update-stats", message.stats, ``, cacheStats);
           } else {
             sendIpcToRenderer(
               "update-stats",
               message.stats,
               `${_("systemmonitor-memory-used")}: ${message.stats.memoryUsed.toFixed(1)}GiB / ${_("systemmonitor-memory-total")}: ${message.stats.memoryTotal.toFixed(1)}GiB`,
+              cacheStats,
             );
           }
         } else if (message.type === "test-log") {
@@ -160,6 +169,10 @@ function updateLocalizedText() {
       "update-localization",
       getLocalization(),
       getTooltipsLocalization(),
+      {
+        size: _("ui-modal-info-metadata-filesize"),
+        pages: _("tool-metadata-section-pages"),
+      },
     );
 }
 exports.updateLocalizedText = updateLocalizedText;
@@ -171,6 +184,10 @@ function getLocalization() {
     {
       id: "sm-memory-widget-name-text",
       text: _("systemmonitor-memory"),
+    },
+    {
+      id: "sm-pagescache-widget-name-text",
+      text: _("tool-pre-pagescache"),
     },
   ];
 }

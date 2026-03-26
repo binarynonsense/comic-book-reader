@@ -1,8 +1,9 @@
 #system-monitor-container {
   display: flex;
-  align-items: flex-start;
+  align-items: flex-end;
   justify-items: center;
   flex-direction: column;
+  gap: 10px;
   direction: ltr;
   z-index: 1000;
   position: fixed;
@@ -11,6 +12,11 @@
   transform: translateX(-50%); */
   right: 10px;
   padding: 20px;
+  pointer-events: none;
+
+  --sm-frame-scale: 1;
+  transform: scale(var(--sm-frame-scale));
+  transform-origin: top right;
 }
 
 #sm-frame {
@@ -21,9 +27,6 @@
   gap: 10px;
   align-items: center;
   justify-content: center;
-  --sm-frame-scale: 1;
-  transform: scale(var(--sm-frame-scale));
-  transform-origin: top right;
 }
 
 .sm-hidden {
@@ -34,6 +37,42 @@
   position: relative;
 }
 
+#sm-details {
+  border: 0;
+  user-select: none;
+  width: 260px;
+  color: var(--systemmonitor-label-name-text-color);
+  background: var(--systemmonitor-circle-center-color);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  border-radius: 4px;
+  padding: 10px;
+  font-size: 10px;
+  line-height: 1.4;
+  pointer-events: all;
+}
+
+#sm-details span {
+  line-height: 2;
+}
+
+#sm-details ul {
+  list-style: none;
+  padding: 0;
+  margin-left: 2px;
+}
+
+#sm-details li {
+  position: relative;
+  padding-left: 10px;
+}
+
+#sm-details li::before {
+  content: "■";
+  position: absolute;
+  left: 0;
+  top: -1px;
+  font-weight: bold;
+}
 /* ------ warning icon ------------------- */
 
 #sm-warning-icon {
@@ -43,6 +82,7 @@
   color: #d97706;
   cursor: pointer;
   font-size: 15px;
+  pointer-events: all;
 }
 #sm-warning-icon:hover {
   transform: scale(1.1);
@@ -78,6 +118,8 @@
   border-radius: 50%;
   display: inline-block;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+
+  pointer-events: all;
 }
 
 .sm-bar-fill {
@@ -129,8 +171,8 @@
     1px 1px 3px rgb(0 0 0 / var(--systemmonitor-label-shadow-opacity)),
     -1px -1px 3px rgb(0 0 0 / var(--systemmonitor-label-shadow-opacity));
   /* to make span text fit to width using Container Queries */
-  container-type: inline-size;
-  width: 50px;
+  /* container-type: inline-size; */
+  width: 150px;
   overflow: hidden;
 }
 
@@ -139,10 +181,11 @@
   width: 100%;
   text-align: center;
   white-space: nowrap;
-  display: inline-block;
+  /* display: inline-block; */
   /* to make span text fit to width */
   /* 12cqi = 12% of container width. clamp() ensures it doesn't get too tiny or too huge. */
-  font-size: clamp(8px, 15cqi, 18px);
+  /* font-size: clamp(8px, 15cqi, 18px); */
+  text-overflow: ellipsis;
 }
 
 .sm-label .sm-name {

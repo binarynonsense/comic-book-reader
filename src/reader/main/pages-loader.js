@@ -49,6 +49,35 @@ exports.setCacheSize = function (value) {
   clearCache();
 };
 
+exports.getCacheStats = function () {
+  const currentPage = g_fileData?.pageIndex;
+  const sortedIndexes =
+    g_pageCache.size > 0 && g_fileData
+      ? (() => {
+          const allKeys = Array.from(g_pageCache.keys()).sort((a, b) => a - b);
+          const before = allKeys
+            .filter((i) => i < currentPage)
+            .map((i) => i + 1)
+            .join(", ");
+          const current = allKeys.includes(currentPage)
+            ? (currentPage + 1).toString()
+            : "";
+          const after = allKeys
+            .filter((i) => i > currentPage)
+            .map((i) => i + 1)
+            .join(", ");
+
+          return [before, current, after]; //`${before}\n${current}\n${after}`;
+        })()
+      : "";
+
+  return {
+    maxSize: g_pageCacheLimitMB,
+    size: g_currentPageCacheMB,
+    sortedIndexes,
+  };
+};
+
 //////////////////////////////////////////////////////////////////////////////
 // TEMP FOLDERS //////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
@@ -313,8 +342,11 @@ function updatePageCacheSize() {
   log.editor(
     `[PAGES][CACHE] cache size ${g_currentPageCacheMB.toFixed(2)}MB - ${g_pageCache.size} entries`,
   );
-  const sortedIndexes = Array.from(g_pageCache.keys()).sort((a, b) => a - b);
-  log.editor("[PAGES][CACHE] current indexes: " + sortedIndexes.join(", "));
+  const sortedIndexes = Array.from(g_pageCache.keys())
+    .sort((a, b) => a - b)
+    .map((i) => i + 1)
+    .join(", ");
+  log.editor("[PAGES][CACHE] current indexes: " + sortedIndexes);
   return g_currentPageCacheMB;
 }
 

@@ -29,6 +29,8 @@ function sendIpcToMain(...args) {
 
 let g_onIpcCallbacks = {};
 let g_isInitialized = false;
+let g_isDev;
+let g_localizedTexts;
 
 export function onIpcFromMain(args) {
   const callback = g_onIpcCallbacks[args[0]];
@@ -41,25 +43,47 @@ export function on(id, callback) {
 }
 
 function initOnIpcCallbacks() {
-  on("show", (isVisible, elementId, scale) => {
+  on("show", (isVisible, elementId, scale, isDev) => {
     if (!g_isInitialized) {
       document
         .querySelector("#sm-warning-icon")
         .addEventListener("click", (event) => {
           sendIpcToMain("on-warning-icon-clicked");
         });
+      document
+        .querySelector("#sm-pagescache-widget")
+        .addEventListener("click", (event) => {
+          document.getElementById("sm-details").classList.toggle("sm-hidden");
+        });
+      document
+        .querySelector("#sm-details")
+        .addEventListener("click", (event) => {
+          document.getElementById("sm-details").classList.toggle("sm-hidden");
+        });
       g_isInitialized = true;
     }
+    g_isDev = isDev;
     if (isVisible) {
       document.getElementById(elementId).classList.remove("sm-hidden");
-      const parent = document.getElementById("sm-frame");
+      const parent = document.getElementById("system-monitor-container");
       parent.style.setProperty("--sm-frame-scale", scale);
+      //
+      if (g_isDev) {
+        document
+          .getElementById("sm-pagescache-widget")
+          .classList.remove("sm-hidden");
+      } else {
+        document
+          .getElementById("sm-pagescache-widget")
+          .classList.add("sm-hidden");
+      }
     } else {
       document.getElementById(elementId).classList.add("sm-hidden");
     }
   });
 
-  on("update-stats", (stats, memoryTooltip) => {
+  on("update-stats", (stats, memoryTooltip, cacheStats) => {
+    let details = "";
     if (stats.warningIcon === "error") {
       updateWidget("sm-cpu-widget", 0);
       updateWidget("sm-memory-widget", 0, "");
@@ -80,6 +104,31 @@ function initOnIpcCallbacks() {
         document.querySelector("#sm-warning-icon").classList.add("sm-hidden");
       }
     }
+    //
+    if (cacheStats) {
+      updateWidget(
+        "sm-pagescache-widget",
+        (100 * cacheStats.size) / cacheStats.maxSize,
+        "",
+      );
+      details += `
+      <span><b>${g_localizedTexts.size}</b>:</span>
+      <ul>
+        <li>${cacheStats.size.toFixed(2)}MB / ${cacheStats.maxSize.toFixed(2)}MB</li>
+      </ul>`;
+      if (cacheStats.size > 0)
+        details += `
+      <span><b>${g_localizedTexts.pages}</b>:</span>
+      <ul>
+        ${cacheStats.sortedIndexes[0] ? `<li>${cacheStats.sortedIndexes[0]}</li>` : ""}
+        ${cacheStats.sortedIndexes[1] ? `<li><b>${cacheStats.sortedIndexes[1]}</b></li>` : ""}
+        ${cacheStats.sortedIndexes[2] ? `<li>${cacheStats.sortedIndexes[2]}</li>` : ""}
+      </ul>`;
+    } else {
+      updateWidget("sm-pagescache-widget", 0, "");
+    }
+    //
+    document.querySelector("#sm-details").innerHTML = details;
   });
 
   on("update-localization", (...args) => {
@@ -112,7 +161,7 @@ function updateWidget(parentID, value, tooltip, size, thick) {
   const clampedVal = Math.min(Math.max(value, 0), 100);
   parent.style.setProperty("--sm-progress", clampedVal);
 
-  if (Math.round(clampedVal) >= 95) {
+  if (Math.round(clampedVal) >= 95 && parentID !== "sm-pagescache-widget") {
     barFillDiv.classList.add("sm-bar-fill-alert");
   } else {
     barFillDiv.classList.remove("sm-bar-fill-alert");
@@ -139,7 +188,12 @@ function updateWidget(parentID, value, tooltip, size, thick) {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-function updateLocalization(localization, tooltipsLocalization) {
+function updateLocalization(
+  localization,
+  tooltipsLocalization,
+  localizedTexts,
+) {
+  g_localizedTexts = localizedTexts;
   for (let index = 0; index < localization.length; index++) {
     const element = localization[index];
     const domElement = document.querySelector("#" + element.id);
