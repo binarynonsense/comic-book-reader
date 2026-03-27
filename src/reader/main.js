@@ -2623,6 +2623,7 @@ function startPageWorker() {
                 );
               } else {
                 log.error(message.result.error);
+                if(message.result.stderr) log.error(message.result.stderr);
                 closeCurrentFile();
                 const detectedFileType = fileUtils.getFileTypeFromPath(
                   message.filePath,
