@@ -241,7 +241,6 @@ function initOnIpcCallbacks() {
   ///////////
 
   on("hs-animate-fireworks", (...args) => {
-    console.log("hs-animate-fireworks");
     const fireworksDiv = document.querySelector("#hs-fireworks");
     if (!fireworksDiv.classList.contains("hs-animate-fireworks")) {
       fireworksDiv.classList.add("hs-animate-fireworks");
