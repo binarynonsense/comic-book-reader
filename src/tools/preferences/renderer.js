@@ -232,6 +232,16 @@ function init(
         sendIpcToMain("set-layout-battery", parseInt(select.value));
       });
     }
+    // system monitor size
+    {
+      let select = document.getElementById(
+        "tool-pre-systemmonitor-size-select",
+      );
+      select.value = settings.systemMonitorScale;
+      select.addEventListener("change", function (event) {
+        sendIpcToMain("set-systemmonitor-size", parseInt(select.value));
+      });
+    }
     // toolbar direction select
     {
       let select = document.getElementById("tool-pre-toolbar-direction-select");

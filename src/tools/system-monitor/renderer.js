@@ -65,8 +65,7 @@ function initOnIpcCallbacks() {
     g_isDev = isDev;
     if (isVisible) {
       document.getElementById(elementId).classList.remove("sm-hidden");
-      const parent = document.getElementById("system-monitor-container");
-      parent.style.setProperty("--sm-frame-scale", scale);
+      setScale(scale);
       //
       if (g_isDev) {
         document
@@ -131,6 +130,10 @@ function initOnIpcCallbacks() {
     document.querySelector("#sm-details").innerHTML = details;
   });
 
+  on("set-scale", (...args) => {
+    setScale(...args);
+  });
+
   on("update-localization", (...args) => {
     updateLocalization(...args);
   });
@@ -152,6 +155,19 @@ function initOnIpcCallbacks() {
 ///////////////////////////////////////////////////////////////////////////////
 // UI /////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
+
+function setScale(scale) {
+  let value;
+  if (scale === 0) {
+    value = 0.9;
+  } else if (scale === 2) {
+    value = 1.1;
+  } else {
+    value = 1.0;
+  }
+  const parent = document.getElementById("system-monitor-container");
+  parent.style.setProperty("--sm-frame-scale", value);
+}
 
 function updateWidget(parentID, value, tooltip, size, thick) {
   const parent = document.getElementById(parentID);

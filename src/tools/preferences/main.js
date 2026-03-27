@@ -15,6 +15,7 @@ const settings = require("../../shared/main/settings");
 const themes = require("../../shared/main/themes");
 const reader = require("../../reader/main");
 const homeScreen = require("../../reader/home-screen/main");
+const systemMonitor = require("../../tools/system-monitor/main");
 const utils = require("../../shared/main/utils");
 const appUtils = require("../../shared/main/app-utils");
 const contextMenu = require("../../shared/main/tools-menu-context");
@@ -240,6 +241,11 @@ function initOnIpcCallbacks() {
   on("set-layout-battery", (value) => {
     settings.setValue("layoutBattery", value);
     reader.updateLayoutBattery();
+  });
+
+  on("set-systemmonitor-size", (value) => {
+    settings.setValue("systemMonitorScale", value);
+    systemMonitor.setScale(value);
   });
 
   on("set-toolbar-direction", (value) => {

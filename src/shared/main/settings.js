@@ -119,7 +119,7 @@ const g_defaultSettings = {
   },
   pagesDirection: 0, // 0: ltr, 1: rtl,
   mouseButtonQuickMenu: 1, // -1: unassigned 0-4: mouse button
-  systemMonitorScale: 1.0,
+  systemMonitorScale: 1, // 0, 1 0r 2 (small, medium, big)
   logToFile: false,
 
   checkUpdatesOnStart: 3, // 0: never, 1: always, 2: day, 3: week, 4: month
@@ -308,7 +308,7 @@ exports.resetPreferences = function () {
     "homeScreen",
     "epubEbook",
     "mouseButtonQuickMenu",
-    //"systemMonitorScale", // TODO: add when included in preferences tool
+    "systemMonitorScale",
     "logToFile",
 
     "checkUpdatesOnStart",
@@ -457,9 +457,9 @@ function sanitize() {
     g_settings.mouseButtonQuickMenu = -1;
   }
   if (
-    typeof g_settings.systemMonitorScale !== "number" ||
-    g_settings.systemMonitorScale < 0.5 ||
-    g_settings.systemMonitorScale > 1.5
+    !Number.isInteger(g_settings.systemMonitorScale) ||
+    g_settings.systemMonitorScale < 0 ||
+    g_settings.systemMonitorScale > 2
   ) {
     g_settings.systemMonitorScale = g_defaultSettings.systemMonitorScale;
   }

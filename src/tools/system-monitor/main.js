@@ -156,6 +156,10 @@ exports.quit = function () {
   shutdownWorker();
 };
 
+exports.setScale = function (scale) {
+  sendIpcToRenderer("set-scale", scale);
+};
+
 function shutdownWorker() {
   if (g_worker) {
     g_worker.postMessage("shutdown");

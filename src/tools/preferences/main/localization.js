@@ -296,7 +296,7 @@ exports.getLocalization = function () {
     },
     {
       id: "tool-pre-layout-audioplayer-text",
-      text: _("tool-pre-layout-audioplayer"),
+      text: _("menu-view-layout-show-mediaplayer"),
     },
 
     {
@@ -335,6 +335,27 @@ exports.getLocalization = function () {
     {
       id: "tool-pre-layout-battery-5-text",
       text: _("menu-shared-bottom-right"),
+    },
+    //////////////////////////////////////////////
+    {
+      id: "tool-pre-systemmonitor-text",
+      text: _("menu-view-layout-show-systemmonitor"),
+    },
+    {
+      id: "tool-pre-systemmonitor-size-text",
+      text: _("ui-modal-info-metadata-filesize"),
+    },
+    {
+      id: "tool-pre-systemmonitor-size-0-text",
+      text: _("mp-menu-size-small"),
+    },
+    {
+      id: "tool-pre-systemmonitor-size-1-text",
+      text: _("mp-menu-size-medium"),
+    },
+    {
+      id: "tool-pre-systemmonitor-size-2-text",
+      text: _("mp-menu-size-big"),
     },
     //////////////////////////////////////////////
     {
