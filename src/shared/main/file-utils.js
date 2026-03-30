@@ -642,32 +642,17 @@ exports.deleteFolderRecursive = function (
     fs.rmSync(folderPath, {
       recursive: true,
       force: true,
-      maxRetries: 5,
+      maxRetries: 10,
       retryDelay: 100,
     });
     log.debug("deleted folder: " + folderPath);
   } catch (error) {
-    if (error.code === "EBUSY" || error.code === "ENOTEMPTY") {
-      log.warning(
-        "folder locked, attempting final delayed retry: " + folderPath,
-      );
-      setTimeout(() => {
-        try {
-          fs.rmSync(folderPath, { recursive: true, force: true });
-          log.debug("retry success: deleted folder: " + folderPath);
-        } catch (retryError) {
-          log.error("couldn't delete folder: " + folderPath);
-          log.error(retryError.code);
-        }
-      }, 500);
+    if (logToError) {
+      log.error("couldn't delete folder after 10 retries: " + folderPath);
+      log.error(error.code);
     } else {
-      if (logToError) {
-        log.error("couldn't delete folder: " + folderPath);
-        log.error(error.code);
-      } else {
-        log.debug("couldn't delete folder: " + folderPath);
-        log.debug(error.code);
-      }
+      log.debug("couldn't delete folder after 10 retries: " + folderPath);
+      log.debug(error.code);
     }
   }
 };
