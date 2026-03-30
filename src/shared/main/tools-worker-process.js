@@ -35,10 +35,10 @@ Object.assign(process.env, safeEnv);
 const cp = require("node:child_process");
 const originalSpawn = cp.spawn;
 cp.spawn = function (command, args, options) {
-  // send({
-  //   type: "editorLog",
-  //   log: `[tools worker] [spawn wrapper] spawn called`,
-  // });
+  send({
+    type: "editorLog",
+    log: `[tools worker] [spawn wrapper] spawn called for ${command} ${args ? args.join(" ") : ""}`,
+  });
   let finalArgs = args;
   let finalOptions = options;
   // handle optional args if only 2 params are passed
@@ -335,7 +335,7 @@ async function createFiles(
         } else if (outputFormat === FileExtension.CBR) {
           if (comicInfoFilePath)
             filesData[index].imgFilePaths.push(comicInfoFilePath);
-          const cmdResult = fileFormats.createRar(
+          const cmdResult = await fileFormats.createRar(
             filesData[index].imgFilePaths,
             filesData[index].outputFilePath,
             extra.rarExePath,

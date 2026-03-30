@@ -30,7 +30,7 @@ exports.moveFile = function (oldPath, newPath, throwUnlinkError = true) {
         // EXDEV = cross-device link not permitted.
         fs.copyFileSync(oldPath, newPath);
         try {
-          return exports.safeUnlinkSync(oldPath);
+          return exports.safeUnlinkSync(oldPath, 6);
         } catch (unlinkError) {
           if (throwUnlinkError) throw unlinkError;
           return;
@@ -642,7 +642,7 @@ exports.deleteFolderRecursive = function (
     fs.rmSync(folderPath, {
       recursive: true,
       force: true,
-      maxRetries: 3,
+      maxRetries: 5,
       retryDelay: 100,
     });
     log.debug("deleted folder: " + folderPath);
@@ -672,7 +672,7 @@ exports.deleteFolderRecursive = function (
   }
 };
 
-exports.safeUnlinkSync = function (filePath, retries = 5, delay = 100) {
+exports.safeUnlinkSync = function (filePath, retries = 10, delay = 100) {
   for (let i = 0; i < retries; i++) {
     try {
       fs.unlinkSync(filePath);
@@ -691,7 +691,11 @@ exports.safeUnlinkSync = function (filePath, retries = 5, delay = 100) {
   }
 };
 
-exports.safeUnlink = async function (filePath, throwError = true, retries = 5) {
+exports.safeUnlink = async function (
+  filePath,
+  throwError = true,
+  retries = 10,
+) {
   for (let i = 0; i < retries; i++) {
     try {
       await fs.promises.unlink(filePath);

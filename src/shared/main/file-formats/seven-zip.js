@@ -374,104 +374,77 @@ exports.create7Zip = async function (
   tempFolderPath,
   archiveType,
 ) {
+  const { spawn } = require("node:child_process");
+  const listFileName = "acbr-file-list.txt";
+  const listFilePath = path.join(tempFolderPath, listFileName);
   try {
     checkPathTo7ZipBin();
+    const listContent = [...new Set(filePathsList)]
+      .map((entryFilePath) => {
+        const relativePath = path.normalize(
+          path.relative(tempFolderPath, entryFilePath),
+        );
+        return `"${relativePath}"`;
+      })
+      .join("\n");
+    fs.writeFileSync(listFilePath, listContent, "utf-8");
 
-    const Seven = require("node-7z");
-    let options = {
-      $bin: g_pathTo7zipBin,
-      charset: "UTF-8", // always used just in case?
-    };
+    // a = add to archive
+    // -aoa = overwrite all
+    const args = [
+      "a",
+      "-aoa",
+      path.resolve(outputFilePath),
+      `@${listFileName}`,
+    ];
     if (password && password.trim() !== "") {
-      options.password = password;
+      args.push(`-p${password}`);
     }
-    if (archiveType && archiveType === "zip") {
-      options.archiveType = archiveType;
+    if (archiveType === "zip") {
+      args.push("-tzip");
+      args.push("-mcu=on"); // force UTF-8 for filenames inside
     }
+    args.push("-scsUTF-8"); // tell 7z the list file is UTF-8
 
-    let seven;
-    if (true) {
-      // don't know how to make 7z use a relative path for the input files
-      // when storing them in the output file, only works when I tell it
-      // to compress all the contents of a folder, so I create temp subfolders
-      // for the files and move them there, which is a loss of time :(
-      const tempSubfolderPath = fileUtils.createRandomSubfolder(tempFolderPath);
-      if (!tempSubfolderPath) throw "Couldn't create 7z subfolder for images";
-      for (let index = 0; index < filePathsList.length; index++) {
-        const oldPath = filePathsList[index];
-        const relativeFilePath = path.relative(tempFolderPath, oldPath);
-        const newPath = path.join(tempSubfolderPath, relativeFilePath);
-        // create subfolders if they don't exist
-        fs.mkdirSync(path.dirname(newPath), { recursive: true });
-        fileUtils.moveFile(oldPath, newPath);
-      }
-      // seven = Seven.add(outputFilePath, tempFolderPath + "/*", options);
-      seven = Seven.add(outputFilePath, tempSubfolderPath + "/*", options);
-    }
-    // else if (true) {
-    //   // use txt with all paths in it
-    //   /* UNFINISHED CODE / NOT WORKING PROPERLY*/
-    //   // problems with keeping the relative folder structure, spaces...
-    //   const pathsTxt = path.join(tempFolderPath, "acbr-tmp-paths.txt");
-    //   // - relative paths version
-    //   // gives an error/warning reading the paths, no more files
-    //   let relativePaths = "";
-    //   for (let index = 0; index < filePathsList.length; index++) {
-    //     if (index > 0) relativePaths += "\n";
-    //     const filePath = filePathsList[index];
-    //     relativePaths += path.relative(tempFolderPath, filePath);
-    //   }
-    //   //options.recursive = true;
-    //   fs.writeFileSync(pathsTxt, relativePaths);
-    //   // - full paths version
-    //   // WRONG because it also stores the full path in the 7z file
-    //   // no matter what I do... can't make the structure relative
-    //   //fs.writeFileSync(pathsTxt, filePathsList.join("\n"));
+    const sevenZipProcess = spawn(path.resolve(g_pathTo7zipBin), args, {
+      cwd: tempFolderPath,
+      windowsHide: true,
+    });
 
-    //   // - test: print stored file paths
-    //   // try {
-    //   //   let data = fs.readFileSync(pathsTxt, "utf8");
-    //   //   console.log(data.toString());
-    //   // }
+    let stderrData = "";
+    // let stdoutData = "";
+    sevenZipProcess.stderr.on(
+      "data",
+      (data) => (stderrData += data.toString()),
+    );
+    // sevenZipProcess.stdout.on(
+    //   "data",
+    //   (data) => (stdoutData += data.toString()),
+    // );
 
-    //   // folder for 7z to store the file while creating it, I think :)
-    //   // if there's an error it moves it to the outputPath so it's
-    //   // of not much use in my case?
-    //   //options.workingDir = tempFolderPath;
-
-    //   // spawnOptions: don't seem to work, at least for cwd!!!!
-    //   options.$spawnOptions = { cwd: tempFolderPath };
-    //   //options.fullyQualifiedPaths = false;
-
-    //   seven = Seven.add(outputFilePath, "@" + pathsTxt, options);
-    //   // - test cwd
-    //   //seven = Seven.add(outputFilePath, "*.*", options);
-    // } else {
-    //   // pass paths directly
-    //   // stopped using it due to potential 'ENAMETOOLONG' errors
-    //   // when too many files (at least on Windows)
-    //   seven = Seven.add(outputFilePath, filePathsList, options);
-    // }
-
-    let promise = await new Promise((resolve) => {
-      seven.on("error", (error) => {
-        resolve({ success: false, data: error });
-      });
-      seven.on("end", () => {
-        return resolve({
-          success: true,
-        });
+    const exitCode = await new Promise((resolve) => {
+      sevenZipProcess.on("close", (code) => resolve(code));
+      sevenZipProcess.on("error", (error) => {
+        stderrData += `\nSpawn Error: ${error.message}`;
+        resolve(-1);
       });
     });
 
-    if (promise.success === true) {
+    try {
+      if (fs.existsSync(listFilePath)) fs.unlinkSync(listFilePath);
+    } catch (e) {}
+
+    // 0 = success, 1 = warning
+    if (exitCode === 0 || exitCode === 1) {
       return;
-    } else if (promise.success === false) {
-      throw promise.data;
     }
+    throw new Error(`7z error: ${stderrData}`);
   } catch (error) {
-    console.log(error);
     throw error;
+  } finally {
+    try {
+      if (fs.existsSync(listFilePath)) fs.unlinkSync(listFilePath);
+    } catch (e) {}
   }
 };
 

@@ -15,72 +15,67 @@ const log = require("../logger");
 // RAR ////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-function createRar(
+exports.createRar = async function (
   filePathsList,
   outputFilePath,
   rarExePath,
   workingDir,
   password,
 ) {
+  const { spawn } = require("node:child_process");
+  const listFileName = "acbr-file-list.txt";
+  const listFilePath = path.join(workingDir, listFileName);
   try {
-    let args = ["a"];
+    const listContent = [...new Set(filePathsList)]
+      .map((entryFilePath) => {
+        const relativePath = path.normalize(
+          path.relative(workingDir, entryFilePath),
+        );
+        return `"${relativePath}"`;
+      })
+      .join("\n");
+    fs.writeFileSync(listFilePath, listContent, "utf-8");
+
+    if (fs.existsSync(outputFilePath)) {
+      // there's no overwrite flag in rar, so delete before creating
+      // if not it would add files to the current one if it exists
+      await fileUtils.safeUnlink(outputFilePath, true);
+    }
+
+    let args = ["a", "-y", outputFilePath, `@${listFileName}`];
     if (password && password.trim() !== "") {
-      // -hp would also encrypt the headers but acbr wouldn't
-      // be able to open it currently
       args.push(`-p${password}`);
     }
-    args.push(outputFilePath);
-    if (true) {
-      args.push("-r");
-      args.push("./*");
+
+    const rarProcess = spawn(rarExePath, args, {
+      cwd: workingDir,
+      windowsHide: true,
+    });
+
+    let stderrData = "";
+    rarProcess.stderr.on("data", (data) => (stderrData += data.toString()));
+
+    const exitCode = await new Promise((resolve) => {
+      rarProcess.on("close", (code) => resolve(code));
+      rarProcess.on("error", (error) => {
+        stderrData += `\nSpawn Error: ${error.message}`;
+        resolve(-1);
+      });
+    });
+
+    // 0 = success, 1 = warning
+    if (exitCode === 0 || exitCode === 1) {
+      return { success: true };
     }
-    // else if (true) {
-    //   // use txt with all paths in it
-    //   const pathsTxt = path.join(workingDir, "acbr-txt-paths.txt");
-    //   let relativePaths = "";
-    //   for (let index = 0; index < filePathsList.length; index++) {
-    //     if (index > 0) relativePaths += "\n";
-    //     const filePath = filePathsList[index];
-    //     relativePaths += path.relative(workingDir, filePath);
-    //   }
-    //   fs.writeFileSync(pathsTxt, relativePaths);
-    //   args.push(`@${pathsTxt}`);
-    // } else {
-    //   // pass paths directly
-    //   // stopped using it due to potential 'ENAMETOOLONG' errors
-    //   // when too many files (at least on Windows)
-    //   filePathsList.forEach((filePath) => {
-    //     filePath = path.relative(workingDir, filePath);
-    //     args.push(filePath);
-    //   });
-    // }
-    // same as with 7z
-    // don't know how to make rar use a relative path for the input files
-    // when storing them in the output file, only works when I tell it
-    // to compress all the contents of a folder, so I create temp subfolders
-    // for the files and move them there, which is a loss of time :(
-    const tempFolderPath = workingDir;
-    const tempSubfolderPath = fileUtils.createRandomSubfolder(tempFolderPath);
-    if (!tempSubfolderPath) throw "Couldn't create rar subfolder for images";
-    for (let index = 0; index < filePathsList.length; index++) {
-      const oldPath = filePathsList[index];
-      const relativeFilePath = path.relative(tempFolderPath, oldPath);
-      const newPath = path.join(tempSubfolderPath, relativeFilePath);
-      // create subfolders if they don't exist
-      fs.mkdirSync(path.dirname(newPath), { recursive: true });
-      fileUtils.moveFile(oldPath, newPath);
-    }
-    const cmdResult = utils.execShellCommand(
-      rarExePath,
-      args,
-      tempSubfolderPath,
-    );
-    return cmdResult;
+    throw new Error(`rar error: ${stderrData}`);
   } catch (error) {
-    return { error: true, stdout: undefined, stderr: error };
+    return { error: true, stderr: error.message || error };
+  } finally {
+    try {
+      if (fs.existsSync(listFilePath)) fs.unlinkSync(listFilePath);
+    } catch (e) {}
   }
-}
-exports.createRar = createRar;
+};
 
 function updateRarEntry(rarExePath, filePath, entryPath, workingDir, password) {
   try {

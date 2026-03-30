@@ -158,26 +158,26 @@ async function processImage(
   ///////////////////////////////////////
   let fileFolderPath = path.dirname(filePath);
   let fileName = path.basename(filePath, path.extname(filePath));
-  let tmpFilePath = path.join(
-    fileFolderPath,
-    fileName + "." + FileExtension.TMP,
-  );
+  let newFilePath = filePath;
+  //
+  const oldFilePath = filePath + ".old";
+  fileUtils.moveFile(filePath, oldFilePath, true);
+  //
   let pipeline;
   let saveToFile = false;
-  let newFilePath = filePath;
 
   let metadata;
 
   // IMAGE OPS 1 /////////////////////////////////////////////
   if (imageOpsNeeded) {
-    if (!pipeline) pipeline = sharp(filePath);
+    if (!pipeline) pipeline = sharp(oldFilePath);
     if (
       uiSelectedOptions.outputCropApply &&
       uiSelectedOptions.outputCropValue > 0
     ) {
       let value = parseInt(uiSelectedOptions.outputCropValue);
       if (value) {
-        if (!metadata) metadata = await sharp(filePath).metadata();
+        if (!metadata) metadata = await sharp(oldFilePath).metadata();
         let newWidth = metadata.width - value * 2;
         let newHeight = metadata.height - value * 2;
         if (newHeight > 0 && newHeight > 0) {
@@ -197,7 +197,7 @@ async function processImage(
   // RESIZE /////////////////////////////////////////////////
   if (resizeNeeded) {
     saveToFile = true;
-    if (!pipeline) pipeline = sharp(filePath);
+    if (!pipeline) pipeline = sharp(oldFilePath);
     if (uiSelectedOptions.outputImageScaleOption === "1") {
       pipeline.resize({
         height: parseInt(uiSelectedOptions.outputImageScaleHeight),
@@ -210,7 +210,7 @@ async function processImage(
       });
     } else {
       // scale
-      if (!metadata) metadata = await sharp(filePath).metadata();
+      if (!metadata) metadata = await sharp(oldFilePath).metadata();
       pipeline.resize(
         Math.round(
           metadata.width * (uiSelectedOptions.outputImageScalePercentage / 100),
@@ -220,7 +220,7 @@ async function processImage(
   }
   // IMAGE OPS 2 /////////////////////////////////////////////
   if (imageOpsNeeded) {
-    if (!pipeline) pipeline = sharp(filePath);
+    if (!pipeline) pipeline = sharp(oldFilePath);
     //////
     if (uiSelectedOptions.outputLevelsApply) {
       let blackLevel = parseFloat(uiSelectedOptions.outputBlackLevelValue);
@@ -325,7 +325,7 @@ async function processImage(
     }
     if (imageFormat != FileExtension.NOT_SET) {
       saveToFile = true;
-      if (!pipeline) pipeline = sharp(filePath);
+      if (!pipeline) pipeline = sharp(oldFilePath);
       if (imageFormat === FileExtension.JPG) {
         pipeline.jpeg({
           quality: parseInt(
@@ -363,10 +363,12 @@ async function processImage(
   }
   // SAVE TO FILE ///////////////////////////////////////////
   if (saveToFile && pipeline) {
-    await pipeline.withMetadata().toFile(tmpFilePath);
-    // fs.unlinkSync(filePath);
-    await fileUtils.safeUnlink(filePath, true);
-    fileUtils.moveFile(tmpFilePath, newFilePath);
+    await pipeline.withMetadata().toFile(newFilePath);
+    // help release the lock on the .old file?
+    pipeline = null;
+    await new Promise(setImmediate);
+    // cleanup the .old source
+    await fileUtils.safeUnlink(oldFilePath, false);
   }
   return { filePath: newFilePath };
 }
