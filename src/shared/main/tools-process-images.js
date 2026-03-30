@@ -359,8 +359,8 @@ async function processImage(
           uiSelectedOptions.outputImageFormatParams.avifQuality,
         ),
       });
-      newFilePath = path.join(fileFolderPath, fileName + "." + imageFormat);
     }
+    newFilePath = path.join(fileFolderPath, fileName + "." + imageFormat);
   }
   // SAVE TO FILE ///////////////////////////////////////////
   if (saveToFile && pipeline) {
