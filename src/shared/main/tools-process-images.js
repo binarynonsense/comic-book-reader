@@ -370,6 +370,9 @@ async function processImage(
     await new Promise(setImmediate);
     // cleanup the .old source
     await fileUtils.safeUnlink(oldFilePath, false);
+  } else {
+    // shouldn't be able to reach this
+    throw "processImage: !(saveToFile && pipeline)";
   }
 
   return { filePath: newFilePath };
