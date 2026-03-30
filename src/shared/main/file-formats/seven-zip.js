@@ -412,15 +412,14 @@ exports.create7Zip = async function (
     });
 
     let stderrData = "";
-    // let stdoutData = "";
+    // NOTE: drains stdout to prevent the process from hanging when the buffer
+    // fills up, alternative: could use stdio: ['ignore', 'ignore', 'pipe'] in
+    // the spawn options
+    sevenZipProcess.stdout.on("data", () => {});
     sevenZipProcess.stderr.on(
       "data",
       (data) => (stderrData += data.toString()),
     );
-    // sevenZipProcess.stdout.on(
-    //   "data",
-    //   (data) => (stdoutData += data.toString()),
-    // );
 
     const exitCode = await new Promise((resolve) => {
       sevenZipProcess.on("close", (code) => resolve(code));

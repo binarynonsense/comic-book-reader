@@ -53,6 +53,10 @@ exports.createRar = async function (
     });
 
     let stderrData = "";
+    // NOTE: drains stdout to prevent the process from hanging when the buffer
+    // fills up, alternative: could use stdio: ['ignore', 'ignore', 'pipe'] in
+    // the spawn options
+    rarProcess.stdout.on("data", () => {});
     rarProcess.stderr.on("data", (data) => (stderrData += data.toString()));
 
     const exitCode = await new Promise((resolve) => {
