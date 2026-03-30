@@ -5,10 +5,10 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-const fs = require("node:fs");
 const path = require("node:path");
 const fileUtils = require("./file-utils");
 const { FileExtension } = require("./constants");
+const log = require("./logger");
 
 exports.processImages = async function ({
   imgFilePaths,
@@ -153,21 +153,57 @@ async function processImage(
   imageOpsNeeded,
   uiSelectedOptions,
 ) {
-  const sharp = require("sharp");
   ///////////////////////////////////////
+  let imageFormat = uiSelectedOptions.outputImageFormat;
+  if (
+    uiSelectedOptions.outputFormat === FileExtension.PDF ||
+    uiSelectedOptions.outputFormat === FileExtension.EPUB
+  ) {
+    if (uiSelectedOptions.outputFormat === FileExtension.PDF) {
+      // change to a format compatible with pdfkit if needed
+      if (
+        imageFormat === FileExtension.WEBP ||
+        imageFormat === FileExtension.AVIF ||
+        (imageFormat === FileExtension.NOT_SET &&
+          !fileUtils.hasPdfKitCompatibleImageExtension(filePath))
+      ) {
+        imageFormat = FileExtension.JPG;
+      }
+    }
+    if (
+      uiSelectedOptions.outputFormat === FileExtension.EPUB &&
+      uiSelectedOptions.outputEpubCreationImageFormat ===
+        "core-media-types-only"
+    ) {
+      // change to a format supported by the epub specification if needed
+      if (
+        imageFormat === FileExtension.WEBP ||
+        imageFormat === FileExtension.AVIF ||
+        (imageFormat === FileExtension.NOT_SET &&
+          !fileUtils.hasEpubSupportedImageExtension(filePath))
+      ) {
+        imageFormat = FileExtension.JPG;
+      }
+    }
+  }
   ///////////////////////////////////////
   let fileFolderPath = path.dirname(filePath);
   let fileName = path.basename(filePath, path.extname(filePath));
   let newFilePath = filePath;
-  //
   const oldFilePath = filePath + ".old";
-  fileUtils.moveFile(filePath, oldFilePath, true);
+  //
+  if (resizeNeeded || imageOpsNeeded || imageFormat !== FileExtension.NOT_SET) {
+    fileUtils.moveFile(filePath, oldFilePath, true);
+  } else {
+    // didn't really need to do anything
+    return { filePath };
+  }
   //
   let pipeline;
   let saveToFile = false;
-
   let metadata;
 
+  const sharp = require("sharp");
   // IMAGE OPS 1 /////////////////////////////////////////////
   if (imageOpsNeeded) {
     if (!pipeline) pipeline = sharp(oldFilePath);
@@ -291,73 +327,38 @@ async function processImage(
     }
   }
   // CHANGE FORMAT /////////////////////////////////////////////
-  if (
-    uiSelectedOptions.outputFormat === FileExtension.PDF ||
-    uiSelectedOptions.outputFormat === FileExtension.EPUB ||
-    uiSelectedOptions.outputImageFormat != FileExtension.NOT_SET
-  ) {
-    let imageFormat = uiSelectedOptions.outputImageFormat;
-    if (uiSelectedOptions.outputFormat === FileExtension.PDF) {
-      // change to a format compatible with pdfkit if needed
+  if (imageFormat !== FileExtension.NOT_SET) {
+    saveToFile = true;
+    if (!pipeline) pipeline = sharp(oldFilePath);
+    if (imageFormat === FileExtension.JPG) {
+      pipeline.jpeg({
+        quality: parseInt(uiSelectedOptions.outputImageFormatParams.jpgQuality),
+        mozjpeg: uiSelectedOptions.outputImageFormatParams.jpgMozjpeg,
+      });
+    } else if (imageFormat === FileExtension.PNG) {
       if (
-        imageFormat === FileExtension.WEBP ||
-        imageFormat === FileExtension.AVIF ||
-        (imageFormat === FileExtension.NOT_SET &&
-          !fileUtils.hasPdfKitCompatibleImageExtension(filePath))
+        parseInt(uiSelectedOptions.outputImageFormatParams.pngQuality) < 100
       ) {
-        imageFormat = FileExtension.JPG;
-      }
-    }
-    if (
-      uiSelectedOptions.outputFormat === FileExtension.EPUB &&
-      uiSelectedOptions.outputEpubCreationImageFormat ===
-        "core-media-types-only"
-    ) {
-      // change to a format supported by the epub specification if needed
-      if (
-        imageFormat === FileExtension.WEBP ||
-        imageFormat === FileExtension.AVIF ||
-        (imageFormat === FileExtension.NOT_SET &&
-          !fileUtils.hasEpubSupportedImageExtension(filePath))
-      ) {
-        imageFormat = FileExtension.JPG;
-      }
-    }
-    if (imageFormat != FileExtension.NOT_SET) {
-      saveToFile = true;
-      if (!pipeline) pipeline = sharp(oldFilePath);
-      if (imageFormat === FileExtension.JPG) {
-        pipeline.jpeg({
+        pipeline.png({
           quality: parseInt(
-            uiSelectedOptions.outputImageFormatParams.jpgQuality,
-          ),
-          mozjpeg: uiSelectedOptions.outputImageFormatParams.jpgMozjpeg,
-        });
-      } else if (imageFormat === FileExtension.PNG) {
-        if (
-          parseInt(uiSelectedOptions.outputImageFormatParams.pngQuality) < 100
-        ) {
-          pipeline.png({
-            quality: parseInt(
-              uiSelectedOptions.outputImageFormatParams.pngQuality,
-            ),
-          });
-        } else {
-          pipeline.png();
-        }
-      } else if (imageFormat === FileExtension.WEBP) {
-        pipeline.webp({
-          quality: parseInt(
-            uiSelectedOptions.outputImageFormatParams.webpQuality,
+            uiSelectedOptions.outputImageFormatParams.pngQuality,
           ),
         });
-      } else if (imageFormat === FileExtension.AVIF) {
-        pipeline.avif({
-          quality: parseInt(
-            uiSelectedOptions.outputImageFormatParams.avifQuality,
-          ),
-        });
+      } else {
+        pipeline.png();
       }
+    } else if (imageFormat === FileExtension.WEBP) {
+      pipeline.webp({
+        quality: parseInt(
+          uiSelectedOptions.outputImageFormatParams.webpQuality,
+        ),
+      });
+    } else if (imageFormat === FileExtension.AVIF) {
+      pipeline.avif({
+        quality: parseInt(
+          uiSelectedOptions.outputImageFormatParams.avifQuality,
+        ),
+      });
       newFilePath = path.join(fileFolderPath, fileName + "." + imageFormat);
     }
   }
@@ -370,6 +371,7 @@ async function processImage(
     // cleanup the .old source
     await fileUtils.safeUnlink(oldFilePath, false);
   }
+
   return { filePath: newFilePath };
 }
 exports.processImage = processImage;

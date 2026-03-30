@@ -9,10 +9,6 @@ const { parentPort } = require("worker_threads");
 const { processImage } = require("./tools-process-images");
 
 parentPort.on("message", async (message) => {
-  // parentPort.postMessage({
-  //   type: "test-log",
-  //   text: message.type,
-  // });
   if (message.type === "shutdown") {
     process.exit(0);
   } else if (message.type === "process") {
@@ -23,6 +19,10 @@ parentPort.on("message", async (message) => {
         message.imageOpsNeeded,
         message.uiOptions,
       );
+      // parentPort.postMessage({
+      //   type: "test-log",
+      //   text: result.filePath,
+      // });
       parentPort.postMessage({
         type: "done",
         id: message.id,
