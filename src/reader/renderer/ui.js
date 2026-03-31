@@ -628,6 +628,8 @@ export function setFilterClass(element) {
 }
 
 function setCustomFilter(
+  invert = 0,
+  rotateHue = 0,
   gamma = 1,
   blackLevel = 0,
   whiteLevel = 1,
@@ -647,6 +649,7 @@ function setCustomFilter(
   const safeContrast = clamp(contrast, 0, 5.0);
   const safeSaturation = clamp(saturation, 0, 5.0);
   const safeSepia = clamp(sepia, 0, 5.0);
+  const safeInvert = clamp(invert, 0, 1.0);
   // svg filter
   const gammaChannels = document.querySelectorAll(
     "#gamma-levels-filter feComponentTransfer:first-of-type > [type='gamma']",
@@ -663,6 +666,8 @@ function setCustomFilter(
   });
   // css vars
   const rootStyle = document.documentElement.style;
+  rootStyle.setProperty("--page-filter-custom-invert", safeInvert);
+  rootStyle.setProperty("--page-filter-custom-hue-rotate", rotateHue + "deg");
   rootStyle.setProperty("--page-filter-custom-brightness", safeBrightness);
   rootStyle.setProperty("--page-filter-custom-contrast", safeContrast);
   rootStyle.setProperty("--page-filter-custom-saturation", safeSaturation);

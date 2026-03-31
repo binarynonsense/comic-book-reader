@@ -30,6 +30,8 @@ exports.getExtraLocalization = function () {
     filterCustom: _("tool-pre-filters-custom"),
     filterPreview: _("tool-metadata-data-page-type-preview"),
     filterName: _("tool-radio-search-options-orderby-name"),
+    filterInvert: _("tool-pre-filters-custom-invert") + " (0.0-1.0)",
+    filterRotateHue: _("tool-pre-filters-custom-rotate-hue"),
     filterGamma: _("tool-pre-filters-custom-gamma") + " (0.01-5.0)",
     filterLevelWhite: _("tool-pre-filters-custom-level-white") + " (0.0-1.0)",
     filterLevelBlack: _("tool-pre-filters-custom-level-black") + " (0.0-1.0)",

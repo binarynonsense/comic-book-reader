@@ -1285,6 +1285,30 @@ function buildCustomFilters(settings, initializeAll = false) {
           <div class="tool-shared-columns-parent" style="min-height: 90px">            
             <div class="tool-shared-columns-50">
               <label
+                ><span>${g_localizedTexts.filterInvert}</span>
+                <input
+                  id="tool-pre-filters-custom-${index}-invert-input"
+                  type="number"
+                  value="${filter.invert}"
+                  step="0.1"
+                  min="0"
+                  max="1"
+              /></label>
+            </div>
+            <div class="tool-shared-columns-50">
+              <label
+                ><span>${g_localizedTexts.filterRotateHue}</span>
+                <input
+                  id="tool-pre-filters-custom-${index}-rotate-hue-input"
+                  type="number"
+                  value="${filter.rotateHue}"
+                  step="1"
+              /></label>
+            </div>
+          </div>
+          <div class="tool-shared-columns-parent" style="min-height: 90px">            
+            <div class="tool-shared-columns-50">
+              <label
                 ><span>${g_localizedTexts.filterLevelBlack}</span>
                 <input
                   id="tool-pre-filters-custom-${index}-level-black-input"
@@ -1423,6 +1447,12 @@ function buildCustomFilters(settings, initializeAll = false) {
     const nameInput = document.querySelector(
       `#tool-pre-filters-custom-${index}-name-input`,
     );
+    const invertInput = document.querySelector(
+      `#tool-pre-filters-custom-${index}-invert-input`,
+    );
+    const rotateHueInput = document.querySelector(
+      `#tool-pre-filters-custom-${index}-rotate-hue-input`,
+    );
     const gammaInput = document.querySelector(
       `#tool-pre-filters-custom-${index}-gamma-input`,
     );
@@ -1450,6 +1480,8 @@ function buildCustomFilters(settings, initializeAll = false) {
     );
 
     function updatePreviewImg(
+      invert,
+      rotateHue,
       gamma,
       blackLevel,
       whiteLevel,
@@ -1469,6 +1501,7 @@ function buildCustomFilters(settings, initializeAll = false) {
       const safeContrast = clamp(contrast, 0, 5.0);
       const safeSaturation = clamp(saturation, 0, 5.0);
       const safeSepia = clamp(sepia, 0, 5.0);
+      const safeInvert = clamp(invert, 0, 1.0);
       // svg filter
       const gammaChannels = document.querySelectorAll(
         `#tool-pre-filters-custom-${index}-gamma-levels-filter feComponentTransfer:first-of-type > [type='gamma']`,
@@ -1486,11 +1519,13 @@ function buildCustomFilters(settings, initializeAll = false) {
       //
       previewImg.setAttribute(
         "style",
-        `filter: url(#tool-pre-filters-custom-${index}-gamma-levels-filter) brightness(${safeBrightness}) contrast(${safeContrast}) saturate(${safeSaturation}) sepia(${safeSepia}); image-rendering: high-quality;`,
+        `filter: invert(${safeInvert}) hue-rotate(${rotateHue}deg) url(#tool-pre-filters-custom-${index}-gamma-levels-filter) brightness(${safeBrightness}) contrast(${safeContrast}) saturate(${safeSaturation}) sepia(${safeSepia}); image-rendering: high-quality;`,
       );
     }
 
     updatePreviewImg(
+      parseFloat(invertInput.value),
+      parseInt(rotateHueInput.value),
       parseFloat(gammaInput.value),
       parseFloat(blackLevelInput.value),
       parseFloat(whiteLevelInput.value),
@@ -1505,6 +1540,8 @@ function buildCustomFilters(settings, initializeAll = false) {
         "set-custom-filter-values",
         index,
         nameInput.value,
+        parseFloat(invertInput.value),
+        parseInt(rotateHueInput.value),
         parseFloat(gammaInput.value),
         parseFloat(blackLevelInput.value),
         parseFloat(whiteLevelInput.value),
@@ -1515,6 +1552,8 @@ function buildCustomFilters(settings, initializeAll = false) {
       );
 
       updatePreviewImg(
+        parseFloat(invertInput.value),
+        parseInt(rotateHueInput.value),
         parseFloat(gammaInput.value),
         parseFloat(blackLevelInput.value),
         parseFloat(whiteLevelInput.value),
@@ -1525,12 +1564,12 @@ function buildCustomFilters(settings, initializeAll = false) {
       );
     }
 
-    function onCustomFilterInputChange(input, min = 0) {
+    function onCustomFilterInputChange(input, min = 0, max = 5) {
       if (input.type === "text") {
         // set default?
       } else {
         if (input.value < min) input.value = min;
-        if (input.value > 5) input.value = 5;
+        if (input.value > max) input.value = max;
       }
       sendValues();
     }
@@ -1546,7 +1585,13 @@ function buildCustomFilters(settings, initializeAll = false) {
     }
 
     nameInput.addEventListener("change", function (event) {
-      onCustomFilterInputChange(nameInput, 0.01);
+      sendValues();
+    });
+    invertInput.addEventListener("change", function (event) {
+      onCustomFilterInputChange(invertInput, 0, 1);
+    });
+    rotateHueInput.addEventListener("change", function (event) {
+      sendValues();
     });
     gammaInput.addEventListener("change", function (event) {
       onCustomFilterInputChange(gammaInput, 0.01);
@@ -1574,6 +1619,8 @@ function buildCustomFilters(settings, initializeAll = false) {
       .getElementById(`tool-pre-filters-custom-${index}-reset-button`)
       .addEventListener("click", (event) => {
         nameInput.value = g_localizedTexts.filterCustom;
+        invertInput.value = 0;
+        rotateHueInput.value = 0;
         gammaInput.value = 1;
         blackLevelInput.value = 0;
         whiteLevelInput.value = 1;

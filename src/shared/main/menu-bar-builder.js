@@ -10,6 +10,7 @@ const core = require("../../core/main");
 const reader = require("../../reader/main");
 const { _ } = require("./i18n");
 const utils = require("./utils");
+const log = require("./logger");
 
 function getHelpSubmenu() {
   let menu = [];
@@ -787,6 +788,17 @@ function getNormalMenu(settings, history) {
   return menu;
 }
 
+function unescapeForMenu(text) {
+  const map = {
+    "&amp;": "&",
+    "&lt;": "<",
+    "&gt;": ">",
+    "&quot;": '"',
+    "&#39;": "'",
+  };
+  return text.replace(/&amp;|&lt;|&gt;|&quot;|&#39;/g, (m) => map[m]);
+}
+
 function getFilters(settings) {
   let entries = [];
   entries.push({
@@ -806,10 +818,12 @@ function getFilters(settings) {
       name = _("menu-view-filter-oldpaper");
     } else if (name === "ACBR Grayscale") {
       name = _("menu-view-filter-grayscale");
+    } else if (name === "ACBR Invert") {
+      name = _("tool-pre-filters-custom-invert");
     }
     entries.push({
       id: "filter-" + (index + 1),
-      label: name,
+      label: unescapeForMenu(name),
       type: "radio",
       checked: settings.filterMode === index + 1,
       click() {

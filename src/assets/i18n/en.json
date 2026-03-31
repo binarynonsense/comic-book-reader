@@ -1,9 +1,9 @@
 {
   "@metadata": {
     "authors": ["Álvaro"],
-    "last-updated": "2026-03-18",
+    "last-updated": "2026-03-31",
     "license-id": "BSD-2-Clause",
-    "acbr-version": "3.18.0",
+    "acbr-version": "3.19.0",
     "pre-release": "false",
     "comments": "",
     "locale": "en",
@@ -648,6 +648,8 @@
   "tool-pre-filters-resetfilters": "Reset Default Filters",
   "tool-pre-filters-resetfilters-warning": "Are you sure you want to reset the available filters to the default ones?",
   "tool-pre-filters-custom": "Custom Filter",
+  "tool-pre-filters-custom-invert": "Invert",
+  "tool-pre-filters-custom-rotate-hue": "Rotate Hue (Degrees)",
   "tool-pre-filters-custom-gamma": "Gamma",
   "tool-pre-filters-custom-level-white": "White Level",
   "tool-pre-filters-custom-level-black": "Black Level",

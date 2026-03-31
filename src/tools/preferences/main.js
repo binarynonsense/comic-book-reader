@@ -366,6 +366,8 @@ function initOnIpcCallbacks() {
     (
       index,
       name,
+      invert,
+      rotateHue,
       gamma,
       blackLevel,
       whiteLevel,
@@ -377,6 +379,8 @@ function initOnIpcCallbacks() {
       try {
         let filters = settings.getValue("customFilters");
         filters[index].name = name;
+        filters[index].invert = invert;
+        filters[index].rotateHue = rotateHue;
         filters[index].gamma = gamma;
         filters[index].blackLevel = blackLevel;
         filters[index].whiteLevel = whiteLevel;
@@ -439,9 +443,11 @@ function initOnIpcCallbacks() {
       filters = [];
       filters.push(settings.getOldPaperFilter());
       filters.push(settings.getGrayscaleFilter());
+      filters.push(settings.getInvertFilter());
       settings.setValue("customFilters", filters);
       sendIpcToRenderer("rebuild-filters", settings.get());
       settings.setValue("filterMode", 0);
+      reader.setFilter(settings.getValue("filterMode"));
       reader.rebuildMenuAndToolBars(false); // needed?
     } catch (error) {
       log.editorError(error);

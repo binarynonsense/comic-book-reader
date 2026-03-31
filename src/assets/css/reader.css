@@ -5,6 +5,8 @@
   --zoom-width-page1: 50%;
   --zoom-width-page2: 50%;
 
+  --page-filter-custom-invert: 0;
+  --page-filter-custom-hue-rotate: 0deg;
   --page-filter-custom-brightness: 1;
   --page-filter-custom-contrast: 1;
   --page-filter-custom-saturation: 1;
@@ -77,7 +79,8 @@
 }
 
 .page-filter-custom {
-  filter: url(#gamma-levels-filter)
+  filter: invert(var(--page-filter-custom-invert))
+    hue-rotate(var(--page-filter-custom-hue-rotate)) url(#gamma-levels-filter)
     brightness(var(--page-filter-custom-brightness))
     contrast(var(--page-filter-custom-contrast))
     saturate(var(--page-filter-custom-saturation))
