@@ -650,6 +650,8 @@
   "[NEEDS TRANSLATION]tool-pre-filters-resetfilters": "Reset Default Filters",
   "[NEEDS TRANSLATION]tool-pre-filters-resetfilters-warning": "Are you sure you want to reset the available filters to the default ones?",
   "[NEEDS TRANSLATION]tool-pre-filters-custom": "Custom Filter",
+  "[NEEDS TRANSLATION]tool-pre-filters-custom-invert": "Invert",
+  "[NEEDS TRANSLATION]tool-pre-filters-custom-rotate-hue": "Rotate Hue (Degrees)",
   "[NEEDS TRANSLATION]tool-pre-filters-custom-gamma": "Gamma",
   "[NEEDS TRANSLATION]tool-pre-filters-custom-level-white": "White Level",
   "[NEEDS TRANSLATION]tool-pre-filters-custom-level-black": "Black Level",

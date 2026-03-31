@@ -1,8 +1,6 @@
 {
   "@metadata": {
-    "authors": [
-      "Álvaro"
-    ],
+    "authors": ["Álvaro"],
     "last-updated": "2026-03-31",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.19.0",
@@ -650,6 +648,8 @@
   "tool-pre-filters-resetfilters": "Restablecer filtros predeterminados",
   "tool-pre-filters-resetfilters-warning": "¿Está seguro de que quiere restablecer los filtros disponibles a los predeterminados?",
   "tool-pre-filters-custom": "Filtro personalizado",
+  "tool-pre-filters-custom-invert": "Invertir",
+  "tool-pre-filters-custom-rotate-hue": "Rotar tono (grados)",
   "tool-pre-filters-custom-gamma": "Gamma",
   "tool-pre-filters-custom-level-white": "Nivel de blancos",
   "tool-pre-filters-custom-level-black": "Nivel de negros",

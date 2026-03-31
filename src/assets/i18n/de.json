@@ -650,6 +650,8 @@
   "tool-pre-filters-resetfilters": "Standardfilter zurücksetzen",
   "tool-pre-filters-resetfilters-warning": "Sind Sie sicher, dass Sie die verfügbaren Filter auf die Standardwerte zurücksetzen möchten?",
   "tool-pre-filters-custom": "Benutzerdefinierter Filter",
+  "[NEEDS TRANSLATION]tool-pre-filters-custom-invert": "Invert",
+  "[NEEDS TRANSLATION]tool-pre-filters-custom-rotate-hue": "Rotate Hue (Degrees)",
   "tool-pre-filters-custom-gamma": "Gamma",
   "tool-pre-filters-custom-level-white": "Weißpegel",
   "tool-pre-filters-custom-level-black": "Schwarzpegel",

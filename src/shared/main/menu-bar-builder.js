@@ -819,7 +819,7 @@ function getFilters(settings) {
     } else if (name === "ACBR Grayscale") {
       name = _("menu-view-filter-grayscale");
     } else if (name === "ACBR Invert") {
-      name = _("menu-view-filter-invert");
+      name = _("tool-pre-filters-custom-invert");
     }
     entries.push({
       id: "filter-" + (index + 1),
