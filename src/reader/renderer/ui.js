@@ -638,6 +638,33 @@ function setCustomFilter(
   saturation = 1,
   sepia = 0,
 ) {
+  ///////////////
+  // only add those in use
+  let rule = ".page-filter-custom { filter:";
+  if (invert !== 0) rule += " invert(var(--page-filter-custom-invert))";
+  if (rotateHue !== 0)
+    rule += " hue-rotate(var(--page-filter-custom-hue-rotate))";
+  if (gamma !== 1 || blackLevel !== 0 || whiteLevel !== 1)
+    rule += " url(#gamma-levels-filter)";
+  if (brightness !== 1)
+    rule += " brightness(var(--page-filter-custom-brightness))";
+  if (contrast !== 1) rule += " contrast(var(--page-filter-custom-contrast))";
+  if (saturation !== 1)
+    rule += " saturate(var(--page-filter-custom-saturation))";
+  if (sepia !== 0) rule += " sepia(var(--page-filter-custom-sepia))";
+  rule += "; image-rendering: high-quality; }";
+  // console.log(rule);
+
+  const sheet = document.styleSheets[3]; // reader.css is the fourth one
+  const rules = sheet.cssRules;
+  for (let i = 0; i < rules.length; i++) {
+    if (rules[i].selectorText === ".page-filter-custom") {
+      sheet.deleteRule(i);
+      sheet.insertRule(rule, i);
+      break;
+    }
+  }
+  ////////////////
   const clamp = (num, min, max) => Math.min(Math.max(num, min), max);
   // internal levels calculation
   const levelsSlope = 1 / Math.max(whiteLevel - blackLevel, 0.01);

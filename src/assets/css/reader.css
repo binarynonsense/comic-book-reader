@@ -79,13 +79,14 @@
 }
 
 .page-filter-custom {
-  filter: invert(var(--page-filter-custom-invert))
+  /* will be filled from js */
+  /* filter: invert(var(--page-filter-custom-invert))
     hue-rotate(var(--page-filter-custom-hue-rotate)) url(#gamma-levels-filter)
     brightness(var(--page-filter-custom-brightness))
     contrast(var(--page-filter-custom-contrast))
     saturate(var(--page-filter-custom-saturation))
     sepia(var(--page-filter-custom-sepia));
-  image-rendering: high-quality;
+  image-rendering: high-quality; */
 }
 
 /* ZOOM  *********************************************************/
