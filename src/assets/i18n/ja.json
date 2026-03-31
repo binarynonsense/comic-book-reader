@@ -650,6 +650,8 @@
   "tool-pre-filters-resetfilters": "既定のフィルターへリセット",
   "tool-pre-filters-resetfilters-warning": "利用可能なフィルターを既定値にリセットしますか？",
   "tool-pre-filters-custom": "カスタムフィルター",
+  "[NEEDS TRANSLATION]tool-pre-filters-custom-invert": "Invert",
+  "[NEEDS TRANSLATION]tool-pre-filters-custom-rotate-hue": "Rotate Hue (Degrees)",
   "tool-pre-filters-custom-gamma": "ガンマ",
   "tool-pre-filters-custom-level-white": "白レベル",
   "tool-pre-filters-custom-level-black": "黒レベル",
