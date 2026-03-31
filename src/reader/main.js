@@ -2267,6 +2267,8 @@ function setFilter(value, rebuildMenu = true) {
   let data;
   if (value > 0) {
     data = [
+      settings.getValue("customFilters")[value - 1].invert ?? 0,
+      settings.getValue("customFilters")[value - 1].rotateHue ?? 0,
       settings.getValue("customFilters")[value - 1].gamma ?? 1,
       settings.getValue("customFilters")[value - 1].blackLevel ?? 0,
       settings.getValue("customFilters")[value - 1].whiteLevel ?? 1,
@@ -2623,7 +2625,7 @@ function startPageWorker() {
                 );
               } else {
                 log.error(message.result.error);
-                if(message.result.stderr) log.error(message.result.stderr);
+                if (message.result.stderr) log.error(message.result.stderr);
                 closeCurrentFile();
                 const detectedFileType = fileUtils.getFileTypeFromPath(
                   message.filePath,

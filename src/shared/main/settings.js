@@ -24,6 +24,8 @@ const g_scaleToHeightMax = 500;
 exports.getOldPaperFilter = function () {
   return {
     name: "ACBR Old Paper",
+    invert: 0,
+    rotateHue: 0,
     gamma: 1,
     blackLevel: 0,
     whiteLevel: 1,
@@ -36,12 +38,28 @@ exports.getOldPaperFilter = function () {
 exports.getGrayscaleFilter = function () {
   return {
     name: "ACBR Grayscale",
+    invert: 0,
+    rotateHue: 0,
     gamma: 1,
     blackLevel: 0,
     whiteLevel: 1,
     brightness: 1,
     contrast: 1,
     saturation: 0,
+    sepia: 0,
+  };
+};
+exports.getInvertFilter = function () {
+  return {
+    name: "ACBR Invert",
+    invert: 0.9,
+    rotateHue: 180,
+    gamma: 1,
+    blackLevel: 0,
+    whiteLevel: 1,
+    brightness: 0.9,
+    contrast: 1,
+    saturation: 1,
     sepia: 0,
   };
 };
@@ -108,7 +126,11 @@ const g_defaultSettings = {
   ffmpegExeFolderPath: undefined,
   turnPageOnScrollBoundary: false,
   filterMode: 0, // 0: none
-  customFilters: [exports.getOldPaperFilter(), exports.getGrayscaleFilter()],
+  customFilters: [
+    exports.getOldPaperFilter(),
+    exports.getGrayscaleFilter(),
+    exports.getInvertFilter(),
+  ],
   toolbarDirection: 0, // 0: infer from language, 1: ltr, 2: rtl
   homeScreen: {
     latestPosition: 0, // 0: after favs, 1: top, 2: bottom
@@ -988,6 +1010,8 @@ function loadCustomFilters(loadedFilters) {
 exports.getDefaultCustomFilter = function () {
   return {
     name: "Filter",
+    invert: 0,
+    rotateHue: 0,
     gamma: 1,
     blackLevel: 0,
     whiteLevel: 1,
@@ -1006,7 +1030,11 @@ function loadCustomFilter(loadedFilter) {
       let isValid = false;
       if (value !== undefined) {
         if (typeof value === "number") {
-          if (option === "gamma") {
+          if (option === "invert") {
+            if (value >= 0 && value <= 1) isValid = true;
+          } else if (option === "rotateHue") {
+            if (Number.isInteger(value)) isValid = true;
+          } else if (option === "gamma") {
             if (value >= 0.01 && value <= 5) isValid = true;
           } else if (option === "whiteLevel" || option === "blackLevel") {
             if (value >= 0 && value <= 1) isValid = true;
