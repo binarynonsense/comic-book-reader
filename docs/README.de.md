@@ -15,20 +15,16 @@ Ein Comicbuch Leser und Konverter für CBZ, CBR, CB7, EPUB, FB2, MOBI und PDF Da
 
 - Windows & Linux Versionen
 - Kompatible Dateiformate<sup>[1]</sup>:
-  - Comicbücher:
-    - CBZ, CBR, CB7, PDF und EPUB
-  - Bilddateien:
-    - JPG, PNG, WebP und AVIF
-  - Ebooks:
-    - PDF, FB2, MOBI<sup>[4]</sup> und EPUB
+  - Comicbücher: CBZ, CBR, CB7, PDF und EPUB
+  - Bilddateien: JPG, PNG, WebP und AVIF
+  - E-Books: PDF, FB2, MOBI<sup>[4]</sup> und EPUB
 - Fenster- (einfache Benutzeroberfläche) und Vollbild- (keine Benutzeroberfläche) Modi.
 - 'Einzelseite', 'Doppelseite' und 'Doppelseite (erste Seite zentrieren)' Seitenmodi
 - 'Breitenanpassung', 'Höhenanpassung' und eine anpassbare 'Höhenskalierung' Seitenansicht
 - Seitenrotation
-- Benutzeroberfläche verfügbar auf:
-  - Englisch, Spanisch, Russisch, Deutsch, Arabisch, Filipino und Japanisch
+- Benutzeroberfläche verfügbar auf: Englisch, Spanisch, Russisch, Deutsch, Arabisch, Filipino und Japanisch.
 - Automatische Wiederherstellung der vergangenen Sitzung, mit Erinnerung der letzten Seitenposition.
-- Tragbarer Modus (durch das Erstellen einer Datei namens portable.txt im selben Ordner wie die Anwendung)
+- Tragbarer Modus (durch das Erstellen einer Datei namens _portable.txt_ im selben Ordner wie die Anwendung)
 - Metadateneditor:
   - Ansicht der Metadaten welche in PDF und EPUB Dateien oder ComicInfo.xml Dateien innerhalb CBR, CBZ und CB7 Comicbüchern gespeichert sind.
   - Erstelle und/oder modifiziere die Metadaten welche in PDF und EPUB Dateien oder ComicInfo.xml Dateien innerhalb unverschlüsselten CBR<sup>[3]</sup>, CBZ und CB7 Comicbüchern gespeichert sind.
@@ -39,24 +35,22 @@ Ein Comicbuch Leser und Konverter für CBZ, CBR, CB7, EPUB, FB2, MOBI und PDF Da
   - Kann Playlists als M3U Dateien exportieren.
   - Mehr Formate, Codecs und Funktionen werden unterstützt falls FFmpeg [verfügbar](https://github.com/binarynonsense/comic-book-reader/wiki/Third%E2%80%90Party-Executables-(rar,-ffmpeg...)) ist.
 - Werkzeuge:
-  - Dateien:
-    - Konvertieren/größe Ändern:
-      - Comicbücher und E-Books (CBR, CBZ, CB7, FB2, MOBI<sup>[4]</sup>, PDF oder EPUB) zu Comicbücher (CBR<sup>[3]</sup>, CBZ, CB7, PDF oder EPUB<sup>[2]</sup>)
-      - Bilder (JPG, PNG, AVIF oder WebP)
-    - Erstelle:
-      - Ein Comicbuch (CBR<sup>[3]</sup>, CBZ, CB7, PDF oder EPUB<sup>[2]</sup>) aus einer Liste von Bilddateien, E-Books und/oder Comicbüchern
-      - Ein QR Code Bild aus Text
-    - Extrahiere:
-      - Comicbuch Seiten (zu JPG, PNG, AVIF oder WebP)
-      - Text (OCR) aus einer Comicbuch Seite oder Bilddatei
-      - QR Code Text aus einer Comicbuch Seite oder Bilddatei
-      - Eine Farbpalette aus einer Comicbuch Seite oder Bilddatei
-        - Kann zu einer GPL oder ACO Palettendatei extrahiert werden.
+  - Konvertieren/Größe ändern:
+    - Comicbücher und E-Books (CBR, CBZ, CB7, FB2, MOBI<sup>[4]</sup>, PDF oder EPUB) zu Comicbücher (CBR<sup>[3]</sup>, CBZ, CB7, PDF oder EPUB<sup>[2]</sup>).
+    - Bilder (JPG, PNG, AVIF oder WebP).
+  - Erstelle:
+    - Ein Comicbuch (CBR<sup>[3]</sup>, CBZ, CB7, PDF oder EPUB<sup>[2]</sup>) aus einer Liste von Bilddateien, E-Books und/oder Comicbüchern.
+    - Einen QR Code Bild aus Text.
+  - Extrahiere:
+    - Comicbuch Seiten (zu JPG, PNG, AVIF oder WebP).
+    - Text (OCR) aus einer Comicbuch Seite oder Bilddatei.
+    - QR Code Text aus einer Comicbuch Seite oder Bilddatei.
+    - Eine Farbpalette aus einer Comicbuch Seite oder Bilddatei (kann zu einer GPL oder ACO Palettendatei extrahiert werden).
   - Suche und öffne:
-    - Bücher/Comics von Digital Comics Museum, Internet Archive Books, Project Gutenberg, xkcd Webcomics und Comic Book Plus
-    - Hörbücher von Librivox AudioBooks
-    - Wörterbucheinträge in Wiktionary Dictionary
-    - Radiosenderstreams von radio-browser
+    - Bücher/Comics von Digital Comics Museum, Internet Archive Books, Project Gutenberg, xkcd Webcomics und Comic Book Plus.
+    - Hörbücher von Librivox AudioBooks.
+    - Wörterbucheinträge in Wiktionary Dictionary.
+    - Radiosenderstreams von radio-browser.
     - RSS Feeds von Podcasts und Websites.
   - Kunst:
     - Comicbuch Seitenvorlagen- und Vorschaubildersteller
