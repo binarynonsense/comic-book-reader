@@ -1,0 +1,60 @@
+name: Generate Flathub Deps
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: CHECKOUT
+        uses: actions/checkout@v4
+        with:
+          repository: binarynonsense/comic-book-reader
+
+      #- name: SETUP NODE
+      #  uses: actions/setup-node@v4
+      #  with:
+      #    node-version: "20.x"
+
+      - name: SET NAME AND VERSION
+        shell: bash
+        run: |
+          APP_VERSION=$(jq -r .version package.json)
+          BUILD_DATE=$(date '+%Y%m%d-%H%M%S')
+          IS_ALPHA=false
+          if echo "$APP_VERSION" | grep 'alpha'; then
+            IS_ALPHA=true
+          fi
+          ADD_DATE=false
+          if [ "$IS_ALPHA" == true ]; then
+            ADD_DATE=true
+          fi
+          if [ "$ADD_DATE" == true ]; then
+            NEW_APP_VERSION="${APP_VERSION}-${BUILD_DATE}"
+            jq --arg variable "${NEW_APP_VERSION}" '.version = $variable' package.json > package.json.tmp
+            mv package.json.tmp package.json
+          else
+            NEW_APP_VERSION="${APP_VERSION}"
+          fi
+          echo $NEW_APP_VERSION
+          echo "RELEASE_NAME=$NEW_APP_VERSION" >> $GITHUB_ENV
+          
+      - name: INSTALL FLATPAK BUILDER TOOLS
+        run: |
+          pipx install git+https://github.com/flatpak/flatpak-builder-tools.git#subdirectory=node
+
+      - name: GENERATE generated-sources.json
+        run: |
+          flatpak-node-generator npm package-lock.json
+
+      - name: RELEASE
+        uses: softprops/action-gh-release@v2
+        with:
+          prerelease: true
+          draft: true
+          name: v${{env.RELEASE_NAME}} - flathub deps
+          tag_name: v${{env.RELEASE_NAME}}-flathub-deps
+          files: |
+            generated-sources.json

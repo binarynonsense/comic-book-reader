@@ -1,0 +1,77 @@
+name: Build Universal MuPDF
+on:
+  workflow_dispatch:
+    inputs:
+      mupdf_tag:
+        description: 'MuPDF Tag (e.g., 1.27.0)'
+        required: true
+        default: '1.27.0'
+      build_linux: { type: boolean, default: true }
+      build_windows: { type: boolean, default: true }
+
+jobs:
+  build:
+    name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-22.04
+            target: linux
+          - os: windows-latest
+            target: windows
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout MuPDF Source
+        if: |
+          (matrix.target == 'linux' && github.event.inputs.build_linux == 'true') ||
+          (matrix.target == 'windows' && github.event.inputs.build_windows == 'true')
+        uses: actions/checkout@v4
+        with:
+          repository: ArtifexSoftware/mupdf
+          ref: ${{ github.event.inputs.mupdf_tag }}
+          path: mupdf-source
+          submodules: recursive
+
+      - name: Build Linux (Turbo Optimized Static)
+        if: matrix.target == 'linux' && github.event.inputs.build_linux == 'true'
+        working-directory: mupdf-source
+        run: |
+          sudo apt update && sudo apt install -y build-essential pkg-config nasm
+          export XCFLAGS="-O3 -march=x86-64-v3 -mavx2 -mfpmath=sse -msse4.2 -flto -DNDEBUG"
+          make -j$(nproc) build=release OUT=build/universal \
+            HAVE_X11=no HAVE_GLUT=no HAVE_MUJS=no HAVE_LIBCRYPTO=no \
+            USE_SYSTEM_LIBS=no HAVE_LIBJPEG=yes
+          strip --strip-all build/universal/mutool
+
+      - name: Setup MSBuild
+        if: matrix.target == 'windows' && github.event.inputs.build_windows == 'true'
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Build Windows (AVX2 Optimized MSBuild)
+        if: matrix.target == 'windows' && github.event.inputs.build_windows == 'true'
+        working-directory: mupdf-source/platform/win32
+        run: |
+          msbuild mupdf.sln /p:Configuration=Release /p:Platform=x64 /t:mutool `
+            /p:PreprocessorDefinitions="WIN32%3BNDEBUG%3B_CONSOLE%3BHAVE_LIBJPEG%3BHAVE_MUJS=0%3BHAVE_LIBCRYPTO=0%3BHAVE_GLUT=0" `
+            /p:ClCompile="Optimization=MaxSpeed%3BEnableEnhancedInstructionSet=AdvancedVectorExtensions2%3BWholeProgramOptimization=true%3BRuntimeLibrary=MultiThreaded" `
+            /p:Link="LinkTimeCodeGeneration=UseLinkTimeCodeGeneration"
+          if (Test-Path "x64\Release\mutool.exe") {
+            Copy-Item "x64\Release\mutool.exe" "..\..\..\mutool-win.exe"
+          }
+
+      - name: Create Prerelease
+        if: |
+          (matrix.target == 'linux' && github.event.inputs.build_linux == 'true') ||
+          (matrix.target == 'windows' && github.event.inputs.build_windows == 'true')
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: mupdf-${{ github.event.inputs.mupdf_tag }}-${{ github.run_number }}
+          name: MuPDF ${{ github.event.inputs.mupdf_tag }} Build ${{ github.run_number }}
+          prerelease: true
+          files: |
+            mupdf-source/COPYING
+            mupdf-source/build/universal/mutool
+            mutool-win.exe
