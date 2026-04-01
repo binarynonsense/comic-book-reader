@@ -36,22 +36,22 @@ Un lector y conversor de cómics para archivos en formato CBZ, CBR, CB7, EPUB, F
   - Admite más formatos, códecs y funciones si FFmpeg está [disponible](<https://github.com/binarynonsense/comic-book-reader/wiki/Third%E2%80%90Party-Executables-(rar,-ffmpeg...)>).
 - Herramientas:
   - Convertir/Redimensionar:
-    - cómics y libros (CBR, CBZ, CB7, FB2, MOBI<sup>[4]</sup>, PDF o EPUB) a cómics (CBR<sup>[3]</sup>, CBZ, CB7, PDF o EPUB<sup>[2]</sup>).
-    - imágenes (JPG, PNG, AVIF o WebP).
+    - Cómics y libros (CBR, CBZ, CB7, FB2, MOBI<sup>[4]</sup>, PDF o EPUB) a cómics (CBR<sup>[3]</sup>, CBZ, CB7, PDF o EPUB<sup>[2]</sup>).
+    - Imágenes (JPG, PNG, AVIF o WebP).
   - Crear:
-    - un cómic (CBR<sup>[3]</sup>, CBZ, CB7, PDF o EPUB<sup>[2]</sup>) a partir de una lista de archivos de imagen, libros y/o cómics.
-    - una imagen de código QR a partir de un texto.
+    - Un cómic (CBR<sup>[3]</sup>, CBZ, CB7, PDF o EPUB<sup>[2]</sup>) a partir de una lista de archivos de imagen, libros y/o cómics.
+    - Una imagen de código QR a partir de un texto.
   - Extraer:
-    - páginas de cómics (a JPG, PNG, AVIF o WebP).
-    - texto (OCR) de una página de cómic o archivo de imagen.
-    - el texto de un código QR en una página de cómic o un archivo de imagen.
-    - una paleta de colores de una página de cómic o un archivo de imagen (se puede exportar a un archivo de paleta GPL o ACO).
+    - Páginas de cómics (a JPG, PNG, AVIF o WebP).
+    - Texto (OCR) de una página de cómic o archivo de imagen.
+    - El texto de un código QR en una página de cómic o un archivo de imagen.
+    - Una paleta de colores de una página de cómic o un archivo de imagen (se puede exportar a un archivo de paleta GPL o ACO).
   - Buscar y abrir:
-    - libros/cómics de Digital Comics Museum, Internet Archive Books, Project Gutenberg, Webcómics xkcd y Comic Book Plus.
-    - audiolibros de Librivox.
-    - términos del diccionario Wiktionary.
-    - streams de radio de radio-browser.
-    - fuentes RSS de podcasts y websites.
+    - Libros/cómics de Digital Comics Museum, Internet Archive Books, Project Gutenberg, Webcómics xkcd y Comic Book Plus.
+    - Audiolibros de Librivox.
+    - Términos del diccionario Wiktionary.
+    - Streams de radio de radio-browser.
+    - Fuentes RSS de podcasts y websites.
   - Arte:
     - Creador de plantillas de páginas y miniaturas de cómic
     - Extractor de paletta de colores
