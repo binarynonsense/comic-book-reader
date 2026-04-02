@@ -637,7 +637,7 @@ if (!gotTheLock) {
     );
 
     // NOTE: potential fix for youtube playing in the media player.
-    // it wasn't needed in the end by keeping it for now for reference.
+    // it wasn't needed in the end but I'm keeping it for now for reference.
     // session.defaultSession.webRequest.onHeadersReceived(
     //   { urls: ["https://www.youtube-nocookie.com*"] },
     //   (details, callback) => {
