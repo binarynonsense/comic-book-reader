@@ -100,12 +100,12 @@
 
 الترجمة:
 
-- [Álvaro García (binarynonsense)](https://github.com/binarynonsense) (الإنجليزية والإسبانية)
-- [vanja-san](https://github.com/vanja-san) (الروسية)
-- [Timo Heidutzek (trzyglow)](https://github.com/trzyglow) (الألمانية)
+- [Álvaro García (binarynonsense)](https://github.com/binarynonsense) (English, Español)
+- [vanja-san](https://github.com/vanja-san) (Русский)
+- [Timo Heidutzek (trzyglow)](https://github.com/trzyglow) (Deutsch)
 - [Ahmed (ahmed-0011)](https://github.com/ahmed-0011) (العربية)
-- [AndrewL (CodeByMoriarty)](https://github.com/CodeByMoriarty) (الفلبينية)
-- [coolvitto](https://github.com/coolvitto) (اليابانية)
+- [AndrewL (CodeByMoriarty)](https://github.com/CodeByMoriarty) (Filipino)
+- [coolvitto](https://github.com/coolvitto) (日本語)
 
 للتعرف على كيفية المساهمة في المشروع، راجع الملف التالي [CONTRIBUTING.md](../CONTRIBUTING.md).
 
