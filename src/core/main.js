@@ -166,7 +166,7 @@ if (g_launchInfo.platform === "linux" && !process.env.G_SLICE) {
   // NOTE: if G_SLICE isn't set to 'always-malloc' the app may crash
   // during conversions due to an issue with sharp
   // NOTE: (2025/07/29) This may no longer be true on current distros.
-  // Although I'm still not a 100% sure, I'm now not enforci // TODO: the file will be conditionally selected based on lauch optionsng it by default
+  // Although I'm still not a 100% sure, I'm now not enforcing it by default
   if (g_launchInfo.isRelease) {
     if (settings.getValue("linuxEnforceGslice")) {
       log.warning(
@@ -196,6 +196,7 @@ if (g_launchInfo.platform === "linux") {
 // show vips warnings from sharp only in dev mode
 if (!g_launchInfo.isDev) process.env.VIPS_WARNING = 1;
 
+// TODO: the file will be conditionally selected based on lauch options
 const windowManager = require("./main/gui");
 
 // init window
