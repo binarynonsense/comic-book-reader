@@ -430,7 +430,6 @@ if (!gotTheLock) {
       if (tools.getCurrentToolName() !== "reader") {
         tools.getCurrentTool().onResize?.();
       }
-      throw "TEsttt";
     });
 
     g_mainWindow.on("maximize", function () {
