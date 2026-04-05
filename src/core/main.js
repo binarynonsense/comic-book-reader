@@ -381,8 +381,12 @@ ipcMain.on("tools-bg-window", (event, ...args) => {
 // EXPORTS ////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-const { createWindow, onIpcMenuAcceleratorPressed, ...publicExports } =
-  windowManager;
+const {
+  createWindow,
+  onIpcMenuAcceleratorPressed,
+  cleanUpOnQuit,
+  ...publicExports
+} = windowManager;
 Object.assign(module.exports, publicExports);
 
 ///////////////////////////////////////////////////////////////////////////////
