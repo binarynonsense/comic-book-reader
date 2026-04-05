@@ -8,27 +8,12 @@
 const { utilityProcess } = require("electron");
 
 const log = require("./logger");
-
-exports.getSafeEnv = function (env = process.env) {
-  // sanitizes an environment object by removing binary null bytes (\0)
-  // from all keys and values. this prevents a bug a user had that
-  // made Electron's utilityProcess.fork break
-  return Object.fromEntries(
-    Object.entries(env)
-      .filter(
-        ([key, value]) => typeof key === "string" && typeof value === "string",
-      )
-      .map(([key, value]) => [
-        key.replace(/\0/g, ""),
-        value.replace(/\0/g, ""),
-      ]),
-  );
-};
+const { getSafeEnv } = require("./env-utils");
 
 exports.fork = function (scriptPath, config = {}) {
   const rawEnv = { ...(config?.options?.env || process.env) };
   try {
-    const safeEnv = exports.getSafeEnv(rawEnv);
+    const safeEnv = getSafeEnv(rawEnv);
     const execArgv = config.options?.execArgv
       ? [...config.options.execArgv]
       : [];

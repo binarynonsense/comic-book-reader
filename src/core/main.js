@@ -5,129 +5,17 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-///////////////////////////////////////////////////////////////////////////////
-// ENV CLEAN UP ///////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-
-// sanitize the environment by removing binary null bytes (\0)
-// from all keys and values. this prevents a bug a user had
-
-function getSafeEnv(env = process.env) {
-  return Object.fromEntries(
-    Object.entries(env)
-      .filter(
-        ([key, value]) => typeof key === "string" && typeof value === "string",
-      )
-      .map(([key, value]) => [
-        key.replace(/\0/g, ""),
-        value.replace(/\0/g, ""),
-      ]),
-  );
-}
-
-const safeEnv = getSafeEnv(process.env);
-for (const key in process.env) {
-  delete process.env[key];
-}
-Object.assign(process.env, safeEnv);
-
-// wrap spawn as a failsafe for node-7z
-const cp = require("node:child_process");
-const originalSpawn = cp.spawn;
-cp.spawn = function (command, args, options) {
-  log?.editor?.(`[core] [spawn wrapper] spawn called for ${command}`);
-  let finalArgs = args;
-  let finalOptions = options;
-  // handle optional args if only 2 params are passed
-  if (!finalOptions && !Array.isArray(finalArgs)) {
-    finalOptions = finalArgs;
-    finalArgs = [];
-  }
-  // create a copy of options so we don't modify the library's original object
-  const opts = finalOptions ? Object.assign({}, finalOptions) : {};
-  const rawEnv = opts.env || process.env;
-  // log bad entry
-  for (const key in rawEnv) {
-    if (typeof key === "string" && typeof rawEnv[key] === "string") {
-      if (key.includes("\0") || rawEnv[key].includes("\0")) {
-        log?.debug?.(
-          `[core] [spawn wrapper] null byte found in: ${key.replace(/\0/g, "[NULL]")}`,
-        );
-      }
-    }
-  }
-  // sanitize
-  opts.env = getSafeEnv(rawEnv);
-  return originalSpawn.call(this, command, finalArgs, opts);
-};
-
-// wrap execFileSync for the rar exe calls
-const originalExecFileSync = cp.execFileSync;
-cp.execFileSync = function (command, args, options) {
-  log?.editor?.(`[core] [execFileSync wrapper] called for ${command}`);
-  let finalArgs = args;
-  let finalOptions = options;
-  // handle optional args: if only 2 params are passed, args is actually the
-  // options object in execFileSync
-  if (!finalOptions && !Array.isArray(finalArgs)) {
-    finalOptions = finalArgs;
-    finalArgs = undefined;
-  }
-  const opts = finalOptions ? Object.assign({}, finalOptions) : {};
-  opts.env = getSafeEnv(opts.env || process.env);
-  return originalExecFileSync.call(this, command, finalArgs, opts);
-};
-
-//////////////////////////////////////////////////////////////////////////////
-// UNHANDLED /////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
-
-process.on("unhandledRejection", (reason, promise) => {
-  console.error(
-    "critical: unhandled rejection at:",
-    promise,
-    "reason:",
-    reason,
-  );
-});
-
-process.on("uncaughtException", (error) => {
-  // TODO: localize buttons and title
-  const stackTrace = error.stack || error.toString();
-  if (app.isReady()) {
-    const clickedIndex = dialog.showMessageBoxSync({
-      type: "error",
-      title: "Critical Main Process Error",
-      message: "A fatal error occurred in the Main process.",
-      detail: stackTrace,
-      buttons: ["Copy Error & Close", "Close App"],
-      defaultId: 0, // enter
-      cancelId: 1, // esc
-    });
-    if (clickedIndex === 0) {
-      clipboard.writeText(stackTrace);
-    }
-  } else {
-    dialog.showErrorBox("Startup Error", error.stack || error.toString());
-  }
-  app.quit();
-});
-
 //////////////////////////////////////////////////////////////////////////////
 // SETUP /////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 
+require("../shared/main/env-utils").setSafeEnvironment("[CORE] ");
+require("../shared/main/env-utils").setGlobalErrorHandlers();
+
 const timers = require("../shared/main/timers");
 timers.start("startup");
 
-const {
-  app,
-  BrowserWindow,
-  ipcMain,
-  screen,
-  dialog,
-  clipboard,
-} = require("electron");
+const { app, BrowserWindow, ipcMain, screen } = require("electron");
 const os = require("node:os");
 const fs = require("node:fs");
 const path = require("node:path");
@@ -278,6 +166,7 @@ if (!gotTheLock) {
   log.debug("electron version: " + process.versions.electron);
   log.debug("chrome version: " + process.versions.chrome);
   log.debug("node version: " + process.versions.node);
+  log.editor("acbr env: " + process.env.acbrenv);
   if (g_launchInfo.isAppImage) {
     log.debug("is AppImage");
   }
@@ -541,6 +430,7 @@ if (!gotTheLock) {
       if (tools.getCurrentToolName() !== "reader") {
         tools.getCurrentTool().onResize?.();
       }
+      throw "TEsttt";
     });
 
     g_mainWindow.on("maximize", function () {
