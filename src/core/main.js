@@ -196,7 +196,8 @@ if (g_launchInfo.platform === "linux") {
 // show vips warnings from sharp only in dev mode
 if (!g_launchInfo.isDev) process.env.VIPS_WARNING = 1;
 
-// TODO: the file will be conditionally selected based on lauch options
+// TODO: the file will be selected based on launch options if other modes are 
+// implemented (e.g. cli mode, media player mode...)
 const windowManager = require("./main/gui");
 
 // init window
