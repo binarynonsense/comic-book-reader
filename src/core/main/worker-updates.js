@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-const utils = require("../shared/main/utils");
+const utils = require("../../shared/main/utils");
 
 process.on("message", (message) => {
   checkUpdate(message);

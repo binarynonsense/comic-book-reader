@@ -15,30 +15,17 @@ require("../shared/main/env-utils").setGlobalErrorHandlers();
 const timers = require("../shared/main/timers");
 timers.start("startup");
 
-const { app, BrowserWindow, ipcMain, screen } = require("electron");
+const { app, ipcMain } = require("electron");
 const os = require("node:os");
 const fs = require("node:fs");
-const path = require("node:path");
 
 const settings = require("../shared/main/settings");
-const history = require("../shared/main/history");
-const i18n = require("../shared/main/i18n");
 const log = require("../shared/main/logger");
-const themes = require("../shared/main/themes");
-const menuBar = require("../shared/main/menu-bar");
-const appUtils = require("../shared/main/app-utils");
-const forkUtils = require("../shared/main/fork-utils");
-const temp = require("../shared/main/temp");
 const tools = require("../shared/main/tools");
-const { _ } = require("../shared/main/i18n");
-
 const reader = require("../reader/main");
-const systemMonitor = require("../tools/system-monitor/main");
 
 let g_mainWindow;
-let g_isLoaded = false;
 let g_launchInfo = {};
-let g_updatesWorker;
 
 // app.commandLine.appendSwitch("js-flags", "--expose-gc");
 // process.env["ELECTRON_DISABLE_SECURITY_WARNINGS"] = "true";
@@ -94,10 +81,6 @@ if (g_launchInfo.platform === "linux" && process.env.container) {
 }
 
 // parse command line arguments
-// g_launchInfo.parsedArgs = require("minimist")(
-//   process.argv.slice(g_launchInfo.isRelease ? 1 : 2),
-//   { boolean: ["dev"], string: ["tool", "output-format", "output-folder"] },
-// );
 // ref: https://nodejs.org/api/util.html#utilparseargsconfig
 const { parseArgs } = require("node:util");
 const options = {
@@ -132,931 +115,275 @@ const gotTheLock = app.requestSingleInstanceLock({
 });
 if (!gotTheLock) {
   app.quit();
-} else {
-  // ref: https://www.electronjs.org/docs/latest/api/app#event-second-instance
-  app.on("second-instance", (event, argv, workingDirectory, additionalData) => {
-    log.debug("Tried to open a second instance of the app");
-    let inputFilePaths = [];
-    additionalData.launchInfo.parsedArgs["_"].forEach((path) => {
-      if (fs.existsSync(path)) {
-        if (!fs.lstatSync(path).isDirectory()) {
-          inputFilePaths.push(path);
-        }
+  return;
+}
+
+// ref: https://www.electronjs.org/docs/latest/api/app#event-second-instance
+app.on("second-instance", (event, argv, workingDirectory, additionalData) => {
+  log.debug("Tried to open a second instance of the app");
+  let inputFilePaths = [];
+  additionalData.launchInfo.parsedArgs["_"].forEach((path) => {
+    if (fs.existsSync(path)) {
+      if (!fs.lstatSync(path).isDirectory()) {
+        inputFilePaths.push(path);
       }
-    });
-    if (inputFilePaths.length > 0) {
-      reader.requestOpenConfirmation(inputFilePaths[0]);
-    }
-    // focus on first instance window
-    if (g_mainWindow) {
-      if (g_mainWindow.isMinimized()) g_mainWindow.restore();
-      g_mainWindow.focus();
     }
   });
-
-  //////////////////////////////////////////////////////////////////////////////
-  // SETUP /////////////////////////////////////////////////////////////////////
-  //////////////////////////////////////////////////////////////////////////////
-
-  // start logging
-  log.init(g_launchInfo);
-  log.info("starting ACBR");
-  log.debug("dev mode: " + g_launchInfo.isDev);
-  log.debug("release version: " + g_launchInfo.isRelease);
-  log.debug("electron version: " + process.versions.electron);
-  log.debug("chrome version: " + process.versions.chrome);
-  log.debug("node version: " + process.versions.node);
-  log.editor("acbr env: " + process.env.acbrenv);
-  if (g_launchInfo.isAppImage) {
-    log.debug("is AppImage");
+  if (inputFilePaths.length > 0) {
+    reader.requestOpenConfirmation(inputFilePaths[0]);
   }
-  if (g_launchInfo.isFlatpak) {
-    log.debug("is Flatpak");
+  // focus on first instance window
+  if (g_mainWindow) {
+    if (g_mainWindow.isMinimized()) g_mainWindow.restore();
+    g_mainWindow.focus();
   }
-  // load settings
-  settings.init();
-  // check g_slice
-  log.debug("checking environment");
-  if (g_launchInfo.platform === "linux" && !process.env.G_SLICE) {
-    // NOTE: if G_SLICE isn't set to 'always-malloc' the app may crash
-    // during conversions due to an issue with sharp
-    // NOTE: (2025/07/29) This may no longer be true on current distros.
-    // Although I'm still not a 100% sure, I'm now not enforcing it by default
-    if (g_launchInfo.isRelease) {
-      if (settings.getValue("linuxEnforceGslice")) {
-        log.warning(
-          "The G_SLICE environment variable is undefined, setting it to 'always-malloc' and relaunching the app. You can avoid this step by launching ACBR using the ACBR.sh script",
-          true,
-        );
-        process.env.G_SLICE = "always-malloc";
-        restartApp();
-      } else {
-        log.notice(
-          "The G_SLICE environment variable is undefined and linuxEnforceGslice is set to false in the settings. If you experience crashes during file conversions try running the program using the provided ACBR.sh script, setting G_SLICE to 'always-malloc' in your shell or setting linuxEnforceGslice to true in the settings.",
-          true,
-        );
-      }
+});
+
+//////////////////////////////////////////////////////////////////////////////
+// SETUP /////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+
+// start logging
+log.init(g_launchInfo);
+log.info("starting ACBR");
+log.debug("dev mode: " + g_launchInfo.isDev);
+log.debug("release version: " + g_launchInfo.isRelease);
+log.debug("electron version: " + process.versions.electron);
+log.debug("chrome version: " + process.versions.chrome);
+log.debug("node version: " + process.versions.node);
+log.editor("acbr env: " + process.env.acbrenv);
+if (g_launchInfo.isAppImage) {
+  log.debug("is AppImage");
+}
+if (g_launchInfo.isFlatpak) {
+  log.debug("is Flatpak");
+}
+// load settings
+settings.init();
+// check g_slice
+log.debug("checking environment");
+if (g_launchInfo.platform === "linux" && !process.env.G_SLICE) {
+  // NOTE: if G_SLICE isn't set to 'always-malloc' the app may crash
+  // during conversions due to an issue with sharp
+  // NOTE: (2025/07/29) This may no longer be true on current distros.
+  // Although I'm still not a 100% sure, I'm now not enforci // TODO: the file will be conditionally selected based on lauch optionsng it by default
+  if (g_launchInfo.isRelease) {
+    if (settings.getValue("linuxEnforceGslice")) {
+      log.warning(
+        "The G_SLICE environment variable is undefined, setting it to 'always-malloc' and relaunching the app. You can avoid this step by launching ACBR using the ACBR.sh script",
+        true,
+      );
+      process.env.G_SLICE = "always-malloc";
+      exports.restartApp();
     } else {
       log.notice(
-        "The G_SLICE environment variable is undefined. If you experience crashes during file conversions try running the program using the provided ACBR.sh script, setting G_SLICE to 'always-malloc' in your shell or setting linuxEnforceGslice to true in the settings.",
+        "The G_SLICE environment variable is undefined and linuxEnforceGslice is set to false in the settings. If you experience crashes during file conversions try running the program using the provided ACBR.sh script, setting G_SLICE to 'always-malloc' in your shell or setting linuxEnforceGslice to true in the settings.",
         true,
       );
     }
-  }
-  // ensure defaultPath works when opening dialogs on linux
-  if (g_launchInfo.platform === "linux") {
-    // ref: https://www.electronjs.org/docs/latest/api/dialog
-    app.commandLine.appendSwitch("xdg-portal-required-version", "4");
-  }
-  // show vips warnings from sharp only in dev mode
-  if (!g_launchInfo.isDev) process.env.VIPS_WARNING = 1;
-  // init window
-  const createWindow = () => {
-    // screen size
-    const primaryDisplay = screen.getPrimaryDisplay();
-    g_launchInfo.screenWidth = primaryDisplay.workAreaSize.width;
-    g_launchInfo.screenHeight = primaryDisplay.workAreaSize.height;
-    if (
-      !g_launchInfo.screenWidth ||
-      !Number.isInteger(g_launchInfo.screenWidth) ||
-      g_launchInfo.screenWidth <= 0
-    )
-      g_launchInfo.screenWidth = 800;
-    if (
-      !g_launchInfo.screenHeight ||
-      !Number.isInteger(g_launchInfo.screenHeight) ||
-      g_launchInfo.screenHeight <= 0
-    )
-      g_launchInfo.screenHeight = 600;
-    settings.capScreenSizes(
-      g_launchInfo.screenWidth,
-      g_launchInfo.screenHeight,
+  } else {
+    log.notice(
+      "The G_SLICE environment variable is undefined. If you experience crashes during file conversions try running the program using the provided ACBR.sh script, setting G_SLICE to 'always-malloc' in your shell or setting linuxEnforceGslice to true in the settings.",
+      true,
     );
-    if (g_launchInfo.isSteamDeck && g_launchInfo.isGameScope) {
-      settings.setValue("width", 1280);
-      settings.setValue("height", 800);
-    }
-    log.debug("work area width: " + g_launchInfo.screenWidth);
-    log.debug("work area height: " + g_launchInfo.screenHeight);
-    log.debug("starting width: " + settings.getValue("width"));
-    log.debug("starting height: " + settings.getValue("height"));
-    log.debug("maximized: " + settings.getValue("maximize"));
-    log.debug("full screen: " + settings.getValue("fullScreen"));
-    // win creation
-    menuBar.empty();
-    g_mainWindow = new BrowserWindow({
-      width: settings.getValue("width"),
-      height: settings.getValue("height"),
-      resizable: true,
-      frame: false,
-      icon: path.join(__dirname, "../assets/images/icon_256x256.png"),
-      show: false,
-      webPreferences: {
-        sandbox: false, // needed for the custom-title-bar to work
-        preload: path.join(__dirname, "preload.js"),
-      },
-    });
-    g_mainWindow.loadFile(path.join(__dirname, "index.html"));
-    // win events
-    g_mainWindow.webContents.on("did-finish-load", async function () {
-      g_isLoaded = true;
-      let tempFolderPath = settings.getValue("tempFolderPath");
-      if (!tempFolderPath) {
-        log.error("Temp folder path is undefined");
-      }
-      if (!path.isAbsolute(tempFolderPath)) {
-        tempFolderPath = path.resolve(
-          appUtils.getExeFolderPath(),
-          tempFolderPath,
-        );
-      }
-      temp.init(tempFolderPath);
-      appUtils.generateExternalFilesFolder();
-      tools.init();
-      history.init(settings.getValue("history_capacity"));
-      i18n.init(g_launchInfo.isDev);
-      themes.init();
-      sendIpcToCoreRenderer("update-css-properties", themes.getData());
-      menuBar.init(g_mainWindow);
-      // add extra divs after menuBar init, so its container is already created
-      sendIpcToCoreRenderer("append-structure-divs");
-      onLanguageChanged();
-      // check command line args and setup initial state
-      let inputFilePaths = [];
-      let inputFileAndFolderPaths = [];
-      g_launchInfo.parsedArgs["_"].forEach((path) => {
-        if (fs.existsSync(path)) {
-          inputFileAndFolderPaths.push(path);
-          if (!fs.lstatSync(path).isDirectory()) {
-            // TODO: add only valid formats?
-            inputFilePaths.push(path);
-          }
-        }
-      });
-      const isValidTool = (name) => {
-        if (name && typeof name === "string") {
-          const validValues = ["cc"];
-          for (let index = 0; index < validValues.length; index++) {
-            if (validValues[index] === name) return true;
-          }
-        }
-        return false;
-      };
-      const isValidFormat = (name) => {
-        if (name && typeof name === "string") {
-          const validValues = ["cbz", "cb7", "epub", "pdf"];
-          if (settings.canEditRars()) validValues.push("cbr");
-          for (let index = 0; index < validValues.length; index++) {
-            if (validValues[index] === name) return true;
-          }
-        }
-        return false;
-      };
+  }
+}
+// ensure defaultPath works when opening dialogs on linux
+if (g_launchInfo.platform === "linux") {
+  // ref: https://www.electronjs.org/docs/latest/api/dialog
+  app.commandLine.appendSwitch("xdg-portal-required-version", "4");
+}
+// show vips warnings from sharp only in dev mode
+if (!g_launchInfo.isDev) process.env.VIPS_WARNING = 1;
+
+const windowManager = require("./main/gui");
+
+// init window
+app.whenReady().then(() => {
+  g_mainWindow = windowManager.createWindow(this, g_launchInfo);
+  // macos
+  // app.on("activate", () => {
+  //   if (BrowserWindow.getAllWindows().length === 0) g_mainWindow = acbrGui.createWindow(this, g_launchInfo);
+  // });
+  // header fixes for the video player's youtube support
+  // avoids errors 153 and 152-4
+  // ref: https://www.electronjs.org/docs/latest/api/web-request
+  const originalUA = g_mainWindow.webContents.getUserAgent();
+  g_mainWindow.webContents.setUserAgent(
+    originalUA.replace(/Electron\/[0-9\.]+\s/g, ""),
+  );
+  const { session } = require("electron");
+  session.defaultSession.webRequest.onBeforeSendHeaders(
+    { urls: ["<all_urls>"] },
+    (details, callback) => {
       if (
-        g_launchInfo.parsedArgs["tool"] &&
-        isValidTool(g_launchInfo.parsedArgs["tool"])
+        details.url.includes("youtube") ||
+        details.url.includes("googlevideo")
       ) {
-        // start reader with no file open
-        await reader.init(undefined, false);
-        // start tool
-        switch (g_launchInfo.parsedArgs["tool"]) {
-          case "cc":
-            {
-              let options = { mode: 0, inputFilePaths: inputFilePaths };
-              const outputFolderPath = g_launchInfo.parsedArgs["output-folder"];
-              if (
-                outputFolderPath &&
-                typeof outputFolderPath === "string" &&
-                fs.existsSync(outputFolderPath) &&
-                fs.lstatSync(outputFolderPath).isDirectory()
-              ) {
-                options.outputFolderPath = outputFolderPath;
-              }
-              const outputFormat = g_launchInfo.parsedArgs["output-format"];
-              if (
-                outputFormat &&
-                typeof outputFormat === "string" &&
-                isValidFormat(outputFormat)
-              ) {
-                options.outputFormat = outputFormat;
-              }
-              tools.switchTool("tool-convert-comics", options);
-            }
-            break;
-        }
-      } else if (inputFilePaths.length > 1) {
-        // start reader with no file open
-        await reader.init(undefined, false);
-        // start tool
-        tools.switchTool("tool-convert-comics", {
-          mode: 0,
-          inputFilePaths: inputFilePaths,
-        });
-      } else {
-        // start reader, open file if available
-        await reader.init(
-          inputFileAndFolderPaths.length > 0
-            ? inputFileAndFolderPaths[0]
-            : undefined,
-          true,
-        );
+        details.requestHeaders["Referer"] = "https://www.youtube-nocookie.com";
+        details.requestHeaders["Origin"] = "https://www.youtube-nocookie.com";
+        delete details.requestHeaders["Sec-Fetch-Site"];
+        delete details.requestHeaders["Sec-Fetch-Mode"];
+        delete details.requestHeaders["Sec-Fetch-Dest"];
       }
-      systemMonitor.init(g_mainWindow, "system-monitor-container");
-      showSystemMonitor(settings.getValue("showSystemMonitor"));
-      startUpCheckForUpdates();
-      // show window
-      g_mainWindow.center();
-      const forceMultimonitorSize = settings.getValue(
-        "experimentalForceMultimonitorSize",
-      );
-      if (
-        forceMultimonitorSize != undefined &&
-        forceMultimonitorSize > 0 &&
-        forceMultimonitorSize < 5
-      ) {
-        // Special/Experimental start-up to force the window to expand to cover
-        // multiple screens
-        const displays = screen.getAllDisplays();
-        let height = 0;
-        let width = 0;
-        displays.forEach((display) => {
-          let displayWidth = display.workAreaSize.width;
-          let displayHeight = display.workAreaSize.height;
-          if (forceMultimonitorSize === 3) {
-            displayWidth = display.size.width;
-            displayHeight = display.size.height;
-          }
-          width += displayWidth;
-          if (height === 0) height = displayHeight;
-          else height = Math.min(height, displayHeight);
-        });
-        // NOTE: setSize doesn't seem to work, it limits the size to the
-        // bounds of the primary display. But setMinimumSize seems to do the
-        // trick. Don't know if this is a universal solution or just my case
-        // so I'll leave multiple options for now.
-        if (forceMultimonitorSize === 1 || forceMultimonitorSize === 3) {
-          g_mainWindow.setSize(width, height);
-          g_mainWindow.setMinimumSize(width, height);
-        } else if (forceMultimonitorSize === 2) {
-          g_mainWindow.setSize(width, height);
-          g_mainWindow.setMinimumSize(width, height);
-          reader.sendIpcToRenderer("set-menubar-visibility", false);
-          reader.sendIpcToRenderer("set-toolbar-visibility", false);
-        } else if (forceMultimonitorSize === 4) {
-          g_mainWindow.setSize(width, height);
-        }
-      } else {
-        // Normal start-up
-        if (settings.getValue("maximize")) {
-          g_mainWindow.maximize();
-        }
-        if (settings.getValue("fullScreen")) {
-          toggleFullScreen();
-        }
-      }
-      g_mainWindow.show();
-      log.debug(`start-up time: ${timers.stop("startup").toFixed(2)}s`);
-    });
+      callback({ cancel: false, requestHeaders: details.requestHeaders });
+    },
+  );
 
-    g_mainWindow.on("resize", function () {
-      if (g_isLoaded && g_mainWindow.isNormal()) {
-        let width = g_mainWindow.getSize()[0];
-        let height = g_mainWindow.getSize()[1];
-        settings.setValue("width", width);
-        settings.setValue("height", height);
-      }
-      renderTitle();
-      reader.onResize();
-      if (tools.getCurrentToolName() !== "reader") {
-        tools.getCurrentTool().onResize?.();
-      }
-    });
+  // NOTE: potential fix for youtube playing in the media player.
+  // it wasn't needed in the end but I'm keeping it for now for reference.
+  // session.defaultSession.webRequest.onHeadersReceived(
+  //   { urls: ["https://www.youtube-nocookie.com*"] },
+  //   (details, callback) => {
+  //     details.responseHeaders["Access-Control-Allow-Origin"] = ["*"];
+  //     delete details.responseHeaders["X-Frame-Options"];
+  //     delete details.responseHeaders["Content-Security-Policy"];
+  //     callback({ cancel: false, responseHeaders: details.responseHeaders });
+  //   },
+  // );
 
-    g_mainWindow.on("maximize", function () {
-      settings.setValue("maximize", true);
-      reader.onMaximize();
-      if (tools.getCurrentToolName() !== "reader")
-        tools.getCurrentTool().onMaximize?.();
-    });
+  // NOTE: potential fix for old radio streams that don't send headers to
+  // inject CORS headers to prevent chromium from muting cross-origin media
+  // when connected to the spectrum visualizer.
+  // session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
+  //   if (details.resourceType === "media") {
+  //     const responseHeaders = { ...details.responseHeaders };
+  //     responseHeaders["access-control-allow-origin"] = ["*"];
+  //     responseHeaders["access-control-expose-headers"] = ["*"];
+  //     return callback({ responseHeaders });
+  //   }
+  //   callback({ responseHeaders: details.responseHeaders });
+  // });
+});
 
-    g_mainWindow.on("unmaximize", function () {
-      settings.setValue("maximize", false);
-    });
+app.on("will-quit", () => {
+  windowManager.cleanUpOnQuit();
+});
 
-    // don't allow opening windows from the renderer
-    g_mainWindow.webContents.setWindowOpenHandler(() => {
-      // ref: https://www.electronjs.org/docs/latest/api/window-open
-      return { action: "deny" };
-    });
+app.on("window-all-closed", () => {
+  if (process.platform !== "darwin") app.quit();
+});
 
-    // let tools save renderer data before closing
-    // UGLY 'HACK' but using beforeunload in the renderer was unreliable
-    g_mainWindow.on("close", function (event) {
-      try {
-        // log.test("g_quittingPhase: " + g_quittingPhase);
-        if (g_quittingPhase === 0) {
-          event.preventDefault();
-          g_quittingPhase = 1;
-          tools.getTools()["media-player"].saveAndQuit();
-        } else if (g_quittingPhase === 1) {
-          event.preventDefault();
-          // waiting for media player data
-        } else if (
-          tools.getCurrentToolName() !== "reader" &&
-          tools.getCurrentTool()?.saveAndQuit
-        ) {
-          if (g_quittingPhase < 4) {
-            event.preventDefault();
-            if (g_quittingPhase === 2) {
-              tools.getCurrentTool().saveAndQuit?.();
-              g_quittingPhase = 3;
-            }
-          }
-        }
-      } catch (error) {}
-    });
-    // g_mainWindow.on("close", function (event) {
-    //   if (
-    //     tools.getCurrentToolName() !== "reader" &&
-    //     tools.getCurrentTool()?.saveAndQuit
-    //   ) {
-    //     if (g_quittingPhase !== 2) {
-    //       event.preventDefault();
-    //       if (g_quittingPhase === 0) {
-    //         tools.getCurrentTool().saveAndQuit?.();
-    //         g_quittingPhase = 1;
-    //       }
-    //     }
-    //   }
-    // });
-  };
-
-  let g_quittingPhase = 0;
-
-  app.whenReady().then(() => {
-    createWindow();
-    // macos
-    app.on("activate", () => {
-      if (BrowserWindow.getAllWindows().length === 0) createWindow();
-    });
-    // header fixes for the video player's youtube support
-    // avoids errors 153 and 152-4
-    // ref: https://www.electronjs.org/docs/latest/api/web-request
-    const originalUA = g_mainWindow.webContents.getUserAgent();
-    g_mainWindow.webContents.setUserAgent(
-      originalUA.replace(/Electron\/[0-9\.]+\s/g, ""),
-    );
-    const { session } = require("electron");
-    session.defaultSession.webRequest.onBeforeSendHeaders(
-      { urls: ["<all_urls>"] },
-      (details, callback) => {
-        if (
-          details.url.includes("youtube") ||
-          details.url.includes("googlevideo")
-        ) {
-          details.requestHeaders["Referer"] =
-            "https://www.youtube-nocookie.com";
-          details.requestHeaders["Origin"] = "https://www.youtube-nocookie.com";
-          delete details.requestHeaders["Sec-Fetch-Site"];
-          delete details.requestHeaders["Sec-Fetch-Mode"];
-          delete details.requestHeaders["Sec-Fetch-Dest"];
-        }
-        callback({ cancel: false, requestHeaders: details.requestHeaders });
-      },
-    );
-
-    // NOTE: potential fix for youtube playing in the media player.
-    // it wasn't needed in the end but I'm keeping it for now for reference.
-    // session.defaultSession.webRequest.onHeadersReceived(
-    //   { urls: ["https://www.youtube-nocookie.com*"] },
-    //   (details, callback) => {
-    //     details.responseHeaders["Access-Control-Allow-Origin"] = ["*"];
-    //     delete details.responseHeaders["X-Frame-Options"];
-    //     delete details.responseHeaders["Content-Security-Policy"];
-    //     callback({ cancel: false, responseHeaders: details.responseHeaders });
-    //   },
-    // );
-
-    // NOTE: potential fix for old radio streams that don't send headers to
-    // inject CORS headers to prevent chromium from muting cross-origin media
-    // when connected to the spectrum visualizer.
-    // session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
-    //   if (details.resourceType === "media") {
-    //     const responseHeaders = { ...details.responseHeaders };
-    //     responseHeaders["access-control-allow-origin"] = ["*"];
-    //     responseHeaders["access-control-expose-headers"] = ["*"];
-    //     return callback({ responseHeaders });
-    //   }
-    //   callback({ responseHeaders: details.responseHeaders });
-    // });
+app.on("web-contents-created", (event, contents) => {
+  // ref: https://www.electronjs.org/docs/latest/tutorial/security
+  contents.on("will-navigate", (event, navigationUrl) => {
+    event.preventDefault();
   });
-
-  app.on("will-quit", () => {
-    cleanUpOnQuit();
+  contents.on("new-window", async (event, navigationUrl) => {
+    event.preventDefault();
   });
+});
 
-  app.on("window-all-closed", () => {
-    if (process.platform !== "darwin") app.quit();
-  });
+//////////////////////////////////////////////////////////////////////////////
+// HELPERS ///////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 
-  app.on("web-contents-created", (event, contents) => {
-    // ref: https://www.electronjs.org/docs/latest/tutorial/security
-    contents.on("will-navigate", (event, navigationUrl) => {
-      event.preventDefault();
-    });
-    contents.on("new-window", async (event, navigationUrl) => {
-      event.preventDefault();
-    });
-  });
-
-  //////////////////////////////////////////////////////////////////////////////
-  // IPC SEND //////////////////////////////////////////////////////////////////
-  //////////////////////////////////////////////////////////////////////////////
-
-  function sendIpcToRenderer(...args) {
-    if (g_mainWindow && !g_mainWindow.isDestroyed()) {
-      g_mainWindow?.webContents?.send("renderer", args);
-    }
+exports.restartApp = function () {
+  windowManager.cleanUpOnQuit();
+  const options = { args: process.argv };
+  if (process.env.APPIMAGE) {
+    // ref: https://github.com/electron-userland/electron-builder/issues/1727
+    options.execPath = process.env.APPIMAGE;
+    options.args.unshift("--mppimage-extract-and-run");
+    app.relaunch(options);
+    app.exit(0);
+  } else {
+    app.relaunch();
+    app.exit(0);
   }
-  exports.sendIpcToRenderer = sendIpcToRenderer;
+};
 
-  function sendIpcToPreload(...args) {
-    if (g_mainWindow && !g_mainWindow.isDestroyed()) {
-      g_mainWindow?.webContents?.send("preload", args);
-    }
+exports.isDev = function () {
+  return g_launchInfo.isDev;
+};
+
+exports.isRelease = function () {
+  return g_launchInfo.isRelease;
+};
+
+exports.getMainWindow = function () {
+  return g_mainWindow;
+};
+
+exports.startToolsQuit = function () {
+  log.editor("startToolsQuit");
+  g_launchInfo.quittingPhase = 2;
+  g_mainWindow.close();
+};
+
+exports.forceQuit = function () {
+  log.editor("forceQuit");
+  g_launchInfo.quittingPhase = 4;
+  g_mainWindow.close();
+};
+
+exports.resetQuit = function () {
+  log.editor("resetQuit");
+  g_launchInfo.quittingPhase = 0;
+};
+
+exports.isToolOpen = function () {
+  return tools.getCurrentToolName() !== "reader";
+};
+
+exports.getCurrentToolLocalizedName = function () {
+  return tools.getCurrentToolLocalizedName();
+};
+
+//////////////////////////////////////////////////////////////////////////////
+// IPC SEND //////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+
+function sendIpcToRenderer(...args) {
+  if (g_mainWindow && !g_mainWindow.isDestroyed()) {
+    g_mainWindow?.webContents?.send("renderer", args);
   }
-  exports.sendIpcToPreload = sendIpcToPreload;
+}
+exports.sendIpcToRenderer = sendIpcToRenderer;
 
-  function sendIpcToCoreRenderer(...args) {
-    sendIpcToRenderer("core", ...args);
+function sendIpcToPreload(...args) {
+  if (g_mainWindow && !g_mainWindow.isDestroyed()) {
+    g_mainWindow?.webContents?.send("preload", args);
   }
-  exports.sendIpcToCoreRenderer = sendIpcToCoreRenderer;
+}
+exports.sendIpcToPreload = sendIpcToPreload;
 
-  //////////////////////////////////////////////////////////////////////////////
-  // IPC RECEIVE ///////////////////////////////////////////////////////////////
-  //////////////////////////////////////////////////////////////////////////////
+function sendIpcToCoreRenderer(...args) {
+  sendIpcToRenderer("core", ...args);
+}
+exports.sendIpcToCoreRenderer = sendIpcToCoreRenderer;
 
-  ipcMain.on("main", (event, args) => {
-    if (args[0] === "menu-accelerator-pressed") {
-      switch (args[1]) {
-        case "fullscreen":
-          toggleFullScreen();
-          break;
-        case "quit":
-          onMenuQuit();
-          break;
-        case "media-player":
-          onMenuToggleMediaPlayer();
-          break;
-        case "history":
-          onMenuOpenHistoryManager();
-          break;
-        case "open-file":
-          reader.onMenuOpenFile();
-          break;
-        case "scrollbar":
-          reader.onMenuToggleScrollBar();
-          break;
-        case "toolbar":
-          reader.onMenuToggleToolBar();
-          break;
-        case "pagenum":
-          reader.onMenuTogglePageNumber();
-          break;
-        case "clock":
-          reader.onMenuToggleClock();
-          break;
-        case "battery":
-          reader.onMenuToggleBattery();
-          break;
-      }
-    } else {
-      tools.getTools()[args[0]]?.onIpcFromRenderer(...args.slice(1));
-    }
-  });
+//////////////////////////////////////////////////////////////////////////////
+// IPC RECEIVE ///////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 
-  ipcMain.handle("main", async (event, ...args) => {
-    return tools.getTools()[args[0]]?.handleIpcFromRenderer(...args.slice(1));
-  });
-
-  ipcMain.on("tools-worker", (event, ...args) => {
-    tools.getTools()[args[0]]?.onIpcFromToolsWorkerRenderer(...args.slice(1));
-  });
-
-  ipcMain.on("tools-bg-window", (event, ...args) => {
-    tools.getTools()[args[0]]?.onIpcFromBgWindow(...args.slice(1));
-  });
-
-  //////////////////////////////////////////////////////////////////////////////
-  //////////////////////////////////////////////////////////////////////////////
-  //////////////////////////////////////////////////////////////////////////////
-
-  function isDev() {
-    return g_launchInfo.isDev;
+ipcMain.on("main", (event, args) => {
+  if (args[0] === "menu-accelerator-pressed") {
+    windowManager.onIpcMenuAcceleratorPressed(args[1]);
+  } else {
+    tools.getTools()[args[0]]?.onIpcFromRenderer(...args.slice(1));
   }
-  exports.isDev = isDev;
+});
 
-  function isRelease() {
-    return g_launchInfo.isRelease;
-  }
-  exports.isRelease = isRelease;
+ipcMain.handle("main", async (event, ...args) => {
+  return tools.getTools()[args[0]]?.handleIpcFromRenderer(...args.slice(1));
+});
 
-  exports.getMainWindow = function () {
-    return g_mainWindow;
-  };
+ipcMain.on("tools-worker", (event, ...args) => {
+  tools.getTools()[args[0]]?.onIpcFromToolsWorkerRenderer(...args.slice(1));
+});
 
-  function restartApp() {
-    cleanUpOnQuit();
-    const options = { args: process.argv };
-    if (process.env.APPIMAGE) {
-      // ref: https://github.com/electron-userland/electron-builder/issues/1727
-      options.execPath = process.env.APPIMAGE;
-      options.args.unshift("--mppimage-extract-and-run");
-      app.relaunch(options);
-      app.exit(0);
-    } else {
-      app.relaunch();
-      app.exit(0);
-    }
-  }
-  exports.restartApp = restartApp;
+ipcMain.on("tools-bg-window", (event, ...args) => {
+  tools.getTools()[args[0]]?.onIpcFromBgWindow(...args.slice(1));
+});
 
-  function cleanUpOnQuit() {
-    g_mainWindow = undefined;
-    systemMonitor.quit();
-    if (g_updatesWorker !== undefined) {
-      g_updatesWorker.kill();
-      g_updatesWorker = undefined;
-    }
-    if (tools.getCurrentToolName() !== "reader")
-      tools.getCurrentTool().onQuit?.();
-    reader.onQuit();
-    settings.save();
-    history.save();
-    if (settings.getValue("logToFile"))
-      log.saveLogFile(
-        path.join(appUtils.getConfigFolder(), "acbr.log"),
-        path.join(appUtils.getConfigFolder(), "acbr-prev.log"),
-        appUtils.getAppVersion(),
-      );
-    // clean up
-    log.info("cleaning up...");
-    temp.cleanUp();
-    appUtils.cleanUpUserDataFolder();
-  }
+///////////////////////////////////////////////////////////////////////////////
+// EXPORTS ////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
-  exports.startToolsQuit = function () {
-    log.editor("startToolsQuit");
-    g_quittingPhase = 2;
-    g_mainWindow.close();
-  };
-
-  exports.forceQuit = function () {
-    log.editor("forceQuit");
-    g_quittingPhase = 4;
-    g_mainWindow.close();
-  };
-
-  exports.resetQuit = function () {
-    log.editor("resetQuit");
-    g_quittingPhase = 0;
-  };
-
-  exports.isToolOpen = function () {
-    return tools.getCurrentToolName() !== "reader";
-  };
-
-  exports.getCurrentToolLocalizedName = function () {
-    return tools.getCurrentToolLocalizedName();
-  };
-
-  function toggleDevTools() {
-    g_mainWindow.toggleDevTools();
-  }
-  exports.toggleDevTools = toggleDevTools;
-
-  function toggleFullScreen() {
-    const newState = !g_mainWindow.isFullScreen();
-    reader.setFullScreen(newState);
-    if (tools.getCurrentToolName() !== "reader") {
-      tools.getCurrentTool().onToggleFullScreen?.(newState);
-    }
-    settings.setValue("fullScreen", newState);
-  }
-  exports.toggleFullScreen = toggleFullScreen;
-
-  function onLanguageChanged() {
-    const direction = i18n.getLoadedLocaleData()["@metadata"]["direction"];
-    if (direction !== "rtl") {
-      direction === "ltr";
-    }
-    reader.setLanguageDirection(direction);
-    sendIpcToCoreRenderer("update-language-direction", direction);
-
-    const locale = i18n.getLoadedLocaleData()["@metadata"]["locale"];
-    sendIpcToCoreRenderer("update-language-locale", locale);
-
-    sendIpcToPreload(
-      "update-window-buttons",
-      {
-        minimize: i18n._("menubar-buttons-minimize"),
-        maximize: i18n._("menubar-buttons-maximize"),
-        restoreDown: i18n._("menubar-buttons-restoredown"),
-        close: i18n._("menubar-buttons-close"),
-      },
-      g_mainWindow.isMaximized(),
-    );
-
-    sendIpcToPreload("update-tools-common", {
-      scrollToTop: i18n._("tool-shared-tooltip-scrolltotop"),
-    });
-  }
-  exports.onLanguageChanged = onLanguageChanged;
-
-  function renderTitle() {
-    let title = "ACBR";
-    if (tools.getCurrentToolName() === "reader") {
-      title = reader.generateTitle();
-    } else {
-    }
-    g_mainWindow.setTitle(title);
-    sendIpcToPreload("update-title", title);
-  }
-  exports.renderTitle = renderTitle;
-
-  function startUpCheckForUpdates() {
-    try {
-      let doCheck = false;
-      if (settings.getValue("checkUpdatesOnStart") > 0) {
-        if (settings.getValue("checkUpdatesOnStart") === 1) {
-          doCheck = true;
-        } else {
-          const lastDate = new Date(settings.getValue("checkUpdatesLastDate"));
-          const daysPassed = Math.floor(
-            Math.abs(new Date() - lastDate) / (1000 * 60 * 60 * 24),
-          );
-          log.debug("days since last update check: " + daysPassed);
-          if (settings.getValue("checkUpdatesOnStart") === 2) {
-            if (daysPassed >= 1) doCheck = true;
-          } else if (settings.getValue("checkUpdatesOnStart") === 3) {
-            if (daysPassed >= 7) doCheck = true;
-          } else if (settings.getValue("checkUpdatesOnStart") === 4) {
-            if (daysPassed >= 30) doCheck = true;
-          }
-        }
-      }
-
-      if (doCheck) {
-        log.debug("checking for updates");
-        if (g_updatesWorker === undefined) {
-          g_updatesWorker = forkUtils.fork(
-            path.join(__dirname, "worker-updates.js"),
-          );
-          g_updatesWorker.on("message", (message) => {
-            const newVersion = message[1];
-            g_updatesWorker.kill(); // kill it after one use
-            if (message[0] === true) {
-              log.debug("update available: " + newVersion);
-              if (
-                settings.getValue("checkUpdatesNotify") === 0 ||
-                newVersion !== settings.getValue("checkUpdatesLastVersionFound")
-              ) {
-                sendIpcToCoreRenderer(
-                  "show-toast-update-available",
-                  _("ui-modal-title-versionavailable"),
-                );
-              }
-              settings.setValue("checkUpdatesLastDate", new Date().toJSON());
-              return;
-            } else {
-              if (newVersion) {
-                log.debug("no update available");
-                settings.setValue("checkUpdatesLastDate", new Date().toJSON());
-                settings.setValue("checkUpdatesLastVersionFound", newVersion);
-              } else {
-                log.debug("couldn't retrieve the updates info");
-              }
-              return;
-            }
-          });
-        }
-        // send to worker
-        g_updatesWorker.postMessage([g_launchInfo, app.getVersion()]);
-      }
-    } catch (error) {
-      log.editorError(error);
-    }
-  }
-
-  function showSystemMonitor(isVisible, updateMenuBar) {
-    settings.setValue("showSystemMonitor", isVisible);
-    systemMonitor.open(isVisible);
-    menuBar.setSystemMonitor(isVisible);
-    if (updateMenuBar) sendIpcToPreload("update-menubar");
-  }
-  exports.showSystemMonitor = showSystemMonitor;
-
-  function showToast(text, duration) {
-    sendIpcToCoreRenderer("show-toast", text, duration);
-  }
-  exports.showToast = showToast;
-
-  //////////////////////////////////////////////////////////////////////////////
-  // MENU MSGS /////////////////////////////////////////////////////////////////
-  //////////////////////////////////////////////////////////////////////////////
-
-  exports.onMenuPreferences = function (...args) {
-    tools.switchTool("tool-preferences", ...args);
-    sendIpcToPreload("update-menubar");
-  };
-
-  function onMenuOpenHistoryManager() {
-    tools.switchTool("tool-history");
-    sendIpcToPreload("update-menubar");
-  }
-  exports.onMenuOpenHistoryManager = onMenuOpenHistoryManager;
-
-  function onMenuQuit() {
-    // app.quit();
-    g_mainWindow.close();
-  }
-  exports.onMenuQuit = onMenuQuit;
-
-  exports.onMenuCloseTool = function () {
-    if (
-      tools.getCurrentToolName() !== "reader" &&
-      tools.getCurrentTool()?.saveAndClose
-    ) {
-      tools.getCurrentTool().saveAndClose();
-    } else {
-      tools.switchTool("reader");
-      sendIpcToPreload("update-menubar");
-    }
-  };
-
-  /////////////
-
-  function onMenuToggleMediaPlayer() {
-    reader.showMediaPlayer(!settings.getValue("showAudioPlayer"));
-    sendIpcToPreload("update-menubar");
-  }
-  exports.onMenuToggleMediaPlayer = onMenuToggleMediaPlayer;
-
-  function onMenuToggleSystemMonitor() {
-    showSystemMonitor(!settings.getValue("showSystemMonitor"));
-    sendIpcToPreload("update-menubar");
-  }
-  exports.onMenuToggleSystemMonitor = onMenuToggleSystemMonitor;
-
-  exports.onMenuToggleFullScreen = function () {
-    toggleFullScreen();
-  };
-
-  // TOOLS /////////////
-
-  exports.onMenuToolConvertComics = function () {
-    tools.switchTool("tool-convert-comics", { mode: 0 });
-    sendIpcToPreload("update-menubar");
-  };
-
-  exports.onMenuToolCreateComic = function () {
-    tools.switchTool("tool-convert-comics", { mode: 1 });
-    sendIpcToPreload("update-menubar");
-  };
-
-  exports.onMenuToolCreateQR = function () {
-    tools.switchTool("tool-create-qr");
-    sendIpcToPreload("update-menubar");
-  };
-
-  exports.onMenuToolConvertImages = function () {
-    tools.switchTool("tool-convert-imgs");
-    sendIpcToPreload("update-menubar");
-  };
-
-  exports.onMenuToolExtractText = function () {
-    tools.switchTool("tool-extract-text");
-    sendIpcToPreload("update-menubar");
-  };
-
-  exports.onMenuToolExtractQR = function () {
-    tools.switchTool("tool-extract-qr");
-    sendIpcToPreload("update-menubar");
-  };
-
-  exports.onMenuToolExtractPalette = function () {
-    tools.switchTool("tool-extract-palette");
-    sendIpcToPreload("update-menubar");
-  };
-
-  exports.onMenuToolFileBrowser = function () {
-    tools.switchTool("tool-file-browser", reader.getFileData());
-    sendIpcToPreload("update-menubar");
-  };
-
-  exports.onMenuToolRssReader = function (options) {
-    tools.switchTool("tool-rss", options);
-    sendIpcToPreload("update-menubar");
-  };
-
-  exports.onMenuToolExtractComics = function () {
-    tools.switchTool("tool-convert-comics", { mode: 2 });
-    sendIpcToPreload("update-menubar");
-  };
-
-  exports.onMenuToolDCM = function () {
-    tools.switchTool("tool-dcm");
-    sendIpcToPreload("update-menubar");
-  };
-
-  exports.onMenuToolCBP = function () {
-    tools.switchTool("tool-cbp");
-    sendIpcToPreload("update-menubar");
-  };
-
-  exports.onMenuToolIArchive = function () {
-    tools.switchTool("tool-internet-archive");
-    sendIpcToPreload("update-menubar");
-  };
-
-  exports.onMenuToolGutenberg = function () {
-    tools.switchTool("tool-gutenberg");
-    sendIpcToPreload("update-menubar");
-  };
-
-  exports.onMenuToolXkcd = function () {
-    tools.switchTool("tool-xkcd");
-    sendIpcToPreload("update-menubar");
-  };
-
-  exports.onMenuToolLibrivox = function () {
-    tools.switchTool("tool-librivox");
-    sendIpcToPreload("update-menubar");
-  };
-
-  exports.onMenuToolWiktionary = function () {
-    tools.switchTool("tool-wiktionary");
-    sendIpcToPreload("update-menubar");
-  };
-
-  exports.onMenuToolRadio = function (section) {
-    tools.switchTool("tool-radio", section);
-    sendIpcToPreload("update-menubar");
-  };
-
-  exports.onMenuToolTemplateMaker = function () {
-    tools.switchTool("tool-template-maker");
-    sendIpcToPreload("update-menubar");
-  };
-
-  exports.onMenuToolDrawingStudio = function () {
-    tools.switchTool("tool-drawing");
-    sendIpcToPreload("update-menubar");
-  };
-
-  //////////////////
-
-  exports.onMenuToggleDevTools = function () {
-    toggleDevTools();
-  };
-
-  exports.onMenuAbout = function () {
-    const licensesPath = app.isPackaged
-      ? path.join(process.resourcesPath, "licenses")
-      : path.join(__dirname, "../../licenses");
-    log.debug(licensesPath);
-    sendIpcToCoreRenderer(
-      "show-modal-about",
-      "ACBR Comic Book Reader",
-      `<div id="about-modal-div">${i18n._(
-        "ui-modal-info-version",
-      )}: <span id="about-modal-version">${app.getVersion()}</span>\n© Álvaro García\n<span id="about-modal-link" title="${i18n._(
-        "tool-shared-ui-search-item-open-browser",
-      )}">www.binarynonsense.com</span>
-      </div>`,
-      i18n._("ui-modal-prompt-button-ok"),
-      i18n._("ui-modal-info-licenses"),
-      licensesPath,
-    );
-  };
-
-  exports.onMenuCheckUpdates = function () {
-    let texts = {
-      titleUpToDate: i18n._("ui-modal-title-versionuptodate"),
-      titleUpdateAvailable: i18n._("ui-modal-title-versionavailable"),
-      titleSearching: i18n._("tool-shared-modal-title-searching"),
-      titleError: i18n._("tool-shared-modal-title-error"),
-      infoUpToDate: i18n._("ui-modal-info-updateavailable-no"),
-      infoUpdateAvailable: i18n._("ui-modal-info-updateavailable-yes"),
-      infoCurrentVersion: i18n._("ui-modal-info-currentversion"),
-      infoLatestVersion: i18n._("ui-modal-info-lateststableversion"),
-      infoNetworkError: i18n._("tool-shared-ui-search-network-error"),
-      buttonOpen: i18n._("ui-modal-prompt-button-open"),
-      buttonClose: i18n._("tool-shared-ui-close"),
-    };
-    sendIpcToCoreRenderer("show-modal-checkversion", app.getVersion(), texts);
-  };
-} // end of if gotTheLock
+const { createWindow, onIpcMenuAcceleratorPressed, ...publicExports } =
+  windowManager;
+Object.assign(module.exports, publicExports);
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
