@@ -515,6 +515,7 @@ exports.onMenuCheckUpdates = function () {
     infoNetworkError: i18n._("tool-shared-ui-search-network-error"),
     buttonOpen: i18n._("ui-modal-prompt-button-open"),
     buttonClose: i18n._("tool-shared-ui-close"),
+    changelog: i18n._("ui-modal-info-changelog"),
   };
   sendIpcToCoreRenderer("show-modal-checkversion", app.getVersion(), texts);
 };

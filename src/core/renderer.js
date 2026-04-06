@@ -408,6 +408,30 @@ async function showModalCheckUpdates(currentVersion, texts) {
     latestVersion = latestVersion.replace("v", "");
     modals.close(g_openModal);
 
+    ////////////
+    let changelog;
+    try {
+      const response = await axios.get(
+        `https://raw.githubusercontent.com/binarynonsense/comic-book-reader/refs/heads/master/CHANGELOG.md`,
+        { timeout: 2000 },
+      );
+      changelog = response.data;
+
+      changelog =
+        "<div class='updates-modal-div'>" +
+        changelog
+          .split("\n")
+          .map((line) => {
+            if (line.startsWith("## ")) {
+              return `<b>${line.substring(3)}</b>:`;
+            }
+            return line;
+          })
+          .join("<br>") +
+        "</div>";
+    } catch (error) {}
+    ////////////
+
     const isOlder = isVersionOlder(currentVersion, latestVersion);
     let versionsText =
       "\n\n" +
@@ -418,11 +442,13 @@ async function showModalCheckUpdates(currentVersion, texts) {
       texts.infoLatestVersion +
       ": " +
       latestVersion;
+    if (changelog) versionsText += "\n\n" + texts.changelog + ":";
     if (isOlder) {
       // Update Available Modal
       g_openModal = modals.show({
         title: texts.titleUpdateAvailable,
         message: texts.infoUpdateAvailable + versionsText,
+        log: changelog ? { message: changelog, useDiv: false } : undefined,
         zIndexDelta: 10,
         close: {
           callback: () => {
@@ -454,6 +480,7 @@ async function showModalCheckUpdates(currentVersion, texts) {
       g_openModal = modals.show({
         title: texts.titleUpToDate,
         message: texts.infoUpToDate + versionsText,
+        log: changelog ? { message: changelog, useDiv: true } : undefined,
         zIndexDelta: 10,
         close: {
           callback: () => {

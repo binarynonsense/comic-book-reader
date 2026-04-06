@@ -243,3 +243,29 @@
     left: 100%;
   }
 }
+
+/* /////////////////////////// */
+
+#about-modal-div {
+  margin: 0;
+  padding: 0;
+  user-select: none;
+}
+
+#about-modal-link {
+  text-decoration: underline;
+}
+#about-modal-link:hover {
+  transform: scale(1.05);
+  cursor: pointer;
+}
+
+.updates-modal-div {
+  padding: 10px;
+  font-size: 0.9em;
+  hyphens: auto;
+  overflow-wrap: break-word;
+  text-align: justify;
+  word-break: normal;
+  line-height: 1.2;
+}
