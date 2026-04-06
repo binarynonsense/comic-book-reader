@@ -212,6 +212,7 @@
   "ui-modal-info-lateststableversion": "Pinakabagong stable na bersyon",
   "ui-modal-info-updateavailable-yes": "May available na mas bagong stable na bersyon. I-click ang 'Buksan' na button upang buksan ang pahina ng pag-download sa iyong browser.",
   "ui-modal-info-updateavailable-no": "Walang natagpuang mas bagong stable na bersyon.",
+  "[NEEDS TRANSLATION]ui-modal-info-changelog": "Changelog",
   "ui-modal-info-mediaerror-play": "Hindi mapatugtog ang file.",
   "ui-modal-info-mediaerror-4": "Nawawala ang file, hindi ito na-download, o hindi sinusuportahan ang format.",
   "ui-modal-info-metadata": "Metadata",

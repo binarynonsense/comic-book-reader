@@ -212,6 +212,7 @@
   "ui-modal-info-lateststableversion": "Последняя стабильная версия",
   "ui-modal-info-updateavailable-yes": "Доступна более новая стабильная версия. Нажмите кнопку 'Открыть', чтобы перейти на страницу скачивания в вашем браузере.",
   "ui-modal-info-updateavailable-no": "Не найдено более новой стабильной версии.",
+  "[NEEDS TRANSLATION]ui-modal-info-changelog": "Changelog",
   "ui-modal-info-mediaerror-play": "Неудалось воспроизвести файл.",
   "ui-modal-info-mediaerror-4": "Файла не существует, невозможно загрузить или формат не поддерживается.",
   "ui-modal-info-metadata": "Метаданные",

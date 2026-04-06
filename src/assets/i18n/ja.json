@@ -212,6 +212,7 @@
   "ui-modal-info-lateststableversion": "最新の安定版",
   "ui-modal-info-updateavailable-yes": "新しい安定版が利用可能です。開くボタンをクリックするとブラウザでダウンロードページを開きます。",
   "ui-modal-info-updateavailable-no": "新しい安定版は見つかりませんでした。",
+  "[NEEDS TRANSLATION]ui-modal-info-changelog": "Changelog",
   "ui-modal-info-mediaerror-play": "ファイルを再生できませんでした。",
   "ui-modal-info-mediaerror-4": "ファイルが見つからない、ダウンロードできない、または形式がサポートされていません。",
   "ui-modal-info-metadata": "メタデータ",
