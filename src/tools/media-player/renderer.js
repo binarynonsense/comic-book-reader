@@ -97,10 +97,9 @@ function clearPlayer() {
   sendIpcToMain("mp-ffmpeg-close-video");
   yt.destroyPlayer();
 
-  // g_player.trackIndex = playlist.getCurrentTrackIndex();
   if (g_player.trackIndex) playlist.setCurrentTrackIndex(g_player.trackIndex);
   else {
-    g_player.trackIndex = playlist.getCurrentTrackIndex();
+    setPlayerTrackIndex(playlist.getCurrentTrackIndex());
   }
   // playlist.scrollToCurrent();
   g_player.trackMetadata = undefined;
@@ -112,6 +111,22 @@ function clearPlayer() {
   g_player.html.restoreMuteTimeOut = undefined;
   clearTimeout(g_player.html.loadingWatchdog);
   g_player.html.loadingWatchdog = undefined;
+}
+
+function setPlayerTrackIndex(index) {
+  g_player.trackIndex = index;
+  const track = playlist.getTrack(index);
+  const list = playlist.getPlaylist();
+  if (
+    track !== undefined &&
+    list !== undefined &&
+    list.files.length > track.fileIndex
+  ) {
+    const name = playlist.getFileFullname(list.files[track.fileIndex]);
+    setTopBarTrackName(name, index + 1, list.files.length);
+  } else {
+    setTopBarTrackName("");
+  }
 }
 
 function initPlayer() {
@@ -330,7 +345,7 @@ async function onInit(settings, loadedPlaylist) {
       playlist.setSelectedTrackFileIndex(
         playlist.getTracks()[loadTrackIndex].fileIndex,
       );
-      g_player.trackIndex = loadTrackIndex;
+      setPlayerTrackIndex(loadTrackIndex);
       g_player.pendingTime = g_settings.currentTime;
       g_player.html.sliderTime.max = g_settings.currentDuration;
       g_player.html.sliderTime.value = g_player.pendingTime;
@@ -463,11 +478,10 @@ async function onPlay(trackIndex = undefined, time = 0) {
 
     // load and play
     clearPlayer();
-    g_player.trackIndex = trackIndex;
+    setPlayerTrackIndex(trackIndex);
     playlist.setSelectedTrackFileIndex(
       playlist.getTracks()[trackIndex].fileIndex,
     );
-    g_player.trackIndex = trackIndex;
     const loadId = ++g_currentLoadId;
     const wasMuted = g_player.engine.muted;
     setPlayerState(PlayerState.LOADING);
@@ -820,7 +834,7 @@ function onSetRepeatMode(mode) {
 function onSetShuffleMode(mode) {
   g_settings.shuffle = mode;
   playlist.createTracksList(true);
-  g_player.trackIndex = playlist.getCurrentTrackIndex();
+  setPlayerTrackIndex(playlist.getCurrentTrackIndex());
 }
 
 function onEnded() {
@@ -836,7 +850,7 @@ function onEnded() {
     } else {
       onPause();
       clearPlayer();
-      g_player.trackIndex = 0;
+      setPlayerTrackIndex(0);
       playlist.setCurrentTrackIndex(0);
     }
   }
@@ -1070,6 +1084,13 @@ function getButtonStates() {
 }
 
 function initUI() {
+  g_player.html.topBarTrackName = document.getElementById(
+    "mp-topbar-trackname",
+  );
+  g_player.html.topBarAdvancedRow = document.getElementById(
+    "mp-topbar-advancedrow",
+  );
+
   g_player.html.buttonOpen = document.getElementById("mp-button-open");
   g_player.html.buttonOpen.addEventListener("click", function () {
     onButtonClicked("open");
@@ -1412,6 +1433,11 @@ function initUI() {
   });
 }
 
+function setTopBarTrackName(name, current, total) {
+  document.getElementById("mp-topbar-trackname").innerHTML =
+    `<i class="fa-solid fa-compact-disc"></i>${current !== undefined && total !== undefined && total > 1 ? `<span>[${current}/${total}] </span>` : ""}<span>${name}</span>`;
+}
+
 function onSliderTimeChanged(slider, event) {
   // const targetSecond = parseFloat(slider.value);
   const targetSecond = parseFloat(
@@ -1734,9 +1760,22 @@ function refreshUI() {
       g_player.html.buttonFullViewIsOn.classList.add("mp-hidden");
       g_player.html.buttonFullViewIsOff.classList.remove("mp-hidden");
     }
+    //
+    if (
+      !g_settings.showPlaylist &&
+      g_player.html.topBarTrackName.textContent != ""
+    ) {
+      g_player.html.topBarTrackName.classList.remove("mp-hidden");
+    } else {
+      g_player.html.topBarTrackName.classList.add("mp-hidden");
+    }
+    //
+    g_player.html.topBarAdvancedRow.classList.remove("mp-hidden");
   } else {
     g_player.html.buttonFullViewIsOn.classList.add("mp-hidden");
     g_player.html.buttonFullViewIsOff.classList.add("mp-hidden");
+    g_player.html.topBarTrackName.classList.add("mp-hidden");
+    g_player.html.topBarAdvancedRow.classList.add("mp-hidden");
   }
 
   if (
@@ -1906,6 +1945,7 @@ function onButtonClicked(buttonName) {
     onStop();
     playlist.clearPlaylist();
     playlist.setSelectedTrackFileIndex(undefined);
+    setTopBarTrackName("");
   } else if (buttonName === "add") {
     sendIpcToMain("on-open-clicked", 1);
   } else if (buttonName === "delete") {
@@ -1939,14 +1979,14 @@ function onButtonClicked(buttonName) {
         if (g_player.state === PlayerState.PLAYING) {
           onPlay(playlist.getCurrentTrackIndex(), 0);
         } else {
-          g_player.trackIndex = playlist.getCurrentTrackIndex();
+          setPlayerTrackIndex(playlist.getCurrentTrackIndex());
         }
       } else {
         // the deleted one was the last
         onPause();
         playlist.setCurrentTrackIndex(playlist.getTracks().length - 1);
         if (playlist.getTracks().length > 0) {
-          g_player.trackIndex = playlist.getTracks().length - 1;
+          setPlayerTrackIndex(playlist.getTracks().length - 1);
         }
       }
     } else {
@@ -1960,6 +2000,7 @@ function onButtonClicked(buttonName) {
       playlist.setSelectedTrackFileIndex(playlist.getCurrentTrackFileIndex());
     } else {
       playlist.setSelectedTrackFileIndex(undefined);
+      setTopBarTrackName("");
     }
     playlist.updatePlaylistInfo();
   } else if (buttonName === "save-playlist") {
@@ -2106,10 +2147,10 @@ function showAdvancedControls(show) {
   if (show) {
     g_settings.showAdvancedControls = true;
     g_player.html.topBar.classList.add("mp-advanced-controls");
-    g_player.html.topBar.children[1].appendChild(
+    g_player.html.topBar.children[2].appendChild(
       document.getElementById("mp-time-wrapper"),
     );
-    g_player.html.topBar.children[1].appendChild(
+    g_player.html.topBar.children[2].appendChild(
       document.getElementById("mp-div-volume"),
     );
   } else {
@@ -2192,7 +2233,7 @@ function initOnIpcCallbacks() {
     onStop();
     playlist.openPlaylist(newPlaylist);
     playlist.setCurrentTrackIndex(0);
-    g_player.trackIndex = playlist.getCurrentTrackIndex();
+    setPlayerTrackIndex(playlist.getCurrentTrackIndex());
     onPlay(g_player.trackIndex, 0);
   });
 

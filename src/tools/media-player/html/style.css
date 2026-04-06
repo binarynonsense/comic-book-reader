@@ -410,7 +410,7 @@ a:hover a:visited {
 
 .mp-button.mp-off-miniicon::after {
   position: absolute;
-  top: 4px;
+  top: -3px;
   right: -3px;
   font: var(--fa-font-solid);
   content: "\f00d";
@@ -494,6 +494,9 @@ a:hover a:visited {
 .mp-div-topbar-row {
   display: flex;
   flex-direction: row;
+  gap: 5px;
+  color: var(--mediaplayer-button-color);
+  align-items: center;
 }
 
 #mp-div-topbar-left-buttons,
@@ -539,6 +542,34 @@ a:hover a:visited {
     justify-content: left;
     display: flex !important;
   }
+}
+
+#mp-topbar-trackname {
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  /* background: repeating-linear-gradient(
+    45deg,
+    color-mix(in srgb, var(--mediaplayer-disabled-color), transparent 50%) 0px,
+    color-mix(in srgb, var(--mediaplayer-disabled-color), transparent 50%) 10px,
+    transparent 10px,
+    transparent 20px
+  ); */
+}
+
+#mp-topbar-trackname span {
+  display: block;
+  font-size: 11px;
+}
+#mp-topbar-trackname span:nth-of-type(2) {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 80%;
+  opacity: 1;
+  /* background-color: var(--mediaplayer-bg-color); */
+  /* padding-left: 5px;
+  padding-right: 5px; */
 }
 
 /* *************** */

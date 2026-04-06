@@ -316,26 +316,32 @@ export function updatePlaylistInfo() {
     div.addEventListener("dblclick", function () {
       onPlaylistTrackDoubleClicked(index);
     });
-    let fullName;
-    if (file.title && file.artist) {
-      fullName = `${file.artist} - ${file.title}`;
-    } else if (file.title) {
-      fullName = `${file.title}`;
-    } else {
-      var filenameextension = file.url.replace(/^.*[\\\/]/, "");
-      var filename = filenameextension.substring(
-        0,
-        filenameextension.lastIndexOf("."),
-      );
-      //var ext = filenameextension.split(".").pop();
-      if (!filename || filename == "") filename = file.url;
-      fullName = filename;
-    }
+    let fullName = getFileFullname(file);
     let content = `<span title="${fullName}\n${file.url}" class="mp-span-playlist-track-title">${fullName}</span
   ><span class="mp-span-playlist-track-time">${duration}</span>`;
     div.innerHTML = content;
     g_player.html.divPlaylistTracks.appendChild(div);
   }
+}
+
+export function getFileFullname(file) {
+  if (file === undefined) return undefined;
+  let fullName;
+  if (file.title && file.artist) {
+    fullName = `${file.artist} - ${file.title}`;
+  } else if (file.title) {
+    fullName = `${file.title}`;
+  } else {
+    let filenameextension = file.url.replace(/^.*[\\\/]/, "");
+    let filename = filenameextension.substring(
+      0,
+      filenameextension.lastIndexOf("."),
+    );
+    //let ext = filenameextension.split(".").pop();
+    if (!filename || filename == "") filename = file.url;
+    fullName = filename;
+  }
+  return fullName;
 }
 
 ////////////////////////////////////////////////
