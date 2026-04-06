@@ -3,7 +3,7 @@
     "authors": [
       "trzyglow"
     ],
-    "last-updated": "2026-04-01",
+    "last-updated": "2026-04-06",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.19.0",
     "pre-release": "false",
@@ -212,7 +212,7 @@
   "ui-modal-info-lateststableversion": "Neuste stabile Version",
   "ui-modal-info-updateavailable-yes": "Eine neuere stabile Version ist verfügbar. Klicken Sie den 'Öffnen' Button um die Downloadseite im Browser zu öffnen.",
   "ui-modal-info-updateavailable-no": "Konnte keine neuere stabile Version finden.",
-  "[NEEDS TRANSLATION]ui-modal-info-changelog": "Changelog",
+  "ui-modal-info-changelog": "Änderungsprotokoll",
   "ui-modal-info-mediaerror-play": "Konnte die Datei nicht abspielen.",
   "ui-modal-info-mediaerror-4": "Die Datei fehlt, konnte nicht heruntergeladen werden, oder das Format wird nicht unterstützt.",
   "ui-modal-info-metadata": "Metadaten",
