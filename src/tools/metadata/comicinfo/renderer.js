@@ -603,7 +603,6 @@ export function onPagesUpdated(data) {
     base.updateColumnsHeight();
     base.closeModal();
   } else {
-    // TODO: show error
     base.closeModal();
     base.showInfoModal(
       g_localizedModalTexts.errorTitle,
