@@ -86,7 +86,7 @@ const { parseArgs } = require("node:util");
 const options = {
   dev: { type: "boolean" },
   cli: { type: "boolean" },
-  mplayer: { type: "boolean" },
+  player: { type: "boolean" },
   tool: { type: "string" },
   "output-format": { type: "string" },
   "output-folder": { type: "string" },
@@ -200,11 +200,11 @@ if (!g_launchInfo.isDev) process.env.VIPS_WARNING = 1;
 
 let windowManager;
 if (g_launchInfo.parsedArgs["cli"] === true) {
-  windowManager = require("./main/cli");
-} else if (g_launchInfo.parsedArgs["mplayer"] === true) {
-  windowManager = require("./main/mplayer");
+  windowManager = require("./main/core-cli");
+} else if (g_launchInfo.parsedArgs["player"] === true) {
+  windowManager = require("./main/core-player");
 } else {
-  windowManager = require("./main/gui");
+  windowManager = require("./main/core-gui");
 }
 
 // init window
