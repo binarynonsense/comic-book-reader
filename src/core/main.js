@@ -85,6 +85,8 @@ if (g_launchInfo.platform === "linux" && process.env.container) {
 const { parseArgs } = require("node:util");
 const options = {
   dev: { type: "boolean" },
+  cli: { type: "boolean" },
+  mplayer: { type: "boolean" },
   tool: { type: "string" },
   "output-format": { type: "string" },
   "output-folder": { type: "string" },
@@ -196,66 +198,75 @@ if (g_launchInfo.platform === "linux") {
 // show vips warnings from sharp only in dev mode
 if (!g_launchInfo.isDev) process.env.VIPS_WARNING = 1;
 
-// TODO: the file will be selected based on launch options if other modes are 
-// implemented (e.g. cli mode, media player mode...)
-const windowManager = require("./main/gui");
+log.test(g_launchInfo.isCli);
+let windowManager;
+if (g_launchInfo.parsedArgs["cli"] === true) {
+  windowManager = require("./main/cli");
+} else if (g_launchInfo.parsedArgs["mplayer"] === true) {
+  windowManager = require("./main/mplayer");
+} else {
+  windowManager = require("./main/gui");
+}
 
 // init window
 app.whenReady().then(() => {
   g_mainWindow = windowManager.createWindow(this, g_launchInfo);
-  // macos
-  // app.on("activate", () => {
-  //   if (BrowserWindow.getAllWindows().length === 0) g_mainWindow = acbrGui.createWindow(this, g_launchInfo);
-  // });
-  // header fixes for the video player's youtube support
-  // avoids errors 153 and 152-4
-  // ref: https://www.electronjs.org/docs/latest/api/web-request
-  const originalUA = g_mainWindow.webContents.getUserAgent();
-  g_mainWindow.webContents.setUserAgent(
-    originalUA.replace(/Electron\/[0-9\.]+\s/g, ""),
-  );
-  const { session } = require("electron");
-  session.defaultSession.webRequest.onBeforeSendHeaders(
-    { urls: ["<all_urls>"] },
-    (details, callback) => {
-      if (
-        details.url.includes("youtube") ||
-        details.url.includes("googlevideo")
-      ) {
-        details.requestHeaders["Referer"] = "https://www.youtube-nocookie.com";
-        details.requestHeaders["Origin"] = "https://www.youtube-nocookie.com";
-        delete details.requestHeaders["Sec-Fetch-Site"];
-        delete details.requestHeaders["Sec-Fetch-Mode"];
-        delete details.requestHeaders["Sec-Fetch-Dest"];
-      }
-      callback({ cancel: false, requestHeaders: details.requestHeaders });
-    },
-  );
+  if (g_mainWindow) {
+    // macos
+    // app.on("activate", () => {
+    //   if (BrowserWindow.getAllWindows().length === 0) g_mainWindow = acbrGui.createWindow(this, g_launchInfo);
+    // });
+    // header fixes for the video player's youtube support
+    // avoids errors 153 and 152-4
+    // ref: https://www.electronjs.org/docs/latest/api/web-request
+    const originalUA = g_mainWindow.webContents.getUserAgent();
+    g_mainWindow.webContents.setUserAgent(
+      originalUA.replace(/Electron\/[0-9\.]+\s/g, ""),
+    );
+    const { session } = require("electron");
+    session.defaultSession.webRequest.onBeforeSendHeaders(
+      { urls: ["<all_urls>"] },
+      (details, callback) => {
+        if (
+          details.url.includes("youtube") ||
+          details.url.includes("googlevideo")
+        ) {
+          details.requestHeaders["Referer"] =
+            "https://www.youtube-nocookie.com";
+          details.requestHeaders["Origin"] = "https://www.youtube-nocookie.com";
+          delete details.requestHeaders["Sec-Fetch-Site"];
+          delete details.requestHeaders["Sec-Fetch-Mode"];
+          delete details.requestHeaders["Sec-Fetch-Dest"];
+        }
+        callback({ cancel: false, requestHeaders: details.requestHeaders });
+      },
+    );
 
-  // NOTE: potential fix for youtube playing in the media player.
-  // it wasn't needed in the end but I'm keeping it for now for reference.
-  // session.defaultSession.webRequest.onHeadersReceived(
-  //   { urls: ["https://www.youtube-nocookie.com*"] },
-  //   (details, callback) => {
-  //     details.responseHeaders["Access-Control-Allow-Origin"] = ["*"];
-  //     delete details.responseHeaders["X-Frame-Options"];
-  //     delete details.responseHeaders["Content-Security-Policy"];
-  //     callback({ cancel: false, responseHeaders: details.responseHeaders });
-  //   },
-  // );
+    // NOTE: potential fix for youtube playing in the media player.
+    // it wasn't needed in the end but I'm keeping it for now for reference.
+    // session.defaultSession.webRequest.onHeadersReceived(
+    //   { urls: ["https://www.youtube-nocookie.com*"] },
+    //   (details, callback) => {
+    //     details.responseHeaders["Access-Control-Allow-Origin"] = ["*"];
+    //     delete details.responseHeaders["X-Frame-Options"];
+    //     delete details.responseHeaders["Content-Security-Policy"];
+    //     callback({ cancel: false, responseHeaders: details.responseHeaders });
+    //   },
+    // );
 
-  // NOTE: potential fix for old radio streams that don't send headers to
-  // inject CORS headers to prevent chromium from muting cross-origin media
-  // when connected to the spectrum visualizer.
-  // session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
-  //   if (details.resourceType === "media") {
-  //     const responseHeaders = { ...details.responseHeaders };
-  //     responseHeaders["access-control-allow-origin"] = ["*"];
-  //     responseHeaders["access-control-expose-headers"] = ["*"];
-  //     return callback({ responseHeaders });
-  //   }
-  //   callback({ responseHeaders: details.responseHeaders });
-  // });
+    // NOTE: potential fix for old radio streams that don't send headers to
+    // inject CORS headers to prevent chromium from muting cross-origin media
+    // when connected to the spectrum visualizer.
+    // session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
+    //   if (details.resourceType === "media") {
+    //     const responseHeaders = { ...details.responseHeaders };
+    //     responseHeaders["access-control-allow-origin"] = ["*"];
+    //     responseHeaders["access-control-expose-headers"] = ["*"];
+    //     return callback({ responseHeaders });
+    //   }
+    //   callback({ responseHeaders: details.responseHeaders });
+    // });
+  }
 });
 
 app.on("will-quit", () => {
