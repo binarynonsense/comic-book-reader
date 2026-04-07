@@ -96,7 +96,6 @@ const { values, positionals } = parseArgs({
   options,
   strict: false,
 });
-// mimic minimist structure for now
 g_launchInfo.parsedArgs = {
   ...values,
   _: positionals,
