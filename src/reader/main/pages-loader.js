@@ -24,6 +24,7 @@ let sendIpcToRenderer, closeCurrentFile;
 let g_fileData;
 let g_pageWorkerMain = { id: "main" };
 let g_pageWorkerBG = { id: "bg" };
+let g_cacheJobId = 0;
 
 exports.init = function (_sendIpcToRenderer, _closeCurrentFile) {
   sendIpcToRenderer = _sendIpcToRenderer;
@@ -37,6 +38,8 @@ exports.onQuit = function () {
 
 exports.onBookClosed = function (fileData) {
   g_fileData = undefined;
+  g_cacheJobId++;
+  log.editor("[PAGES] cacheJobId: " + g_cacheJobId);
   killPageWorker(g_pageWorkerMain);
   killPageWorker(g_pageWorkerBG);
   clearCache();
@@ -174,15 +177,12 @@ function sendCurrentRequestResult() {
 function pagesFetched(message) {
   if (message.success === true) {
     try {
+      if (message.cacheJobId !== g_cacheJobId) {
+        log.debug("[PAGES] pagesFetched message.cacheJobId !== g_cacheJobId");
+        return;
+      }
       deleteTempPageFolder(message.tempSubFolderPath);
       message.images.forEach((image) => {
-        if (!image) {
-          // NOTE: trying to prevent a strange error I could only trigger
-          // on the Windows build sometimes when switching files, not sure of
-          // why this happens
-          // TODO: figure out the chain of events
-          return;
-        }
         cachePage(image.pageIndex, image, g_fileData.pageIndex);
       });
       if (message.workerId === "main") {
@@ -243,7 +243,7 @@ async function fetchPages(pageWorker, fileData, pageIndexes) {
   g_fileData = fileData;
   let scrollBarPos = g_scrollBarPos;
   if (g_fileData.type !== FileDataType.WWW) {
-    let extraData = { workerId: pageWorker.id };
+    let extraData = { workerId: pageWorker.id, cacheJobId: g_cacheJobId };
     let entryNames = pageIndexes;
     if (g_fileData.type === FileDataType.PDF) {
       if (!settings.getValue("pdfReadingLibrary").startsWith("pdfjs")) {

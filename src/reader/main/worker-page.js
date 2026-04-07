@@ -30,6 +30,7 @@ process.parentPort.on("message", async (event) => {
     const pageIndexes = message.pageIndexes;
     const entryNames = message.entryNames;
     const workerId = message.extraData.workerId;
+    const cacheJobId = message.extraData.cacheJobId;
     let images = [];
     let tempSubFolderPath = message.tempSubFolderPath;
     for (let i = 0; i < entryNames.length; i++) {
@@ -42,6 +43,7 @@ process.parentPort.on("message", async (event) => {
           error: result.error,
           tempSubFolderPath,
           workerId,
+          cacheJobId,
         });
         return;
       }
@@ -58,6 +60,7 @@ process.parentPort.on("message", async (event) => {
       tempSubFolderPath,
       scrollBarPos: message.scrollBarPos,
       workerId,
+      cacheJobId,
     });
   } else if (message.command === "open") {
     if (message.fileType === FileDataType.PDF) {
