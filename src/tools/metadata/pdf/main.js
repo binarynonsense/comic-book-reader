@@ -72,10 +72,10 @@ exports.saveMetadataToFile = async function (data) {
     const { PDFDocument } = require("pdf-lib");
     const pdf = await PDFDocument.load(fs.readFileSync(g_fileData.path));
 
-    if (data["title"]) pdf.setTitle(data["title"]);
-    if (data["author"]) pdf.setAuthor(data["author"]);
-    if (data["subject"]) pdf.setSubject(data["subject"]);
-    if (data["keywords"]) {
+    if (data["title"] !== undefined) pdf.setTitle(data["title"]);
+    if (data["author"] !== undefined) pdf.setAuthor(data["author"]);
+    if (data["subject"] !== undefined) pdf.setSubject(data["subject"]);
+    if (data["keywords"] !== undefined) {
       if (
         !Array.isArray(data["keywords"]) &&
         typeof data["keywords"] === "string"
@@ -84,16 +84,16 @@ exports.saveMetadataToFile = async function (data) {
       }
       pdf.setKeywords(data["keywords"]); // must be array
     }
-    if (data["producer"] || data["producer"] === "") {
+    if (data["producer"] !== undefined) {
       pdf.setProducer(data["producer"]);
     } else if (g_metadata.producer) {
       pdf.setProducer(g_metadata.producer);
     } else {
       pdf.setProducer("ACBR");
     }
-    if (data["creator"]) pdf.setCreator(data["creator"]);
+    if (data["creator"] !== undefined) pdf.setCreator(data["creator"]);
 
-    if (data["creationDate"]) {
+    if (data["creationDate"] !== undefined) {
       let creationDate = new Date(data["creationDate"]);
       if (creationDate && creationDate.toString() !== "Invalid Date") {
         pdf.setCreationDate(creationDate);
@@ -101,7 +101,7 @@ exports.saveMetadataToFile = async function (data) {
         throw { dateError: true };
       }
     }
-    if (data["modificationDate"]) {
+    if (data["modificationDate"] !== undefined) {
       let modificationDate = new Date(data["modificationDate"]);
       if (modificationDate && modificationDate.toString() !== "Invalid Date") {
         pdf.setCreationDate(modificationDate);
