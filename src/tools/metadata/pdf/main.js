@@ -84,11 +84,13 @@ exports.saveMetadataToFile = async function (data) {
       }
       pdf.setKeywords(data["keywords"]); // must be array
     }
-    if (data["producer"] !== undefined) {
+    if (data["producer"]) {
       pdf.setProducer(data["producer"]);
-    } else if (g_metadata.producer) {
-      pdf.setProducer(g_metadata.producer);
-    } else {
+    }
+    // else if (g_metadata.producer) {
+    //   pdf.setProducer(g_metadata.producer);
+    // }
+    else {
       pdf.setProducer("ACBR");
     }
     if (data["creator"] !== undefined) pdf.setCreator(data["creator"]);
