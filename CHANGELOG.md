@@ -1,3 +1,12 @@
+## v3.20.0
+
+- Added new parameters to the custom filters in the Reader, invert and rotate hue, and a new default filter, Invert, to use as a quick Dark Mode (resetting the filters to the default ones is needed for the new one to be available if version 3.19.0 was previously used).
+- Added the changelog from GitHub to the info shown in the Check for Updates modal.
+- Added the current track's name to the Media Player's top bar when the advanced controls are enabled and the playlist is hidden.
+- Fixed the Reader's new pages cache manager making the app crash on Windows when changing files in some circumstances.
+- Fixed the Metadata Editor failing to update a ComicInfo.xml's pages list when requested and never ending the operation.
+- Fixed the Metadata Editor failing to update some PDF's entries if the new value in the input field is empty.
+
 ## v3.19.0
 
 - Improved, significantly, the average page loading time in the Reader by implementing a pages cache that is filled in the background. The cache size can be increased in the Preferences (Comic Book Reader > Pages Cache), so it can fit more pages if the user doesn't mind the extra RAM usage.
