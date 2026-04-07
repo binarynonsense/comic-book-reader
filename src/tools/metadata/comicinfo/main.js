@@ -175,7 +175,6 @@ exports.updatePages = function (data) {
       g_worker = undefined;
     }
     if (g_worker === undefined) {
-      // strip null from env to avoid exception
       g_worker = forkUtils.fork(
         path.join(__dirname, "../../../shared/main/tools-worker-process.js"),
       );
