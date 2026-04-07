@@ -200,8 +200,6 @@ if (!g_launchInfo.isDev) process.env.VIPS_WARNING = 1;
 let windowManager;
 if (g_launchInfo.parsedArgs["cli"] === true) {
   windowManager = require("./main/core-cli");
-} else if (g_launchInfo.parsedArgs["player"] === true) {
-  windowManager = require("./main/core-player");
 } else {
   windowManager = require("./main/core-gui");
 }
