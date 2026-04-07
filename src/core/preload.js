@@ -29,7 +29,7 @@ let g_titlebar;
 
 window.addEventListener("DOMContentLoaded", () => {
   g_titlebar = new CustomTitlebar({
-    icon: "../assets/images/icon_256x256.png",
+    icon: "../../assets/images/icon_256x256.png",
     titleHorizontalAlignment: "right",
   });
 

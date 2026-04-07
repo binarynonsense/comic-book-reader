@@ -317,7 +317,7 @@ function initPlayer() {
 async function onInit(settings, loadedPlaylist) {
   try {
     // load css ////
-    await loadStylesheet("../tools/media-player/html/style.css");
+    await loadStylesheet("../../tools/media-player/html/style.css");
 
     // init UI ////
     initUI();
@@ -1519,7 +1519,7 @@ function updateVolumeUI() {
       const useTag = g_player.html.buttonVolumeOff.querySelector("use");
       if (useTag) {
         const spritePath =
-          "../assets/libs/fontawesome7/sprites_custom/volume_sheet.svg";
+          "../../assets/libs/fontawesome7/sprites_custom/volume_sheet.svg";
         useTag.setAttribute("href", `${spritePath}#${id}`);
       }
     };

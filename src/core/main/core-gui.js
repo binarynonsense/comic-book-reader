@@ -86,7 +86,7 @@ exports.createWindow = function (_core, launchInfo) {
       preload: path.join(__dirname, "../preload.js"),
     },
   });
-  g_mainWindow.loadFile(path.join(__dirname, "../index.html"));
+  g_mainWindow.loadFile(path.join(__dirname, "../html/core-gui.html"));
   // win events
   g_mainWindow.webContents.on("did-finish-load", async function () {
     g_isLoaded = true;
