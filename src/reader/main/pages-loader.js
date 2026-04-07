@@ -173,26 +173,38 @@ function sendCurrentRequestResult() {
 
 function pagesFetched(message) {
   if (message.success === true) {
-    deleteTempPageFolder(message.tempSubFolderPath);
-    message.images.forEach((image) => {
-      cachePage(image.pageIndex, image, g_fileData.pageIndex);
-    });
-    if (message.workerId === "main") {
+    try {
+      deleteTempPageFolder(message.tempSubFolderPath);
       message.images.forEach((image) => {
-        g_currentRequest.forEach((request) => {
-          if (request.pageIndex === image.pageIndex) {
-            log.editor(
-              "[PAGES] update request fulfilled for page " + image.pageIndex,
-            );
-            request.image = image;
-          }
-        });
+        if (!image) {
+          // NOTE: trying to prevent a strange error I could only trigger
+          // on the Windows build sometimes when switching files, not sure of
+          // why this happens
+          // TODO: figure out the chain of events
+          return;
+        }
+        cachePage(image.pageIndex, image, g_fileData.pageIndex);
       });
-      if (isCurrentRequestDone()) {
-        sendCurrentRequestResult();
+      if (message.workerId === "main") {
+        message.images.forEach((image) => {
+          g_currentRequest.forEach((request) => {
+            if (request.pageIndex === image.pageIndex) {
+              log.editor(
+                "[PAGES] update request fulfilled for page " + image.pageIndex,
+              );
+              request.image = image;
+            }
+          });
+        });
+        if (isCurrentRequestDone()) {
+          sendCurrentRequestResult();
+        }
+      } else {
+        tryBgFetchIfNeeded();
       }
-    } else {
-      tryBgFetchIfNeeded();
+    } catch (error) {
+      log.debug("unknown pagesFetched error");
+      log.error(error);
     }
     return;
   } else if (message.success === false) {
