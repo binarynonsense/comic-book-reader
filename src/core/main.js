@@ -198,7 +198,6 @@ if (g_launchInfo.platform === "linux") {
 // show vips warnings from sharp only in dev mode
 if (!g_launchInfo.isDev) process.env.VIPS_WARNING = 1;
 
-log.test(g_launchInfo.isCli);
 let windowManager;
 if (g_launchInfo.parsedArgs["cli"] === true) {
   windowManager = require("./main/cli");
