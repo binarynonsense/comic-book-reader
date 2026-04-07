@@ -390,7 +390,6 @@ exports.init = function (mainWindow, parentElementId, ffmpegPath) {
   initOnIpcCallbacks();
   initHandleIpcCallbacks();
   g_mainWindow = mainWindow;
-  initOnIpcCallbacks;
   const data = fs.readFileSync(path.join(__dirname, "html/index.html"));
   g_parentElementId = parentElementId;
   sendIpcToCoreRenderer(
