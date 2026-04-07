@@ -166,8 +166,9 @@ exports.loadMetadata = async function () {
 };
 
 exports.updatePages = function (data) {
+  let tempFolderPath;
   try {
-    let tempFolderPath = temp.createSubFolder();
+    tempFolderPath = temp.createSubFolder();
     if (g_worker !== undefined) {
       // kill it after one use
       g_worker.kill();
@@ -192,7 +193,7 @@ exports.updatePages = function (data) {
         }
       });
     }
-    g_worker.send([
+    g_worker.postMessage([
       core.getLaunchInfo(),
       "extract",
       g_fileData.path,
@@ -201,8 +202,9 @@ exports.updatePages = function (data) {
       g_fileData.password,
     ]);
   } catch (error) {
-    // TODO: recuperate???
     log.error(error);
+    if (tempFolderPath) temp.deleteSubFolder(tempFolderPath);
+    base.sendIpcToRenderer("pages-updated", undefined);
   }
 };
 

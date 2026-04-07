@@ -605,6 +605,11 @@ export function onPagesUpdated(data) {
   } else {
     // TODO: show error
     base.closeModal();
+    base.showInfoModal(
+      g_localizedModalTexts.errorTitle,
+      "",
+      g_localizedModalTexts.okButton,
+    );
   }
 }
 
