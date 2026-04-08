@@ -240,7 +240,7 @@ function onIpcFromMain(event, args) {
             args[2],
             args[3],
             () => {
-              reader.sendIpcToMain("open-path-in-browser", args[4]);
+              sendIpcToMain("open-path-in-browser", args[4]);
             },
             args[5],
           );

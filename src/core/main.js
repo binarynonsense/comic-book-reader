@@ -23,6 +23,7 @@ const settings = require("../shared/main/settings");
 const log = require("../shared/main/logger");
 const tools = require("../shared/main/tools");
 const reader = require("../reader/main");
+const appUtils = require("../shared/main/app-utils");
 
 let g_mainWindow;
 let g_launchInfo = {};
@@ -393,6 +394,8 @@ ipcMain.on("main", (event, args) => {
         }
       }
     }
+  } else if (args[0] === "open-path-in-browser") {
+    appUtils.openPathInFileBrowser(args[1]);
   } else {
     tools.getTools()[args[0]]?.onIpcFromRenderer(...args.slice(1));
   }
