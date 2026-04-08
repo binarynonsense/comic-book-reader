@@ -11,7 +11,7 @@
   flex-direction: column;
   direction: ltr;
   width: var(--mp-frame-width);
-  gap: 3px;
+  /* gap: 3px; */
 }
 #media-player-container.mp-layout-fullscreen #mp-div-topbar {
   position: fixed;
@@ -88,6 +88,9 @@
   min-height: 10px;
   width: 100%;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+.mp-frame + .mp-frame {
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
 }
 
 .mp-frame a,
