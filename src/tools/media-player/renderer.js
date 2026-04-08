@@ -1093,6 +1093,13 @@ function initUI() {
     "mp-topbar-advancedrow",
   );
 
+  g_player.html.buttonClosePlayer = document.getElementById(
+    "mp-button-close-player",
+  );
+  g_player.html.buttonClosePlayer.addEventListener("click", function () {
+    onButtonClicked("close-player");
+  });
+
   g_player.html.buttonOpen = document.getElementById("mp-button-open");
   g_player.html.buttonOpen.addEventListener("click", function () {
     onButtonClicked("open");
@@ -1878,7 +1885,9 @@ function refreshUI() {
 }
 
 function onButtonClicked(buttonName) {
-  if (buttonName === "play") {
+  if (buttonName === "close-player") {
+    sendIpcToMain("close");
+  } else if (buttonName === "play") {
     onPlay();
   } else if (buttonName === "pause") {
     onPause();

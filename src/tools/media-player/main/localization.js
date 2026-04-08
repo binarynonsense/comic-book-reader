@@ -42,6 +42,10 @@ exports.getLocalization = function () {
       text: _("mp-tooltip-button-volume-on"),
     },
     {
+      id: "mp-button-close-player",
+      text: _("tool-shared-ui-close"),
+    },
+    {
       id: "mp-button-close-playlist",
       text: _("mp-tooltip-button-playlist-hide"),
     },
