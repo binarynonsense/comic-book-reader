@@ -284,14 +284,15 @@ exports.createWindow = function (_core, launchInfo) {
         const { screen } = require("electron");
         const area = screen.getPrimaryDisplay().workArea;
         let { x, y } = bounds;
-        if (y < area.y) y = area.y;
-        else if (y + height > area.y + area.height) {
-          y = area.y + area.height - height;
+        let padding = { top: 10, bottom: 10 + 50, left: 10, right: 10 + 50 };
+        if (y - padding.top < area.y) y = area.y - padding.top;
+        else if (y + height - padding.bottom > area.y + area.height) {
+          y = area.y + area.height - height + padding.bottom;
         }
-        if (x < area.x) {
-          x = area.x;
-        } else if (x + width > area.x + area.width) {
-          x = area.x + area.width - width;
+        if (x - padding.left < area.x) {
+          x = area.x - padding.left;
+        } else if (x + width - padding.right > area.x + area.width) {
+          x = area.x + area.width - width + padding.right;
         }
         g_mainWindow.setPosition(Math.round(x), Math.round(y));
       });
