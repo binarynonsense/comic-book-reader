@@ -895,8 +895,6 @@ a:hover a:visited {
 
     .mp-div-frame-drag {
       display: none !important;
-    }
-    .mp-div-frame-drag-bg {
       -webkit-app-region: no-drag;
     }
   }
@@ -909,10 +907,9 @@ a:hover a:visited {
     padding: 0;
     height: 10px;
     margin: 3px -4px 5px 4px;
+    -webkit-app-region: drag;
   }
   .mp-div-frame-drag-bg {
-    -webkit-app-region: drag;
-    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -927,15 +924,13 @@ a:hover a:visited {
       transparent 2px
     );
   }
-  .mp-div-frame-drag-bg a {
-    -webkit-app-region: no-drag;
-  }
   .mp-div-frame-drag-title {
     background-color: var(--mediaplayer-bg-color);
     padding-left: 5px;
     padding-right: 5px;
     padding-top: 2px;
     font-weight: bolder;
+    font-size: 9px;
   }
   #mp-div-topbar.mp-advanced-controls {
     .mp-div-frame-drag {
@@ -945,6 +940,7 @@ a:hover a:visited {
   #mp-button-close-player {
     margin-left: auto;
     font-size: 12px;
+    -webkit-app-region: no-drag;
   }
   /* #mp-div-frame-drag-logo {
     margin-right: auto;
