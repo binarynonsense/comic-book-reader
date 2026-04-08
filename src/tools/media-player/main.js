@@ -24,6 +24,7 @@ const contextMenu = require("./main/menu-context");
 let g_mainWindow;
 let g_parentElementId;
 let g_ffmpegPath;
+let g_launchInfo = {};
 
 ///////////////////////////////////////////////////////////////////////////////
 // IPC SEND ///////////////////////////////////////////////////////////////////
@@ -148,7 +149,11 @@ function initOnIpcCallbacks() {
   });
 
   on("close", () => {
-    reader.showMediaPlayer(false, true);
+    if (g_launchInfo.isPlayerMode) {
+      core.requestQuit();
+    } else {
+      reader.showMediaPlayer(false, true);
+    }
   });
 
   on("save-playlist", (playlist) => {
@@ -231,10 +236,12 @@ function initOnIpcCallbacks() {
   });
 
   on("show-context-menu", (params, data) => {
+    data.isPlayerMode = g_launchInfo.isPlayerMode;
     contextMenu.show("normal", params, data, sendIpcToRenderer, openRecent);
   });
 
   on("show-button-menu", (type, rect, data) => {
+    data.isPlayerMode = g_launchInfo.isPlayerMode;
     contextMenu.show(
       type,
       { x: rect.top, y: rect.left },
@@ -358,7 +365,12 @@ let g_didShow = false;
 
 exports.open = async function (isVisible) {
   if (isVisible & !g_didShow) {
-    sendIpcToRenderer("init", settings.get(), g_playlist);
+    sendIpcToRenderer(
+      "init",
+      settings.get(),
+      g_playlist,
+      g_launchInfo.isPlayerMode,
+    );
     g_didShow = true;
   }
   sendIpcToRenderer("show", isVisible, g_parentElementId);
@@ -385,7 +397,8 @@ function loadSettings() {
 
 /////////////////////////////////////////////////////////////////////////
 
-exports.init = function (mainWindow, parentElementId, ffmpegPath) {
+exports.init = function (launchInfo, mainWindow, parentElementId, ffmpegPath) {
+  g_launchInfo = launchInfo;
   exports.updateFfmpegPath(ffmpegPath);
   initOnIpcCallbacks();
   initHandleIpcCallbacks();

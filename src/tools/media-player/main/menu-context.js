@@ -39,7 +39,7 @@ exports.show = function (type, params, data, sendIpcToRenderer, openRecent) {
         click() {
           sendIpcToRenderer(
             "show-modal-open-url",
-            _("mp-menu-open-openurl"),
+            "",
             "URL",
             _("ui-modal-prompt-button-ok"),
             _("ui-modal-prompt-button-cancel"),
@@ -200,7 +200,9 @@ exports.show = function (type, params, data, sendIpcToRenderer, openRecent) {
       },
       { type: "separator" },
       {
-        label: _("mp-menu-hide"),
+        label: data.isPlayerMode
+          ? _("tool-shared-ui-close")
+          : _("mp-menu-hide"),
         click() {
           sendIpcToRenderer("on-context-menu", "hide");
         },

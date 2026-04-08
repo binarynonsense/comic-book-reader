@@ -108,6 +108,20 @@ function onIpcFromMain(event, args) {
         }
         break;
 
+      case "set-player-mode": {
+        const readerDiv = document.querySelector("#reader");
+        readerDiv.classList.add("mp-hidden");
+        const titleBarDiv = document.querySelector(".cet-titlebar");
+        titleBarDiv.classList.add("mp-hidden");
+        const mediaPlayerDiv = document.querySelector(
+          "#media-player-container",
+        );
+        mediaPlayerDiv.classList = "mp-player-mode";
+        document.body.style.backgroundColor = "#22000000";
+
+        break;
+      }
+
       case "append-structure-divs":
         {
           const readerDiv = document.createElement("div");
@@ -137,11 +151,11 @@ function onIpcFromMain(event, args) {
             toolsDiv.scrollTop = 0;
           });
 
-          const audioplayerDiv = document.createElement("div");
-          audioplayerDiv.id = "media-player-container";
-          audioplayerDiv.classList =
+          const mediaPlayerDiv = document.createElement("div");
+          mediaPlayerDiv.id = "media-player-container";
+          mediaPlayerDiv.classList =
             "mp-layout-top-left set-display-none mp-zindex-reader";
-          document.body.appendChild(audioplayerDiv);
+          document.body.appendChild(mediaPlayerDiv);
 
           const systemMonitorDiv = document.createElement("div");
           systemMonitorDiv.id = "system-monitor-container";

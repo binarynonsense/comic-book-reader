@@ -74,18 +74,36 @@ exports.createWindow = function (_core, launchInfo) {
   log.debug("full screen: " + settings.getValue("fullScreen"));
   // win creation
   menuBar.empty();
-  g_mainWindow = new BrowserWindow({
-    width: settings.getValue("width"),
-    height: settings.getValue("height"),
-    resizable: true,
-    frame: false,
-    icon: path.join(__dirname, "../../assets/images/icon_256x256.png"),
-    show: false,
-    webPreferences: {
-      sandbox: false, // needed for the custom-title-bar to work
-      preload: path.join(__dirname, "../preload.js"),
-    },
-  });
+  let options;
+  if (g_launchInfo.isPlayerMode) {
+    options = {
+      width: 0,
+      height: 0,
+      resizable: false,
+      frame: false,
+      icon: path.join(__dirname, "../../assets/images/icon_256x256.png"),
+      show: false,
+      webPreferences: {
+        sandbox: false, // needed for the custom-title-bar to work
+        preload: path.join(__dirname, "../preload.js"),
+      },
+      transparent: true,
+    };
+  } else {
+    options = {
+      width: settings.getValue("width"),
+      height: settings.getValue("height"),
+      resizable: true,
+      frame: false,
+      icon: path.join(__dirname, "../../assets/images/icon_256x256.png"),
+      show: false,
+      webPreferences: {
+        sandbox: false, // needed for the custom-title-bar to work
+        preload: path.join(__dirname, "../preload.js"),
+      },
+    };
+  }
+  g_mainWindow = new BrowserWindow(options);
   g_mainWindow.loadFile(path.join(__dirname, "../html/core-gui.html"));
   // win events
   g_mainWindow.webContents.on("did-finish-load", async function () {
@@ -111,138 +129,172 @@ exports.createWindow = function (_core, launchInfo) {
     // add extra divs after menuBar init, so its container is already created
     sendIpcToCoreRenderer("append-structure-divs");
     onLanguageChanged();
-    // check command line args and setup initial state
-    let inputFilePaths = [];
-    let inputFileAndFolderPaths = [];
-    g_launchInfo.parsedArgs["_"].forEach((path) => {
-      if (fs.existsSync(path)) {
-        inputFileAndFolderPaths.push(path);
-        if (!fs.lstatSync(path).isDirectory()) {
-          // TODO: add only valid formats?
-          inputFilePaths.push(path);
-        }
-      }
-    });
-    const isValidTool = (name) => {
-      if (name && typeof name === "string") {
-        const validValues = ["cc"];
-        for (let index = 0; index < validValues.length; index++) {
-          if (validValues[index] === name) return true;
-        }
-      }
-      return false;
-    };
-    const isValidFormat = (name) => {
-      if (name && typeof name === "string") {
-        const validValues = ["cbz", "cb7", "epub", "pdf"];
-        if (settings.canEditRars()) validValues.push("cbr");
-        for (let index = 0; index < validValues.length; index++) {
-          if (validValues[index] === name) return true;
-        }
-      }
-      return false;
-    };
-    if (
-      g_launchInfo.parsedArgs["tool"] &&
-      isValidTool(g_launchInfo.parsedArgs["tool"])
-    ) {
-      // start reader with no file open
-      await reader.init(undefined, false);
-      // start tool
-      switch (g_launchInfo.parsedArgs["tool"]) {
-        case "cc":
-          {
-            let options = { mode: 0, inputFilePaths: inputFilePaths };
-            const outputFolderPath = g_launchInfo.parsedArgs["output-folder"];
-            if (
-              outputFolderPath &&
-              typeof outputFolderPath === "string" &&
-              fs.existsSync(outputFolderPath) &&
-              fs.lstatSync(outputFolderPath).isDirectory()
-            ) {
-              options.outputFolderPath = outputFolderPath;
-            }
-            const outputFormat = g_launchInfo.parsedArgs["output-format"];
-            if (
-              outputFormat &&
-              typeof outputFormat === "string" &&
-              isValidFormat(outputFormat)
-            ) {
-              options.outputFormat = outputFormat;
-            }
-            tools.switchTool("tool-convert-comics", options);
+    if (!g_launchInfo.isPlayerMode) {
+      // check command line args and setup initial state
+      let inputFilePaths = [];
+      let inputFileAndFolderPaths = [];
+      g_launchInfo.parsedArgs["_"].forEach((path) => {
+        if (fs.existsSync(path)) {
+          inputFileAndFolderPaths.push(path);
+          if (!fs.lstatSync(path).isDirectory()) {
+            // TODO: add only valid formats?
+            inputFilePaths.push(path);
           }
-          break;
-      }
-    } else if (inputFilePaths.length > 1) {
-      // start reader with no file open
-      await reader.init(undefined, false);
-      // start tool
-      tools.switchTool("tool-convert-comics", {
-        mode: 0,
-        inputFilePaths: inputFilePaths,
-      });
-    } else {
-      // start reader, open file if available
-      await reader.init(
-        inputFileAndFolderPaths.length > 0
-          ? inputFileAndFolderPaths[0]
-          : undefined,
-        true,
-      );
-    }
-    systemMonitor.init(g_mainWindow, "system-monitor-container");
-    showSystemMonitor(settings.getValue("showSystemMonitor"));
-    startUpCheckForUpdates();
-    // show window
-    g_mainWindow.center();
-    const forceMultimonitorSize = settings.getValue(
-      "experimentalForceMultimonitorSize",
-    );
-    if (
-      forceMultimonitorSize != undefined &&
-      forceMultimonitorSize > 0 &&
-      forceMultimonitorSize < 5
-    ) {
-      // Special/Experimental start-up to force the window to expand to cover
-      // multiple screens
-      const displays = screen.getAllDisplays();
-      let height = 0;
-      let width = 0;
-      displays.forEach((display) => {
-        let displayWidth = display.workAreaSize.width;
-        let displayHeight = display.workAreaSize.height;
-        if (forceMultimonitorSize === 3) {
-          displayWidth = display.size.width;
-          displayHeight = display.size.height;
         }
-        width += displayWidth;
-        if (height === 0) height = displayHeight;
-        else height = Math.min(height, displayHeight);
       });
-      // NOTE: setSize doesn't seem to work, it limits the size to the
-      // bounds of the primary display. But setMinimumSize seems to do the
-      // trick. Don't know if this is a universal solution or just my case
-      // so I'll leave multiple options for now.
-      if (forceMultimonitorSize === 1 || forceMultimonitorSize === 3) {
-        g_mainWindow.setSize(width, height);
-        g_mainWindow.setMinimumSize(width, height);
-      } else if (forceMultimonitorSize === 2) {
-        g_mainWindow.setSize(width, height);
-        g_mainWindow.setMinimumSize(width, height);
-        reader.sendIpcToRenderer("set-menubar-visibility", false);
-        reader.sendIpcToRenderer("set-toolbar-visibility", false);
-      } else if (forceMultimonitorSize === 4) {
-        g_mainWindow.setSize(width, height);
+      const isValidTool = (name) => {
+        if (name && typeof name === "string") {
+          const validValues = ["cc"];
+          for (let index = 0; index < validValues.length; index++) {
+            if (validValues[index] === name) return true;
+          }
+        }
+        return false;
+      };
+      const isValidFormat = (name) => {
+        if (name && typeof name === "string") {
+          const validValues = ["cbz", "cb7", "epub", "pdf"];
+          if (settings.canEditRars()) validValues.push("cbr");
+          for (let index = 0; index < validValues.length; index++) {
+            if (validValues[index] === name) return true;
+          }
+        }
+        return false;
+      };
+      if (
+        g_launchInfo.parsedArgs["tool"] &&
+        isValidTool(g_launchInfo.parsedArgs["tool"])
+      ) {
+        // start reader with no file open
+        await reader.init(undefined, false);
+        // start tool
+        switch (g_launchInfo.parsedArgs["tool"]) {
+          case "cc":
+            {
+              let options = { mode: 0, inputFilePaths: inputFilePaths };
+              const outputFolderPath = g_launchInfo.parsedArgs["output-folder"];
+              if (
+                outputFolderPath &&
+                typeof outputFolderPath === "string" &&
+                fs.existsSync(outputFolderPath) &&
+                fs.lstatSync(outputFolderPath).isDirectory()
+              ) {
+                options.outputFolderPath = outputFolderPath;
+              }
+              const outputFormat = g_launchInfo.parsedArgs["output-format"];
+              if (
+                outputFormat &&
+                typeof outputFormat === "string" &&
+                isValidFormat(outputFormat)
+              ) {
+                options.outputFormat = outputFormat;
+              }
+              tools.switchTool("tool-convert-comics", options);
+            }
+            break;
+        }
+      } else if (inputFilePaths.length > 1) {
+        // start reader with no file open
+        await reader.init(undefined, false);
+        // start tool
+        tools.switchTool("tool-convert-comics", {
+          mode: 0,
+          inputFilePaths: inputFilePaths,
+        });
+      } else {
+        // start reader, open file if available
+        await reader.init(
+          inputFileAndFolderPaths.length > 0
+            ? inputFileAndFolderPaths[0]
+            : undefined,
+          true,
+        );
+      }
+      systemMonitor.init(g_mainWindow, "system-monitor-container");
+      showSystemMonitor(settings.getValue("showSystemMonitor"));
+      startUpCheckForUpdates();
+      // show window
+      g_mainWindow.center();
+      const forceMultimonitorSize = settings.getValue(
+        "experimentalForceMultimonitorSize",
+      );
+      if (
+        forceMultimonitorSize != undefined &&
+        forceMultimonitorSize > 0 &&
+        forceMultimonitorSize < 5
+      ) {
+        // Special/Experimental start-up to force the window to expand to cover
+        // multiple screens
+        const displays = screen.getAllDisplays();
+        let height = 0;
+        let width = 0;
+        displays.forEach((display) => {
+          let displayWidth = display.workAreaSize.width;
+          let displayHeight = display.workAreaSize.height;
+          if (forceMultimonitorSize === 3) {
+            displayWidth = display.size.width;
+            displayHeight = display.size.height;
+          }
+          width += displayWidth;
+          if (height === 0) height = displayHeight;
+          else height = Math.min(height, displayHeight);
+        });
+        // NOTE: setSize doesn't seem to work, it limits the size to the
+        // bounds of the primary display. But setMinimumSize seems to do the
+        // trick. Don't know if this is a universal solution or just my case
+        // so I'll leave multiple options for now.
+        if (forceMultimonitorSize === 1 || forceMultimonitorSize === 3) {
+          g_mainWindow.setSize(width, height);
+          g_mainWindow.setMinimumSize(width, height);
+        } else if (forceMultimonitorSize === 2) {
+          g_mainWindow.setSize(width, height);
+          g_mainWindow.setMinimumSize(width, height);
+          reader.sendIpcToRenderer("set-menubar-visibility", false);
+          reader.sendIpcToRenderer("set-toolbar-visibility", false);
+        } else if (forceMultimonitorSize === 4) {
+          g_mainWindow.setSize(width, height);
+        }
+      } else {
+        // Normal start-up
+        if (settings.getValue("maximize")) {
+          g_mainWindow.maximize();
+        }
+        if (settings.getValue("fullScreen")) {
+          toggleFullScreen();
+        }
       }
     } else {
-      // Normal start-up
-      if (settings.getValue("maximize")) {
-        g_mainWindow.maximize();
-      }
-      if (settings.getValue("fullScreen")) {
-        toggleFullScreen();
-      }
+      // player mode ////
+      log.debug("setting media player mode");
+      const utils = require("../../shared/main/utils");
+      tools
+        .getTools()
+        [
+          "media-player"
+        ].init(g_launchInfo, core.getMainWindow(), "media-player-container", settings.canUseFFmpeg() ? utils.getFfmpegCommand(settings.getValue("ffmpegExeFolderPath")) : undefined);
+      reader.showMediaPlayer(true);
+      sendIpcToCoreRenderer("set-player-mode");
+      sendIpcToPreload("set-player-mode");
+      g_mainWindow.center();
+      // g_mainWindow.webContents.openDevTools();
+      g_mainWindow.on("move", () => {
+        if (g_mainWindow.isFullScreen()) return;
+        const bounds = g_mainWindow.getBounds();
+        const [width, height] = g_mainWindow.getSize();
+        const { screen } = require("electron");
+        const area = screen.getPrimaryDisplay().workArea;
+        let { x, y } = bounds;
+        if (y < area.y) y = area.y;
+        else if (y + height > area.y + area.height) {
+          y = area.y + area.height - height;
+        }
+        if (x < area.x) {
+          x = area.x;
+        } else if (x + width > area.x + area.width) {
+          x = area.x + area.width - width;
+        }
+        g_mainWindow.setPosition(Math.round(x), Math.round(y));
+      });
     }
     g_mainWindow.show();
     log.debug(`start-up time: ${timers.stop("startup").toFixed(2)}s`);
@@ -565,16 +617,18 @@ exports.onIpcMenuAcceleratorPressed = function (id) {
 
 function cleanUpOnQuit() {
   g_mainWindow = undefined;
-  systemMonitor.quit();
-  if (g_updatesWorker !== undefined) {
-    g_updatesWorker.kill();
-    g_updatesWorker = undefined;
+  if (!g_launchInfo.isPlayerMode) {
+    systemMonitor.quit();
+    if (g_updatesWorker !== undefined) {
+      g_updatesWorker.kill();
+      g_updatesWorker = undefined;
+    }
+    if (tools.getCurrentToolName() !== "reader")
+      tools.getCurrentTool().onQuit?.();
+    reader.onQuit();
+    settings.save();
+    history.save();
   }
-  if (tools.getCurrentToolName() !== "reader")
-    tools.getCurrentTool().onQuit?.();
-  reader.onQuit();
-  settings.save();
-  history.save();
   if (settings.getValue("logToFile"))
     log.saveLogFile(
       path.join(appUtils.getConfigFolder(), "acbr.log"),

@@ -48,6 +48,63 @@ window.addEventListener("DOMContentLoaded", () => {
       const localization = args[1];
       document.getElementById("tools-scroll-to-top-button").title =
         localization.scrollToTop;
+    } else if (args[0] == "set-player-mode") {
+      // const observer = new ResizeObserver((entries) => {
+      //   for (const entry of entries) {
+      //     // const width = Math.ceil(entry.contentRect.width);
+      //     // const height = Math.ceil(entry.contentRect.height);
+      //     const width = Math.ceil(entry.borderBoxSize[0].inlineSize);
+      //     const height = Math.ceil(entry.borderBoxSize[0].blockSize);
+      //     ipcRenderer.send("main", [
+      //       "resize-player-mode",
+      //       width,
+      //       height,
+      //       document
+      //         .querySelector("#media-player-container")
+      //         .classList.contains("mp-layout-fullscreen"),
+      //     ]);
+      //   }
+      // });
+      const mediaPlayerDiv = document.querySelector("#media-player-container");
+      const modalsDiv = document.querySelector("#modals");
+      //
+      function resizePlayer() {
+        let mediaSize = { width: 0, height: 0 };
+        let modalsSize = { width: 0, height: 0 };
+        mediaSize.width = Math.ceil(mediaPlayerDiv.offsetWidth);
+        mediaSize.height = Math.ceil(mediaPlayerDiv.offsetHeight);
+        if (modalsDiv.children.length !== 0) {
+          const modalFrameDiv = modalsDiv.querySelector(".modal-frame");
+          modalsSize.width = Math.ceil(modalFrameDiv.offsetWidth);
+          modalsSize.height = Math.ceil(modalFrameDiv.offsetHeight);
+        }
+        ipcRenderer.send("main", [
+          "resize-player-mode",
+          Math.max(mediaSize.width, modalsSize.width),
+          Math.max(mediaSize.height, modalsSize.height),
+          document
+            .querySelector("#media-player-container")
+            .classList.contains("mp-layout-fullscreen"),
+        ]);
+      }
+      //
+      const mediaSizeObserver = new ResizeObserver((entries) => {
+        resizePlayer();
+      });
+      mediaSizeObserver.observe(mediaPlayerDiv);
+      ////
+      let wasEmpty = modalsDiv.children.length === 0;
+      const elementObserver = new MutationObserver(() => {
+        const isEmpty = modalsDiv.children.length === 0;
+        if (isEmpty !== wasEmpty) {
+          // resize if modal created or destroyed
+          resizePlayer();
+          wasEmpty = isEmpty;
+        }
+      });
+      elementObserver.observe(modalsDiv, {
+        childList: true,
+      });
     }
   });
 });

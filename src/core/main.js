@@ -15,7 +15,7 @@ require("../shared/main/env-utils").setGlobalErrorHandlers();
 const timers = require("../shared/main/timers");
 timers.start("startup");
 
-const { app, ipcMain } = require("electron");
+const { app, ipcMain, screen } = require("electron");
 const os = require("node:os");
 const fs = require("node:fs");
 
@@ -102,6 +102,7 @@ g_launchInfo.parsedArgs = {
 };
 
 g_launchInfo.isDev = g_launchInfo.parsedArgs["dev"] === true;
+g_launchInfo.isPlayerMode = g_launchInfo.parsedArgs["player"] === true;
 
 //////////////////////////////////////////////////////////////////////////////
 // PREVENT SECOND INSTANCES //////////////////////////////////////////////////
@@ -302,6 +303,10 @@ exports.restartApp = function () {
   }
 };
 
+exports.getLaunchOptions = function () {
+  return g_launchInfo;
+};
+
 exports.isDev = function () {
   return g_launchInfo.isDev;
 };
@@ -318,6 +323,11 @@ exports.startToolsQuit = function () {
   log.editor("startToolsQuit");
   g_launchInfo.quittingPhase = 2;
   g_mainWindow.close();
+};
+
+exports.requestQuit = function () {
+  log.editor("requestQuit");
+  app.quit();
 };
 
 exports.forceQuit = function () {
@@ -369,6 +379,20 @@ exports.sendIpcToCoreRenderer = sendIpcToCoreRenderer;
 ipcMain.on("main", (event, args) => {
   if (args[0] === "menu-accelerator-pressed") {
     windowManager.onIpcMenuAcceleratorPressed(args[1]);
+  } else if (args[0] === "resize-player-mode") {
+    if (g_launchInfo.isPlayerMode) {
+      if (g_mainWindow) {
+        if (args[3]) {
+          g_mainWindow.setFullScreen(true);
+        } else {
+          if (g_mainWindow.isFullScreen()) {
+            g_mainWindow.setFullScreen(false);
+          }
+          g_mainWindow.setMinimumSize(args[1], args[2]);
+          g_mainWindow.setSize(args[1] + 50, args[2] + 50);
+        }
+      }
+    }
   } else {
     tools.getTools()[args[0]]?.onIpcFromRenderer(...args.slice(1));
   }

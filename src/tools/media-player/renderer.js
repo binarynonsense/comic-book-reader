@@ -23,6 +23,7 @@ import {
 let g_settings;
 let g_ffmpegAvailable = false;
 let g_currentLoadId = 0;
+let g_isPlayerMode = false;
 
 ///////////////////////////////////////////////////////////////////////////////
 // PLAYER /////////////////////////////////////////////////////////////////////
@@ -314,8 +315,9 @@ function initPlayer() {
 // BASE ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-async function onInit(settings, loadedPlaylist) {
+async function onInit(settings, loadedPlaylist, isPlayerMode) {
   try {
+    g_isPlayerMode = isPlayerMode;
     // load css ////
     await loadStylesheet("../../tools/media-player/html/style.css");
 
@@ -2147,10 +2149,10 @@ function showAdvancedControls(show) {
   if (show) {
     g_settings.showAdvancedControls = true;
     g_player.html.topBar.classList.add("mp-advanced-controls");
-    g_player.html.topBar.children[2].appendChild(
+    g_player.html.topBar.children[3].appendChild(
       document.getElementById("mp-time-wrapper"),
     );
-    g_player.html.topBar.children[2].appendChild(
+    g_player.html.topBar.children[3].appendChild(
       document.getElementById("mp-div-volume"),
     );
   } else {
