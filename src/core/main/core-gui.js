@@ -297,6 +297,7 @@ exports.createWindow = function (_core, launchInfo) {
         g_mainWindow.setPosition(Math.round(x), Math.round(y));
       });
     }
+    tools.getTools()["media-player"].createTray();
     g_mainWindow.show();
     log.debug(`start-up time: ${timers.stop("startup").toFixed(2)}s`);
   });

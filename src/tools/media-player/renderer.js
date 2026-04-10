@@ -1099,6 +1099,12 @@ function initUI() {
   g_player.html.buttonClosePlayer.addEventListener("click", function () {
     onButtonClicked("close-player");
   });
+  g_player.html.buttonHidePlayer = document.getElementById(
+    "mp-button-hide-player",
+  );
+  g_player.html.buttonHidePlayer.addEventListener("click", function () {
+    onButtonClicked("hide-player");
+  });
 
   g_player.html.buttonOpen = document.getElementById("mp-button-open");
   g_player.html.buttonOpen.addEventListener("click", function () {
@@ -1887,6 +1893,8 @@ function refreshUI() {
 function onButtonClicked(buttonName) {
   if (buttonName === "close-player") {
     sendIpcToMain("close");
+  } else if (buttonName === "hide-player") {
+    sendIpcToMain("hide");
   } else if (buttonName === "play") {
     onPlay();
   } else if (buttonName === "pause") {
@@ -2473,6 +2481,10 @@ function initOnIpcCallbacks() {
         takeVideoScreenshot();
         break;
     }
+  });
+
+  on("tray-context-menu-requested", (...args) => {
+    sendIpcToMain("show-tray-context-menu", getContextMenuData());
   });
 }
 

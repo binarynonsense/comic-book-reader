@@ -163,41 +163,7 @@ exports.show = function (type, params, data, sendIpcToRenderer, openRecent) {
       },
       { type: "separator" },
       ...getPlaylistSubmenu(data),
-      {
-        label: _("mp-tooltip-button-play"),
-        visible: data.buttonStates.play,
-        click() {
-          sendIpcToRenderer("on-context-menu", "play");
-        },
-      },
-      {
-        label: _("mp-tooltip-button-pause"),
-        visible: data.buttonStates.pause,
-        click() {
-          sendIpcToRenderer("on-context-menu", "pause");
-        },
-      },
-      {
-        label: _("mp-tooltip-button-stop"),
-        visible: data.buttonStates.stop,
-        click() {
-          sendIpcToRenderer("on-context-menu", "stop");
-        },
-      },
-      {
-        label: _("mp-tooltip-button-next"),
-        visible: data.buttonStates.next,
-        click() {
-          sendIpcToRenderer("on-context-menu", "next");
-        },
-      },
-      {
-        label: _("mp-tooltip-button-prev"),
-        visible: data.buttonStates.prev,
-        click() {
-          sendIpcToRenderer("on-context-menu", "prev");
-        },
-      },
+      ...getPlayButtons(data),
       { type: "separator" },
       {
         label: data.isPlayerMode
@@ -688,7 +654,6 @@ exports.show = function (type, params, data, sendIpcToRenderer, openRecent) {
 
   switch (type) {
     case "normal":
-    case "data.settings":
     default:
       Menu.buildFromTemplate([...header, ...getCommonEntries(data)]).popup(
         core.getMainWindow(),
@@ -696,16 +661,56 @@ exports.show = function (type, params, data, sendIpcToRenderer, openRecent) {
         params.y,
       );
       break;
-
-    case "open":
-      Menu.buildFromTemplate([
-        {
-          label: _("tool-shared-ui-open").toUpperCase(),
-          enabled: false,
-        },
-        { type: "separator" },
-        ...openSubmenu,
-      ]).popup(core.getMainWindow(), params.x, params.y);
-      break;
   }
+};
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+
+function getPlayButtons(data) {
+  return [
+    {
+      label: _("mp-tooltip-button-play"),
+      visible: data.buttonStates.play,
+      click() {
+        sendIpcToRenderer("on-context-menu", "play");
+      },
+    },
+    {
+      label: _("mp-tooltip-button-pause"),
+      visible: data.buttonStates.pause,
+      click() {
+        sendIpcToRenderer("on-context-menu", "pause");
+      },
+    },
+    {
+      label: _("mp-tooltip-button-stop"),
+      visible: data.buttonStates.stop,
+      click() {
+        sendIpcToRenderer("on-context-menu", "stop");
+      },
+    },
+    {
+      label: _("mp-tooltip-button-next"),
+      visible: data.buttonStates.next,
+      click() {
+        sendIpcToRenderer("on-context-menu", "next");
+      },
+    },
+    {
+      label: _("mp-tooltip-button-prev"),
+      visible: data.buttonStates.prev,
+      click() {
+        sendIpcToRenderer("on-context-menu", "prev");
+      },
+    },
+  ];
+}
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+
+exports.getTrayContextMenu = function (data, sendIpcToRenderer) {
+  log.test("getTrayContextMenu");
+  return Menu.buildFromTemplate([...getPlayButtons(data)]);
 };

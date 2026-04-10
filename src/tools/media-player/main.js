@@ -156,6 +156,10 @@ function initOnIpcCallbacks() {
     }
   });
 
+  on("hide", () => {
+    showWindow(false);
+  });
+
   on("save-playlist", (playlist) => {
     let defaultPath = path.join(app.getPath("desktop"), "acbr-playlist.m3u");
     if (!playlist?.files[0]?.url) return;
@@ -238,6 +242,13 @@ function initOnIpcCallbacks() {
   on("show-context-menu", (params, data) => {
     data.isPlayerMode = g_launchInfo.isPlayerMode;
     contextMenu.show("normal", params, data, sendIpcToRenderer, openRecent);
+  });
+
+  on("show-tray-context-menu", (data) => {
+    data.isPlayerMode = g_launchInfo.isPlayerMode;
+    g_tray.popUpContextMenu(
+      contextMenu.getTrayContextMenu(data, sendIpcToRenderer),
+    );
   });
 
   on("show-button-menu", (type, rect, data) => {
@@ -375,6 +386,58 @@ exports.open = async function (isVisible) {
   }
   sendIpcToRenderer("show", isVisible, g_parentElementId);
 };
+
+let g_lastBounds = null;
+let g_tray;
+exports.createTray = function () {
+  // ref: https://www.electronjs.org/docs/latest/api/tray
+  const { Tray, Menu } = require("electron");
+  g_tray = new Tray(
+    path.join(__dirname, "../../assets/images/icon_256x256.png"),
+  );
+  g_tray.setToolTip("ACBR Player");
+  const contextMenu = Menu.buildFromTemplate([
+    {
+      label: _("menu-shared-toggle"),
+      click() {
+        toggleWindow();
+      },
+    },
+    {
+      label: _("menu-file-quit"),
+      click() {
+        core.requestQuit();
+      },
+    },
+  ]);
+  g_tray.setContextMenu(contextMenu);
+  //tray.setIgnoreDoubleClickEvents(true)
+  g_tray.on("click", function (event) {
+    toggleWindow();
+  });
+  g_tray.on("right-click", function (event) {
+    // sendIpcToRenderer("tray-context-menu-requested");
+  });
+};
+
+function toggleWindow() {
+  if (g_mainWindow.isVisible()) {
+    showWindow(false);
+  } else {
+    showWindow(true);
+  }
+}
+function showWindow(show) {
+  if (show) {
+    g_mainWindow.show();
+    if (g_lastBounds) {
+      g_mainWindow.setBounds(g_lastBounds);
+    }
+  } else {
+    g_lastBounds = g_mainWindow.getBounds();
+    g_mainWindow.hide();
+  }
+}
 
 let g_playlist = {
   id: "",
