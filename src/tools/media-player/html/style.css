@@ -824,6 +824,10 @@ a:hover a:visited {
   gap: 2px;
 }
 
+#mp-button-close-playlist {
+  font-size: 12px;
+}
+
 /* ***************************************** */
 
 #mp-spectrum-div {
@@ -943,10 +947,20 @@ a:hover a:visited {
       margin-bottom: -2px;
     }
   }
-  #mp-button-close-player {
+  #mp-div-frame-drag-buttons {
     margin-left: auto;
     font-size: 12px;
     -webkit-app-region: no-drag;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    margin-right: 5px;
+    margin-left: 3px;
+  }
+  #mp-button-close-player {
+    min-width: 0px;
   }
   /* #mp-div-frame-drag-logo {
     margin-right: auto;

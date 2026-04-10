@@ -6,9 +6,14 @@
     <div class="mp-div-frame-drag-bg">
       <div class="mp-div-frame-drag-title">ACBR PLAYER</div>
     </div>
-    <a id="mp-button-close-player" class="mp-button" title="close"
-      ><i class="fa fa-xmark" aria-hidden="true"></i
-    ></a>
+    <div id="mp-div-frame-drag-buttons">
+      <a id="mp-button-hide-player" class="mp-button mp-hidden" title="hide"
+        ><i class="fa-solid fa-angle-up"></i
+      ></a>
+      <a id="mp-button-close-player" class="mp-button" title="close"
+        ><i class="fa fa-xmark"></i
+      ></a>
+    </div>
   </div>
   <div class="mp-div-topbar-row">
     <div id="mp-div-topbar-left-buttons">
@@ -127,7 +132,8 @@
 <!-- ---------------  VIDEO PLAYERS---------------  -->
 <div id="mp-video-div" class="mp-frame mp-hidden">
   <button id="mp-video-close-button" class="mp-widget-close-button">
-    <i class="fas fa-times"></i>
+    <!-- <i class="fas fa-times"></i> -->
+    <i class="fa-solid fa-angle-up"></i>
   </button>
   <video id="mp-html-video" crossorigin="anonymous"></video>
   <div id="mp-video-title" class="mp-widget-title-div"></div>
@@ -138,7 +144,8 @@
 </div>
 <div id="mp-spectrum-div" class="mp-frame mp-hidden">
   <button id="mp-spectrum-close-button" class="mp-widget-close-button">
-    <i class="fas fa-times"></i>
+    <!-- <i class="fas fa-times"></i> -->
+    <i class="fa-solid fa-angle-up"></i>
   </button>
   <div id="mp-spectrum-title" class="mp-widget-title-div"></div>
   <canvas id="mp-spectrum-canvas" width="400" height="100"></canvas>
@@ -152,8 +159,10 @@
       id="mp-button-close-playlist"
       class="mp-button mp-button-smaller"
       title=""
-      ><i class="fa-solid fa-xmark"></i
-    ></a>
+      ><i class="fa-solid fa-angle-up"></i>
+      <!-- <i class="fa-solid fa-xmark"></i
+    > -->
+    </a>
   </div>
   <div id="mp-span-playlist-buttons-left">
     <a id="mp-button-clear" class="mp-button mp-button-smaller" title=""
