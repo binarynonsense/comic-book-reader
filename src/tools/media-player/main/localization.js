@@ -43,7 +43,11 @@ exports.getLocalization = function () {
     },
     {
       id: "mp-button-close-player",
-      text: _("tool-shared-ui-close"),
+      text: _("menu-file-quit"), //_("tool-shared-ui-close"),
+    },
+    {
+      id: "mp-button-hide-player",
+      text: _("mp-menu-hide"),
     },
     {
       id: "mp-button-close-playlist",
