@@ -391,10 +391,23 @@ let g_lastBounds = null;
 let g_tray;
 exports.createTray = function () {
   // ref: https://www.electronjs.org/docs/latest/api/tray
-  const { Tray, Menu } = require("electron");
-  g_tray = new Tray(
-    path.join(__dirname, "../../assets/images/icon_256x256.png"),
-  );
+  const { Tray, Menu, nativeTheme } = require("electron");
+
+  function getIconPath() {
+    const isWindows = process.platform === "win32";
+    const ext = isWindows ? ".ico" : ".png";
+    const mode = nativeTheme.shouldUseDarkColors ? "dark" : "light";
+    return path.join(
+      __dirname,
+      "../../assets/images",
+      `tray_${mode}_mode${ext}`,
+    );
+  }
+
+  g_tray = new Tray(path.join(getIconPath()));
+  nativeTheme.on("updated", () => {
+    g_tray.setImage(getIconPath());
+  });
   g_tray.setToolTip("ACBR Player");
   const contextMenu = Menu.buildFromTemplate([
     {

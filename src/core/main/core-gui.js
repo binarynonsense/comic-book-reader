@@ -276,6 +276,7 @@ exports.createWindow = function (_core, launchInfo) {
       sendIpcToCoreRenderer("set-player-mode");
       sendIpcToPreload("set-player-mode");
       g_mainWindow.center();
+      tools.getTools()["media-player"].createTray();
       // g_mainWindow.webContents.openDevTools();
       g_mainWindow.on("move", () => {
         if (g_mainWindow.isFullScreen()) return;
@@ -297,7 +298,6 @@ exports.createWindow = function (_core, launchInfo) {
         g_mainWindow.setPosition(Math.round(x), Math.round(y));
       });
     }
-    tools.getTools()["media-player"].createTray();
     g_mainWindow.show();
     log.debug(`start-up time: ${timers.stop("startup").toFixed(2)}s`);
   });
