@@ -393,15 +393,19 @@ exports.createTray = function () {
   // ref: https://www.electronjs.org/docs/latest/api/tray
   const { Tray, Menu, nativeTheme } = require("electron");
 
-  function getIconPath() {
+  function getIconPath(useTheme = false) {
     const isWindows = process.platform === "win32";
     const ext = isWindows ? ".ico" : ".png";
-    const mode = nativeTheme.shouldUseDarkColors ? "dark" : "light";
-    return path.join(
-      __dirname,
-      "../../assets/images",
-      `tray_${mode}_mode${ext}`,
-    );
+    if (useTheme) {
+      const mode = nativeTheme.shouldUseDarkColors ? "dark" : "light";
+      return path.join(
+        __dirname,
+        "../../assets/images",
+        `tray_${mode}_mode${ext}`,
+      );
+    } else {
+      return path.join(__dirname, "../../assets/images", `tray_color${ext}`);
+    }
   }
 
   g_tray = new Tray(path.join(getIconPath()));

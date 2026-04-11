@@ -192,11 +192,11 @@ function createIcons() {
     { bodyColor: "#2F2F2F", isCutout: true },
     "tray_light_mode",
   );
-  // saveTrayIcons(
-  //   drawComicBubble,
-  //   { bodyColor: "#d9af50", bubbleColor: "#FFFFFF", isCutout: false },
-  //   "tray_orange",
-  // );
+  saveTrayIcons(
+    drawComicBubble,
+    { bodyColor: "#d9af50", bubbleColor: "#FFFFFF", isCutout: false },
+    "tray_color",
+  );
 
   saveAppLogo(
     drawComicBubble,
@@ -268,9 +268,14 @@ function copyIcons() {
 
   copy("icon_512x512.png");
   copy("icon_256x256.png");
+  copy("tray_dark_mode.ico");
   copy("tray_dark_mode.png");
   copy("tray_dark_mode@2x.png");
   copy("tray_light_mode.png");
+  copy("tray_light_mode.ico");
   copy("tray_light_mode@2x.png");
+  copy("tray_color.png");
+  copy("tray_color@2x.png");
+  copy("tray_color.ico");
   console.log("done!");
 }
