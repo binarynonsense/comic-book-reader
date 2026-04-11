@@ -101,16 +101,15 @@ function saveTrayIcons(drawingFunction, config, filename) {
   const snap = Snap(size, size);
   drawingFunction(snap, config, size);
 
-  const assetsDir = path.join(__dirname, "./output/icons/tray");
+  const assetsDir = path.join(__dirname, "./output/icons");
   if (!fs.existsSync(assetsDir)) fs.mkdirSync(assetsDir, { recursive: true });
 
   const svgPath = path.join(assetsDir, `${filename}.svg`);
   fs.writeFileSync(svgPath, snap.toString());
 
   const pngSizes = [
-    { px: 16, s: "" },
-    { px: 32, s: "@2x" },
-    { px: 48, s: "@3x" },
+    { px: 32, s: "" },
+    { px: 64, s: "@2x" },
   ];
   pngSizes.forEach((t) => {
     const out = path.join(assetsDir, `${filename}${t.s}.png`);
@@ -136,7 +135,7 @@ function saveAppLogo(
   const snap = Snap(size, size);
   drawingFunc(snap, config, size);
 
-  const assetsDir = path.join(__dirname, "./output/icons/logo");
+  const assetsDir = path.join(__dirname, "./output/icons");
   if (!fs.existsSync(assetsDir)) fs.mkdirSync(assetsDir, { recursive: true });
 
   const svgPath = path.join(assetsDir, `${filename}.svg`);
@@ -177,11 +176,11 @@ saveTrayIcons(
   { bodyColor: "#2F2F2F", isCutout: true },
   "tray_light_mode",
 );
-saveTrayIcons(
-  drawComicBubble,
-  { bodyColor: "#d9af50", bubbleColor: "#FFFFFF", isCutout: false },
-  "tray_orange",
-);
+// saveTrayIcons(
+//   drawComicBubble,
+//   { bodyColor: "#d9af50", bubbleColor: "#FFFFFF", isCutout: false },
+//   "tray_orange",
+// );
 
 saveAppLogo(
   drawComicBubble,
@@ -202,6 +201,19 @@ saveAppLogo(
   256,
 );
 
+saveAppLogo(
+  drawComicBubble,
+  {
+    bodyColor: "#d9af50",
+    bubbleColor: "#FFFFFF",
+    text: "ACBR",
+    font: "Komika Hand",
+    fontSize: 120,
+    textColor: "#d9af50",
+  },
+  "icon_text_1024x1024",
+  1024,
+);
 saveAppLogo(
   drawComicBubble,
   {
