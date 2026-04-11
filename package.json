@@ -121,6 +121,7 @@
     "localization:state": "node ./tools/localization.js state all",
     "localization": "node ./tools/localization.js",
     "translate": "node ./tools/translate.js",
+    "make-icons": "node ./tools/make-icons.js",
     "check-patches": "jq -r '.dependencies, .devDependencies | to_entries[] | \"\\(.key) \\(.value)\"' package.json | while read pkg cur; do major=$(echo $cur | cut -d. -f1 | tr -d 'v^~\" '); latest=$(npm view \"$pkg@^$major\" version --json 2>/dev/null | jq -r 'if type == \"array\" then .[-1] else . end'); if [ \"$cur\" != \"$latest\" ] && [ -n \"$latest\" ]; then echo \"[UPDATE] $pkg: $cur -> $latest\"; fi; done",
     "build:easy-brush": "mkdir -p src/assets/libs/easy-brush && npm install --no-save browserify easy-brush && npx browserify node_modules/easy-brush/dist/index.js --standalone EasyBrush -o src/assets/libs/easy-brush/easy-brush-browser.js && npm uninstall browserify easy-brush"
   },
@@ -129,7 +130,8 @@
     "electron": "37.10.3",
     "electron-builder": "26.7.0",
     "license-checker": "25.0.1",
-    "shx": "0.4.0"
+    "shx": "0.4.0",
+    "snapsvg-cjs": "^0.0.6"
   },
   "dependencies": {
     "adm-zip": "0.5.16",
