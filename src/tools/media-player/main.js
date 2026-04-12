@@ -20,11 +20,13 @@ const { getLocalization } = require("./main/localization");
 const ffmpeg = require("./main/ffmpeg");
 const subtitles = require("./main/subtitles");
 const contextMenu = require("./main/menu-context");
+const tools = require("../../shared/main/tools");
 
 let g_mainWindow;
 let g_parentElementId;
 let g_ffmpegPath;
 let g_launchInfo = {};
+let g_radioFavorites = [];
 
 ///////////////////////////////////////////////////////////////////////////////
 // IPC SEND ///////////////////////////////////////////////////////////////////
@@ -241,11 +243,19 @@ function initOnIpcCallbacks() {
 
   on("show-context-menu", (params, data) => {
     data.isPlayerMode = g_launchInfo.isPlayerMode;
-    contextMenu.show("normal", params, data, sendIpcToRenderer, openRecent);
+    data.radioFavorites = g_radioFavorites;
+    contextMenu.show(
+      "normal",
+      params,
+      data,
+      sendIpcToRenderer,
+      openFromContextMenu,
+    );
   });
 
   on("show-tray-context-menu", (data) => {
     data.isPlayerMode = g_launchInfo.isPlayerMode;
+    data.radioFavorites = g_radioFavorites;
     g_tray.popUpContextMenu(
       contextMenu.getTrayContextMenu(data, sendIpcToRenderer),
     );
@@ -253,12 +263,13 @@ function initOnIpcCallbacks() {
 
   on("show-button-menu", (type, rect, data) => {
     data.isPlayerMode = g_launchInfo.isPlayerMode;
+    data.radioFavorites = g_radioFavorites;
     contextMenu.show(
       type,
       { x: rect.top, y: rect.left },
       data,
       sendIpcToRenderer,
-      openRecent,
+      openFromContextMenu,
     );
   });
 
@@ -480,6 +491,7 @@ function loadSettings() {
 exports.init = function (launchInfo, mainWindow, parentElementId, ffmpegPath) {
   g_launchInfo = launchInfo;
   exports.updateFfmpegPath(ffmpegPath);
+  g_radioFavorites = tools.getTools()["tool-radio"].getFavorites();
   initOnIpcCallbacks();
   initHandleIpcCallbacks();
   g_mainWindow = mainWindow;
@@ -633,13 +645,13 @@ function callOpenFilesDialog(mode) {
   }
 }
 
-function openRecent(filePath) {
+function openFromContextMenu(url, title) {
   let playlist = {
     id: "",
     source: "filesystem",
     files: [],
   };
-  playlist.files.push({ url: filePath });
+  playlist.files.push({ title, url });
   sendIpcToRenderer("open-playlist", playlist);
   ///
   // sendIpcToRenderer("add-to-playlist", [{ url: filePath }], true);

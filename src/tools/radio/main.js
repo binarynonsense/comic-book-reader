@@ -102,23 +102,7 @@ exports.open = function (section = 1) {
   sendIpcToCoreRenderer("replace-inner-html", "#tools", data.toString());
   updateLocalizedText();
 
-  let loadedOptions = settings.loadToolOptions("tool-radio");
-  if (
-    loadedOptions &&
-    loadedOptions.favorites &&
-    Array.isArray(loadedOptions.favorites)
-  ) {
-    g_favorites = [];
-    loadedOptions.favorites.forEach((favorite) => {
-      if (typeof favorite == "object" && favorite.constructor == Object) {
-        if (favorite.url && typeof favorite.url === "string") {
-          if (!favorite.name || typeof favorite.name !== "string")
-            favorite.name = "???";
-          g_favorites.push(favorite);
-        }
-      }
-    });
-  }
+  g_favorites = exports.getFavorites();
 
   sendIpcToRenderer(
     "show",
@@ -164,6 +148,27 @@ exports.onToggleFullScreen = function () {
 function onCloseClicked() {
   tools.switchTool("reader");
 }
+
+exports.getFavorites = function () {
+  let favorites = [];
+  let loadedOptions = settings.loadToolOptions("tool-radio");
+  if (
+    loadedOptions &&
+    loadedOptions.favorites &&
+    Array.isArray(loadedOptions.favorites)
+  ) {
+    loadedOptions.favorites.forEach((favorite) => {
+      if (typeof favorite == "object" && favorite.constructor == Object) {
+        if (favorite.url && typeof favorite.url === "string") {
+          if (!favorite.name || typeof favorite.name !== "string")
+            favorite.name = "???";
+          favorites.push(favorite);
+        }
+      }
+    });
+  }
+  return favorites;
+};
 
 ///////////////////////////////////////////////////////////////////////////////
 // IPC SEND ///////////////////////////////////////////////////////////////////

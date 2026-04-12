@@ -12,7 +12,7 @@ const utils = require("../../../shared/main/utils");
 const log = require("../../../shared/main/logger");
 const history = require("./history");
 
-exports.show = function (type, params, data, sendIpcToRenderer, openRecent) {
+exports.show = function (type, params, data, sendIpcToRenderer, openMedia) {
   // ref: https://github.com/electron/electron/blob/main/docs/api/web-contents.md#event-context-menu
   // core.onMenuToggleFullScreen();
 
@@ -26,7 +26,7 @@ exports.show = function (type, params, data, sendIpcToRenderer, openRecent) {
     { type: "separator" },
   ];
 
-  function getOpenSubmenu() {
+  function getOpenSubmenu(data) {
     return [
       {
         label: _("menu-tools-files") + "...",
@@ -48,6 +48,15 @@ exports.show = function (type, params, data, sendIpcToRenderer, openRecent) {
         },
       },
       {
+        label: _("tool-radio-radio-station"),
+        submenu: [
+          {
+            label: _("tool-radio-favorites"),
+            submenu: [...getOpenRadioFavoritesMenu(data)],
+          },
+        ],
+      },
+      {
         label: _("home-section-recent"),
         submenu: [...getOpenRecentMenu()],
       },
@@ -66,7 +75,7 @@ exports.show = function (type, params, data, sendIpcToRenderer, openRecent) {
       menu.push({
         label,
         click() {
-          openRecent(entry.filePath);
+          openMedia(entry.filePath);
         },
       });
     }
@@ -83,11 +92,27 @@ exports.show = function (type, params, data, sendIpcToRenderer, openRecent) {
     return menu;
   }
 
+  function getOpenRadioFavoritesMenu(data) {
+    const favorites = data.radioFavorites;
+    let menu = [];
+    for (let index = 0; index < favorites.length; index++) {
+      const entry = favorites[index];
+      let label = entry.name ?? utils.reduceStringFrontEllipsis(entry.url);
+      menu.push({
+        label,
+        click() {
+          openMedia(entry.url, entry.name);
+        },
+      });
+    }
+    return menu;
+  }
+
   function getCommonEntries(data) {
     return [
       {
         label: _("tool-shared-ui-open"),
-        submenu: [...getOpenSubmenu()],
+        submenu: [...getOpenSubmenu(data)],
       },
       { type: "separator" },
       ...getVideoSubmenu(data),
