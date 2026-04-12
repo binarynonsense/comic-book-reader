@@ -493,7 +493,6 @@ function getTrayIconPath(useTheme = false) {
 }
 
 function setTrayIcon(trayIcon) {
-  log.test(trayIcon);
   settings.setValue("trayIcon", trayIcon);
   if (trayIcon === 0) {
     if (process.platform === "win32") {
