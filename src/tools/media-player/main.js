@@ -451,7 +451,7 @@ function updateTrayMenu() {
     contextMenu.getTrayContextMenu(
       [
         {
-          label: _("menu-shared-toggle"),
+          label: _("menu-view-layout-showhide"),
           click() {
             toggleWindow();
           },
