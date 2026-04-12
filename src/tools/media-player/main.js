@@ -645,10 +645,10 @@ function callOpenFilesDialog(mode) {
   }
 }
 
-function openFromContextMenu(url, title) {
+function openFromContextMenu(url, title, source = "filesystem") {
   let playlist = {
     id: "",
-    source: "filesystem",
+    source,
     files: [],
   };
   playlist.files.push({ title, url });

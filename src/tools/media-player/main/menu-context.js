@@ -101,7 +101,7 @@ exports.show = function (type, params, data, sendIpcToRenderer, openMedia) {
       menu.push({
         label,
         click() {
-          openMedia(entry.url, entry.name);
+          openMedia(entry.url, entry.name, "radio");
         },
       });
     }
