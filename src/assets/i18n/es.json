@@ -1,6 +1,8 @@
 {
   "@metadata": {
-    "authors": ["Álvaro"],
+    "authors": [
+      "Álvaro"
+    ],
     "last-updated": "2026-03-31",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.19.0",
@@ -154,6 +156,14 @@
   "ctxmenu-rotate-counterclockwise": "Sentido anti-horario",
   "ctxmenu-openfile": "Abrir archivo...",
   "ctxmenu-opencontainingfolder": "Abrir carpeta contenedora",
+  "ctxmenu-systemtray": "Bandeja de sistema",
+  "ctxmenu-systemtray-icon": "Icono",
+  "ctxmenu-systemtray-icon-disabled": "Desactivado",
+  "[NOTE TO TRANSLATORS]ctxmenu-systemtray-icon-disabled-restartrequired": "Restart Required is used like: Disabled (Restart Required)",
+  "ctxmenu-systemtray-icon-disabled-restartrequired": "require reiniciar",
+  "ctxmenu-systemtray-icon-default": "Predeterminado",
+  "ctxmenu-systemtray-icon-white": "Blanco",
+  "ctxmenu-systemtray-icon-black": "Negro",
   "[NOTE TO TRANSLATORS]toolbar-change-to": "'Change to' will be used in the toolbar tooltips in combination with other entries like 'Fit to Width' or 'Double Page', e.g. 'Change to: Double Page'",
   "toolbar-change-to": "Cambiar a",
   "toolbar-go-left": "Ir a la izda.",
