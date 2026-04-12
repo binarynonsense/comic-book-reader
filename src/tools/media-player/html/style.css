@@ -13,6 +13,16 @@
   width: var(--mp-frame-width);
   /* gap: 3px; */
 }
+#media-player-container > div:nth-child(1 of :not(.mp-hidden)) {
+  border-radius: 5px 5px 0 0;
+}
+#media-player-container > div:nth-last-child(1 of :not(.mp-hidden)) {
+  border-radius: 0 0 5px 5px;
+}
+#media-player-container
+  > div:nth-child(1 of :not(.mp-hidden)):nth-last-child(1 of :not(.mp-hidden)) {
+  border-radius: 5px;
+}
 #media-player-container.mp-layout-fullscreen #mp-div-topbar {
   position: fixed;
   bottom: 20px;
@@ -84,13 +94,23 @@
   font-size: 15px;
   background-color: var(--mediaplayer-bg-color);
   padding: 5px 5px;
-  border-radius: 5px;
   min-height: 10px;
   width: 100%;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); */
 }
-.mp-frame + .mp-frame {
+/* .mp-frame + .mp-frame {
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
+} */
+.mp-frame::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  z-index: -1;
+  border-radius: inherit;
 }
 
 .mp-frame a,
@@ -98,29 +118,6 @@ a:hover a:visited {
   text-decoration: none;
   cursor: pointer;
 }
-
-#mp-video-div {
-  background: #000;
-  aspect-ratio: 16 / 9;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  padding: 0;
-  container-type: size;
-}
-
-/* #mp-video-div video {
-  background: #000;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100% !important;
-  height: 100% !important;
-  border: none;
-  left: 50%;
-  transform: translateX(-50%);
-} */
 
 #mp-video-div {
   background: #000;
@@ -156,20 +153,6 @@ a:hover a:visited {
   object-position: center;
   border: none;
 }
-
-/* #mp-video-div video {
-  background: #000;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover;
-  border: none;
-  object-fit: contain;
-  aspect-ratio: auto;
-} */
 
 #mp-video-div iframe {
   position: absolute;
@@ -231,13 +214,13 @@ a:hover a:visited {
 
 .mp-widget-close-button {
   position: absolute;
-  top: 10px;
+  top: 8px;
   right: 10px;
   background: transparent;
   border: none;
   cursor: pointer;
   color: rgb(197, 197, 197);
-  font-size: 18px;
+  font-size: 14px;
   opacity: 0;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
 }
@@ -266,8 +249,8 @@ a:hover a:visited {
 
 .mp-widget-title-div {
   position: absolute;
-  top: 8px;
-  left: 8px;
+  top: 4px;
+  left: 6px;
   background: transparent;
   border: none;
   pointer-events: none;
@@ -751,9 +734,9 @@ a:hover a:visited {
 #mp-div-playlist-tracks {
   clear: both;
   margin: 3px 2px 3px 2px;
-  padding: 5px;
+  padding: 0;
   background-color: var(--mediaplayer-tracks-bg-color);
-  border-radius: 5px;
+  /* border-radius: 5px; */
   min-height: 0px;
   /* max-height: 200px; */
   overflow-x: hidden;
@@ -763,13 +746,13 @@ a:hover a:visited {
 }
 
 #mp-div-playlist-tracks::-webkit-scrollbar {
-  width: 5px;
+  width: 10px;
 }
 
 .mp-div-playlist-track {
   font-size: 11px;
   width: 100%;
-  padding: 2px;
+  padding: 2px 5px;
   cursor: pointer;
   color: var(--mediaplayer-track-text-color);
   font-family: monospace;
