@@ -2185,6 +2185,7 @@ function showPlaylist(show) {
   if (show) {
     g_player.html.divPlaylist.classList.remove("mp-hidden");
     g_settings.showPlaylist = true;
+    playlist.scrollToCurrent();
   } else {
     g_player.html.divPlaylist.classList.add("mp-hidden");
     g_settings.showPlaylist = false;

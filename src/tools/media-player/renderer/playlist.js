@@ -355,7 +355,7 @@ export function scrollToCurrent() {
     let divId = "mp-playlist-track-" + index;
     document.getElementById(divId).scrollIntoView({
       behavior: "smooth",
-      block: "nearest",
+      block: "start",
       inline: "nearest",
     });
   }
