@@ -2539,7 +2539,8 @@ export function onInputEvent(type, event) {
             const file = event.dataTransfer.files[index];
             outputPaths.push(ipc.showFilePath(file));
           }
-          if (outputPaths.length > 0) sendIpcToMain("on-drop", outputPaths);
+          if (outputPaths.length > 0)
+            sendIpcToMain("on-drop", outputPaths, element.id);
           return true;
         }
       }

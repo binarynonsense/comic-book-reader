@@ -162,8 +162,8 @@ function initOnIpcCallbacks() {
     }
   });
 
-  on("on-drop", (inputPaths) => {
-    onDroppedFiles(inputPaths);
+  on("on-drop", (...args) => {
+    onDroppedFiles(...args);
   });
 
   on("close", () => {
@@ -588,36 +588,6 @@ exports.updateLocalizedText = updateLocalizedText;
 // ADD FILES //////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-function onDroppedFiles(inputPaths) {
-  let filePaths = [];
-  for (let index = 0; index < inputPaths.length; index++) {
-    const inputPath = inputPaths[index];
-    if (!fs.existsSync(inputPath)) return;
-    if (fs.lstatSync(inputPath).isDirectory()) {
-      let inDirPaths = fs.readdirSync(inputPath);
-      inDirPaths.forEach((inDirPath) => {
-        filePaths.push(path.join(inputPath, inDirPath));
-      });
-    } else {
-      filePaths.push(inputPath);
-    }
-  }
-  let files = getValidFiles(filePaths);
-  if (files.length == 0) {
-    return;
-  }
-  // let playlist = {
-  //   id: "",
-  //   source: "filesystem",
-  //   files: [],
-  // };
-  // outputPaths.forEach((element) => {
-  //   playlist.files.push({ url: element });
-  // });
-  // sendIpcToRenderer("open-playlist", playlist);
-  sendIpcToRenderer("add-to-playlist", files, false);
-}
-
 function getValidFiles(filePaths) {
   function isAlreadyInArray(inputArray, content) {
     for (let index = 0; index < inputArray.length; index++) {
@@ -658,6 +628,53 @@ function getValidFiles(filePaths) {
   return files;
 }
 
+function openNewPlaylistFromFiles(files) {
+  let playlist = {
+    id: "",
+    source: "filesystem",
+    files: [],
+  };
+  files.forEach((element) => {
+    playlist.files.push(element);
+  });
+  //
+  let recent = history.getRecent();
+  let currentTime = 0;
+  for (let index = 0; index < recent.length; index++) {
+    if (recent[index].filePath === files[0].url) {
+      currentTime = recent[index].currentTime;
+      break;
+    }
+  }
+  //
+  sendIpcToRenderer("open-playlist", playlist, currentTime);
+}
+
+function onDroppedFiles(inputPaths, targetId) {
+  let filePaths = [];
+  for (let index = 0; index < inputPaths.length; index++) {
+    const inputPath = inputPaths[index];
+    if (!fs.existsSync(inputPath)) return;
+    if (fs.lstatSync(inputPath).isDirectory()) {
+      let inDirPaths = fs.readdirSync(inputPath);
+      inDirPaths.forEach((inDirPath) => {
+        filePaths.push(path.join(inputPath, inDirPath));
+      });
+    } else {
+      filePaths.push(inputPath);
+    }
+  }
+  let files = getValidFiles(filePaths);
+  if (files.length == 0) {
+    return;
+  }
+  if (targetId && targetId.startsWith("mp-div-playlist")) {
+    sendIpcToRenderer("add-to-playlist", files, false);
+  } else {
+    openNewPlaylistFromFiles(files);
+  }
+}
+
 function callOpenFilesDialog(mode) {
   let defaultPath;
   let allowMultipleSelection = true;
@@ -691,25 +708,7 @@ function callOpenFilesDialog(mode) {
   if (mode === 1) {
     sendIpcToRenderer("add-to-playlist", files, false);
   } else if (mode === 0) {
-    let playlist = {
-      id: "",
-      source: "filesystem",
-      files: [],
-    };
-    files.forEach((element) => {
-      playlist.files.push(element);
-    });
-    //
-    let recent = history.getRecent();
-    let currentTime = 0;
-    for (let index = 0; index < recent.length; index++) {
-      if (recent[index].filePath === files[0].url) {
-        currentTime = recent[index].currentTime;
-        break;
-      }
-    }
-    //
-    sendIpcToRenderer("open-playlist", playlist);
+    openNewPlaylistFromFiles(files);
   }
 }
 
