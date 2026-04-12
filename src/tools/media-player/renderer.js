@@ -2030,17 +2030,15 @@ function onButtonClicked(buttonName) {
   } else if (buttonName === "close-videoarea") {
     g_settings.showVideo = false;
   } else if (buttonName === "close-spectrum") {
-    g_settings.showSpectrum = false;
+    showSpectrumVisualizer(false);
   } else if (buttonName === "toggle-playlist") {
     showPlaylist(!g_settings.showPlaylist);
   } else if (buttonName === "toggle-videoarea") {
     g_settings.showVideo = !g_settings.showVideo;
   } else if (buttonName === "toggle-spectrum") {
     showSpectrumVisualizer(!g_settings.showSpectrum);
-    refreshUI();
   } else if (buttonName === "toggle-advancedcontrols") {
     showAdvancedControls(!g_settings.showAdvancedControls);
-    refreshUI();
   } else if (buttonName === "takescreenshot") {
     takeVideoScreenshot();
   }
@@ -2558,6 +2556,12 @@ export function onInputEvent(type, event) {
       break;
     case "click":
       {
+        if (
+          event.target.parentNode === g_player.html.buttonCloseVideoArea ||
+          event.target.parentNode === g_player.html.buttonCloseSpectrum
+        ) {
+          return;
+        }
         const videoElementClicked = event.target.closest("#mp-video-div");
         const spectrumElementCliked = event.target.closest("#mp-spectrum-div");
         if (videoElementClicked || spectrumElementCliked) {
@@ -2593,6 +2597,12 @@ export function onInputEvent(type, event) {
       break;
     case "dblclick":
       {
+        if (
+          event.target.parentNode === g_player.html.buttonCloseVideoArea ||
+          event.target.parentNode === g_player.html.buttonCloseSpectrum
+        ) {
+          return;
+        }
         const videoElementClicked = event.target.closest("#mp-video-div");
         const spectrumElementClicked = event.target.closest("#mp-spectrum-div");
         if (videoElementClicked || spectrumElementClicked) {
