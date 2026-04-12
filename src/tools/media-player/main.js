@@ -699,20 +699,28 @@ function callOpenFilesDialog(mode) {
     files.forEach((element) => {
       playlist.files.push(element);
     });
+    //
+    let recent = history.getRecent();
+    let currentTime = 0;
+    for (let index = 0; index < recent.length; index++) {
+      if (recent[index].filePath === files[0].url) {
+        currentTime = recent[index].currentTime;
+        break;
+      }
+    }
+    //
     sendIpcToRenderer("open-playlist", playlist);
   }
 }
 
-function openFromContextMenu(url, title, source = "filesystem") {
+function openFromContextMenu({ url, title, source, currentTime }) {
   let playlist = {
     id: "",
     source,
     files: [],
   };
   playlist.files.push({ title, url });
-  sendIpcToRenderer("open-playlist", playlist);
-  ///
-  // sendIpcToRenderer("add-to-playlist", [{ url: filePath }], true);
+  sendIpcToRenderer("open-playlist", playlist, currentTime);
 }
 
 function addUrl(urlData) {

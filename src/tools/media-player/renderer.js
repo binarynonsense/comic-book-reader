@@ -385,7 +385,6 @@ function onSaveAndQuitRequested() {
     g_settings.currentTime = parseInt(g_player.html.sliderTime.value);
     g_settings.currentDuration = parseInt(g_player.html.sliderTime.max);
     // history
-
     if (
       g_player.trackIndex !== undefined &&
       g_player.trackIndex === playlist.getCurrentTrackIndex()
@@ -2256,12 +2255,12 @@ function initOnIpcCallbacks() {
     g_ffmpegAvailable = ffmpegAvailable;
   });
 
-  on("open-playlist", (newPlaylist) => {
+  on("open-playlist", (newPlaylist, currentTime) => {
     onStop();
     playlist.openPlaylist(newPlaylist);
     playlist.setCurrentTrackIndex(0);
     setPlayerTrackIndex(playlist.getCurrentTrackIndex());
-    onPlay(g_player.trackIndex, 0);
+    onPlay(g_player.trackIndex, currentTime ?? 0);
   });
 
   on("add-to-playlist", (...args) => {

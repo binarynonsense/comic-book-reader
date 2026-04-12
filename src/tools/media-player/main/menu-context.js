@@ -12,7 +12,7 @@ const utils = require("../../../shared/main/utils");
 const log = require("../../../shared/main/logger");
 const history = require("./history");
 
-exports.show = function (type, params, data, sendIpcToRenderer, openMedia) {
+exports.show = function (type, params, data, sendIpcToRenderer, openEntry) {
   // ref: https://github.com/electron/electron/blob/main/docs/api/web-contents.md#event-context-menu
   // core.onMenuToggleFullScreen();
 
@@ -75,7 +75,7 @@ exports.show = function (type, params, data, sendIpcToRenderer, openMedia) {
       menu.push({
         label,
         click() {
-          openMedia(entry.filePath);
+          openEntry({ url: entry.filePath, currentTime: entry.currentTime });
         },
       });
     }
@@ -101,7 +101,7 @@ exports.show = function (type, params, data, sendIpcToRenderer, openMedia) {
       menu.push({
         label,
         click() {
-          openMedia(entry.url, entry.name, "radio");
+          openEntry({ url: entry.url, title: entry.name, source: "radio" });
         },
       });
     }
