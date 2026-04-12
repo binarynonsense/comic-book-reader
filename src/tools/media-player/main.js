@@ -27,6 +27,7 @@ let g_parentElementId;
 let g_ffmpegPath;
 let g_launchInfo = {};
 let g_radioFavorites = [];
+let g_contextMenuData;
 
 ///////////////////////////////////////////////////////////////////////////////
 // IPC SEND ///////////////////////////////////////////////////////////////////
@@ -88,6 +89,21 @@ function initOnIpcCallbacks() {
   on("add-to-history", (file, currentTime, totalTime) => {
     if (file && file.url) {
       history.addEntryToRecent(file.url, currentTime, totalTime);
+    }
+  });
+
+  on("update-context-menu-data", (data) => {
+    g_contextMenuData = data;
+    if (g_tray) {
+      updateTrayMenu();
+    }
+  });
+
+  on("set-tray-icon", (trayIcon) => {
+    if (g_tray) {
+      setTrayIcon(trayIcon);
+    } else {
+      log.warning("trying to set tray icon in non player mode");
     }
   });
 
@@ -253,14 +269,6 @@ function initOnIpcCallbacks() {
     );
   });
 
-  on("show-tray-context-menu", (data) => {
-    data.isPlayerMode = g_launchInfo.isPlayerMode;
-    data.radioFavorites = g_radioFavorites;
-    g_tray.popUpContextMenu(
-      contextMenu.getTrayContextMenu(data, sendIpcToRenderer),
-    );
-  });
-
   on("show-button-menu", (type, rect, data) => {
     data.isPlayerMode = g_launchInfo.isPlayerMode;
     data.radioFavorites = g_radioFavorites;
@@ -401,52 +409,103 @@ exports.open = async function (isVisible) {
 let g_lastBounds = null;
 let g_tray;
 exports.createTray = function () {
+  if (settings.getValue("trayIcon") === 0) return;
+  createTrayIcon();
+};
+
+function createTrayIcon() {
   // ref: https://www.electronjs.org/docs/latest/api/tray
-  const { Tray, Menu, nativeTheme } = require("electron");
+  const { Tray } = require("electron");
 
-  function getIconPath(useTheme = false) {
-    const isWindows = process.platform === "win32";
-    const ext = isWindows ? ".ico" : ".png";
-    if (useTheme) {
-      const mode = nativeTheme.shouldUseDarkColors ? "dark" : "light";
-      return path.join(
-        __dirname,
-        "../../assets/images",
-        `tray_${mode}_mode${ext}`,
-      );
-    } else {
-      return path.join(__dirname, "../../assets/images", `tray_color${ext}`);
-    }
-  }
-
-  g_tray = new Tray(path.join(getIconPath()));
-  nativeTheme.on("updated", () => {
-    g_tray.setImage(getIconPath());
-  });
+  g_tray = new Tray(getTrayIconPath());
+  // nativeTheme.on("updated", () => {
+  //   g_tray.setImage(getTrayIconPath());
+  // });
   g_tray.setToolTip("ACBR Player");
-  const contextMenu = Menu.buildFromTemplate([
-    {
-      label: _("menu-shared-toggle"),
-      click() {
-        toggleWindow();
-      },
-    },
-    {
-      label: _("menu-file-quit"),
-      click() {
-        core.requestQuit();
-      },
-    },
-  ]);
-  g_tray.setContextMenu(contextMenu);
+  updateTrayMenu();
   //tray.setIgnoreDoubleClickEvents(true)
   g_tray.on("click", function (event) {
     toggleWindow();
   });
-  g_tray.on("right-click", function (event) {
-    // sendIpcToRenderer("tray-context-menu-requested");
-  });
-};
+  g_tray.on("right-click", function (event) {});
+}
+
+function destroyTrayIcon() {
+  // NOTE: doesn't work on Kubuntu 24.04
+  if (g_tray) {
+    log.test("destroyTrayIcon");
+    g_tray.setContextMenu(null);
+    g_tray.destroy();
+    g_tray = undefined;
+  }
+}
+
+function updateTrayMenu() {
+  let data;
+  if (g_contextMenuData) {
+    data = g_contextMenuData;
+    data.isPlayerMode = g_launchInfo.isPlayerMode;
+    data.radioFavorites = g_radioFavorites;
+  }
+  g_tray.setContextMenu(
+    contextMenu.getTrayContextMenu(
+      [
+        {
+          label: _("menu-shared-toggle"),
+          click() {
+            toggleWindow();
+          },
+        },
+        {
+          label: _("menu-file-quit"),
+          click() {
+            core.requestQuit();
+          },
+        },
+      ],
+      data,
+      sendIpcToRenderer,
+    ),
+  );
+}
+
+function getTrayIconPath(useTheme = false) {
+  let trayIcon = settings.getValue("trayIcon");
+  const isWindows = process.platform === "win32";
+  const ext = isWindows ? ".ico" : ".png";
+  // if (useTheme) {
+  //   const mode = nativeTheme.shouldUseDarkColors ? "dark" : "light";
+  //   return path.join(
+  //     __dirname,
+  //     "../../assets/images",
+  //     `tray_${mode}_mode${ext}`,
+  //   );
+  // } else {
+  //   return path.join(__dirname, "../../assets/images", `tray_color${ext}`);
+  // }
+  if (trayIcon === 3) {
+    return path.join(__dirname, "../../assets/images", `tray_light_mode${ext}`);
+  } else if (trayIcon === 2) {
+    return path.join(__dirname, "../../assets/images", `tray_dark_mode${ext}`);
+  } else {
+    return path.join(__dirname, "../../assets/images", `tray_color${ext}`);
+  }
+}
+
+function setTrayIcon(trayIcon) {
+  log.test(trayIcon);
+  settings.setValue("trayIcon", trayIcon);
+  if (trayIcon === 0) {
+    if (process.platform === "win32") {
+      destroyTrayIcon();
+    }
+  } else if (g_tray) {
+    g_tray.setImage(getTrayIconPath());
+    updateTrayMenu();
+  } else {
+    createTrayIcon();
+  }
+}
 
 function toggleWindow() {
   if (g_mainWindow.isVisible()) {

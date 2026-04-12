@@ -188,7 +188,7 @@ exports.show = function (type, params, data, sendIpcToRenderer, openMedia) {
       },
       { type: "separator" },
       ...getPlaylistSubmenu(data),
-      ...getPlayButtons(data),
+      ...getPlayButtons(data, sendIpcToRenderer),
       { type: "separator" },
       {
         label: data.isPlayerMode
@@ -692,7 +692,7 @@ exports.show = function (type, params, data, sendIpcToRenderer, openMedia) {
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
-function getPlayButtons(data) {
+function getPlayButtons(data, sendIpcToRenderer) {
   return [
     {
       label: _("mp-tooltip-button-play"),
@@ -732,10 +732,68 @@ function getPlayButtons(data) {
   ];
 }
 
+function getSystemTraySubmenu(data, sendIpcToRenderer) {
+  const isWindows = process.platform === "win32";
+  return [
+    {
+      label: _("ctxmenu-systemtray"),
+      submenu: [
+        {
+          label: _("ctxmenu-systemtray-icon"),
+          submenu: [
+            {
+              label: `${_("ctxmenu-systemtray-icon-disabled")}${!isWindows ? ` (${_("ctxmenu-systemtray-icon-disabled-restartrequired")})` : ""}`,
+              type: "radio",
+              checked: data.settings.trayIcon === 0,
+              click() {
+                sendIpcToRenderer("on-context-menu", "set-tray-icon", 0);
+              },
+            },
+            {
+              label: _("ctxmenu-systemtray-icon-default"),
+              type: "radio",
+              checked: data.settings.trayIcon === 1,
+              click() {
+                sendIpcToRenderer("on-context-menu", "set-tray-icon", 1);
+              },
+            },
+            {
+              label: _("ctxmenu-systemtray-icon-white"),
+              type: "radio",
+              checked: data.settings.trayIcon === 2,
+              click() {
+                sendIpcToRenderer("on-context-menu", "set-tray-icon", 2);
+              },
+            },
+            {
+              label: _("ctxmenu-systemtray-icon-black"),
+              type: "radio",
+              checked: data.settings.trayIcon === 3,
+              click() {
+                sendIpcToRenderer("on-context-menu", "set-tray-icon", 3);
+              },
+            },
+          ],
+        },
+      ],
+    },
+    { type: "separator" },
+  ];
+}
+
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
-exports.getTrayContextMenu = function (data, sendIpcToRenderer) {
-  log.test("getTrayContextMenu");
-  return Menu.buildFromTemplate([...getPlayButtons(data)]);
+exports.getTrayContextMenu = function (basicEntries, data, sendIpcToRenderer) {
+  if (data) {
+    return Menu.buildFromTemplate([
+      ...getPlayButtons(data, sendIpcToRenderer),
+      { type: "separator" },
+      ...getSystemTraySubmenu(data, sendIpcToRenderer),
+      { type: "separator" },
+      ...basicEntries,
+    ]);
+  } else {
+    return Menu.buildFromTemplate([...basicEntries]);
+  }
 };

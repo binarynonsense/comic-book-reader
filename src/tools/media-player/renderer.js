@@ -1888,7 +1888,16 @@ function refreshUI() {
     g_player.html.buttonDelete.classList.add("mp-disabled");
   }
   playlist.updatePlaylistInfo();
+
+  ///////////////
+
+  clearTimeout(g_updateContextDataTimeout);
+  g_updateContextDataTimeout = setTimeout(
+    () => sendIpcToMain("update-context-menu-data", getContextMenuData()),
+    500,
+  );
 }
+let g_updateContextDataTimeout;
 
 function onButtonClicked(buttonName) {
   if (buttonName === "close-player") {
@@ -2479,11 +2488,15 @@ function initOnIpcCallbacks() {
       case "takescreenshot":
         takeVideoScreenshot();
         break;
-    }
-  });
 
-  on("tray-context-menu-requested", (...args) => {
-    sendIpcToMain("show-tray-context-menu", getContextMenuData());
+      ////
+
+      case "set-tray-icon":
+        g_settings.trayIcon = args[1];
+        sendIpcToMain("update-context-menu-data", getContextMenuData());
+        sendIpcToMain("set-tray-icon", g_settings.trayIcon);
+        break;
+    }
   });
 }
 

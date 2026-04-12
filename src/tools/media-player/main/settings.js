@@ -56,6 +56,7 @@ function setDefaultValues() {
     subtitleFontSize: 1,
     videoCrop: "original",
     videoAspectRatio: "original",
+    trayIcon: 1,
   };
 }
 
@@ -130,6 +131,13 @@ function sanitize() {
   }
   if (typeof g_settings.videoAspectRatio !== "string") {
     g_settings.videoAspectRatio = "original";
+  }
+  if (
+    !Number.isInteger(g_settings.trayIcon) ||
+    g_settings.trayIcon < 0 ||
+    g_settings.trayIcon > 3
+  ) {
+    g_settings.trayIcon = 1;
   }
 }
 

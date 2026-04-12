@@ -189,7 +189,7 @@ function createIcons() {
   );
   saveTrayIcons(
     drawComicBubble,
-    { bodyColor: "#2F2F2F", isCutout: true },
+    { bodyColor: "#111111", isCutout: true },
     "tray_light_mode",
   );
   saveTrayIcons(
