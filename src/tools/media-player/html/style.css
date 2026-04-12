@@ -872,11 +872,11 @@ a:hover a:visited {
 /* ******************************************************************** */
 
 #media-player-container.mp-player-mode {
-  padding: 10px;
+  margin: 10px;
 
   &.mp-layout-fullscreen {
     top: 0 !important;
-    padding: 0px;
+    margin: 0px;
 
     #mp-spectrum-div {
       height: 100% !important;

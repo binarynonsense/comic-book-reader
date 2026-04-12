@@ -285,7 +285,7 @@ exports.createWindow = function (_core, launchInfo) {
         const { screen } = require("electron");
         const area = screen.getPrimaryDisplay().workArea;
         let { x, y } = bounds;
-        let padding = { top: 10, bottom: 10 + 50, left: 10, right: 10 + 50 };
+        let padding = { top: 10, bottom: 50 - 10, left: 10, right: 50 - 10 };
         if (y - padding.top < area.y) y = area.y - padding.top;
         else if (y + height - padding.bottom > area.y + area.height) {
           y = area.y + area.height - height + padding.bottom;
