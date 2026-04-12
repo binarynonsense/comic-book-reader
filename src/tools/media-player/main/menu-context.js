@@ -157,6 +157,7 @@ exports.show = function (type, params, data, sendIpcToRenderer, openMedia) {
               sendIpcToRenderer("on-context-menu", "toggle-playlist");
             },
           },
+          ...getSystemTraySubmenu(data, sendIpcToRenderer),
           { type: "separator" },
           ...getSizeSubmenu(data),
           { type: "separator" },
@@ -733,6 +734,7 @@ function getPlayButtons(data, sendIpcToRenderer) {
 }
 
 function getSystemTraySubmenu(data, sendIpcToRenderer) {
+  if (!data.isPlayerMode) return [];
   const isWindows = process.platform === "win32";
   return [
     {
