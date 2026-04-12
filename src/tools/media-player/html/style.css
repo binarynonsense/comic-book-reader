@@ -740,7 +740,7 @@ a:hover a:visited {
   min-height: 0px;
   /* max-height: 200px; */
   overflow-x: hidden;
-  overflow-y: scroll;
+  overflow-y: auto;
   /* trick: multiply by a huge number so clamp gives one or the other */
   height: clamp(100px, calc((var(--mp-frame-width) - 300px) * 9999), 200px);
 }
