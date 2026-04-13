@@ -87,7 +87,7 @@ const { parseArgs } = require("node:util");
 const options = {
   dev: { type: "boolean" },
   cli: { type: "boolean" },
-  player: { type: "boolean" },
+  player: { type: "boolean" }, //, short: "p" },
   tool: { type: "string" },
   "output-format": { type: "string" },
   "output-folder": { type: "string" },
@@ -96,6 +96,7 @@ const { values, positionals } = parseArgs({
   args: process.argv.slice(g_launchInfo.isRelease ? 1 : 2),
   options,
   strict: false,
+  allowPositionals: true,
 });
 g_launchInfo.parsedArgs = {
   ...values,
