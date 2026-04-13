@@ -278,23 +278,30 @@ exports.createWindow = function (_core, launchInfo) {
       tools.getTools()["media-player"].createTray();
       // g_mainWindow.webContents.openDevTools();
       g_mainWindow.on("move", () => {
-        if (g_mainWindow.isFullScreen()) return;
-        const bounds = g_mainWindow.getBounds();
-        const [width, height] = g_mainWindow.getSize();
-        const { screen } = require("electron");
-        const area = screen.getPrimaryDisplay().workArea;
-        let { x, y } = bounds;
-        let padding = { top: 10, bottom: 50 - 10, left: 10, right: 50 - 10 };
-        if (y - padding.top < area.y) y = area.y - padding.top;
-        else if (y + height - padding.bottom > area.y + area.height) {
-          y = area.y + area.height - height + padding.bottom;
-        }
-        if (x - padding.left < area.x) {
-          x = area.x - padding.left;
-        } else if (x + width - padding.right > area.x + area.width) {
-          x = area.x + area.width - width + padding.right;
-        }
-        g_mainWindow.setPosition(Math.round(x), Math.round(y));
+        try {
+          if (g_mainWindow.isFullScreen()) return;
+          const bounds = g_mainWindow.getBounds();
+          const [width, height] = g_mainWindow.getSize();
+          const { screen } = require("electron");
+          let { x, y } = bounds;
+          // const area = screen.getPrimaryDisplay().workArea;
+          const currentScreen = screen.getDisplayNearestPoint({
+            x,
+            y,
+          });
+          const area = currentScreen.workArea;
+          let padding = { top: 10, bottom: 50 - 10, left: 10, right: 50 - 10 };
+          if (y - padding.top < area.y) y = area.y - padding.top;
+          else if (y + height - padding.bottom > area.y + area.height) {
+            y = area.y + area.height - height + padding.bottom;
+          }
+          if (x - padding.left < area.x) {
+            x = area.x - padding.left;
+          } else if (x + width - padding.right > area.x + area.width) {
+            x = area.x + area.width - width + padding.right;
+          }
+          g_mainWindow.setPosition(Math.round(x), Math.round(y));
+        } catch (error) {}
       });
     }
     g_mainWindow.show();
