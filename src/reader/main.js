@@ -570,7 +570,17 @@ function initOnIpcCallbacks() {
   ////////////////////////////////////////////////////////////////////////////
 
   on("open-file", (filePath) => {
-    tryOpen(filePath);
+    if (
+      fileUtils.hasAudioExtension(filePath) ||
+      fileUtils.hasVideoExtension(filePath)
+    ) {
+      showMediaPlayer(true);
+      setTimeout(() => {
+        tools.getTools()["media-player"].onDroppedFiles([filePath]);
+      }, 500);
+    } else {
+      tryOpen(filePath);
+    }
   });
 
   on("close-file", () => {
