@@ -67,6 +67,9 @@ function initOnIpcCallbacks() {
   on("save-on-quit", (_settings, _playlist, _historyData) => {
     try {
       settings.set(_settings);
+      if (g_launchInfo.isPlayerMode) {
+        settings.setValue("lastStandAlonePosition", g_mainWindow.getPosition());
+      }
       g_playlist = _playlist;
       if (_historyData) {
         history.addEntryToRecent(
@@ -406,6 +409,14 @@ exports.open = async function (isVisible) {
       g_launchInfo.isPlayerMode,
     );
     g_didShow = true;
+    if (g_launchInfo.isPlayerMode) {
+      const lastPos = settings.getValue("lastStandAlonePosition");
+      if (lastPos) {
+        setTimeout(() => g_mainWindow.setPosition(...lastPos), 300);
+      } else {
+        setTimeout(() => g_mainWindow.center(), 300);
+      }
+    }
   }
   sendIpcToRenderer("show", isVisible, g_parentElementId);
 };

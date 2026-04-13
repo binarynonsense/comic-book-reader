@@ -57,6 +57,7 @@ function setDefaultValues() {
     videoCrop: "original",
     videoAspectRatio: "original",
     trayIcon: 1,
+    lastStandAlonePosition: undefined,
   };
 }
 
@@ -138,6 +139,17 @@ function sanitize() {
     g_settings.trayIcon > 3
   ) {
     g_settings.trayIcon = 1;
+  }
+  if (
+    !(
+      g_settings.lastStandAlonePosition !== undefined &&
+      Array.isArray(g_settings.lastStandAlonePosition) &&
+      g_settings.lastStandAlonePosition.length === 2 &&
+      Number.isInteger(g_settings.lastStandAlonePosition[0]) &&
+      Number.isInteger(g_settings.lastStandAlonePosition[1])
+    )
+  ) {
+    g_settings.lastStandAlonePosition = undefined;
   }
 }
 
