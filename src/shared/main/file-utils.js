@@ -481,6 +481,20 @@ exports.hasEpubSupportedImageExtension = function (filePath) {
   return false;
 };
 
+exports.hasVideoExtension = (filePath) => {
+  const videoExtensions = [".mp4", ".mov", ".avi", ".mkv", ".webm"];
+  return videoExtensions.some((extension) =>
+    filePath.toLowerCase().endsWith(extension),
+  );
+};
+
+exports.hasAudioExtension = (filePath) => {
+  const musicExtensions = [".mp3", ".wav", ".flac", ".aac", ".ogg", ".m4a"];
+  return musicExtensions.some((extension) =>
+    filePath.toLowerCase().endsWith(extension),
+  );
+};
+
 ///////////////////////////////////////////////////////////////////////////////
 // GET IMAGES /////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
