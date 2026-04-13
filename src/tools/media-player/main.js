@@ -68,7 +68,12 @@ function initOnIpcCallbacks() {
     try {
       settings.set(_settings);
       if (g_launchInfo.isPlayerMode) {
-        settings.setValue("lastStandAlonePosition", g_mainWindow.getPosition());
+        if (!settings.getValue("fullView")) {
+          g_lastPosition = g_mainWindow.getPosition();
+        }
+        if (g_lastPosition) {
+          settings.setValue("lastStandAlonePosition", g_lastPosition);
+        }
       }
       g_playlist = _playlist;
       if (_historyData) {
@@ -399,6 +404,9 @@ function initHandleIpcCallbacks() {
 ///////////////////////////////////////////////////////////////////////////////
 
 let g_didShow = false;
+let g_lastBounds = null;
+let g_tray;
+let g_lastPosition;
 
 exports.open = async function (isVisible) {
   if (isVisible & !g_didShow) {
@@ -421,8 +429,10 @@ exports.open = async function (isVisible) {
   sendIpcToRenderer("show", isVisible, g_parentElementId);
 };
 
-let g_lastBounds = null;
-let g_tray;
+exports.updateLastPosition = function () {
+  g_lastPosition = g_mainWindow.getPosition();
+};
+
 exports.createTray = function () {
   if (settings.getValue("trayIcon") === 0) return;
   createTrayIcon();
@@ -575,6 +585,8 @@ exports.init = function (launchInfo, mainWindow, parentElementId, ffmpegPath) {
     data.toString(),
   );
   loadSettings();
+  if (g_launchInfo.isPlayerMode)
+    g_lastPosition = settings.getValue("lastStandAlonePosition");
   history.init();
   updateLocalizedText();
 };

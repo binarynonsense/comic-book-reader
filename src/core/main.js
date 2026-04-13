@@ -385,7 +385,10 @@ ipcMain.on("main", (event, args) => {
     if (g_launchInfo.isPlayerMode) {
       if (g_mainWindow) {
         if (args[3]) {
-          g_mainWindow.setFullScreen(true);
+          if (!g_mainWindow.isFullScreen()) {
+            tools.getTools()["media-player"].updateLastPosition();
+            g_mainWindow.setFullScreen(true);
+          }
         } else {
           if (g_mainWindow.isFullScreen()) {
             g_mainWindow.setFullScreen(false);
