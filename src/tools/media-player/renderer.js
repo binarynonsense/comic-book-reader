@@ -1382,13 +1382,13 @@ function initUI() {
       const rect = slider.getBoundingClientRect();
 
       // TODO: calculate the hardcoded offsets
-      hoverT.style.left = event.clientX - rect.left + "px";
       if (g_settings.showAdvancedControls) {
         g_player.html.sliderTimeStatusOverlay.style.display = "none";
-        // hoverT.style.left = event.clientX - rect.left + 80 + "px";
+        // TODO: why do I need the + 40 to make it centered?
+        hoverT.style.left = event.clientX - rect.left + 40 + "px";
       } else {
         g_player.html.sliderTimeStatusOverlay.style.display = "block";
-        // hoverT.style.left = event.clientX - rect.left + 30 + "px";
+        hoverT.style.left = event.clientX - rect.left + "px";
       }
     } else {
       g_player.html.sliderTimeHoverTooltip.style.display = "none";
