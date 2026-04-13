@@ -38,7 +38,7 @@ function createIcons() {
   global.eve = require("eve");
   const Snap = require("snapsvg-cjs");
 
-  function drawComicBubble(snap, config, size = 256, paddingMul = 0.1) {
+  function drawComicBubble(snap, config, size = 256, paddingMul = 0.06) {
     const center = size / 2;
     const padding = size * paddingMul;
     const radius = size / 2 - padding;
