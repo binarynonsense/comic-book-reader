@@ -19,6 +19,7 @@ const i18n = require("../../shared/main/i18n");
 const log = require("../../shared/main/logger");
 const themes = require("../../shared/main/themes");
 const menuBar = require("../../shared/main/menu-bar");
+const utils = require("../../shared/main/utils");
 const appUtils = require("../../shared/main/app-utils");
 const forkUtils = require("../../shared/main/fork-utils");
 const temp = require("../../shared/main/temp");
@@ -129,19 +130,18 @@ exports.createWindow = function (_core, launchInfo) {
     // add extra divs after menuBar init, so its container is already created
     sendIpcToCoreRenderer("append-structure-divs");
     onLanguageChanged();
+    let inputFilePaths = [];
+    let inputFileAndFolderPaths = [];
+    g_launchInfo.parsedArgs["_"].forEach((path) => {
+      if (fs.existsSync(path)) {
+        inputFileAndFolderPaths.push(path);
+        if (!fs.lstatSync(path).isDirectory()) {
+          inputFilePaths.push(path);
+        }
+      }
+    });
     if (!g_launchInfo.isPlayerMode) {
       // check command line args and setup initial state
-      let inputFilePaths = [];
-      let inputFileAndFolderPaths = [];
-      g_launchInfo.parsedArgs["_"].forEach((path) => {
-        if (fs.existsSync(path)) {
-          inputFileAndFolderPaths.push(path);
-          if (!fs.lstatSync(path).isDirectory()) {
-            // TODO: add only valid formats?
-            inputFilePaths.push(path);
-          }
-        }
-      });
       const isValidTool = (name) => {
         if (name && typeof name === "string") {
           const validValues = ["cc"];
@@ -223,7 +223,7 @@ exports.createWindow = function (_core, launchInfo) {
         forceMultimonitorSize > 0 &&
         forceMultimonitorSize < 5
       ) {
-        // Special/Experimental start-up to force the window to expand to cover
+        // special/Eexperimental start-up to force the window to expand to cover
         // multiple screens
         const displays = screen.getAllDisplays();
         let height = 0;
@@ -255,7 +255,7 @@ exports.createWindow = function (_core, launchInfo) {
           g_mainWindow.setSize(width, height);
         }
       } else {
-        // Normal start-up
+        // normal start-up
         if (settings.getValue("maximize")) {
           g_mainWindow.maximize();
         }
@@ -266,15 +266,14 @@ exports.createWindow = function (_core, launchInfo) {
     } else {
       // player mode ////
       log.debug("setting media player mode");
-      const utils = require("../../shared/main/utils");
+      sendIpcToCoreRenderer("set-player-mode");
+      sendIpcToPreload("set-player-mode");
       tools
         .getTools()
         [
           "media-player"
         ].init(g_launchInfo, core.getMainWindow(), "media-player-container", settings.canUseFFmpeg() ? utils.getFfmpegCommand(settings.getValue("ffmpegExeFolderPath")) : undefined);
-      reader.showMediaPlayer(true);
-      sendIpcToCoreRenderer("set-player-mode");
-      sendIpcToPreload("set-player-mode");
+      tools.getTools()["media-player"].open(true);
       g_mainWindow.center();
       tools.getTools()["media-player"].createTray();
       // g_mainWindow.webContents.openDevTools();
@@ -299,6 +298,13 @@ exports.createWindow = function (_core, launchInfo) {
       });
     }
     g_mainWindow.show();
+    if (inputFileAndFolderPaths && inputFileAndFolderPaths.length > 0) {
+      setTimeout(() => {
+        tools
+          .getTools()
+          ["media-player"].onDroppedFiles(inputFileAndFolderPaths);
+      }, 500);
+    }
     log.debug(`start-up time: ${timers.stop("startup").toFixed(2)}s`);
   });
 

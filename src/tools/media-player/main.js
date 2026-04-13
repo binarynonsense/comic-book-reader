@@ -60,6 +60,10 @@ function on(id, callback) {
 function initOnIpcCallbacks() {
   ffmpeg.initOnIpcCallbacks(on, sendIpcToRenderer);
 
+  on("log-test", (value) => {
+    log.test(value);
+  });
+
   on("save-on-quit", (_settings, _playlist, _historyData) => {
     try {
       settings.set(_settings);
@@ -674,6 +678,7 @@ function onDroppedFiles(inputPaths, targetId) {
     openNewPlaylistFromFiles(files);
   }
 }
+exports.onDroppedFiles = onDroppedFiles;
 
 function callOpenFilesDialog(mode) {
   let defaultPath;

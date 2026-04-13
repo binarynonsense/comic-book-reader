@@ -107,7 +107,15 @@ exports.init = async function (filePath, checkHistory) {
 
   // if the program is called from the os' 'open with' of file association
   if (filePath && filePath !== "" && fs.existsSync(filePath)) {
-    if (await tryOpen(filePath)) {
+    if (
+      fileUtils.hasAudioExtension(filePath) ||
+      fileUtils.hasVideoExtension(filePath)
+    ) {
+      showMediaPlayer(true);
+      setTimeout(() => {
+        tools.getTools()["media-player"].onDroppedFiles([filePath]);
+      }, 500);
+    } else if (await tryOpen(filePath)) {
       return;
     }
   }
