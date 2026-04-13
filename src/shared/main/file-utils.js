@@ -639,6 +639,7 @@ exports.getComicInfoFileInFolderRecursive = getComicInfoFileInFolderRecursive;
 ///////////////////////////////////////////////////////////////////////////////
 
 exports.deleteFolderRecursive = function (
+  maxRetries,
   folderPath,
   logToError,
   pathStartsWith,
@@ -656,16 +657,20 @@ exports.deleteFolderRecursive = function (
     fs.rmSync(folderPath, {
       recursive: true,
       force: true,
-      maxRetries: 10,
+      maxRetries,
       retryDelay: 100,
     });
     log.debug("deleted folder: " + folderPath);
   } catch (error) {
     if (logToError) {
-      log.error("couldn't delete folder after 10 retries: " + folderPath);
+      log.error(
+        `couldn't delete folder after ${maxRetries} retries: ${folderPath}`,
+      );
       log.error(error.code);
     } else {
-      log.debug("couldn't delete folder after 10 retries: " + folderPath);
+      log.debug(
+        `couldn't delete folder after ${maxRetries} retries: ${folderPath}`,
+      );
       log.debug(error.code);
     }
   }

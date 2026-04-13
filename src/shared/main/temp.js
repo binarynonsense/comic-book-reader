@@ -55,7 +55,7 @@ function setBaseFolder(parentFolderPath, resetToDefault) {
     }
     if (fs.existsSync(baseFolder)) {
       // it already existed, clean it up just in case
-      deleteFolderRecursive(baseFolder, true, undefined, "acbr-tmp");
+      deleteFolderRecursive(10, baseFolder, true, undefined, "acbr-tmp");
     }
     fs.mkdirSync(baseFolder);
     log.debug("base temp folder: " + baseFolder);
@@ -72,7 +72,7 @@ function setBaseFolder(parentFolderPath, resetToDefault) {
 }
 
 function deleteBaseFolder() {
-  deleteFolderRecursive(g_baseFolderPath, true, undefined, "acbr-tmp");
+  deleteFolderRecursive(10, g_baseFolderPath, true, undefined, "acbr-tmp");
 }
 
 exports.createSubFolder = function (baseFolderPath) {
@@ -85,7 +85,7 @@ exports.createSubFolder = function (baseFolderPath) {
 
 exports.deleteSubFolder = function (folderPath) {
   if (folderPath) {
-    deleteFolderRecursive(folderPath, true, g_baseFolderPath, "acbr-tmp-");
+    deleteFolderRecursive(10, folderPath, true, g_baseFolderPath, "acbr-tmp-");
   }
 };
 

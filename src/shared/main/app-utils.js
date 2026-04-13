@@ -334,7 +334,7 @@ function cleanUpUserDataFolder() {
         if (!keepFiles.includes(file)) {
           const entryPath = path.join(userDataPath, file);
           if (fs.lstatSync(entryPath).isDirectory()) {
-            fileUtils.deleteFolderRecursive(entryPath, false, userDataPath);
+            fileUtils.deleteFolderRecursive(1, entryPath, false, userDataPath);
           } else {
             try {
               fs.unlinkSync(entryPath); // delete the file
