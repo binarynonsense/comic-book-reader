@@ -107,7 +107,7 @@ function initOnIpcCallbacks() {
   });
 
   on("set-tray-icon", (trayIcon) => {
-    if (g_tray) {
+    if (g_launchInfo.isPlayerMode) {
       setTrayIcon(trayIcon);
     } else {
       log.warning("trying to set tray icon in non player mode");
@@ -429,6 +429,7 @@ exports.createTray = function () {
 };
 
 function createTrayIcon() {
+  log.test("create tray");
   // ref: https://www.electronjs.org/docs/latest/api/tray
   const { Tray } = require("electron");
 
