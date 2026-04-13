@@ -1618,6 +1618,12 @@ function refreshUI() {
     1,
   );
 
+  if (g_settings.trayIcon === 0) {
+    g_player.html.buttonHidePlayer.classList.add("mp-hidden");
+  } else {
+    g_player.html.buttonHidePlayer.classList.remove("mp-hidden");
+  }
+
   let trackTitle;
   const track = playlist.getTrack(g_player.trackIndex);
   if (
@@ -2507,6 +2513,7 @@ function initOnIpcCallbacks() {
         g_settings.trayIcon = args[1];
         sendIpcToMain("update-context-menu-data", getContextMenuData());
         sendIpcToMain("set-tray-icon", g_settings.trayIcon);
+        refreshUI();
         break;
     }
   });
