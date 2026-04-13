@@ -275,6 +275,7 @@ exports.createWindow = function (_core, launchInfo) {
         ].init(g_launchInfo, core.getMainWindow(), "media-player-container", settings.canUseFFmpeg() ? utils.getFfmpegCommand(settings.getValue("ffmpegExeFolderPath")) : undefined);
       tools.getTools()["media-player"].open(true);
       g_mainWindow.center();
+      setTimeout(() => g_mainWindow.center(), 200);
       tools.getTools()["media-player"].createTray();
       // g_mainWindow.webContents.openDevTools();
       g_mainWindow.on("move", () => {
