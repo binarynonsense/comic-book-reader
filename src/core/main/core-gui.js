@@ -291,7 +291,7 @@ exports.createWindow = function (_core, launchInfo) {
             y,
           });
           const area = currentScreen.workArea;
-          let padding = { top: 10, bottom: 50 - 10, left: 10, right: 50 - 10 };
+          let padding = { top: 0, bottom: 0, left: 0, right: 0 };
           if (y - padding.top < area.y) y = area.y - padding.top;
           else if (y + height - padding.bottom > area.y + area.height) {
             y = area.y + area.height - height + padding.bottom;
