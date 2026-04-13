@@ -25,41 +25,45 @@
   > div:nth-child(1 of :not(.mp-hidden)):nth-last-child(1 of :not(.mp-hidden)) {
   border-radius: var(--mp-frame-border-radius);
 }
-#media-player-container.mp-layout-fullscreen #mp-div-topbar {
-  position: fixed;
-  bottom: 20px;
-  width: 500px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10;
-  padding: 20px;
-}
-#media-player-container.mp-layout-fullscreen #mp-div-playlist {
-  display: none;
+
+#media-player-container.mp-layout-fullscreen {
+  #mp-div-topbar {
+    position: fixed;
+    bottom: 20px;
+    width: 500px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    padding: 20px;
+  }
+  > div:nth-child(1 of :not(.mp-hidden)) {
+    border-radius: 5px !important;
+  }
+  #mp-div-playlist {
+    display: none;
+  }
+  #mp-video-close-button {
+    display: none;
+  }
+  #mp-spectrum-div {
+    border-radius: 0 !important;
+    height: calc(100% - var(--menubar-height));
+    border-radius: 0 !important;
+    position: fixed;
+  }
+  #mp-spectrum-close-button {
+    display: none;
+  }
+  .mp-widget-title-div {
+    opacity: 1;
+    top: 3cqh;
+    left: 3cqh;
+    font-size: 3.5cqh;
+  }
 }
 /* #media-player-container.mp-layout-fullscreen #mp-video-div {
   height: calc(100% - var(--menubar-height));
   border-radius: 0 !important;
-} */
-#media-player-container.mp-layout-fullscreen #mp-video-close-button {
-  display: none;
-}
-#media-player-container.mp-layout-fullscreen #mp-spectrum-div {
-  border-radius: 0 !important;
-  height: calc(100% - var(--menubar-height));
-  border-radius: 0 !important;
-  position: fixed;
-}
-#media-player-container.mp-layout-fullscreen #mp-spectrum-close-button {
-  display: none;
-}
-#media-player-container.mp-layout-fullscreen .mp-widget-title-div {
-  opacity: 1;
-  top: 3cqh;
-  left: 3cqh;
-  font-size: 3.5cqh;
-}
-/* #media-player-container:not(.mp-layout-fullscreen) #mp-video-div {
 } */
 
 .mp-zindex-reader {
@@ -874,6 +878,7 @@ a:hover a:visited {
 
 #media-player-container.mp-player-mode {
   margin: var(--mp-player-mode-margin);
+  --mp-frame-border-radius: 0px;
 
   &.mp-layout-fullscreen {
     top: 0 !important;

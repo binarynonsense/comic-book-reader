@@ -49,8 +49,6 @@ window.addEventListener("DOMContentLoaded", () => {
       document.getElementById("tools-scroll-to-top-button").title =
         localization.scrollToTop;
     } else if (args[0] == "set-player-mode") {
-      document.documentElement.style.setProperty("--mp-frame-border-radius", 0);
-      document.documentElement.style.setProperty("--mp-player-mode-margin", 0);
       // const observer = new ResizeObserver((entries) => {
       //   for (const entry of entries) {
       //     // const width = Math.ceil(entry.contentRect.width);
