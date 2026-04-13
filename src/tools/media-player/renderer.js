@@ -2074,11 +2074,24 @@ function updateTimeUI() {
         )
       : "--:--";
 
+    if (g_player.hasFixedDuration) {
+      slider.classList.remove("mp-disabled");
+    } else {
+      slider.classList.add("mp-disabled");
+    }
+
     if (g_settings.showAdvancedControls) {
       const currentDiv = document.getElementById("mp-time-current-span");
       const totalDiv = document.getElementById("mp-time-total-span");
       currentDiv.textContent = formattedCurrent;
       totalDiv.textContent = formattedTotal;
+      if (g_player.hasFixedDuration) {
+        currentDiv.classList.remove("mp-disabled");
+        totalDiv.classList.remove("mp-disabled");
+      } else {
+        currentDiv.classList.add("mp-disabled");
+        totalDiv.classList.add("mp-disabled");
+      }
     } else {
       statusT.textContent = formattedCurrent + " / " + formattedTotal;
     }
