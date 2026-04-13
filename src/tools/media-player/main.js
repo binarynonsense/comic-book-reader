@@ -429,7 +429,6 @@ exports.createTray = function () {
 };
 
 function createTrayIcon() {
-  log.test("create tray");
   // ref: https://www.electronjs.org/docs/latest/api/tray
   const { Tray } = require("electron");
 
@@ -449,7 +448,6 @@ function createTrayIcon() {
 function destroyTrayIcon() {
   // NOTE: doesn't work on Kubuntu 24.04
   if (g_tray) {
-    log.test("destroyTrayIcon");
     g_tray.setContextMenu(null);
     g_tray.destroy();
     g_tray = undefined;
