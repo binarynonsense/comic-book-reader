@@ -193,7 +193,7 @@ exports.show = function (type, params, data, sendIpcToRenderer, openEntry) {
       { type: "separator" },
       {
         label: data.isPlayerMode
-          ? _("tool-shared-ui-close")
+          ? _("menu-file-quit") //_("tool-shared-ui-close")
           : _("mp-menu-hide"),
         click() {
           sendIpcToRenderer("on-context-menu", "hide");

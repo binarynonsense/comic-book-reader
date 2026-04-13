@@ -98,7 +98,8 @@ function sanitize() {
   ) {
     g_settings.repeat = 0;
   }
-  if (typeof g_settings.fullView !== "boolean") {
+  // NOTE: hack, I won't allow starting in full view for now
+  if (true || typeof g_settings.fullView !== "boolean") {
     g_settings.fullView = false;
   }
   if (typeof g_settings.showPlaylist !== "boolean") {
