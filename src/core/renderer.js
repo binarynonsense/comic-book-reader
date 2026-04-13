@@ -118,7 +118,6 @@ function onIpcFromMain(event, args) {
         );
         mediaPlayerDiv.classList = "mp-player-mode";
         document.body.style.backgroundColor = "#22000000";
-
         break;
       }
 

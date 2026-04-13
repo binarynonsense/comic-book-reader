@@ -15,7 +15,7 @@ require("../shared/main/env-utils").setGlobalErrorHandlers();
 const timers = require("../shared/main/timers");
 timers.start("startup");
 
-const { app, ipcMain, screen } = require("electron");
+const { app, ipcMain } = require("electron");
 const os = require("node:os");
 const fs = require("node:fs");
 
@@ -394,7 +394,8 @@ ipcMain.on("main", (event, args) => {
             g_mainWindow.setFullScreen(false);
           }
           g_mainWindow.setMinimumSize(args[1], args[2]);
-          g_mainWindow.setSize(args[1] + 50, args[2] + 50);
+          let extra = { x: 0, y: 0 };
+          g_mainWindow.setSize(args[1] + extra.x, args[2] + extra.y);
         }
       }
     }

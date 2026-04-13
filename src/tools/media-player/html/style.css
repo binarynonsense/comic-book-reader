@@ -2,6 +2,8 @@
   --mp-frame-width: 300px;
   --mp-slider-thumb-width: 5px;
   --mp-subtitle-font-size: 5cqh;
+  --mp-frame-border-radius: 5px;
+  --mp-player-mode-margin: 0px;
 }
 
 #media-player-container {
@@ -14,14 +16,14 @@
   /* gap: 3px; */
 }
 #media-player-container > div:nth-child(1 of :not(.mp-hidden)) {
-  border-radius: 5px 5px 0 0;
+  border-radius: var(--mp-frame-border-radius) var(--mp-frame-border-radius) 0 0;
 }
 #media-player-container > div:nth-last-child(1 of :not(.mp-hidden)) {
-  border-radius: 0 0 5px 5px;
+  border-radius: 0 0 var(--mp-frame-border-radius) var(--mp-frame-border-radius);
 }
 #media-player-container
   > div:nth-child(1 of :not(.mp-hidden)):nth-last-child(1 of :not(.mp-hidden)) {
-  border-radius: 5px;
+  border-radius: var(--mp-frame-border-radius);
 }
 #media-player-container.mp-layout-fullscreen #mp-div-topbar {
   position: fixed;
@@ -602,13 +604,13 @@ a:hover a:visited {
   position: absolute;
   display: none;
   pointer-events: none;
-  top: 25px;
+  top: -15px;
   transform: translateX(-50%);
   background: rgba(0, 0, 0, 0.85);
   color: #fff;
-  padding: 2px 6px;
+  padding: 3px;
   border-radius: 4px;
-  font-size: 11px;
+  font-size: 10px;
   z-index: 1000;
   white-space: nowrap;
 }
@@ -620,13 +622,13 @@ a:hover a:visited {
   left: 100%;
   top: 50%;
   transform: translateY(-50%);
-  margin-left: 10px;
+  margin-left: 2px;
   background: rgba(0, 0, 0, 0.85);
   color: #fff;
-  padding: 2px 8px;
+  padding: 1px 3px;
   border-radius: 4px;
   font-family: monospace;
-  font-size: 12px;
+  font-size: 10px;
   white-space: nowrap;
   z-index: 100;
 }
@@ -660,13 +662,13 @@ a:hover a:visited {
   position: absolute;
   display: none;
   pointer-events: none;
-  top: 25px;
+  top: -15px;
   transform: translateX(-50%);
   background: rgba(0, 0, 0, 0.85);
   color: #fff;
-  padding: 2px 6px;
+  padding: 3px;
   border-radius: 4px;
-  font-size: 11px;
+  font-size: 10px;
   z-index: 1000;
   white-space: nowrap;
 }
@@ -675,16 +677,15 @@ a:hover a:visited {
   position: absolute;
   display: none;
   pointer-events: none;
-  left: 100%;
+  right: 100%;
   top: 50%;
   transform: translateY(-50%);
-  margin-left: 8px;
   background: rgba(0, 0, 0, 0.85);
   color: #fff;
-  padding: 2px 8px;
+  padding: 1px 3px;
   border-radius: 4px;
   font-family: monospace;
-  font-size: 12px;
+  font-size: 10px;
   white-space: nowrap;
   z-index: 100;
 }
@@ -872,7 +873,7 @@ a:hover a:visited {
 /* ******************************************************************** */
 
 #media-player-container.mp-player-mode {
-  margin: 10px;
+  margin: var(--mp-player-mode-margin);
 
   &.mp-layout-fullscreen {
     top: 0 !important;

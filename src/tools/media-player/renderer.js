@@ -1368,7 +1368,6 @@ function initUI() {
     });
   });
   //////
-
   g_player.html.sliderTime.addEventListener("mousemove", (event) => {
     if (g_player.hasFixedDuration) {
       const slider = g_player.html.sliderTime;
@@ -1382,13 +1381,14 @@ function initUI() {
 
       const rect = slider.getBoundingClientRect();
 
-      // TODO: calculate teh hardcoded offsets
+      // TODO: calculate the hardcoded offsets
+      hoverT.style.left = event.clientX - rect.left + "px";
       if (g_settings.showAdvancedControls) {
         g_player.html.sliderTimeStatusOverlay.style.display = "none";
-        hoverT.style.left = event.clientX - rect.left + 80 + "px";
+        // hoverT.style.left = event.clientX - rect.left + 80 + "px";
       } else {
         g_player.html.sliderTimeStatusOverlay.style.display = "block";
-        hoverT.style.left = event.clientX - rect.left + 30 + "px";
+        // hoverT.style.left = event.clientX - rect.left + 30 + "px";
       }
     } else {
       g_player.html.sliderTimeHoverTooltip.style.display = "none";

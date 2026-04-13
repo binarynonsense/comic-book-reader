@@ -82,13 +82,14 @@ exports.createWindow = function (_core, launchInfo) {
       height: 0,
       resizable: false,
       frame: false,
+      thickFrame: false,
       icon: path.join(__dirname, "../../assets/images/icon_256x256.png"),
       show: false,
       webPreferences: {
         sandbox: false, // needed for the custom-title-bar to work
         preload: path.join(__dirname, "../preload.js"),
       },
-      transparent: true,
+      backgroundColor: "#1a1a1a",
     };
   } else {
     options = {
@@ -267,7 +268,7 @@ exports.createWindow = function (_core, launchInfo) {
       // player mode ////
       log.debug("setting media player mode");
       sendIpcToCoreRenderer("set-player-mode");
-      sendIpcToPreload("set-player-mode");
+      sendIpcToPreload("set-player-mode", g_launchInfo);
       tools
         .getTools()
         [
