@@ -918,7 +918,7 @@ async function takeVideoScreenshot() {
 function clearPlayerSubtitle() {
   g_player.subtitle = undefined;
   if (g_player?.html?.videoSubtitleDiv)
-    g_player.html.videoSubtitleDiv.textContent = "";
+    g_player.html.videoSubtitleDiv.innerHTML = "&nbsp;";
   if (g_player?.html?.sliderTime)
     updateSubtitleUI(g_player.html.sliderTime.value);
 }
@@ -1029,10 +1029,15 @@ function updateSubtitleUI(relativeTime) {
       absoluteTime >= subtitle.start && absoluteTime <= subtitle.end,
   );
 
+  // NOTE: empty using "&nbsp;" instead of "" to fix a weird bug where on
+  // Windows on fullscreen, if cropping to 4:3 for example, when the UI isn't
+  // showing the video will be pushed to the right... don't know why this fixes
+  // it
+  // TODO: figure it out!
   if (index !== g_player.subtitle.dataIndex) {
     if (index !== -1) {
       const sub = g_player.subtitle.data[index];
-      g_player.html.videoSubtitleDiv.innerHTML = "";
+      g_player.html.videoSubtitleDiv.innerHTML = "&nbsp;";
       sub.text.split("\n").forEach((lineText, index, array) => {
         const span = document.createElement("span");
         span.textContent = lineText;
@@ -1041,7 +1046,7 @@ function updateSubtitleUI(relativeTime) {
       });
       // g_player.html.videoSubtitleDiv.textContent = sub.text;
     } else {
-      g_player.html.videoSubtitleDiv.textContent = "";
+      g_player.html.videoSubtitleDiv.innerHTML = "&nbsp;";
     }
     g_player.subtitle.dataIndex = index;
   }
