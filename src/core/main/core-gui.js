@@ -78,6 +78,8 @@ exports.createWindow = function (_core, launchInfo) {
   let options;
   if (g_launchInfo.isPlayerMode) {
     g_launchInfo.transparentWindow = g_launchInfo.platform === "linux";
+    if (g_launchInfo.parsedArgs["transparent"])
+      g_launchInfo.transparentWindow = true;
     options = {
       width: 300,
       height: 300,
