@@ -86,8 +86,8 @@ exports.createWindow = function (_core, launchInfo) {
       log.debug("forcing transparent window: false");
     }
     options = {
-      width: 300,
-      height: 300,
+      width: 150,
+      height: 100,
       resizable: true,
       frame: false,
       transparent: g_launchInfo.transparentWindow,
