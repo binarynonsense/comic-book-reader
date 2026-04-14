@@ -287,23 +287,11 @@ exports.createWindow = function (_core, launchInfo) {
       // g_mainWindow.webContents.openDevTools();
       g_mainWindow.setResizable(false);
       g_mainWindow.center();
-      let myIsFullscreen = false;
-      g_mainWindow.on("enter-full-screen", () => {
-        myIsFullscreen = true;
-        log.debug("-------------------");
-        log.debug("enter fullscreen");
-        log.debug("isFullScreen: " + g_mainWindow.isFullScreen());
-        log.debug("-------------------");
-      });
+      // g_mainWindow.on("enter-full-screen", () => {
+      // });
       g_mainWindow.on("leave-full-screen", () => {
         g_mainWindow.setResizable(false);
-        myIsFullscreen = false;
-        log.debug("-------------------");
-        log.debug("leave fullscreen");
-        log.debug("isFullScreen: " + g_mainWindow.isFullScreen());
-        log.debug("-------------------");
       });
-
       let moveTimeout;
       g_mainWindow.on("move", () => {
         if (g_mainWindow.isFullScreen()) return;
