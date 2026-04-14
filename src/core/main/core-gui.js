@@ -79,12 +79,11 @@ exports.createWindow = function (_core, launchInfo) {
   if (g_launchInfo.isPlayerMode) {
     g_launchInfo.transparentWindow = g_launchInfo.platform === "linux";
     options = {
-      width: 0,
-      height: 0,
-      resizable: false,
+      width: 300,
+      height: 300,
+      resizable: true,
       frame: false,
       transparent: g_launchInfo.transparentWindow,
-      thickFrame: false,
       icon: path.join(__dirname, "../../assets/images/icon_256x256.png"),
       show: false,
       webPreferences: {
@@ -309,6 +308,7 @@ exports.createWindow = function (_core, launchInfo) {
         } catch (error) {}
       });
     }
+    g_mainWindow.setResizable(false);
     g_mainWindow.show();
     if (inputFileAndFolderPaths && inputFileAndFolderPaths.length > 0) {
       setTimeout(() => {
