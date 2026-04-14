@@ -723,9 +723,13 @@ exports.onLanguageChanged = onLanguageChanged;
 
 function renderTitle() {
   let title = "ACBR";
-  if (tools.getCurrentToolName() === "reader") {
-    title = reader.generateTitle();
+  if (g_launchInfo.isPlayerMode) {
+    title = "ACBR Player";
   } else {
+    if (tools.getCurrentToolName() === "reader") {
+      title = reader.generateTitle();
+    } else {
+    }
   }
   g_mainWindow.setTitle(title);
   sendIpcToPreload("update-title", title);
