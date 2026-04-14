@@ -78,8 +78,13 @@ exports.createWindow = function (_core, launchInfo) {
   let options;
   if (g_launchInfo.isPlayerMode) {
     g_launchInfo.transparentWindow = g_launchInfo.platform === "linux";
-    if (g_launchInfo.parsedArgs["transparent"])
+    if (g_launchInfo.parsedArgs["transparent"] === "1") {
       g_launchInfo.transparentWindow = true;
+      log.debug("forcing transparent window: true");
+    } else if (g_launchInfo.parsedArgs["transparent"] === "2") {
+      g_launchInfo.transparentWindow = false;
+      log.debug("forcing transparent window: false");
+    }
     options = {
       width: 300,
       height: 300,
@@ -278,9 +283,10 @@ exports.createWindow = function (_core, launchInfo) {
           "media-player"
         ].init(g_launchInfo, core.getMainWindow(), "media-player-container", settings.canUseFFmpeg() ? utils.getFfmpegCommand(settings.getValue("ffmpegExeFolderPath")) : undefined);
       tools.getTools()["media-player"].open(true);
-      g_mainWindow.center();
       tools.getTools()["media-player"].createTray();
       // g_mainWindow.webContents.openDevTools();
+      g_mainWindow.setResizable(false);
+      g_mainWindow.center();
       g_mainWindow.on("move", () => {
         try {
           if (g_mainWindow.isFullScreen()) return;
@@ -310,7 +316,6 @@ exports.createWindow = function (_core, launchInfo) {
         } catch (error) {}
       });
     }
-    g_mainWindow.setResizable(false);
     g_mainWindow.show();
     if (inputFileAndFolderPaths && inputFileAndFolderPaths.length > 0) {
       setTimeout(() => {

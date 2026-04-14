@@ -88,6 +88,7 @@ const options = {
   dev: { type: "boolean" },
   cli: { type: "boolean" },
   player: { type: "boolean" }, //, short: "p" },
+  transparent: { type: "string" },
   tool: { type: "string" },
   "output-format": { type: "string" },
   "output-folder": { type: "string" },
