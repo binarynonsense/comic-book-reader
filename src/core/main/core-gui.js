@@ -77,11 +77,13 @@ exports.createWindow = function (_core, launchInfo) {
   menuBar.empty();
   let options;
   if (g_launchInfo.isPlayerMode) {
+    g_launchInfo.transparentWindow = g_launchInfo.platform === "linux";
     options = {
       width: 0,
       height: 0,
       resizable: false,
       frame: false,
+      transparent: g_launchInfo.transparentWindow,
       thickFrame: false,
       icon: path.join(__dirname, "../../assets/images/icon_256x256.png"),
       show: false,
@@ -89,7 +91,7 @@ exports.createWindow = function (_core, launchInfo) {
         sandbox: false, // needed for the custom-title-bar to work
         preload: path.join(__dirname, "../preload.js"),
       },
-      backgroundColor: "#1a1a1a",
+      backgroundColor: g_launchInfo.transparentWindow ? undefined : "#1a1a1a",
     };
   } else {
     options = {
@@ -267,7 +269,7 @@ exports.createWindow = function (_core, launchInfo) {
     } else {
       // player mode ////
       log.debug("setting media player mode");
-      sendIpcToCoreRenderer("set-player-mode");
+      sendIpcToCoreRenderer("set-player-mode", g_launchInfo.transparentWindow);
       sendIpcToPreload("set-player-mode", g_launchInfo);
       tools
         .getTools()
@@ -292,6 +294,8 @@ exports.createWindow = function (_core, launchInfo) {
           });
           const area = currentScreen.workArea;
           let padding = { top: 0, bottom: 0, left: 0, right: 0 };
+          if (g_launchInfo.transparentWindow)
+            padding = { top: 10, bottom: 10, left: 10, right: 10 };
           if (y - padding.top < area.y) y = area.y - padding.top;
           else if (y + height - padding.bottom > area.y + area.height) {
             y = area.y + area.height - height + padding.bottom;

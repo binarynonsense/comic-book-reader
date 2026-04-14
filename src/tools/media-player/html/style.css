@@ -3,7 +3,6 @@
   --mp-slider-thumb-width: 5px;
   --mp-subtitle-font-size: 5cqh;
   --mp-frame-border-radius: 5px;
-  --mp-player-mode-margin: 0px;
 }
 
 #media-player-container {
@@ -877,8 +876,13 @@ a:hover a:visited {
 /* ******************************************************************** */
 
 #media-player-container.mp-player-mode {
-  margin: var(--mp-player-mode-margin);
+  margin: 0;
   --mp-frame-border-radius: 0px;
+
+  &.mp-transparent-window {
+    margin: 10px;
+    --mp-frame-border-radius: 5px;
+  }
 
   &.mp-layout-fullscreen {
     top: 0 !important;

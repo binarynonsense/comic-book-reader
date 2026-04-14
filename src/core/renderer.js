@@ -117,6 +117,9 @@ function onIpcFromMain(event, args) {
           "#media-player-container",
         );
         mediaPlayerDiv.classList = "mp-player-mode";
+        if (args[2]) {
+          mediaPlayerDiv.classList = "mp-player-mode mp-transparent-window";
+        }
         document.body.style.backgroundColor = "#22000000";
         break;
       }

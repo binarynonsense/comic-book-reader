@@ -395,6 +395,7 @@ ipcMain.on("main", (event, args) => {
           }
           g_mainWindow.setMinimumSize(args[1], args[2]);
           let extra = { x: 0, y: 0 };
+          if (g_launchInfo.transparentWindow) extra = { x: 20, y: 20 };
           g_mainWindow.setSize(args[1] + extra.x, args[2] + extra.y);
         }
       }
