@@ -383,23 +383,31 @@ ipcMain.on("main", (event, args) => {
   if (args[0] === "menu-accelerator-pressed") {
     windowManager.onIpcMenuAcceleratorPressed(args[1]);
   } else if (args[0] === "resize-player-mode") {
-    if (g_launchInfo.isPlayerMode) {
-      if (g_mainWindow) {
-        if (args[3]) {
-          if (!g_mainWindow.isFullScreen()) {
-            tools.getTools()["media-player"].updateLastPosition();
-            g_mainWindow.setFullScreen(true);
-          }
-        } else {
-          if (g_mainWindow.isFullScreen()) {
-            g_mainWindow.setFullScreen(false);
-          }
-          g_mainWindow.setMinimumSize(args[1], args[2]);
-          let extra = { x: 0, y: 0 };
-          if (g_launchInfo.transparentWindow) extra = { x: 20, y: 20 };
-          g_mainWindow.setSize(args[1] + extra.x, args[2] + extra.y);
+    if (g_launchInfo.isPlayerMode && g_mainWindow) {
+      log.debug("-------------------");
+      log.debug("resize-player-mode");
+      log.debug("fullscreen id: " + args[3]);
+      log.debug("isFullScreen: " + g_mainWindow.isFullScreen());
+      if (args[3]) {
+        if (!g_mainWindow.isFullScreen()) {
+          tools.getTools()["media-player"].updateLastPosition();
+          log.debug("setFullScreen(true)");
+          g_mainWindow.setResizable(true);
+          g_mainWindow.setFullScreen(true);
         }
+      } else {
+        if (g_mainWindow.isFullScreen()) {
+          log.debug("setFullScreen(false)");
+          g_mainWindow.setFullScreen(false);
+        }
+        g_mainWindow.setMinimumSize(args[1], args[2]);
+        let extra = { x: 0, y: 0 };
+        if (g_launchInfo.transparentWindow) extra = { x: 20, y: 20 };
+        g_mainWindow.setSize(args[1] + extra.x, args[2] + extra.y);
+        log.debug("setMinimumSize: " + [args[1], args[2]]);
+        log.debug("setSize: " + [args[1] + extra.x, args[2] + extra.y]);
       }
+      log.debug("-------------------");
     }
   } else if (args[0] === "open-path-in-browser") {
     appUtils.openPathInFileBrowser(args[1]);

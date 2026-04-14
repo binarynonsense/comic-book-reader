@@ -287,33 +287,54 @@ exports.createWindow = function (_core, launchInfo) {
       // g_mainWindow.webContents.openDevTools();
       g_mainWindow.setResizable(false);
       g_mainWindow.center();
+      let myIsFullscreen = false;
+      g_mainWindow.on("enter-full-screen", () => {
+        myIsFullscreen = true;
+        log.debug("-------------------");
+        log.debug("enter fullscreen");
+        log.debug("isFullScreen: " + g_mainWindow.isFullScreen());
+        log.debug("-------------------");
+      });
+      g_mainWindow.on("leave-full-screen", () => {
+        g_mainWindow.setResizable(false);
+        myIsFullscreen = false;
+        log.debug("-------------------");
+        log.debug("leave fullscreen");
+        log.debug("isFullScreen: " + g_mainWindow.isFullScreen());
+        log.debug("-------------------");
+      });
+
+      let moveTimeout;
       g_mainWindow.on("move", () => {
-        try {
-          if (g_mainWindow.isFullScreen()) return;
-          const bounds = g_mainWindow.getBounds();
-          const [width, height] = g_mainWindow.getSize();
-          const { screen } = require("electron");
-          let { x, y } = bounds;
-          // const area = screen.getPrimaryDisplay().workArea;
-          const currentScreen = screen.getDisplayNearestPoint({
-            x,
-            y,
-          });
-          const area = currentScreen.workArea;
-          let padding = { top: 0, bottom: 0, left: 0, right: 0 };
-          if (g_launchInfo.transparentWindow)
-            padding = { top: 10, bottom: 10, left: 10, right: 10 };
-          if (y - padding.top < area.y) y = area.y - padding.top;
-          else if (y + height - padding.bottom > area.y + area.height) {
-            y = area.y + area.height - height + padding.bottom;
-          }
-          if (x - padding.left < area.x) {
-            x = area.x - padding.left;
-          } else if (x + width - padding.right > area.x + area.width) {
-            x = area.x + area.width - width + padding.right;
-          }
-          g_mainWindow.setPosition(Math.round(x), Math.round(y));
-        } catch (error) {}
+        if (g_mainWindow.isFullScreen()) return;
+        clearTimeout(moveTimeout);
+        moveTimeout = setTimeout(() => {
+          try {
+            const bounds = g_mainWindow.getBounds();
+            const [width, height] = g_mainWindow.getSize();
+            const { screen } = require("electron");
+            let { x, y } = bounds;
+            // const area = screen.getPrimaryDisplay().workArea;
+            const currentScreen = screen.getDisplayNearestPoint({
+              x,
+              y,
+            });
+            const area = currentScreen.workArea;
+            let padding = { top: 0, bottom: 0, left: 0, right: 0 };
+            if (g_launchInfo.transparentWindow)
+              padding = { top: 10, bottom: 10, left: 10, right: 10 };
+            if (y - padding.top < area.y) y = area.y - padding.top;
+            else if (y + height - padding.bottom > area.y + area.height) {
+              y = area.y + area.height - height + padding.bottom;
+            }
+            if (x - padding.left < area.x) {
+              x = area.x - padding.left;
+            } else if (x + width - padding.right > area.x + area.width) {
+              x = area.x + area.width - width + padding.right;
+            }
+            g_mainWindow.setPosition(Math.round(x), Math.round(y));
+          } catch (error) {}
+        }, 250);
       });
     }
     g_mainWindow.show();
