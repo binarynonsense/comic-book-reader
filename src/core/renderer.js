@@ -116,9 +116,12 @@ function onIpcFromMain(event, args) {
         const mediaPlayerDiv = document.querySelector(
           "#media-player-container",
         );
+        const modalsDiv = document.querySelector("#modals");
         mediaPlayerDiv.classList = "mp-player-mode";
+        modalsDiv.classList = "mp-player-mode";
         if (args[2]) {
           mediaPlayerDiv.classList = "mp-player-mode mp-transparent-window";
+          modalsDiv.classList = "mp-player-mode mp-transparent-window";
         }
         document.body.style.backgroundColor = "#22000000";
         break;

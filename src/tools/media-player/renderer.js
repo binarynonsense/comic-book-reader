@@ -1750,11 +1750,21 @@ function refreshUI() {
   ///////////////////////////////////////////////////////////////////////////
   if (g_settings.fullView) {
     g_player.html.playerDiv.classList.add("mp-layout-fullscreen");
+    if (g_isPlayerMode) {
+      document
+        .querySelector("#modals")
+        .classList.add("modals-layout-fullscreen");
+    }
     document.documentElement.style.setProperty("--mp-frame-width", `500px`);
     //
     g_player.html.buttonTogglePlaylist.classList.add("mp-disabled");
   } else {
     g_player.html.playerDiv.classList.remove("mp-layout-fullscreen");
+    if (g_isPlayerMode) {
+      document
+        .querySelector("#modals")
+        .classList.remove("modals-layout-fullscreen");
+    }
     g_player.html.topBar.style.opacity = "1";
     g_player.html.topBar.style.visibility = "visible";
     if (g_settings.size === 0) {

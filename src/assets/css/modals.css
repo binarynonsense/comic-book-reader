@@ -2,6 +2,7 @@
   z-index: 500;
   cursor: auto;
 }
+
 .modal {
   position: absolute;
   top: calc(var(--menubar-height));
@@ -26,6 +27,7 @@
   /* border: 1px solid var(--modal-text-color); */
   border-radius: 5px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  margin: 20px;
 }
 
 .modal-frame-show {
@@ -268,4 +270,27 @@
   text-align: justify;
   word-break: normal;
   line-height: 1.2;
+}
+
+/* ******************************* */
+
+#modals.mp-player-mode:not(.modals-layout-fullscreen) {
+  .modal {
+    top: 0;
+    width: var(--mp-frame-width);
+    padding: 10px !important;
+  }
+
+  &.mp-transparent-window {
+    .modal {
+      top: 10px;
+      left: 10px;
+      width: var(--mp-frame-width);
+      padding: 10px;
+    }
+
+    .modal-frame {
+      margin: 0px;
+    }
+  }
 }
