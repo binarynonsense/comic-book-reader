@@ -64,6 +64,10 @@ function initOnIpcCallbacks() {
     log.test(value);
   });
 
+  on("toggle-dev-tools", () => {
+    if (core.isDev()) g_mainWindow.toggleDevTools();
+  });
+
   on("save-on-quit", (_settings, _playlist, _historyData) => {
     try {
       settings.set(_settings);

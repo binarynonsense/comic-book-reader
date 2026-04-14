@@ -115,57 +115,66 @@ document.body.ondrop = (event) => {
 
 function initKeyboard() {
   document.onkeydown = function (event) {
-    // TODO: check open file, open history, audio player, scrollbar... accelerators pressed and act accordingly
-    if (
-      event.key === "PageDown" ||
-      event.key === "PageUp" ||
-      event.key === "F1" ||
-      event.key === "F2" ||
-      event.key === "F3" ||
-      event.key === "F4" ||
-      event.key === "F5" ||
-      event.key === "F6" ||
-      event.key === "F7" ||
-      event.key === "F8" ||
-      event.key === "F9" ||
-      event.key === "F10" ||
-      event.key === "F11" ||
-      event.key === "F12" ||
-      (event.key === "-" && event.ctrlKey) ||
-      (event.key === "+" && event.ctrlKey) ||
-      (event.key === "0" && event.ctrlKey)
-    ) {
-      event.preventDefault();
-    } // modals need arrows and enter default, tab?
+    try {
+      // TODO: check open file, open history, audio player, scrollbar... accelerators pressed and act accordingly
+      if (
+        event.key === "PageDown" ||
+        event.key === "PageUp" ||
+        event.key === "F1" ||
+        event.key === "F2" ||
+        event.key === "F3" ||
+        event.key === "F4" ||
+        event.key === "F5" ||
+        event.key === "F6" ||
+        event.key === "F7" ||
+        event.key === "F8" ||
+        event.key === "F9" ||
+        event.key === "F10" ||
+        event.key === "F11" ||
+        event.key === "F12" ||
+        (event.key === "-" && event.ctrlKey) ||
+        (event.key === "+" && event.ctrlKey) ||
+        (event.key === "0" && event.ctrlKey)
+      ) {
+        event.preventDefault();
+      } // modals need arrows and enter default, tab?
 
-    // shortcuts - all /////////////////////////////////////////
+      const mediaPlayerDiv = document.querySelector("#media-player-container");
+      const isPlayerMode = mediaPlayerDiv.classList.contains("mp-player-mode");
 
-    if (checkShortcut("toggleFullScreen", "fullscreen")) {
-      return;
-    } else if (checkShortcut("quit", "quit")) {
-      return;
-    } else if (checkShortcut("toggleMediaPlayer", "media-player")) {
-      return;
+      // shortcuts - all /////////////////////////////////////////
+
+      if (!isPlayerMode) {
+        if (checkShortcut("toggleFullScreen", "fullscreen")) {
+          return;
+        } else if (checkShortcut("quit", "quit")) {
+          return;
+        } else if (checkShortcut("toggleMediaPlayer", "media-player")) {
+          return;
+        }
+      }
+
+      //////////////////////////////////////////////////////////
+
+      if (getOpenModal()) {
+        modals.onInputEvent(getOpenModal(), "onkeydown", event);
+        return;
+      } else if (getTools()["media-player"].getOpenModal()) {
+        modals.onInputEvent(
+          getTools()["media-player"].getOpenModal(),
+          "onkeydown",
+          event,
+        );
+        return;
+      }
+
+      //////////////////////////////////////////////////////////
+
+      getTools()["media-player"].onInputEvent("onkeydown", event);
+      if (!isPlayerMode) getCurrentTool().onInputEvent("onkeydown", event);
+    } catch (error) {
+      console.log(error);
     }
-
-    //////////////////////////////////////////////////////////
-
-    if (getOpenModal()) {
-      modals.onInputEvent(getOpenModal(), "onkeydown", event);
-      return;
-    } else if (getTools()["media-player"].getOpenModal()) {
-      modals.onInputEvent(
-        getTools()["media-player"].getOpenModal(),
-        "onkeydown",
-        event,
-      );
-      return;
-    }
-
-    //////////////////////////////////////////////////////////
-
-    getTools()["media-player"].onInputEvent("onkeydown", event);
-    getCurrentTool().onInputEvent("onkeydown", event);
   };
 }
 

@@ -2591,6 +2591,11 @@ export function onInputEvent(type, event) {
         if (g_settings.fullView) {
           takeVideoScreenshot();
         }
+      } else if (event.key === "F11") {
+        // TODO toggle fullscreen
+        sendIpcToMain("log-test", "TODO toggle fullscreen");
+      } else if (event.key === "F10") {
+        sendIpcToMain("toggle-dev-tools");
       }
       break;
     case "mousemove":
