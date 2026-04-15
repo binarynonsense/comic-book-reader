@@ -57,6 +57,8 @@ let g_imageIndex = 0;
 
 let g_inputFiles;
 let g_inputFilesIndex;
+let g_numErrors = 0;
+let g_failedFilePaths = [];
 
 function init() {
   if (!g_isInitialized) {
@@ -64,7 +66,6 @@ function init() {
     initHandleIpcCallbacks();
     g_isInitialized = true;
   }
-
   g_initialPassword = "";
   g_uiSelectedOptions.outputFileBaseName = undefined;
 }
@@ -121,7 +122,6 @@ exports.close = function () {
   temp.deleteSubFolder(g_tempSubFolderPath);
   g_tempSubFolderPath = undefined;
   temp.deleteSubFolder(g_creationTempSubFolderPath);
-  g_tempSubFolderPath = undefined;
   g_creationTempSubFolderPath = undefined;
 };
 
@@ -333,20 +333,6 @@ function initOnIpcCallbacks() {
     onStartClicked(...args);
   });
 
-  on("start", (...args) => {
-    menuBar.setCloseTool(false);
-    sendIpcToPreload("update-menubar");
-    start(...args);
-  });
-
-  on("start-file", (...args) => {
-    startFile(...args);
-  });
-
-  on("process-content", (...args) => {
-    processContent(...args);
-  });
-
   /////////////////////////
 
   on("cancel", () => {
@@ -367,10 +353,6 @@ function initOnIpcCallbacks() {
 
   on("stop-error", (errorMsg) => {
     stopError(undefined, errorMsg);
-  });
-
-  on("end", (...args) => {
-    end(...args);
   });
 
   on("copy-text-to-clipboard", (text) => {
@@ -402,12 +384,16 @@ function initHandleIpcCallbacks() {}
 
 async function onStartClicked(inputList, selectedOptions) {
   g_inputFiles = [];
+  g_inputFilesIndex = -1;
+  g_numErrors = 0;
+  g_failedFilePaths = [];
 
   function isAlreadyInInputList(filePath) {
     return g_inputFiles.some((e) => e.path === filePath);
   }
 
   g_uiSelectedOptions = structuredClone(selectedOptions);
+  // log.test(g_uiSelectedOptions);
   for (let index = 0; index < inputList.length; index++) {
     const inputListItem = inputList[index];
     if (inputListItem.type === 0) {
@@ -487,27 +473,26 @@ async function onStartClicked(inputList, selectedOptions) {
       }
     }
   }
-  if (g_inputFiles.length > 0)
-    sendIpcToRenderer("start-accepted", g_inputFiles);
-  else
+  ////
+  if (g_inputFiles.length <= 0) {
     sendIpcToRenderer(
       "show-modal-info",
       _("tool-shared-modal-title-error"),
       _("tool-shared-modal-log-failed-reason-no-valid-file"),
       _("tool-shared-ui-close").toUpperCase(),
     );
-}
-
-//////////////////////
-
-function start() {
+    return;
+  }
+  sendIpcToRenderer("start-accepted");
+  ////
+  menuBar.setCloseTool(false);
+  sendIpcToPreload("update-menubar");
   timers.start("convert-comics");
   g_cancel = false;
   g_imageIndex = 0;
-  g_inputFilesIndex = undefined;
   if (g_mode === ToolMode.CONVERT || g_mode === ToolMode.EXTRACT) {
     g_uiSelectedOptions.outputFileBaseName = undefined;
-    sendIpcToRenderer("start-first-file");
+    startNextFile();
   } else {
     // ToolMode.CREATE
     g_tempSubFolderPath = temp.createSubFolder();
@@ -535,23 +520,22 @@ function start() {
         const outPath = path.join(g_tempSubFolderPath, outName);
         fs.copyFileSync(inputFilePath, outPath, fs.constants.COPYFILE_EXCL);
       }
-      sendIpcToRenderer("file-images-extracted");
+      processContent();
     } else {
-      sendIpcToRenderer("start-first-file");
+      startNextFile();
     }
   }
 }
 
 //////////////////////
 
-function startFile(inputFileIndex, totalFilesNum) {
+function startNextFile() {
   try {
-    g_inputFilesIndex = inputFileIndex;
-
     if (g_cancel === true) {
       stopCancel();
       return;
     }
+    g_inputFilesIndex++;
     let inputFilePath = g_inputFiles[g_inputFilesIndex].path;
     let inputFileType = g_inputFiles[g_inputFilesIndex].type;
     let fileNum = g_inputFilesIndex + 1;
@@ -566,7 +550,9 @@ function startFile(inputFileIndex, totalFilesNum) {
     sendIpcToRenderer(
       "modal-update-title-text",
       updateTitle +
-        (totalFilesNum > 1 ? " (" + fileNum + "/" + totalFilesNum + ")" : ""),
+        (g_inputFiles.length > 1
+          ? " (" + fileNum + "/" + g_inputFiles.length + ")"
+          : ""),
     );
     sendIpcToRenderer(
       "update-info-text",
@@ -646,7 +632,7 @@ function startFile(inputFileIndex, totalFilesNum) {
         inputFilePath,
         g_uiSelectedOptions.inputSearchFoldersRecursively,
       );
-      sendIpcToRenderer("file-images-extracted");
+      processContent();
     } else if (inputFileType === FileDataType.IMG) {
       const extension = path.extname(inputFilePath);
       let outName = g_imageIndex++ + extension;
@@ -654,7 +640,7 @@ function startFile(inputFileIndex, totalFilesNum) {
       fs.copyFileSync(inputFilePath, outPath, fs.constants.COPYFILE_EXCL);
       temp.deleteSubFolder(g_creationTempSubFolderPath);
       g_creationTempSubFolderPath = undefined;
-      sendIpcToRenderer("file-images-extracted");
+      processContent();
     } else if (
       inputFileType === FileDataType.ZIP ||
       inputFileType === FileDataType.RAR ||
@@ -717,7 +703,7 @@ function startFile(inputFileIndex, totalFilesNum) {
                 temp.deleteSubFolder(g_creationTempSubFolderPath);
                 g_creationTempSubFolderPath = undefined;
               }
-              sendIpcToRenderer("file-images-extracted");
+              processContent();
               return;
             } else {
               if (message.error === "no_disk_space") {
@@ -841,7 +827,7 @@ exports.onIpcFromToolsWorkerRenderer = function (...args) {
           temp.deleteSubFolder(g_creationTempSubFolderPath);
           g_creationTempSubFolderPath = undefined;
         }
-        sendIpcToRenderer("file-images-extracted");
+        processContent();
       } else stopCancel();
       break;
     case "stop-error":
@@ -855,6 +841,21 @@ exports.onIpcFromToolsWorkerRenderer = function (...args) {
 ///////////////////////////////////////////////////////////////////////////////
 // TOOL END ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
+
+function onFileFinishedSuccess() {
+  if (g_mode === ToolMode.CREATE) {
+    if (g_inputFilesIndex < 0) {
+      // special case, all images done at once
+      end(false, g_inputFiles.length, 0, g_inputFiles.length);
+      return;
+    }
+  }
+  if (g_inputFilesIndex < g_inputFiles.length - 1) {
+    startNextFile();
+  } else {
+    end(false, g_inputFiles.length, g_numErrors, g_inputFilesIndex + 1);
+  }
+}
 
 function end(wasCanceled, numFiles, numErrors, numAttempted) {
   const conversionTime = timers.stop("convert-comics");
@@ -957,10 +958,13 @@ function end(wasCanceled, numFiles, numErrors, numAttempted) {
           : "",
     );
   }
-
   menuBar.setCloseTool(true);
   sendIpcToPreload("update-menubar");
-  sendIpcToRenderer("show-result", _("tool-shared-modal-log-failed-files"));
+  sendIpcToRenderer(
+    "show-result",
+    _("tool-shared-modal-log-failed-files"),
+    g_failedFilePaths,
+  );
 }
 
 function stopError(error, errorMessage, nameAsError = true) {
@@ -1016,6 +1020,23 @@ function stopError(error, errorMessage, nameAsError = true) {
 
   updateModalLogText(" ");
   sendIpcToRenderer("file-finished-error");
+  //////////////
+  if (g_mode === ToolMode.CONVERT || g_mode === ToolMode.EXTRACT) {
+    g_numErrors++;
+    g_failedFilePaths.push(g_inputFiles[g_inputFilesIndex]);
+    if (g_inputFilesIndex < g_inputFiles.length - 1) {
+      startNextFile();
+    } else {
+      end(false, g_inputFiles.length, g_numErrors, g_inputFilesIndex + 1);
+    }
+  } else {
+    end(
+      false,
+      g_inputFiles.length,
+      g_inputFiles.length,
+      g_inputFilesIndex, // last one wasn't converted or error
+    );
+  }
 }
 
 function stopCancel() {
@@ -1032,6 +1053,12 @@ function stopCancel() {
   );
   updateModalLogText("");
   sendIpcToRenderer("file-finished-canceled");
+  end(
+    true,
+    g_inputFiles.length,
+    g_numErrors,
+    g_inputFilesIndex, // last one wasn't converted or error
+  );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1130,8 +1157,17 @@ function copyImagesToTempFolder(sourceFolderPath, doRecursively) {
 // IMAGE OPERATIONS ///////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-async function processContent(inputFilePath) {
+async function processContent() {
   try {
+    if (
+      g_mode === ToolMode.CREATE &&
+      g_inputFilesIndex < g_inputFiles.length - 1
+    ) {
+      startNextFile();
+      return;
+    }
+    const inputFilePath =
+      g_inputFilesIndex >= 0 ? g_inputFiles[g_inputFilesIndex].path : undefined;
     ///////////////////////////////////////////////
     // SORT FILES /////////////////////////////////
     ///////////////////////////////////////////////
@@ -1427,7 +1463,7 @@ async function createFilesFromImages(
               updateModalLogText(element);
             });
             updateModalLogText("");
-            sendIpcToRenderer("file-finished-ok");
+            onFileFinishedSuccess();
             return;
           } else {
             stopError(message.error);
@@ -1450,7 +1486,7 @@ async function createFilesFromImages(
     }
     let outputFolderPath = g_uiSelectedOptions.outputFolderPath;
     if (
-      g_inputFilesIndex !== undefined &&
+      g_inputFilesIndex >= 0 &&
       g_inputFiles[g_inputFilesIndex].outputFolderPath
     ) {
       outputFolderPath = g_inputFiles[g_inputFilesIndex].outputFolderPath;
@@ -1535,7 +1571,7 @@ async function createFolderWithImages(imgFilePaths, outputFolderPath) {
       }
       temp.deleteSubFolder(g_tempSubFolderPath);
       g_tempSubFolderPath = undefined;
-      sendIpcToRenderer("file-finished-ok");
+      onFileFinishedSuccess();
     } else {
       stopError("tool-ec folder shouldn't exist");
     }

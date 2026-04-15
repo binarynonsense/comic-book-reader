@@ -22,15 +22,9 @@ const ToolMode = {
 let g_mode = ToolMode.CONVERT;
 
 let g_inputList = [];
-let g_inputFiles = [];
-let g_inputFilesIndex = 0;
 let g_inputListID = 0;
 
 let g_cancel = false;
-let g_numErrors = 0;
-let g_failedFilePaths = [];
-
-let g_inputFilePath;
 
 let g_inputListDiv;
 let g_outputFolderDiv;
@@ -82,12 +76,7 @@ function init(
   g_inputList = [];
   g_inputListID = 0;
 
-  g_inputFiles = [];
-  g_inputFilesIndex = -1;
-
   g_cancel = false;
-  g_numErrors = 0;
-  g_failedFilePaths = [];
 
   // menu buttons
   document
@@ -1125,56 +1114,8 @@ function initOnIpcCallbacks() {
 
   /////////////////////////////////////////////////////////////////////////////
 
-  on("start-accepted", (inputFiles) => {
-    onStart(inputFiles);
-  });
-
-  on("start-first-file", () => {
-    onStartNextFile();
-  });
-
-  on("file-images-extracted", () => {
-    if (g_mode === ToolMode.CONVERT || g_mode === ToolMode.EXTRACT) {
-      sendIpcToMain("process-content", g_inputFilePath);
-    } else {
-      // create tool
-      if (
-        g_inputFilePath === undefined || // special case, all images done at once
-        g_inputFilesIndex === g_inputFiles.length - 1
-      ) {
-        // all done - resize and make file
-        sendIpcToMain("process-content", g_inputFilePath);
-      } else {
-        onStartNextFile();
-      }
-    }
-  });
-
-  on("file-finished-ok", () => {
-    if (g_mode === ToolMode.CREATE) {
-      if (g_inputFilePath === undefined) {
-        // special case, all images done at once
-        sendIpcToMain(
-          "end",
-          false,
-          g_inputFiles.length,
-          0,
-          g_inputFiles.length,
-        );
-        return;
-      }
-    }
-    if (g_inputFilesIndex < g_inputFiles.length - 1) {
-      onStartNextFile();
-    } else {
-      sendIpcToMain(
-        "end",
-        false,
-        g_inputFiles.length,
-        g_numErrors,
-        g_inputFilesIndex + 1,
-      );
-    }
+  on("start-accepted", () => {
+    onStartAccepted();
   });
 
   on("file-finished-error", () => {
@@ -1184,19 +1125,6 @@ function initOnIpcCallbacks() {
     if (g_mode === ToolMode.CONVERT || g_mode === ToolMode.EXTRACT) {
       modalButtonClose.classList.remove("modal-button-success-color");
       modalButtonClose.classList.add("modal-button-danger-color");
-      g_numErrors++;
-      g_failedFilePaths.push(g_inputFiles[g_inputFilesIndex]);
-      if (g_inputFilesIndex < g_inputFiles.length - 1) {
-        onStartNextFile();
-      } else {
-        sendIpcToMain(
-          "end",
-          false,
-          g_inputFiles.length,
-          g_numErrors,
-          g_inputFilesIndex + 1,
-        );
-      }
     } else {
       const modalButtonCancel = g_openModal.querySelector(
         "#tool-cc-modal-cancel-button",
@@ -1209,13 +1137,6 @@ function initOnIpcCallbacks() {
         modalButtonClose.classList.add("modal-button-danger-color");
       }
       modalLoadingBar.classList.add("set-display-none");
-      sendIpcToMain(
-        "end",
-        false,
-        g_inputFiles.length,
-        g_inputFiles.length,
-        g_inputFilesIndex, // last one wasn't converted or error
-      );
     }
   });
 
@@ -1235,22 +1156,15 @@ function initOnIpcCallbacks() {
       modalButtonClose.classList.add("modal-button-danger-color");
     }
     modalLoadingBar.classList.add("set-display-none");
-    sendIpcToMain(
-      "end",
-      true,
-      g_inputFiles.length,
-      g_numErrors,
-      g_inputFilesIndex, // last one wasn't converted or error
-    );
   });
 
-  on("show-result", (failedFilesText) => {
-    if (g_failedFilePaths.length > 0) {
+  on("show-result", (failedFilesText, failedFilePaths) => {
+    if (failedFilePaths.length > 0) {
       updateLogText(
         "------------ " + failedFilesText + ": ------------\n",
         true,
       );
-      g_failedFilePaths.forEach((fileData) => {
+      failedFilePaths.forEach((fileData) => {
         updateLogText(fileData.path, true);
       });
     }
@@ -1531,14 +1445,9 @@ function onMoveFileDownInList(element, id) {
   }
 }
 
-function onStart(inputFiles) {
+function onStartAccepted() {
   if (!g_openModal) showLogModal(); // TODO: check if first time?
 
-  g_inputFiles = inputFiles;
-  g_inputFilePath = undefined;
-  g_inputFilesIndex = -1;
-  g_numErrors = 0;
-  g_failedFilePaths = [];
   updateLogText("", false);
 
   g_cancel = false;
@@ -1557,18 +1466,9 @@ function onStart(inputFiles) {
   modalButtonCancel.classList.remove("set-display-none");
   modalButtonClose.classList.add("set-display-none");
   modalButtonCopyLog.classList.add("set-display-none");
-  if (g_numErrors === 0) {
-    modalButtonClose.classList.add("modal-button-success-color");
-    modalButtonClose.classList.remove("modal-button-danger-color");
-  }
 
-  sendIpcToMain("start");
-}
-
-function onStartNextFile() {
-  g_inputFilesIndex++;
-  g_inputFilePath = g_inputFiles[g_inputFilesIndex].path;
-  sendIpcToMain("start-file", g_inputFilesIndex, g_inputFiles.length);
+  modalButtonClose.classList.add("modal-button-success-color");
+  modalButtonClose.classList.remove("modal-button-danger-color");
 }
 
 function onCancel() {
