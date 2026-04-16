@@ -22,15 +22,19 @@ let g_isDev = false;
 // ref: https://www.electronjs.org/docs/api/locales
 // ref: https://www.christianengvall.se/electron-localization/
 
-exports.init = function (isDev) {
+exports.init = function (isDev, locale) {
   g_isDev = isDev;
-  g_userDataLocalesPath = settings.getValue("loadExternalLocalizations")
-    ? path.join(appUtils.getExternalFilesFolder(), "locales/")
-    : undefined;
-  if (settings.getValue("locale") === undefined) {
-    settings.setValue("locale", loadLocale(appUtils.getSystemLocale()));
+  if (locale) {
+    loadLocale(locale);
   } else {
-    settings.setValue("locale", loadLocale(settings.getValue("locale")));
+    g_userDataLocalesPath = settings.getValue("loadExternalLocalizations")
+      ? path.join(appUtils.getExternalFilesFolder(), "locales/")
+      : undefined;
+    if (settings.getValue("locale") === undefined) {
+      settings.setValue("locale", loadLocale(appUtils.getSystemLocale()));
+    } else {
+      settings.setValue("locale", loadLocale(settings.getValue("locale")));
+    }
   }
 };
 
