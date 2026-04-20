@@ -70,6 +70,13 @@ function init() {
   g_uiSelectedOptions.outputFileBaseName = undefined;
 }
 
+exports.execute = function (options, uiOptions, ipcReceiver) {
+  g_mode = options.mode;
+  g_initialPassword = options.password;
+  sendIpcToRenderer = ipcReceiver;
+  onStartClicked(options.inputList, uiOptions);
+};
+
 exports.open = async function (options) {
   // called by switchTool when opening tool
   g_mode = options.mode;
@@ -843,6 +850,7 @@ exports.onIpcFromToolsWorkerRenderer = function (...args) {
 ///////////////////////////////////////////////////////////////////////////////
 
 function onFileFinishedSuccess() {
+  sendIpcToRenderer("file-finished-ok");
   if (g_mode === ToolMode.CREATE) {
     if (g_inputFilesIndex < 0) {
       // special case, all images done at once
@@ -1064,6 +1072,27 @@ function stopCancel() {
 ///////////////////////////////////////////////////////////////////////////////
 // TOOL UTILS /////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
+
+function getInputPathType(inputPath) {
+  let type = -1;
+  if (fs.existsSync(inputPath)) {
+    if (fs.lstatSync(inputPath)?.isDirectory()) {
+      type = 1;
+    } else {
+      if (g_mode === ToolMode.CONVERT || g_mode === ToolMode.EXTRACT) {
+        if (fileUtils.hasComicBookExtension(inputPath)) type = 0;
+      } else {
+        if (
+          fileUtils.hasComicBookExtension(inputPath) ||
+          fileUtils.hasImageExtension(inputPath)
+        )
+          type = 0;
+      }
+    }
+  }
+  return type;
+}
+exports.getInputPathType = getInputPathType;
 
 function addPathToInputList(inputPath) {
   if (fs.existsSync(inputPath)) {

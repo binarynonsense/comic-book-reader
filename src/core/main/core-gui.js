@@ -152,23 +152,17 @@ exports.createWindow = function (_core, launchInfo) {
     if (!g_launchInfo.isPlayerMode) {
       // check command line args and setup initial state
       const isValidTool = (name) => {
-        if (name && typeof name === "string") {
-          const validValues = ["cc"];
-          for (let index = 0; index < validValues.length; index++) {
-            if (validValues[index] === name) return true;
-          }
-        }
-        return false;
+        return typeof name === "string" && ["cc"].includes(name);
       };
       const isValidFormat = (name) => {
-        if (name && typeof name === "string") {
-          const validValues = ["cbz", "cb7", "epub", "pdf"];
-          if (settings.canEditRars()) validValues.push("cbr");
-          for (let index = 0; index < validValues.length; index++) {
-            if (validValues[index] === name) return true;
-          }
-        }
-        return false;
+        const validValues = [
+          "cbz",
+          "cb7",
+          "epub",
+          "pdf",
+          ...(settings.canEditRars() ? ["cbr"] : []),
+        ];
+        return typeof name === "string" && validValues.includes(name);
       };
       if (
         g_launchInfo.parsedArgs["tool"] &&
