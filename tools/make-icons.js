@@ -39,6 +39,7 @@ function createIcons() {
   const Snap = require("snapsvg-cjs");
 
   function drawComicBubble(snap, config, size = 256, paddingMul = 0.06) {
+    // ref: http://snapsvg.io/docs
     const center = size / 2;
     const scale = size / 256;
     const padding = size * paddingMul;
@@ -240,11 +241,21 @@ function copyIcons() {
   const path = require("node:path");
   const inputDir = path.join(__dirname, "./output/icons");
   const outputDir = path.join(__dirname, "../src/assets/images");
+  const outputDirTools = path.join(__dirname, "./icons");
   function copy(fileName) {
     try {
       fs.copyFileSync(
         path.join(inputDir, fileName),
         path.join(outputDir, fileName),
+      );
+      console.log("copied: " + fileName);
+    } catch (error) {}
+  }
+  function copyTools(fileName) {
+    try {
+      fs.copyFileSync(
+        path.join(inputDir, fileName),
+        path.join(outputDirTools, fileName),
       );
       console.log("copied: " + fileName);
     } catch (error) {}
@@ -261,5 +272,9 @@ function copyIcons() {
   copy("tray_color.png");
   copy("tray_color@2x.png");
   copy("tray_color.ico");
+
+  copyTools("icon_512x512.svg");
+  copyTools("icon_text_1024x1024.svg");
+  copyTools("icon_text_1024x1024.png");
   console.log("done!");
 }

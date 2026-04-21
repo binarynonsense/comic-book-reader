@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   height="512"
+   version="1.1"
+   width="512"
+   id="svg14"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <desc
+     id="desc2">Created with Snap</desc>
+  <defs
+     id="defs4" />
+  <circle
+     cx="256"
+     cy="256"
+     r="225.28"
+     style=""
+     fill="#d9af50"
+     id="circle6" />
+  <g
+     fill="#ffffff"
+     id="g12">
+    <path
+       id="ellipse8"
+       d="M 386,256 A 130,96 0 0 1 256,352 130,96 0 0 1 126,256 130,96 0 0 1 256,160 130,96 0 0 1 386,256 Z" />
+    <path
+       id="polygon10"
+       d="M 356,376 126,256 h 214 z" />
+  </g>
+</svg>
