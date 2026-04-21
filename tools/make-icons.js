@@ -40,9 +40,10 @@ function createIcons() {
 
   function drawComicBubble(snap, config, size = 256, paddingMul = 0.06) {
     const center = size / 2;
+    const scale = size / 256;
     const padding = size * paddingMul;
     const radius = size / 2 - padding;
-
+    // circle fill
     let fillValue = config.bodyColor;
     if (config.gradientColors && config.gradientColors.length >= 2) {
       const c1 = config.gradientColors[0];
@@ -53,7 +54,7 @@ function createIcons() {
         `L(${center}, 0, ${center}, ${size})${c1}:0-${c2}:${stop}-${c2}:100`,
       );
     }
-
+    // circle
     const backgroundCircle = snap.circle(center, center, radius);
     if (config.isStroked) {
       backgroundCircle.attr({
@@ -64,32 +65,16 @@ function createIcons() {
     } else {
       backgroundCircle.attr({ fill: fillValue });
     }
-
     // bubble (base design 256px)
-    const scale = size / 256;
-    const rx = config.rx || 65 * scale;
-    const ry = config.ry || 48 * scale;
+    const rx = 65;
+    const ry = 48;
     // tail
-    const tx = config.tx || 48 * scale;
-    const ty = config.ty || 12 * scale;
-    const baseLeftX = center + rx * 0.1;
-    const baseRightX = center + rx * 0.7;
-    const baseYLeft = center + ry * 0.8;
-    const baseYRight = center + ry * 0.6;
-    const tailPoints = [
-      baseLeftX,
-      baseYLeft,
-      center + tx,
-      center + ry + ty,
-      baseRightX,
-      baseYRight,
-    ];
-
+    let tailPoints = [128 - 65, 128, 128 + 42, 128, 128 + 50, 128 + 60];
+    tailPoints = tailPoints.map((x) => x * scale);
     // group bubble parts
-    const bubbleEllipse = snap.ellipse(center, center, rx, ry);
+    const bubbleEllipse = snap.ellipse(center, center, rx * scale, ry * scale);
     const bubbleTail = snap.polygon(tailPoints);
     const bubble = snap.group(bubbleEllipse, bubbleTail);
-
     // details
     if (config.isCutout) {
       const maskRect = snap.rect(0, 0, size, size).attr({ fill: "white" });
@@ -98,7 +83,6 @@ function createIcons() {
     } else {
       bubble.attr({ fill: config.bubbleColor || "#FFFFFF" });
     }
-
     if (config.text) {
       const bubbleText = snap.text(center, center, config.text);
       bubbleText.attr({
