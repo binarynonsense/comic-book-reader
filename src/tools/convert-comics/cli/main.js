@@ -95,7 +95,7 @@ exports.execute = function (launchInfo) {
     } else {
       if (g_mode === ToolMode.CREATE) {
         if (!cliOptions.outputFileBaseName)
-          cliOptions.outputFileBaseName = "NewComicBook";
+          cliOptions.outputFileBaseName = "ComicBook";
       }
 
       const outputFormat = cliOptions.outputFormat;

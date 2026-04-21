@@ -68,31 +68,39 @@ function getParsedOptions(defaults, parsedArgs, parentPath = "") {
   return result;
 }
 
-function printCliDocumentation(options, parentPath = "") {
+function printHelp(options, parentPath = "") {
   if (!options) options = structuredClone(g_defaultToolOptions);
   for (const [key, value] of Object.entries(options)) {
     const kebabKey = key.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
     const fullKey = parentPath ? `${parentPath}-${kebabKey}` : kebabKey;
     if (value !== null && typeof value === "object" && !Array.isArray(value)) {
-      printCliDocumentation(value, fullKey);
+      printHelp(value, fullKey);
     } else {
       let displayValue;
       let typeLabel;
       if (Array.isArray(value)) {
-        typeLabel = "list";
+        typeLabel = "values list";
         // e.g.: .cbz,.cbr,.pdf
         displayValue = value.join(",");
       } else {
         typeLabel = typeof value;
         displayValue = value;
       }
-      console.log(
-        `--${fullKey.padEnd(45)} [${typeLabel}] (Default: ${displayValue})`,
-      );
+      //////////
+      console.log(`--${fullKey}`);
+      // console.log(`\ttype:  ${typeLabel}`);
+      if (typeof value === "boolean") {
+        console.log(`\targuments:  none`);
+      } else {
+        console.log(
+          `\targuments:  ${typeLabel === "values list" ? typeLabel : "value"}`,
+        );
+        console.log(`\tdefault:  "${displayValue}"`);
+      }
     }
   }
 }
-exports.printCliDocumentation = printCliDocumentation;
+exports.printCliDocumentation = printHelp;
 
 let g_defaultToolOptions = {
   outputFolderPath: "",
@@ -119,7 +127,7 @@ let g_defaultToolOptions = {
   outputFolderOption: "0",
   outputFormat: "cbz",
   outputImageFormat: "not set",
-  outputFileBaseName: "",
+  outputFileBaseName: "ComicBook",
   outputImageScaleOption: "0",
   outputImageScalePercentage: "100",
   outputImageScaleHeight: "3056",
