@@ -113,7 +113,9 @@ exports.execute = function (launchInfo) {
     let initOptions = { mode: g_mode, inputList };
     tool.execute(initOptions, cliOptions, ipcReceiver);
   } catch (error) {
-    log.error(error);
+    if (error.message && error.message.startsWith("Unknown option")) {
+      log.error(error.message.substring(0, error.message.indexOf(".")), true);
+    }
     quit();
   }
 };
