@@ -257,7 +257,7 @@ function copyIcons() {
         path.join(inputDir, fileName),
         path.join(outputDirTools, fileName),
       );
-      console.log("copied: " + fileName);
+      console.log("copied to tools: " + fileName);
     } catch (error) {}
   }
 
