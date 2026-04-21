@@ -68,7 +68,11 @@ exports.info = function (message) {
   g_log += `${getTime()} [INFO] ${message}\n`;
 };
 
-exports.error = function (message) {
+exports.error = function (message, simple = false) {
+  if (simple) {
+    console.log(`${getTime()} ${g_errorTag} ${message}`);
+    return;
+  }
   if (message?.message) {
     console.log(
       `${getTime()} ${g_errorTag} ${message.message}\n${getCallerData()}`,
