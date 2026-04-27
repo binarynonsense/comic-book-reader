@@ -6,7 +6,7 @@
  */
 
 export let FileExtension = {
-  NOT_SET: "not set",
+  NOT_SET: "not_set",
 
   CBZ: "cbz",
   ZIP: "zip",
@@ -36,14 +36,14 @@ export let FileExtension = {
 };
 
 export let FileDataType = {
-  NOT_SET: "not set",
+  NOT_SET: "not_set",
   PDF: "pdf",
   IMG: "img",
-  IMGS_FOLDER: "imgs folder",
+  IMGS_FOLDER: "imgs_folder",
   ZIP: "zip",
   RAR: "rar",
-  EPUB_COMIC: "epub comic",
-  EPUB_EBOOK: "epub ebook",
+  EPUB_COMIC: "epub_comic",
+  EPUB_EBOOK: "epub_ebook",
   SEVENZIP: "7z",
   WWW: "www",
 };

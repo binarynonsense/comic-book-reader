@@ -6,7 +6,7 @@
  */
 
 exports.FileExtension = {
-  NOT_SET: "not set",
+  NOT_SET: "not_set",
 
   CBZ: "cbz",
   ZIP: "zip",
@@ -45,13 +45,13 @@ exports.FileExtension = {
 };
 
 exports.FileDataState = {
-  NOT_SET: "not set",
+  NOT_SET: "not_set",
   LOADING: "loading",
   LOADED: "loaded",
 };
 
 exports.FileDataType = {
-  NOT_SET: "not set",
+  NOT_SET: "not_set",
 
   ZIP: "zip",
   RAR: "rar",
@@ -61,13 +61,13 @@ exports.FileDataType = {
   MOBI: "mobi",
   AZW3: "azw3",
   FB2: "fb2",
-  FB2_ZIPPED: "fb2 zipped",
+  FB2_ZIPPED: "fb2_zipped",
   EPUB: "epub",
-  EPUB_COMIC: "epub comic",
-  EPUB_EBOOK: "epub ebook",
+  EPUB_COMIC: "epub_comic",
+  EPUB_EBOOK: "epub_ebook",
 
   IMG: "img",
-  IMGS_FOLDER: "imgs folder",
+  IMGS_FOLDER: "imgs_folder",
   JPG: "jpg",
   PNG: "png",
   WEBP: "webp",
@@ -78,7 +78,7 @@ exports.FileDataType = {
 };
 
 exports.BookType = {
-  NOT_SET: "not set",
+  NOT_SET: "not_set",
   COMIC: "comic",
   EBOOK: "ebook",
 };

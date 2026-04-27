@@ -265,7 +265,7 @@ function init(
     g_outputFormatSelect.innerHTML += '<option value="cbr">cbr</option>';
   }
   if (g_mode === ToolMode.EXTRACT) {
-    g_outputFormatSelect.innerHTML += `<option value="imgs folder">${g_localizedTexts.outputFormatFolder}</option>`;
+    g_outputFormatSelect.innerHTML += `<option value="imgs_folder">${g_localizedTexts.outputFormatFolder}</option>`;
   }
   g_outputFormatSelect.addEventListener("change", (event) => {
     checkValidData();
@@ -660,7 +660,7 @@ function updateUISelectedOptions() {
   ).value;
   g_uiSelectedOptions.outputFormat = g_outputFormatSelect.value;
   if (g_mode === ToolMode.EXTRACT)
-    g_uiSelectedOptions.outputFormat = "imgs folder";
+    g_uiSelectedOptions.outputFormat = "imgs_folder";
   g_uiSelectedOptions.outputImageFormat = g_outputImageFormatSelect.value;
   if (g_mode === ToolMode.CONVERT || g_mode === ToolMode.EXTRACT) {
     g_uiSelectedOptions.outputFileBaseName = "";

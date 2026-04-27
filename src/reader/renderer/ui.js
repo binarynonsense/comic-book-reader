@@ -15,7 +15,7 @@ export function initIpc() {
 }
 
 let BookType = {
-  NOT_SET: "not set",
+  NOT_SET: "not_set",
   COMIC: "comic",
   EBOOK: "ebook",
 };
