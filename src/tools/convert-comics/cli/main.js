@@ -54,9 +54,11 @@ exports.execute = function (launchInfo) {
     }
     ////
     if (launchInfo.parsedArgs["help"]) {
-      toolOptions.printCliDocumentation();
+      toolOptions.printHelp();
       quit();
+      return;
     }
+    log.test(cliOptions);
     ////
     let inputList = [];
     cliInputPaths.forEach((inputPath, index) => {
@@ -115,6 +117,8 @@ exports.execute = function (launchInfo) {
   } catch (error) {
     if (error.message && error.message.startsWith("Unknown option")) {
       log.error(error.message.substring(0, error.message.indexOf(".")), true);
+    } else {
+      log.error(error);
     }
     quit();
   }
