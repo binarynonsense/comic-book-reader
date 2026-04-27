@@ -92,13 +92,14 @@ exports.createWindow = function (_core, launchInfo) {
     // TODO: print better error / localize
     if (launchInfo.parsedArgs["help"]) {
       log.info("valid tool names:");
-      log.info("convert-comics");
-      log.info("extract-comics");
-      log.info("create-comic");
-      log.info("e.g. --tool convert-comics");
+      log.info("  convert-comics");
+      log.info("  extract-comics");
+      log.info("  create-comic");
+      log.info(`e.g. --tool="convert-comics"`);
       quit();
     } else {
-      log.info("Error: invalid tool");
+      log.error("Invalid tool.", true);
+      log.info("Add --help to print a list of the available tools.");
     }
     quit();
   }

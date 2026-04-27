@@ -38,6 +38,13 @@ let g_mode = ToolMode.CONVERT;
 exports.execute = function (launchInfo) {
   try {
     g_launchInfo = launchInfo;
+    g_launchInfo.canEditRars = settings.canEditRars();
+    if (g_launchInfo.parsedArgs["help"]) {
+      log.info("available options:");
+      toolOptions.printHelp(g_launchInfo);
+      quit();
+      return;
+    }
     const [cliOptions, cliInputPaths] =
       toolOptions.getParsedCliOptions(g_launchInfo);
     ////
@@ -53,12 +60,7 @@ exports.execute = function (launchInfo) {
         break;
     }
     ////
-    if (launchInfo.parsedArgs["help"]) {
-      toolOptions.printHelp();
-      quit();
-      return;
-    }
-    log.test(cliOptions);
+    // log.test(cliOptions);
     ////
     let inputList = [];
     cliInputPaths.forEach((inputPath, index) => {
@@ -117,9 +119,12 @@ exports.execute = function (launchInfo) {
   } catch (error) {
     if (error.message && error.message.startsWith("Unknown option")) {
       log.error(error.message.substring(0, error.message.indexOf(".")), true);
+    } else if (typeof error === "string" && error.startsWith("Invalid value")) {
+      log.error(error, true);
     } else {
       log.error(error);
     }
+    log.info("Add --help to print a list of the available options.");
     quit();
   }
 };
