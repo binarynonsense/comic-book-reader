@@ -83,6 +83,7 @@ exports.printHelp = function (data) {
       typeof entry === "object" &&
       "defaultValue" in entry
     ) {
+      console.log();
       let displayValue;
       let typeLabel;
       if (Array.isArray(entry.defaultValue)) {
@@ -103,8 +104,10 @@ exports.printHelp = function (data) {
         console.log(
           `    arguments:  ${typeLabel === "values list" ? typeLabel : "value"}`,
         );
-        console.log(`    default:  "${displayValue}"`);
+        console.log(`    default:  ${displayValue}`);
       }
+      if (entry.cliType !== "boolean" && entry.validValues)
+        console.log(`    valid values:  ${entry.validValues.join(", ")}`);
     } else {
       // nested option
       exports.printHelp(entry);
@@ -243,7 +246,7 @@ function getOptionsData() {
     },
     outputFolderOption: {
       defaultValue: "0",
-      validValues: undefined,
+      validValues: ["0", "1"],
       cliName: "output-folder-option",
       cliType: "string",
     },
@@ -267,7 +270,7 @@ function getOptionsData() {
     },
     outputImageScaleOption: {
       defaultValue: "0",
-      validValues: undefined,
+      validValues: ["0", "1", "2"],
       cliName: "output-image-scale-option",
       cliType: "string",
     },
@@ -303,7 +306,7 @@ function getOptionsData() {
     },
     outputFileSameName: {
       defaultValue: "rename",
-      validValues: undefined,
+      validValues: ["rename", "skip", "overwrite"],
       cliName: "output-file-same-name",
       cliType: "string",
     },
@@ -315,19 +318,19 @@ function getOptionsData() {
     },
     outputPdfCreationMethod: {
       defaultValue: "metadata",
-      validValues: undefined,
+      validValues: ["metadata", "300dpi", "72dpi"],
       cliName: "output-pdf-creation-method",
       cliType: "string",
     },
     outputEpubCreationImageFormat: {
       defaultValue: "keep-selected",
-      validValues: undefined,
+      validValues: ["keep-selected", "core-media-types-only"],
       cliName: "output-epub-creation-image-format",
       cliType: "string",
     },
     outputEpubCreationImageStorage: {
       defaultValue: "files",
-      validValues: undefined,
+      validValues: ["files", "base64"],
       cliName: "output-epub-creation-image-storage",
       cliType: "string",
     },
