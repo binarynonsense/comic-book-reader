@@ -152,7 +152,9 @@ exports.createWindow = function (_core, launchInfo) {
     if (!g_launchInfo.isPlayerMode) {
       // check command line args and setup initial state
       const isValidTool = (name) => {
-        return typeof name === "string" && ["cc"].includes(name);
+        return (
+          typeof name === "string" && ["cc", "convert-comics"].includes(name)
+        );
       };
       const isValidFormat = (name) => {
         const validValues = [
@@ -173,6 +175,7 @@ exports.createWindow = function (_core, launchInfo) {
         // start tool
         switch (g_launchInfo.parsedArgs["tool"]) {
           case "cc":
+          case "convert-comics":
             {
               let options = { mode: 0, inputFilePaths: inputFilePaths };
               const outputFolderPath = g_launchInfo.parsedArgs["output-folder"];
