@@ -35,7 +35,6 @@ exports.createWindow = function (_core, launchInfo) {
 
   g_launchInfo = launchInfo;
   g_launchInfo.quittingPhase = 0;
-  // log.test(g_launchInfo.parsedArgs);
 
   process.on("unhandledRejection", (reason, promise) => {
     console.error("Unhandled rejection at:", promise, "reason:", reason);

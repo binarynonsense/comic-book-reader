@@ -70,11 +70,11 @@ function init() {
   g_uiSelectedOptions.outputFileBaseName = undefined;
 }
 
-exports.execute = function (options, uiOptions, ipcReceiver) {
+exports.execute = async function (options, uiOptions, ipcReceiver) {
   g_mode = options.mode;
   g_initialPassword = options.password;
   sendIpcToRenderer = ipcReceiver;
-  onStartClicked(options.inputList, uiOptions);
+  return await onStartClicked(options.inputList, uiOptions);
 };
 
 exports.open = async function (options) {
@@ -488,7 +488,7 @@ async function onStartClicked(inputList, selectedOptions) {
       _("tool-shared-modal-log-failed-reason-no-valid-file"),
       _("tool-shared-ui-close").toUpperCase(),
     );
-    return;
+    return false;
   }
   sendIpcToRenderer("start-accepted");
   ////
@@ -532,6 +532,7 @@ async function onStartClicked(inputList, selectedOptions) {
       startNextFile();
     }
   }
+  return true;
 }
 
 //////////////////////

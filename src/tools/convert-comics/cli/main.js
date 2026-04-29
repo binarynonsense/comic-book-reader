@@ -35,7 +35,7 @@ let g_mode = ToolMode.CONVERT;
 // CLI ///////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 
-exports.execute = function (launchInfo) {
+exports.execute = async function (launchInfo) {
   try {
     g_launchInfo = launchInfo;
     g_launchInfo.canEditRars = settings.canEditRars();
@@ -61,8 +61,6 @@ exports.execute = function (launchInfo) {
     }
     log.debug("execute cli tool: " + g_mode);
     ////
-    // log.test(cliOptions);
-    ////
     let inputList = [];
     cliInputPaths.forEach((inputPath, index) => {
       const type = tool.getInputPathType(inputPath);
@@ -76,8 +74,7 @@ exports.execute = function (launchInfo) {
     });
     // check options
     if (inputList.length <= 0) {
-      log.info("Error: no input paths");
-      return;
+      throw "Invalid input list: couldn't find any valid input file.";
     }
     /////////////////////////////////////////////////////////////////
     const outputFolderOption = cliOptions.outputFolderOption;
@@ -94,9 +91,7 @@ exports.execute = function (launchInfo) {
           fs.lstatSync(outputFolderPath).isDirectory()
         )
       ) {
-        log.info("Error: no output folder");
-        quit();
-        return;
+        throw "Invalid output folder.";
         // uiOptions.outputFolderPath = appUtils.getDesktopFolderPath();
       }
     }
@@ -112,11 +107,14 @@ exports.execute = function (launchInfo) {
       cliOptions.inputSearchFoldersFormats.map((s) => "." + s);
     /////////////////////////////////////////////////////////////////
     let initOptions = { mode: g_mode, inputList };
-    tool.execute(initOptions, cliOptions, ipcReceiver);
+    const result = await tool.execute(initOptions, cliOptions, ipcReceiver);
+    if (!result) {
+      throw "Invalid input list: couldn't find any valid input file.";
+    }
   } catch (error) {
     if (error.message && error.message.startsWith("Unknown option")) {
       log.error(error.message.substring(0, error.message.indexOf(".")), true);
-    } else if (typeof error === "string" && error.startsWith("Invalid value")) {
+    } else if (typeof error === "string" && error.startsWith("Invalid")) {
       log.error(error, true);
     } else {
       log.error(error);
