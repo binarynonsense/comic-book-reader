@@ -155,13 +155,12 @@ exports.printHelp = function (launchInfo, data) {
         console.log(`    argument:  none`);
       } else {
         if (typeLabel === "values list") {
-          console.log(`    arguments:  values list`);
+          console.log(`    arguments:  values list (comma separated)`);
           console.log(`    default values list:`);
         } else {
           console.log(`    arguments:  value`);
           console.log(`    default value:`);
         }
-
         console.log(`      "${displayValue}"`);
       }
       if (entry.cliType !== "boolean" && entry.validValues) {
@@ -181,7 +180,9 @@ exports.printHelp = function (launchInfo, data) {
 };
 /////////////////////////
 
-// not really used for now
+// TODO: INTEGER not really used for now, could look someething like
+// validCheck: { type: ValidType.INTEGER, max: 100, min: 1 },
+// and be used for outputImageScalePercentage for example
 const ValidType = {
   EXISTING_DIR_PATH: "validpath",
   INTEGER: "integer",
@@ -318,6 +319,12 @@ function getOptionsData(launchInfo) {
       cliDescription: `Only used if --tool is set to "create-comic".`,
     },
     ///////////////////////////////////////
+    inputSearchFoldersFormats: {
+      defaultValue: ["cbz", "cbr", "pdf", "epub", "cb7"],
+      validValues: ["cbz", "cbr", "pdf", "epub", "cb7", "mobi"],
+      cliName: "input-search-folders-formats",
+      cliType: "string",
+    },
     inputSearchFoldersRecursively: {
       defaultValue: false,
       validValues: [true, false],
@@ -331,18 +338,12 @@ function getOptionsData(launchInfo) {
       cliType: "string",
       cliDescription: `Only used if --input-search-folders-recursively is set.`,
     },
-    inputSearchFoldersFormats: {
-      defaultValue: [".cbz", ".cbr", ".pdf", ".epub", ".cb7"],
-      validValues: [".cbz", ".cbr", ".pdf", ".epub", ".cb7", ".mobi"],
-      cliName: "input-search-folders-formats",
-      cliType: "string",
-      cliDescription: `Only used if --input-search-folders-recursively is set.`,
-    },
     outputKeepSubfoldersStructure: {
       defaultValue: false,
       validValues: [true, false],
       cliName: "output-keep-subfolders-structure",
       cliType: "boolean",
+      cliDescription: `Only used if --input-search-folders-recursively is set.`,
     },
     ///////////////////////////////////////
     imageProcessingMultithreadingMethod: {
@@ -375,7 +376,6 @@ function getOptionsData(launchInfo) {
     inputPdfExtractionDpi: {
       defaultValue: "300",
       validValues: undefined,
-      validCheck: { type: ValidType.INTEGER },
       cliName: "input-pdf-extraction-dpi",
       cliType: "string",
       setOption: { key: "inputPdfExtractionMethod", value: "0" },

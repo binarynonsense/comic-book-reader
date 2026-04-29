@@ -59,6 +59,7 @@ exports.execute = function (launchInfo) {
         g_mode = ToolMode.CONVERT;
         break;
     }
+    log.debug("execute cli tool: " + g_mode);
     ////
     // log.test(cliOptions);
     ////
@@ -79,40 +80,36 @@ exports.execute = function (launchInfo) {
       return;
     }
     /////////////////////////////////////////////////////////////////
+    const outputFolderOption = cliOptions.outputFolderOption;
     const outputFolderPath = cliOptions.outputFolderPath;
-    if (
-      !(
-        outputFolderPath &&
-        typeof outputFolderPath === "string" &&
-        fs.existsSync(outputFolderPath) &&
-        fs.lstatSync(outputFolderPath).isDirectory()
-      )
-    ) {
-      log.info("Error: no output folder");
-      quit();
-      return;
-      // uiOptions.outputFolderPath = appUtils.getDesktopFolderPath();
-    }
-    ////
-    if (g_mode === ToolMode.EXTRACT) {
-      cliOptions.outputFormat = FileDataType.IMGS_FOLDER;
+    if (outputFolderOption && outputFolderOption === "1") {
+      // will use the same folder as the input file
     } else {
-      if (g_mode === ToolMode.CREATE) {
-        if (!cliOptions.outputFileBaseName)
-          cliOptions.outputFileBaseName = "ComicBook";
-      }
-
-      const outputFormat = cliOptions.outputFormat;
+      // outputFolderPath must be valid
       if (
         !(
-          outputFormat &&
-          typeof outputFormat === "string" &&
-          isValidFormat(outputFormat)
+          outputFolderPath &&
+          typeof outputFolderPath === "string" &&
+          fs.existsSync(outputFolderPath) &&
+          fs.lstatSync(outputFolderPath).isDirectory()
         )
       ) {
-        cliOptions.outputFormat = "cbz";
+        log.info("Error: no output folder");
+        quit();
+        return;
+        // uiOptions.outputFolderPath = appUtils.getDesktopFolderPath();
       }
     }
+    ////
+    if (g_mode === ToolMode.CREATE) {
+      if (!cliOptions.outputFileBaseName)
+        cliOptions.outputFileBaseName = "ComicBook";
+    } else if (g_mode === ToolMode.EXTRACT) {
+      cliOptions.outputFormat = FileDataType.IMGS_FOLDER;
+    }
+    ////
+    cliOptions.inputSearchFoldersFormats =
+      cliOptions.inputSearchFoldersFormats.map((s) => "." + s);
     /////////////////////////////////////////////////////////////////
     let initOptions = { mode: g_mode, inputList };
     tool.execute(initOptions, cliOptions, ipcReceiver);
@@ -156,18 +153,3 @@ function ipcReceiver(...args) {
   //"file-finished-error"
   //"file-finished-ok"
 }
-
-//////////////////////////////////////////////////////////////////////////////
-// HELPERS ///////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
-
-const isValidFormat = (name) => {
-  const validValues = [
-    "cbz",
-    "cb7",
-    "epub",
-    "pdf",
-    ...(settings.canEditRars() ? ["cbr"] : []),
-  ];
-  return typeof name === "string" && validValues.includes(name);
-};
