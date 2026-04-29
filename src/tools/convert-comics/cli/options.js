@@ -189,6 +189,24 @@ const ValidType = {
 };
 
 function getOptionsData(launchInfo) {
+  let searchFolderFormats;
+  if (launchInfo.toolMode !== 1) {
+    searchFolderFormats = ["cbz", "cbr", "pdf", "epub", "cb7", "mobi"];
+  } else {
+    searchFolderFormats = [
+      "cbz",
+      "cbr",
+      "pdf",
+      "epub",
+      "cb7",
+      "mobi",
+      "jpg",
+      "jpeg",
+      "png",
+      "webp",
+      "avif",
+    ];
+  }
   return {
     outputFolderOption: {
       defaultValue: "0",
@@ -320,8 +338,8 @@ function getOptionsData(launchInfo) {
     },
     ///////////////////////////////////////
     inputSearchFoldersFormats: {
-      defaultValue: ["cbz", "cbr", "pdf", "epub", "cb7"],
-      validValues: ["cbz", "cbr", "pdf", "epub", "cb7", "mobi"],
+      defaultValue: searchFolderFormats,
+      validValues: searchFolderFormats,
       cliName: "input-search-folders-formats",
       cliType: "string",
     },

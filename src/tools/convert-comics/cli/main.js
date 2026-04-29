@@ -39,15 +39,6 @@ exports.execute = async function (launchInfo) {
   try {
     g_launchInfo = launchInfo;
     g_launchInfo.canEditRars = settings.canEditRars();
-    if (g_launchInfo.parsedArgs["help"]) {
-      log.info("available options:");
-      toolOptions.printHelp(g_launchInfo);
-      quit();
-      return;
-    }
-    const [cliOptions, cliInputPaths] =
-      toolOptions.getParsedCliOptions(g_launchInfo);
-    ////
     switch (g_launchInfo.parsedArgs["tool"]) {
       case "extract-comics":
         g_mode = ToolMode.EXTRACT;
@@ -59,7 +50,17 @@ exports.execute = async function (launchInfo) {
         g_mode = ToolMode.CONVERT;
         break;
     }
+    g_launchInfo.toolMode = g_mode;
     log.debug("execute cli tool: " + g_mode);
+    if (g_launchInfo.parsedArgs["help"]) {
+      log.info("available options:");
+      toolOptions.printHelp(g_launchInfo);
+      quit();
+      return;
+    }
+    ////
+    const [cliOptions, cliInputPaths] =
+      toolOptions.getParsedCliOptions(g_launchInfo);
     ////
     let inputList = [];
     cliInputPaths.forEach((inputPath, index) => {
