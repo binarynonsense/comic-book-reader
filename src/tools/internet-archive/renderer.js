@@ -10,7 +10,7 @@ import {
   sendIpcToMainAndWait as coreSendIpcToMainAndWait,
 } from "../../core/renderer.js";
 import * as modals from "../../shared/renderer/modals.js";
-import axios from "../../assets/libs/axios/dist/esm/axios.js";
+import net from "../../shared/both/net.js";
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -447,7 +447,7 @@ async function getBookPagesInfo(comicData) {
     https://api.archivelab.org/books/theworksofplato01platiala/pages/1  -> ERROR
   */
   try {
-    const response = await axios.get(
+    const response = await net.get(
       `https://api.archivelab.org/books/${comicData.comicId}/pages`,
       { timeout: 10000 },
     );

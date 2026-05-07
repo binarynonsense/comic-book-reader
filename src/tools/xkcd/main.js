@@ -129,13 +129,10 @@ function initHandleIpcCallbacks() {}
 
 async function getPageCallback(pageNum, fileData) {
   try {
-    const axios = require("axios").default;
-    const response = await axios.get(
-      `https://xkcd.com/${pageNum}/info.0.json`,
-      {
-        timeout: 10000,
-      },
-    );
+    const net = require("../../shared/both/net");
+    const response = await net.get(`https://xkcd.com/${pageNum}/info.0.json`, {
+      timeout: 10000,
+    });
     const imageUrl = response?.data?.img;
     return {
       pageImgSrc: imageUrl,

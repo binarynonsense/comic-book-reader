@@ -125,7 +125,6 @@ function initOnIpcCallbacks() {
       if (text.trim().length === 0) {
         throw "query's text is empty";
       }
-      const axios = require("axios").default;
       let searchQuery = `q=(${encodeURIComponent(text)})`;
       let collectionQuery = "";
       if (collection && collection !== "")
@@ -134,7 +133,8 @@ function initOnIpcCallbacks() {
       if (availability == 0) {
         readableQuery = `+AND+lending___status%3A(is_readable)`;
       }
-      const response = await axios.get(
+      const net = require("../../shared/both/net");
+      const response = await net.get(
         `https://archive.org/advancedsearch.php?${searchQuery}${collectionQuery}+AND+mediatype%3A(texts)${readableQuery}&fl[]=identifier&fl[]=imagecount&fl[]=title&fl[]=creator&sort[]=&sort[]=&sort[]=&rows=${g_queryPageSize}&page=${pageNum}&output=json`,
         { timeout: 10000 },
       );
@@ -186,16 +186,15 @@ function initHandleIpcCallbacks() {}
 
 async function getPageCallback(pageNum, fileData) {
   try {
-    const axios = require("axios").default;
     let comicData = fileData.data;
     let imgUrl = `https://archive.org/download/${comicData.comicId}/page/n${
       pageNum - 1
     }/mode/1up`;
-    const response = await axios.get(imgUrl, {
+    const net = require("../../shared/both/net");
+    const response = await net.get(imgUrl, {
       timeout: 10000,
-      responseType: "arraybuffer",
     });
-    let buf = Buffer.from(response.data, "binary");
+    let buf = response.data;
     let img64 = "data:image/jpg;base64," + buf.toString("base64");
     return { pageImgSrc: img64, pageImgUrl: imgUrl };
   } catch (error) {

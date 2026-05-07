@@ -1444,12 +1444,10 @@ async function openEbookFromPath(
       if (!fs.existsSync(cachedPath)) {
         try {
           // download it
-          const axios = require("axios").default;
-          const response = await axios.get(url, {
-            responseType: "arraybuffer",
+          const net = require("../shared/both/net");
+          const response = await net.get(url, {
             timeout: 10000,
           });
-
           if (!response?.data) {
             throw {
               name: "GenericError",

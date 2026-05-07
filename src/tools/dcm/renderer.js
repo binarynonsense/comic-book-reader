@@ -10,7 +10,7 @@ import {
   sendIpcToMainAndWait as coreSendIpcToMainAndWait,
 } from "../../core/renderer.js";
 import * as modals from "../../shared/renderer/modals.js";
-import axios from "../../assets/libs/axios/dist/esm/axios.js";
+import net from "../../shared/both/net.js";
 
 let g_searchInput;
 let g_searchButton;
@@ -560,7 +560,7 @@ async function onSearchResultClicked(dlid, openWith) {
       showProgressModal();
       updateModalTitleText(g_localizedModalLoadingTitleText);
       let infoUrl = `https://digitalcomicmuseum.com/?dlid=${dlid}`;
-      const response = await axios.get(infoUrl, { timeout: 15000 });
+      const response = await net.get(infoUrl, { timeout: 15000 });
       const parser = new DOMParser().parseFromString(
         response.data,
         "text/html",
@@ -643,7 +643,7 @@ function openDCMLink(url) {
 
 async function getFirstPageInfo(comicId) {
   try {
-    const response = await axios.get(
+    const response = await net.get(
       `https://digitalcomicmuseum.com/preview/index.php?did=${comicId}&page=${1}`,
       { timeout: 15000 },
     );
@@ -703,7 +703,7 @@ function checkValidData() {
 async function fillPublishers() {
   cleanUpSelected();
   try {
-    const response = await axios.get(
+    const response = await net.get(
       "https://digitalcomicmuseum.com/preview/index.php",
       { timeout: 15000 },
     );
@@ -730,16 +730,17 @@ async function fillPublishers() {
 async function fillTitles(publisherId) {
   cleanUpSelected(false);
   try {
-    const response = await axios.get(
+    const response = await net.get(
       `https://digitalcomicmuseum.com/preview/select.php?id=${publisherId}`,
       { timeout: 15000 },
     );
     //e.g. [ {"optionValue": "98", "optionDisplay": "Please Select a Comic Title"},{"optionValue": "289", "optionDisplay": "All Love"},...
-    let data = response.data;
-    g_titlesSelect.innerHTML += `<option value="-1">${g_selectTitleString}</option>`;
+    const data = response.data;
+    let text = `<option value="-1">${g_selectTitleString}</option>`;
     for (let index = 1; index < data.length; index++) {
-      g_titlesSelect.innerHTML += `<option value="${data[index].optionValue}">${data[index].optionDisplay}</option>`;
+      text += `<option value="${data[index].optionValue}">${data[index].optionDisplay}</option>`;
     }
+    g_titlesSelect.innerHTML += text;
     document
       .querySelector("#tool-dcm-catalog-error-message-div")
       .classList.add("set-display-none");
@@ -754,17 +755,18 @@ async function fillTitles(publisherId) {
 async function fillComics(titleId) {
   cleanUpSelected(false, false);
   try {
-    const response = await axios.get(
+    const response = await net.get(
       `https://digitalcomicmuseum.com/preview/select.php?cid=${titleId}`,
       { timeout: 15000 },
     );
     //e.g. [ {"optionValue": "0", "optionDisplay": "Please Select a Comic Book"},{"optionValue": "https://digitalcomicmuseum.com/preview/index.php?did=7793", "optionDisplay": "World War III #01 (inc)"},...
     let data = response.data;
-    g_comicsSelect.innerHTML += `<option value="-1">${g_selectComicString}</option>`;
+    let text = `<option value="-1">${g_selectComicString}</option>`;
     for (let index = 1; index < data.length; index++) {
       let parts = data[index].optionValue.split("did=");
-      g_comicsSelect.innerHTML += `<option value="${parts[1]}">${data[index].optionDisplay}</option>`;
+      text += `<option value="${parts[1]}">${data[index].optionDisplay}</option>`;
     }
+    g_comicsSelect.innerHTML += text;
     document
       .querySelector("#tool-dcm-catalog-error-message-div")
       .classList.add("set-display-none");

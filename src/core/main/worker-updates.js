@@ -19,8 +19,8 @@ async function checkUpdate(data) {
   try {
     let currentVersion = data[1];
 
-    const axios = require("axios").default;
-    const response = await axios.get(
+    const net = require("../../shared/both/net");
+    const response = await net.get(
       `https://api.github.com/repos/binarynonsense/comic-book-reader/releases/latest`,
       { timeout: 15000 },
     );

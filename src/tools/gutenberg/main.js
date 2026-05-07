@@ -124,13 +124,13 @@ function initOnIpcCallbacks() {
       if (text.trim().length === 0) {
         throw "query text is empty";
       }
-      const axios = require("axios").default;
       // uses https://gutendex.com/
       // e.g. https://gutendex.com/books/?page=2&search=jules+verne',
       // if this stops working try parsing official search engine
       // e.g. https://www.gutenberg.org/ebooks/search/?query=jules+verne
       let searchQuery = encodeURIComponent(text);
-      const response = await axios.get(
+      const net = require("../../shared/both/net");
+      const response = await net.get(
         `https://gutendex.com/books?page=${pageNum}&search=${searchQuery}`,
         { timeout: 10000 },
       );

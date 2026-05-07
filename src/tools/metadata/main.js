@@ -286,7 +286,6 @@ async function search(text, pageNum) {
     if (text.trim().length === 0) {
       throw "query text is empty";
     }
-    const axios = require("axios").default;
 
     let resources = "volume";
 
@@ -296,7 +295,8 @@ async function search(text, pageNum) {
     // https://comicvine.gamespot.com/api/issue/4000-14582/?api_key=YOUR-KEY&format=json
 
     let searchQuery = encodeURIComponent(text);
-    const response = await axios.get(
+    const net = require("../../shared/both/net");
+    const response = await net.get(
       `https://comicvine.gamespot.com/api/search/?api_key=${g_cvApiKey}&format=json&resources=${resources}&page=${pageNum}&limit=50&query=${searchQuery}`,
       { timeout: 10000 },
     ); //&sort=name:asc
@@ -323,13 +323,10 @@ async function search(text, pageNum) {
 
 async function getVolumeData(url) {
   try {
-    const axios = require("axios").default;
-    const response = await axios.get(
-      `${url}?api_key=${g_cvApiKey}&format=json`,
-      {
-        timeout: 10000,
-      },
-    );
+    const net = require("../../shared/both/net");
+    const response = await net.get(`${url}?api_key=${g_cvApiKey}&format=json`, {
+      timeout: 10000,
+    });
     //&sort=issue_number:asc didn't work, I sort them in renderer
     await utils.delay(1); // to not get banned from the api
     sendIpcToRenderer(
@@ -351,13 +348,10 @@ async function getVolumeData(url) {
 
 async function getIssueData(url) {
   try {
-    const axios = require("axios").default;
-    const response = await axios.get(
-      `${url}?api_key=${g_cvApiKey}&format=json`,
-      {
-        timeout: 10000,
-      },
-    );
+    const net = require("../../shared/both/net");
+    const response = await net.get(`${url}?api_key=${g_cvApiKey}&format=json`, {
+      timeout: 10000,
+    });
     await utils.delay(1); // to not get banned from the api
     sendIpcToRenderer(
       "search-issue-results",

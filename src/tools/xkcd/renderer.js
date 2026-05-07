@@ -10,7 +10,7 @@ import {
   sendIpcToMainAndWait as coreSendIpcToMainAndWait,
 } from "../../core/renderer.js";
 import * as modals from "../../shared/renderer/modals.js";
-import axios from "../../assets/libs/axios/dist/esm/axios.js";
+import net from "../../shared/both/net.js";
 
 let g_catalogNumberSelect;
 let g_openSelectedInACBRButton;
@@ -90,12 +90,9 @@ async function init(selectCatalogNumberLocalizedText) {
     const number = g_catalogNumberSelect.value;
     if (!number || number == "-1") return;
     try {
-      const response = await axios.get(
-        `https://xkcd.com/${number}/info.0.json`,
-        {
-          timeout: 10000,
-        },
-      );
+      const response = await net.get(`https://xkcd.com/${number}/info.0.json`, {
+        timeout: 10000,
+      });
       const url = response?.data?.img;
       if (url) openXkcdLink(url);
     } catch (error) {}
@@ -103,7 +100,7 @@ async function init(selectCatalogNumberLocalizedText) {
 
   let selectNumberContent = `<option value="-1">${selectCatalogNumberLocalizedText}</option>`;
   try {
-    const response = await axios.get("https://xkcd.com/info.0.json", {
+    const response = await net.get("https://xkcd.com/info.0.json", {
       timeout: 10000,
     });
     g_totalNumComics = response?.data?.num;

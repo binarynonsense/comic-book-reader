@@ -112,7 +112,10 @@ function initOnIpcCallbacks() {
     });
     reader.showMediaPlayer(true, false);
     // onCloseClicked();
-    sendIpcToAudioPlayerRenderer("open-playlist", playlist);
+    setTimeout(
+      () => sendIpcToAudioPlayerRenderer("open-playlist", playlist),
+      300,
+    );
   });
 
   on("search", async (text, pageNum) => {
@@ -120,10 +123,10 @@ function initOnIpcCallbacks() {
       if (text.trim().length === 0) {
         throw "query's text is empty";
       }
-      const axios = require("axios").default;
       let searchQuery = `q=(${encodeURIComponent(text)})`;
       let collectionQuery = `+AND+collection%3A(librivoxaudio)`;
-      const response = await axios.get(
+      const net = require("../../shared/both/net");
+      const response = await net.get(
         `https://archive.org/advancedsearch.php?${searchQuery}${collectionQuery}+AND+mediatype%3A(audio)&fl[]=identifier&fl[]=title&fl[]=creator&sort[]=&sort[]=&sort[]=&rows=${g_queryPageSize}&page=${pageNum}&output=json`,
         { timeout: 10000 },
       );

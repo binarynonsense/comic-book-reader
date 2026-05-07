@@ -10,7 +10,7 @@ import {
   sendIpcToMainAndWait as coreSendIpcToMainAndWait,
 } from "../../core/renderer.js";
 import * as modals from "../../shared/renderer/modals.js";
-import axios from "../../assets/libs/axios/dist/esm/axios.js";
+import net from "../../shared/both/net.js";
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -398,7 +398,7 @@ async function onSearchResultClicked(index, mode) {
   if (mode === 0) {
     try {
       const downloadsUrl = `https://archive.org/download/${bookData.identifier}`;
-      const response = await axios.get(downloadsUrl, { timeout: 10000 });
+      const response = await net.get(downloadsUrl, { timeout: 10000 });
       const parser = new DOMParser().parseFromString(
         response.data,
         "text/html",

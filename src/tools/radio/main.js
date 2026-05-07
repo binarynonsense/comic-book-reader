@@ -39,8 +39,8 @@ async function getServersList() {
   let urls = [];
   try {
     log.debug("[Radio] trying to get server from de1.api");
-    const axios = require("axios").default;
-    const response = await axios.get(
+    const net = require("../../shared/both/net");
+    const response = await net.get(
       `https://de1.api.radio-browser.info/json/servers`,
       { timeout: 10000 },
     );
@@ -64,8 +64,8 @@ async function getServersList() {
     log.editorError(error);
     try {
       log.debug("[Radio] trying to get server from all.api");
-      const axios = require("axios").default;
-      const response = await axios.get(
+      const net = require("../../shared/both/net");
+      const response = await net.get(
         `https://all.api.radio-browser.info/json/servers`,
         { timeout: 10000 },
       );
@@ -227,8 +227,8 @@ function initOnIpcCallbacks() {
     // Call the click api as requested by the docs
     (async () => {
       try {
-        const axios = require("axios").default;
-        await axios.get(
+        const net = require("../../shared/both/net");
+        await net.get(
           `${g_server ? g_server : g_defaultServer}/json/url/${id}`,
           {
             timeout: 5000,
@@ -287,7 +287,6 @@ function initOnIpcCallbacks() {
       if (text.trim().length === 0) {
         throw "query's text is empty";
       }
-      const axios = require("axios").default;
       let searchQuery = encodeURIComponent(text);
       let extraOptions = "";
       for (const key in options) {
@@ -295,7 +294,8 @@ function initOnIpcCallbacks() {
           extraOptions += "&" + key + "=" + encodeURIComponent(options[key]);
         }
       }
-      const response = await axios.get(
+      const net = require("../../shared/both/net");
+      const response = await net.get(
         `${
           g_server ? g_server : g_defaultServer
         }/json/stations/search?name=${searchQuery}&hidebroken=false${extraOptions}`,

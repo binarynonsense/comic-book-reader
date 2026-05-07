@@ -122,14 +122,11 @@ function initOnIpcCallbacks() {
     try {
       const formData = new FormData();
       formData.append("terms", data.query);
-      const axios = require("axios").default;
-      const response = await axios.post(
+      const net = require("../../shared/both/net");
+      const response = await net.post(
         "https://digitalcomicmuseum.com/index.php?ACT=dosearch",
         formData,
         {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
           timeout: 15000,
         },
       );
@@ -342,11 +339,11 @@ function initHandleIpcCallbacks() {}
 
 async function getPageCallback(pageNum, fileData) {
   try {
-    const axios = require("axios").default;
     const jsdom = require("jsdom");
     const { JSDOM } = jsdom;
     let comicData = fileData.data;
-    const response = await axios.get(
+    const net = require("../../shared/both/net");
+    const response = await net.get(
       `https://digitalcomicmuseum.com/preview/index.php?did=${comicData.comicId}&page=${pageNum}`,
       { timeout: 15000 },
     );

@@ -20,7 +20,7 @@ import {
   isVersionOlder,
   getFormattedShortcut,
 } from "../shared/renderer/utils.js";
-import axios from "../assets/libs/axios/dist/esm/axios.js";
+import net from "../shared/both/net.js";
 import * as toasts from "../shared/renderer/toasts.js";
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -416,7 +416,7 @@ async function showModalCheckUpdates(currentVersion, texts) {
     progressBar: {},
   });
   try {
-    const response = await axios.get(
+    const response = await net.get(
       `https://api.github.com/repos/binarynonsense/comic-book-reader/releases/latest`,
       { timeout: 15000 },
     );
@@ -430,7 +430,7 @@ async function showModalCheckUpdates(currentVersion, texts) {
     ////////////
     let changelog;
     try {
-      const response = await axios.get(
+      const response = await net.get(
         `https://raw.githubusercontent.com/binarynonsense/comic-book-reader/refs/heads/master/CHANGELOG.md`,
         { timeout: 2000 },
       );
@@ -523,7 +523,7 @@ async function showModalCheckUpdates(currentVersion, texts) {
     g_openModal = modals.show({
       title: texts.titleError,
       message:
-        error?.name === "AxiosError"
+        error?.name === "NetError" || error?.name === "TimeoutError"
           ? texts.infoNetworkError.replace("{0}", "GitHub")
           : error,
       zIndexDelta: 10,

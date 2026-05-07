@@ -10,7 +10,7 @@ import {
   sendIpcToMainAndWait as coreSendIpcToMainAndWait,
 } from "../../core/renderer.js";
 import * as modals from "../../shared/renderer/modals.js";
-import axios from "../../assets/libs/axios/dist/esm/axios.js";
+import net from "../../shared/both/net.js";
 
 let g_searchInput;
 let g_searchButton;
@@ -564,7 +564,7 @@ function openCBPLink(url) {
 
 async function getFirstPageInfo(comicId) {
   try {
-    const response = await axios.get(
+    const response = await net.get(
       `https://comicbookplus.com/?dlid=${comicId}`,
       { timeout: 15000 },
     );

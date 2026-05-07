@@ -378,7 +378,6 @@ let g_pageCallbackLastComicId, g_pageCallbackLastImageUrlRoot;
 
 async function getPageCallback(pageNum, fileData) {
   try {
-    const axios = require("axios").default;
     const jsdom = require("jsdom");
     const { JSDOM } = jsdom;
     let comicData = fileData.data;
@@ -387,7 +386,8 @@ async function getPageCallback(pageNum, fileData) {
       !g_pageCallbackLastComicId ||
       g_pageCallbackLastComicId != comicData.comicId
     ) {
-      const response = await axios.get(
+      const net = require("../../shared/both/net");
+      const response = await net.get(
         `https://comicbookplus.com/?dlid=${comicData.comicId}`,
         { timeout: 15000 },
       );

@@ -98,15 +98,15 @@ function initOnIpcCallbacks() {
 
   on("search", async (text, languageId) => {
     try {
-      const axios = require("axios").default;
       let word = encodeURI(text.trim().split(" ")[0]);
-      const response = await axios.get(
+      const net = require("../../shared/both/net");
+      const response = await net.get(
         `https://${languageId}.wiktionary.org/w/api.php?titles=${word}&action=query&prop=extracts&format=json`,
         {
           timeout: 10000,
           headers: {
             "User-Agent":
-              "ACBR/1.0 (https://github.com/binarynonsense/comic-book-reader) axios/1.x",
+              "ACBR/1.0 (https://github.com/binarynonsense/comic-book-reader) fetch/1.x",
           },
         },
       );

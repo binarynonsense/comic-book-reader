@@ -12,7 +12,6 @@ const reader = require("../../reader/main");
 const contextMenu = require("../../shared/main/tools-menu-context");
 const tools = require("../../shared/main/tools");
 const log = require("../../shared/main/logger");
-const axios = require("axios").default;
 const sanitizeHtml = require("sanitize-html");
 const settings = require("../../shared/main/settings");
 const appUtils = require("../../shared/main/app-utils");
@@ -445,9 +444,9 @@ function initOnIpcCallbacks() {
         if (text.trim().length === 0) {
           throw "query's text is empty";
         }
-        const axios = require("axios").default;
+        const net = require("../../shared/both/net");
         let searchQuery = encodeURIComponent(text);
-        const response = await axios.get(
+        const response = await net.get(
           `https://itunes.apple.com/search?entity=podcast&limit=200&term=${searchQuery}`,
           { timeout: 10000 },
         );
@@ -463,9 +462,9 @@ function initOnIpcCallbacks() {
         if (text.trim().length === 0) {
           throw "query's text is empty";
         }
-        const axios = require("axios").default;
+        const net = require("../../shared/both/net");
         let searchQuery = encodeURIComponent(text);
-        const response = await axios.get(
+        const response = await net.get(
           `https://feedsearch.dev/api/v1/search?url=${searchQuery}`,
           { timeout: 10000 },
         );
@@ -530,7 +529,8 @@ async function openFeedURL(url, switchToContent) {
 
 async function getFeedContent(url) {
   try {
-    const response = await axios.get(url, { timeout: 15000 });
+    const net = require("../../shared/both/net");
+    const response = await net.get(url, { timeout: 15000 });
     const { XMLParser, XMLValidator } = require("fast-xml-parser");
     const isValidXml = XMLValidator.validate(response.data);
     if (isValidXml !== true) {
