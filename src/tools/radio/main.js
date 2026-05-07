@@ -215,14 +215,21 @@ function initOnIpcCallbacks() {
     reader.showMediaPlayer(true, false);
     if (playlistOption === 0) {
       let files = [{ url: url, duration: -1, title: name }];
-      sendIpcToAudioPlayerRenderer("add-to-playlist", files, true, false);
+      setTimeout(
+        () =>
+          sendIpcToAudioPlayerRenderer("add-to-playlist", files, true, false),
+        300,
+      );
     } else {
       let playlist = {
         id: name,
         source: "radio",
         files: [{ url: url, duration: -1, title: name }],
       };
-      sendIpcToAudioPlayerRenderer("open-playlist", playlist);
+      setTimeout(
+        () => sendIpcToAudioPlayerRenderer("open-playlist", playlist),
+        300,
+      );
     }
     // Call the click api as requested by the docs
     (async () => {

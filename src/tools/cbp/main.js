@@ -121,14 +121,21 @@ function initOnIpcCallbacks() {
     reader.showMediaPlayer(true, false);
     if (playlistOption === 0) {
       let files = [{ url, title, duration: -1 }];
-      sendIpcToAudioPlayerRenderer("add-to-playlist", files, true, false);
+      setTimeout(
+        () =>
+          sendIpcToAudioPlayerRenderer("add-to-playlist", files, true, false),
+        300,
+      );
     } else {
       let playlist = {
         id: title,
         source: "cbp",
         files: [{ url, duration: -1, title }],
       };
-      sendIpcToAudioPlayerRenderer("open-playlist", playlist);
+      setTimeout(
+        () => sendIpcToAudioPlayerRenderer("open-playlist", playlist),
+        300,
+      );
     }
     // onCloseClicked();
   });
