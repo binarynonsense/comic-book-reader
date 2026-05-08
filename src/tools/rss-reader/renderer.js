@@ -156,7 +156,7 @@ async function init(section, favorites) {
     showFeedContent(
       g_currentFeedData,
       g_currentFeedFavoriteIndex,
-      g_currentFeedContentPage
+      g_currentFeedContentPage,
     );
   } else {
     removeCurrentFeedContent();
@@ -351,7 +351,7 @@ function initOnIpcCallbacks() {
       showFeedContent(
         g_currentFeedData,
         g_currentFeedFavoriteIndex,
-        g_currentFeedContentPage
+        g_currentFeedContentPage,
       );
     } else {
       // just in case
@@ -502,7 +502,7 @@ function buildFavorites() {
               "on-modal-feed-options-move-clicked",
               index,
               g_favorites[index].url,
-              0
+              0,
             );
           });
         } else {
@@ -522,7 +522,7 @@ function buildFavorites() {
               "on-modal-feed-options-move-clicked",
               index,
               g_favorites[index].url,
-              1
+              1,
             );
           });
         } else {
@@ -540,7 +540,7 @@ function buildFavorites() {
           sendIpcToMain(
             "on-modal-feed-options-remove-clicked",
             index,
-            g_favorites[index].url
+            g_favorites[index].url,
           );
         });
         li.appendChild(buttonSpan);
@@ -617,10 +617,10 @@ function showFeedContent(data, index, pageNum, scrollToTop = false) {
       <div id='tool-rss-channel-info-title-button' class="${
         data?.link ? "tool-rss-icon-button" : ""
       }" title="${
-      data?.link
-        ? g_extraLocalization.openInBrowser + " (" + data?.link + ")"
-        : ""
-    }">
+        data?.link
+          ? g_extraLocalization.openInBrowser + " (" + data?.link + ")"
+          : ""
+      }">
         <i class="fas fa-rss"></i>
         <span id="tool-rss-channel-info-title-text">${
           index >= 0 ? g_favorites[g_currentFeedFavoriteIndex].name : data.name
@@ -647,10 +647,10 @@ function showFeedContent(data, index, pageNum, scrollToTop = false) {
           ? "<span>" + data.name + "</span>"
           : ""
       }${
-      data.description
-        ? `<span${descPrelineClass}>` + data.description + "</span$>"
-        : ""
-    }
+        data.description
+          ? `<span${descPrelineClass}>` + data.description + "</span$>"
+          : ""
+      }
       </div>
     </div>`;
 
@@ -675,7 +675,7 @@ function showFeedContent(data, index, pageNum, scrollToTop = false) {
         sendIpcToMain(
           "on-modal-feed-options-remove-clicked",
           g_currentFeedFavoriteIndex,
-          g_favorites[g_currentFeedFavoriteIndex].url
+          g_favorites[g_currentFeedFavoriteIndex].url,
         );
       });
 
@@ -737,7 +737,7 @@ function getFeedContentPaginationHtml(pageNum, totalPagesNum) {
           g_currentFeedData,
           g_currentFeedFavoriteIndex,
           pageNum - 1,
-          true
+          true,
         );
       });
     } else {
@@ -758,7 +758,7 @@ function getFeedContentPaginationHtml(pageNum, totalPagesNum) {
           g_currentFeedData,
           g_currentFeedFavoriteIndex,
           pageNum + 1,
-          true
+          true,
         );
       });
     } else {
@@ -776,7 +776,7 @@ function getFeedContentPaginationHtml(pageNum, totalPagesNum) {
           g_currentFeedData,
           g_currentFeedFavoriteIndex,
           totalPagesNum - 1,
-          true
+          true,
         );
       });
     } else {
@@ -819,19 +819,23 @@ function itemsToHtml(root, items, pageNum, itemsPerPage, totalPagesNum) {
           } else if (utils.hasVideoExtension(item.enclosureUrl.split("?")[0])) {
             html += `<div class="tool-rss-item-enclosure"><i class="fas fa-play-circle tool-rss-item-enclosure-playicon" data-src="${item.enclosureUrl}" data-title="${item.title}"></i></div>`;
           }
-        } else if (item.contentEncoded) {
-          const div = document.createElement("div");
-          div.innerHTML = item.contentEncoded;
-          const image = div.querySelector("img");
-          if (image && image.src) {
-            html += `<div class="tool-rss-item-enclosure"><img src="${image.src}" loading=”lazy”></div>`;
-          }
         }
 
-        html += `<div class="tool-rss-item-desc${
-          utils.isStringHTML(item.description) ? "" : " tool-rss-desc-prelined"
-        }">${item.description}</div>
+        if (item.contentEncoded) {
+          html += `<div class="tool-rss-item-desc${
+            utils.isStringHTML(item.contentEncoded)
+              ? ""
+              : " tool-rss-desc-prelined"
+          }">${item.contentEncoded}</div>
         </div>`;
+        } else {
+          html += `<div class="tool-rss-item-desc${
+            utils.isStringHTML(item.description)
+              ? ""
+              : " tool-rss-desc-prelined"
+          }">${item.description}</div>
+        </div>`;
+        }
       } catch (error) {
         html = "";
       }
@@ -869,7 +873,7 @@ function itemsToHtml(root, items, pageNum, itemsPerPage, totalPagesNum) {
       mp3Url.addEventListener("click", () => {
         onPlayUrlClicked(
           mp3Url.getAttribute("data-src"),
-          mp3Url.getAttribute("data-title")
+          mp3Url.getAttribute("data-title"),
         );
       });
     }
@@ -877,7 +881,7 @@ function itemsToHtml(root, items, pageNum, itemsPerPage, totalPagesNum) {
 
   for (let index = 0; index < items.length; index++) {
     const element = document.getElementById(
-      `tool-rss-item-title-${index}-button`
+      `tool-rss-item-title-${index}-button`,
     );
     if (element) {
       element.addEventListener("click", (event) => {
@@ -896,7 +900,7 @@ async function onPlayUrlClicked(url, name) {
     g_extraLocalization.openInAudioPlayer,
     g_extraLocalization.cancel,
     g_extraLocalization.addToPlaylist,
-    g_extraLocalization.startPlaylist
+    g_extraLocalization.startPlaylist,
   );
 }
 
@@ -909,7 +913,7 @@ function updateSearchResults(type, searchResults) {
     .querySelector("#tool-rss-search-results-h3")
     .classList.remove("set-display-none");
   const searchResultsDiv = document.querySelector(
-    "#tool-rss-search-results-div"
+    "#tool-rss-search-results-div",
   );
   searchResultsDiv.innerHTML = "";
   if (searchResults && searchResults.length > 0) {
@@ -958,7 +962,7 @@ function updateSearchResults(type, searchResults) {
         if (resultData.releaseDate) {
           text = document.createElement("span");
           text.innerHTML = new Date(
-            resultData.releaseDate
+            resultData.releaseDate,
           ).toLocaleDateString();
           multilineText.appendChild(text);
         }
@@ -1023,7 +1027,7 @@ async function onSearch() {
   sendIpcToMain(
     "search",
     g_searchInput.value,
-    document.getElementById("tool-rss-search-type-select").value
+    document.getElementById("tool-rss-search-type-select").value,
   );
 }
 
@@ -1271,7 +1275,7 @@ function showModalFeedOptions(
   textButtonEditName,
   textButtonEditUrl,
   textButtonOpenURLBrowser,
-  showFocus
+  showFocus,
 ) {
   if (getOpenModal()) {
     return;
@@ -1286,7 +1290,7 @@ function showModalFeedOptions(
       sendIpcToMain(
         "on-modal-feed-options-edit-name-clicked",
         favoriteIndex,
-        g_favorites[favoriteIndex].url
+        g_favorites[favoriteIndex].url,
       );
     },
   });
@@ -1298,7 +1302,7 @@ function showModalFeedOptions(
       sendIpcToMain(
         "on-modal-feed-options-edit-url-clicked",
         favoriteIndex,
-        g_favorites[favoriteIndex].url
+        g_favorites[favoriteIndex].url,
       );
     },
   });
@@ -1309,7 +1313,7 @@ function showModalFeedOptions(
       modalClosed();
       sendIpcToMain(
         "on-modal-feed-options-open-url-browser-clicked",
-        g_favorites[favoriteIndex].url
+        g_favorites[favoriteIndex].url,
       );
     },
   });
@@ -1358,7 +1362,7 @@ function showModalFeedEditName(index, name, title, textButton1, textButton2) {
           sendIpcToMain(
             "on-modal-feed-options-edit-name-ok-clicked",
             index,
-            value
+            value,
           );
           modalClosed();
         },
@@ -1396,7 +1400,7 @@ function showModalFeedEditUrl(index, url, title, textButton1, textButton2) {
           sendIpcToMain(
             "on-modal-feed-options-edit-url-ok-clicked",
             index,
-            value
+            value,
           );
           modalClosed();
         },
@@ -1420,7 +1424,7 @@ function showModalFeedRemoveFromFavorites(
   title,
   message,
   textButton1,
-  textButton2
+  textButton2,
 ) {
   if (getOpenModal()) {
     return;
@@ -1464,7 +1468,7 @@ function showModalOpenInPlayer(
   textButtonBack,
   textButtonAddToPlayList,
   textButtonNewPlaylist,
-  showFocus
+  showFocus,
 ) {
   if (g_openModal) {
     closeModal();
