@@ -130,7 +130,7 @@
     "electron": "37.10.3",
     "electron-builder": "26.7.0",
     "shx": "0.4.0",
-    "snapsvg-cjs": "^0.0.6"
+    "snapsvg-cjs": "0.0.6"
   },
   "dependencies": {
     "adm-zip": "0.5.16",
