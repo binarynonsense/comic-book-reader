@@ -82,20 +82,20 @@ html[dir="rtl"] #tools:not(:has(iframe)) {
   /* border-inline-start: 3px solid var(--tools-bg2-color); */
 }
 
-.tools-option-children > label {
+.tools-option-children-bullet {
   position: relative;
 }
 
 /* "• └ › ↳ ∙" */
-.tools-option-children > label::before {
+.tools-option-children-bullet::before {
   content: "└";
   position: absolute;
   left: -15px;
-  /* top: -5px; */
   font-weight: bold;
   opacity: 0.4;
 }
-html[dir="rtl"] .tools-option-children > label::before {
+
+html[dir="rtl"] .tools-option-children-bullet::before {
   content: "┘";
   right: -15px;
   left: auto;
