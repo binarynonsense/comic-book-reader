@@ -1,3 +1,9 @@
+## v3.21.0
+
+- Added a new command line flag, --player, that makes ACBR launch in "Media Player Mode". In this mode the media player runs as if it was a stand alone application, without the Reader's main window or other tools.
+- Added a new command line flag, --cli, that allows launching a text mode version of some of the tools ("Convert Comics", "Extract Comics" and "Create Comic") that runs directly through the command line rather than the graphical user interface.
+- Fixed the RSS Reader showing the short summary instead of the full content for an RSS feed item if both are available.
+
 ## v3.20.0
 
 - Added new parameters to the custom filters in the Reader, invert and rotate hue, and a new default filter, Invert, to use as a quick Dark Mode (resetting the filters to the default ones is needed for the new one to be available if version 3.19.0 was previously used).
