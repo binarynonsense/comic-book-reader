@@ -116,7 +116,7 @@
     "chmod-bins:linux": "shx chmod +x node_modules/7zip-bin/linux/x64/7za && shx chmod +x src/assets/bin/7zip/linux/7zz && shx chmod +x src/assets/bin/mupdf/linux/mutool",
     "extras:linux": "echo '#!/bin/bash\\nexport G_SLICE=always-malloc && ./acbr-comic-book-reader \"$@\"' > ./dist/linux-unpacked/ACBR.sh && shx chmod +x ./dist/linux-unpacked/ACBR.sh && echo '#!/bin/bash\\nexport G_SLICE=always-malloc && ./acbr-comic-book-reader.AppImage \"$@\"' > ./dist/ACBR.sh && shx chmod +x ./dist/ACBR.sh && echo '#!/bin/bash\\nexport G_SLICE=always-malloc && acbr-comic-book-reader \"$@\"' > ./dist/ACBR_deb.sh && shx chmod +x ./dist/ACBR_deb.sh && echo ${npm_package_version} > ./dist/linux-unpacked/VERSION && echo ${npm_package_version} > ./dist/VERSION",
     "extras:windows": "echo %npm_package_version% > ./dist/win-unpacked/VERSION",
-    "licenses": "license-checker > licenses/node_modules.txt && shx sed -i 's/path.*node_modules/path: node_modules/' ./licenses/node_modules.txt && shx sed -i 's/licenseFile.*node_modules/licenseFile: node_modules/' ./licenses/node_modules.txt && npm run localization licenses",
+    "licenses": "node ./tools/generate-licenses.js && npm run localization licenses",
     "localization:update": "node ./tools/localization.js update all",
     "localization:state": "node ./tools/localization.js state all",
     "localization": "node ./tools/localization.js",
@@ -129,7 +129,6 @@
     "del-cli": "6.0.0",
     "electron": "37.10.3",
     "electron-builder": "26.7.0",
-    "license-checker": "25.0.1",
     "shx": "0.4.0",
     "snapsvg-cjs": "^0.0.6"
   },
