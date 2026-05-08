@@ -287,6 +287,7 @@ exports.getConfigFiles = function () {
   data.push(getFileData("acbr.fav", cfgFolderPath));
   data.push(getFileData("acbr-player.cfg", cfgFolderPath));
   data.push(getFileData("acbr-player.m3u", cfgFolderPath));
+  data.push(getFileData("acbr-player.hst", cfgFolderPath));
   return data;
 };
 
