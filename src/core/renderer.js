@@ -467,7 +467,7 @@ async function showModalCheckUpdates(currentVersion, texts) {
       g_openModal = modals.show({
         title: texts.titleUpdateAvailable,
         message: texts.infoUpdateAvailable + versionsText,
-        log: changelog ? { message: changelog, useDiv: false } : undefined,
+        log: changelog ? { message: changelog, useDiv: true } : undefined,
         zIndexDelta: 10,
         close: {
           callback: () => {
