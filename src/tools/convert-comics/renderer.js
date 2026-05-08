@@ -359,7 +359,7 @@ function init(
   );
   let formats = [];
   if (g_mode === ToolMode.CONVERT || g_mode === ToolMode.EXTRACT) {
-    formats = [".cbz", ".cbr", ".pdf", ".epub", ".cb7"];
+    formats = [".cbz", ".cbr", ".pdf", ".epub", ".cb7", ".mobi", ".fb2"];
   } else {
     formats = [
       ".cbz",
@@ -367,6 +367,8 @@ function init(
       ".pdf",
       ".epub",
       ".cb7",
+      ".mobi",
+      ".fb2",
       ".jpg",
       ".png",
       ".webp",

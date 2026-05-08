@@ -1184,6 +1184,7 @@ html[dir="rtl"] .tools-range-bubble {
   flex-direction: row;
   gap: 20px;
   justify-content: flex-start;
+  flex-wrap: wrap;
 }
 
 .tools-checkboxes-row-div .tools-checkbox-container {
