@@ -10,7 +10,7 @@
 
 Программа для чтения и конвертирования комиксов с расширениями файлов CBZ, CBR, CB7, EPUB и PDF.
 
-![git_banner](https://github.com/user-attachments/assets/6ef7ded2-749a-4efd-a6b7-109d0f33d603)
+<img  alt="git_banner" src="https://github.com/user-attachments/assets/4598d889-7f3d-4d77-ace9-49465b6b725f" />
 
 ## Содержание:
 
