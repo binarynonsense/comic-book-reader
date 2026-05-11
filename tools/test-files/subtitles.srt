@@ -1,0 +1,61 @@
+1
+00:00:00,000 --> 00:00:03,000
+Simple <i>italics</i> on one line
+
+2
+00:00:03,000 --> 00:00:06,000
+Simple <b>bold</b> on one line
+
+3
+00:00:06,000 --> 00:00:09,000
+Simple <u>underline</u> on one line
+
+4
+00:00:09,000 --> 00:00:12,000
+Simple <font color='#0000ff'>blue text</font> on one line
+
+5
+00:00:12,000 --> 00:00:15,000
+<b>Bold across
+lines test</b>
+
+6
+00:00:15,000 --> 00:00:18,000
+<i>Italic across
+lines test</i>
+
+7
+00:00:18,000 --> 00:00:21,000
+<font color='#ff0000'>Red color
+across lines</font>
+
+8
+00:00:21,000 --> 00:00:24,000
+Nested <i>Italic and <b>Bold</b></i>
+on separate lines
+
+9
+00:00:24,000 --> 00:00:27,000
+Non-HTML tags: {i}Curly italics{/i}
+and {b}Curly bold{/b}
+
+10
+00:00:27,000 --> 00:00:30,000
+Positioning tag removal: {\an8}
+an8 tag should not be visible above
+
+11
+00:00:30,000 --> 00:00:33,000
+Mathematical safety: 3 < 5
+and x > 10 (should be visible)
+
+12
+00:00:33,000 --> 00:00:36,000
+Malformed: < i>Spaces and <b / >
+self-closing tests
+
+13
+00:00:36,000 --> 00:00:39,000
+Final Test:
+<font color='#00ff00'>Green <i>Italic
+Across multiple lines</i></font>
