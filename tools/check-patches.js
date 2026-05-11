@@ -17,8 +17,9 @@ function checkPackagePatches() {
     ...json.devDependencies,
   };
 
-  console.log("available updates for the current major version:\n");
+  console.log("Available updates for the current major version:\n");
 
+  let updateCount = 0;
   for (const [packageName, currentVersion] of Object.entries(dependencies)) {
     try {
       // get the current version without symbols (e.g., "^1.2.3" -> "1.2.3")
@@ -48,16 +49,15 @@ function checkPackagePatches() {
 
       // compare them to see if there's a newer one
       if (latestVersion && cleanCurrentVersion !== latestVersion) {
-        console.log(
-          `[UPDATE] ${packageName}: ${currentVersion} -> ${latestVersion}`,
-        );
+        console.log(`${packageName}: ${currentVersion} -> ${latestVersion}`);
+        updateCount++;
       }
-      console.log("\ndone");
     } catch (error) {
       console.log("failed:");
       console.log(error);
     }
   }
+  console.log(`\nScan complete: ${updateCount} updates found.`);
 }
 
 checkPackagePatches();
