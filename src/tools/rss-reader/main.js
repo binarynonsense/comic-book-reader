@@ -44,16 +44,20 @@ let g_defaultFeeds = [
     url: "https://www.comicsbeat.com/feed/",
   },
   {
+    name: "r/comicbooks",
+    url: "https://old.reddit.com/r/comicbooks/.rss",
+  },
+  {
+    name: "Zona Negativa",
+    url: "https://www.zonanegativa.com/feed/",
+  },
+  {
     name: "Bleeding Cool - Comics",
     url: "https://bleedingcool.com/comics/feed/",
   },
   {
     name: "ComicList: Shipping This Week",
     url: "http://feeds.feedburner.com/ncrl",
-  },
-  {
-    name: "r/comicbooks",
-    url: "https://old.reddit.com/r/comicbooks/.rss",
   },
   {
     name: "xkcd.com",
