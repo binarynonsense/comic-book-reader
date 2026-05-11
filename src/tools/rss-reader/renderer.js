@@ -634,7 +634,7 @@ function showFeedContent(data, index, pageNum, scrollToTop = false) {
     const descPrelineClass = `${
       utils.isStringHTML(data.description)
         ? ""
-        : " class='tool-rss-desc-prelined'"
+        : " class='tool-rss-text-prelined'"
     }`;
 
     root.innerHTML += `
@@ -821,21 +821,34 @@ function itemsToHtml(root, items, pageNum, itemsPerPage, totalPagesNum) {
           }
         }
 
-        if (item.contentEncoded) {
-          html += `<div class="tool-rss-item-desc${
-            utils.isStringHTML(item.contentEncoded)
-              ? ""
-              : " tool-rss-desc-prelined"
-          }">${item.contentEncoded}</div>
-        </div>`;
-        } else {
-          html += `<div class="tool-rss-item-desc${
+        if (item.contentEncoded && item.description) {
+          html += `<div class="tool-rss-item-text${
             utils.isStringHTML(item.description)
               ? ""
-              : " tool-rss-desc-prelined"
-          }">${item.description}</div>
-        </div>`;
+              : " tool-rss-text-prelined"
+          }">${item.description}</div>`;
+          ////
+          html += `<div class="tool-rss-item-text${
+            utils.isStringHTML(item.contentEncoded)
+              ? ""
+              : " tool-rss-text-prelined"
+          } set-display-none">${item.contentEncoded}</div>`;
+          ////
+          html += `<i class="tool-rss-item-text-toggle-button fa-solid fa-circle-chevron-down"></i>`;
+        } else if (item.contentEncoded) {
+          html += `<div class="tool-rss-item-text${
+            utils.isStringHTML(item.contentEncoded)
+              ? ""
+              : " tool-rss-text-prelined"
+          }">${item.contentEncoded}</div>`;
+        } else {
+          html += `<div class="tool-rss-item-text${
+            utils.isStringHTML(item.description)
+              ? ""
+              : " tool-rss-text-prelined"
+          }">${item.description}</div>`;
         }
+        html += `</div>`;
       } catch (error) {
         html = "";
       }
@@ -843,6 +856,31 @@ function itemsToHtml(root, items, pageNum, itemsPerPage, totalPagesNum) {
     }
     root.innerHTML += `<div id='tool-rss-items-bottom-pagination'></div>`;
   } catch (error) {}
+
+  let toggles = document.querySelectorAll(".tool-rss-item-text-toggle-button");
+  toggles.forEach((toggle) => {
+    toggle.title = g_extraLocalization.expandContent;
+    toggle.addEventListener("click", () => {
+      const content = toggle.previousSibling;
+      const desc = toggle.previousSibling.previousSibling;
+      if (toggle.classList.contains("fa-circle-chevron-down")) {
+        toggle.classList.remove("fa-circle-chevron-down");
+        toggle.classList.add("fa-circle-chevron-up");
+        // desc.classList.add("set-display-none");
+        content.classList.remove("set-display-none");
+        updateColumnsHeight();
+        toggle.title = g_extraLocalization.collapseContent;
+      } else {
+        toggle.classList.add("fa-circle-chevron-down");
+        toggle.classList.remove("fa-circle-chevron-up");
+        // desc.classList.remove("set-display-none");
+        content.classList.add("set-display-none");
+        updateColumnsHeight();
+        toggle.scrollIntoViewIfNeeded();
+        toggle.title = g_extraLocalization.expandContent;
+      }
+    });
+  });
 
   let links = document.querySelectorAll("a");
   links.forEach((link) => {
