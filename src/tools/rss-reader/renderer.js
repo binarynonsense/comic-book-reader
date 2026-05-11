@@ -1091,6 +1091,26 @@ export function onInputEvent(type, event) {
     case "onkeydown": {
       if (event.key == "Tab") {
         event.preventDefault();
+      } else if (event.key == "PageDown") {
+        document.getElementById("tools").scrollBy({
+          top: window.innerHeight,
+          behavior: "auto",
+        });
+      } else if (event.key == "PageUp") {
+        document.getElementById("tools").scrollBy({
+          top: -window.innerHeight,
+          behavior: "auto",
+        });
+      } else if (event.key == "ArrowDown") {
+        document.getElementById("tools").scrollBy({
+          top: 40,
+          behavior: "auto",
+        });
+      } else if (event.key == "ArrowUp") {
+        document.getElementById("tools").scrollBy({
+          top: -40,
+          behavior: "auto",
+        });
       }
       break;
     }
