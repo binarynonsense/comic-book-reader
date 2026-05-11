@@ -44,10 +44,39 @@ exports.parseSRT = function (data) {
       if (!timeMatch) return null;
 
       const timeIndex = lines.indexOf(timeLine);
-      const text = lines
+      let text = lines
         .slice(timeIndex + 1)
         .join("\n")
         .trim();
+      // convert or discard non-HTML tags, e.g. {i} to <i>
+      // and clean-up spaces
+      // NOTE: at most I currently only allow i, b, u and font tags
+      text = text
+        .replace(/\{[biu]\}/gi, (m) => m.replace("{", "<").replace("}", ">"))
+        .replace(/\{\/[biu]\}/gi, (m) => m.replace("{", "<").replace("}", ">"))
+        .replace(/\{\\an\d\}/gi, "") // discard positioning tags
+        .replace(
+          /<\s*(\/?)\s*(b|i|u|font)([^>]*?)\s*\/?>/gi,
+          (match, slash, tag, attributes) => {
+            const cleanAttrs = attributes.trim();
+            return `<${slash}${tag}${cleanAttrs ? " " + cleanAttrs : ""}>`;
+          },
+        );
+      const allowTags = true;
+      const sanitizeHtml = require("sanitize-html");
+      if (allowTags) {
+        text = sanitizeHtml(text, {
+          allowedTags: ["b", "i", "u", "font"],
+          allowedAttributes: {
+            font: ["color", "size"],
+          },
+        });
+      } else {
+        text = sanitizeHtml(text, {
+          allowedTags: [],
+          allowedAttributes: {},
+        });
+      }
 
       return {
         start: srtTimeToSeconds(timeMatch[1]),

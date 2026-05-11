@@ -320,6 +320,9 @@ a:hover a:visited {
   text-wrap: balance;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
 }
+.mp-video-subtitle-line b {
+  font-size: 1.2em;
+}
 
 #mp-video-subtitle.mp-video-subtitle-high-contrast .mp-video-subtitle-line {
   background-color: rgba(0, 0, 0, 0.75);

@@ -1036,15 +1036,59 @@ function updateSubtitleUI(relativeTime) {
   // TODO: figure it out!
   if (index !== g_player.subtitle.dataIndex) {
     if (index !== -1) {
+      const allowTags = true;
       const sub = g_player.subtitle.data[index];
       g_player.html.videoSubtitleDiv.innerHTML = "&nbsp;";
-      sub.text.split("\n").forEach((lineText, index, array) => {
-        const span = document.createElement("span");
-        span.textContent = lineText;
-        span.className = "mp-video-subtitle-line";
-        g_player.html.videoSubtitleDiv.appendChild(span);
-      });
-      // g_player.html.videoSubtitleDiv.textContent = sub.text;
+      if (allowTags) {
+        // keep track of tags
+        let activeTags = [];
+        sub.text.split("\n").forEach((lineText) => {
+          const span = document.createElement("span");
+          span.className = "mp-video-subtitle-line";
+          // add tags still open
+          let formattedLine = activeTags.join("");
+          formattedLine += lineText;
+          // keep track of tags in this line
+          const tagRegex = /<((\/?)(b|i|u|font)[^>]*)>/gi;
+          let match;
+          while ((match = tagRegex.exec(lineText)) !== null) {
+            const fullTag = match[0];
+            const isClosing = match[2] === "/";
+            const tagName = match[3].toLowerCase();
+            if (isClosing) {
+              // closing -> remove
+              activeTags = activeTags.filter(
+                (t) => !t.toLowerCase().startsWith(`<${tagName}`),
+              );
+            } else {
+              // opening -> add
+              activeTags.push(fullTag);
+            }
+          }
+          // close still open tags so they render correctly
+          formattedLine += activeTags
+            .slice()
+            .reverse()
+            .map((tag) => {
+              const nameMatch = tag.match(/<([a-z]+)/i);
+              const name = nameMatch ? nameMatch[1] : "";
+              return name ? `</${name}>` : "";
+            })
+            .join("");
+          span.innerHTML = formattedLine;
+          g_player.html.videoSubtitleDiv.appendChild(span);
+        });
+      } else {
+        sub.text.split("\n").forEach((lineText) => {
+          const span = document.createElement("span");
+          span.className = "mp-video-subtitle-line";
+          // temp element to decode things like &lt; back to <
+          const temp = document.createElement("div");
+          temp.innerHTML = lineText;
+          span.textContent = temp.textContent;
+          g_player.html.videoSubtitleDiv.appendChild(span);
+        });
+      }
     } else {
       g_player.html.videoSubtitleDiv.innerHTML = "&nbsp;";
     }
