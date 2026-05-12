@@ -1,3 +1,10 @@
+## v3.21.1
+
+- Made feed items with both description and content data in the RSS Reader start showing only the description and a expand/collapse button to show/hide the content, so it's easier to read and navigate them.
+- Added Zona Negativa's feed to the RSS Reader's defaults.
+- Fixed the changelog formatting in the check for updates modal when there is a new version.
+- Fixed the Media Player's subtitle rendering so tags (italics, bold...) are shown correctly.
+
 ## v3.21.0
 
 - Added a new command line flag, --player, that makes ACBR launch in "Media Player Mode". In this mode the media player runs as if it was a stand alone application, without the Reader's main window or other tools.
