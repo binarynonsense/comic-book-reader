@@ -2,7 +2,7 @@
 
 قارئ ومحول للكتب المصورة يدعم ملفات CBZ و CBR و CB7 و EPUB و FB2 و MOBI و PDF.
 
-<img alt="git_banner" src="https://github.com/user-attachments/assets/60a04322-d9cd-45f3-bf46-d0658ecfe784" />
+<img alt="git_banner" src="https://github.com/user-attachments/assets/33395bb7-3b53-4586-bfaa-1e59fb19df99" />
 
 ## المحتويات:
 

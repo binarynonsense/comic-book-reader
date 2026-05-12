@@ -2,7 +2,7 @@
 
 A comic book reader and converter for CBZ, CBR, CB7, EPUB, FB2, MOBI and PDF files.
 
-<img alt="git_banner" src="https://github.com/user-attachments/assets/60a04322-d9cd-45f3-bf46-d0658ecfe784" />
+<img alt="git_banner" src="https://github.com/user-attachments/assets/33395bb7-3b53-4586-bfaa-1e59fb19df99" />
 
 ## Contents:
 
