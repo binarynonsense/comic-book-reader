@@ -10,7 +10,7 @@
 
 Isang comic book reader at converter para sa mga CBZ, CBR, CB7, EPUB at PDF na mga file.
 
-<img alt="git_banner" src="https://github.com/user-attachments/assets/33395bb7-3b53-4586-bfaa-1e59fb19df99" />
+<img alt="git_banner" src="https://github.com/user-attachments/assets/da605b30-7bb3-40a5-8f36-f3f2e0541faf" />
 
 ## Nilalaman:
 
