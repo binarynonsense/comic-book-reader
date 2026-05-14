@@ -1325,6 +1325,9 @@ function checkValidData() {
     document
       .querySelector("#tool-cc-folders-file-formats-text")
       .parentElement.parentElement.classList.remove("tools-option-children");
+    document
+      .querySelector("#tool-cc-folders-file-formats-text")
+      .parentElement.classList.remove("tools-option-children-bullet");
   }
   ///////////////////
   if (g_outputImageScaleSelect.value === "0") {
