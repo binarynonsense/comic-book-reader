@@ -1,3 +1,7 @@
+## v3.21.2
+
+- Fixed the "Create Comic" tool duplicating pages in the output file when the input list consists only of images.
+
 ## v3.21.1
 
 - Made feed items with both description and content data in the RSS Reader start showing only the description and a expand/collapse button to show/hide the content, so it's easier to read and navigate them.
