@@ -96,8 +96,8 @@
         "--env=XCURSOR_PATH=/run/host/user-share/icons:/run/host/share/icons"
       ],
       "license": "./licenses/acbr.txt",
-      "baseVersion": "25.08",
-      "runtimeVersion": "25.08"
+      "baseVersion": "24.08",
+      "runtimeVersion": "24.08"
     }
   },
   "scripts": {
