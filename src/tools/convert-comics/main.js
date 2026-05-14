@@ -499,39 +499,21 @@ async function onStartClicked(inputList, selectedOptions) {
   g_imageIndex = 0;
   if (g_mode === ToolMode.CONVERT || g_mode === ToolMode.EXTRACT) {
     g_uiSelectedOptions.outputFileBaseName = undefined;
-    startNextFile();
   } else {
     // ToolMode.CREATE
     g_tempSubFolderPath = temp.createSubFolder();
-    // check types
-    let areAllImages = true;
-    for (let index = 0; index < g_inputFiles.length; index++) {
-      const inputFile = g_inputFiles[index];
-      if (inputFile.type !== FileDataType.IMG) {
-        areAllImages = false;
-        break;
-      }
-    }
-    if (areAllImages) {
-      sendIpcToRenderer(
-        "modal-update-title-text",
-        _("tool-shared-modal-title-creating"),
-      );
-      for (let index = 0; index < g_inputFiles.length; index++) {
-        const inputFilePath = g_inputFiles[index].path;
-        let outName = path.basename(inputFilePath);
-        if (g_uiSelectedOptions.outputPageOrder === "byPosition") {
-          const extension = path.extname(inputFilePath);
-          outName = g_imageIndex++ + extension;
-        }
-        const outPath = path.join(g_tempSubFolderPath, outName);
-        fs.copyFileSync(inputFilePath, outPath, fs.constants.COPYFILE_EXCL);
-      }
-      processContent();
-    } else {
-      startNextFile();
+    if (g_uiSelectedOptions.outputPageOrder === "byName") {
+      g_inputFiles.sort((a, b) => {
+        const nameA = path.basename(a.path).toLowerCase();
+        const nameB = path.basename(b.path).toLowerCase();
+        return nameA.localeCompare(nameB, undefined, {
+          numeric: true,
+          sensitivity: "base",
+        });
+      });
     }
   }
+  startNextFile();
   return true;
 }
 
@@ -635,7 +617,9 @@ function startNextFile() {
     }
     // extract to temp folder
     if (inputFileType === FileDataType.IMGS_FOLDER) {
-      g_imageIndex = 0;
+      if (g_mode === ToolMode.CONVERT || g_mode === ToolMode.EXTRACT) {
+        g_imageIndex = 0;
+      }
       copyImagesToTempFolder(
         inputFilePath,
         g_uiSelectedOptions.inputSearchFoldersRecursively,
