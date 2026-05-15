@@ -1,3 +1,8 @@
+## v3.21.3
+
+- Added more ways to manage the "Convert Comics", "Extract Comics" and "Create Comic" tools' input list. The "Add Files", "Add Folders" and "Clear List" buttons are now at the top of the list and when the list grows bigger than 10 elements another set of the same buttons is placed at its bottom. Also, when right-clicking inside the list, the context menu now shows entries for those actions.
+- Fixed setting the "Convert Comics" tool's "Input Folders Contain" advanced input option to "The image files from a single comic book each" no longer working.
+
 ## v3.21.2
 
 - Fixed the "Create Comic" tool duplicating pages in the output file when the input list consists only of images.
