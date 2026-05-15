@@ -530,13 +530,19 @@ const getImageFilesInFolderRecursive = function (
 };
 exports.getImageFilesInFolderRecursive = getImageFilesInFolderRecursive;
 
-function getImageFilesInFolder(folderPath) {
+function getImageFilesInFolder(folderPath, namesOnly = false) {
   if (fs.existsSync(folderPath) && fs.lstatSync(folderPath).isDirectory()) {
     let filesInFolder = fs.readdirSync(folderPath);
     if (filesInFolder.length === 0) {
       return [];
     } else {
-      return filesInFolder.filter(hasImageExtension);
+      if (namesOnly) {
+        return filesInFolder.filter(hasImageExtension);
+      } else {
+        return filesInFolder.filter(hasImageExtension).map((fileName) => {
+          return path.join(folderPath, fileName);
+        });
+      }
     }
   } else {
     return [];
