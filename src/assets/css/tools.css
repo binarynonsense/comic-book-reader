@@ -999,6 +999,9 @@ html[dir="rtl"] .tools-range-bubble {
 .tool-shared-columns-parent-extra-margin-bottom {
   margin-bottom: 10px;
 }
+.tool-shared-columns-parent-extra-margin-top {
+  margin-top: 10px;
+}
 
 .tool-shared-columns-100 {
   flex: 0 1 100%;
