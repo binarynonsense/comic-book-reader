@@ -994,7 +994,7 @@ function openImageFolder(folderPath, filePath, pageIndex) {
     return;
   }
 
-  let pagesPaths = fileUtils.getImageFilesInFolder(folderPath);
+  let pagesPaths = fileUtils.getImageFilesInFolder(folderPath, true);
   if (pagesPaths.length <= 0) {
     sendIpcToRenderer("update-bg", true);
     sendIpcToRenderer("update-loading", false);
