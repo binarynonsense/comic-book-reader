@@ -197,8 +197,12 @@ function initOnIpcCallbacks() {
     onCloseClicked();
   });
 
-  on("show-context-menu", (params) => {
-    contextMenu.show("minimal", params, onCloseClicked);
+  on("show-context-menu", (params, isInputList) => {
+    if (isInputList) {
+      contextMenu.show("tool-cc-input-list", params, onCloseClicked);
+    } else {
+      contextMenu.show("minimal", params, onCloseClicked);
+    }
   });
 
   on("click-reset-options", () => {

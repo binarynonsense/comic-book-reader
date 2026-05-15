@@ -59,7 +59,7 @@ exports.show = function (type, params, backToReaderCallback) {
         Menu.buildFromTemplate([...commonEntries]).popup(
           core.getMainWindow(),
           params.x,
-          params.y
+          params.y,
         );
       }
       break;
@@ -77,7 +77,7 @@ exports.show = function (type, params, backToReaderCallback) {
         Menu.buildFromTemplate([...commonEntries]).popup(
           core.getMainWindow(),
           params.x,
-          params.y
+          params.y,
         );
       }
       break;
@@ -129,8 +129,44 @@ exports.show = function (type, params, backToReaderCallback) {
       Menu.buildFromTemplate([...commonEntries]).popup(
         core.getMainWindow(),
         params.x,
-        params.y
+        params.y,
       );
+      break;
+
+    //////////////////////////////////////////
+
+    case "tool-cc-input-list":
+      Menu.buildFromTemplate([
+        {
+          label: _("tool-shared-ui-add-files") + "...",
+          click: () => {
+            core.sendIpcToRenderer(
+              "tool-convert-comics",
+              "context-menu-add-file-clicked",
+            );
+          },
+        },
+        {
+          label: _("tool-shared-ui-add-folders") + "...",
+          click: () => {
+            core.sendIpcToRenderer(
+              "tool-convert-comics",
+              "context-menu-add-folder-clicked",
+            );
+          },
+        },
+        {
+          label: _("tool-shared-ui-clear-list"),
+          click: () => {
+            core.sendIpcToRenderer(
+              "tool-convert-comics",
+              "context-menu-clear-clicked",
+            );
+          },
+        },
+        { type: "separator" },
+        ...commonEntries,
+      ]).popup(core.getMainWindow(), params.x, params.y);
       break;
   }
 };

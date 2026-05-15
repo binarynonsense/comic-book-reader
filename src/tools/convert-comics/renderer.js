@@ -178,31 +178,34 @@ function init(
   document
     .getElementById("tool-cc-add-file-button")
     .addEventListener("click", (event) => {
-      let lastFilePath = undefined;
-      if (g_inputList && g_inputList.length > 0) {
-        lastFilePath = g_inputList[g_inputList.length - 1].path;
-      }
-      sendIpcToMain("add-file-clicked", lastFilePath);
+      onAddFileToListClicked();
+    });
+  document
+    .getElementById("tool-cc-add-file-button-2")
+    .addEventListener("click", (event) => {
+      onAddFileToListClicked();
     });
 
   document
     .getElementById("tool-cc-add-folder-button")
     .addEventListener("click", (event) => {
-      let lastFilePath = undefined;
-      if (g_inputList && g_inputList.length > 0) {
-        lastFilePath = g_inputList[g_inputList.length - 1].path;
-      }
-      sendIpcToMain("add-folder-clicked", lastFilePath);
+      onAddFolderToListClicked();
+    });
+  document
+    .getElementById("tool-cc-add-folder-button-2")
+    .addEventListener("click", (event) => {
+      onAddFolderToListClicked();
     });
 
   document
     .getElementById("tool-cc-clear-list-button")
     .addEventListener("click", (event) => {
-      // clear list
-      g_inputList = [];
-      g_inputListID = 0;
-      g_inputListDiv.innerHTML = "";
-      checkValidData();
+      onClearListClicked();
+    });
+  document
+    .getElementById("tool-cc-clear-list-button-2")
+    .addEventListener("click", (event) => {
+      onClearListClicked();
     });
 
   document
@@ -1100,6 +1103,18 @@ function initOnIpcCallbacks() {
     checkValidData();
   });
 
+  on("context-menu-add-file-clicked", () => {
+    onAddFileToListClicked();
+  });
+
+  on("context-menu-add-folder-clicked", () => {
+    onAddFolderToListClicked();
+  });
+
+  on("context-menu-clear-clicked", () => {
+    onClearListClicked();
+  });
+
   /////////////////////////////////////////////////////////////////////////////
 
   on("modal-update-title-text", (text) => {
@@ -1242,6 +1257,15 @@ function checkValidData() {
     g_startButton.classList.remove("tools-disabled");
   }
   ///////////////////
+  if (g_inputListDiv.childElementCount > 10) {
+    document
+      .getElementById("tool-cc-input-list-buttons-2")
+      .classList.remove("set-display-none");
+  } else {
+    document
+      .getElementById("tool-cc-input-list-buttons-2")
+      .classList.add("set-display-none");
+  }
   for (let index = 0; index < g_inputListDiv.childElementCount; ++index) {
     const element = g_inputListDiv.children[index];
     const moveUpSpan = element.querySelector('[data-type="move-up-in-list"]');
@@ -1450,6 +1474,31 @@ function onMoveFileDownInList(element, id) {
   }
 }
 
+function onAddFileToListClicked() {
+  let lastFilePath = undefined;
+  if (g_inputList && g_inputList.length > 0) {
+    lastFilePath = g_inputList[g_inputList.length - 1].path;
+  }
+  sendIpcToMain("add-file-clicked", lastFilePath);
+}
+
+function onAddFolderToListClicked() {
+  let lastFilePath = undefined;
+  if (g_inputList && g_inputList.length > 0) {
+    lastFilePath = g_inputList[g_inputList.length - 1].path;
+  }
+  sendIpcToMain("add-folder-clicked", lastFilePath);
+}
+
+function onClearListClicked() {
+  g_inputList = [];
+  g_inputListID = 0;
+  g_inputListDiv.innerHTML = "";
+  checkValidData();
+}
+
+//////////////////////////////////////////////////
+
 function onStartAccepted() {
   if (!g_openModal) showLogModal(); // TODO: check if first time?
 
@@ -1528,7 +1577,11 @@ export function onContextMenu(params) {
   if (getOpenModal()) {
     return;
   }
-  sendIpcToMain("show-context-menu", params);
+  sendIpcToMain(
+    "show-context-menu",
+    params,
+    event.target.closest("#tool-cc-input-list") !== null,
+  );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
