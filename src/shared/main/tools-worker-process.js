@@ -86,6 +86,8 @@ async function extractImages(
       inputFileType === FileDataType.FB2
     ) {
       result = await fileFormats.extractMuEpub(
+        inputFileType === FileDataType.AZW3 ||
+          inputFileType === FileDataType.MOBI,
         inputFilePath,
         tempFolderPath,
         extraData,

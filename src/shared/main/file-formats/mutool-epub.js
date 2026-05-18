@@ -270,6 +270,7 @@ exports.extractMuEpubPageBuffer = async function (
 };
 
 exports.extractMuEpub = async function (
+  isMobi,
   filePath,
   tempFolderPath,
   config,
@@ -279,7 +280,12 @@ exports.extractMuEpub = async function (
   g_isCancelled = false;
 
   try {
-    const openInfo = await exports.openMuEpub(filePath, tempFolderPath, config);
+    const openInfo = await exports.openMuEpub(
+      isMobi,
+      filePath,
+      tempFolderPath,
+      config,
+    );
     if (!openInfo.success) return { success: false, error: openInfo.error };
 
     const totalPages = openInfo.numPages;
