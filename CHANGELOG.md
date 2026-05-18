@@ -1,3 +1,9 @@
+## v3.21.4
+
+- Fixed EPUB, MOBI and PDF files not working correctly on the Windows version of ACBR if the app is placed in a path containing spaces.
+- Fixed images-only MOBIs not working.
+- Fixed images-only EPUBs that don't store the image paths in img tags not working, and improved the code for the already working ones.
+
 ## v3.21.3
 
 - Added more ways to manage the "Convert Comics", "Extract Comics" and "Create Comic" tools' input list. The "Add Files", "Add Folders" and "Clear List" buttons are now at the top of the list and when the list grows bigger than 10 elements another set of the same buttons is placed at its bottom. Also, when right-clicking inside the list, the context menu now shows entries for those actions.
