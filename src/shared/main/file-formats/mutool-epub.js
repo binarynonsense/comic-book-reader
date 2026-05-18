@@ -115,7 +115,7 @@ exports.openMuEpub = async function (filePath, tempSubFolderPath, config) {
       filePath,
     ];
 
-    const child = spawn(binPath, args, { shell: process.platform === "win32" });
+    const child = spawn(binPath, args);
 
     let numPages = 0;
     let hasContent = false;

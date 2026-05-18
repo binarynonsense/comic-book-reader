@@ -63,8 +63,7 @@ exports.openMuPdf = async function (filePath, password = "") {
     if (password) args.push("-p", password);
     args.push(filePath);
 
-    // shell: true to handle spaces in paths on windows
-    const child = spawn(binPath, args, { shell: process.platform === "win32" });
+    const child = spawn(binPath, args);
 
     let stdout = "";
     let stderr = "";
