@@ -86,6 +86,8 @@ process.parentPort.on("message", async (event) => {
       message.fileType === FileDataType.FB2
     ) {
       const result = await fileFormats.openMuEpub(
+        message.fileType === FileDataType.AZW3 ||
+          message.fileType === FileDataType.MOBI,
         message.filePath,
         message.tempSubFolderPath,
         message.extraData.config,

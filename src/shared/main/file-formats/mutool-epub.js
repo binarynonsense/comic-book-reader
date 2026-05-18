@@ -78,7 +78,12 @@ exports.stopMuEpubExtraction = function () {
   return false;
 };
 
-exports.openMuEpub = async function (filePath, tempSubFolderPath, config) {
+exports.openMuEpub = async function (
+  isMobi,
+  filePath,
+  tempSubFolderPath,
+  config,
+) {
   const binPath = getMuToolBinPath();
   const cssFilePath = path.join(
     tempSubFolderPath,
@@ -137,13 +142,11 @@ exports.openMuEpub = async function (filePath, tempSubFolderPath, config) {
 
     child.on("close", (code) => {
       if (fs.existsSync(cssFilePath)) {
-        // try {
-        //   fs.unlinkSync(cssFilePath);
-        // } catch (error) {}
         fileUtils.safeUnlink(cssFilePath, false).catch((error) => {});
       }
       if (code === 0) {
-        if (numPages > 0 && !hasContent) {
+        // if (numPages > 0 && !hasContent) {
+        if (isMobi && numPages < 2 && !hasContent) {
           // found pages but zero characters! must be a pure azw3
           resolve({
             success: false,
