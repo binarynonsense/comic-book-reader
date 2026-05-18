@@ -78,8 +78,7 @@ async function extractImages(
         password,
       );
     } else if (inputFileType === FileDataType.EPUB_COMIC) {
-      // TODO: get success and error
-      success = await fileFormats.extractEpub(inputFilePath, tempFolderPath);
+      result = await fileFormats.extractEpub(inputFilePath, tempFolderPath);
     } else if (
       inputFileType === FileDataType.EPUB_EBOOK ||
       inputFileType === FileDataType.AZW3 ||

@@ -14,56 +14,31 @@ const log = require("../logger");
 ///////////////////////////////////////////////////////////////////////////////
 
 async function getEpubImageIdsList(filePath) {
-  // ref: https://github.com/julien-c/epub/blob/master/example/example.js
-  // ref: https://github.com/julien-c/epub/issues/16
+  // ref: https://github.com/julien-c/epub/
   try {
     const EPub = require("epub");
     const epub = new EPub(filePath);
 
-    let promise = await new Promise((resolve, reject) => {
-      epub.on("error", function (error) {
-        resolve({ success: false, error: error });
-      });
-      epub.on("end", function (error) {
-        if (error) {
-          resolve({ success: false, error: error });
-        } else {
-          resolve({ success: true, error: undefined });
-        }
+    await new Promise((resolve, reject) => {
+      epub.once("error", reject);
+      epub.once("end", function () {
+        resolve();
       });
       epub.parse();
     });
-    if (!promise.success) {
-      throw promise.error;
-    }
 
     let imageIDs = [];
+    const manifestKeys = Object.keys(epub.manifest);
+
     for (let index = 0; index < epub.spine.contents.length; index++) {
-      let promise = await new Promise((resolve, reject) => {
-        epub.getChapter(epub.spine.contents[index].id, function (error, data) {
-          if (error) {
-            resolve({
-              success: false,
-              error: error,
-            });
-          } else {
-            // ref: https://stackoverflow.com/questions/14939296/extract-image-src-from-a-string/14939476
-            const rex = /<img[^>]+src="([^">]+)/g;
-            while ((m = rex.exec(data))) {
-              // e.g. /images/img-0139/OPS/images/0139.jpeg
-              let id = m[1].split("/")[2];
-              imageIDs.push(id);
-            }
-            resolve({
-              success: true,
-            });
-          }
-        });
-      });
+      const chapterId = epub.spine.contents[index].id;
+      let promise = await getChapterImageIDs(epub, chapterId, manifestKeys);
       if (!promise.success) {
         throw promise.error;
       }
+      imageIDs.push(...promise.ids);
     }
+
     return imageIDs;
   } catch (error) {
     log.error(error);
@@ -73,46 +48,33 @@ async function getEpubImageIdsList(filePath) {
 exports.getEpubImageIdsList = getEpubImageIdsList;
 
 async function extractEpubImageBuffer(filePath, imageID) {
-  const EPub = require("epub");
-  const epub = new EPub(filePath);
-
-  // parse epub
-  await new Promise((resolve, reject) => {
-    epub.parse();
-    epub.on("error", reject);
-    epub.on("end", (err) => {
-      if (err) {
-        return reject({
-          error: true,
-          message: err,
-        });
-      }
-      return resolve({
-        success: true,
+  try {
+    const EPub = require("epub");
+    const epub = new EPub(filePath);
+    // parse epub
+    await new Promise((resolve, reject) => {
+      epub.once("error", reject);
+      epub.once("end", () => resolve());
+      epub.parse();
+    });
+    // extract image buffer
+    let buf;
+    let mime;
+    await new Promise((resolve, reject) => {
+      epub.getImage(imageID, function (error, data, mimeType) {
+        if (error) {
+          reject(error);
+        } else {
+          buf = Buffer.from(data);
+          mime = mimeType;
+          resolve();
+        }
       });
     });
-  });
-
-  // extract image buffer
-  let buf;
-  let mime;
-  await new Promise((resolve, reject) => {
-    epub.getImage(imageID, function (err, data, mimeType) {
-      if (err) {
-        return reject({
-          error: true,
-          message: err,
-        });
-      } else {
-        buf = Buffer.from(data);
-        mime = mimeType;
-        return resolve({
-          success: true,
-        });
-      }
-    });
-  });
-  return [buf, mime];
+    return [buf, mime];
+  } catch (error) {
+    throw error;
+  }
 }
 exports.extractEpubImageBuffer = extractEpubImageBuffer;
 
@@ -122,67 +84,149 @@ async function extractEpub(filePath, tempFolderPath) {
     const epub = new EPub(filePath);
 
     // parse epub
-    let promise = await new Promise((resolve, reject) => {
+    await new Promise((resolve, reject) => {
+      epub.once("error", reject);
+      epub.once("end", () => resolve());
       epub.parse();
-      epub.on("error", reject);
-      epub.on("end", (error) => {
-        if (error) {
-          resolve({ success: false, error: error });
-        } else {
-          resolve({
-            success: true,
-          });
-        }
-      });
     });
-    if (!promise.success) throw promise.error;
-
     // get list of image IDs
+    const manifestKeys = Object.keys(epub.manifest);
     let imageIDs = [];
     for (let index = 0; index < epub.spine.contents.length; index++) {
-      const element = epub.spine.contents[index];
-      let promise = await new Promise((resolve, reject) => {
-        epub.getChapter(element.id, function (error, data) {
-          if (error) {
-            resolve({ success: false, error: error });
-          } else {
-            const rex = /<img[^>]+src="([^">]+)/g;
-            while ((m = rex.exec(data))) {
-              // e.g. /images/img-0139/OPS/images/0139.jpeg
-              let id = m[1].split("/")[2];
-              imageIDs.push(id);
-            }
-            resolve({
-              success: true,
-            });
-          }
-        });
-      });
-      if (!promise.success) throw promise.error;
+      const chapterId = epub.spine.contents[index].id;
+      const discoveredIDs = await getChapterImageIDs(
+        epub,
+        chapterId,
+        manifestKeys,
+      );
+      if (discoveredIDs.success && discoveredIDs.ids) {
+        imageIDs.push(...discoveredIDs.ids);
+      } else if (discoveredIDs.error) {
+        throw discoveredIDs.error;
+      }
     }
 
     // extract and save images
     for (let index = 0; index < imageIDs.length; index++) {
       const imageID = imageIDs[index];
-      let promise = await new Promise((resolve, reject) => {
+      await new Promise((resolve) => {
         epub.getImage(imageID, function (error, data, mimeType) {
-          if (error) {
+          if (error || !data) {
             resolve({ success: false, error: error });
           } else {
-            let extension = mimeType.split("/")[1];
-            let filePath = path.join(tempFolderPath, index + "." + extension);
-            fs.writeFileSync(filePath, Buffer.from(data), "binary");
-            resolve({
-              success: true,
-            });
+            // e.g. mimeType = image/png
+            let extension = mimeType ? mimeType.split("/")[1] : "jpg";
+            let outputFilePath = path.join(
+              tempFolderPath,
+              index + "." + extension,
+            );
+            fs.writeFileSync(outputFilePath, Buffer.from(data), "binary");
+            resolve({ success: true });
           }
         });
       });
     }
 
-    return true;
+    return { success: true };
   } catch (error) {
-    return false;
+    return { success: false, error };
   }
 }
 exports.extractEpub = extractEpub;
+
+//////////////////////////////////////////////////////////////////////////////
+// HELPERS  ////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+
+function getChapterImageIDs(epub, chapterId, manifestKeys) {
+  return new Promise((resolve, reject) => {
+    epub.getChapter(chapterId, function (error, data) {
+      if (error) {
+        return resolve({ success: false, error, ids: [] });
+      }
+
+      const chapterIDs = [];
+      let foundImgs = false;
+      let m;
+      // const rex = /<img[^>]+src="([^">]+)/g;
+      const rex = /<img[^>]+src=(?:"([^">]+)"|'([^'>]+)')/g;
+
+      // look for src in img tags
+      while ((m = rex.exec(data))) {
+        foundImgs = true;
+
+        const srcString = m[1] || m[2];
+        if (srcString && srcString.startsWith("data:")) {
+          // discard base64 sources
+          continue;
+        }
+
+        // remove potential starting instances of ../ or ..\
+        // ?: avoids unnecessary memory overhead
+        const cleanSrc = srcString.replace(/^(?:\.\.[/\\])+/, "");
+        const srcTail = getPathTail(cleanSrc, false);
+        const matchedImageId = findImageInManifest(
+          manifestKeys,
+          epub,
+          srcTail,
+          false,
+          false,
+        );
+
+        if (matchedImageId) {
+          chapterIDs.push(matchedImageId);
+        }
+      }
+
+      // alternative for fixed layout / kindle comics, look for them
+      // in the manifest
+      if (!foundImgs && chapterId && epub.manifest[chapterId]) {
+        // remove file extension (e.g. .xhtml)
+        const chapTail = getPathTail(epub.manifest[chapterId].href, true);
+        const id = findImageInManifest(
+          manifestKeys,
+          epub,
+          chapTail,
+          true,
+          true,
+        );
+        if (id) {
+          chapterIDs.push(id);
+        }
+      }
+
+      resolve({ success: true, ids: chapterIDs });
+    });
+  });
+}
+
+function getPathTail(pathString, stripExtension = false) {
+  if (!pathString) return "";
+  const cleanPath = pathString.replace(/\\/g, "/"); // \ to /
+  const parts = cleanPath.split("/");
+  const sliceCount = parts.length >= 2 ? -2 : -1;
+  let tail = parts.slice(sliceCount).join("/");
+  if (stripExtension) {
+    tail = tail.replace(/\.[^/.]+$/, "");
+  }
+  return tail;
+}
+
+function findImageInManifest(
+  manifestKeys,
+  epub,
+  targetTail,
+  exactMatch = false,
+  stripExtension = false,
+) {
+  return manifestKeys.find((key) => {
+    const asset = epub.manifest[key];
+    const isImage =
+      asset["media-type"] && asset["media-type"].startsWith("image/");
+    if (!isImage) return false;
+    const assetTail = getPathTail(asset.href, stripExtension);
+    return exactMatch
+      ? assetTail === targetTail
+      : assetTail.endsWith(targetTail);
+  });
+}
