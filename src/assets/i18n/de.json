@@ -3,7 +3,7 @@
     "authors": [
       "trzyglow"
     ],
-    "last-updated": "2026-04-13",
+    "last-updated": "2026-05-18",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.19.0",
     "pre-release": "false",
@@ -38,7 +38,7 @@
   "menu-view-zoom": "Zoom",
   "menu-view-zoom-fitwidth": "An Breite anpassen",
   "menu-view-zoom-fitheight": "An Höhe anpassen",
-  "[NEEDS TRANSLATION]menu-view-zoom-fitpage": "Fit Page",
+  "menu-view-zoom-fitpage": "An beides anpassen",
   "menu-view-zoom-scaleheight": "Auf Höhe skalieren",
   "menu-view-zoom-scaleheight-enter": "Wert eingeben...",
   "menu-view-zoom-scaleheight-in": "Erhöhen",
@@ -633,7 +633,7 @@
   "tool-pre-zoom-default": "Standardwert",
   "tool-pre-zoom-default-fitwidth": "An Breite anpassen",
   "tool-pre-zoom-default-fitheight": "An Höhe anpassen",
-  "[NEEDS TRANSLATION]tool-pre-zoom-default-fitpage": "Fit page",
+  "tool-pre-zoom-default-fitpage": "An beides anpassen",
   "tool-pre-zoom-default-lastused": "Zuletzt verwendet",
   "tool-pre-zoom-fileloading": "Datei öffnen",
   "tool-pre-zoom-fileloading-default": "Verwende Standardwert",
