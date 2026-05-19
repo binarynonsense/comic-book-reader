@@ -124,26 +124,6 @@
   width: 50%;
 }
 
-.set-scale-to-height > #epub-ebook-container {
-  height: var(--scale-to-height-size);
-  width: calc(var(--scale-to-height-size) / 600 * 450);
-}
-
-.set-fit-to-height > #epub-ebook-container {
-  height: calc(100vh - var(--zoom-height-borders));
-  width: calc((100vh - var(--zoom-height-borders)) / 600 * 450);
-}
-
-.set-fit-to-width > #epub-ebook-container {
-  height: calc((100vw - 25px) / 450 * 600);
-  width: calc(100vw - 25px);
-}
-
-/* .set-fit-to-height > .pages-row-2p .page {
-  height: inherit;
-  width: inherit !important;
-} */
-
 /* INFO *********************************************************/
 
 .info-anchor {
