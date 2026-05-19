@@ -359,21 +359,33 @@ function initOnIpcCallbacks() {
     setFitToHeight();
   });
 
+  on("set-fit-to-both", () => {
+    setFitToBoth();
+  });
+
   on("set-scale-to-height", (scale) => {
     setScaleToHeight(scale);
   });
 
-  on("try-zoom-scale-from-width", (increment) => {
-    const page = document.querySelector("#pages-container");
-    const img = page.firstChild;
-    const imgHeight = img.offsetHeight;
-    const vh = Math.min(
-      document.documentElement.clientHeight || 0,
-      window.innerHeight || 0,
+  on("try-zoom-scale-from-other-mode", (increment) => {
+    const pagesContainer = document.getElementById("pages-container");
+    const pagesRow = pagesContainer.querySelector(".pages-row");
+    if (!pagesRow) return;
+    const pages = pagesRow.querySelectorAll(".page");
+    if (pages.length === 0) return;
+
+    const currentVisualHeight = pagesRow.getBoundingClientRect().height;
+    const maxHeight = window.innerHeight;
+    const cssHeightBordersVar = getComputedStyle(
+      document.documentElement,
+    ).getPropertyValue("--zoom-height-borders");
+    const heightBordersSize = parseFloat(cssHeightBordersVar) || 0;
+
+    let scale = Math.round(
+      ((currentVisualHeight + heightBordersSize) / maxHeight) * 100,
     );
-    // TODO: not getting exactly the value I want, cheat by using the 1.1 multiplier for now
-    let scale = parseInt((imgHeight / vh) * 100 * (increment > 0 ? 1.1 : 1));
     scale += increment;
+
     sendIpcToMain("set-scale-mode", scale);
   });
 
@@ -549,6 +561,7 @@ function setFitToWidth() {
   container.classList.remove("set-scale-to-height");
   container.classList.remove("set-fit-to-height");
   container.classList.add("set-fit-to-width");
+  container.classList.remove("set-fit-to-both");
 
   setToolbarMenuButtonIcon("toolbar-button-zoom", 1);
 }
@@ -558,8 +571,19 @@ function setFitToHeight() {
   container.classList.remove("set-scale-to-height");
   container.classList.remove("set-fit-to-width");
   container.classList.add("set-fit-to-height");
+  container.classList.remove("set-fit-to-both");
 
   setToolbarMenuButtonIcon("toolbar-button-zoom", 0);
+}
+
+function setFitToBoth() {
+  let container = document.querySelector("#pages-container");
+  container.classList.remove("set-scale-to-height");
+  container.classList.remove("set-fit-to-height");
+  container.classList.remove("set-fit-to-width");
+  container.classList.add("set-fit-to-both");
+  setToolbarMenuButtonIcon;
+  setToolbarMenuButtonIcon("toolbar-button-zoom", 2);
 }
 
 function setScaleToHeight(scale) {
@@ -568,6 +592,7 @@ function setScaleToHeight(scale) {
   container.classList.remove("set-fit-to-width");
   container.classList.remove("set-fit-to-height");
   container.classList.add("set-scale-to-height");
+  container.classList.remove("set-fit-to-both");
 
   setToolbarMenuButtonIcon("toolbar-button-zoom", 2);
 }
@@ -1555,6 +1580,7 @@ export function renderImageBuffers(
         containerDiv.innerHTML = "";
         containerDiv.appendChild(pagesRowDiv);
         if (scrollBarPos !== undefined) setScrollBarsPosition(scrollBarPos);
+        addPagesResizeEventListener(pagesRowDiv);
       }
     }
     //// events ///
@@ -1632,6 +1658,7 @@ export function renderImageBuffers(
       containerDiv.innerHTML = "";
       containerDiv.appendChild(pagesRowDiv);
       if (scrollBarPos !== undefined) setScrollBarsPosition(scrollBarPos);
+      addPagesResizeEventListener(pagesRowDiv);
     };
     image.onerror = function () {
       image.src = "../assets/images/error_page.png";
@@ -1651,6 +1678,60 @@ function assignImageToImgSrc(image, imgElement) {
     }
     imgElement.src = url;
   }
+}
+
+let g_activeResizeHandler;
+
+function addPagesResizeEventListener(pagesRowDiv) {
+  if (!pagesRowDiv) return;
+  const pages = pagesRowDiv.querySelectorAll(".page");
+  if (pages.length === 0) return;
+
+  // the combined ratio is the sum of the one from all pages
+  let combinedPageSizeRatio = 0;
+  pages.forEach((img) => {
+    const trueWidth = img.width || img.naturalWidth || 1;
+    const trueHeight = img.height || img.naturalHeight || 1;
+    combinedPageSizeRatio += trueWidth / trueHeight;
+  });
+
+  // clean up previous
+  if (g_activeResizeHandler) {
+    window.removeEventListener("resize", g_activeResizeHandler);
+  }
+
+  g_activeResizeHandler = () => {
+    const hasFitMode = document.querySelector(".set-fit-to-both");
+    if (!hasFitMode) {
+      // clean up if not fit both mode
+      pagesRowDiv.style.width = "";
+      pagesRowDiv.style.height = "";
+      window.removeEventListener("resize", g_activeResizeHandler);
+      g_activeResizeHandler = null;
+      return;
+    }
+
+    const maxWidth = window.innerWidth;
+    const cssHeightBordersVar = getComputedStyle(
+      document.documentElement,
+    ).getPropertyValue("--zoom-height-borders");
+    const heightBordersSize = parseFloat(cssHeightBordersVar) || 0;
+    const maxHeight = window.innerHeight - heightBordersSize;
+
+    let desiredPagesRowHeight = maxHeight;
+    let desiredPagesRowWidth = desiredPagesRowHeight * combinedPageSizeRatio;
+    // fit to both width and height
+    if (desiredPagesRowWidth > maxWidth) {
+      desiredPagesRowWidth = maxWidth;
+      desiredPagesRowHeight = desiredPagesRowWidth / combinedPageSizeRatio;
+    }
+
+    pagesRowDiv.style.width = `${Math.floor(desiredPagesRowWidth)}px`;
+    pagesRowDiv.style.height = `${Math.floor(desiredPagesRowHeight)}px`;
+  };
+
+  window.addEventListener("resize", g_activeResizeHandler);
+  g_activeResizeHandler();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

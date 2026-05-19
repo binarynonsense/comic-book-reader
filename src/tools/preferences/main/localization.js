@@ -172,6 +172,10 @@ exports.getLocalization = function () {
       text: _("tool-pre-zoom-default-fitheight"),
     },
     {
+      id: "tool-pre-zoom-default-fitboth-text",
+      text: _("tool-pre-zoom-default-fitboth"),
+    },
+    {
       id: "tool-pre-zoom-default-lastused-text",
       text: _("tool-pre-zoom-default-lastused"),
     },

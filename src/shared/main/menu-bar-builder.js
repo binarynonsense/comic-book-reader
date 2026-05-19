@@ -619,6 +619,15 @@ function getNormalMenu(settings, history) {
               },
             },
             {
+              id: "fit-to-both",
+              label: _("menu-view-zoom-fitboth"),
+              type: "radio",
+              checked: settings.fit_mode == 3,
+              click() {
+                reader.onMenuFitToBoth();
+              },
+            },
+            {
               id: "scale-to-height",
               label: _("menu-view-zoom-scaleheight"),
               type: "radio",

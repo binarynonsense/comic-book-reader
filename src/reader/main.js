@@ -59,6 +59,8 @@ exports.init = async function (filePath, checkHistory) {
     setFitToWidth();
   } else if (settings.getValue("fit_mode") === 1) {
     setFitToHeight();
+  } else if (settings.getValue("fit_mode") === 3) {
+    setFitToBoth();
   } else {
     setScaleToHeight(settings.getValue("zoom_scale"));
   }
@@ -532,6 +534,9 @@ function initOnIpcCallbacks() {
         break;
       case "toolbar-button-zoom-menu-1":
         setFitToWidth();
+        break;
+      case "toolbar-button-zoom-menu-2":
+        setFitToBoth();
         break;
       case "toolbar-button-fullscreen-enter":
         core.toggleFullScreen();
@@ -2075,6 +2080,7 @@ function updateLocalizedText() {
     [
       _("menu-view-zoom-fitheight"),
       _("menu-view-zoom-fitwidth"),
+      _("menu-view-zoom-fitboth"),
       _("menu-view-zoom-scaleheight"),
     ],
     _("menu-view-layout-pagemode"),
@@ -2385,6 +2391,15 @@ function setFitToHeight() {
   rebuildMenuAndToolBars();
 }
 
+function setFitToBoth() {
+  settings.setValue("fit_mode", 3);
+  menuBar.setFitToWidth();
+  sendIpcToPreload("update-menubar");
+  sendIpcToRenderer("set-fit-to-both");
+  renderPageRefresh();
+  rebuildMenuAndToolBars();
+}
+
 // TODO: repeated in settings, unify?
 let g_scaleToHeightMin = 25;
 let g_scaleToHeightMax = 500;
@@ -2408,6 +2423,8 @@ function switchScaleMode() {
     setFitToHeight();
   } else if (settings.getValue("fit_mode") === 1) {
     setFitToWidth();
+  } else if (settings.getValue("fit_mode") === 3) {
+    setFitToBoth();
   } else {
     setFitToWidth();
   }
@@ -2452,12 +2469,17 @@ function setInitialZoom(filePath) {
   } else if (settings.getValue("zoomDefault") === 1) {
     setFitToHeight();
     return;
+  } else if (settings.getValue("zoomDefault") === 3) {
+    setFitToBoth();
+    return;
   }
   // use last used
   if (settings.getValue("fit_mode") === 0) {
     setFitToWidth();
   } else if (settings.getValue("fit_mode") === 1) {
     setFitToHeight();
+  } else if (settings.getValue("fit_mode") === 3) {
+    setFitToBoth();
   } else {
     setScaleToHeight(settings.getValue("zoom_scale"));
   }
@@ -2474,9 +2496,12 @@ function processZoomInput(input, factor) {
     } else if (settings.getValue("fit_mode") === 1) {
       // height
       setScaleToHeight(100 + amount, true);
-    } else if (settings.getValue("fit_mode") === 0) {
-      // width
-      sendIpcToRenderer("try-zoom-scale-from-width", amount);
+    } else if (
+      settings.getValue("fit_mode") === 0 ||
+      settings.getValue("fit_mode") === 3
+    ) {
+      // width or both
+      sendIpcToRenderer("try-zoom-scale-from-other-mode", amount);
     }
   } else if (input < 0) {
     // zoom out
@@ -2485,16 +2510,16 @@ function processZoomInput(input, factor) {
     } else if (settings.getValue("fit_mode") === 1) {
       // height
       setScaleToHeight(100 - amount, true);
-    } else if (settings.getValue("fit_mode") === 0) {
-      // width
-      sendIpcToRenderer("try-zoom-scale-from-width", -amount);
+    } else if (
+      settings.getValue("fit_mode") === 0 ||
+      settings.getValue("fit_mode") === 3
+    ) {
+      // width or both
+      sendIpcToRenderer("try-zoom-scale-from-other-mode", -amount);
     }
   } else {
     // 0 = reset
-    if (
-      settings.getValue("fit_mode") === 2 ||
-      settings.getValue("fit_mode") === 0
-    ) {
+    if (settings.getValue("fit_mode") != 1) {
       setFitToHeight();
     }
   }
@@ -2757,6 +2782,10 @@ exports.onMenuFitToWidth = function () {
 
 exports.onMenuFitToHeight = function () {
   setFitToHeight();
+};
+
+exports.onMenuFitToBoth = function () {
+  setFitToBoth();
 };
 
 exports.onMenuScaleToHeight = function (scale) {

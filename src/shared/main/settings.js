@@ -68,7 +68,7 @@ exports.getInvertFilter = function () {
 const g_defaultSettings = {
   version: app.getVersion(),
   date: "",
-  fit_mode: 0, // 0: width, 1: height, 2: scale height
+  fit_mode: 0, // 0: width, 1: height, 2: scale height, 3: both
   zoom_scale: 100,
   page_mode: 0, // 0: single-page, 1: double-page, 2: double-page first centered
   hotspots_mode: 1, // 0: disabled, 1: 2-columns, 2: 3-columns
@@ -94,7 +94,7 @@ const g_defaultSettings = {
   loadLastOpened: true, // TODO: used????
   autoOpen: 0, // 0: disabled, 1: next file, 2: next and previous files
   cursorVisibility: 0, // 0: always visible, 1: hide when inactive
-  zoomDefault: 2, // 0: width, 1: height, 2: last used
+  zoomDefault: 2, // 0: width, 1: height, 2: last used, 3: both
   zoomFileLoading: 0, // 0: use default, 1: use history
   pageModeDefault: 3, // 0: single, 1: double, 2: double centered, 3: last used
   pageModeFileLoading: 0, // 0: use default, 1: use history
@@ -376,7 +376,7 @@ function sanitize() {
   if (
     !Number.isInteger(g_settings.fit_mode) ||
     g_settings.fit_mode < 0 ||
-    g_settings.fit_mode > 2
+    g_settings.fit_mode > 3
   ) {
     g_settings.fit_mode = g_defaultSettings.fit_mode;
   }
@@ -488,7 +488,7 @@ function sanitize() {
   if (
     !Number.isInteger(g_settings.zoomDefault) ||
     g_settings.zoomDefault < 0 ||
-    g_settings.zoomDefault > 2
+    g_settings.zoomDefault > 3
   ) {
     g_settings.zoomDefault = g_defaultSettings.zoomDefault;
   }

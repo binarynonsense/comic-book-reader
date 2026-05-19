@@ -99,6 +99,8 @@
   height: calc(var(--scale-to-height-size));
 }
 
+/* fit to height */
+
 .set-fit-to-height {
   height: 100% !important;
 }
@@ -106,6 +108,8 @@
 .set-fit-to-height > .pages-row {
   height: calc(100vh - var(--zoom-height-borders));
 }
+
+/* fit to width */
 
 .set-fit-to-width > .pages-row {
   width: 100%;
@@ -122,6 +126,57 @@
 }
 .set-fit-to-width .page-centered {
   width: 50%;
+}
+
+/* fit to both */
+
+/* pages-row is made the right size from a javascript resizer and this css forces the pages inside to expand, align, and fill it while not deforming */
+
+.set-fit-to-both {
+  height: 100% !important;
+}
+
+/* center pages-row */
+.set-fit-to-both > .pages-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+  box-sizing: border-box;
+  /* flicker fix for javascript resizer transition */
+  opacity: 0;
+}
+
+/* flicker fix*/
+.set-fit-to-both > .pages-row[style*="width"] {
+  opacity: 1;
+}
+
+/* fit height and allow width to scale naturally */
+/* valid for images, canvas is overruled below */
+.set-fit-to-both .page {
+  height: 100% !important;
+  width: auto !important;
+  max-width: none !important;
+  max-height: none !important;
+  /* don't let flexbox change the width (grow shrink basis) */
+  flex: 0 0 auto !important;
+  object-fit: contain;
+}
+
+/* force the canvas box to fill pages-row's bounds */
+.set-fit-to-both .page-canvas {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  display: block !important; /* strip default canvas inline spacing */
+  object-fit: contain;
+}
+
+/* single page fallback */
+.set-fit-to-both .page:not(.page-1):not(.page-2):not(.page-centered) {
+  max-width: 100% !important;
 }
 
 /* INFO *********************************************************/
