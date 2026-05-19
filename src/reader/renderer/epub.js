@@ -5,12 +5,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-import {
-  on,
-  sendIpcToMain,
-  getCurrentImgBuffers,
-  showNoBookContent,
-} from "../renderer.js";
+import { on, sendIpcToMain, getCurrentImgBuffers } from "../renderer.js";
 import { renderImageBuffers, setScrollBarsPosition } from "./ui.js";
 
 export function initIpc() {
