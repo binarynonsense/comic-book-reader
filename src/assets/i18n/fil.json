@@ -1,8 +1,6 @@
 {
   "@metadata": {
-    "authors": [
-      "Andrew"
-    ],
+    "authors": ["Andrew"],
     "last-updated": "2026-02-10",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.16.0",
@@ -38,7 +36,7 @@
   "menu-view-zoom": "I-zoom",
   "menu-view-zoom-fitwidth": "Tugma sa Lapad",
   "menu-view-zoom-fitheight": "Tugma sa Taas",
-  "[NEEDS TRANSLATION]menu-view-zoom-fitpage": "Fit to Both",
+  "[NEEDS TRANSLATION]menu-view-zoom-fitboth": "Fit to Both",
   "menu-view-zoom-scaleheight": "Sukatin sa Taas",
   "menu-view-zoom-scaleheight-enter": "Maglagay ng Halaga...",
   "menu-view-zoom-scaleheight-in": "Dagdagan",
@@ -633,7 +631,7 @@
   "tool-pre-zoom-default": "Default na Halaga",
   "tool-pre-zoom-default-fitwidth": "Magkasya sa lapad",
   "tool-pre-zoom-default-fitheight": "Magkasya sa taas",
-  "[NEEDS TRANSLATION]tool-pre-zoom-default-fitpage": "Fit to both",
+  "[NEEDS TRANSLATION]tool-pre-zoom-default-fitboth": "Fit to both",
   "tool-pre-zoom-default-lastused": "Huling ginamit",
   "tool-pre-zoom-fileloading": "Pagbukas ng File",
   "tool-pre-zoom-fileloading-default": "Gamitin ang default na halaga",

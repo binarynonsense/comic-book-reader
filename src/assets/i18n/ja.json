@@ -1,8 +1,6 @@
 {
   "@metadata": {
-    "authors": [
-      "coolvitto"
-    ],
+    "authors": ["coolvitto"],
     "last-updated": "2026-05-19",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.21.4",
@@ -38,7 +36,7 @@
   "menu-view-zoom": "ズーム",
   "menu-view-zoom-fitwidth": "幅に合わせる",
   "menu-view-zoom-fitheight": "高さに合わせる",
-  "menu-view-zoom-fitpage": "両方に合わせる",
+  "menu-view-zoom-fitboth": "両方に合わせる",
   "menu-view-zoom-scaleheight": "高さに合わせて拡大縮小",
   "menu-view-zoom-scaleheight-enter": "値を入力...",
   "menu-view-zoom-scaleheight-in": "拡大",
@@ -633,7 +631,7 @@
   "tool-pre-zoom-default": "既定値",
   "tool-pre-zoom-default-fitwidth": "幅に合わせる",
   "tool-pre-zoom-default-fitheight": "高さに合わせる",
-  "tool-pre-zoom-default-fitpage": "両方に合わせる",
+  "tool-pre-zoom-default-fitboth": "両方に合わせる",
   "tool-pre-zoom-default-lastused": "最後に使用した設定",
   "tool-pre-zoom-fileloading": "ファイルを開くとき",
   "tool-pre-zoom-fileloading-default": "既定値を使用",

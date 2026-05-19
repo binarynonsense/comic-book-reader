@@ -1,8 +1,6 @@
 {
   "@metadata": {
-    "authors": [
-      "ahmed-0011"
-    ],
+    "authors": ["ahmed-0011"],
     "last-updated": "2026-04-02",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.19.0",
@@ -38,7 +36,7 @@
   "menu-view-zoom": "تكبير/تصغير",
   "menu-view-zoom-fitwidth": "مطابق للعرض",
   "menu-view-zoom-fitheight": "مطابق للارتفاع",
-  "[NEEDS TRANSLATION]menu-view-zoom-fitpage": "Fit to Both",
+  "[NEEDS TRANSLATION]menu-view-zoom-fitboth": "Fit to Both",
   "menu-view-zoom-scaleheight": "تناسب مع الارتفاع",
   "menu-view-zoom-scaleheight-enter": "أدخل قيمة...",
   "menu-view-zoom-scaleheight-in": "زيادة",
@@ -633,7 +631,7 @@
   "tool-pre-zoom-default": "القيمة الافتراضية",
   "tool-pre-zoom-default-fitwidth": "مطابق للعرض",
   "tool-pre-zoom-default-fitheight": "مطابق للارتفاع",
-  "[NEEDS TRANSLATION]tool-pre-zoom-default-fitpage": "Fit to both",
+  "[NEEDS TRANSLATION]tool-pre-zoom-default-fitboth": "Fit to both",
   "tool-pre-zoom-default-lastused": "آخر استخدام",
   "tool-pre-zoom-fileloading": "جارٍ فتح الملف",
   "tool-pre-zoom-fileloading-default": "استخدم القيمة الافتراضية",

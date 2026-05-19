@@ -1,8 +1,6 @@
 {
   "@metadata": {
-    "authors": [
-      "vanja-san"
-    ],
+    "authors": ["vanja-san"],
     "last-updated": "2026-03-15",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.17.0",
@@ -38,7 +36,7 @@
   "menu-view-zoom": "Масштаб",
   "menu-view-zoom-fitwidth": "Подогнать по ширине",
   "menu-view-zoom-fitheight": "Подогнать по высоте",
-  "[NEEDS TRANSLATION]menu-view-zoom-fitpage": "Fit to Both",
+  "[NEEDS TRANSLATION]menu-view-zoom-fitboth": "Fit to Both",
   "menu-view-zoom-scaleheight": "Масштабирование по высоте",
   "menu-view-zoom-scaleheight-enter": "Введите значение...",
   "menu-view-zoom-scaleheight-in": "Увеличить",
@@ -633,7 +631,7 @@
   "tool-pre-zoom-default": "Значение по умолчанию",
   "tool-pre-zoom-default-fitwidth": "Подогнать по ширине",
   "tool-pre-zoom-default-fitheight": "Подогнать по высоте",
-  "[NEEDS TRANSLATION]tool-pre-zoom-default-fitpage": "Fit to both",
+  "[NEEDS TRANSLATION]tool-pre-zoom-default-fitboth": "Fit to both",
   "tool-pre-zoom-default-lastused": "Последний использованный",
   "tool-pre-zoom-fileloading": "Открытие файла",
   "tool-pre-zoom-fileloading-default": "Использовать значение по умолчанию",

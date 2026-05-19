@@ -1,8 +1,6 @@
 {
   "@metadata": {
-    "authors": [
-      "Álvaro"
-    ],
+    "authors": ["Álvaro"],
     "last-updated": "2026-03-31",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.19.0",
@@ -38,7 +36,7 @@
   "menu-view-zoom": "Zoom",
   "menu-view-zoom-fitwidth": "Ajustar a ancho",
   "menu-view-zoom-fitheight": "Ajustar a alto",
-  "menu-view-zoom-fitpage": "Ajustar a ambos",
+  "menu-view-zoom-fitboth": "Ajustar a ambos",
   "menu-view-zoom-scaleheight": "Escalar altura",
   "menu-view-zoom-scaleheight-enter": "Introducir valor...",
   "menu-view-zoom-scaleheight-in": "Incrementar",
@@ -633,7 +631,7 @@
   "tool-pre-zoom-default": "Valor por defecto",
   "tool-pre-zoom-default-fitwidth": "Ajustar a ancho",
   "tool-pre-zoom-default-fitheight": "Ajustar a alto",
-  "tool-pre-zoom-default-fitpage": "Ajustar a ambos",
+  "tool-pre-zoom-default-fitboth": "Ajustar a ambos",
   "tool-pre-zoom-default-lastused": "Último valor usado",
   "tool-pre-zoom-fileloading": "Apertura de archivo",
   "tool-pre-zoom-fileloading-default": "Usar valor por defecto",
