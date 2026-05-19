@@ -5,15 +5,12 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-import { on, sendIpcToMain, getCurrentImgBuffers } from "../renderer.js";
-import { renderImageBuffers, setScrollBarsPosition } from "./ui.js";
+import { on, getCurrentImgBuffers } from "../renderer.js";
+import { renderImageBuffers } from "./ui.js";
 
 export function initIpc() {
   initHandlers();
 }
-
-let g_textColor = "black";
-let g_bgColor = "white";
 
 ///////////////////////////////////////////////////////////////////////////////
 // IPC RECEIVE ////////////////////////////////////////////////////////////////
