@@ -2603,6 +2603,7 @@ export function onInputEvent(type, event) {
     modals.onInputEvent(getOpenModal(), type, event);
     return;
   }
+  if (!g_settings) return; // it's not initialized
   switch (type) {
     case "body.ondrop": {
       const composedPath = event.composedPath();
