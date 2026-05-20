@@ -355,12 +355,16 @@ function initMouse() {
     getTools()["media-player"].onInputEvent("dblclick", event);
   });
 
-  document.addEventListener("wheel", function (event) {
-    if (getOpenModal()) return;
-    getCurrentTool().onInputEvent("wheel", event);
-    event.stopPropagation();
-    //event.preventDefault();
-  });
+  document.addEventListener(
+    "wheel",
+    function (event) {
+      if (getOpenModal()) return;
+      getCurrentTool().onInputEvent("wheel", event);
+      event.stopPropagation();
+      //event.preventDefault();
+    },
+    { passive: false },
+  );
 
   document.addEventListener("contextmenu", (event) => {
     event.preventDefault();

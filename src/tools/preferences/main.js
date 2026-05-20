@@ -464,10 +464,22 @@ function initOnIpcCallbacks() {
     reader.sendIpcToRenderer("set-mousebutton-quickmenu", value);
   });
 
-  on("set-page-turn", (value) => {
-    settings.setValue("turnPageOnScrollBoundary", value);
-    reader.sendIpcToRenderer("set-page-turn-on-scroll-boundary", value);
-  });
+  on(
+    "set-page-turn",
+    (enabled, lockTimeMs, settleTimeMs, scrollBlockTimeMs) => {
+      settings.setValue("turnPageOnScrollBoundary", enabled);
+      settings.setValue("turnPageOnScrollBoundaryLockTimeMs", lockTimeMs);
+      settings.setValue("turnPageOnScrollBoundarySettleTimeMs", settleTimeMs);
+      settings.setValue("turnPageOnScrollScrollBlockTimeMs", scrollBlockTimeMs);
+      reader.sendIpcToRenderer(
+        "set-page-turn-on-scroll-boundary",
+        enabled,
+        lockTimeMs,
+        settleTimeMs,
+        scrollBlockTimeMs,
+      );
+    },
+  );
 
   on("change-log-to-file", (value) => {
     settings.setValue("logToFile", value);

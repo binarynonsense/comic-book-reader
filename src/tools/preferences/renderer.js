@@ -437,10 +437,86 @@ function init(
     // turn-page select
     {
       let select = document.getElementById("tool-pre-page-turn-select");
+      function checkSelectExpand() {
+        const div = document.querySelector(
+          "#tool-pre-page-turn-onscroll-children-div",
+        );
+        if (select.value === "true") {
+          div.classList.remove("set-display-none");
+        } else {
+          div.classList.add("set-display-none");
+        }
+      }
       select.value = settings.turnPageOnScrollBoundary ? "true" : "false";
+      checkSelectExpand();
       select.addEventListener("change", function (event) {
-        sendIpcToMain("set-page-turn", select.value === "true");
+        checkSelectExpand();
+        sendValues();
       });
+
+      const lockInput = document.getElementById(
+        "tool-pre-page-turn-onscroll-boundary-lock-time-input",
+      );
+      lockInput.value = settings.turnPageOnScrollBoundaryLockTimeMs;
+      lockInput.addEventListener("change", function (event) {
+        const value = parseInt(lockInput.value);
+        if (!Number.isNaN(value)) {
+          if (value < 0) {
+            lockInput.value = settings.turnPageOnScrollBoundaryLockTimeMs;
+          } else {
+            lockInput.value = value;
+          }
+        } else {
+          lockInput.value = settings.turnPageOnScrollBoundaryLockTimeMs;
+        }
+        sendValues();
+      });
+
+      const settleInput = document.getElementById(
+        "tool-pre-page-turn-onscroll-boundary-settle-time-input",
+      );
+      settleInput.value = settings.turnPageOnScrollBoundarySettleTimeMs;
+      settleInput.addEventListener("change", function (event) {
+        const value = parseInt(settleInput.value);
+        if (!Number.isNaN(value)) {
+          if (value < 0) {
+            settleInput.value = settings.turnPageOnScrollBoundarySettleTimeMs;
+          } else {
+            settleInput.value = value;
+          }
+        } else {
+          settleInput.value = settings.turnPageOnScrollBoundarySettleTimeMs;
+        }
+        sendValues();
+      });
+
+      const scrollBlockInput = document.getElementById(
+        "tool-pre-page-turn-onscroll-scroll-block-time-input",
+      );
+      scrollBlockInput.value = settings.turnPageOnScrollScrollBlockTimeMs;
+      scrollBlockInput.addEventListener("change", function (event) {
+        const value = parseInt(scrollBlockInput.value);
+        if (!Number.isNaN(value)) {
+          if (value < 0) {
+            scrollBlockInput.value = settings.turnPageOnScrollScrollBlockTimeMs;
+          } else {
+            scrollBlockInput.value = value;
+          }
+        } else {
+          scrollBlockInput.value = settings.turnPageOnScrollScrollBlockTimeMs;
+        }
+        sendValues();
+      });
+
+      function sendValues() {
+        sendIpcToMain(
+          "set-page-turn",
+          select.value === "true",
+          parseInt(lockInput.value),
+          parseInt(settleInput.value),
+          parseInt(scrollBlockInput.value),
+        );
+      }
     }
     // epub select
     {

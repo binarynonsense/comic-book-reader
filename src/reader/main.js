@@ -89,6 +89,9 @@ exports.init = async function (filePath, checkHistory) {
   sendIpcToRenderer(
     "set-page-turn-on-scroll-boundary",
     settings.getValue("turnPageOnScrollBoundary"),
+    settings.getValue("turnPageOnScrollBoundaryLockTimeMs"),
+    settings.getValue("turnPageOnScrollBoundarySettleTimeMs"),
+    settings.getValue("turnPageOnScrollScrollBlockTimeMs"),
   );
 
   showScrollBar(settings.getValue("showScrollBar"));

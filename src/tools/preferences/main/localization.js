@@ -70,6 +70,26 @@ exports.getTooltipsLocalization = function () {
           : ""
       }`,
     },
+    //
+    {
+      id: "tool-pre-page-turn-tooltip",
+      text:
+        _("tool-pre-page-turn-onscroll") +
+        ": " +
+        _("tool-pre-page-turn-onscroll-desc"),
+    },
+    {
+      id: "tool-pre-page-turn-onscroll-boundary-lock-time-tooltip",
+      text: _("tool-pre-page-turn-onscroll-boundarylocktime-desc"),
+    },
+    {
+      id: "tool-pre-page-turn-onscroll-boundary-settle-time-tooltip",
+      text: _("tool-pre-page-turn-onscroll-boundarysettletime-desc"),
+    },
+    {
+      id: "tool-pre-page-turn-onscroll-scroll-block-time-tooltip",
+      text: _("tool-pre-page-turn-onscroll-scrollblocktime-desc"),
+    },
   ];
 };
 
@@ -579,6 +599,18 @@ exports.getLocalization = function () {
     {
       id: "tool-pre-page-turn-onscroll-text",
       text: _("tool-pre-page-turn-onscroll"),
+    },
+    {
+      id: "tool-pre-page-turn-onscroll-boundary-lock-time-text",
+      text: `${_("tool-pre-mousewheel")}: ${_("tool-pre-page-turn-onscroll-boundarylocktime")} (${_("tool-pre-page-turn-onscroll-milliseconds")})`,
+    },
+    {
+      id: "tool-pre-page-turn-onscroll-boundary-settle-time-text",
+      text: `${_("tool-pre-mousewheel")}: ${_("tool-pre-page-turn-onscroll-boundarysettletime")} (${_("tool-pre-page-turn-onscroll-milliseconds")})`,
+    },
+    {
+      id: "tool-pre-page-turn-onscroll-scroll-block-time-text",
+      text: `${_("tool-pre-mousewheel")}: ${_("tool-pre-page-turn-onscroll-scrollblocktime")} (${_("tool-pre-page-turn-onscroll-milliseconds")})`,
     },
     //////////////////////////////////////////////
     {

@@ -125,6 +125,9 @@ const g_defaultSettings = {
   rarExeFolderPath: undefined,
   ffmpegExeFolderPath: undefined,
   turnPageOnScrollBoundary: false,
+  turnPageOnScrollBoundaryLockTimeMs: 200,
+  turnPageOnScrollBoundarySettleTimeMs: 500,
+  turnPageOnScrollScrollBlockTimeMs: 0,
   filterMode: 0, // 0: none
   customFilters: [
     exports.getOldPaperFilter(),
@@ -325,6 +328,9 @@ exports.resetPreferences = function () {
     "rarExeFolderPath",
     "ffmpegExeFolderPath",
     "turnPageOnScrollBoundary",
+    "turnPageOnScrollBoundaryLockTimeMs",
+    "turnPageOnScrollBoundarySettleTimeMs",
+    "turnPageOnScrollScrollBlockTimeMs",
     "customFilters",
     "toolbarDirection",
     "homeScreen",
@@ -622,10 +628,33 @@ function sanitize() {
   ) {
     g_settings.cbrCreation = g_defaultSettings.cbrCreation;
   }
+  ////
   if (typeof g_settings.turnPageOnScrollBoundary !== "boolean") {
     g_settings.turnPageOnScrollBoundary =
       g_defaultSettings.turnPageOnScrollBoundary;
   }
+  if (
+    !Number.isInteger(g_settings.turnPageOnScrollBoundaryLockTimeMs) ||
+    g_settings.turnPageOnScrollBoundaryLockTimeMs < 0
+  ) {
+    g_settings.turnPageOnScrollBoundaryLockTimeMs =
+      g_defaultSettings.turnPageOnScrollBoundaryLockTimeMs;
+  }
+  if (
+    !Number.isInteger(g_settings.turnPageOnScrollBoundarySettleTimeMs) ||
+    g_settings.turnPageOnScrollBoundarySettleTimeMs < 0
+  ) {
+    g_settings.turnPageOnScrollBoundarySettleTimeMs =
+      g_defaultSettings.turnPageOnScrollBoundarySettleTimeMs;
+  }
+  if (
+    !Number.isInteger(g_settings.turnPageOnScrollScrollBlockTimeMs) ||
+    g_settings.turnPageOnScrollScrollBlockTimeMs < 0
+  ) {
+    g_settings.turnPageOnScrollScrollBlockTimeMs =
+      g_defaultSettings.turnPageOnScrollScrollBlockTimeMs;
+  }
+  ////
   if (
     !Number.isInteger(g_settings.filterMode) ||
     g_settings.filterMode < 0 ||

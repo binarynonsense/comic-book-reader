@@ -35,7 +35,6 @@ export function getMouseButtons() {
   return { quickMenu: g_mouseButtonQuickMenu };
 }
 
-let g_turnPageOnScrollBoundary = true;
 let g_filterMode = 0;
 let g_showLoadingIndicator; // = true;
 
@@ -46,7 +45,9 @@ let g_showLoadingIndicator; // = true;
 function initOnIpcCallbacks() {
   on("add-event-listeners", () => {
     addToolbarEventListeners();
+    addScrollEventListener();
   });
+
   on("update-loading", (isVisible) => {
     if (g_showLoadingIndicator && isVisible) {
       document.querySelector("#loading").classList.add("is-active");
@@ -389,9 +390,15 @@ function initOnIpcCallbacks() {
     sendIpcToMain("set-scale-mode", scale);
   });
 
-  on("set-page-turn-on-scroll-boundary", (value) => {
-    g_turnPageOnScrollBoundary = value;
-  });
+  on(
+    "set-page-turn-on-scroll-boundary",
+    (enabled, lockTimeMs, settleTimeMs, scrollBlockTimeMs) => {
+      g_scrollBoundariesEnabled = enabled;
+      g_scrollBoundaryLockTimeMs = lockTimeMs;
+      g_scrollBoundarySettleTimeMs = settleTimeMs;
+      g_scrollBlockTimeMs = scrollBlockTimeMs;
+    },
+  );
 
   on("render-page-info", (pageNum, numPages, isPercentage) => {
     updatePageInfo(pageNum, numPages, isPercentage);
@@ -1039,22 +1046,25 @@ export function onInputEvent(type, event) {
             } else if (event.deltaY > 0) {
               inputZoomOut();
             }
-          } else if (g_turnPageOnScrollBoundary) {
-            let container = document.querySelector("#reader");
-            if (
-              event.deltaY > 0 &&
-              Math.abs(
-                container.scrollHeight -
-                  container.scrollTop -
-                  container.clientHeight,
-              ) < 1
-            ) {
-              // reached bottom
-              inputGoToNextPage();
-            } else if (event.deltaY < 0 && container.scrollTop <= 0) {
-              // reached top
-              inputGoToPrevPage();
-            }
+          }
+          // else if (g_scrollBoundariesEnabled) {
+          //   let container = document.querySelector("#reader");
+          //   if (
+          //     event.deltaY > 0 &&
+          //     Math.abs(
+          //       container.scrollHeight -
+          //         container.scrollTop -
+          //         container.clientHeight,
+          //     ) < 1
+          //   ) {
+          //     inputGoToNextPage();
+          //   } else if (event.deltaY < 0 && container.scrollTop <= 0) {
+          //     // reached top
+          //     inputGoToPrevPage();
+          //   }
+          // }
+          else if (g_scrollBoundariesEnabled) {
+            handleWheelEventScrollBoundaries(event);
           }
         }
       }
@@ -1067,7 +1077,7 @@ function inputScrollPageUp(checkEdge = true, factor = 1) {
   const container = document.getElementById("pages-container");
   const image = container?.firstChild;
   if (reader && container && image) {
-    if (g_turnPageOnScrollBoundary && checkEdge && reader.scrollTop <= 0) {
+    if (g_scrollBoundariesEnabled && checkEdge && reader.scrollTop <= 0) {
       inputGoToPrevPage();
     } else {
       const cs = getComputedStyle(reader);
@@ -1090,7 +1100,7 @@ function inputScrollPageDown(checkEdge = true, factor = 1) {
   const image = container.firstChild;
   if (reader && container && image) {
     if (
-      g_turnPageOnScrollBoundary &&
+      g_scrollBoundariesEnabled &&
       checkEdge &&
       Math.abs(reader.scrollHeight - reader.scrollTop - reader.clientHeight) < 1
     ) {
@@ -1188,6 +1198,268 @@ export function onMouseMove(fileOpen) {
       document.querySelector("#reader").style.cursor = "none";
       g_isMouseCursorVisible = false;
     }, g_mouseCursorHideTime);
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// INPUT SCROLL ///////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+let g_scrollBoundariesEnabled = true;
+const g_scrollStates = {
+  IDLE: 0,
+  BANNED: 1,
+  READY: 2,
+};
+const g_scrollPositions = {
+  MIDDLE: 0,
+  TOP: 1,
+  BOTTOM: 2,
+  TOP_AND_BOTTOM: 3,
+};
+let g_currentScrollPosition = g_scrollPositions.MIDDLE;
+let g_bottomScrollBoundaryState = g_scrollStates.IDLE;
+let g_bottomScrollBoundaryTimer = null;
+let g_topScrollBoundaryState = g_scrollStates.IDLE;
+let g_topScrollBoundaryTimer = null;
+
+let g_scrollBoundaryLockTimeMs = 200;
+let g_scrollBoundarySettleTimeMs = 500;
+let g_scrollBlockTimeMs = 0;
+let g_scrollBlockTimer = null;
+let g_scrollIsBlocked = false;
+
+function addScrollEventListener() {
+  document.querySelector("#reader").addEventListener("scroll", (event) => {
+    let pagesRow = document.querySelector(".pages-row");
+    if (!pagesRow || pagesRow.children.length === 0) return;
+
+    let container = event.currentTarget;
+    const hasVerticalScrollbar =
+      container.scrollHeight > container.clientHeight;
+    if (!hasVerticalScrollbar) return;
+
+    let distanceToBottom =
+      container.scrollHeight - container.scrollTop - container.clientHeight;
+
+    let isAtTop = container.scrollTop < 4;
+    let isAtBottom = distanceToBottom < 4;
+
+    // both: small scrollbar with barely any space
+    if (isAtTop && isAtBottom) {
+      if (g_currentScrollPosition !== g_scrollPositions.TOP_AND_BOTTOM) {
+        g_currentScrollPosition = g_scrollPositions.TOP_AND_BOTTOM;
+        if (g_bottomScrollBoundaryState === g_scrollStates.IDLE) {
+          g_bottomScrollBoundaryState = g_scrollStates.BANNED;
+          if (g_bottomScrollBoundaryTimer)
+            clearTimeout(g_bottomScrollBoundaryTimer);
+          g_bottomScrollBoundaryTimer = setTimeout(() => {
+            g_bottomScrollBoundaryState = g_scrollStates.READY;
+            g_bottomScrollBoundaryTimer = null;
+          }, g_scrollBoundaryLockTimeMs);
+        }
+        if (g_topScrollBoundaryState === g_scrollStates.IDLE) {
+          g_topScrollBoundaryState = g_scrollStates.BANNED;
+          if (g_topScrollBoundaryTimer) clearTimeout(g_topScrollBoundaryTimer);
+          g_topScrollBoundaryTimer = setTimeout(() => {
+            g_topScrollBoundaryState = g_scrollStates.READY;
+            g_topScrollBoundaryTimer = null;
+          }, g_scrollBoundaryLockTimeMs);
+        }
+      }
+    }
+    // bottom
+    else if (isAtBottom) {
+      if (g_currentScrollPosition !== g_scrollPositions.BOTTOM) {
+        g_currentScrollPosition = g_scrollPositions.BOTTOM;
+        if (g_topScrollBoundaryTimer) clearTimeout(g_topScrollBoundaryTimer);
+        if (g_topScrollBoundaryState !== g_scrollStates.IDLE) {
+          g_topScrollBoundaryState = g_scrollStates.IDLE;
+          g_topScrollBoundaryTimer = null;
+        }
+        if (g_bottomScrollBoundaryState === g_scrollStates.IDLE) {
+          g_bottomScrollBoundaryState = g_scrollStates.BANNED;
+          if (g_bottomScrollBoundaryTimer)
+            clearTimeout(g_bottomScrollBoundaryTimer);
+          g_bottomScrollBoundaryTimer = setTimeout(() => {
+            g_bottomScrollBoundaryState = g_scrollStates.READY;
+            g_bottomScrollBoundaryTimer = null;
+          }, g_scrollBoundaryLockTimeMs);
+        }
+      }
+    }
+    // top
+    else if (isAtTop) {
+      if (g_currentScrollPosition !== g_scrollPositions.TOP) {
+        g_currentScrollPosition = g_scrollPositions.TOP;
+        if (g_bottomScrollBoundaryTimer)
+          clearTimeout(g_bottomScrollBoundaryTimer);
+        if (g_bottomScrollBoundaryState !== g_scrollStates.IDLE) {
+          g_bottomScrollBoundaryState = g_scrollStates.IDLE;
+          g_bottomScrollBoundaryTimer = null;
+        }
+        if (g_topScrollBoundaryState === g_scrollStates.IDLE) {
+          g_topScrollBoundaryState = g_scrollStates.BANNED;
+          if (g_topScrollBoundaryTimer) clearTimeout(g_topScrollBoundaryTimer);
+          g_topScrollBoundaryTimer = setTimeout(() => {
+            g_topScrollBoundaryState = g_scrollStates.READY;
+            g_topScrollBoundaryTimer = null;
+          }, g_scrollBoundaryLockTimeMs);
+        }
+      }
+    }
+    // middle
+    else {
+      if (g_currentScrollPosition !== g_scrollPositions.MIDDLE) {
+        g_currentScrollPosition = g_scrollPositions.MIDDLE;
+        if (g_bottomScrollBoundaryTimer)
+          clearTimeout(g_bottomScrollBoundaryTimer);
+        if (g_bottomScrollBoundaryState !== g_scrollStates.IDLE) {
+          g_bottomScrollBoundaryState = g_scrollStates.IDLE;
+          g_bottomScrollBoundaryTimer = null;
+        }
+        if (g_topScrollBoundaryTimer) clearTimeout(g_topScrollBoundaryTimer);
+        if (g_topScrollBoundaryState !== g_scrollStates.IDLE) {
+          g_topScrollBoundaryState = g_scrollStates.IDLE;
+          g_topScrollBoundaryTimer = null;
+        }
+      }
+    }
+  });
+
+  // reset watcher
+  const pagesContainerObserver = new MutationObserver((mutations) => {
+    // only trigger if a node was added or removed to it
+    const layoutChanged = mutations.some(
+      (mutation) =>
+        mutation.addedNodes.length > 0 || mutation.removedNodes.length > 0,
+    );
+    if (layoutChanged) {
+      let container = document.querySelector("#reader");
+      const hasVerticalScrollbar =
+        container.scrollHeight > container.clientHeight;
+
+      if (hasVerticalScrollbar) {
+        if (g_bottomScrollBoundaryTimer)
+          clearTimeout(g_bottomScrollBoundaryTimer);
+        if (g_topScrollBoundaryTimer) clearTimeout(g_topScrollBoundaryTimer);
+        g_bottomScrollBoundaryTimer = null;
+        g_topScrollBoundaryTimer = null;
+        g_bottomScrollBoundaryState = g_scrollStates.IDLE;
+        g_topScrollBoundaryState = g_scrollStates.IDLE;
+        g_currentScrollPosition = g_scrollPositions.MIDDLE;
+      } else {
+        if (!g_topScrollBoundaryTimer) {
+          g_topScrollBoundaryState = g_scrollStates.IDLE;
+        }
+        if (!g_bottomScrollBoundaryTimer) {
+          g_bottomScrollBoundaryState = g_scrollStates.IDLE;
+        }
+      }
+
+      /////////////////
+
+      if (g_scrollBlockTimeMs > 0) {
+        g_scrollIsBlocked = true;
+        if (g_scrollBlockTimer) clearTimeout(g_scrollBlockTimer);
+        g_scrollBlockTimer = setTimeout(() => {
+          g_scrollIsBlocked = false;
+        }, g_scrollBlockTimeMs);
+      }
+    }
+  });
+  pagesContainerObserver.observe(document.querySelector("#pages-container"), {
+    childList: true,
+    subtree: true,
+  });
+}
+
+function handleWheelEventScrollBoundaries(event) {
+  let pagesRow = document.querySelector(".pages-row");
+  if (!pagesRow || pagesRow.children.length === 0) return;
+
+  if (g_scrollIsBlocked) {
+    // g_scrollIsBlocked is set in the scroll handler
+    event.stopPropagation();
+    event.preventDefault();
+  }
+
+  let container = document.querySelector("#reader");
+  const hasVerticalScrollbar = container.scrollHeight > container.clientHeight;
+
+  // scrollbar, the scroll handler applies the lock time
+  if (hasVerticalScrollbar) {
+    // auto-correct top
+    if (
+      event.deltaY < 0 &&
+      g_currentScrollPosition === g_scrollPositions.MIDDLE &&
+      container.scrollTop < 4
+    ) {
+      let distanceToBottom =
+        container.scrollHeight - container.scrollTop - container.clientHeight;
+      if (distanceToBottom < 4) {
+        // scrollbar is so large that it's also at bottom
+        g_currentScrollPosition = g_scrollPositions.TOP_AND_BOTTOM;
+        g_topScrollBoundaryState = g_scrollStates.READY;
+        g_bottomScrollBoundaryState = g_scrollStates.READY;
+      } else {
+        g_currentScrollPosition = g_scrollPositions.TOP;
+        g_topScrollBoundaryState = g_scrollStates.READY;
+      }
+    }
+    // bottom
+    if (
+      event.deltaY > 0 &&
+      (g_currentScrollPosition === g_scrollPositions.BOTTOM ||
+        g_currentScrollPosition === g_scrollPositions.TOP_AND_BOTTOM)
+    ) {
+      if (g_bottomScrollBoundaryState === g_scrollStates.BANNED) {
+        // do nothing
+      } else if (g_bottomScrollBoundaryState === g_scrollStates.READY) {
+        inputGoToNextPage();
+        g_bottomScrollBoundaryState = g_scrollStates.IDLE;
+        g_currentScrollPosition = g_scrollPositions.MIDDLE;
+      }
+    }
+    // top
+    else if (
+      event.deltaY < 0 &&
+      (g_currentScrollPosition === g_scrollPositions.TOP ||
+        g_currentScrollPosition === g_scrollPositions.TOP_AND_BOTTOM)
+    ) {
+      if (g_topScrollBoundaryState === g_scrollStates.BANNED) {
+        // do nothing
+      } else if (g_topScrollBoundaryState === g_scrollStates.READY) {
+        inputGoToPrevPage();
+        g_topScrollBoundaryState = g_scrollStates.IDLE;
+        g_currentScrollPosition = g_scrollPositions.MIDDLE;
+      }
+    }
+  }
+  // no scrollbar, apply settle time after page change
+  else {
+    // bottom
+    if (event.deltaY > 0) {
+      if (g_bottomScrollBoundaryState === g_scrollStates.IDLE) {
+        inputGoToNextPage();
+        g_bottomScrollBoundaryState = g_scrollStates.BANNED;
+        g_bottomScrollBoundaryTimer = setTimeout(() => {
+          g_bottomScrollBoundaryState = g_scrollStates.IDLE;
+          g_bottomScrollBoundaryTimer = null;
+        }, g_scrollBoundarySettleTimeMs);
+      }
+    }
+    // top
+    else if (event.deltaY < 0) {
+      if (g_topScrollBoundaryState === g_scrollStates.IDLE) {
+        inputGoToPrevPage();
+        g_topScrollBoundaryState = g_scrollStates.BANNED;
+        g_topScrollBoundaryTimer = setTimeout(() => {
+          g_topScrollBoundaryState = g_scrollStates.IDLE;
+          g_topScrollBoundaryTimer = null;
+        }, g_scrollBoundarySettleTimeMs);
+      }
+    }
   }
 }
 
