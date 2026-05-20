@@ -1,6 +1,8 @@
 {
   "@metadata": {
-    "authors": ["Andrew"],
+    "authors": [
+      "Andrew"
+    ],
     "last-updated": "2026-02-10",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.16.0",
@@ -671,6 +673,7 @@
   "[NEEDS TRANSLATION]tool-pre-filters-custom-resetvalues": "Reset Values",
   "[NEEDS TRANSLATION]tool-pre-filters-custom-deletefilter": "Delete Filter",
   "tool-pre-mouse": "Mouse",
+  "[NEEDS TRANSLATION]tool-pre-mousewheel": "Mouse Wheel",
   "tool-pre-keyboard": "Keyboard",
   "tool-pre-gamepad": "Gamepad",
   "tool-pre-mouse-keyboard": "Mouse at Keyboard",
@@ -690,6 +693,14 @@
   "tool-pre-page-turn": "Awtomatikong Pag-ikot ng Pahina",
   "tool-pre-page-turn-default": "Huwag Paganahin",
   "tool-pre-page-turn-onscroll": "Sa scroll boundaries",
+  "[NEEDS TRANSLATION]tool-pre-page-turn-onscroll-desc": "After reaching the top or bottom scroll boundary of the page, if the page is scrolled again in that direction a page turn to the previous or next page will be triggered automatically.",
+  "[NEEDS TRANSLATION]tool-pre-page-turn-onscroll-boundarylocktime": "Boundary Lock Time",
+  "[NEEDS TRANSLATION]tool-pre-page-turn-onscroll-boundarylocktime-desc": "Time a scroll boundary (top or bottom) remains locked after it is reached before it can trigger a page turn by scrolling again in that direction (only applies if there's a scrollbar).",
+  "[NEEDS TRANSLATION]tool-pre-page-turn-onscroll-boundarysettletime": "Boundary Settle Time",
+  "[NEEDS TRANSLATION]tool-pre-page-turn-onscroll-boundarysettletime-desc": "Time a scroll boundary (top or bottom) remains locked after it triggers a page turn before it can trigger a new one (only applies if there's no scrollbar).",
+  "[NEEDS TRANSLATION]tool-pre-page-turn-onscroll-scrollblocktime": "Scroll Block Time",
+  "[NEEDS TRANSLATION]tool-pre-page-turn-onscroll-scrollblocktime-desc": "Time the scrolling stays blocked after a page turn.",
+  "[NEEDS TRANSLATION]tool-pre-page-turn-onscroll-milliseconds": "milliseconds",
   "tool-pre-formats-library-reading": "Reading Library",
   "tool-pre-formats-library-extraction": "Extraction Library",
   "tool-pre-formats-library-compression": "Compression Library",

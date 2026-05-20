@@ -1,6 +1,8 @@
 {
   "@metadata": {
-    "authors": ["ahmed-0011"],
+    "authors": [
+      "ahmed-0011"
+    ],
     "last-updated": "2026-04-02",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.19.0",
@@ -671,6 +673,7 @@
   "tool-pre-filters-custom-resetvalues": "إعادة تعيين القيم",
   "tool-pre-filters-custom-deletefilter": "حذف الفلتر",
   "tool-pre-mouse": "الفأرة",
+  "[NEEDS TRANSLATION]tool-pre-mousewheel": "Mouse Wheel",
   "tool-pre-keyboard": "لوحة المفاتيح",
   "tool-pre-gamepad": "مقبض اللعب",
   "tool-pre-mouse-keyboard": "الفأرة ولوحة المفاتيح",
@@ -690,6 +693,14 @@
   "tool-pre-page-turn": "قلب الصفحات تلقائيًا",
   "tool-pre-page-turn-default": "معطل",
   "tool-pre-page-turn-onscroll": "الحدود عند التمرير",
+  "[NEEDS TRANSLATION]tool-pre-page-turn-onscroll-desc": "After reaching the top or bottom scroll boundary of the page, if the page is scrolled again in that direction a page turn to the previous or next page will be triggered automatically.",
+  "[NEEDS TRANSLATION]tool-pre-page-turn-onscroll-boundarylocktime": "Boundary Lock Time",
+  "[NEEDS TRANSLATION]tool-pre-page-turn-onscroll-boundarylocktime-desc": "Time a scroll boundary (top or bottom) remains locked after it is reached before it can trigger a page turn by scrolling again in that direction (only applies if there's a scrollbar).",
+  "[NEEDS TRANSLATION]tool-pre-page-turn-onscroll-boundarysettletime": "Boundary Settle Time",
+  "[NEEDS TRANSLATION]tool-pre-page-turn-onscroll-boundarysettletime-desc": "Time a scroll boundary (top or bottom) remains locked after it triggers a page turn before it can trigger a new one (only applies if there's no scrollbar).",
+  "[NEEDS TRANSLATION]tool-pre-page-turn-onscroll-scrollblocktime": "Scroll Block Time",
+  "[NEEDS TRANSLATION]tool-pre-page-turn-onscroll-scrollblocktime-desc": "Time the scrolling stays blocked after a page turn.",
+  "[NEEDS TRANSLATION]tool-pre-page-turn-onscroll-milliseconds": "milliseconds",
   "tool-pre-formats-library-reading": "مكتبة القراءة",
   "tool-pre-formats-library-extraction": "مكتبة الاستخراج",
   "tool-pre-formats-library-compression": "مكتبة الضغط",

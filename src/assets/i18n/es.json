@@ -1,6 +1,8 @@
 {
   "@metadata": {
-    "authors": ["Álvaro"],
+    "authors": [
+      "Álvaro"
+    ],
     "last-updated": "2026-03-31",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.19.0",
@@ -671,6 +673,7 @@
   "tool-pre-filters-custom-resetvalues": "Restablecer valores",
   "tool-pre-filters-custom-deletefilter": "Eliminar filtro",
   "tool-pre-mouse": "Ratón",
+  "tool-pre-mousewheel": "Rueda del ratón",
   "tool-pre-keyboard": "Teclado",
   "tool-pre-gamepad": "Mando",
   "tool-pre-mouse-keyboard": "Teclado y ratón",
@@ -690,6 +693,14 @@
   "tool-pre-page-turn": "Cambio de página automático",
   "tool-pre-page-turn-default": "Desactivado",
   "tool-pre-page-turn-onscroll": "En los límites del scroll",
+  "tool-pre-page-turn-onscroll-desc": "Tras alcanzar el límite de desplazamiento superior o inferior de la página, si se vuelve a desplazar la página en esa dirección, se activará automáticamente el cambio a la página anterior o siguiente.",
+  "tool-pre-page-turn-onscroll-boundarylocktime": "Tiempo de bloqueo de límite",
+  "tool-pre-page-turn-onscroll-boundarylocktime-desc": "Tiempo durante el cual un límite de desplazamiento (superior o inferior) permanece bloqueado después de alcanzarlo antes de que pueda activar un cambio de página desplazándose de nuevo en esa dirección (solo se aplica si hay una barra de desplazamiento).",
+  "tool-pre-page-turn-onscroll-boundarysettletime": "Tiempo de asentamiento de límite",
+  "tool-pre-page-turn-onscroll-boundarysettletime-desc": "Tiempo durante el cual un límite de desplazamiento (superior o inferior) permanece bloqueado después de que active un cambio de página antes de que pueda activar uno de nuevo (solo se aplica si no hay barra de desplazamiento).",
+  "tool-pre-page-turn-onscroll-scrollblocktime": "Tiempo de bloqueo de desplazamiento",
+  "tool-pre-page-turn-onscroll-scrollblocktime-desc": "Tiempo durante el cual el desplazamiento en cualquier dirección permance bloqueado tras un cambio de página.",
+  "tool-pre-page-turn-onscroll-milliseconds": "milisegundos",
   "tool-pre-formats-library-reading": "Librería de lectura",
   "tool-pre-formats-library-extraction": "Librería de extracción",
   "tool-pre-formats-library-compression": "Librería de compresión",
