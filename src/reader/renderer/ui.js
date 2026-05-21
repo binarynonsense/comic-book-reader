@@ -37,6 +37,8 @@ export function getMouseButtons() {
 
 let g_filterMode = 0;
 let g_showLoadingIndicator; // = true;
+let g_isLoading = false;
+let g_lastRequestedScrollbarPos = 0;
 
 ///////////////////////////////////////////////////////////////////////////////
 // IPC RECEIVE ////////////////////////////////////////////////////////////////
@@ -54,6 +56,9 @@ function initOnIpcCallbacks() {
     } else {
       document.querySelector("#loading").classList.remove("is-active");
     }
+    ///////
+    g_isLoading = isVisible;
+    scrollBoundaryHandleIsLoadingChanged();
   });
 
   on("update-clock", (time) => {
@@ -634,6 +639,8 @@ function updateZoom() {
 function moveScrollBarsToStart() {
   document.querySelector("#reader").scrollTop = 0;
   document.querySelector("#reader").scrollLeft = 0;
+
+  g_lastRequestedScrollbarPos = 0;
 }
 
 function moveScrollBarsToEnd() {
@@ -641,6 +648,8 @@ function moveScrollBarsToEnd() {
     document.querySelector("#reader").scrollHeight;
   document.querySelector("#reader").scrollLeft =
     document.querySelector("#reader").scrollWidth;
+
+  g_lastRequestedScrollbarPos = document.querySelector("#reader").scrollHeight;
 }
 
 export function setScrollBarsPosition(position) {
@@ -685,7 +694,6 @@ function setCustomFilter(
     rule += " saturate(var(--page-filter-custom-saturation))";
   if (sepia !== 0) rule += " sepia(var(--page-filter-custom-sepia))";
   rule += "; image-rendering: high-quality; }";
-  // console.log(rule);
 
   const sheet = document.styleSheets[3]; // reader.css is the fourth one
   const rules = sheet.cssRules;
@@ -1229,21 +1237,23 @@ let g_scrollBlockTimeMs = 0;
 let g_scrollBlockTimer = null;
 let g_scrollIsBlocked = false;
 
+const g_scrollBoundaryThreshold = 4;
+
 function addScrollEventListener() {
   document.querySelector("#reader").addEventListener("scroll", (event) => {
     let pagesRow = document.querySelector(".pages-row");
     if (!pagesRow || pagesRow.children.length === 0) return;
 
     let container = event.currentTarget;
-    const hasVerticalScrollbar =
+    const hasVerticalScrollSpace =
       container.scrollHeight > container.clientHeight;
-    if (!hasVerticalScrollbar) return;
+    if (!hasVerticalScrollSpace) return;
 
     let distanceToBottom =
       container.scrollHeight - container.scrollTop - container.clientHeight;
 
-    let isAtTop = container.scrollTop < 4;
-    let isAtBottom = distanceToBottom < 4;
+    let isAtTop = container.scrollTop < g_scrollBoundaryThreshold;
+    let isAtBottom = distanceToBottom < g_scrollBoundaryThreshold;
 
     // both: small scrollbar with barely any space
     if (isAtTop && isAtBottom) {
@@ -1327,68 +1337,172 @@ function addScrollEventListener() {
     }
   });
 
-  // reset watcher
-  const pagesContainerObserver = new MutationObserver((mutations) => {
-    // only trigger if a node was added or removed to it
-    const layoutChanged = mutations.some(
-      (mutation) =>
-        mutation.addedNodes.length > 0 || mutation.removedNodes.length > 0,
-    );
-    if (layoutChanged) {
-      let container = document.querySelector("#reader");
-      const hasVerticalScrollbar =
+  // const pagesContainerObserver = new MutationObserver((mutations) => {
+  //   // only trigger if a node was added or removed to it
+  //   const layoutChanged = mutations.some(
+  //     (mutation) =>
+  //       mutation.addedNodes.length > 0 || mutation.removedNodes.length > 0,
+  //   );
+  //   if (layoutChanged) {
+  //     console.log("layout changed");
+  //     let container = document.querySelector("#reader");
+  //     const hasVerticalScrollSpace =
+  //       container.scrollHeight > container.clientHeight;
+
+  //     if (hasVerticalScrollSpace) {
+  //       if (g_bottomScrollBoundaryTimer)
+  //         clearTimeout(g_bottomScrollBoundaryTimer);
+  //       if (g_topScrollBoundaryTimer) clearTimeout(g_topScrollBoundaryTimer);
+  //       g_bottomScrollBoundaryTimer = null;
+  //       g_topScrollBoundaryTimer = null;
+  //       g_bottomScrollBoundaryState = g_scrollStates.IDLE;
+  //       g_topScrollBoundaryState = g_scrollStates.IDLE;
+  //       g_currentScrollPosition = g_scrollPositions.MIDDLE;
+  //     } else {
+  //       if (!g_topScrollBoundaryTimer) {
+  //         g_topScrollBoundaryState = g_scrollStates.IDLE;
+  //       }
+  //       if (!g_bottomScrollBoundaryTimer) {
+  //         g_bottomScrollBoundaryState = g_scrollStates.IDLE;
+  //       }
+  //     }
+
+  //     //////////////////
+  //   }
+  // });
+
+  // pagesContainerObserver.observe(document.querySelector("#pages-container"), {
+  //   childList: true,
+  //   subtree: true,
+  // });
+}
+
+// function scrollBoundaryHandleIsLoadingChanged() {
+//   console.log("loading " + (g_isLoading ? "START" : "END"));
+//   let container = document.querySelector("#reader");
+//   if (g_isLoading) {
+//     container.classList.add("disable-compositor-scroll");
+//     if (g_scrollBlockTimeMs > 0) {
+//       g_scrollIsBlocked = true;
+//       console.log("start block");
+//       if (g_scrollBlockTimer) clearTimeout(g_scrollBlockTimer);
+//       g_scrollBlockTimer = setTimeout(() => {
+//         g_scrollIsBlocked = false;
+//         console.log("end block");
+//         console.log("scrollTop: " + container.scrollTop);
+//       }, g_scrollBlockTimeMs);
+//     }
+//   } else {
+//     // console.log("scrollTop: " + container.scrollTop);
+//     // container.scrollTop = g_lastRequestedScrollbarPos;
+//     // console.log("reseted to: " + container.scrollTop);
+//   }
+// }
+
+function scrollBoundaryHandleIsLoadingChanged() {
+  // called when loading state is updated
+  let container = document.querySelector("#reader");
+  if (g_isLoading) {
+    if (g_scrollBlockTimeMs > 0) {
+      g_scrollIsBlocked = true;
+      // if g_scrollBlockTimeMs > hide the scrollbar during load and reshow
+      // it after to make chromium flush any remaining events from its
+      // smoothing scroll, also keep the gutter space for pages that need it
+      // so there's no visual discrepancies in size when hiding<->showing
+      // the scrollbar
+      const currentHasScrollbar =
         container.scrollHeight > container.clientHeight;
-
-      if (hasVerticalScrollbar) {
-        if (g_bottomScrollBoundaryTimer)
-          clearTimeout(g_bottomScrollBoundaryTimer);
-        if (g_topScrollBoundaryTimer) clearTimeout(g_topScrollBoundaryTimer);
-        g_bottomScrollBoundaryTimer = null;
-        g_topScrollBoundaryTimer = null;
-        g_bottomScrollBoundaryState = g_scrollStates.IDLE;
-        g_topScrollBoundaryState = g_scrollStates.IDLE;
-        g_currentScrollPosition = g_scrollPositions.MIDDLE;
-      } else {
-        if (!g_topScrollBoundaryTimer) {
-          g_topScrollBoundaryState = g_scrollStates.IDLE;
-        }
-        if (!g_bottomScrollBoundaryTimer) {
-          g_bottomScrollBoundaryState = g_scrollStates.IDLE;
-        }
+      if (currentHasScrollbar) {
+        container.classList.add("keep-gutter-space");
       }
+      if (g_scrollBlockTimer) clearTimeout(g_scrollBlockTimer);
+      g_scrollBlockTimer = setTimeout(() => {
+        g_scrollIsBlocked = false;
+        container.classList.remove("keep-gutter-space");
+        container.style.overflow = "auto";
+        container.scrollTop = g_lastRequestedScrollbarPos;
+      }, g_scrollBlockTimeMs);
+      // hide scrollbar so no more scroll events are accepted
+      container.style.overflow = "hidden";
+    }
+    // make sure the scroll is at the requested place
+    container.scrollTop = g_lastRequestedScrollbarPos;
+  } else {
+    // ended loading
+    let pagesRow = document.querySelector(".pages-row");
+    const hasVerticalScrollSpace = pagesRow
+      ? pagesRow.scrollHeight > container.clientHeight
+      : container.scrollHeight > container.clientHeight;
 
-      /////////////////
-
-      if (g_scrollBlockTimeMs > 0) {
-        g_scrollIsBlocked = true;
-        if (g_scrollBlockTimer) clearTimeout(g_scrollBlockTimer);
-        g_scrollBlockTimer = setTimeout(() => {
-          g_scrollIsBlocked = false;
-        }, g_scrollBlockTimeMs);
+    if (g_scrollBlockTimeMs > 0) {
+      // restore the scrollbar once pages are loaded
+      container.style.overflow = "auto";
+      if (!hasVerticalScrollSpace) {
+        container.classList.remove("keep-gutter-space");
       }
     }
-  });
-  pagesContainerObserver.observe(document.querySelector("#pages-container"), {
-    childList: true,
-    subtree: true,
-  });
+    // make sure again that the scroll is at the requested place
+    container.scrollTop = g_lastRequestedScrollbarPos;
+
+    // boundary management ////////////
+    if (hasVerticalScrollSpace) {
+      if (g_bottomScrollBoundaryTimer)
+        clearTimeout(g_bottomScrollBoundaryTimer);
+      if (g_topScrollBoundaryTimer) clearTimeout(g_topScrollBoundaryTimer);
+      g_bottomScrollBoundaryTimer = null;
+      g_topScrollBoundaryTimer = null;
+      g_bottomScrollBoundaryState = g_scrollStates.IDLE;
+      g_topScrollBoundaryState = g_scrollStates.IDLE;
+
+      const maxScrollBottom = pagesRow.scrollHeight - container.clientHeight;
+      if (maxScrollBottom < g_scrollBoundaryThreshold) {
+        g_currentScrollPosition = g_scrollPositions.TOP_AND_BOTTOM;
+        g_topScrollBoundaryState = g_scrollStates.READY;
+        g_bottomScrollBoundaryState = g_scrollStates.READY;
+      } else if (g_lastRequestedScrollbarPos < g_scrollBoundaryThreshold) {
+        g_currentScrollPosition = g_scrollPositions.TOP;
+        g_topScrollBoundaryState = g_scrollStates.READY;
+        g_bottomScrollBoundaryState = g_scrollStates.IDLE;
+      } else {
+        g_currentScrollPosition = g_scrollPositions.BOTTOM;
+        g_bottomScrollBoundaryState = g_scrollStates.READY;
+        g_topScrollBoundaryState = g_scrollStates.IDLE;
+      }
+    } else {
+      if (!g_topScrollBoundaryTimer) {
+        g_topScrollBoundaryState = g_scrollStates.IDLE;
+      }
+      if (!g_bottomScrollBoundaryTimer) {
+        g_bottomScrollBoundaryState = g_scrollStates.IDLE;
+      }
+    }
+
+    ///////////////////////////////
+  }
 }
 
 function handleWheelEventScrollBoundaries(event) {
-  let pagesRow = document.querySelector(".pages-row");
-  if (!pagesRow || pagesRow.children.length === 0) return;
+  let container = document.querySelector("#reader");
+  const hasVerticalScrollSpace =
+    container.scrollHeight > container.clientHeight;
 
   if (g_scrollIsBlocked) {
     // g_scrollIsBlocked is set in the scroll handler
     event.stopPropagation();
     event.preventDefault();
+    return;
+  }
+  if (g_isLoading) {
+    event.stopPropagation();
+    event.preventDefault();
+    return;
   }
 
-  let container = document.querySelector("#reader");
-  const hasVerticalScrollbar = container.scrollHeight > container.clientHeight;
+  let pagesRow = document.querySelector(".pages-row");
+  if (!pagesRow || pagesRow.children.length === 0) return;
 
   // scrollbar, the scroll handler applies the lock time
-  if (hasVerticalScrollbar) {
+  if (hasVerticalScrollSpace) {
     // auto-correct top
     if (
       event.deltaY < 0 &&

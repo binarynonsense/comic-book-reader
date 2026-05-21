@@ -23,6 +23,10 @@
   overflow: auto;
 }
 
+.keep-gutter-space {
+  scrollbar-gutter: stable !important;
+}
+
 #reader:has(> #pages-container:empty) {
   margin-bottom: 0px !important;
 }
