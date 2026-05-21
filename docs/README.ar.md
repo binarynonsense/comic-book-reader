@@ -1,6 +1,6 @@
 # ACBR - Comic Book Reader
 
-قارئ ومحول للكتب المصورة يدعم ملفات CBZ و CBR و CB7 و EPUB و FB2 و MOBI و PDF.
+قارئ ومحول للكتب المصورة يدعم ملفات CBZ و CBR و CB7 و EPUB و FB2 و MOBI 7 و PDF.
 
 <img alt="git_banner" src="https://github.com/user-attachments/assets/da605b30-7bb3-40a5-8f36-f3f2e0541faf" />
 
@@ -17,7 +17,7 @@
 - تنسيقات الملفات المتوافقة<sup>[1]</sup>:
   - الكتب المصورة: CBZ و CBR و CB7 و PDF و EPUB
   - ملفات الصور: JPG و PNG و WebP و AVIF
-  - الكتب الإلكترونية: PDF و FB2 و MOBI<sup>[4]</sup> و EPUB
+  - الكتب الإلكترونية: PDF و FB2 و MOBI 7<sup>[4]</sup> و EPUB
 - متوفر في وضعين: وضع واجهة مستخدم بسيطة و وضع ملء الشاشة (بدون عناصر واجهة المستخدم).
 - تبديل وضع الصفحة: 'صفحة واحدة' أو 'صفحة مزدوجة' أو 'صفحة مزدوجة (توسيط الصفحة الأولى)'
 - عرض الصفحة حسب الخصائص التالية: 'مطابق لعرض الشاشة' أو 'مطابق لارتفاع الشاشة' أو 'بالتناسب مع ارتفاع الشاشة'.
@@ -36,7 +36,7 @@
   - يتم دعم المزيد من التنسيقات والتراميز والميزات في حالة [توفر](<https://github.com/binarynonsense/comic-book-reader/wiki/Third%E2%80%90Party-Executables-(rar,-ffmpeg...)>) برنامج FFmpeg.
 - الأدوات:
   - تحويل التنسيق/تغيير الحجم:
-      - الكتب المصورة والكتب الإلكترونية (CBR أو CBZ أو CB7 أو FB2 أو MOBI<sup>[4]</sup> أو PDF أو EPUB) إلى (CBR<sup>[3]</sup> أو CBZ أو CB7 أو PDF أو EPUB<sup>[2]</sup>).
+      - الكتب المصورة والكتب الإلكترونية (CBR أو CBZ أو CB7 أو FB2 أو MOBI 7<sup>[4]</sup> أو PDF أو EPUB) إلى (CBR<sup>[3]</sup> أو CBZ أو CB7 أو PDF أو EPUB<sup>[2]</sup>).
       - الصور (JPG أو PNG أو AVIF أو WebP).
   - إنشاء:
     - كتاب مصور (CBR<sup>[3]</sup> أو CBZ أو CB7 أو PDF أو EPUB<sup>[2]</sup>) من العديد من الصور و/أو الكتب المصورة.

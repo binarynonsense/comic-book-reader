@@ -1,6 +1,6 @@
 # ACBR - Comic Book Reader
 
-A comic book reader and converter for CBZ, CBR, CB7, EPUB, FB2, MOBI and PDF files.
+A comic book reader and converter for CBZ, CBR, CB7, EPUB, FB2, MOBI 7 and PDF files.
 
 <img alt="git_banner" src="https://github.com/user-attachments/assets/da605b30-7bb3-40a5-8f36-f3f2e0541faf" />
 
@@ -17,7 +17,7 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB, FB2, MOBI and PDF fil
 - Compatible file formats<sup>[1]</sup>:
   - Comic books: CBZ, CBR, CB7, PDF and EPUB
   - Image files: JPG, PNG, WebP and AVIF
-  - Ebooks: PDF, FB2, MOBI<sup>[4]</sup> and EPUB
+  - Ebooks: PDF, FB2, MOBI 7<sup>[4]</sup> and EPUB
 - Windowed (simple UI) and full-screen (no UI) modes
 - 'Single page', 'double page' and 'double page (center first page)' page modes
 - 'Fit to width', 'fit to height' and a customizable 'scale to height' page views
@@ -36,7 +36,7 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB, FB2, MOBI and PDF fil
   - More formats, codecs and features are supported if FFmpeg is [available](<https://github.com/binarynonsense/comic-book-reader/wiki/Third%E2%80%90Party-Executables-(rar,-ffmpeg...)>).
 - Tools:
   - Convert/Resize:
-    - Comic books and ebooks (CBR, CBZ, CB7, FB2, MOBI<sup>[4]</sup>, PDF or EPUB) to comic books (CBR<sup>[3]</sup>, CBZ, CB7, PDF or EPUB<sup>[2]</sup>).
+    - Comic books and ebooks (CBR, CBZ, CB7, FB2, MOBI 7<sup>[4]</sup>, PDF or EPUB) to comic books (CBR<sup>[3]</sup>, CBZ, CB7, PDF or EPUB<sup>[2]</sup>).
     - Images (JPG, PNG, AVIF or WebP).
   - Create:
     - A comic book (CBR<sup>[3]</sup>, CBZ, CB7, PDF or EPUB<sup>[2]</sup>) from a list of image files, ebooks and/or comic books.
