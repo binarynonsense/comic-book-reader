@@ -1552,9 +1552,9 @@ function handleWheelEventScrollBoundaries(event) {
     ) {
       if (g_bottomScrollBoundaryState === g_scrollStates.BANNED) {
         // do nothing
-        console.log(
-          `BOTTOM BANNED :: ${g_currentScrollPosition} :: ${g_bottomScrollBoundaryState}`,
-        );
+        // console.log(
+        //   `BOTTOM BANNED :: ${g_currentScrollPosition} :: ${g_bottomScrollBoundaryState}`,
+        // );
       } else if (g_bottomScrollBoundaryState === g_scrollStates.READY) {
         inputGoToNextPage();
         g_bottomScrollBoundaryState = g_scrollStates.IDLE;
@@ -1569,9 +1569,9 @@ function handleWheelEventScrollBoundaries(event) {
     ) {
       if (g_topScrollBoundaryState === g_scrollStates.BANNED) {
         // do nothing
-        console.log(
-          `TOP BANNED :: ${g_currentScrollPosition} :: ${g_topScrollBoundaryState}`,
-        );
+        // console.log(
+        //   `TOP BANNED :: ${g_currentScrollPosition} :: ${g_topScrollBoundaryState}`,
+        // );
       } else if (g_topScrollBoundaryState === g_scrollStates.READY) {
         inputGoToPrevPage();
         g_topScrollBoundaryState = g_scrollStates.IDLE;
@@ -1591,9 +1591,9 @@ function handleWheelEventScrollBoundaries(event) {
           g_bottomScrollBoundaryTimer = null;
         }, g_scrollBoundarySettleTimeMs);
       } else {
-        console.log(
-          `BOTTOM BANNED :: ${g_currentScrollPosition} :: ${g_bottomScrollBoundaryState}`,
-        );
+        // console.log(
+        //   `BOTTOM BANNED :: ${g_currentScrollPosition} :: ${g_bottomScrollBoundaryState}`,
+        // );
       }
     }
     // top
@@ -1606,9 +1606,9 @@ function handleWheelEventScrollBoundaries(event) {
           g_topScrollBoundaryTimer = null;
         }, g_scrollBoundarySettleTimeMs);
       } else {
-        console.log(
-          `TOP BANNED :: ${g_currentScrollPosition} :: ${g_bottomScrollBoundaryState}`,
-        );
+        // console.log(
+        //   `TOP BANNED :: ${g_currentScrollPosition} :: ${g_bottomScrollBoundaryState}`,
+        // );
       }
     }
   }
