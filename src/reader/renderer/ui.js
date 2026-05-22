@@ -606,7 +606,7 @@ function setScaleToHeight(scale) {
   container.classList.add("set-scale-to-height");
   container.classList.remove("set-fit-to-both");
 
-  setToolbarMenuButtonIcon("toolbar-button-zoom", 2);
+  setToolbarMenuButtonIcon("toolbar-button-zoom", 3);
 }
 
 function setZoomHeightCssVars(scale) {
@@ -1552,6 +1552,9 @@ function handleWheelEventScrollBoundaries(event) {
     ) {
       if (g_bottomScrollBoundaryState === g_scrollStates.BANNED) {
         // do nothing
+        console.log(
+          `BOTTOM BANNED :: ${g_currentScrollPosition} :: ${g_bottomScrollBoundaryState}`,
+        );
       } else if (g_bottomScrollBoundaryState === g_scrollStates.READY) {
         inputGoToNextPage();
         g_bottomScrollBoundaryState = g_scrollStates.IDLE;
@@ -1566,6 +1569,9 @@ function handleWheelEventScrollBoundaries(event) {
     ) {
       if (g_topScrollBoundaryState === g_scrollStates.BANNED) {
         // do nothing
+        console.log(
+          `TOP BANNED :: ${g_currentScrollPosition} :: ${g_topScrollBoundaryState}`,
+        );
       } else if (g_topScrollBoundaryState === g_scrollStates.READY) {
         inputGoToPrevPage();
         g_topScrollBoundaryState = g_scrollStates.IDLE;
@@ -1577,24 +1583,32 @@ function handleWheelEventScrollBoundaries(event) {
   else {
     // bottom
     if (event.deltaY > 0) {
-      if (g_bottomScrollBoundaryState === g_scrollStates.IDLE) {
+      if (g_bottomScrollBoundaryState !== g_scrollStates.BANNED) {
         inputGoToNextPage();
         g_bottomScrollBoundaryState = g_scrollStates.BANNED;
         g_bottomScrollBoundaryTimer = setTimeout(() => {
           g_bottomScrollBoundaryState = g_scrollStates.IDLE;
           g_bottomScrollBoundaryTimer = null;
         }, g_scrollBoundarySettleTimeMs);
+      } else {
+        console.log(
+          `BOTTOM BANNED :: ${g_currentScrollPosition} :: ${g_bottomScrollBoundaryState}`,
+        );
       }
     }
     // top
     else if (event.deltaY < 0) {
-      if (g_topScrollBoundaryState === g_scrollStates.IDLE) {
+      if (g_topScrollBoundaryState !== g_scrollStates.BANNED) {
         inputGoToPrevPage();
         g_topScrollBoundaryState = g_scrollStates.BANNED;
         g_topScrollBoundaryTimer = setTimeout(() => {
           g_topScrollBoundaryState = g_scrollStates.IDLE;
           g_topScrollBoundaryTimer = null;
         }, g_scrollBoundarySettleTimeMs);
+      } else {
+        console.log(
+          `TOP BANNED :: ${g_currentScrollPosition} :: ${g_bottomScrollBoundaryState}`,
+        );
       }
     }
   }
