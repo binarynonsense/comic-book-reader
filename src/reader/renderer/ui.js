@@ -881,7 +881,13 @@ export function onInputEvent(type, event) {
           ) {
             let container = document.querySelector("#reader");
             let amount = container.offsetWidth / 5;
-            container.scrollBy(-amount, 0);
+            // container.scrollBy(-amount, 0);
+            container.scrollBy({
+              top: 0,
+              left: -amount,
+              behavior: "smooth",
+            });
+
             event.stopPropagation();
           } else if (
             input.isActionDown({
@@ -892,7 +898,12 @@ export function onInputEvent(type, event) {
           ) {
             let container = document.querySelector("#reader");
             let amount = container.offsetWidth / 5;
-            container.scrollBy(amount, 0);
+            // container.scrollBy(amount, 0);
+            container.scrollBy({
+              top: 0,
+              left: amount,
+              behavior: "smooth",
+            });
             event.stopPropagation();
           } else if (
             input.isActionDownThisFrame({
@@ -1084,6 +1095,7 @@ function inputScrollPageUp(checkEdge = true, factor = 1) {
   const reader = document.getElementById("reader");
   const container = document.getElementById("pages-container");
   const image = container?.firstChild;
+
   if (reader && container && image) {
     if (g_scrollBoundariesEnabled && checkEdge && reader.scrollTop <= 0) {
       inputGoToPrevPage();
@@ -1091,12 +1103,17 @@ function inputScrollPageUp(checkEdge = true, factor = 1) {
       const cs = getComputedStyle(reader);
       const readerHeight = reader.offsetHeight - parseFloat(cs.marginBottom);
       const scrollableHeight = Math.ceil(image.offsetHeight - readerHeight);
+
       if (scrollableHeight > 0) {
-        const amount = Math.max(
-          readerHeight / 100,
-          (factor * scrollableHeight) / 5,
-        );
-        reader.scrollBy(0, -amount);
+        const isRepeating = !checkEdge;
+        const amount = isRepeating
+          ? 10
+          : Math.max(readerHeight / 100, (factor * scrollableHeight) / 5);
+        reader.scrollBy({
+          top: -amount,
+          left: 0,
+          behavior: isRepeating ? "auto" : "smooth",
+        });
       }
     }
   }
@@ -1105,7 +1122,8 @@ function inputScrollPageUp(checkEdge = true, factor = 1) {
 function inputScrollPageDown(checkEdge = true, factor = 1) {
   const reader = document.getElementById("reader");
   const container = document.getElementById("pages-container");
-  const image = container.firstChild;
+  const image = container?.firstChild;
+
   if (reader && container && image) {
     if (
       g_scrollBoundariesEnabled &&
@@ -1117,12 +1135,17 @@ function inputScrollPageDown(checkEdge = true, factor = 1) {
       const cs = getComputedStyle(reader);
       const readerHeight = reader.offsetHeight - parseFloat(cs.marginBottom);
       const scrollableHeight = Math.ceil(image.offsetHeight - readerHeight);
+
       if (scrollableHeight > 0) {
-        const amount = Math.max(
-          readerHeight / 100,
-          (factor * scrollableHeight) / 5,
-        );
-        reader.scrollBy(0, amount);
+        const isRepeating = !checkEdge;
+        const amount = isRepeating
+          ? 10
+          : Math.max(readerHeight / 100, (factor * scrollableHeight) / 5);
+        reader.scrollBy({
+          top: amount,
+          left: 0,
+          behavior: isRepeating ? "auto" : "smooth",
+        });
       }
     }
   }
