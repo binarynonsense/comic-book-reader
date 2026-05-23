@@ -104,6 +104,13 @@ exports.show = function (type, params, fileData) {
             },
           },
           {
+            id: "fit-to-both",
+            label: _("menu-view-zoom-fitboth"),
+            click() {
+              reader.onMenuFitToBoth();
+            },
+          },
+          {
             id: "scale-to-height",
             label: _("menu-view-zoom-scaleheight"),
             submenu: getScaleToHeightSubmenu(),
