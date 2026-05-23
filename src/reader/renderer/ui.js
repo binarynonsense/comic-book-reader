@@ -1065,24 +1065,7 @@ export function onInputEvent(type, event) {
             } else if (event.deltaY > 0) {
               inputZoomOut();
             }
-          }
-          // else if (g_scrollBoundariesEnabled) {
-          //   let container = document.querySelector("#reader");
-          //   if (
-          //     event.deltaY > 0 &&
-          //     Math.abs(
-          //       container.scrollHeight -
-          //         container.scrollTop -
-          //         container.clientHeight,
-          //     ) < 1
-          //   ) {
-          //     inputGoToNextPage();
-          //   } else if (event.deltaY < 0 && container.scrollTop <= 0) {
-          //     // reached top
-          //     inputGoToPrevPage();
-          //   }
-          // }
-          else if (g_scrollBoundariesEnabled) {
+          } else if (g_scrollBoundariesEnabled) {
             handleWheelEventScrollBoundaries(event);
           }
         }
@@ -1467,11 +1450,11 @@ function scrollBoundaryHandleIsLoadingChanged() {
     // make sure again that the scroll is at the requested place
     container.scrollTop = g_lastRequestedScrollbarPos;
 
+    if (g_bottomScrollBoundaryTimer) clearTimeout(g_bottomScrollBoundaryTimer);
+    if (g_topScrollBoundaryTimer) clearTimeout(g_topScrollBoundaryTimer);
+
     // boundary management ////////////
     if (hasVerticalScrollSpace) {
-      if (g_bottomScrollBoundaryTimer)
-        clearTimeout(g_bottomScrollBoundaryTimer);
-      if (g_topScrollBoundaryTimer) clearTimeout(g_topScrollBoundaryTimer);
       g_bottomScrollBoundaryTimer = null;
       g_topScrollBoundaryTimer = null;
       g_bottomScrollBoundaryState = g_scrollStates.IDLE;
@@ -1492,11 +1475,31 @@ function scrollBoundaryHandleIsLoadingChanged() {
         g_topScrollBoundaryState = g_scrollStates.IDLE;
       }
     } else {
-      if (!g_topScrollBoundaryTimer) {
+      // if (!g_topScrollBoundaryTimer) {
+      //   g_topScrollBoundaryState = g_scrollStates.IDLE;
+      // }
+      // if (!g_bottomScrollBoundaryTimer) {
+      //   g_bottomScrollBoundaryState = g_scrollStates.IDLE;
+      // }
+      if (g_topScrollBoundaryState !== g_scrollStates.BANNED) {
         g_topScrollBoundaryState = g_scrollStates.IDLE;
+      } else {
+        if (g_scrollBoundarySettleTimeMs <= 0)
+          console.log("error: _scrollBoundarySettleTimeMs <= 0");
+        g_topScrollBoundaryTimer = setTimeout(() => {
+          g_topScrollBoundaryState = g_scrollStates.IDLE;
+          g_topScrollBoundaryState = null;
+        }, g_scrollBoundarySettleTimeMs);
       }
-      if (!g_bottomScrollBoundaryTimer) {
+      if (g_bottomScrollBoundaryState !== g_scrollStates.BANNED) {
         g_bottomScrollBoundaryState = g_scrollStates.IDLE;
+      } else {
+        if (g_scrollBoundarySettleTimeMs <= 0)
+          console.log("error: _scrollBoundarySettleTimeMs <= 0");
+        g_bottomScrollBoundaryTimer = setTimeout(() => {
+          g_bottomScrollBoundaryState = g_scrollStates.IDLE;
+          g_bottomScrollBoundaryState = null;
+        }, g_scrollBoundarySettleTimeMs);
       }
     }
 
@@ -1505,21 +1508,48 @@ function scrollBoundaryHandleIsLoadingChanged() {
 }
 
 function handleWheelEventScrollBoundaries(event) {
+  // if (
+  //   !(
+  //     g_scrollBlockTimeMs > 0 ||
+  //     g_scrollBoundaryLockTimeMs > 0 ||
+  //     g_scrollBoundarySettleTimeMs > 0
+  //   )
+  // ) {
+  //   console.log("old path");
+  //   let container = document.querySelector("#reader");
+  //   if (
+  //     event.deltaY > 0 &&
+  //     Math.abs(
+  //       container.scrollHeight - container.scrollTop - container.clientHeight,
+  //     ) < 1
+  //   ) {
+  //     // bottom
+  //     inputGoToNextPage();
+  //   } else if (event.deltaY < 0 && container.scrollTop <= 0) {
+  //     // top
+  //     inputGoToPrevPage();
+  //   }
+  //   return;
+  // }
+
   let container = document.querySelector("#reader");
   const hasVerticalScrollSpace =
     container.scrollHeight > container.clientHeight;
 
   if (g_scrollIsBlocked) {
+    // console.log("block g_scrollIsBlocked");
     // g_scrollIsBlocked is set in the scroll handler
     event.stopPropagation();
     event.preventDefault();
     return;
   }
   if (g_isLoading) {
+    // console.log("block g_isLoading");
     event.stopPropagation();
     event.preventDefault();
     return;
   }
+  // console.log("scroll: " + event.deltaY);
 
   let pagesRow = document.querySelector(".pages-row");
   if (!pagesRow || pagesRow.children.length === 0) return;
@@ -1556,9 +1586,17 @@ function handleWheelEventScrollBoundaries(event) {
         //   `BOTTOM BANNED :: ${g_currentScrollPosition} :: ${g_bottomScrollBoundaryState}`,
         // );
       } else if (g_bottomScrollBoundaryState === g_scrollStates.READY) {
-        inputGoToNextPage();
         g_bottomScrollBoundaryState = g_scrollStates.IDLE;
+        g_topScrollBoundaryState = g_scrollStates.IDLE;
         g_currentScrollPosition = g_scrollPositions.MIDDLE;
+        // setup for settle time on next load if new page has no scrollbar
+        if (g_scrollBoundarySettleTimeMs > 0)
+          g_bottomScrollBoundaryState = g_scrollStates.BANNED;
+        ////
+        if (g_bottomScrollBoundaryTimer)
+          clearTimeout(g_bottomScrollBoundaryTimer);
+        if (g_topScrollBoundaryTimer) clearTimeout(g_topScrollBoundaryTimer);
+        inputGoToNextPage();
       }
     }
     // top
@@ -1573,9 +1611,17 @@ function handleWheelEventScrollBoundaries(event) {
         //   `TOP BANNED :: ${g_currentScrollPosition} :: ${g_topScrollBoundaryState}`,
         // );
       } else if (g_topScrollBoundaryState === g_scrollStates.READY) {
-        inputGoToPrevPage();
+        g_bottomScrollBoundaryState = g_scrollStates.IDLE;
         g_topScrollBoundaryState = g_scrollStates.IDLE;
         g_currentScrollPosition = g_scrollPositions.MIDDLE;
+        // setup for settle time on next load if new page has no scrollbar
+        if (g_scrollBoundarySettleTimeMs > 0)
+          g_topScrollBoundaryState = g_scrollStates.BANNED;
+        ////
+        if (g_bottomScrollBoundaryTimer)
+          clearTimeout(g_bottomScrollBoundaryTimer);
+        if (g_topScrollBoundaryTimer) clearTimeout(g_topScrollBoundaryTimer);
+        inputGoToPrevPage();
       }
     }
   }
@@ -1584,30 +1630,34 @@ function handleWheelEventScrollBoundaries(event) {
     // bottom
     if (event.deltaY > 0) {
       if (g_bottomScrollBoundaryState !== g_scrollStates.BANNED) {
+        // setup for settle time on next load if new page has no scrollbar
+        if (g_scrollBoundarySettleTimeMs > 0)
+          g_bottomScrollBoundaryState = g_scrollStates.BANNED;
+        ////
+        if (g_bottomScrollBoundaryTimer)
+          clearTimeout(g_bottomScrollBoundaryTimer);
+        if (g_topScrollBoundaryTimer) clearTimeout(g_topScrollBoundaryTimer);
         inputGoToNextPage();
-        g_bottomScrollBoundaryState = g_scrollStates.BANNED;
-        g_bottomScrollBoundaryTimer = setTimeout(() => {
-          g_bottomScrollBoundaryState = g_scrollStates.IDLE;
-          g_bottomScrollBoundaryTimer = null;
-        }, g_scrollBoundarySettleTimeMs);
       } else {
         // console.log(
-        //   `BOTTOM BANNED :: ${g_currentScrollPosition} :: ${g_bottomScrollBoundaryState}`,
+        //   `BOTTOM BANNED NO BAR :: ${g_currentScrollPosition} :: ${g_bottomScrollBoundaryState}`,
         // );
       }
     }
     // top
     else if (event.deltaY < 0) {
       if (g_topScrollBoundaryState !== g_scrollStates.BANNED) {
+        // setup for settle time on next load if new page has no scrollbar
+        if (g_scrollBoundarySettleTimeMs > 0)
+          g_topScrollBoundaryState = g_scrollStates.BANNED;
+        ////
+        if (g_bottomScrollBoundaryTimer)
+          clearTimeout(g_bottomScrollBoundaryTimer);
+        if (g_topScrollBoundaryTimer) clearTimeout(g_topScrollBoundaryTimer);
         inputGoToPrevPage();
-        g_topScrollBoundaryState = g_scrollStates.BANNED;
-        g_topScrollBoundaryTimer = setTimeout(() => {
-          g_topScrollBoundaryState = g_scrollStates.IDLE;
-          g_topScrollBoundaryTimer = null;
-        }, g_scrollBoundarySettleTimeMs);
       } else {
         // console.log(
-        //   `TOP BANNED :: ${g_currentScrollPosition} :: ${g_bottomScrollBoundaryState}`,
+        //   `TOP BANNED NO BAR :: ${g_currentScrollPosition} :: ${g_bottomScrollBoundaryState}`,
         // );
       }
     }
