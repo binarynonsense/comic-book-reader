@@ -1475,12 +1475,6 @@ function scrollBoundaryHandleIsLoadingChanged() {
         g_topScrollBoundaryState = g_scrollStates.IDLE;
       }
     } else {
-      // if (!g_topScrollBoundaryTimer) {
-      //   g_topScrollBoundaryState = g_scrollStates.IDLE;
-      // }
-      // if (!g_bottomScrollBoundaryTimer) {
-      //   g_bottomScrollBoundaryState = g_scrollStates.IDLE;
-      // }
       if (g_topScrollBoundaryState !== g_scrollStates.BANNED) {
         g_topScrollBoundaryState = g_scrollStates.IDLE;
       } else {
