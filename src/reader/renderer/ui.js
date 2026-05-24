@@ -881,7 +881,6 @@ export function onInputEvent(type, event) {
           ) {
             let container = document.querySelector("#reader");
             let amount = container.offsetWidth / 5;
-            // container.scrollBy(-amount, 0);
             container.scrollBy({
               top: 0,
               left: -amount,
@@ -898,7 +897,6 @@ export function onInputEvent(type, event) {
           ) {
             let container = document.querySelector("#reader");
             let amount = container.offsetWidth / 5;
-            // container.scrollBy(amount, 0);
             container.scrollBy({
               top: 0,
               left: amount,
@@ -930,7 +928,6 @@ export function onInputEvent(type, event) {
               event: event,
             })
           ) {
-            // inputZoomReset();
             inputSwitchScaleMode();
             event.stopPropagation();
           } else if (
@@ -1040,7 +1037,7 @@ export function onInputEvent(type, event) {
         if (fileOpen) {
           // NOTE: I'm having trouble testing this as my PC doesn't have a touch
           // screen, and going back and forth to my steamdeck with the build
-          // is time consuming and can't easily debug things
+          // is time consuming
           if (g_pinchZoomTimeOut === undefined) {
             // zoom at a constant rate
             g_pinchZoomTimeOut = setTimeout(() => {
@@ -1198,7 +1195,6 @@ export function onMouseMove(fileOpen) {
     window.clearTimeout(g_mouseCursorTimer);
   }
   if (!g_isMouseCursorVisible) {
-    //document.body.style.cursor = "default";
     document.querySelector("#reader").style.cursor = "default";
     g_isMouseCursorVisible = true;
   }
@@ -1208,7 +1204,6 @@ export function onMouseMove(fileOpen) {
   } else if (g_hideMouseCursor) {
     g_mouseCursorTimer = window.setTimeout(() => {
       g_mouseCursorTimer = undefined;
-      //document.body.style.cursor = "none";
       document.querySelector("#reader").style.cursor = "none";
       g_isMouseCursorVisible = false;
     }, g_mouseCursorHideTime);
@@ -1245,7 +1240,18 @@ let g_scrollIsBlocked = false;
 
 const g_scrollBoundaryThreshold = 4;
 
+// NOTE: goal for this code used for the automatic page turn in boundaries:
+// - pages with scrollbar: when reaching a scroll boundary, top or bottom,
+//   use lock time to ban changing time for some time to avoid inadvertely 
+//   changing paces due to fast scrolling.
+// - when loading a page with no scrollbar: use settle time to ban the last
+//   used boundary from changing page, to avoid skipping pages on fast scrolls.
+// - use scroll block time to temporarily block scrolling after a page load, to
+//   avoid the scrollbar sometimes starting already moved a bit due to accumulated
+//   events.
+
 function addScrollEventListener() {
+  // keep tabs orf where the scrollbar is
   document.querySelector("#reader").addEventListener("scroll", (event) => {
     let pagesRow = document.querySelector(".pages-row");
     if (!pagesRow || pagesRow.children.length === 0) return;
@@ -1350,30 +1356,7 @@ function addScrollEventListener() {
   //       mutation.addedNodes.length > 0 || mutation.removedNodes.length > 0,
   //   );
   //   if (layoutChanged) {
-  //     console.log("layout changed");
-  //     let container = document.querySelector("#reader");
-  //     const hasVerticalScrollSpace =
-  //       container.scrollHeight > container.clientHeight;
-
-  //     if (hasVerticalScrollSpace) {
-  //       if (g_bottomScrollBoundaryTimer)
-  //         clearTimeout(g_bottomScrollBoundaryTimer);
-  //       if (g_topScrollBoundaryTimer) clearTimeout(g_topScrollBoundaryTimer);
-  //       g_bottomScrollBoundaryTimer = null;
-  //       g_topScrollBoundaryTimer = null;
-  //       g_bottomScrollBoundaryState = g_scrollStates.IDLE;
-  //       g_topScrollBoundaryState = g_scrollStates.IDLE;
-  //       g_currentScrollPosition = g_scrollPositions.MIDDLE;
-  //     } else {
-  //       if (!g_topScrollBoundaryTimer) {
-  //         g_topScrollBoundaryState = g_scrollStates.IDLE;
-  //       }
-  //       if (!g_bottomScrollBoundaryTimer) {
-  //         g_bottomScrollBoundaryState = g_scrollStates.IDLE;
-  //       }
-  //     }
-
-  //     //////////////////
+  // ...
   //   }
   // });
 
@@ -1382,28 +1365,6 @@ function addScrollEventListener() {
   //   subtree: true,
   // });
 }
-
-// function scrollBoundaryHandleIsLoadingChanged() {
-//   console.log("loading " + (g_isLoading ? "START" : "END"));
-//   let container = document.querySelector("#reader");
-//   if (g_isLoading) {
-//     container.classList.add("disable-compositor-scroll");
-//     if (g_scrollBlockTimeMs > 0) {
-//       g_scrollIsBlocked = true;
-//       console.log("start block");
-//       if (g_scrollBlockTimer) clearTimeout(g_scrollBlockTimer);
-//       g_scrollBlockTimer = setTimeout(() => {
-//         g_scrollIsBlocked = false;
-//         console.log("end block");
-//         console.log("scrollTop: " + container.scrollTop);
-//       }, g_scrollBlockTimeMs);
-//     }
-//   } else {
-//     // console.log("scrollTop: " + container.scrollTop);
-//     // container.scrollTop = g_lastRequestedScrollbarPos;
-//     // console.log("reseted to: " + container.scrollTop);
-//   }
-// }
 
 function scrollBoundaryHandleIsLoadingChanged() {
   // called when loading state is updated
@@ -1531,19 +1492,16 @@ function handleWheelEventScrollBoundaries(event) {
     container.scrollHeight > container.clientHeight;
 
   if (g_scrollIsBlocked) {
-    // console.log("block g_scrollIsBlocked");
     // g_scrollIsBlocked is set in the scroll handler
     event.stopPropagation();
     event.preventDefault();
     return;
   }
   if (g_isLoading) {
-    // console.log("block g_isLoading");
     event.stopPropagation();
     event.preventDefault();
     return;
   }
-  // console.log("scroll: " + event.deltaY);
 
   let pagesRow = document.querySelector(".pages-row");
   if (!pagesRow || pagesRow.children.length === 0) return;
@@ -1576,9 +1534,6 @@ function handleWheelEventScrollBoundaries(event) {
     ) {
       if (g_bottomScrollBoundaryState === g_scrollStates.BANNED) {
         // do nothing
-        // console.log(
-        //   `BOTTOM BANNED :: ${g_currentScrollPosition} :: ${g_bottomScrollBoundaryState}`,
-        // );
       } else if (g_bottomScrollBoundaryState === g_scrollStates.READY) {
         g_bottomScrollBoundaryState = g_scrollStates.IDLE;
         g_topScrollBoundaryState = g_scrollStates.IDLE;
@@ -1601,9 +1556,6 @@ function handleWheelEventScrollBoundaries(event) {
     ) {
       if (g_topScrollBoundaryState === g_scrollStates.BANNED) {
         // do nothing
-        // console.log(
-        //   `TOP BANNED :: ${g_currentScrollPosition} :: ${g_topScrollBoundaryState}`,
-        // );
       } else if (g_topScrollBoundaryState === g_scrollStates.READY) {
         g_bottomScrollBoundaryState = g_scrollStates.IDLE;
         g_topScrollBoundaryState = g_scrollStates.IDLE;
@@ -1633,9 +1585,7 @@ function handleWheelEventScrollBoundaries(event) {
         if (g_topScrollBoundaryTimer) clearTimeout(g_topScrollBoundaryTimer);
         inputGoToNextPage();
       } else {
-        // console.log(
-        //   `BOTTOM BANNED NO BAR :: ${g_currentScrollPosition} :: ${g_bottomScrollBoundaryState}`,
-        // );
+        // do nothing
       }
     }
     // top
@@ -1650,9 +1600,7 @@ function handleWheelEventScrollBoundaries(event) {
         if (g_topScrollBoundaryTimer) clearTimeout(g_topScrollBoundaryTimer);
         inputGoToPrevPage();
       } else {
-        // console.log(
-        //   `TOP BANNED NO BAR :: ${g_currentScrollPosition} :: ${g_bottomScrollBoundaryState}`,
-        // );
+        // do nothing
       }
     }
   }
