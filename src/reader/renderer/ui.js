@@ -1251,7 +1251,7 @@ const g_scrollBoundaryThreshold = 4;
 //   events.
 
 function addScrollEventListener() {
-  // keep tabs orf where the scrollbar is
+  // keep tabs on where the scrollbar is
   document.querySelector("#reader").addEventListener("scroll", (event) => {
     let pagesRow = document.querySelector(".pages-row");
     if (!pagesRow || pagesRow.children.length === 0) return;
