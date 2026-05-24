@@ -126,7 +126,30 @@ exports.loadMetadata = async function () {
     if (xmlFileData === undefined) {
       throw "no comicinfo";
     }
-    const isValidXml = XMLValidator.validate(xmlFileData);
+
+    const validationOptions = {
+      allowBooleanAttributes: true,
+    };
+
+    // "fast-xml-parser" doesn't like attribute names right against a '>'
+    // even thought it can generate them itself that way :S
+    // so I add a space (e.g. DoublePage></Page> -> DoublePage ></Page>)
+    // check opening tags
+    xmlFileData = xmlFileData.replace(/<([^/>]+)>/g, (match, tagBody) => {
+      // only add a space to a tag like <Page ... DoublePage>
+      // so check if it has spaces and ends with a valid XML
+      // name (letters, numbers, _, -, ., :, or unicode letters)
+      if (tagBody.includes(" ") && /[\w.\-:\p{L}]+$/u.test(tagBody)) {
+        //\p{L} = match any character that is a letter in any alphabet
+        return `<${tagBody} >`;
+      }
+      return match; // do nothing for the rest
+    });
+    // NOTE: alternative undocumented way would be to use
+    // attributeRegexp: /([^=\s]+)\s*=\s*(['"])(.*?)\2|([^=\s>]+)/g,
+    // in parserOptions (/2 makes it match the correct quote type from group 2)
+
+    const isValidXml = XMLValidator.validate(xmlFileData, validationOptions);
     if (isValidXml !== true) {
       throw "invalid xml";
     }
