@@ -16,9 +16,6 @@ const fileUtils = require("../file-utils");
 // NOTE: this is a conversion of what I do for PDFs, I have more comments there
 // TODO: maybe I could combine them?
 
-const { spawn } = require("node:child_process");
-const sharp = require("sharp");
-
 let g_activeTasks = new Set();
 let g_isCancelled = false;
 
@@ -84,6 +81,8 @@ exports.openMuEpub = async function (
   tempSubFolderPath,
   config,
 ) {
+  const { spawn } = require("node:child_process");
+
   const binPath = getMuToolBinPath();
   const cssFilePath = path.join(
     tempSubFolderPath,
@@ -171,6 +170,9 @@ exports.extractMuEpubPageBuffer = async function (
   config,
   format = "jpg",
 ) {
+  const { spawn } = require("node:child_process");
+  const sharp = require("sharp");
+
   pageIndex++; // mutool starts pages at 1
   const binPath = getMuToolBinPath();
 
@@ -276,6 +278,9 @@ exports.extractMuEpub = async function (
   config,
   send,
 ) {
+  const { spawn } = require("node:child_process");
+  const sharp = require("sharp");
+
   const binPath = getMuToolBinPath();
   g_isCancelled = false;
 
