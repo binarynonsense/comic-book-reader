@@ -41,7 +41,6 @@ exports.fork = function (scriptPath, config = {}) {
       // 'Console' in hex is '43 6f 6e 73 6f 6c 65'.
       // 'Console\0' appears as '43 6f 6e 73 6f 6c 65 00'.
       logMessage += `hex dump analysis (finding the '00' byte):\n`;
-
       for (const [key, value] of Object.entries(rawEnv)) {
         if (typeof value === "string") {
           const hexData = Buffer.from(value).toString("hex");
@@ -52,33 +51,6 @@ exports.fork = function (scriptPath, config = {}) {
         }
       }
       log.debug(logMessage);
-
-      // if (true) {
-      //   try {
-      //     let shouldAppend = true;
-
-      //     if (fs.existsSync(logPath)) {
-      //       const stats = fs.statSync(logPath);
-      //       if (stats.size > 1024 * 1024) shouldAppend = false;
-      //     }
-
-      //     if (shouldAppend) {
-      //       fs.appendFileSync(
-      //         logPath,
-      //         logMessage + "\n" + "=".repeat(40) + "\n",
-      //       );
-      //     } else {
-      //       fs.writeFileSync(
-      //         logPath,
-      //         "[LOG RESET - FILE TOO LARGE]\n" + logMessage + "\n",
-      //       );
-      //     }
-
-      //     log.debug(`diagnostic log updated at: ${logPath}`);
-      //   } catch (error) {
-      //     log.error("log failed", error);
-      //   }
-      // }
     }
     throw error;
   }
