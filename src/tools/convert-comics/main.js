@@ -1229,7 +1229,8 @@ async function processContent() {
     let updateComicInfoNeeded =
       comicInfoFilePath &&
       (g_uiSelectedOptions.outputFormat === FileExtension.CBZ ||
-        g_uiSelectedOptions.outputFormat === FileExtension.CB7) &&
+        g_uiSelectedOptions.outputFormat === FileExtension.CB7 ||
+        g_uiSelectedOptions.outputFormat === FileExtension.CBR) &&
       (g_uiSelectedOptions.outputImageFormat != FileExtension.NOT_SET ||
         resizeNeeded ||
         imageOpsNeeded);
@@ -1269,47 +1270,53 @@ async function processContent() {
       g_uiSelectedOptions.outputImageFormat != FileExtension.NOT_SET
     ) {
       log.debug("[CC] " + _("tool-shared-modal-log-converting-images"));
-      switch (
-        parseInt(g_uiSelectedOptions.imageProcessingMultithreadingMethod)
-      ) {
-        case 1:
-          {
-            const result = await processImages({
-              imgFilePaths,
-              resizeNeeded,
-              imageOpsNeeded,
-              updateModalLogText,
-              modalInfoText: _("tool-shared-modal-log-converting-image"),
-              uiSelectedOptions: g_uiSelectedOptions,
-              getCancel: () => {
-                return g_cancel;
-              },
-            });
-            if (result.state === "error") {
-              stopError(result.error);
+      try {
+        log.editor("[CC] starting worker (process images)");
+        killWorker();
+        g_worker = forkUtils.fork(
+          path.join(__dirname, "../../shared/main/tools-worker-process.js"),
+        );
+        await new Promise((resolve, reject) => {
+          g_worker.on("message", (message) => {
+            if (message.type === "testLog") {
+              log.test(message.log);
               return;
-            }
-          }
-          break;
-        default:
-          {
-            const result = await processImagesWithWorkers({
-              imgFilePaths,
-              resizeNeeded,
-              imageOpsNeeded,
-              updateModalLogText,
-              modalInfoText: _("tool-shared-modal-log-converting-image"),
-              uiSelectedOptions: g_uiSelectedOptions,
-              getCancel: () => {
-                return g_cancel;
-              },
-            });
-            if (result.state === "error") {
-              stopError(result.error);
+            } else if (message.type === "editorLog") {
+              log.editor("[CC] " + message.log);
               return;
+            } else if (message.type === "modalLog") {
+              updateModalLogText(message.log);
+              return;
+            } else {
+              if (message.success) {
+                log.debug("[CC] images processed: " + message.state);
+                imgFilePaths = message.imgFilePaths;
+                resolve();
+              } else {
+                log.debug("[CC] images NOT processed correctly");
+                reject(message.error);
+              }
             }
-          }
-          break;
+          });
+          g_worker.on("exit", (code) => {
+            if (code !== 0) {
+              reject(new Error(`worker exited with code ${code}`));
+            }
+          });
+          g_worker.postMessage([
+            core.getLaunchInfo(),
+            "process-images",
+            imgFilePaths,
+            resizeNeeded,
+            imageOpsNeeded,
+            _("tool-shared-modal-log-converting-image"),
+            g_uiSelectedOptions,
+          ]);
+        });
+        killWorker();
+      } catch (error) {
+        stopError(error);
+        return;
       }
       if (g_cancel === true) {
         stopCancel();
@@ -1323,73 +1330,58 @@ async function processContent() {
       // update comicbook.xml if available, needs changing and the output format
       // is right
       try {
-        const {
-          XMLParser,
-          XMLBuilder,
-          XMLValidator,
-        } = require("fast-xml-parser");
-        const xmlFileData = fs.readFileSync(comicInfoFilePath, "utf8");
-        const isValidXml = XMLValidator.validate(xmlFileData);
-        if (isValidXml === true) {
-          // open
-          const parserOptions = {
-            ignoreAttributes: false,
-          };
-          const parser = new XMLParser(parserOptions);
-          let json = parser.parse(xmlFileData);
-          // modify
-          updateModalLogText(_("tool-shared-modal-log-updating-comicinfoxml"));
-
-          if (!json["ComicInfo"]["Pages"]) {
-            json["ComicInfo"]["Pages"] = {};
-          }
-          if (!json["ComicInfo"]["Pages"]["Page"]) {
-            json["ComicInfo"]["Pages"]["Page"] = [];
-          }
-
-          json["ComicInfo"]["PageCount"] = imgFilePaths.length;
-          let oldPagesArray = json["ComicInfo"]["Pages"]["Page"].slice();
-          json["ComicInfo"]["Pages"]["Page"] = [];
-          for (let index = 0; index < imgFilePaths.length; index++) {
-            let pageData = {
-              "@_Image": "",
-              "@_ImageSize": "",
-              "@_ImageWidth": "",
-              "@_ImageHeight": "",
-            };
-            if (oldPagesArray.length > index) {
-              pageData = oldPagesArray[index];
-            }
-            let filePath = imgFilePaths[index];
-            pageData["@_Image"] = index;
-            let fileStats = fs.statSync(filePath);
-            let fileSizeInBytes = fileStats.size;
-            pageData["@_ImageSize"] = fileSizeInBytes;
-            const sharp = require("sharp");
-            const metadata = await sharp(filePath).metadata();
-            pageData["@_ImageWidth"] = metadata.width;
-            pageData["@_ImageHeight"] = metadata.height;
-            json["ComicInfo"]["Pages"]["Page"].push(pageData);
-          }
-          // rebuild
-          const builderOptions = {
-            ignoreAttributes: false,
-            format: true,
-          };
-          const builder = new XMLBuilder(builderOptions);
-          let outputXmlData = builder.build(json);
-          fs.writeFileSync(comicInfoFilePath, outputXmlData);
-        } else {
-          throw "ComicInfo.xml is not a valid xml file";
-        }
-      } catch (error) {
-        log.debug(
-          "[CC] " +
-            "Warning: couldn't update the contents of ComicInfo.xml: " +
-            error,
+        log.editor("[CC] starting worker (update-comicinfo)");
+        killWorker();
+        g_worker = forkUtils.fork(
+          path.join(__dirname, "../../shared/main/tools-worker-process.js"),
         );
-        updateModalLogText(_("tool-shared-modal-log-warning-comicinfoxml"));
-        updateModalLogText(error);
+        await new Promise((resolve, reject) => {
+          g_worker.on("message", (message) => {
+            if (message.type === "testLog") {
+              log.test(message.log);
+              return;
+            } else if (message.type === "editorLog") {
+              log.editor("[CC] " + message.log);
+              return;
+            } else if (message.type === "modalLog") {
+              updateModalLogText(message.log);
+              return;
+            } else {
+              if (message.success) {
+                log.debug("[CC] ComicInfo.xml successfully updated");
+                resolve();
+              } else {
+                log.debug(
+                  "[CC] " +
+                    "Warning: couldn't update the contents of ComicInfo.xml: " +
+                    message.error,
+                );
+                updateModalLogText(
+                  _("tool-shared-modal-log-warning-comicinfoxml"),
+                );
+                updateModalLogText(message.error);
+                // don't error out, go on
+                resolve();
+              }
+            }
+          });
+          g_worker.on("exit", (code) => {
+            if (code !== 0) {
+              reject(new Error(`worker exited with code ${code}`));
+            }
+          });
+          g_worker.postMessage([
+            core.getLaunchInfo(),
+            "update-comicinfo",
+            comicInfoFilePath,
+            imgFilePaths,
+            _("tool-shared-modal-log-updating-comicinfoxml"),
+          ]);
+        });
+        killWorker();
+      } catch (error) {
+        stopError(error);
+        return;
       }
     }
     ///////////////////////////////////////////////

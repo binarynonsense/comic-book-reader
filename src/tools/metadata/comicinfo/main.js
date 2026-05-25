@@ -198,6 +198,7 @@ exports.updatePages = function (data) {
       g_worker = undefined;
     }
     if (g_worker === undefined) {
+      log.editor("[Metadata] starting worker (extract)");
       g_worker = forkUtils.fork(
         path.join(__dirname, "../../../shared/main/tools-worker-process.js"),
       );
@@ -205,6 +206,7 @@ exports.updatePages = function (data) {
         if (message.type === undefined) {
           g_worker.kill(); // kill it after one use
           if (message.success) {
+            log.editor("[Metadata] file correctly extracted");
             updatePagesDataFromImages(data, tempFolderPath);
             return;
           } else {
@@ -232,41 +234,37 @@ exports.updatePages = function (data) {
 
 async function updatePagesDataFromImages(data, tempFolderPath) {
   try {
-    const sharp = require("sharp");
-    let imgFilePaths = fileUtils.getImageFilesInFolderRecursive(tempFolderPath);
-    imgFilePaths.sort(utils.compare);
-
-    if (!data["ComicInfo"]["Pages"]) {
-      data["ComicInfo"]["Pages"] = {};
+    if (g_worker !== undefined) {
+      g_worker.kill();
+      g_worker = undefined;
     }
-    if (!data["ComicInfo"]["Pages"]["Page"]) {
-      data["ComicInfo"]["Pages"]["Page"] = [];
+    if (g_worker === undefined) {
+      log.editor("[Metadata] starting worker (update pages)");
+      g_worker = forkUtils.fork(
+        path.join(__dirname, "../../../shared/main/tools-worker-process.js"),
+      );
+      g_worker.on("message", (message) => {
+        if (message.type === undefined) {
+          g_worker.kill(); // kill it after one use
+          if (message.success) {
+            log.editor("[Metadata] pages data correctly updated");
+            temp.deleteSubFolder(tempFolderPath);
+            base.sendIpcToRenderer("pages-updated", message.data);
+            return;
+          } else {
+            base.sendIpcToRenderer("pages-updated", undefined);
+            temp.deleteSubFolder(tempFolderPath);
+            return;
+          }
+        }
+      });
     }
-    let oldPagesArray = data["ComicInfo"]["Pages"]["Page"].slice();
-    data["ComicInfo"]["Pages"]["Page"] = [];
-    for (let index = 0; index < imgFilePaths.length; index++) {
-      let pageData = {
-        "@_Image": "",
-        "@_ImageSize": "",
-        "@_ImageWidth": "",
-        "@_ImageHeight": "",
-      };
-      if (oldPagesArray.length > index) {
-        pageData = oldPagesArray[index];
-      }
-      let filePath = imgFilePaths[index];
-      pageData["@_Image"] = index;
-      let fileStats = fs.statSync(filePath);
-      let fileSizeInBytes = fileStats.size;
-      pageData["@_ImageSize"] = fileSizeInBytes;
-      const metadata = await sharp(filePath).metadata();
-      pageData["@_ImageWidth"] = metadata.width;
-      pageData["@_ImageHeight"] = metadata.height;
-      data["ComicInfo"]["Pages"]["Page"].push(pageData);
-    }
-
-    temp.deleteSubFolder(tempFolderPath);
-    base.sendIpcToRenderer("pages-updated", data);
+    g_worker.postMessage([
+      core.getLaunchInfo(),
+      "update-comicinfo-data",
+      data,
+      tempFolderPath,
+    ]);
   } catch (error) {
     temp.deleteSubFolder(tempFolderPath);
     base.sendIpcToRenderer("pages-updated", undefined);
@@ -275,6 +273,7 @@ async function updatePagesDataFromImages(data, tempFolderPath) {
 
 exports.saveMetadataToFile = async function (data) {
   try {
+    log.editor("[Metadata] saving to file");
     const { XMLBuilder } = require("fast-xml-parser");
     // rebuild
     const builderOptions = {

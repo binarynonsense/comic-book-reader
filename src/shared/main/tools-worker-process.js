@@ -21,6 +21,8 @@ const fileUtils = require("./file-utils");
 // const controller = new AbortController();
 // const { signal } = controller;
 
+let g_cancel;
+
 process.parentPort.on("message", async (event) => {
   let message = event.data;
   send({
@@ -31,13 +33,27 @@ process.parentPort.on("message", async (event) => {
     extractImages(...message.slice(2));
   } else if (message[1] === "create") {
     createFiles(...message.slice(2));
+  } else if (message[1] === "process-images") {
+    g_cancel = false;
+    processImages(...message.slice(2));
+  } else if (message[1] === "images-tool-work") {
+    g_cancel = false;
+    doImagesToolWork(...message.slice(2));
+  } else if (message[1] === "update-comicinfo") {
+    updateComicInfo(...message.slice(2));
+  } else if (message[1] === "update-comicinfo-data") {
+    updateComicInfoData(...message.slice(2));
   } else if (message[1] === "cancel") {
+    g_cancel = true;
     // controller.abort();
     fileFormats.stopMuPdfExtraction();
     fileFormats.stopMuEpubExtraction();
     fileFormats.stop7zExtraction();
   }
 });
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 async function extractImages(
   inputFilePath,
@@ -140,6 +156,8 @@ async function extractImages(
     });
   }
 }
+
+///////////////////////////////////////////////////////////////////////////////
 
 async function createFiles(
   baseFileName,
@@ -331,6 +349,347 @@ async function createFiles(
   }
 }
 
+///////////////////////////////////////////////////////////////////////////////
+
+async function processImages(
+  imgFilePaths,
+  resizeNeeded,
+  imageOpsNeeded,
+  modalInfoText,
+  uiSelectedOptions,
+) {
+  try {
+    const {
+      processImages,
+      processImagesWithWorkers,
+    } = require("./tools-process-images");
+
+    let result;
+    switch (parseInt(uiSelectedOptions.imageProcessingMultithreadingMethod)) {
+      case 1:
+        result = await processImages({
+          imgFilePaths,
+          resizeNeeded,
+          imageOpsNeeded,
+          updateModalLogText,
+          modalInfoText,
+          uiSelectedOptions,
+          getCancel: () => {
+            return g_cancel;
+          },
+        });
+        break;
+      default:
+        result = await processImagesWithWorkers({
+          imgFilePaths,
+          resizeNeeded,
+          imageOpsNeeded,
+          updateModalLogText,
+          modalInfoText,
+          uiSelectedOptions,
+          getCancel: () => {
+            return g_cancel;
+          },
+        });
+        break;
+    }
+    if (result.state === "error") {
+      throw result.error;
+    } else {
+      send({ success: true, state: result.state, imgFilePaths });
+    }
+  } catch (error) {
+    send({
+      success: false,
+      error: error,
+    });
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+async function updateComicInfo(comicInfoFilePath, imgFilePaths, updatingText) {
+  try {
+    const { XMLParser, XMLBuilder, XMLValidator } = require("fast-xml-parser");
+    const xmlFileData = fs.readFileSync(comicInfoFilePath, "utf8");
+    const isValidXml = XMLValidator.validate(xmlFileData);
+    if (isValidXml === true) {
+      // open
+      const parserOptions = {
+        ignoreAttributes: false,
+      };
+      const parser = new XMLParser(parserOptions);
+      let json = parser.parse(xmlFileData);
+      // modify
+      updateModalLogText(updatingText);
+
+      if (!json["ComicInfo"]["Pages"]) {
+        json["ComicInfo"]["Pages"] = {};
+      }
+      if (!json["ComicInfo"]["Pages"]["Page"]) {
+        json["ComicInfo"]["Pages"]["Page"] = [];
+      }
+
+      json["ComicInfo"]["PageCount"] = imgFilePaths.length;
+      let oldPagesArray = json["ComicInfo"]["Pages"]["Page"].slice();
+      json["ComicInfo"]["Pages"]["Page"] = [];
+      for (let index = 0; index < imgFilePaths.length; index++) {
+        let pageData = {
+          "@_Image": "",
+          "@_ImageSize": "",
+          "@_ImageWidth": "",
+          "@_ImageHeight": "",
+        };
+        if (oldPagesArray.length > index) {
+          pageData = oldPagesArray[index];
+        }
+        let filePath = imgFilePaths[index];
+        pageData["@_Image"] = index;
+        let fileStats = fs.statSync(filePath);
+        let fileSizeInBytes = fileStats.size;
+        pageData["@_ImageSize"] = fileSizeInBytes;
+        const sharp = require("sharp");
+        const metadata = await sharp(filePath).metadata();
+        pageData["@_ImageWidth"] = metadata.width;
+        pageData["@_ImageHeight"] = metadata.height;
+        json["ComicInfo"]["Pages"]["Page"].push(pageData);
+      }
+      // rebuild
+      const builderOptions = {
+        ignoreAttributes: false,
+        format: true,
+        suppressBooleanAttributes: false, // keek booleans like ="true"
+      };
+      const builder = new XMLBuilder(builderOptions);
+      let outputXmlData = builder.build(json);
+      fs.writeFileSync(comicInfoFilePath, outputXmlData);
+
+      send({ success: true });
+    } else {
+      throw "ComicInfo.xml is not a valid xml file";
+    }
+  } catch (error) {
+    send({
+      success: false,
+      error: error,
+    });
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+async function updateComicInfoData(data, tempFolderPath) {
+  try {
+    const sharp = require("sharp");
+    let imgFilePaths = fileUtils.getImageFilesInFolderRecursive(tempFolderPath);
+    imgFilePaths.sort(utils.compare);
+
+    if (!data["ComicInfo"]["Pages"]) {
+      data["ComicInfo"]["Pages"] = {};
+    }
+    if (!data["ComicInfo"]["Pages"]["Page"]) {
+      data["ComicInfo"]["Pages"]["Page"] = [];
+    }
+    let oldPagesArray = data["ComicInfo"]["Pages"]["Page"].slice();
+    data["ComicInfo"]["Pages"]["Page"] = [];
+    for (let index = 0; index < imgFilePaths.length; index++) {
+      let pageData = {
+        "@_Image": "",
+        "@_ImageSize": "",
+        "@_ImageWidth": "",
+        "@_ImageHeight": "",
+      };
+      if (oldPagesArray.length > index) {
+        pageData = oldPagesArray[index];
+      }
+      let filePath = imgFilePaths[index];
+      pageData["@_Image"] = index;
+      let fileStats = fs.statSync(filePath);
+      let fileSizeInBytes = fileStats.size;
+      pageData["@_ImageSize"] = fileSizeInBytes;
+      const metadata = await sharp(filePath).metadata();
+      pageData["@_ImageWidth"] = metadata.width;
+      pageData["@_ImageHeight"] = metadata.height;
+      data["ComicInfo"]["Pages"]["Page"].push(pageData);
+    }
+    send({ success: true, data });
+  } catch (error) {
+    send({
+      success: false,
+      error: error,
+    });
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+async function doImagesToolWork(
+  imgFiles,
+  tempSubFolderPath,
+  outputFolderPath,
+  outputFormat,
+  outputScaleParams,
+  outputFormatParams,
+  resizingImageText,
+  convertingImageText,
+  extractingToText,
+) {
+  let numAttempts = 0;
+  let numErrors = 0;
+  let failedFilePaths = [];
+  try {
+    const sharp = require("sharp");
+    // avoid EBUSY error on windows
+    sharp.cache(false);
+    for (let index = 0; index < imgFiles.length; index++) {
+      updateModalLogText("");
+      numAttempts++;
+      let originalFilePath = "???";
+      try {
+        if (g_cancel === true) {
+          send({
+            success: true,
+            state: "cancelled",
+            numAttempts,
+            numErrors,
+            failedFilePaths,
+          });
+          return;
+        }
+        originalFilePath = imgFiles[index].path;
+        let filePath = path.join(
+          tempSubFolderPath,
+          path.basename(imgFiles[index].path),
+        );
+        fs.copyFileSync(imgFiles[index].path, filePath);
+        let fileName = path.basename(filePath, path.extname(filePath));
+        let outputFilePath = path.join(
+          outputFolderPath,
+          fileName + "." + outputFormat,
+        );
+        let i = 1;
+        while (fs.existsSync(outputFilePath)) {
+          i++;
+          outputFilePath = path.join(
+            outputFolderPath,
+            fileName + "(" + i + ")." + outputFormat,
+          );
+        }
+        // resize first if needed
+        if (
+          outputScaleParams.option !== "0" ||
+          parseInt(outputScaleParams.value) < 100
+        ) {
+          updateModalLogText(resizingImageText + ": " + originalFilePath);
+          let tmpFilePath = path.join(
+            tempSubFolderPath,
+            fileName + "." + FileExtension.TMP,
+          );
+          if (outputScaleParams.option === "1") {
+            await sharp(filePath)
+              .withMetadata()
+              .resize({
+                height: parseInt(outputScaleParams.value),
+                withoutEnlargement: true,
+              })
+              .toFile(tmpFilePath);
+          } else if (outputScaleParams.option === "2") {
+            await sharp(filePath)
+              .withMetadata()
+              .resize({
+                width: parseInt(outputScaleParams.value),
+                withoutEnlargement: true,
+              })
+              .toFile(tmpFilePath);
+          } else {
+            // scale
+            let data = await sharp(filePath).metadata();
+            await sharp(filePath)
+              .withMetadata()
+              .resize(
+                Math.round(
+                  data.width * (parseInt(outputScaleParams.value) / 100),
+                ),
+              )
+              .toFile(tmpFilePath);
+          }
+          // fs.unlinkSync(filePath);
+          await fileUtils.safeUnlink(filePath, true);
+          fileUtils.moveFile(tmpFilePath, filePath);
+        }
+        // convert
+        updateModalLogText(convertingImageText + ": " + originalFilePath);
+        updateModalLogText(extractingToText + ": " + outputFilePath);
+        if (outputFormat === FileExtension.JPG) {
+          await sharp(filePath)
+            .withMetadata()
+            .jpeg({
+              quality: parseInt(outputFormatParams.jpgQuality),
+              mozjpeg: outputFormatParams.jpgMozjpeg,
+            })
+            .toFile(outputFilePath);
+        } else if (outputFormat === FileExtension.PNG) {
+          if (parseInt(outputFormatParams.pngQuality) < 100) {
+            await sharp(filePath)
+              .withMetadata()
+              .png({
+                quality: parseInt(outputFormatParams.pngQuality),
+              })
+              .toFile(outputFilePath);
+          } else {
+            await sharp(filePath).png().toFile(outputFilePath);
+          }
+        } else if (outputFormat === FileExtension.WEBP) {
+          await sharp(filePath)
+            .withMetadata()
+            .webp({
+              quality: parseInt(outputFormatParams.webpQuality),
+            })
+            .toFile(outputFilePath);
+        } else if (outputFormat === FileExtension.AVIF) {
+          await sharp(filePath)
+            .withMetadata()
+            .avif({
+              quality: parseInt(outputFormatParams.avifQuality),
+            })
+            .toFile(outputFilePath);
+        }
+        // fs.unlinkSync(filePath);
+        await fileUtils.safeUnlink(filePath, true);
+      } catch (error) {
+        updateModalLogText(error);
+        numErrors++;
+        failedFilePaths.push(originalFilePath);
+      }
+    }
+    send({
+      success: true,
+      state: "success",
+      numAttempts,
+      numErrors,
+      failedFilePaths,
+    });
+  } catch (error) {
+    send({
+      success: false,
+      error: error,
+      numAttempts,
+      numErrors,
+      failedFilePaths,
+    });
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
 function send(message) {
   process.parentPort.postMessage(message);
+}
+
+function updateModalLogText(text) {
+  send({
+    type: "modalLog",
+    log: text,
+  });
 }

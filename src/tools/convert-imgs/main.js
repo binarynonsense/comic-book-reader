@@ -20,6 +20,7 @@ const tools = require("../../shared/main/tools");
 const settings = require("../../shared/main/settings");
 const menuBar = require("../../shared/main/menu-bar");
 const log = require("../../shared/main/logger");
+const forkUtils = require("../../shared/main/fork-utils");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -53,15 +54,20 @@ exports.open = function () {
   updateLocalizedText();
 };
 
+function killWorker() {
+  if (g_worker !== undefined) {
+    log.editor("[CI] killing worker");
+    g_worker?.kill();
+    g_worker = undefined;
+  }
+}
+
 exports.close = function () {
   // called by switchTool when closing tool
   sendIpcToRenderer("close-modal");
   sendIpcToRenderer("hide"); // clean up
 
-  if (g_worker !== undefined) {
-    g_worker.kill();
-    g_worker = undefined;
-  }
+  killWorker();
   temp.deleteSubFolder(g_tempSubFolderPath);
   g_tempSubFolderPath = undefined;
 };
@@ -224,8 +230,15 @@ function initOnIpcCallbacks() {
   /////////////////////////
 
   on("cancel", () => {
+    log.editor("[CI] cancel received");
     if (!g_cancel) {
       g_cancel = true;
+      if (g_worker) {
+        log.editor("[CI] sending cancel to worker");
+        g_worker.postMessage([core.getLaunchInfo(), "cancel"]);
+      } else {
+        log.editor("[CI] can't send cancel to worker, no g_worker");
+      }
     }
   });
 
@@ -370,6 +383,10 @@ function stopCancel() {
   );
 }
 
+function updateModalLogText(inputText, append = true) {
+  sendIpcToRenderer("update-log-text", inputText, append);
+}
+
 let g_numErrors = 0;
 let g_numFiles = 0;
 let g_numAttempts = 0;
@@ -397,140 +414,67 @@ async function start(
       _("tool-shared-modal-log-converting-images") + "...",
     );
 
-    const sharp = require("sharp");
-
     g_tempSubFolderPath = temp.createSubFolder();
-    // avoid EBUSY error on windows
-    sharp.cache(false);
-    for (let index = 0; index < imgFiles.length; index++) {
-      sendIpcToRenderer("update-log-text", "");
-      g_numAttempts++;
-      let originalFilePath = "???";
-      try {
-        if (g_cancel === true) {
-          stopCancel(index);
-          return;
-        }
-        originalFilePath = imgFiles[index].path;
-        let filePath = path.join(
-          g_tempSubFolderPath,
-          path.basename(imgFiles[index].path),
-        );
-        fs.copyFileSync(imgFiles[index].path, filePath);
-        let fileName = path.basename(filePath, path.extname(filePath));
-        let outputFilePath = path.join(
-          outputFolderPath,
-          fileName + "." + outputFormat,
-        );
-        let i = 1;
-        while (fs.existsSync(outputFilePath)) {
-          i++;
-          outputFilePath = path.join(
-            outputFolderPath,
-            fileName + "(" + i + ")." + outputFormat,
-          );
-        }
-        // resize first if needed
-        if (
-          outputScaleParams.option !== "0" ||
-          parseInt(outputScaleParams.value) < 100
-        ) {
-          if (g_cancel === true) {
-            stopCancel(index);
+
+    try {
+      log.editor("[CI] starting worker (process images)");
+      killWorker();
+      g_worker = forkUtils.fork(
+        path.join(__dirname, "../../shared/main/tools-worker-process.js"),
+      );
+      await new Promise((resolve, reject) => {
+        g_worker.on("message", (message) => {
+          if (message.type === "testLog") {
+            log.test(message.log);
             return;
-          }
-          sendIpcToRenderer(
-            "update-log-text",
-            _("tool-shared-modal-log-resizing-image") + ": " + originalFilePath,
-          );
-          let tmpFilePath = path.join(
-            g_tempSubFolderPath,
-            fileName + "." + FileExtension.TMP,
-          );
-          if (outputScaleParams.option === "1") {
-            await sharp(filePath)
-              .withMetadata()
-              .resize({
-                height: parseInt(outputScaleParams.value),
-                withoutEnlargement: true,
-              })
-              .toFile(tmpFilePath);
-          } else if (outputScaleParams.option === "2") {
-            await sharp(filePath)
-              .withMetadata()
-              .resize({
-                width: parseInt(outputScaleParams.value),
-                withoutEnlargement: true,
-              })
-              .toFile(tmpFilePath);
+          } else if (message.type === "editorLog") {
+            log.editor("[CI] " + message.log);
+            return;
+          } else if (message.type === "modalLog") {
+            updateModalLogText(message.log);
+            return;
           } else {
-            // scale
-            let data = await sharp(filePath).metadata();
-            await sharp(filePath)
-              .withMetadata()
-              .resize(
-                Math.round(
-                  data.width * (parseInt(outputScaleParams.value) / 100),
-                ),
-              )
-              .toFile(tmpFilePath);
+            g_numAttempts = message.numAttempts;
+            g_numErrors = message.numErrors;
+            g_failedFilePaths = message.failedFilePaths;
+            if (message.success) {
+              log.debug("[CI] images processed: " + message.state);
+              resolve();
+            } else {
+              log.debug("[CI] images NOT processed correctly");
+              reject(message.error);
+            }
           }
-          // fs.unlinkSync(filePath);
-          await fileUtils.safeUnlink(filePath, true);
-          fileUtils.moveFile(tmpFilePath, filePath);
-        }
-        // convert
-        sendIpcToRenderer(
-          "update-log-text",
-          _("tool-shared-modal-log-converting-image") + ": " + originalFilePath,
-        );
-        sendIpcToRenderer(
-          "update-log-text",
-          _("tool-ec-modal-log-extracting-to") + ": " + outputFilePath,
-        );
-        if (outputFormat === FileExtension.JPG) {
-          await sharp(filePath)
-            .withMetadata()
-            .jpeg({
-              quality: parseInt(outputFormatParams.jpgQuality),
-              mozjpeg: outputFormatParams.jpgMozjpeg,
-            })
-            .toFile(outputFilePath);
-        } else if (outputFormat === FileExtension.PNG) {
-          if (parseInt(outputFormatParams.pngQuality) < 100) {
-            await sharp(filePath)
-              .withMetadata()
-              .png({
-                quality: parseInt(outputFormatParams.pngQuality),
-              })
-              .toFile(outputFilePath);
-          } else {
-            await sharp(filePath).png().toFile(outputFilePath);
+        });
+        g_worker.on("exit", (code) => {
+          if (code !== 0) {
+            reject(new Error(`worker exited with code ${code}`));
           }
-        } else if (outputFormat === FileExtension.WEBP) {
-          await sharp(filePath)
-            .withMetadata()
-            .webp({
-              quality: parseInt(outputFormatParams.webpQuality),
-            })
-            .toFile(outputFilePath);
-        } else if (outputFormat === FileExtension.AVIF) {
-          await sharp(filePath)
-            .withMetadata()
-            .avif({
-              quality: parseInt(outputFormatParams.avifQuality),
-            })
-            .toFile(outputFilePath);
-        }
-        // fs.unlinkSync(filePath);
-        await fileUtils.safeUnlink(filePath, true);
-      } catch (err) {
-        sendIpcToRenderer("update-log-text", err);
-        g_numErrors++;
-        g_failedFilePaths.push(originalFilePath);
+        });
+        g_worker.postMessage([
+          core.getLaunchInfo(),
+          "images-tool-work",
+          imgFiles,
+          g_tempSubFolderPath,
+          outputFolderPath,
+          outputFormat,
+          outputScaleParams,
+          outputFormatParams,
+          _("tool-shared-modal-log-resizing-image"),
+          _("tool-shared-modal-log-converting-image"),
+          _("tool-ec-modal-log-extracting-to"),
+        ]);
+      });
+      killWorker();
+      if (g_cancel === true) {
+        stopCancel();
+        return;
       }
+    } catch (error) {
+      stopError(error);
+      return;
     }
-    // DONE /////////////////////
+
     temp.deleteSubFolder(g_tempSubFolderPath);
     g_tempSubFolderPath = undefined;
     sendIpcToRenderer(
