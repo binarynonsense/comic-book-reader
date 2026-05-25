@@ -145,7 +145,7 @@
     "pdfkit": "0.17.2",
     "qrcode": "1.5.4",
     "sanitize-html": "2.17.0",
-    "sharp": "0.33.5",
+    "sharp": "0.34.5",
     "tesseract.js": "3.0.3"
   }
 }
