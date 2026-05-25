@@ -1973,7 +1973,7 @@ function renderPageRefresh() {
       g_fileData.type === FileDataType.ZIP ||
       g_fileData.type === FileDataType.SEVENZIP ||
       g_fileData.type === FileDataType.IMGS_FOLDER ||
-      g_fileData.type === FileDataType.PDF || // pdfium
+      g_fileData.type === FileDataType.PDF ||
       g_fileData.type === FileDataType.WWW
     ) {
       sendIpcToRenderer("refresh-img-page", g_fileData.pageRotation);
