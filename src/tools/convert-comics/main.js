@@ -251,7 +251,6 @@ function initOnIpcCallbacks() {
           FileExtension.JPEG,
           FileExtension.PNG,
           FileExtension.WEBP,
-          FileExtension.BMP,
           FileExtension.AVIF,
 
           FileExtension.CBZ,
@@ -269,7 +268,6 @@ function initOnIpcCallbacks() {
           FileExtension.JPEG,
           FileExtension.PNG,
           FileExtension.WEBP,
-          FileExtension.BMP,
           FileExtension.AVIF,
         ];
       }
@@ -1162,7 +1160,6 @@ async function getFileType(filePath) {
     (detectedFileType === FileDataType.JPG ||
       detectedFileType === FileDataType.PNG ||
       detectedFileType === FileDataType.WEBP ||
-      detectedFileType === FileDataType.BMP ||
       detectedFileType === FileDataType.AVIF)
   ) {
     return FileDataType.IMG;

@@ -424,7 +424,7 @@ function init(
   if (g_mode === ToolMode.CONVERT || g_mode === ToolMode.EXTRACT) {
     formats = [".cbz", ".cbr", ".pdf", ".epub", ".cb7", ".mobi", ".fb2"];
   } else if (g_mode === ToolMode.CONVERT_IMGS) {
-    formats = [".jpg", ".png", ".webp", ".avif", ".bmp"];
+    formats = [".jpg", ".png", ".webp", ".avif"];
   } else {
     formats = [
       ".cbz",
@@ -438,7 +438,6 @@ function init(
       ".png",
       ".webp",
       ".avif",
-      ".bmp",
     ];
   }
   formats.forEach((format) => {
