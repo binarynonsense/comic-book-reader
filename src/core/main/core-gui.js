@@ -477,7 +477,7 @@ exports.onMenuToolCreateQR = function () {
 };
 
 exports.onMenuToolConvertImages = function () {
-  tools.switchTool("tool-convert-imgs");
+  tools.switchTool("tool-convert-comics", { mode: 3 });
   sendIpcToPreload("update-menubar");
 };
 

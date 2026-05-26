@@ -526,17 +526,34 @@ async function updateComicInfoData(data, tempFolderPath) {
 async function doImagesToolWork(
   imgFiles,
   tempSubFolderPath,
-  outputFolderPath,
-  outputFormat,
-  outputScaleParams,
-  outputFormatParams,
-  resizingImageText,
+  uiSelectedOptions,
   convertingImageText,
   extractingToText,
 ) {
   let numAttempts = 0;
   let numErrors = 0;
   let failedFilePaths = [];
+
+  let scaleValue;
+  switch (uiSelectedOptions.outputImageScaleOption) {
+    case "0":
+      scaleValue = uiSelectedOptions.outputImageScalePercentage;
+      break;
+    case "1":
+      scaleValue = uiSelectedOptions.outputImageScaleHeight;
+      break;
+    case "2":
+      scaleValue = uiSelectedOptions.outputImageScaleWidth;
+      break;
+  }
+  let outputScaleParams = {
+    option: uiSelectedOptions.outputImageScaleOption,
+    value: scaleValue,
+  };
+  let outputFormatParams = uiSelectedOptions.outputImageFormatParams;
+  let outputFolderPath = uiSelectedOptions.outputFolderPath;
+  let outputFormat = uiSelectedOptions.outputImageFormat;
+  ////////////////
   try {
     const sharp = require("sharp");
     // avoid EBUSY error on windows
@@ -544,19 +561,21 @@ async function doImagesToolWork(
     for (let index = 0; index < imgFiles.length; index++) {
       updateModalLogText("");
       numAttempts++;
-      let originalFilePath = "???";
+      let originalFilePath;
       try {
+        originalFilePath = imgFiles[index].path;
+        updateModalLogText(convertingImageText + ": " + originalFilePath);
         if (g_cancel === true) {
           send({
             success: true,
             state: "cancelled",
-            numAttempts,
+            numAttempts: numAttempts - 1,
             numErrors,
             failedFilePaths,
           });
           return;
         }
-        originalFilePath = imgFiles[index].path;
+
         let filePath = path.join(
           tempSubFolderPath,
           path.basename(imgFiles[index].path),
@@ -580,7 +599,6 @@ async function doImagesToolWork(
           outputScaleParams.option !== "0" ||
           parseInt(outputScaleParams.value) < 100
         ) {
-          updateModalLogText(resizingImageText + ": " + originalFilePath);
           let tmpFilePath = path.join(
             tempSubFolderPath,
             fileName + "." + FileExtension.TMP,
@@ -618,7 +636,6 @@ async function doImagesToolWork(
           fileUtils.moveFile(tmpFilePath, filePath);
         }
         // convert
-        updateModalLogText(convertingImageText + ": " + originalFilePath);
         updateModalLogText(extractingToText + ": " + outputFilePath);
         if (outputFormat === FileExtension.JPG) {
           await sharp(filePath)
@@ -662,6 +679,7 @@ async function doImagesToolWork(
         failedFilePaths.push(originalFilePath);
       }
     }
+    if (numErrors > 0) throw "failed conversions: " + numErrors;
     send({
       success: true,
       state: "success",
