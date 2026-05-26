@@ -423,7 +423,6 @@ async function onStartClicked(inputList, selectedOptions) {
     if (inputListItem.type === 0) {
       // FILE
       let type = await getFileType(inputListItem.path);
-      log.test(type);
       if (type != undefined && !isAlreadyInInputList(inputListItem.path)) {
         g_inputFiles.push({
           path: inputListItem.path,

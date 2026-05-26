@@ -193,13 +193,6 @@ function init(
     document
       .getElementById("tool-cc-advanced-output-options-section-div")
       .classList.add("set-display-none");
-    //
-    document
-      .getElementById("tool-cc-imageops-apply-text")
-      .parentElement.classList.add("set-display-none");
-    document
-      .getElementById("tool-cc-imageops-levels-checkbox")
-      .parentElement.parentElement.classList.add("set-display-none");
   }
   ////////////////////////////////////////
   g_inputListDiv = document.querySelector("#tool-cc-input-list");

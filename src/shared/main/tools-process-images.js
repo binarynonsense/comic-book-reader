@@ -22,6 +22,7 @@ exports.processImages = async function ({
   try {
     const sharp = require("sharp");
     sharp.concurrency(0);
+    // avoid EBUSY error on windows
     sharp.cache(false);
     for (let index = 0; index < imgFilePaths.length; index++) {
       if (getCancel()) {

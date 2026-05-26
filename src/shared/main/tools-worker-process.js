@@ -534,30 +534,17 @@ async function doImagesToolWork(
   let numErrors = 0;
   let failedFilePaths = [];
 
-  let scaleValue;
-  switch (uiSelectedOptions.outputImageScaleOption) {
-    case "0":
-      scaleValue = uiSelectedOptions.outputImageScalePercentage;
-      break;
-    case "1":
-      scaleValue = uiSelectedOptions.outputImageScaleHeight;
-      break;
-    case "2":
-      scaleValue = uiSelectedOptions.outputImageScaleWidth;
-      break;
-  }
-  let outputScaleParams = {
-    option: uiSelectedOptions.outputImageScaleOption,
-    value: scaleValue,
-  };
-  let outputFormatParams = uiSelectedOptions.outputImageFormatParams;
-  let outputFolderPath = uiSelectedOptions.outputFolderPath;
-  let outputFormat = uiSelectedOptions.outputImageFormat;
-  ////////////////
   try {
+    const { processImage } = require("./tools-process-images");
     const sharp = require("sharp");
+    sharp.concurrency(0);
     // avoid EBUSY error on windows
     sharp.cache(false);
+
+    let outputFolderPath = uiSelectedOptions.outputFolderPath;
+    let outputFormat = uiSelectedOptions.outputImageFormat;
+    uiSelectedOptions.outputFormat === FileExtension.NOT_SET;
+
     for (let index = 0; index < imgFiles.length; index++) {
       updateModalLogText("");
       numAttempts++;
@@ -575,13 +562,16 @@ async function doImagesToolWork(
           });
           return;
         }
-
-        let filePath = path.join(
+        //////////////////////////////////////////////
+        let tempCopyFilePath = path.join(
           tempSubFolderPath,
           path.basename(imgFiles[index].path),
         );
-        fs.copyFileSync(imgFiles[index].path, filePath);
-        let fileName = path.basename(filePath, path.extname(filePath));
+        fs.copyFileSync(imgFiles[index].path, tempCopyFilePath);
+        let fileName = path.basename(
+          tempCopyFilePath,
+          path.extname(tempCopyFilePath),
+        );
         let outputFilePath = path.join(
           outputFolderPath,
           fileName + "." + outputFormat,
@@ -594,85 +584,18 @@ async function doImagesToolWork(
             fileName + "(" + i + ")." + outputFormat,
           );
         }
-        // resize first if needed
-        if (
-          outputScaleParams.option !== "0" ||
-          parseInt(outputScaleParams.value) < 100
-        ) {
-          let tmpFilePath = path.join(
-            tempSubFolderPath,
-            fileName + "." + FileExtension.TMP,
-          );
-          if (outputScaleParams.option === "1") {
-            await sharp(filePath)
-              .withMetadata()
-              .resize({
-                height: parseInt(outputScaleParams.value),
-                withoutEnlargement: true,
-              })
-              .toFile(tmpFilePath);
-          } else if (outputScaleParams.option === "2") {
-            await sharp(filePath)
-              .withMetadata()
-              .resize({
-                width: parseInt(outputScaleParams.value),
-                withoutEnlargement: true,
-              })
-              .toFile(tmpFilePath);
-          } else {
-            // scale
-            let data = await sharp(filePath).metadata();
-            await sharp(filePath)
-              .withMetadata()
-              .resize(
-                Math.round(
-                  data.width * (parseInt(outputScaleParams.value) / 100),
-                ),
-              )
-              .toFile(tmpFilePath);
-          }
-          // fs.unlinkSync(filePath);
-          await fileUtils.safeUnlink(filePath, true);
-          fileUtils.moveFile(tmpFilePath, filePath);
-        }
-        // convert
+        //////////////////////////////////////////////
+        const result = await processImage(
+          tempCopyFilePath,
+          true,
+          true,
+          uiSelectedOptions,
+        );
+        tempCopyFilePath = result.filePath;
         updateModalLogText(extractingToText + ": " + outputFilePath);
-        if (outputFormat === FileExtension.JPG) {
-          await sharp(filePath)
-            .withMetadata()
-            .jpeg({
-              quality: parseInt(outputFormatParams.jpgQuality),
-              mozjpeg: outputFormatParams.jpgMozjpeg,
-            })
-            .toFile(outputFilePath);
-        } else if (outputFormat === FileExtension.PNG) {
-          if (parseInt(outputFormatParams.pngQuality) < 100) {
-            await sharp(filePath)
-              .withMetadata()
-              .png({
-                quality: parseInt(outputFormatParams.pngQuality),
-              })
-              .toFile(outputFilePath);
-          } else {
-            await sharp(filePath).png().toFile(outputFilePath);
-          }
-        } else if (outputFormat === FileExtension.WEBP) {
-          await sharp(filePath)
-            .withMetadata()
-            .webp({
-              quality: parseInt(outputFormatParams.webpQuality),
-            })
-            .toFile(outputFilePath);
-        } else if (outputFormat === FileExtension.AVIF) {
-          await sharp(filePath)
-            .withMetadata()
-            .avif({
-              quality: parseInt(outputFormatParams.avifQuality),
-            })
-            .toFile(outputFilePath);
-        }
-        // fs.unlinkSync(filePath);
-        await fileUtils.safeUnlink(filePath, true);
+        fs.copyFileSync(tempCopyFilePath, outputFilePath);
+        //////////////////////////////////////////////
+        await fileUtils.safeUnlink(tempCopyFilePath, true);
       } catch (error) {
         updateModalLogText(error);
         numErrors++;
