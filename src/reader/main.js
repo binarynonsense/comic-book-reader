@@ -2460,6 +2460,9 @@ function setInitialZoom(filePath) {
         } else if (fitMode === 2 && zoomScale != undefined) {
           setScaleToHeight(zoomScale);
           return;
+        } else if (fitMode === 3) {
+          setFitToBoth();
+          return;
         }
       }
     }
