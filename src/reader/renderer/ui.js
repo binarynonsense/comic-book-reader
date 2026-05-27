@@ -1369,53 +1369,49 @@ function addScrollEventListener() {
 function scrollBoundaryHandleIsLoadingChanged() {
   // called when loading state is updated
   let container = document.querySelector("#reader");
+  const needsScrollbar = container.scrollHeight > container.clientHeight;
   if (g_isLoading) {
-    if (g_scrollBlockTimeMs > 0) {
+    if (g_scrollBoundariesEnabled && g_scrollBlockTimeMs > 0) {
       g_scrollIsBlocked = true;
       // if g_scrollBlockTimeMs > hide the scrollbar during load and reshow
       // it after to make chromium flush any remaining events from its
       // smoothing scroll, also keep the gutter space for pages that need it
       // so there's no visual discrepancies in size when hiding<->showing
       // the scrollbar
-      const currentHasScrollbar =
-        container.scrollHeight > container.clientHeight;
-      if (currentHasScrollbar) {
+
+      if (needsScrollbar) {
         container.classList.add("keep-gutter-space");
       }
-      if (g_scrollBlockTimer) clearTimeout(g_scrollBlockTimer);
-      g_scrollBlockTimer = setTimeout(() => {
-        g_scrollIsBlocked = false;
-        container.classList.remove("keep-gutter-space");
-        container.style.overflow = "auto";
-        container.scrollTop = g_lastRequestedScrollbarPos;
-      }, g_scrollBlockTimeMs);
       // hide scrollbar so no more scroll events are accepted
       container.style.overflow = "hidden";
     }
-    // make sure the scroll is at the requested place
-    container.scrollTop = g_lastRequestedScrollbarPos;
   } else {
     // ended loading
-    let pagesRow = document.querySelector(".pages-row");
-    const hasVerticalScrollSpace = pagesRow
-      ? pagesRow.scrollHeight > container.clientHeight
-      : container.scrollHeight > container.clientHeight;
-
-    if (g_scrollBlockTimeMs > 0) {
-      // restore the scrollbar once pages are loaded
-      container.style.overflow = "auto";
-      if (!hasVerticalScrollSpace) {
+    if (g_scrollBoundariesEnabled && g_scrollBlockTimeMs > 0) {
+      if (!needsScrollbar) {
         container.classList.remove("keep-gutter-space");
+      } else {
+        container.classList.add("keep-gutter-space");
       }
+      container.style.overflow = "hidden"; // in case it's the first page loaded
+      if (g_scrollBlockTimer) clearTimeout(g_scrollBlockTimer);
+      g_scrollBlockTimer = setTimeout(() => {
+        g_scrollIsBlocked = false;
+        container.scrollTop = g_lastRequestedScrollbarPos;
+        // restore the scrollbar
+        container.style.overflow = "auto";
+        container.classList.remove("keep-gutter-space");
+      }, g_scrollBlockTimeMs);
     }
-    // make sure again that the scroll is at the requested place
+    // make sure that the scroll is at the requested place
     container.scrollTop = g_lastRequestedScrollbarPos;
 
     if (g_bottomScrollBoundaryTimer) clearTimeout(g_bottomScrollBoundaryTimer);
     if (g_topScrollBoundaryTimer) clearTimeout(g_topScrollBoundaryTimer);
 
     // boundary management ////////////
-    if (hasVerticalScrollSpace) {
+    let pagesRow = document.querySelector(".pages-row");
+    if (needsScrollbar) {
       g_bottomScrollBoundaryTimer = null;
       g_topScrollBoundaryTimer = null;
       g_bottomScrollBoundaryState = g_scrollStates.IDLE;
@@ -1457,7 +1453,6 @@ function scrollBoundaryHandleIsLoadingChanged() {
         }, g_scrollBoundarySettleTimeMs);
       }
     }
-
     ///////////////////////////////
   }
 }
