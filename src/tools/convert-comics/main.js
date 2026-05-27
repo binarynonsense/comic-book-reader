@@ -1238,8 +1238,8 @@ async function processContent() {
     ///////////////////////////////////////////////
     // CHECK REQUIREMENTS /////////////////////////
     ///////////////////////////////////////////////
-    let resizeNeeded = false;
-    let imageOpsNeeded = false;
+    let resizeNeeded = isResizeNeeded();
+    let imageOpsNeeded = areImageOpsNeeded();
     let updateComicInfoNeeded =
       comicInfoFilePath &&
       (g_uiSelectedOptions.outputFormat === FileExtension.CBZ ||
@@ -1251,24 +1251,6 @@ async function processContent() {
     g_uiSelectedOptions.outputImageScalePercentage = parseInt(
       g_uiSelectedOptions.outputImageScalePercentage,
     );
-    if (
-      g_uiSelectedOptions.outputImageScaleOption !== "0" ||
-      g_uiSelectedOptions.outputImageScalePercentage < 100
-    ) {
-      resizeNeeded = true;
-    }
-    if (
-      g_uiSelectedOptions.outputLevelsApply ||
-      g_uiSelectedOptions.outputGammaApply ||
-      g_uiSelectedOptions.outputBrightnessApply ||
-      g_uiSelectedOptions.outputSaturationApply ||
-      (g_uiSelectedOptions.outputCropApply &&
-        g_uiSelectedOptions.outputCropValue > 0) ||
-      (g_uiSelectedOptions.outputExtendApply &&
-        g_uiSelectedOptions.outputExtendValue > 0)
-    ) {
-      imageOpsNeeded = true;
-    }
     if (g_cancel === true) {
       stopCancel();
       return;
@@ -1604,6 +1586,32 @@ async function createFolderWithImages(imgFilePaths, outputFolderPath) {
   }
 }
 
+function isResizeNeeded() {
+  if (
+    g_uiSelectedOptions.outputImageScaleOption !== "0" ||
+    g_uiSelectedOptions.outputImageScalePercentage < 100
+  ) {
+    return true;
+  }
+  return false;
+}
+
+function areImageOpsNeeded() {
+  if (
+    g_uiSelectedOptions.outputLevelsApply ||
+    g_uiSelectedOptions.outputGammaApply ||
+    g_uiSelectedOptions.outputBrightnessApply ||
+    g_uiSelectedOptions.outputSaturationApply ||
+    (g_uiSelectedOptions.outputCropApply &&
+      g_uiSelectedOptions.outputCropValue > 0) ||
+    (g_uiSelectedOptions.outputExtendApply &&
+      g_uiSelectedOptions.outputExtendValue > 0)
+  ) {
+    return true;
+  }
+  return false;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // CONVERT IMGS TOOL //////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -1654,12 +1662,15 @@ async function startConvertImages() {
             reject(new Error(`worker exited with code ${code}`));
           }
         });
-
+        log.test(isResizeNeeded());
+        log.test(areImageOpsNeeded());
         g_worker.postMessage([
           core.getLaunchInfo(),
           "images-tool-work",
           g_inputFiles,
           g_tempSubFolderPath,
+          isResizeNeeded(),
+          areImageOpsNeeded(),
           g_uiSelectedOptions,
           _("tool-shared-modal-log-converting-image"),
           _("tool-ec-modal-log-extracting-to"),

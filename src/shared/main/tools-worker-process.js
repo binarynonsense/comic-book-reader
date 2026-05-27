@@ -526,6 +526,8 @@ async function updateComicInfoData(data, tempFolderPath) {
 async function doImagesToolWork(
   imgFiles,
   tempSubFolderPath,
+  resizeNeeded,
+  imageOpsNeeded,
   uiSelectedOptions,
   convertingImageText,
   extractingToText,
@@ -587,8 +589,8 @@ async function doImagesToolWork(
         //////////////////////////////////////////////
         const result = await processImage(
           tempCopyFilePath,
-          true,
-          true,
+          resizeNeeded,
+          imageOpsNeeded,
           uiSelectedOptions,
         );
         tempCopyFilePath = result.filePath;
