@@ -2396,7 +2396,7 @@ function setFitToHeight() {
 
 function setFitToBoth() {
   settings.setValue("fit_mode", 3);
-  menuBar.setFitToWidth();
+  menuBar.setFitToBoth();
   sendIpcToPreload("update-menubar");
   sendIpcToRenderer("set-fit-to-both");
   renderPageRefresh();

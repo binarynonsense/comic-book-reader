@@ -51,18 +51,28 @@ exports.rebuild = rebuild;
 exports.setFitToWidth = function () {
   checkItem(getItem("fit-to-width"), true);
   checkItem(getItem("fit-to-height"), false);
+  checkItem(getItem("fit-to-both"), false);
   checkItem(getItem("scale-to-height"), false);
 };
 
 exports.setFitToHeight = function () {
   checkItem(getItem("fit-to-width"), false);
   checkItem(getItem("fit-to-height"), true);
+  checkItem(getItem("fit-to-both"), false);
+  checkItem(getItem("scale-to-height"), false);
+};
+
+exports.setFitToBoth = function () {
+  checkItem(getItem("fit-to-width"), false);
+  checkItem(getItem("fit-to-height"), false);
+  checkItem(getItem("fit-to-both"), true);
   checkItem(getItem("scale-to-height"), false);
 };
 
 exports.setScaleToHeight = function () {
   checkItem(getItem("fit-to-width"), false);
   checkItem(getItem("fit-to-height"), false);
+  checkItem(getItem("fit-to-both"), false);
   checkItem(getItem("scale-to-height"), true);
 };
 
