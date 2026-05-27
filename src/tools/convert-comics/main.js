@@ -1662,8 +1662,6 @@ async function startConvertImages() {
             reject(new Error(`worker exited with code ${code}`));
           }
         });
-        log.test(isResizeNeeded());
-        log.test(areImageOpsNeeded());
         g_worker.postMessage([
           core.getLaunchInfo(),
           "images-tool-work",
