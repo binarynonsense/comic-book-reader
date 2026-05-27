@@ -720,6 +720,9 @@ html[dir="rtl"] .tools-range-bubble {
 .tools-collection-li:last-child {
   border-bottom: 1px solid var(--tools-collection-border-color);
 }
+.tools-collection-li span {
+  word-break: break-word;
+}
 
 .tools-collection-li-infoset {
   margin-left: auto;
