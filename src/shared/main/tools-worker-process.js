@@ -531,6 +531,7 @@ async function doImagesToolWork(
   uiSelectedOptions,
   convertingImageText,
   extractingToText,
+  outputExistsErrorText,
 ) {
   let numAttempts = 0;
   let numErrors = 0;
@@ -550,9 +551,8 @@ async function doImagesToolWork(
     for (let index = 0; index < imgFiles.length; index++) {
       updateModalLogText("");
       numAttempts++;
-      let originalFilePath;
+      const originalFilePath = imgFiles[index].path;
       try {
-        originalFilePath = imgFiles[index].path;
         updateModalLogText(convertingImageText + ": " + originalFilePath);
         if (g_cancel === true) {
           send({
@@ -567,24 +567,33 @@ async function doImagesToolWork(
         //////////////////////////////////////////////
         let tempCopyFilePath = path.join(
           tempSubFolderPath,
-          path.basename(imgFiles[index].path),
+          path.basename(originalFilePath),
         );
-        fs.copyFileSync(imgFiles[index].path, tempCopyFilePath);
-        let fileName = path.basename(
+        fs.copyFileSync(originalFilePath, tempCopyFilePath);
+        let baseFileName = path.basename(
           tempCopyFilePath,
           path.extname(tempCopyFilePath),
         );
         let outputFilePath = path.join(
           outputFolderPath,
-          fileName + "." + outputFormat,
+          baseFileName + "." + outputFormat,
         );
-        let i = 1;
-        while (fs.existsSync(outputFilePath)) {
-          i++;
-          outputFilePath = path.join(
-            outputFolderPath,
-            fileName + "(" + i + ")." + outputFormat,
-          );
+        if (fs.existsSync(outputFilePath)) {
+          if (uiSelectedOptions.outputFileSameName === "overwrite") {
+            // do nothing
+          } else if (uiSelectedOptions.outputFileSameName === "skip") {
+            throw outputExistsErrorText;
+          } else {
+            // "rename"
+            let i = 1;
+            while (fs.existsSync(outputFilePath)) {
+              i++;
+              outputFilePath = path.join(
+                outputFolderPath,
+                baseFileName + " (" + i + ")." + outputFormat,
+              );
+            }
+          }
         }
         //////////////////////////////////////////////
         const result = await processImage(
@@ -601,10 +610,10 @@ async function doImagesToolWork(
       } catch (error) {
         updateModalLogText(error);
         numErrors++;
-        failedFilePaths.push(originalFilePath);
+        failedFilePaths.push({ path: originalFilePath });
       }
     }
-    if (numErrors > 0) throw "failed conversions: " + numErrors;
+    if (numErrors > 0) throw "failed conversions";
     send({
       success: true,
       state: "success",

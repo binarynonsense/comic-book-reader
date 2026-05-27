@@ -980,53 +980,62 @@ function end(wasCanceled, numFiles, numErrors, numAttempted) {
 
 function stopError(error, errorMessage, nameAsError = true) {
   let uiMsg = errorMessage;
-  if (error) {
-    log.error(error);
-    if (error.message) {
-      uiMsg = (errorMessage ? errorMessage + "\n" : "") + error.message;
-      log.error(uiMsg);
-    } else {
-      const toString = error.toString();
-      if (
-        toString &&
-        toString !== "" &&
-        !toString.includes("[object Object]")
-      ) {
-        uiMsg = (errorMessage ? errorMessage + "\n" : "") + toString;
+  if (error !== "failed conversions") {
+    if (error) {
+      log.error(error);
+      if (error.message) {
+        uiMsg = (errorMessage ? errorMessage + "\n" : "") + error.message;
         log.error(uiMsg);
       } else {
-        uiMsg = (errorMessage ? errorMessage + "\n" : "") + "Unknown error";
-        log.error(uiMsg);
+        const toString = error.toString();
+        if (
+          toString &&
+          toString !== "" &&
+          !toString.includes("[object Object]")
+        ) {
+          uiMsg = (errorMessage ? errorMessage + "\n" : "") + toString;
+          log.error(uiMsg);
+        } else {
+          uiMsg = (errorMessage ? errorMessage + "\n" : "") + "Unknown error";
+          log.error(uiMsg);
+        }
       }
+    } else {
+      if (!uiMsg) uiMsg = "Unknown error";
+      if (nameAsError) log.error(errorMessage);
     }
-  } else {
-    if (!uiMsg) uiMsg = "Unknown error";
-    if (nameAsError) log.error(errorMessage);
   }
   temp.deleteSubFolder(g_tempSubFolderPath);
   g_tempSubFolderPath = undefined;
   temp.deleteSubFolder(g_creationTempSubFolderPath);
   g_creationTempSubFolderPath = undefined;
   if (nameAsError) {
-    updateModalLogText(uiMsg);
-    if (g_mode === ToolMode.CREATE) updateModalLogText("");
-    updateModalLogText(
-      g_mode === ToolMode.CONVERT
-        ? _("tool-shared-modal-log-conversion-error")
-        : g_mode === ToolMode.EXTRACT
-          ? _("tool-shared-modal-log-extraction-error")
-          : _("tool-shared-modal-log-creation-error"),
-    );
+    if (g_mode === ToolMode.CONVERT_IMGS) {
+    } else {
+      updateModalLogText(uiMsg);
+      if (g_mode === ToolMode.CREATE || g_mode === ToolMode.CONVERT_IMGS)
+        updateModalLogText("");
+      updateModalLogText(
+        g_mode === ToolMode.CONVERT
+          ? _("tool-shared-modal-log-conversion-error")
+          : g_mode === ToolMode.EXTRACT
+            ? _("tool-shared-modal-log-extraction-error")
+            : _("tool-shared-modal-log-creation-error"),
+      );
+    }
   } else {
-    // not really an error. if file is skipped, for example
-    updateModalLogText(
-      g_mode === ToolMode.CONVERT
-        ? _("tool-shared-modal-log-failed-conversion")
-        : g_mode === ToolMode.EXTRACT
-          ? _("tool-shared-modal-log-failed-extraction")
-          : _("tool-shared-modal-log-failed-creation"),
-    );
-    updateModalLogText(uiMsg);
+    if (g_mode === ToolMode.CONVERT_IMGS) {
+    } else {
+      // not really an error. if file is skipped, for example
+      updateModalLogText(
+        g_mode === ToolMode.CONVERT
+          ? _("tool-shared-modal-log-failed-conversion")
+          : g_mode === ToolMode.EXTRACT
+            ? _("tool-shared-modal-log-failed-extraction")
+            : _("tool-shared-modal-log-failed-creation"),
+      );
+      updateModalLogText(uiMsg);
+    }
   }
 
   updateModalLogText(" ");
@@ -1040,6 +1049,8 @@ function stopError(error, errorMessage, nameAsError = true) {
     } else {
       end(false, g_inputFiles.length, g_numErrors, g_inputFilesIndex + 1);
     }
+  } else if (g_mode === ToolMode.CONVERT_IMGS) {
+    end(false, g_inputFiles.length, g_numErrors, g_inputFilesIndex + 1);
   } else {
     end(
       false,
@@ -1628,7 +1639,7 @@ async function startConvertImages() {
     );
     g_tempSubFolderPath = temp.createSubFolder();
     try {
-      log.editor("[CI] starting worker (process images)");
+      log.editor("[CC] starting worker (process images)");
       killWorker();
       g_worker = forkUtils.fork(
         path.join(__dirname, "../../shared/main/tools-worker-process.js"),
@@ -1639,7 +1650,7 @@ async function startConvertImages() {
             log.test(message.log);
             return;
           } else if (message.type === "editorLog") {
-            log.editor("[CI] " + message.log);
+            log.editor("[CC] " + message.log);
             return;
           } else if (message.type === "modalLog") {
             updateModalLogText(message.log);
@@ -1649,10 +1660,10 @@ async function startConvertImages() {
             g_numErrors = message.numErrors;
             g_failedFilePaths = message.failedFilePaths;
             if (message.success) {
-              log.debug("[CI] images processed: " + message.state);
+              log.debug("[CC] images processed: " + message.state);
               resolve();
             } else {
-              log.debug("[CI] images NOT processed correctly");
+              log.debug("[CC] images NOT processed correctly");
               reject(message.error);
             }
           }
@@ -1672,6 +1683,9 @@ async function startConvertImages() {
           g_uiSelectedOptions,
           _("tool-shared-modal-log-converting-image"),
           _("tool-ec-modal-log-extracting-to"),
+          _("tool-shared-modal-log-failed-conversion") +
+            "\n" +
+            _("tool-shared-modal-log-failed-reason-output-file-exists"),
         ]);
       });
       killWorker();

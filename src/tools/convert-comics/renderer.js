@@ -171,7 +171,7 @@ function init(
       document.getElementById("tool-cc-advanced-output-options-section-div")
         ?.children[1].children,
     ).forEach((element, index) => {
-      if (index > 1) {
+      if (index > 0) {
         element.classList.add("set-display-none");
       }
     });
@@ -189,9 +189,6 @@ function init(
     // TODO add features
     document
       .getElementById("tool-cc-output-folder-option-select")
-      .classList.add("set-display-none");
-    document
-      .getElementById("tool-cc-advanced-output-options-section-div")
       .classList.add("set-display-none");
   }
   ////////////////////////////////////////
@@ -565,7 +562,7 @@ function switchSection(id) {
       document
         .getElementById("tool-cc-advanced-input-options-section-div")
         .classList.add("set-display-none");
-      if (g_mode !== ToolMode.EXTRACT && g_mode !== ToolMode.CONVERT_IMGS)
+      if (g_mode !== ToolMode.EXTRACT)
         document
           .getElementById("tool-cc-advanced-output-options-section-div")
           .classList.add("set-display-none");
@@ -600,7 +597,7 @@ function switchSection(id) {
       document
         .getElementById("tool-cc-advanced-input-options-section-div")
         .classList.remove("set-display-none");
-      if (g_mode !== ToolMode.EXTRACT && g_mode !== ToolMode.CONVERT_IMGS)
+      if (g_mode !== ToolMode.EXTRACT)
         document
           .getElementById("tool-cc-advanced-output-options-section-div")
           .classList.remove("set-display-none");
@@ -635,7 +632,7 @@ function switchSection(id) {
       document
         .getElementById("tool-cc-advanced-input-options-section-div")
         .classList.add("set-display-none");
-      if (g_mode !== ToolMode.EXTRACT && g_mode !== ToolMode.CONVERT_IMGS)
+      if (g_mode !== ToolMode.EXTRACT)
         document
           .getElementById("tool-cc-advanced-output-options-section-div")
           .classList.add("set-display-none");
@@ -1375,7 +1372,7 @@ function checkValidData() {
     "#tool-cc-keep-subfolders-structure-toggle",
   );
 
-  if (g_mode === ToolMode.CONVERT || g_mode === ToolMode.CONVERT_IMGS) {
+  if (g_mode === ToolMode.CONVERT) {
     outputKeepSubfoldersStructureDiv.classList.remove("set-display-none");
     if (
       document.getElementById("tool-cc-output-folder-option-select").value ===
