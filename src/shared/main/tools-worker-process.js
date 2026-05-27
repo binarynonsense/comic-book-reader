@@ -192,7 +192,13 @@ async function createFiles(
       );
 
       if (fs.existsSync(outputFilePath)) {
-        if (outputFileSameName === "rename") {
+        if (outputFileSameName === "overwrite") {
+          // do nothing
+        } else if (outputFileSameName === "skip") {
+          // shouldn't be here
+          throw "file already exists";
+        } else {
+          // "rename"
           let i = 1;
           while (fs.existsSync(outputFilePath)) {
             i++;
@@ -201,10 +207,6 @@ async function createFiles(
               baseFileName + " (" + i + ")." + outputFormat,
             );
           }
-        } else if (outputFileSameName === "skip") {
-          // skip
-          // shouldn't be here
-          throw "file already exists";
         }
       }
       filesData.push({
@@ -217,7 +219,13 @@ async function createFiles(
       outputSubFolderPath = path.join(outputFolderPath, baseFileName);
 
       if (fs.existsSync(outputSubFolderPath)) {
-        if (outputFileSameName == "rename") {
+        if (outputFileSameName === "overwrite") {
+          // do nothing
+        } else if (outputFileSameName === "skip") {
+          // shouldn't be here
+          throw "file already exists";
+        } else {
+          // "rename"
           let i = 1;
           while (fs.existsSync(outputSubFolderPath)) {
             i++;
@@ -226,10 +234,6 @@ async function createFiles(
               baseFileName + " (" + i + ")",
             );
           }
-        } else if (outputFileSameName == "skip") {
-          // skip
-          // shouldn't be here
-          throw "file already exists";
         }
       }
 

@@ -1683,7 +1683,7 @@ async function startConvertImages() {
           g_uiSelectedOptions,
           _("tool-shared-modal-log-converting-image"),
           _("tool-ec-modal-log-extracting-to"),
-          _("tool-shared-modal-log-failed-conversion") +
+          "tool-shared-modal-log-failed-conversion" +
             "\n" +
             _("tool-shared-modal-log-failed-reason-output-file-exists"),
         ]);
