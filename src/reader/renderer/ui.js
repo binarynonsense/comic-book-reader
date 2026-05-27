@@ -1242,7 +1242,7 @@ const g_scrollBoundaryThreshold = 4;
 
 // NOTE: goal for this code used for the automatic page turn in boundaries:
 // - pages with scrollbar: when reaching a scroll boundary, top or bottom,
-//   use lock time to ban changing time for some time to avoid inadvertely 
+//   use lock time to ban changing time for some time to avoid inadvertely
 //   changing paces due to fast scrolling.
 // - when loading a page with no scrollbar: use settle time to ban the last
 //   used boundary from changing page, to avoid skipping pages on fast scrolls.
@@ -2004,7 +2004,7 @@ export function renderImageBuffers(
       checkImageResults();
     };
     page1Img.onerror = function () {
-      page1Img.src = "../assets/images/error_page.png";
+      page1Img.src = "../../assets/images/error_page.png";
     };
     if (isDoublePages) {
       page2Img.onload = function () {
@@ -2021,7 +2021,7 @@ export function renderImageBuffers(
         checkImageResults();
       };
       page2Img.onerror = function () {
-        page2Img.src = "../assets/images/error_page.png";
+        page2Img.src = "../../assets/images/error_page.png";
       };
     }
   }
@@ -2076,7 +2076,7 @@ export function renderImageBuffers(
       addPagesResizeEventListener(pagesRowDiv);
     };
     image.onerror = function () {
-      image.src = "../assets/images/error_page.png";
+      image.src = "../../assets/images/error_page.png";
     };
     assignImageToImgSrc(images[0], image);
   }
