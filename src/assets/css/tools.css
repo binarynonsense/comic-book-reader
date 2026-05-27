@@ -538,7 +538,7 @@ input:checked + .tools-toggle-slider:before {
 }
 #tools label span {
   overflow: hidden;
-  white-space: nowrap;
+  /* white-space: nowrap; */
 }
 
 #tools label > select,
