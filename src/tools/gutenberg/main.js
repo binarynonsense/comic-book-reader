@@ -121,7 +121,6 @@ function initOnIpcCallbacks() {
   });
 
   on("cancel-search", () => {
-    log.test("cancel");
     g_netCancelController.abort();
   });
 
@@ -139,7 +138,7 @@ function initOnIpcCallbacks() {
       g_netCancelController = new AbortController();
       const response = await net.get(
         `https://gutendex.com/books?page=${pageNum}&search=${searchQuery}`,
-        { timeout: 120000, signal: g_netCancelController.signal },
+        { timeout: 120000, cancelSignal: g_netCancelController.signal },
       );
       sendIpcToRenderer(
         "update-results",

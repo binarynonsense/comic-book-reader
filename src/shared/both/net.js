@@ -50,7 +50,7 @@ export const get = async (url, options = {}) => {
   const {
     timeout = 10000,
     headers = {},
-    signal: cancelSignal,
+    cancelSignal = null,
     ...fetchOptions
   } = options;
   const timeoutSignal = AbortSignal.timeout(timeout);
@@ -70,7 +70,7 @@ export const post = async (url, data = null, options = {}) => {
   const {
     timeout = 10000,
     headers = {},
-    signal: cancelSignal,
+    cancelSignal = null,
     ...fetchOptions
   } = options;
   const timeoutSignal = AbortSignal.timeout(timeout);
