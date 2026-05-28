@@ -47,20 +47,36 @@ async function handleResponse(response) {
 }
 
 export const get = async (url, options = {}) => {
-  const { timeout = 10000, headers = {}, ...fetchOptions } = options;
-  const signal = AbortSignal.timeout(timeout);
+  const {
+    timeout = 10000,
+    headers = {},
+    signal: cancelSignal,
+    ...fetchOptions
+  } = options;
+  const timeoutSignal = AbortSignal.timeout(timeout);
+  const combinedSignal = cancelSignal
+    ? AbortSignal.any([timeoutSignal, cancelSignal])
+    : timeoutSignal;
   const response = await fetch(url, {
     ...fetchOptions,
     method: "GET",
     headers,
-    signal,
+    signal: combinedSignal,
   });
   return await handleResponse(response);
 };
 
 export const post = async (url, data = null, options = {}) => {
-  const { timeout = 10000, headers = {}, ...fetchOptions } = options;
-  const signal = AbortSignal.timeout(timeout);
+  const {
+    timeout = 10000,
+    headers = {},
+    signal: cancelSignal,
+    ...fetchOptions
+  } = options;
+  const timeoutSignal = AbortSignal.timeout(timeout);
+  const signal = cancelSignal
+    ? AbortSignal.any([timeoutSignal, cancelSignal])
+    : timeoutSignal;
   let body = data;
   const requestHeaders = { ...headers };
   if (data instanceof FormData) {
