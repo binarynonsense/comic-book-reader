@@ -1,11 +1,9 @@
 {
   "@metadata": {
-    "authors": [
-      "Álvaro"
-    ],
-    "last-updated": "2026-03-31",
+    "authors": ["Álvaro"],
+    "last-updated": "2026-05-28",
     "license-id": "BSD-2-Clause",
-    "acbr-version": "3.19.0",
+    "acbr-version": "3.22.0",
     "pre-release": "false",
     "comments": "",
     "locale": "es",
