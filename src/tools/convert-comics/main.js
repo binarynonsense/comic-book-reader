@@ -1521,37 +1521,6 @@ async function createFilesFromImages(
   }
 }
 
-// async function createFolderWithImages(imgFilePaths, outputFolderPath) {
-//   if (g_cancel === true) {
-//     stopCancel();
-//     return;
-//   }
-//   try {
-//     sendIpcToRenderer(
-//       "update-log-text",
-//       _("tool-ec-modal-log-extracting-to") + ":",
-//     );
-//     sendIpcToRenderer("update-log-text", outputFolderPath);
-//     // create subFolderPath
-//     if (!fs.existsSync(outputFolderPath)) {
-//       fs.mkdirSync(outputFolderPath);
-//       for (let index = 0; index < imgFilePaths.length; index++) {
-//         let oldPath = imgFilePaths[index];
-//         log.test(oldPath);
-//         let newPath = path.join(outputFolderPath, path.basename(oldPath));
-//         fileUtils.moveFile(oldPath, newPath);
-//       }
-//       temp.deleteSubFolder(g_tempSubFolderPath);
-//       g_tempSubFolderPath = undefined;
-//       sendIpcToRenderer("file-finished-ok");
-//     } else {
-//       stopError("tool-ec folder shouldn't exist");
-//     }
-//   } catch (error) {
-//     stopError(error);
-//   }
-// }
-
 async function createFolderWithImages(imgFilePaths, outputFolderPath) {
   if (g_cancel === true) {
     stopCancel();
