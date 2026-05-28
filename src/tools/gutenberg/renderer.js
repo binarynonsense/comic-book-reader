@@ -648,10 +648,11 @@ function showSearchModal() {
     frameWidth: 600,
     close: {
       callback: () => {
-        modalClosed();
+        sendIpcToMain("cancel-search");
+        // modalClosed();
       },
-      // key: "Escape",
-      hide: true,
+      key: "Escape",
+      // hide: true,
     },
     progressBar: {},
   });
