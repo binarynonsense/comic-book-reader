@@ -171,7 +171,7 @@ function init(
       document.getElementById("tool-cc-advanced-output-options-section-div")
         ?.children[1].children,
     ).forEach((element, index) => {
-      if (index > 0) {
+      if (index > 1) {
         element.classList.add("set-display-none");
       }
     });
@@ -184,11 +184,6 @@ function init(
       .classList.add("set-display-none");
     document
       .getElementById("tool-cc-imageprocessing-multithreading-method-0-div")
-      .classList.add("set-display-none");
-
-    // TODO add features
-    document
-      .getElementById("tool-cc-output-folder-option-select")
       .classList.add("set-display-none");
   }
   ////////////////////////////////////////
@@ -836,8 +831,7 @@ function updateUISelectedOptions() {
 ///////////////////////////////////////////////////////////////////////////////
 
 function updateFolderOptionUI() {
-  if (g_mode === ToolMode.CONVERT) {
-    // || g_mode === ToolMode.CONVERT_IMGS) {
+  if (g_mode === ToolMode.CONVERT || g_mode === ToolMode.CONVERT_IMGS) {
     const outputFolderOptionSelect = document.getElementById(
       "tool-cc-output-folder-option-select",
     );
@@ -1372,12 +1366,13 @@ function checkValidData() {
     "#tool-cc-keep-subfolders-structure-toggle",
   );
 
-  if (g_mode === ToolMode.CONVERT) {
+  if (g_mode === ToolMode.CONVERT || g_mode === ToolMode.CONVERT_IMGS) {
     outputKeepSubfoldersStructureDiv.classList.remove("set-display-none");
     if (
       document.getElementById("tool-cc-output-folder-option-select").value ===
         "0" &&
-      document.getElementById("tool-cc-folders-recursively-checkbox").checked &&
+      //   &&
+      // document.getElementById("tool-cc-folders-recursively-checkbox").checked
       document.getElementById("tool-cc-folders-contain-select").value ===
         "comics"
     ) {

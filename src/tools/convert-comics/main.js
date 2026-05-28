@@ -446,45 +446,33 @@ async function onStartClicked(inputList, selectedOptions) {
             g_uiSelectedOptions.inputSearchFoldersFormats,
           );
         } else {
-          filesInFolder = fileUtils.getFilesInFolder(
-            inputListItem.path,
-            g_uiSelectedOptions.inputSearchFoldersFormats,
-          );
+          filesInFolder = fileUtils
+            .getFilesInFolder(
+              inputListItem.path,
+              g_uiSelectedOptions.inputSearchFoldersFormats,
+            )
+            .map((partialPath) => path.join(inputListItem.path, partialPath));
         }
-        if (g_uiSelectedOptions.inputSearchFoldersRecursively) {
-          for (let j = 0; j < filesInFolder.length; j++) {
-            const element = filesInFolder[j];
-            const filePath = element;
-            let type = await getFileType(filePath);
-            if (type != undefined && !isAlreadyInInputList(filePath)) {
-              if (
-                g_uiSelectedOptions.outputKeepSubfoldersStructure &&
-                g_uiSelectedOptions.inputFoldersContain === "comics"
-              ) {
-                let outputFolderPath = path.join(
-                  g_uiSelectedOptions.outputFolderPath,
-                  path.basename(inputListItem.path),
-                  path.relative(inputListItem.path, path.dirname(filePath)),
-                );
-                g_inputFiles.push({
-                  path: filePath,
-                  type: type,
-                  outputFolderPath,
-                });
-              } else {
-                g_inputFiles.push({
-                  path: filePath,
-                  type: type,
-                });
-              }
-            }
-          }
-        } else {
-          for (let j = 0; j < filesInFolder.length; j++) {
-            const element = filesInFolder[j];
-            const filePath = path.join(inputListItem.path, element);
-            let type = await getFileType(filePath);
-            if (type != undefined && !isAlreadyInInputList(filePath)) {
+        for (let j = 0; j < filesInFolder.length; j++) {
+          const element = filesInFolder[j];
+          const filePath = element;
+          let type = await getFileType(filePath);
+          if (type != undefined && !isAlreadyInInputList(filePath)) {
+            if (
+              g_uiSelectedOptions.outputKeepSubfoldersStructure &&
+              g_uiSelectedOptions.inputFoldersContain === "comics"
+            ) {
+              let outputFolderPath = path.join(
+                g_uiSelectedOptions.outputFolderPath,
+                path.basename(inputListItem.path),
+                path.relative(inputListItem.path, path.dirname(filePath)),
+              );
+              g_inputFiles.push({
+                path: filePath,
+                type: type,
+                outputFolderPath,
+              });
+            } else {
               g_inputFiles.push({
                 path: filePath,
                 type: type,
@@ -1734,7 +1722,7 @@ function updateLocalizedText() {
   sendIpcToRenderer(
     "update-localization",
     localization.getLocalization(g_mode),
-    localization.getTooltipsLocalization(),
+    localization.getTooltipsLocalization(g_mode),
     localization.getLocalizedTexts(),
   );
 }

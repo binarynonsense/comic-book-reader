@@ -548,7 +548,6 @@ async function doImagesToolWork(
     // avoid EBUSY error on windows
     sharp.cache(false);
 
-    let outputFolderPath = uiSelectedOptions.outputFolderPath;
     let outputFormat = uiSelectedOptions.outputImageFormat;
     uiSelectedOptions.outputFormat === FileExtension.NOT_SET;
 
@@ -578,6 +577,25 @@ async function doImagesToolWork(
           tempCopyFilePath,
           path.extname(tempCopyFilePath),
         );
+        ////
+        let outputFolderPath;
+        let createFolders = false;
+        if (uiSelectedOptions.outputFolderOption == "1") {
+          // same as input
+          outputFolderPath = path.dirname(originalFilePath);
+        } else {
+          // one for all
+          outputFolderPath = uiSelectedOptions.outputFolderPath;
+          if (
+            uiSelectedOptions.outputKeepSubfoldersStructure &&
+            imgFiles[index].outputFolderPath &&
+            imgFiles[index].outputFolderPath.startsWith(outputFolderPath)
+          ) {
+            outputFolderPath = imgFiles[index].outputFolderPath;
+            createFolders = true;
+          }
+        }
+        ////
         let outputFilePath = path.join(
           outputFolderPath,
           baseFileName + "." + outputFormat,
@@ -608,6 +626,7 @@ async function doImagesToolWork(
         );
         tempCopyFilePath = result.filePath;
         updateModalLogText(extractingToText + ": " + outputFilePath);
+        if (createFolders) fs.mkdirSync(outputFolderPath, { recursive: true });
         fs.copyFileSync(tempCopyFilePath, outputFilePath);
         //////////////////////////////////////////////
         await fileUtils.safeUnlink(tempCopyFilePath, true);

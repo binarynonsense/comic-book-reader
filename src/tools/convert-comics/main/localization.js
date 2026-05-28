@@ -34,7 +34,7 @@ exports.getLocalizedTexts = function () {
   };
 };
 
-exports.getTooltipsLocalization = function () {
+exports.getTooltipsLocalization = function (mode) {
   return [
     {
       id: "tool-cc-tooltip-output-size",
@@ -70,12 +70,14 @@ exports.getTooltipsLocalization = function () {
     },
     {
       id: "tool-cc-tooltip-keep-subfolders-structure",
-      text: _(
-        "tool-shared-ui-output-options-keep-subfolders-tooltip",
-        _("tool-shared-ui-output-folder"),
-        _("tool-shared-ui-output-folder-0"),
-        _("tool-shared-ui-input-folders-recursively"),
-      ),
+      text:
+        _("tool-shared-ui-output-options-keep-subfolders-tooltip") +
+        "\n\n" +
+        _(
+          "tool-shared-ui-output-options-keep-subfolders-tooltip-o2",
+          _("tool-shared-ui-output-folder"),
+          _("tool-shared-ui-output-folder-0"),
+        ),
     },
   ];
 };
