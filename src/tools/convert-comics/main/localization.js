@@ -71,13 +71,23 @@ exports.getTooltipsLocalization = function (mode) {
     {
       id: "tool-cc-tooltip-keep-subfolders-structure",
       text:
-        _("tool-shared-ui-output-options-keep-subfolders-tooltip") +
-        "\n\n" +
-        _(
-          "tool-shared-ui-output-options-keep-subfolders-tooltip-o2",
-          _("tool-shared-ui-output-folder"),
-          _("tool-shared-ui-output-folder-0"),
-        ),
+        mode === ToolMode.CONVERT_IMGS
+          ? _("tool-shared-ui-output-options-keep-subfolders-tooltip") +
+            "\n\n" +
+            _(
+              "tool-shared-ui-output-options-keep-subfolders-tooltip-o1",
+              _("tool-shared-ui-output-folder"),
+              _("tool-shared-ui-output-folder-0"),
+            )
+          : _("tool-shared-ui-output-options-keep-subfolders-tooltip") +
+            "\n\n" +
+            _(
+              "tool-shared-ui-output-options-keep-subfolders-tooltip-o2",
+              _("tool-shared-ui-output-folder"),
+              _("tool-shared-ui-output-folder-0"),
+              _("tool-shared-ui-input-folders-contain"),
+              _("tool-shared-ui-input-folders-contain-0"),
+            ),
     },
   ];
 };

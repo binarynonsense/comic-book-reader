@@ -1383,6 +1383,22 @@ function checkValidData() {
   } else {
     outputKeepSubfoldersStructureDiv.classList.add("set-display-none");
   }
+  ///
+  if (g_mode === ToolMode.CONVERT) {
+    const checkbox = document.getElementById(
+      "tool-cc-folders-recursively-checkbox",
+    );
+    if (
+      document.getElementById("tool-cc-folders-contain-select").value ===
+      "comics"
+    ) {
+      console.log("removeee");
+      checkbox.parentElement.classList.remove("tools-disabled");
+    } else {
+      console.log("addd");
+      checkbox.parentElement.classList.add("tools-disabled");
+    }
+  }
   ///////////////////
   const folderContentsSelect = document.querySelector(
     "#tool-cc-folders-contain-select",
