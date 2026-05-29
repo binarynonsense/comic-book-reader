@@ -147,8 +147,11 @@ function initOnIpcCallbacks() {
       try {
         const jsdom = require("jsdom");
         const { JSDOM } = jsdom;
-        const dom = new JSDOM(data.html);
+        const virtualConsole = new jsdom.VirtualConsole();
+        virtualConsole.on("warn", () => {});
+        const dom = new JSDOM(data.html, { virtualConsole });
         const table = dom.window.document.querySelector("#search-results");
+
         const links = table?.getElementsByTagName("a");
         if (links && links.length > 0) {
           for (let index = 0; index < links.length; index++) {
@@ -254,7 +257,10 @@ function initOnIpcCallbacks() {
     } else {
       const jsdom = require("jsdom");
       const { JSDOM } = jsdom;
-      const dom = new JSDOM(data.html);
+      const virtualConsole = new jsdom.VirtualConsole();
+      virtualConsole.on("warn", () => {});
+      const dom = new JSDOM(data.html, { virtualConsole });
+
       if (data.engine === "disroot") {
         try {
           results = search.searchDisroot(
@@ -339,15 +345,18 @@ function initHandleIpcCallbacks() {}
 
 async function getPageCallback(pageNum, fileData) {
   try {
-    const jsdom = require("jsdom");
-    const { JSDOM } = jsdom;
     let comicData = fileData.data;
     const net = require("../../shared/both/net");
     const response = await net.get(
       `https://digitalcomicmuseum.com/preview/index.php?did=${comicData.comicId}&page=${pageNum}`,
       { timeout: 15000 },
     );
-    const dom = new JSDOM(response.data);
+
+    const jsdom = require("jsdom");
+    const { JSDOM } = jsdom;
+    const virtualConsole = new jsdom.VirtualConsole();
+    virtualConsole.on("warn", () => {});
+    const dom = new JSDOM(response.data, { virtualConsole });
     let images = dom.window.document.getElementsByTagName("img");
 
     let imageUrl;

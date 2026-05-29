@@ -219,7 +219,10 @@ function initOnIpcCallbacks() {
     } else {
       const jsdom = require("jsdom");
       const { JSDOM } = jsdom;
-      const dom = new JSDOM(data.html);
+      const virtualConsole = new jsdom.VirtualConsole();
+      virtualConsole.on("warn", () => {});
+      const dom = new JSDOM(data.html, { virtualConsole });
+
       if (data.engine === "cbp") {
         try {
           const gsWebResults =
@@ -385,10 +388,7 @@ let g_pageCallbackLastComicId, g_pageCallbackLastImageUrlRoot;
 
 async function getPageCallback(pageNum, fileData) {
   try {
-    const jsdom = require("jsdom");
-    const { JSDOM } = jsdom;
     let comicData = fileData.data;
-
     if (
       !g_pageCallbackLastComicId ||
       g_pageCallbackLastComicId != comicData.comicId
@@ -398,10 +398,15 @@ async function getPageCallback(pageNum, fileData) {
         `https://comicbookplus.com/?dlid=${comicData.comicId}`,
         { timeout: 15000 },
       );
-      const dom = new JSDOM(response.data);
+
+      const jsdom = require("jsdom");
+      const { JSDOM } = jsdom;
+      const virtualConsole = new jsdom.VirtualConsole();
+      virtualConsole.on("warn", () => {});
+      const dom = new JSDOM(response.data, { virtualConsole });
+
       let imageUrl = dom.window.document.getElementById("maincomic").src;
       let imageUrlRoot = imageUrl.substring(0, imageUrl.lastIndexOf("/"));
-
       g_pageCallbackLastComicId = comicData.comicId;
       g_pageCallbackLastImageUrlRoot = imageUrlRoot;
     }
