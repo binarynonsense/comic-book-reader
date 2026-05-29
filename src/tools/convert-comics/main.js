@@ -429,7 +429,10 @@ async function onStartClicked(inputList, selectedOptions) {
       }
     } else {
       // DIR
-      if (g_uiSelectedOptions.inputFoldersContain === "images") {
+      if (
+        g_uiSelectedOptions.inputFoldersContain === "images" &&
+        g_mode !== ToolMode.CONVERT_IMGS
+      ) {
         // folder content = comic book images
         if (!isAlreadyInInputList(inputListItem.path)) {
           g_inputFiles.push({
