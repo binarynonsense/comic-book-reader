@@ -336,7 +336,7 @@ export function onContextMenu(params) {
 ///////////////////////////////////////////////////////////////////////////////
 
 async function toggleEasyBrush(active) {
-  const libPath = "../assets/libs/easy-brush/easy-brush-browser.js";
+  const libPath = "../../assets/libs/easy-brush/easy-brush-browser.js";
   const scriptClass = "easy-brush-script";
   // clean up ////
   // remove the script tag
