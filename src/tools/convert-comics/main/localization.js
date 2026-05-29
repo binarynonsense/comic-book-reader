@@ -418,6 +418,10 @@ exports.getLocalization = function (mode) {
       id: "tool-cc-imageprocessing-multithreading-numworkers-text",
       text: _("tool-shared-ui-imageprocessing-multithreading-numworkers"),
     },
+    {
+      id: "tool-cc-image-quality-text",
+      text: _("tool-shared-ui-output-options-image-quality"),
+    },
     //////////////////////////////////////////////
     {
       id: "tool-cc-advanced-output-options-text",
