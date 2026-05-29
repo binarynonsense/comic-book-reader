@@ -116,6 +116,10 @@ function init(
       .getElementById("tool-cc-add-folder-button")
       .parentElement.classList.add("set-display-none");
     document
+      .getElementById("tool-cc-add-folder-button-2")
+      .parentElement.classList.add("set-display-none");
+    ///
+    document
       .getElementById("tool-cc-output-name-label")
       .classList.add("set-display-none");
     document
