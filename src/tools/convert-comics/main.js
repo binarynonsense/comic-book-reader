@@ -460,7 +460,8 @@ async function onStartClicked(inputList, selectedOptions) {
           if (type != undefined && !isAlreadyInInputList(filePath)) {
             if (
               g_uiSelectedOptions.outputKeepSubfoldersStructure &&
-              g_uiSelectedOptions.inputFoldersContain === "comics"
+              (g_uiSelectedOptions.inputFoldersContain === "comics" ||
+                g_mode === ToolMode.CONVERT_IMGS)
             ) {
               let outputFolderPath = path.join(
                 g_uiSelectedOptions.outputFolderPath,

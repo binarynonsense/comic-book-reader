@@ -1396,10 +1396,8 @@ function checkValidData() {
       document.getElementById("tool-cc-folders-contain-select").value ===
       "comics"
     ) {
-      console.log("removeee");
       checkbox.parentElement.classList.remove("tools-disabled");
     } else {
-      console.log("addd");
       checkbox.parentElement.classList.add("tools-disabled");
     }
   }
