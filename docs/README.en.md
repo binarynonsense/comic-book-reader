@@ -20,7 +20,7 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB, FB2, MOBI 7 and PDF f
   - Ebooks: PDF, FB2, MOBI 7<sup>[4]</sup> and EPUB
 - Windowed (simple UI) and full-screen (no UI) modes
 - 'Single page', 'double page' and 'double page (center first page)' page modes
-- 'Fit to width', 'fit to height' and a customizable 'scale to height' page views
+- 'Fit to width', 'fit to height', 'fit to both' and a customizable 'scale to height' page views
 - Page rotation
 - UI available in English, Spanish, Russian, German, Arabic, Filipino and Japanese.
 - Automatically restores the previous session's last opened book and page, and remembers the last books' page positions.
