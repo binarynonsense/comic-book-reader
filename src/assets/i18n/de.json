@@ -3,7 +3,7 @@
     "authors": [
       "trzyglow"
     ],
-    "last-updated": "2026-05-28",
+    "last-updated": "2026-05-31",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.22.0",
     "pre-release": "false",
@@ -426,9 +426,9 @@
   "tool-shared-ui-output-options-keep-subfolders": "Behalte Unterordnerstruktur",
   "tool-shared-ui-output-options-keep-subfolders-tooltip": "Repliziere die Ordnerstruktur der Eingangsliste im Ausgangsordner und platziere die konvertierten Dateien in ihre entsprechenden Unterordner.",
   "[NOTE TO TRANSLATORS] tool-shared-ui-output-options-keep-subfolders-tooltip-o1": "At runtime, {0} and {1} will be replaced by the localized text (from the corresponding keys in this file) for an option name ('Output Folder') and an option value ('Specify one for all files').",
-  "[NEEDS TRANSLATION]tool-shared-ui-output-options-keep-subfolders-tooltip-o1": "Only available when \"{0}\" is set to \"{1}\".",
+  "tool-shared-ui-output-options-keep-subfolders-tooltip-o1": "Nur verfügbar wenn \"{0}\" auf \"{1}\" gestellt ist.",
   "[NOTE TO TRANSLATORS] tool-shared-ui-output-options-keep-subfolders-tooltip-o2": "At runtime, {0}, {1}, {2} and {3} will be replaced by the localized text (from the corresponding keys in this file) for an option name ('Output Folder'), an option value ('Specify one for all files'), an option name ('Input Folders Contain) and an option value ('Comic book files') respectively.",
-  "[NEEDS TRANSLATION]tool-shared-ui-output-options-keep-subfolders-tooltip-o2": "Only available when \"{0}\" is set to \"{1}\" and \"{2}\" to \"{3}\".",
+  "tool-shared-ui-output-options-keep-subfolders-tooltip-o2": "Nur verfügbar wenn \"{0}\" auf \"{1}\" und \"{2}\" auf \"{3}\" gestellt sind.",
   "tool-shared-ui-output-file-same-name": "Falls die Ausgangsdatei bereits existiert",
   "tool-shared-ui-output-file-same-name-0": "Ändere den Namen der Ausgangsdatei zu einem nicht verwendeten",
   "tool-shared-ui-output-file-same-name-1": "Überschreibe die existierende Datei",
