@@ -1,3 +1,16 @@
+## v3.22.0
+
+- Added a new zoom mode to the Reader, "Fit to Both", to fit the page/s to the width and height of the viewable area.
+- Expanded the "Automatic Page Turn" setting in the "Comic Book Reader > Navigation" subsection of the Preferences. Now, when selecting the "On scroll boundaries" option, some time values can be changed to customize its behavior.
+- Made scrolling the pages using the keyboard smoother on key presses, instead of instant, and more precise if you keep holding down.
+- Added more advanced options to the "Convert Images" tool.
+- Increased the timeout for the Project Gutenberg search tool and added a cancel button, as the website it relies on can be quite slow to respond lately.
+- Updated the Flatpak version's runtime to 25.08.
+- Updated the image processing library, sharp, to a newer version.
+- Refactored all the image operations' code to avoid crashes due to glib conflicts caused by the new runtime and image library updates.
+- Fixed books with broken image files getting stuck trying to load the error page image due to a path change in a recent update. 
+- Fixed the test images used by some tools showing as broken due to a path change in a recent update. 
+
 ## v3.21.4
 
 - Fixed EPUB, MOBI and PDF files not working correctly on the Windows version of ACBR if the app is placed in a path containing spaces.
