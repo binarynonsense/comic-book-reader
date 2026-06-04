@@ -91,6 +91,7 @@ All versions (stable and beta):
 Also available on:
 
 - [Flathub](https://flathub.org/apps/com.binarynonsense.acbr)
+- [itch.io](https://binarynonsense.itch.io/comic-book-reader)
 
 ## Contributions:
 
