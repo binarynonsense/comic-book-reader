@@ -1,0 +1,142 @@
+name: Badges
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 */3 * *'
+
+jobs:
+  make-badges:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Generate Badges
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          MAIN_REPO="${{ github.repository_owner }}/comic-book-reader"
+          
+          export STABLE_COLOR="#007ec6"
+          export DL_COLOR="#28a745"
+          COLOR_LATEST_SAME="#007ec6"
+          COLOR_LATEST_DIFF="#fe7d37"
+          
+          export BADGE_PADDING=24
+          # bash can't handle decimals, multiply by 10 and later divide by it
+          export CHAR_WIDTH_X10=71
+
+          STABLE_VERSION=$(gh release list -R "$MAIN_REPO" --limit 1 --exclude-pre-releases --json tagName --jq '.[0].tagName' 2>/dev/null || echo "")
+          LATEST_VERSION=$(gh release list -R "$MAIN_REPO" --limit 1 --json tagName --jq '.[0].tagName' 2>/dev/null || echo "")
+
+          # get rows of download numbers using graphql and use awk to add them
+          DOWNLOADS_RAW=$(gh api graphql --paginate -f query='
+            query($owner: String!, $repo: String!, $endCursor: String) {
+              repository(owner: $owner, name: $repo) {
+                releases(first: 100, after: $endCursor) {
+                  pageInfo { hasNextPage endCursor }
+                  nodes {
+                    releaseAssets(first: 50) {
+                      nodes { downloadCount }
+                    }
+                  }
+                }
+              }
+            }' -F owner="${{ github.repository_owner }}" -F repo="comic-book-reader" --jq '.data.repository.releases.nodes[].releaseAssets.nodes[].downloadCount' 2>/dev/null | awk '{sum+=$1} END {print (sum ? sum : 0)}')
+
+          if [ -z "$STABLE_VERSION" ] || [ "$STABLE_VERSION" = "null" ]; then STABLE_VERSION="UNKNOWN"; fi
+          if [ -z "$LATEST_VERSION" ] || [ "$LATEST_VERSION" = "null" ]; then LATEST_VERSION="UNKNOWN"; fi
+          if [ -z "$DOWNLOADS_RAW" ] || [[ "$DOWNLOADS_RAW" =~ [^0-9] ]]; then DOWNLOADS_RAW="0"; fi
+          # show values like 50.2K, 123.6K ...
+          if [ "$DOWNLOADS_RAW" -ge 1000 ]; then
+            VAL_DIV=$(( DOWNLOADS_RAW / 100 ))
+            WHOLE=$(( VAL_DIV / 10 ))
+            DECIMAL=$(( VAL_DIV % 10 ))
+            DOWNLOADS_RAW="${WHOLE}.${DECIMAL}K"
+          fi
+
+          export STABLE_UPPER=$(echo "$STABLE_VERSION" | tr '[:lower:]' '[:upper:]')
+          export LATEST_UPPER=$(echo "$LATEST_VERSION" | tr '[:lower:]' '[:upper:]')
+          export DOWNLOADS_COUNT="$DOWNLOADS_RAW"
+
+          if [ "$STABLE_VERSION" = "$LATEST_VERSION" ]; then
+            export LATEST_COLOR="$COLOR_LATEST_SAME"
+          else
+            export LATEST_COLOR="$COLOR_LATEST_DIFF"
+          fi
+
+          generate_svg_params() {
+            local label="$1"
+            local val="$2"
+            local color="$3"
+            local output_filename="$4"
+
+            export LABEL_UPPER=$(echo "$label" | tr '[:lower:]' '[:upper:]')
+            export VAL_UPPER=$(echo "$val" | tr '[:lower:]' '[:upper:]')
+            export BADGE_COLOR="$color"
+
+            local left_char_count=${#LABEL_UPPER}
+            local left_text_width=$(( (left_char_count * CHAR_WIDTH_X10) / 10 ))
+            export LEFT_W=$(( left_text_width + BADGE_PADDING ))
+            export LEFT_X=$(( LEFT_W / 2 ))
+
+            local right_char_count=${#VAL_UPPER}
+            local right_text_width=$(( (right_char_count * CHAR_WIDTH_X10) / 10 ))
+            export RIGHT_W=$(( right_text_width + BADGE_PADDING ))
+            export RIGHT_X=$(( LEFT_W + (RIGHT_W / 2) ))
+
+            export TOTAL_W=$(( LEFT_W + RIGHT_W ))
+
+            # envsubst substitutes the exported vars in the template text
+            envsubst < badges/template.svg > "badges/${output_filename}"
+          }
+
+          if [[ "$STABLE_VERSION" != "UNKNOWN" ]]; then
+            generate_svg_params "stable" "$STABLE_VERSION" "$STABLE_COLOR" "stable.svg"
+          fi
+          if [[ "$LATEST_VERSION" != "UNKNOWN" ]]; then
+            generate_svg_params "latest" "$LATEST_VERSION" "$LATEST_COLOR" "latest.svg"
+          fi
+          if [[ "$DOWNLOADS_RAW" != "0" ]]; then
+            generate_svg_params "downloads" "$DOWNLOADS_RAW" "$DL_COLOR" "downloads.svg"
+          fi          
+
+      - name: Commit, Push and Purge Cache
+        run: |
+          # ref: https://github.com/orgs/community/discussions/26560
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          
+          git add badges/stable.svg badges/latest.svg badges/downloads.svg
+          
+          if git diff --staged --quiet; then
+            echo "Up to date."
+          else
+            git commit -m "Update badges"
+            git push
+
+            echo "Waiting 30 seconds so the CDN updates..."
+            sleep 30
+            
+            STABLE_RAW="https://raw.githubusercontent.com/${{ github.repository_owner }}/acbr-builder/main/badges/stable.svg"
+            LATEST_RAW="https://raw.githubusercontent.com/${{ github.repository_owner }}/acbr-builder/main/badges/latest.svg"
+            DOWNLOADS_RAW="https://raw.githubusercontent.com/${{ github.repository_owner }}/acbr-builder/main/badges/downloads.svg"
+            
+            STABLE_RAW_CLEAN=$(echo "$STABLE_RAW" | tr -d ' ')
+            LATEST_RAW_CLEAN=$(echo "$LATEST_RAW" | tr -d ' ')
+            DOWNLOADS_RAW_CLEAN=$(echo "$DOWNLOADS_RAW" | tr -d ' ')
+
+            # ref: https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/about-anonymized-urls
+            # ref: https://stackoverflow.com/questions/73666498/how-do-i-generate-the-github-camo-url-for-an-image-used-in-a-github-wiki
+            STABLE_HASH=$(echo -n "$STABLE_RAW_CLEAN" | openssl dgst -sha1 -hmac "" | cut -d' ' -f2)
+            LATEST_HASH=$(echo -n "$LATEST_RAW_CLEAN" | openssl dgst -sha1 -hmac "" | cut -d' ' -f2)
+            DOWNLOADS_HASH=$(echo -n "$DOWNLOADS_RAW_CLEAN" | openssl dgst -sha1 -hmac "" | cut -d' ' -f2)
+            
+            curl -X PURGE "https://camo.githubusercontent.com/${STABLE_HASH}" || true
+            curl -X PURGE "https://camo.githubusercontent.com/${LATEST_HASH}" || true
+            curl -X PURGE "https://camo.githubusercontent.com/${DOWNLOADS_HASH}" || true
+          fi

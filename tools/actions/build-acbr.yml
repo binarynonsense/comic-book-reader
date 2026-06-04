@@ -5,26 +5,32 @@ on:
       createWindows:
         description: "Create Windows version"
         required: true
+        type: boolean
         default: true
       createLinux:
         description: "Create Linux version"
         required: true
+        type: boolean
         default: true
       addDateToAlphas:
         description: "Add date to alpha versions"
         required: true
+        type: boolean
         default: true
       addDateToAll:
         description: "Add date to any version"
         required: true
+        type: boolean
         default: false
       releaseWinSelfExtracting:
         description: "Include Windows Self-Extracting"
         required: true
+        type: boolean
         default: true
       releaseLinAppImage:
         description: "Include Linux AppImage"
         required: true
+        type: boolean
         default: true
 permissions:
   contents: write
@@ -32,6 +38,7 @@ permissions:
 jobs:
   build:
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-24.04, windows-latest]
     runs-on: ${{ matrix.os }}
@@ -52,6 +59,8 @@ jobs:
         if: ${{ (matrix.os == 'ubuntu-24.04' && github.event.inputs.createLinux == 'true') || (matrix.os == 'windows-latest' && github.event.inputs.createWindows == 'true') }}
         run: npm ci
 
+      ############################################################################################################
+      
       - name: SET NAME AND VERSION
         if: ${{ (matrix.os == 'ubuntu-24.04' && github.event.inputs.createLinux == 'true') || (matrix.os == 'windows-latest' && github.event.inputs.createWindows == 'true') }}
         shell: bash
@@ -81,6 +90,8 @@ jobs:
           echo $NEW_APP_VERSION
           echo "RELEASE_NAME=$NEW_APP_VERSION" >> $GITHUB_ENV
 
+      ############################################################################################################
+      
       - name: INSTALL FLATPAK-BUILDER AND DEPENDENCIES (LINUX)
         if: ${{ matrix.os == 'ubuntu-24.04' && github.event.inputs.createLinux == 'true' }}
         run: |
@@ -90,17 +101,24 @@ jobs:
             flatpak-builder
           flatpak --user remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 
+      ############################################################################################################
+      
       - name: RUN DIST (LINUX)
         if: ${{ matrix.os == 'ubuntu-24.04' && github.event.inputs.createLinux == 'true' }}
         run: npm run dist:linux
+        
       - name: RUN DIST (WINDOWS)
         if: ${{ matrix.os == 'windows-latest' && github.event.inputs.createWindows == 'true' }}
         run: npm run dist:windows
+
+      ############################################################################################################
 
       - name: LS DIST
         if: ${{ (matrix.os == 'ubuntu-24.04' && github.event.inputs.createLinux == 'true') || (matrix.os == 'windows-latest' && github.event.inputs.createWindows == 'true') }}
         shell: bash
         run: ls ./dist
+
+      ############################################################################################################
 
       - name: PREPARE FILES (LINUX)
         if: ${{ matrix.os == 'ubuntu-24.04' && github.event.inputs.createLinux == 'true' }}
@@ -122,7 +140,8 @@ jobs:
 
           mv ./dist/linux-unpacked ./dist/ACBR_Linux
           cp -r licenses ./dist/ACBR_Linux/licenses
-          rm  ./dist/ACBR_Linux/LICENSE*
+          rm  ./dist/ACBR_Linux/LICENSE*   
+          
       - name: PREPARE FILES (WINDOWS)
         if: ${{ matrix.os == 'windows-latest' && github.event.inputs.createWindows == 'true' }}
         shell: bash
@@ -140,6 +159,7 @@ jobs:
           zip -r ./ACBR_Linux_AppImage.zip ./ACBR_Linux_AppImage
           zip -r ./ACBR_Linux_deb.zip ./ACBR_Linux_deb
           zip -r ./ACBR_Linux_flatpak.zip ./ACBR_Linux_flatpak
+          
       - name: PREPARE ZIPS (WINDOWS)
         if: ${{ matrix.os == 'windows-latest' && github.event.inputs.createWindows == 'true' }}
         shell: bash
@@ -147,56 +167,61 @@ jobs:
           cd ./dist
           7z a ./ACBR_Windows.zip ./ACBR_Windows
           RELEASE_SE=${{ github.event.inputs.releaseWinSelfExtracting }}
-          if [ "$RELEASE_SE" == true ]; then
+          if [ "$RELEASE_SE" == "true" ]; then
             7z a -t7z -sfx -m0=lzma2 -mx=9 ACBR_Windows_SelfExtracting.exe ./ACBR_Windows
           fi
+
+      ############################################################################################################
 
       - name: LS DIST
         if: ${{ (matrix.os == 'ubuntu-24.04' && github.event.inputs.createLinux == 'true') || (matrix.os == 'windows-latest' && github.event.inputs.createWindows == 'true') }}
         shell: bash
         run: ls ./dist
 
+      ############################################################################################################
+      
       - name: RELEASE (LINUX) (ALL)
         if: ${{matrix.os == 'ubuntu-24.04' && github.event.inputs.createLinux == 'true' && github.event.inputs.releaseLinAppImage == 'true' }}
-        uses: softprops/action-gh-release@v2
-        with:
-          prerelease: true
-          draft: true
-          name: v${{env.RELEASE_NAME}} (linux)
-          tag_name: v${{env.RELEASE_NAME}}-linux
-          files: |
-            ./dist/ACBR_Linux.zip
-            ./dist/ACBR_Linux_AppImage.zip
-            ./dist/ACBR_Linux_deb.zip
-            ./dist/ACBR_Linux_flatpak.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TARGET_REPO="${{ github.repository }}"
+          TAG_NAME="v${{ env.RELEASE_NAME }}-linux"
+          TITLE_NAME="v${{ env.RELEASE_NAME }} (linux)"
+          FILES="./dist/ACBR_Linux.zip ./dist/ACBR_Linux_AppImage.zip ./dist/ACBR_Linux_deb.zip ./dist/ACBR_Linux_flatpak.zip"
+          gh release create "$TAG_NAME" --title "$TITLE_NAME" --draft --prerelease --repo "$TARGET_REPO" $FILES || gh release upload "$TAG_NAME" $FILES --clobber --repo "$TARGET_REPO"
+
       - name: RELEASE (LINUX) (SIMPLE)
         if: ${{matrix.os == 'ubuntu-24.04' && github.event.inputs.createLinux == 'true' && github.event.inputs.releaseLinAppImage == 'false' }}
-        uses: softprops/action-gh-release@v2
-        with:
-          prerelease: true
-          draft: true
-          name: v${{env.RELEASE_NAME}} (linux)
-          tag_name: v${{env.RELEASE_NAME}}-linux
-          files: |
-            ./dist/ACBR_Linux.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TARGET_REPO="${{ github.repository }}"
+          TAG_NAME="v${{ env.RELEASE_NAME }}-linux"
+          TITLE_NAME="v${{ env.RELEASE_NAME }} (linux)"
+          FILES="./dist/ACBR_Linux.zip"
+          gh release create "$TAG_NAME" --title "$TITLE_NAME" --draft --prerelease --repo "$TARGET_REPO" $FILES || gh release upload "$TAG_NAME" $FILES --clobber --repo "$TARGET_REPO"
+
       - name: RELEASE (WINDOWS) (ALL)
         if: ${{matrix.os == 'windows-latest' && github.event.inputs.createWindows == 'true' && github.event.inputs.releaseWinSelfExtracting == 'true' }}
-        uses: softprops/action-gh-release@v2
-        with:
-          prerelease: true
-          draft: true
-          name: v${{env.RELEASE_NAME}} (windows)
-          tag_name: v${{env.RELEASE_NAME}}-windows
-          files: |
-            ./dist/ACBR_Windows.zip
-            ./dist/ACBR_Windows_SelfExtracting.exe
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TARGET_REPO="${{ github.repository }}"
+          TAG_NAME="v${{ env.RELEASE_NAME }}-windows"
+          TITLE_NAME="v${{ env.RELEASE_NAME }} (windows)"
+          FILES="./dist/ACBR_Windows.zip ./dist/ACBR_Windows_SelfExtracting.exe"
+          gh release create "$TAG_NAME" --title "$TITLE_NAME" --draft --prerelease --repo "$TARGET_REPO" $FILES || gh release upload "$TAG_NAME" $FILES --clobber --repo "$TARGET_REPO"
+
       - name: RELEASE (WINDOWS) (SIMPLE)
         if: ${{matrix.os == 'windows-latest' && github.event.inputs.createWindows == 'true' && github.event.inputs.releaseWinSelfExtracting == 'false' }}
-        uses: softprops/action-gh-release@v2
-        with:
-          prerelease: true
-          draft: true
-          name: v${{env.RELEASE_NAME}} (windows)
-          tag_name: v${{env.RELEASE_NAME}}-windows
-          files: |
-            ./dist/ACBR_Windows.zip
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TARGET_REPO="${{ github.repository }}"
+          TAG_NAME="v${{ env.RELEASE_NAME }}-windows"
+          TITLE_NAME="v${{ env.RELEASE_NAME }} (windows)"
+          FILES="./dist/ACBR_Windows.zip"
+          gh release create "$TAG_NAME" --title "$TITLE_NAME" --draft --prerelease --repo "$TARGET_REPO" $FILES || gh release upload "$TAG_NAME" $FILES --clobber --repo "$TARGET_REPO"
