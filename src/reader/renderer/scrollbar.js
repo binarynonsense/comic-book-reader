@@ -6,10 +6,13 @@
  */
 
 import { inputGoToNextPage, inputGoToPrevPage } from "./ui.js";
+import { on } from "../renderer.js";
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
+
+// BOUNDARIES ////
 
 let g_scrollBoundariesEnabled = true;
 let g_lastRequestedScrollbarPos = 0;
@@ -39,6 +42,67 @@ let g_scrollIsBlocked = false;
 
 const g_scrollBoundaryThreshold = 4;
 
+///////////////////////////////////////////////////////////////////////////////
+// IPC ////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+export function initScrollbarOnIpcCallbacks() {
+  on("set-scrollbar-visibility", (isVisible) => {
+    showScrollBar(isVisible);
+  });
+
+  on("set-scrollbar-position", (position) => {
+    setScrollBarsPosition(position);
+  });
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// GENERAL ////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+export function showScrollBar(isVisible) {
+  // ref: https://stackoverflow.com/questions/4481485/changing-css-pseudo-element-styles-via-javascript
+  if (isVisible) {
+    // generic:
+    document.body.classList.remove("hidden-scrollbar");
+    // if custom title bar enabled:
+    document.querySelector("#reader").classList.remove("hidden-scrollbar");
+  } else {
+    // generic:
+    document.body.classList.add("hidden-scrollbar");
+    // if custom title bar enabled:
+    document.querySelector("#reader").classList.add("hidden-scrollbar");
+  }
+}
+
+function moveScrollBarsToStart() {
+  document.querySelector("#reader").scrollTop = 0;
+  document.querySelector("#reader").scrollLeft = 0;
+
+  setLastRequestedScrollbarPos(0);
+}
+
+function moveScrollBarsToEnd() {
+  document.querySelector("#reader").scrollTop =
+    document.querySelector("#reader").scrollHeight;
+  document.querySelector("#reader").scrollLeft =
+    document.querySelector("#reader").scrollWidth;
+
+  setLastRequestedScrollbarPos(document.querySelector("#reader").scrollHeight);
+}
+
+export function setScrollBarsPosition(position) {
+  if (position === 0) {
+    moveScrollBarsToStart();
+  } else if (position === 1) {
+    moveScrollBarsToEnd();
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// BOUNDARIES /////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
 // NOTE: goal for this code used for the automatic page turn in boundaries:
 // - pages with scrollbar: when reaching a scroll boundary, top or bottom,
 //   use lock time to ban changing time for some time to avoid inadvertely
@@ -49,11 +113,7 @@ const g_scrollBoundaryThreshold = 4;
 //   avoid the scrollbar sometimes starting already moved a bit due to accumulated
 //   events.
 
-///////////////////////////////////////////////////////////////////////////////
-// EXPORTS ////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-
-export function setScrollbarConfig(
+export function setScrollbarBoundariesConfig(
   enabled,
   lockTimeMs,
   settleTimeMs,

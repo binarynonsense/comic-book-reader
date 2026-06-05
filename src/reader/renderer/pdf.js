@@ -6,7 +6,8 @@
  */
 
 import { on, sendIpcToMain, showNoBookContent } from "../renderer.js";
-import { setScrollBarsPosition, setFilterClass, getPageMode } from "./ui.js";
+import { setFilterClass, getPageMode } from "./ui.js";
+import { setScrollBarsPosition } from "./scrollbar.js";
 
 export function initIpc() {
   initOnIpcCallbacks();

@@ -9,11 +9,12 @@ import { on, sendIpcToMain, showNoBookContent } from "../renderer.js";
 import { initModalsOnIpcCallbacks } from "./modals.js";
 import * as input from "../../shared/renderer/input.js";
 import {
-  setScrollbarConfig,
+  initScrollbarOnIpcCallbacks,
+  setScrollBarsPosition,
+  setScrollbarBoundariesConfig,
   addScrollEventListener,
   scrollBoundaryHandleIsLoadingChanged,
   handleWheelEventScrollBoundaries,
-  setLastRequestedScrollbarPos,
 } from "./scrollbar.js";
 import {
   initToolbarOnIpcCallbacks,
@@ -27,6 +28,7 @@ export function initIpc() {
   initOnIpcCallbacks();
   initModalsOnIpcCallbacks();
   initToolbarOnIpcCallbacks();
+  initScrollbarOnIpcCallbacks();
 }
 
 let BookType = {
@@ -206,20 +208,8 @@ function initOnIpcCallbacks() {
     else showNoBookContent(false);
   });
 
-  on("set-scrollbar-visibility", (isVisible) => {
-    showScrollBar(isVisible);
-  });
-
-  on("set-scrollbar-position", (position) => {
-    setScrollBarsPosition(position);
-  });
-
   on("set-menubar-visibility", (isVisible) => {
     showMenuBar(isVisible);
-  });
-
-  on("set-toolbar-visibility", (isVisible) => {
-    showToolBar(isVisible);
   });
 
   on("set-page-number-visibility", (isVisible) => {
@@ -288,7 +278,12 @@ function initOnIpcCallbacks() {
     "set-page-turn-on-scroll-boundary",
     (enabled, lockTimeMs, settleTimeMs, scrollBlockTimeMs) => {
       g_scrollBoundariesEnabled = enabled;
-      setScrollbarConfig(enabled, lockTimeMs, settleTimeMs, scrollBlockTimeMs);
+      setScrollbarBoundariesConfig(
+        enabled,
+        lockTimeMs,
+        settleTimeMs,
+        scrollBlockTimeMs,
+      );
     },
   );
 
@@ -343,21 +338,6 @@ function initOnIpcCallbacks() {
 // MODIFIERS //////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-function showScrollBar(isVisible) {
-  // ref: https://stackoverflow.com/questions/4481485/changing-css-pseudo-element-styles-via-javascript
-  if (isVisible) {
-    // generic:
-    document.body.classList.remove("hidden-scrollbar");
-    // if custom title bar enabled:
-    document.querySelector("#reader").classList.remove("hidden-scrollbar");
-  } else {
-    // generic:
-    document.body.classList.add("hidden-scrollbar");
-    // if custom title bar enabled:
-    document.querySelector("#reader").classList.add("hidden-scrollbar");
-  }
-}
-
 function showMenuBar(isVisible) {
   if (isVisible) {
     document
@@ -373,21 +353,6 @@ function showMenuBar(isVisible) {
     document.querySelector("#reader").classList.add("set-top-zero");
 
     document.querySelector("#loading-spinner").classList.add("is-full-screen");
-  }
-  updateZoom();
-}
-
-function showToolBar(isVisible) {
-  if (isVisible) {
-    document.querySelector("#toolbar").classList.remove("set-display-none");
-    document
-      .querySelector("#reader")
-      .classList.remove("set-margin-bottom-zero");
-    document.documentElement.style.setProperty("--toolbar-height", "30px");
-  } else {
-    document.querySelector("#toolbar").classList.add("set-display-none");
-    document.querySelector("#reader").classList.add("set-margin-bottom-zero");
-    document.documentElement.style.setProperty("--toolbar-height", "0px");
   }
   updateZoom();
 }
@@ -519,32 +484,8 @@ function setZoomHeightCssVars(scale) {
   );
 }
 
-function updateZoom() {
+export function updateZoom() {
   setZoomHeightCssVars();
-}
-
-function moveScrollBarsToStart() {
-  document.querySelector("#reader").scrollTop = 0;
-  document.querySelector("#reader").scrollLeft = 0;
-
-  setLastRequestedScrollbarPos(0);
-}
-
-function moveScrollBarsToEnd() {
-  document.querySelector("#reader").scrollTop =
-    document.querySelector("#reader").scrollHeight;
-  document.querySelector("#reader").scrollLeft =
-    document.querySelector("#reader").scrollWidth;
-
-  setLastRequestedScrollbarPos(document.querySelector("#reader").scrollHeight);
-}
-
-export function setScrollBarsPosition(position) {
-  if (position === 0) {
-    moveScrollBarsToStart();
-  } else if (position === 1) {
-    moveScrollBarsToEnd();
-  }
 }
 
 export function setFilterClass(element) {

@@ -6,6 +6,7 @@
  */
 
 import { sendIpcToMain, on } from "../renderer.js";
+import { updateZoom } from "./ui.js";
 
 let g_toolbarSliderIsPercentage = false;
 
@@ -14,6 +15,21 @@ let g_toolbarSliderIsPercentage = false;
 ///////////////////////////////////////////////////////////////////////////////
 
 export function initToolbarOnIpcCallbacks() {
+  on("set-toolbar-visibility", (isVisible) => {
+    if (isVisible) {
+      document.querySelector("#toolbar").classList.remove("set-display-none");
+      document
+        .querySelector("#reader")
+        .classList.remove("set-margin-bottom-zero");
+      document.documentElement.style.setProperty("--toolbar-height", "30px");
+    } else {
+      document.querySelector("#toolbar").classList.add("set-display-none");
+      document.querySelector("#reader").classList.add("set-margin-bottom-zero");
+      document.documentElement.style.setProperty("--toolbar-height", "0px");
+    }
+    updateZoom();
+  });
+
   on("update-toolbar-menus-collapse-all", () => {
     collapseAllToolbarMenus();
   });
