@@ -127,6 +127,14 @@ function initOnIpcCallbacks() {
     addScrollEventListener();
   });
 
+  on("file-closed", () => {
+    viewOnFileClosed();
+    let container = document.getElementById("pages-container");
+    container.innerHTML = "";
+    showNoBookContent(true);
+    updatePageInfo(0, 0);
+  });
+
   ///////////////////////////////////////////////
 
   on("set-menubar-visibility", (isVisible) => {
@@ -146,14 +154,6 @@ function initOnIpcCallbacks() {
   on("update-bg", (show) => {
     if (show) showNoBookContent(true);
     else showNoBookContent(false);
-  });
-
-  on("file-closed", () => {
-    viewOnFileClosed();
-    let container = document.getElementById("pages-container");
-    container.innerHTML = "";
-    showNoBookContent(true);
-    updatePageInfo(0, 0);
   });
 
   ///////////////////////////////////////////////

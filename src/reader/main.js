@@ -258,15 +258,7 @@ function initOnIpcCallbacks() {
     if (data) {
       if (data.error) {
         // TODO: handle errors loading pages
-      }
-      // else if (g_fileData.type === FileDataType.EPUB_EBOOK) {
-      //   if (data.percentage) {
-      //     g_fileData.pageIndex = Number(data.percentage).toFixed(2);
-      //   } else {
-      //     // shouldn't happen?
-      //   }
-      // }
-      else if (data.dimensions) {
+      } else if (data.dimensions) {
         g_fileData.pageDimensions = data.dimensions;
       }
     }
@@ -318,36 +310,6 @@ function initOnIpcCallbacks() {
   on("booktype-entered", (filePath, bookType) => {
     tryOpen(filePath, bookType);
   });
-
-  ////////////////////////////////////////////////////////////////////////////
-
-  // on("epub-ebook-loaded", (filePath, percentage) => {
-  //   g_fileData.state = FileDataState.LOADED; // will change inmediately to loading
-  //   g_fileData.type = FileDataType.EPUB_EBOOK;
-  //   if (percentage < 0 || percentage >= 100) percentage = 0;
-  //   g_fileData.pageIndex = percentage;
-  //   updateMenuAndToolbarItems();
-  //   setPageRotation(0, false);
-  //   setInitialZoom(filePath);
-  //   setInitialFixedPageModeSingle();
-  //   addCurrentToHistory();
-  //   goToPercentage(g_fileData.pageIndex);
-  //   renderPageInfo();
-  //   renderTitle();
-  // });
-
-  // on("epub-ebook-load-failed", (error) => {
-  //   // unrecoverable error
-  //   sendIpcToRenderer("update-loading", false);
-  //   log.error(error.message);
-  //   closeCurrentFile(false);
-  //   sendIpcToRenderer(
-  //     "show-modal-info",
-  //     _("ui-modal-title-fileerror"),
-  //     _("ui-modal-info-couldntopen-epub"),
-  //     _("ui-modal-prompt-button-ok"),
-  //   );
-  // });
 
   // pdfjs ////////////////////////////////////////////////////////////////////
 
@@ -413,18 +375,6 @@ function initOnIpcCallbacks() {
     }
   });
 
-  // on(
-  //   "pdf-page-dataurl-extracted",
-  //   (error, dataUrl, dpi, outputFolderPath, sendToTool) => {
-  //     // NOTE: no longer used but don't delete in case I need this some day
-  //     // if (error !== undefined) {
-  //     //   exportPageError(error);
-  //     // } else {
-  //     //   exportPageSaveDataUrl(dataUrl, dpi, outputFolderPath, sendToTool);
-  //     // }
-  //   },
-  // );
-
   ////////////////////////////////////////////////////////////////////////////
 
   on("escape-pressed", () => {
@@ -438,23 +388,15 @@ function initOnIpcCallbacks() {
   });
 
   on("home-pressed", () => {
-    // if (g_fileData.type === FileDataType.EPUB_EBOOK) {
-    //   goToPercentage(0);
-    // } else {
     if (g_fileData.pageIndex != 0) {
       goToPage(0);
     }
-    // }
   });
 
   on("end-pressed", () => {
-    // if (g_fileData.type === FileDataType.EPUB_EBOOK) {
-    //   goToPercentage(100);
-    // } else {
     if (g_fileData.pageIndex != g_fileData.numPages - 1) {
       goToPage(g_fileData.numPages - 1);
     }
-    // }
   });
 
   on("next-page-pressed", () => {
@@ -561,15 +503,10 @@ function initOnIpcCallbacks() {
 
   on("toolbar-slider-changed", (value) => {
     if (g_fileData.state === FileDataState.LOADED) {
-      // if (g_fileData.type === FileDataType.EPUB_EBOOK) {
-      //   goToPercentage(value);
-      //   return;
-      // } else {
       value -= 1; // from 1 based to 0 based
       if (value !== g_fileData.pageIndex) {
         goToPage(value);
         return;
-        // }
       }
     }
     renderPageInfo();
@@ -1142,11 +1079,6 @@ async function openComicBookFromPath(
     } else {
       if (detectedFileType === FileDataType.RAR) {
         const tempSubFolderPath = temp.createSubFolder();
-        // let rarData = await fileFormats.getRarEntriesList(
-        //   filePath,
-        //   password,
-        //   tempSubFolderPath,
-        // );
         let rarData = await fileFormats.get7ZipEntriesList(
           filePath,
           password,
@@ -1423,8 +1355,6 @@ async function openEbookFromPath(
   }
   closeCurrentFile(); // in case coming from tool and bypassing tryopen
   if (!pageIndex) pageIndex = 0;
-  // let fileExtension = path.extname(filePath).toLowerCase();
-  // if (fileExtension === "." + FileExtension.EPUB) {
   let data;
   let cachedPath;
   let tempPath;
@@ -1514,17 +1444,6 @@ async function openEbookFromPath(
   });
 
   return true;
-  // } else {
-  //   sendIpcToRenderer("update-loading", false);
-  //   sendIpcToRenderer("update-bg", true);
-  //   sendIpcToRenderer(
-  //     "show-modal-info",
-  //     _("ui-modal-info-invalidformat"),
-  //     filePath,
-  //     _("ui-modal-prompt-button-ok"),
-  //   );
-  //   return false;
-  // }
 }
 exports.openEbookFromPath = openEbookFromPath;
 
@@ -1661,7 +1580,6 @@ async function goToPage(pageIndex, scrollBarPos = 0) {
       return indexes;
     }
 
-    // TEMPP!!!!!
     if (
       g_fileData.type === FileDataType.ZIP ||
       g_fileData.type === FileDataType.RAR ||
@@ -1675,127 +1593,9 @@ async function goToPage(pageIndex, scrollBarPos = 0) {
       g_fileData.type === FileDataType.FB2 ||
       g_fileData.type === FileDataType.WWW
     ) {
-      // loader experimental
       g_fileData.state = FileDataState.LOADING;
       await pagesLoader.loadPage(g_fileData, getGoToIndexes(), scrollBarPos);
     }
-    // else if (
-    //   g_fileData.type === FileDataType.ZIP ||
-    //   g_fileData.type === FileDataType.RAR ||
-    //   g_fileData.type === FileDataType.SEVENZIP ||
-    //   g_fileData.type === FileDataType.EPUB_COMIC ||
-    //   g_fileData.type === FileDataType.IMGS_FOLDER
-    // ) {
-    //   g_fileData.state = FileDataState.LOADING;
-    //   timers.start("pagesExtraction");
-
-    //   let tempSubFolderPath =
-    //     g_fileData.type === FileDataType.SEVENZIP ||
-    //     g_fileData.type === FileDataType.ZIP ||
-    //     g_fileData.type === FileDataType.RAR
-    //       ? temp.createSubFolder()
-    //       : undefined;
-
-    //   let entryNames = [];
-    //   let pageIndexes = getGoToIndexes();
-    //   pageIndexes.forEach((index) => {
-    //     entryNames.push(g_fileData.pagesPaths[index]);
-    //   });
-
-    //   // keep killing the worker for the old methods, should be slower
-    //   // but from my initial test doesn't seem significant, so I'll keep
-    //   // doing to not break anything (it may be helping to avoid memory
-    //   // leaks)
-    //   killPageWorker();
-    //   startPageWorker();
-
-    //   sendToPageWorker({
-    //     command: "extract",
-    //     fileType: g_fileData.type,
-    //     filePath: g_fileData.path,
-    //     entryNames,
-    //     scrollBarPos,
-    //     password: g_fileData.password,
-    //     tempSubFolderPath,
-    //   });
-    // } else if (g_fileData.type === FileDataType.PDF) {
-    //   g_fileData.state = FileDataState.LOADING;
-    //   let pageIndexes = getGoToIndexes();
-    //   if (!settings.getValue("pdfReadingLibrary").startsWith("pdfjs")) {
-    //     timers.start("pagesExtraction");
-    //     sendToPageWorker({
-    //       command: "extract",
-    //       fileType: g_fileData.type,
-    //       filePath: g_fileData.path,
-    //       entryNames: pageIndexes,
-    //       scrollBarPos,
-    //       password: g_fileData.password,
-    //       extraData: { dpi: settings.getValue("pdfReadingDpi") },
-    //     });
-    //   } else {
-    //     // pdfjs
-    //     sendIpcToRenderer(
-    //       "render-pdf-page",
-    //       pageIndexes,
-    //       g_fileData.pageRotation,
-    //       scrollBarPos,
-    //       settings.getValue("pdfReadingDpi"),
-    //     );
-    //   }
-    // }
-    // else if (
-    //   g_fileData.type === FileDataType.EPUB_EBOOK ||
-    //   g_fileData.type === FileDataType.AZW3 ||
-    //   g_fileData.type === FileDataType.MOBI ||
-    //   g_fileData.type === FileDataType.FB2
-    // ) {
-    //   g_fileData.state = FileDataState.LOADING;
-    //   let pageIndexes = getGoToIndexes();
-    //   timers.start("pagesExtraction");
-    //   let tempSubFolderPath = temp.createSubFolder();
-    //   sendToPageWorker({
-    //     command: "extract",
-    //     fileType: g_fileData.type,
-    //     filePath: g_fileData.cachedPath ?? g_fileData.path,
-    //     entryNames: pageIndexes,
-    //     scrollBarPos,
-    //     tempSubFolderPath,
-    //     config: settings.getValue("epubEbook"),
-    //   });
-    // }
-    // else if (g_fileData.type === FileDataType.WWW) {
-    //   (async () => {
-    //     g_fileData.state = FileDataState.LOADING;
-    //     const calledFunc = g_fileData.getPageCallback;
-    //     let response = await g_fileData.getPageCallback(
-    //       g_fileData.pageIndex + 1,
-    //       g_fileData,
-    //     );
-    //     if (calledFunc !== g_fileData.getPageCallback) {
-    //       // getPageCallback changed while downloading
-    //       return;
-    //     }
-    //     if (!response || !response.pageImgSrc) {
-    //       // TODO: handle error
-    //       log.error("download error");
-    //       g_fileData.state = FileDataState.LOADED;
-    //       sendIpcToRenderer("update-loading", false);
-    //       return;
-    //     }
-    //     g_fileData.pagesPaths = [response.pageImgUrl];
-    //     if (response.tempData) {
-    //       if (g_fileData.data) {
-    //         g_fileData.data.tempData = response.tempData;
-    //       }
-    //     }
-    //     sendIpcToRenderer(
-    //       "render-img-page",
-    //       [{ url: response.pageImgSrc }],
-    //       g_fileData.pageRotation,
-    //       scrollBarPos,
-    //     );
-    //   })(); // async
-    // }
   } catch (error) {
     closeCurrentFile();
     sendIpcToRenderer(
@@ -1809,9 +1609,6 @@ async function goToPage(pageIndex, scrollBarPos = 0) {
 }
 
 function goToNextPage() {
-  // if (g_fileData.type === FileDataType.EPUB_EBOOK) {
-  //   goToPage(1);
-  // } else {
   if (g_fileData.pageIndex + 1 < g_fileData.numPages) {
     if (settings.getValue("page_mode") === 0) {
       // single page mode
@@ -1843,13 +1640,9 @@ function goToNextPage() {
   ) {
     tryOpeningAdjacentFile(true);
   }
-  // }
 }
 
 function goToPreviousPage() {
-  // if (g_fileData.type === FileDataType.EPUB_EBOOK) {
-  //   goToPage(-1);
-  // } else {
   if (g_fileData.pageIndex - 1 >= 0) {
     if (settings.getValue("page_mode") === 0) {
       // single page mode
@@ -1874,7 +1667,6 @@ function goToPreviousPage() {
   } else if (settings.getValue("autoOpen") === 2) {
     tryOpeningAdjacentFile(false);
   }
-  // }
 }
 
 function goToRightPage() {
@@ -1892,25 +1684,6 @@ function goToLeftPage() {
     goToPreviousPage();
   }
 }
-
-// function goToPercentage(percentage) {
-//   if (
-//     g_fileData.state !== FileDataState.LOADED ||
-//     g_fileData.type === FileDataType.NOT_SET
-//   ) {
-//     sendIpcToRenderer("update-bg", true);
-//     sendIpcToRenderer("update-loading", false);
-//     return;
-//   }
-//   sendIpcToRenderer("update-loading", true);
-
-//   if (g_fileData.type === FileDataType.EPUB_EBOOK) {
-//     if (percentage < 0 || percentage > 100) return;
-//     g_fileData.pageIndex = percentage;
-//     g_fileData.state = FileDataState.LOADING;
-//     sendIpcToRenderer("render-epub-ebook-page-percentage", percentage);
-//   }
-// }
 
 //////////////////////////////////////////////////////////////////////////////
 // RENDER ////////////////////////////////////////////////////////////////////
@@ -1944,7 +1717,7 @@ exports.generateTitle = function () {
 };
 
 function renderPageInfo() {
-  let isPercentage = false; // g_fileData.type === FileDataType.EPUB_EBOOK;
+  let isPercentage = false;
   sendIpcToRenderer(
     "render-page-info",
     g_fileData.pageIndex,
@@ -1953,20 +1726,12 @@ function renderPageInfo() {
   );
 }
 
-// function onDelayedRefreshPageCall() {
-//   if (g_fileData.type === FileDataType.PDF) {
-//     sendIpcToRenderer("refresh-pdf-page", g_fileData.pageRotation);
-//   }
-// }
-
 function renderPageRefresh() {
   if (g_fileData.state === FileDataState.LOADED) {
     if (
       g_fileData.type === FileDataType.PDF &&
       settings.getValue("pdfReadingLibrary").startsWith("pdfjs")
     ) {
-      // clearTimeout(g_delayedRefreshPageEvent);
-      // g_delayedRefreshPageEvent = setTimeout(onDelayedRefreshPageCall, 300);
       sendIpcToRenderer("refresh-pdf-page", g_fileData.pageRotation);
     } else if (
       g_fileData.type === FileDataType.RAR ||
@@ -2921,22 +2686,6 @@ exports.onMenuOpenContainingFolder = function () {
   }
 };
 
-// exports.onMenuPageExport = function () {
-//   exportPageStart(0);
-// };
-
-// exports.onMenuPageExtractText = function () {
-//   exportPageStart(1);
-// };
-
-// exports.onMenuPageExtractPalette = function () {
-//   exportPageStart(2);
-// };
-
-// exports.onMenuPageExtractQR = function () {
-//   exportPageStart(3);
-// };
-
 exports.onMenuConvertFile = function () {
   if (g_fileData.path !== undefined) {
     tools.switchTool("tool-convert-comics", {
@@ -2961,17 +2710,6 @@ exports.onMenuExtractFile = function () {
 
 exports.onGoToPageDialog = function () {
   sendIpcToPreload("update-menubar");
-  // if (g_fileData.type === FileDataType.EPUB_EBOOK) {
-  //   let question = `${_("ui-modal-prompt-pagepercentage")} (0-100):`;
-  //   sendIpcToRenderer(
-  //     "show-modal-prompt",
-  //     question,
-  //     "" + g_fileData.pageIndex,
-  //     _("ui-modal-prompt-button-ok"),
-  //     _("ui-modal-prompt-button-cancel"),
-  //     2,
-  //   );
-  // } else {
   let question = `${_("ui-modal-prompt-pagenumber")} (1-${
     g_fileData.numPages
   }):`;
@@ -2982,25 +2720,16 @@ exports.onGoToPageDialog = function () {
     _("ui-modal-prompt-button-ok"),
     _("ui-modal-prompt-button-cancel"),
   );
-  // }
 };
 
 exports.onGoToPageFirst = function () {
   sendIpcToPreload("update-menubar");
-  // if (g_fileData.type === FileDataType.EPUB_EBOOK) {
-  //   goToPercentage(0);
-  // } else {
   goToPage(0);
-  // }
 };
 
 exports.onGoToPageLast = function () {
   sendIpcToPreload("update-menubar");
-  // if (g_fileData.type === FileDataType.EPUB_EBOOK) {
-  //   goToPercentage(100);
-  // } else {
   goToPage(g_fileData.numPages - 1);
-  // }
 };
 
 exports.onMenuFilterValue = function (value) {
