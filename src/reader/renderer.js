@@ -10,9 +10,11 @@ import {
   initIpc as uiInitIpc,
   renderImageBuffers as renderImages,
   updatePageInfo,
-  onInputEvent as uiOnInputEvent,
-  onGamepadPolled as uiOnGamepadPolled,
 } from "./renderer/ui.js";
+import {
+  onInputEvent as readerOnInputEvent,
+  onGamepadPolled as readerOnGamepadPolled,
+} from "./renderer/input.js";
 import {
   initIpc as pdfInitIpc,
   cleanUp as cleanUpPdf,
@@ -143,7 +145,7 @@ export function onInputEvent(type, event) {
   }
   let fileOpen = g_pagesContainerDiv && g_pagesContainerDiv.innerHTML !== "";
   if (fileOpen) {
-    uiOnInputEvent(type, event);
+    readerOnInputEvent(type, event);
   } else {
     homeScreenOnInputEvent(type, event);
   }
@@ -183,7 +185,7 @@ export function onGamepadPolled() {
   }
   let fileOpen = g_pagesContainerDiv && g_pagesContainerDiv.innerHTML !== "";
   if (fileOpen) {
-    uiOnGamepadPolled();
+    readerOnGamepadPolled();
   } else {
     homeScreenOnGamepadPolled();
   }

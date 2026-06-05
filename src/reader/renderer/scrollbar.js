@@ -5,12 +5,14 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-import { inputGoToNextPage, inputGoToPrevPage } from "./ui.js";
+import { inputGoToNextPage, inputGoToPrevPage } from "./input.js";
 import { on } from "../renderer.js";
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
+
+let g_isLoading = false;
 
 // BOUNDARIES ////
 
@@ -123,6 +125,10 @@ export function setScrollbarBoundariesConfig(
   g_scrollBoundaryLockTimeMs = lockTimeMs;
   g_scrollBoundarySettleTimeMs = settleTimeMs;
   g_scrollBlockTimeMs = scrollBlockTimeMs;
+}
+
+export function areScrollBoundariesEnabled() {
+  return g_scrollBoundariesEnabled;
 }
 
 export function setLastRequestedScrollbarPos(value) {
@@ -246,10 +252,11 @@ export function addScrollEventListener() {
 }
 
 export function scrollBoundaryHandleIsLoadingChanged(isLoading) {
+  g_isLoading = isLoading;
   // called when loading state is updated
   let container = document.querySelector("#reader");
   const needsScrollbar = container.scrollHeight > container.clientHeight;
-  if (isLoading) {
+  if (g_isLoading) {
     if (g_scrollBoundariesEnabled && g_scrollBlockTimeMs > 0) {
       g_scrollIsBlocked = true;
       // if g_scrollBlockTimeMs > hide the scrollbar during load and reshow
@@ -336,7 +343,8 @@ export function scrollBoundaryHandleIsLoadingChanged(isLoading) {
   }
 }
 
-export function handleWheelEventScrollBoundaries(event, isLoading) {
+export function handleWheelEventScrollBoundaries(event) {
+  if (!g_scrollBoundariesEnabled) return;
   // if (
   //   !(
   //     g_scrollBlockTimeMs > 0 ||
@@ -371,7 +379,7 @@ export function handleWheelEventScrollBoundaries(event, isLoading) {
     event.preventDefault();
     return;
   }
-  if (isLoading) {
+  if (g_isLoading) {
     event.stopPropagation();
     event.preventDefault();
     return;

@@ -9,7 +9,13 @@ import { getOpenModal, sendIpcToMain } from "../../core/renderer.js";
 import { getTools, getCurrentTool, getCurrentToolName } from "./tools.js";
 import * as modals from "./modals.js";
 import * as gamepads from "./gamepads.js";
-import { getNavKeys } from "../../reader/renderer/ui.js";
+import { getNavKeys } from "../../reader/renderer/input.js";
+
+export const Source = {
+  KEYBOARD: "keyboard",
+  MOUSE: "mouse",
+  GAMEPAD: "gamepad",
+};
 
 ///////////////////////////////////////////////////////////////////////////////
 // INPUT  /////////////////////////////////////////////////////////////////////
@@ -21,13 +27,6 @@ export function init() {
   initTouchScreen();
   initGamepads();
 }
-
-// TODO: move to top
-export const Source = {
-  KEYBOARD: "keyboard",
-  MOUSE: "mouse",
-  GAMEPAD: "gamepad",
-};
 
 export function getGamepadsDeltaTime() {
   return gamepads.getDeltaTime();
