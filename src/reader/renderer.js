@@ -44,11 +44,6 @@ let g_currentImages;
 function cleanUpPages() {
   g_currentImages = undefined;
   cleanUpPdf();
-  // cleanUpEpub();
-}
-
-export function getCurrentImgBuffers() {
-  return g_currentImages;
 }
 
 export function showNoBookContent(show) {
