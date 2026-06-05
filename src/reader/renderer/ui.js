@@ -14,7 +14,7 @@ import {
   scrollBoundaryHandleIsLoadingChanged,
   handleWheelEventScrollBoundaries,
   setLastRequestedScrollbarPos,
-} from "./scroll-boundaries.js";
+} from "./scrollbar.js";
 
 export function initIpc() {
   initOnIpcCallbacks();
