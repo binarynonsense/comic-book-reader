@@ -6,7 +6,7 @@
  */
 
 import { on, sendIpcToMain, showNoBookContent } from "../renderer.js";
-import { initModalsOnIpcCallbacks } from "./ui-modals.js";
+import { initModalsOnIpcCallbacks } from "./modals.js";
 import * as input from "../../shared/renderer/input.js";
 
 export function initIpc() {

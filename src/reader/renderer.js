@@ -21,7 +21,7 @@ import {
   onInputEvent as modalOnInputEvent,
   onGamepadPolled as modalOnGamepadPolled,
 } from "../shared/renderer/modals.js";
-import { getOpenModal } from "./renderer/ui-modals.js";
+import { getOpenModal } from "./renderer/modals.js";
 import {
   initIpc as homeScreenInitIpc,
   onInputEvent as homeScreenOnInputEvent,

@@ -13,11 +13,7 @@ import {
   getMouseButtons,
   getNavKeys,
 } from "../../reader/renderer/ui.js";
-import {
-  getOpenModal,
-  showModal,
-  modalClosed,
-} from "../../reader/renderer/ui-modals.js";
+import { getOpenModal, showModal, modalClosed } from "../renderer/modals.js";
 import * as input from "../../shared/renderer/input.js";
 import * as navigation from "./renderer/navigation.js";
 
