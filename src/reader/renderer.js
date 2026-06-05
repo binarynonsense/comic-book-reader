@@ -19,10 +19,6 @@ import {
   cleanUp as cleanUpPdf,
 } from "./renderer/pdf.js";
 import {
-  initIpc as epubInitIpc,
-  // cleanUp as cleanUpEpub,
-} from "./renderer/epub.js";
-import {
   onInputEvent as modalOnInputEvent,
   onGamepadPolled as modalOnGamepadPolled,
 } from "../shared/renderer/modals.js";
@@ -35,7 +31,6 @@ import {
 export function initIpc() {
   uiInitIpc();
   pdfInitIpc();
-  epubInitIpc();
   homeScreenInitIpc();
   initOnIpcCallbacks();
 }

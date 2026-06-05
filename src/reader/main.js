@@ -1974,13 +1974,11 @@ function renderPageRefresh() {
       g_fileData.type === FileDataType.SEVENZIP ||
       g_fileData.type === FileDataType.IMGS_FOLDER ||
       g_fileData.type === FileDataType.PDF ||
+      g_fileData.type === FileDataType.EPUB_COMIC ||
       g_fileData.type === FileDataType.WWW
     ) {
       sendIpcToRenderer("refresh-img-page", g_fileData.pageRotation);
-    } else if (g_fileData.type === FileDataType.EPUB_COMIC) {
-      sendIpcToRenderer("refresh-epub-comic-page", g_fileData.pageRotation);
     } else if (g_fileData.type === FileDataType.EPUB_EBOOK) {
-      // sendIpcToRenderer("refresh-epub-ebook-page", g_fileData.pageRotation);
       sendIpcToRenderer("refresh-img-page", g_fileData.pageRotation);
     }
   }
