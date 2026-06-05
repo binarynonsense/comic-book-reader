@@ -5,8 +5,13 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-import { on, sendIpcToMain, showNoBookContent } from "../renderer.js";
-import { setFilterClass, getPageMode } from "./ui.js";
+import {
+  on,
+  sendIpcToMain,
+  showNoBookContent,
+  setFilterClass,
+} from "../renderer.js";
+import { getPageMode } from "./view.js";
 import { setScrollBarsPosition } from "./scrollbar.js";
 
 export function initIpc() {

@@ -5,8 +5,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-import { sendIpcToMain, on } from "../renderer.js";
-import { updateZoom } from "./ui.js";
+import { sendIpcToMain, on, updateZoom } from "../renderer.js";
 
 let g_toolbarSliderIsPercentage = false;
 
