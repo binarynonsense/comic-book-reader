@@ -7,15 +7,17 @@
 
 import { sendIpcToMain, on } from "../../reader/renderer.js";
 import {
-  getOpenModal,
-  showModal,
-  modalClosed,
   getNavButtons,
   inputOpenQuickMenu,
   onMouseMove,
   getMouseButtons,
   getNavKeys,
 } from "../../reader/renderer/ui.js";
+import {
+  getOpenModal,
+  showModal,
+  modalClosed,
+} from "../../reader/renderer/ui-modals.js";
 import * as input from "../../shared/renderer/input.js";
 import * as navigation from "./renderer/navigation.js";
 

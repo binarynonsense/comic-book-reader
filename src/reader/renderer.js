@@ -11,7 +11,6 @@ import {
   renderImageBuffers as renderImages,
   updatePageInfo,
   onInputEvent as uiOnInputEvent,
-  getOpenModal,
   onGamepadPolled as uiOnGamepadPolled,
 } from "./renderer/ui.js";
 import {
@@ -22,6 +21,7 @@ import {
   onInputEvent as modalOnInputEvent,
   onGamepadPolled as modalOnGamepadPolled,
 } from "../shared/renderer/modals.js";
+import { getOpenModal } from "./renderer/ui-modals.js";
 import {
   initIpc as homeScreenInitIpc,
   onInputEvent as homeScreenOnInputEvent,
