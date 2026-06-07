@@ -51,12 +51,17 @@ jobs:
           if [ -z "$STABLE_VERSION" ] || [ "$STABLE_VERSION" = "null" ]; then STABLE_VERSION="UNKNOWN"; fi
           if [ -z "$LATEST_VERSION" ] || [ "$LATEST_VERSION" = "null" ]; then LATEST_VERSION="UNKNOWN"; fi
           if [ -z "$DOWNLOADS_RAW" ] || [[ "$DOWNLOADS_RAW" =~ [^0-9] ]]; then DOWNLOADS_RAW="0"; fi
+          # remove starting v if any
+          STABLE_VERSION="${STABLE_VERSION#v}"
+          LATEST_VERSION="${LATEST_VERSION#v}"
           # show values like 50.2K, 123.6K ...
           if [ "$DOWNLOADS_RAW" -ge 1000 ]; then
             VAL_DIV=$(( DOWNLOADS_RAW / 100 ))
             WHOLE=$(( VAL_DIV / 10 ))
             DECIMAL=$(( VAL_DIV % 10 ))
-            DOWNLOADS_RAW="${WHOLE}.${DECIMAL}K"
+            DOWNLOADS_K="${WHOLE}.${DECIMAL}K"
+          else
+            DOWNLOADS_K="$DOWNLOADS_RAW"
           fi
 
           export STABLE_UPPER=$(echo "$STABLE_VERSION" | tr '[:lower:]' '[:upper:]')
@@ -74,6 +79,7 @@ jobs:
             local val="$2"
             local color="$3"
             local output_filename="$4"
+            local raw_value="$5"
 
             export LABEL_UPPER=$(echo "$label" | tr '[:lower:]' '[:upper:]')
             export VAL_UPPER=$(echo "$val" | tr '[:lower:]' '[:upper:]')
@@ -91,18 +97,20 @@ jobs:
 
             export TOTAL_W=$(( LEFT_W + RIGHT_W ))
 
+            export RAW_VALUE="$raw_value"
+
             # envsubst substitutes the exported vars in the template text
             envsubst < badges/template.svg > "badges/${output_filename}"
           }
 
           if [[ "$STABLE_VERSION" != "UNKNOWN" ]]; then
-            generate_svg_params "stable" "$STABLE_VERSION" "$STABLE_COLOR" "stable.svg"
+            generate_svg_params "stable" "$STABLE_VERSION" "$STABLE_COLOR" "stable.svg" "$STABLE_VERSION"
           fi
           if [[ "$LATEST_VERSION" != "UNKNOWN" ]]; then
-            generate_svg_params "latest" "$LATEST_VERSION" "$LATEST_COLOR" "latest.svg"
+            generate_svg_params "latest" "$LATEST_VERSION" "$LATEST_COLOR" "latest.svg" "$LATEST_VERSION"
           fi
           if [[ "$DOWNLOADS_RAW" != "0" ]]; then
-            generate_svg_params "downloads" "$DOWNLOADS_RAW" "$DL_COLOR" "downloads.svg"
+            generate_svg_params "downloads" "$DOWNLOADS_K" "$DL_COLOR" "downloads.svg" "$DOWNLOADS_RAW"
           fi          
 
       - name: Commit, Push and Purge Cache
