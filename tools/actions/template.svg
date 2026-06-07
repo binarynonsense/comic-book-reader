@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="${TOTAL_W}" height="28" data-raw="${RAW_VALUE}">
+  <g shape-rendering="crispEdges">
+    <rect width="${LEFT_W}" height="28" fill="#555555"/>
+    <rect x="${LEFT_W}" width="${RIGHT_W}" height="28" fill="${BADGE_COLOR}"/>
+  </g>
+  <g fill="#ffffff" text-anchor="middle" font-family="monospace" font-weight="bold" font-size="11">
+    <text x="${LEFT_X}" y="18">${LABEL_UPPER}</text>
+    <text x="${RIGHT_X}" y="18">${VAL_UPPER}</text>
+  </g>
+</svg>
