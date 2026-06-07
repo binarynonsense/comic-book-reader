@@ -98,6 +98,7 @@ jobs:
             export TOTAL_W=$(( LEFT_W + RIGHT_W ))
 
             export RAW_VALUE="$raw_value"
+            export DATE=$(date +'%Y%m%d-%H%M%S')
 
             # envsubst substitutes the exported vars in the template text
             envsubst < badges/template.svg > "badges/${output_filename}"

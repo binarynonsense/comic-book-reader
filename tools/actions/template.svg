@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="${TOTAL_W}" height="28" data-raw="${RAW_VALUE}">
+<svg xmlns="http://www.w3.org/2000/svg" width="${TOTAL_W}" height="28" data-raw="${RAW_VALUE}" data-date="${DATE}">
   <g shape-rendering="crispEdges">
     <rect width="${LEFT_W}" height="28" fill="#555555"/>
     <rect x="${LEFT_W}" width="${RIGHT_W}" height="28" fill="${BADGE_COLOR}"/>
