@@ -1337,7 +1337,7 @@ function addFileToList(ul, file) {
 function buildCustomFilters(settings, initializeAll = false) {
   const parentDiv = document.querySelector("#tool-pre-filters-custom-div");
   parentDiv.innerHTML = "";
-  let imgSrc = "../assets/images/filter_preview.jpg";
+  let imgSrc = "../../assets/images/filter_preview.jpg";
   const pagesContainer = document.querySelector("#pages-container");
   if (pagesContainer) {
     const pageImg = pagesContainer.querySelector(".page-img");
