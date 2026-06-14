@@ -680,9 +680,6 @@ function updateUISelectedOptions() {
   g_uiSelectedOptions.inputPdfExtractionHeight = document.getElementById(
     "tool-cc-pdf-extraction-method-height-input",
   ).value;
-  g_uiSelectedOptions.inputPdfExtractionLib = document.getElementById(
-    "tool-cc-pdf-extraction-lib-select",
-  ).value;
   //////////////////
   g_uiSelectedOptions.inputEpubExtraction = {
     bookType: document.getElementById("tool-cc-epub-extraction-booktype-select")
@@ -1299,9 +1296,6 @@ function checkValidData() {
 
   toolsShared.updateSliders();
 
-  if (document.getElementById("tool-cc-pdf-extraction-lib-select").value === "")
-    document.getElementById("tool-cc-pdf-extraction-lib-select").value =
-      "default";
   if (g_outputFormatSelect.value === "") g_outputFormatSelect.value = "cbz";
 
   //////////////////////////////////////

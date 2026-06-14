@@ -302,26 +302,6 @@ exports.getLocalization = function (mode) {
       id: "tool-cc-pdf-extraction-method-select-1-text",
       text: _("tool-shared-ui-output-options-scale-height"),
     },
-    {
-      id: "tool-cc-pdf-extraction-lib-o-pdfjs1-text",
-      text: `PDF.js ${_("tool-pre-pdf-library-version-oldest")} (${_(
-        "tool-pre-pdf-library-version-oldest-desc",
-      )})`,
-    },
-    {
-      id: "tool-cc-pdf-extraction-lib-o-pdfjs2-text",
-      text: `PDF.js ${_("tool-pre-pdf-library-version-newest")} (${_(
-        "tool-pre-pdf-library-version-newest-desc",
-      )})`,
-    },
-    {
-      id: "tool-cc-pdf-extraction-lib-o-mupdf-text",
-      text: `MuPDF`,
-    },
-    {
-      id: "tool-cc-pdf-extraction-lib-o-default-text",
-      text: `${_("tool-pre-formats-library-value-default")} (MuPDF)`,
-    },
     /////////////////
     {
       id: "tool-cc-epub-extraction-text",

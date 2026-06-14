@@ -110,14 +110,6 @@ async function extractImages(
         send,
       );
     } else if (inputFileType === FileDataType.PDF) {
-      // result = await fileFormats.extractPdf(
-      //   inputFilePath,
-      //   tempFolderPath,
-      //   password,
-      //   extraData,
-      //   send,
-      //   signal,
-      // );
       result = await fileFormats.extractMuPdf(
         inputFilePath,
         tempFolderPath,

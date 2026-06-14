@@ -405,12 +405,6 @@ function getOptionsData(launchInfo) {
       cliType: "string",
       setOption: { key: "inputPdfExtractionMethod", value: "1" },
     },
-    inputPdfExtractionLib: {
-      defaultValue: "default",
-      validValues: ["default", "mupdf", "pdfjs_older", "pdfjs_newer"],
-      cliName: "input-pdf-extraction-lib",
-      cliType: "string",
-    },
     ///////////////////////////////////////
     outputPdfCreationMethod: {
       defaultValue: "metadata",

@@ -46,7 +46,6 @@ let g_mode = ToolMode.CONVERT;
 
 let g_cancel = false;
 let g_worker;
-let g_workerWindow;
 
 // hack to allow this at least for files from File>Convert...
 let g_inputPassword = "";
@@ -119,11 +118,6 @@ exports.close = function () {
   sendIpcToRenderer("hide"); // clean up
 
   g_cancel = false;
-
-  if (g_workerWindow !== undefined) {
-    g_workerWindow.destroy();
-    g_workerWindow = undefined;
-  }
 
   killWorker();
 
@@ -360,9 +354,6 @@ function initOnIpcCallbacks() {
     log.editor("[CC] cancel received");
     if (!g_cancel) {
       g_cancel = true;
-      if (g_workerWindow) {
-        g_workerWindow.webContents.send("cancel");
-      }
       if (g_worker) {
         log.editor("[CC] sending cancel to worker");
         g_worker.postMessage([core.getLaunchInfo(), "cancel"]);
@@ -652,8 +643,7 @@ function startNextFile() {
       inputFileType === FileDataType.FB2 ||
       inputFileType === FileDataType.EPUB_COMIC ||
       inputFileType === FileDataType.EPUB_EBOOK ||
-      (inputFileType === FileDataType.PDF &&
-        !g_uiSelectedOptions.inputPdfExtractionLib.startsWith("pdfjs"))
+      inputFileType === FileDataType.PDF
     ) {
       updateModalLogText(_("tool-shared-modal-log-extracting-pages") + "...");
       log.debug("[CC] " + _("tool-shared-modal-log-extracting-pages") + "...");
@@ -738,7 +728,6 @@ function startNextFile() {
               method: g_uiSelectedOptions.inputPdfExtractionMethod,
               dpi: g_uiSelectedOptions.inputPdfExtractionDpi,
               height: g_uiSelectedOptions.inputPdfExtractionHeight,
-              lib: g_uiSelectedOptions.inputPdfExtractionLib,
             };
           } else if (
             inputFileType === FileDataType.EPUB_EBOOK ||
@@ -763,48 +752,6 @@ function startNextFile() {
         ]);
         g_worker = worker;
       }
-    }
-    // pdfjs
-    else if (inputFileType === FileDataType.PDF) {
-      updateModalLogText(_("tool-shared-modal-log-extracting-pages") + "...");
-      log.debug("[CC] " + _("tool-shared-modal-log-extracting-pages") + "...");
-      if (core.isDev()) updateModalLogText("[DEV] pdfjs");
-      /////////////////////////
-      // use a hidden window for better performance and node api access
-      if (g_workerWindow !== undefined) {
-        // shouldn't happen
-        g_workerWindow.destroy();
-        g_workerWindow = undefined;
-      }
-      g_workerWindow = new BrowserWindow({
-        show: false,
-        webPreferences: { nodeIntegration: true, contextIsolation: false },
-        parent: core.getMainWindow(),
-      });
-      g_workerWindow.loadFile(
-        `${__dirname}/../../shared/renderer/tools-bg-worker.html`,
-      );
-
-      g_workerWindow.webContents.on("did-finish-load", function () {
-        //g_resizeWindow.webContents.openDevTools();
-        g_workerWindow.webContents.send(
-          "extract-pdf",
-          "tool-convert-comics",
-          inputFilePath,
-          g_mode === ToolMode.CONVERT || g_mode === ToolMode.EXTRACT
-            ? g_tempSubFolderPath
-            : g_creationTempSubFolderPath,
-          _("tool-shared-modal-log-extracting-page") + ": ",
-          g_inputPassword,
-          core.isDev(),
-          {
-            method: g_uiSelectedOptions.inputPdfExtractionMethod,
-            dpi: g_uiSelectedOptions.inputPdfExtractionDpi,
-            height: g_uiSelectedOptions.inputPdfExtractionHeight,
-            lib: g_uiSelectedOptions.inputPdfExtractionLib,
-          },
-        );
-      });
     } else {
       stopError(undefined, "start: invalid file type");
     }
@@ -820,21 +767,7 @@ exports.onIpcFromToolsWorkerRenderer = function (...args) {
     case "update-log-text":
       updateModalLogText(args[1]);
       break;
-    case "pdf-images-extracted":
-      g_workerWindow.destroy();
-      g_workerWindow = undefined;
-      if (!args[1]) {
-        if (g_mode === ToolMode.CREATE) {
-          copyImagesToTempFolder(g_creationTempSubFolderPath, true);
-          temp.deleteSubFolder(g_creationTempSubFolderPath);
-          g_creationTempSubFolderPath = undefined;
-        }
-        processContent();
-      } else stopCancel();
-      break;
     case "stop-error":
-      g_workerWindow.destroy();
-      g_workerWindow = undefined;
       stopError(undefined, args[1]);
       break;
   }
