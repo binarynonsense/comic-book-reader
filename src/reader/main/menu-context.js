@@ -19,16 +19,12 @@ const path = require("node:path");
 const temp = require("../../shared/main/temp");
 const tools = require("../../shared/main/tools");
 
-exports.show = function (type, params, fileData) {
+exports.show = function (type, params, fileData, canRotate) {
   let isOpen = true;
-  let showRotation = true;
+  let showRotation = canRotate;
   if (fileData.type === FileDataType.NOT_SET) {
     isOpen = false;
   }
-  // else if (fileData.type === FileDataType.EPUB_EBOOK) {
-  //   showRotation = false;
-  // }
-  //
   let saveImageEntries = [];
   let pageExtraEntries = [];
   switch (type) {

@@ -560,9 +560,19 @@ function initOnIpcCallbacks() {
   on("show-context-menu", (params) => {
     sendIpcToRenderer("update-toolbar-menus-collapse-all");
     if (params[2]) {
-      contextMenu.show("page", params, g_fileData);
+      contextMenu.show(
+        "page",
+        params,
+        g_fileData,
+        settings.getValue("page_mode") === 0,
+      );
     } else {
-      contextMenu.show("normal", params, g_fileData);
+      contextMenu.show(
+        "normal",
+        params,
+        g_fileData,
+        settings.getValue("page_mode") === 0,
+      );
     }
   });
 
