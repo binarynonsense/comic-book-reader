@@ -284,24 +284,6 @@ function initOnIpcCallbacks() {
 
   /////////////////
 
-  let g_pdfWillCloseToApplyModalShown = false;
-  on("set-pdf-reading-lib", (value) => {
-    if (reader.getFileData().type === FileDataType.PDF) {
-      reader.onMenuCloseFile();
-      if (!g_pdfWillCloseToApplyModalShown) {
-        // g_pdfWillCloseToApplyModalShown = true;
-        sendIpcToRenderer(
-          "show-ok-modal",
-          _("tool-shared-modal-title-info"),
-          _("ui-modal-info-willclosetoapply"),
-          _("ui-modal-prompt-button-ok").toUpperCase(),
-        );
-      }
-    }
-    settings.setValue("pdfReadingLibrary", value);
-    reader.setPdfLibVersion(value);
-  });
-
   let g_epubEbookWillCloseToApplyModalShown = false;
   on("set-epub-ebook-settings", (values) => {
     if (

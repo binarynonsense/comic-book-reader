@@ -246,19 +246,7 @@ async function fetchPages(pageWorker, fileData, pageIndexes) {
     let extraData = { workerId: pageWorker.id, cacheJobId: g_cacheJobId };
     let entryNames = pageIndexes;
     if (g_fileData.type === FileDataType.PDF) {
-      if (!settings.getValue("pdfReadingLibrary").startsWith("pdfjs")) {
-        extraData.dpi = settings.getValue("pdfReadingDpi");
-      } else {
-        // pdfjs
-        sendIpcToRenderer(
-          "render-pdf-page",
-          pageIndexes,
-          g_fileData.pageRotation,
-          scrollBarPos,
-          settings.getValue("pdfReadingDpi"),
-        );
-        return;
-      }
+      extraData.dpi = settings.getValue("pdfReadingDpi");
     } else if (
       g_fileData.type === FileDataType.EPUB_EBOOK ||
       g_fileData.type === FileDataType.AZW3 ||

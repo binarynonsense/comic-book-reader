@@ -699,30 +699,6 @@ exports.getLocalization = function () {
       id: "tool-pre-pdf-text",
       text: _("tool-pre-pdf"),
     },
-    {
-      id: "tool-pre-pdf-reading-library-version-text",
-      text: _("tool-pre-pdf-reading-library-version"),
-    },
-    {
-      id: "tool-pre-pdf-reading-library-version-0-text",
-      text: `${_("tool-pre-formats-library-value-default")} (MuPDF)`,
-    },
-    {
-      id: "tool-pre-pdf-reading-library-version-1-text",
-      text: `MuPDF`,
-    },
-    {
-      id: "tool-pre-pdf-reading-library-version-2-text",
-      text: `PDF.js ${_("tool-pre-pdf-library-version-oldest")} (${_(
-        "tool-pre-pdf-library-version-oldest-desc",
-      )})`,
-    },
-    {
-      id: "tool-pre-pdf-reading-library-version-3-text",
-      text: `PDF.js ${_("tool-pre-pdf-library-version-newest")} (${_(
-        "tool-pre-pdf-library-version-newest-desc",
-      )})`,
-    },
 
     {
       id: "tool-pre-pdf-reading-dpi-text",

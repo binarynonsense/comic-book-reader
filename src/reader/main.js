@@ -66,8 +66,6 @@ exports.init = async function (filePath, checkHistory) {
   }
   setPagesDirection(settings.getValue("pagesDirection"));
 
-  setPdfLibVersion();
-
   updateLoadingIndicator();
   updateLayoutClock();
   updateLayoutPageNum();
@@ -1018,39 +1016,25 @@ async function openComicBookFromPath(
       detectedFileType = fileUtils.getFileTypeFromPath(filePath);
 
     if (detectedFileType === FileDataType.PDF) {
-      if (!settings.getValue("pdfReadingLibrary").startsWith("pdfjs")) {
-        log.editor("loading PDF using mupdf");
-        if (g_fileData.state !== FileDataState.LOADING) {
-          cleanUpFileData();
-          g_fileData.type = FileDataType.PDF;
-          g_fileData.state = FileDataState.LOADING;
-          g_fileData.pageIndex = pageIndex;
-          g_fileData.path = filePath;
-          g_fileData.name = path.basename(filePath);
-        }
-        startPageWorker();
-        g_fileData.password = password;
-        sendToPageWorker({
-          command: "open",
-          fileType: g_fileData.type,
-          filePath: g_fileData.path,
-          pageIndex,
-          password,
-        });
-        return true;
-      } else {
-        // pdfjs
-        if (g_fileData.state !== FileDataState.LOADING) {
-          cleanUpFileData();
-          g_fileData.type = FileDataType.PDF;
-          g_fileData.state = FileDataState.LOADING;
-          g_fileData.pageIndex = pageIndex;
-          g_fileData.path = filePath;
-        }
-        g_fileData.password = password;
-        sendIpcToRenderer("load-pdf", filePath, pageIndex, password);
-        return true;
+      log.editor("loading PDF using mupdf");
+      if (g_fileData.state !== FileDataState.LOADING) {
+        cleanUpFileData();
+        g_fileData.type = FileDataType.PDF;
+        g_fileData.state = FileDataState.LOADING;
+        g_fileData.pageIndex = pageIndex;
+        g_fileData.path = filePath;
+        g_fileData.name = path.basename(filePath);
       }
+      startPageWorker();
+      g_fileData.password = password;
+      sendToPageWorker({
+        command: "open",
+        fileType: g_fileData.type,
+        filePath: g_fileData.path,
+        pageIndex,
+        password,
+      });
+      return true;
     } else if (detectedFileType === FileDataType.EPUB) {
       if (g_fileData.type === FileDataType.EPUB_EBOOK) {
         throw "shouldn't be here? epub not ebook";
@@ -1739,21 +1723,15 @@ function renderPageInfo() {
 function renderPageRefresh() {
   if (g_fileData.state === FileDataState.LOADED) {
     if (
-      g_fileData.type === FileDataType.PDF &&
-      settings.getValue("pdfReadingLibrary").startsWith("pdfjs")
-    ) {
-      sendIpcToRenderer("refresh-pdf-page", g_fileData.pageRotation);
-    } else if (
       g_fileData.type === FileDataType.RAR ||
       g_fileData.type === FileDataType.ZIP ||
       g_fileData.type === FileDataType.SEVENZIP ||
       g_fileData.type === FileDataType.IMGS_FOLDER ||
       g_fileData.type === FileDataType.PDF ||
       g_fileData.type === FileDataType.EPUB_COMIC ||
+      g_fileData.type === FileDataType.EPUB_EBOOK ||
       g_fileData.type === FileDataType.WWW
     ) {
-      sendIpcToRenderer("refresh-img-page", g_fileData.pageRotation);
-    } else if (g_fileData.type === FileDataType.EPUB_EBOOK) {
       sendIpcToRenderer("refresh-img-page", g_fileData.pageRotation);
     }
   }
@@ -2137,14 +2115,6 @@ function setPageMode(value, reloadPages) {
   rebuildMenuAndToolBars();
 }
 
-function setPdfLibVersion() {
-  sendIpcToRenderer(
-    "set-pdf-lib-version",
-    settings.getValue("pdfReadingLibrary"),
-  );
-}
-exports.setPdfLibVersion = setPdfLibVersion;
-
 //////////////////////////////////////////////////////////////////////////////
 // ZOOM //////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
@@ -2334,8 +2304,7 @@ function startPageWorker() {
         } else {
           if (
             !(
-              (g_fileData.type === FileDataType.PDF &&
-                !settings.getValue("pdfReadingLibrary").startsWith("pdfjs")) ||
+              g_fileData.type === FileDataType.PDF ||
               g_fileData.type === FileDataType.EPUB_EBOOK ||
               g_fileData.type === FileDataType.AZW3 ||
               g_fileData.type === FileDataType.MOBI ||

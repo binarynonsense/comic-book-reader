@@ -1,421 +1,421 @@
-/**
- * @license
- * Copyright 2020-2026 Álvaro García
- * www.binarynonsense.com
- * SPDX-License-Identifier: BSD-2-Clause
- */
+// /**
+//  * @license
+//  * Copyright 2020-2026 Álvaro García
+//  * www.binarynonsense.com
+//  * SPDX-License-Identifier: BSD-2-Clause
+//  */
 
-import {
-  on,
-  sendIpcToMain,
-  showNoBookContent,
-  setFilterClass,
-} from "../renderer.js";
-import { getPageMode } from "./view.js";
-import { setScrollBarsPosition } from "./scrollbar.js";
+// import {
+//   on,
+//   sendIpcToMain,
+//   showNoBookContent,
+//   setFilterClass,
+// } from "../renderer.js";
+// import { getPageMode } from "./view.js";
+// import { setScrollBarsPosition } from "./scrollbar.js";
 
-export function initIpc() {
-  initOnIpcCallbacks();
-}
+// export function initIpc() {
+//   initOnIpcCallbacks();
+// }
 
-let g_settingsPdfLibVersion;
-let g_currentPdfLibVersion;
+// let g_settingsPdfLibVersion;
+// let g_currentPdfLibVersion;
 
-///////////////////////////////////////////////////////////////////////////////
-// IPC RECEIVE ////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
+// ///////////////////////////////////////////////////////////////////////////////
+// // IPC RECEIVE ////////////////////////////////////////////////////////////////
+// ///////////////////////////////////////////////////////////////////////////////
 
-function initOnIpcCallbacks() {
-  on("set-pdf-lib-version", (version) => {
-    g_settingsPdfLibVersion = version;
-  });
-  on("load-pdf", (filePath, pageIndex, password) => {
-    loadPdf(filePath, pageIndex, password);
-  });
-  on("render-pdf-page", (pageIndexes, rotation, scrollBarPos, dpi) => {
-    showNoBookContent(false);
-    renderPdfPages(pageIndexes, rotation, scrollBarPos, dpi);
-  });
-  on("refresh-pdf-page", (rotation) => {
-    refreshPdfPages(rotation);
-  });
-}
+// function initOnIpcCallbacks() {
+//   on("set-pdf-lib-version", (version) => {
+//     g_settingsPdfLibVersion = version;
+//   });
+//   on("load-pdf", (filePath, pageIndex, password) => {
+//     loadPdf(filePath, pageIndex, password);
+//   });
+//   on("render-pdf-page", (pageIndexes, rotation, scrollBarPos, dpi) => {
+//     showNoBookContent(false);
+//     renderPdfPages(pageIndexes, rotation, scrollBarPos, dpi);
+//   });
+//   on("refresh-pdf-page", (rotation) => {
+//     refreshPdfPages(rotation);
+//   });
+// }
 
-///////////////////////////////////////////////////////////////////////////////
-// PDF ////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
+// ///////////////////////////////////////////////////////////////////////////////
+// // PDF ////////////////////////////////////////////////////////////////////////
+// ///////////////////////////////////////////////////////////////////////////////
 
-let g_currentPdf = {};
-let g_renderJobPages;
-let g_currentLoadingTask = null;
+// let g_currentPdf = {};
+// let g_renderJobPages;
+// let g_currentLoadingTask = null;
 
-export async function cleanUp() {
-  // pdfjs: tell the worker to shut down and release the file
-  if (g_currentLoadingTask) {
-    try {
-      await g_currentLoadingTask.destroy();
-    } catch (e) {
-      console.error("Error during task destruction:", e);
-    }
-    g_currentLoadingTask = null;
-  }
-  g_currentPdf = {};
-  // last pages rendered reference
-  g_renderJobPages = undefined;
-}
+// export async function cleanUp() {
+//   // pdfjs: tell the worker to shut down and release the file
+//   if (g_currentLoadingTask) {
+//     try {
+//       await g_currentLoadingTask.destroy();
+//     } catch (e) {
+//       console.error("Error during task destruction:", e);
+//     }
+//     g_currentLoadingTask = null;
+//   }
+//   g_currentPdf = {};
+//   // last pages rendered reference
+//   g_renderJobPages = undefined;
+// }
 
-async function loadPdfjsLib(version) {
-  if (g_currentLoadingTask) {
-    // clean up memory: kill background worker process if pdf is open
-    await g_currentLoadingTask.destroy();
-    g_currentLoadingTask = null;
-  }
+// async function loadPdfjsLib(version) {
+//   if (g_currentLoadingTask) {
+//     // clean up memory: kill background worker process if pdf is open
+//     await g_currentLoadingTask.destroy();
+//     g_currentLoadingTask = null;
+//   }
 
-  window.pdfjsLib = null;
-  delete window["pdfjs-dist/build/pdf"];
+//   window.pdfjsLib = null;
+//   delete window["pdfjs-dist/build/pdf"];
 
-  const basePath = `../assets/libs/pdfjs-${version}/build/`;
-  const libPath = `${basePath}pdf.js`;
-  const workerPath = `${basePath}pdf.worker.js`;
+//   const basePath = `../../assets/libs/pdfjs-${version}/build/`;
+//   const libPath = `${basePath}pdf.js`;
+//   const workerPath = `${basePath}pdf.worker.js`;
 
-  // remove the old <script> elements from the HTML
-  document
-    .querySelectorAll(".pdf-version-script")
-    .forEach((element) => element.remove());
+//   // remove the old <script> elements from the HTML
+//   document
+//     .querySelectorAll(".pdf-version-script")
+//     .forEach((element) => element.remove());
 
-  // dynamic loading
-  return new Promise((resolve, reject) => {
-    const script = document.createElement("script");
-    script.className = "pdf-version-script";
+//   // dynamic loading
+//   return new Promise((resolve, reject) => {
+//     const script = document.createElement("script");
+//     script.className = "pdf-version-script";
 
-    // the timestamp (?t=...) forces Electron to bypass the cache to make sure it
-    // loads the code I want
-    script.src = `${libPath}?t=${Date.now()}`;
+//     // the timestamp (?t=...) forces Electron to bypass the cache to make sure it
+//     // loads the code I want
+//     script.src = `${libPath}?t=${Date.now()}`;
 
-    script.onload = () => {
-      // window["pdfjs-dist/build/pdf"] is the internal key PDF.js uses when
-      // loaded via script
-      const lib = window["pdfjs-dist/build/pdf"];
-      if (lib) {
-        window.pdfjsLib = lib;
-        lib.GlobalWorkerOptions.workerSrc = workerPath;
-        console.log(`setting pdfjs v${lib.version}`);
-        resolve(lib);
-      } else {
-        reject(new Error("error loading the PDF library"));
-      }
-    };
+//     script.onload = () => {
+//       // window["pdfjs-dist/build/pdf"] is the internal key PDF.js uses when
+//       // loaded via script
+//       const lib = window["pdfjs-dist/build/pdf"];
+//       if (lib) {
+//         window.pdfjsLib = lib;
+//         lib.GlobalWorkerOptions.workerSrc = workerPath;
+//         console.log(`setting pdfjs v${lib.version}`);
+//         resolve(lib);
+//       } else {
+//         reject(new Error("error loading the PDF library"));
+//       }
+//     };
 
-    script.onerror = () =>
-      reject(new Error(`failed to load the script: ${libPath}`));
+//     script.onerror = () =>
+//       reject(new Error(`failed to load the script: ${libPath}`));
 
-    document.head.appendChild(script);
-  });
-}
+//     document.head.appendChild(script);
+//   });
+// }
 
-async function loadPdf(filePath, pageIndex, password) {
-  g_currentPdfLibVersion = g_settingsPdfLibVersion;
-  await loadPdfjsLib(
-    g_currentPdfLibVersion === "pdfjs_newer" ? "3.8.162" : "2.3.200",
-  );
+// async function loadPdf(filePath, pageIndex, password) {
+//   g_currentPdfLibVersion = g_settingsPdfLibVersion;
+//   await loadPdfjsLib(
+//     g_currentPdfLibVersion === "pdfjs_newer" ? "3.8.162" : "2.3.200",
+//   );
 
-  let escapedInputFilePath = filePath.replaceAll("#", "%23");
-  // hashtags must be escaped so PDF.js doesn't break trying to parse
-  // the path, as it looks for patterns like #page=2&zoom=200
-  await cleanUp();
-  g_currentLoadingTask = pdfjsLib.getDocument({
-    url: escapedInputFilePath,
-    password: password,
-    isEvalSupported: false,
-  });
+//   let escapedInputFilePath = filePath.replaceAll("#", "%23");
+//   // hashtags must be escaped so PDF.js doesn't break trying to parse
+//   // the path, as it looks for patterns like #page=2&zoom=200
+//   await cleanUp();
+//   g_currentLoadingTask = pdfjsLib.getDocument({
+//     url: escapedInputFilePath,
+//     password: password,
+//     isEvalSupported: false,
+//   });
 
-  g_currentLoadingTask.promise
-    .then(function (pdf) {
-      g_currentPdf.pdf = pdf;
-      //console.log(g_currentPdf.pdf);
-      g_currentPdf.pdf
-        .getMetadata()
-        .then(function (metadata) {
-          sendIpcToMain(
-            "pdf-loaded",
-            filePath,
-            pageIndex,
-            g_currentPdf.pdf.numPages,
-            {
-              encrypted: password && password.trim() !== "",
-              creator: metadata.info.Creator,
-              producer: metadata.info.Producer,
-              created: metadata.info.CreationDate,
-              modified: metadata.info.ModDate,
-              format: "PDF " + metadata.info.PDFFormatVersion,
-              author: metadata.info.Author,
-              subject: metadata.info.Subject,
-              keywords: metadata.info.Keywords,
-              title: metadata.info.Title,
-            },
-          );
-        })
-        .catch(function (error) {
-          // keep on anyway
-          sendIpcToMain(
-            "pdf-loaded",
-            filePath,
-            pageIndex,
-            g_currentPdf.pdf.numPages,
-            { encrypted: password && password.trim() !== "" },
-          );
-        });
-    })
-    .catch((error) => {
-      sendIpcToMain("pdf-load-failed", error);
-    });
-}
+//   g_currentLoadingTask.promise
+//     .then(function (pdf) {
+//       g_currentPdf.pdf = pdf;
+//       //console.log(g_currentPdf.pdf);
+//       g_currentPdf.pdf
+//         .getMetadata()
+//         .then(function (metadata) {
+//           sendIpcToMain(
+//             "pdf-loaded",
+//             filePath,
+//             pageIndex,
+//             g_currentPdf.pdf.numPages,
+//             {
+//               encrypted: password && password.trim() !== "",
+//               creator: metadata.info.Creator,
+//               producer: metadata.info.Producer,
+//               created: metadata.info.CreationDate,
+//               modified: metadata.info.ModDate,
+//               format: "PDF " + metadata.info.PDFFormatVersion,
+//               author: metadata.info.Author,
+//               subject: metadata.info.Subject,
+//               keywords: metadata.info.Keywords,
+//               title: metadata.info.Title,
+//             },
+//           );
+//         })
+//         .catch(function (error) {
+//           // keep on anyway
+//           sendIpcToMain(
+//             "pdf-loaded",
+//             filePath,
+//             pageIndex,
+//             g_currentPdf.pdf.numPages,
+//             { encrypted: password && password.trim() !== "" },
+//           );
+//         });
+//     })
+//     .catch((error) => {
+//       sendIpcToMain("pdf-load-failed", error);
+//     });
+// }
 
-function refreshPdfPages(rotation) {
-  // if (g_currentPdf.pages && g_currentPdf.pages.length > 0) {
-  //   if (g_renderJobPages) {
-  //     for (let i = 0; i < g_currentPdf.pages.length; i++) {
-  //       if (g_renderJobPages[i].renderTask) {
-  //         return;
-  //       }
-  //     }
-  //   }
-  //   renderOpenPDFPages(rotation, undefined, false);
-  // }
-}
+// function refreshPdfPages(rotation) {
+//   // if (g_currentPdf.pages && g_currentPdf.pages.length > 0) {
+//   //   if (g_renderJobPages) {
+//   //     for (let i = 0; i < g_currentPdf.pages.length; i++) {
+//   //       if (g_renderJobPages[i].renderTask) {
+//   //         return;
+//   //       }
+//   //     }
+//   //   }
+//   //   renderOpenPDFPages(rotation, undefined, false);
+//   // }
+// }
 
-async function renderPdfPages(pageIndexes, rotation, scrollBarPos, dpi) {
-  // NOTE: pdfjs counts from 1
-  // ref: https://mozilla.github.io/pdf.js/examples/
-  const isDoublePages = pageIndexes.length === 2;
-  if (!isDoublePages) {
-    g_currentPdf.pdf.getPage(pageIndexes[0] + 1).then(
-      function (page) {
-        g_currentPdf.pages = [];
-        g_currentPdf.pages.push(page);
-        renderOpenPDFPages(rotation, scrollBarPos, true, dpi);
-      },
-      function (reason) {
-        // PDF loading error
-        console.error(reason);
-      },
-    );
-  } else {
-    g_currentPdf.pages = [];
-    for (let i = 0; i < pageIndexes.length; i++) {
-      let page = await g_currentPdf.pdf.getPage(pageIndexes[i] + 1);
-      g_currentPdf.pages.push(page);
-    }
-    renderOpenPDFPages(rotation, scrollBarPos, true, dpi);
-  }
-}
+// async function renderPdfPages(pageIndexes, rotation, scrollBarPos, dpi) {
+//   // NOTE: pdfjs counts from 1
+//   // ref: https://mozilla.github.io/pdf.js/examples/
+//   const isDoublePages = pageIndexes.length === 2;
+//   if (!isDoublePages) {
+//     g_currentPdf.pdf.getPage(pageIndexes[0] + 1).then(
+//       function (page) {
+//         g_currentPdf.pages = [];
+//         g_currentPdf.pages.push(page);
+//         renderOpenPDFPages(rotation, scrollBarPos, true, dpi);
+//       },
+//       function (reason) {
+//         // PDF loading error
+//         console.error(reason);
+//       },
+//     );
+//   } else {
+//     g_currentPdf.pages = [];
+//     for (let i = 0; i < pageIndexes.length; i++) {
+//       let page = await g_currentPdf.pdf.getPage(pageIndexes[i] + 1);
+//       g_currentPdf.pages.push(page);
+//     }
+//     renderOpenPDFPages(rotation, scrollBarPos, true, dpi);
+//   }
+// }
 
-async function renderOpenPDFPages(rotation, scrollBarPos, sendPageLoaded, dpi) {
-  // This new method hides the canvases and copies their images to a final
-  // img element, as rendering downsized canvases looks worse to me, more
-  // 'harsh'/broken, especially for texts.
-  ////////////////////////////////////////////////////////////////////////////
-  const jobId = performance.now();
-  if (!g_renderJobPages) {
-    g_renderJobPages = [];
-    g_renderJobPages.push({
-      canvas: document.createElement("canvas"),
-    });
-    g_renderJobPages.push({
-      canvas: document.createElement("canvas"),
-    });
-  }
-  let canvases = [];
-  let createCanvases = false;
-  for (let i = 0; i < g_currentPdf.pages.length; i++) {
-    if (g_renderJobPages[i].renderTask) {
-      createCanvases = true;
-      break;
-    }
-  }
-  for (let i = 0; i < g_currentPdf.pages.length; i++) {
-    if (createCanvases) {
-      g_renderJobPages[i].canvas = document.createElement("canvas");
-      g_renderJobPages[i].renderTask = undefined;
-      console.log(
-        `Old PDF job still rendering, create new canvas (p${i}::dt${Math.trunc(
-          g_renderJobPages[i].jobId - jobId,
-        )}ms)`,
-      );
-    }
-    g_renderJobPages[i].jobId = jobId;
-    canvases.push(g_renderJobPages[i].canvas);
-  }
-  ////////////////////////////////////////////////////////////////////////////
-  const containerDiv = document.getElementById("pages-container");
-  const isDoublePages = g_currentPdf.pages.length === 2;
-  // NOTE: to improve the flickering when loading new pages, I don't empty
-  // the container yet and create the pages row as a hidden element to
-  // only add it to the container and reveal it the last moment, which is when
-  // I delete the previousrow
-  // containerDiv.innerHTML = "";
-  const tempPagesRowDiv = document.createElement("div");
-  tempPagesRowDiv.classList.add("pages-row");
-  tempPagesRowDiv.classList.add("pages-row-hidden-rendering");
-  if (isDoublePages) tempPagesRowDiv.classList.add("pages-row-2p");
-  containerDiv.appendChild(tempPagesRowDiv);
-  tempPagesRowDiv.innerHTML = "";
+// async function renderOpenPDFPages(rotation, scrollBarPos, sendPageLoaded, dpi) {
+//   // This new method hides the canvases and copies their images to a final
+//   // img element, as rendering downsized canvases looks worse to me, more
+//   // 'harsh'/broken, especially for texts.
+//   ////////////////////////////////////////////////////////////////////////////
+//   const jobId = performance.now();
+//   if (!g_renderJobPages) {
+//     g_renderJobPages = [];
+//     g_renderJobPages.push({
+//       canvas: document.createElement("canvas"),
+//     });
+//     g_renderJobPages.push({
+//       canvas: document.createElement("canvas"),
+//     });
+//   }
+//   let canvases = [];
+//   let createCanvases = false;
+//   for (let i = 0; i < g_currentPdf.pages.length; i++) {
+//     if (g_renderJobPages[i].renderTask) {
+//       createCanvases = true;
+//       break;
+//     }
+//   }
+//   for (let i = 0; i < g_currentPdf.pages.length; i++) {
+//     if (createCanvases) {
+//       g_renderJobPages[i].canvas = document.createElement("canvas");
+//       g_renderJobPages[i].renderTask = undefined;
+//       console.log(
+//         `Old PDF job still rendering, create new canvas (p${i}::dt${Math.trunc(
+//           g_renderJobPages[i].jobId - jobId,
+//         )}ms)`,
+//       );
+//     }
+//     g_renderJobPages[i].jobId = jobId;
+//     canvases.push(g_renderJobPages[i].canvas);
+//   }
+//   ////////////////////////////////////////////////////////////////////////////
+//   const containerDiv = document.getElementById("pages-container");
+//   const isDoublePages = g_currentPdf.pages.length === 2;
+//   // NOTE: to improve the flickering when loading new pages, I don't empty
+//   // the container yet and create the pages row as a hidden element to
+//   // only add it to the container and reveal it the last moment, which is when
+//   // I delete the previousrow
+//   // containerDiv.innerHTML = "";
+//   const tempPagesRowDiv = document.createElement("div");
+//   tempPagesRowDiv.classList.add("pages-row");
+//   tempPagesRowDiv.classList.add("pages-row-hidden-rendering");
+//   if (isDoublePages) tempPagesRowDiv.classList.add("pages-row-2p");
+//   containerDiv.appendChild(tempPagesRowDiv);
+//   tempPagesRowDiv.innerHTML = "";
 
-  const finalPagesRowDiv = document.createElement("div");
-  finalPagesRowDiv.classList.add("pages-row");
-  finalPagesRowDiv.classList.add("pages-row-hidden-rendering");
-  if (isDoublePages) finalPagesRowDiv.classList.add("pages-row-2p");
-  containerDiv.appendChild(finalPagesRowDiv);
-  finalPagesRowDiv.innerHTML = "";
+//   const finalPagesRowDiv = document.createElement("div");
+//   finalPagesRowDiv.classList.add("pages-row");
+//   finalPagesRowDiv.classList.add("pages-row-hidden-rendering");
+//   if (isDoublePages) finalPagesRowDiv.classList.add("pages-row-2p");
+//   containerDiv.appendChild(finalPagesRowDiv);
+//   finalPagesRowDiv.innerHTML = "";
 
-  for (let i = 0; i < g_currentPdf.pages.length; i++) {
-    if (g_renderJobPages[i].jobId !== jobId) {
-      // can change during second page
-      console.log(
-        `Skiping page render (p${i}::dt${Math.trunc(
-          g_renderJobPages[i].jobId - jobId,
-        )}ms`,
-      );
-      break;
-    }
-    let tempCanvas = canvases[i];
-    const context = tempCanvas.getContext("2d", { willReadFrequently: true });
-    const finalImg = document.createElement("img");
-    finalImg.classList.add("page-canvas");
-    finalImg.classList.add("page");
-    tempCanvas.classList.add("page-canvas");
-    tempCanvas.classList.add("page");
-    if (isDoublePages) {
-      if (i === 0) {
-        tempCanvas.classList.add("page-1");
-        finalImg.classList.add("page-1");
-      } else {
-        tempCanvas.classList.add("page-2");
-        finalImg.classList.add("page-2");
-      }
-    } else {
-      if (g_currentPdf.pages.length == 1 && getPageMode() !== 0) {
-        tempPagesRowDiv.classList.add("pages-row-2p");
-        tempCanvas.classList.add("page-centered");
-        finalPagesRowDiv.classList.add("pages-row-2p");
-        finalImg.classList.add("page-centered");
-      }
-    }
-    tempPagesRowDiv.appendChild(tempCanvas);
-    setFilterClass(finalImg);
-    finalPagesRowDiv.appendChild(finalImg);
+//   for (let i = 0; i < g_currentPdf.pages.length; i++) {
+//     if (g_renderJobPages[i].jobId !== jobId) {
+//       // can change during second page
+//       console.log(
+//         `Skiping page render (p${i}::dt${Math.trunc(
+//           g_renderJobPages[i].jobId - jobId,
+//         )}ms`,
+//       );
+//       break;
+//     }
+//     let tempCanvas = canvases[i];
+//     const context = tempCanvas.getContext("2d", { willReadFrequently: true });
+//     const finalImg = document.createElement("img");
+//     finalImg.classList.add("page");
+//     finalImg.classList.add("page-img");
+//     tempCanvas.classList.add("page-canvas");
+//     tempCanvas.classList.add("page");
+//     if (isDoublePages) {
+//       if (i === 0) {
+//         tempCanvas.classList.add("page-1");
+//         finalImg.classList.add("page-1");
+//       } else {
+//         tempCanvas.classList.add("page-2");
+//         finalImg.classList.add("page-2");
+//       }
+//     } else {
+//       if (g_currentPdf.pages.length == 1 && getPageMode() !== 0) {
+//         tempPagesRowDiv.classList.add("pages-row-2p");
+//         tempCanvas.classList.add("page-centered");
+//         finalPagesRowDiv.classList.add("pages-row-2p");
+//         finalImg.classList.add("page-centered");
+//       }
+//     }
+//     tempPagesRowDiv.appendChild(tempCanvas);
+//     setFilterClass(finalImg);
+//     finalPagesRowDiv.appendChild(finalImg);
 
-    // old method
-    // // max to clientwith to avoid some issues when the canvas offsetWidth
-    // // doesn't correspond to what I want when, for example, changing page mode
-    // const desiredWidth = Math.max(
-    //   tempCanvas.offsetWidth,
-    //   document.body.clientWidth,
-    // );
-    // const viewport = g_currentPdf.pages[i].getViewport({
-    //   scale: 1,
-    //   rotation,
-    // });
-    // const scale = desiredWidth / viewport.width;
-    // let scaledViewport = g_currentPdf.pages[i].getViewport({
-    //   scale: scale,
-    //   rotation,
-    // });
-    // tempCanvas.height = scaledViewport.height;
-    // tempCanvas.width = desiredWidth;
+//     // old method
+//     // // max to clientwith to avoid some issues when the canvas offsetWidth
+//     // // doesn't correspond to what I want when, for example, changing page mode
+//     // const desiredWidth = Math.max(
+//     //   tempCanvas.offsetWidth,
+//     //   document.body.clientWidth,
+//     // );
+//     // const viewport = g_currentPdf.pages[i].getViewport({
+//     //   scale: 1,
+//     //   rotation,
+//     // });
+//     // const scale = desiredWidth / viewport.width;
+//     // let scaledViewport = g_currentPdf.pages[i].getViewport({
+//     //   scale: scale,
+//     //   rotation,
+//     // });
+//     // tempCanvas.height = scaledViewport.height;
+//     // tempCanvas.width = desiredWidth;
 
-    // DPI - SCALE
-    const page = g_currentPdf.pages[i];
-    let pageWidth = page.view[2]; // [left, top, width, height]
-    let pageHeight = page.view[3];
-    let userUnit = page.userUnit; // 1 unit = 1/72 inch
-    let iPerUnit = 1 / 72;
-    let scaleFactor = dpi / 72;
-    // resize if too big?
-    let bigSide = pageHeight;
-    if (pageHeight < pageWidth) bigSide = pageWidth;
-    let scaledSide = bigSide * scaleFactor;
-    if (scaledSide > 4000) {
-      if ((!userUnit || userUnit <= 1) && bigSide > 2500) {
-        // bad userUnit info?
-        scaleFactor = 1;
-      } else {
-        scaleFactor = 4000 / bigSide;
-      }
-      // console.log(
-      //   "reducing PDF scale factor, img too big. forcing scaleFactor = " +
-      //     scaleFactor,
-      // );
-    }
-    // RENDER
-    let scaledViewport = g_currentPdf.pages[i].getViewport({
-      scale: scaleFactor,
-      rotation,
-    });
+//     // DPI - SCALE
+//     const page = g_currentPdf.pages[i];
+//     let pageWidth = page.view[2]; // [left, top, width, height]
+//     let pageHeight = page.view[3];
+//     let userUnit = page.userUnit; // 1 unit = 1/72 inch
+//     let iPerUnit = 1 / 72;
+//     let scaleFactor = dpi / 72;
+//     // resize if too big?
+//     let bigSide = pageHeight;
+//     if (pageHeight < pageWidth) bigSide = pageWidth;
+//     let scaledSide = bigSide * scaleFactor;
+//     if (scaledSide > 4000) {
+//       if ((!userUnit || userUnit <= 1) && bigSide > 2500) {
+//         // bad userUnit info?
+//         scaleFactor = 1;
+//       } else {
+//         scaleFactor = 4000 / bigSide;
+//       }
+//       // console.log(
+//       //   "reducing PDF scale factor, img too big. forcing scaleFactor = " +
+//       //     scaleFactor,
+//       // );
+//     }
+//     // RENDER
+//     let scaledViewport = g_currentPdf.pages[i].getViewport({
+//       scale: scaleFactor,
+//       rotation,
+//     });
 
-    tempCanvas.height = scaledViewport.height;
-    tempCanvas.width = scaledViewport.width;
+//     tempCanvas.height = scaledViewport.height;
+//     tempCanvas.width = scaledViewport.width;
 
-    const renderContext = {
-      canvasContext: context,
-      viewport: scaledViewport,
-    };
+//     const renderContext = {
+//       canvasContext: context,
+//       viewport: scaledViewport,
+//     };
 
-    const renderTask = g_currentPdf.pages[i].render(renderContext);
-    g_renderJobPages[i].renderTask = renderTask;
-    try {
-      await renderTask.promise;
-    } catch (error) {
-      console.log(
-        `(p${i}::dt${Math.trunc(g_renderJobPages[i].jobId - jobId)}ms`,
-      );
-      console.log(error);
-    }
-    // renderTask.promise
-    //   .then(function () {
-    //   })
-    //   .catch(function (error) {
-    //   });
+//     const renderTask = g_currentPdf.pages[i].render(renderContext);
+//     g_renderJobPages[i].renderTask = renderTask;
+//     try {
+//       await renderTask.promise;
+//     } catch (error) {
+//       console.log(
+//         `(p${i}::dt${Math.trunc(g_renderJobPages[i].jobId - jobId)}ms`,
+//       );
+//       console.log(error);
+//     }
+//     // renderTask.promise
+//     //   .then(function () {
+//     //   })
+//     //   .catch(function (error) {
+//     //   });
 
-    if (g_renderJobPages[i].jobId === jobId) {
-      finalImg.src = tempCanvas.toDataURL("image/jpeg");
-    } else {
-      console.log(
-        `PDF page rendered but didn't use it as it's out of date (p${i}::dt${Math.trunc(
-          g_renderJobPages[i].jobId - jobId,
-        )}ms)`,
-      );
-    }
-    // clean page rendering cache
-    g_currentPdf.pages[i].cleanup();
-    // be gc friendly
-    tempCanvas.width = 0;
-    tempCanvas.height = 0;
-    tempCanvas = null;
-  }
+//     if (g_renderJobPages[i].jobId === jobId) {
+//       finalImg.src = tempCanvas.toDataURL("image/jpeg");
+//     } else {
+//       console.log(
+//         `PDF page rendered but didn't use it as it's out of date (p${i}::dt${Math.trunc(
+//           g_renderJobPages[i].jobId - jobId,
+//         )}ms)`,
+//       );
+//     }
+//     // clean page rendering cache
+//     g_currentPdf.pages[i].cleanup();
+//     // be gc friendly
+//     tempCanvas.width = 0;
+//     tempCanvas.height = 0;
+//     tempCanvas = null;
+//   }
 
-  if (g_renderJobPages[0].jobId === jobId) {
-    finalPagesRowDiv.classList.remove("pages-row-hidden-rendering");
-    while (containerDiv.childNodes.length > 1) {
-      containerDiv.removeChild(containerDiv.firstChild);
-    }
+//   if (g_renderJobPages[0].jobId === jobId) {
+//     finalPagesRowDiv.classList.remove("pages-row-hidden-rendering");
+//     while (containerDiv.childNodes.length > 1) {
+//       containerDiv.removeChild(containerDiv.firstChild);
+//     }
 
-    setScrollBarsPosition(scrollBarPos);
-    if (sendPageLoaded) {
-      const [x1, y1, x2, y2] = g_currentPdf.pages[0].view;
-      const width = x2 - x1;
-      const height = y2 - y1;
-      sendIpcToMain("page-loaded", {
-        dimensions: [width, height],
-      });
-    }
+//     setScrollBarsPosition(scrollBarPos);
+//     if (sendPageLoaded) {
+//       const [x1, y1, x2, y2] = g_currentPdf.pages[0].view;
+//       const width = x2 - x1;
+//       const height = y2 - y1;
+//       sendIpcToMain("page-loaded", {
+//         dimensions: [width, height],
+//       });
+//     }
 
-    for (let i = 0; i < g_currentPdf.pages.length; i++) {
-      g_renderJobPages[i].renderTask = undefined;
-    }
-  } else {
-    console.log("PDF page render out of date");
-    if (finalPagesRowDiv.parentElement)
-      containerDiv.removeChild(finalPagesRowDiv);
-  }
-}
+//     for (let i = 0; i < g_currentPdf.pages.length; i++) {
+//       g_renderJobPages[i].renderTask = undefined;
+//     }
+//   } else {
+//     console.log("PDF page render out of date");
+//     if (finalPagesRowDiv.parentElement)
+//       containerDiv.removeChild(finalPagesRowDiv);
+//   }
+// }

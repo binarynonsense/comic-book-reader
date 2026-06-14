@@ -636,16 +636,6 @@ function init(
       ///////
       updateEpubEbookUI();
     }
-    // pdf reading library select
-    {
-      let select = document.getElementById(
-        "tool-pre-pdf-reading-library-version-select",
-      );
-      select.value = settings.pdfReadingLibrary;
-      select.addEventListener("change", function (event) {
-        sendIpcToMain("set-pdf-reading-lib", select.value);
-      });
-    }
     // pdf reading dpi
     {
       let select = document.getElementById("tool-pre-pdf-reading-dpi-select");

@@ -29,7 +29,6 @@ import {
 } from "./renderer/toolbar.js";
 import { initModalsOnIpcCallbacks, getOpenModal } from "./renderer/modals.js";
 
-import { initIpc as pdfInitIpc } from "./renderer/pdf.js";
 import {
   onInputEvent as modalOnInputEvent,
   onGamepadPolled as modalOnGamepadPolled,
@@ -55,7 +54,6 @@ let g_showLoadingIndicator;
 
 export function initIpc() {
   viewInitIpc();
-  pdfInitIpc();
 
   initModalsOnIpcCallbacks();
   initModalsOnIpcCallbacks();

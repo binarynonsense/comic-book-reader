@@ -119,7 +119,6 @@ const g_defaultSettings = {
     colorText: "#000000", // rgb color in hex
     colorBg: "#ffffff", // rgb color in hex
   },
-  pdfReadingLibrary: "default", // default, pdfjs_older, pdfjs_newer, mupdf
   pdfReadingDpi: 200, // 300, 200, 150, 96 or 72
   cbrCreation: 0, // 0 disabled, 1 use command tool if available
   rarExeFolderPath: undefined,
@@ -322,7 +321,6 @@ exports.resetPreferences = function () {
     "layoutBattery",
     "epubBookType",
     "rememberEpubBookType",
-    "pdfReadingLibrary",
     "pdfReadingDpi",
     "cbrCreation",
     "rarExeFolderPath",
@@ -600,15 +598,6 @@ function sanitize() {
   }
   if (typeof g_settings.rememberEpubBookType !== "boolean") {
     g_settings.rememberEpubBookType = g_defaultSettings.rememberEpubBookType;
-  }
-  if (
-    typeof g_settings.pdfReadingLibrary !== "string" ||
-    (g_settings.pdfReadingLibrary !== "default" &&
-      g_settings.pdfReadingLibrary !== "pdfjs_older" &&
-      g_settings.pdfReadingLibrary !== "pdfjs_newer" &&
-      g_settings.pdfReadingLibrary !== "mupdf")
-  ) {
-    g_settings.pdfReadingLibrary = g_defaultSettings.pdfReadingLibrary;
   }
   if (
     !Number.isInteger(g_settings.pdfReadingDpi) ||
