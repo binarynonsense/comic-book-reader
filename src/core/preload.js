@@ -41,7 +41,7 @@ window.addEventListener("DOMContentLoaded", () => {
       // updateWindowButtons();
     } else if (args[0] == "update-title") {
       document.title = args[1];
-      g_titlebar.updateTitle(args[1]);
+      g_titlebar.updateTitle(args[1].replace(/[\r\n]+/g, ""));
     } else if (args[0] == "update-window-buttons") {
       updateWindowButtons(...args.slice(1));
     } else if (args[0] == "update-tools-common") {
