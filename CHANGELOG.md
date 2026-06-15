@@ -1,3 +1,8 @@
+## v3.23.1
+
+- Reduced the size of the flatpak build available on Flathub.
+- Fixed the Digital Comic Museum tool no longer working.
+
 ## v3.23.0
 
 - Refactored the Reader's code for easier maintenance and future improvements. This should have no effect in how it works compared to the previous version.
