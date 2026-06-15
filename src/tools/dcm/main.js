@@ -357,15 +357,8 @@ async function getPageCallback(pageNum, fileData) {
     const virtualConsole = new jsdom.VirtualConsole();
     virtualConsole.on("warn", () => {});
     const dom = new JSDOM(response.data, { virtualConsole });
-    let images = dom.window.document.getElementsByTagName("img");
-
-    let imageUrl;
-    for (let i = 0; i < images.length; i++) {
-      if (images[i].alt === "Comic Page") {
-        imageUrl = images[i].src;
-        continue;
-      }
-    }
+    let img = dom.window.document.querySelector(".reader-page-image");
+    const imageUrl = img.src;
     return { pageImgSrc: imageUrl, pageImgUrl: imageUrl };
   } catch (error) {
     // console.error(error);

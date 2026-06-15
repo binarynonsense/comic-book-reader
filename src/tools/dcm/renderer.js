@@ -647,27 +647,21 @@ async function getFirstPageInfo(comicId) {
       `https://digitalcomicmuseum.com/preview/index.php?did=${comicId}&page=${1}`,
       { timeout: 15000 },
     );
-    const parser = new DOMParser().parseFromString(response.data, "text/html");
-    //e.g. <a href="https://digitalcomicmuseum.com/preview/index.php?did=21376&page=2" alt="Comic Page - ZIP"><img src='https://cdn.digitalcomicmuseum.com/preview/cache/21376/ff153p00fc-hag.jpg' width='100%' alt='Comic Page'/><br /></a>
-    let images = parser.getElementsByTagName("img");
-    let imageUrl;
-    for (let i = 0; i < images.length; i++) {
-      if (images[i].alt === "Comic Page") {
-        imageUrl = images[i].src;
-        continue;
-      }
-    }
-    //num pages
-    const thumbs = parser.querySelectorAll(".slick-slide");
-    let numPages = thumbs.length;
-    // title
-    let title = parser.title;
-    title = title.substring(
-      title.lastIndexOf("Digital Comic Museum Viewer: ") +
-        "Digital Comic Museum Viewer: ".length,
-      title.lastIndexOf(" - "),
+    const parseDocument = new DOMParser().parseFromString(
+      response.data,
+      "text/html",
     );
-
+    let img = parseDocument.querySelector(".reader-page-image");
+    const imageUrl = img.src;
+    //num pages
+    let numPages = parseDocument.body.getAttribute("data-total-pages");
+    // title
+    let title = parseDocument.querySelector(".reader-title").title;
+    // some titles include things like &#039; -> clean it up
+    const decoder = document.createElement("textarea");
+    decoder.innerHTML = title;
+    title = decoder.value;
+    title = title.replace(/[\r\n]+/g, "");
     return { url: imageUrl, numPages: numPages, name: title };
   } catch (error) {
     console.error(error);
