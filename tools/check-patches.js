@@ -49,7 +49,27 @@ function checkPackagePatches() {
 
       // compare them to see if there's a newer one
       if (latestVersion && cleanCurrentVersion !== latestVersion) {
-        console.log(`${packageName}: ${currentVersion} -> ${latestVersion}`);
+        let releaseDate = "???";
+        try {
+          const npmViewOutput = execSync(
+            `npm view "${packageName}" time --json`,
+            {
+              stdio: ["pipe", "pipe", "ignore"],
+            },
+          )
+            .toString()
+            .trim();
+          if (npmViewOutput) {
+            const time = JSON.parse(npmViewOutput);
+            if (time && time[latestVersion]) {
+              releaseDate = time[latestVersion].split("T")[0];
+            }
+          }
+        } catch (error) {}
+
+        console.log(
+          `${packageName}: ${currentVersion} -> ${latestVersion} (${releaseDate})`,
+        );
         updateCount++;
       }
     } catch (error) {
