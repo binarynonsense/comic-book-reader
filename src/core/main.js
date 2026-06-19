@@ -448,21 +448,21 @@ Object.assign(module.exports, publicExports);
 // NOTE: (2026/06/19) I'm using v39.8.8 of electron as v40.X
 // - broke the youtube player due to changes in header security and I
 //   wasn't able to fix it for now.
-// - dialogs ignore defaultPath
+// - dialogs ignore defaultPath.
 // - forcing x11 as wayland support had problems before 41+ from what I read
-//   (can't test it right now as my dev system is x11)
+//   (can't test it right now as my dev system is x11).
 // Would like to update to 41+ when dialogs are fixes even if that means
 // losing youtube url playback, to among other things get good wayland support.
-// TODO: keep trying to find solutions / learn more / test newer versions.
+// TODO: Keep trying to find solutions / learn more / test newer versions.
 
 // NOTE: (2026/05/25) Only use sharp inside a utility process to avoid crashes
 // due to glib conflicts
 
 // NOTE: (2023/08/02) I'm using v3.x of the tesseract.js module as v4.x
 // was giving errors.
-// TODO: try newer versions & investigate further.
+// TODO: Try newer versions & investigate further.
 
-// NOTE: command to test the memory cage when running the dev script 'npm run
+// NOTE: Command to test the memory cage when running the dev script 'npm run
 // start:safe':
 // systemctl show --user --property=MemoryMax,MemorySwapMax run-*.scope
 
