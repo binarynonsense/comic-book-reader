@@ -111,7 +111,7 @@
     "build:windows": "electron-builder --win --dir --publish never",
     "sharp:windows": "del-cli ./node_modules/sharp && npm install --platform=win32 --arch=x64 sharp",
     "sharp:linux": "del-cli ./node_modules/sharp && npm install --platform=linux --arch=x64 sharp",
-    "chmod-bins:linux": "shx chmod +x node_modules/7zip-bin/linux/x64/7za && shx chmod +x src/assets/bin/7zip/linux/7zz && shx chmod +x src/assets/bin/mupdf/linux/mutool",
+    "chmod-bins:linux": "chmod +x node_modules/7zip-bin/linux/x64/7za && chmod +x src/assets/bin/7zip/linux/7zz && chmod +x src/assets/bin/mupdf/linux/mutool",
     "extras:linux": "echo ${npm_package_version} > ./dist/linux-unpacked/VERSION && echo ${npm_package_version} > ./dist/VERSION",
     "extras:windows": "echo %npm_package_version% > ./dist/win-unpacked/VERSION",
     "licenses": "node ./tools/generate-licenses.js && npm run localization licenses",
@@ -127,7 +127,6 @@
     "del-cli": "7.0.0",
     "electron": "39.8.8",
     "electron-builder": "26.9.0",
-    "shx": "0.4.0",
     "snapsvg-cjs": "0.0.6"
   },
   "dependencies": {
