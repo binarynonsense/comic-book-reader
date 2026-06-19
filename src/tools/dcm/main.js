@@ -113,6 +113,12 @@ function initOnIpcCallbacks() {
     onCloseClicked();
   });
 
+  on("search-browser", (data) => {
+    appUtils.openURLInBrowser(
+      `https://digitalcomicmuseum.com/index.php?ACT=dosearch&terms=${data.query}`,
+    );
+  });
+
   // TODO: 2026 disroot and duckduckgo no longer work, I disabled the
   // option to choose search engines for now
 
@@ -443,6 +449,10 @@ function getLocalization() {
     {
       id: "tool-dcm-search-button-text",
       text: _("tool-shared-ui-search-button").toUpperCase(),
+    },
+    {
+      id: "tool-dcm-search-browser-button-text",
+      text: _("tool-shared-ui-search-browser-button").toUpperCase(),
     },
     {
       id: "tool-dcm-search-results-text",

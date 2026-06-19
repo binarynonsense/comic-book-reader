@@ -14,6 +14,7 @@ import net from "../../shared/both/net.js";
 
 let g_searchInput;
 let g_searchButton;
+let g_searchBrowserButton;
 
 let g_engineSelect;
 
@@ -79,14 +80,26 @@ function init() {
   g_searchButton.addEventListener("click", (event) => {
     onSearch();
   });
+  g_searchButton.classList.add("set-display-none");
+  g_searchBrowserButton = document.getElementById(
+    "tool-dcm-search-browser-button",
+  );
+  function onSearchBrowser() {
+    sendIpcToMain("search-browser", { query: g_searchInput.value });
+  }
+  g_searchBrowserButton.addEventListener("click", (event) => {
+    onSearchBrowser();
+  });
 
   g_searchInput = document.getElementById("tool-dcm-search-input");
   g_searchInput.placeholder = g_localizedSearchPlaceholderText;
   g_searchInput.addEventListener("input", function (event) {
     if (g_searchInput.value !== "") {
       g_searchButton.classList.remove("tools-disabled");
+      g_searchBrowserButton.classList.remove("tools-disabled");
     } else {
       g_searchButton.classList.add("tools-disabled");
+      g_searchBrowserButton.classList.add("tools-disabled");
     }
   });
   g_searchInput.addEventListener("keypress", function (event) {
@@ -98,7 +111,8 @@ function init() {
     ) {
       event.preventDefault();
       if (g_searchInput.value) {
-        onSearch();
+        // onSearch();
+        onSearchBrowser();
       }
     }
   });
