@@ -499,6 +499,7 @@
   "tool-shared-ui-epub-creation-image-storage-o1": "تخزين الصور كملفات",
   "tool-shared-ui-epub-creation-image-storage-o2": "تضمين الصور في html (base64)",
   "tool-shared-ui-search-button": "بحث",
+  "[NEEDS TRANSLATION]tool-shared-ui-search-browser-button": "Search in Browser",
   "tool-shared-ui-search-input": "مدخل البحث",
   "tool-shared-ui-search-results": "نتائج البحث",
   "tool-shared-ui-search-placeholder": "أدخل مفردات البحث",

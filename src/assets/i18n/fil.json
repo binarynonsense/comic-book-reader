@@ -499,6 +499,7 @@
   "tool-shared-ui-epub-creation-image-storage-o1": "I-store ang mga imahe bilang mga file",
   "tool-shared-ui-epub-creation-image-storage-o2": "I-embed ang mga imahe sa html (base64)",
   "tool-shared-ui-search-button": "Maghanap",
+  "[NEEDS TRANSLATION]tool-shared-ui-search-browser-button": "Search in Browser",
   "tool-shared-ui-search-input": "Input para sa Paghahanap",
   "tool-shared-ui-search-results": "Mga Resulta ng Paghahanap",
   "tool-shared-ui-search-placeholder": "Ilagay ang iyong mga termino para sa paghahanap",

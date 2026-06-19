@@ -499,6 +499,7 @@
   "tool-shared-ui-epub-creation-image-storage-o1": "画像をファイルとして保存",
   "tool-shared-ui-epub-creation-image-storage-o2": "画像を HTML に埋め込み (base64)",
   "tool-shared-ui-search-button": "検索",
+  "[NEEDS TRANSLATION]tool-shared-ui-search-browser-button": "Search in Browser",
   "tool-shared-ui-search-input": "検索入力",
   "tool-shared-ui-search-results": "検索結果",
   "tool-shared-ui-search-placeholder": "検索語句を入力",
