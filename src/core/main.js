@@ -203,6 +203,9 @@ log.debug("checking environment");
 if (g_launchInfo.platform === "linux") {
   // ref: https://www.electronjs.org/docs/latest/api/dialog
   app.commandLine.appendSwitch("xdg-portal-required-version", "4");
+  // force x11 for now as wayland support in electron < 41 has issues
+  // users can still use the --ozone-platform=wayland to override it
+  app.commandLine.appendSwitch("ozone-platform", "x11");
 }
 // show vips warnings from sharp only in dev mode
 if (!g_launchInfo.isDev) process.env.VIPS_WARNING = 1;
