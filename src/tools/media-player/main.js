@@ -218,7 +218,7 @@ function initOnIpcCallbacks() {
   });
 
   on("fill-tags", async (files) => {
-    const musicmetadata = require("music-metadata");
+    const musicmetadata = await import("music-metadata");
     let updatedFiles = [];
     for (let index = 0; index < files.length; index++) {
       const file = files[index];
@@ -254,7 +254,6 @@ function initOnIpcCallbacks() {
         log.debug(
           `[Media Player] couldn't fill tags for ${file.url}: ${error}`,
         );
-        sendIpcToRenderer("tags-filled", []);
       }
     }
     sendIpcToRenderer("tags-filled", updatedFiles);

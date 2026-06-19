@@ -136,7 +136,7 @@
     "fast-xml-parser": "5.7.1",
     "jsdom": "29.0.2",
     "jsqr": "1.4.0",
-    "music-metadata": "7.13.4",
+    "music-metadata": "11.12.3",
     "node-7z": "3.0.0",
     "pdf-lib": "1.17.1",
     "pdfkit": "0.18.0",

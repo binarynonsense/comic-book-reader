@@ -445,20 +445,19 @@ Object.assign(module.exports, publicExports);
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+// NOTE: (2026/06/19) I'm using v39.8.8 of electron as v40.X broke the youtube
+// player due to changes in header security and I wasn't able to fix it for now.
+// also dialogs ignore defaultPath
+// Also forcing x11 as wayland support had problems before 41+ from
+// what I read (can't test it right now as my dev system is x11)
+// TODO: keep trying to find solutions / learn more / test newer versions.
+
 // NOTE: (2026/05/25) Only use sharp inside a utility process to avoid crashes
 // due to glib conflicts
-
-// NOTE: (2026/03/23) I'm using v37.X of electron as v40.X broke the youtube
-// player due to changes in header security and I wasn't able to fix it for now.
-// TODO: keep trying to find a solution.
 
 // NOTE: (2023/08/02) I'm using v3.x of the tesseract.js module as v4.x
 // was giving errors.
 // TODO: try newer versions & investigate further.
-
-// NOTE: I'm freezing the music-metadata module version to 7.13.4 as later
-// versions require projects to be ESM.
-// https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c
 
 // NOTE: command to test the memory cage when running the dev script 'npm run
 // start:safe':
