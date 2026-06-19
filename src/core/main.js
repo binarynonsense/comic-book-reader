@@ -449,8 +449,9 @@ Object.assign(module.exports, publicExports);
 // - broke the youtube player due to changes in header security and I
 //   wasn't able to fix it for now.
 // - dialogs ignore defaultPath.
-// - forcing x11 as wayland support had problems before 41+ from what I read
-//   (can't test it right now as my dev system is x11).
+// Also, I'm forcing x11 as wayland support had problems before 41+ from what
+// I read (can't test it right now as my dev system is x11) and I want to set
+// the flatpak args to support wayland so it doesn't have a warning on Flathub.
 // Would like to update to 41+ when dialogs are fixed even if that means
 // losing youtube url playback, to among other things get good wayland support.
 // TODO: Keep trying to find solutions / learn more / test newer versions.
