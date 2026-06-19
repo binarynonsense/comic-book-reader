@@ -445,11 +445,12 @@ Object.assign(module.exports, publicExports);
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-// NOTE: (2026/06/19) I'm using v39.8.8 of electron as v40.X broke the youtube
-// player due to changes in header security and I wasn't able to fix it for now.
-// also dialogs ignore defaultPath
-// Also forcing x11 as wayland support had problems before 41+ from
-// what I read (can't test it right now as my dev system is x11)
+// NOTE: (2026/06/19) I'm using v39.8.8 of electron as
+// - v40.X broke the youtube player due to changes in header security and I
+//   wasn't able to fix it for now.
+// - dialogs ignore defaultPath
+// - forcing x11 as wayland support had problems before 41+ from what I read
+//   (can't test it right now as my dev system is x11)
 // TODO: keep trying to find solutions / learn more / test newer versions.
 
 // NOTE: (2026/05/25) Only use sharp inside a utility process to avoid crashes
