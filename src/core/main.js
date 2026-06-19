@@ -445,13 +445,13 @@ Object.assign(module.exports, publicExports);
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-// NOTE: (2026/06/19) I'm using v39.8.8 of electron as v40.X
+// NOTE: (2026/06/19) I'm using v39.8.8 of electron as tested v41.2.1 and
 // - broke the youtube player due to changes in header security and I
 //   wasn't able to fix it for now.
 // - dialogs ignore defaultPath.
 // - forcing x11 as wayland support had problems before 41+ from what I read
 //   (can't test it right now as my dev system is x11).
-// Would like to update to 41+ when dialogs are fixes even if that means
+// Would like to update to 41+ when dialogs are fixed even if that means
 // losing youtube url playback, to among other things get good wayland support.
 // TODO: Keep trying to find solutions / learn more / test newer versions.
 
