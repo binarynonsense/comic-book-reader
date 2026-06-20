@@ -9,7 +9,6 @@ const path = require("node:path");
 const fs = require("node:fs");
 const timers = require("./timers");
 const log = require("./logger");
-const { forEach } = require("pdfkit/js/pdfkit.standalone");
 
 //////////////////////////////////////////////////////////////////////////////
 // PATHS /////////////////////////////////////////////////////////////////////
