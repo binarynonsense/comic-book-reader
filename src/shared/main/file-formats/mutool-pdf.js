@@ -7,43 +7,14 @@
 
 const path = require("node:path");
 const fs = require("node:fs");
+const binUtils = require("../bin-utils");
 
 ///////////////////////////////////////////////////////////////////////////////
 // MUPDF: PDF /////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-function getPdfBinPath() {
-  const isWin = process.platform === "win32";
-  const binName = isWin ? "mutool-win.exe" : "mutool";
-
-  const isPackaged =
-    process.resourcesPath && !process.resourcesPath.includes("node_modules");
-
-  const binPath = isPackaged
-    ? path.join(
-        process.resourcesPath,
-        "bin",
-        "mupdf",
-        isWin ? "win" : "linux",
-        binName,
-      )
-    : path.join(
-        __dirname,
-        "../../../",
-        "assets",
-        "bin",
-        "mupdf",
-        isWin ? "win" : "linux",
-        binName,
-      );
-
-  if (!isWin && fs.existsSync(binPath)) {
-    try {
-      fs.chmodSync(binPath, 0o755);
-    } catch (error) {}
-  }
-
-  return binPath;
+function getMutoolBinPath() {
+  return binUtils.getMutoolBinPath();
 }
 
 /////////////////////////
@@ -58,7 +29,7 @@ exports.openMuPdf = async function (filePath, password = "") {
   const { spawn } = require("node:child_process");
 
   const result = await new Promise((resolve) => {
-    const binPath = getPdfBinPath();
+    const binPath = getMutoolBinPath();
     const args = ["info"];
     if (password) args.push("-p", password);
     args.push(filePath);
@@ -132,7 +103,7 @@ exports.extractMuPdfPageBuffer = async function (
       pageIndex.toString(),
     ];
 
-    const child = spawn(getPdfBinPath(), args);
+    const child = spawn(getMutoolBinPath(), args);
 
     let stdoutChunks = [];
     let stderr = "";
@@ -271,7 +242,7 @@ exports.extractMuPdf = async function (
           args.push("-r", targetDpi.toString(), "-w", "4500", "-h", "4500");
           args.push(filePath, pageNum.toString());
 
-          const child = spawn(getPdfBinPath(), args);
+          const child = spawn(getMutoolBinPath(), args);
           g_activeTasks.add(child); // Track this specific worker
 
           let headerBuffer = Buffer.alloc(0);

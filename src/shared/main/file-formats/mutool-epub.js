@@ -8,6 +8,7 @@
 const path = require("node:path");
 const fs = require("node:fs");
 const fileUtils = require("../file-utils");
+const binUtils = require("../bin-utils");
 
 ///////////////////////////////////////////////////////////////////////////////
 // MUPDF: EPUB / MOBI / AZW3 //////////////////////////////////////////////////
@@ -27,38 +28,8 @@ let g_defaultEpubConfig = {
   dpi: 144,
 };
 
-function getMuToolBinPath() {
-  const isWin = process.platform === "win32";
-  const binName = isWin ? "mutool-win.exe" : "mutool";
-
-  const isPackaged =
-    process.resourcesPath && !process.resourcesPath.includes("node_modules");
-
-  const binPath = isPackaged
-    ? path.join(
-        process.resourcesPath,
-        "bin",
-        "mupdf",
-        isWin ? "win" : "linux",
-        binName,
-      )
-    : path.join(
-        __dirname,
-        "../../../",
-        "assets",
-        "bin",
-        "mupdf",
-        isWin ? "win" : "linux",
-        binName,
-      );
-
-  if (!isWin && fs.existsSync(binPath)) {
-    try {
-      fs.chmodSync(binPath, 0o755);
-    } catch (error) {}
-  }
-
-  return binPath;
+function getMutoolBinPath() {
+  return binUtils.getMutoolBinPath();
 }
 
 exports.stopMuEpubExtraction = function () {
@@ -83,7 +54,7 @@ exports.openMuEpub = async function (
 ) {
   const { spawn } = require("node:child_process");
 
-  const binPath = getMuToolBinPath();
+  const binPath = getMutoolBinPath();
   const cssFilePath = path.join(
     tempSubFolderPath,
     `tmp_style_${Date.now()}.css`,
@@ -174,7 +145,7 @@ exports.extractMuEpubPageBuffer = async function (
   const sharp = require("sharp");
 
   pageIndex++; // mutool starts pages at 1
-  const binPath = getMuToolBinPath();
+  const binPath = getMutoolBinPath();
 
   return new Promise((resolve) => {
     let cssFilePath = null;
@@ -281,7 +252,7 @@ exports.extractMuEpub = async function (
   const { spawn } = require("node:child_process");
   const sharp = require("sharp");
 
-  const binPath = getMuToolBinPath();
+  const binPath = getMutoolBinPath();
   g_isCancelled = false;
 
   try {

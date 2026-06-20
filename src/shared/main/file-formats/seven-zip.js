@@ -8,57 +8,15 @@
 const path = require("node:path");
 const fs = require("node:fs");
 const fileUtils = require("../file-utils");
+const binUtils = require("../bin-utils");
 const log = require("../logger");
 
 ///////////////////////////////////////////////////////////////////////////////
 // 7ZIP ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-let g_pathTo7zipBin;
-
-function checkPathTo7ZipBin() {
-  if (g_pathTo7zipBin !== undefined) return g_pathTo7zipBin;
-
-  const isWin = process.platform === "win32";
-  const binName = isWin ? "7z.exe" : "7zz";
-  let finalPath;
-
-  const isPackaged =
-    process.resourcesPath.includes("app.asar") ||
-    !process.resourcesPath.includes("node_modules");
-
-  if (isPackaged) {
-    finalPath = path.join(
-      process.resourcesPath,
-      "bin",
-      "7zip",
-      isWin ? "win" : "linux",
-      binName,
-    );
-  } else {
-    finalPath = path.join(
-      __dirname,
-      "../../../",
-      "assets",
-      "bin",
-      "7zip",
-      isWin ? "win" : "linux",
-      binName,
-    );
-  }
-
-  if (!isWin && fs.existsSync(finalPath)) {
-    try {
-      fs.chmodSync(finalPath, 0o755);
-    } catch (e) {}
-  }
-
-  if (!fs.existsSync(finalPath)) {
-    log.error(`7z not found at: ${finalPath}`);
-  }
-
-  g_pathTo7zipBin = finalPath;
-  return g_pathTo7zipBin;
+function get7zBinPath() {
+  return binUtils.get7zBinPath();
 }
 
 // NOTE: I use node-7z for ZIP/7Z as before but native 'spawn' + '-slt' for
@@ -68,12 +26,11 @@ exports.get7ZipEntriesList = async function (filePath, password, archiveType) {
   try {
     const { spawn } = require("node:child_process");
     const Seven = require("node-7z");
-    checkPathTo7ZipBin();
     // ZIP, 7Z
     if (archiveType !== "rar") {
       const pass = password === undefined || password === "" ? "_" : password;
       const seven = Seven.list(filePath, {
-        $bin: g_pathTo7zipBin,
+        $bin: get7zBinPath(),
         charset: "UTF-8",
         password: pass,
         archiveType,
@@ -119,7 +76,7 @@ exports.get7ZipEntriesList = async function (filePath, password, archiveType) {
     }
 
     return await new Promise((resolve) => {
-      const child = spawn(g_pathTo7zipBin, args);
+      const child = spawn(get7zBinPath(), args);
       let imgEntries = [];
       let comicInfoIds = [];
       let isEncrypted = false;
@@ -194,7 +151,6 @@ exports.extract7ZipEntryBuffer = async function (
     const { execFile } = require("node:child_process");
     const fs = require("fs");
     const path = require("path");
-    checkPathTo7ZipBin();
 
     let args = [
       "e",
@@ -212,7 +168,7 @@ exports.extract7ZipEntryBuffer = async function (
 
     await new Promise((resolve, reject) => {
       execFile(
-        g_pathTo7zipBin,
+        get7zBinPath(),
         args,
         { maxBuffer: 1024 * 1024 * 10 },
         (error, stdout, stderr) => {
@@ -254,7 +210,6 @@ exports.extract7Zip = async function (
     const { spawn } = require("node:child_process");
     const Seven = require("node-7z");
     const path = require("path");
-    checkPathTo7ZipBin();
 
     const absPath = path.resolve(filePath);
     const pass = password === undefined || password === "" ? "_" : password;
@@ -271,7 +226,7 @@ exports.extract7Zip = async function (
       }
 
       return await new Promise((resolve) => {
-        g_active7zProcess = spawn(g_pathTo7zipBin, args);
+        g_active7zProcess = spawn(get7zBinPath(), args);
 
         let fullStderr = "";
 
@@ -315,7 +270,7 @@ exports.extract7Zip = async function (
     } else {
       // ZIP, 7Z
       const seven = Seven.extractFull(absPath, tempFolderPath, {
-        $bin: g_pathTo7zipBin,
+        $bin: get7zBinPath(),
         charset: "UTF-8",
         password: pass,
         archiveType: archiveType,
@@ -378,7 +333,6 @@ exports.create7Zip = async function (
   const listFileName = "acbr-file-list.txt";
   const listFilePath = path.join(tempFolderPath, listFileName);
   try {
-    checkPathTo7ZipBin();
     const listContent = [...new Set(filePathsList)]
       .map((entryFilePath) => {
         const relativePath = path.normalize(
@@ -406,7 +360,7 @@ exports.create7Zip = async function (
     }
     args.push("-scsUTF-8"); // tell 7z the list file is UTF-8
 
-    const sevenZipProcess = spawn(path.resolve(g_pathTo7zipBin), args, {
+    const sevenZipProcess = spawn(path.resolve(get7zBinPath()), args, {
       cwd: tempFolderPath,
       windowsHide: true,
     });
@@ -454,13 +408,12 @@ exports.update7ZipWithFolderContents = async function (
   archiveType,
 ) {
   try {
-    checkPathTo7ZipBin();
     const Seven = require("node-7z");
 
     // Doesn't work, saves everything at the root, internal folders are ignored
     // {
     //   let options = {
-    //     $bin: g_pathTo7zipBin,
+    //     $bin: get7zBinPath(),
     //     charset: "UTF-8",
     //     password: password,
     //     workingDir: contentFolderPath,
@@ -473,7 +426,7 @@ exports.update7ZipWithFolderContents = async function (
     // }
 
     let options = {
-      $bin: g_pathTo7zipBin,
+      $bin: get7zBinPath(),
       charset: "UTF-8",
     };
     if (password && password.trim() !== "") {
@@ -515,10 +468,9 @@ exports.getEpubOpfEntriesList = async function (filePath, password) {
     if (password === undefined || password === "") {
       password = "_";
     }
-    checkPathTo7ZipBin();
     const Seven = require("node-7z");
     let options = {
-      $bin: g_pathTo7zipBin,
+      $bin: get7zBinPath(),
       charset: "UTF-8",
       password: password,
     };

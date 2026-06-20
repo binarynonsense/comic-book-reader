@@ -24,6 +24,7 @@ const log = require("../shared/main/logger");
 const tools = require("../shared/main/tools");
 const reader = require("../reader/main");
 const appUtils = require("../shared/main/app-utils");
+const binUtils = require("../shared/main/bin-utils");
 
 let g_mainWindow;
 let g_launchInfo = {};
@@ -170,35 +171,6 @@ if (g_launchInfo.isFlatpak) {
 settings.init();
 // check g_slice
 log.debug("checking environment");
-// NOTE: (2026/04/16): disabling all this together, as seems like it's no
-// longer needed
-// TODO: delete
-// if (g_launchInfo.platform === "linux" && !process.env.G_SLICE) {
-//   // NOTE: if G_SLICE isn't set to 'always-malloc' the app may crash
-//   // during conversions due to an issue with sharp
-//   // NOTE: (2025/07/29) This may no longer be true on current distros.
-//   // Although I'm still not a 100% sure, I'm now not enforcing it by default
-//   if (g_launchInfo.isRelease) {
-//     if (settings.getValue("linuxEnforceGslice")) {
-//       log.warning(
-//         "The G_SLICE environment variable is undefined, setting it to 'always-malloc' and relaunching the app. You can avoid this step by launching ACBR using the ACBR.sh script",
-//         true,
-//       );
-//       process.env.G_SLICE = "always-malloc";
-//       exports.restartApp();
-//     } else {
-//       log.notice(
-//         "The G_SLICE environment variable is undefined and linuxEnforceGslice is set to false in the settings. If you experience crashes during file conversions try running the program using the provided ACBR.sh script, setting G_SLICE to 'always-malloc' in your shell or setting linuxEnforceGslice to true in the settings.",
-//         true,
-//       );
-//     }
-//   } else {
-//     log.notice(
-//       "The G_SLICE environment variable is undefined. If you experience crashes during file conversions try running the program using the provided ACBR.sh script, setting G_SLICE to 'always-malloc' in your shell or setting linuxEnforceGslice to true in the settings.",
-//       true,
-//     );
-//   }
-// }
 // ensure defaultPath works when opening dialogs on linux
 if (g_launchInfo.platform === "linux") {
   // ref: https://www.electronjs.org/docs/latest/api/dialog
@@ -220,6 +192,20 @@ if (g_launchInfo.parsedArgs["cli"] === true) {
 
 // init window
 app.whenReady().then(() => {
+  // security checks
+  // if (g_launchInfo.isDev && !g_launchInfo.isRelease) {
+  //   binUtils.printAllBinHashes();
+  // }
+  const checkResult = binUtils.checkBinHashes(g_launchInfo);
+  if (!checkResult.passed) {
+    // TODO: stop with dialog instead of just warning?
+    // const { dialog } = require("electron");
+    // dialog.showErrorBox("Security Error", checkResult.errorInfo + "\nThe app will now close");
+    // app.quit();
+    // return;
+    log.warning(checkResult.errorInfo);
+  }
+  // create window
   g_mainWindow = windowManager.createWindow(this, g_launchInfo);
   if (g_mainWindow) {
     // macos

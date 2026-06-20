@@ -650,7 +650,7 @@ exports.onIpcMenuAcceleratorPressed = function (id) {
 
 function cleanUpOnQuit() {
   g_mainWindow = undefined;
-  if (!g_launchInfo.isPlayerMode) {
+  if (g_launchInfo && !g_launchInfo.isPlayerMode) {
     systemMonitor.quit();
     if (g_updatesWorker !== undefined) {
       g_updatesWorker.kill();

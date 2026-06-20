@@ -330,35 +330,12 @@ exports.getFileTypeFromBuffer = getFileTypeFromBuffer;
 
 exports.getEpubType = async function (filePath) {
   const Seven = require("node-7z");
-
+  const { get7zBinPath } = require("./bin-utils");
   //////////////
   // bin logic copied from my seven-zip.js file
   const isWin = process.platform === "win32";
   const binName = isWin ? "7z.exe" : "7zz";
-  let pathTo7zip;
-  const isPackaged =
-    process.resourcesPath.includes("app.asar") ||
-    !process.resourcesPath.includes("node_modules");
-  if (isPackaged) {
-    pathTo7zip = path.join(
-      process.resourcesPath,
-      "bin",
-      "7zip",
-      isWin ? "win" : "linux",
-      binName,
-    );
-  } else {
-    pathTo7zip = path.join(
-      __dirname,
-      "../../",
-      "assets",
-      "bin",
-      "7zip",
-      isWin ? "win" : "linux",
-      binName,
-    );
-  }
-  //////////////
+  let pathTo7zip = get7zBinPath();
 
   return new Promise((resolve) => {
     let imageCount = 0;
