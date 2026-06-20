@@ -47,10 +47,49 @@ exports.createRar = async function (
       args.push(`-p${password}`);
     }
 
-    const rarProcess = spawn(rarExePath, args, {
-      cwd: workingDir,
+    // const rarProcess = spawn(rarExePath, args, {
+    //   cwd: workingDir,
+    //   windowsHide: true,
+    // });
+
+    /////////////////////////////////////////////
+
+    // ref: execShellCommand in utils
+
+    let finalCommand = rarExePath;
+    let finalArgs = args;
+    let options = {
       windowsHide: true,
-    });
+      cwd: workingDir,
+    };
+    if (process.platform === "linux" && fs.existsSync("/.flatpak-info")) {
+      const toHost = (originalPath) => {
+        const id = process.env.FLATPAK_ID;
+        if (id === undefined || typeof originalPath !== "string")
+          return originalPath;
+        const home = require("os").homedir();
+        if (originalPath.includes(`${home}/.config`)) {
+          return originalPath.replace(
+            `${home}/.config`,
+            `${home}/.var/app/${id}/config`,
+          );
+        }
+        return originalPath;
+      };
+      if (!rarExePath.includes("/") && !rarExePath.includes("\\")) {
+        finalCommand = "flatpak-spawn";
+        let flatpakArgs = ["--host"];
+        if (workingDir) {
+          const hostDir = toHost(workingDir);
+          flatpakArgs.push(`--directory=${hostDir}`);
+        }
+        finalArgs = [...flatpakArgs, rarExePath, ...finalArgs.map(toHost)];
+        delete options.cwd;
+      }
+    }
+    const rarProcess = spawn(finalCommand, finalArgs, options);
+
+    /////////////////////////////////////////////
 
     let stderrData = "";
     // NOTE: drains stdout to prevent the process from hanging when the buffer
