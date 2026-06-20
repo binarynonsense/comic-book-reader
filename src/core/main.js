@@ -212,6 +212,7 @@ app.whenReady().then(() => {
     // app.on("activate", () => {
     //   if (BrowserWindow.getAllWindows().length === 0) g_mainWindow = acbrGui.createWindow(this, g_launchInfo);
     // });
+
     // header fixes for the video player's youtube support
     // avoids errors 153 and 152-4
     // ref: https://www.electronjs.org/docs/latest/api/web-request
