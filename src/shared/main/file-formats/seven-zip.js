@@ -148,7 +148,7 @@ exports.extract7ZipEntryBuffer = async function (
   archiveType,
 ) {
   try {
-    const { execFile } = require("node:child_process");
+    const { execFileSync } = require("node:child_process");
     const fs = require("fs");
     const path = require("path");
 
@@ -166,7 +166,6 @@ exports.extract7ZipEntryBuffer = async function (
       args.push("-p");
     }
 
-    const { execFileSync } = require("node:child_process");
     try {
       const stdout = execFileSync(get7zBinPath(), args, {
         maxBuffer: 1024 * 1024 * 10,
