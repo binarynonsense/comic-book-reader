@@ -70,7 +70,7 @@ const g_binFilesInfo = [
     os: "linux",
     folderName: "7zip",
     binName: "7zz",
-    hash: "7a115829a9643312289d6cc91e877851f594eda269e20357bf44f03a3f14d9b1",
+    hash: "eea104e8c832b1ed6c63875ed2f50bab80a36dacf8dd0490811058cf20bb2fc5",
   },
   {
     os: "linux",
