@@ -31,7 +31,7 @@ Ein Comicbuch Leser und Konverter für CBZ, CBR, CB7, EPUB, FB2, MOBI 7 und PDF 
   - Suche nach und importiere Comicbuch Metadaten von Comic Vine (hierfür wird ein [Comic Vine API key](https://comicvine.gamespot.com/api/) benötigt).
 - Integrierter Mediaplayer:
   - Audio: MP3, Ogg, WAV, M3U und M3U8 Dateien
-  - Video: Web-kompatible Codecs und Formate wie MP4 und WebM, Youtube URLs und SRT Untertiteldateien
+  - Video: Web-kompatible Codecs und Formate (MP4, WebM...) und SRT Untertiteldateien
   - Kann Playlists als M3U Dateien exportieren.
   - Mehr Formate, Codecs und Funktionen werden unterstützt falls FFmpeg [verfügbar](https://github.com/binarynonsense/comic-book-reader/wiki/Third%E2%80%90Party-Executables-(rar,-ffmpeg...)) ist.
 - Werkzeuge:
@@ -46,7 +46,7 @@ Ein Comicbuch Leser und Konverter für CBZ, CBR, CB7, EPUB, FB2, MOBI 7 und PDF 
     - Text (OCR) aus einer Comicbuch Seite oder Bilddatei.
     - QR Code Text aus einer Comicbuch Seite oder Bilddatei.
     - Eine Farbpalette aus einer Comicbuch Seite oder Bilddatei (kann zu einer GPL oder ACO Palettendatei extrahiert werden).
-  - Suche und öffne:
+  - Suche und/oder öffne:
     - Bücher/Comics von Digital Comics Museum, Internet Archive Books, Project Gutenberg, xkcd Webcomics und Comic Book Plus.
     - Hörbücher von Librivox AudioBooks.
     - Wörterbucheinträge in Wiktionary Dictionary.
