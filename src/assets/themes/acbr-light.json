@@ -99,7 +99,7 @@
   "--modal-bg-color": "#ddd",
   "--modal-input-bg-color": "#eee",
   "--modal-input-text-color": "#555",
-  "--modal-progress-bar-bg-color": "#dbdbdb",
+  "--modal-progress-bar-bg-color": "#cfcfcf",
   "--modal-progress-bar-fg-color": "#589cdf",
   "--modal-button-normal-bg-color": "#777",
   "--modal-button-normal-bg-hover-color": "#666",

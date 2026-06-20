@@ -22,7 +22,7 @@ export function show(options) {
     if (options.zIndexDelta && Number.isInteger(options.zIndexDelta)) {
       modalDiv.style.zIndex = `${
         parseInt(
-          window.getComputedStyle(modalsDiv).getPropertyValue("z-index")
+          window.getComputedStyle(modalsDiv).getPropertyValue("z-index"),
         ) + options.zIndexDelta
       }`;
     }
@@ -30,7 +30,7 @@ export function show(options) {
     if (options.title && typeof options.title === "string") {
       modalDiv.querySelector(".modal-title").innerHTML = options.title.replace(
         /\n/g,
-        "<br>"
+        "<br>",
       );
       modalDiv
         .querySelector(".modal-title")
@@ -125,7 +125,7 @@ export function show(options) {
             if (buttonOptions.callback)
               buttonOptions.callback(
                 event == undefined || event.pointerType !== "mouse",
-                inputElement.value
+                inputElement.value,
               );
           });
           if (buttonOptions.key && typeof buttonOptions.key === "string") {
@@ -211,7 +211,7 @@ export function onInputEvent(modalDiv, type, event) {
           undefined,
           event.key == "Enter",
           upPressed,
-          downPressed
+          downPressed,
         );
         // close x button
         {
@@ -399,7 +399,7 @@ function navigate(
   backPressed,
   actionPressed,
   upPressed,
-  downPressed
+  downPressed,
 ) {
   // close x button
   if (backPressed) {
