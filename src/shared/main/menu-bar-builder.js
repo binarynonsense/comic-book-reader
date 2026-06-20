@@ -218,7 +218,7 @@ function getToolsSubmenu() {
       ],
     },
     {
-      label: _("menu-tools-search"),
+      label: _("menu-tools-websites"),
       submenu: [
         {
           label: _("menu-tools-cbp"),
