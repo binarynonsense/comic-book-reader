@@ -262,18 +262,18 @@ function getToolsSubmenu() {
             core.onMenuToolWiktionary();
           },
         },
-        {
-          label: _("menu-tools-radio"),
-          click() {
-            core.onMenuToolRadio(1);
-          },
-        },
-        {
-          label: _("menu-tools-rssfeeds"),
-          click() {
-            core.onMenuToolRssReader(1);
-          },
-        },
+        // {
+        //   label: "radio-browser",
+        //   click() {
+        //     core.onMenuToolRadio(1);
+        //   },
+        // },
+        // {
+        //   label: _("menu-tools-rssfeeds"),
+        //   click() {
+        //     core.onMenuToolRssReader(1);
+        //   },
+        // },
       ],
     },
     // {
