@@ -166,25 +166,25 @@ exports.extract7ZipEntryBuffer = async function (
       args.push("-p");
     }
 
-    await new Promise((resolve, reject) => {
-      execFile(
-        get7zBinPath(),
-        args,
-        { maxBuffer: 1024 * 1024 * 10 },
-        (error, stdout, stderr) => {
-          const output = (stdout || "") + (stderr || "").toLowerCase();
-          if (
-            error &&
-            (output.includes("password") ||
-              output.includes("encrypted") ||
-              output.includes("wrong password"))
-          ) {
-            return reject("password required");
-          }
-          resolve();
-        },
-      );
-    });
+    const { execFileSync } = require("node:child_process");
+    try {
+      const stdout = execFileSync(get7zBinPath(), args, {
+        maxBuffer: 1024 * 1024 * 10,
+        encoding: "utf8",
+      });
+    } catch (error) {
+      const stdoutStr = error.stdout || "";
+      const stderrStr = error.stderr || "";
+      const output = (stdoutStr + stderrStr).toLowerCase();
+      if (
+        output.includes("password") ||
+        output.includes("encrypted") ||
+        output.includes("wrong password")
+      ) {
+        throw "password required";
+      }
+      throw error;
+    }
 
     const fullPath = path.join(tempSubFolderPath, path.basename(entryName));
     const buffer = fs.readFileSync(fullPath);
@@ -345,12 +345,7 @@ exports.create7Zip = async function (
 
     // a = add to archive
     // -aoa = overwrite all
-    const args = [
-      "a",
-      "-aoa",
-      path.resolve(outputFilePath),
-      `@${listFileName}`,
-    ];
+    const args = ["a", "-aoa", outputFilePath, `@${listFileName}`];
     if (password && password.trim() !== "") {
       args.push(`-p${password}`);
     }
@@ -360,7 +355,7 @@ exports.create7Zip = async function (
     }
     args.push("-scsUTF-8"); // tell 7z the list file is UTF-8
 
-    const sevenZipProcess = spawn(path.resolve(get7zBinPath()), args, {
+    const sevenZipProcess = spawn(get7zBinPath(), args, {
       cwd: tempFolderPath,
       windowsHide: true,
     });
