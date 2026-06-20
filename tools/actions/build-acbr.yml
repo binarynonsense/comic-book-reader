@@ -53,14 +53,14 @@ jobs:
         if: ${{ (matrix.os == 'ubuntu-24.04' && github.event.inputs.createLinux == 'true') || (matrix.os == 'windows-latest' && github.event.inputs.createWindows == 'true') }}
         uses: actions/setup-node@v4
         with:
-          node-version: "20.x"
+          node-version: 22
 
       - name: INSTALL PACKAGES
         if: ${{ (matrix.os == 'ubuntu-24.04' && github.event.inputs.createLinux == 'true') || (matrix.os == 'windows-latest' && github.event.inputs.createWindows == 'true') }}
         run: npm ci
 
       ############################################################################################################
-      
+
       - name: SET NAME AND VERSION
         if: ${{ (matrix.os == 'ubuntu-24.04' && github.event.inputs.createLinux == 'true') || (matrix.os == 'windows-latest' && github.event.inputs.createWindows == 'true') }}
         shell: bash
@@ -91,7 +91,7 @@ jobs:
           echo "RELEASE_NAME=$NEW_APP_VERSION" >> $GITHUB_ENV
 
       ############################################################################################################
-      
+
       - name: INSTALL FLATPAK-BUILDER AND DEPENDENCIES (LINUX)
         if: ${{ matrix.os == 'ubuntu-24.04' && github.event.inputs.createLinux == 'true' }}
         run: |
@@ -102,11 +102,11 @@ jobs:
           flatpak --user remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 
       ############################################################################################################
-      
+
       - name: RUN DIST (LINUX)
         if: ${{ matrix.os == 'ubuntu-24.04' && github.event.inputs.createLinux == 'true' }}
         run: npm run dist:linux
-        
+
       - name: RUN DIST (WINDOWS)
         if: ${{ matrix.os == 'windows-latest' && github.event.inputs.createWindows == 'true' }}
         run: npm run dist:windows
@@ -140,8 +140,8 @@ jobs:
 
           mv ./dist/linux-unpacked ./dist/ACBR_Linux
           cp -r licenses ./dist/ACBR_Linux/licenses
-          rm  ./dist/ACBR_Linux/LICENSE*   
-          
+          rm  ./dist/ACBR_Linux/LICENSE*
+
       - name: PREPARE FILES (WINDOWS)
         if: ${{ matrix.os == 'windows-latest' && github.event.inputs.createWindows == 'true' }}
         shell: bash
@@ -159,7 +159,7 @@ jobs:
           zip -r ./ACBR_Linux_AppImage.zip ./ACBR_Linux_AppImage
           zip -r ./ACBR_Linux_deb.zip ./ACBR_Linux_deb
           zip -r ./ACBR_Linux_flatpak.zip ./ACBR_Linux_flatpak
-          
+
       - name: PREPARE ZIPS (WINDOWS)
         if: ${{ matrix.os == 'windows-latest' && github.event.inputs.createWindows == 'true' }}
         shell: bash
@@ -179,7 +179,7 @@ jobs:
         run: ls ./dist
 
       ############################################################################################################
-      
+
       - name: RELEASE (LINUX) (ALL)
         if: ${{matrix.os == 'ubuntu-24.04' && github.event.inputs.createLinux == 'true' && github.event.inputs.releaseLinAppImage == 'true' }}
         env:
