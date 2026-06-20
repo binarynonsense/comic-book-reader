@@ -109,6 +109,7 @@
   "menu-tools-extract-qr": "نص من صورة لرمز الاستجابة السريعة (QR Code)",
   "menu-tools-rename": "إعادة تسمية",
   "menu-tools-search": "البحث",
+  "[NEEDS TRANSLATION]menu-tools-websites": "Websites",
   "[NOTE TO TRANSLATORS]menu-tools-": "dcm/cbp/iab/gut/librivox/xkcd/wiktionary: contain names of websites, leave those names in English unless there's an official translation",
   "menu-tools-dcm": "المتحف الرقمي للقصص المصورة",
   "menu-tools-cbp": "موقع Comic Book Plus",

@@ -109,6 +109,7 @@
   "menu-tools-extract-qr": "Teksto ng QR Code mula sa Larawan",
   "menu-tools-rename": "Palitan ang Pangalan",
   "menu-tools-search": "Maghanap",
+  "[NEEDS TRANSLATION]menu-tools-websites": "Websites",
   "[NOTE TO TRANSLATORS]menu-tools-": "dcm/cbp/iab/gut/librivox/xkcd/wiktionary: contain names of websites, leave those names in English unless there's an official translation",
   "menu-tools-dcm": "Digital Comic Museum",
   "menu-tools-cbp": "Comic Book Plus",
