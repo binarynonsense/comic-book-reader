@@ -756,29 +756,37 @@ async function fillPublishers() {
   }
 }
 
+let g_catalogTitlesCache;
+
 async function fillTitles(publisherId) {
   cleanUpSelected(false);
+  let parser;
   try {
-    const response = await net.get(
-      `https://digitalcomicmuseum.com/preview/category.php?cid=${publisherId}`,
-      { timeout: 15000 },
-    );
-    const parser = new DOMParser().parseFromString(response.data, "text/html");
+    if (
+      g_catalogTitlesCache &&
+      g_catalogTitlesCache.publisherId === publisherId
+    ) {
+      parser = g_catalogTitlesCache.parser;
+    } else {
+      const response = await net.get(
+        `https://digitalcomicmuseum.com/preview/category.php?cid=${publisherId}`,
+        { timeout: 15000 },
+      );
+      parser = new DOMParser().parseFromString(response.data, "text/html");
+      g_catalogTitlesCache = { publisherId, parser };
+    }
+
     const titleElements = parser
       .querySelectorAll(".browser-category-nav")[0]
       .getElementsByTagName("a");
     g_titlesSelect.innerHTML += `<option value="-1">${g_selectTitleString}</option>`;
     for (let index = 0; index < titleElements.length; index++) {
       let aElement = titleElements[index];
-      g_titlesSelect.innerHTML += `<option value="https://digitalcomicmuseum.com/preview/category.php?cid=${publisherId}${aElement.href}">${aElement.firstChild.textContent.trim()} (${aElement.querySelector("span")?.textContent ?? ""})</option>`;
+      g_titlesSelect.innerHTML += `<option value="${aElement.href}">${aElement.firstChild.textContent.trim()} (${aElement.querySelector("span")?.textContent ?? ""})</option>`;
     }
     document
       .querySelector("#tool-dcm-catalog-error-message-div")
       .classList.add("set-display-none");
-
-    // <a href="#category-121">
-    //   Adventures into the Unknown <span>115</span>
-    // </a>;
   } catch (error) {
     // console.log(error);
     document
@@ -790,8 +798,9 @@ async function fillTitles(publisherId) {
 async function fillComics(titleId) {
   cleanUpSelected(false, false);
   try {
-    const response = await net.get(titleId, { timeout: 15000 });
-    const parser = new DOMParser().parseFromString(response.data, "text/html");
+    // const response = await net.get(titleId, { timeout: 15000 });
+    // const parser = new DOMParser().parseFromString(response.data, "text/html");
+    const parser = g_catalogTitlesCache.parser;
     const id = titleId.split("#")[1];
     const section = parser.querySelector(`#${id}`);
     const comicElements = section.querySelectorAll(".browser-comic-card");
