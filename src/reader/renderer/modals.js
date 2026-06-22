@@ -67,6 +67,10 @@ export function initModalsOnIpcCallbacks() {
   on("show-modal-quick-menu", (...args) => {
     showModalQuickMenu(...args);
   });
+
+  on("show-modal-open-url", (...args) => {
+    showModalOpenURL(...args);
+  });
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -429,5 +433,40 @@ function showModalQuickMenu(
       gpCommand: g_navButtons.quickMenu[0],
     },
     buttons: buttons,
+  });
+}
+
+function showModalOpenURL(title, message, textButton1, textButton2) {
+  if (getOpenModal()) {
+    return;
+  }
+
+  showModal({
+    title,
+    message,
+    zIndexDelta: -450,
+    input: { type: "text", default: "" },
+    close: {
+      callback: () => {
+        modalClosed();
+      },
+      key: "Escape",
+    },
+    buttons: [
+      {
+        text: textButton1.toUpperCase(),
+        callback: (showFocus, value) => {
+          sendIpcToMain("on-modal-open-url-ok-clicked", value);
+          modalClosed();
+        },
+        key: "Enter",
+      },
+      {
+        text: textButton2.toUpperCase(),
+        callback: () => {
+          modalClosed();
+        },
+      },
+    ],
   });
 }

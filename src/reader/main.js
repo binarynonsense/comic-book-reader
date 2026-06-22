@@ -516,6 +516,60 @@ function initOnIpcCallbacks() {
 
   ////////////////////////////////////////////////////////////////////////////
 
+  on("on-modal-open-url-ok-clicked", (url) => {
+    url = url.trim();
+    if (
+      url.startsWith("https://digitalcomicmuseum.com/preview/index.php?did=")
+    ) {
+      // e.g. https://digitalcomicmuseum.com/preview/index.php?did=32771
+      core.sendIpcToRenderer(
+        "tool-dcm",
+        "on-menu-bar-open-url",
+        url,
+        _("tool-shared-modal-title-loading"),
+      );
+    }
+    if (url.startsWith("https://comicbookplus.com/?dlid=")) {
+      // e.g.  https://comicbookplus.com/?dlid=36448
+      core.sendIpcToRenderer(
+        "tool-cbp",
+        "on-menu-bar-open-url",
+        url,
+        _("tool-shared-modal-title-loading"),
+      );
+    } else {
+      sendIpcToRenderer(
+        "show-modal-info",
+        _("tool-shared-modal-title-error"),
+        _("ui-modal-info-couldntopen-url") +
+          "\n" +
+          _("ui-modal-info-url-unsupported-site"),
+        _("ui-modal-prompt-button-ok"),
+      );
+    }
+  });
+
+  on("open-comicdata-from-tool", (data) => {
+    if (!data) {
+      sendIpcToRenderer(
+        "show-modal-info",
+        _("tool-shared-modal-title-error"),
+        _("ui-modal-info-couldntopen-url"),
+        _("ui-modal-prompt-button-ok"),
+      );
+      return;
+    }
+    if (data.source === "dcm") {
+      const tool = require("../tools/dcm/main");
+      openBookFromCallback(data, tool.getPageCallback);
+    } else if (data.source === "cbp") {
+      const tool = require("../tools/cbp/main");
+      openBookFromCallback(data, tool.getPageCallback);
+    }
+  });
+
+  ////////////////////////////////////////////////////////////////////////////
+
   on("open-metadata-tool", () => {
     if (g_fileData.path !== undefined) {
       tools.switchTool("tool-metadata", g_fileData);
@@ -2531,6 +2585,16 @@ exports.onMenuToggleBattery = function () {
 
 exports.onMenuToggleLoadingIndicator = function () {
   toggleLoadingIndicator();
+};
+
+exports.onMenuOpenUrl = function () {
+  sendIpcToRenderer(
+    "show-modal-open-url",
+    _("tool-shared-tab-openurl"),
+    "URL",
+    _("ui-modal-prompt-button-ok"),
+    _("ui-modal-prompt-button-cancel"),
+  );
 };
 
 function onMenuOpenFile(startPath) {

@@ -341,6 +341,20 @@ function getWorkInProgressSubmenu() {
   }
 }
 
+function getOpenUrl() {
+  let entries = [];
+  if (core.isDev() && !core.isRelease()) {
+    entries.push({
+      id: "open-url",
+      label: "[DEV] " + _("tool-shared-tab-openurl") + "...",
+      click() {
+        reader.onMenuOpenUrl();
+      },
+    });
+  }
+  return entries;
+}
+
 function getNormalMenu(settings, history) {
   let menu = [
     {
@@ -354,6 +368,7 @@ function getNormalMenu(settings, history) {
             reader.onMenuOpenFile();
           },
         },
+        ...getOpenUrl(),
         {
           id: "openrecent-file",
           label: _("menu-file-openrecent"),
@@ -856,6 +871,7 @@ function getHomeScreenMenu(settings, history) {
             reader.onMenuOpenFile();
           },
         },
+        ...getOpenUrl(),
         {
           id: "openrecent-file",
           label: _("menu-file-openrecent"),

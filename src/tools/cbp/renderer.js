@@ -251,14 +251,20 @@ function initOnIpcCallbacks() {
     updateColumnsHeight();
   });
 
+  /////////////////////////////////////////////////////////////////////////////
+
+  on("on-menu-bar-open-url", (url, loadingText) => {
+    onOpenComicUrlInACBR(url, loadingText);
+  });
+
+  /////////////////////////////////////////////////////////////////////////////
+
   on("close-modal", () => {
     if (g_openModal) {
       modals.close(g_openModal);
       modalClosed();
     }
   });
-
-  /////////////////////////////////////////////////////////////////////////////
 
   on("modal-update-title-text", (text) => {
     updateModalTitleText(text);
@@ -502,9 +508,9 @@ async function onSearchResultClicked(dlid, openWith) {
 
 //////////////////////////////////////
 
-async function onOpenComicUrlInACBR(url) {
+async function onOpenComicUrlInACBR(url, loadingText) {
   showProgressModal();
-  updateModalTitleText(g_localizedModalLoadingTitleText);
+  updateModalTitleText(g_localizedModalLoadingTitleText ?? loadingText);
   try {
     if (!url) url = g_urlInput.value;
     const tmp = document.createElement("a");
@@ -518,6 +524,7 @@ async function onOpenComicUrlInACBR(url) {
       if (!comicId) return;
 
       let page = await getFirstPageInfo(comicId, 1);
+
       if (page && page.url) {
         let comicData = {
           source: "cbp",
@@ -526,24 +533,34 @@ async function onOpenComicUrlInACBR(url) {
           numPages: page.numPages,
           url: `https://comicbookplus.com/?dlid=${comicId}`,
         };
-        if (page.url) {
+        if (loadingText) {
+          coreSendIpcToMain("reader", "open-comicdata-from-tool", comicData);
+        } else {
           sendIpcToMain("open", comicData);
         }
       } else if (page && page.audioUrl) {
-        showModalOpenInPlayer(
-          page,
-          g_localizedModalOpenInPlayerTitleText,
-          g_localizedModalCancelButtonText,
-          g_localizedModalAddToPlaylistButtonText,
-          g_localizedModalNewPlaylistButtonText,
-        );
-        return;
+        if (loadingText) {
+          // TODO: enable
+          throw "open audioUrl from menu not implemented for now";
+        } else {
+          showModalOpenInPlayer(
+            page,
+            g_localizedModalOpenInPlayerTitleText,
+            g_localizedModalCancelButtonText,
+            g_localizedModalAddToPlaylistButtonText,
+            g_localizedModalNewPlaylistButtonText,
+          );
+          return;
+        }
       }
       closeModal();
     }
   } catch (error) {
     console.error(error);
     closeModal();
+    if (loadingText) {
+      coreSendIpcToMain("reader", "open-comicdata-from-tool", undefined);
+    }
   }
 }
 

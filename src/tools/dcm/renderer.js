@@ -343,14 +343,20 @@ function initOnIpcCallbacks() {
     updateColumnsHeight();
   });
 
+  /////////////////////////////////////////////////////////////////////////////
+
+  on("on-menu-bar-open-url", (url, loadingText) => {
+    onOpenComicUrlInACBR(url, loadingText);
+  });
+
+  /////////////////////////////////////////////////////////////////////////////
+
   on("close-modal", () => {
     if (g_openModal) {
       modals.close(g_openModal);
       modalClosed();
     }
   });
-
-  /////////////////////////////////////////////////////////////////////////////
 
   on("modal-update-title-text", (text) => {
     updateModalTitleText(text);
@@ -608,35 +614,47 @@ async function onSearchResultClicked(dlid, openWith) {
 
 //////////////////////////////////////
 
-async function onOpenComicUrlInACBR(url) {
+async function onOpenComicUrlInACBR(url, loadingText) {
   if (!g_openModal) {
     showProgressModal();
-    updateModalTitleText(g_localizedModalLoadingTitleText);
+    updateModalTitleText(g_localizedModalLoadingTitleText ?? loadingText);
   }
-  if (!url) url = g_dcmUrlInput.value;
-  const tmp = document.createElement("a");
-  tmp.href = url;
-  if (tmp.host === "digitalcomicmuseum.com") {
-    // e.g. https://digitalcomicmuseum.com/preview/index.php?did=32771
-    let comicId;
-    let parts = url.split("did=");
-    if (parts.length === 2 && isValidId(parts[1])) {
-      comicId = parts[1];
-    }
-    if (!comicId) return;
+  try {
+    if (!url) url = g_dcmUrlInput.value;
+    const tmp = document.createElement("a");
+    tmp.href = url;
+    if (tmp.host === "digitalcomicmuseum.com") {
+      // e.g. https://digitalcomicmuseum.com/preview/index.php?did=32771
+      let comicId;
+      let parts = url.split("did=");
+      if (parts.length === 2 && isValidId(parts[1])) {
+        comicId = parts[1];
+      }
+      if (!comicId) return;
 
-    let page = await getFirstPageInfo(comicId, 1);
-    let comicData = {
-      source: "dcm",
-      comicId: comicId,
-      name: page.name,
-      numPages: page.numPages,
-      url: `https://digitalcomicmuseum.com/preview/index.php?did=${comicId}`,
-    };
-    if (page.url) {
-      sendIpcToMain("open", comicData);
+      let page = await getFirstPageInfo(comicId, 1);
+
+      if (page && page.url) {
+        let comicData = {
+          source: "dcm",
+          comicId: comicId,
+          name: page.name,
+          numPages: page.numPages,
+          url: `https://digitalcomicmuseum.com/preview/index.php?did=${comicId}`,
+        };
+        if (loadingText) {
+          coreSendIpcToMain("reader", "open-comicdata-from-tool", comicData);
+        } else {
+          sendIpcToMain("open", comicData, closeTool);
+        }
+      }
+    }
+  } catch (error) {
+    if (loadingText) {
+      coreSendIpcToMain("reader", "open-comicdata-from-tool", undefined);
     }
   }
+  // TODO: error modal if no data?
   closeModal();
 }
 
