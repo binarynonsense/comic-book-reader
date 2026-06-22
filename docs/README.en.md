@@ -58,10 +58,10 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB, FB2, MOBI 7 and PDF f
   - Other:
     - RSS reader
     - Internet Radio
-<a name="note_1"></a>
+
 > Notes:
 >
-> [1]: Including password protected PDF, CBZ, CB7 and CBR files.
+> <a name="note_1"></a>[1]: Including password protected PDF, CBZ, CB7 and CBR files.
 >
 > [2]: Images only.
 >
