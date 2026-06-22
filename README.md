@@ -14,10 +14,10 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB, FB2, MOBI 7 and PDF f
 ## Features:
 
 - Windows & Linux versions
-- Compatible file formats<sup>[1]</sup>:
+- Compatible file formats<sup>[[1]](#note_1)</sup>:
   - Comic books: CBZ, CBR, CB7, PDF and EPUB
   - Image files: JPG, PNG, WebP and AVIF
-  - Ebooks: PDF, FB2, MOBI 7<sup>[4]</sup> and EPUB
+  - Ebooks: PDF, FB2, MOBI 7<sup>[[4]](#note_4)</sup> and EPUB
 - Windowed (simple UI) and full-screen (no UI) modes
 - 'Single page', 'double page' and 'double page (center first page)' page modes
 - 'Fit to width', 'fit to height', 'fit to both' and a customizable 'scale to height' page views
@@ -27,19 +27,20 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB, FB2, MOBI 7 and PDF f
 - Portable mode (by creating a file named _portable.txt_ in the same folder as the executable)
 - Metadata editor:
   - View the metadata in PDF and EPUB files or stored in ComicInfo.xml files inside CBR, CBZ and CB7 comic books.
-  - Create and/or modify the metadata in PDF and EPUB files or stored in ComicInfo.xml files inside unencrypted CBR<sup>[3]</sup>, CBZ and CB7 comic books.
+  - Create and/or modify the metadata in PDF and EPUB files or stored in ComicInfo.xml files inside unencrypted CBR<sup>[[3]](#note_3)</sup>, CBZ and CB7 comic books.
   - Search for and import comic book metadata from Comic Vine (a [Comic Vine API key](https://comicvine.gamespot.com/api/) is required).
 - Integrated media player:
   - Audio: MP3, Ogg, WAV, M3U and M3U8 files
   - Video: web-compatible codecs and formats (MP4, WebM...) and SRT subtitle files
   - Can export playlists to M3U files.
   - More formats, codecs and features are supported if FFmpeg is [available](<https://github.com/binarynonsense/comic-book-reader/wiki/Third%E2%80%90Party-Executables-(rar,-ffmpeg...)>).
-- Tools:
+  - Can be launched in [stand-alone mode](https://github.com/binarynonsense/comic-book-reader/wiki/Media-Player:-Launch-in-Stand-Alone-Mode).
+- Tools<sup>[[5]](#note_5)</sup>:
   - Convert/Resize:
-    - Comic books and ebooks (CBR, CBZ, CB7, FB2, MOBI 7<sup>[4]</sup>, PDF or EPUB) to comic books (CBR<sup>[3]</sup>, CBZ, CB7, PDF or EPUB<sup>[2]</sup>).
+    - Comic books and ebooks (CBR, CBZ, CB7, FB2, MOBI 7<sup>[[4]](#note_4)</sup>, PDF or EPUB) to comic books (CBR<sup>[[3]](#note_3)</sup>, CBZ, CB7, PDF or EPUB<sup>[[2]](#note_2)</sup>).
     - Images (JPG, PNG, AVIF or WebP).
   - Create:
-    - A comic book (CBR<sup>[3]</sup>, CBZ, CB7, PDF or EPUB<sup>[2]</sup>) from a list of image files, ebooks and/or comic books.
+    - A comic book (CBR<sup>[[3]](#note_3)</sup>, CBZ, CB7, PDF or EPUB<sup>[[2]](#note_2)</sup>) from a list of image files, ebooks and/or comic books.
     - A QR code image from text.
   - Extract:
     - Comic book pages (to JPG, PNG, AVIF or WebP).
@@ -59,15 +60,18 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB, FB2, MOBI 7 and PDF f
     - RSS reader
     - Internet Radio
 
+
 > Notes:
 >
-> [1]: Including password protected PDF, CBZ, CB7 and CBR files.
+> <a name="note_1"></a>[1]: Including password protected PDF, CBZ, CB7 and CBR files.
 >
-> [2]: Images only.
+> <a name="note_2"></a>[2]: Images only.
 >
-> [3]: Creating and modifying CBR files are disabled by default. They can be enabled in the preferences but require a third-party command-line tool ([rar](https://github.com/binarynonsense/comic-book-reader/wiki/Third%E2%80%90Party-Executables-(rar,-ffmpeg...))) to be installed in the system.
+> <a name="note_3"></a>[3]: Creating and modifying CBR files are disabled by default. They can be enabled in the preferences but require a third-party command-line tool ([rar](https://github.com/binarynonsense/comic-book-reader/wiki/Third%E2%80%90Party-Executables-(rar,-ffmpeg...))) to be installed in the system.
 >
-> [4]: Only legacy MOBI (MOBI 7) files are supported. Newer formats like KF8 (AZW3) are not compatible.
+> <a name="note_4"></a>[4]: Only legacy MOBI (MOBI 7) files are supported. Newer formats like KF8 (AZW3) are not compatible.
+>
+> <a name="note_5"></a>[5]: Some of the tools can also run directly [through the command line](https://github.com/binarynonsense/comic-book-reader/wiki/Command%E2%80%90Line-Tools:-Launch-Options) rather than the graphical user interface.
 
 ## Downloads:
 

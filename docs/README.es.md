@@ -14,10 +14,10 @@ Un lector y conversor de cómics para archivos en formato CBZ, CBR, CB7, EPUB, F
 ## Características:
 
 - Versiones para Windows y Linux
-- Formatos de archivo compatibles<sup>[1]</sup>:
+- Formatos de archivo compatibles<sup>[[1]](#note_1)</sup>:
   - Cómics: CBZ, CBR, CB7, PDF y EPUB
   - Archivos de imagen: JPG, PNG, WebP y AVIF
-  - Ebooks: PDF, FB2, MOBI 7<sup>[4]</sup> y EPUB
+  - Ebooks: PDF, FB2, MOBI 7<sup>[[4]](#note_4)</sup> y EPUB
 - Modos de ventana (IU simple) y pantalla completa (sin IU)
 - Modos de página: 'página simple', 'página doble' y 'página doble (centrar primera página')
 - Vistas de pagina: 'ajustar a anchura', 'ajustar a altura', 'ajustar a ambos' y 'escalar a altura' personalizable
@@ -27,19 +27,20 @@ Un lector y conversor de cómics para archivos en formato CBZ, CBR, CB7, EPUB, F
 - Modo portátil (al crear un archivo llamado _portable.txt_ en la misma carpeta que el ejecutable)
 - Editor de metadatos:
   - Ver los metadatos en archivos PDF y EPUB o almacenados en archivos ComicInfo.xml dentro de cómics CBR, CBZ y CB7.
-  - Crear y/o modificar los metadatos en archivos PDF y EPUB o almacenados en archivos ComicInfo.xml dentro de cómics CBR<sup>[3]</sup>, CBZ y CB7 no encriptados.
+  - Crear y/o modificar los metadatos en archivos PDF y EPUB o almacenados en archivos ComicInfo.xml dentro de cómics CBR<sup>[[3]](#note_3)</sup>, CBZ y CB7 no encriptados.
   - Buscar e importar metadatos de cómics de Comic Vine (es necesaria una [clave API de Comic Vine](https://comicvine.gamespot.com/api/)).
 - Reproductor de multimedia integrado:
   - Audio: archivos MP3, Ogg, WAV, M3U y M3U8
   - Vídeo: códecs y formatos compatibles con la web (MP4, WebM...) y archivos de subtítulos SRT
   - Puede exportar listas de reproducción a archivos M3U.
   - Admite más formatos, códecs y funciones si FFmpeg está [disponible](<https://github.com/binarynonsense/comic-book-reader/wiki/Third%E2%80%90Party-Executables-(rar,-ffmpeg...)>).
-- Herramientas:
+  - Se puede iniciar en [modo independiente](https://github.com/binarynonsense/comic-book-reader/wiki/Media-Player:-Launch-in-Stand-Alone-Mode).
+- Herramientas<sup>[[5]](#note_5)</sup>:
   - Convertir/Redimensionar:
-    - Cómics y libros (CBR, CBZ, CB7, FB2, MOBI 7<sup>[4]</sup>, PDF o EPUB) a cómics (CBR<sup>[3]</sup>, CBZ, CB7, PDF o EPUB<sup>[2]</sup>).
+    - Cómics y libros (CBR, CBZ, CB7, FB2, MOBI 7<sup>[[4]](#note_4)</sup>, PDF o EPUB) a cómics (CBR<sup>[[3]](#note_3)</sup>, CBZ, CB7, PDF o EPUB<sup>[[2]](#note_2)</sup>).
     - Imágenes (JPG, PNG, AVIF o WebP).
   - Crear:
-    - Un cómic (CBR<sup>[3]</sup>, CBZ, CB7, PDF o EPUB<sup>[2]</sup>) a partir de una lista de archivos de imagen, libros y/o cómics.
+    - Un cómic (CBR<sup>[[3]](#note_3)</sup>, CBZ, CB7, PDF o EPUB<sup>[[2]](#note_2)</sup>) a partir de una lista de archivos de imagen, libros y/o cómics.
     - Una imagen de código QR a partir de un texto.
   - Extraer:
     - Páginas de cómics (a JPG, PNG, AVIF o WebP).
@@ -61,13 +62,15 @@ Un lector y conversor de cómics para archivos en formato CBZ, CBR, CB7, EPUB, F
 
 > Notas:
 >
-> [1]: Incluyendo archivos PDF, CBZ, CB7 y CBR protegidos con contraseña.
+> <a name="note_1"></a>[1]: Incluyendo archivos PDF, CBZ, CB7 y CBR protegidos con contraseña.
 >
-> [2]: Solo imágenes.
+> <a name="note_2"></a>[2]: Solo imágenes.
 >
-> [3]: La creación y modificación de archivos CBR están desactivadas por defecto. Se pueden activar en las preferencias pero requieren que una herramienta de línea de comandos de terceros ([rar](https://github.com/binarynonsense/comic-book-reader/wiki/Third%E2%80%90Party-Executables-(rar,-ffmpeg...)) se encuentre instalada en el sistema.
+> <a name="note_3"></a>[3]: La creación y modificación de archivos CBR están desactivadas por defecto. Se pueden activar en las preferencias pero requieren que una herramienta de línea de comandos de terceros ([rar](https://github.com/binarynonsense/comic-book-reader/wiki/Third%E2%80%90Party-Executables-(rar,-ffmpeg...)) se encuentre instalada en el sistema.
 >
-> [4]: Solo se admiten archivos legacy MOBI (MOBI 7). Los formatos más recientes, como KF8 (AZW3), no son compatibles.
+> <a name="note_4"></a>[4]: Solo se admiten archivos legacy MOBI (MOBI 7). Los formatos más recientes, como KF8 (AZW3), no son compatibles.
+>
+> <a name="note_5"></a>[5]: Algunas de las herramientas también pueden ejecutarse directamente [a través de la línea de comandos](https://github.com/binarynonsense/comic-book-reader/wiki/Command%E2%80%90Line-Tools:-Launch-Options) en lugar de la interfaz gráfica de usuario.
 
 ## Descargas:
 
