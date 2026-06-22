@@ -34,7 +34,8 @@ Ein Comicbuch Leser und Konverter für CBZ, CBR, CB7, EPUB, FB2, MOBI 7 und PDF 
   - Video: Web-kompatible Codecs und Formate (MP4, WebM...) und SRT Untertiteldateien
   - Kann Playlists als M3U Dateien exportieren.
   - Mehr Formate, Codecs und Funktionen werden unterstützt falls FFmpeg [verfügbar](https://github.com/binarynonsense/comic-book-reader/wiki/Third%E2%80%90Party-Executables-(rar,-ffmpeg...)) ist.
-- Werkzeuge:
+  - Können im ['Standalone' Modus](https://github.com/binarynonsense/comic-book-reader/wiki/Media-Player:-Launch-in-Stand-Alone-Mode) gestartet werden.
+- Werkzeuge<sup>[[5]](#note_5)</sup>:
   - Konvertieren/Größe ändern:
     - Comicbücher und E-Books (CBR, CBZ, CB7, FB2, MOBI 7<sup>[[4]](#note_4)</sup>, PDF oder EPUB) zu Comicbücher (CBR<sup>[[3]](#note_3)</sup>, CBZ, CB7, PDF oder EPUB<sup>[[2]](#note_2)</sup>).
     - Bilder (JPG, PNG, AVIF oder WebP).
@@ -59,6 +60,7 @@ Ein Comicbuch Leser und Konverter für CBZ, CBR, CB7, EPUB, FB2, MOBI 7 und PDF 
     - RSS Reader
     - Internet Radio
 
+
 > Hinweise:
 >
 > <a name="note_1"></a>[1]: Dazu gehören Passwort geschützte PDF, CBZ, CB7 und CBR Dateien.
@@ -68,6 +70,8 @@ Ein Comicbuch Leser und Konverter für CBZ, CBR, CB7, EPUB, FB2, MOBI 7 und PDF 
 > <a name="note_3"></a>[3]: Das Erstellen und Modifizieren von CBR Dateien ist standardmäßig deaktiviert. Diese Funktionen können über die Einstellungen aktiviert werden, benötigen aber ein Drittanbieter Kommandozeilen-werkzeug ([rar](https://github.com/binarynonsense/comic-book-reader/wiki/Third%E2%80%90Party-Executables-(rar,-ffmpeg...))), welches im System installiert sein muss.
 >
 > <a name="note_4"></a>[4]: Nur "legacy" MOBI (MOBI 7) Dateien werden unterstützt. Neuere Formate wie KF8 (AZW3) sind nicht kompatibel.
+>
+> <a name="note_5"></a>[5]: Einige der Werkzeuge können auch direkt [über die Kommandozeile](https://github.com/binarynonsense/comic-book-reader/wiki/Command%E2%80%90Line-Tools:-Launch-Options) anstelle einer grafischen Benutzeroberfläche laufen.
 
 ## Downloads:
 
