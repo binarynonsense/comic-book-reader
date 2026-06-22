@@ -128,36 +128,36 @@ function init() {
     "#tool-dcm-open-selected-browser-button",
   );
 
-  // g_publishersSelect.addEventListener("change", (event) => {
-  //   if (event.target.value == -1) {
-  //     cleanUpSelected(false);
-  //     return;
-  //   }
-  //   g_comicsSelect.innerHTML = "";
-  //   fillTitles(event.target.value);
-  // });
-  // g_titlesSelect.addEventListener("change", (event) => {
-  //   if (event.target.value == -1) {
-  //     cleanUpSelected(false, false);
-  //     return;
-  //   }
-  //   fillComics(event.target.value);
-  // });
-  // g_comicsSelect.addEventListener("change", async (event) => {
-  //   if (event.target.value == -1) {
-  //     return;
-  //   }
-  //   let comicId = event.target.value;
-  //   let page = await getFirstPageInfo(comicId, 1);
-  //   g_selectedComicData = {
-  //     source: "dcm",
-  //     comicId: comicId,
-  //     name: event.target.options[event.target.selectedIndex].text,
-  //     numPages: page.numPages,
-  //     url: `https://digitalcomicmuseum.com/preview/index.php?did=${comicId}`,
-  //   };
-  //   checkValidData();
-  // });
+  g_publishersSelect.addEventListener("change", (event) => {
+    if (event.target.value == -1) {
+      cleanUpSelected(false);
+      return;
+    }
+    g_comicsSelect.innerHTML = "";
+    fillTitles(event.target.value);
+  });
+  g_titlesSelect.addEventListener("change", (event) => {
+    if (event.target.value == -1) {
+      cleanUpSelected(false, false);
+      return;
+    }
+    fillComics(event.target.value);
+  });
+  g_comicsSelect.addEventListener("change", async (event) => {
+    if (event.target.value == -1) {
+      return;
+    }
+    let comicId = event.target.value;
+    let page = await getFirstPageInfo(comicId, 1);
+    g_selectedComicData = {
+      source: "dcm",
+      comicId: comicId,
+      name: event.target.options[event.target.selectedIndex].text,
+      numPages: page.numPages,
+      url: `https://digitalcomicmuseum.com/preview/index.php?did=${comicId}`,
+    };
+    checkValidData();
+  });
 
   g_openSelectedInACBRButton.addEventListener("click", (event) => {
     if (g_selectedComicData) {
@@ -258,18 +258,17 @@ function switchSection(id) {
 
     if (index === 0) {
       g_searchInput.focus();
+    } else if (index === 1) {
+      if (g_publishersSelect.innerHTML == "") {
+        document
+          .querySelector("#tool-dcm-catalog-error-message-div")
+          .classList.add("set-display-none");
+        (async () => {
+          await fillPublishers();
+          checkValidData();
+        })(); // async
+      }
     }
-    // else if (index === 1) {
-    //   if (g_publishersSelect.innerHTML == "") {
-    //     document
-    //       .querySelector("#tool-dcm-catalog-error-message-div")
-    //       .classList.add("set-display-none");
-    //     (async () => {
-    //       await fillPublishers();
-    //       checkValidData();
-    //     })(); // async
-    //   }
-    // }
   }
   updateColumnsHeight(true);
 }
@@ -729,83 +728,89 @@ function checkValidData() {
   }
 }
 
-// async function fillPublishers() {
-//   cleanUpSelected();
-//   try {
-//     const response = await net.get(
-//       "https://digitalcomicmuseum.com/preview/index.php",
-//       { timeout: 15000 },
-//     );
-//     const parser = new DOMParser().parseFromString(response.data, "text/html");
-//     //e.g. <div class='pull-left'><a href='category.php?cid=98'>Ace Magazines</a>
-//     const publisherElements = parser.querySelectorAll(".pull-left");
-//     g_publishersSelect.innerHTML += `<option value="-1">${g_selectPublisherString}</option>`;
-//     for (let index = 0; index < publisherElements.length; index++) {
-//       let aElement = publisherElements[index].getElementsByTagName("a")[0];
-//       let parts = aElement.href.split("cid=");
-//       g_publishersSelect.innerHTML += `<option value="${parts[1]}">${aElement.innerHTML}</option>`;
-//     }
-//     document
-//       .querySelector("#tool-dcm-catalog-error-message-div")
-//       .classList.add("set-display-none");
-//   } catch (error) {
-//     // console.log(error);
-//     document
-//       .querySelector("#tool-dcm-catalog-error-message-div")
-//       .classList.remove("set-display-none");
-//   }
-// }
+async function fillPublishers() {
+  cleanUpSelected();
+  try {
+    const response = await net.get(
+      "https://digitalcomicmuseum.com/preview/index.php#publishers",
+      { timeout: 15000 },
+    );
+    const parser = new DOMParser().parseFromString(response.data, "text/html");
+    const publisherElements = parser.querySelectorAll(
+      ".browser-publisher-card",
+    );
+    g_publishersSelect.innerHTML += `<option value="-1">${g_selectPublisherString}</option>`;
+    for (let index = 0; index < publisherElements.length; index++) {
+      let aElement = publisherElements[index];
+      let parts = aElement.href.split("cid=");
+      g_publishersSelect.innerHTML += `<option value="${parts[1]}">${aElement.children[1].children[0].innerHTML}</option>`;
+    }
+    document
+      .querySelector("#tool-dcm-catalog-error-message-div")
+      .classList.add("set-display-none");
+  } catch (error) {
+    // console.log(error);
+    document
+      .querySelector("#tool-dcm-catalog-error-message-div")
+      .classList.remove("set-display-none");
+  }
+}
 
-// async function fillTitles(publisherId) {
-//   cleanUpSelected(false);
-//   try {
-//     const response = await net.get(
-//       `https://digitalcomicmuseum.com/preview/select.php?id=${publisherId}`,
-//       { timeout: 15000 },
-//     );
-//     //e.g. [ {"optionValue": "98", "optionDisplay": "Please Select a Comic Title"},{"optionValue": "289", "optionDisplay": "All Love"},...
-//     const data = response.data;
-//     let text = `<option value="-1">${g_selectTitleString}</option>`;
-//     for (let index = 1; index < data.length; index++) {
-//       text += `<option value="${data[index].optionValue}">${data[index].optionDisplay}</option>`;
-//     }
-//     g_titlesSelect.innerHTML += text;
-//     document
-//       .querySelector("#tool-dcm-catalog-error-message-div")
-//       .classList.add("set-display-none");
-//   } catch (error) {
-//     // console.log(error);
-//     document
-//       .querySelector("#tool-dcm-catalog-error-message-div")
-//       .classList.remove("set-display-none");
-//   }
-// }
+async function fillTitles(publisherId) {
+  cleanUpSelected(false);
+  try {
+    const response = await net.get(
+      `https://digitalcomicmuseum.com/preview/category.php?cid=${publisherId}`,
+      { timeout: 15000 },
+    );
+    const parser = new DOMParser().parseFromString(response.data, "text/html");
+    const titleElements = parser
+      .querySelectorAll(".browser-category-nav")[0]
+      .getElementsByTagName("a");
+    g_titlesSelect.innerHTML += `<option value="-1">${g_selectTitleString}</option>`;
+    for (let index = 0; index < titleElements.length; index++) {
+      let aElement = titleElements[index];
+      g_titlesSelect.innerHTML += `<option value="https://digitalcomicmuseum.com/preview/category.php?cid=${publisherId}${aElement.href}">${aElement.firstChild.textContent.trim()} (${aElement.querySelector("span")?.textContent ?? ""})</option>`;
+    }
+    document
+      .querySelector("#tool-dcm-catalog-error-message-div")
+      .classList.add("set-display-none");
 
-// async function fillComics(titleId) {
-//   cleanUpSelected(false, false);
-//   try {
-//     const response = await net.get(
-//       `https://digitalcomicmuseum.com/preview/select.php?cid=${titleId}`,
-//       { timeout: 15000 },
-//     );
-//     //e.g. [ {"optionValue": "0", "optionDisplay": "Please Select a Comic Book"},{"optionValue": "https://digitalcomicmuseum.com/preview/index.php?did=7793", "optionDisplay": "World War III #01 (inc)"},...
-//     let data = response.data;
-//     let text = `<option value="-1">${g_selectComicString}</option>`;
-//     for (let index = 1; index < data.length; index++) {
-//       let parts = data[index].optionValue.split("did=");
-//       text += `<option value="${parts[1]}">${data[index].optionDisplay}</option>`;
-//     }
-//     g_comicsSelect.innerHTML += text;
-//     document
-//       .querySelector("#tool-dcm-catalog-error-message-div")
-//       .classList.add("set-display-none");
-//   } catch (error) {
-//     // console.log(error);
-//     document
-//       .querySelector("#tool-dcm-catalog-error-message-div")
-//       .classList.remove("set-display-none");
-//   }
-// }
+    // <a href="#category-121">
+    //   Adventures into the Unknown <span>115</span>
+    // </a>;
+  } catch (error) {
+    // console.log(error);
+    document
+      .querySelector("#tool-dcm-catalog-error-message-div")
+      .classList.remove("set-display-none");
+  }
+}
+
+async function fillComics(titleId) {
+  cleanUpSelected(false, false);
+  try {
+    const response = await net.get(titleId, { timeout: 15000 });
+    const parser = new DOMParser().parseFromString(response.data, "text/html");
+    const id = titleId.split("#")[1];
+    const section = parser.querySelector(`#${id}`);
+    const comicElements = section.querySelectorAll(".browser-comic-card");
+    g_comicsSelect.innerHTML += `<option value="-1">${g_selectComicString}</option>`;
+    for (let index = 0; index < comicElements.length; index++) {
+      let aElement = comicElements[index];
+      let cardTitle = aElement.querySelector(".browser-card-title");
+      g_comicsSelect.innerHTML += `<option value="${cardTitle.href.split("did=")[1]}">${cardTitle.innerText}</option>`;
+    }
+    document
+      .querySelector("#tool-dcm-catalog-error-message-div")
+      .classList.add("set-display-none");
+  } catch (error) {
+    // console.log(error);
+    document
+      .querySelector("#tool-dcm-catalog-error-message-div")
+      .classList.remove("set-display-none");
+  }
+}
 
 //////////////////////////////////////
 
