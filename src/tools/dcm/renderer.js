@@ -653,7 +653,7 @@ async function onOpenComicUrlInACBR(url, loadingText) {
     if (loadingText) {
       coreSendIpcToMain("reader", "open-comicdata-from-tool", undefined);
     } else {
-      // TODO: show error modal??
+      // TODO: show error modal?
     }
   }
   // TODO: error modal if no data?
