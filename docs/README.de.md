@@ -14,10 +14,10 @@ Ein Comicbuch Leser und Konverter für CBZ, CBR, CB7, EPUB, FB2, MOBI 7 und PDF 
 ## Funktionen:
 
 - Windows & Linux Versionen
-- Kompatible Dateiformate<sup>[1]</sup>:
+- Kompatible Dateiformate<sup>[[1]](#note_1)</sup>:
   - Comicbücher: CBZ, CBR, CB7, PDF und EPUB
   - Bilddateien: JPG, PNG, WebP und AVIF
-  - E-Books: PDF, FB2, MOBI 7<sup>[4]</sup> und EPUB
+  - E-Books: PDF, FB2, MOBI 7<sup>[[4]](#note_4)</sup> und EPUB
 - Fenster- (einfache Benutzeroberfläche) und Vollbild- (keine Benutzeroberfläche) Modi.
 - 'Einzelseite', 'Doppelseite' und 'Doppelseite (erste Seite zentrieren)' Seitenmodi
 - 'Breitenanpassung', 'Höhenanpassung' 'Anpassung an beide' und eine anpassbare 'Höhenskalierung' Seitenansicht
@@ -27,7 +27,7 @@ Ein Comicbuch Leser und Konverter für CBZ, CBR, CB7, EPUB, FB2, MOBI 7 und PDF 
 - Tragbarer Modus (durch das Erstellen einer Datei namens _portable.txt_ im selben Ordner wie die Anwendung)
 - Metadateneditor:
   - Ansicht der Metadaten welche in PDF und EPUB Dateien oder ComicInfo.xml Dateien innerhalb CBR, CBZ und CB7 Comicbüchern gespeichert sind.
-  - Erstelle und/oder modifiziere die Metadaten welche in PDF und EPUB Dateien oder ComicInfo.xml Dateien innerhalb unverschlüsselten CBR<sup>[3]</sup>, CBZ und CB7 Comicbüchern gespeichert sind.
+  - Erstelle und/oder modifiziere die Metadaten welche in PDF und EPUB Dateien oder ComicInfo.xml Dateien innerhalb unverschlüsselten CBR<sup>[[3]](#note_3)</sup>, CBZ und CB7 Comicbüchern gespeichert sind.
   - Suche nach und importiere Comicbuch Metadaten von Comic Vine (hierfür wird ein [Comic Vine API key](https://comicvine.gamespot.com/api/) benötigt).
 - Integrierter Mediaplayer:
   - Audio: MP3, Ogg, WAV, M3U und M3U8 Dateien
@@ -36,10 +36,10 @@ Ein Comicbuch Leser und Konverter für CBZ, CBR, CB7, EPUB, FB2, MOBI 7 und PDF 
   - Mehr Formate, Codecs und Funktionen werden unterstützt falls FFmpeg [verfügbar](https://github.com/binarynonsense/comic-book-reader/wiki/Third%E2%80%90Party-Executables-(rar,-ffmpeg...)) ist.
 - Werkzeuge:
   - Konvertieren/Größe ändern:
-    - Comicbücher und E-Books (CBR, CBZ, CB7, FB2, MOBI 7<sup>[4]</sup>, PDF oder EPUB) zu Comicbücher (CBR<sup>[3]</sup>, CBZ, CB7, PDF oder EPUB<sup>[2]</sup>).
+    - Comicbücher und E-Books (CBR, CBZ, CB7, FB2, MOBI 7<sup>[[4]](#note_4)</sup>, PDF oder EPUB) zu Comicbücher (CBR<sup>[[3]](#note_3)</sup>, CBZ, CB7, PDF oder EPUB<sup>[[2]](#note_2)</sup>).
     - Bilder (JPG, PNG, AVIF oder WebP).
   - Erstelle:
-    - Ein Comicbuch (CBR<sup>[3]</sup>, CBZ, CB7, PDF oder EPUB<sup>[2]</sup>) aus einer Liste von Bilddateien, E-Books und/oder Comicbüchern.
+    - Ein Comicbuch (CBR<sup>[[3]](#note_3)</sup>, CBZ, CB7, PDF oder EPUB<sup>[[2]](#note_2)</sup>) aus einer Liste von Bilddateien, E-Books und/oder Comicbüchern.
     - Einen QR Code Bild aus Text.
   - Extrahiere:
     - Comicbuch Seiten (zu JPG, PNG, AVIF oder WebP).
@@ -61,13 +61,13 @@ Ein Comicbuch Leser und Konverter für CBZ, CBR, CB7, EPUB, FB2, MOBI 7 und PDF 
 
 > Hinweise:
 >
-> [1]: Dazu gehören Passwort geschützte PDF, CBZ, CB7 und CBR Dateien.
+> <a name="note_1"></a>[1]: Dazu gehören Passwort geschützte PDF, CBZ, CB7 und CBR Dateien.
 >
-> [2]: Nur Bilder.
+> <a name="note_2"></a>[2]: Nur Bilder.
 >
-> [3]: Das Erstellen und Modifizieren von CBR Dateien ist standardmäßig deaktiviert. Diese Funktionen können über die Einstellungen aktiviert werden, benötigen aber ein Drittanbieter Kommandozeilen-werkzeug ([rar](https://github.com/binarynonsense/comic-book-reader/wiki/Third%E2%80%90Party-Executables-(rar,-ffmpeg...))), welches im System installiert sein muss.
+> <a name="note_3"></a>[3]: Das Erstellen und Modifizieren von CBR Dateien ist standardmäßig deaktiviert. Diese Funktionen können über die Einstellungen aktiviert werden, benötigen aber ein Drittanbieter Kommandozeilen-werkzeug ([rar](https://github.com/binarynonsense/comic-book-reader/wiki/Third%E2%80%90Party-Executables-(rar,-ffmpeg...))), welches im System installiert sein muss.
 >
-> [4]: Nur "legacy" MOBI (MOBI 7) Dateien werden unterstützt. Neuere Formate wie KF8 (AZW3) sind nicht kompatibel.
+> <a name="note_4"></a>[4]: Nur "legacy" MOBI (MOBI 7) Dateien werden unterstützt. Neuere Formate wie KF8 (AZW3) sind nicht kompatibel.
 
 ## Downloads:
 

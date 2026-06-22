@@ -810,8 +810,8 @@ async function tryOpenPath(
   ) {
     sendIpcToRenderer(
       "show-modal-info",
+      _("ui-modal-title-fileerror"),
       _("ui-modal-info-invalidformat"),
-      filePath,
       _("ui-modal-prompt-button-ok"),
     );
     return false;
