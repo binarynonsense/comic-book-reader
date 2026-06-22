@@ -14,7 +14,7 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB, FB2, MOBI 7 and PDF f
 ## Features:
 
 - Windows & Linux versions
-- Compatible file formats<sup>[1]</sup>:
+- Compatible file formats<sup>[[1]](#note_1)</sup>:
   - Comic books: CBZ, CBR, CB7, PDF and EPUB
   - Image files: JPG, PNG, WebP and AVIF
   - Ebooks: PDF, FB2, MOBI 7<sup>[4]</sup> and EPUB
@@ -58,7 +58,7 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB, FB2, MOBI 7 and PDF f
   - Other:
     - RSS reader
     - Internet Radio
-
+<a name="note_1"></a>
 > Notes:
 >
 > [1]: Including password protected PDF, CBZ, CB7 and CBR files.
