@@ -493,7 +493,7 @@ function initOnIpcCallbacks() {
 
   on("show-context-menu", (params) => {
     sendIpcToRenderer("update-toolbar-menus-collapse-all");
-    if (params[2]) {
+    if (params.img) {
       contextMenu.show(
         "page",
         params,

@@ -37,6 +37,7 @@ exports.init = function () {
   g_tools["tool-template-maker"] = require("../../tools/template-maker/main");
   g_tools["tool-drawing"] = require("../../tools/drawing/main");
   g_tools["tool-rss"] = require("../../tools/rss-reader/main");
+  g_tools["tool-wiki"] = require("../../tools/wiki/main");
 };
 
 exports.getTools = function () {

@@ -15,9 +15,15 @@ const log = require("./logger");
 function getHelpSubmenu() {
   let menu = [];
   menu.push({
-    label: _("menu-help-checkupdates"), // + "...",
+    label: _("menu-help-checkupdates"),
     click() {
       core.onMenuCheckUpdates();
+    },
+  });
+  menu.push({
+    label: _("tool-wiki-title"),
+    click() {
+      core.onMenuToolWikiViewer();
     },
   });
   menu.push({

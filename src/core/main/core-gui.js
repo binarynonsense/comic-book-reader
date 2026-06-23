@@ -561,6 +561,11 @@ exports.onMenuToolDrawingStudio = function () {
   sendIpcToPreload("update-menubar");
 };
 
+exports.onMenuToolWikiViewer = function () {
+  tools.switchTool("tool-wiki");
+  sendIpcToPreload("update-menubar");
+};
+
 //////////////////
 
 exports.onMenuToggleDevTools = function () {
