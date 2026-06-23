@@ -150,8 +150,11 @@ async function loadMdUrl(url) {
     const response = await net.get(urlData.rawUrl, {
       timeout: 10000,
     });
-    const htmlOutput = marked.parse(response.data);
-    // TODO: sanitize
+    let htmlOutput = marked.parse(response.data);
+    const sanitizeHtml = require("sanitize-html");
+    htmlOutput = sanitizeHtml(htmlOutput, {
+      allowedTags: sanitizeHtml.defaults.allowedTags.concat(["img"]),
+    });
     sendIpcToRenderer("load-content", htmlOutput, urlData);
   } catch (error) {
     log.error(error);
@@ -175,7 +178,7 @@ async function loadMdUrl(url) {
     }
     sendIpcToRenderer(
       "show-modal-info",
-      _("ui-modal-title-networkerror"),
+      _("tool-shared-modal-title-error"),
       _("tool-wiki-error-load"),
       _("ui-modal-prompt-button-ok"),
     );
