@@ -298,21 +298,21 @@ function initMouse() {
         break;
       case 2: // right
         if (getOpenModal()) return;
+        let params = {};
+        params.x = event.pageX;
+        params.y = event.pageY;
+        params.selectionText = window.getSelection()?.toString();
+        params.isEditable = canEdit(event.target);
+        params.isSelectAll = canSelectAll(event.target);
         if (true) {
           // TODO: check only if Media Player is open
           if (event.target.closest(".mp-frame")) {
-            getTools()["media-player"].onContextMenu(
-              [event.pageX, event.pageY],
-              event.target,
-            );
+            getTools()["media-player"].onContextMenu(params, event.target);
             return;
           }
         }
         if (getCurrentTool().onContextMenu)
-          getCurrentTool().onContextMenu(
-            [event.pageX, event.pageY],
-            event.target,
-          );
+          getCurrentTool().onContextMenu(params, event.target);
     }
   });
 
@@ -369,6 +369,40 @@ function initMouse() {
     event.preventDefault();
   });
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// HELPERS ////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+function canEdit(element) {
+  if (!element) return false;
+  const tagName = element.tagName.toUpperCase();
+  if (tagName === "TEXTAREA") return true;
+  if (tagName === "INPUT") {
+    const selectableTypes = ["text", "number"];
+    return selectableTypes.includes(element.type.toLowerCase());
+  }
+  if (element.isContentEditable) return true;
+  return false;
+}
+
+function canSelectAll(element) {
+  if (!element) return false;
+  const tagName = element.tagName.toUpperCase();
+  if (tagName === "TEXTAREA") return true;
+  if (tagName === "INPUT") {
+    const selectableTypes = ["text", "number"];
+    return selectableTypes.includes(element.type.toLowerCase());
+  }
+  if (element.isContentEditable) return true;
+  if (element.textContent && element.textContent.trim().length > 0) {
+    const styles = window.getComputedStyle(element);
+    if (styles.userSelect === "none") return false;
+    return true;
+  }
+  return false;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // TOUCHSCREEN ////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////

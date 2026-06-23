@@ -12,7 +12,8 @@ const log = require("./logger");
 
 exports.show = function (type, params, backToReaderCallback) {
   // ref: https://github.com/electron/electron/blob/main/docs/api/web-contents.md#event-context-menu
-  const { selectionText, isEditable } = params;
+  const { selectionText, isEditable, isSelectAll } = params;
+  log.test(params);
   const commonEntries = [
     {
       label: _("tool-shared-ui-back-to-reader"),
@@ -73,6 +74,14 @@ exports.show = function (type, params, backToReaderCallback) {
           { type: "separator" },
           ...commonEntries,
         ]).popup(core.getMainWindow(), params.x, params.y);
+      } else if (isSelectAll) {
+        Menu.buildFromTemplate([
+          { label: _("ctxmenu-copy"), role: "copy", enabled: false },
+          { type: "separator" },
+          { label: _("ctxmenu-select-all"), role: "selectall" },
+          { type: "separator" },
+          ...commonEntries,
+        ]).popup(core.getMainWindow(), params.x, params.y);
       } else {
         Menu.buildFromTemplate([...commonEntries]).popup(
           core.getMainWindow(),
@@ -91,7 +100,7 @@ exports.show = function (type, params, backToReaderCallback) {
               try {
                 core
                   .getMainWindow()
-                  .webContents.copyImageAt(params[0], params[1]);
+                  .webContents.copyImageAt(params.x, params.y);
               } catch (error) {
                 log.error(error);
               }
@@ -101,8 +110,8 @@ exports.show = function (type, params, backToReaderCallback) {
             label: _("ctxmenu-copyimageurl"),
             click: () => {
               try {
-                clipboard.writeText(params[2]);
-                log.debug(params[2]);
+                clipboard.writeText(params.img);
+                log.debug(params.img);
               } catch (error) {
                 log.error(error);
               }
@@ -112,7 +121,7 @@ exports.show = function (type, params, backToReaderCallback) {
             label: _("ctxmenu-saveimageas") + "...",
             click: () => {
               try {
-                core.getMainWindow().webContents.downloadURL(params[2]);
+                core.getMainWindow().webContents.downloadURL(params.img);
               } catch (error) {
                 log.error(error);
               }

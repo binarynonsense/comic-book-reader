@@ -1122,7 +1122,7 @@ export function onContextMenu(params, target) {
     return;
   }
   if (target.tagName === "IMG") {
-    params.push(target.src);
+    params.img = target.src;
   }
   sendIpcToMain("show-context-menu", params, target.tagName === "IMG");
 }

@@ -243,7 +243,7 @@ function getScaleToHeightSubmenu() {
 
 async function exportPage(sendToTool, params, fileData) {
   try {
-    const dataUrl = params[2];
+    const dataUrl = params.img;
 
     let outputFolderPath;
     if (sendToTool !== 0) {
@@ -281,7 +281,7 @@ async function exportPage(sendToTool, params, fileData) {
     let fileName =
       path.basename(fileData.name, path.extname(fileData.name)) +
       "_page_" +
-      (!params[3] ? fileData.pageIndex + 1 : fileData.pageIndex + 2);
+      (!params.isDoublePage ? fileData.pageIndex + 1 : fileData.pageIndex + 2);
 
     let outputFilePath = path.join(outputFolderPath, fileName + fileExtension);
     let i = 1;
