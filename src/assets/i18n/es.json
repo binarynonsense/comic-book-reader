@@ -1,6 +1,8 @@
 {
   "@metadata": {
-    "authors": ["Álvaro"],
+    "authors": [
+      "Álvaro"
+    ],
     "last-updated": "2026-05-28",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.22.0",
@@ -127,6 +129,7 @@
   "menu-tools-rss-reader": "Lector RSS",
   "menu-help": "Ayuda",
   "menu-help-checkupdates": "Buscar actualizaciones",
+  "menu-help-wiki": "Ver la wiki",
   "menu-help-about": "Acerca de",
   "menu-help-devtools-toggle": "Alternar DevTools",
   "menu-shared-top-left": "Arriba izda.",
@@ -186,6 +189,7 @@
   "ui-modal-title-foldererror": "Error de carpeta",
   "ui-modal-title-fileerror": "Error de archivo",
   "ui-modal-title-urlerror": "Error de URL",
+  "ui-modal-title-networkerror": "Error de red",
   "ui-modal-title-audioplayererror": "Error del reproductor de audio",
   "ui-modal-title-mediaplayererror": "Error del reproductor multimedia",
   "ui-modal-title-quickmenu": "Menú rápido",
@@ -225,6 +229,7 @@
   "ui-modal-info-updateavailable-yes": "Hay disponible una versión estable más reciente. Haga click en el botón 'Abrir' para abrir la página de descarga en su navegador.",
   "ui-modal-info-updateavailable-no": "No se encontró una versión estable más reciente.",
   "ui-modal-info-changelog": "Registro de cambios",
+  "ui-modal-info-networkerror-code": "La solicitud de red falló con el código de estado {0}.",
   "ui-modal-info-mediaerror-play": "No se pudo reproducir el archivo.",
   "ui-modal-info-mediaerror-4": "No se encontró el archivo, no se pudo descargar o el formato no es compatible.",
   "ui-modal-info-metadata": "Metadatos",
@@ -1209,6 +1214,8 @@
   "tool-rss-search-type-websites": "Fuentes de Páginas Web",
   "tool-rss-search-type-podcasts-placeholder": "Introduzca sus criterios de búsqueda, ej: {0}",
   "tool-rss-search-type-websites-placeholder": "Introduzca la URL de una página web, ej: {0}",
+  "tool-wiki-title": "Visor de wiki",
+  "tool-wiki-error-load": "Se produjo un error al intentar descargar el contenido de la página wiki de GitHub.",
   "[NOTE TO TRANSLATORS]tool-br-title": "Batch Renamer as in a tool to batch/bulk rename files (rename multiple files)",
   "tool-br-title": "Renombrador masivo",
   "[NOTE TO TRANSLATORS]tool-br-preview": "Preview as in the name of summary/explanation of what will happen before taking an action.",

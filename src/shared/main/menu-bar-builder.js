@@ -21,7 +21,7 @@ function getHelpSubmenu() {
     },
   });
   menu.push({
-    label: _("tool-wiki-title"),
+    label: _("menu-help-wiki"),
     click() {
       core.onMenuToolWikiViewer();
     },
