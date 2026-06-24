@@ -463,6 +463,7 @@
   "tool-shared-ui-merge": "Merge",
   "tool-shared-ui-split": "Split",
   "tool-shared-ui-open": "Open",
+  "tool-shared-ui-openwith": "Open With",
   "tool-shared-ui-close": "Close",
   "tool-shared-ui-cancel": "Cancel",
   "tool-shared-ui-reset": "Reset",

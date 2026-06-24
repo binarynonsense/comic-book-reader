@@ -1,8 +1,6 @@
 {
   "@metadata": {
-    "authors": [
-      "Álvaro"
-    ],
+    "authors": ["Álvaro"],
     "last-updated": "2026-05-28",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.22.0",
@@ -465,6 +463,7 @@
   "tool-shared-ui-merge": "Unir",
   "tool-shared-ui-split": "Dividir",
   "tool-shared-ui-open": "Abrir",
+  "tool-shared-ui-openwith": "Abrir con",
   "tool-shared-ui-close": "Cerrar",
   "tool-shared-ui-cancel": "Cancelar",
   "tool-shared-ui-reset": "Restablecer",

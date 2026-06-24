@@ -465,6 +465,7 @@
   "tool-shared-ui-merge": "Объединить",
   "tool-shared-ui-split": "Разделить",
   "tool-shared-ui-open": "Открыть",
+  "[NEEDS TRANSLATION]tool-shared-ui-openwith": "Open With",
   "tool-shared-ui-close": "Закрыть",
   "tool-shared-ui-cancel": "Отмена",
   "tool-shared-ui-reset": "Сбросить",

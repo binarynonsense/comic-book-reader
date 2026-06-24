@@ -465,6 +465,7 @@
   "tool-shared-ui-merge": "結合",
   "tool-shared-ui-split": "分割",
   "tool-shared-ui-open": "開く",
+  "[NEEDS TRANSLATION]tool-shared-ui-openwith": "Open With",
   "tool-shared-ui-close": "閉じる",
   "tool-shared-ui-cancel": "キャンセル",
   "tool-shared-ui-reset": "リセット",
