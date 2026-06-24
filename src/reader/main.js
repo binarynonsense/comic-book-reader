@@ -536,6 +536,14 @@ function initOnIpcCallbacks() {
         url,
         _("tool-shared-modal-title-loading"),
       );
+    } else if (url.startsWith("https://archive.org/details/")) {
+      // e.g. https://archive.org/details/princessofmars0000edga_t9i5
+      core.sendIpcToRenderer(
+        "tool-internet-archive",
+        "on-menu-bar-open-url",
+        url,
+        _("tool-shared-modal-title-loading"),
+      );
     } else if (url.startsWith("https://www.gutenberg.org/ebooks/")) {
       // e.g.  https://www.gutenberg.org/ebooks/35
       core.sendIpcToRenderer("tool-gutenberg", "on-menu-bar-open-url", url);
@@ -566,6 +574,9 @@ function initOnIpcCallbacks() {
       openBookFromCallback(comicData, tool.getPageCallback);
     } else if (comicData.source === "cbp") {
       const tool = require("../tools/cbp/main");
+      openBookFromCallback(comicData, tool.getPageCallback);
+    } else if (comicData.source === "iab") {
+      const tool = require("../tools/internet-archive/main");
       openBookFromCallback(comicData, tool.getPageCallback);
     }
   });

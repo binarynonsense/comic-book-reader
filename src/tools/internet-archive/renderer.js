@@ -214,14 +214,20 @@ function initOnIpcCallbacks() {
     updateColumnsHeight();
   });
 
+  /////////////////////////////////////////////////////////////////////////////
+
+  on("on-menu-bar-open-url", (...args) => {
+    onOpenComicUrlInACBR(...args);
+  });
+
+  /////////////////////////////////////////////////////////////////////////////
+
   on("close-modal", () => {
     if (g_openModal) {
       modals.close(g_openModal);
       modalClosed();
     }
   });
-
-  /////////////////////////////////////////////////////////////////////////////
 
   on("modal-update-title-text", (text) => {
     console.log(text);
@@ -414,9 +420,10 @@ async function onSearch(pageNum = 1, inputValue = undefined) {
 }
 
 async function onSearchResultClicked(index, mode) {
+  // TODO: show loading modal
   if (!g_lastSearchResults) return;
   const bookData = g_lastSearchResults.response.docs[index];
-  let selectedComicData = {
+  let comicData = {
     source: "iab",
     comicId: bookData.identifier,
     name: bookData.title,
@@ -425,15 +432,41 @@ async function onSearchResultClicked(index, mode) {
   };
   if (mode === 0) {
     try {
-      if (!bookData.imagecount) {
-        let numPages = await getBookPagesInfo(selectedComicData);
-        if (numPages) selectedComicData.numPages = numPages + 1; // some times it's one more, others not???, not sure
-      }
-      sendIpcToMain("open", selectedComicData);
+      let numPages = await getBookPagesInfo(comicData);
+      if (numPages) comicData.numPages = numPages;
+      sendIpcToMain("open", comicData);
     } catch (error) {}
   } else {
-    let url = `https://archive.org/details/${selectedComicData.comicId}`;
+    let url = `https://archive.org/details/${comicData.comicId}`;
     openIALink(url);
+  }
+}
+
+async function onOpenComicUrlInACBR(url, loadingText) {
+  // examples:
+  // https://archive.org/details/princessofmars0000edga_t9i5
+  // https://archive.org/details/thuviamaidofmars0000edga
+  // https://archive.org/details/theworksofplato01platiala
+  const comicId = url.replace("https://archive.org/details/", "");
+  let comicData = {
+    source: "iab",
+    comicId,
+    name: comicId,
+    numPages: undefined,
+    url,
+  };
+  showSearchModal(loadingText);
+  let numPages = await getBookPagesInfo({ comicId });
+  closeModal();
+  if (numPages) comicData.numPages = numPages;
+  else {
+    console.log("iab error opening url");
+  }
+  if (loadingText) {
+    coreSendIpcToMain("reader", "open-comicdata-from-tool", comicData);
+  } else {
+    // TODO: implement if I add the open url section like in dcm for example
+    //sendIpcToMain("open", comicData, closeTool);
   }
 }
 
@@ -443,15 +476,31 @@ async function getBookPagesInfo(comicData) {
   /*
     https://archive.org/download/theworksofplato01platiala/page/n12/mode/1up
     https://archive.org/metadata/theworksofplato01platiala
-    https://api.archivelab.org/books/theworksofplato01platiala/pages
-    https://api.archivelab.org/books/theworksofplato01platiala/pages/1  -> ERROR
   */
   try {
     const response = await net.get(
-      `https://api.archivelab.org/books/${comicData.comicId}/pages`,
+      `https://archive.org/metadata/${comicData.comicId}`,
       { timeout: 10000 },
     );
-    return response.data.pages.length;
+    // imagecount is sometimes bigger than the real page count
+    const files = response.data.files || {};
+    const hasPagesJson = files.some(
+      (file) => file.name && file.name.endsWith("_page_numbers.json"),
+    );
+    if (hasPagesJson) {
+      try {
+        const jsonResponse = await net.get(
+          `https://archive.org/download/${comicData.comicId}/${comicData.comicId}_page_numbers.json`,
+          { timeout: 5000 },
+        );
+        console.log(jsonResponse.data.pages);
+        let numJsonPages = jsonResponse.data.pages.length;
+        return numJsonPages;
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    return parseInt(response.data.metadata.imagecount);
   } catch (error) {
     console.error(error);
     return undefined;
@@ -527,12 +576,12 @@ function modalClosed() {
   g_openModal = undefined;
 }
 
-function showSearchModal() {
+function showSearchModal(loadingText) {
   if (g_openModal) {
     return;
   }
   g_openModal = modals.show({
-    title: " ",
+    title: loadingText ?? " ",
     message: " ",
     zIndexDelta: 5,
     frameWidth: 600,
