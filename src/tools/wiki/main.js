@@ -62,7 +62,7 @@ exports.onToggleFullScreen = function () {
 };
 
 exports.getLocalizedName = function () {
-  return _("menu-tools-rss-reader");
+  return _("tool-wiki-title");
 };
 
 function onCloseClicked() {
