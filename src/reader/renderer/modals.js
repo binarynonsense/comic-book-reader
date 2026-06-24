@@ -7,6 +7,7 @@
 
 import * as modals from "../../shared/renderer/modals.js";
 import { sendIpcToMain, on } from "../renderer.js";
+import { getNavKeys, getNavButtons } from "./input.js";
 
 let g_openModal;
 
@@ -374,10 +375,8 @@ function showModalQuickMenu(
       modalClosed();
     },
   });
-  if (!g_pagesContainerDiv) {
-    g_pagesContainerDiv = document.getElementById("pages-container");
-  }
-  let fileOpen = g_pagesContainerDiv && g_pagesContainerDiv.innerHTML !== "";
+  const pagesContainerDiv = document.getElementById("pages-container");
+  let fileOpen = pagesContainerDiv && pagesContainerDiv.innerHTML !== "";
   if (fileOpen) {
     buttons.push({
       text: textCloseFile.toUpperCase(),
@@ -429,8 +428,8 @@ function showModalQuickMenu(
       callback: () => {
         modalClosed();
       },
-      key: "Escape," + g_navKeys.quickMenu[0],
-      gpCommand: g_navButtons.quickMenu[0],
+      key: "Escape," + getNavKeys().quickMenu[0],
+      gpCommand: getNavButtons().quickMenu[0],
     },
     buttons: buttons,
   });
