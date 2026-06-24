@@ -205,7 +205,7 @@ function getLocalization() {
     },
     {
       id: "tool-eq-back-button-text",
-      text: _("tool-shared-ui-back-to-reader").toUpperCase(),
+      text: _("menu-file-closetool").toUpperCase(),
     },
     {
       id: "tool-eq-start-button-text",

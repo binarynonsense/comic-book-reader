@@ -131,7 +131,7 @@ exports.getLocalization = function (mode) {
     },
     {
       id: "tool-cc-back-button-text",
-      text: _("tool-shared-ui-back-to-reader").toUpperCase(),
+      text: _("menu-file-closetool").toUpperCase(),
     },
     {
       id: "tool-cc-start-button-text",

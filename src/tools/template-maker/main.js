@@ -141,7 +141,7 @@ function getLocalization() {
   localization.texts = [
     {
       id: "tool-template-maker-back-button-text",
-      text: _("tool-shared-ui-back-to-reader").toUpperCase(),
+      text: _("menu-file-closetool").toUpperCase(),
     },
   ];
   localization.modals["closeTitle"] = _("tool-shared-modal-title-warning");

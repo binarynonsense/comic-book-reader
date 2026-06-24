@@ -230,7 +230,7 @@ function getLocalization() {
     },
     {
       id: "tool-cq-back-button-text",
-      text: _("tool-shared-ui-back-to-reader").toUpperCase(),
+      text: _("menu-file-closetool").toUpperCase(),
     },
     {
       id: "tool-cq-start-button-text",

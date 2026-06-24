@@ -232,7 +232,7 @@ function getLocalization() {
     },
     {
       id: "tool-et-back-button-text",
-      text: _("tool-shared-ui-back-to-reader").toUpperCase(),
+      text: _("menu-file-closetool").toUpperCase(),
     },
     {
       id: "tool-et-start-button-text",

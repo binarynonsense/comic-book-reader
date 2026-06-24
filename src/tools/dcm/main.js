@@ -406,7 +406,7 @@ function getLocalization() {
     },
     {
       id: "tool-dcm-back-button-text",
-      text: _("tool-shared-ui-back-to-reader").toUpperCase(),
+      text: _("menu-file-closetool").toUpperCase(),
     },
     {
       id: "tool-dcm-start-button-text",
