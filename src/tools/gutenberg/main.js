@@ -111,11 +111,15 @@ function initOnIpcCallbacks() {
     const url = `${mirrorUrl}cache/epub/${bookId}/pg${bookId}.epub`;
     let data = { source: "gut", bookType: BookType.EBOOK };
     if (bookTitle) data.name = bookTitle;
-    // reader.openEbookFromPath(url, undefined, 0, {
-    //   data: data,
-    // });
     reader.tryOpen(url, undefined, undefined, {
       data: data,
+    });
+    onCloseClicked();
+  });
+
+  on("open-book-url", (url, data) => {
+    reader.tryOpen(url, undefined, undefined, {
+      data,
     });
     onCloseClicked();
   });

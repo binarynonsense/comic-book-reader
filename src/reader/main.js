@@ -528,8 +528,7 @@ function initOnIpcCallbacks() {
         url,
         _("tool-shared-modal-title-loading"),
       );
-    }
-    if (url.startsWith("https://comicbookplus.com/?dlid=")) {
+    } else if (url.startsWith("https://comicbookplus.com/?dlid=")) {
       // e.g.  https://comicbookplus.com/?dlid=36448
       core.sendIpcToRenderer(
         "tool-cbp",
@@ -537,6 +536,9 @@ function initOnIpcCallbacks() {
         url,
         _("tool-shared-modal-title-loading"),
       );
+    } else if (url.startsWith("https://www.gutenberg.org/ebooks/")) {
+      // e.g.  https://www.gutenberg.org/ebooks/35
+      core.sendIpcToRenderer("tool-gutenberg", "on-menu-bar-open-url", url);
     } else {
       sendIpcToRenderer(
         "show-modal-info",
@@ -549,8 +551,8 @@ function initOnIpcCallbacks() {
     }
   });
 
-  on("open-comicdata-from-tool", (data) => {
-    if (!data) {
+  on("open-comicdata-from-tool", (comicData) => {
+    if (!comicData) {
       sendIpcToRenderer(
         "show-modal-info",
         _("tool-shared-modal-title-error"),
@@ -559,12 +561,29 @@ function initOnIpcCallbacks() {
       );
       return;
     }
-    if (data.source === "dcm") {
+    if (comicData.source === "dcm") {
       const tool = require("../tools/dcm/main");
-      openBookFromCallback(data, tool.getPageCallback);
-    } else if (data.source === "cbp") {
+      openBookFromCallback(comicData, tool.getPageCallback);
+    } else if (comicData.source === "cbp") {
       const tool = require("../tools/cbp/main");
-      openBookFromCallback(data, tool.getPageCallback);
+      openBookFromCallback(comicData, tool.getPageCallback);
+    }
+  });
+
+  on("open-comicurl-from-tool", (url, data) => {
+    if (!url || !data) {
+      sendIpcToRenderer(
+        "show-modal-info",
+        _("tool-shared-modal-title-error"),
+        _("ui-modal-info-couldntopen-url"),
+        _("ui-modal-prompt-button-ok"),
+      );
+      return;
+    }
+    if (data.source === "gut") {
+      tryOpen(url, undefined, undefined, {
+        data,
+      });
     }
   });
 

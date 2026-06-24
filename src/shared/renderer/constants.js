@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-export let FileExtension = {
+export const FileExtension = {
   NOT_SET: "not_set",
 
   CBZ: "cbz",
@@ -35,7 +35,7 @@ export let FileExtension = {
   TMP: "tmp",
 };
 
-export let FileDataType = {
+export const FileDataType = {
   NOT_SET: "not_set",
   PDF: "pdf",
   IMG: "img",
@@ -46,4 +46,10 @@ export let FileDataType = {
   EPUB_EBOOK: "epub_ebook",
   SEVENZIP: "7z",
   WWW: "www",
+};
+
+export const BookType = {
+  NOT_SET: "not_set",
+  COMIC: "comic",
+  EBOOK: "ebook",
 };

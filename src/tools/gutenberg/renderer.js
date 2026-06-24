@@ -10,6 +10,7 @@ import {
   sendIpcToMainAndWait as coreSendIpcToMainAndWait,
 } from "../../core/renderer.js";
 import * as modals from "../../shared/renderer/modals.js";
+import { BookType } from "../../shared/renderer/constants.js";
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -300,14 +301,20 @@ function initOnIpcCallbacks() {
     updateColumnsHeight();
   });
 
+  /////////////////////////////////////////////////////////////////////////////
+
+  on("on-menu-bar-open-url", (url) => {
+    onOpenUrlInACBR(url, true);
+  });
+
+  /////////////////////////////////////////////////////////////////////////////
+
   on("close-modal", () => {
     if (g_openModal) {
       modals.close(g_openModal);
       modalClosed();
     }
   });
-
-  /////////////////////////////////////////////////////////////////////////////
 
   on("modal-update-title-text", (text) => {
     console.log(text);
@@ -544,8 +551,8 @@ async function onSearchResultClicked(bookId, bookTitle, openWith) {
 
 //////////////////////////////////////
 
-function onOpenUrlInACBR() {
-  let url = g_urlInput.value;
+function onOpenUrlInACBR(url, sendToReader) {
+  if (!url) url = g_urlInput.value;
   const tmp = document.createElement("a");
   tmp.href = url;
   if (tmp.host === "www.gutenberg.org") {
@@ -556,7 +563,19 @@ function onOpenUrlInACBR() {
       bookId = parts[1];
     }
     if (!bookId) return;
-    sendIpcToMain("open-id", bookId, undefined, g_mirrorsSelect.value);
+    const mirrorDomain =
+      g_mirrorsSelect?.value ?? "https://gutenberg.pglaf.org/";
+    const mirrorUrl = `${mirrorDomain}cache/epub/${bookId}/pg${bookId}.epub`;
+    let data = {
+      source: "gut",
+      name: `pg${bookId}.epub`,
+      bookType: BookType.EBOOK,
+    };
+    if (sendToReader) {
+      coreSendIpcToMain("reader", "open-comicurl-from-tool", mirrorUrl, data);
+    } else {
+      sendIpcToMain("open-book-url", mirrorUrl, data);
+    }
   }
 }
 
