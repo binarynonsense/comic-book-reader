@@ -621,6 +621,13 @@ async function onOpenComicUrlInACBR(url, loadingText) {
   }
   try {
     if (!url) url = g_dcmUrlInput.value;
+    if (
+      !url ||
+      !url.startsWith("https://digitalcomicmuseum.com/preview/index.php?did=")
+    ) {
+      // TODO: use better check that startsWith
+      throw "invalid url";
+    }
     const tmp = document.createElement("a");
     tmp.href = url;
     if (tmp.host === "digitalcomicmuseum.com") {

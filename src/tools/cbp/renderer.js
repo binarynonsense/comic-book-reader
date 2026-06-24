@@ -513,6 +513,10 @@ async function onOpenComicUrlInACBR(url, loadingText) {
   updateModalTitleText(g_localizedModalLoadingTitleText ?? loadingText);
   try {
     if (!url) url = g_urlInput.value;
+    if (!url || !url.startsWith("https://comicbookplus.com/?dlid=")) {
+      // TODO: use better check that startsWith
+      throw "invalid url";
+    }
     const tmp = document.createElement("a");
     tmp.href = url;
     if (tmp.host === "comicbookplus.com") {

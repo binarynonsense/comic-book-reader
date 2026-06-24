@@ -447,26 +447,40 @@ async function onOpenComicUrlInACBR(url, loadingText) {
   // https://archive.org/details/princessofmars0000edga_t9i5
   // https://archive.org/details/thuviamaidofmars0000edga
   // https://archive.org/details/theworksofplato01platiala
-  const comicId = url.replace("https://archive.org/details/", "");
-  let comicData = {
-    source: "iab",
-    comicId,
-    name: comicId,
-    numPages: undefined,
-    url,
-  };
-  showSearchModal(loadingText);
-  let numPages = await getBookPagesInfo({ comicId });
-  closeModal();
-  if (numPages) comicData.numPages = numPages;
-  else {
-    console.log("iab error opening url");
-  }
-  if (loadingText) {
-    coreSendIpcToMain("reader", "open-comicdata-from-tool", comicData);
-  } else {
-    // TODO: implement if I add the open url section like in dcm for example
-    //sendIpcToMain("open", comicData, closeTool);
+  try {
+    if (!url || !url.startsWith("https://archive.org/details/")) {
+      // TODO: use better check that startsWith
+      throw "invalid url";
+    }
+    const comicId = url.replace("https://archive.org/details/", "");
+    let comicData = {
+      source: "iab",
+      comicId,
+      name: comicId,
+      numPages: undefined,
+      url,
+    };
+    showSearchModal(loadingText);
+    let numPages = await getBookPagesInfo({ comicId });
+    closeModal();
+    if (numPages) comicData.numPages = numPages;
+    else {
+      console.log("iab error opening url");
+    }
+    if (loadingText) {
+      coreSendIpcToMain("reader", "open-comicdata-from-tool", comicData);
+    } else {
+      // TODO: implement if I add the open url section like in dcm for example
+      //sendIpcToMain("open", comicData, closeTool);
+    }
+  } catch (error) {
+    console.error(error);
+    closeModal();
+    if (loadingText) {
+      coreSendIpcToMain("reader", "open-comicdata-from-tool", undefined);
+    } else {
+      // TODO: show error modal?
+    }
   }
 }
 

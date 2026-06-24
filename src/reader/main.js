@@ -518,45 +518,69 @@ function initOnIpcCallbacks() {
 
   on("on-modal-open-url-ok-clicked", (url) => {
     url = url.trim();
-    if (
-      url.startsWith("https://digitalcomicmuseum.com/preview/index.php?did=")
-    ) {
-      // e.g. https://digitalcomicmuseum.com/preview/index.php?did=32771
-      core.sendIpcToRenderer(
-        "tool-dcm",
-        "on-menu-bar-open-url",
-        url,
-        _("tool-shared-modal-title-loading"),
-      );
-    } else if (url.startsWith("https://comicbookplus.com/?dlid=")) {
-      // e.g.  https://comicbookplus.com/?dlid=36448
-      core.sendIpcToRenderer(
-        "tool-cbp",
-        "on-menu-bar-open-url",
-        url,
-        _("tool-shared-modal-title-loading"),
-      );
-    } else if (url.startsWith("https://archive.org/details/")) {
-      // e.g. https://archive.org/details/princessofmars0000edga_t9i5
-      core.sendIpcToRenderer(
-        "tool-internet-archive",
-        "on-menu-bar-open-url",
-        url,
-        _("tool-shared-modal-title-loading"),
-      );
-    } else if (url.startsWith("https://www.gutenberg.org/ebooks/")) {
-      // e.g.  https://www.gutenberg.org/ebooks/35
-      core.sendIpcToRenderer("tool-gutenberg", "on-menu-bar-open-url", url);
-    } else {
-      sendIpcToRenderer(
-        "show-modal-info",
-        _("tool-shared-modal-title-error"),
-        _("ui-modal-info-couldntopen-url") +
-          "\n" +
-          _("ui-modal-info-url-unsupported-site"),
-        _("ui-modal-prompt-button-ok"),
-      );
+    try {
+      const tmp = new URL(url);
+      const isHttp = tmp.protocol === "http:" || tmp.protocol === "https:";
+      if (!isHttp) throw "invalid protocol";
+      if (
+        tmp.hostname === "digitalcomicmuseum.com" ||
+        tmp.hostname === "www.digitalcomicmuseum.com"
+      ) {
+        // e.g. https://digitalcomicmuseum.com/preview/index.php?did=32771
+        core.sendIpcToRenderer(
+          "tool-dcm",
+          "on-menu-bar-open-url",
+          url,
+          _("tool-shared-modal-title-loading"),
+        );
+        return;
+      } else if (
+        tmp.hostname === "comicbookplus.com" ||
+        tmp.hostname === "www.comicbookplus.com"
+      ) {
+        // e.g. https://comicbookplus.com/?dlid=36448
+        core.sendIpcToRenderer(
+          "tool-cbp",
+          "on-menu-bar-open-url",
+          url,
+          _("tool-shared-modal-title-loading"),
+        );
+        return;
+      } else if (
+        tmp.hostname === "archive.org" ||
+        tmp.hostname === "www.archive.org"
+      ) {
+        // e.g. https://archive.org/details/princessofmars0000edga_t9i5
+        core.sendIpcToRenderer(
+          "tool-internet-archive",
+          "on-menu-bar-open-url",
+          url,
+          _("tool-shared-modal-title-loading"),
+        );
+        return;
+      } else if (
+        tmp.hostname === "gutenberg.org" ||
+        tmp.hostname === "www.gutenberg.org"
+      ) {
+        // e.g. https://www.gutenberg.org/ebooks/35
+        core.sendIpcToRenderer("tool-gutenberg", "on-menu-bar-open-url", url);
+        return;
+      } else {
+        // other domain
+      }
+      /////
+    } catch (error) {
+      // just let it reach the send error message
     }
+    /////
+    sendIpcToRenderer(
+      "show-modal-info",
+      _("tool-shared-modal-title-error"),
+      _("ui-modal-info-couldntopen-url") +
+        "\n" +
+        _("ui-modal-info-url-unsupported-site"),
+      _("ui-modal-prompt-button-ok"),
+    );
   });
 
   on("open-comicdata-from-tool", (comicData) => {

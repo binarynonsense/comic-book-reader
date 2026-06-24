@@ -552,29 +552,43 @@ async function onSearchResultClicked(bookId, bookTitle, openWith) {
 //////////////////////////////////////
 
 function onOpenUrlInACBR(url, sendToReader) {
-  if (!url) url = g_urlInput.value;
-  const tmp = document.createElement("a");
-  tmp.href = url;
-  if (tmp.host === "www.gutenberg.org") {
-    // e.g. https://www.gutenberg.org/ebooks/35
-    let bookId;
-    let parts = url.split("ebooks/");
-    if (parts.length === 2 && isValidBookId(parts[1])) {
-      bookId = parts[1];
+  try {
+    if (!url) url = g_urlInput.value;
+    if (!url || !url.startsWith("https://www.gutenberg.org/ebooks/")) {
+      // TODO: use better check that startsWith
+      throw "invalid url";
     }
-    if (!bookId) return;
-    const mirrorDomain =
-      g_mirrorsSelect?.value ?? "https://gutenberg.pglaf.org/";
-    const mirrorUrl = `${mirrorDomain}cache/epub/${bookId}/pg${bookId}.epub`;
-    let data = {
-      source: "gut",
-      name: `pg${bookId}.epub`,
-      bookType: BookType.EBOOK,
-    };
+    const tmp = document.createElement("a");
+    tmp.href = url;
+    if (tmp.host === "www.gutenberg.org") {
+      // e.g. https://www.gutenberg.org/ebooks/35
+      let bookId;
+      let parts = url.split("ebooks/");
+      if (parts.length === 2 && isValidBookId(parts[1])) {
+        bookId = parts[1];
+      }
+      if (!bookId) return;
+      const mirrorDomain =
+        g_mirrorsSelect?.value ?? "https://gutenberg.pglaf.org/";
+      const mirrorUrl = `${mirrorDomain}cache/epub/${bookId}/pg${bookId}.epub`;
+      let data = {
+        source: "gut",
+        name: `pg${bookId}.epub`,
+        bookType: BookType.EBOOK,
+      };
+      if (sendToReader) {
+        coreSendIpcToMain("reader", "open-comicurl-from-tool", mirrorUrl, data);
+      } else {
+        sendIpcToMain("open-book-url", mirrorUrl, data);
+      }
+    }
+  } catch (error) {
+    console.error(error);
+    closeModal();
     if (sendToReader) {
-      coreSendIpcToMain("reader", "open-comicurl-from-tool", mirrorUrl, data);
+      coreSendIpcToMain("reader", "open-comicurl-from-tool", undefined);
     } else {
-      sendIpcToMain("open-book-url", mirrorUrl, data);
+      // TODO: show error modal?
     }
   }
 }
