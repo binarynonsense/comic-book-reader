@@ -109,8 +109,15 @@
   "--modal-button-success-bg-color": "#50d971",
   "--modal-button-success-text-color": "#525252",
 
-  "--hs-logo-opacity": "0.75",
   "--hs-bg-color": "#ccc",
+  "--hs-bg-border-size": "3px",
+  "--hs-logo-opacity": "1",
+  "--hs-logo-brightness": "0.9",
+  "--hs-logo-saturate": "0.9",
+  "--hs-bg-img-opacity": "0.2",
+  "--hs-bg-img-saturate": "0",
+  "--hs-bg-img-blur": "1.3px",
+  "--hs-bg-img-brightness": "1",
   "--hs-text-color": "#777",
   "--hs-button-normal-bg-color": "#777",
   "--hs-button-normal-bg-hover-color": "#666",
@@ -119,8 +126,5 @@
   "--hs-button-accent-text-color": "#303030",
   "--hs-path-card-bg-color": "#ddd",
   "--hs-path-card-text-color": "#777",
-  "--hs-add-card-bg-pct": "50%",
-  "--hs-bg-img-opacity": "0.4",
-  "--hs-bg-img-grayscale": "80%",
-  "--hs-bg-img-blur": "2.5px"
+  "--hs-add-card-bg-pct": "50%"
 }

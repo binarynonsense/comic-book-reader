@@ -21,7 +21,7 @@
   flex-direction: column;
   width: 1024px;
   max-width: 1024px;
-  padding: 50px;
+  padding: 45px;
   padding-bottom: 0px;
   color: var(--hs-text-color);
   z-index: 1;
@@ -36,9 +36,11 @@
   bottom: 0px;
   width: 100%;
   /* height: 100%; */
-  height: 250px;
+  height: var(--hs-bg-height, 250px);
   pointer-events: none;
   container-type: size;
+  border-bottom: var(--hs-bg-border-size, 3px) solid
+    var(--hs-button-normal-bg-color);
 }
 
 #hs-bg::before {
@@ -52,18 +54,20 @@
   /* get the size of the parent to get the scrollbar */
   width: 100cqw;
 
-  background-position: var(--home-bg-pos-x, 0px) var(--home-bg-pos-y, 0px);
+  background-position: var(--hs-bg-pos-x, 0px) var(--hs-bg-pos-y, 0px);
   background-image: url("../images/home_bg.webp");
   background-repeat: repeat;
-  mask-image: linear-gradient(
+  /* mask-image: linear-gradient(
     to bottom,
     rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 1) 80%,
     rgba(0, 0, 0, 0) 100%
-  );
-  background-size: var(--home-bg-size, 0px) auto;
+  ); */
+  background-size: var(--hs-bg-size, 0px) auto;
 
-  filter: grayscale(var(--hs-bg-img-grayscale, 80%))
-    blur(var(--hs-bg-img-blur, 2.5px));
+  filter: saturate(var(--hs-bg-img-saturate, 1))
+    blur(var(--hs-bg-img-blur, 2.5px))
+    brightness(var(--hs-bg-img-brightness, 1));
   opacity: var(--hs-bg-img-opacity, 0.2);
 }
 
@@ -217,7 +221,7 @@
   align-items: center;
   justify-content: center;
   gap: 30px;
-  margin-bottom: 45px;
+  margin-bottom: 80px;
 }
 
 #hs-logo-open button {
@@ -226,11 +230,14 @@
 
 #hs-logo-image {
   display: inline-block;
+  filter: brightness(var(--hs-logo-brightness, 0.8))
+    saturate(var(--hs-logo-saturate, 0.8));
 }
 
 #hs-logo-image img {
   width: 150px;
-  opacity: var(--hs-logo-opacity);
+  opacity: var(--hs-logo-opacity, 1);
+  margin-top: 4px;
 }
 
 /* animations ref: https://codepen.io/nelledejones/pen/gOOPWrK */

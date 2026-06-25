@@ -215,7 +215,7 @@ function init(settings) {
     });
 
     // set the background covers randomized position
-    const targetCoverWidth = 85; // edit this to vary the size
+    const targetCoverWidth = 80; // edit this to vary the size
     const imageColumns = 20;
     const imageRows = 3;
     const coverWidth = 100;
@@ -228,9 +228,10 @@ function init(settings) {
     const randomX = -(randomColumnStep * targetCoverWidth);
     const randomY = -(randomRowStep * targetCoverHeight);
     const root = document.documentElement;
-    root.style.setProperty("--home-bg-size", `${homeBgSize}px`);
-    root.style.setProperty("--home-bg-pos-x", `${randomX}px`);
-    root.style.setProperty("--home-bg-pos-y", `${randomY}px`);
+    root.style.setProperty("--hs-bg-size", `${homeBgSize}px`);
+    root.style.setProperty("--hs-bg-pos-x", `${randomX}px`);
+    root.style.setProperty("--hs-bg-pos-y", `${randomY}px`);
+    root.style.setProperty("--hs-bg-height", `${250}px`);
     //
     showBackgroundImage(g_settings.showBgImg);
   }
