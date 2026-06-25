@@ -140,6 +140,7 @@ const g_defaultSettings = {
     latestMaxRowsCollapsed: 2, // integer >= 1
     favoritesMaxRowsCollapsed: 2, // integer >= 1
     otherMaxRowsCollapsed: 2, // integer >= 1
+    showBgImg: true,
   },
   pagesDirection: 0, // 0: ltr, 1: rtl,
   mouseButtonQuickMenu: 1, // -1: unassigned 0-4: mouse button
@@ -949,11 +950,17 @@ function loadHomeScreen(loadedHomeScreen) {
     for (const option in g_settings.homeScreen) {
       let value = loadedHomeScreen[option];
       let isValid = false;
-      if (value !== undefined && Number.isInteger(value)) {
-        if (option === "latestPosition") {
-          if (value >= 0 && value <= 2) isValid = true;
-        } else {
-          if (value > 0) isValid = true;
+      if (value !== undefined) {
+        if (Number.isInteger(value)) {
+          if (option === "latestPosition") {
+            if (value >= 0 && value <= 2) isValid = true;
+          } else {
+            if (value > 0) isValid = true;
+          }
+        } else if (typeof value === "boolean") {
+          if (option === "showBgImg") {
+            isValid = true;
+          }
         }
       }
       if (isValid) {

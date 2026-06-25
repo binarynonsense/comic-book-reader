@@ -35,7 +35,8 @@ let g_collapseFavorites = true;
 let g_draggedCard = null;
 let g_draggedTitle = null;
 
-function init() {
+function init(settings) {
+  g_settings = settings;
   if (!g_isInitialized) {
     // things to start only once go here
     g_isInitialized = true;
@@ -212,11 +213,39 @@ function init() {
     scrollToTopButton.addEventListener("click", (event) => {
       homeScreenDiv.scrollTop = 0;
     });
+
+    // set the background covers randomized position
+    const targetCoverWidth = 85; // edit this to vary the size
+    const imageColumns = 20;
+    const imageRows = 3;
+    const coverWidth = 100;
+    const coverHeight = 154;
+    const aspectRatio = coverHeight / coverWidth;
+    const targetCoverHeight = targetCoverWidth * aspectRatio;
+    const homeBgSize = targetCoverWidth * imageColumns;
+    const randomColumnStep = Math.floor(Math.random() * imageColumns);
+    const randomRowStep = Math.floor(Math.random() * imageRows);
+    const randomX = -(randomColumnStep * targetCoverWidth);
+    const randomY = -(randomRowStep * targetCoverHeight);
+    const root = document.documentElement;
+    root.style.setProperty("--home-bg-size", `${homeBgSize}px`);
+    root.style.setProperty("--home-bg-pos-x", `${randomX}px`);
+    root.style.setProperty("--home-bg-pos-y", `${randomY}px`);
+    //
+    showBackgroundImage(g_settings.showBgImg);
   }
 }
 
 export function initIpc() {
   initOnIpcCallbacks();
+}
+
+function showBackgroundImage(show) {
+  if (show) {
+    document.querySelector("#hs-bg").classList.remove("set-display-none");
+  } else {
+    document.querySelector("#hs-bg").classList.add("set-display-none");
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -229,11 +258,15 @@ function initOnIpcCallbacks() {
   });
 
   on("hs-init", (...args) => {
-    init();
+    init(...args);
   });
 
   on("hs-build-sections", (...args) => {
     buildSections(...args);
+  });
+
+  on("show-bg-img", (...args) => {
+    showBackgroundImage(...args);
   });
 
   ///////////

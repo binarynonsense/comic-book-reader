@@ -24,6 +24,47 @@
   padding: 50px;
   padding-bottom: 0px;
   color: var(--hs-text-color);
+  z-index: 1;
+}
+
+#hs-bg {
+  position: absolute;
+  /* top: calc(var(--menubar-height)); */
+  top: 0;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  width: 100%;
+  /* height: 100%; */
+  height: 250px;
+  pointer-events: none;
+  container-type: size;
+}
+
+#hs-bg::before {
+  content: "";
+  /* position: fixed; */
+  /* top: calc(var(--menubar-height)); */
+  position: absolute;
+  top: 0;
+  left: 0px;
+  bottom: 0px;
+  /* get the size of the parent to get the scrollbar */
+  width: 100cqw;
+
+  background-position: var(--home-bg-pos-x, 0px) var(--home-bg-pos-y, 0px);
+  background-image: url("../images/home_bg.webp");
+  background-repeat: repeat;
+  mask-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  background-size: var(--home-bg-size, 0px) auto;
+
+  filter: grayscale(var(--hs-bg-img-grayscale, 80%))
+    blur(var(--hs-bg-img-blur, 2.5px));
+  opacity: var(--hs-bg-img-opacity, 0.2);
 }
 
 #hs-content button {
@@ -660,12 +701,8 @@ html[dir="rtl"] .hs-path-card-percentageBar {
   transform: translate(-50%, -50%);
   width: 0.5vmin;
   aspect-ratio: 1;
-  background: radial-gradient(
-        circle,
-        var(--hs-fireworks-color) 0.2vmin,
-        #0000 0
-      )
-      50% 00%,
+  background:
+    radial-gradient(circle, var(--hs-fireworks-color) 0.2vmin, #0000 0) 50% 00%,
     radial-gradient(circle, var(--hs-fireworks-color) 12.3vmin, #0000 0) 00% 50%,
     radial-gradient(circle, var(--hs-fireworks-color) 110.5vmin, #0000 0) 50%
       99%,

@@ -282,6 +282,11 @@ function initOnIpcCallbacks() {
     updateHomeSettingsEntry("otherMaxRowsCollapsed", value);
   });
 
+  on("set-home-screen-show-bg-img", (value) => {
+    updateHomeSettingsEntry("showBgImg", value);
+    homeScreen.showBackgroundImage(value);
+  });
+
   /////////////////
 
   let g_epubEbookWillCloseToApplyModalShown = false;

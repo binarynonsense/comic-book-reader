@@ -386,6 +386,16 @@ function init(
         );
       });
     }
+    // home screen bg img
+    {
+      let checkbox = document.getElementById(
+        "tool-pre-home-screen-show-bg-img-checkbox",
+      );
+      checkbox.checked = settings.homeScreen.showBgImg;
+      checkbox.addEventListener("change", (event) => {
+        sendIpcToMain("set-home-screen-show-bg-img", checkbox.checked);
+      });
+    }
     // hotspots select
     {
       let select = document.getElementById("tool-pre-hotspots-select");

@@ -1,8 +1,8 @@
 {
   "@metadata": {
     "authors": ["Álvaro"],
-    "last-updated": "2026-01-30",
-    "acbr-version": "3.16.0-beta1",
+    "last-updated": "2026-06-25",
+    "acbr-version": "3.24.0-beta2",
     "comments": "dark text over light background, with the orange slider",
     "name": "ACBR Light"
   },
@@ -119,5 +119,8 @@
   "--hs-button-accent-text-color": "#303030",
   "--hs-path-card-bg-color": "#ddd",
   "--hs-path-card-text-color": "#777",
-  "--hs-add-card-bg-pct": "50%"
+  "--hs-add-card-bg-pct": "50%",
+  "--hs-bg-img-opacity": "0.4",
+  "--hs-bg-img-grayscale": "80%",
+  "--hs-bg-img-blur": "2.5px"
 }

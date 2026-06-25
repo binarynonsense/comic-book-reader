@@ -43,7 +43,7 @@ function init() {
       "#home-screen",
       data.toString(),
     );
-    sendIpcToRenderer("hs-init");
+    sendIpcToRenderer("hs-init", settings.getValue("homeScreen"));
     updateLocalizedText(false);
     favorites.init();
     g_collapseFavorites = favorites.getValue("collapseFavorites");
@@ -76,6 +76,10 @@ exports.setLanguageDirection = function (direction) {
 
 exports.onSettingsUpdated = function () {
   buildSections();
+};
+
+exports.showBackgroundImage = function (show) {
+  sendIpcToRenderer("show-bg-img", show);
 };
 
 //////////////////////////////////////////////////////////////////////////////

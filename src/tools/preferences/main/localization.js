@@ -514,6 +514,10 @@ exports.getLocalization = function () {
         "home-list-setting-max-rows",
       )} ${_("home-list-setting-max-rows-ifcollapsed")}`,
     },
+    {
+      id: "tool-pre-home-screen-show-bg-img-checkbox-text",
+      text: _("tool-pre-home-show-bg-img"),
+    },
     //////////////////////////////////////////////
     {
       id: "tool-pre-mouse-text",
