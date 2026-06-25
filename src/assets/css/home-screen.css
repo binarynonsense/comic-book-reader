@@ -221,7 +221,7 @@
   align-items: center;
   justify-content: center;
   gap: 30px;
-  margin-bottom: 80px;
+  margin: 40px 30px 125px 30px;
 }
 
 #hs-logo-open button {
@@ -232,12 +232,28 @@
   display: inline-block;
   filter: brightness(var(--hs-logo-brightness, 0.8))
     saturate(var(--hs-logo-saturate, 0.8));
+  position: absolute;
+  left: -100px;
 }
 
 #hs-logo-image img {
   width: 150px;
   opacity: var(--hs-logo-opacity, 1);
   margin-top: 4px;
+}
+
+#hs-logo-buttons {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  flex-grow: 1;
+  background-color: var(--hs-logo-buttons-bg-color);
+  padding: 10px 10px 10px 57px;
+  border-radius: 10px;
+  position: relative;
+  margin-left: 110px;
 }
 
 /* animations ref: https://codepen.io/nelledejones/pen/gOOPWrK */
@@ -350,6 +366,8 @@
 
 .hs-logo-button i {
   transition: transform 0.2s ease-in-out;
+  /* -webkit-text-stroke-width: 1px;
+  -webkit-text-stroke-color: rgb(255, 255, 255); */
 }
 
 .hs-logo-button:hover i {

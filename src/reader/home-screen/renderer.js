@@ -216,10 +216,10 @@ function init(settings) {
 
     // set the background covers randomized position
     const targetCoverWidth = 80; // edit this to vary the size
-    const imageColumns = 20;
-    const imageRows = 3;
-    const coverWidth = 100;
-    const coverHeight = 154;
+    const imageColumns = 30;
+    const imageRows = 2;
+    const coverWidth = 80;
+    const coverHeight = (154 * 80) / 100;
     const aspectRatio = coverHeight / coverWidth;
     const targetCoverHeight = targetCoverWidth * aspectRatio;
     const homeBgSize = targetCoverWidth * imageColumns;
