@@ -812,6 +812,7 @@
   "tool-pre-externalfiles-folder": "Containing Folder",
   "tool-pre-externalfiles-type-themes": "Color Themes",
   "tool-pre-externalfiles-type-localizations": "Localizations",
+  "tool-pre-home-show-bg-img": "Show Backgroud Image",
   "tool-hst-title": "History",
   "tool-hst-button-clear-all": "Clear History",
   "[NOTE TO TRANSLATORS]tool-hst-recentfiles": "Recent Files as in most recently opened files",

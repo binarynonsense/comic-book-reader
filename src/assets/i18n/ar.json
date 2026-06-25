@@ -814,6 +814,7 @@
   "tool-pre-externalfiles-folder": "المجلد المصدر",
   "tool-pre-externalfiles-type-themes": "أنماط الألوان",
   "tool-pre-externalfiles-type-localizations": "الترجمات",
+  "[NEEDS TRANSLATION]tool-pre-home-show-bg-img": "Show Backgroud Image",
   "tool-hst-title": "التاريخ",
   "tool-hst-button-clear-all": "مسح التاريخ",
   "[NOTE TO TRANSLATORS]tool-hst-recentfiles": "Recent Files as in most recently opened files",

@@ -814,6 +814,7 @@
   "tool-pre-externalfiles-folder": "Carpeta contenedora",
   "tool-pre-externalfiles-type-themes": "Temas de color",
   "tool-pre-externalfiles-type-localizations": "Localizaciones",
+  "tool-pre-home-show-bg-img": "Mostrar imagen de fondo",
   "tool-hst-title": "Historial",
   "tool-hst-button-clear-all": "Vaciar historial",
   "[NOTE TO TRANSLATORS]tool-hst-recentfiles": "Recent Files as in most recently opened files",

@@ -814,6 +814,7 @@
   "tool-pre-externalfiles-folder": "Beinhaltender Ordner",
   "tool-pre-externalfiles-type-themes": "Farbthemen",
   "tool-pre-externalfiles-type-localizations": "Lokalisierungen",
+  "[NEEDS TRANSLATION]tool-pre-home-show-bg-img": "Show Backgroud Image",
   "tool-hst-title": "Chronik",
   "tool-hst-button-clear-all": "Chronik löschen",
   "[NOTE TO TRANSLATORS]tool-hst-recentfiles": "Recent Files as in most recently opened files",
