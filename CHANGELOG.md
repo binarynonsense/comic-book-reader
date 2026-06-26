@@ -1,3 +1,16 @@
+## v3.24.0
+
+- Added a "File > Open URL..." entry to the menu bar to open URLs. For now, it is only able to open URLs that fit the formats supported by the "Open URL" section in some of the "Websites" tools.
+- Added a "Help > View the Wiki" entry to the menu bar to open a tool that lets the user navigate the online Github wiki for ACBR inside the app.
+- Added a background image to the Home Screen (can be disabled in the preferences).
+- Replaced the search button in the "Digital Comic Museum" tool with a search in browser one, that opens the site's search page in the system's browser with the provided query, as the in-app integrated search code no longer works due to new Cloudflare security restrictions in the site.
+- Restored the "Catalog" section's functionality in the "Digital Comic Museum" tool.
+- Improved the page number count for some books in the "Internet Archive Books" tool, as it was sometimes giving a greater number that the real one.
+- Changed the progress bar's background color in the ACBR Light theme to make it fit better with the modals' background color.
+- Updated some of the core libraries to newer versions.
+- Fixed the quick menu no longer working.
+- Fixed CBR creation not working on the flatpak build.
+
 ## v3.23.1
 
 - Reduced the size of the flatpak build available on Flathub.
