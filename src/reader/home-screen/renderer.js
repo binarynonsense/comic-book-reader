@@ -228,10 +228,9 @@ function init(settings) {
     const randomX = -(randomColumnStep * targetCoverWidth);
     const randomY = -(randomRowStep * targetCoverHeight);
     const root = document.documentElement;
-    root.style.setProperty("--hs-bg-size", `${homeBgSize}px`);
-    root.style.setProperty("--hs-bg-pos-x", `${randomX}px`);
-    root.style.setProperty("--hs-bg-pos-y", `${randomY}px`);
-    root.style.setProperty("--hs-bg-height", `${250}px`);
+    root.style.setProperty("--hs-background-size", `${homeBgSize}px`);
+    root.style.setProperty("--hs-background-pos-x", `${randomX}px`);
+    root.style.setProperty("--hs-background-pos-y", `${randomY}px`);
     //
     showBackgroundImage(g_settings.showBgImg);
   }
@@ -242,10 +241,19 @@ export function initIpc() {
 }
 
 function showBackgroundImage(show) {
+  const root = document.documentElement;
   if (show) {
-    document.querySelector("#hs-bg").classList.remove("set-display-none");
+    document
+      .querySelector("#hs-background")
+      .classList.remove("set-display-none");
+    root.style.setProperty("--hs-logo-open-margin-bottom", `125px`);
+    document
+      .querySelector("#hs-logo-buttons")
+      .classList.remove("no-background");
   } else {
-    document.querySelector("#hs-bg").classList.add("set-display-none");
+    document.querySelector("#hs-background").classList.add("set-display-none");
+    root.style.setProperty("--hs-logo-open-margin-bottom", `85px`);
+    document.querySelector("#hs-logo-buttons").classList.add("no-background");
   }
 }
 
