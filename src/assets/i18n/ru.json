@@ -814,7 +814,7 @@
   "tool-pre-externalfiles-folder": "Папка расположения",
   "tool-pre-externalfiles-type-themes": "Цвет темы",
   "tool-pre-externalfiles-type-localizations": "Локализации",
-  "[NEEDS TRANSLATION]tool-pre-home-show-bg-img": "Show Backgroud Image",
+  "[NEEDS TRANSLATION]tool-pre-home-show-bg-img": "Show Background Image",
   "tool-hst-title": "История",
   "tool-hst-button-clear-all": "Очистить историю",
   "[NOTE TO TRANSLATORS]tool-hst-recentfiles": "Recent Files as in most recently opened files",
