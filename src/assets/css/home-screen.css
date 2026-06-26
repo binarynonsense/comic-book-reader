@@ -67,10 +67,23 @@
   ); */
   background-size: var(--hs-background-size, 0px) auto;
 
+  transition:
+    filter 0.3s ease-in-out,
+    opacity 0.3s ease-in-out;
   filter: saturate(var(--hs-background-img-saturate, 1))
     blur(var(--hs-background-img-blur, 2.5px))
     brightness(var(--hs-background-img-brightness, 1));
   opacity: var(--hs-background-img-opacity, 0.2);
+}
+
+/* #home-screen:has(#hs-logo-buttons > :not(#hs-logo-image):hover) #hs-background::before {
+  filter: saturate(1);
+} */
+#home-screen:has(#hs-logo-buttons:hover) #hs-background::before {
+  filter: saturate(var(--hs-background-img-saturate-hover, 0.3))
+    blur(var(--hs-background-img-blur-hover, 0))
+    brightness(var(--hs-background-img-brightness-hover, 1));
+  opacity: var(--hs-background-img-opacity-hover, 0.2);
 }
 
 #hs-content button {
@@ -231,17 +244,24 @@
 }
 
 #hs-logo-image {
+  position: absolute;
+  left: -100px;
   display: inline-block;
   filter: brightness(var(--hs-logo-brightness, 0.8))
     saturate(var(--hs-logo-saturate, 0.8));
-  position: absolute;
-  left: -100px;
+  pointer-events: none;
 }
 
-#hs-logo-image img {
+/* using svg to make a circle for the interactive area */
+#hs-logo-image svg {
   width: 150px;
-  opacity: var(--hs-logo-opacity, 1);
+  height: auto;
   margin-top: 4px;
+  opacity: var(--hs-logo-opacity, 1);
+  display: block;
+}
+#hs-logo-image svg circle {
+  pointer-events: auto;
 }
 
 #hs-logo-buttons {
