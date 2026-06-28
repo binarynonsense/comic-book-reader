@@ -16,8 +16,8 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB, FB2, MOBI 7 and PDF f
 - Windows & Linux versions
 - Windowed and full-screen modes
 - UI available in English, Spanish, Russian, German, Arabic, Filipino and Japanese.
-- Partial controller support
-- Portable mode (by creating a file named _portable.txt_ in the same folder as the executable)
+- Partial [controller](https://github.com/binarynonsense/comic-book-reader/wiki/Basic-Controls-&-Gamepad-Layout) support
+- [Portable](https://github.com/binarynonsense/comic-book-reader/wiki/Portable-Mode) mode
 - Reader:
   - Compatible file formats<sup>[[1]](#note_1)</sup>:
     - Comic books: CBZ, CBR, CB7, PDF and EPUB

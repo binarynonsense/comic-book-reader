@@ -16,8 +16,8 @@ Un lector y conversor de cómics para archivos en formato CBZ, CBR, CB7, EPUB, F
 - Versiones para Windows y Linux
 - Modos de ventana y pantalla completa
 - Interfaz de usuario disponible en Inglés, español, ruso, alemán, árabe, filipino y japonés.
-- Compatibilidad parcial con mando 
-- Modo portátil (al crear un archivo llamado _portable.txt_ en la misma carpeta que el ejecutable)
+- Compatibilidad parcial con [mando](https://github.com/binarynonsense/comic-book-reader/wiki/Basic-Controls-&-Gamepad-Layout) 
+- Modo [portátil](https://github.com/binarynonsense/comic-book-reader/wiki/Portable-Mode))
 - Lector:
   - Formatos de archivo compatibles<sup>[[1]](#note_1)</sup>:
     - Cómics: CBZ, CBR, CB7, PDF y EPUB
