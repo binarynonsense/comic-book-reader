@@ -14,18 +14,19 @@ Un lector y conversor de cómics para archivos en formato CBZ, CBR, CB7, EPUB, F
 ## Características:
 
 - Versiones para Windows y Linux
-- Formatos de archivo compatibles<sup>[[1]](#note_1)</sup>:
-  - Cómics: CBZ, CBR, CB7, PDF y EPUB
-  - Archivos de imagen: JPG, PNG, WebP y AVIF
-  - Ebooks: PDF, FB2, MOBI 7<sup>[[4]](#note_4)</sup> y EPUB
-- Modos de ventana (IU simple) y pantalla completa (sin IU)
-- Modos de página: 'página simple', 'página doble' y 'página doble (centrar primera página')
-- Vistas de pagina: 'ajustar a anchura', 'ajustar a altura', 'ajustar a ambos' y 'escalar a altura' personalizable
-- Rotación de página
+- Modos de ventana y pantalla completa
 - Interfaz de usuario disponible en Inglés, español, ruso, alemán, árabe, filipino y japonés.
-- Restaura automáticamente el último cómic, y página, abierto en la sesión anterior, y recuerda las posiciones de página de los últimos cómics.
 - Compatibilidad parcial con mando 
 - Modo portátil (al crear un archivo llamado _portable.txt_ en la misma carpeta que el ejecutable)
+- Lector:
+  - Formatos de archivo compatibles<sup>[[1]](#note_1)</sup>:
+    - Cómics: CBZ, CBR, CB7, PDF y EPUB
+    - Archivos de imagen: JPG, PNG, WebP y AVIF
+    - Ebooks: PDF, FB2, MOBI 7<sup>[[4]](#note_4)</sup> y EPUB
+  - Modos de página: 'página simple', 'página doble' y 'página doble (centrar primera página')
+  - Vistas de pagina: 'ajustar a anchura', 'ajustar a altura', 'ajustar a ambos' y 'escalar a altura' personalizable
+  - Rotación de página  
+  - Restaura automáticamente el último cómic, y página, abierto en la sesión anterior, y recuerda las posiciones de página de los últimos cómics.
 - Pantalla de inicio:
   - Mostrar, organizar y abrir rápidamente archivos y carpetas de cómics usando sus listas predeterminadas de favoritos y recientes, permitiendo la creación de listas adicionales personalizadas.
 - Editor de metadatos:

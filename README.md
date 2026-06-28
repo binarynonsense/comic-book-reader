@@ -14,18 +14,19 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB, FB2, MOBI 7 and PDF f
 ## Features:
 
 - Windows & Linux versions
-- Compatible file formats<sup>[[1]](#note_1)</sup>:
-  - Comic books: CBZ, CBR, CB7, PDF and EPUB
-  - Image files: JPG, PNG, WebP and AVIF
-  - Ebooks: PDF, FB2, MOBI 7<sup>[[4]](#note_4)</sup> and EPUB
-- Windowed (simple UI) and full-screen (no UI) modes
-- 'Single page', 'double page' and 'double page (center first page)' page modes
-- 'Fit to width', 'fit to height', 'fit to both' and a customizable 'scale to height' page views
-- Page rotation
+- Windowed and full-screen modes
 - UI available in English, Spanish, Russian, German, Arabic, Filipino and Japanese.
-- Automatically restores the previous session's last opened book and page, and remembers the last books' page positions.
 - Partial controller support
 - Portable mode (by creating a file named _portable.txt_ in the same folder as the executable)
+- Reader:
+  - Compatible file formats<sup>[[1]](#note_1)</sup>:
+    - Comic books: CBZ, CBR, CB7, PDF and EPUB
+    - Image files: JPG, PNG, WebP and AVIF
+    - Ebooks: PDF, FB2, MOBI 7<sup>[[4]](#note_4)</sup> and EPUB
+  - 'Single page', 'double page' and 'double page (center first page)' page modes
+  - 'Fit to width', 'fit to height', 'fit to both' and a customizable 'scale to height' page views
+  - Page rotation
+  - Automatically restores the previous session's last opened book and page, and remembers the last books' page positions.
 - Home screen:
   - Display, organize and quickly open comic book files and folders using its default favorites and recent lists, allowing the creation of custom additional ones.
 - Metadata editor:
@@ -62,7 +63,6 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB, FB2, MOBI 7 and PDF f
   - Other:
     - RSS reader
     - Internet Radio
-
 
 > Notes:
 >
