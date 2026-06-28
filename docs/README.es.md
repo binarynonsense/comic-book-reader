@@ -28,7 +28,7 @@ Un lector y conversor de cómics para archivos en formato CBZ, CBR, CB7, EPUB, F
   - Rotación de página  
   - Restaura automáticamente el último cómic, y página, abierto en la sesión anterior, y recuerda las posiciones de página de los últimos cómics.
 - Pantalla de inicio:
-  - Mostrar, organizar y abrir rápidamente archivos y carpetas de cómics usando sus listas predeterminadas de favoritos y recientes, permitiendo la creación de listas adicionales personalizadas.
+  - Mostrar, organizar y abrir rápidamente archivos y carpetas de cómics usando las listas predeterminadas de favoritos y recientes, permitiendo la creación de listas adicionales personalizadas.
 - Editor de metadatos:
   - Ver los metadatos en archivos PDF y EPUB o almacenados en archivos ComicInfo.xml dentro de cómics CBR, CBZ y CB7.
   - Crear y/o modificar los metadatos en archivos PDF y EPUB o almacenados en archivos ComicInfo.xml dentro de cómics CBR<sup>[[3]](#note_3)</sup>, CBZ y CB7 no encriptados.

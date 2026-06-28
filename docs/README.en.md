@@ -28,7 +28,7 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB, FB2, MOBI 7 and PDF f
   - Page rotation
   - Automatically restores the previous session's last opened book and page, and remembers the last books' page positions.
 - Home screen:
-  - Display, organize and quickly open comic book files and folders using its default favorites and recent lists, allowing the creation of custom additional ones.
+  - Display, organize and quickly open comic book files and folders using the default favorites and recent lists, allowing the creation of custom additional ones.
 - Metadata editor:
   - View the metadata in PDF and EPUB files or stored in ComicInfo.xml files inside CBR, CBZ and CB7 comic books.
   - Create and/or modify the metadata in PDF and EPUB files or stored in ComicInfo.xml files inside unencrypted CBR<sup>[[3]](#note_3)</sup>, CBZ and CB7 comic books.
