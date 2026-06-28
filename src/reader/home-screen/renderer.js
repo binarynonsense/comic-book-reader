@@ -231,6 +231,7 @@ function init(settings) {
     root.style.setProperty("--hs-background-size", `${homeBgSize}px`);
     root.style.setProperty("--hs-background-pos-x", `${randomX}px`);
     root.style.setProperty("--hs-background-pos-y", `${randomY}px`);
+    root.style.setProperty("--hs-background-height", `${coverHeight * 2}px`);
     //
     showBackgroundImage(g_settings.showBgImg);
   }
