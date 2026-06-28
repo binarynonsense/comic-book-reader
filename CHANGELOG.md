@@ -1,3 +1,7 @@
+## v3.24.1
+
+- Fixed the background image in the Home Screen being taller than intended, showing a couple pixels of the next row of covers.
+
 ## v3.24.0
 
 - Added a "File > Open URL..." entry to the menu bar to open URLs. For now, it is only able to open URLs that fit the formats supported by the "Open URL" section in some of the "Websites" tools.
