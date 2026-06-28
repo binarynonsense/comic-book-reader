@@ -215,23 +215,19 @@ function init(settings) {
     });
 
     // set the background covers randomized position
-    const targetCoverWidth = 80; // edit this to vary the size
-    const imageColumns = 30;
-    const imageRows = 2;
-    const coverWidth = 80;
-    const coverHeight = (154 * 80) / 100;
-    const aspectRatio = coverHeight / coverWidth;
-    const targetCoverHeight = targetCoverWidth * aspectRatio;
-    const homeBgSize = targetCoverWidth * imageColumns;
-    const randomColumnStep = Math.floor(Math.random() * imageColumns);
-    const randomRowStep = Math.floor(Math.random() * imageRows);
-    const randomX = -(randomColumnStep * targetCoverWidth);
-    const randomY = -(randomRowStep * targetCoverHeight);
+    const bgImageWidth = 2400;
+    const bgImageHeight = 246;
+    const numColumns = 30;
+    const numRows = 2;
+    const randomColumnStep = Math.floor(Math.random() * numColumns);
+    const randomRowStep = Math.floor(Math.random() * numRows);
+    const randomX = -((randomColumnStep * bgImageWidth) / numColumns);
+    const randomY = -((randomRowStep * bgImageHeight) / numRows);
     const root = document.documentElement;
-    root.style.setProperty("--hs-background-size", `${homeBgSize}px`);
+    root.style.setProperty("--hs-background-size", `${bgImageWidth}px`);
     root.style.setProperty("--hs-background-pos-x", `${randomX}px`);
     root.style.setProperty("--hs-background-pos-y", `${randomY}px`);
-    root.style.setProperty("--hs-background-height", `${coverHeight * 2}px`);
+    root.style.setProperty("--hs-background-height", `${bgImageHeight}px`);
     //
     showBackgroundImage(g_settings.showBgImg);
   }
