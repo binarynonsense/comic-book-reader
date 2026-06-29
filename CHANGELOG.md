@@ -1,3 +1,8 @@
+## v3.24.2
+
+- Removed the "Digital Comic Museum" tool, as new restrictions on the website made maintaining it no longer possible.
+- Disabled the "Help > View the Wiki" entry in the menu bar when another tool is open so it can't be used while the current one is potentially doing work.
+
 ## v3.24.1
 
 - Fixed the background image in the Home Screen being taller than intended, showing a couple pixels of the next row of covers.
