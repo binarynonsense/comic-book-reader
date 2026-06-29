@@ -232,12 +232,12 @@ function getToolsSubmenu() {
             core.onMenuToolCBP();
           },
         },
-        {
-          label: _("menu-tools-dcm"),
-          click() {
-            core.onMenuToolDCM();
-          },
-        },
+        // {
+        //   label: _("menu-tools-dcm"),
+        //   click() {
+        //     core.onMenuToolDCM();
+        //   },
+        // },
         {
           label: _("menu-tools-iab"),
           click() {

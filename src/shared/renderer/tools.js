@@ -15,7 +15,7 @@ import * as toolExtractPalette from "../../tools/extract-palette/renderer.js";
 import * as toolExtractText from "../../tools/extract-text/renderer.js";
 import * as toolCreateQr from "../../tools/create-qr/renderer.js";
 import * as toolExtractQr from "../../tools/extract-qr/renderer.js";
-import * as toolDcm from "../../tools/dcm/renderer.js";
+// import * as toolDcm from "../../tools/dcm/renderer.js";
 import * as toolInternetArchive from "../../tools/internet-archive/renderer.js";
 import * as toolGutenberg from "../../tools/gutenberg/renderer.js";
 import * as toolXkcd from "../../tools/xkcd/renderer.js";
@@ -45,7 +45,7 @@ export function init() {
   g_tools["tool-extract-text"] = toolExtractText;
   g_tools["tool-create-qr"] = toolCreateQr;
   g_tools["tool-extract-qr"] = toolExtractQr;
-  g_tools["tool-dcm"] = toolDcm;
+  // g_tools["tool-dcm"] = toolDcm;
   g_tools["tool-internet-archive"] = toolInternetArchive;
   g_tools["tool-gutenberg"] = toolGutenberg;
   g_tools["tool-xkcd"] = toolXkcd;

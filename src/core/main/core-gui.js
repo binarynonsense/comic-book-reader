@@ -511,10 +511,10 @@ exports.onMenuToolExtractComics = function () {
   sendIpcToPreload("update-menubar");
 };
 
-exports.onMenuToolDCM = function () {
-  tools.switchTool("tool-dcm");
-  sendIpcToPreload("update-menubar");
-};
+// exports.onMenuToolDCM = function () {
+//   tools.switchTool("tool-dcm");
+//   sendIpcToPreload("update-menubar");
+// };
 
 exports.onMenuToolCBP = function () {
   tools.switchTool("tool-cbp");

@@ -594,8 +594,14 @@ function initOnIpcCallbacks() {
       return;
     }
     if (comicData.source === "dcm") {
-      const tool = require("../tools/dcm/main");
-      openBookFromCallback(comicData, tool.getPageCallback);
+      sendIpcToRenderer(
+        "show-modal-info",
+        _("tool-shared-modal-title-error"),
+        _("ui-modal-info-couldntopen-url"),
+        _("ui-modal-prompt-button-ok"),
+      );
+      // const tool = require("../tools/dcm/main");
+      // openBookFromCallback(comicData, tool.getPageCallback);
     } else if (comicData.source === "cbp") {
       const tool = require("../tools/cbp/main");
       openBookFromCallback(comicData, tool.getPageCallback);
@@ -761,7 +767,7 @@ async function tryOpen(filePath, bookType, historyEntry, homeScreenListEntry) {
         if (!historyEntry) {
           // not in history
           if (
-            homeScreenListEntry.data.source === "dcm" ||
+            // homeScreenListEntry.data.source === "dcm" ||
             homeScreenListEntry.data.source === "iab" ||
             homeScreenListEntry.data.source === "xkcd" ||
             homeScreenListEntry.data.source === "cbp"
@@ -804,7 +810,7 @@ async function tryOpen(filePath, bookType, historyEntry, homeScreenListEntry) {
       if (!Number.isInteger(pageIndex)) pageIndex = 0;
       if (historyEntry.data && historyEntry.data.source) {
         if (
-          historyEntry.data.source === "dcm" ||
+          // historyEntry.data.source === "dcm" ||
           historyEntry.data.source === "iab" ||
           historyEntry.data.source === "xkcd" ||
           historyEntry.data.source === "cbp"
@@ -818,6 +824,14 @@ async function tryOpen(filePath, bookType, historyEntry, homeScreenListEntry) {
             BookType.EBOOK,
             historyEntry,
           );
+        } else if (historyEntry.data.source === "dcm") {
+          sendIpcToRenderer(
+            "show-modal-info",
+            _("tool-shared-modal-title-error"),
+            _("ui-modal-info-url-unsupported-site") + "\n\n" + filePath,
+            _("ui-modal-prompt-button-ok"),
+          );
+          return false;
         }
       }
       if (bookType === BookType.NOT_SET && historyEntry?.data?.bookType) {
@@ -944,11 +958,12 @@ async function tryOpenPath(
 
 function tryOpenWWW(pageIndex, historyEntry) {
   const data = historyEntry.data;
-  if (data.source === "dcm") {
-    const tool = require("../tools/dcm/main");
-    openBookFromCallback(data, tool.getPageCallback, pageIndex);
-    return true;
-  } else if (data.source === "iab") {
+  // if (data.source === "dcm") {
+  //   const tool = require("../tools/dcm/main");
+  //   openBookFromCallback(data, tool.getPageCallback, pageIndex);
+  //   return true;
+  // } else
+  if (data.source === "iab") {
     const tool = require("../tools/internet-archive/main");
     openBookFromCallback(data, tool.getPageCallback, pageIndex);
     return true;
