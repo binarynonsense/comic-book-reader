@@ -12,7 +12,7 @@ const { _ } = require("./i18n");
 const utils = require("./utils");
 const log = require("./logger");
 
-function getHelpSubmenu() {
+function getHelpSubmenu(isTool) {
   let menu = [];
   menu.push({
     label: _("menu-help-checkupdates"),
@@ -22,6 +22,7 @@ function getHelpSubmenu() {
   });
   menu.push({
     label: _("menu-help-wiki"),
+    enabled: !isTool,
     click() {
       core.onMenuToolWikiViewer();
     },
@@ -1019,7 +1020,7 @@ function getToolMenu(settings, history, toolName) {
     },
     {
       label: _("menu-help"),
-      submenu: getHelpSubmenu(),
+      submenu: getHelpSubmenu(true),
     },
   ];
 
