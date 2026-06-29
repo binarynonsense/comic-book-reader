@@ -522,19 +522,20 @@ function initOnIpcCallbacks() {
       const tmp = new URL(url);
       const isHttp = tmp.protocol === "http:" || tmp.protocol === "https:";
       if (!isHttp) throw "invalid protocol";
+      // if (
+      //   tmp.hostname === "digitalcomicmuseum.com" ||
+      //   tmp.hostname === "www.digitalcomicmuseum.com"
+      // ) {
+      //   // e.g. https://digitalcomicmuseum.com/preview/index.php?did=32771
+      //   core.sendIpcToRenderer(
+      //     "tool-dcm",
+      //     "on-menu-bar-open-url",
+      //     url,
+      //     _("tool-shared-modal-title-loading"),
+      //   );
+      //   return;
+      // } else
       if (
-        tmp.hostname === "digitalcomicmuseum.com" ||
-        tmp.hostname === "www.digitalcomicmuseum.com"
-      ) {
-        // e.g. https://digitalcomicmuseum.com/preview/index.php?did=32771
-        core.sendIpcToRenderer(
-          "tool-dcm",
-          "on-menu-bar-open-url",
-          url,
-          _("tool-shared-modal-title-loading"),
-        );
-        return;
-      } else if (
         tmp.hostname === "comicbookplus.com" ||
         tmp.hostname === "www.comicbookplus.com"
       ) {
