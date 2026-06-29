@@ -16,7 +16,7 @@ Un lector y conversor de cómics para archivos en formato CBZ, CBR, CB7, EPUB, F
 - Versiones para Windows y Linux
 - Modos de ventana y pantalla completa
 - Interfaz de usuario disponible en Inglés, español, ruso, alemán, árabe, filipino y japonés.
-- Compatibilidad parcial con [mando](https://github.com/binarynonsense/comic-book-reader/wiki/Basic-Controls-&-Gamepad-Layout) 
+- Compatibilidad parcial con [mando](https://github.com/binarynonsense/comic-book-reader/wiki/Basic-Controls-&-Gamepad-Layout)
 - Modo [portátil](https://github.com/binarynonsense/comic-book-reader/wiki/Portable-Mode))
 - Lector:
   - Formatos de archivo compatibles<sup>[[1]](#note_1)</sup>:
@@ -25,7 +25,7 @@ Un lector y conversor de cómics para archivos en formato CBZ, CBR, CB7, EPUB, F
     - Ebooks: PDF, FB2, MOBI 7<sup>[[4]](#note_4)</sup> y EPUB
   - Modos de página: 'página simple', 'página doble' y 'página doble (centrar primera página')
   - Vistas de pagina: 'ajustar a anchura', 'ajustar a altura', 'ajustar a ambos' y 'escalar a altura' personalizable
-  - Rotación de página  
+  - Rotación de página
   - Restaura automáticamente el último cómic, y página, abierto en la sesión anterior, y recuerda las posiciones de página de los últimos cómics.
 - Pantalla de inicio:
   - Mostrar, organizar y abrir rápidamente archivos y carpetas de cómics usando las listas predeterminadas de 'favoritos' y 'recientes', permitiendo la creación de listas adicionales personalizadas.
@@ -52,7 +52,7 @@ Un lector y conversor de cómics para archivos en formato CBZ, CBR, CB7, EPUB, F
     - El texto de un código QR en una página de cómic o un archivo de imagen.
     - Una paleta de colores de una página de cómic o un archivo de imagen (se puede exportar a un archivo de paleta GPL o ACO).
   - Buscar y/o abrir:
-    - Libros/cómics de Digital Comics Museum, Internet Archive Books, Project Gutenberg, Webcómics xkcd y Comic Book Plus.
+    - Libros/cómics de Internet Archive Books, Project Gutenberg, Webcómics xkcd y Comic Book Plus.
     - Audiolibros de Librivox.
     - Términos del diccionario Wiktionary.
     - Streams de radio de radio-browser.
@@ -70,7 +70,7 @@ Un lector y conversor de cómics para archivos en formato CBZ, CBR, CB7, EPUB, F
 >
 > <a name="note_2"></a>[2]: Solo imágenes.
 >
-> <a name="note_3"></a>[3]: La creación y modificación de archivos CBR están desactivadas por defecto. Se pueden activar en las preferencias pero requieren que una herramienta de línea de comandos de terceros ([rar](https://github.com/binarynonsense/comic-book-reader/wiki/Third%E2%80%90Party-Executables-(rar,-ffmpeg...)) se encuentre instalada en el sistema.
+> <a name="note_3"></a>[3]: La creación y modificación de archivos CBR están desactivadas por defecto. Se pueden activar en las preferencias pero requieren que una herramienta de línea de comandos de terceros ([rar](<https://github.com/binarynonsense/comic-book-reader/wiki/Third%E2%80%90Party-Executables-(rar,-ffmpeg...)>) se encuentre instalada en el sistema.
 >
 > <a name="note_4"></a>[4]: Solo se admiten archivos legacy MOBI (MOBI 7). Los formatos más recientes, como KF8 (AZW3), no son compatibles.
 >

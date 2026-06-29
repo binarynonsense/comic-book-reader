@@ -52,7 +52,7 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB, FB2, MOBI 7 and PDF f
     - A QR code's text from a comic book page or image file.
     - A color palette from a comic book page or image file (can be exported to a GPL or ACO palette file).
   - Search and/or open:
-    - Books/comics from Digital Comics Museum, Internet Archive Books, Project Gutenberg, xkcd Webcomics and Comic Book Plus.
+    - Books/comics from Internet Archive Books, Project Gutenberg, xkcd Webcomics and Comic Book Plus.
     - Audiobooks from Librivox AudioBooks.
     - Dictionary terms from Wiktionary Dictionary.
     - Radio station streams from radio-browser.
@@ -64,14 +64,13 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB, FB2, MOBI 7 and PDF f
     - RSS reader
     - Internet Radio
 
-
 > Notes:
 >
 > <a name="note_1"></a>[1]: Including password protected PDF, CBZ, CB7 and CBR files.
 >
 > <a name="note_2"></a>[2]: Images only.
 >
-> <a name="note_3"></a>[3]: Creating and modifying CBR files are disabled by default. They can be enabled in the preferences but require a third-party command-line tool ([rar](https://github.com/binarynonsense/comic-book-reader/wiki/Third%E2%80%90Party-Executables-(rar,-ffmpeg...))) to be installed in the system.
+> <a name="note_3"></a>[3]: Creating and modifying CBR files are disabled by default. They can be enabled in the preferences but require a third-party command-line tool ([rar](<https://github.com/binarynonsense/comic-book-reader/wiki/Third%E2%80%90Party-Executables-(rar,-ffmpeg...)>)) to be installed in the system.
 >
 > <a name="note_4"></a>[4]: Only legacy MOBI (MOBI 7) files are supported. Newer formats like KF8 (AZW3) are not compatible.
 >

@@ -52,7 +52,7 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB, FB2, MOBI 7 and PDF f
     - A QR code's text from a comic book page or image file.
     - A color palette from a comic book page or image file (can be exported to a GPL or ACO palette file).
   - Search and/or open:
-    - Books/comics from Digital Comics Museum, Internet Archive Books, Project Gutenberg, xkcd Webcomics and Comic Book Plus.
+    - Books/comics from Internet Archive Books, Project Gutenberg, xkcd Webcomics and Comic Book Plus.
     - Audiobooks from Librivox AudioBooks.
     - Dictionary terms from Wiktionary Dictionary.
     - Radio station streams from radio-browser.
@@ -70,7 +70,7 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB, FB2, MOBI 7 and PDF f
 >
 > <a name="note_2"></a>[2]: Images only.
 >
-> <a name="note_3"></a>[3]: Creating and modifying CBR files are disabled by default. They can be enabled in the preferences but require a third-party command-line tool ([rar](https://github.com/binarynonsense/comic-book-reader/wiki/Third%E2%80%90Party-Executables-(rar,-ffmpeg...))) to be installed in the system.
+> <a name="note_3"></a>[3]: Creating and modifying CBR files are disabled by default. They can be enabled in the preferences but require a third-party command-line tool ([rar](<https://github.com/binarynonsense/comic-book-reader/wiki/Third%E2%80%90Party-Executables-(rar,-ffmpeg...)>)) to be installed in the system.
 >
 > <a name="note_4"></a>[4]: Only legacy MOBI (MOBI 7) files are supported. Newer formats like KF8 (AZW3) are not compatible.
 >
@@ -79,6 +79,7 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB, FB2, MOBI 7 and PDF f
 ## Downloads:
 
 <!-- <a href="https://github.com/binarynonsense/comic-book-reader/releases/latest"><img src="https://shields.io/github/v/release/binarynonsense/comic-book-reader?display_name=tag&label=stable&style=for-the-badge" title="version"></a> <a href="https://github.com/binarynonsense/comic-book-reader/releases"><img src="https://shields.io/github/v/release/binarynonsense/comic-book-reader?display_name=tag&label=latest&include_prereleases&style=for-the-badge" title="version"></a> <a href="http://www.binarynonsense.com/webapps/github-releases-summary/?owner=binarynonsense&name=comic-book-reader"><img src="https://img.shields.io/github/downloads/binarynonsense/comic-book-reader/total" title="total downloads"></a> -->
+
 <a href="https://github.com/binarynonsense/comic-book-reader/releases/latest"><img src="https://raw.githubusercontent.com/binarynonsense/acbr-builder/refs/heads/main/badges/stable.svg" title="latest stable version"></a> <a href="https://github.com/binarynonsense/comic-book-reader/releases"><img src="https://raw.githubusercontent.com/binarynonsense/acbr-builder/refs/heads/main/badges/latest.svg" title="latest version"></a> <a href="http://www.binarynonsense.com/webapps/github-releases-summary/?owner=binarynonsense&name=comic-book-reader"><img src="https://raw.githubusercontent.com/binarynonsense/acbr-builder/refs/heads/main/badges/downloads.svg" title="total downloads"></a>
 
 Stable version:
