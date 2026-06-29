@@ -829,7 +829,9 @@ async function tryOpen(filePath, bookType, historyEntry, homeScreenListEntry) {
           sendIpcToRenderer(
             "show-modal-info",
             _("tool-shared-modal-title-error"),
-            _("ui-modal-info-url-unsupported-site") + "\n\n" + filePath,
+            _("ui-modal-info-couldntopen-url") +
+              "\n" +
+              _("ui-modal-info-url-unsupported-site"),
             _("ui-modal-prompt-button-ok"),
           );
           return false;
