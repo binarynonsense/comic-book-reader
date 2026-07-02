@@ -14,17 +14,21 @@ Ein Comicbuch Leser und Konverter für CBZ, CBR, CB7, EPUB, FB2, MOBI 7 und PDF 
 ## Funktionen:
 
 - Windows & Linux Versionen
-- Kompatible Dateiformate<sup>[[1]](#note_1)</sup>:
-  - Comicbücher: CBZ, CBR, CB7, PDF und EPUB
-  - Bilddateien: JPG, PNG, WebP und AVIF
-  - E-Books: PDF, FB2, MOBI 7<sup>[[4]](#note_4)</sup> und EPUB
-- Fenster- (einfache Benutzeroberfläche) und Vollbild- (keine Benutzeroberfläche) Modi.
-- 'Einzelseite', 'Doppelseite' und 'Doppelseite (erste Seite zentrieren)' Seitenmodi
-- 'Breitenanpassung', 'Höhenanpassung' 'Anpassung an beide' und eine anpassbare 'Höhenskalierung' Seitenansicht
-- Seitenrotation
+- Fenster- und Vollbild-modi.
 - Benutzeroberfläche verfügbar auf: Englisch, Spanisch, Russisch, Deutsch, Arabisch, Filipino und Japanisch.
-- Automatische Wiederherstellung der vergangenen Sitzung, mit Erinnerung der letzten Seitenposition.
-- Tragbarer Modus (durch das Erstellen einer Datei namens _portable.txt_ im selben Ordner wie die Anwendung)
+- Teilweise [Controller](https://github.com/binarynonsense/comic-book-reader/wiki/Basic-Controls-&-Gamepad-Layout) Unterstützung
+- [Tragbarer](https://github.com/binarynonsense/comic-book-reader/wiki/Portable-Mode) Modus
+- Reader:
+  - Kompatible Dateiformate<sup>[[1]](#note_1)</sup>:
+    - Comicbücher: CBZ, CBR, CB7, PDF und EPUB
+    - Bilddateien: JPG, PNG, WebP und AVIF
+    - E-Books: PDF, FB2, MOBI 7<sup>[[4]](#note_4)</sup> und EPUB
+  - 'Einzelseite', 'Doppelseite' und 'Doppelseite (erste Seite zentrieren)' Seitenmodi
+  - 'Breitenanpassung', 'Höhenanpassung' 'Anpassung an beide' und eine anpassbare 'Höhenskalierung' Seitenansicht
+  - Seitenrotation
+  - Automatische Wiederherstellung der vergangenen Sitzung, mit Erinnerung der letzten Seitenposition.
+- Startbildschirm:
+  - Zeige, organisiere and öffne schnell Comicbuchdateien und Ordner mit den Standard 'Favoriten' und 'Zuletzt geöffnet' Listen, mit der Möglichkeit weitere benutzerdefinierte Listen zu erstellen.
 - Metadateneditor:
   - Ansicht der Metadaten welche in PDF und EPUB Dateien oder ComicInfo.xml Dateien innerhalb CBR, CBZ und CB7 Comicbüchern gespeichert sind.
   - Erstelle und/oder modifiziere die Metadaten welche in PDF und EPUB Dateien oder ComicInfo.xml Dateien innerhalb unverschlüsselten CBR<sup>[[3]](#note_3)</sup>, CBZ und CB7 Comicbüchern gespeichert sind.
@@ -48,7 +52,7 @@ Ein Comicbuch Leser und Konverter für CBZ, CBR, CB7, EPUB, FB2, MOBI 7 und PDF 
     - QR Code Text aus einer Comicbuch Seite oder Bilddatei.
     - Eine Farbpalette aus einer Comicbuch Seite oder Bilddatei (kann zu einer GPL oder ACO Palettendatei extrahiert werden).
   - Suche und/oder öffne:
-    - Bücher/Comics von Digital Comics Museum, Internet Archive Books, Project Gutenberg, xkcd Webcomics und Comic Book Plus.
+    - Bücher/Comics von Internet Archive Books, Project Gutenberg, xkcd Webcomics und Comic Book Plus.
     - Hörbücher von Librivox AudioBooks.
     - Wörterbucheinträge in Wiktionary Dictionary.
     - Radiosenderstreams von radio-browser.
@@ -60,14 +64,13 @@ Ein Comicbuch Leser und Konverter für CBZ, CBR, CB7, EPUB, FB2, MOBI 7 und PDF 
     - RSS Reader
     - Internet Radio
 
-
 > Hinweise:
 >
 > <a name="note_1"></a>[1]: Dazu gehören Passwort geschützte PDF, CBZ, CB7 und CBR Dateien.
 >
 > <a name="note_2"></a>[2]: Nur Bilder.
 >
-> <a name="note_3"></a>[3]: Das Erstellen und Modifizieren von CBR Dateien ist standardmäßig deaktiviert. Diese Funktionen können über die Einstellungen aktiviert werden, benötigen aber ein Drittanbieter Kommandozeilen-werkzeug ([rar](https://github.com/binarynonsense/comic-book-reader/wiki/Third%E2%80%90Party-Executables-(rar,-ffmpeg...))), welches im System installiert sein muss.
+> <a name="note_3"></a>[3]: Das Erstellen und Modifizieren von CBR Dateien ist standardmäßig deaktiviert. Diese Funktionen können über die Einstellungen aktiviert werden, benötigen aber ein Drittanbieter Kommandozeilen-werkzeug ([rar](https://github.com/binarynonsense/comic-book-reader/wiki/Third%E2%80%90Party-Executables-(rar,-ffmpeg...)>)), welches im System installiert sein muss.
 >
 > <a name="note_4"></a>[4]: Nur "legacy" MOBI (MOBI 7) Dateien werden unterstützt. Neuere Formate wie KF8 (AZW3) sind nicht kompatibel.
 >
