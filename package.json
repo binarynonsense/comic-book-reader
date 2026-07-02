@@ -124,9 +124,15 @@
     "check-patches": "node ./tools/check-patches.js",
     "build:easy-brush": "mkdir -p src/assets/libs/easy-brush && npm install --no-save browserify easy-brush && npx browserify node_modules/easy-brush/dist/index.js --standalone EasyBrush -o src/assets/libs/easy-brush/easy-brush-browser.js && npm uninstall browserify easy-brush"
   },
+  "allowScripts": {
+    "sharp": true,
+    "tesseract.js": false,
+    "electron-winstaller": false,
+    "zipfile": false
+  },
   "devDependencies": {
     "del-cli": "7.0.0",
-    "electron": "39.8.8",
+    "electron": "42.3.0",
     "electron-builder": "26.9.0",
     "snapsvg-cjs": "0.0.6"
   },
