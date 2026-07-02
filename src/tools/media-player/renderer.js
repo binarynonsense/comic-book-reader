@@ -556,82 +556,82 @@ async function onPlay(trackIndex = undefined, time = 0) {
       } else {
         g_player.html.sliderTime.value = time;
         g_player.engine.currentTime = time;
-        if (
-          playlist.getTracks()[trackIndex].fileUrl.startsWith("http") &&
-          yt.getYouTubeVideoIdFromUrl(playlist.getTracks()[trackIndex].fileUrl)
-        ) {
-          g_player.engineType = PlayerEngineType.YOUTUBE;
-          g_player.mediaType = PlayerMediaType.VIDEO;
-          const ytId = yt.getYouTubeVideoIdFromUrl(
-            playlist.getTracks()[trackIndex].fileUrl,
-          );
-          yt.createNewPlayer(
-            ytId,
-            time,
-            g_settings.muted ? 0 : g_player.engine.volume,
-            refreshUI,
-            playlist.updateCurrentFileTags,
-            onPlaySucceeded,
-            onEnded,
-          );
-        } else {
-          // NATIVE
-          g_player.engine.muted = true;
-          g_player.engineType = PlayerEngineType.NATIVE;
+        // if (
+        //   playlist.getTracks()[trackIndex].fileUrl.startsWith("http") &&
+        //   yt.getYouTubeVideoIdFromUrl(playlist.getTracks()[trackIndex].fileUrl)
+        // ) {
+        //   g_player.engineType = PlayerEngineType.YOUTUBE;
+        //   g_player.mediaType = PlayerMediaType.VIDEO;
+        //   const ytId = yt.getYouTubeVideoIdFromUrl(
+        //     playlist.getTracks()[trackIndex].fileUrl,
+        //   );
+        //   yt.createNewPlayer(
+        //     ytId,
+        //     time,
+        //     g_settings.muted ? 0 : g_player.engine.volume,
+        //     refreshUI,
+        //     playlist.updateCurrentFileTags,
+        //     onPlaySucceeded,
+        //     onEnded,
+        //   );
+        // } else {
+        // NATIVE
+        g_player.engine.muted = true;
+        g_player.engineType = PlayerEngineType.NATIVE;
 
-          // check metadata ////
-          if (g_player.trackMetadata && g_player.trackMetadata.hasVideo) {
-            g_player.trackHasVideoMetadata = true;
+        // check metadata ////
+        if (g_player.trackMetadata && g_player.trackMetadata.hasVideo) {
+          g_player.trackHasVideoMetadata = true;
 
-            const metadata = g_player.trackMetadata;
-            const fileUrl = playlist
-              .getTracks()
-              [trackIndex].fileUrl.toLowerCase();
-            const badAudioCodecs = ["ac3", "dts", "eac3", "truehd"];
-            const heavyContainers = ["matroska", "avi", "flv", "mov", "wmv"];
-            const riskyExtensions = [".mkv", ".avi", ".flv", ".mov", ".wmv"];
+          const metadata = g_player.trackMetadata;
+          const fileUrl = playlist
+            .getTracks()
+            [trackIndex].fileUrl.toLowerCase();
+          const badAudioCodecs = ["ac3", "dts", "eac3", "truehd"];
+          const heavyContainers = ["matroska", "avi", "flv", "mov", "wmv"];
+          const riskyExtensions = [".mkv", ".avi", ".flv", ".mov", ".wmv"];
 
-            let useFFmpeg = false;
+          let useFFmpeg = false;
 
-            if (metadata.usedFFprobe) {
-              const hasBadAudio = metadata.audioCodecs.some((c) =>
-                badAudioCodecs.includes(c),
-              );
-              const isHeavyContainer = heavyContainers.some((c) =>
-                metadata.container.includes(c),
-              );
+          if (metadata.usedFFprobe) {
+            const hasBadAudio = metadata.audioCodecs.some((c) =>
+              badAudioCodecs.includes(c),
+            );
+            const isHeavyContainer = heavyContainers.some((c) =>
+              metadata.container.includes(c),
+            );
 
-              if (hasBadAudio || isHeavyContainer) {
-                useFFmpeg = true;
-              }
-            } else {
-              // fallback
-              const hasRiskyExt = riskyExtensions.some((ext) =>
-                fileUrl.endsWith(ext),
-              );
-              if (hasRiskyExt) {
-                useFFmpeg = true;
-              }
+            if (hasBadAudio || isHeavyContainer) {
+              useFFmpeg = true;
             }
-            if (useFFmpeg) {
-              throw new Error("NotSupportedError");
+          } else {
+            // fallback
+            const hasRiskyExt = riskyExtensions.some((ext) =>
+              fileUrl.endsWith(ext),
+            );
+            if (hasRiskyExt) {
+              useFFmpeg = true;
             }
           }
-          //////
-          await g_player.engine.play();
-          await new Promise((r) => setTimeout(r, 250));
-          if (loadId !== g_currentLoadId) return;
-          if (
-            g_player.engine.videoWidth === 0 &&
-            g_player.engine.webkitVideoDecodedByteCount === 0
-          ) {
-            if (loadId !== g_currentLoadId) return;
-            if (g_player.trackMetadata && g_player.trackMetadata.hasVideo) {
-              throw new Error("NotSupportedError");
-            }
+          if (useFFmpeg) {
+            throw new Error("NotSupportedError");
           }
-          g_player.engine.muted = wasMuted;
         }
+        //////
+        await g_player.engine.play();
+        await new Promise((r) => setTimeout(r, 250));
+        if (loadId !== g_currentLoadId) return;
+        if (
+          g_player.engine.videoWidth === 0 &&
+          g_player.engine.webkitVideoDecodedByteCount === 0
+        ) {
+          if (loadId !== g_currentLoadId) return;
+          if (g_player.trackMetadata && g_player.trackMetadata.hasVideo) {
+            throw new Error("NotSupportedError");
+          }
+        }
+        g_player.engine.muted = wasMuted;
+        // }
       }
     } catch (error) {
       g_player.engine.muted = wasMuted;
