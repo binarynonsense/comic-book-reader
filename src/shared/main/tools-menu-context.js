@@ -156,7 +156,10 @@ exports.show = function (type, params, backToReaderCallback) {
           },
         },
         {
-          label: _("tool-shared-ui-add-folders") + "...",
+          label:
+            (process.platform !== "linux"
+              ? _("tool-shared-ui-add-folders")
+              : _("tool-shared-ui-add-folder")) + "...",
           click: () => {
             core.sendIpcToRenderer(
               "tool-convert-comics",

@@ -691,7 +691,7 @@ function initOnIpcCallbacks() {
   });
 
   on("hs-open-dialog-file", (filePath, sourceId) => {
-    if (sourceId === 1) {
+    if (sourceId === 1 || process.platform === "linux") {
       tools.switchTool("tool-file-browser", { path: filePath }, true);
     } else {
       reader.onMenuOpenFile(filePath);
@@ -889,7 +889,9 @@ function initOnIpcCallbacks() {
         : g_userLists[listIndex].name,
       _("tool-shared-ui-back"),
       _("tool-shared-ui-add-files"),
-      _("tool-shared-ui-add-folders"),
+      process.platform !== "linux"
+        ? _("tool-shared-ui-add-folders")
+        : _("tool-shared-ui-add-folder"),
       listIndex,
       showFocus,
     );

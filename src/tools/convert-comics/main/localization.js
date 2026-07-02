@@ -170,7 +170,10 @@ exports.getLocalization = function (mode) {
     },
     {
       id: "tool-cc-add-folder-button-text",
-      text: _("tool-shared-ui-add-folders").toUpperCase(),
+      text: (process.platform !== "linux"
+        ? _("tool-shared-ui-add-folders")
+        : _("tool-shared-ui-add-folder")
+      ).toUpperCase(),
     },
     {
       id: "tool-cc-clear-list-button-text",
@@ -182,7 +185,10 @@ exports.getLocalization = function (mode) {
     },
     {
       id: "tool-cc-add-folder-button-text-2",
-      text: _("tool-shared-ui-add-folders").toUpperCase(),
+      text: (process.platform !== "linux"
+        ? _("tool-shared-ui-add-folders")
+        : _("tool-shared-ui-add-folder")
+      ).toUpperCase(),
     },
     {
       id: "tool-cc-clear-list-button-text-2",
