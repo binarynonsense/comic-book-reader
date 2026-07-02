@@ -169,16 +169,7 @@ if (g_launchInfo.isFlatpak) {
 }
 // load settings
 settings.init();
-// check g_slice
-log.debug("checking environment");
-// ensure defaultPath works when opening dialogs on linux
-if (g_launchInfo.platform === "linux") {
-  // ref: https://www.electronjs.org/docs/latest/api/dialog
-  app.commandLine.appendSwitch("xdg-portal-required-version", "4");
-  // force x11 for now as wayland support in electron < 41 has issues
-  // users can still use the --ozone-platform=wayland to override it
-  app.commandLine.appendSwitch("ozone-platform", "x11");
-}
+
 // show vips warnings from sharp only in dev mode
 if (!g_launchInfo.isDev) process.env.VIPS_WARNING = 1;
 
@@ -212,57 +203,56 @@ app.whenReady().then(() => {
     // app.on("activate", () => {
     //   if (BrowserWindow.getAllWindows().length === 0) g_mainWindow = acbrGui.createWindow(this, g_launchInfo);
     // });
-
-    // header fixes for the video player's youtube support
-    // avoids errors 153 and 152-4
-    // ref: https://www.electronjs.org/docs/latest/api/web-request
-    const originalUA = g_mainWindow.webContents.getUserAgent();
-    g_mainWindow.webContents.setUserAgent(
-      originalUA.replace(/Electron\/[0-9\.]+\s/g, ""),
-    );
-    const { session } = require("electron");
-    session.defaultSession.webRequest.onBeforeSendHeaders(
-      { urls: ["<all_urls>"] },
-      (details, callback) => {
-        if (
-          details.url.includes("youtube") ||
-          details.url.includes("googlevideo")
-        ) {
-          details.requestHeaders["Referer"] =
-            "https://www.youtube-nocookie.com";
-          details.requestHeaders["Origin"] = "https://www.youtube-nocookie.com";
-          delete details.requestHeaders["Sec-Fetch-Site"];
-          delete details.requestHeaders["Sec-Fetch-Mode"];
-          delete details.requestHeaders["Sec-Fetch-Dest"];
-        }
-        callback({ cancel: false, requestHeaders: details.requestHeaders });
-      },
-    );
-
-    // NOTE: potential fix for youtube playing in the media player.
-    // it wasn't needed in the end but I'm keeping it for now for reference.
-    // session.defaultSession.webRequest.onHeadersReceived(
-    //   { urls: ["https://www.youtube-nocookie.com*"] },
+    //
+    // NOTE: youtube support removed as this no longer works
+    // // header fixes for the video player's youtube support
+    // // avoids errors 153 and 152-4
+    // // ref: https://www.electronjs.org/docs/latest/api/web-request
+    // const originalUA = g_mainWindow.webContents.getUserAgent();
+    // g_mainWindow.webContents.setUserAgent(
+    //   originalUA.replace(/Electron\/[0-9\.]+\s/g, ""),
+    // );
+    // const { session } = require("electron");
+    // session.defaultSession.webRequest.onBeforeSendHeaders(
+    //   { urls: ["<all_urls>"] },
     //   (details, callback) => {
-    //     details.responseHeaders["Access-Control-Allow-Origin"] = ["*"];
-    //     delete details.responseHeaders["X-Frame-Options"];
-    //     delete details.responseHeaders["Content-Security-Policy"];
-    //     callback({ cancel: false, responseHeaders: details.responseHeaders });
+    //     if (
+    //       details.url.includes("youtube") ||
+    //       details.url.includes("googlevideo")
+    //     ) {
+    //       details.requestHeaders["Referer"] =
+    //         "https://www.youtube-nocookie.com";
+    //       details.requestHeaders["Origin"] = "https://www.youtube-nocookie.com";
+    //       delete details.requestHeaders["Sec-Fetch-Site"];
+    //       delete details.requestHeaders["Sec-Fetch-Mode"];
+    //       delete details.requestHeaders["Sec-Fetch-Dest"];
+    //     }
+    //     callback({ cancel: false, requestHeaders: details.requestHeaders });
     //   },
     // );
-
-    // NOTE: potential fix for old radio streams that don't send headers to
-    // inject CORS headers to prevent chromium from muting cross-origin media
-    // when connected to the spectrum visualizer.
-    // session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
-    //   if (details.resourceType === "media") {
-    //     const responseHeaders = { ...details.responseHeaders };
-    //     responseHeaders["access-control-allow-origin"] = ["*"];
-    //     responseHeaders["access-control-expose-headers"] = ["*"];
-    //     return callback({ responseHeaders });
-    //   }
-    //   callback({ responseHeaders: details.responseHeaders });
-    // });
+    // // NOTE: potential fix for youtube playing in the media player.
+    // // it wasn't needed in the end but I'm keeping it for now for reference.
+    // // session.defaultSession.webRequest.onHeadersReceived(
+    // //   { urls: ["https://www.youtube-nocookie.com*"] },
+    // //   (details, callback) => {
+    // //     details.responseHeaders["Access-Control-Allow-Origin"] = ["*"];
+    // //     delete details.responseHeaders["X-Frame-Options"];
+    // //     delete details.responseHeaders["Content-Security-Policy"];
+    // //     callback({ cancel: false, responseHeaders: details.responseHeaders });
+    // //   },
+    // // );
+    // // NOTE: potential fix for old radio streams that don't send headers to
+    // // inject CORS headers to prevent chromium from muting cross-origin media
+    // // when connected to the spectrum visualizer.
+    // // session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
+    // //   if (details.resourceType === "media") {
+    // //     const responseHeaders = { ...details.responseHeaders };
+    // //     responseHeaders["access-control-allow-origin"] = ["*"];
+    // //     responseHeaders["access-control-expose-headers"] = ["*"];
+    // //     return callback({ responseHeaders });
+    // //   }
+    // //   callback({ responseHeaders: details.responseHeaders });
+    // // });
   }
 });
 
