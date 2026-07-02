@@ -128,7 +128,7 @@
     "sharp": true,
     "tesseract.js": false,
     "electron-winstaller": false,
-    "zipfile": false
+    "zipfile": true
   },
   "devDependencies": {
     "del-cli": "7.0.0",
