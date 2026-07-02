@@ -77,7 +77,7 @@ exports.createWindow = function (_core, launchInfo) {
   menuBar.empty();
   let options;
   if (g_launchInfo.isPlayerMode) {
-    g_launchInfo.transparentWindow = g_launchInfo.platform === "linux";
+    g_launchInfo.transparentWindow = false; //g_launchInfo.platform === "linux";
     if (g_launchInfo.parsedArgs["transparent"] === "1") {
       g_launchInfo.transparentWindow = true;
       log.debug("forcing transparent window: true");
