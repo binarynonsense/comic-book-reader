@@ -692,11 +692,7 @@ function initOnIpcCallbacks() {
 
   on("hs-open-button-clicked", (useAcbrBrowser) => {
     if (useAcbrBrowser) {
-      tools.switchTool(
-        "tool-file-browser",
-        { path: appUtils.getDesktopFolderPath() },
-        true,
-      );
+      tools.switchTool("tool-file-browser", { path: undefined }, true);
     } else {
       reader.onMenuOpenFile();
     }

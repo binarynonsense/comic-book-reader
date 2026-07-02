@@ -41,6 +41,7 @@ exports.open = function (fileData, showFocus) {
   const data = fs.readFileSync(path.join(__dirname, "index.html"));
   sendIpcToCoreRenderer("replace-inner-html", "#tools", data.toString());
   updateLocalizedText();
+  g_startingFolderPath = undefined;
   if (
     fileData &&
     fileData.path !== undefined &&
@@ -63,10 +64,13 @@ exports.open = function (fileData, showFocus) {
     g_startingFolderPath = path.dirname(
       history.getEntryInRecentByIndex(history.getRecent().length - 1).filePath,
     );
-  } else {
+  }
+
+  if (!g_startingFolderPath || !fs.existsSync(g_startingFolderPath)) {
     g_startingFolderPath = appUtils.getDesktopFolderPath();
   }
   g_previousFolderPath = undefined;
+
   sendIpcToRenderer("show", showFocus, _("tool-shared-modal-title-loading"));
 };
 
