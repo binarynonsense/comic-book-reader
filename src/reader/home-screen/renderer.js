@@ -82,11 +82,11 @@ function init(settings) {
     ///////////
     const openFileButton = document.querySelector("#hs-openfile-button");
     openFileButton.addEventListener("click", (event) => {
-      sendIpcToMain("hs-open-dialog-file");
+      sendIpcToMain("hs-open-button-clicked", false);
       event.stopPropagation();
     });
     openFileButton.addEventListener("acbr-nav-click", (event) => {
-      sendIpcToMain("hs-open-dialog-file", undefined, 1);
+      sendIpcToMain("hs-open-button-clicked", true);
       event.stopPropagation();
     });
     openFileButton.setAttribute("data-nav-panel", 0);

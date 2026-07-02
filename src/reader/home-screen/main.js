@@ -690,6 +690,18 @@ function initOnIpcCallbacks() {
     sendIpcToRenderer("hs-animate-fireworks");
   });
 
+  on("hs-open-button-clicked", (useAcbrBrowser) => {
+    if (useAcbrBrowser) {
+      tools.switchTool(
+        "tool-file-browser",
+        { path: appUtils.getDesktopFolderPath() },
+        true,
+      );
+    } else {
+      reader.onMenuOpenFile();
+    }
+  });
+
   on("hs-open-dialog-file", (filePath, sourceId) => {
     if (sourceId === 1 || process.platform === "linux") {
       tools.switchTool("tool-file-browser", { path: filePath }, true);
