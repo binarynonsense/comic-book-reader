@@ -194,7 +194,7 @@ function addCurrentToHistory(updateMenu = true) {
     g_fileData.state !== FileDataState.LOADED
   )
     return;
-  if (g_fileData.path !== "") {
+  if (g_fileData.path !== "" && !g_fileData.path.startsWith("/run/user/")) {
     history.addEntryToRecent(
       g_fileData.path,
       g_fileData.pageIndex,
