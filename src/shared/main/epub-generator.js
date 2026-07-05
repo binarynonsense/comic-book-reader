@@ -8,6 +8,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const log = require("./logger");
+const binUtils = require("./bin-utils");
 
 function getMimeType(filePath) {
   // ref: https://idpf.org/epub/30/spec/epub30-publications.html#sec-core-media-types
@@ -171,32 +172,33 @@ img {
   text-align: center;
   text-indent:0;
 }`;
-    // add all to zip
-    const AdmZip = require("adm-zip");
-    let zip = new AdmZip();
     // NOTE: mimetype must be stored uncompressed, and be the first entry
-    // TODO: adm-zip seems to reorder the entries when writing the file, making the current way of making the epub not
-    // conformant to the specification
-    zip.addFile("mimetype", Buffer.from(mimetype, "utf8"));
-    // ref: https://github.com/cthackers/adm-zip/issues/187#issuecomment-490166400
-    let mimeEntry = zip.getEntry("mimetype");
-    mimeEntry.header.method = 0; // Compression method 0 (STORED) or 8 (DEFLATED)
-    zip.addFile("META-INF/container.xml", Buffer.from(containerXml, "utf8"));
-    zip.addFile("OEBPS/content.opf", Buffer.from(contentOpf, "utf8"));
-    zip.addFile("OEBPS/toc.xhtml", Buffer.from(tocXhtml, "utf8"));
+    // 7z does this by default because it's a very small file I think
+    // TODO: 7z, as previously adm-zip, seems to reorder the entries when
+    // writing the file, making the current way of making the epub not
+    // conformant to the specification as mimetype should be the first
+    const writeToTemp = (relPath, content) => {
+      const fullPath = path.join(tempFolderPath, relPath);
+      fs.mkdirSync(path.dirname(fullPath), { recursive: true });
+      fs.writeFileSync(fullPath, content);
+    };
+    writeToTemp("mimetype", Buffer.from(mimetype, "utf8"));
+    writeToTemp("META-INF/container.xml", Buffer.from(containerXml, "utf8"));
+    writeToTemp("OEBPS/content.opf", Buffer.from(contentOpf, "utf8"));
+    writeToTemp("OEBPS/toc.xhtml", Buffer.from(tocXhtml, "utf8"));
     for (let index = 0; index < imgPathsList.length; index++) {
-      zip.addFile(
+      writeToTemp(
         `OEBPS/page_${index}.xhtml`,
         Buffer.from(pagesXhtml[index], "utf8"),
       );
     }
-    zip.addFile("OEBPS/toc.ncx", Buffer.from(tocNcx, "utf8"));
-    zip.addFile("OEBPS/style.css", Buffer.from(styleCss, "utf8"));
+    writeToTemp("OEBPS/toc.ncx", Buffer.from(tocNcx, "utf8"));
+    writeToTemp("OEBPS/style.css", Buffer.from(styleCss, "utf8"));
     if (
       path.extname(imgPathsList[0]) === ".jpg" ||
       path.extname(imgPathsList[0]) === ".jpeg"
     ) {
-      zip.addFile(`OEBPS/cover.jpeg`, fs.readFileSync(imgPathsList[0]));
+      writeToTemp(`OEBPS/cover.jpeg`, fs.readFileSync(imgPathsList[0]));
     } else {
       // convert first
       const sharp = require("sharp");
@@ -207,28 +209,45 @@ img {
           quality: 85,
         })
         .toBuffer();
-      zip.addFile(`OEBPS/cover.jpeg`, buffer);
+      writeToTemp(`OEBPS/cover.jpeg`, buffer);
     }
     if (imageStorageSelection !== "base64") {
       for (let index = 0; index < imgPathsList.length; index++) {
-        zip.addFile(
+        writeToTemp(
           `OEBPS/images/${index}.${getMimeType(imgPathsList[index])}`,
           fs.readFileSync(imgPathsList[index]),
         );
       }
     }
-    // write file //////////////////
-    zip.writeZip(outputFilePath);
-    // // test
-    // {
-    //   zip = new AdmZip(outputFilePath);
-    //   let zipEntries = zip.getEntries();
-    //   zipEntries.forEach(function (zipEntry) {
-    //     log.debug(zipEntry.entryName);
-    //     log.debug(zipEntry.header.method);
-    //     log.debug();
-    //   });
-    // }
+    // write file using 7z //////////////////
+    if (fs.existsSync(outputFilePath)) {
+      fs.unlinkSync(outputFilePath);
+    }
+    const { spawn } = require("node:child_process");
+    let args = ["a", outputFilePath, ".", "-tzip"];
+    // a -> add files to zip or create it and add them
+    // . -> take all files in the working dir
+    await new Promise((resolve, reject) => {
+      const child = spawn(binUtils.get7zBinPath(), args, {
+        cwd: tempFolderPath,
+      });
+      let fullStderr = "";
+      child.stderr.on("data", (data) => {
+        fullStderr += data.toString();
+      });
+      child.on("error", (error) => {
+        reject(error);
+      });
+      child.on("close", (code) => {
+        if (code !== 0) {
+          reject(
+            new Error(`7z exited with code ${code}. Error: ${fullStderr}`),
+          );
+        } else {
+          resolve();
+        }
+      });
+    });
   } catch (error) {
     log.error("Epub generator error: " + error);
     throw "Epub generator error: " + error;
