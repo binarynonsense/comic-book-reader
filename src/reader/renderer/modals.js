@@ -8,6 +8,7 @@
 import * as modals from "../../shared/renderer/modals.js";
 import { sendIpcToMain, on } from "../renderer.js";
 import { getNavKeys, getNavButtons } from "./input.js";
+import { BookType } from "../../shared/renderer/constants.js";
 
 let g_openModal;
 
