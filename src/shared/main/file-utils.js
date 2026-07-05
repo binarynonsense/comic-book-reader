@@ -329,10 +329,11 @@ function getFileTypeFromBuffer(buffer, returnMimeType = false) {
 exports.getFileTypeFromBuffer = getFileTypeFromBuffer;
 
 exports.getEpubType = async function (filePath) {
-  const Seven = require("node-7z");
+  const { spawn } = require("node:child_process");
+  const path = require("path");
   const { get7zBinPath } = require("./bin-utils");
   //////////////
-  // bin logic copied from my seven-zip.js file
+  // bin logic and 7z usage copied from my seven-zip.js file
   const isWin = process.platform === "win32";
   const binName = isWin ? "7z.exe" : "7zz";
   let pathTo7zip = get7zBinPath();
@@ -340,16 +341,31 @@ exports.getEpubType = async function (filePath) {
   return new Promise((resolve) => {
     let imageCount = 0;
     let htmlCount = 0;
+    let remainingData = "";
+    let args = ["l", filePath, "-slt", "-sccUTF-8", "-mmt=off", "-tzip"];
 
-    const stream = Seven.list(filePath, { $bin: pathTo7zip });
+    const child = spawn(pathTo7zip, args);
 
-    stream.on("data", (data) => {
-      const name = data.file.toLowerCase();
-      if (name.match(/\.(jpg|jpeg|png|webp|avif)$/)) imageCount++;
-      if (name.match(/\.(xhtml|html)$/)) htmlCount++;
+    child.stdout.on("data", (chunk) => {
+      remainingData += chunk.toString();
+      let lines = remainingData.split(/\r?\n/);
+      remainingData = lines.pop();
+      for (let line of lines) {
+        const trimmed = line.trim();
+        if (trimmed.startsWith("Path = ")) {
+          const name = trimmed.substring(7).trim().toLowerCase();
+          if (name.match(/\.(jpg|jpeg|png|webp|avif)$/)) imageCount++;
+          if (name.match(/\.(xhtml|html)$/)) htmlCount++;
+        }
+      }
     });
-
-    stream.on("end", () => {
+    child.stderr.on("data", () => {});
+    child.on("error", (err) => {
+      log.error("7z list error:", err);
+      resolve("ebook");
+    });
+    child.on("close", () => {
+      log.test(imageCount);
       // hackish logic, may need to tweak it:
       // comic: roughly 1 image per page
       // ebook: many text pages vs few images
@@ -357,11 +373,6 @@ exports.getEpubType = async function (filePath) {
       const result = isComic ? "comic" : "ebook";
       log.editor("epub detected as: " + result);
       resolve(result);
-    });
-
-    stream.on("error", (err) => {
-      log.error("7z list error:", err);
-      resolve("ebook");
     });
   });
 };

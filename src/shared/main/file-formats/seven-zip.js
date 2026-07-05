@@ -19,62 +19,19 @@ function get7zBinPath() {
   return binUtils.get7zBinPath();
 }
 
-// NOTE: I use node-7z for ZIP/7Z as before but native 'spawn' + '-slt' for
-// RARs to fix crashing on my 2GB+ test rar
-
 exports.get7ZipEntriesList = async function (filePath, password, archiveType) {
   try {
     const { spawn } = require("node:child_process");
-    const Seven = require("node-7z");
-    // ZIP, 7Z
-    if (archiveType !== "rar") {
-      const pass = password === undefined || password === "" ? "_" : password;
-      const seven = Seven.list(filePath, {
-        $bin: get7zBinPath(),
-        charset: "UTF-8",
-        password: pass,
-        archiveType,
-      });
 
-      let imgEntries = [];
-      let comicInfoIds = [];
-      let promise = await new Promise((resolve) => {
-        seven.on("data", (data) => {
-          if (data && data.file) {
-            if (fileUtils.hasImageExtension(data.file))
-              imgEntries.push(data.file);
-            else if (data.file.toLowerCase().endsWith("comicinfo.xml"))
-              comicInfoIds.push(data.file);
-          }
-        });
-        seven.on("error", (error) => resolve({ success: false, data: error }));
-        seven.on("end", () => resolve({ success: true }));
-      });
-
-      if (promise.success) {
-        return {
-          result: "success",
-          paths: imgEntries,
-          metadata: {
-            encrypted: pass !== "_",
-            comicInfoId: comicInfoIds[0] || undefined,
-          },
-        };
-      } else {
-        if (promise.data.toString().toLowerCase().includes("password"))
-          return { result: "password required", paths: [] };
-        throw promise.data;
-      }
-    }
-
-    // RAR
     let args = ["l", filePath, "-slt", "-sccUTF-8", "-mmt=off"];
     if (password && password !== "" && password !== "_") {
       args.push("-p" + password);
     } else {
       args.push("-p");
     }
-
+    // if (archiveType && archiveType !== "rar") {
+    //   args.push(`-t${archiveType}`);
+    // }
     return await new Promise((resolve) => {
       const child = spawn(get7zBinPath(), args);
       let imgEntries = [];
@@ -148,7 +105,7 @@ exports.extract7ZipEntryBuffer = async function (
   archiveType,
 ) {
   try {
-    const { execFileSync } = require("node:child_process");
+    const { spawn } = require("node:child_process");
     const fs = require("fs");
     const path = require("path");
 
@@ -166,31 +123,49 @@ exports.extract7ZipEntryBuffer = async function (
       args.push("-p");
     }
 
-    try {
-      const stdout = execFileSync(get7zBinPath(), args, {
-        maxBuffer: 1024 * 1024 * 10,
-        encoding: "utf8",
+    await new Promise((resolve, reject) => {
+      const child = spawn(get7zBinPath(), args);
+
+      const stdoutChunks = [];
+      const stderrChunks = [];
+      child.stdout.on("data", (chunk) => {
+        stdoutChunks.push(chunk);
       });
-    } catch (error) {
-      const stdoutStr = error.stdout || "";
-      const stderrStr = error.stderr || "";
-      const output = (stdoutStr + stderrStr).toLowerCase();
-      if (
-        output.includes("password") ||
-        output.includes("encrypted") ||
-        output.includes("wrong password")
-      ) {
-        throw "password required";
-      }
-      throw error;
-    }
+      child.stderr.on("data", (chunk) => {
+        stderrChunks.push(chunk);
+      });
+
+      child.on("error", (error) => {
+        reject(error);
+      });
+      child.on("close", (code) => {
+        const stdout = Buffer.concat(stdoutChunks).toString("utf8");
+        const stderr = Buffer.concat(stderrChunks).toString("utf8");
+        if (code !== 0) {
+          const error = new Error(`7z exited with code ${code}`);
+          error.stdout = stdout;
+          error.stderr = stderr;
+          return reject(error);
+        }
+        resolve();
+      });
+    });
 
     const fullPath = path.join(tempSubFolderPath, path.basename(entryName));
     const buffer = fs.readFileSync(fullPath);
     return { success: true, data: buffer };
   } catch (error) {
-    if (error === "password required")
+    const stdoutStr = error.stdout || "";
+    const stderrStr = error.stderr || "";
+    const output = (stdoutStr + stderrStr).toLowerCase();
+    if (
+      output.includes("password") ||
+      output.includes("encrypted") ||
+      output.includes("wrong password")
+    ) {
       return { success: false, data: "password required" };
+    }
+
     return { success: false, data: error };
   }
 };
@@ -207,97 +182,66 @@ exports.extract7Zip = async function (
 ) {
   try {
     const { spawn } = require("node:child_process");
-    const Seven = require("node-7z");
     const path = require("path");
 
     const absPath = path.resolve(filePath);
     const pass = password === undefined || password === "" ? "_" : password;
 
-    if (archiveType === "rar") {
-      // 'x' to ensure inner folders are kept
-      let args = ["x", absPath, `-o${tempFolderPath}`, "-y"];
-
-      if (pass !== "_") {
-        args.push("-p" + pass);
-      } else {
-        // trigger password error if encrypted
-        args.push("-p-");
-      }
-
-      return await new Promise((resolve) => {
-        g_active7zProcess = spawn(get7zBinPath(), args);
-
-        let fullStderr = "";
-
-        g_active7zProcess.stdout.on("data", () => {
-          // silence progress logs
-        });
-        g_active7zProcess.stderr.on("data", (data) => {
-          fullStderr += data.toString();
-        });
-
-        g_active7zProcess.on("close", (code, signal) => {
-          g_active7zProcess = null;
-
-          if (signal === "SIGTERM" || signal === "SIGKILL") {
-            // cancelled
-            return resolve({ success: false, cancelled: true });
-          }
-
-          if (code === 0) {
-            resolve({ success: true });
-          } else {
-            const errStr = fullStderr.toLowerCase();
-            let errorResult = fullStderr;
-            if (errStr.includes("password") || errStr.includes("encrypted")) {
-              errorResult = "password required";
-            } else if (
-              errStr.includes("e_fail") ||
-              errStr.includes("no space")
-            ) {
-              errorResult = "no_disk_space";
-            }
-            resolve({ success: false, error: errorResult });
-          }
-        });
-
-        g_active7zProcess.on("error", (err) => {
-          g_active7zProcess = null;
-          resolve({ success: false, error: err.message });
-        });
-      });
+    // 'x' to ensure inner folders are kept
+    let args = ["x", absPath, `-o${tempFolderPath}`, "-y"];
+    if (pass !== "_") {
+      args.push("-p" + pass);
     } else {
-      // ZIP, 7Z
-      const seven = Seven.extractFull(absPath, tempFolderPath, {
-        $bin: get7zBinPath(),
-        charset: "UTF-8",
-        password: pass,
-        archiveType: archiveType,
-      });
-
-      g_active7zProcess = seven;
-
-      let promise = await new Promise((resolve) => {
-        seven.on("error", (error) => {
-          g_active7zProcess = null;
-          resolve({ success: false, data: error });
-        });
-        seven.on("end", () => {
-          g_active7zProcess = null;
-          resolve({ success: true });
-        });
-      });
-
-      if (promise.success === true) return { success: true };
-      else {
-        let error = promise.data;
-        if (error.message && error.message.includes("E_FAIL"))
-          error = "no_disk_space";
-        if (error.toString().toLowerCase().includes("password"))
-          error = "password required";
-        return { success: false, error: error };
-      }
+      // trigger password error if encrypted
+      args.push("-p-");
     }
+    // if (archiveType && archiveType !== "rar") {
+    //   args.push(`-t${archiveType}`);
+    // }
+
+    return await new Promise((resolve) => {
+      g_active7zProcess = spawn(get7zBinPath(), args);
+
+      let fullStderr = "";
+
+      g_active7zProcess.stdout.on("data", () => {
+        // silence progress logs
+      });
+      g_active7zProcess.stderr.on("data", (data) => {
+        fullStderr += data.toString();
+      });
+
+      g_active7zProcess.on("close", (code, signal) => {
+        g_active7zProcess = null;
+
+        if (signal === "SIGTERM" || signal === "SIGKILL") {
+          // cancelled
+          return resolve({ success: false, cancelled: true });
+        }
+
+        if (code === 0) {
+          resolve({ success: true });
+        } else {
+          const errStr = fullStderr.toLowerCase();
+          let errorResult = fullStderr;
+          if (
+            errStr.includes("password") ||
+            errStr.includes("encrypted") ||
+            errStr.includes("wrong password")
+          ) {
+            errorResult = "password required";
+          } else if (errStr.includes("e_fail") || errStr.includes("no space")) {
+            errorResult = "no_disk_space";
+          }
+          resolve({ success: false, error: errorResult });
+        }
+      });
+
+      g_active7zProcess.on("error", (err) => {
+        g_active7zProcess = null;
+        resolve({ success: false, error: err.message });
+      });
+    });
   } catch (error) {
     g_active7zProcess = null;
     log.error("extract7Zip Global Error:", error);
@@ -402,51 +346,42 @@ exports.update7ZipWithFolderContents = async function (
   archiveType,
 ) {
   try {
-    const Seven = require("node-7z");
+    const { spawn } = require("node:child_process");
+    const path = require("path");
 
-    // Doesn't work, saves everything at the root, internal folders are ignored
-    // {
-    //   let options = {
-    //     $bin: get7zBinPath(),
-    //     charset: "UTF-8",
-    //     password: password,
-    //     workingDir: contentFolderPath,
-    //   };
-    //   if (archiveType && archiveType === "zip") {
-    //     options.archiveType = archiveType;
-    //   }
+    const absFilePath = path.resolve(filePath);
 
-    //   seven = Seven.add(filePath, entryName, options);
-    // }
+    let args = ["u", absFilePath, contentFolderPath + "/*", "-y", "-sccUTF-8"];
 
-    let options = {
-      $bin: get7zBinPath(),
-      charset: "UTF-8",
-    };
     if (password && password.trim() !== "") {
-      options.password = password;
+      args.push("-p" + password);
     }
-    if (archiveType && archiveType === "zip") {
-      options.archiveType = archiveType;
-    }
-    const seven = Seven.add(filePath, contentFolderPath + "/*", options);
 
-    let promise = await new Promise((resolve) => {
-      seven.on("error", (error) => {
-        resolve({ success: false, data: error });
+    if (archiveType && archiveType === "zip") {
+      args.push(`-t${archiveType}`);
+    }
+
+    const success = await new Promise((resolve) => {
+      const child = spawn(get7zBinPath(), args);
+
+      child.stdout.on("data", () => {
+        // silence progress logs
       });
-      seven.on("end", () => {
-        return resolve({
-          success: true,
-          data: "",
-        });
+      child.stderr.on("data", () => {
+        // silence error logs
+      });
+      child.on("error", () => {
+        resolve(false);
+      });
+      child.on("close", (code) => {
+        resolve(code === 0);
       });
     });
 
-    if (promise.success === true) {
+    if (success) {
       return true;
     }
-    throw promise.data;
+    throw "7-Zip update command failed";
   } catch (error) {
     log.error(error);
     return false;
@@ -462,26 +397,55 @@ exports.getEpubOpfEntriesList = async function (filePath, password) {
     if (password === undefined || password === "") {
       password = "_";
     }
-    const Seven = require("node-7z");
-    let options = {
-      $bin: get7zBinPath(),
-      charset: "UTF-8",
-      password: password,
-    };
-    options.archiveType = "zip";
-    const seven = Seven.test(filePath, options);
+    const { spawn } = require("node:child_process");
+    let args = ["l", filePath, "-slt", "-sccUTF-8", "-mmt=off", "-tzip"];
+    if (password !== "_") {
+      args.push("-p" + password);
+    } else {
+      args.push("-p");
+    }
     let promise = await new Promise((resolve) => {
+      const child = spawn(get7zBinPath(), args);
       const opfEntries = [];
-      seven.on("data", function (data) {
-        if (data.file.toLowerCase().endsWith(".opf")) {
-          opfEntries.push(data.file);
+      let fullStderr = "";
+      let remainingData = "";
+      child.stdout.on("data", (chunk) => {
+        remainingData += chunk.toString();
+        let lines = remainingData.split(/\r?\n/);
+        remainingData = lines.pop();
+        for (let line of lines) {
+          const trimmed = line.trim();
+          if (trimmed.startsWith("Path = ")) {
+            const fileName = trimmed.substring(7).trim();
+            if (fileName && fileName.toLowerCase().endsWith(".opf")) {
+              opfEntries.push(fileName);
+            }
+          }
         }
       });
-      seven.on("error", (error) => {
+      child.stderr.on("data", (data) => {
+        fullStderr += data.toString();
+      });
+
+      child.on("error", (error) => {
         resolve({ success: false, data: error });
       });
-      seven.on("end", () => {
-        return resolve({
+      child.on("close", (code) => {
+        if (code !== 0 && opfEntries.length === 0) {
+          const lowerStderr = fullStderr.toLowerCase();
+          if (
+            lowerStderr.includes("password") ||
+            lowerStderr.includes("encrypted") ||
+            lowerStderr.includes("wrong password")
+          ) {
+            return resolve({ success: false, data: "password required" });
+          }
+          return resolve({
+            success: false,
+            data: new Error(`7z exited with code ${code}`),
+          });
+        }
+        resolve({
           success: true,
           data: opfEntries,
         });
@@ -498,3 +462,16 @@ exports.getEpubOpfEntriesList = async function (filePath, password) {
     return undefined;
   }
 };
+
+// NOTE: 7z reference
+//
+// l -> list
+// x -> extract
+// u -> update / append
+// a -> add or create?
+//
+// -slt -> show technical layout, key = value; don't truncate names?
+// -sccUTF-8 -> stdout/stderr streams to unicode
+// -mmt=off -> disable multithread, to maintain output order?
+// -p... -> password
+// -aos -> archive overwrite skip, skip file if output path already exists
