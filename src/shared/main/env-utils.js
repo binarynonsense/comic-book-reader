@@ -15,9 +15,9 @@ exports.setSafeEnvironment = function (logHeader, send) {
     delete process.env[key];
   }
   Object.assign(process.env, safeEnv);
+  const cp = require("node:child_process");
 
   // wrap spawn
-  const cp = require("node:child_process");
   const originalSpawn = cp.spawn;
   cp.spawn = function (command, args, options) {
     const message = `${logHeader}[spawn WRAPPER] spawn called for ${command} ${args ? args.join(" ") : ""}`;
@@ -40,23 +40,23 @@ exports.setSafeEnvironment = function (logHeader, send) {
     // create a copy of options so we don't modify the library's original object
     const opts = finalOptions ? Object.assign({}, finalOptions) : {};
     const rawEnv = opts.env || process.env;
-    // log bad entry
-    for (const key in rawEnv) {
-      if (typeof key === "string" && typeof rawEnv[key] === "string") {
-        if (key.includes("\0") || rawEnv[key].includes("\0")) {
-          const message = `${logHeader}[spawn WRAPPER] null byte found in: ${key.replace(/\0/g, "[NULL]")}`;
-          if (send) {
-            send({
-              type: "debugLog",
-              log: message,
-            });
-          } else {
-            const log = require("./logger");
-            log.debug(message);
-          }
-        }
-      }
-    }
+    // // log bad entry
+    // for (const key in rawEnv) {
+    //   if (typeof key === "string" && typeof rawEnv[key] === "string") {
+    //     if (key.includes("\0") || rawEnv[key].includes("\0")) {
+    //       const message = `${logHeader}[spawn WRAPPER] null byte found in: ${key.replace(/\0/g, "[NULL]")}`;
+    //       if (send) {
+    //         send({
+    //           type: "debugLog",
+    //           log: message,
+    //         });
+    //       } else {
+    //         const log = require("./logger");
+    //         log.debug(message);
+    //       }
+    //     }
+    //   }
+    // }
     // sanitize
     opts.env = getSafeEnv(rawEnv);
     return originalSpawn.call(this, command, finalArgs, opts);
@@ -86,6 +86,46 @@ exports.setSafeEnvironment = function (logHeader, send) {
     const opts = finalOptions ? Object.assign({}, finalOptions) : {};
     opts.env = getSafeEnv(opts.env || process.env);
     return originalExecFileSync.call(this, command, finalArgs, opts);
+  };
+
+  // wrap execFile
+  const originalExecFile = cp.execFile;
+  cp.execFile = function (command, args, options, callback) {
+    let finalArgs = args;
+    let finalOptions = options;
+    let finalCallback = callback;
+    // handle optional args
+    if (typeof finalArgs === "function") {
+      finalCallback = finalArgs;
+      finalArgs = undefined;
+      finalOptions = undefined;
+    } else if (typeof finalOptions === "function") {
+      finalCallback = finalOptions;
+    }
+    const message = `${logHeader}[execFile WRAPPER] called for ${command} ${finalArgs ? finalArgs.join(" ") : ""}`;
+    if (send) {
+      send({
+        type: "editorLog",
+        log: message,
+      });
+    } else {
+      const log = require("./logger");
+      log.editor(message);
+    }
+    const opts = finalOptions ? Object.assign({}, finalOptions) : {};
+    // sanitize
+    opts.env = getSafeEnv(opts.env || process.env);
+    if (finalArgs === undefined) {
+      return originalExecFile.call(this, command, opts, finalCallback);
+    } else {
+      return originalExecFile.call(
+        this,
+        command,
+        finalArgs,
+        opts,
+        finalCallback,
+      );
+    }
   };
 };
 
