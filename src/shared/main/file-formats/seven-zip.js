@@ -470,9 +470,8 @@ exports.getEpubOpfEntriesList = async function (filePath, password) {
     };
     options.archiveType = "zip";
     const seven = Seven.test(filePath, options);
-    let opfEntries;
     let promise = await new Promise((resolve) => {
-      opfEntries = [];
+      const opfEntries = [];
       seven.on("data", function (data) {
         if (data.file.toLowerCase().endsWith(".opf")) {
           opfEntries.push(data.file);
@@ -490,7 +489,7 @@ exports.getEpubOpfEntriesList = async function (filePath, password) {
     });
 
     if (promise.success === true) {
-      return opfEntries;
+      return promise.data;
     } else {
       throw promise.data;
     }
