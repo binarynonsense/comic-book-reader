@@ -149,7 +149,7 @@ async function createFiles(
   outputFileSameName,
   tempFolderPath,
   password,
-  extra,
+  extraData,
 ) {
   let outputSubFolderPath;
   if (outputFormat === undefined) outputFormat = FileExtension.CBZ;
@@ -238,7 +238,7 @@ async function createFiles(
           await fileFormats.createPdf(
             filesData[index].imgFilePaths,
             filesData[index].outputFilePath,
-            extra,
+            extraData,
             password,
           );
         } else if (outputFormat === FileExtension.EPUB) {
@@ -246,7 +246,7 @@ async function createFiles(
             filesData[index].imgFilePaths,
             filesData[index].outputFilePath,
             tempFolderPath,
-            extra,
+            extraData,
           );
         } else if (outputFormat === FileExtension.CB7) {
           if (comicInfoFilePath)
@@ -263,8 +263,8 @@ async function createFiles(
           const cmdResult = await fileFormats.createRar(
             filesData[index].imgFilePaths,
             filesData[index].outputFilePath,
-            extra.rarExePath,
-            extra.workingDir,
+            extraData.rarExePath,
+            extraData.workingDir,
             password,
           );
           if (cmdResult.error) {

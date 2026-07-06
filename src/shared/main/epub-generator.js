@@ -21,9 +21,10 @@ exports.createComic = async function (
   imgPathsList,
   outputFilePath,
   tempFolderPath,
-  imageStorageSelection,
+  extraData,
 ) {
   try {
+    const imageStorageSelection = extraData.imageStorage;
     let bookTitle = path.basename(outputFilePath, path.extname(outputFilePath));
     // ref: https://ebooks.stackexchange.com/questions/1183/what-is-the-minimum-required-content-for-a-valid-epub
     // ref: https://stackoverflow.com/questions/74870022/how-to-create-an-epub-from-javascript
@@ -179,8 +180,10 @@ img {
     //   writing the file no matter the order, making the current way of
     //   creating the epub not conformant to the specification
 
+    // TODO: this method duplicates the images, easier to get the exact zip
+    // I want, but wasteful. Could I do it differently?
     const writeToTemp = (relPath, content) => {
-      const fullPath = path.join(tempFolderPath, relPath);
+      const fullPath = path.join(extraData.tempSubFolderPath, relPath);
       fs.mkdirSync(path.dirname(fullPath), { recursive: true });
       fs.writeFileSync(fullPath, content);
     };
@@ -231,7 +234,7 @@ img {
     // . -> take all files in the working dir
     await new Promise((resolve, reject) => {
       const child = spawn(binUtils.get7zBinPath(), args, {
-        cwd: tempFolderPath,
+        cwd: extraData.tempSubFolderPath,
       });
       let fullStderr = "";
       child.stderr.on("data", (data) => {

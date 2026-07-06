@@ -1404,6 +1404,9 @@ async function createFilesFromImages(
           return;
         } else if (message.type === undefined) {
           killWorker();
+          if (message?.extraData?.tempSubFolderPath) {
+            temp.deleteSubFolder(message.extraData.tempSubFolderPath);
+          }
           if (message.success) {
             log.debug("[CC] file/s created in: " + message.times);
             temp.deleteSubFolder(g_tempSubFolderPath);
@@ -1424,7 +1427,10 @@ async function createFilesFromImages(
     }
     let extraData = undefined;
     if (g_uiSelectedOptions.outputFormat === FileExtension.EPUB) {
-      extraData = g_uiSelectedOptions.outputEpubCreationImageStorage;
+      extraData = {
+        imageStorage: g_uiSelectedOptions.outputEpubCreationImageStorage,
+        tempSubFolderPath: temp.createSubFolder(),
+      };
     } else if (g_uiSelectedOptions.outputFormat === FileExtension.CBR) {
       extraData = {
         rarExePath: utils.getRarCommand(settings.getValue("rarExeFolderPath")),

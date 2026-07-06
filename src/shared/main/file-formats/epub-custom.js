@@ -13,7 +13,7 @@ async function createEpub(
   imgPathsList,
   outputFilePath,
   tempFolderPath,
-  imageStorageSelection,
+  extraData,
 ) {
   try {
     const epub = require("../epub-generator");
@@ -21,7 +21,7 @@ async function createEpub(
       imgPathsList,
       outputFilePath,
       tempFolderPath,
-      imageStorageSelection,
+      extraData,
     );
     return;
   } catch (error) {
