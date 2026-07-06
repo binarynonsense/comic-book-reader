@@ -271,7 +271,7 @@ exports.parsePdfDate = function (date) {
 };
 
 exports.padNumber = function (number, maximum) {
-  if (!number || !maximum) return number;
+  if (number === undefined || maximum === undefined) return number;
   number = number.toString();
   maximum = maximum.toString();
   while (number.length < maximum.length) number = "0" + number;
