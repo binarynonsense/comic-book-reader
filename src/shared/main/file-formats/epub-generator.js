@@ -120,7 +120,8 @@ exports.createComic = async function (
         let img64 = "data:" + mime + ";base64," + buf.toString("base64");
         pageXhtml += `\n      <img src="${img64}" alt="page_image"/>`;
       } else {
-        pageXhtml += `\n      <img src="images/${index}.${getMimeType(
+        const fileName = utils.padNumber(index + 1, imgPathsList.length);
+        pageXhtml += `\n      <img src="images/${fileName}.${getMimeType(
           imgPathsList[index],
         )}" alt="page_image"/>`;
       }
