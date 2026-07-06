@@ -10,7 +10,7 @@ const fs = require("node:fs");
 let g_isDebug = false;
 let g_isRelease = true;
 let g_levelCap = 4;
-// 0 = info, notice and error, 1 = warning, 2 = debug, 3 = editor ,
+// 0 = info, notice and error, 1 = warning, 2 = debug, 3 = editor,
 // 4 = debug and editor extra
 
 const g_noticeTag = "[\x1b[33mNOTICE\x1b[0m]";
