@@ -183,9 +183,6 @@ async function parseEpubMetadata(filePath, tempFolderPath) {
     );
     // TODO: check result for !success
 
-    // if (process.type === "utility") {
-    // }
-
     const opfData = parser.parse(opfBuffer.data.toString());
 
     let manifestData = opfData.package.manifest.item;
