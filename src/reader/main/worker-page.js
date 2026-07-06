@@ -64,14 +64,6 @@ process.parentPort.on("message", async (event) => {
     });
   } else if (message.command === "open") {
     if (message.fileType === FileDataType.PDF) {
-      ////
-      // const result = await fileFormats.openPdf(
-      //   message.filePath,
-      //   message.password,
-      // );
-      // message.type = "openResult";
-      // message.result = result;
-      // process.parentPort.postMessage(message);
       const result = await fileFormats.openMuPdf(
         message.filePath,
         message.password,
@@ -157,11 +149,16 @@ async function extractImageBuffer({
         error = result.data;
       }
     } else if (fileType === FileDataType.EPUB_COMIC) {
-      const data = await fileFormats.extractEpubImageBuffer(
+      const result = await fileFormats.extractEpubImageBuffer(
         filePath,
         entryName,
+        tempSubFolderPath,
       );
-      buffer = data[0];
+      if (result.success) {
+        buffer = result.data;
+      } else {
+        error = result.data;
+      }
     } else if (fileType === FileDataType.IMGS_FOLDER) {
       // if (!path.isAbsolute(entryName)) {
       //   // FIXME: make it absolute somehow?

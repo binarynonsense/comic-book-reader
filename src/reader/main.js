@@ -1101,7 +1101,12 @@ async function openComicBookFromPath(
       if (g_fileData.type === FileDataType.EPUB_EBOOK) {
         throw "shouldn't be here? epub not ebook";
       } else {
-        let pagesPaths = await fileFormats.getEpubImageIdsList(filePath);
+        const tempSubFolderPath = temp.createSubFolder();
+        let pagesPaths = await fileFormats.getEpubImageIdsList(
+          filePath,
+          tempSubFolderPath,
+        );
+        temp.deleteSubFolder(tempSubFolderPath);
         if (pagesPaths !== undefined && pagesPaths.length > 0) {
           g_fileData.state = FileDataState.LOADED;
           g_fileData.type = FileDataType.EPUB_COMIC;

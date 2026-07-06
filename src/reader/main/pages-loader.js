@@ -265,6 +265,7 @@ async function fetchPages(pageWorker, fileData, pageIndexes) {
       g_fileData.type === FileDataType.SEVENZIP ||
       g_fileData.type === FileDataType.ZIP ||
       g_fileData.type === FileDataType.RAR ||
+      g_fileData.type === FileDataType.EPUB_COMIC ||
       g_fileData.type === FileDataType.EPUB_EBOOK ||
       g_fileData.type === FileDataType.AZW3 ||
       g_fileData.type === FileDataType.MOBI ||

@@ -683,6 +683,9 @@ function startNextFile() {
             return;
           } else if (message.type === undefined) {
             // success or failure
+            if (message?.extraData?.tempSubFolderPath) {
+              temp.deleteSubFolder(message.extraData.tempSubFolderPath);
+            }
             killWorker();
             if (message.success || message.cancelled) {
               if (g_cancel === true) {
@@ -736,6 +739,10 @@ function startNextFile() {
             inputFileType === FileDataType.FB2
           ) {
             return g_uiSelectedOptions.inputEpubExtraction;
+          } else if (inputFileType === FileDataType.EPUB_COMIC) {
+            return {
+              tempSubFolderPath: temp.createSubFolder(),
+            };
           }
           return undefined;
         }

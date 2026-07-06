@@ -65,10 +65,8 @@ async function extractImages(
   const timers = require("./timers");
   timers.start("extractImages");
   try {
-    let success = false;
     let result = undefined;
     if (inputFileType === FileDataType.ZIP) {
-      // success = fileFormats.extractZip(inputFilePath, tempFolderPath, password);
       result = await fileFormats.extract7Zip(
         inputFilePath,
         tempFolderPath,
@@ -76,11 +74,6 @@ async function extractImages(
         "zip",
       );
     } else if (inputFileType === FileDataType.RAR) {
-      // result = await fileFormats.extractRar(
-      //   inputFilePath,
-      //   tempFolderPath,
-      //   password,
-      // );
       result = await fileFormats.extract7Zip(
         inputFilePath,
         tempFolderPath,
@@ -94,7 +87,11 @@ async function extractImages(
         password,
       );
     } else if (inputFileType === FileDataType.EPUB_COMIC) {
-      result = await fileFormats.extractEpub(inputFilePath, tempFolderPath);
+      result = await fileFormats.extractEpub(
+        inputFilePath,
+        tempFolderPath,
+        extraData,
+      );
     } else if (
       inputFileType === FileDataType.EPUB_EBOOK ||
       inputFileType === FileDataType.AZW3 ||
@@ -121,30 +118,21 @@ async function extractImages(
       throw "invalid file type";
     }
     let time = `${timers.stop("extractImages").toFixed(2)}s`;
-    if (result) {
-      if (result.success) {
-        send({ success: true, time: time });
-      } else if (result.cancelled) {
-        send({ success: false, cancelled: true });
-      } else {
-        if (result.error) {
-          throw result.error;
-        } else throw "Unknown error";
-      }
+    if (result.success) {
+      send({ success: true, time: time, extraData });
+    } else if (result.cancelled) {
+      send({ success: false, cancelled: true, extraData });
     } else {
-      // TODO: get errors from all extraction functions
-      // TODO: eventually delete this path
-      if (success) {
-        send({ success: true, time: time });
-      } else {
-        throw "Unknown error";
-      }
+      if (result.error) {
+        throw result.error;
+      } else throw "Unknown error";
     }
   } catch (error) {
     timers.stop("extractImages").toFixed(2);
     send({
       success: false,
-      error: error,
+      error,
+      extraData,
     });
   }
 }
