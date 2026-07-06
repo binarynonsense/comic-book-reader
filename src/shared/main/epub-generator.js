@@ -173,10 +173,11 @@ img {
   text-indent:0;
 }`;
     // NOTE: mimetype must be stored uncompressed, and be the first entry
-    // 7z does this by default because it's a very small file I think
-    // TODO: 7z, as previously adm-zip, seems to reorder the entries when
-    // writing the file, making the current way of making the epub not
-    // conformant to the specification as mimetype should be the first
+    // - 7z already stores it uncompressed by default because it's a very small
+    //   file, I think
+    // - TODO: 7z, as previously adm-zip, seems to reorder the entries when
+    //   writing the file, making the current way of making the epub not
+    //   conformant to the specification as mimetype should be the first
     const writeToTemp = (relPath, content) => {
       const fullPath = path.join(tempFolderPath, relPath);
       fs.mkdirSync(path.dirname(fullPath), { recursive: true });
