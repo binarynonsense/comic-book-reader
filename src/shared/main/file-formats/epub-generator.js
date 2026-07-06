@@ -7,9 +7,9 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
-const log = require("./logger");
-const binUtils = require("./bin-utils");
-const utils = require("./utils");
+const log = require("../logger");
+const binUtils = require("../bin-utils");
+const utils = require("../utils");
 
 function getMimeType(filePath) {
   // ref: https://idpf.org/epub/30/spec/epub30-publications.html#sec-core-media-types

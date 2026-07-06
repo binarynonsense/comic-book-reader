@@ -7,9 +7,9 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
-const fileFormats = require("./file-formats");
-const temp = require("./temp");
-const log = require("./logger");
+const fileFormats = require("../file-formats");
+const temp = require("../temp");
+const log = require("../logger");
 
 exports.getMetadataProperties = async function (
   filePath,

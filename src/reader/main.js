@@ -2851,7 +2851,7 @@ async function onMenuFileProperties() {
       g_fileData.type === FileDataType.EPUB_COMIC ||
       g_fileData.type === FileDataType.EPUB_EBOOK
     ) {
-      const epubMetadata = require("../shared/main/epub-metadata");
+      const epubMetadata = require("../shared/main/file-formats/epub-metadata");
       g_fileData.metadata = await epubMetadata.getMetadataProperties(
         g_fileData.path,
         g_fileData.metadata,

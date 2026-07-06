@@ -16,7 +16,7 @@ async function createEpub(
   extraData,
 ) {
   try {
-    const epub = require("../epub-generator");
+    const epub = require("./epub-generator");
     await epub.createComic(
       imgPathsList,
       outputFilePath,

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2024 Álvaro García
+ * Copyright 2024-2026 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -11,7 +11,7 @@ const core = require("../../../core/main");
 const base = require("../main");
 const { _ } = require("../../../shared/main/i18n");
 
-const epub = require("../../../shared/main/epub-metadata");
+const epub = require("../../../shared/main/file-formats/epub-metadata");
 
 const log = require("../../../shared/main/logger");
 
