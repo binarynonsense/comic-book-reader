@@ -9,6 +9,7 @@
     "type": "git",
     "url": "https://github.com/binarynonsense/comic-book-reader"
   },
+  "desktopName": "com.binarynonsense.acbr.desktop",
   "build": {
     "productName": "ACBR Comic Book Reader",
     "appId": "com.binarynonsense.acbr",
@@ -50,6 +51,7 @@
     "linux": {
       "category": "Graphics",
       "icon": "./src/assets/images/icon_256x256.png",
+      "syncDesktopName": true,
       "target": [
         {
           "target": "AppImage"
