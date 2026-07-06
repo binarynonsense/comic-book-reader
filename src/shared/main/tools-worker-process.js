@@ -325,11 +325,11 @@ async function createFiles(
       createdFiles.push(filesData[index].outputFilePath);
     }
     /////////////////////////////
-    send({ success: true, files: createdFiles, times: times });
+    send({ success: true, files: createdFiles, times: times, extraData });
   } catch (error) {
     // TODO: remove outputSubFolderPath if exists?
     // I'd prefer not to delete things outside the temp folder, just in case
-    send({ success: false, error: error });
+    send({ success: false, error: error, extraData });
   }
 }
 
