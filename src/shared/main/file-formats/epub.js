@@ -8,6 +8,7 @@
 const path = require("node:path");
 const fs = require("node:fs");
 const log = require("../logger");
+const utils = require("../utils");
 const temp = require("../temp");
 const {
   getEpubOpfEntriesList,
@@ -124,9 +125,13 @@ async function extractEpub(filePath, tempFolderPath, extraData) {
         if (!buffer.success) throw "EPUB: bad image";
 
         // e.g. mimeType = image/png
-        let mimeType = asset["media-type"];
-        let extension = mimeType ? mimeType.split("/")[1] : "jpg";
-        let outputFilePath = path.join(tempFolderPath, index + "." + extension);
+        const mimeType = asset["media-type"];
+        const extension = mimeType ? mimeType.split("/")[1] : "jpg";
+        const fileName = utils.padNumber(index + 1, imageIDs.length);
+        const outputFilePath = path.join(
+          tempFolderPath,
+          fileName + "." + extension,
+        );
         fs.writeFileSync(outputFilePath, buffer.data, "binary");
       } catch (e) {
         continue;

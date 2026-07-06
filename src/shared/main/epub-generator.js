@@ -9,6 +9,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const log = require("./logger");
 const binUtils = require("./bin-utils");
+const utils = require("./utils");
 
 function getMimeType(filePath) {
   // ref: https://idpf.org/epub/30/spec/epub30-publications.html#sec-core-media-types
@@ -218,8 +219,9 @@ img {
     }
     if (imageStorageSelection !== "base64") {
       for (let index = 0; index < imgPathsList.length; index++) {
+        const fileName = utils.padNumber(index + 1, imgPathsList.length);
         writeToTemp(
-          `OEBPS/images/${index}.${getMimeType(imgPathsList[index])}`,
+          `OEBPS/images/${fileName}.${getMimeType(imgPathsList[index])}`,
           fs.readFileSync(imgPathsList[index]),
         );
       }
