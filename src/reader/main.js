@@ -100,6 +100,7 @@ exports.init = async function (filePath, checkHistory) {
   sendIpcToRenderer("init-battery");
   showBattery(settings.getValue("showBattery"));
   showLoadingIndicator(settings.getValue("showLoadingIndicator"));
+
   tools
     .getTools()
     [
@@ -107,6 +108,11 @@ exports.init = async function (filePath, checkHistory) {
     ].init(core.getLaunchInfo(), core.getMainWindow(), "media-player-container", settings.canUseFFmpeg() ? utils.getFfmpegCommand(settings.getValue("ffmpegExeFolderPath")) : undefined);
   showMediaPlayer(settings.getValue("showAudioPlayer"));
   homeScreen.open(undefined);
+
+  sendIpcToRenderer("set-toolbar-visibility", false);
+  sendIpcToRenderer("update-bg", true);
+  sendIpcToRenderer("update-loading", false);
+  sendIpcToRenderer("render-page-info", 0, 0, false);
 
   // if the program is called from the os' 'open with' of file association
   if (filePath && filePath !== "" && fs.existsSync(filePath)) {
@@ -118,7 +124,8 @@ exports.init = async function (filePath, checkHistory) {
       setTimeout(() => {
         tools.getTools()["media-player"].onDroppedFiles([filePath]);
       }, 500);
-    } else if (await tryOpen(filePath)) {
+    } else {
+      tryOpen(filePath);
       return;
     }
   }
@@ -131,15 +138,9 @@ exports.init = async function (filePath, checkHistory) {
     const entry = history.getEntryInRecentByIndex(
       history.getRecent().length - 1,
     );
-    if (await tryOpen(entry.filePath, undefined, entry)) {
-      return;
-    }
+    tryOpen(entry.filePath, undefined, entry);
+    return;
   }
-
-  sendIpcToRenderer("set-toolbar-visibility", false);
-  sendIpcToRenderer("update-bg", true);
-  sendIpcToRenderer("update-loading", false);
-  sendIpcToRenderer("render-page-info", 0, 0, false);
 };
 
 exports.open = function () {
@@ -742,6 +743,8 @@ exports.requestOpenConfirmation = function (filePath) {
 async function tryOpen(filePath, bookType, historyEntry, homeScreenListEntry) {
   sendIpcToPreload("update-menubar"); // in case coming from menu
   closeCurrentFile();
+  sendIpcToRenderer("update-loading", true);
+  sendIpcToRenderer("update-bg", false);
   try {
     if (!bookType) bookType = BookType.NOT_SET;
     let pageIndex;
@@ -773,15 +776,29 @@ async function tryOpen(filePath, bookType, historyEntry, homeScreenListEntry) {
             homeScreenListEntry.data.source === "xkcd" ||
             homeScreenListEntry.data.source === "cbp"
           ) {
-            return tryOpenWWW(pageIndex, homeScreenListEntry);
+            if (tryOpenWWW(pageIndex, homeScreenListEntry)) {
+              return true;
+            } else {
+              sendIpcToRenderer("update-loading", false);
+              sendIpcToRenderer("update-bg", true);
+              return false;
+            }
           } else if (homeScreenListEntry.data.source === "gut") {
-            return await tryOpenPath(
-              filePath,
-              detetedFileType,
-              pageIndex,
-              BookType.EBOOK,
-              homeScreenListEntry, // has same data as history would
-            );
+            if (
+              await tryOpenPath(
+                filePath,
+                detetedFileType,
+                pageIndex,
+                BookType.EBOOK,
+                homeScreenListEntry, // has same data as history would
+              )
+            ) {
+              return true;
+            } else {
+              sendIpcToRenderer("update-loading", false);
+              sendIpcToRenderer("update-bg", true);
+              return false;
+            }
           }
         }
       } else {
@@ -816,15 +833,29 @@ async function tryOpen(filePath, bookType, historyEntry, homeScreenListEntry) {
           historyEntry.data.source === "xkcd" ||
           historyEntry.data.source === "cbp"
         ) {
-          return tryOpenWWW(pageIndex, historyEntry);
+          if (tryOpenWWW(pageIndex, historyEntry)) {
+            return true;
+          } else {
+            sendIpcToRenderer("update-loading", false);
+            sendIpcToRenderer("update-bg", true);
+            return false;
+          }
         } else if (historyEntry.data.source === "gut") {
-          return await tryOpenPath(
-            filePath,
-            detetedFileType,
-            pageIndex,
-            BookType.EBOOK,
-            historyEntry,
-          );
+          if (
+            await tryOpenPath(
+              filePath,
+              detetedFileType,
+              pageIndex,
+              BookType.EBOOK,
+              historyEntry,
+            )
+          ) {
+            return true;
+          } else {
+            sendIpcToRenderer("update-loading", false);
+            sendIpcToRenderer("update-bg", true);
+            return false;
+          }
         } else if (historyEntry.data.source === "dcm") {
           sendIpcToRenderer(
             "show-modal-info",
@@ -882,15 +913,25 @@ async function tryOpen(filePath, bookType, historyEntry, homeScreenListEntry) {
         filePath,
         _("ui-modal-prompt-button-ok"),
       );
+      sendIpcToRenderer("update-loading", false);
+      sendIpcToRenderer("update-bg", true);
       return false;
     }
-    return await tryOpenPath(
-      filePath,
-      detetedFileType,
-      pageIndex,
-      bookType,
-      historyEntry,
-    );
+    if (
+      await tryOpenPath(
+        filePath,
+        detetedFileType,
+        pageIndex,
+        bookType,
+        historyEntry,
+      )
+    ) {
+      return true;
+    } else {
+      sendIpcToRenderer("update-loading", false);
+      sendIpcToRenderer("update-bg", true);
+      return false;
+    }
   } catch (error) {
     log.editorError(error);
     sendIpcToRenderer(
@@ -899,6 +940,9 @@ async function tryOpen(filePath, bookType, historyEntry, homeScreenListEntry) {
       filePath,
       _("ui-modal-prompt-button-ok"),
     );
+    sendIpcToRenderer("update-loading", false);
+    sendIpcToRenderer("update-bg", true);
+    return false;
     return false;
   }
 }
