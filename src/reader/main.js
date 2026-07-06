@@ -2407,7 +2407,7 @@ function startPageWorker() {
           log.test(message.log);
           return;
         } else if (message.type === "editorLog") {
-          log.editor(message.log);
+          log.editor(message.log, message.isExtra);
           return;
         } else if (message.type === "debugLog") {
           log.debug(message.log);

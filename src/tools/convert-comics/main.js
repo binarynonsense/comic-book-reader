@@ -671,7 +671,7 @@ function startNextFile() {
             log.test(message.log);
             return;
           } else if (message.type === "editorLog") {
-            log.editor("[CC] " + message.log);
+            log.editor("[CC] " + message.log, message.isExtra);
             return;
           } else if (message.type === "debugLog") {
             log.debug("[CC] " + message.log);
@@ -1221,7 +1221,7 @@ async function processContent() {
               log.test(message.log);
               return;
             } else if (message.type === "editorLog") {
-              log.editor("[CC] " + message.log);
+              log.editor("[CC] " + message.log, message.isExtra);
               return;
             } else if (message.type === "modalLog") {
               updateModalLogText(message.log);
@@ -1280,7 +1280,7 @@ async function processContent() {
               log.test(message.log);
               return;
             } else if (message.type === "editorLog") {
-              log.editor("[CC] " + message.log);
+              log.editor("[CC] " + message.log, message.isExtra);
               return;
             } else if (message.type === "modalLog") {
               updateModalLogText(message.log);
@@ -1395,7 +1395,7 @@ async function createFilesFromImages(
           log.test(message.log);
           return;
         } else if (message.type === "editorLog") {
-          log.editor("[CC] " + message.log);
+          log.editor("[CC] " + message.log, message.isExtra);
           return;
         } else if (message.type === "debugLog") {
           log.debug("[CC] " + message.log);
@@ -1551,7 +1551,7 @@ async function startConvertImages() {
             log.test(message.log);
             return;
           } else if (message.type === "editorLog") {
-            log.editor("[CC] " + message.log);
+            log.editor("[CC] " + message.log, message.isExtra);
             return;
           } else if (message.type === "modalLog") {
             updateModalLogText(message.log);

@@ -342,12 +342,13 @@ function updatePageCacheSize() {
   g_currentPageCacheMB = totalBytes / (1024 * 1024);
   log.editor(
     `[PAGES] [CACHE] cache size ${g_currentPageCacheMB.toFixed(2)}MB - ${g_pageCache.size} entries`,
+    true,
   );
   const sortedIndexes = Array.from(g_pageCache.keys())
     .sort((a, b) => a - b)
     .map((i) => i + 1)
     .join(", ");
-  log.editor("[PAGES] [CACHE] current indexes: " + sortedIndexes);
+  log.editor("[PAGES] [CACHE] current indexes: " + sortedIndexes, true);
   return g_currentPageCacheMB;
 }
 
@@ -479,7 +480,7 @@ function startPageWorker(pageWorker) {
           log.test("[PAGES] " + message.log);
           return;
         } else if (message.type === "editorLog") {
-          log.editor("[PAGES] " + message.log);
+          log.editor("[PAGES] " + message.log, message.isExtra);
           return;
         } else if (message.type === "debugLog") {
           log.debug("[PAGES] " + message.log);
@@ -501,7 +502,7 @@ function startPageWorker(pageWorker) {
 
 function killPageWorker(pageWorker) {
   if (pageWorker.process !== undefined) {
-    log.editor("[PAGES] kill page worker " + pageWorker.id);
+    log.editor("[PAGES] kill page worker " + pageWorker.id, true);
     pageWorker.process.kill();
     pageWorker.process = undefined;
     if (pageWorker.id === "bg") {

@@ -92,6 +92,7 @@ g_launchInfo.defaultParsingOptions = {
   transparent: { type: "string" },
   tool: { type: "string" },
   help: { type: "boolean" },
+  "log-level-cap": { type: "string" },
 };
 const options = {
   "output-format": { type: "string" },

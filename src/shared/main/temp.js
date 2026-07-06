@@ -79,7 +79,7 @@ exports.createSubFolder = function (baseFolderPath) {
   let folderPath = fs.mkdtempSync(
     path.join(baseFolderPath ?? g_baseFolderPath, "acbr-tmp-"),
   );
-  log.debug("created folder: " + folderPath);
+  log.debug("created folder: " + folderPath, true);
   return folderPath;
 };
 

@@ -25,10 +25,11 @@ exports.setSafeEnvironment = function (logHeader, send) {
       send({
         type: "editorLog",
         log: message,
+        isExtra: true,
       });
     } else {
       const log = require("./logger");
-      log.editor(message);
+      log.editor(message, true);
     }
     let finalArgs = args;
     let finalOptions = options;

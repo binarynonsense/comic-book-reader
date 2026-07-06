@@ -654,7 +654,7 @@ exports.deleteFolderRecursive = function (
       maxRetries,
       retryDelay: 100,
     });
-    log.debug("deleted folder: " + folderPath);
+    log.debug("deleted folder: " + folderPath, true);
   } catch (error) {
     if (logToError) {
       log.error(

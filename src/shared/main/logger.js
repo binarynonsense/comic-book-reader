@@ -9,6 +9,9 @@ const fs = require("node:fs");
 
 let g_isDebug = false;
 let g_isRelease = true;
+let g_levelCap = 4;
+// 0 = info, notice and error, 1 = warning, 2 = debug, 3 = editor ,
+// 4 = debug and editor extra
 
 const g_noticeTag = "[\x1b[33mNOTICE\x1b[0m]";
 const g_warningTag = "[\x1b[93mWARNING\x1b[0m]";
@@ -25,6 +28,13 @@ let g_log;
 exports.init = function (info) {
   g_isDebug = info.isDev;
   g_isRelease = info.isRelease;
+  // console.log(info.parsedArgs["log-level-cap"]);
+  if (typeof info.parsedArgs["log-level-cap"] === "string") {
+    const intValue = parseInt(info.parsedArgs["log-level-cap"]);
+    if (intValue >= 0 && intValue <= 4) {
+      g_levelCap = intValue;
+    }
+  }
   g_log = "";
 };
 
@@ -44,9 +54,11 @@ exports.saveLogFile = function (filePath, prevFilePath, version) {
   } catch (error) {}
 };
 
-exports.debug = function (message) {
-  if (g_isDebug) {
-    console.log(`${getTime()} ${g_debugTag}`, message);
+exports.debug = function (message, isExtra) {
+  if (g_levelCap >= 4 || (g_levelCap >= 2 && !isExtra)) {
+    if (g_isDebug) {
+      console.log(`${getTime()} ${g_debugTag}`, message);
+    }
   }
   g_log += `${getTime()} [DEBUG] ${message}\n`;
 };
@@ -57,8 +69,10 @@ exports.notice = function (message) {
 };
 
 exports.warning = function (message, alwaysShow = false) {
-  if (alwaysShow || g_isDebug) {
-    console.log(`${getTime()} ${g_warningTag}`, message);
+  if (g_levelCap >= 1) {
+    if (alwaysShow || g_isDebug) {
+      console.log(`${getTime()} ${g_warningTag}`, message);
+    }
   }
   g_log += `${getTime()} [WARNING] ${message}\n`;
 };
@@ -100,9 +114,11 @@ exports.test = function (message) {
 //   }
 // };
 
-exports.editor = function (message) {
-  if (g_isDebug && !g_isRelease) {
-    console.log(`${getTime()} ${g_editorTag}`, message);
+exports.editor = function (message, isExtra) {
+  if (g_levelCap >= 4 || (g_levelCap >= 3 && !isExtra)) {
+    if (g_isDebug && !g_isRelease) {
+      console.log(`${getTime()} ${g_editorTag}`, message);
+    }
   }
 };
 
