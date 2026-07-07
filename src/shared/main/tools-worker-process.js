@@ -403,20 +403,20 @@ async function updateComicInfo(comicInfoFilePath, imgFilePaths, updatingText) {
         ignoreAttributes: false,
       };
       const parser = new XMLParser(parserOptions);
-      let json = parser.parse(xmlFileData);
+      const parsedData = parser.parse(xmlFileData);
       // modify
       updateModalLogText(updatingText);
 
-      if (!json["ComicInfo"]["Pages"]) {
-        json["ComicInfo"]["Pages"] = {};
+      if (!parsedData["ComicInfo"]["Pages"]) {
+        parsedData["ComicInfo"]["Pages"] = {};
       }
-      if (!json["ComicInfo"]["Pages"]["Page"]) {
-        json["ComicInfo"]["Pages"]["Page"] = [];
+      if (!parsedData["ComicInfo"]["Pages"]["Page"]) {
+        parsedData["ComicInfo"]["Pages"]["Page"] = [];
       }
 
-      json["ComicInfo"]["PageCount"] = imgFilePaths.length;
-      let oldPagesArray = json["ComicInfo"]["Pages"]["Page"].slice();
-      json["ComicInfo"]["Pages"]["Page"] = [];
+      parsedData["ComicInfo"]["PageCount"] = imgFilePaths.length;
+      let oldPagesArray = parsedData["ComicInfo"]["Pages"]["Page"].slice();
+      parsedData["ComicInfo"]["Pages"]["Page"] = [];
       for (let index = 0; index < imgFilePaths.length; index++) {
         let pageData = {
           "@_Image": "",
@@ -436,7 +436,7 @@ async function updateComicInfo(comicInfoFilePath, imgFilePaths, updatingText) {
         const metadata = await sharp(filePath).metadata();
         pageData["@_ImageWidth"] = metadata.width;
         pageData["@_ImageHeight"] = metadata.height;
-        json["ComicInfo"]["Pages"]["Page"].push(pageData);
+        parsedData["ComicInfo"]["Pages"]["Page"].push(pageData);
       }
       // rebuild
       const builderOptions = {
@@ -445,7 +445,7 @@ async function updateComicInfo(comicInfoFilePath, imgFilePaths, updatingText) {
         suppressBooleanAttributes: false, // keek booleans like ="true"
       };
       const builder = new XMLBuilder(builderOptions);
-      let outputXmlData = builder.build(json);
+      let outputXmlData = builder.build(parsedData);
       fs.writeFileSync(comicInfoFilePath, outputXmlData);
 
       send({ success: true });

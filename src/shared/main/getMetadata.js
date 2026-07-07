@@ -9,7 +9,7 @@ exports.getMetadata = async function (filePath, currentMetadata, password) {
     const tempFolderPath = temp.createSubFolder();
     const opfEntries = await fileFormats.getEpubOpfEntriesList(
       filePath,
-      password
+      password,
     );
     if (!opfEntries || opfEntries.length <= 0) {
       throw "no metadata file found";
@@ -30,7 +30,7 @@ exports.getMetadata = async function (filePath, currentMetadata, password) {
       entryPath,
       password,
       tempFolderPath,
-      "zip"
+      "zip",
     );
     temp.deleteSubFolder(tempFolderPath);
     const buffer = result.data;
@@ -53,8 +53,8 @@ exports.getMetadata = async function (filePath, currentMetadata, password) {
       allowBooleanAttributes: true,
     };
     const parser = new XMLParser(parserOptions);
-    let json = parser.parse(xmlFileData);
-    if (!json["package"] || !json["package"]["metadata"]) {
+    const parsedData = parser.parse(xmlFileData);
+    if (!parsedData["package"] || !parsedData["package"]["metadata"]) {
       throw "invalid metadata";
     }
 
@@ -77,11 +77,11 @@ exports.getMetadata = async function (filePath, currentMetadata, password) {
       }
     }
 
-    if (json["package"]["metadata"]["dc:title"]) {
-      fileMetadata.title = json["package"]["metadata"]["dc:title"];
+    if (parsedData["package"]["metadata"]["dc:title"]) {
+      fileMetadata.title = parsedData["package"]["metadata"]["dc:title"];
     }
-    if (json["package"]["metadata"]["dc:creator"]) {
-      let creators = json["package"]["metadata"]["dc:creator"];
+    if (parsedData["package"]["metadata"]["dc:creator"]) {
+      let creators = parsedData["package"]["metadata"]["dc:creator"];
       if (Array.isArray(creators)) {
         fileMetadata.author = "";
         creators.forEach(function (creator, index, array) {
@@ -96,12 +96,13 @@ exports.getMetadata = async function (filePath, currentMetadata, password) {
         fileMetadata.author = creators;
       }
     }
-    if (json["package"]["metadata"]["dc:subject"]) {
+    if (parsedData["package"]["metadata"]["dc:subject"]) {
       fileMetadata.subject =
-        json["package"]["metadata"]["dc:subject"].join("; ");
+        parsedData["package"]["metadata"]["dc:subject"].join("; ");
     }
-    if (json["package"]["metadata"]["dc:description"]) {
-      fileMetadata.description = json["package"]["metadata"]["dc:description"];
+    if (parsedData["package"]["metadata"]["dc:description"]) {
+      fileMetadata.description =
+        parsedData["package"]["metadata"]["dc:description"];
     }
     // pdf example
     // {

@@ -554,36 +554,43 @@ async function getFeedContent(url) {
       allowBooleanAttributes: true,
     };
     const parser = new XMLParser(parserOptions);
-    let data = parser.parse(response.data);
+    const parsedData = parser.parse(response.data);
     ///////////
     let content = {};
-    if (data) {
+    if (parsedData) {
       // RSS //////////
-      if (data.rss && data.rss.channel && data.rss.channel.item) {
+      if (
+        parsedData.rss &&
+        parsedData.rss.channel &&
+        parsedData.rss.channel.item
+      ) {
         log.editor("RSS feed");
         content.url = url;
-        content.name = data.rss.channel.title
-          ? data.rss.channel.title
+        content.name = parsedData.rss.channel.title
+          ? parsedData.rss.channel.title
           : "RSS Feed";
-        content.link = data.rss.channel.link
-          ? data.rss.channel.link
+        content.link = parsedData.rss.channel.link
+          ? parsedData.rss.channel.link
           : undefined;
-        if (data.rss.channel.description) {
-          if (data.rss.channel.description["#text"]) {
+        if (parsedData.rss.channel.description) {
+          if (parsedData.rss.channel.description["#text"]) {
             content.description = sanitizeHtml(
-              data.rss.channel.description["#text"],
+              parsedData.rss.channel.description["#text"],
               {
                 allowedTags: sanitizeHtml.defaults.allowedTags.concat(["img"]),
               },
             );
           } else {
-            content.description = sanitizeHtml(data.rss.channel.description, {
-              allowedTags: sanitizeHtml.defaults.allowedTags.concat(["img"]),
-            });
+            content.description = sanitizeHtml(
+              parsedData.rss.channel.description,
+              {
+                allowedTags: sanitizeHtml.defaults.allowedTags.concat(["img"]),
+              },
+            );
           }
         }
         content.items = [];
-        data.rss.channel.item.forEach((item, index) => {
+        parsedData.rss.channel.item.forEach((item, index) => {
           let itemData = {};
           itemData.title = item.title;
           itemData.link = item.link;
@@ -616,43 +623,47 @@ async function getFeedContent(url) {
       }
       // ATOM //////////
       else {
-        if (data.feed && data.feed.entry) {
+        if (parsedData.feed && parsedData.feed.entry) {
           log.editor("Atom feed");
           content.url = url;
-          if (data.feed.title) {
-            if (data.feed.title["#text"]) {
-              content.name = data.feed.title["#text"];
+          if (parsedData.feed.title) {
+            if (parsedData.feed.title["#text"]) {
+              content.name = parsedData.feed.title["#text"];
             } else {
-              content.name = data.feed.title;
+              content.name = parsedData.feed.title;
             }
           } else {
             content.name = "Atom Feed";
           }
-          if (data.feed.subtitle) {
-            if (data.feed.subtitle["#text"]) {
-              content.description = data.feed.subtitle["#text"];
+          if (parsedData.feed.subtitle) {
+            if (parsedData.feed.subtitle["#text"]) {
+              content.description = parsedData.feed.subtitle["#text"];
             } else {
-              content.description = data.feed.subtitle;
+              content.description = parsedData.feed.subtitle;
             }
           } else {
             content.description = "";
           }
-          if (data.feed.link) {
-            if (Array.isArray(data.feed.link)) {
-              for (let index = 0; index < data.feed.link.length; index++) {
-                const link = data.feed.link[index];
+          if (parsedData.feed.link) {
+            if (Array.isArray(parsedData.feed.link)) {
+              for (
+                let index = 0;
+                index < parsedData.feed.link.length;
+                index++
+              ) {
+                const link = parsedData.feed.link[index];
                 if (link["@_href"]) {
                   content.link = link["@_href"];
                   if (link["@_rel"] == undefined) break;
                 }
               }
             } else {
-              content.link = data.feed.link["@_href"];
+              content.link = parsedData.feed.link["@_href"];
             }
           }
 
           content.items = [];
-          data.feed.entry.forEach((item, index) => {
+          parsedData.feed.entry.forEach((item, index) => {
             let itemData = {};
 
             if (item.title) {

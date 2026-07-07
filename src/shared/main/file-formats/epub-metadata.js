@@ -66,14 +66,14 @@ exports.getMetadataProperties = async function (
       allowBooleanAttributes: true,
     };
     const parser = new XMLParser(parserOptions);
-    let json = parser.parse(xmlFileData);
-    if (!json["package"] || !json["package"]["metadata"]) {
+    const parsedData = parser.parse(xmlFileData);
+    if (!parsedData["package"] || !parsedData["package"]["metadata"]) {
       throw "invalid metadata";
     }
     // log.test(json["package"]["metadata"]);
 
     function addMetadataEntry(jsonKey, metadataKey) {
-      let contents = json["package"]["metadata"][jsonKey];
+      let contents = parsedData["package"]["metadata"][jsonKey];
       if (contents) {
         if (Array.isArray(contents) && contents.length > 0) {
           fileMetadata[metadataKey] = "";
@@ -109,7 +109,7 @@ exports.getMetadataProperties = async function (
     addMetadataEntry("dc:date", "publicationDate");
 
     fileMetadata["format"] = "EPUB";
-    const formatVersion = json["package"]["@_version"];
+    const formatVersion = parsedData["package"]["@_version"];
     if (formatVersion) fileMetadata["format"] += " v" + formatVersion;
     //////////////////////////
     return fileMetadata;
@@ -169,15 +169,15 @@ exports.getMetadataFileXmlData = async function (filePath, password) {
       allowBooleanAttributes: true,
     };
     const parser = new XMLParser(parserOptions);
-    let json = parser.parse(xmlFileData);
-    if (!json["package"] || !json["package"]["metadata"]) {
+    const parsedData = parser.parse(xmlFileData);
+    if (!parsedData["package"] || !parsedData["package"]["metadata"]) {
       throw "invalid metadata";
     }
     return {
       filePath,
       password,
       entryPath,
-      json,
+      json: parsedData,
     };
   } catch (error) {
     log.error(error);

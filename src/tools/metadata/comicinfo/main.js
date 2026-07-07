@@ -159,11 +159,11 @@ exports.loadMetadata = async function () {
       allowBooleanAttributes: true,
     };
     const parser = new XMLParser(parserOptions);
-    let data = parser.parse(xmlFileData);
-    if (!data["ComicInfo"]) {
+    const parsedData = parser.parse(xmlFileData);
+    if (!parsedData["ComicInfo"]) {
       throw "invalid comicinfo";
     }
-    base.sendIpcToRenderer("load-metadata", data, undefined);
+    base.sendIpcToRenderer("load-metadata", parsedData, undefined);
   } catch (error) {
     try {
       xmlFileData = `<?xml version="1.0"?>
@@ -175,10 +175,10 @@ exports.loadMetadata = async function () {
         allowBooleanAttributes: true,
       };
       const parser = new XMLParser(parserOptions);
-      let data = parser.parse(xmlFileData);
+      const parsedData = parser.parse(xmlFileData);
       base.sendIpcToRenderer(
         "load-metadata",
-        data,
+        parsedData,
         error === "no comicinfo" ? undefined : error,
       );
     } catch (error) {
