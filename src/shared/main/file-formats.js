@@ -7,11 +7,9 @@
 
 module.exports = {
   ...require("./file-formats/epub"),
-  ...require("./file-formats/epub-custom"),
   ...require("./file-formats/mutool-epub"),
   ...require("./file-formats/mutool-pdf"),
   ...require("./file-formats/pdfkit"),
-  ...require("./file-formats/unrar-js"),
   ...require("./file-formats/rar"),
   ...require("./file-formats/seven-zip"),
 };

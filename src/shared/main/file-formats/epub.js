@@ -19,6 +19,27 @@ const {
 // EPUB ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+async function createEpub(
+  imgPathsList,
+  outputFilePath,
+  tempFolderPath,
+  extraData,
+) {
+  try {
+    const epubGenerator = require("./epub-generator");
+    await epubGenerator.createComic(
+      imgPathsList,
+      outputFilePath,
+      tempFolderPath,
+      extraData,
+    );
+    return;
+  } catch (error) {
+    throw error;
+  }
+}
+exports.createEpub = createEpub;
+
 async function getEpubImageIdsList(filePath, tempFolderPath) {
   try {
     const metadata = await parseEpubMetadata(filePath, tempFolderPath);
