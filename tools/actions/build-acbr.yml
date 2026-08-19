@@ -45,13 +45,13 @@ jobs:
     steps:
       - name: CHECKOUT
         if: ${{ (matrix.os == 'ubuntu-24.04' && github.event.inputs.createLinux == 'true') || (matrix.os == 'windows-latest' && github.event.inputs.createWindows == 'true') }}
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: binarynonsense/comic-book-reader
 
       - name: SETUP NODE
         if: ${{ (matrix.os == 'ubuntu-24.04' && github.event.inputs.createLinux == 'true') || (matrix.os == 'windows-latest' && github.event.inputs.createWindows == 'true') }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 24
 
