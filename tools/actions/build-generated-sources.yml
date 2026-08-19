@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: CHECKOUT
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: binarynonsense/comic-book-reader
 
@@ -40,7 +40,7 @@ jobs:
           fi
           echo $NEW_APP_VERSION
           echo "RELEASE_NAME=$NEW_APP_VERSION" >> $GITHUB_ENV
-          
+
       - name: INSTALL FLATPAK BUILDER TOOLS
         run: |
           pipx install git+https://github.com/flatpak/flatpak-builder-tools.git#subdirectory=node
@@ -50,7 +50,7 @@ jobs:
           flatpak-node-generator npm package-lock.json
 
       - name: RELEASE
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           prerelease: true
           draft: true
