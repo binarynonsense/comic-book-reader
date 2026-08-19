@@ -1,3 +1,9 @@
+## v3.25.1
+
+- Fixed the Reader's EPUB type selection modal (shown when opening a new EPUB file and "File Formats > EPUB > Book Type" is not set to the default, "Autodetect", in the Preferences) silently breaking and not opening the book after a type button is clicked and the modal closes.
+- Replaced some of the core libraries with custom code.
+- Updated some of the core libraries to newer versions.
+
 ## v3.25.0
 
 - Updated Electron to a newer version. This should bring full Wayland support to the Linux builds and, hopefully, help fix the previous version not working in some systems running Wayland, especially the flatpak build, due to a combination of the version I was using, me forcing X11 due to that Electron version not fully supporting Wayland, and some changes I made to the flatpak manifest.
