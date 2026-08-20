@@ -89,7 +89,7 @@ Stable version:
 - [Linux (deb)](https://github.com/binarynonsense/comic-book-reader/releases/latest/download/ACBR_Linux_deb.zip)
 - [Linux (flatpak)](https://github.com/binarynonsense/comic-book-reader/releases/latest/download/ACBR_Linux_flatpak.zip)
 
-> Note: The 'Linux' and 'Linux (AppImage)' builds may require setting an AppArmor profile to run on certain distributions, such as Ubuntu 24.04 and newer.
+> Note: The 'Linux' and 'Linux (AppImage)' builds may require setting an AppArmor profile to run on certain distributions, like Ubuntu 24.04 or newer.
 
 All versions (stable and beta):
 
