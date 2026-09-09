@@ -133,7 +133,7 @@
   },
   "devDependencies": {
     "del-cli": "7.0.0",
-    "electron": "42.3.3",
+    "electron": "42.7.1",
     "electron-builder": "26.15.3",
     "snapsvg-cjs": "0.0.6"
   },
