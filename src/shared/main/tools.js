@@ -21,7 +21,7 @@ exports.init = function () {
   g_tools["tool-extract-palette"] = require("../../tools/extract-palette/main");
   g_tools["tool-extract-text"] = require("../../tools/extract-text/main");
   g_tools["tool-create-qr"] = require("../../tools/create-qr/main");
-  g_tools["tool-extract-qr"] = require("../../tools/extract-qr/main");
+  // g_tools["tool-extract-qr"] = require("../../tools/extract-qr/main");
   // g_tools["tool-dcm"] = require("../../tools/dcm/main");
   g_tools[
     "tool-internet-archive"

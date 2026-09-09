@@ -605,8 +605,14 @@ function initOnIpcCallbacks() {
       // const tool = require("../tools/dcm/main");
       // openBookFromCallback(comicData, tool.getPageCallback);
     } else if (comicData.source === "cbp") {
-      const tool = require("../tools/cbp/main");
-      openBookFromCallback(comicData, tool.getPageCallback);
+      sendIpcToRenderer(
+        "show-modal-info",
+        _("tool-shared-modal-title-error"),
+        _("ui-modal-info-couldntopen-url"),
+        _("ui-modal-prompt-button-ok"),
+      );
+      // const tool = require("../tools/cbp/main");
+      // openBookFromCallback(comicData, tool.getPageCallback);
     } else if (comicData.source === "iab") {
       const tool = require("../tools/internet-archive/main");
       openBookFromCallback(comicData, tool.getPageCallback);
@@ -773,8 +779,9 @@ async function tryOpen(filePath, bookType, historyEntry, homeScreenListEntry) {
           if (
             // homeScreenListEntry.data.source === "dcm" ||
             homeScreenListEntry.data.source === "iab" ||
-            homeScreenListEntry.data.source === "xkcd" ||
-            homeScreenListEntry.data.source === "cbp"
+            homeScreenListEntry.data.source === "xkcd"
+            // ||
+            // homeScreenListEntry.data.source === "cbp"
           ) {
             if (tryOpenWWW(pageIndex, homeScreenListEntry)) {
               return true;
@@ -830,8 +837,9 @@ async function tryOpen(filePath, bookType, historyEntry, homeScreenListEntry) {
         if (
           // historyEntry.data.source === "dcm" ||
           historyEntry.data.source === "iab" ||
-          historyEntry.data.source === "xkcd" ||
-          historyEntry.data.source === "cbp"
+          historyEntry.data.source === "xkcd"
+          // ||
+          // historyEntry.data.source === "cbp"
         ) {
           if (tryOpenWWW(pageIndex, historyEntry)) {
             return true;
@@ -856,7 +864,12 @@ async function tryOpen(filePath, bookType, historyEntry, homeScreenListEntry) {
             sendIpcToRenderer("update-bg", true);
             return false;
           }
-        } else if (historyEntry.data.source === "dcm") {
+        } else if (
+          historyEntry.data.source === "dcm" ||
+          historyEntry.data.source === "cbp"
+        ) {
+          sendIpcToRenderer("update-loading", false);
+          sendIpcToRenderer("update-bg", true);
           sendIpcToRenderer(
             "show-modal-info",
             _("tool-shared-modal-title-error"),
@@ -1018,11 +1031,12 @@ function tryOpenWWW(pageIndex, historyEntry) {
     const tool = require("../tools/xkcd/main");
     openBookFromCallback(data, tool.getPageCallback, pageIndex);
     return true;
-  } else if (data.source === "cbp") {
-    const tool = require("../tools/cbp/main");
-    openBookFromCallback(data, tool.getPageCallback, pageIndex);
-    return true;
   }
+  // else if (data.source === "cbp") {
+  //   const tool = require("../tools/cbp/main");
+  //   openBookFromCallback(data, tool.getPageCallback, pageIndex);
+  //   return true;
+  // }
   return false;
 }
 

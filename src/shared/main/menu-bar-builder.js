@@ -227,12 +227,12 @@ function getToolsSubmenu() {
     {
       label: _("menu-tools-websites"),
       submenu: [
-        {
-          label: _("menu-tools-cbp"),
-          click() {
-            core.onMenuToolCBP();
-          },
-        },
+        // {
+        //   label: _("menu-tools-cbp"),
+        //   click() {
+        //     core.onMenuToolCBP();
+        //   },
+        // },
         // {
         //   label: _("menu-tools-dcm"),
         //   click() {
