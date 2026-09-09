@@ -382,9 +382,6 @@ ipcMain.on("main", (event, args) => {
         if (g_mainWindow.isFullScreen()) {
           g_mainWindow.setFullScreen(false);
         }
-        log.debug("resize-player-mode");
-        log.debug(args[1]);
-        log.debug(args[2]);
         g_mainWindow.setMinimumSize(args[1], args[2]);
         g_mainWindow.setSize(args[1], args[2]);
       }
