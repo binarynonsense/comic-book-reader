@@ -77,27 +77,17 @@ exports.createWindow = function (_core, launchInfo) {
   menuBar.empty();
   let options;
   if (g_launchInfo.isPlayerMode) {
-    g_launchInfo.transparentWindow = false; //g_launchInfo.platform === "linux";
-    if (g_launchInfo.parsedArgs["transparent"] === "1") {
-      g_launchInfo.transparentWindow = true;
-      log.debug("forcing transparent window: true");
-    } else if (g_launchInfo.parsedArgs["transparent"] === "2") {
-      g_launchInfo.transparentWindow = false;
-      log.debug("forcing transparent window: false");
-    }
     options = {
       width: 150,
       height: 100,
       resizable: true,
       frame: false,
-      transparent: g_launchInfo.transparentWindow,
       icon: path.join(__dirname, "../../assets/images/icon_256x256.png"),
       show: false,
       webPreferences: {
         sandbox: false, // needed for the custom-title-bar to work
         preload: path.join(__dirname, "../preload.js"),
       },
-      backgroundColor: g_launchInfo.transparentWindow ? undefined : "#1a1a1a",
     };
   } else {
     options = {
@@ -272,7 +262,7 @@ exports.createWindow = function (_core, launchInfo) {
     } else {
       // player mode ////
       log.debug("setting media player mode");
-      sendIpcToCoreRenderer("set-player-mode", g_launchInfo.transparentWindow);
+      sendIpcToCoreRenderer("set-player-mode");
       sendIpcToPreload("set-player-mode", g_launchInfo);
       tools
         .getTools()
@@ -305,17 +295,14 @@ exports.createWindow = function (_core, launchInfo) {
               y,
             });
             const area = currentScreen.workArea;
-            let padding = { top: 0, bottom: 0, left: 0, right: 0 };
-            if (g_launchInfo.transparentWindow)
-              padding = { top: 10, bottom: 10, left: 10, right: 10 };
-            if (y - padding.top < area.y) y = area.y - padding.top;
-            else if (y + height - padding.bottom > area.y + area.height) {
-              y = area.y + area.height - height + padding.bottom;
+            if (y < area.y) y = area.y;
+            else if (y + height > area.y + area.height) {
+              y = area.y + area.height - height;
             }
-            if (x - padding.left < area.x) {
-              x = area.x - padding.left;
-            } else if (x + width - padding.right > area.x + area.width) {
-              x = area.x + area.width - width + padding.right;
+            if (x < area.x) {
+              x = area.x;
+            } else if (x + width > area.x + area.width) {
+              x = area.x + area.width - width;
             }
             g_mainWindow.setPosition(Math.round(x), Math.round(y));
           } catch (error) {}
