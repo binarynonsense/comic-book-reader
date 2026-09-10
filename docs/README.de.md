@@ -52,7 +52,7 @@ Ein Comicbuch Leser und Konverter für CBZ, CBR, CB7, EPUB, FB2, MOBI 7 und PDF 
     - QR Code Text aus einer Comicbuch Seite oder Bilddatei.
     - Eine Farbpalette aus einer Comicbuch Seite oder Bilddatei (kann zu einer GPL oder ACO Palettendatei extrahiert werden).
   - Suche und/oder öffne:
-    - Bücher/Comics von Internet Archive Books, Project Gutenberg, xkcd Webcomics und Comic Book Plus.
+    - Bücher/Comics von Internet Archive Books, Project Gutenberg und xkcd Webcomics.
     - Hörbücher von Librivox AudioBooks.
     - Wörterbucheinträge in Wiktionary Dictionary.
     - Radiosenderstreams von radio-browser.
