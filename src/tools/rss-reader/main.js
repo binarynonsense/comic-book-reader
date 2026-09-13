@@ -46,7 +46,7 @@ let g_defaultFeeds = [
   },
   {
     name: "r/comicbooks",
-    url: "https://old.reddit.com/r/comicbooks/.rss",
+    url: "https://www.reddit.com/r/comicbooks/.rss",
   },
   {
     name: "Zona Negativa",
