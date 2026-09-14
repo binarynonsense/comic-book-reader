@@ -52,7 +52,7 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB, FB2, MOBI 7 and PDF f
     - A QR code's text from a comic book page or image file.
     - A color palette from a comic book page or image file (can be exported to a GPL or ACO palette file).
   - Search and/or open:
-    - Books/comics from Internet Archive Books, Project Gutenberg, xkcd Webcomics and Comic Book Plus.
+    - Books/comics from Internet Archive Books, Project Gutenberg and xkcd Webcomics.
     - Audiobooks from Librivox AudioBooks.
     - Dictionary terms from Wiktionary Dictionary.
     - Radio station streams from radio-browser.

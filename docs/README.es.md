@@ -52,7 +52,7 @@ Un lector y conversor de cómics para archivos en formato CBZ, CBR, CB7, EPUB, F
     - El texto de un código QR en una página de cómic o un archivo de imagen.
     - Una paleta de colores de una página de cómic o un archivo de imagen (se puede exportar a un archivo de paleta GPL o ACO).
   - Buscar y/o abrir:
-    - Libros/cómics de Internet Archive Books, Project Gutenberg, Webcómics xkcd y Comic Book Plus.
+    - Libros/cómics de Internet Archive Books, Project Gutenberg y Webcómics xkcd.
     - Audiolibros de Librivox.
     - Términos del diccionario Wiktionary.
     - Streams de radio de radio-browser.
