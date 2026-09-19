@@ -15,7 +15,7 @@ Un lector y conversor de cómics para archivos en formato CBZ, CBR, CB7, EPUB, F
 
 - Versiones para Windows y Linux
 - Modos de ventana y pantalla completa
-- Interfaz de usuario disponible en Inglés, español, ruso, alemán, árabe, filipino y japonés.
+- Interfaz de usuario disponible en inglés, español, ruso, alemán, árabe, filipino, japonés y francés.
 - Compatibilidad parcial con [mando](https://github.com/binarynonsense/comic-book-reader/wiki/Basic-Controls-&-Gamepad-Layout)
 - Modo [portátil](https://github.com/binarynonsense/comic-book-reader/wiki/Portable-Mode))
 - Lector:
@@ -113,6 +113,7 @@ Localizaciones:
 - [Timo Heidutzek (trzyglow)](https://github.com/trzyglow) (Deutsch)
 - [Ahmed (ahmed-0011)](https://github.com/ahmed-0011) (العربية)
 - [AndrewL (CodeByMoriarty)](https://github.com/CodeByMoriarty) (Filipino)
+- [Lorsoen](https://github.com/Lorsoen) (Français)
 
 Hay información sobre cómo contribuir al proyecto en el fichero [CONTRIBUTING.md](../CONTRIBUTING.md).
 

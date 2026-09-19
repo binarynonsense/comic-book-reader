@@ -15,7 +15,7 @@ A comic book reader and converter for CBZ, CBR, CB7, EPUB, FB2, MOBI 7 and PDF f
 
 - Windows & Linux versions
 - Windowed and full-screen modes
-- UI available in English, Spanish, Russian, German, Arabic, Filipino and Japanese.
+- UI available in English, Spanish, Russian, German, Arabic, Filipino, Japanese and French.
 - Partial [controller](https://github.com/binarynonsense/comic-book-reader/wiki/Basic-Controls-&-Gamepad-Layout) support
 - [Portable](https://github.com/binarynonsense/comic-book-reader/wiki/Portable-Mode) mode
 - Reader:
@@ -114,6 +114,7 @@ Localizations:
 - [Ahmed (ahmed-0011)](https://github.com/ahmed-0011) (العربية)
 - [AndrewL (CodeByMoriarty)](https://github.com/CodeByMoriarty) (Filipino)
 - [coolvitto](https://github.com/coolvitto) (日本語)
+- [Lorsoen](https://github.com/Lorsoen) (Français)
 
 There's info about how to contribute to the project in the [CONTRIBUTING.md](./CONTRIBUTING.md) file.
 
