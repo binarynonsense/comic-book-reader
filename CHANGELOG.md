@@ -1,3 +1,11 @@
+## v3.25.2
+
+- Fixed the media player window in stand-alone mode on Windows shrinking every time it was moved due to a bug in the Electron version used in the previous version.
+- Removed the "Comic Book Plus" tool, as new restrictions on the website made maintaining it no longer possible.
+- Added French localization (contributed by Lorsoen).
+- Updated the URL for r/comicbooks in the default RSS feeds.
+- Updated Electron to a newer version.
+
 ## v3.25.1
 
 - Fixed the Reader's EPUB type selection modal (shown when opening a new EPUB file and "File Formats > EPUB > Book Type" is not set to the default, "Autodetect", in the Preferences) silently breaking and not opening the book after a type button is clicked and the modal closes.
