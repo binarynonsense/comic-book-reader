@@ -15,7 +15,7 @@ Ein Comicbuch Leser und Konverter für CBZ, CBR, CB7, EPUB, FB2, MOBI 7 und PDF 
 
 - Windows & Linux Versionen
 - Fenster- und Vollbild-modi.
-- Benutzeroberfläche verfügbar auf: Englisch, Spanisch, Russisch, Deutsch, Arabisch, Filipino und Japanisch.
+- Benutzeroberfläche verfügbar auf: Englisch, Spanisch, Russisch, Deutsch, Arabisch, Filipino, Japanisch und Französisch.
 - Teilweise [Controller](https://github.com/binarynonsense/comic-book-reader/wiki/Basic-Controls-&-Gamepad-Layout) Unterstützung
 - [Tragbarer](https://github.com/binarynonsense/comic-book-reader/wiki/Portable-Mode) Modus
 - Reader:
@@ -114,6 +114,7 @@ Lokalisierungen:
 - [Ahmed (ahmed-0011)](https://github.com/ahmed-0011) (العربية)
 - [AndrewL (CodeByMoriarty)](https://github.com/CodeByMoriarty) (Filipino)
 - [coolvitto](https://github.com/coolvitto) (日本語)
+- [Lorsoen](https://github.com/Lorsoen) (Français)
 
 Informationen darüber, wie man zu dem Projekt beitragen kann, gibt es im [CONTRIBUTING.md](../CONTRIBUTING.md) Dokument.
 
