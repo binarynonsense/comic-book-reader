@@ -126,7 +126,7 @@ function getExeFolderPath() {
     if (process.env.APPIMAGE) {
       return path.dirname(process.env.APPIMAGE);
     } else {
-      if (process.argv[2] == "--dev") {
+      if (!app.isPackaged) {
         return process.cwd();
       } else {
         return path.join(app.getAppPath(), "../../");
