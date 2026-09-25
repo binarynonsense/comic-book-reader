@@ -313,43 +313,59 @@ function cleanUpUserDataFolder() {
     log.debug(
       "the clean up process may fail to delete some files or folders depending on the OS and other circumstances, this is normal and expected",
     );
-    let keepFiles = [
-      "acbr.cfg",
-      "acbr.hst",
-      "acbr.fav",
-      "acbr-player.cfg",
-      "acbr-player.hst",
-      "acbr-player.m3u",
-      "acbr-cache",
-      "acbr-user-extensions",
-      "acbr.log",
-      "acbr-prev.log",
-      "acbr-screenshots",
-      //
-      "acbr-fork-debug.log",
-    ];
+    // let keepFiles = [
+    //   "acbr.cfg",
+    //   "acbr.hst",
+    //   "acbr.fav",
+    //   "acbr-player.cfg",
+    //   "acbr-player.hst",
+    //   "acbr-player.m3u",
+    //   "acbr-cache",
+    //   "acbr-user-extensions",
+    //   "acbr.log",
+    //   "acbr-prev.log",
+    //   "acbr-screenshots",
+    //   //
+    //   "acbr-fork-debug.log",
+    // ];
     let userDataPath = app.getPath("userData");
     if (
       fs.existsSync(userDataPath) &&
       path.basename(userDataPath).startsWith("acbr-comic-book-reader")
     ) {
       log.debug("user data path is valid");
-      let files = fs.readdirSync(userDataPath);
-      files.forEach((file) => {
-        if (!keepFiles.includes(file)) {
-          const entryPath = path.join(userDataPath, file);
-          if (fs.lstatSync(entryPath).isDirectory()) {
-            fileUtils.deleteFolderRecursive(1, entryPath, false, userDataPath);
-          } else {
-            try {
-              fs.unlinkSync(entryPath); // delete the file
-            } catch (error) {
-              // just skip it
-              log.debug("couldn't delete file: " + entryPath);
-            }
-          }
-        }
+      // let files = fs.readdirSync(userDataPath);
+      // files.forEach((file) => {
+      //   if (!keepFiles.includes(file)) {
+      //     const entryPath = path.join(userDataPath, file);
+      //     if (fs.lstatSync(entryPath).isDirectory()) {
+      //       fileUtils.deleteFolderRecursive(1, entryPath, false, userDataPath);
+      //     } else {
+      //       try {
+      //         fs.unlinkSync(entryPath); // delete the file
+      //       } catch (error) {
+      //         // just skip it
+      //         log.debug("couldn't delete file: " + entryPath);
+      //       }
+      //     }
+      //   }
+      // });
+      const chromiumFolders = [
+        "Cache",
+        "Code Cache",
+        "GPUCache",
+        "Local Storage",
+        "Session Storage",
+        "Network",
+        "Crashpad",
+        "blob_storage",
+      ];
+
+      chromiumFolders.forEach((dirName) => {
+        const fullPath = path.join(userDataPath, dirName);
+        fileUtils.deleteFolderRecursive(1, fullPath, false, userDataPath);
       });
+      log.info("finished cleaning up");
     }
   } catch (error) {}
 }
