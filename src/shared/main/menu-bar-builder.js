@@ -134,6 +134,17 @@ function getOpenRecentSubmenu(history) {
   return menu;
 }
 
+function getServersSubmenu() {
+  return [
+    {
+      label: "Komga",
+      click() {
+        core.onMenuKomga();
+      },
+    },
+  ];
+}
+
 function getToolsSubmenu() {
   return [
     {
@@ -795,6 +806,11 @@ function getNormalMenu(settings, history) {
       ],
     },
     {
+      id: "servers",
+      label: _("menu-servers"),
+      submenu: getServersSubmenu(),
+    },
+    {
       id: "tools",
       label: _("menu-tools"),
       submenu: getToolsSubmenu(),
@@ -938,6 +954,11 @@ function getHomeScreenMenu(settings, history) {
           },
         },
       ],
+    },
+    {
+      id: "servers",
+      label: _("menu-servers"),
+      submenu: getServersSubmenu(),
     },
     {
       id: "tools",

@@ -553,6 +553,11 @@ exports.onMenuToolWikiViewer = function () {
   sendIpcToPreload("update-menubar");
 };
 
+exports.onMenuKomga = function () {
+  tools.switchTool("tool-komga");
+  sendIpcToPreload("update-menubar");
+};
+
 //////////////////
 
 exports.onMenuToggleDevTools = function () {
