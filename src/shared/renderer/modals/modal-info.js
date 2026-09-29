@@ -7,7 +7,14 @@
 
 import { getLevelZIndex, close, Level } from "./modals.js";
 
-export function showInfoModal(titleText, messageText, okText) {
+export function showInfoModal(
+  titleText,
+  messageText,
+  okText,
+  cancelText,
+  okCallback,
+  cancelCallBack,
+) {
   const container = document.querySelector("#modals");
   const modal = document.createElement("div");
   modal.className = "modal";
@@ -24,6 +31,13 @@ export function showInfoModal(titleText, messageText, okText) {
     <div class="modal-message">${messageText}</div>   
     <div class="modal-buttons">
         <button class="modal-button" id="modal-ok-action-btn">${okText.toUpperCase()}</button>
+        ${
+          cancelText
+            ? `<button class="modal-button" id="modal-cancel-action-btn">
+              ${cancelText.toUpperCase()}
+            </button>`
+            : ""
+        }
     </div>
   </div>`;
   container.appendChild(modal);
@@ -35,7 +49,15 @@ export function showInfoModal(titleText, messageText, okText) {
   const okBtn = modal.querySelector("#modal-ok-action-btn");
   okBtn.addEventListener("click", (event) => {
     close(modal);
+    if (okCallback) okCallback();
   });
+  if (cancelText) {
+    const cancelBtn = modal.querySelector("#modal-cancel-action-btn");
+    cancelBtn.addEventListener("click", (event) => {
+      close(modal);
+      if (cancelCallBack) okCallback();
+    });
+  }
   ///
   return modal;
 }
