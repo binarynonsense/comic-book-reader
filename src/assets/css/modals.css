@@ -84,6 +84,17 @@
   text-align: start;
 }
 
+.modal-field {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin: 10px 0;
+}
+.modal-field label {
+  font-size: 0.95rem;
+}
+
+.modal-field input,
 .modal-input {
   margin-top: 10px;
   padding: 5px;
@@ -96,6 +107,56 @@
   background-color: var(--modal-input-bg-color);
   text-align: start;
 }
+.modal-input:disabled {
+  opacity: 0.4;
+}
+
+.modal-field label:has(input[type="checkbox"]) {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  gap: 8px;
+  cursor: pointer;
+}
+
+/* ref: tools css*/
+
+.modal-field input[type="checkbox"] {
+  cursor: pointer;
+  appearance: none;
+  background-color: var(--modal-input-bg-color);
+  margin: 0;
+  font: inherit;
+  color: var(--modal-input-text-color);
+  width: 1.6em;
+  height: 1.6em;
+  min-width: 1.6em;
+  min-height: 1.6em;
+  border: 2px solid var(--modal-button-normal-bg-color);
+  border-radius: 0.15em;
+  transform: translateY(-0.075em);
+  display: grid;
+  place-content: center;
+}
+
+.modal-field input[type="checkbox"]::before {
+  content: "";
+  width: 0.8em;
+  height: 0.8em;
+  min-width: 0.8em;
+  min-height: 0.8em;
+  clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+  transform: scale(0);
+  box-shadow: inset 1em 1em var(--modal-input-text-color);
+  background-color: var(--modal-input-bg-color);
+}
+
+.modal-field input[type="checkbox"]:checked::before {
+  transform: scale(1);
+}
+
+/* ///// */
 
 .modal-log {
   margin-top: 10px;
@@ -204,6 +265,10 @@
 }
 .modal-buttons button:active {
   transform: scale(0.98);
+}
+.modal-buttons button:disabled {
+  opacity: 0.4;
+  pointer-events: none;
 }
 
 .modal-button-danger-color {
