@@ -235,19 +235,7 @@ function initOnIpcCallbacks() {
 
   on("on-connect-button-clicked", () => {
     const defaults = { url: "", email: "", password: "" };
-    // TODO: TEMP!!! testing ///////////////////////////
-    const komgaTxtPath = (absoluteFilePath = path.resolve(
-      appUtils.getExeFolderPath(),
-      "wip_komga.txt",
-    ));
-    if (fs.existsSync(komgaTxtPath)) {
-      const content = fs.readFileSync(komgaTxtPath, "utf-8");
-      const loginData = content.split(/\r?\n/);
-      defaults.url = loginData[0];
-      defaults.email = loginData[1];
-      defaults.password = loginData[2];
-    }
-    /////////////
+    // TODO: save last accessed and used that for defaults?
     sendIpcToRenderer(
       "show-modal-login",
       _("tool-komga-modal-connect-to-server"),
