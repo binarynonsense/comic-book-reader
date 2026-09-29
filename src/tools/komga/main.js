@@ -26,7 +26,7 @@ const server = require("./server");
 ///////////////////////////////////////////////////////////////////////////////
 
 let g_isInitialized = false;
-let g_servers = [];
+let g_servers;
 let g_goBackHistory = [];
 
 function init() {
@@ -39,13 +39,7 @@ function init() {
   }
 }
 
-exports.open = async function () {
-  // called by switchTool when opening tool
-  init();
-  const data = fs.readFileSync(path.join(__dirname, "index.html"));
-  sendIpcToCoreRenderer("replace-inner-html", "#tools", data.toString());
-  updateLocalizedText();
-  //////////////////
+function loadOptions() {
   let loadedOptions = settings.loadToolOptions("tool-komga");
   if (
     loadedOptions &&
@@ -66,6 +60,16 @@ exports.open = async function () {
   } else {
     g_servers = [];
   }
+}
+
+exports.open = async function () {
+  // called by switchTool when opening tool
+  init();
+  const data = fs.readFileSync(path.join(__dirname, "index.html"));
+  sendIpcToCoreRenderer("replace-inner-html", "#tools", data.toString());
+  updateLocalizedText();
+  //////////////////
+  loadOptions();
   ///////////////////
   sendIpcToRenderer("show", 0, g_servers);
   if (g_goBackHistory.length > 0) {
@@ -160,21 +164,8 @@ function initOnIpcCallbacks() {
 
   //////////////////
 
-  on("connect-to-server-in-list", async (index, refData) => {
-    // TODO: check refData to make sure it's the same
-    if (index >= 0 && index < g_servers.length) {
-      if (safeStorage.isEncryptionAvailable()) {
-        const data = g_servers[index];
-        const password = safeStorage.decryptString(
-          Buffer.from(data.encodedPassword, "hex"),
-        );
-        logToServer(data.url, data.email, password, false);
-      } else {
-        log.error("encryption NOT available!!");
-      }
-    } else {
-      log.error("index out of bounds");
-    }
+  on("connect-to-server-in-list", async (...args) => {
+    connectToServerInList(...args);
   });
 
   on("remove-server-from-list-request", async (index, refData) => {
@@ -279,6 +270,42 @@ function initHandleIpcCallbacks() {}
 // TOOL ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+exports.getSavedServerDataFromUrl = function (url) {
+  if (!g_servers) loadOptions();
+  const index = g_servers.findIndex((server) => server.url === url);
+  if (index >= 0) {
+    if (safeStorage.isEncryptionAvailable()) {
+      const data = g_servers[index];
+      const password = safeStorage.decryptString(
+        Buffer.from(data.encodedPassword, "hex"),
+      );
+      return { url: data.url, email: data.email, password };
+    } else {
+      return undefined;
+    }
+  } else {
+    return undefined;
+  }
+};
+
+async function connectToServerInList(index, refData) {
+  // TODO: check refData if any to make sure it's the same
+  if (index >= 0 && index < g_servers.length) {
+    if (safeStorage.isEncryptionAvailable()) {
+      const data = g_servers[index];
+      const password = safeStorage.decryptString(
+        Buffer.from(data.encodedPassword, "hex"),
+      );
+      logToServer(data.url, data.email, password, false);
+    } else {
+      log.error("encryption NOT available!!");
+    }
+  } else {
+    log.error("index out of bounds");
+  }
+}
+exports.connectToServerInList = connectToServerInList;
+
 async function logToServer(url, email, password, save) {
   const session = server.getSession();
   if (
@@ -326,6 +353,7 @@ async function logToServer(url, email, password, save) {
   sendIpcToRenderer("show-modal-loading");
   showLibraries();
 }
+
 ////////////////////////////////////////////
 
 async function showLibraries() {
@@ -380,22 +408,6 @@ function goBack() {
 }
 
 ////////////////////////////////////////////
-
-// async function getPageCallback(pageNumber, fileData) {
-//   try {
-//     const response = await server.loadPageImageBuffer(
-//       fileData.data.comicId,
-//       pageNumber,
-//     );
-//     return {
-//       pageImgBuffer: response.buffer,
-//     };
-//   } catch (error) {
-//     // console.error(error);
-//     return undefined;
-//   }
-// }
-// exports.getPageCallback = getPageCallback;
 
 ///////////////////////////////////////////////////////////////////////////////
 // LOCALIZATION ///////////////////////////////////////////////////////////////

@@ -10,6 +10,8 @@ import { sendIpcToMain, on } from "../renderer.js";
 import { getNavKeys, getNavButtons } from "./input.js";
 import { BookType } from "../../shared/renderer/constants.js";
 
+import { showKomgaLoginModal } from "../../shared/renderer/modals/modals.js";
+
 let g_openModal;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -72,6 +74,22 @@ export function initModalsOnIpcCallbacks() {
 
   on("show-modal-open-url", (...args) => {
     showModalOpenURL(...args);
+  });
+
+  // new modals ///////////////////////
+
+  on("show-modal-login", (...args) => {
+    const mainArgs = args.slice(0, -2);
+
+    showKomgaLoginModal(...mainArgs, (data) => {
+      if (!data) return;
+      sendIpcToMain(
+        "on-modal-komga-login-ok-clicked",
+        data,
+        args.at(-2),
+        args.at(-1),
+      );
+    });
   });
 }
 

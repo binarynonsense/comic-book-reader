@@ -42,12 +42,18 @@ export function showKomgaLoginModal(
         <label for="modal-server-password-input">${passwordText}</label>
         <input type="password" id="modal-server-password-input" value="${defaults.password}"/>
     </div>
+    ${
+      rememberText
+        ? `
     <div class="modal-field">
         <label>
             <input type="checkbox" id="modal-server-remember-checkbox" checked />
             ${rememberText}
         </label>
     </div>
+    `
+        : ""
+    }    
     <div class="modal-buttons">
         <button class="modal-button" id="modal-cancel-action-btn">${cancelText.toUpperCase()}</button>
         <button class="modal-button" id="modal-ok-action-btn" disabled>${okText.toUpperCase()}</button>
@@ -87,7 +93,9 @@ export function showKomgaLoginModal(
       url: urlInput.value,
       email: emailInput.value,
       password: passwordInput.value,
-      save: modal.querySelector("#modal-server-remember-checkbox").checked,
+      save: rememberText
+        ? modal.querySelector("#modal-server-remember-checkbox").checked
+        : false,
     });
   });
   ///

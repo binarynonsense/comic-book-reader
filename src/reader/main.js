@@ -682,6 +682,14 @@ function initOnIpcCallbacks() {
     appUtils.openURLInBrowser(url);
   });
 
+  ////////////////////////////////////////////////////////////////////////////
+
+  on("on-modal-komga-login-ok-clicked", (...args) => {
+    onModalLogin(...args);
+  });
+
+  ////////////////////////////////////////////////////////////////////////////
+
   on("quit", () => {
     core.onMenuQuit();
   });
@@ -777,7 +785,7 @@ async function tryOpen(filePath, bookType, historyEntry, homeScreenListEntry) {
             homeScreenListEntry.data.source === "xkcd" ||
             homeScreenListEntry.data.source === "komga"
           ) {
-            if (tryOpenWWW(pageIndex, homeScreenListEntry)) {
+            if (await tryOpenWWW(pageIndex, homeScreenListEntry)) {
               return true;
             } else {
               sendIpcToRenderer("update-loading", false);
@@ -833,7 +841,7 @@ async function tryOpen(filePath, bookType, historyEntry, homeScreenListEntry) {
           historyEntry.data.source === "xkcd" ||
           historyEntry.data.source === "komga"
         ) {
-          if (tryOpenWWW(pageIndex, historyEntry)) {
+          if (await tryOpenWWW(pageIndex, historyEntry)) {
             return true;
           } else {
             sendIpcToRenderer("update-loading", false);
@@ -1008,7 +1016,7 @@ async function tryOpenPath(
   return false;
 }
 
-function tryOpenWWW(pageIndex, historyEntry) {
+async function tryOpenWWW(pageIndex, historyEntry) {
   const data = historyEntry.data;
   if (data.source === "iab") {
     const tool = require("../tools/internet-archive/main");
@@ -1019,11 +1027,82 @@ function tryOpenWWW(pageIndex, historyEntry) {
     openBookFromCallback(data, tool.getPageCallback, pageIndex);
     return true;
   } else if (data.source === "komga") {
-    log.test("komga");
-    // TODO
-    return false;
+    const { getSession, login } = require("../tools/komga/server");
+    const session = getSession();
+    if (session.url != data.serverUrl) {
+      // need to log in
+      const { getSavedServerDataFromUrl } = require("../tools/komga/main");
+      let serverData = getSavedServerDataFromUrl(data.serverUrl);
+      if (serverData) {
+        const result = await login(
+          serverData.url,
+          serverData.email,
+          serverData.password,
+        );
+        if (!result.success) {
+          log.error(result.error);
+          sendIpcToRenderer(
+            "show-modal-info",
+            _("tool-shared-modal-title-error"),
+            _("tool-shared-ui-search-network-error", data.serverUrl) +
+              "\n\n" +
+              result.error,
+            _("ui-modal-prompt-button-ok"),
+          );
+          return false;
+        }
+        openBookFromServer(data, pageIndex);
+        return true;
+      } else {
+        // not in list, show login modal
+        const defaults = { url: data.serverUrl, email: "", password: "" };
+        sendIpcToRenderer(
+          "show-modal-login",
+          _("tool-komga-modal-connect-to-server"),
+          "URL",
+          _("tool-komga-modal-email"),
+          _("tool-shared-ui-creation-password"),
+          undefined,
+          _("tool-komga-button-connect"),
+          _("ui-modal-prompt-button-cancel"),
+          defaults,
+          data,
+          pageIndex,
+        );
+        return true;
+      }
+    } else {
+      openBookFromServer(data, pageIndex);
+      return true;
+    }
   }
   return false;
+}
+
+// called from event "on-modal-komga-login-ok-clicked"
+async function onModalLogin(data, comicData, pageIndex) {
+  try {
+    const { login } = require("../tools/komga/server");
+    const result = await login(data.url, data.email, data.password);
+    if (!result.success) {
+      log.error(result.error);
+      sendIpcToRenderer(
+        "show-modal-info",
+        _("tool-shared-modal-title-error"),
+        _("tool-shared-ui-search-network-error", data.url) +
+          "\n\n" +
+          result.error,
+        _("ui-modal-prompt-button-ok"),
+      );
+      sendIpcToRenderer("update-loading", false);
+      sendIpcToRenderer("update-bg", true);
+      return;
+    }
+    openBookFromServer(comicData, pageIndex);
+  } catch (error) {
+    sendIpcToRenderer("update-loading", false);
+    sendIpcToRenderer("update-bg", true);
+  }
 }
 
 function openImageFile(filePath) {
