@@ -246,7 +246,7 @@ function buildServers(servers) {
   const container = document.querySelector("#tool-komga-servers-div");
   container.innerHTML = "";
   if (g_servers && g_servers.length > 0) {
-    container.style = "padding-top: 20px";
+    container.style = "padding-top: 10px";
     // list
     let ul = document.createElement("ul");
     ul.className = "tools-collection-ul";
@@ -348,6 +348,7 @@ function buildServers(servers) {
     container.appendChild(ul);
   } else {
     container.style = "padding-top: 5px";
+    container.innerHTML = `<span> ${g_extraLocalization.noServers} </span>`;
   }
 }
 

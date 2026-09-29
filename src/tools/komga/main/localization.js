@@ -43,6 +43,8 @@ exports.getLocalization = function () {
 exports.getExtraLocalization = function () {
   return {
     loadingTitle: _("tool-shared-modal-title-loading"),
+    // servers
+    noServers: _("tool-komga-no-servers-message"),
     // content
     noContent: _("tool-komga-no-content-message"),
     // favorites
