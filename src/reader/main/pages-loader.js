@@ -297,26 +297,49 @@ async function fetchPages(pageWorker, fileData, pageIndexes) {
       // getPageCallback changed while downloading
       return;
     }
-    if (!response || !response.pageImgSrc) {
-      // TODO: handle error
-      log.error("[PAGES] download error");
-      g_fileData.state = FileDataState.LOADED;
-      sendIpcToRenderer("update-loading", false);
+    if ((g_fileData.data.source = "komga")) {
+      if (!response || !response.pageImgBuffer) {
+        // TODO: handle error
+        log.error("[PAGES] download error");
+        g_fileData.state = FileDataState.LOADED;
+        sendIpcToRenderer("update-loading", false);
+        return;
+      }
+      g_fileData.pagesPaths = [response.pageImgBuffer];
+      if (response.tempData) {
+        if (g_fileData.data) {
+          g_fileData.data.tempData = response.tempData;
+        }
+      }
+      sendIpcToRenderer(
+        "render-img-page",
+        [{ buffer: response.pageImgBuffer }],
+        g_fileData.pageRotation,
+        scrollBarPos,
+      );
+      return;
+    } else {
+      if (!response || !response.pageImgSrc) {
+        // TODO: handle error
+        log.error("[PAGES] download error");
+        g_fileData.state = FileDataState.LOADED;
+        sendIpcToRenderer("update-loading", false);
+        return;
+      }
+      g_fileData.pagesPaths = [response.pageImgUrl];
+      if (response.tempData) {
+        if (g_fileData.data) {
+          g_fileData.data.tempData = response.tempData;
+        }
+      }
+      sendIpcToRenderer(
+        "render-img-page",
+        [{ url: response.pageImgSrc }],
+        g_fileData.pageRotation,
+        scrollBarPos,
+      );
       return;
     }
-    g_fileData.pagesPaths = [response.pageImgUrl];
-    if (response.tempData) {
-      if (g_fileData.data) {
-        g_fileData.data.tempData = response.tempData;
-      }
-    }
-    sendIpcToRenderer(
-      "render-img-page",
-      [{ url: response.pageImgSrc }],
-      g_fileData.pageRotation,
-      scrollBarPos,
-    );
-    return;
   }
 }
 
