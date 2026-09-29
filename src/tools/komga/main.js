@@ -53,10 +53,11 @@ exports.open = async function () {
   ) {
     g_servers = [];
     loadedOptions.servers.forEach((server) => {
+      // TODO: proper error checking and fixes
       if (typeof server == "object" && server.constructor == Object) {
         if (server.url && typeof server.url === "string") {
-          if (!server.name || typeof server.name !== "string")
-            server.name = "???";
+          // if (!server.name || typeof server.name !== "string")
+          //   server.name = "???";
           g_servers.push(server);
         }
       }
@@ -70,14 +71,14 @@ exports.open = async function () {
 
 function saveSettings() {
   let options = {};
-  options.feeds = g_servers;
+  options.servers = g_servers;
   settings.updateToolOptions("tool-komga", options);
 }
 
 exports.close = function () {
   // called by switchTool when closing tool
   saveSettings();
-  sendIpcToRenderer("close-modal");
+  sendIpcToRenderer("close-active-modal");
   sendIpcToRenderer("hide"); // clean up
 };
 
@@ -155,6 +156,47 @@ function initOnIpcCallbacks() {
 
   //////////////////
 
+  on("connect-to-server-in-list", async (index, refData) => {
+    // TODO: check refData to make sure it's the same
+    if (index >= 0 && index < g_servers.length) {
+      if (safeStorage.isEncryptionAvailable()) {
+        const data = g_servers[index];
+        const password = safeStorage.decryptString(
+          Buffer.from(data.encodedPassword, "hex"),
+        );
+        logToServer(data.url, data.email, password, false);
+      } else {
+        log.error("encryption NOT available!!");
+      }
+    } else {
+      log.error("index out of bounds");
+    }
+  });
+
+  on("remove-server-from-list-request", async (index, refData) => {
+    // TODO: check refData to make sure it's the same
+    if (index >= 0 && index < g_servers.length) {
+      const data = g_servers[index];
+      sendIpcToRenderer(
+        "show-modal-remove-server-from-list-warning",
+        index,
+        _("tool-komga-remove-server-from-list"),
+        _("tool-komga-remove-server-from-list-warning"),
+        _("ui-modal-prompt-button-ok"),
+        _("ui-modal-prompt-button-cancel"),
+      );
+    } else {
+      log.error("index out of bounds");
+    }
+  });
+
+  on("on-modal-remove-server-from-list-ok-clicked", async (index) => {
+    g_servers.splice(index, 1);
+    sendIpcToRenderer("build-servers", g_servers);
+  });
+
+  //////////////////
+
   on("download-book", async (bookId, name) => {
     await server.downloadBook(bookId, name ?? "book");
   });
@@ -191,7 +233,7 @@ function initOnIpcCallbacks() {
 
   //////////////////
 
-  on("on-open-server-url-clicked", () => {
+  on("on-connect-button-clicked", () => {
     const defaults = { url: "", email: "", password: "" };
     // TODO: TEMP!!! testing ///////////////////////////
     const komgaTxtPath = (absoluteFilePath = path.resolve(
@@ -219,50 +261,8 @@ function initOnIpcCallbacks() {
     );
   });
 
-  on("on-modal-open-server-url-ok-clicked", async (data) => {
-    const session = server.getSession();
-    if (
-      session.url === data.url &&
-      session.email === data.email &&
-      data.password === data.password
-    ) {
-      log.test("already logged as that user, skipping login");
-      sendIpcToRenderer("show-modal-loading");
-      showLibraries();
-      return;
-    }
-
-    const result = await server.login(data.url, data.email, data.password);
-    if (result.success) {
-      if (data.save) {
-        /////////
-        // TODO: save in servers list
-        let encodedPassword = "";
-        if (safeStorage.isEncryptionAvailable()) {
-          encodedPassword = safeStorage
-            .encryptString(data.password)
-            .toString("hex");
-          log.test(encodedPassword);
-          // log.test(safeStorage.decryptString(Buffer.from(encodedPassword, "hex")));
-        } else {
-          // can't encrypt -> don't save
-          log.error("encryption NOT available!!");
-        }
-        /////////
-      }
-      sendIpcToRenderer("show-modal-loading");
-      showLibraries();
-    } else {
-      log.error(result.error);
-      sendIpcToRenderer(
-        "show-modal-info",
-        _("tool-shared-modal-title-error"),
-        _("tool-shared-ui-search-network-error", data.url) +
-          "\n\n" +
-          result.error,
-        _("ui-modal-prompt-button-ok"),
-      );
-    }
+  on("on-modal-connect-ok-clicked", async (data) => {
+    logToServer(data.url, data.email, data.password, data.save);
   });
 }
 
@@ -287,49 +287,100 @@ function initHandleIpcCallbacks() {}
 // TOOL ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+async function logToServer(url, email, password, save) {
+  const session = server.getSession();
+  if (
+    session.url === url &&
+    session.email === email &&
+    session.password === password
+  ) {
+    log.editor("already logged as that user, skipping login");
+  } else {
+    const result = await server.login(url, email, password);
+    if (!result.success) {
+      log.error(result.error);
+      sendIpcToRenderer(
+        "show-modal-info",
+        _("tool-shared-modal-title-error"),
+        _("tool-shared-ui-search-network-error", url) + "\n\n" + result.error,
+        _("ui-modal-prompt-button-ok"),
+      );
+      return;
+    }
+  }
+  if (save) {
+    let encodedPassword = "";
+    if (safeStorage.isEncryptionAvailable()) {
+      encodedPassword = safeStorage.encryptString(password).toString("hex");
+      const existingServer = g_servers.find(
+        (server) => server.url === url && server.email === email,
+      );
+      if (existingServer) {
+        // just in case
+        existingServer.encodedPassword = encodedPassword;
+      } else {
+        g_servers.push({
+          url,
+          email,
+          encodedPassword,
+        });
+      }
+      sendIpcToRenderer("build-servers", g_servers);
+    } else {
+      // can't encrypt -> don't save
+      log.error("encryption NOT available!!");
+    }
+  }
+  sendIpcToRenderer("show-modal-loading");
+  showLibraries();
+}
 ////////////////////////////////////////////
 
 let g_goBackHistory = [];
 
 async function showLibraries() {
   const response = await server.getLibraries();
-  sendIpcToRenderer("render-libraries", response);
+  sendIpcToRenderer("build-content-libraries", response);
   g_goBackHistory = [];
-  g_goBackHistory.push(["render-libraries", response]);
-  g_goBackHistory.push(["render-libraries", response]);
-  g_goBackCurrentParams = ["render-libraries", response];
+  g_goBackHistory.push(["build-content-libraries", response]);
+  g_goBackHistory.push(["build-content-libraries", response]);
+  g_goBackCurrentParams = ["build-content-libraries", response];
 }
 
 async function showSeriesInLibrary(libraryId, pageIndex = 0) {
   const response = await server.getSeriesInLibrary(libraryId, pageIndex);
-  sendIpcToRenderer("render-series-in-library", libraryId, response);
+  sendIpcToRenderer("build-content-series-in-library", libraryId, response);
   if (
     g_goBackHistory.length === 0 ||
-    g_goBackHistory.at(-1)[0] !== "render-series-in-library"
+    g_goBackHistory.at(-1)[0] !== "build-content-series-in-library"
   ) {
-    g_goBackHistory.push(["render-series-in-library", libraryId, response]);
+    g_goBackHistory.push([
+      "build-content-series-in-library",
+      libraryId,
+      response,
+    ]);
   }
 }
 
 async function showBooksInSeries(seriesId, pageIndex = 0) {
   const response = await server.getBooksInSeries(seriesId, pageIndex);
-  sendIpcToRenderer("render-books-in-series", seriesId, response);
+  sendIpcToRenderer("build-content-books-in-series", seriesId, response);
   if (
     g_goBackHistory.length === 0 ||
-    g_goBackHistory.at(-1)[0] !== "render-books-in-series"
+    g_goBackHistory.at(-1)[0] !== "build-content-books-in-series"
   ) {
-    g_goBackHistory.push(["render-books-in-series", seriesId, response]);
+    g_goBackHistory.push(["build-content-books-in-series", seriesId, response]);
   }
 }
 
 async function showBook(id) {
   const response = await server.getBook(id);
-  sendIpcToRenderer("render-book", response);
+  sendIpcToRenderer("build-content-book", response);
   if (
     g_goBackHistory.length === 0 ||
-    g_goBackHistory.at(-1)[0] !== "render-book"
+    g_goBackHistory.at(-1)[0] !== "build-content-book"
   ) {
-    g_goBackHistory.push(["render-book", response]);
+    g_goBackHistory.push(["build-content-book", response]);
   }
 }
 

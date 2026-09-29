@@ -45,7 +45,7 @@ async function init(section, servers) {
     .getElementById("tool-komga-add-button")
     .addEventListener("click", (event) => {
       // modals.showKomgaLogin();
-      sendIpcToMain("on-open-server-url-clicked");
+      sendIpcToMain("on-connect-button-clicked");
     });
   // sections menu
   for (
@@ -62,8 +62,9 @@ async function init(section, servers) {
 
   ////////////////////////////////////////
 
-  g_servers = servers;
-  renderNoContent();
+  buildServers(servers);
+  buildContentEmpty();
+
   switchSection(1);
 
   ////////////////////////////////////////
@@ -165,21 +166,31 @@ function initOnIpcCallbacks() {
 
   /////////////////////////////////////////////////////////////////////////////
 
-  on("render-libraries", (...args) => {
+  on("build-servers", (...args) => {
+    buildServers(...args);
+  });
+
+  on("show-modal-remove-server-from-list-warning", (...args) => {
+    showModalRemoveServerFromList(...args);
+  });
+
+  /////////////////////////////////////////////////////////////////////////////
+
+  on("build-content-libraries", (...args) => {
     switchSection(1);
-    renderLibraries(...args);
+    buildContentLibraries(...args);
   });
 
-  on("render-series-in-library", (...args) => {
-    renderSeriesInLibrary(...args);
+  on("build-content-series-in-library", (...args) => {
+    buildContentSeriesInLibrary(...args);
   });
 
-  on("render-books-in-series", (...args) => {
-    renderBooksInSeries(...args);
+  on("build-content-books-in-series", (...args) => {
+    buildContentBooksInSeries(...args);
   });
 
-  on("render-book", (...args) => {
-    renderBook(...args);
+  on("build-content-book", (...args) => {
+    buildContentBook(...args);
   });
 
   on("render-book-thumb", (bookId, buffer, mime) => {
@@ -204,24 +215,10 @@ function initOnIpcCallbacks() {
     }
   });
 
-  on("render-image", (buffer, mime) => {
-    if (buffer) {
-      const container = document.querySelector("#tool-komga-content");
-      container.innerHTML = "";
-      const img = document.createElement("img");
-      img.style.width = "100%";
-      container.appendChild(img);
-
-      const blob = new Blob([buffer], { type: mime });
-      const url = URL.createObjectURL(blob);
-      img.src = url;
-    }
-  });
-
   /////////////////////////////////////////////////////////////////////////////
 
-  on("close-modal", () => {
-    closeOpenModal();
+  on("close-active-modal", () => {
+    closeActiveModal();
   });
 
   on("show-modal-login", (...args) => {
@@ -242,6 +239,119 @@ function initOnIpcCallbacks() {
 ///////////////////////////////////////////////////////////////////////////////
 // TOOL ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
+
+function buildServers(servers) {
+  g_servers = servers;
+
+  const container = document.querySelector("#tool-komga-servers-div");
+  container.innerHTML = "";
+  if (g_servers && g_servers.length > 0) {
+    container.style = "padding-top: 20px";
+    // list
+    let ul = document.createElement("ul");
+    ul.className = "tools-collection-ul";
+    for (let index = 0; index < g_servers.length; index++) {
+      ////////////////
+      const data = g_servers[index];
+      // create html
+      let li = document.createElement("li");
+      li.className = "tools-buttons-list-li";
+      const buttonSpan = document.createElement("span");
+      buttonSpan.className = "tools-buttons-list-button";
+      buttonSpan.innerHTML = `<i class="fas fa-server fa-2x"></i>`;
+      buttonSpan.title = g_extraLocalization.connect;
+      const multilineText = document.createElement("span");
+      multilineText.className = "tools-buttons-list-li-multiline-text";
+      {
+        let text = document.createElement("span");
+        text.innerText = `${data.url}`;
+        multilineText.appendChild(text);
+
+        text = document.createElement("span");
+        text.innerText = `${data.email}`;
+        multilineText.appendChild(text);
+      }
+      buttonSpan.appendChild(multilineText);
+      buttonSpan.addEventListener("click", (event) => {
+        sendIpcToMain("connect-to-server-in-list", index, data);
+        showLoadingModal();
+      });
+      li.appendChild(buttonSpan);
+      // {
+      //   let buttonSpan = document.createElement("span");
+      //   buttonSpan.innerHTML = `<i class="fa-solid fa-arrow-up"></i>`;
+      //   buttonSpan.title = g_extraLocalization.moveUpInList;
+      //   if (index > 0) {
+      //     buttonSpan.className = "tools-buttons-list-button";
+      //     buttonSpan.addEventListener("click", (event) => {
+      //       sendIpcToMain(
+      //         "on-modal-feed-options-move-clicked",
+      //         index,
+      //         g_servers[index].url,
+      //         0,
+      //       );
+      //     });
+      //   } else {
+      //     buttonSpan.className =
+      //       "tools-buttons-list-button tools-buttons-list-button-disabled";
+      //   }
+      //   li.appendChild(buttonSpan);
+      // }
+      // {
+      //   let buttonSpan = document.createElement("span");
+      //   buttonSpan.innerHTML = `<i class="fa-solid fa-arrow-down"></i>`;
+      //   buttonSpan.title = g_extraLocalization.moveDownInList;
+      //   if (index < g_servers.length - 1) {
+      //     buttonSpan.className = "tools-buttons-list-button";
+      //     buttonSpan.addEventListener("click", (event) => {
+      //       sendIpcToMain(
+      //         "on-modal-feed-options-move-clicked",
+      //         index,
+      //         g_servers[index].url,
+      //         1,
+      //       );
+      //     });
+      //   } else {
+      //     buttonSpan.className =
+      //       "tools-buttons-list-button tools-buttons-list-button-disabled";
+      //   }
+      //   li.appendChild(buttonSpan);
+      // }
+      {
+        let buttonSpan = document.createElement("span");
+        buttonSpan.className = "tools-buttons-list-button";
+        buttonSpan.innerHTML = `<i class="fa-solid fa-xmark"></i>`;
+        buttonSpan.title = g_extraLocalization.removeFromList;
+        buttonSpan.addEventListener("click", (event) => {
+          sendIpcToMain(
+            "remove-server-from-list-request",
+            index,
+            g_servers[index],
+          );
+        });
+        li.appendChild(buttonSpan);
+      }
+      // {
+      //   let buttonSpan = document.createElement("span");
+      //   buttonSpan.className = "tools-buttons-list-button";
+      //   buttonSpan.innerHTML = `<i class="fas fa-ellipsis-v"></i>`;
+      //   buttonSpan.title = g_extraLocalization.options;
+      //   buttonSpan.addEventListener("click", (event) => {
+      //     event.stopPropagation();
+      //     sendIpcToMain("on-server-options-clicked", index);
+      //   });
+      //   li.appendChild(buttonSpan);
+      // }
+      ul.appendChild(li);
+      ////////////////
+    }
+    container.appendChild(ul);
+  } else {
+    container.style = "padding-top: 5px";
+  }
+}
+
+//////////////////////////////////////////////////////////
 
 function getPaginationDiv(pageIndex, totalPagesNum, goToPage) {
   let paginationDiv = document.createElement("div");
@@ -304,13 +414,13 @@ function getPaginationDiv(pageIndex, totalPagesNum, goToPage) {
   return paginationDiv;
 }
 
-function renderNoContent() {
+function buildContentEmpty() {
   const root = document.querySelector("#tool-komga-content");
   root.style = "padding-top: 10px";
   root.innerHTML = `<span> ${g_extraLocalization.noContent} </span>`;
 }
 
-function renderLibraries(inputData) {
+function buildContentLibraries(inputData) {
   if (inputData) {
     const root = document.querySelector("#tool-komga-content");
     root.style = "padding-top: 10px";
@@ -364,10 +474,10 @@ function renderLibraries(inputData) {
     block: "start",
     inline: "nearest",
   });
-  closeOpenModal();
+  closeActiveModal();
 }
 
-function renderSeriesInLibrary(libraryId, inputData, pageIndex = 0) {
+function buildContentSeriesInLibrary(libraryId, inputData, pageIndex = 0) {
   const root = document.querySelector("#tool-komga-content");
   root.style = "padding-top: 10px";
   root.innerHTML = "";
@@ -449,10 +559,10 @@ function renderSeriesInLibrary(libraryId, inputData, pageIndex = 0) {
     block: "start",
     inline: "nearest",
   });
-  closeOpenModal();
+  closeActiveModal();
 }
 
-function renderBooksInSeries(seriesId, inputData, pageIndex = 0) {
+function buildContentBooksInSeries(seriesId, inputData, pageIndex = 0) {
   const root = document.querySelector("#tool-komga-content");
   root.style = "padding-top: 10px";
   root.innerHTML = "";
@@ -532,10 +642,10 @@ function renderBooksInSeries(seriesId, inputData, pageIndex = 0) {
     block: "start",
     inline: "nearest",
   });
-  closeOpenModal();
+  closeActiveModal();
 }
 
-function renderBook(data) {
+function buildContentBook(data) {
   console.log(data);
 
   const root = document.querySelector("#tool-komga-content");
@@ -631,7 +741,7 @@ function renderBook(data) {
     block: "start",
     inline: "nearest",
   });
-  closeOpenModal();
+  closeActiveModal();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -639,8 +749,8 @@ function renderBook(data) {
 ///////////////////////////////////////////////////////////////////////////////
 
 export function onInputEvent(type, event) {
-  if (getOpenModal()) {
-    oldModals.onInputEvent(getOpenModal(), type, event);
+  if (getActiveModal()) {
+    oldModals.onInputEvent(getActiveModal(), type, event);
     return;
   }
   switch (type) {
@@ -654,7 +764,7 @@ export function onInputEvent(type, event) {
 }
 
 export function onContextMenu(params) {
-  if (getOpenModal()) {
+  if (getActiveModal()) {
     return;
   }
   sendIpcToMain("show-context-menu", params);
@@ -664,39 +774,56 @@ export function onContextMenu(params) {
 // MODALS /////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-let g_openModal;
+let g_activeModal;
 
-export function getOpenModal() {
-  return g_openModal;
+export function getActiveModal() {
+  return g_activeModal;
 }
 
-function closeOpenModal() {
-  if (g_openModal) {
-    modals.close(g_openModal);
-    modalClosed();
+function closeActiveModal() {
+  if (g_activeModal) {
+    modals.close(g_activeModal);
+    g_activeModal = undefined;
   }
-}
-
-function modalClosed() {
-  g_openModal = undefined;
 }
 
 function showLoadingModal() {
-  if (g_openModal) {
-    closeOpenModal();
+  if (g_activeModal) {
+    closeActiveModal();
   }
-  g_openModal = modals.showLoadingModal(
+  g_activeModal = modals.showLoadingModal(
     modals.Level.TOOLS,
     g_extraLocalization.loadingTitle,
   );
 }
 
 function showLoginModal(...args) {
-  if (g_openModal) {
-    closeOpenModal();
+  if (g_activeModal) {
+    closeActiveModal();
   }
-  g_openModal = modals.showKomgaLoginModal(...args, (data) => {
+  g_activeModal = modals.showKomgaLoginModal(...args, (data) => {
     if (!data) return;
-    sendIpcToMain("on-modal-open-server-url-ok-clicked", data);
+    sendIpcToMain("on-modal-connect-ok-clicked", data);
   });
+}
+
+function showModalRemoveServerFromList(
+  index,
+  titleText,
+  messageText,
+  okText,
+  cancelText,
+) {
+  if (g_activeModal) {
+    closeActiveModal();
+  }
+  g_activeModal = modals.showInfoModal(
+    titleText,
+    messageText,
+    okText,
+    cancelText,
+    () => {
+      sendIpcToMain("on-modal-remove-server-from-list-ok-clicked", index);
+    },
+  );
 }

@@ -32,6 +32,11 @@ exports.getLocalization = function () {
       text: _("tool-komga-server-content"),
     },
     //////////////////////////////////////////////
+    {
+      id: "tool-komga-saved-servers-text",
+      text: _("tool-komga-saved-servers"),
+    },
+    //////////////////////////////////////////////
   ];
 };
 
@@ -40,5 +45,13 @@ exports.getExtraLocalization = function () {
     loadingTitle: _("tool-shared-modal-title-loading"),
     // content
     noContent: _("tool-komga-no-content-message"),
+    // favorites
+    options: _("tool-shared-tab-options"),
+    connect: _("tool-komga-button-connect"),
+    open: _("ui-modal-prompt-button-open"),
+    back: _("tool-shared-ui-back"),
+    removeFromList: _("tool-shared-tooltip-remove-from-list"),
+    moveUpInList: _("tool-shared-tooltip-move-up-in-list"),
+    moveDownInList: _("tool-shared-tooltip-move-down-in-list"),
   };
 };
