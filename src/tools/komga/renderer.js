@@ -65,7 +65,7 @@ async function init(section, servers) {
   buildServers(servers);
   buildContentEmpty();
 
-  switchSection(1);
+  switchSection(servers.length > 0 ? 0 : 1);
 
   ////////////////////////////////////////
 
