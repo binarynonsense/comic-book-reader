@@ -1229,6 +1229,7 @@
   "tool-komga-server-content": "Content",
   "tool-komga-button-connect": "Connect",
   "tool-komga-saved-servers": "Saved Servers",
+  "tool-komga-no-servers-message": "The list is empty. Check 'Save server and credentials' when connecting to a server to add it to the list.",
   "tool-komga-remove-server-from-list": "Remove Server",
   "tool-komga-remove-server-from-list-warning": "Are you sure you want to remove this server?",
   "tool-komga-no-content-message": "Use the 'Connect' button or select one from the 'Servers' list to start browsing a server's contents.",
