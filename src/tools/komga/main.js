@@ -27,6 +27,7 @@ const server = require("./server");
 
 let g_isInitialized = false;
 let g_servers = [];
+let g_goBackHistory = [];
 
 function init() {
   if (!g_isInitialized) {
@@ -67,6 +68,9 @@ exports.open = async function () {
   }
   ///////////////////
   sendIpcToRenderer("show", 0, g_servers);
+  if (g_goBackHistory.length > 0) {
+    sendIpcToRenderer(...g_goBackHistory.at(-1));
+  }
 };
 
 function saveSettings() {
@@ -323,8 +327,6 @@ async function logToServer(url, email, password, save) {
   showLibraries();
 }
 ////////////////////////////////////////////
-
-let g_goBackHistory = [];
 
 async function showLibraries() {
   const response = await server.getLibraries();
