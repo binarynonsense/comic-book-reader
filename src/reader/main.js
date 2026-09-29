@@ -602,8 +602,6 @@ function initOnIpcCallbacks() {
         _("ui-modal-info-couldntopen-url"),
         _("ui-modal-prompt-button-ok"),
       );
-      // const tool = require("../tools/dcm/main");
-      // openBookFromCallback(comicData, tool.getPageCallback);
     } else if (comicData.source === "cbp") {
       sendIpcToRenderer(
         "show-modal-info",
@@ -611,8 +609,6 @@ function initOnIpcCallbacks() {
         _("ui-modal-info-couldntopen-url"),
         _("ui-modal-prompt-button-ok"),
       );
-      // const tool = require("../tools/cbp/main");
-      // openBookFromCallback(comicData, tool.getPageCallback);
     } else if (comicData.source === "iab") {
       const tool = require("../tools/internet-archive/main");
       openBookFromCallback(comicData, tool.getPageCallback);
@@ -777,11 +773,9 @@ async function tryOpen(filePath, bookType, historyEntry, homeScreenListEntry) {
         if (!historyEntry) {
           // not in history
           if (
-            // homeScreenListEntry.data.source === "dcm" ||
             homeScreenListEntry.data.source === "iab" ||
-            homeScreenListEntry.data.source === "xkcd"
-            // ||
-            // homeScreenListEntry.data.source === "cbp"
+            homeScreenListEntry.data.source === "xkcd" ||
+            homeScreenListEntry.data.source === "komga"
           ) {
             if (tryOpenWWW(pageIndex, homeScreenListEntry)) {
               return true;
@@ -835,11 +829,9 @@ async function tryOpen(filePath, bookType, historyEntry, homeScreenListEntry) {
       if (!Number.isInteger(pageIndex)) pageIndex = 0;
       if (historyEntry.data && historyEntry.data.source) {
         if (
-          // historyEntry.data.source === "dcm" ||
           historyEntry.data.source === "iab" ||
-          historyEntry.data.source === "xkcd"
-          // ||
-          // historyEntry.data.source === "cbp"
+          historyEntry.data.source === "xkcd" ||
+          historyEntry.data.source === "komga"
         ) {
           if (tryOpenWWW(pageIndex, historyEntry)) {
             return true;
@@ -1018,11 +1010,6 @@ async function tryOpenPath(
 
 function tryOpenWWW(pageIndex, historyEntry) {
   const data = historyEntry.data;
-  // if (data.source === "dcm") {
-  //   const tool = require("../tools/dcm/main");
-  //   openBookFromCallback(data, tool.getPageCallback, pageIndex);
-  //   return true;
-  // } else
   if (data.source === "iab") {
     const tool = require("../tools/internet-archive/main");
     openBookFromCallback(data, tool.getPageCallback, pageIndex);
@@ -1031,12 +1018,11 @@ function tryOpenWWW(pageIndex, historyEntry) {
     const tool = require("../tools/xkcd/main");
     openBookFromCallback(data, tool.getPageCallback, pageIndex);
     return true;
+  } else if (data.source === "komga") {
+    log.test("komga");
+    // TODO
+    return false;
   }
-  // else if (data.source === "cbp") {
-  //   const tool = require("../tools/cbp/main");
-  //   openBookFromCallback(data, tool.getPageCallback, pageIndex);
-  //   return true;
-  // }
   return false;
 }
 
@@ -1588,6 +1574,27 @@ function openBookFromCallback(comicData, getPageCallback, pageIndex = 0) {
 }
 exports.openBookFromCallback = openBookFromCallback;
 
+function openBookFromServer(comicData, pageIndex = 0) {
+  sendIpcToRenderer("update-bg", false);
+  sendIpcToRenderer("update-loading", true);
+  closeCurrentFile();
+  g_fileData.state = FileDataState.LOADED;
+  g_fileData.type = FileDataType.WWW;
+  g_fileData.path = comicData.url ?? comicData.name;
+  g_fileData.name = comicData.name;
+  g_fileData.pagesPaths = [];
+  g_fileData.numPages = comicData.numPages;
+  if (pageIndex < 0 || pageIndex >= g_fileData.numPages) pageIndex = 0;
+  g_fileData.pageIndex = pageIndex;
+  g_fileData.data = comicData;
+  updateMenuAndToolbarItems();
+  setPageRotation(0, false);
+  setInitialZoom(g_fileData.path);
+  setInitialPageMode(g_fileData.path);
+  goToPage(g_fileData.pageIndex);
+}
+exports.openBookFromServer = openBookFromServer;
+
 //////////////////////////////////////////////////////////////////////////////
 
 function tryOpeningAdjacentFile(next) {
@@ -1877,7 +1884,9 @@ function updateMenuAndToolbarItems(isOpen = true) {
         g_fileData.type === FileDataType.RAR ||
         g_fileData.type === FileDataType.SEVENZIP ||
         g_fileData.type === FileDataType.EPUB_COMIC ||
-        g_fileData.type === FileDataType.PDF
+        g_fileData.type === FileDataType.PDF ||
+        (g_fileData.type === FileDataType.WWW &&
+          g_fileData.data.source === "komga")
       ) {
         menuBar.setComicBookOpened(true);
         sendIpcToRenderer(

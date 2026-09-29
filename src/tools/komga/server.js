@@ -88,6 +88,7 @@ exports.login = async function (serverUrl, username, password) {
         g_session.email = username;
         g_session.password = password;
         g_session.token = token;
+        g_session.userAgent = g_customUserAgent;
         result.success = true;
         result.isKomga = true;
         return result;
@@ -395,27 +396,26 @@ exports.downloadBook = async function (bookId, fileName) {
 // PAGE //////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 
-exports.loadPageImageBuffer = async function (bookId, pageNum) {
+exports.loadPageImageBuffer = async function (bookId, pageNum, session) {
   try {
-    const url = `${g_session.url}/api/v1/books/${bookId}/pages/${pageNum}`;
+    const url = `${session.url}/api/v1/books/${bookId}/pages/${pageNum}`;
     const response = await fetch(url, {
       headers: {
-        "X-Auth-Token": g_session.token,
-        "User-Agent": g_customUserAgent,
+        "X-Auth-Token": session.token,
+        "User-Agent": session.userAgent,
         Accept: "image/jpeg", // so pdf pages are rasterized
       },
     });
     if (!response.ok) {
-      throw new Error(`failed to fetch page: ${response.statusText}`);
+      throw new Error(`failed to fetch page: ${response.status}`);
     }
     const arrayBuffer = await response.arrayBuffer();
     // convert to a node buffer
     const buffer = Buffer.from(arrayBuffer);
-    const mime = fileUtils.getFileTypeFromBuffer(buffer, true);
-    return { buffer, mime };
+    return { success: true, buffer };
   } catch (error) {
     log.error(error);
-    return undefined;
+    return { error };
   }
 };
 

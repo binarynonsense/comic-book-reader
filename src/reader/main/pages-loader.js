@@ -242,7 +242,10 @@ function pagesFetched(message) {
 async function fetchPages(pageWorker, fileData, pageIndexes) {
   g_fileData = fileData;
   let scrollBarPos = g_scrollBarPos;
-  if (g_fileData.type !== FileDataType.WWW) {
+  if (
+    g_fileData.type !== FileDataType.WWW ||
+    g_fileData.data.source === "komga"
+  ) {
     let extraData = { workerId: pageWorker.id, cacheJobId: g_cacheJobId };
     let entryNames = pageIndexes;
     if (g_fileData.type === FileDataType.PDF) {
@@ -254,6 +257,14 @@ async function fetchPages(pageWorker, fileData, pageIndexes) {
       g_fileData.type === FileDataType.FB2
     ) {
       extraData.config = settings.getValue("epubEbook");
+    } else if (
+      g_fileData.type === FileDataType.WWW &&
+      g_fileData.data.source === "komga"
+    ) {
+      extraData.source = "komga";
+      extraData.comicId = g_fileData.data.comicId;
+      const server = require("../../tools/komga/server");
+      extraData.session = server.getSession();
     } else {
       entryNames = [];
       pageIndexes.forEach((index) => {
@@ -287,7 +298,7 @@ async function fetchPages(pageWorker, fileData, pageIndexes) {
     });
     return;
   } else {
-    // WWW
+    // WWW not Komga
     const calledFunc = g_fileData.getPageCallback;
     let response = await g_fileData.getPageCallback(
       g_fileData.pageIndex + 1,
@@ -297,28 +308,7 @@ async function fetchPages(pageWorker, fileData, pageIndexes) {
       // getPageCallback changed while downloading
       return;
     }
-    if ((g_fileData.data.source = "komga")) {
-      if (!response || !response.pageImgBuffer) {
-        // TODO: handle error
-        log.error("[PAGES] download error");
-        g_fileData.state = FileDataState.LOADED;
-        sendIpcToRenderer("update-loading", false);
-        return;
-      }
-      g_fileData.pagesPaths = [response.pageImgBuffer];
-      if (response.tempData) {
-        if (g_fileData.data) {
-          g_fileData.data.tempData = response.tempData;
-        }
-      }
-      sendIpcToRenderer(
-        "render-img-page",
-        [{ buffer: response.pageImgBuffer }],
-        g_fileData.pageRotation,
-        scrollBarPos,
-      );
-      return;
-    } else {
+    if (g_fileData.data.source !== "komga") {
       if (!response || !response.pageImgSrc) {
         // TODO: handle error
         log.error("[PAGES] download error");

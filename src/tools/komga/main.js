@@ -150,7 +150,7 @@ function initOnIpcCallbacks() {
   on("open-book", (comicData, pageNum) => {
     comicData.url = server.getUrl() + "/book/" + comicData.comicId;
     comicData.serverUrl = server.getUrl();
-    reader.openBookFromCallback(comicData, getPageCallback, pageNum - 1);
+    reader.openBookFromServer(comicData, pageNum - 1);
     onCloseClicked();
   });
 
@@ -381,21 +381,21 @@ function goBack() {
 
 ////////////////////////////////////////////
 
-async function getPageCallback(pageNumber, fileData) {
-  try {
-    const response = await server.loadPageImageBuffer(
-      fileData.data.comicId,
-      pageNumber,
-    );
-    return {
-      pageImgBuffer: response.buffer,
-    };
-  } catch (error) {
-    // console.error(error);
-    return undefined;
-  }
-}
-exports.getPageCallback = getPageCallback;
+// async function getPageCallback(pageNumber, fileData) {
+//   try {
+//     const response = await server.loadPageImageBuffer(
+//       fileData.data.comicId,
+//       pageNumber,
+//     );
+//     return {
+//       pageImgBuffer: response.buffer,
+//     };
+//   } catch (error) {
+//     // console.error(error);
+//     return undefined;
+//   }
+// }
+// exports.getPageCallback = getPageCallback;
 
 ///////////////////////////////////////////////////////////////////////////////
 // LOCALIZATION ///////////////////////////////////////////////////////////////
