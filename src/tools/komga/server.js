@@ -396,9 +396,9 @@ exports.downloadBook = async function (bookId, fileName) {
 // PAGE //////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 
-exports.loadPageImageBuffer = async function (bookId, pageNum, session) {
+exports.loadPageImageBuffer = async function (bookId, pageNumber, session) {
   try {
-    const url = `${session.url}/api/v1/books/${bookId}/pages/${pageNum}`;
+    const url = `${session.url}/api/v1/books/${bookId}/pages/${pageNumber}`;
     const response = await fetch(url, {
       headers: {
         "X-Auth-Token": session.token,
@@ -419,13 +419,6 @@ exports.loadPageImageBuffer = async function (bookId, pageNum, session) {
   }
 };
 
-/*
-TODO:
-NOT YET TESTED
-- call on page turn with completed = false, but maybe use debouncing
-(wait for 2-3 seconds before really calling updateReadingProgress)
-- call on final page set page = totalPages-1 and completed = true.
-*/
 exports.updateReadingProgress = async function (
   bookId,
   page,
@@ -460,6 +453,40 @@ exports.updateReadingProgress = async function (
   } catch (error) {
     log.error(`failed to update reading progress for book ${bookId}: ` + error);
     return false;
+  }
+};
+
+exports.getReadingProgress = async function (bookId) {
+  if (!bookId) {
+    throw new Error(`no book id`);
+  }
+  const url = `${g_session.url}/api/v1/books/${bookId}`;
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "X-Auth-Token": g_session.token,
+        "User-Agent": g_customUserAgent,
+        Accept: "application/json",
+      },
+    });
+    if (response.status === 200) {
+      const bookData = await response.json();
+      if (bookData.readProgress) {
+        log.debug(
+          `got progress for book ${bookId}: page ${bookData.readProgress.page}`,
+        );
+        return {
+          page: bookData.readProgress.page,
+          completed: bookData.readProgress.completed,
+        };
+      }
+      return { page: 1, completed: false };
+    }
+    throw new Error(`HTML error code: ${response.status}`);
+  } catch (error) {
+    log.error(`failed to get reading progress for book ${bookId}: ` + error);
+    return { page: 1, completed: false };
   }
 };
 

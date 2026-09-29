@@ -723,7 +723,11 @@ function buildContentBook(data) {
         numPages: pagesCount,
         url: ``,
       };
-      sendIpcToMain("open-book", comicData, 1);
+      sendIpcToMain(
+        "open-book",
+        comicData,
+        data.readProgress ? data.readProgress.page : 1,
+      );
     });
 
     const downloadButton = document.getElementById(

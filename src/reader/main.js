@@ -1027,11 +1027,15 @@ async function tryOpenWWW(pageIndex, historyEntry) {
     openBookFromCallback(data, tool.getPageCallback, pageIndex);
     return true;
   } else if (data.source === "komga") {
-    const { getSession, login } = require("../tools/komga/server");
+    const { getSavedServerDataFromUrl } = require("../tools/komga/main");
+    const {
+      getSession,
+      login,
+      getReadingProgress,
+    } = require("../tools/komga/server");
     const session = getSession();
     if (session.url != data.serverUrl) {
       // need to log in
-      const { getSavedServerDataFromUrl } = require("../tools/komga/main");
       let serverData = getSavedServerDataFromUrl(data.serverUrl);
       if (serverData) {
         const result = await login(
@@ -1051,6 +1055,7 @@ async function tryOpenWWW(pageIndex, historyEntry) {
           );
           return false;
         }
+        pageIndex = (await getReadingProgress(data.comicId)).page - 1;
         openBookFromServer(data, pageIndex);
         return true;
       } else {
@@ -1072,6 +1077,7 @@ async function tryOpenWWW(pageIndex, historyEntry) {
         return true;
       }
     } else {
+      pageIndex = (await getReadingProgress(data.comicId)).page - 1;
       openBookFromServer(data, pageIndex);
       return true;
     }
@@ -1082,7 +1088,7 @@ async function tryOpenWWW(pageIndex, historyEntry) {
 // called from event "on-modal-komga-login-ok-clicked"
 async function onModalLogin(data, comicData, pageIndex) {
   try {
-    const { login } = require("../tools/komga/server");
+    const { login, getReadingProgress } = require("../tools/komga/server");
     const result = await login(data.url, data.email, data.password);
     if (!result.success) {
       log.error(result.error);
@@ -1098,6 +1104,7 @@ async function onModalLogin(data, comicData, pageIndex) {
       sendIpcToRenderer("update-bg", true);
       return;
     }
+    pageIndex = (await getReadingProgress(data.comicId)).page - 1;
     openBookFromServer(comicData, pageIndex);
   } catch (error) {
     sendIpcToRenderer("update-loading", false);
@@ -1799,7 +1806,19 @@ async function goToPage(pageIndex, scrollBarPos = 0) {
       g_fileData.type === FileDataType.WWW
     ) {
       g_fileData.state = FileDataState.LOADING;
-      await pagesLoader.loadPage(g_fileData, getGoToIndexes(), scrollBarPos);
+      const indexes = getGoToIndexes();
+      await pagesLoader.loadPage(g_fileData, indexes, scrollBarPos);
+      if (
+        g_fileData.type === FileDataType.WWW &&
+        g_fileData.data.source === "komga"
+      ) {
+        const { updateReadingProgress } = require("../tools/komga/server");
+        updateReadingProgress(
+          g_fileData.data.comicId,
+          indexes.at(-1) + 1,
+          indexes.at(-1) >= g_fileData.numPages - 1,
+        );
+      }
     }
   } catch (error) {
     closeCurrentFile();

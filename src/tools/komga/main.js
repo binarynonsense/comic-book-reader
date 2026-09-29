@@ -151,10 +151,10 @@ function initOnIpcCallbacks() {
     contextMenu.show("minimal", params, onCloseClicked);
   });
 
-  on("open-book", (comicData, pageNum) => {
+  on("open-book", (comicData, pageNumber) => {
     comicData.url = server.getUrl() + "/book/" + comicData.comicId;
     comicData.serverUrl = server.getUrl();
-    reader.openBookFromServer(comicData, pageNum - 1);
+    reader.openBookFromServer(comicData, pageNumber - 1);
     onCloseClicked();
   });
 
