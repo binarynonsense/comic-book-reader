@@ -153,7 +153,7 @@ function generateCardsFromSavedData(inputData, isFavoritesList) {
         if (outputBook.pathType === 0) {
           outputBook.percentageRead =
             getPercentageReadFromHistoryListByEntry(inputBook);
-        } else if (outputBook.pathType === 2) {
+        } else if (outputBook.pathType === 2 || outputBook.pathType === 3) {
           outputBook.percentageRead =
             getPercentageReadFromHistoryListByEntry(inputBook);
         }
