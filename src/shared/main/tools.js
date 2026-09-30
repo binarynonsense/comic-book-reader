@@ -21,8 +21,6 @@ exports.init = function () {
   g_tools["tool-extract-palette"] = require("../../tools/extract-palette/main");
   g_tools["tool-extract-text"] = require("../../tools/extract-text/main");
   g_tools["tool-create-qr"] = require("../../tools/create-qr/main");
-  // g_tools["tool-extract-qr"] = require("../../tools/extract-qr/main");
-  // g_tools["tool-dcm"] = require("../../tools/dcm/main");
   g_tools[
     "tool-internet-archive"
   ] = require("../../tools/internet-archive/main");
@@ -33,7 +31,6 @@ exports.init = function () {
   g_tools["tool-file-browser"] = require("../../tools/file-browser/main");
   g_tools["tool-radio"] = require("../../tools/radio/main");
   g_tools["tool-metadata"] = require("../../tools/metadata/main");
-  g_tools["tool-cbp"] = require("../../tools/cbp/main");
   g_tools["tool-template-maker"] = require("../../tools/template-maker/main");
   g_tools["tool-drawing"] = require("../../tools/drawing/main");
   g_tools["tool-rss"] = require("../../tools/rss-reader/main");
