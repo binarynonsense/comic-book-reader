@@ -979,7 +979,6 @@ function getNewCardDiv(cardType, data, navRow, navColumn, listIndex) {
           www
         </div>`;
     } else if (data.pathType === 3) {
-      console.log("3");
       return `
         <div class="hs-path-card-typeminiicon hs-path-card-typeminiicon-komga">
           KOMGA
