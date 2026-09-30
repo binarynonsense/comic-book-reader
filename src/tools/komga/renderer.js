@@ -354,7 +354,7 @@ function buildServers(servers) {
 
 //////////////////////////////////////////////////////////
 
-function getPaginationDiv(pageIndex, totalPagesNum, goToPage) {
+function getSimplePaginationDiv(pageIndex, totalPagesNum, goToPage) {
   let paginationDiv = document.createElement("div");
   paginationDiv.className = "tools-collection-pagination";
   {
@@ -412,6 +412,120 @@ function getPaginationDiv(pageIndex, totalPagesNum, goToPage) {
     }
     paginationDiv.appendChild(span);
   }
+  return paginationDiv;
+}
+
+function getPaginationDiv(
+  pageIndex,
+  totalPagesNum,
+  goToPage,
+  maxVisibleButtons = 11,
+) {
+  let paginationDiv = document.createElement("div");
+  paginationDiv.className = "tools-collection-pagination";
+
+  function addArrowButton(innerHTML, isEnabled, targetPage, titleText) {
+    let span = document.createElement("span");
+    span.innerHTML = innerHTML;
+    if (titleText) {
+      span.title = titleText;
+    }
+    if (isEnabled) {
+      span.className = "tools-collection-pagination-button";
+      span.addEventListener("click", () => goToPage(targetPage));
+    } else {
+      span.className = "tools-collection-pagination-button-disabled";
+    }
+    paginationDiv.appendChild(span);
+  }
+
+  function addPageNumberButton(idx) {
+    let span = document.createElement("span");
+    span.innerText = idx + 1;
+    if (idx === pageIndex) {
+      let textSpan = document.createElement("span");
+      textSpan.innerText = ` ${idx + 1} `;
+      paginationDiv.appendChild(textSpan);
+    } else {
+      span.className = "tools-collection-pagination-button";
+      span.addEventListener("click", () => goToPage(idx));
+      paginationDiv.appendChild(span);
+    }
+  }
+
+  function addEllipsis() {
+    let span = document.createElement("span");
+    span.innerText = " ... ";
+    paginationDiv.appendChild(span);
+  }
+
+  /////////
+
+  addArrowButton(
+    '<i class="fas fa-angle-double-left"></i>',
+    pageIndex > 0,
+    Math.max(0, pageIndex - 10),
+    "-10",
+  );
+  addArrowButton(
+    '<i class="fas fa-angle-left"></i>',
+    pageIndex > 0,
+    pageIndex - 1,
+    "-1",
+  );
+
+  let targetSlots = maxVisibleButtons;
+  let hasLeftEdge = false;
+  let hasRightEdge = false;
+
+  if (totalPagesNum > targetSlots) {
+    let checkStart = pageIndex - Math.floor(targetSlots / 2);
+    let checkEnd = checkStart + targetSlots - 1;
+
+    if (checkStart > 0) {
+      targetSlots -= 2;
+      hasLeftEdge = true;
+    }
+    if (checkEnd < totalPagesNum - 1) {
+      targetSlots -= 2;
+      hasRightEdge = true;
+    }
+  }
+
+  let startPage = Math.max(0, pageIndex - Math.floor(targetSlots / 2));
+  let endPage = Math.min(totalPagesNum - 1, startPage + targetSlots - 1);
+
+  if (endPage - startPage + 1 < targetSlots) {
+    startPage = Math.max(0, endPage - targetSlots + 1);
+  }
+
+  if (hasLeftEdge) {
+    addPageNumberButton(0);
+    addEllipsis();
+  }
+
+  for (let i = startPage; i <= endPage; i++) {
+    addPageNumberButton(i);
+  }
+
+  if (hasRightEdge) {
+    addEllipsis();
+    addPageNumberButton(totalPagesNum - 1);
+  }
+
+  addArrowButton(
+    '<i class="fas fa-angle-right"></i>',
+    pageIndex < totalPagesNum - 1,
+    pageIndex + 1,
+    "+1",
+  );
+  addArrowButton(
+    '<i class="fas fa-angle-double-right"></i>',
+    pageIndex < totalPagesNum - 1,
+    Math.min(totalPagesNum - 1, pageIndex + 10),
+    "+10",
+  );
+
   return paginationDiv;
 }
 

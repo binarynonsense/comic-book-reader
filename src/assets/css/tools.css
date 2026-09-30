@@ -840,7 +840,7 @@ html[dir="rtl"] .tools-range-bubble {
   align-items: center;
   justify-content: center;
   height: 25px;
-  width: 25px;
+  min-width: 25px;
   background-color: var(--tools-button-normal-bg-color);
   color: var(--tools-collection-bg-color);
   border-radius: 3px;
@@ -856,7 +856,7 @@ html[dir="rtl"] .tools-range-bubble {
   align-items: center;
   justify-content: center;
   height: 25px;
-  width: 25px;
+  min-width: 25px;
   background-color: var(--tools-collection-text-color);
   color: var(--tools-collection-bg-color);
   border-radius: 3px;
