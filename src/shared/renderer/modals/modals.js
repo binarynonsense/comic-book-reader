@@ -8,6 +8,7 @@
 // generic
 export * from "./modal-loading-bar.js";
 export * from "./modal-info.js";
+export * from "./modal-search.js";
 // custom
 export * from "./modal-komga-login.js";
 

@@ -120,6 +120,41 @@
   cursor: pointer;
 }
 
+.modal-field select {
+  background-color: var(--modal-button-normal-bg-color);
+  color: var(--modal-button-normal-text-color);
+  padding: 5px;
+  border: 2px solid var(--modal-button-normal-bg-color);
+  width: 100%;
+  height: 30px;
+}
+
+.modal-field:has(> #modal-search-input):has(> #modal-search-select) {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  box-sizing: border-box;
+}
+
+.modal-field:has(> #modal-search-input):has(> #modal-search-select)
+  > #modal-search-input {
+  flex-grow: 1;
+  width: 0;
+  min-width: 0;
+  box-sizing: border-box;
+  margin-top: 0;
+}
+
+.modal-field:has(> #modal-search-input):has(> #modal-search-select)
+  > #modal-search-select {
+  flex-shrink: 0;
+  width: 100px;
+  min-width: 100px;
+  box-sizing: border-box;
+  margin-top: 0;
+}
+
 /* ref: tools css*/
 
 .modal-field input[type="checkbox"] {

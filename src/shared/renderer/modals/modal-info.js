@@ -55,7 +55,7 @@ export function showInfoModal(
     const cancelBtn = modal.querySelector("#modal-cancel-action-btn");
     cancelBtn.addEventListener("click", (event) => {
       close(modal);
-      if (cancelCallBack) okCallback();
+      if (cancelCallBack) cancelCallBack();
     });
   }
   ///
