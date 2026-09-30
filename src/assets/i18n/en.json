@@ -1236,5 +1236,14 @@
   "tool-komga-modal-connect-to-server": "Connect to Server",
   "tool-komga-modal-server-url": "Server URL",
   "tool-komga-modal-email": "Email",
-  "tool-komga-modal-remember": "Save server and credentials"
+  "tool-komga-modal-remember": "Save server and credentials",
+  "tool-komga-section-libraries": "Libraries",
+  "[NOTE TO TRANSLATORS]tool-komga-section-series": "Series as in comic book series",
+  "tool-komga-section-series": "Series",
+  "tool-komga-section-books": "Books",
+  "tool-komga-subsection-keepreading": "Keep Reading",
+  "tool-komga-subsection-recentlyaddedbooks": "Recently Added Books",
+  "tool-komga-subsection-recentlyaddedseries": "Recently Added Series",
+  "tool-komga-subsection-recentlyupdatedseries": "Recently Updated Series",
+  "tool-komga-subsection-recentlyfinished": "Recently Finished"
 }
