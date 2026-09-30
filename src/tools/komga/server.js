@@ -125,37 +125,11 @@ exports.login = async function (serverUrl, username, password) {
 // API ///////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 
-exports.getOnDeckBooks = async function (page = 0, size = 20) {
-  // recent and next up for user from komga?
-  const endpoint = `${g_session.url}/api/v1/books/ondeck?page=${page}&size=${size}`;
-
-  try {
-    const response = await fetch(endpoint, {
-      method: "GET",
-      headers: {
-        "X-Auth-Token": g_session.token,
-        "User-Agent": g_customUserAgent,
-        Accept: "application/json",
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const pagedResult = await response.json();
-    return pagedResult;
-  } catch (error) {
-    log.error("failed to fetch ondeck books: " + error);
-    return undefined;
-  }
-};
-
 exports.getLibraries = async function () {
   exports.cancelThumbsRetrieval();
   const url = `${g_session.url}/api/v1/libraries`;
   try {
-    const response = await fetch(url, {
+    const response = await net.fetch(url, {
       method: "GET",
       headers: {
         "X-Auth-Token": g_session.token,
@@ -181,7 +155,7 @@ exports.getLibrary = async function (id) {
   }
   const url = `${g_session.url}/api/v1/libraries/${id}`;
   try {
-    const response = await fetch(url, {
+    const response = await net.fetch(url, {
       method: "GET",
       headers: {
         "X-Auth-Token": g_session.token,
@@ -211,7 +185,7 @@ exports.getSeriesInLibrary = async function (
   }
   const url = `${g_session.url}/api/v1/series?library_id=${libraryId}&deleted=false&page=${pageIndex}&size=${size}&sort=metadata.titleSort,asc`;
   try {
-    const response = await fetch(url, {
+    const response = await net.fetch(url, {
       method: "GET",
       headers: {
         "X-Auth-Token": g_session.token,
@@ -236,7 +210,7 @@ exports.getBooksInSeries = async function (seriesId, pageIndex = 0, size = 20) {
   }
   const url = `${g_session.url}/api/v1/series/${seriesId}/books?page=${pageIndex}&size=${size}&sort=metadata.numberSort,asc&sort=name,asc`;
   try {
-    const response = await fetch(url, {
+    const response = await net.fetch(url, {
       method: "GET",
       headers: {
         "X-Auth-Token": g_session.token,
@@ -261,7 +235,7 @@ exports.getBook = async function (id) {
   }
   const url = `${g_session.url}/api/v1/books/${id}`;
   try {
-    const response = await fetch(url, {
+    const response = await net.fetch(url, {
       method: "GET",
       headers: {
         "X-Auth-Token": g_session.token,
@@ -281,6 +255,157 @@ exports.getBook = async function (id) {
 };
 
 //////////////////////////////////////////////////////////////////////////////
+// API HOME //////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+
+exports.getHome = async function () {
+  try {
+    const size = 5;
+    const results = await Promise.allSettled([
+      exports.getInProgressBooks(0, size),
+      exports.getRecentlyAddedBooks(0, size),
+      exports.getRecentlyAddedSeries(0, size),
+      exports.getRecentlyUpdatedSeries(0, size),
+    ]);
+
+    return {
+      inProgress:
+        results[0].status === "fulfilled" ? results[0].value : undefined,
+      latestBooks:
+        results[1].status === "fulfilled" ? results[1].value : undefined,
+      newSeries:
+        results[2].status === "fulfilled" ? results[2].value : undefined,
+      updatedSeries:
+        results[3].status === "fulfilled" ? results[3].value : undefined,
+    };
+  } catch (error) {
+    log.error("error getting home data: " + error);
+    return {};
+  }
+};
+
+exports.getInProgressBooks = async function (page = 0, size = 20) {
+  const url = `${g_session.url}/api/v1/books?read_status=IN_PROGRESS&page=${page}&size=${size}`;
+
+  try {
+    const response = await net.fetch(url, {
+      method: "GET",
+      headers: {
+        "X-Auth-Token": g_session.token,
+        "User-Agent": g_customUserAgent,
+        Accept: "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    log.error("failed to fetch in-progress books: " + error);
+    return undefined;
+  }
+};
+
+exports.getRecentlyAddedBooks = async function (page = 0, size = 20) {
+  const url = `${g_session.url}/api/v1/books/latest?page=${page}&size=${size}`;
+
+  try {
+    const response = await net.fetch(url, {
+      method: "GET",
+      headers: {
+        "X-Auth-Token": g_session.token,
+        "User-Agent": g_customUserAgent,
+        Accept: "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    log.error("failed to fetch latest books: " + error);
+    return undefined;
+  }
+};
+
+exports.getRecentlyAddedSeries = async function (page = 0, size = 20) {
+  const url = `${g_session.url}/api/v1/series/new?page=${page}&size=${size}`;
+
+  try {
+    const response = await net.fetch(url, {
+      method: "GET",
+      headers: {
+        "X-Auth-Token": g_session.token,
+        "User-Agent": g_customUserAgent,
+        Accept: "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    log.error("failed to fetch new series: " + error);
+    return undefined;
+  }
+};
+
+exports.getRecentlyUpdatedSeries = async function (page = 0, size = 20) {
+  const url = `${g_session.url}/api/v1/series/updated?page=${page}&size=${size}`;
+
+  try {
+    const response = await net.fetch(url, {
+      method: "GET",
+      headers: {
+        "X-Auth-Token": g_session.token,
+        "User-Agent": g_customUserAgent,
+        Accept: "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    log.error("failed to fetch updated series: " + error);
+    return undefined;
+  }
+};
+
+exports.getRecentlyFinishedBooks = async function (page = 0, size = 20) {
+  // const url = `${g_session.url}/api/v1/books?read_status=IN_PROGRESS&read_status=READ&sort=readProgress.lastModified,desc&page=${page}&size=${size}`;
+  const url = `${g_session.url}/api/v1/books?read_status=READ&sort=readProgress.lastModified,desc&page=${page}&size=${size}`;
+
+  try {
+    const response = await net.fetch(url, {
+      method: "GET",
+      headers: {
+        "X-Auth-Token": g_session.token,
+        "User-Agent": g_customUserAgent,
+        Accept: "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    log.error("failed to fetch completed recently read books: " + error);
+    return undefined;
+  }
+};
+
+//////////////////////////////////////////////////////////////////////////////
 // DOWNLOAD //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 
@@ -294,7 +419,7 @@ exports.downloadBook = async function (bookId, fileName) {
   try {
     const url = `${g_session.url}/api/v1/books/${bookId}/file`;
     log.debug("downloading: " + url);
-    const response = await fetch(url, {
+    const response = await net.fetch(url, {
       headers: {
         "X-Auth-Token": g_session.token,
         "User-Agent": g_customUserAgent,
@@ -399,7 +524,7 @@ exports.downloadBook = async function (bookId, fileName) {
 exports.loadPageImageBuffer = async function (bookId, pageNumber, session) {
   try {
     const url = `${session.url}/api/v1/books/${bookId}/pages/${pageNumber}`;
-    const response = await fetch(url, {
+    const response = await net.fetch(url, {
       headers: {
         "X-Auth-Token": session.token,
         "User-Agent": session.userAgent,
@@ -433,7 +558,7 @@ exports.updateReadingProgress = async function (
     completed: completed,
   };
   try {
-    const response = await fetch(url, {
+    const response = await net.fetch(url, {
       method: "PATCH",
       headers: {
         "X-Auth-Token": g_session.token,
@@ -462,7 +587,7 @@ exports.getReadingProgress = async function (bookId) {
   }
   const url = `${g_session.url}/api/v1/books/${bookId}`;
   try {
-    const response = await fetch(url, {
+    const response = await net.fetch(url, {
       method: "GET",
       headers: {
         "X-Auth-Token": g_session.token,
