@@ -136,6 +136,16 @@ function init(settings) {
     fileBrowserButton.setAttribute("data-nav-col", navColumn++);
     fileBrowserButton.setAttribute("tabindex", "0");
     ///////////
+    const serversButton = document.querySelector("#hs-logo-servers-button");
+    serversButton.addEventListener("click", (event) => {
+      sendIpcToMain("hs-open-servers");
+      event.stopPropagation();
+    });
+    serversButton.setAttribute("data-nav-panel", 0);
+    serversButton.setAttribute("data-nav-row", navRow);
+    serversButton.setAttribute("data-nav-col", navColumn++);
+    serversButton.setAttribute("tabindex", "0");
+    ///////////
     const rssReaderButton = document.querySelector(
       "#hs-logo-rss-reader-button",
     );
@@ -2278,6 +2288,7 @@ function updateLocalization(
   filesToolsTitle,
   artToolsTitle,
   fileBrowserTitle,
+  serversTitle,
   rssReaderTitle,
   radioTitle,
   quitTitle,
@@ -2309,6 +2320,8 @@ function updateLocalization(
   document.querySelector("#hs-logo-art-tools-button").title = artToolsTitle;
   // file browser
   document.querySelector("#hs-logo-browser-button").title = fileBrowserTitle;
+  // servers
+  document.querySelector("#hs-logo-servers-button").title = serversTitle;
   // rss reader
   document.querySelector("#hs-logo-rss-reader-button").title = rssReaderTitle;
   // radio

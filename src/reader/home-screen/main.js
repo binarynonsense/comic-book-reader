@@ -770,6 +770,10 @@ function initOnIpcCallbacks() {
     tools.switchTool("tool-file-browser");
   });
 
+  on("hs-open-servers", () => {
+    tools.switchTool("tool-komga");
+  });
+
   on("hs-open-radio", () => {
     core.onMenuToolRadio(0);
   });
@@ -1419,6 +1423,7 @@ function updateLocalizedText(rebuildSections = true) {
       ? _raw("home-button-art-tools", false)
       : _("menu-tools") + " > " + _("menu-tools-art"),
     _("tool-fb-title"),
+    _("tool-komga-title"), //_("menu-servers"),
     _("menu-tools-rss-reader"),
     _("menu-tools-radio"),
     _("menu-file-quit"),
