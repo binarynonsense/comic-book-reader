@@ -354,6 +354,58 @@ function buildServers(servers) {
 
 //////////////////////////////////////////////////////////
 
+function getAlphabetFilterDiv(groupData, activeGroup, onGroupClick) {
+  let containerDiv = document.createElement("div");
+  containerDiv.className = "tools-collection-alphabet-filter";
+
+  function addButton(label, isActive, isEnabled, onClickValue) {
+    if (isActive) {
+      let textSpan = document.createElement("span");
+      textSpan.innerText = ` ${label} `;
+      containerDiv.appendChild(textSpan);
+    } else {
+      let span = document.createElement("span");
+      span.innerText = label;
+      if (isEnabled) {
+        span.className = "tools-collection-pagination-button";
+        span.addEventListener("click", () => onGroupClick(onClickValue));
+      } else {
+        span.className = "tools-collection-pagination-button-disabled";
+      }
+      containerDiv.appendChild(span);
+    }
+  }
+
+  /////
+
+  let hashCount = 0;
+  let letterCounts = {};
+
+  groupData.forEach((item) => {
+    let grp = item.group.toLowerCase();
+    if (grp >= "a" && grp <= "z") {
+      letterCounts[grp] = (letterCounts[grp] || 0) + item.count;
+    } else {
+      hashCount += item.count;
+    }
+  });
+
+  let totalCount = groupData.reduce((acc, item) => acc + item.count, 0);
+  addButton("ALL", activeGroup === "ALL", totalCount > 0, "ALL");
+
+  addButton("#", activeGroup === "#", hashCount > 0, "#");
+
+  for (let i = 0; i < 26; i++) {
+    let letter = String.fromCharCode(97 + i); // 'a' to 'z'
+    let upperLetter = letter.toUpperCase();
+    let count = letterCounts[letter] || 0;
+
+    addButton(upperLetter, activeGroup === letter, count > 0, letter);
+  }
+
+  return containerDiv;
+}
+
 function getSimplePaginationDiv(pageIndex, totalPagesNum, goToPage) {
   let paginationDiv = document.createElement("div");
   paginationDiv.className = "tools-collection-pagination";
@@ -574,7 +626,7 @@ function buildContentLibraries(inputData) {
       buttonSpan.addEventListener("click", (event) => {
         showLoadingModal();
         // updateModalTitleText(g_localizedModalTexts.searchingTitle);
-        sendIpcToMain("show-series-in-library", data.id, 0);
+        sendIpcToMain("show-series-in-library", data.id, "ALL", 0);
       });
       /////
       li.appendChild(buttonSpan);
@@ -592,7 +644,14 @@ function buildContentLibraries(inputData) {
   closeActiveModal();
 }
 
-function buildContentSeriesInLibrary(libraryId, inputData, pageIndex = 0) {
+function buildContentSeriesInLibrary(
+  libraryId,
+  inputData,
+  letters,
+  letter,
+  pageIndex = 0,
+) {
+  console.log(letter);
   const root = document.querySelector("#tool-komga-content");
   root.style = "padding-top: 10px";
   root.innerHTML = "";
@@ -604,6 +663,13 @@ function buildContentSeriesInLibrary(libraryId, inputData, pageIndex = 0) {
   });
   backButton.innerHTML = `<i class="fas fa-angle-left"></i> BACK`;
   root.appendChild(backButton);
+
+  root.appendChild(
+    getAlphabetFilterDiv(letters, letter, (newLetter) => {
+      showLoadingModal();
+      sendIpcToMain("show-series-in-library", libraryId, newLetter, 0);
+    }),
+  );
 
   if (inputData) {
     /////
@@ -618,7 +684,12 @@ function buildContentSeriesInLibrary(libraryId, inputData, pageIndex = 0) {
           inputData.totalPages,
           (pageIndex) => {
             showLoadingModal();
-            sendIpcToMain("show-series-in-library", libraryId, pageIndex);
+            sendIpcToMain(
+              "show-series-in-library",
+              libraryId,
+              letter,
+              pageIndex,
+            );
           },
         ),
       );
@@ -658,7 +729,12 @@ function buildContentSeriesInLibrary(libraryId, inputData, pageIndex = 0) {
           inputData.totalPages,
           (pageIndex) => {
             showLoadingModal();
-            sendIpcToMain("show-series-in-library", libraryId, pageIndex);
+            sendIpcToMain(
+              "show-series-in-library",
+              libraryId,
+              letter,
+              pageIndex,
+            );
           },
         ),
       );

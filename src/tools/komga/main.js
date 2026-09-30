@@ -365,9 +365,16 @@ async function showLibraries() {
   g_goBackCurrentParams = ["build-content-libraries", response];
 }
 
-async function showSeriesInLibrary(libraryId, pageIndex = 0) {
-  const response = await server.getSeriesInLibrary(libraryId, pageIndex);
-  sendIpcToRenderer("build-content-series-in-library", libraryId, response);
+async function showSeriesInLibrary(libraryId, letter, pageIndex = 0) {
+  const letters = await server.getAlphabeticalGroups(libraryId);
+  const series = await server.getSeriesInLibrary(libraryId, letter, pageIndex);
+  sendIpcToRenderer(
+    "build-content-series-in-library",
+    libraryId,
+    series,
+    letters,
+    letter,
+  );
   if (
     g_goBackHistory.length === 0 ||
     g_goBackHistory.at(-1)[0] !== "build-content-series-in-library"
@@ -375,7 +382,9 @@ async function showSeriesInLibrary(libraryId, pageIndex = 0) {
     g_goBackHistory.push([
       "build-content-series-in-library",
       libraryId,
-      response,
+      series,
+      letters,
+      letter,
     ]);
   }
 }

@@ -863,6 +863,60 @@ html[dir="rtl"] .tools-range-bubble {
   filter: opacity(0.2);
 }
 
+/*  */
+
+.tools-collection-alphabet-filter {
+  margin-top: 15px;
+  margin-bottom: 15px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  flex-wrap: wrap;
+  line-height: 1;
+}
+
+.tools-collection-alphabet-filter span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 15px;
+  min-width: 15px;
+  font-size: 10px;
+  border-radius: 50%;
+  padding: 0 4px;
+}
+
+.tools-collection-alphabet-filter .tools-collection-pagination-button {
+  background-color: transparent;
+  color: var(--tools-collection-text-color);
+  cursor: pointer;
+}
+
+.tools-collection-alphabet-filter .tools-collection-pagination-button:hover {
+  transform: scale(1.1);
+  background-color: var(--tools-button-normal-bg-hover-color);
+  color: var(--tools-collection-bg-color);
+}
+
+.tools-collection-alphabet-filter .tools-collection-pagination-button-disabled {
+  background-color: transparent;
+  color: var(--tools-collection-text-color);
+  cursor: default;
+  filter: opacity(0.2);
+}
+
+.tools-collection-alphabet-filter span:not([class]) {
+  /* background-color: var(--tools-button-normal-bg-color); */
+  color: var(--tools-button-normal-bg-color);
+  font-weight: bolder;
+  cursor: default;
+  font-size: 11px;
+}
+
+/*  */
+
 .tools-collection-navigation-back {
   cursor: pointer;
   margin-bottom: 20px;

@@ -122,24 +122,33 @@ exports.login = async function (serverUrl, username, password) {
 };
 
 //////////////////////////////////////////////////////////////////////////////
+// HELPERS ///////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+
+async function fetchUrl(url) {
+  const response = await net.fetch(url, {
+    method: "GET",
+    headers: {
+      "X-Auth-Token": g_session.token,
+      "User-Agent": g_customUserAgent,
+      Accept: "application/json",
+    },
+  });
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+  return response;
+}
+
+//////////////////////////////////////////////////////////////////////////////
 // SECTIONS //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 
 exports.getLibraries = async function () {
-  exports.cancelThumbsRetrieval();
-  const url = `${g_session.url}/api/v1/libraries`;
   try {
-    const response = await net.fetch(url, {
-      method: "GET",
-      headers: {
-        "X-Auth-Token": g_session.token,
-        "User-Agent": g_customUserAgent,
-        Accept: "application/json",
-      },
-    });
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
+    exports.cancelThumbsRetrieval();
+    const url = `${g_session.url}/api/v1/libraries`;
+    const response = await fetchUrl(url);
     const libraries = await response.json();
     return libraries;
   } catch (error) {
@@ -149,23 +158,13 @@ exports.getLibraries = async function () {
 };
 
 exports.getLibrary = async function (id) {
-  exports.cancelThumbsRetrieval();
-  if (!id) {
-    return undefined;
-  }
-  const url = `${g_session.url}/api/v1/libraries/${id}`;
   try {
-    const response = await net.fetch(url, {
-      method: "GET",
-      headers: {
-        "X-Auth-Token": g_session.token,
-        "User-Agent": g_customUserAgent,
-        Accept: "application/json",
-      },
-    });
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+    exports.cancelThumbsRetrieval();
+    if (!id) {
+      return undefined;
     }
+    const url = `${g_session.url}/api/v1/libraries/${id}`;
+    const response = await fetchUrl(url);
     const library = await response.json();
     return library;
   } catch (error) {
@@ -176,51 +175,40 @@ exports.getLibrary = async function (id) {
 
 exports.getSeriesInLibrary = async function (
   libraryId,
+  letter,
   pageIndex = 0,
   size = 20,
 ) {
-  exports.cancelThumbsRetrieval();
-  if (!libraryId) {
-    return undefined;
-  }
-  const url = `${g_session.url}/api/v1/series?library_id=${libraryId}&deleted=false&page=${pageIndex}&size=${size}&sort=metadata.titleSort,asc`;
   try {
-    const response = await net.fetch(url, {
-      method: "GET",
-      headers: {
-        "X-Auth-Token": g_session.token,
-        "User-Agent": g_customUserAgent,
-        Accept: "application/json",
-      },
-    });
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+    exports.cancelThumbsRetrieval();
+    if (!libraryId || !letter) {
+      return undefined;
     }
-    const pagedResult = await response.json();
-    return pagedResult;
+
+    let url = `${g_session.url}/api/v1/series?library_id=${libraryId}&deleted=false&page=${pageIndex}&size=${size}&sort=metadata.titleSort,asc`;
+    if (letter === "ALL") {
+      // the old basic fetch
+    } else if (letter === "#") {
+      // group all non a-z
+      url += `&search_regex=${encodeURIComponent("^[^a-zA-Z],TITLE_SORT")}`;
+    } else {
+      url += `&search_regex=${encodeURIComponent("^(?i)" + letter + ",TITLE_SORT")}`;
+    }
+    const response = await fetchUrl(url);
+    return await response.json();
   } catch (error) {
-    log.error(`error fetching series for library ${libraryId}: ` + error);
+    log.error(`error getting letter series: ` + error);
     return undefined;
   }
 };
 
 exports.getBooksInSeries = async function (seriesId, pageIndex = 0, size = 20) {
-  if (!seriesId) {
-    return undefined;
-  }
-  const url = `${g_session.url}/api/v1/series/${seriesId}/books?page=${pageIndex}&size=${size}&sort=metadata.numberSort,asc&sort=name,asc`;
   try {
-    const response = await net.fetch(url, {
-      method: "GET",
-      headers: {
-        "X-Auth-Token": g_session.token,
-        "User-Agent": g_customUserAgent,
-        Accept: "application/json",
-      },
-    });
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+    if (!seriesId) {
+      return undefined;
     }
+    const url = `${g_session.url}/api/v1/series/${seriesId}/books?page=${pageIndex}&size=${size}&sort=metadata.numberSort,asc&sort=name,asc`;
+    const response = await fetchUrl(url);
     const pagedResult = await response.json();
     return pagedResult;
   } catch (error) {
@@ -230,26 +218,37 @@ exports.getBooksInSeries = async function (seriesId, pageIndex = 0, size = 20) {
 };
 
 exports.getBook = async function (id) {
-  if (!id) {
-    return undefined;
-  }
-  const url = `${g_session.url}/api/v1/books/${id}`;
   try {
-    const response = await net.fetch(url, {
-      method: "GET",
-      headers: {
-        "X-Auth-Token": g_session.token,
-        "User-Agent": g_customUserAgent,
-        Accept: "application/json",
-      },
-    });
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+    if (!id) {
+      return undefined;
     }
+    const url = `${g_session.url}/api/v1/books/${id}`;
+    const response = await fetchUrl(url);
     const book = await response.json();
     return book;
   } catch (error) {
     log.error(`error fetching book ${id}: ` + error);
+    return undefined;
+  }
+};
+
+//////////////////////////////////////////////////////////////////////////////
+// LIBRARY ///////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+
+exports.getAlphabeticalGroups = async function (libraryId) {
+  try {
+    if (!libraryId) {
+      return undefined;
+    }
+    const url = `${g_session.url}/api/v1/series/alphabetical-groups?library_id=${libraryId}`;
+    const response = await fetchUrl(url);
+    // example: ["#", "A", "B", "M", "Z"]
+    return await response.json();
+  } catch (error) {
+    log.error(
+      `couldn't get alphabetical groups for library ${libraryId}: ` + error,
+    );
     return undefined;
   }
 };
@@ -285,22 +284,9 @@ exports.getHome = async function () {
 };
 
 exports.getInProgressBooks = async function (page = 0, size = 20) {
-  const url = `${g_session.url}/api/v1/books?read_status=IN_PROGRESS&page=${page}&size=${size}`;
-
   try {
-    const response = await net.fetch(url, {
-      method: "GET",
-      headers: {
-        "X-Auth-Token": g_session.token,
-        "User-Agent": g_customUserAgent,
-        Accept: "application/json",
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
+    const url = `${g_session.url}/api/v1/books?read_status=IN_PROGRESS&page=${page}&size=${size}`;
+    const response = await fetchUrl(url);
     return await response.json();
   } catch (error) {
     log.error("failed to fetch in-progress books: " + error);
@@ -309,22 +295,9 @@ exports.getInProgressBooks = async function (page = 0, size = 20) {
 };
 
 exports.getRecentlyAddedBooks = async function (page = 0, size = 20) {
-  const url = `${g_session.url}/api/v1/books/latest?page=${page}&size=${size}`;
-
   try {
-    const response = await net.fetch(url, {
-      method: "GET",
-      headers: {
-        "X-Auth-Token": g_session.token,
-        "User-Agent": g_customUserAgent,
-        Accept: "application/json",
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
+    const url = `${g_session.url}/api/v1/books/latest?page=${page}&size=${size}`;
+    const response = await fetchUrl(url);
     return await response.json();
   } catch (error) {
     log.error("failed to fetch latest books: " + error);
@@ -333,22 +306,9 @@ exports.getRecentlyAddedBooks = async function (page = 0, size = 20) {
 };
 
 exports.getRecentlyAddedSeries = async function (page = 0, size = 20) {
-  const url = `${g_session.url}/api/v1/series/new?page=${page}&size=${size}`;
-
   try {
-    const response = await net.fetch(url, {
-      method: "GET",
-      headers: {
-        "X-Auth-Token": g_session.token,
-        "User-Agent": g_customUserAgent,
-        Accept: "application/json",
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
+    const url = `${g_session.url}/api/v1/series/new?page=${page}&size=${size}`;
+    const response = await fetchUrl(url);
     return await response.json();
   } catch (error) {
     log.error("failed to fetch new series: " + error);
@@ -357,22 +317,9 @@ exports.getRecentlyAddedSeries = async function (page = 0, size = 20) {
 };
 
 exports.getRecentlyUpdatedSeries = async function (page = 0, size = 20) {
-  const url = `${g_session.url}/api/v1/series/updated?page=${page}&size=${size}`;
-
   try {
-    const response = await net.fetch(url, {
-      method: "GET",
-      headers: {
-        "X-Auth-Token": g_session.token,
-        "User-Agent": g_customUserAgent,
-        Accept: "application/json",
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
+    const url = `${g_session.url}/api/v1/series/updated?page=${page}&size=${size}`;
+    const response = await fetchUrl(url);
     return await response.json();
   } catch (error) {
     log.error("failed to fetch updated series: " + error);
@@ -381,23 +328,10 @@ exports.getRecentlyUpdatedSeries = async function (page = 0, size = 20) {
 };
 
 exports.getRecentlyFinishedBooks = async function (page = 0, size = 20) {
-  // const url = `${g_session.url}/api/v1/books?read_status=IN_PROGRESS&read_status=READ&sort=readProgress.lastModified,desc&page=${page}&size=${size}`;
-  const url = `${g_session.url}/api/v1/books?read_status=READ&sort=readProgress.lastModified,desc&page=${page}&size=${size}`;
-
   try {
-    const response = await net.fetch(url, {
-      method: "GET",
-      headers: {
-        "X-Auth-Token": g_session.token,
-        "User-Agent": g_customUserAgent,
-        Accept: "application/json",
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
+    // const url = `${g_session.url}/api/v1/books?read_status=IN_PROGRESS&read_status=READ&sort=readProgress.lastModified,desc&page=${page}&size=${size}`;
+    const url = `${g_session.url}/api/v1/books?read_status=READ&sort=readProgress.lastModified,desc&page=${page}&size=${size}`;
+    const response = await fetchUrl(url);
     return await response.json();
   } catch (error) {
     log.error("failed to fetch completed recently read books: " + error);
@@ -549,15 +483,15 @@ exports.updateReadingProgress = async function (
   page,
   completed = false,
 ) {
-  if (!bookId) {
-    return false;
-  }
-  const url = `${g_session.url}/api/v1/books/${bookId}/read-progress`;
-  const payload = {
-    page: page,
-    completed: completed,
-  };
   try {
+    if (!bookId) {
+      return false;
+    }
+    const url = `${g_session.url}/api/v1/books/${bookId}/read-progress`;
+    const payload = {
+      page: page,
+      completed: completed,
+    };
     const response = await net.fetch(url, {
       method: "PATCH",
       headers: {
@@ -582,19 +516,12 @@ exports.updateReadingProgress = async function (
 };
 
 exports.getReadingProgress = async function (bookId) {
-  if (!bookId) {
-    throw new Error(`no book id`);
-  }
-  const url = `${g_session.url}/api/v1/books/${bookId}`;
   try {
-    const response = await net.fetch(url, {
-      method: "GET",
-      headers: {
-        "X-Auth-Token": g_session.token,
-        "User-Agent": g_customUserAgent,
-        Accept: "application/json",
-      },
-    });
+    if (!bookId) {
+      throw new Error(`no book id`);
+    }
+    const url = `${g_session.url}/api/v1/books/${bookId}`;
+    const response = await fetchUrl(url);
     if (response.status === 200) {
       const bookData = await response.json();
       if (bookData.readProgress) {
