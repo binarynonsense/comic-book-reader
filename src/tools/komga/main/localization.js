@@ -43,9 +43,21 @@ exports.getLocalization = function () {
 exports.getExtraLocalization = function () {
   return {
     loadingTitle: _("tool-shared-modal-title-loading"),
+    // sections
+    libraries: _("tool-komga-section-libraries"),
+    series: _("tool-komga-section-series"),
+    books: _("tool-komga-section-books"),
+    keepReading: _("tool-komga-subsection-keepreading"),
+    recentlyAddedBooks: _("tool-komga-subsection-recentlyaddedbooks"),
+    recentlyAddedSeries: _("tool-komga-subsection-recentlyaddedseries"),
+    recentlyUpdatedSeries: _("tool-komga-subsection-recentlyupdatedseries"),
+    recentlyFinished: _("tool-komga-subsection-recentlyfinished"),
     // servers
     noServers: _("tool-komga-no-servers-message"),
     // content
+    back: _("tool-shared-ui-back"),
+    search: _("menu-tools-search"),
+    history: _("tool-hst-title"),
     noContent: _("tool-komga-no-content-message"),
     // favorites
     options: _("tool-shared-tab-options"),

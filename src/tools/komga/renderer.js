@@ -63,6 +63,7 @@ async function init(section, servers) {
   ////////////////////////////////////////
 
   buildServers(servers);
+  buildContentNavbar();
   buildContentEmpty();
 
   switchSection(servers.length > 0 ? 0 : 1);
@@ -176,22 +177,49 @@ function initOnIpcCallbacks() {
 
   /////////////////////////////////////////////////////////////////////////////
 
+  on("build-content-navbar", (...args) => {
+    buildContentNavbar(...args);
+  });
+
+  on("show-modal-search", (...args) => {
+    showModalSearch(...args);
+  });
+
+  /////////////////////////////////////////////////////////////////////////////
+
   on("build-content-libraries", (...args) => {
     switchSection(1);
     buildContentLibraries(...args);
   });
 
   on("build-content-series-in-library", (...args) => {
+    switchSection(1);
     buildContentSeriesInLibrary(...args);
   });
 
   on("build-content-books-in-series", (...args) => {
+    switchSection(1);
     buildContentBooksInSeries(...args);
   });
 
   on("build-content-book", (...args) => {
+    switchSection(1);
     buildContentBook(...args);
   });
+
+  /////////////////////////////////////////////////////////////////////////////
+
+  on("build-content-search-books", (...args) => {
+    switchSection(1);
+    buildContentBooksInSearch(...args);
+  });
+
+  on("build-content-search-series", (...args) => {
+    switchSection(1);
+    buildContentSeriesInSearch(...args);
+  });
+
+  /////////////////////////////////////////////////////////////////////////////
 
   on("render-book-thumb", (bookId, buffer, mime) => {
     if (buffer) {
@@ -237,7 +265,7 @@ function initOnIpcCallbacks() {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// TOOL ///////////////////////////////////////////////////////////////////////
+// SERVERS ////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
 function buildServers(servers) {
@@ -352,7 +380,9 @@ function buildServers(servers) {
   }
 }
 
-//////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+// CONTENT ////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 function getAlphabetFilterDiv(groupData, activeGroup, onGroupClick) {
   let containerDiv = document.createElement("div");
@@ -406,6 +436,7 @@ function getAlphabetFilterDiv(groupData, activeGroup, onGroupClick) {
   return containerDiv;
 }
 
+// not used
 function getSimplePaginationDiv(pageIndex, totalPagesNum, goToPage) {
   let paginationDiv = document.createElement("div");
   paginationDiv.className = "tools-collection-pagination";
@@ -626,7 +657,7 @@ function buildContentLibraries(inputData) {
       buttonSpan.addEventListener("click", (event) => {
         showLoadingModal();
         // updateModalTitleText(g_localizedModalTexts.searchingTitle);
-        sendIpcToMain("show-series-in-library", data.id, "ALL", 0);
+        sendIpcToMain("show-series-in-library", data.id, data.name, "ALL", 0);
       });
       /////
       li.appendChild(buttonSpan);
@@ -646,209 +677,54 @@ function buildContentLibraries(inputData) {
 
 function buildContentSeriesInLibrary(
   libraryId,
+  libraryName,
   inputData,
   letters,
   letter,
   pageIndex = 0,
 ) {
-  console.log(letter);
-  const root = document.querySelector("#tool-komga-content");
-  root.style = "padding-top: 10px";
-  root.innerHTML = "";
-
-  let backButton = document.createElement("span");
-  backButton.className = "tools-collection-navigation-back";
-  backButton.addEventListener("click", (event) => {
-    sendIpcToMain("go-back");
-  });
-  backButton.innerHTML = `<i class="fas fa-angle-left"></i> BACK`;
-  root.appendChild(backButton);
-
-  root.appendChild(
-    getAlphabetFilterDiv(letters, letter, (newLetter) => {
+  helperBuildSeries(
+    inputData,
+    (pageIndex) => {
       showLoadingModal();
-      sendIpcToMain("show-series-in-library", libraryId, newLetter, 0);
-    }),
+      sendIpcToMain(
+        "show-series-in-library",
+        libraryId,
+        libraryName,
+        letter,
+        pageIndex,
+      );
+    },
+    letters,
+    letter,
+    (newLetter) => {
+      showLoadingModal();
+      sendIpcToMain(
+        "show-series-in-library",
+        libraryId,
+        libraryName,
+        newLetter,
+        0,
+      );
+    },
   );
-
-  if (inputData) {
-    /////
-    if (
-      inputData.number !== undefined &&
-      inputData.totalPages !== undefined &&
-      inputData.totalPages > 1
-    ) {
-      root.appendChild(
-        getPaginationDiv(
-          inputData.number,
-          inputData.totalPages,
-          (pageIndex) => {
-            showLoadingModal();
-            sendIpcToMain(
-              "show-series-in-library",
-              libraryId,
-              letter,
-              pageIndex,
-            );
-          },
-        ),
-      );
-    }
-    ////
-    const gridWrapper = document.createElement("div");
-    gridWrapper.className = "tool-komga-books-grid-wrapper";
-    root.appendChild(gridWrapper);
-
-    inputData.content.forEach((data) => {
-      const card = document.createElement("div");
-      card.className = "tool-komga-book-card";
-      card.setAttribute("data-id", data.id);
-      const safeTitle = data.name.replace(/"/g, "&quot;");
-      card.innerHTML = `
-          <div class="tool-komga-book-card-container" title="${safeTitle}">
-            <img class="tool-komga-book-card-img" id="tool-komga-thumb-${data.id}" src="" alt="" title="${safeTitle}" />
-            <div class="tool-komga-book-card-numtag">${data.booksCount}</div>
-          </div>
-          <span class="tool-komga-book-card-title" title="${safeTitle}">${data.name}</span>
-        `;
-      card.addEventListener("click", () => {
-        showLoadingModal();
-        sendIpcToMain("show-books-in-series", data.id);
-      });
-      gridWrapper.appendChild(card);
-    });
-    ////
-    if (
-      inputData.number !== undefined &&
-      inputData.totalPages !== undefined &&
-      inputData.totalPages > 1
-    ) {
-      root.appendChild(
-        getPaginationDiv(
-          inputData.number,
-          inputData.totalPages,
-          (pageIndex) => {
-            showLoadingModal();
-            sendIpcToMain(
-              "show-series-in-library",
-              libraryId,
-              letter,
-              pageIndex,
-            );
-          },
-        ),
-      );
-    }
-  }
-  //
-  const seriesIds = inputData.content.map((data) => data.id);
-  sendIpcToMain("get-series-thumbs", seriesIds);
-  ///////////////////////////////////////////
-  updateColumnsHeight();
-  document.getElementById("tools-columns-right").scrollIntoView({
-    behavior: "smooth",
-    block: "start",
-    inline: "nearest",
-  });
-  closeActiveModal();
 }
 
-function buildContentBooksInSeries(seriesId, inputData, pageIndex = 0) {
-  const root = document.querySelector("#tool-komga-content");
-  root.style = "padding-top: 10px";
-  root.innerHTML = "";
-
-  let backButton = document.createElement("span");
-  backButton.className = "tools-collection-navigation-back";
-  backButton.addEventListener("click", (event) => {
-    sendIpcToMain("go-back");
+function buildContentBooksInSeries(
+  seriesId,
+  seriesName,
+  inputData,
+  pageIndex = 0,
+) {
+  helperBuildBooks(inputData, (pageIndex) => {
+    showLoadingModal();
+    sendIpcToMain("show-books-in-series", seriesId, seriesName, pageIndex);
   });
-  backButton.innerHTML = `<i class="fas fa-angle-left"></i> BACK`;
-  root.appendChild(backButton);
-
-  if (inputData) {
-    /////
-    if (
-      inputData.number !== undefined &&
-      inputData.totalPages !== undefined &&
-      inputData.totalPages > 1
-    ) {
-      root.appendChild(
-        getPaginationDiv(
-          inputData.number,
-          inputData.totalPages,
-          (pageIndex) => {
-            showLoadingModal();
-            sendIpcToMain("show-books-in-series", seriesId, pageIndex);
-          },
-        ),
-      );
-    }
-    ////
-    const gridWrapper = document.createElement("div");
-    gridWrapper.className = "tool-komga-books-grid-wrapper";
-    root.appendChild(gridWrapper);
-    inputData.content.forEach((data) => {
-      const card = document.createElement("div");
-      card.className = "tool-komga-book-card";
-      card.setAttribute("data-id", data.id);
-      const safeTitle = data.name.replace(/"/g, "&quot;");
-      card.innerHTML = `
-          <div class="tool-komga-book-card-container" title="${safeTitle}">
-            <img class="tool-komga-book-card-img" id="tool-komga-thumb-${data.id}" src="" alt="" title="${safeTitle}" />
-          </div>
-          <span class="tool-komga-book-card-title" title="${safeTitle}">${data.name}</span>
-        `;
-      card.addEventListener("click", () => {
-        showLoadingModal();
-        sendIpcToMain("show-book", data.id);
-      });
-      gridWrapper.appendChild(card);
-    });
-    ////
-    if (
-      inputData.number !== undefined &&
-      inputData.totalPages !== undefined &&
-      inputData.totalPages > 1
-    ) {
-      root.appendChild(
-        getPaginationDiv(
-          inputData.number,
-          inputData.totalPages,
-          (pageIndex) => {
-            showLoadingModal();
-            sendIpcToMain("show-books-in-series", seriesId, pageIndex);
-          },
-        ),
-      );
-    }
-    //
-    const bookIds = inputData.content.map((data) => data.id);
-    sendIpcToMain("get-books-thumbs", bookIds);
-  }
-  ///////////////////////////////////////////
-  updateColumnsHeight();
-  document.getElementById("tools-columns-right").scrollIntoView({
-    behavior: "smooth",
-    block: "start",
-    inline: "nearest",
-  });
-  closeActiveModal();
 }
 
 function buildContentBook(data) {
-  console.log(data);
-
   const root = document.querySelector("#tool-komga-content");
   root.innerHTML = "";
-
-  let backButton = document.createElement("span");
-  backButton.className = "tools-collection-navigation-back";
-  backButton.addEventListener("click", (event) => {
-    sendIpcToMain("go-back");
-  });
-  backButton.innerHTML = `<i class="fas fa-angle-left"></i> BACK`;
-  root.appendChild(backButton);
 
   if (data) {
     const safeTitle = data.name.replace(/"/g, "&quot;");
@@ -940,12 +816,241 @@ function buildContentBook(data) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+
+function buildContentBooksInSearch(query, inputData, pageIndex = 0) {
+  helperBuildBooks(inputData, (pageIndex) => {
+    showLoadingModal();
+    sendIpcToMain("show-books-in-search", query, pageIndex);
+  });
+}
+
+function buildContentSeriesInSearch(query, inputData, pageIndex = 0) {
+  helperBuildSeries(inputData, (pageIndex) => {
+    showLoadingModal();
+    sendIpcToMain("show-series-in-search", query, pageIndex);
+  });
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+function helperBuildSeries(inputData, goToPage, letters, letter, goToAlphabet) {
+  const root = document.querySelector("#tool-komga-content");
+  root.style = "padding-top: 10px";
+  root.innerHTML = "";
+
+  if (goToAlphabet)
+    root.appendChild(getAlphabetFilterDiv(letters, letter, goToAlphabet));
+
+  if (inputData) {
+    /////
+    if (
+      inputData.number !== undefined &&
+      inputData.totalPages !== undefined &&
+      inputData.totalPages > 1
+    ) {
+      root.appendChild(
+        getPaginationDiv(inputData.number, inputData.totalPages, goToPage),
+      );
+    }
+    ////
+    const gridWrapper = document.createElement("div");
+    gridWrapper.className = "tool-komga-books-grid-wrapper";
+    root.appendChild(gridWrapper);
+
+    inputData.content.forEach((data) => {
+      const card = document.createElement("div");
+      card.className = "tool-komga-book-card";
+      card.setAttribute("data-id", data.id);
+      const safeTitle = data.name.replace(/"/g, "&quot;");
+      card.innerHTML = `
+          <div class="tool-komga-book-card-container" title="${safeTitle}">
+            <img class="tool-komga-book-card-img" id="tool-komga-thumb-${data.id}" src="" alt="" title="${safeTitle}" />
+            <div class="tool-komga-book-card-numtag">${data.booksCount}</div>
+          </div>
+          <span class="tool-komga-book-card-title" title="${safeTitle}">${data.name}</span>
+        `;
+      card.addEventListener("click", () => {
+        showLoadingModal();
+        sendIpcToMain("show-books-in-series", data.id, data.name);
+      });
+      gridWrapper.appendChild(card);
+    });
+    ////
+    if (
+      inputData.number !== undefined &&
+      inputData.totalPages !== undefined &&
+      inputData.totalPages > 1
+    ) {
+      root.appendChild(
+        getPaginationDiv(inputData.number, inputData.totalPages, goToPage),
+      );
+    }
+  }
+  //
+  const seriesIds = inputData.content.map((data) => data.id);
+  sendIpcToMain("get-series-thumbs", seriesIds);
+  ///////////////////////////////////////////
+  updateColumnsHeight();
+  document.getElementById("tools-columns-right").scrollIntoView({
+    behavior: "smooth",
+    block: "start",
+    inline: "nearest",
+  });
+  closeActiveModal();
+}
+
+function helperBuildBooks(inputData, goToPage) {
+  const root = document.querySelector("#tool-komga-content");
+  root.style = "padding-top: 10px";
+  root.innerHTML = "";
+
+  if (inputData) {
+    /////
+    if (
+      inputData.number !== undefined &&
+      inputData.totalPages !== undefined &&
+      inputData.totalPages > 1
+    ) {
+      root.appendChild(
+        getPaginationDiv(inputData.number, inputData.totalPages, goToPage),
+      );
+    }
+    ////
+    const gridWrapper = document.createElement("div");
+    gridWrapper.className = "tool-komga-books-grid-wrapper";
+    root.appendChild(gridWrapper);
+    inputData.content.forEach((data) => {
+      const card = document.createElement("div");
+      card.className = "tool-komga-book-card";
+      card.setAttribute("data-id", data.id);
+      const safeTitle = data.name.replace(/"/g, "&quot;");
+      card.innerHTML = `
+          <div class="tool-komga-book-card-container" title="${safeTitle}">
+            <img class="tool-komga-book-card-img" id="tool-komga-thumb-${data.id}" src="" alt="" title="${safeTitle}" />
+          </div>
+          <span class="tool-komga-book-card-title" title="${safeTitle}">${data.name}</span>
+        `;
+      card.addEventListener("click", () => {
+        showLoadingModal();
+        sendIpcToMain("show-book", data.id, data.name);
+      });
+      gridWrapper.appendChild(card);
+    });
+    ////
+    if (
+      inputData.number !== undefined &&
+      inputData.totalPages !== undefined &&
+      inputData.totalPages > 1
+    ) {
+      root.appendChild(
+        getPaginationDiv(inputData.number, inputData.totalPages, goToPage),
+      );
+    }
+    //
+    const bookIds = inputData.content.map((data) => data.id);
+    sendIpcToMain("get-books-thumbs", bookIds);
+  }
+  ///////////////////////////////////////////
+  updateColumnsHeight();
+  document.getElementById("tools-columns-right").scrollIntoView({
+    behavior: "smooth",
+    block: "start",
+    inline: "nearest",
+  });
+  closeActiveModal();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// CONTENT NAVBAR /////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+const Section = {
+  LIBRARIES: "libraries",
+  HISTORY: "dashboard",
+  SEARCH_BOOKS: "search_books",
+  SEARCH_SERIES: "search_series",
+  //
+  LIBRARY_SERIES: "library_series",
+  SERIES_BOOKS: "series_books",
+  BOOK: "book",
+};
+
+function buildContentNavbar(state, history) {
+  const root = document.querySelector("#tool-komga-navbar");
+  root.innerHTML = ``;
+
+  ///////////
+  const backButton = document.createElement("span");
+  backButton.className = "tool-komga-navbar-icon-button";
+  backButton.addEventListener("click", (event) => {
+    sendIpcToMain("on-nav-button-clicked", "back");
+  });
+  backButton.innerHTML = `<i class="fa-solid fa-arrow-left"></i>`;
+  if (!state?.section || state.section === Section.LIBRARIES)
+    backButton.classList.add("tool-komga-navbar-icon-button-disabled");
+  backButton.title = g_extraLocalization.back;
+  root.appendChild(backButton);
+
+  const librariesButton = document.createElement("span");
+  librariesButton.className = "tool-komga-navbar-icon-button";
+  librariesButton.addEventListener("click", (event) => {
+    sendIpcToMain("on-nav-button-clicked", "libraries");
+  });
+  librariesButton.innerHTML = `<i class="fa-solid fa-folder-tree"></i>`;
+  if (!state?.section || state.section === Section.LIBRARIES)
+    librariesButton.classList.add("tool-komga-navbar-icon-button-disabled");
+  librariesButton.title = g_extraLocalization.libraries;
+  root.appendChild(librariesButton);
+
+  const historyButton = document.createElement("span");
+  historyButton.className = "tool-komga-navbar-icon-button";
+  historyButton.addEventListener("click", (event) => {
+    sendIpcToMain("on-nav-button-clicked", "home");
+  });
+  historyButton.innerHTML = `<i class="fa-solid fa-clock-rotate-left"></i>`;
+  if (!state?.section || state.section === Section.HISTORY)
+    historyButton.classList.add("tool-komga-navbar-icon-button-disabled");
+  historyButton.title = g_extraLocalization.history;
+  root.appendChild(historyButton);
+
+  const searchButton = document.createElement("span");
+  searchButton.className = "tool-komga-navbar-icon-button";
+  searchButton.addEventListener("click", (event) => {
+    sendIpcToMain("on-nav-button-clicked", "search");
+  });
+  searchButton.innerHTML = `<i class="fa-solid fa-magnifying-glass"></i>`;
+  if (!state?.section)
+    searchButton.classList.add("tool-komga-navbar-icon-button-disabled");
+  searchButton.title = g_extraLocalization.search;
+  root.appendChild(searchButton);
+  //////////////
+  const rightDiv = document.createElement("div");
+  rightDiv.id = "tool-komga-navbar-right-content";
+  root.appendChild(rightDiv);
+
+  let title = "";
+  const { section, search, library, series, book } = state || {};
+  const loc = g_extraLocalization;
+  if (section === Section.SEARCH_BOOKS || section === Section.SEARCH_SERIES) {
+    const type = section === Section.SEARCH_BOOKS ? loc.books : loc.series;
+    title += `${loc.search} (${type}): ${search.query}`;
+  } else {
+    const path = [library?.name, series?.name, book?.name].filter((item) => {
+      return item; // returns item when if(item) is true
+    });
+    title += path.join(" :: ");
+  }
+  rightDiv.textContent = title;
+}
+
+///////////////////////////////////////////////////////////////////////////////
 // EVENT LISTENERS ////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
 export function onInputEvent(type, event) {
   if (getActiveModal()) {
-    oldModals.onInputEvent(getActiveModal(), type, event);
+    // TODO: new modals input
+    //oldModals.onInputEvent(getActiveModal(), type, event);
     return;
   }
   switch (type) {
@@ -1019,6 +1124,26 @@ function showModalRemoveServerFromList(
     cancelText,
     () => {
       sendIpcToMain("on-modal-remove-server-from-list-ok-clicked", index);
+    },
+  );
+}
+
+function showModalSearch(titleText, messageText, okText, cancelText) {
+  if (g_activeModal) {
+    closeActiveModal();
+  }
+  g_activeModal = modals.showSearchModal(
+    modals.Level.TOOLS,
+    titleText,
+    messageText,
+    [
+      { name: g_extraLocalization.books, value: "0" },
+      { name: g_extraLocalization.series, value: "1" },
+    ],
+    okText,
+    cancelText,
+    (query, selectValue) => {
+      sendIpcToMain("on-modal-search-ok-clicked", query, selectValue);
     },
   );
 }

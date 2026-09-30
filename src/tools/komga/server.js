@@ -125,7 +125,7 @@ exports.login = async function (serverUrl, username, password) {
 // HELPERS ///////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 
-async function fetchUrl(url) {
+async function fetchUrlGet(url) {
   const response = await net.fetch(url, {
     method: "GET",
     headers: {
@@ -133,6 +133,22 @@ async function fetchUrl(url) {
       "User-Agent": g_customUserAgent,
       Accept: "application/json",
     },
+  });
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+  return response;
+}
+
+async function fetchUrlPost(url, body) {
+  const response = await net.fetch(url, {
+    method: "POST",
+    headers: {
+      "X-Auth-Token": g_session.token,
+      "User-Agent": g_customUserAgent,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
   });
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);
@@ -148,7 +164,7 @@ exports.getLibraries = async function () {
   try {
     exports.cancelThumbsRetrieval();
     const url = `${g_session.url}/api/v1/libraries`;
-    const response = await fetchUrl(url);
+    const response = await fetchUrlGet(url);
     const libraries = await response.json();
     return libraries;
   } catch (error) {
@@ -164,7 +180,7 @@ exports.getLibrary = async function (id) {
       return undefined;
     }
     const url = `${g_session.url}/api/v1/libraries/${id}`;
-    const response = await fetchUrl(url);
+    const response = await fetchUrlGet(url);
     const library = await response.json();
     return library;
   } catch (error) {
@@ -194,7 +210,7 @@ exports.getSeriesInLibrary = async function (
     } else {
       url += `&search_regex=${encodeURIComponent("^(?i)" + letter + ",TITLE_SORT")}`;
     }
-    const response = await fetchUrl(url);
+    const response = await fetchUrlGet(url);
     return await response.json();
   } catch (error) {
     log.error(`error getting letter series: ` + error);
@@ -208,7 +224,7 @@ exports.getBooksInSeries = async function (seriesId, pageIndex = 0, size = 20) {
       return undefined;
     }
     const url = `${g_session.url}/api/v1/series/${seriesId}/books?page=${pageIndex}&size=${size}&sort=metadata.numberSort,asc&sort=name,asc`;
-    const response = await fetchUrl(url);
+    const response = await fetchUrlGet(url);
     const pagedResult = await response.json();
     return pagedResult;
   } catch (error) {
@@ -223,7 +239,7 @@ exports.getBook = async function (id) {
       return undefined;
     }
     const url = `${g_session.url}/api/v1/books/${id}`;
-    const response = await fetchUrl(url);
+    const response = await fetchUrlGet(url);
     const book = await response.json();
     return book;
   } catch (error) {
@@ -242,7 +258,7 @@ exports.getAlphabeticalGroups = async function (libraryId) {
       return undefined;
     }
     const url = `${g_session.url}/api/v1/series/alphabetical-groups?library_id=${libraryId}`;
-    const response = await fetchUrl(url);
+    const response = await fetchUrlGet(url);
     // example: ["#", "A", "B", "M", "Z"]
     return await response.json();
   } catch (error) {
@@ -257,7 +273,7 @@ exports.getAlphabeticalGroups = async function (libraryId) {
 // HOME //////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 
-exports.getHome = async function () {
+exports.getHistory = async function () {
   try {
     const size = 5;
     const results = await Promise.allSettled([
@@ -286,7 +302,7 @@ exports.getHome = async function () {
 exports.getInProgressBooks = async function (page = 0, size = 20) {
   try {
     const url = `${g_session.url}/api/v1/books?read_status=IN_PROGRESS&page=${page}&size=${size}`;
-    const response = await fetchUrl(url);
+    const response = await fetchUrlGet(url);
     return await response.json();
   } catch (error) {
     log.error("failed to fetch in-progress books: " + error);
@@ -297,7 +313,7 @@ exports.getInProgressBooks = async function (page = 0, size = 20) {
 exports.getRecentlyAddedBooks = async function (page = 0, size = 20) {
   try {
     const url = `${g_session.url}/api/v1/books/latest?page=${page}&size=${size}`;
-    const response = await fetchUrl(url);
+    const response = await fetchUrlGet(url);
     return await response.json();
   } catch (error) {
     log.error("failed to fetch latest books: " + error);
@@ -308,7 +324,7 @@ exports.getRecentlyAddedBooks = async function (page = 0, size = 20) {
 exports.getRecentlyAddedSeries = async function (page = 0, size = 20) {
   try {
     const url = `${g_session.url}/api/v1/series/new?page=${page}&size=${size}`;
-    const response = await fetchUrl(url);
+    const response = await fetchUrlGet(url);
     return await response.json();
   } catch (error) {
     log.error("failed to fetch new series: " + error);
@@ -319,7 +335,7 @@ exports.getRecentlyAddedSeries = async function (page = 0, size = 20) {
 exports.getRecentlyUpdatedSeries = async function (page = 0, size = 20) {
   try {
     const url = `${g_session.url}/api/v1/series/updated?page=${page}&size=${size}`;
-    const response = await fetchUrl(url);
+    const response = await fetchUrlGet(url);
     return await response.json();
   } catch (error) {
     log.error("failed to fetch updated series: " + error);
@@ -331,10 +347,46 @@ exports.getRecentlyFinishedBooks = async function (page = 0, size = 20) {
   try {
     // const url = `${g_session.url}/api/v1/books?read_status=IN_PROGRESS&read_status=READ&sort=readProgress.lastModified,desc&page=${page}&size=${size}`;
     const url = `${g_session.url}/api/v1/books?read_status=READ&sort=readProgress.lastModified,desc&page=${page}&size=${size}`;
-    const response = await fetchUrl(url);
+    const response = await fetchUrlGet(url);
     return await response.json();
   } catch (error) {
     log.error("failed to fetch completed recently read books: " + error);
+    return undefined;
+  }
+};
+
+//////////////////////////////////////////////////////////////////////////////
+// SEARCH ////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+
+exports.getSearchSeries = async function (
+  searchQuery = "",
+  page = 0,
+  size = 20,
+) {
+  try {
+    const url = `${g_session.url}/api/v1/series/list?page=${page}&size=${size}`;
+    const response = await fetchUrlPost(url, { fullTextSearch: searchQuery });
+    return await response.json();
+  } catch (error) {
+    log.error("failed to search series: " + error);
+    return undefined;
+  }
+};
+
+exports.getSearchBooks = async function (
+  searchQuery = "",
+  page = 0,
+  size = 20,
+) {
+  try {
+    const url = `${g_session.url}/api/v1/books/list?page=${page}&size=${size}`;
+    const response = await fetchUrlPost(url, {
+      fullTextSearch: searchQuery,
+    });
+    return await response.json();
+  } catch (error) {
+    log.error("failed to search books: " + error);
     return undefined;
   }
 };
@@ -521,7 +573,7 @@ exports.getReadingProgress = async function (bookId) {
       throw new Error(`no book id`);
     }
     const url = `${g_session.url}/api/v1/books/${bookId}`;
-    const response = await fetchUrl(url);
+    const response = await fetchUrlGet(url);
     if (response.status === 200) {
       const bookData = await response.json();
       if (bookData.readProgress) {

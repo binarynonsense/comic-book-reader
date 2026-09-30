@@ -27,7 +27,6 @@ const server = require("./server");
 
 let g_isInitialized = false;
 let g_servers;
-let g_goBackHistory = [];
 
 function init() {
   if (!g_isInitialized) {
@@ -72,8 +71,8 @@ exports.open = async function () {
   loadOptions();
   ///////////////////
   sendIpcToRenderer("show", 0, g_servers);
-  if (g_goBackHistory.length > 0) {
-    sendIpcToRenderer(...g_goBackHistory.at(-1));
+  if (g_navState.section) {
+    loadState(g_navState);
   }
 };
 
@@ -222,8 +221,24 @@ function initOnIpcCallbacks() {
     await showBook(...args);
   });
 
-  on("go-back", (...args) => {
-    goBack(...args);
+  /////////////////
+
+  on("show-books-in-search", async (...args) => {
+    await showBooksInSearch(...args);
+  });
+
+  on("show-series-in-search", async (...args) => {
+    await showSeriesInSearch(...args);
+  });
+
+  /////////////////
+
+  on("on-nav-button-clicked", (...args) => {
+    navButtonClicked(...args);
+  });
+
+  on("on-modal-search-ok-clicked", (...args) => {
+    search(...args);
   });
 
   //////////////////
@@ -267,7 +282,7 @@ function handle(id, callback) {
 function initHandleIpcCallbacks() {}
 
 ///////////////////////////////////////////////////////////////////////////////
-// TOOL ///////////////////////////////////////////////////////////////////////
+// SERVERS ////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
 exports.getSavedServerDataFromUrl = function (url) {
@@ -354,69 +369,198 @@ async function logToServer(url, email, password, save) {
   showLibraries();
 }
 
-////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+// CONTENT ////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+const Section = {
+  LIBRARIES: "libraries",
+  HISTORY: "dashboard",
+  SEARCH_BOOKS: "search_books",
+  SEARCH_SERIES: "search_series",
+  //
+  LIBRARY_SERIES: "library_series",
+  SERIES_BOOKS: "series_books",
+  BOOK: "book",
+};
+
+let g_navState = {
+  section: undefined,
+  library: undefined,
+  series: undefined,
+  book: undefined,
+};
+let g_navHistory = [];
+function clearNavData() {
+  g_navState = {};
+  g_navHistory = [];
+  log.editor("cleared nav history");
+}
+function addCurrentNavStateToHistory() {
+  g_navHistory.push(structuredClone(g_navState));
+  log.editor("added state to history: " + g_navHistory.at(-1).section);
+}
+function removeLastNavStateFromHistory() {
+  log.editor("removed last state from history: " + g_navHistory.at(-1).section);
+  return g_navHistory.pop();
+}
 
 async function showLibraries() {
   const response = await server.getLibraries();
   sendIpcToRenderer("build-content-libraries", response);
-  g_goBackHistory = [];
-  g_goBackHistory.push(["build-content-libraries", response]);
-  g_goBackHistory.push(["build-content-libraries", response]);
-  g_goBackCurrentParams = ["build-content-libraries", response];
+  ////
+  clearNavData();
+  g_navState.section = Section.LIBRARIES;
+  sendIpcToRenderer("build-content-navbar", g_navState, g_navHistory.length);
 }
 
-async function showSeriesInLibrary(libraryId, letter, pageIndex = 0) {
+async function showSeriesInLibrary(
+  libraryId,
+  libraryName,
+  letter,
+  pageIndex = 0,
+) {
   const letters = await server.getAlphabeticalGroups(libraryId);
   const series = await server.getSeriesInLibrary(libraryId, letter, pageIndex);
   sendIpcToRenderer(
     "build-content-series-in-library",
     libraryId,
+    libraryName,
     series,
     letters,
     letter,
   );
-  if (
-    g_goBackHistory.length === 0 ||
-    g_goBackHistory.at(-1)[0] !== "build-content-series-in-library"
-  ) {
-    g_goBackHistory.push([
-      "build-content-series-in-library",
-      libraryId,
-      series,
-      letters,
-      letter,
-    ]);
+  ////
+  if (g_navState.section !== Section.LIBRARY_SERIES) {
+    addCurrentNavStateToHistory();
   }
+  g_navState.section = Section.LIBRARY_SERIES;
+  g_navState.library = { id: libraryId, name: libraryName, letter, pageIndex };
+  sendIpcToRenderer("build-content-navbar", g_navState, g_navHistory.length);
 }
 
-async function showBooksInSeries(seriesId, pageIndex = 0) {
+async function showBooksInSeries(seriesId, seriesName, pageIndex = 0) {
   const response = await server.getBooksInSeries(seriesId, pageIndex);
-  sendIpcToRenderer("build-content-books-in-series", seriesId, response);
-  if (
-    g_goBackHistory.length === 0 ||
-    g_goBackHistory.at(-1)[0] !== "build-content-books-in-series"
-  ) {
-    g_goBackHistory.push(["build-content-books-in-series", seriesId, response]);
+  sendIpcToRenderer(
+    "build-content-books-in-series",
+    seriesId,
+    seriesName,
+    response,
+  );
+  ////
+  if (g_navState.section !== Section.SERIES_BOOKS) {
+    addCurrentNavStateToHistory();
   }
+  g_navState.section = Section.SERIES_BOOKS;
+  g_navState.series = { id: seriesId, name: seriesName, pageIndex };
+  sendIpcToRenderer("build-content-navbar", g_navState, g_navHistory.length);
 }
 
-async function showBook(id) {
+async function showBook(id, name) {
   const response = await server.getBook(id);
   sendIpcToRenderer("build-content-book", response);
-  if (
-    g_goBackHistory.length === 0 ||
-    g_goBackHistory.at(-1)[0] !== "build-content-book"
-  ) {
-    g_goBackHistory.push(["build-content-book", response]);
+  ////
+  if (g_navState.section !== Section.BOOK) {
+    addCurrentNavStateToHistory();
+  }
+  g_navState.section = Section.BOOK;
+  g_navState.book = { id, name };
+  sendIpcToRenderer("build-content-navbar", g_navState, g_navHistory.length);
+}
+
+////
+
+async function showBooksInSearch(query, pageIndex = 0) {
+  const response = await server.getSearchBooks(query, pageIndex);
+  sendIpcToRenderer("build-content-search-books", query, response);
+  ////
+  if (g_navState.section !== Section.SEARCH_BOOKS) {
+    addCurrentNavStateToHistory();
+  }
+  g_navState = {};
+  g_navState.section = Section.SEARCH_BOOKS;
+  g_navState.search = { query };
+  sendIpcToRenderer("build-content-navbar", g_navState, g_navHistory.length);
+}
+
+async function showSeriesInSearch(query, pageIndex = 0) {
+  const response = await server.getSearchSeries(query, pageIndex);
+  sendIpcToRenderer("build-content-search-series", query, response);
+  ////
+  if (g_navState.section !== Section.SEARCH_SERIES) {
+    addCurrentNavStateToHistory();
+  }
+  g_navState = {};
+  g_navState.section = Section.SEARCH_SERIES;
+  g_navState.search = { query };
+  sendIpcToRenderer("build-content-navbar", g_navState, g_navHistory.length);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// NAVBAR /////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+function navButtonClicked(buttonName) {
+  switch (buttonName) {
+    case "back":
+      goBack(); //
+      break;
+
+    case "libraries":
+      showLibraries();
+      break;
+
+    case "search":
+      sendIpcToRenderer(
+        "show-modal-search",
+        _("menu-tools-search"),
+        undefined,
+        _("ui-modal-prompt-button-ok"),
+        _("ui-modal-prompt-button-cancel"),
+      );
+      break;
+
+    default:
+      break;
   }
 }
 
-function goBack() {
-  g_goBackHistory.pop();
-  sendIpcToRenderer(...g_goBackHistory.at(-1));
+async function search(query, selectValue) {
+  // 0 -> books, 1 -> series
+  if (selectValue === "0") {
+    showBooksInSearch(query);
+  } else {
+    showSeriesInSearch(query);
+  }
 }
 
-////////////////////////////////////////////
+async function goBack() {
+  if (g_navHistory.length < 1) return;
+  await loadState(removeLastNavStateFromHistory());
+}
+
+async function loadState(state) {
+  g_navState = state;
+  if (state.section === Section.LIBRARIES) {
+    await showLibraries();
+  } else if (state.section === Section.LIBRARY_SERIES) {
+    await showSeriesInLibrary(
+      state.library.id,
+      state.library.name,
+      state.library.letter,
+    );
+  } else if (state.section === Section.SERIES_BOOKS) {
+    await showBooksInSeries(state.series.id, state.series.name);
+  } else if (state.section === Section.BOOK) {
+    await showBook(state.book.id, state.book.name);
+  }
+  ////
+  else if (state.section === Section.SEARCH_BOOKS) {
+    await showBooksInSearch(state.search.query);
+  } else if (state.section === Section.SEARCH_SERIES) {
+    await showSeriesInSearch(state.search.query);
+  }
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // LOCALIZATION ///////////////////////////////////////////////////////////////
