@@ -141,10 +141,6 @@ function init(settings) {
       sendIpcToMain("hs-open-servers");
       event.stopPropagation();
     });
-    serversButton.setAttribute("data-nav-panel", 0);
-    serversButton.setAttribute("data-nav-row", navRow);
-    serversButton.setAttribute("data-nav-col", navColumn++);
-    serversButton.setAttribute("tabindex", "0");
     ///////////
     const rssReaderButton = document.querySelector(
       "#hs-logo-rss-reader-button",
