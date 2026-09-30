@@ -978,6 +978,12 @@ function getNewCardDiv(cardType, data, navRow, navColumn, listIndex) {
         <div class="hs-path-card-typeminiicon hs-path-card-typeminiicon-www">
           www
         </div>`;
+    } else if (data.pathType === 3) {
+      console.log("3");
+      return `
+        <div class="hs-path-card-typeminiicon hs-path-card-typeminiicon-komga">
+          KOMGA
+        </div>`;
     } else if (data.pathType === 0) {
       const path = data.path.toLowerCase();
       const pos = path.lastIndexOf(".");
@@ -1031,6 +1037,8 @@ function getNewCardDiv(cardType, data, navRow, navColumn, listIndex) {
   <i class="hs-path-card-image-file fas fa-question fa-2x fa-fw"></i>`;
     const wwwIconHtml = `
   <i class="hs-path-card-image-file fas fa-globe fa-2x fa-fw"></i>`;
+    const serverIconHtml = `
+  <i class="hs-path-card-image-file fas fa-server fa-2x fa-fw"></i>`;
     if (data.pathType === -1) {
       return questionIconHtml;
     } else {
@@ -1038,6 +1046,8 @@ function getNewCardDiv(cardType, data, navRow, navColumn, listIndex) {
         return fileIconHtml;
       } else if (data.pathType === 2) {
         return wwwIconHtml;
+      } else if (data.pathType === 3) {
+        return serverIconHtml;
       } else {
         if (cardType === CardType.LATEST) {
           return imagesIconHtml;

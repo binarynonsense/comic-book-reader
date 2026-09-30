@@ -140,7 +140,7 @@ function generateCardsFromSavedData(inputData, isFavoritesList) {
         outputBook.isInFavorites = isEntryInList(-1, inputData[index]);
       }
       if (inputBook?.data?.source) {
-        outputBook.pathType = 2;
+        outputBook.pathType = inputBook.data.source === "komga" ? 3 : 2;
         outputBook.path = inputBook.data.url ?? inputBook.path;
       } else if (fs.existsSync(outputBook.path)) {
         outputBook.pathType = !fs.lstatSync(outputBook.path).isDirectory()
@@ -380,33 +380,15 @@ function getLatestCards() {
         );
         const historyDataFile = historyData[latestInfo.index];
         if (historyDataFile?.data?.source) {
-          latestInfo.pathType = 2;
+          latestInfo.pathType = historyDataFile.data.source === "komga" ? 3 : 2;
           if (historyDataFile.data.name) {
             latestInfo.name = historyDataFile.data.name;
           } else {
             latestInfo.name = historyDataFile.filePath;
           }
           switch (historyDataFile.data.source) {
-            case "dcm":
-              if (historyDataFile.data.url)
-                latestInfo.path = historyDataFile.data.url;
-              else
-                latestInfo.path =
-                  _("menu-tools-dcm") + " - " + historyDataFile.data.name;
-              break;
-
-            case "cbp":
-              if (historyDataFile.data.url)
-                latestInfo.path = historyDataFile.data.url;
-              else
-                latestInfo.path =
-                  _("menu-tools-cbp") + " - " + historyDataFile.data.name;
-              break;
-
             case "gut":
               latestInfo.path = historyDataFile.filePath;
-              // latestInfo.path =
-              //   _("menu-tools-gut") + " - " + historyDataFile.data.name;
               break;
 
             case "iab":
@@ -420,6 +402,10 @@ function getLatestCards() {
             case "xkcd":
               latestInfo.path =
                 historyDataFile.data.url ?? historyDataFile.filePath;
+              break;
+
+            case "komga":
+              latestInfo.path = historyDataFile.filePath;
               break;
           }
         } else {

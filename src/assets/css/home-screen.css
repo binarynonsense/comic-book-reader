@@ -575,6 +575,13 @@ html[dir="rtl"] .hs-path-card-typeminiicon {
   padding: 1px 3px;
 }
 
+.hs-path-card-typeminiicon-komga {
+  font-size: 9px;
+  left: 30%;
+  padding: 1px 3px;
+  bottom: 3px;
+}
+
 /*  */
 
 .hs-path-card-favminiicon {

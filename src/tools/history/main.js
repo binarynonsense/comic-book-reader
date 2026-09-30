@@ -76,8 +76,9 @@ function onCloseClicked() {
 function getHistory() {
   let historyCopy = history.getRecent();
   historyCopy.forEach((fileInfo) => {
+    fileInfo.iconType = -1;
     if (fileInfo.data && fileInfo.data.source) {
-      fileInfo.isOnline = true;
+      fileInfo.iconType = 2;
       if (fileInfo.data.name) {
         fileInfo.fileName = fileInfo.data.name;
       } else {
@@ -85,25 +86,6 @@ function getHistory() {
       }
       if (fileInfo.data.source) {
         switch (fileInfo.data.source) {
-          case "dcm":
-            if (fileInfo.data.url) fileInfo.filePath = fileInfo.data.url;
-            else
-              fileInfo.filePath =
-                _("menu-tools-dcm") + " - " + fileInfo.data.name;
-            break;
-
-          case "cbp":
-            if (fileInfo.data.url) fileInfo.filePath = fileInfo.data.url;
-            else
-              fileInfo.filePath =
-                _("menu-tools-cbp") + " - " + fileInfo.data.name;
-            break;
-
-          // case "gut":
-          //   fileInfo.filePath =
-          //     _("menu-tools-gut") + " - " + fileInfo.data.name;
-          //   break;
-
           case "iab":
             if (fileInfo.data.url) fileInfo.filePath = fileInfo.data.url;
             else
@@ -114,14 +96,18 @@ function getHistory() {
           case "xkcd":
             fileInfo.filePath = fileInfo.data.url;
             break;
+
+          case "komga":
+            fileInfo.iconType = 3;
+            break;
         }
       }
     } else {
       fileInfo.fileName = path.basename(fileInfo.filePath);
       if (fs.existsSync(fileInfo.filePath)) {
-        fileInfo.fileExists = true;
+        fileInfo.iconType = 0;
         if (fs.lstatSync(fileInfo.filePath).isDirectory()) {
-          fileInfo.isDirectory = true;
+          fileInfo.iconType = 1;
         }
       }
     }

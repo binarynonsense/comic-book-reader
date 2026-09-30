@@ -218,14 +218,14 @@ function buildHistoryList(history, max) {
     li.className = "tools-buttons-list-li";
     let buttonSpan = document.createElement("span");
     buttonSpan.className = "tools-buttons-list-button";
-    if (fileInfo.isOnline) {
+    if (fileInfo.iconType === 2) {
       buttonSpan.innerHTML = `<i class="fas fa-globe fa-2x fa-fw"></i>`;
-    } else if (fileInfo.fileExists) {
-      if (fileInfo.isDirectory) {
-        buttonSpan.innerHTML = `<i class="fas fa-images fa-2x fa-fw"></i>`;
-      } else {
-        buttonSpan.innerHTML = `<i class="fas fa-file fa-2x fa-fw"></i>`;
-      }
+    } else if (fileInfo.iconType === 3) {
+      buttonSpan.innerHTML = `<i class="fas fa-server fa-2x fa-fw"></i>`;
+    } else if (fileInfo.iconType === 0) {
+      buttonSpan.innerHTML = `<i class="fas fa-file fa-2x fa-fw"></i>`;
+    } else if (fileInfo.iconType === 1) {
+      buttonSpan.innerHTML = `<i class="fas fa-images fa-2x fa-fw"></i>`;
     } else {
       buttonSpan.innerHTML = `<i class="fas fa-question fa-2x fa-fw"></i>`;
     }
