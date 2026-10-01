@@ -31,6 +31,9 @@
   "menu-file-page-extract-palette": "Extract Color Palette",
   "menu-file-page-extract-qr": "Extract QR Code's Text",
   "menu-file-preferences": "Preferences",
+  "menu-file-privatemode": "Private Mode",
+  "menu-file-pivatemode-on": "Enabled",
+  "menu-file-pivatemode-off": "Disabled",
   "menu-file-quit": "Quit",
   "menu-view": "View",
   "menu-view-zoom": "Zoom",
@@ -1247,7 +1250,6 @@
   "tool-komga-subsection-recentlyaddedseries": "Recently Added Series",
   "tool-komga-subsection-recentlyupdatedseries": "Recently Updated Series",
   "tool-komga-subsection-recentlyfinished": "Recently Finished",
-  "tool-komga-incognito-mode": "Incognito Mode",
   "tool-komga-reading-progress-completed": "Completed",
   "tool-komga-reading-progress": "Reading Progress",
   "tool-komga-no-summary": "No summary available."
