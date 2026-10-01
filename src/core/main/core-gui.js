@@ -726,7 +726,13 @@ function renderTitle() {
     }
   }
   g_mainWindow.setTitle(title);
-  sendIpcToPreload("update-title", title);
+  sendIpcToPreload(
+    "update-title",
+    title,
+    reader.getPrivateMode()
+      ? `${_("menu-file-privatemode")}: ${_("menu-file-pivatemode-on")}`
+      : "",
+  );
 }
 exports.renderTitle = renderTitle;
 

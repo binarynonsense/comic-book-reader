@@ -42,6 +42,8 @@ let g_resizeEventCounter;
 let g_languageDir = "ltr";
 let g_pagesDirection = "ltr";
 
+let g_isPrivateMode = false;
+
 exports.init = async function (filePath, checkHistory) {
   initOnIpcCallbacks();
 
@@ -190,6 +192,12 @@ exports.setLanguageDirection = function (direction) {
 //////////////////////////////////////////////////////////////////////////////
 
 function addCurrentToHistory(updateMenu = true) {
+  if (g_isPrivateMode) {
+    log.editor(
+      "addCurrentToHistory: didn't add entry because private mode is on",
+    );
+    return;
+  }
   if (
     g_fileData.type === FileDataType.NOT_SET ||
     g_fileData.state !== FileDataState.LOADED
@@ -208,6 +216,18 @@ function addCurrentToHistory(updateMenu = true) {
     homeScreen.refresh();
   }
 }
+
+exports.setPrivateMode = function (isOn) {
+  g_isPrivateMode = isOn;
+  log.editor("private mode set to: " + g_isPrivateMode);
+  renderTitle();
+};
+exports.togglePrivateMode = function () {
+  exports.setPrivateMode(!g_isPrivateMode);
+};
+exports.getPrivateMode = function () {
+  return g_isPrivateMode;
+};
 
 //////////////////////////////////////////////////////////////////////////////
 // IPC SEND //////////////////////////////////////////////////////////////////
@@ -264,10 +284,6 @@ function initOnIpcCallbacks() {
     renderPageInfo();
     renderTitle();
     if (g_fileData?.data?.source === "xkcd") {
-      sendIpcToRenderer(
-        "update-title",
-        `${g_fileData.data.name} #${g_fileData.pageIndex + 1}`,
-      );
       if (g_fileData.data?.tempData?.title) {
         sendIpcToRenderer(
           "update-img-page-title",
@@ -1810,7 +1826,8 @@ async function goToPage(pageIndex, scrollBarPos = 0) {
       await pagesLoader.loadPage(g_fileData, indexes, scrollBarPos);
       if (
         g_fileData.type === FileDataType.WWW &&
-        g_fileData.data.source === "komga"
+        g_fileData.data.source === "komga" &&
+        !g_isPrivateMode
       ) {
         const { updateReadingProgress } = require("../tools/komga/server");
         updateReadingProgress(
@@ -1925,6 +1942,9 @@ exports.generateTitle = function () {
     title = "Comic Book Reader - ACBR";
   } else {
     title = `${g_fileData.name}`;
+    if (g_fileData?.data?.source === "xkcd") {
+      title = `${g_fileData.data.name} #${g_fileData.pageIndex + 1}`;
+    }
     let length = 50;
     if (core.getMainWindow().getSize()[0] < 700) length = 10;
     else if (core.getMainWindow().getSize()[0] < 750) length = 20;

@@ -474,6 +474,18 @@ function getNormalMenu(settings, history) {
           type: "separator",
         },
         {
+          id: "file-privatemode",
+          label: _("menu-file-privatemode"),
+          type: "checkbox",
+          checked: reader.getPrivateMode(),
+          click() {
+            reader.togglePrivateMode();
+          },
+        },
+        {
+          type: "separator",
+        },
+        {
           label: _("menu-file-quit"),
           accelerator: "acc-quit",
           click() {
@@ -906,6 +918,18 @@ function getHomeScreenMenu(settings, history) {
           label: _("menu-file-preferences"),
           click() {
             core.onMenuPreferences();
+          },
+        },
+        {
+          type: "separator",
+        },
+        {
+          id: "file-privatemode",
+          label: _("menu-file-privatemode"),
+          type: "checkbox",
+          checked: reader.getPrivateMode(),
+          click() {
+            reader.togglePrivateMode();
           },
         },
         {

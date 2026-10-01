@@ -40,8 +40,26 @@ window.addEventListener("DOMContentLoaded", () => {
       g_titlebar.refreshMenu();
       // updateWindowButtons();
     } else if (args[0] == "update-title") {
-      document.title = args[1];
-      g_titlebar.updateTitle(args[1].replace(/[\r\n]+/g, ""));
+      const title = args[1].replace(/[\r\n]+/g, "");
+      g_titlebar.updateTitle(title);
+      document.title = title + (args[2] ? ` [${args[2]}]` : "");
+      const titleBar = document.querySelector(".cet-titlebar");
+      if (titleBar) {
+        const titleDiv = titleBar.querySelector(".cet-title");
+        if (titleDiv) {
+          let privateDiv = document.querySelector(".cet-acbr-private");
+          if (!privateDiv) {
+            // haven't added it yet, do it
+            privateDiv = document.createElement("div");
+            privateDiv.classList.add("cet-acbr-private");
+            titleDiv.after(privateDiv);
+          }
+          privateDiv.innerHTML = args[2]
+            ? `<i class="fa-solid fa-eye-slash"></i>`
+            : "";
+          privateDiv.title = args[2] ?? "";
+        }
+      }
     } else if (args[0] == "update-window-buttons") {
       updateWindowButtons(...args.slice(1));
     } else if (args[0] == "update-tools-common") {

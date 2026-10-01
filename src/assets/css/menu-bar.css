@@ -31,6 +31,11 @@
   color: var(--titlebar-title-text-color) !important;
 }
 
+.cet-acbr-private:not(:empty) {
+  margin-inline-start: 5px;
+  -webkit-app-region: no-drag !important;
+}
+
 /* rtl overrides */
 
 html[dir="rtl"] .cet-menubar-menu-container {
