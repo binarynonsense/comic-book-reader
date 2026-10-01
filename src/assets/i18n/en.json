@@ -1240,6 +1240,7 @@
   "tool-komga-modal-server-url": "Server URL",
   "tool-komga-modal-email": "Email",
   "tool-komga-modal-remember": "Save server and credentials",
+  "[NOTE TO TRANSLATORS]tool-komga-section-activity": "Activity as in recent activity in the server: latest read books, latest updated books...",
   "tool-komga-section-activity": "Activity",
   "tool-komga-section-libraries": "Libraries",
   "[NOTE TO TRANSLATORS]tool-komga-section-series": "Series as in comic book series",
@@ -1252,5 +1253,8 @@
   "tool-komga-subsection-recentlyfinished": "Recently Finished",
   "tool-komga-reading-progress-completed": "Completed",
   "tool-komga-reading-progress": "Reading Progress",
-  "tool-komga-no-summary": "No summary available."
+  "tool-komga-no-summary": "No summary available.",
+  "tool-komga-button-see-all-books": "See All",
+  "tool-komga-button-see-all-series": "See All",
+  "tool-komga-number-pages": "{0} pages"
 }
