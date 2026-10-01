@@ -890,7 +890,10 @@ function buildContentBook(data) {
     if (data.readProgress?.completed) {
       progress = g_extraLocalization.completed;
     } else if (data.readProgress?.page && data.media?.pagesCount) {
-      progress = (data.readProgress.page / data.media.pagesCount) * 100 + "%";
+      progress =
+        parseInt(
+          (data.readProgress.page / data.media.pagesCount) * 100,
+        ).toFixed(0) + "%";
     }
 
     const detailView = document.createElement("div");
