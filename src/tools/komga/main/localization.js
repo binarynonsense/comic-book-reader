@@ -67,5 +67,19 @@ exports.getExtraLocalization = function () {
     removeFromList: _("tool-shared-tooltip-remove-from-list"),
     moveUpInList: _("tool-shared-tooltip-move-up-in-list"),
     moveDownInList: _("tool-shared-tooltip-move-down-in-list"),
+    // book
+    creators: _("tool-metadata-section-creators"),
+    fileSize: _("ui-modal-info-metadata-filesize"),
+    numPages: _("tool-metadata-section-pages"),
+    tags: "Tags",
+    filePath: _("ui-modal-info-metadata-filepath"),
+    unknown: _("tool-metadata-data-manga-option-unknown"),
+    none: _("menu-view-filter-none"),
+    format: _("tool-metadata-data-format"),
+    file: _("tool-shared-ui-output-options-file"),
+    progress: _("tool-komga-reading-progress"),
+    completed: _("tool-komga-reading-progress-completed"),
+    noSummary: _("tool-komga-no-summary"),
+    //tool-metadata-data-summary
   };
 };

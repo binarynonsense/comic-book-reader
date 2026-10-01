@@ -730,21 +730,27 @@ function buildContentBook(data) {
     const safeTitle = data.name.replace(/"/g, "&quot;");
     const pagesCount = data.media?.pagesCount || 0;
 
+    let progress;
+    if (data.readProgress?.completed) {
+      progress = g_extraLocalization.completed;
+    } else if (data.readProgress?.page && data.media?.pagesCount) {
+      progress = (data.readProgress.page / data.media.pagesCount) * 100 + "%";
+    }
+
     const detailView = document.createElement("div");
     detailView.className = "tool-komga-book-detail-view";
 
     const authorsList =
       data.metadata?.authors?.map((a) => `${a.name} (${a.role})`).join(", ") ||
-      "Unknown Author";
+      g_extraLocalization.unknown;
     const tagsList =
       data.metadata?.tags
-        ?.map((t) => `<span class="tool-komga-book-badge">${t}</span>`)
-        .join(" ") || "None";
-    const summaryText = data.metadata?.summary || "No summary available.";
+        ?.map((t) => `<span class="tool-komga-book-tag">${t}</span>`)
+        .join(", ") || g_extraLocalization.none;
+    const summaryText = data.metadata?.summary || g_extraLocalization.noSummary;
 
     detailView.innerHTML = `
         <div class="tool-komga-book-detail-main">
-          <!-- Left Column: Frame holding our unique thumbnail slot -->
           <div class="tool-komga-book-detail-left">
             <div class="tool-komga-book-card-container">
               <img class="tool-komga-book-card-img tool-komga-contain" id="tool-komga-thumb-${data.id}" src="" alt="" title="${safeTitle}" />
@@ -756,10 +762,12 @@ function buildContentBook(data) {
             <h4 class="tool-komga-book-detail-series">${data.seriesTitle}</h4>
             
             <div class="tool-komga-book-meta-grid">
-              <p><strong>Pages:</strong> ${pagesCount}</p>
-              <p><strong>File Size:</strong> ${data.size || "Unknown size"}</p>
-              <p><strong>Creators:</strong> ${authorsList}</p>
-              <div class="tool-komga-book-tags-row"><strong>Tags:</strong> ${tagsList}</div>
+              <p><span class="tool-komga-book-dataname">${g_extraLocalization.numPages.toUpperCase()}</span> ${pagesCount}</p>
+              ${progress ? `<p><span class="tool-komga-book-dataname">${g_extraLocalization.progress.toUpperCase()}</span> ${progress}</p>` : ""}             
+              <p><span class="tool-komga-book-dataname">${g_extraLocalization.creators.toUpperCase()}</span> ${authorsList}</p>
+              <div><span class="tool-komga-book-dataname">${g_extraLocalization.tags.toUpperCase()}</span> ${tagsList}</div>
+              <p><span class="tool-komga-book-dataname">${g_extraLocalization.file.toUpperCase()}</span> ${data?.url || g_extraLocalization.unknown}</p>
+              <p><span class="tool-komga-book-dataname">${g_extraLocalization.format.toUpperCase()}</span> ${data?.media?.mediaType || g_extraLocalization.unknown}</p>
             </div>
             
             <p class="tool-komga-book-summary">${summaryText}</p>

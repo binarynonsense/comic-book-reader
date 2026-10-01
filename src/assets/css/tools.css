@@ -1713,6 +1713,9 @@ html[dir="rtl"] .tools-range-bubble {
   line-height: 1.6;
   padding-bottom: 12px;
   margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 }
 
 .tool-komga-book-meta-grid p {
@@ -1723,18 +1726,22 @@ html[dir="rtl"] .tools-range-bubble {
   margin-top: 6px;
 }
 
-.tool-komga-book-badge {
-  padding: 2px 8px;
-  border-radius: 12px;
-  font-size: 11px;
-  margin-left: 4px;
-  display: inline-block;
+/* .tool-komga-book-tag {
+
+} */
+
+.tool-komga-book-dataname {
+  background-color: var(--tools-bg2-color);
+  padding: 5px;
+  margin-right: 5px;
 }
 
 .tool-komga-book-summary {
   font-size: 14px;
   line-height: 1.5;
   margin: 0;
+  border-left: 3px solid var(--tools-bg2-color);
+  padding-left: 5px;
 }
 
 .tool-komga-book-detail-view .tool-komga-book-card-container {
@@ -1775,6 +1782,7 @@ html[dir="rtl"] .tools-range-bubble {
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-weight: bold;
 }
 
 .tool-komga-navbar-icon-button {
