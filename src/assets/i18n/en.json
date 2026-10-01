@@ -1237,6 +1237,7 @@
   "tool-komga-modal-server-url": "Server URL",
   "tool-komga-modal-email": "Email",
   "tool-komga-modal-remember": "Save server and credentials",
+  "tool-komga-section-activity": "Activity",
   "tool-komga-section-libraries": "Libraries",
   "[NOTE TO TRANSLATORS]tool-komga-section-series": "Series as in comic book series",
   "tool-komga-section-series": "Series",
@@ -1245,5 +1246,9 @@
   "tool-komga-subsection-recentlyaddedbooks": "Recently Added Books",
   "tool-komga-subsection-recentlyaddedseries": "Recently Added Series",
   "tool-komga-subsection-recentlyupdatedseries": "Recently Updated Series",
-  "tool-komga-subsection-recentlyfinished": "Recently Finished"
+  "tool-komga-subsection-recentlyfinished": "Recently Finished",
+  "tool-komga-incognito-mode": "Incognito Mode",
+  "tool-komga-reading-progress-completed": "Completed",
+  "tool-komga-reading-progress": "Reading Progress",
+  "tool-komga-no-summary": "No summary available."
 }
