@@ -1809,13 +1809,21 @@ html[dir="rtl"] .tools-range-bubble {
   pointer-events: none;
 }
 
-/* .tool-komga-navbar-text-button {
-  cursor: pointer;
-  display: inline-block;
-  padding: 5px;
+/* ************************************ */
+
+.tool-komga-activity-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
 }
-.tool-komga-navbar-text-button:hover {
-  transform: scale(1.1);
-  background-color: var(--tools-button-normal-bg-hover-color);
-  color: var(--tools-button-normal-text-color);
-} */
+.tool-komga-activity-section:last-child {
+  margin-bottom: 0px;
+}
+
+.tool-komga-activity-title {
+  font-size: 22px;
+}
+
+.tool-komga-activity-div {
+}

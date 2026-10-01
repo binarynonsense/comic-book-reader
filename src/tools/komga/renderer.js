@@ -9,7 +9,6 @@ import {
   sendIpcToMain as coreSendIpcToMain,
   sendIpcToMainAndWait as coreSendIpcToMainAndWait,
 } from "../../core/renderer.js";
-import * as oldModals from "../../shared/renderer/modals.js";
 import * as modals from "../../shared/renderer/modals/modals.js";
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -187,6 +186,11 @@ function initOnIpcCallbacks() {
 
   /////////////////////////////////////////////////////////////////////////////
 
+  on("build-content-activity", (...args) => {
+    switchSection(1);
+    buildContentActivity(...args);
+  });
+
   on("build-content-libraries", (...args) => {
     switchSection(1);
     buildContentLibraries(...args);
@@ -221,20 +225,31 @@ function initOnIpcCallbacks() {
 
   /////////////////////////////////////////////////////////////////////////////
 
-  on("render-book-thumb", (bookId, buffer, mime) => {
-    if (buffer) {
-      const img = document.querySelector(`#tool-komga-thumb-${bookId}`);
-      if (img) {
-        const blob = new Blob([buffer], { type: mime });
-        const url = URL.createObjectURL(blob);
-        img.src = url;
-      }
-    }
+  on("build-content-books-in-keepreading", (...args) => {
+    switchSection(1);
+    buildContentBooksInKeepReading(...args);
   });
 
-  on("render-series-thumb", (seriesId, buffer, mime) => {
+  on("build-content-books-in-recentbooks", (...args) => {
+    switchSection(1);
+    buildContentBooksInRecentBooks(...args);
+  });
+
+  on("build-content-series-in-recentseries", (...args) => {
+    switchSection(1);
+    buildContentSeriesInRecentSeries(...args);
+  });
+
+  on("build-content-series-in-updatedseries", (...args) => {
+    switchSection(1);
+    buildContentSeriesInUpdatedSeries(...args);
+  });
+
+  /////////////////////////////////////////////////////////////////////////////
+
+  on("render-thumb", (id, buffer, mime) => {
     if (buffer) {
-      const img = document.querySelector(`#tool-komga-thumb-${seriesId}`);
+      const img = document.querySelector(`#tool-komga-thumb-${id}`);
       if (img) {
         const blob = new Blob([buffer], { type: mime });
         const url = URL.createObjectURL(blob);
@@ -255,6 +270,12 @@ function initOnIpcCallbacks() {
 
   on("show-modal-loading", () => {
     showLoadingModal();
+  });
+
+  on("hide-modal-loading", () => {
+    if (g_activeModal) {
+      closeActiveModal();
+    }
   });
 
   on("show-modal-info", (...args) => {
@@ -616,6 +637,141 @@ function buildContentEmpty() {
   const root = document.querySelector("#tool-komga-content");
   root.style = "padding-top: 10px";
   root.innerHTML = `<span> ${g_extraLocalization.noContent} </span>`;
+  ///////////////////////////////////////////
+  updateColumnsHeight();
+  document.getElementById("tools-columns-right").scrollIntoView({
+    behavior: "smooth",
+    block: "start",
+    inline: "nearest",
+  });
+  closeActiveModal();
+}
+
+function buildContentActivity(inputData) {
+  console.log(inputData);
+  const root = document.querySelector("#tool-komga-content");
+  root.style = "padding-top: 10px";
+  root.innerHTML = `
+  <div class="tool-komga-activity-section">  
+    <div class="tool-komga-activity-title">${g_extraLocalization.keepReading}</div>
+    <div class="tool-komga-activity-div" id="tool-komga-activity-inprogress-div"></div>
+    ${
+      inputData.inProgress.totalElements > 5
+        ? `
+    <button id="tool-komga-activity-inprogress-button">
+      <span>${g_extraLocalization.btnSeeAllBooks.toUpperCase()}</span>
+    </button>`
+        : ""
+    }
+  </div>
+  <div class="tool-komga-activity-section">  
+    <div class="tool-komga-activity-title">${g_extraLocalization.recentlyAddedBooks}</div>
+    <div class="tool-komga-activity-div" id="tool-komga-activity-recentbooks-div"></div>
+    ${
+      inputData.recentlyAddedBooks.totalElements > 5
+        ? `
+    <button id="tool-komga-activity-recentbooks-button">
+      <span>${g_extraLocalization.btnSeeAllBooks.toUpperCase()}</span>
+    </button>`
+        : ""
+    }   
+  </div>
+  <div class="tool-komga-activity-section">  
+    <div class="tool-komga-activity-title">${g_extraLocalization.recentlyAddedSeries}</div>
+    <div class="tool-komga-activity-div" id="tool-komga-activity-recentseries-div"></div>
+    ${
+      inputData.recentlyAddedSeries.totalElements > 5
+        ? `
+    <button id="tool-komga-activity-recentseries-button">
+      <span>${g_extraLocalization.btnSeeAllBooks.toUpperCase()}</span>
+    </button>`
+        : ""
+    }
+  </div>
+  <div class="tool-komga-activity-section">  
+    <div class="tool-komga-activity-title">${g_extraLocalization.recentlyUpdatedSeries}</div>
+    <div class="tool-komga-activity-div" id="tool-komga-activity-updatedseries-div"></div>
+    ${
+      inputData.recentlyUpdatedSeries.totalElements > 5
+        ? `
+    <button id="tool-komga-activity-updatedseries-button">
+      <span>${g_extraLocalization.btnSeeAllBooks.toUpperCase()}</span>
+    </button>`
+        : ""
+    }    
+  </div>
+  `;
+  let bookIds = [];
+  let seriesIds = [];
+  {
+    const div = document.querySelector("#tool-komga-activity-inprogress-div");
+    const grid = helperBooksGrid(inputData.inProgress);
+    div.appendChild(grid);
+    bookIds.push(...inputData.inProgress.content.map((data) => data.id));
+    const button = document.querySelector(
+      "#tool-komga-activity-inprogress-button",
+    );
+    if (button)
+      button.addEventListener("click", () => {
+        sendIpcToMain("show-books-in-keepreading", 0);
+      });
+  }
+  {
+    const div = document.querySelector("#tool-komga-activity-recentbooks-div");
+    const grid = helperBooksGrid(inputData.recentlyAddedBooks);
+    div.appendChild(grid);
+    bookIds.push(
+      ...inputData.recentlyAddedBooks.content.map((data) => data.id),
+    );
+    const button = document.querySelector(
+      "#tool-komga-activity-recentbooks-button",
+    );
+    if (button)
+      button.addEventListener("click", () => {
+        sendIpcToMain("show-books-in-recentbooks", 0);
+      });
+  }
+  {
+    const div = document.querySelector("#tool-komga-activity-recentseries-div");
+    const grid = helperSeriesGrid(inputData.recentlyAddedSeries);
+    div.appendChild(grid);
+    seriesIds.push(
+      ...inputData.recentlyAddedSeries.content.map((data) => data.id),
+    );
+    const button = document.querySelector(
+      "#tool-komga-activity-recentseries-button",
+    );
+    if (button)
+      button.addEventListener("click", () => {
+        sendIpcToMain("show-series-in-recentseries", 0);
+      });
+  }
+  {
+    const div = document.querySelector(
+      "#tool-komga-activity-updatedseries-div",
+    );
+    const grid = helperSeriesGrid(inputData.recentlyUpdatedSeries);
+    div.appendChild(grid);
+    seriesIds.push(
+      ...inputData.recentlyUpdatedSeries.content.map((data) => data.id),
+    );
+    const button = document.querySelector(
+      "#tool-komga-activity-updatedseries-button",
+    );
+    if (button)
+      button.addEventListener("click", () => {
+        sendIpcToMain("show-series-in-updatedseries", 0);
+      });
+  }
+  sendIpcToMain("get-thumbs", bookIds, seriesIds);
+  ///////////////////////////////////////////
+  updateColumnsHeight();
+  document.getElementById("tools-columns-right").scrollIntoView({
+    behavior: "smooth",
+    block: "start",
+    inline: "nearest",
+  });
+  closeActiveModal();
 }
 
 function buildContentLibraries(inputData) {
@@ -793,7 +949,7 @@ function buildContentBook(data) {
       const comicData = {
         source: "komga",
         comicId: data.id,
-        name: data.name,
+        name: data.metadata.title,
         numPages: pagesCount,
         url: ``,
       };
@@ -841,6 +997,36 @@ function buildContentSeriesInSearch(query, inputData, pageIndex = 0) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
+function buildContentBooksInKeepReading(inputData, pageIndex = 0) {
+  helperBuildBooks(inputData, (pageIndex) => {
+    showLoadingModal();
+    sendIpcToMain("show-books-in-keepreading", pageIndex);
+  });
+}
+
+function buildContentBooksInRecentBooks(inputData, pageIndex = 0) {
+  helperBuildBooks(inputData, (pageIndex) => {
+    showLoadingModal();
+    sendIpcToMain("show-books-in-recentbooks", pageIndex);
+  });
+}
+
+function buildContentSeriesInRecentSeries(inputData, pageIndex = 0) {
+  helperBuildSeries(inputData, (pageIndex) => {
+    showLoadingModal();
+    sendIpcToMain("show-series-in-recentseries", pageIndex);
+  });
+}
+
+function buildContentSeriesInUpdatedSeries(inputData, pageIndex = 0) {
+  helperBuildSeries(inputData, (pageIndex) => {
+    showLoadingModal();
+    sendIpcToMain("show-series-in-updatedseries", pageIndex);
+  });
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
 function helperBuildSeries(inputData, goToPage, letters, letter, goToAlphabet) {
   const root = document.querySelector("#tool-komga-content");
   root.style = "padding-top: 10px";
@@ -861,28 +1047,8 @@ function helperBuildSeries(inputData, goToPage, letters, letter, goToAlphabet) {
       );
     }
     ////
-    const gridWrapper = document.createElement("div");
-    gridWrapper.className = "tool-komga-books-grid-wrapper";
+    const gridWrapper = helperSeriesGrid(inputData);
     root.appendChild(gridWrapper);
-
-    inputData.content.forEach((data) => {
-      const card = document.createElement("div");
-      card.className = "tool-komga-book-card";
-      card.setAttribute("data-id", data.id);
-      const safeTitle = data.name.replace(/"/g, "&quot;");
-      card.innerHTML = `
-          <div class="tool-komga-book-card-container" title="${safeTitle}">
-            <img class="tool-komga-book-card-img" id="tool-komga-thumb-${data.id}" src="" alt="" title="${safeTitle}" />
-            <div class="tool-komga-book-card-numtag">${data.booksCount}</div>
-          </div>
-          <span class="tool-komga-book-card-title" title="${safeTitle}">${data.name}</span>
-        `;
-      card.addEventListener("click", () => {
-        showLoadingModal();
-        sendIpcToMain("show-books-in-series", data.id, data.name);
-      });
-      gridWrapper.appendChild(card);
-    });
     ////
     if (
       inputData.number !== undefined &&
@@ -924,26 +1090,8 @@ function helperBuildBooks(inputData, goToPage) {
       );
     }
     ////
-    const gridWrapper = document.createElement("div");
-    gridWrapper.className = "tool-komga-books-grid-wrapper";
+    const gridWrapper = helperBooksGrid(inputData);
     root.appendChild(gridWrapper);
-    inputData.content.forEach((data) => {
-      const card = document.createElement("div");
-      card.className = "tool-komga-book-card";
-      card.setAttribute("data-id", data.id);
-      const safeTitle = data.name.replace(/"/g, "&quot;");
-      card.innerHTML = `
-          <div class="tool-komga-book-card-container" title="${safeTitle}">
-            <img class="tool-komga-book-card-img" id="tool-komga-thumb-${data.id}" src="" alt="" title="${safeTitle}" />
-          </div>
-          <span class="tool-komga-book-card-title" title="${safeTitle}">${data.name}</span>
-        `;
-      card.addEventListener("click", () => {
-        showLoadingModal();
-        sendIpcToMain("show-book", data.id, data.name);
-      });
-      gridWrapper.appendChild(card);
-    });
     ////
     if (
       inputData.number !== undefined &&
@@ -968,13 +1116,64 @@ function helperBuildBooks(inputData, goToPage) {
   closeActiveModal();
 }
 
+function helperBooksGrid(inputData) {
+  const gridWrapper = document.createElement("div");
+  gridWrapper.className = "tool-komga-books-grid-wrapper";
+  inputData.content.forEach((data) => {
+    const card = document.createElement("div");
+    card.className = "tool-komga-book-card";
+    card.setAttribute("data-id", data.id);
+    const safeTitle = data.metadata.title.replace(/"/g, "&quot;");
+    card.innerHTML = `
+          <div class="tool-komga-book-card-container" title="${safeTitle}">
+            <img class="tool-komga-book-card-img" id="tool-komga-thumb-${data.id}" src="" alt="" title="${safeTitle}" />
+          </div>
+          <span class="tool-komga-book-card-title" title="${safeTitle}">${data.metadata.title}</span>
+        `;
+    card.addEventListener("click", () => {
+      showLoadingModal();
+      sendIpcToMain("show-book", data.id, data.metadata.title);
+    });
+    gridWrapper.appendChild(card);
+  });
+  return gridWrapper;
+}
+
+function helperSeriesGrid(inputData) {
+  const gridWrapper = document.createElement("div");
+  gridWrapper.className = "tool-komga-books-grid-wrapper";
+  inputData.content.forEach((data) => {
+    const card = document.createElement("div");
+    card.className = "tool-komga-book-card";
+    card.setAttribute("data-id", data.id);
+    const safeTitle = data.metadata.title.replace(/"/g, "&quot;");
+    card.innerHTML = `
+          <div class="tool-komga-book-card-container" title="${safeTitle}">
+            <img class="tool-komga-book-card-img" id="tool-komga-thumb-${data.id}" src="" alt="" title="${safeTitle}" />
+            <div class="tool-komga-book-card-numtag">${data.booksCount}</div>
+          </div>
+          <span class="tool-komga-book-card-title" title="${safeTitle}">${data.metadata.title}</span>
+        `;
+    card.addEventListener("click", () => {
+      showLoadingModal();
+      sendIpcToMain("show-books-in-series", data.id, data.metadata.title);
+    });
+    gridWrapper.appendChild(card);
+  });
+  return gridWrapper;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // CONTENT NAVBAR /////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
 const Section = {
   LIBRARIES: "libraries",
-  HISTORY: "dashboard",
+  ACTIVITY: "activity",
+  KEEP_READING: "keep_reading",
+  RECENT_BOOKS: "recent_books",
+  RECENT_SERIES: "recent_Series",
+  UPDATED_SERIES: "updated_series",
   SEARCH_BOOKS: "search_books",
   SEARCH_SERIES: "search_series",
   //
@@ -991,6 +1190,7 @@ function buildContentNavbar(state, history) {
   const backButton = document.createElement("span");
   backButton.className = "tool-komga-navbar-icon-button";
   backButton.addEventListener("click", (event) => {
+    showLoadingModal();
     sendIpcToMain("on-nav-button-clicked", "back");
   });
   backButton.innerHTML = `<i class="fa-solid fa-arrow-left"></i>`;
@@ -1002,6 +1202,7 @@ function buildContentNavbar(state, history) {
   const librariesButton = document.createElement("span");
   librariesButton.className = "tool-komga-navbar-icon-button";
   librariesButton.addEventListener("click", (event) => {
+    showLoadingModal();
     sendIpcToMain("on-nav-button-clicked", "libraries");
   });
   librariesButton.innerHTML = `<i class="fa-solid fa-folder-tree"></i>`;
@@ -1010,20 +1211,22 @@ function buildContentNavbar(state, history) {
   librariesButton.title = g_extraLocalization.libraries;
   root.appendChild(librariesButton);
 
-  const historyButton = document.createElement("span");
-  historyButton.className = "tool-komga-navbar-icon-button";
-  historyButton.addEventListener("click", (event) => {
-    sendIpcToMain("on-nav-button-clicked", "home");
+  const activityButton = document.createElement("span");
+  activityButton.className = "tool-komga-navbar-icon-button";
+  activityButton.addEventListener("click", (event) => {
+    showLoadingModal();
+    sendIpcToMain("on-nav-button-clicked", "activity");
   });
-  historyButton.innerHTML = `<i class="fa-solid fa-clock-rotate-left"></i>`;
-  if (!state?.section || state.section === Section.HISTORY)
-    historyButton.classList.add("tool-komga-navbar-icon-button-disabled");
-  historyButton.title = g_extraLocalization.history;
-  root.appendChild(historyButton);
+  activityButton.innerHTML = `<i class="fa-solid fa-chart-simple"></i>`;
+  if (!state?.section || state.section === Section.ACTIVITY)
+    activityButton.classList.add("tool-komga-navbar-icon-button-disabled");
+  activityButton.title = g_extraLocalization.activity;
+  root.appendChild(activityButton);
 
   const searchButton = document.createElement("span");
   searchButton.className = "tool-komga-navbar-icon-button";
   searchButton.addEventListener("click", (event) => {
+    showLoadingModal();
     sendIpcToMain("on-nav-button-clicked", "search");
   });
   searchButton.innerHTML = `<i class="fa-solid fa-magnifying-glass"></i>`;
@@ -1042,6 +1245,10 @@ function buildContentNavbar(state, history) {
   if (section === Section.SEARCH_BOOKS || section === Section.SEARCH_SERIES) {
     const type = section === Section.SEARCH_BOOKS ? loc.books : loc.series;
     title += `${loc.search} (${type}): ${search.query}`;
+  } else if (section === Section.ACTIVITY) {
+    title += g_extraLocalization.activity;
+  } else if (section === Section.LIBRARIES) {
+    title += g_extraLocalization.libraries;
   } else {
     const path = [library?.name, series?.name, book?.name].filter((item) => {
       return item; // returns item when if(item) is true

@@ -270,10 +270,10 @@ exports.getAlphabeticalGroups = async function (libraryId) {
 };
 
 //////////////////////////////////////////////////////////////////////////////
-// HOME //////////////////////////////////////////////////////////////////////
+// ACTIVITY //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 
-exports.getHistory = async function () {
+exports.getActivity = async function () {
   try {
     const size = 5;
     const results = await Promise.allSettled([
@@ -286,15 +286,15 @@ exports.getHistory = async function () {
     return {
       inProgress:
         results[0].status === "fulfilled" ? results[0].value : undefined,
-      latestBooks:
+      recentlyAddedBooks:
         results[1].status === "fulfilled" ? results[1].value : undefined,
-      newSeries:
+      recentlyAddedSeries:
         results[2].status === "fulfilled" ? results[2].value : undefined,
-      updatedSeries:
+      recentlyUpdatedSeries:
         results[3].status === "fulfilled" ? results[3].value : undefined,
     };
   } catch (error) {
-    log.error("error getting home data: " + error);
+    log.error("error getting activity data: " + error);
     return {};
   }
 };
@@ -405,16 +405,7 @@ exports.downloadBook = async function (bookId, fileName) {
   try {
     const url = `${g_session.url}/api/v1/books/${bookId}/file`;
     log.debug("downloading: " + url);
-    const response = await net.fetch(url, {
-      headers: {
-        "X-Auth-Token": g_session.token,
-        "User-Agent": g_customUserAgent,
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`failed to download book: ${response.statusText}`);
-    }
+    const response = await fetchUrlGet(url);
 
     const contentLength = response.headers.get("content-length");
     const totalBytes = contentLength ? parseInt(contentLength, 10) : 0;
@@ -602,65 +593,39 @@ let g_thumbsRetrievalAbortController = null;
 
 exports.loadBookThumb = function (bookId) {
   if (!bookId) return;
-  exports.loadBooksThumbs([bookId]);
-};
-
-exports.loadBooksThumbs = async function (bookIds) {
-  // cancel previous batch if any
-  if (g_thumbsRetrievalAbortController) {
-    g_thumbsRetrievalAbortController.abort();
-  }
-  g_thumbsRetrievalAbortController = new AbortController();
-  const { signal } = g_thumbsRetrievalAbortController;
-  // run them concurrently
-  const fetchPromises = bookIds.map(async (bookId) => {
-    try {
-      const url = `${g_session.url}/api/v1/books/${bookId}/thumbnail`;
-      // this one includes the signal so I can abort it
-      const response = await net.fetch(url, {
-        signal,
-        headers: {
-          "X-Auth-Token": g_session.token,
-          "User-Agent": g_customUserAgent,
-        },
-      });
-      if (!response.ok) {
-        throw new Error(`Status: ${response.statusText}`);
-      }
-      const arrayBuffer = await response.arrayBuffer();
-      const buffer = Buffer.from(arrayBuffer);
-      const mime = fileUtils.getFileTypeFromBuffer(buffer, true);
-      if (signal.aborted) return;
-      sendIpcToRenderer("render-book-thumb", bookId, buffer, mime);
-    } catch (error) {
-      if (error.name === "AbortError") {
-        log.debug(`thumbnail fetch for book ${bookId} successfully aborted`);
-      } else {
-        log.error(`failed to fetch thumbnail for book ${bookId}: ` + error);
-      }
-    }
-  });
-  await Promise.allSettled(fetchPromises);
-  // clean up
-  g_thumbsRetrievalAbortController = null;
+  exports.loadThumbs([bookId], []);
 };
 
 exports.loadSeriesThumb = function (seriesId) {
   if (!seriesId) return;
-  exports.loadSeriesThumbs([seriesId]);
+  exports.loadThumbs([], [seriesId]);
 };
 
-exports.loadSeriesThumbs = async function (seriesIds) {
-  // TODO: mostly the same as book thumbs, maybe merge?
+exports.loadThumbs = async function (bookIds, seriesIds) {
   if (g_thumbsRetrievalAbortController) {
     g_thumbsRetrievalAbortController.abort();
   }
   g_thumbsRetrievalAbortController = new AbortController();
-  const { signal } = g_thumbsRetrievalAbortController;
-  const fetchPromises = seriesIds.map(async (seriesId) => {
+  const currentController = g_thumbsRetrievalAbortController;
+  const { signal } = currentController;
+  const cleanBookIds = Array.isArray(bookIds) ? bookIds : [];
+  const cleanSeriesIds = Array.isArray(seriesIds) ? seriesIds : [];
+  const tasks = [];
+  cleanBookIds.forEach((id) => {
+    tasks.push({
+      id,
+      url: `${g_session.url}/api/v1/books/${id}/thumbnail`,
+    });
+  });
+  cleanSeriesIds.forEach((id) => {
+    tasks.push({
+      id,
+      url: `${g_session.url}/api/v1/series/${id}/thumbnail`,
+    });
+  });
+  const fetchPromises = tasks.map(async (task) => {
     try {
-      const url = `${g_session.url}/api/v1/series/${seriesId}/thumbnail`;
-      const response = await net.fetch(url, {
+      const response = await net.fetch(task.url, {
         signal,
         headers: {
           "X-Auth-Token": g_session.token,
@@ -673,21 +638,24 @@ exports.loadSeriesThumbs = async function (seriesIds) {
       const arrayBuffer = await response.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
       const mime = fileUtils.getFileTypeFromBuffer(buffer, true);
-      if (signal.aborted) return;
-      sendIpcToRenderer("render-series-thumb", seriesId, buffer, mime);
+      if (
+        signal.aborted ||
+        g_thumbsRetrievalAbortController !== currentController
+      )
+        return;
+      sendIpcToRenderer("render-thumb", task.id, buffer, mime);
     } catch (error) {
-      if (error.name === "AbortError") {
-        log.debug(
-          `thumbnail fetch for series ${seriesId} was successfully aborted`,
-        );
+      if (error.name === "AbortError" || signal.aborted) {
+        log.debug(`thumbnail fetch for ${task.id} successfully aborted`);
       } else {
-        log.error(`failed to fetch thumbnail for series ${seriesId}: ` + error);
+        log.error(`failed to fetch thumbnail for ${task.id}: ` + error);
       }
     }
   });
   await Promise.allSettled(fetchPromises);
-  // clean up
-  g_thumbsRetrievalAbortController = null;
+  if (g_thumbsRetrievalAbortController === currentController) {
+    g_thumbsRetrievalAbortController = null;
+  }
 };
 
 exports.cancelThumbsRetrieval = function () {

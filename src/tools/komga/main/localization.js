@@ -44,6 +44,7 @@ exports.getExtraLocalization = function () {
   return {
     loadingTitle: _("tool-shared-modal-title-loading"),
     // sections
+    activity: _("tool-komga-section-activity"),
     libraries: _("tool-komga-section-libraries"),
     series: _("tool-komga-section-series"),
     books: _("tool-komga-section-books"),
@@ -57,7 +58,6 @@ exports.getExtraLocalization = function () {
     // content
     back: _("tool-shared-ui-back"),
     search: _("menu-tools-search"),
-    history: _("tool-hst-title"),
     noContent: _("tool-komga-no-content-message"),
     // favorites
     options: _("tool-shared-tab-options"),
@@ -80,6 +80,13 @@ exports.getExtraLocalization = function () {
     progress: _("tool-komga-reading-progress"),
     completed: _("tool-komga-reading-progress-completed"),
     noSummary: _("tool-komga-no-summary"),
-    //tool-metadata-data-summary
+    // activity
+    keepReading: _("tool-komga-subsection-keepreading"),
+    recentlyAddedBooks: _("tool-komga-subsection-recentlyaddedbooks"),
+    recentlyAddedSeries: _("tool-komga-subsection-recentlyaddedseries"),
+    recentlyUpdatedSeries: _("tool-komga-subsection-recentlyupdatedseries"),
+    recentlyFinished: _("tool-komga-subsection-recentlyfinished"),
+    btnSeeAllBooks: _("tool-komga-button-see-all-books"),
+    btnSeeAllSeries: _("tool-komga-button-see-all-series"),
   };
 };

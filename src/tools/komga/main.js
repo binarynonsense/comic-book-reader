@@ -209,12 +209,16 @@ function initOnIpcCallbacks() {
     await showBooksInSeries(...args);
   });
 
+  on("get-thumbs", async (bookIds, seriesIds) => {
+    server.loadThumbs(bookIds, seriesIds);
+  });
+
   on("get-books-thumbs", async (ids) => {
-    server.loadBooksThumbs(ids);
+    server.loadThumbs(ids, undefined);
   });
 
   on("get-series-thumbs", async (ids) => {
-    server.loadSeriesThumbs(ids);
+    server.loadThumbs(undefined, ids);
   });
 
   on("show-book", async (...args) => {
@@ -229,6 +233,24 @@ function initOnIpcCallbacks() {
 
   on("show-series-in-search", async (...args) => {
     await showSeriesInSearch(...args);
+  });
+
+  /////////////////
+
+  on("show-books-in-keepreading", async (...args) => {
+    await showBooksInKeepReading(...args);
+  });
+
+  on("show-books-in-recentbooks", async (...args) => {
+    await showBooksInRecentBooks(...args);
+  });
+
+  on("show-series-in-recentseries", async (...args) => {
+    await showSeriesInRecentSeries(...args);
+  });
+
+  on("show-series-in-updatedseries", async (...args) => {
+    await showSeriesInUpdatedSeries(...args);
   });
 
   /////////////////
@@ -375,7 +397,11 @@ async function logToServer(url, email, password, save) {
 
 const Section = {
   LIBRARIES: "libraries",
-  HISTORY: "dashboard",
+  ACTIVITY: "activity",
+  KEEP_READING: "keep_reading",
+  RECENT_BOOKS: "recent_books",
+  RECENT_SERIES: "recent_Series",
+  UPDATED_SERIES: "updated_series",
   SEARCH_BOOKS: "search_books",
   SEARCH_SERIES: "search_series",
   //
@@ -468,7 +494,7 @@ async function showBook(id, name) {
   sendIpcToRenderer("build-content-navbar", g_navState, g_navHistory.length);
 }
 
-////
+////////////////////////////////////////////////////////
 
 async function showBooksInSearch(query, pageIndex = 0) {
   const response = await server.getSearchBooks(query, pageIndex);
@@ -480,6 +506,7 @@ async function showBooksInSearch(query, pageIndex = 0) {
   g_navState = {};
   g_navState.section = Section.SEARCH_BOOKS;
   g_navState.search = { query };
+  g_navState.series = { pageIndex };
   sendIpcToRenderer("build-content-navbar", g_navState, g_navHistory.length);
 }
 
@@ -493,6 +520,75 @@ async function showSeriesInSearch(query, pageIndex = 0) {
   g_navState = {};
   g_navState.section = Section.SEARCH_SERIES;
   g_navState.search = { query };
+  g_navState.library = { pageIndex };
+  sendIpcToRenderer("build-content-navbar", g_navState, g_navHistory.length);
+}
+
+////////////////////////////////////////////////////////////
+
+async function showActivity() {
+  const response = await server.getActivity();
+  sendIpcToRenderer("build-content-activity", response);
+  ////
+  if (g_navState.section !== Section.ACTIVITY) {
+    addCurrentNavStateToHistory();
+  }
+  g_navState = {};
+  g_navState.section = Section.ACTIVITY;
+  sendIpcToRenderer("build-content-navbar", g_navState, g_navHistory.length);
+}
+
+// g_navState.series = { id: seriesId, name: seriesName, pageIndex };
+// g_navState.library = { id: libraryId, name: libraryName, letter, pageIndex };
+async function showBooksInKeepReading(pageIndex = 0) {
+  const response = await server.getInProgressBooks(pageIndex);
+  sendIpcToRenderer("build-content-books-in-keepreading", response);
+  ////
+  if (g_navState.section !== Section.KEEP_READING) {
+    addCurrentNavStateToHistory();
+  }
+  g_navState = {};
+  g_navState.section = Section.KEEP_READING;
+  g_navState.series = { pageIndex };
+  sendIpcToRenderer("build-content-navbar", g_navState, g_navHistory.length);
+}
+
+async function showBooksInRecentBooks(pageIndex = 0) {
+  const response = await server.getRecentlyAddedBooks(pageIndex);
+  sendIpcToRenderer("build-content-books-in-recentbooks", response);
+  ////
+  if (g_navState.section !== Section.RECENT_BOOKS) {
+    addCurrentNavStateToHistory();
+  }
+  g_navState = {};
+  g_navState.section = Section.RECENT_BOOKS;
+  g_navState.series = { pageIndex };
+  sendIpcToRenderer("build-content-navbar", g_navState, g_navHistory.length);
+}
+
+async function showSeriesInRecentSeries(pageIndex = 0) {
+  const response = await server.getRecentlyAddedSeries(pageIndex);
+  sendIpcToRenderer("build-content-series-in-recentseries", response);
+  ////
+  if (g_navState.section !== Section.RECENT_SERIES) {
+    addCurrentNavStateToHistory();
+  }
+  g_navState = {};
+  g_navState.section = Section.RECENT_SERIES;
+  g_navState.library = { pageIndex };
+  sendIpcToRenderer("build-content-navbar", g_navState, g_navHistory.length);
+}
+
+async function showSeriesInUpdatedSeries(pageIndex = 0) {
+  const response = await server.getRecentlyUpdatedSeries(pageIndex);
+  sendIpcToRenderer("build-content-series-in-updatedseries", response);
+  ////
+  if (g_navState.section !== Section.UPDATED_SERIES) {
+    addCurrentNavStateToHistory();
+  }
+  g_navState = {};
+  g_navState.section = Section.UPDATED_SERIES;
+  g_navState.library = { pageIndex };
   sendIpcToRenderer("build-content-navbar", g_navState, g_navHistory.length);
 }
 
@@ -508,6 +604,10 @@ function navButtonClicked(buttonName) {
 
     case "libraries":
       showLibraries();
+      break;
+
+    case "activity":
+      showActivity();
       break;
 
     case "search":
@@ -541,24 +641,46 @@ async function goBack() {
 
 async function loadState(state) {
   g_navState = state;
-  if (state.section === Section.LIBRARIES) {
-    await showLibraries();
-  } else if (state.section === Section.LIBRARY_SERIES) {
-    await showSeriesInLibrary(
-      state.library.id,
-      state.library.name,
-      state.library.letter,
-    );
-  } else if (state.section === Section.SERIES_BOOKS) {
-    await showBooksInSeries(state.series.id, state.series.name);
-  } else if (state.section === Section.BOOK) {
-    await showBook(state.book.id, state.book.name);
-  }
-  ////
-  else if (state.section === Section.SEARCH_BOOKS) {
-    await showBooksInSearch(state.search.query);
-  } else if (state.section === Section.SEARCH_SERIES) {
-    await showSeriesInSearch(state.search.query);
+  try {
+    if (state.section === Section.LIBRARIES) {
+      await showLibraries();
+    } else if (state.section === Section.LIBRARY_SERIES) {
+      await showSeriesInLibrary(
+        state.library.id,
+        state.library.name,
+        state.library.letter,
+        state.library.pageIndex,
+      );
+    } else if (state.section === Section.SERIES_BOOKS) {
+      await showBooksInSeries(
+        state.series.id,
+        state.series.name,
+        state.series.pageIndex,
+      );
+    } else if (state.section === Section.BOOK) {
+      await showBook(state.book.id, state.book.name);
+    }
+    ////
+    else if (state.section === Section.SEARCH_BOOKS) {
+      await showBooksInSearch(state.search.query, state.series.pageIndex);
+    } else if (state.section === Section.SEARCH_SERIES) {
+      await showSeriesInSearch(state.search.query, state.library.pageIndex);
+    }
+    ////
+    else if (state.section === Section.ACTIVITY) {
+      await showActivity();
+    } else if (state.section === Section.KEEP_READING) {
+      await showBooksInKeepReading(state.series.pageIndex);
+    } else if (state.section === Section.RECENT_BOOKS) {
+      await showBooksInRecentBooks(state.series.pageIndex);
+    } else if (state.section === Section.RECENT_SERIES) {
+      await showSeriesInRecentSeries(state.library.pageIndex);
+    } else if (state.section === Section.UPDATED_SERIES) {
+      await showSeriesInUpdatedSeries(state.library.pageIndex);
+    }
+  } catch (error) {
+    log.error(error);
+    sendIpcToRenderer("hide-modal-loading");
   }
 }
 
