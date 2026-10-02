@@ -946,6 +946,7 @@ function buildContentBook(data) {
               <p><span class="tool-komga-book-dataname">${g_extraLocalization.creators.toUpperCase()}</span> ${authorsList}</p>
               <div><span class="tool-komga-book-dataname">${g_extraLocalization.tags.toUpperCase()}</span> ${tagsList}</div>
               <p><span class="tool-komga-book-dataname">${g_extraLocalization.file.toUpperCase()}</span> ${data?.url || g_extraLocalization.unknown}</p>
+              <p><span class="tool-komga-book-dataname">${g_extraLocalization.fileSize.toUpperCase()}</span> ${data?.size || g_extraLocalization.unknown}</p>
               <p><span class="tool-komga-book-dataname">${g_extraLocalization.format.toUpperCase()}</span> ${data?.media?.mediaType || g_extraLocalization.unknown}</p>
             </div>
             
