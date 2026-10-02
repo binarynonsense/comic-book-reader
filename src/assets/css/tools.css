@@ -844,6 +844,7 @@ html[dir="rtl"] .tools-range-bubble {
   background-color: var(--tools-button-normal-bg-color);
   color: var(--tools-collection-bg-color);
   border-radius: 3px;
+  padding: 0 5px;
 }
 .tools-collection-pagination-button:hover {
   transform: scale(1.1);
