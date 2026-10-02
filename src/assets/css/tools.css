@@ -1824,8 +1824,23 @@ html[dir="rtl"] .tools-range-bubble {
 }
 
 .tool-komga-activity-title {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.tool-komga-activity-title > span {
   font-size: 22px;
 }
-
-.tool-komga-activity-div {
+.tool-komga-activity-title i {
+  font-size: 25px;
+  margin-left: auto;
+  color: var(--tools-button-normal-bg-color);
+}
+.tool-komga-activity-title i:hover {
+  transform: scale(1.05);
+  cursor: pointer;
+  color: var(--tools-button-normal-bg-hover-color);
+}
+.tool-komga-activity-title i:active {
+  transform: scale(1.05) translateY(1px);
 }

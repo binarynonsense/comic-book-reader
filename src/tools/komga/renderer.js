@@ -673,52 +673,53 @@ function buildContentActivity(inputData) {
   root.style = "padding-top: 10px";
   root.innerHTML = `
   <div class="tool-komga-activity-section">  
-    <div class="tool-komga-activity-title">${g_extraLocalization.keepReading}</div>
-    <div class="tool-komga-activity-div" id="tool-komga-activity-inprogress-div"></div>
-    ${
-      inputData.inProgress.totalElements > 5
-        ? `
-    <button id="tool-komga-activity-inprogress-button">
-      <span>${g_extraLocalization.btnSeeAllBooks.toUpperCase()}</span>
-    </button>`
-        : ""
-    }
+    <div class="tool-komga-activity-title">
+      <span>${g_extraLocalization.keepReading}</span>
+      ${
+        inputData.inProgress.totalElements > 5
+          ? `
+      <i class="fa-solid fa-circle-plus" id="tool-komga-activity-inprogress-button" title="${g_extraLocalization.btnSeeAllBooks}"></i>`
+          : ""
+      }
+    </div>
+    <div class="tool-komga-activity-div" id="tool-komga-activity-inprogress-div"></div>    
   </div>
   <div class="tool-komga-activity-section">  
-    <div class="tool-komga-activity-title">${g_extraLocalization.recentlyAddedBooks}</div>
+    <div class="tool-komga-activity-title">
+      <span>${g_extraLocalization.recentlyAddedBooks}</span>
+      ${
+        inputData.recentlyAddedBooks.totalElements > 5
+          ? `
+      <i class="fa-solid fa-circle-plus" id="tool-komga-activity-recentbooks-button" title="${g_extraLocalization.btnSeeAllBooks}"></i>`
+          : ""
+      }
+    </div>
     <div class="tool-komga-activity-div" id="tool-komga-activity-recentbooks-div"></div>
-    ${
-      inputData.recentlyAddedBooks.totalElements > 5
-        ? `
-    <button id="tool-komga-activity-recentbooks-button">
-      <span>${g_extraLocalization.btnSeeAllBooks.toUpperCase()}</span>
-    </button>`
-        : ""
-    }   
+       
   </div>
   <div class="tool-komga-activity-section">  
-    <div class="tool-komga-activity-title">${g_extraLocalization.recentlyAddedSeries}</div>
-    <div class="tool-komga-activity-div" id="tool-komga-activity-recentseries-div"></div>
-    ${
-      inputData.recentlyAddedSeries.totalElements > 5
-        ? `
-    <button id="tool-komga-activity-recentseries-button">
-      <span>${g_extraLocalization.btnSeeAllBooks.toUpperCase()}</span>
-    </button>`
-        : ""
-    }
+    <div class="tool-komga-activity-title">
+      <span>${g_extraLocalization.recentlyAddedSeries}</span>
+      ${
+        inputData.recentlyAddedSeries.totalElements > 5
+          ? `
+      <i class="fa-solid fa-circle-plus" id="tool-komga-activity-recentseries-button" title="${g_extraLocalization.btnSeeAllBooks}"></i>`
+          : ""
+      }
+    </div>
+    <div class="tool-komga-activity-div" id="tool-komga-activity-recentseries-div"></div>    
   </div>
   <div class="tool-komga-activity-section">  
-    <div class="tool-komga-activity-title">${g_extraLocalization.recentlyUpdatedSeries}</div>
-    <div class="tool-komga-activity-div" id="tool-komga-activity-updatedseries-div"></div>
-    ${
-      inputData.recentlyUpdatedSeries.totalElements > 5
-        ? `
-    <button id="tool-komga-activity-updatedseries-button">
-      <span>${g_extraLocalization.btnSeeAllBooks.toUpperCase()}</span>
-    </button>`
-        : ""
-    }    
+    <div class="tool-komga-activity-title">
+      <span>${g_extraLocalization.recentlyUpdatedSeries}</span>
+      ${
+        inputData.recentlyUpdatedSeries.totalElements > 5
+          ? `
+      <i class="fa-solid fa-circle-plus" id="tool-komga-activity-updatedseries-button" title="${g_extraLocalization.btnSeeAllBooks}"></i>`
+          : ""
+      } 
+    </div>
+    <div class="tool-komga-activity-div" id="tool-komga-activity-updatedseries-div"></div>       
   </div>
   `;
   let bookIds = [];
