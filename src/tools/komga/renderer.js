@@ -11,6 +11,8 @@ import {
 } from "../../core/renderer.js";
 import * as modals from "../../shared/renderer/modals/modals.js";
 
+import { Section } from "./constants.js";
+
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -1167,21 +1169,6 @@ function helperSeriesGrid(inputData) {
 ///////////////////////////////////////////////////////////////////////////////
 // CONTENT NAVBAR /////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-
-const Section = {
-  LIBRARIES: "libraries",
-  ACTIVITY: "activity",
-  KEEP_READING: "keep_reading",
-  RECENT_BOOKS: "recent_books",
-  RECENT_SERIES: "recent_Series",
-  UPDATED_SERIES: "updated_series",
-  SEARCH_BOOKS: "search_books",
-  SEARCH_SERIES: "search_series",
-  //
-  LIBRARY_SERIES: "library_series",
-  SERIES_BOOKS: "series_books",
-  BOOK: "book",
-};
 
 function buildContentNavbar(state, history) {
   const root = document.querySelector("#tool-komga-navbar");

@@ -20,6 +20,7 @@ const localization = require("./main/localization");
 const log = require("../../shared/main/logger");
 
 const server = require("./server");
+const { Section } = require("./constants.js");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP //////////////////////////////////////////////////////////////////////
@@ -394,21 +395,6 @@ async function logToServer(url, email, password, save) {
 ///////////////////////////////////////////////////////////////////////////////
 // CONTENT ////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-
-const Section = {
-  LIBRARIES: "libraries",
-  ACTIVITY: "activity",
-  KEEP_READING: "keep_reading",
-  RECENT_BOOKS: "recent_books",
-  RECENT_SERIES: "recent_Series",
-  UPDATED_SERIES: "updated_series",
-  SEARCH_BOOKS: "search_books",
-  SEARCH_SERIES: "search_series",
-  //
-  LIBRARY_SERIES: "library_series",
-  SERIES_BOOKS: "series_books",
-  BOOK: "book",
-};
 
 let g_navState = {
   section: undefined,
