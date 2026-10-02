@@ -451,7 +451,12 @@ async function showSeriesInLibrary(
   sendIpcToRenderer("build-content-navbar", g_navState, g_navHistory.length);
 }
 
-async function showBooksInSeries(seriesId, seriesName, pageIndex = 0) {
+async function showBooksInSeries(
+  seriesId,
+  seriesName,
+  pageIndex = 0,
+  altLibraryName = undefined,
+) {
   const response = await server.getBooksInSeries(seriesId, pageIndex);
   sendIpcToRenderer(
     "build-content-books-in-series",
@@ -465,10 +470,11 @@ async function showBooksInSeries(seriesId, seriesName, pageIndex = 0) {
   }
   g_navState.section = Section.SERIES_BOOKS;
   g_navState.series = { id: seriesId, name: seriesName, pageIndex };
+  if (altLibraryName) g_navState.library = { name: altLibraryName };
   sendIpcToRenderer("build-content-navbar", g_navState, g_navHistory.length);
 }
 
-async function showBook(id, name) {
+async function showBook(id, name, altLibraryName) {
   const response = await server.getBook(id);
   sendIpcToRenderer("build-content-book", response);
   ////
@@ -477,6 +483,7 @@ async function showBook(id, name) {
   }
   g_navState.section = Section.BOOK;
   g_navState.book = { id, name };
+  if (altLibraryName) g_navState.library = { name: altLibraryName };
   sendIpcToRenderer("build-content-navbar", g_navState, g_navHistory.length);
 }
 
@@ -521,6 +528,7 @@ async function showActivity() {
   }
   g_navState = {};
   g_navState.section = Section.ACTIVITY;
+  g_navState.library = { name: _("tool-komga-section-activity") };
   sendIpcToRenderer("build-content-navbar", g_navState, g_navHistory.length);
 }
 
@@ -535,6 +543,7 @@ async function showBooksInKeepReading(pageIndex = 0) {
   }
   g_navState = {};
   g_navState.section = Section.KEEP_READING;
+  g_navState.library = { name: _("tool-komga-subsection-keepreading") };
   g_navState.series = { pageIndex };
   sendIpcToRenderer("build-content-navbar", g_navState, g_navHistory.length);
 }
@@ -548,6 +557,7 @@ async function showBooksInRecentBooks(pageIndex = 0) {
   }
   g_navState = {};
   g_navState.section = Section.RECENT_BOOKS;
+  g_navState.library = { name: _("tool-komga-subsection-recentlyaddedbooks") };
   g_navState.series = { pageIndex };
   sendIpcToRenderer("build-content-navbar", g_navState, g_navHistory.length);
 }
@@ -561,7 +571,10 @@ async function showSeriesInRecentSeries(pageIndex = 0) {
   }
   g_navState = {};
   g_navState.section = Section.RECENT_SERIES;
-  g_navState.library = { pageIndex };
+  g_navState.library = {
+    pageIndex,
+    name: _("tool-komga-subsection-recentlyaddedseries"),
+  };
   sendIpcToRenderer("build-content-navbar", g_navState, g_navHistory.length);
 }
 
@@ -574,7 +587,10 @@ async function showSeriesInUpdatedSeries(pageIndex = 0) {
   }
   g_navState = {};
   g_navState.section = Section.UPDATED_SERIES;
-  g_navState.library = { pageIndex };
+  g_navState.library = {
+    pageIndex,
+    name: _("tool-komga-subsection-recentlyupdatedseries"),
+  };
   sendIpcToRenderer("build-content-navbar", g_navState, g_navHistory.length);
 }
 

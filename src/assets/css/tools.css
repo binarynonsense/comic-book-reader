@@ -1776,13 +1776,14 @@ html[dir="rtl"] .tools-range-bubble {
 
 #tool-komga-navbar-right-content {
   margin-left: auto;
-  padding-left: 10px;
+  padding-left: 15px;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
   font-weight: bold;
+  text-align: justify;
 }
 
 .tool-komga-navbar-icon-button {

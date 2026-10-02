@@ -705,7 +705,10 @@ function buildContentActivity(inputData) {
   let seriesIds = [];
   {
     const div = document.querySelector("#tool-komga-activity-inprogress-div");
-    const grid = helperBooksGrid(inputData.inProgress);
+    const grid = helperBooksGrid(
+      inputData.inProgress,
+      g_extraLocalization.keepReading,
+    );
     div.appendChild(grid);
     bookIds.push(...inputData.inProgress.content.map((data) => data.id));
     const button = document.querySelector(
@@ -718,7 +721,10 @@ function buildContentActivity(inputData) {
   }
   {
     const div = document.querySelector("#tool-komga-activity-recentbooks-div");
-    const grid = helperBooksGrid(inputData.recentlyAddedBooks);
+    const grid = helperBooksGrid(
+      inputData.recentlyAddedBooks,
+      g_extraLocalization.recentlyAddedBooks,
+    );
     div.appendChild(grid);
     bookIds.push(
       ...inputData.recentlyAddedBooks.content.map((data) => data.id),
@@ -733,7 +739,10 @@ function buildContentActivity(inputData) {
   }
   {
     const div = document.querySelector("#tool-komga-activity-recentseries-div");
-    const grid = helperSeriesGrid(inputData.recentlyAddedSeries);
+    const grid = helperSeriesGrid(
+      inputData.recentlyAddedSeries,
+      g_extraLocalization.recentlyAddedSeries,
+    );
     div.appendChild(grid);
     seriesIds.push(
       ...inputData.recentlyAddedSeries.content.map((data) => data.id),
@@ -750,7 +759,10 @@ function buildContentActivity(inputData) {
     const div = document.querySelector(
       "#tool-komga-activity-updatedseries-div",
     );
-    const grid = helperSeriesGrid(inputData.recentlyUpdatedSeries);
+    const grid = helperSeriesGrid(
+      inputData.recentlyUpdatedSeries,
+      g_extraLocalization.recentlyUpdatedSeries,
+    );
     div.appendChild(grid);
     seriesIds.push(
       ...inputData.recentlyUpdatedSeries.content.map((data) => data.id),
@@ -1119,7 +1131,7 @@ function helperBuildBooks(inputData, goToPage) {
   modals.closeActiveModal(modals.Level.TOOLS);
 }
 
-function helperBooksGrid(inputData) {
+function helperBooksGrid(inputData, altLibraryName) {
   const gridWrapper = document.createElement("div");
   gridWrapper.className = "tool-komga-books-grid-wrapper";
   inputData.content.forEach((data) => {
@@ -1135,14 +1147,14 @@ function helperBooksGrid(inputData) {
         `;
     card.addEventListener("click", () => {
       showLoadingModal();
-      sendIpcToMain("show-book", data.id, data.metadata.title);
+      sendIpcToMain("show-book", data.id, data.metadata.title, altLibraryName);
     });
     gridWrapper.appendChild(card);
   });
   return gridWrapper;
 }
 
-function helperSeriesGrid(inputData) {
+function helperSeriesGrid(inputData, altLibraryName) {
   const gridWrapper = document.createElement("div");
   gridWrapper.className = "tool-komga-books-grid-wrapper";
   inputData.content.forEach((data) => {
@@ -1159,7 +1171,13 @@ function helperSeriesGrid(inputData) {
         `;
     card.addEventListener("click", () => {
       showLoadingModal();
-      sendIpcToMain("show-books-in-series", data.id, data.metadata.title);
+      sendIpcToMain(
+        "show-books-in-series",
+        data.id,
+        data.metadata.title,
+        0,
+        altLibraryName,
+      );
     });
     gridWrapper.appendChild(card);
   });
@@ -1232,13 +1250,25 @@ function buildContentNavbar(state, history) {
   const loc = g_extraLocalization;
   if (section === Section.SEARCH_BOOKS || section === Section.SEARCH_SERIES) {
     const type = section === Section.SEARCH_BOOKS ? loc.books : loc.series;
-    title += `${loc.search} (${type}): ${search.query}`;
+    title += `${loc.search?.toUpperCase()} (${type}): ${search.query}`;
   } else if (section === Section.ACTIVITY) {
-    title += g_extraLocalization.activity;
+    title += loc.activity.toUpperCase();
   } else if (section === Section.LIBRARIES) {
-    title += g_extraLocalization.libraries;
+    title += loc.libraries.toUpperCase();
+  } else if (section === Section.KEEP_READING) {
+    title += loc.keepReading.toUpperCase();
+  } else if (section === Section.RECENT_BOOKS) {
+    title += loc.recentlyAddedBooks.toUpperCase();
+  } else if (section === Section.RECENT_SERIES) {
+    title += loc.recentlyAddedSeries.toUpperCase();
+  } else if (section === Section.UPDATED_SERIES) {
+    title += loc.recentlyUpdatedSeries.toUpperCase();
   } else {
-    const path = [library?.name, series?.name, book?.name].filter((item) => {
+    const path = [
+      library?.name?.toUpperCase(),
+      series?.name,
+      book?.name,
+    ].filter((item) => {
       return item; // returns item when if(item) is true
     });
     title += path.join(" :: ");
