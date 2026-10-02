@@ -317,7 +317,15 @@ function buildServers(servers) {
         multilineText.appendChild(text);
 
         text = document.createElement("span");
-        text.innerText = `${data.email}`;
+        text.innerText = data.maskedApiKey
+          ? "API Key"
+          : g_extraLocalization.passwordType;
+        multilineText.appendChild(text);
+
+        text = document.createElement("span");
+        text.innerText = data.maskedApiKey
+          ? data.maskedApiKey
+          : data.maskedEmail;
         multilineText.appendChild(text);
       }
       buttonSpan.appendChild(multilineText);

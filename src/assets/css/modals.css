@@ -121,6 +121,7 @@
 }
 
 .modal-field select {
+  margin-top: 10px;
   background-color: var(--modal-button-normal-bg-color);
   color: var(--modal-button-normal-text-color);
   padding: 5px;

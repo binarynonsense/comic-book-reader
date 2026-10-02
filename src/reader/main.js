@@ -1054,11 +1054,11 @@ async function tryOpenWWW(pageIndex, historyEntry) {
       // need to log in
       let serverData = getSavedServerDataFromUrl(data.serverUrl);
       if (serverData) {
-        const result = await login(
-          serverData.url,
-          serverData.email,
-          serverData.password,
-        );
+        const result = await login(serverData.url, {
+          email: serverData.email,
+          password: serverData.password,
+          apiKey: serverData.apiKey,
+        });
         if (!result.success) {
           log.error(result.error);
           sendIpcToRenderer(

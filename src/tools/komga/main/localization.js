@@ -55,6 +55,7 @@ exports.getExtraLocalization = function () {
     recentlyFinished: _("tool-komga-subsection-recentlyfinished"),
     // servers
     noServers: _("tool-komga-no-servers-message"),
+    passwordType: _("tool-komga-modal-credentials-type-password"),
     // content
     back: _("tool-shared-ui-back"),
     search: _("menu-tools-search"),

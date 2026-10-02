@@ -71,7 +71,7 @@ exports.open = async function () {
   //////////////////
   loadOptions();
   ///////////////////
-  sendIpcToRenderer("show", 0, g_servers);
+  sendIpcToRenderer("show", 0, getUIServersList());
   if (g_navState.section) {
     loadState(g_navState);
   }
@@ -187,7 +187,7 @@ function initOnIpcCallbacks() {
 
   on("on-modal-remove-server-from-list-ok-clicked", async (index) => {
     g_servers.splice(index, 1);
-    sendIpcToRenderer("build-servers", g_servers);
+    sendIpcToRenderer("build-servers", getUIServersList());
   });
 
   //////////////////
@@ -267,12 +267,16 @@ function initOnIpcCallbacks() {
   //////////////////
 
   on("on-connect-button-clicked", () => {
-    const defaults = { url: "", email: "", password: "" };
+    const defaults = { url: "", email: "", password: "", apiKey: "" };
     // TODO: save last accessed and used that for defaults?
     sendIpcToRenderer(
       "show-modal-login",
       _("tool-komga-modal-connect-to-server"),
       "URL",
+      _("tool-komga-modal-credentials-type"),
+      "API Key",
+      _("tool-komga-modal-credentials-type-password"),
+      "API Key",
       _("tool-komga-modal-email"),
       _("tool-shared-ui-creation-password"),
       _("tool-komga-modal-remember"),
@@ -283,7 +287,7 @@ function initOnIpcCallbacks() {
   });
 
   on("on-modal-connect-ok-clicked", async (data) => {
-    logToServer(data.url, data.email, data.password, data.save);
+    logToServer(data.url, data.apiKey, data.email, data.password, data.save);
   });
 }
 
@@ -314,10 +318,17 @@ exports.getSavedServerDataFromUrl = function (url) {
   if (index >= 0) {
     if (safeStorage.isEncryptionAvailable()) {
       const data = g_servers[index];
-      const password = safeStorage.decryptString(
-        Buffer.from(data.encodedPassword, "hex"),
-      );
-      return { url: data.url, email: data.email, password };
+      if (data.encodedApiKey) {
+        const apiKey = safeStorage.decryptString(
+          Buffer.from(data.encodedApiKey, "hex"),
+        );
+        return { url: data.url, apiKey };
+      } else {
+        const password = safeStorage.decryptString(
+          Buffer.from(data.encodedPassword, "hex"),
+        );
+        return { url: data.url, email: data.email, password };
+      }
     } else {
       return undefined;
     }
@@ -331,10 +342,17 @@ async function connectToServerInList(index, refData) {
   if (index >= 0 && index < g_servers.length) {
     if (safeStorage.isEncryptionAvailable()) {
       const data = g_servers[index];
-      const password = safeStorage.decryptString(
-        Buffer.from(data.encodedPassword, "hex"),
-      );
-      logToServer(data.url, data.email, password, false);
+      if (data.encodedApiKey) {
+        const apiKey = safeStorage.decryptString(
+          Buffer.from(data.encodedApiKey, "hex"),
+        );
+        logToServer(data.url, apiKey, undefined, undefined, false);
+      } else {
+        const password = safeStorage.decryptString(
+          Buffer.from(data.encodedPassword, "hex"),
+        );
+        logToServer(data.url, undefined, data.email, password, false);
+      }
     } else {
       log.error("encryption NOT available!!");
     }
@@ -344,16 +362,26 @@ async function connectToServerInList(index, refData) {
 }
 exports.connectToServerInList = connectToServerInList;
 
-async function logToServer(url, email, password, save) {
+async function logToServer(url, apiKey, email, password, save) {
   const session = server.getSession();
-  if (
-    session.url === url &&
-    session.email === email &&
-    session.password === password
-  ) {
+  let isAlreadyLogged = false;
+  if (apiKey) {
+    isAlreadyLogged = session.url === url && session.apiKey === apiKey;
+  } else {
+    isAlreadyLogged =
+      session.url === url &&
+      session.email === email &&
+      session.password === password;
+  }
+  if (isAlreadyLogged) {
     log.editor("already logged as that user, skipping login");
   } else {
-    const result = await server.login(url, email, password);
+    let result;
+    if (apiKey) {
+      result = await server.login(url, { apiKey });
+    } else {
+      result = await server.login(url, { email, password });
+    }
     if (!result.success) {
       log.error(result.error);
       sendIpcToRenderer(
@@ -366,23 +394,38 @@ async function logToServer(url, email, password, save) {
     }
   }
   if (save) {
-    let encodedPassword = "";
     if (safeStorage.isEncryptionAvailable()) {
-      encodedPassword = safeStorage.encryptString(password).toString("hex");
-      const existingServer = g_servers.find(
-        (server) => server.url === url && server.email === email,
-      );
-      if (existingServer) {
-        // just in case
-        existingServer.encodedPassword = encodedPassword;
+      if (apiKey) {
+        let encodedApiKey = "";
+        encodedApiKey = safeStorage.encryptString(apiKey).toString("hex");
+        const existingServer = g_servers.find(
+          (server) =>
+            server.url === url && server.encodedApiKey === encodedApiKey,
+        );
+        if (!existingServer) {
+          g_servers.push({
+            url,
+            encodedApiKey,
+          });
+        }
       } else {
-        g_servers.push({
-          url,
-          email,
-          encodedPassword,
-        });
+        let encodedPassword = "";
+        encodedPassword = safeStorage.encryptString(password).toString("hex");
+        const existingServer = g_servers.find(
+          (server) => server.url === url && server.email === email,
+        );
+        if (existingServer) {
+          // just in case
+          existingServer.encodedPassword = encodedPassword;
+        } else {
+          g_servers.push({
+            url,
+            email,
+            encodedPassword,
+          });
+        }
       }
-      sendIpcToRenderer("build-servers", g_servers);
+      sendIpcToRenderer("build-servers", getUIServersList());
     } else {
       // can't encrypt -> don't save
       log.error("encryption NOT available!!");
@@ -394,6 +437,47 @@ async function logToServer(url, email, password, save) {
   }
   sendIpcToRenderer("show-modal-loading");
   showLibraries();
+}
+
+function getUIServersList() {
+  const servers = g_servers.map((server) => {
+    const serverCopy = { ...server };
+    if (serverCopy.encodedApiKey) {
+      try {
+        // decode
+        const apiKey = safeStorage.decryptString(
+          Buffer.from(serverCopy.encodedApiKey, "hex"),
+        );
+        // mask
+        if (!apiKey || apiKey.length < 8) {
+          serverCopy.maskedApiKey = "..."; // too short, offuscate all
+        } else {
+          const start = apiKey.substring(0, 4);
+          const end = apiKey.substring(apiKey.length - 4);
+          serverCopy.maskedApiKey = `${start}...${end}`;
+        }
+      } catch (error) {
+        serverCopy.maskedApiKey = "????";
+      }
+    } else if (serverCopy.email) {
+      try {
+        const [name, domain] = serverCopy.email.split("@");
+        if (!name || !domain) {
+          serverCopy.maskedEmail = serverCopy.email;
+        } else {
+          const visibleLength = name.length > 2 ? 2 : 1;
+          const maskedName =
+            name.substring(0, visibleLength) +
+            "*".repeat(Math.max(3, name.length - visibleLength));
+          serverCopy.maskedEmail = `${maskedName}@${domain}`;
+        }
+      } catch (error) {
+        serverCopy.maskedEmail = "????";
+      }
+    }
+    return serverCopy;
+  });
+  return servers;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

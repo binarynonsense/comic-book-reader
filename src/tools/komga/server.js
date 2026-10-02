@@ -20,6 +20,7 @@ let g_session = {
   email: null,
   password: null,
   token: null,
+  apiKey: null,
 };
 
 let sendIpcToRenderer;
@@ -40,7 +41,7 @@ exports.setIpcs = async function (_sendIpcToRenderer) {
 // LOG IN ////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 
-exports.login = async function (serverUrl, username, password) {
+exports.login = async function (serverUrl, credentials) {
   const { app } = require("electron");
   const os = require("os");
   const platform = os.platform();
@@ -54,7 +55,7 @@ exports.login = async function (serverUrl, username, password) {
   }
   const version = app.getVersion();
   g_customUserAgent = `ACBR/${version} (${osName})`;
-  ////////////
+
   const result = {
     success: false,
     isKomga: false,
@@ -62,41 +63,59 @@ exports.login = async function (serverUrl, username, password) {
   };
 
   try {
-    const encodedCredentials = Buffer.from(`${username}:${password}`).toString(
-      "base64",
-    );
-    const authHeader = `Basic ${encodedCredentials}`;
-
     const sanitizedUrl = serverUrl.replace(/\/+\$/, "");
     const loginUrl = `${sanitizedUrl}/api/v2/users/me`;
+    const headers = {
+      "User-Agent": g_customUserAgent,
+    };
+
+    const isApiKeyMode = !!credentials.apiKey;
+
+    if (isApiKeyMode) {
+      headers["X-API-Key"] = credentials.apiKey;
+    } else if (credentials.email && credentials.password) {
+      const encodedCredentials = Buffer.from(
+        `${credentials.email}:${credentials.password}`,
+      ).toString("base64");
+      headers["Authorization"] = `Basic ${encodedCredentials}`;
+      headers["X-Auth-Token"] = "";
+    } else {
+      result.error = "Missing required credentials (apiKey or email/password).";
+      return result;
+    }
 
     const response = await net.fetch(loginUrl, {
       method: "GET",
-      headers: {
-        Authorization: authHeader,
-        "User-Agent": g_customUserAgent,
-        "X-Auth-Token": "",
-      },
+      headers: headers,
     });
 
     if (response.ok) {
-      const token = response.headers.get("x-auth-token");
+      g_session.url = serverUrl;
+      g_session.userAgent = g_customUserAgent;
 
-      if (token) {
-        log.debug("received Komga X-Auth-Token");
-        g_session.url = serverUrl;
-        g_session.email = username;
-        g_session.password = password;
-        g_session.token = token;
-        g_session.userAgent = g_customUserAgent;
+      if (isApiKeyMode) {
+        log.debug("logged via Komga API Key");
+        g_session.apiKey = credentials.apiKey;
+        g_session.token = null;
         result.success = true;
         result.isKomga = true;
         return result;
       } else {
-        // login succeeded but no X-Auth-Token in response headers
-        result.isKomga = true;
-        result.error = "Missing session token header.";
-        return result;
+        const token = response.headers.get("x-auth-token");
+        if (token) {
+          log.debug("received Komga X-Auth-Token");
+          g_session.email = credentials.email;
+          g_session.password = credentials.password;
+          g_session.token = token;
+          g_session.apiKey = null;
+          result.success = true;
+          result.isKomga = true;
+          return result;
+        } else {
+          result.isKomga = true;
+          result.error = "Missing session token header.";
+          return result;
+        }
       }
     }
 
@@ -104,9 +123,10 @@ exports.login = async function (serverUrl, username, password) {
       const wwwAuth = response.headers.get("www-authenticate");
       const isKomga = !!(wwwAuth && wwwAuth.toLowerCase().includes("basic"));
       if (isKomga) {
-        result.error = "Invalid email or password.";
+        result.error = isApiKeyMode
+          ? "Invalid API Key."
+          : "Invalid email or password.";
       } else {
-        // received 401 from an unknown non-komga server
         result.error = "Unauthorized access to a non-Komga server.";
       }
       result.isKomga = isKomga;
@@ -125,31 +145,82 @@ exports.login = async function (serverUrl, username, password) {
 // HELPERS ///////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 
-async function fetchUrlGet(url) {
-  const response = await net.fetch(url, {
+async function fetchUrlGet(url, options = {}) {
+  const currentSession = options.session || g_session;
+  const currentUserAgent = currentSession.userAgent || g_customUserAgent;
+  const headers = {
+    "User-Agent": currentUserAgent,
+  };
+  if (options.accept) {
+    headers["Accept"] = options.accept;
+  }
+  if (currentSession.apiKey) {
+    headers["X-API-Key"] = currentSession.apiKey;
+  } else if (currentSession.token) {
+    headers["X-Auth-Token"] = currentSession.token;
+  }
+  const fetchOptions = {
     method: "GET",
-    headers: {
-      "X-Auth-Token": g_session.token,
-      "User-Agent": g_customUserAgent,
-      Accept: "application/json",
-    },
-  });
+    headers: headers,
+  };
+  if (options.signal) {
+    fetchOptions.signal = options.signal;
+  }
+  const response = await net.fetch(url, fetchOptions);
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);
   }
   return response;
 }
 
-async function fetchUrlPost(url, body) {
-  const response = await net.fetch(url, {
+async function fetchUrlPost(url, body, options = {}) {
+  const currentSession = options.session || g_session;
+  const currentUserAgent = currentSession.userAgent || g_customUserAgent;
+  const headers = {
+    "User-Agent": currentUserAgent,
+    "Content-Type": "application/json",
+  };
+  if (currentSession.apiKey) {
+    headers["X-API-Key"] = currentSession.apiKey;
+  } else if (currentSession.token) {
+    headers["X-Auth-Token"] = currentSession.token;
+  }
+  const fetchOptions = {
     method: "POST",
-    headers: {
-      "X-Auth-Token": g_session.token,
-      "User-Agent": g_customUserAgent,
-      "Content-Type": "application/json",
-    },
+    headers: headers,
     body: JSON.stringify(body),
-  });
+  };
+  if (options.signal) {
+    fetchOptions.signal = options.signal;
+  }
+  const response = await net.fetch(url, fetchOptions);
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+  return response;
+}
+
+async function fetchUrlPatch(url, body, options = {}) {
+  const currentSession = options.session || g_session;
+  const currentUserAgent = currentSession.userAgent || g_customUserAgent;
+  const headers = {
+    "User-Agent": currentUserAgent,
+    "Content-Type": "application/json",
+  };
+  if (currentSession.apiKey) {
+    headers["X-API-Key"] = currentSession.apiKey;
+  } else if (currentSession.token) {
+    headers["X-Auth-Token"] = currentSession.token;
+  }
+  const fetchOptions = {
+    method: "PATCH",
+    headers: headers,
+    body: JSON.stringify(body),
+  };
+  if (options.signal) {
+    fetchOptions.signal = options.signal;
+  }
+  const response = await net.fetch(url, fetchOptions);
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);
   }
@@ -501,16 +572,10 @@ exports.downloadBook = async function (bookId, fileName) {
 exports.loadPageImageBuffer = async function (bookId, pageNumber, session) {
   try {
     const url = `${session.url}/api/v1/books/${bookId}/pages/${pageNumber}`;
-    const response = await net.fetch(url, {
-      headers: {
-        "X-Auth-Token": session.token,
-        "User-Agent": session.userAgent,
-        Accept: "image/jpeg", // so pdf pages are rasterized
-      },
+    const response = await fetchUrlGet(url, {
+      session: session,
+      accept: "image/jpeg",
     });
-    if (!response.ok) {
-      throw new Error(`failed to fetch page: ${response.status}`);
-    }
     const arrayBuffer = await response.arrayBuffer();
     // convert to a node buffer
     const buffer = Buffer.from(arrayBuffer);
@@ -535,15 +600,7 @@ exports.updateReadingProgress = async function (
       page: page,
       completed: completed,
     };
-    const response = await net.fetch(url, {
-      method: "PATCH",
-      headers: {
-        "X-Auth-Token": g_session.token,
-        "User-Agent": g_customUserAgent,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
+    const response = await fetchUrlPatch(url, payload);
     // HTTP 204 No Content = successful update
     if (response.status === 204) {
       log.debug(
@@ -625,16 +682,7 @@ exports.loadThumbs = async function (bookIds, seriesIds) {
   });
   const fetchPromises = tasks.map(async (task) => {
     try {
-      const response = await net.fetch(task.url, {
-        signal,
-        headers: {
-          "X-Auth-Token": g_session.token,
-          "User-Agent": g_customUserAgent,
-        },
-      });
-      if (!response.ok) {
-        throw new Error(`Status: ${response.statusText}`);
-      }
+      const response = await fetchUrlGet(task.url, { signal });
       const arrayBuffer = await response.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
       const mime = fileUtils.getFileTypeFromBuffer(buffer, true);
