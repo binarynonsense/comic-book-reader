@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-import { closeModal, addActiveModal } from "./modals.js";
+import { closeActiveModal, addActiveModal } from "./modals.js";
 
 export function showSearchModal(
   level,
@@ -62,11 +62,11 @@ export function showSearchModal(
   ///
   const closeBtn = modal.querySelector(".modal-close-button");
   closeBtn.addEventListener("click", (event) => {
-    closeModal(modal);
+    closeActiveModal(level, modal);
   });
   const okBtn = modal.querySelector("#modal-ok-action-btn");
   okBtn.addEventListener("click", (event) => {
-    closeModal(modal);
+    closeActiveModal(level, modal);
     if (okCallback)
       okCallback(
         searchInput.value.trim(),
@@ -77,7 +77,7 @@ export function showSearchModal(
   });
   const cancelBtn = modal.querySelector("#modal-cancel-action-btn");
   cancelBtn.addEventListener("click", (event) => {
-    closeModal(modal);
+    closeActiveModal(level, modal);
     if (cancelCallBack) cancelCallBack();
   });
   ///

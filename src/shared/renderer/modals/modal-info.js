@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-import { closeModal, addActiveModal } from "./modals.js";
+import { closeActiveModal, addActiveModal } from "./modals.js";
 
 export function showInfoModal(
   level,
@@ -16,10 +16,11 @@ export function showInfoModal(
   okCallback,
   cancelCallBack,
 ) {
+  console.log(level);
   const container = document.querySelector("#modals");
   const modal = document.createElement("div");
   modal.className = "modal";
-  messageText = messageText.replace(/\n/g, "<br>");
+  if (messageText) messageText = messageText.replace(/\n/g, "<br>");
   modal.innerHTML = `
   <div class="modal-frame modal-frame-show">
     <div class="modal-topbar">
@@ -28,7 +29,7 @@ export function showInfoModal(
         </div>
     </div>
     <div class="modal-title">${titleText}</div>
-    <div class="modal-message">${messageText}</div>   
+    ${messageText ? `<div class="modal-message">${messageText}</div>` : ""}
     <div class="modal-buttons">
         <button class="modal-button" id="modal-ok-action-btn">${okText.toUpperCase()}</button>
         ${
@@ -44,17 +45,17 @@ export function showInfoModal(
   ///
   const closeBtn = modal.querySelector(".modal-close-button");
   closeBtn.addEventListener("click", (event) => {
-    closeModal(modal);
+    closeActiveModal(level, modal);
   });
   const okBtn = modal.querySelector("#modal-ok-action-btn");
   okBtn.addEventListener("click", (event) => {
-    closeModal(modal);
+    closeActiveModal(level, modal);
     if (okCallback) okCallback();
   });
   if (cancelText) {
     const cancelBtn = modal.querySelector("#modal-cancel-action-btn");
     cancelBtn.addEventListener("click", (event) => {
-      closeModal(modal);
+      closeActiveModal(level, modal);
       if (cancelCallBack) cancelCallBack();
     });
   }

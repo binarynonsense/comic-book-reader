@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-import { closeModal, Level, addActiveModal } from "./modals.js";
+import { closeActiveModal, Level, addActiveModal } from "./modals.js";
 
 export function showKomgaLoginModal(
   titleText,
@@ -101,19 +101,19 @@ export function showKomgaLoginModal(
   ///
   const closeBtn = modal.querySelector(".modal-close-button");
   closeBtn.addEventListener("click", (event) => {
-    closeModal(modal);
+    closeActiveModal(level, modal);
     callback();
   });
 
   const cancelBtn = modal.querySelector("#modal-cancel-action-btn");
   cancelBtn.addEventListener("click", (event) => {
-    closeModal(modal);
+    closeActiveModal(level, modal);
     callback();
   });
 
   const addBtn = modal.querySelector("#modal-ok-action-btn");
   addBtn.addEventListener("click", (event) => {
-    closeModal(modal);
+    closeActiveModal(level, modal);
     callback({
       url: urlInput.value,
       email: emailInput.value,

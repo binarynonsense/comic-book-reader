@@ -32,36 +32,27 @@ export const Level = {
 const g_activeModals = {};
 
 export function init() {
-  // NOTE: i'm using an array to be future proof, in case i want to
-  // be able to have multiple at once per level
   for (const key in Level) {
-    g_activeModals[Level[key]] = [];
+    g_activeModals[Level[key]] = undefined;
   }
 }
 
 export function addActiveModal(modal, level, closeOthers = true) {
-  if (closeOthers)
-    g_activeModals[level].forEach((element) => {
-      closeModal(element);
-    });
+  if (g_activeModals[level]) removeModalElement(g_activeModals[level]);
   modal.style.zIndex = getLevelZIndex(level);
-  g_activeModals[level] = [modal];
+  g_activeModals[level] = modal;
 }
 
 export function getActiveModal(level) {
-  if (g_activeModals[level].length <= 0) return undefined;
-  return g_activeModals[level][0];
+  return g_activeModals[level];
 }
 
 export function closeActiveModal(level) {
-  // NOTE: for now closing all
-  if (g_activeModals[level].length <= 0) return;
-  g_activeModals[level].forEach((element) => {
-    closeModal(element);
-  });
+  if (g_activeModals[level]) removeModalElement(g_activeModals[level]);
+  g_activeModals[level] = undefined;
 }
 
-export function closeModal(modal) {
+function removeModalElement(modal) {
   if (modal) {
     modal.remove();
   }

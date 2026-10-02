@@ -338,6 +338,16 @@
   animation: progress-bar-animation 2.5s linear infinite;
 }
 
+.modal-progress-bar-fill {
+  bottom: 0;
+  top: 0;
+  width: 0%;
+  background-color: var(--modal-progress-bar-fg-color);
+  border-radius: 1000px;
+  position: absolute;
+  transition: width 0.3s ease-out;
+}
+
 @keyframes progress-bar-animation {
   from {
     left: -50%;
