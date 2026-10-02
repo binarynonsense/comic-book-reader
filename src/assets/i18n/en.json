@@ -580,6 +580,7 @@
   "tool-shared-modal-title-updating": "Updating",
   "tool-shared-modal-title-saving": "Saving",
   "tool-shared-modal-title-loading": "Loading",
+  "tool-shared-modal-title-downloading": "Downloading",
   "tool-shared-modal-title-importing": "Importing",
   "tool-shared-modal-title-conversion-finished": "Conversion Finished",
   "tool-shared-modal-title-conversion-canceled": "Conversion Canceled",
