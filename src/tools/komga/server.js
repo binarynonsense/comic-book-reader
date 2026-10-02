@@ -540,7 +540,6 @@ exports.downloadBook = async function (bookId, fileName) {
           const current5PercentStep = Math.floor(actualPercent / 5) * 5;
 
           if (current5PercentStep > lastLoggedPercent) {
-            if (current5PercentStep > 50) throw "Test";
             lastLoggedPercent = current5PercentStep;
             log.debug(
               `download Progress: ${current5PercentStep}% (${downloadedBytes}/${totalBytes} bytes)`,
