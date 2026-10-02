@@ -388,6 +388,10 @@ async function logToServer(url, email, password, save) {
       log.error("encryption NOT available!!");
     }
   }
+  const currentFileData = reader.getFileData();
+  if (currentFileData?.data?.source === "komga") {
+    reader.onMenuCloseFile();
+  }
   sendIpcToRenderer("show-modal-loading");
   showLibraries();
 }
