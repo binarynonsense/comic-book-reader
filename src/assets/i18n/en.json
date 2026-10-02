@@ -1243,6 +1243,8 @@
   "tool-komga-no-content-message": "Use the 'Connect' button or select one from the 'Servers' list to start browsing a server's contents.",
   "tool-komga-modal-connect-to-server": "Connect to Server",
   "tool-komga-modal-server-url": "Server URL",
+  "tool-komga-modal-credentials-type": "Login method",
+  "tool-komga-modal-credentials-type-password": "Email and Password",
   "tool-komga-modal-email": "Email",
   "tool-komga-modal-remember": "Save server and credentials",
   "[NOTE TO TRANSLATORS]tool-komga-section-activity": "Activity as in recent activity in the server: latest read books, latest updated books...",
