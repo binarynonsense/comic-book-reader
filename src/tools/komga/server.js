@@ -562,6 +562,7 @@ exports.downloadBook = async function (bookId, fileName) {
     await pipeline(nodeStream, progressTrackingStream, writeStream, { signal });
 
     log.debug(`${bookId} successfully saved to ${outputFilePath}`);
+    sendIpcToRenderer("close-active-modal");
     return true;
   } catch (error) {
     sendIpcToRenderer("close-active-modal");
