@@ -1784,7 +1784,7 @@ html[dir="rtl"] .tools-range-bubble {
   overflow: hidden;
   text-overflow: ellipsis;
   font-weight: bold;
-  text-align: justify;
+  text-align: right;
 }
 
 .tool-komga-navbar-icon-button {
