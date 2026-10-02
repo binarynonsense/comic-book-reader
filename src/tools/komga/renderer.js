@@ -703,7 +703,7 @@ function buildContentActivity(inputData) {
       ${
         inputData.recentlyAddedSeries.totalElements > 5
           ? `
-      <i class="fa-solid fa-circle-plus" id="tool-komga-activity-recentseries-button" title="${g_extraLocalization.btnSeeAllBooks}"></i>`
+      <i class="fa-solid fa-circle-plus" id="tool-komga-activity-recentseries-button" title="${g_extraLocalization.btnSeeAllSeries}"></i>`
           : ""
       }
     </div>
@@ -715,7 +715,7 @@ function buildContentActivity(inputData) {
       ${
         inputData.recentlyUpdatedSeries.totalElements > 5
           ? `
-      <i class="fa-solid fa-circle-plus" id="tool-komga-activity-updatedseries-button" title="${g_extraLocalization.btnSeeAllBooks}"></i>`
+      <i class="fa-solid fa-circle-plus" id="tool-komga-activity-updatedseries-button" title="${g_extraLocalization.btnSeeAllSeries}"></i>`
           : ""
       } 
     </div>
@@ -737,6 +737,7 @@ function buildContentActivity(inputData) {
     );
     if (button)
       button.addEventListener("click", () => {
+        showLoadingModal();
         sendIpcToMain("show-books-in-keepreading", 0);
       });
   }
@@ -755,6 +756,7 @@ function buildContentActivity(inputData) {
     );
     if (button)
       button.addEventListener("click", () => {
+        showLoadingModal();
         sendIpcToMain("show-books-in-recentbooks", 0);
       });
   }
@@ -773,6 +775,7 @@ function buildContentActivity(inputData) {
     );
     if (button)
       button.addEventListener("click", () => {
+        showLoadingModal();
         sendIpcToMain("show-series-in-recentseries", 0);
       });
   }
@@ -793,6 +796,7 @@ function buildContentActivity(inputData) {
     );
     if (button)
       button.addEventListener("click", () => {
+        showLoadingModal();
         sendIpcToMain("show-series-in-updatedseries", 0);
       });
   }
