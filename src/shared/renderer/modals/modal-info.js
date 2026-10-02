@@ -5,9 +5,10 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-import { getLevelZIndex, close, Level } from "./modals.js";
+import { closeModal, addActiveModal } from "./modals.js";
 
 export function showInfoModal(
+  level,
   titleText,
   messageText,
   okText,
@@ -18,7 +19,6 @@ export function showInfoModal(
   const container = document.querySelector("#modals");
   const modal = document.createElement("div");
   modal.className = "modal";
-  modal.style.zIndex = getLevelZIndex(Level.TOOLS);
   messageText = messageText.replace(/\n/g, "<br>");
   modal.innerHTML = `
   <div class="modal-frame modal-frame-show">
@@ -44,20 +44,21 @@ export function showInfoModal(
   ///
   const closeBtn = modal.querySelector(".modal-close-button");
   closeBtn.addEventListener("click", (event) => {
-    close(modal);
+    closeModal(modal);
   });
   const okBtn = modal.querySelector("#modal-ok-action-btn");
   okBtn.addEventListener("click", (event) => {
-    close(modal);
+    closeModal(modal);
     if (okCallback) okCallback();
   });
   if (cancelText) {
     const cancelBtn = modal.querySelector("#modal-cancel-action-btn");
     cancelBtn.addEventListener("click", (event) => {
-      close(modal);
+      closeModal(modal);
       if (cancelCallBack) cancelCallBack();
     });
   }
   ///
+  addActiveModal(modal, level);
   return modal;
 }

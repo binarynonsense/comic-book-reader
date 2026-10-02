@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-import { getLevelZIndex, close, Level } from "./modals.js";
+import { closeModal, Level, addActiveModal } from "./modals.js";
 
 export function showKomgaLoginModal(
   titleText,
@@ -18,10 +18,10 @@ export function showKomgaLoginModal(
   defaults,
   callback,
 ) {
+  const level = Level.TOOLS;
   const container = document.querySelector("#modals");
   const modal = document.createElement("div");
   modal.className = "modal";
-  modal.style.zIndex = getLevelZIndex(Level.TOOLS);
   modal.innerHTML = `
   <div class="modal-frame modal-frame-show">
     <div class="modal-topbar">
@@ -76,19 +76,19 @@ export function showKomgaLoginModal(
   ///
   const closeBtn = modal.querySelector(".modal-close-button");
   closeBtn.addEventListener("click", (event) => {
-    close(modal);
+    closeModal(modal);
     callback();
   });
 
   const cancelBtn = modal.querySelector("#modal-cancel-action-btn");
   cancelBtn.addEventListener("click", (event) => {
-    close(modal);
+    closeModal(modal);
     callback();
   });
 
   const addBtn = modal.querySelector("#modal-ok-action-btn");
   addBtn.addEventListener("click", (event) => {
-    close(modal);
+    closeModal(modal);
     callback({
       url: urlInput.value,
       email: emailInput.value,
@@ -108,5 +108,7 @@ export function showKomgaLoginModal(
   }
   ///
   inputUpdated();
+  ///
+  addActiveModal(modal, level);
   return modal;
 }

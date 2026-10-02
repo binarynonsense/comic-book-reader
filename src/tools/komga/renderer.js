@@ -261,7 +261,7 @@ function initOnIpcCallbacks() {
   /////////////////////////////////////////////////////////////////////////////
 
   on("close-active-modal", () => {
-    closeActiveModal();
+    modals.closeActiveModal(modals.Level.TOOLS);
   });
 
   on("show-modal-login", (...args) => {
@@ -273,13 +273,11 @@ function initOnIpcCallbacks() {
   });
 
   on("hide-modal-loading", () => {
-    if (g_activeModal) {
-      closeActiveModal();
-    }
+    modals.closeActiveModal(modals.Level.TOOLS);
   });
 
   on("show-modal-info", (...args) => {
-    modals.showInfoModal(...args);
+    modals.showInfoModal(modals.Level.TOOLS, ...args);
   });
 
   /////////////////////////////////////////////////////////////////////////////
@@ -644,7 +642,7 @@ function buildContentEmpty() {
     block: "start",
     inline: "nearest",
   });
-  closeActiveModal();
+  modals.closeActiveModal(modals.Level.TOOLS);
 }
 
 function buildContentActivity(inputData) {
@@ -771,7 +769,7 @@ function buildContentActivity(inputData) {
     block: "start",
     inline: "nearest",
   });
-  closeActiveModal();
+  modals.closeActiveModal(modals.Level.TOOLS);
 }
 
 function buildContentLibraries(inputData) {
@@ -828,7 +826,7 @@ function buildContentLibraries(inputData) {
     block: "start",
     inline: "nearest",
   });
-  closeActiveModal();
+  modals.closeActiveModal(modals.Level.TOOLS);
 }
 
 function buildContentSeriesInLibrary(
@@ -979,7 +977,7 @@ function buildContentBook(data) {
     block: "start",
     inline: "nearest",
   });
-  closeActiveModal();
+  modals.closeActiveModal(modals.Level.TOOLS);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1073,7 +1071,7 @@ function helperBuildSeries(inputData, goToPage, letters, letter, goToAlphabet) {
     block: "start",
     inline: "nearest",
   });
-  closeActiveModal();
+  modals.closeActiveModal(modals.Level.TOOLS);
 }
 
 function helperBuildBooks(inputData, goToPage) {
@@ -1116,7 +1114,7 @@ function helperBuildBooks(inputData, goToPage) {
     block: "start",
     inline: "nearest",
   });
-  closeActiveModal();
+  modals.closeActiveModal(modals.Level.TOOLS);
 }
 
 function helperBooksGrid(inputData) {
@@ -1266,9 +1264,9 @@ function buildContentNavbar(state, history) {
 ///////////////////////////////////////////////////////////////////////////////
 
 export function onInputEvent(type, event) {
-  if (getActiveModal()) {
+  if (modals.getActiveModal(modals.Level.TOOLS)) {
     // TODO: new modals input
-    //oldModals.onInputEvent(getActiveModal(), type, event);
+    modals.onInputEvent(modals.getActiveModal(modals.Level.TOOLS), type, event);
     return;
   }
   switch (type) {
@@ -1282,7 +1280,7 @@ export function onInputEvent(type, event) {
 }
 
 export function onContextMenu(params) {
-  if (getActiveModal()) {
+  if (modals.getActiveModal(modals.Level.TOOLS)) {
     return;
   }
   sendIpcToMain("show-context-menu", params);
@@ -1292,34 +1290,12 @@ export function onContextMenu(params) {
 // MODALS /////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-let g_activeModal;
-
-export function getActiveModal() {
-  return g_activeModal;
-}
-
-function closeActiveModal() {
-  if (g_activeModal) {
-    modals.close(g_activeModal);
-    g_activeModal = undefined;
-  }
-}
-
 function showLoadingModal() {
-  if (g_activeModal) {
-    closeActiveModal();
-  }
-  g_activeModal = modals.showLoadingModal(
-    modals.Level.TOOLS,
-    g_extraLocalization.loadingTitle,
-  );
+  modals.showLoadingModal(modals.Level.TOOLS, g_extraLocalization.loadingTitle);
 }
 
 function showLoginModal(...args) {
-  if (g_activeModal) {
-    closeActiveModal();
-  }
-  g_activeModal = modals.showKomgaLoginModal(...args, (data) => {
+  modals.showKomgaLoginModal(...args, (data) => {
     if (!data) return;
     sendIpcToMain("on-modal-connect-ok-clicked", data);
   });
@@ -1332,10 +1308,8 @@ function showModalRemoveServerFromList(
   okText,
   cancelText,
 ) {
-  if (g_activeModal) {
-    closeActiveModal();
-  }
-  g_activeModal = modals.showInfoModal(
+  modals.showInfoModal(
+    modals.Level.TOOLS,
     titleText,
     messageText,
     okText,
@@ -1347,10 +1321,7 @@ function showModalRemoveServerFromList(
 }
 
 function showModalSearch(titleText, messageText, okText, cancelText) {
-  if (g_activeModal) {
-    closeActiveModal();
-  }
-  g_activeModal = modals.showSearchModal(
+  modals.showSearchModal(
     modals.Level.TOOLS,
     titleText,
     messageText,

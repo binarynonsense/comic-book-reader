@@ -5,13 +5,12 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-import { getLevelZIndex } from "./modals.js";
+import { addActiveModal } from "./modals.js";
 
 export function showLoadingModal(level, title) {
   const container = document.querySelector("#modals");
   const modal = document.createElement("div");
   modal.className = "modal";
-  modal.style.zIndex = getLevelZIndex(level);
   modal.innerHTML = `
   <div class="modal-frame modal-frame-show" style="width: 600px;">
     <div class="modal-title">${title ?? ""}</div>
@@ -21,5 +20,6 @@ export function showLoadingModal(level, title) {
   </div>`;
   container.appendChild(modal);
   ///
+  addActiveModal(modal, level);
   return modal;
 }

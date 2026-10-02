@@ -15,6 +15,7 @@ import {
   needsScrollToTopButtonUpdate,
 } from "../shared/renderer/tools.js";
 import * as modals from "../shared/renderer/modals.js";
+import { init as initModals } from "../shared/renderer/modals/modals.js";
 import { init as initInput } from "../shared/renderer/input.js";
 import {
   isVersionOlder,
@@ -30,6 +31,7 @@ import * as toasts from "../shared/renderer/toasts.js";
 init();
 
 function init() {
+  initModals(); // NOTE: new modals - wip
   initInput();
   initTools();
   // init ipcs

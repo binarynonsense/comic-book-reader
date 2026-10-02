@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-import { getLevelZIndex, close } from "./modals.js";
+import { closeModal, addActiveModal } from "./modals.js";
 
 export function showSearchModal(
   level,
@@ -20,7 +20,6 @@ export function showSearchModal(
   const container = document.querySelector("#modals");
   const modal = document.createElement("div");
   modal.className = "modal";
-  modal.style.zIndex = getLevelZIndex(level);
   let selectHtml = "";
   if (selectOptions) {
     selectHtml = `<select id="modal-search-select">`;
@@ -63,11 +62,11 @@ export function showSearchModal(
   ///
   const closeBtn = modal.querySelector(".modal-close-button");
   closeBtn.addEventListener("click", (event) => {
-    close(modal);
+    closeModal(modal);
   });
   const okBtn = modal.querySelector("#modal-ok-action-btn");
   okBtn.addEventListener("click", (event) => {
-    close(modal);
+    closeModal(modal);
     if (okCallback)
       okCallback(
         searchInput.value.trim(),
@@ -78,10 +77,12 @@ export function showSearchModal(
   });
   const cancelBtn = modal.querySelector("#modal-cancel-action-btn");
   cancelBtn.addEventListener("click", (event) => {
-    close(modal);
+    closeModal(modal);
     if (cancelCallBack) cancelCallBack();
   });
   ///
   inputUpdated();
+  ///
+  addActiveModal(modal, level);
   return modal;
 }
