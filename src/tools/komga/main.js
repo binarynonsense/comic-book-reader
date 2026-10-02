@@ -196,6 +196,10 @@ function initOnIpcCallbacks() {
     await server.downloadBook(bookId, name ?? "book");
   });
 
+  on("cancel-download-book", async () => {
+    server.cancelDownloadBook();
+  });
+
   //////////////////
 
   on("show-libraries", async (...args) => {

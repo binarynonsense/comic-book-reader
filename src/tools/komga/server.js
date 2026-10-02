@@ -466,7 +466,15 @@ exports.getSearchBooks = async function (
 // DOWNLOAD //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 
+let g_activeDownloadController = null;
+
 exports.downloadBook = async function (bookId, fileName) {
+  if (g_activeDownloadController) {
+    return false;
+  }
+  g_activeDownloadController = new AbortController();
+  const { signal } = g_activeDownloadController;
+
   const { dialog } = require("electron");
   const { open, rm } = require("fs/promises");
   const { Readable, Transform } = require("stream");
@@ -476,8 +484,8 @@ exports.downloadBook = async function (bookId, fileName) {
   try {
     const url = `${g_session.url}/api/v1/books/${bookId}/file`;
     log.debug("downloading: " + url);
-    const response = await fetchUrlGet(url);
 
+    const response = await fetchUrlGet(url, { signal });
     const contentLength = response.headers.get("content-length");
     const totalBytes = contentLength ? parseInt(contentLength, 10) : 0;
     const contentType = response.headers.get("content-type") || "";
@@ -500,7 +508,6 @@ exports.downloadBook = async function (bookId, fileName) {
 
     fileName = fileName.replace(/\.[^/.]+\$/, "");
     fileName = `${fileName}.${extension}`;
-
     const { canceled, filePath } = await dialog.showSaveDialog({
       title: "Save Comic Book",
       defaultPath: fileName,
@@ -519,7 +526,8 @@ exports.downloadBook = async function (bookId, fileName) {
     log.debug("to: " + filePath);
     outputFilePath = filePath;
 
-    // download
+    sendIpcToRenderer("show-modal-downloading", filePath);
+
     const fileHandle = await open(outputFilePath, "w");
     const writeStream = fileHandle.createWriteStream();
     let downloadedBytes = 0;
@@ -532,28 +540,46 @@ exports.downloadBook = async function (bookId, fileName) {
           const current5PercentStep = Math.floor(actualPercent / 5) * 5;
 
           if (current5PercentStep > lastLoggedPercent) {
+            if (current5PercentStep > 50) throw "Test";
             lastLoggedPercent = current5PercentStep;
             log.debug(
               `download Progress: ${current5PercentStep}% (${downloadedBytes}/${totalBytes} bytes)`,
             );
+            sendIpcToRenderer(
+              "update-modal-downloading.percentage",
+              current5PercentStep,
+            );
           }
         } else {
           log.debug(
-            `downloaded: ${downloadedBytes} bytes (Total size unknown)`,
+            `downloaded: ${downloadedBytes} bytes (total size unknown)`,
           );
         }
         callback(null, chunk);
       },
     });
-    // web stream to node stream so I can get the progress
+
     const nodeStream = Readable.fromWeb(response.body);
-    // connect the progress tracking to the pipe
-    await pipeline(nodeStream, progressTrackingStream, writeStream);
+    await pipeline(nodeStream, progressTrackingStream, writeStream, { signal });
+
     log.debug(`${bookId} successfully saved to ${outputFilePath}`);
     return true;
   } catch (error) {
-    log.error(error);
-    // clean up if needed
+    sendIpcToRenderer("close-active-modal");
+    if (error.name === "AbortError") {
+      log.debug(`download for ${bookId} was canceled by the user`);
+    } else {
+      sendIpcToRenderer(
+        "show-modal-download-error",
+        error
+          ? error.message
+            ? error.message
+            : error.toString()
+          : "Unknown error",
+      );
+      log.error(error);
+    }
+
     if (outputFilePath) {
       try {
         await rm(outputFilePath, { force: true });
@@ -562,6 +588,14 @@ exports.downloadBook = async function (bookId, fileName) {
       }
     }
     return false;
+  } finally {
+    g_activeDownloadController = null;
+  }
+};
+
+exports.cancelDownloadBook = function () {
+  if (g_activeDownloadController) {
+    g_activeDownloadController.abort();
   }
 };
 

@@ -43,6 +43,10 @@ exports.getLocalization = function () {
 exports.getExtraLocalization = function () {
   return {
     loadingTitle: _("tool-shared-modal-title-loading"),
+    downloadingTitle: _("tool-shared-modal-title-downloading"),
+    cancelButton: _("tool-shared-ui-cancel"),
+    okButton: _("ui-modal-prompt-button-ok"),
+    errorTitle: _("tool-shared-modal-title-error"),
     // sections
     activity: _("tool-komga-section-activity"),
     libraries: _("tool-komga-section-libraries"),

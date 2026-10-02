@@ -282,6 +282,18 @@ function initOnIpcCallbacks() {
     modals.showInfoModal(modals.Level.TOOLS, ...args);
   });
 
+  on("show-modal-downloading", (...args) => {
+    showDownloadingModal(...args);
+  });
+
+  on("show-modal-download-error", (...args) => {
+    showDownloadErrorModal(...args);
+  });
+
+  on("update-modal-downloading.percentage", (...args) => {
+    updateDownloadingModalPercentage(...args);
+  });
+
   /////////////////////////////////////////////////////////////////////////////
 }
 
@@ -1317,7 +1329,41 @@ export function onContextMenu(params) {
 ///////////////////////////////////////////////////////////////////////////////
 
 function showLoadingModal() {
-  modals.showLoadingModal(modals.Level.TOOLS, g_extraLocalization.loadingTitle);
+  modals.showLoadingModal(
+    modals.Level.TOOLS,
+    true,
+    g_extraLocalization.loadingTitle,
+  );
+}
+
+function showDownloadingModal(fileName) {
+  modals.showLoadingModal(
+    modals.Level.TOOLS,
+    false,
+    g_extraLocalization.downloadingTitle,
+    fileName,
+    g_extraLocalization.cancelButton,
+    () => {
+      sendIpcToMain("cancel-download-book");
+    },
+  );
+}
+
+function updateDownloadingModalPercentage(percentage) {
+  const modal = modals.getActiveModal(modals.Level.TOOLS);
+  if (!modal) return;
+  const progressBar = modal.querySelector(".modal-progress-bar-fill");
+  if (!progressBar) return;
+  progressBar.style.width = `${percentage}%`;
+}
+
+function showDownloadErrorModal(error) {
+  modals.showInfoModal(
+    modals.Level.TOOLS,
+    g_extraLocalization.errorTitle,
+    error,
+    g_extraLocalization.okButton,
+  );
 }
 
 function showLoginModal(...args) {
