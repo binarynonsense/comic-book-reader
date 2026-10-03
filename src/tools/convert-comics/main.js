@@ -1181,6 +1181,8 @@ async function processContent() {
     ///////////////////////////////////////////////
     // CHECK REQUIREMENTS /////////////////////////
     ///////////////////////////////////////////////
+    let forceAdvancedImageOptions =
+      g_uiSelectedOptions.outputImageForceAdvancedOptions;
     let resizeNeeded = isResizeNeeded();
     let imageOpsNeeded = areImageOpsNeeded();
     let updateComicInfoNeeded =
@@ -1202,6 +1204,7 @@ async function processContent() {
     // MODIFY IMAGES //////////////////////////////
     ///////////////////////////////////////////////
     if (
+      forceAdvancedImageOptions ||
       resizeNeeded ||
       imageOpsNeeded ||
       g_uiSelectedOptions.outputFormat === FileExtension.PDF ||
@@ -1246,6 +1249,7 @@ async function processContent() {
             core.getLaunchInfo(),
             "process-images",
             imgFilePaths,
+            forceAdvancedImageOptions,
             resizeNeeded,
             imageOpsNeeded,
             _("tool-shared-modal-log-converting-image"),
@@ -1585,6 +1589,7 @@ async function startConvertImages() {
           "images-tool-work",
           g_inputFiles,
           g_tempSubFolderPath,
+          forceAdvancedImageOptions,
           isResizeNeeded(),
           areImageOpsNeeded(),
           g_uiSelectedOptions,

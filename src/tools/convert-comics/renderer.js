@@ -30,19 +30,23 @@ let g_cancel = false;
 let g_inputListDiv;
 let g_outputFolderDiv;
 let g_startButton;
-let g_inputPdfExtractionMethodSelect;
-let g_outputFormatSelect;
-let g_outputImageScaleSelect;
-let g_outputImageFormatSelect;
-let g_outputSplitNumFilesInput;
-let g_outputPasswordInput;
 
 let g_outputNameInput;
+let g_outputFormatSelect;
+let g_outputImageScaleSelect;
+let g_outputImageScaleSlider;
+let g_outputImageForceAdvancedOptions;
+let g_outputImageFormatSelect;
+
+let g_inputPdfExtractionMethodSelect;
+
+let g_outputSplitNumFilesInput;
+let g_outputPasswordInput;
+let g_outputPNGUseIndexedCheckbox;
+let g_outputPNGQualitySlider;
 
 let g_localizedTexts = {};
-
 let g_uiSelectedOptions = {};
-
 let g_defaultImageWorkers;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -207,6 +211,12 @@ function init(
   g_outputImageScaleSelect = document.querySelector(
     "#tool-cc-output-image-scale-select",
   );
+  g_outputImageScaleSlider = document.querySelector(
+    "#tool-cc-output-image-scale-slider",
+  );
+  g_outputImageForceAdvancedOptions = document.querySelector(
+    "#tool-cc-output-image-forceadvanced-checkbox",
+  );
   g_outputImageFormatSelect = document.querySelector(
     "#tool-cc-output-image-format-select",
   );
@@ -215,6 +225,16 @@ function init(
   );
   g_outputSplitNumFilesInput.value = 1;
   g_outputPasswordInput = document.querySelector("#tool-cc-password-input");
+
+  g_outputPNGUseIndexedCheckbox = document.querySelector(
+    "#tool-cc-png-indexed-checkbox",
+  );
+  g_outputPNGUseIndexedCheckbox.addEventListener("change", (event) => {
+    checkValidData();
+  });
+  g_outputPNGQualitySlider = document.querySelector(
+    "#tool-cc-png-quality-slider",
+  );
 
   g_startButton = document.querySelector("#tool-cc-start-button");
 
@@ -318,6 +338,9 @@ function init(
   });
 
   g_outputImageScaleSelect.addEventListener("change", (event) => {
+    checkValidData();
+  });
+  g_outputImageScaleSlider.addEventListener("change", (event) => {
     checkValidData();
   });
 
@@ -732,9 +755,10 @@ function updateUISelectedOptions() {
     g_uiSelectedOptions.outputFileBaseName = g_outputNameInput.value;
   }
   g_uiSelectedOptions.outputImageScaleOption = g_outputImageScaleSelect.value;
-  g_uiSelectedOptions.outputImageScalePercentage = document.querySelector(
-    "#tool-cc-output-image-scale-slider",
-  ).value;
+  g_uiSelectedOptions.outputImageForceAdvancedOptions =
+    g_outputImageForceAdvancedOptions.checked;
+  g_uiSelectedOptions.outputImageScalePercentage =
+    g_outputImageScaleSlider.value;
   g_uiSelectedOptions.outputImageScaleHeight = document.querySelector(
     "#tool-cc-output-image-scale-height-input",
   ).value;
@@ -763,7 +787,11 @@ function updateUISelectedOptions() {
   g_uiSelectedOptions.outputImageFormatParams = {
     jpgQuality: document.querySelector("#tool-cc-jpg-quality-slider").value,
     jpgMozjpeg: document.querySelector("#tool-cc-jpg-mozjpeg-checkbox").checked,
-    pngQuality: document.querySelector("#tool-cc-png-quality-slider").value,
+    pngQuality: g_outputPNGQualitySlider.value,
+    pngCompressionLevel: document.querySelector(
+      "#tool-cc-png-conpression-slider",
+    ).value,
+    pngUseIndexedColors: g_outputPNGUseIndexedCheckbox.checked,
     avifQuality: document.querySelector("#tool-cc-avif-quality-slider").value,
     webpQuality: document.querySelector("#tool-cc-webp-quality-slider").value,
   };
@@ -1427,9 +1455,7 @@ function checkValidData() {
   }
   ///////////////////
   if (g_outputImageScaleSelect.value === "0") {
-    document
-      .getElementById("tool-cc-output-image-scale-slider")
-      .parentElement.classList.remove("set-display-none");
+    g_outputImageScaleSlider.parentElement.classList.remove("set-display-none");
     document
       .getElementById("tool-cc-output-image-scale-height-input")
       .classList.add("set-display-none");
@@ -1437,9 +1463,7 @@ function checkValidData() {
       .getElementById("tool-cc-output-image-scale-width-input")
       .classList.add("set-display-none");
   } else if (g_outputImageScaleSelect.value === "1") {
-    document
-      .getElementById("tool-cc-output-image-scale-slider")
-      .parentElement.classList.add("set-display-none");
+    g_outputImageScaleSlider.parentElement.classList.add("set-display-none");
     document
       .getElementById("tool-cc-output-image-scale-height-input")
       .classList.remove("set-display-none");
@@ -1447,15 +1471,39 @@ function checkValidData() {
       .getElementById("tool-cc-output-image-scale-width-input")
       .classList.add("set-display-none");
   } else if (g_outputImageScaleSelect.value === "2") {
-    document
-      .getElementById("tool-cc-output-image-scale-slider")
-      .parentElement.classList.add("set-display-none");
+    g_outputImageScaleSlider.parentElement.classList.add("set-display-none");
     document
       .getElementById("tool-cc-output-image-scale-height-input")
       .classList.add("set-display-none");
     document
       .getElementById("tool-cc-output-image-scale-width-input")
       .classList.remove("set-display-none");
+  }
+  ///////////////////
+  if (
+    g_outputImageScaleSelect.value === "0" &&
+    g_outputImageScaleSlider.value === "100" &&
+    g_outputImageFormatSelect.value === FileExtension.NOT_SET
+  ) {
+    document
+      .getElementById("tool-cc-output-image-forceadvanced-checkbox")
+      .parentElement.classList.remove("set-display-none");
+    document
+      .getElementById("tool-cc-output-image-forceadvanced-alwaystrue-checkbox")
+      .parentElement.classList.add("set-display-none");
+  } else {
+    document
+      .getElementById("tool-cc-output-image-forceadvanced-checkbox")
+      .parentElement.classList.add("set-display-none");
+    document
+      .getElementById("tool-cc-output-image-forceadvanced-alwaystrue-checkbox")
+      .parentElement.classList.remove("set-display-none");
+  }
+  ///////////////////
+  if (g_outputPNGUseIndexedCheckbox.checked) {
+    g_outputPNGQualitySlider.parentElement.classList.remove("tools-disabled");
+  } else {
+    g_outputPNGQualitySlider.parentElement.classList.add("tools-disabled");
   }
   ///////////////////
   updateColumnsHeight();

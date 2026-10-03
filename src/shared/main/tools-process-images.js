@@ -12,6 +12,7 @@ const log = require("./logger");
 
 exports.processImages = async function ({
   imgFilePaths,
+  forceAdvancedImageOptions,
   resizeNeeded,
   imageOpsNeeded,
   updateModalLogText,
@@ -31,8 +32,10 @@ exports.processImages = async function ({
       updateModalLogText(
         modalInfoText + ": " + (index + 1) + " / " + imgFilePaths.length,
       );
+      updateModalLogText(parseInt(uiSelectedOptions.imageProcessingNumWorkers));
       const result = await processImage(
         imgFilePaths[index],
+        forceAdvancedImageOptions,
         resizeNeeded,
         imageOpsNeeded,
         uiSelectedOptions,
@@ -47,6 +50,7 @@ exports.processImages = async function ({
 
 exports.processImagesWithWorkers = async function ({
   imgFilePaths,
+  forceAdvancedImageOptions,
   resizeNeeded,
   imageOpsNeeded,
   updateModalLogText,
@@ -60,8 +64,10 @@ exports.processImagesWithWorkers = async function ({
     // process.env.UV_THREADPOOL_SIZE = os.cpus().length;
 
     let maxWorkers = parseInt(uiSelectedOptions.imageProcessingNumWorkers);
-    if (!maxWorkers || maxWorkers <= 0)
+    if (!maxWorkers || maxWorkers <= 0) {
+      const os = require("node:os");
       maxWorkers = Math.max(1, Math.floor(os.cpus().length / 2));
+    }
     let sharpConcurrency = parseInt(
       uiSelectedOptions.imageProcessingSharpConcurrency,
     );
@@ -123,6 +129,7 @@ exports.processImagesWithWorkers = async function ({
         type: "process",
         id: job.id,
         filePath: job.filePath,
+        forceAdvancedImageOptions,
         resizeNeeded,
         imageOpsNeeded,
         uiOptions: uiSelectedOptions,
@@ -150,6 +157,7 @@ exports.processImagesWithWorkers = async function ({
 
 async function processImage(
   filePath,
+  forceAdvancedImageOptions,
   resizeNeeded,
   imageOpsNeeded,
   uiSelectedOptions,
@@ -193,7 +201,12 @@ async function processImage(
   let newFilePath = filePath;
   const oldFilePath = filePath + ".old";
   //
-  if (resizeNeeded || imageOpsNeeded || imageFormat !== FileExtension.NOT_SET) {
+  if (
+    forceAdvancedImageOptions ||
+    resizeNeeded ||
+    imageOpsNeeded ||
+    imageFormat !== FileExtension.NOT_SET
+  ) {
     fileUtils.moveFile(filePath, oldFilePath, true);
   } else {
     // didn't really need to do anything
@@ -328,41 +341,90 @@ async function processImage(
     }
   }
   // CHANGE FORMAT /////////////////////////////////////////////
-  if (imageFormat !== FileExtension.NOT_SET) {
-    saveToFile = true;
-    if (!pipeline) pipeline = sharp(oldFilePath);
-    if (imageFormat === FileExtension.JPG) {
-      pipeline.jpeg({
-        quality: parseInt(uiSelectedOptions.outputImageFormatParams.jpgQuality),
-        mozjpeg: uiSelectedOptions.outputImageFormatParams.jpgMozjpeg,
-      });
-    } else if (imageFormat === FileExtension.PNG) {
-      if (
-        parseInt(uiSelectedOptions.outputImageFormatParams.pngQuality) < 100
-      ) {
-        pipeline.png({
-          quality: parseInt(
-            uiSelectedOptions.outputImageFormatParams.pngQuality,
-          ),
-        });
-      } else {
-        pipeline.png();
-      }
-    } else if (imageFormat === FileExtension.WEBP) {
-      pipeline.webp({
-        quality: parseInt(
-          uiSelectedOptions.outputImageFormatParams.webpQuality,
-        ),
-      });
-    } else if (imageFormat === FileExtension.AVIF) {
-      pipeline.avif({
-        quality: parseInt(
-          uiSelectedOptions.outputImageFormatParams.avifQuality,
-        ),
-      });
+  // if (imageFormat !== FileExtension.NOT_SET) {
+  //   saveToFile = true;
+  //   if (!pipeline) pipeline = sharp(oldFilePath);
+  //   if (imageFormat === FileExtension.JPG) {
+  //     pipeline.jpeg({
+  //       quality: parseInt(uiSelectedOptions.outputImageFormatParams.jpgQuality),
+  //       mozjpeg: uiSelectedOptions.outputImageFormatParams.jpgMozjpeg,
+  //     });
+  //   } else if (imageFormat === FileExtension.PNG) {
+  //     const pngQuality = parseInt(
+  //       uiSelectedOptions.outputImageFormatParams.pngQuality,
+  //     );
+  //     pipeline.png({
+  //       quality: pngQuality,
+  //       //palette: false, // true = use indexed colors, false is default in current sharp if quality < 100?
+  //     });
+  //   } else if (imageFormat === FileExtension.WEBP) {
+  //     pipeline.webp({
+  //       quality: parseInt(
+  //         uiSelectedOptions.outputImageFormatParams.webpQuality,
+  //       ),
+  //     });
+  //   } else if (imageFormat === FileExtension.AVIF) {
+  //     pipeline.avif({
+  //       quality: parseInt(
+  //         uiSelectedOptions.outputImageFormatParams.avifQuality,
+  //       ),
+  //     });
+  //   }
+  //   newFilePath = path.join(fileFolderPath, fileName + "." + imageFormat);
+  // }
+  //////////////////
+  // NOTE: new way, old one was incorrect as when
+  // imageFormat !== FileExtension.NOT_SET the advanced processing options
+  // were not applied
+  // TODO: delete the commented old one when this has been more tested
+  let activeFormat = imageFormat;
+  if (activeFormat === FileExtension.NOT_SET) {
+    const detectedExt = path.extname(filePath).toLowerCase().replace(".", "");
+    if (detectedExt === "jpeg" || detectedExt === "jpg") {
+      activeFormat = FileExtension.JPG;
+    } else if (detectedExt === "png") {
+      activeFormat = FileExtension.PNG;
+    } else if (detectedExt === "webp") {
+      activeFormat = FileExtension.WEBP;
+    } else if (detectedExt === "avif") {
+      activeFormat = FileExtension.AVIF;
+    } else {
+      activeFormat = detectedExt;
     }
-    newFilePath = path.join(fileFolderPath, fileName + "." + imageFormat);
   }
+  // TODO: I now always save, so no need for the var saveToFile?
+  saveToFile = true;
+  if (!pipeline) pipeline = sharp(oldFilePath);
+  if (activeFormat === FileExtension.JPG) {
+    pipeline.jpeg({
+      quality: parseInt(uiSelectedOptions.outputImageFormatParams.jpgQuality),
+      mozjpeg: uiSelectedOptions.outputImageFormatParams.jpgMozjpeg,
+    });
+  } else if (activeFormat === FileExtension.PNG) {
+    const options = {
+      compressionLevel: parseInt(
+        uiSelectedOptions.outputImageFormatParams.pngCompressionLevel,
+      ),
+    };
+    if (uiSelectedOptions.outputImageFormatParams.pngUseIndexedColors) {
+      options.quality = parseInt(
+        uiSelectedOptions.outputImageFormatParams.pngQuality,
+      );
+      options.palette = true;
+    } else {
+      options.palette = false;
+    }
+    pipeline.png(options);
+  } else if (activeFormat === FileExtension.WEBP) {
+    pipeline.webp({
+      quality: parseInt(uiSelectedOptions.outputImageFormatParams.webpQuality),
+    });
+  } else if (activeFormat === FileExtension.AVIF) {
+    pipeline.avif({
+      quality: parseInt(uiSelectedOptions.outputImageFormatParams.avifQuality),
+    });
+  }
+  newFilePath = path.join(fileFolderPath, fileName + "." + activeFormat);
   // SAVE TO FILE ///////////////////////////////////////////
   if (saveToFile && pipeline) {
     await pipeline.withMetadata().toFile(newFilePath);

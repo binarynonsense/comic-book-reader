@@ -89,6 +89,13 @@ exports.getTooltipsLocalization = function (mode) {
               _("tool-shared-ui-input-folders-contain-0"),
             ),
     },
+    {
+      id: "tool-cc-tooltip-png-quality",
+      text: _(
+        "tool-shared-ui-output-png-quality-tooltip",
+        "PNG: PNG-8 (Indexed)",
+      ),
+    },
   ];
 };
 
@@ -265,6 +272,10 @@ exports.getLocalization = function (mode) {
     {
       id: "tool-cc-imageprocessing-options-text",
       text: _("tool-shared-ui-imageprocessing-options"),
+    },
+    {
+      id: "tool-cc-output-image-forceadvanced-text",
+      text: _("tool-shared-ui-output-options-image-forceadvanced"),
     },
     //////////////////////////////////////////////
     {

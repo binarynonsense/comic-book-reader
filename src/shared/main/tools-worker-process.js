@@ -337,6 +337,7 @@ async function createFiles(
 
 async function processImages(
   imgFilePaths,
+  forceAdvancedImageOptions,
   resizeNeeded,
   imageOpsNeeded,
   modalInfoText,
@@ -353,6 +354,7 @@ async function processImages(
       case 1:
         result = await processImages({
           imgFilePaths,
+          forceAdvancedImageOptions,
           resizeNeeded,
           imageOpsNeeded,
           updateModalLogText,
@@ -366,6 +368,7 @@ async function processImages(
       default:
         result = await processImagesWithWorkers({
           imgFilePaths,
+          forceAdvancedImageOptions,
           resizeNeeded,
           imageOpsNeeded,
           updateModalLogText,
@@ -510,6 +513,7 @@ async function updateComicInfoData(data, tempFolderPath) {
 async function doImagesToolWork(
   imgFiles,
   tempSubFolderPath,
+  forceAdvancedImageOptions,
   resizeNeeded,
   imageOpsNeeded,
   uiSelectedOptions,
@@ -600,6 +604,7 @@ async function doImagesToolWork(
         //////////////////////////////////////////////
         const result = await processImage(
           tempCopyFilePath,
+          forceAdvancedImageOptions,
           resizeNeeded,
           imageOpsNeeded,
           uiSelectedOptions,

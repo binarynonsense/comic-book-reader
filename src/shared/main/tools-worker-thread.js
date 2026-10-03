@@ -15,6 +15,7 @@ parentPort.on("message", async (message) => {
     try {
       const result = await processImage(
         message.filePath,
+        message.forceAdvancedImageOptions,
         message.resizeNeeded,
         message.imageOpsNeeded,
         message.uiOptions,
