@@ -457,6 +457,7 @@
   "tool-shared-ui-imageprocessing-options": "خيارات معالجة الصور",
   "tool-shared-ui-advanced-imageprocessing-options": "خيارات متقدمة لمعالجة الصور",
   "[NEEDS TRANSLATION]tool-shared-ui-output-options-image-forceadvanced": "Apply Advanced Image Processing Options",
+  "[NEEDS TRANSLATION]tool-shared-tooltip-output-image-forceadvanced": "If the selected output format requires an image format conversion, the advanced image processing options will apply regardless of this option's value.",
   "tool-shared-ui-imageprocessing-multithreading-method": "تعدد الخيوط",
   "tool-shared-ui-imageprocessing-multithreading-method-0": "استخدام خيوط العمل",
   "tool-shared-ui-imageprocessing-multithreading-method-1": "عدم استخدام خيوط العمل",

@@ -457,6 +457,7 @@
   "tool-shared-ui-imageprocessing-options": "Параметры обработки изображений",
   "tool-shared-ui-advanced-imageprocessing-options": "Расширенные параметры обработки изображений",
   "[NEEDS TRANSLATION]tool-shared-ui-output-options-image-forceadvanced": "Apply Advanced Image Processing Options",
+  "[NEEDS TRANSLATION]tool-shared-tooltip-output-image-forceadvanced": "If the selected output format requires an image format conversion, the advanced image processing options will apply regardless of this option's value.",
   "tool-shared-ui-imageprocessing-multithreading-method": "Многопоточность",
   "tool-shared-ui-imageprocessing-multithreading-method-0": "Использовать рабочие потоки",
   "tool-shared-ui-imageprocessing-multithreading-method-1": "Не использовать рабочие потоки",

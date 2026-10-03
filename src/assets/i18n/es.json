@@ -455,6 +455,7 @@
   "tool-shared-ui-imageprocessing-options": "Opciones de procesado de imagen",
   "tool-shared-ui-advanced-imageprocessing-options": "Opciones avanzadas de procesado de imagen",
   "tool-shared-ui-output-options-image-forceadvanced": "Aplicar opciones avanzadas de procesado de imagen",
+  "tool-shared-tooltip-output-image-forceadvanced": "Si el formato de salida seleccionado requiere una conversión de formato de imagen, se aplicarán las opciones avanzadas de procesado de imágenes independientemente del valor de esta opción.",
   "tool-shared-ui-imageprocessing-multithreading-method": "Multitarea",
   "tool-shared-ui-imageprocessing-multithreading-method-0": "Usar hilos de trabajo",
   "tool-shared-ui-imageprocessing-multithreading-method-1": "No usar hilos de trabajo",

@@ -457,6 +457,7 @@
   "tool-shared-ui-imageprocessing-options": "Mga Opsyon sa Pagproseso ng Imahe",
   "tool-shared-ui-advanced-imageprocessing-options": "Mga Advanced na Opsyon sa Pagproseso ng Imahe",
   "[NEEDS TRANSLATION]tool-shared-ui-output-options-image-forceadvanced": "Apply Advanced Image Processing Options",
+  "[NEEDS TRANSLATION]tool-shared-tooltip-output-image-forceadvanced": "If the selected output format requires an image format conversion, the advanced image processing options will apply regardless of this option's value.",
   "tool-shared-ui-imageprocessing-multithreading-method": "Multithreading",
   "tool-shared-ui-imageprocessing-multithreading-method-0": "Gamitin ang mga worker thread",
   "tool-shared-ui-imageprocessing-multithreading-method-1": "Huwag gumamit ng mga worker thread",
