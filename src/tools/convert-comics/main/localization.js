@@ -41,6 +41,10 @@ exports.getTooltipsLocalization = function (mode) {
       text: _("tool-shared-tooltip-output-scale-options"),
     },
     {
+      id: "tool-cc-tooltip-output-image-forceadvanced",
+      text: _("tool-shared-tooltip-output-image-forceadvanced"),
+    },
+    {
       id: "tool-cc-tooltip-output-page-order",
       text: _("tool-shared-tooltip-output-page-order"),
     },
