@@ -1,6 +1,8 @@
 {
   "@metadata": {
-    "authors": ["Álvaro"],
+    "authors": [
+      "Álvaro"
+    ],
     "last-updated": "2026-10-03",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.26.0-beta1",
@@ -1262,6 +1264,7 @@
   "tool-komga-section-series": "Series",
   "tool-komga-section-volumes": "Volúmenes",
   "tool-komga-section-books": "Libros",
+  "[NOTE TO TRANSLATORS]tool-komga-section-chapters": "What Komga calls books Kavita calls chapters (manga) or issues (comics)",
   "tool-komga-section-chapters": "Capítulos",
   "tool-komga-section-issues": "Números",
   "tool-komga-subsection-keepreading": "Continuar leyendo",

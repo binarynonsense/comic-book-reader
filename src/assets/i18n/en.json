@@ -1262,6 +1262,7 @@
   "tool-komga-section-series": "Series",
   "tool-komga-section-volumes": "Volumes",
   "tool-komga-section-books": "Books",
+  "[NOTE TO TRANSLATORS]tool-komga-section-chapters": "What Komga calls books Kavita calls chapters (manga) or issues (comics)",
   "tool-komga-section-chapters": "Chapters",
   "tool-komga-section-issues": "Issues",
   "tool-komga-subsection-keepreading": "Keep Reading",
