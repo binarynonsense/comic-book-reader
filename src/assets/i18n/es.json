@@ -1,8 +1,6 @@
 {
   "@metadata": {
-    "authors": [
-      "Álvaro"
-    ],
+    "authors": ["Álvaro"],
     "last-updated": "2026-10-03",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.26.0-beta1",
@@ -1250,6 +1248,7 @@
   "tool-komga-remove-server-from-list-warning": "¿Está seguro de que quiere eliminar este servidor?",
   "tool-komga-no-content-message": "Use el botón 'Conectar' o seleccione uno de la lista de 'Servidores' para empezar a explorar el contenido de un servidor.",
   "tool-komga-modal-connect-to-server": "Conectar al servidor",
+  "tool-komga-modal-server-type": "Tipo de servidor",
   "tool-komga-modal-server-url": "URL del servidor",
   "tool-komga-modal-credentials-type": "Método de inicio de sesión",
   "tool-komga-modal-credentials-type-password": "Correo electrónico y contraseña",
