@@ -32,7 +32,6 @@ exports.processImages = async function ({
       updateModalLogText(
         modalInfoText + ": " + (index + 1) + " / " + imgFilePaths.length,
       );
-      updateModalLogText(parseInt(uiSelectedOptions.imageProcessingNumWorkers));
       const result = await processImage(
         imgFilePaths[index],
         forceAdvancedImageOptions,
