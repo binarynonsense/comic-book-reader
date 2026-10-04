@@ -1240,6 +1240,7 @@
   "tool-br-rename-warning": "Вы уверены, что хотите продолжить? При нажатии ОК начнется процесс переименования файлов.",
   "[NOTE TO TRANSLATORS]tool-komga-title": "Komga Browser as in a tool to browse the contents of a Komga media server.",
   "[NEEDS TRANSLATION]tool-komga-title": "Komga Browser",
+  "[NOTE TO TRANSLATORS]tool-komga-title-alt": "The alt name will be used in case I also add Kavita support and I don't make it a separate tool but mix both, as the resulting tool will be used to browse media servers of more than one type: Komga and Kavita.",
   "[NEEDS TRANSLATION]tool-komga-title-alt": "Server Browser",
   "[NEEDS TRANSLATION]tool-komga-servers-list": "Servers",
   "[NEEDS TRANSLATION]tool-komga-server-content": "Content",

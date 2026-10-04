@@ -1,6 +1,8 @@
 {
   "@metadata": {
-    "authors": ["Álvaro"],
+    "authors": [
+      "Álvaro"
+    ],
     "last-updated": "2026-10-03",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.26.0-beta1",
@@ -1238,6 +1240,7 @@
   "tool-br-rename-warning": "Está seguro de que quiere continuar? Hacer click en OK comenzará el proceso de renombrado de los archivos.",
   "[NOTE TO TRANSLATORS]tool-komga-title": "Komga Browser as in a tool to browse the contents of a Komga media server.",
   "tool-komga-title": "Navegador Komga",
+  "[NOTE TO TRANSLATORS]tool-komga-title-alt": "The alt name will be used in case I also add Kavita support and I don't make it a separate tool but mix both, as the resulting tool will be used to browse media servers of more than one type: Komga and Kavita.",
   "tool-komga-title-alt": "Navegador de servidores",
   "tool-komga-servers-list": "Servidores",
   "tool-komga-server-content": "Contenido",
