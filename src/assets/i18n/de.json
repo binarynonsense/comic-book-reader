@@ -1,9 +1,7 @@
 {
   "@metadata": {
-    "authors": [
-      "trzyglow"
-    ],
-    "last-updated": "2026-10-04",
+    "authors": ["trzyglow"],
+    "last-updated": "2026-10-06",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.26.0-beta1",
     "pre-release": "false",
@@ -1279,12 +1277,12 @@
   "tool-servers-no-summary": "Keine Zusammenfassung verfügbar.",
   "tool-servers-button-see-all-books": "Alle ansehen",
   "tool-servers-button-see-all-series": "Alle ansehen",
-  "[NEEDS TRANSLATION]tool-servers-type-volume": "Volume",
-  "[NEEDS TRANSLATION]tool-servers-type-issue": "Issue",
-  "[NEEDS TRANSLATION]tool-servers-type-chapter": "Chapter",
-  "[NEEDS TRANSLATION]tool-servers-type-book": "Book",
-  "[NEEDS TRANSLATION]tool-servers-generic-name-volume": "Single Volume",
-  "[NEEDS TRANSLATION]tool-servers-generic-name-issue": "Single Issue",
-  "[NEEDS TRANSLATION]tool-servers-generic-name-chapter": "Single Chapter",
+  "tool-servers-type-volume": "Band",
+  "tool-servers-type-issue": "Ausgabe",
+  "tool-servers-type-chapter": "Kapitel",
+  "tool-servers-type-book": "Buch",
+  "tool-servers-generic-name-volume": "Einzelner Band",
+  "tool-servers-generic-name-issue": "Einzelne Ausgabe",
+  "tool-servers-generic-name-chapter": "Einzelnes Kapitel",
   "tool-servers-number-pages": "{0} Seiten"
 }
