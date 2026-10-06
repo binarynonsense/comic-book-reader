@@ -301,6 +301,10 @@ function initOnIpcCallbacks() {
     await showSeriesInUpdatedSeries(...args);
   });
 
+  on("show-series-in-ondeckseries", async (...args) => {
+    await showSeriesInOnDeckSeries(...args);
+  });
+
   /////////////////
 
   on("on-nav-button-clicked", (...args) => {
@@ -837,6 +841,22 @@ async function showSeriesInUpdatedSeries(pageIndex = 0) {
   sendIpcToRenderer("build-content-navbar", g_navState, g_navHistory.length);
 }
 
+async function showSeriesInOnDeckSeries(pageIndex = 0) {
+  const response = await g_server.getOnDeckSeries(pageIndex);
+  sendIpcToRenderer("build-content-series-in-ondeckseries", response);
+  ////
+  if (g_navState.section !== Section.ON_DECK_SERIES) {
+    addCurrentNavStateToHistory();
+  }
+  g_navState = {};
+  g_navState.section = Section.ON_DECK_SERIES;
+  g_navState.library = {
+    pageIndex,
+    name: _("tool-servers-subsection-keepreading"),
+  };
+  sendIpcToRenderer("build-content-navbar", g_navState, g_navHistory.length);
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // NAVBAR /////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -934,6 +954,8 @@ async function loadState(state) {
       await showSeriesInRecentSeries(state.library.pageIndex);
     } else if (state.section === Section.UPDATED_SERIES) {
       await showSeriesInUpdatedSeries(state.library.pageIndex);
+    } else if (state.section === Section.ON_DECK_SERIES) {
+      await showSeriesInOnDeckSeries(state.library.pageIndex);
     }
   } catch (error) {
     log.error(error);

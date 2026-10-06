@@ -329,7 +329,7 @@ exports.getVolumesInSeries = async function (seriesId, pageIndex = 0) {
     const data = await response.json();
     const formattedVolumes = data.map((volume) => {
       let displayTitle = "";
-      if (volume.name && volume.name !== "" && volume.name !== "-100000") {
+      if (volume.title && volume.title !== "" && volume.title !== "-100000") {
         displayTitle = `${_("tool-servers-type-volume")}: ${volume.name}`;
       } else {
         displayTitle = _("tool-servers-generic-name-volume");
@@ -510,20 +510,20 @@ exports.getActivity = async function () {
     exports.cancelThumbsRetrieval();
     const size = 5;
     const results = await Promise.allSettled([
-      exports.getInProgressBooks(0, size),
-      exports.getRecentlyAddedBooks(0, size),
+      exports.getOnDeckSeries(0, size),
       exports.getRecentlyAddedSeries(0, size),
       exports.getRecentlyUpdatedSeries(0, size),
+      exports.getRecentlyFinishedBooks(0, size),
     ]);
 
     return {
-      inProgress:
+      onDeckSeries:
         results[0].status === "fulfilled" ? results[0].value : undefined,
-      recentlyAddedBooks:
-        results[1].status === "fulfilled" ? results[1].value : undefined,
       recentlyAddedSeries:
-        results[2].status === "fulfilled" ? results[2].value : undefined,
+        results[1].status === "fulfilled" ? results[1].value : undefined,
       recentlyUpdatedSeries:
+        results[2].status === "fulfilled" ? results[2].value : undefined,
+      recentlyFinishedBooks:
         results[3].status === "fulfilled" ? results[3].value : undefined,
     };
   } catch (error) {
@@ -532,7 +532,7 @@ exports.getActivity = async function () {
   }
 };
 
-exports.getInProgressBooks = async function (page = 0, size = 20) {
+exports.getOnDeckSeries = async function (page = 0, size = 20) {
   try {
     const url = `${g_session.url}/api/Series/on-deck?libraryId=0`;
     const response = await fetchUrlPost(url, {});
@@ -543,17 +543,17 @@ exports.getInProgressBooks = async function (page = 0, size = 20) {
     const totalPages = Math.ceil(data.length / size) || 1;
 
     return {
-      content: paginatedItems.map((s) => ({
-        id: s.id,
-        booksCount: s.booksCount || 0,
-        metadata: { title: s.name || "" },
+      content: paginatedItems.map((series) => ({
+        id: series.id,
+        booksCount: 0,
+        metadata: { title: series.name || "" },
       })),
       number: page,
       totalPages: totalPages,
       totalElements: data.length,
     };
   } catch (error) {
-    log.error("error getting in progress books / on-deck: " + error);
+    log.error("error getting on-deck series: " + error);
     return { content: [], number: page, totalPages: 1, totalElements: 0 };
   }
 };
@@ -562,8 +562,9 @@ exports.getRecentlyAddedSeries = async function (page = 0, size = 20) {
   try {
     const url = `${g_session.url}/api/Series/recently-added-v2?pageNumber=${page + 1}&pageSize=${size}`;
     const response = await fetchUrlPost(url, {});
+    const data = await response.json();
 
-    let totalRecords = size;
+    let totalRecords = data.length || 0;
     let totalPages = 1;
     const paginationHeader =
       response.headers.get("Pagination") ||
@@ -574,27 +575,18 @@ exports.getRecentlyAddedSeries = async function (page = 0, size = 20) {
       totalPages = meta.totalPages || 1;
     }
 
-    const data = await response.json();
     return {
-      content: data.map((s) => ({
-        id: s.id,
-        booksCount: s.booksCount || 0,
-        metadata: { title: s.name || "" },
+      content: data.map((series) => ({
+        id: series.id,
+        booksCount: 0,
+        metadata: { title: series.name || "" },
       })),
       number: page,
-      totalPages: paginationHeader
-        ? totalPages
-        : data.length({
-            id: s.id,
-            booksCount: s.booksCount || 0,
-            metadata: { title: s.name || "" },
-          }),
-      number: page,
-      totalPages: totalPages,
+      totalPages,
       totalElements: totalRecords,
     };
   } catch (error) {
-    log.error("error getting recentliy added series: " + error);
+    log.error("error getting recently added series: " + error);
     return { content: [], number: page, totalPages: 1, totalElements: 0 };
   }
 };
@@ -604,10 +596,39 @@ exports.getRecentlyAddedBooks = async function (page = 0, size = 20) {
 };
 
 exports.getRecentlyUpdatedSeries = async function (page = 0, size = 20) {
-  return { content: [], number: page, totalPages: 1, totalElements: 0 };
+  try {
+    const url = `${g_session.url}/api/Series/recently-updated-series?pageNumber=${page + 1}&pageSize=${size}`;
+    const response = await fetchUrlPost(url, {});
+    const data = await response.json();
+
+    let totalRecords = data.length || 0;
+    let totalPages = 1;
+    const paginationHeader =
+      response.headers.get("Pagination") ||
+      response.headers.get("X-Pagination");
+    if (paginationHeader) {
+      const meta = JSON.parse(paginationHeader);
+      totalRecords = meta.totalItems || 0;
+      totalPages = meta.totalPages || 1;
+    }
+
+    return {
+      content: data.map((series) => ({
+        id: series.id,
+        booksCount: 0,
+        metadata: { title: series.name || "" },
+      })),
+      number: page,
+      totalPages: totalPages,
+      totalElements: totalRecords,
+    };
+  } catch (error) {
+    log.error("error getting recently updated series: " + error);
+    return { content: [], number: page, totalPages: 1, totalElements: 0 };
+  }
 };
 
-// TODO: untested / unused
+// NOTE: returns [] in the demo server, could be right but I don't know
 exports.getRecentlyFinishedBooks = async function (page = 0, size = 20) {
   try {
     const url = `${g_session.url}/api/Series/v2?pageNumber=${page + 1}&pageSize=${size}`;
@@ -617,10 +638,21 @@ exports.getRecentlyFinishedBooks = async function (page = 0, size = 20) {
       combination: 0,
       entityType: 0,
       limitTo: 0,
-      sortOptions: { sortField: 4, isAscending: false },
-      statements: [{ field: 12, comparison: 0, value: "true" }],
+      sortOptions: {
+        sortField: 7, // ReadProgress timestamp
+        isAscending: false,
+      },
+      statements: [
+        {
+          field: 20, // ReadProgress status (0 = unread, 1 = in progress, 2 = completed)
+          comparison: 0,
+          value: "2",
+        },
+      ],
     };
+
     const response = await fetchUrlPost(url, body);
+
     let totalRecords = 0;
     let totalPages = 1;
 
@@ -634,18 +666,19 @@ exports.getRecentlyFinishedBooks = async function (page = 0, size = 20) {
     }
 
     const data = await response.json();
+
     return {
-      content: data.map((s) => ({
-        id: s.id,
-        booksCount: s.booksCount || 0,
-        metadata: { title: s.name || "" },
+      content: data.map((series) => ({
+        id: series.id,
+        booksCount: series.booksCount || 0,
+        metadata: { title: series.name || "" },
       })),
       number: page,
       totalPages: totalPages,
       totalElements: totalRecords,
     };
   } catch (error) {
-    log.error("error getting finished added series: " + error);
+    log.error("error getting finished series: " + error);
     return { content: [], number: page, totalPages: 1, totalElements: 0 };
   }
 };
@@ -663,11 +696,7 @@ exports.getSearchSeries = async function (
     const url = `${g_session.url}/api/Search/search?queryString=${searchQuery}`;
     const response = await fetchUrlGet(url);
     // ref: getSeriesInLibrary
-    const seriesItems = (await response.json())?.series;
-    if (!seriesItems || !Array.isArray(seriesItems)) {
-      log.test("was empty");
-      seriesItems = [];
-    }
+    const seriesItems = (await response.json())?.series || [];
     let totalRecords = seriesItems.length;
     let totalPages = 1;
     // TODO: paginate?
@@ -1067,6 +1096,90 @@ exports.cancelThumbsRetrieval = function () {
     log.debug("all pending thumbnail fetches were canceled");
   }
 };
+
+//////////////////////////////////////////////////////////////////////////////
+// Series/v2 FILTER EXAMPLES /////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+
+// search text tests: wroks
+// const body = {
+//   id: 0,
+//   name: "JavaTestSearch",
+//   combination: 0,
+//   entityType: 0,
+//   limitTo: 0,
+//   sortOptions: {
+//     sortField: 1,
+//     isAscending: false,
+//   },
+//   statements: [
+//     {
+//       field: 1,
+//       comparison: 7,
+//       value: "java",
+//     },
+//   ],
+// };
+// test works
+// const body = {
+//   id: 0,
+//   name: "NotCompleted",
+//   combination: 0,
+//   entityType: 0,
+//   limitTo: 0,
+//   sortOptions: {
+//     sortField: 7,
+//     isAscending: false,
+//   },
+//   statements: [
+//     {
+//       field: 20,
+//       comparison: 9,
+//       value: "2",
+//     },
+//   ],
+// };
+// const body = {
+//   id: 0,
+//   name: "AllUnreadBooks",
+//   combination: 1,
+//   entityType: 0,
+//   limitTo: 0,
+//   sortOptions: {
+//     sortField: 1,
+//     isAscending: true,
+//   },
+//   statements: [
+//     {
+//       field: 20,
+//       comparison: 9,
+//       value: "1",
+//     },
+//     {
+//       field: 20,
+//       comparison: 9,
+//       value: "2",
+//     },
+//   ],
+// };
+// const body = {{
+//   id: 0,
+//   name: "WantToRead",
+//   combination: 0,
+//   entityType: 0,
+//   limitTo: 0,
+//   sortOptions: {
+//     sortField: 1,
+//     isAscending: true,
+//   },
+//   statements: [
+//     {
+//       field: 26,
+//       comparison: 0,
+//       value: "true",
+//     },
+//   ],
+// }
 
 //////////////////////////////////////////////////////////////////////////////
 // OPDS EXPERIMENTS //////////////////////////////////////////////////////////

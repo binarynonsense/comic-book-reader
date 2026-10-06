@@ -257,6 +257,11 @@ function initOnIpcCallbacks() {
     buildContentSeriesInUpdatedSeries(...args);
   });
 
+  on("build-content-series-in-ondeckseries", (...args) => {
+    switchSection(1);
+    buildContentSeriesInOnDeckSeries(...args);
+  });
+
   /////////////////////////////////////////////////////////////////////////////
 
   on("render-thumb", (id, buffer, mime) => {
@@ -678,10 +683,11 @@ function buildContentEmpty() {
 }
 
 function buildContentActivity(inputData) {
-  console.log(inputData);
   const root = document.querySelector("#tool-servers-content");
   root.style = "padding-top: 10px";
-  root.innerHTML = `
+  root.innerHTML = "";
+  if (inputData.inProgress?.totalElements > 0)
+    root.innerHTML += `
   <div class="tool-servers-activity-section">  
     <div class="tool-servers-activity-title">
       <span>${g_extraLocalization.keepReading}</span>
@@ -693,7 +699,23 @@ function buildContentActivity(inputData) {
       }
     </div>
     <div class="tool-servers-activity-div" id="tool-servers-activity-inprogress-div"></div>    
-  </div>
+  </div>`;
+  if (inputData.onDeckSeries?.totalElements > 0)
+    root.innerHTML += `
+  <div class="tool-servers-activity-section">  
+    <div class="tool-servers-activity-title">
+      <span>${g_extraLocalization.keepReading}</span>
+      ${
+        inputData.onDeckSeries.totalElements > 5
+          ? `
+      <i class="fa-solid fa-circle-plus" id="tool-servers-activity-ondeck-button" title="${g_extraLocalization.btnSeeAllBooks}"></i>`
+          : ""
+      }
+    </div>
+    <div class="tool-servers-activity-div" id="tool-servers-activity-ondeck-div"></div>    
+  </div>`;
+  if (inputData.recentlyAddedBooks?.totalElements > 0)
+    root.innerHTML += `
   <div class="tool-servers-activity-section">  
     <div class="tool-servers-activity-title">
       <span>${g_extraLocalization.recentlyAddedBooks}</span>
@@ -706,7 +728,9 @@ function buildContentActivity(inputData) {
     </div>
     <div class="tool-servers-activity-div" id="tool-servers-activity-recentbooks-div"></div>
        
-  </div>
+  </div>`;
+  if (inputData.recentlyAddedSeries?.totalElements > 0)
+    root.innerHTML += `
   <div class="tool-servers-activity-section">  
     <div class="tool-servers-activity-title">
       <span>${g_extraLocalization.recentlyAddedSeries}</span>
@@ -718,7 +742,9 @@ function buildContentActivity(inputData) {
       }
     </div>
     <div class="tool-servers-activity-div" id="tool-servers-activity-recentseries-div"></div>    
-  </div>
+  </div>`;
+  if (inputData.recentlyUpdatedSeries?.totalElements > 0)
+    root.innerHTML += `
   <div class="tool-servers-activity-section">  
     <div class="tool-servers-activity-title">
       <span>${g_extraLocalization.recentlyUpdatedSeries}</span>
@@ -736,83 +762,110 @@ function buildContentActivity(inputData) {
   let seriesIds = [];
   {
     const div = document.querySelector("#tool-servers-activity-inprogress-div");
-    const grid = helperBooksGrid(
-      inputData.inProgress,
-      g_extraLocalization.keepReading,
-    );
-    div.appendChild(grid);
-    bookIds.push(...inputData.inProgress.content.map((data) => data.id));
-    const button = document.querySelector(
-      "#tool-servers-activity-inprogress-button",
-    );
-    if (button)
-      button.addEventListener("click", () => {
-        showLoadingModal();
-        sendIpcToMain("show-books-in-keepreading", 0);
-      });
+    if (div) {
+      const grid = helperBooksGrid(
+        inputData.inProgress,
+        g_extraLocalization.keepReading,
+      );
+      div.appendChild(grid);
+      bookIds.push(...inputData.inProgress.content.map((data) => data.id));
+      const button = document.querySelector(
+        "#tool-servers-activity-inprogress-button",
+      );
+      if (button)
+        button.addEventListener("click", () => {
+          showLoadingModal();
+          sendIpcToMain("show-books-in-keepreading", 0);
+        });
+    }
+  }
+  {
+    const div = document.querySelector("#tool-servers-activity-ondeck-div");
+    if (div) {
+      const grid = helperSeriesGrid(
+        inputData.onDeckSeries,
+        g_extraLocalization.keepReading,
+      );
+      div.appendChild(grid);
+      seriesIds.push(...inputData.onDeckSeries.content.map((data) => data.id));
+      const button = document.querySelector(
+        "#tool-servers-activity-ondeck-button",
+      );
+      if (button)
+        button.addEventListener("click", () => {
+          showLoadingModal();
+          sendIpcToMain("show-series-in-ondeckseries", 0);
+        });
+    }
   }
   {
     const div = document.querySelector(
       "#tool-servers-activity-recentbooks-div",
     );
-    const grid = helperBooksGrid(
-      inputData.recentlyAddedBooks,
-      g_extraLocalization.recentlyAddedBooks,
-    );
-    div.appendChild(grid);
-    bookIds.push(
-      ...inputData.recentlyAddedBooks.content.map((data) => data.id),
-    );
-    const button = document.querySelector(
-      "#tool-servers-activity-recentbooks-button",
-    );
-    if (button)
-      button.addEventListener("click", () => {
-        showLoadingModal();
-        sendIpcToMain("show-books-in-recentbooks", 0);
-      });
+    if (div) {
+      const grid = helperBooksGrid(
+        inputData.recentlyAddedBooks,
+        g_extraLocalization.recentlyAddedBooks,
+      );
+      div.appendChild(grid);
+      bookIds.push(
+        ...inputData.recentlyAddedBooks.content.map((data) => data.id),
+      );
+      const button = document.querySelector(
+        "#tool-servers-activity-recentbooks-button",
+      );
+      if (button)
+        button.addEventListener("click", () => {
+          showLoadingModal();
+          sendIpcToMain("show-books-in-recentbooks", 0);
+        });
+    }
   }
   {
     const div = document.querySelector(
       "#tool-servers-activity-recentseries-div",
     );
-    const grid = helperSeriesGrid(
-      inputData.recentlyAddedSeries,
-      g_extraLocalization.recentlyAddedSeries,
-    );
-    div.appendChild(grid);
-    seriesIds.push(
-      ...inputData.recentlyAddedSeries.content.map((data) => data.id),
-    );
-    const button = document.querySelector(
-      "#tool-servers-activity-recentseries-button",
-    );
-    if (button)
-      button.addEventListener("click", () => {
-        showLoadingModal();
-        sendIpcToMain("show-series-in-recentseries", 0);
-      });
+    if (div) {
+      const grid = helperSeriesGrid(
+        inputData.recentlyAddedSeries,
+        g_extraLocalization.recentlyAddedSeries,
+      );
+      div.appendChild(grid);
+      seriesIds.push(
+        ...inputData.recentlyAddedSeries.content.map((data) => data.id),
+      );
+      const button = document.querySelector(
+        "#tool-servers-activity-recentseries-button",
+      );
+      if (button)
+        button.addEventListener("click", () => {
+          showLoadingModal();
+          sendIpcToMain("show-series-in-recentseries", 0);
+        });
+    }
   }
   {
     const div = document.querySelector(
       "#tool-servers-activity-updatedseries-div",
     );
-    const grid = helperSeriesGrid(
-      inputData.recentlyUpdatedSeries,
-      g_extraLocalization.recentlyUpdatedSeries,
-    );
-    div.appendChild(grid);
-    seriesIds.push(
-      ...inputData.recentlyUpdatedSeries.content.map((data) => data.id),
-    );
-    const button = document.querySelector(
-      "#tool-servers-activity-updatedseries-button",
-    );
-    if (button)
-      button.addEventListener("click", () => {
-        showLoadingModal();
-        sendIpcToMain("show-series-in-updatedseries", 0);
-      });
+    if (div) {
+      const grid = helperSeriesGrid(
+        inputData.recentlyUpdatedSeries,
+        g_extraLocalization.recentlyUpdatedSeries,
+      );
+      div.appendChild(grid);
+      seriesIds.push(
+        ...inputData.recentlyUpdatedSeries.content.map((data) => data.id),
+      );
+      const button = document.querySelector(
+        "#tool-servers-activity-updatedseries-button",
+      );
+      if (button)
+        button.addEventListener("click", () => {
+          showLoadingModal();
+          sendIpcToMain("show-series-in-updatedseries", 0);
+        });
+    }
   }
   sendIpcToMain("get-thumbs", bookIds, seriesIds);
   ///////////////////////////////////////////
@@ -1110,6 +1163,13 @@ function buildContentSeriesInUpdatedSeries(inputData, pageIndex = 0) {
   });
 }
 
+function buildContentSeriesInOnDeckSeries(inputData, pageIndex = 0) {
+  helperBuildSeries(inputData, (pageIndex) => {
+    showLoadingModal();
+    sendIpcToMain("show-series-in-ondeckseries", pageIndex);
+  });
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
 function helperBuildSeries(inputData, goToPage, letters, letter, goToAlphabet) {
@@ -1399,6 +1459,8 @@ function buildContentNavbar(state, history) {
     title += loc.recentlyAddedSeries.toUpperCase();
   } else if (section === Section.UPDATED_SERIES) {
     title += loc.recentlyUpdatedSeries.toUpperCase();
+  } else if (section === Section.ON_DECK_SERIES) {
+    title += loc.keepReading.toUpperCase();
   } else {
     const path = [
       library?.name?.toUpperCase(),
