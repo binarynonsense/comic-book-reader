@@ -731,6 +731,7 @@ async function showVolumesInSeries(
 ////////////////////////////////////////////////////////
 
 async function showBooksInSearch(query, pageIndex = 0) {
+  sendIpcToRenderer("show-modal-loading");
   const response = await g_server.getSearchBooks(query, pageIndex);
   sendIpcToRenderer("build-content-search-books", query, response);
   ////
@@ -745,8 +746,9 @@ async function showBooksInSearch(query, pageIndex = 0) {
 }
 
 async function showSeriesInSearch(query, pageIndex = 0) {
+  sendIpcToRenderer("show-modal-loading");
   const response = await g_server.getSearchSeries(query, pageIndex);
-  sendIpcToRenderer("build-content-search-series", query, response);
+  sendIpcToRenderer("build-content-search-series", query, response || []);
   ////
   if (g_navState.section !== Section.SEARCH_SERIES) {
     addCurrentNavStateToHistory();

@@ -303,7 +303,7 @@ exports.getSeriesInLibrary = async function (
     const formattedContent = seriesItems.map((series) => {
       return {
         id: series.id,
-        booksCount: series.booksCount || 0,
+        booksCount: 0,
         metadata: { title: series.name || "" },
       };
     });
@@ -494,6 +494,14 @@ exports.getBook = async function (id) {
 };
 
 //////////////////////////////////////////////////////////////////////////////
+// LIBRARY ///////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+
+exports.getAlphabeticalGroups = async function (libraryId) {
+  return undefined;
+};
+
+//////////////////////////////////////////////////////////////////////////////
 // ACTIVITY //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 
@@ -643,11 +651,88 @@ exports.getRecentlyFinishedBooks = async function (page = 0, size = 20) {
 };
 
 //////////////////////////////////////////////////////////////////////////////
-// LIBRARY ///////////////////////////////////////////////////////////////////
+// SEARCH ////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 
-exports.getAlphabeticalGroups = async function (libraryId) {
-  return undefined;
+exports.getSearchSeries = async function (
+  searchQuery = "",
+  pageIndex = 0,
+  size = 20,
+) {
+  try {
+    const url = `${g_session.url}/api/Search/search?queryString=${searchQuery}`;
+    const response = await fetchUrlGet(url);
+    // ref: getSeriesInLibrary
+    const seriesItems = (await response.json())?.series;
+    if (!seriesItems || !Array.isArray(seriesItems)) {
+      log.test("was empty");
+      seriesItems = [];
+    }
+    let totalRecords = seriesItems.length;
+    let totalPages = 1;
+    // TODO: paginate?
+    const formattedContent = seriesItems.map((series) => {
+      return {
+        id: series.seriesId,
+        booksCount: 0,
+        metadata: { title: series.name || "" },
+      };
+    });
+    return {
+      content: formattedContent,
+      number: pageIndex,
+      totalPages: totalPages,
+      totalElements: totalRecords,
+    };
+  } catch (error) {
+    log.error("failed to search series: " + error);
+    return undefined;
+  }
+};
+
+exports.getSearchBooks = async function (
+  searchQuery = "",
+  pageIndex = 0,
+  size = 20,
+) {
+  try {
+    const url = `${g_session.url}/api/Search/search?queryString=${searchQuery}`;
+    const response = await fetchUrlGet(url);
+    // ref: getBooksInVolume
+    const data = await response.json();
+    const chapters = data.chapters || [];
+    const formattedBooks = chapters.map((chapter) => {
+      let displayTitle = "";
+      if (
+        chapter.title &&
+        chapter.title !== "" &&
+        chapter.title !== "-100000" &&
+        chapter.title !== chapter.number
+      ) {
+        displayTitle = chapter.title;
+      } else if (chapter.number !== undefined && chapter.number !== "-100000") {
+        displayTitle = `${_("tool-servers-type-issue")}: ${chapter.number}`;
+      } else {
+        displayTitle = _("tool-servers-generic-name-issue");
+      }
+      return {
+        id: chapter.id,
+        metadata: {
+          title: displayTitle,
+          numberSort: chapter.number === -100000 ? 0 : chapter.number || 0,
+        },
+      };
+    });
+    return {
+      content: formattedBooks,
+      number: pageIndex,
+      totalPages: 1,
+      totalElements: formattedBooks.length,
+    };
+  } catch (error) {
+    log.error("failed to search books: " + error);
+    return undefined;
+  }
 };
 
 //////////////////////////////////////////////////////////////////////////////
