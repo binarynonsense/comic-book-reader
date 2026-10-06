@@ -178,7 +178,8 @@ function initOnIpcCallbacks() {
     //   comicData,
     //   pageNumber ? pageNumber - 1 : undefined,
     // );
-    reader.tryOpen("", "www", { data: comicData });
+    const { FileDataType } = require("../../shared/main/constants");
+    reader.tryOpen("", FileDataType.WWW, { data: comicData });
     onCloseClicked();
   });
 
