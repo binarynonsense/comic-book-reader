@@ -1027,7 +1027,7 @@ function buildContentBook(data) {
         sendIpcToMain(
           "open-book",
           comicData,
-          data.readProgress ? data.readProgress.page : 1,
+          data.readProgress ? data.readProgress.page : undefined,
         );
       });
 

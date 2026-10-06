@@ -174,7 +174,11 @@ function initOnIpcCallbacks() {
       }
     }
     comicData.serverUrl = g_server.getUrl();
-    reader.openBookFromServer(comicData, pageNumber - 1);
+    // reader.openBookFromServer(
+    //   comicData,
+    //   pageNumber ? pageNumber - 1 : undefined,
+    // );
+    reader.tryOpen("", "www", { data: comicData });
     onCloseClicked();
   });
 
