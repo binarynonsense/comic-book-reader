@@ -1793,6 +1793,10 @@ html[dir="rtl"] .tools-range-bubble {
   text-align: right;
 }
 
+#tool-servers-navbar-right-content .arrow {
+  margin: 5px;
+}
+
 .tool-servers-navbar-icon-button {
   font-size: 16px;
   display: inline-flex;

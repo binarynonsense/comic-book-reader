@@ -757,8 +757,6 @@ async function showActivity() {
   sendIpcToRenderer("build-content-navbar", g_navState, g_navHistory.length);
 }
 
-// g_navState.series = { id: seriesId, name: seriesName, pageIndex };
-// g_navState.library = { id: libraryId, name: libraryName, letter, pageIndex };
 async function showBooksInKeepReading(pageIndex = 0) {
   const response = await g_server.getInProgressBooks(pageIndex);
   sendIpcToRenderer("build-content-books-in-keepreading", response);

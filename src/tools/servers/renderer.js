@@ -1296,7 +1296,7 @@ function helperSeriesGrid(inputData, altLibraryName) {
     card.innerHTML = `
           <div class="tool-servers-book-card-container" title="${safeTitle}">
             <img class="tool-servers-book-card-img" id="tool-servers-thumb-${data.id}" src="" alt="" title="${safeTitle}" />
-            <div class="tool-servers-book-card-numtag">${data.booksCount}</div>
+            ${data.booksCount ? `<div class="tool-servers-book-card-numtag">${data.booksCount}</div>` : ""}
           </div>
           <span class="tool-servers-book-card-title" title="${safeTitle}">${data.metadata.title}</span>
         `;
@@ -1377,7 +1377,7 @@ function buildContentNavbar(state, history) {
   root.appendChild(rightDiv);
 
   let title = "";
-  const { section, search, library, series, book } = state || {};
+  const { section, search, library, series, volume, book } = state || {};
   const loc = g_extraLocalization;
   if (section === Section.SEARCH_BOOKS || section === Section.SEARCH_SERIES) {
     const type = section === Section.SEARCH_BOOKS ? loc.books : loc.series;
@@ -1398,13 +1398,15 @@ function buildContentNavbar(state, history) {
     const path = [
       library?.name?.toUpperCase(),
       series?.name,
+      volume?.name,
       book?.name,
     ].filter((item) => {
       return item; // returns item when if(item) is true
     });
-    title += path.join(" :: ");
+    // title += path.join(" 	► ");
+    title += path.join("<span class='arrow'>►</span>");
   }
-  rightDiv.textContent = title;
+  rightDiv.innerHTML = title;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
