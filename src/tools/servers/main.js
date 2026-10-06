@@ -163,6 +163,15 @@ function initOnIpcCallbacks() {
     } else {
       // don't know of a real url i could use only from the chapterid
       comicData.url = g_server.getUrl() + "::chapter-" + comicData.comicId;
+      {
+        const { series, volume, book } = g_navState || {};
+        const navNames = [series?.name, volume?.name, book?.name].filter(
+          (item) => {
+            return item; // returns item when if(item) is true
+          },
+        );
+        comicData.name = navNames.join(" - ");
+      }
     }
     comicData.serverUrl = g_server.getUrl();
     reader.openBookFromServer(comicData, pageNumber - 1);
@@ -237,6 +246,12 @@ function initOnIpcCallbacks() {
     await showBooksInVolume(...args);
   });
 
+  on("show-book", async (...args) => {
+    await showBook(...args);
+  });
+
+  /////////////////
+
   on("get-thumbs", async (bookIds, seriesIds) => {
     g_server.loadThumbs(bookIds, seriesIds);
   });
@@ -251,10 +266,6 @@ function initOnIpcCallbacks() {
 
   on("get-volumes-thumbs", async (ids) => {
     g_server.loadThumbs(undefined, undefined, ids);
-  });
-
-  on("show-book", async (...args) => {
-    await showBook(...args);
   });
 
   /////////////////

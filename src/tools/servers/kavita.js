@@ -8,7 +8,6 @@
 const { net } = require("electron");
 
 const fileUtils = require("../../shared/main/file-utils");
-const { _, _raw } = require("../../shared/main/i18n");
 const log = require("../../shared/main/logger");
 
 //////////////////////////////////////////////////////////////////////////////
@@ -322,6 +321,7 @@ exports.getSeriesInLibrary = async function (
 
 exports.getVolumesInSeries = async function (seriesId, pageIndex = 0) {
   try {
+    const { _ } = require("../../shared/main/i18n");
     exports.cancelThumbsRetrieval();
     if (!seriesId) return undefined;
     const url = `${g_session.url}/api/Series/volumes?seriesId=${seriesId}`;
@@ -355,6 +355,7 @@ exports.getVolumesInSeries = async function (seriesId, pageIndex = 0) {
 
 exports.getBooksInVolume = async function (volumeId, pageIndex = 0) {
   try {
+    const { _ } = require("../../shared/main/i18n");
     exports.cancelThumbsRetrieval();
     if (!volumeId) return undefined;
     const url = `${g_session.url}/api/Series/volume?volumeId=${volumeId}`;
@@ -397,6 +398,7 @@ exports.getBooksInVolume = async function (volumeId, pageIndex = 0) {
 
 exports.getBook = async function (id) {
   try {
+    const { _ } = require("../../shared/main/i18n");
     exports.cancelThumbsRetrieval();
     if (!id) return undefined;
     const url = `${g_session.url}/api/Chapter?chapterId=${id}`;
