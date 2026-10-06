@@ -402,7 +402,6 @@ exports.getBook = async function (id) {
     const url = `${g_session.url}/api/Chapter?chapterId=${id}`;
     const response = await fetchUrlGet(url);
     const data = await response.json();
-    log.test(data);
     if (!data) return undefined;
     const fileNode =
       Array.isArray(data.files) && data.files.length > 0 ? data.files[0] : {};
@@ -430,29 +429,41 @@ exports.getBook = async function (id) {
       displayTitle = _("tool-servers-generic-name-issue");
     }
 
+    // TODO: more
     const authorsArray = [];
     if (Array.isArray(data.writers)) {
-      data.writers.forEach((w) => {
-        if (w.name) authorsArray.push({ name: w.name, role: "Writer" });
+      data.writers.forEach((writer) => {
+        if (writer.name)
+          authorsArray.push({ name: writer.name, role: "Writer" });
       });
     }
     if (Array.isArray(data.coverArtists)) {
-      data.coverArtists.forEach((ca) => {
-        if (ca.name) authorsArray.push({ name: ca.name, role: "Cover Artist" });
+      data.coverArtists.forEach((artist) => {
+        if (artist.name)
+          authorsArray.push({ name: artist.name, role: "Cover Artist" });
       });
     }
 
     const tagsArray = [];
     if (Array.isArray(data.genres)) {
-      data.genres.forEach((g) => {
-        if (g.title) tagsArray.push(g.title);
+      data.genres.forEach((genre) => {
+        if (genre.title) tagsArray.push(genre.title);
       });
     }
     if (Array.isArray(data.tags)) {
-      data.tags.forEach((t) => {
-        if (t.title && !tagsArray.includes(t.title)) tagsArray.push(t.title);
+      data.tags.forEach((tag) => {
+        if (tag.title && !tagsArray.includes(tag.title))
+          tagsArray.push(tag.title);
       });
     }
+
+    // format:
+    // 0	loose images (.jpg, .png, .webp, etc.)
+    // 1	comic archives (.cbz, .cbr, .cb7, .cbt, .zip, .rar)
+    // 2 	Mobi / Audio
+    // 3	Epub (.epub)
+    // 4	Pdf (.pdf)
+    let disableReading = data.format === 2 || data.format === 3;
 
     return {
       id: parseInt(id, 10),
@@ -471,7 +482,8 @@ exports.getBook = async function (id) {
         tags: tagsArray,
         allowDownload: !!g_session.canDownload,
       },
-      readProgress: null,
+      readProgress: null, // TODO
+      disableReading,
     };
   } catch (error) {
     log.error(`error getting book details for ${id}: ` + error);

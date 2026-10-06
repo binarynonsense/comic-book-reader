@@ -998,9 +998,13 @@ function buildContentBook(data) {
         </div>
 
         <div>
-          <button id="tool-servers-read-btn-${data.id}">
+          ${
+            !data.disableReading
+              ? `<button id="tool-servers-read-btn-${data.id}">
             <span>OPEN IN ACBR</span>
-          </button>
+          </button>`
+              : ""
+          }          
           <button id="tool-servers-download-btn-${data.id}">
             <span>DOWNLOAD</span>
           </button>
@@ -1012,19 +1016,20 @@ function buildContentBook(data) {
     const readButton = document.getElementById(
       `tool-servers-read-btn-${data.id}`,
     );
-    readButton.addEventListener("click", () => {
-      const comicData = {
-        comicId: data.id,
-        name: data.metadata.title,
-        numPages: pagesCount,
-        url: ``,
-      };
-      sendIpcToMain(
-        "open-book",
-        comicData,
-        data.readProgress ? data.readProgress.page : 1,
-      );
-    });
+    if (readButton)
+      readButton.addEventListener("click", () => {
+        const comicData = {
+          comicId: data.id,
+          name: data.metadata.title,
+          numPages: pagesCount,
+          url: ``,
+        };
+        sendIpcToMain(
+          "open-book",
+          comicData,
+          data.readProgress ? data.readProgress.page : 1,
+        );
+      });
 
     const downloadButton = document.getElementById(
       `tool-servers-download-btn-${data.id}`,
