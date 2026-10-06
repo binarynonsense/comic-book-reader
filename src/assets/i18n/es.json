@@ -1,6 +1,8 @@
 {
   "@metadata": {
-    "authors": ["Álvaro"],
+    "authors": [
+      "Álvaro"
+    ],
     "last-updated": "2026-10-03",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.26.0-beta1",
@@ -1277,5 +1279,12 @@
   "tool-servers-no-summary": "No hay resumen disponible.",
   "tool-servers-button-see-all-books": "Ver todos",
   "tool-servers-button-see-all-series": "Ver todas",
+  "tool-servers-type-volume": "Volumen",
+  "tool-servers-type-issue": "Número",
+  "tool-servers-type-chapter": "Capítulo",
+  "tool-servers-type-book": "Libro",
+  "tool-servers-generic-name-volume": "Volumen único",
+  "tool-servers-generic-name-issue": "Número único",
+  "tool-servers-generic-name-chapter": "Capítulo único",
   "tool-servers-number-pages": "{0} páginas"
 }

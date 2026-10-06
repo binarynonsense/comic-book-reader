@@ -1,6 +1,8 @@
 {
   "@metadata": {
-    "authors": ["coolvitto"],
+    "authors": [
+      "coolvitto"
+    ],
     "last-updated": "2026-10-04",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.26.0-beta1",
@@ -1277,5 +1279,12 @@
   "tool-servers-no-summary": "あらすじはありません。",
   "tool-servers-button-see-all-books": "すべて表示",
   "tool-servers-button-see-all-series": "すべて表示",
+  "[NEEDS TRANSLATION]tool-servers-type-volume": "Volume",
+  "[NEEDS TRANSLATION]tool-servers-type-issue": "Issue",
+  "[NEEDS TRANSLATION]tool-servers-type-chapter": "Chapter",
+  "[NEEDS TRANSLATION]tool-servers-type-book": "Book",
+  "[NEEDS TRANSLATION]tool-servers-generic-name-volume": "Single Volume",
+  "[NEEDS TRANSLATION]tool-servers-generic-name-issue": "Single Issue",
+  "[NEEDS TRANSLATION]tool-servers-generic-name-chapter": "Single Chapter",
   "tool-servers-number-pages": "{0} ページ"
 }

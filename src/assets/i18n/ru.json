@@ -1,6 +1,8 @@
 {
   "@metadata": {
-    "authors": ["vanja-san"],
+    "authors": [
+      "vanja-san"
+    ],
     "last-updated": "2026-03-15",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.17.0",
@@ -1277,5 +1279,12 @@
   "[NEEDS TRANSLATION]tool-servers-no-summary": "No summary available.",
   "[NEEDS TRANSLATION]tool-servers-button-see-all-books": "See All",
   "[NEEDS TRANSLATION]tool-servers-button-see-all-series": "See All",
+  "[NEEDS TRANSLATION]tool-servers-type-volume": "Volume",
+  "[NEEDS TRANSLATION]tool-servers-type-issue": "Issue",
+  "[NEEDS TRANSLATION]tool-servers-type-chapter": "Chapter",
+  "[NEEDS TRANSLATION]tool-servers-type-book": "Book",
+  "[NEEDS TRANSLATION]tool-servers-generic-name-volume": "Single Volume",
+  "[NEEDS TRANSLATION]tool-servers-generic-name-issue": "Single Issue",
+  "[NEEDS TRANSLATION]tool-servers-generic-name-chapter": "Single Chapter",
   "[NEEDS TRANSLATION]tool-servers-number-pages": "{0} pages"
 }
