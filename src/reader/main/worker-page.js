@@ -201,7 +201,19 @@ async function extractImageBuffer({
         error = result.data;
       }
     } else if (fileType === FileDataType.WWW && extraData.source === "komga") {
-      const { loadPageImageBuffer } = require("../../tools/komga/server");
+      const { loadPageImageBuffer } = require("../../tools/servers/komga");
+      let response = await loadPageImageBuffer(
+        extraData.comicId,
+        entryName + 1, // entryName = page index,
+        extraData.session,
+      );
+      if (!response.success) {
+        error = response.error;
+      } else {
+        buffer = response.buffer;
+      }
+    } else if (fileType === FileDataType.WWW && extraData.source === "kavita") {
+      const { loadPageImageBuffer } = require("../../tools/servers/kavita");
       let response = await loadPageImageBuffer(
         extraData.comicId,
         entryName + 1, // entryName = page index,

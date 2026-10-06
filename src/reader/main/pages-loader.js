@@ -244,7 +244,8 @@ async function fetchPages(pageWorker, fileData, pageIndexes) {
   let scrollBarPos = g_scrollBarPos;
   if (
     g_fileData.type !== FileDataType.WWW ||
-    g_fileData.data.source === "komga"
+    g_fileData.data.source === "komga" ||
+    g_fileData.data.source === "kavita"
   ) {
     let extraData = { workerId: pageWorker.id, cacheJobId: g_cacheJobId };
     let entryNames = pageIndexes;
@@ -259,12 +260,18 @@ async function fetchPages(pageWorker, fileData, pageIndexes) {
       extraData.config = settings.getValue("epubEbook");
     } else if (
       g_fileData.type === FileDataType.WWW &&
-      g_fileData.data.source === "komga"
+      (g_fileData.data.source === "komga" ||
+        g_fileData.data.source === "kavita")
     ) {
-      extraData.source = "komga";
+      extraData.source = g_fileData.data.source;
       extraData.comicId = g_fileData.data.comicId;
-      const server = require("../../tools/komga/server");
-      extraData.session = server.getSession();
+      if (g_fileData.data.source === "komga") {
+        const server = require("../../tools/servers/komga");
+        extraData.session = server.getSession();
+      } else if (g_fileData.data.source === "kavita") {
+        const server = require("../../tools/servers/kavita");
+        extraData.session = server.getSession();
+      }
     } else {
       entryNames = [];
       pageIndexes.forEach((index) => {
@@ -298,7 +305,7 @@ async function fetchPages(pageWorker, fileData, pageIndexes) {
     });
     return;
   } else {
-    // WWW not Komga
+    // WWW not Komga or kavita
     const calledFunc = g_fileData.getPageCallback;
     let response = await g_fileData.getPageCallback(
       g_fileData.pageIndex + 1,
@@ -308,7 +315,10 @@ async function fetchPages(pageWorker, fileData, pageIndexes) {
       // getPageCallback changed while downloading
       return;
     }
-    if (g_fileData.data.source !== "komga") {
+    if (
+      g_fileData.data.source !== "komga" &&
+      g_fileData.data.source !== "kavita"
+    ) {
       if (!response || !response.pageImgSrc) {
         // TODO: handle error
         log.error("[PAGES] download error");

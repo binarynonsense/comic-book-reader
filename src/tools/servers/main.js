@@ -9,17 +9,18 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { safeStorage } = require("electron");
 
-const core = require("../../core/main");
-const { _ } = require("../../shared/main/i18n");
-const reader = require("../../reader/main");
-const contextMenu = require("../../shared/main/tools-menu-context");
-const tools = require("../../shared/main/tools");
-const appUtils = require("../../shared/main/app-utils");
-const settings = require("../../shared/main/settings");
-const localization = require("./main/localization");
-const log = require("../../shared/main/logger");
+const core = require("../../core/main.js");
+const { _ } = require("../../shared/main/i18n.js");
+const reader = require("../../reader/main.js");
+const contextMenu = require("../../shared/main/tools-menu-context.js");
+const tools = require("../../shared/main/tools.js");
+const appUtils = require("../../shared/main/app-utils.js");
+const settings = require("../../shared/main/settings.js");
+const localization = require("./main/localization.js");
+const log = require("../../shared/main/logger.js");
 
-const server = require("./server");
+const komga = require("./komga.js");
+const kavita = require("./kavita.js");
 const { Section } = require("./constants.js");
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -28,6 +29,7 @@ const { Section } = require("./constants.js");
 
 let g_isInitialized = false;
 let g_servers;
+let g_server;
 
 function init() {
   if (!g_isInitialized) {
@@ -35,12 +37,14 @@ function init() {
     initHandleIpcCallbacks();
     g_isInitialized = true;
     ////
-    server.setIpcs(sendIpcToRenderer);
+    komga.setIpcs(sendIpcToRenderer);
+    kavita.setIpcs(sendIpcToRenderer);
+    g_server = komga;
   }
 }
 
 function loadOptions() {
-  let loadedOptions = settings.loadToolOptions("tool-komga");
+  let loadedOptions = settings.loadToolOptions("tool-servers");
   if (
     loadedOptions &&
     loadedOptions.servers &&
@@ -50,6 +54,7 @@ function loadOptions() {
     loadedOptions.servers.forEach((server) => {
       // TODO: proper error checking and fixes
       if (typeof server == "object" && server.constructor == Object) {
+        if (!server.type) server.type = "komga";
         if (server.url && typeof server.url === "string") {
           // if (!server.name || typeof server.name !== "string")
           //   server.name = "???";
@@ -80,7 +85,7 @@ exports.open = async function () {
 function saveSettings() {
   let options = {};
   options.servers = g_servers;
-  settings.updateToolOptions("tool-komga", options);
+  settings.updateToolOptions("tool-servers", options);
 }
 
 exports.close = function () {
@@ -107,7 +112,7 @@ exports.onToggleFullScreen = function () {
 };
 
 exports.getLocalizedName = function () {
-  return _("tool-komga-title");
+  return _("tool-servers-title-alt");
 };
 
 function onCloseClicked() {
@@ -119,7 +124,7 @@ function onCloseClicked() {
 ///////////////////////////////////////////////////////////////////////////////
 
 function sendIpcToRenderer(...args) {
-  core.sendIpcToRenderer("tool-komga", ...args);
+  core.sendIpcToRenderer("tool-servers", ...args);
 }
 
 function sendIpcToCoreRenderer(...args) {
@@ -152,8 +157,14 @@ function initOnIpcCallbacks() {
   });
 
   on("open-book", (comicData, pageNumber) => {
-    comicData.url = server.getUrl() + "/book/" + comicData.comicId;
-    comicData.serverUrl = server.getUrl();
+    comicData.source = g_server.getType();
+    if (g_server.getType() === "komga") {
+      comicData.url = g_server.getUrl() + "/book/" + comicData.comicId;
+    } else {
+      // don't know of a real url i could use only from the chapterid
+      comicData.url = g_server.getUrl() + "::chapter-" + comicData.comicId;
+    }
+    comicData.serverUrl = g_server.getUrl();
     reader.openBookFromServer(comicData, pageNumber - 1);
     onCloseClicked();
   });
@@ -175,8 +186,8 @@ function initOnIpcCallbacks() {
       sendIpcToRenderer(
         "show-modal-remove-server-from-list-warning",
         index,
-        _("tool-komga-remove-server-from-list"),
-        _("tool-komga-remove-server-from-list-warning"),
+        _("tool-servers-remove-server-from-list"),
+        _("tool-servers-remove-server-from-list-warning"),
         _("ui-modal-prompt-button-ok"),
         _("ui-modal-prompt-button-cancel"),
       );
@@ -193,11 +204,11 @@ function initOnIpcCallbacks() {
   //////////////////
 
   on("download-book", async (bookId, name) => {
-    await server.downloadBook(bookId, name ?? "book");
+    await g_server.downloadBook(bookId, name ?? "book");
   });
 
   on("cancel-download-book", async () => {
-    server.cancelDownloadBook();
+    g_server.cancelDownloadBook();
   });
 
   //////////////////
@@ -210,20 +221,36 @@ function initOnIpcCallbacks() {
     await showSeriesInLibrary(...args);
   });
 
+  on("show-volumes-in-series", async (...args) => {
+    await showVolumesInSeries(...args);
+  });
+
   on("show-books-in-series", async (...args) => {
-    await showBooksInSeries(...args);
+    if (g_server.getType() === "komga") {
+      await showBooksInSeries(...args);
+    } else {
+      await showVolumesInSeries(...args);
+    }
+  });
+
+  on("show-books-in-volume", async (...args) => {
+    await showBooksInVolume(...args);
   });
 
   on("get-thumbs", async (bookIds, seriesIds) => {
-    server.loadThumbs(bookIds, seriesIds);
+    g_server.loadThumbs(bookIds, seriesIds);
   });
 
   on("get-books-thumbs", async (ids) => {
-    server.loadThumbs(ids, undefined);
+    g_server.loadThumbs(ids, undefined, undefined);
   });
 
   on("get-series-thumbs", async (ids) => {
-    server.loadThumbs(undefined, ids);
+    g_server.loadThumbs(undefined, ids, undefined);
+  });
+
+  on("get-volumes-thumbs", async (ids) => {
+    g_server.loadThumbs(undefined, undefined, ids);
   });
 
   on("show-book", async (...args) => {
@@ -275,23 +302,33 @@ function initOnIpcCallbacks() {
     // TODO: save last accessed and used that for defaults?
     sendIpcToRenderer(
       "show-modal-login",
-      _("tool-komga-modal-connect-to-server"),
+      _("tool-servers-modal-connect-to-server"),
       "URL",
-      _("tool-komga-modal-credentials-type"),
+      _("tool-servers-modal-server-type"),
+      _("tool-servers-modal-credentials-type"),
       "API Key",
-      _("tool-komga-modal-credentials-type-password"),
+      _("tool-servers-modal-credentials-type-password"),
       "API Key",
-      _("tool-komga-modal-email"),
+      _("tool-servers-modal-username"),
+      _("tool-servers-modal-email"),
       _("tool-shared-ui-creation-password"),
-      _("tool-komga-modal-remember"),
-      _("tool-komga-button-connect"),
+      _("tool-servers-modal-remember"),
+      _("tool-servers-button-connect"),
       _("ui-modal-prompt-button-cancel"),
       defaults,
     );
   });
 
   on("on-modal-connect-ok-clicked", async (data) => {
-    logToServer(data.url, data.apiKey, data.email, data.password, data.save);
+    logToServer(
+      data.type,
+      data.url,
+      data.apiKey,
+      data.username,
+      data.email,
+      data.password,
+      data.save,
+    );
   });
 }
 
@@ -331,7 +368,12 @@ exports.getSavedServerDataFromUrl = function (url) {
         const password = safeStorage.decryptString(
           Buffer.from(data.encodedPassword, "hex"),
         );
-        return { url: data.url, email: data.email, password };
+        return {
+          url: data.url,
+          username: data.username,
+          email: data.email,
+          password,
+        };
       }
     } else {
       return undefined;
@@ -350,12 +392,20 @@ async function connectToServerInList(index, refData) {
         const apiKey = safeStorage.decryptString(
           Buffer.from(data.encodedApiKey, "hex"),
         );
-        logToServer(data.url, apiKey, undefined, undefined, false);
+        logToServer(data.type, data.url, apiKey, undefined, undefined, false);
       } else {
         const password = safeStorage.decryptString(
           Buffer.from(data.encodedPassword, "hex"),
         );
-        logToServer(data.url, undefined, data.email, password, false);
+        logToServer(
+          data.type,
+          data.url,
+          undefined,
+          data.username,
+          data.email,
+          password,
+          false,
+        );
       }
     } else {
       log.error("encryption NOT available!!");
@@ -366,25 +416,39 @@ async function connectToServerInList(index, refData) {
 }
 exports.connectToServerInList = connectToServerInList;
 
-async function logToServer(url, apiKey, email, password, save) {
-  const session = server.getSession();
+async function logToServer(type, url, apiKey, username, email, password, save) {
+  if (type === "kavita") {
+    g_server = kavita;
+  } else {
+    g_server = komga;
+  }
+  const session = g_server.getSession();
   let isAlreadyLogged = false;
   if (apiKey) {
     isAlreadyLogged = session.url === url && session.apiKey === apiKey;
   } else {
-    isAlreadyLogged =
-      session.url === url &&
-      session.email === email &&
-      session.password === password;
+    if (type === "kavita") {
+      isAlreadyLogged =
+        session.type === type &&
+        session.url === url &&
+        session.username === username &&
+        session.password === password;
+    } else {
+      isAlreadyLogged =
+        session.type === type &&
+        session.url === url &&
+        session.email === email &&
+        session.password === password;
+    }
   }
   if (isAlreadyLogged) {
     log.editor("already logged as that user, skipping login");
   } else {
     let result;
     if (apiKey) {
-      result = await server.login(url, { apiKey });
+      result = await g_server.login(url, { apiKey });
     } else {
-      result = await server.login(url, { email, password });
+      result = await g_server.login(url, { username, email, password });
     }
     if (!result.success) {
       log.error(result.error);
@@ -408,6 +472,7 @@ async function logToServer(url, apiKey, email, password, save) {
         );
         if (!existingServer) {
           g_servers.push({
+            type,
             url,
             encodedApiKey,
           });
@@ -416,14 +481,22 @@ async function logToServer(url, apiKey, email, password, save) {
         let encodedPassword = "";
         encodedPassword = safeStorage.encryptString(password).toString("hex");
         const existingServer = g_servers.find(
-          (server) => server.url === url && server.email === email,
+          (server) =>
+            (server.type === "komga" &&
+              server.url === url &&
+              server.email === email) ||
+            (server.type === "kavita" &&
+              server.url === url &&
+              server.username === username),
         );
         if (existingServer) {
           // just in case
           existingServer.encodedPassword = encodedPassword;
         } else {
           g_servers.push({
+            type,
             url,
+            username,
             email,
             encodedPassword,
           });
@@ -478,6 +551,13 @@ function getUIServersList() {
       } catch (error) {
         serverCopy.maskedEmail = "????";
       }
+    } else if (serverCopy.username) {
+      try {
+        // TODO: kavita
+        serverCopy.maskedEmail = serverCopy.username;
+      } catch (error) {
+        serverCopy.maskedEmail = "????";
+      }
     }
     return serverCopy;
   });
@@ -492,6 +572,7 @@ let g_navState = {
   section: undefined,
   library: undefined,
   series: undefined,
+  volume: undefined,
   book: undefined,
 };
 let g_navHistory = [];
@@ -510,7 +591,7 @@ function removeLastNavStateFromHistory() {
 }
 
 async function showLibraries() {
-  const response = await server.getLibraries();
+  const response = await g_server.getLibraries();
   sendIpcToRenderer("build-content-libraries", response);
   ////
   clearNavData();
@@ -524,8 +605,12 @@ async function showSeriesInLibrary(
   letter,
   pageIndex = 0,
 ) {
-  const letters = await server.getAlphabeticalGroups(libraryId);
-  const series = await server.getSeriesInLibrary(libraryId, letter, pageIndex);
+  const letters = await g_server.getAlphabeticalGroups(libraryId);
+  const series = await g_server.getSeriesInLibrary(
+    libraryId,
+    letter,
+    pageIndex,
+  );
   sendIpcToRenderer(
     "build-content-series-in-library",
     libraryId,
@@ -549,7 +634,7 @@ async function showBooksInSeries(
   pageIndex = 0,
   altLibraryName = undefined,
 ) {
-  const response = await server.getBooksInSeries(seriesId, pageIndex);
+  const response = await g_server.getBooksInSeries(seriesId, pageIndex);
   sendIpcToRenderer(
     "build-content-books-in-series",
     seriesId,
@@ -566,8 +651,31 @@ async function showBooksInSeries(
   sendIpcToRenderer("build-content-navbar", g_navState, g_navHistory.length);
 }
 
+async function showBooksInVolume(
+  volumeId,
+  volumeName,
+  pageIndex = 0,
+  altLibraryName = undefined,
+) {
+  const response = await g_server.getBooksInVolume(volumeId, pageIndex);
+  sendIpcToRenderer(
+    "build-content-books-in-volume",
+    volumeId,
+    volumeName,
+    response,
+  );
+  ////
+  if (g_navState.section !== Section.VOLUME_BOOKS) {
+    addCurrentNavStateToHistory();
+  }
+  g_navState.section = Section.VOLUME_BOOKS;
+  g_navState.volume = { id: volumeId, name: volumeName, pageIndex };
+  if (altLibraryName) g_navState.library = { name: altLibraryName };
+  sendIpcToRenderer("build-content-navbar", g_navState, g_navHistory.length);
+}
+
 async function showBook(id, name, altLibraryName) {
-  const response = await server.getBook(id);
+  const response = await g_server.getBook(id);
   sendIpcToRenderer("build-content-book", response);
   ////
   if (g_navState.section !== Section.BOOK) {
@@ -579,10 +687,35 @@ async function showBook(id, name, altLibraryName) {
   sendIpcToRenderer("build-content-navbar", g_navState, g_navHistory.length);
 }
 
+////// kavita volumes
+
+async function showVolumesInSeries(
+  seriesId,
+  seriesName,
+  pageIndex = 0,
+  altLibraryName = undefined,
+) {
+  const response = await g_server.getVolumesInSeries(seriesId, pageIndex);
+  sendIpcToRenderer(
+    "build-content-volumes-in-series",
+    seriesId,
+    seriesName,
+    response,
+  );
+  ////
+  if (g_navState.section !== Section.SERIES_VOLUMES) {
+    addCurrentNavStateToHistory();
+  }
+  g_navState.section = Section.SERIES_VOLUMES;
+  g_navState.series = { id: seriesId, name: seriesName, pageIndex };
+  if (altLibraryName) g_navState.library = { name: altLibraryName };
+  sendIpcToRenderer("build-content-navbar", g_navState, g_navHistory.length);
+}
+
 ////////////////////////////////////////////////////////
 
 async function showBooksInSearch(query, pageIndex = 0) {
-  const response = await server.getSearchBooks(query, pageIndex);
+  const response = await g_server.getSearchBooks(query, pageIndex);
   sendIpcToRenderer("build-content-search-books", query, response);
   ////
   if (g_navState.section !== Section.SEARCH_BOOKS) {
@@ -596,7 +729,7 @@ async function showBooksInSearch(query, pageIndex = 0) {
 }
 
 async function showSeriesInSearch(query, pageIndex = 0) {
-  const response = await server.getSearchSeries(query, pageIndex);
+  const response = await g_server.getSearchSeries(query, pageIndex);
   sendIpcToRenderer("build-content-search-series", query, response);
   ////
   if (g_navState.section !== Section.SEARCH_SERIES) {
@@ -612,7 +745,7 @@ async function showSeriesInSearch(query, pageIndex = 0) {
 ////////////////////////////////////////////////////////////
 
 async function showActivity() {
-  const response = await server.getActivity();
+  const response = await g_server.getActivity();
   sendIpcToRenderer("build-content-activity", response);
   ////
   if (g_navState.section !== Section.ACTIVITY) {
@@ -620,14 +753,14 @@ async function showActivity() {
   }
   g_navState = {};
   g_navState.section = Section.ACTIVITY;
-  g_navState.library = { name: _("tool-komga-section-activity") };
+  g_navState.library = { name: _("tool-servers-section-activity") };
   sendIpcToRenderer("build-content-navbar", g_navState, g_navHistory.length);
 }
 
 // g_navState.series = { id: seriesId, name: seriesName, pageIndex };
 // g_navState.library = { id: libraryId, name: libraryName, letter, pageIndex };
 async function showBooksInKeepReading(pageIndex = 0) {
-  const response = await server.getInProgressBooks(pageIndex);
+  const response = await g_server.getInProgressBooks(pageIndex);
   sendIpcToRenderer("build-content-books-in-keepreading", response);
   ////
   if (g_navState.section !== Section.KEEP_READING) {
@@ -635,13 +768,13 @@ async function showBooksInKeepReading(pageIndex = 0) {
   }
   g_navState = {};
   g_navState.section = Section.KEEP_READING;
-  g_navState.library = { name: _("tool-komga-subsection-keepreading") };
+  g_navState.library = { name: _("tool-servers-subsection-keepreading") };
   g_navState.series = { pageIndex };
   sendIpcToRenderer("build-content-navbar", g_navState, g_navHistory.length);
 }
 
 async function showBooksInRecentBooks(pageIndex = 0) {
-  const response = await server.getRecentlyAddedBooks(pageIndex);
+  const response = await g_server.getRecentlyAddedBooks(pageIndex);
   sendIpcToRenderer("build-content-books-in-recentbooks", response);
   ////
   if (g_navState.section !== Section.RECENT_BOOKS) {
@@ -649,13 +782,15 @@ async function showBooksInRecentBooks(pageIndex = 0) {
   }
   g_navState = {};
   g_navState.section = Section.RECENT_BOOKS;
-  g_navState.library = { name: _("tool-komga-subsection-recentlyaddedbooks") };
+  g_navState.library = {
+    name: _("tool-servers-subsection-recentlyaddedbooks"),
+  };
   g_navState.series = { pageIndex };
   sendIpcToRenderer("build-content-navbar", g_navState, g_navHistory.length);
 }
 
 async function showSeriesInRecentSeries(pageIndex = 0) {
-  const response = await server.getRecentlyAddedSeries(pageIndex);
+  const response = await g_server.getRecentlyAddedSeries(pageIndex);
   sendIpcToRenderer("build-content-series-in-recentseries", response);
   ////
   if (g_navState.section !== Section.RECENT_SERIES) {
@@ -665,13 +800,13 @@ async function showSeriesInRecentSeries(pageIndex = 0) {
   g_navState.section = Section.RECENT_SERIES;
   g_navState.library = {
     pageIndex,
-    name: _("tool-komga-subsection-recentlyaddedseries"),
+    name: _("tool-servers-subsection-recentlyaddedseries"),
   };
   sendIpcToRenderer("build-content-navbar", g_navState, g_navHistory.length);
 }
 
 async function showSeriesInUpdatedSeries(pageIndex = 0) {
-  const response = await server.getRecentlyUpdatedSeries(pageIndex);
+  const response = await g_server.getRecentlyUpdatedSeries(pageIndex);
   sendIpcToRenderer("build-content-series-in-updatedseries", response);
   ////
   if (g_navState.section !== Section.UPDATED_SERIES) {
@@ -681,7 +816,7 @@ async function showSeriesInUpdatedSeries(pageIndex = 0) {
   g_navState.section = Section.UPDATED_SERIES;
   g_navState.library = {
     pageIndex,
-    name: _("tool-komga-subsection-recentlyupdatedseries"),
+    name: _("tool-servers-subsection-recentlyupdatedseries"),
   };
   sendIpcToRenderer("build-content-navbar", g_navState, g_navHistory.length);
 }
@@ -750,6 +885,18 @@ async function loadState(state) {
         state.series.id,
         state.series.name,
         state.series.pageIndex,
+      );
+    } else if (state.section === Section.SERIES_VOLUMES) {
+      await showVolumesInSeries(
+        state.series.id,
+        state.series.name,
+        state.series.pageIndex,
+      );
+    } else if (state.section === Section.VOLUME_BOOKS) {
+      await showBooksInVolume(
+        state.volume.id,
+        state.volume.name,
+        state.volume.pageIndex,
       );
     } else if (state.section === Section.BOOK) {
       await showBook(state.book.id, state.book.name);

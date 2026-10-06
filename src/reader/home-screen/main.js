@@ -140,7 +140,11 @@ function generateCardsFromSavedData(inputData, isFavoritesList) {
         outputBook.isInFavorites = isEntryInList(-1, inputData[index]);
       }
       if (inputBook?.data?.source) {
-        outputBook.pathType = inputBook.data.source === "komga" ? 3 : 2;
+        outputBook.pathType =
+          inputBook.data.source === "komga" ||
+          inputBook.data.source === "kavita"
+            ? 3
+            : 2;
         outputBook.path = inputBook.data.url ?? inputBook.path;
       } else if (fs.existsSync(outputBook.path)) {
         outputBook.pathType = !fs.lstatSync(outputBook.path).isDirectory()
@@ -380,7 +384,13 @@ function getLatestCards() {
         );
         const historyDataFile = historyData[latestInfo.index];
         if (historyDataFile?.data?.source) {
-          latestInfo.pathType = historyDataFile.data.source === "komga" ? 3 : 2;
+          latestInfo.pathType =
+            historyDataFile.data.source === "komga" ||
+            historyDataFile.data.source === "kavita"
+              ? historyDataFile.data.source === "komga"
+                ? 3
+                : 4
+              : 2;
           if (historyDataFile.data.name) {
             latestInfo.name = historyDataFile.data.name;
           } else {
@@ -405,6 +415,7 @@ function getLatestCards() {
               break;
 
             case "komga":
+            case "kavita":
               latestInfo.path = historyDataFile.filePath;
               break;
           }
@@ -771,7 +782,7 @@ function initOnIpcCallbacks() {
   });
 
   on("hs-open-servers", () => {
-    tools.switchTool("tool-komga");
+    tools.switchTool("tool-servers");
   });
 
   on("hs-open-radio", () => {
@@ -1423,7 +1434,7 @@ function updateLocalizedText(rebuildSections = true) {
       ? _raw("home-button-art-tools", false)
       : _("menu-tools") + " > " + _("menu-tools-art"),
     _("tool-fb-title"),
-    _("tool-komga-title"), //_("menu-servers"),
+    _("tool-servers-title-alt"), //_("menu-servers"),
     _("menu-tools-rss-reader"),
     _("menu-tools-radio"),
     _("menu-file-quit"),

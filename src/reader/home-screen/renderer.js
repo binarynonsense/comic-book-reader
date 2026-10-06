@@ -989,6 +989,11 @@ function getNewCardDiv(cardType, data, navRow, navColumn, listIndex) {
         <div class="hs-path-card-typeminiicon hs-path-card-typeminiicon-komga">
           KOMGA
         </div>`;
+    } else if (data.pathType === 4) {
+      return `
+        <div class="hs-path-card-typeminiicon hs-path-card-typeminiicon-komga">
+          KAVITA
+        </div>`;
     } else if (data.pathType === 0) {
       const path = data.path.toLowerCase();
       const pos = path.lastIndexOf(".");
@@ -1051,7 +1056,7 @@ function getNewCardDiv(cardType, data, navRow, navColumn, listIndex) {
         return fileIconHtml;
       } else if (data.pathType === 2) {
         return wwwIconHtml;
-      } else if (data.pathType === 3) {
+      } else if (data.pathType === 3 || data.pathType === 4) {
         return serverIconHtml;
       } else {
         if (cardType === CardType.LATEST) {

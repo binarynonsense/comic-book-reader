@@ -18,6 +18,8 @@ export const Section = {
   LIBRARY_SERIES: "library_series",
   SERIES_BOOKS: "series_books",
   BOOK: "book",
+  SERIES_VOLUMES: "series_volumes",
+  VOLUME_BOOKS: "volume_books",
 };
 
 if (typeof module !== "undefined" && module.exports) {

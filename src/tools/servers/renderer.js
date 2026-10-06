@@ -38,12 +38,12 @@ async function init(section, servers) {
   });
   // menu buttons
   document
-    .getElementById("tool-komga-back-button")
+    .getElementById("tool-servers-back-button")
     .addEventListener("click", (event) => {
       sendIpcToMain("close");
     });
   document
-    .getElementById("tool-komga-add-button")
+    .getElementById("tool-servers-add-button")
     .addEventListener("click", (event) => {
       // modals.showKomgaLogin();
       sendIpcToMain("on-connect-button-clicked");
@@ -55,7 +55,7 @@ async function init(section, servers) {
     index++
   ) {
     document
-      .getElementById(`tool-komga-section-${index}-button`)
+      .getElementById(`tool-servers-section-${index}-button`)
       .addEventListener("click", (event) => {
         switchSection(index);
       });
@@ -99,17 +99,17 @@ function switchSection(id) {
   ) {
     if (id === index) {
       document
-        .getElementById(`tool-komga-section-${index}-button`)
+        .getElementById(`tool-servers-section-${index}-button`)
         .classList.add("tools-menu-button-selected");
       document
-        .getElementById(`tool-komga-section-${index}-content-div`)
+        .getElementById(`tool-servers-section-${index}-content-div`)
         .classList.remove("set-display-none");
     } else {
       document
-        .getElementById(`tool-komga-section-${index}-button`)
+        .getElementById(`tool-servers-section-${index}-button`)
         .classList.remove("tools-menu-button-selected");
       document
-        .getElementById(`tool-komga-section-${index}-content-div`)
+        .getElementById(`tool-servers-section-${index}-content-div`)
         .classList.add("set-display-none");
     }
   }
@@ -121,11 +121,11 @@ function switchSection(id) {
 ///////////////////////////////////////////////////////////////////////////////
 
 export function sendIpcToMain(...args) {
-  coreSendIpcToMain("tool-komga", ...args);
+  coreSendIpcToMain("tool-servers", ...args);
 }
 
 async function sendIpcToMainAndWait(...args) {
-  return await coreSendIpcToMainAndWait("tool-komga", ...args);
+  return await coreSendIpcToMainAndWait("tool-servers", ...args);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -208,6 +208,16 @@ function initOnIpcCallbacks() {
     buildContentBooksInSeries(...args);
   });
 
+  on("build-content-volumes-in-series", (...args) => {
+    switchSection(1);
+    buildContentVolumesInSeries(...args);
+  });
+
+  on("build-content-books-in-volume", (...args) => {
+    switchSection(1);
+    buildContentBooksInVolume(...args);
+  });
+
   on("build-content-book", (...args) => {
     switchSection(1);
     buildContentBook(...args);
@@ -251,7 +261,7 @@ function initOnIpcCallbacks() {
 
   on("render-thumb", (id, buffer, mime) => {
     if (buffer) {
-      const img = document.querySelector(`#tool-komga-thumb-${id}`);
+      const img = document.querySelector(`#tool-servers-thumb-${id}`);
       if (img) {
         const blob = new Blob([buffer], { type: mime });
         const url = URL.createObjectURL(blob);
@@ -304,7 +314,7 @@ function initOnIpcCallbacks() {
 function buildServers(servers) {
   g_servers = servers;
 
-  const container = document.querySelector("#tool-komga-servers-div");
+  const container = document.querySelector("#tool-servers-servers-div");
   container.innerHTML = "";
   if (g_servers && g_servers.length > 0) {
     container.style = "padding-top: 10px";
@@ -654,7 +664,7 @@ function getPaginationDiv(
 }
 
 function buildContentEmpty() {
-  const root = document.querySelector("#tool-komga-content");
+  const root = document.querySelector("#tool-servers-content");
   root.style = "padding-top: 10px";
   root.innerHTML = `<span> ${g_extraLocalization.noContent} </span>`;
   ///////////////////////////////////////////
@@ -669,63 +679,63 @@ function buildContentEmpty() {
 
 function buildContentActivity(inputData) {
   console.log(inputData);
-  const root = document.querySelector("#tool-komga-content");
+  const root = document.querySelector("#tool-servers-content");
   root.style = "padding-top: 10px";
   root.innerHTML = `
-  <div class="tool-komga-activity-section">  
-    <div class="tool-komga-activity-title">
+  <div class="tool-servers-activity-section">  
+    <div class="tool-servers-activity-title">
       <span>${g_extraLocalization.keepReading}</span>
       ${
         inputData.inProgress.totalElements > 5
           ? `
-      <i class="fa-solid fa-circle-plus" id="tool-komga-activity-inprogress-button" title="${g_extraLocalization.btnSeeAllBooks}"></i>`
+      <i class="fa-solid fa-circle-plus" id="tool-servers-activity-inprogress-button" title="${g_extraLocalization.btnSeeAllBooks}"></i>`
           : ""
       }
     </div>
-    <div class="tool-komga-activity-div" id="tool-komga-activity-inprogress-div"></div>    
+    <div class="tool-servers-activity-div" id="tool-servers-activity-inprogress-div"></div>    
   </div>
-  <div class="tool-komga-activity-section">  
-    <div class="tool-komga-activity-title">
+  <div class="tool-servers-activity-section">  
+    <div class="tool-servers-activity-title">
       <span>${g_extraLocalization.recentlyAddedBooks}</span>
       ${
         inputData.recentlyAddedBooks.totalElements > 5
           ? `
-      <i class="fa-solid fa-circle-plus" id="tool-komga-activity-recentbooks-button" title="${g_extraLocalization.btnSeeAllBooks}"></i>`
+      <i class="fa-solid fa-circle-plus" id="tool-servers-activity-recentbooks-button" title="${g_extraLocalization.btnSeeAllBooks}"></i>`
           : ""
       }
     </div>
-    <div class="tool-komga-activity-div" id="tool-komga-activity-recentbooks-div"></div>
+    <div class="tool-servers-activity-div" id="tool-servers-activity-recentbooks-div"></div>
        
   </div>
-  <div class="tool-komga-activity-section">  
-    <div class="tool-komga-activity-title">
+  <div class="tool-servers-activity-section">  
+    <div class="tool-servers-activity-title">
       <span>${g_extraLocalization.recentlyAddedSeries}</span>
       ${
         inputData.recentlyAddedSeries.totalElements > 5
           ? `
-      <i class="fa-solid fa-circle-plus" id="tool-komga-activity-recentseries-button" title="${g_extraLocalization.btnSeeAllSeries}"></i>`
+      <i class="fa-solid fa-circle-plus" id="tool-servers-activity-recentseries-button" title="${g_extraLocalization.btnSeeAllSeries}"></i>`
           : ""
       }
     </div>
-    <div class="tool-komga-activity-div" id="tool-komga-activity-recentseries-div"></div>    
+    <div class="tool-servers-activity-div" id="tool-servers-activity-recentseries-div"></div>    
   </div>
-  <div class="tool-komga-activity-section">  
-    <div class="tool-komga-activity-title">
+  <div class="tool-servers-activity-section">  
+    <div class="tool-servers-activity-title">
       <span>${g_extraLocalization.recentlyUpdatedSeries}</span>
       ${
         inputData.recentlyUpdatedSeries.totalElements > 5
           ? `
-      <i class="fa-solid fa-circle-plus" id="tool-komga-activity-updatedseries-button" title="${g_extraLocalization.btnSeeAllSeries}"></i>`
+      <i class="fa-solid fa-circle-plus" id="tool-servers-activity-updatedseries-button" title="${g_extraLocalization.btnSeeAllSeries}"></i>`
           : ""
       } 
     </div>
-    <div class="tool-komga-activity-div" id="tool-komga-activity-updatedseries-div"></div>       
+    <div class="tool-servers-activity-div" id="tool-servers-activity-updatedseries-div"></div>       
   </div>
   `;
   let bookIds = [];
   let seriesIds = [];
   {
-    const div = document.querySelector("#tool-komga-activity-inprogress-div");
+    const div = document.querySelector("#tool-servers-activity-inprogress-div");
     const grid = helperBooksGrid(
       inputData.inProgress,
       g_extraLocalization.keepReading,
@@ -733,7 +743,7 @@ function buildContentActivity(inputData) {
     div.appendChild(grid);
     bookIds.push(...inputData.inProgress.content.map((data) => data.id));
     const button = document.querySelector(
-      "#tool-komga-activity-inprogress-button",
+      "#tool-servers-activity-inprogress-button",
     );
     if (button)
       button.addEventListener("click", () => {
@@ -742,7 +752,9 @@ function buildContentActivity(inputData) {
       });
   }
   {
-    const div = document.querySelector("#tool-komga-activity-recentbooks-div");
+    const div = document.querySelector(
+      "#tool-servers-activity-recentbooks-div",
+    );
     const grid = helperBooksGrid(
       inputData.recentlyAddedBooks,
       g_extraLocalization.recentlyAddedBooks,
@@ -752,7 +764,7 @@ function buildContentActivity(inputData) {
       ...inputData.recentlyAddedBooks.content.map((data) => data.id),
     );
     const button = document.querySelector(
-      "#tool-komga-activity-recentbooks-button",
+      "#tool-servers-activity-recentbooks-button",
     );
     if (button)
       button.addEventListener("click", () => {
@@ -761,7 +773,9 @@ function buildContentActivity(inputData) {
       });
   }
   {
-    const div = document.querySelector("#tool-komga-activity-recentseries-div");
+    const div = document.querySelector(
+      "#tool-servers-activity-recentseries-div",
+    );
     const grid = helperSeriesGrid(
       inputData.recentlyAddedSeries,
       g_extraLocalization.recentlyAddedSeries,
@@ -771,7 +785,7 @@ function buildContentActivity(inputData) {
       ...inputData.recentlyAddedSeries.content.map((data) => data.id),
     );
     const button = document.querySelector(
-      "#tool-komga-activity-recentseries-button",
+      "#tool-servers-activity-recentseries-button",
     );
     if (button)
       button.addEventListener("click", () => {
@@ -781,7 +795,7 @@ function buildContentActivity(inputData) {
   }
   {
     const div = document.querySelector(
-      "#tool-komga-activity-updatedseries-div",
+      "#tool-servers-activity-updatedseries-div",
     );
     const grid = helperSeriesGrid(
       inputData.recentlyUpdatedSeries,
@@ -792,7 +806,7 @@ function buildContentActivity(inputData) {
       ...inputData.recentlyUpdatedSeries.content.map((data) => data.id),
     );
     const button = document.querySelector(
-      "#tool-komga-activity-updatedseries-button",
+      "#tool-servers-activity-updatedseries-button",
     );
     if (button)
       button.addEventListener("click", () => {
@@ -813,7 +827,7 @@ function buildContentActivity(inputData) {
 
 function buildContentLibraries(inputData) {
   if (inputData) {
-    const root = document.querySelector("#tool-komga-content");
+    const root = document.querySelector("#tool-servers-content");
     root.style = "padding-top: 10px";
     root.innerHTML = "";
 
@@ -915,8 +929,20 @@ function buildContentBooksInSeries(
   });
 }
 
+function buildContentBooksInVolume(
+  volumeId,
+  volumeName,
+  inputData,
+  pageIndex = 0,
+) {
+  helperBuildBooks(inputData, (pageIndex) => {
+    showLoadingModal();
+    sendIpcToMain("show-books-in-volume", volumeId, volumeName, pageIndex);
+  });
+}
+
 function buildContentBook(data) {
-  const root = document.querySelector("#tool-komga-content");
+  const root = document.querySelector("#tool-servers-content");
   root.innerHTML = "";
 
   if (data) {
@@ -934,48 +960,48 @@ function buildContentBook(data) {
     }
 
     const detailView = document.createElement("div");
-    detailView.className = "tool-komga-book-detail-view";
+    detailView.className = "tool-servers-book-detail-view";
 
     const authorsList =
       data.metadata?.authors?.map((a) => `${a.name} (${a.role})`).join(", ") ||
       g_extraLocalization.unknown;
     const tagsList =
       data.metadata?.tags
-        ?.map((t) => `<span class="tool-komga-book-tag">${t}</span>`)
+        ?.map((t) => `<span class="tool-servers-book-tag">${t}</span>`)
         .join(", ") || g_extraLocalization.none;
     const summaryText = data.metadata?.summary || g_extraLocalization.noSummary;
 
     detailView.innerHTML = `
-        <div class="tool-komga-book-detail-main">
-          <div class="tool-komga-book-detail-left">
-            <div class="tool-komga-book-card-container">
-              <img class="tool-komga-book-card-img tool-komga-contain" id="tool-komga-thumb-${data.id}" src="" alt="" title="${safeTitle}" />
+        <div class="tool-servers-book-detail-main">
+          <div class="tool-servers-book-detail-left">
+            <div class="tool-servers-book-card-container">
+              <img class="tool-servers-book-card-img tool-servers-contain" id="tool-servers-thumb-${data.id}" src="" alt="" title="${safeTitle}" />
             </div>
           </div>
           
-          <div class="tool-komga-book-detail-right">
-            <h2 class="tool-komga-book-detail-title">${data.name}</h2>
-            <h4 class="tool-komga-book-detail-series">${data.seriesTitle}</h4>
+          <div class="tool-servers-book-detail-right">
+            <h2 class="tool-servers-book-detail-title">${data.name}</h2>
+            <h4 class="tool-servers-book-detail-series">${data.seriesTitle}</h4>
             
-            <div class="tool-komga-book-meta-grid">
-              <p><span class="tool-komga-book-dataname">${g_extraLocalization.numPages.toUpperCase()}</span> ${pagesCount}</p>
-              ${progress ? `<p><span class="tool-komga-book-dataname">${g_extraLocalization.progress.toUpperCase()}</span> ${progress}</p>` : ""}             
-              <p><span class="tool-komga-book-dataname">${g_extraLocalization.creators.toUpperCase()}</span> ${authorsList}</p>
-              <div><span class="tool-komga-book-dataname">${g_extraLocalization.tags.toUpperCase()}</span> ${tagsList}</div>
-              <p><span class="tool-komga-book-dataname">${g_extraLocalization.file.toUpperCase()}</span> ${data?.url || g_extraLocalization.unknown}</p>
-              <p><span class="tool-komga-book-dataname">${g_extraLocalization.fileSize.toUpperCase()}</span> ${data?.size || g_extraLocalization.unknown}</p>
-              <p><span class="tool-komga-book-dataname">${g_extraLocalization.format.toUpperCase()}</span> ${data?.media?.mediaType || g_extraLocalization.unknown}</p>
+            <div class="tool-servers-book-meta-grid">
+              <p><span class="tool-servers-book-dataname">${g_extraLocalization.numPages.toUpperCase()}</span> ${pagesCount}</p>
+              ${progress ? `<p><span class="tool-servers-book-dataname">${g_extraLocalization.progress.toUpperCase()}</span> ${progress}</p>` : ""}             
+              <p><span class="tool-servers-book-dataname">${g_extraLocalization.creators.toUpperCase()}</span> ${authorsList}</p>
+              <div><span class="tool-servers-book-dataname">${g_extraLocalization.tags.toUpperCase()}</span> ${tagsList}</div>
+              <p><span class="tool-servers-book-dataname">${g_extraLocalization.file.toUpperCase()}</span> ${data?.url || g_extraLocalization.unknown}</p>
+              <p><span class="tool-servers-book-dataname">${g_extraLocalization.fileSize.toUpperCase()}</span> ${data?.size || g_extraLocalization.unknown}</p>
+              <p><span class="tool-servers-book-dataname">${g_extraLocalization.format.toUpperCase()}</span> ${data?.media?.mediaType || g_extraLocalization.unknown}</p>
             </div>
             
-            <p class="tool-komga-book-summary">${summaryText}</p>
+            <p class="tool-servers-book-summary">${summaryText}</p>
           </div>
         </div>
 
         <div>
-          <button id="tool-komga-read-btn-${data.id}">
+          <button id="tool-servers-read-btn-${data.id}">
             <span>OPEN IN ACBR</span>
           </button>
-          <button id="tool-komga-download-btn-${data.id}">
+          <button id="tool-servers-download-btn-${data.id}">
             <span>DOWNLOAD</span>
           </button>
         </div>
@@ -984,11 +1010,10 @@ function buildContentBook(data) {
     root.appendChild(detailView);
 
     const readButton = document.getElementById(
-      `tool-komga-read-btn-${data.id}`,
+      `tool-servers-read-btn-${data.id}`,
     );
     readButton.addEventListener("click", () => {
       const comicData = {
-        source: "komga",
         comicId: data.id,
         name: data.metadata.title,
         numPages: pagesCount,
@@ -1002,7 +1027,7 @@ function buildContentBook(data) {
     });
 
     const downloadButton = document.getElementById(
-      `tool-komga-download-btn-${data.id}`,
+      `tool-servers-download-btn-${data.id}`,
     );
     downloadButton.addEventListener("click", () => {
       sendIpcToMain("download-book", data.id, data.name);
@@ -1018,6 +1043,20 @@ function buildContentBook(data) {
     inline: "nearest",
   });
   modals.closeActiveModal(modals.Level.TOOLS);
+}
+
+//
+
+function buildContentVolumesInSeries(
+  volumeId,
+  volumeName,
+  inputData,
+  pageIndex = 0,
+) {
+  helperBuildVolumes(inputData, (pageIndex) => {
+    showLoadingModal();
+    sendIpcToMain("show-books-in-volume", volumeId, volumeName, pageIndex);
+  });
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1069,11 +1108,11 @@ function buildContentSeriesInUpdatedSeries(inputData, pageIndex = 0) {
 ///////////////////////////////////////////////////////////////////////////////
 
 function helperBuildSeries(inputData, goToPage, letters, letter, goToAlphabet) {
-  const root = document.querySelector("#tool-komga-content");
+  const root = document.querySelector("#tool-servers-content");
   root.style = "padding-top: 10px";
   root.innerHTML = "";
 
-  if (goToAlphabet)
+  if (letters && goToAlphabet)
     root.appendChild(getAlphabetFilterDiv(letters, letter, goToAlphabet));
 
   if (inputData) {
@@ -1114,8 +1153,51 @@ function helperBuildSeries(inputData, goToPage, letters, letter, goToAlphabet) {
   modals.closeActiveModal(modals.Level.TOOLS);
 }
 
+function helperBuildVolumes(inputData, goToPage) {
+  const root = document.querySelector("#tool-servers-content");
+  root.style = "padding-top: 10px";
+  root.innerHTML = "";
+
+  if (inputData) {
+    /////
+    if (
+      inputData.number !== undefined &&
+      inputData.totalPages !== undefined &&
+      inputData.totalPages > 1
+    ) {
+      root.appendChild(
+        getPaginationDiv(inputData.number, inputData.totalPages, goToPage),
+      );
+    }
+    ////
+    const gridWrapper = helperVolumesGrid(inputData);
+    root.appendChild(gridWrapper);
+    ////
+    if (
+      inputData.number !== undefined &&
+      inputData.totalPages !== undefined &&
+      inputData.totalPages > 1
+    ) {
+      root.appendChild(
+        getPaginationDiv(inputData.number, inputData.totalPages, goToPage),
+      );
+    }
+  }
+  //
+  const seriesIds = inputData.content.map((data) => data.id);
+  sendIpcToMain("get-volumes-thumbs", seriesIds);
+  ///////////////////////////////////////////
+  updateColumnsHeight();
+  document.getElementById("tools-columns-right").scrollIntoView({
+    behavior: "smooth",
+    block: "start",
+    inline: "nearest",
+  });
+  modals.closeActiveModal(modals.Level.TOOLS);
+}
+
 function helperBuildBooks(inputData, goToPage) {
-  const root = document.querySelector("#tool-komga-content");
+  const root = document.querySelector("#tool-servers-content");
   root.style = "padding-top: 10px";
   root.innerHTML = "";
 
@@ -1159,17 +1241,17 @@ function helperBuildBooks(inputData, goToPage) {
 
 function helperBooksGrid(inputData, altLibraryName) {
   const gridWrapper = document.createElement("div");
-  gridWrapper.className = "tool-komga-books-grid-wrapper";
+  gridWrapper.className = "tool-servers-books-grid-wrapper";
   inputData.content.forEach((data) => {
     const card = document.createElement("div");
-    card.className = "tool-komga-book-card";
+    card.className = "tool-servers-book-card";
     card.setAttribute("data-id", data.id);
     const safeTitle = data.metadata.title.replace(/"/g, "&quot;");
     card.innerHTML = `
-          <div class="tool-komga-book-card-container" title="${safeTitle}">
-            <img class="tool-komga-book-card-img" id="tool-komga-thumb-${data.id}" src="" alt="" title="${safeTitle}" />
+          <div class="tool-servers-book-card-container" title="${safeTitle}">
+            <img class="tool-servers-book-card-img" id="tool-servers-thumb-${data.id}" src="" alt="" title="${safeTitle}" />
           </div>
-          <span class="tool-komga-book-card-title" title="${safeTitle}">${data.metadata.title}</span>
+          <span class="tool-servers-book-card-title" title="${safeTitle}">${data.metadata.title}</span>
         `;
     card.addEventListener("click", () => {
       showLoadingModal();
@@ -1180,20 +1262,43 @@ function helperBooksGrid(inputData, altLibraryName) {
   return gridWrapper;
 }
 
-function helperSeriesGrid(inputData, altLibraryName) {
+function helperVolumesGrid(inputData) {
   const gridWrapper = document.createElement("div");
-  gridWrapper.className = "tool-komga-books-grid-wrapper";
+  gridWrapper.className = "tool-servers-books-grid-wrapper";
   inputData.content.forEach((data) => {
     const card = document.createElement("div");
-    card.className = "tool-komga-book-card";
+    card.className = "tool-servers-book-card";
     card.setAttribute("data-id", data.id);
     const safeTitle = data.metadata.title.replace(/"/g, "&quot;");
     card.innerHTML = `
-          <div class="tool-komga-book-card-container" title="${safeTitle}">
-            <img class="tool-komga-book-card-img" id="tool-komga-thumb-${data.id}" src="" alt="" title="${safeTitle}" />
-            <div class="tool-komga-book-card-numtag">${data.booksCount}</div>
+          <div class="tool-servers-book-card-container" title="${safeTitle}">
+            <img class="tool-servers-book-card-img" id="tool-servers-thumb-${data.id}" src="" alt="" title="${safeTitle}" />
           </div>
-          <span class="tool-komga-book-card-title" title="${safeTitle}">${data.metadata.title}</span>
+          <span class="tool-servers-book-card-title" title="${safeTitle}">${data.metadata.title}</span>
+        `;
+    card.addEventListener("click", () => {
+      showLoadingModal();
+      sendIpcToMain("show-books-in-volume", data.id, data.metadata.title);
+    });
+    gridWrapper.appendChild(card);
+  });
+  return gridWrapper;
+}
+
+function helperSeriesGrid(inputData, altLibraryName) {
+  const gridWrapper = document.createElement("div");
+  gridWrapper.className = "tool-servers-books-grid-wrapper";
+  inputData.content.forEach((data) => {
+    const card = document.createElement("div");
+    card.className = "tool-servers-book-card";
+    card.setAttribute("data-id", data.id);
+    const safeTitle = data.metadata.title.replace(/"/g, "&quot;");
+    card.innerHTML = `
+          <div class="tool-servers-book-card-container" title="${safeTitle}">
+            <img class="tool-servers-book-card-img" id="tool-servers-thumb-${data.id}" src="" alt="" title="${safeTitle}" />
+            <div class="tool-servers-book-card-numtag">${data.booksCount}</div>
+          </div>
+          <span class="tool-servers-book-card-title" title="${safeTitle}">${data.metadata.title}</span>
         `;
     card.addEventListener("click", () => {
       showLoadingModal();
@@ -1215,60 +1320,60 @@ function helperSeriesGrid(inputData, altLibraryName) {
 ///////////////////////////////////////////////////////////////////////////////
 
 function buildContentNavbar(state, history) {
-  const root = document.querySelector("#tool-komga-navbar");
+  const root = document.querySelector("#tool-servers-navbar");
   root.innerHTML = ``;
 
   ///////////
   const backButton = document.createElement("span");
-  backButton.className = "tool-komga-navbar-icon-button";
+  backButton.className = "tool-servers-navbar-icon-button";
   backButton.addEventListener("click", (event) => {
     showLoadingModal();
     sendIpcToMain("on-nav-button-clicked", "back");
   });
   backButton.innerHTML = `<i class="fa-solid fa-arrow-left"></i>`;
   if (!state?.section || state.section === Section.LIBRARIES)
-    backButton.classList.add("tool-komga-navbar-icon-button-disabled");
+    backButton.classList.add("tool-servers-navbar-icon-button-disabled");
   backButton.title = g_extraLocalization.back;
   root.appendChild(backButton);
 
   const librariesButton = document.createElement("span");
-  librariesButton.className = "tool-komga-navbar-icon-button";
+  librariesButton.className = "tool-servers-navbar-icon-button";
   librariesButton.addEventListener("click", (event) => {
     showLoadingModal();
     sendIpcToMain("on-nav-button-clicked", "libraries");
   });
   librariesButton.innerHTML = `<i class="fa-solid fa-folder-tree"></i>`;
   if (!state?.section || state.section === Section.LIBRARIES)
-    librariesButton.classList.add("tool-komga-navbar-icon-button-disabled");
+    librariesButton.classList.add("tool-servers-navbar-icon-button-disabled");
   librariesButton.title = g_extraLocalization.libraries;
   root.appendChild(librariesButton);
 
   const activityButton = document.createElement("span");
-  activityButton.className = "tool-komga-navbar-icon-button";
+  activityButton.className = "tool-servers-navbar-icon-button";
   activityButton.addEventListener("click", (event) => {
     showLoadingModal();
     sendIpcToMain("on-nav-button-clicked", "activity");
   });
   activityButton.innerHTML = `<i class="fa-solid fa-chart-simple"></i>`;
   if (!state?.section || state.section === Section.ACTIVITY)
-    activityButton.classList.add("tool-komga-navbar-icon-button-disabled");
+    activityButton.classList.add("tool-servers-navbar-icon-button-disabled");
   activityButton.title = g_extraLocalization.activity;
   root.appendChild(activityButton);
 
   const searchButton = document.createElement("span");
-  searchButton.className = "tool-komga-navbar-icon-button";
+  searchButton.className = "tool-servers-navbar-icon-button";
   searchButton.addEventListener("click", (event) => {
     showLoadingModal();
     sendIpcToMain("on-nav-button-clicked", "search");
   });
   searchButton.innerHTML = `<i class="fa-solid fa-magnifying-glass"></i>`;
   if (!state?.section)
-    searchButton.classList.add("tool-komga-navbar-icon-button-disabled");
+    searchButton.classList.add("tool-servers-navbar-icon-button-disabled");
   searchButton.title = g_extraLocalization.search;
   root.appendChild(searchButton);
   //////////////
   const rightDiv = document.createElement("div");
-  rightDiv.id = "tool-komga-navbar-right-content";
+  rightDiv.id = "tool-servers-navbar-right-content";
   root.appendChild(rightDiv);
 
   let title = "";
@@ -1372,7 +1477,7 @@ function showDownloadErrorModal(error) {
 }
 
 function showLoginModal(...args) {
-  modals.showKomgaLoginModal(...args, (data) => {
+  modals.showServerLoginModal(...args, (data) => {
     if (!data) return;
     sendIpcToMain("on-modal-connect-ok-clicked", data);
   });

@@ -10,7 +10,7 @@ import { sendIpcToMain, on } from "../renderer.js";
 import { getNavKeys, getNavButtons } from "./input.js";
 import { BookType } from "../../shared/renderer/constants.js";
 
-import { showKomgaLoginModal } from "../../shared/renderer/modals/modals.js";
+import { showServerLoginModal } from "../../shared/renderer/modals/modals.js";
 
 let g_openModal;
 
@@ -81,7 +81,7 @@ export function initModalsOnIpcCallbacks() {
   on("show-modal-login", (...args) => {
     const mainArgs = args.slice(0, -2);
 
-    showKomgaLoginModal(...mainArgs, (data) => {
+    showServerLoginModal(...mainArgs, (data) => {
       if (!data) return;
       sendIpcToMain(
         "on-modal-komga-login-ok-clicked",

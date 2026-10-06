@@ -25,6 +25,10 @@ let g_session = {
 
 let sendIpcToRenderer;
 
+exports.getType = function () {
+  return "komga";
+};
+
 exports.getSession = function () {
   return g_session;
 };
@@ -291,6 +295,7 @@ exports.getSeriesInLibrary = async function (
 
 exports.getBooksInSeries = async function (seriesId, pageIndex = 0, size = 20) {
   try {
+    exports.cancelThumbsRetrieval();
     if (!seriesId) {
       return undefined;
     }
@@ -306,6 +311,7 @@ exports.getBooksInSeries = async function (seriesId, pageIndex = 0, size = 20) {
 
 exports.getBook = async function (id) {
   try {
+    exports.cancelThumbsRetrieval();
     if (!id) {
       return undefined;
     }
@@ -346,6 +352,7 @@ exports.getAlphabeticalGroups = async function (libraryId) {
 
 exports.getActivity = async function () {
   try {
+    exports.cancelThumbsRetrieval();
     const size = 5;
     const results = await Promise.allSettled([
       exports.getInProgressBooks(0, size),

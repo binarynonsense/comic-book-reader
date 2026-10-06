@@ -554,7 +554,7 @@ exports.onMenuToolWikiViewer = function () {
 };
 
 exports.onMenuKomga = function () {
-  tools.switchTool("tool-komga");
+  tools.switchTool("tool-servers");
   sendIpcToPreload("update-menubar");
 };
 

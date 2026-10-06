@@ -35,7 +35,7 @@ exports.init = function () {
   g_tools["tool-drawing"] = require("../../tools/drawing/main");
   g_tools["tool-rss"] = require("../../tools/rss-reader/main");
   g_tools["tool-wiki"] = require("../../tools/wiki/main");
-  g_tools["tool-komga"] = require("../../tools/komga/main");
+  g_tools["tool-servers"] = require("../../tools/servers/main");
 };
 
 exports.getTools = function () {

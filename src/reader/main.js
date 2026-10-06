@@ -799,7 +799,8 @@ async function tryOpen(filePath, bookType, historyEntry, homeScreenListEntry) {
           if (
             homeScreenListEntry.data.source === "iab" ||
             homeScreenListEntry.data.source === "xkcd" ||
-            homeScreenListEntry.data.source === "komga"
+            homeScreenListEntry.data.source === "komga" ||
+            homeScreenListEntry.data.source === "kavita"
           ) {
             if (await tryOpenWWW(pageIndex, homeScreenListEntry)) {
               return true;
@@ -855,7 +856,8 @@ async function tryOpen(filePath, bookType, historyEntry, homeScreenListEntry) {
         if (
           historyEntry.data.source === "iab" ||
           historyEntry.data.source === "xkcd" ||
-          historyEntry.data.source === "komga"
+          historyEntry.data.source === "komga" ||
+          historyEntry.data.source === "kavita"
         ) {
           if (await tryOpenWWW(pageIndex, historyEntry)) {
             return true;
@@ -1043,18 +1045,19 @@ async function tryOpenWWW(pageIndex, historyEntry) {
     openBookFromCallback(data, tool.getPageCallback, pageIndex);
     return true;
   } else if (data.source === "komga") {
-    const { getSavedServerDataFromUrl } = require("../tools/komga/main");
+    const { getSavedServerDataFromUrl } = require("../tools/servers/main");
     const {
       getSession,
       login,
       getReadingProgress,
-    } = require("../tools/komga/server");
+    } = require("../tools/servers/komga");
     const session = getSession();
     if (session.url != data.serverUrl) {
       // need to log in
       let serverData = getSavedServerDataFromUrl(data.serverUrl);
       if (serverData) {
         const result = await login(serverData.url, {
+          username: serverData.username,
           email: serverData.email,
           password: serverData.password,
           apiKey: serverData.apiKey,
@@ -1079,12 +1082,69 @@ async function tryOpenWWW(pageIndex, historyEntry) {
         const defaults = { url: data.serverUrl, email: "", password: "" };
         sendIpcToRenderer(
           "show-modal-login",
-          _("tool-komga-modal-connect-to-server"),
+          _("tool-servers-modal-connect-to-server"),
           "URL",
-          _("tool-komga-modal-email"),
+          _("tool-servers-modal-email"),
           _("tool-shared-ui-creation-password"),
           undefined,
-          _("tool-komga-button-connect"),
+          _("tool-servers-button-connect"),
+          _("ui-modal-prompt-button-cancel"),
+          defaults,
+          data,
+          pageIndex,
+        );
+        return true;
+      }
+    } else {
+      pageIndex = (await getReadingProgress(data.comicId)).page - 1;
+      openBookFromServer(data, pageIndex);
+      return true;
+    }
+  } else if (data.source === "kavita") {
+    const { getSavedServerDataFromUrl } = require("../tools/servers/main");
+    const {
+      getSession,
+      login,
+      getReadingProgress,
+    } = require("../tools/servers/kavita");
+    const session = getSession();
+    if (session.url != data.serverUrl) {
+      // need to log in
+      let serverData = getSavedServerDataFromUrl(data.serverUrl);
+
+      if (serverData) {
+        const result = await login(serverData.url, {
+          username: serverData.username,
+          email: serverData.email,
+          password: serverData.password,
+          apiKey: serverData.apiKey,
+        });
+        if (!result.success) {
+          log.error(result.error);
+          sendIpcToRenderer(
+            "show-modal-info",
+            _("tool-shared-modal-title-error"),
+            _("tool-shared-ui-search-network-error", data.serverUrl) +
+              "\n\n" +
+              result.error,
+            _("ui-modal-prompt-button-ok"),
+          );
+          return false;
+        }
+        pageIndex = (await getReadingProgress(data.comicId)).page - 1;
+        openBookFromServer(data, pageIndex);
+        return true;
+      } else {
+        // not in list, show login modal
+        const defaults = { url: data.serverUrl, email: "", password: "" };
+        sendIpcToRenderer(
+          "show-modal-login",
+          _("tool-servers-modal-connect-to-server"),
+          "URL",
+          _("tool-servers-modal-email"),
+          _("tool-shared-ui-creation-password"),
+          undefined,
+          _("tool-servers-button-connect"),
           _("ui-modal-prompt-button-cancel"),
           defaults,
           data,
@@ -1104,7 +1164,7 @@ async function tryOpenWWW(pageIndex, historyEntry) {
 // called from event "on-modal-komga-login-ok-clicked"
 async function onModalLogin(data, comicData, pageIndex) {
   try {
-    const { login, getReadingProgress } = require("../tools/komga/server");
+    const { login, getReadingProgress } = require("../tools/servers/komga");
     const result = await login(data.url, data.email, data.password);
     if (!result.success) {
       log.error(result.error);
@@ -1826,10 +1886,14 @@ async function goToPage(pageIndex, scrollBarPos = 0) {
       await pagesLoader.loadPage(g_fileData, indexes, scrollBarPos);
       if (
         g_fileData.type === FileDataType.WWW &&
-        g_fileData.data.source === "komga" &&
+        (g_fileData.data.source === "komga" ||
+          g_fileData.data.source === "kavita") &&
         !g_isPrivateMode
       ) {
-        const { updateReadingProgress } = require("../tools/komga/server");
+        const { updateReadingProgress } =
+          g_fileData.data.source === "komga"
+            ? require("../tools/servers/komga")
+            : require("../tools/servers/kavita");
         updateReadingProgress(
           g_fileData.data.comicId,
           indexes.at(-1) + 1,
@@ -2004,7 +2068,8 @@ function updateMenuAndToolbarItems(isOpen = true) {
         g_fileData.type === FileDataType.EPUB_COMIC ||
         g_fileData.type === FileDataType.PDF ||
         (g_fileData.type === FileDataType.WWW &&
-          g_fileData.data.source === "komga")
+          (g_fileData.data.source === "komga" ||
+            g_fileData.data.source === "kavita"))
       ) {
         menuBar.setComicBookOpened(true);
         sendIpcToRenderer(

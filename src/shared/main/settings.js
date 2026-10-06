@@ -862,6 +862,14 @@ function load() {
         throw error;
       }
 
+      // rename
+      if (loadedSettings["tool-komga"]) {
+        if (!loadedSettings["tool-servers"]) {
+          loadedSettings["tool-servers"] = loadedSettings["tool-komga"];
+        }
+        loadedSettings["tool-komga"] = undefined;
+      }
+
       for (const key in g_settings) {
         // ref: https://stackoverflow.com/questions/1098040/checking-if-a-key-exists-in-a-javascript-object
         if (loadedSettings[key] !== undefined) {

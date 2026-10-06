@@ -7,13 +7,15 @@
 
 import { closeActiveModal, Level, addActiveModal } from "./modals.js";
 
-export function showKomgaLoginModal(
+export function showServerLoginModal(
   titleText,
   urlText,
-  typeText,
+  serverTypeText,
+  credentialsTypeText,
   typeOptionText1,
   typeOptionText2,
   apiKeyText,
+  userText,
   emailText,
   passwordText,
   rememberText,
@@ -38,9 +40,16 @@ export function showKomgaLoginModal(
       <label for="modal-server-url-input">${urlText}</label>
       <input type="text" id="modal-server-url-input" value="${defaults.url}" />
     </div>
-     <div class="modal-field">
-      <label for="modal-server-type-select">${typeText}</label>
+    <div class="modal-field">
+      <label for="modal-server-type-select">${serverTypeText}</label>
       <select id="modal-server-type-select">
+        <option value="komga">Komga</option>
+        <option value="kavita">Kavita</option>
+      </select>
+    </div>
+    <div class="modal-field">
+      <label for="modal-cred-type-select">${credentialsTypeText}</label>
+      <select id="modal-cred-type-select">
         <option value="0">${typeOptionText1}</option>
         <option value="1">${typeOptionText2}</option>
       </select>
@@ -48,6 +57,10 @@ export function showKomgaLoginModal(
     <div class="modal-field">
       <label for="modal-server-apikey-input">${apiKeyText}</label>
       <input id="modal-server-apikey-input" value="${defaults.apiKey}"}" />
+    </div>
+    <div class="modal-field">
+      <label for="modal-server-user-input">${userText}</label>
+      <input id="modal-server-user-input" value="${defaults.username}"}" />
     </div>
     <div class="modal-field">
       <label for="modal-server-email-input">${emailText}</label>
@@ -80,14 +93,24 @@ export function showKomgaLoginModal(
   urlInput.addEventListener("input", (event) => {
     inputUpdated();
   });
-  const typeSelect = modal.querySelector("#modal-server-type-select");
-  typeSelect.addEventListener("change", (event) => {
+  urlInput.focus();
+  //
+  const serverTypeSelect = modal.querySelector("#modal-server-type-select");
+  serverTypeSelect.addEventListener("change", (event) => {
     inputUpdated();
   });
-  urlInput.focus();
+  //
+  const credTypeSelect = modal.querySelector("#modal-cred-type-select");
+  credTypeSelect.addEventListener("change", (event) => {
+    inputUpdated();
+  });
   //
   const apiKeyInput = modal.querySelector("#modal-server-apikey-input");
   apiKeyInput.addEventListener("input", (event) => {
+    inputUpdated();
+  });
+  const userInput = modal.querySelector("#modal-server-user-input");
+  userInput.addEventListener("input", (event) => {
     inputUpdated();
   });
   const emailInput = modal.querySelector("#modal-server-email-input");
@@ -115,8 +138,10 @@ export function showKomgaLoginModal(
   addBtn.addEventListener("click", (event) => {
     closeActiveModal(level, modal);
     callback({
+      type: serverTypeSelect.value,
       url: urlInput.value,
       email: emailInput.value,
+      username: userInput.value,
       password: passwordInput.value,
       apiKey: apiKeyInput.value,
       save: rememberText
@@ -126,24 +151,50 @@ export function showKomgaLoginModal(
   });
   ///
   function inputUpdated() {
-    if (typeSelect.value === "0") {
-      // api key
-      apiKeyInput.parentElement.classList.remove("set-display-none");
-      emailInput.parentElement.classList.add("set-display-none");
-      passwordInput.parentElement.classList.add("set-display-none");
-      if (urlInput.value && apiKeyInput.value) {
-        addBtn.disabled = false;
+    if (serverTypeSelect.value === "komga") {
+      userInput.parentElement.classList.add("set-display-none");
+      if (credTypeSelect.value === "0") {
+        // api key
+        apiKeyInput.parentElement.classList.remove("set-display-none");
+        emailInput.parentElement.classList.add("set-display-none");
+        passwordInput.parentElement.classList.add("set-display-none");
+        if (urlInput.value && apiKeyInput.value) {
+          addBtn.disabled = false;
+        } else {
+          addBtn.disabled = true;
+        }
       } else {
-        addBtn.disabled = true;
+        apiKeyInput.parentElement.classList.add("set-display-none");
+        emailInput.parentElement.classList.remove("set-display-none");
+        passwordInput.parentElement.classList.remove("set-display-none");
+        if (urlInput.value && passwordInput.value && emailInput.value) {
+          addBtn.disabled = false;
+        } else {
+          addBtn.disabled = true;
+        }
       }
     } else {
-      apiKeyInput.parentElement.classList.add("set-display-none");
-      emailInput.parentElement.classList.remove("set-display-none");
-      passwordInput.parentElement.classList.remove("set-display-none");
-      if (urlInput.value && passwordInput.value && emailInput.value) {
-        addBtn.disabled = false;
+      // kavita
+      emailInput.parentElement.classList.add("set-display-none");
+      if (credTypeSelect.value === "0") {
+        // api key
+        apiKeyInput.parentElement.classList.remove("set-display-none");
+        userInput.parentElement.classList.add("set-display-none");
+        passwordInput.parentElement.classList.add("set-display-none");
+        if (urlInput.value && apiKeyInput.value) {
+          addBtn.disabled = false;
+        } else {
+          addBtn.disabled = true;
+        }
       } else {
-        addBtn.disabled = true;
+        apiKeyInput.parentElement.classList.add("set-display-none");
+        userInput.parentElement.classList.remove("set-display-none");
+        passwordInput.parentElement.classList.remove("set-display-none");
+        if (urlInput.value && passwordInput.value && userInput.value) {
+          addBtn.disabled = false;
+        } else {
+          addBtn.disabled = true;
+        }
       }
     }
   }

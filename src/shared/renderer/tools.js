@@ -29,7 +29,7 @@ import * as toolTemplateMaker from "../../tools/template-maker/renderer.js";
 import * as toolDrawing from "../../tools/drawing/renderer.js";
 import * as toolRssReader from "../../tools/rss-reader/renderer.js";
 import * as toolWikiViewer from "../../tools/wiki/renderer.js";
-import * as toolKomga from "../../tools/komga/renderer.js";
+import * as toolServer from "../../tools/servers/renderer.js";
 
 let g_currentTool = "reader";
 let g_tools;
@@ -60,7 +60,7 @@ export function init() {
   g_tools["tool-drawing"] = toolDrawing;
   g_tools["tool-rss"] = toolRssReader;
   g_tools["tool-wiki"] = toolWikiViewer;
-  g_tools["tool-komga"] = toolKomga;
+  g_tools["tool-servers"] = toolServer;
 }
 
 export function getTools() {

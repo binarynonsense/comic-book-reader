@@ -137,7 +137,7 @@ function getOpenRecentSubmenu(history) {
 function getServersSubmenu() {
   return [
     {
-      label: _("tool-komga-title"),
+      label: _("tool-servers-title-alt"),
       click() {
         core.onMenuKomga();
       },
