@@ -5,9 +5,11 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-const fileUtils = require("../../shared/main/file-utils");
-const log = require("../../shared/main/logger");
 const { net } = require("electron");
+
+const fileUtils = require("../../shared/main/file-utils");
+const { _, _raw } = require("../../shared/main/i18n");
+const log = require("../../shared/main/logger");
 
 //////////////////////////////////////////////////////////////////////////////
 // SETUP /////////////////////////////////////////////////////////////////////
@@ -324,15 +326,19 @@ exports.getVolumesInSeries = async function (seriesId, pageIndex = 0) {
     if (!seriesId) return undefined;
     const url = `${g_session.url}/api/Series/volumes?seriesId=${seriesId}`;
     const response = await fetchUrlGet(url);
-    const volumesList = await response.json();
-    const formattedVolumes = volumesList.map((vol) => {
-      let displayTitle = vol.name || "";
-      if (displayTitle === "" || displayTitle.includes("-100000")) {
-        displayTitle = "Single Volume"; // TODO: localize
+    const data = await response.json();
+    const formattedVolumes = data.map((volume) => {
+      let displayTitle = "";
+      if (volume.name && volume.name !== "" && volume.name !== "-100000") {
+        displayTitle = `${_("tool-servers-type-volume")}: ${volume.name}`;
+      } else {
+        displayTitle = _("tool-servers-generic-name-volume");
       }
       return {
-        id: vol.id,
-        metadata: { title: displayTitle },
+        id: volume.id,
+        metadata: {
+          title: displayTitle,
+        },
       };
     });
     return {
@@ -353,37 +359,27 @@ exports.getBooksInVolume = async function (volumeId, pageIndex = 0) {
     if (!volumeId) return undefined;
     const url = `${g_session.url}/api/Series/volume?volumeId=${volumeId}`;
     const response = await fetchUrlGet(url);
-    const volumeData = await response.json();
-    const chapters = volumeData.chapters || [];
-    const formattedBooks = chapters.map((ch) => {
-      const rawLabel = ch.label ? String(ch.label).trim() : "";
-      const rawTitle = ch.title ? String(ch.title).trim() : "";
-      const rawIssue = ch.issueNumber ? String(ch.issueNumber).trim() : "";
-      const rawNum = ch.number !== undefined ? String(ch.number).trim() : "";
-      let displayTitle = rawLabel || rawTitle || "";
-      // TODO: localize
-      if (displayTitle.includes("-100000") || displayTitle === "") {
-        if (rawIssue !== "" && rawIssue !== "-100000") {
-          displayTitle = `Issue #${rawIssue}`;
-        } else if (rawNum !== "" && rawNum !== "-100000") {
-          displayTitle = `Issue #${rawNum}`;
-        } else {
-          displayTitle = "Single Volume";
-        }
+    const data = await response.json();
+    const chapters = data.chapters || [];
+    const formattedBooks = chapters.map((chapter) => {
+      let displayTitle = "";
+      if (
+        chapter.title &&
+        chapter.title !== "" &&
+        chapter.title !== "-100000" &&
+        chapter.title !== chapter.number
+      ) {
+        displayTitle = chapter.title;
+      } else if (chapter.number !== undefined && chapter.number !== "-100000") {
+        displayTitle = `${_("tool-servers-type-issue")}: ${chapter.number}`;
       } else {
-        if (
-          rawIssue !== "" &&
-          rawIssue !== "-100000" &&
-          !displayTitle.includes(rawIssue)
-        ) {
-          displayTitle = `Issue #${rawIssue}`;
-        }
+        displayTitle = _("tool-servers-generic-name-issue");
       }
       return {
-        id: ch.id,
+        id: chapter.id,
         metadata: {
           title: displayTitle,
-          numberSort: ch.number === -100000 ? 0 : ch.number || 0,
+          numberSort: chapter.number === -100000 ? 0 : chapter.number || 0,
         },
       };
     });
@@ -406,6 +402,7 @@ exports.getBook = async function (id) {
     const url = `${g_session.url}/api/Chapter?chapterId=${id}`;
     const response = await fetchUrlGet(url);
     const data = await response.json();
+    log.test(data);
     if (!data) return undefined;
     const fileNode =
       Array.isArray(data.files) && data.files.length > 0 ? data.files[0] : {};
@@ -413,22 +410,24 @@ exports.getBook = async function (id) {
       typeof data.pages === "number" ? data.pages : fileNode.pages || 0;
     const sizeInBytes = fileNode.bytes || 0;
 
-    // TODO: localize
-    let formattedSize = "Unknown";
+    let formattedSize;
     if (sizeInBytes > 0) {
       const mb = sizeInBytes / (1024 * 1024);
       formattedSize = `${mb.toFixed(1)} MB`;
     }
 
-    let cleanTitle = data.title || `Book ${id}`;
-    const trimmedTitle = String(cleanTitle).trim();
-
+    let displayTitle = "";
     if (
-      trimmedTitle === "" ||
-      trimmedTitle.includes("-100000") ||
-      !isNaN(trimmedTitle)
+      data.title &&
+      data.title !== "" &&
+      data.title !== "-100000" &&
+      data.title !== data.number
     ) {
-      cleanTitle = "Single Issue";
+      displayTitle = data.title;
+    } else if (data.number !== undefined && data.number !== "-100000") {
+      displayTitle = `${_("tool-servers-type-issue")}: ${data.number}`;
+    } else {
+      displayTitle = _("tool-servers-generic-name-issue");
     }
 
     const authorsArray = [];
@@ -457,16 +456,16 @@ exports.getBook = async function (id) {
 
     return {
       id: parseInt(id, 10),
-      name: cleanTitle,
+      name: displayTitle,
       seriesTitle: data.volumeTitle || "",
       url: fileNode.filePath || "",
       size: formattedSize,
       media: {
         pagesCount: pagesCount,
-        mediaType: fileNode.extension || "Unknown",
+        mediaType: fileNode.extension,
       },
       metadata: {
-        title: cleanTitle,
+        title: displayTitle,
         summary: data.summary || "",
         authors: authorsArray,
         tags: tagsArray,
