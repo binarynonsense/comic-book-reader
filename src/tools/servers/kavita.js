@@ -405,6 +405,7 @@ exports.getBook = async function (id) {
     const response = await fetchUrlGet(url);
     const data = await response.json();
     if (!data) return undefined;
+
     const fileNode =
       Array.isArray(data.files) && data.files.length > 0 ? data.files[0] : {};
     const pagesCount =
@@ -484,7 +485,8 @@ exports.getBook = async function (id) {
         tags: tagsArray,
         allowDownload: !!g_session.canDownload,
       },
-      readProgress: null, // TODO
+      // TODO: readProgress.completed
+      readProgress: { page: data.pagesRead, pageCount: data.pages },
       disableReading,
     };
   } catch (error) {
