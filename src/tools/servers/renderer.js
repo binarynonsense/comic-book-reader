@@ -274,7 +274,7 @@ function initOnIpcCallbacks() {
       const imgs = document.querySelectorAll(`#tool-servers-thumb-${id}`);
       if (imgs) {
         imgs.forEach((img) => {
-          if (img) {
+          if (img && (img.src === "" || img.src === window.location.href)) {
             const blob = new Blob([buffer], { type: mime });
             const url = URL.createObjectURL(blob);
             img.src = url;
