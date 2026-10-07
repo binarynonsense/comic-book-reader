@@ -955,6 +955,7 @@ async function goBack() {
 }
 
 async function loadState(state) {
+  sendIpcToRenderer("show-modal-loading");
   g_navState = state;
   try {
     if (state.section === Section.LIBRARIES) {
