@@ -100,6 +100,10 @@ function getHistory() {
           case "komga":
             fileInfo.iconType = 3;
             break;
+
+          case "kavita":
+            fileInfo.iconType = 3;
+            break;
         }
       }
     } else {
