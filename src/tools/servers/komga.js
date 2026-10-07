@@ -326,6 +326,7 @@ exports.getBook = async function (id) {
     if (!g_session.canStream || data?.media?.mediaType?.includes("epub")) {
       data.disableReading = true;
     }
+    data.allowDownload = g_session.canDownload;
     return data;
   } catch (error) {
     log.error(`error fetching book ${id}: ` + error);
