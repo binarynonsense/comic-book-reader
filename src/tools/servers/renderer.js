@@ -1511,21 +1511,21 @@ function buildContentNavbar(state, history) {
   const loc = g_extraLocalization;
   if (section === Section.SEARCH_BOOKS || section === Section.SEARCH_SERIES) {
     const type = section === Section.SEARCH_BOOKS ? loc.books : loc.series;
-    title += `${loc.search?.toUpperCase()} (${type}): ${search.query}`;
+    title += `<span>${loc.search?.toUpperCase()} (${type}): ${search.query}</span>`;
   } else if (section === Section.ACTIVITY) {
-    title += loc.activity.toUpperCase();
+    title += "<span>" + loc.activity.toUpperCase() + "</span>";
   } else if (section === Section.LIBRARIES) {
-    title += loc.libraries.toUpperCase();
+    title += "<span>" + loc.libraries.toUpperCase() + "</span>";
   } else if (section === Section.KEEP_READING) {
-    title += loc.keepReading.toUpperCase();
+    title += "<span>" + loc.keepReading.toUpperCase() + "</span>";
   } else if (section === Section.RECENT_BOOKS) {
-    title += loc.recentlyAddedBooks.toUpperCase();
+    title += "<span>" + loc.recentlyAddedBooks.toUpperCase() + "</span>";
   } else if (section === Section.RECENT_SERIES) {
-    title += loc.recentlyAddedSeries.toUpperCase();
+    title += "<span>" + loc.recentlyAddedSeries.toUpperCase() + "</span>";
   } else if (section === Section.UPDATED_SERIES) {
-    title += loc.recentlyUpdatedSeries.toUpperCase();
+    title += "<span>" + loc.recentlyUpdatedSeries.toUpperCase() + "</span>";
   } else if (section === Section.ON_DECK_SERIES) {
-    title += loc.keepReading.toUpperCase();
+    title += "<span>" + loc.keepReading.toUpperCase() + "</span>";
   } else {
     const path = [
       library?.name?.toUpperCase(),

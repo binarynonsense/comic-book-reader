@@ -1827,7 +1827,7 @@ html[dir="rtl"] .tools-range-bubble {
   overflow: hidden;
   text-overflow: ellipsis;
   font-weight: bold;
-  text-align-last: right;
+  /* text-align-last: right; */
 }
 
 #tool-servers-navbar-right-content .arrow {
