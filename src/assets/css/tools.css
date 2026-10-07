@@ -1715,6 +1715,12 @@ html[dir="rtl"] .tools-range-bubble {
   font-size: 16px;
 }
 
+.tool-servers-book-detail-buttons {
+  display: flex;
+  gap: 1px;
+  flex-direction: column;
+}
+
 .tool-servers-book-meta-grid {
   font-size: 14px;
   line-height: 1.6;

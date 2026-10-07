@@ -317,8 +317,11 @@ exports.getBook = async function (id) {
     }
     const url = `${g_session.url}/api/v1/books/${id}`;
     const response = await fetchUrlGet(url);
-    const book = await response.json();
-    return book;
+    const data = await response.json();
+    if (data?.media?.mediaType?.includes("epub")) {
+      data.disableReading = true;
+    }
+    return data;
   } catch (error) {
     log.error(`error fetching book ${id}: ` + error);
     return undefined;
