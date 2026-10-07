@@ -1072,14 +1072,9 @@ html[dir="rtl"] .tools-range-bubble {
   padding: 2px 3px;
   border-radius: 4px;
 }
-html[dir="rtl"] .tools-buttons-list-typeminiicon {
-  left: auto;
-  right: 45%;
+.tools-buttons-list-li:nth-child(even) .tools-buttons-list-typeminiicon {
+  background-color: var(--tools-buttons-list-bg2-color);
 }
-/* .tools-buttons-list-button:hover .tools-buttons-list-typeminiicon {
-  background-color: var(--tools-buttons-list-bg1-color);
-  color: var(--tools-buttons-list-text-color);
-} */
 .tools-buttons-list-button:hover .tools-buttons-list-typeminiicon {
   color: var(--tools-button-normal-text-color);
   background-color: var(--tools-button-normal-bg-hover-color);

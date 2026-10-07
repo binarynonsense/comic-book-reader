@@ -239,32 +239,7 @@ function buildHistoryList(history, max) {
         const path = fileInfo.filePath.toLowerCase();
         const pos = path.lastIndexOf(".");
         const ext = path.substring(pos + 1);
-        let iconText = "";
-        switch (ext) {
-          case "cbz":
-            iconText = "CBZ";
-            break;
-          case "cbr":
-            iconText = "CBR";
-            break;
-          case "cb7":
-            iconText = "CB7";
-            break;
-          case "epub":
-            iconText = "EPUB";
-            break;
-          case "pdf":
-            iconText = "PDF";
-            break;
-          case "mobi":
-            iconText = "MOBI";
-            break;
-          case "fb2":
-            iconText = "FB2";
-            break;
-          default:
-            break;
-        }
+        let iconText = ext.toUpperCase();
         if (iconText !== "") {
           return `
         <div class="tools-buttons-list-typeminiicon">
