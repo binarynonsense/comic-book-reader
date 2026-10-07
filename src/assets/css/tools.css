@@ -1696,6 +1696,7 @@ html[dir="rtl"] .tools-range-bubble {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   overflow: hidden;
 
   line-height: 1.4;
@@ -1803,11 +1804,6 @@ html[dir="rtl"] .tools-range-bubble {
   min-height: 150px;
 }
 
-/* .tool-servers-book-card-img.tool-servers-contain {
-  object-fit: contain !important;
-  background-color: #000000;
-} */
-
 /* ************************************ */
 
 #tool-servers-navbar {
@@ -1821,15 +1817,17 @@ html[dir="rtl"] .tools-range-bubble {
 }
 
 #tool-servers-navbar-right-content {
+  font-size: 12px;
   margin-left: auto;
   padding-left: 15px;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
   font-weight: bold;
-  text-align: right;
+  text-align-last: right;
 }
 
 #tool-servers-navbar-right-content .arrow {
