@@ -1212,24 +1212,6 @@ exports.cancelThumbsRetrieval = function () {
 //     },
 //   ],
 // };
-// const body = {{
-//   id: 0,
-//   name: "WantToRead",
-//   combination: 0,
-//   entityType: 0,
-//   limitTo: 0,
-//   sortOptions: {
-//     sortField: 1,
-//     isAscending: true,
-//   },
-//   statements: [
-//     {
-//       field: 26,
-//       comparison: 0,
-//       value: "true",
-//     },
-//   ],
-// }
 
 //////////////////////////////////////////////////////////////////////////////
 // OPDS EXPERIMENTS //////////////////////////////////////////////////////////
