@@ -96,6 +96,11 @@ exports.login = async function (serverUrl, credentials) {
     if (response.ok) {
       g_session.url = serverUrl;
       g_session.userAgent = g_customUserAgent;
+      const userData = await response.json();
+      g_session.roles = Array.isArray(userData.roles) ? userData.roles : [];
+      g_session.canDownload = g_session.roles.includes("FILE_DOWNLOAD");
+      g_session.canStream = g_session.roles.includes("PAGE_STREAMING");
+      log.debug(g_session.roles);
 
       if (isApiKeyMode) {
         log.debug("logged via Komga API Key");
@@ -318,7 +323,7 @@ exports.getBook = async function (id) {
     const url = `${g_session.url}/api/v1/books/${id}`;
     const response = await fetchUrlGet(url);
     const data = await response.json();
-    if (data?.media?.mediaType?.includes("epub")) {
+    if (!g_session.canStream || data?.media?.mediaType?.includes("epub")) {
       data.disableReading = true;
     }
     return data;

@@ -1109,10 +1109,10 @@ function buildContentBook(data) {
         </div>
 
         <div class="tool-servers-book-detail-buttons">
-          <button id="tool-servers-read-btn-${data.id}" ${data.disableReading ? `class="tools-disabled"` : ""}   >
+          <button id="tool-servers-read-btn-${data.id}" ${data.disableReading ? `class="tools-disabled"` : ""}>
             <span>OPEN IN ACBR</span>
           </button>            
-          <button id="tool-servers-download-btn-${data.id}">
+          <button id="tool-servers-download-btn-${data.id}" ${!data.allowDownload ? `class="tools-disabled"` : ""}>
             <span>DOWNLOAD</span>
           </button>
         </div>

@@ -95,7 +95,9 @@ exports.login = async function (serverUrl, credentials) {
               g_session.roles = Array.isArray(userData.roles)
                 ? userData.roles
                 : [];
+              log.debug(g_session.roles);
               g_session.canDownload = g_session.roles.includes("Download");
+              g_session.canStream = true;
             }
           } catch (userErr) {
             log.error("failed to fetch user roles: " + userErr);
@@ -133,7 +135,9 @@ exports.login = async function (serverUrl, credentials) {
           g_session.token = data.token;
           g_session.apiKey = data.apiKey || null;
           g_session.roles = Array.isArray(data.roles) ? data.roles : [];
+          log.debug(g_session.roles);
           g_session.canDownload = g_session.roles.includes("Download");
+          g_session.canStream = true;
 
           result.success = true;
           result.isKavita = true;
@@ -476,7 +480,8 @@ exports.getBook = async function (id) {
     // 2 	Mobi / Audio
     // 3	Epub (.epub)
     // 4	Pdf (.pdf)
-    let disableReading = data.format === 2 || data.format === 3;
+    let disableReading =
+      !g_session.canStream || data.format === 2 || data.format === 3;
     return {
       id: parseInt(id, 10),
       name: displayTitle,
@@ -492,11 +497,11 @@ exports.getBook = async function (id) {
         summary: summary || "",
         authors: authorsArray,
         tags: tagsArray,
-        allowDownload: !!g_session.canDownload,
       },
       // TODO: readProgress.completed
       readProgress: { page: data.pagesRead, pageCount: data.pages },
       disableReading,
+      allowDownload: !!g_session.canDownload,
     };
   } catch (error) {
     log.error(`error getting book details for ${id}: ` + error);
