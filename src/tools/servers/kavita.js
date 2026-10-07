@@ -515,7 +515,7 @@ exports.getActivity = async function () {
       exports.getOnDeckSeries(0, size),
       exports.getRecentlyAddedSeries(0, size),
       exports.getRecentlyUpdatedSeries(0, size),
-      exports.getRecentlyFinishedBooks(0, size),
+      exports.getWantToReadSeries(0, size),
     ]);
 
     return {
@@ -525,7 +525,7 @@ exports.getActivity = async function () {
         results[1].status === "fulfilled" ? results[1].value : undefined,
       recentlyUpdatedSeries:
         results[2].status === "fulfilled" ? results[2].value : undefined,
-      recentlyFinishedBooks:
+      wantToReadSeries:
         results[3].status === "fulfilled" ? results[3].value : undefined,
     };
   } catch (error) {
@@ -593,10 +593,6 @@ exports.getRecentlyAddedSeries = async function (page = 0, size = 20) {
   }
 };
 
-exports.getRecentlyAddedBooks = async function (page = 0, size = 20) {
-  return { content: [], number: page, totalPages: 1, totalElements: 0 };
-};
-
 exports.getRecentlyUpdatedSeries = async function (page = 0, size = 20) {
   try {
     const url = `${g_session.url}/api/Series/recently-updated-series?pageNumber=${page + 1}&pageSize=${size}`;
@@ -631,7 +627,7 @@ exports.getRecentlyUpdatedSeries = async function (page = 0, size = 20) {
 };
 
 // NOTE: returns [] in the demo server, could be right but I don't know
-exports.getRecentlyFinishedBooks = async function (page = 0, size = 20) {
+exports.getRecentlyFinishedSeries = async function (page = 0, size = 20) {
   try {
     const url = `${g_session.url}/api/Series/v2?pageNumber=${page + 1}&pageSize=${size}`;
     const body = {
@@ -673,6 +669,58 @@ exports.getRecentlyFinishedBooks = async function (page = 0, size = 20) {
       content: data.map((series) => ({
         id: series.id,
         booksCount: series.booksCount || 0,
+        metadata: { title: series.name || "" },
+      })),
+      number: page,
+      totalPages: totalPages,
+      totalElements: totalRecords,
+    };
+  } catch (error) {
+    log.error("error getting finished series: " + error);
+    return { content: [], number: page, totalPages: 1, totalElements: 0 };
+  }
+};
+
+exports.getWantToReadSeries = async function (page = 0, size = 20) {
+  try {
+    const url = `${g_session.url}/api/Series/v2?pageNumber=${page + 1}&pageSize=${size}`;
+    const body = {
+      id: 0,
+      name: "WantToRead",
+      combination: 0,
+      entityType: 0,
+      limitTo: 0,
+      sortOptions: {
+        sortField: 1,
+        isAscending: true,
+      },
+      statements: [
+        {
+          field: 26,
+          comparison: 0,
+          value: "true",
+        },
+      ],
+    };
+
+    const response = await fetchUrlPost(url, body);
+    const data = await response.json();
+
+    let totalRecords = 0;
+    let totalPages = 1;
+    const paginationHeader =
+      response.headers.get("Pagination") ||
+      response.headers.get("X-Pagination");
+    if (paginationHeader) {
+      const meta = JSON.parse(paginationHeader);
+      totalRecords = meta.totalItems || 0;
+      totalPages = meta.totalPages || 1;
+    }
+
+    return {
+      content: data.map((series) => ({
+        id: series.id,
+        booksCount: 0,
         metadata: { title: series.name || "" },
       })),
       number: page,

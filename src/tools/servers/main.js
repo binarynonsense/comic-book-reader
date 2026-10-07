@@ -305,6 +305,10 @@ function initOnIpcCallbacks() {
     await showSeriesInOnDeckSeries(...args);
   });
 
+  on("show-series-in-wanttoreadseries", async (...args) => {
+    await showSeriesInWantToReadSeries(...args);
+  });
+
   /////////////////
 
   on("on-nav-button-clicked", (...args) => {
@@ -857,6 +861,22 @@ async function showSeriesInOnDeckSeries(pageIndex = 0) {
   sendIpcToRenderer("build-content-navbar", g_navState, g_navHistory.length);
 }
 
+async function showSeriesInWantToReadSeries(pageIndex = 0) {
+  const response = await g_server.getWantToReadSeries(pageIndex);
+  sendIpcToRenderer("build-content-series-in-wanttoreadseries", response);
+  ////
+  if (g_navState.section !== Section.WANT_TO_READ_SERIES) {
+    addCurrentNavStateToHistory();
+  }
+  g_navState = {};
+  g_navState.section = Section.WANT_TO_READ_SERIES;
+  g_navState.library = {
+    pageIndex,
+    name: _("tool-servers-subsection-wanttoread"),
+  };
+  sendIpcToRenderer("build-content-navbar", g_navState, g_navHistory.length);
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // NAVBAR /////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -956,6 +976,8 @@ async function loadState(state) {
       await showSeriesInUpdatedSeries(state.library.pageIndex);
     } else if (state.section === Section.ON_DECK_SERIES) {
       await showSeriesInOnDeckSeries(state.library.pageIndex);
+    } else if (state.section === Section.WANT_TO_READ_SERIES) {
+      await showSeriesInWantToReadSeries(state.library.pageIndex);
     }
   } catch (error) {
     log.error(error);

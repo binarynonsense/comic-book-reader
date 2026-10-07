@@ -13,6 +13,7 @@ export const Section = {
   RECENT_SERIES: "recent_Series",
   UPDATED_SERIES: "updated_series",
   ON_DECK_SERIES: "on_deck_series",
+  WANT_TO_READ_SERIES: "want_to_series",
   SEARCH_BOOKS: "search_books",
   SEARCH_SERIES: "search_series",
   //

@@ -88,6 +88,7 @@ exports.getExtraLocalization = function () {
     noSummary: _("tool-servers-no-summary"),
     // activity
     keepReading: _("tool-servers-subsection-keepreading"),
+    wantToRead: _("tool-servers-subsection-wanttoread"),
     recentlyAddedBooks: _("tool-servers-subsection-recentlyaddedbooks"),
     recentlyAddedSeries: _("tool-servers-subsection-recentlyaddedseries"),
     recentlyUpdatedSeries: _("tool-servers-subsection-recentlyupdatedseries"),

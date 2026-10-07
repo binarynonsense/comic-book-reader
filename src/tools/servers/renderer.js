@@ -262,6 +262,11 @@ function initOnIpcCallbacks() {
     buildContentSeriesInOnDeckSeries(...args);
   });
 
+  on("build-content-series-in-wanttoreadseries", (...args) => {
+    switchSection(1);
+    buildContentSeriesInWantToReadSeries(...args);
+  });
+
   /////////////////////////////////////////////////////////////////////////////
 
   on("render-thumb", (id, buffer, mime) => {
@@ -686,20 +691,6 @@ function buildContentActivity(inputData) {
   const root = document.querySelector("#tool-servers-content");
   root.style = "padding-top: 10px";
   root.innerHTML = "";
-  if (inputData.inProgress?.totalElements > 0)
-    root.innerHTML += `
-  <div class="tool-servers-activity-section">  
-    <div class="tool-servers-activity-title">
-      <span>${g_extraLocalization.keepReading}</span>
-      ${
-        inputData.inProgress.totalElements > 5
-          ? `
-      <i class="fa-solid fa-circle-plus" id="tool-servers-activity-inprogress-button" title="${g_extraLocalization.btnSeeAllBooks}"></i>`
-          : ""
-      }
-    </div>
-    <div class="tool-servers-activity-div" id="tool-servers-activity-inprogress-div"></div>    
-  </div>`;
   if (inputData.onDeckSeries?.totalElements > 0)
     root.innerHTML += `
   <div class="tool-servers-activity-section">  
@@ -713,6 +704,34 @@ function buildContentActivity(inputData) {
       }
     </div>
     <div class="tool-servers-activity-div" id="tool-servers-activity-ondeck-div"></div>    
+  </div>`;
+  if (inputData.wantToReadSeries?.totalElements > 0)
+    root.innerHTML += `
+  <div class="tool-servers-activity-section">  
+    <div class="tool-servers-activity-title">
+      <span>${g_extraLocalization.wantToRead}</span>
+      ${
+        inputData.wantToReadSeries.totalElements > 5
+          ? `
+      <i class="fa-solid fa-circle-plus" id="tool-servers-activity-wanttoread-button" title="${g_extraLocalization.btnSeeAllBooks}"></i>`
+          : ""
+      }
+    </div>
+    <div class="tool-servers-activity-div" id="tool-servers-activity-wanttoread-div"></div>    
+  </div>`;
+  if (inputData.inProgress?.totalElements > 0)
+    root.innerHTML += `
+  <div class="tool-servers-activity-section">  
+    <div class="tool-servers-activity-title">
+      <span>${g_extraLocalization.keepReading}</span>
+      ${
+        inputData.inProgress.totalElements > 5
+          ? `
+      <i class="fa-solid fa-circle-plus" id="tool-servers-activity-inprogress-button" title="${g_extraLocalization.btnSeeAllBooks}"></i>`
+          : ""
+      }
+    </div>
+    <div class="tool-servers-activity-div" id="tool-servers-activity-inprogress-div"></div>    
   </div>`;
   if (inputData.recentlyAddedBooks?.totalElements > 0)
     root.innerHTML += `
@@ -776,6 +795,27 @@ function buildContentActivity(inputData) {
         button.addEventListener("click", () => {
           showLoadingModal();
           sendIpcToMain("show-books-in-keepreading", 0);
+        });
+    }
+  }
+  {
+    const div = document.querySelector("#tool-servers-activity-wanttoread-div");
+    if (div) {
+      const grid = helperSeriesGrid(
+        inputData.wantToReadSeries,
+        g_extraLocalization.wantToRead,
+      );
+      div.appendChild(grid);
+      seriesIds.push(
+        ...inputData.wantToReadSeries.content.map((data) => data.id),
+      );
+      const button = document.querySelector(
+        "#tool-servers-activity-wanttoread-button",
+      );
+      if (button)
+        button.addEventListener("click", () => {
+          showLoadingModal();
+          sendIpcToMain("show-series-in-wanttoreadseries", 0);
         });
     }
   }
@@ -1171,6 +1211,13 @@ function buildContentSeriesInOnDeckSeries(inputData, pageIndex = 0) {
   helperBuildSeries(inputData, (pageIndex) => {
     showLoadingModal();
     sendIpcToMain("show-series-in-ondeckseries", pageIndex);
+  });
+}
+
+function buildContentSeriesInWantToReadSeries(inputData, pageIndex = 0) {
+  helperBuildSeries(inputData, (pageIndex) => {
+    showLoadingModal();
+    sendIpcToMain("show-series-in-wanttoreadseries", pageIndex);
   });
 }
 
