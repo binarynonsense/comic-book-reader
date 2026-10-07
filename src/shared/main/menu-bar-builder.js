@@ -103,10 +103,13 @@ function getOpenRecentSubmenu(history) {
     const entry = reverseHistory[index];
     let label = "???";
     if (entry?.data?.source) {
+      let tag = "[www] ";
+      if (entry.data.source === "komga") tag = "[komga] ";
+      else if (entry.data.source === "kavita") tag = "[kavita] ";
       if (entry.data.name) {
-        label = "[www] " + utils.reduceStringFrontEllipsis(entry.data.name);
+        label = tag + utils.reduceStringFrontEllipsis(entry.data.name);
       } else {
-        label = "[www] " + utils.reduceStringFrontEllipsis(entry.data.url);
+        label = tag + utils.reduceStringFrontEllipsis(entry.data.url);
       }
     } else {
       label = utils.reduceStringFrontEllipsis(entry.filePath);
