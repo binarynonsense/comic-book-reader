@@ -329,7 +329,7 @@ exports.getVolumesInSeries = async function (seriesId, pageIndex = 0) {
     const data = await response.json();
     const formattedVolumes = data.map((volume) => {
       let displayTitle = "";
-      if (volume.title && volume.title !== "" && volume.title !== "-100000") {
+      if (volume.name && volume.name !== "" && volume.name !== "-100000") {
         displayTitle = `${_("tool-servers-type-volume")}: ${volume.name}`;
       } else {
         displayTitle = _("tool-servers-generic-name-volume");
