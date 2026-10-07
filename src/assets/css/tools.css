@@ -1829,9 +1829,9 @@ html[dir="rtl"] .tools-range-bubble {
   font-weight: bold;
   /* text-align-last: right; */
 }
-
-#tool-servers-navbar-right-content .arrow {
-  margin: 5px;
+#tool-servers-navbar-right-content i {
+  margin: 2px;
+  font-size: 11px;
 }
 
 .tool-servers-navbar-icon-button {

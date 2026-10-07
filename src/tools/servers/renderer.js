@@ -1532,11 +1532,13 @@ function buildContentNavbar(state, history) {
       series?.name,
       volume?.name,
       book?.name,
-    ].filter((item) => {
-      return item; // returns item when if(item) is true
-    });
-    // title += path.join(" 	► ");
-    title += path.join("<span class='arrow'>►</span>");
+    ]
+      .filter((item) => {
+        return item; // returns item when if(item) is true
+      })
+      .map((item) => `<span>${item}</span>`);
+    // title += path.join(" <span class='arrow'>►</span> ");
+    title += path.join(' <i class="fa-solid fa-angle-right"></i> ');
   }
   rightDiv.innerHTML = title;
 }
