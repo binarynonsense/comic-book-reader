@@ -335,7 +335,6 @@ exports.getVolumesInSeries = async function (seriesId, pageIndex = 0) {
     const response = await fetchUrlGet(url);
     const data = await response.json();
     const formattedVolumes = data.map((volume) => {
-      log.test(volume);
       let displayTitle = "";
       // -100000 = unset (loose or unnumbered books)
       //  100000 = special, artbook, one-shot...
