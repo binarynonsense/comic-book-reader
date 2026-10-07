@@ -64,6 +64,7 @@ exports.getExtraLocalization = function () {
     back: _("tool-shared-ui-back"),
     search: _("menu-tools-search"),
     noContent: _("tool-servers-no-content-message"),
+    noSearchResults: _("tool-shared-ui-search-nothing-found"),
     // favorites
     options: _("tool-shared-tab-options"),
     connect: _("tool-servers-button-connect"),

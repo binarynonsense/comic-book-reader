@@ -668,10 +668,10 @@ function getPaginationDiv(
   return paginationDiv;
 }
 
-function buildContentEmpty() {
+function buildContentEmpty(text) {
   const root = document.querySelector("#tool-servers-content");
   root.style = "padding-top: 10px";
-  root.innerHTML = `<span> ${g_extraLocalization.noContent} </span>`;
+  root.innerHTML = `<span> ${text ?? g_extraLocalization.noContent} </span>`;
   ///////////////////////////////////////////
   updateColumnsHeight();
   document.getElementById("tools-columns-right").scrollIntoView({
@@ -1119,18 +1119,26 @@ function buildContentVolumesInSeries(
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function buildContentBooksInSearch(query, inputData, pageIndex = 0) {
-  helperBuildBooks(inputData, (pageIndex) => {
-    showLoadingModal();
-    sendIpcToMain("show-books-in-search", query, pageIndex);
-  });
+function buildContentBooksInSearch(query, inputData) {
+  if (inputData.length > 0) {
+    helperBuildBooks(inputData, (pageIndex) => {
+      showLoadingModal();
+      sendIpcToMain("show-books-in-search", query, pageIndex);
+    });
+  } else {
+    buildContentEmpty(g_extraLocalization.noSearchResults);
+  }
 }
 
-function buildContentSeriesInSearch(query, inputData, pageIndex = 0) {
-  helperBuildSeries(inputData, (pageIndex) => {
-    showLoadingModal();
-    sendIpcToMain("show-series-in-search", query, pageIndex);
-  });
+function buildContentSeriesInSearch(query, inputData) {
+  if (inputData.length > 0) {
+    helperBuildSeries(inputData, (pageIndex) => {
+      showLoadingModal();
+      sendIpcToMain("show-series-in-search", query, pageIndex);
+    });
+  } else {
+    buildContentEmpty(g_extraLocalization.noSearchResults);
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
