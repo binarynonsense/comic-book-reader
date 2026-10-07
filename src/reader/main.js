@@ -2066,10 +2066,7 @@ function updateMenuAndToolbarItems(isOpen = true) {
         g_fileData.type === FileDataType.RAR ||
         g_fileData.type === FileDataType.SEVENZIP ||
         g_fileData.type === FileDataType.EPUB_COMIC ||
-        g_fileData.type === FileDataType.PDF ||
-        (g_fileData.type === FileDataType.WWW &&
-          (g_fileData.data.source === "komga" ||
-            g_fileData.data.source === "kavita"))
+        g_fileData.type === FileDataType.PDF
       ) {
         menuBar.setComicBookOpened(true);
         sendIpcToRenderer(
@@ -2102,6 +2099,20 @@ function updateMenuAndToolbarItems(isOpen = true) {
         sendIpcToRenderer("update-toolbar-zoom-buttons", true);
         sendIpcToRenderer("update-toolbar-pagesdirection-buttons", true);
         sendIpcToRenderer("update-toolbar-pagemode-buttons", false);
+      } else if (
+        g_fileData.type === FileDataType.WWW &&
+        (g_fileData.data.source === "komga" ||
+          g_fileData.data.source === "kavita")
+      ) {
+        menuBar.setServerFileOpened();
+        sendIpcToRenderer(
+          "update-toolbar-rotation-buttons",
+          settings.getValue("page_mode") === 0,
+        );
+        sendIpcToRenderer("update-toolbar-page-buttons", true);
+        sendIpcToRenderer("update-toolbar-zoom-buttons", true);
+        sendIpcToRenderer("update-toolbar-pagesdirection-buttons", true);
+        sendIpcToRenderer("update-toolbar-pagemode-buttons", true);
       } else if (g_fileData.type === FileDataType.WWW) {
         menuBar.setWWWOpened();
         sendIpcToRenderer("update-toolbar-rotation-buttons", true);

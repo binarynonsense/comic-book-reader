@@ -211,6 +211,13 @@ exports.setWWWOpened = function () {
   enableItemRecursive(getItem("view-layout-pagemode"), false);
 };
 
+exports.setServerFileOpened = function () {
+  setComicBookOpened(true);
+  enableItem(getItem("convert-file"), false);
+  enableItem(getItem("extract-file"), false);
+  enableItem(getItem("file-properties"), false);
+};
+
 function getItem(id) {
   return Menu.getApplicationMenu().getMenuItemById(id);
 }
