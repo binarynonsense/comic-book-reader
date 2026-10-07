@@ -560,7 +560,10 @@ async function logToServer(type, url, apiKey, username, email, password, save) {
     }
   }
   const currentFileData = reader.getFileData();
-  if (currentFileData?.data?.source === "komga") {
+  if (
+    currentFileData?.data?.source === "komga" ||
+    currentFileData?.data?.source === "kavita"
+  ) {
     reader.onMenuCloseFile();
   }
   sendIpcToRenderer("show-modal-loading");
