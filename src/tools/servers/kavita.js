@@ -469,12 +469,6 @@ exports.getBook = async function (id) {
       allowedTags: ["b", "i", "u", "p", "br"],
       allowedAttributes: {},
     });
-    // text = sanitizeHtml(text, {
-    //       allowedTags: ["b", "i", "u", "font"],
-    //       allowedAttributes: {
-    //         font: ["color", "size"],
-    //       },
-    //     });
 
     // format:
     // 0	loose images (.jpg, .png, .webp, etc.)
