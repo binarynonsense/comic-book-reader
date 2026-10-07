@@ -1,6 +1,8 @@
 {
   "@metadata": {
-    "authors": ["trzyglow"],
+    "authors": [
+      "trzyglow"
+    ],
     "last-updated": "2026-10-06",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.26.0-beta1",
@@ -1268,6 +1270,7 @@
   "tool-servers-section-chapters": "Kapitel",
   "tool-servers-section-issues": "Ausgaben",
   "tool-servers-subsection-keepreading": "Weiter lesen",
+  "[NEEDS TRANSLATION]tool-servers-subsection-wanttoread": "Want to Read",
   "tool-servers-subsection-recentlyaddedbooks": "Kürzlich hinzugefügte Bücher",
   "tool-servers-subsection-recentlyaddedseries": "Kürzlich hinzugefügte Reihe",
   "tool-servers-subsection-recentlyupdatedseries": "Kürzlich aktualisierte Series",

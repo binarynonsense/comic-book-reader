@@ -1,8 +1,6 @@
 {
   "@metadata": {
-    "authors": [
-      "Álvaro"
-    ],
+    "authors": ["Álvaro"],
     "last-updated": "2026-10-03",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.26.0-beta1",
@@ -1270,6 +1268,7 @@
   "tool-servers-section-chapters": "Capítulos",
   "tool-servers-section-issues": "Números",
   "tool-servers-subsection-keepreading": "Continuar leyendo",
+  "tool-servers-subsection-wanttoread": "Quiero leer",
   "tool-servers-subsection-recentlyaddedbooks": "Libros añadidos recientemente",
   "tool-servers-subsection-recentlyaddedseries": "Series añadidas recientemente",
   "tool-servers-subsection-recentlyupdatedseries": "Series actualizadas recientemente",
