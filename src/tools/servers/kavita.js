@@ -335,8 +335,16 @@ exports.getVolumesInSeries = async function (seriesId, pageIndex = 0) {
     const response = await fetchUrlGet(url);
     const data = await response.json();
     const formattedVolumes = data.map((volume) => {
+      log.test(volume);
       let displayTitle = "";
-      if (volume.name && volume.name !== "" && volume.name !== "-100000") {
+      // -100000 = unset (loose or unnumbered books)
+      //  100000 = special, artbook, one-shot...
+      if (
+        volume.name &&
+        volume.name !== "" &&
+        volume.name !== "-100000" &&
+        volume.name !== "100000"
+      ) {
         displayTitle = `${_("tool-servers-type-volume")}: ${volume.name}`;
       } else {
         displayTitle = _("tool-servers-generic-name-volume");
