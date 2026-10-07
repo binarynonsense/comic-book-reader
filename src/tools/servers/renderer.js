@@ -271,11 +271,15 @@ function initOnIpcCallbacks() {
 
   on("render-thumb", (id, buffer, mime) => {
     if (buffer) {
-      const img = document.querySelector(`#tool-servers-thumb-${id}`);
-      if (img) {
-        const blob = new Blob([buffer], { type: mime });
-        const url = URL.createObjectURL(blob);
-        img.src = url;
+      const imgs = document.querySelectorAll(`#tool-servers-thumb-${id}`);
+      if (imgs) {
+        imgs.forEach((img) => {
+          if (img) {
+            const blob = new Blob([buffer], { type: mime });
+            const url = URL.createObjectURL(blob);
+            img.src = url;
+          }
+        });
       }
     }
   });
