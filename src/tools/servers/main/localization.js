@@ -86,6 +86,7 @@ exports.getExtraLocalization = function () {
     progress: _("tool-servers-reading-progress"),
     completed: _("tool-servers-reading-progress-completed"),
     noSummary: _("tool-servers-no-summary"),
+    summary: _("tool-metadata-data-summary"),
     // activity
     keepReading: _("tool-servers-subsection-keepreading"),
     wantToRead: _("tool-servers-subsection-wanttoread"),

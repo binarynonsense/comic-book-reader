@@ -1059,9 +1059,22 @@ function buildContentBook(data) {
     const detailView = document.createElement("div");
     detailView.className = "tool-servers-book-detail-view";
 
+    const grouped = (data.metadata?.authors || []).reduce((acc, current) => {
+      acc[current.role] = acc[current.role] || [];
+      acc[current.role].push(current.name);
+      return acc;
+    }, {});
+
+    const entries = Object.entries(grouped);
+
     const authorsList =
-      data.metadata?.authors?.map((a) => `${a.name} (${a.role})`).join(", ") ||
-      g_extraLocalization.unknown;
+      entries.length > 0
+        ? "<br>" +
+          entries
+            .map(([role, names]) => `${role}: ${names.join(", ")}.`)
+            .join("<br>")
+        : g_extraLocalization.unknown;
+
     const tagsList =
       data.metadata?.tags
         ?.map((t) => `<span class="tool-servers-book-tag">${t}</span>`)
@@ -1090,6 +1103,7 @@ function buildContentBook(data) {
               <p><span class="tool-servers-book-dataname">${g_extraLocalization.format.toUpperCase()}</span> ${data?.media?.mediaType || g_extraLocalization.unknown}</p>
             </div>
             
+            <p><span class="tool-servers-book-dataname">${g_extraLocalization.summary.toUpperCase()}</span></p>
             <p class="tool-servers-book-summary">${summaryText}</p>
           </div>
         </div>

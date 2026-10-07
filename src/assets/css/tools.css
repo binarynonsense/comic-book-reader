@@ -1724,9 +1724,8 @@ html[dir="rtl"] .tools-range-bubble {
 
 .tool-servers-book-meta-grid {
   font-size: 14px;
-  line-height: 1.6;
-  padding-bottom: 12px;
-  margin-bottom: 12px;
+  line-height: 1.8;
+  padding-bottom: 3px;
   display: flex;
   flex-direction: column;
   gap: 5px;

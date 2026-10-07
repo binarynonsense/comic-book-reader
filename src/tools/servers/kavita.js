@@ -10,6 +10,9 @@ const { net } = require("electron");
 const fileUtils = require("../../shared/main/file-utils");
 const log = require("../../shared/main/logger");
 
+// NOTE: the functions try to mimick the outputs from the Komga one
+// so the renderer doesn't need to know where they come from
+
 //////////////////////////////////////////////////////////////////////////////
 // SETUP /////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
@@ -432,20 +435,21 @@ exports.getBook = async function (id) {
       displayTitle = _("tool-servers-generic-name-issue");
     }
 
-    // TODO: more
-    const authorsArray = [];
-    if (Array.isArray(data.writers)) {
-      data.writers.forEach((writer) => {
-        if (writer.name)
-          authorsArray.push({ name: writer.name, role: "Writer" });
-      });
-    }
-    if (Array.isArray(data.coverArtists)) {
-      data.coverArtists.forEach((artist) => {
-        if (artist.name)
-          authorsArray.push({ name: artist.name, role: "Cover Artist" });
-      });
-    }
+    const rolesMap = {
+      writers: _("tool-metadata-data-writer"),
+      pencillers: _("tool-metadata-data-penciller"),
+      inkers: _("tool-metadata-data-inker"),
+      colorists: _("tool-metadata-data-colorist"),
+      coverArtists: _("tool-metadata-data-coverartist"),
+      letterers: _("tool-metadata-data-letterer"),
+      editors: _("tool-metadata-data-editor"),
+    };
+    const authorsArray = Object.entries(rolesMap).flatMap(([key, role]) => {
+      const people = data[key];
+      return Array.isArray(people)
+        ? people.map((person) => ({ name: person.name, role }))
+        : [];
+    });
 
     const tagsArray = [];
     if (Array.isArray(data.genres)) {
@@ -460,6 +464,18 @@ exports.getBook = async function (id) {
       });
     }
 
+    const sanitizeHtml = require("sanitize-html");
+    const summary = sanitizeHtml(data.summary, {
+      allowedTags: ["b", "i", "u", "p", "br"],
+      allowedAttributes: {},
+    });
+    // text = sanitizeHtml(text, {
+    //       allowedTags: ["b", "i", "u", "font"],
+    //       allowedAttributes: {
+    //         font: ["color", "size"],
+    //       },
+    //     });
+
     // format:
     // 0	loose images (.jpg, .png, .webp, etc.)
     // 1	comic archives (.cbz, .cbr, .cb7, .cbt, .zip, .rar)
@@ -467,7 +483,6 @@ exports.getBook = async function (id) {
     // 3	Epub (.epub)
     // 4	Pdf (.pdf)
     let disableReading = data.format === 2 || data.format === 3;
-
     return {
       id: parseInt(id, 10),
       name: displayTitle,
@@ -480,7 +495,7 @@ exports.getBook = async function (id) {
       },
       metadata: {
         title: displayTitle,
-        summary: data.summary || "",
+        summary: summary || "",
         authors: authorsArray,
         tags: tagsArray,
         allowDownload: !!g_session.canDownload,
