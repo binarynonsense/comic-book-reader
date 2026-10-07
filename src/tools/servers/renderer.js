@@ -1170,7 +1170,7 @@ function buildContentVolumesInSeries(
 ///////////////////////////////////////////////////////////////////////////////
 
 function buildContentBooksInSearch(query, inputData) {
-  if (inputData.length > 0) {
+  if (inputData.content.length > 0) {
     helperBuildBooks(inputData, (pageIndex) => {
       showLoadingModal();
       sendIpcToMain("show-books-in-search", query, pageIndex);
@@ -1181,7 +1181,7 @@ function buildContentBooksInSearch(query, inputData) {
 }
 
 function buildContentSeriesInSearch(query, inputData) {
-  if (inputData.length > 0) {
+  if (inputData.content.length > 0) {
     helperBuildSeries(inputData, (pageIndex) => {
       showLoadingModal();
       sendIpcToMain("show-series-in-search", query, pageIndex);
