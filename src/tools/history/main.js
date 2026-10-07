@@ -102,7 +102,7 @@ function getHistory() {
             break;
 
           case "kavita":
-            fileInfo.iconType = 3;
+            fileInfo.iconType = 4;
             break;
         }
       }

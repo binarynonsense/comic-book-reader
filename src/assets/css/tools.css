@@ -1041,6 +1041,8 @@ html[dir="rtl"] .tools-range-bubble {
   filter: opacity(0.25);
 }
 
+/* file browser  */
+
 .tools-buttons-list-linkicon-file {
   color: var(--tools-buttons-list-bg1-color) !important;
   padding-inline-start: 5px;
@@ -1050,6 +1052,42 @@ html[dir="rtl"] .tools-range-bubble {
   color: var(--tools-buttons-list-bg1-color) !important;
   padding-inline-start: 10px;
   padding-top: 2px;
+}
+
+/* history  */
+
+.tools-buttons-list-icon {
+  position: relative;
+}
+
+.tools-buttons-list-typeminiicon {
+  position: absolute;
+  bottom: -6px;
+  left: 45%;
+  font-size: 8px;
+  font-weight: bolder;
+  color: var(--tools-buttons-list-text-color);
+  background-color: var(--tools-buttons-list-bg1-color);
+  pointer-events: none;
+  padding: 2px 3px;
+  border-radius: 4px;
+}
+html[dir="rtl"] .tools-buttons-list-typeminiicon {
+  left: auto;
+  right: 45%;
+}
+/* .tools-buttons-list-button:hover .tools-buttons-list-typeminiicon {
+  background-color: var(--tools-buttons-list-bg1-color);
+  color: var(--tools-buttons-list-text-color);
+} */
+.tools-buttons-list-button:hover .tools-buttons-list-typeminiicon {
+  color: var(--tools-button-normal-text-color);
+  background-color: var(--tools-button-normal-bg-hover-color);
+}
+
+.tools-buttons-list-typeminiicon-komga {
+  left: 30%;
+  font-size: 7px;
 }
 
 /* /////////////////////////////////////////////////////////////// */

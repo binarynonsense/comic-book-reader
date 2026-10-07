@@ -218,17 +218,80 @@ function buildHistoryList(history, max) {
     li.className = "tools-buttons-list-li";
     let buttonSpan = document.createElement("span");
     buttonSpan.className = "tools-buttons-list-button";
-    if (fileInfo.iconType === 2) {
-      buttonSpan.innerHTML = `<i class="fas fa-globe fa-2x fa-fw"></i>`;
-    } else if (fileInfo.iconType === 3) {
-      buttonSpan.innerHTML = `<i class="fas fa-server fa-2x fa-fw"></i>`;
-    } else if (fileInfo.iconType === 0) {
-      buttonSpan.innerHTML = `<i class="fas fa-file fa-2x fa-fw"></i>`;
-    } else if (fileInfo.iconType === 1) {
-      buttonSpan.innerHTML = `<i class="fas fa-images fa-2x fa-fw"></i>`;
-    } else {
-      buttonSpan.innerHTML = `<i class="fas fa-question fa-2x fa-fw"></i>`;
+
+    function getTypeMiniIconHtml() {
+      if (fileInfo.iconType === 2) {
+        return `
+        <div class="tools-buttons-list-typeminiicon">
+          www
+        </div>`;
+      } else if (fileInfo.iconType === 3) {
+        return `
+        <div class="tools-buttons-list-typeminiicon tools-buttons-list-typeminiicon-komga">
+          KOMGA
+        </div>`;
+      } else if (fileInfo.iconType === 4) {
+        return `
+        <div class="tools-buttons-list-typeminiicon tools-buttons-list-typeminiicon-komga">
+          KAVITA
+        </div>`;
+      } else if (fileInfo.iconType === 0) {
+        const path = fileInfo.filePath.toLowerCase();
+        const pos = path.lastIndexOf(".");
+        const ext = path.substring(pos + 1);
+        let iconText = "";
+        switch (ext) {
+          case "cbz":
+            iconText = "CBZ";
+            break;
+          case "cbr":
+            iconText = "CBR";
+            break;
+          case "cb7":
+            iconText = "CB7";
+            break;
+          case "epub":
+            iconText = "EPUB";
+            break;
+          case "pdf":
+            iconText = "PDF";
+            break;
+          case "mobi":
+            iconText = "MOBI";
+            break;
+          case "fb2":
+            iconText = "FB2";
+            break;
+          default:
+            break;
+        }
+        if (iconText !== "") {
+          return `
+        <div class="tools-buttons-list-typeminiicon">
+          ${iconText}
+        </div>`;
+        }
+      }
+      return "";
     }
+
+    function getIconHtml() {
+      if (fileInfo.iconType === 2) {
+        return `<i class="fas fa-globe fa-2x fa-fw"></i>`;
+      } else if (fileInfo.iconType === 3) {
+        return `<i class="fas fa-server fa-2x fa-fw"></i>`;
+      } else if (fileInfo.iconType === 4) {
+        return `<i class="fas fa-server fa-2x fa-fw"></i>`;
+      } else if (fileInfo.iconType === 0) {
+        return `<i class="fas fa-file fa-2x fa-fw"></i>`;
+      } else if (fileInfo.iconType === 1) {
+        return `<i class="fas fa-images fa-2x fa-fw"></i>`;
+      } else {
+        return `<i class="fas fa-question fa-2x fa-fw"></i>`;
+      }
+    }
+
+    buttonSpan.innerHTML = `<div class="tools-buttons-list-icon">${getIconHtml()}${getTypeMiniIconHtml()}</div>`;
 
     buttonSpan.title = g_localizedOpenFromListText;
     let multilineText = document.createElement("span");

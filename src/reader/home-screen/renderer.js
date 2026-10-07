@@ -1015,6 +1015,12 @@ function getNewCardDiv(cardType, data, navRow, navColumn, listIndex) {
         case "pdf":
           iconText = "PDF";
           break;
+        case "mobi":
+          iconText = "MOBI";
+          break;
+        case "fb2":
+          iconText = "fb2";
+          break;
         default:
           break;
       }
