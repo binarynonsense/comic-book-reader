@@ -14,6 +14,7 @@ export function showServerLoginModal(
   credentialsTypeText,
   typeOptionText1,
   typeOptionText2,
+  typeOptionText2b,
   apiKeyText,
   userText,
   emailText,
@@ -153,6 +154,7 @@ export function showServerLoginModal(
   function inputUpdated() {
     if (serverTypeSelect.value === "komga") {
       userInput.parentElement.classList.add("set-display-none");
+      credTypeSelect.options[1].text = typeOptionText2;
       if (credTypeSelect.value === "0") {
         // api key
         apiKeyInput.parentElement.classList.remove("set-display-none");
@@ -176,6 +178,7 @@ export function showServerLoginModal(
     } else {
       // kavita
       emailInput.parentElement.classList.add("set-display-none");
+      credTypeSelect.options[1].text = typeOptionText2b;
       if (credTypeSelect.value === "0") {
         // api key
         apiKeyInput.parentElement.classList.remove("set-display-none");
