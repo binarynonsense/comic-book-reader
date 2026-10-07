@@ -353,9 +353,15 @@ function buildServers(servers) {
         multilineText.appendChild(text);
 
         text = document.createElement("span");
+        text.innerText = data?.type?.toUpperCase() || "";
+        multilineText.appendChild(text);
+
+        text = document.createElement("span");
         text.innerText = data.maskedApiKey
           ? "API Key"
-          : g_extraLocalization.passwordType;
+          : data.type === "komga"
+            ? g_extraLocalization.passwordType
+            : g_extraLocalization.passwordType2;
         multilineText.appendChild(text);
 
         text = document.createElement("span");
@@ -370,46 +376,36 @@ function buildServers(servers) {
         showLoadingModal();
       });
       li.appendChild(buttonSpan);
-      // {
-      //   let buttonSpan = document.createElement("span");
-      //   buttonSpan.innerHTML = `<i class="fa-solid fa-arrow-up"></i>`;
-      //   buttonSpan.title = g_extraLocalization.moveUpInList;
-      //   if (index > 0) {
-      //     buttonSpan.className = "tools-buttons-list-button";
-      //     buttonSpan.addEventListener("click", (event) => {
-      //       sendIpcToMain(
-      //         "on-modal-feed-options-move-clicked",
-      //         index,
-      //         g_servers[index].url,
-      //         0,
-      //       );
-      //     });
-      //   } else {
-      //     buttonSpan.className =
-      //       "tools-buttons-list-button tools-buttons-list-button-disabled";
-      //   }
-      //   li.appendChild(buttonSpan);
-      // }
-      // {
-      //   let buttonSpan = document.createElement("span");
-      //   buttonSpan.innerHTML = `<i class="fa-solid fa-arrow-down"></i>`;
-      //   buttonSpan.title = g_extraLocalization.moveDownInList;
-      //   if (index < g_servers.length - 1) {
-      //     buttonSpan.className = "tools-buttons-list-button";
-      //     buttonSpan.addEventListener("click", (event) => {
-      //       sendIpcToMain(
-      //         "on-modal-feed-options-move-clicked",
-      //         index,
-      //         g_servers[index].url,
-      //         1,
-      //       );
-      //     });
-      //   } else {
-      //     buttonSpan.className =
-      //       "tools-buttons-list-button tools-buttons-list-button-disabled";
-      //   }
-      //   li.appendChild(buttonSpan);
-      // }
+      {
+        let buttonSpan = document.createElement("span");
+        buttonSpan.innerHTML = `<i class="fa-solid fa-arrow-up"></i>`;
+        buttonSpan.title = g_extraLocalization.moveUpInList;
+        if (index > 0) {
+          buttonSpan.className = "tools-buttons-list-button";
+          buttonSpan.addEventListener("click", (event) => {
+            sendIpcToMain("on-server-in-list-move-clicked", index, 0);
+          });
+        } else {
+          buttonSpan.className =
+            "tools-buttons-list-button tools-buttons-list-button-disabled";
+        }
+        li.appendChild(buttonSpan);
+      }
+      {
+        let buttonSpan = document.createElement("span");
+        buttonSpan.innerHTML = `<i class="fa-solid fa-arrow-down"></i>`;
+        buttonSpan.title = g_extraLocalization.moveDownInList;
+        if (index < g_servers.length - 1) {
+          buttonSpan.className = "tools-buttons-list-button";
+          buttonSpan.addEventListener("click", (event) => {
+            sendIpcToMain("on-server-in-list-move-clicked", index, 1);
+          });
+        } else {
+          buttonSpan.className =
+            "tools-buttons-list-button tools-buttons-list-button-disabled";
+        }
+        li.appendChild(buttonSpan);
+      }
       {
         let buttonSpan = document.createElement("span");
         buttonSpan.className = "tools-buttons-list-button";

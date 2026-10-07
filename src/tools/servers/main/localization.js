@@ -60,6 +60,7 @@ exports.getExtraLocalization = function () {
     // servers
     noServers: _("tool-servers-no-servers-message"),
     passwordType: _("tool-servers-modal-credentials-type-password"),
+    passwordType2: _("tool-servers-modal-credentials-type-password-2"),
     // content
     back: _("tool-shared-ui-back"),
     search: _("menu-tools-search"),

@@ -215,6 +215,26 @@ function initOnIpcCallbacks() {
     sendIpcToRenderer("build-servers", getUIServersList());
   });
 
+  on("on-server-in-list-move-clicked", (index, dir) => {
+    if (dir == 0) {
+      // up
+      if (index > 0) {
+        let temp = g_servers[index - 1];
+        g_servers[index - 1] = g_servers[index];
+        g_servers[index] = temp;
+        sendIpcToRenderer("build-servers", getUIServersList());
+      }
+    } else if (dir == 1) {
+      // down
+      if (index < g_servers.length - 1) {
+        let temp = g_servers[index + 1];
+        g_servers[index + 1] = g_servers[index];
+        g_servers[index] = temp;
+        sendIpcToRenderer("build-servers", getUIServersList());
+      }
+    }
+  });
+
   //////////////////
 
   on("download-book", async (bookId, name) => {
