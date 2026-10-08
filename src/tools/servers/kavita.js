@@ -758,6 +758,30 @@ exports.getWantToReadSeries = async function (page = 0, size = 20) {
 // SEARCH ////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 
+// NOTE: seems like /api/Search/search is limited to 15 results per
+// category, but I haven't found anything better for a global search
+// TODO: for series I tried using /api/Series/v2 with
+// const body = {
+//   id: 0,
+//   name: "SeriesNameContains",
+//   combination: 0,
+//   entityType: 0,
+//   limitTo: 0,
+//   sortOptions: {
+//     sortField: 1,
+//     isAscending: true,
+//   },
+//   statements: [
+//     {
+//       field: 1, // SeriesName
+//       comparison: 5, // Contains
+//       value: searchQuery,
+//     },
+//   ],
+// };
+// but gives a 500 error
+// maybe try some more
+
 exports.getSearchSeries = async function (
   searchQuery = "",
   pageIndex = 0,
@@ -1173,7 +1197,7 @@ exports.cancelThumbsRetrieval = function () {
 // Series/v2 FILTER EXAMPLES /////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 
-// search text tests: wroks
+// tests that worked, I think
 // const body = {
 //   id: 0,
 //   name: "JavaTestSearch",
@@ -1192,7 +1216,6 @@ exports.cancelThumbsRetrieval = function () {
 //     },
 //   ],
 // };
-// test works
 // const body = {
 //   id: 0,
 //   name: "NotCompleted",
