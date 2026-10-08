@@ -1057,29 +1057,6 @@ function buildContentBook(data) {
 
     //////////
 
-    function getListSeparators(locale = "en") {
-      let formatter;
-      try {
-        formatter = new Intl.ListFormat(locale, {
-          style: "long",
-          type: "conjunction",
-        });
-      } catch (error) {
-        formatter = new Intl.ListFormat("en", {
-          style: "long",
-          type: "conjunction",
-        });
-      }
-      const parts = formatter.formatToParts(["A", "B", "C"]);
-      const literals = parts
-        .filter((part) => part.type === "literal")
-        .map((part) => part.value);
-      return {
-        standard: literals[0] || "",
-        final: literals[1] || literals[0] || "",
-      };
-    }
-    //
     const grouped = (data.metadata?.authors || []).reduce((result, current) => {
       result[current.role] = result[current.role] || [];
       result[current.role].push(current.name);
