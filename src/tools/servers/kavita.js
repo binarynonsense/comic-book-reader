@@ -796,6 +796,7 @@ exports.getSearchBooks = async function (
   size = 20,
 ) {
   try {
+    const { _ } = require("../../shared/main/i18n");
     const url = `${g_session.url}/api/Search/search?queryString=${searchQuery}`;
     const response = await fetchUrlGet(url);
     // ref: getBooksInVolume
