@@ -353,10 +353,6 @@ function buildServers(servers) {
         multilineText.appendChild(text);
 
         text = document.createElement("span");
-        text.innerText = data?.type?.toUpperCase() || "";
-        multilineText.appendChild(text);
-
-        text = document.createElement("span");
         text.innerText = data.maskedApiKey
           ? "API Key"
           : data.type === "komga"
@@ -375,6 +371,12 @@ function buildServers(servers) {
         sendIpcToMain("connect-to-server-in-list", index, data);
         showLoadingModal();
       });
+      /////
+      let badge = document.createElement("span");
+      badge.classList.add("tools-buttons-list-cornerbadge");
+      badge.innerText = data?.type?.toUpperCase() || "";
+      buttonSpan.appendChild(badge);
+      /////
       li.appendChild(buttonSpan);
       {
         let buttonSpan = document.createElement("span");

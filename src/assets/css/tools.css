@@ -1008,6 +1008,7 @@ html[dir="rtl"] .tools-range-bubble {
 }
 
 .tools-buttons-list-button {
+  position: relative;
   display: flex;
   flex-direction: row;
   gap: 15px;
@@ -1083,6 +1084,27 @@ html[dir="rtl"] .tools-range-bubble {
 .tools-buttons-list-typeminiicon-komga {
   left: 30%;
   font-size: 7px;
+}
+
+/* servers */
+
+.tools-buttons-list-cornerbadge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 8px;
+  font-weight: bolder;
+  color: var(--tools-buttons-list-bg1-color);
+  background-color: var(--tools-buttons-list-text-color);
+  pointer-events: none;
+  padding: 2px 3px;
+}
+.tools-buttons-list-li:nth-child(even) .tools-buttons-list-cornerbadge {
+  color: var(--tools-buttons-list-bg2-color);
+}
+.tools-buttons-list-button:hover .tools-buttons-list-cornerbadge {
+  color: var(--tools-button-normal-bg-hover-color);
+  background-color: var(--tools-button-normal-text-color);
 }
 
 /* /////////////////////////////////////////////////////////////// */
