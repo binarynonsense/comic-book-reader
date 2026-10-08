@@ -316,6 +316,7 @@ exports.getBooksInSeries = async function (seriesId, pageIndex = 0, size = 20) {
 
 exports.getBook = async function (id) {
   try {
+    const { _ } = require("../../shared/main/i18n");
     exports.cancelThumbsRetrieval();
     if (!id) {
       return undefined;
@@ -327,6 +328,23 @@ exports.getBook = async function (id) {
       data.disableReading = true;
     }
     data.allowDownload = g_session.canDownload;
+    // localize authors
+    const rolesMap = {
+      writer: _("tool-metadata-data-writer"),
+      penciller: _("tool-metadata-data-penciller"),
+      inker: _("tool-metadata-data-inker"),
+      colorist: _("tool-metadata-data-colorist"),
+      cover: _("tool-metadata-data-coverartist"),
+      letterer: _("tool-metadata-data-letterer"),
+      editor: _("tool-metadata-data-editor"),
+    };
+    if (data?.metadata?.authors && Array.isArray(data.metadata.authors)) {
+      data.metadata.authors = data.metadata.authors.map((author) => ({
+        ...author,
+        role: rolesMap[author.role.toLowerCase()] || author.role,
+      }));
+    }
+    //
     return data;
   } catch (error) {
     log.error(`error fetching book ${id}: ` + error);
