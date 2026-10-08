@@ -103,7 +103,7 @@ exports.login = async function (serverUrl, credentials) {
       log.debug(g_session.roles);
 
       if (isApiKeyMode) {
-        log.debug("logged via Komga API Key");
+        log.debug("[SERVERS] [KOMGA] logged via Komga API Key");
         g_session.apiKey = credentials.apiKey;
         g_session.token = null;
         result.success = true;
@@ -112,7 +112,7 @@ exports.login = async function (serverUrl, credentials) {
       } else {
         const token = response.headers.get("x-auth-token");
         if (token) {
-          log.debug("received Komga X-Auth-Token");
+          log.debug("[SERVERS] [KOMGA] received Komga X-Auth-Token");
           g_session.email = credentials.email;
           g_session.password = credentials.password;
           g_session.token = token;
@@ -248,7 +248,7 @@ exports.getLibraries = async function () {
     const libraries = await response.json();
     return libraries;
   } catch (error) {
-    log.error(error);
+    log.error("[SERVERS] [KOMGA] error getting libraries: " + error);
     return undefined;
   }
 };
@@ -264,7 +264,7 @@ exports.getLibrary = async function (id) {
     const library = await response.json();
     return library;
   } catch (error) {
-    log.error(`error fetching library ${id}: ` + error);
+    log.error(`[SERVERS] [KOMGA] error getting library ${id}: ` + error);
     return undefined;
   }
 };
@@ -293,7 +293,7 @@ exports.getSeriesInLibrary = async function (
     const response = await fetchUrlGet(url);
     return await response.json();
   } catch (error) {
-    log.error(`error getting letter series: ` + error);
+    log.error(`[SERVERS] [KOMGA] error getting series: ` + error);
     return undefined;
   }
 };
@@ -309,7 +309,9 @@ exports.getBooksInSeries = async function (seriesId, pageIndex = 0, size = 20) {
     const pagedResult = await response.json();
     return pagedResult;
   } catch (error) {
-    log.error(`error fetching books for series ${seriesId}: ` + error);
+    log.error(
+      `[SERVERS] [KOMGA] error getting books for series ${seriesId}: ` + error,
+    );
     return undefined;
   }
 };
@@ -347,7 +349,7 @@ exports.getBook = async function (id) {
     //
     return data;
   } catch (error) {
-    log.error(`error fetching book ${id}: ` + error);
+    log.error(`[SERVERS] [KOMGA] error getting book ${id}: ` + error);
     return undefined;
   }
 };
@@ -367,7 +369,8 @@ exports.getAlphabeticalGroups = async function (libraryId) {
     return await response.json();
   } catch (error) {
     log.error(
-      `couldn't get alphabetical groups for library ${libraryId}: ` + error,
+      `[SERVERS] [KOMGA] couldn't get alphabetical groups for library ${libraryId}: ` +
+        error,
     );
     return undefined;
   }
@@ -399,7 +402,7 @@ exports.getActivity = async function () {
         results[3].status === "fulfilled" ? results[3].value : undefined,
     };
   } catch (error) {
-    log.error("error getting activity data: " + error);
+    log.error("[SERVERS] [KOMGA] error getting activity data: " + error);
     return {};
   }
 };
@@ -410,7 +413,7 @@ exports.getInProgressBooks = async function (page = 0, size = 20) {
     const response = await fetchUrlGet(url);
     return await response.json();
   } catch (error) {
-    log.error("failed to fetch in-progress books: " + error);
+    log.error("[SERVERS] [KOMGA] failed to get in-progress books: " + error);
     return undefined;
   }
 };
@@ -421,7 +424,7 @@ exports.getRecentlyAddedBooks = async function (page = 0, size = 20) {
     const response = await fetchUrlGet(url);
     return await response.json();
   } catch (error) {
-    log.error("failed to fetch latest books: " + error);
+    log.error("[SERVERS] [KOMGA] failed to get latest books: " + error);
     return undefined;
   }
 };
@@ -432,7 +435,7 @@ exports.getRecentlyAddedSeries = async function (page = 0, size = 20) {
     const response = await fetchUrlGet(url);
     return await response.json();
   } catch (error) {
-    log.error("failed to fetch new series: " + error);
+    log.error("[SERVERS] [KOMGA] failed to get new series: " + error);
     return undefined;
   }
 };
@@ -443,7 +446,7 @@ exports.getRecentlyUpdatedSeries = async function (page = 0, size = 20) {
     const response = await fetchUrlGet(url);
     return await response.json();
   } catch (error) {
-    log.error("failed to fetch updated series: " + error);
+    log.error("[SERVERS] [KOMGA] failed to get updated series: " + error);
     return undefined;
   }
 };
@@ -455,7 +458,9 @@ exports.getRecentlyFinishedBooks = async function (page = 0, size = 20) {
     const response = await fetchUrlGet(url);
     return await response.json();
   } catch (error) {
-    log.error("failed to fetch completed recently read books: " + error);
+    log.error(
+      "[SERVERS] [KOMGA] failed to get completed recently read books: " + error,
+    );
     return undefined;
   }
 };
@@ -474,7 +479,7 @@ exports.getSearchSeries = async function (
     const response = await fetchUrlPost(url, { fullTextSearch: searchQuery });
     return await response.json();
   } catch (error) {
-    log.error("failed to search series: " + error);
+    log.error("[SERVERS] [KOMGA] failed to search series: " + error);
     return undefined;
   }
 };
@@ -491,7 +496,7 @@ exports.getSearchBooks = async function (
     });
     return await response.json();
   } catch (error) {
-    log.error("failed to search books: " + error);
+    log.error("[SERVERS] [KOMGA] failed to search books: " + error);
     return undefined;
   }
 };
@@ -517,7 +522,7 @@ exports.downloadBook = async function (bookId, fileName) {
   let outputFilePath = null;
   try {
     const url = `${g_session.url}/api/v1/books/${bookId}/file`;
-    log.debug("downloading: " + url);
+    log.debug("[SERVERS] [KOMGA] downloading: " + url);
 
     const response = await fetchUrlGet(url, { signal });
     const contentLength = response.headers.get("content-length");
@@ -554,10 +559,10 @@ exports.downloadBook = async function (bookId, fileName) {
       ],
     });
     if (canceled || !filePath) {
-      log.debug("downloading was canceled");
+      log.debug("[SERVERS] [KOMGA] downloading was canceled");
       return false;
     }
-    log.debug("to: " + filePath);
+    log.debug("[SERVERS] [KOMGA] to: " + filePath);
     outputFilePath = filePath;
 
     sendIpcToRenderer("show-modal-downloading", filePath);
@@ -576,7 +581,7 @@ exports.downloadBook = async function (bookId, fileName) {
           if (current5PercentStep > lastLoggedPercent) {
             lastLoggedPercent = current5PercentStep;
             log.debug(
-              `download Progress: ${current5PercentStep}% (${downloadedBytes}/${totalBytes} bytes)`,
+              `[SERVERS] [KOMGA] download progress: ${current5PercentStep}% (${downloadedBytes}/${totalBytes} bytes)`,
             );
             sendIpcToRenderer(
               "update-modal-downloading.percentage",
@@ -585,7 +590,7 @@ exports.downloadBook = async function (bookId, fileName) {
           }
         } else {
           log.debug(
-            `downloaded: ${downloadedBytes} bytes (total size unknown)`,
+            `[SERVERS] [KOMGA] downloaded: ${downloadedBytes} bytes (total size unknown)`,
           );
         }
         callback(null, chunk);
@@ -595,13 +600,17 @@ exports.downloadBook = async function (bookId, fileName) {
     const nodeStream = Readable.fromWeb(response.body);
     await pipeline(nodeStream, progressTrackingStream, writeStream, { signal });
 
-    log.debug(`${bookId} successfully saved to ${outputFilePath}`);
+    log.debug(
+      `[SERVERS] [KOMGA] ${bookId} successfully saved to ${outputFilePath}`,
+    );
     sendIpcToRenderer("close-active-modal");
     return true;
   } catch (error) {
     sendIpcToRenderer("close-active-modal");
     if (error.name === "AbortError") {
-      log.debug(`download for ${bookId} was canceled by the user`);
+      log.debug(
+        `[SERVERS] [KOMGA] download for ${bookId} was canceled by the user`,
+      );
     } else {
       sendIpcToRenderer(
         "show-modal-download-error",
@@ -611,14 +620,14 @@ exports.downloadBook = async function (bookId, fileName) {
             : error.toString()
           : "Unknown error",
       );
-      log.error(error);
+      log.error("[SERVERS] [KOMGA] " + error);
     }
 
     if (outputFilePath) {
       try {
         await rm(outputFilePath, { force: true });
       } catch (cleanupError) {
-        log.error(cleanupError);
+        log.error("[SERVERS] [KOMGA] " + cleanupError);
       }
     }
     return false;
@@ -649,7 +658,7 @@ exports.loadPageImageBuffer = async function (bookId, pageNumber, session) {
     const buffer = Buffer.from(arrayBuffer);
     return { success: true, buffer };
   } catch (error) {
-    log.error(error);
+    log.error("[SERVERS] [KOMGA] " + error);
     return { error };
   }
 };
@@ -672,13 +681,16 @@ exports.updateReadingProgress = async function (
     // HTTP 204 No Content = successful update
     if (response.status === 204) {
       log.debug(
-        `synced progress for book ${bookId}: page ${page} (completed: ${completed})`,
+        `[SERVERS] [KOMGA] synced progress for book ${bookId}: page ${page} (completed: ${completed})`,
       );
       return true;
     }
     throw new Error(`Unexpected status code: ${response.status}`);
   } catch (error) {
-    log.error(`failed to update reading progress for book ${bookId}: ` + error);
+    log.error(
+      `[SERVERS] [KOMGA] failed to update reading progress for book ${bookId}: ` +
+        error,
+    );
     return false;
   }
 };
@@ -694,7 +706,7 @@ exports.getReadingProgress = async function (bookId) {
       const bookData = await response.json();
       if (bookData.readProgress) {
         log.debug(
-          `got progress for book ${bookId}: page ${bookData.readProgress.page}`,
+          `[SERVERS] [KOMGA] got progress for book ${bookId}: page ${bookData.readProgress.page}`,
         );
         return {
           page: bookData.readProgress.page,
@@ -705,7 +717,10 @@ exports.getReadingProgress = async function (bookId) {
     }
     throw new Error(`HTML error code: ${response.status}`);
   } catch (error) {
-    log.error(`failed to get reading progress for book ${bookId}: ` + error);
+    log.error(
+      `[SERVERS] [KOMGA] failed to get reading progress for book ${bookId}: ` +
+        error,
+    );
     return { page: 1, completed: false };
   }
 };
@@ -762,9 +777,14 @@ exports.loadThumbs = async function (bookIds, seriesIds) {
       sendIpcToRenderer("render-thumb", task.id, buffer, mime);
     } catch (error) {
       if (error.name === "AbortError" || signal.aborted) {
-        log.debug(`thumbnail fetch for ${task.id} successfully aborted`);
+        log.editor(
+          `[SERVERS] [KOMGA] thumbnail download for ${task.id} successfully aborted`,
+        );
       } else {
-        log.error(`failed to fetch thumbnail for ${task.id}: ` + error);
+        log.error(
+          `[SERVERS] [KOMGA] failed to download thumbnail for ${task.id}: ` +
+            error,
+        );
       }
     }
   });
@@ -778,6 +798,8 @@ exports.cancelThumbsRetrieval = function () {
   if (g_thumbsRetrievalAbortController) {
     g_thumbsRetrievalAbortController.abort();
     g_thumbsRetrievalAbortController = null;
-    log.debug("all pending thumbnail fetches were canceled");
+    log.editor(
+      "[SERVERS] [KOMGA] all pending thumbnail downloads were canceled",
+    );
   }
 };

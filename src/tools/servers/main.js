@@ -493,7 +493,7 @@ async function logToServer(type, url, apiKey, username, email, password, save) {
     }
   }
   if (isAlreadyLogged) {
-    log.editor("already logged as that user, skipping login");
+    log.editor("[SERVERS] already logged as that user, skipping login");
   } else {
     let result;
     if (apiKey) {
@@ -633,14 +633,18 @@ let g_navHistory = [];
 function clearNavData() {
   g_navState = {};
   g_navHistory = [];
-  log.editor("cleared nav history");
+  log.editor("[SERVERS] cleared nav history");
 }
 function addCurrentNavStateToHistory() {
   g_navHistory.push(structuredClone(g_navState));
-  log.editor("added state to history: " + g_navHistory.at(-1).section);
+  log.editor(
+    "[SERVERS] added state to history: " + g_navHistory.at(-1).section,
+  );
 }
 function removeLastNavStateFromHistory() {
-  log.editor("removed last state from history: " + g_navHistory.at(-1).section);
+  log.editor(
+    "[SERVERS] removed last state from history: " + g_navHistory.at(-1).section,
+  );
   return g_navHistory.pop();
 }
 

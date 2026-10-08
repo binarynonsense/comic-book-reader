@@ -78,7 +78,7 @@ exports.login = async function (serverUrl, credentials) {
     g_session.userAgent = g_customUserAgent;
 
     if (isApiKeyMode) {
-      log.debug("logging to Kavita server using API Key");
+      log.debug("[SERVERS] [KAVITA] logging to Kavita server using API Key");
       g_session.apiKey = credentials.apiKey;
       g_session.token = null;
 
@@ -100,7 +100,9 @@ exports.login = async function (serverUrl, credentials) {
               g_session.canStream = true;
             }
           } catch (userErr) {
-            log.error("failed to fetch user roles: " + userErr);
+            log.error(
+              "[SERVERS] [KAVITA] failed to fetch user roles: " + userErr,
+            );
             g_session.roles = [];
             g_session.canDownload = false;
           }
@@ -129,7 +131,7 @@ exports.login = async function (serverUrl, credentials) {
       if (response.ok) {
         const data = await response.json();
         if (data && data.token) {
-          log.debug("received Kavita JWT Token");
+          log.debug("[SERVERS] [KAVITA] received Kavita JWT Token");
           g_session.username = credentials.username;
           g_session.password = credentials.password;
           g_session.token = data.token;
@@ -244,7 +246,7 @@ exports.getLibraries = async function () {
     const libraries = await response.json();
     return libraries;
   } catch (error) {
-    log.error(`error getting libraries: ` + error);
+    log.error(`[SERVERS] [KAVITA] error getting libraries: ` + error);
     return undefined;
   }
 };
@@ -262,7 +264,7 @@ exports.getLibrary = async function (id) {
     }
     return undefined;
   } catch (error) {
-    log.error(`error getting library ${id}: ` + error);
+    log.error(`[SERVERS] [KAVITA] error getting library ${id}: ` + error);
     return undefined;
   }
 };
@@ -321,7 +323,7 @@ exports.getSeriesInLibrary = async function (
       totalElements: totalRecords,
     };
   } catch (error) {
-    log.error(`error getting series: ` + error);
+    log.error(`[SERVERS] [KAVITA] error getting series: ` + error);
     return undefined;
   }
 };
@@ -362,7 +364,7 @@ exports.getVolumesInSeries = async function (seriesId, pageIndex = 0) {
       totalElements: formattedVolumes.length,
     };
   } catch (error) {
-    log.error(`error getting volumes: ` + error);
+    log.error(`[SERVERS] [KAVITA] error getting volumes: ` + error);
     return undefined;
   }
 };
@@ -405,7 +407,7 @@ exports.getBooksInVolume = async function (volumeId, pageIndex = 0) {
       totalElements: formattedBooks.length,
     };
   } catch (error) {
-    log.error(`error getting books: ` + error);
+    log.error(`[SERVERS] [KAVITA] error getting books: ` + error);
     return undefined;
   }
 };
@@ -511,7 +513,9 @@ exports.getBook = async function (id) {
       allowDownload: !!g_session.canDownload,
     };
   } catch (error) {
-    log.error(`error getting book details for ${id}: ` + error);
+    log.error(
+      `[SERVERS] [KAVITA] error getting book details for ${id}: ` + error,
+    );
     return undefined;
   }
 };
@@ -550,7 +554,7 @@ exports.getActivity = async function () {
         results[3].status === "fulfilled" ? results[3].value : undefined,
     };
   } catch (error) {
-    log.error("error getting activity data: " + error);
+    log.error("[SERVERS] [KAVITA] error getting activity data: " + error);
     return {};
   }
 };
@@ -576,7 +580,7 @@ exports.getOnDeckSeries = async function (page = 0, size = 20) {
       totalElements: data.length,
     };
   } catch (error) {
-    log.error("error getting on-deck series: " + error);
+    log.error("[SERVERS] [KAVITA] error getting on-deck series: " + error);
     return { content: [], number: page, totalPages: 1, totalElements: 0 };
   }
 };
@@ -609,7 +613,9 @@ exports.getRecentlyAddedSeries = async function (page = 0, size = 20) {
       totalElements: totalRecords,
     };
   } catch (error) {
-    log.error("error getting recently added series: " + error);
+    log.error(
+      "[SERVERS] [KAVITA] error getting recently added series: " + error,
+    );
     return { content: [], number: page, totalPages: 1, totalElements: 0 };
   }
 };
@@ -642,7 +648,9 @@ exports.getRecentlyUpdatedSeries = async function (page = 0, size = 20) {
       totalElements: totalRecords,
     };
   } catch (error) {
-    log.error("error getting recently updated series: " + error);
+    log.error(
+      "[SERVERS] [KAVITA] error getting recently updated series: " + error,
+    );
     return { content: [], number: page, totalPages: 1, totalElements: 0 };
   }
 };
@@ -697,7 +705,7 @@ exports.getRecentlyFinishedSeries = async function (page = 0, size = 20) {
       totalElements: totalRecords,
     };
   } catch (error) {
-    log.error("error getting finished series: " + error);
+    log.error("[SERVERS] [KAVITA] error getting finished series: " + error);
     return { content: [], number: page, totalPages: 1, totalElements: 0 };
   }
 };
@@ -749,7 +757,7 @@ exports.getWantToReadSeries = async function (page = 0, size = 20) {
       totalElements: totalRecords,
     };
   } catch (error) {
-    log.error("error getting finished series: " + error);
+    log.error("[SERVERS] [KAVITA] error getting finished series: " + error);
     return { content: [], number: page, totalPages: 1, totalElements: 0 };
   }
 };
@@ -809,7 +817,7 @@ exports.getSearchSeries = async function (
       totalElements: totalRecords,
     };
   } catch (error) {
-    log.error("failed to search series: " + error);
+    log.error("[SERVERS] [KAVITA] failed to search series: " + error);
     return undefined;
   }
 };
@@ -855,7 +863,7 @@ exports.getSearchBooks = async function (
       totalElements: formattedBooks.length,
     };
   } catch (error) {
-    log.error("failed to search books: " + error);
+    log.error("[SERVERS] [KAVITA] failed to search books: " + error);
     return undefined;
   }
 };
@@ -882,7 +890,7 @@ exports.downloadBook = async function (bookId, fileName) {
   let outputFilePath = null;
   try {
     const url = `${g_session.url}/api/Download/chapter?chapterId=${bookId}`;
-    log.debug("downloading: " + url);
+    log.debug("[SERVERS] [KAVITA] downloading: " + url);
 
     const response = await fetchUrlGet(url, { signal });
     const contentLength = response.headers.get("content-length");
@@ -922,10 +930,10 @@ exports.downloadBook = async function (bookId, fileName) {
       ],
     });
     if (canceled || !filePath) {
-      log.debug("downloading was canceled");
+      log.debug("[SERVERS] [KAVITA] downloading was canceled");
       return false;
     }
-    log.debug("to: " + filePath);
+    log.debug("[SERVERS] [KAVITA] to: " + filePath);
     outputFilePath = filePath;
 
     sendIpcToRenderer("show-modal-downloading", filePath);
@@ -944,7 +952,7 @@ exports.downloadBook = async function (bookId, fileName) {
           if (current5PercentStep > lastLoggedPercent) {
             lastLoggedPercent = current5PercentStep;
             log.debug(
-              `download Progress: ${current5PercentStep}% (${downloadedBytes}/${totalBytes} bytes)`,
+              `[SERVERS] [KAVITA] download progress: ${current5PercentStep}% (${downloadedBytes}/${totalBytes} bytes)`,
             );
             sendIpcToRenderer(
               "update-modal-downloading.percentage",
@@ -953,7 +961,7 @@ exports.downloadBook = async function (bookId, fileName) {
           }
         } else {
           log.debug(
-            `downloaded: ${downloadedBytes} bytes (total size unknown)`,
+            `[SERVERS] [KAVITA] downloaded: ${downloadedBytes} bytes (total size unknown)`,
           );
         }
         callback(null, chunk);
@@ -963,13 +971,17 @@ exports.downloadBook = async function (bookId, fileName) {
     const nodeStream = Readable.fromWeb(response.body);
     await pipeline(nodeStream, progressTrackingStream, writeStream, { signal });
 
-    log.debug(`${bookId} successfully saved to ${outputFilePath}`);
+    log.debug(
+      `[SERVERS] [KAVITA] ${bookId} successfully saved to ${outputFilePath}`,
+    );
     sendIpcToRenderer("close-active-modal");
     return true;
   } catch (error) {
     sendIpcToRenderer("close-active-modal");
     if (error.name === "AbortError") {
-      log.debug(`download for ${bookId} was canceled by the user`);
+      log.debug(
+        `[SERVERS] [KAVITA] download for ${bookId} was canceled by the user`,
+      );
     } else {
       sendIpcToRenderer(
         "show-modal-download-error",
@@ -979,14 +991,14 @@ exports.downloadBook = async function (bookId, fileName) {
             : error.toString()
           : "Unknown error",
       );
-      log.error(error);
+      log.error("[SERVERS] [KAVITA] " + error);
     }
 
     if (outputFilePath) {
       try {
         await rm(outputFilePath, { force: true });
       } catch (cleanupError) {
-        log.error(cleanupError);
+        log.error("[SERVERS] [KAVITA] " + cleanupError);
       }
     }
     return false;
@@ -1017,7 +1029,7 @@ exports.loadPageImageBuffer = async function (chapterId, pageNumber, session) {
     const buffer = Buffer.from(arrayBuffer);
     return { success: true, buffer };
   } catch (error) {
-    log.error("error loading page buffer:", error);
+    log.error("[SERVERS] [KAVITA] error loading page buffer:", error);
     return { error };
   }
 };
@@ -1067,12 +1079,17 @@ exports.updateReadingProgress = async function (
     };
     const progressResponse = await fetchUrlPost(progressUrl, payload);
     if (progressResponse.status === 200 || progressResponse.status === 204) {
-      log.debug(`synced progress for book ${bookId}: page ${page}`);
+      log.debug(
+        `[SERVERS] [KAVITA] synced progress for book ${bookId}: page ${page}`,
+      );
       return true;
     }
     throw new Error(`Unexpected status code: ${progressResponse.status}`);
   } catch (error) {
-    log.error(`failed to update reading progress for book ${bookId}: ` + error);
+    log.error(
+      `[SERVERS] [KAVITA] failed to update reading progress for book ${bookId}: ` +
+        error,
+    );
     return false;
   }
 };
@@ -1090,7 +1107,9 @@ exports.getReadingProgress = async function (bookId) {
         const totalPages = typeof data.pages === "number" ? data.pages : 1;
         const isCompleted = currentPage >= totalPages && totalPages > 0;
 
-        log.debug(`got progress for book ${bookId}: page ${currentPage}`);
+        log.debug(
+          `[SERVERS] [KAVITA] got progress for book ${bookId}: page ${currentPage}`,
+        );
         return {
           page: currentPage,
           completed: isCompleted,
@@ -1099,7 +1118,10 @@ exports.getReadingProgress = async function (bookId) {
     }
     return { page: 1, completed: false };
   } catch (error) {
-    log.error(`failed to get reading progress for book ${bookId}: ` + error);
+    log.error(
+      `[SERVERS] [KAVITA] failed to get reading progress for book ${bookId}: ` +
+        error,
+    );
     return { page: 1, completed: false };
   }
 };
@@ -1172,9 +1194,14 @@ exports.loadThumbs = async function (bookIds, seriesIds, volumeIds) {
       sendIpcToRenderer("render-thumb", task.id, buffer, mime);
     } catch (error) {
       if (error.name === "AbortError" || signal.aborted) {
-        log.debug(`thumbnail fetch for ${task.id} successfully aborted`);
+        log.editor(
+          `[SERVERS] [KAVITA] thumbnail download for ${task.id} successfully aborted`,
+        );
       } else {
-        log.error(`failed to fetch thumbnail for ${task.id}: ` + error);
+        log.error(
+          `[SERVERS] [KAVITA] failed to download thumbnail for ${task.id}: ` +
+            error,
+        );
       }
     }
   });
@@ -1189,7 +1216,9 @@ exports.cancelThumbsRetrieval = function () {
   if (g_thumbsRetrievalAbortController) {
     g_thumbsRetrievalAbortController.abort();
     g_thumbsRetrievalAbortController = null;
-    log.debug("all pending thumbnail fetches were canceled");
+    log.editor(
+      "[SERVERS] [KAVITA] all pending thumbnail downloads were canceled",
+    );
   }
 };
 
@@ -1418,7 +1447,7 @@ exports.cancelThumbsRetrieval = function () {
 //       totalElements: totalRecords,
 //     };
 //   } catch (error) {
-//     log.error(`error getting series via OPDS: ` + error);
+//     log.error(`[SERVERS] [KAVITA] error getting series via OPDS: ` + error);
 //     return undefined;
 //   }
 // };
@@ -1470,7 +1499,7 @@ exports.cancelThumbsRetrieval = function () {
 //       totalElements: 0,
 //     };
 //   } catch (error) {
-//     log.error(`error for series ${seriesId}: ` + error);
+//     log.error(`[SERVERS] [KAVITA] error for series ${seriesId}: ` + error);
 //     return undefined;
 //   }
 // };
