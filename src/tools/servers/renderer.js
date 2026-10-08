@@ -1505,27 +1505,31 @@ function buildContentNavbar(state, history) {
   const rightDiv = document.createElement("div");
   rightDiv.id = "tool-servers-navbar-right-content";
   root.appendChild(rightDiv);
-
-  let title = "";
+  //////////////
+  let title;
   const { section, search, library, series, volume, book } = state || {};
   const loc = g_extraLocalization;
+
   if (section === Section.SEARCH_BOOKS || section === Section.SEARCH_SERIES) {
     const type = section === Section.SEARCH_BOOKS ? loc.books : loc.series;
-    title += `<span>${loc.search?.toUpperCase()} (${type}): ${search.query}</span>`;
+    title = `${loc.search?.toUpperCase()} (${type}): ${search.query}`;
   } else if (section === Section.ACTIVITY) {
-    title += "<span>" + loc.activity.toUpperCase() + "</span>";
+    title = loc.activity.toUpperCase();
   } else if (section === Section.LIBRARIES) {
-    title += "<span>" + loc.libraries.toUpperCase() + "</span>";
+    title = loc.libraries.toUpperCase();
   } else if (section === Section.KEEP_READING) {
-    title += "<span>" + loc.keepReading.toUpperCase() + "</span>";
+    title = loc.keepReading.toUpperCase();
   } else if (section === Section.RECENT_BOOKS) {
-    title += "<span>" + loc.recentlyAddedBooks.toUpperCase() + "</span>";
+    title = loc.recentlyAddedBooks.toUpperCase();
   } else if (section === Section.RECENT_SERIES) {
-    title += "<span>" + loc.recentlyAddedSeries.toUpperCase() + "</span>";
+    title = loc.recentlyAddedSeries.toUpperCase();
   } else if (section === Section.UPDATED_SERIES) {
-    title += "<span>" + loc.recentlyUpdatedSeries.toUpperCase() + "</span>";
+    title = loc.recentlyUpdatedSeries.toUpperCase();
   } else if (section === Section.ON_DECK_SERIES) {
-    title += "<span>" + loc.keepReading.toUpperCase() + "</span>";
+    title = loc.keepReading.toUpperCase();
+  }
+  if (title) {
+    title = `<span>${title}</span>`;
   } else {
     const path = [
       library?.name?.toUpperCase(),
@@ -1538,7 +1542,7 @@ function buildContentNavbar(state, history) {
       })
       .map((item) => `<span>${item}</span>`);
     // title += path.join(" <span class='arrow'>►</span> ");
-    title += path.join(' <i class="fa-solid fa-angle-right"></i> ');
+    title = path.join(' <i class="fa-solid fa-angle-right"></i> ');
   }
   rightDiv.innerHTML = title;
 }
