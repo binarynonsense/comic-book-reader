@@ -1055,21 +1055,57 @@ function buildContentBook(data) {
     const detailView = document.createElement("div");
     detailView.className = "tool-servers-book-detail-view";
 
+    //////////
+
+    function getListSeparators(locale = "en") {
+      let formatter;
+      try {
+        formatter = new Intl.ListFormat(locale, {
+          style: "long",
+          type: "conjunction",
+        });
+      } catch (error) {
+        formatter = new Intl.ListFormat("en", {
+          style: "long",
+          type: "conjunction",
+        });
+      }
+      const parts = formatter.formatToParts(["A", "B", "C"]);
+      const literals = parts
+        .filter((part) => part.type === "literal")
+        .map((part) => part.value);
+      return {
+        standard: literals[0] || "",
+        final: literals[1] || literals[0] || "",
+      };
+    }
+    //
     const grouped = (data.metadata?.authors || []).reduce((acc, current) => {
       acc[current.role] = acc[current.role] || [];
       acc[current.role].push(current.name);
       return acc;
     }, {});
-
     const entries = Object.entries(grouped);
+    const separators = getListSeparators(g_extraLocalization.languageCode);
+    let authorsList;
+    if (entries.length > 0) {
+      const formattedEntries = entries.map(([role, names]) => {
+        let namesList;
+        if (names.length > 1) {
+          const allButLast = names.slice(0, -1).join(separators.standard);
+          const last = names.slice(-1);
+          namesList = allButLast + separators.final + last;
+        } else {
+          namesList = names.join("");
+        }
+        return role + ": " + namesList + ".";
+      });
+      authorsList = "<br>" + formattedEntries.join("<br>");
+    } else {
+      authorsList = g_extraLocalization.unknown;
+    }
 
-    const authorsList =
-      entries.length > 0
-        ? "<br>" +
-          entries
-            .map(([role, names]) => `${role}: ${names.join(", ")}.`)
-            .join("<br>")
-        : g_extraLocalization.unknown;
+    ///////////
 
     const tagsList =
       data.metadata?.tags

@@ -42,6 +42,8 @@ exports.getLocalization = function () {
 
 exports.getExtraLocalization = function () {
   return {
+    languageCode: i18n.getLoadedLocale() || "en",
+    //
     loadingTitle: _("tool-shared-modal-title-loading"),
     downloadingTitle: _("tool-shared-modal-title-downloading"),
     cancelButton: _("tool-shared-ui-cancel"),
