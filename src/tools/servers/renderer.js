@@ -1080,25 +1080,21 @@ function buildContentBook(data) {
       };
     }
     //
-    const grouped = (data.metadata?.authors || []).reduce((acc, current) => {
-      acc[current.role] = acc[current.role] || [];
-      acc[current.role].push(current.name);
-      return acc;
+    const grouped = (data.metadata?.authors || []).reduce((result, current) => {
+      result[current.role] = result[current.role] || [];
+      result[current.role].push(current.name);
+      return result;
     }, {});
     const entries = Object.entries(grouped);
-    const separators = getListSeparators(g_extraLocalization.languageCode);
+    const formatter = new Intl.ListFormat(g_extraLocalization.languageCode, {
+      style: "long",
+      type: "conjunction",
+    });
     let authorsList;
     if (entries.length > 0) {
       const formattedEntries = entries.map(([role, names]) => {
-        let namesList;
-        if (names.length > 1) {
-          const allButLast = names.slice(0, -1).join(separators.standard);
-          const last = names.slice(-1);
-          namesList = allButLast + separators.final + last;
-        } else {
-          namesList = names.join("");
-        }
-        return role + ": " + namesList + ".";
+        const namesStr = formatter.format(names);
+        return role + ": " + namesStr + ".";
       });
       authorsList = "<br>" + formattedEntries.join("<br>");
     } else {
