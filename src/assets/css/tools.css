@@ -1107,6 +1107,10 @@ html[dir="rtl"] .tools-range-bubble {
   background-color: var(--tools-button-normal-text-color);
 }
 
+.tools-buttons-list-button-selected {
+  border: 3px solid !important;
+}
+
 /* /////////////////////////////////////////////////////////////// */
 
 .tools-tooltip-button:hover {

@@ -345,6 +345,8 @@ function buildServers(servers) {
       buttonSpan.className = "tools-buttons-list-button";
       buttonSpan.innerHTML = `<i class="fas fa-server fa-2x"></i>`;
       buttonSpan.title = g_extraLocalization.connect;
+      if (data.isSelected)
+        buttonSpan.classList.add("tools-buttons-list-button-selected");
       const multilineText = document.createElement("span");
       multilineText.className = "tools-buttons-list-li-multiline-text";
       {

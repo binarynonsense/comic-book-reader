@@ -15,13 +15,7 @@ const { net } = require("electron");
 
 let g_customUserAgent;
 
-let g_session = {
-  url: null,
-  email: null,
-  password: null,
-  token: null,
-  apiKey: null,
-};
+let g_session = {};
 
 let sendIpcToRenderer;
 
@@ -31,6 +25,18 @@ exports.getType = function () {
 
 exports.getSession = function () {
   return g_session;
+};
+
+clearSession = function () {
+  g_session = {
+    url: undefined,
+    username: undefined,
+    email: undefined,
+    password: undefined,
+    token: undefined,
+    apiKey: undefined,
+    roles: [],
+  };
 };
 
 exports.getUrl = function () {
@@ -94,6 +100,7 @@ exports.login = async function (serverUrl, credentials) {
     });
 
     if (response.ok) {
+      clearSession();
       g_session.url = serverUrl;
       g_session.userAgent = g_customUserAgent;
       const userData = await response.json();
@@ -105,7 +112,6 @@ exports.login = async function (serverUrl, credentials) {
       if (isApiKeyMode) {
         log.debug("[SERVERS] [KOMGA] logged via Komga API Key");
         g_session.apiKey = credentials.apiKey;
-        g_session.token = null;
         result.success = true;
         result.isKomga = true;
         return result;
@@ -116,7 +122,6 @@ exports.login = async function (serverUrl, credentials) {
           g_session.email = credentials.email;
           g_session.password = credentials.password;
           g_session.token = token;
-          g_session.apiKey = null;
           result.success = true;
           result.isKomga = true;
           return result;

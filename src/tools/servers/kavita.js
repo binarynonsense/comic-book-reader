@@ -19,13 +19,7 @@ const log = require("../../shared/main/logger");
 
 let g_customUserAgent;
 
-let g_session = {
-  url: null,
-  email: null,
-  password: null,
-  token: null,
-  apiKey: null,
-};
+let g_session = {};
 
 let sendIpcToRenderer;
 
@@ -35,6 +29,18 @@ exports.getType = function () {
 
 exports.getSession = function () {
   return g_session;
+};
+
+clearSession = function () {
+  g_session = {
+    url: undefined,
+    username: undefined,
+    email: undefined,
+    password: undefined,
+    token: undefined,
+    apiKey: undefined,
+    roles: [],
+  };
 };
 
 exports.getUrl = function () {
@@ -72,22 +78,21 @@ exports.login = async function (serverUrl, credentials) {
 
   try {
     const sanitizedUrl = serverUrl.replace(/\/+\$/, "");
-    const isApiKeyMode = !!credentials.apiKey;
-
-    g_session.url = serverUrl;
-    g_session.userAgent = g_customUserAgent;
-
-    if (isApiKeyMode) {
+    if (credentials.apiKey) {
       log.debug("[SERVERS] [KAVITA] logging to Kavita server using API Key");
-      g_session.apiKey = credentials.apiKey;
-      g_session.token = null;
-
+      const session = {
+        ...g_session,
+      };
+      session.apiKey = credentials.apiKey;
       try {
         const verifyUrl = `${sanitizedUrl}/api/Account/refresh-account`;
-        const response = await fetchUrlGet(verifyUrl, { session: g_session });
-
+        const response = await fetchUrlGet(verifyUrl, { session });
         if (response.ok) {
           try {
+            clearSession();
+            g_session.url = serverUrl;
+            g_session.userAgent = g_customUserAgent;
+            g_session.apiKey = credentials.apiKey;
             const userUrl = `${sanitizedUrl}/api/Account`;
             const userResponse = await fetchUrlGet(userUrl);
             if (userResponse.ok) {
@@ -106,7 +111,6 @@ exports.login = async function (serverUrl, credentials) {
             g_session.roles = [];
             g_session.canDownload = false;
           }
-
           result.success = true;
           result.isKavita = true;
           return result;
@@ -132,10 +136,14 @@ exports.login = async function (serverUrl, credentials) {
         const data = await response.json();
         if (data && data.token) {
           log.debug("[SERVERS] [KAVITA] received Kavita JWT Token");
+          clearSession();
+          g_session.url = serverUrl;
+          g_session.userAgent = g_customUserAgent;
+          g_session.apiKey = data.apiKey || null;
           g_session.username = credentials.username;
           g_session.password = credentials.password;
           g_session.token = data.token;
-          g_session.apiKey = data.apiKey || null;
+
           g_session.roles = Array.isArray(data.roles) ? data.roles : [];
           log.debug(g_session.roles);
           g_session.canDownload = g_session.roles.includes("Download");

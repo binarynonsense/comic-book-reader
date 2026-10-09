@@ -467,39 +467,53 @@ async function connectToServerInList(index, refData) {
 }
 exports.connectToServerInList = connectToServerInList;
 
-async function logToServer(type, url, apiKey, username, email, password, save) {
-  if (type === "kavita") {
-    g_server = kavita;
-  } else {
-    g_server = komga;
-  }
+function isSameAsLoggedServer(type, url, apiKey, username, email, password) {
   const session = g_server.getSession();
-  let isAlreadyLogged = false;
-  if (apiKey) {
-    isAlreadyLogged = session.url === url && session.apiKey === apiKey;
-  } else {
-    if (type === "kavita") {
-      isAlreadyLogged =
-        session.type === type &&
+  if (!session || !session.url) return false;
+  if (type === "kavita") {
+    if (password) {
+      return (
+        g_server.getType() === type &&
         session.url === url &&
         session.username === username &&
-        session.password === password;
-    } else {
-      isAlreadyLogged =
-        session.type === type &&
+        session.password === password
+      );
+    }
+    if (apiKey) {
+      return session.url === url && session.apiKey === apiKey;
+    }
+  } else if (type === "komga") {
+    if (password) {
+      return (
+        g_server.getType() === type &&
         session.url === url &&
         session.email === email &&
-        session.password === password;
+        session.password === password
+      );
+    }
+    if (apiKey) {
+      return session.url === url && session.apiKey === apiKey;
     }
   }
-  if (isAlreadyLogged) {
+}
+
+async function logToServer(type, url, apiKey, username, email, password, save) {
+  let server;
+  if (type === "kavita") {
+    server = kavita;
+  } else {
+    server = komga;
+  }
+  if (isSameAsLoggedServer(type, url, apiKey, username, email, password)) {
     log.editor("[SERVERS] already logged as that user, skipping login");
+    sendIpcToRenderer("hide-modal-loading");
+    return;
   } else {
     let result;
     if (apiKey) {
-      result = await g_server.login(url, { apiKey });
+      result = await server.login(url, { apiKey });
     } else {
-      result = await g_server.login(url, { username, email, password });
+      result = await server.login(url, { username, email, password });
     }
     if (!result.success) {
       log.error(result.error);
@@ -512,6 +526,7 @@ async function logToServer(type, url, apiKey, username, email, password, save) {
       return;
     }
   }
+  g_server = server;
   if (save) {
     if (safeStorage.isEncryptionAvailable()) {
       if (apiKey) {
@@ -553,7 +568,6 @@ async function logToServer(type, url, apiKey, username, email, password, save) {
           });
         }
       }
-      sendIpcToRenderer("build-servers", getUIServersList());
     } else {
       // can't encrypt -> don't save
       log.error("encryption NOT available!!");
@@ -566,6 +580,7 @@ async function logToServer(type, url, apiKey, username, email, password, save) {
   ) {
     reader.onMenuCloseFile();
   }
+  sendIpcToRenderer("build-servers", getUIServersList());
   sendIpcToRenderer("show-modal-loading");
   showLibraries();
 }
@@ -613,6 +628,22 @@ function getUIServersList() {
         serverCopy.maskedEmail = "????";
       }
     }
+    serverCopy.isSelected = isSameAsLoggedServer(
+      serverCopy.type,
+      serverCopy.url,
+      serverCopy.encodedApiKey
+        ? safeStorage.decryptString(
+            Buffer.from(serverCopy.encodedApiKey, "hex"),
+          )
+        : undefined,
+      serverCopy.username,
+      serverCopy.email,
+      serverCopy.encodedPassword
+        ? safeStorage.decryptString(
+            Buffer.from(serverCopy.encodedPassword, "hex"),
+          )
+        : undefined,
+    );
     return serverCopy;
   });
   return servers;
