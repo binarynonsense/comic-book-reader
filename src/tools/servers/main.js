@@ -617,28 +617,34 @@ function getUIServersList() {
       }
     } else if (serverCopy.username) {
       try {
-        // TODO: kavita
+        // kavita reuses maskedEmail for user in renderer UI
         serverCopy.maskedEmail = serverCopy.username;
       } catch (error) {
         serverCopy.maskedEmail = "????";
       }
     }
-    serverCopy.isSelected = isSameAsLoggedServer(
-      serverCopy.type,
-      serverCopy.url,
-      serverCopy.encodedApiKey
-        ? safeStorage.decryptString(
-            Buffer.from(serverCopy.encodedApiKey, "hex"),
-          )
-        : undefined,
-      serverCopy.username,
-      serverCopy.email,
-      serverCopy.encodedPassword
-        ? safeStorage.decryptString(
-            Buffer.from(serverCopy.encodedPassword, "hex"),
-          )
-        : undefined,
-    );
+    //
+    try {
+      serverCopy.isSelected = isSameAsLoggedServer(
+        serverCopy.type,
+        serverCopy.url,
+        serverCopy.encodedApiKey
+          ? safeStorage.decryptString(
+              Buffer.from(serverCopy.encodedApiKey, "hex"),
+            )
+          : undefined,
+        serverCopy.username,
+        serverCopy.email,
+        serverCopy.encodedPassword
+          ? safeStorage.decryptString(
+              Buffer.from(serverCopy.encodedPassword, "hex"),
+            )
+          : undefined,
+      );
+    } catch (error) {
+      serverCopy.isSelected = false;
+    }
+    //
     return serverCopy;
   });
   return servers;
