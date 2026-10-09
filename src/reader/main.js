@@ -1044,13 +1044,13 @@ async function tryOpenWWW(pageIndex, historyEntry) {
     const tool = require("../tools/xkcd/main");
     openBookFromCallback(data, tool.getPageCallback, pageIndex);
     return true;
-  } else if (data.source === "komga") {
+  }
+  ////
+  else if (data.source === "komga" || data.source === "kavita") {
     const { getSavedServerDataFromUrl } = require("../tools/servers/main");
-    const {
-      getSession,
-      login,
-      getReadingProgress,
-    } = require("../tools/servers/komga");
+    const { getSession, login, getReadingProgress } = require(
+      `../tools/servers/${data.source}`,
+    );
     const session = getSession();
     if (session.url != data.serverUrl) {
       // need to log in
@@ -1080,74 +1080,7 @@ async function tryOpenWWW(pageIndex, historyEntry) {
       } else {
         // not in list, show login modal
         const defaults = {
-          type: "komga",
-          url: data.serverUrl,
-        };
-        sendIpcToRenderer(
-          "show-modal-login",
-          _("tool-servers-modal-connect-to-server"),
-          "URL",
-          _("tool-servers-modal-server-type"),
-          _("tool-servers-modal-credentials-type"),
-          "API Key",
-          _("tool-servers-modal-credentials-type-password"),
-          _("tool-servers-modal-credentials-type-password-2"),
-          "API Key",
-          _("tool-servers-modal-username"),
-          _("tool-servers-modal-email"),
-          _("tool-shared-ui-creation-password"),
-          false,
-          _("tool-servers-modal-remember"),
-          _("tool-servers-button-connect"),
-          _("ui-modal-prompt-button-cancel"),
-          defaults,
-          data,
-          pageIndex,
-        );
-        return true;
-      }
-    } else {
-      pageIndex = (await getReadingProgress(data.comicId)).page - 1;
-      openBookFromServer(data, pageIndex);
-      return true;
-    }
-  } else if (data.source === "kavita") {
-    const { getSavedServerDataFromUrl } = require("../tools/servers/main");
-    const {
-      getSession,
-      login,
-      getReadingProgress,
-    } = require("../tools/servers/kavita");
-    const session = getSession();
-    if (session.url != data.serverUrl) {
-      // need to log in
-      let serverData = getSavedServerDataFromUrl(data.serverUrl);
-      if (serverData) {
-        const result = await login(serverData.url, {
-          username: serverData.username,
-          email: serverData.email,
-          password: serverData.password,
-          apiKey: serverData.apiKey,
-        });
-        if (!result.success) {
-          log.error(result.error);
-          sendIpcToRenderer(
-            "show-modal-info",
-            _("tool-shared-modal-title-error"),
-            _("tool-shared-ui-search-network-error", data.serverUrl) +
-              "\n\n" +
-              result.error,
-            _("ui-modal-prompt-button-ok"),
-          );
-          return false;
-        }
-        pageIndex = (await getReadingProgress(data.comicId)).page - 1;
-        openBookFromServer(data, pageIndex);
-        return true;
-      } else {
-        // not in list, show login modal
-        const defaults = {
-          type: "kavita",
+          type: data.source,
           url: data.serverUrl,
         };
         sendIpcToRenderer(
