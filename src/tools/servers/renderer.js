@@ -968,15 +968,15 @@ function buildContentLibraries(inputData) {
       ////////////////
       ul.appendChild(li);
     });
-  }
-  ///////////////////////////////////////////
-  updateColumnsHeight();
-  document.getElementById("tools-columns-right").scrollIntoView({
-    behavior: "smooth",
-    block: "start",
-    inline: "nearest",
-  });
-  modals.closeActiveModal(modals.Level.TOOLS);
+    ///////////////////////////////////////////
+    updateColumnsHeight();
+    document.getElementById("tools-columns-right").scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+      inline: "nearest",
+    });
+    modals.closeActiveModal(modals.Level.TOOLS);
+  } else buildContentEmpty();
 }
 
 function buildContentSeriesInLibrary(

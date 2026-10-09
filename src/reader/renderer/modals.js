@@ -82,7 +82,15 @@ export function initModalsOnIpcCallbacks() {
     const mainArgs = args.slice(0, -2);
 
     showServerLoginModal(...mainArgs, (data) => {
-      if (!data) return;
+      if (!data) {
+        sendIpcToMain(
+          "on-modal-komga-login-ok-clicked",
+          data,
+          args.at(-2),
+          args.at(-1),
+        );
+        return;
+      }
       sendIpcToMain(
         "on-modal-komga-login-ok-clicked",
         data,

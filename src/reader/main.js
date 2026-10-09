@@ -1079,14 +1079,25 @@ async function tryOpenWWW(pageIndex, historyEntry) {
         return true;
       } else {
         // not in list, show login modal
-        const defaults = { url: data.serverUrl, email: "", password: "" };
+        const defaults = {
+          type: "komga",
+          url: data.serverUrl,
+        };
         sendIpcToRenderer(
           "show-modal-login",
           _("tool-servers-modal-connect-to-server"),
           "URL",
+          _("tool-servers-modal-server-type"),
+          _("tool-servers-modal-credentials-type"),
+          "API Key",
+          _("tool-servers-modal-credentials-type-password"),
+          _("tool-servers-modal-credentials-type-password-2"),
+          "API Key",
+          _("tool-servers-modal-username"),
           _("tool-servers-modal-email"),
           _("tool-shared-ui-creation-password"),
-          undefined,
+          false,
+          _("tool-servers-modal-remember"),
           _("tool-servers-button-connect"),
           _("ui-modal-prompt-button-cancel"),
           defaults,
@@ -1111,7 +1122,6 @@ async function tryOpenWWW(pageIndex, historyEntry) {
     if (session.url != data.serverUrl) {
       // need to log in
       let serverData = getSavedServerDataFromUrl(data.serverUrl);
-
       if (serverData) {
         const result = await login(serverData.url, {
           username: serverData.username,
@@ -1136,14 +1146,25 @@ async function tryOpenWWW(pageIndex, historyEntry) {
         return true;
       } else {
         // not in list, show login modal
-        const defaults = { url: data.serverUrl, email: "", password: "" };
+        const defaults = {
+          type: "kavita",
+          url: data.serverUrl,
+        };
         sendIpcToRenderer(
           "show-modal-login",
           _("tool-servers-modal-connect-to-server"),
           "URL",
+          _("tool-servers-modal-server-type"),
+          _("tool-servers-modal-credentials-type"),
+          "API Key",
+          _("tool-servers-modal-credentials-type-password"),
+          _("tool-servers-modal-credentials-type-password-2"),
+          "API Key",
+          _("tool-servers-modal-username"),
           _("tool-servers-modal-email"),
           _("tool-shared-ui-creation-password"),
-          undefined,
+          false,
+          _("tool-servers-modal-remember"),
           _("tool-servers-button-connect"),
           _("ui-modal-prompt-button-cancel"),
           defaults,
@@ -1164,8 +1185,22 @@ async function tryOpenWWW(pageIndex, historyEntry) {
 // called from event "on-modal-komga-login-ok-clicked"
 async function onModalLogin(data, comicData, pageIndex) {
   try {
-    const { login, getReadingProgress } = require("../tools/servers/komga");
-    const result = await login(data.url, data.email, data.password);
+    if (!data) {
+      sendIpcToRenderer("update-loading", false);
+      sendIpcToRenderer("update-bg", true);
+      return;
+    }
+    const { login, getReadingProgress } =
+      comicData.source === "komga"
+        ? require("../tools/servers/komga")
+        : require("../tools/servers/kavita");
+    const result = await login(data.url, {
+      url: data.url,
+      apiKey: data.apiKey,
+      username: data.username,
+      email: data.email,
+      password: data.password,
+    });
     if (!result.success) {
       log.error(result.error);
       sendIpcToRenderer(

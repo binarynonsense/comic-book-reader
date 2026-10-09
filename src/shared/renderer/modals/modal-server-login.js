@@ -19,6 +19,7 @@ export function showServerLoginModal(
   userText,
   emailText,
   passwordText,
+  showRememberCheckbox,
   rememberText,
   okText,
   cancelText,
@@ -39,11 +40,11 @@ export function showServerLoginModal(
     <div class="modal-title">${titleText}</div>
     <div class="modal-field">
       <label for="modal-server-url-input">${urlText}</label>
-      <input type="text" id="modal-server-url-input" value="${defaults.url}" />
+      <input type="text" id="modal-server-url-input" value="${defaults.url || ""}" />
     </div>
     <div class="modal-field">
       <label for="modal-server-type-select">${serverTypeText}</label>
-      <select id="modal-server-type-select">
+      <select id="modal-server-type-select" value="${defaults.type || "komga"}">
         <option value="komga">Komga</option>
         <option value="kavita">Kavita</option>
       </select>
@@ -57,19 +58,19 @@ export function showServerLoginModal(
     </div>
     <div class="modal-field">
       <label for="modal-server-apikey-input">${apiKeyText}</label>
-      <input id="modal-server-apikey-input" value="${defaults.apiKey}"}" />
+      <input id="modal-server-apikey-input" value="${defaults.apiKey || ""}"}" />
     </div>
     <div class="modal-field">
       <label for="modal-server-user-input">${userText}</label>
-      <input id="modal-server-user-input" value="${defaults.username}"}" />
+      <input id="modal-server-user-input" value="${defaults.username || ""}"}" />
     </div>
     <div class="modal-field">
       <label for="modal-server-email-input">${emailText}</label>
-      <input type="email" id="modal-server-email-input" value="${defaults.email}"}" />
+      <input type="email" id="modal-server-email-input" value="${defaults.email || ""}"}" />
     </div>
     <div class="modal-field">
       <label for="modal-server-password-input">${passwordText}</label>
-      <input type="password" id="modal-server-password-input" value="${defaults.password}"/>
+      <input type="password" id="modal-server-password-input" value="${defaults.password || ""}"/>
     </div>
     ${
       rememberText
@@ -122,6 +123,11 @@ export function showServerLoginModal(
   passwordInput.addEventListener("input", (event) => {
     inputUpdated();
   });
+  ///
+  if (!showRememberCheckbox)
+    modal
+      .querySelector("#modal-server-remember-checkbox")
+      .parentElement.classList.add("set-display-none");
   ///
   const closeBtn = modal.querySelector(".modal-close-button");
   closeBtn.addEventListener("click", (event) => {

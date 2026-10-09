@@ -7,7 +7,7 @@
 
 const fileUtils = require("../../shared/main/file-utils");
 const log = require("../../shared/main/logger");
-const { net } = require("electron");
+const { net, session } = require("electron");
 
 //////////////////////////////////////////////////////////////////////////////
 // SETUP /////////////////////////////////////////////////////////////////////
@@ -27,17 +27,20 @@ exports.getSession = function () {
   return g_session;
 };
 
-clearSession = function () {
+function clearSession() {
   g_session = {
     url: undefined,
+    userAgent: undefined,
     username: undefined,
     email: undefined,
     password: undefined,
     token: undefined,
     apiKey: undefined,
-    roles: [],
+    roles: undefined,
+    canStream: false,
+    disableReading: true,
   };
-};
+}
 
 exports.getUrl = function () {
   return g_session.url;
@@ -78,9 +81,7 @@ exports.login = async function (serverUrl, credentials) {
     const headers = {
       "User-Agent": g_customUserAgent,
     };
-
-    const isApiKeyMode = !!credentials.apiKey;
-
+    const isApiKeyMode = credentials.apiKey;
     if (isApiKeyMode) {
       headers["X-API-Key"] = credentials.apiKey;
     } else if (credentials.email && credentials.password) {

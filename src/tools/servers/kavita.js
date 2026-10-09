@@ -31,17 +31,20 @@ exports.getSession = function () {
   return g_session;
 };
 
-clearSession = function () {
+function clearSession() {
   g_session = {
     url: undefined,
+    userAgent: undefined,
     username: undefined,
     email: undefined,
     password: undefined,
     token: undefined,
     apiKey: undefined,
-    roles: [],
+    roles: undefined,
+    canStream: false,
+    disableReading: true,
   };
-};
+}
 
 exports.getUrl = function () {
   return g_session.url;

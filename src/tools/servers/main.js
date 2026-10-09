@@ -342,13 +342,7 @@ function initOnIpcCallbacks() {
   //////////////////
 
   on("on-connect-button-clicked", () => {
-    const defaults = {
-      url: "",
-      username: "",
-      email: "",
-      password: "",
-      apiKey: "",
-    };
+    const defaults = {};
     // TODO: save last accessed and used that for defaults?
     sendIpcToRenderer(
       "show-modal-login",
@@ -363,6 +357,7 @@ function initOnIpcCallbacks() {
       _("tool-servers-modal-username"),
       _("tool-servers-modal-email"),
       _("tool-shared-ui-creation-password"),
+      true,
       _("tool-servers-modal-remember"),
       _("tool-servers-button-connect"),
       _("ui-modal-prompt-button-cancel"),
