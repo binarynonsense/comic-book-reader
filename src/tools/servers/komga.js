@@ -331,7 +331,12 @@ exports.getBook = async function (id) {
     const url = `${g_session.url}/api/v1/books/${id}`;
     const response = await fetchUrlGet(url);
     const data = await response.json();
-    if (!g_session.canStream || data?.media?.mediaType?.includes("epub")) {
+    if (
+      !g_session.canStream ||
+      (data.media.mediaType.includes("application/epub") &&
+        !data.media.epubDivinaCompatible)
+    ) {
+      // divina = prepaginated images only epub, those can be streamed
       data.disableReading = true;
     }
     data.allowDownload = g_session.canDownload;
