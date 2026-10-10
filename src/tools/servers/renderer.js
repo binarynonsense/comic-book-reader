@@ -456,6 +456,7 @@ function getAlphabetFilterDiv(groupData, activeGroup, onGroupClick) {
   function addButton(label, isActive, isEnabled, onClickValue) {
     if (isActive) {
       let textSpan = document.createElement("span");
+      textSpan.className = "tools-collection-pagination-button-selected";
       textSpan.innerText = ` ${label} `;
       containerDiv.appendChild(textSpan);
     } else {
