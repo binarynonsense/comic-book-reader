@@ -1260,6 +1260,7 @@
   "tool-servers-modal-save-server-error": "No se pudo guardar el servidor.",
   "tool-servers-modal-save-server-encrypt-server-error": "No se pudieron cifrar las credenciales del servidor.",
   "tool-servers-modal-load-server-decrypt-error": "No se pudieron descifrar las credenciales del servidor.",
+  "tool-servers-modal-load-server-decrypt-error-2": "Es posible que deba guardar las credenciales de nuevo.",
   "[NOTE TO TRANSLATORS]tool-servers-section-activity": "Activity as in recent activity in the server: latest read books, latest updated books...",
   "tool-servers-section-activity": "Actividad",
   "tool-servers-section-libraries": "Bibliotecas",
