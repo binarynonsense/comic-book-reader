@@ -504,6 +504,7 @@ async function logToServer(type, url, apiKey, username, email, password, save) {
     sendIpcToRenderer("hide-modal-loading");
     return;
   } else {
+    sendIpcToRenderer("show-modal-loading");
     let result;
     if (apiKey) {
       result = await server.login(url, { apiKey });

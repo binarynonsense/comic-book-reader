@@ -1148,7 +1148,7 @@ async function onModalLogin(data, comicData, pageIndex) {
       sendIpcToRenderer("update-bg", true);
       return;
     }
-    pageIndex = (await getReadingProgress(data.comicId)).page - 1;
+    pageIndex = (await getReadingProgress(comicData.comicId)).page - 1;
     openBookFromServer(comicData, pageIndex);
   } catch (error) {
     sendIpcToRenderer("update-loading", false);
