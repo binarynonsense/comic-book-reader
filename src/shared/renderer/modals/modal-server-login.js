@@ -146,9 +146,9 @@ export function showServerLoginModal(
     closeActiveModal(level, modal);
     callback({
       type: serverTypeSelect.value,
-      url: urlInput.value,
-      email: emailInput.value,
-      username: userInput.value,
+      url: urlInput.value.trim(),
+      email: emailInput.value.trim(),
+      username: userInput.value.trim(),
       password: passwordInput.value,
       apiKey: apiKeyInput.value,
       save: rememberText
