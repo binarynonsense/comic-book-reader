@@ -1,3 +1,10 @@
+## v3.26.0
+
+- Added support for Komga and Kavita media servers. The menu "Servers > Server Browser" now opens a tool to connect to, browse and open books from them.
+- Added more advanced PNG image options to the conversion tools and a new output toggle to make more clear when the advanced image options are going to be applied or not, being now able to force them to be applied even when a 100% scale is set and "Keep original" is selected as image format (by default, the original untouched images were always used in this case, if possible, with no option to override it).
+- Added a private mode that can be enabled from "File > Private Mode" that makes the file history and reading progress not be updated during that session while it's on.
+- Fixed the advanced image processing options not applying when the output image format was set to "Keep original" in the conversion tools.
+
 ## v3.25.2
 
 - Fixed the media player window in stand-alone mode on Windows shrinking every time it was moved due to a bug in the Electron version used in the previous version.
