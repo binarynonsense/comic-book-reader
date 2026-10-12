@@ -1,3 +1,7 @@
+## v3.26.1
+
+- Fixed the flatpak build failing to encrypt credentials and add servers to the saved list in the Server Browser. A change in the way the credentials are encrypted and decrypted was needed. Besides fixing the problem this new method has better long term support but, sadly, it also means that any server saved with the previous version of ACBR will need to be deleted from the list and saved again if a Linux build was used (the Windows build seems to be compatible).
+
 ## v3.26.0
 
 - Added support for Komga and Kavita media servers. The menu "Servers > Server Browser" now opens a tool to connect to, browse and open books from them.
