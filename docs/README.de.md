@@ -33,6 +33,8 @@ Ein Comicbuch Leser und Konverter für CBZ, CBR, CB7, EPUB, FB2, MOBI 7 und PDF 
   - Ansicht der Metadaten welche in PDF und EPUB Dateien oder ComicInfo.xml Dateien innerhalb CBR, CBZ und CB7 Comicbüchern gespeichert sind.
   - Erstelle und/oder modifiziere die Metadaten welche in PDF und EPUB Dateien oder ComicInfo.xml Dateien innerhalb unverschlüsselten CBR<sup>[[3]](#note_3)</sup>, CBZ und CB7 Comicbüchern gespeichert sind.
   - Suche nach und importiere Comicbuch Metadaten von Comic Vine (hierfür wird ein [Comic Vine API key](https://comicvine.gamespot.com/api/) benötigt).
+- Server-browser:
+  - Verbinde mit, durchsuche und öffne Comicbücher von Komga und Kavita Medienservern.
 - Integrierter Mediaplayer:
   - Audio: MP3, Ogg, WAV, M3U und M3U8 Dateien
   - Video: Web-kompatible Codecs und Formate (MP4, WebM...) und SRT Untertiteldateien
