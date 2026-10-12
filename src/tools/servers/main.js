@@ -555,13 +555,23 @@ async function logToServer(type, url, apiKey, username, email, password, save) {
           // just in case
           existingServer.encodedPassword = encodedPassword;
         } else {
-          g_servers.push({
-            type,
-            url,
-            username,
-            email,
-            encodedPassword,
-          });
+          if (type === "komga") {
+            g_servers.push({
+              type,
+              url,
+              undefined,
+              email,
+              encodedPassword,
+            });
+          } else if (type === "kavita") {
+            g_servers.push({
+              type,
+              url,
+              username,
+              undefined,
+              encodedPassword,
+            });
+          }
         }
       }
     } else {
