@@ -1054,7 +1054,7 @@ async function tryOpenWWW(pageIndex, historyEntry) {
     const session = getSession();
     if (session.url != data.serverUrl) {
       // need to log in
-      let serverData = getSavedServerDataFromUrl(data.serverUrl);
+      let serverData = await getSavedServerDataFromUrl(data.serverUrl);
       if (serverData) {
         const result = await login(serverData.url, {
           username: serverData.username,

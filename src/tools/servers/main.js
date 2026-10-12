@@ -76,7 +76,7 @@ exports.open = async function () {
   //////////////////
   loadOptions();
   ///////////////////
-  sendIpcToRenderer("show", 0, getUIServersList());
+  sendIpcToRenderer("show", 0, await getUIServersList());
   if (g_navState.section) {
     loadState(g_navState);
   }
@@ -212,17 +212,17 @@ function initOnIpcCallbacks() {
 
   on("on-modal-remove-server-from-list-ok-clicked", async (index) => {
     g_servers.splice(index, 1);
-    sendIpcToRenderer("build-servers", getUIServersList());
+    sendIpcToRenderer("build-servers", await getUIServersList());
   });
 
-  on("on-server-in-list-move-clicked", (index, dir) => {
+  on("on-server-in-list-move-clicked", async (index, dir) => {
     if (dir == 0) {
       // up
       if (index > 0) {
         let temp = g_servers[index - 1];
         g_servers[index - 1] = g_servers[index];
         g_servers[index] = temp;
-        sendIpcToRenderer("build-servers", getUIServersList());
+        sendIpcToRenderer("build-servers", await getUIServersList());
       }
     } else if (dir == 1) {
       // down
@@ -230,7 +230,7 @@ function initOnIpcCallbacks() {
         let temp = g_servers[index + 1];
         g_servers[index + 1] = g_servers[index];
         g_servers[index] = temp;
-        sendIpcToRenderer("build-servers", getUIServersList());
+        sendIpcToRenderer("build-servers", await getUIServersList());
       }
     }
   });
@@ -366,7 +366,7 @@ function initOnIpcCallbacks() {
   });
 
   on("on-modal-connect-ok-clicked", async (data) => {
-    logToServer(
+    await logToServer(
       data.type,
       data.url,
       data.apiKey,
@@ -399,21 +399,25 @@ function initHandleIpcCallbacks() {}
 // SERVERS ////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-exports.getSavedServerDataFromUrl = function (url) {
+exports.getSavedServerDataFromUrl = async function (url) {
   if (!g_servers) loadOptions();
   const index = g_servers.findIndex((server) => server.url === url);
   if (index >= 0) {
-    if (safeStorage.isEncryptionAvailable()) {
+    if (await safeStorage.isAsyncEncryptionAvailable()) {
       const data = g_servers[index];
       if (data.encodedApiKey) {
-        const apiKey = safeStorage.decryptString(
-          Buffer.from(data.encodedApiKey, "hex"),
-        );
+        const apiKey = (
+          await safeStorage.decryptStringAsync(
+            Buffer.from(data.encodedApiKey, "hex"),
+          )
+        ).result;
         return { url: data.url, apiKey };
       } else {
-        const password = safeStorage.decryptString(
-          Buffer.from(data.encodedPassword, "hex"),
-        );
+        const password = (
+          await safeStorage.decryptStringAsync(
+            Buffer.from(data.encodedPassword, "hex"),
+          )
+        ).result;
         return {
           url: data.url,
           username: data.username,
@@ -432,35 +436,69 @@ exports.getSavedServerDataFromUrl = function (url) {
 async function connectToServerInList(index, refData) {
   // TODO: check refData if any to make sure it's the same
   if (index >= 0 && index < g_servers.length) {
-    if (safeStorage.isEncryptionAvailable()) {
+    if (await safeStorage.isAsyncEncryptionAvailable()) {
       const data = g_servers[index];
-      if (data.encodedApiKey) {
-        const apiKey = safeStorage.decryptString(
-          Buffer.from(data.encodedApiKey, "hex"),
+      try {
+        if (data.encodedApiKey) {
+          const apiKey = (
+            await safeStorage.decryptStringAsync(
+              Buffer.from(data.encodedApiKey, "hex"),
+            )
+          ).result;
+          await logToServer(
+            data.type,
+            data.url,
+            apiKey,
+            undefined,
+            undefined,
+            false,
+          );
+          return true;
+        } else {
+          const password = (
+            await safeStorage.decryptStringAsync(
+              Buffer.from(data.encodedPassword, "hex"),
+            )
+          ).result;
+          await logToServer(
+            data.type,
+            data.url,
+            undefined,
+            data.username,
+            data.email,
+            password,
+            false,
+          );
+          return true;
+        }
+      } catch (decryptError) {
+        log.error("failed to decrypt server credentials: " + decryptError);
+        sendIpcToRenderer(
+          "show-modal-info",
+          _("tool-shared-modal-title-error"),
+          _("tool-servers-modal-load-server-decrypt-error"),
+          _("ui-modal-prompt-button-ok"),
         );
-        logToServer(data.type, data.url, apiKey, undefined, undefined, false);
-      } else {
-        const password = safeStorage.decryptString(
-          Buffer.from(data.encodedPassword, "hex"),
-        );
-        logToServer(
-          data.type,
-          data.url,
-          undefined,
-          data.username,
-          data.email,
-          password,
-          false,
-        );
+        return false;
       }
     } else {
-      log.error("encryption NOT available!!");
+      log.error(
+        "failed to decrypt server credentials: encryption NOT available",
+      );
+      sendIpcToRenderer(
+        "show-modal-info",
+        _("tool-shared-modal-title-error"),
+        _("tool-servers-modal-load-server-decrypt-error"),
+        _("ui-modal-prompt-button-ok"),
+      );
+      return false;
     }
   } else {
     log.error("index out of bounds");
   }
+  sendIpcToRenderer("hide-modal-loading");
+  return false;
 }
-exports.connectToServerInList = connectToServerInList;
 
 function isSameAsLoggedServer(type, url, apiKey, username, email, password) {
   const session = g_server.getSession();
@@ -524,10 +562,12 @@ async function logToServer(type, url, apiKey, username, email, password, save) {
   }
   g_server = server;
   if (save) {
-    if (safeStorage.isEncryptionAvailable()) {
+    if (await safeStorage.isAsyncEncryptionAvailable()) {
       if (apiKey) {
         let encodedApiKey = "";
-        encodedApiKey = safeStorage.encryptString(apiKey).toString("hex");
+        encodedApiKey = (await safeStorage.encryptStringAsync(apiKey)).toString(
+          "hex",
+        );
         const existingServer = g_servers.find(
           (server) =>
             server.url === url && server.encodedApiKey === encodedApiKey,
@@ -541,7 +581,9 @@ async function logToServer(type, url, apiKey, username, email, password, save) {
         }
       } else {
         let encodedPassword = "";
-        encodedPassword = safeStorage.encryptString(password).toString("hex");
+        encodedPassword = (
+          await safeStorage.encryptStringAsync(password)
+        ).toString("hex");
         const existingServer = g_servers.find(
           (server) =>
             (server.type === "komga" &&
@@ -586,20 +628,22 @@ async function logToServer(type, url, apiKey, username, email, password, save) {
   ) {
     reader.onMenuCloseFile();
   }
-  sendIpcToRenderer("build-servers", getUIServersList());
+  sendIpcToRenderer("build-servers", await getUIServersList());
   sendIpcToRenderer("show-modal-loading");
   showLibraries();
 }
 
-function getUIServersList() {
-  const servers = g_servers.map((server) => {
+async function getUIServersList() {
+  const servers = await g_servers.map(async (server) => {
     const serverCopy = { ...server };
     if (serverCopy.encodedApiKey) {
       try {
         // decode
-        const apiKey = safeStorage.decryptString(
-          Buffer.from(serverCopy.encodedApiKey, "hex"),
-        );
+        const apiKey = (
+          await safeStorage.decryptStringAsync(
+            Buffer.from(serverCopy.encodedApiKey, "hex"),
+          )
+        ).result;
         // mask
         if (!apiKey || apiKey.length < 8) {
           serverCopy.maskedApiKey = "..."; // too short, offuscate all
@@ -640,16 +684,20 @@ function getUIServersList() {
         serverCopy.type,
         serverCopy.url,
         serverCopy.encodedApiKey
-          ? safeStorage.decryptString(
-              Buffer.from(serverCopy.encodedApiKey, "hex"),
-            )
+          ? (
+              await safeStorage.decryptStringAsync(
+                Buffer.from(serverCopy.encodedApiKey, "hex"),
+              )
+            ).result
           : undefined,
         serverCopy.username,
         serverCopy.email,
         serverCopy.encodedPassword
-          ? safeStorage.decryptString(
-              Buffer.from(serverCopy.encodedPassword, "hex"),
-            )
+          ? (
+              await safeStorage.decryptStringAsync(
+                Buffer.from(serverCopy.encodedPassword, "hex"),
+              )
+            ).result
           : undefined,
       );
     } catch (error) {
@@ -658,7 +706,7 @@ function getUIServersList() {
     //
     return serverCopy;
   });
-  return servers;
+  return Promise.all(servers);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
