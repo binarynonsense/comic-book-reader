@@ -473,10 +473,15 @@ async function connectToServerInList(index, refData) {
         }
       } catch (decryptError) {
         log.error("failed to decrypt server credentials: " + decryptError);
+        let message = _("tool-servers-modal-load-server-decrypt-error");
+        if (!data.version) {
+          message +=
+            "\n\n" + _("tool-servers-modal-load-server-decrypt-error-2");
+        }
         sendIpcToRenderer(
           "show-modal-info",
           _("tool-shared-modal-title-error"),
-          _("tool-servers-modal-load-server-decrypt-error"),
+          message,
           _("ui-modal-prompt-button-ok"),
         );
         return false;
@@ -531,6 +536,7 @@ function isSameAsLoggedServer(type, url, apiKey, username, email, password) {
 }
 
 async function logToServer(type, url, apiKey, username, email, password, save) {
+  const appUtils = require("../../shared/main/app-utils");
   let server;
   if (type === "kavita") {
     server = kavita;
@@ -574,6 +580,7 @@ async function logToServer(type, url, apiKey, username, email, password, save) {
         );
         if (!existingServer) {
           g_servers.push({
+            version: appUtils.getAppVersion(),
             type,
             url,
             encodedApiKey,
@@ -599,6 +606,7 @@ async function logToServer(type, url, apiKey, username, email, password, save) {
         } else {
           if (type === "komga") {
             g_servers.push({
+              version: appUtils.getAppVersion(),
               type,
               url,
               undefined,
@@ -607,6 +615,7 @@ async function logToServer(type, url, apiKey, username, email, password, save) {
             });
           } else if (type === "kavita") {
             g_servers.push({
+              version: appUtils.getAppVersion(),
               type,
               url,
               username,
