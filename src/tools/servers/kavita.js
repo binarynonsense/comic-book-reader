@@ -45,6 +45,7 @@ function clearSession() {
     disableReading: true,
   };
 }
+exports.clearSession = clearSession;
 
 exports.getUrl = function () {
   return g_session.url;
