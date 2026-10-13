@@ -1047,8 +1047,11 @@ async function tryOpenWWW(pageIndex, historyEntry) {
   }
   ////
   else if (data.source === "komga" || data.source === "kavita") {
-    const { getSavedServerDataFromUrl } = require("../tools/servers/main");
-    const { getSession, login, getReadingProgress } = require(
+    const {
+      logToServer,
+      getSavedServerDataFromUrl,
+    } = require("../tools/servers/main");
+    const { getSession, getReadingProgress } = require(
       `../tools/servers/${data.source}`,
     );
     const session = getSession();
@@ -1056,27 +1059,22 @@ async function tryOpenWWW(pageIndex, historyEntry) {
       // need to log in
       let serverData = await getSavedServerDataFromUrl(data.serverUrl);
       if (serverData) {
-        const result = await login(serverData.url, {
-          username: serverData.username,
-          email: serverData.email,
-          password: serverData.password,
-          apiKey: serverData.apiKey,
-        });
-        if (!result.success) {
-          log.error(result.error);
-          sendIpcToRenderer(
-            "show-modal-info",
-            _("tool-shared-modal-title-error"),
-            _("tool-shared-ui-search-network-error", data.serverUrl) +
-              "\n\n" +
-              result.error,
-            _("ui-modal-prompt-button-ok"),
-          );
-          return false;
+        const result = await logToServer(
+          data.source,
+          serverData.url,
+          serverData.apiKey,
+          serverData.username,
+          serverData.email,
+          serverData.password,
+          false,
+          true,
+        );
+        if (result) {
+          pageIndex = (await getReadingProgress(data.comicId)).page - 1;
+          openBookFromServer(data, pageIndex);
+          return true;
         }
-        pageIndex = (await getReadingProgress(data.comicId)).page - 1;
-        openBookFromServer(data, pageIndex);
-        return true;
+        return false;
       } else {
         // not in list, show login modal
         const defaults = {

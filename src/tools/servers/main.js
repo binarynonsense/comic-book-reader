@@ -39,7 +39,7 @@ function init() {
     ////
     komga.setIpcs(sendIpcToRenderer);
     kavita.setIpcs(sendIpcToRenderer);
-    g_server = komga;
+    if (!g_server) g_server = komga;
   }
 }
 
@@ -79,6 +79,9 @@ exports.open = async function () {
   sendIpcToRenderer("show", 0, await getUIServersList());
   if (g_navState.section) {
     loadState(g_navState);
+  } else if (g_server.getSession().url) {
+    sendIpcToRenderer("show-modal-loading");
+    await showLibraries();
   }
 };
 
@@ -508,6 +511,7 @@ async function connectToServerInList(index, refData) {
 }
 
 function isSameAsLoggedServer(type, url, apiKey, username, email, password) {
+  if (!g_server) return false;
   const session = g_server.getSession();
   if (!session || !session.url) return false;
   if (type === "kavita") {
@@ -537,7 +541,16 @@ function isSameAsLoggedServer(type, url, apiKey, username, email, password) {
   }
 }
 
-async function logToServer(type, url, apiKey, username, email, password, save) {
+async function logToServer(
+  type,
+  url,
+  apiKey,
+  username,
+  email,
+  password,
+  save,
+  skipRender,
+) {
   const appUtils = require("../../shared/main/app-utils");
   let server;
   if (type === "kavita") {
@@ -548,7 +561,7 @@ async function logToServer(type, url, apiKey, username, email, password, save) {
   if (isSameAsLoggedServer(type, url, apiKey, username, email, password)) {
     log.editor("[SERVERS] already logged as that user, skipping login");
   } else {
-    sendIpcToRenderer("show-modal-loading");
+    if (!skipRender) sendIpcToRenderer("show-modal-loading");
     let result;
     if (apiKey) {
       result = await server.login(url, { apiKey });
@@ -556,7 +569,7 @@ async function logToServer(type, url, apiKey, username, email, password, save) {
       result = await server.login(url, { username, email, password });
     }
     if (!result.success) {
-      log.error(result.error);
+      log.editorError(result.error);
       sendIpcToRenderer(
         "show-modal-info",
         _("tool-shared-modal-title-error"),
@@ -646,85 +659,89 @@ async function logToServer(type, url, apiKey, username, email, password, save) {
       );
     }
   }
-  sendIpcToRenderer("build-servers", await getUIServersList());
-  sendIpcToRenderer("show-modal-loading");
-  showLibraries();
+  if (!skipRender) {
+    sendIpcToRenderer("build-servers", await getUIServersList());
+    sendIpcToRenderer("show-modal-loading");
+    showLibraries();
+  }
+  return true;
 }
+exports.logToServer = logToServer;
 
 async function getUIServersList() {
-  const servers = await g_servers.map(async (server) => {
-    const serverCopy = { ...server };
-    if (serverCopy.encodedApiKey) {
+  const servers = structuredClone(g_servers);
+  for (let index = 0; index < servers.length; index++) {
+    const server = servers[index];
+    if (server.encodedApiKey) {
       try {
         // decode
         const apiKey = (
           await safeStorage.decryptStringAsync(
-            Buffer.from(serverCopy.encodedApiKey, "hex"),
+            Buffer.from(server.encodedApiKey, "hex"),
           )
         ).result;
         // mask
         if (!apiKey || apiKey.length < 8) {
-          serverCopy.maskedApiKey = "..."; // too short, offuscate all
+          server.maskedApiKey = "..."; // too short, offuscate all
         } else {
           const start = apiKey.substring(0, 4);
           const end = apiKey.substring(apiKey.length - 4);
-          serverCopy.maskedApiKey = `${start}...${end}`;
+          server.maskedApiKey = `${start}...${end}`;
         }
       } catch (error) {
-        serverCopy.maskedApiKey = "????";
+        server.maskedApiKey = "????";
       }
-    } else if (serverCopy.email) {
+    } else if (server.email) {
       try {
-        const [name, domain] = serverCopy.email.split("@");
+        const [name, domain] = server.email.split("@");
         if (!name || !domain) {
-          serverCopy.maskedEmail = serverCopy.email;
+          server.maskedEmail = server.email;
         } else {
           const visibleLength = name.length > 2 ? 2 : 1;
           const maskedName =
             name.substring(0, visibleLength) +
             "*".repeat(Math.max(3, name.length - visibleLength));
-          serverCopy.maskedEmail = `${maskedName}@${domain}`;
+          server.maskedEmail = `${maskedName}@${domain}`;
         }
       } catch (error) {
-        serverCopy.maskedEmail = "????";
+        server.maskedEmail = "????";
       }
-    } else if (serverCopy.username) {
+    } else if (server.username) {
       try {
         // kavita reuses maskedEmail for user in renderer UI
-        serverCopy.maskedEmail = serverCopy.username;
+        server.maskedEmail = server.username;
       } catch (error) {
-        serverCopy.maskedEmail = "????";
+        server.maskedEmail = "????";
       }
     }
     //
     try {
-      serverCopy.isSelected = isSameAsLoggedServer(
-        serverCopy.type,
-        serverCopy.url,
-        serverCopy.encodedApiKey
+      server.isSelected = isSameAsLoggedServer(
+        server.type,
+        server.url,
+        server.encodedApiKey
           ? (
               await safeStorage.decryptStringAsync(
-                Buffer.from(serverCopy.encodedApiKey, "hex"),
+                Buffer.from(server.encodedApiKey, "hex"),
               )
             ).result
           : undefined,
-        serverCopy.username,
-        serverCopy.email,
-        serverCopy.encodedPassword
+        server.username,
+        server.email,
+        server.encodedPassword
           ? (
               await safeStorage.decryptStringAsync(
-                Buffer.from(serverCopy.encodedPassword, "hex"),
+                Buffer.from(server.encodedPassword, "hex"),
               )
             ).result
           : undefined,
       );
     } catch (error) {
-      serverCopy.isSelected = false;
+      log.editorError(error);
+      server.isSelected = false;
     }
-    //
-    return serverCopy;
-  });
-  return Promise.all(servers);
+  }
+  return servers;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
