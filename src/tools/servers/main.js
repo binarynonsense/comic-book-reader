@@ -206,7 +206,7 @@ function initOnIpcCallbacks() {
         _("ui-modal-prompt-button-cancel"),
       );
     } else {
-      log.error("index out of bounds");
+      log.error("[SERVERS] index out of bounds");
     }
   });
 
@@ -472,7 +472,9 @@ async function connectToServerInList(index, refData) {
           return true;
         }
       } catch (decryptError) {
-        log.error("failed to decrypt server credentials: " + decryptError);
+        log.error(
+          "[SERVERS] failed to decrypt server credentials: " + decryptError,
+        );
         let message = _("tool-servers-modal-load-server-decrypt-error");
         if (!data.version) {
           message +=
@@ -488,7 +490,7 @@ async function connectToServerInList(index, refData) {
       }
     } else {
       log.error(
-        "failed to decrypt server credentials: encryption NOT available",
+        "[SERVERS] failed to decrypt server credentials: encryption NOT available",
       );
       sendIpcToRenderer(
         "show-modal-info",
@@ -499,7 +501,7 @@ async function connectToServerInList(index, refData) {
       return false;
     }
   } else {
-    log.error("index out of bounds");
+    log.error("[SERVERS] index out of bounds");
   }
   sendIpcToRenderer("hide-modal-loading");
   return false;
@@ -545,8 +547,6 @@ async function logToServer(type, url, apiKey, username, email, password, save) {
   }
   if (isSameAsLoggedServer(type, url, apiKey, username, email, password)) {
     log.editor("[SERVERS] already logged as that user, skipping login");
-    sendIpcToRenderer("hide-modal-loading");
-    return;
   } else {
     sendIpcToRenderer("show-modal-loading");
     let result;
@@ -564,6 +564,13 @@ async function logToServer(type, url, apiKey, username, email, password, save) {
         _("ui-modal-prompt-button-ok"),
       );
       return;
+    }
+    const currentFileData = reader.getFileData();
+    if (
+      currentFileData?.data?.source === "komga" ||
+      currentFileData?.data?.source === "kavita"
+    ) {
+      reader.onMenuCloseFile();
     }
   }
   g_server = server;
@@ -627,15 +634,17 @@ async function logToServer(type, url, apiKey, username, email, password, save) {
       }
     } else {
       // can't encrypt -> don't save
-      log.error("encryption NOT available!!");
+      log.error("[SERVERS] couldn't save the server: encryption NOT available");
+      sendIpcToCoreRenderer(
+        "show-toast",
+        _("tool-servers-modal-save-server-error") +
+          "<br>" +
+          _("tool-servers-modal-save-server-encrypt-server-error"),
+        3000,
+        undefined,
+        false,
+      );
     }
-  }
-  const currentFileData = reader.getFileData();
-  if (
-    currentFileData?.data?.source === "komga" ||
-    currentFileData?.data?.source === "kavita"
-  ) {
-    reader.onMenuCloseFile();
   }
   sendIpcToRenderer("build-servers", await getUIServersList());
   sendIpcToRenderer("show-modal-loading");
