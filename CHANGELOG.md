@@ -1,3 +1,7 @@
+## v3.26.3
+
+- Fixed a bug introduced in the previous release that made switching between servers not work in the Server Browser under some circumstances.
+
 ## v3.26.2
 
 - Fixed not being able to browse a server in the Server Browser if a connection with it was already established from the reader to open a book from the history and it is still the current one.
