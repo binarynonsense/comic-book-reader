@@ -1259,7 +1259,7 @@
   "tool-servers-modal-remember": "Server und Zugangsdaten speichern",
   "tool-servers-modal-save-server-error": "Konnte Server nicht speichern.",
   "tool-servers-modal-save-server-encrypt-server-error": "Konnte Server-zugangsdaten nicht verschlüsseln.",
-  "tool-servers-modal-load-server-decrypt-error": "Server-zugangsdaten nicht entschlüsseln.",
+  "tool-servers-modal-load-server-decrypt-error": "Konnte Server-zugangsdaten nicht entschlüsseln.",
   "tool-servers-modal-load-server-decrypt-error-2": "Sie müssen eventuell die Zugangsdaten neu abspeichern.",
   "[NOTE TO TRANSLATORS]tool-servers-section-activity": "Activity as in recent activity in the server: latest read books, latest updated books...",
   "tool-servers-section-activity": "Activität",
