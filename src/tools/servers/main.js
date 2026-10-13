@@ -586,7 +586,7 @@ async function logToServer(
       reader.onMenuCloseFile();
     }
   }
-  if (g_server && g_server.getType() !== server.type) {
+  if (g_server && g_server.getType() !== type) {
     g_server.clearSession();
   }
   g_server = server;
