@@ -1,9 +1,7 @@
 {
   "@metadata": {
-    "authors": [
-      "trzyglow"
-    ],
-    "last-updated": "2026-10-07",
+    "authors": ["trzyglow"],
+    "last-updated": "2026-10-13",
     "license-id": "BSD-2-Clause",
     "acbr-version": "3.26.0",
     "pre-release": "false",
@@ -1259,10 +1257,10 @@
   "tool-servers-modal-username": "Nutzername",
   "tool-servers-modal-email": "E-Mail",
   "tool-servers-modal-remember": "Server und Zugangsdaten speichern",
-  "[NEEDS TRANSLATION]tool-servers-modal-save-server-error": "Couldn't save the server.",
-  "[NEEDS TRANSLATION]tool-servers-modal-save-server-encrypt-server-error": "Couldn't encrypt the server's credentials.",
-  "[NEEDS TRANSLATION]tool-servers-modal-load-server-decrypt-error": "Couldn't decrypt the server's credentials.",
-  "[NEEDS TRANSLATION]tool-servers-modal-load-server-decrypt-error-2": "You may need to save the credentials again.",
+  "tool-servers-modal-save-server-error": "Konnte Server nicht speichern.",
+  "tool-servers-modal-save-server-encrypt-server-error": "Konnte Server-zugangsdaten nicht verschlüsseln.",
+  "tool-servers-modal-load-server-decrypt-error": "Konnte Server-zugangsdaten nicht entschlüsseln.",
+  "tool-servers-modal-load-server-decrypt-error-2": "Sie müssen eventuell die Zugangsdaten neu abspeichern.",
   "[NOTE TO TRANSLATORS]tool-servers-section-activity": "Activity as in recent activity in the server: latest read books, latest updated books...",
   "tool-servers-section-activity": "Activität",
   "tool-servers-section-libraries": "Bibliotheken",
