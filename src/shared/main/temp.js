@@ -38,6 +38,8 @@ exports.getBaseFolder = function () {
   return g_baseFolderPath;
 };
 
+// TODO: improve to handle Windows not letting me create or delete
+// the base folder for some reason (like EPERM)
 function setBaseFolder(parentFolderPath, resetToDefault) {
   try {
     if (!exports.isValidParentFolder(parentFolderPath)) {
@@ -60,7 +62,12 @@ function setBaseFolder(parentFolderPath, resetToDefault) {
     try {
       fs.mkdirSync(baseFolder);
     } catch (error) {
-      log.error(error);
+      if (error.code === "EEXIST") {
+        log.error(error);
+      } else {
+        // TODO: how to recover?
+        throw error;
+      }
     }
     log.debug("base temp folder: " + baseFolder);
     if (g_baseFolderPath) {
