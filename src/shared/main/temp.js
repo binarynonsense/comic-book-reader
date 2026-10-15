@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2024 Álvaro García
+ * Copyright 2024-2026 Álvaro García
  * www.binarynonsense.com
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -57,7 +57,11 @@ function setBaseFolder(parentFolderPath, resetToDefault) {
       // it already existed, clean it up just in case
       deleteFolderRecursive(10, baseFolder, true, undefined, "acbr-tmp");
     }
-    fs.mkdirSync(baseFolder);
+    try {
+      fs.mkdirSync(baseFolder);
+    } catch (error) {
+      log.error(error);
+    }
     log.debug("base temp folder: " + baseFolder);
     if (g_baseFolderPath) {
       // there was a different one set already, clean it up just in case
