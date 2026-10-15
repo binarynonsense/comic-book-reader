@@ -65,7 +65,9 @@ function setBaseFolder(parentFolderPath, resetToDefault) {
       fs.mkdirSync(baseFolder);
     } catch (error) {
       if (error.code === "EEXIST") {
-        log.error(error);
+        log.debug(
+          `couldn't create the folder, it already existed: ${baseFolder}`,
+        );
       } else {
         // TODO: how to recover?
         throw error;
