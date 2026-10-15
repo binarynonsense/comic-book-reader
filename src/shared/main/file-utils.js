@@ -641,11 +641,11 @@ exports.deleteFolderRecursive = function (
 ) {
   if (!fs.existsSync(folderPath)) {
     log.editor("deleteFolderRecursive: !existsSync " + folderPath);
-    return;
+    return false;
   }
   if (nameStartsWith && !path.basename(folderPath).startsWith(nameStartsWith))
-    return;
-  if (pathStartsWith && !folderPath.startsWith(pathStartsWith)) return;
+    return false;
+  if (pathStartsWith && !folderPath.startsWith(pathStartsWith)) return false;
 
   try {
     fs.rmSync(folderPath, {
@@ -655,6 +655,7 @@ exports.deleteFolderRecursive = function (
       retryDelay: 100,
     });
     log.debug("deleted folder: " + folderPath, true);
+    return true;
   } catch (error) {
     if (logToError) {
       log.error(
@@ -667,6 +668,7 @@ exports.deleteFolderRecursive = function (
       );
       log.debug(error.code);
     }
+    return false;
   }
 };
 
