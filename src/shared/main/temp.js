@@ -57,7 +57,9 @@ function setBaseFolder(parentFolderPath, resetToDefault) {
     }
     if (fs.existsSync(baseFolder)) {
       // it already existed, clean it up just in case
-      deleteFolderRecursive(10, baseFolder, true, undefined, "acbr-tmp");
+      if (!deleteFolderRecursive(10, baseFolder, true, undefined, "acbr-tmp")) {
+        // TODO: show warning message?
+      }
     }
     try {
       fs.mkdirSync(baseFolder);
